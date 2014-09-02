@@ -88,7 +88,21 @@ static Key *createKeyFromPath(Key *parentKey, const char *treePath)
 {
 	Key *key = keyDup (parentKey);
 	const char *baseName = (treePath + strlen (AUGEAS_TREE_ROOT) + 1);
-	keyAddBaseName (key, baseName);
+
+	size_t baseSize = keyGetNameSize(key);
+	size_t keyNameSize = strlen (baseName) + baseSize + 1;
+	char *newName = malloc (keyNameSize);
+
+	if (!newName) return 0;
+
+	strcpy (newName, keyName (key));
+	newName[baseSize - 1] = KDB_PATH_SEPARATOR;
+	newName[baseSize] = 0;
+	strcat (newName, baseName);
+
+	keySetName(key, newName);
+	free (newName);
+
 	return key;
 }
 

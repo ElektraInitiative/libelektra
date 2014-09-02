@@ -96,6 +96,8 @@ function (add_scripttest testname)
 				testscr_${testname_we}
 				"${testscriptname}"
 				)
+			#dash does memleak:
+			set_property(TEST testscr_${testname_we} PROPERTY LABELS memleak kdbtests)
 			endif (NOT ${testname_we} STREQUAL "check_gen" OR ENABLE_CXX11)
 			endif (NOT ${testname_we} STREQUAL "run_all")
 			endif(ENABLE_KDB_TESTING)

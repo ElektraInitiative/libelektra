@@ -276,7 +276,7 @@ AUTOLINK_SUPPORT       = YES
 # func(std::string) {}). This also makes the inheritance and collaboration
 # diagrams that involve STL classes more complete and accurate.
 
-BUILTIN_STL_SUPPORT    = NO
+BUILTIN_STL_SUPPORT    = YES
 
 # If you use Microsoft's C++/CLI language, you should set this option to YES to
 # enable parsing support.
@@ -675,7 +675,7 @@ INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
                          @PROJECT_SOURCE_DIR@/src/include \
                          @PROJECT_SOURCE_DIR@/src/libtools \
                          @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
-                         @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.c \
+                         @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
                          @PROJECT_SOURCE_DIR@/src/libloader/doc.c
 
 # This tag can be used to specify the character encoding of the source files
@@ -695,8 +695,8 @@ INPUT_ENCODING         = UTF-8
 # *.f90 *.f *.for *.vhd *.vhdl
 
 FILE_PATTERNS          = *.c \
-                         *.cc \
-                         *.cxx \
+                         *.md \
+                         *.hxx \
                          *.cpp \
                          *.c++ \
                          *.d \
@@ -714,27 +714,10 @@ FILE_PATTERNS          = *.c \
                          *.idl \
                          *.odl \
                          *.cs \
-                         *.php \
-                         *.php3 \
                          *.inc \
-                         *.m \
-                         *.mm \
-                         *.dox \
                          *.py \
-                         *.C \
-                         *.CC \
-                         *.C++ \
-                         *.II \
-                         *.I++ \
-                         *.H \
-                         *.HH \
-                         *.H++ \
-                         *.CS \
-                         *.PHP \
-                         *.PHP3 \
-                         *.M \
-                         *.MM \
-                         *.PY
+                         *.lua \
+                         *.h
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories
 # should be searched for input files as well. Possible values are YES and NO.
@@ -771,7 +754,6 @@ EXCLUDE_PATTERNS       =
 # AClass::ANamespace, ANamespace::*Test
 
 EXCLUDE_SYMBOLS        = doxygen* \
-                         elektra* \
                          _*
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or
@@ -779,7 +761,10 @@ EXCLUDE_SYMBOLS        = doxygen* \
 # the \include command).
 
 EXAMPLE_PATH           = "@PROJECT_SOURCE_DIR@/examples" \
-                         "@PROJECT_SOURCE_DIR@/src/bindings/cpp/examples"
+                         "@PROJECT_SOURCE_DIR@/src/bindings/cpp/examples" \
+                         "@PROJECT_SOURCE_DIR@/tests/abi" \
+                         "@PROJECT_SOURCE_DIR@/tests/ctest" \
+                         "@PROJECT_SOURCE_DIR@/src/plugins/doc"
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp

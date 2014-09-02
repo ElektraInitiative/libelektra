@@ -45,12 +45,12 @@ enum keyswitch_t
 #define KS_END ((Key*)0)
 
 /**
- * Options to change the default behavior of kdbGet(), kdbSet()
- * and ksLookup() functions.
+ * Options to change the default behavior of
+ * ksLookup() functions.
  *
  * These options can be ORed. That is the |-Operator in C.
  *
- * @ingroup kdb
+ * @ingroup keyset
  * @see kdbGet(), kdbSet()
  */
 enum option_t

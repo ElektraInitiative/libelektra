@@ -13,7 +13,6 @@
 #include <backends.hpp>
 #include <cmdline.hpp>
 
-#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <fstream>
@@ -30,21 +29,6 @@ using namespace kdb::tools;
 MountCommand::MountCommand()
 {}
 
-/**
- * @brief Read in configuration and print warnings
- *
- * @post will update mountConf
- */
-void MountCommand::readMountConf()
-{
-	Key parentKey(Backends::mountpointsPath, KEY_END);
-
-	kdb::KDB kdb (parentKey);
-	kdb.get(mountConf, parentKey);
-	kdb.close (parentKey);
-
-	printWarnings (cerr, parentKey);
-}
 
 /**
  * @brief Output what currently is mounted
@@ -78,135 +62,17 @@ void MountCommand::processArguments(Cmdline const& cl)
 	}
 }
 
-/**
- * @brief Check for rootkey in  mountConf and add one if missing
- *
- * @param cl.verbose print text when it is missing
- */
-void MountCommand::fixRootKey(Cmdline const& cl)
-{
-	Key rootKey (Backends::mountpointsPath, KEY_END);
-
-	Key cur;
-	cur = mountConf.lookup(rootKey);
-	if (!cur)
-	{
-		if (cl.verbose)
-		{
-			cout << "Did not find the root key, will add it" << endl;
-		}
-		mountConf.append ( *Key(Backends::mountpointsPath,
-			KEY_COMMENT, "Below are the mountpoints.",
-			KEY_END));
-		mountConf.rewind();
-	}
-}
-
-/**
- * @brief Set variable name (either interactive or by parameter)
- */
-void MountCommand::getName(Cmdline const& cl)
-{
-	std::vector <std::string> names;
-	Backends::BackendInfoVector info = Backends::getBackendInfo(mountConf);
-	names.push_back("default");
-	for (Backends::BackendInfoVector::const_iterator it=info.begin();
-			it!=info.end(); ++it)
-	{
-		names.push_back(it->name);
-	}
-
-	if (cl.interactive)
-	{
-		cout << "Already used are: ";
-		std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
-		cout << endl;
-		std::cout << "Backend name: ";
-		cin >> name;
-	}
-	else
-	{
-		name = cl.arguments[1];
-		if (name == "/")
-		{
-			name = "root";
-		}
-		else
-		{
-			std::replace(name.begin(), name.end(), '/', '_');
-		}
-	}
-
-	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
-}
-
-/**
- * @brief set mp (interactive or by commandline)
- *
- * @pre name must be set before
- * @see getName()
- */
-void MountCommand::getMountpoint(Cmdline const& cl)
-{
-	Key cur;
-	std::vector <std::string> mountpoints;
-	mountpoints.push_back("system/elektra");
-	mountConf.rewind();
-	while (cur = mountConf.next())
-	{
-		if (cur.getBaseName() == "mountpoint")
-		{
-			if (cur.getString().at(0) == '/')
-			{
-				mountpoints.push_back(Key ("user" + cur.getString(), KEY_END).getName());
-				mountpoints.push_back(Key ("system" + cur.getString(), KEY_END).getName());
-			} else {
-				mountpoints.push_back(cur.getString());
-			}
-		};
-	}
-
-	mp = "/";
-	if (name != "root")
-	{
-		if (cl.interactive)
-		{
-			cout << "Already used are: ";
-			std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
-			cout << endl;
-			cout << "Please start with / for a cascading backend" << endl;
-			cout << "Enter the mountpoint: ";
-			cin >> mp;
-		}
-		else
-		{
-			mp = cl.arguments[1];
-		}
-	}
-
-	if (mp.at(0) == '/')
-	{
-		Key skmp ("system" + mp, KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
-		Key ukmp ("user" + mp, KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
-	} else {
-		Key kmp (mp, KEY_END);
-		if (!kmp.isValid()) throw MountpointNotValid();
-		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
-	}
-}
-
 void MountCommand::buildBackend(Cmdline const& cl)
 {
 	Backend backend (name, mp);
 
 	if (cl.debug)
 	{
-		cout << "Trying to load the resolver plugin" << endl;
+		cout << "Trying to load the resolver plugin " << cl.resolver << endl;
 	}
 
-	backend.addPlugin ("resolver");
+	backend.addPlugin (cl.resolver);
+
 
 	if (cl.interactive)
 	{
@@ -225,10 +91,8 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	backend.checkFile (path);
 
-	std::string configPath = Backends::mountpointsPath;
-	configPath += "/";
-	configPath += name;
-	configPath += "/config";
+	std::string configPath = Backends::getConfigBasePath(name);
+
 	mountConf.append ( *Key(configPath,
 			KEY_VALUE, "",
 			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
@@ -251,6 +115,68 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	backend.serialise (rootKey, mountConf);
 }
 
+void MountCommand::addConfig (string const& configBasePath, string const& keyName, string const& value)
+{
+	Key configKey = Key (configBasePath + "/" + keyName, KEY_END);
+	// configKey.addName (keyName);
+	configKey.setString (value);
+	mountConf.append (configKey);
+}
+
+bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
+{
+	string keyName;
+	string value;
+
+	const string configBasePath = Backends::getConfigBasePath (name);
+	if (cl.interactive)
+	{
+		cout << "Enter the plugin configuration" << endl;
+		cout << "Use '.' as Key name to finish" << endl;
+
+		while (true)
+		{
+			cout << "Enter the Key name: ";
+			cin >> keyName;
+
+			if (keyName == ".") break;
+
+			cout << "Enter the Key value: ";
+			cin >> value;
+
+			addConfig (configBasePath, keyName, value);
+		}
+	}
+	else
+	{
+		// check if there is a further token (which might be the config of the current plugin)
+		if (current_token + 1 >= cl.arguments.size ()) return false;
+
+		string configString = cl.arguments[current_token + 1];
+
+		// check if the next argument is a config (otherwise it is treated as plugin name)
+		// only a token with a '=' is treated as config
+		if (configString.find ('=') == string::npos) return false;
+
+		istringstream sstream(configString);
+
+		while (true)
+		{
+			// read until the next '=', this will be the keyname
+			if (!std::getline (sstream, keyName, '=')) break;
+
+			// read until a ',' or the end of line
+			// if nothing is read because the '=' is the last character
+			// in the config string, consider the value empty
+			if (!std::getline (sstream, value, ',')) value = "";
+
+			addConfig (configBasePath, keyName, value);
+		}
+	}
+
+	return true;
+}
+
 void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 {
 	std::string pname;
@@ -259,6 +185,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 	{
 		cout << "First Plugin: ";
 		cin >> pname;
+		readPluginConfig (cl, current_plugin);
 	}
 	else
 	{
@@ -269,9 +196,14 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		else
 		{
 			pname = cl.arguments[current_plugin];
+			if (readPluginConfig (cl, current_plugin))
+			{
+				current_plugin ++;
+			}
 		}
 		current_plugin ++;
 	}
+
 
 	while (pname != "." || !backend.validated())
 	{
@@ -280,8 +212,8 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		}
 		catch (PluginCheckException const& e)
 		{
-			cout << "Could not add that plugin" << endl;
-			cout << e.what() << endl;
+			cerr << "Could not add that plugin" << endl;
+			cerr << e.what() << endl;
 		}
 		if (cl.interactive)
 		{
@@ -294,6 +226,11 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			cout << endl;
 			cout << "Next Plugin: ";
 			cin >> pname;
+
+			if (pname != ".")
+			{
+				readPluginConfig (cl, current_plugin);
+			}
 		}
 		else
 		{
@@ -304,65 +241,23 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			else
 			{
 				pname = cl.arguments[current_plugin];
+				if (readPluginConfig (cl, current_plugin))
+				{
+					current_plugin ++;
+				}
 			}
 			current_plugin ++;
 		}
 
 		if (pname == "." && !backend.validated())
 		{
+			std::cerr << backend << std::endl;
 			throw CommandAbortException();
 		}
 	}
+
 }
 
-void MountCommand::askForConfirmation(Cmdline const& cl)
-{
-	if (cl.interactive)
-	{
-		cout << endl;
-		cout << "Ready to mount with following configuration:" << endl;
-		cout << "Name:       " << name << endl;
-		cout << "Mountpoint: " << mp << endl;
-		cout << "Path:       " << path << endl;
-	}
-
-	if (cl.debug)
-	{
-		cout << "The configuration which will be set is:" << endl;
-		mountConf.rewind();
-		while (Key k = mountConf.next())
-		{
-			cout << k.getName() << " " << k.getString() << endl;
-		}
-	}
-
-	if (cl.interactive)
-	{
-		cout << "Are you sure you want to do that (y/N): ";
-		std::string answer;
-		cin >> answer;
-		if (answer != "y") throw CommandAbortException();
-	}
-
-	if (cl.debug)
-	{
-		cout << "Now writing the mountpoint configuration";
-	}
-}
-
-/**
- * @brief Really write out config
- */
-void MountCommand::doIt()
-{
-	Key parentKey(Backends::mountpointsPath, KEY_END);
-
-	kdb::KDB kdb (parentKey);
-	kdb.set(mountConf, parentKey);
-	kdb.close (parentKey);
-
-	printWarnings(cerr, parentKey);
-}
 
 /**
  * @brief Its quite linear whats going on, but there are many steps involved

@@ -2,6 +2,10 @@ find_package(DBus REQUIRED)
 if (DBUS_FOUND)
 	include (LibAddMacros)
 
+	generate_readme (dbus)
+	add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+	include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 	add_includes (elektra-full ${DBUS_INCLUDE_DIR})
 	add_includes (elektra-full ${DBUS_ARCH_INCLUDE_DIR})
 	include_directories (${DBUS_INCLUDE_DIR})

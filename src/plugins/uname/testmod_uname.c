@@ -32,7 +32,7 @@ void test_structure()
 	printf ("Test structure of keys returned from uname plugin");
 
 	Key *parentKey = keyNew("user/test/key", KEY_END);
-	KeySet *keys = ksNew(0);
+	KeySet *keys = ksNew(0, KS_END);
 	KeySet *conf = 0;
 
 	PLUGIN_OPEN("uname");

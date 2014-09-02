@@ -66,6 +66,12 @@ static KeySet* createSimpleTestKeys()
 					KEY_META, "convert/metaname", "testmeta",
 					KEY_META, "convert/append", "previous",
 					KEY_END),
+			keyNew ("user/normalkey1/subkey",
+					KEY_VALUE, "testvalue3",
+					KEY_META, "order", "60",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "parent",
+					KEY_END),
 			KS_END);
 }
 
@@ -74,7 +80,7 @@ static KeySet* createMergeTestkeys()
 	/* the keys to be converted are merged together
 	 * into a single metadata
 	 */
-	KeySet* ks = ksNew (0);
+	KeySet* ks = ksNew(0, KS_END);
 	for (int i = 1; i <= 3; i++)
 	{
 		Key* key = createMergingKey (i);
@@ -210,7 +216,7 @@ static KeySet* createDifferentMetaNameTestKeys()
 void test_parentAppendMode()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN ("keytometa");
 
 	KeySet *ks = createParentTestKeys ();
@@ -264,6 +270,7 @@ void test_parentAppendMode()
 	succeed_if (key, "normalkey2 was removed");
 	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey2 should not contain any meta data");
 
+
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE();
@@ -273,7 +280,7 @@ void test_parentAppendMode()
 void test_simpleAppendModes()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 
@@ -293,16 +300,25 @@ void test_simpleAppendModes()
 	succeed_if (key, "normalkey2 was removed");
 
 	const Key *metaKey1 = keyGetMeta(key, "testmeta");
-	succeed_if (metaKey1, "normalkey1 contained no metakey");
-	succeed_if (!strcmp (keyString(metaKey1), "testvalue1"), "metakey of normalkey1 contained incorrect data");
+	succeed_if (metaKey1, "normalkey2 contained no metakey");
+	succeed_if (!strcmp (keyString(metaKey1), "testvalue1"), "metakey of normalkey2 contained incorrect data");
 
 	/* normalkey3 must contain meta information generated from convertkey2 (via previous) */
 	key = ksLookupByName (ks, "user/normalkey3", 0);
 	succeed_if (key, "normalkey3 was removed");
 
 	const Key *metaKey2 = keyGetMeta(key, "testmeta");
-	succeed_if (metaKey2, "normalkey1 contained no metakey");
-	succeed_if (!strcmp (keyString(metaKey2), "testvalue2"), "metakey of normalkey2 contained incorrect data");
+	succeed_if (metaKey2, "normalkey3 contained no metakey");
+	succeed_if (!strcmp (keyString(metaKey2), "testvalue2"), "metakey of normalkey3 contained incorrect data");
+
+	/* normalkey1 must contain meta information generated from subkey (via parent) */
+	key = ksLookupByName (ks, "user/normalkey1", 0);
+	succeed_if (key, "normalkey1 was removed");
+
+	const Key *metaKey3 = keyGetMeta(key, "testmeta");
+	succeed_if (metaKey3, "normalkey1 contained no metakey");
+	succeed_if (!strcmp (keyString(metaKey3), "testvalue3"), "metakey of normalkey1 contained incorrect data");
+
 
 	keyDel (parentKey);
 	ksDel(ks);
@@ -315,7 +331,7 @@ void test_simpleAppendModes()
 void test_metaMerging ()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet* ks = createMergeTestkeys ();
@@ -368,7 +384,7 @@ void test_metaMerging ()
 void test_metaSkipMerge()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet* ks = createSkipMergeTestKeys();
@@ -400,7 +416,7 @@ void test_metaSkipMerge()
 
 void test_differentMetaNames () {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet *ks = createDifferentMetaNameTestKeys();
@@ -429,7 +445,7 @@ void test_differentMetaNames () {
 
 void test_restoreOnSet () {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("keytometa");
 
 	KeySet *ks = createSimpleTestKeys ();
@@ -464,6 +480,11 @@ void test_restoreOnSet () {
 	succeed_if (key, "convertkey2 was not restored");
 	succeed_if (!strcmp (keyString(key), "testvalue2"), " value of convertkey2 was modified");
 
+	key = ksLookupByName (ks, "user/normalkey1/subkey", 0);
+	succeed_if (key, "subkey was not restored");
+	succeed_if (!strcmp (keyString(key), "testvalue3"), " value of subkey was modified");
+
+
 	keyDel (parentKey);
 	ksDel(ks);
 	PLUGIN_CLOSE ()
@@ -484,7 +505,7 @@ int main(int argc, char** argv)
 	test_differentMetaNames();
 	test_restoreOnSet();
 
-	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
+	printf ("\ntest_keytometa RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
 
 	return nbError;

@@ -36,6 +36,12 @@ macro (mkdir dir)
 		)
 endmacro (mkdir)
 
+macro (add_testheaders HDR_FILES)
+	include_directories ("${PROJECT_SOURCE_DIR}/tests/cframework")
+	file (GLOB BIN_HDR_FILES
+		"${PROJECT_SOURCE_DIR}/tests/cframework/*.h")
+	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
+endmacro (add_testheaders HDR_FILES)
 
 # Add a test for a plugin
 #
@@ -47,11 +53,12 @@ endmacro (mkdir)
 macro (add_plugintest testname)
 	if (BUILD_FULL)
 		set (TEST_SOURCES
-				${CMAKE_SOURCE_DIR}/tests/tests.c
-				${CMAKE_SOURCE_DIR}/tests/tests.h
+				$<TARGET_OBJECTS:cframework>
 				${ARGN}
 				)
-		include_directories ("${CMAKE_SOURCE_DIR}/tests")
+		add_headers(TEST_SOURCES)
+		add_testheaders(TEST_SOURCES)
+		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
 		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)
 		if (INSTALL_TESTING)
 			install (TARGETS testmod_${testname}
@@ -402,5 +409,8 @@ function (generate_readme p)
 	STRING(REGEX REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\"" "keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	# allow macros:
+	STRING(REGEX REPLACE "\" *#ifdef ([^\\]*)\\\\n\"" "#ifdef \\1" contents "${contents}")
+	STRING(REGEX REPLACE "\" *#endif\\\\n\"" "#endif" contents "${contents}")
 	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c ${contents})
 endfunction()

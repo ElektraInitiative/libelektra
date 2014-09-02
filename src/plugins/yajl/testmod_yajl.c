@@ -15,7 +15,6 @@
 
 #include "yajl.h"
 #include "name.h"
-#include "array.h"
 #include "iterator.h"
 
 #ifdef HAVE_KDBCONFIG_H
@@ -481,7 +480,7 @@ void test_json(const char * fileName,
 	Key *parentKey = keyNew ("user/tests/yajl",
 			KEY_VALUE, srcdir_file(fileName),
 			KEY_END);
-	KeySet *keys = ksNew(0);
+	KeySet *keys = ksNew(0, KS_END);
 	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
 	succeed_if(output_error(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
@@ -529,7 +528,7 @@ void test_readWrite(const char * fileName,
 	Key *parentKey = keyNew ("user/tests/yajl",
 			KEY_VALUE, srcdir_file(fileName),
 			KEY_END);
-	KeySet *keys = ksNew(0);
+	KeySet *keys = ksNew(0, KS_END);
 	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
 	succeed_if(output_error(parentKey), "error in kdbGet");
 	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
@@ -552,73 +551,6 @@ void test_readWrite(const char * fileName,
 	ksDel (keys);
 
 	elektraPluginClose(plugin, 0);
-}
-
-void test_array()
-{
-	printf ("Test array\n");
-
-	Key *k = keyNew("user/array/#0", KEY_END);
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#1"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#2"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#3"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#4"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#5"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#6"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#7"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#8"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#9"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_10"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_11"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_12"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_13"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_14"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_15"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_16"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_17"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_18"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_19"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_20"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_21"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_22"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_23"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_24"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_25"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_26"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_27"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_28"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	succeed_if(!strcmp(keyName(k), "user/array/#_29"), "array entry name not correct");
-	succeed_if(!elektraArrayIncName(k), "increment array entry name returned error");
-	keyDel(k);
 }
 
 // TODO: make nicer and put to test framework
@@ -768,7 +700,7 @@ void test_countLevel()
 
 void test_writing()
 {
-	KeySet *conf = ksNew(0);
+	KeySet *conf = ksNew(0, KS_END);
 	Key *parentKey = keyNew("user/tests/yajl",
 				KEY_VALUE, "/proc/self/fd/1",
 				KEY_END);
@@ -801,48 +733,47 @@ int main(int argc, char** argv)
 	printf("YAJL       TESTS\n");
 	printf("==================\n\n");
 
-	modules = ksNew(0);
+	modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	init (argc, argv);
 
-	test_array();
 	test_nextNotBelow();
 	test_reverseLevel();
 	test_countLevel();
 	test_writing();
 
-	test_json("yajl/testdata_null.json", getNullKeys(), ksNew(0));
-	test_json("yajl/testdata_boolean.json", getBooleanKeys(), ksNew(0));
-	test_json("yajl/testdata_number.json", getNumberKeys(), ksNew(0));
-	test_json("yajl/testdata_string.json", getStringKeys(), ksNew(0));
-	test_json("yajl/testdata_maps.json", getMapKeys(), ksNew(0));
-	test_json("yajl/testdata_array.json", getArrayKeys(), ksNew(0));
-	test_json("yajl/testdata_below.json", getBelowKeys(), ksNew(0));
-	test_json("yajl/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0));
+	test_json("yajl/testdata_null.json", getNullKeys(), ksNew(0, KS_END));
+	test_json("yajl/testdata_boolean.json", getBooleanKeys(), ksNew(0, KS_END));
+	test_json("yajl/testdata_number.json", getNumberKeys(), ksNew(0, KS_END));
+	test_json("yajl/testdata_string.json", getStringKeys(), ksNew(0, KS_END));
+	test_json("yajl/testdata_maps.json", getMapKeys(), ksNew(0, KS_END));
+	test_json("yajl/testdata_array.json", getArrayKeys(), ksNew(0, KS_END));
+	test_json("yajl/testdata_below.json", getBelowKeys(), ksNew(0, KS_END));
+	test_json("yajl/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0, KS_END));
 
 	// TODO currently do not have a KeySet, wait for C-plugin to make
 	// it easy to generate it..
-	test_readWrite("yajl/empty_object.json", ksNew(0));
-	test_readWrite("yajl/empty_array.json", ksNew(0));
-	test_readWrite("yajl/rfc_object.json", ksNew(0));
-	test_readWrite("yajl/rfc_array.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_mixed.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_in_array.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_in_array_anon_map.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_nested.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_broken.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_special_ending.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_outside.json", ksNew(0));
-	test_readWrite("yajl/keyframes_complex.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_mixed2.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_special_start.json", ksNew(0));
-	test_readWrite("yajl/testdata_array_mixed3.json", ksNew(0));
-	test_readWrite("yajl/testdata_empty_in_array.json", ksNew(0));
-	test_readWrite("yajl/testdata_empty_in_map.json", ksNew(0));
-	test_readWrite("yajl/testdata_empty_in_array1.json", ksNew(0));
-	test_readWrite("yajl/testdata_empty_in_map2.json", ksNew(0));
-	test_readWrite("yajl/testdata_empty_in_map1.json", ksNew(0));
+	test_readWrite("yajl/empty_object.json", ksNew(0, KS_END));
+	test_readWrite("yajl/empty_array.json", ksNew(0, KS_END));
+	test_readWrite("yajl/rfc_object.json", ksNew(0, KS_END));
+	test_readWrite("yajl/rfc_array.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_mixed.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_in_array.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_in_array_anon_map.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_nested.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_broken.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_special_ending.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_outside.json", ksNew(0, KS_END));
+	test_readWrite("yajl/keyframes_complex.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_mixed2.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_special_start.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_array_mixed3.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_empty_in_array.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_empty_in_map.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_empty_in_array1.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_empty_in_map2.json", ksNew(0, KS_END));
+	test_readWrite("yajl/testdata_empty_in_map1.json", ksNew(0, KS_END));
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);

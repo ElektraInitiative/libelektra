@@ -28,7 +28,7 @@ void test_latin1_to_utf8()
 			keyNew ("user/to", KEY_VALUE, "UTF-8", KEY_END),
 			KS_END);
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 	Key *parentKey = keyNew (0);
 
@@ -71,7 +71,7 @@ void test_utf8_to_latin1()
 			keyNew ("user/to", KEY_VALUE, "ISO8859-1", KEY_END),
 			KS_END);
 
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 
@@ -106,7 +106,7 @@ void test_utf8_to_latin1()
 void test_utf8_needed()
 {
 	printf ("Test if utf8 conversation is needed\n");
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	KeySet *conf = ksNew (2,
@@ -147,7 +147,7 @@ static void set_str (char **str, size_t *len, char *newstr)
 
 void test_utf8_conversation()
 {
-	KeySet *modules = ksNew(0);
+	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 
 	KeySet *conf = ksNew (2,

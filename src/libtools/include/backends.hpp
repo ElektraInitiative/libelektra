@@ -49,6 +49,8 @@ public:
 	 */
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
 
+	static std::string getConfigBasePath(std::string name);
+
 	/**
 	 * @brief Below this path is the mountConf
 	 */

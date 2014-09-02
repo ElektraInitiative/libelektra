@@ -80,7 +80,7 @@ public:
 	typedef std::map<std::string, KeyNode> KeyNodeMap;
 	typedef KeyNodeMap::iterator KeyNodeIterator;
 
-	KeyNode(unsigned long depth, Key k = 0):
+	KeyNode(unsigned long depth, Key k = (ckdb::Key*)0):
 		m_self(k),
 		m_subnodes(),
 		m_depth(depth)

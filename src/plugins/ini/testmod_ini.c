@@ -27,10 +27,10 @@ void test_plainIniRead(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
 
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -44,6 +44,7 @@ void test_plainIniRead(char *fileName)
 	key = ksLookupByName (ks, "user/tests/ini-read/section1", KDB_O_NONE);
 	exit_if_fail(key, "section1 not found");
 	succeed_if (keyIsDir(key), "section1 is not a directory key");
+	succeed_if (!strcmp ("", keyString(key)), "section value was not empty");
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1/key1", KDB_O_NONE);
 	exit_if_fail(key, "key1 not found");
@@ -64,7 +65,7 @@ void test_plainIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
@@ -107,10 +108,10 @@ void test_commentIniRead(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
 
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	KeySet *ks = ksNew (0);
+	KeySet *ks = ksNew(0, KS_END);
 
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
 			"call to kdbGet was not successful");
@@ -131,9 +132,9 @@ void test_commentIniRead(char *fileName)
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1/key1", KDB_O_NONE);
 	exit_if_fail(key, "key1 not found");
-	const Key *keyComment = keyGetMeta(key, "comment");
-	exit_if_fail(keyComment, "key1 contained no comment");
-	succeed_if (!strcmp ("key comment1\nkey comment2", keyString(keyComment)), "key1 contained an invalid comment");
+	const Key *keyComment_ = keyGetMeta(key, "comment");
+	exit_if_fail(keyComment_, "key1 contained no comment");
+	succeed_if (!strcmp ("key comment1\nkey comment2", keyString(keyComment_)), "key1 contained an invalid comment");
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -146,7 +147,7 @@ void test_commentIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,

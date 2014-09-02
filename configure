@@ -7,7 +7,7 @@ srcdir=".."
 builddir="build"
 
 # Get command line options. We use getopt to "break them down into nice, digestible particles".
-set -- `getopt -l "srcdir:,builddir:,prefix:,eprefix:,bindir:,sbindir:,libexecdir:,sysconfdir:,libdir:,includedir:,oldincludedir:,datarootdir:,datadir:,infodir:,localedir:,mandir:,docdir:,htmldir:,dvidir:,pdfdir:,psdir:,quiet,silent,version,help,run" hVqn "$@"`
+set -- `getopt -u -l "all,srcdir:,builddir:,prefix:,eprefix:,bindir:,sbindir:,libexecdir:,sysconfdir:,libdir:,includedir:,oldincludedir:,datarootdir:,datadir:,infodir:,localedir:,mandir:,docdir:,htmldir:,dvidir:,pdfdir:,psdir:,quiet,silent,version,help,run" hVqn "$@"`
 test $# -lt 1  && exit 1
 while test $# -gt 0 
 do
@@ -20,6 +20,7 @@ do
        --bindir) bindir="$2"; shift;;
        --libdir) libdir="$2"; shift;;
        --includedir) includedir="$2"; shift;;
+       --all) all="y";;
     --) shift; break;;
   esac
   shift
@@ -44,19 +45,27 @@ if test -n "$includedir"; then
   CMAKEFLAGS="$CMAKEFLAGS -DINCLUDE_INSTALL_DIR:PATH=$includedir"
 fi
 
+if test -n "$all"; then
+  CMAKEFLAGS="$CMAKEFLAGS "
+fi
+
 # print info.
 echo ""
 echo "Elektra uses the CMake (http://www.cmake.org) buildsystem instead of configure."
 echo "CMake uses different options than configure, but some have direct equivalents:"
-echo "   --srcdir=<dir>  : the top level source directory"
-echo "   --builddir=<dir>  : the directory where Elektra is build"
+echo "   --srcdir=<dir>     : the top level source directory"
+echo "   --builddir=<dir>   : the directory where Elektra is build"
 echo "   --prefix=<dir>     : -DCMAKE_INSTALL_PREFIX:PATH=<dir>"
 echo "   --bindir=<dir>     : -DBIN_INSTALL_DIR:PATH=<dir>"
 echo "   --includedir=<dir> : -DINCLUDE_INSTALL_DIR:PATH=<dir>"
 echo "   --libdir=<dir>     : -DLIB_INSTALL_DIR:PATH=<dir>"
 echo "Once CMake has run successfully, you can use \"make edit_cache\" to view and modify all settings."
 echo ""
-echo "Your current configure options translate more or less to:"
-echo "   mkdir $builddir; cd $builddir; cmake$CMAKEFLAGS $srcdir ; make ; make install"
+echo "To configure all parts on a debian system, see scripts/configure-debian"
 echo ""
+echo "Your current configure options translate more or less to:"
+echo "   mkdir -p $builddir; cd $builddir; cmake$CMAKEFLAGS $srcdir"
+echo ""
+echo "After configuration, you have to issue following command in $builddir"
+echo "   make -j5; make install"
 

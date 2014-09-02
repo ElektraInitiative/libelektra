@@ -1,5 +1,9 @@
 include (LibAddMacros)
 
+generate_readme (iconv)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 set (SOURCES iconv.h iconv.c)
 add_sources (elektra-full ${SOURCES})
 add_headers (SOURCES)

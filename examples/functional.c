@@ -114,15 +114,15 @@ int main()
 	ksForEach (ks, add_string);
 	ksForEach (ks, add_comment);
 
-	out = ksNew (0);
+	out = ksNew(0, KS_END);
 	ksFilter (out, ks, has_a);
 	ksDel (out);
 
-	out = ksNew (0);
+	out = ksNew(0, KS_END);
 	ksFilter (out, ks, below_a);
 	ksDel (out);
 
-	out = ksNew (0);
+	out = ksNew(0, KS_END);
 	ksFilter (out, ks, direct_below_a);
 	ksDel (out);
 
@@ -142,7 +142,7 @@ int main()
 	/* add together */
 	ksForEach (values, sum_helper);
 
-	values_below_30 = ksNew (0);
+	values_below_30 = ksNew(0, KS_END);
 	ksFilter (values_below_30, values, below_30);
 	ksForEach (values_below_30, sum_helper);
 

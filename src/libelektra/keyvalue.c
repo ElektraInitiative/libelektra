@@ -50,10 +50,6 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
-#include <stdio.h>
-#endif
-
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
@@ -66,7 +62,10 @@
 #include <stdlib.h>
 #endif
 
-#include "kdb.h"
+#if DEBUG && HAVE_STDIO_H
+#include <stdio.h>
+#endif
+
 #include "kdbprivate.h"
 
 
@@ -134,7 +133,7 @@ keyDel(key);
  * @par Example:
  * @code
 KDB *handle = kdbOpen();
-KeySet *ks=ksNew(0);
+KeySet *ks=ksNew(0, KS_END);
 Key *current=0;
 
 kdbGetByName(handle,ks,"system/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
@@ -212,7 +211,7 @@ const char *keyString(const Key *key)
 		return "";
 	}
 
-	if (key->data.c[key->dataSize-1] != 0)
+	if (keyIsBinary(key))
 	{
 		return "(binary)";
 	}
@@ -381,6 +380,42 @@ ssize_t keySetString(Key *key, const char *newStringValue)
 }
 
 
+/**
+ * @brief Set a formatted string
+ *
+ * @param key the key to set the string value
+ * @param format NULL-terminated text format string
+ * @param ... more arguments
+ *
+ * @return the size of the string as set (with including 0)
+ */
+ssize_t keySetStringF(Key *key, const char *format, ...)
+{
+	va_list arg_list;
+
+	keySetMeta (key, "binary", 0);
+
+	va_start(arg_list, format);
+	char *p = elektraFormat(format, arg_list);
+	va_end(arg_list);
+
+	if (!p)
+	{
+		return -1;
+	}
+
+	if (key->data.c)
+	{
+		elektraFree(key->data.c);
+	}
+
+	key->data.c = p;
+	key->dataSize = elektraStrLen(key->data.c);
+	set_bit(key->flags, KEY_FLAG_SYNC);
+
+	return key->dataSize;
+}
+
 
 
 
@@ -449,7 +484,6 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
 		return -1;
 	}
 
-
 	memcpy(returnedBinary,key->data.v,key->dataSize);
 	return key->dataSize;
 }
@@ -495,7 +529,7 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
 
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
-	if (key->flags & KEY_FLAG_RO) return -1;
+	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
 
 	keySetMeta (key, "binary", "");
 
@@ -505,11 +539,13 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
 	return ret;
 }
 
-/*
+/**
+ * @internal
+ *
  * Set raw  data as the value of a key.
  * If NULL pointers are passed, key value is cleaned.
- * This method will not change or set the key type, and should not be
- * used unless working with user-defined value types.
+ * This method will not change or set the key type, and should only
+ * be used internally in elektra.
  *
  * @param key the key object to work with
  * @param newBinary array of bytes to set as the value
@@ -523,7 +559,7 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
 ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 {
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO) return -1;
+	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
 
 	if (!dataSize || !newBinary)
 	{
@@ -532,7 +568,7 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 			key->data.v=0;
 		}
 		key->dataSize = 0;
-		key->flags |= KEY_FLAG_SYNC;
+		set_bit(key->flags, KEY_FLAG_SYNC);
 		if (keyIsBinary(key)) return 0;
 		return 1;
 	}
@@ -545,13 +581,14 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 		if (NULL==p) return -1;
 		key->data.v=p;
 	} else {
-		key->data.v=malloc(key->dataSize);
-        }
+		char *p=elektraMalloc(key->dataSize);
+		if (NULL==p) return -1;
+		key->data.v=p;
+	}
 
-	if (!key->data.v) return -1;
 
 	memcpy(key->data.v,newBinary,key->dataSize);
-	key->flags |= KEY_FLAG_SYNC;
+	set_bit(key->flags, KEY_FLAG_SYNC);
 	return keyGetValueSize (key);
 }
 

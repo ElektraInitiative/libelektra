@@ -1,8 +1,11 @@
 ##
 # This file sets compiler flags and things related
 # to compiler detection
-##
-
+#
+#
+# make sure to update src/plugins/constants/constants.c
+#
+# if new flags are added
 
 #
 # The mode (standard) to be used by the compiler
@@ -21,7 +24,10 @@ endif()
 #
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	#older clang did not support non-pod-varargs (will compile, but crash if used)
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-error=non-pod-varargs")
+	#so simply avoid to use it
+	#icc also crashes (but just warns, no error)
+	#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-error=non-pod-varargs")
+
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 	message (STATUS "Clang detected")
@@ -49,7 +55,7 @@ endif ()
 #
 # Common flags can be used by both C and C++
 #
-set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic")
+set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic -Wno-variadic-macros")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-overlength-strings")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")
@@ -73,7 +79,7 @@ endif (ENABLE_COVERAGE)
 # Merge all flags
 #
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wno-missing-field-initializers")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wno-missing-field-initializers -Wstrict-null-sentinel")
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")
 message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")

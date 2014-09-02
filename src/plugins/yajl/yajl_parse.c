@@ -5,9 +5,8 @@
 
 #include <kdberrors.h>
 #include <kdbconfig.h>
+#include <kdbproposal.h>
 #include <yajl/yajl_parse.h>
-
-#include "array.h"
 
 
 /**
@@ -23,18 +22,22 @@ static int elektraYajlIncrementArrayEntry(KeySet * ks)
 
 	if (baseName && *baseName == '#')
 	{
+		current = keyNew(keyName(current), KEY_END);
 		if (!strcmp(baseName, "###empty_array"))
 		{
-			// we have a new array entry, just use it
-			keySetBaseName (current, "#0");
+			// get rid of previous key
+			keyDel(ksLookup(ks, current, KDB_O_POP));
+			// we have a new array entry
+			keySetBaseName (current, 0);
+			keyAddName(current, "#0");
+			ksAppendKey(ks, current);
 			return 1;
 		}
 		else
 		{
 			// we are in an array
-			Key * newKey = keyNew (keyName(current), KEY_END);
-			elektraArrayIncName(newKey);
-			ksAppendKey(ks, newKey);
+			elektraArrayIncName(current);
+			ksAppendKey(ks, current);
 			return 2;
 		}
 	}
@@ -139,7 +142,8 @@ static int elektraYajlParseMapKey(void *ctx, const unsigned char * stringVal,
 	KeySet *ks = (KeySet*) ctx;
 	elektraYajlIncrementArrayEntry(ks);
 
-	Key *currentKey = ksCurrent(ks);
+	Key *currentKey = keyNew(keyName(ksCurrent(ks)), KEY_END);
+	keySetString(currentKey, 0);
 
 	unsigned char delim = stringVal[stringLen];
 	char * stringValue = (char*)stringVal;
@@ -151,16 +155,17 @@ static int elektraYajlParseMapKey(void *ctx, const unsigned char * stringVal,
 #endif
 	if (currentKey && !strcmp(keyBaseName(currentKey), "___empty_map"))
 	{
+		// remove old key
+		keyDel(ksLookup(ks, currentKey, KDB_O_POP));
 		// now we know the name of the object
 		keySetBaseName(currentKey, stringValue);
 	}
 	else
 	{
 		// we entered a new pair (inside the previous object)
-		Key * newKey = keyNew (keyName(currentKey), KEY_END);
-		keySetBaseName(newKey, stringValue);
-		ksAppendKey(ks, newKey);
+		keySetBaseName(currentKey, stringValue);
 	}
+	ksAppendKey(ks, currentKey);
 
 	// restore old character in buffer
 	stringValue[stringLen] = delim;
@@ -193,7 +198,7 @@ static int elektraYajlParseEnd(void *ctx)
 	Key *currentKey = ksCurrent(ks);
 
 	Key * lookupKey = keyNew (keyName(currentKey), KEY_END);
-	keySetBaseName(lookupKey, ""); // remove current baseName
+	keySetBaseName(lookupKey, 0); // remove current baseName
 
 	// lets point current to the correct place
 	Key * foundKey = ksLookup(ks, lookupKey, 0);
@@ -225,7 +230,7 @@ static int elektraYajlParseStartArray(void *ctx)
 
 	Key * newKey = keyNew (keyName(currentKey), KEY_END);
 	// add a pseudo element for empty array
-	keyAddBaseName(newKey, "###empty_array");
+	keyAddName(newKey, "###empty_array");
 	ksAppendKey(ks, newKey);
 
 #ifdef ELEKTRA_YAJL_VERBOSE

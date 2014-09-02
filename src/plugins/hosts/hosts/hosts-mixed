@@ -1,0 +1,2 @@
+127.0.0.1	ipv4host ipv4alias1 ipv4alias2
+::1				ipv6host ipv6alias1 ipv6alias2

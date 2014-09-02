@@ -18,8 +18,10 @@
 #define KDBPRIVATE_H
 
 #include <kdb.h>
+#include <kdbhelper.h>
 #include <kdbconfig.h>
 #include <kdbplugin.h>
+#include <kdbproposal.h>
 #include <kdbextension.h>
 
 #include <limits.h>
@@ -107,21 +109,28 @@ typedef enum
 {
 	KEY_FLAG_SYNC=1,	/*!<
 		Key need sync.
-		If name or value
+		If name, value or metadata
 		are changed this flag will be set, so that the backend will sync
 		the key to database.*/
-	KEY_FLAG_META=1<<2,	/*!<
-		Key meta need sync.
-		TODO: not used currently
-		If meta
-		is changed this flag will be set, so that the backend will sync
-		the key to database.*/
-	KEY_FLAG_RO=1<<3	/*!<
-		Read only flag.
-		TODO: not used currently
-		Key is read only and not allowed
-		to be changed. All attempts to change name, value,
-		or meta data will be ignored.*/
+	KEY_FLAG_RO_NAME=1<<1,	/*!<
+		Read only flag for name.
+		Key name is read only and not allowed
+		to be changed. All attempts to change the name
+		will lead to an error.
+		Needed for meta keys and keys that are in a data
+		structure that depends on name ordering.*/
+	KEY_FLAG_RO_VALUE=1<<2,	/*!<
+		Read only flag for value.
+		Key value is read only and not allowed
+		to be changed. All attempts to change the value
+		will lead to an error.
+		Needed for meta keys*/
+	KEY_FLAG_RO_META=1<<3	/*!<
+		Read only flag for meta.
+		Key meta is read only and not allowed
+		to be changed. All attempts to change the value
+		will lead to an error.
+		Needed for meta keys.*/
 } keyflag_t;
 
 
@@ -135,17 +144,11 @@ typedef enum
  */
 typedef enum
 {
-	KS_FLAG_SYNC=1,	/*!<
+	KS_FLAG_SYNC=1	/*!<
 		KeySet need sync.
 		If keys were popped from the Keyset
 		this flag will be set, so that the backend will sync
 		the keys to database.*/
-	KS_FLAG_RO=1<<3	/*!<
-		Read only flag.
-		KeySet is read only and not allowed
-		TODO: not used currently
-		to be changed. All attempts to append or pop keys
-		will be ignored.*/
 } ksflag_t;
 
 
@@ -189,6 +192,12 @@ struct _Key
 	 * @see keyGetName(), keyGetNameSize(), keySetName()
 	 */
 	size_t         keySize;
+
+	/**
+	 * Size of the unescaped key name in bytes, including all NULL.
+	 * @see keyBaseName(), keyUnescapedName()
+	 */
+	size_t         keyUSize;
 
 	/**
 	 * Some control and internal flags.
@@ -413,15 +422,6 @@ int elektraSplitSync (Split *split);
 int elektraSplitPrepare (Split *split);
 int elektraSplitUpdateSize (Split *split);
 
-/*Internal helpers*/
-ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);
-ssize_t elektraMemmove (Key** array1, Key** array2, size_t size);
-void *elektraMalloc (size_t size);
-void *elektraCalloc (size_t size);
-void  elektraFree (void *ptr);
-char *elektraStrDup (const char *s);
-char *elektraStrNDup (const char *s, size_t l);
-int elektraRealloc(void **buffer, size_t size);
 
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
@@ -461,17 +461,28 @@ Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 
 /*Private helper for keys*/
 int keyInit(Key *key);
-int keyClose(Key *key);
-
-int ksInit(KeySet *ks);
-int ksClose(KeySet *ks);
-
-int elektraStrCmp (const char *s1, const char *s2);
-int elektraStrCaseCmp (const char *s1, const char *s2);
-size_t elektraStrLen(const char *s);
+void keyVInit(Key *key, const char *keyname, va_list ap);
 
 int keyClearSync (Key *key);
 
+/*Private helper for keyset*/
+int ksInit(KeySet *ks);
+int ksClose(KeySet *ks);
+
+ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
+
+/*Used for internal memcpy/memmove*/
+ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size);
+ssize_t elektraMemmove (Key** array1, Key** array2, size_t size);
+
+char *elektraStrNDup (const char *s, size_t l);
+ssize_t elektraFinalizeName(Key *key);
+ssize_t elektraFinalizeEmptyName(Key *key);
+
+char *elektraEscapeKeyNamePart(const char *source, char *dest);
+size_t elektraUnescapeKeyName(const char *source, char *dest);
+
+int elektraValidateKeyNamePart(const char *name);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

@@ -18,6 +18,7 @@ check_type_size(int             SIZEOF_INT)
 check_type_size(long            SIZEOF_LONG)
 check_type_size("long long"     SIZEOF_LONG_LONG)
 check_type_size("long double"   SIZEOF_LONG_DOUBLE)
+check_type_size(mode_t          SIZEOF_MODE_T)
 
 set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
@@ -46,11 +47,10 @@ install (FILES
 	kdbextension.h
 	kdbtypes.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
-	kdbinternal.h
 	kdbmodule.h
 	kdbos.h
 	kdbplugin.h
 	kdbprivate.h
-	kdbtools.h
+	kdbproposal.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})

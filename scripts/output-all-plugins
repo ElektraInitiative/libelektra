@@ -6,7 +6,6 @@ do
 	then
 		echo -n "$i;"
 		#echo "--- $i ---"
-		#build/src/kdb/kdb-full check $i
 	fi
 done
 

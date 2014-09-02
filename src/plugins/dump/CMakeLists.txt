@@ -1,5 +1,9 @@
 include(LibAddMacros)
 
+generate_readme (dump)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 set (SOURCES dump.hpp dump.cpp)
 add_sources(elektra-full ${SOURCES})
 add_headers(SOURCES)

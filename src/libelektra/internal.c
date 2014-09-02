@@ -34,7 +34,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if HAVE_STDIO_H
 #include <stdio.h>
 #endif
 
@@ -111,57 +111,23 @@ ssize_t elektraMemmove (Key** array1, Key** array2, size_t size)
 	return size;
 }
 
-/**Compare Strings using kdb semantics.
+/**@brief Compare Strings.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared
  *
- * / is handled special, it will always be prefered
- * for any other character.
- *
  * @ingroup internal
  * @return a negative number if s1 is less than s2
- * @return a number less than, equal to or greater than zero if
- *    s1 is found, respectively, to be less than, to match, or
- *    be greater than s2.
+ * @return 0 if s1 matches s2
+ * @return a positive number if s1 is greater than s2
  **/
 int elektraStrCmp (const char *s1, const char *s2)
 {
-	int c1;
-	int c2;
-
-	if (s1 == s2) return 0;
-
-	for(; *s1 == *s2; ++s1, ++s2)
-		if(*s1 == 0)
-			return 0;
-
-	c1 = *(unsigned char *)s1;
-	c2 = *(unsigned char *)s2;
-	if (c1 == '\0')
-	{
-		c1 = 0;
-	} else {
-		if (c1 == '/') c1 = 1;
-		else ++c1;
-	}
-
-	if (c2 == '\0')
-	{
-		c2 = 0;
-	} else {
-		if (c2 == '/') c2 = 1;
-		else ++c2;
-	}
-
-	return c1 - c2;
+	return strcmp(s1, s2);
 }
 
 
-/**Compare Strings ignoring case using kdb semantics.
- *
- * TODO: semantics not correct
- * Does not work with binary sort.
+/**@brief Compare Strings ignoring case.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared
@@ -173,18 +139,7 @@ int elektraStrCmp (const char *s1, const char *s2)
  **/
 int elektraStrCaseCmp (const char *s1, const char *s2)
 {
-	const unsigned char *p1 = (const unsigned char *)s1;
-	const unsigned char *p2 = (const unsigned char *)s2;
-	int result;
-
-	if (p1 == p2) return 0;
-
-	while ((result = tolower(*p1)-tolower(*p2 ++)) == 0)
-	{
-		if (*p1++ == '\0') break;
-	}
-
-	return result;
+	return strcasecmp(s1, s2);
 }
 
 /**Reallocate Storage in a save way.
@@ -343,4 +298,390 @@ size_t elektraStrLen(const char *s)
 	char *found=strchr(s,0);
 	if (found) return found-s+1;
 	return 0;
+}
+
+/**
+ * @brief Does string formating in fresh allocated memory
+ *
+ * @param format as in printf()
+ * @param arg_list as in printf()
+ *
+ * @return new allocated memory (free with elektraFree)
+ */
+char *elektraFormat(const char *format, va_list arg_list)
+{
+	static int const default_size = 512;
+	char *buffer = elektraMalloc(default_size);
+	if (!buffer) return 0;
+
+	va_list arg_list_adj;
+	va_copy(arg_list_adj, arg_list);
+
+	int const calculated_length =
+		vsnprintf(buffer,
+				default_size,
+				format,
+				arg_list);
+
+	if (calculated_length == -1)
+	{
+		va_end(arg_list_adj);
+		// before Glibc 2.0.6, always -1 is returned
+		// we won't do Glibc job, please upgrade
+		return 0;
+	}
+
+	if (calculated_length < default_size)
+	{
+		va_end(arg_list_adj);
+		// content was written successfully into
+		// default sized buffer
+		return buffer;
+	}
+
+	// String is longer then default_size.
+	// Allocate an intermediate buffer
+	// according to the calculated length from our last try
+	size_t const adjusted_buffer_size = calculated_length + 1;
+	elektraRealloc((void**)&buffer, adjusted_buffer_size);
+	if (!buffer)
+	{
+		va_end(arg_list_adj);
+		return 0;
+	}
+
+	int const ret = vsnprintf(buffer,
+			adjusted_buffer_size,
+			format,
+			arg_list_adj);
+
+	va_end(arg_list_adj);
+
+	if(ret == -1)
+	{
+		elektraFree(buffer);
+		return 0;
+	}
+	return buffer;
+}
+
+
+/**
+ * Validates whether the supplied keyname part is valid
+ * The function looks for escape characters that do not escape
+ * anything and also for unescaped characters that have
+ * to be escaped.
+ *
+ * @param the key name part that is to be checked
+ * @return true if the supplied keyname part is valid, false otherwise
+ */
+int elektraValidateKeyNamePart(const char *name)
+{
+	const char *current = name;
+	const char *last = name + strlen(name) - 1;
+	const char *escapable = "\\/%#.";
+	int escapeCount = 0;
+
+	current = name;
+	while (*current)
+	{
+		if (*current == '\\')
+		{
+			escapeCount++;
+			if (escapeCount % 2 != 0)
+			{
+				/* this backslash won't be able to escape anything */
+				if (current == last) return 0;
+
+				/* check if the following character is escapable */
+				if (!strchr (escapable, *(current+1))) return 0;
+			}
+		}
+		else
+		{
+			/* there are no escape characters left to escape this slash */
+			if (*current == '/' && escapeCount % 2 == 0) return 0;
+
+			escapeCount = 0;
+		}
+
+		current ++;
+	}
+
+
+	return 1;
+}
+
+/**
+ * @internal
+ *
+ * @brief Write number backslashes to dest
+ *
+ * @param dest where to write to, will be updated to position after
+ *        the written backslashes
+ * @param number of backslashes to write
+ */
+static void elektraWriteBackslashes(char **dest, size_t number)
+{
+	char * dp = *dest;
+	while (number--)
+	{
+		*dp = '\\';
+		++dp;
+	}
+	*dest = dp;
+}
+
+/**
+ * @internal
+ *
+ * @brief Unescapes the beginning of the key name part
+ *
+ * If there was something to escape in the begin, then it is guaranteed
+ * that nothing more needs to be escaped.
+ *
+ * Otherwise this method does not change anything
+ *
+ * @param source the source to read from
+ * @param size the number of bytes to process from source
+ * @param [in] dest the destination to write to
+ * @param [out] dest pointer after writing to it (w/o null, 1 after the
+ *        last character)
+ *
+ * @retval 0 if nothing was done (dest unmodified) and escaping of
+ *         string needs to be done
+ * @retval 1 if key name part was handeled correctly (dest might be
+ *         updated if it was needed)
+ */
+int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest)
+{
+	const char *sp = source;
+	char *dp = *dest;
+	if (!strncmp ("%", sp, size))
+	{
+		// nothing to do, but part is finished
+		return 1;
+	}
+
+	size_t skippedBackslashes = 0;
+	// skip all backslashes, but one, at start of a name
+	while (*sp == '\\')
+	{
+		++sp; 
+		++skippedBackslashes;
+	}
+	size -= skippedBackslashes;
+
+	if (skippedBackslashes > 0)
+	{
+		// correct by one (avoid lookahead in loop)
+		--sp;
+		++size;
+		--skippedBackslashes;
+	}
+
+	if (size <= 1)
+	{
+		// matches below would be wrong
+		return 0;
+	}
+
+	if (!strncmp ("\\%", sp, size))
+	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
+		strcpy(dp, "%");
+		*dest = dp+1;
+		return 1;
+	}
+
+	if (!strncmp ("\\.", sp, size))
+	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
+		strcpy(dp, ".");
+		*dest = dp+1;
+		return 1;
+	}
+
+	if (size <= 2)
+	{
+		// matches below would be wrong
+		return 0;
+	}
+
+	if (!strncmp ("\\..", sp, size))
+	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
+		strcpy(dp, "..");
+		*dest = dp+2;
+		return 1;
+	}
+
+	return 0;
+}
+
+
+/**
+ * @internal
+ *
+ * @brief Unescapes (a part of) a key name.
+ *
+ * As described in Syntax for Key Names, slashes are
+ * prefixed with a \\. This method removes all \\ that are such
+ * escape characters.
+ *
+ * The new string will be written to dest.
+ * May only need half the storage than the source string.
+ * It is not safe to use the same string for source and dest.
+ *
+ * @param source the source to read from
+ * @param size the number of bytes to process from source
+ * @param dest the destination to write to
+ *
+ * @return the destination pointer how far it was written to
+ */
+char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest)
+{
+	const char *sp = source;
+	char *dp = dest;
+
+	while (size--)
+	{
+		if (*sp == '\\' && *(sp+1) == '/')
+		{
+			*dp='/';
+			dp++;
+			sp+=2; // skip both
+			size --;
+		}
+		else
+		{
+			*dp = *sp;
+			dp++;
+			sp++;
+		}
+	}
+	return dp;
+}
+
+/**
+ * @internal
+ *
+ * @brief Unescapes a key name.
+ *
+ * Writes a null terminated sequence of key name parts to dest.
+ *
+ * May only need half the storage than the source string.
+ * It is not safe to use the same string for source and dest.
+**/
+size_t elektraUnescapeKeyName(const char *source, char *dest)
+{
+	const char * sp = source;
+	char * dp = dest;
+	size_t size = 0;
+	while (*(sp=keyNameGetOneLevel(sp+size,&size)))
+	{
+		if (!elektraUnescapeKeyNamePartBegin(sp, size, &dp))
+		{
+			dp = elektraUnescapeKeyNamePart(sp, size, dp);
+		}
+		*dp = 0;
+		++dp;
+	}
+	return dp-dest;
+}
+
+/**
+ * @internal
+ *
+ * Escapes (a part of) a key name.
+ */
+int elektraEscapeKeyNamePartBegin(const char *source, char *dest)
+{
+	const char *sp = source;
+	char *dp = dest;
+
+	if (!strcmp ("", sp))
+	{
+		strcpy(dp,"%");
+		return 1;
+	}
+
+	size_t skippedBackslashes = 0;
+	// skip all backslashes at start of a name
+	while (*sp == '\\')
+	{
+		++sp;
+		++skippedBackslashes;
+	}
+
+	if (!strcmp ("%", sp))
+	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
+		strcpy(dp, "\\%");
+		return 1;
+	}
+
+	if (!strcmp (".", sp))
+	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
+		strcpy(dp, "\\.");
+		return 1;
+	}
+
+	if (!strcmp ("..", sp))
+	{
+		elektraWriteBackslashes(&dp, skippedBackslashes);
+		strcpy(dp, "\\..");
+		return 1;
+	}
+
+	return 0;
+}
+
+
+/**
+ * @internal
+ *
+ * @brief Escapes character in the part of a key name.
+ *
+ * As described in Syntax for Key Names, special characters will be
+ * prefixed with a \\. No existing escaping is assumed. That means
+ * that even sequences that look like escapings will be escaped again.
+ * For example, \\/ will be escaped (or quoted) to \\\\\\/.
+ *
+ * The string will be written to dest.
+ *
+ * @note May need twice the storage than the source string.
+ *       Do not use the source string as destination string.
+ *
+ * @param sp the source pointer where escaping should start
+ * @param dest the destination to write to (twice the size as sp
+ *
+ * @return pointer to destination
+ */
+char *elektraEscapeKeyNamePart(const char *source, char *dest)
+{
+	if (elektraEscapeKeyNamePartBegin(source, dest))
+	{
+		return dest;
+	}
+	
+
+	const char *sp = source;
+	char *dp = dest;
+	/* slashes and backslashes are escaped everywhere */
+	while (*sp)
+	{
+		if (*sp == '/')
+		{
+			*dp='\\';
+			++dp;
+		}
+
+		*dp = *sp;
+		++dp;
+		++sp;
+	}
+	*dp = 0;
+	return dest;
 }

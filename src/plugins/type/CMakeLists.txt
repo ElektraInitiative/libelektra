@@ -1,5 +1,9 @@
 include (LibAddMacros)
 
+generate_readme (type)
+add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
 set (SOURCES type.hpp type.cpp
 		types.hpp types.cpp
 		type_checker.hpp)
@@ -24,3 +28,6 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_cpp_plugintest(${name})
 endforeach (file ${TESTS})
+
+#C++ stdlib memleaks on using locales
+set_property(TEST testmod_type PROPERTY LABELS memleak)

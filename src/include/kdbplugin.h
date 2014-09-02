@@ -24,10 +24,55 @@
 
 #include <kdb.h>
 
+#define ELEKTRA_QUOTE(x)       #x
+
 #ifdef ELEKTRA_STATIC
-        #define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol(void)
+	#ifdef ELEKTRA_VARIANT
+		#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2(module, ELEKTRA_VARIANT)
+		#define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3(module, variant)
+		#define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol(void)
+	#else
+		#define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol(void)
+	#endif
 #else
         #define ELEKTRA_PLUGIN_EXPORT(module) elektraPluginSymbol(void)
+#endif
+
+#ifdef ELEKTRA_VARIANT
+	#define ELEKTRA_PLUGIN_FUNCTION(module, function) ELEKTRA_PLUGIN_FUNCTION2(module, ELEKTRA_VARIANT, function)
+	#define ELEKTRA_PLUGIN_FUNCTION2(module, variant, function) ELEKTRA_PLUGIN_FUNCTION3(module, variant, function)
+	#define ELEKTRA_PLUGIN_FUNCTION3(module, variant, function) libelektra_##module##_##variant##_LTX_elektraPlugin##function
+#else
+	/**
+	 * @brief Declare a plugin's function name suitable for
+	 * compilation variants (see doc/tutorials).
+	 *
+	 * It can be used in the same way as elektraPluginExport().
+	 * @see ELEKTRA_PLUGIN_EXPORT
+	 *
+	 * @ingroup plugin
+	 *
+	 * @param plugin the name of the plugin
+	 * @param which which function it is (open, close, get, set, error)
+	 */
+	#define ELEKTRA_PLUGIN_FUNCTION(module, function) libelektra_##module##_LTX_elektraPlugin##function
+#endif
+
+#ifdef ELEKTRA_VARIANT
+	#define ELEKTRA_README(module) ELEKTRA_README2(module, ELEKTRA_VARIANT)
+	#define ELEKTRA_README2(module, variant) ELEKTRA_README3(module, variant)
+	#define ELEKTRA_README3(module, variant) ELEKTRA_QUOTE(readme_##module##_##variant.c)
+#else
+	/**
+	 * @brief The filename for inclusion of the readme for
+	 * compilation variants (see doc/tutorials).
+	 *
+	 * @ingroup plugin
+	 *
+	 * @param plugin the name of the plugin
+	 */
+	#define ELEKTRA_README(module) ELEKTRA_README2(module)
+	#define ELEKTRA_README2(module) ELEKTRA_QUOTE(readme_##module.c)
 #endif
 
 /**

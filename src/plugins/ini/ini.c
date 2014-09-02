@@ -15,96 +15,99 @@
 #include <string.h>
 #include <stdlib.h>
 #include <kdberrors.h>
-#include "lib/inih.h"
+#include <kdbextension.h>
+#include <inih.h>
 #include "ini.h"
 
-#define ELEKTRA_SET_GENERAL_ERROR_IF(id, parentKey, message, condition) \
+#include "contract.h"
+
+#define ELEKTRA_SET_GENERAL_ERROR(id, parentKey, message) \
 	do { \
-		if (condition) \
-		{ \
-			ELEKTRA_SET_ERROR(id, parentKey, message); \
-			errno = errnosave; \
-			return -1; \
-		} \
+		ELEKTRA_SET_ERROR(id, parentKey, message); \
+		errno = errnosave; \
 	} while (0)
 
-#define ELEKTRA_SET_ERRNO_ERROR_IF(id, parentKey, condition) \
-	ELEKTRA_SET_GENERAL_ERROR_IF(id, parentKey, strerror(errno), condition)
+#define ELEKTRA_SET_ERRNO_ERROR(id, parentKey) \
+	ELEKTRA_SET_GENERAL_ERROR(id, parentKey, strerror(errno))
 
 
 typedef struct {
 	const Key *parentKey;
 	KeySet *result;
 	char *collectedComment;
-} Configuration;
+} CallbackHandle;
 
-static void writeCommentToMeta (Configuration *config, Key *key)
+static void writeCommentToMeta (CallbackHandle *handle, Key *key)
 {
-	if (config->collectedComment)
+	if (handle->collectedComment)
 	{
-		keySetMeta (key, "comment", config->collectedComment);
-		free (config->collectedComment);
-		config->collectedComment = 0;
+		keySetMeta (key, "comment", handle->collectedComment);
+		free (handle->collectedComment);
+		handle->collectedComment = 0;
 	}
 }
 
-static int iniKeyToElektraKey (void *vconfig, const char *section, const char *name, const char *value)
+static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value)
 {
 
-	Configuration *config = (Configuration *)vconfig;
+	CallbackHandle *handle = (CallbackHandle *)vhandle;
 
-	Key *appendKey = keyDup (config->parentKey);
+	Key *appendKey = keyDup (handle->parentKey);
 
 	if (section)
 	{
-		keyAddBaseName(appendKey, section);
+		if (*section != '\0')
+		{
+			keyAddBaseName(appendKey, section);
+		}
 	}
 
 	keyAddBaseName (appendKey, name);
-	writeCommentToMeta (config, appendKey);
+	writeCommentToMeta (handle, appendKey);
 	keySetString (appendKey, value);
-	ksAppendKey (config->result, appendKey);
+	ksAppendKey (handle->result, appendKey);
 
 	return 1;
 }
 
-static int iniSectionToElektraKey (void *vconfig, const char *section)
+static int iniSectionToElektraKey (void *vhandle, const char *section)
 {
-	Configuration *config = (Configuration *)vconfig;
+	CallbackHandle *handle = (CallbackHandle *)vhandle;
 
-	Key *appendKey = keyDup (config->parentKey);
+	Key *appendKey = keyDup (handle->parentKey);
+	keySetString(appendKey, 0);
 
 	keyAddBaseName(appendKey, section);
-	writeCommentToMeta (config, appendKey);
+	writeCommentToMeta (handle, appendKey);
 	keySetDir(appendKey);
-	ksAppendKey(config->result, appendKey);
+	ksAppendKey(handle->result, appendKey);
 
 	return 1;
 }
 
-static int iniCommentToMeta (void *vconfig, const char *comment)
+static int iniCommentToMeta (void *vhandle, const char *comment)
 {
-	Configuration *config = (Configuration *)vconfig;
+	CallbackHandle *handle = (CallbackHandle *)vhandle;
 
 	size_t commentSize = strlen (comment) + 1;
 
-	if (!config->collectedComment)
+	if (!handle->collectedComment)
 	{
-		config->collectedComment = malloc (commentSize);
+		handle->collectedComment = malloc (commentSize);
 
-		if (!config->collectedComment) return 0;
+		if (!handle->collectedComment) return 0;
 
-		strncpy (config->collectedComment, comment, commentSize);
+		strncpy (handle->collectedComment, comment, commentSize);
 	}
 	else
 	{
-		size_t newCommentSize = strlen (config->collectedComment) + commentSize + 1;
-		config->collectedComment = realloc (config->collectedComment, newCommentSize);
+		size_t newCommentSize = strlen (handle->collectedComment) + commentSize + 1;
+		handle->collectedComment = realloc (handle->collectedComment, newCommentSize);
 
-		if (!config->collectedComment) return 0;
+		if (!handle->collectedComment) return 0;
 
-		strcat (config->collectedComment, "\n");
-		strncat (config->collectedComment, comment, newCommentSize);
+		strcat (handle->collectedComment, "\n");
+		strncat (handle->collectedComment, comment, newCommentSize);
 	}
 
 	return 1;
@@ -118,8 +121,7 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/ini"))
 	{
-		KeySet *info =
-#include "contract.h"
+		KeySet *info = getPluginContract();
 
 		ksAppend (returned, info);
 		ksDel (info);
@@ -127,23 +129,32 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	}
 
 	FILE *fh = fopen (keyString (parentKey), "r");
-	ELEKTRA_SET_ERRNO_ERROR_IF(9, parentKey, !fh);
+	if (!fh)
+	{
+		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		return -1;
+	}
 
-	KeySet *append = ksNew (ksGetSize (returned) * 2, KS_END);
+	KeySet *append = ksNew (0, KS_END);
 
-	Configuration config;
-	config.parentKey = parentKey;
-	config.result = append;
-	config.collectedComment = 0;
-
-	int ret = ini_parse_file(fh,iniKeyToElektraKey, iniSectionToElektraKey, iniCommentToMeta, &config);
+	CallbackHandle cbHandle;
+	cbHandle.parentKey = parentKey;
+	cbHandle.result = append;
+	cbHandle.collectedComment = 0;
+	ksAppendKey (cbHandle.result, keyDup(parentKey));
+	int ret = ini_parse_file(fh,iniKeyToElektraKey, iniSectionToElektraKey, iniCommentToMeta, &cbHandle);
 
 	fclose (fh);
-	ELEKTRA_SET_GENERAL_ERROR_IF(87, parentKey, "Unable to parse the ini file", ret < 0);
+
+	if (ret < 0)
+	{
+		ELEKTRA_SET_GENERAL_ERROR(87, parentKey, "Unable to parse the ini file");
+		return -1;
+	}
 
 	ksClear(returned);
-	ksAppend(returned, config.result);
-	ksDel(config.result);
+	ksAppend(returned, cbHandle.result);
+	ksDel(cbHandle.result);
 	errno = errnosave;
 	return 1; /* success */
 }
@@ -178,12 +189,18 @@ int elektraIniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 
 	FILE *fh = fopen(keyString(parentKey), "w");
 
-	ELEKTRA_SET_ERRNO_ERROR_IF(9, parentKey, !fh);
+	if (!fh)
+	{
+		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		return -1;
+	}
 
 	ksRewind (returned);
 	Key *current;
 	while ((current = ksNext (returned)))
 	{
+		if (!strcmp (keyName(current), keyName(parentKey))) continue;
+
 		writeComments (current, fh);
 		size_t baseNameSize = keyGetBaseNameSize(current);
 		char *name = malloc (baseNameSize);

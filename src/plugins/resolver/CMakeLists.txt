@@ -1,20 +1,54 @@
-include(LibAddMacros)
+include(LibAddPlugin)
 
-set (SOURCES resolver.h resolver.c filename.c lock.c)
-add_sources(elektra-full ${SOURCES})
-add_headers(SOURCES)
+add_plugin_helper(elektra-resolver-lock
+	SOURCES
+		lock.c
+		)
 
-#this needs posix, so it won't compile with c99 standard
-#the last -std will be used, so it should be no problem
-#that this is only added here
-# this would not solve the problem for -full and -static..
-#set_target_properties (elektra-resolver PROPERTIES COMPILE_FLAGS "-std=gnu99")
+set (SOURCES resolver.h resolver.c filename.c)
 
-set (PLUGIN_NAME elektra-resolver)
-add_library (${PLUGIN_NAME} MODULE ${SOURCES})
-target_link_libraries (${PLUGIN_NAME} elektra)
-
-install (TARGETS ${PLUGIN_NAME}
-	DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+add_plugin(resolver
+	SOURCES
+		${SOURCES}
+	LINK_LIBRARIES
+		elektra-resolver-lock
+	COMPILE_DEFINITIONS
+		ELEKTRA_VARIANT_BASE=\"\"
+		ELEKTRA_VARIANT_USER=\"hub\"
+		ELEKTRA_VARIANT_SYSTEM=\"b\"
+		ELEKTRA_PLUGIN_NAME=\"resolver\")
 
 add_plugintest(resolver)
+
+foreach (plugin ${PLUGINS})
+	if(${plugin} MATCHES "resolver_.*")
+		string(REGEX REPLACE "resolver_" "" variant ${plugin})
+		string(REGEX REPLACE "_" ";" variantlist ${variant})
+
+		list(GET variantlist 0 variant_base)
+		list(GET variantlist 1 variant_user)
+		list(GET variantlist 2 variant_system)
+
+		# if a c is found in the first part of the variant
+		# the conflict debug mode is activated
+		string(FIND "${variant_base}" "c" out_var_n)
+		if (NOT "${out_var_n}" EQUAL "-1")
+			set (FURTHER_DEFINITIONS "ELEKTRA_CONFLICT_DEBUG")
+		endif ()
+
+
+		add_plugin(${plugin}
+			SOURCES
+				${SOURCES}
+			LINK_LIBRARIES
+				elektra-resolver-lock
+			COMPILE_DEFINITIONS
+				ELEKTRA_VARIANT_BASE=\"${variant_base}\"
+				ELEKTRA_VARIANT_USER=\"${variant_user}\"
+				ELEKTRA_VARIANT_SYSTEM=\"${variant_system}\"
+				ELEKTRA_VARIANT=${variant}
+				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
+				${FURTHER_DEFINITIONS})
+	endif()
+endforeach(plugin)
+

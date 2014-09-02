@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.8)
 
 project (Elektra)
 
@@ -44,7 +44,7 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 7)
+set (KDB_VERSION_MICRO 8)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 
@@ -57,6 +57,7 @@ include (cmake/ElektraPackaging.cmake)
 #now add all directories
 add_subdirectory (cmake)
 add_subdirectory (src)
+add_subdirectory (scripts)
 
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
@@ -70,28 +71,14 @@ if (BUILD_TESTING)
 	endif (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_TESTING)
 
-if (BUILD_FULL OR BUILD_STATIC)
-	if (BUILD_EXAMPLES)
+if (BUILD_EXAMPLES)
+	if (BUILD_FULL OR BUILD_STATIC)
 		add_subdirectory (examples)
-	else (BUILD_EXAMPLES)
+	else (BUILD_FULL OR BUILD_STATIC)
 		message(WARNING "Requested to build examples, but is impossible because neither full or static build active")
-	endif (BUILD_EXAMPLES)
-endif (BUILD_FULL OR BUILD_STATIC)
+	endif (BUILD_FULL OR BUILD_STATIC)
+endif (BUILD_EXAMPLES)
 
 if (BUILD_FULL OR BUILD_STATIC)
-	add_subdirectory (benchmarks EXCLUDE_FROM_ALL)
+	add_subdirectory (benchmarks)
 endif (BUILD_FULL OR BUILD_STATIC)
-
-ADD_CUSTOM_TARGET(uninstall
-	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ElektraUninstall.cmake")
-
-configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/scripts/make-source-package.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/scripts/make-source-package")
-
-ADD_CUSTOM_TARGET(source-package
-		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/scripts/make-source-package"
-		COMMENT "Make a elektra source package by using git"
-		VERBATIM
-		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-		)

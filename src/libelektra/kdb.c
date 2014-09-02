@@ -24,44 +24,15 @@
  * #include <kdb.h>
  * @endcode
  *
- * The kdb*() class of methods are used to access the storage, to get and set
- * @link key Keys @endlink or @link keyset KeySets @endlink.
+ * The kdb*() methods are used to access the storage, to get and set
+ * @link keyset KeySets @endlink.
  *
- * The most important functions are:
- *  - kdbOpen()
- *  - kdbClose()
- *  - kdbGet()
- *  - kdbSet()
+ * They use some backend implementation to know the details about how
+ * to access the storage.
  *
- * The two essential functions for dynamic information about backends are:
- *  - kdbGetMountpoint()
- *
- * They use some backend implementation to know the details about how to access
- * the storage. Currently we have this backends:
- * - @c berkeleydb: the keys are stored in a Berkeley DB database, providing
- *   very small footprint, speed, and other advantages.
- * - @c filesys: the key hierarchy and data are saved as plain text files in 
- *   the filesystem.
- * - @c ini: the key hierarchy are saved into configuration files.
- *   @see http://www.libelektra.org/Ini
- * - @c fstab: a reference backend used to interpret the @c /etc/fstab file as
- *   a set of keys under @c system/filesystems .
- * - @c gconf: makes Elektra use the GConf daemon to access keys. Only the
- *   @c user/ tree is available since GConf is not system wide.
- *
- * Backends are physically a library named @c /lib/libelektra-{NAME}.so.
- *
+ * One backend consists of multiple plugins.
  * See @link plugin writing a new plugin @endlink for information
  * about how to write a plugin.
- *
- * Language binding writers should follow the same rules:
- * - You must relay completely on the backend-dependent methods.
- * - You may use or reimplement the second set of methods.
- * - You should completely reimplement in your language the higher
- *   lever methods.
- * - Many methods are just for comfort in C. These methods are marked
- *   and need not to be implemented if the binding language has e.g. string
- *   operators which can do the operation easily.
  *
  * @{
  */
@@ -105,6 +76,7 @@
 /**
  * @brief Opens the session with the Key database.
  *
+ * The method will bootstrap itself the following way.
  * The first step is to open the default backend. With it
  * system/elektra/mountpoints will be loaded and all needed
  * libraries and mountpoints will be determined.
@@ -140,13 +112,12 @@ thread2
  * @endcode
  *
  * You don't need to use the kdbOpen() if you only want to
- * manipulate plain in-memory Key or KeySet objects without any affairs with
- * the backend key database or when your application loads plugins
- * directly.
+ * manipulate plain in-memory Key or KeySet objects.
+ *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * @param errorKey the key which holds errors and warnings which were issued
- *                 must be given
- * @see kdbClose() to end all affairs to the key database.
+ * @see kdbGet(), kdbClose() to end all affairs to the key database.
  * @return a KDB pointer on success
  * @return NULL on failure
  * @ingroup kdb
@@ -158,9 +129,13 @@ KDB * kdbOpen(Key *errorKey)
 
 	handle = elektraCalloc(sizeof(struct _KDB));
 
-	handle->modules = ksNew(0);
+	handle->modules = ksNew(0, KS_END);
 	if(elektraModulesInit(handle->modules, errorKey) == -1)
 	{
+		ksDel(handle->modules);
+		elektraFree(handle);
+		ELEKTRA_SET_ERROR(94, errorKey,
+				"elektraModulesInit returned with -1");
 		return 0;
 	}
 
@@ -168,6 +143,8 @@ KDB * kdbOpen(Key *errorKey)
 			errorKey);
 	if(!handle->defaultBackend)
 	{
+		ksDel(handle->modules);
+		elektraFree(handle);
 		ELEKTRA_SET_ERROR(40, errorKey,
 				"could not open default backend");
 		return 0;
@@ -177,7 +154,7 @@ KDB * kdbOpen(Key *errorKey)
 	elektraSplitAppend (handle->split, handle->defaultBackend,
 			keyNew (KDB_KEY_MOUNTPOINTS, KEY_END), 2);
 
-	keys=ksNew(0);
+	keys=ksNew(0, KS_END);
 
 	Key *initialParent = keyDup (errorKey);
 	keySetName(errorKey, KDB_KEY_MOUNTPOINTS);
@@ -219,20 +196,23 @@ KDB * kdbOpen(Key *errorKey)
 	// Open the trie, keys will be deleted within elektraMountOpen
 	if (elektraMountOpen(handle, keys, handle->modules, errorKey) == -1)
 	{
-		// Initial loading of trie did not work
+		ELEKTRA_ADD_WARNING(93, errorKey,
+				"Initial loading of trie did not work");
 	}
 
 	if (elektraMountDefault(handle, handle->modules, errorKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(40, errorKey,
-				"could not reopen default backend");
+				"could not reopen and mount default backend");
+		kdbClose(handle, errorKey);
 		keyDel (initialParent);
 		return 0;
 	}
 
 	if (elektraMountModules(handle, handle->modules, errorKey) == -1)
 	{
-		// Mounting modules did not work
+		ELEKTRA_ADD_WARNING(92, errorKey,
+				"Mounting modules did not work");
 	}
 
 	elektraMountVersion (handle, errorKey);
@@ -245,18 +225,20 @@ KDB * kdbOpen(Key *errorKey)
 /**
  * Closes the session with the Key database.
  *
- * You should call this method when you finished your affairs with the key
- * database. You can manipulate Key and KeySet objects also after kdbClose().
- * You must not use any kdb* call afterwards. You can implement kdbClose()
- * in the atexit() handler.
- *
  * This is the counterpart of kdbOpen().
  *
- * The @p handle parameter will be finalized and all resources associated to it
- * will be freed. After a kdbClose(), this @p handle can't be used anymore,
- * unless it gets initialized again with another call to kdbOpen().
+ * You must call this method when you finished your affairs with the key
+ * database. You can manipulate Key and KeySet objects also after
+ * kdbClose(), but you must not use any kdb*() call afterwards. You
+ * can run kdbClose() in the atexit() handler.
  *
- * @see kdbOpen()
+ * The @p handle parameter will be finalized and all resources associated to it
+ * will be freed. After a kdbClose(), the @p handle can't be used anymore.
+ *
+ * @pre The handle must be a valid handle as returned from kdbOpen()
+ *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
+ *
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
  * @param errorKey the key which holds error information
@@ -295,6 +277,8 @@ int kdbClose(KDB *handle, Key *errorKey)
 }
 
 /**
+ * @internal
+ *
  * @brief Check if an update is needed at all
  *
  * @retval -1 an error occurred
@@ -339,6 +323,7 @@ static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
 }
 
 /**
+ * @internal
  * @brief Do the real update.
  *
  * @retval -1 on error
@@ -377,58 +362,68 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
 
 
 /**
- * @brief Retrieve keys in an atomic and universal way, all other
- * kdbGet() Functions rely on that one.
+ * @brief Retrieve keys in an atomic and universal way.
  *
- * The @p returned KeySet must be initialized.
- * The @p returned KeySet may already contain some
- * keys. The new retrieved keys will be appended using ksAppendKey().
+ * @pre kdbOpen() must be called before using this method.
  *
- * It will fully retrieve all keys
- * under the @p parentKey folder, with all subfolders and their children.
+ * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
+ *     with ksNew().
  *
- * @section kdbgetexample Example
+ * The @p returned KeySet may already contain some keys from previous
+ * kdbGet() calls. The new retrieved keys will be appended using
+ * ksAppendKey().
  *
- * This example demonstrates the typical usecase within an application
- * without updating.
+ * It will fully retrieve, at least, all keys under the @p parentKey
+ * folder, with all subfolders and their children.
+ *
+ * @note kdbGet() might retrieve more keys then requested (that are not
+ *     below parentKey). These keys must be passed to calls of kdbSet(),
+ *     otherwise they will be lost. This stems from the fact that the
+ *     user has the only copy of the whole configuration and backends
+ *     only write configuration that was passed to them.
+ *     For example, if you kdbGet() "system/mountpoint/interest"
+ *     you will not only get all keys below system/mountpoint/interest,
+ *     but also all keys below system/mountpoint (if system/mountpoint
+ *     is a mountpoint as the name suggests, but
+ *     system/mountpoint/interest is not a mountpoint).
+ *     Make sure to not touch or remove keys outside the keys of interest,
+ *     because others may need them!
+ *
+ * @see ksCut() for further remarks on that topic.
  *
  * @par Example:
+ *
+ * This example demonstrates the typical usecase within an application
+ * (without error handling).
+ *
  * @code
-KeySet *myConfig = ksNew(0);
-Key *key = keyNew("system/sw/MyApp",KEY_END);
-KDB *handle = kdbOpen(key);
+KeySet *myConfig = ksNew(0,KS_END);
+Key *pkey = keyNew("system/sw/MyApp",KEY_END);
+KDB *handle = kdbOpen(pkey);
 
-kdbGet(handle, myConfig, key);
+kdbGet(handle, myConfig, pkey); // get the config initially
 
-keySetName(key, "user/sw/MyApp");
-kdbGet(handle, myConfig, key);
-
-// check for errors in key
-keyDel(key);
-
-key = ksLookupByName(myConfig,"/sw/MyApp/key", 0);
+Key *key = ksLookupByName(myConfig,"/sw/MyApp/key", 0);
 // check if key is not 0 and work with it...
+
+kdbGet(handle, myConfig, pkey); // get the config again
 
 ksDel (myConfig); // delete the in-memory configuration
 
-
-// maybe you want kdbSet() myConfig here
-
-kdbClose(handle, 0); // no more affairs with the key database.
+kdbClose(handle, pkey); // no more affairs with the key database.
+keyDel(pkey);
  * @endcode
  *
- * @section kdbgetdetail Details
- *
- * When no backend could be found (e.g. no backend mounted)
- * the default backend will be used.
+ * @par Details:
  *
  * If you pass NULL on any parameter kdbGet() will fail
  * immediately without doing anything.
  *
- * When a backend fails kdbGet() will return -1 without any
- * changes to one of the parameter.
+ * When a backend fails kdbGet() will return -1 with all
+ * error and warning information in the @p parentKey.
+ * The parameter @p returned will not be changed.
  *
- * @section kdbgetupdate Updating
+ * @par Updates:
  *
  * In the first run of kdbGet all keys are retrieved. On subsequent
  * calls only the keys are retrieved where something was changed
@@ -444,14 +439,16 @@ kdbClose(handle, 0); // no more affairs with the key database.
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param parentKey parent key holds the information which keys should
- * 	be get - invalid name gets all keys
+ * 	be get (it is possible that more are retrieved) - an invalid name gets all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
- * @see ksLookupByName() for powerful
+ * @see ksLookup(), ksLookupByName() for powerful
  * 	lookups after the KeySet was retrieved
- * @return 1 if the keys were retrieved successfully
- * @return 0 if there was no update - no changes are made to the keyset then
- * @return -1 on failure - no changes are made to the keyset then
+ * @see kdbSet() to save the configuration afterwards and kdbClose() to
+ * 	finish affairs with the key database.
+ * @retval 1 if the keys were retrieved successfully
+ * @retval 0 if there was no update - no changes are made to the keyset then
+ * @retval -1 on failure - no changes are made to the keyset then
  * @ingroup kdb
  */
 int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
@@ -493,6 +490,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		elektraSplitDel (split);
 		return 0;
 	case -1: goto error;
+	// otherwise falltrough
 	}
 
 	if(elektraSplitAppoint (split, handle, ks) == -1)
@@ -532,6 +530,7 @@ error:
 }
 
 /**
+ * @internal
  * @brief Does all set steps but not commit
  *
  * @param split all information for iteration
@@ -592,6 +591,7 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 }
 
 /**
+ * @internal
  * @brief Does the commit
  *
  * @param split all information for iteration
@@ -628,6 +628,7 @@ static void elektraSetCommit(Split *split, Key *parentKey)
 }
 
 /**
+ * @internal
  * @brief Does the rollback
  *
  * @param split all information for iteration
@@ -662,40 +663,22 @@ static void elektraSetRollback(Split *split, Key *parentKey)
 }
 
 
-/**
- * Set keys in an atomic and universal way.
+/** @brief Set keys in an atomic and universal way.
  *
- * All other kdbSet Functions rely on that one.
+ * With @p parentKey you can only store a part of the given keyset.
+ * When other keys also belong to a backend, they will be used too,
+ * even when they are above @p parentKey.
  *
- * @section kdbsetparent parentKey
- *
- * With parentKey you can only store a part of the given keyset.
- *
- * @code
-KeySet *ks = ksNew(0);
-Key *parentKey = keyNew("user/app/myapp/default", KEY_END);
-kdbGet (h, ks, parentKey));
-
-//now only set everything below user
-if (kdbSet (h, ks, parentKey) == -1)
-{
-	// in parentKey you can check the error cause
-	// ksCurrent(ks) is the faulty key
-}
-
-ksDel (ks);
- * @endcode
+ * @par Details:
  *
  * If you pass a parentKey without a name the whole keyset will be set
  * in an atomic way.
- *
- * @section kdbsetupdate Update
  *
  * Each key is checked with keyNeedSync() before being actually committed. So
  * only changed keys are updated. If no key of a backend needs to be synced
  * any affairs to backends omitted and 0 is returned.
  *
- * @section kdbseterror Error Situations
+ * @par Errors:
  *
  * If some error occurs, kdbSet() will stop. In this situation the KeySet
  * internal cursor will be set on the key that generated the error.
@@ -715,35 +698,75 @@ ksDel (ks);
  * @par Example of how this method can be used:
  * @code
 int i;
-KeySet *ks;  // the KeySet I want to set
-// fill ks with some keys
-for (i=0; i< NR_OF_TRIES; i++) // limit to NR_OF_TRIES tries
+KeySet *myConfig = ksNew(0,KS_END);
+Key *parentKey = keyNew("system/sw/MyApp",KEY_END);
+KDB *handle = kdbOpen(pkey);
+
+kdbGet(handle, ks, parentKey); // kdbGet needs to be called first!
+KeySet *base = ksDup(ks); // save a copy of original keyset
+
+// change the keys within ks
+
+KeySet *ours = ksDup(ks); // save a copy of our keyset
+int ret=kdbSet(handle, ks, parentKey);
+while (ret == -1) // as long as we have an error
 {
-	ret=kdbSet(handle, ks, parentKey);
-	if (ret == -1)
+	// We got an error. Warn user.
+	Key *problemKey = ksCurrent(ks);
+	// parentKey has the errorInformation
+	// problemKey is the faulty key (may be null)
+	int userInput = showElektraErrorDialog (parentKey, problemKey);
+	switch (userInput)
 	{
-		// We got an error. Warn user.
-		Key *problemKey = ksCurrent(ks);
-		// parentKey has the errorInformation
-		// problemKey is the faulty key (may be null)
-		int userInput = showElektraErrorDialog (parentKey, problemKey);
-		switch (userInput)
-		{
-		case INPUT_REPEAT: continue;
-		case INPUT_REMOVE: ksLookup (ks, parentKey, KDB_O_POP); break;
-		...
-		}
+	case INPUT_USE_OURS:
+		kdbGet(handle, ks, parentKey); // refresh key database
+		ksDel(ks);
+		ks = ours;
+		break;
+	case INPUT_DO_MERGE:
+		kdbGet(handle, ks, parentKey); // refresh key database
+		KeySet * res=doElektraMerge(ours, ks, base);
+		ksDel(ks);
+		ks = res;
+		break;
+	case INPUT_USE_THEIRS:
+		// should always work, we just write what we got
+		// but to be sure always give the user another way
+		// to exit the loop
+		kdbGet(handle, ks, parentKey); // refresh key database
+		break;
+	...
 	}
+	ret=kdbSet(handle, ks, parentKey);
 }
+
+ksDel (ours);
+ksDel (base);
+ksDel (ks); // delete the in-memory configuration
+
+kdbClose(handle, parentKey); // no more affairs with the key database.
+keyDel(parentKey);
+
  * @endcode
+ *
+ * showElektraErrorDialog() and doElektraMerge() need to be implemented
+ * by the user. For doElektraMerge a 3-way merge algorithm exists in
+ * libelektra-tools.
+ *
+ * @pre kdbGet() must be called before kdbSet():
+ *    - initially (after kdbOpen())
+ *    - after conflict errors in kdbSet().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
  * @param parentKey holds the information below which key keys should be set, see above
- * @return 1 on success
- * @return 0 if nothing had to be done
- * @return -1 on failure
- * @see keyNeedSync(), ksNext(), ksCurrent()
+ * @retval 1 on success
+ * @retval 0 if nothing had to be done
+ * @retval -1 on failure
+ * @see keyNeedSync()
+ * @see ksNext(), ksCurrent() for iteration over the keyset
+ * @see kdbOpen() and kdbGet() that must be called first
+ * @see kdbClose() that must be called afterwards
  * @ingroup kdb
  */
 int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)

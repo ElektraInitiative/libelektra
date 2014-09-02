@@ -31,7 +31,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 	os << "ksNew " << ckdb::ksGetSize(ks) << std::endl;
 
-	ckdb::KeySet *metacopies = ckdb::ksNew(0);
+	ckdb::KeySet *metacopies = ckdb::ksNew(0, KS_END);
 
 	ksRewind(ks);
 	while ((cur = ksNext(ks)) != 0)
@@ -225,20 +225,7 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 				KEY_SIZE, sizeof (unserialise),
 				KEY_BINARY,
 				KEY_VALUE, &unserialise, KEY_END),
-			keyNew ("system/elektra/modules/dump/infos",
-				KEY_VALUE, "Dumps into a format tailored to KeySet semantics", KEY_END),
-			keyNew ("system/elektra/modules/dump/infos/author",
-				KEY_VALUE, "Markus Raab <elektra@markus-raab.org>", KEY_END),
-			keyNew ("system/elektra/modules/dump/infos/licence",
-				KEY_VALUE, "BSD", KEY_END),
-			keyNew ("system/elektra/modules/dump/infos/description",
-				KEY_VALUE, "Dumps complete KeySet Semantics", KEY_END),
-			keyNew ("system/elektra/modules/dump/infos/provides",
-				KEY_VALUE, "storage", KEY_END),
-			keyNew ("system/elektra/modules/dump/infos/placements",
-				KEY_VALUE, "getstorage setstorage", KEY_END),
-			keyNew ("system/elektra/modules/dump/infos/needs",
-				KEY_VALUE, "", KEY_END),
+#include "readme_dump.c"
 			keyNew ("system/elektra/modules/dump/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END);

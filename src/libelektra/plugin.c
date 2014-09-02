@@ -52,42 +52,39 @@
 
 
 /**
- * Takes the first key and cuts off this common part
- * for all other keys.
+ * @brief Takes the first key and cuts off this common part
+ * for all other keys, instead name will be prepended
  *
- * The first key is removed.
+ * @return a new allocated keyset with keys in user namespace.
  *
- * Will convert to a user-config.
+ * The first key is removed in the resulting keyset.
  */
-static int elektraRenamePluginConfig(KeySet *config)
+KeySet* elektraRenameKeys(KeySet *config, const char* name)
 {
 	Key *root;
 	Key *cur;
-	ssize_t userSize = sizeof("user");
 	ssize_t rootSize = 0;
 
 	ksRewind(config);
 
 	root = ksNext (config);
 	rootSize = keyGetNameSize(root);
-	if (rootSize == -1) return -1;
 
 	keyDel (ksLookup (config, root, KDB_O_POP));
 
-	while ((cur = ksNext(config)) != 0)
+	KeySet *newConfig = ksNew(ksGetSize(config), KS_END);
+	if (rootSize == -1) return newConfig;
+
+	while ((cur = ksPop(config)) != 0)
 	{
-		ssize_t curSize = keyGetNameSize(cur);
-		if (curSize == -1) return -1;
-		// cant use strcpy here, because it fills up everything with 0
-		strcpy (cur->key, "user/");
-		for (ssize_t i=0; i<curSize-rootSize; ++i)
-		{
-			cur->key[i+userSize] = cur->key[i+rootSize];
-		}
-		cur->keySize = curSize-rootSize+userSize;
+		Key *dupKey = keyDup(cur);
+		keySetName(dupKey, name);
+		keyAddName(dupKey, keyName(cur)+rootSize-1);
+		ksAppendKey(newConfig, dupKey);
+		keyDel(cur);
 	}
 
-	return 0;
+	return newConfig;
 }
 
 /**
@@ -198,9 +195,8 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 		{
 			char *pluginName = 0;
 			char *referenceName = 0;
-			int pluginNumber;
+			int pluginNumber = 0;
 
-			KeySet *pluginConfig;
 			Key *key;
 
 			if (elektraProcessPlugin(cur, &pluginNumber, &pluginName, &referenceName, errorKey) == -1)
@@ -211,21 +207,25 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				return -1;
 			}
 
+
+
 			if (pluginName)
 			{
 				key = keyDup (cur);
 				keyAddBaseName(key, "config");
-				pluginConfig = ksCut (config, key);
+				KeySet *cutConfig = ksCut (config, key);
 				keyDel (key);
 
-				elektraRenamePluginConfig(pluginConfig);
+				KeySet *pluginConfig = elektraRenameKeys(cutConfig, "user");
+				ksDel(cutConfig);
+				if (!pluginConfig) return -1;
 				ksAppend(pluginConfig, systemConfig);
 				ksRewind(pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
 				/* case 1, we create a new plugin,
 				   note that errorKey is not passed here, because it would set error information
 				   but we only want a warning instead. */
-				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, 0);
+				plugins[pluginNumber] = elektraPluginOpen(pluginName, modules, pluginConfig, errorKey);
 				if (!plugins[pluginNumber])
 				{
 					ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
@@ -289,7 +289,7 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 
 	if (!name || name[0] == '\0')
 	{
-		ELEKTRA_SET_ERROR(39, errorKey, "name is null or empty");
+		ELEKTRA_ADD_WARNING(39, errorKey, "name is null or empty");
 		goto err_clup;
 	}
 
@@ -302,21 +302,21 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 
 	if (*n == '\0')
 	{
-		ELEKTRA_SET_ERROR(39, errorKey, "name contained slashes only");
+		ELEKTRA_ADD_WARNING(39, errorKey, "name contained slashes only");
 		goto err_clup;
 	}
 
 	pluginFactory = elektraModulesLoad(modules, name, errorKey);
 	if (pluginFactory == 0)
 	{
-		/* error already set by elektraModulesLoad */
+		/* warning already set by elektraModulesLoad */
 		goto err_clup;
 	}
 
 	handle = pluginFactory();
 	if (handle == 0)
 	{
-		ELEKTRA_SET_ERROR(6, errorKey, name);
+		ELEKTRA_ADD_WARNING(6, errorKey, name);
 		goto err_clup;
 	}
 
@@ -430,21 +430,38 @@ Plugin *elektraPluginVersion(void)
 
 
 /**
- * This function must be called by a plugin's elektraPluginSymbol() to
- * define the plugin's methods that will be exported.
+ * @brief Allows to Export Methods for a Plugin.
  *
- * See ELEKTRA_PLUGIN_EXPORT() how to use it for plugins.
+ * This function must be called within ELEKTRA_PLUGIN_EXPORT.
+ * It define the plugin's methods that will be exported.
  *
- * The order and number of arguments are flexible (as in keyNew() and ksNew()) to let
- * libelektra.so evolve without breaking its ABI compatibility with plugins.
- * So for each method a plugin must export, there is a flag defined by
- * #plugin_t.
- Each flag tells kdbPluginExport() which method comes
- * next. A plugin can have no implementation for a few methods that have
- * default inefficient high-level implementations and to use these defaults, simply
- * don't pass anything to kdbPluginExport() about them.
+ * All KDB methods implemented by the plugin basically could
+ * have random names (convention is elektraName*), except
+ * ELEKTRA_PLUGIN_EXPORT.
  *
- * @param pluginName a simple name for this plugin
+ * This is the single symbol that will be looked up
+ * when loading the plugin, and the first method of the backend
+ * implementation that will be called.
+ *
+ * You need to use a macro so that both dynamic and static loading
+ * of the plugin works. For example for the doc plugin:
+ * @snippet doc.c export
+ *
+ * The first parameter is the name of the plugin.
+ * Then every plugin should have:
+ * @c ELEKTRA_PLUGIN_OPEN,
+ * @c ELEKTRA_PLUGIN_CLOSE,
+ * @c ELEKTRA_PLUGIN_GET,
+ * @c ELEKTRA_PLUGIN_SET and optionally
+ * @c ELEKTRA_PLUGIN_ERROR.
+ *
+ * The list is terminated with
+ * @c ELEKTRA_PLUGIN_END.
+ *
+ * You must use static "char arrays" in a read only segment.
+ * Don't allocate storage, it won't be freed.
+ *
+ * @param pluginName the name of this plugin
  * @return an object that contains all plugin informations needed by
  * 	libelektra.so
  * @ingroup plugin
@@ -496,7 +513,12 @@ Plugin *elektraPluginExport(const char *pluginName, ...)
 
 
 /**
- * Returns the configuration of that plugin.
+ * @brief Returns the configuration of that plugin.
+ *
+ * - The user/ config holds plugin specific configuration
+ * - The system/ config holds backend specific configuration
+ *
+ * So prefer cascading lookups to honor both.
  *
  * @param handle a pointer to the plugin
  * @ingroup plugin
@@ -508,7 +530,7 @@ KeySet *elektraPluginGetConfig(Plugin *handle)
 }
 
 /**
- * Store a pointer to any plugin related data.
+ * @brief Store a pointer to any plugin related data.
  *
  * @param plugin a pointer to the plugin
  * @param data the pointer to the data
@@ -520,7 +542,7 @@ void elektraPluginSetData(Plugin *plugin, void *data)
 }
 
 /**
- * Get a pointer to any plugin related data stored before.
+ * @brief Get a pointer to any plugin related data stored before.
  *
  * @param plugin a pointer to the plugin
  * @return a pointer to the data

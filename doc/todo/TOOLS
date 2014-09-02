@@ -1,41 +1,32 @@
 == TOOLS ==
 
-kdb tools meta description files
 
 == MOUNT ==
 
-mountget, mountset, mountls
-
-rename getmeta to metaget, metaset, metals?
-
-add possibility to give names and configure plugins:
-
-e.g.
-kdb mount path=s.ini,recode=utf8..latin1,name=backendname /path/to/mount
-          ni,name=pluginname rebase,relative=/path
-
-kdb mount OpenICC_device_config_DB.json /org/freedesktop/openicc yajl
-          rebase,relative=/org/freedesktop/openicc,case=ignore
-
-
-allow to mount/umount plugin to all currently mounted backends +
-register them to be added for all future backends
+multi-mount (e.g. all .ini from one folder)
 
 allow --no-env --no-arg --no-default arguments?
 
-== libelektra-tools ==
 
-including mounting functionality
+
 
 
 
 = KDB =
+
+
+kdb tools meta description files
+	list all tools (with --help)
+
+allow key array increments with kdb tool
 
 list existing plugins
 	which are available? (src/plugins)
 	which are installed
 	kdb pls
 	(workaround: use ls /usr/lib/elektra)
+
+allow change of symlink (resolver, storage)
 
 kdb-shell:
 	use import/export
@@ -66,9 +57,11 @@ install config (mount+preload system config) by using meta struct
 
 == GEN ==
 
+code generator always yields LONG_MIN, LONG_MAX on any type!
+
 cmake support for "kdb gen" (run kdb gen within cmake)
 
-use doc/SPECIFICATION to validate config files
+use doc/METADATA.ini to validate config files
 	fix check/type vs. type and check/type/{min,max} vs. range problem
 
 cleanup: use utilities to avoid code duplication
@@ -78,7 +71,7 @@ environment parsing support
 static compilation model
 
 has_ queries
-(allows to differ between default fallback and intentional set default)
+(allows one to differ between default fallback and intentional set default)
 
 new generators:
 	all hardcoded (without elektra dependency)?

@@ -39,8 +39,8 @@ Nearly every aspect of Elektra must be extremely extensible.
 On the other side semantics must be very clear and well defined
 so that this extensible system works reproducible and predictable.
 
-> Only key/value pairs are the common factor and a way to get and set
-> them, everything else is an extension.
+Only key/value pairs are the common factor and a way to get and set
+them, everything else is an extension.
 
 
 
@@ -71,4 +71,4 @@ Elektra needs to be similar fast then current solutions.
 Ideally it should get faster because of centralized optimization
 endeavours where everyone using Elektra can benefit from.
 
-> Only pay for what you need.
+Only pay for what you need.

@@ -13,9 +13,15 @@ The plugins are:
 ## Storage ##
 
 Before configuration is actually written, the file name needs to be
-determined:
+determined (will be automatically added by kdb mount):
 
 - [resolver](resolver) uses POSIX APIs to handle conflicts gracefully
+- [noresolver](noresolver) does not resolve, but can act as one
+
+and afterwards the configuration file must be synced with
+harddisc (recommended to add at every kdb mount):
+
+- [sync](sync) uses POSIX APIs to sync configuration file with harddisc
 
 Read and write everything a KeySet might contain:
 
@@ -27,6 +33,7 @@ Read (and write) standard config files of /etc:
   files using the augeas library
 - [fstab](fstab) reads fstab files.
 - [hosts](hosts) read/write hosts files
+- [line](line) reads any file line by line
 
 Having flat, but arbitrary configuration:
 
@@ -36,8 +43,17 @@ Having flat, but arbitrary configuration:
 Using semi-structured data for config files:
 
 - [ni](ni) uses hierarchical INI files (with nested sections)
+- [ini](ini) other hierarchical INI
 - [xmltool](xmltool) uses XML.
 - [yajl](yajl#introduction) uses JSON.
+
+## System Information ##
+
+Information compiled in Elektra:
+- [version](version) is a special-buildin plugin directly within the
+  core so that it cannot give wrong version information
+- [constants](constants) various constants, including version
+  information
 
 Providing information found on the system not available in persistent
 files:
@@ -52,6 +68,10 @@ Rewrite unwanted characters with different techniques
 - [ccode](ccode) using the technique from arrays in the programming
   language C
 - [hexcode](hexcode) using hex codes
+
+Transformations:
+
+- [keytometa](keytometa) transforms keys to metadata
 
 Doing other stuff:
 
@@ -96,7 +116,6 @@ copied by another plugin just before):
 
 - [doc](doc) contains the documentation of the plugin interface
 - [error](error) yields errors as described in metadata
-- [success](success) is always successful
 - [template](template) to be copied for new plugins
 
 To add a new plugin you can copy the template plugin. Please make sure

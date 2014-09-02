@@ -19,18 +19,14 @@
 #ifndef KDB_H
 #define KDB_H
 
-#include "kdbos.h"
-
+#define ELEKTRA_SENTINEL // needed for SWIG
 #define KDB_VERSION "@KDB_VERSION@"
 #define KDB_VERSION_MAJOR @KDB_VERSION_MAJOR@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_MICRO @KDB_VERSION_MICRO@
 
-#ifdef __cplusplus
-#define KS_END ((ckdb::Key*)0)
-#else
-#define KS_END ((Key*)0)
-#endif
+#include "kdbos.h"
+
 
 enum {
 	KEY_END=0,
@@ -149,6 +145,7 @@ int keyIsString(const Key *key);
 const char *keyName(const Key *key);
 ssize_t keyGetNameSize(const Key *key);
 ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
+
 ssize_t keySetName(Key *key, const char *newname);
 
 ssize_t keyGetFullNameSize(const Key *key);
@@ -157,8 +154,9 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
 const char *keyBaseName(const Key *key);
 ssize_t keyGetBaseNameSize(const Key *key);
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
-ssize_t keyAddBaseName(Key *key,const char *baseName);
+
 ssize_t keySetBaseName(Key *key,const char *baseName);
+ssize_t keyAddBaseName(Key *key,const char *baseName);
 
 /* Value Manipulation Methods */
 const void *keyValue(const Key *key);
@@ -179,7 +177,7 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
  *
  **************************************/
 
-KeySet *ksNew(size_t alloc, ...);
+KeySet *ksNew(size_t alloc, ...) ELEKTRA_SENTINEL;
 KeySet *ksVNew(size_t alloc, va_list ap);
 
 KeySet *ksDup(const KeySet * source);

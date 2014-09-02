@@ -10,16 +10,12 @@ FILE=`mktemp`
 for PLUGIN in $PLUGINS
 do
 	case "$PLUGIN" in
-	"template")
-		continue
-		;;
-	"doc")
-		continue
-		;;
 	"tracer")
+		# output on open/close
 		continue
 		;;
 	"timeofday")
+		# output on open/close
 		continue
 		;;
 	esac

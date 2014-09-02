@@ -30,7 +30,7 @@ void h (Key *k)
 int main()
 {
 	Key * origKey;
-	KeySet * ks = ksNew(0);
+	KeySet * ks = ksNew(0, KS_END);
 
 	Key * key = keyNew ("user/test/name",
 			KEY_VALUE, "myvalue",
