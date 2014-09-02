@@ -75,22 +75,6 @@ kdb <script>):
 - merging scripts were added for the usage with ucf
 - scripts doing internal checks on source of plugins
 
-## API Proposals
-
-keySetStringF      ..  printf format-style changing of the key string
-keyLock            ..  to allow to secure keys against modifications
-elektraKeySetName  ..  to allow to set meta + cascading keys
-keyNameAdd         ..  see explanation below in "Compatibility"
-keyUnescapedName   ..  also see below
-
-elektraArrayIncName() now works correctly with empty arrays embedded in
-other arrays (yajl+line plugin)
-elektraArrayValidateName() was also added, thanks to Felix.
-
-These methods are declared in the file kdbproposal.h
-but do not guarantee any forms of compatibility (they might
-even be removed).
-
 
 ## Compatibility
 
@@ -113,6 +97,8 @@ add/set a basename (variant 1).
 
 The variant 2, to add any name was added and is called keyAddName() and
 added as proposal.
+
+(Thank Felix for implementations and Manuel for investigations)
 
 When keys are renamed after adding to a keyset is a bad thing because it
 destroys the order of the keyset. This is now avoided by keyLock.
@@ -149,11 +135,24 @@ for that purpose, but we also improved testing in other parts:
 - (New Test strategy)[/doc/TESTING.md]
 - New resolver tests for conflicts (needs tty)
 
-And the Buildserver:
- - now also compiles with icc
- - runs make run_memcheck
- - checks if plugins are added correctly
- - runs those ABI tests
+## API Proposals
+
+see above for more information:
+keyAddName         ..  add key name without escaping, like keySetName
+keyUnescapedName   ..  get access to null-separated unescaped name
+keyLock            ..  to allow to secure keys against modifications
+
+some new ideas:
+keySetStringF      ..  printf format-style changing of the key string
+elektraKeySetName  ..  to allow to set meta + cascading keys
+
+elektraArrayIncName() now works correctly with empty arrays embedded in
+other arrays (yajl+line plugin)
+elektraArrayValidateName() was also added, thanks to Felix.
+
+These methods are declared in the file kdbproposal.h
+but do not guarantee any forms of compatibility (they might
+even be removed).
 
 
 ## Issues
@@ -174,6 +173,58 @@ tracked on github):
 - make test data naming consistent (thanks Pino)
 - use LIB_SUFFIX for TARGET_TOOL_EXEC_FOLDER thanks to Kai Uwe
 - Fix search for boost (thank Pino)
+
+## Other Stuff ##
+
+Thanks to Pino Toscano Elektra 0.8.7-4 is now available in Debian
+Testing: https://packages.debian.org/search?keywords=elektra
+So it is only a matter of time that other (debian-based) distributions
+will follow and replace the dusty Elektra 0.7.
+
+Debian Continuous Integration http://ci.debian.net/packages/e/elektra
+(thanks Pino)
+greatly complement our tests running on http://build.libelektra.org:8080/
+
+Elektra's buildserver also was improved:
+ - now also compiles with icc
+ - runs make run_memcheck
+ - checks if plugins are added correctly in-source
+ - runs ABI + behavioural tests
+
+Raffael Pancheri now made a merge request for qt-gui
+https://github.com/ElektraInitiative/libelektra/pull/103/files
+in which copy, paste and delete of keys already works.
+It is, however, still work in progress.
+
+Manuel Mausz made great progress in script-based Elektra plugins. He is
+also working on glib+gobject-introspection based bindings.
+He investigated some issues, e.g. a crash of the python binding which
+was only triggered if python3 is build with a specific flag/module
+combination, see:
+https://github.com/ElektraInitiative/libelektra/issues/25
+
+
+## Get It! ##
+
+You can download the release from:
+
+http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.8.tar.gz
+size: 
+md5sum: 
+sha1: 
+sha256: 
+
+
+already built API-Docu can be found here:
+
+http://doc.libelektra.org/api/0.8.8/html/
+
+Best regards,
+Markus
+
+
+
+
 
 
 
