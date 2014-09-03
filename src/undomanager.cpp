@@ -72,6 +72,16 @@ void UndoManager::createCutKeyCommand(ConfigNode *target)
     m_undoStack->push(new CutKeyCommand(qvariant_cast<TreeViewModel*>(m_clipboard->property("model")), qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target, m_clipboard->property("index").toInt()));
 }
 
+void UndoManager::setClean()
+{
+    m_undoStack->setClean();
+}
+
+bool UndoManager::isClean()
+{
+    return m_undoStack->isClean();
+}
+
 void UndoManager::undo()
 {
     m_undoStack->undo();

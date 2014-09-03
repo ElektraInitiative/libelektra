@@ -40,5 +40,7 @@
         <file>qml/icons/edit-clear.png</file>
         <file>qml/EditKeyWindow.qml</file>
         <file>qml/KeyWindow.qml</file>
+        <file>qml/ExitDialog.qml</file>
+        <file>qml/MainMenuBar.qml</file>
     </qresource>
 </RCC>

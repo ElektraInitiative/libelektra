@@ -49,15 +49,15 @@ ConfigNode::ConfigNode()
 {
 }
 
-//ConfigNode::~ConfigNode()
-//{
-//    delete m_children;
-//    delete m_metaData;
-//    m_parentModel = NULL;
+ConfigNode::~ConfigNode()
+{
+    delete m_children;
+    delete m_metaData;
+    m_parentModel = NULL;
 
-//    if(m_key)
-//        m_key.clear();
-//}
+    if(m_key)
+        m_key.clear();
+}
 
 int ConfigNode::getChildCount() const
 {
@@ -229,6 +229,9 @@ void ConfigNode::setKey(Key key)
 
 void ConfigNode::setKeyName(const QString &name)
 {
+    if(!m_key)
+        m_key = Key();
+
     m_key.setName(name.toStdString());
 }
 

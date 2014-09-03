@@ -4,5 +4,5 @@ Rectangle {
     color: activePalette.window
     radius: 5
     border.width: 2
-    border.color: activePalette.dark
+    border.color: activePalette.light
 }

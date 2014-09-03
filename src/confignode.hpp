@@ -24,7 +24,7 @@ public:
     ConfigNode(const ConfigNode& other);
     /// Needed by Qt
     ConfigNode();
-//    ~ConfigNode();
+    ~ConfigNode();
 
     /**
      * @brief Returns the number of children of this ConfigNode.

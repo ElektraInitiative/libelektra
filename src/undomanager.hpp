@@ -41,6 +41,8 @@ public:
     Q_INVOKABLE void        createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
     Q_INVOKABLE void        createCopyKeyCommand(ConfigNode *target);
     Q_INVOKABLE void        createCutKeyCommand(ConfigNode *target);
+    Q_INVOKABLE void        setClean();
+    Q_INVOKABLE bool        isClean();
 
 Q_SIGNALS:
 

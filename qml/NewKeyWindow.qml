@@ -16,9 +16,6 @@ KeyWindow {
         //create UndoCommand
         undoManager.createNewKeyCommand(externTreeModel, treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
 
-//        //insert new node
-//        externTreeModel.createNewNode(treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
-
         nameTextField.text = ""
         valueTextField.text = ""
         nameTextField.focus = true

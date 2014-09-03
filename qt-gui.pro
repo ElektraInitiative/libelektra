@@ -62,7 +62,9 @@ OTHER_FILES += \
     qml/TreeView.qml \
     qml/KeyWindow.qml \
     qml/NewKeyWindow.qml \
-    qml/EditKeyWindow.qml
+    qml/EditKeyWindow.qml \
+    qml/ExitDialog.qml \
+    qml/MainMenuBar.qml
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += elektra
