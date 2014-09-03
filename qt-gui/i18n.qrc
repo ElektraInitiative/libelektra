@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qml/i18n/lang_de_DE.qm</file>
-    </qresource>
-</RCC>
