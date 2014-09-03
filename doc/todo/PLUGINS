@@ -187,6 +187,14 @@ ignore_error plugin:
 
 
 
+# Generic plugins #
+
+Shell bindings: exec program and send dump format to it and receive one
+can use #!kdb shell
+or also some other scripts, e.g. git commit
+
+
+
 
 
 # FILTER Plugins #

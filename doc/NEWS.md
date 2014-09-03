@@ -66,7 +66,7 @@ The kdb tools were greatly improved (thanks to Felix):
 - mount is now more verbose when validation fails
 
 New/improved scripts/make targets (note that scripts can be executed by
-kdb <script>):
+kdb scriptname):
 - mounting, unmounting scripts were added
 - generate template for a new plugin was improved
 - configure-debian was added
@@ -548,9 +548,9 @@ wrongly tell that the API is not compatible, but this is not the case
 (thanks to Manuel Mausz).
 
 The C++ API changed, including:
-- does not wrongly convert garbage to default types using get<T>
-- getMeta now interally uses get<T> and both throw the KeyTypeConversion
-  Exception
+- does not wrongly convert garbage to default types using ```get<T>```
+- getMeta now interally uses ```get<T>``` and both throw the
+  KeyTypeConversion Exception
 - KeySet::at directly allows one to use ksAtCursor()
 - KeyTypeConversion (or former KeyBadMeta) is not thrown anymore if key
   is not available
@@ -680,7 +680,9 @@ kdb tool now smoothly integrates external tools. These tools can reside
 in external source repositories and even written in other programming
 languages. The approach is similar from "git". Any executable in the
 folder, given with the CMake Cache variable TARGET_TOOL_EXEC_FOLDER
-(default "/usr/lib/elektra/tool_exec"), can be executed by kdb <name>.
+(default "/usr/lib/elektra/tool_exec"), can be executed by
+
+   kdb name
 
 All tests (script+compiled) now install in this folder instead of
 directly to /usr/bin to minimise cluttering folders in the user's PATH.

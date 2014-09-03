@@ -6,25 +6,17 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.8 #
+# 0.8.9 #
 
-fix resolver:
-	add sync
+kdb run all + allow disable version check
 
 fix types:
 	type checker should check like defined in schema
 	let json use same types (double, boolean, nothing for string)
 
-finish GSoC
-
-
-
-# 0.8.9 #
-
 allow more key names
 	starting with /
 	meta keynames
-
 
 ## powerful cascading ##
 
@@ -60,6 +52,4 @@ defaults are hardcoded (for system without /etc)
 test libelektratools:
 	addPlugin(Plugin) tests
 	usePath functionality?
-
-have icc on buildserver
 
