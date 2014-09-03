@@ -5,7 +5,8 @@ import QtQuick.Controls.Styles 1.1
 
 Item {
     id: metaInfoItem
-    width: metaArea.width - 3*defaultMargins
+
+    width: parent.width
     height: metaNameField.height
 
     property alias metaNameField: metaNameField
@@ -29,7 +30,15 @@ Item {
         }
         Button {
             id:deleteMetaButton
-            iconSource: "icons/application-exit.png"
+
+            style: ButtonStyle {
+                background: Image {
+                    anchors.centerIn: parent
+                    height: metaNameField.height
+                    width: height
+                    source: "icons/application-exit.png"
+                }
+            }
 
             onClicked: {
                 qmlMetaKeyModel.remove(index)// remove the visual item
