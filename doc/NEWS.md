@@ -146,16 +146,17 @@ it says on that line 94 in test_ks.c:
 ## API Proposals
 
 see above for more information:
-keyAddName         ..  add key name without escaping, like keySetName
-keyUnescapedName   ..  get access to null-separated unescaped name
-keyLock            ..  to allow to secure keys against modifications
+- keyAddName         ..  add key name without escaping, like keySetName
+- keyUnescapedName   ..  get access to null-separated unescaped name
+- keyLock            ..  to allow to secure keys against modifications
 
 some new ideas:
-keySetStringF      ..  printf format-style changing of the key string
-elektraKeySetName  ..  to allow to set meta + cascading keys
+- keySetStringF      ..  printf format-style changing of the key string
+- elektraKeySetName  ..  to allow to set meta + cascading keys
 
 elektraArrayIncName() now works correctly with empty arrays embedded in
 other arrays (yajl+line plugin)
+
 elektraArrayValidateName() was also added, thanks to Felix.
 
 These methods are declared in the file kdbproposal.h
@@ -170,6 +171,7 @@ https://github.com/ElektraInitiative/libelektra/issues
 Alone for the milestone 0.8.8 we closed 17 issues, including
 those mentioned in "Compatibility". Other issues (not all were
 tracked on github):
+
 - fix undefined errors in kdbOpen() or kdbClose()
 - Now Python 2+3 work in parallel
 - python2 interpreter is found correctly (also on Arch)
@@ -194,6 +196,7 @@ Debian Continuous Integration http://ci.debian.net/packages/e/elektra
 greatly complement our tests running on http://build.libelektra.org:8080/
 
 Elektra's buildserver also was improved:
+
  - now also compiles with icc
  - runs make run_memcheck
  - checks if plugins are added correctly in-source
@@ -217,10 +220,11 @@ https://github.com/ElektraInitiative/libelektra/issues/25
 You can download the release from:
 
 http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.8.tar.gz
-size: 1644441
-md5sum: fe11c6704b0032bdde2d0c8fa5e1c7e3
-sha1: 16e43c63cd6d62b9fce82cb0a33288c390e39d12
-sha256: ae75873966f4b5b5300ef5e5de5816542af50f35809f602847136a8cb21104e2
+
+- size: 1644441
+- md5sum: fe11c6704b0032bdde2d0c8fa5e1c7e3
+- sha1: 16e43c63cd6d62b9fce82cb0a33288c390e39d12
+- sha256: ae75873966f4b5b5300ef5e5de5816542af50f35809f602847136a8cb21104e2
 
 
 already built API-Docu can be found here:
