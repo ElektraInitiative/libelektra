@@ -1,7 +1,10 @@
 #include "treeviewmodel.hpp"
+#include <modules.hpp>
+#include <toolexcept.hpp>
 
 using namespace std;
 using namespace kdb;
+using namespace kdb::tools;
 
 TreeViewModel::TreeViewModel(QObject* parent)
 {
@@ -192,6 +195,31 @@ int TreeViewModel::getIndexByName(const QString &name) const
     }
 
     return -1;
+}
+
+void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QString file)
+{
+    synchronize();
+
+    file.remove("file://");
+
+    Key root(node->getPath().toStdString());
+    KeySet set;
+
+    m_kdb.get(set, "");
+
+    KeySet part(set.cut(root));
+
+    Modules modules;
+    PluginPtr plugin = modules.load(format.toStdString());
+
+    Key errorKey(root);
+    errorKey.setString(file.toStdString());
+
+    plugin->set(part, errorKey);
+
+    printWarnings(cerr, errorKey);
+    printError(cerr, errorKey);
 }
 
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
@@ -389,17 +417,16 @@ void TreeViewModel::createNewNode(const QString &path, const QString &value, con
         key.setMeta(iter.key().toStdString(), iter.value().toString().toStdString());
     }
 
-    QStringList splittedKey = path.split("/");
+    QStringList keys = path.split("/");
+    QString root = keys.takeFirst();
 
-    if (splittedKey.at(0) == "system")
+    if (root == "system")
     {
-        splittedKey.removeFirst();
-        sink(m_model.at(0), splittedKey, "system", key);
+        sink(m_model.at(0), keys, "system", key);
     }
-    else if (splittedKey.at(0) == "user")
+    else if (root == "user")
     {
-        splittedKey.removeFirst();
-        sink(m_model.at(1), splittedKey, "user", key);
+        sink(m_model.at(1), keys, "user", key);
     }
     else
     {

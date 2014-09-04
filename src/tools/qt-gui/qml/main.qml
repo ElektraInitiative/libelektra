@@ -75,10 +75,8 @@ ApplicationWindow {
         id: wizardLoader
     }
 
-    FileDialog {
+    ExportDialog {
         id: exportDialog
-        title: qsTr("Export to file")
-        selectExisting: false
     }
 
     ExitDialog {
@@ -123,7 +121,6 @@ ApplicationWindow {
         iconSource: "icons/export.png"
         tooltip: qsTr("Export Configuration")
         onTriggered: exportDialog.open()
-        enabled: false
     }
 
     Action {

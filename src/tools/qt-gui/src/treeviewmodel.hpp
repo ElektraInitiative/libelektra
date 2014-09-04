@@ -89,6 +89,7 @@ public:
                 QString         toString();
                 void            deletePath(const QString &path);
     Q_INVOKABLE int             getIndexByName(const QString &name) const;
+    Q_INVOKABLE void            exportConfiguration(ConfigNode *node, QString format, QString file);
 
 private:
     void                        sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);

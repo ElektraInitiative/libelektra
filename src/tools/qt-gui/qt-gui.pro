@@ -35,9 +35,6 @@ CONFIG += debug
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
-INCLUDEPATH += /usr/include/elektra
-INCLUDEPATH += /usr/local/include/elektra
-
 # Default rules for deployment.
 include(deployment.pri)
 
@@ -64,11 +61,15 @@ OTHER_FILES += \
     qml/NewKeyWindow.qml \
     qml/EditKeyWindow.qml \
     qml/ExitDialog.qml \
-    qml/MainMenuBar.qml
-
-unix: CONFIG += link_pkgconfig
-unix: PKGCONFIG += elektra
+    qml/MainMenuBar.qml \
+    qml/ExportDialog.qml
 
 SUBDIRS += \
     unittest/unittest.pro \
 #    modeltest/modeltest.pro
+
+unix: LIBS += -L/usr/local/lib/ -lelektra
+unix: LIBS += -L/usr/local/lib/ -lelektratools
+
+INCLUDEPATH += /usr/local/include/elektra
+DEPENDPATH += /usr/local/include/elektra
