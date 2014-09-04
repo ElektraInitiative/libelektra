@@ -62,7 +62,8 @@ OTHER_FILES += \
     qml/EditKeyWindow.qml \
     qml/ExitDialog.qml \
     qml/MainMenuBar.qml \
-    qml/ExportDialog.qml
+    qml/ExportDialog.qml \
+    qml/ImportDialog.qml
 
 SUBDIRS += \
     unittest/unittest.pro \

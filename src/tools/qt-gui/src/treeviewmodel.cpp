@@ -199,27 +199,30 @@ int TreeViewModel::getIndexByName(const QString &name) const
 
 void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QString file)
 {
-    synchronize();
+    if(node)
+    {
+        synchronize();
 
-    file.remove("file://");
+        file.remove("file://");
 
-    Key root(node->getPath().toStdString());
-    KeySet set;
+        Key root(node->getPath().toStdString());
+        KeySet set;
 
-    m_kdb.get(set, "");
+        m_kdb.get(set, "");
 
-    KeySet part(set.cut(root));
+        KeySet part(set.cut(root));
 
-    Modules modules;
-    PluginPtr plugin = modules.load(format.toStdString());
+        Modules modules;
+        PluginPtr plugin = modules.load(format.toStdString());
 
-    Key errorKey(root);
-    errorKey.setString(file.toStdString());
+        Key errorKey(root);
+        errorKey.setString(file.toStdString());
 
-    plugin->set(part, errorKey);
+        plugin->set(part, errorKey);
 
-    printWarnings(cerr, errorKey);
-    printError(cerr, errorKey);
+        printWarnings(cerr, errorKey);
+        printError(cerr, errorKey);
+    }
 }
 
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const

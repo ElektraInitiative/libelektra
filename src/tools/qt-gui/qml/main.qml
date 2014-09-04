@@ -79,6 +79,16 @@ ApplicationWindow {
         id: exportDialog
     }
 
+    ImportDialog {
+        id: importDialog
+    }
+
+    FileDialog {
+        id: importFileDialog
+        title: qsTr("Select File")
+        onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
+    }
+
     ExitDialog {
         id: exitDialog
     }
@@ -111,8 +121,7 @@ ApplicationWindow {
         text: qsTr("Import Configuration... ")
         iconSource: "icons/import.png"
         tooltip: qsTr("Import Configuration")
-        onTriggered: importDialog.open()
-        enabled: false
+        onTriggered: importDialog.show()
     }
 
     Action {
@@ -282,9 +291,8 @@ ApplicationWindow {
             }
             Item {
                 width: Math.round(mainWindow.width*0.3 - 7*tbRedo.width - 7*defaultSpacing - defaultMargins)
-                height: 28
+                height: tbNew.height
             }
-
             Image {
                 id: searchLogo
                 source: "icons/edit-find.png"

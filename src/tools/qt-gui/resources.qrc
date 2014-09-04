@@ -43,5 +43,6 @@
         <file>qml/ExitDialog.qml</file>
         <file>qml/MainMenuBar.qml</file>
         <file>qml/ExportDialog.qml</file>
+        <file>qml/ImportDialog.qml</file>
     </qresource>
 </RCC>

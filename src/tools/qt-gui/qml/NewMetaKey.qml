@@ -7,7 +7,7 @@ Item {
     id: metaInfoItem
 
     width: parent.width
-    height: metaNameField.height
+    height: metaNameField.height + defaultMargins
 
     property alias metaNameField: metaNameField
     property alias metaValueField: metaValueField
@@ -31,11 +31,12 @@ Item {
         Button {
             id:deleteMetaButton
 
+            implicitHeight: metaNameField.height
+            implicitWidth: implicitHeight
+
             style: ButtonStyle {
                 background: Image {
                     anchors.centerIn: parent
-                    height: metaNameField.height
-                    width: height
                     source: "icons/application-exit.png"
                 }
             }
