@@ -83,6 +83,14 @@ ApplicationWindow {
         id: importDialog
     }
 
+    MessageDialog {
+        id: noNodeSelectedDialog
+
+        title: qsTr("No Node selected")
+        icon: StandardIcon.Critical
+        text: qsTr("Please select a node to export the configuration below.")
+    }
+
     FileDialog {
         id: importFileDialog
         title: qsTr("Select File")

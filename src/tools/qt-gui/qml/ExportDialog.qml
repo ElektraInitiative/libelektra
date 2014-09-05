@@ -6,5 +6,11 @@ FileDialog {
     title: qsTr("Export Configuration to File")
     selectExisting: false
 
-    onAccepted: externTreeModel.exportConfiguration(treeView.currentNode.node, "dump", exportDialog.fileUrl)
+    onAccepted: {
+        if(treeView.currentNode !== null)
+            externTreeModel.exportConfiguration(treeView.currentNode.node, "dump", exportDialog.fileUrl)
+        else{
+            noNodeSelectedDialog.open()
+        }
+    }
 }
