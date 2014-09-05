@@ -46,10 +46,20 @@ ksLookup("/path/to/my/application/dir/key")
 defaults are hardcoded (for system without /etc)
 	just for information in spec
 
+## mount specification ##
 
-### test ###
+
+## test ##
 
 test libelektratools:
 	addPlugin(Plugin) tests
 	usePath functionality?
 
+full coverage of all plugins in end-to-end test
+	create a directory value rewriter for ini+yajl
+
+
+## OpenICC ##
+
+rebase plugin
+xdg resolver
