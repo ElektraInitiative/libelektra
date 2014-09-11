@@ -31,12 +31,12 @@ ConfigNode::ConfigNode(const ConfigNode& other)
     , m_parentModel(other.m_parentModel)
 {
 
-    foreach(ConfigNode *node, other.getChildren()->model())
+    foreach(ConfigNode *node, other.m_children->model())
     {
         m_children->append(new ConfigNode(*node));
     }
 
-    foreach(ConfigNode *node, other.getMetaKeys()->model())
+    foreach(ConfigNode *node, other.m_metaData->model())
     {
         m_metaData->append(new ConfigNode(*node));
     }
