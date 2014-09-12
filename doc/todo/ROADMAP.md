@@ -8,6 +8,8 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.9 #
 
+32-bit build agent! (for variable size problems)
+
 kdb run all + allow disable version check
 
 fix types:

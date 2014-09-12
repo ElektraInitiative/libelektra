@@ -92,7 +92,7 @@ Fix debian/ + document in NEWS what maintainer need to consider, then build the 
 Now move and install:
  cd ~elektra && mkdir deb/$DVERSION
  mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
- sudo dpkg -i deb/$DVERSION/*.deb
+ sudo dpkg -i deb/$DVERSION/*`dpkg-architecture -qDEB_BUILD_ARCH`.deb
 
 
 Run some basic commands, at least:
