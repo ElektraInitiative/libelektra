@@ -1,3 +1,5 @@
+#define __STDC_FORMAT_MACROS
+
 #include <kdbproposal.h>
 #include "kdbtypes.h"
 
@@ -100,9 +102,8 @@ int elektraArrayIncName(Key *key)
 		++baseName;
 	}
 
-	long int oldIndex  = 0;
+	int64_t oldIndex  = 0;
 
-	char *endptr;
 	int errnosave = errno;
 	errno = 0;
 	if (!arrayElement)
@@ -112,7 +113,11 @@ int elektraArrayIncName(Key *key)
 	}
 	else
 	{
-		oldIndex = strtol(baseName, &endptr, 10);
+		if (sscanf(baseName, "%"PRId64, &oldIndex) != 1)
+		{
+			errno = errnosave;
+			return -1;
+		}
 
 		if (errno != 0) // any error
 		{
@@ -125,18 +130,13 @@ int elektraArrayIncName(Key *key)
 			return -1;
 		}
 
-		if (oldIndex == LONG_MAX) // overflow
-		{
-			return -1;
-		}
-
-		if (endptr == baseName)
+		if (oldIndex >= INT64_MAX) // overflow
 		{
 			return -1;
 		}
 	}
 
-	long int newIndex = oldIndex+1; // we increment by one
+	int64_t newIndex = oldIndex+1; // we increment by one
 
 	// maximal size calculation (C99 would also allow non maximum though...)
 	size_t sizeMax_ = 9; // maximum of n-1 _
@@ -147,13 +147,13 @@ int elektraArrayIncName(Key *key)
 	// now we fill out newName
 	size_t index = 0; // index of newName
 	newName[index++] = '#';
-	long int i = newIndex/10;
+	int64_t i = newIndex/10;
 	while (i>0)
 	{
 		newName[index++] = '_'; // index n-1 of decimals
 		i/=10;
 	}
-	if (snprintf (&newName[index], size, "%ld", newIndex)  < 0)
+	if (snprintf (&newName[index], size, "%"PRId64, newIndex)  < 0)
 	{
 		return -1;
 	}
