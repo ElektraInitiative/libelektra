@@ -37,6 +37,15 @@ Environment expansion
 
 
 
+# File based plugins #
+
+Most plugins work on the KeySet. Other plugins might just work
+on the file (in the value of the parentKey), including:
+- gzip the file
+- encrypt the file
+- git add/git commit
+
+
 
 # Helper plugins #
 
