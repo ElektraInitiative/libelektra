@@ -45,3 +45,6 @@ CMAKE_FLAGS = \
 
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_FLAGS)
+
+override_dh_auto_test:
+	ctest --force-new-ctest-process --output-on-failure -E testabi_ks -E test_array
