@@ -1,10 +1,8 @@
-# NEWS #
+# 0.8.8 Release
 
-
-## 0.8.8 Release
-
-%Author: Markus Raab
-%Date: 02.09.2014
+- author: Markus Raab
+- guid: eca69e19-5ddb-438c-ac06-57c20b1a9160
+- pubDate: Tue, 02 Sep 2014 17:31:42 +0200
 
 
 In this release we changed 578 files in 473 commits
@@ -243,8 +241,12 @@ Markus
 
 ---------
 
-%Author: Markus Raab
-%Date: 22.08.2014
+
+# Augeas and Config::Model
+
+- author: Markus Raab
+- guid: eca69e19-5ddb-438c-ac06-57c20b1a9160
+- pubDate: Mon, 22 Oct 2014 17:31:42 +0200
 
 A common question is: now we have Augeas for editing config files,
 why do we need Elektra, Config::Model or something else?
@@ -301,9 +303,10 @@ the behaviour of the key database).
 
 -------------
 
-%Author: Markus Raab
-%Date: 28.07.2014
-%Subject: 0.8.7 release
+# 0.8.7 release
+
+- author: Markus Raab
+- date: 28.07.2014
 
 Again, we managed to have a great feature release with dozens of
 corrections!

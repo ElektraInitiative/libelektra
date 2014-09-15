@@ -9,6 +9,12 @@ A complete list of ideas what could be done can be found in the
 # 0.8.9 #
 
 32-bit build agent! (for variable size problems)
+2.6 python-cheetah? (exclude 2.6 in setuptools)
+Compiling /usr/lib/pymodules/python2.6/nested_support.py ...
+SyntaxError: ('invalid syntax',
+		('/usr/lib/pymodules/python2.6/nested_support.py', 199,
+		 18, '\t\t\t\tcwc.update({c})\n'))
+
 
 kdb run all + allow disable version check
 
