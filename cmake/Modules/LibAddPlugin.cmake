@@ -107,5 +107,4 @@ function(add_plugin PLUGIN_SHORT_NAME)
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES"
 		"${ARG_LINK_LIBRARIES}")
-
 endfunction()

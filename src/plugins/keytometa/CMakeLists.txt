@@ -17,6 +17,3 @@ add_plugintest(keytometa)
 
 install (TARGETS ${PLUGIN_NAME}
 	DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
-
-#TODO: Fix #32!
-set_property(TEST testmod_keytometa PROPERTY LABELS memleak)

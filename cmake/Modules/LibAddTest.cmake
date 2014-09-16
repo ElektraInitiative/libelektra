@@ -32,6 +32,7 @@ endif()
 
 
 macro (add_gtest source)
+	if (BUILD_TESTING)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
 
@@ -54,4 +55,5 @@ macro (add_gtest source)
 			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
+	endif(BUILD_TESTING)
 endmacro (add_gtest)

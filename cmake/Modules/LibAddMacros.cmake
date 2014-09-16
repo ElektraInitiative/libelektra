@@ -1,3 +1,5 @@
+include(LibParseArguments)
+
 # Copy a file from source dir to binary dir
 #
 # copy_file or directory
@@ -51,10 +53,16 @@ endmacro (add_testheaders HDR_FILES)
 # links the executeable (only if build_full)
 # and adds a test
 macro (add_plugintest testname)
-	if (BUILD_FULL)
+	if (BUILD_TESTING)
+	if (BUILD_FULL) #TODO: add static variant
+		parse_arguments(ARG
+			"" # no arguments
+			"MEMLEAK" #options
+			${ARGN}
+			)
 		set (TEST_SOURCES
 				$<TARGET_OBJECTS:cframework>
-				${ARGN}
+				${ARG_UNPARSED_ARGUMENTS}
 				)
 		add_headers(TEST_SOURCES)
 		add_testheaders(TEST_SOURCES)
@@ -71,7 +79,12 @@ macro (add_plugintest testname)
 				"${CMAKE_CURRENT_BINARY_DIR}/testmod_${testname}"
 				"${CMAKE_CURRENT_SOURCE_DIR}"
 				)
+		if (ARG_MEMLEAK)
+			set_property(TEST testmod_${testname} PROPERTY
+				LABELS memleak)
+		endif (ARG_MEMLEAK)
 	endif (BUILD_FULL)
+	endif (BUILD_TESTING)
 endmacro (add_plugintest)
 
 # Add a test for cpp plugins
