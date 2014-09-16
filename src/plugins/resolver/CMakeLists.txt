@@ -3,7 +3,7 @@ include(LibAddPlugin)
 add_plugin_helper(elektra-resolver-lock
 	SOURCES
 		lock.c
-		)
+	)
 
 set (SOURCES resolver.h resolver.c filename.c)
 
@@ -16,7 +16,8 @@ add_plugin(resolver
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hub\"
 		ELEKTRA_VARIANT_SYSTEM=\"b\"
-		ELEKTRA_PLUGIN_NAME=\"resolver\")
+		ELEKTRA_PLUGIN_NAME=\"resolver\"
+	)
 
 add_plugintest(resolver)
 
@@ -48,7 +49,8 @@ foreach (plugin ${PLUGINS})
 				ELEKTRA_VARIANT_SYSTEM=\"${variant_system}\"
 				ELEKTRA_VARIANT=${variant}
 				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
-				${FURTHER_DEFINITIONS})
+				${FURTHER_DEFINITIONS}
+			)
 	endif()
 endforeach(plugin)
 
