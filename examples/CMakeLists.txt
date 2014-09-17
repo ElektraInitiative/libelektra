@@ -21,9 +21,11 @@ macro (do_example source)
 
 	if (BUILD_FULL)
 		target_link_libraries (${source} elektra-full)
-	else (BUILD_FULL)
+	elseif (BUILD_STATIC)
 		target_link_libraries (${source} elektra-static)
-	endif (BUILD_FULL)
+	else ()
+		target_link_libraries (${source} elektra)
+	endif ()
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
