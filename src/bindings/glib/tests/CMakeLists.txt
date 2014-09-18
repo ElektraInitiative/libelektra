@@ -17,7 +17,7 @@ macro (do_glib_test file)
 
 	add_test (
 		NAME ${name}
-		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${name}" "${CMAKE_CURRENT_SOURCE_DIR}"
+		COMMAND "${CMAKE_BINARY_DIR}/bin/${name}" "${CMAKE_CURRENT_SOURCE_DIR}"
 	)
 endmacro (do_glib_test)
 
