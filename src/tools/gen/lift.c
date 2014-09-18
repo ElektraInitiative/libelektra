@@ -31,11 +31,11 @@ int lift(KeySet *conf)
 void kdbGetByName(KDB *kdb, KeySet *conf, Key *parentKey, char *where)
 {
 	keySetName(parentKey, "system");
-	keyAddBaseName(parentKey, where);
+	keyAddName(parentKey, where);
 	kdbGet(kdb, conf, parentKey);
 
 	keySetName(parentKey, "user");
-	keyAddBaseName(parentKey, where);
+	keyAddName(parentKey, where);
 	kdbGet(kdb, conf, parentKey);
 }
 

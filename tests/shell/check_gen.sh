@@ -165,7 +165,7 @@ succeed_if "cant get $SKEY"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "delay: $VALUE"
-	succeed_if "value of delay not $VALUE"
+	succeed_if "value of delay not $VALUE for $TESTPROG"
 done
 
 ./lift -d 2 | grep "delay: 2"
@@ -174,7 +174,7 @@ succeed_if "delay commandline parameter not working"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "delay: $VALUE"
-	succeed_if "value of delay not $VALUE"
+	succeed_if "value of delay not $VALUE for $TESTPROG"
 done
 
 
