@@ -36,13 +36,10 @@ macro (add_gtest source)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
 
-	if (BUILD_FULL)
-		target_link_libraries (${source} elektratools-full)
-	else (BUILD_FULL)
-		target_link_libraries (${source} elektratools-static)
-	endif (BUILD_FULL)
+	#do not hardcode tools here:
+	target_link_elektratools(${source})
 
-	target_link_libraries(${name} gtest gtest_main)
+	target_link_libraries(${source} gtest gtest_main)
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source}
@@ -52,7 +49,7 @@ macro (add_gtest source)
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	add_test (${source}
-			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
 	endif(BUILD_TESTING)

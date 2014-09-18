@@ -8,11 +8,7 @@ macro (do_cpp_test source)
 	set (SOURCES ${HDR_FILES} ${source}.cpp tests.cpp tests.hpp)
 	add_executable (${source} ${SOURCES})
 
-	if (BUILD_FULL)
-		target_link_libraries (${source} elektra-full)
-	else (BUILD_FULL)
-		target_link_libraries (${source} elektra-static)
-	endif (BUILD_FULL)
+	target_link_elektra(${source})
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source}
@@ -22,7 +18,7 @@ macro (do_cpp_test source)
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	add_test (${source}
-			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
 endmacro (do_cpp_test)

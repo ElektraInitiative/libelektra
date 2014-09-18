@@ -58,6 +58,19 @@ function (target_link_elektra source)
 
 endfunction()
 
+function (target_link_elektratools source)
+	if (BUILD_FULL)
+		target_link_libraries (${source} elektratools-full)
+	elseif (BUILD_STATIC)
+		target_link_libraries (${source} elektratools-static)
+	elseif (BUILD_SHARED)
+		target_link_libraries (${source} elektratools)
+	else ()
+		message(SEND_ERROR "no elektratools to link for ${source}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+	endif ()
+
+endfunction()
+
 # Add a test for a plugin
 #
 # will include the common tests.h file + its source file
@@ -119,7 +132,7 @@ macro (add_cpp_plugintest source)
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	add_test (${source}
-			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
 endmacro (add_cpp_plugintest testname)
