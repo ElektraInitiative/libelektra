@@ -36,6 +36,8 @@ endif()
 if (CMAKE_COMPILER_IS_GNUCXX)
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
+	#not supported by clang:
+	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
 	message (STATUS "GCC detected")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
@@ -48,6 +50,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 	#statically link in libimf.so libsvml.so libirng.so libintlc.so.5
 	#and fix warning #10237: -lcilkrts linked in dynamically, # static library not available
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -static-intel -wd10237")
+	#not supported by clang:
+	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
 	message (STATUS "ICC detected")
 endif ()
 
@@ -79,7 +83,7 @@ endif (ENABLE_COVERAGE)
 # Merge all flags
 #
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wno-missing-field-initializers -Wstrict-null-sentinel")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_FLAGS} ${COMMON_FLAGS} -Wno-missing-field-initializers")
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")
 message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")
