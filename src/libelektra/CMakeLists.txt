@@ -99,39 +99,27 @@ if (BUILD_FULL OR BUILD_STATIC)
 	get_property (elektra-full_INCLUDES GLOBAL PROPERTY elektra-full_INCLUDES)
 
 	include_directories (${elektra-full_INCLUDES})
+
+	if (BUILD_FULL)
+            set(ELEKTRA_LIB_TARGET_NAME elektra-full CACHE INTERNAL "Target name of libelektra" FORCE)
+            add_library (${ELEKTRA_LIB_TARGET_NAME} SHARED ${SOURCES})
+        endif (BUILD_FULL)
+        if (BUILD_STATIC)
+            set(ELEKTRA_LIB_TARGET_NAME elektra-static CACHE INTERNAL "Target name of libelektra" FORCE)
+            add_library (${ELEKTRA_LIB_TARGET_NAME} STATIC ${SOURCES})
+        endif (BUILD_STATIC)
+
+        target_link_libraries (${ELEKTRA_LIB_TARGET_NAME} ${elektra-full_LIBRARIES})
+
+        set_target_properties (${ELEKTRA_LIB_TARGET_NAME} PROPERTIES
+                        COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
+        set_target_properties (${ELEKTRA_LIB_TARGET_NAME} PROPERTIES
+                        VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
+        set_target_properties (${ELEKTRA_LIB_TARGET_NAME} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+        set_target_properties (${ELEKTRA_LIB_TARGET_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+
+        install (TARGETS ${ELEKTRA_LIB_TARGET_NAME} DESTINATION lib${LIB_SUFFIX})
+
 endif (BUILD_FULL OR BUILD_STATIC)
-
-
-if (BUILD_FULL)
-	add_library (elektra-full SHARED ${SOURCES})
-
-	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
-
-	set_target_properties (elektra-full PROPERTIES
-			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
-	set_target_properties (elektra-full PROPERTIES
-			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-	set_target_properties (elektra-full PROPERTIES LINKER_LANGUAGE CXX)
-
-	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX})
-endif (BUILD_FULL)
-
-
-if (BUILD_STATIC)
-	add_library (elektra-static STATIC ${SOURCES})
-
-	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
-
-	set_target_properties (elektra-static PROPERTIES
-			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
-	set_target_properties (elektra-static PROPERTIES
-			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-	set_target_properties (elektra-static PROPERTIES LINKER_LANGUAGE CXX)
-
-	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX})
-endif (BUILD_STATIC)
-
 #if you want the same name for those 3 libraries, here is how to do it:
 #http://www.itk.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F
