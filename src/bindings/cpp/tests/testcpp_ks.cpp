@@ -138,7 +138,7 @@ void test_iterate()
 	ks3.rewind();
 	Key n;
 	int j=0;
-	while (n=ks3.next())
+	while ((n=ks3.next()))
 	{
 		char str[] = "user/key3/X";
 
