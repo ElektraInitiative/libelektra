@@ -4,7 +4,7 @@ static void test_ro()
 {
 	Key *key;
 
-	key = keyNew(KEY_END);
+	key = keyNew(0);
 	key->flags |= KEY_FLAG_RO_VALUE;
 
 	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");

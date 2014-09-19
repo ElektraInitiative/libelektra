@@ -436,7 +436,7 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	if (!metaName) return 0;
 	if (!key->meta) return 0;
 
-	search = keyNew (KEY_END);
+	search = keyNew (0);
 	elektraKeySetName(search, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 
 	ret = ksLookup(key->meta, search, 0);
@@ -487,7 +487,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (metaNameSize == -1) return -1;
 	if (newMetaString) metaStringSize = elektraStrLen (newMetaString);
 
-	toSet = keyNew(KEY_END);
+	toSet = keyNew(0);
 	if (!toSet) return -1;
 
 	elektraKeySetName(toSet, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
