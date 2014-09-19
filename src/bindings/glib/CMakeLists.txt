@@ -1,7 +1,7 @@
 include (LibAddMacros)
 
 find_package (PkgConfig)
-pkg_check_modules (GOBJECT REQUIRED gobject-2.0)
+pkg_check_modules (GOBJECT REQUIRED gobject-2.0>=2.36)
 
 file (GLOB GELEKTRA_HDR_FILES *.h)
 file (GLOB GELEKTRA_SRC_FILES *.c)
