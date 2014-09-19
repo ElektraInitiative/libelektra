@@ -133,6 +133,7 @@ int init(int argc, char** argv);
 #define succeed_if_same_string(s1, s2) \
 { \
 	nbTest++; \
+	_Pragma("GCC diagnostic push") \
 	ELEKTRA_GCC_WARNING(-Waddress) \
 	if (!s1) yield_error("left hand side is null pointer") \
 	else if (!s2) yield_error("right hand side is null pointer") \
