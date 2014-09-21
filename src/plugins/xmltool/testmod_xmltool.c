@@ -16,7 +16,7 @@
 
 #include <tests_internal.h>
 
-#include <kdbtools.h>
+#include "kdbtools.h"
 
 #include <unistd.h>
 

@@ -19,12 +19,7 @@ macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
 
-	if (BUILD_FULL)
-		target_link_libraries (${source} elektra-full)
-	else (BUILD_FULL)
-		target_link_libraries (${source} elektra-static)
-	endif (BUILD_FULL)
-
+	target_link_elektra(${source})
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)

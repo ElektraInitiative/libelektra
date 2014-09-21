@@ -23,17 +23,13 @@ macro (do_test source)
 			DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 	endif (INSTALL_TESTING)
 
-	if (BUILD_FULL)
-		target_link_libraries (${source} elektra-full)
-	else (BUILD_FULL)
-		target_link_libraries (${source} elektra-static)
-	endif (BUILD_FULL)
+	target_link_elektra(${source})
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	set_target_properties (${source} PROPERTIES LINKER_LANGUAGE CXX)
 	add_test (${source}
-			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}"
 			)
 endmacro (do_test)

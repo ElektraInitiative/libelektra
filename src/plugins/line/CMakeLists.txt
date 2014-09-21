@@ -12,8 +12,9 @@ if (COMPAT_GETLINE)
 			line.h
 			line.c
 		)
-#else (COMPAT_GETLINE)
-#	remove_plugin (line "Unable to use getline function. Check libc version, should be higher than 4.6.27.")
+else (COMPAT_GETLINE)
+	remove_plugin (line "Unable to use getline function. Check libc version, should be higher than 4.6.27.")
+
 endif (COMPAT_GETLINE)
 
 add_plugintest (line)

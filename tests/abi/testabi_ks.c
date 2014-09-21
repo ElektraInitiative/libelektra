@@ -2417,13 +2417,19 @@ static void test_keyVNew()
 {
 	printf ("Test keyVNew\n");
 
-	KeySet *ks = ksVNew(0, *(va_list*)KS_END);
+	KeySet *ks = 0;
+
+/*
+	Not possible on some platforms:
+
+	ks = ksVNew(0, *(va_list*)KS_END);
 	succeed_if (ks != 0, "did not create KeySet");
 	ksDel(ks);
 
 	ks = ksVNew(10, *(va_list*)KS_END);
 	succeed_if (ks != 0, "did not create KeySet");
 	ksDel(ks);
+*/
 
 	ks = fill_vaargs(20,
 			keyNew("user/a", KEY_END),

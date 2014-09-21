@@ -264,6 +264,18 @@ if (BUILD_SWIG_LUA)
 	)
 endif (BUILD_SWIG_LUA)
 
+option (BUILD_GLIB "Enable GLIB bindings" OFF)
+option (BUILD_GLIB_GI "Enable the GObject Introspection bindings" OFF)
+if (BUILD_GLIB_GI AND NOT BUILD_GLIB)
+	message (WARNING "GObject Introspection bindings require GLib bindings")
+endif ()
+if (BUILD_GLIB_GI)
+	set (TARGET_LUA_LMOD_FOLDER "share/lua/5.2"
+		CACHE PATH
+		"Directory to install Lua modules (configure lua via LUA_PATH)"
+	)
+endif (BUILD_GLIB_GI)
+
 #
 # Developer builds (debug or verbose build)
 #

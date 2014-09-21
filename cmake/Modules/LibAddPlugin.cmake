@@ -56,6 +56,8 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	add_headers(ARG_SOURCES)
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 
+	add_dependencies(${PLUGIN_OBJS} readme_${PLUGIN_SHORT_NAME}.c)
+
 	#message ("generate readme for ${PLUGIN_SHORT_NAME}")
 	generate_readme (${PLUGIN_SHORT_NAME})
 
@@ -105,5 +107,4 @@ function(add_plugin PLUGIN_SHORT_NAME)
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES"
 		"${ARG_LINK_LIBRARIES}")
-
 endfunction()

@@ -1,3 +1,5 @@
+include(LibParseArguments)
+
 # Copy a file from source dir to binary dir
 #
 # copy_file or directory
@@ -43,6 +45,32 @@ macro (add_testheaders HDR_FILES)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 endmacro (add_testheaders HDR_FILES)
 
+function (target_link_elektra source)
+	if (BUILD_FULL)
+		target_link_libraries (${source} elektra-full)
+	elseif (BUILD_STATIC)
+		target_link_libraries (${source} elektra-static)
+	elseif (BUILD_SHARED)
+		target_link_libraries (${source} elektra)
+	else ()
+		message(SEND_ERROR "no elektra to link for ${source}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+	endif ()
+
+endfunction()
+
+function (target_link_elektratools source)
+	if (BUILD_FULL)
+		target_link_libraries (${source} elektratools-full)
+	elseif (BUILD_STATIC)
+		target_link_libraries (${source} elektratools-static)
+	elseif (BUILD_SHARED)
+		target_link_libraries (${source} elektratools)
+	else ()
+		message(SEND_ERROR "no elektratools to link for ${source}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+	endif ()
+
+endfunction()
+
 # Add a test for a plugin
 #
 # will include the common tests.h file + its source file
@@ -51,10 +79,15 @@ endmacro (add_testheaders HDR_FILES)
 # links the executeable (only if build_full)
 # and adds a test
 macro (add_plugintest testname)
-	if (BUILD_FULL)
+	if (BUILD_TESTING)
+		parse_arguments(ARG
+			"" # no arguments
+			"MEMLEAK" #options
+			${ARGN}
+			)
 		set (TEST_SOURCES
 				$<TARGET_OBJECTS:cframework>
-				${ARGN}
+				${ARG_UNPARSED_ARGUMENTS}
 				)
 		add_headers(TEST_SOURCES)
 		add_testheaders(TEST_SOURCES)
@@ -64,14 +97,18 @@ macro (add_plugintest testname)
 			install (TARGETS testmod_${testname}
 				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 		endif (INSTALL_TESTING)
-		target_link_libraries (testmod_${testname} elektra-full)
+		target_link_elektra(testmod_${testname})
 		set_target_properties (testmod_${testname} PROPERTIES
 				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 		add_test (testmod_${testname}
-				"${CMAKE_CURRENT_BINARY_DIR}/testmod_${testname}"
+				"${CMAKE_BINARY_DIR}/bin/testmod_${testname}"
 				"${CMAKE_CURRENT_SOURCE_DIR}"
 				)
-	endif (BUILD_FULL)
+		if (ARG_MEMLEAK)
+			set_property(TEST testmod_${testname} PROPERTY
+				LABELS memleak)
+		endif (ARG_MEMLEAK)
+	endif (BUILD_TESTING)
 endmacro (add_plugintest)
 
 # Add a test for cpp plugins
@@ -95,7 +132,7 @@ macro (add_cpp_plugintest source)
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 	add_test (${source}
-			"${CMAKE_CURRENT_BINARY_DIR}/${source}"
+			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
 endmacro (add_cpp_plugintest testname)

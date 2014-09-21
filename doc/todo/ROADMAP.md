@@ -6,25 +6,25 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.8 #
+# 0.8.9 #
 
-fix resolver:
-	add sync
+32-bit build agent! (for variable size problems)
+2.6 python-cheetah? (exclude 2.6 in setuptools)
+Compiling /usr/lib/pymodules/python2.6/nested_support.py ...
+SyntaxError: ('invalid syntax',
+		('/usr/lib/pymodules/python2.6/nested_support.py', 199,
+		 18, '\t\t\t\tcwc.update({c})\n'))
+
+
+kdb run all + allow disable version check
 
 fix types:
 	type checker should check like defined in schema
 	let json use same types (double, boolean, nothing for string)
 
-finish GSoC
-
-
-
-# 0.8.9 #
-
 allow more key names
 	starting with /
 	meta keynames
-
 
 ## powerful cascading ##
 
@@ -54,12 +54,20 @@ ksLookup("/path/to/my/application/dir/key")
 defaults are hardcoded (for system without /etc)
 	just for information in spec
 
+## mount specification ##
 
-### test ###
+
+## test ##
 
 test libelektratools:
 	addPlugin(Plugin) tests
 	usePath functionality?
 
-have icc on buildserver
+full coverage of all plugins in end-to-end test
+	create a directory value rewriter for ini+yajl
 
+
+## OpenICC ##
+
+rebase plugin
+xdg resolver

@@ -113,10 +113,22 @@ int init(int argc, char** argv);
 	} \
 }
 
+//GCC diagnostic not allowed inside functions
+//does not work with 4.4
+//4.6 and 4.7 as in debian work with it, that are:
+//4.6.3
+//4.7.2
+//(https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52116)
+#if __GNUC__ > 4 || \
+	(__GNUC__ == 4 && (__GNUC_MINOR__ > 6 || (__GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ > 2))) || \
+	(__GNUC__ == 4 && (__GNUC_MINOR__ > 7 || (__GNUC_MINOR__ == 7 && __GNUC_PATCHLEVEL__ > 1)))
 #define ELEKTRA_GCC_WARNING(x) _Pragma(ELEKTRA_GCC_HELPER2(x))
 #define ELEKTRA_GCC_HELPER2(y) ELEKTRA_GCC_HELPER1(#y)
 #define ELEKTRA_GCC_HELPER1(x) ELEKTRA_GCC_HELPER0(GCC diagnostic ignored x)
 #define ELEKTRA_GCC_HELPER0(x) #x
+#else
+#define ELEKTRA_GCC_WARNING(x)
+#endif
 
 #define succeed_if_same_string(s1, s2) \
 { \

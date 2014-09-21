@@ -37,6 +37,10 @@ if (NOT CMAKE_BUILD_TYPE)
 	SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 
 #some basic and important variables
 set (DOMAIN libelektra.org) #needed by doxygen
@@ -71,13 +75,7 @@ if (BUILD_TESTING)
 	endif (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_TESTING)
 
-if (BUILD_EXAMPLES)
-	if (BUILD_FULL OR BUILD_STATIC)
-		add_subdirectory (examples)
-	else (BUILD_FULL OR BUILD_STATIC)
-		message(WARNING "Requested to build examples, but is impossible because neither full or static build active")
-	endif (BUILD_FULL OR BUILD_STATIC)
-endif (BUILD_EXAMPLES)
+add_subdirectory (examples)
 
 if (BUILD_FULL OR BUILD_STATIC)
 	add_subdirectory (benchmarks)

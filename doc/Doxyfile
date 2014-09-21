@@ -675,7 +675,7 @@ INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
                          @PROJECT_SOURCE_DIR@/src/include \
                          @PROJECT_SOURCE_DIR@/src/libtools \
                          @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
-                         @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.c \
+                         @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
                          @PROJECT_SOURCE_DIR@/src/libloader/doc.c
 
 # This tag can be used to specify the character encoding of the source files
