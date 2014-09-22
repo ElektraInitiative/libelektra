@@ -50,7 +50,7 @@ int CpCommand::execute (Cmdline const& cl)
 	{
 		// copy all keys with new name
 		Key k;
-		while (k = oldConf.next())
+		while ((k = oldConf.next()))
 		{
 			newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
 		}

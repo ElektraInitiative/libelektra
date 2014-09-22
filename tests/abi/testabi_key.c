@@ -117,7 +117,7 @@ static void test_keyNewSpecial()
 {
 	printf ("Test special key creation\n");
 
-	Key *k = keyNew (KEY_END);
+	Key *k = keyNew (0);
 	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
 	keyDel (k);
 
@@ -521,7 +521,7 @@ static void test_keyNameSlashes()
 	succeed_if (keyGetNameSize(key) == 1, "empty name size" );
 	keyDel (key);
 
-	key = keyNew (KEY_END);
+	key = keyNew (0);
 	keySetName(key,"user");
 	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: User as basename");
 	succeed_if (keyGetNameSize(key) == 5, "empty name size" );
@@ -531,7 +531,7 @@ static void test_keyNameSlashes()
 	succeed_if (keyGetNameSize(key) == 7, "empty name size" );
 	keyDel (key);
 
-	key = keyNew (KEY_END);
+	key = keyNew (0);
 	keySetName(key,"system");
 	succeed_if (strcmp (keyName(key), "system") == 0, "Name Problem: System as basename");
 	succeed_if (keyGetNameSize(key) == 7, "empty name size" );
@@ -717,7 +717,7 @@ static void test_keyNameSlashes()
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 
 	printf("Test key's name manipulation\n");
-	Key * copy = keyNew (KEY_END);
+	Key * copy = keyNew (0);
 	for(i = 0 ; tstKeyName[i].testName != NULL ; i++) {
 		key = keyNew(tstKeyName[i].keyName, KEY_END);
 
@@ -1532,7 +1532,7 @@ static void test_keyBelowOrSame()
 static void test_keyNameSpecial()
 {
 	printf ("Test special keynames");
-	Key *k = keyNew (KEY_END);
+	Key *k = keyNew (0);
 	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
 
 	succeed_if (keySetName (k, "system"), "could not set key name with system");
@@ -1761,7 +1761,7 @@ static void test_keySetBaseName()
 {
 	printf ("Test set basename\n");
 
-	Key *k = keyNew (KEY_END);
+	Key *k = keyNew (0);
 
 	succeed_if (keySetBaseName (k, "abc") == -1, "invalid key");
 	succeed_if_same_string(keyName(k), "");
@@ -1899,7 +1899,7 @@ static void test_keyAddBaseName()
 {
 	printf ("Test add basename\n");
 
-	Key *k = keyNew (KEY_END);
+	Key *k = keyNew (0);
 
 //![base0 empty]
 keySetName(k,"");

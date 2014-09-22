@@ -85,7 +85,7 @@ void test_iter()
 
 	int count = 0;
 	k.rewindMeta();
-	while (meta = k.nextMeta()) count ++;
+	while ((meta = k.nextMeta())) count ++;
 	succeed_if (count == 3, "Not the correct number of meta data");
 
 	k.setMeta("d", "more");
@@ -93,7 +93,7 @@ void test_iter()
 
 	count = 0;
 	k.rewindMeta();
-	while (meta = k.nextMeta()) count ++;
+	while ((meta = k.nextMeta())) count ++;
 	succeed_if (count == 5, "Not the correct number of meta data");
 }
 
@@ -134,7 +134,7 @@ void test_copy()
 	Key meta;
 
 	k.rewindMeta();
-	while (meta = k.nextMeta())
+	while ((meta = k.nextMeta()))
 	{
 		d.copyMeta(k, meta.getName());
 	}

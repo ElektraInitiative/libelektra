@@ -191,13 +191,13 @@ static void test_keyHelpers()
 }
 
 
-	k2 = keyNew (KEY_END);
+	k2 = keyNew (0);
 	succeed_if (keyAddBaseName (k2, "no") == -1, "Could add basename on empty name");
 	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
 	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
 	keyDel (k2);
 
-	k2 = keyNew (KEY_END);
+	k2 = keyNew (0);
 	succeed_if (keyAddBaseName (k2, "user") == -1, "Could add basename on empty name");
 	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
 	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
@@ -720,7 +720,7 @@ static void test_keyDir (void)
 
 static void test_keyTime()
 {
-	Key * key = keyNew (KEY_END);
+	Key * key = keyNew (0);
 	time_t now = time(0);
 	time_t past= now - 60*60*24*356 * 10;
 	time_t future = now + 60*60*24*356 * 10;
@@ -859,7 +859,7 @@ static void test_keyNamespace()
 
 	printf ("Test namespaces\n");
 
-	key = keyNew (KEY_END);
+	key = keyNew (0);
 	succeed_if (keyNameGetNamespace (keyName(key)) == 0, "empty namespace not 0");
 	succeed_if (keyGetNamespace (key) == 0, "empty namespace not 0");
 	succeed_if (keyNameIsSystem (keyName(key)) == 0, "empty name is not system");
@@ -981,7 +981,7 @@ static void test_keyLock()
 	succeed_if (keyCopyAllMeta(key, key2) == -1, "read only meta, not allowed to set");
 
 	keyDel (key);
-	key = keyNew(KEY_END);
+	key = keyNew(0);
 
 	keyLock(key, KEY_LOCK_NAME);
 	succeed_if (keySetName(key, "user") == -1, "read only name, not allowed to set");
@@ -990,7 +990,7 @@ static void test_keyLock()
 	succeed_if (keyAddBaseName(key, "a") == -1, "read only name, not allowed to set");
 
 	keyDel (key);
-	key = keyNew(KEY_END);
+	key = keyNew(0);
 
 	keyLock(key, KEY_LOCK_VALUE);
 
@@ -998,7 +998,7 @@ static void test_keyLock()
 	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
 
 	keyDel (key);
-	key = keyNew(KEY_END);
+	key = keyNew(0);
 
 	keyLock(key, KEY_LOCK_META);
 

@@ -449,5 +449,5 @@ function (generate_readme p)
 	# allow macros:
 	STRING(REGEX REPLACE "\" *#ifdef ([^\\]*)\\\\n\"" "#ifdef \\1" contents "${contents}")
 	STRING(REGEX REPLACE "\" *#endif\\\\n\"" "#endif" contents "${contents}")
-	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c ${contents})
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c "${contents}\n")
 endfunction()

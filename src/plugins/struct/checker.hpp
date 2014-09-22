@@ -62,7 +62,7 @@ public:
 		if (!root) throw "StructChecker: No root key found";
 
 
-		while (cur = ks.next())
+		while ((cur = ks.next()))
 		{
 			Key searchKey = config.next();
 			if (!searchKey) throw "StructChecker: More keys found than structure should have";
@@ -94,7 +94,7 @@ public:
 		Key root = ks2.next();
 		if (!root) throw "ListChecker: no root key found";
 
-		while (k = ks2.next())
+		while ((k = ks2.next()))
 		{
 			if (!root.isDirectBelow(k)) throw "ListChecker: key is not direct below";
 

@@ -122,18 +122,20 @@ int init(int argc, char** argv);
 #if __GNUC__ > 4 || \
 	(__GNUC__ == 4 && (__GNUC_MINOR__ > 6 || (__GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ > 2))) || \
 	(__GNUC__ == 4 && (__GNUC_MINOR__ > 7 || (__GNUC_MINOR__ == 7 && __GNUC_PATCHLEVEL__ > 1)))
-#define ELEKTRA_GCC_WARNING(x) _Pragma(ELEKTRA_GCC_HELPER2(x))
-#define ELEKTRA_GCC_HELPER2(y) ELEKTRA_GCC_HELPER1(#y)
-#define ELEKTRA_GCC_HELPER1(x) ELEKTRA_GCC_HELPER0(GCC diagnostic ignored x)
-#define ELEKTRA_GCC_HELPER0(x) #x
+#define ELEKTRA_PRAGMA(x)  _Pragma(ELEKTRA_PRAGMA_STR(x))
 #else
-#define ELEKTRA_GCC_WARNING(x)
+#define ELEKTRA_PRAGMA(x)
 #endif
+#define ELEKTRA_PRAGMA_STR(x) #x
+#define ELEKTRA_DIAG_STORE    ELEKTRA_PRAGMA(GCC diagnostic push)
+#define ELEKTRA_DIAG_OFF(x)   ELEKTRA_PRAGMA(GCC diagnostic ignored ELEKTRA_PRAGMA_STR(x))
+#define ELEKTRA_DIAG_RESTORE  ELEKTRA_PRAGMA(GCC diagnostic pop)
 
 #define succeed_if_same_string(s1, s2) \
 { \
 	nbTest++; \
-	ELEKTRA_GCC_WARNING(-Waddress) \
+	ELEKTRA_DIAG_STORE \
+	ELEKTRA_DIAG_OFF(-Waddress) \
 	if (!s1) yield_error("left hand side is null pointer") \
 	else if (!s2) yield_error("right hand side is null pointer") \
 	else if (strcmp(s1, s2)) \
@@ -148,7 +150,7 @@ int init(int argc, char** argv);
 		 \
 		yield_error(errorMsg); \
 	} \
-	_Pragma("GCC diagnostic pop") \
+	ELEKTRA_DIAG_RESTORE \
 }
 
 // not recommended to use, only works with int (not size_t, ssize_t,...)
