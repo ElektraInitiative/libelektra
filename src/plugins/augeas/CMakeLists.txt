@@ -3,18 +3,18 @@ find_package (LibXml2 REQUIRED)
 
 if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 
-  try_compile (HAS_LIBAUGEAS16
+	try_compile (HAS_LIBAUGEAS16
 		"${CMAKE_BINARY_DIR}"
 		"${PROJECT_SOURCE_DIR}/src/plugins/augeas/testaugeas.c"
 		CMAKE_FLAGS 
 			-DINCLUDE_DIRECTORIES:STRING=${LIBAUGEAS_INCLUDE_DIR}\;${LIBXML2_INCLUDE_DIR} 
 			-DLINK_LIBRARIES:PATH=${LIBAUGEAS_LIBRARIES}\;${LIBXML2_LIBRARIES}
 		)
-	
+
 	if (HAS_LIBAUGEAS16)
-	
+
 		include (LibAddMacros)
-	
+
 		add_includes (elektra-full ${LIBAUGEAS_INCLUDE_DIR})
 		add_includes (elektra-full ${LIBXML2_INCLUDE_DIR})
 		

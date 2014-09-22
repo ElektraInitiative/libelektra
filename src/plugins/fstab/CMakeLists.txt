@@ -5,10 +5,6 @@ try_compile (HAS_MNTENT
 
 include(LibAddMacros)
 
-generate_readme (fstab)
-add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
-include_directories (${CMAKE_CURRENT_BINARY_DIR})
-
 if (HAS_MNTENT)
 	add_plugin(fstab
 		SOURCES

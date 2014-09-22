@@ -6,15 +6,14 @@ try_compile (COMPAT_GETLINE
 	)
 
 if (COMPAT_GETLINE)
-	
 	add_plugin(line
 		SOURCES
 			line.h
 			line.c
 		)
+
+	add_plugintest (line)
 else (COMPAT_GETLINE)
 	remove_plugin (line "Unable to use getline function. Check libc version, should be higher than 4.6.27.")
 
 endif (COMPAT_GETLINE)
-
-add_plugintest (line)
