@@ -60,8 +60,11 @@ include (cmake/ElektraPackaging.cmake)
 
 #now add all directories
 add_subdirectory (cmake)
-add_subdirectory (src)
 add_subdirectory (scripts)
+
+if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
+	add_subdirectory (src)
+endif()
 
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
@@ -75,7 +78,9 @@ if (BUILD_TESTING)
 	endif (BUILD_FULL OR BUILD_STATIC)
 endif (BUILD_TESTING)
 
-add_subdirectory (examples)
+if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
+	add_subdirectory (examples)
+endif()
 
 if (BUILD_FULL OR BUILD_STATIC)
 	add_subdirectory (benchmarks)
