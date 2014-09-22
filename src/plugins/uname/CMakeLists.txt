@@ -7,18 +7,11 @@ include(LibAddMacros)
 
 if(HAS_UNAME)
 
-	generate_readme (uname)
-	add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
-	include_directories (${CMAKE_CURRENT_BINARY_DIR})
-
-	set (SOURCES uname.h uname.c)
-	add_sources (elektra-full ${SOURCES})
-	add_headers (SOURCES)
-
-	set (PLUGIN_NAME elektra-uname)
-	add_library (${PLUGIN_NAME} MODULE ${SOURCES})
-	target_link_libraries (${PLUGIN_NAME} elektra)
-	install (TARGETS ${PLUGIN_NAME} DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+	add_plugin(uname
+		SOURCES
+			uname.h
+			uname.c
+	)
 
 	add_plugintest (uname)
 else()
