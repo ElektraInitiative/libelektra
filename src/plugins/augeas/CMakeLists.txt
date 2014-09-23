@@ -25,7 +25,8 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		add_libraries (elektra-full ${LIBAUGEAS_LIBRARIES})
 		add_libraries(elektra-full ${LIBXML2_LIBRARIES})
 		
-		
+		generate_readme (augeas)
+				
 		set (SOURCES augeas.h augeas.c)
 		add_sources (elektra-full ${SOURCES})
 		add_headers (SOURCES)
@@ -34,6 +35,9 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		add_library (${PLUGIN_NAME} MODULE ${SOURCES})
 		target_link_libraries (${PLUGIN_NAME} elektra)
 		target_link_libraries (${PLUGIN_NAME} ${LIBAUGEAS_LIBRARIES})
+
+		add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 		install(DIRECTORY augeas DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		install (TARGETS ${PLUGIN_NAME}
