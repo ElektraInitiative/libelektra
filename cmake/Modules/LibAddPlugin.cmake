@@ -39,26 +39,31 @@ endfunction()
 function(add_plugin PLUGIN_SHORT_NAME)
 	parse_arguments(ARG
 		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
-		"" # no option
+		"CPP"
 		${ARGN}
 		)
 
 
 	set (PLUGIN_NAME elektra-${PLUGIN_SHORT_NAME})
 	set (PLUGIN_OBJS ${PLUGIN_NAME}-objects)
+	set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:${PLUGIN_OBJS}>")
 
 	#message (STATUS "name: ${PLUGIN_NAME}")
 	#message (STATUS "srcs are: ${ARG_SOURCES}")
 	#message (STATUS "deps are: ${ARG_LINK_LIBRARIES}")
 	#message (STATUS "comp are: ${ARG_COMPILE_DEFINITIONS}")
 	#message (STATUS "incl are: ${ARG_INCLUDE_DIRECTORIES}")
+	#message (STATUS "current bin ${CMAKE_CURRENT_BINARY_DIR}")
 
 	add_headers(ARG_SOURCES)
+	if (ARG_CPP)
+		add_cppheaders(ARG_SOURCES)
+	endif (ARG_CPP)
+
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 
 	add_dependencies(${PLUGIN_OBJS} readme_${PLUGIN_SHORT_NAME}.c)
 
-	#message ("generate readme for ${PLUGIN_SHORT_NAME}")
 	generate_readme (${PLUGIN_SHORT_NAME})
 
 	set_property(TARGET ${PLUGIN_OBJS}
@@ -86,24 +91,14 @@ function(add_plugin PLUGIN_SHORT_NAME)
 
 
 	if (BUILD_SHARED)
-		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES})
+		add_library (${PLUGIN_NAME} MODULE ${PLUGIN_TARGET_OBJS})
 		target_link_libraries (${PLUGIN_NAME} ${ARG_LINK_LIBRARIES})
 		install (TARGETS ${PLUGIN_NAME} DESTINATION
 			lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
-		set_property(TARGET ${PLUGIN_NAME}
-			APPEND PROPERTY COMPILE_DEFINITIONS
-			${ARG_COMPILE_DEFINITIONS}
-			"HAVE_KDBCONFIG_H"
-			)
-		set_property(TARGET ${PLUGIN_NAME}
-			APPEND PROPERTY INCLUDE_DIRECTORIES
-			${ARG_INCLUDE_DIRECTORIES}
-			${CMAKE_CURRENT_BINARY_DIR} #for readme
-			)
 	endif()
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS"
-		"$<TARGET_OBJECTS:${PLUGIN_OBJS}>")
+		${PLUGIN_TARGET_OBJS})
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES"
 		"${ARG_LINK_LIBRARIES}")

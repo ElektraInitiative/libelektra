@@ -112,29 +112,41 @@ macro (add_plugintest testname)
 endmacro (add_plugintest)
 
 # Add a test for cpp plugins
-macro (add_cpp_plugintest source)
-	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
-	set (SOURCES ${HDR_FILES} ${source}.cpp ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp)
-	add_executable (${source} ${SOURCES})
-
-	if (BUILD_FULL)
-		target_link_libraries (${source} elektra-full)
-	else (BUILD_FULL)
-		target_link_libraries (${source} elektra-static)
-	endif (BUILD_FULL)
-
-	if (INSTALL_TESTING)
-		install (TARGETS ${source}
-			DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-	endif (INSTALL_TESTING)
-
-	set_target_properties (${source} PROPERTIES
-			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-	add_test (${source}
-			"${CMAKE_BINARY_DIR}/bin/${source}"
-			"${CMAKE_CURRENT_BINARY_DIR}/"
+macro (add_cpp_plugintest testname)
+	if (BUILD_TESTING)
+		parse_arguments(ARG
+			"" # no arguments
+			"MEMLEAK" #options
+			${ARGN}
 			)
+		set (source "testmod_${testname}")
+		include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
+		include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
+		set (SOURCES ${HDR_FILES} ${source}.cpp ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp)
+		add_executable (${source} ${SOURCES})
+
+		if (BUILD_FULL)
+			target_link_libraries (${source} elektra-full)
+		else (BUILD_FULL)
+			target_link_libraries (${source} elektra-static)
+		endif (BUILD_FULL)
+
+		if (INSTALL_TESTING)
+			install (TARGETS ${source}
+				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+		endif (INSTALL_TESTING)
+
+		set_target_properties (${source} PROPERTIES
+				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+		add_test (${source}
+				"${CMAKE_BINARY_DIR}/bin/${source}"
+				"${CMAKE_CURRENT_BINARY_DIR}/"
+				)
+		if (ARG_MEMLEAK)
+			set_property(TEST testmod_${testname} PROPERTY
+				LABELS memleak)
+		endif (ARG_MEMLEAK)
+	endif(BUILD_TESTING)
 endmacro (add_cpp_plugintest testname)
 
 
@@ -183,11 +195,11 @@ endmacro (add_headers)
 #
 macro (add_cppheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/bindings/cpp/include")
-	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*)
+	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/bindings/cpp/include/*.hpp)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/bindings/cpp/include")
-	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*)
+	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/bindings/cpp/include/*.hpp)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_cppheaders)
 
