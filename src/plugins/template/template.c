@@ -51,7 +51,7 @@ int elektraTemplateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_U
 	{
 		KeySet *contract = ksNew (30,
 		keyNew ("system/elektra/modules/template",
-			KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
+			KEY_VALUE, "template plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/template/exports", KEY_END),
 		keyNew ("system/elektra/modules/template/exports/open",
 			KEY_FUNC, elektraTemplateOpen, KEY_END),
