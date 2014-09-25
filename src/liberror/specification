@@ -553,3 +553,13 @@ number:94
 description:Could not initialize the modules
 severity:fatal
 ingroup:kdb
+
+number:95
+description:Could not load config file
+severity:fatal
+module:regexstore
+
+number:96
+description:Regex failure
+severity:warning
+module:regexstore

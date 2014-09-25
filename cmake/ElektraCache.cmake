@@ -52,7 +52,6 @@ set (PLUGINS_LIST_NODEP
 	struct
 	tracer
 	type
-	validation
 	constants
 	noresolver
 	ini
@@ -74,6 +73,8 @@ set (PLUGINS_LIST_POSIX
 	simpleini
 	line
 	resolver_c_b_b  # needed for tests
+	validation
+	regexstore
 	)
 
 #
