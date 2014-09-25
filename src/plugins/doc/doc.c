@@ -218,6 +218,11 @@ int elektraPluginSet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *paren
 //![set full]
 
 
+void elektraUsercodeUselessSymbol()
+{
+	usercode(0,0,0);
+}
+
 //![export]
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
