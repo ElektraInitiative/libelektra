@@ -441,7 +441,8 @@ int main(int argc, char** argv)
 	test_cmp();
 	test_appendowner();
 
-	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
+			argv[0], nbTest, nbError);
 
 	return nbError;
 }

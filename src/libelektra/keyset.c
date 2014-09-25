@@ -176,6 +176,49 @@ KeySet *ksNew(size_t alloc, ...)
 	return ks;
 }
 
+
+Key *ksLookupBySpec(KeySet *ks, Key *specKey)
+{
+	char buffer [] = "override/#0";
+	int i='0';
+	const Key *m = 0;
+	do {
+		buffer[sizeof(buffer)-2] = i;
+		m = keyGetMeta(specKey, buffer);
+		Key *ret=ksLookupByName(ks, keyString(m), 0);
+		if (ret) return ret;
+		++i;
+	} while(m);
+
+	{
+		Key *ret=ksLookupByName(ks, keyName(specKey), 0);
+		if (ret) return ret;
+	}
+
+	strcpy (buffer, "fallback/#0");
+	i='0';
+	m = 0;
+	do {
+		buffer[sizeof(buffer)-2] = i;
+		m = keyGetMeta(specKey, buffer);
+		Key *ret=ksLookupByName(ks, keyString(m), 0);
+		if (ret) return ret;
+		++i;
+	} while(m);
+
+	{
+		m = keyGetMeta(specKey, "default");
+		if (!m) return 0;
+		Key * ret=keyDup(specKey);
+		if (!ret) return 0;
+		keySetString(ret, keyString(m));
+		ksAppendKey(ks, ret);
+		if (ret) return ret;
+	}
+
+	return 0;
+}
+
 /**
  * @copydoc ksNew
  *
