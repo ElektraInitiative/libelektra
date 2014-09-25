@@ -43,6 +43,9 @@ do
 	unset -f cleanup
 	FILE=test.$PLUGIN
 
+	echo
+	echo "-- Testing $PLUGIN"
+
 	check_remaining_files $FILE
 
 	$KDB mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1>/dev/null
@@ -66,7 +69,7 @@ do
 
 	for ROOT in $USER_ROOT $SYSTEM_ROOT
 	do
-		echo "do preparation for $PLUGIN in $ROOT"
+		#echo "do preparation for $PLUGIN in $ROOT"
 		$KDB set $ROOT "root" 1>/dev/null
 		succeed_if "could not set root"
 
