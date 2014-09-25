@@ -55,6 +55,7 @@ int elektraRegexstoreClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_
 }
 
 std::string elektraRegexstorePos(std::string const & str,
+		int offset,
 		std::string const & text,
 		regmatch_t *offsets,
 		char index,
@@ -77,16 +78,10 @@ std::string elektraRegexstorePos(std::string const & str,
 			pos, text.c_str());
 		return std::string("");
 	}
-	std::string const & ret = str.substr(offsets[pos].rm_so,
+	return str.substr(
+		offset + offsets[pos].rm_so,
 		offsets[pos].rm_eo - offsets[pos].rm_so);
-	ELEKTRA_ADD_WARNINGF (96,
-		parentKey,
-		"Regex Group %d ok for %s; GOT:%s",
-		pos, text.c_str(), ret.c_str());
-	return ret;
 }
-
-#include <iostream>
 
 /** e.g.
 configKey = keyNew ("user/map/#2",
@@ -95,6 +90,7 @@ configKey = keyNew ("user/map/#2",
 		KEY_END);
 */
 Key *elektraRegexstoreProcess(Key *configKey,
+		int *offset,
 		std::string const & str,
 		Key *parentKey)
 {
@@ -128,15 +124,21 @@ Key *elektraRegexstoreProcess(Key *configKey,
 		return 0;
 	}
 
-	ret = regexec(&regex, str.c_str(), nmatch, offsets, 0);
 
-	if (ret != 0) /* e.g. REG_NOMATCH */
+	ret = regexec(&regex, str.c_str()+*offset, nmatch, offsets, 0);
+
+	if (ret == REG_NOMATCH)
+	{
+		return 0;
+	}
+
+	if (ret != 0)
 	{
 		char buffer [1000];
 		regerror (ret, &regex, buffer, 999);
 		ELEKTRA_ADD_WARNINGF (96,
 			parentKey,
-			"No regex match, because: %s",
+			"Regex exec returned error (not in manual for linux), because: %s",
 			buffer);
 		regfree (&regex);
 		return 0;
@@ -159,6 +161,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 		{
 			++i;
 			newkeyname += elektraRegexstorePos(str,
+					*offset,
 					std::string("keyname ")+keyname,
 					offsets,
 					keyname[i],
@@ -175,6 +178,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 
 	keySetString(toAppend,
 			elektraRegexstorePos(str,
+				*offset,
 				"keystring of "+newkeyname,
 				offsets,
 				configString[1],
@@ -186,6 +190,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 		keySetMeta(toAppend,
 			keyName(keyCurrentMeta(configKey)),
 			elektraRegexstorePos(str,
+				*offset,
 				std::string("meta")
 					+keyName(keyCurrentMeta(configKey))
 					+" of "+newkeyname,
@@ -193,6 +198,10 @@ Key *elektraRegexstoreProcess(Key *configKey,
 				keyString(keyCurrentMeta(configKey))[1],
 				parentKey).c_str());
 	}
+
+	// update offset for next iteration
+	*offset += offsets[0].rm_eo;
+
 	regfree (&regex);
 	return toAppend;
 }
@@ -206,7 +215,7 @@ int elektraRegexstoreGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 	{
 		KeySet *contract = ksNew (30,
 		keyNew ("system/elektra/modules/regexstore",
-			KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
+			KEY_VALUE, "regexstore plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/regexstore/exports", KEY_END),
 		keyNew ("system/elektra/modules/regexstore/exports/open",
 			KEY_FUNC, elektraRegexstoreOpen, KEY_END),
@@ -248,13 +257,20 @@ int elektraRegexstoreGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 	}
 	ksNext(conf); // skip root
 	do {
-		Key *toAppend = elektraRegexstoreProcess(
-			ksCurrent(conf),
-			str,
-			parentKey);
-		ksAppendKey(returned, toAppend);
+		int offset = 0;
+		Key *toAppend = 0;
+		do
+		{
+			toAppend = elektraRegexstoreProcess(
+				ksCurrent(conf),
+				&offset,
+				str,
+				parentKey);
+			ksAppendKey(returned, toAppend);
+		} while (toAppend);
 	}
-	while(ksNext(conf) && keyIsBelow(confParent, ksCurrent(conf)));
+	while(ksNext(conf) &&
+		keyIsBelow(confParent, ksCurrent(conf)));
 
 	return 1; /* success */
 }
