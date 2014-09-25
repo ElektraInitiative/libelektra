@@ -480,4 +480,8 @@ int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey);
 int elektraDocError(Plugin *handle, KeySet *returned, Key *parentKey);
 
 
+/**
+ * @}
+ */
+
 #endif
