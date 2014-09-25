@@ -9,6 +9,10 @@
 ## Introduction ##
 
 Allows regular expressions to be applied as storage plugin.
+The idea is to have something like "lazy lenses" with regex
+only on relevant parts of a file. It is unclear if this is
+a good idea and we do not encourage you to use this plugin.
+Currently it can only read and the potential harm is limited.
 
 In the configuration, below the key (that must also exist)
 
@@ -19,6 +23,8 @@ other keys define which regex are applied on a text file.
 The name of these config keys (with .../regexsore/ stripped of)
 will be used to build up the names of the keys:
 - #[0-9] will be replaced what the regex matched
+- If no or the wrong placeholder occurs in the name,
+  the keys will overwrite themselves, the last wins then.
 
 The value of the config key is as follows:
 - the first three letters need to be '#[0-9 '.
@@ -36,9 +42,6 @@ be avoided in productive use.
 
 Currently the storage plugin does not have write support. When writing
 is added, overlapping regex need to be disallowed.
-
-Currently only one match per regex can be done.
-
 
 ## Usage ##
 
@@ -71,3 +74,5 @@ then we will get two keys with:
 Suppose we want to match:
 
     (global-set-key (kbd "<escape>")      'keyboard-escape-quit)
+
+TODO.. not finished
