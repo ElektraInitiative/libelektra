@@ -176,7 +176,6 @@ KeySet *ksNew(size_t alloc, ...)
 	return ks;
 }
 
-
 Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 {
 	char buffer [] = "override/#0";

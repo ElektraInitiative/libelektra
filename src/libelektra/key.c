@@ -373,7 +373,8 @@ Key* keyDup(const Key *source)
 	dest->ksReference = 0;
 	dest->flags=KEY_FLAG_SYNC;
 
-	if (source->key && keySetName(dest,source->key) == -1) goto memerror;
+	/* use any name as passed */
+	if (source->key && elektraKeySetName(dest,source->key,KDB_O_CASCADING_NAME|KDB_O_META_NAME|KDB_O_EMPTY_NAME) == -1) goto memerror;
 	if (source->data.v && keySetRaw(dest,source->data.v,source->dataSize) == -1) goto memerror;
 	if (source->meta)
 	{

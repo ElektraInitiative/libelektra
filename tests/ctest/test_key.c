@@ -919,41 +919,87 @@ static void test_elektraKeySetName()
 	printf ("test elektraKeySetName\n");
 
 	Key *key = keyNew("", KEY_END);
+	Key *dup = 0;
+
 	succeed_if(elektraKeySetName(key, "/", KDB_O_CASCADING_NAME) != -1, "could not set cascading name");
 	succeed_if_same_string(keyName(key), "/");
 	elektraKeySetName(key, "/cascading", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/cascading");
+	keyDel(dup);
+
 	elektraKeySetName(key, "/cascading/s/deep/below", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading/s/deep/below");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/cascading/s/deep/below");
+	keyDel(dup);
+
 	elektraKeySetName(key, "user/cascading/s/deep/below", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "user/cascading/s/deep/below");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "user/cascading/s/deep/below");
+	keyDel(dup);
+
 	elektraKeySetName(key, "system/cascading/s/deep/below", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "system/cascading/s/deep/below");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "system/cascading/s/deep/below");
+	keyDel(dup);
 
 	elektraKeySetName(key, "order", KDB_O_META_NAME);
 	succeed_if_same_string(keyName(key), "order");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "order");
+	keyDel(dup);
+
 	elektraKeySetName(key, "check/type", KDB_O_META_NAME);
 	succeed_if_same_string(keyName(key), "check/type");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "check/type");
+	keyDel(dup);
 
 	elektraKeySetName(key, "", KDB_O_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
 
 	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
 
 	keySetName(key, 0);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
 
 	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
+
+	elektraKeySetName(key, "/cascading", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "/cascading");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/cascading");
+	keyDel(dup);
+
+	elektraKeySetName(key, "meta", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "meta");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "meta");
+	keyDel(dup);
 
 	keyDel(key);
 }
