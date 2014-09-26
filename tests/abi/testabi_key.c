@@ -171,15 +171,15 @@ static void test_keyNewSystem()
 	// Key with name
 	key = keyNew("system/sw/test", KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name");
-	succeed_if(strcmp(keyName(key), "system/sw/test") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "system/sw/test");
 	keyCopy (key, 0);
-	succeed_if (strcmp (keyName(key), "") == 0, "name after keyCopy(,0)");
+	succeed_if_same_string (keyName(key), "");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 	
 	// Key with name
 	key = keyNew("system/sw/test", KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name");
-	succeed_if(strcmp(keyName(key), "system/sw/test") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "system/sw/test");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 	
 	// Key with name + value
@@ -187,7 +187,7 @@ static void test_keyNewSystem()
 			KEY_VALUE, "test",
 			KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name + value of default type");
-	succeed_if(strcmp(keyValue(key), "test") == 0, "keyNew: Value not set correctly");
+	succeed_if_same_string (keyValue(key), "test");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + value");
 	key = keyNew("system/valid/there",
 			KEY_BINARY,
@@ -234,15 +234,15 @@ static void test_keyNewSystem()
 	k3=keyNew("system/3", KEY_VALUE, "syskey",  KEY_END);
 	succeed_if(k1 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if(keyIsString(k1), "keyNew: Default key value isn't set to string");
-	succeed_if(strcmp(keyValue(k1), "singlevalue") == 0, "keyNew: Value not set correctly");
+	succeed_if_same_string (keyValue(k1), "singlevalue");
 	
 	succeed_if(k2 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if(keyIsString(k2), "keyNew: Default key value isn't set to string");
-	succeed_if(strcmp(keyValue(k2), "myvalue") == 0, "keyNew: Value not set correctly");
+	succeed_if_same_string (keyValue(k2), "myvalue");
 	
 	succeed_if(k3 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if(keyIsString(k3), "keyNew: Default key value isn't set to string");
-	succeed_if(strcmp(keyValue(k3), "syskey") == 0, "keyNew: Value not set correctly");
+	succeed_if_same_string (keyValue(k3), "syskey");
 
 	succeed_if(keyDel(k1) == 0, "keyDel: Unable to delete key with name + value");
 	succeed_if(keyDel(k2) == 0, "keyDel: Unable to delete key with name + value");
@@ -262,15 +262,15 @@ static void test_keyNewUser()
 	k3=keyNew("user/3", KEY_VALUE, "syskey",  KEY_END);
 	succeed_if(k1 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if(keyIsString(k1), "keyNew: Default key value isn't set to string");
-	succeed_if(strcmp(keyValue(k1), "singlevalue") == 0, "keyNew: Value not set correctly");
+	succeed_if_same_string (keyValue(k1), "singlevalue");
 	
 	succeed_if(k2 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if(keyIsString(k2), "keyNew: Default key value isn't set to string");
-	succeed_if(strcmp(keyValue(k2), "myvalue") == 0, "keyNew: Value not set correctly");
+	succeed_if_same_string (keyValue(k2), "myvalue");
 	
 	succeed_if(k3 != NULL, "keyNew: Unable to create a key with name + value of default type");
 	succeed_if(keyIsString(k3), "keyNew: Default key value isn't set to string");
-	succeed_if(strcmp(keyValue(k3), "syskey") == 0, "keyNew: Value not set correctly");
+	succeed_if_same_string (keyValue(k3), "syskey");
 
 	succeed_if(keyDel(k1) == 0, "keyDel: Unable to delete key with name + value");
 	succeed_if(keyDel(k2) == 0, "keyDel: Unable to delete key with name + value");
@@ -278,7 +278,7 @@ static void test_keyNewUser()
 
 	k1 = keyNew ("invalid", KEY_END);
 	succeed_if (k1 != 0, "should construct key even on invalid names");
-	succeed_if (strcmp (keyName(k1), "") == 0, "no name should be set");
+	succeed_if_same_string (keyName(k1), "");
 	succeed_if (keyGetNameSize(k1) == 1, "namesize");
 	keyDel (k1);
 }
@@ -431,9 +431,9 @@ static void test_keyName()
 	succeed_if (keyName(0) == 0, "null pointer");
 
 	key = keyNew (0);
-	succeed_if (strcmp(keyName(key), "") == 0, "empty name");
+	succeed_if_same_string (keyName(key), "");
 	succeed_if (keyGetName (key,ret, 1000) == 1, "get empty name");
-	succeed_if (strcmp(ret, "") == 0, "not empty name");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetName (key,ret, 0) == -1, "get empty name");
 	keyDel (key);
 
@@ -460,7 +460,7 @@ static void test_keyName()
 
 	key = keyNew (0);
 	succeed_if (keyGetFullName (key,ret, 1000) == 1, "get empty name");
-	succeed_if (strcmp(ret, "") == 0, "not empty name");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetFullName (key,ret, 0) == -1, "get empty name");
 	keyDel (key);
 
@@ -489,9 +489,9 @@ static void test_keyName()
 	succeed_if (keyBaseName(0) == 0, "null pointer");
 
 	key = keyNew (0);
-	succeed_if (strcmp(keyBaseName(key), "") == 0, "empty name");
+	succeed_if_same_string (keyBaseName(key), "");
 	succeed_if (keyGetBaseName (key,ret, 1000) == 1, "get empty name");
-	succeed_if (strcmp(ret, "") == 0, "not empty name");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetBaseName (key,ret, 0) == -1, "get empty name");
 	keyDel (key);
 
@@ -500,17 +500,17 @@ static void test_keyName()
 	key = keyNew ("user", KEY_END);
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
-	succeed_if (strcmp (ret, "") == 0, "did not return correct basename");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
-	succeed_if (strcmp (ret, "") == 0, "did not return correct basename");
+	succeed_if_same_string (ret, "");
 	keyDel (key);
 
 	key = keyNew ("system", KEY_END);
 	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
 	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
-	succeed_if (strcmp (ret, "") == 0, "did not return correct basename");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
-	succeed_if (strcmp (ret, "") == 0, "did not return correct basename");
+	succeed_if_same_string (ret, "");
 	keyDel (key);
 }
 
@@ -532,47 +532,47 @@ static void test_keyNameSlashes()
 
 	key = keyNew("", KEY_END);
 	succeed_if (key != 0, "key should not be null!");
-	succeed_if (strcmp (keyName(key), "") == 0, "keyName should be "" string");
+	succeed_if_same_string (keyName(key), "");
 	succeed_if (keyGetName(key,ret, 999) == 1, "keyGetName should return 1");
-	succeed_if (strcmp (ret, "") == 0, "\\0 should be first character in array");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetNameSize(key) == 1, "empty name size" );
 	keyDel (key);
 
 	key = keyNew (0);
 	keySetName(key,"user");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: User as basename");
+	succeed_if_same_string (keyName(key), "user");
 	succeed_if (keyGetNameSize(key) == 5, "empty name size" );
 
 	keySetName(key,"system");
-	succeed_if (strcmp (keyName(key), "system") == 0, "Name Problem: System as basename");
+	succeed_if_same_string (keyName(key), "system");
 	succeed_if (keyGetNameSize(key) == 7, "empty name size" );
 	keyDel (key);
 
 	key = keyNew (0);
 	keySetName(key,"system");
-	succeed_if (strcmp (keyName(key), "system") == 0, "Name Problem: System as basename");
+	succeed_if_same_string (keyName(key), "system");
 	succeed_if (keyGetNameSize(key) == 7, "empty name size" );
 
 	keySetName(key,"user");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: User as basename");
+	succeed_if_same_string (keyName(key), "user");
 	succeed_if (keyGetNameSize(key) == 5, "empty name size" );
 	keyDel (key);
 
 	key = keyNew(0);
 	succeed_if (keySetName(key,"user:") == 5, "setting user: generates error");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: System as basename");
+	succeed_if_same_string (keyName(key), "user");
 	succeed_if (keyGetNameSize(key) == 5, "empty name size" );
 	keyDel (key);
 
 	key = keyNew(0);
 	succeed_if (keySetName(key,"user:y") == 5, "setting user: generates error");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: System as basename");
+	succeed_if_same_string (keyName(key), "user");
 	succeed_if (keyGetNameSize(key) == 5, "empty name size" );
 	keyDel (key);
 
 	key = keyNew(0);
 	succeed_if (keySetName(key,"no") == -1, "no error code setting invalid name");
-	succeed_if (strcmp (keyName(key), "") == 0, "Name Problem: System as basename");
+	succeed_if_same_string (keyName(key), "");
 	succeed_if (keyGetNameSize(key) == 1, "empty name size" );
 	keyDel (key);
 
@@ -580,104 +580,104 @@ static void test_keyNameSlashes()
 	succeed_if(keyGetNameSize(key) == 12, "size not correct after keyNew");
 	getBack = malloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
-	succeed_if(strcmp(getBack, "user/noname") == 0, "did not get correct value back");
+	succeed_if_same_string (getBack, "user/noname");
 	free (getBack);
 
 	keySetName (key, "user/noname");
 	succeed_if(keyGetNameSize(key) == 12, "size not correct after keySetName");
 	getBack = malloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
-	succeed_if(strcmp(getBack, "user/noname") == 0, "did not get correct value back");
+	succeed_if_same_string (getBack, "user/noname");
 	free (getBack);
 
 	keySetName (key, "no");
 	succeed_if(keyGetNameSize(key) == 1, "size not correct after keySetName");
 	getBack = malloc (1);
 	succeed_if(keyGetName(key, getBack, 1), "could not get name");
-	succeed_if(strcmp(getBack, "") == 0, "did not get correct value back");
+	succeed_if_same_string (getBack, "");
 	free (getBack);
 	keyDel (key);
 
 	key = keyNew("user/noname", KEY_END);
 	keySetName(key,"");
-	succeed_if (strcmp (keyName(key), "") == 0, "keyName should be "" string");
+	succeed_if_same_string (keyName(key), "");
 	succeed_if (keyGetName(key,ret, 999) == 1, "keyGetName should return 1");
-	succeed_if (strcmp (ret, "") == 0, "\\0 should be first character in array");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetNameSize(key) == 1, "empty name size" );
 
 	keySetName(key,"user//hidden");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Two slashes in name");
+	succeed_if_same_string (keyName(key), "user/hidden");
 	succeed_if (keyGetNameSize(key) == 12, "name size minus slashes" );
 
 	keySetName(key,"user///hidden");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Three slashes in name");
+	succeed_if_same_string (keyName(key), "user/hidden");
 	succeed_if (keyGetNameSize(key) == 12, "name size minus slashes" );
 
 	keySetName(key,"user////////////////////////////////////hidden");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Many slashes in name");
+	succeed_if_same_string (keyName(key), "user/hidden");
 	succeed_if (keyGetNameSize(key) == 12, "name size minus slashes" );
 
 	printf("Test trailing Slashes in Key Name\n");
 	keySetName(key,"user//hidden/");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Trailing Slashes");
+	succeed_if_same_string (keyName(key), "user/hidden");
 	succeed_if (keyGetNameSize(key) == 12, "name size minus slashes" );
 
 	keySetName(key,"user//hidden//");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Trailing Slashes");
+	succeed_if_same_string (keyName(key), "user/hidden");
 	succeed_if (keyGetNameSize(key) == 12, "name size minus slashes" );
 
 	keySetName(key,"user//hidden///////");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Trailing Slashes");
+	succeed_if_same_string (keyName(key), "user/hidden");
 	succeed_if (keyGetNameSize(key) == 12, "name size minus slashes" );
 
 	keySetName(key,"user/");
 	// printf ("Name: %s\n", keyName(key));
-	succeed_if (strcmp (keyName(key), "user") == 0, "Trailing Slashes");
+	succeed_if_same_string (keyName(key), "user");
 
 	keySetName(key,"user/a");
-	succeed_if (strcmp (keyName(key), "user/a") == 0, "Trailing Slashes: One letter problem");
+	succeed_if_same_string (keyName(key), "user/a");
 
 	keySetName(key,"user//");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Trailing Slashes");
+	succeed_if_same_string (keyName(key), "user");
 
 	keySetName(key,"user/////////");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Trailing Slashes");
+	succeed_if_same_string (keyName(key), "user");
 
 	printf("Test Dots in Key Name\n");
 	keySetName(key,"user/hidden/.");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Name Problem: Dot as basename");
+	succeed_if_same_string (keyName(key), "user/hidden");
 
 	keySetName(key,"user/.");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Dot in Middle");
+	succeed_if_same_string (keyName(key), "user");
 
 	keySetName(key,"user/./hidden");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Name Problem: Dot in Middle");
+	succeed_if_same_string (keyName(key), "user/hidden");
 
 	keySetName(key,"user/.valid/.");
-	succeed_if (strcmp (keyName(key), "user/.valid") == 0, "Name Problem: Dot as basename (with comment)");
+	succeed_if_same_string (keyName(key), "user/.valid");
 
 	keySetName(key,"user/./.valid");
-	succeed_if (strcmp (keyName(key), "user/.valid") == 0, "Name Problem: Dot in Middle (with comment)");
+	succeed_if_same_string (keyName(key), "user/.valid");
 
 	keySetName(key,"user/./.valid/.");
-	succeed_if (strcmp (keyName(key), "user/.valid") == 0, "Name Problem: More dots");
+	succeed_if_same_string (keyName(key), "user/.valid");
 
 	keySetName(key,"user/././././.valid/././././.");
-	succeed_if (strcmp (keyName(key), "user/.valid") == 0, "Name Problem: Much more dots");
+	succeed_if_same_string (keyName(key), "user/.valid");
 
 	printf("Test Double Dots in Key Name\n");
 	keySetName(key,"user/hidden/parent/..");
-	succeed_if (strcmp (keyName(key), "user/hidden") == 0, "Name Problem: Double Dot as basename");
+	succeed_if_same_string (keyName(key), "user/hidden");
 
 	keySetName(key,"user/hidden/..");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Double Dot as basename");
+	succeed_if_same_string (keyName(key), "user");
 
 	keySetName(key,"user/..");
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Can't go higher then user in hierarchy");
+	succeed_if_same_string (keyName(key), "user");
 
 	keySetName(key,"user/hidden/../..");
 	// printf ("Name: %s\n", keyName(key));
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: Can't go higher then user in hierarchy");
+	succeed_if_same_string (keyName(key), "user");
 
 	succeed_if (keySetName(key, "user///sw/../sw//././MyApp")==sizeof("user/sw/MyApp"), "could not set keySet example");
 	// printf("%s %d\n", keyName(key), keyGetNameSize(key));
@@ -706,31 +706,31 @@ static void test_keyNameSlashes()
 
 	key = keyNew ("user/validname", KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name");
-	succeed_if(strcmp(keyName(key), "user/validname") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "user/validname");
 
 	keySetName(key, "invalid");
 	succeed_if (keyGetNameSize(key) == 1, "name size for invalid name");
-	succeed_if(strcmp(keyName(key), "") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "");
 
 	keySetName (key, "user/validname");
-	succeed_if(strcmp(keyName(key), "user/validname") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "user/validname");
 
 	keySetName(key, "");
 	succeed_if (keyGetNameSize(key) == 1, "name size for invalid name");
-	succeed_if(strcmp(keyName(key), "") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "");
 
 	keySetName (key, "user/validname\\/t");
-	succeed_if(strcmp(keyName(key), "user/validname\\/t") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "user/validname\\/t");
 
 	keySetName(key, 0);
 	succeed_if (keyGetNameSize(key) == 1, "name size for invalid name");
-	succeed_if(strcmp(keyName(key), "") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "");
 
 	keySetName (key, "user/validname\\");
-	succeed_if(strcmp(keyName(key), "user/validname\\") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "user/validname\\");
 
 	keySetName (key, "user/validname\\/");
-	succeed_if(strcmp(keyName(key), "user/validname\\/") == 0, "keyNew: Key's name setted incorrectly");
+	succeed_if_same_string (keyName(key), "user/validname\\/");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 
 	printf("Test key's name manipulation\n");
@@ -816,22 +816,22 @@ static void test_keyValue()
 	succeed_if (keyGetValueSize (key) == 1, "empty value size");
 	succeed_if (keySetString (key,"perfectvalue") == 13, "could not set string");
 	succeed_if (keyGetValueSize (key) == 13, "value size not correct");
-	succeed_if (strcmp (keyValue(key), "perfectvalue") == 0, "String not same as set");
+	succeed_if_same_string (keyValue(key), "perfectvalue");
 	succeed_if (keySetString (key,"perfectvalue") == 13, "could not re-set same string");
-	succeed_if (strcmp (keyValue(key), "perfectvalue") == 0, "String not same as set");
+	succeed_if_same_string (keyValue(key), "perfectvalue");
 	succeed_if (keySetString (key,"nearperfectvalue") == 17, "could not re-set other string");
 	succeed_if (keyGetValueSize (key) == 17, "value size not correct");
-	succeed_if (strcmp (keyValue(key), "nearperfectvalue") == 0, "String not same as set");
+	succeed_if_same_string (keyValue(key), "nearperfectvalue");
 	succeed_if (keyGetString (key, ret, keyGetValueSize (key)>=999 ? 999 : keyGetValueSize (key))
 			== 17, "could not get string");
-	succeed_if (strcmp (ret, "nearperfectvalue") == 0, "String not same as set");
+	succeed_if_same_string (ret, "nearperfectvalue");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	succeed_if (key = keyNew(0), "could not create new key");
-	succeed_if (strcmp (keyValue(key), "") == 0, "Empty value problem");
+	succeed_if_same_string (keyValue(key), "");
 	succeed_if (keyGetValueSize(key) == 1, "Empty value size problem");
 	succeed_if (keySetString (key,"") == 1, "could not set empty string");
-	succeed_if (strcmp (keyValue(key), "") == 0, "Empty value problem");
+	succeed_if_same_string (keyValue(key), "");
 	succeed_if (keyGetValueSize(key) == 1, "Empty value size problem");
 	succeed_if (keyGetString(key, ret, 0) == -1, "Could not get empty value");
 	succeed_if (keyGetString(key, ret, 1) == 1, "Could not get empty value");
@@ -884,7 +884,7 @@ static void test_keyValue()
 		ret[0] =  i; ret[1] = i; ret[2] = 0;
 		//output_key (key);
 		succeed_if (keySetString (key,ret) == 3, "could not set string");
-		succeed_if (strcmp (keyValue(key), ret) == 0, "String not same as set");
+		succeed_if_same_string (keyValue(key), ret);
 	}
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
@@ -927,19 +927,19 @@ static void test_keyValue()
 
 	succeed_if (keySetString(key,0) == 1, "delete string");
 	succeed_if (keyGetString (key,ret,i) == 1, "length checking deleting");
-	succeed_if (strcmp(ret, "") == 0, "not empty string");
+	succeed_if_same_string (ret, "");
 
 	succeed_if (keySetString(key,testString) == sizeof(testString), "set string");
 	succeed_if (keyGetString (key,ret,i) == sizeof(testString), "length checking working");
-	succeed_if (strcmp(ret, testString) == 0, "not empty string");
+	succeed_if_same_string (ret, testString);
 
 	succeed_if (keySetString(key,"") == 1, "delete string");
 	succeed_if (keyGetString (key,ret,i) == 1, "length checking deleting");
-	succeed_if (strcmp(ret, "") == 0, "not empty string");
+	succeed_if_same_string (ret, "");
 
 	succeed_if (keySetString(key,testString) == sizeof(testString), "set string");
 	succeed_if (keyGetString (key,ret,i) == sizeof(testString), "length checking working");
-	succeed_if (strcmp(ret, testString) == 0, "not empty string");
+	succeed_if_same_string (ret, testString);
 
 	succeed_if (keyGetValueSize(key) == sizeof(testString), "testString value size");
 	succeed_if (strncmp(keyValue(key), testString, sizeof(testString)) == 0, "testString not same");
@@ -980,22 +980,22 @@ static void test_keyValue()
 
 	succeed_if (keySetBinary(key,testBinary, sizeof(testBinary)) == sizeof(testBinary), "set binary");
 	succeed_if (keyGetBinary (key,ret,i) == sizeof(testBinary), "length checking working");
-	succeed_if (strcmp(ret, testBinary) == 0, "not empty binary");
+	succeed_if_same_string (ret, testBinary);
 
 	succeed_if (keySetBinary(key,0,1) == 0, "delete binary");
 	succeed_if (keyGetBinary (key,ret,i) == 0, "length checking deleting");
 
 	succeed_if (keySetBinary(key,testBinary, sizeof(testBinary)) == sizeof(testBinary), "set binary");
 	succeed_if (keyGetBinary (key,ret,i) == sizeof(testBinary), "length checking working");
-	succeed_if (strcmp(ret, testBinary) == 0, "not empty binary");
+	succeed_if_same_string (ret, testBinary);
 
 	succeed_if (keySetBinary(key,"",1) == 1, "delete binary the string way");
 	succeed_if (keyGetBinary (key,ret,i) == 1, "length checking deleting string way");
-	succeed_if (strcmp(ret, "") == 0, "not empty binary the string way");
+	succeed_if_same_string (ret, "");
 
 	succeed_if (keySetBinary(key,testBinary, sizeof(testBinary)) == sizeof(testBinary), "set binary");
 	succeed_if (keyGetBinary (key,ret,i) == sizeof(testBinary), "length checking working");
-	succeed_if (strcmp(ret, testBinary) == 0, "not empty binary");
+	succeed_if_same_string (ret, testBinary);
 
 	succeed_if (keyGetValueSize(key) == sizeof(testBinary), "testBinary value size");
 	succeed_if (strncmp(keyValue(key), testBinary, sizeof(testBinary)) == 0, "testBinary not same");
@@ -1287,7 +1287,7 @@ static void test_keyDup()
 	keyDel(orig); // everything independent from original!
 
 	// Check the duplication
-	succeed_if( strcmp(keyName(copy), "user/foo/bar") == 0, "keyDup: key name copy error");
+	succeed_if_same_string (keyName(copy), "user/foo/bar");
 	succeed_if( strncmp(keyValue(copy), "foobar", 6) == 0, "keyDup: key value copy error");
 	succeed_if (keyIsBinary(copy), "keyDup: key type copy error");
 
@@ -1297,8 +1297,8 @@ static void test_keyDup()
 	keySetName (orig, "invalid");
 
 	succeed_if ( (copy = keyDup(orig)) != 0, "keyDup failed");
-	succeed_if ( strcmp(keyName(orig), "") == 0, "orig name should be empty");
-	succeed_if ( strcmp(keyName(copy), "") == 0, "copy name should be empty");
+	succeed_if_same_string (keyName(orig), "");
+	succeed_if_same_string (keyName(copy), "");
 	succeed_if (keyGetNameSize(orig) == 1, "orig name size");
 	succeed_if (keyGetNameSize(copy) == 1, "orig name size");
 	succeed_if (keyGetRef(orig) == 0, "orig ref counter should be 0");
@@ -1336,7 +1336,7 @@ static void test_keyCopy()
 	keyDel(orig); // everything independent from original!
 
 	// Check the duplication
-	succeed_if( strcmp(keyName(copy), "user/foo/bar") == 0, "keyCopy: key name copy error");
+	succeed_if_same_string (keyName(copy), "user/foo/bar");
 	succeed_if( strncmp(keyValue(copy), "foobar", 6) == 0, "keyCopy: key value copy error");
 
 	orig = keyNew(0);
@@ -1352,8 +1352,8 @@ static void test_keyCopy()
 
 	copy = keyNew(0);
 	succeed_if( keyCopy(copy, orig) == 1, "keyCopy failed");
-	succeed_if ( strcmp(keyName(orig), "") == 0, "orig name should be empty");
-	succeed_if ( strcmp(keyName(copy), "") == 0, "copy name should be empty");
+	succeed_if_same_string (keyName(orig), "");
+	succeed_if_same_string (keyName(copy), "");
 	succeed_if (keyGetNameSize(orig) == 1, "orig name size");
 	succeed_if (keyGetNameSize(copy) == 1, "orig name size");
 	succeed_if (keyGetRef(orig) == 0, "orig ref counter should be 0");

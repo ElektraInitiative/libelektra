@@ -17,21 +17,21 @@ static void test_ksCommonParentName()
 	printf ("Test common parentname\n");
 
 	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could not find correct parentname");
-	succeed_if (strcmp (ret, "system/sw/xorg") == 0, "parentname not correct");
+	succeed_if_same_string (ret, "system/sw/xorg");
 	ksDel (ks);
 
 	ks = ksNew (10,
 		keyNew("system",0),
 		keyNew("user",0),KS_END);
 	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "") == 0, "parentname not empty");
+	succeed_if_same_string (ret, "");
 	ksDel (ks);
 
 	ks = ksNew (10,
 		keyNew("system/some/thing",0),
 		keyNew("system/other/thing",0), KS_END);
 	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 7, "could find correct parentname");
-	succeed_if (strcmp (ret, "system") == 0, "parentname not empty");
+	succeed_if_same_string (ret, "system");
 	ksDel (ks);
 
 	ks = ksNew (10,
@@ -39,7 +39,7 @@ static void test_ksCommonParentName()
 		keyNew("system/here/in/deep/goes/ok/other/thing",0),
 		KS_END);
 	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "system/here/in/deep/goes/ok") == 0, "parentname not empty");
+	succeed_if_same_string (ret, "system/here/in/deep/goes/ok");
 	ksDel (ks);
 
 	ks = ksNew (10,
@@ -47,13 +47,13 @@ static void test_ksCommonParentName()
 		keyNew("system/here/in/deep/goes/ok/other/thing",0),
 		keyNew("user/unique/thing",0),KS_END);
 	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "") == 0, "parentname not empty");
+	succeed_if_same_string (ret, "");
 	ksDel (ks);
 
 	ks = ksNew (10,
 		keyNew("user/unique/thing",0),KS_END);
 	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if (strcmp (ret, "user/unique/thing") == 0, "parentname not empty");
+	succeed_if_same_string (ret, "user/unique/thing");
 	ksDel (ks);
 }
 

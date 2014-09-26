@@ -80,7 +80,7 @@ static void test_comment()
 	char ret[10];
 
 	succeed_if (key = keyNew(0), "could not create new key");
-	succeed_if (strcmp (keyComment(key), "") == 0, "Empty comment problem");
+	succeed_if_same_string (keyComment(key), "");
 	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
 	succeed_if (keyValue(keyGetMeta(key, "comment")) == 0, "No comment up to now");
 
