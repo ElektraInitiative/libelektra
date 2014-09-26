@@ -54,6 +54,8 @@ void NewKeyStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, Me
 			result.addMergeKey(conflictKey);
 		}
 		break;
+	default:
+		break;
 	}
 }
 

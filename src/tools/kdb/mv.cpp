@@ -51,7 +51,7 @@ int MvCommand::execute (Cmdline const& cl)
 	if (cl.verbose) cout << "common name: " << sourceName << endl;
 	if (cl.recursive)
 	{
-		while (k = oldConf.next())
+		while ((k = oldConf.next()))
 		{
 			newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
 		}

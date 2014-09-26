@@ -30,6 +30,7 @@ extern "C" {
 // is this needed?
 Key *ksPrev(KeySet *ks);
 Key *ksPopAtCursor(KeySet *ks, cursor_t c);
+Key *ksLookupBySpec(KeySet *ks, Key *specKey);
 
 // is the unescaped name useful for applications?
 const void *keyUnescapedName(const Key *key);

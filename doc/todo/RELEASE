@@ -1,11 +1,21 @@
 This describes what to do for an release!
 
+= Info =
+
+Following shell expansions are used in this document:
+ ~e           .. source of libelektra
+ ~build       .. the build directory
+ ~elektra     .. the directory above ~e and ~build
+ ~elektra-ftp .. where ftp files go to
+ ~elektra-doc .. where doc flies go to
+
+
 = TODO =
 
 - make sure no TODO is in this file (resolve them first!)
 
-= Cleanup =
 
+= Cleanup =
 
 For the first few steps you have to work on branch master:
  git-checkout master
@@ -19,6 +29,9 @@ And now commit everything:
 Clean up the mess left over:
  git-clean -df
 
+Make an empty builddirectory:
+ mkdir ~build
+
 
 == Check ==
 
@@ -30,8 +43,8 @@ Before release is done, following must be checked:
 If version numbers are correct in
 - CMakeLists.txt
 
-Memleaks:
-- ctest -T memcheck
+Rebuild cleanly, run all tests and also check for memleaks:
+  cd ~build && ~e/scripts/configure-debian ~e && make -j20 && make run_all && make run_memcheck
 
 
 = Preperation =
@@ -51,8 +64,9 @@ Now lets merge that to the release branch:
 Build tar.gz and tag version and make hashsum:
  cd ~build && make source-package
 
-Unpack + compile (with all available plugins) + test those sources (using valgrind!):
-tar xvzf elektra-$VERSION.tar.gz && mkdir build && cd build && cmake -DPLUGINS=ALL ../elektra-$VERSION && make -j 5 && ctest -T memcheck
+Unpack + compile (with all available plugins) + test those sources:
+ tar xvzf elektra-$VERSION.tar.gz && mkdir build
+ cd ~build/build && ~e/scripts/configure-debian ../elektra-$VERSION && make -j 20 && make run_all && make run_memcheck
 
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
@@ -64,7 +78,7 @@ Now copy the packages to ftp (stay in same folder):
 export DVERSION=$VERSION-1
 
 Build deb:
- git-checkout debian
+ cd ~e && git-checkout debian
  git-merge --no-ff release -m "Merge for debian release $DVERSION"
 
  dch --newversion $DVERSION "New upstream version."
@@ -76,10 +90,9 @@ Fix debian/ + document in NEWS what maintainer need to consider, then build the 
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
- cd ~elektra
- mkdir deb/$DVERSION
+ cd ~elektra && mkdir deb/$DVERSION
  mv elektra_$DVERSION* deb/$DVERSION && mv *.deb deb/$DVERSION && mv elektra_$VERSION.orig.tar.gz deb/$DVERSION/
- sudo dpkg -i deb/$DVERSION/*.deb
+ sudo dpkg -i deb/$DVERSION/*`dpkg-architecture -qDEB_BUILD_ARCH`.deb
 
 
 Run some basic commands, at least:
@@ -88,20 +101,9 @@ Run some basic commands, at least:
 Run local tests:
  kdb run_all
 
-Now run lintian:
- lintian -EI --color=auto --pedantic deb/$DVERSION/elektra_${VERSION}_*.changes
-
-And run piuparts:
- sudo piuparts deb/$DVERSION/elektra_${DVERSION}_*.changes
-
-And run adequate (combined with piuparts and after installation)
- adequate '*elektra*'
-
-Install libelektra-test of the previous version and run:
- for i in `dpkg -L libelektra-test | grep tool_exec`; do $i; done
-or, if available:
- kdb run_all
-
+Install libelektra-test of the previous version and run again:
+(TODO: disable version check + avoid strcmp but use succeed_if_same_string)
+ kdb run_tests
 
 
 == Test external tools ==
@@ -110,10 +112,12 @@ or, if available:
 Check if tools based on elektra still do:
  dq
 
+Run unit-tests in-source again (because some use installed Elektra):
+ make run_all
 
 == Documentation ==
 
-And the API docu (stay in same folder):
+And the API docu:
  mkdir ~elektra-doc/api/$VERSION/
  cd ~build && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
@@ -131,7 +135,7 @@ Symlink current to latest version and add everything:
 
 == Commit source package ==
 
-Commit elektra-ftp to gitorious:
+Commit elektra-ftp to github:
  cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz && git-add releases/elektra-$VERSION.tar.gz.hashsum && git-commit -a -m "Release $VERSION"
 
 
@@ -139,21 +143,19 @@ Commit elektra-ftp to gitorious:
 
 Now we know that everything worked well:
 
-Now push release branch with tags to gitorious:
+Now push release branch with tags to github:
  cd ~e && git-pull && git-push && git-push --tags
 
-Push elektra-ftp to gitorious:
- cd ~elektra-ftp && git-push && git-push gitorious
+Push elektra-ftp:
+ cd ~elektra-ftp && git-push
 
-Push elektra-doc to gitorious:
+Push elektra-doc to github:
  cd ~elektra-doc && git-commit -a -m "$VERSION Release" && git-push
 
 
 == Announce ==
 
-git checkout master
-
-Finish NEWS for new release (do not forget to add links where to download release):
+Finish NEWS for new release (hashsum, add links where to download release):
  editor doc/NEWS
 
 Finally check links and send out mail to list

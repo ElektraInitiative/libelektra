@@ -29,7 +29,7 @@ $Id$
 #include <libxml/xmlreader.h>
 #include <libxml/xmlschemas.h>
 
-#include <kdbtools.h>
+#include "kdbtools.h"
 #include <kdbinternal.h>
 
 /*
@@ -84,8 +84,8 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 				(const xmlChar *)"basename");
 
 			if (context) keySetName(newKey,context);
-			if (privateContext) keyAddBaseName(newKey, (char *)privateContext);
-			if (buffer) keyAddBaseName(newKey,(char *)buffer);
+			if (privateContext) keyAddName(newKey, (char *)privateContext);
+			if (buffer) keyAddName(newKey,(char *)buffer);
 
 			xmlFree(privateContext); privateContext=0;
 			xmlFree(buffer); buffer=0;

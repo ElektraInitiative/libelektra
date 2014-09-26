@@ -349,8 +349,8 @@ static void test_cmp()
 {
 	printf ("Compare two keys\n");
 
-	Key *k1 = keyNew(KEY_END);
-	Key *k2 = keyNew(KEY_END);
+	Key *k1 = keyNew(0);
+	Key *k2 = keyNew(0);
 
 	succeed_if (keyCmp(0,0) == 0, "null keys comparision");
 	succeed_if (keyCmp(k1,0) ==  1, "compare null key with key with no name");
@@ -441,7 +441,8 @@ int main(int argc, char** argv)
 	test_cmp();
 	test_appendowner();
 
-	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
+			argv[0], nbTest, nbError);
 
 	return nbError;
 }

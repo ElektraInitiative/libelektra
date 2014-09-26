@@ -1,18 +1,9 @@
 include (LibAddMacros)
 
-generate_readme (path)
-add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
-include_directories (${CMAKE_CURRENT_BINARY_DIR})
-
-set (SOURCES path.h path.c)
-add_sources (elektra-full ${SOURCES})
-add_headers (SOURCES)
-
-set (PLUGIN_NAME elektra-path)
-add_library (${PLUGIN_NAME} MODULE ${SOURCES})
-target_link_libraries (${PLUGIN_NAME} elektra)
-
-install (TARGETS ${PLUGIN_NAME}
-	DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+add_plugin(path
+	SOURCES
+		path.h
+		path.c
+	)
 
 #add_plugintest (path)

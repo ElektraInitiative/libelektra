@@ -1,4 +1,5 @@
 find_package(DBus REQUIRED)
+
 if (DBUS_FOUND)
 	include (LibAddMacros)
 

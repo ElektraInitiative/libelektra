@@ -100,6 +100,8 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		return 0; // we just ignore if we could not open file
 	}
 
+
+	// icc warning #269: invalid format string conversion
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
 	{
 		Key *read = keyNew(0);

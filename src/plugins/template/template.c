@@ -27,6 +27,8 @@
 # include "kdbconfig.h"
 #endif
 
+#include <string.h>
+
 #include "template.h"
 
 int elektraTemplateOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
@@ -45,11 +47,11 @@ int elektraTemplateClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UN
 
 int elektraTemplateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp(keyName(parentKey), "system/elektra/modules/template"))
+	if (!strcmp(keyName(parentKey), "system/elektra/modules/template"))
 	{
 		KeySet *contract = ksNew (30,
 		keyNew ("system/elektra/modules/template",
-			KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
+			KEY_VALUE, "template plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/template/exports", KEY_END),
 		keyNew ("system/elektra/modules/template/exports/open",
 			KEY_FUNC, elektraTemplateOpen, KEY_END),

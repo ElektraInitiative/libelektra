@@ -30,12 +30,19 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+
 	message (STATUS "Clang detected")
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+
+	#not supported by icc/clang:
+	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
+
 	message (STATUS "GCC detected")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
@@ -49,6 +56,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 	#and fix warning #10237: -lcilkrts linked in dynamically, # static library not available
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -static-intel -wd10237")
 	message (STATUS "ICC detected")
+
+	# cmake bug: cmake thinks Intel does not know isystem
+	set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 endif ()
 
 
@@ -63,7 +73,6 @@ set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat-security")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized")
-set (COMMON_FLAGS "${COMMON_FLAGS} -Wno-ignored-qualifiers")
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
 
@@ -79,7 +88,7 @@ endif (ENABLE_COVERAGE)
 # Merge all flags
 #
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wno-missing-field-initializers -Wstrict-null-sentinel")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_FLAGS} ${COMMON_FLAGS} -Wno-missing-field-initializers")
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")
 message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")

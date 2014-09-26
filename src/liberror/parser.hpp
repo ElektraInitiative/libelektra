@@ -18,7 +18,7 @@ struct parse_error: std::exception
 	~parse_error() throw()
 	{}
 
-	virtual const char* what() throw()
+	virtual const char* what() const throw()
 	{
 		return info.c_str();
 	}

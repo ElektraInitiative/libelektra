@@ -24,6 +24,7 @@
 
 
 #include "xmltool.h"
+#include "kdbtools.h"
 
 #include "kdbconfig.h"
 

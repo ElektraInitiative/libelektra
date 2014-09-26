@@ -1,3 +1,5 @@
+include(LibAddPlugin)
+
 foreach (plugin ${PLUGINS})
 	if(${plugin} MATCHES ".*_.*")
 		message(STATUS "Include Plugin's build variant ${plugin}")

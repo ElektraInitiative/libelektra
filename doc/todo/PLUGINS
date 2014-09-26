@@ -37,6 +37,15 @@ Environment expansion
 
 
 
+# File based plugins #
+
+Most plugins work on the KeySet. Other plugins might just work
+on the file (in the value of the parentKey), including:
+- gzip the file
+- encrypt the file
+- git add/git commit
+
+
 
 # Helper plugins #
 
@@ -184,6 +193,14 @@ compile lenses as plugin:
 ignore_error plugin:
 	transform error of a plugin to a warning
 
+
+
+
+# Generic plugins #
+
+Shell bindings: exec program and send dump format to it and receive one
+can use #!kdb shell
+or also some other scripts, e.g. git commit
 
 
 

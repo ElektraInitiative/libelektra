@@ -71,7 +71,7 @@ public:
 	bool check (KeySet &ks)
 	{
 		Key k;
-		while (k = ks.next())
+		while ((k = ks.next()))
 		{
 			if (!check(k)) return false;
 		}

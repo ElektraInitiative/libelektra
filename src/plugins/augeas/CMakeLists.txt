@@ -3,18 +3,18 @@ find_package (LibXml2 REQUIRED)
 
 if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 
-  try_compile (HAS_LIBAUGEAS16
+	try_compile (HAS_LIBAUGEAS16
 		"${CMAKE_BINARY_DIR}"
 		"${PROJECT_SOURCE_DIR}/src/plugins/augeas/testaugeas.c"
 		CMAKE_FLAGS 
 			-DINCLUDE_DIRECTORIES:STRING=${LIBAUGEAS_INCLUDE_DIR}\;${LIBXML2_INCLUDE_DIR} 
 			-DLINK_LIBRARIES:PATH=${LIBAUGEAS_LIBRARIES}\;${LIBXML2_LIBRARIES}
 		)
-	
+
 	if (HAS_LIBAUGEAS16)
-	
+
 		include (LibAddMacros)
-	
+
 		add_includes (elektra-full ${LIBAUGEAS_INCLUDE_DIR})
 		add_includes (elektra-full ${LIBXML2_INCLUDE_DIR})
 		
@@ -25,7 +25,8 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		add_libraries (elektra-full ${LIBAUGEAS_LIBRARIES})
 		add_libraries(elektra-full ${LIBXML2_LIBRARIES})
 		
-		
+		generate_readme (augeas)
+				
 		set (SOURCES augeas.h augeas.c)
 		add_sources (elektra-full ${SOURCES})
 		add_headers (SOURCES)
@@ -34,6 +35,9 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		add_library (${PLUGIN_NAME} MODULE ${SOURCES})
 		target_link_libraries (${PLUGIN_NAME} elektra)
 		target_link_libraries (${PLUGIN_NAME} ${LIBAUGEAS_LIBRARIES})
+
+		add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
+		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 		install(DIRECTORY augeas DESTINATION ${TARGET_TEST_DATA_FOLDER})
 		install (TARGETS ${PLUGIN_NAME}

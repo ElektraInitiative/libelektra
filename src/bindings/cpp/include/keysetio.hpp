@@ -26,7 +26,7 @@ inline std::ostream & operator << (std::ostream & os, kdb::KeySet const & cks)
 	cursor_t c = ks.getCursor();
 	ks.rewind();
 	kdb::Key k;
-	while (k=ks.next())
+	while ((k=ks.next()))
 	{
 		os << k << std::endl;
 	}

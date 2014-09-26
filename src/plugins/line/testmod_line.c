@@ -14,7 +14,7 @@
 
 void test_readline(){
 
-	char * filename = srcdir_file("linetest/linetest");
+	char * filename = srcdir_file("line/linetest");
 	Key * parentKey = keyNew ("user/tests/line", KEY_VALUE, filename, KEY_END);
 	KeySet *conf = 0;
 	PLUGIN_OPEN("line");
