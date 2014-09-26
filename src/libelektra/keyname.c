@@ -405,7 +405,7 @@ ssize_t keySetName(Key *key, const char *newName)
 }
 
 ssize_t elektraKeySetName(Key *key, const char *newName,
-		enum elektra_name_options options)
+		enum elektraNameOptions options)
 {
 	size_t length;
 	size_t rootLength, userLength, systemLength, ownerLength;

@@ -205,10 +205,27 @@ static void test_keyNewSystem()
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew("system", KEY_END);
-	succeed_if (strcmp (keyName(key), "system") == 0, "Name Problem: System as basename");
+	succeed_if_same_string (keyName(key), "system");
 	succeed_if (keyGetNameSize(key) == 7, "empty name size" );
-	// succeed_if (strcmp (keyOwner(key), "") == 0, "owner for a system key?");
-	// succeed_if (keyGetOwnerSize(key) == 1, "owner y size" );
+	succeed_if(keyValue(keyGetMeta(key, "owner")) == 0, "owner not null");
+	keyDel (key);
+
+	key = keyNew("user/abc", KEY_OWNER, "huhu", KEY_END);
+	succeed_if_same_string (keyName(key), "user/abc");
+	succeed_if (keyGetNameSize(key) == 9, "empty name size" );
+	succeed_if_same_string (keyString(keyGetMeta(key, "owner")), "huhu");
+	keyDel (key);
+
+	key = keyNew("user:lost/abc", KEY_OWNER, "huhu", KEY_END);
+	succeed_if_same_string (keyName(key), "user/abc");
+	succeed_if (keyGetNameSize(key) == 9, "empty name size" );
+	succeed_if_same_string (keyString(keyGetMeta(key, "owner")), "huhu");
+	keyDel (key);
+
+	key = keyNew("user:huhu/abc", KEY_END);
+	succeed_if_same_string (keyName(key), "user/abc");
+	succeed_if (keyGetNameSize(key) == 9, "empty name size" );
+	succeed_if_same_string (keyString(keyGetMeta(key, "owner")), "huhu");
 	keyDel (key);
 
 	// testing multiple values at once

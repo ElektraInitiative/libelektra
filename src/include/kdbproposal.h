@@ -45,14 +45,14 @@ int elektraArrayIncName(Key *key);
 int elektraKsToMemArray(KeySet *ks, Key **buffer);
 KeySet* elektraRenameKeys(KeySet *config, const char* name);
 
-enum elektra_lock_options
+enum elektraLockOptions
 {
 	KEY_LOCK_NAME=1<<17,
 	KEY_LOCK_VALUE=1<<18,
 	KEY_LOCK_META=1<<19
 };
 
-enum elektra_name_options
+enum elektraNameOptions
 {
 	KDB_O_CASCADING_NAME=1<<20,
 	KDB_O_META_NAME=1<<21,
@@ -64,11 +64,12 @@ enum elektra_name_options
 ssize_t keyAddName(Key *key, const char *addName);
 
 // locks a key, is this needed externally?
-int keyLock(Key *key, /*option_t*/ enum elektra_lock_options lock);
+int keyLock(Key *key,
+	/*option_t*/ enum elektraLockOptions lock);
 
 // this might become the new keySetName
 ssize_t elektraKeySetName(Key *key, const char *newName,
-	/*option_t*/ enum elektra_name_options options);
+	/*option_t*/ enum elektraNameOptions options);
 
 
 #ifdef __cplusplus

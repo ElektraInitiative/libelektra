@@ -411,7 +411,7 @@ memerror:
  * @retval 0 if everything was locked before
  * @retval -1 if it could not be locked (nullpointer)
  */
-int keyLock(Key *key, /*option_t*/ enum elektra_lock_options what)
+int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
 {
 	int ret = 0;
 
