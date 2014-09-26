@@ -463,19 +463,19 @@ static void test_ksIterate()
 	succeed_if (ksRewind(ks) == 0, "Could not rewind keyset twice");
 
 	succeed_if (ksNext(ks) != 0, "Could not get first key");
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/1"), "This is not the first key");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/1");
 
 	succeed_if (ksNext(ks) != 0, "Could not get second key");
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/2"), "This is not the second key");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/2");
 
 	succeed_if (ksNext(ks) != 0, "Could not get third key");
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/3"), "This is not the third key");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/3");
 
 	succeed_if (ksNext(ks) != 0, "Could not get fourth key");
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/4"), "This is not the fourth key");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/4");
 
 	succeed_if (ksNext(ks) != 0, "Could not get fifth key");
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/5"), "This is not the fifth key");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/5");
 
 	succeed_if (ksNext(ks) == 0, "Could not iterate over last");
 	succeed_if (ksCurrent(ks) == 0, "This is not the beyond last key");
@@ -610,7 +610,7 @@ static void test_ksCursor()
 
 	ksSetCursor(ks, cursor);
 	key = ksCurrent (ks);
-	succeed_if(!strcmp (keyName(key), name), output);
+	succeed_if_same_string (keyName(key), name);
 
 	ksDel (ks);
 
@@ -682,7 +682,7 @@ static void test_ksAtCursor()
 	ksNext (ks);
 	ksNext (ks);
 	current = ksAtCursor (ks, cursor);
-	succeed_if (!strcmp (keyName(current), "user/test1"), "wrong key returned after internal cursor was moved");
+	succeed_if_same_string (keyName(current), "user/test1");
 
 	/* test whether the internal cursor is modified */
 	ksRewind (ks);
@@ -690,9 +690,9 @@ static void test_ksAtCursor()
 	cursor = ksGetCursor (ks);
 	ksNext (ks);
 	current = ksAtCursor (ks, cursor);
-	succeed_if (!strcmp (keyName (current), "user/test1"), "initial cursor position wrong");
+	succeed_if_same_string (keyName (current), "user/test1");
 	current = ksNext (ks);
-	succeed_if (!strcmp (keyName (current), "user/test3"), "internal cursor not correct");
+	succeed_if_same_string (keyName (current), "user/test3");
 
 	/* test postconditions */
 	succeed_if (!ksAtCursor (0, cursor), "did not return NULL on NULL keyset");
@@ -2550,13 +2550,13 @@ static void test_cutpoint()
 			KS_END);
 	ksRewind(orig);
 	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(orig)), "user/a");
 	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(orig)), "user/a/b");
 
 	KeySet *part = ksCut(orig, cutpoint);
 
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "cursor should stay");
+	succeed_if_same_string (keyName(ksCurrent(orig)), "user/a/b");
 
 	KeySet *cmp_orig = ksNew(15,
 			keyNew("user/a", KEY_END),
@@ -2594,11 +2594,11 @@ static void test_cutpoint_1()
 			KS_END);
 	ksRewind(orig);
 	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(orig)), "user/a");
 	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(orig)), "user/a/b");
 	ksNext(orig);
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b/c"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(orig)), "user/a/b/c");
 
 	KeySet *part = ksCut(orig, cutpoint);
 
@@ -2858,13 +2858,13 @@ static void test_morecut()
 		KS_END);
 	succeed_if (ksCurrent(ks) == 0, "should be rewinded");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key1"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "system/valid/key1");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "system/valid/key2"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "system/valid/key2");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key1"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/valid/key1");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/valid/key2"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/valid/key2");
 
 	KeySet *split1 = ksNew (
 		3,
@@ -2907,15 +2907,15 @@ static void test_cutafter()
 		KS_END);
 	ksRewind(ks);
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/a/valid/key"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/a/valid/key");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/a/x/valid/key"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/a/x/valid/key");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/b/valid/key"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/b/valid/key");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/b/x/valid/key"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/b/x/valid/key");
 	ksNext(ks);
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/c/valid/key"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/c/valid/key");
 	// printf ("%s\n", keyName(ksCurrent(ks)));
 
 	KeySet *split1 = ksNew (
@@ -2935,7 +2935,7 @@ static void test_cutafter()
 
 	KeySet *cut = ksCut (ks, userKey);
 	// printf ("%s\n", keyName(ksCurrent(ks)));
-	succeed_if (!strcmp(keyName(ksCurrent(ks)), "user/c/valid/key"), "wrong cursor");
+	succeed_if_same_string (keyName(ksCurrent(ks)), "user/c/valid/key");
 
 	compare_keyset(cut, split1);
 	compare_keyset(ks, split2);
