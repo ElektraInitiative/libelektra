@@ -118,28 +118,28 @@ static void test_keyNewSpecial()
 	printf ("Test special key creation\n");
 
 	Key *k = keyNew (0);
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 	keyDel (k);
 
 	k = keyNew (0, KEY_END); //  might break, useless arguments?
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 	keyDel (k);
 
 	k = keyNew ("", KEY_END);
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 	keyDel (k);
 
 	k = keyNew ("invalid", KEY_END);
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 	keyDel (k);
 
 
 	k = keyNew ("other invalid", KEY_END);
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 	keyDel (k);
 
 	k = keyNew ("system spaces", KEY_END);
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 	keyDel (k);
 
 	k = keyNew ("system/bin",
@@ -1550,96 +1550,96 @@ static void test_keyNameSpecial()
 {
 	printf ("Test special keynames");
 	Key *k = keyNew (0);
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 
 	succeed_if (keySetName (k, "system"), "could not set key name with system");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, 0) == 0, "could not set key name with 0");
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 
 	succeed_if (keySetName (k, "system"), "could not set key name with system");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "") == 0, "could not set key name with empty string");
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 
 	succeed_if (keySetName (k, "system"), "could not set key name with system");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "invalid") == -1, "could not set key name invalid");
-	succeed_if (!strcmp (keyName(k), ""), "name should be empty after initialization");
+	succeed_if_same_string (keyName(k), "");
 
 
 
 	succeed_if (keySetName (k, "system/something/.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "system/something/.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "system/something/../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "system/something/../../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "system/something/../../../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "system/something/../../../../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 
 
 	succeed_if (keySetName (k, "system/../something"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/something");
 
 	succeed_if (keySetName (k, "system/../../something"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/something");
 
 	succeed_if (keySetName (k, "system/../../../something"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/something");
 
 	succeed_if (keySetName (k, "system/../../../../something"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/something");
 
 	succeed_if (keySetName (k, "system/../../../../../something"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/something"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/something");
 
 
 
 	succeed_if (keySetName (k, "system/a/b/c/.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/a/b"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/a/b");
 
 	succeed_if (keySetName (k, "system/a/b/c/../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/a"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/a");
 
 	succeed_if (keySetName (k, "system/a/b/c/../../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "system/a/b/c/../../../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 	succeed_if (keySetName (k, "system/a/b/c/../../../../.."), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system"), "name wrong");
+	succeed_if_same_string (keyName(k), "system");
 
 
 
 	succeed_if (keySetName (k, "system/../a/b/c"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/a/b/c");
 
 	succeed_if (keySetName (k, "system/../../a/b/c"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/a/b/c");
 
 	succeed_if (keySetName (k, "system/../../../a/b/c"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/a/b/c");
 
 	succeed_if (keySetName (k, "system/../../../../a/b/c"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/a/b/c");
 
 	succeed_if (keySetName (k, "system/../../../../../a/b/c"), "could not set key name with ..");
-	succeed_if (!strcmp (keyName(k), "system/a/b/c"), "name wrong");
+	succeed_if_same_string (keyName(k), "system/a/b/c");
 
 
 	keyDel (k);
@@ -1650,32 +1650,32 @@ static void test_keyClear()
 	printf ("Test clear of key\n");
 
 	Key *k1 = keyNew("system/abc", KEY_END);
-	succeed_if (!strcmp (keyName(k1), "system/abc"), "name wrong");
+	succeed_if_same_string (keyName(k1), "system/abc");
 
 	succeed_if (keyGetRef(k1) == 0, "New key reference");
 	keyIncRef(k1);
 	succeed_if (keyGetRef(k1) == 1, "Incremented key reference");
 	Key *k2 = k1; // create an alias for k1
-	succeed_if (!strcmp (keyName(k2), "system/abc"), "name wrong");
+	succeed_if_same_string (keyName(k2), "system/abc");
 	succeed_if (keyGetRef(k1) == 1, "Incremented key reference");
 	succeed_if (keyGetRef(k2) == 1, "Incremented key reference");
 
 	keyIncRef(k1);
 	Key *k3 = k1; // create an alias for k1
-	succeed_if (!strcmp (keyName(k3), "system/abc"), "name wrong");
+	succeed_if_same_string (keyName(k3), "system/abc");
 	succeed_if (keyGetRef(k1) == 2, "Incremented key reference");
 	succeed_if (keyGetRef(k2) == 2, "Incremented key reference");
 	succeed_if (keyGetRef(k3) == 2, "Incremented key reference");
 
 	keyClear(k1);
-	succeed_if (!strcmp (keyName(k1), ""), "name wrong after clear");
-	succeed_if (!strcmp (keyName(k2), ""), "name wrong after clear");
-	succeed_if (!strcmp (keyName(k3), ""), "name wrong after clear");
+	succeed_if_same_string (keyName(k1), "");
+	succeed_if_same_string (keyName(k2), "");
+	succeed_if_same_string (keyName(k3), "");
 
 	keySetMeta(k1, "test_meta", "test_value");
-	succeed_if (!strcmp (keyValue(keyGetMeta(k1, "test_meta")), "test_value"), "meta wrong");
-	succeed_if (!strcmp (keyValue(keyGetMeta(k2, "test_meta")), "test_value"), "meta wrong");
-	succeed_if (!strcmp (keyValue(keyGetMeta(k3, "test_meta")), "test_value"), "meta wrong");
+	succeed_if_same_string (keyValue(keyGetMeta(k1, "test_meta")), "test_value");
+	succeed_if_same_string (keyValue(keyGetMeta(k2, "test_meta")), "test_value");
+	succeed_if_same_string (keyValue(keyGetMeta(k3, "test_meta")), "test_value");
 
 	keyClear(k2);
 	succeed_if (keyGetMeta(k1, "test_meta") == 0, "there should be no meta after keyClear");
@@ -1683,14 +1683,14 @@ static void test_keyClear()
 	succeed_if (keyGetMeta(k3, "test_meta") == 0, "there should be no meta after keyClear");
 
 	keySetString(k1, "mystring");
-	succeed_if (!strcmp (keyValue(k1), "mystring"), "value wrong after clear");
-	succeed_if (!strcmp (keyValue(k2), "mystring"), "value wrong after clear");
-	succeed_if (!strcmp (keyValue(k3), "mystring"), "value wrong after clear");
+	succeed_if_same_string (keyValue(k1), "mystring");
+	succeed_if_same_string (keyValue(k2), "mystring");
+	succeed_if_same_string (keyValue(k3), "mystring");
 
 	keyClear(k3);
-	succeed_if (!strcmp (keyValue(k1), ""), "value wrong");
-	succeed_if (!strcmp (keyValue(k2), ""), "value wrong");
-	succeed_if (!strcmp (keyValue(k3), ""), "value wrong");
+	succeed_if_same_string (keyValue(k1), "");
+	succeed_if_same_string (keyValue(k2), "");
+	succeed_if_same_string (keyValue(k3), "");
 
 	succeed_if (keyGetRef(k1) == 2, "Incremented key reference");
 	succeed_if (keyGetRef(k2) == 2, "Incremented key reference");
