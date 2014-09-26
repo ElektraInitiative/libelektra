@@ -1,10 +1,12 @@
 #include "treeviewmodel.hpp"
-#include <modules.hpp>
+#include <factory.hpp>
+#include <command.hpp>
+#include <cmdline.hpp>
+#include <external.hpp>
 #include <toolexcept.hpp>
 
 using namespace std;
 using namespace kdb;
-using namespace kdb::tools;
 
 TreeViewModel::TreeViewModel(QObject* parent)
 {
@@ -197,6 +199,11 @@ int TreeViewModel::getIndexByName(const QString &name) const
     return -1;
 }
 
+void TreeViewModel::importConfiguration(ConfigNode *node, QString file, QString format, int mergeStrategy)
+{
+
+}
+
 void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QString file)
 {
 
@@ -204,24 +211,63 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
 
     file.remove("file://");
 
-    Key root(node->getPath().toStdString());
-    KeySet set;
+    Factory f;
 
-    m_kdb.get(set, "");
+    QByteArray executable = QString("kdb").toLocal8Bit();
+    QByteArray commandName = QString("export").toLocal8Bit();
+    QByteArray exportName = node->getName().toLocal8Bit();
+    QByteArray exportFormat = format.toLocal8Bit();
+    QByteArray exportFile = file.toLocal8Bit();
 
-    KeySet part(set.cut(root));
+    char *argv[] = {executable.data(), commandName.data(), exportName.data(), exportFormat.data(), exportFile.data(), NULL};
 
-    Modules modules;
-    PluginPtr plugin = modules.load(format.toStdString());
+    string command = argv[1];
 
-    Key errorKey(root);
-    errorKey.setString(file.toStdString());
+    try {
+        CommandPtr cmd = f.get(command);
 
-    plugin->set(part, errorKey);
+        Cmdline cl(5, argv, cmd.get());
 
-    printWarnings(cerr, errorKey);
-    printError(cerr, errorKey);
-
+        try
+        {
+            cmd->execute(cl);
+        }
+        catch (std::invalid_argument const& ia)
+        {
+            cerr << "Invalid arguments passed: " << ia.what()
+                 << endl << endl;
+            cerr << cl << endl;
+        }
+    }
+    catch (CommandException const& ce)
+    {
+        std::cerr << "The command "
+                  << command
+                  << " terminated unsuccessfully with the info: "
+                  << ce.what()
+                  << std::endl;
+    }
+    catch (kdb::Key& key)
+    {
+        std::cerr << "The command "
+                  << command << " failed while accessing the key database"
+                  << std::endl;
+        printWarnings(cerr, key);
+        printError(cerr, key);
+    }
+    catch (std::exception const& ce)
+    {
+        std::cerr << "The command "
+                  << command
+                  << " terminated unsuccessfully with the info: "
+                  << std::endl
+                  << ce.what()
+                  << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown error" << std::endl;
+    }
 }
 
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
