@@ -787,7 +787,7 @@ static void test_keyNameSlashes()
 		size = keyGetNameSize(key);
 		buf = malloc(size*sizeof(char));
 		keyGetName(key, buf, size);
-		succeed_if( (strcmp(buf, tstKeyName[i].expectedKeyName) == 0), "keyGetName" );
+		succeed_if_same_string (buf, tstKeyName[i].expectedKeyName);
 		free(buf);
 
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
