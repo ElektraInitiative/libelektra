@@ -90,6 +90,56 @@ static void test_lookupDefault()
 
 }
 
+static void test_lookupLongChain()
+{
+	printf ("Test lookup long chain\n");
+
+	Key *specKey = keyNew("user/4",
+			KEY_META, "override/#0", "user/something",
+			KEY_META, "override/#1", "user/something",
+			KEY_META, "override/#2", "user/something",
+			KEY_META, "override/#3", "user/something",
+			KEY_META, "override/#3", "user/something",
+			KEY_META, "override/#4", "user/something",
+			KEY_META, "override/#5", "user/something",
+			KEY_META, "override/#6", "user/something",
+			KEY_META, "override/#7", "user/something",
+			KEY_META, "override/#8", "user/something",
+			KEY_META, "override/#9", "user/something",
+			KEY_META, "override/#_10", "user/something",
+			KEY_META, "override/#_11", "user/something",
+			KEY_META, "override/#_12", "user/something",
+			KEY_META, "override/#_13", "user/something",
+			KEY_META, "override/#_14", "user/something",
+			KEY_META, "override/#_15", "user/something",
+			KEY_END);
+	Key *k1 = 0;
+	Key *k2 = 0;
+	Key *k3 = 0;
+	Key *k4 = 0;
+	KeySet *ks= ksNew(20,
+		k1 = keyNew("user/1", KEY_END),
+		k2 = keyNew("user/2", KEY_END),
+		k3 = keyNew("user/3", KEY_END),
+		k4 = keyNew("user/4", KEY_END),
+		KS_END);
+
+	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	keySetMeta(specKey, "override/#_16", "user/else");
+	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	keySetMeta(specKey, "override/#_17", "user/wrong");
+	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	keySetMeta(specKey, "override/#_18", "user/3");
+	succeed_if(ksLookupBySpec(ks, specKey) == k3, "did not find override key");
+	keySetMeta(specKey, "override/#_10", "user/2");
+	succeed_if(ksLookupBySpec(ks, specKey) == k2, "found wrong key");
+	keySetMeta(specKey, "override/#5", "user/1");
+	succeed_if(ksLookupBySpec(ks, specKey) == k1, "found wrong key");
+
+	keyDel(specKey);
+	ksDel(ks);
+}
+
 int main(int argc, char** argv)
 {
 	printf("SPEC  TESTS\n");
@@ -100,6 +150,7 @@ int main(int argc, char** argv)
 	test_lookupSingle();
 	test_lookupChain();
 	test_lookupDefault();
+	test_lookupLongChain();
 
 	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
 			argv[0], nbTest, nbError);
