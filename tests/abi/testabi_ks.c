@@ -269,8 +269,7 @@ static void test_ksReference()
 		succeed_if (keyGetRef(k2) == 1, "reference counter");
 		kss[i] = ksDup (kss[i-1]);
 		succeed_if (keyGetRef(k2) == 2, "reference counter");
-		succeed_if (!strcmp(keyName(ksPop (kss[i-1])), "user/key"),
-				"were not in order");
+		succeed_if_same_string (keyName(ksPop (kss[i-1])), "user/key");
 		succeed_if (keyGetRef(k2) == 1, "reference counter");
 		succeed_if (keyDel(k2) == 1, "delete key");
 		succeed_if (keyGetRef(k2) == 1, "reference counter");
@@ -542,7 +541,6 @@ static void test_ksCursor()
 	Key *cur;
 	int i;
 	char name [] = "user/n";
-	char output [] = "n key not on its place";
 
 	printf("Test keyset cursor\n");
 
@@ -581,7 +579,6 @@ static void test_ksCursor()
 		{
 			cursor = ksGetCursor (ks);
 			name[5] = '0' + i;
-			output[0] = '0' + i;
 		}
 	}
 	ksSetCursor(ks, cursor);
@@ -604,7 +601,6 @@ static void test_ksCursor()
 		{
 			cursor = ksGetCursor (ks);
 			name[5] = '0' + i;
-			output[0] = '0' + i;
 		}
 	}
 
@@ -670,8 +666,7 @@ static void test_ksAtCursor()
 		ksNext (ks);
 		cursor = ksGetCursor (ks);
 		other = ksAtCursor (ks, cursor);
-		succeed_if(!strcmp (keyName (current), keyName (other)),
-				"Key with wrong name returned");
+		succeed_if_same_string(keyName (current), keyName (other));
 	}
 
 	/* test whether the correct key is returned even if
@@ -2602,8 +2597,7 @@ static void test_cutpoint_1()
 
 	KeySet *part = ksCut(orig, cutpoint);
 
-	succeed_if (!strcmp(keyName(ksCurrent(orig)), "user/a/b"),
-			"cursor should jump for cutpoint");
+	succeed_if_same_string (keyName(ksCurrent(orig)), "user/a/b");
 
 	KeySet *cmp_orig = ksNew(15,
 			keyNew("user/a", KEY_END),
@@ -2785,22 +2779,18 @@ static void test_cursor()
 	succeed_if (ksGetCursor(config) == -1, "should be invalid cursor");
 	succeed_if (ksNext(config) != 0, "should be root key");
 	succeed_if (ksGetCursor(config) == 0, "cursor on first position");
-	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple"),
-			"not pointing to the root key");
+	succeed_if_same_string (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple");
 	succeed_if (ksNext(config) != 0, "should be on config");
 	succeed_if (ksGetCursor(config) == 1, "cursor on config");
-	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/config"),
-			"not pointing to the correct key");
+	succeed_if_same_string (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/config");
 
 	KeySet *res = ksCut(config, ksCurrent(config));
 	succeed_if (ksGetCursor(config) == 0, "cursor on first position");
-	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple"),
-			"not pointing to the root key again");
+	succeed_if_same_string (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple");
 
 	succeed_if (ksNext(config) != 0, "should be on config");
 	succeed_if (ksGetCursor(config) == 1, "cursor on getplugins");
-	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/getplugins"),
-			"not pointing to the correct key");
+	succeed_if_same_string (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/getplugins");
 
 	KeySet *getplugins = ksCut(config, ksCurrent(config));
 	succeed_if (ksGetCursor(getplugins) == -1, "should be invalid cursor");
@@ -2815,19 +2805,16 @@ static void test_cursor()
 
 	succeed_if (ksNext(config) != 0, "next did not work");
 	succeed_if (ksGetCursor(config ) == 1, "cursor not correct");
-	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/mountpoint"),
-			"not pointing to the correct key");
+	succeed_if_same_string (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/mountpoint");
 
 	succeed_if (ksNext(config) != 0, "next did not work");
 	succeed_if (ksGetCursor(config ) == 2, "cursor not correct");
-	succeed_if (!strcmp (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/setplugins"),
-			"not pointing to the correct key");
+	succeed_if_same_string (keyName(ksCurrent(config)), "system/elektra/mountpoints/simple/setplugins");
 
 	KeySet *setplugins = ksCut(config, ksCurrent(config));
 	succeed_if (ksNext(config) == 0, "should be no more config");
 	succeed_if (ksNext(setplugins) != 0, "ksnext did not work");
-	succeed_if (!strcmp (keyName(ksCurrent(setplugins)), "system/elektra/mountpoints/simple/setplugins"),
-			"not pointing to the correct key");
+	succeed_if_same_string (keyName(ksCurrent(setplugins)), "system/elektra/mountpoints/simple/setplugins");
 	succeed_if (ksNext(setplugins) != 0, "ksnext did not work");
 
 	KeySet *settracer = ksCut (setplugins, ksCurrent (setplugins));
