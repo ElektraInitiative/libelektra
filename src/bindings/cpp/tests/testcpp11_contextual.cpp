@@ -606,6 +606,37 @@ void test_threads()
 	assert(d == 12);
 }
 
+class MyTestGetPolicy
+{
+public:
+	static Key get(ELEKTRA_UNUSED KeySet &ks,
+		ELEKTRA_UNUSED std::string const & name)
+	{
+		Key k("user/test",
+			KEY_VALUE, "23",
+			KEY_END);
+		return k;
+	}
+};
+
+static void test_policy()
+{
+	std::cout << "Testing Policies" << std::endl;
+
+	KeySet ks;
+	Context c;
+	ContextualValue<int, MyTestGetPolicy> cv
+		(ks, c,  Key("", KEY_VALUE, "/test",
+			 KEY_META, "default", 88, KEY_END));
+	/*
+	 * do policy tests
+	assert(cv == 23);
+	assert(cv == cv);
+	cv = 40;
+	assert(cv == 23);
+	*/
+}
+
 
 
 int main()
@@ -620,6 +651,7 @@ int main()
 	test_integer_copy();
 	test_observer();
 	test_threads();
+	test_policy();
 
 	cout << endl;
 	cout << "testcpp_contextual RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

@@ -599,7 +599,7 @@ public:
 	}
 
 public:
-	ContextualValue<T> const & operator= (type n)
+	ContextualValue<T, PolicySetter1, PolicySetter2> const & operator= (type n)
 	{
 		m_cache = n;
 
@@ -621,7 +621,7 @@ public:
 			return m_cache;
 	}
 
-	bool operator == (ContextualValue<T> const & other) const
+	bool operator == (ContextualValue<T, PolicySetter1, PolicySetter2> const & other) const
 	{
 		return m_cache == other.m_cache ;
 	}

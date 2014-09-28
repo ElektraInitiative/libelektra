@@ -217,13 +217,51 @@ namespace $nsnpretty($n)
 {
 @end for
 
+class ${hierarchy.classname}GetPolicy
+{
+public:
+	static kdb::Key get(kdb::KeySet &ks, std::string const & name)
+	{
+	@if $hierarchy.info.get('override')
+		// override
+		kdb::Key found = ks.lookup("${override(hierarchy.info)[0]}", 0);
+	@for $o in $override(hierarchy.info)[1:]
+		if (!found)
+		{
+			found = ks.lookup("$o", 0);
+		}
+	@end for
+		// now the key itself
+		if(!found)
+		{
+			found = ks.lookup(name, 0);
+		}
+	@else
+		kdb::Key found = ks.lookup(name, 0);
+	@end if
+
+	@if $hierarchy.info.get('fallback')
+		// fallback
+	@for $f in $fallback(hierarchy.info)
+		if (!found)
+		{
+			found = ks.lookup("$f", 0);
+		}
+	@end for
+	@end if
+
+		return found;
+	}
+};
+
 /** \brief class of $hierarchy.name
  * Full Name (with contextual placeholders):
  * $hierarchy.info.get('name')
  * Dirname: $hierarchy.dirname
  * Basename: $hierarchy.basename
  * */
-class $hierarchy.classname : public ContextualValue<$typeof($hierarchy.info)>
+class $hierarchy.classname : public ContextualValue
+	<$typeof($hierarchy.info), ${hierarchy.classname}GetPolicy>
 {
 public:
 
@@ -232,7 +270,7 @@ public:
 	 * \param ks keyset to work with
 	 */
 	${hierarchy.classname}(kdb::KeySet & ks, kdb::Context & context)
-		: ContextualValue<$typeof($hierarchy.info)>(ks,
+		: ContextualValue<$typeof($hierarchy.info), ${hierarchy.classname}GetPolicy>(ks,
 			context,
 			kdb::Key("",
 @if $hierarchy.info.get('name'):
@@ -261,7 +299,7 @@ public:
 @end for
 	{}
 
-	using ContextualValue<$typeof($hierarchy.info)>::operator =;
+	using ContextualValue<$typeof($hierarchy.info), ${hierarchy.classname}GetPolicy>::operator =;
 
 @for k in hierarchy.children
 @set nsname = $nspretty(k.dirname)
