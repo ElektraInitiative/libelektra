@@ -15,7 +15,11 @@
 
 #include <keyset.hpp>
 
-#define ELEKTRA_INLINE __attribute__((noinline))
+#ifdef __GNUC__
+#define ELEKTRA_NOINLINE __attribute__((noinline))
+#else
+#define ELEKTRA_NOINLINE
+#endif
 
 namespace kdb
 {
@@ -464,17 +468,111 @@ private:
 };
 
 
+// Default Policies for ContextualValue
+// + mechanism for named policy switching
+
+/**
+ * @brief simply lookup without spec
+ */
+class DefaultGetPolicy
+{
+public:
+	static Key get(KeySet &ks, std::string const & name)
+	{
+		return ks.lookup(name, 0);
+	}
+};
+
+/**
+ * @brief Implements update when key is not found.
+ *
+ * The new value always can be written out
+ */
+class DefaultSetPolicy
+{
+public:
+	static Key set(KeySet &ks, std::string const & name)
+	{
+		kdb::Key found = ks.lookup(name, 0);
+
+		if(!found)
+		{
+			kdb::Key k("user/"+name, KEY_END);
+			ks.append(k);
+			found = k;
+		}
+
+		return found;
+	}
+};
+
+template <typename Base, int D>
+class Discriminator : public Base
+{
+};
+
+template < typename Setter1,
+	   typename Setter2
+>
+class PolicySelector : public Discriminator<Setter1,1>,
+			public Discriminator<Setter2,2>
+{
+};
+
+class DefaultPolicies
+{
+	public:
+		typedef DefaultGetPolicy GetPolicy;
+		typedef DefaultSetPolicy SetPolicy;
+};
+
+class DefaultPolicyArgs : virtual public DefaultPolicies
+{
+};
+
+
+// class templates to override the default policy values
+
+/// Needed to set the event manager policy
+///
+/// @tparam Policy
+template <typename Policy>
+class GetPolicyIs : virtual public DefaultPolicies
+{
+	public:
+		typedef Policy GetPolicy;  // overriding typedef
+};
+
+
+/// Needed to set the supervision policy
+///
+/// @tparam Policy
+template <typename Policy>
+class SetPolicyIs : virtual public DefaultPolicies
+{
+	public:
+		typedef Policy SetPolicy;  // overriding typedef
+};
 
 // standard types
 
-template<typename T>
-class ContextualValue : public Observer
+template<typename T,
+	typename PolicySetter1 = DefaultPolicyArgs,
+	typename PolicySetter2 = DefaultPolicyArgs>
+class ContextualValue :
+	public Observer
 {
 public:
 	typedef T type;
+	typedef PolicySelector<
+		PolicySetter1,
+		PolicySetter2
+		>
+		Policies;
 
 	// not to be constructed yourself
-	ContextualValue<T>(KeySet & ks, Context & context_, kdb::Key meta) :
+	ContextualValue<T, PolicySetter1, PolicySetter2>
+		(KeySet & ks, Context & context_, kdb::Key meta) :
 		m_cache(),
 		m_ks(ks),
 		m_context(context_),
@@ -486,7 +584,8 @@ public:
 		m_context.attachByName(m_meta.getString(), *this);
 	}
 
-	ContextualValue<T>(ContextualValue<T> const & other, KeySet & ks) :
+	ContextualValue<T, PolicySetter1, PolicySetter2>
+		(ContextualValue<T> const & other, KeySet & ks) :
 		m_cache(other.m_cache),
 		m_ks(ks),
 		m_context(other.m_context),
@@ -546,7 +645,7 @@ public:
 
 	/// Do not inline so that we can use it for debugging
 	
-	ELEKTRA_INLINE std::string const & getEvaluatedName() const
+	ELEKTRA_NOINLINE std::string const & getEvaluatedName() const
 	{
 		return m_evaluated_name;
 	}
@@ -554,7 +653,7 @@ public:
 	// keyset to cache
 	void syncCache() const
 	{
-		kdb::Key found = m_ks.lookup(m_evaluated_name, 0);
+		kdb::Key found = Policies::GetPolicy::get(m_ks, m_evaluated_name);
 		if (found)
 		{
 			m_cache = found.get<type>();
@@ -564,11 +663,6 @@ public:
 			m_cache = getDefault();
 		}
 
-		/*
-		m_context_changed = false;
-		m_atomic_context_changed = false;
-		m_volatile_context_changed = false;
-		*/
 #if DEBUG && VERBOSE
 		std::cout << "got name: " << m_evaluated_name << " to " << m_cache << std::endl;
 #endif
@@ -580,15 +674,8 @@ public:
 #if DEBUG && VERBOSE
 		std::cout << "set name: " << m_evaluated_name << " to " << m_cache << std::endl;
 #endif
-		kdb::Key found = m_ks.lookup(m_evaluated_name, 0);
-
-		if(!found)
-		{
-			kdb::Key k("user/"+m_evaluated_name, KEY_END);
-			k.set<type>(m_cache);
-			m_ks.append(k);
-		}
-		else
+		kdb::Key found = Policies::SetPolicy::set(m_ks, m_evaluated_name);
+		if (found)
 		{
 			found.set<type>(m_cache);
 		}
