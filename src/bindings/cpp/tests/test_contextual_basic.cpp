@@ -4,9 +4,9 @@
 
 #include <thread>
 
-#include <tests.hpp>
+#include <gtest/gtest.h>
 
-const uint32_t value = 55;
+const uint32_t i_value = 55;
 const char * s_value = "55";
 const uint32_t othervalue = 66;
 const char * s_othervalue = "66";
@@ -41,8 +41,8 @@ class CountryGPSLayer : public kdb::Layer
 {
 public:
 	CountryGPSLayer() : m_country("austria") {}
-	string id() const { return "country"; }
-	string operator()() const { return m_country; }
+	std::string id() const { return "country"; }
+	std::string operator()() const { return m_country; }
 private:
 	std::string m_country;
 };
@@ -51,14 +51,14 @@ class ThreadLayer : public kdb::Layer
 {
 public:
 	ThreadLayer() {}
-    string id() const { return "thread"; }
-    string operator()() const {
-	    ostringstream os;
-		thread::id tid = this_thread::get_id();
-	    if (tid != g_main_id) { os << tid; }
-	    return os.str(); };
+	std::string id() const { return "thread"; }
+	std::string operator()() const {
+		std::ostringstream os;
+		std::thread::id tid = std::this_thread::get_id();
+		if (tid != g_main_id) { os << tid; }
+		return os.str(); };
 private:
-	static const thread::id g_main_id;
+	static const std::thread::id g_main_id;
 };
 
 const std::thread::id ThreadLayer::g_main_id = std::this_thread::get_id();
@@ -67,9 +67,9 @@ class CountingLayer : public kdb::Layer
 {
 public:
 	CountingLayer() : m_id() {}
-	string id() const { return "counting"; }
-	string operator()() const {
-		ostringstream os;
+	std::string id() const { return "counting"; }
+	std::string operator()() const {
+		std::ostringstream os;
 		os << m_id++;
 		return os.str();
 	};
@@ -115,26 +115,24 @@ private:
 class ProfileLayer : public kdb::Layer
 {
 public:
-	ProfileLayer(String const & profile) :
+	ProfileLayer(kdb::String const & profile) :
 		m_profile(profile) {}
-	string id() const { return "profile"; }
-	string operator()() const { return m_profile; }
+	std::string id() const { return "profile"; }
+	std::string operator()() const { return m_profile; }
 private:
-	String const & m_profile;
+	kdb::String const & m_profile;
 };
 
 
-void test_integer()
+TEST(test_contextual_basic, integer)
 {
-	std::cout << "Testing integer" << std::endl;
-
 	using namespace kdb;
 	KeySet ks;
 	Context c;
 	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
 			ckdb::KDB_O_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
-	assert(i == value);
+	assert(i == i_value);
 	i = 5;
 	assert(i == 5);
 	assert(i.getSpec().getName() == "/%/%/%/test");
@@ -146,7 +144,7 @@ void test_integer()
 	assert(ks.lookup("/%/%/%/test").getString() == "5");
 
 	c.activate<LanguageGermanLayer>();
-	assert(i == value);
+	assert(i == i_value);
 //{debug/assert}
 assert(i.context()["language"] == "german");
 assert(i.getSpec().getName() == "/german/%/%/test");
@@ -186,7 +184,7 @@ assert(i.getSpec().getName() == "/german/%/%/test");
 	c.with<LanguageGermanLayer>()
 	 .with<CountryGermanyLayer>()([&]()
 	{
-		assert(i == value);
+		assert(i == i_value);
 		assert(ks.lookup("/%/%/%/test").getString() == "10");
 		assert(ks.lookup("/german/%/%/test").getString() == "15");
 		i = 20;
@@ -233,7 +231,7 @@ break 1520 if i.getSpec().getName()
 		assert(ks.lookup("/german/germany/%/test").getString() == "30");
 		c.with<CountryGPSLayer>()([&]()
 		{
-			assert(i == value);
+			assert(i == i_value);
 		});
 		assert(ks.lookup("/german/austria/%/test").getString() == s_value);
 	});
@@ -243,16 +241,15 @@ break 1520 if i.getSpec().getName()
 }
 
 
-void test_counting()
+TEST(test_contextual_basic, counting)
 {
-	std::cout << "Testing counting" << std::endl;
+	using namespace kdb;
 
-	std::shared_ptr<Layer> l = std::make_shared<CountingLayer>();
+	std::shared_ptr<kdb::Layer> l = std::make_shared<CountingLayer>();
 	KeySet ks;
 	Context c;
 	c.with<CountingLayer>()([&]
 	{
-		// std::cout << "c " << c["counting"] << std::endl;
 		assert(c["counting"] == "0");
 	});
 	// is it a specification error to have counting
@@ -288,9 +285,9 @@ void test_counting()
 	assert(c["counting"].empty());
 }
 
-void test_groups()
+TEST(test_contextual_basic, groups)
 {
-	std::cout << "Testing groups" << std::endl;
+	using namespace kdb;
 
 	KeySet ks;
 	Context c;
@@ -341,17 +338,15 @@ void test_groups()
 }
 
 
-void test_integer_copy()
+TEST(test_contextual_basic, integer_copy)
 {
-	std::cout << "Testing integer copy" << std::endl;
-
 	using namespace kdb;
 	KeySet ks;
 	Context c;
 	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
 		ckdb::KDB_O_CASCADING_NAME,
 		KEY_META, "default", s_value, KEY_END));
-	assert(i == value);
+	assert(i == i_value);
 	i = 5;
 	assert(i == 5);
 	assert(i.getSpec().getName() == "/%/%/%/test");
@@ -370,10 +365,9 @@ void test_integer_copy()
 	assert(ks2.lookup("/%/%/%/test").getString() == "10");
 }
 
-void test_evaluate()
+TEST(test_contextual_basic, evaluate)
 {
-	std::cout << "Testing evaluate" << std::endl;
-
+	using namespace kdb;
 	kdb::Context c;
 	assert (c["language"] == "");
 	assert (c["country"] == "");
@@ -494,10 +488,8 @@ struct MockObserver : kdb::Observer
 };
 
 // duplicates need to be filtered
-void test_observer()
+TEST(test_contextual_basic, observer)
 {
-	std::cout << "Testing observer" << std::endl;
-
 	kdb::Context c;
 	MockObserver o1;
 	MockObserver o2;
@@ -542,7 +534,7 @@ void foo(kdb::Integer & e)
 {
 	e.context().with<SelectedPrinterLayer>()([&]()
 	{
-		if (fooFirst) assert(e == value);
+		if (fooFirst) assert(e == i_value);
 		else assert(e == 20);
 		e = 20;
 		assert(e == 20);
@@ -560,7 +552,7 @@ void bar(kdb::Integer const & e)
 		.with<SelectedPrinterLayer>()([&]()
 	{
 		if (barFirst) assert(e == 20);
-		else assert(e == value);
+		else assert(e == i_value);
 
 		e.context().without<ThreadLayer>()([&]()
 		{
@@ -571,11 +563,9 @@ void bar(kdb::Integer const & e)
 	barFirst = false;
 }
 
-void test_threads()
+TEST(test_contextual_basic, threads)
 {
 	using namespace kdb;
-
-	std::cout << "Testing threads" << std::endl;
 
 	KeySet ks;
 	Context c;
@@ -585,15 +575,15 @@ void test_threads()
 
 
 	n.context().activate<MainApplicationLayer>();
-	assert(n == value);
+	assert(n == i_value);
 
 	n = 18;
 	assert(n == 18);
 
 	Integer & d = n;
 
-	d = value;
-	assert(d == value);
+	d = i_value;
+	assert(d == i_value);
 
 	d = 12;
 	assert(d == 12);
@@ -614,23 +604,4 @@ void test_threads()
 	std::thread t2(foo, std::ref(d));
 	t2.join();
 	assert(d == 12);
-}
-
-
-int main()
-{
-	cout << "CONTEXTUAL TESTS" << endl;
-	cout << "===============" << endl << endl;
-
-	test_evaluate();
-	test_counting();
-	test_groups();
-	test_integer();
-	test_integer_copy();
-	test_observer();
-	test_threads();
-
-	cout << endl;
-	cout << "testcpp_contextual RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
-	return nbError;
 }

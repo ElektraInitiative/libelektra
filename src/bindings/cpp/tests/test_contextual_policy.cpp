@@ -16,7 +16,7 @@ public:
 };
 
 
-TEST(test_contextual, staticGetPolicy)
+TEST(test_contextual_policy, staticGetPolicy)
 {
 	using namespace kdb;
 	KeySet ks;
@@ -47,7 +47,7 @@ public:
 	}
 };
 
-TEST(test_contextual, dynamicGetPolicy)
+TEST(test_contextual_policy, dynamicGetPolicy)
 {
 	using namespace kdb;
 	KeySet ks;
@@ -84,7 +84,7 @@ struct RootLayer : kdb::Layer
 	}
 };
 
-TEST(test_contextual, root)
+TEST(test_contextual_policy, root)
 {
 	using namespace kdb;
 	KeySet ks;
@@ -123,7 +123,7 @@ public:
 	{}
 };
 
-TEST(test_contextual, myCVRoot)
+TEST(test_contextual_policy, myCVRoot)
 {
 	using namespace kdb;
 	KeySet ks;
@@ -168,7 +168,7 @@ public:
 	MyCV m_m;
 };
 
-TEST(test_contextual, myCV2Root)
+TEST(test_contextual_policy, myCV2Root)
 {
 	using namespace kdb;
 	KeySet ks;

@@ -41,5 +41,6 @@ if (ENABLE_CXX11)
 		target_link_libraries (${name} ${CMAKE_THREAD_LIBS_INIT})
 	endforeach (file ${TESTS})
 
-	add_gtest(test_contextual)
+	add_gtest(test_contextual_basic)
+	add_gtest(test_contextual_policy)
 endif (ENABLE_CXX11)
