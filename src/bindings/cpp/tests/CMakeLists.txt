@@ -31,16 +31,11 @@ foreach (file ${TESTS})
 endforeach (file ${TESTS})
 
 if (ENABLE_CXX11)
-	find_package (Threads)
 	include (LibAddTest)
 
 	file (GLOB TESTS testcpp11_*.cpp)
 	foreach (file ${TESTS})
 		get_filename_component (name ${file} NAME_WE)
-		do_cpp_test (${name})
-		target_link_libraries (${name} ${CMAKE_THREAD_LIBS_INIT})
+		add_gtest(${name})
 	endforeach (file ${TESTS})
-
-	add_gtest(test_contextual_basic)
-	add_gtest(test_contextual_policy)
 endif (ENABLE_CXX11)
