@@ -1,2 +1,2 @@
-usr/local/lib/python2.7/dist-packages/kdb.py*
-usr/local/lib/python2.7/dist-packages/_kdb.so
+usr/lib/python2.7/dist-packages/kdb.py*
+usr/lib/python2.7/dist-packages/_kdb.so
