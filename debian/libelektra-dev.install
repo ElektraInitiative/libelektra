@@ -1,5 +1,5 @@
-usr/share/cmake-2.8/Modules/FindElektra.cmake
-usr/lib/pkgconfig/elektra.pc
-usr/include/elektra
-usr/lib/libelektra*.a
-usr/bin/kdb-static
+usr/local/share/cmake-2.8/Modules/FindElektra.cmake
+usr/local/lib/pkgconfig/elektra.pc
+usr/local/include/elektra
+usr/local/lib/libelektra*.a
+usr/local/bin/kdb-static

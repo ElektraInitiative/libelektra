@@ -17,7 +17,7 @@ CXXFLAGS:=$(shell dpkg-buildflags --get CXXFLAGS) $(CPPFLAGS)
 LDFLAGS:=$(shell dpkg-buildflags --get LDFLAGS)
 
 CMAKE_FLAGS = \
-	-DCMAKE_INSTALL_PREFIX=/usr \
+	-DCMAKE_INSTALL_PREFIX=/usr/local \
 	-DTARGET_PLUGIN_FOLDER=elektra4 \
 	-DPLUGINS="$(ELEKTRA_PLUGINS)" \
 	-DTOOLS="$(ELEKTRA_TOOLS)" \
@@ -48,3 +48,5 @@ override_dh_auto_configure:
 
 override_dh_auto_test:
 	ctest --force-new-ctest-process --output-on-failure -E testabi_ks -E test_array
+
+override_dh_usrlocal:
