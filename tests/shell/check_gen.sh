@@ -33,7 +33,6 @@ fi
 GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
 GEN="$GEN_FOLDER/gen"
 
-#changed later again (if fallback/override) not supported
 TESTPROGS="./lift ./cpplift ./nestedlift ./contextlift"
 
 if $GEN -h | grep "^usage:"
@@ -217,7 +216,6 @@ succeed_if "cannot rm $UKEY"
 
 
 
-TESTPROGS="./lift ./cpplift ./nestedlift"
 
 echo "test override with limit"
 
