@@ -32,6 +32,7 @@ endforeach (file ${TESTS})
 
 if (ENABLE_CXX11)
 	find_package (Threads)
+	include (LibAddTest)
 
 	file (GLOB TESTS testcpp11_*.cpp)
 	foreach (file ${TESTS})
@@ -39,4 +40,6 @@ if (ENABLE_CXX11)
 		do_cpp_test (${name})
 		target_link_libraries (${name} ${CMAKE_THREAD_LIBS_INIT})
 	endforeach (file ${TESTS})
+
+	add_gtest(test_contextual)
 endif (ENABLE_CXX11)
