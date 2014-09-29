@@ -157,7 +157,7 @@ static inline int bool_from_string(const char *s)
  */
 static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 {
-@if $info.get('override')
+@if $len(override(info)) > 0
 	// override
 	Key * found = ksLookupByName(ks, "${override(info)[0]}", 0);
 @for $o in $override(info)[1:]
@@ -175,7 +175,7 @@ static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 	Key * found = ksLookupByName(ks, "$key", 0);
 @end if
 
-@if $info.get('fallback')
+@if $len(fallback(info)) > 0
 	// fallback
 @for $f in $fallback(info)
 	if (!found)

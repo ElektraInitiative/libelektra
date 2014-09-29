@@ -222,7 +222,7 @@ class ${hierarchy.classname}GetPolicy
 public:
 	static kdb::Key get(kdb::KeySet &ks, kdb::Key const& spec)
 	{
-	@if $hierarchy.info.get('override')
+	@if len($override(hierarchy.info)) > 0
 		// override
 		kdb::Key found = ks.lookup("${override(hierarchy.info)[0]}", 0);
 	@for $o in $override(hierarchy.info)[1:]
@@ -240,7 +240,7 @@ public:
 		kdb::Key found = ks.lookup(spec.getName(), 0);
 	@end if
 
-	@if $hierarchy.info.get('fallback')
+	@if len($fallback(hierarchy.info)) > 0
 		// fallback
 	@for $f in $fallback(hierarchy.info)
 		if (!found)
@@ -290,12 +290,6 @@ public:
 @end if
 @if $hierarchy.info.get('rationale'):
 				KEY_META, "rationale", $quote($hierarchy.info.get('rationale')),
-@end if
-@if $hierarchy.info.get('fallback'):
-				KEY_META, "fallback", $quote($hierarchy.info.get('fallback')),
-@end if
-@if $hierarchy.info.get('override'):
-				KEY_META, "override", $quote($hierarchy.info.get('override')),
 @end if
 				KEY_END))
 

@@ -32,7 +32,7 @@ cheetahVarStartToken = $
 @end if
 </dl>
 
-@if $info.get('override')
+@if $len(override(info)) > 0
 <h2>Override</h2>
 <ul>
     @for $i in $override(info)
@@ -41,7 +41,7 @@ cheetahVarStartToken = $
 </ul>
 @end if
 
-@if $info.get('fallback')
+@if $len(fallback(info)) > 0
 <h2>Fallback</h2>
 <ul>
     @for $i in $fallback(info)

@@ -85,7 +85,7 @@ echo "Test defaults"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "delay: 0"
-	succeed_if "default of delay not correct"
+	succeed_if "default in $TESTPROG of delay not correct"
 done
 
 ./lift | grep "stops: true"
@@ -197,7 +197,7 @@ succeed_if "cant get $SKEY with $VALUE (writeback)"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "delay: 4"
-	succeed_if "writeback was not permenent"
+	succeed_if "writeback  in $TESTPROG was not permenent"
 done
 
 $KDB rm "$SKEY" 1>/dev/null
@@ -263,7 +263,7 @@ succeed_if "cant get $UKEY (writeback problem)"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "limit: 22"
-	succeed_if "writeback was not permenent"
+	succeed_if "writeback  in $TESTPROG was not permenent"
 done
 
 ./lift -l 81 | grep "limit: 22"
@@ -282,7 +282,7 @@ succeed_if "could not set $OKEY to value $VALUE"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "limit: $VALUE"
-	succeed_if "override value $VALUE not found"
+	succeed_if "override  in $TESTPROG value $VALUE not found"
 done
 
 ./lift -l 22 -w | grep "limit: $VALUE"
@@ -294,7 +294,7 @@ succeed_if "cant get $UKEY which will not be used"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "limit: $VALUE"
-	succeed_if "override was not in favour to writeback"
+	succeed_if "override  in $TESTPROG was not in favour to writeback"
 done
 
 $KDB rm "$OKEY" 1>/dev/null
@@ -333,7 +333,7 @@ succeed_if "could not set $UKEY to value $VALUE"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "height #3: $VALUE"
-	succeed_if "fallback of height $VALUE was not used"
+	succeed_if "fallback in $TESTPROG of height $VALUE was not used"
 done
 
 ./lift -h 14.4 | grep "height #3: 14.4"
@@ -353,7 +353,7 @@ succeed_if "could not set $KKEY to value $VALUE"
 for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "height #3: $VALUE"
-	succeed_if "fallback of height $VALUE was not used"
+	succeed_if "fallback  in $TESTPROG of height $VALUE was not used"
 done
 
 $KDB rm "$KKEY" 1>/dev/null

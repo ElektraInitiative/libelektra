@@ -126,7 +126,7 @@ inline bool Key::get() const
  * \par Rationale
  * $info.get('rationale')
 @end if
-@if $info.get('override')
+@if $len(override(info)) > 0
  * \par Override
 <ul>
     @for $i in $override(info)
@@ -134,7 +134,7 @@ inline bool Key::get() const
     @end for
 </ul>
 @end if
-@if $info.get('fallback')
+@if $len(fallback(info)) > 0
  * \par Fallback
 <ul>
     @for $i in $fallback(info)
@@ -284,7 +284,7 @@ $outputClasses(hierarchy)
  */
 inline $typeof(info) $nsname($key)$classname($key)::get$funcname($key)() const
 {
-@if $info.get('override')
+@if $len(override(info)) > 0
 	// override
 	kdb::Key found = ks.lookup("${override(info)[0]}", 0);
 @for $o in $override(info)[1:]
@@ -302,7 +302,7 @@ inline $typeof(info) $nsname($key)$classname($key)::get$funcname($key)() const
 	kdb::Key found = ks.lookup("$key", 0);
 @end if
 
-@if $info.get('fallback')
+@if $len(fallback(info)) > 0
 	// fallback
 @for $f in $fallback(info)
 	if (!found)
