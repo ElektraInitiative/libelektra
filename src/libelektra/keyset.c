@@ -580,7 +580,7 @@ static int keyCompareByNameOwnerCase(const void *p1, const void *p2)
  * Given any Keys k1 and k2 constructed with keyNew(), following
  * equation hold true:
  *
- * @snippet testabi_rel cmp null
+ * @snippet testabi_rel.c cmp null
  *
  * Here are some more examples:
  * @code

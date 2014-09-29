@@ -131,12 +131,13 @@ void test_integer()
 	using namespace kdb;
 	KeySet ks;
 	Context c;
-	Integer i(ks, c, Key("", KEY_VALUE, "/%language%/%country%/%dialect%/test",
-						 KEY_META, "default", s_value, KEY_END));
+	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
+			ckdb::KDB_O_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
 	assert(i == value);
 	i = 5;
 	assert(i == 5);
-	assert(i.getEvaluatedName() == "/%/%/%/test");
+	assert(i.getSpec().getName() == "/%/%/%/test");
 	assert(!ks.lookup("/%/%/%/test"));
 	i.syncKeySet();
 	assert(ks.lookup("/%/%/%/test").getString() == "5");
@@ -148,7 +149,7 @@ void test_integer()
 	assert(i == value);
 //{debug/assert}
 assert(i.context()["language"] == "german");
-assert(i.getEvaluatedName() == "/german/%/%/test");
+assert(i.getSpec().getName() == "/german/%/%/test");
 //{end}
 	assert(ks.lookup("/%/%/%/test").getString() == "10");
 	i = 15;
@@ -189,7 +190,7 @@ assert(i.getEvaluatedName() == "/german/%/%/test");
 		assert(ks.lookup("/%/%/%/test").getString() == "10");
 		assert(ks.lookup("/german/%/%/test").getString() == "15");
 		i = 20;
-		assert(i.getEvaluatedName() == "/german/germany/%/test");
+		assert(i.getSpec().getName() == "/german/germany/%/test");
 /*
 //{debug/backtrace}
 #3  0x0000000000407a56 in operator() at first.cpp:1521
@@ -197,7 +198,7 @@ assert(i.getEvaluatedName() == "/german/%/%/test");
           m_evaluated_name = "/german/germany/%/test" }
 //{end}
 //{debug/breakpoint}
-break 1520 if i.getEvaluatedName()
+break 1520 if i.getSpec().getName()
               .compare("/german/germany/%/test") == 0
 //{end}
 */
@@ -256,8 +257,9 @@ void test_counting()
 	});
 	// is it a specification error to have counting
 	// two times?
-	Integer i(ks, c, Key("", KEY_VALUE, "/%counting%/%counting%",
-						 KEY_META, "default", s_value, KEY_END));
+	Integer i(ks, c, Key("/%counting%/%counting%",
+				ckdb::KDB_O_CASCADING_NAME,
+				KEY_META, "default", s_value, KEY_END));
 
 	assert((*l)() == "0");
 	assert((*l)() == "1");
@@ -293,44 +295,47 @@ void test_groups()
 	KeySet ks;
 	Context c;
 
-	Integer i(ks, c, Key("", KEY_VALUE,
+	Integer i(ks, c, Key(
 	"/%application%/%version profile thread module%/%manufacturer type family model%/serial_number",
+	ckdb::KDB_O_CASCADING_NAME,
 	KEY_META, "default", s_value, KEY_END));
-	assert(i.getEvaluatedName() == "/%/%/%/serial_number");
+	assert(i.getSpec().getName() == "/%/%/%/serial_number");
 	c.activate<MainApplicationLayer>();
-	String s(ks, c, Key("", KEY_VALUE, "/%x%", KEY_META, "default", "anonymous", KEY_END));
+	String s(ks, c, Key("/%x%",
+		ckdb::KDB_O_CASCADING_NAME,
+		KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer>(s);
-	assert(i.getEvaluatedName() == "/main/%/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%/%/serial_number");
 	c.activate<KeyValueLayer>("version", "1");
-	assert(i.getEvaluatedName() == "/main/%1%anonymous/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%1%anonymous/%/serial_number");
 	c.activate<KeyValueLayer>("module", "M1");
-	assert(i.getEvaluatedName() == "/main/%1%anonymous/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%1%anonymous/%/serial_number");
 	c.activate<KeyValueLayer>("manufacturer", "hp");
-	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp/serial_number");
+	assert(i.getSpec().getName() == "/main/%1%anonymous/%hp/serial_number");
 	c.activate<KeyValueLayer>("family", "EliteBook");
-	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp/serial_number");
+	assert(i.getSpec().getName() == "/main/%1%anonymous/%hp/serial_number");
 	c.activate<KeyValueLayer>("type", "MobileWorkstation");
-	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
+	assert(i.getSpec().getName() == "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
 	c.activate<KeyValueLayer>("model", "8570");
-	assert(i.getEvaluatedName() == "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getSpec().getName() == "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.activate<KeyValueLayer>("thread", "40");
-	assert(i.getEvaluatedName() == "/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getSpec().getName() == "/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.deactivate<KeyValueLayer>("version", "");
-	assert(i.getEvaluatedName() == "/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getSpec().getName() == "/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.activate<KeyValueLayer>("version", "4");
-	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getSpec().getName() == "/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.deactivate<KeyValueLayer>("manufacturer", "");
-	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%4%anonymous%40%M1/%/serial_number");
 	c.activate<KeyValueLayer>("manufacturer", "HP");
-	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
+	assert(i.getSpec().getName() == "/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
 	c.deactivate<KeyValueLayer>("type", "");
-	assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP/serial_number");
+	assert(i.getSpec().getName() == "/main/%4%anonymous%40%M1/%HP/serial_number");
 	c.with<KeyValueLayer>("type", "Notebook")([&]
 	{
-		assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
+		assert(i.getSpec().getName() == "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 		c.without<KeyValueLayer>("type", "")([&]
 		{
-			assert(i.getEvaluatedName() == "/main/%4%anonymous%40%M1/%HP/serial_number");
+			assert(i.getSpec().getName() == "/main/%4%anonymous%40%M1/%HP/serial_number");
 		});
 	});
 }
@@ -343,12 +348,13 @@ void test_integer_copy()
 	using namespace kdb;
 	KeySet ks;
 	Context c;
-	Integer i(ks, c, Key("", KEY_VALUE, "/%language%/%country%/%dialect%/test",
-						 KEY_META, "default", s_value, KEY_END));
+	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
+		ckdb::KDB_O_CASCADING_NAME,
+		KEY_META, "default", s_value, KEY_END));
 	assert(i == value);
 	i = 5;
 	assert(i == 5);
-	assert(i.getEvaluatedName() == "/%/%/%/test");
+	assert(i.getSpec().getName() == "/%/%/%/test");
 	assert(!ks.lookup("/%/%/%/test"));
 	i.syncKeySet();
 	assert(ks.lookup("/%/%/%/test").getString() == "5");
@@ -453,21 +459,24 @@ void test_evaluate()
 	assert(c.evaluate("/%language%/%country%/%dialect%/test") == "/%/%/%/test");
 
 	KeySet ks;
-	Integer i(ks, c, Key("", KEY_VALUE,
+	Integer i(ks, c, Key(
 	"/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
+	ckdb::KDB_O_CASCADING_NAME,
 	KEY_META, "default", s_value, KEY_END));
-	assert(i.getEvaluatedName() == "/%/%/%/%/%/%/%/%/%/serial_number");
+	assert(i.getSpec().getName() == "/%/%/%/%/%/%/%/%/%/serial_number");
 	c.activate<MainApplicationLayer>();
-	assert(i.getEvaluatedName() == "/main/%/%/%/%/%/%/%/%/serial_number");
-	String s(ks, c, Key("", KEY_VALUE, "/%x%", KEY_META, "default", "anonymous", KEY_END));
+	assert(i.getSpec().getName() == "/main/%/%/%/%/%/%/%/%/serial_number");
+	String s(ks, c, Key("/%x%", 
+		ckdb::KDB_O_CASCADING_NAME,
+		KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer>(s);
-	assert(i.getEvaluatedName() == "/main/%/anonymous/%/%/%/%/%/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%/anonymous/%/%/%/%/%/%/serial_number");
 	c.activate<KeyValueLayer>("module", "M1");
-	assert(i.getEvaluatedName() == "/main/%/anonymous/%/M1/%/%/%/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%/anonymous/%/M1/%/%/%/%/serial_number");
 	c.activate<KeyValueLayer>("manufacturer", "hp");
-	assert(i.getEvaluatedName() == "/main/%/anonymous/%/M1/hp/%/%/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%/anonymous/%/M1/hp/%/%/%/serial_number");
 	c.activate<KeyValueLayer>("family", "EliteBook");
-	assert(i.getEvaluatedName() == "/main/%/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
+	assert(i.getSpec().getName() == "/main/%/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
 }
 
 
@@ -570,8 +579,9 @@ void test_threads()
 
 	KeySet ks;
 	Context c;
-	kdb::Integer n(ks, c,  Key("", KEY_VALUE, "/%thread%/%printer%/test",
-						 KEY_META, "default", s_value, KEY_END));
+	kdb::Integer n(ks, c,  Key("/%thread%/%printer%/test",
+					ckdb::KDB_O_CASCADING_NAME,
+					KEY_META, "default", s_value, KEY_END));
 
 
 	n.context().activate<MainApplicationLayer>();

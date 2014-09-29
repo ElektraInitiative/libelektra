@@ -14,6 +14,7 @@
 GEN=./gen
 ELEKTRA=-lelektra-static
 CFLAGS=-O0 -ggdb
+CXXFLAGS=-O0 -ggdb
 FLAGS = -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
 
 .PHONY:all

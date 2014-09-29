@@ -220,7 +220,7 @@ namespace $nsnpretty($n)
 class ${hierarchy.classname}GetPolicy
 {
 public:
-	static kdb::Key get(kdb::KeySet &ks, std::string const & name)
+	static kdb::Key get(kdb::KeySet &ks, kdb::Key const& spec)
 	{
 	@if $hierarchy.info.get('override')
 		// override
@@ -234,10 +234,10 @@ public:
 		// now the key itself
 		if(!found)
 		{
-			found = ks.lookup(name, 0);
+			found = ks.lookup(spec.getName(), 0);
 		}
 	@else
-		kdb::Key found = ks.lookup(name, 0);
+		kdb::Key found = ks.lookup(spec.getName(), 0);
 	@end if
 
 	@if $hierarchy.info.get('fallback')
@@ -261,7 +261,7 @@ public:
  * Basename: $hierarchy.basename
  * */
 class $hierarchy.classname : public ContextualValue
-	<$typeof($hierarchy.info), ${hierarchy.classname}GetPolicy>
+	<$typeof($hierarchy.info), GetPolicyIs<${hierarchy.classname}GetPolicy>>
 {
 public:
 
@@ -270,14 +270,15 @@ public:
 	 * \param ks keyset to work with
 	 */
 	${hierarchy.classname}(kdb::KeySet & ks, kdb::Context & context)
-		: ContextualValue<$typeof($hierarchy.info), ${hierarchy.classname}GetPolicy>(ks,
+		: ContextualValue<$typeof($hierarchy.info), GetPolicyIs<${hierarchy.classname}GetPolicy>>(ks,
 			context,
-			kdb::Key("",
+			kdb::Key(
 @if $hierarchy.info.get('name'):
-				KEY_VALUE, "$hierarchy.info.get('name')",
+				"$hierarchy.info.get('name')",
 @else
-				KEY_VALUE, "/",
+				"/",
 @end if
+				ckdb::KDB_O_CASCADING_NAME,
 @if $hierarchy.info.get('default'):
 				KEY_META, "default", $quote($hierarchy.info.get('default')),
 @end if
@@ -290,6 +291,12 @@ public:
 @if $hierarchy.info.get('rationale'):
 				KEY_META, "rationale", $quote($hierarchy.info.get('rationale')),
 @end if
+@if $hierarchy.info.get('fallback'):
+				KEY_META, "fallback", $quote($hierarchy.info.get('fallback')),
+@end if
+@if $hierarchy.info.get('override'):
+				KEY_META, "override", $quote($hierarchy.info.get('override')),
+@end if
 				KEY_END))
 
 
@@ -299,7 +306,7 @@ public:
 @end for
 	{}
 
-	using ContextualValue<$typeof($hierarchy.info), ${hierarchy.classname}GetPolicy>::operator =;
+	using ContextualValue<$typeof($hierarchy.info), GetPolicyIs<${hierarchy.classname}GetPolicy>>::operator =;
 
 @for k in hierarchy.children
 @set nsname = $nspretty(k.dirname)

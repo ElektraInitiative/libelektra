@@ -17,6 +17,7 @@
 #include <functional>
 #include <unordered_map>
 
+#include <kdbproposal.h>
 #include <keyset.hpp>
 
 #ifdef __GNUC__
@@ -481,9 +482,9 @@ private:
 class DefaultGetPolicy
 {
 public:
-	static Key get(KeySet &ks, std::string const & name)
+	static Key get(KeySet &ks, Key const& spec)
 	{
-		return ks.lookup(name, 0);
+		return ks.lookup(spec.getName(), 0);
 	}
 };
 
@@ -495,13 +496,13 @@ public:
 class DefaultSetPolicy
 {
 public:
-	static Key set(KeySet &ks, std::string const & name)
+	static Key set(KeySet &ks, Key const& spec)
 	{
-		kdb::Key found = ks.lookup(name, 0);
+		kdb::Key found = ks.lookup(spec.getName(), 0);
 
 		if(!found)
 		{
-			kdb::Key k("user/"+name, KEY_END);
+			kdb::Key k("user/"+spec.getName(), KEY_END);
 			ks.append(k);
 			found = k;
 		}
@@ -576,16 +577,19 @@ public:
 
 	// not to be constructed yourself
 	ContextualValue<T, PolicySetter1, PolicySetter2>
-		(KeySet & ks, Context & context_, kdb::Key meta) :
+		(KeySet & ks, Context & context_, kdb::Key spec) :
 		m_cache(),
 		m_ks(ks),
 		m_context(context_),
-		m_meta(meta),
-		m_evaluated_name(m_context.evaluate(m_meta.getString()))
+		m_spec(spec)
 	{
-		assert(m_meta.getString()[0] == '/');
+		assert(m_spec.getName()[0] == '/');
+		m_spec.setMeta("name", m_spec.getName());
+		ckdb::elektraKeySetName(*m_spec,
+				m_context.evaluate(m_spec.getName()).c_str(),
+				ckdb::KDB_O_CASCADING_NAME);
 		syncCache();  // read what we have in our context
-		m_context.attachByName(m_meta.getString(), *this);
+		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
 	ContextualValue<T, PolicySetter1, PolicySetter2>
@@ -593,13 +597,12 @@ public:
 		m_cache(other.m_cache),
 		m_ks(ks),
 		m_context(other.m_context),
-		m_meta(other.m_meta),
-		m_evaluated_name(other.m_evaluated_name)
+		m_spec(other.m_spec)
 	{
-		assert(m_meta.getString()[0] == '/');
+		assert(m_spec.getName()[0] == '/');
 		// cache already in sync
 		// attach copy, too:
-		m_context.attachByName(m_meta.getString(), *this);
+		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
 public:
@@ -632,12 +635,7 @@ public:
 
 	type getDefault() const
 	{
-		return m_meta.getMeta<type>("default");
-	}
-
-	bool isEmpty() const
-	{
-		return !m_ks.lookup(m_meta.getString(), 0);
+		return m_spec.getMeta<type>("default");
 	}
 
 	/// We allow manipulation of context for const
@@ -648,37 +646,39 @@ public:
 	}
 
 	/// Do not inline so that we can use it for debugging
-	
-	ELEKTRA_NOINLINE std::string const & getEvaluatedName() const
+	ELEKTRA_NOINLINE Key const& getSpec() const
 	{
-		return m_evaluated_name;
+		return m_spec;
 	}
 
 	// keyset to cache
 	void syncCache() const
 	{
-		kdb::Key found = Policies::GetPolicy::get(m_ks, m_evaluated_name);
+		kdb::Key found = Policies::GetPolicy::get(m_ks, m_spec);
 		if (found)
 		{
 			m_cache = found.get<type>();
+#if DEBUG && VERBOSE
+		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
+#endif
 		}
 		else
 		{
 			m_cache = getDefault();
+#if DEBUG && VERBOSE
+		std::cout << "got default name: " << m_spec.getName() << " to " << m_cache << std::endl;
+#endif
 		}
 
-#if DEBUG && VERBOSE
-		std::cout << "got name: " << m_evaluated_name << " to " << m_cache << std::endl;
-#endif
 	}
 
 	// cache to keyset
 	void syncKeySet() const
 	{
 #if DEBUG && VERBOSE
-		std::cout << "set name: " << m_evaluated_name << " to " << m_cache << std::endl;
+		std::cout << "set name: " << m_spec.getName() << " to " << m_cache << std::endl;
 #endif
-		kdb::Key found = Policies::SetPolicy::set(m_ks, m_evaluated_name);
+		kdb::Key found = Policies::SetPolicy::set(m_ks, m_spec);
 		if (found)
 		{
 			found.set<type>(m_cache);
@@ -689,14 +689,16 @@ public:
 private:
 	virtual void update() const
 	{
-		std::string evaluated_name = m_context.evaluate(m_meta.getString());
+		std::string evaluated_name = m_context.evaluate(m_spec.getMeta<std::string>("name"));
 #if DEBUG && VERBOSE
-		std::cout << "update " << evaluated_name << " from " << m_evaluated_name << std::endl;
+		std::cout << "update " << evaluated_name << " from " << m_spec.getName() << std::endl;
 #endif
-		if (evaluated_name != m_evaluated_name)
+		if (evaluated_name != m_spec.getName())
 		{
 			syncKeySet(); // flush out what currently is in cache
-			m_evaluated_name = evaluated_name;
+			ckdb::elektraKeySetName(*m_spec,
+					evaluated_name.c_str(),
+					ckdb::KDB_O_CASCADING_NAME);
 			syncCache();  // read what we have under new context
 		}
 	}
@@ -705,8 +707,7 @@ private:
 	mutable type m_cache;
 	KeySet & m_ks;
 	Context & m_context;
-	Key m_meta;
-	mutable std::string m_evaluated_name;
+	mutable Key m_spec;
 };
 
 typedef ContextualValue<uint32_t>Integer;
