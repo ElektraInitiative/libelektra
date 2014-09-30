@@ -1,49 +1,62 @@
-#from c_support import *
+#from gen_support import *
+#compiler-settings
+directiveStartToken = @
+cheetahVarStartToken = $
+#end compiler-settings
 
-This is how a static method would work to allow shared code.
-(Currently not used)
-
+This is how a static method would work to allow shared code:
 https://pythonhosted.org/Cheetah/recipes/staticmethod.html
 
-#@staticmethod
-#def doxygen(key, info)
+@@staticmethod
+@def header()
+/** \file
+ *
+ * This is a generated file.
+ *
+ * \warning this is a generated file, do not modify it
+ * \warning this is a prototype and not production code
+ */
+@end def
+
+@@staticmethod
+@def doxygen(key, info)
  * \par Type
  * $info['type']
  * \par Mapped Type
  * $typeof(info)
-#if $info.get('unit'):
+@if $info.get('unit'):
  * \par Unit
  * $info.get('unit')
-#end if
+@end if
  * \par Default Value
  * $info['default']
-#if $info.get('explanation'):
+@if $info.get('explanation'):
  * \par Explanation
  * $info.get('explanation')
-#end if
-#if $info.get('rationale'):
+@end if
+@if $info.get('rationale'):
  * \par Rationale
  * $info.get('rationale')
-#end if
-#if $info.get('override')
+@end if
+@if $info.get('override')
  * \par Override
 <ul>
-    #for $i in $override(info)
+    @for $i in $override(info)
     <li>get_${funcname($i)}()</li>
-    #end for
+    @end for
 </ul>
-#end if
-#if $info.get('fallback')
+@end if
+@if $info.get('fallback')
  * \par Fallback
 <ul>
-    #for $i in $fallback(info)
+    @for $i in $fallback(info)
     <li>get_${funcname($i)}()</li>
-    #end for
+    @end for
 </ul>
-#end if
-#if $info.get('see')
-    #for $i in $see(info)
+@end if
+@if $info.get('see')
+    @for $i in $see(info)
  * \see get_${funcname($i)}
-    #end for
-#end if
-#end def
+    @end for
+@end if
+@end def

@@ -1,18 +1,12 @@
 #from c_support import *
+#from util import util
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 #ifndef $includeguard($args.output)
 #define $includeguard($args.output)
-/** \file
- *
- * Generated file ${args.output}
- * With include guard $includeguard($args.output)
- *
- * \warning this is a generated file, do not modify it
- * \warning this is a prototype and not production code
- */
+$util.header
 #include "kdb.h"
 #include "kdbtypes.h"
 

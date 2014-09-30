@@ -20,37 +20,34 @@ FLAGS = -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
 .PHONY:all
 all:lift cpplift nestedlift contextlift contextvisit lift.html lift.3
 
-# see util.tmpl for motivation
-#not used at the moment, do not have dependency to cheetah-compile,
-#2 liner should be integrated into kdb gen if approach is chosen
 util.py:util.tmpl
-	cheetah-compile util.tmpl
+	${GEN} -p specification.ini util.tmpl
 
-lift.html:${GEN} specification.ini template.html
+lift.html:${GEN} specification.ini template.html util.py
 	${GEN} specification.ini template.html -o lift.html
 
-lift.3:${GEN} specification.ini template.man
+lift.3:${GEN} specification.ini template.man util.py
 	${GEN} specification.ini template.man -o lift.3
 
-lift.h:${GEN} specification.ini template.h c_support.py
+lift.h:${GEN} specification.ini template.h c_support.py util.py
 	${GEN} specification.ini template.h -o lift.h
 
-lift.hpp:${GEN} specification.ini template.hpp
+lift.hpp:${GEN} specification.ini template.hpp util.py
 	${GEN} specification.ini template.hpp -o lift.hpp
 
-lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py
+lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py util.py
 	${GEN} specification.ini template_nested.hpp -o lift_nested.hpp
 
-lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py
+lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py util.py
 	${GEN} specification.ini template_context.hpp -o lift_context.hpp
 
-visit_context.hpp:${GEN} visit_specification.ini template_context.hpp context_support.py
+visit_context.hpp:${GEN} visit_specification.ini template_context.hpp context_support.py util.py
 	${GEN} visit_specification.ini template_context.hpp -o visit_context.hpp
 
-genopt.c:${GEN} specification.ini template_genopt.c opt_support.py
+genopt.c:${GEN} specification.ini template_genopt.c opt_support.py util.py
 	${GEN} specification.ini template_genopt.c -o genopt.c
 
-genopt.h:${GEN} specification.ini template_genopt.h opt_support.py
+genopt.h:${GEN} specification.ini template_genopt.h opt_support.py util.py
 	${GEN} specification.ini template_genopt.h -o genopt.h
 
 lift:lift.c lift.h genopt.c genopt.h
@@ -85,3 +82,4 @@ clean:
 	rm -f contextlift
 	rm -f visit_context.hpp
 	rm -f contextvisit
+	rm -f util.py
