@@ -382,7 +382,6 @@ QVariant TreeViewModel::find(const QString& term)
 
 void TreeViewModel::find(ConfigNode* node, TreeViewModel *searchResults, const QString term)
 {
-
     int tmpChildCount = node->getChildCount();
 
     if (tmpChildCount > 0)
@@ -397,7 +396,6 @@ void TreeViewModel::find(ConfigNode* node, TreeViewModel *searchResults, const Q
     {
         searchResults->model().append(node);
     }
-
 }
 
 bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
