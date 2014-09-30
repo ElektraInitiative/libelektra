@@ -607,7 +607,6 @@ void test_threads()
 }
 
 
-
 int main()
 {
 	cout << "CONTEXTUAL TESTS" << endl;

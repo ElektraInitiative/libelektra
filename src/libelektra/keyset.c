@@ -176,14 +176,17 @@ KeySet *ksNew(size_t alloc, ...)
 	return ks;
 }
 
+#define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
 
 Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 {
-	char buffer [] = "override/#0";
-	int i='0';
+	int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
+	char buffer [ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE]
+		= "override/";
+	int64_t i=0;
 	const Key *m = 0;
 	do {
-		buffer[sizeof(buffer)-2] = i;
+		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
 		Key *ret=ksLookupByName(ks, keyString(m), 0);
 		if (ret) return ret;
@@ -195,11 +198,11 @@ Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 		if (ret) return ret;
 	}
 
-	strcpy (buffer, "fallback/#0");
-	i='0';
+	strcpy (buffer, "fallback/");
+	i=0;
 	m = 0;
 	do {
-		buffer[sizeof(buffer)-2] = i;
+		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
 		Key *ret=ksLookupByName(ks, keyString(m), 0);
 		if (ret) return ret;

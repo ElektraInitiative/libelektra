@@ -1,6 +1,7 @@
 #define __STDC_FORMAT_MACROS
 
 #include <kdbproposal.h>
+#include <kdbprivate.h>
 #include "kdbtypes.h"
 
 #include <stdlib.h>
@@ -58,6 +59,10 @@ int elektraArrayValidateName(Key *key)
 		}
 
 		if (underscores != digits -1) return -1;
+		if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE-2)
+		{
+			return -1;
+		}
 	}
 	else
 	{
@@ -67,7 +72,71 @@ int elektraArrayValidateName(Key *key)
 	return 1;
 }
 
+int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex)
+{
+
+	int errnosave = errno;
+	errno = 0;
+	if (sscanf(baseName, "%"PRId64, oldIndex) != 1)
+	{
+		errno = errnosave;
+		return -1;
+	}
+
+	if (errno != 0) // any error
+	{
+		errno = errnosave;
+		return -1;
+	}
+
+	if (*oldIndex < 0) // underflow
+	{
+		return -1;
+	}
+
+	if (*oldIndex >= INT64_MAX) // overflow
+	{
+		return -1;
+	}
+	return 0;
+}
+
 /**
+ * @internal
+ *
+ * @brief Writes a elektra array name
+ *
+ * @param newName the buffer to write to (size must be
+ *       #ELEKTRA_MAX_ARRAY_SIZE or more)
+ * @param newIndex the index of the array to write
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+int elektraWriteArrayNumber(char *newName, int64_t newIndex)
+{
+	// now we fill out newName
+	size_t index = 0; // index of newName
+	newName[index++] = '#';
+	int64_t i = newIndex/10;
+
+	while (i>0)
+	{
+		newName[index++] = '_'; // index n-1 of decimals
+		i/=10;
+	}
+	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE,
+				"%"PRId64, newIndex)  < 0)
+	{
+		return -1;
+	}
+
+	return 0;
+}
+
+/**
+ * @internal
+ *
  * @brief Increment the name of the key by one
  *
  * Alphabetical order will remain
@@ -90,7 +159,6 @@ int elektraArrayIncName(Key *key)
 	const char * baseName = keyBaseName(key);
 
 	int arrayElement = elektraArrayValidateName(key);
-
 	if (arrayElement == -1)
 	{
 		return -1;
@@ -103,9 +171,6 @@ int elektraArrayIncName(Key *key)
 	}
 
 	int64_t oldIndex  = 0;
-
-	int errnosave = errno;
-	errno = 0;
 	if (!arrayElement)
 	{
 		// we have a start element
@@ -113,24 +178,7 @@ int elektraArrayIncName(Key *key)
 	}
 	else
 	{
-		if (sscanf(baseName, "%"PRId64, &oldIndex) != 1)
-		{
-			errno = errnosave;
-			return -1;
-		}
-
-		if (errno != 0) // any error
-		{
-			errno = errnosave;
-			return -1;
-		}
-
-		if (oldIndex < 0) // underflow
-		{
-			return -1;
-		}
-
-		if (oldIndex >= INT64_MAX) // overflow
+		if (elektraReadArrayNumber(baseName, &oldIndex) == -1)
 		{
 			return -1;
 		}
@@ -138,27 +186,10 @@ int elektraArrayIncName(Key *key)
 
 	int64_t newIndex = oldIndex+1; // we increment by one
 
-	// maximal size calculation (C99 would also allow non maximum though...)
-	size_t sizeMax_ = 9; // maximum of n-1 _
-	size_t sizeNum = 10; // maximum of 10 digits in 32bit number
-	size_t size = sizeMax_ + sizeNum + 1;
-	char newName[size]; // #_________4000000000
+	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
-	// now we fill out newName
-	size_t index = 0; // index of newName
-	newName[index++] = '#';
-	int64_t i = newIndex/10;
-	while (i>0)
-	{
-		newName[index++] = '_'; // index n-1 of decimals
-		i/=10;
-	}
-	if (snprintf (&newName[index], size, "%"PRId64, newIndex)  < 0)
-	{
-		return -1;
-	}
-	keySetBaseName(key, 0);
-	keyAddName(key, newName);
+	elektraWriteArrayNumber(newName, newIndex);
+	keySetBaseName(key, newName);
 
 	return 0;
 }

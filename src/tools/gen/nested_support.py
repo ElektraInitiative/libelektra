@@ -196,7 +196,7 @@ class Hierarchy:
 		cwc = set()
 		for c in self._children:
 			if c._children:
-				cwc.update({c})
+				cwc.add(c)
 		return cwc
 
 	@property
@@ -204,7 +204,7 @@ class Hierarchy:
 		cwc = set()
 		for c in self._children:
 			if 'type' in c.info:
-				cwc.update({c})
+				cwc.add(c)
 		return cwc
 
 	def __eq__(self, other):
@@ -232,13 +232,13 @@ class Hierarchy:
 			for c in self._children:
 				if hierarchy.name == c.name:
 					"""update info and children into previous structure hierarchy"""
-					assert c._info == {}, "info is not empty in" + c.name
+					assert len(c._info) == 0, "info is not empty in" + c.name
 					c._info.update(hierarchy.info)
 					c._children.update(hierarchy.children)
 					"updated " + hierarchy.name + " in child " + c.name
 					return
 			"""add new child below myself""" + hierarchy.name + " into " + self.name
-			self._children.update({hierarchy})
+			self._children.add(hierarchy)
 			return
 
 		for c in self._children:
@@ -249,7 +249,7 @@ class Hierarchy:
 		n = cutname(hierarchy.name, self.name)
 		h = self.structure(n)
 		"""create a structure hierarchy""",hierarchy.name, self.name, h.name
-		self._children.update({h})
+		self._children.add(h)
 		h.add(hierarchy)
 		return
 

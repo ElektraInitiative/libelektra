@@ -14,7 +14,7 @@
 GEN=./gen
 ELEKTRA=-lelektra-static
 CFLAGS=-O0 -ggdb
-FLAGS = `pkg-config --libs --cflags elektra`
+FLAGS = -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
 
 .PHONY:all
 all:lift cpplift nestedlift contextlift contextvisit lift.html lift.3

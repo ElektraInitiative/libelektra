@@ -23,19 +23,16 @@ static void test_basic()
 	succeed_if (keyGetMeta(key, "hello") == 0, "hello was not set up to now");
 
 	keySetMeta(key, "hello", "hello_world");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "hello_world"),
-			"could not receive previously set meta information");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
 
 	keySetMeta(key, "mode", "0644");
 	keySetMeta(key, "time", "1271234264");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "hello_world"),
-			"meta info changed unexpectly");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "mode")), "0644"), "mode not set correctly");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "time")), "1271234264"), "time not set correctly");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "mode")), "0644");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "time")), "1271234264");
 
 	keySetMeta(key, "hello", "between");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "between"),
-			"could not set meta information again");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "between");
 
 	keySetMeta(key, "hello", 0);
 	succeed_if (keyValue(keyGetMeta(key, "hello")) == 0, "could not remove meta data");
@@ -45,20 +42,20 @@ static void test_basic()
 			"could not set meta information again (2x)");
 
 	keySetMeta(key, "empty", "");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "empty")), ""), "Problem with empty meta string");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "empty")), "");
 
 	keySetMeta(key, "owner", "hugo");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "owner")), "hugo"), "Problem with meta string");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "owner")), "hugo");
 
 	keySetMeta(key, "mode", "775");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "owner")), "hugo"), "Problem with meta string");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "mode")), "775"), "Problem with meta string");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "owner")), "hugo");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "mode")), "775");
 
 	keySetMeta(key, "", "empty");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), "empty"), "Problem with empty name");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "empty");
 
 	keySetMeta(key, "", "");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), ""), "Problem with empty name and string");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "");
 
 	keySetMeta(key, "", 0);
 	succeed_if (keyValue(keyGetMeta(key, "")) == 0, "could not remove empty meta data");
@@ -79,8 +76,8 @@ static void test_iterate()
 
 	keySetMeta (key, "meta1", "meta_value");
 	succeed_if (keyRewindMeta(key) == 0, "Could not rewind key");
-	succeed_if (!strcmp(keyName(keyNextMeta(key)), "meta1"), "keyNextMeta does not work at 1. iteration");
-	succeed_if (!strcmp(keyValue(keyCurrentMeta(key)), "meta_value"), "keyCurrentMeta does not work at 1. iteration");
+	succeed_if_same_string (keyName(keyNextMeta(key)), "meta1");
+	succeed_if_same_string (keyValue(keyCurrentMeta(key)), "meta_value");
 
 	succeed_if (keyNextMeta(key) == 0, "Could get next meta name, even if it is empty at 2. iteration");
 	succeed_if (keyCurrentMeta(key) == 0, "Could get next meta value, even if it is empty at 2. iteration");
@@ -115,10 +112,10 @@ static void test_size()
 	keySetMeta(key, "time", "1271234264");
 	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "hello_world"),
 			"meta info changed unexpectly");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "mode")), "0644"), "mode not set correctly");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "mode")), "0644");
 	succeed_if (keyGetValueSize (keyGetMeta(key, "mode")) == sizeof("0644"),
 			"got wrong size");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "time")), "1271234264"), "time not set correctly");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "time")), "1271234264");
 	succeed_if (keyGetValueSize (keyGetMeta(key, "time")) == sizeof("1271234264"),
 			"got wrong size");
 
@@ -131,7 +128,7 @@ static void test_size()
 	succeed_if (keyGetString (keyGetMeta(key, "hello"), buffer,
 				keyGetValueSize (keyGetMeta(key, "hello"))) == keyGetValueSize (keyGetMeta(key, "hello")),
 			"could not get meta");
-	succeed_if (!strcmp(buffer, "between"), "buffer was not set correctly");
+	succeed_if_same_string (buffer, "between");
 	free (buffer);
 
 
@@ -149,40 +146,40 @@ static void test_size()
 	succeed_if (keyGetString (keyGetMeta(key, "hello"), buffer,
 				keyGetValueSize (keyGetMeta(key, "hello"))) == keyGetValueSize (keyGetMeta(key, "hello")),
 			"could not get meta");
-	succeed_if (!strcmp(buffer, "goodbye"), "buffer was not set correctly");
+	succeed_if_same_string (buffer, "goodbye");
 	free (buffer);
 
 	keySetMeta(key, "empty", "");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "empty")), ""), "Problem with empty meta string");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "empty")), "");
 	succeed_if (keyGetValueSize (keyGetMeta(key, "empty")) == sizeof(""),
 			"got wrong size");
 	buffer = calloc (1, keyGetValueSize (keyGetMeta(key, "empty")));
 	succeed_if (keyGetString (keyGetMeta(key, "empty"), buffer,
 				keyGetValueSize (keyGetMeta(key, "empty"))) == keyGetValueSize (keyGetMeta(key, "empty")),
 			"could not get meta");
-	succeed_if (!strcmp(buffer, ""), "buffer was not set correctly");
+	succeed_if_same_string (buffer, "");
 	free (buffer);
 
 	keySetMeta(key, "", "empty");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), "empty"), "Problem with empty name");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "empty");
 	succeed_if (keyGetValueSize (keyGetMeta(key, "")) == sizeof("empty"),
 			"got wrong size");
 	buffer = calloc (1, keyGetValueSize (keyGetMeta(key, "")));
 	succeed_if (keyGetString (keyGetMeta(key, ""), buffer,
 				keyGetValueSize (keyGetMeta(key, ""))) == keyGetValueSize (keyGetMeta(key, "")),
 			"could not get meta");
-	succeed_if (!strcmp(buffer, "empty"), "buffer was not set correctly");
+	succeed_if_same_string (buffer, "empty");
 	free (buffer);
 
 	keySetMeta(key, "", "");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), ""), "Problem with empty name and string");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "");
 	succeed_if (keyGetValueSize (keyGetMeta(key, "")) == sizeof(""),
 			"got wrong size");
 	buffer = calloc (1, keyGetValueSize (keyGetMeta(key, "")));
 	succeed_if (keyGetString (keyGetMeta(key, ""), buffer,
 				keyGetValueSize (keyGetMeta(key, ""))) == keyGetValueSize (keyGetMeta(key, "")),
 			"could not get meta");
-	succeed_if (!strcmp(buffer, ""), "buffer was not set correctly");
+	succeed_if_same_string (buffer, "");
 	free (buffer);
 
 	keySetMeta(key, "", 0);
@@ -203,17 +200,14 @@ static void test_dup()
 	key = keyNew ("user/orig", KEY_END);
 	succeed_if (keySetMeta (key, "test", "some_meta_test") == sizeof("some_meta_test"),
 			"could not set meta");
-	succeed_if (!strcmp(keyValue (keyGetMeta(key, "test")), "some_meta_test"), "could not set meta value");
+	succeed_if_same_string (keyValue (keyGetMeta(key, "test")), "some_meta_test");
 
 	dup = keyDup (key);
-	succeed_if (!strcmp(keyValue (keyGetMeta(dup, "test")), "some_meta_test"),
-			"in duplicated key meta value was not copied");
-	succeed_if (keySetMeta (dup, "test", "some_other_meta_test") == sizeof("some_other_meta_test"),
-			"could not set meta");
-	succeed_if (!strcmp(keyValue (keyGetMeta(dup, "test")), "some_other_meta_test"),
-			"in duplicated key meta value was not changed");
-	succeed_if (!strcmp(keyValue (keyGetMeta(key, "test")), "some_meta_test"),
-			"in original key the value has changed");
+	succeed_if_same_string (keyValue (keyGetMeta(dup, "test")), "some_meta_test");
+	succeed_if(keySetMeta (dup, "test", "some_other_meta_test") == sizeof("some_other_meta_test"),
+		"sizeof meta test wrong");
+	succeed_if_same_string (keyValue (keyGetMeta(dup, "test")), "some_other_meta_test");
+	succeed_if_same_string (keyValue (keyGetMeta(key, "test")), "some_meta_test");
 	keyDel (dup);
 
 	keyDel (key);
@@ -258,8 +252,8 @@ static void test_examples()
 
 	j(key);
 
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "xef")), "ybc"), "did not copy meta");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "xop")), "yup"), "did not copy meta");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "xef")), "ybc");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "xop")), "yup");
 	succeed_if (keyValue(keyGetMeta(key, "def")) == 0, "old meta data remained");
 	succeed_if (keyValue(keyGetMeta(key, "nop")) == 0, "old meta data remained");
 
@@ -276,9 +270,9 @@ static void test_examples()
 
 	l (key);
 
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "def")), "abc"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "nop")), "cup"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "type")), "boolean"), "the meta data was not copied");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "def")), "abc");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "nop")), "cup");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "type")), "boolean");
 	succeed_if (keyValue(keyGetMeta(key, "xop")) == 0, "this meta data was not requested to be copied");
 
 	keyDel (key);
@@ -309,13 +303,13 @@ static void test_copy()
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
 			"could not set meta value");
 	succeed_if (keyCopyMeta(key2, key1, "mymeta") == 1, "could not copy meta value");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
 
 	succeed_if (keyCopyMeta(key1, key2, "mymeta") == 1, "did nothing in the end");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
 
 	keyDel (key1);
@@ -328,20 +322,20 @@ static void test_copy()
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
 			"could not set meta value");
 	succeed_if (keyCopyMeta(key2, key1, "mymeta") == 1, "could not copy meta value");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
 
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
 			"could not set meta value");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") != keyGetMeta(key2, "mymeta"), "reference to another key");
 
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value2") == sizeof("a longer meta value2"),
 			"could not set meta value2");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value2"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value2");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") != keyGetMeta(key2, "mymeta"),
 			"reference to another key (with another value)");
 
@@ -422,13 +416,13 @@ static void test_new()
 
 	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "hello_world"),
 			"could not receive previously set meta information");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "mode")), "0644"), "mode not set correctly");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "time")), "1271234264"), "time not set correctly");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "empty")), ""), "Problem with empty meta string");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), "empty"), "Problem with empty name");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "mode")), "0644");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "time")), "1271234264");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "empty")), "");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "empty");
 
 	keySetMeta(key, "", "full");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), "full"), "Problem with empty name");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "full");
 
 	keySetMeta(key, "", 0);
 	succeed_if (keyValue(keyGetMeta(key, "")) == 0, "could not remove empty meta data");
@@ -445,13 +439,13 @@ static void test_new()
 
 	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "goodbye"),
 			"could not receive previously set meta information");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "mode")), "0775"), "mode not set correctly");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "time")), "1271939923"), "time not set correctly");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "empty")), ""), "Problem with empty meta string");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), ""), "Problem with empty name");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "mode")), "0775");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "time")), "1271939923");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "empty")), "");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "");
 
 	keySetMeta(key, "", "full");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key, "")), "full"), "Problem with empty name");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "full");
 
 	keySetMeta(key, "", 0);
 	succeed_if (keyValue(keyGetMeta(key, "")) == 0, "could not remove empty meta data");
@@ -484,13 +478,13 @@ static void test_copyall()
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
 			"could not set meta value");
 	succeed_if (keyCopyAllMeta(key2, key1) == 1, "could not copy meta value");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
 
 	succeed_if (keyCopyAllMeta(key1, key2) == 1, "did nothing in the end");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
 
 	keyDel (key1);
@@ -503,20 +497,20 @@ static void test_copyall()
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
 			"could not set meta value");
 	succeed_if (keyCopyAllMeta(key2, key1) == 1, "could not copy meta value");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") == keyGetMeta(key2, "mymeta"), "reference to the same key");
 
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value") == sizeof("a longer meta value"),
 			"could not set meta value");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") != keyGetMeta(key2, "mymeta"), "reference to another key");
 
 	succeed_if (keySetMeta(key1, "mymeta", "a longer meta value2") == sizeof("a longer meta value2"),
 			"could not set meta value2");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value2"), "old meta data should be unchanged");
-	succeed_if (!strcmp(keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value"), "old meta data should be unchanged");
+	succeed_if_same_string (keyValue(keyGetMeta(key1, "mymeta")), "a longer meta value2");
+	succeed_if_same_string (keyValue(keyGetMeta(key2, "mymeta")), "a longer meta value");
 	succeed_if (keyGetMeta(key1, "mymeta") != keyGetMeta(key2, "mymeta"),
 			"reference to another key (with another value)");
 

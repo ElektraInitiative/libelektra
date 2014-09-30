@@ -662,15 +662,15 @@ static void test_realworld()
 	succeed_if (split->handles[5] == split->handles[6], "root backends have same handle");
 	succeed_if (split->syncbits[5] == 2, "sync state for root not correct");
 	succeed_if (split->syncbits[6] == 2, "sync state for root not correct");
-	succeed_if (!strcmp(keyName(split->parents[0]), "user/sw/apps/app1/default"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[1]), "user/sw/apps/app2"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[2]), "system/groups"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[3]), "system/hosts"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[4]), "user/sw/kde/default"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[5]), "system"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[6]), "user"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[7]), "system/users"), "parent key not correct");
-	succeed_if (!strcmp(keyName(split->parents[8]), "system/elektra"), "parent key not correct");
+	succeed_if_same_string (keyName(split->parents[0]), "user/sw/apps/app1/default");
+	succeed_if_same_string (keyName(split->parents[1]), "user/sw/apps/app2");
+	succeed_if_same_string (keyName(split->parents[2]), "system/groups");
+	succeed_if_same_string (keyName(split->parents[3]), "system/hosts");
+	succeed_if_same_string (keyName(split->parents[4]), "user/sw/kde/default");
+	succeed_if_same_string (keyName(split->parents[5]), "system");
+	succeed_if_same_string (keyName(split->parents[6]), "user");
+	succeed_if_same_string (keyName(split->parents[7]), "system/users");
+	succeed_if_same_string (keyName(split->parents[8]), "system/elektra");
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "should need sync");
 	succeed_if (split->size == 10, "size not correct");

@@ -26,12 +26,12 @@ public:
 class ProfileLayer : public kdb::Layer
 {
 public:
-	ProfileLayer(kdb::ContextualValue<std::string> const & profile) :
+	ProfileLayer(kdb::visit::Profile const & profile) :
 		m_profile(profile) {}
 	std::string id() const { return "profile"; }
 	std::string operator()() const { return m_profile; }
 private:
-	kdb::ContextualValue<std::string> const & m_profile;
+	kdb::visit::Profile const & m_profile;
 };
 //{end}
 

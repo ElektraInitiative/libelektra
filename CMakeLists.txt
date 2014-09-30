@@ -16,6 +16,7 @@ endif (ENABLE_COVERAGE)
 if (ENABLE_TESTING)
 	enable_testing ()
 	include (Dart)
+	find_package (GTest)
 endif (ENABLE_TESTING)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)

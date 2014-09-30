@@ -484,6 +484,23 @@ size_t elektraUnescapeKeyName(const char *source, char *dest);
 
 int elektraValidateKeyNamePart(const char *name);
 
+/** The buffer size needed for an array name
+ *
+ * The size of the buffer so that the buffer can contain:
+ * - a # in the beginning
+ * - up to 9 underscores are needed as prefix
+ * - a 32bit number has a maximum of 10 digits
+ * - one byte for null termination
+ *
+ * E.g. \#_________4000000000\\0
+ */
+#define ELEKTRA_MAX_ARRAY_SIZE (21)
+
+/*Internally used for array handling*/
+int elektraArrayValidateName(Key *key);
+int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex);
+int elektraWriteArrayNumber(char *newName, int64_t newIndex);
+
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))
 /** Set a bit. @see clear_bit() */
