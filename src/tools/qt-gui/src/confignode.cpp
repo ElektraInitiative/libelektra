@@ -100,14 +100,11 @@ void ConfigNode::setValue(const QVariant& value)
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
-    //    qDebug() << "ConfigNode::setMeta: metaNode " << m_name << " has new metaname " << name;
     m_name = name;
     m_value = value;
 
     if(m_key)
     {
-        //        deleteMeta(m_name);
-        //        qDebug() << "ConfigNode::setMeta: key " << QString::fromStdString(m_key.getName()) << " has new metakey " << name;
         m_key.setMeta(name.toStdString(), value.toString().toStdString());
     }
 }

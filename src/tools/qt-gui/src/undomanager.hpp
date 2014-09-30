@@ -11,6 +11,11 @@ class QUndoStack;
 
 /**
  * @brief The UndoManager class
+ *
+ * To add your own command, implement a class that inherits from QUndoCommand. This class will have an undo and redo method respectively.
+ * ATTENTION: you put the code of THE FIRST ACTION into the redo method. Redo will be called automatically when the command is put onto the QUndoStack.
+ * If you put the code of the initial action somewhere in your code and then put the command on the stack, the action will be performed twice. In the undo
+ * method you put the code that reverts the initial action. To execute the command, put your new command on the stack.
  */
 class UndoManager : public QObject
 {
@@ -40,7 +45,7 @@ public:
     UndoManager(UndoManager const & other);
 
     /**
-     * @brief
+     * @brief The destructor of this class.
      *
      */
     ~UndoManager();
