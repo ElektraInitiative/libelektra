@@ -1,12 +1,10 @@
-#from opt_support import *
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-// start of a generated file
-#ifndef $includeguard($args.output)
-#define $includeguard($args.output)
-
+@from opt_support import *
+@from util import util
+$util.header($args.output)
 #include "kdb.h"
 
 
@@ -37,4 +35,4 @@ const char *elektraGenHelpText();
 }
 #endif
 
-#endif // $includeguard($args.output)
+$util.footer($args.output)

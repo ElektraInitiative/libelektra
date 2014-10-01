@@ -1,9 +1,8 @@
-#from gen_support import *
-
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
+@from gen_support import *
 .\" Template for manpages
 .TH man 3 "08.02.2013" "1.0" "template man page"
 .SH NAME

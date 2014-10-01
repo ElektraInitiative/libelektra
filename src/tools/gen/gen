@@ -15,6 +15,12 @@ except ImportError:
 	print "Or visit http://www.cheetahtemplate.org"
 	sys.exit(1)
 
+def do_output(args, text):
+	if args.output == '-':
+		print text
+	else:
+		with open(args.output, 'w') as f:
+			f.write(text)
 
 def main():
 	parser = argparse.ArgumentParser(prog="kdb gen",
@@ -26,6 +32,9 @@ def main():
 	parser.add_argument("-v", "--verbose",
 		help="Prints the specification",
 		action="store_true")
+	parser.add_argument("-d", "--debug",
+		help="Start debugger if compilation is not successful",
+		action="store_true")
 	parser.add_argument("-p", "--python",
 		help="Generate python code that yields code instead of directly producing code (only the argument template is used)",
 		action="store_true")
@@ -33,12 +42,6 @@ def main():
 		help="Write the evaluated file to given file (- for stdout)",
 		default='-')
 	args = parser.parse_args()
-
-	if args.python:
-		from Cheetah.CheetahWrapper import CheetahWrapper
-		c = CheetahWrapper()
-		a = ["kdb gen", "compile", args.template]
-		c.main(a)
 
 	parser = ConfigParser.ConfigParser(allow_no_value=True)
 	parser.read(args.specification)
@@ -55,13 +58,33 @@ def main():
 	if args.verbose:
 		print parameterSpecification
 
-	template = str(Template(file=args.template,
-							searchList=[parameterSpecification]))
+	template = Template(file=args.template,
+		searchList=[parameterSpecification])
 
-	if args.output == '-':
-		print template
-	else:
-	   with open(args.output, 'w') as f:
-		   f.write(template)
+	try:
+		text = str(template)
+	except Exception as e:
+		if args.debug:
+			import pdb
+			pdb.post_mortem(e)
+
+		print "Compilation failed!"
+		print "Exception "+e.__class__.__name__+" was thrown"
+		print "Output file "+args.output+" contains python code"
+		text = template.generatedClassCode()
+
+		do_output(args, template.generatedModuleCode()+template.generatedClassCode())
+
+		raise
+
+	if args.python:
+		from Cheetah.CheetahWrapper import CheetahWrapper
+		c = CheetahWrapper()
+		a = ["kdb gen", "compile", args.template]
+		c.main(a)
+		return
+		#text = template.generatedModuleCode()+template.generatedClassCode()
+
+	do_output(args, text);
 
 main()

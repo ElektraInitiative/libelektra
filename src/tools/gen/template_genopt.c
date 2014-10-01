@@ -1,9 +1,11 @@
-#from opt_support import *
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-// start of a generated file
+@from util import util
+@from opt_support import *
+@set support = CSupport()
+$util.header($args.output)
 #ifdef __cplusplus
 #include "genopt.hpp"
 #else
@@ -136,7 +138,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 		@end if
 		@if $info.get('range')
 				{
-					$typeof(info) check;
+					$support.typeof(info) check;
 					char *endptr;
 					errno = 0;
 					check = strtol(optarg, &endptr, 10);
@@ -152,22 +154,22 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 						retval |= 8;
 						break;
 					}
-					if (check < $min(info))
+					if (check < $support.min(info))
 					{
 						retval |= 16;
 						break;
 					}
-					if (check > $max(info))
+					if (check > $support.max(info))
 					{
 						retval |= 32;
 						break;
 					}
 				}
 		@end if
-		@if $isenum(info):
+		@if $support.isenum(info):
 				if(!(
-				   !strcmp(optarg, "${enumval(info)[0]}")
-			@for $enum in $enumval(info)[1:]
+				   !strcmp(optarg, "${support.enumval(info)[0]}")
+			@for $enum in $support.enumval(info)[1:]
 				   || !strcmp(optarg, "$enum")
 			@end for
 				  ))
@@ -176,10 +178,10 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 					break;
 				}
 		@end if
-				found = ksLookupByName(ks, "$userkey(key)", 0);
+				found = ksLookupByName(ks, "$support.userkey(key)", 0);
 				if(!found)
 				{
-					ksAppendKey(ks, keyNew("$userkey(key)",
+					ksAppendKey(ks, keyNew("$support.userkey(key)",
 							KEY_VALUE, $optarg(info),
 							KEY_END));
 				}
@@ -217,3 +219,4 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 }
 //extern "C"
 #endif
+$util.footer($args.output)

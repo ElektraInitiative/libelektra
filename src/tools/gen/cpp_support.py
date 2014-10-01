@@ -1,36 +1,38 @@
 from c_support import *
 
-#todo: duplicate
-def funcname(key):
-	if key.startswith('/'):
-		return funcpretty(key[1:])
-	elif key.startswith('user/'):
-		return funcpretty(key[5:])
-	elif key.startswith('system/'):
-		return funcpretty(key[7:])
-	else:
-		raise Exception("invalid keyname " + key)
+class CppSupport(CSupport):
+	def funcpretty(self, key):
+		"""Return pretty printed key name for functions"""
+		return key.title().replace('_','').replace('/','').replace('#','')
 
-def funcpretty(key):
-	"""Return pretty printed key name for functions"""
-	return key.title().replace('_','').replace('/','').replace('#','')
+	def getfuncname(self, key):
+		"""CamelCase"""
+		return "get"+self.funcname(key)
 
-def valof(info):
-	"""Return the default value for given parameter"""
-	val = info["default"]
-	type = info["type"]
-	if isenum(info):
-		return " = "+enumname(info)+"::"+val+";"
-	elif type == "string" and val == "":
-		return ' = "";'
-	return " = "+val+";"
+	def setfuncname(self, key):
+		"""CamelCase"""
+		return "set"+self.funcname(key)
 
-def typeof(info):
-	"""Return the type for given parameter"""
-	type = info["type"]
-	if type == "string":
-		return "std::string"
-	elif isenum(info):
-		return enumname(info)
-	else:
-		return "kdb::"+type+"_t"
+	def valof(self, info):
+		"""Return the default value for given parameter"""
+		val = info["default"]
+		type = info["type"]
+		if self.isenum(info):
+			return " = "+self.enumname(info)+"::"+val+";"
+		elif type == "string" and val == "":
+			return ' = "";'
+		return " = "+val+";"
+
+	def typeof(self, info):
+		"""Return the type for given parameter"""
+		type = info["type"]
+		if type == "string":
+			return "std::string"
+		elif self.isenum(info):
+			return self.enumname(info)
+		else:
+			return "kdb::"+type+"_t"
+
+if __name__ == "__main__":
+	import doctest
+	doctest.testmod()

@@ -21,7 +21,10 @@ FLAGS = -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
 all:lift cpplift nestedlift contextlift contextvisit lift.html lift.3
 
 util.py:util.tmpl
-	${GEN} -p specification.ini util.tmpl
+	${GEN} -p specification.ini util.tmpl -o util.py
+
+cpp_util.py:cpp_util.tmpl
+	${GEN} -p specification.ini cpp_util.tmpl -o cpp_util.py
 
 lift.html:${GEN} specification.ini template.html util.py
 	${GEN} specification.ini template.html -o lift.html
@@ -32,16 +35,16 @@ lift.3:${GEN} specification.ini template.man util.py
 lift.h:${GEN} specification.ini template.h c_support.py util.py
 	${GEN} specification.ini template.h -o lift.h
 
-lift.hpp:${GEN} specification.ini template.hpp util.py
+lift.hpp:${GEN} specification.ini template.hpp util.py cpp_util.py
 	${GEN} specification.ini template.hpp -o lift.hpp
 
-lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py util.py
+lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py util.py cpp_util.py
 	${GEN} specification.ini template_nested.hpp -o lift_nested.hpp
 
-lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py util.py
+lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py util.py cpp_util.py
 	${GEN} specification.ini template_context.hpp -o lift_context.hpp
 
-visit_context.hpp:${GEN} visit_specification.ini template_context.hpp context_support.py util.py
+visit_context.hpp:${GEN} visit_specification.ini template_context.hpp context_support.py util.py cpp_util.py
 	${GEN} visit_specification.ini template_context.hpp -o visit_context.hpp
 
 genopt.c:${GEN} specification.ini template_genopt.c opt_support.py util.py
@@ -82,4 +85,5 @@ clean:
 	rm -f contextlift
 	rm -f visit_context.hpp
 	rm -f contextvisit
-	rm -f util.py
+	rm -f util.py util.py.bak
+	rm -f cpp_util.py cpp_util.py.bak
