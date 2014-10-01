@@ -569,3 +569,9 @@ description:writing multiline values is not enabled
 severity:error
 ingroup:plugin
 module:storage
+
+number: 98
+description:invalid ini syntax
+severity:error
+ingroup:plugin
+module:storage

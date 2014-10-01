@@ -22,7 +22,7 @@
 #include <tests_plugin.h>
 
 
-void test_plainIniRead(char *fileName)
+static void test_plainIniRead(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
@@ -57,11 +57,10 @@ void test_plainIniRead(char *fileName)
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 }
 
-void test_plainIniWrite(char *fileName)
+static void test_plainIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
@@ -98,12 +97,11 @@ void test_plainIniWrite(char *fileName)
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 }
 
 
-void test_commentIniRead(char *fileName)
+static void test_commentIniRead(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
@@ -139,11 +137,10 @@ void test_commentIniRead(char *fileName)
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 }
 
-void test_commentIniWrite(char *fileName)
+static void test_commentIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
@@ -170,19 +167,17 @@ void test_commentIniWrite(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if(
-			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 }
 
 
-void test_multilineIniRead(char *fileName)
+static void test_multilineIniRead(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-multiline-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
@@ -214,11 +209,10 @@ void test_multilineIniRead(char *fileName)
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 }
 
-void test_multilineIniWrite(char *fileName)
+static void test_multilineIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
@@ -246,17 +240,15 @@ void test_multilineIniWrite(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if(
-			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 }
-void test_multilineIniInvalidConfigWrite()
+static void test_multilineIniInvalidConfigWrite()
 {
 	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
@@ -281,8 +273,7 @@ void test_multilineIniInvalidConfigWrite()
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ()
-	;
+	PLUGIN_CLOSE ();
 }
 
 int main(int argc, char** argv)
