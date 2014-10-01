@@ -82,6 +82,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	else
 	{
 		Key *existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE);
+		keyDel (appendKey);
 
 		/* something went wrong before because this key should exist */
 		if (!existingKey) return -1;
