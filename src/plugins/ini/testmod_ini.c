@@ -181,6 +181,110 @@ void test_commentIniWrite(char *fileName)
 	;
 }
 
+
+void test_multilineIniRead(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-multiline-read", KEY_VALUE,
+			srcdir_file(fileName), KEY_END);
+
+	KeySet *conf = ksNew(30,
+			keyNew ("system/multiline", KEY_VALUE, "1", KEY_END),
+			KS_END);
+	PLUGIN_OPEN ("ini");
+
+	KeySet *ks = ksNew(0, KS_END);
+
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	Key *key = ksLookupByName (ks, "user/tests/ini-multiline-read/multilinesection/key1", KDB_O_NONE);
+	exit_if_fail(key, "key1 not found");
+	succeed_if (!strcmp ("value1\nwith continuation\nlines", keyString(key)), "key1 contained invalid data");
+
+	key = ksLookupByName (ks, "user/tests/ini-multiline-read/singlelinesection/key2", KDB_O_NONE);
+	exit_if_fail(key, "key2 not found");
+	succeed_if (!strcmp ("", keyString(key)), "key2 contained invalid data");
+
+	key = ksLookupByName (ks, "user/tests/ini-multiline-read/singlelinesection/key3", KDB_O_NONE);
+	exit_if_fail(key, "key3 not found");
+	succeed_if (!strcmp ("value3", keyString(key)), "key3 contained invalid data");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ()
+	;
+}
+
+void test_multilineIniWrite(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
+			elektraFilename(), KEY_END);
+	KeySet *conf = ksNew(30,
+			keyNew ("system/multiline", KEY_VALUE, "1", KEY_END),
+			KS_END);
+	PLUGIN_OPEN("ini");
+
+	KeySet *ks = ksNew (30,
+			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_DIR, KEY_END),
+			keyNew ("user/tests/ini-multiline-write/multilinesection/key1",
+					KEY_VALUE, "value1\nwith continuation\nlines",
+					KEY_END),
+			keyNew ("user/tests/ini-multiline-write/singlelinesection", KEY_DIR, KEY_END),
+			keyNew ("user/tests/ini-multiline-write/singlelinesection/key2",
+					KEY_VALUE, "",
+					KEY_END),
+			keyNew ("user/tests/ini-multiline-write/singlelinesection/key3",
+					KEY_VALUE, "value3",
+					KEY_END),
+			KS_END);
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(
+			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ()
+	;
+}
+void test_multilineIniInvalidConfigWrite()
+{
+	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
+			elektraFilename(), KEY_END);
+	KeySet *conf = ksNew(0, KS_END);
+	PLUGIN_OPEN("ini");
+
+	KeySet *ks = ksNew (30,
+			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_DIR, KEY_END),
+			keyNew ("user/tests/ini-multiline-write/multilinesection/key1",
+					KEY_VALUE, "value1\nwith continuation\nlines",
+					KEY_END),
+			KS_END);
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) < 0,
+			"call to kdbSet was successful, but should fail");
+
+	const Key *metaError = keyGetMeta(parentKey, "error");
+	exit_if_fail(metaError, "No error was produced on the parentKey");
+
+	succeed_if(!strcmp(keyString(keyGetMeta(parentKey, "error/number")), "97"), "The plugin threw the wrong error");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ()
+	;
+}
+
 int main(int argc, char** argv)
 {
 	printf ("INI       TESTS\n");
@@ -192,8 +296,11 @@ int main(int argc, char** argv)
 	test_plainIniWrite ("ini/plainini");
 	test_commentIniRead ("ini/commentini");
 	test_commentIniWrite ("ini/commentini");
+	test_multilineIniRead ("ini/multilineini");
+	test_multilineIniWrite("ini/multilineini");
+	test_multilineIniInvalidConfigWrite();
 
-	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
+	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
 
 	return nbError;
