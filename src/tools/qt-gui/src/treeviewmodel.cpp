@@ -215,7 +215,7 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
 
     QByteArray executable = QString("kdb").toLocal8Bit();
     QByteArray commandName = QString("export").toLocal8Bit();
-    QByteArray exportName = node->getName().toLocal8Bit();
+    QByteArray exportName = node->getPath().toLocal8Bit();
     QByteArray exportFormat = format.toLocal8Bit();
     QByteArray exportFile = file.toLocal8Bit();
 
@@ -234,39 +234,30 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         }
         catch (std::invalid_argument const& ia)
         {
-            cerr << "Invalid arguments passed: " << ia.what()
-                 << endl << endl;
-            cerr << cl << endl;
+            emit showError("Invalid arguments passed: " + QString(ia.what()), "", "");
         }
     }
     catch (CommandException const& ce)
     {
-        std::cerr << "The command "
-                  << command
-                  << " terminated unsuccessfully with the info: "
-                  << ce.what()
-                  << std::endl;
+        emit showError("Exporting the file terminated unsuccessfully with the info: " + QString(ce.what()), "", "");
     }
     catch (kdb::Key& key)
     {
-        std::cerr << "The command "
-                  << command << " failed while accessing the key database"
-                  << std::endl;
-        printWarnings(cerr, key);
-        printError(cerr, key);
+        stringstream ws;
+        stringstream es;
+
+        ws << printWarnings(cerr, key);
+        es << printError(cerr, key);
+
+        emit showError("Exporting the file failed while accessing the key database", QString::fromStdString(ws.str()), QString::fromStdString(es.str()));
     }
     catch (std::exception const& ce)
     {
-        std::cerr << "The command "
-                  << command
-                  << " terminated unsuccessfully with the info: "
-                  << std::endl
-                  << ce.what()
-                  << std::endl;
+        emit showError("Exporting the file terminated unsuccessfully with the info: " + QString(ce.what()), "", "");
     }
     catch (...)
     {
-        std::cerr << "Unknown error" << std::endl;
+        emit showError("Unknown error", "", "");
     }
 }
 

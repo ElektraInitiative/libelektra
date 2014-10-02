@@ -36,6 +36,21 @@ ApplicationWindow {
     property int defaultSpacing: 4
     property int defaultMargins: 8
 
+    Connections {
+        target: externTreeModel
+        onShowError: {
+            showError(text, detailedText, informativeText)
+        }
+    }
+
+    function showError(text, detailedText, informativeText) {
+        generalErrorDialog.text = text
+        generalErrorDialog.detailedText = detailedText
+        generalErrorDialog.informativeText = informativeText
+
+        generalErrorDialog.open()
+    }
+
     //Get access to system colors
     SystemPalette {
         id: activePalette
@@ -89,6 +104,13 @@ ApplicationWindow {
         title: qsTr("No Node selected")
         icon: StandardIcon.Critical
         text: qsTr("Please select a node to export the configuration below.")
+    }
+
+    MessageDialog {
+        id:generalErrorDialog
+
+        title: qsTr("Error")
+        icon: StandardIcon.Critical
     }
 
     FileDialog {
