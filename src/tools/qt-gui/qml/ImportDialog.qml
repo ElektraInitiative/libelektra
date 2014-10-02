@@ -36,8 +36,10 @@ BasicWindow {
             }
             GroupBox {
                 id: importMergeGroup
+
                 title: qsTr("Merge Strategy:")
                 flat: true
+
                 RowLayout {
                     ExclusiveGroup { id: group }
                     RadioButton {
@@ -61,4 +63,15 @@ BasicWindow {
     cancelButton.onClicked: {
         importTextField.text = ""
     }
+    okButton.onClicked: {
+        if(treeView.currentNode !== null)
+            externTreeModel.importConfiguration(treeView.currentNode.node, "dump", importTextField.text, "preserve")
+        else{
+            noNodeSelectedDialog.text = qsTr("Please select a node to import a configuration from file.")
+            noNodeSelectedDialog.open()
+        }
+
+        importDialog.close()
+    }
+
 }

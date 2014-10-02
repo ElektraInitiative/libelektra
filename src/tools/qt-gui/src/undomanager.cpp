@@ -5,6 +5,7 @@
 #include "newkeycommand.hpp"
 #include "copykeycommand.hpp"
 #include "cutkeycommand.hpp"
+#include "importconfigurationcommand.hpp"
 
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
@@ -70,6 +71,11 @@ void UndoManager::createCopyKeyCommand(ConfigNode *target)
 void UndoManager::createCutKeyCommand(ConfigNode *target)
 {
     m_undoStack->push(new CutKeyCommand(qvariant_cast<TreeViewModel*>(m_clipboard->property("model")), qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target, m_clipboard->property("index").toInt()));
+}
+
+void UndoManager::createImportConfigurationCommand(ConfigNode *node, QString format, QString file, QString mergeStrategy)
+{
+    m_undoStack->push(new ImportConfigurationCommand(node, format, file, mergeStrategy));
 }
 
 void UndoManager::setClean()

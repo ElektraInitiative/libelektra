@@ -199,9 +199,65 @@ int TreeViewModel::getIndexByName(const QString &name) const
     return -1;
 }
 
-void TreeViewModel::importConfiguration(ConfigNode *node, QString file, QString format, int mergeStrategy)
+void TreeViewModel::importConfiguration(ConfigNode *node, QString format, QString file, QString mergeStrategy)
 {
+    synchronize();
 
+    file.remove("file://");
+
+    Factory f;
+
+    QByteArray executable = QString("kdb").toLocal8Bit();
+    QByteArray commandName = QString("import").toLocal8Bit();
+    QByteArray importName = node->getPath().toLocal8Bit();
+    QByteArray importFormat = format.toLocal8Bit();
+    QByteArray importFile = file.toLocal8Bit();
+    QByteArray importMergeStrategy = QString("-s" + mergeStrategy).toLocal8Bit();
+
+    char *argv[] = {executable.data(), commandName.data(), importName.data(), importFormat.data(), importFile.data(), importMergeStrategy.data(), NULL};
+
+    string command = argv[1];
+
+    try {
+        CommandPtr cmd = f.get(command);
+
+        Cmdline cl(6, argv, cmd.get());
+
+        try
+        {
+            cmd->execute(cl);
+        }
+        catch (std::invalid_argument const& ia)
+        {
+            emit showError("Invalid arguments passed:", QString(ia.what()), "");
+        }
+    }
+    catch (CommandException const& ce)
+    {
+        emit showError("Importing the file terminated unsuccessfully with the info:", QString(ce.what()), "");
+    }
+    catch (kdb::Key& key)
+    {
+        stringstream ws;
+        stringstream es;
+
+        ws << printWarnings(cerr, key);
+        es << printError(cerr, key);
+
+        emit showError("Importing the file failed while accessing the key database", QString::fromStdString(ws.str()) + QString::fromStdString(es.str()), "");
+    }
+    catch (std::exception const& ce)
+    {
+        emit showError("Importing the file terminated unsuccessfully with the info:", QString(ce.what()), "");
+    }
+    catch (...)
+    {
+        emit showError("Unknown error", "", "");
+    }
+
+    m_kdb.get(m_keySet, "");
+
+    synchronize();
 }
 
 void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QString file)
@@ -234,12 +290,12 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         }
         catch (std::invalid_argument const& ia)
         {
-            emit showError("Invalid arguments passed: " + QString(ia.what()), "", "");
+            emit showError("Invalid arguments passed:", QString(ia.what()), "");
         }
     }
     catch (CommandException const& ce)
     {
-        emit showError("Exporting the file terminated unsuccessfully with the info: " + QString(ce.what()), "", "");
+        emit showError("Exporting the file terminated unsuccessfully with the info:", QString(ce.what()), "");
     }
     catch (kdb::Key& key)
     {
@@ -249,11 +305,11 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         ws << printWarnings(cerr, key);
         es << printError(cerr, key);
 
-        emit showError("Exporting the file failed while accessing the key database", QString::fromStdString(ws.str()), QString::fromStdString(es.str()));
+        emit showError("Exporting the file failed while accessing the key database", QString::fromStdString(ws.str()) + QString::fromStdString(es.str()), "");
     }
     catch (std::exception const& ce)
     {
-        emit showError("Exporting the file terminated unsuccessfully with the info: " + QString(ce.what()), "", "");
+        emit showError("Exporting the file terminated unsuccessfully with the info:", QString(ce.what()), "");
     }
     catch (...)
     {
@@ -304,8 +360,8 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 
 void TreeViewModel::populateModel()
 {
-    ConfigNode* system = new ConfigNode("system", "system", 0, this);
-    ConfigNode* user = new ConfigNode("user", "user", 0, this);
+    ConfigNode* system = new ConfigNode("system", "system", m_keySet.lookup("system"), this);
+    ConfigNode* user = new ConfigNode("user", "user", m_keySet.lookup("user"), this);
 
     m_model << system << user;
 
@@ -314,8 +370,6 @@ void TreeViewModel::populateModel()
     while (m_keySet.next())
     {
         QString currentKey = QString::fromStdString(m_keySet.current().getName());
-
-        //        qDebug() << "TreeViewModel::populateModel: currentKey: " << currentKey;
 
         QStringList keys = currentKey.split("/");
         QString root = keys.takeFirst();
@@ -481,7 +535,14 @@ void TreeViewModel::synchronize()
     KeySetVisitor ksVisit(m_keySet);
     accept(ksVisit);
     m_keySet = ksVisit.getKeySet();
-    m_kdb.set(m_keySet, "/");
+
+    try{
+        m_kdb.set(m_keySet, "/");
+    }
+    catch (kdb::KDBException const & e){
+        emit showError("Synchronizing failed due to the following error:", QString(e.what()), "");
+    }
+
     populateModel();
 }
 

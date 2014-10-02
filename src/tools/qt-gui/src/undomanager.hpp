@@ -144,6 +144,8 @@ public:
      */
     Q_INVOKABLE void createCutKeyCommand(ConfigNode *target);
 
+    Q_INVOKABLE void createImportConfigurationCommand(ConfigNode *node, QString format, QString file, QString mergeStrategy);
+
     /**
      * @brief This function is called when the configuration is saved; if the user closes the application
      * in a clean state, she will not be asked to save the configuration again.

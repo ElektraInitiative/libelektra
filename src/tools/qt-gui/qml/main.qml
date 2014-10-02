@@ -38,15 +38,16 @@ ApplicationWindow {
 
     Connections {
         target: externTreeModel
+
         onShowError: {
-            showError(text, detailedText, informativeText)
+            showError(text, informativeText, detailedText)
         }
     }
 
-    function showError(text, detailedText, informativeText) {
+    function showError(text, informativeText, detailedText) {
         generalErrorDialog.text = text
-        generalErrorDialog.detailedText = detailedText
         generalErrorDialog.informativeText = informativeText
+        generalErrorDialog.detailedText = detailedText
 
         generalErrorDialog.open()
     }

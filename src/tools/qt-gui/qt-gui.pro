@@ -42,7 +42,8 @@ SOURCES += \
     ../kdb/shell.cpp \
     ../kdb/test.cpp \
     ../kdb/umount.cpp \
-    ../kdb/validation.cpp
+    ../kdb/validation.cpp \
+    src/importconfigurationcommand.cpp
 
 HEADERS += \
     src/treeviewmodel.hpp \
@@ -89,6 +90,7 @@ HEADERS += \
     ../kdb/test.hpp \
     ../kdb/umount.hpp \
     ../kdb/validation.hpp \
+    src/importconfigurationcommand.hpp
 
 CONFIG += debug
 

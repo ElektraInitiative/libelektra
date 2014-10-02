@@ -165,7 +165,7 @@ public:
      */
     Q_INVOKABLE void            exportConfiguration(ConfigNode *node, QString format, QString file);
 
-    Q_INVOKABLE void            importConfiguration(ConfigNode *node, QString file, QString format, int mergeStrategy);
+    Q_INVOKABLE void            importConfiguration(ConfigNode *node, QString file, QString format, QString mergeStrategy);
 
 private:
 
@@ -197,7 +197,7 @@ protected:
     QHash<int, QByteArray>      roleNames() const;
 
 signals:
-    void showError(QString text, QString detailedText, QString informativeText);
+    void showError(QString text, QString informativeText, QString detailedText);
 };
 
 Q_DECLARE_METATYPE(TreeViewModel)
