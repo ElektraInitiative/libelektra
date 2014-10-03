@@ -8,10 +8,11 @@
 class KeySetVisitor : public Visitor
 {
 public:
-    explicit KeySetVisitor(kdb::KeySet &keySet);
+    explicit KeySetVisitor();
     void visit(ConfigNode *node);
     void visit(TreeViewModel *model);
-    kdb::KeySet& getKeySet();
+    kdb::KeySet getKeySet();
+
 
 private:
     kdb::KeySet m_set;

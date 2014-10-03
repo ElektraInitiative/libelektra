@@ -189,6 +189,8 @@ public:
      */
     void                        setParentModel(TreeViewModel *parent);
 
+    void                        clear();
+
 private:
     // TODO: not needed if we hold the Key
     QString m_name;

@@ -144,7 +144,7 @@ public:
      */
     Q_INVOKABLE void createCutKeyCommand(ConfigNode *target);
 
-    Q_INVOKABLE void createImportConfigurationCommand(ConfigNode *node, QString format, QString file, QString mergeStrategy);
+    Q_INVOKABLE void createImportConfigurationCommand(TreeViewModel *model, const QString &name, const QString &format, const QString &file, const QString &mergeStrategy);
 
     /**
      * @brief This function is called when the configuration is saved; if the user closes the application
@@ -159,6 +159,7 @@ public:
      * @return True if the UndoStack is in a clean state.
      */
     Q_INVOKABLE bool isClean();
+
 
 Q_SIGNALS:
 

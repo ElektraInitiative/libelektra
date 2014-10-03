@@ -198,6 +198,14 @@ void ConfigNode::setParentModel(TreeViewModel *parent)
     m_parentModel = parent;
 }
 
+void ConfigNode::clear()
+{
+    foreach(ConfigNode *node, m_children->model()){
+        node->clear();
+        m_children->removeRow(m_children->getIndexByName(node->getName()));
+    }
+}
+
 void ConfigNode::populateMetaModel()
 {
     if (m_key)

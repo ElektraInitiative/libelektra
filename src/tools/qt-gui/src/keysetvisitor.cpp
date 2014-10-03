@@ -2,10 +2,7 @@
 
 using namespace kdb;
 
-KeySetVisitor::KeySetVisitor(KeySet &keySet)
-{
-    m_set = keySet;
-}
+KeySetVisitor::KeySetVisitor() {}
 
 void KeySetVisitor::visit(ConfigNode *node)
 {
@@ -15,22 +12,23 @@ void KeySetVisitor::visit(ConfigNode *node)
         qDebug() << "Appending key " << QString::fromStdString(key.getName());
         m_set.append(key);
     }
+    else if(!key){
+        qDebug() << "Key of node " << node->getName() << " is null";
+    }
     else{
-        qDebug() << "Key of node " << node->getName() << " is null or invalid";
+        qDebug() << "Key of node " << node->getName() << " is invalid";
     }
 }
 
 void KeySetVisitor::visit(TreeViewModel *model)
 {
-    qDebug() << "===================================";
+    qDebug() << "===============start Visit==============";
     foreach (ConfigNode *node, model->model())
         node->accept(*this);
-    qDebug() << "===================================";
-
-    model->populateModel();
+    qDebug() << "===============end Visit================";
 }
 
-KeySet &KeySetVisitor::getKeySet()
+KeySet KeySetVisitor::getKeySet()
 {
-    return m_set;
+    return m_set.dup();
 }

@@ -165,7 +165,11 @@ public:
      */
     Q_INVOKABLE void            exportConfiguration(ConfigNode *node, QString format, QString file);
 
-    Q_INVOKABLE void            importConfiguration(ConfigNode *node, QString file, QString format, QString mergeStrategy);
+    Q_INVOKABLE void            importConfiguration(const QString &name, const QString &file, QString &format, const QString &mergeStrategy);
+
+    void setKeySet(kdb::KeySet set);
+
+    void collectCurrentKeySet();
 
 private:
 
