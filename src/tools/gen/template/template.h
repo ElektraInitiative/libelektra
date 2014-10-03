@@ -3,7 +3,7 @@ directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 @from util import util
-@from c_support import *
+@from support.c import *
 @set support = CSupport()
 $util.header($args.output)
 #include "kdb.h"

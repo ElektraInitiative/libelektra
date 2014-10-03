@@ -4,7 +4,7 @@ cheetahVarStartToken = $
 #end compiler-settings
 @from util import util
 @from cpp_util import cpp_util
-@from cpp_support import *
+@from support.cpp import *
 @set support = CppSupport()
 $util.header($args.output)
 #include "kdb.hpp"

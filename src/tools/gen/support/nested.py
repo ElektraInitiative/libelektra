@@ -1,5 +1,5 @@
-from cpp_support import *
-from kdb_support import *
+from support.cpp import *
+from support.kdb import *
 
 class NestedSupport(CppSupport):
 	def nsname(self, key):

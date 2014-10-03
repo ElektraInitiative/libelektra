@@ -2,7 +2,7 @@
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-@from context_support import *
+@from support.context import *
 @from util import util
 @from cpp_util import cpp_util
 @set support = ContextSupport()

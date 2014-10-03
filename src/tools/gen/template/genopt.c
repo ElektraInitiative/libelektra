@@ -3,7 +3,8 @@ directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 @from util import util
-@from opt_support import *
+@from support.c import *
+@from support.genopt import *
 @set support = CSupport()
 $util.header($args.output)
 #ifdef __cplusplus

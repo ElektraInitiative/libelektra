@@ -1,5 +1,5 @@
-from nested_support import *
-from kdb_support import *
+from support.nested import *
+from support.kdb import *
 
 class ContextSupport(NestedSupport):
 	def funcpretty(self, key):

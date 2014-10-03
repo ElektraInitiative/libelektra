@@ -1,4 +1,4 @@
-#from util_support import *
+#from support.cpp import *
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $

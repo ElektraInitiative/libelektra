@@ -3,7 +3,7 @@ directiveStartToken = @
 cheetahVarStartToken = $
 useAutocalling = false
 #end compiler-settings
-@from nested_support import *
+@from support.nested import *
 @from util import util
 @from cpp_util import cpp_util
 @set support = NestedSupport()

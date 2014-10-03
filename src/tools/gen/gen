@@ -38,6 +38,9 @@ def main():
 	parser.add_argument("-p", "--python",
 		help="Generate python code that yields code instead of directly producing code (only the argument template is used)",
 		action="store_true")
+	parser.add_argument("-c", "--classname",
+		help="Name of the class when python code is generated",
+		default="util")
 	parser.add_argument("-o", "--output",
 		help="Write the evaluated file to given file (- for stdout)",
 		default='-')
@@ -78,11 +81,19 @@ def main():
 		raise
 
 	if args.python:
-		from Cheetah.CheetahWrapper import CheetahWrapper
-		c = CheetahWrapper()
-		a = ["kdb gen", "compile", args.template]
-		c.main(a)
-		return
+		#from Cheetah.CheetahWrapper import CheetahWrapper
+		#c = CheetahWrapper()
+		#a = ["kdb gen", "compile", args.template]
+		#c.main(a)
+		#return
+
+		text = Template.compile(file=args.template,
+			returnAClass=False,
+			moduleName=args.classname,
+			className=args.classname,
+			#commandlineopts=self.opts,
+			#compilerSettings=compilerSettings
+			)
 		#text = template.generatedModuleCode()+template.generatedClassCode()
 
 	do_output(args, text);

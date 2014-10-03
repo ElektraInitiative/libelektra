@@ -2,7 +2,7 @@
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-@from opt_support import *
+@from support.genopt import *
 @from util import util
 $util.header($args.output)
 #include "kdb.h"

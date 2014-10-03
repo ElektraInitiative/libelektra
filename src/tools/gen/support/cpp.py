@@ -1,4 +1,4 @@
-from c_support import *
+from support.c import *
 
 class CppSupport(CSupport):
 	def funcpretty(self, key):

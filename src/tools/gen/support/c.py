@@ -1,4 +1,5 @@
-from gen_support import *
+from support.gen import *
+from support.util import *
 
 class CSupport(Support):
 	def funcname(self, key):
