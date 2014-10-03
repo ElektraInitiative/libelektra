@@ -49,33 +49,7 @@ private:
  */
 inline $support.typeof(info) Parameters::$support.getfuncname($key)() const
 {
-@if $len(support.override(info)) > 0
-	// override
-	kdb::Key found = ks.lookup("${support.override(info)[0]}", 0);
-@for $o in $support.override(info)[1:]
-	if (!found)
-	{
-		found = ks.lookup("$o", 0);
-	}
-@end for
-	// now the key itself
-	if(!found)
-	{
-		found = ks.lookup("$key", 0);
-	}
-@else
-	kdb::Key found = ks.lookup("$key", 0);
-@end if
-
-@if $len(support.fallback(info)) > 0
-	// fallback
-@for $f in $support.fallback(info)
-	if (!found)
-	{
-		found = ks.lookup("$f", 0);
-	}
-@end for
-@end if
+	$cpp_util.generateGetBySpec(support, support.quote(key), info)
 
 	$support.typeof(info) ret $support.valof(info)
 

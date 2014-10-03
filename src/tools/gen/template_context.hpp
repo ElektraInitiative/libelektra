@@ -3,9 +3,9 @@ directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
 @from context_support import *
-@set support = ContextSupport()
 @from util import util
 @from cpp_util import cpp_util
+@set support = ContextSupport()
 $util.header($args.output)
 #include "contextual.hpp"
 #include "kdbtypes.h"
@@ -35,32 +35,6 @@ inline kdb::none_t Key::get() const
 
 
 
-@def outputForwardDecl(support, hierarchy)
-@if not hierarchy.children
-@return
-@end if
-
-@for n in hierarchy.name.split('/')[1:-1]
-namespace $support.nsnpretty($n)
-{
-@end for
-
-class $hierarchy.prettyclassname(support);
-
-@for n in hierarchy.name.split('/')[1:-1]
-}
-@end for
-
-@for $child in hierarchy.children
-$outputForwardDecl(support, child)
-@end for
-
-@end def
-
-
-
-
-
 
 
 
@@ -84,38 +58,12 @@ namespace $support.nsnpretty($n)
 class ${hierarchy.prettyclassname(support)}GetPolicy
 {
 public:
-	static kdb::Key get(kdb::KeySet &ks, kdb::Key const& spec)
-	{
-	@if len($support.override(hierarchy.info)) > 0
-		// override
-		kdb::Key found = ks.lookup("${support.override(hierarchy.info)[0]}", 0);
-	@for $o in $support.override(hierarchy.info)[1:]
-		if (!found)
-		{
-			found = ks.lookup("$o", 0);
-		}
-	@end for
-		// now the key itself
-		if(!found)
-		{
-			found = ks.lookup(spec.getName(), 0);
-		}
-	@else
-		kdb::Key found = ks.lookup(spec.getName(), 0);
-	@end if
+static kdb::Key get(kdb::KeySet &ks, kdb::Key const& spec)
+{
+	$cpp_util.generateGetBySpec(support, "spec.getName()",  hierarchy.info)
 
-	@if len($support.fallback(hierarchy.info)) > 0
-		// fallback
-	@for $f in $support.fallback(hierarchy.info)
-		if (!found)
-		{
-			found = ks.lookup("$f", 0);
-		}
-	@end for
-	@end if
-
-		return found;
-	}
+	return found;
+}
 };
 
 /** \brief class of $hierarchy.name
@@ -211,7 +159,7 @@ $hierarchy
 */
 
 
-$outputForwardDecl(support, hierarchy)
+$cpp_util.generateForwardDecl($support, $hierarchy)
 $outputClasses(support, hierarchy)
 
 } // namespace kdb

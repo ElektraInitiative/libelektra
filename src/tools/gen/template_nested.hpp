@@ -8,7 +8,6 @@ useAutocalling = false
 @from cpp_util import cpp_util
 @set support = NestedSupport()
 $util.header($args.output)
-
 #include "kdb.hpp"
 #include "kdbtypes.h"
 
@@ -21,27 +20,6 @@ $cpp_util.generateenum($support, $parameters)
 $cpp_util.generatebool($support)
 
 
-@def outputForwardDecl(support, hierarchy)
-@if not hierarchy.children
-@return
-@end if
-
-@for n in hierarchy.name.split('/')[1:-1]
-namespace ${support.nsnpretty($n)}
-{
-@end for
-
-class ${hierarchy.prettyclassname($support)};
-
-@for n in hierarchy.name.split('/')[1:-1]
-}
-@end for
-
-@for $child in hierarchy.children
-$outputForwardDecl(support, child)
-@end for
-
-@end def
 
 
 
@@ -134,7 +112,7 @@ $hierarchy
 */
 
 
-$outputForwardDecl(support, hierarchy)
+$cpp_util.generateForwardDecl($support, $hierarchy)
 $outputClasses(support, hierarchy)
 
 @for $key, $info in $parameters.iteritems()
@@ -148,33 +126,7 @@ $outputClasses(support, hierarchy)
  */
 inline $support.typeof(info) $support.nsname($key)${support.classname($key)}::$support.getfuncname($key)() const
 {
-@if $len(support.override(info)) > 0
-	// override
-	kdb::Key found = ks.lookup("${support.override(info)[0]}", 0);
-@for $o in $support.override(info)[1:]
-	if (!found)
-	{
-		found = ks.lookup("$o", 0);
-	}
-@end for
-	// now the key itself
-	if(!found)
-	{
-		found = ks.lookup("$key", 0);
-	}
-@else
-	kdb::Key found = ks.lookup("$key", 0);
-@end if
-
-@if $len(support.fallback(info)) > 0
-	// fallback
-@for $f in $support.fallback(info)
-	if (!found)
-	{
-		found = ks.lookup("$f", 0);
-	}
-@end for
-@end if
+	$cpp_util.generateGetBySpec(support, support.quote(key), info)
 
 	$support.typeof(info) ret $support.valof(info)
 

@@ -95,3 +95,58 @@ inline bool Key::get() const
 	return ret;
 }
 @end def
+
+
+@@staticmethod
+@def generateForwardDecl(support, hierarchy)
+@if not hierarchy.children
+@return
+@end if
+
+@for n in hierarchy.name.split('/')[1:-1]
+namespace ${support.nsnpretty($n)}
+{
+@end for
+
+class ${hierarchy.prettyclassname($support)};
+
+@for n in hierarchy.name.split('/')[1:-1]
+}
+@end for
+
+@for $child in hierarchy.children
+$cpp_util.generateForwardDecl(support, child)
+@end for
+
+@end def
+
+@@staticmethod
+@def generateGetBySpec(support, key, info)
+@if len($support.override(info)) > 0
+	// override
+	kdb::Key found = ks.lookup("${support.override(info)[0]}", 0);
+@for $o in $support.override(info)[1:]
+	if (!found)
+	{
+		found = ks.lookup("$o", 0);
+	}
+@end for
+	// now the key itself
+	if(!found)
+	{
+		found = ks.lookup($key, 0);
+	}
+@else
+	kdb::Key found = ks.lookup($key, 0);
+@end if
+
+@if len($support.fallback(info)) > 0
+	// fallback
+@for $f in $support.fallback(info)
+	if (!found)
+	{
+		found = ks.lookup("$f", 0);
+	}
+@end for
+@end if
+@end def
