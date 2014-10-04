@@ -2,16 +2,15 @@
 
 #include <gtest/gtest.h>
 
+template<typename T>
 class MyStaticGetPolicy
 {
 public:
-	static kdb::Key get(ELEKTRA_UNUSED kdb::KeySet & ks,
+	typedef T type;
+	static T get(ELEKTRA_UNUSED kdb::KeySet & ks,
 		ELEKTRA_UNUSED kdb::Key const& spec)
 	{
-		kdb::Key k("user/test",
-			KEY_VALUE, "23",
-			KEY_END);
-		return k;
+		return 23;
 	}
 };
 
@@ -21,7 +20,7 @@ TEST(test_contextual_policy, staticGetPolicy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
-	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy>> cv
+	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy<int>>> cv
 		(ks, c, Key("/test",
 			ckdb::KDB_O_CASCADING_NAME,
 			KEY_VALUE, "/test",
@@ -32,18 +31,25 @@ TEST(test_contextual_policy, staticGetPolicy)
 	cv = 40;
 	EXPECT_EQ(cv, 40);
 
-	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy>> cv2(cv);
+	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy<int>>> cv2(cv);
 	EXPECT_EQ(cv, cv2);
 
 }
 
+template<typename T>
 class MyDynamicGetPolicy
 {
 public:
-	static kdb::Key get(ELEKTRA_UNUSED kdb::KeySet & ks,
-		ELEKTRA_UNUSED kdb::Key const& spec)
+	typedef T type;
+	static T get(ELEKTRA_UNUSED kdb::KeySet & ks,
+		kdb::Key const& spec)
 	{
-		return ksLookupBySpec(ks.getKeySet(), *spec);
+		kdb::Key key = ksLookupBySpec(ks.getKeySet(), *spec);
+		if (key)
+		{
+			return key.get<T>();
+		}
+		return 0;
 	}
 };
 
@@ -55,7 +61,7 @@ TEST(test_contextual_policy, dynamicGetPolicy)
 				KEY_VALUE, "12",
 				KEY_END));
 	Context c;
-	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
+	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy<int>>> cv
 		(ks, c, Key("/test",
 			ckdb::KDB_O_CASCADING_NAME,
 			KEY_META, "default", "88",
@@ -67,7 +73,7 @@ TEST(test_contextual_policy, dynamicGetPolicy)
 	cv = 40;
 	EXPECT_EQ(cv, 40);
 
-	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv2(cv);
+	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy<int>>> cv2(cv);
 	EXPECT_EQ(cv, cv2);
 
 }
@@ -92,7 +98,7 @@ TEST(test_contextual_policy, root)
 				KEY_VALUE, "12",
 				KEY_END));
 	Context c;
-	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
+	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy<int>>> cv
 		(ks, c, Key("/",
 			ckdb::KDB_O_CASCADING_NAME,
 			KEY_META, "default", "88",
@@ -106,15 +112,17 @@ TEST(test_contextual_policy, root)
 	c.activate<RootLayer>();
 	EXPECT_EQ(cv, 40);
 
-	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv2(cv);
+	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy<int>>> cv2(cv);
 	EXPECT_EQ(cv, cv2);
 }
 
-class MyCV : public kdb::ContextualValue<int, kdb::GetPolicyIs<MyStaticGetPolicy>>
+class MyCV : public kdb::ContextualValue<int,
+	kdb::GetPolicyIs<MyStaticGetPolicy<int>>>
 {
 public:
 	MyCV(kdb::KeySet & ks_, kdb::Context & context_)
-		: ContextualValue<int, kdb::GetPolicyIs<MyStaticGetPolicy>>(ks_,
+		: ContextualValue<int,
+			kdb::GetPolicyIs<MyStaticGetPolicy<int>>>(ks_,
 			context_,
 			kdb::Key(
 				"/",
@@ -152,11 +160,24 @@ inline none_t Key::get() const
 
 }
 
-class MyCV2 : public kdb::ContextualValue<none_t, kdb::GetPolicyIs<MyStaticGetPolicy>>
+class MyNoneGetPolicy
+{
+public:
+	typedef none_t type;
+	static none_t get(ELEKTRA_UNUSED kdb::KeySet & ks,
+		ELEKTRA_UNUSED kdb::Key const& spec)
+	{
+		return none_t{};
+	}
+};
+
+class MyCV2 : public kdb::ContextualValue<none_t,
+	kdb::GetPolicyIs<MyNoneGetPolicy>>
 {
 public:
 	MyCV2(kdb::KeySet & ks_, kdb::Context & context_)
-		: ContextualValue<none_t, kdb::GetPolicyIs<MyStaticGetPolicy>>(ks_,
+		: ContextualValue<none_t,
+			kdb::GetPolicyIs<MyNoneGetPolicy>>(ks_,
 			context_,
 			kdb::Key(
 				"/",

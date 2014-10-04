@@ -49,16 +49,11 @@ private:
  */
 inline $support.typeof(info) Parameters::$support.getfuncname($key)() const
 {
+	$support.typeof(info) value $support.valof(info)
+
 	$cpp_util.generateGetBySpec(support, support.quote(key), info)
 
-	$support.typeof(info) ret $support.valof(info)
-
-	if(found)
-	{
-		ret = found.get<$support.typeof(info)>();
-	}
-
-	return ret;
+	return value;
 }
 
 /** \brief Set parameter $key

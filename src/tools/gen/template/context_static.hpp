@@ -58,11 +58,14 @@ namespace $support.nsnpretty($n)
 class ${hierarchy.prettyclassname(support)}GetPolicy
 {
 public:
-static kdb::Key get(kdb::KeySet &ks, kdb::Key const& spec)
+typedef $support.typeof($hierarchy.info) type;
+static type get(kdb::KeySet &ks, kdb::Key const& spec)
 {
+	type value{};
+
 	$cpp_util.generateGetBySpec(support, "spec.getName()",  hierarchy.info)
 
-	return found;
+	return value;
 }
 };
 
@@ -74,7 +77,8 @@ static kdb::Key get(kdb::KeySet &ks, kdb::Key const& spec)
  * Basename: $hierarchy.basename
  * */
 class $hierarchy.prettyclassname(support) : public ContextualValue
-	<$support.typeof($hierarchy.info), GetPolicyIs<${hierarchy.prettyclassname(support)}GetPolicy>>
+	<$support.typeof($hierarchy.info),
+	GetPolicyIs<${hierarchy.prettyclassname(support)}GetPolicy>>
 {
 public:
 

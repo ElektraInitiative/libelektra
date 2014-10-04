@@ -1,6 +1,14 @@
 from support.c import *
 
 class CppSupport(CSupport):
+	def generatetransform(self, key, info):
+		"""Generates the code to transform values"""
+		k = key + "/transform/cpp"
+		if k in info:
+			f = info.get(k)
+			return f;
+		return ""
+
 	def funcpretty(self, key):
 		"""Return pretty printed key name for functions"""
 		return key.title().replace('_','').replace('/','').replace('#','')

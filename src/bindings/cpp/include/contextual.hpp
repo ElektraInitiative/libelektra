@@ -479,12 +479,31 @@ private:
 /**
  * @brief simply lookup without spec
  */
+template<typename T>
 class DefaultGetPolicy
 {
 public:
-	static Key get(KeySet &ks, Key const& spec)
+	typedef T type;
+	static type get(KeySet &ks, Key const& spec)
 	{
-		return ks.lookup(spec.getName(), 0);
+		Key found = ks.lookup(spec.getName(), 0);
+		type val = type{};
+		if (found)
+		{
+			val = found.get<type>();
+#if DEBUG && VERBOSE
+		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
+#endif
+		}
+		else
+		{
+			val = spec.getMeta<type>("default");
+#if DEBUG && VERBOSE
+		std::cout << "got default name: " << m_spec.getName() << " to " << m_cache << std::endl;
+#endif
+		}
+
+		return val;
 	}
 };
 
@@ -496,6 +515,7 @@ public:
 class DefaultSetPolicy
 {
 public:
+	typedef void type;
 	static Key set(KeySet &ks, Key const& spec)
 	{
 		kdb::Key found = ks.lookup(spec.getName(), 0);
@@ -511,6 +531,14 @@ public:
 	}
 };
 
+/**
+ * This technique with the PolicySelector and Discriminator is taken
+ * from the book  "C++ Templates - The Complete Guide"
+ * by David Vandevoorde and Nicolai M. Josuttis, Addison-Wesley, 2002 
+ *
+ * The technique allows users of the class Context to use any number
+ * and order of policies as desired.
+ */
 template <typename Base, int D>
 class Discriminator : public Base
 {
@@ -524,14 +552,16 @@ class PolicySelector : public Discriminator<Setter1,1>,
 {
 };
 
+template<typename T>
 class DefaultPolicies
 {
-	public:
-		typedef DefaultGetPolicy GetPolicy;
-		typedef DefaultSetPolicy SetPolicy;
+public:
+	typedef DefaultGetPolicy<T> GetPolicy;
+	typedef DefaultSetPolicy SetPolicy;
 };
 
-class DefaultPolicyArgs : virtual public DefaultPolicies
+template<typename T>
+class DefaultPolicyArgs : virtual public DefaultPolicies<T>
 {
 };
 
@@ -542,10 +572,10 @@ class DefaultPolicyArgs : virtual public DefaultPolicies
 ///
 /// @tparam Policy
 template <typename Policy>
-class GetPolicyIs : virtual public DefaultPolicies
+class GetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
 {
-	public:
-		typedef Policy GetPolicy;  // overriding typedef
+public:
+	typedef Policy GetPolicy;  // overriding typedef
 };
 
 
@@ -553,17 +583,17 @@ class GetPolicyIs : virtual public DefaultPolicies
 ///
 /// @tparam Policy
 template <typename Policy>
-class SetPolicyIs : virtual public DefaultPolicies
+class SetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
 {
-	public:
-		typedef Policy SetPolicy;  // overriding typedef
+public:
+	typedef Policy SetPolicy;  // overriding typedef
 };
 
 // standard types
 
 template<typename T,
-	typename PolicySetter1 = DefaultPolicyArgs,
-	typename PolicySetter2 = DefaultPolicyArgs>
+	typename PolicySetter1 = DefaultPolicyArgs<T>,
+	typename PolicySetter2 = DefaultPolicyArgs<T>>
 class ContextualValue :
 	public Observer
 {
@@ -654,22 +684,7 @@ public:
 	// keyset to cache
 	void syncCache() const
 	{
-		kdb::Key found = Policies::GetPolicy::get(m_ks, m_spec);
-		if (found)
-		{
-			m_cache = found.get<type>();
-#if DEBUG && VERBOSE
-		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
-#endif
-		}
-		else
-		{
-			m_cache = getDefault();
-#if DEBUG && VERBOSE
-		std::cout << "got default name: " << m_spec.getName() << " to " << m_cache << std::endl;
-#endif
-		}
-
+		m_cache = Policies::GetPolicy::get(m_ks, m_spec);
 	}
 
 	// cache to keyset

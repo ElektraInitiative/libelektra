@@ -123,7 +123,7 @@ $cpp_util.generateForwardDecl(support, child)
 @@staticmethod
 @def generateGetBySpec(support, key, info)
 @if len($support.override(info)) > 0
-	// override
+// override
 	kdb::Key found = ks.lookup("${support.override(info)[0]}", 0);
 @for $o in $support.override(info)[1:]
 	if (!found)
@@ -137,6 +137,7 @@ $cpp_util.generateForwardDecl(support, child)
 		found = ks.lookup($key, 0);
 	}
 @else
+// the key itself
 	kdb::Key found = ks.lookup($key, 0);
 @end if
 
@@ -149,4 +150,10 @@ $cpp_util.generateForwardDecl(support, child)
 	}
 @end for
 @end if
+
+	if(found)
+	{
+		value = found.get<$support.typeof(info)>();
+	}
+
 @end def
