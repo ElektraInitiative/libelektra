@@ -372,6 +372,10 @@ inline KeySet::KeySet (ckdb::KeySet *k) :
  *       if you change key values also the keys in the original keyset
  *       will be changed.
  *
+ * So it is shallow copy, to create a deep copy you have to dup() every
+ * key (it still won't copy meta data, but they are COW):
+ * @snippet cpp_example_dup.cpp ksDeepCopy
+ *
  * @see dup
  */
 inline KeySet::KeySet (const KeySet &other)
@@ -495,6 +499,9 @@ inline ssize_t KeySet::size () const
  *
  * @return a copy of the keys
  *
+ * This is only a shallow copy. For a deep copy you need to dup every
+ * key.
+ *
  * @copydoc ksDup()
  */
 inline ckdb::KeySet* KeySet::dup () const
@@ -506,6 +513,9 @@ inline ckdb::KeySet* KeySet::dup () const
  * @brief Copy a keyset
  *
  * @param other other keyset to copy
+ *
+ * This is only a shallow copy. For a deep copy you need to dup every
+ * key.
  *
  * @copydoc ksCopy()
  */
