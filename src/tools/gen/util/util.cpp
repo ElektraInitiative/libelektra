@@ -125,35 +125,40 @@ $cpp_util.generateForwardDecl(support, child)
 @if len($support.override(info)) > 0
 // override
 	kdb::Key found = ks.lookup("${support.override(info)[0]}", 0);
-@for $o in $support.override(info)[1:]
-	if (!found)
+	if (found)
 	{
-		found = ks.lookup("$o", 0);
+		value = found.get<$support.typeof(info)>();
+		$support.generateotransform($info, 0);
+	}
+@set $oa = $support.override(info)[1:]
+@for $o in oa
+	found = ks.lookup("$o", 0);
+	if (found)
+	{
+		value = found.get<$support.typeof(info)>();
+		$support.generateotransform($info, $oa.index($o));
 	}
 @end for
 	// now the key itself
-	if(!found)
-	{
-		found = ks.lookup($key, 0);
-	}
+	found = ks.lookup("$key", 0);
 @else
-// the key itself
-	kdb::Key found = ks.lookup($key, 0);
+kdb::Key found = ks.lookup("$key", 0);
 @end if
-
-@if len($support.fallback(info)) > 0
-	// fallback
-@for $f in $support.fallback(info)
-	if (!found)
+	if(found)
 	{
-		found = ks.lookup("$f", 0);
+		return found.get<$support.typeof(info)>();
+	}
+
+@set $fa = $support.fallback(info)
+@if len(fa) > 0
+	// fallback
+@for $f in $fa
+	found = ks.lookup("$f", 0);
+	if (found)
+	{
+		value = found.get<$support.typeof(info)>();
+		$support.generateftransform($info, $fa.index($f));
 	}
 @end for
 @end if
-
-	if(found)
-	{
-		value = found.get<$support.typeof(info)>();
-	}
-
 @end def

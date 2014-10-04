@@ -63,7 +63,9 @@ static type get(kdb::KeySet &ks, kdb::Key const& spec)
 {
 	type value{};
 
-	$cpp_util.generateGetBySpec(support, "spec.getName()",  hierarchy.info)
+	$cpp_util.generateGetBySpec(support,
+			$hierarchy.name,
+			hierarchy.info)
 
 	return value;
 }

@@ -1,13 +1,21 @@
 from support.c import *
 
 class CppSupport(CSupport):
-	def generatetransform(self, key, info):
+	def generateotransform(self, info, index):
 		"""Generates the code to transform values"""
-		k = key + "/transform/cpp"
+		k = "override/#" + str(index) + "/transform/cpp"
 		if k in info:
 			f = info.get(k)
 			return f;
-		return ""
+		return "return value"
+
+	def generateftransform(self, info, index):
+		"""Generates the code to transform values"""
+		k = "fallback/#" + str(index) + "/transform/cpp"
+		if k in info:
+			f = info.get(k)
+			return f;
+		return "return value"
 
 	def funcpretty(self, key):
 		"""Return pretty printed key name for functions"""

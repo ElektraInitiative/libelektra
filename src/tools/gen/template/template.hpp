@@ -51,7 +51,7 @@ inline $support.typeof(info) Parameters::$support.getfuncname($key)() const
 {
 	$support.typeof(info) value $support.valof(info)
 
-	$cpp_util.generateGetBySpec(support, support.quote(key), info)
+	$cpp_util.generateGetBySpec(support, key, info)
 
 	return value;
 }
