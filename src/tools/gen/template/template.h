@@ -1,18 +1,11 @@
-#from c_support import *
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
 #end compiler-settings
-#ifndef $includeguard($args.output)
-#define $includeguard($args.output)
-/** \file
- *
- * Generated file ${args.output}
- * With include guard $includeguard($args.output)
- *
- * \warning this is a generated file, do not modify it
- * \warning this is a prototype and not production code
- */
+@from util import util
+@from support.c import *
+@set support = CSupport()
+$util.header($args.output)
 #include "kdb.h"
 #include "kdbtypes.h"
 
@@ -26,15 +19,15 @@ cheetahVarStartToken = $
 #include <errno.h>
 
 
-@for $key, $info in $parameters.items()
-@if $isenum(info):
+@for $k, $i in $parameters.iteritems():
+@if support.isenum(i):
 /**
- * Enum of $key
+ * Enum of $k
  */
-$typeof(info)
+$support.typeof(i)
 {
-@for $enum in $enumval(info)
-	$enum,
+@for e in $support.enumval(i)
+	$e,
 @end for
 };
 
@@ -43,12 +36,12 @@ $typeof(info)
  * \return string that holds value of enum
  * \param e the enum that should be converted
  */
-static inline const char *${enumname(info)}_to_string($typeof(info) e)
+static inline const char *${support.enumname(i)}_to_string($support.typeof(i) e)
 {
 	switch(e)
 	{
-@for $enum in $enumval(info)
-	case $enum: return "$enum";
+@for e in $support.enumval(i)
+	case $e: return "$e";
 @end for
 	}
 	return "";
@@ -59,12 +52,12 @@ static inline const char *${enumname(info)}_to_string($typeof(info) e)
  * \return enum from string s or default value
  * \param s the string that should be converted
  */
-static inline $typeof(info) ${enumname(info)}_from_string(const char *s)
+static inline $support.typeof(i) ${support.enumname(i)}_from_string(const char *s)
 {
-	$typeof(info) ret $valof(info)
-@for $enum in $enumval(info)
-	if(!strcmp(s, "$enum"))
-		ret = $enum;
+	$support.typeof(i) ret $support.valof(i)
+@for e in $support.enumval(i)
+	if(!strcmp(s, "$e"))
+		ret = $e;
 @end for
 	return ret;
 }
@@ -92,8 +85,8 @@ static inline const char *bool_to_string(int b)
 static inline int bool_from_string(const char *s)
 {
 	if(
-	   !strcmp(s, "${trueval()[0]}")
-@for $b in $trueval()[1:]
+	   !strcmp(s, "${support.trueval()[0]}")
+@for b in $support.trueval()[1:]
 	   || !strcmp(s, "$b")
 @end for
 	   )
@@ -102,65 +95,22 @@ static inline int bool_from_string(const char *s)
 		return 0;
 }
 
-##todo: duplicate
-@def doxygen(key, info)
- * \par Type
- * $info['type']
- * \par Mapped Type
- * $typeof(info)
-@if $info.get('unit'):
- * \par Unit
- * $info.get('unit')
-@end if
- * \par Default Value
- * $info['default']
-@if $info.get('explanation'):
- * \par Explanation
- * $info.get('explanation')
-@end if
-@if $info.get('rationale'):
- * \par Rationale
- * $info.get('rationale')
-@end if
-@if $info.get('override')
- * \par Override
-<ul>
-    @for $i in $override(info)
-    <li>get_${funcname($i)}()</li>
-    @end for
-</ul>
-@end if
-@if $info.get('fallback')
- * \par Fallback
-<ul>
-    @for $i in $fallback(info)
-    <li>get_${funcname($i)}()</li>
-    @end for
-</ul>
-@end if
-@if $info.get('see')
-    @for $i in $see(info)
- * \see get_${funcname($i)}
-    @end for
-@end if
-@end def
-
-@for $key, $info in $parameters.items()
+@for $key, $info in $parameters.iteritems()
 /** \brief Get parameter $key
  *
- * $doxygen(key, info)
+ * $util.doxygen(support, key, info)
  *
- * \see set_$funcname($key)
+ * \see $support.setfuncname($key)
  *
  * \return the value of the parameter, default if it could not be found
  * \param ks the keyset where the parameter is searched
  */
-static inline $typeof(info) get_$funcname($key)(KeySet *ks)
+static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 {
-@if $info.get('override')
+@if len(support.override(info)) > 0
 	// override
-	Key * found = ksLookupByName(ks, "${override(info)[0]}", 0);
-@for $o in $override(info)[1:]
+	Key * found = ksLookupByName(ks, "${support.override(info)[0]}", 0);
+@for $o in $support.override(info)[1:]
 	if (!found)
 	{
 		found = ksLookupByName(ks, "$o", 0);
@@ -175,9 +125,9 @@ static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 	Key * found = ksLookupByName(ks, "$key", 0);
 @end if
 
-@if $info.get('fallback')
+@if len($support.fallback(info)) > 0
 	// fallback
-@for $f in $fallback(info)
+@for $f in $support.fallback(info)
 	if (!found)
 	{
 		found = ksLookupByName(ks, "$f", 0);
@@ -185,7 +135,7 @@ static inline $typeof(info) get_$funcname($key)(KeySet *ks)
 @end for
 @end if
 
-@def strtonumber(info, function)
+@def strtonumber(support, info, function)
 char *endptr;
 		errno = 0;
 @if function == 'strtof' or function == 'strtod' or function == 'strtold'
@@ -197,47 +147,47 @@ char *endptr;
 				&& (ret == LONG_MAX || ret == LONG_MIN))
 				|| (errno != 0 && ret == 0))
 		{
-			ret $valof(info)
+			ret ${support.valof(info)}
 		}
 
 		if (endptr == keyString(found))
 		{
 		
-			ret $valof(info)
+			ret ${support.valof(info)}
 		}
 @end def
-	$typeof(info) ret $valof(info)
+	$support.typeof(info) ret $support.valof(info)
 
 	if(found)
 	{
 	@if $info['type'] == 'short'
-		$strtonumber(info, "strtol")
+		$strtonumber(support, info, "strtol")
 	@else if $info['type'] == 'long'
-		$strtonumber(info, "strtoul")
+		$strtonumber(support, info, "strtoul")
 	@else if $info['type'] == 'long_long'
-		$strtonumber(info, "ELEKTRA_LONG_LONG_S")
+		$strtonumber(support, info, "ELEKTRA_LONG_LONG_S")
 	@else if $info['type'] == 'unsigned_short'
-		$strtonumber(info, "strtoul")
+		$strtonumber(support, info, "strtoul")
 	@else if $info['type'] == 'unsigned_long'
-		$strtonumber(info, "strtoul")
+		$strtonumber(support, info, "strtoul")
 	@else if $info['type'] == 'unsigned_long_long'
-		$strtonumber(info, "ELEKTRA_UNSIGNED_LONG_LONG_S")
+		$strtonumber(support, info, "ELEKTRA_UNSIGNED_LONG_LONG_S")
 	@else if $info['type'] == 'float'
-		$strtonumber(info, "strtof")
+		$strtonumber(support, info, "strtof")
 	@else if $info['type'] == 'double'
-		$strtonumber(info, "strtod")
+		$strtonumber(support, info, "strtod")
 	@else if $info['type'] == 'long_double'
-		$strtonumber(info, "strtold")
+		$strtonumber(support, info, "strtold")
 	@else if $info['type'] == 'char'
 		ret = keyString(found)[0];
 	@else if $info['type'] == 'octet'
-		$strtonumber(info, "strtol")
+		$strtonumber(support, info, "strtol")
 	@else if $info['type'] == 'string'
 		ret = keyString(found);
 	@else if $info['type'] == 'boolean'
 		ret = bool_from_string(keyString(found));
-	@else if $isenum(info)
-		ret = ${enumname(info)}_from_string(keyString(found));
+	@else if $support.isenum(info)
+		ret = ${support.enumname(info)}_from_string(keyString(found));
 	@end if
 	}
 
@@ -246,14 +196,14 @@ char *endptr;
 
 /** \brief Set parameter $key
  *
- * $doxygen(key, info)
+ * $util.doxygen(support, key, info)
  *
- * \see set_$funcname($key)
+ * \see $support.setfuncname($key)
  *
  * \param ks the keyset where the parameter is added or replaced
  * \param n is the value to set in the parameter
  */
-static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
+static inline void $support.setfuncname($key)(KeySet *ks, $support.typeof(info) n)
 {
 	Key * found = ksLookupByName(ks, "$key", 0);
 @if $info['type'] == 'short'
@@ -293,12 +243,12 @@ static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
 	const char *s = n;
 @else if $info['type'] == 'boolean'
 	const char *s = bool_to_string(n);
-@else if $isenum(info)
-	const char *s = ${enumname(info)}_to_string(n);
+@else if $support.isenum(info)
+	const char *s = ${support.enumname(info)}_to_string(n);
 @end if
 	if(!found)
 	{
-		ksAppendKey(ks, keyNew("$userkey(key)",
+		ksAppendKey(ks, keyNew("$support.userkey(key)",
 				KEY_VALUE, s,
 				KEY_END));
 	}
@@ -310,4 +260,4 @@ static inline void set_$funcname($key)(KeySet *ks, $typeof(info) n)
 
 
 @end for
-#endif // $includeguard($args.output)
+$util.footer($args.output)

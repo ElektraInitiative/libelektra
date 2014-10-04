@@ -1,5 +1,3 @@
-from c_support import *
-
 def optarg(info):
 	val = info["default"]
 	if val == "true":

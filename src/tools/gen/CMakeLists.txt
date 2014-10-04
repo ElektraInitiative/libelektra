@@ -24,4 +24,27 @@ if (PYTHON2_EXECUTABLE)
 			)"
 		)
 
+	function(gen ARGS)
+		#scan args for files
+		file(GLOB DEPS
+			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+			${ARGS})
+		#call the gen tool
+		add_custom_command(
+			OUTPUT ${CMAKE_BINARY_DIR}/src/tools/x
+			COMMAND ${PYTHON2_EXECUTABLE}
+			WORKING_DIRECTORY
+				${CMAKE_BINARY_DIR}/src/tools/gen
+			${CMAKE_SOURCE_DIR}/src/tools/gen/gen ${ARGS}
+			DEPENDS ${DEPS}
+			)
+	endfunction(gen)
+
+
+	# for future cmakification
+	#add_subdirectory(support)
+	#add_subdirectory(template)
+	#add_subdirectory(util)
+	#add_subdirectory(tests)
+
 endif()
