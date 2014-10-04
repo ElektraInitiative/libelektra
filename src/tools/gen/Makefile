@@ -19,7 +19,7 @@ FLAGS = -I. -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
 PYTHONPATH=`pwd`
 
 .PHONY:all
-all:lift cpplift nestedlift contextlift lift.html lift.3 contextvisit 
+all:lift cpplift nestedlift contextlift lift.html lift.3 contextvisit contexteditor
 
 util.py:util/util.c
 	${GEN} -p tests/lift.ini util/util.c -o util.py
@@ -48,6 +48,9 @@ lift_context.hpp:${GEN} tests/lift.ini template/context_static.hpp support/conte
 visit_context.hpp:${GEN} tests/visit.ini template/context_static.hpp support/context.py util.py cpp_util.py
 	${GEN} tests/visit.ini template/context_static.hpp -o visit_context.hpp
 
+editor_context.hpp:${GEN} tests/editor.ini template/context_static.hpp support/context.py util.py cpp_util.py
+	${GEN} tests/editor.ini template/context_static.hpp -o editor_context.hpp
+
 genopt.c:${GEN} tests/lift.ini template/genopt.c support/genopt.py util.py
 	${GEN} tests/lift.ini template/genopt.c -o genopt.c
 
@@ -69,6 +72,9 @@ contextlift:lift_context.hpp tests/lift_context.cpp
 contextvisit:visit_context.hpp tests/visit_context.cpp
 	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/visit_context.cpp visit_context.hpp ${ELEKTRA}  -o contextvisit
 
+contexteditor:editor_context.hpp tests/editor_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/editor_context.cpp editor_context.hpp ${ELEKTRA}  -o contexteditor
+
 .PHONY:clean
 clean:
 	rm -f lift.h
@@ -86,6 +92,8 @@ clean:
 	rm -f contextlift
 	rm -f visit_context.hpp
 	rm -f contextvisit
+	rm -f contexteditor
+	rm -f editor_context.hpp
 	rm -f util.py util.py.bak
 	rm -f cpp_util.py cpp_util.py.bak
 	rm -f support/__init__.pyc
