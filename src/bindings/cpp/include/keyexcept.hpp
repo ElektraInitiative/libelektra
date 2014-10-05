@@ -53,7 +53,8 @@ class KeyInvalidName : public KeyException
 public:
 	virtual const char* what() const throw()
 	{
-		return "Invalid Keyname: keyname needs to start with user/ or system/";
+		return "Invalid Keyname: keyname needs to start with user/ or system/ "
+			"or maybe you tried to change a key that is already in a KeySet.";
 	}
 };
 

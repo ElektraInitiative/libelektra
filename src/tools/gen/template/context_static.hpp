@@ -22,7 +22,7 @@ class none_t
 {};
 
 template <>
-inline void Key::set(kdb::none_t e)
+inline void Key::set(kdb::none_t)
 {}
 
 template <>
@@ -59,7 +59,7 @@ class ${hierarchy.prettyclassname(support)}GetPolicy
 {
 public:
 typedef $support.typeof($hierarchy.info) type;
-static type get(kdb::KeySet &ks, kdb::Key const& spec)
+static type get(kdb::KeySet &ks, kdb::Key const&)
 {
 	type value{};
 
