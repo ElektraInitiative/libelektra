@@ -28,15 +28,13 @@ int main(int argc, char* argv[])
     QQmlContext* ctxt = engine.rootContext();
 
     UndoManager manager;
-    kdb::KeySet set;
 
-    TreeViewModel* model = new TreeViewModel(set);
-    //new ModelTest(model);
-
+    TreeViewModel* model = new TreeViewModel;
     model->populateModel();
 
     ctxt->setContextProperty("undoManager", &manager);
     ctxt->setContextProperty("externTreeModel", model);
+
     engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
 //    PrintVisitor printer;

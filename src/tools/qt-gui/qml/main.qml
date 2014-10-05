@@ -44,6 +44,22 @@ ApplicationWindow {
         }
     }
 
+    Connections {
+        target: treeView.currentNode === null ? null : treeView.currentNode.node
+
+        onShowError: {
+            showError(text, informativeText, detailedText)
+        }
+    }
+
+    Connections {
+        target: keyAreaSelectedItem === null ? null : keyAreaSelectedItem.node
+
+        onShowError: {
+            showError(text, informativeText, detailedText)
+        }
+    }
+
     function showError(text, informativeText, detailedText) {
         generalErrorDialog.text = text
         generalErrorDialog.informativeText = informativeText

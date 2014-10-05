@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
-set( CMAKE_BUILD_TYPE Debug )
+set(CMAKE_BUILD_TYPE Debug)
 
 add_definitions(-Wall)
 
@@ -37,6 +37,7 @@ set(qt-gui_HDRS
 	src/deletekeycommand.hpp
 	src/cutkeycommand.hpp
 	src/copykeycommand.hpp
+	src/importconfigurationcommand.hpp
 	../kdb/check.hpp 
 	../kdb/cmdline.hpp 
 	../kdb/command.hpp 
@@ -103,6 +104,7 @@ set(qt-gui_SRCS
 	src/editkeycommand.cpp
 	src/copykeycommand.cpp
 	src/cutkeycommand.cpp
+	src/importconfigurationcommand.cpp
 	../kdb/check.cpp 
 	../kdb/cmdline.cpp 
 	../kdb/command.cpp 

@@ -9,7 +9,7 @@ class ImportConfigurationCommand : public QUndoCommand
 {
 
 public:
-    explicit ImportConfigurationCommand(TreeViewModel *model, const QString &keyName, const QString &format, const QString &file, const QString &mergeStrategy, QUndoCommand *parent = 0);
+    explicit ImportConfigurationCommand(TreeViewModel *model, const QString keyName, const QString format, const QString file, const QString mergeStrategy, QUndoCommand *parent = 0);
 
     virtual void undo();
     virtual void redo();

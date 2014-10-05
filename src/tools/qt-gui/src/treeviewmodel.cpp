@@ -11,6 +11,13 @@ using namespace kdb;
 TreeViewModel::TreeViewModel(QObject* parent)
 {
     Q_UNUSED(parent);
+
+    try{
+        m_kdb.get(m_keySet, "/");
+    }
+    catch (kdb::KDBException const & e){
+        emit showError("Constructor: Could not read config due to the following error:", QString(e.what()), "");
+    }
 }
 
 TreeViewModel::TreeViewModel(KeySet &keySet)
@@ -103,7 +110,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 
 }
 
-bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int role)
+bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int role)
 {
     if (!index.isValid() || index.row() > (m_model.size() - 1))
     {
@@ -117,15 +124,15 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& value, int
     {
 
     case NameRole:
-        node->setName(value.toString());
+        node->setName(data.toString());
         break;
 
     case ValueRole:
-        node->setValue(value);
+        node->setValue(data);
         break;
 
     case MetaValueRole:
-        QVariantList valueList = value.toList();
+        QVariantList valueList = data.toList();
         node->setMeta(valueList.at(0).toString(), valueList.at(1));
     }
 
@@ -206,27 +213,15 @@ int TreeViewModel::getIndexByName(const QString &name) const
 
 void TreeViewModel::importConfiguration(const QString &name, const QString &format, QString &file, const QString &mergeStrategy)
 {
-    qDebug() << "KEYSET BEFORE VISITING";
-    m_keySet.rewind();
-    while(m_keySet.next())
-        qDebug() << QString::fromStdString(m_keySet.current().getName());
-    qDebug() << "END KEYSET BEFORE VISITING";
 
     collectCurrentKeySet();
-
-    qDebug() << "KEYSET AFTER VISITING";
-    m_keySet.rewind();
-    while(m_keySet.next())
-        qDebug() << QString::fromStdString(m_keySet.current().getName());
-    qDebug() << "END KEYSET AFTER VISITING";
-
-    qDebug() << "SETTING KEYSET";
 
     try{
         m_kdb.set(m_keySet, "");
     }
     catch (kdb::KDBException const & e){
         emit showError("Import: Could not set configuration due to the following error:", QString(e.what()), "");
+        return;
     }
 
     file.remove("file://");
@@ -240,14 +235,15 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
     QByteArray importFile = file.toLocal8Bit();
     QByteArray importMergeStrategy = QString("-s" + mergeStrategy).toLocal8Bit();
 
-    char *argv[] {executable.data(), commandName.data(), importName.data(), importFormat.data(), importFile.data(), importMergeStrategy.data()};
+    char *argv[] = {executable.data(), commandName.data(), importName.data(), importFormat.data(), importFile.data(), importMergeStrategy.data()};
+    int argc = sizeof(argv) / sizeof(char*) - 1;
 
     string command = argv[1];
 
     try {
         CommandPtr cmd = f.get(command);
 
-        Cmdline cl(5, argv, cmd.get());
+        Cmdline cl(argc, argv, cmd.get());
 
         try
         {
@@ -281,20 +277,12 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
         emit showError("Unknown error", "", "");
     }
 
-    qDebug() << "GETTING KEYSET";
-
     try{
-        m_kdb.get(m_keySet, "/");
+        m_kdb.get(m_keySet, "");
     }
     catch (kdb::KDBException const & e){
         emit showError("Import: Could not read configuration due to the following error:", QString(e.what()), "");
     }
-
-    qDebug() << "KEYSET AFTER IMPORT";
-    m_keySet.rewind();
-    while(m_keySet.next())
-        qDebug() << QString::fromStdString(m_keySet.current().getName());
-    qDebug() << "END KEYSET AFTER IMPORT";
 
     populateModel();
 }
@@ -321,13 +309,14 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
     QByteArray exportFile = file.toLocal8Bit();
 
     char *argv[] = {executable.data(), commandName.data(), exportName.data(), exportFormat.data(), exportFile.data(), NULL};
+    int argc = sizeof(argv) / sizeof(char*) - 1;
 
     string command = argv[1];
 
     try {
         CommandPtr cmd = f.get(command);
 
-        Cmdline cl(5, argv, cmd.get());
+        Cmdline cl(argc, argv, cmd.get());
 
         try
         {
@@ -364,19 +353,11 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
 
 void TreeViewModel::setKeySet(KeySet set)
 {
-    qDebug() << "KEYSET BEFORE SETKEYSET";
-    m_keySet.rewind();
-    while(m_keySet.next())
-        qDebug() << QString::fromStdString(m_keySet.current().getName());
-    qDebug() << "END KEYSET BEFORE SETKEYSET";
+    m_keySet.clear();
+    set.rewind();
 
-    m_keySet = set;
-
-    qDebug() << "KEYSET AFTER SETKEYSET";
-    m_keySet.rewind();
-    while(m_keySet.next())
-        qDebug() << QString::fromStdString(m_keySet.current().getName());
-    qDebug() << "END KEYSET AFTER SETKEYSET";
+    while(set.next())
+        m_keySet.append(Key(set.current().dup()));
 }
 
 void TreeViewModel::collectCurrentKeySet()
@@ -442,7 +423,7 @@ void TreeViewModel::populateModel()
     while (m_keySet.next())
     {
         QString currentKey = QString::fromStdString(m_keySet.current().getName());
-
+        qDebug() << "current: " << currentKey;
         QStringList keys = currentKey.split("/");
         QString root = keys.takeFirst();
 
@@ -607,7 +588,7 @@ void TreeViewModel::synchronize()
     collectCurrentKeySet();
 
     try{
-        m_kdb.set(m_keySet, "/");
+        m_kdb.set(m_keySet, "");
     }
     catch (kdb::KDBException const & e){
         emit showError("Synchronizing failed due to the following error:", QString(e.what()), "");

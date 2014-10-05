@@ -81,12 +81,24 @@ QVariant ConfigNode::getValue() const
 
 void ConfigNode::setName(const QString& name)
 {
-    //    qDebug() << "ConfigNode::setName: Node with name " << m_name << " has new name " << name;
+    qDebug() << "ConfigNode::setName: Node with name " << m_name << " has new name " << name;
     m_name = name;
 
+    int idx = m_path.lastIndexOf("/");
+
+    if(idx != -1)
+    {
+        m_path.replace(idx, m_path.length() - idx,"/" + name);
+    }
+
     if(QString::fromStdString(m_key.getName()) != ""){
-        //        qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
-        m_key.setBaseName(name.toStdString());
+        try{
+            m_key.setBaseName(name.toStdString());
+            qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
+        }
+        catch(KeyInvalidName ex){
+            emit showError("ConfigNode::setName: Terminate called after throwing an instance of \'kdb::KeyInvalidName\'", ex.what(),"Keyname: " + QString::fromStdString(m_key.getFullName()));
+        }
     }
 }
 
@@ -138,7 +150,7 @@ void ConfigNode::deleteMeta(const QString &name)
 {
     if(m_key)
     {
-        //        qDebug() << "metakey " << name << " of node " << m_name << " deleted";
+        qDebug() << "metakey " << name << " of node " << m_name << " deleted";
         m_key.delMeta(name.toStdString());
     }
 }
@@ -158,8 +170,10 @@ Key ConfigNode::getKey() const
 
 void ConfigNode::invalidateKey()
 {
-    //    qDebug() << "ConfigNode::deleteKey: clearing key " << QString::fromStdString(m_key.getName());
-    m_key.clear();
+    if(m_key){
+        qDebug() << "ConfigNode::deleteKey: clearing key " << QString::fromStdString(m_key.getName());
+        m_key.clear();
+    }
 }
 
 void ConfigNode::deletePath(QStringList &path)
@@ -215,7 +229,7 @@ void ConfigNode::populateMetaModel()
 
         while (m_key.nextMeta())
         {
-            //      qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
+            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
             ConfigNode* node = new ConfigNode();
 
             node->setName(QString::fromStdString(m_key.getName()));

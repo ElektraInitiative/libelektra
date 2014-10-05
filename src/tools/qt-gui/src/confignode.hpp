@@ -210,6 +210,9 @@ private:
      *
      */
     void populateMetaModel();
+
+signals:
+    void showError(QString text, QString informativeText, QString detailedText);
 };
 
 Q_DECLARE_METATYPE(ConfigNode)
