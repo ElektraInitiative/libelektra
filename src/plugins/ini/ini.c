@@ -221,7 +221,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			ELEKTRA_SET_ERROR(87, parentKey, "Memory allocation error while reading the ini file");
 			break;
 		default:
-			ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First occurrence at %d", keyString(parentKey), ret);
+			ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First error at line %d", keyString(parentKey), ret);
 			break;
 		}
 		ret = -1;
