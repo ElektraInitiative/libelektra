@@ -212,8 +212,6 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	else
 	{
-		char errorbuffer[100];
-
 		switch (ret)
 		{
 		case -1:
@@ -223,8 +221,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			ELEKTRA_SET_ERROR(87, parentKey, "Memory allocation error while reading the ini file");
 			break;
 		default:
-			snprintf (errorbuffer, 100, "Could not parse ini file. First occurrence at %d", ret);
-			ELEKTRA_SET_ERROR(98, parentKey, errorbuffer);
+			ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First occurrence at %d", keyString(parentKey), ret);
 			break;
 		}
 		ret = -1;
@@ -319,7 +316,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				}
 				else
 				{
-					ELEKTRA_SET_ERROR(97, parentKey, "Encountered a multiline value but multiline support is not enabled\n "
+					ELEKTRA_SET_ERROR(97, parentKey, "Encountered a multiline value but multiline support is not enabled. "
 							"Have a look at kdb info ini for more details");
 					ret = -1;
 				}
