@@ -11,7 +11,9 @@ DeleteKeyCommand::DeleteKeyCommand(const QString &type, TreeViewModel *model, Co
 
 void DeleteKeyCommand::undo()
 {
-    m_model->insertRow(m_index, new ConfigNode(m_node));
+    ConfigNode *node = new ConfigNode(m_node);
+    node->setParentModel(m_model);
+    m_model->insertRow(m_index, node);
 }
 
 void DeleteKeyCommand::redo()

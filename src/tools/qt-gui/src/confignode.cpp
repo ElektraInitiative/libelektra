@@ -28,7 +28,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
     , m_key(other.m_key.dup())
     , m_children(new TreeViewModel())
     , m_metaData(new TreeViewModel())
-    , m_parentModel(other.m_parentModel)
+    , m_parentModel(new TreeViewModel())
 {
 
     foreach(ConfigNode *node, other.m_children->model())
@@ -81,7 +81,7 @@ QVariant ConfigNode::getValue() const
 
 void ConfigNode::setName(const QString& name)
 {
-    qDebug() << "ConfigNode::setName: Node with name " << m_name << " has new name " << name;
+//    qDebug() << "ConfigNode::setName: Node with name " << m_name << " has new name " << name;
     m_name = name;
 
     int idx = m_path.lastIndexOf("/");
@@ -229,7 +229,7 @@ void ConfigNode::populateMetaModel()
 
         while (m_key.nextMeta())
         {
-            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
+//            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
             ConfigNode* node = new ConfigNode();
 
             node->setName(QString::fromStdString(m_key.getName()));

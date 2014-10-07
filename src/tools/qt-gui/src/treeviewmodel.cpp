@@ -425,7 +425,7 @@ void TreeViewModel::populateModel()
 
     clear();
     //Why wont the treeview update anymore if I clear the List?
-//    m_model.clear();
+    //    m_model.clear();
     m_model << system << user;
 
     m_keySet.rewind();
@@ -433,7 +433,7 @@ void TreeViewModel::populateModel()
     while (m_keySet.next())
     {
         QString currentKey = QString::fromStdString(m_keySet.current().getName());
-        qDebug() << "current: " << currentKey;
+//        qDebug() << "current: " << currentKey;
         QStringList keys = currentKey.split("/");
         QString root = keys.takeFirst();
 
@@ -517,8 +517,14 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
     }
 
     beginRemoveRows(QModelIndex(), row, row);
-    m_model.at(row)->invalidateKey();
+
+    ConfigNode *node = m_model.at(row);
+
+    if(node->getKey() && node->getKey().isValid())
+        m_model.at(row)->invalidateKey();
+
     delete m_model.takeAt(row);
+
     endRemoveRows();
 
     return true;
@@ -603,8 +609,6 @@ void TreeViewModel::synchronize()
     catch (kdb::KDBException const & e){
         emit showError("Synchronizing failed due to the following error:", QString(e.what()), "");
     }
-
-//    populateModel();
 }
 
 void TreeViewModel::clear()

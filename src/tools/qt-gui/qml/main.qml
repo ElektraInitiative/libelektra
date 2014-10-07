@@ -230,6 +230,9 @@ ApplicationWindow {
 
                 if(metaAreaModel !== null)
                     metaAreaModel = null
+
+                if(keyAreaSelectedItem !== null)
+                    keyAreaSelectedItem = null
             }
             else if(undoManager.redoText === "cut"){
                 pasteCounter--
@@ -449,6 +452,7 @@ ApplicationWindow {
                 }
                 else if(treeView.currentNode !== null && keyAreaSelectedItem === null){
                     undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+                    treeView.currentNode = null
                 }
             }
         }
@@ -523,9 +527,10 @@ ApplicationWindow {
 
                     model:{
                         if(treeView.currentNode !== null)
-                            if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
+                            if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren){
                                 //TreeViewModel
                                 treeView.currentNode.children
+                            }
                     }
                     TableViewColumn {
                         role: "name"
@@ -551,6 +556,7 @@ ApplicationWindow {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                                 onClicked: {
+                                    //TODO:CRASH
                                     keyAreaSelectedItem = model.get(styleData.row)
 
                                     if(mouse.button === Qt.RightButton)
