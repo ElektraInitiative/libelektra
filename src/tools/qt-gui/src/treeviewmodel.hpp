@@ -170,6 +170,7 @@ public:
     void setKeySet(kdb::KeySet set);
 
     void collectCurrentKeySet();
+    void clearMetaModel();
 
 private:
 

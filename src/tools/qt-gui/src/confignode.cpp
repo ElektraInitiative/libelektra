@@ -94,7 +94,7 @@ void ConfigNode::setName(const QString& name)
     if(QString::fromStdString(m_key.getName()) != ""){
         try{
             m_key.setBaseName(name.toStdString());
-            qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
+//            qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
         }
         catch(KeyInvalidName ex){
             emit showError("ConfigNode::setName: Terminate called after throwing an instance of \'kdb::KeyInvalidName\'", ex.what(),"Keyname: " + QString::fromStdString(m_key.getFullName()));
@@ -128,7 +128,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
         m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
     }
 
-    m_metaData->clear();
+    m_metaData->clearMetaModel();
 
     for(int i = 0; i < metaData.size(); i++)
     {

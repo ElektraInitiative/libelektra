@@ -216,8 +216,12 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
 
     collectCurrentKeySet();
 
+    m_keySet.rewind();
+    while(m_keySet.next())
+        qDebug() << QString::fromStdString(m_keySet.current().getName());
+
     try{
-        m_kdb.set(m_keySet, "");
+        m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
         emit showError("Import: Could not set configuration due to the following error:", QString(e.what()), "");
@@ -292,10 +296,11 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
     collectCurrentKeySet();
 
     try{
-        m_kdb.set(m_keySet, "");
+        m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
         emit showError("Export: Could not set configuration due to the following error:", QString(e.what()), "");
+        return;
     }
 
     file.remove("file://");
@@ -325,11 +330,13 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         catch (std::invalid_argument const& ia)
         {
             emit showError("Exporting the configuration to file failed because there were invalid arguments passed:", QString(ia.what()), "");
+            return;
         }
     }
     catch (CommandException const& ce)
     {
         emit showError("Exporting the configuration to file terminated unsuccessfully with the info:", QString(ce.what()), "");
+        return;
     }
     catch (kdb::Key& key)
     {
@@ -340,10 +347,12 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         es << printError(cerr, key);
 
         emit showError("Exporting the configuration to file failed while accessing the key database", QString::fromStdString(ws.str()) + QString::fromStdString(es.str()), "");
+        return;
     }
     catch (std::exception const& ce)
     {
         emit showError("Exporting the configuration to file terminated unsuccessfully with the info:", QString(ce.what()), "");
+        return;
     }
     catch (...)
     {
@@ -364,7 +373,8 @@ void TreeViewModel::collectCurrentKeySet()
 {
     KeySetVisitor ksVisit;
     accept(ksVisit);
-    m_keySet = ksVisit.getKeySet();
+
+    setKeySet(ksVisit.getKeySet());
 }
 
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
@@ -397,7 +407,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
         ConfigNode* newNode;
 
         if(isLeaf)
-            newNode = new ConfigNode(name, (path + "/" + name), key, node->getChildren());
+            newNode = new ConfigNode(name, (path + "/" + name), key.dup(), node->getChildren());
         else
             newNode = new ConfigNode(name, (path + "/" + name), NULL, node->getChildren());
 
@@ -411,7 +421,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 void TreeViewModel::populateModel()
 {
     ConfigNode* system = new ConfigNode("system", "system", 0, this);
-    ConfigNode* user = new ConfigNode("user", "user", 0, this);
+    ConfigNode* user = new ConfigNode("user", "user", Key("user"), this);
 
     clear();
     //Why wont the treeview update anymore if I clear the List?
@@ -588,7 +598,7 @@ void TreeViewModel::synchronize()
     collectCurrentKeySet();
 
     try{
-        m_kdb.set(m_keySet, "");
+        m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
         emit showError("Synchronizing failed due to the following error:", QString(e.what()), "");
@@ -602,6 +612,13 @@ void TreeViewModel::clear()
     foreach(ConfigNode *node, m_model){
         node->clear();
     }
+}
+
+void TreeViewModel::clearMetaModel()
+{
+    beginResetModel();
+    m_model.clear();
+    endResetModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
