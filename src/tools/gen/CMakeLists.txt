@@ -13,6 +13,20 @@ if (PYTHON2_EXECUTABLE)
 	configure_file(setup.py.in ${SETUP_PY})
 
 	install(CODE "execute_process(COMMAND
+			${PYTHON2_EXECUTABLE}
+			${CMAKE_CURRENT_SOURCE_DIR}/gen
+			-p tests/lift.ini
+			${CMAKE_CURRENT_SOURCE_DIR}/util/util.c
+			-o ${CMAKE_CURRENT_BINARY_DIR}/util.py)")
+
+	install(CODE "execute_process(COMMAND
+			${PYTHON2_EXECUTABLE}
+			${CMAKE_CURRENT_SOURCE_DIR}/gen
+			-p tests/lift.ini
+			${CMAKE_CURRENT_SOURCE_DIR}/util/util.cpp
+			-o ${CMAKE_CURRENT_BINARY_DIR}/cpp_util.py)")
+
+	install(CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE} ${SETUP_PY}
 			--no-user-cfg
 			--quiet
@@ -24,27 +38,35 @@ if (PYTHON2_EXECUTABLE)
 			)"
 		)
 
-	function(gen ARGS)
-		#scan args for files
-		file(GLOB DEPS
-			RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-			${ARGS})
+	function(gen_util TEMPLATE OUTPUT)
+		#file(GLOB SUPPORT RELATIVE support "*.py")
 		#call the gen tool
-		add_custom_command(
-			OUTPUT ${CMAKE_BINARY_DIR}/src/tools/x
-			COMMAND ${PYTHON2_EXECUTABLE}
-			WORKING_DIRECTORY
-				${CMAKE_BINARY_DIR}/src/tools/gen
-			${CMAKE_SOURCE_DIR}/src/tools/gen/gen ${ARGS}
-			DEPENDS ${DEPS}
-			)
-	endfunction(gen)
+		set(OUTPUT
+			"${CMAKE_BINARY_DIR}/src/tools/gen/${OUTPUT}")
+		message (STATUS "doing command ${TEMPLATE} ${OUTPUT}")
+		#add_custom_command(
+		#add_custom_target(${OUTPUT}
+		#	OUTPUT ${OUTPUT}
+		#	COMMAND ${PYTHON2_EXECUTABLE}
+		#		${CMAKE_SOURCE_DIR}/src/tools/gen/gen
+		#		-p
+		#		tests/lift.ini
+		#		${TEMPLATE}
+		#		-o
+		#		${OUTPUT}
+		#	WORKING_DIRECTORY
+		#		${CMAKE_BINARY_DIR}/src/tools/gen
+		#	MAIN_DEPENDENCY ${TEMPLATE} 
+		#	DEPENDS ${SUPPORT}
+		#	COMMENT "build the util ${TEMPLATE}"
+		#	)
+	endfunction(gen_util)
 
+	#add_subdirectory(util)
 
 	# for future cmakification
 	#add_subdirectory(support)
 	#add_subdirectory(template)
-	#add_subdirectory(util)
 	#add_subdirectory(tests)
 
 endif()

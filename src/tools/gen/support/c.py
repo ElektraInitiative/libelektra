@@ -44,7 +44,10 @@ class CSupport(Support):
 		elif type == "string" and val == "":
 			return ' = "";'
 		elif type == "char":
-			return " = '"+val+"';"
+			if val == "' '":
+				return " = ' ';"
+			else:
+				return " = '"+val+"';"
 		else:
 			return " = "+val+";"
 
