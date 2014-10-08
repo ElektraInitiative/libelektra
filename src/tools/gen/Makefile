@@ -89,6 +89,7 @@ clean:
 	rm -f genopt.c
 	rm -f genopt.h
 	rm -f lift
+	rm -f core
 	rm -f cpplift
 	rm -f *.pyc
 	rm -f lift.3
@@ -96,7 +97,8 @@ clean:
 	rm -f nestedlift
 	rm -f lift_context_dynamic.hpp
 	rm -f lift_context_static.hpp
-	rm -f contextlift
+	rm -f staticcontextlift
+	rm -f dynamiccontextlift
 	rm -f visit_context.hpp
 	rm -f contextvisit
 	rm -f contexteditor
