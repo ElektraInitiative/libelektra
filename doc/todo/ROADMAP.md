@@ -20,6 +20,8 @@ SyntaxError: ('invalid syntax',
 
 kdb run all + allow disable version check
 
+constants plugin+docu of new CMake variables
+
 fix types:
 	type checker should check like defined in schema
 	let json use same types (double, boolean, nothing for string)

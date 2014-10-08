@@ -181,6 +181,17 @@ set (KDB_DB_USER ".kdb" CACHE PATH
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
 
+set (KDB_DB_FILE "default.ecf" CACHE PATH
+		"This configuration file will be used initially (for bootstrapping)."
+		)
+
+set (KDB_DEFAULT_STORAGE "dump" CACHE PATH
+	"This storage plugin will be used initially (for bootstrapping).")
+
+
+set (KDB_DEFAULT_RESOLVER "resolver" CACHE PATH
+	"This resolver plugin will be used initially (for bootstrapping).")
+
 
 
 #
