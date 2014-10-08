@@ -9,6 +9,7 @@ cheetahVarStartToken = $
 $util.header($args.output)
 #include "contextual.hpp"
 #include "kdbtypes.h"
+#include "kdbproposal.h"
 
 #include <string>
 
@@ -43,13 +44,16 @@ class ${hierarchy.prettyclassname(support)}GetPolicy
 {
 public:
 typedef $support.typeof($hierarchy.info) type;
-static type get(kdb::KeySet &ks, kdb::Key const&)
+static type get(kdb::KeySet &ks, kdb::Key const& spec)
 {
 	type value{};
 
-	$cpp_util.generateGetBySpec(support,
-			$hierarchy.name,
-			hierarchy.info)
+	Key found(ckdb::ksLookupBySpec(ks.getKeySet(), *spec));
+
+	if (found)
+	{
+		value = found.get<$support.typeof(hierarchy.info)>();
+	}
 
 	return value;
 }
@@ -67,7 +71,7 @@ static type get(kdb::KeySet &ks, kdb::Key const&)
 
 
 /*
-static hierarchy is
+dynamic hierarchy is
 @set hierarchy = ContextHierarchy('/', {})
 @for $key, $info in $parameters.items()
 hierarchy.addWithContext(Hierarchy($key, $info))

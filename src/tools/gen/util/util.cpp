@@ -56,6 +56,27 @@ inline $support.enumname(info) Key::get() const
 
 
 
+@@staticmethod
+@def generatenone()
+/**
+ * @brief A none type, means that this contextual value actually does
+ * not exist in the specification.
+ */
+class none_t
+{};
+
+template <>
+inline void Key::set(kdb::none_t)
+{}
+
+template <>
+inline kdb::none_t Key::get() const
+{
+	kdb::none_t ret;
+	return ret;
+}
+@end def
+
 
 @@staticmethod
 @def generatebool(support)
