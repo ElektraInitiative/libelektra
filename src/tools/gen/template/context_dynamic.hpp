@@ -45,7 +45,7 @@ class ${hierarchy.prettyclassname(support)}GetPolicy
 public:
 typedef $support.typeof($hierarchy.info) type;
 @if $support.typeof($hierarchy.info) == "kdb::none_t"
-static type get(kdb::KeySet &, kdb::Key const& spec)
+static type get(kdb::KeySet &, kdb::Key const&)
 {
 	none_t none;
 	return none;
