@@ -111,6 +111,14 @@ public:
 @if $hierarchy.info.get('rationale'):
 				KEY_META, "rationale", $support.quote($hierarchy.info.get('rationale')),
 @end if
+@set $fa = $support.fallback(hierarchy.info)
+@for $f in $fa
+				KEY_META, "fallback/#$fa.index($f)", "$f",
+@end for
+@set $ov = $support.override(hierarchy.info)
+@for $o in $ov
+				KEY_META, "override/#$ov.index($o)", "$o",
+@end for
 				KEY_END))
 
 
