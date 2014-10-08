@@ -41,9 +41,9 @@ class KeyTypeConversion : public KeyException
 public:
 	virtual const char* what() const throw()
 	{
-		return  "Could not convert data to requested type."
-			"get(Meta)<std::string> or use getMeta<const Key>."
-			"or specialise these template methods";
+		return  "Could not convert data to requested type. "
+			"Use get(Meta)<std::string> respectively get(Meta)<const Key> for more generic access "
+			"or specialize the template methods with your type.";
 	}
 };
 
