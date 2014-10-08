@@ -23,12 +23,7 @@ TreeViewModel::TreeViewModel(QObject* parent)
 TreeViewModel::TreeViewModel(KeySet &keySet)
     : m_keySet(keySet)
 {
-    try{
-        m_kdb.get(m_keySet, "");
-    }
-    catch (kdb::KDBException const & e){
-        emit showError("Constructor: Could not read config due to the following error:", QString(e.what()), "");
-    }
+    populateModel();
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
@@ -53,14 +48,16 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
     {
-        qDebug() << "TreeViewModel::data: index not valid. Index = " << index.row() << " Model size = " << m_model.size();
+        emit showError("TreeViewModel::data: index not valid", QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()),"");
+//        qDebug() << "TreeViewModel::data: index not valid. Index = " << index.row() << " Model size = " << m_model.size();
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
 
     if (index.row() > (m_model.size() - 1))
     {
-        qDebug() << "TreeViewModel::data: row too high" << index.row();
+        emit showError(QString("TreeViewModel::data: row too high: " + index.row()), "", "");
+//        qDebug() << "TreeViewModel::data: row too high" << index.row();
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
@@ -103,7 +100,8 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(index.row());
 
     default:
-        qDebug() << "Unknown role " << role;
+        emit showError("Unknown role: " + role, "", "");
+//        qDebug() << "Unknown role " << role;
         return QVariant();
 
     }
@@ -114,7 +112,8 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
 {
     if (!index.isValid() || index.row() > (m_model.size() - 1))
     {
-        qDebug() << "TreeViewModel::setData: Wrong index called";
+        emit showError("TreeViewModel::setData: index not valid", QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()),"");
+        //qDebug() << "TreeViewModel::setData: Wrong index called";
         return false;
     }
 
@@ -147,7 +146,8 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        qDebug() << "TreeViewModel::setData: Wrong index called. model.size = " << m_model.size() << " index = " << index;
+        emit showError("TreeViewModel::data: index not valid", QString("Index = " + index) + QString("\nModel size = " + m_model.size()),"");
+     //   qDebug() << "TreeViewModel::setData: Wrong index called. model.size = " << m_model.size() << " index = " << index;
         return;
     }
 
@@ -512,7 +512,8 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     if (row < 0 || row > m_model.size() - 1)
     {
-        qDebug() << "Tried to remove row out of bounds. model.size = " <<  m_model.size() << ", index = " << row;
+        emit showError("Tried to remove row out of bounds.", QString("Model size = " +  m_model.size()) + QString("\nIndex = " + row), "");
+ //       qDebug() << "Tried to remove row out of bounds. model.size = " <<  m_model.size() << ", index = " << row;
         return false;
     }
 
@@ -566,7 +567,7 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
 
 void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
 {
-    qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
+//    qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
     Key key;
     key.setName(path.toStdString());
     key.setString(value.toStdString());

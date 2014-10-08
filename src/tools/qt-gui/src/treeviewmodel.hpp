@@ -202,7 +202,7 @@ protected:
     QHash<int, QByteArray>      roleNames() const;
 
 signals:
-    void showError(QString text, QString informativeText, QString detailedText);
+    void showError(QString text, QString informativeText, QString detailedText) const;
 };
 
 Q_DECLARE_METATYPE(TreeViewModel)
