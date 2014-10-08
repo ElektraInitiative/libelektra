@@ -200,7 +200,7 @@ kdb::Key found = ks.lookup("$key", 0);
 				"/",
 @end if
 				ckdb::KDB_O_CASCADING_NAME,
-@if $hierarchy.info.get('default'):
+@if $hierarchy.info.get('default') != None:
 				KEY_META, "default", $support.quote($hierarchy.info.get('default')),
 @end if
 @if $hierarchy.info.get('unit'):
@@ -262,7 +262,7 @@ public:
 		: ContextualValue<$support.typeof($hierarchy.info),
 		  GetPolicyIs<${hierarchy.prettyclassname(support)}GetPolicy>>(ks,
 			context,
-			$cpp_util.generateSpecKey(support,$hierarchy)
+$cpp_util.generateSpecKey(support,$hierarchy)
 			)
 
 

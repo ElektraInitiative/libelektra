@@ -44,19 +44,24 @@ class ${hierarchy.prettyclassname(support)}GetPolicy
 {
 public:
 typedef $support.typeof($hierarchy.info) type;
+@if $support.typeof($hierarchy.info) == "kdb::none_t"
+static type get(kdb::KeySet &, kdb::Key const& spec)
+{
+	none_t none;
+	return none;
+}
+@else
 static type get(kdb::KeySet &ks, kdb::Key const& spec)
 {
-	type value{};
+	type value $support.valof($hierarchy.info)
 
 	Key found(ckdb::ksLookupBySpec(ks.getKeySet(), *spec));
-
-	if (found)
-	{
-		value = found.get<$support.typeof(hierarchy.info)>();
-	}
+	assert(found && "found empty is a problem of the code generator");
+	value = found.get<$support.typeof($hierarchy.info)>();
 
 	return value;
 }
+@end if
 };
 
 @for n in hierarchy.name.split('/')[1:-1]

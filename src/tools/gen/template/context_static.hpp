@@ -43,9 +43,16 @@ class ${hierarchy.prettyclassname(support)}GetPolicy
 {
 public:
 typedef $support.typeof($hierarchy.info) type;
+@if $support.typeof($hierarchy.info) == "kdb::none_t"
+static type get(kdb::KeySet &, kdb::Key const& spec)
+{
+	none_t none;
+	return none;
+}
+@else
 static type get(kdb::KeySet &ks, kdb::Key const&)
 {
-	type value{};
+	type value $support.valof($hierarchy.info)
 
 	$cpp_util.generateGetBySpec(support,
 			$hierarchy.name,
@@ -53,6 +60,7 @@ static type get(kdb::KeySet &ks, kdb::Key const&)
 
 	return value;
 }
+@end if
 };
 
 @for n in hierarchy.name.split('/')[1:-1]
