@@ -117,7 +117,7 @@ static void test_cascadingLookup()
 		k3 = keyNew("user/benchmark/override/#3",0),
 		KS_END);
 	Key *search = keyNew ("/benchmark/override/#0",
-		KDB_O_CASCADING_NAME);
+		KDB_O_CASCADING_NAME, KEY_END);
 	Key *found = ksLookup(ks, search, 0);
 	succeed_if(found == k0, "found wrong key");
 
@@ -128,7 +128,7 @@ static void test_cascadingLookup()
 	keyDel(search);
 
 	search = keyNew ("/benchmark/override/#2",
-		KDB_O_CASCADING_NAME);
+		KDB_O_CASCADING_NAME, KEY_END);
 	found = ksLookup(ks, search, 0);
 	succeed_if(found == k2, "found wrong key");
 
@@ -137,6 +137,7 @@ static void test_cascadingLookup()
 	found = ksLookup(ks, search, 0);
 	succeed_if(found == k3, "found wrong key");
 	keyDel(search);
+	ksDel(ks);
 }
 
 int main()
