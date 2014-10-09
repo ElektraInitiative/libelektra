@@ -1717,16 +1717,16 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 
 	if (strcmp(name, "") && name[0] == '/')
 	{
-		size_t length = strlen (name) + sizeof ("system") + 1;
+		size_t length = strlen (name) + sizeof ("system");
 		char *newname = elektraMalloc (length*2);
 		if (!newname)
 		{
 			return 0;
 		}
-		strncpy (newname+2, "user",4);
+		strncpy (newname+2, "user", 4);
 		strcpy  (newname+6, name);
 		key->key = newname+2;
-		key->keySize  = strlen(newname+2);
+		key->keySize = length-2;
 		elektraFinalizeName(key);
 		Key *found = ksLookup(ks, key, options); // call me
 
@@ -1734,7 +1734,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		{
 			strncpy (newname, "system",6);
 			key->key = newname;
-			key->keySize = strlen(newname);
+			key->keySize = length;
 			elektraFinalizeName(key);
 			found = ksLookup(ks, key, options); // call me
 		}
@@ -1806,7 +1806,11 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 }
 
 /**
- * Look for a Key contained in @p ks that matches @p name.
+ * Convenience method to look for a Key contained in @p ks that matches @p name.
+ *
+ * @deprecated Do not use this method because it needs to allocate a Key
+ * internally. Prefer to use ksLookup() where you can control the
+ * minimal allocations of keys.
  *
  * @p ksLookupByName() is designed to let you work with
  * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
@@ -1887,45 +1891,17 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 {
 	Key * key=0;
 	Key * found=0;
-	char * newname=0;
 
 	if (!ks) return 0;
 	if (!name) return 0;
 
 	if (! ks->size) return 0;
 
-	if (name[0] == '/')
-	{
-		// will be freed by keyDel later
-		newname = elektraMalloc (strlen (name) + sizeof ("system") + 1);
-		if (!newname)
-		{
-			/*errno = KDB_ERR_NOMEM;*/
-			return 0;
-		}
-		strncpy (newname+2, "user",4);
-		strcpy  (newname+6, name);
-		key = keyNew (newname+2, KEY_END);
-		found = ksLookup(ks, key, options);
-		keyDel (key);
-
-		if (!found)
-		{
-			strncpy (newname, "system",6);
-			key = keyNew (newname, KEY_END);
-			found = ksLookup(ks, key, options);
-			keyDel (key);
-		}
-
-		elektraFree (newname);
-		return found;
-	} else {
-		key = keyNew (name, KEY_END);
-		if (!key) return 0;
-		found = ksLookup(ks, key, options);
-		keyDel (key);
-		return found;
-	}
+	key = keyNew (name, KDB_O_CASCADING_NAME, KEY_END);
+	if (!key) return 0;
+	found = ksLookup(ks, key, options);
+	keyDel (key);
+	return found;
 }
 
 
