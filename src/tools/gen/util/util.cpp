@@ -148,7 +148,9 @@ $cpp_util.generateForwardDecl(support, child)
 @def generateGetBySpec(support, key, info)
 @if len($support.override(info)) > 0
 // override
-	kdb::Key found = ks.lookup("${support.override(info)[0]}", 0);
+	kdb::Key search ("${support.override(info)[0]}",
+		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+	kdb::Key found = ks.lookup(search, 0);
 	if (found)
 	{
 		value = found.get<$support.typeof(info)>();
@@ -156,7 +158,9 @@ $cpp_util.generateForwardDecl(support, child)
 	}
 @set $oa = $support.override(info)[1:]
 @for $o in oa
-	found = ks.lookup("$o", 0);
+	elektraKeySetName(*search, "$o",
+		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+	found = ks.lookup(search, 0);
 	if (found)
 	{
 		value = found.get<$support.typeof(info)>();
@@ -164,9 +168,13 @@ $cpp_util.generateForwardDecl(support, child)
 	}
 @end for
 	// now the key itself
-	found = ks.lookup("$key", 0);
+	elektraKeySetName(*search, "$key",
+		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+	found = ks.lookup(search, 0);
 @else
-kdb::Key found = ks.lookup("$key", 0);
+kdb::Key search ("$key",
+		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+	kdb::Key found = ks.lookup(search, 0);
 @end if
 	if(found)
 	{
@@ -177,7 +185,9 @@ kdb::Key found = ks.lookup("$key", 0);
 @if len(fa) > 0
 	// fallback
 @for $f in $fa
-	found = ks.lookup("$f", 0);
+	elektraKeySetName(*search, "$f",
+		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+	found = ks.lookup(search, 0);
 	if (found)
 	{
 		value = found.get<$support.typeof(info)>();

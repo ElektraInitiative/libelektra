@@ -10,6 +10,7 @@ useAutocalling = false
 $util.header($args.output)
 #include "kdb.hpp"
 #include "kdbtypes.h"
+#include "kdbproposal.h"
 
 #include <string>
 
