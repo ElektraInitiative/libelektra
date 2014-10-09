@@ -1712,13 +1712,13 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	cursor = ksGetCursor (ks);
 
 	if (!key) return 0;
-	const char * name = keyName(key);
+	char * name = key->key;
 	if (!name) return 0;
 
 	if (strcmp(name, "") && name[0] == '/')
 	{
-		/* Will be freed by second key */
-		char *newname = elektraMalloc (strlen (name) + sizeof ("system") + 1);
+		size_t length = strlen (name) + sizeof ("system") + 1;
+		char *newname = elektraMalloc (length*2);
 		if (!newname)
 		{
 			return 0;
@@ -1726,16 +1726,20 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		strncpy (newname+2, "user",4);
 		strcpy  (newname+6, name);
 		key->key = newname+2;
+		key->keySize  = strlen(newname+2);
+		elektraFinalizeName(key);
 		Key *found = ksLookup(ks, key, options); // call me
 
 		if (!found)
 		{
 			strncpy (newname, "system",6);
 			key->key = newname;
+			key->keySize = strlen(newname);
+			elektraFinalizeName(key);
 			found = ksLookup(ks, key, options); // call me
 		}
 
-		key->key = (char*) name; // restore old cascading name
+		key->key = name; // restore old cascading name
 		elektraFree (newname);
 		return found;
 	}
@@ -1892,7 +1896,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 
 	if (name[0] == '/')
 	{
-		/* Will be freed by second key */
+		// will be freed by keyDel later
 		newname = elektraMalloc (strlen (name) + sizeof ("system") + 1);
 		if (!newname)
 		{
