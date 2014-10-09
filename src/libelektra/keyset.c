@@ -185,17 +185,25 @@ Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 		= "override/";
 	int64_t i=0;
 	const Key *m = 0;
+	Key *k = 0;
+	Key *ret = 0;
 	do {
 		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
-		Key *ret=ksLookupByName(ks, keyString(m), 0);
-		if (ret) return ret;
+		if (!m) break;
+		// optimization: lazy instanziation of k
+		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+				KEY_END);
+		else elektraKeySetName(k, keyString(m),
+				KDB_O_CASCADING_NAME);
+		ret=ksLookup(ks, k, 0);
+		if (ret) goto finished;
 		++i;
 	} while(m);
 
 	{
-		Key *ret=ksLookupByName(ks, keyName(specKey), 0);
-		if (ret) return ret;
+		ret=ksLookup(ks, specKey, 0);
+		if (ret) goto finished;
 	}
 
 	strcpy (buffer, "fallback/");
@@ -204,22 +212,29 @@ Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 	do {
 		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
-		Key *ret=ksLookupByName(ks, keyString(m), 0);
-		if (ret) return ret;
+		if (!m) break;
+		// optimization: lazy instanziation of k
+		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+				KEY_END);
+		else elektraKeySetName(k, keyString(m),
+				KDB_O_CASCADING_NAME);
+		ret=ksLookup(ks, k, 0);
+		if (ret) goto finished;
 		++i;
 	} while(m);
 
 	{
 		m = keyGetMeta(specKey, "default");
-		if (!m) return 0;
-		Key * ret=keyDup(specKey);
-		if (!ret) return 0;
+		if (!m) goto finished;
+		ret=keyDup(specKey);
+		if (!ret) goto finished;
 		keySetString(ret, keyString(m));
 		ksAppendKey(ks, ret);
-		if (ret) return ret;
 	}
 
-	return 0;
+finished:
+	keyDel(k);
+	return ret;
 }
 
 /**
