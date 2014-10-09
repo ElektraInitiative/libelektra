@@ -1697,6 +1697,33 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	cursor = ksGetCursor (ks);
 
 	if (!key) return 0;
+	const char * name = keyName(key);
+	if (!name) return 0;
+
+	if (strcmp(name, "") && name[0] == '/')
+	{
+		/* Will be freed by second key */
+		char *newname = elektraMalloc (strlen (name) + sizeof ("system") + 1);
+		if (!newname)
+		{
+			return 0;
+		}
+		strncpy (newname+2, "user",4);
+		strcpy  (newname+6, name);
+		key->key = newname+2;
+		Key *found = ksLookup(ks, key, options); // call me
+
+		if (!found)
+		{
+			strncpy (newname, "system",6);
+			key->key = newname;
+			found = ksLookup(ks, key, options); // call me
+		}
+
+		key->key = (char*) name; // restore old cascading name
+		elektraFree (newname);
+		return found;
+	}
 
 	if ((options & KDB_O_NOALL)
 		// || (options & KDB_O_NOCASE)
