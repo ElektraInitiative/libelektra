@@ -140,6 +140,35 @@ static void test_lookupLongChain()
 	ksDel(ks);
 }
 
+static void test_lookupCascading()
+{
+	printf ("Test lookup cascading\n");
+
+	Key *specKey = keyNew("/abc",
+			KDB_O_CASCADING_NAME,
+			KEY_META, "override/#0", "/something",
+			KEY_END);
+	Key *k = 0;
+	KeySet *ks= ksNew(20,
+		k = keyNew("user/else", KEY_END),
+		KS_END);
+	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	keySetMeta(specKey, "fallback/#0", "/else");
+	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find fallback key");
+	keySetMeta(specKey, "fallback/#0", "");
+	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	keySetMeta(specKey, "override/#0", "/else");
+	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find override key");
+	keySetMeta(specKey, "override/#0", "");
+	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	elektraKeySetName(specKey, "/else", KDB_O_CASCADING_NAME);
+	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find key itself");
+
+	keyDel(specKey);
+	ksDel(ks);
+}
+
+
 int main(int argc, char** argv)
 {
 	printf("SPEC  TESTS\n");
@@ -151,6 +180,7 @@ int main(int argc, char** argv)
 	test_lookupChain();
 	test_lookupDefault();
 	test_lookupLongChain();
+	test_lookupCascading();
 
 	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
 			argv[0], nbTest, nbError);
