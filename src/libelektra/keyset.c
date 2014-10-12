@@ -452,10 +452,10 @@ static int keyCmpByName(const void *p1, const void *p2)
 {
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
-	const void *name1 = keyUnescapedName(key1);
-	const void *name2 = keyUnescapedName(key2);
-	size_t const nameSize1 = keyGetUnescapedNameSize(key1);
-	size_t const nameSize2 = keyGetUnescapedNameSize(key2);
+	const void *name1 = key1->key+key1->keySize;
+	const void *name2 = key2->key+key2->keySize;
+	size_t const nameSize1 = key1->keyUSize;
+	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
 	if (nameSize1 == nameSize2)
 	{
@@ -739,7 +739,7 @@ ssize_t ksGetSize(const KeySet *ks)
 /**
  * @internal
  *
- * Binary search in a keyset.
+ * Binary search in a keyset that informs where key should be inserted.
  *
  * @code
 
