@@ -1884,7 +1884,6 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  */
 Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 {
-	Key * key=0;
 	Key * found=0;
 
 	if (!ks) return 0;
@@ -1892,10 +1891,17 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 
 	if (! ks->size) return 0;
 
-	key = keyNew (name, KDB_O_CASCADING_NAME, KEY_END);
-	if (!key) return 0;
-	found = ksLookup(ks, key, options);
-	keyDel (key);
+	struct _Key key;
+	size_t size = strlen(name)+1;
+	char localname [size*2];
+	strcpy(localname, name);
+
+	keyInit(&key);
+	key.key = localname;
+	key.keySize = size;
+	elektraFinalizeName(&key);
+
+	found = ksLookup(ks, &key, options);
 	return found;
 }
 
