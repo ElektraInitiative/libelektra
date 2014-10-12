@@ -76,6 +76,8 @@ BasicWindow {
 
             ListModel {
                 id: qmlMetaKeyModel
+
+                onCountChanged: modelIndex = count
             }
             Component {
                 id: metaKeyDelegate
@@ -83,7 +85,7 @@ BasicWindow {
                 NewMetaKey {
                     //check if user has edited metakeyname or metakeyvalue. This comparison can only happen here since
                     //"metaNameField.text" cannot be accessed outside the delegate.
-                    Component.onCompleted: modelIndex = modelIndex + 1
+                    Component.onCompleted: modelIndex
                     metaNameField.readOnly: nameReadOnly
                     metaValueField.placeholderText: qsTr(valuePlaceHolder)
 
