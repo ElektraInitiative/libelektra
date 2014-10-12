@@ -443,12 +443,14 @@ int ksClear(KeySet *ks)
 /**
  * @brief Compare by unescaped name only (not by owner, they are equal)
  *
- * Other Cmp* are based on this one.
+ * @internal
+ *
+ * Other non-case Cmp* are based on this one.
  *
  * Is suitable for binary search (but may return wrong owner)
  *
  */
-static int keyCmpByName(const void *p1, const void *p2)
+static int keyCompareByName(const void *p1, const void *p2)
 {
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
@@ -473,6 +475,46 @@ static int keyCmpByName(const void *p1, const void *p2)
 	return ret;
 }
 
+/**
+ * @brief Compare by unescaped name only, ignoring case
+ *
+ * @internal
+ *
+ * @param p1
+ * @param p2
+ *
+ * @return 
+ */
+static int keyCompareByNameCase(const void *p1, const void *p2)
+{
+	Key *key1=*(Key **)p1;
+	Key *key2=*(Key **)p2;
+	const void *name1 = key1->key+key1->keySize;
+	const void *name2 = key2->key+key2->keySize;
+	size_t const nameSize1 = key1->keyUSize;
+	size_t const nameSize2 = key2->keyUSize;
+	int ret = 0;
+	if (nameSize1 == nameSize2)
+	{
+		ret = elektraMemCaseCmp(name1, name2, nameSize2);
+	} else {
+		if (nameSize1 < nameSize2)
+		{
+			ret = elektraMemCaseCmp(name1, name2, nameSize1);
+			if (ret==0) ret = -1;
+		} else {
+			ret = elektraMemCaseCmp(name1, name2, nameSize2);
+			if (ret==0) ret = 1;
+		}
+	}
+	return ret;
+}
+
+/**
+ * @brief Compare only the owner of two keys (not the name)
+ *
+ * @return comparision result
+ */
 static int keyCompareByOwner(const void *p1, const void *p2)
 {
 	Key *key1=*(Key **)p1;
@@ -482,7 +524,7 @@ static int keyCompareByOwner(const void *p1, const void *p2)
 	if (!owner1 && !owner2) return 0;
 	if (!owner1) return -1;
 	if (!owner2) return 1;
-	return keyCmpByName(p1, p2);
+	return elektraStrCmp(owner1, owner2);
 }
 
 /**
@@ -494,39 +536,17 @@ static int keyCompareByOwner(const void *p1, const void *p2)
  *
  * Is suitable for binary search
  *
- * @see keyCmp, keyCmpByName
+ * @see keyCmp, keyCompareByName
  */
-static int keyCmpByNameOwner(const void *p1, const void *p2)
+static int keyCompareByNameOwner(const void *p1, const void *p2)
 {
-	int ret = keyCmpByName(p1, p2);
+	int ret = keyCompareByName(p1, p2);
 
 	if (ret == 0)
 	{
 		return keyCompareByOwner(p1,p2);
 	}
 	return ret;
-}
-
-
-static int keyCompareByNameCase(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-
-	return elektraStrCaseCmp(name1, name2);
-}
-
-static int keyCompareByNameOwner(const void *p1, const void *p2)
-{
-	int result = keyCmpByName(p1, p2);
-
-	if (result == 0)
-	{
-		return keyCompareByOwner(p1,p2);
-	}
-	return result;
 }
 
 
@@ -621,7 +641,7 @@ int keyCmp (const Key *k1, const Key *k2)
 	if (!k1->key) return -1;
 	if (!k2->key) return 1;
 
-	return keyCmpByNameOwner(&k1, &k2);
+	return keyCompareByNameOwner(&k1, &k2);
 }
 
 /**
@@ -770,7 +790,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 			break;
 		}
 		middle = left + ((right-left)/2);
-		cmpresult = keyCmpByNameOwner(&toAppend, &ks->array[middle]);
+		cmpresult = keyCompareByNameOwner(&toAppend, &ks->array[middle]);
 		if (cmpresult > 0)
 		{
 			insertpos = left = middle + 1;
@@ -1746,7 +1766,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 			{
 				if (!keyCompareByNameCase(&key, &current)) break;
 			}
-			else if (!keyCmpByName(&key, &current)) break;
+			else if (!keyCompareByName(&key, &current)) break;
 		}
 		if (options & KDB_O_DEL) keyDel (key);
 		if (current == 0) ksSetCursor (ks, cursor);
@@ -1760,13 +1780,13 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 				sizeof (Key *), keyCompareByNameOwnerCase);
 		else if (options & KDB_O_WITHOWNER)
 			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-				sizeof (Key *), keyCmpByNameOwner);
+				sizeof (Key *), keyCompareByNameOwner);
 		else if (options & KDB_O_NOCASE)
 			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
 				sizeof (Key *), keyCompareByNameCase);
 		else
 		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-			sizeof (Key *), keyCmpByName);
+			sizeof (Key *), keyCompareByName);
 		if (options & KDB_O_DEL) keyDel (key);
 		if (found)
 		{
