@@ -8,12 +8,16 @@ import QtQuick.Dialogs 1.1
 BasicWindow {
     id: keyWindow
 
-//    property alias  valueLayout: valueLayout
     property alias  nameLabel: nameLabel
     property alias  addButton: addButton
     property alias  qmlMetaKeyModel: qmlMetaKeyModel
     property alias  nameTextField: nameTextField
+    property alias  valueLabel: valueLabel
     property alias  valueTextField: valueTextField
+    property bool   nameReadOnly: false
+    property string valuePlaceHolder: "Meta Key Value..."
+    property int    modelIndex: 0
+    property bool   isArray: false
     property string path: ""
     property string keyName: ""
     property string keyValue: ""
@@ -52,34 +56,7 @@ BasicWindow {
                 text: keyValue
             }
         }
-        //        RowLayout {
-        //            spacing: defaultSpacing
 
-        //            Label {
-        //                id:nameLabel
-        //                text: qsTr("Key Name: ")
-        //            }
-        //            TextField {
-        //                id: nameTextField
-        //                Layout.fillWidth: true
-        //                focus: true
-        //                text: keyName
-        //            }
-        //        }
-        //        RowLayout {
-        //            id:valueLayout
-        //            spacing: defaultSpacing
-
-        //            Label {
-        //                id: valueLabel
-        //                text: qsTr("Key Value:  ")
-        //            }
-        //            TextField {
-        //                id: valueTextField
-        //                Layout.fillWidth: true
-        //                text: keyValue
-        //            }
-        //        }
         BasicRectangle {
             id: metaArea
             Layout.fillWidth: true
@@ -106,6 +83,10 @@ BasicWindow {
                 NewMetaKey {
                     //check if user has edited metakeyname or metakeyvalue. This comparison can only happen here since
                     //"metaNameField.text" cannot be accessed outside the delegate.
+                    Component.onCompleted: modelIndex = modelIndex + 1
+                    metaNameField.readOnly: nameReadOnly
+                    metaValueField.placeholderText: qsTr(valuePlaceHolder)
+
                     metaNameField.onTextChanged:  {
                         if(metaName !== metaNameField.text){
                             qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
@@ -123,12 +104,9 @@ BasicWindow {
         }
         Button {
             id: addButton
+
             anchors.horizontalCenter: parent.horizontalCenter
             text: qsTr("New Meta Key")
-            onClicked: {
-                //add visual item
-                qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
-            }
         }
     }
     cancelButton.onClicked: {

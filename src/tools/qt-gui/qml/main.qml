@@ -84,6 +84,11 @@ ApplicationWindow {
 
     NewKeyWindow {
         id: newKeyWindow
+
+        addButton.onClicked: {
+            //add visual item
+            qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
+        }
     }
 
     EditKeyWindow {
@@ -91,13 +96,23 @@ ApplicationWindow {
     }
 
 
-    //    NewKeyWindow {
-    //        id: newArrayWindow
-    //        title: qsTr("Create new Array Entry")
-    //        valueLayout.visible: false
-    //        nameLabel.text: qsTr("Array Name: ")
-    //        addButton.text: qsTr("New Array Entry")
-    //    }
+    NewKeyWindow {
+        id: newArrayWindow
+
+        valueLabel.visible: false
+        valueTextField.visible: false
+        title: qsTr("Create new Array Entry")
+        nameLabel.text: qsTr("Array Name: ")
+        addButton.text: qsTr("New Array Entry")
+
+        nameReadOnly: true
+        valuePlaceHolder: "Array Value"
+        isArray: true
+
+        addButton.onClicked: {
+            qmlMetaKeyModel.append({"metaName" : "#" + modelIndex, "metaValue" : ""})
+        }
+    }
 
     UnmountBackendWindow {
         id: unmountBackendWindow
@@ -152,7 +167,6 @@ ApplicationWindow {
         id:newArrayAction
         text: qsTr("Array Entry...")
         onTriggered: newArrayWindow.show()
-        enabled: false
     }
 
     Action {

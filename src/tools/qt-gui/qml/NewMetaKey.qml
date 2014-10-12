@@ -11,6 +11,7 @@ Item {
 
     property alias metaNameField: metaNameField
     property alias metaValueField: metaValueField
+    property alias deleteMetaButton: deleteMetaButton
 
     RowLayout {
         anchors.fill: parent
@@ -18,14 +19,13 @@ Item {
 
         TextField {
             id: metaNameField
-            Layout.fillWidth: true
+            Layout.fillWidth: isArray ? false : true
             placeholderText : qsTr("Meta Key Name...")
             text: metaName
         }
         TextField {
             id: metaValueField
             Layout.fillWidth: true
-            placeholderText : qsTr("Meta Key Value...")
             text: metaValue
         }
         Button {
@@ -43,10 +43,21 @@ Item {
 
             onClicked: {
                 qmlMetaKeyModel.remove(index)// remove the visual item
+
+                if(isArray){
+                    for(var i = 0; i < qmlMetaKeyModel.count; i++){
+                        qmlMetaKeyModel.set(i, {"metaName": "#" + i})
+                    }
+
+                }
+
                 isEdited = true
             }
+
         }
+
     }
+
 }
 
 
