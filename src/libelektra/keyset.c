@@ -1718,11 +1718,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	if (strcmp(name, "") && name[0] == '/')
 	{
 		size_t length = strlen (name) + sizeof ("system");
-		char *newname = elektraMalloc (length*2);
-		if (!newname)
-		{
-			return 0;
-		}
+		char newname[length*2];
 		strncpy (newname+2, "user", 4);
 		strcpy  (newname+6, name);
 		key->key = newname+2;
@@ -1740,7 +1736,6 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		}
 
 		key->key = name; // restore old cascading name
-		elektraFree (newname);
 		return found;
 	}
 
