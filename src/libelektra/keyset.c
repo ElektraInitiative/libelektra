@@ -482,7 +482,7 @@ static int keyCompareByOwner(const void *p1, const void *p2)
 	if (!owner1 && !owner2) return 0;
 	if (!owner1) return -1;
 	if (!owner2) return 1;
-	return elektraStrCmp(owner1, owner2);
+	return keyCmpByName(p1, p2);
 }
 
 /**
@@ -507,20 +507,6 @@ static int keyCmpByNameOwner(const void *p1, const void *p2)
 	return ret;
 }
 
-/**
- * @brief Compare by name
- *
- * @return 
- */
-static int keyCompareByName(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-
-	return elektraStrCmp(name1, name2);
-}
 
 static int keyCompareByNameCase(const void *p1, const void *p2)
 {
@@ -534,7 +520,7 @@ static int keyCompareByNameCase(const void *p1, const void *p2)
 
 static int keyCompareByNameOwner(const void *p1, const void *p2)
 {
-	int result = keyCompareByName(p1, p2);
+	int result = keyCmpByName(p1, p2);
 
 	if (result == 0)
 	{
@@ -1760,7 +1746,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 			{
 				if (!keyCompareByNameCase(&key, &current)) break;
 			}
-			else if (!keyCompareByName(&key, &current)) break;
+			else if (!keyCmpByName(&key, &current)) break;
 		}
 		if (options & KDB_O_DEL) keyDel (key);
 		if (current == 0) ksSetCursor (ks, cursor);
