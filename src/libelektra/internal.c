@@ -580,6 +580,13 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
 	size_t size = 0;
 	while (*(sp=keyNameGetOneLevel(sp+size,&size)))
 	{
+		/* skip all repeating '/' in the beginning */
+		while (*sp && *sp == KDB_PATH_SEPARATOR)
+		{
+			++sp;
+			--size;
+		}
+
 		if (!elektraUnescapeKeyNamePartBegin(sp, size, &dp))
 		{
 			dp = elektraUnescapeKeyNamePart(sp, size, dp);

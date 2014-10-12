@@ -1803,10 +1803,6 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 /**
  * Convenience method to look for a Key contained in @p ks that matches @p name.
  *
- * @deprecated Do not use this method because it needs to allocate a Key
- * internally. Prefer to use ksLookup() where you can control the
- * minimal allocations of keys.
- *
  * @p ksLookupByName() is designed to let you work with
  * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
  * idea is to fully kdbGetByName() for your application root key and
@@ -1889,19 +1885,28 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 	if (!ks) return 0;
 	if (!name) return 0;
 
-	if (! ks->size) return 0;
+	if (!ks->size) return 0;
 
-	struct _Key key;
-	size_t size = strlen(name)+1;
-	char localname [size*2];
-	strcpy(localname, name);
+	if (name[0] == 'u' && name[4] == ':')
+	{
+		Key *key = keyNew(name, KDB_O_CASCADING_NAME, KEY_END);
+		found = ksLookup(ks, key, options);
+		keyDel (key);
+	}
+	else
+	{
+		struct _Key key;
+		size_t size = strlen(name)+1;
+		char localname [size*2];
+		strcpy(localname, name);
 
-	keyInit(&key);
-	key.key = localname;
-	key.keySize = size;
-	elektraFinalizeName(&key);
+		keyInit(&key);
+		key.key = localname;
+		key.keySize = size;
+		elektraFinalizeName(&key);
 
-	found = ksLookup(ks, &key, options);
+		found = ksLookup(ks, &key, options);
+	}
 	return found;
 }
 
