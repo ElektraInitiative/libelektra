@@ -103,6 +103,43 @@ static void test_elektraEmptyKeys()
 	ksDel(ks);
 }
 
+static void test_cascadingLookup()
+{
+	printf ("test cascading lookup\n");
+	Key *k0;
+	Key *k1;
+	Key *k2;
+	Key *k3;
+	KeySet *ks = ksNew (10,
+		k0 = keyNew("system/benchmark/override/#0",0),
+		k1 = keyNew("system/benchmark/override/#1",0),
+		k2 = keyNew("user/benchmark/override/#2",0),
+		k3 = keyNew("user/benchmark/override/#3",0),
+		KS_END);
+	Key *search = keyNew ("/benchmark/override/#0",
+		KDB_O_CASCADING_NAME, KEY_END);
+	Key *found = ksLookup(ks, search, 0);
+	succeed_if(found == k0, "found wrong key");
+
+	elektraKeySetName(search, "/benchmark/override/#1",
+		KDB_O_CASCADING_NAME);
+	found = ksLookup(ks, search, 0);
+	succeed_if(found == k1, "found wrong key");
+	keyDel(search);
+
+	search = keyNew ("/benchmark/override/#2",
+		KDB_O_CASCADING_NAME, KEY_END);
+	found = ksLookup(ks, search, 0);
+	succeed_if(found == k2, "found wrong key");
+
+	elektraKeySetName(search, "/benchmark/override/#3",
+		KDB_O_CASCADING_NAME);
+	found = ksLookup(ks, search, 0);
+	succeed_if(found == k3, "found wrong key");
+	keyDel(search);
+	ksDel(ks);
+}
+
 int main()
 {
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
@@ -110,6 +147,7 @@ int main()
 	test_ksCommonParentName();
 	test_elektraRenameKeys();
 	test_elektraEmptyKeys();
+	test_cascadingLookup();
 
 	return nbError;
 }

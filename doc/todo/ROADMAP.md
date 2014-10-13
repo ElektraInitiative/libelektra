@@ -9,6 +9,8 @@ A complete list of ideas what could be done can be found in the
 # 0.8.9 #
 
 32-bit build agent! (for variable size problems)
+
+Debug+improve installation of gen
 2.6 python-cheetah? (exclude 2.6 in setuptools)
 Compiling /usr/lib/pymodules/python2.6/nested_support.py ...
 SyntaxError: ('invalid syntax',
@@ -17,6 +19,8 @@ SyntaxError: ('invalid syntax',
 
 
 kdb run all + allow disable version check
+
+constants plugin+docu of new CMake variables
 
 fix types:
 	type checker should check like defined in schema

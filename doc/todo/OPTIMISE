@@ -6,9 +6,22 @@ general:
 	profile the code and fix optimization leaks
 	benchmark first!
 
+
+== mmap storage ==
+
+Cow keys for mmap storage
+
+
+== faster lookup ==
+
+cascading keys: keep place for namespaces
+
+
+
 == STORAGE ==
 
 use less write() syscalls in dump
+do not use c++ iostreams..
 
 
 == SEARCH ==

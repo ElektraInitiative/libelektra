@@ -46,6 +46,23 @@ void benchmarkReadin()
 	ksDel(n);
 }
 
+void benchmarkLookupByName()
+{
+	int i,j;
+	char name [KEY_NAME_LENGTH + 1];
+
+	for (i=0; i< NUM_DIR; i++)
+	{
+		snprintf (name, KEY_NAME_LENGTH, "%s/%s%d", KEY_ROOT, "dir", i);
+		ksLookupByName(large, name, 0);
+		for (j=0; j<NUM_KEY; j++)
+		{
+			snprintf (name, KEY_NAME_LENGTH, "%s/%s%d/%s%d", KEY_ROOT, "dir", i, "key", j);
+			ksLookupByName(large, name, 0);
+		}
+	}
+}
+
 void benchmarkReread()
 {
 	kdbGet(kdb, large, key);
@@ -101,6 +118,9 @@ int main()
 
 	benchmarkReadin();
 	timePrint ("Read in key database");
+
+	benchmarkLookupByName();
+	timePrint ("Lookup key database");
 
 	benchmarkReread();
 	timePrint ("Re read key database");

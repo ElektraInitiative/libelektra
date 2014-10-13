@@ -329,7 +329,7 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
 /**
  * @internal
  *
- * @brief Call this function after every key changing operation
+ * @brief Call this function after every key name changing operation
  *
  * @pre key->key and key->keySize are set accordingly and the size of
  * allocation is twice as what you actually needed.

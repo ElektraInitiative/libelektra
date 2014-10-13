@@ -8,6 +8,7 @@ cheetahVarStartToken = $
 $util.header($args.output)
 #include "kdb.h"
 #include "kdbtypes.h"
+#include "kdbproposal.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -109,20 +110,27 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 {
 @if len(support.override(info)) > 0
 	// override
-	Key * found = ksLookupByName(ks, "${support.override(info)[0]}", 0);
+	Key * searchKey = keyNew("${support.override(info)[0]}",
+		KDB_O_CASCADING_NAME, KEY_END);
+	Key * found = ksLookup(ks, searchKey, 0);
 @for $o in $support.override(info)[1:]
 	if (!found)
 	{
-		found = ksLookupByName(ks, "$o", 0);
+		elektraKeySetName(searchKey, "$o", KDB_O_CASCADING_NAME);
+		found = ksLookup(ks, searchKey, 0);
 	}
 @end for
 	// now the key itself
 	if(!found)
 	{
-		found = ksLookupByName(ks, "$key", 0);
+
+		elektraKeySetName(searchKey, "$key", KDB_O_CASCADING_NAME);
+		found = ksLookup(ks, searchKey, 0);
 	}
 @else
-	Key * found = ksLookupByName(ks, "$key", 0);
+	Key * searchKey = keyNew("${key}",
+		KDB_O_CASCADING_NAME, KEY_END);
+	Key * found = ksLookup(ks, searchKey, 0);
 @end if
 
 @if len($support.fallback(info)) > 0
@@ -130,10 +138,12 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 @for $f in $support.fallback(info)
 	if (!found)
 	{
-		found = ksLookupByName(ks, "$f", 0);
+		elektraKeySetName(searchKey,  "$f", KDB_O_CASCADING_NAME);
+		found = ksLookup(ks, searchKey, 0);
 	}
 @end for
 @end if
+	keyDel(searchKey);
 
 @def strtonumber(support, info, function)
 char *endptr;

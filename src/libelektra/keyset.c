@@ -185,17 +185,25 @@ Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 		= "override/";
 	int64_t i=0;
 	const Key *m = 0;
+	Key *k = 0;
+	Key *ret = 0;
 	do {
 		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
-		Key *ret=ksLookupByName(ks, keyString(m), 0);
-		if (ret) return ret;
+		if (!m) break;
+		// optimization: lazy instanziation of k
+		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+				KEY_END);
+		else elektraKeySetName(k, keyString(m),
+				KDB_O_CASCADING_NAME);
+		ret=ksLookup(ks, k, 0);
+		if (ret) goto finished;
 		++i;
 	} while(m);
 
 	{
-		Key *ret=ksLookupByName(ks, keyName(specKey), 0);
-		if (ret) return ret;
+		ret=ksLookup(ks, specKey, 0);
+		if (ret) goto finished;
 	}
 
 	strcpy (buffer, "fallback/");
@@ -204,22 +212,29 @@ Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 	do {
 		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
-		Key *ret=ksLookupByName(ks, keyString(m), 0);
-		if (ret) return ret;
+		if (!m) break;
+		// optimization: lazy instanziation of k
+		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+				KEY_END);
+		else elektraKeySetName(k, keyString(m),
+				KDB_O_CASCADING_NAME);
+		ret=ksLookup(ks, k, 0);
+		if (ret) goto finished;
 		++i;
 	} while(m);
 
 	{
 		m = keyGetMeta(specKey, "default");
-		if (!m) return 0;
-		Key * ret=keyDup(specKey);
-		if (!ret) return 0;
+		if (!m) goto finished;
+		ret=keyDup(specKey);
+		if (!ret) goto finished;
 		keySetString(ret, keyString(m));
 		ksAppendKey(ks, ret);
-		if (ret) return ret;
 	}
 
-	return 0;
+finished:
+	keyDel(k);
+	return ret;
 }
 
 /**
@@ -428,19 +443,21 @@ int ksClear(KeySet *ks)
 /**
  * @brief Compare by unescaped name only (not by owner, they are equal)
  *
- * Other Cmp* are based on this one.
+ * @internal
+ *
+ * Other non-case Cmp* are based on this one.
  *
  * Is suitable for binary search (but may return wrong owner)
  *
  */
-static int keyCmpByName(const void *p1, const void *p2)
+static int keyCompareByName(const void *p1, const void *p2)
 {
 	Key *key1=*(Key **)p1;
 	Key *key2=*(Key **)p2;
-	const void *name1 = keyUnescapedName(key1);
-	const void *name2 = keyUnescapedName(key2);
-	size_t const nameSize1 = keyGetUnescapedNameSize(key1);
-	size_t const nameSize2 = keyGetUnescapedNameSize(key2);
+	const void *name1 = key1->key+key1->keySize;
+	const void *name2 = key2->key+key2->keySize;
+	size_t const nameSize1 = key1->keyUSize;
+	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
 	if (nameSize1 == nameSize2)
 	{
@@ -458,6 +475,46 @@ static int keyCmpByName(const void *p1, const void *p2)
 	return ret;
 }
 
+/**
+ * @brief Compare by unescaped name only, ignoring case
+ *
+ * @internal
+ *
+ * @param p1
+ * @param p2
+ *
+ * @return 
+ */
+static int keyCompareByNameCase(const void *p1, const void *p2)
+{
+	Key *key1=*(Key **)p1;
+	Key *key2=*(Key **)p2;
+	const void *name1 = key1->key+key1->keySize;
+	const void *name2 = key2->key+key2->keySize;
+	size_t const nameSize1 = key1->keyUSize;
+	size_t const nameSize2 = key2->keyUSize;
+	int ret = 0;
+	if (nameSize1 == nameSize2)
+	{
+		ret = elektraMemCaseCmp(name1, name2, nameSize2);
+	} else {
+		if (nameSize1 < nameSize2)
+		{
+			ret = elektraMemCaseCmp(name1, name2, nameSize1);
+			if (ret==0) ret = -1;
+		} else {
+			ret = elektraMemCaseCmp(name1, name2, nameSize2);
+			if (ret==0) ret = 1;
+		}
+	}
+	return ret;
+}
+
+/**
+ * @brief Compare only the owner of two keys (not the name)
+ *
+ * @return comparision result
+ */
 static int keyCompareByOwner(const void *p1, const void *p2)
 {
 	Key *key1=*(Key **)p1;
@@ -479,53 +536,17 @@ static int keyCompareByOwner(const void *p1, const void *p2)
  *
  * Is suitable for binary search
  *
- * @see keyCmp, keyCmpByName
+ * @see keyCmp, keyCompareByName
  */
-static int keyCmpByNameOwner(const void *p1, const void *p2)
+static int keyCompareByNameOwner(const void *p1, const void *p2)
 {
-	int ret = keyCmpByName(p1, p2);
+	int ret = keyCompareByName(p1, p2);
 
 	if (ret == 0)
 	{
 		return keyCompareByOwner(p1,p2);
 	}
 	return ret;
-}
-
-/**
- * @brief Compare by name
- *
- * @return 
- */
-static int keyCompareByName(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-
-	return elektraStrCmp(name1, name2);
-}
-
-static int keyCompareByNameCase(const void *p1, const void *p2)
-{
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-
-	return elektraStrCaseCmp(name1, name2);
-}
-
-static int keyCompareByNameOwner(const void *p1, const void *p2)
-{
-	int result = keyCompareByName(p1, p2);
-
-	if (result == 0)
-	{
-		return keyCompareByOwner(p1,p2);
-	}
-	return result;
 }
 
 
@@ -620,7 +641,7 @@ int keyCmp (const Key *k1, const Key *k2)
 	if (!k1->key) return -1;
 	if (!k2->key) return 1;
 
-	return keyCmpByNameOwner(&k1, &k2);
+	return keyCompareByNameOwner(&k1, &k2);
 }
 
 /**
@@ -724,7 +745,7 @@ ssize_t ksGetSize(const KeySet *ks)
 /**
  * @internal
  *
- * Binary search in a keyset.
+ * Binary search in a keyset that informs where key should be inserted.
  *
  * @code
 
@@ -769,7 +790,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 			break;
 		}
 		middle = left + ((right-left)/2);
-		cmpresult = keyCmpByNameOwner(&toAppend, &ks->array[middle]);
+		cmpresult = keyCompareByNameOwner(&toAppend, &ks->array[middle]);
 		if (cmpresult > 0)
 		{
 			insertpos = left = middle + 1;
@@ -1697,6 +1718,32 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	cursor = ksGetCursor (ks);
 
 	if (!key) return 0;
+	char * name = key->key;
+	if (!name) return 0;
+
+	if (strcmp(name, "") && name[0] == '/')
+	{
+		size_t length = strlen (name) + sizeof ("system");
+		char newname[length*2];
+		strncpy (newname+2, "user", 4);
+		strcpy  (newname+6, name);
+		key->key = newname+2;
+		key->keySize = length-2;
+		elektraFinalizeName(key);
+		Key *found = ksLookup(ks, key, options); // call me
+
+		if (!found)
+		{
+			strncpy (newname, "system",6);
+			key->key = newname;
+			key->keySize = length;
+			elektraFinalizeName(key);
+			found = ksLookup(ks, key, options); // call me
+		}
+
+		key->key = name; // restore old cascading name
+		return found;
+	}
 
 	if ((options & KDB_O_NOALL)
 		// || (options & KDB_O_NOCASE)
@@ -1733,13 +1780,13 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 				sizeof (Key *), keyCompareByNameOwnerCase);
 		else if (options & KDB_O_WITHOWNER)
 			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-				sizeof (Key *), keyCmpByNameOwner);
+				sizeof (Key *), keyCompareByNameOwner);
 		else if (options & KDB_O_NOCASE)
 			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
 				sizeof (Key *), keyCompareByNameCase);
 		else
 		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-			sizeof (Key *), keyCmpByName);
+			sizeof (Key *), keyCompareByName);
 		if (options & KDB_O_DEL) keyDel (key);
 		if (found)
 		{
@@ -1760,7 +1807,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 }
 
 /**
- * Look for a Key contained in @p ks that matches @p name.
+ * Convenience method to look for a Key contained in @p ks that matches @p name.
  *
  * @p ksLookupByName() is designed to let you work with
  * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
@@ -1839,47 +1886,34 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  */
 Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 {
-	Key * key=0;
 	Key * found=0;
-	char * newname=0;
 
 	if (!ks) return 0;
 	if (!name) return 0;
 
-	if (! ks->size) return 0;
+	if (!ks->size) return 0;
 
-	if (name[0] == '/')
+	if (name[0] == 'u' && name[4] == ':')
 	{
-		/* Will be freed by second key */
-		newname = elektraMalloc (strlen (name) + sizeof ("system") + 1);
-		if (!newname)
-		{
-			/*errno = KDB_ERR_NOMEM;*/
-			return 0;
-		}
-		strncpy (newname+2, "user",4);
-		strcpy  (newname+6, name);
-		key = keyNew (newname+2, KEY_END);
+		Key *key = keyNew(name, KDB_O_CASCADING_NAME, KEY_END);
 		found = ksLookup(ks, key, options);
 		keyDel (key);
-
-		if (!found)
-		{
-			strncpy (newname, "system",6);
-			key = keyNew (newname, KEY_END);
-			found = ksLookup(ks, key, options);
-			keyDel (key);
-		}
-
-		elektraFree (newname);
-		return found;
-	} else {
-		key = keyNew (name, KEY_END);
-		if (!key) return 0;
-		found = ksLookup(ks, key, options);
-		keyDel (key);
-		return found;
 	}
+	else
+	{
+		struct _Key key;
+		size_t size = strlen(name)+1;
+		char localname [size*2];
+		strcpy(localname, name);
+
+		keyInit(&key);
+		key.key = localname;
+		key.keySize = size;
+		elektraFinalizeName(&key);
+
+		found = ksLookup(ks, &key, options);
+	}
+	return found;
 }
 
 

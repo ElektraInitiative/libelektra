@@ -61,6 +61,8 @@ class Support:
 		return info["type"].split(' ')[1]
 
 	def quote(self, s):
+		if len(s) == 0:
+			return '""';
 		if s[0] != '"' and s[-1] != '"':
 			return '"' + s + '"'
 		return s

@@ -30,6 +30,12 @@
   * to search for user configuration. */
 #define KDB_DB_HOME              "@KDB_DB_HOME@"
 
+#define KDB_DB_FILE              "@KDB_DB_FILE@"
+
+#define KDB_DEFAULT_STORAGE      "@KDB_DEFAULT_STORAGE@"
+
+#define KDB_DEFAULT_RESOLVER      "@KDB_DEFAULT_RESOLVER@"
+
 /** Declares a parameter as unused. */
 #define ELEKTRA_UNUSED           @ELEKTRA_UNUSED@
 

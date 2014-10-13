@@ -1,4 +1,8 @@
-#include "lift_context.hpp"
+#ifdef DYNAMIC
+#include "lift_context_dynamic.hpp"
+#else
+#include "lift_context_static.hpp"
+#endif
 #include <kdb.hpp>
 
 #include <iostream>

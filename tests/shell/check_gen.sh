@@ -33,7 +33,7 @@ fi
 GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
 GEN="$GEN_FOLDER/gen"
 
-TESTPROGS="./lift ./cpplift ./nestedlift ./contextlift"
+TESTPROGS="./lift ./cpplift ./nestedlift ./staticcontextlift ./dynamiccontextlift"
 
 if $GEN -h | grep "^usage:"
 then
@@ -86,19 +86,19 @@ for TESTPROG in $TESTPROGS
 do
 	$TESTPROG | grep "delay: 0"
 	succeed_if "default in $TESTPROG of delay not correct"
-done
 
-./lift | grep "stops: true"
-succeed_if "default of stops not correct"
+	$TESTPROG | grep "stops: true"
+	succeed_if "default in $TESTPROG of stops not correct"
+
+	$TESTPROG | grep "height #3: 2.5"
+	succeed_if "default in $TESTPROG of height #3 not correct"
+
+	$TESTPROG | grep "limit: 1"
+	succeed_if "default in $TESTPROG of limit not correct"
+done
 
 ./lift | grep "algorithm: stay"
 succeed_if "default of algorithm not correct"
-
-./lift | grep "height #3: 2.5"
-succeed_if "default of height #3 not correct"
-
-./lift | grep "limit: 1"
-succeed_if "default of limit not correct"
 
 
 

@@ -99,7 +99,7 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 	/* skip all repeating '/' in the beginning */
 	while (*real && *real == KDB_PATH_SEPARATOR)
 	{
-		real++;
+		++real;
 	}
 
 	/* now see where this basename ends handling escaped chars with '\' */
