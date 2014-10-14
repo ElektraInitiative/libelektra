@@ -19,25 +19,18 @@
 #include <inih.h>
 #include "ini.h"
 
+int elektraIniOpen(Plugin *handle, Key *parentKey);
+int elektraIniClose(Plugin *handle, Key *parentKey);
+
 #include "contract.h"
 
-#define ELEKTRA_SET_GENERAL_ERROR(id, parentKey, message) \
-	do { \
-		ELEKTRA_SET_ERROR(id, parentKey, message); \
-		errno = errnosave; \
-	} while (0)
-
-#define ELEKTRA_SET_ERRNO_ERROR(id, parentKey) \
-	ELEKTRA_SET_GENERAL_ERROR(id, parentKey, strerror(errno))
-
-
 typedef struct {
-	const Key *parentKey;
-	KeySet *result;
-	char *collectedComment;
+	const Key *parentKey;	/* the parent key of the result KeySet */
+	KeySet *result;			/* the result KeySet */
+	char *collectedComment;	/* buffer for collecting comments until a non comment key is reached */
 } CallbackHandle;
 
-static void writeCommentToMeta (CallbackHandle *handle, Key *key)
+static void flushCollectedComment (CallbackHandle *handle, Key *key)
 {
 	if (handle->collectedComment)
 	{
@@ -47,7 +40,26 @@ static void writeCommentToMeta (CallbackHandle *handle, Key *key)
 	}
 }
 
-static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value)
+// TODO: this is very similar to elektraKeyAppendMetaLine in keytometa
+static int elektraKeyAppendLine (Key *target, const char *line)
+{
+	if (!target) return 0;
+	if (!line) return 0;
+
+
+	char *buffer = malloc (keyGetValueSize(target) + strlen (line) + 1);
+	if (!buffer) return 0;
+
+	keyGetString(target, buffer, keyGetValueSize(target));
+	strcat (buffer, "\n");
+	strncat (buffer, line, strlen (line));
+
+	keySetString(target, buffer);
+	free (buffer);
+	return keyGetValueSize(target);
+}
+
+static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value, unsigned short lineContinuation)
 {
 
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
@@ -63,9 +75,24 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	}
 
 	keyAddBaseName (appendKey, name);
-	writeCommentToMeta (handle, appendKey);
-	keySetString (appendKey, value);
-	ksAppendKey (handle->result, appendKey);
+
+	if (!lineContinuation)
+	{
+		flushCollectedComment (handle, appendKey);
+		keySetString (appendKey, value);
+		ksAppendKey (handle->result, appendKey);
+	}
+	else
+	{
+		Key *existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE);
+		keyDel (appendKey);
+
+		/* something went wrong before because this key should exist */
+		if (!existingKey) return -1;
+
+		elektraKeyAppendLine(existingKey, value);
+	}
+
 
 	return 1;
 }
@@ -78,7 +105,7 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	keySetString(appendKey, 0);
 
 	keyAddBaseName(appendKey, section);
-	writeCommentToMeta (handle, appendKey);
+	flushCollectedComment (handle, appendKey);
 	keySetDir(appendKey);
 	ksAppendKey(handle->result, appendKey);
 
@@ -113,7 +140,25 @@ static int iniCommentToMeta (void *vhandle, const char *comment)
 	return 1;
 }
 
-int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+
+
+int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
+{
+	KeySet *config = elektraPluginGetConfig (handle);
+	Key* multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
+	elektraPluginSetData(handle, multilineKey);
+
+	return 0;
+}
+
+
+int elektraIniClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
+{
+	elektraPluginSetData(handle, 0);
+	return 0;
+}
+
+int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
 
@@ -131,7 +176,8 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	FILE *fh = fopen (keyString (parentKey), "r");
 	if (!fh)
 	{
-		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		ELEKTRA_SET_ERROR(9, parentKey, strerror (errno));
+		errno = errnosave;
 		return -1;
 	}
 
@@ -142,21 +188,47 @@ int elektraIniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	cbHandle.result = append;
 	cbHandle.collectedComment = 0;
 	ksAppendKey (cbHandle.result, keyDup(parentKey));
-	int ret = ini_parse_file(fh,iniKeyToElektraKey, iniSectionToElektraKey, iniCommentToMeta, &cbHandle);
+
+
+
+	struct IniConfig iniConfig;
+	iniConfig.keyHandler=iniKeyToElektraKey;
+	iniConfig.sectionHandler = iniSectionToElektraKey;
+	iniConfig.commentHandler = iniCommentToMeta;
+
+	Key *multiLineKey = elektraPluginGetData(handle);
+	iniConfig.supportMultiline = multiLineKey != 0;
+
+	int ret = ini_parse_file(fh, &iniConfig, &cbHandle);
 
 	fclose (fh);
+	errno = errnosave;
 
-	if (ret < 0)
+	if (ret == 0)
 	{
-		ELEKTRA_SET_GENERAL_ERROR(87, parentKey, "Unable to parse the ini file");
-		return -1;
+		ksClear(returned);
+		ksAppend(returned, cbHandle.result);
+		ret = 1;
+	}
+	else
+	{
+		switch (ret)
+		{
+		case -1:
+			ELEKTRA_SET_ERROR(9, parentKey, "Unable to open the ini file");
+			break;
+		case -2:
+			ELEKTRA_SET_ERROR(87, parentKey, "Memory allocation error while reading the ini file");
+			break;
+		default:
+			ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First error at line %d", keyString(parentKey), ret);
+			break;
+		}
+		ret = -1;
 	}
 
-	ksClear(returned);
-	ksAppend(returned, cbHandle.result);
 	ksDel(cbHandle.result);
-	errno = errnosave;
-	return 1; /* success */
+	return ret; /* success */
 }
 
 // TODO: # and ; comments get mixed up, patch inih to differentiate and
@@ -182,18 +254,41 @@ void writeComments(Key* current, FILE* fh)
 	}
 }
 
-int elektraIniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+void writeMultilineKey(Key *key, FILE *fh)
+{
+	size_t valueSize = keyGetValueSize(key);
+	char *saveptr = 0;
+	char *result = 0;
+	char *value = malloc (valueSize);
+	keyGetString(key, value, valueSize);
+	result = strtok_r (value, "\n", &saveptr);
+
+	fprintf (fh, "%s = %s\n", keyBaseName(key), result);
+
+	while ( (result = strtok_r (0, "\n", &saveptr)) != 0)
+	{
+		fprintf (fh, "\t%s\n", result);
+	}
+
+	free (value);
+}
+
+int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 	int errnosave = errno;
+	int ret = 1;
 
 	FILE *fh = fopen(keyString(parentKey), "w");
 
 	if (!fh)
 	{
-		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		ELEKTRA_SET_ERROR(9, parentKey, strerror(errno));
+		errno = errnosave;
 		return -1;
 	}
+
+	Key* multilineKey = elektraPluginGetData(handle);
 
 	ksRewind (returned);
 	Key *current;
@@ -202,31 +297,46 @@ int elektraIniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
 
 		writeComments (current, fh);
-		size_t baseNameSize = keyGetBaseNameSize(current);
-		char *name = malloc (baseNameSize);
-		keyGetBaseName(current, name, baseNameSize);
 
 		if (keyIsDir(current))
 		{
-			fprintf (fh, "[%s]\n", name);
+			fprintf (fh, "[%s]\n", keyBaseName(current));
 		}
 		else
 		{
-			fprintf (fh, "%s = %s\n", name, keyString(current));
+			if (strstr (keyString (current), "\n") == 0)
+			{
+				fprintf (fh, "%s = %s\n", keyBaseName(current), keyString(current));
+			}
+			else
+			{
+				if (multilineKey)
+				{
+					writeMultilineKey(current, fh);
+				}
+				else
+				{
+					ELEKTRA_SET_ERROR(97, parentKey, "Encountered a multiline value but multiline support is not enabled. "
+							"Have a look at kdb info ini for more details");
+					ret = -1;
+				}
+			}
 		}
 
-		free (name);
+		if (ret < 0) break;
 	}
 
 	fclose (fh);
 
 	errno = errnosave;
-	return 1; /* success */
+	return ret; /* success */
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(ini)
 {
 	return elektraPluginExport("ini",
+		ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
+		ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
 		ELEKTRA_PLUGIN_GET,	&elektraIniGet,
 		ELEKTRA_PLUGIN_SET,	&elektraIniSet,
 		ELEKTRA_PLUGIN_END);
