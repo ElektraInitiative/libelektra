@@ -1,6 +1,6 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
-import QtQuick.Window 2.1
+import QtQuick.Window 2.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
@@ -31,9 +31,9 @@ BasicWindow {
                 ListView {
                     id: mountedBackendsView
                     anchors.fill: parent
-                    model: mountedBackendsModel
+                    model: externTreeModel.getMountedBackends()
                     focus: true
-                    //interactive: true
+                    interactive: true
                     currentIndex: 0
                     highlight: Rectangle {
                         color: activePalette.highlight
@@ -41,7 +41,7 @@ BasicWindow {
                     }
                     delegate: Text {
                         color: activePalette.text
-                        text: backendName
+                        text: modelData
 
                         MouseArea {
                             anchors.fill: parent
@@ -54,6 +54,10 @@ BasicWindow {
         Button {
             text: qsTr("Unmount")
             Layout.alignment: Qt.AlignHCenter
+            onClicked: {
+                externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
+                mountedBackendsView.model = externTreeModel.getMountedBackends()
+            }
         }
     }
 }

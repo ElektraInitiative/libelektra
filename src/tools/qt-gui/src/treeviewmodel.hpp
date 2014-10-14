@@ -172,6 +172,9 @@ public:
     void collectCurrentKeySet();
     void clearMetaModel();
 
+    Q_INVOKABLE QStringList     getMountedBackends();
+    Q_INVOKABLE void            unMountBackend(QString backendName);
+
 private:
 
     /**
