@@ -519,12 +519,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     beginRemoveRows(QModelIndex(), row, row);
 
-    ConfigNode *node = m_model.at(row);
-
-    if(node->getKey() && node->getKey().isValid())
-        m_model.at(row)->invalidateKey();
-
-    delete m_model.takeAt(row);
+    m_model.takeAt(row);
 
     endRemoveRows();
 

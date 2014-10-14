@@ -4,11 +4,15 @@
 #include <QUndoCommand>
 #include "treeviewmodel.hpp"
 
+/**
+ * @brief Remembers a node for redo/undo
+ */
 class DeleteKeyCommand : public QUndoCommand
 {
 
 public:
     explicit DeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNode *node, int index, QUndoCommand *parent = 0);
+    ~DeleteKeyCommand();
 
     virtual void undo();
     virtual void redo();
@@ -16,7 +20,7 @@ public:
 private:
 
     TreeViewModel *m_model;
-    ConfigNode m_node;
+    ConfigNode *m_node;
     int m_index;
 
 };
