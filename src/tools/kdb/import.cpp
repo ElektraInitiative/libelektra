@@ -31,7 +31,7 @@ int ImportCommand::execute(Cmdline const& cl)
 	Key root (cl.arguments[0], KEY_END);
 	if (!root.isValid())
 	{
-		throw invalid_argument ("root key is not a valid key name");
+        throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");
 	}
 
 	KeySet originalKeys;
@@ -81,7 +81,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	if (!result.hasConflicts ())
 	{
-		if (cl.verbose)
+        if (cl.verbose)
 		{
 			cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
 			cout << result.getMergedKeys();

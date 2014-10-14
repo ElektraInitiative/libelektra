@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/BasicWindow.qml</file>
+        <file>qml/SearchBox.qml</file>
+        <file>qml/RectWithFileDialog.qml</file>
+        <file>qml/ButtonRow.qml</file>
+        <file>qml/Page1.qml</file>
+        <file>qml/Page2.qml</file>
+        <file>qml/Page3.qml</file>
+        <file>qml/WizardLoader.qml</file>
+        <file>qml/WizardTemplate.qml</file>
+        <file>qml/Page4.qml</file>
+        <file>qml/NewKeyArrayWindow.qml</file>
+        <file>qml/NewMetaKey.qml</file>
+    </qresource>
+</RCC>
