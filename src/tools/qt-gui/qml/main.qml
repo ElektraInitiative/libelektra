@@ -116,6 +116,7 @@ ApplicationWindow {
 
     UnmountBackendWindow {
         id: unmountBackendWindow
+        okButton.onClicked: unmountBackendWindow.close()
     }
 
     WizardLoader {
@@ -282,7 +283,6 @@ ApplicationWindow {
         text: qsTr("Unmount Backend...")
         tooltip: qsTr("Unmount Backend")
         onTriggered: unmountBackendWindow.show()
-        enabled: false
     }
 
     Action {
@@ -469,19 +469,6 @@ ApplicationWindow {
                     treeView.currentNode = null
                 }
             }
-        }
-    }
-
-    ListModel {
-        id: mountedBackendsModel
-        ListElement {
-            backendName: "Test"
-        }
-        ListElement {
-            backendName: "Backend1"
-        }
-        ListElement {
-            backendName: "Backend2"
         }
     }
 

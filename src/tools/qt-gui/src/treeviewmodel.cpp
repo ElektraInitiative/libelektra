@@ -4,9 +4,11 @@
 #include <cmdline.hpp>
 #include <external.hpp>
 #include <toolexcept.hpp>
+#include <backends.hpp>
 
 using namespace std;
 using namespace kdb;
+using namespace kdb::tools;
 
 TreeViewModel::TreeViewModel(QObject* parent)
 {
@@ -49,7 +51,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
     if (!index.isValid())
     {
         emit showError("TreeViewModel::data: index not valid", QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()),"");
-//        qDebug() << "TreeViewModel::data: index not valid. Index = " << index.row() << " Model size = " << m_model.size();
+        //        qDebug() << "TreeViewModel::data: index not valid. Index = " << index.row() << " Model size = " << m_model.size();
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
@@ -57,7 +59,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
     if (index.row() > (m_model.size() - 1))
     {
         emit showError(QString("TreeViewModel::data: row too high: " + index.row()), "", "");
-//        qDebug() << "TreeViewModel::data: row too high" << index.row();
+        //        qDebug() << "TreeViewModel::data: row too high" << index.row();
         // TODO: why is this function called with wrong index?
         return QVariant();
     }
@@ -101,7 +103,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 
     default:
         emit showError("Unknown role: " + role, "", "");
-//        qDebug() << "Unknown role " << role;
+        //        qDebug() << "Unknown role " << role;
         return QVariant();
 
     }
@@ -147,7 +149,7 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
     if (index < 0 || index > m_model.size() - 1)
     {
         emit showError("TreeViewModel::data: index not valid", QString("Index = " + index) + QString("\nModel size = " + m_model.size()),"");
-     //   qDebug() << "TreeViewModel::setData: Wrong index called. model.size = " << m_model.size() << " index = " << index;
+        //   qDebug() << "TreeViewModel::setData: Wrong index called. model.size = " << m_model.size() << " index = " << index;
         return;
     }
 
@@ -417,7 +419,6 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
     }
 }
 
-
 void TreeViewModel::populateModel()
 {
     ConfigNode* system = new ConfigNode("system", "system", 0, this);
@@ -433,7 +434,7 @@ void TreeViewModel::populateModel()
     while (m_keySet.next())
     {
         QString currentKey = QString::fromStdString(m_keySet.current().getName());
-//        qDebug() << "current: " << currentKey;
+        //        qDebug() << "current: " << currentKey;
         QStringList keys = currentKey.split("/");
         QString root = keys.takeFirst();
 
@@ -513,7 +514,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
     if (row < 0 || row > m_model.size() - 1)
     {
         emit showError("Tried to remove row out of bounds.", QString("Model size = " +  m_model.size()) + QString("\nIndex = " + row), "");
- //       qDebug() << "Tried to remove row out of bounds. model.size = " <<  m_model.size() << ", index = " << row;
+        //       qDebug() << "Tried to remove row out of bounds. model.size = " <<  m_model.size() << ", index = " << row;
         return false;
     }
 
@@ -567,7 +568,7 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
 
 void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
 {
-//    qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
+    //    qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
     Key key;
     key.setName(path.toStdString());
     key.setString(value.toStdString());
@@ -624,6 +625,33 @@ void TreeViewModel::clearMetaModel()
     beginResetModel();
     m_model.clear();
     endResetModel();
+}
+
+QStringList TreeViewModel::getMountedBackends()
+{
+    Backends::BackendInfoVector mtab = Backends::getBackendInfo(m_keySet);
+
+    QStringList mountedBackends;
+
+    for (Backends::BackendInfoVector::const_iterator it = mtab.begin(); it != mtab.end(); ++it)
+    {
+        mountedBackends.append(QString::fromStdString(it->name));
+    }
+
+    return mountedBackends;
+}
+
+void TreeViewModel::unMountBackend(QString backendName)
+{
+    qDebug() << "Backendname " << backendName;
+
+    const std::string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
+
+    Key x(keyName, KEY_END);
+
+    m_keySet.cut(x);
+
+    populateModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
