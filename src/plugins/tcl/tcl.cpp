@@ -111,10 +111,18 @@ int elektraTclSet(Plugin *, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 
+	int saveerrno = errno;
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open())
 	{
-		ELEKTRA_SET_ERROR (9, parentKey, "file is not open in tcl");
+		if (errno == EACCES)
+		{
+			ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
+			errno = saveerrno;
+			return -1;
+		}
+		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyValue(parentKey), strerror(errno));
+		errno = saveerrno;
 		return -1;
 	}
 

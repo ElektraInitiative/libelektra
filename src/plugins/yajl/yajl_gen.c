@@ -244,10 +244,18 @@ int elektraGenEmpty(yajl_gen g, KeySet *returned, Key *parentKey)
 
 int elektraGenWriteFile(yajl_gen g, Key *parentKey)
 {
+	int saveerrno = errno;
 	FILE *fp = fopen(keyString(parentKey), "w");
-	if (!fp)
+	if (!fp && errno == EACCES)
 	{
-		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
+		errno = saveerrno;
+		return -1;
+	}
+	else if(!fp)
+	{
+		ELEKTRA_SET_ERROR(75, parentKey, keyString(parentKey));
+		errno = saveerrno;
 		return -1;
 	}
 
@@ -259,6 +267,7 @@ int elektraGenWriteFile(yajl_gen g, Key *parentKey)
 
 	fclose (fp);
 
+	errno = saveerrno;
 	return 1; /* success */
 }
 

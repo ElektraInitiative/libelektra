@@ -451,9 +451,19 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	FILE *fh = fopen (keyValue (parentKey), "w+");
 
-	if (fh == 0)
+	if (fh == 0 && errno == EACCES)
 	{
-		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		// we know its a permission problem
+		ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
+		errno = saveerrno;
+		return -1;
+	}
+	else if(!fh)
+	{
+		// other problems..
+		ELEKTRA_SET_ERRNO_ERROR(75, parentKey);
+		errno = saveerrno;
+		return -1;
 	}
 
 	int ret = 0;

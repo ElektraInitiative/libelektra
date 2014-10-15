@@ -68,7 +68,7 @@ severity:fatal
 ingroup:kdb
 
 number:9
-description:could not open file
+description:Insufficient permissions to open configuration file for writing. You might want to retry as root.
 severity:normal
 ingroup:kdb
 
@@ -445,7 +445,7 @@ ingroup:plugin
 module:resolver
 
 number:75
-description:Could not open file for writing
+description:Could not open file for writing.
 severity:error
 ingroup:plugin
 module:storage

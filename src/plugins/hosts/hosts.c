@@ -335,9 +335,15 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 	fp = fopen (keyValue(parentKey), "w");
 
-	if (fp == 0)
+	if (fp == 0 && errno == EACCES)
 	{
-		ELEKTRA_SET_ERROR(9, parentKey, strerror(errno));
+		ELEKTRA_SET_ERROR(9, parentKey, keyValue(parentKey));
+		errno = errnosave;
+		return -1;
+	}
+	else if (fp == 0)
+	{
+		ELEKTRA_SET_ERRORF(75, parentKey, "%s could not be written because %s", keyValue(parentKey) strerror(errno));
 		errno = errnosave;
 		return -1;
 	}
