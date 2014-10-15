@@ -178,7 +178,7 @@ ingroup:plugin
 module:resolver
 
 number:30
-description:found conflict
+description:A conflict occurred: another process modified the key database.
 severity:error
 ingroup:plugin
 module:resolver
