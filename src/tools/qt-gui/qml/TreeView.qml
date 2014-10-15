@@ -90,6 +90,7 @@ ScrollView {
                                     else if(mouse.button == Qt.RightButton)
                                         treeContextMenu.popup()
                                 }
+
                             }
                             Row {
                                 id: row

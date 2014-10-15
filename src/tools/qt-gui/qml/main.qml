@@ -93,6 +93,11 @@ ApplicationWindow {
 
     EditKeyWindow {
         id: editKeyWindow
+
+        addButton.onClicked: {
+            //add visual item
+            qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
+        }
     }
 
 
