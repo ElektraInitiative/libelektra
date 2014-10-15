@@ -204,7 +204,16 @@ ApplicationWindow {
         text: qsTr("Import Configuration... ")
         iconSource: "icons/import.png"
         tooltip: qsTr("Import Configuration")
-        onTriggered: importDialog.show()
+
+        onTriggered:{
+            if(treeView.currentNode !== null){
+                importDialog.show()
+            }
+            else{
+                noNodeSelectedDialog.text = qsTr("Please select a node to import a configuration from file.")
+                noNodeSelectedDialog.open()
+            }
+        }
     }
 
     Action {
@@ -212,7 +221,13 @@ ApplicationWindow {
         text: qsTr("Export Configuration... ")
         iconSource: "icons/export.png"
         tooltip: qsTr("Export Configuration")
-        onTriggered: exportDialog.open()
+
+        onTriggered: {
+            if(treeView.currentNode !== null)
+                exportDialog.open()
+            else
+                noNodeSelectedDialog.open()
+        }
     }
 
     Action {
