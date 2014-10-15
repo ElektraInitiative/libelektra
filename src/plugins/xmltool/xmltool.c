@@ -26,6 +26,9 @@
 #include "xmltool.h"
 #include "kdbtools.h"
 
+#include <errno.h>
+
+#include "kdberrors.h"
 #include "kdbconfig.h"
 
 #include <string.h>
@@ -67,12 +70,27 @@ int elektraXmltoolSet(Plugin *handle ELEKTRA_UNUSED,
 {
 	/* set all keys */
 
+	int errnosave = errno;
 	FILE *fout = fopen (keyString(parentKey), "w");
-	if (!fout) return 0;
+	if (fout == 0 && errno == EACCES)
+	{
+		ELEKTRA_SET_ERROR(9, parentKey, keyValue(parentKey));
+		errno = errnosave;
+		return -1;
+	}
+	else if (fout == 0)
+	{
+		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyValue(parentKey), strerror(errno));
+		errno = errnosave;
+		return -1;
+	}
 
 	ksToStream (returned, fout, KDB_O_HEADER);
 
-	if (fclose (fout)) return -1;
+	if (fclose (fout))
+	{
+		return -1;
+	}
 
 	return 1; /* success */
 }

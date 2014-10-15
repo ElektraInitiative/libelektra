@@ -705,7 +705,7 @@ const char *keyBaseName(const Key *key)
  *
  * Basenames are denoted as:
  * - @c system/some/thing/basename -> @c basename
- * - @c user:domain/some/thing/base\/name > @c base\/name
+ * - @c user:domain/some/thing/base\\/name > @c base\\/name
  *
  * @param key the key object to work with
  * @return size in bytes of @p key's basename including ending NULL
