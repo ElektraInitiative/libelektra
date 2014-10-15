@@ -161,13 +161,29 @@ ApplicationWindow {
         text: qsTr("Key...")
         iconSource: "icons/new.png"
         tooltip: qsTr("New Key")
-        onTriggered: newKeyWindow.show()
+        onTriggered: {
+            if(treeView.currentItem === null){
+                noNodeSelectedDialog.text = qsTr("Please select a node to create a new key.")
+                noNodeSelectedDialog.open()
+            }
+            else{
+                newKeyWindow.show()
+            }
+        }
     }
 
     Action {
         id:newArrayAction
         text: qsTr("Array Entry...")
-        onTriggered: newArrayWindow.show()
+        onTriggered: {
+            if(treeView.currentItem === null){
+                noNodeSelectedDialog.text = qsTr("Please select a node to create a new array entry.")
+                noNodeSelectedDialog.open()
+            }
+            else{
+                newArrayWindow.show()
+            }
+        }
     }
 
     Action {
