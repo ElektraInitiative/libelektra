@@ -22,6 +22,12 @@ static inline KeySet *getPluginContract()
 			keyNew ("system/elektra/modules/ini/exports/set",
 					KEY_FUNC, elektraIniSet,
 					KEY_END),
+			keyNew ("system/elektra/modules/ini/exports/open",
+					KEY_FUNC, elektraIniOpen,
+					KEY_END),
+			keyNew ("system/elektra/modules/ini/exports/close",
+					KEY_FUNC, elektraIniClose,
+					KEY_END),
 	#include "readme_ini.c"
 			keyNew ("system/elektra/modules/ini/infos/version",
 					KEY_VALUE, PLUGINVERSION,

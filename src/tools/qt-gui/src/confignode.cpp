@@ -168,14 +168,6 @@ Key ConfigNode::getKey() const
     return m_key;
 }
 
-void ConfigNode::invalidateKey()
-{
-    if(m_key){
-        qDebug() << "ConfigNode::deleteKey: clearing key " << QString::fromStdString(m_key.getName());
-        m_key.clear();
-    }
-}
-
 void ConfigNode::deletePath(QStringList &path)
 {
     if(path.count() == 0)

@@ -151,6 +151,7 @@ endif ()
 if (TOOLS MATCHES "ALL")
 	set (TOOLS_LIST
 		gen
+		qt-gui
 		)
 	set (TOOLS_FORCE FORCE)
 endif ()

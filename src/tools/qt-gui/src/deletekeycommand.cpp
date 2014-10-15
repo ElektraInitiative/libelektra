@@ -3,17 +3,23 @@
 DeleteKeyCommand::DeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNode *node, int index, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_model(model)
-    , m_node(*node)
+    , m_node(node)
     , m_index(index)
 {
     setText(type);
 }
 
+/**
+ * @brief After DeleteKeyCommand is destructed, the node will be lost forever.
+ */
+DeleteKeyCommand::~DeleteKeyCommand()
+{
+    delete m_node;
+}
+
 void DeleteKeyCommand::undo()
 {
-    ConfigNode *node = new ConfigNode(m_node);
-    node->setParentModel(m_model);
-    m_model->insertRow(m_index, node);
+    m_model->insertRow(m_index, m_node);
 }
 
 void DeleteKeyCommand::redo()

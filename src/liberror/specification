@@ -563,3 +563,15 @@ number:96
 description:Regex failure
 severity:warning
 module:regexstore
+
+number:97
+description:writing multiline values is not enabled
+severity:error
+ingroup:plugin
+module:storage
+
+number: 98
+description:invalid ini syntax
+severity:error
+ingroup:plugin
+module:storage

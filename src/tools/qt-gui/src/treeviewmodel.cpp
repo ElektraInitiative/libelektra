@@ -422,7 +422,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 void TreeViewModel::populateModel()
 {
     ConfigNode* system = new ConfigNode("system", "system", 0, this);
-    ConfigNode* user = new ConfigNode("user", "user", Key("user"), this);
+    ConfigNode* user = new ConfigNode("user", "user", Key("user", KEY_END), this);
 
     clear();
     //Why wont the treeview update anymore if I clear the List?
@@ -520,12 +520,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     beginRemoveRows(QModelIndex(), row, row);
 
-    ConfigNode *node = m_model.at(row);
-
-    if(node->getKey() && node->getKey().isValid())
-        m_model.at(row)->invalidateKey();
-
-    delete m_model.takeAt(row);
+    m_model.takeAt(row);
 
     endRemoveRows();
 
