@@ -17,7 +17,7 @@ ScrollView {
     property Component delegate: Label {
         id: label
         text: model.name
-        color: activePalette.windowText
+        color: model.isNull ? disabledPalette.windowText : activePalette.windowText
     }
 
     contentItem: Loader {

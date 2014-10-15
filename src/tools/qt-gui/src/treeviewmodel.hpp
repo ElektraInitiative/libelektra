@@ -37,7 +37,8 @@ public:
         MetaValueRole, ///< The role QML can access the meta model of a ConfigNode at a specified index.
         NodeRole, ///< The role QML can retrieve the ConfigNode at a specified index.
         ParentModelRole, ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
-        IndexRole ///< The role QML can retrieve the index of a ConfigNode.
+        IndexRole, ///< The role QML can retrieve the index of a ConfigNode.
+        IsNullRole
     };
 
     explicit TreeViewModel(QObject* parent =  0);
