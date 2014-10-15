@@ -1,5 +1,7 @@
 #include "yajl_gen.h"
 
+#include <errno.h>
+
 
 /**
  * @brief Return the first character of next name level

@@ -30,6 +30,8 @@
 
 #include <fstream>
 
+#include "errno.h"
+
 #include <boost/spirit/include/qi_expect.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
 
@@ -121,7 +123,7 @@ int elektraTclSet(Plugin *, KeySet *returned, Key *parentKey)
 			errno = saveerrno;
 			return -1;
 		}
-		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyValue(parentKey), strerror(errno));
+		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyString(parentKey), strerror(errno));
 		errno = saveerrno;
 		return -1;
 	}

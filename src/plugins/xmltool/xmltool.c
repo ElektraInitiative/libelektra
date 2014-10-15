@@ -26,6 +26,9 @@
 #include "xmltool.h"
 #include "kdbtools.h"
 
+#include <errno.h>
+
+#include "kdberrors.h"
 #include "kdbconfig.h"
 
 #include <string.h>

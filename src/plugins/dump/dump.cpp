@@ -14,6 +14,7 @@
  ***************************************************************************/
 
 #include "dump.hpp"
+#include <errno.h>
 
 using namespace ckdb;
 
