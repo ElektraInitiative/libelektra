@@ -18,7 +18,7 @@ TreeViewModel::TreeViewModel(QObject* parent)
         m_kdb.get(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
-        emit showError("Constructor: Could not read config due to the following error:", QString(e.what()), "");
+        emit showError("Could not read configuration.", "", QString(e.what()));
     }
 }
 
@@ -50,17 +50,13 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
     {
-        emit showError("TreeViewModel::data: index not valid", QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()),"");
-        //        qDebug() << "TreeViewModel::data: index not valid. Index = " << index.row() << " Model size = " << m_model.size();
-        // TODO: why is this function called with wrong index?
+        emit showError("Index not valid.", QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()), "TreeViewModel::data");
         return QVariant();
     }
 
     if (index.row() > (m_model.size() - 1))
     {
-        emit showError(QString("TreeViewModel::data: row too high: " + index.row()), "", "");
-        //        qDebug() << "TreeViewModel::data: row too high" << index.row();
-        // TODO: why is this function called with wrong index?
+        emit showError(QString("Index too high. "), "Index: " + index.row(), "TreeViewModel::data");
         return QVariant();
     }
 
@@ -109,20 +105,17 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
     }
 
     default:
-        emit showError("Unknown role: " + role, "", "");
-        //        qDebug() << "Unknown role " << role;
+        emit showError("Unknown role: " + role, "", "TreeViewModel::data");
         return QVariant();
 
     }
-
 }
 
 bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int role)
 {
     if (!index.isValid() || index.row() > (m_model.size() - 1))
     {
-        emit showError("TreeViewModel::setData: index not valid", QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()),"");
-        //qDebug() << "TreeViewModel::setData: Wrong index called";
+        emit showError("Index not valid.", QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()),"TreeViewModel::setData");
         return false;
     }
 
@@ -155,8 +148,7 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        emit showError("TreeViewModel::data: index not valid", QString("Index = " + index) + QString("\nModel size = " + m_model.size()),"");
-        //   qDebug() << "TreeViewModel::setData: Wrong index called. model.size = " << m_model.size() << " index = " << index;
+        emit showError("Index not valid.", QString("Index = " + index) + QString("\nModel size = " + m_model.size()), "TreeViewModel::setData");
         return;
     }
 
@@ -206,7 +198,7 @@ void TreeViewModel::deletePath(const QString &path)
     }
     else
     {
-        qDebug() << "TreeViewModel::deletePath: INVALID_PATH";
+        emit showError("Invalid path.", "", "TreeViewModel::deletePath");
     }
 }
 
@@ -233,7 +225,7 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
         m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
-        emit showError("Import: Could not set configuration due to the following error:", QString(e.what()), "");
+        emit showError("Importing the configuration from file failed because current configuration could not be set." , "", QString(e.what()));
         return;
     }
 
@@ -264,12 +256,12 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
         }
         catch (std::invalid_argument const& ia)
         {
-            emit showError("Importing the configuration from file failed because there were invalid arguments passed:", QString(ia.what()), "");
+            emit showError("Importing the configuration from file failed because there were invalid arguments passed.", "" , QString(ia.what()));
         }
     }
     catch (CommandException const& ce)
     {
-        emit showError("Importing the configuration from file terminated unsuccessfully with the info:", QString(ce.what()), "");
+        emit showError("Importing the configuration from file terminated unsuccessfully because of a faulty command.", "", QString(ce.what()));
     }
     catch (kdb::Key& key)
     {
@@ -279,22 +271,22 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
         ws << printWarnings(cerr, key);
         es << printError(cerr, key);
 
-        emit showError("Importing the configuration from file failed while accessing the key database", QString::fromStdString(ws.str()) + QString::fromStdString(es.str()), "");
+        emit showError("Importing the configuration from file failed while accessing the key database.", "" , QString::fromStdString(ws.str()) + QString::fromStdString(es.str()));
     }
     catch (std::exception const& ce)
     {
-        emit showError("Importing the configuration from file terminated unsuccessfully with the info:", QString(ce.what()), "");
+        emit showError("Importing the configuration from file terminated unsuccessfully.", "", QString(ce.what()));
     }
     catch (...)
     {
-        emit showError("Unknown error", "", "");
+        emit showError("Unknown error", "", "TreeViewModel::importConfiguration");
     }
 
     try{
-        m_kdb.get(m_keySet, "");
+        m_kdb.get(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
-        emit showError("Import: Could not read configuration due to the following error:", QString(e.what()), "");
+        emit showError("Import: Could not read configuration.", "", QString(e.what()));
     }
 
     populateModel();
@@ -308,7 +300,7 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
-        emit showError("Export: Could not set configuration due to the following error:", QString(e.what()), "");
+        emit showError("Exporting the configuration to file failed because current configuration could not be set.", "", QString(e.what()));
         return;
     }
 
@@ -338,13 +330,13 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         }
         catch (std::invalid_argument const& ia)
         {
-            emit showError("Exporting the configuration to file failed because there were invalid arguments passed:", QString(ia.what()), "");
+            emit showError("Exporting the configuration to file failed because there were invalid arguments passed.", "", QString(ia.what()));
             return;
         }
     }
     catch (CommandException const& ce)
     {
-        emit showError("Exporting the configuration to file terminated unsuccessfully with the info:", QString(ce.what()), "");
+        emit showError("Exporting the configuration to file terminated unsuccessfully.", "", QString(ce.what()));
         return;
     }
     catch (kdb::Key& key)
@@ -355,17 +347,17 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         ws << printWarnings(cerr, key);
         es << printError(cerr, key);
 
-        emit showError("Exporting the configuration to file failed while accessing the key database", QString::fromStdString(ws.str()) + QString::fromStdString(es.str()), "");
+        emit showError("Exporting the configuration to file failed while accessing the key database.", "", QString::fromStdString(ws.str()) + QString::fromStdString(es.str()));
         return;
     }
     catch (std::exception const& ce)
     {
-        emit showError("Exporting the configuration to file terminated unsuccessfully with the info:", QString(ce.what()), "");
+        emit showError("Exporting the configuration to file terminated unsuccessfully.", "", QString(ce.what()));
         return;
     }
     catch (...)
     {
-        emit showError("Unknown error", "", "");
+        emit showError("Unknown error", "", "TreeViewModel::exportConfiguration");
     }
 }
 
@@ -520,8 +512,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     if (row < 0 || row > m_model.size() - 1)
     {
-        emit showError("Tried to remove row out of bounds.", QString("Model size = " +  m_model.size()) + QString("\nIndex = " + row), "");
-        //       qDebug() << "Tried to remove row out of bounds. model.size = " <<  m_model.size() << ", index = " << row;
+        emit showError("Index not valid.", QString("Model size = " +  m_model.size()) + QString("\nIndex = " + row), "TreeViewModel::removeRow");
         return false;
     }
 
@@ -565,7 +556,7 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
         insertRow(row);
     }
     else
-        qDebug() << "Key " << QString::fromStdString(node->getKey().getFullName()) << " not valid!";
+        emit showError("Inserting metakey failed.", "Key " + QString::fromStdString(node->getKey().getFullName()) + " is not valid.", "");
 }
 
 void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
@@ -594,7 +585,7 @@ void TreeViewModel::createNewNode(const QString &path, const QString &value, con
     }
     else
     {
-        qDebug() << "TreeViewModel::createNewNode: INVALID_KEY: " << path;
+        emit showError(QString("Creating a new node failed because the key " + path) + " is invalid", "", "TreeViewModel::createNewNode");
     }
 }
 
@@ -611,7 +602,7 @@ void TreeViewModel::synchronize()
         m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
-        emit showError("Synchronizing failed due to the following error:", QString(e.what()), "");
+        emit showError("Synchronizing failed.", "", QString(e.what()));
     }
 }
 
@@ -645,8 +636,6 @@ QStringList TreeViewModel::getMountedBackends()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
-    qDebug() << "Backendname " << backendName;
-
     const std::string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
 
     Key x(keyName, KEY_END);

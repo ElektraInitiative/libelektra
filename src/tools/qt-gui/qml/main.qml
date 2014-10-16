@@ -189,6 +189,7 @@ ApplicationWindow {
                 newArrayWindow.show()
             }
         }
+        enabled: false
     }
 
     Action {
@@ -569,13 +570,18 @@ ApplicationWindow {
                                 treeView.currentNode.children
                             }
                     }
+
                     TableViewColumn {
+                        id: nameColumn
+
                         role: "name"
                         title: qsTr("Name")
                         width: Math.round(keyArea.width*0.5)
                         delegate: tableViewColumnDelegate
                     }
                     TableViewColumn {
+                        id: valueColumn
+
                         role: "value"
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)

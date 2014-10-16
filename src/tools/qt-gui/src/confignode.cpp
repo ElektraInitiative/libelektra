@@ -97,7 +97,7 @@ void ConfigNode::setName(const QString& name)
 //            qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
         }
         catch(KeyInvalidName ex){
-            emit showError("ConfigNode::setName: Terminate called after throwing an instance of \'kdb::KeyInvalidName\'", ex.what(),"Keyname: " + QString::fromStdString(m_key.getFullName()));
+            emit showError("Could not set name because Keyname: " + QString::fromStdString(m_key.getFullName()) + " is invalid.", "", ex.what());
         }
     }
 }
@@ -150,7 +150,7 @@ void ConfigNode::deleteMeta(const QString &name)
 {
     if(m_key)
     {
-        qDebug() << "ConfigNode::deleteMeta: " << "metakey " << name << " of node " << m_name << " deleted";
+//        qDebug() << "ConfigNode::deleteMeta: " << "metakey " << name << " of node " << m_name << " deleted";
         m_key.delMeta(name.toStdString());
     }
 }
