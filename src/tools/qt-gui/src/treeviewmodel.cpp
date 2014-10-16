@@ -101,6 +101,13 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
     case IndexRole:
         return QVariant::fromValue(index.row());
 
+    case IsNullRole:{
+        if(node->getKey())
+            return QVariant::fromValue(false);
+        else
+            return QVariant::fromValue(true);
+    }
+
     default:
         emit showError("Unknown role: " + role, "", "");
         //        qDebug() << "Unknown role " << role;
@@ -663,6 +670,7 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
     roles[NodeRole] = "node";
     roles[ParentModelRole] = "parentModel";
     roles[IndexRole] = "index";
+    roles[IsNullRole] = "isNull";
 
     return roles;
 }

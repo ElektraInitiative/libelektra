@@ -14,6 +14,7 @@
  ***************************************************************************/
 
 #include "dump.hpp"
+#include <errno.h>
 
 using namespace ckdb;
 
@@ -242,13 +243,23 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 
 int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
+	int saveerrno = errno;
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open())
 	{
+		if (errno == EACCES)
+		{
+			ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
+			errno = saveerrno;
+			return -1;
+		}
 		std::string error_reason = 
 			"dump storage could not open file ";
 		error_reason += keyString(parentKey);
-		ELEKTRA_SET_ERROR (9, parentKey, error_reason.c_str());
+		error_reason += " because of ";
+		error_reason += strerror(errno);
+		ELEKTRA_SET_ERROR (75, parentKey, error_reason.c_str());
+		errno = saveerrno;
 		return -1;
 	}
 
