@@ -607,6 +607,7 @@ ApplicationWindow {
 
                                 onDoubleClicked: {
                                     keyAreaSelectedItem = model.get(styleData.row)
+                                    editKeyWindow.selectedNode = keyAreaSelectedItem
                                     editKeyWindow.show()
                                     editKeyWindow.populateMetaArea()
                                 }

@@ -90,7 +90,14 @@ ScrollView {
                                     else if(mouse.button == Qt.RightButton)
                                         treeContextMenu.popup()
                                 }
+                                onDoubleClicked:{
+                                    if(!treeView.currentNode.isNull){
+                                        editKeyWindow.selectedNode = treeView.currentNode
 
+                                        editKeyWindow.show()
+                                        editKeyWindow.populateMetaArea()
+                                    }
+                                }
                             }
                             Row {
                                 id: row
