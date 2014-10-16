@@ -544,7 +544,7 @@ ApplicationWindow {
 
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
-                            text: styleData.value
+                            text: styleData.value.replace(/\n/g, " ")
                             color: (keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text
                         }
                     }
@@ -593,7 +593,6 @@ ApplicationWindow {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                                 onClicked: {
-                                    //TODO:CRASH
                                     keyAreaSelectedItem = model.get(styleData.row)
 
                                     if(mouse.button === Qt.RightButton)

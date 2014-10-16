@@ -11,7 +11,6 @@ KeyWindow {
     keyValue: selectedNode === null ? "" : selectedNode.value
 
     function populateMetaArea() {
-        console.log(selectedNode.metaValue.rowCount())
         for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
             qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
         }
