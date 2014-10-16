@@ -435,7 +435,6 @@ ApplicationWindow {
 
             action: cutAction
             onTriggered: {
-                console.log("cut")
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
@@ -449,7 +448,6 @@ ApplicationWindow {
             action: copyAction
 
             onTriggered: {
-                console.log("copy")
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
@@ -461,7 +459,6 @@ ApplicationWindow {
 
             action: pasteAction
             onTriggered: {
-                console.log("paste")
                 keyAreaView.copyPasteIndex = -1
                 keyAreaView.currentNodePath = ""
 
