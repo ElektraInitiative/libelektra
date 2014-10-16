@@ -438,7 +438,7 @@ ApplicationWindow {
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("cut", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                undoManager.putToClipboard("cut", keyAreaView.model, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
                 pasteCounter = 0
             }
         }
@@ -451,13 +451,14 @@ ApplicationWindow {
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("copy", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                undoManager.putToClipboard("copy", keyAreaView.model, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
             }
         }
         MenuItem {
             id: kcmPaste
 
             action: pasteAction
+
             onTriggered: {
                 keyAreaView.copyPasteIndex = -1
                 keyAreaView.currentNodePath = ""
@@ -543,7 +544,7 @@ ApplicationWindow {
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
                             text: styleData.value.replace(/\n/g, " ")
-                            color: (keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text
+                            color: treeView.currentNode === null ? "transparent" : ((keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text)
                         }
                     }
                 }

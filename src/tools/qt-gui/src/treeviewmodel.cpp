@@ -541,6 +541,7 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 void TreeViewModel::insertRow(int row, ConfigNode *node)
 {
     beginInsertRows(QModelIndex(), row, row);
+    node->setParentModel(this);
     m_model.insert(row, node);
     endInsertRows();
 }
@@ -553,8 +554,16 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
     if(m_metaModelParent){
         insertRow(row);
     }
-    else
-        emit showError(tr("Inserting metakey failed."), "Key " + QString::fromStdString(node->getKey().getFullName()) + " is not valid.", "");
+    else{
+        QString keyName;
+
+        if(node->getKey())
+            keyName = QString::fromStdString(node->getKey().getFullName());
+        else
+            keyName = node->getName();
+
+        emit showError(tr("Inserting metakey failed."), "Key " + keyName + " is not valid.", "");
+    }
 }
 
 void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
