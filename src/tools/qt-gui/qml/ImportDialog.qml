@@ -65,6 +65,7 @@ BasicWindow {
     }
     okButton.onClicked: {
         undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, "preserve")
+        externTreeModel.populateModel()
         importDialog.close()
     }
 }

@@ -214,7 +214,6 @@ int TreeViewModel::getIndexByName(const QString &name) const
 
 void TreeViewModel::importConfiguration(const QString &name, const QString &format, QString &file, const QString &mergeStrategy)
 {
-
     collectCurrentKeySet();
 
     m_keySet.rewind();
@@ -225,7 +224,7 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
         m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
-        emit showError("Importing the configuration from file failed because current configuration could not be set." , "", QString(e.what()));
+        emit showError("Importing the configuration from file failed because the current configuration could not be set." , "", QString(e.what()));
         return;
     }
 
@@ -245,7 +244,8 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
 
     string command = argv[1];
 
-    try {
+    try
+    {
         CommandPtr cmd = f.get(command);
 
         Cmdline cl(argc, argv, cmd.get());
@@ -283,7 +283,7 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
     }
 
     try{
-        m_kdb.get(m_keySet, "/");
+        m_kdb.get(m_keySet, "");
     }
     catch (kdb::KDBException const & e){
         emit showError("Import: Could not read configuration.", "", QString(e.what()));
@@ -300,7 +300,7 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
         m_kdb.set(m_keySet, "/");
     }
     catch (kdb::KDBException const & e){
-        emit showError("Exporting the configuration to file failed because current configuration could not be set.", "", QString(e.what()));
+        emit showError("Exporting the configuration to file failed because the current configuration could not be set.", "", QString(e.what()));
         return;
     }
 
@@ -421,7 +421,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 void TreeViewModel::populateModel()
 {
     ConfigNode* system = new ConfigNode("system", "system", 0, this);
-    ConfigNode* user = new ConfigNode("user", "user", 0, this);
+    ConfigNode* user = new ConfigNode("user", "user", Key("user"), this);
 
     clear();
     //Why wont the treeview update anymore if I clear the List?
@@ -449,9 +449,7 @@ void TreeViewModel::populateModel()
         {
             qDebug() << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey;
         }
-
     }
-
 }
 
 void TreeViewModel::accept(Visitor &visitor)
