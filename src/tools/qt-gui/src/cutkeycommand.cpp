@@ -23,6 +23,5 @@ void CutKeyCommand::redo()
     m_source.setKeyName(newPath);
 
     m_target->appendChild(new ConfigNode(m_source));
-
     m_model->removeRow(m_index);
 }

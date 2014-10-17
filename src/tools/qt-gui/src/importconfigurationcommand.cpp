@@ -17,13 +17,12 @@ ImportConfigurationCommand::ImportConfigurationCommand(TreeViewModel *model, con
 
 void ImportConfigurationCommand::undo()
 {
-    qDebug() << "UNDO";
     m_model->setKeySet(m_set);
     m_model->populateModel();
+    m_model->synchronize();
 }
 
 void ImportConfigurationCommand::redo()
 {
-    qDebug() << "REDO";
     m_model->importConfiguration(m_name, m_format, m_file, m_mergeStrategy);
 }

@@ -19,7 +19,7 @@ DeleteKeyCommand::~DeleteKeyCommand()
 
 void DeleteKeyCommand::undo()
 {
-    m_model->insertRow(m_index, m_node);
+    m_model->insertRow(m_index, new ConfigNode(*m_node));
 }
 
 void DeleteKeyCommand::redo()

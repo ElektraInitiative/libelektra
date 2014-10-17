@@ -16,8 +16,8 @@ ScrollView {
 
     property Component delegate: Label {
         id: label
-        text: model.name
-        color: model.isNull ? disabledPalette.windowText : activePalette.windowText
+        text: model === null ? "" : model.name
+        color: model === null ? "transparent" : (model.isNull ? disabledPalette.windowText : activePalette.windowText)
     }
 
     contentItem: Loader {
@@ -90,7 +90,14 @@ ScrollView {
                                     else if(mouse.button == Qt.RightButton)
                                         treeContextMenu.popup()
                                 }
+                                onDoubleClicked:{
+                                    if(!treeView.currentNode.isNull){
+                                        editKeyWindow.selectedNode = treeView.currentNode
 
+                                        editKeyWindow.show()
+                                        editKeyWindow.populateMetaArea()
+                                    }
+                                }
                             }
                             Row {
                                 id: row

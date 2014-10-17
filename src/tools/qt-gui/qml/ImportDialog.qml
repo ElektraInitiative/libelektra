@@ -64,16 +64,8 @@ BasicWindow {
         importTextField.text = ""
     }
     okButton.onClicked: {
-
-        if(treeView.currentNode !== null){
-            undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, "preserve")
-        }
-        else{
-            noNodeSelectedDialog.text = qsTr("Please select a node to import a configuration from file.")
-            noNodeSelectedDialog.open()
-        }
-
+        undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, "preserve")
+        externTreeModel.populateModel()
         importDialog.close()
     }
-
 }

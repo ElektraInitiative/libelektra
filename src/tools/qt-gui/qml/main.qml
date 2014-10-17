@@ -189,6 +189,7 @@ ApplicationWindow {
                 newArrayWindow.show()
             }
         }
+        enabled: false
     }
 
     Action {
@@ -204,7 +205,16 @@ ApplicationWindow {
         text: qsTr("Import Configuration... ")
         iconSource: "icons/import.png"
         tooltip: qsTr("Import Configuration")
-        onTriggered: importDialog.show()
+
+        onTriggered:{
+            if(treeView.currentNode !== null){
+                importDialog.show()
+            }
+            else{
+                noNodeSelectedDialog.text = qsTr("Please select a node to import a configuration from file.")
+                noNodeSelectedDialog.open()
+            }
+        }
     }
 
     Action {
@@ -212,7 +222,13 @@ ApplicationWindow {
         text: qsTr("Export Configuration... ")
         iconSource: "icons/export.png"
         tooltip: qsTr("Export Configuration")
-        onTriggered: exportDialog.open()
+
+        onTriggered: {
+            if(treeView.currentNode !== null)
+                exportDialog.open()
+            else
+                noNodeSelectedDialog.open()
+        }
     }
 
     Action {
@@ -419,11 +435,10 @@ ApplicationWindow {
 
             action: cutAction
             onTriggered: {
-                console.log("cut")
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("cut", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                undoManager.putToClipboard("cut", keyAreaView.model, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
                 pasteCounter = 0
             }
         }
@@ -433,19 +448,18 @@ ApplicationWindow {
             action: copyAction
 
             onTriggered: {
-                console.log("copy")
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("copy", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                undoManager.putToClipboard("copy", keyAreaView.model, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
             }
         }
         MenuItem {
             id: kcmPaste
 
             action: pasteAction
+
             onTriggered: {
-                console.log("paste")
                 keyAreaView.copyPasteIndex = -1
                 keyAreaView.currentNodePath = ""
 
@@ -529,8 +543,8 @@ ApplicationWindow {
 
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
-                            text: styleData.value
-                            color: (keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text
+                            text: styleData.value.replace(/\n/g, " ")
+                            color: treeView.currentNode === null ? "transparent" : ((keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text)
                         }
                     }
                 }
@@ -554,13 +568,18 @@ ApplicationWindow {
                                 treeView.currentNode.children
                             }
                     }
+
                     TableViewColumn {
+                        id: nameColumn
+
                         role: "name"
                         title: qsTr("Name")
                         width: Math.round(keyArea.width*0.5)
                         delegate: tableViewColumnDelegate
                     }
                     TableViewColumn {
+                        id: valueColumn
+
                         role: "value"
                         title: qsTr("Value")
                         width: Math.round(keyArea.width*0.5)
@@ -578,7 +597,6 @@ ApplicationWindow {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                                 onClicked: {
-                                    //TODO:CRASH
                                     keyAreaSelectedItem = model.get(styleData.row)
 
                                     if(mouse.button === Qt.RightButton)
@@ -592,6 +610,7 @@ ApplicationWindow {
 
                                 onDoubleClicked: {
                                     keyAreaSelectedItem = model.get(styleData.row)
+                                    editKeyWindow.selectedNode = keyAreaSelectedItem
                                     editKeyWindow.show()
                                     editKeyWindow.populateMetaArea()
                                 }

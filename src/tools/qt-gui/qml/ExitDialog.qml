@@ -11,5 +11,13 @@ MessageDialog {
         externTreeModel.synchronize()
         Qt.quit()
     }
-    onDiscard: Qt.quit()
+    onDiscard: {
+        if(undoManager.undoText === "import"){
+            console.log("YES")
+            undoManager.undo()
+        }
+
+        Qt.quit()
+    }
+
 }

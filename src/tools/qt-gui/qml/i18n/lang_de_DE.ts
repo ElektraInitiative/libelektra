@@ -4,330 +4,372 @@
 <context>
     <name>ButtonRow</name>
     <message>
-        <location filename="../ButtonRow.qml" line="20"/>
         <source>&amp;Back</source>
-        <translation>&amp;Zurück</translation>
+        <translation type="vanished">&amp;Zurück</translation>
     </message>
     <message>
-        <location filename="../ButtonRow.qml" line="25"/>
         <source>&amp;Next</source>
-        <translation>&amp;Vor</translation>
+        <translation type="vanished">&amp;Vor</translation>
     </message>
     <message>
-        <location filename="../ButtonRow.qml" line="30"/>
         <source>&amp;Finish</source>
-        <translation>&amp;Beenden</translation>
+        <translation type="vanished">&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../ButtonRow.qml" line="35"/>
         <source>&amp;Cancel</source>
-        <translation>&amp;Abbrechen</translation>
+        <translation type="vanished">&amp;Abbrechen</translation>
+    </message>
+</context>
+<context>
+    <name>ConfigNode</name>
+    <message>
+        <location filename="../../src/confignode.cpp" line="100"/>
+        <source>Could not set name because Keyname: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/confignode.cpp" line="100"/>
+        <source> is invalid.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>NewKeyWindow</name>
     <message>
-        <location filename="../NewKeyWindow.qml" line="44"/>
         <source>Key Name: </source>
-        <translation>Schlüssel Name:</translation>
+        <translation type="vanished">Schlüssel Name:</translation>
     </message>
     <message>
-        <location filename="../NewKeyWindow.qml" line="59"/>
         <source>Key Value: </source>
-        <translation>Schlüssel Wert:</translation>
+        <translation type="vanished">Schlüssel Wert:</translation>
     </message>
     <message>
-        <location filename="../NewKeyWindow.qml" line="97"/>
         <source>New Meta Key</source>
-        <translation>Neuer Meta Schlüssel</translation>
+        <translation type="vanished">Neuer Meta Schlüssel</translation>
     </message>
 </context>
 <context>
     <name>NewMetaKey</name>
     <message>
-        <location filename="../NewMetaKey.qml" line="21"/>
         <source>Meta Key Name...</source>
-        <translation>Meta Schlüssel Name...</translation>
+        <translation type="vanished">Meta Schlüssel Name...</translation>
     </message>
     <message>
-        <location filename="../NewMetaKey.qml" line="27"/>
         <source>Meta Key Value...</source>
-        <translation>Meta Schlüssel Wert...</translation>
+        <translation type="vanished">Meta Schlüssel Wert...</translation>
     </message>
 </context>
 <context>
     <name>Page1</name>
     <message>
-        <location filename="../Page1.qml" line="9"/>
         <source>Backend name: </source>
-        <translation>Backend Name:</translation>
+        <translation type="vanished">Backend Name:</translation>
     </message>
 </context>
 <context>
     <name>Page2</name>
     <message>
-        <location filename="../Page2.qml" line="6"/>
         <source>Mount point: </source>
-        <translation>Einhängepunkt:</translation>
+        <translation type="vanished">Einhängepunkt:</translation>
     </message>
 </context>
 <context>
     <name>Page3</name>
     <message>
-        <location filename="../Page3.qml" line="5"/>
-        <source>Please enter a path to a file in the filesystem. This file is used by all plugins of this backend as fallback. For user or cascading mountpoints it must be a relative path. The actual path will be located dynamically by the resolver plugin.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../Page3.qml" line="6"/>
         <source>Path: </source>
-        <translation>Pfad:</translation>
+        <translation type="vanished">Pfad:</translation>
     </message>
 </context>
 <context>
     <name>Page4</name>
     <message>
-        <location filename="../Page4.qml" line="21"/>
         <source>Please select the plugins you want to include in the backend.</source>
-        <translation>Bitte wählen Sie die Plugins die Sie in Ihr Backend einfügen möchten.</translation>
+        <translation type="vanished">Bitte wählen Sie die Plugins die Sie in Ihr Backend einfügen möchten.</translation>
     </message>
     <message>
-        <location filename="../Page4.qml" line="34"/>
         <source>Add Plugin</source>
-        <translation>Plugin Einfügen</translation>
+        <translation type="vanished">Plugin Einfügen</translation>
     </message>
     <message>
-        <location filename="../Page4.qml" line="39"/>
         <source>Remove Plugin</source>
-        <translation>Plugin Entfernen</translation>
+        <translation type="vanished">Plugin Entfernen</translation>
     </message>
     <message>
-        <location filename="../Page4.qml" line="55"/>
         <source>Included Plugins</source>
-        <translation>Eingefügte Plugins</translation>
+        <translation type="vanished">Eingefügte Plugins</translation>
     </message>
     <message>
-        <location filename="../Page4.qml" line="72"/>
         <source>Plugin Info</source>
-        <translation>Plugin Information</translation>
+        <translation type="vanished">Plugin Information</translation>
     </message>
 </context>
 <context>
     <name>SearchField</name>
     <message>
-        <location filename="../SearchField.qml" line="6"/>
         <source>Find Key...</source>
-        <translation>Schlüssel finden...</translation>
+        <translation type="vanished">Schlüssel finden...</translation>
+    </message>
+</context>
+<context>
+    <name>TreeViewModel</name>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="21"/>
+        <source>Could not read configuration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="53"/>
+        <location filename="../../src/treeviewmodel.cpp" line="118"/>
+        <location filename="../../src/treeviewmodel.cpp" line="151"/>
+        <location filename="../../src/treeviewmodel.cpp" line="513"/>
+        <source>Index not valid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="108"/>
+        <source>Unknown role: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="201"/>
+        <source>Invalid path.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="227"/>
+        <source>Importing the configuration from file failed because the current configuration could not be set.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="259"/>
+        <source>Importing the configuration from file failed because there were invalid arguments passed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="264"/>
+        <source>Importing the configuration from file terminated unsuccessfully because of a faulty command.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="274"/>
+        <source>Importing the configuration from file failed while accessing the key database.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="278"/>
+        <source>Importing the configuration from file terminated unsuccessfully.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/treeviewmodel.cpp" line="282"/>
+        <location filename="../../src/treeviewmodel.cpp" line="360"/>
+        <source>Unknown error</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="289"/>
+        <source>Import: Could not read configuration.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="303"/>
+        <source>Exporting the configuration to file failed because the current configuration could not be set.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="333"/>
+        <source>Exporting the configuration to file failed because there were invalid arguments passed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="339"/>
+        <location filename="../../src/treeviewmodel.cpp" line="355"/>
+        <source>Exporting the configuration to file terminated unsuccessfully.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="350"/>
+        <source>Exporting the configuration to file failed while accessing the key database.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="483"/>
+        <source>There were no results matching your query.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="557"/>
+        <source>Inserting metakey failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="603"/>
+        <source>Synchronizing failed.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>UnmountBackendWindow</name>
     <message>
-        <location filename="../UnmountBackendWindow.qml" line="10"/>
         <source>Unmount Backend</source>
-        <translation>Backend aushängen</translation>
+        <translation type="vanished">Backend aushängen</translation>
     </message>
     <message>
-        <location filename="../UnmountBackendWindow.qml" line="19"/>
         <source>Mounted Backends</source>
-        <translation>Eingehängte Backends</translation>
+        <translation type="vanished">Eingehängte Backends</translation>
     </message>
     <message>
-        <location filename="../UnmountBackendWindow.qml" line="55"/>
         <source>Unmount</source>
-        <translation>Aushängen</translation>
+        <translation type="vanished">Aushängen</translation>
     </message>
 </context>
 <context>
     <name>WizardLoader</name>
     <message>
-        <location filename="../WizardLoader.qml" line="15"/>
         <source>Create Backend</source>
-        <translation>Backend erstellen</translation>
+        <translation type="vanished">Backend erstellen</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
-        <location filename="../main.qml" line="43"/>
         <source>Create new Key</source>
-        <translation>Neuen Schlüssel erstellen</translation>
+        <translation type="vanished">Neuen Schlüssel erstellen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="48"/>
         <source>Edit Key</source>
-        <translation>Schlüssel editieren</translation>
+        <translation type="vanished">Schlüssel editieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="57"/>
         <source>Create new Array Entry</source>
-        <translation>Neuen Array Eintrag erstellen</translation>
+        <translation type="vanished">Neuen Array Eintrag erstellen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="59"/>
         <source>Array Name: </source>
-        <translation>Array Name:</translation>
+        <translation type="vanished">Array Name:</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="60"/>
         <source>New Array Entry</source>
-        <translation>Neuer Array Eintrag</translation>
+        <translation type="vanished">Neuer Array Eintrag</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="73"/>
         <source>Export to file</source>
-        <translation>In Datei exportieren</translation>
+        <translation type="vanished">In Datei exportieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="79"/>
         <source>Key...</source>
-        <translation>Schlüssel...</translation>
+        <translation type="vanished">Schlüssel...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="81"/>
         <source>New Key</source>
-        <translation>Neuer Schlüssel</translation>
+        <translation type="vanished">Neuer Schlüssel</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="87"/>
         <source>Array Entry...</source>
-        <translation>Array Eintrag...</translation>
+        <translation type="vanished">Array Eintrag...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="93"/>
         <source>Delete</source>
-        <translation>Löschen</translation>
+        <translation type="vanished">Löschen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="101"/>
         <source>Import Configuration... </source>
-        <translation>Konfiguration importieren...</translation>
+        <translation type="vanished">Konfiguration importieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="103"/>
         <source>Import Configuration</source>
-        <translation>Konfiguration importieren</translation>
+        <translation type="vanished">Konfiguration importieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="109"/>
         <source>Export Configuration... </source>
-        <translation>Konfiguration exportieren...</translation>
+        <translation type="vanished">Konfiguration exportieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="111"/>
         <source>Export Configuration</source>
-        <translation>Konfiguration exportieren</translation>
+        <translation type="vanished">Konfiguration exportieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="117"/>
-        <location filename="../main.qml" line="119"/>
         <source>Undo</source>
-        <translation>Rückggängig</translation>
+        <translation type="vanished">Rückggängig</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="126"/>
-        <location filename="../main.qml" line="128"/>
         <source>Redo</source>
-        <translation>Wiederholen</translation>
+        <translation type="vanished">Wiederholen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="135"/>
-        <location filename="../main.qml" line="137"/>
         <source>Synchronize</source>
-        <translation>Synchronisieren</translation>
+        <translation type="vanished">Synchronisieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="145"/>
         <source>Create Backend...</source>
-        <translation>Backend erstellen...</translation>
+        <translation type="vanished">Backend erstellen...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="146"/>
         <source>Create Backend</source>
-        <translation>Backend erstellen</translation>
+        <translation type="vanished">Backend erstellen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="152"/>
         <source>Unmount Backend...</source>
-        <translation>Backend aushängen...</translation>
+        <translation type="vanished">Backend aushängen...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="153"/>
         <source>Unmount Backend</source>
-        <translation>Backend aushängen</translation>
+        <translation type="vanished">Backend aushängen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="159"/>
         <source>Edit...</source>
-        <translation>Editieren...</translation>
+        <translation type="vanished">Editieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="160"/>
         <source>Edit</source>
-        <translation>Editieren</translation>
+        <translation type="vanished">Editieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="165"/>
-        <location filename="../main.qml" line="166"/>
         <source>Cut</source>
-        <translation>Ausschneiden</translation>
+        <translation type="vanished">Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="173"/>
-        <location filename="../main.qml" line="174"/>
         <source>Copy</source>
-        <translation>Kopieren</translation>
+        <translation type="vanished">Kopieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="181"/>
-        <location filename="../main.qml" line="182"/>
         <source>Paste</source>
-        <translation>Einfügen</translation>
+        <translation type="vanished">Einfügen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="192"/>
         <source>&amp;Database</source>
-        <translation>&amp;Datenbank</translation>
+        <translation type="vanished">&amp;Datenbank</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="218"/>
         <source>Exit</source>
-        <translation>Beenden</translation>
+        <translation type="vanished">Beenden</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="225"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Editieren</translation>
+        <translation type="vanished">&amp;Editieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="240"/>
         <source>New</source>
-        <translation>Neu</translation>
+        <translation type="vanished">Neu</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="279"/>
         <source>&amp;About</source>
-        <translation>&amp;Über</translation>
+        <translation type="vanished">&amp;Über</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="281"/>
-        <source>Credits </source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../main.qml" line="423"/>
         <source>Name</source>
-        <translation>Name</translation>
+        <translation type="vanished">Name</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="428"/>
         <source>Value</source>
-        <translation>Wert</translation>
+        <translation type="vanished">Wert</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="475"/>
         <source>Close</source>
-        <translation>Schließen</translation>
+        <translation type="vanished">Schließen</translation>
     </message>
 </context>
 </TS>
