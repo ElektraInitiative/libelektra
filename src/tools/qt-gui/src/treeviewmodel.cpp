@@ -516,7 +516,8 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     beginRemoveRows(QModelIndex(), row, row);
 
-    m_model.takeAt(row);
+    if(!m_model.isEmpty())
+        m_model.takeAt(row);
 
     endRemoveRows();
 

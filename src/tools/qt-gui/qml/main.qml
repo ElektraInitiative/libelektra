@@ -245,7 +245,7 @@ ApplicationWindow {
                 keyAreaView.__incrementCurrentIndex()
                 keyAreaView.selection.clear()
                 keyAreaView.selection.select(keyAreaView.currentRow)
-                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                //keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
             }
             else if(undoManager.undoText === "cut"){
                 pasteCounter--
@@ -268,13 +268,17 @@ ApplicationWindow {
 
             if(undoManager.redoText === "deleteKey"){
 
-                keyAreaView.__decrementCurrentIndex()
-                keyAreaView.selection.clear()
-                keyAreaView.selection.select(keyAreaView.currentRow)
-                keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                if(keyAreaView.currentRow > 0){
+                    keyAreaView.__decrementCurrentIndex()
+                }
 
-                if(keyAreaView.rowCount !== 0)
+                keyAreaView.selection.clear()
+                metaAreaModel = null
+
+                if(keyAreaView.rowCount > 0){
+                    keyAreaView.selection.select(keyAreaView.currentRow)
                     keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                }
                 else
                     keyAreaSelectedItem = null
             }
@@ -489,13 +493,17 @@ ApplicationWindow {
                 if(keyAreaSelectedItem !== null){
                     undoManager.createDeleteKeyCommand("deleteKey", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
 
-                    keyAreaView.__decrementCurrentIndex()
-                    keyAreaView.selection.clear()
-                    keyAreaView.selection.select(keyAreaView.currentRow)
-                    keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                    if(keyAreaView.currentRow > 0){
+                        keyAreaView.__decrementCurrentIndex()
+                    }
 
-                    if(keyAreaView.rowCount !== 0)
+                    keyAreaView.selection.clear()
+                    metaAreaModel = null
+
+                    if(keyAreaView.rowCount > 0){
+                        keyAreaView.selection.select(keyAreaView.currentRow)
                         keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+                    }
                     else
                         keyAreaSelectedItem = null
                 }
@@ -598,6 +606,7 @@ ApplicationWindow {
 
                                 onClicked: {
                                     keyAreaSelectedItem = model.get(styleData.row)
+                                    metaAreaModel = keyAreaSelectedItem.metaValue
 
                                     if(mouse.button === Qt.RightButton)
                                         keyContextMenu.popup()
