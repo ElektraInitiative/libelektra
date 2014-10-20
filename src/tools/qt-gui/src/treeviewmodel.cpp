@@ -547,7 +547,6 @@ void TreeViewModel::insertRow(int row, ConfigNode *node)
     endInsertRows();
 }
 
-
 void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
 {
     m_metaModelParent = node->getKey();

@@ -242,9 +242,13 @@ ApplicationWindow {
 
             if(undoManager.undoText === "deleteKey"){
                 undoManager.undo()
-                keyAreaView.__incrementCurrentIndex()
-                keyAreaView.selection.clear()
-                keyAreaView.selection.select(keyAreaView.currentRow)
+
+                if(keyAreaView.currentRow === -1)
+                    keyAreaView.currentRow = 0
+                else
+                    keyAreaView.__incrementCurrentIndex()
+
+                //keyAreaView.selection.clear()
                 //keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
             }
             else if(undoManager.undoText === "cut"){
@@ -442,7 +446,7 @@ ApplicationWindow {
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("cut", keyAreaView.model, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+                undoManager.putToClipboard("cut", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
                 pasteCounter = 0
             }
         }
@@ -455,7 +459,7 @@ ApplicationWindow {
                 keyAreaView.copyPasteIndex = keyAreaView.currentRow
                 keyAreaView.currentNodePath = treeView.currentNode.path
 
-                undoManager.putToClipboard("copy", keyAreaView.model, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+                undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
             }
         }
         MenuItem {
@@ -491,7 +495,7 @@ ApplicationWindow {
             onTriggered: {
 
                 if(keyAreaSelectedItem !== null){
-                    undoManager.createDeleteKeyCommand("deleteKey", keyAreaView.model, keyAreaSelectedItem.node, keyAreaView.currentRow)
+                    undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
 
                     if(keyAreaView.currentRow > 0){
                         keyAreaView.__decrementCurrentIndex()

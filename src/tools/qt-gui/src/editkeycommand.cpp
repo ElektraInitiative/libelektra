@@ -3,7 +3,7 @@
 EditKeyCommand::EditKeyCommand(TreeViewModel *model, int index, const QString &oldName, const QVariant &oldValue, const QVariantMap &oldMetaData,
                          const QString &newName, const QVariant &newValue, const QVariantMap &newMetaData, QUndoCommand *parent)
     :  QUndoCommand(parent)
-    ,  m_model(model)
+    , m_model(model)
     , m_index(index)
     , m_oldName(oldName)
     , m_oldValue(oldValue)

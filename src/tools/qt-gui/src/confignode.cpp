@@ -53,10 +53,6 @@ ConfigNode::~ConfigNode()
 {
     delete m_children;
     delete m_metaData;
-    m_parentModel = NULL;
-
-    if(m_key)
-        m_key.clear();
 }
 
 int ConfigNode::getChildCount() const
