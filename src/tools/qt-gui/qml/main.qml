@@ -155,6 +155,7 @@ ApplicationWindow {
 
     FileDialog {
         id: importFileDialog
+
         title: qsTr("Select File")
         onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
     }
@@ -165,8 +166,9 @@ ApplicationWindow {
 
     Action {
         id:newKeyAction
+
         text: qsTr("Key...")
-        iconSource: "icons/new.png"
+        iconSource: "icons/new-key.png"
         tooltip: qsTr("New Key")
         onTriggered: {
             if(treeView.currentItem === null){
@@ -181,6 +183,8 @@ ApplicationWindow {
 
     Action {
         id:newArrayAction
+
+        iconSource: "icons/new-array.png"
         text: qsTr("Array Entry...")
         onTriggered: {
             if(treeView.currentItem === null){
@@ -196,6 +200,7 @@ ApplicationWindow {
 
     Action {
         id:deleteAction
+
         text: qsTr("Delete")
         iconSource: "icons/delete.png"
         tooltip: "Delete"
@@ -204,6 +209,7 @@ ApplicationWindow {
 
     Action {
         id: importAction
+
         text: qsTr("Import Configuration... ")
         iconSource: "icons/import.png"
         tooltip: qsTr("Import Configuration")
@@ -221,6 +227,7 @@ ApplicationWindow {
 
     Action {
         id: exportAction
+
         text: qsTr("Export Configuration... ")
         iconSource: "icons/export.png"
         tooltip: qsTr("Export Configuration")
@@ -235,6 +242,7 @@ ApplicationWindow {
 
     Action {
         id: undoAction
+
         text: qsTr("Undo")
         iconSource: "icons/undo.png"
         tooltip: qsTr("Undo")
@@ -265,6 +273,7 @@ ApplicationWindow {
 
     Action {
         id: redoAction
+
         text: qsTr("Redo")
         iconSource: "icons/redo.png"
         tooltip: qsTr("Redo")
@@ -307,6 +316,7 @@ ApplicationWindow {
 
     Action {
         id: synchronizeAction
+
         text: qsTr("Synchronize")
         iconSource: "icons/synchronize.png"
         tooltip: qsTr("Synchronize")
@@ -319,6 +329,7 @@ ApplicationWindow {
 
     Action {
         id: createBackendAction
+
         text: qsTr("Create Backend...")
         tooltip: qsTr("Create Backend")
         onTriggered: wizardLoader.show()
@@ -327,6 +338,7 @@ ApplicationWindow {
 
     Action {
         id: unmountBackendAction
+
         text: qsTr("Unmount Backend...")
         tooltip: qsTr("Unmount Backend")
         onTriggered: unmountBackendWindow.show()
@@ -334,12 +346,16 @@ ApplicationWindow {
 
     Action {
         id: editAction
+
+        iconSource: "icons/edit-rename.png"
         text: qsTr("Edit...")
         tooltip: qsTr("Edit")
     }
 
     Action {
         id: cutAction
+
+        iconSource: "icons/edit-cut.png"
         text: qsTr("Cut")
         tooltip: qsTr("Cut")
         shortcut: StandardKey.Cut
@@ -347,6 +363,8 @@ ApplicationWindow {
 
     Action {
         id: copyAction
+
+        iconSource: "icons/edit-copy.png"
         text: qsTr("Copy")
         tooltip: qsTr("Copy")
         shortcut: StandardKey.Copy
@@ -354,6 +372,8 @@ ApplicationWindow {
 
     Action {
         id: pasteAction
+
+        iconSource: "icons/edit-paste.png"
         text: qsTr("Paste")
         tooltip: qsTr("Paste")
         shortcut: StandardKey.Paste
@@ -419,10 +439,101 @@ ApplicationWindow {
 
     Menu {
         id: treeContextMenu
-        //MenuItem {
-        //id:tcmDelete
-        //action: deleteAction
-        //}
+
+        Menu {
+            id:tcmNew
+            title: qsTr("New")
+
+            MenuItem {
+                id:tcmNewKey
+
+                action: newKeyAction
+            }
+            MenuItem {
+                id:tcmNewArray
+
+                action: newArrayAction
+            }
+        }
+        MenuItem {
+            id: tcmEdit
+
+            action: editAction
+            onTriggered: {
+                editKeyWindow.show()
+                editKeyWindow.populateMetaArea()
+            }
+        }
+
+        MenuSeparator{}
+
+        MenuItem{
+            id: tcmImport
+
+            action: importAction
+        }
+        MenuItem{
+            id: tcmExport
+
+            action: exportAction
+        }
+
+        MenuSeparator{}
+
+        MenuItem {
+            id: tcmCut
+
+            action: cutAction
+//            onTriggered: {
+//                keyAreaView.copyPasteIndex = keyAreaView.currentRow
+//                keyAreaView.currentNodePath = treeView.currentNode.path
+
+//                undoManager.putToClipboard("cut", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+//                pasteCounter = 0
+//            }
+        }
+        MenuItem {
+            id: tcmCopy
+
+            action: copyAction
+
+//            onTriggered: {
+//                keyAreaView.copyPasteIndex = keyAreaView.currentRow
+//                keyAreaView.currentNodePath = treeView.currentNode.path
+
+//                undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+//            }
+        }
+        MenuItem {
+            id: tcmPaste
+
+            action: pasteAction
+
+//            onTriggered: {
+//                keyAreaView.copyPasteIndex = -1
+//                keyAreaView.currentNodePath = ""
+
+//                if(undoManager.clipboardType === "copy"){
+//                    undoManager.createCopyKeyCommand(treeView.currentNode.node)
+//                }
+//                else if (undoManager.clipboardType === "cut"){
+
+//                    if(pasteCounter === 0){
+//                        undoManager.createCutKeyCommand(treeView.currentNode.node)
+//                        pasteCounter++
+//                    }
+//                    else{
+//                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
+//                        pasteCounter++
+//                    }
+//                }
+//            }
+        }
+        MenuItem {
+            id:tcmDelete
+
+            action: deleteAction
+        }
     }
 
     Menu {
