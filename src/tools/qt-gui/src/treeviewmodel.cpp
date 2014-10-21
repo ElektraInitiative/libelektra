@@ -638,6 +638,9 @@ QStringList TreeViewModel::getMountedBackends()
         mountedBackends.append(QString::fromStdString(it->name));
     }
 
+    if(mountedBackends.isEmpty())
+        mountedBackends.append("empty");
+
     return mountedBackends;
 }
 

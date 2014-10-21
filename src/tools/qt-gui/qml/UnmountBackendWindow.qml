@@ -30,18 +30,19 @@ BasicWindow {
 
                 ListView {
                     id: mountedBackendsView
+
                     anchors.fill: parent
                     model: externTreeModel.getMountedBackends()
                     focus: true
                     interactive: true
-                    currentIndex: 0
+                    currentIndex: -1
                     highlight: Rectangle {
                         color: activePalette.highlight
                         width: mountedBackendsFrame.width
                     }
                     delegate: Text {
-                        color: activePalette.text
-                        text: modelData
+                        color: modelData === "empty" ? disabledPalette.text : activePalette.text
+                        text:  modelData === "empty" ? qsTr("There are currently no mounted backends.") : modelData
 
                         MouseArea {
                             anchors.fill: parent
@@ -55,8 +56,10 @@ BasicWindow {
             text: qsTr("Unmount")
             Layout.alignment: Qt.AlignHCenter
             onClicked: {
-                externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
-                mountedBackendsView.model = externTreeModel.getMountedBackends()
+                if(!mountedBackendsView.model === "empty"){
+                    externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
+                    mountedBackendsView.model = externTreeModel.getMountedBackends()
+                }
             }
         }
     }

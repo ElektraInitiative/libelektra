@@ -36,6 +36,7 @@ ApplicationWindow {
     property int defaultSpacing: 4
     property int defaultMargins: 8
 
+    //Set up slots to catch signals from nodes/models
     Connections {
         target: externTreeModel
 
@@ -60,6 +61,7 @@ ApplicationWindow {
         }
     }
 
+    //display an error message dialog
     function showError(text, informativeText, detailedText) {
         generalErrorDialog.text = text
         generalErrorDialog.informativeText = informativeText
@@ -555,7 +557,7 @@ ApplicationWindow {
 
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
-                            text: styleData.value.replace(/\n/g, " ")
+                            text: treeView.currentNode === null ? "" : styleData.value.replace(/\n/g, " ")
                             color: treeView.currentNode === null ? "transparent" : ((keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text)
                         }
                     }
@@ -576,7 +578,6 @@ ApplicationWindow {
                     model:{
                         if(treeView.currentNode !== null)
                             if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren){
-                                //TreeViewModel
                                 treeView.currentNode.children
                             }
                     }
