@@ -94,7 +94,7 @@ void ConfigNode::setName(const QString& name)
     //            qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
             }
             catch(KeyInvalidName ex){
-                emit showError(tr("Could not set name because Keyname: ") + QString::fromStdString(m_key.getFullName()) + tr(" is invalid."), "", ex.what());
+                emit showError(tr("Could not set name because Keyname \"") + QString::fromStdString(m_key.getFullName()) + tr("\" is invalid."), "", ex.what());
             }
         }
     }

@@ -261,7 +261,7 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
     }
     catch (CommandException const& ce)
     {
-        emit showError(tr("Importing the configuration from file terminated unsuccessfully because of a faulty command."), "", QString(ce.what()));
+        emit showError(tr("Importing the configuration from file failed because of a faulty command."), "", QString(ce.what()));
     }
     catch (kdb::Key& key)
     {
@@ -286,7 +286,7 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
         m_kdb.get(m_keySet, "");
     }
     catch (kdb::KDBException const & e){
-        emit showError(tr("Import: Could not read configuration."), "", QString(e.what()));
+        emit showError(tr("Could not read configuration."), "", QString(e.what()));
     }
 
     populateModel();
@@ -357,7 +357,7 @@ void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QStrin
     }
     catch (...)
     {
-        emit showError(tr("Unknown error"), "", "TreeViewModel::exportConfiguration");
+        emit showError(tr("Unknown error."), "", "TreeViewModel::exportConfiguration");
     }
 }
 
@@ -562,7 +562,7 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
         else
             keyName = node->getName();
 
-        emit showError(tr("Inserting metakey failed."), "Key " + keyName + " is not valid.", "");
+        emit showError(tr("Inserting metakey failed."), tr("Key \"") + keyName + tr("\" is not valid."), "");
     }
 }
 
@@ -592,7 +592,7 @@ void TreeViewModel::createNewNode(const QString &path, const QString &value, con
     }
     else
     {
-        emit showError(QString(tr("Creating a new node failed because the key ") + path) + " is invalid", "", "TreeViewModel::createNewNode");
+        emit showError(QString(tr("Creating a new node failed because the key \"") + path) + tr("\" is invalid."), "", "TreeViewModel::createNewNode");
     }
 }
 
