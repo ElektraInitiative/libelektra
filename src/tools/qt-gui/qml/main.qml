@@ -25,18 +25,16 @@ ApplicationWindow {
 
     //**Properties********************************************************************************************//
 
-    property int deltaKeyAreaHeight: Math.round(keyArea.height - searchResultsArea.height*0.5 - defaultSpacing)
-    property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7 - defaultSpacing)
-    property int deltaMetaAreaHeight: Math.round(metaArea.height - searchResultsArea.height*0.5)
-    property var keyAreaSelectedItem: null
-    //TreeViewModel
-    property var metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
-
-    property int pasteCounter: 0
+    property int    deltaKeyAreaHeight: Math.round(keyArea.height - searchResultsArea.height*0.5 - defaultSpacing)
+    property int    deltaKeyAreaWidth: Math.round(mainRow.width*0.7 - defaultSpacing)
+    property int    deltaMetaAreaHeight: Math.round(metaArea.height - searchResultsArea.height*0.5)
+    property var    keyAreaSelectedItem: null
+    property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
+    property int    pasteCounter: 0
 
     //Spacing & Margins recommended by KDE HIG
-    property int defaultSpacing: 4
-    property int defaultMargins: 8
+    property int    defaultSpacing: 4
+    property int    defaultMargins: 8
 
     //**Signals & Slots****************************************************************************************//
 
@@ -58,7 +56,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: keyAreaSelectedItem === null ? null : keyAreaSelectedItem.node
+        target: (keyAreaSelectedItem === null || keyAreaSelectedItem === 'undefined') ? null : keyAreaSelectedItem.node
 
         onShowError: {
             showError(text, informativeText, detailedText)
@@ -74,6 +72,87 @@ ApplicationWindow {
         generalErrorDialog.detailedText = detailedText
 
         generalErrorDialog.open()
+    }
+
+    function cutKey() {
+        console.log("cut Key")
+        keyAreaView.copyPasteIndex = keyAreaView.currentRow
+        keyAreaView.currentNodePath = treeView.currentNode.path
+
+        undoManager.putToClipboard("cut", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+        pasteCounter = 0
+    }
+
+    function cutBranch() {
+        console.log("cut Branch")
+        keyAreaView.copyPasteIndex = treeView.currentNode.index
+        keyAreaView.currentNodePath = treeView.currentNode.path
+
+        undoManager.putToClipboard("cut", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        pasteCounter = 0
+    }
+
+    function copyKey() {
+        console.log("copy Key")
+        keyAreaView.copyPasteIndex = keyAreaView.currentRow
+        keyAreaView.currentNodePath = treeView.currentNode.path
+
+        undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+    }
+
+    function copyBranch() {
+        console.log("copy Branch")
+    }
+
+    function pasteKey() {
+        console.log("paste Key")
+        keyAreaView.copyPasteIndex = -1
+        keyAreaView.currentNodePath = ""
+
+        if(undoManager.clipboardType === "copy"){
+            undoManager.createCopyKeyCommand(treeView.currentNode.node)
+        }
+        else if (undoManager.clipboardType === "cut"){
+
+            if(pasteCounter === 0){
+                undoManager.createCutKeyCommand(treeView.currentNode.node)
+                pasteCounter++
+            }
+            else{
+                undoManager.createCopyKeyCommand(treeView.currentNode.node)
+                pasteCounter++
+            }
+        }
+    }
+
+    function pasteBranch() {
+        console.log("paste Branch")
+    }
+
+    function deleteKey() {
+        console.log("delete Key")
+
+        undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+
+        metaAreaModel = null
+        keyAreaSelectedItem = null
+        //This is essential, without it, styleData.row is not updated!!
+        keyAreaView.model = null
+        keyAreaView.model = treeView.currentNode.children
+
+        if(keyAreaView.rowCount - 1 >= 0){
+            keyAreaView.selection.clear()
+            keyAreaView.selection.select(keyAreaView.currentRow)
+            keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+        }
+        else
+            keyAreaSelectedItem = null
+    }
+
+    function deleteBranch() {
+        console.log("delete Branch")
+        undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        treeView.currentNode = null
     }
 
     //**Colors*************************************************************************************************//
@@ -219,6 +298,13 @@ ApplicationWindow {
         iconSource: "icons/delete.png"
         tooltip: "Delete"
         shortcut: StandardKey.Delete
+
+        onTriggered: {
+            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+                deleteBranch()
+            else
+                deleteKey()
+        }
     }
 
     Action {
@@ -267,12 +353,16 @@ ApplicationWindow {
             if(undoManager.undoText === "deleteKey"){
                 undoManager.undo()
 
-                if(keyAreaView.currentRow === -1)
-                    keyAreaView.currentRow = 0
-                else
-                    keyAreaView.__incrementCurrentIndex()
+                var tmp = keyAreaView.model
+                keyAreaView.model = null
+                keyAreaView.model = tmp
 
-                //keyAreaView.selection.clear()
+//                if(keyAreaView.currentRow === -1)
+//                    keyAreaView.currentRow = 0
+//                else
+//                    keyAreaView.__incrementCurrentIndex()
+
+//                keyAreaView.selection.clear()
                 //keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
             }
             else if(undoManager.undoText === "cut"){
@@ -364,6 +454,11 @@ ApplicationWindow {
         iconSource: "icons/edit-rename.png"
         text: qsTr("Edit...")
         tooltip: qsTr("Edit")
+
+        onTriggered: {
+            editKeyWindow.show()
+            editKeyWindow.populateMetaArea()
+        }
     }
 
     Action {
@@ -373,6 +468,13 @@ ApplicationWindow {
         text: qsTr("Cut")
         tooltip: qsTr("Cut")
         shortcut: StandardKey.Cut
+
+        onTriggered: {
+            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+                cutBranch()
+            else
+                cutKey()
+        }
     }
 
     Action {
@@ -382,6 +484,13 @@ ApplicationWindow {
         text: qsTr("Copy")
         tooltip: qsTr("Copy")
         shortcut: StandardKey.Copy
+
+        onTriggered: {
+            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+                copyBranch()
+            else
+                copyKey()
+        }
     }
 
     Action {
@@ -391,6 +500,13 @@ ApplicationWindow {
         text: qsTr("Paste")
         tooltip: qsTr("Paste")
         shortcut: StandardKey.Paste
+
+        onTriggered: {
+            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+                pasteBranch()
+            else
+                pasteKey()
+        }
     }
 
     //**Menus & Toolbars***************************************************************************************//
@@ -475,15 +591,9 @@ ApplicationWindow {
         }
         MenuItem {
             id: tcmEdit
-            //TODO: if node does not contain a key, its not possible to add metakeys
+            //TODO: if this node does not contain a key, its not possible to add metakeys
             //      if this node is renamed the changes are not permanent
             action: editAction
-            onTriggered: {
-                editKeyWindow.show()
-
-                if(!treeView.currentNode.isNull)
-                    editKeyWindow.populateMetaArea()
-            }
         }
 
         MenuSeparator{}
@@ -505,13 +615,6 @@ ApplicationWindow {
             id: tcmCut
 
             action: cutAction
-//            onTriggered: {
-//                keyAreaView.copyPasteIndex = treeView.currentNode.index
-//                keyAreaView.currentNodePath = treeView.currentNode.path
-
-//                undoManager.putToClipboard("cut", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
-//                pasteCounter = 0
-//            }
         }
         MenuItem {
             id: tcmCopy
@@ -564,96 +667,27 @@ ApplicationWindow {
 
         MenuItem {
             id: kcmNewKey
-
             action: newKeyAction
         }
         MenuItem {
             id: kcmEdit
-
             action: editAction
-            onTriggered: {
-                editKeyWindow.show()
-                editKeyWindow.populateMetaArea()
-            }
         }
         MenuItem {
             id: kcmCut
-
             action: cutAction
-            onTriggered: {
-                keyAreaView.copyPasteIndex = keyAreaView.currentRow
-                keyAreaView.currentNodePath = treeView.currentNode.path
-
-                undoManager.putToClipboard("cut", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
-                pasteCounter = 0
-            }
         }
         MenuItem {
             id: kcmCopy
-
             action: copyAction
-
-            onTriggered: {
-                keyAreaView.copyPasteIndex = keyAreaView.currentRow
-                keyAreaView.currentNodePath = treeView.currentNode.path
-
-                undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
-            }
         }
         MenuItem {
             id: kcmPaste
-
             action: pasteAction
-
-            onTriggered: {
-                keyAreaView.copyPasteIndex = -1
-                keyAreaView.currentNodePath = ""
-
-                if(undoManager.clipboardType === "copy"){
-                    undoManager.createCopyKeyCommand(treeView.currentNode.node)
-                }
-                else if (undoManager.clipboardType === "cut"){
-
-                    if(pasteCounter === 0){
-                        undoManager.createCutKeyCommand(treeView.currentNode.node)
-                        pasteCounter++
-                    }
-                    else{
-                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
-                        pasteCounter++
-                    }
-                }
-            }
         }
         MenuItem {
             id: kcmDelete
-
             action: deleteAction
-
-            onTriggered: {
-
-                if(keyAreaSelectedItem !== null){
-                    undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
-
-                    if(keyAreaView.currentRow > 0){
-                        keyAreaView.__decrementCurrentIndex()
-                    }
-
-                    keyAreaView.selection.clear()
-                    metaAreaModel = null
-
-                    if(keyAreaView.rowCount > 0){
-                        keyAreaView.selection.select(keyAreaView.currentRow)
-                        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
-                    }
-                    else
-                        keyAreaSelectedItem = null
-                }
-                else if(treeView.currentNode !== null && keyAreaSelectedItem === null){
-                    undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
-                    treeView.currentNode = null
-                }
-            }
         }
     }
 
@@ -696,7 +730,7 @@ ApplicationWindow {
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
                             text: treeView.currentNode === null ? "" : styleData.value.replace(/\n/g, " ")
-                            color: treeView.currentNode === null ? "transparent" : ((keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath) ? disabledPalette.text : activePalette.text)
+                            color: treeView.currentNode === null ? "transparent" : ((keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
                         }
                     }
                 }
@@ -712,6 +746,7 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
+                    Component.onCompleted: currentRow = -1
 
                     model:{
                         if(treeView.currentNode !== null)
@@ -748,17 +783,18 @@ ApplicationWindow {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                                 onClicked: {
-                                    keyAreaSelectedItem = model.get(styleData.row)
-                                    editKeyWindow.selectedNode = keyAreaSelectedItem
-                                    metaAreaModel = keyAreaSelectedItem.metaValue
 
                                     if(mouse.button === Qt.RightButton){
                                         keyContextMenu.popup()
                                     }
                                     else{
+                                        keyAreaView.currentRow = styleData.row
+                                        keyAreaSelectedItem = model.get(styleData.row)
+                                        editKeyWindow.selectedNode = keyAreaSelectedItem
+                                        metaAreaModel = keyAreaSelectedItem.metaValue
+
                                         keyAreaView.selection.clear()
                                         keyAreaView.selection.select(styleData.row)
-                                        keyAreaView.currentRow = styleData.row
                                     }
                                 }
 
