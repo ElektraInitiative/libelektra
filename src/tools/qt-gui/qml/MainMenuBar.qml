@@ -101,6 +101,7 @@ MenuBar {
         title: qsTr("&About")
         MenuItem {
             text: qsTr("Credits ")
+            iconSource: "icons/elektra-logo.png"
         }
     }
 }

@@ -23,6 +23,8 @@ ApplicationWindow {
             Qt.quit()
     }
 
+    //**Properties********************************************************************************************//
+
     property int deltaKeyAreaHeight: Math.round(keyArea.height - searchResultsArea.height*0.5 - defaultSpacing)
     property int deltaKeyAreaWidth: Math.round(mainRow.width*0.7 - defaultSpacing)
     property int deltaMetaAreaHeight: Math.round(metaArea.height - searchResultsArea.height*0.5)
@@ -35,6 +37,8 @@ ApplicationWindow {
     //Spacing & Margins recommended by KDE HIG
     property int defaultSpacing: 4
     property int defaultMargins: 8
+
+    //**Signals & Slots****************************************************************************************//
 
     //Set up slots to catch signals from nodes/models
     Connections {
@@ -61,6 +65,8 @@ ApplicationWindow {
         }
     }
 
+    //**Functions**********************************************************************************************//
+
     //display an error message dialog
     function showError(text, informativeText, detailedText) {
         generalErrorDialog.text = text
@@ -69,6 +75,8 @@ ApplicationWindow {
 
         generalErrorDialog.open()
     }
+
+    //**Colors*************************************************************************************************//
 
     //Get access to system colors
     SystemPalette {
@@ -83,6 +91,8 @@ ApplicationWindow {
         id: disabledPalette
         colorGroup: SystemPalette.Disabled
     }
+
+    //**Windows************************************************************************************************//
 
     NewKeyWindow {
         id: newKeyWindow
@@ -130,6 +140,8 @@ ApplicationWindow {
         id: wizardLoader
     }
 
+    //**Dialogs************************************************************************************************//
+
     ExportDialog {
         id: exportDialog
     }
@@ -163,6 +175,8 @@ ApplicationWindow {
     ExitDialog {
         id: exitDialog
     }
+
+    //**Actions************************************************************************************************//
 
     Action {
         id:newKeyAction
@@ -379,6 +393,8 @@ ApplicationWindow {
         shortcut: StandardKey.Paste
     }
 
+    //**Menus & Toolbars***************************************************************************************//
+
     menuBar: MainMenuBar {
         id:mainMenuBar
     }
@@ -436,6 +452,8 @@ ApplicationWindow {
             }
         }
     }
+
+    //TreeView Area Context Menu
 
     Menu {
         id: treeContextMenu
@@ -536,6 +554,8 @@ ApplicationWindow {
         }
     }
 
+    //Key Area Context Menu
+
     Menu {
         id: keyContextMenu
 
@@ -631,6 +651,8 @@ ApplicationWindow {
             }
         }
     }
+
+    //**Layouts & Views****************************************************************************************//
 
     Row {
         id: mainRow
