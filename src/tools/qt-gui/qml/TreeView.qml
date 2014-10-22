@@ -85,6 +85,7 @@ ScrollView {
                                         treeView.currentNode = model
                                         treeView.currentItem = loader
                                         keyAreaSelectedItem = null
+                                        editKeyWindow.selectedNode = treeView.currentNode
                                         forceActiveFocus()
                                     }
                                     else if(mouse.button == Qt.RightButton)

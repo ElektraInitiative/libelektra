@@ -475,11 +475,14 @@ ApplicationWindow {
         }
         MenuItem {
             id: tcmEdit
-
+            //TODO: if node does not contain a key, its not possible to add metakeys
+            //      if this node is renamed the changes are not permanent
             action: editAction
             onTriggered: {
                 editKeyWindow.show()
-                editKeyWindow.populateMetaArea()
+
+                if(!treeView.currentNode.isNull)
+                    editKeyWindow.populateMetaArea()
             }
         }
 
@@ -503,10 +506,10 @@ ApplicationWindow {
 
             action: cutAction
 //            onTriggered: {
-//                keyAreaView.copyPasteIndex = keyAreaView.currentRow
+//                keyAreaView.copyPasteIndex = treeView.currentNode.index
 //                keyAreaView.currentNodePath = treeView.currentNode.path
 
-//                undoManager.putToClipboard("cut", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+//                undoManager.putToClipboard("cut", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
 //                pasteCounter = 0
 //            }
         }
@@ -515,37 +518,37 @@ ApplicationWindow {
 
             action: copyAction
 
-//            onTriggered: {
-//                keyAreaView.copyPasteIndex = keyAreaView.currentRow
-//                keyAreaView.currentNodePath = treeView.currentNode.path
+            //            onTriggered: {
+            //                keyAreaView.copyPasteIndex = keyAreaView.currentRow
+            //                keyAreaView.currentNodePath = treeView.currentNode.path
 
-//                undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
-//            }
+            //                undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+            //            }
         }
         MenuItem {
             id: tcmPaste
 
             action: pasteAction
 
-//            onTriggered: {
-//                keyAreaView.copyPasteIndex = -1
-//                keyAreaView.currentNodePath = ""
+            //            onTriggered: {
+            //                keyAreaView.copyPasteIndex = -1
+            //                keyAreaView.currentNodePath = ""
 
-//                if(undoManager.clipboardType === "copy"){
-//                    undoManager.createCopyKeyCommand(treeView.currentNode.node)
-//                }
-//                else if (undoManager.clipboardType === "cut"){
+            //                if(undoManager.clipboardType === "copy"){
+            //                    undoManager.createCopyKeyCommand(treeView.currentNode.node)
+            //                }
+            //                else if (undoManager.clipboardType === "cut"){
 
-//                    if(pasteCounter === 0){
-//                        undoManager.createCutKeyCommand(treeView.currentNode.node)
-//                        pasteCounter++
-//                    }
-//                    else{
-//                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
-//                        pasteCounter++
-//                    }
-//                }
-//            }
+            //                    if(pasteCounter === 0){
+            //                        undoManager.createCutKeyCommand(treeView.currentNode.node)
+            //                        pasteCounter++
+            //                    }
+            //                    else{
+            //                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
+            //                        pasteCounter++
+            //                    }
+            //                }
+            //            }
         }
         MenuItem {
             id:tcmDelete
@@ -561,10 +564,12 @@ ApplicationWindow {
 
         MenuItem {
             id: kcmNewKey
+
             action: newKeyAction
         }
         MenuItem {
             id: kcmEdit
+
             action: editAction
             onTriggered: {
                 editKeyWindow.show()
@@ -744,10 +749,12 @@ ApplicationWindow {
 
                                 onClicked: {
                                     keyAreaSelectedItem = model.get(styleData.row)
+                                    editKeyWindow.selectedNode = keyAreaSelectedItem
                                     metaAreaModel = keyAreaSelectedItem.metaValue
 
-                                    if(mouse.button === Qt.RightButton)
+                                    if(mouse.button === Qt.RightButton){
                                         keyContextMenu.popup()
+                                    }
                                     else{
                                         keyAreaView.selection.clear()
                                         keyAreaView.selection.select(styleData.row)
@@ -756,8 +763,6 @@ ApplicationWindow {
                                 }
 
                                 onDoubleClicked: {
-                                    keyAreaSelectedItem = model.get(styleData.row)
-                                    editKeyWindow.selectedNode = keyAreaSelectedItem
                                     editKeyWindow.show()
                                     editKeyWindow.populateMetaArea()
                                 }

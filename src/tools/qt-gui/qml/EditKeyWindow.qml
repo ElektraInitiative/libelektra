@@ -8,7 +8,7 @@ KeyWindow {
 
     path: treeView.currentNode === null ? "" : treeView.currentNode.path
     keyName: selectedNode === null ? "" : selectedNode.name
-    keyValue: selectedNode === null ? "" : selectedNode.value
+    keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
     function populateMetaArea() {
         for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
