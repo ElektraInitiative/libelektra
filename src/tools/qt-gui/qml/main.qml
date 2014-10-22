@@ -143,6 +143,7 @@ ApplicationWindow {
             keyAreaView.selection.clear()
             keyAreaView.selection.select(keyAreaView.currentRow)
             keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+            metaAreaModel = keyAreaSelectedItem.metaValue
         }
         else
             keyAreaSelectedItem = null
