@@ -393,14 +393,10 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 
     bool isLeaf = (keys.length() == 1);
 
-    // qDebug() << "in sink: " << keys << " with path: " << path;
-
     QString name =  keys.takeFirst();
-    // qDebug() << "with name: " << name << " and node " << node;
 
-    if (node->hasChild(name))
+    if (node->hasChild(name) && (!node->getChildByName(name)->getKey() || (key.isString() &&  node->getChildByName(name)->getValue() == QString::fromStdString(key.getString()))))
     {
-        // qDebug() << "has child: " << name << " with path: " << node->getPath();
         sink(node->getChildByName(name), keys, node->getPath() + "/" + name, key);
     }
     else
@@ -424,7 +420,7 @@ void TreeViewModel::populateModel()
     ConfigNode* user = new ConfigNode("user", "user", Key("user", KEY_END), this);
 
     clear();
-    //Why wont the treeview update anymore if I clear the List?
+    //Why wont the treeview update anymore if list is cleared?
     //    m_model.clear();
     m_model << system << user;
 
@@ -568,14 +564,12 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
 
 void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
 {
-    //    qDebug() << "TreeViewModel::createNewNode: path = " << path << " value = " << value;
     Key key;
     key.setName(path.toStdString());
     key.setString(value.toStdString());
 
     for(QVariantMap::const_iterator iter = metaData.begin(); iter != metaData.end(); iter++)
     {
-        qDebug() << iter.key() << iter.value();
         key.setMeta(iter.key().toStdString(), iter.value().toString().toStdString());
     }
 

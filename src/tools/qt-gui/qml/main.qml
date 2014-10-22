@@ -130,13 +130,12 @@ ApplicationWindow {
     }
 
     function deleteKey() {
-        console.log("delete Key")
 
         undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
 
         metaAreaModel = null
         keyAreaSelectedItem = null
-        //This is essential, without it, styleData.row is not updated!!
+        //This is essential, without it, styleData.row of keyAreaView is not updated!!
         keyAreaView.model = null
         keyAreaView.model = treeView.currentNode.children
 
@@ -150,7 +149,7 @@ ApplicationWindow {
     }
 
     function deleteBranch() {
-        console.log("delete Branch")
+
         undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         treeView.currentNode = null
     }
