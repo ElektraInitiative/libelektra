@@ -154,6 +154,16 @@ ApplicationWindow {
         treeView.currentNode = null
     }
 
+    function updateKeyAreaSelection() {
+        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+        editKeyWindow.selectedNode = keyAreaSelectedItem
+        metaAreaModel = keyAreaSelectedItem.metaValue
+
+        keyAreaView.selection.clear()
+        keyAreaView.selection.select(keyAreaView.currentRow)
+        keyAreaView.forceActiveFocus()
+    }
+
     //**Colors*************************************************************************************************//
 
     //Get access to system colors
@@ -776,6 +786,7 @@ ApplicationWindow {
                         Rectangle {
                             width: keyAreaView.width
                             color: styleData.selected ? activePalette.highlight : "transparent"
+//                            focus: true
 
                             MouseArea {
                                 anchors.fill: parent
@@ -788,12 +799,7 @@ ApplicationWindow {
                                     }
                                     else{
                                         keyAreaView.currentRow = styleData.row
-                                        keyAreaSelectedItem = model.get(styleData.row)
-                                        editKeyWindow.selectedNode = keyAreaSelectedItem
-                                        metaAreaModel = keyAreaSelectedItem.metaValue
-
-                                        keyAreaView.selection.clear()
-                                        keyAreaView.selection.select(styleData.row)
+                                        updateKeyAreaSelection()
                                     }
                                 }
 
@@ -802,6 +808,21 @@ ApplicationWindow {
                                     editKeyWindow.populateMetaArea()
                                 }
                             }
+                        }
+                    }
+                    Keys.onPressed: {
+
+                        if(event.key === Qt.Key_Up) {
+                            keyAreaView.currentRow = keyAreaView.currentRow--
+                            updateKeyAreaSelection()
+                        }
+                        else if(event.key === Qt.Key_Down){
+                            keyAreaView.currentRow = keyAreaView.currentRow++
+                            updateKeyAreaSelection()
+                        }
+                        else if(event.key === Qt.Key_Enter || Qt.Key_Return){
+                            editKeyWindow.show()
+                            editKeyWindow.populateMetaArea()
                         }
                     }
                 }

@@ -39,11 +39,12 @@ Window {
             Button {
                 id:okButton
                 text: "Ok"
+                isDefault: true
+                //focus: true
             }
             Button {
                 id:cancelButton
                 text: "Cancel"
-                isDefault: true
                 onClicked: basicWindow.visible = false
             }
         }

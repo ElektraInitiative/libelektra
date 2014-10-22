@@ -80,6 +80,7 @@ ScrollView {
                             MouseArea {
                                 anchors.fill: rowfill
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                focus: true
                                 onPressed: {
                                     if(mouse.button == Qt.LeftButton){
                                         treeView.currentNode = model
