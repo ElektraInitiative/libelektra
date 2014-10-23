@@ -23,6 +23,7 @@ class UndoManager : public QObject
 
     Q_PROPERTY(bool canUndo READ canUndo() NOTIFY canUndoChanged())
     Q_PROPERTY(bool canRedo READ canRedo() NOTIFY canRedoChanged())
+    Q_PROPERTY(bool canPaste READ canPaste() NOTIFY canPasteChanged())
 
     Q_PROPERTY(QString redoText READ redoText() NOTIFY redoTextChanged())
     Q_PROPERTY(QString undoText READ undoText() NOTIFY undoTextChanged())
@@ -160,6 +161,8 @@ public:
      */
     Q_INVOKABLE bool isClean();
 
+    Q_INVOKABLE bool canPaste();
+
 
 Q_SIGNALS:
 
@@ -173,6 +176,8 @@ Q_SIGNALS:
 
     void clipboardTypeChanged();
 
+    void canPasteChanged();
+
 public Q_SLOTS:
 
     void undo();
@@ -184,6 +189,7 @@ private:
     QUndoStack *m_undoStack;
     QClipboard *m_clipboard;
     QString     m_clipboardType;
+    bool        m_clipboardEmpty;
 };
 
 Q_DECLARE_METATYPE(UndoManager)

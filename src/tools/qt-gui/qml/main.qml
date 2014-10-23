@@ -143,9 +143,7 @@ ApplicationWindow {
         keyAreaModel = treeView.currentNode.children
 
         if(keyAreaView.rowCount > 0){
-            console.log(keyAreaView.currentRow)
             keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
-            console.log(keyAreaView.currentRow)
             updateKeyAreaSelection()
         }
         else
@@ -486,7 +484,7 @@ ApplicationWindow {
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
                 cutBranch()
-            else
+            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
                 cutKey()
         }
     }
@@ -502,7 +500,7 @@ ApplicationWindow {
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
                 copyBranch()
-            else
+            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
                 copyKey()
         }
     }
@@ -514,11 +512,12 @@ ApplicationWindow {
         text: qsTr("Paste")
         tooltip: qsTr("Paste")
         shortcut: StandardKey.Paste
+        enabled: undoManager.canPaste
 
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
                 pasteBranch()
-            else
+            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
                 pasteKey()
         }
     }

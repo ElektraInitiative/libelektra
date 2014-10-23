@@ -10,6 +10,7 @@
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
   , m_undoStack(new QUndoStack(this))
+  , m_clipboardEmpty(true)
 {
     connect(m_undoStack, SIGNAL(canRedoChanged(bool)), this, SIGNAL(canRedoChanged()));
     connect(m_undoStack, SIGNAL(canUndoChanged(bool)), this, SIGNAL(canUndoChanged()));
@@ -88,6 +89,11 @@ bool UndoManager::isClean()
     return m_undoStack->isClean();
 }
 
+bool UndoManager::canPaste()
+{
+    return !m_clipboardEmpty;
+}
+
 void UndoManager::undo()
 {
     m_undoStack->undo();
@@ -118,7 +124,10 @@ void UndoManager::putToClipboard(const QString &type, TreeViewModel *model, Conf
     m_clipboard->setProperty("node", QVariant::fromValue(new ConfigNode(*node)));
     m_clipboard->setProperty("index", QVariant::fromValue(index));
 
+    m_clipboardEmpty = false;
+
     emit clipboardTypeChanged();
+    emit canPasteChanged();
 }
 
 QString UndoManager::redoText() const
