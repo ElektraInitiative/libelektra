@@ -31,6 +31,7 @@ ApplicationWindow {
     property var    keyAreaSelectedItem: null
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
     property int    pasteCounter: 0
+    property var    keyAreaModel
 
     //Spacing & Margins recommended by KDE HIG
     property int    defaultSpacing: 4
@@ -130,33 +131,36 @@ ApplicationWindow {
     }
 
     function deleteKey() {
+        console.log("delete key")
+        var cr = keyAreaView.currentRow
 
         undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
 
         metaAreaModel = null
         keyAreaSelectedItem = null
         //This is essential, without it, styleData.row of keyAreaView is not updated!!
-        keyAreaView.model = null
-        keyAreaView.model = treeView.currentNode.children
+        keyAreaModel = null
+        keyAreaModel = treeView.currentNode.children
 
-        if(keyAreaView.rowCount - 1 >= 0){
-            keyAreaView.selection.clear()
-            keyAreaView.selection.select(keyAreaView.currentRow)
-            keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
-            metaAreaModel = keyAreaSelectedItem.metaValue
+        if(keyAreaView.rowCount > 0){
+            console.log(keyAreaView.currentRow)
+            keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
+            console.log(keyAreaView.currentRow)
+            updateKeyAreaSelection()
         }
         else
             keyAreaSelectedItem = null
+
     }
 
     function deleteBranch() {
-
+        console.log("delete branch")
         undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         treeView.currentNode = null
     }
 
     function updateKeyAreaSelection() {
-        keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+        keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
         editKeyWindow.selectedNode = keyAreaSelectedItem
         metaAreaModel = keyAreaSelectedItem.metaValue
 
@@ -312,7 +316,7 @@ ApplicationWindow {
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
                 deleteBranch()
-            else
+            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
                 deleteKey()
         }
     }
@@ -363,16 +367,16 @@ ApplicationWindow {
             if(undoManager.undoText === "deleteKey"){
                 undoManager.undo()
 
-                var tmp = keyAreaView.model
-                keyAreaView.model = null
-                keyAreaView.model = tmp
+                var tmp = keyAreaModel
+                keyAreaModel = null
+                keyAreaModel = tmp
 
-//                if(keyAreaView.currentRow === -1)
-//                    keyAreaView.currentRow = 0
-//                else
-//                    keyAreaView.__incrementCurrentIndex()
+                //                if(keyAreaView.currentRow === -1)
+                //                    keyAreaView.currentRow = 0
+                //                else
+                //                    keyAreaView.__incrementCurrentIndex()
 
-//                keyAreaView.selection.clear()
+                //                keyAreaView.selection.clear()
                 //keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
             }
             else if(undoManager.undoText === "cut"){
@@ -397,19 +401,19 @@ ApplicationWindow {
 
             if(undoManager.redoText === "deleteKey"){
 
-                if(keyAreaView.currentRow > 0){
-                    keyAreaView.__decrementCurrentIndex()
-                }
+//                if(keyAreaView.currentRow > 0){
+//                    keyAreaView.__decrementCurrentIndex()
+//                }
 
-                keyAreaView.selection.clear()
-                metaAreaModel = null
+//                keyAreaView.selection.clear()
+//                metaAreaModel = null
 
-                if(keyAreaView.rowCount > 0){
-                    keyAreaView.selection.select(keyAreaView.currentRow)
-                    keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
-                }
-                else
-                    keyAreaSelectedItem = null
+//                if(keyAreaView.rowCount > 0){
+//                    keyAreaView.selection.select(keyAreaView.currentRow)
+//                    keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
+//                }
+//                else
+//                    keyAreaSelectedItem = null
             }
             else if(undoManager.redoText === "deleteBranch"){
 
@@ -758,12 +762,7 @@ ApplicationWindow {
                     backgroundVisible: false
                     Component.onCompleted: currentRow = -1
 
-                    model:{
-                        if(treeView.currentNode !== null)
-                            if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren){
-                                treeView.currentNode.children
-                            }
-                    }
+                    model: keyAreaModel
 
                     TableViewColumn {
                         id: nameColumn
@@ -787,7 +786,7 @@ ApplicationWindow {
                         Rectangle {
                             width: keyAreaView.width
                             color: styleData.selected ? activePalette.highlight : "transparent"
-//                            focus: true
+                            //                            focus: true
 
                             MouseArea {
                                 anchors.fill: parent
@@ -821,7 +820,7 @@ ApplicationWindow {
                             keyAreaView.currentRow = keyAreaView.currentRow++
                             updateKeyAreaSelection()
                         }
-                        else if(event.key === Qt.Key_Enter || Qt.Key_Return){
+                        else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
                             editKeyWindow.show()
                             editKeyWindow.populateMetaArea()
                         }

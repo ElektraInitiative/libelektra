@@ -88,6 +88,13 @@ ScrollView {
                                         keyAreaSelectedItem = null
                                         editKeyWindow.selectedNode = treeView.currentNode
                                         forceActiveFocus()
+
+                                        if (treeView.currentNode !== null){
+                                            if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
+                                                keyAreaModel = treeView.currentNode.children
+                                            else
+                                                keyAreaModel = null
+                                        }
                                     }
                                     else if(mouse.button == Qt.RightButton)
                                         treeContextMenu.popup()

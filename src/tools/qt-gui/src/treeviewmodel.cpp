@@ -395,7 +395,7 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
 
     QString name =  keys.takeFirst();
 
-    if (node->hasChild(name) && (!node->getChildByName(name)->getKey() || (key.isString() &&  node->getChildByName(name)->getValue() == QString::fromStdString(key.getString()))))
+    if (node->hasChild(name))
     {
         sink(node->getChildByName(name), keys, node->getPath() + "/" + name, key);
     }
