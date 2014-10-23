@@ -77,7 +77,7 @@ ApplicationWindow {
 
     function cutKey() {
         console.log("cut Key")
-        keyAreaView.copyPasteIndex = keyAreaView.currentRow
+        keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
         undoManager.putToClipboard("cut", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
@@ -86,7 +86,7 @@ ApplicationWindow {
 
     function cutBranch() {
         console.log("cut Branch")
-        keyAreaView.copyPasteIndex = treeView.currentNode.index
+        treeView.treeAreaCopyIndex = treeView.currentNode.index
         keyAreaView.currentNodePath = treeView.currentNode.path
 
         undoManager.putToClipboard("cut", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
@@ -95,7 +95,7 @@ ApplicationWindow {
 
     function copyKey() {
         console.log("copy Key")
-        keyAreaView.copyPasteIndex = keyAreaView.currentRow
+        keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
         undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
@@ -107,14 +107,13 @@ ApplicationWindow {
 
     function pasteKey() {
         console.log("paste Key")
-        keyAreaView.copyPasteIndex = -1
+        keyAreaView.keyAreaCopyIndex = -1
         keyAreaView.currentNodePath = ""
 
         if(undoManager.clipboardType === "copy"){
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
         }
         else if (undoManager.clipboardType === "cut"){
-
             if(pasteCounter === 0){
                 undoManager.createCutKeyCommand(treeView.currentNode.node)
                 pasteCounter++
@@ -242,14 +241,6 @@ ApplicationWindow {
     }
 
     MessageDialog {
-        id: noNodeSelectedDialog
-
-        title: qsTr("No Node selected")
-        icon: StandardIcon.Critical
-        text: qsTr("Please select a node to export the configuration below.")
-    }
-
-    MessageDialog {
         id:generalErrorDialog
 
         title: qsTr("Error")
@@ -277,8 +268,7 @@ ApplicationWindow {
         tooltip: qsTr("New Key")
         onTriggered: {
             if(treeView.currentItem === null){
-                noNodeSelectedDialog.text = qsTr("Please select a node to create a new key.")
-                noNodeSelectedDialog.open()
+                showError(qsTr("Please select a node to create a new key."), "", "")
             }
             else{
                 newKeyWindow.show()
@@ -293,8 +283,7 @@ ApplicationWindow {
         text: qsTr("Array Entry...")
         onTriggered: {
             if(treeView.currentItem === null){
-                noNodeSelectedDialog.text = qsTr("Please select a node to create a new array entry.")
-                noNodeSelectedDialog.open()
+                showError(qsTr("Please select a node to create a new array entry."), "", "")
             }
             else{
                 newArrayWindow.show()
@@ -331,8 +320,7 @@ ApplicationWindow {
                 importDialog.show()
             }
             else{
-                noNodeSelectedDialog.text = qsTr("Please select a node to import a configuration from file.")
-                noNodeSelectedDialog.open()
+                showError(qsTr("Please select a node to import a configuration from file."), "", "")
             }
         }
     }
@@ -348,7 +336,7 @@ ApplicationWindow {
             if(treeView.currentNode !== null)
                 exportDialog.open()
             else
-                noNodeSelectedDialog.open()
+                showError(qsTr("Please select a node to export a configuration to file."), "", "")
         }
     }
 
@@ -743,7 +731,7 @@ ApplicationWindow {
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
                             text: treeView.currentNode === null ? "" : styleData.value.replace(/\n/g, " ")
-                            color: treeView.currentNode === null ? "transparent" : ((keyAreaView.copyPasteIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
+                            color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
                         }
                     }
                 }
@@ -751,7 +739,7 @@ ApplicationWindow {
                 TableView {
                     id: keyAreaView
 
-                    property int copyPasteIndex
+                    property int keyAreaCopyIndex
                     property string currentNodePath
 
                     anchors.fill: parent
@@ -759,7 +747,7 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-                    Component.onCompleted: currentRow = -1
+//                    Component.onCompleted: currentRow = -1
 
                     model: keyAreaModel
 
@@ -785,7 +773,6 @@ ApplicationWindow {
                         Rectangle {
                             width: keyAreaView.width
                             color: styleData.selected ? activePalette.highlight : "transparent"
-                            //                            focus: true
 
                             MouseArea {
                                 anchors.fill: parent

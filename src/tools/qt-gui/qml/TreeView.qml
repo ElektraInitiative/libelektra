@@ -13,6 +13,7 @@ ScrollView {
     property int columnIndent: 22
     property var currentNode: null
     property var currentItem: null
+    property int treeAreaCopyIndex
 
     property Component delegate: Label {
         id: label

@@ -42,18 +42,54 @@ BasicWindow {
 
                 RowLayout {
                     ExclusiveGroup { id: group }
-                    RadioButton {
-                        text: qsTr("Preserve")
-                        exclusiveGroup: group
-                        checked: true
+                    Column {
+                        RadioButton {
+                            id: preserve
+                            text: qsTr("Preserve")
+                            exclusiveGroup: group
+                            checked: true
+                            property string command: "preserve"
+                        }
+                        RadioButton {
+                            text: qsTr("Ours")
+                            exclusiveGroup: group
+                            property string command: "ours"
+                        }
                     }
-                    RadioButton {
-                        text: qsTr("Overwrite")
-                        exclusiveGroup: group
+                    Column {
+                        RadioButton {
+                            text: qsTr("Theirs")
+                            exclusiveGroup: group
+                            property string command: "theirs"
+                        }
+                        RadioButton {
+                            text: qsTr("Base")
+                            exclusiveGroup: group
+                            property string command: "base"
+                        }
                     }
-                    RadioButton {
-                        text: qsTr("Cut")
-                        exclusiveGroup: group
+                    Column {
+                        RadioButton {
+                            text: qsTr("New Key")
+                            exclusiveGroup: group
+                            property string command: "newkey"
+                        }
+                        RadioButton {
+                            text: qsTr("Our Value")
+                            exclusiveGroup: group
+                            property string command: "ourvalue"
+                        }
+                    }
+                    Column {
+                        RadioButton {
+                            text: qsTr("Their Value")
+                            exclusiveGroup: group
+                            property string command: "theirvalue"
+                        }
+                        Item{
+                            height: preserve.height
+                            width: preserve.width
+                        }
                     }
                 }
             }
@@ -64,8 +100,15 @@ BasicWindow {
         importTextField.text = ""
     }
     okButton.onClicked: {
-        undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, "preserve")
-        externTreeModel.populateModel()
-        importDialog.close()
+        console.log(group.current.command)
+        if(importTextField.text !== ""){
+            undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, group.current.command)
+            externTreeModel.populateModel()
+            importTextField.text = ""
+            importDialog.close()
+        }
+        else{
+            showError(qsTr("Please enter a path to a compatible configuration file on your system."), "", "")
+        }
     }
 }
