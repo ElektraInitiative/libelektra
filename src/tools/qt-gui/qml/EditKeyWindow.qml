@@ -31,5 +31,6 @@ KeyWindow {
                                           nameTextField.text, valueTextField.text, metaData)
 
         qmlMetaKeyModel.clear()
+        selectedNode = null
     }
 }

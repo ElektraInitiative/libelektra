@@ -116,6 +116,7 @@ BasicWindow {
         nameTextField.undo()
         valueTextField.undo()
         qmlMetaKeyModel.clear()
+        selectedNode = null
     }
     okButton.onClicked: {
         //check if user has edited keyname or keyvalue

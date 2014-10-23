@@ -20,7 +20,6 @@ void CutKeyCommand::redo()
 {
     QString newPath = m_target->getPath() + "/" + m_source.getName();
     m_source.setPath(newPath);
-    m_source.setKeyName(newPath);
 
     m_target->appendChild(new ConfigNode(m_source));
     m_model->removeRow(m_index);

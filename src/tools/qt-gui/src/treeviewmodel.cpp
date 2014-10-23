@@ -421,7 +421,7 @@ void TreeViewModel::populateModel()
 
     clear();
     //Why wont the treeview update anymore if list is cleared?
-    //    m_model.clear();
+    m_model.clear();
     m_model << system << user;
 
     m_keySet.rewind();
@@ -647,6 +647,21 @@ void TreeViewModel::unMountBackend(QString backendName)
     m_keySet.cut(x);
 
     populateModel();
+}
+
+void TreeViewModel::reloadModel()
+{
+    QList<ConfigNode*> newModel;
+    foreach(ConfigNode *node, m_model){
+        newModel.append(new ConfigNode(*node));
+    }
+
+    beginResetModel();
+    m_model.clear();
+    foreach(ConfigNode *node, newModel){
+        m_model.append(new ConfigNode(*node));
+    }
+    endResetModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

@@ -112,7 +112,7 @@ ApplicationWindow {
         undoManager.putToClipboard("copy", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
     }
 
-    function paste() {
+    function pasteKey() {
         console.log("paste")
         keyAreaView.keyAreaCopyIndex = -1
         keyAreaView.currentNodePath = ""
@@ -132,10 +132,17 @@ ApplicationWindow {
         }
     }
 
-//    function pasteBranch() {
-//        console.log("paste Branch")
-//        undoManager.createCopyKeyCommand(treeView.currentNode.node)
-//    }
+    function pasteBranch() {
+        console.log("paste Branch")
+        if(undoManager.clipboardType === "copy"){
+            undoManager.createCopyKeyCommand(treeView.currentNode.node)
+            treeView.currentNode.parentModel.reloadModel()
+//            var tmp = treeView.currentNode
+//            treeView.currentNode = null
+//            treeView.currentNode = tmp
+//            resetKeyAreaModel()
+        }
+    }
 
     function deleteKey() {
         console.log("delete key")
@@ -146,8 +153,9 @@ ApplicationWindow {
         metaAreaModel = null
         keyAreaSelectedItem = null
         //This is essential, without it, styleData.row of keyAreaView is not updated!!
-        keyAreaModel = null
-        keyAreaModel = treeView.currentNode.children
+//        keyAreaModel = null
+//        keyAreaModel = treeView.currentNode.children
+        resetKeyAreaModel()
 
         if(keyAreaView.rowCount > 0){
             keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
@@ -172,6 +180,12 @@ ApplicationWindow {
         keyAreaView.selection.clear()
         keyAreaView.selection.select(keyAreaView.currentRow)
         keyAreaView.forceActiveFocus()
+    }
+
+    function resetKeyAreaModel() {
+//        var tmp = keyAreaModel
+        keyAreaModel = null
+        keyAreaModel = treeView.currentNode.children
     }
 
     //**Colors*************************************************************************************************//
@@ -360,10 +374,7 @@ ApplicationWindow {
 
             if(undoManager.undoText === "deleteKey"){
                 undoManager.undo()
-
-                var tmp = keyAreaModel
-                keyAreaModel = null
-                keyAreaModel = tmp
+                resetKeyAreaModel()
 
                 //                if(keyAreaView.currentRow === -1)
                 //                    keyAreaView.currentRow = 0
@@ -510,11 +521,11 @@ ApplicationWindow {
         shortcut: StandardKey.Paste
         enabled: undoManager.canPaste
 
-        onTriggered: { paste()
-//            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-//                pasteBranch()
-//            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-//                pasteKey()
+        onTriggered: {
+            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+                pasteBranch()
+            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
+                pasteKey()
         }
     }
 
@@ -738,7 +749,7 @@ ApplicationWindow {
 
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
-                            text: treeView.currentNode === null ? "" : styleData.value.replace(/\n/g, " ")
+                            text: (treeView.currentNode === null || treeView.currentNode.value === 'undefined') ? "" : styleData.value.replace(/\n/g, " ")
                             color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
                         }
                     }
@@ -798,6 +809,8 @@ ApplicationWindow {
                                 }
 
                                 onDoubleClicked: {
+                                    keyAreaView.currentRow = styleData.row
+                                    updateKeyAreaSelection()
                                     editKeyWindow.show()
                                     editKeyWindow.populateMetaArea()
                                 }
@@ -815,6 +828,7 @@ ApplicationWindow {
                             updateKeyAreaSelection()
                         }
                         else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                            updateKeyAreaSelection()
                             editKeyWindow.show()
                             editKeyWindow.populateMetaArea()
                         }

@@ -102,7 +102,7 @@ BasicWindow {
     okButton.onClicked: {
         if(importTextField.text !== ""){
             undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, group.current.command)
-            externTreeModel.populateModel()
+            treeView.currentNode.parentModel.reloadModel()
             importTextField.text = ""
             preserve.checked = true
             importDialog.close()
