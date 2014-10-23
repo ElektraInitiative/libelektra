@@ -5,7 +5,7 @@ MessageDialog {
     icon: StandardIcon.Warning
     title: qsTr("Close Elektra Editor")
     text: qsTr("The configuration has been modified.")
-    informativeText: "Do you want to save your changes or discard them?"
+    informativeText: qsTr("Do you want to save your changes or discard them?")
     standardButtons: StandardButton.Save | StandardButton.Discard | StandardButton.Cancel
     onAccepted: {
         externTreeModel.synchronize()
@@ -13,7 +13,6 @@ MessageDialog {
     }
     onDiscard: {
         if(undoManager.undoText === "import"){
-            console.log("YES")
             undoManager.undo()
         }
 

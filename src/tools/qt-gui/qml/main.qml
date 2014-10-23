@@ -23,7 +23,7 @@ ApplicationWindow {
             Qt.quit()
     }
 
-    //**Properties********************************************************************************************//
+    //**Properties*********************************************************************************************//
 
     property int    deltaKeyAreaHeight: Math.round(keyArea.height - searchResultsArea.height*0.5 - defaultSpacing)
     property int    deltaKeyAreaWidth: Math.round(mainRow.width*0.7 - defaultSpacing)
@@ -77,6 +77,7 @@ ApplicationWindow {
 
     function cutKey() {
         console.log("cut Key")
+        //needed to mark the node
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
@@ -95,6 +96,7 @@ ApplicationWindow {
 
     function copyKey() {
         console.log("copy Key")
+        //needed to mark the node
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
@@ -103,10 +105,15 @@ ApplicationWindow {
 
     function copyBranch() {
         console.log("copy Branch")
+        //needed to mark the node
+        treeView.treeAreaCopyIndex = treeView.currentNode.index
+        treeView.currentNodePath = treeView.currentNode.path
+
+        undoManager.putToClipboard("copy", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
     }
 
-    function pasteKey() {
-        console.log("paste Key")
+    function paste() {
+        console.log("paste")
         keyAreaView.keyAreaCopyIndex = -1
         keyAreaView.currentNodePath = ""
 
@@ -125,9 +132,10 @@ ApplicationWindow {
         }
     }
 
-    function pasteBranch() {
-        console.log("paste Branch")
-    }
+//    function pasteBranch() {
+//        console.log("paste Branch")
+//        undoManager.createCopyKeyCommand(treeView.currentNode.node)
+//    }
 
     function deleteKey() {
         console.log("delete key")
@@ -186,7 +194,7 @@ ApplicationWindow {
 
     NewKeyWindow {
         id: newKeyWindow
-
+        //in order to execute different actions for the same key, these actions have to be defined here and not inside the button
         addButton.onClicked: {
             //add visual item
             qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
@@ -195,7 +203,7 @@ ApplicationWindow {
 
     EditKeyWindow {
         id: editKeyWindow
-
+        //in order to execute different actions for the same key, these actions have to be defined here and not inside the button
         addButton.onClicked: {
             //add visual item
             qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
@@ -215,7 +223,7 @@ ApplicationWindow {
         nameReadOnly: true
         valuePlaceHolder: "Array Value"
         isArray: true
-
+        //in order to execute different actions for the same key, these actions have to be defined here and not inside the button
         addButton.onClicked: {
             qmlMetaKeyModel.append({"metaName" : "#" + modelIndex, "metaValue" : ""})
         }
@@ -502,11 +510,11 @@ ApplicationWindow {
         shortcut: StandardKey.Paste
         enabled: undoManager.canPaste
 
-        onTriggered: {
-            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-                pasteBranch()
-            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-                pasteKey()
+        onTriggered: { paste()
+//            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+//                pasteBranch()
+//            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
+//                pasteKey()
         }
     }
 
@@ -593,7 +601,7 @@ ApplicationWindow {
         MenuItem {
             id: tcmEdit
             //TODO: if this node does not contain a key, its not possible to add metakeys
-            //      if this node is renamed the changes are not permanent
+            //      if this node is renamed, the changes are not permanent
             action: editAction
         }
 
@@ -919,7 +927,7 @@ ApplicationWindow {
                 id: path
                 anchors.fill: parent
                 anchors.leftMargin: defaultMargins
-                text: treeView.currentNode === null ? "" : treeView.currentNode.path + "/" + (keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.name)
+                text: treeView.currentNode === null ? "" : treeView.currentNode.path + (keyAreaSelectedItem === null ? "" : "/" + keyAreaSelectedItem.name)
             }
         }
     }

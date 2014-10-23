@@ -216,9 +216,9 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
 {
     collectCurrentKeySet();
 
-    m_keySet.rewind();
-    while(m_keySet.next())
-        qDebug() << QString::fromStdString(m_keySet.current().getName());
+//    m_keySet.rewind();
+//    while(m_keySet.next())
+//        qDebug() << QString::fromStdString(m_keySet.current().getName());
 
     try{
         m_kdb.set(m_keySet, "/");

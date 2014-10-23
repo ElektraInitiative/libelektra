@@ -77,7 +77,6 @@ QVariant ConfigNode::getValue() const
 
 void ConfigNode::setName(const QString& name)
 {
-//    qDebug() << "ConfigNode::setName: Node with name " << m_name << " has new name " << name;
     m_name = name;
 
     int idx = m_path.lastIndexOf("/");
@@ -91,7 +90,6 @@ void ConfigNode::setName(const QString& name)
         if(QString::fromStdString(m_key.getName()) != ""){
             try{
                 m_key.setBaseName(name.toStdString());
-    //            qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
             }
             catch(KeyInvalidName ex){
                 emit showError(tr("Could not set name because Keyname \"") + QString::fromStdString(m_key.getFullName()) + tr("\" is invalid."), "", ex.what());
@@ -148,7 +146,7 @@ void ConfigNode::deleteMeta(const QString &name)
 {
     if(m_key)
     {
-//        qDebug() << "ConfigNode::deleteMeta: " << "metakey " << name << " of node " << m_name << " deleted";
+        //        qDebug() << "ConfigNode::deleteMeta: " << "metakey " << name << " of node " << m_name << " deleted";
         m_key.delMeta(name.toStdString());
     }
 }
@@ -219,7 +217,7 @@ void ConfigNode::populateMetaModel()
 
         while (m_key.nextMeta())
         {
-//            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
+            //            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
             ConfigNode* node = new ConfigNode();
 
             node->setName(QString::fromStdString(m_key.getName()));
@@ -297,6 +295,11 @@ ConfigNode* ConfigNode::getChildByIndex(int index) const
 void ConfigNode::setPath(const QString &path)
 {
     m_path = path;
+    setKeyName(path);
+
+    foreach(ConfigNode *node, m_children->model()){
+        node->setPath(m_path + "/" + node->getName());
+    }
 }
 
 bool ConfigNode::childrenHaveNoChildren() const

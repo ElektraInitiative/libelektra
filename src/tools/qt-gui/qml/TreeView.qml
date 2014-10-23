@@ -14,6 +14,7 @@ ScrollView {
     property var currentNode: null
     property var currentItem: null
     property int treeAreaCopyIndex
+    property var currentNodePath
 
     property Component delegate: Label {
         id: label

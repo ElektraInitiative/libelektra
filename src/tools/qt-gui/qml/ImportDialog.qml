@@ -100,11 +100,11 @@ BasicWindow {
         importTextField.text = ""
     }
     okButton.onClicked: {
-        console.log(group.current.command)
         if(importTextField.text !== ""){
             undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, group.current.command)
             externTreeModel.populateModel()
             importTextField.text = ""
+            preserve.checked = true
             importDialog.close()
         }
         else{
