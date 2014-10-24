@@ -10,6 +10,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
     , m_children(new TreeViewModel)
     , m_metaData(new TreeViewModel)
     , m_parentModel(parentModel)
+    , m_isExpanded(false)
 {
     if (m_key && m_key.isString())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
@@ -29,6 +30,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
     , m_children(new TreeViewModel())
     , m_metaData(new TreeViewModel())
     , m_parentModel(new TreeViewModel())
+    , m_isExpanded(false)
 {
 
     foreach(ConfigNode *node, other.m_children->model())
@@ -46,6 +48,7 @@ ConfigNode::ConfigNode()
     : m_children(new TreeViewModel)
     , m_metaData(new TreeViewModel)
     , m_parentModel(new TreeViewModel)
+    , m_isExpanded(false)
 {
 }
 
@@ -207,6 +210,16 @@ void ConfigNode::clear()
         m_children->removeRow(m_children->getIndexByName(node->getName()));
     }
 }
+bool ConfigNode::getIsExpanded() const
+{
+    return m_isExpanded;
+}
+
+void ConfigNode::setIsExpanded(bool value)
+{
+    m_isExpanded = value;
+}
+
 
 void ConfigNode::populateMetaModel()
 {

@@ -103,11 +103,15 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
         else
             return QVariant::fromValue(true);
     }
+    case IsExpandedRole:
+        return QVariant::fromValue(node->getIsExpanded());
+
+    case CountRole:
+        return QVariant::fromValue(m_model.count());
 
     default:
         emit showError(tr("Unknown role: ") + role, "", "TreeViewModel::data");
         return QVariant();
-
     }
 }
 
@@ -132,9 +136,15 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
         node->setValue(data);
         break;
 
-    case MetaValueRole:
+    case MetaValueRole:{
         QVariantList valueList = data.toList();
         node->setMeta(valueList.at(0).toString(), valueList.at(1));
+        break;
+    }
+    case IsExpandedRole:{
+        qDebug() << "setting isExpanded of node " << node->getName() << "to " << data.toBool();
+        node->setIsExpanded(data.toBool());
+        }
     }
 
     emit dataChanged(index, index);
@@ -165,6 +175,9 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
     else if (role == "MetaValue")
     {
         setData(modelIndex, value, MetaValueRole);
+    }
+    else if (role == "isExpanded"){
+        setData(modelIndex, value, IsExpandedRole);
     }
     else
         return;
@@ -652,16 +665,25 @@ void TreeViewModel::unMountBackend(QString backendName)
 void TreeViewModel::reloadModel()
 {
     QList<ConfigNode*> newModel;
+    qDebug() << "";
     foreach(ConfigNode *node, m_model){
-        newModel.append(new ConfigNode(*node));
+        qDebug() << "Copying " << node->getName() << " with children ";
+        foreach(ConfigNode *n, node->getChildren()->model())
+            qDebug() << n->getName();
+        newModel.append(node);
     }
-
+    qDebug() << "";
     beginResetModel();
     m_model.clear();
     foreach(ConfigNode *node, newModel){
-        m_model.append(new ConfigNode(*node));
+        m_model.append(node);
     }
     endResetModel();
+}
+
+int TreeViewModel::count() const
+{
+    return m_model.count();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
@@ -679,6 +701,8 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
     roles[ParentModelRole] = "parentModel";
     roles[IndexRole] = "index";
     roles[IsNullRole] = "isNull";
+    roles[IsExpandedRole] = "isExpanded";
+    roles[CountRole] = "count";
 
     return roles;
 }

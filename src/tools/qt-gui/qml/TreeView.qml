@@ -104,7 +104,6 @@ ScrollView {
                                 onDoubleClicked:{
                                     if(!treeView.currentNode.isNull){
                                         editKeyWindow.selectedNode = treeView.currentNode
-
                                         editKeyWindow.show()
                                         editKeyWindow.populateMetaArea()
                                     }
@@ -137,8 +136,10 @@ ScrollView {
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         onClicked: {
-                                            if(model.childCount > 0 && !model.childrenHaveNoChildren)
+                                            if(model.childCount > 0 && !model.childrenHaveNoChildren){
                                                 loader.expanded = !loader.expanded
+                                                model.isExpanded = loader.expanded
+                                            }
                                         }
                                     }
                                 }

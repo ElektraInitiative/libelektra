@@ -66,7 +66,7 @@ void UndoManager::createNewKeyCommand(TreeViewModel *model, const QString &name,
 
 void UndoManager::createCopyKeyCommand(ConfigNode *target)
 {
-    m_undoStack->push(new CopyKeyCommand(qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target));
+    m_undoStack->push(new CopyKeyCommand(m_clipboardType, qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target));
 }
 
 void UndoManager::createCutKeyCommand(ConfigNode *target)

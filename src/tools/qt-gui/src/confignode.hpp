@@ -191,17 +191,22 @@ public:
 
     void                        clear();
 
+    bool getIsExpanded() const;
+    void setIsExpanded(bool value);
+
 private:
     // TODO: not needed if we hold the Key
-    QString m_name;
-    QString m_path;
-    QVariant m_value;
+    QString         m_name;
+    QString         m_path;
+    QVariant        m_value;
 
     // that is the only part we need:
-    kdb::Key m_key;
-    TreeViewModel* m_children;
-    TreeViewModel* m_metaData;
-    TreeViewModel* m_parentModel;
+    kdb::Key        m_key;
+    TreeViewModel*  m_children;
+    TreeViewModel*  m_metaData;
+    TreeViewModel*  m_parentModel;
+
+    bool            m_isExpanded;
 
 
 

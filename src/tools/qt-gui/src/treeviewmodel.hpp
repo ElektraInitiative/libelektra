@@ -38,7 +38,9 @@ public:
         NodeRole, ///< The role QML can retrieve the ConfigNode at a specified index.
         ParentModelRole, ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
         IndexRole, ///< The role QML can retrieve the index of a ConfigNode.
-        IsNullRole
+        IsNullRole,
+        IsExpandedRole,
+        CountRole
     };
 
     explicit TreeViewModel(QObject* parent =  0);
@@ -176,6 +178,7 @@ public:
     Q_INVOKABLE QStringList     getMountedBackends();
     Q_INVOKABLE void            unMountBackend(QString backendName);
     Q_INVOKABLE void            reloadModel();
+    Q_INVOKABLE int             count() const;
 
 private:
 

@@ -32,6 +32,8 @@ ApplicationWindow {
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
     property int    pasteCounter: 0
     property var    keyAreaModel
+    property var    copyPasteStack: []
+    property var    currentUndoRedoModel
 
     //Spacing & Margins recommended by KDE HIG
     property int    defaultSpacing: 4
@@ -81,7 +83,7 @@ ApplicationWindow {
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("cut", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+        undoManager.putToClipboard("cutKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
         pasteCounter = 0
     }
 
@@ -90,7 +92,7 @@ ApplicationWindow {
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("cut", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        undoManager.putToClipboard("cutBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         pasteCounter = 0
     }
 
@@ -100,7 +102,7 @@ ApplicationWindow {
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+        undoManager.putToClipboard("copyKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
     }
 
     function copyBranch() {
@@ -109,38 +111,33 @@ ApplicationWindow {
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         treeView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("copy", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        undoManager.putToClipboard("copyBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
     }
 
-    function pasteKey() {
-        console.log("paste")
-        keyAreaView.keyAreaCopyIndex = -1
-        keyAreaView.currentNodePath = ""
-
-        if(undoManager.clipboardType === "copy"){
+    function paste() {
+        if(undoManager.clipboardType === "copyKey"){
+            console.log("pasteKey")
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
-        }
-        else if (undoManager.clipboardType === "cut"){
-            if(pasteCounter === 0){
-                undoManager.createCutKeyCommand(treeView.currentNode.node)
-                pasteCounter++
-            }
-            else{
-                undoManager.createCopyKeyCommand(treeView.currentNode.node)
-                pasteCounter++
+            keyAreaView.keyAreaCopyIndex = -1
+            keyAreaView.currentNodePath = ""
+
+            if(keyAreaSelectedItem === null){
+                resetKeyAreaModel()
             }
         }
-    }
-
-    function pasteBranch() {
-        console.log("paste Branch")
-        if(undoManager.clipboardType === "copy"){
+        else if(undoManager.clipboardType === "copyBranch"){
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
-            treeView.currentNode.parentModel.reloadModel()
-//            var tmp = treeView.currentNode
-//            treeView.currentNode = null
-//            treeView.currentNode = tmp
-//            resetKeyAreaModel()
+
+            if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
+                copyPasteStack.push(treeView.currentNode.children)
+                treeView.currentNode.children.reloadModel()
+                resetKeyAreaModel()
+            }
+            else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
+                copyPasteStack.push(treeView.currentNode.parentModel)
+                treeView.currentNode.parentModel.reloadModel()
+                resetKeyAreaModel()
+            }
         }
     }
 
@@ -183,9 +180,9 @@ ApplicationWindow {
     }
 
     function resetKeyAreaModel() {
-//        var tmp = keyAreaModel
         keyAreaModel = null
-        keyAreaModel = treeView.currentNode.children
+        if(treeView.currentNode !== null)
+            keyAreaModel = treeView.currentNode.children
     }
 
     //**Colors*************************************************************************************************//
@@ -384,13 +381,29 @@ ApplicationWindow {
                 //                keyAreaView.selection.clear()
                 //keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
             }
-            else if(undoManager.undoText === "cut"){
-                pasteCounter--
+            else if(undoManager.undoText === "deleteBranch"){
                 undoManager.undo()
+            }
+            else if(undoManager.undoText === "copyKey"){
+                undoManager.undo()
+                //count role is not working????
+                if(keyAreaView.currentRow >= keyAreaModel.count()) {
+                    metaAreaModel = null
+                    keyAreaSelectedItem = null
+                    resetKeyAreaModel()
+                }
             }
             else{
                 undoManager.undo()
             }
+
+//            else if(undoManager.undoText === "cut" || undoManager.undoText === "copy"){
+//                undoManager.undo()
+//                console.log(copyPasteStack.length)
+//                currentUndoRedoModel = copyPasteStack.pop()
+//                currentUndoRedoModel.reloadModel()
+//                pasteCounter--
+//            }
         }
     }
 
@@ -405,7 +418,8 @@ ApplicationWindow {
         onTriggered: {
 
             if(undoManager.redoText === "deleteKey"){
-
+                undoManager.redo()
+                metaAreaModel = null
 //                if(keyAreaView.currentRow > 0){
 //                    keyAreaView.__decrementCurrentIndex()
 //                }
@@ -421,20 +435,28 @@ ApplicationWindow {
 //                    keyAreaSelectedItem = null
             }
             else if(undoManager.redoText === "deleteBranch"){
-
+                undoManager.redo()
                 if(metaAreaModel !== null)
                     metaAreaModel = null
 
                 if(keyAreaSelectedItem !== null)
                     keyAreaSelectedItem = null
             }
-            else if(undoManager.redoText === "cut"){
-                pasteCounter--
+            else if(undoManager.redoText === "copyKey"){
+                undoManager.redo()
+//                resetKeyAreaModel()
+//                copyPasteStack.push(currentUndoRedoModel)
+//                currentUndoRedoModel.reloadModel()
+            }
+            else{
+                undoManager.redo()
             }
 
-            undoManager.redo()
+//            else if(undoManager.redoText === "cut"){
+//                undoManager.redo()
+//                pasteCounter--
+//            }
         }
-
     }
 
     Action {
@@ -521,12 +543,12 @@ ApplicationWindow {
         shortcut: StandardKey.Paste
         enabled: undoManager.canPaste
 
-        onTriggered: {
+        onTriggered: paste() /*{
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
                 pasteBranch()
             else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
                 pasteKey()
-        }
+        }*/
     }
 
     //**Menus & Toolbars***************************************************************************************//
@@ -749,7 +771,7 @@ ApplicationWindow {
 
                         Text{
                             anchors.verticalCenter: parent.verticalCenter
-                            text: (treeView.currentNode === null || treeView.currentNode.value === 'undefined') ? "" : styleData.value.replace(/\n/g, " ")
+                            text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
                             color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
                         }
                     }
@@ -766,7 +788,6 @@ ApplicationWindow {
                     frameVisible: false
                     alternatingRowColors: false
                     backgroundVisible: false
-//                    Component.onCompleted: currentRow = -1
 
                     model: keyAreaModel
 
