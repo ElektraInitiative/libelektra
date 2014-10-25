@@ -479,10 +479,16 @@ ApplicationWindow {
         iconSource: "icons/edit-rename.png"
         text: qsTr("Edit...")
         tooltip: qsTr("Edit")
+        enabled:(treeView.currentNode !== null && treeView.currentNode.isNull && keyAreaSelectedItem === null) ? false : true
 
         onTriggered: {
-            editKeyWindow.show()
-            editKeyWindow.populateMetaArea()
+            if(treeView.currentItem === null && keyAreaSelectedItem === null){
+                showError(qsTr("Please select a node for editing."), "", "")
+            }
+            else{
+                editKeyWindow.show()
+                editKeyWindow.populateMetaArea()
+            }
         }
     }
 
