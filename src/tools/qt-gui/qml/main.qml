@@ -46,36 +46,48 @@ ApplicationWindow {
     Connections {
         target: externTreeModel
 
-        onShowError: {
-            showError(text, informativeText, detailedText)
+        onShowMessage: {
+            showMessage(title, text, informativeText, detailedText, icon)
         }
     }
 
     Connections {
         target: treeView.currentNode === null ? null : treeView.currentNode.node
 
-        onShowError: {
-            showError(text, informativeText, detailedText)
+        onShowMessage: {
+            showMessage(title, text, informativeText, detailedText, icon)
         }
     }
 
     Connections {
         target: (keyAreaSelectedItem === null || keyAreaSelectedItem === 'undefined') ? null : keyAreaSelectedItem.node
 
-        onShowError: {
-            showError(text, informativeText, detailedText)
+        onShowMessage: {
+            showMessage(title, text, informativeText, detailedText, icon)
         }
     }
 
     //**Functions**********************************************************************************************//
 
     //display an error message dialog
-    function showError(text, informativeText, detailedText) {
-        generalErrorDialog.text = text
-        generalErrorDialog.informativeText = informativeText
-        generalErrorDialog.detailedText = detailedText
+    function showMessage(title, text, informativeText, detailedText, icon) {
+        generalMessageDialog.title = title
+        generalMessageDialog.text = text
+        generalMessageDialog.informativeText = informativeText
+        generalMessageDialog.detailedText = detailedText
 
-        generalErrorDialog.open()
+        if(icon === "")
+            generalMessageDialog.icon = StandardIcon.NoIcon
+        else if(icon === "q")
+            generalMessageDialog.icon = StandardIcon.Question
+        else if(icon === "i")
+            generalMessageDialog.icon = StandardIcon.Information
+        else if(icon === "w")
+            generalMessageDialog.icon = StandardIcon.Warning
+        else if(icon === "c")
+            generalMessageDialog.icon = StandardIcon.Critical
+
+        generalMessageDialog.open()
     }
 
     function cutKey() {
@@ -276,10 +288,7 @@ ApplicationWindow {
     }
 
     MessageDialog {
-        id:generalErrorDialog
-
-        title: qsTr("Error")
-        icon: StandardIcon.Critical
+        id:generalMessageDialog
     }
 
     FileDialog {
@@ -303,7 +312,7 @@ ApplicationWindow {
         tooltip: qsTr("New Key")
         onTriggered: {
             if(treeView.currentItem === null){
-                showError(qsTr("Please select a node to create a new key."), "", "")
+                showMessage(qsTr("No node selected"), qsTr("Please select a node to create a new key."), "", "", "w")
             }
             else{
                 newKeyWindow.show()
@@ -318,7 +327,7 @@ ApplicationWindow {
         text: qsTr("Array Entry...")
         onTriggered: {
             if(treeView.currentItem === null){
-                showError(qsTr("Please select a node to create a new array entry."), "", "")
+                showMessage(qsTr("No node selected"), qsTr("Please select a node to create a new array entry."), "", "", "w")
             }
             else{
                 newArrayWindow.show()
@@ -355,7 +364,7 @@ ApplicationWindow {
                 importDialog.show()
             }
             else{
-                showError(qsTr("Please select a node to import a configuration from file."), "", "")
+                showMessage(qsTr("No node selected"), qsTr("Please select a node to import a configuration from file."), "", "", "w")
             }
         }
     }
@@ -371,7 +380,7 @@ ApplicationWindow {
             if(treeView.currentNode !== null)
                 exportDialog.open()
             else
-                showError(qsTr("Please select a node to export a configuration to file."), "", "")
+                showMessage(qsTr("No node selected"), qsTr("Please select a node to export a configuration to file."), "", "", "w")
         }
     }
 
@@ -599,7 +608,7 @@ ApplicationWindow {
                         searchResultsListView.currentIndex = -1
                     }
                     else
-                        showError(qsTr("You need to enter a term to perform a search."),"","")
+                        showMessage(qsTr("No Input"), qsTr("You need to enter a term to perform a search."),"","", "w")
                 }
             }
         }

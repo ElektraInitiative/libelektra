@@ -22,7 +22,7 @@ UndoManager::UndoManager(QObject *parent) :
 
 UndoManager::UndoManager(const UndoManager &other)
 {
-
+    Q_UNUSED(other)
 }
 
 UndoManager::~UndoManager()

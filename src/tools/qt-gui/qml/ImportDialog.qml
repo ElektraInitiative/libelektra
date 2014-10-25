@@ -108,7 +108,7 @@ BasicWindow {
             importDialog.close()
         }
         else{
-            showError(qsTr("Please enter a path to a compatible configuration file on your system."), "", "")
+            showMessage(qsTr("No Input"), qsTr("Please enter a path to a compatible configuration file on your system."), "", "", "w")
         }
     }
 }

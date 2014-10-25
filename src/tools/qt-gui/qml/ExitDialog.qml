@@ -2,7 +2,7 @@ import QtQuick 2.2
 import QtQuick.Dialogs 1.1
 
 MessageDialog {
-    icon: StandardIcon.Warning
+    icon: StandardIcon.Question
     title: qsTr("Close Elektra Editor")
     text: qsTr("The configuration has been modified.")
     informativeText: qsTr("Do you want to save your changes or discard them?")
