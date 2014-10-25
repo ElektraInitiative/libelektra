@@ -25,9 +25,12 @@ ApplicationWindow {
 
     //**Properties*********************************************************************************************//
 
-    property int    deltaKeyAreaHeight: Math.round(keyArea.height - searchResultsArea.height*0.5 - defaultSpacing)
+    property int    keyAreaHeight: Math.round(mainRow.height*0.7 - defaultSpacing)
+    property int    deltaKeyAreaHeight: Math.round(keyAreaHeight - searchResultsAreaHeight*0.5 - defaultSpacing)
     property int    deltaKeyAreaWidth: Math.round(mainRow.width*0.7 - defaultSpacing)
-    property int    deltaMetaAreaHeight: Math.round(metaArea.height - searchResultsArea.height*0.5)
+    property int    metaAreaHeight: Math.round(mainRow.height*0.3)
+    property int    deltaMetaAreaHeight: Math.round(metaAreaHeight - searchResultsAreaHeight*0.5)
+    property int    searchResultsAreaHeight: Math.round(mainRow.height*0.2)
     property var    keyAreaSelectedItem: null
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
     property int    pasteCounter: 0
@@ -590,7 +593,14 @@ ApplicationWindow {
                 id: searchField
                 Layout.fillWidth: true
                 focus: true
-                onAccepted: {searchResultsListView.model = treeView.model.find(text); searchResultsListView.currentIndex = -1}
+                onAccepted: {
+                    if(text !== ""){
+                        searchResultsListView.model = treeView.model.find(text)
+                        searchResultsListView.currentIndex = -1
+                    }
+                    else
+                        showError(qsTr("You need to enter a term to perform a search."),"","")
+                }
             }
         }
     }
@@ -744,7 +754,7 @@ ApplicationWindow {
                 id: keyArea
 
                 width: deltaKeyAreaWidth
-                height: Math.round(mainRow.height*0.7 - defaultSpacing)
+                height: keyAreaHeight
 
                 Component {
                     id: tableViewColumnDelegate
@@ -844,7 +854,7 @@ ApplicationWindow {
                 id: metaArea
 
                 width: deltaKeyAreaWidth
-                height: Math.round(mainRow.height*0.3)
+                height: metaAreaHeight
 
                 ScrollView {
                     id: metaAreaScrollView
@@ -868,7 +878,7 @@ ApplicationWindow {
                 id: searchResultsArea
 
                 width: deltaKeyAreaWidth
-                height: Math.round(mainRow.height*0.2)
+                height: searchResultsAreaHeight
                 visible: false
 
                 Button {
