@@ -665,14 +665,11 @@ void TreeViewModel::unMountBackend(QString backendName)
 void TreeViewModel::reloadModel()
 {
     QList<ConfigNode*> newModel;
-    qDebug() << "";
+
     foreach(ConfigNode *node, m_model){
-        qDebug() << "Copying " << node->getName() << " with children ";
-        foreach(ConfigNode *n, node->getChildren()->model())
-            qDebug() << n->getName();
         newModel.append(node);
     }
-    qDebug() << "";
+
     beginResetModel();
     m_model.clear();
     foreach(ConfigNode *node, newModel){
