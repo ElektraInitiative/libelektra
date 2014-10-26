@@ -94,6 +94,15 @@ bool UndoManager::canPaste()
     return !m_clipboardEmpty;
 }
 
+TreeViewModel *UndoManager::getClipBoardModel() const
+{
+    if(!m_clipboardEmpty){
+        return m_clipboardModel;
+    }
+
+    return NULL;
+}
+
 void UndoManager::undo()
 {
     m_undoStack->undo();
@@ -125,6 +134,7 @@ void UndoManager::putToClipboard(const QString &type, TreeViewModel *model, Conf
     m_clipboard->setProperty("index", QVariant::fromValue(index));
 
     m_clipboardEmpty = false;
+    m_clipboardModel = model;
 
     emit clipboardTypeChanged();
     emit canPasteChanged();

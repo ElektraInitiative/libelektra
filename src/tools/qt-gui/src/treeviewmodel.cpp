@@ -106,9 +106,6 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
     case IsExpandedRole:
         return QVariant::fromValue(node->getIsExpanded());
 
-    case CountRole:
-        return QVariant::fromValue(m_model.count());
-
     default:
         emit showMessage(tr("Error"), tr("Unknown role: ") + role, "", "TreeViewModel::data", "c");
         return QVariant();
@@ -136,15 +133,14 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
         node->setValue(data);
         break;
 
-    case MetaValueRole:{
+    case MetaValueRole:
+    {
         QVariantList valueList = data.toList();
         node->setMeta(valueList.at(0).toString(), valueList.at(1));
         break;
     }
-    case IsExpandedRole:{
-        qDebug() << "setting isExpanded of node " << node->getName() << "to " << data.toBool();
+    case IsExpandedRole:
         node->setIsExpanded(data.toBool());
-        }
     }
 
     emit dataChanged(index, index);
@@ -154,6 +150,7 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
 
 // TODO: Why are there two implementations of setData needed?
 // Because QML cannot call setData() directly (see https://bugreports.qt-project.org/browse/QTBUG-7932)
+// and to make it possible to set data without a QModelIndex
 void TreeViewModel::setData(int index, const QVariant& value, const QString& role)
 {
     if (index < 0 || index > m_model.size() - 1)
@@ -228,10 +225,6 @@ int TreeViewModel::getIndexByName(const QString &name) const
 void TreeViewModel::importConfiguration(const QString &name, const QString &format, QString &file, const QString &mergeStrategy)
 {
     collectCurrentKeySet();
-
-//    m_keySet.rewind();
-//    while(m_keySet.next())
-//        qDebug() << QString::fromStdString(m_keySet.current().getName());
 
     try{
         m_kdb.set(m_keySet, "/");
@@ -699,7 +692,6 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
     roles[IndexRole] = "index";
     roles[IsNullRole] = "isNull";
     roles[IsExpandedRole] = "isExpanded";
-    roles[CountRole] = "count";
 
     return roles;
 }

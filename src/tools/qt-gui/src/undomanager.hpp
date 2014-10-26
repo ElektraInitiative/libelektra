@@ -163,6 +163,8 @@ public:
 
     Q_INVOKABLE bool canPaste();
 
+    Q_INVOKABLE TreeViewModel* getClipBoardModel() const;
+
 
 Q_SIGNALS:
 
@@ -186,10 +188,11 @@ public Q_SLOTS:
 
 private:
 
-    QUndoStack *m_undoStack;
-    QClipboard *m_clipboard;
-    QString     m_clipboardType;
-    bool        m_clipboardEmpty;
+    QUndoStack*     m_undoStack;
+    QClipboard*     m_clipboard;
+    QString         m_clipboardType;
+    bool            m_clipboardEmpty;
+    TreeViewModel*  m_clipboardModel;
 };
 
 Q_DECLARE_METATYPE(UndoManager)

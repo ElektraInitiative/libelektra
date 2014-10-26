@@ -168,7 +168,25 @@ ApplicationWindow {
             }
         }
         else if(undoManager.clipboardType === "cutBranch"){
+            if(pasteCounter === 0){
+                undoManager.createCutKeyCommand(treeView.currentNode.node)
+                pasteCounter++
+            }
+            else{
+                undoManager.createCopyKeyCommand(treeView.currentNode.node)
+                pasteCounter++
+            }
 
+            if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
+                treeView.currentNode.children.reloadModel()
+//                undoManager.getClipBoardModel().reloadModel()
+                resetKeyAreaModel()
+            }
+            else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
+                treeView.currentNode.parentModel.reloadModel()
+//                undoManager.getClipBoardModel().reloadModel()
+                resetKeyAreaModel()
+            }
         }
     }
 
@@ -193,6 +211,7 @@ ApplicationWindow {
 
     function deleteBranch() {
         console.log("delete branch")
+
         undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         treeView.currentNode = null
     }
@@ -491,10 +510,16 @@ ApplicationWindow {
         iconSource: "icons/edit-rename.png"
         text: qsTr("Edit...")
         tooltip: qsTr("Edit")
+        enabled:(treeView.currentNode !== null && treeView.currentNode.isNull && keyAreaSelectedItem === null) ? false : true
 
         onTriggered: {
-            editKeyWindow.show()
-            editKeyWindow.populateMetaArea()
+            if(treeView.currentItem === null && keyAreaSelectedItem === null){
+                showError(qsTr("Please select a node for editing."), "", "")
+            }
+            else{
+                editKeyWindow.show()
+                editKeyWindow.populateMetaArea()
+            }
         }
     }
 
@@ -930,7 +955,7 @@ ApplicationWindow {
 
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: {searchResultsListView.currentIndex = index}
+                                onClicked: searchResultsListView.currentIndex = index
                             }
                         }
                     }
