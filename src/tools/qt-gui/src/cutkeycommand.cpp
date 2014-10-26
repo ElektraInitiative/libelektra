@@ -16,6 +16,10 @@ void CutKeyCommand::undo()
     m_model->insertRow(m_sourceIndex, m_source);
     m_target->getChildren()->removeRow(m_targetIndex);
 
+    if(m_target->childrenHaveNoChildren()){
+        m_target->setIsExpanded(false);
+    }
+
     if(m_model == m_target->getChildren()){
         m_model->reloadModel();
     }

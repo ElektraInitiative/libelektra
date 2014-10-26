@@ -35,6 +35,8 @@ ApplicationWindow {
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
     property int    pasteCounter: 0
     property var    keyAreaModel
+    property var    pasteArray: []
+    property bool   isPasted
 
     //Spacing & Margins recommended by KDE HIG
     property int    defaultSpacing: 4
@@ -128,6 +130,7 @@ ApplicationWindow {
     }
 
     function paste() {
+
         if(undoManager.clipboardType === "copyKey"){
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
             keyAreaView.keyAreaCopyIndex = -1
@@ -140,14 +143,24 @@ ApplicationWindow {
         else if(undoManager.clipboardType === "copyBranch"){
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
 
+            console.log("putting model to " + pasteCounter)
+
+            console.log(treeView.currentNode.name + " is expanded: " + treeView.currentNode.isExpanded)
+
             if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
+
+                pasteArray[pasteCounter] = treeView.currentNode.children
                 treeView.currentNode.children.reloadModel()
                 resetKeyAreaModel()
             }
             else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
+
+                pasteArray[pasteCounter] = treeView.currentNode.parentModel
                 treeView.currentNode.parentModel.reloadModel()
                 resetKeyAreaModel()
             }
+            pasteCounter++
+
         }
         else if(undoManager.clipboardType === "cutKey"){
 
@@ -429,6 +442,13 @@ ApplicationWindow {
                     resetKeyAreaModel()
                 }
             }
+            else if(undoManager.undoText === "copyBranch"){
+                undoManager.undo()
+                pasteCounter--
+                console.log("undo reloadModel at " + pasteCounter)
+                pasteArray[pasteCounter].reloadModel()
+                resetKeyAreaModel()
+            }
             else if(undoManager.undoText === "cutKey"){
                 undoManager.undo()
                 pasteCounter--
@@ -463,6 +483,12 @@ ApplicationWindow {
             }
             else if(undoManager.redoText === "copyKey"){
                 undoManager.redo()
+            }
+            else if(undoManager.redoText === "copyBranch"){
+                undoManager.redo()
+               console.log("redo reloadModel at " + pasteCounter)
+                pasteArray[pasteCounter].reloadModel()
+                pasteCounter++
             }
             else if(undoManager.redoText === "cutKey"){
                 undoManager.redo()
