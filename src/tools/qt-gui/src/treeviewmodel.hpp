@@ -210,6 +210,7 @@ protected:
 
 signals:
     void showMessage(QString title, QString text, QString informativeText, QString detailedText, QString icon) const;
+    void expandNode(bool);
 };
 
 Q_DECLARE_METATYPE(TreeViewModel)

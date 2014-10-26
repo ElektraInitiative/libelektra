@@ -13,10 +13,6 @@ CopyKeyCommand::CopyKeyCommand(QString type, ConfigNode *source, ConfigNode *tar
 void CopyKeyCommand::undo()
 {
     m_target->getChildren()->removeRow(m_index);
-
-    if(m_target->childrenHaveNoChildren()){
-        m_target->setIsExpanded(false);
-    }
 }
 
 void CopyKeyCommand::redo()

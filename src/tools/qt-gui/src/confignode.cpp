@@ -19,6 +19,8 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 
     if(m_key)
         populateMetaModel();
+
+    connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
 }
 
 ConfigNode::ConfigNode(const ConfigNode& other)
@@ -42,6 +44,8 @@ ConfigNode::ConfigNode(const ConfigNode& other)
     {
         m_metaData->append(new ConfigNode(*node));
     }
+
+    connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
 }
 
 ConfigNode::ConfigNode()
@@ -50,6 +54,7 @@ ConfigNode::ConfigNode()
     , m_parentModel(new TreeViewModel)
     , m_isExpanded(false)
 {
+    connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
 }
 
 ConfigNode::~ConfigNode()

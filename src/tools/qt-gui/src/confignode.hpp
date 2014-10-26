@@ -192,7 +192,7 @@ public:
     void                        clear();
 
     bool getIsExpanded() const;
-    void setIsExpanded(bool value);
+
 
 private:
     // TODO: not needed if we hold the Key
@@ -218,6 +218,9 @@ private:
 
 signals:
     void showMessage(QString title, QString text, QString informativeText, QString detailedText, QString icon);
+
+public slots:
+    void setIsExpanded(bool value);
 };
 
 Q_DECLARE_METATYPE(ConfigNode)

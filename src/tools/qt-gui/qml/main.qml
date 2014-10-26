@@ -99,7 +99,7 @@ ApplicationWindow {
         keyAreaView.currentNodePath = treeView.currentNode.path
 
         undoManager.putToClipboard("cutKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
-        pasteCounter = 0
+        isPasted = false
     }
 
     function cutBranch() {
@@ -108,7 +108,7 @@ ApplicationWindow {
         keyAreaView.currentNodePath = treeView.currentNode.path
 
         undoManager.putToClipboard("cutBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
-        pasteCounter = 0
+        isPasted = false
     }
 
     function copyKey() {
@@ -141,20 +141,17 @@ ApplicationWindow {
             }
         }
         else if(undoManager.clipboardType === "copyBranch"){
+
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
 
-            console.log("putting model to " + pasteCounter)
-
-            console.log(treeView.currentNode.name + " is expanded: " + treeView.currentNode.isExpanded)
-
             if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
-
+                console.log("copy branch: putting model " + treeView.currentNode.children +  " to " + pasteCounter)
                 pasteArray[pasteCounter] = treeView.currentNode.children
                 treeView.currentNode.children.reloadModel()
                 resetKeyAreaModel()
             }
             else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
-
+                console.log("copy branch: putting model " + treeView.currentNode.parentModel + " to " + pasteCounter)
                 pasteArray[pasteCounter] = treeView.currentNode.parentModel
                 treeView.currentNode.parentModel.reloadModel()
                 resetKeyAreaModel()
@@ -167,13 +164,12 @@ ApplicationWindow {
             keyAreaView.keyAreaCopyIndex = -1
             keyAreaView.currentNodePath = ""
 
-            if(pasteCounter === 0){
+            if(!isPasted){
                 undoManager.createCutKeyCommand(treeView.currentNode.node)
-                pasteCounter++
+                isPasted = true
             }
             else{
                 undoManager.createCopyKeyCommand(treeView.currentNode.node)
-                pasteCounter++
             }
 
             if(keyAreaSelectedItem === null){
@@ -181,26 +177,30 @@ ApplicationWindow {
             }
         }
         else if(undoManager.clipboardType === "cutBranch"){
-            if(pasteCounter === 0){
+
+            if(!isPasted){
                 undoManager.createCutKeyCommand(treeView.currentNode.node)
-                pasteCounter++
+                isPasted = true
             }
             else{
                 undoManager.createCopyKeyCommand(treeView.currentNode.node)
-                pasteCounter++
             }
 
             if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
+                console.log("cut branch: putting model " + treeView.currentNode.children +  " to " + pasteCounter)
+                pasteArray[pasteCounter] = treeView.currentNode.children
                 treeView.currentNode.children.reloadModel()
-//                undoManager.getClipBoardModel().reloadModel()
                 resetKeyAreaModel()
             }
             else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
+                console.log("cut branch: putting model " + treeView.currentNode.parentModel +  " to " + pasteCounter)
+                pasteArray[pasteCounter] = treeView.currentNode.parentModel
                 treeView.currentNode.parentModel.reloadModel()
-//                undoManager.getClipBoardModel().reloadModel()
                 resetKeyAreaModel()
             }
+            pasteCounter++
         }
+
     }
 
     function deleteKey() {
@@ -445,13 +445,19 @@ ApplicationWindow {
             else if(undoManager.undoText === "copyBranch"){
                 undoManager.undo()
                 pasteCounter--
-                console.log("undo reloadModel at " + pasteCounter)
+                console.log("undo copy branch: reloadModel at " + pasteCounter)
                 pasteArray[pasteCounter].reloadModel()
                 resetKeyAreaModel()
             }
             else if(undoManager.undoText === "cutKey"){
                 undoManager.undo()
+            }
+            else if(undoManager.undoText === "cutBranch"){
+                undoManager.undo()
                 pasteCounter--
+                console.log("undo cut branch: reloadModel at " + pasteCounter)
+                pasteArray[pasteCounter].reloadModel()
+                resetKeyAreaModel()
             }
             else{
                 undoManager.undo()
@@ -486,12 +492,17 @@ ApplicationWindow {
             }
             else if(undoManager.redoText === "copyBranch"){
                 undoManager.redo()
-               console.log("redo reloadModel at " + pasteCounter)
+                console.log("redo: copy branch reloadModel at " + pasteCounter)
                 pasteArray[pasteCounter].reloadModel()
                 pasteCounter++
             }
             else if(undoManager.redoText === "cutKey"){
                 undoManager.redo()
+            }
+            else if(undoManager.redoText === "cutBranch"){
+                undoManager.redo()
+                console.log("redo: cut branch reloadModel at " + pasteCounter)
+                pasteArray[pasteCounter].reloadModel()
                 pasteCounter++
             }
             else{
