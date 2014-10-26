@@ -155,7 +155,7 @@ ScrollView {
                                 x: treeView.columnIndent
                                 height: expanded ? implicitHeight : 0
                                 property var node: model
-                                property bool expanded: false
+                                property bool expanded: model.isExpanded
                                 property var elements: model.children
                                 property var text: model.name
                                 sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined
