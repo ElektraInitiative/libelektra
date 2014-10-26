@@ -81,6 +81,7 @@ ScrollView {
                                 color: activePalette.highlight
                             }
                             Keys.onPressed: {
+
                                 if(event.key === Qt.Key_Space){
                                     if(model.childCount > 0 && !model.childrenHaveNoChildren){
                                         loader.expanded = !loader.expanded
@@ -88,7 +89,8 @@ ScrollView {
                                     }
                                 }
                                 else if(event.key === Qt.Key_Up){
-                                    console.log("up ")
+                                    console.log("up")
+
                                 }
                                 else if(event.key === Qt.Key_Down){
                                     console.log("down")

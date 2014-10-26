@@ -50,13 +50,13 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
     {
-        emit showMessage(tr("Error"), tr("Index not valid."), QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()), "TreeViewModel::data", "c");
+        emit showMessage(tr("Error"), tr("Index not valid."), tr("Index = %1,\nModel size = %2").arg(index.row()).arg(m_model.count()), "TreeViewModel::data", "c");
         return QVariant();
     }
 
     if (index.row() > (m_model.size() - 1))
     {
-        emit showMessage(tr("Error"), QString(tr("Index too high. ")), "Index: " + index.row(), "TreeViewModel::data", "c");
+        emit showMessage(tr("Error"), QString(tr("Index too high. ")), QString("Index: %1").arg(index.row()), "TreeViewModel::data", "c");
         return QVariant();
     }
 
@@ -107,7 +107,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
         return QVariant::fromValue(node->getIsExpanded());
 
     default:
-        emit showMessage(tr("Error"), tr("Unknown role: ") + role, "", "TreeViewModel::data", "c");
+        emit showMessage(tr("Error"), tr("Unknown role: %1").arg(role), "", "TreeViewModel::data", "c");
         return QVariant();
     }
 }
@@ -116,7 +116,7 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
 {
     if (!index.isValid() || index.row() > (m_model.size() - 1))
     {
-        emit showMessage(tr("Error"), tr("Index not valid."), QString("Index = " + index.row()) + QString("\nModel size = " + m_model.size()),"TreeViewModel::setData", "c");
+         emit showMessage(tr("Error"), tr("Index not valid."), tr("Index = %1,\nModel size = %2").arg(index.row()).arg(m_model.count()), "TreeViewModel::setData", "c");
         return false;
     }
 
@@ -155,7 +155,7 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        emit showMessage(tr("Error"), tr("Index not valid."), QString("Index = " + index) + QString("\nModel size = " + m_model.size()), "TreeViewModel::setData", "c");
+        emit showMessage(tr("Error"), tr("Index not valid."), tr("Index = %1 \nModel size = %2").arg(index).arg(m_model.size()), "TreeViewModel::setData", "c");
         return;
     }
 
@@ -512,7 +512,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     if (row < 0 || row > m_model.size() - 1)
     {
-        emit showMessage(tr("Error"), tr("Index not valid."), QString("Model size = " +  m_model.size()) + QString("\nIndex = " + row), "TreeViewModel::removeRow", "c");
+        emit showMessage(tr("Error"), tr("Index not valid."), tr("Model size = %1 \nIndex = %2").arg(m_model.size()).arg(row), "TreeViewModel::removeRow", "c");
         return false;
     }
 
@@ -567,7 +567,7 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
         else
             keyName = node->getName();
 
-        emit showMessage(tr("Error"), tr("Inserting metakey failed."), tr("Key \"") + keyName + tr("\" is not valid."), "", "c");
+        emit showMessage(tr("Error"), tr("Inserting metakey failed."), tr("Key \"%1\" is not valid.").arg(keyName), "", "c");
     }
 }
 
@@ -595,7 +595,7 @@ void TreeViewModel::createNewNode(const QString &path, const QString &value, con
     }
     else
     {
-        emit showMessage(tr("Error"), QString(tr("Creating a new node failed because the key \"") + path) + tr("\" is invalid."), "", "TreeViewModel::createNewNode", "c");
+        emit showMessage(tr("Error"), tr("Creating a new node failed because the key \"%1\" is invalid.").arg(path), "", "TreeViewModel::createNewNode", "c");
     }
 }
 
