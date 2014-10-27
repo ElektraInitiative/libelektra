@@ -178,7 +178,7 @@ void ConfigNode::deletePath(QStringList &path)
         return;
 
     QString name = path.takeFirst();
-    int index = getIndexByName(name);
+    int index = getChildIndexByName(name);
     ConfigNode *node = getChildByName(name);
 
     node->deletePath(path);
@@ -187,7 +187,7 @@ void ConfigNode::deletePath(QStringList &path)
         m_children->removeRow(index);
 }
 
-int ConfigNode::getIndexByName(const QString &name)
+int ConfigNode::getChildIndexByName(const QString &name)
 {
     for(int i = 0; i < m_children->model().count(); i++)
     {
@@ -224,7 +224,6 @@ void ConfigNode::setIsExpanded(bool value)
 {
     m_isExpanded = value;
 }
-
 
 void ConfigNode::populateMetaModel()
 {

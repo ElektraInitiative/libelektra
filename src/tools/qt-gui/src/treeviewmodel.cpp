@@ -37,7 +37,7 @@ TreeViewModel::TreeViewModel(const TreeViewModel& other)
 TreeViewModel::~TreeViewModel()
 {
     // TODO: is this needed?
-    qDeleteAll(m_model);
+    //qDeleteAll(m_model);
 }
 
 int TreeViewModel::rowCount(const QModelIndex& parent) const

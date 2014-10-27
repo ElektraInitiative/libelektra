@@ -171,11 +171,11 @@ public:
     void                        deletePath(QStringList &path);
 
     /**
-     * @brief Returns the index of this ConfigNode in the TreeViewModel this ConfigNode is in, based on its name.
+     * @brief Returns the index of a child ConfigNode, based on its name; if there is no child with this name, the return index is -1
      * @param name The name of this ConfigNode.
      * @return The index of this ConfigNode.
      */
-    int                         getIndexByName(const QString &name);
+    int                         getChildIndexByName(const QString &name);
 
     /**
      * @brief Returns a pointer to the TreeViewModel this ConfigNode is in.
@@ -188,11 +188,8 @@ public:
      * @param parent The TreeViewModel this ConfigNode is in.
      */
     void                        setParentModel(TreeViewModel *parent);
-
     void                        clear();
-
-    bool getIsExpanded() const;
-
+    bool                        getIsExpanded() const;
 
 private:
     // TODO: not needed if we hold the Key

@@ -668,6 +668,7 @@ ApplicationWindow {
                     if(text !== ""){
                         searchResultsListView.model = treeView.model.find(text)
                         searchResultsListView.currentIndex = -1
+                        searchResultsListView.forceActiveFocus()
                     }
                     else
                         showMessage(qsTr("No Input"), qsTr("You need to enter a term to perform a search."),"","", "w")
@@ -979,7 +980,27 @@ ApplicationWindow {
                     ListView {
                         id: searchResultsListView
 
-                        focus: false
+                        anchors.fill: parent
+                        clip: true
+                        highlightMoveDuration: 0
+                        highlightResizeDuration: 0
+                        keyNavigationWraps: true
+
+                        Keys.onPressed: {
+
+                            if(event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
+                                currentIndex--
+                            }
+                            else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.count() - 1){
+                                currentIndex++
+                            }
+                            else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                                editKeyWindow.selectedNode = model.get(currentIndex)
+                                editKeyWindow.accessFromSearchResults = true
+                                editKeyWindow.show()
+                                editKeyWindow.populateMetaArea()
+                            }
+                        }
 
                         highlight: Rectangle {
                             id: highlightBar
@@ -992,7 +1013,18 @@ ApplicationWindow {
 
                             MouseArea {
                                 anchors.fill: parent
-                                onClicked: searchResultsListView.currentIndex = index
+
+                                onClicked: {
+                                    searchResultsListView.currentIndex = index
+                                    forceActiveFocus()
+                                }
+                                onDoubleClicked: {
+                                    searchResultsListView.currentIndex = index
+                                    editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
+                                    editKeyWindow.accessFromSearchResults = true
+                                    editKeyWindow.show()
+                                    editKeyWindow.populateMetaArea()
+                                }
                             }
                         }
                     }

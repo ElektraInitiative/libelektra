@@ -29,19 +29,6 @@ ScrollView {
         sourceComponent: treeBranch
         property var elements: treeView.model
 
-        Column {
-            anchors.fill: parent
-            Repeater {
-                model: 1 + Math.max(treeView.contentItem.height, treeView.height) / treeView.rowHeight
-
-                Rectangle {
-                    color: activePalette.window
-                    width: treeView.width
-                    height: treeView.rowHeight
-                }
-            }
-        }
-
         Component {
             id: treeBranch
 

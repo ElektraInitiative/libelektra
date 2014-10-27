@@ -4,7 +4,8 @@ KeyWindow {
 
     title: qsTr("Edit Key")
 
-    property var selectedNode: null
+    property var    selectedNode: null
+    property bool   accessFromSearchResults: false
 
     path: treeView.currentNode === null ? "" : treeView.currentNode.path
     keyName: selectedNode === null ? "" : selectedNode.name
@@ -19,6 +20,12 @@ KeyWindow {
     function editAccepted() {
 
         var metaData = {};
+        var index;
+
+        if(accessFromSearchResults)
+            index = selectedNode.parentModel.getIndexByName(selectedNode.name)
+        else
+            index = selectedNode.index
 
         //collect metadata in a map
         for(var i = 0; i < qmlMetaKeyModel.count; i++){
@@ -27,10 +34,11 @@ KeyWindow {
 
         //create undo command
         if(isEdited)
-            undoManager.createEditKeyCommand(selectedNode.parentModel, selectedNode.index, keyName.toString(), keyValue.toString(), selectedNode.metaValue,
+            undoManager.createEditKeyCommand(selectedNode.parentModel, index, keyName.toString(), keyValue.toString(), selectedNode.metaValue,
                                           nameTextField.text, valueTextField.text, metaData)
 
         qmlMetaKeyModel.clear()
         selectedNode = null
+        accessFromSearchResults = false
     }
 }
