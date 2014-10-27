@@ -39,6 +39,10 @@ KeyWindow {
 
         qmlMetaKeyModel.clear()
         selectedNode = null
+
+        if(accessFromSearchResults)
+            searchResultsListView.model.reloadModel()
+
         accessFromSearchResults = false
     }
 }
