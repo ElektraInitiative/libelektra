@@ -21,6 +21,7 @@ UndoManager::UndoManager(QObject *parent) :
 }
 
 UndoManager::UndoManager(const UndoManager &other)
+    : QObject()
 {
     Q_UNUSED(other)
 }

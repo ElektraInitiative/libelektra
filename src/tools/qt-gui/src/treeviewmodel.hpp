@@ -99,12 +99,6 @@ public:
     void                        insertRow(int row, ConfigNode* node);
 
     /**
-     * @brief Resets this TreeViewModel to an empty state.
-     *
-     */
-    Q_INVOKABLE void            clear();
-
-    /**
      * @brief Looks for valid ConfigNodes, adds them to a KeySet and repopulates this TreeViewModel based on the KeySet.
      *
      */
@@ -169,10 +163,9 @@ public:
 
     Q_INVOKABLE void            importConfiguration(const QString &name, const QString &file, QString &format, const QString &mergeStrategy);
 
-    void setKeySet(kdb::KeySet set);
-
-    void collectCurrentKeySet();
-    void clearMetaModel();
+    void                        setKeySet(kdb::KeySet set);
+    void                        collectCurrentKeySet();
+    void                        clearMetaModel();
 
     Q_INVOKABLE QStringList     getMountedBackends();
     Q_INVOKABLE void            unMountBackend(QString backendName);

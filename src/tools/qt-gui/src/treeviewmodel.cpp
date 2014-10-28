@@ -425,8 +425,8 @@ void TreeViewModel::populateModel()
     ConfigNode* system = new ConfigNode("system", "system", 0, this);
     ConfigNode* user = new ConfigNode("user", "user", Key("user", KEY_END), this);
 
-    clear();
-    //Why wont the treeview update anymore if list is cleared?
+//    clear();
+//    //Why wont the treeview update anymore if list is cleared?
     m_model.clear();
     m_model << system << user;
 
@@ -613,13 +613,6 @@ void TreeViewModel::synchronize()
     }
     catch (kdb::KDBException const & e){
         emit showMessage(tr("Error"), tr("Synchronizing failed."), "", QString(e.what()), "c");
-    }
-}
-
-void TreeViewModel::clear()
-{
-    foreach(ConfigNode *node, m_model){
-        node->clear();
     }
 }
 

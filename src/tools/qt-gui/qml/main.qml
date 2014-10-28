@@ -137,14 +137,12 @@ ApplicationWindow {
             keyAreaView.currentNodePath = ""
 
             if(keyAreaSelectedItem === null){
-                resetKeyAreaModel()
+                keyAreaModel.refresh()
             }
         }
         else if(undoManager.clipboardType === "copyBranch"){
-
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
-            treeView.model.refresh()
-            resetKeyAreaModel()
+            externTreeModel.refresh()
         }
         else if(undoManager.clipboardType === "cutKey"){
 
@@ -160,7 +158,7 @@ ApplicationWindow {
             }
 
             if(keyAreaSelectedItem === null){
-                resetKeyAreaModel()
+                keyAreaModel.refresh()
             }
         }
         else if(undoManager.clipboardType === "cutBranch"){
@@ -173,8 +171,8 @@ ApplicationWindow {
                 undoManager.createCopyKeyCommand(treeView.currentNode.node)
             }
 
-            treeView.model.refresh()
-            resetKeyAreaModel()
+            externTreeModel.refresh()
+            keyAreaModel.refresh()
         }
     }
 
@@ -186,7 +184,7 @@ ApplicationWindow {
 
         metaAreaModel = null
         keyAreaSelectedItem = null
-        resetKeyAreaModel()
+        keyAreaModel.refresh()
 
         if(keyAreaView.rowCount > 0){
             keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
@@ -201,7 +199,7 @@ ApplicationWindow {
 
         undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         treeView.currentNode = null
-        treeView.model.refresh()
+        externTreeModel.refresh()
     }
 
     function deleteSearchResult(){
@@ -220,12 +218,6 @@ ApplicationWindow {
         keyAreaView.selection.clear()
         keyAreaView.selection.select(keyAreaView.currentRow)
         keyAreaView.forceActiveFocus()
-    }
-
-    function resetKeyAreaModel() {
-        keyAreaModel = null
-        if(treeView.currentNode !== null)
-            keyAreaModel = treeView.currentNode.children
     }
 
     //**Colors*************************************************************************************************//
@@ -413,11 +405,11 @@ ApplicationWindow {
 
             if(undoManager.undoText === "deleteKey"){
                 undoManager.undo()
-                resetKeyAreaModel()
+                keyAreaModel.refresh()
             }
             else if(undoManager.undoText === "deleteBranch"){
                 undoManager.undo()
-                treeView.model.refresh()
+                externTreeModel.refresh()
             }
             else if(undoManager.undoText === "copyKey"){
                 undoManager.undo()
@@ -425,22 +417,23 @@ ApplicationWindow {
                 if(keyAreaView.currentRow >= keyAreaModel.count()) {
                     metaAreaModel = null
                     keyAreaSelectedItem = null
-                    resetKeyAreaModel()
+                    keyAreaModel.refresh()
                 }
             }
             else if(undoManager.undoText === "copyBranch"){
                 undoManager.undo()
-                treeView.model.refresh()
-                resetKeyAreaModel()
+                externTreeModel.refresh()
             }
             else if(undoManager.undoText === "cutKey"){
                 undoManager.undo()
             }
             else if(undoManager.undoText === "cutBranch"){
                 undoManager.undo()
-
-                treeView.model.refresh()
-                resetKeyAreaModel()
+                externTreeModel.refresh()
+            }
+            else if(undoManager.undoText === "import"){
+                undoManager.undo()
+                externTreeModel.refresh()
             }
             else{
                 undoManager.undo()
@@ -471,24 +464,27 @@ ApplicationWindow {
                 if(keyAreaSelectedItem !== null)
                     keyAreaSelectedItem = null
 
-                treeView.model.refresh()
+                externTreeModel.refresh()
 
             }
             else if(undoManager.redoText === "copyKey"){
                 undoManager.redo()
-                resetKeyAreaModel()
+                keyAreaModel.refresh()
             }
             else if(undoManager.redoText === "copyBranch"){
                 undoManager.redo()
-                treeView.model.refresh()
+                externTreeModel.refresh()
             }
             else if(undoManager.redoText === "cutKey"){
                 undoManager.redo()
             }
             else if(undoManager.redoText === "cutBranch"){
                 undoManager.redo()
-                treeView.model.refresh()
-                resetKeyAreaModel()
+                externTreeModel.refresh()
+            }
+            else if(undoManager.redoText === "import"){
+                undoManager.redo()
+                externTreeModel.refresh()
             }
             else{
                 undoManager.redo()
@@ -590,12 +586,7 @@ ApplicationWindow {
         shortcut: StandardKey.Paste
         enabled: undoManager.canPaste
 
-        onTriggered: paste() /*{
-            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-                pasteBranch()
-            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-                pasteKey()
-        }*/
+        onTriggered: paste()
     }
 
     //**Menus & Toolbars***************************************************************************************//

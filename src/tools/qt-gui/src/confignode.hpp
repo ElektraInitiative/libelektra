@@ -157,12 +157,6 @@ public:
     void                        setKeyName(const QString &name);
 
     /**
-     * @brief Invalidate the underlying Key of this ConfigNode. After invalidating the Key of this ConfigNode, it will not be added to
-     * the configuration on the next synchronizing action.
-     */
-    void                        invalidateKey();
-
-    /**
      * @brief This method is needed to support undoing the creation of a new ConfigNode. Since a new ConfigNode is added via the @see TreeViewModel#sink method, it
      * is not possible to say where the new ConfigNode will find its place. This method is supposed to "clean up" the path of the new ConfigNode, if the insertion
      * is going to be reverted.
