@@ -523,8 +523,8 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     endRemoveRows();
 
-    if(m_model.isEmpty())
-        emit expandNode(false);
+//    if(m_model.isEmpty())
+//        emit expandNode(false);
 
     return true;
 }
@@ -658,7 +658,7 @@ void TreeViewModel::unMountBackend(QString backendName)
     populateModel();
 }
 
-void TreeViewModel::reloadModel()
+void TreeViewModel::refresh()
 {
     QList<ConfigNode*> newModel(m_model);
 
