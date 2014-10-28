@@ -660,11 +660,7 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 void TreeViewModel::reloadModel()
 {
-    QList<ConfigNode*> newModel;
-
-    foreach(ConfigNode *node, m_model){
-        newModel.append(node);
-    }
+    QList<ConfigNode*> newModel(m_model);
 
     beginResetModel();
     m_model.clear();
