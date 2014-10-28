@@ -17,7 +17,7 @@ void CutKeyCommand::undo()
     m_target->getChildren()->removeRow(m_targetIndex);
 
     if(m_sourceParentModel == m_target->getChildren()){
-        m_sourceParentModel->reloadModel();
+        m_sourceParentModel->refresh();
     }
 }
 
@@ -30,7 +30,7 @@ void CutKeyCommand::redo()
 
     if(m_sourceParentModel == m_target->getChildren()){
         m_targetIndex = m_target->getChildCount();
-        m_sourceParentModel->reloadModel();
+        m_sourceParentModel->refresh();
     }
     else
         m_targetIndex = m_target->getChildCount() - 1;

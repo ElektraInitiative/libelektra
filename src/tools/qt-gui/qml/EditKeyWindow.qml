@@ -41,7 +41,7 @@ KeyWindow {
         selectedNode = null
 
         if(accessFromSearchResults)
-            searchResultsListView.model.reloadModel()
+            searchResultsListView.model.refresh()
 
         accessFromSearchResults = false
     }

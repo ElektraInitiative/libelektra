@@ -658,7 +658,7 @@ void TreeViewModel::unMountBackend(QString backendName)
     populateModel();
 }
 
-void TreeViewModel::reloadModel()
+void TreeViewModel::refresh()
 {
     QList<ConfigNode*> newModel;
 

@@ -148,13 +148,13 @@ ApplicationWindow {
             if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
                 console.log("copy branch: putting model " + treeView.currentNode.children +  " to " + pasteCounter)
                 pasteArray[pasteCounter] = treeView.currentNode.children
-                treeView.currentNode.children.reloadModel()
+                treeView.currentNode.children.refresh()
                 resetKeyAreaModel()
             }
             else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
                 console.log("copy branch: putting model " + treeView.currentNode.parentModel + " to " + pasteCounter)
                 pasteArray[pasteCounter] = treeView.currentNode.parentModel
-                treeView.currentNode.parentModel.reloadModel()
+                treeView.currentNode.parentModel.refresh()
                 resetKeyAreaModel()
             }
             pasteCounter++
@@ -188,15 +188,15 @@ ApplicationWindow {
             }
 
             if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
-                console.log("cut branch: putting model " + treeView.currentNode.children +  " to " + pasteCounter)
+
                 pasteArray[pasteCounter] = treeView.currentNode.children
-                treeView.currentNode.children.reloadModel()
+                treeView.currentNode.children.refresh()
                 resetKeyAreaModel()
             }
             else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
-                console.log("cut branch: putting model " + treeView.currentNode.parentModel +  " to " + pasteCounter)
+
                 pasteArray[pasteCounter] = treeView.currentNode.parentModel
-                treeView.currentNode.parentModel.reloadModel()
+                treeView.currentNode.parentModel.refresh()
                 resetKeyAreaModel()
             }
             pasteCounter++
@@ -228,6 +228,14 @@ ApplicationWindow {
 
         undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         treeView.currentNode = null
+    }
+
+    function deleteSearchResult(){
+        console.log("delete search result")
+        if(searchResultsSelectedItem.childCount > 0)
+            undoManager.createDeleteKeyCommand("deleteBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+        else
+            undoManager.createDeleteKeyCommand("deleteKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
     }
 
     function updateKeyAreaSelection() {
@@ -378,7 +386,9 @@ ApplicationWindow {
         shortcut: StandardKey.Delete
 
         onTriggered: {
-            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+            if(searchResultsSelectedItem !== null)
+                deleteSearchResult()
+            else if(treeView.currentNode !== null && keyAreaSelectedItem === null)
                 deleteBranch()
             else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
                 deleteKey()
@@ -446,8 +456,8 @@ ApplicationWindow {
             else if(undoManager.undoText === "copyBranch"){
                 undoManager.undo()
                 pasteCounter--
-                console.log("undo copy branch: reloadModel at " + pasteCounter)
-                pasteArray[pasteCounter].reloadModel()
+                console.log("undo copy branch: refresh at " + pasteCounter)
+                pasteArray[pasteCounter].refresh()
                 resetKeyAreaModel()
             }
             else if(undoManager.undoText === "cutKey"){
@@ -456,8 +466,8 @@ ApplicationWindow {
             else if(undoManager.undoText === "cutBranch"){
                 undoManager.undo()
                 pasteCounter--
-                console.log("undo cut branch: reloadModel at " + pasteCounter)
-                pasteArray[pasteCounter].reloadModel()
+                console.log("undo cut branch: refresh at " + pasteCounter)
+                pasteArray[pasteCounter].refresh()
                 resetKeyAreaModel()
             }
             else{
@@ -493,8 +503,8 @@ ApplicationWindow {
             }
             else if(undoManager.redoText === "copyBranch"){
                 undoManager.redo()
-                console.log("redo: copy branch reloadModel at " + pasteCounter)
-                pasteArray[pasteCounter].reloadModel()
+                console.log("redo: copy branch refresh at " + pasteCounter)
+                pasteArray[pasteCounter].refresh()
                 pasteCounter++
             }
             else if(undoManager.redoText === "cutKey"){
@@ -502,8 +512,8 @@ ApplicationWindow {
             }
             else if(undoManager.redoText === "cutBranch"){
                 undoManager.redo()
-                console.log("redo: cut branch reloadModel at " + pasteCounter)
-                pasteArray[pasteCounter].reloadModel()
+                console.log("redo: cut branch refresh at " + pasteCounter)
+                pasteArray[pasteCounter].refresh()
                 pasteCounter++
             }
             else{
@@ -689,6 +699,7 @@ ApplicationWindow {
 
         Menu {
             id:tcmNew
+
             title: qsTr("New")
 
             MenuItem {
@@ -704,8 +715,7 @@ ApplicationWindow {
         }
         MenuItem {
             id: tcmEdit
-            //TODO: if this node does not contain a key, its not possible to add metakeys
-            //      if this node is renamed, the changes are not permanent
+
             action: editAction
         }
 
@@ -733,38 +743,11 @@ ApplicationWindow {
             id: tcmCopy
 
             action: copyAction
-
-            //            onTriggered: {
-            //                keyAreaView.copyPasteIndex = keyAreaView.currentRow
-            //                keyAreaView.currentNodePath = treeView.currentNode.path
-
-            //                undoManager.putToClipboard("copy", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
-            //            }
         }
         MenuItem {
             id: tcmPaste
 
             action: pasteAction
-
-            //            onTriggered: {
-            //                keyAreaView.copyPasteIndex = -1
-            //                keyAreaView.currentNodePath = ""
-
-            //                if(undoManager.clipboardType === "copy"){
-            //                    undoManager.createCopyKeyCommand(treeView.currentNode.node)
-            //                }
-            //                else if (undoManager.clipboardType === "cut"){
-
-            //                    if(pasteCounter === 0){
-            //                        undoManager.createCutKeyCommand(treeView.currentNode.node)
-            //                        pasteCounter++
-            //                    }
-            //                    else{
-            //                        undoManager.createCopyKeyCommand(treeView.currentNode.node)
-            //                        pasteCounter++
-            //                    }
-            //                }
-            //            }
         }
         MenuItem {
             id:tcmDelete
@@ -981,7 +964,10 @@ ApplicationWindow {
                     anchors.top: parent.top
                     anchors.margins: Math.round(defaultMargins*0.25)
                     tooltip: qsTr("Close")
-                    onClicked: keyMetaColumn.state = ""
+                    onClicked: {
+                        keyMetaColumn.state = ""
+                        searchResultsSelectedItem = null
+                    }
 
                     style: ButtonStyle {
                         background: Rectangle {
@@ -1014,6 +1000,7 @@ ApplicationWindow {
                             }
                             else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.count() - 1){
                                 currentIndex++
+                                searchResultsSelectedItem = model.get(currentIndex)
                             }
                             else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
                                 editKeyWindow.selectedNode = model.get(currentIndex)
@@ -1039,13 +1026,14 @@ ApplicationWindow {
                                 onClicked: {
                                     if(mouse.button === Qt.LeftButton){
                                         searchResultsListView.currentIndex = index
+                                        searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
                                         forceActiveFocus()
                                     }
                                     else if(mouse.button === Qt.RightButton) {
                                         searchResultsListView.currentIndex = index
+                                        searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
                                         forceActiveFocus()
                                         editKeyWindow.accessFromSearchResults = true
-                                        searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
                                         searchResultsContextMenu.popup()
                                     }
                                 }

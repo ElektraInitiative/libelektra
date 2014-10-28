@@ -176,7 +176,7 @@ public:
 
     Q_INVOKABLE QStringList     getMountedBackends();
     Q_INVOKABLE void            unMountBackend(QString backendName);
-    Q_INVOKABLE void            reloadModel();
+    Q_INVOKABLE void            refresh();
     Q_INVOKABLE int             count() const;
 
 private:
