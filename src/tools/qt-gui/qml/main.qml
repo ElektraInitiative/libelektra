@@ -32,6 +32,7 @@ ApplicationWindow {
     property int    deltaMetaAreaHeight: Math.round(metaAreaHeight - searchResultsAreaHeight*0.5)
     property int    searchResultsAreaHeight: Math.round(mainRow.height*0.2)
     property var    keyAreaSelectedItem: null
+    property var    searchResultsSelectedItem: null
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
     property int    pasteCounter: 0
     property var    keyAreaModel
@@ -550,10 +551,14 @@ ApplicationWindow {
         enabled:(treeView.currentNode !== null && treeView.currentNode.isNull && keyAreaSelectedItem === null) ? false : true
 
         onTriggered: {
-            if(treeView.currentItem === null && keyAreaSelectedItem === null){
-                showError(qsTr("Please select a node for editing."), "", "")
+            if(treeView.currentItem === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null){
+                showMessage(qsTr("No node selected"), qsTr("Please select a node for editing."), "", "", "w")
             }
             else{
+                if(editKeyWindow.accessFromSearchResults){
+                    editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
+                }
+
                 editKeyWindow.show()
                 editKeyWindow.populateMetaArea()
             }
@@ -799,6 +804,21 @@ ApplicationWindow {
         }
     }
 
+    //Search Results Area Context Menu
+
+    Menu {
+        id: searchResultsContextMenu
+
+        MenuItem {
+            id: srcmEdit
+            action: editAction
+        }
+        MenuItem {
+            id: srcmDelete
+            action: deleteAction
+        }
+    }
+
     //**Layouts & Views****************************************************************************************//
 
     Row {
@@ -889,7 +909,7 @@ ApplicationWindow {
                                     if(mouse.button === Qt.RightButton){
                                         keyContextMenu.popup()
                                     }
-                                    else{
+                                    else if(mouse.button === Qt.LeftButton){
                                         keyAreaView.currentRow = styleData.row
                                         updateKeyAreaSelection()
                                     }
@@ -990,6 +1010,7 @@ ApplicationWindow {
 
                             if(event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
                                 currentIndex--
+                                searchResultsSelectedItem = model.get(currentIndex)
                             }
                             else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.count() - 1){
                                 currentIndex++
@@ -1013,15 +1034,26 @@ ApplicationWindow {
 
                             MouseArea {
                                 anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                                 onClicked: {
-                                    searchResultsListView.currentIndex = index
-                                    forceActiveFocus()
+                                    if(mouse.button === Qt.LeftButton){
+                                        searchResultsListView.currentIndex = index
+                                        forceActiveFocus()
+                                    }
+                                    else if(mouse.button === Qt.RightButton) {
+                                        searchResultsListView.currentIndex = index
+                                        forceActiveFocus()
+                                        editKeyWindow.accessFromSearchResults = true
+                                        searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+                                        searchResultsContextMenu.popup()
+                                    }
                                 }
                                 onDoubleClicked: {
                                     searchResultsListView.currentIndex = index
-                                    editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
+                                    forceActiveFocus()
                                     editKeyWindow.accessFromSearchResults = true
+                                    editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
                                     editKeyWindow.show()
                                     editKeyWindow.populateMetaArea()
                                 }
