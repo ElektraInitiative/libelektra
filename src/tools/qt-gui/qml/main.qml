@@ -36,7 +36,6 @@ ApplicationWindow {
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
     property int    pasteCounter: 0
     property var    keyAreaModel
-    property var    pasteArray: []
     property bool   isPasted
 
     //Spacing & Margins recommended by KDE HIG
@@ -144,21 +143,8 @@ ApplicationWindow {
         else if(undoManager.clipboardType === "copyBranch"){
 
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
-
-            if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
-                console.log("copy branch: putting model " + treeView.currentNode.children +  " to " + pasteCounter)
-                pasteArray[pasteCounter] = treeView.currentNode.children
-                treeView.currentNode.children.refresh()
-                resetKeyAreaModel()
-            }
-            else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
-                console.log("copy branch: putting model " + treeView.currentNode.parentModel + " to " + pasteCounter)
-                pasteArray[pasteCounter] = treeView.currentNode.parentModel
-                treeView.currentNode.parentModel.refresh()
-                resetKeyAreaModel()
-            }
-            pasteCounter++
-
+            treeView.model.refresh()
+            resetKeyAreaModel()
         }
         else if(undoManager.clipboardType === "cutKey"){
 
@@ -187,21 +173,9 @@ ApplicationWindow {
                 undoManager.createCopyKeyCommand(treeView.currentNode.node)
             }
 
-            if(treeView.currentNode.isExpanded && treeView.currentNode.childrenHaveNoChildren){
-
-                pasteArray[pasteCounter] = treeView.currentNode.children
-                treeView.currentNode.children.refresh()
-                resetKeyAreaModel()
-            }
-            else if(!treeView.currentNode.isExpanded || treeView.currentNode.childrenHaveNoChildren){
-
-                pasteArray[pasteCounter] = treeView.currentNode.parentModel
-                treeView.currentNode.parentModel.refresh()
-                resetKeyAreaModel()
-            }
-            pasteCounter++
+            treeView.model.refresh()
+            resetKeyAreaModel()
         }
-
     }
 
     function deleteKey() {
@@ -220,7 +194,6 @@ ApplicationWindow {
         }
         else
             keyAreaSelectedItem = null
-
     }
 
     function deleteBranch() {
@@ -228,6 +201,7 @@ ApplicationWindow {
 
         undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         treeView.currentNode = null
+        treeView.model.refresh()
     }
 
     function deleteSearchResult(){
@@ -443,10 +417,11 @@ ApplicationWindow {
             }
             else if(undoManager.undoText === "deleteBranch"){
                 undoManager.undo()
+                treeView.model.refresh()
             }
             else if(undoManager.undoText === "copyKey"){
                 undoManager.undo()
-                //count role is not working????
+
                 if(keyAreaView.currentRow >= keyAreaModel.count()) {
                     metaAreaModel = null
                     keyAreaSelectedItem = null
@@ -455,9 +430,7 @@ ApplicationWindow {
             }
             else if(undoManager.undoText === "copyBranch"){
                 undoManager.undo()
-                pasteCounter--
-                console.log("undo copy branch: refresh at " + pasteCounter)
-                pasteArray[pasteCounter].refresh()
+                treeView.model.refresh()
                 resetKeyAreaModel()
             }
             else if(undoManager.undoText === "cutKey"){
@@ -465,9 +438,8 @@ ApplicationWindow {
             }
             else if(undoManager.undoText === "cutBranch"){
                 undoManager.undo()
-                pasteCounter--
-                console.log("undo cut branch: refresh at " + pasteCounter)
-                pasteArray[pasteCounter].refresh()
+
+                treeView.model.refresh()
                 resetKeyAreaModel()
             }
             else{
@@ -492,29 +464,31 @@ ApplicationWindow {
             }
             else if(undoManager.redoText === "deleteBranch"){
                 undoManager.redo()
+
                 if(metaAreaModel !== null)
                     metaAreaModel = null
 
                 if(keyAreaSelectedItem !== null)
                     keyAreaSelectedItem = null
+
+                treeView.model.refresh()
+
             }
             else if(undoManager.redoText === "copyKey"){
                 undoManager.redo()
+                resetKeyAreaModel()
             }
             else if(undoManager.redoText === "copyBranch"){
                 undoManager.redo()
-                console.log("redo: copy branch refresh at " + pasteCounter)
-                pasteArray[pasteCounter].refresh()
-                pasteCounter++
+                treeView.model.refresh()
             }
             else if(undoManager.redoText === "cutKey"){
                 undoManager.redo()
             }
             else if(undoManager.redoText === "cutBranch"){
                 undoManager.redo()
-                console.log("redo: cut branch refresh at " + pasteCounter)
-                pasteArray[pasteCounter].refresh()
-                pasteCounter++
+                treeView.model.refresh()
+                resetKeyAreaModel()
             }
             else{
                 undoManager.redo()
