@@ -24,7 +24,7 @@ echo "Elektra Source is assumed at $EDIR, build directory is assumed at $BDIR"
 # quit with error if cbmc fails
 set -ex
 
-ARG="--depth 200"
+ARG="--depth 200 -D ELEKTRA_BMC"
 EINC="-I $EDIR/src/include -I $BDIR/src/include"
 YINC="-I /usr/include/yajl -I $BDIR/src/plugins/yajl"
 
