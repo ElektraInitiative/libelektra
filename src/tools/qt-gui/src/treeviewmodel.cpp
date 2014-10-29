@@ -506,7 +506,7 @@ void TreeViewModel::find(ConfigNode* node, TreeViewModel *searchResults, const Q
     }
 }
 
-bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
+ConfigNode* TreeViewModel::removeRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
 
@@ -519,14 +519,14 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
     beginRemoveRows(QModelIndex(), row, row);
 
     if(!m_model.isEmpty())
-        m_model.takeAt(row);
+        return m_model.takeAt(row);
 
     endRemoveRows();
 
 //    if(m_model.isEmpty())
 //        emit expandNode(false);
 
-    return true;
+    return NULL;
 }
 
 bool TreeViewModel::insertRow(int row, const QModelIndex& parent)

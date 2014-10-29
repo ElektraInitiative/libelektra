@@ -18,6 +18,7 @@ private:
 
     ConfigNode *m_source;
     ConfigNode *m_target;
+    bool        m_isExpanded;
     int         m_index;
 };
 

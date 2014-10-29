@@ -19,9 +19,9 @@ public:
 
 private:
 
-    TreeViewModel *m_model;
-    ConfigNode *m_node;
-    int m_index;
+    TreeViewModel   *m_model;
+    ConfigNode      *m_node;
+    int              m_index;
 
 };
 

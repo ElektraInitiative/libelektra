@@ -14,11 +14,12 @@ public:
 
 private:
 
-    TreeViewModel   *m_sourceParentModel;
-    ConfigNode      *m_source;
-    ConfigNode      *m_target;
-    int              m_sourceIndex;
-    int              m_targetIndex;
+    TreeViewModel*  m_sourceParentModel;
+    ConfigNode*     m_source;
+    ConfigNode*     m_target;
+    bool            m_isExpanded;
+    int             m_sourceIndex;
+    int             m_targetIndex;
 };
 
 #endif // CUTKEYCOMMAND_H
