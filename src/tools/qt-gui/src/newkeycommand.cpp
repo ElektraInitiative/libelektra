@@ -10,6 +10,8 @@ NewKeyCommand::NewKeyCommand(TreeViewModel *model, const QString &path, const QS
     setText("new");
 }
 
+//TODO: redesign this command
+
 void NewKeyCommand::undo()
 {
     m_model->deletePath(m_path);

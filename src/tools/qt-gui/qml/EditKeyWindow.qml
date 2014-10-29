@@ -4,9 +4,6 @@ KeyWindow {
 
     title: qsTr("Edit Key")
 
-    property var    selectedNode: null
-    property bool   accessFromSearchResults: false
-
     path: treeView.currentNode === null ? "" : treeView.currentNode.path
     keyName: selectedNode === null ? "" : selectedNode.name
     keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
@@ -44,5 +41,6 @@ KeyWindow {
             searchResultsListView.model.refresh()
 
         accessFromSearchResults = false
+        resetKeyAreaModel()
     }
 }

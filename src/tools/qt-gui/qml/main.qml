@@ -338,14 +338,8 @@ ApplicationWindow {
         text: qsTr("Key...")
         iconSource: "icons/new-key.png"
         tooltip: qsTr("New Key")
-        onTriggered: {
-            if(treeView.currentItem === null){
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to create a new key."), "", "", "w")
-            }
-            else{
-                newKeyWindow.show()
-            }
-        }
+        enabled: treeView.currentItem !== null
+        onTriggered: newKeyWindow.show()
     }
 
     Action {
@@ -353,15 +347,8 @@ ApplicationWindow {
 
         iconSource: "icons/new-array.png"
         text: qsTr("Array Entry...")
-        onTriggered: {
-            if(treeView.currentItem === null){
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to create a new array entry."), "", "", "w")
-            }
-            else{
-                newArrayWindow.show()
-            }
-        }
-        enabled: false
+        enabled: false//treeView.currentItem !== null
+        onTriggered: newArrayWindow.show()
     }
 
     Action {
@@ -371,6 +358,7 @@ ApplicationWindow {
         iconSource: "icons/delete.png"
         tooltip: "Delete"
         shortcut: StandardKey.Delete
+        enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
 
         onTriggered: {
             if(searchResultsSelectedItem !== null)
@@ -388,15 +376,8 @@ ApplicationWindow {
         text: qsTr("Import Configuration... ")
         iconSource: "icons/import.png"
         tooltip: qsTr("Import Configuration")
-
-        onTriggered:{
-            if(treeView.currentNode !== null){
-                importDialog.show()
-            }
-            else{
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to import a configuration from file."), "", "", "w")
-            }
-        }
+        enabled: treeView.currentItem !== null
+        onTriggered: importDialog.show()
     }
 
     Action {
@@ -405,13 +386,8 @@ ApplicationWindow {
         text: qsTr("Export Configuration... ")
         iconSource: "icons/export.png"
         tooltip: qsTr("Export Configuration")
-
-        onTriggered: {
-            if(treeView.currentNode !== null)
-                exportDialog.open()
-            else
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to export a configuration to file."), "", "", "w")
-        }
+        enabled: treeView.currentItem !== null
+        onTriggered: exportDialog.open()
     }
 
     Action {
@@ -422,6 +398,7 @@ ApplicationWindow {
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
         enabled: undoManager.canUndo
+
         onTriggered: {
 
             if(undoManager.undoText === "deleteKey"){
@@ -461,6 +438,8 @@ ApplicationWindow {
             }
             else{
                 undoManager.undo()
+                if(searchResultsListView.model !== null)
+                    searchResultsListView.model.refresh()
             }
         }
     }
@@ -514,6 +493,8 @@ ApplicationWindow {
             }
             else{
                 undoManager.redo()
+                if(searchResultsListView.model !== null)
+                    searchResultsListView.model.refresh()
             }
         }
     }
@@ -554,20 +535,15 @@ ApplicationWindow {
         iconSource: "icons/edit-rename.png"
         text: qsTr("Edit...")
         tooltip: qsTr("Edit")
-        enabled:(treeView.currentNode !== null && treeView.currentNode.isNull && keyAreaSelectedItem === null) ? false : true
+        enabled: !((treeView.currentNode === null || treeView.currentNode.isNull) && keyAreaSelectedItem === null)
 
         onTriggered: {
-            if(treeView.currentItem === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null){
-                showMessage(qsTr("No node selected"), qsTr("Please select a node for editing."), "", "", "w")
+            if(editKeyWindow.accessFromSearchResults){
+                editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
             }
-            else{
-                if(editKeyWindow.accessFromSearchResults){
-                    editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
-                }
 
-                editKeyWindow.show()
-                editKeyWindow.populateMetaArea()
-            }
+            editKeyWindow.show()
+            editKeyWindow.populateMetaArea()
         }
     }
 
@@ -578,6 +554,7 @@ ApplicationWindow {
         text: qsTr("Cut")
         tooltip: qsTr("Cut")
         shortcut: StandardKey.Cut
+        enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
@@ -594,6 +571,7 @@ ApplicationWindow {
         text: qsTr("Copy")
         tooltip: qsTr("Copy")
         shortcut: StandardKey.Copy
+        enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
@@ -976,7 +954,7 @@ ApplicationWindow {
 
                     ListView {
                         id: searchResultsListView
-
+                        //TODO: proper model updating after editing
                         anchors.fill: parent
                         clip: true
                         highlightMoveDuration: 0

@@ -22,11 +22,15 @@ Item {
             Layout.fillWidth: isArray ? false : true
             placeholderText : qsTr("Meta Key Name...")
             text: metaName
+            Keys.onEnterPressed: okClicked()
+            Keys.onEscapePressed: cancelClicked()
         }
         TextField {
             id: metaValueField
             Layout.fillWidth: true
             text: metaValue
+            Keys.onEnterPressed: okClicked()
+            Keys.onEscapePressed: cancelClicked()
         }
         Button {
             id:deleteMetaButton
