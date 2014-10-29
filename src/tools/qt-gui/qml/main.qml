@@ -206,10 +206,24 @@ ApplicationWindow {
 
     function deleteSearchResult(){
         console.log("delete search result")
-        if(searchResultsSelectedItem.childCount > 0)
-            undoManager.createDeleteKeyCommand("deleteBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
-        else
-            undoManager.createDeleteKeyCommand("deleteKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+        var ci = searchResultsListView.currentIndex
+
+        if(searchResultsSelectedItem !== null){
+
+            if(searchResultsSelectedItem.childCount > 0)
+                undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+            else
+                undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+
+            undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.node, searchResultsSelectedItem.index)
+
+            if(searchResultsListView.model.count() > 0){
+                searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.count() - 1)
+                searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+            }
+            else
+                searchResultsSelectedItem = null
+        }
     }
 
     function updateKeyAreaSelection() {
@@ -419,6 +433,10 @@ ApplicationWindow {
                 undoManager.undo()
                 treeView.model.refresh()
             }
+            else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
+                undoManager.undo()
+                undoManager.undo()
+            }
             else if(undoManager.undoText === "copyKey"){
                 undoManager.undo()
 
@@ -473,6 +491,10 @@ ApplicationWindow {
 
                 treeView.model.refresh()
 
+            }
+            else if(undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
+                undoManager.redo()
+                undoManager.redo()
             }
             else if(undoManager.redoText === "copyKey"){
                 undoManager.redo()
@@ -590,12 +612,7 @@ ApplicationWindow {
         shortcut: StandardKey.Paste
         enabled: undoManager.canPaste
 
-        onTriggered: paste() /*{
-            if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-                pasteBranch()
-            else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-                pasteKey()
-        }*/
+        onTriggered: paste()
     }
 
     //**Menus & Toolbars***************************************************************************************//
@@ -977,7 +994,7 @@ ApplicationWindow {
                                 searchResultsSelectedItem = model.get(currentIndex)
                             }
                             else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
-                                editKeyWindow.selectedNode = model.get(currentIndex)
+                                editKeyWindow.selectedNode = searchResultsSelectedItem
                                 editKeyWindow.accessFromSearchResults = true
                                 editKeyWindow.show()
                                 editKeyWindow.populateMetaArea()
