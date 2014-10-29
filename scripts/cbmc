@@ -1,0 +1,37 @@
+#!/bin/sh
+
+SELF=$(readlink -f "$0")
+
+if [ "$#" -ne 1 ] || ! [ -d "$1" ]
+then
+	echo "Usage: $SELF build-dir [source-dir]"
+	exit 1
+fi
+
+BDIR="$1"
+
+if [ "$#" -ne 2 ] || ! [ -d "$1" ]
+then
+	SDIR=$(dirname "$SELF")
+	EDIR=$(dirname "$SDIR")
+else
+	EDIR="$2"
+fi
+
+
+echo "Elektra Source is assumed at $EDIR, build directory is assumed at $BDIR"
+
+# quit with error if cbmc fails
+set -ex
+
+ARG="--depth 200"
+EINC="-I $EDIR/src/include -I $BDIR/src/include"
+YINC="-I /usr/include/yajl -I $BDIR/src/plugins/yajl"
+
+cd $EDIR/src/plugins/yajl
+cbmc --function elektraYajlSet $ARG $YINC $EINC yajl_gen.c
+
+cd $EDIR/src/libelektra
+cbmc --function kdbSet $ARG $EINC kdb.c
+
+
