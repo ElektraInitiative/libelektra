@@ -1,6 +1,6 @@
-find_package (Python2Interp 2.7 REQUIRED)
+find_package (Python2Interp 2.7)
 
-if (PYTHON2_EXECUTABLE)
+if (PYTHON2INTERP_FOUND)
 	#add_custom_command(
 	#	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/timestamp
 	#	COMMAND ${PYTHON2_EXECUTABLE} setup.py build
@@ -69,4 +69,6 @@ if (PYTHON2_EXECUTABLE)
 	#add_subdirectory(template)
 	#add_subdirectory(tests)
 
+else()
+	remove_tool(gen "Did not find python2 interpreter")
 endif()

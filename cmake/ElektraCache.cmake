@@ -116,7 +116,7 @@ if (PLUGINS MATCHES "ALL")
 endif ()
 
 
-set (PLUGINS_DOC "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
+set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
 
 
 #
@@ -173,7 +173,7 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 	set (BINDINGS_FORCE FORCE)
 endif ()
 
-set (BINDINGS_DOC "Which bindings should be compiled? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
+set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
 
 
 set (BINDINGS
@@ -220,12 +220,20 @@ if (TOOLS MATCHES "ALL")
 	set (TOOLS_FORCE FORCE)
 endif ()
 
+set (TOOLS_DOC "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
+
 set (TOOLS
 	${TOOLS_LIST_DEFAULT}
 	${TOOLS_LIST}
-	CACHE STRING "Which TOOLS should be compiled? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set."
+	CACHE STRING ${TOOLS_DOC}
 	${TOOLS_FORCE}
 	)
+
+
+
+
+
+
 
 
 #

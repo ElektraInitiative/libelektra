@@ -236,6 +236,14 @@ macro (remove_binding name reason)
 	set (BINDINGS ${TMP} CACHE STRING ${BINDINGS_DOC} FORCE)
 endmacro (remove_binding)
 
+
+macro (remove_tool name reason)
+	set (TMP ${TOOLS})
+	message ("-- Exclude tool ${name} because ${reason}")
+	list (REMOVE_ITEM TMP ${name})
+	set (TOOLS ${TMP} CACHE STRING ${TOOLS_DOC} FORCE)
+endmacro (remove_tool)
+
 # LIST_FILTER(<list> <regexp_var> [<regexp_var> ...]
 #              [OUTPUT_VARIABLE <variable>])
 # Removes items from <list> which match any of the specified

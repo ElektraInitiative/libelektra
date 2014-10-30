@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+	echo "Usage: $0 source-directory"
+	echo
+	echo "configure elektra for debian wheezy (Qt 5.3.0 as from homepage), run script within build directory"
+	exit 0
+fi
+
+cmake -DCMAKE_PREFIX_PATH=/opt/Qt5.3.0/5.3/gcc_64/lib/cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.2 -DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so -DPLUGINS=ALL -DTOOLS=ALL -DBINDINGS=ALL $1
