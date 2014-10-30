@@ -3,6 +3,8 @@ include (LibAddMacros)
 find_package (GObjectIntrospection 1.38)
 
 if (INTROSPECTION_FOUND)
+	add_headers (NOT_USED)
+
 	set (GIR_NS      "GElektra")
 	set (GIR_PREFIX  "${GIR_NS}-${SO_VERSION}.0")
 	set (GIR_FILE    "${GIR_PREFIX}.gir")
