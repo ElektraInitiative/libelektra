@@ -374,6 +374,8 @@ set (TARGET_TEMPLATE_FOLDER
 		"This folder (below prefix) will be used to install templates"
     )
 
+option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
+
 #
 # Misc.
 #
