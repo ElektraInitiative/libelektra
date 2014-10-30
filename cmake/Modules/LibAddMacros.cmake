@@ -225,7 +225,7 @@ macro (remove_plugin name reason)
 	set (TMP ${PLUGINS})
 	message ("-- Exclude Plugin ${name} because ${reason}")
 	list (REMOVE_ITEM TMP ${name})
-	set (PLUGINS ${TMP} CACHE STRING "Which plugins should be compiled?" FORCE)
+	set (PLUGINS ${TMP} CACHE STRING ${PLUGINS_DOC} FORCE)
 endmacro (remove_plugin)
 
 

@@ -116,6 +116,7 @@ if (PLUGINS MATCHES "ALL")
 endif ()
 
 
+set (PLUGINS_DOC "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
 
 
 #
@@ -126,9 +127,75 @@ endif ()
 set (PLUGINS
 	${PLUGINS_LIST_DEFAULT}
 	${PLUGINS_LIST}
-	CACHE STRING "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies, DEFAULT for minimal set."
+	CACHE STRING ${PLUGINS_DOC}
 	${PLUGINS_FORCE}
 	)
+
+list(REMOVE_DUPLICATES PLUGINS)
+set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
+
+
+
+
+
+
+
+
+
+
+#
+# set BINDINGS cache variable
+#
+
+set (BINDINGS_LIST_DEFAULT cpp)
+
+if (BINDINGS MATCHES "DEFAULT")
+	set (BINDINGS_FORCE FORCE)
+endif()
+
+list (FIND BINDINGS "SWIG" FINDEX)
+if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
+	set (BINDINGS_LIST_SWIG
+		swig_lua
+		swig_python2
+		swig_python3
+		)
+	set (BINDINGS_FORCE FORCE)
+endif ()
+
+list (FIND BINDINGS "GI" FINDEX)
+if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
+	set (BINDINGS_LIST_GI
+		glib
+		gi_lua
+		gi_python3
+		)
+	set (BINDINGS_FORCE FORCE)
+endif ()
+
+set (BINDINGS_DOC "Which bindings should be compiled? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
+
+
+set (BINDINGS
+	${BINDINGS_LIST_DEFAULT}
+	${BINDINGS_LIST_SWIG}
+	${BINDINGS_LIST_GI}
+	CACHE STRING ${BINDINGS_DOC}
+	${BINDINGS_FORCE}
+	)
+
+
+list(REMOVE_DUPLICATES BINDINGS)
+set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
+
+
+
+
+
+
+
+
+
 
 
 
