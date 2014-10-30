@@ -549,6 +549,7 @@ int keyCopy (Key *dest, const Key *source)
 	dest->key=0;
 	dest->data.v=0;
 	dest->meta=0;
+        dest->flags=0;
 
 	if (keySetName(dest,source->key) == -1)
 	{
