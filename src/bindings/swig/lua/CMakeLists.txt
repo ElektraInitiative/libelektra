@@ -9,7 +9,8 @@ add_cppheaders (HDR_FILES)
 include_directories (${LUA_INCLUDE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-set (CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
+set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
 set (CMAKE_SWIG_FLAGS "-O")
 
 set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)

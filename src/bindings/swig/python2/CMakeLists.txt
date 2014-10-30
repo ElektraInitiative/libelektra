@@ -1,6 +1,7 @@
 include (${SWIG_USE_FILE})
 include(LibAddMacros)
 
+#set (PythonInterp_FIND_VERSION_EXACT ON)
 find_package (Python2Interp 2.7 REQUIRED)
 find_package (Python2Libs 2.7 REQUIRED)
 
@@ -15,7 +16,8 @@ add_cppheaders (HDR_FILES)
 include_directories (${PYTHON2_INCLUDE_DIR})
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-set (CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR})
+set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
 set (CMAKE_SWIG_FLAGS "-O")
 
 set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
@@ -23,6 +25,8 @@ set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-extranative")
 swig_add_module (swig-python2 python kdb.i)
 swig_link_libraries (swig-python2 elektra ${PYTHON_LIBRARIES})
 set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
+
+set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "-DSWIG_TYPE_TABLE=kdb")
 
 set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 execute_process (
