@@ -1,10 +1,28 @@
 #!/bin/sh
 
-if [ $# -ne 1 ]; then
-	echo "Usage: $0 source-directory"
-	echo
-	echo "configure elektra for debian unstable, run script within build directory"
-	exit 0
+SELF=$(readlink -f "$0")
+SCRIPTS=$(dirname "$SELF")
+SOURCE=$(dirname "$SCRIPTS")
+SBUILD=$(pwd)
+BUILD=$(readlink -f "$SBUILD")
+
+if [ -d "$1" ]
+then
+	SOURCE="$1"
 fi
 
-cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.4 -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.4dm.so -DPLUGINS=ALL -DTOOLS=ALL -DBINDINGS=ALL $1
+if [ "$SOURCE" = "$BUILD" ]
+then
+	echo "In source builds are not allowed, create a new directory and run $SELF there"
+	exit 1
+fi
+
+if [ "$SCRIPTS" = "$BUILD" ]
+then
+	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
+	exit 1
+fi
+
+cd $BUILD
+
+cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.4 -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.4dm.so -DPLUGINS=ALL -DTOOLS=ALL -DBINDINGS=ALL $SOURCE
