@@ -17,7 +17,6 @@ endif()
 
 
 #needed by ifs below
-include (cmake/ElektraPolicy.cmake)
 include (cmake/ElektraCache.cmake)
 include (cmake/ElektraCompiling.cmake)
 if (ENABLE_COVERAGE)
