@@ -69,7 +69,7 @@
 # define ELEKTRA_PRINT_VERBOSE(text)
 #endif
 
-#if DEBUG || ELEKTRA_BMC
+#if DEBUG || defined(ELEKTRA_BMC)
 #define ELEKTRA_ASSERT assert
 #else
 #define ELEKTRA_ASSERT

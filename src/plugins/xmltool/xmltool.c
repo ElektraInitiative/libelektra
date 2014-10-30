@@ -80,7 +80,7 @@ int elektraXmltoolSet(Plugin *handle ELEKTRA_UNUSED,
 	}
 	else if (fout == 0)
 	{
-		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyValue(parentKey), strerror(errno));
+		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyString(parentKey), strerror(errno));
 		errno = errnosave;
 		return -1;
 	}
