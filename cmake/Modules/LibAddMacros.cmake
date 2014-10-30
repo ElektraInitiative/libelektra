@@ -229,6 +229,77 @@ macro (remove_plugin name reason)
 endmacro (remove_plugin)
 
 
+macro (remove_binding name reason)
+	set (TMP ${BINDINGS})
+	message ("-- Exclude Binding ${name} because ${reason}")
+	list (REMOVE_ITEM TMP ${name})
+	set (BINDINGS ${TMP} CACHE STRING ${BINDINGS_DOC} FORCE)
+endmacro (remove_binding)
+
+# LIST_FILTER(<list> <regexp_var> [<regexp_var> ...]
+#              [OUTPUT_VARIABLE <variable>])
+# Removes items from <list> which match any of the specified
+# regular expressions. An optional argument OUTPUT_VARIABLE
+# specifies a variable in which to store the matched items instead of
+# updating <list>
+# As regular expressions can not be given to macros (see bug #5389), we pass
+# variable names whose content is the regular expressions.
+#
+# copied from http://www.cmake.org/Wiki/CMakeMacroListOperations
+MACRO(list_filter)
+  parse_arguments(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
+  # Check arguments.
+  LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
+  IF(${LIST_FILTER_default_length} EQUAL 0)
+    MESSAGE(FATAL_ERROR "LIST_FILTER: missing list variable.")
+  ENDIF(${LIST_FILTER_default_length} EQUAL 0)
+  IF(${LIST_FILTER_default_length} EQUAL 1)
+    MESSAGE(FATAL_ERROR "LIST_FILTER: missing regular expression variable.")
+  ENDIF(${LIST_FILTER_default_length} EQUAL 1)
+  # Reset output variable
+  IF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+    SET(LIST_FILTER_OUTPUT_VARIABLE "LIST_FILTER_internal_output")
+  ENDIF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+  SET(${LIST_FILTER_OUTPUT_VARIABLE})
+  # Extract input list from arguments
+  LIST(GET LIST_FILTER_DEFAULT_ARGS 0 LIST_FILTER_input_list)
+  LIST(REMOVE_AT LIST_FILTER_DEFAULT_ARGS 0)
+  FOREACH(LIST_FILTER_item ${${LIST_FILTER_input_list}})
+    set(add_item "1")
+    FOREACH(LIST_FILTER_regexp_var ${LIST_FILTER_DEFAULT_ARGS})
+      FOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+        IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+          set(add_item "0")
+        ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+      ENDFOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+    ENDFOREACH(LIST_FILTER_regexp_var)
+    if (add_item)
+      LIST(APPEND ${LIST_FILTER_OUTPUT_VARIABLE} ${LIST_FILTER_item})
+    endif()
+  ENDFOREACH(LIST_FILTER_item)
+  # If OUTPUT_VARIABLE is not specified, overwrite the input list.
+  IF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+    SET(${LIST_FILTER_input_list} ${${LIST_FILTER_OUTPUT_VARIABLE}})
+  ENDIF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+ENDMACRO(list_filter)
+
+#find string in list with regex
+function(list_find input_list regexp_var output)
+  # Reset output variable
+  # Extract input list from arguments
+  set(${output} "0" PARENT_SCOPE)
+  FOREACH(LIST_FILTER_item ${${input_list}})
+    FOREACH(LIST_FILTER_regexp ${${regexp_var}})
+      #message("try to match ${LIST_FILTER_regexp} with ${LIST_FILTER_item}")
+      IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+        set(${output} "1" PARENT_SCOPE)
+      ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+    ENDFOREACH(LIST_FILTER_regexp ${regexp_var})
+  ENDFOREACH(LIST_FILTER_item)
+endfunction(list_find)
+
+
+
 #- Add sources for a target
 #
 #  ADD_SOURCES (<target> <source1> [<source2> ...])

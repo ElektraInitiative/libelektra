@@ -1,30 +1,36 @@
 include (${SWIG_USE_FILE})
 include(LibAddMacros)
 
-find_package (Lua52 REQUIRED)
+find_package (Lua52)
 
-add_headers (HDR_FILES)
-add_cppheaders (HDR_FILES)
+if (NOT LUA52_FOUND)
+	remove_binding(swig_lua "lua52 not found")
+else()
+	message("-- Include Binding swig_lua")
 
-include_directories (${LUA_INCLUDE_DIR})
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+	add_headers (HDR_FILES)
+	add_cppheaders (HDR_FILES)
 
-set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
-set (CMAKE_SWIG_FLAGS "-O")
+	include_directories (${LUA_INCLUDE_DIR})
+	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
-swig_add_module (swig-lua lua kdb.i)
-swig_link_libraries (swig-lua elektra ${LUA_LIBRARIES})
-set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)
-set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME} PROPERTIES PREFIX "")
+	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
+	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
+	set (CMAKE_SWIG_FLAGS "-O")
 
-install (
-	TARGETS swig-lua
-	LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER}
-)
+	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
+	swig_add_module (swig-lua lua kdb.i)
+	swig_link_libraries (swig-lua elektra ${LUA_LIBRARIES})
+	set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)
+	set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME} PROPERTIES PREFIX "")
 
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
+	install (
+		TARGETS swig-lua
+		LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER}
+	)
 
-add_subdirectory (tests)
+	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+	include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
+
+	add_subdirectory (tests)
+endif()

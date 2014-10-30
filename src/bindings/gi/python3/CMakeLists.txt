@@ -17,6 +17,8 @@ macro (do_gi_python_test source)
 endmacro (do_gi_python_test)
 
 if (PYTHONINTERP_FOUND)
+	message("-- Include Binding gi_python3")
+
 	set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 	execute_process (
 		COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
@@ -31,5 +33,5 @@ if (PYTHONINTERP_FOUND)
 		do_gi_python_test (${file})
 	endforeach (file ${TESTS})
 else (PYTHONINTERP_FOUND)
-	message (WARNING "No Python interpreter found. Python specific GObject Introspection overrides won't be installed")
+	remove_binding(gi_python3 "No Python interpreter found. Python specific GObject Introspection overrides won't be installed")
 endif (PYTHONINTERP_FOUND)

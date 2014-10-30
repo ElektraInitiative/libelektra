@@ -20,10 +20,12 @@ install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 # for the library. But that's better than nothing.
 find_package (Lua52)
 if (LUA52_FOUND)
+	message("-- Include Binding gi_lua")
+
 	file (GLOB TESTS testgi_*.lua)
 	foreach (file ${TESTS})
 		do_gi_lua_test (${file})
 	endforeach (file ${TESTS})
 else (LUA52_FOUND)
-	message (WARNING "No Lua interpreter found. Skipping GObject Introspection Lua tests")
+	remove_binding (gi_lua "No Lua interpreter found needed for GObject Introspection Lua installation")
 endif (LUA52_FOUND)
