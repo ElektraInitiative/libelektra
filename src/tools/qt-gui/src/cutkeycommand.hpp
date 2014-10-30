@@ -7,7 +7,7 @@
 class CutKeyCommand : public QUndoCommand
 {
 public:
-    explicit CutKeyCommand(QString type, TreeViewModel *sourceParentModel, ConfigNode *source, ConfigNode *target, int index, QUndoCommand *parent = 0);
+    explicit CutKeyCommand(QString type, ConfigNode *source, ConfigNode *target, int index, QUndoCommand *parent = 0);
 
     virtual void undo();
     virtual void redo();

@@ -21,6 +21,7 @@ UndoManager::UndoManager(QObject *parent) :
 }
 
 UndoManager::UndoManager(const UndoManager &other)
+    : UndoManager(other)
 {
     Q_UNUSED(other)
 }
@@ -66,12 +67,12 @@ void UndoManager::createNewKeyCommand(TreeViewModel *model, const QString &name,
 
 void UndoManager::createCopyKeyCommand(ConfigNode *target)
 {
-    m_undoStack->push(new CopyKeyCommand(m_clipboardType, qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target));
+    m_undoStack->push(new CopyKeyCommand(m_clipboardType, qvariant_cast<ConfigNode*>(m_clipboard->property("source")), target));
 }
 
 void UndoManager::createCutKeyCommand(ConfigNode *target)
 {
-    m_undoStack->push(new CutKeyCommand(m_clipboardType, qvariant_cast<TreeViewModel*>(m_clipboard->property("model")), qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target, m_clipboard->property("index").toInt()));
+    m_undoStack->push(new CutKeyCommand(m_clipboardType, qvariant_cast<ConfigNode*>(m_clipboard->property("source")), target, m_clipboard->property("index").toInt()));
 }
 
 void UndoManager::createImportConfigurationCommand(TreeViewModel *model, const QString &name, const QString &format, const QString &file, const QString &mergeStrategy)
@@ -94,15 +95,6 @@ bool UndoManager::canPaste()
     return !m_clipboardEmpty;
 }
 
-TreeViewModel *UndoManager::getClipBoardModel() const
-{
-    if(!m_clipboardEmpty){
-        return m_clipboardModel;
-    }
-
-    return NULL;
-}
-
 void UndoManager::undo()
 {
     m_undoStack->undo();
@@ -123,18 +115,16 @@ QString UndoManager::clipboardType() const
     return m_clipboardType;
 }
 
-void UndoManager::putToClipboard(const QString &type, TreeViewModel *model, ConfigNode *node, int index)
+void UndoManager::putToClipboard(const QString &type, ConfigNode *source, int index)
 {
     m_clipboardType = type;
 
     m_clipboard->clear();
 
-    m_clipboard->setProperty("model", QVariant::fromValue(model));
-    m_clipboard->setProperty("node", QVariant::fromValue(new ConfigNode(*node)));
+    m_clipboard->setProperty("source", QVariant::fromValue(source));
     m_clipboard->setProperty("index", QVariant::fromValue(index));
 
     m_clipboardEmpty = false;
-    m_clipboardModel = model;
 
     emit clipboardTypeChanged();
     emit canPasteChanged();

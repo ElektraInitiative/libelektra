@@ -97,7 +97,7 @@ ApplicationWindow {
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("cutKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+        undoManager.putToClipboard("cutKey", keyAreaSelectedItem.node, keyAreaSelectedItem.index)
         isPasted = false
     }
 
@@ -106,7 +106,7 @@ ApplicationWindow {
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("cutBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        undoManager.putToClipboard("cutBranch", treeView.currentNode.node, treeView.currentNode.index)
         isPasted = false
     }
 
@@ -116,7 +116,7 @@ ApplicationWindow {
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("copyKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+        undoManager.putToClipboard("copyKey", keyAreaSelectedItem.node, keyAreaSelectedItem.index)
     }
 
     function copyBranch() {
@@ -125,7 +125,7 @@ ApplicationWindow {
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         treeView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("copyBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        undoManager.putToClipboard("copyBranch", treeView.currentNode.node, treeView.currentNode.index)
     }
 
     function paste() {

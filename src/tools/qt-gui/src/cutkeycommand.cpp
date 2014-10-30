@@ -1,8 +1,8 @@
 #include "cutkeycommand.hpp"
 
-CutKeyCommand::CutKeyCommand(QString type, TreeViewModel *sourceParentModel, ConfigNode *source, ConfigNode *target, int index, QUndoCommand *parent)
+CutKeyCommand::CutKeyCommand(QString type, ConfigNode *source, ConfigNode *target, int index, QUndoCommand *parent)
     : QUndoCommand(parent)
-    , m_sourceParentModel(sourceParentModel)
+    , m_sourceParentModel(source->getParentModel())
     , m_source(new ConfigNode(*source))
     , m_target(target)
     , m_isExpanded(false)
