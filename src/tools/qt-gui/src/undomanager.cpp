@@ -21,7 +21,7 @@ UndoManager::UndoManager(QObject *parent) :
 }
 
 UndoManager::UndoManager(const UndoManager &other)
-    : UndoManager(other)
+    : QObject()
 {
     Q_UNUSED(other)
 }
@@ -60,9 +60,9 @@ void UndoManager::createDeleteKeyCommand(const QString &type, TreeViewModel *mod
     m_undoStack->push(new DeleteKeyCommand(type, model, node, index));
 }
 
-void UndoManager::createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData)
+void UndoManager::createNewKeyCommand(ConfigNode *node, const QString &name, const QString &value, const QVariantMap &metaData)
 {
-    m_undoStack->push(new NewKeyCommand(model, name, value, metaData));
+    m_undoStack->push(new NewKeyCommand(node, name, value, metaData));
 }
 
 void UndoManager::createCopyKeyCommand(ConfigNode *target)

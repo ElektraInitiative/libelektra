@@ -436,9 +436,13 @@ ApplicationWindow {
                 externTreeModel.refresh()
                 resetKeyAreaModel()
             }
+            else if(undoManager.undoText === "newKey"){
+                undoManager.undo()
+                externTreeModel.refresh()
+            }
             else{
                 undoManager.undo()
-                if(searchResultsListView.model !== null)
+                if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
                     searchResultsListView.model.refresh()
             }
         }
@@ -491,9 +495,13 @@ ApplicationWindow {
                 externTreeModel.refresh()
                 resetKeyAreaModel()
             }
+            else if(undoManager.redoText === "newKey"){
+                undoManager.redo()
+                externTreeModel.refresh()
+            }
             else{
                 undoManager.redo()
-                if(searchResultsListView.model !== null)
+                if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
                     searchResultsListView.model.refresh()
             }
         }

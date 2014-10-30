@@ -66,6 +66,16 @@ public:
     // recursively populate the model
     Q_INVOKABLE void            populateModel();
 
+    /**
+     * @brief The method that populates this TreeViewModel.
+     *
+     * @param node The ConfigNode that is supposed to find its place in the hierarchy.
+     * @param keys The path of the ConfigNode that is supposed to find its place in the hierarchy, splitted up into a QStringList.
+     * @param path The current path of the ConfigNode.
+     * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
+     */
+    void                        sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
+
     void                        accept(Visitor &visitor);
 
     /**
@@ -117,7 +127,7 @@ public:
      * @param value The value of the ConfigNode.
      * @param metaData The metada of the ConfigNode.
      */
-    Q_INVOKABLE void            createNewNode(const QString &path, const QString &value, const QVariantMap metaData);
+    Q_INVOKABLE kdb::Key createNewKey(const QString &path, const QString &value, const QVariantMap metaData);
 
     /**
      * @brief Appends a ConfigNode to this TreeViewModel. At the time of insertion the index of the ConfigNode will be the largest in this model.
@@ -141,14 +151,6 @@ public:
      * @return QString A String representation of this model.
      */
     QString                     toString();
-
-    /**
-     * @brief This method is needed to support undoing the creation of a new ConfigNode. Since a new ConfigNode is added via the @see #sink method, it
-     * is not possible to say where the new ConfigNode will find its place. This method is supposed to "clean up" the path of the new ConfigNode, if the insertion
-     * is going to be reverted.
-     * @param path The whole path of the ConfigNode which should be removed.
-     */
-    void                        deletePath(const QString &path);
 
     /**
      * @brief Returns the index of a ConfigNode in this TreeViewModel based in the ConfigNode's name.
@@ -180,16 +182,6 @@ public:
     Q_INVOKABLE int             count() const;
 
 private:
-
-    /**
-     * @brief The method that populates this TreeViewModel.
-     *
-     * @param node The ConfigNode that is supposed to find its place in the hierarchy.
-     * @param keys The path of the ConfigNode that is supposed to find its place in the hierarchy, splitted up into a QStringList.
-     * @param path The current path of the ConfigNode.
-     * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
-     */
-    void                        sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
 
     /**
      * @brief A private method that is called from the public @see #find method. It performs the actual search.

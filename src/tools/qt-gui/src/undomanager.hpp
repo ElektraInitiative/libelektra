@@ -129,7 +129,7 @@ public:
      * @param value The value of the new ConfigNode.
      * @param metaData The meta data of the new ConfigNode.
      */
-    Q_INVOKABLE void createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
+    Q_INVOKABLE void createNewKeyCommand(ConfigNode *node, const QString &name, const QString &value, const QVariantMap &metaData);
 
     /**
      * @brief Create a new CopyKeyCommand.
