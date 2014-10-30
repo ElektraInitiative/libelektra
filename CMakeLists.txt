@@ -1,5 +1,4 @@
 cmake_minimum_required (VERSION 2.8.8)
-cmake_policy(VERSION 2.8.8) # CMP0026
 
 project (Elektra)
 
@@ -8,6 +7,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/"
 
 
 #needed by ifs below
+include (cmake/ElektraPolicy.cmake)
 include (cmake/ElektraCache.cmake)
 include (cmake/ElektraCompiling.cmake)
 if (ENABLE_COVERAGE)
