@@ -92,6 +92,7 @@ function(add_plugin PLUGIN_SHORT_NAME)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES})
+		target_link_libraries (${PLUGIN_NAME} elektra)
 		target_link_libraries (${PLUGIN_NAME}
 			${ARG_LINK_LIBRARIES})
 		install (TARGETS ${PLUGIN_NAME} DESTINATION
