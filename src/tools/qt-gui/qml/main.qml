@@ -308,6 +308,7 @@ ApplicationWindow {
             spacing: defaultMargins
 
             RowLayout {
+                spacing: 2*defaultMargins
                 Image {
                     source: "icons/elektra-logo-big.png"
                 }
@@ -318,7 +319,7 @@ ApplicationWindow {
                         color: activePalette.text
                     }
                     Text {
-                        text: "Version: 0.0.1 (beta)"
+                        text: "Version: 0.0.1 (alpha)"
                         color: activePalette.text
                     }
                 }
@@ -335,7 +336,7 @@ ApplicationWindow {
                             property string link: "https://github.com/ElektraInitiative/libelektra"
                             readOnly: true
                             textFormat: TextEdit.RichText
-                            text: "Visit Elektra on GitHub: <html><style type=\"text/css\"></style><a href=\"" + link + "\">ElektraInitiative/libelektra
+                            text: "<html><style type=\"text/css\"></style><b>Visit Elektra on GitHub:</b><br><a href=\"" + link + "\">ElektraInitiative/libelektra
 </a></html>"
                             onLinkActivated: Qt.openUrlExternally(link)
                         }
@@ -343,9 +344,12 @@ ApplicationWindow {
                     Tab {
                         title: qsTr("A&uthors")
                         TextArea {
-                            text: "Raffael Pancheri\ne0003088@student.tuwien.ac.at"
+                            property string mail: "mailto:e0003088@student.tuwien.ac.at"
+                            readOnly: true
+                            textFormat: TextEdit.RichText
+                            text: "Raffael Pancheri\n<html><style type=\"text/css\"></style><a href=\"" + mail + "\">e0003088@student.tuwien.ac.at</a></html>"
+                            onLinkActivated: Qt.openUrlExternally(mail)
                         }
-
                     }
                 }
             }
