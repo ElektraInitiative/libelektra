@@ -100,8 +100,8 @@ MenuBar {
         id:about
         title: qsTr("&About")
         MenuItem {
-            text: qsTr("Credits ")
-            iconSource: "icons/elektra-logo.png"
+            text: qsTr("About Elektra Editor")
+            action: aboutAction
         }
     }
 }

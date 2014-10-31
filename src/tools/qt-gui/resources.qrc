@@ -50,5 +50,6 @@
         <file>qml/icons/edit-rename.png</file>
         <file>qml/icons/new-array.png</file>
         <file>qml/icons/elektra-logo.png</file>
+        <file>qml/icons/elektra-logo-big.png</file>
     </qresource>
 </RCC>

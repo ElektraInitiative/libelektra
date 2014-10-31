@@ -22,6 +22,8 @@ BasicWindow {
     property string keyName: ""
     property string keyValue: ""
     property bool   isEdited: false
+    property var    selectedNode: null
+    property bool   accessFromSearchResults: false
 
     contents: ColumnLayout {
         anchors.fill: parent
@@ -45,6 +47,16 @@ BasicWindow {
                 Layout.fillWidth: true
                 focus: true
                 text: keyName
+                Keys.onPressed: {
+                    if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                        okClicked()
+                        event.accepted = true
+                    }
+                    else if(event.key === Qt.Key_Escape){
+                        cancelClicked()
+                        event.accepted = true
+                    }
+                }
             }
             Label {
                 id: valueLabel
@@ -54,6 +66,16 @@ BasicWindow {
                 id: valueTextField
                 Layout.fillWidth: true
                 text: keyValue
+                Keys.onPressed: {
+                    if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                        okClicked()
+                        event.accepted = true
+                    }
+                    else if(event.key === Qt.Key_Escape){
+                        cancelClicked()
+                        event.accepted = true
+                    }
+                }
             }
         }
 
@@ -110,20 +132,30 @@ BasicWindow {
             text: qsTr("New Meta Key")
         }
     }
-    cancelButton.onClicked: {
+
+    okButton.onClicked: okClicked()
+    cancelButton.onClicked: cancelClicked()
+
+    function okClicked(){
+
+        if(nameTextField.text !== ""){
+            //check if user has edited keyname or keyvalue
+            if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
+                isEdited = true
+
+            keyWindow.visible = false
+            editAccepted()
+        }
+        else
+            showMessage(qsTr("No Keyname"), qsTr("Please enter a keyname."), "", "", "w")
+    }
+
+    function cancelClicked() {
         keyWindow.visible = false
         isEdited = false
         nameTextField.undo()
         valueTextField.undo()
         qmlMetaKeyModel.clear()
         selectedNode = null
-    }
-    okButton.onClicked: {
-        //check if user has edited keyname or keyvalue
-        if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
-            isEdited = true
-
-        keyWindow.visible = false
-        editAccepted()
     }
 }

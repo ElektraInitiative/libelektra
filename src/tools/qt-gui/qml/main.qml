@@ -34,7 +34,6 @@ ApplicationWindow {
     property var    keyAreaSelectedItem: null
     property var    searchResultsSelectedItem: null
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
-    property int    pasteCounter: 0
     property var    keyAreaModel
     property bool   isPasted
 
@@ -98,7 +97,7 @@ ApplicationWindow {
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("cutKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+        undoManager.putToClipboard("cutKey", keyAreaSelectedItem.node, keyAreaSelectedItem.index)
         isPasted = false
     }
 
@@ -107,7 +106,7 @@ ApplicationWindow {
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("cutBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        undoManager.putToClipboard("cutBranch", treeView.currentNode.node, treeView.currentNode.index)
         isPasted = false
     }
 
@@ -117,7 +116,7 @@ ApplicationWindow {
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("copyKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+        undoManager.putToClipboard("copyKey", keyAreaSelectedItem.node, keyAreaSelectedItem.index)
     }
 
     function copyBranch() {
@@ -126,7 +125,7 @@ ApplicationWindow {
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         treeView.currentNodePath = treeView.currentNode.path
 
-        undoManager.putToClipboard("copyBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+        undoManager.putToClipboard("copyBranch", treeView.currentNode.node, treeView.currentNode.index)
     }
 
     function paste() {
@@ -204,10 +203,24 @@ ApplicationWindow {
 
     function deleteSearchResult(){
         console.log("delete search result")
-        if(searchResultsSelectedItem.childCount > 0)
-            undoManager.createDeleteKeyCommand("deleteBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
-        else
-            undoManager.createDeleteKeyCommand("deleteKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+        var ci = searchResultsListView.currentIndex
+
+        if(searchResultsSelectedItem !== null){
+
+            if(searchResultsSelectedItem.childCount > 0)
+                undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+            else
+                undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+
+            undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.node, searchResultsSelectedItem.index)
+
+            if(searchResultsListView.model.count() > 0){
+                searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.count() - 1)
+                searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+            }
+            else
+                searchResultsSelectedItem = null
+        }
     }
 
     function updateKeyAreaSelection() {
@@ -256,7 +269,6 @@ ApplicationWindow {
         }
     }
 
-
     NewKeyWindow {
         id: newArrayWindow
 
@@ -278,10 +290,70 @@ ApplicationWindow {
     UnmountBackendWindow {
         id: unmountBackendWindow
         okButton.onClicked: unmountBackendWindow.close()
+        cancelButton.onClicked: unmountBackendWindow.close()
     }
 
     WizardLoader {
         id: wizardLoader
+    }
+
+    BasicWindow {
+        id: aboutWindow
+
+        title: qsTr("About Elektra Editor")
+        width: tabs.width + 2*defaultMargins
+        height: 2*tabs.height
+
+        ColumnLayout {
+            spacing: defaultMargins
+
+            RowLayout {
+                Image {
+                    source: "icons/elektra-logo-big.png"
+                }
+                Column {
+                    Text {
+                        text: "Elektra Editor"
+                        font.bold: true
+                        color: activePalette.text
+                    }
+                    Text {
+                        text: "Version: 0.0.1 (beta)"
+                        color: activePalette.text
+                    }
+                }
+            }
+
+            RowLayout {
+
+                TabView {
+                    id: tabs
+
+                    Tab {
+                        title: qsTr("&About")
+                        TextArea{
+                            property string link: "https://github.com/ElektraInitiative/libelektra"
+                            readOnly: true
+                            textFormat: TextEdit.RichText
+                            text: "Visit Elektra on GitHub: <html><style type=\"text/css\"></style><a href=\"" + link + "\">ElektraInitiative/libelektra
+</a></html>"
+                            onLinkActivated: Qt.openUrlExternally(link)
+                        }
+                    }
+                    Tab {
+                        title: qsTr("A&uthors")
+                        TextArea {
+                            text: "Raffael Pancheri\ne0003088@student.tuwien.ac.at"
+                        }
+
+                    }
+                }
+            }
+        }
+
+        cancelButton.visible: false
+        okButton.text: qsTr("&Close")
+        okButton.onClicked: aboutWindow.close()
     }
 
     //**Dialogs************************************************************************************************//
@@ -317,14 +389,8 @@ ApplicationWindow {
         text: qsTr("Key...")
         iconSource: "icons/new-key.png"
         tooltip: qsTr("New Key")
-        onTriggered: {
-            if(treeView.currentItem === null){
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to create a new key."), "", "", "w")
-            }
-            else{
-                newKeyWindow.show()
-            }
-        }
+        enabled: treeView.currentItem !== null
+        onTriggered: newKeyWindow.show()
     }
 
     Action {
@@ -332,15 +398,8 @@ ApplicationWindow {
 
         iconSource: "icons/new-array.png"
         text: qsTr("Array Entry...")
-        onTriggered: {
-            if(treeView.currentItem === null){
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to create a new array entry."), "", "", "w")
-            }
-            else{
-                newArrayWindow.show()
-            }
-        }
-        enabled: false
+        enabled: false//treeView.currentItem !== null
+        onTriggered: newArrayWindow.show()
     }
 
     Action {
@@ -350,6 +409,7 @@ ApplicationWindow {
         iconSource: "icons/delete.png"
         tooltip: "Delete"
         shortcut: StandardKey.Delete
+        enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
 
         onTriggered: {
             if(searchResultsSelectedItem !== null)
@@ -367,15 +427,8 @@ ApplicationWindow {
         text: qsTr("Import Configuration... ")
         iconSource: "icons/import.png"
         tooltip: qsTr("Import Configuration")
-
-        onTriggered:{
-            if(treeView.currentNode !== null){
-                importDialog.show()
-            }
-            else{
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to import a configuration from file."), "", "", "w")
-            }
-        }
+        enabled: treeView.currentItem !== null
+        onTriggered: importDialog.show()
     }
 
     Action {
@@ -384,13 +437,8 @@ ApplicationWindow {
         text: qsTr("Export Configuration... ")
         iconSource: "icons/export.png"
         tooltip: qsTr("Export Configuration")
-
-        onTriggered: {
-            if(treeView.currentNode !== null)
-                exportDialog.open()
-            else
-                showMessage(qsTr("No node selected"), qsTr("Please select a node to export a configuration to file."), "", "", "w")
-        }
+        enabled: treeView.currentItem !== null
+        onTriggered: exportDialog.open()
     }
 
     Action {
@@ -401,6 +449,7 @@ ApplicationWindow {
         tooltip: qsTr("Undo")
         shortcut: StandardKey.Undo
         enabled: undoManager.canUndo
+
         onTriggered: {
 
             if(undoManager.undoText === "deleteKey"){
@@ -410,6 +459,10 @@ ApplicationWindow {
             else if(undoManager.undoText === "deleteBranch"){
                 undoManager.undo()
                 externTreeModel.refresh()
+            }
+            else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
+                undoManager.undo()
+                undoManager.undo()
             }
             else if(undoManager.undoText === "copyKey"){
                 undoManager.undo()
@@ -430,13 +483,21 @@ ApplicationWindow {
             else if(undoManager.undoText === "cutBranch"){
                 undoManager.undo()
                 externTreeModel.refresh()
-            }
+                externTreeModel.refresh()
             else if(undoManager.undoText === "import"){
                 undoManager.undo()
                 externTreeModel.refresh()
             }
+            else if(undoManager.undoText === "newKey"){
+                undoManager.undo()
+                externTreeModel.refresh()
+                if(keyAreaModel.rowCount === 0 && keyAreaSelectedItem !== null)
+                    keyAreaSelectedItem = null
+            }
             else{
                 undoManager.undo()
+                if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
+                    searchResultsListView.model.refresh()
             }
         }
     }
@@ -467,6 +528,10 @@ ApplicationWindow {
                 externTreeModel.refresh()
 
             }
+            else if(undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
+                undoManager.redo()
+                undoManager.redo()
+            }
             else if(undoManager.redoText === "copyKey"){
                 undoManager.redo()
                 keyAreaModel.refresh()
@@ -474,6 +539,7 @@ ApplicationWindow {
             else if(undoManager.redoText === "copyBranch"){
                 undoManager.redo()
                 externTreeModel.refresh()
+                resetKeyAreaModel()
             }
             else if(undoManager.redoText === "cutKey"){
                 undoManager.redo()
@@ -486,8 +552,14 @@ ApplicationWindow {
                 undoManager.redo()
                 externTreeModel.refresh()
             }
+            else if(undoManager.redoText === "newKey"){
+                undoManager.redo()
+                externTreeModel.refresh()
+            }
             else{
                 undoManager.redo()
+                if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
+                    searchResultsListView.model.refresh()
             }
         }
     }
@@ -528,20 +600,15 @@ ApplicationWindow {
         iconSource: "icons/edit-rename.png"
         text: qsTr("Edit...")
         tooltip: qsTr("Edit")
-        enabled:(treeView.currentNode !== null && treeView.currentNode.isNull && keyAreaSelectedItem === null) ? false : true
+        enabled: !((treeView.currentNode === null || treeView.currentNode.isNull) && keyAreaSelectedItem === null)
 
         onTriggered: {
-            if(treeView.currentItem === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null){
-                showMessage(qsTr("No node selected"), qsTr("Please select a node for editing."), "", "", "w")
+            if(editKeyWindow.accessFromSearchResults){
+                editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
             }
-            else{
-                if(editKeyWindow.accessFromSearchResults){
-                    editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
-                }
 
-                editKeyWindow.show()
-                editKeyWindow.populateMetaArea()
-            }
+            editKeyWindow.show()
+            editKeyWindow.populateMetaArea()
         }
     }
 
@@ -552,6 +619,7 @@ ApplicationWindow {
         text: qsTr("Cut")
         tooltip: qsTr("Cut")
         shortcut: StandardKey.Cut
+        enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
@@ -568,6 +636,7 @@ ApplicationWindow {
         text: qsTr("Copy")
         tooltip: qsTr("Copy")
         shortcut: StandardKey.Copy
+        enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
         onTriggered: {
             if(treeView.currentNode !== null && keyAreaSelectedItem === null)
@@ -587,6 +656,13 @@ ApplicationWindow {
         enabled: undoManager.canPaste
 
         onTriggered: paste()
+    }
+
+    Action {
+        id: aboutAction
+        text: qsTr("About Elektra Editor")
+        iconSource: "icons/elektra-logo.png"
+        onTriggered: aboutWindow.show()
     }
 
     //**Menus & Toolbars***************************************************************************************//
@@ -646,7 +722,7 @@ ApplicationWindow {
                 focus: true
                 onAccepted: {
                     if(text !== ""){
-                        searchResultsListView.model = treeView.model.find(text)
+                        searchResultsListView.model = externTreeModel.find(text)
                         searchResultsListView.currentIndex = -1
                         searchResultsListView.forceActiveFocus()
                     }
@@ -968,7 +1044,7 @@ ApplicationWindow {
                                 searchResultsSelectedItem = model.get(currentIndex)
                             }
                             else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
-                                editKeyWindow.selectedNode = model.get(currentIndex)
+                                editKeyWindow.selectedNode = searchResultsSelectedItem
                                 editKeyWindow.accessFromSearchResults = true
                                 editKeyWindow.show()
                                 editKeyWindow.populateMetaArea()

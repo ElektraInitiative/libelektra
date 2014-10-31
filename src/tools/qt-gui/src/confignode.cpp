@@ -290,7 +290,7 @@ TreeViewModel* ConfigNode::getMetaKeys() const
 
 ConfigNode* ConfigNode::getChildByName(QString& name) const
 {
-    foreach (ConfigNode * node, m_children->model())
+    foreach (ConfigNode* node, m_children->model())
     {
         if (node->getName() == name)
         {

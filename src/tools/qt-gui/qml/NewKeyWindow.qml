@@ -14,11 +14,12 @@ KeyWindow {
             metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
         //create UndoCommand
-        undoManager.createNewKeyCommand(externTreeModel, treeView.currentNode.path + "/" + nameTextField.text, valueTextField.text, metaData)
+        undoManager.createNewKeyCommand(treeView.currentNode.node, nameTextField.text, valueTextField.text, metaData)
 
         nameTextField.text = ""
         valueTextField.text = ""
         nameTextField.focus = true
         qmlMetaKeyModel.clear()
+        externTreeModel.refresh()
     }
 }

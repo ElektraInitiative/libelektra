@@ -192,26 +192,6 @@ QString TreeViewModel::toString()
     return model;
 }
 
-void TreeViewModel::deletePath(const QString &path)
-{
-    QStringList splittedPath = path.split("/");
-
-    QString root = splittedPath.takeFirst();
-
-    if(root == "system")
-    {
-        m_model.at(0)->deletePath(splittedPath);
-    }
-    else if(root == "user")
-    {
-        m_model.at(1)->deletePath(splittedPath);
-    }
-    else
-    {
-        emit showMessage(tr("Error"), tr("Invalid path."), "", "TreeViewModel::deletePath", "c");
-    }
-}
-
 int TreeViewModel::getIndexByName(const QString &name) const
 {
     for(int i = 0; i < m_model.count(); i++){
@@ -392,34 +372,6 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
 }
 
-void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key key)
-{
-    if (keys.length() == 0)
-        return;
-
-    bool isLeaf = (keys.length() == 1);
-
-    QString name =  keys.takeFirst();
-
-    if (node->hasChild(name))
-    {
-        sink(node->getChildByName(name), keys, node->getPath() + "/" + name, key);
-    }
-    else
-    {
-        ConfigNode* newNode;
-
-        if(isLeaf)
-            newNode = new ConfigNode(name, (path + "/" + name), key.dup(), node->getChildren());
-        else
-            newNode = new ConfigNode(name, (path + "/" + name), NULL, node->getChildren());
-
-        node->appendChild(newNode);
-
-        sink(newNode, keys, node->getPath() + "/" + name, key);
-    }
-}
-
 void TreeViewModel::populateModel()
 {
     ConfigNode* system = new ConfigNode("system", "system", 0, this);
@@ -523,8 +475,14 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     endRemoveRows();
 
-//    if(m_model.isEmpty())
-//        emit expandNode(false);
+    int childCount = 0;
+
+    foreach (ConfigNode *node, m_model) {
+        childCount += node->getChildCount();
+    }
+
+    if(childCount == 0)
+        emit expandNode(false);
 
     return true;
 }
@@ -571,7 +529,35 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
     }
 }
 
-void TreeViewModel::createNewNode(const QString &path, const QString &value, const QVariantMap metaData)
+void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key key)
+{
+    if (keys.length() == 0)
+        return;
+
+    bool isLeaf = (keys.length() == 1);
+
+    QString name =  keys.takeFirst();
+
+    if (node->hasChild(name))
+    {
+        sink(node->getChildByName(name), keys, node->getPath() + "/" + name, key);
+    }
+    else
+    {
+        ConfigNode* newNode;
+
+        if(isLeaf)
+            newNode = new ConfigNode(name, (path + "/" + name), key.dup(), node->getChildren());
+        else
+            newNode = new ConfigNode(name, (path + "/" + name), NULL, node->getChildren());
+
+        node->appendChild(newNode);
+
+        sink(newNode, keys, node->getPath() + "/" + name, key);
+    }
+}
+
+Key TreeViewModel::createNewKey(const QString &path, const QString &value, const QVariantMap metaData)
 {
     Key key;
     key.setName(path.toStdString());
@@ -582,21 +568,7 @@ void TreeViewModel::createNewNode(const QString &path, const QString &value, con
         key.setMeta(iter.key().toStdString(), iter.value().toString().toStdString());
     }
 
-    QStringList keys = path.split("/");
-    QString root = keys.takeFirst();
-
-    if (root == "system")
-    {
-        sink(m_model.at(0), keys, "system", key);
-    }
-    else if (root == "user")
-    {
-        sink(m_model.at(1), keys, "user", key);
-    }
-    else
-    {
-        emit showMessage(tr("Error"), tr("Creating a new node failed because the key \"%1\" is invalid.").arg(path), "", "TreeViewModel::createNewNode", "c");
-    }
+    return key;
 }
 
 void TreeViewModel::append(ConfigNode *node)

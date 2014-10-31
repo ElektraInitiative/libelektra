@@ -40,12 +40,10 @@ Window {
                 id:okButton
                 text: "Ok"
                 isDefault: true
-                //focus: true
             }
             Button {
                 id:cancelButton
                 text: "Cancel"
-                onClicked: basicWindow.visible = false
             }
         }
     }

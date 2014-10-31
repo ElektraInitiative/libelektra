@@ -94,7 +94,7 @@ public:
      * @param node The ConfigNode to put in the clipboard.
      * @param index The index of the ConfigNode.
      */
-    Q_INVOKABLE void putToClipboard(const QString &type, TreeViewModel *model, ConfigNode *node, int index);
+    Q_INVOKABLE void putToClipboard(const QString &type, ConfigNode *source, int index);
 
     /**
      * @brief Create a new EditKeyCommand.
@@ -129,7 +129,7 @@ public:
      * @param value The value of the new ConfigNode.
      * @param metaData The meta data of the new ConfigNode.
      */
-    Q_INVOKABLE void createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
+    Q_INVOKABLE void createNewKeyCommand(ConfigNode *node, const QString &name, const QString &value, const QVariantMap &metaData);
 
     /**
      * @brief Create a new CopyKeyCommand.
@@ -162,9 +162,6 @@ public:
     Q_INVOKABLE bool isClean();
 
     Q_INVOKABLE bool canPaste();
-
-    Q_INVOKABLE TreeViewModel* getClipBoardModel() const;
-
 
 Q_SIGNALS:
 
