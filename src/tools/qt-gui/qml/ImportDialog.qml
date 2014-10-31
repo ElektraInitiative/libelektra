@@ -98,6 +98,7 @@ BasicWindow {
 
     cancelButton.onClicked: {
         importTextField.text = ""
+        importDialog.close()
     }
     okButton.onClicked: {
         if(importTextField.text !== ""){

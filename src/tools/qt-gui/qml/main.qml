@@ -277,7 +277,6 @@ ApplicationWindow {
         }
     }
 
-
     NewKeyWindow {
         id: newArrayWindow
 
@@ -299,6 +298,7 @@ ApplicationWindow {
     UnmountBackendWindow {
         id: unmountBackendWindow
         okButton.onClicked: unmountBackendWindow.close()
+        cancelButton.onClicked: unmountBackendWindow.close()
     }
 
     WizardLoader {
@@ -439,6 +439,8 @@ ApplicationWindow {
             else if(undoManager.undoText === "newKey"){
                 undoManager.undo()
                 externTreeModel.refresh()
+                if(keyAreaModel.rowCount === 0 && keyAreaSelectedItem !== null)
+                    keyAreaSelectedItem = null
             }
             else{
                 undoManager.undo()
@@ -962,7 +964,7 @@ ApplicationWindow {
 
                     ListView {
                         id: searchResultsListView
-                        //TODO: proper model updating after editing
+
                         anchors.fill: parent
                         clip: true
                         highlightMoveDuration: 0

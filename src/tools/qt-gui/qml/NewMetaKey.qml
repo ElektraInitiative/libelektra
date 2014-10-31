@@ -22,15 +22,31 @@ Item {
             Layout.fillWidth: isArray ? false : true
             placeholderText : qsTr("Meta Key Name...")
             text: metaName
-            Keys.onEnterPressed: okClicked()
-            Keys.onEscapePressed: cancelClicked()
+            Keys.onPressed: {
+                if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                    okClicked()
+                    event.accepted = true
+                }
+                else if(event.key === Qt.Key_Escape){
+                    cancelClicked()
+                    event.accepted = true
+                }
+            }
         }
         TextField {
             id: metaValueField
             Layout.fillWidth: true
             text: metaValue
-            Keys.onEnterPressed: okClicked()
-            Keys.onEscapePressed: cancelClicked()
+            Keys.onPressed: {
+                if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                    okClicked()
+                    event.accepted = true
+                }
+                else if(event.key === Qt.Key_Escape){
+                    cancelClicked()
+                    event.accepted = true
+                }
+            }
         }
         Button {
             id:deleteMetaButton

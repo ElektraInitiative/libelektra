@@ -47,8 +47,16 @@ BasicWindow {
                 Layout.fillWidth: true
                 focus: true
                 text: keyName
-                Keys.onEnterPressed: okClicked()
-                Keys.onEscapePressed: cancelClicked()
+                Keys.onPressed: {
+                    if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                        okClicked()
+                        event.accepted = true
+                    }
+                    else if(event.key === Qt.Key_Escape){
+                        cancelClicked()
+                        event.accepted = true
+                    }
+                }
             }
             Label {
                 id: valueLabel
@@ -58,8 +66,16 @@ BasicWindow {
                 id: valueTextField
                 Layout.fillWidth: true
                 text: keyValue
-                Keys.onEnterPressed: okClicked()
-                Keys.onEscapePressed: cancelClicked()
+                Keys.onPressed: {
+                    if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+                        okClicked()
+                        event.accepted = true
+                    }
+                    else if(event.key === Qt.Key_Escape){
+                        cancelClicked()
+                        event.accepted = true
+                    }
+                }
             }
         }
 
@@ -116,14 +132,12 @@ BasicWindow {
             text: qsTr("New Meta Key")
         }
     }
-    cancelButton.onClicked: {
-        cancelClicked()
-    }
-    okButton.onClicked: {
-        okClicked()
-    }
+
+    okButton.onClicked: okClicked()
+    cancelButton.onClicked: cancelClicked()
 
     function okClicked(){
+
         if(nameTextField.text !== ""){
             //check if user has edited keyname or keyvalue
             if(keyName !== nameTextField.text || keyValue !== valueTextField.text)

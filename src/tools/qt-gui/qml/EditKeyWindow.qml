@@ -41,6 +41,5 @@ KeyWindow {
             searchResultsListView.model.refresh()
 
         accessFromSearchResults = false
-        resetKeyAreaModel()
     }
 }

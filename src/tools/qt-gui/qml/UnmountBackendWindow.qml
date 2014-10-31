@@ -36,6 +36,10 @@ BasicWindow {
                     focus: true
                     interactive: true
                     currentIndex: -1
+                    highlightMoveDuration: 0
+                    highlightResizeDuration: 0
+                    keyNavigationWraps: true
+
                     highlight: Rectangle {
                         color: activePalette.highlight
                         width: mountedBackendsFrame.width
