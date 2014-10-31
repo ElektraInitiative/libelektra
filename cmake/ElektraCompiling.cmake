@@ -43,6 +43,12 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	#not supported by icc/clang:
 	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
 
+	if (ENABLE_CXX11)
+		set (CXX_STD "-std=gnu++11")
+	else()
+		set (CXX_STD "-std=gnu++98")
+	endif()
+
 	message (STATUS "GCC detected")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
