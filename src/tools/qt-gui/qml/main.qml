@@ -305,6 +305,65 @@ ApplicationWindow {
         id: wizardLoader
     }
 
+    BasicWindow {
+        id: aboutWindow
+
+        title: qsTr("About Elektra Editor")
+        width: tabs.width + 2*defaultMargins
+        height: 2*tabs.height
+
+        ColumnLayout {
+            spacing: defaultMargins
+
+            RowLayout {
+                Image {
+                    source: "icons/elektra-logo-big.png"
+                }
+                Column {
+                    Text {
+                        text: "Elektra Editor"
+                        font.bold: true
+                        color: activePalette.text
+                    }
+                    Text {
+                        text: "Version: 0.0.1 (beta)"
+                        color: activePalette.text
+                    }
+                }
+            }
+
+            RowLayout {
+
+                TabView {
+                    id: tabs
+
+                    Tab {
+                        title: qsTr("&About")
+                        TextArea{
+                            property string link: "https://github.com/ElektraInitiative/libelektra"
+                            readOnly: true
+                            textFormat: TextEdit.RichText
+                            text: "Visit Elektra on GitHub: <html><style type=\"text/css\"></style><a href=\"" + link + "\">ElektraInitiative/libelektra
+</a></html>"
+                            onLinkActivated: Qt.openUrlExternally(link)
+                        }
+                    }
+                    Tab {
+                        title: qsTr("A&uthors")
+                        TextArea {
+                            text: "Raffael Pancheri\ne0003088@student.tuwien.ac.at"
+                        }
+
+                    }
+                }
+            }
+        }
+
+        cancelButton.visible: false
+        okButton.text: qsTr("&Close")
+        okButton.onClicked: aboutWindow.close()
+    }
+
     //**Dialogs************************************************************************************************//
 
     ExportDialog {
@@ -601,6 +660,13 @@ ApplicationWindow {
         enabled: undoManager.canPaste
 
         onTriggered: paste()
+    }
+
+    Action {
+        id: aboutAction
+        text: qsTr("About Elektra Editor")
+        iconSource: "icons/elektra-logo.png"
+        onTriggered: aboutWindow.show()
     }
 
     //**Menus & Toolbars***************************************************************************************//
