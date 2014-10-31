@@ -483,7 +483,7 @@ ApplicationWindow {
             else if(undoManager.undoText === "cutBranch"){
                 undoManager.undo()
                 externTreeModel.refresh()
-                externTreeModel.refresh()
+            }
             else if(undoManager.undoText === "import"){
                 undoManager.undo()
                 externTreeModel.refresh()
