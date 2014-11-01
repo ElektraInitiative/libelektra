@@ -59,7 +59,8 @@
 static void resolverInit (resolverHandle *p, const char *path)
 {
 	p->fd = -1;
-	p->mtime = 0;
+	p->mtime.tv_sec = 0;
+	p->mtime.tv_nsec = 0;
 
 	p->filename = 0;
 	p->dirname= 0;
@@ -217,19 +218,22 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 	{
 		// no file, so storage has no job
 		errno = errnoSave;
-		pk->mtime = 0; // no file, so no time
+		pk->mtime.tv_sec = 0; // no file, so no time
+		pk->mtime.tv_nsec = 0; // no file, so no time
 		return 0;
 	}
 
 	/* Check if update needed */
-	if (pk->mtime == buf.st_mtime)
+	if (pk->mtime.tv_sec == buf.st_mtim.tv_sec &&
+	    pk->mtime.tv_nsec == buf.st_mtim.tv_nsec)
 	{
 		// no update, so storage has no job
 		errno = errnoSave;
 		return 0;
 	}
 
-	pk->mtime = buf.st_mtime;
+	pk->mtime.tv_sec = buf.st_mtim.tv_sec;
+	pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
 
 	errno = errnoSave;
 	return 1;
@@ -372,7 +376,8 @@ error:
  */
 static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 {
-	if (pk->mtime == 0)
+	if (pk->mtime.tv_sec == 0 &&
+		pk_mtime.tv_nsec == 0)
 	{
 		// this can happen if the kdbGet() path found no file
 
@@ -400,19 +405,16 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 		return -1;
 	}
 
-	if (buf.st_mtime != pk->mtime)
+	if (buf.st_mtim.tv_sec != pk->mtime.tv_sec ||
+	    buf.st_mtim.tv_nsec != pk->mtime.tv_nsec)
 	{
-		char *errorText = malloc(
-				strlen(pk->filename) +
-				ERROR_SIZE*2+ // for snprintf+identity
-				5); // for spaces after filename
-		snprintf(errorText, ERROR_SIZE,
-				"conflict, file time stamp %ld is different than our time stamp %ld, config file name is \"",
-				buf.st_mtime, pk->mtime);
-		strcat(errorText, pk->filename);
-		strcat(errorText, "\" ");
-		elektraAddIdentity(errorText);
-		ELEKTRA_SET_ERROR (30, parentKey, errorText);
+		ELEKTRA_SET_ERRORF (30, parentKey,
+				"conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file name is \"%s\", "
+				"our identity is uid: %u, euid: %u, gid: %u, egid: %u",
+				buf.st_mtim.tv_sec, buf.st_mtim.tv_nsec,
+				pk->mtime.tv_sec, pk->mtime.tv_nsec,
+				pk->filename,
+				getuid(), geteuid(), getgid(), getegid());
 		return -1;
 	}
 
@@ -501,7 +503,8 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 	} else {
 		/* Update timestamp */
-		pk->mtime = buf.st_mtime;
+		pk->mtime.tv_sec = buf.st_mtim.tv_sec;
+		pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
 	}
 
 	elektraUnlockFile(pk->fd, parentKey);

@@ -28,6 +28,8 @@
 #ifndef PLUGIN_RESOLVER_H
 #define PLUGIN_RESOLVER_H
 
+#include <sys/stat.h>
+
 #include <kdbconfig.h>
 #include <kdbplugin.h>
 #include <kdberrors.h>
@@ -41,7 +43,7 @@ typedef struct _resolverHandle resolverHandle;
 struct _resolverHandle
 {
 	int fd;       ///< Descriptor to the locking file
-	time_t mtime; ///< Previous timestamp of the file
+	struct timespec mtime; ///< Previous timestamp of the file
 	mode_t mode;  ///< The mode to set
 
 	char *dirname; ///< directory where real+temp file is
