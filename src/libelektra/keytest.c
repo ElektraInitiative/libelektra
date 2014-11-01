@@ -33,7 +33,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -445,54 +445,6 @@ int keyIsInactive (const Key *key)
 
 
 
-
-/**
- * Check if the mode for the key has access
- * privileges.
- *
- * In the filesys backend a key represented through
- * a file has the mode 664, but a key represented
- * through a folder 775. keyIsDir() checks if all
- * 3 executeable bits are set.
- *
- * If any executable bit is set it will be recognized
- * as a directory.
- *
- * @note keyIsDir may return true even though you
- *   can't access the directory.
- *
- * To know if you can access the directory, you
- * need to check, if your
- * - user ID is equal the key's
- *   user ID and the mode & 100 is true
- * - group ID is equal the key's
- *   group ID and the mode & 010 is true
- * - mode & 001 is true
- *
- * Accessing does not mean that you can get any value or
- * comments below, see @ref mode for more information.
- *
- * @note currently mountpoints can only where keyIsDir()
- *       is true (0.7.0) but this is likely to change.
- *
- * @param key the key object to work with
- * @return 1 if key is a directory, 0 otherwise
- * @return -1 on NULL pointer
- * @see keySetDir(), keySetMode()
- * @ingroup keytest
- */
-int keyIsDir(const Key *key)
-{
-	mode_t mode;
-
-	if (!key) return -1;
-
-	mode = keyGetMode(key);
-
-	return ((mode & KDB_DIR_MODE) != 0);
-}
-
-
 /**
  * Check if a key is binary type.
  *
@@ -649,10 +601,13 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	ssize_t size1 = keyGetValueSize(key1);
 	ssize_t size2 = keyGetValueSize(key2);
 
+	// TODO: metadata not compared?
 
+#ifndef WIN32
 	if (keyGetUID(key1) != keyGetUID(key2))  ret|=KEY_UID;
 	if (keyGetGID(key1) != keyGetGID(key2))  ret|=KEY_GID;
 	if (keyGetMode(key1)!= keyGetMode(key2)) ret|=KEY_MODE;
+#endif
 	if (nsize1 != nsize2)              ret|=KEY_NAME;
 	if (strcmp(name1, name2))          ret|=KEY_NAME;
 	if (strcmp(comment1, comment2))    ret|=KEY_COMMENT;

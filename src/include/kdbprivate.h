@@ -502,10 +502,12 @@ int elektraValidateKeyNamePart(const char *name);
  */
 #define ELEKTRA_MAX_ARRAY_SIZE (21)
 
+#ifndef WIN32
 /*Internally used for array handling*/
 int elektraArrayValidateName(Key *key);
 int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex);
 int elektraWriteArrayNumber(char *newName, int64_t newIndex);
+#endif
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

@@ -80,7 +80,7 @@ ksDel (myConfig); // delete keyset and all keys appended
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -178,6 +178,7 @@ KeySet *ksNew(size_t alloc, ...)
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
 
+#ifndef WIN32
 Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 {
 	int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
@@ -236,6 +237,7 @@ finished:
 	keyDel(k);
 	return ret;
 }
+#endif
 
 /**
  * @copydoc ksNew

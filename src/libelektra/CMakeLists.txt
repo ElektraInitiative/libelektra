@@ -44,7 +44,10 @@ file (GLOB SRC_FILES *.c)
 
 #remove those we don't want..
 file (GLOB RM_FILES exportsymbols.c kdbmainpage.c)
-list (REMOVE_ITEM SRC_FILES ${RM_FILES})
+if (WIN32)
+	file (GLOB WIN32_RM_FILES array.c keymoremeta.c)
+endif (WIN32)
+list (REMOVE_ITEM SRC_FILES ${RM_FILES} ${WIN32_RM_FILES})
 
 #now add all source files of other folders
 get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
