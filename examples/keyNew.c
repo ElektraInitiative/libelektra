@@ -75,6 +75,17 @@ keyDel(k);
 
 }{
 
+//! [With Meta]
+Key *k=keyNew("user/tmp/ex3",
+	KEY_META, "comment", "a comment",  // with a commet
+	KEY_META, "owner", "root",         // and an owner
+	KEY_META, "special", "yes",        // and any other meta data
+	KEY_END);                  // end of args
+//! [With Meta]
+keyDel(k);
+
+}{
+
 //! [With Everything]
 Key *k=keyNew("user/tmp/ex4",
 	KEY_BINARY,			// key type

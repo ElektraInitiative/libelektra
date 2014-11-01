@@ -34,57 +34,26 @@
  *   - @link keymeta UID, GID and filesystem-like mode permissions @endlink
  *   - @link keymeta Mode, change and modification times @endlink
  *
+ * @par ABI
  * Due to ABI compatibility, the @p Key structure is not defined in kdb.h,
  * only declared. So you can only declare @p pointers to @p Keys in your
  * program, and allocate and free memory for them with keyNew()
  * and keyDel() respectively.
  *
  *
- * @section ref Reference Counting
- *
- * The reference counter (see keyGetRef()) will be initialized
+ * @par Reference Counting
+ * Every key has its reference counter (see keyGetRef() for longer
+ * explanation) that will be initialized
  * with 0, that means a subsequent call of keyDel() will delete
  * the key. If you append the key to a keyset the reference counter
- * will be incremented by one (see keyInc()) and the key can't be
- * be deleted by a keyDel():
- *
- * @snippet keyNew.c Ref in KeySet
- *
- * You can even add the key to more KeySets:
- *
-* @snippet keyNew.c Ref in multiple KeySets
- *@code
- *@endcode
- *
- * If you increment only by one with keyInc() the same as said above
- * is valid:
- *
- *
- * @snippet keyNew.c Ref
- *
- *
- * or use keyInc() more than once:
- *
- * @snippet keyNew.c Multi Ref
- *
- * The key won't be deleted by a keyDel() as long refcounter is not 0.
- *
+ * will be incremented by one (see keyIncRef()) and the key can't be
+ * be deleted by a keyDel().
+ * 
+ * @par
  * As you can imagine this refcounting allows you to put the Key in your
  * own datastructures.
  * It can be a very powerful feature, e.g. if you need your own-defined
  * ordering or different Models of your configuration.
- *
- * @see keyIncRef(), keyDecRef(), keyGetRef()
- *
- *
- * @section sync Sync Bits
- *
- * The key's sync bit will always be set for any call, except:
- * 
- * @code
-Key *k = keyNew(0);
-// keyNeedSync() will be false
- * @endcode
  */
 
 
@@ -159,47 +128,52 @@ static Key *elektraKeyMalloc()
  *
  * keyNew() processes the given argument list even further.
  * The Key attribute tags are the following:
- * - #keyswitch_t::KEY_VALUE \n
- *   Next parameter is a pointer to the value that will be set to the key
- *   If no keyswitch_t::KEY_TYPE was used before,
- *   keyswitch_t::KEY_TYPE_STRING is assumed.
+ * - ::KEY_VALUE \n
+ *   Next parameter is a pointer to the value that will be used.
+ *   If no ::KEY_BINARY was used before, *   a string is assumed.
  *   @snippet keyNew.c With Value
- * - keyswitch_t::KEY_SIZE \n
- *   Define a maximum length of the value. This is only useful for setting
+ * - ::KEY_SIZE \n
+ *   Define a maximum length of the value. This is only used when setting
  *   a binary key.
  *   @snippet keyNew.c With Size
- * - keyswitch_t::KEY_BINARY \n
+ * - ::KEY_BINARY \n
  *   Allows to change the key to a binary key.
- *   Make sure that you also pass KEY_SIZE before you set the value.
+ *   Make sure that you also pass ::KEY_SIZE before you set the value.
  *   Otherwise it will be cut off with first \\0 in the string.
  *   So this value toggle from keySetString()
  *   to keySetBinary().
- *   If you don't use KEY_BINARY a string will be used.
  *   @snippet keyNew.c With Binary
- * - keyswitch_t::KEY_DIR \n
- *   Define that the key is a directory rather than a ordinary key.
- *   This means its executable bits in its mode are set.
- *   But even without this option a key can have subkeys.
- *   See keySetDir().
- * - keyswitch_t::KEY_OWNER \n
- *   Next parameter is the owner. See keySetOwner().
- * - keyswitch_t::KEY_UID, @p keyswitch_t::KEY_GID \n
- *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
- *   be defined on the key.
- *   See keySetUID() and keySetGID().
- * - keyswitch_t::KEY_MODE \n
- *   Next parameter is taken as mode permissions (int) to the key.
- *   See keySetMode().
- *   @snippet keyNew.c With Mode
- * - keyswitch_t::KEY_COMMENT \n
- *   Next parameter is a comment. See keySetComment().
- * - keyswitch_t::KEY_END \n
+ * - ::KEY_META \n
+ *   Next two parameter is a meta name and a meta value. See keySetMeta().
+ *   @snippet keyNew.c With Meta
+ * - ::KEY_END \n
  *   Must be the last parameter passed to keyNew(). It is always
  *   required, unless the @p keyName is 0.
  *
- * Example with most features:
  *
-* @snippet keyNew.c With Everything
+ *
+ * @deprecated These other flags deprecated and ::KEY_META should be
+ * preferred. They remain some time, however, for compatibility:
+ * - ::KEY_DIR \n
+ *   Define that the key is a directory rather than a ordinary key.
+ *   This means its executable bits in its mode are set.
+ *   But even without this option the key can have subkeys.
+ *   See keySetDir().
+ * - ::KEY_OWNER \n
+ *   Next parameter is the owner. See keySetOwner().
+ * - ::KEY_UID, ::KEY_GID \n
+ *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
+ *   be defined on the key.
+ *   See keySetUID() and keySetGID().
+ * - ::KEY_MODE \n
+ *   Next parameter is taken as mode permissions (int) to the key.
+ *   See keySetMode().
+ *   @snippet keyNew.c With Mode
+ * - ::KEY_COMMENT \n
+ *   Next parameter is a comment. See keySetComment().
+ *   @snippet keyNew.c With Everything
+ *
+ *
  *
  * @param name a valid name to the key, or NULL to get a simple
  * 	initialized, but really empty, object 
@@ -495,7 +469,7 @@ int keyCopy (Key *dest, const Key *source)
  * be returned.
  *
  * @param key the key object to delete
- * @see keyNew(), keyInc(), keyGetRef()
+ * @see keyNew(), keyIncRef(), keyGetRef()
  * @return the value of the reference counter
  *         if the key is within keyset(s)
  * @return 0 when the key was freed
@@ -582,14 +556,6 @@ int keyClear(Key *key)
  * the reference and thus avoid destruction
  * of the object in a subsequent keyDel().
  *
- * @code
-Key *k;
-keyInc (k);
-function_that_keyDec(k);
-// work with k
-keyDel (k); // now really free it
- * @endcode
- *
  * The reference counter can't be incremented
  * once it reached SSIZE_MAX. In that situation
  * nothing will happen and SSIZE_MAX will be
@@ -601,7 +567,7 @@ keyDel (k); // now really free it
  * @return -1 on null pointer
  * @return SSIZE_MAX when maximum exceeded
  * @param key the key object to work with
- * @see keyGetRef(), keyDecRef(), keyDel()
+ * @see keyGetRef() for longer explanation, keyDecRef(), keyDel()
  * @ingroup key
  */
 ssize_t keyIncRef(Key *key)
@@ -634,7 +600,7 @@ ssize_t keyIncRef(Key *key)
  * @return -1 on null pointer
  * @return 0 when the key is ready to be freed
  * @param key the key object to work with
- * @see keyGetRef(), keyDel(), keyIncRef()
+ * @see keyGetRef() for longer explanation, keyDel(), keyIncRef()
  * @ingroup key
  */
 ssize_t keyDecRef(Key *key)
@@ -651,6 +617,27 @@ ssize_t keyDecRef(Key *key)
 /**
  * Return how many references the key has.
  *
+ * The reference counting is the essential property of keys to make sure
+ * that they can be put safely into data structures. E.g. if you put
+ * a Key into a KeySet:
+ *
+ * @snippet keyNew.c Ref in KeySet
+ *
+ * You can even add the key to more KeySets:
+ *
+* @snippet keyNew.c Ref in multiple KeySets
+ *
+ * If you increment only by one with keyIncRef() the same as said above
+ * is valid:
+ *
+ * @snippet keyNew.c Ref
+ *
+ * or use keyIncRef() more than once:
+ *
+ * @snippet keyNew.c Multi Ref
+ *
+ * The key won't be deleted by a keyDel() as long refcounter is not 0.
+ *
  * The references will be incremented on successful calls to
  * ksAppendKey() or ksAppend().
  *
@@ -658,8 +645,7 @@ ssize_t keyDecRef(Key *key)
  *
  * For your own applications you can use
  * keyIncRef() and keyDecRef() for reference
- * counting. Keys with zero references
- * will be deleted when using keyDel().
+ * counting, too.
  *
  * @param key the key object to work with
  * @return the number of references

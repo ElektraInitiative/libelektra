@@ -80,8 +80,8 @@ int keyClearSync (Key *key)
 /**
  * Test if a key needs to be synced to backend storage.
  *
- * If any key modification took place the key will be flagged with
- * KEY_FLAG_SYNC so that kdbSet() knows which keys were modified
+ * If any key modification took place the key will be flagged
+ * so that kdbSet() knows which keys were modified
  * and which not.
  *
  * After keyNew() the flag will normally be set, but after kdbGet()
@@ -91,7 +91,8 @@ int keyClearSync (Key *key)
  * In your application you can make use of that flag to know
  * if you changed something in a key after a kdbGet() or kdbSet().
  *
- * @note Note that also changes in the meta data will set that flag.
+ * @note Note that the sync status will be updated on any change,
+ * including meta data.
  *
  * @see keyNew()
  * @param key the key object to work with

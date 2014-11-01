@@ -15,11 +15,17 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <sys/stat.h>
+#include <sys/stat.h> /* mkdir() */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+
+#if defined(_WIN32)
+#include <windows.h>
+#include <shlobj.h>
+#include <io.h>
+#endif
 
 #include "oyranos_config_internal.h"
 #include "oyranos.h"
@@ -35,6 +41,7 @@
 /* --- Helpers  --- */
 
 #define AD oyAllocateFunc_, oyDeAllocateFunc_
+
 
 /* --- static variables   --- */
 
@@ -97,15 +104,18 @@ char *       oyReadFileSToMem_       ( FILE              * fp,
   if (fp && size)
   {
     *size = 0;
-    while((c = getc(fp)) && !feof(fp))
+    do
     {
+      c = getc(fp);
       if(*size >= mem_size)
       {
         mem_size *= 2;
         mem = realloc( mem, mem_size );
       }
       mem[(*size)++] = c;
-    }
+    } while(!feof(fp));
+
+    --*size;
 
     if(mem)
     {
@@ -449,21 +459,20 @@ oyWriteMemToFile_(const char* name, const void* mem, size_t size)
       else
         WARNc1_S("no data to write into: \"%s\"", filename );
 
-    if(r)
+    if(r && oy_debug > 1)
     {
       switch (errno)
       {
         case EACCES:       WARNc1_S("Permission denied: %s", filename); break;
         case EIO:          WARNc1_S("EIO : %s", filename); break;
-#ifdef HAVE_POSIX
-        case ELOOP:        WARNc1_S("Too many symbolic links encountered while traversing the path: %s", filename); break;
-#endif
         case ENAMETOOLONG: WARNc1_S("ENAMETOOLONG : %s", filename); break;
         case ENOENT:       WARNc1_S("A component of the path/file_name does not exist, or the file_name is an empty string: \"%s\"", filename); break;
         case ENOTDIR:      WARNc1_S("ENOTDIR : %s", filename); break;
 #ifdef HAVE_POSIX
+        case ELOOP:        WARNc1_S("Too many symbolic links encountered while traversing the path: %s", filename); break;
         case EOVERFLOW:    WARNc1_S("EOVERFLOW : %s", filename); break;
 #endif
+        default:           WARNc2_S("%s : %s", strerror(errno), filename);break;
       }
     }
 
@@ -615,14 +624,79 @@ int  oyWriteMemToFile2_              ( const char        * name,
   return error;
 }
 
-char*
-oyGetHomeDir_ ()
+char * oyGetCurrentDir_ ()
 {
-# if (__WINDOWS__)
+# if defined(_WIN32)
+  char * path = NULL;
+  DWORD len = 0;
+
   DBG_PROG_START
+
+  len = GetCurrentDirectory(0,NULL);
+
+  if(len)
+    oyAllocString_m_( path, len+1,
+                      oyAllocateFunc_, return NULL );
+    
+  if(len && path)
+  {
+    int i;
+
+    len = GetCurrentDirectory( len+1, path );
+
+    for(i=0; i < len; ++i)
+      if(path[i] == '\\')
+        path[i] = '/';
+  } else
+    WARNc_S("Could not get \"PWD\" directory name");
+
+  DBG_PROG2_S("PWD[%d]=%s", len, oyNoEmptyString_m_(path));
+
   DBG_PROG_ENDE
-  WARNc_S("OS not supported yet");
-  return 0;
+  return path;
+# else
+  char * name = oyStringCopy( getenv("PWD"), oyAllocateFunc_ );
+
+  DBG_PROG_START
+
+  if(!name)
+    WARNc_S("Could not get \"PWD\" directory name");
+
+  DBG_PROG_ENDE
+  return name;
+# endif
+}
+
+char * oyGetHomeDir_ ()
+{
+# if defined(_WIN32)
+  static CHAR path[MAX_PATH];
+  static int init = 0;
+
+  DBG_PROG_START
+
+  if(init)
+  {
+    DBG_PROG_ENDE
+    return path;
+  }
+
+  init = 1;
+
+  if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL, 0, &path[0])))
+  {
+    int len = strlen(path), i;
+    for(i=0; i < len; ++i)
+      if(path[i] == '\\')
+        path[i] = '/';
+  }
+  else
+    WARNc_S("Could not get \"HOME\" directory name");
+
+  DBG_PROG2_S("HOME[%d]=%s", MAX_PATH, path);
+
+  DBG_PROG_ENDE
+  return path;
 # else
   char* name = (char*) getenv("HOME");
 
@@ -676,8 +750,23 @@ int oyIsDirFull_ (const char* name)
 
   DBG_MEM_START
 
-  status.st_mode = 0;
+  memset(&status,0,sizeof(struct stat));
   r = stat (name, &status);
+
+  if(r != 0 && oy_debug > 1)
+  switch (errno)
+  {
+    case EACCES:       WARNc1_S("Permission denied: %s", name); break;
+    case EIO:          WARNc1_S("EIO : %s", name); break;
+    case ENAMETOOLONG: WARNc1_S("ENAMETOOLONG : %s", name); break;
+    case ENOENT:       WARNc1_S("A component of the name/file_name does not exist, or the file_name is an empty string: \"%s\"", name); break;
+    case ENOTDIR:      WARNc1_S("ENOTDIR : %s", name); break;
+#ifdef HAVE_POSIX
+    case ELOOP:        WARNc1_S("Too many symbolic links encountered while traversing the name: %s", name); break;
+    case EOVERFLOW:    WARNc1_S("EOVERFLOW : %s", name); break;
+#endif
+    default:           WARNc2_S("%s : %s", strerror(errno), name); break;
+  }
   DBG_MEM1_S("status.st_mode = %d", (int)(status.st_mode&S_IFMT)&S_IFDIR)
   DBG_MEM1_S("status.st_mode = %d", (int)status.st_mode)
   DBG_MEM1_S("name = %s ", name)
@@ -713,26 +802,26 @@ oyIsFileFull_ (const char* fullFileName, const char * read_mode)
   DBG_MEM_START
 
   DBG_MEM1_S("fullFileName = \"%s\"", fullFileName)
-  status.st_mode = 0;
+  memset(&status,0,sizeof(struct stat));
   r = stat (name, &status);
 
   DBG_MEM1_S("status.st_mode = %d", (int)(status.st_mode&S_IFMT)&S_IFDIR)
   DBG_MEM1_S("status.st_mode = %d", (int)status.st_mode)
   DBG_MEM1_S("name = %s", name)
   DBG_MEM_V( r )
-  switch (r)
+  if(r != 0 && oy_debug > 1)
+  switch (errno)
   {
-    case EACCES:       WARNc1_S("EACCES = %d\n",r); break;
-    case EIO:          WARNc1_S("EIO = %d\n",r); break;
-#ifdef HAVE_POSIX
-    case ELOOP:        WARNc1_S("ELOOP = %d\n",r); break;
+    case EACCES:       WARNc1_S("Permission denied: %s", name); break;
+    case EIO:          WARNc1_S("EIO : %s", name); break;
+    case ENAMETOOLONG: WARNc1_S("ENAMETOOLONG : %s", name); break;
+    case ENOENT:       WARNc1_S("A component of the name/file_name does not exist, or the file_name is an empty string: \"%s\"", name); break;
+    case ENOTDIR:      WARNc1_S("ENOTDIR : %s", name); break;
+#ifdef AVE_POSIX
+    case ELOOP:        WARNc1_S("Too many symbolic links encountered while traversing the name: %s", name); break;
+    case EOVERFLOW:    WARNc1_S("EOVERFLOW : %s", name); break;
 #endif
-    case ENAMETOOLONG: WARNc1_S("ENAMETOOLONG = %d\n",r); break;
-    case ENOENT:       WARNc1_S("ENOENT = %d\n",r); break;
-    case ENOTDIR:      WARNc1_S("ENOTDIR = %d\n",r); break;
-#ifdef HAVE_POSIX
-    case EOVERFLOW:    WARNc1_S("EOVERFLOW = %d\n",r); break;
-#endif
+    default:           WARNc2_S("%s : %s", strerror(errno), name); break;
   }
 
   r = !r &&
@@ -773,8 +862,7 @@ oyIsFile_ (const char* fileName)
   return r;
 }
 
-int
-oyMakeDir_ (const char* path)
+int oyMakeDir_ (const char* path)
 {
   char * full_name = oyResolveDirFileName_ (path),
        * path_parent = 0,
@@ -806,20 +894,19 @@ oyMakeDir_ (const char* path)
                             , mode
 #endif
                                   );
-      if(rc)
+      if(rc && oy_debug > 1)
       switch (errno)
       {
         case EACCES:       WARNc1_S("Permission denied: %s", path); break;
         case EIO:          WARNc1_S("EIO : %s", path); break;
-#ifdef HAVE_POSIX
-        case ELOOP:        WARNc1_S("Too many symbolic links encountered while traversing the path: %s", path); break;
-#endif
         case ENAMETOOLONG: WARNc1_S("ENAMETOOLONG : %s", path); break;
         case ENOENT:       WARNc1_S("A component of the path/file_name does not exist, or the file_name is an empty string: \"%s\"", path); break;
         case ENOTDIR:      WARNc1_S("ENOTDIR : %s", path); break;
 #ifdef HAVE_POSIX
+        case ELOOP:        WARNc1_S("Too many symbolic links encountered while traversing the path: %s", path); break;
         case EOVERFLOW:    WARNc1_S("EOVERFLOW : %s", path); break;
 #endif
+        default:           WARNc2_S("%s : %s", strerror(errno), path); break;
       }
     }
     oyDeAllocateFunc_( path_name );;
@@ -836,55 +923,54 @@ int  oyRemoveFile_                   ( const char        * full_file_name )
   return remove( full_file_name );
 }
 
-char*
-oyResolveDirFileName_ (const char* name)
+char * oyResolveDirFileName_ (const char* name)
 {
   char * newName = NULL,
        * home = NULL;
-  int len = 0;
 
   DBG_MEM_START
 
-  DBG_MEM_S(name)
+  if(!name)
+  {
+    WARNc1_S ("name %s", oyNoEmptyString_m_(name));
+    return NULL;
+  }
 
   /* user directory */
   if (name[0] == '~')
   {
     home = oyGetHomeDir_();
-    len = strlen(name) + strlen(home) + 1;
-    oyAllocHelper_m_( newName, char, len + 2, oyAllocateFunc_, fprintf(stderr,"oyranos_io.c:367 oyResolveDirFileName_() Could not allocate enough memory.\n"); return 0 );
+    DBG_MEM1_S ("home %s", oyNoEmptyString_m_(home));
+    oyStringAddPrintf( &newName, AD, "%s%s", home, &name[0]+1 );
 
-    oySprintf_ (newName, "%s%s", home, &name[0]+1);
-
-  } else {
-    len = strlen(name)+1;
-    oyAllocHelper_m_( newName, char, len, oyAllocateFunc_, fprintf(stderr,"oyranos_io.c:554 oyResolveDirFileName_() Could not allocate enough memory.\n"); return 0 );
-    oySprintf_ (newName, "%s", name);
-
+  } else
+  {
     /* relative names - where the first sign is no directory separator */
-    if (newName[0] != OY_SLASH_C)
+    if (name[0] != OY_SLASH_C
+ #ifdef _WIN32
+    /* ... and no windows drive */
+        && name[1] != ':'
+ #endif
+       )
     {
-      char* cn = 0;
-      const char * pw = getenv("PWD");
+      char * pw = oyGetCurrentDir_();
+      const char * t = name;
 
-      len += strlen(pw) + 10;
-
-      STRING_ADD(cn, pw);
-      STRING_ADD(cn, OY_SLASH);
-      STRING_ADD(cn, name);
-      DBG_MEM1_S("canonoical %s ", cn)
-      oyFree_m_(newName);
-      STRING_ADD(newName, cn);
-      oyFree_m_(cn);
-    }
+      oyStringAddPrintf( &newName, AD, "%s%s", pw, OY_SLASH );
+      if(name[0] == '.' &&
+         name[1] == '/')
+        t = &name[2];
+      STRING_ADD(newName, t);
+      DBG_MEM1_S("canonoical %s ", newName)
+      DBG_MEM1_S ("pwd %s", oyNoEmptyString_m_(pw));
+      oyFree_m_(pw);
+    } else
+      /* nothing to do - just copy */
+      newName = oyStringCopy( name, oyAllocateFunc_ );
   }
 
-  if(name)
-    DBG_MEM1_S ("name %s", name);
-  if(home)
-    DBG_MEM1_S ("home %s", home);
-  if(newName)
-    DBG_MEM1_S ("newName = %s", newName);
+  DBG_MEM1_S ("name = %s", oyNoEmptyString_m_(name));
+  DBG_MEM1_S ("newName = %s", oyNoEmptyString_m_(newName));
 
   DBG_MEM_ENDE
   return newName;
@@ -904,15 +990,14 @@ oyExtractPathFromFileName_ (const char* file_name)
   oySprintf_( path_name, "%s", file_name );
   DBG_MEM1_S ("path_name = %s", path_name)
   ptr = strrchr (path_name, '/');
-  ptr[0+1] = 0;
+  ptr[0] = 0;
   DBG_MEM1_S ("path_name = %s", path_name)
   DBG_MEM1_S ("ptr = %s", ptr)
   DBG_MEM_ENDE
   return path_name;
 }
 
-char*
-oyMakeFullFileDirName_ (const char* name)
+char* oyMakeFullFileDirName_ (const char* name)
 {
   char *newName = 0;
   char *dirName = 0;
@@ -928,13 +1013,12 @@ oyMakeFullFileDirName_ (const char* name)
   } else
   { DBG_MEM
     /* create directory name */
-    oyAllocString_m_( newName, MAX_PATH,
-                      oyAllocateFunc_, return 0 );
-    dirName = (char*) getenv("PWD");
-    oySprintf_ (newName, "%s%s", dirName, OY_SLASH);
+    dirName = oyGetCurrentDir_();
+    oyStringAddPrintf( &newName, AD, "%s%s", dirName, OY_SLASH );
     if (name)
-      oySprintf_ (strrchr(newName,OY_SLASH_C)+1, "%s", name);
+      oyStringAddPrintf( &newName, AD, "%s", name);
     DBG_MEM1_S("newName = %s", newName)
+    oyFree_m_(dirName);
   }
 
   DBG_MEM1_S("newName = %s", newName)
@@ -1041,20 +1125,20 @@ oyRecursivePaths_  ( pathSelect_f_ doInPath,
     if( path_is_double )
       continue;
 
+    memset(&statbuf,0,sizeof(struct stat));
     if ((stat (path, &statbuf)) != 0) {
       switch (errno)
       {
         case EACCES:       WARNc2_S("Permission denied: %s %d", path, i); break;
         case EIO:          WARNc2_S("EIO : %s %d", path, i); break;
-#ifdef HAVE_POSIX
-        case ELOOP:        WARNc2_S("Too many symbolic links encountered while traversing the path: %s %d", path, i); break;
-#endif
         case ENAMETOOLONG: WARNc2_S("ENAMETOOLONG : %s %d", path, i); break;
         case ENOENT:       DBG_MEM2_S("A component of the path file_name does not exist, or the path is an empty string: \"%s\" %d", path, i); break;
         case ENOTDIR:      WARNc2_S("ENOTDIR : %s %d", path, i); break;
 #ifdef HAVE_POSIX
+        case ELOOP:        WARNc2_S("Too many symbolic links encountered while traversing the path: %s %d", path, i); break;
         case EOVERFLOW:    WARNc2_S("EOVERFLOW : %s %d", path, i); break;
 #endif
+        default:           WARNc3_S("%s : %s %d", strerror(errno), path, i); break;
       }
       continue;
     }
@@ -1076,10 +1160,10 @@ oyRecursivePaths_  ( pathSelect_f_ doInPath,
 
     while(run)
     {
-      char name[256];
+      char * name = NULL;
       int k;
 
-      if(l>=64) WARNc_S("max path depth reached: 64");
+      if(l>=MAX_DEPTH) WARNc1_S("max path depth reached: %d", MAX_DEPTH);
       if(dir[l] == NULL)
       {
         WARNc_S("NULL");
@@ -1096,16 +1180,19 @@ oyRecursivePaths_  ( pathSelect_f_ doInPath,
         goto cont;
       }
 
-      oySprintf_(name, "%s",path);
+      STRING_ADD( name, path );
       for (k=0; k <= l; ++k) {
-        int len = strlen(name);
-        assert(entry[k] && entry[k]->d_name);
-        if(len+strlen(entry[k]->d_name) < 256)
-          oySprintf_(&name[strlen(name)],"/%s", entry[k]->d_name);
-        else {
-          DBG_MEM3_S("%d. %s/%s ignored", l, name, entry[k]->d_name)
+
+        if(!(entry[k] && entry[k]->d_name))
+	{
+          DBG_MEM3_S("%d. skip empty entry[%d]->d_name in %s", l, k, path)
           goto cont;
-        }
+	}
+
+        assert(entry[k] && entry[k]->d_name);
+
+        oyStringAddPrintf( &name, AD, "/%s", entry[k]->d_name );
+        DBG_MEM4_S("%d. %s %s/%s", l, oyNoEmptyString_m(name), path, entry[k]->d_name)
       }
 
       if ((strcmp (entry[l]->d_name, "..") == 0) ||
@@ -1113,16 +1200,12 @@ oyRecursivePaths_  ( pathSelect_f_ doInPath,
         DBG_MEM2_S("%d. %s ignored", l, name)
         goto cont;
       }
+      memset(&statbuf,0,sizeof(struct stat));
       if ((stat (name, &statbuf)) != 0) {
         DBG_MEM2_S("%d. %s does not exist", l, name)
         goto cont;
       }
-#ifdef HAVE_POSIX
-      if (!S_ISLNK(statbuf.st_mode)){/*((statbuf.st_mode & S_IFMT) & S_IFLNK))  */
-        DBG_MEM5_S("%d. %s is a link: ignored %d %d %d", l, name, (int)statbuf.st_mode , S_IFLNK, 0120000);
-        /*goto cont; */
-      }
-#endif
+
       if (S_ISDIR (statbuf.st_mode) &&
           l < MAX_DEPTH ) {
 
@@ -1131,6 +1214,7 @@ oyRecursivePaths_  ( pathSelect_f_ doInPath,
         DBG_MEM2_S("%d. %s directory", l, name);
         goto cont;
       }
+
       if(!S_ISREG (statbuf.st_mode)) {
         DBG_MEM2_S("%d. %s is a non regular file", l, name);
         goto cont;
@@ -1148,6 +1232,9 @@ oyRecursivePaths_  ( pathSelect_f_ doInPath,
 
       cont:
         ;
+
+      if(name)
+        oyFree_m_( name );
     }
 
     for( j = 0; j < MAX_DEPTH; ++j ) { if(dir[j]) closedir(dir[j]); dir[j] = NULL; }
@@ -1163,7 +1250,7 @@ oyRecursivePaths_  ( pathSelect_f_ doInPath,
 int oyFileListCb_ ( oyFileList_s * data,
                     const char * full_name, const char * filename)
 {
-  oyFileList_s *l = (oyFileList_s*)data;
+  oyFileList_s *l = data;
 
   if(l->type != oyOBJECT_FILE_LIST_S_)
     WARNc_S("Could not find a oyFileList_s objetc.");
@@ -1190,6 +1277,29 @@ int oyFileListCb_ ( oyFileList_s * data,
   return 0;
 }
 
+int oyLibListCb_ ( oyFileList_s * data,
+                    const char * full_name, const char * filename)
+{
+  if(filename)
+  {
+    int len = strlen(filename);
+    /* filter out object and static libraries, as we do not support them 
+     * and they emit warnings */
+    if(len >= 2 &&
+       !(filename[len-2] == '.' &&
+         (filename[len-1] == 'a' ||
+          filename[len-1] == 'o')
+        ))
+      return oyFileListCb_(data, full_name, filename);
+    else
+      DBG_MEM3_S( "skipped full_name: \"%s\" filename: \"%s\" %d",
+                  full_name, filename, len);
+  } else
+    WARNc2_S( "argument wrong full_name: \"%s\" filename: \"%s\"",
+              full_name, filename);
+
+  return 0;
+}
 
 /** @internal
  *  @brief query valid XDG paths
@@ -1443,7 +1553,7 @@ oyFileListGet_                  (const char * subpath,
                                  int          data,
                                  int          owner)
 {
-  oyFileList_s l = {oyOBJECT_FILE_LIST_S_, 128, NULL, 0, 128, 0, 0};
+  oyFileList_s l = {oyOBJECT_FILE_LIST_S_, 128, NULL, 0, 128, 0, NULL};
   int count = 0;
   char ** path_names = NULL;
  
@@ -1573,7 +1683,10 @@ char**  oyLibPathsGet_( int             * count,
             if(!oyStringListHas_((const char**)paths,n,fp))
             {
               if(!oyIsDir_(fp))
-                WARNc4_S("%s %s:\"%s\"/\"%s\"",_("path is not readable"), vars[i], full_name, subdir );
+                WARNc4_S("%s %s:\"%s\"/\"%s\"",_("path is not readable"),
+                         oyNoEmptyString_m_(vars[i]),
+                         oyNoEmptyString_m_(full_name),
+                         oyNoEmptyString_m_(subdir) );
               full_paths[full_paths_n++] = fp; fp = NULL;
             } else
               oyFree_m_( fp );
@@ -1624,7 +1737,7 @@ oyLibListGet_                   (const char * subpath,
                                  int        * size,
                                  int          owner)
 {
-  struct oyFileList_s l = {oyOBJECT_FILE_LIST_S_, 128, NULL, 0, 128, 0, 0};
+  oyFileList_s l = {oyOBJECT_FILE_LIST_S_, 128, NULL, 0, 128, 0, NULL};
   int count = 0;
   char ** path_names = NULL;
  
@@ -1641,7 +1754,7 @@ oyLibListGet_                   (const char * subpath,
 
   oyAllocHelper_m_(l.names, char*, l.mem_count, oyAllocateFunc_, return 0);
 
-  oyRecursivePaths_(oyFileListCb_, &l, (const char**)path_names, count);
+  oyRecursivePaths_(oyLibListCb_, &l, (const char**)path_names, count);
 
   oyStringListRelease_(&path_names, count, oyDeAllocateFunc_);
 
@@ -1664,6 +1777,9 @@ char*   oyLibNameCreate_                 ( const char * lib_base_name,
 #ifdef __APPLE__
     oyStringAddPrintf_( &fn, oyAllocateFunc_, oyDeAllocateFunc_,
                         "%s%s.%d%s", OY_LIB_PREFIX, lib_base_name, version, OY_LIB_SUFFIX );
+#elif defined(_WIN32)
+    oyStringAddPrintf_( &fn, oyAllocateFunc_, oyDeAllocateFunc_,
+                        "%s%s-%d%s", OY_LIB_PREFIX, lib_base_name, version, OY_LIB_SUFFIX );
 #else
     oyStringAddPrintf_( &fn, oyAllocateFunc_, oyDeAllocateFunc_,
                         "%s%s%s.%d", OY_LIB_PREFIX, lib_base_name, OY_LIB_SUFFIX, version );
