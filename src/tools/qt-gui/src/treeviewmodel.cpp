@@ -155,7 +155,7 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
 {
     if (index < 0 || index > m_model.size() - 1)
     {
-        emit showMessage(tr("Error"), tr("Index not valid."), tr("Index = %1 \nModel size = %2").arg(index).arg(m_model.size()), "TreeViewModel::setData", "c");
+        emit showMessage(tr("Error"), tr("Index not valid."), tr("Index = %1, Model size = %2").arg(index).arg(m_model.size()), "TreeViewModel::setData", "c");
         return;
     }
 
@@ -464,7 +464,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     if (row < 0 || row > m_model.size() - 1)
     {
-        emit showMessage(tr("Error"), tr("Index not valid."), tr("Model size = %1 \nIndex = %2").arg(m_model.size()).arg(row), "TreeViewModel::removeRow", "c");
+        emit showMessage(tr("Error"), tr("Index not valid."), tr("Index = %1, Model size = %2").arg(m_model.size()).arg(row), "TreeViewModel::removeRow", "c");
         return false;
     }
 

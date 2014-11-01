@@ -23,14 +23,19 @@
 <context>
     <name>ConfigNode</name>
     <message>
-        <location filename="../../src/confignode.cpp" line="97"/>
+        <location filename="../../src/confignode.cpp" line="103"/>
         <source>Could not set name because Keyname &quot;</source>
         <translation>Konnte Namen nicht setzen da Schlüsselname \&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/confignode.cpp" line="97"/>
+        <location filename="../../src/confignode.cpp" line="103"/>
         <source>&quot; is invalid.</source>
         <translation>\&quot; ungültig ist.</translation>
+    </message>
+    <message>
+        <location filename="../../src/confignode.cpp" line="103"/>
+        <source>Error</source>
+        <translation>Fehler</translation>
     </message>
 </context>
 <context>
@@ -114,17 +119,50 @@
     <name>TreeViewModel</name>
     <message>
         <location filename="../../src/treeviewmodel.cpp" line="21"/>
-        <location filename="../../src/treeviewmodel.cpp" line="289"/>
+        <location filename="../../src/treeviewmodel.cpp" line="275"/>
         <source>Could not read configuration.</source>
         <translation>Konnte Konfiguration nicht lesen.</translation>
     </message>
     <message>
+        <location filename="../../src/treeviewmodel.cpp" line="21"/>
         <location filename="../../src/treeviewmodel.cpp" line="53"/>
-        <location filename="../../src/treeviewmodel.cpp" line="118"/>
-        <location filename="../../src/treeviewmodel.cpp" line="151"/>
-        <location filename="../../src/treeviewmodel.cpp" line="513"/>
+        <location filename="../../src/treeviewmodel.cpp" line="59"/>
+        <location filename="../../src/treeviewmodel.cpp" line="110"/>
+        <location filename="../../src/treeviewmodel.cpp" line="119"/>
+        <location filename="../../src/treeviewmodel.cpp" line="158"/>
+        <location filename="../../src/treeviewmodel.cpp" line="213"/>
+        <location filename="../../src/treeviewmodel.cpp" line="245"/>
+        <location filename="../../src/treeviewmodel.cpp" line="250"/>
+        <location filename="../../src/treeviewmodel.cpp" line="260"/>
+        <location filename="../../src/treeviewmodel.cpp" line="264"/>
+        <location filename="../../src/treeviewmodel.cpp" line="268"/>
+        <location filename="../../src/treeviewmodel.cpp" line="275"/>
+        <location filename="../../src/treeviewmodel.cpp" line="289"/>
+        <location filename="../../src/treeviewmodel.cpp" line="319"/>
+        <location filename="../../src/treeviewmodel.cpp" line="325"/>
+        <location filename="../../src/treeviewmodel.cpp" line="336"/>
+        <location filename="../../src/treeviewmodel.cpp" line="341"/>
+        <location filename="../../src/treeviewmodel.cpp" line="346"/>
+        <location filename="../../src/treeviewmodel.cpp" line="467"/>
+        <location filename="../../src/treeviewmodel.cpp" line="528"/>
+        <location filename="../../src/treeviewmodel.cpp" line="587"/>
+        <source>Error</source>
+        <translation>Fehler</translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="53"/>
+        <location filename="../../src/treeviewmodel.cpp" line="119"/>
+        <location filename="../../src/treeviewmodel.cpp" line="158"/>
+        <location filename="../../src/treeviewmodel.cpp" line="467"/>
         <source>Index not valid.</source>
         <translation>Index ungültig.</translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="53"/>
+        <location filename="../../src/treeviewmodel.cpp" line="119"/>
+        <source>Index = %1,
+Model size = %2</source>
+        <translation>Index = %1, Model Größe = %2</translation>
     </message>
     <message>
         <location filename="../../src/treeviewmodel.cpp" line="59"/>
@@ -132,98 +170,108 @@
         <translation>Index zu groß.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="108"/>
         <source>Unknown role: </source>
         <translation>Unbekannte Rolle:</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="201"/>
         <source>Invalid path.</source>
         <translation>Ungültiger Pfad.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="227"/>
+        <location filename="../../src/treeviewmodel.cpp" line="110"/>
+        <source>Unknown role: %1</source>
+        <translation>Unbekannte Rolle: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="213"/>
         <source>Importing the configuration from file failed because the current configuration could not be set.</source>
         <translation>Das importieren einer Konfiguration aus einer Datei schlug fehl weil die aktuelle Konfiguration nicht gesichert werden konnte.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="259"/>
+        <location filename="../../src/treeviewmodel.cpp" line="245"/>
         <source>Importing the configuration from file failed because there were invalid arguments passed.</source>
         <translation>Das importieren einer Konfiguration aus einer Datei schlug fehl weil ungültige Argumenete aufgetreten sind.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="264"/>
+        <location filename="../../src/treeviewmodel.cpp" line="250"/>
         <source>Importing the configuration from file failed because of a faulty command.</source>
         <translation>Das importieren einer Konfiguration aus einer Datei schlug fehl wegen eines fehlerhaften Befehls.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="274"/>
+        <location filename="../../src/treeviewmodel.cpp" line="260"/>
         <source>Importing the configuration from file failed while accessing the key database.</source>
         <translation>Das importieren einer Konfiguration aus einer Datei schlug fehl während versucht wurde die Datenbank zu lesen.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="278"/>
+        <location filename="../../src/treeviewmodel.cpp" line="264"/>
         <source>Importing the configuration from file terminated unsuccessfully.</source>
         <translation>Das importieren einer Konfiguration aus einer Datei schlug fehl.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="282"/>
+        <location filename="../../src/treeviewmodel.cpp" line="268"/>
         <source>Unknown error</source>
         <translation>Unbekannter Fehler.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="303"/>
+        <location filename="../../src/treeviewmodel.cpp" line="289"/>
         <source>Exporting the configuration to file failed because the current configuration could not be set.</source>
         <translation>Das exportieren einer Konfiguration in eine Datei schlug fehl weil die aktuelle Konfiguration nicht gesichert werden konnte. </translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="333"/>
+        <location filename="../../src/treeviewmodel.cpp" line="319"/>
         <source>Exporting the configuration to file failed because there were invalid arguments passed.</source>
         <translation>Das exportieren einer Konfiguration in eine Datei schlug fehl weil ungültige Argumenete aufgetreten sind.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="339"/>
-        <location filename="../../src/treeviewmodel.cpp" line="355"/>
+        <location filename="../../src/treeviewmodel.cpp" line="325"/>
+        <location filename="../../src/treeviewmodel.cpp" line="341"/>
         <source>Exporting the configuration to file terminated unsuccessfully.</source>
         <translation>Das exportieren einer Konfiguration in eine Datei schlug fehl.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="350"/>
+        <location filename="../../src/treeviewmodel.cpp" line="336"/>
         <source>Exporting the configuration to file failed while accessing the key database.</source>
         <translation>Das importieren einer Konfiguration in eine Datei schlug fehl während versucht wurde die Datenbank zu lesen.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="360"/>
+        <location filename="../../src/treeviewmodel.cpp" line="346"/>
         <source>Unknown error.</source>
         <translation>Unbekannter Fehler.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="483"/>
+        <location filename="../../src/treeviewmodel.cpp" line="437"/>
         <source>There were no results matching your query.</source>
         <translation>Ihre Suche ergab keine Treffer.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="565"/>
+        <location filename="../../src/treeviewmodel.cpp" line="158"/>
+        <location filename="../../src/treeviewmodel.cpp" line="467"/>
+        <source>Index = %1, Model size = %2</source>
+        <translation>Index = %1, Model Größe = %2</translation>
+    </message>
+    <message>
+        <location filename="../../src/treeviewmodel.cpp" line="528"/>
         <source>Inserting metakey failed.</source>
         <translation>Das einfügel eines Metaschlüssels schlug fehl.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="565"/>
+        <location filename="../../src/treeviewmodel.cpp" line="528"/>
+        <source>Key &quot;%1&quot; is not valid.</source>
+        <translation>Schlüssel &quot;%1&quot; ist ungültig.</translation>
+    </message>
+    <message>
         <source>Key &quot;</source>
         <translation>Schlüssel &quot;</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="565"/>
         <source>&quot; is not valid.</source>
         <translation>&quot; ist ungültig.</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="595"/>
         <source>Creating a new node failed because the key &quot;</source>
         <translation>Das erstellen eines neuen Knotens schlug fehl weil der Schlüssel &quot; </translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="595"/>
         <source>&quot; is invalid.</source>
         <translation>&quot; ungültig ist.</translation>
     </message>
@@ -232,7 +280,7 @@
         <translation>Das erstellen eines neuen Knotens schlug fehl weil der Schlüssel</translation>
     </message>
     <message>
-        <location filename="../../src/treeviewmodel.cpp" line="612"/>
+        <location filename="../../src/treeviewmodel.cpp" line="587"/>
         <source>Synchronizing failed.</source>
         <translation>Das synchronisieren schlug fehl.</translation>
     </message>

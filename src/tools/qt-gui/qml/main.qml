@@ -171,7 +171,8 @@ ApplicationWindow {
             }
 
             externTreeModel.refresh()
-            keyAreaModel.refresh()
+            if(keyAreaModel !== null)
+                keyAreaModel.refresh()
         }
     }
 
