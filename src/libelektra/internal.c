@@ -34,7 +34,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if HAVE_STDIO_H
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
 

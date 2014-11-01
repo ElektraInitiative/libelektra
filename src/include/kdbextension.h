@@ -31,6 +31,7 @@ namespace ckdb {
 extern "C" {
 #endif
 
+#ifndef _WIN32
 /* Conveniences Methods regarding Meta Info */
 uid_t keyGetUID(const Key *key);
 int keySetUID(Key *key, uid_t uid);
@@ -52,6 +53,7 @@ int keySetMTime(Key *key, time_t mtime);
 
 time_t keyGetCTime(const Key *key);
 int keySetCTime(Key *key, time_t ctime);
+#endif
 
 const char *keyOwner(const Key *key);
 ssize_t keyGetOwnerSize(const Key *key);

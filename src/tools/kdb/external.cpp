@@ -102,7 +102,11 @@ void tryExternalCommand(char** argv)
 		savedArg = argv[0];
 		argv[0] = const_cast<char*>(command.c_str());
 
+#ifdef _WIN32
+		execve(command.c_str(), argv, 0);
+#else
 		execve(command.c_str(), argv, environ);
+#endif
 
 		std::cerr << "Could not execute external command "
 			<< command

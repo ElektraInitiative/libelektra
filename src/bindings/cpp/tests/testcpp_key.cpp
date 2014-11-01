@@ -131,6 +131,7 @@ void test_keynew()
 	succeed_if(key4.getBinary() == s, "key4 has wrong binary value");
 	succeed_if(key4.getBinarySize() == 3, "key4 has wrong value size");
 
+#ifndef _WIN32
 	// Key with name + UID/GID
 	Key key5 ("system/sw/test",
 			KEY_UID, 123,
@@ -149,6 +150,7 @@ void test_keynew()
 	key6.setString("a very long string");
 	succeed_if(key6.getString() == "a very long string", "key6 has wrong value");
 	succeed_if(key6.get<string>() == "a very long string", "key6 has wrong value");
+#endif
 
 	// Key with name + owner
 	Key key7 ("system/sw/test",
