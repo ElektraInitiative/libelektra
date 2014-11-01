@@ -20,14 +20,6 @@
  * @brief A Key is the essential class that encapsulates key @link keyname name @endlink,
  * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  *
- */
-
-/**
- * @defgroup key_basic Basic Methods
- * @ingroup key
- *
- * @brief Key construction and initialization methods.
- *
  * To use them:
  * @code
 #include <kdb.h>
@@ -72,6 +64,8 @@
 #include "kdbprivate.h"
 
 /*
+ * @internal
+ *
  * Allocates and initializes a key
  * @returns 0 if allocation did not work, the key otherwise
  */
@@ -460,65 +454,34 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
  * because it was passed by a pointer in a function
  * you can do so:
  *
- * @code
-void h (Key *k)
-{
-	// receive key c
-	keyCopy (k, c);
-	// the caller will see the changed key k
-}
- * @endcode
+ * @snippet keyCopy.c Basic Usage
  *
  * The reference counter will not be changed for
  * both keys. Affiliation to keysets
  * are also not affected.
  *
- * When you pass a NULL-pointer as source the
- * data of dest will be cleaned completely
- * (except reference counter, see keyClear()) and
- * you get a fresh dest key.
- *
- * @code
-void g (Key *k)
-{
-	keyCopy (k, 0);
-	// k is now an empty and fresh key
-}
- * @endcode
- *
  * The meta data will be duplicated for the destination
  * key. So it will not take much additional space, even
  * with lots of metadata.
  *
- * If you want to copy all metadata, but keep the old
- * value you can use keyCopy() too.
+ * When you pass a NULL-pointer as source the
+ * data of dest will be cleaned completely
+ * (except reference counter, see keyClear()) and
+ * you get a fresh dest key:
  *
- * @code
-void j (Key *k)
-{
-	size_t size = keyGetValueSize (k);
-	char *value = malloc (size);
-	int bstring = keyIsString (k);
-
-	// receive key c
-	memcpy (value, keyValue(k), size);
-	keyCopy (k, c);
-	if (bstring) keySetString (k, value);
-	else keySetBinary (k, value, size);
-	free (value);
-	// the caller will see the changed key k
-	// with the metadata from c
-}
- * @endcode
+ * @snippet keyCopy.c Clear
  *
- * @note Next to the value itself we also need to remember
- *       if the value was string or binary. So in fact the
- *       meta data of the resulting key k in that
- *       example is not a complete
- *       duplicate, because the meta data "binary" may
- *       differ. Similar considerations might be necessary
- *       for the type of the key and so on, depending on the
- *       concrete situation.
+ * If you want to copy everything, except e.g. the value
+ * you can use keyCopy() too:
+ *
+ * @snippet keyCopy.c Copy Without Value
+ *
+ * Or, if you prefer you can copy the desired properties
+ * individually (no error handling nor handling of binary
+ * keys):
+ *
+ * @snippet keyCopy.c Individual Copy
+ *
  *
  * @param dest the key which will be written to
  * @param source the key which should be copied
@@ -536,19 +499,11 @@ int keyCopy (Key *dest, const Key *source)
 {
 	if (!dest) return -1;
 
-	size_t destRef = dest->ksReference;;
-
-	keyClear (dest);
-
-	if (!source) return 0;
-
-	/* copy all data of structure */
-	*dest=*source;
-
-	/* prepare to set dynamic properties */
-	dest->key=0;
-	dest->data.v=0;
-	dest->meta=0;
+	if (!source)
+	{
+		keyClear (dest);
+		return 0;
+	}
 
 	if (keySetName(dest,source->key) == -1)
 	{
@@ -563,10 +518,14 @@ int keyCopy (Key *dest, const Key *source)
 
 	if (source->meta)
 	{
+		ksDel(dest->meta);
 		dest->meta = ksDup (source->meta);
 	}
-
-	dest->ksReference = destRef;
+	else
+	{
+		ksDel(dest->meta);
+		dest->meta = 0;
+	}
 
 	return 1;
 }
