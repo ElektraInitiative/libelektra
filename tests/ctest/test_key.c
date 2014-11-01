@@ -1112,7 +1112,7 @@ static void test_keyNeedSync()
 	printf ("Test key need sync\n");
 
 	Key * k = keyNew(0);
-	succeed_if(keyNeedSync(k), "fresh key should need sync");
+	succeed_if(!keyNeedSync(k), "no sync, because written like that in docu prior to 0.8.9");
 	keyDel(k);
 
 	k = keyNew("", KEY_END);
