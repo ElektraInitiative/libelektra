@@ -1,3 +1,68 @@
+# 0.8.9 Release
+
+- author: Markus Raab, Raffael Pancheri
+- guid:
+- pubDate
+
+- qt-gui was added to elektra
+Thanks to Raffael Pancheri.
+
+- add glib+gi bindings
+thank to Manuel Mausz
+
+- improve clang support (no warnings anymore),
+thank to Manuel Mausz
+
+- added read-only regexstore
+
+- added ksLookupBySpec and policy based contextual values
+
+
+Use add_plugin in CMake for all plugins.
+
+Convert METADATA spec to ini files and add proposal for comments.
+(thanks to Felix)
+
+ini now supports multiline
+(thanks to Felix)
+
+ksLookup now also implements cascading search
+
+use BINDINGS variable for easier handling of many BINDINGS
+
+Many more examples were written and are used within doxygen. Most
+snippets now can also be found in compilable files:
+- C++ deep dup
+- keyNew examples
+- keyCopy examples
+
+Refactoring:
+- reuse of utilities in gen code generator
+- refactor array handling
+- internal comparision functions (keyCompareByName)
+
+Optimization:
+- lookupByName does not need to allocate two keys
+- lookups in generated code
+- prefer to use allocation on stack
+
+Fixes:
+- disable cast that segfaults on i386 (in testing code)
+  (now unit tests run on i386, too)
+- fix keyAddBaseName in xmltool and testing code
+- fix many issues regarding CMake, more variants of setting CMake
+  options are now allowed.
+- support non-system installation (e.g. in home directory)
+- rewrote test cases to use succeed_if_same to avoid crashes on
+  null pointers
+- allow to use python 2.6 for kdb gen
+- improve exception messages
+- use memcasecmp (fix lookup ignoring case)
+- fix memory leaks (ini)
+- text messages for some warnings/errors
+- cmake policy for cmake version > 3
+
+
 # 0.8.8 Release
 
 - author: Markus Raab

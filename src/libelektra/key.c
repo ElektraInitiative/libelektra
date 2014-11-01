@@ -20,14 +20,6 @@
  * @brief A Key is the essential class that encapsulates key @link keyname name @endlink,
  * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  *
- */
-
-/**
- * @defgroup key_basic Basic Methods
- * @ingroup key
- *
- * @brief Key construction and initialization methods.
- *
  * To use them:
  * @code
 #include <kdb.h>
@@ -42,8 +34,57 @@
  *   - @link keymeta UID, GID and filesystem-like mode permissions @endlink
  *   - @link keymeta Mode, change and modification times @endlink
  *
- * Described here the methods to allocate and free the key.
+ * Due to ABI compatibility, the @p Key structure is not defined in kdb.h,
+ * only declared. So you can only declare @p pointers to @p Keys in your
+ * program, and allocate and free memory for them with keyNew()
+ * and keyDel() respectively.
  *
+ *
+ * @section ref Reference Counting
+ *
+ * The reference counter (see keyGetRef()) will be initialized
+ * with 0, that means a subsequent call of keyDel() will delete
+ * the key. If you append the key to a keyset the reference counter
+ * will be incremented by one (see keyInc()) and the key can't be
+ * be deleted by a keyDel():
+ *
+ * @snippet keyNew.c Ref in KeySet
+ *
+ * You can even add the key to more KeySets:
+ *
+* @snippet keyNew.c Ref in multiple KeySets
+ *@code
+ *@endcode
+ *
+ * If you increment only by one with keyInc() the same as said above
+ * is valid:
+ *
+ *
+ * @snippet keyNew.c Ref
+ *
+ *
+ * or use keyInc() more than once:
+ *
+ * @snippet keyNew.c Multi Ref
+ *
+ * The key won't be deleted by a keyDel() as long refcounter is not 0.
+ *
+ * As you can imagine this refcounting allows you to put the Key in your
+ * own datastructures.
+ * It can be a very powerful feature, e.g. if you need your own-defined
+ * ordering or different Models of your configuration.
+ *
+ * @see keyIncRef(), keyDecRef(), keyGetRef()
+ *
+ *
+ * @section sync Sync Bits
+ *
+ * The key's sync bit will always be set for any call, except:
+ * 
+ * @code
+Key *k = keyNew(0);
+// keyNeedSync() will be false
+ * @endcode
  */
 
 
@@ -72,6 +113,8 @@
 #include "kdbprivate.h"
 
 /*
+ * @internal
+ *
  * Allocates and initializes a key
  * @returns 0 if allocation did not work, the key otherwise
  */
@@ -88,182 +131,75 @@ static Key *elektraKeyMalloc()
 /**
  * A practical way to fully create a Key object in one step.
  *
- * This function tries to mimic the C++ way for constructors.
- *
  * To just get a key object, simple do:
- * @code
-Key *k = keyNew(0);
-// work with it
-keyDel (k);
- * @endcode
+ *
+ * @snippet keyNew.c Simple
  *
  * If you want the key object to contain a name, value, comment and other
  * meta info read on.
  *
  * @note When you already have a key with similar properties its
- * easier and cheaper to keyDup() the key.
- *
- * Due to ABI compatibility, the @p Key structure is not defined in kdb.h,
- * only declared. So you can only declare @p pointers to @p Keys in your
- * program, and allocate and free memory for them with keyNew()
- * and keyDel() respectively.
- * See http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN135
+ * easier to keyDup() the key.
  *
  * You can call it in many different ways depending on the attribute tags you
  * pass as parameters. Tags are represented as the #keyswitch_t values,
  * and tell keyNew() which Key attribute comes next.
  *
- * The simplest and minimum way to use it is with no tags, only a key name:
- * @code
-Key *nullKey,*emptyNamedKey;
-
-// Create a key that has no name, is completely empty, but is initialized
-nullKey=keyNew(0);
-keyDel (nullKey);
-
-// Is the same as above
-nullKey=keyNew("", KEY_END);
-keyDel (nullKey);
-
-// Create and initialize a key with a name and nothing else
-emptyNamedKey=keyNew("user/some/example",KEY_END);
-keyDel (emptyNamedKey);
- * @endcode
+ * We can also give an empty key name and a KEY_END tag with the same
+ * effect as before:
  *
- * keyNew() allocates memory for a key object and cleans everything up. After
- * that, it processes the given argument list.
+ * @snippet keyNew.c Alternative
  *
+ * But we can also give the key a proper name right from the start:
+ *
+ * @snippet keyNew.c With Name
+ *
+ * So, keyNew() allocates memory for a key object and keyDel() cleans
+ * everything up.
+ *
+ * keyNew() processes the given argument list even further.
  * The Key attribute tags are the following:
- * - keyswitch_t::KEY_TYPE \n
- *   Next parameter is a type of the value. Default assumed is KEY_TYPE_UNDEFINED.
- *   Set this attribute so that a subsequent KEY_VALUE can toggle to keySetString()
- *   or keySetBinary() regarding to keyIsString() or keyIsBinary().
- *   If you don't use KEY_TYPE but a KEY_VALUE follows afterwards, KEY_TYPE_STRING
- *   will be used.
- * - keyswitch_t::KEY_SIZE \n
- *   Define a maximum length of the value. This is especially useful for setting
- *   a binary key. So make sure you use that before you KEY_VALUE for
- *   binary keys.
- * - keyswitch_t::KEY_VALUE \n
+ * - #keyswitch_t::KEY_VALUE \n
  *   Next parameter is a pointer to the value that will be set to the key
  *   If no keyswitch_t::KEY_TYPE was used before,
- *   keyswitch_t::KEY_TYPE_STRING is assumed. If KEY_TYPE was previously
- *   passed with a KEY_TYPE_BINARY,
- *   you should have passed KEY_SIZE before! Otherwise it will be cut of
- *   with first \\0 in string!
- * - keyswitch_t::KEY_UID, @p keyswitch_t::KEY_GID \n
- *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
- *   be defined on the key. See keySetUID() and keySetGID().
- * - keyswitch_t::KEY_MODE \n
- *   Next parameter is taken as mode permissions (int) to the key.
- *   See keySetMode().
+ *   keyswitch_t::KEY_TYPE_STRING is assumed.
+ *   @snippet keyNew.c With Value
+ * - keyswitch_t::KEY_SIZE \n
+ *   Define a maximum length of the value. This is only useful for setting
+ *   a binary key.
+ *   @snippet keyNew.c With Size
+ * - keyswitch_t::KEY_BINARY \n
+ *   Allows to change the key to a binary key.
+ *   Make sure that you also pass KEY_SIZE before you set the value.
+ *   Otherwise it will be cut off with first \\0 in the string.
+ *   So this value toggle from keySetString()
+ *   to keySetBinary().
+ *   If you don't use KEY_BINARY a string will be used.
+ *   @snippet keyNew.c With Binary
  * - keyswitch_t::KEY_DIR \n
  *   Define that the key is a directory rather than a ordinary key.
- *   This means its executable bits in its mode are set. This option
- *   allows the key to have subkeys.
+ *   This means its executable bits in its mode are set.
+ *   But even without this option a key can have subkeys.
  *   See keySetDir().
  * - keyswitch_t::KEY_OWNER \n
  *   Next parameter is the owner. See keySetOwner().
+ * - keyswitch_t::KEY_UID, @p keyswitch_t::KEY_GID \n
+ *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
+ *   be defined on the key.
+ *   See keySetUID() and keySetGID().
+ * - keyswitch_t::KEY_MODE \n
+ *   Next parameter is taken as mode permissions (int) to the key.
+ *   See keySetMode().
+ *   @snippet keyNew.c With Mode
  * - keyswitch_t::KEY_COMMENT \n
  *   Next parameter is a comment. See keySetComment().
  * - keyswitch_t::KEY_END \n
  *   Must be the last parameter passed to keyNew(). It is always
  *   required, unless the @p keyName is 0.
  *
- * @par Example:
- * @code
-KeySet *ks=ksNew(0, KS_END);
-
-ksAppendKey(ks,keyNew(0));       // an empty key
-
-ksAppendKey(ks,keyNew("user/sw",              // the name of the key
-	KEY_END));                      // no more args
-
-ksAppendKey(ks,keyNew("user/tmp/ex1",
-	KEY_VALUE,"some data",          // set a string value
-	KEY_END));                      // end of args
-
-ksAppendKey(ks,keyNew("user/tmp/ex2",
-	KEY_VALUE,"some data",          // with a simple value
-	KEY_MODE,0777,                  // permissions
-	KEY_END));                      // end of args
-
-ksAppendKey(ks,keyNew("user/tmp/ex4",
-	KEY_TYPE,KEY_TYPE_BINARY,	// key type
-	KEY_SIZE,7,			// assume binary length 7
-	KEY_VALUE,"some data",		// value that will be truncated in 7 bytes
-	KEY_COMMENT,"value is truncated",
-	KEY_OWNER,"root",		// owner (not uid) is root
-	KEY_UID,0,			// root uid
-	KEY_END));			// end of args
-
-ksAppendKey(ks,keyNew("user/tmp/ex5",
-	KEY_TYPE,
-		KEY_TYPE_DIR | KEY_TYPE_BINARY,// dir key with a binary value
-	KEY_SIZE,7,
-	KEY_VALUE,"some data",		// value that will be truncated in 7 bytes
-	KEY_COMMENT,"value is truncated",
-	KEY_OWNER,"root",               // owner (not uid) is root
-	KEY_UID,0,                      // root uid
-	KEY_END));                      // end of args
-
-ksDel(ks);
- * @endcode
+ * Example with most features:
  *
- * The reference counter (see keyGetRef()) will be initialized
- * with 0, that means a subsequent call of keyDel() will delete
- * the key. If you append the key to a keyset the reference counter
- * will be incremented by one (see keyInc()) and the key can't be
- * be deleted by a keyDel().
- *
- *@code
-Key *k = keyNew(0); // ref counter 0
-ksAppendKey(ks, k); // ref counter of key 1
-ksDel(ks); // key will be deleted with keyset
- *@endcode
- *
- * If you increment only by one with keyInc() the same as said above
- * is valid:
- *
- *@code
-Key *k = keyNew(0); // ref counter 0
-keyIncRef(k); // ref counter of key 1
-keyDel(k);    // has no effect
-keyDecRef(k); // ref counter back to 0
-keyDel(k);    // key is now deleted
- *@endcode
- *
- * If you add the key to more keySets:
- *
- *@code
-Key *k = keyNew(0); // ref counter 0
-ksAppendKey(ks1, k); // ref counter of key 1
-ksAppendKey(ks2, k); // ref counter of key 2
-ksDel(ks1); // ref counter of key 1
-ksDel(ks2); // k is now deleted
- *@endcode
- *
- * or use keyInc() more than once:
- *
- *@code
-Key *k = keyNew(0); // ref counter 0
-keyIncRef(k); // ref counter of key 1
-keyDel (k);   // has no effect
-keyIncRef(k); // ref counter of key 2
-keyDel (k);   // has no effect
-keyDecRef(k); // ref counter of key 1
-keyDel (k);   // has no effect
-keyDecRef(k); // ref counter is now 0
-keyDel (k); // k is now deleted
- *@endcode
- *
- * they key won't be deleted by a keyDel() as long refcounter is not 0.
- *
- * The key's sync bit will always be set for any call, except:
- * @code
-Key *k = keyNew(0);
-// keyNeedSync() will be false
- * @endcode
+* @snippet keyNew.c With Everything
  *
  * @param name a valid name to the key, or NULL to get a simple
  * 	initialized, but really empty, object 
@@ -460,65 +396,33 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
  * because it was passed by a pointer in a function
  * you can do so:
  *
- * @code
-void h (Key *k)
-{
-	// receive key c
-	keyCopy (k, c);
-	// the caller will see the changed key k
-}
- * @endcode
+ * @snippet keyCopy.c Basic Usage
  *
  * The reference counter will not be changed for
  * both keys. Affiliation to keysets
  * are also not affected.
  *
- * When you pass a NULL-pointer as source the
- * data of dest will be cleaned completely
- * (except reference counter, see keyClear()) and
- * you get a fresh dest key.
- *
- * @code
-void g (Key *k)
-{
-	keyCopy (k, 0);
-	// k is now an empty and fresh key
-}
- * @endcode
- *
  * The meta data will be duplicated for the destination
  * key. So it will not take much additional space, even
  * with lots of metadata.
  *
- * If you want to copy all metadata, but keep the old
- * value you can use keyCopy() too.
+ * When you pass a NULL-pointer as source the
+ * data of dest will be cleaned completely
+ * (except reference counter, see keyClear()) and
+ * you get a fresh dest key:
  *
- * @code
-void j (Key *k)
-{
-	size_t size = keyGetValueSize (k);
-	char *value = malloc (size);
-	int bstring = keyIsString (k);
-
-	// receive key c
-	memcpy (value, keyValue(k), size);
-	keyCopy (k, c);
-	if (bstring) keySetString (k, value);
-	else keySetBinary (k, value, size);
-	free (value);
-	// the caller will see the changed key k
-	// with the metadata from c
-}
- * @endcode
+ * @snippet keyCopy.c Clear
  *
- * @note Next to the value itself we also need to remember
- *       if the value was string or binary. So in fact the
- *       meta data of the resulting key k in that
- *       example is not a complete
- *       duplicate, because the meta data "binary" may
- *       differ. Similar considerations might be necessary
- *       for the type of the key and so on, depending on the
- *       concrete situation.
+ * If you want to copy everything, except e.g. the value
+ * you can use keyCopy() too:
+ *
+ * @snippet keyCopy.c Copy Without Value
+ *
+ * Restrain from coping everything yourself, because it will lead to
+ * wrong metadata and is not able to copy empty or cascading names:
+ *
+ * @snippet keyCopy.c Individual Copy
+ *
  *
  * @param dest the key which will be written to
  * @param source the key which should be copied
@@ -536,21 +440,14 @@ int keyCopy (Key *dest, const Key *source)
 {
 	if (!dest) return -1;
 
-	size_t destRef = dest->ksReference;;
+	if (!source)
+	{
+		keyClear (dest);
+		return 0;
+	}
 
-	keyClear (dest);
-
-	if (!source) return 0;
-
-	/* copy all data of structure */
-	*dest=*source;
-
-	/* prepare to set dynamic properties */
-	dest->key=0;
-	dest->data.v=0;
-	dest->meta=0;
-
-	if (keySetName(dest,source->key) == -1)
+	if (elektraKeySetName(dest,source->key,
+		KDB_O_CASCADING_NAME|KDB_O_META_NAME|KDB_O_EMPTY_NAME) == -1)
 	{
 		return -1;
 	}
@@ -563,10 +460,14 @@ int keyCopy (Key *dest, const Key *source)
 
 	if (source->meta)
 	{
+		ksDel(dest->meta);
 		dest->meta = ksDup (source->meta);
 	}
-
-	dest->ksReference = destRef;
+	else
+	{
+		ksDel(dest->meta);
+		dest->meta = 0;
+	}
 
 	return 1;
 }

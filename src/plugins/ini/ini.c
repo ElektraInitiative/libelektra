@@ -242,7 +242,7 @@ void writeComments(Key* current, FILE* fh)
 		size_t commentSize = keyGetValueSize (commentMeta);
 		char* comments = malloc (commentSize);
 		keyGetString (commentMeta, comments, commentSize);
-		char* savePtr;
+		char* savePtr = 0;
 		char* currentComment = strtok_r (comments, "\n", &savePtr);
 		while (currentComment)
 		{

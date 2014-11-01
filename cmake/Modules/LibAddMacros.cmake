@@ -150,6 +150,29 @@ macro (add_cpp_plugintest testname)
 endmacro (add_cpp_plugintest testname)
 
 
+function(find_util util output_loc output_arg)
+	if (CMAKE_CROSSCOMPILING)
+		if (WIN32)
+			find_program(EXE_LOC wine)
+			if (EXE_LOC)
+				set (ARG_LOC "${CMAKE_BINARY_DIR}/bin/${util}.exe")
+			else()
+				find_program (EXE_LOC
+					HINTS
+						${CMAKE_BINARY_DIR}
+					${util}.exe)
+			endif ()
+		else()
+			find_program (EXE_LOC ${util})
+		endif ()
+	else (CMAKE_CROSSCOMPILING)
+		get_target_property (EXE_LOC ${util} LOCATION)
+	endif (CMAKE_CROSSCOMPILING)
+	set (${output_loc} ${EXE_LOC} PARENT_SCOPE)
+	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)
+endfunction(find_util util output)
+
+
 #- Adds all headerfiles of global include path to the given variable
 #
 #  ADD_HEADERS (variable)
@@ -176,17 +199,13 @@ macro (add_headers HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
-	if (CMAKE_CROSSCOMPILING)
-		find_program (EXE_LOC exporterrors)
-	else (CMAKE_CROSSCOMPILING)
-		get_target_property (EXE_LOC exporterrors LOCATION)
-	endif (CMAKE_CROSSCOMPILING)
+	find_util(exporterrors EXE_ERR_LOC EXE_ERR_ARG)
 
 	add_custom_command (
 			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 			DEPENDS exporterrors
-			COMMAND ${EXE_LOC}
-			ARGS ${CMAKE_SOURCE_DIR}/src/liberror/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
+			COMMAND ${EXE_ERR_LOC}
+			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/liberror/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 			)
 	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
@@ -225,8 +244,87 @@ macro (remove_plugin name reason)
 	set (TMP ${PLUGINS})
 	message ("-- Exclude Plugin ${name} because ${reason}")
 	list (REMOVE_ITEM TMP ${name})
-	set (PLUGINS ${TMP} CACHE STRING "Which plugins should be compiled?" FORCE)
+	set (PLUGINS ${TMP} CACHE STRING ${PLUGINS_DOC} FORCE)
 endmacro (remove_plugin)
+
+
+macro (remove_binding name reason)
+	set (TMP ${BINDINGS})
+	message ("-- Exclude Binding ${name} because ${reason}")
+	list (REMOVE_ITEM TMP ${name})
+	set (BINDINGS ${TMP} CACHE STRING ${BINDINGS_DOC} FORCE)
+endmacro (remove_binding)
+
+
+macro (remove_tool name reason)
+	set (TMP ${TOOLS})
+	message ("-- Exclude tool ${name} because ${reason}")
+	list (REMOVE_ITEM TMP ${name})
+	set (TOOLS ${TMP} CACHE STRING ${TOOLS_DOC} FORCE)
+endmacro (remove_tool)
+
+# LIST_FILTER(<list> <regexp_var> [<regexp_var> ...]
+#              [OUTPUT_VARIABLE <variable>])
+# Removes items from <list> which match any of the specified
+# regular expressions. An optional argument OUTPUT_VARIABLE
+# specifies a variable in which to store the matched items instead of
+# updating <list>
+# As regular expressions can not be given to macros (see bug #5389), we pass
+# variable names whose content is the regular expressions.
+#
+# copied from http://www.cmake.org/Wiki/CMakeMacroListOperations
+MACRO(list_filter)
+  parse_arguments(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
+  # Check arguments.
+  LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
+  IF(${LIST_FILTER_default_length} EQUAL 0)
+    MESSAGE(FATAL_ERROR "LIST_FILTER: missing list variable.")
+  ENDIF(${LIST_FILTER_default_length} EQUAL 0)
+  IF(${LIST_FILTER_default_length} EQUAL 1)
+    MESSAGE(FATAL_ERROR "LIST_FILTER: missing regular expression variable.")
+  ENDIF(${LIST_FILTER_default_length} EQUAL 1)
+  # Reset output variable
+  IF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+    SET(LIST_FILTER_OUTPUT_VARIABLE "LIST_FILTER_internal_output")
+  ENDIF(NOT LIST_FILTER_OUTPUT_VARIABLE)
+  SET(${LIST_FILTER_OUTPUT_VARIABLE})
+  # Extract input list from arguments
+  LIST(GET LIST_FILTER_DEFAULT_ARGS 0 LIST_FILTER_input_list)
+  LIST(REMOVE_AT LIST_FILTER_DEFAULT_ARGS 0)
+  FOREACH(LIST_FILTER_item ${${LIST_FILTER_input_list}})
+    set(add_item "1")
+    FOREACH(LIST_FILTER_regexp_var ${LIST_FILTER_DEFAULT_ARGS})
+      FOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+        IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+          set(add_item "0")
+        ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+      ENDFOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
+    ENDFOREACH(LIST_FILTER_regexp_var)
+    if (add_item)
+      LIST(APPEND ${LIST_FILTER_OUTPUT_VARIABLE} ${LIST_FILTER_item})
+    endif()
+  ENDFOREACH(LIST_FILTER_item)
+  # If OUTPUT_VARIABLE is not specified, overwrite the input list.
+  IF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+    SET(${LIST_FILTER_input_list} ${${LIST_FILTER_OUTPUT_VARIABLE}})
+  ENDIF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
+ENDMACRO(list_filter)
+
+#find string in list with regex
+function(list_find input_list regexp_var output)
+  # Reset output variable
+  # Extract input list from arguments
+  set(${output} "0" PARENT_SCOPE)
+  FOREACH(LIST_FILTER_item ${${input_list}})
+    FOREACH(LIST_FILTER_regexp ${${regexp_var}})
+      #message("try to match ${LIST_FILTER_regexp} with ${LIST_FILTER_item}")
+      IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+        set(${output} "1" PARENT_SCOPE)
+      ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
+    ENDFOREACH(LIST_FILTER_regexp ${regexp_var})
+  ENDFOREACH(LIST_FILTER_item)
+endfunction(list_find)
+
 
 
 #- Add sources for a target

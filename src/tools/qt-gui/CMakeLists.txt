@@ -1,7 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-
-project(qt-gui)
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
@@ -10,7 +6,10 @@ set(CMAKE_BUILD_TYPE Debug)
 
 add_definitions(-Wall)
 
-find_package(Qt5 REQUIRED Quick Gui Core Qml Widgets Test)
+find_package(Qt5 COMPONENTS Core Quick Gui Qml Widgets Test)
+if (NOT Qt5_FOUND)
+	remove_tool(qt-gui "Did not find qt5")
+else()
 
 include_directories (
 	${CMAKE_SOURCE_DIR} 
@@ -21,13 +20,16 @@ include_directories (
 	${Qt5Qml_INCLUDE_DIRS} 
 	${Qt5Widgets_INCLUDE_DIRS}    
 	${Qt5Test_INCLUDE_DIRS}
-	/usr/include/elektra
-	/usr/local/include/elektra
-	../kdb/
-	../../libtools/include/
-	../../include/
+	../kdb
+	../../libtools/include
+	../../libtools/include/merging
+	../../libtools/include/helper
 	)
-	
+
+add_headers (qt-gui_HDRS)                                               
+add_cppheaders (qt-gui_HDRS)                                            
+add_toolheaders (qt-gui_HDRS)
+
 set(qt-gui_HDRS
 	src/visitor.hpp
 	src/printvisitor.hpp
@@ -38,37 +40,6 @@ set(qt-gui_HDRS
 	src/cutkeycommand.hpp
 	src/copykeycommand.hpp
 	src/importconfigurationcommand.hpp
-	../kdb/check.hpp 
-	../kdb/cmdline.hpp 
-	../kdb/command.hpp 
-	../kdb/convert.hpp 
-	../kdb/cp.hpp 
-	../kdb/export.hpp 
-	../kdb/external.hpp 
-	../kdb/factory.hpp 
-	../kdb/file.hpp 
-	../kdb/fstab.hpp 
-	../kdb/get.hpp 
-	../kdb/import.hpp 
-	../kdb/info.hpp 
-	../kdb/ls.hpp 
-	../kdb/merge.hpp 
-	../kdb/mergehelper.hpp 
-	../kdb/metaget.hpp 
-	../kdb/metals.hpp 
-	../kdb/metaset.hpp 
-	../kdb/mount.hpp 
-	../kdb/mountbase.hpp 
-	../kdb/mv.hpp 
-	../kdb/remount.hpp 
-	../kdb/rename.hpp 
-	../kdb/rm.hpp 
-	../kdb/set.hpp 
-	../kdb/sget.hpp 
-	../kdb/shell.hpp 
-	../kdb/test.hpp 
-	../kdb/umount.hpp 
-	../kdb/validation.hpp 
 	../../libtools/include/merging/automergestrategy.hpp
 	../../libtools/include/merging/interactivemergestrategy.hpp
 	../../libtools/include/merging/mergeconflict.hpp
@@ -134,22 +105,6 @@ set(qt-gui_SRCS
 	../kdb/test.cpp 
 	../kdb/umount.cpp 
 	../kdb/validation.cpp
-	../../libtools/src/merging/automergestrategy.cpp
-	../../libtools/src/merging/interactivemergestrategy.cpp
-	../../libtools/src/merging/mergeconflictstrategy.cpp
-	../../libtools/src/merging/mergeresult.cpp
-	../../libtools/src/merging/metamergestrategy.cpp
-	../../libtools/src/merging/newkeystrategy.cpp
-	../../libtools/src/merging/onesidestrategy.cpp
-	../../libtools/src/merging/onesidevaluestrategy.cpp
-	../../libtools/src/merging/threewaymerge.cpp
-	../../libtools/src/backend.cpp
-	../../libtools/src/backends.cpp
-	../../libtools/src/modules.cpp
-	../../libtools/src/plugin.cpp
-	../../libtools/src/plugins.cpp
-	../../libtools/src/helper/comparison.cpp
-	../../libtools/src/helper/keyhelper.cpp
 	)
 
 set(qt-gui_RSCS
@@ -163,3 +118,5 @@ add_executable(qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
 qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} elektra elektratools)
+
+endif()

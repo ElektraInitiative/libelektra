@@ -141,20 +141,8 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 
 
 	key = keyDup (parentKey);
-	keyAddName(key, "cmake/BUILD_SWIG_PYTHON2");
-	keySetString(key, "@BUILD_SWIG_PYTHON2@");
-	ksAppendKey(ks, key);
-
-
-	key = keyDup (parentKey);
-	keyAddName(key, "cmake/BUILD_SWIG_PYTHON3");
-	keySetString(key, "@BUILD_SWIG_PYTHON3@");
-	ksAppendKey(ks, key);
-
-
-	key = keyDup (parentKey);
-	keyAddName(key, "cmake/BUILD_SWIG_LUA");
-	keySetString(key, "@BUILD_SWIG_LUA@");
+	keyAddName(key, "cmake/BINDINGS");
+	keySetString(key, "@BINDINGS@");
 	ksAppendKey(ks, key);
 
 

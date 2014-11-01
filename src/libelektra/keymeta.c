@@ -323,23 +323,15 @@ int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
 /**Do a shallow copy of all meta data from source to dest.
  *
  * The key dest will additionally have all meta data
- * source had.
+ * the source had.
  * Meta data not present in source will not be changed.
  * Meta data which was present in source and dest will
  * be overwritten.
  *
  * For example the meta data type is copied into the
- * Key k.
+ * Key k:
  *
- * @code
-void l(Key *k)
-{
-	// receive c
-	keyCopyMeta(k, c);
-	// the caller will see the changed key k
-	// with all the metadata from c
-}
- * @endcode
+ * @snippet keyMeta.c Basic Copy All
  *
  * The main purpose of this function is for plugins or
  * applications which want to add the same meta data to
@@ -349,30 +341,15 @@ void l(Key *k)
  * some meta data for each.
  *
  * To avoid that problem you can use keyCopyAllMeta()
- * or keyCopyMeta().
+ * or keyCopyMeta():
  *
- * @code
-void o(KeySet *ks)
-{
-	Key *current;
-	Key *shared = keyNew (0);
-	keySetMeta(shared, "shared1", "this meta data should be shared among many keys");
-	keySetMeta(shared, "shared2", "this meta data should be shared among many keys also");
-	keySetMeta(shared, "shared3", "this meta data should be shared among many keys too");
-
-	ksRewind(ks);
-	while ((current = ksNext(ks)) != 0)
-	{
-		if (needs_shared_data(current)) keyCopyAllMeta(current, shared);
-	}
-}
- * @endcode
+ * @snippet keyMeta.c Shared Meta All
  *
  * @post for every metaName present in source: keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
  * @return 1 if was successfully copied
  * @return 0 if source did not have any meta data
- * @return -1 on null pointers (source or dest)
+ * @return -1 on null pointer of dest or source
  * @return -1 on memory problems
  * @param dest the destination where the meta data should be copied too
  * @param source the key where the meta data should be copied from
@@ -383,7 +360,6 @@ int keyCopyAllMeta(Key *dest, const Key *source)
 	if (!source) return -1;
 	if (!dest) return -1;
 	if (dest->flags & KEY_FLAG_RO_META) return -1;
-
 
 	if (source->meta)
 	{

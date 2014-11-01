@@ -2,11 +2,11 @@ install (PROGRAMS elektra-merge DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS elektra-mount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS elektra-umount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-IF (IS_DIRECTORY /etc/bash_completion.d)
+if (INSTALL_SYSTEM_FILES)
 	install (FILES kdb-bash-completion
-			DESTINATION /etc/bash_completion.d 
+			DESTINATION /etc/bash_completion.d
 			RENAME kdb)
-ENDIF()
+endif()
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/make-source-package.in"

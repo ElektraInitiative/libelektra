@@ -381,6 +381,14 @@ static void test_keyReference()
 	succeed_if (keyGetRef(key) == 0, "reference counter");
 	keyDel (key); // key is now deleted
 
+	Key *k = keyNew("system/proper_name", KEY_END); // ref counter = 0
+	succeed_if(keyGetRef(k) == 0, "ref should be zero");
+	KeySet *ks = ksNew (1, k, KS_END);
+	succeed_if(keyGetRef(k) == 1, "ref should be one");
+	succeed_if(keyDel(k) == 1, "key will not be deleted, because its in the keyset");
+	succeed_if(keyGetRef(k) == 1, "ref should be one");
+	succeed_if(ksDel(ks) == 0, "could not del"); // now the key will be deleted
+
 	return;
 
 	/* This code needs very long to execute, especially on 64bit
@@ -1361,7 +1369,32 @@ static void test_keyCopy()
 
 	keyDel (orig);
 	keyDel (copy);
+
+	orig = keyNew("user/orig", KEY_END);
+	succeed_if(keyNeedSync(orig), "fresh key does not need sync?");
+	KeySet *ks = ksNew(20, KS_END);
+	ksAppendKey(ks, orig);
+	copy = keyNew("user/othername", KEY_END);
+	succeed_if(keyNeedSync(copy), "fresh key does not need sync?");
+	succeed_if (keyGetRef(orig) == 1, "orig ref counter should be 1");
+	succeed_if (keyGetRef(copy) == 0, "copy ref counter should be 0");
+	succeed_if (keyCopy(orig, copy) == -1, "copy should not be allowed when key is already referred to");
+	succeed_if(keyNeedSync(orig), "copied key does not need sync?");
+	succeed_if(keyNeedSync(copy), "copied key does not need sync?");
+
+	succeed_if (keyGetRef(orig) == 1, "orig ref counter should be 1");
+	succeed_if (keyGetRef(copy) == 0, "copy ref counter should be 1");
+
+	succeed_if_same_string(keyName(orig), "user/orig");
+	succeed_if_same_string(keyName(copy), "user/othername");
+
+	keyDel(copy);
+	ksRewind(ks);
+	succeed_if_same_string(keyName(ksNext(ks)), "user/orig");
+	ksDel(ks);
 }
+
+
 typedef void (*fun_t) ();
 static void fun()
 {}

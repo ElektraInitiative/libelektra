@@ -3,17 +3,10 @@
  * to document them. */
 
 /**
- * Switches to denote the various Key attributes in methods throughout
- * this library.
- *
- * This enum switch provide a flag for every metadata in a key.
- *
- * In case of keyNew() they give Information what Parameter comes
- * next.
+ * Allows keyNew() to determine which information comes next.
  *
  * @ingroup key
  * @see keyNew()
- * @see ksToStream(), keyToStream()
  */
 enum keyswitch_t
 {

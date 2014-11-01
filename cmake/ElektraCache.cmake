@@ -116,6 +116,7 @@ if (PLUGINS MATCHES "ALL")
 endif ()
 
 
+set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
 
 
 #
@@ -126,9 +127,72 @@ endif ()
 set (PLUGINS
 	${PLUGINS_LIST_DEFAULT}
 	${PLUGINS_LIST}
-	CACHE STRING "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies, DEFAULT for minimal set."
+	CACHE STRING ${PLUGINS_DOC}
 	${PLUGINS_FORCE}
 	)
+
+list(REMOVE_DUPLICATES PLUGINS)
+set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
+
+
+
+
+
+
+
+
+
+
+#
+# set BINDINGS cache variable
+#
+
+set (BINDINGS_LIST_DEFAULT cpp)
+
+if (BINDINGS MATCHES "DEFAULT")
+	set (BINDINGS_FORCE FORCE)
+endif()
+
+list (FIND BINDINGS "SWIG" FINDEX)
+if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
+	set (BINDINGS_LIST_SWIG
+		swig_lua
+		swig_python2
+		swig_python3
+		)
+	set (BINDINGS_FORCE FORCE)
+endif ()
+
+list (FIND BINDINGS "GI" FINDEX)
+if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
+	set (BINDINGS_LIST_GI
+		glib
+		gi_lua
+		gi_python3
+		)
+	set (BINDINGS_FORCE FORCE)
+endif ()
+
+set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
+
+
+set (BINDINGS
+	${BINDINGS_LIST_DEFAULT}
+	${BINDINGS_LIST_SWIG}
+	${BINDINGS_LIST_GI}
+	CACHE STRING ${BINDINGS_DOC}
+	${BINDINGS_FORCE}
+	)
+
+
+list(REMOVE_DUPLICATES BINDINGS)
+set(BINDINGS ${BINDINGS} CACHE STRING ${BINDINGS_DOC} FORCE)
+
+
+
+
+
+
 
 
 
@@ -156,12 +220,20 @@ if (TOOLS MATCHES "ALL")
 	set (TOOLS_FORCE FORCE)
 endif ()
 
+set (TOOLS_DOC "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
+
 set (TOOLS
 	${TOOLS_LIST_DEFAULT}
 	${TOOLS_LIST}
-	CACHE STRING "Which TOOLS should be compiled? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set."
+	CACHE STRING ${TOOLS_DOC}
 	${TOOLS_FORCE}
 	)
+
+
+
+
+
+
 
 
 #
@@ -266,28 +338,8 @@ set (COVERAGE_PREFIX
 		"Full path to common prefix of build+source directory"
     )
 
+option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
 
-option (BUILD_SWIG_PYTHON2 "Enable the SWIG bindings for Python2" OFF)
-option (BUILD_SWIG_PYTHON3 "Enable the SWIG bindings for Python3" OFF)
-option (BUILD_SWIG_LUA    "Enable the SWIG bindings for Lua" OFF)
-if (BUILD_SWIG_LUA)
-	set (TARGET_LUA_CMOD_FOLDER "lib${LIB_SUFFIX}/lua/5.2"
-		CACHE PATH
-		"Directory to install Lua binary modules (configure lua via LUA_CPATH)"
-	)
-endif (BUILD_SWIG_LUA)
-
-option (BUILD_GLIB "Enable GLIB bindings" OFF)
-option (BUILD_GLIB_GI "Enable the GObject Introspection bindings" OFF)
-if (BUILD_GLIB_GI AND NOT BUILD_GLIB)
-	message (WARNING "GObject Introspection bindings require GLib bindings")
-endif ()
-if (BUILD_GLIB_GI)
-	set (TARGET_LUA_LMOD_FOLDER "share/lua/5.2"
-		CACHE PATH
-		"Directory to install Lua modules (configure lua via LUA_PATH)"
-	)
-endif (BUILD_GLIB_GI)
 
 #
 # Developer builds (debug or verbose build)
@@ -372,6 +424,16 @@ set (TARGET_TEMPLATE_FOLDER
 		"share/elektra/templates"
 		CACHE STRING
 		"This folder (below prefix) will be used to install templates"
+    )
+
+set (TARGET_LUA_CMOD_FOLDER "lib${LIB_SUFFIX}/lua/5.2"
+	CACHE PATH
+	"Directory to install Lua binary modules, should be in LUA_CPATH"
+   )
+
+set (TARGET_LUA_LMOD_FOLDER "share/lua/5.2"
+	CACHE PATH
+	"Directory to install Lua source modules, should be in LUA_PATH)"
     )
 
 #

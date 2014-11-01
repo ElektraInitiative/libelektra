@@ -26,6 +26,20 @@ fi
 
 set -m
 
+ERRORTEXT="A conflict occurred: another process modified the key database"
+
+if [ "x$IS_INSTALLED" = "xNO" ]
+then
+	SOURCE="@CMAKE_SOURCE_DIR@"
+	SPEC="$SOURCE/src/liberror/specification"
+	[ -f "$SPEC" ]
+	exit_if_fail "no spec file $SPEC found, even though we are in-source"
+
+	grep "$ERRORTEXT" "$SPEC"
+	exit_if_fail "Errortext has changed, please correct in spec or here in test"
+fi
+
+
 check_version
 
 # simulates a config file
@@ -97,7 +111,7 @@ succeed_if "should fail (time mismatch error)"
 # test if the command failed because of the correct reason
 grep '(#30)' $ERRORFILE > /dev/null
 succeed_if "error number not correct"
-grep 'found conflict' $ERRORFILE > /dev/null
+grep "$ERRORTEXT" "$ERRORFILE" > /dev/null
 succeed_if "error message not correct"
 
 # test if value2 was actually written
@@ -123,9 +137,9 @@ fg %1
 succeed_if "value4 could not be written"
 
 # test if the command failed because of the correct reason
-grep '(#30)' $ERRORFILE > /dev/null
+grep '(#30)' "$ERRORFILE" > /dev/null
 succeed_if "error number not correct"
-grep 'found conflict' $ERRORFILE > /dev/null
+grep "$ERRORTEXT" "$ERRORFILE" > /dev/null
 succeed_if "error message not correct"
 
 # test if value4 was actually written

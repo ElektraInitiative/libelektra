@@ -1,4 +1,4 @@
-set(PYTHON2_MODULEPATH "${CMAKE_CURRENT_BINARY_DIR}/..")
+set(PYTHON2_MODULEPATH "${CMAKE_SWIG_OUTDIR}")
 
 macro (do_python_test source)
 	get_filename_component (name ${source} NAME)

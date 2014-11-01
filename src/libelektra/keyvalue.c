@@ -578,11 +578,11 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	{
 		char *p=0;
 		p=realloc(key->data.v,key->dataSize);
-		if (NULL==p) return -1;
+		if (0==p) return -1;
 		key->data.v=p;
 	} else {
 		char *p=elektraMalloc(key->dataSize);
-		if (NULL==p) return -1;
+		if (0==p) return -1;
 		key->data.v=p;
 	}
 
