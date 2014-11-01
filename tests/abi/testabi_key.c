@@ -381,6 +381,14 @@ static void test_keyReference()
 	succeed_if (keyGetRef(key) == 0, "reference counter");
 	keyDel (key); // key is now deleted
 
+	Key *k = keyNew("system/proper_name", KEY_END); // ref counter = 0
+	succeed_if(keyGetRef(k) == 0, "ref should be zero");
+	KeySet *ks = ksNew (1, k, KS_END);
+	succeed_if(keyGetRef(k) == 1, "ref should be one");
+	succeed_if(keyDel(k) == 1, "key will not be deleted, because its in the keyset");
+	succeed_if(keyGetRef(k) == 1, "ref should be one");
+	succeed_if(ksDel(ks) == 0, "could not del"); // now the key will be deleted
+
 	return;
 
 	/* This code needs very long to execute, especially on 64bit

@@ -34,13 +34,57 @@
  *   - @link keymeta UID, GID and filesystem-like mode permissions @endlink
  *   - @link keymeta Mode, change and modification times @endlink
  *
- * Described here the methods to allocate and free the key.
- *
  * Due to ABI compatibility, the @p Key structure is not defined in kdb.h,
  * only declared. So you can only declare @p pointers to @p Keys in your
  * program, and allocate and free memory for them with keyNew()
  * and keyDel() respectively.
  *
+ *
+ * @section ref Reference Counting
+ *
+ * The reference counter (see keyGetRef()) will be initialized
+ * with 0, that means a subsequent call of keyDel() will delete
+ * the key. If you append the key to a keyset the reference counter
+ * will be incremented by one (see keyInc()) and the key can't be
+ * be deleted by a keyDel():
+ *
+ * @snippet keyNew.c Ref in KeySet
+ *
+ * You can even add the key to more KeySets:
+ *
+* @snippet keyNew.c Ref in multiple KeySets
+ *@code
+ *@endcode
+ *
+ * If you increment only by one with keyInc() the same as said above
+ * is valid:
+ *
+ *
+ * @snippet keyNew.c Ref
+ *
+ *
+ * or use keyInc() more than once:
+ *
+ * @snippet keyNew.c Multi Ref
+ *
+ * The key won't be deleted by a keyDel() as long refcounter is not 0.
+ *
+ * As you can imagine this refcounting allows you to put the Key in your
+ * own datastructures.
+ * It can be a very powerful feature, e.g. if you need your own-defined
+ * ordering or different Models of your configuration.
+ *
+ * @see keyIncRef(), keyDecRef(), keyGetRef()
+ *
+ *
+ * @section sync Sync Bits
+ *
+ * The key's sync bit will always be set for any call, except:
+ * 
+ * @code
+Key *k = keyNew(0);
+// keyNeedSync() will be false
+ * @endcode
  */
 
 
@@ -115,7 +159,7 @@ static Key *elektraKeyMalloc()
  *
  * keyNew() processes the given argument list even further.
  * The Key attribute tags are the following:
- * - keyswitch_t::KEY_VALUE \n
+ * - #keyswitch_t::KEY_VALUE \n
  *   Next parameter is a pointer to the value that will be set to the key
  *   If no keyswitch_t::KEY_TYPE was used before,
  *   keyswitch_t::KEY_TYPE_STRING is assumed.
@@ -156,58 +200,6 @@ static Key *elektraKeyMalloc()
  * Example with most features:
  *
 * @snippet keyNew.c With Everything
- *
- * The reference counter (see keyGetRef()) will be initialized
- * with 0, that means a subsequent call of keyDel() will delete
- * the key. If you append the key to a keyset the reference counter
- * will be incremented by one (see keyInc()) and the key can't be
- * be deleted by a keyDel().
- *
- *@code
- *@endcode
- *
- * If you increment only by one with keyInc() the same as said above
- * is valid:
- *
- *@code
-Key *k = keyNew(0); // ref counter 0
-keyIncRef(k); // ref counter of key 1
-keyDel(k);    // has no effect
-keyDecRef(k); // ref counter back to 0
-keyDel(k);    // key is now deleted
- *@endcode
- *
- * If you add the key to more keySets:
- *
- *@code
-Key *k = keyNew(0); // ref counter 0
-ksAppendKey(ks1, k); // ref counter of key 1
-ksAppendKey(ks2, k); // ref counter of key 2
-ksDel(ks1); // ref counter of key 1
-ksDel(ks2); // k is now deleted
- *@endcode
- *
- * or use keyInc() more than once:
- *
- *@code
-Key *k = keyNew(0); // ref counter 0
-keyIncRef(k); // ref counter of key 1
-keyDel (k);   // has no effect
-keyIncRef(k); // ref counter of key 2
-keyDel (k);   // has no effect
-keyDecRef(k); // ref counter of key 1
-keyDel (k);   // has no effect
-keyDecRef(k); // ref counter is now 0
-keyDel (k); // k is now deleted
- *@endcode
- *
- * they key won't be deleted by a keyDel() as long refcounter is not 0.
- *
- * The key's sync bit will always be set for any call, except:
- * @code
-Key *k = keyNew(0);
-// keyNeedSync() will be false
- * @endcode
  *
  * @param name a valid name to the key, or NULL to get a simple
  * 	initialized, but really empty, object 

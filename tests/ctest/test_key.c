@@ -1111,7 +1111,11 @@ static void test_keyNeedSync()
 {
 	printf ("Test key need sync\n");
 
-	Key * k = keyNew("", KEY_END);
+	Key * k = keyNew(0);
+	succeed_if(keyNeedSync(k), "fresh key should need sync");
+	keyDel(k);
+
+	k = keyNew("", KEY_END);
 	succeed_if(keyNeedSync(k), "fresh key should need sync");
 
 	set_bit(k->flags, KEY_FLAG_SYNC);

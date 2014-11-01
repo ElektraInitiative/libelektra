@@ -90,6 +90,25 @@ keyDel(k);
 
 }{
 
+//! [Ref in KeySet]
+Key *k = keyNew("user/proper_name", KEY_END); // ref counter = 0
+KeySet *ks = ksNew (1, k, KS_END);
+keyDel(k); // key will not be deleted, because its in the keyset
+ksDel(ks); // now the key will be deleted
+//! [Ref in KeySet]
+
+}{
+
+//! [Ref in multiple KeySets]
+Key *k = keyNew("user/proper_name", KEY_END); // ref counter 0
+KeySet *ks1 = ksNew(1, k, KS_END); // ref counter of k 1
+KeySet *ks2 = ksNew(1, k, KS_END); // ref counter of k 2
+ksDel(ks1); // ref counter of k 1
+ksDel(ks2); // k is now deleted
+//! [Ref in multiple KeySets]
+
+}{
+
 //! [Ref]
 Key *k = keyNew(0); // ref counter = 0
 keyIncRef(k); // ref counter = 1
@@ -97,6 +116,20 @@ keyDel(k); // key will not be deleted
 keyDecRef(k);
 keyDel(k);
 //! [Ref]
+
+}{
+
+//! [Multi Ref]
+Key *k = keyNew(0); // ref counter 0
+keyIncRef(k); // ref counter of key 1
+keyDel (k);   // has no effect
+keyIncRef(k); // ref counter of key 2
+keyDel (k);   // has no effect
+keyDecRef(k); // ref counter of key 1
+keyDel (k);   // has no effect
+keyDecRef(k); // ref counter is now 0
+keyDel (k); // k is now deleted
+//! [Multi Ref]
 
 }
 
