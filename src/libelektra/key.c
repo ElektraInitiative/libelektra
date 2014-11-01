@@ -477,7 +477,7 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
  * @snippet keyCopy.c Copy Without Value
  *
  * Restrain from coping everything yourself, because it will lead to
- * wrong metadata:
+ * wrong metadata and is not able to copy empty or cascading names:
  *
  * @snippet keyCopy.c Individual Copy
  *
@@ -504,7 +504,8 @@ int keyCopy (Key *dest, const Key *source)
 		return 0;
 	}
 
-	if (keySetName(dest,source->key) == -1)
+	if (elektraKeySetName(dest,source->key,
+		KDB_O_CASCADING_NAME|KDB_O_META_NAME|KDB_O_EMPTY_NAME) == -1)
 	{
 		return -1;
 	}

@@ -1107,6 +1107,101 @@ static void test_keyAddName()
 	keyDel(k);
 }
 
+static void test_keyNeedSync()
+{
+	printf ("Test key need sync\n");
+
+	Key * k = keyNew("", KEY_END);
+	succeed_if(keyNeedSync(k), "fresh key should need sync");
+
+	set_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keyNeedSync(k), "sync bit was set");
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(!keyNeedSync(k), "sync bit was cleared");
+
+	keySetName(k, "");
+	succeed_if(keyNeedSync(k), "nothing done, but synced (impl-dep, could be optimized)");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetName(k, "user/abc");
+	succeed_if(keyNeedSync(k), "new name, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetString(k, "a str");
+	succeed_if(keyNeedSync(k), "new string, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetBinary(k, "a str", 4);
+	succeed_if(keyNeedSync(k), "new binary, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetMeta(k, "metakey", "metaval");
+	succeed_if(keyNeedSync(k), "new meta, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	Key *d = keyDup(k);
+	succeed_if(keyNeedSync(d), "dup key, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	clear_bit(d->flags, KEY_FLAG_SYNC);
+	succeed_if(keyCopy(d, k) != -1, "copy not successful");
+	succeed_if(keyNeedSync(d), "copy key, should definitely need sync");
+	succeed_if(!keyNeedSync(k), "sources sync flag should not be affected");
+	keyDel(d);
+
+	keyIncRef(k);
+	succeed_if(!keyNeedSync(k), "ref counter should not affect sync");
+	keyDecRef(k);
+	succeed_if(!keyNeedSync(k), "ref counter should not affect sync");
+
+
+	keySetName(k, "");
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+
+	succeed_if(keySetBaseName(k, "") == -1, "could not set base name");
+	succeed_if(!keyNeedSync(k), "nothing done, so still no sync (impl-dep, could be deoptimized)");
+
+	keySetName(k, "user/abc");
+	succeed_if(keyNeedSync(k), "name set, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keySetBaseName(k, "xynz") != -1, "could not set base name");
+	succeed_if(keyNeedSync(k), "base name changed, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keyAddBaseName(k, "foo") != -1, "could not add base name");
+	succeed_if(keyNeedSync(k), "base name changed, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keyAddName(k, "bar") != -1, "could not add name");
+	succeed_if(keyNeedSync(k), "base name changed, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keySetOwner(k, "someowner") != -1, "could not set owner");
+	succeed_if(keyNeedSync(k), "owner changed, sync should be there");
+
+	keyDel(k);
+}
+
+static void test_keyCopy()
+{
+	printf ("test copy key\n");
+	Key *k = keyNew("", KEY_END);
+	Key *c = keyNew("user/name", KEY_END);
+
+	succeed_if(keyCopy(c, k) != -1, "could not copy");
+	succeed_if_same_string(keyName(k), "");
+	succeed_if_same_string(keyName(c), "");
+
+	succeed_if (elektraKeySetName(k, "/abc", KDB_O_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if(keyCopy(c, k) != -1, "could not copy");
+	succeed_if_same_string(keyName(k), "/abc");
+	succeed_if_same_string(keyName(c), "/abc");
+
+	keyDel(k);
+	keyDel(c);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -1123,7 +1218,6 @@ int main(int argc, char** argv)
 	test_keyComment();
 	test_keyOwner();
 	test_keyComment();
-	test_keyOwner();
 	test_keyDir();
 	test_keyTime();
 	test_keyMeta();
@@ -1132,6 +1226,8 @@ int main(int argc, char** argv)
 	test_elektraKeySetName();
 	test_keyLock();
 	test_keyAddName();
+	test_keyNeedSync();
+	test_keyCopy();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
