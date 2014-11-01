@@ -8,6 +8,8 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.9 #
 
+Compile under MINGW
+
 32-bit build agent! (for variable size problems)
 
 Debug+improve installation of gen

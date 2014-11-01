@@ -150,6 +150,29 @@ macro (add_cpp_plugintest testname)
 endmacro (add_cpp_plugintest testname)
 
 
+function(find_util util output_loc output_arg)
+	if (CMAKE_CROSSCOMPILING)
+		if (WIN32)
+			find_program(EXE_LOC wine)
+			if (EXE_LOC)
+				set (ARG_LOC "${CMAKE_BINARY_DIR}/bin/${util}.exe")
+			else()
+				find_program (EXE_LOC
+					HINTS
+						${CMAKE_BINARY_DIR}
+					${util}.exe)
+			endif ()
+		else()
+			find_program (EXE_LOC ${util})
+		endif ()
+	else (CMAKE_CROSSCOMPILING)
+		get_target_property (EXE_LOC ${util} LOCATION)
+	endif (CMAKE_CROSSCOMPILING)
+	set (${output_loc} ${EXE_LOC} PARENT_SCOPE)
+	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)
+endfunction(find_util util output)
+
+
 #- Adds all headerfiles of global include path to the given variable
 #
 #  ADD_HEADERS (variable)
@@ -176,17 +199,13 @@ macro (add_headers HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
-	if (CMAKE_CROSSCOMPILING)
-		find_program (EXE_LOC exporterrors)
-	else (CMAKE_CROSSCOMPILING)
-		get_target_property (EXE_LOC exporterrors LOCATION)
-	endif (CMAKE_CROSSCOMPILING)
+	find_util(exporterrors EXE_ERR_LOC EXE_ERR_ARG)
 
 	add_custom_command (
 			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 			DEPENDS exporterrors
-			COMMAND ${EXE_LOC}
-			ARGS ${CMAKE_SOURCE_DIR}/src/liberror/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
+			COMMAND ${EXE_ERR_LOC}
+			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/liberror/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 			)
 	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)

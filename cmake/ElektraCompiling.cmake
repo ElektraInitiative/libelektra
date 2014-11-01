@@ -36,14 +36,18 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-	#not supported by icc:
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+	if (WIN32)
+		message (STATUS "mingw detected")
+	else(WIN32)
+		#not supported by icc:
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
 
-	#not supported by icc/clang:
-	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
+		#not supported by icc/clang:
+		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
 
-	message (STATUS "GCC detected")
+		message (STATUS "GCC detected")
+	endif(WIN32)
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 if (WIN32)
