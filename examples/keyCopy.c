@@ -45,9 +45,9 @@ void i (Key *k)
 {
 	keySetName(k, keyName(c));
 	keySetString(k, keyString(c));
-	keyCopyAllMeta(k, 0); // get rid of previous metadata
 	keyCopyAllMeta(k, c);
-	// k is now a copy of c if everything was successfully
+	// k is not a copy of c even if everything was successfully,
+	// because it still contains meta data from k
 }
 //! [Individual Copy]
 
@@ -67,4 +67,5 @@ int main()
 	i(k);
 
 	keyDel(k);
+	keyDel(c);
 }

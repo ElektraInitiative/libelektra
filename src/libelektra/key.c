@@ -476,9 +476,8 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
  *
  * @snippet keyCopy.c Copy Without Value
  *
- * Or, if you prefer you can copy the desired properties
- * individually (no error handling nor handling of binary
- * keys):
+ * Restrain from coping everything yourself, because it will lead to
+ * wrong metadata:
  *
  * @snippet keyCopy.c Individual Copy
  *
