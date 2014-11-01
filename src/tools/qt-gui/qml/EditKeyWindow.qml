@@ -37,8 +37,10 @@ KeyWindow {
         qmlMetaKeyModel.clear()
         selectedNode = null
 
-        if(accessFromSearchResults)
+        if(accessFromSearchResults){
             searchResultsListView.model.refresh()
+            searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+        }
 
         accessFromSearchResults = false
     }

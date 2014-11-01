@@ -92,7 +92,7 @@ ApplicationWindow {
     }
 
     function cutKey() {
-        console.log("cut Key")
+        //console.log("cut Key")
         //needed to mark the node
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
@@ -102,7 +102,7 @@ ApplicationWindow {
     }
 
     function cutBranch() {
-        console.log("cut Branch")
+        //console.log("cut Branch")
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         keyAreaView.currentNodePath = treeView.currentNode.path
 
@@ -111,7 +111,7 @@ ApplicationWindow {
     }
 
     function copyKey() {
-        console.log("copy Key")
+        //console.log("copy Key")
         //needed to mark the node
         keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
         keyAreaView.currentNodePath = treeView.currentNode.path
@@ -120,7 +120,7 @@ ApplicationWindow {
     }
 
     function copyBranch() {
-        console.log("copy Branch")
+        //console.log("copy Branch")
         //needed to mark the node
         treeView.treeAreaCopyIndex = treeView.currentNode.index
         treeView.currentNodePath = treeView.currentNode.path
@@ -134,7 +134,7 @@ ApplicationWindow {
             undoManager.createCopyKeyCommand(treeView.currentNode.node)
             keyAreaView.keyAreaCopyIndex = -1
             keyAreaView.currentNodePath = ""
-
+            resetKeyAreaModel()
             if(keyAreaSelectedItem === null){
                 keyAreaModel.refresh()
             }
@@ -176,7 +176,7 @@ ApplicationWindow {
     }
 
     function deleteKey() {
-        console.log("delete key")
+        //console.log("delete key")
         var cr = keyAreaView.currentRow
 
         undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
@@ -194,7 +194,7 @@ ApplicationWindow {
     }
 
     function deleteBranch() {
-        console.log("delete branch")
+        //console.log("delete branch")
 
         undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
         treeView.currentNode = null
@@ -202,7 +202,7 @@ ApplicationWindow {
     }
 
     function deleteSearchResult(){
-        console.log("delete search result")
+        //console.log("delete search result")
         var ci = searchResultsListView.currentIndex
 
         if(searchResultsSelectedItem !== null){
@@ -231,6 +231,11 @@ ApplicationWindow {
         keyAreaView.selection.clear()
         keyAreaView.selection.select(keyAreaView.currentRow)
         keyAreaView.forceActiveFocus()
+    }
+
+    function resetKeyAreaModel() {
+        keyAreaModel = null
+        keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
     }
 
     //**Colors*************************************************************************************************//
@@ -336,7 +341,7 @@ ApplicationWindow {
                             property string link: "https://github.com/ElektraInitiative/libelektra"
                             readOnly: true
                             textFormat: TextEdit.RichText
-                            text: "<html><style type=\"text/css\"></style><b>Visit Elektra on GitHub:</b><br><a href=\"" + link + "\">ElektraInitiative/libelektra
+                            text: "<html><style type=\"text/css\"></style><b>Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database.</b><br><br><b>Visit Elektra on GitHub:</b><br><a href=\"" + link + "\">ElektraInitiative/libelektra
 </a></html>"
                             onLinkActivated: Qt.openUrlExternally(link)
                         }
@@ -458,10 +463,17 @@ ApplicationWindow {
 
             if(undoManager.undoText === "deleteKey"){
                 undoManager.undo()
-                keyAreaModel.refresh()
+                resetKeyAreaModel()
+
+                if(keyAreaModel !== null)
+                    keyAreaModel.refresh()
+
+                externTreeModel.refresh()
             }
             else if(undoManager.undoText === "deleteBranch"){
                 undoManager.undo()
+                if(keyAreaModel !== null)
+                    keyAreaModel.refresh()
                 externTreeModel.refresh()
             }
             else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
@@ -495,11 +507,11 @@ ApplicationWindow {
             else if(undoManager.undoText === "newKey"){
                 undoManager.undo()
                 externTreeModel.refresh()
-                if(keyAreaModel.rowCount === 0 && keyAreaSelectedItem !== null)
-                    keyAreaSelectedItem = null
+                keyAreaView.selection.clear()
             }
             else{
                 undoManager.undo()
+                keyAreaView.selection.clear()
                 if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
                     searchResultsListView.model.refresh()
             }
@@ -519,6 +531,7 @@ ApplicationWindow {
             if(undoManager.redoText === "deleteKey"){
                 undoManager.redo()
                 metaAreaModel = null
+                externTreeModel.refresh()
             }
             else if(undoManager.redoText === "deleteBranch"){
                 undoManager.redo()

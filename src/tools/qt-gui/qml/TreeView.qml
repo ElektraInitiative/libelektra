@@ -76,11 +76,11 @@ ScrollView {
                                     }
                                 }
                                 else if(event.key === Qt.Key_Up){
-                                    console.log("up")
+                                    //console.log("up")
 
                                 }
                                 else if(event.key === Qt.Key_Down){
-                                    console.log("down")
+                                    //console.log("down")
                                 }
                             }
                             MouseArea {
