@@ -17,7 +17,6 @@
 #define NUM_DIR 200
 #define NUM_KEY 200
 
-#define NUM_THREAD 2
 #define NR 50
 
 #define BUF_SIZ 50
