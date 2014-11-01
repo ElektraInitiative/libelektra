@@ -1,4 +1,4 @@
-This is a technical release of a new gui for Elektra.
+This is a technical preview of a new gui for Elektra.
 
 To build it, make sure that you have Qt5 cmake files in your
 CMAKE PREFIX PATH and that you have added qt-gui in TOOLS.

@@ -14,7 +14,9 @@ DeleteKeyCommand::DeleteKeyCommand(const QString &type, TreeViewModel *model, Co
  */
 DeleteKeyCommand::~DeleteKeyCommand()
 {
-    delete m_node;
+    //TODO: This node will be deleted twice: once here and once when the parentmodel is destructed. This
+    //leads to a crash on exit.
+//    delete m_node;
 }
 
 void DeleteKeyCommand::undo()

@@ -10,6 +10,7 @@
 UndoManager::UndoManager(QObject *parent) :
     QObject(parent)
   , m_undoStack(new QUndoStack(this))
+  , m_clipboardEmpty(true)
 {
     connect(m_undoStack, SIGNAL(canRedoChanged(bool)), this, SIGNAL(canRedoChanged()));
     connect(m_undoStack, SIGNAL(canUndoChanged(bool)), this, SIGNAL(canUndoChanged()));
@@ -20,8 +21,9 @@ UndoManager::UndoManager(QObject *parent) :
 }
 
 UndoManager::UndoManager(const UndoManager &other)
+    : QObject()
 {
-
+    Q_UNUSED(other)
 }
 
 UndoManager::~UndoManager()
@@ -58,19 +60,19 @@ void UndoManager::createDeleteKeyCommand(const QString &type, TreeViewModel *mod
     m_undoStack->push(new DeleteKeyCommand(type, model, node, index));
 }
 
-void UndoManager::createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData)
+void UndoManager::createNewKeyCommand(ConfigNode *node, const QString &name, const QString &value, const QVariantMap &metaData)
 {
-    m_undoStack->push(new NewKeyCommand(model, name, value, metaData));
+    m_undoStack->push(new NewKeyCommand(node, name, value, metaData));
 }
 
 void UndoManager::createCopyKeyCommand(ConfigNode *target)
 {
-    m_undoStack->push(new CopyKeyCommand(qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target));
+    m_undoStack->push(new CopyKeyCommand(m_clipboardType, qvariant_cast<ConfigNode*>(m_clipboard->property("source")), target));
 }
 
 void UndoManager::createCutKeyCommand(ConfigNode *target)
 {
-    m_undoStack->push(new CutKeyCommand(qvariant_cast<TreeViewModel*>(m_clipboard->property("model")), qvariant_cast<ConfigNode*>(m_clipboard->property("node")), target, m_clipboard->property("index").toInt()));
+    m_undoStack->push(new CutKeyCommand(m_clipboardType, qvariant_cast<ConfigNode*>(m_clipboard->property("source")), target, m_clipboard->property("index").toInt()));
 }
 
 void UndoManager::createImportConfigurationCommand(TreeViewModel *model, const QString &name, const QString &format, const QString &file, const QString &mergeStrategy)
@@ -86,6 +88,11 @@ void UndoManager::setClean()
 bool UndoManager::isClean()
 {
     return m_undoStack->isClean();
+}
+
+bool UndoManager::canPaste()
+{
+    return !m_clipboardEmpty;
 }
 
 void UndoManager::undo()
@@ -108,17 +115,19 @@ QString UndoManager::clipboardType() const
     return m_clipboardType;
 }
 
-void UndoManager::putToClipboard(const QString &type, TreeViewModel *model, ConfigNode *node, int index)
+void UndoManager::putToClipboard(const QString &type, ConfigNode *source, int index)
 {
     m_clipboardType = type;
 
     m_clipboard->clear();
 
-    m_clipboard->setProperty("model", QVariant::fromValue(model));
-    m_clipboard->setProperty("node", QVariant::fromValue(new ConfigNode(*node)));
+    m_clipboard->setProperty("source", QVariant::fromValue(source));
     m_clipboard->setProperty("index", QVariant::fromValue(index));
 
+    m_clipboardEmpty = false;
+
     emit clipboardTypeChanged();
+    emit canPasteChanged();
 }
 
 QString UndoManager::redoText() const

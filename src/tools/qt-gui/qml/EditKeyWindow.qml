@@ -5,18 +5,24 @@ KeyWindow {
     title: qsTr("Edit Key")
 
     path: treeView.currentNode === null ? "" : treeView.currentNode.path
-    keyName: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.name
-    keyValue: keyAreaSelectedItem === null ? "" : keyAreaSelectedItem.value
+    keyName: selectedNode === null ? "" : selectedNode.name
+    keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
     function populateMetaArea() {
-        for(var i = 0; i < metaAreaModel.rowCount(); i++){
-            qmlMetaKeyModel.append({"metaName" : metaAreaListView.model.get(i).name, "metaValue" : metaAreaListView.model.get(i).value})
+        for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
+            qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
         }
     }
 
     function editAccepted() {
 
         var metaData = {};
+        var index;
+
+        if(accessFromSearchResults)
+            index = selectedNode.parentModel.getIndexByName(selectedNode.name)
+        else
+            index = selectedNode.index
 
         //collect metadata in a map
         for(var i = 0; i < qmlMetaKeyModel.count; i++){
@@ -25,19 +31,17 @@ KeyWindow {
 
         //create undo command
         if(isEdited)
-            undoManager.createEditKeyCommand(keyAreaView.model, keyAreaView.currentRow, keyName.toString(), keyValue.toString(), keyAreaSelectedItem.metaValue,
+            undoManager.createEditKeyCommand(selectedNode.parentModel, index, keyName.toString(), keyValue.toString(), selectedNode.metaValue,
                                           nameTextField.text, valueTextField.text, metaData)
 
-//        //set key name & value
-//        keyAreaView.model.setData(keyAreaView.currentRow, nameTextField.text, "Name")
-//        keyAreaView.model.setData(keyAreaView.currentRow, valueTextField.text, "Value")
-
-
-//        console.log(keyAreaView.currentRow)
-
-//        //set metaData
-//        keyAreaSelectedItem.node.setMeta(metaData)
-
         qmlMetaKeyModel.clear()
+        selectedNode = null
+
+        if(accessFromSearchResults){
+            searchResultsListView.model.refresh()
+            searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+        }
+
+        accessFromSearchResults = false
     }
 }

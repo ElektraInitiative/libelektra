@@ -12,7 +12,7 @@ Window {
     property alias cancelButton: cancelButton
     default property alias contents: placeholder.children
 
-    width: Math.round(mainWindow.width*0.35)
+    width: Math.round(mainWindow.width*0.4)
     height: Math.round(mainWindow.height*0.6)
 
     x: Math.round(Screen.desktopAvailableWidth*0.5-width*0.5)
@@ -39,12 +39,11 @@ Window {
             Button {
                 id:okButton
                 text: "Ok"
+                isDefault: true
             }
             Button {
                 id:cancelButton
                 text: "Cancel"
-                isDefault: true
-                onClicked: basicWindow.visible = false
             }
         }
     }

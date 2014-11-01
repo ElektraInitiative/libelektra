@@ -23,6 +23,7 @@ class UndoManager : public QObject
 
     Q_PROPERTY(bool canUndo READ canUndo() NOTIFY canUndoChanged())
     Q_PROPERTY(bool canRedo READ canRedo() NOTIFY canRedoChanged())
+    Q_PROPERTY(bool canPaste READ canPaste() NOTIFY canPasteChanged())
 
     Q_PROPERTY(QString redoText READ redoText() NOTIFY redoTextChanged())
     Q_PROPERTY(QString undoText READ undoText() NOTIFY undoTextChanged())
@@ -93,7 +94,7 @@ public:
      * @param node The ConfigNode to put in the clipboard.
      * @param index The index of the ConfigNode.
      */
-    Q_INVOKABLE void putToClipboard(const QString &type, TreeViewModel *model, ConfigNode *node, int index);
+    Q_INVOKABLE void putToClipboard(const QString &type, ConfigNode *source, int index);
 
     /**
      * @brief Create a new EditKeyCommand.
@@ -128,7 +129,7 @@ public:
      * @param value The value of the new ConfigNode.
      * @param metaData The meta data of the new ConfigNode.
      */
-    Q_INVOKABLE void createNewKeyCommand(TreeViewModel *model, const QString &name, const QString &value, const QVariantMap &metaData);
+    Q_INVOKABLE void createNewKeyCommand(ConfigNode *node, const QString &name, const QString &value, const QVariantMap &metaData);
 
     /**
      * @brief Create a new CopyKeyCommand.
@@ -160,6 +161,7 @@ public:
      */
     Q_INVOKABLE bool isClean();
 
+    Q_INVOKABLE bool canPaste();
 
 Q_SIGNALS:
 
@@ -173,6 +175,8 @@ Q_SIGNALS:
 
     void clipboardTypeChanged();
 
+    void canPasteChanged();
+
 public Q_SLOTS:
 
     void undo();
@@ -181,9 +185,11 @@ public Q_SLOTS:
 
 private:
 
-    QUndoStack *m_undoStack;
-    QClipboard *m_clipboard;
-    QString     m_clipboardType;
+    QUndoStack*     m_undoStack;
+    QClipboard*     m_clipboard;
+    QString         m_clipboardType;
+    bool            m_clipboardEmpty;
+    TreeViewModel*  m_clipboardModel;
 };
 
 Q_DECLARE_METATYPE(UndoManager)

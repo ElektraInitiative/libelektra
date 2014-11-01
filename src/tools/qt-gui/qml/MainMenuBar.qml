@@ -100,7 +100,8 @@ MenuBar {
         id:about
         title: qsTr("&About")
         MenuItem {
-            text: qsTr("Credits ")
+            text: qsTr("About Elektra Editor")
+            action: aboutAction
         }
     }
 }

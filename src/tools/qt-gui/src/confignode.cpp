@@ -10,6 +10,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
     , m_children(new TreeViewModel)
     , m_metaData(new TreeViewModel)
     , m_parentModel(parentModel)
+    , m_isExpanded(false)
 {
     if (m_key && m_key.isString())
         m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
@@ -18,6 +19,8 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 
     if(m_key)
         populateMetaModel();
+
+    connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
 }
 
 ConfigNode::ConfigNode(const ConfigNode& other)
@@ -29,6 +32,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
     , m_children(new TreeViewModel())
     , m_metaData(new TreeViewModel())
     , m_parentModel(new TreeViewModel())
+    , m_isExpanded(false)
 {
 
     foreach(ConfigNode *node, other.m_children->model())
@@ -40,23 +44,23 @@ ConfigNode::ConfigNode(const ConfigNode& other)
     {
         m_metaData->append(new ConfigNode(*node));
     }
+
+    connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
 }
 
 ConfigNode::ConfigNode()
     : m_children(new TreeViewModel)
     , m_metaData(new TreeViewModel)
     , m_parentModel(new TreeViewModel)
+    , m_isExpanded(false)
 {
+    connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
 }
 
 ConfigNode::~ConfigNode()
 {
     delete m_children;
     delete m_metaData;
-    m_parentModel = NULL;
-
-    if(m_key)
-        m_key.clear();
 }
 
 int ConfigNode::getChildCount() const
@@ -81,7 +85,6 @@ QVariant ConfigNode::getValue() const
 
 void ConfigNode::setName(const QString& name)
 {
-//    qDebug() << "ConfigNode::setName: Node with name " << m_name << " has new name " << name;
     m_name = name;
 
     int idx = m_path.lastIndexOf("/");
@@ -91,13 +94,14 @@ void ConfigNode::setName(const QString& name)
         m_path.replace(idx, m_path.length() - idx,"/" + name);
     }
 
-    if(QString::fromStdString(m_key.getName()) != ""){
-        try{
-            m_key.setBaseName(name.toStdString());
-//            qDebug() << "ConfigNode::setName: Key with name " << QString::fromStdString(m_key.getName()) << " has new base name " << name;
-        }
-        catch(KeyInvalidName ex){
-            emit showError("ConfigNode::setName: Terminate called after throwing an instance of \'kdb::KeyInvalidName\'", ex.what(),"Keyname: " + QString::fromStdString(m_key.getFullName()));
+    if(m_key){
+        if(QString::fromStdString(m_key.getName()) != ""){
+            try{
+                m_key.setBaseName(name.toStdString());
+            }
+            catch(KeyInvalidName ex){
+                emit showMessage(tr("Error"), tr("Could not set name because Keyname \"") + QString::fromStdString(m_key.getFullName()) + tr("\" is invalid."), "", ex.what(), "c");
+            }
         }
     }
 }
@@ -150,7 +154,7 @@ void ConfigNode::deleteMeta(const QString &name)
 {
     if(m_key)
     {
-        qDebug() << "metakey " << name << " of node " << m_name << " deleted";
+        //        qDebug() << "ConfigNode::deleteMeta: " << "metakey " << name << " of node " << m_name << " deleted";
         m_key.delMeta(name.toStdString());
     }
 }
@@ -174,7 +178,7 @@ void ConfigNode::deletePath(QStringList &path)
         return;
 
     QString name = path.takeFirst();
-    int index = getIndexByName(name);
+    int index = getChildIndexByName(name);
     ConfigNode *node = getChildByName(name);
 
     node->deletePath(path);
@@ -183,7 +187,7 @@ void ConfigNode::deletePath(QStringList &path)
         m_children->removeRow(index);
 }
 
-int ConfigNode::getIndexByName(const QString &name)
+int ConfigNode::getChildIndexByName(const QString &name)
 {
     for(int i = 0; i < m_children->model().count(); i++)
     {
@@ -211,6 +215,15 @@ void ConfigNode::clear()
         m_children->removeRow(m_children->getIndexByName(node->getName()));
     }
 }
+bool ConfigNode::getIsExpanded() const
+{
+    return m_isExpanded;
+}
+
+void ConfigNode::setIsExpanded(bool value)
+{
+    m_isExpanded = value;
+}
 
 void ConfigNode::populateMetaModel()
 {
@@ -221,7 +234,7 @@ void ConfigNode::populateMetaModel()
 
         while (m_key.nextMeta())
         {
-//            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
+            //            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
             ConfigNode* node = new ConfigNode();
 
             node->setName(QString::fromStdString(m_key.getName()));
@@ -248,6 +261,7 @@ void ConfigNode::setKeyName(const QString &name)
 
 void ConfigNode::appendChild(ConfigNode* node)
 {
+    node->setParentModel(m_children);
     m_children->append(node);
 }
 
@@ -276,7 +290,7 @@ TreeViewModel* ConfigNode::getMetaKeys() const
 
 ConfigNode* ConfigNode::getChildByName(QString& name) const
 {
-    foreach (ConfigNode * node, m_children->model())
+    foreach (ConfigNode* node, m_children->model())
     {
         if (node->getName() == name)
         {
@@ -298,6 +312,11 @@ ConfigNode* ConfigNode::getChildByIndex(int index) const
 void ConfigNode::setPath(const QString &path)
 {
     m_path = path;
+    setKeyName(path);
+
+    foreach(ConfigNode *node, m_children->model()){
+        node->setPath(m_path + "/" + node->getName());
+    }
 }
 
 bool ConfigNode::childrenHaveNoChildren() const

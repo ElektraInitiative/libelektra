@@ -8,7 +8,6 @@
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
 #include "undomanager.hpp"
-#include "modeltest/modeltest.h"
 
 int main(int argc, char* argv[])
 {

@@ -157,12 +157,6 @@ public:
     void                        setKeyName(const QString &name);
 
     /**
-     * @brief Invalidate the underlying Key of this ConfigNode. After invalidating the Key of this ConfigNode, it will not be added to
-     * the configuration on the next synchronizing action.
-     */
-    void                        invalidateKey();
-
-    /**
      * @brief This method is needed to support undoing the creation of a new ConfigNode. Since a new ConfigNode is added via the @see TreeViewModel#sink method, it
      * is not possible to say where the new ConfigNode will find its place. This method is supposed to "clean up" the path of the new ConfigNode, if the insertion
      * is going to be reverted.
@@ -171,11 +165,11 @@ public:
     void                        deletePath(QStringList &path);
 
     /**
-     * @brief Returns the index of this ConfigNode in the TreeViewModel this ConfigNode is in, based on its name.
+     * @brief Returns the index of a child ConfigNode, based on its name; if there is no child with this name, the return index is -1
      * @param name The name of this ConfigNode.
      * @return The index of this ConfigNode.
      */
-    int                         getIndexByName(const QString &name);
+    int                         getChildIndexByName(const QString &name);
 
     /**
      * @brief Returns a pointer to the TreeViewModel this ConfigNode is in.
@@ -188,20 +182,22 @@ public:
      * @param parent The TreeViewModel this ConfigNode is in.
      */
     void                        setParentModel(TreeViewModel *parent);
-
     void                        clear();
+    bool                        getIsExpanded() const;
 
 private:
     // TODO: not needed if we hold the Key
-    QString m_name;
-    QString m_path;
-    QVariant m_value;
+    QString         m_name;
+    QString         m_path;
+    QVariant        m_value;
 
     // that is the only part we need:
-    kdb::Key m_key;
-    TreeViewModel* m_children;
-    TreeViewModel* m_metaData;
-    TreeViewModel* m_parentModel;
+    kdb::Key        m_key;
+    TreeViewModel*  m_children;
+    TreeViewModel*  m_metaData;
+    TreeViewModel*  m_parentModel;
+
+    bool            m_isExpanded;
 
 
 
@@ -212,7 +208,10 @@ private:
     void populateMetaModel();
 
 signals:
-    void showError(QString text, QString informativeText, QString detailedText);
+    void showMessage(QString title, QString text, QString informativeText, QString detailedText, QString icon);
+
+public slots:
+    void setIsExpanded(bool value);
 };
 
 Q_DECLARE_METATYPE(ConfigNode)

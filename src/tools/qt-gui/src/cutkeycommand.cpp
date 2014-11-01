@@ -1,28 +1,41 @@
 #include "cutkeycommand.hpp"
 
-CutKeyCommand::CutKeyCommand(TreeViewModel *model, ConfigNode *source, ConfigNode *target, int index, QUndoCommand *parent)
+CutKeyCommand::CutKeyCommand(QString type, ConfigNode *source, ConfigNode *target, int index, QUndoCommand *parent)
     : QUndoCommand(parent)
-    , m_model(model)
-    , m_source(*source)
+    , m_sourceParentModel(source->getParentModel())
+    , m_source(new ConfigNode(*source))
     , m_target(target)
-    , m_index(index)
+    , m_isExpanded(false)
+    , m_sourceIndex(index)
+    , m_targetIndex(-1)
 {
-    setText("cut");
+    setText(type);
+
+    QString newPath = m_target->getPath() + "/" + m_source->getName();
+    m_source->setPath(newPath);
 }
 
 void CutKeyCommand::undo()
 {
-    m_model->insertRow(m_index, new ConfigNode(m_source));
-    m_target->getChildren()->removeRow(m_target->getIndexByName(m_source.getName()));
+    m_isExpanded = m_target->getIsExpanded();
+    m_sourceParentModel->insertRow(m_sourceIndex, m_source);
+    m_target->getChildren()->removeRow(m_targetIndex);
+
+    if(m_sourceParentModel == m_target->getChildren()){
+        m_sourceParentModel->refresh();
+    }
 }
 
 void CutKeyCommand::redo()
 {
-    QString newPath = m_target->getPath() + "/" + m_source.getName();
-    m_source.setPath(newPath);
-    m_source.setKeyName(newPath);
+    m_target->setIsExpanded(m_isExpanded);
+    m_target->appendChild(m_source);
+    m_sourceParentModel->removeRow(m_sourceIndex);
 
-    m_target->appendChild(new ConfigNode(m_source));
-
-    m_model->removeRow(m_index);
+    if(m_sourceParentModel == m_target->getChildren()){
+        m_targetIndex = m_target->getChildCount();
+        m_sourceParentModel->refresh();
+    }
+    else
+        m_targetIndex = m_target->getChildCount() - 1;
 }

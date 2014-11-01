@@ -7,7 +7,7 @@
         <file>qml/icons/emptyFile.png</file>
         <file>qml/icons/export.png</file>
         <file>qml/icons/import.png</file>
-        <file>qml/icons/new.png</file>
+        <file>qml/icons/new-key.png</file>
         <file>qml/icons/page-simple.png</file>
         <file>qml/icons/redo.png</file>
         <file>qml/icons/synchronize.png</file>
@@ -44,5 +44,12 @@
         <file>qml/MainMenuBar.qml</file>
         <file>qml/ExportDialog.qml</file>
         <file>qml/ImportDialog.qml</file>
+        <file>qml/icons/edit-copy.png</file>
+        <file>qml/icons/edit-cut.png</file>
+        <file>qml/icons/edit-paste.png</file>
+        <file>qml/icons/edit-rename.png</file>
+        <file>qml/icons/new-array.png</file>
+        <file>qml/icons/elektra-logo.png</file>
+        <file>qml/icons/elektra-logo-big.png</file>
     </qresource>
 </RCC>
