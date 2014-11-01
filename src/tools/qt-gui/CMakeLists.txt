@@ -67,8 +67,6 @@ set(qt-gui_SRCS
 	src/confignode.cpp
 	src/printvisitor.cpp
 	src/keysetvisitor.cpp
-	modeltest/dynamictreemodel.cpp
-	modeltest/modeltest.cpp
 	src/undomanager.cpp
 	src/newkeycommand.cpp
 	src/deletekeycommand.cpp
