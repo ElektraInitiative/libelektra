@@ -30,8 +30,11 @@ ksLookup now also implements cascading search
 
 use BINDINGS variable for easier handling of many BINDINGS
 
-Examples:
+Many more examples were written and are used within doxygen. Most
+snippets now can also be found in compilable files:
 - C++ deep dup
+- keyNew examples
+- keyCopy examples
 
 Refactoring:
 - reuse of utilities in gen code generator

@@ -577,7 +577,8 @@ void keyVInit (Key *key, const char *name, va_list va)
 {
 	keyswitch_t action = 0;
 	void *value = 0;
-	ssize_t valueSize = -1;
+	int valueSizeChanged = 0;
+	size_t valueSize = 0;
 	char *owner = 0;
 	enum elektraNameOptions nameOptions = 0;
 	void (*p) (void) = 0;
@@ -590,17 +591,18 @@ void keyVInit (Key *key, const char *name, va_list va)
 			switch (action) {
 				case KEY_SIZE:
 					valueSize=va_arg(va, size_t);
+					valueSizeChanged = 1;
 					break;
 				case KEY_BINARY:
 					keySetMeta (key, "binary", "");
 					break;
 				case KEY_VALUE:
 					value = va_arg(va, void *);
-					if (valueSize>=0 && keyIsBinary(key))
+					if (valueSizeChanged && keyIsBinary(key))
 					{
 						keySetBinary(key,value, valueSize);
 					} else if (keyIsBinary(key)) {
-						valueSize = (ssize_t) elektraStrLen (value);
+						valueSize = elektraStrLen (value);
 						keySetBinary(key,value, valueSize);
 					} else {
 						keySetString(key,value);
