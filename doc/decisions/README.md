@@ -14,7 +14,11 @@ section here.
 
 ## Decided
 
+- [Relative Storages](relative.md)
+
 ## In Discussion
+
+- [CMake spec](cmake_spec.md)
 
 ## Drafts
 
