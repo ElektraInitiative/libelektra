@@ -13,6 +13,7 @@ endif()
 add_plugin(resolver
 	SOURCES
 		${SOURCES}
+		mutex.c
 	LINK_LIBRARIES
 		${CMAKE_THREAD_LIBS_INIT}
 		${CMAKE_REALTIME_LIBS_INIT}
