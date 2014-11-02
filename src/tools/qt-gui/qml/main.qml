@@ -307,10 +307,12 @@ ApplicationWindow {
         id: aboutWindow
 
         title: qsTr("About Elektra Editor")
-        width: tabs.width + 2*defaultMargins
-        height: 2*tabs.height
+
+        width: Math.round(mainWindow.width*0.2)
+        height: Math.round(mainWindow.width*0.2)
 
         ColumnLayout {
+            anchors.fill: parent
             spacing: defaultMargins
 
             RowLayout {
@@ -335,6 +337,10 @@ ApplicationWindow {
 
                 TabView {
                     id: tabs
+
+                    anchors.fill: parent
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
 
                     Tab {
                         title: qsTr("&About")
