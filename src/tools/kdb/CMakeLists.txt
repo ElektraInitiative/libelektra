@@ -37,11 +37,7 @@ if (BUILD_STATIC)
 		elektra-static
 		elektratools-static)
 
-	list (FIND PLUGINS "resolver" FINDEX)
-	if (FINDEX GREATER -1)
-		target_link_libraries (kdb-static
-			elektra-resolver-lock)
-	endif()
+	#TODO: add helper libraries of plugins, too
 
 	if (CMAKE_STATIC_FLAGS)
 		set_target_properties (kdb-static PROPERTIES LINK_FLAGS

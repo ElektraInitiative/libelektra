@@ -34,8 +34,6 @@
 #include <kdbplugin.h>
 #include <kdberrors.h>
 
-#include "lock.h"
-
 #define ERROR_SIZE 1024
 
 typedef struct _resolverHandle resolverHandle;
