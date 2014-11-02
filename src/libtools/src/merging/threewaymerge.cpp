@@ -59,7 +59,7 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 			else
 			{
 				// metakeys are different
-				mergeResult.addConflict (mergeKey, META, META);
+				mergeResult.addConflict (mergeKey, CONFLICT_META, CONFLICT_META);
 			}
 		}
 		else
@@ -77,7 +77,7 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 					if (!keyDataEqual (our, baseLookupResult) && keyDataEqual (theirLookupResult, baseLookupResult))
 					{
 						// the key was only modified in ours
-						addAsymmetricConflict (mergeResult, mergeKey, MODIFY, SAME, reverseConflictMeta);
+						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_MODIFY, CONFLICT_SAME, reverseConflictMeta);
 					}
 					else
 					{
@@ -85,7 +85,7 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 						if (!keyDataEqual (our, baseLookupResult) && !keyDataEqual (theirLookupResult, baseLookupResult))
 						{
 							// the key was modified on both sides
-							mergeResult.addConflict (mergeKey, MODIFY, MODIFY);
+							mergeResult.addConflict (mergeKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
 						}
 					}
 				}
@@ -95,12 +95,12 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 					if (keyDataEqual (our, baseLookupResult))
 					{
 						// the key was deleted in theirs, and not modified in ours
-						addAsymmetricConflict (mergeResult, mergeKey, SAME, DELETE, reverseConflictMeta);
+						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_SAME, CONFLICT_DELETE, reverseConflictMeta);
 					}
 					else
 					{
 						// the key was deleted in theirs, but modified in ours
-						addAsymmetricConflict (mergeResult, mergeKey, MODIFY, DELETE, reverseConflictMeta);
+						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_MODIFY, CONFLICT_DELETE, reverseConflictMeta);
 					}
 				}
 			}
@@ -120,19 +120,19 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 						else
 						{
 							// metakeys are different
-							mergeResult.addConflict (mergeKey, META, META);
+							mergeResult.addConflict (mergeKey, CONFLICT_META, CONFLICT_META);
 						}
 					}
 					else
 					{
 						// the key was added on both sides with different values
-						mergeResult.addConflict (mergeKey, ADD, ADD);
+						mergeResult.addConflict (mergeKey, CONFLICT_ADD, CONFLICT_ADD);
 					}
 				}
 				else
 				{
 					// the key was only added to ours
-					addAsymmetricConflict (mergeResult, mergeKey, ADD, SAME, reverseConflictMeta);
+					addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_ADD, CONFLICT_SAME, reverseConflictMeta);
 				}
 			}
 		}

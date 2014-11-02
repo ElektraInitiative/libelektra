@@ -36,7 +36,7 @@ TEST_F(AutoMergeStrategyTest, DeleteEqualsMerges)
 {
 	task.ours.lookup ("user/parento/config/key1", KDB_O_POP);
 	Key conflictKey = mergeKeys.lookup (mk1);
-	result.addConflict (conflictKey, DELETE, SAME);
+	result.addConflict (conflictKey, CONFLICT_DELETE, CONFLICT_SAME);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);
@@ -54,7 +54,7 @@ TEST_F(AutoMergeStrategyTest, EqualsDeleteMerges)
 {
 	task.theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
 	Key conflictKey = mergeKeys.lookup (mk1);
-	result.addConflict (conflictKey, SAME, DELETE);
+	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_DELETE);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);
@@ -71,7 +71,7 @@ TEST_F(AutoMergeStrategyTest, EqualsModifyMerges)
 {
 	task.theirs.lookup ("user/parentt/config/key1").setString ("modifiedvalue");
 	Key conflictKey = mergeKeys.lookup (mk1);
-	result.addConflict (conflictKey, SAME, MODIFY);
+	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);
@@ -91,7 +91,7 @@ TEST_F(AutoMergeStrategyTest, ModifyEqualsMerges)
 {
 	task.ours.lookup ("user/parento/config/key1").setString ("modifiedvalue");
 	Key conflictKey = mergeKeys.lookup (mk1);
-	result.addConflict (conflictKey, MODIFY, SAME);
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_SAME);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);
@@ -113,7 +113,7 @@ TEST_F(AutoMergeStrategyTest, AddEqualsKeyMerge)
 	task.ours.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);
-	result.addConflict (conflictKey, ADD, SAME);
+	result.addConflict (conflictKey, CONFLICT_ADD, CONFLICT_SAME);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);
@@ -130,7 +130,7 @@ TEST_F(AutoMergeStrategyTest, EqualsAddKeyMerge)
 	task.theirs.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);
-	result.addConflict (conflictKey, SAME, ADD);
+	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_ADD);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);
