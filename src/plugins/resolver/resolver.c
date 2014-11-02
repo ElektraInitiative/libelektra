@@ -56,11 +56,8 @@
 #include <pthread.h>
 
 // every resolver should use the same mutex
-pthread_mutex_t elektra_resolver_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
-
-#ifdef _GNU_SOURCE
-#error "Something turned _GNU_SOURCE on, this breaks strerror_r!"
+pthread_mutex_t elektra_resolver_mutex =
+	PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 #endif
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -126,10 +123,9 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED,
 		else
 		{
 			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING(27, parentKey, buffer);
 
-			ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed file lock (warning 27 for strerror)");
+			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed file lock with message: %s",
+				strerror_r(errno, buffer, ERROR_SIZE));
 		}
 		return -1;
 	}
@@ -163,8 +159,8 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 	if (ret == -1)
 	{
 		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING(32, parentKey, buffer);
+		ELEKTRA_ADD_WARNINGF(32, parentKey, "fcntl SETLK unlocking failed with message: %s", 
+			strerror_r(errno, buffer, ERROR_SIZE));
 	}
 
 	return ret;
@@ -193,10 +189,8 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 		else
 		{
 			char buffer[ERROR_SIZE];
-			strerror_r(errno, buffer, ERROR_SIZE);
-			ELEKTRA_ADD_WARNING(27, parentKey, buffer);
-
-			ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed mutex lock (warning 27 for strerror)");
+			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed mutex lock with message: %s",
+				strerror_r(errno, buffer, ERROR_SIZE));
 		}
 		return -1;
 	}
@@ -219,8 +213,8 @@ static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 	if (ret != 0)
 	{
 		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING(32, parentKey, buffer);
+		ELEKTRA_ADD_WARNINGF(32, parentKey, "mutex unlock failed with message: %s",
+			strerror_r(errno, buffer, ERROR_SIZE));
 		return -1;
 	}
 	return 0;
@@ -242,8 +236,8 @@ static void elektraCloseFile(int fd, Key *parentKey)
 	if (close (fd) == -1)
 	{
 		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING (33, parentKey, buffer);
+		ELEKTRA_ADD_WARNINGF(33, parentKey, "close failed with message: %s",
+			strerror_r(errno, buffer, ERROR_SIZE));
 	}
 }
 
@@ -265,26 +259,7 @@ static void elektraAddErrnoText(char *errorText)
 	}
 	else
 	{
-		int error_ret = strerror_r(errno, buffer, ERROR_SIZE-2);
-		if (error_ret == -1)
-		{
-			if (errno == EINVAL)
-			{
-				strcat (errorText, "Got no valid errno!");
-			}
-			else if (errno == ERANGE)
-			{
-				strcat (errorText, "Not enough space for error text in buffer!");
-			}
-			else
-			{
-				strcat (errorText, "strerror_r returned wrong error value!");
-			}
-		}
-		else
-		{
-			strcat (errorText, buffer);
-		}
+		strcat(errorText, strerror_r(errno, buffer, ERROR_SIZE-2));
 	}
 }
 
