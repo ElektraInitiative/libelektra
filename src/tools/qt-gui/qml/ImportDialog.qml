@@ -7,7 +7,7 @@ import QtQuick.Dialogs 1.1
 BasicWindow {
 
     title: qsTr("Import Configuration from File")
-    height: Math.round(importMergeGroup.height*4)
+    height: Math.ceil(importMergeGroup.height*4)
 
     property alias importTextField: importTextField
 

@@ -25,12 +25,12 @@ ApplicationWindow {
 
     //**Properties*********************************************************************************************//
 
-    property int    keyAreaHeight: Math.round(mainRow.height*0.7 - defaultSpacing)
-    property int    deltaKeyAreaHeight: Math.round(keyAreaHeight - searchResultsAreaHeight*0.5 - defaultSpacing)
-    property int    deltaKeyAreaWidth: Math.round(mainRow.width*0.7 - defaultSpacing)
-    property int    metaAreaHeight: Math.round(mainRow.height*0.3)
-    property int    deltaMetaAreaHeight: Math.round(metaAreaHeight - searchResultsAreaHeight*0.5)
-    property int    searchResultsAreaHeight: Math.round(mainRow.height*0.2)
+    property int    keyAreaHeight: Math.ceil(mainRow.height*0.7 - defaultSpacing)
+    property int    deltaKeyAreaHeight: Math.ceil(keyAreaHeight - searchResultsAreaHeight*0.5 - defaultSpacing)
+    property int    deltaKeyAreaWidth: Math.ceil(mainRow.width*0.7 - defaultSpacing)
+    property int    metaAreaHeight: Math.ceil(mainRow.height*0.3 - metaAreaLabel.font.pixelSize - defaultMargins)
+    property int    deltaMetaAreaHeight: Math.ceil(metaAreaHeight - searchResultsAreaHeight*0.5)
+    property int    searchResultsAreaHeight: Math.ceil(mainRow.height*0.2)
     property var    keyAreaSelectedItem: null
     property var    searchResultsSelectedItem: null
     property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
@@ -308,8 +308,8 @@ ApplicationWindow {
 
         title: qsTr("About Elektra Editor")
 
-        width: Math.round(mainWindow.width*0.2)
-        height: Math.round(mainWindow.width*0.2)
+        width: Math.ceil(mainWindow.width*0.2)
+        height: Math.ceil(mainWindow.width*0.2)
 
         ColumnLayout {
             anchors.fill: parent
@@ -732,7 +732,7 @@ ApplicationWindow {
                 action: synchronizeAction
             }
             Item {
-                width: Math.round(mainWindow.width*0.3 - 7*tbRedo.width - 7*defaultSpacing - defaultMargins)
+                width: Math.ceil(mainWindow.width*0.3 - 7*tbRedo.width - 7*defaultSpacing - defaultMargins)
                 height: tbNew.height
             }
             Image {
@@ -877,7 +877,7 @@ ApplicationWindow {
         BasicRectangle {
             id:treeViewRectangle
 
-            width: Math.round(parent.width*0.3)
+            width: Math.ceil(parent.width*0.3)
             height: parent.height
 
             TreeView {
@@ -929,7 +929,7 @@ ApplicationWindow {
 
                         role: "name"
                         title: qsTr("Name")
-                        width: Math.round(keyArea.width*0.5)
+                        width: Math.ceil(keyArea.width*0.5)
                         delegate: tableViewColumnDelegate
                     }
                     TableViewColumn {
@@ -937,7 +937,7 @@ ApplicationWindow {
 
                         role: "value"
                         title: qsTr("Value")
-                        width: Math.round(keyArea.width*0.5)
+                        width: Math.ceil(keyArea.width*0.5)
                         delegate: tableViewColumnDelegate
                     }
 
@@ -989,6 +989,12 @@ ApplicationWindow {
                     }
                 }
             }
+            Label {
+                id: metaAreaLabel
+                text: qsTr("Metadata")
+                anchors.left: metaArea.left
+                anchors.leftMargin: defaultSpacing
+            }
             BasicRectangle {
                 id: metaArea
 
@@ -1026,7 +1032,7 @@ ApplicationWindow {
                     iconSource: "icons/dialog-close.png"
                     anchors.right: parent.right
                     anchors.top: parent.top
-                    anchors.margins: Math.round(defaultMargins*0.25)
+                    anchors.margins: Math.ceil(defaultMargins*0.25)
                     tooltip: qsTr("Close")
                     onClicked: {
                         keyMetaColumn.state = ""
