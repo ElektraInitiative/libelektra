@@ -606,6 +606,7 @@ QStringList TreeViewModel::getMountedBackends()
         mountedBackends.append(QString::fromStdString(it->name));
     }
 
+    //cannot read the size of the QStringList in QML
     if(mountedBackends.isEmpty())
         mountedBackends.append("empty");
 

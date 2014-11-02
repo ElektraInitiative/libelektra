@@ -15,6 +15,11 @@ BasicWindow {
         anchors.centerIn: parent
         spacing: defaultMargins
 
+        Text{
+            text: qsTr("Notice: To successfully unmount backends you need to be an administrator.")
+            color: disabledPalette.text
+        }
+
         Label {
             text: qsTr("Mounted Backends")
         }
@@ -60,9 +65,13 @@ BasicWindow {
             text: qsTr("Unmount")
             Layout.alignment: Qt.AlignHCenter
             onClicked: {
-                if(!mountedBackendsView.model === "empty"){
+                if(mountedBackendsView.model.toString() !== "empty"){
                     externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
                     mountedBackendsView.model = externTreeModel.getMountedBackends()
+
+                    if(mountedBackendsView.model.toString() === "empty")
+                        mountedBackendsView.currentIndex = -1
+
                 }
             }
         }
