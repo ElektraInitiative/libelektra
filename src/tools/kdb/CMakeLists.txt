@@ -33,8 +33,16 @@ if (BUILD_STATIC)
 	set_target_properties (kdb-static PROPERTIES
 			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
 
-	target_link_libraries (kdb-static elektra-static
-		elektra-resolver-lock elektratools-static)
+	target_link_libraries (kdb-static
+		elektra-static
+		elektratools-static)
+
+	list (FIND PLUGINS "resolver" FINDEX)
+	if (FINDEX GREATER -1)
+		target_link_libraries (kdb-static
+			elektra-resolver-lock)
+	endif()
+
 	if (CMAKE_STATIC_FLAGS)
 		set_target_properties (kdb-static PROPERTIES LINK_FLAGS
 			${CMAKE_STATIC_FLAGS})

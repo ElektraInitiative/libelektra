@@ -17,7 +17,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -608,6 +608,7 @@ void keyVInit (Key *key, const char *name, va_list va)
 						keySetString(key,value);
 					}
 					break;
+#ifndef WIN32
 				case KEY_UID:
 					keySetUID(key,va_arg(va,uid_t));
 					break;
@@ -620,14 +621,15 @@ void keyVInit (Key *key, const char *name, va_list va)
 					 */
 					keySetMode(key,va_arg(va, int));
 					break;
+				case KEY_DIR:
+					keySetDir(key);
+					break;
+#endif
 				case KEY_OWNER:
 					owner = va_arg(va,char *);
 					break;
 				case KEY_COMMENT:
 					keySetComment(key,va_arg(va,char *));
-					break;
-				case KEY_DIR:
-					keySetDir(key);
 					break;
 				case KEY_LOCK_NAME:
 					keyLock(key, KEY_LOCK_NAME);
