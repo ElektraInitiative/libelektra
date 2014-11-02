@@ -1,22 +1,16 @@
 include(LibAddPlugin)
 
-add_plugin_helper(elektra-resolver-lock
-	SOURCES
-		lock.c
-	)
-
 set (SOURCES resolver.h resolver.c filename.c)
 
 add_plugin(resolver
 	SOURCES
 		${SOURCES}
-	LINK_LIBRARIES
-		elektra-resolver-lock
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hub\"
 		ELEKTRA_VARIANT_SYSTEM=\"b\"
 		ELEKTRA_PLUGIN_NAME=\"resolver\"
+		ELEKTRA_LOCK_FILE
 	)
 
 add_plugintest(resolver)
@@ -37,12 +31,15 @@ foreach (plugin ${PLUGINS})
 			set (FURTHER_DEFINITIONS "ELEKTRA_CONFLICT_DEBUG")
 		endif ()
 
+		string(FIND "${variant_base}" "f" out_var_n)
+		if (NOT "${out_var_n}" EQUAL "-1")
+			set (FURTHER_DEFINITIONS "ELEKTRA_LOCK_FILE")
+		endif ()
+
 
 		add_plugin(${plugin}
 			SOURCES
 				${SOURCES}
-			LINK_LIBRARIES
-				elektra-resolver-lock
 			COMPILE_DEFINITIONS
 				ELEKTRA_VARIANT_BASE=\"${variant_base}\"
 				ELEKTRA_VARIANT_USER=\"${variant_user}\"
