@@ -54,6 +54,7 @@ set (PLUGINS_LIST_NODEP
 	type
 	constants
 	noresolver
+	wresolver
 	ini
 	)
 
