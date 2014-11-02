@@ -267,6 +267,15 @@ set (KDB_DEFAULT_STORAGE "dump" CACHE PATH
 set (KDB_DEFAULT_RESOLVER "resolver" CACHE PATH
 	"This resolver plugin will be used initially (for bootstrapping).")
 
+list (FIND PLUGINS ${KDB_DEFAULT_STORAGE} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default storage is not selected in PLUGINS")
+endif()
+
+list (FIND PLUGINS ${KDB_DEFAULT_RESOLVER} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default resolver is not selected in PLUGINS")
+endif()
 
 
 #
