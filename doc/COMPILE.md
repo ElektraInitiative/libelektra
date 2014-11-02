@@ -82,14 +82,46 @@ commit the changes (resolver plugin) and also do many other
 tasks related to configuration.
 To add all plugins, you can use  
 
-		-DPLUGINS=ALL
+	-DPLUGINS=ALL
+
 To add all plugins not having additional dependencies
 (they need only POSIX), you can use  
-	
-		-DPLUGINS=NODEP
+
+	-DPLUGINS=NODEP
+
 To manually set the default (same as not setting PLUGINS), you can use  
 
-		-DPLUGINS=DEFAULT
+	-DPLUGINS=DEFAULT
+
+Alternatively, you can pass the list of plugins you want, e.g.:
+
+	-DPLUGINS="resolver;sync;dump"
+
+Some plugins are compile-time configureable. Then you can choose which
+features are compiled in or out. This is especially important in the
+bootstrapping phase, because then only the compiled in configuration
+applies. To compile-time-configure a plugin, you just pass a underscore
+(_) and flags after the name of the plugin.
+
+The resolver even distinguish between 3 different kind of flags:
+
+	-DPLUGINS="resolver_baseflags_userflags_systemflags"
+
+Following baseflags are available:
+
+- 'c' for debugging conflicts
+- 'l' for enabling file locking
+- 'm' for enabling mutex locking
+
+
+The user flags are (the order matters!):
+
+- 'p' use passwd/ldap to lookup home directory using getpwuid_r
+- 'h' use the environment variable HOME
+- 'u' use the environment variable USER
+- 'b' use the built-in default CMAKE variable KDB_DB_HOME
+
+
 
 #### CMAKE_BUILD_TYPE  ####
 Debug, Release or RelWithDebInfo

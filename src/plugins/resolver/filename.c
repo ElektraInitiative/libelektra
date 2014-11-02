@@ -265,6 +265,7 @@ static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
 		return elektraResolveEnvUser(p);
 	case 'b':
 		return elektraResolveBuildin(p);
+	// TODO: also document in doc/COMPILE.md
 	}
 	return -1;
 }
