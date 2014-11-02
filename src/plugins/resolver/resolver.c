@@ -285,7 +285,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve system key");
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 
@@ -296,7 +296,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve user key");
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key", ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 	keyDel (testKey);

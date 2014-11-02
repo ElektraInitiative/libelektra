@@ -8,6 +8,8 @@
 #include <libgen.h>
 #include <stdio.h>
 
+#include <kdbproposal.h>
+
 #define POSTFIX_SIZE 50
 
 /**
@@ -77,8 +79,67 @@ static void elektraGenTempFilename(char *where, const char *filename)
 			tv.tv_usec);
 }
 
-static int elektraResolveSystem(resolverHandle *p)
+static int elektraResolveSystemBuildin(resolverHandle *p)
 {
+	p->dirname= malloc (sizeof(KDB_DB_SYSTEM));
+	strcpy (p->dirname, KDB_DB_SYSTEM);
+
+	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
+		+ strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, KDB_DB_SYSTEM);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+
+	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
+	elektraGenTempFilename(p->tempfile, p->filename);
+	return 1;
+}
+
+static int elektraResolveSystemXDG(resolverHandle *p, Key *warningsKey)
+{
+	const char * configDir = getenv("XDG_CONFIG_DIRS");
+
+	if (!configDir)
+	{
+		return 0;
+	}
+
+	size_t configDirSize = elektraStrLen(configDir);
+
+
+	if (strchr(configDir , ':') != 0)
+	{
+		ELEKTRA_ADD_WARNING(90, warningsKey,
+			"XDG specification not implemented, : will be interpreted as part of the path");
+		// TODO: now we should search..
+		// (see XDG specification
+		// http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+		// )
+	}
+
+	p->dirname= malloc (configDirSize);
+	strcpy (p->dirname, configDir);
+
+	size_t filenameSize = configDirSize
+		+ strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, configDir);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+
+	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
+	elektraGenTempFilename(p->tempfile, p->filename);
+	return 1;
+}
+
+/**
+ * @retval 0 if variant did not have a result
+ * @retval 1 on success
+ */
+static int elektraResolveSystem(char variant, resolverHandle *p, Key *warningsKey)
+{
+	// hardcoded path wins against variants for now
 	if (p->path[0] == '/')
 	{
 		/* Use absolute path */
@@ -96,21 +157,18 @@ static int elektraResolveSystem(resolverHandle *p)
 		p->tempfile = malloc(filenameSize + POSTFIX_SIZE);
 		elektraGenTempFilename(p->tempfile, p->filename);
 
-		return 0;
+		return 1;
 	}
-	p->dirname= malloc (sizeof(KDB_DB_SYSTEM));
-	strcpy (p->dirname, KDB_DB_SYSTEM);
 
-	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
-		+ strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
-	strcpy (p->filename, KDB_DB_SYSTEM);
-	strcat (p->filename, "/");
-	strcat (p->filename, p->path);
-
-	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
-	elektraGenTempFilename(p->tempfile, p->filename);
-	return 1;
+	switch (variant)
+	{
+	case 'x':
+		return elektraResolveSystemXDG(p, warningsKey);
+	case 'b':
+		return elektraResolveSystemBuildin(p);
+	// TODO: also document in doc/COMPILE.md
+	}
+	return -1;
 }
 
 static void elektraResolveUsingHome(resolverHandle *p, const char *home)
@@ -118,21 +176,7 @@ static void elektraResolveUsingHome(resolverHandle *p, const char *home)
 	size_t dirnameSize = 0;
 	Key *canonify = keyNew("user", KEY_END);
 
-	// TODO: this is really cumbersume and should be simplified
-	size_t baseSize = keyGetNameSize(canonify);
-	size_t keyNameSize = strlen (home) + baseSize + 1;
-	char *newName = malloc (keyNameSize);
-	strcpy (newName, keyName (canonify));
-	newName[baseSize - 1] = KDB_PATH_SEPARATOR;
-	newName[baseSize] = 0;
-	strcat (newName, home);
-
-	keySetName(canonify, newName);
-	free (newName);
-
-	/* this was the old way
-	keyAddBaseName(canonify, home);
-	*/
+	keyAddName(canonify, home);
 
 	dirnameSize = keyGetNameSize(canonify) +
 			sizeof("/" KDB_DB_USER);
@@ -253,6 +297,10 @@ static void elektraResolveFinish(resolverHandle *p)
 }
 
 
+/**
+ * @retval 0 if variant did not have a result
+ * @retval 1 on success
+ */
 static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
 {
 	switch (variant)
@@ -306,7 +354,30 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 
 	if (!strncmp(keyName(forKey), "system", 6))
 	{
-		return elektraResolveSystem(p);
+		int finished = 0;
+		size_t i;
+		for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_SYSTEM); ++i)
+		{
+			finished = elektraResolveSystem(ELEKTRA_VARIANT_SYSTEM[i],
+					p, warningsKey);
+		}
+		if (finished == -1)
+		{
+			ELEKTRA_ADD_WARNINGF(83, warningsKey,
+				"system resolver failed at step %zu, the configuration is: %s",
+				i, ELEKTRA_VARIANT_SYSTEM);
+			return -1;
+		}
+
+		if (p->dirname == 0)
+		{
+			ELEKTRA_ADD_WARNINGF(83, warningsKey,
+				"no resolver set the system dirname, the configuration is: %s",
+				ELEKTRA_VARIANT_SYSTEM);
+			return -1;
+		}
+
+		return finished;
 	}
 	else if (!strncmp(keyName(forKey), "user", 4))
 	{
@@ -319,16 +390,17 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 		}
 		if (finished == -1)
 		{
-			// TODO: add i and ELEKTRA_VARIANT_USER[i]
-			ELEKTRA_SET_ERROR(83, warningsKey,
-				"resolver failed, the configuration is: " ELEKTRA_VARIANT_USER);
+			ELEKTRA_ADD_WARNINGF(83, warningsKey,
+				"user resolver failed at step %zu, the configuration is: %s",
+				i, ELEKTRA_VARIANT_USER);
 			return -1;
 		}
 
 		if (p->dirname == 0)
 		{
-			ELEKTRA_SET_ERROR(83, warningsKey,
-				"no resolver set the dirname, the configuration is: " ELEKTRA_VARIANT_USER);
+			ELEKTRA_ADD_WARNINGF(83, warningsKey,
+				"no resolver set the user dirname, the configuration is: %s",
+				ELEKTRA_VARIANT_USER);
 			return -1;
 		}
 

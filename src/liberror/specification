@@ -489,8 +489,8 @@ severity:warning
 ingroup:kdb
 
 number:83
-description:resolver was not able to resolve a filename (see warnings above)
-severity:error
+description:resolver was not able to resolve a filename
+severity:warning
 ingroup:plugin
 module:resolver
 
