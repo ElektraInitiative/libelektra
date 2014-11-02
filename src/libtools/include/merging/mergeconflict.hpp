@@ -28,13 +28,16 @@ public:
 	InvalidConflictOperation(std::string message) :
 			ToolException(message)
 	{
-	}
-	;
+	};
 };
 
 enum ConflictOperation
 {
-	ADD, DELETE, MODIFY, META, SAME
+	CONFLICT_ADD,
+	CONFLICT_DELETE,
+	CONFLICT_MODIFY,
+	CONFLICT_META,
+	CONFLICT_SAME
 };
 
 class MergeConflictOperation
@@ -44,16 +47,16 @@ public:
 	{
 		switch (operation)
 		{
-		case ADD:
-			return "add";
-		case DELETE:
-			return "delete";
-		case MODIFY:
-			return "modify";
-		case META:
-			return "meta";
-		case SAME:
-			return "same";
+		case CONFLICT_ADD:
+			return "CONFLICT_ADD";
+		case CONFLICT_DELETE:
+			return "CONFLICT_DELETE";
+		case CONFLICT_MODIFY:
+			return "CONFLICT_MODIFY";
+		case CONFLICT_META:
+			return "CONFLICT_META";
+		case CONFLICT_SAME:
+			return "CONFLICT_SAME";
 		}
 
 		return "unknown";
@@ -61,11 +64,11 @@ public:
 
 	static ConflictOperation getFromName(std::string name)
 	{
-		if (name == "add") return ADD;
-		if (name == "delete") return DELETE;
-		if (name == "modify") return MODIFY;
-		if (name == "meta") return META;
-		if (name == "same") return SAME;
+		if (name == "CONFLICT_ADD") return CONFLICT_ADD;
+		if (name == "CONFLICT_DELETE") return CONFLICT_DELETE;
+		if (name == "CONFLICT_MODIFY") return CONFLICT_MODIFY;
+		if (name == "CONFLICT_META") return CONFLICT_META;
+		if (name == "CONFLICT_SAME") return CONFLICT_SAME;
 		throw InvalidConflictOperation (
 				"The conflict operation " + name + " is unknown");
 	}

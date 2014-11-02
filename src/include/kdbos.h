@@ -123,7 +123,9 @@
  ***************************************************/
 
 /* Avoid the most crazy things */
-#define NOMINMAX
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
 
 #include <windows.h>
 #include <limits.h>

@@ -79,11 +79,11 @@ void MetaMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 
 	if (!metaResult.hasConflicts ())
 	{
-		if (ourOperation == META && theirOperation == META)
+		if (ourOperation == CONFLICT_META && theirOperation == CONFLICT_META)
 		{
 			// TODO: addConflict deletes the key content
 			// without this strategy restoring the value the value would be lost
-			// this happens only for META <--> META conflicts
+			// this happens only for CONFLICT_META <--> CONFLICT_META conflicts
 			// add a test for this behaviour
 			conflictKey.setString(ourKey.getString());
 			result.resolveConflict (conflictKey);
