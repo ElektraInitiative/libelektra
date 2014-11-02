@@ -7,7 +7,7 @@ import QtQuick.Dialogs 1.1
 BasicWindow {
 
     title: qsTr("Import Configuration from File")
-    height: Math.round(importMergeGroup.height*4)
+    height: Math.ceil(importMergeGroup.height*4)
 
     property alias importTextField: importTextField
 
@@ -21,7 +21,7 @@ BasicWindow {
             spacing: defaultSpacing
 
             Label {
-                text: qsTr("File to import: ")
+                text: qsTr("Please select a file to import to \"" + path.text + "\": ")
             }
             RowLayout {
                 TextField {

@@ -10,7 +10,7 @@ void KeySetVisitor::visit(ConfigNode *node)
 
     if(key && key.isValid()){
 //        qDebug() << "Appending key " << QString::fromStdString(key.getName());
-        m_set.append(key);
+        m_set.append(key.dup());
     }
     else if(!key){
 //        qDebug() << "Key of node " << node->getName() << " is null";

@@ -56,7 +56,7 @@ Item {
                 }
                 BasicRectangle {
                     id: includedPluginsArea
-                    width: Math.round(wizardLoader.width*0.3)
+                    width: Math.ceil(wizardLoader.width*0.3)
                     //Layout.fillWidth: true
                     Layout.fillHeight: true
 

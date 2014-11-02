@@ -12,11 +12,11 @@ Window {
     property alias cancelButton: cancelButton
     default property alias contents: placeholder.children
 
-    width: Math.round(mainWindow.width*0.4)
-    height: Math.round(mainWindow.height*0.6)
+    width: Math.ceil(mainWindow.width*0.4)
+    height: Math.ceil(mainWindow.height*0.6)
 
-    x: Math.round(Screen.desktopAvailableWidth*0.5-width*0.5)
-    y: Math.round(Screen.desktopAvailableHeight*0.5-height*0.5)
+    x: Math.ceil(Screen.desktopAvailableWidth*0.5-width*0.5)
+    y: Math.ceil(Screen.desktopAvailableHeight*0.5-height*0.5)
 
     color: activePalette.window
 
