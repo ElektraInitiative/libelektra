@@ -103,6 +103,9 @@ bootstrapping phase, because then only the compiled in configuration
 applies. To compile-time-configure a plugin, you just pass a underscore
 (_) and flags after the name of the plugin.
 
+Note that the base-plugin itself need to be part of PLUGINS, so that the
+variants will work.
+
 The resolver even distinguish between 3 different kind of flags:
 
 	-DPLUGINS="resolver_baseflags_userflags_systemflags"
@@ -121,6 +124,20 @@ The user flags are (the order matters!):
 - 'u' use the environment variable USER
 - 'b' use the built-in default CMAKE variable KDB_DB_HOME
 
+The system flags are (the order matters!):
+
+- if a path that begins with / is chosen the system flags are irrelevant
+  and the path is taken as-is.
+- 'x' use the environment variable XDG_CONFIG_DIRS
+  (: are interpreted as part of filename, no searching is done!)
+  This option is not recommended (unless for testing), because it
+  allows users to fake system configuration.
+- 'b' use the built-in default CMAKE variable KDB_DB_SYSTEM
+
+
+E.g. one may use:
+
+	-DPLUGINS="resolver;resolver_lm_uhpb_b"
 
 
 #### CMAKE_BUILD_TYPE  ####
