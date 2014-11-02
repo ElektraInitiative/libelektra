@@ -21,7 +21,7 @@ BasicWindow {
             spacing: defaultSpacing
 
             Label {
-                text: qsTr("File to import: ")
+                text: qsTr("Please select a file to import to \"" + path.text + "\": ")
             }
             RowLayout {
                 TextField {
