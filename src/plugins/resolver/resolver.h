@@ -28,6 +28,8 @@
 #ifndef PLUGIN_RESOLVER_H
 #define PLUGIN_RESOLVER_H
 
+#define _GNU_SOURCE // needed for recursive mutex
+
 #include <sys/stat.h>
 
 #include <kdbconfig.h>
