@@ -296,7 +296,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key", ELEKTRA_VARIANT_USER);
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 	keyDel (testKey);
