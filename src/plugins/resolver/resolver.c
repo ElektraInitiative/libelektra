@@ -52,6 +52,13 @@
 #include <signal.h>
 #endif
 
+#ifdef ELEKTRA_LOCK_MUTEX
+#include <pthread.h>
+
+// every resolver should use the same mutex
+pthread_mutex_t elektra_resolver_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
 #ifdef _GNU_SOURCE
 #error "Something turned _GNU_SOURCE on, this breaks strerror_r!"
 #endif
@@ -114,7 +121,7 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED,
 	{
 		if (errno == EAGAIN || errno == EACCES)
 		{
-			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other process writes to configuration indicated by lock");
+			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other process writes to configuration indicated by file lock");
 		}
 		else
 		{
@@ -122,7 +129,7 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED,
 			strerror_r(errno, buffer, ERROR_SIZE);
 			ELEKTRA_ADD_WARNING(27, parentKey, buffer);
 
-			ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed lock (warning 27 for strerror)");
+			ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed file lock (warning 27 for strerror)");
 		}
 		return -1;
 	}
@@ -161,6 +168,62 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 	}
 
 	return ret;
+#else
+	return 0;
+#endif
+}
+
+/**
+ * @brief mutex lock for multithread-safety
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
+{
+#ifdef ELEKTRA_LOCK_MUTEX
+	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
+	if (ret != 0)
+	{
+		if (errno == EBUSY // for trylock
+			|| errno == EDEADLK) // for error checking mutex, if enabled
+		{
+			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other thread writes to configuration indicated by mutex lock");
+		}
+		else
+		{
+			char buffer[ERROR_SIZE];
+			strerror_r(errno, buffer, ERROR_SIZE);
+			ELEKTRA_ADD_WARNING(27, parentKey, buffer);
+
+			ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed mutex lock (warning 27 for strerror)");
+		}
+		return -1;
+	}
+	return 0;
+#else
+	return 0;
+#endif
+}
+
+/**
+ * @brief mutex unlock for multithread-safety
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
+{
+#ifdef ELEKTRA_LOCK_MUTEX
+	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
+	if (ret != 0)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNING(32, parentKey, buffer);
+		return -1;
+	}
+	return 0;
 #else
 	return 0;
 #endif
@@ -551,10 +614,17 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 		}
 	}
 
+	if (elektraLockMutex(parentKey) != 0)
+	{
+		elektraCloseFile(pk->fd, parentKey);
+		return -1;
+	}
+
 	// now we have a file, so lock immediately
 	if (elektraLockFile(pk->fd, parentKey) == -1)
 	{
 		elektraCloseFile(pk->fd, parentKey);
+		elektraUnlockMutex(parentKey);
 		return -1;
 	}
 
@@ -566,10 +636,32 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 	{
 		elektraUnlockFile(pk->fd, parentKey);
 		elektraCloseFile(pk->fd, parentKey);
+		elektraUnlockMutex(parentKey);
 		return -1;
 	}
 
 	return 0;
+}
+
+
+/* Update timestamp of old file to provoke conflicts in
+ * stalling processes that might still wait with the old
+ * filedescriptor */
+static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
+{
+
+	const struct timespec times[2] = {
+		pk->mtime,  // atime
+		pk->mtime}; // mtime
+
+	if (futimens(pk->fd, times) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNINGF(99, parentKey,
+			"Could not update time stamp of \"%s\", because %s",
+			pk->filename, buffer);
+	}
 }
 
 /**
@@ -607,16 +699,11 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
 	}
 
-	/* Update timestamp of old file to provoke conflicts in
-	 * stalling processes that might still wait with the old
-	 * filedescriptor */
-	const struct timespec times[2] = {
-		pk->mtime,  // atime
-		pk->mtime}; // mtime
-	futimens(pk->fd, times);
+	elektraUpdateFileTime(pk, parentKey);
 
 	elektraUnlockFile(pk->fd, parentKey);
 	elektraCloseFile(pk->fd, parentKey);
+	elektraUnlockMutex(parentKey);
 
 	DIR * dirp = opendir(pk->dirname);
 	// checking dirp not needed, fsync will have EBADF
@@ -625,7 +712,7 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(88, parentKey,
-			"Could not sync directory %s because %s",
+			"Could not sync directory \"%s\", because %s",
 			pk->dirname, buffer);
 	}
 	closedir(dirp);

@@ -575,3 +575,9 @@ description:invalid ini syntax
 severity:error
 ingroup:plugin
 module:storage
+
+number: 99
+description:could not update time of file
+severity:warning
+ingroup:plugin
+module:resolver
