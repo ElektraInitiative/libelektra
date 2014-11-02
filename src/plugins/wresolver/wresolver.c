@@ -158,7 +158,7 @@ void elektraWresolveFileName(Key *forKey, resolverHandle *p, Key *warningsKey)
 	}
 }
 
-int elektraWresolverOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraWresolverOpen(Plugin *handle, Key *errorKey)
 {
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
 	const char *path = keyString(ksLookupByName(resolverConfig, "/path", 0));
@@ -184,7 +184,7 @@ int elektraWresolverOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UN
 	return 0; /* success */
 }
 
-int elektraWresolverClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraWresolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 {
 	resolverHandles *ps = elektraPluginGetData(handle);
 
@@ -198,11 +198,9 @@ int elektraWresolverClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_U
 	}
 
 	return 0; /* success */
-
-	return 1; /* success */
 }
 
-int elektraWresolverGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraWresolverGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/wresolver"))
 	{
@@ -258,13 +256,13 @@ int elektraWresolverGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 	return 1; /* success */
 }
 
-int elektraWresolverSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraWresolverSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 	keySetString(parentKey, pk->filename);
 
 	/* set all keys */
-	if (pk->mtime== 0)
+	if (pk->mtime == 0)
 	{
 		// this can happen if the kdbGet() path found no file
 
