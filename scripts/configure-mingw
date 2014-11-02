@@ -26,5 +26,5 @@ fi
 cd $BUILD
 
 cmake -DENABLE_TESTING=OFF -DBUILD_TESTING=OFF -DPLUGINS="noresolver;dump" \
-       -DCMAKE_PIC_FLAGS="" \
+       -DCMAKE_PIC_FLAGS="" -DCXX_STD=gnu++98 \
        -DCMAKE_TOOLCHAIN_FILE=$SOURCE/cmake/Toolchain/Toolchain-mingw32.cmake $SOURCE
