@@ -4,7 +4,10 @@ set (SOURCES resolver.h resolver.c filename.c)
 
 
 find_package(Threads)
-#TODO: check if threads available + remove plugin
+
+if (UNIX AND NOT APPLE)
+	set(CMAKE_REALTIME_LIBS_INIT rt)
+endif()
 
 #TODO: remove "default" resolver
 add_plugin(resolver
@@ -12,6 +15,7 @@ add_plugin(resolver
 		${SOURCES}
 	LINK_LIBRARIES
 		${CMAKE_THREAD_LIBS_INIT}
+		${CMAKE_REALTIME_LIBS_INIT}
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hub\"
@@ -47,8 +51,9 @@ foreach (plugin ${PLUGINS})
 		string(FIND "${variant_base}" "m" out_var_n)
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
-			find_package(Threads)
-			set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+			set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES}
+				${CMAKE_THREAD_LIBS_INIT}
+				${CMAKE_REALTIME_LIBS_INIT})
 		endif ()
 
 
