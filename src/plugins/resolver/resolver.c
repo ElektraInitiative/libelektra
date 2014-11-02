@@ -291,7 +291,6 @@ static void elektraAddErrnoText(char *errorText)
 int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	(Plugin *handle, Key *errorKey)
 {
-
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
 	const char *path = keyString(ksLookupByName(resolverConfig, "/path", 0));
 
