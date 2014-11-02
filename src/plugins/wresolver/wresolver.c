@@ -276,6 +276,9 @@ int elektraWresolverSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 
 	if (stat (pk->filename, &buf) == -1)
 	{
+		ELEKTRA_ADD_WARNINGF (29, parentKey,
+				"could not stat config file \"%s\", ",
+				pk->filename);
 		// no file found
 		return 0;
 	}
@@ -284,12 +287,12 @@ int elektraWresolverSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 	if (pk->mtime != buf.st_mtime)
 	{
 		// conflict
-		ELEKTRA_SET_ERRORF (30, parentKey,
+		ELEKTRA_ADD_WARNINGF (29, parentKey,
 				"conflict, file modification time stamp %ld is different than our time stamp %ld, config file name is \"%s\", ",
 				buf.st_mtime,
 				pk->mtime,
 				pk->filename);
-		return -1;
+		return 1; // stat unreliable for windows, keep it at warning
 	}
 
 	pk->mtime = buf.st_mtime;
