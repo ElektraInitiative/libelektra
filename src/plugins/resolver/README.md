@@ -19,6 +19,24 @@ This is unavoidable because
 such problems can only be detected in the commit phase when it is too late for
 rollbacks.
 
+## Resolving Files ##
+
+Use following command to see to which file is resolved to:
+
+    kdb file
+
+See the constants of this plugin for further information, that are:
+
+    system/elektra/modules/resolver/constants
+    system/elektra/modules/resolver/constants/ELEKTRA_VARIANT_SYSTEM
+    system/elektra/modules/resolver/constants/ELEKTRA_VARIANT_USER
+    system/elektra/modules/resolver/constants/KDB_DB_HOME
+    system/elektra/modules/resolver/constants/KDB_DB_SYSTEM
+    system/elektra/modules/resolver/constants/KDB_DB_USER
+
+Note that the VARIANT might change for different variants of the
+resolver plugin.
+
 ## Reading Configuration ##
 
  1.) stat the file
@@ -31,7 +49,12 @@ rollbacks.
 
  1.) Open the configuration file
      If not available recursively create directories and retry.
+#ifdef ELEKTRA_LOCK_MUTEX
+ 1.) Try to lock a global mutex, if not possible -> conflict
+#endif
+#ifdef ELEKTRA_LOCK_FILE
  1.) Try to lock the configuration file, if not possible -> conflict
+#endif
  2.) Check the update time -> conflict
  3.) update the update time
 
@@ -52,7 +75,4 @@ DO NOT USE THIS PLUGIN IN PRODUCTION!!!
 IT IS FOR DEBUG PURPOSES ONLY!!!
 
 #endif
-
-
-
 

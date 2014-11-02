@@ -37,6 +37,10 @@ foreach (plugin ${PLUGINS})
 		list(GET variantlist 1 variant_user)
 		list(GET variantlist 2 variant_system)
 
+		# don't forget near-global scope for CMake variables
+		set (FURTHER_DEFINITIONS "")
+		set (FURTHER_LIBRARIES "")
+
 		# if a c is found in the first part of the variant
 		# the conflict debug mode is activated
 		string(FIND "${variant_base}" "c" out_var_n)
