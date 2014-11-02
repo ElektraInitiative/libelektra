@@ -377,7 +377,7 @@ error:
 static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 {
 	if (pk->mtime.tv_sec == 0 &&
-		pk_mtime.tv_nsec == 0)
+		pk->mtime.tv_nsec == 0)
 	{
 		// this can happen if the kdbGet() path found no file
 
@@ -502,10 +502,18 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 	} else {
-		/* Update timestamp */
+		/* Update my timestamp */
 		pk->mtime.tv_sec = buf.st_mtim.tv_sec;
 		pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
 	}
+
+	/* Update timestamp of old file to provoke conflicts in
+	 * stalling processes that might still wait with the old
+	 * filedescriptor */
+	const struct timespec times[2] = {
+		pk->mtime,  // atime
+		pk->mtime}; // mtime
+	futimens(pk->fd, times);
 
 	elektraUnlockFile(pk->fd, parentKey);
 	elektraCloseFile(pk->fd, parentKey);
