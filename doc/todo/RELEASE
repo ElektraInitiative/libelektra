@@ -115,6 +115,22 @@ Check if tools based on elektra still do:
 Run unit-tests in-source again (because some use installed Elektra):
  make run_all
 
+
+== Test external test suites ==
+
+#https://github.com/oyranos-cms/oyranos/blob/master/src/tests/test2.cpp#L185
+#https://github.com/oyranos-cms/oyranos/blob/master/src/liboyranos_config/oyranos_elektra.c#L195
+
+git clone git@github.com:oyranos-cms/oyranos.git
+cd oyranos
+mkdir build
+cd build
+cmake ..
+make
+make test2 # or make test-2 for the most of the tests
+src/tests/test2 Elektra
+
+
 == Documentation ==
 
 And the API docu:
