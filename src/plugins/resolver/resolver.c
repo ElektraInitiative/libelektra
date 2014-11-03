@@ -46,12 +46,6 @@
 #include <dirent.h>
 #include <kdberrors.h>
 
-#ifdef ELEKTRA_CONFLICT_DEBUG
-//has stop signals at certain points to let you test
-//concurrent access from shell scripts
-#include <signal.h>
-#endif
-
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>
 
@@ -570,11 +564,6 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
  */
 static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 {
-#ifdef ELEKTRA_CONFLICT_DEBUG
-	// we are somewhere in the middle of work
-	kill(getpid(), SIGSTOP);
-#endif
-
 	pk->fd = open (pk->filename, O_RDWR | O_CREAT, KDB_FILE_MODE);
 	// we can silently ignore an error, because we will retry later
 	if (pk->fd == -1)
@@ -600,10 +589,6 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 		elektraUnlockMutex(parentKey);
 		return -1;
 	}
-
-#ifdef ELEKTRA_CONFLICT_DEBUG
-	kill(getpid(), SIGSTOP);
-#endif
 
 	if (elektraCheckConflict(pk, parentKey) == -1)
 	{

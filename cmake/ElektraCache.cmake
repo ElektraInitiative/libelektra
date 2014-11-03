@@ -73,7 +73,6 @@ set (PLUGINS_LIST_POSIX
 	timeofday
 	simpleini
 	line
-	resolver_c_b_b  # needed for conflict tests
 	resolver_fm_uhb_xb  # handy for tests
 	validation
 	regexstore

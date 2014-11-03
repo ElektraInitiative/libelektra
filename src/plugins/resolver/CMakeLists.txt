@@ -41,13 +41,6 @@ foreach (plugin ${PLUGINS})
 		set (FURTHER_DEFINITIONS "")
 		set (FURTHER_LIBRARIES "")
 
-		# if a c is found in the first part of the variant
-		# the conflict debug mode is activated
-		string(FIND "${variant_base}" "c" out_var_n)
-		if (NOT "${out_var_n}" EQUAL "-1")
-			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_CONFLICT_DEBUG")
-		endif ()
-
 		string(FIND "${variant_base}" "f" out_var_n)
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_FILE")
