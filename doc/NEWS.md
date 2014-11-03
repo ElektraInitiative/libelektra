@@ -8,6 +8,7 @@ Again we managed to do an amazing feature release in just two month.
 In 416 commits we modified 393 files with 23462 insertions(+) and
 9046 deletions(-).
 
+
 ## Most awaited
 
 The most awaited feature in this release is certainly the qt-gui
@@ -15,18 +16,27 @@ developed by Raffael Pancheri. It includes a rich feature set including
 searching, unmounting, importing and exporting. A lot of functionality
 is quite stable now, even though its version is 0.0.1 alpha. If you find
 any bugs or want to give general feedback, feel free to use the issue
-tracker of the Elektra project.
+tracker of the Elektra project. A screenshot can be found at:
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/images/screenshot-qt-gui.png
 
-Manuel Mausz also has been quite active and developed glib+gi bindings.
-These bindings make Elektra more friendly to the glib/gtk/gnome World.
+Manuel Mausz also has been very active and developed glib+gi bindings.
+These bindings make Elektra more friendly to the glib/gtk/gnome world.
 Using the gobject introspection python3 and lua bindings were developed.
 Additionally he got rid of all clang warnings.
 
-Felix Berlakovich also has been active: ini now supports multiline
+Felix Berlakovich also has been active: ini now supports multiline and
+which can be dynamically turned on and off, i.e. during mounting
 (thanks to Felix)
 
-Last, but not least, Kai-Uwe ported Elektra to Windows7 using the newly
-supported MinGW compiler.
+Last, but not least, Kai-Uwe ported Elektra to Windows7. MinGW is now
+one more supported compiler (tested on build-server, see later).
+There are still some minor glitches that could not be reproduced with
+wine, but it was only little effort necessary to come so far:
+Basically we only needed a new implementation of the resolver, called
+"wresolver". Different from the "resolver" it lacks the sophisticated
+multi-process and multi-thread atomicity properties. On the plus side
+we now have a resolver that is very easy to study and understand and
+still works as file resolver ("noresolver" did not).
 
 
 ## Interfaces
@@ -63,6 +73,10 @@ capture individual configuration options within an otherwise not
 understood configuration file (e.g. for vimrc or emacs where
 the configuration file contains programming constructs).
 
+Most tests now also work with the BUILD_SHARED variant (from our
+knowledge all work now, but some are still excluded if BUILD_FULL
+and BUILD_STATIC is disabled).
+
 A small but very important step towards specifying configuration files
 is the new proposed API method ksLookupBySpec (and ksLookup implementing
 cascading search). It introduces a "logical view" of
@@ -83,11 +97,28 @@ manually (not using Elektra) the next kdbSet() then is much more likely
 to fail.  Additionally a recursive mutex now protects the file locking
 mechanism.
 
+The build server now additionally tests:
+- http://build.libelektra.org:8080/job/elektra-gcc-i386/
+  because we had an undetected i386 regression. None of the developers
+  seems to use i386.
+- http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/
+  Calls the scripts/configure-debian(-wheezy).
+- http://build.libelektra.org:8080/job/elektra-local-installation/
+  We had an regression that local installation was not possible because
+  of a bash completion file installed to /etc. This build tests if it is
+  possible to install Elektra in your home directory (and calls kdb
+  run_all afterwards)
+- http://build.libelektra.org:8080/job/elektra-test-bindings/
+  Compiles and tests ALL bindings.
+- http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw/
+  Compiles Elektra using mingw.
+
 Many more examples were written and are used within doxygen. Most
 snippets now can also be found in compilable files:
 - C++ deep dup
 - keyNew examples
 - keyCopy examples
+- examples for what you can mount, see scripts/mount-*
 
 Most plugins now internally use the same CMake function add_plugin.
 
@@ -118,7 +149,7 @@ Fixes:
 - use memcasecmp (fix lookup ignoring case)
 - fix memory leaks (ini)
 - text messages for some warnings/errors
-- cmake policy for cmake version > 3
+- cmake policies fixes allow us to use cmake version > 3
 
 
 
