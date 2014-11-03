@@ -217,6 +217,7 @@ endif ()
 if (TOOLS MATCHES "ALL")
 	set (TOOLS_LIST
 		gen
+		race
 		qt-gui
 		)
 	set (TOOLS_FORCE FORCE)

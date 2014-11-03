@@ -12,6 +12,8 @@ if (HAS_MNTENT)
 			fstab.h
 		)
 
+	install(DIRECTORY fstab DESTINATION ${TARGET_TEST_DATA_FOLDER})
+
 	add_plugintest (fstab)
 else (HAS_MNTENT)
 	remove_plugin (fstab "mntent is missing")

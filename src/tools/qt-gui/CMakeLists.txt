@@ -117,4 +117,6 @@ qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} elektra elektratools)
 
+install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
 endif()

@@ -12,6 +12,8 @@ if (COMPAT_GETLINE)
 			line.c
 		)
 
+	install(DIRECTORY line DESTINATION ${TARGET_TEST_DATA_FOLDER})
+
 	add_plugintest (line)
 else (COMPAT_GETLINE)
 	remove_plugin (line "Unable to use getline function. Check libc version, should be higher than 4.6.27.")
