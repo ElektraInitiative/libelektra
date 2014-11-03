@@ -14,19 +14,10 @@ Following shell expansions are used in this document:
 
 - make sure no TODO is in this file (resolve them first!)
 
-install(DIRECTORY fstab DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
+debian package:
 installed is: augeas  ini  shell  xmltool  yajl
 should    be: augeas  ini  shell  yajl
 missing fstab, hosts, line
-
-
-kdb mount /etc/fstab system/fstab augeas lens=Fstab.lns
-kdb mount /etc/hosts system/hosts augeas lens=Hosts.lns
-kdb mount /etc/passwd system/passwd augeas lens=Passwd.lns
-kdb mount /etc/vsftpd.conf system/sw/vsftpd augeas lens=Vsftpd.lns
-kdb mount /etc/ssh/sshd_config system/sw/sshd augeas lens=Sshd.lns
-kdb mount /etc/security/limits.conf system/limits augeas lens=Limits.lns
 
 
 = Cleanup =
