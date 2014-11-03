@@ -10,12 +10,20 @@
 #
 # The mode (standard) to be used by the compiler
 #
-set (C_STD "-std=gnu99")
-
-if (ENABLE_CXX11)
-	set (CXX_STD "-std=c++11")
+if (C_STD)
+	message (STATUS "use C_STD as given by user: ${C_STD}")
 else()
-	set (CXX_STD "-std=c++98")
+	set (C_STD "-std=gnu99")
+endif()
+
+if (CXX_STD)
+	message (STATUS "use CXX_STD as given by user: ${CXX_STD}")
+else()
+	if (ENABLE_CXX11)
+		set (CXX_STD "-std=c++11")
+	else()
+		set (CXX_STD "-std=c++98")
+	endif()
 endif()
 
 
