@@ -14,6 +14,20 @@ Following shell expansions are used in this document:
 
 - make sure no TODO is in this file (resolve them first!)
 
+install(DIRECTORY fstab DESTINATION ${TARGET_TEST_DATA_FOLDER})
+
+installed is: augeas  ini  shell  xmltool  yajl
+should    be: augeas  ini  shell  yajl
+missing fstab, hosts, line
+
+
+kdb mount /etc/fstab system/fstab augeas lens=Fstab.lns
+kdb mount /etc/hosts system/hosts augeas lens=Hosts.lns
+kdb mount /etc/passwd system/passwd augeas lens=Passwd.lns
+kdb mount /etc/vsftpd.conf system/sw/vsftpd augeas lens=Vsftpd.lns
+kdb mount /etc/ssh/sshd_config system/sw/sshd augeas lens=Sshd.lns
+kdb mount /etc/security/limits.conf system/limits augeas lens=Limits.lns
+
 
 = Cleanup =
 
@@ -66,7 +80,7 @@ Build tar.gz and tag version and make hashsum:
 
 Unpack + compile (with all available plugins) + test those sources:
  tar xvzf elektra-$VERSION.tar.gz && mkdir build
- cd ~build/build && ~e/scripts/configure-debian ../elektra-$VERSION && make -j 20 && make run_all && make run_memcheck
+ cd ~build/build && ~e/scripts/configure-debian-wheezy ../elektra-$VERSION && make -j 20 && make run_all && make run_memcheck
 
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
@@ -100,10 +114,11 @@ Run some basic commands, at least:
 
 Run local tests:
  kdb run_all
+ KDB=kdb kdb run_all
+ KDB=kdb-static kdb run_all
 
 Install libelektra-test of the previous version and run again:
-(TODO: disable version check + avoid strcmp but use succeed_if_same_string)
- kdb run_tests
+ CHECK_VERSION=NO kdb run_tests
 
 
 == Test external tools ==

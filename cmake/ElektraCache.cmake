@@ -261,21 +261,21 @@ set (KDB_DB_FILE "default.ecf" CACHE PATH
 		"This configuration file will be used initially (for bootstrapping)."
 		)
 
-set (KDB_DEFAULT_STORAGE "dump" CACHE PATH
+set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
 	"This storage plugin will be used initially (for bootstrapping).")
 
 
-set (KDB_DEFAULT_RESOLVER "resolver" CACHE PATH
+set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
 	"This resolver plugin will be used initially (for bootstrapping).")
 
 list (FIND PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)
-	message(SEND_ERROR "selected default storage is not selected in PLUGINS")
+	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
 endif()
 
 list (FIND PLUGINS ${KDB_DEFAULT_RESOLVER} output)
 if (output EQUAL -1)
-	message(SEND_ERROR "selected default resolver is not selected in PLUGINS")
+	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
 endif()
 
 

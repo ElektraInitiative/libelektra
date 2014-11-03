@@ -1,17 +1,31 @@
 # 0.8.9 Release
 
-- author: Markus Raab, Raffael Pancheri
-- guid:
-- pubDate
+author: Markus Raab
+guid: 38640673-3e07-4cff-9647-f6bdd89b1b08
+pubDate: Mon, 03 Nov 2014 14:26:38 +0100
 
-- qt-gui was added to elektra
-Thanks to Raffael Pancheri.
+Again we managed to do an amazing feature release in just two month.
+In 416 commits we modified 393 files with 23462 insertions(+) and
+9046 deletions(-).
 
-- add glib+gi bindings
-thank to Manuel Mausz
+## Most awaited
 
-- improve clang support (no warnings anymore),
-thank to Manuel Mausz
+The most awaited feature in this release is certainly the qt-gui
+developed by Raffael Pancheri. It includes a rich feature set including
+searching, unmounting, importing and exporting. A lot of functionality
+is quite stable now, even though its version is 0.0.1 alpha. If you find
+any bugs or want to give general feedback, feel free to use the issue
+tracker of the Elektra project.
+
+Manuel Mausz also has been quite active and developed glib+gi bindings.
+These bindings make Elektra more friendly to the glib/gtk/gnome World.
+Using the gobject introspection python3 and lua bindings were developed.
+Additionally he got rid of all clang warnings.
+
+Felix Berlakovich also has been active: ini now supports multiline
+(thanks to Felix)
+
+
 
 - added read-only regexstore
 
@@ -21,9 +35,6 @@ thank to Manuel Mausz
 Use add_plugin in CMake for all plugins.
 
 Convert METADATA spec to ini files and add proposal for comments.
-(thanks to Felix)
-
-ini now supports multiline
 (thanks to Felix)
 
 ksLookup now also implements cascading search
