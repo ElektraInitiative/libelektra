@@ -32,9 +32,9 @@ the path to the newer library to your ld search paths (consult your system docum
 The plugin can be mounted via the mount command like any other plugin.
 For example, in order to mount the hosts file with the augeas plugin, issue the following command:
 
-	kdb mount /etc/hosts system/hosts augeas
+	kdb mount /etc/hosts system/hosts augeas lens=Hosts.lns
 
-However, additional configuration is needed. Without configuring a lens the plugin will bail out an error:
+Without configuring a lens the plugin would bail out an error:
 
 	kdb ls system/hosts
 	The command ls terminated unsuccessfully with the info: Error (#85) occurred!
@@ -44,9 +44,11 @@ However, additional configuration is needed. Without configuring a lens the plug
 	At: /path/augeas.c:166
 	Reason: Lens not found
 
-This is because the plugin does not know yet which lens to use to read the configuration.
-A lens can be configured by setting the config/lens key in the mountpoint configuration:
+This is because the plugin would not know which lens to use to read the configuration.
+For that reason, the lens configuration option was supplied together with the mount command.
+A lens can also be configured by setting the config/lens key in the mountpoint configuration manually:
 
+  kdb mount /etc/hosts system/hosts augeas
 	kdb mount
 	... output omitted ...
 	/etc/hosts on system/hosts with name system_hosts
@@ -122,5 +124,4 @@ Wheras the following script succeeds due to the correct order
 
 ## PLANNED IMPROVEMENTS ##
 
-* simplified mounting and configuration
 * a validation plugin preventing inner node values,
