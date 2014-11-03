@@ -19,10 +19,10 @@ setup(name='elektra-gen',
       },
       scripts=['${CMAKE_CURRENT_SOURCE_DIR}/gen'],
       packages=['support'],
-      py_modules = [
-          'util',
-          'cpp_util'
-          ],
+      #py_modules = [
+      #    'util',
+      #    'cpp_util'
+      #    ],
       data_files = [
           ('@CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@', [
                  '${CMAKE_CURRENT_SOURCE_DIR}/README.md',
