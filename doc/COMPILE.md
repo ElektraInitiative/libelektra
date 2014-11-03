@@ -101,6 +101,16 @@ To manually set the default (same as not setting PLUGINS), you can use
 
 	-DPLUGINS=DEFAULT
 
+This only states the list of the plugins are the default list and does
+not mean that a different default is used after Elektra was installed.
+For this endeavour you need to change:
+
+	-DKDB_DEFAULT_RESOLVER=resolver
+
+and
+
+	-DKDB_DEFAULT_STORAGE=dump
+
 Alternatively, you can pass the list of plugins you want, e.g.:
 
 	-DPLUGINS="resolver;sync;dump"

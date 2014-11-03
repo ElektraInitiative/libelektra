@@ -25,27 +25,74 @@ Additionally he got rid of all clang warnings.
 Felix Berlakovich also has been active: ini now supports multiline
 (thanks to Felix)
 
+Last, but not least, Kai-Uwe ported Elektra to Windows7 using the newly
+supported MinGW compiler.
 
 
-- added read-only regexstore
+## Interfaces
 
-- added ksLookupBySpec and policy based contextual values
+ABI/API of the C-API is still completely stable even though under the
+hood a lot was changed. All testcases compiled against the previous
+version still run against Elektra 0.8.9.
+
+This is, however, not the case for libtools. For MinGW porting it was
+necessary to rename an enum related to merging because it conflicted
+with an already defined MACRO.
+
+For maintainers also some changes were necessary. For MinGW and to
+actually use the flexibility of the new resolver variants two new CMake
+Variables are introduced: KDB_DEFAULT_RESOLVER and KDB_DEFAULT_STORAGE.
+
+More importantly for maintainers the CMake variables regarding SWIG
+bindings are now abandoned in favour to the new variable BINDINGS that
+work like PLUGINS and TOOLS. Just start with
+
+	-DBINDINGS=ALL
+
+and CMake should remove the bindings that have missing dependencies
+on your system. (Remember that glib and gi (i.e. gi_python3 and gi_lua)
+bindings were introduced. Additionally, the cpp binding can now be
+deactivated if not added to BINDINGS.
 
 
-Use add_plugin in CMake for all plugins.
 
-Convert METADATA spec to ini files and add proposal for comments.
-(thanks to Felix)
+## Other Bits
 
-ksLookup now also implements cascading search
+A proof of concept storage plugin "regexstore" was added. It allows to
+capture individual configuration options within an otherwise not
+understood configuration file (e.g. for vimrc or emacs where
+the configuration file contains programming constructs).
 
-use BINDINGS variable for easier handling of many BINDINGS
+A small but very important step towards specifying configuration files
+is the new proposed API method ksLookupBySpec (and ksLookup implementing
+cascading search). It introduces a "logical view" of
+configuration that in difference to the "physical view" of
+configuration does not have namespaces, but everything is below the root
+"/". Additionally, contextual values now allow to be compile-time
+configured using C++-Policies. These are small puzzle pieces that will
+fit into a greater picture at a later time.
+
+A (data) race detection tool was implemented. Using it a configurable
+number of processes and threads it tries to kdbSet() a different
+configuration at (nearly) the same time.
+
+With this tool the resolver could be greatly be improved again. It now
+uses stat with nanosecond precision that will be updated for every
+successful kdbSet(). Even if the configuration file was modified
+manually (not using Elektra) the next kdbSet() then is much more likely
+to fail.  Additionally a recursive mutex now protects the file locking
+mechanism.
 
 Many more examples were written and are used within doxygen. Most
 snippets now can also be found in compilable files:
 - C++ deep dup
 - keyNew examples
 - keyCopy examples
+
+Most plugins now internally use the same CMake function add_plugin.
+
+Felix converted the METADATA spec to ini files and added proposal
+for comments.
 
 Refactoring:
 - reuse of utilities in gen code generator
@@ -72,6 +119,9 @@ Fixes:
 - fix memory leaks (ini)
 - text messages for some warnings/errors
 - cmake policy for cmake version > 3
+
+
+
 
 
 # 0.8.8 Release
