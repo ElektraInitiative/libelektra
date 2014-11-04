@@ -1,8 +1,9 @@
-elektra (0.8.8-1) UNRELEASED; urgency=low
+elektra (0.8.9-1) UNRELEASED; urgency=low
 
   * New upstream version.
+  * New upstream version.
 
- -- Markus Raab <debian@markus-raab.org>  Tue, 02 Sep 2014 00:47:53 +0200
+ -- Markus Raab <debian@markus-raab.org>  Tue, 04 Nov 2014 09:07:08 +0100
 
 elektra (0.8.7-2) unstable; urgency=low
 
