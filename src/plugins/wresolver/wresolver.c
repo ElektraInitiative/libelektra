@@ -98,18 +98,25 @@ static void resolverInit (resolverHandle *p, const char *path)
 
 static void elektraResolveSystem(resolverHandle *p)
 {
+	char * system = getenv("ALLUSERSPROFILE");
+
+	if (!system) system = "";
+
 	if (p->path[0] == '/')
 	{
 		/* Use absolute path */
-		size_t filenameSize = strlen(p->path) + 1;
+		size_t filenameSize = strlen(system)
+			+ strlen(p->path) + 1;
 		p->filename = malloc (filenameSize);
-		strcpy (p->filename, p->path);
+		strcpy (p->filename, system);
+		strcat (p->filename, p->path);
 		return;
 	}
 	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
-		+ strlen(p->path) + sizeof("/") + 1;
+		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
 	p->filename = malloc (filenameSize);
-	strcpy (p->filename, KDB_DB_SYSTEM);
+	strcpy (p->filename, system);
+	strcat (p->filename, KDB_DB_SYSTEM);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
 	return;
