@@ -96,11 +96,24 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->path = path;
 }
 
+static void escapePath(char *home)
+{
+	int len = strlen(home), i;
+	for(i=0; i < len; ++i)
+	{
+		if(home[i] == '\\')
+		{
+			home[i] = '/';
+		}
+	}
+}
+
 static void elektraResolveSystem(resolverHandle *p)
 {
 	char * system = getenv("ALLUSERSPROFILE");
 
 	if (!system) system = "";
+	else escapePath(system);
 
 	if (p->path[0] == '/')
 	{
@@ -137,15 +150,7 @@ void elektraWresolveFileName(Key *forKey, resolverHandle *p, Key *warningsKey)
 		if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
 						0, home)))
 		{
-			int len = strlen(home), i;
-			for(i=0; i < len; ++i)
-			{
-
-				if(home[i] == '\\')
-				{
-					home[i] = '/';
-				}
-			}
+			escapePath(home);
 		}
 		else
 		{
