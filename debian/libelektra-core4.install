@@ -32,3 +32,6 @@ usr/lib/elektra4/libelektra-constants.so*
 usr/lib/elektra4/libelektra-keytometa.so*
 usr/lib/elektra4/libelektra-line.so*
 usr/lib/elektra4/libelektra-journald.so*
+usr/lib/elektra4/libelektra-wresolver.so*
+usr/lib/elektra4/libelektra-resolver_fm_uhb_xb.so.so*
+usr/lib/elektra4/libelektra-regexstore.so*
