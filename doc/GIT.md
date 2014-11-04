@@ -36,13 +36,6 @@ master should always compile and all test
 cases should pass successfully.
 (see config option above)
 
-	release
-
-Once the master is ready to be released,
-it should be merged to the release branch
-with --no-ff. So on the release branch
-there are only merges from master.
-(see config option above)
 
 	debian
 
@@ -51,7 +44,7 @@ packages. It additionally contains the
 debian folder. Only debian related commits
 should be on the debian branch - otherwise
 it should only contain --no-ff merges from
-release.  (see config option above)
+master.  (see config option above)
 
 ## Local branches ##
 
