@@ -37,7 +37,7 @@ TEST_F(OneSideStrategyTest, BaseWinsCorrectly)
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
 	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
 	Key conflictKey = mk1;
-	result.addConflict (conflictKey, MODIFY, MODIFY);
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
 
 	OneSideStrategy strategy (BASE);
@@ -57,7 +57,7 @@ TEST_F(OneSideStrategyTest, OursWinsCorrectly)
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
 	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
 	Key conflictKey = mk1;
-	result.addConflict (conflictKey, MODIFY, MODIFY);
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
 
 	OneSideStrategy strategy (OURS);
@@ -77,7 +77,7 @@ TEST_F(OneSideStrategyTest, TheirsWinsCorrectly)
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
 	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
 	Key conflictKey = mk1;
-	result.addConflict (conflictKey, MODIFY, MODIFY);
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
 
 	OneSideStrategy strategy (THEIRS);

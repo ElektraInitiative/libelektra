@@ -1,5 +1,7 @@
 #include <cmdline.hpp>
 
+#include <kdbconfig.h>
+
 #include <iostream>
 #include <vector>
 #include <cstdio>
@@ -29,7 +31,7 @@ Cmdline::Cmdline (int argc,
 	noNewline(),
 	test(),
 	recursive(),
-	resolver("resolver"),
+	resolver(KDB_DEFAULT_RESOLVER),
 	strategy("preserve"),
 	verbose(),
 	version(),

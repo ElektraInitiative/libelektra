@@ -34,7 +34,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if HAVE_STDIO_H
+#ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
 
@@ -118,7 +118,7 @@ ssize_t elektraMemmove (Key** array1, Key** array2, size_t size)
  *
  * @ingroup internal
  * @return a negative number if s1 is less than s2
- * @return 0 if s1 matches s2
+ * @retval 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  **/
 int elektraStrCmp (const char *s1, const char *s2)
@@ -134,12 +134,41 @@ int elektraStrCmp (const char *s1, const char *s2)
  *
  * @ingroup internal
  * @return a negative number if s1 is less than s2
- * @return 0 if s1 matches s2
+ * @retval 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  **/
 int elektraStrCaseCmp (const char *s1, const char *s2)
 {
 	return strcasecmp(s1, s2);
+}
+
+/**
+ * @brief Compare two memory regions but make cmp chars uppercase before
+ * comparision.
+ *
+ * @param s1 The first string to be compared
+ * @param s2 The second string to be compared
+ * @param size to be compared
+ *
+ * @ingroup internal
+ * @return a negative number if s1 is less than s2
+ * @retval 0 if s1 matches s2
+ * @return a positive number if s1 is greater than s2
+ */
+int elektraMemCaseCmp (const char *s1, const char *s2, size_t size)
+{
+	size_t i;
+	for (i = 0; i < size; i++)
+	{
+		const unsigned char cmp1 = s1[i];
+		const unsigned char cmp2 = s2[i];
+		const int CMP1 = toupper (cmp1);
+		const int CMP2 = toupper (cmp2);
+		const int diff = CMP1 - CMP2;
+		if (diff)
+			return diff;
+	}
+	return 0;
 }
 
 /**Reallocate Storage in a save way.
@@ -580,6 +609,13 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
 	size_t size = 0;
 	while (*(sp=keyNameGetOneLevel(sp+size,&size)))
 	{
+		/* skip all repeating '/' in the beginning */
+		while (*sp && *sp == KDB_PATH_SEPARATOR)
+		{
+			++sp;
+			--size;
+		}
+
 		if (!elektraUnescapeKeyNamePartBegin(sp, size, &dp))
 		{
 			dp = elektraUnescapeKeyNamePart(sp, size, dp);

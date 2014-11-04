@@ -33,6 +33,10 @@ kdb-shell:
 	automatic tests for functionality
 	Examples in --help
 
+kdb-export:
+	in a way that it can be used as shell script to immediately
+	import
+
 kdb tool:
 	request -f for rm, mv in system/elektra
 

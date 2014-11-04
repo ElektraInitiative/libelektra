@@ -45,8 +45,6 @@ void unserialise(istream &in, KeySet & input)
 
 	using boost::spirit::ascii::space;
 
-	typedef std::istreambuf_iterator<char> base_iterator_type;
-
 	in.unsetf (std::ios::skipws);
 	boost::spirit::istream_iterator begin (in);
 	boost::spirit::istream_iterator end;

@@ -101,6 +101,11 @@ check_version()
 {
 	echo "Check if script tests the correct version"
 
+	if [ "x$CHECK_VERSION" = "xNO" ]
+	then
+		return 0
+	fi
+
 	REAL_KDB_VERSION="`$KDB get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
 	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch"
@@ -176,7 +181,8 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xline" \
 	-o "x$PLUGIN" = "xuname" \
 	-o "x$PLUGIN" = "xconstants" \
-	-o "x$PLUGIN" = "xaugeas"
+	-o "x$PLUGIN" = "xaugeas" \
+	-o "x$PLUGIN" = "xregexstore"
 }
 
 is_plugin_available()
@@ -190,14 +196,6 @@ is_plugin_available()
 	done
 	return 1
 }
-
-
-
-
-
-
-
-
 
 
 

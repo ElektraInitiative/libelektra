@@ -16,6 +16,7 @@ Before configuration is actually written, the file name needs to be
 determined (will be automatically added by kdb mount):
 
 - [resolver](resolver) uses POSIX APIs to handle conflicts gracefully
+- [wresolver](wresolver) minimalistic resolver for non-POSIX systems
 - [noresolver](noresolver) does not resolve, but can act as one
 
 and afterwards the configuration file must be synced with
@@ -31,21 +32,24 @@ Read (and write) standard config files of /etc:
 
 - [augeas](augeas) parses and generates many different configuration
   files using the augeas library
-- [fstab](fstab) reads fstab files.
 - [hosts](hosts) read/write hosts files
 - [line](line) reads any file line by line
 
-Having flat, but arbitrary configuration:
-
-- [simpleini](simpleini) is ini without sections
-- [tcl](tcl)-like config files (including meta data)
-
 Using semi-structured data for config files:
 
-- [ni](ni) uses hierarchical INI files (with nested sections)
+- [tcl](tcl)-like config files (including meta data)
 - [ini](ini) other hierarchical INI
 - [xmltool](xmltool) uses XML.
 - [yajl](yajl#introduction) uses JSON.
+
+Plugins that just show some functionality, (currently) not intended for
+productive use:
+
+- [fstab](fstab) reads fstab files.
+- [ni](ni) uses hierarchical INI files (with nested sections)
+- [regexstore](regexstore)
+- [simpleini](simpleini) is ini without sections
+
 
 ## System Information ##
 

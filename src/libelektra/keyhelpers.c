@@ -17,7 +17,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -99,7 +99,7 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 	/* skip all repeating '/' in the beginning */
 	while (*real && *real == KDB_PATH_SEPARATOR)
 	{
-		real++;
+		++real;
 	}
 
 	/* now see where this basename ends handling escaped chars with '\' */
@@ -575,37 +575,40 @@ int keyInit(Key *key)
  */
 void keyVInit (Key *key, const char *name, va_list va)
 {
-	keyswitch_t action=0;
-	void * value=0;
-	ssize_t valueSize=-1;
-	void (*p) (void)=0;
+	keyswitch_t action = 0;
+	void *value = 0;
+	int valueSizeChanged = 0;
+	size_t valueSize = 0;
+	char *owner = 0;
+	enum elektraNameOptions nameOptions = 0;
+	void (*p) (void) = 0;
 
 	if (!key) return;
 
 	if (name) {
-		keySetName(key, name);
-
 		action=va_arg(va, keyswitch_t);
 		while (action) {
 			switch (action) {
 				case KEY_SIZE:
 					valueSize=va_arg(va, size_t);
+					valueSizeChanged = 1;
 					break;
 				case KEY_BINARY:
 					keySetMeta (key, "binary", "");
 					break;
 				case KEY_VALUE:
 					value = va_arg(va, void *);
-					if (valueSize>=0 && keyIsBinary(key))
+					if (valueSizeChanged && keyIsBinary(key))
 					{
 						keySetBinary(key,value, valueSize);
 					} else if (keyIsBinary(key)) {
-						valueSize = (ssize_t) elektraStrLen (value);
+						valueSize = elektraStrLen (value);
 						keySetBinary(key,value, valueSize);
 					} else {
 						keySetString(key,value);
 					}
 					break;
+#ifndef WIN32
 				case KEY_UID:
 					keySetUID(key,va_arg(va,uid_t));
 					break;
@@ -618,14 +621,15 @@ void keyVInit (Key *key, const char *name, va_list va)
 					 */
 					keySetMode(key,va_arg(va, int));
 					break;
+				case KEY_DIR:
+					keySetDir(key);
+					break;
+#endif
 				case KEY_OWNER:
-					keySetOwner(key,va_arg(va,char *));
+					owner = va_arg(va,char *);
 					break;
 				case KEY_COMMENT:
 					keySetComment(key,va_arg(va,char *));
-					break;
-				case KEY_DIR:
-					keySetDir(key);
 					break;
 				case KEY_LOCK_NAME:
 					keyLock(key, KEY_LOCK_NAME);
@@ -645,14 +649,32 @@ void keyVInit (Key *key, const char *name, va_list va)
 					/*First parameter is name*/
 					keySetMeta (key, value, va_arg(va,char *));
 					break;
+				case KDB_O_CASCADING_NAME:
+					nameOptions |= KDB_O_CASCADING_NAME;
+					break;
+				case KDB_O_META_NAME:
+					nameOptions |= KDB_O_META_NAME;
+					break;
+				case KDB_O_EMPTY_NAME:
+					/* actually useless in current
+					 * implementation, empty name
+					 * is ok anyway. Maybe if error
+					 * handling is visible to user
+					 * in future the option still
+					 * might be interesting */
+					nameOptions |= KDB_O_EMPTY_NAME;
+					break;
 				default:
 #if DEBUG
-					fprintf (stderr, "Unknown option in keyNew %ld\n", (long int)action);
+					fprintf (stderr, "Unknown option in keyVInit %ld\n", (long int)action);
 #endif
 					break;
 			}
 			action=va_arg(va, keyswitch_t);
 		}
+
+		elektraKeySetName(key, name, nameOptions);
+		if (owner) keySetOwner(key, owner);
 	}
 }
 

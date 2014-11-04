@@ -14,58 +14,72 @@
 GEN=./gen
 ELEKTRA=-lelektra-static
 CFLAGS=-O0 -ggdb
-FLAGS = `pkg-config --libs --cflags elektra`
+CXXFLAGS=-O0 -ggdb
+FLAGS = -I. -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
+PYTHONPATH=`pwd`
 
 .PHONY:all
-all:lift cpplift nestedlift contextlift contextvisit lift.html lift.3
+all:lift cpplift nestedlift dynamiccontextlift staticcontextlift lift.html lift.3 contextvisit contexteditor
 
-# see util.tmpl for motivation
-#not used at the moment, do not have dependency to cheetah-compile,
-#2 liner should be integrated into kdb gen if approach is chosen
-util.py:util.tmpl
-	cheetah-compile util.tmpl
+util.py:util/util.c
+	${GEN} -p tests/lift.ini util/util.c -o util.py
 
-lift.html:${GEN} specification.ini template.html
-	${GEN} specification.ini template.html -o lift.html
+cpp_util.py:util/util.cpp
+	${GEN} -p -c cpp_util tests/lift.ini util/util.cpp -o cpp_util.py
 
-lift.3:${GEN} specification.ini template.man
-	${GEN} specification.ini template.man -o lift.3
+lift.html:${GEN} tests/lift.ini template/template.html util.py
+	${GEN} tests/lift.ini template/template.html -o lift.html
 
-lift.h:${GEN} specification.ini template.h c_support.py
-	${GEN} specification.ini template.h -o lift.h
+lift.3:${GEN} tests/lift.ini  template/template.man util.py
+	${GEN} tests/lift.ini template/template.man -o lift.3
 
-lift.hpp:${GEN} specification.ini template.hpp
-	${GEN} specification.ini template.hpp -o lift.hpp
+lift.h:${GEN} tests/lift.ini  template/template.h support/c.py util.py
+	${GEN} tests/lift.ini template/template.h -o lift.h
 
-lift_nested.hpp:${GEN} specification.ini template_nested.hpp nested_support.py
-	${GEN} specification.ini template_nested.hpp -o lift_nested.hpp
+lift.hpp:${GEN} tests/lift.ini template/template.hpp util.py cpp_util.py
+	${GEN} tests/lift.ini template/template.hpp -o lift.hpp
 
-lift_context.hpp:${GEN} specification.ini template_context.hpp context_support.py
-	${GEN} specification.ini template_context.hpp -o lift_context.hpp
+lift_nested.hpp:${GEN} tests/lift.ini template/nested.hpp support/nested.py util.py cpp_util.py
+	${GEN} tests/lift.ini template/nested.hpp -o lift_nested.hpp
 
-visit_context.hpp:${GEN} visit_specification.ini template_context.hpp context_support.py
-	${GEN} visit_specification.ini template_context.hpp -o visit_context.hpp
+lift_context_dynamic.hpp:${GEN} tests/lift.ini template/context_dynamic.hpp support/context.py util.py cpp_util.py
+	${GEN} tests/lift.ini template/context_dynamic.hpp -o lift_context_dynamic.hpp
 
-genopt.c:${GEN} specification.ini template_genopt.c opt_support.py
-	${GEN} specification.ini template_genopt.c -o genopt.c
+lift_context_static.hpp:${GEN} tests/lift.ini template/context_static.hpp support/context.py util.py cpp_util.py
+	${GEN} tests/lift.ini template/context_static.hpp -o lift_context_static.hpp
 
-genopt.h:${GEN} specification.ini template_genopt.h opt_support.py
-	${GEN} specification.ini template_genopt.h -o genopt.h
+visit_context.hpp:${GEN} tests/visit.ini template/context_static.hpp support/context.py util.py cpp_util.py
+	${GEN} tests/visit.ini template/context_static.hpp -o visit_context.hpp
 
-lift:lift.c lift.h genopt.c genopt.h
-	cc ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE lift.c genopt.c genopt.h lift.h ${ELEKTRA} -o lift
+editor_context.hpp:${GEN} tests/editor.ini template/context_static.hpp support/context.py util.py cpp_util.py
+	${GEN} tests/editor.ini template/context_static.hpp -o editor_context.hpp
 
-cpplift:lift.cpp lift.hpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift.cpp lift.hpp ${ELEKTRA}  -o cpplift
+genopt.c:${GEN} tests/lift.ini template/genopt.c support/genopt.py util.py
+	${GEN} tests/lift.ini template/genopt.c -o genopt.c
 
-nestedlift:lift_nested.hpp lift_nested.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
+genopt.h:${GEN} tests/lift.ini template/genopt.h support/genopt.py util.py
+	${GEN} tests/lift.ini template/genopt.h -o genopt.h
 
-contextlift:lift_context.hpp lift_context.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall lift_context.cpp lift_context.hpp ${ELEKTRA}  -o contextlift
+lift:tests/lift.c lift.h genopt.c genopt.h
+	cc ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE tests/lift.c genopt.c genopt.h lift.h ${ELEKTRA} -o lift
 
-contextvisit:visit_context.hpp visit_context.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall visit_context.cpp visit_context.hpp ${ELEKTRA}  -o contextvisit
+cpplift:tests/lift.cpp lift.hpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift.cpp lift.hpp ${ELEKTRA}  -o cpplift
+
+nestedlift:lift_nested.hpp tests/lift_nested.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
+
+dynamiccontextlift:lift_context_dynamic.hpp tests/lift_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/lift_context.cpp lift_context_dynamic.hpp ${ELEKTRA}  -o dynamiccontextlift
+
+staticcontextlift:lift_context_static.hpp tests/lift_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_context.cpp lift_context_static.hpp ${ELEKTRA}  -o staticcontextlift
+
+contextvisit:visit_context.hpp tests/visit_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/visit_context.cpp visit_context.hpp ${ELEKTRA}  -o contextvisit
+
+contexteditor:editor_context.hpp tests/editor_context.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/editor_context.cpp editor_context.hpp ${ELEKTRA}  -o contexteditor
 
 .PHONY:clean
 clean:
@@ -75,12 +89,29 @@ clean:
 	rm -f genopt.c
 	rm -f genopt.h
 	rm -f lift
+	rm -f core
 	rm -f cpplift
 	rm -f *.pyc
 	rm -f lift.3
 	rm -f lift_nested.hpp
 	rm -f nestedlift
-	rm -f lift_context.hpp
-	rm -f contextlift
+	rm -f lift_context_dynamic.hpp
+	rm -f lift_context_static.hpp
+	rm -f staticcontextlift
+	rm -f dynamiccontextlift
 	rm -f visit_context.hpp
 	rm -f contextvisit
+	rm -f contexteditor
+	rm -f editor_context.hpp
+	rm -f util.py util.py.bak
+	rm -f cpp_util.py cpp_util.py.bak
+	rm -f support/__init__.pyc
+	rm -f support/c.pyc
+	rm -f support/context.pyc
+	rm -f support/cpp.pyc
+	rm -f support/gen.pyc
+	rm -f support/genopt.pyc
+	rm -f support/kdb.pyc
+	rm -f support/nested.pyc
+	rm -f support/util.pyc
+

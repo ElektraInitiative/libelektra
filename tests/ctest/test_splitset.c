@@ -818,8 +818,8 @@ static void test_emptyremove()
 
 	elektraSplitPrepare(split);
 	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if (!strcmp(keyName(split->parents[0]), "user"), "parent key not correct");
-	succeed_if (!strcmp(keyValue(split->parents[0]), "default"), "parent value not correct");
+	succeed_if_same_string (keyName(split->parents[0]), "user");
+	succeed_if_same_string (keyValue(split->parents[0]), "default");
 
 	elektraSplitDel (split);
 
@@ -1072,8 +1072,8 @@ static void test_realworld()
 
 	succeed_if( elektraSplitPrepare(split) == 0, "prepare did not work");
 	succeed_if (split->size == 1, "size not correct");
-	succeed_if (!strcmp(keyName(split->parents[0]), "system/hosts"), "parent key not correct");
-	succeed_if (!strcmp(keyValue(split->parents[0]), "hosts"), "parent value not correct");
+	succeed_if_same_string (keyName(split->parents[0]), "system/hosts");
+	succeed_if_same_string (keyValue(split->parents[0]), "hosts");
 
 	elektraSplitDel (split);
 

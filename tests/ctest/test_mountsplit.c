@@ -215,8 +215,8 @@ static void test_us()
 	succeed_if (backend == backend2, "should be same backend");
 
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
-	succeed_if (!strcmp(keyName(mp), "user"), "wrong mountpoint for backend");
-	succeed_if (!strcmp(keyString(mp), "user"), "wrong name for backend");
+	succeed_if_same_string (keyName(mp), "user");
+	succeed_if_same_string (keyString(mp), "user");
 
 
 	keySetName(key, "system/anywhere/tests/backend/two");
@@ -224,8 +224,8 @@ static void test_us()
 	succeed_if (two != backend, "should be differnt backend");
 
 	succeed_if ((mp = two->mountpoint) != 0, "no mountpoint found");
-	succeed_if (!strcmp(keyName(mp), "system"), "wrong mountpoint for backend two");
-	succeed_if (!strcmp(keyString(mp), "system"), "wrong name for backend");
+	succeed_if_same_string (keyName(mp), "system");
+	succeed_if_same_string (keyString(mp), "system");
 
 	keyDel (key);
 	elektraModulesClose (modules, 0);

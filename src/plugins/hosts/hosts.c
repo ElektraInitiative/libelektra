@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <errno.h>
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -333,11 +334,17 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	Key *key, *alias=0;
 	char * lastline;
 
-	fp = fopen (keyValue(parentKey), "w");
+	fp = fopen (keyString(parentKey), "w");
 
-	if (fp == 0)
+	if (fp == 0 && errno == EACCES)
 	{
-		ELEKTRA_SET_ERROR(9, parentKey, strerror(errno));
+		ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
+		errno = errnosave;
+		return -1;
+	}
+	else if (fp == 0)
+	{
+		ELEKTRA_SET_ERRORF(75, parentKey, "%s could not be written because %s", keyString(parentKey), strerror(errno));
 		errno = errnosave;
 		return -1;
 	}

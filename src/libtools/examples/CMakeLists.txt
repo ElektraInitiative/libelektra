@@ -16,7 +16,7 @@ macro (do_example source)
 	elseif (BUILD_FULL)
 		target_link_libraries (${source} elektratools-full)
 	else ()
-		message(ERROR "no BUILD_ selected")
+		message(SEND_ERROR "no BUILD_ selected")
 	endif ()
 
 	set_target_properties (${source} PROPERTIES

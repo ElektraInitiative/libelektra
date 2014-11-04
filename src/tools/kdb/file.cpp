@@ -23,7 +23,7 @@ int FileCommand::execute (Cmdline const& cl)
 	}
 
 	kdb.get(conf, x);
-	cout << x.getString() << endl;
+	cout << x.getString();
 
 	if (!cl.noNewline)
 	{

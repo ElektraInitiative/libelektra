@@ -119,18 +119,21 @@
 #else /* WIN32 */
 
 /***************************************************
- *                 Windows
+ *                 Windows (using mingw)
  ***************************************************/
 
 /* Avoid the most crazy things */
-#define NOMINMAX
+#ifndef NOMINMAX
+# define NOMINMAX
+#endif
 
-# include <windows.h>
-# include <limits.h>
+#include <windows.h>
+#include <limits.h>
+#include <sys/types.h>
 
-# define usleep(x) Sleep(x)
-# define ssize_t int
-# define snprintf _snprintf
+// # define usleep(x) Sleep(x)
+// # define ssize_t int
+// # define snprintf _snprintf
 
 #define KDB_MAX_PATH_LENGTH 4096
 

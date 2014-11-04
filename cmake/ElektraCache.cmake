@@ -52,9 +52,9 @@ set (PLUGINS_LIST_NODEP
 	struct
 	tracer
 	type
-	validation
 	constants
 	noresolver
+	wresolver
 	ini
 	)
 
@@ -73,7 +73,9 @@ set (PLUGINS_LIST_POSIX
 	timeofday
 	simpleini
 	line
-	resolver_c_b_b  # needed for tests
+	resolver_fm_uhb_xb  # handy for tests
+	validation
+	regexstore
 	)
 
 #
@@ -115,6 +117,7 @@ if (PLUGINS MATCHES "ALL")
 endif ()
 
 
+set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
 
 
 #
@@ -125,9 +128,72 @@ endif ()
 set (PLUGINS
 	${PLUGINS_LIST_DEFAULT}
 	${PLUGINS_LIST}
-	CACHE STRING "Which plugins should be compiled? ALL for all available, NODEP for plugins without additional dependencies, DEFAULT for minimal set."
+	CACHE STRING ${PLUGINS_DOC}
 	${PLUGINS_FORCE}
 	)
+
+list(REMOVE_DUPLICATES PLUGINS)
+set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
+
+
+
+
+
+
+
+
+
+
+#
+# set BINDINGS cache variable
+#
+
+set (BINDINGS_LIST_DEFAULT cpp)
+
+if (BINDINGS MATCHES "DEFAULT")
+	set (BINDINGS_FORCE FORCE)
+endif()
+
+list (FIND BINDINGS "SWIG" FINDEX)
+if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
+	set (BINDINGS_LIST_SWIG
+		swig_lua
+		swig_python2
+		swig_python3
+		)
+	set (BINDINGS_FORCE FORCE)
+endif ()
+
+list (FIND BINDINGS "GI" FINDEX)
+if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
+	set (BINDINGS_LIST_GI
+		glib
+		gi_lua
+		gi_python3
+		)
+	set (BINDINGS_FORCE FORCE)
+endif ()
+
+set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
+
+
+set (BINDINGS
+	${BINDINGS_LIST_DEFAULT}
+	${BINDINGS_LIST_SWIG}
+	${BINDINGS_LIST_GI}
+	CACHE STRING ${BINDINGS_DOC}
+	${BINDINGS_FORCE}
+	)
+
+
+list(REMOVE_DUPLICATES BINDINGS)
+set(BINDINGS ${BINDINGS} CACHE STRING ${BINDINGS_DOC} FORCE)
+
+
+
+
+
+
 
 
 
@@ -150,16 +216,26 @@ endif ()
 if (TOOLS MATCHES "ALL")
 	set (TOOLS_LIST
 		gen
+		race
+		qt-gui
 		)
 	set (TOOLS_FORCE FORCE)
 endif ()
 
+set (TOOLS_DOC "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
+
 set (TOOLS
 	${TOOLS_LIST_DEFAULT}
 	${TOOLS_LIST}
-	CACHE STRING "Which TOOLS should be compiled? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set."
+	CACHE STRING ${TOOLS_DOC}
 	${TOOLS_FORCE}
 	)
+
+
+
+
+
+
 
 
 #
@@ -180,6 +256,26 @@ set (KDB_DB_USER ".kdb" CACHE PATH
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
 
+set (KDB_DB_FILE "default.ecf" CACHE PATH
+		"This configuration file will be used initially (for bootstrapping)."
+		)
+
+set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
+	"This storage plugin will be used initially (for bootstrapping).")
+
+
+set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
+	"This resolver plugin will be used initially (for bootstrapping).")
+
+list (FIND PLUGINS ${KDB_DEFAULT_STORAGE} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
+endif()
+
+list (FIND PLUGINS ${KDB_DEFAULT_RESOLVER} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
+endif()
 
 
 #
@@ -253,16 +349,8 @@ set (COVERAGE_PREFIX
 		"Full path to common prefix of build+source directory"
     )
 
+option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
 
-option (BUILD_SWIG_PYTHON2 "Enable the SWIG bindings for Python2" OFF)
-option (BUILD_SWIG_PYTHON3 "Enable the SWIG bindings for Python3" OFF)
-option (BUILD_SWIG_LUA    "Enable the SWIG bindings for Lua" OFF)
-if (BUILD_SWIG_LUA)
-	set (TARGET_LUA_CMOD_FOLDER "lib${LIB_SUFFIX}/lua/5.2"
-		CACHE PATH
-		"Directory to install Lua binary modules (configure lua via LUA_CPATH)"
-	)
-endif (BUILD_SWIG_LUA)
 
 #
 # Developer builds (debug or verbose build)
@@ -347,6 +435,16 @@ set (TARGET_TEMPLATE_FOLDER
 		"share/elektra/templates"
 		CACHE STRING
 		"This folder (below prefix) will be used to install templates"
+    )
+
+set (TARGET_LUA_CMOD_FOLDER "lib${LIB_SUFFIX}/lua/5.2"
+	CACHE PATH
+	"Directory to install Lua binary modules, should be in LUA_CPATH"
+   )
+
+set (TARGET_LUA_LMOD_FOLDER "share/lua/5.2"
+	CACHE PATH
+	"Directory to install Lua source modules, should be in LUA_PATH)"
     )
 
 #

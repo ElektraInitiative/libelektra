@@ -149,7 +149,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -329,7 +329,7 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
 /**
  * @internal
  *
- * @brief Call this function after every key changing operation
+ * @brief Call this function after every key name changing operation
  *
  * @pre key->key and key->keySize are set accordingly and the size of
  * allocation is twice as what you actually needed.
@@ -405,7 +405,7 @@ ssize_t keySetName(Key *key, const char *newName)
 }
 
 ssize_t elektraKeySetName(Key *key, const char *newName,
-		enum elektra_name_options options)
+		enum elektraNameOptions options)
 {
 	size_t length;
 	size_t rootLength, userLength, systemLength, ownerLength;
@@ -705,7 +705,7 @@ const char *keyBaseName(const Key *key)
  *
  * Basenames are denoted as:
  * - @c system/some/thing/basename -> @c basename
- * - @c user:domain/some/thing/base\/name > @c base\/name
+ * - @c user:domain/some/thing/base\\/name > @c base\\/name
  *
  * @param key the key object to work with
  * @return size in bytes of @p key's basename including ending NULL

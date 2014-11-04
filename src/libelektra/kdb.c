@@ -14,7 +14,6 @@
  ***************************************************************************/
 
 
-
 /**
  * @defgroup kdb KDB
  * @brief General methods to access the Key database.
@@ -42,7 +41,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -789,7 +788,6 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	Split *split = elektraSplitNew();
 	Key *initialParent = keyDup(parentKey);
 	Key *errorKey = 0;
-
 
 	if(elektraSplitBuildup(split, handle, parentKey) == -1)
 	{

@@ -68,7 +68,7 @@ severity:fatal
 ingroup:kdb
 
 number:9
-description:could not open file
+description:Insufficient permissions to open configuration file for writing. You might want to retry as root.
 severity:normal
 ingroup:kdb
 
@@ -178,7 +178,7 @@ ingroup:plugin
 module:resolver
 
 number:30
-description:found conflict
+description:A conflict occurred: another process modified the key database.
 severity:error
 ingroup:plugin
 module:resolver
@@ -445,7 +445,7 @@ ingroup:plugin
 module:resolver
 
 number:75
-description:Could not open file for writing
+description:Could not open file for writing.
 severity:error
 ingroup:plugin
 module:storage
@@ -489,8 +489,8 @@ severity:warning
 ingroup:kdb
 
 number:83
-description:resolver was not able to resolve a filename (see warnings above)
-severity:error
+description:resolver was not able to resolve a filename
+severity:warning
 ingroup:plugin
 module:resolver
 
@@ -553,3 +553,31 @@ number:94
 description:Could not initialize the modules
 severity:fatal
 ingroup:kdb
+
+number:95
+description:Could not load config file
+severity:fatal
+module:regexstore
+
+number:96
+description:Regex failure
+severity:warning
+module:regexstore
+
+number:97
+description:writing multiline values is not enabled
+severity:error
+ingroup:plugin
+module:storage
+
+number: 98
+description:invalid ini syntax
+severity:error
+ingroup:plugin
+module:storage
+
+number: 99
+description:could not update time of file
+severity:warning
+ingroup:plugin
+module:resolver

@@ -24,7 +24,7 @@
 KeySet *set_pluginconf()
 {
 	return ksNew( 10 ,
-		keyNew ("system/path", KEY_VALUE, "default.ecf", KEY_END),
+		keyNew ("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
 		keyNew ("user/path", KEY_VALUE, "elektra.ecf", KEY_END),
 		KS_END);
 }

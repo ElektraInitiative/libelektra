@@ -38,7 +38,7 @@ TEST_F(MetaMergeStrategyTest, MergesMetaWithInnerStrategy)
 	ours.lookup ("user/parento/config/key1").setMeta ("testmeta", "valueo");
 	theirs.lookup ("user/parentt/config/key1").setMeta ("testmeta", "valuet");
 	Key conflictKey = mk1;
-	result.addConflict (conflictKey, META, META);
+	result.addConflict (conflictKey, CONFLICT_META, CONFLICT_META);
 	conflictKey = result.getConflictSet ().at (0);
 
 	ThreeWayMerge merger;

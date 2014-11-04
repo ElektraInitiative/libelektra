@@ -46,7 +46,7 @@ int elektraSyncGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 	{
 		KeySet *contract = ksNew (30,
 		keyNew ("system/elektra/modules/sync",
-			KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
+			KEY_VALUE, "sync plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/sync/exports", KEY_END),
 		keyNew ("system/elektra/modules/sync/exports/get",
 			KEY_FUNC, elektraSyncGet, KEY_END),

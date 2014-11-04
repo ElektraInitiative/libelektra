@@ -112,8 +112,8 @@ static void test_simple()
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
-	succeed_if (!strcmp(keyName(mp), "user/tests/backend/simple"), "wrong mountpoint for backend");
-	succeed_if (!strcmp(keyString(mp), "simple"), "wrong name for backend");
+	succeed_if_same_string (keyName(mp), "user/tests/backend/simple");
+	succeed_if_same_string (keyString(mp), "simple");
 
 	Plugin *plugin = backend->getplugins[1];
 
@@ -156,8 +156,8 @@ static void test_default()
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
-	succeed_if (!strcmp(keyName(mp), ""), "wrong mountpoint for default backend");
-	succeed_if (!strcmp(keyString(mp), "default"), "wrong name for default backend");
+	succeed_if_same_string (keyName(mp), "");
+	succeed_if_same_string (keyString(mp), "default");
 
 	elektraBackendClose(backend, 0);
 	elektraModulesClose (modules, 0);
@@ -216,8 +216,8 @@ static void test_backref()
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
-	succeed_if (!strcmp(keyName(mp), "user/tests/backend/backref"), "wrong mountpoint for backend");
-	succeed_if (!strcmp(keyString(mp), "backref"), "wrong name for backend");
+	succeed_if_same_string (keyName(mp), "user/tests/backend/backref");
+	succeed_if_same_string (keyString(mp), "backref");
 
 	Plugin *plugin1 = backend->getplugins[1];
 	Plugin *plugin2 = backend->setplugins[1];

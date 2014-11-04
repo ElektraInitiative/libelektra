@@ -38,9 +38,9 @@ static void test_ksToArray()
 	Key **keyArray = calloc (ksGetSize (ks), sizeof (Key *));
 	elektraKsToMemArray(ks, keyArray);
 
-	succeed_if (!strcmp ("user/test1", keyName(keyArray[0])), "first key in array incorrect");
-	succeed_if (!strcmp ("user/test2", keyName(keyArray[1])), "second key in array incorrect");
-	succeed_if (!strcmp ("user/test3", keyName(keyArray[2])), "third key in array incorrect");
+	succeed_if_same_string ("user/test1", keyName(keyArray[0]));
+	succeed_if_same_string ("user/test2", keyName(keyArray[1]));
+	succeed_if_same_string ("user/test3", keyName(keyArray[2]));
 
 	/* test if cursor is restored */
 	ksNext(ks);

@@ -1,0 +1,65 @@
+#compiler-settings
+directiveStartToken = @
+cheetahVarStartToken = $
+#end compiler-settings
+@from support.gen import *
+@set support = Support()
+<!-- start of generated file -->
+<html>
+    <head>
+    </head>
+    <body>
+@for $key, $info in $parameters.items()
+<a name="$key"></a>
+<h1>$key</h1>
+<dl>
+    <dt>Name</dt><dd>$key</dd>
+    <dt>Type</dt><dd>$info.get('type')</dd>
+@if $info.get('unit')
+    <dt>Unit</dt><dd>$info.get('unit')</dd>
+@end if
+@if $info.get('default')
+    <dt>Default</dt><dd>$info.get('default')</dd>
+@end if
+@if $info.get('explanation')
+    <dt>Explanation</dt><dd>$info.get('explanation')</dd>
+@end if
+@if $info.get('rationale')
+    <dt>Rationale</dt><dd>$info.get('rationale')</dd>
+@end if
+@if $info.get('accessibility')
+    <dt>Accessibility</dt><dd>$info.get('accessibility')</dd>
+@end if
+</dl>
+
+@if $len(support.override(info)) > 0
+<h2>Override</h2>
+<ul>
+    @for $i in $support.override(info)
+    <li><a href="#$i">$i</a></li>
+    @end for
+</ul>
+@end if
+
+@if $len(support.fallback(info)) > 0
+<h2>Fallback</h2>
+<ul>
+    @for $i in $support.fallback(info)
+    <li><a href="#$i">$i</a></li>
+    @end for
+</ul>
+@end if
+
+@if $len(support.see(info)) > 0
+<h2>see</h2>
+<ul>
+    @for $i in $support.see(info)
+    <li><a href="#$i">$i</a></li>
+    @end for
+</ul>
+@end if
+
+@end for
+    </body>
+</html>
+<!-- end of a generated file -->

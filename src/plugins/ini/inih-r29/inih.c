@@ -59,12 +59,7 @@ static char* strncpy0(char* dest, const char* src, size_t size)
 }
 
 /* See documentation in header file. */
-int ini_parse_file(FILE* file,
-                   int (*handler)(void*, const char*, const char*,
-                                  const char*),
-                   int (*sectionHandler)(void*, const char*),
-                   int (*commentHandler)(void*, const char*),
-                   void* user)
+int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 {
     /* Uses a fair bit of stack (use heap instead if you need to) */
 #if INI_USE_STACK
@@ -105,18 +100,17 @@ int ini_parse_file(FILE* file,
 
         if (*start == ';' || *start == '#') {
         	start += 1;
-        	if (!commentHandler(user, start) && !error)
+        	if (!config->commentHandler(user, start) && !error)
         		error = lineno;
             /* Per Python ConfigParser, allow '#' comments at start of line */
         }
-#if INI_ALLOW_MULTILINE
-        else if (*prev_name && *start && start > line) {
+
+        else if (config->supportMultiline && *prev_name && *start && start > line) {
             /* Non-black line with leading whitespace, treat as continuation
                of previous name's value (as per Python ConfigParser). */
-            if (!handler(user, section, prev_name, start) && !error)
+            if (!config->keyHandler(user, section, prev_name, start, 1) && !error)
                 error = lineno;
         }
-#endif
         else if (*start == '[') {
             /* A "[section]" line */
             end = find_char_or_comment(start + 1, ']');
@@ -124,7 +118,7 @@ int ini_parse_file(FILE* file,
                 *end = '\0';
                 strncpy0(section, start + 1, sizeof(section));
                 *prev_name = '\0';
-                if(!sectionHandler(user, section) && !error)
+                if(!config->sectionHandler(user, section) && !error)
                 	error = lineno;
             }
             else if (!error) {
@@ -149,7 +143,7 @@ int ini_parse_file(FILE* file,
 
                 /* Valid name[=:]value pair found, call handler */
                 strncpy0(prev_name, name, sizeof(prev_name));
-                if (!handler(user, section, name, value) && !error)
+                if (!config->keyHandler(user, section, name, value, 0) && !error)
                     error = lineno;
             }
             else if (!error) {
@@ -172,12 +166,7 @@ int ini_parse_file(FILE* file,
 }
 
 /* See documentation in header file. */
-int ini_parse(const char* filename,
-			int (*handler)(void*, const char*, const char*,
-						   const char*),
-			int (*sectionHandler)(void*, const char*),
-			int (*commentHandler)(void*, const char*),
-			void* user)
+int ini_parse(const char* filename, const struct IniConfig* config, void* user)
 {
     FILE* file;
     int error;
@@ -185,7 +174,7 @@ int ini_parse(const char* filename,
     file = fopen(filename, "r");
     if (!file)
         return -1;
-    error = ini_parse_file(file, handler, sectionHandler, commentHandler, user);
+    error = ini_parse_file(file, config, user);
     fclose(file);
     return error;
 }

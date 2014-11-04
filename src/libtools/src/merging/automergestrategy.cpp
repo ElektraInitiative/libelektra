@@ -34,8 +34,8 @@ void AutoMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 
 	switch (ourOperation)
 	{
-	case SAME:
-		if (theirOperation == MODIFY || theirOperation == ADD)
+	case CONFLICT_SAME:
+		if (theirOperation == CONFLICT_MODIFY || theirOperation == CONFLICT_ADD)
 		{
 			Key source = task.theirs.lookup(theirLookup);
 			conflictKey.setString(source.getString());
@@ -43,14 +43,14 @@ void AutoMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 			result.addMergeKey(conflictKey);
 		}
 
-		if (theirOperation == DELETE)
+		if (theirOperation == CONFLICT_DELETE)
 		{
 			result.resolveConflict(conflictKey);
 		}
 		break;
-	case MODIFY:
-	case ADD:
-		if (theirOperation == SAME)
+	case CONFLICT_MODIFY:
+	case CONFLICT_ADD:
+		if (theirOperation == CONFLICT_SAME)
 		{
 			Key source = task.ours.lookup(ourLookup);
 			conflictKey.setString(source.getString());
@@ -58,13 +58,13 @@ void AutoMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 			result.addMergeKey(conflictKey);
 		}
 		break;
-	case DELETE:
-		if (theirOperation == SAME)
+	case CONFLICT_DELETE:
+		if (theirOperation == CONFLICT_SAME)
 		{
 			result.resolveConflict(conflictKey);
 		}
 		break;
-	case META:
+	case CONFLICT_META:
 		break;
 	}
 

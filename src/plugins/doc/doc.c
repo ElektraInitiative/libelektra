@@ -90,7 +90,7 @@ int elektraDocGet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 	{
 		KeySet *contract = ksNew (30,
 		keyNew ("system/elektra/modules/doc",
-			KEY_VALUE, "dbus plugin waits for your orders", KEY_END),
+			KEY_VALUE, "doc plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/doc/exports", KEY_END),
 		keyNew ("system/elektra/modules/doc/exports/open",
 			KEY_FUNC, elektraDocOpen, KEY_END),
@@ -217,6 +217,11 @@ int elektraPluginSet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *paren
 }
 //![set full]
 
+
+void elektraUsercodeUselessSymbol()
+{
+	usercode(0,0,0);
+}
 
 //![export]
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)

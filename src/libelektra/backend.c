@@ -18,7 +18,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && HAVE_STDIO_H
+#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -213,10 +213,11 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 	backend->refcounter = 1;
 
 	KeySet *resolverConfig = ksNew(5,
-		keyNew("system/path", KEY_VALUE, "default.ecf", KEY_END),
+		keyNew("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
 		KS_END);
 
-	Plugin *resolver = elektraPluginOpen("resolver", modules, resolverConfig, errorKey);
+	Plugin *resolver = elektraPluginOpen(KDB_DEFAULT_RESOLVER,
+			modules, resolverConfig, errorKey);
 	if (!resolver)
 	{
 		elektraFree(backend);
@@ -233,7 +234,8 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 	KeySet *storageConfig = ksNew(5,
 		KS_END);
 
-	Plugin *storage = elektraPluginOpen("dump", modules, storageConfig, errorKey);
+	Plugin *storage = elektraPluginOpen(KDB_DEFAULT_STORAGE,
+			modules, storageConfig, errorKey);
 	if (!storage)
 	{
 		elektraPluginClose(resolver, errorKey);

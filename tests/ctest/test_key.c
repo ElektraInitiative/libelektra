@@ -48,10 +48,10 @@ static void test_keyHelpers()
 		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
 		switch (level)
 		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct"); break;
-			case 2: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct"); break;
-			case 3: succeed_if (strcmp (buffer, "defghi") == 0, "keyNameGetOneLevel not correct"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct"); break;
+			case 1: succeed_if_same_string (buffer, "user"); break;
+			case 2: succeed_if_same_string (buffer, "abc"); break;
+			case 3: succeed_if_same_string (buffer, "defghi"); break;
+			case 4: succeed_if_same_string (buffer, "jkl"); break;
 			default: succeed_if (0, "should not reach case statement");
 		}
 	}
@@ -71,13 +71,13 @@ static void test_keyHelpers()
 		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
 		switch (level)
 		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+			case 1: succeed_if_same_string (buffer, "user");
 				succeed_if (size == 4, "wrong size returned"); break;
-			case 2: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct");
+			case 2: succeed_if_same_string (buffer, "abc");
 				succeed_if (size == 3, "wrong size returned"); break;
-			case 3: succeed_if (strcmp (buffer, "def\\/ghi") == 0, "keyNameGetOneLevel not correct");
+			case 3: succeed_if_same_string (buffer, "def\\/ghi");
 				succeed_if (size == 8, "wrong size returned"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct");
+			case 4: succeed_if_same_string (buffer, "jkl");
 				succeed_if (size == 3, "wrong size returned"); break;
 			default: succeed_if (0, "should not reach case statement");
 		}
@@ -98,13 +98,13 @@ static void test_keyHelpers()
 		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
 		switch (level)
 		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+			case 1: succeed_if_same_string (buffer, "user");
 				succeed_if (size == 4, "wrong size returned"); break;
-			case 2: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct");
+			case 2: succeed_if_same_string (buffer, "abc");
 				succeed_if (size == 3, "wrong size returned"); break;
-			case 3: succeed_if (strcmp (buffer, "def\\/ghi") == 0, "keyNameGetOneLevel not correct");
+			case 3: succeed_if_same_string (buffer, "def\\/ghi");
 				succeed_if (size == 8, "wrong size returned"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct");
+			case 4: succeed_if_same_string (buffer, "jkl\\/\\/");
 				succeed_if (size == 7, "wrong size returned"); break;
 			default: succeed_if (0, "should not reach case statement");
 		}
@@ -125,13 +125,13 @@ static void test_keyHelpers()
 		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
 		switch (level)
 		{
-			case 1: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+			case 1: succeed_if_same_string (buffer, "user");
 				succeed_if (size == 4, "wrong size returned"); break;
-			case 2: succeed_if (strcmp (buffer, "\\/abc") == 0, "keyNameGetOneLevel not correct");
+			case 2: succeed_if_same_string (buffer, "\\/abc");
 				succeed_if (size == 5, "wrong size returned"); break;
-			case 3: succeed_if (strcmp (buffer, "\\/def\\/ghi") == 0, "keyNameGetOneLevel not correct");
+			case 3: succeed_if_same_string (buffer, "\\/def\\/ghi");
 				succeed_if (size == 10, "wrong size returned"); break;
-			case 4: succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct");
+			case 4: succeed_if_same_string (buffer, "jkl\\/\\/");
 				succeed_if (size == 7, "wrong size returned"); break;
 			default: succeed_if (0, "should not reach case statement");
 		}
@@ -141,7 +141,7 @@ static void test_keyHelpers()
 	parentSize=keyGetParentNameSize(key);
 	parentName=malloc(parentSize);
 	keyGetParentName(key,parentName,parentSize);
-	succeed_if (strcmp (parentName, "system/parent") == 0, "parentName error");
+	succeed_if_same_string (parentName, "system/parent");
 	free (parentName);
 	keyDel (key);
 
@@ -149,17 +149,17 @@ static void test_keyHelpers()
 
 	k1 = keyNew ("user/dir1/dir2", KEY_END);
 	succeed_if (keyAddBaseName (k1, 0) == 15, "Could not add nothing to basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k1), "user/dir1/dir2");
 	succeed_if (keyAddBaseName (k1, "") == 17, "Could not add nothing to basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/%") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k1), "user/dir1/dir2/%");
 	succeed_if (keyAddBaseName (k1, "mykey") == 23, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/%/mykey") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k1), "user/dir1/dir2/%/mykey");
 	succeed_if (keyGetNameSize(k1) == 23, "Name size not correct");
 	succeed_if (keyAddBaseName (k1, "mykey") == sizeof("user/dir1/dir2/%/mykey/mykey"), "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/%/mykey/mykey") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k1), "user/dir1/dir2/%/mykey/mykey");
 	succeed_if (keyGetNameSize(k1) == 29, "Name size not correct");
 	succeed_if (keyAddBaseName (k1, "a") == 31, "Could not add basename");
-	succeed_if (strcmp (keyName(k1), "user/dir1/dir2/%/mykey/mykey/a") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k1), "user/dir1/dir2/%/mykey/mykey/a");
 	succeed_if (keyGetNameSize(k1) == 31, "Name size not correct");
 	keyDel (k1);
 
@@ -191,41 +191,41 @@ static void test_keyHelpers()
 }
 
 
-	k2 = keyNew (KEY_END);
+	k2 = keyNew (0);
 	succeed_if (keyAddBaseName (k2, "no") == -1, "Could add basename on empty name");
-	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "");
 	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
 	keyDel (k2);
 
-	k2 = keyNew (KEY_END);
+	k2 = keyNew (0);
 	succeed_if (keyAddBaseName (k2, "user") == -1, "Could add basename on empty name");
-	succeed_if (strcmp (keyName(k2), "") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "");
 	succeed_if (keyGetNameSize(k2) == 1, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("user/dir1/dir2/mykey/mykey/a", KEY_END);
 	succeed_if (keySetBaseName (k2, "mykey") == 33, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/mykey") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "user/dir1/dir2/mykey/mykey/mykey");
 	succeed_if (keyGetNameSize(k2) == 33, "Name size not correct");
 	succeed_if (keySetBaseName (k2, "einva") == 33, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/einva") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "user/dir1/dir2/mykey/mykey/einva");
 	succeed_if (keyGetNameSize(k2) == 33, "Name size not correct");
 	succeed_if (keySetBaseName (k2, "chang") == 33, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/chang") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "user/dir1/dir2/mykey/mykey/chang");
 	succeed_if (keySetBaseName (k2, "change") == 34, "Could not add basename");
 	succeed_if (keyGetNameSize(k2) == 34, "Name size not correct");
-	succeed_if (strcmp (keyName(k2), "user/dir1/dir2/mykey/mykey/change") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "user/dir1/dir2/mykey/mykey/change");
 	keyDel (k2);
 
 	k2 = keyNew ("user/dir1/a", KEY_END);
 	succeed_if (keySetBaseName (k2, 0) == 10, "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "user/dir1");
 	succeed_if (keyGetNameSize(k2) == 10, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("user/dir1/a", KEY_END);
 	succeed_if (keySetBaseName (k2, "some/more") == sizeof("user/dir1/some\\/more"), "Could not add basename");
-	succeed_if (strcmp (keyName(k2), "user/dir1/some\\/more") == 0, "added basename not correct");
+	succeed_if_same_string (keyName(k2), "user/dir1/some\\/more");
 	succeed_if (keyGetNameSize(k2) == sizeof("user/dir1/some\\/more"), "Name size not correct");
 	keyDel (k2);
 
@@ -249,13 +249,13 @@ static void test_keyHelpers()
 
 	k2 = keyNew ("user", KEY_END);
 	succeed_if (keySetBaseName (k2, "user") == -1, "Could add basename, but there is none");
-	succeed_if (strcmp (keyName(k2), "user") == 0, "basename not correct");
+	succeed_if_same_string (keyName(k2), "user");
 	succeed_if (keyGetNameSize(k2) == 5, "Name size not correct");
 	keyDel (k2);
 
 	k2 = keyNew ("system", KEY_END);
 	succeed_if (keySetBaseName (k2, "system") == -1, "Could add basename, but there is none");
-	succeed_if (strcmp (keyName(k2), "system") == 0, "basename not correct");
+	succeed_if_same_string (keyName(k2), "system");
 	succeed_if (keyGetNameSize(k2) == 7, "Name size not correct");
 	keyDel (k2);
 }
@@ -405,29 +405,29 @@ static void test_owner()
 	char * getBack;
 	key = keyNew ("user/test/test", KEY_END);
 	succeed_if (keySetOwner(key, "hugo") == sizeof("hugo"), "could not set owner");
-	succeed_if( strcmp(keyOwner(key), "hugo") == 0, "keyNew: owner not set correctly");
+	succeed_if_same_string (keyOwner(key), "hugo");
 	succeed_if( keyGetOwnerSize(key) == 5, "owner length not correct");
 	keyGetFullName (key, fullroot, KDB_MAX_PATH_LENGTH);
-	succeed_if( strcmp(keyOwner(key), "hugo") == 0, "keyNew: owner not set correctly");
+	succeed_if_same_string (keyOwner(key), "hugo");
 	/* printf ("%s, %s, %s\n", keyName(key), keyBaseName(key), fullroot); */
-	succeed_if(strcmp(keyName(key),"user/test/test") == 0, "Wrong keyname: keyName");
-	succeed_if(strcmp(keyBaseName(key),"test") == 0, "Wrong keyname: keyBaseName");
+	succeed_if_same_string (keyName(key), "user/test/test");
+	succeed_if_same_string (keyBaseName(key), "test");
 	// printf ("%s\n", fullroot);
-	succeed_if(strcmp(fullroot,"user:hugo/test/test") == 0, "Wrong keyname: keyGetFullName");
+	succeed_if_same_string (fullroot, "user:hugo/test/test");
 	succeed_if (keyIsUser(key) == 1, "is user");
 	succeed_if (keyIsSystem(key) == 0, "not system");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew ("user/test/test", KEY_END);
 	succeed_if (keySetOwner(key, "tommy") == sizeof("tommy"), "could not set owner");
-	succeed_if( strcmp(keyOwner(key), "tommy") == 0, "keyNew: owner not set correctly");
+	succeed_if_same_string (keyOwner(key), "tommy");
 	succeed_if( keyGetOwnerSize(key) == 6, "owner length not correct");
 	keyGetFullName (key, fullroot, KDB_MAX_PATH_LENGTH);
-	succeed_if( strcmp(keyOwner(key), "tommy") == 0, "keyNew: owner not set correctly");
+	succeed_if_same_string (keyOwner(key), "tommy");
 	/* printf ("%s, %s, %s\n", keyName(key), keyBaseName(key), fullroot); */
-	succeed_if(strcmp(keyName(key),"user/test/test") == 0, "Wrong keyname: keyName");
-	succeed_if(strcmp(keyBaseName(key),"test") == 0, "Wrong keyname: keyBaseName");
-	succeed_if(strcmp(fullroot,"user:tommy/test/test") == 0, "Wrong keyname: keyGetFullName");
+	succeed_if_same_string (keyName(key), "user/test/test");
+	succeed_if_same_string (keyBaseName(key), "test");
+	succeed_if_same_string (fullroot, "user:tommy/test/test");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 	
 	// Key with name + owner
@@ -435,7 +435,7 @@ static void test_owner()
 			KEY_OWNER, "yl",
 			KEY_END);
 	succeed_if(key != NULL, "keyNew: Unable to create a key with name + owner");
-	succeed_if( strcmp(keyOwner(key), "yl") == 0, "keyNew: owner not set correctly");
+	succeed_if_same_string (keyOwner(key), "yl");
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 	
 	key = keyNew("user/valid/there",
@@ -454,16 +454,16 @@ static void test_owner()
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew("user:y", KEY_END);
-	succeed_if (strcmp (keyName(key), "user") == 0, "Name Problem: System as basename");
+	succeed_if_same_string (keyName(key), "user");
 	succeed_if (keyGetNameSize(key) == 5, "empty name size" );
-	succeed_if (strcmp (keyOwner(key), "y") == 0, "Should be a name not length 0");
+	succeed_if_same_string (keyOwner(key), "y");
 	succeed_if (keyGetOwnerSize(key) == 2, "owner y size" );
 	keyDel (key);
 
 	succeed_if (key = keyNew("user:perfectowner", KEY_END), "could not create new key");
 	succeed_if (keySetName(key, "user:perfectowner") == 5, "could not set to user with owner");
 	succeed_if (keyGetOwnerSize (key) == 13, "owner size not correct");
-	succeed_if (strcmp (keyOwner(key), "perfectowner") == 0, "Owner not same as set");
+	succeed_if_same_string (keyOwner(key), "perfectowner");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	char	ret [1000];
@@ -484,27 +484,27 @@ static void test_owner()
 
 	succeed_if (keySetOwner(key,0) == 1, "delete owner");
 	succeed_if (keyGetOwner (key,ret,i) == 1, "length checking deleting");
-	succeed_if (strcmp(ret, "") == 0, "not empty owner");
+	succeed_if_same_string (ret, "");
 
 	succeed_if (keySetOwner(key,testOwner) == sizeof(testOwner), "set owner");
 	succeed_if (keyGetOwner (key,ret,i) == sizeof(testOwner), "length checking working");
-	succeed_if (strcmp(ret, testOwner) == 0, "not empty owner");
+	succeed_if_same_string (ret, testOwner);
 
 	succeed_if (keySetOwner(key,"") == 1, "delete owner");
 	succeed_if (keyGetOwner (key,ret,i) == 1, "length checking deleting");
-	succeed_if (strcmp(ret, "") == 0, "not empty owner");
+	succeed_if_same_string (ret, "");
 
 	succeed_if (keySetOwner(key,testOwner) == sizeof(testOwner), "set owner");
 	succeed_if (keyGetOwner (key,ret,i) == sizeof(testOwner), "length checking working");
-	succeed_if (strcmp(ret, testOwner) == 0, "not empty owner");
+	succeed_if_same_string (ret, testOwner);
 	keyDel (key);
 
 	succeed_if (keyOwner(0) == 0, "null pointer");
 
 	key = keyNew (0);
-	succeed_if (strcmp(keyOwner(key), "") == 0, "empty owner");
+	succeed_if_same_string (keyOwner(key), "");
 	succeed_if (keyGetOwner (key,ret, 1000) == 1, "get empty owner");
-	succeed_if (strcmp(ret, "") == 0, "not empty owner");
+	succeed_if_same_string (ret, "");
 	succeed_if (keyGetOwner (key,ret, 0) == -1, "get empty owner");
 	keyDel (key);
 
@@ -524,22 +524,22 @@ static void test_keyComment()
 	succeed_if (keyGetCommentSize (key) == 1, "empty comment size");
 	succeed_if (keySetComment (key,"perfectcomment") == 15, "could not set comment");
 	succeed_if (keyGetCommentSize (key) == 15, "comment size not correct");
-	succeed_if (strcmp (keyComment(key), "perfectcomment") == 0, "Comment not same as set");
+	succeed_if_same_string (keyComment(key), "perfectcomment");
 	succeed_if (keySetComment (key,"perfectcomment") == 15, "could not re-set same comment");
-	succeed_if (strcmp (keyComment(key), "perfectcomment") == 0, "Comment not same as set");
+	succeed_if_same_string (keyComment(key), "perfectcomment");
 	succeed_if (keySetComment (key,"nearperfectcomment") == 19, "could not re-set other comment");
 	succeed_if (keyGetCommentSize (key) == 19, "comment size not correct");
-	succeed_if (strcmp (keyComment(key), "nearperfectcomment") == 0, "Comment not same as set");
+	succeed_if_same_string (keyComment(key), "nearperfectcomment");
 	succeed_if (keyGetComment (key, ret, keyGetCommentSize (key)>=999 ? 999 : keyGetCommentSize (key))
 			== 19, "could not get comment");
-	succeed_if (strcmp (ret, "nearperfectcomment") == 0, "Comment not same as set");
+	succeed_if_same_string (ret, "nearperfectcomment");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 	
 	succeed_if (key = keyNew(0), "could not create new key");
-	succeed_if (strcmp (keyComment(key), "") == 0, "Empty comment problem");
+	succeed_if_same_string (keyComment(key), "");
 	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
 	succeed_if (keySetComment (key,"") == 1, "could not set comment");
-	succeed_if (strcmp (keyComment(key), "") == 0, "Empty comment problem");
+	succeed_if_same_string (keyComment(key), "");
 	succeed_if (keyGetCommentSize(key) == 1, "Empty comment size problem");
 	succeed_if (keyGetComment(key, ret, 0) == -1, "Could not get empty comment");
 	succeed_if (keyGetComment(key, ret, 1) == 1, "Could not get empty comment");
@@ -552,7 +552,7 @@ static void test_keyComment()
 		ret[0] = i; ret[1] = i; ret[2] = 0;
 		succeed_if (keySetComment (key,ret) == 3, "could not set comment");
 		// output_key (key);
-		succeed_if (strcmp (keyComment(key), ret) == 0, "Comment not same as set");
+		succeed_if_same_string (keyComment(key), ret);
 	}
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
@@ -584,19 +584,19 @@ static void test_keyComment()
 
 	succeed_if (keySetComment(key,0) == 1, "delete comment");
 	succeed_if (keyGetComment (key,ret,i) == 1, "length checking deleting");
-	succeed_if (strcmp(ret, "") == 0, "not empty comment");
+	succeed_if_same_string (ret, "");
 
 	succeed_if (keySetComment(key,testComment) == sizeof(testComment), "set comment");
 	succeed_if (keyGetComment (key,ret,i) == sizeof(testComment), "length checking working");
-	succeed_if (strcmp(ret, testComment) == 0, "not empty comment");
+	succeed_if_same_string (ret, testComment);
 
 	succeed_if (keySetComment(key,"") == 1, "delete comment");
 	succeed_if (keyGetComment (key,ret,i) == 1, "length checking deleting");
-	succeed_if (strcmp(ret, "") == 0, "not empty comment");
+	succeed_if_same_string (ret, "");
 
 	succeed_if (keySetComment(key,testComment) == sizeof(testComment), "set comment");
 	succeed_if (keyGetComment (key,ret,i) == sizeof(testComment), "length checking working");
-	succeed_if (strcmp(ret, testComment) == 0, "not empty comment");
+	succeed_if_same_string (ret, testComment);
 
 	succeed_if (keyGetCommentSize(key) == sizeof(testComment), "testComment comment size");
 	succeed_if (strncmp(keyComment(key), testComment, sizeof(testComment)) == 0, "testComment not same");
@@ -614,28 +614,28 @@ static void test_keyOwner()
 	succeed_if (keyGetOwnerSize (key) == 1, "empty owner size");
 	succeed_if (keySetOwner (key,"perfectowner") == 13, "could not set owner");
 	succeed_if (keyGetOwnerSize (key) == 13, "owner size not correct");
-	succeed_if (strcmp (keyOwner(key), "perfectowner") == 0, "Owner not same as set");
+	succeed_if_same_string (keyOwner(key), "perfectowner");
 	succeed_if (keySetOwner (key,"perfectowner") == 13, "could not re-set same owner");
-	succeed_if (strcmp (keyOwner(key), "perfectowner") == 0, "Owner not same as set");
+	succeed_if_same_string (keyOwner(key), "perfectowner");
 	succeed_if (keySetOwner (key,"nearperfectowner") == 17, "could not re-set other owner");
 	succeed_if (keyGetOwnerSize (key) == 17, "owner size not correct");
-	succeed_if (strcmp (keyOwner(key), "nearperfectowner") == 0, "Owner not same as set");
+	succeed_if_same_string (keyOwner(key), "nearperfectowner");
 	succeed_if (keyGetOwner (key, ret, keyGetOwnerSize (key)>=999 ? 999 : keyGetOwnerSize (key))
 			== 17, "could not get owner");
-	succeed_if (strcmp (ret, "nearperfectowner") == 0, "Owner not same as set");
+	succeed_if_same_string (ret, "nearperfectowner");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	succeed_if (key = keyNew(0), "could not create new key");
 	succeed_if (keySetName(key, "user:perfectowner") == 5, "could not set to user with owner");
 	succeed_if (keyGetOwnerSize (key) == 13, "owner size not correct");
-	succeed_if (strcmp (keyOwner(key), "perfectowner") == 0, "Owner not same as set");
+	succeed_if_same_string (keyOwner(key), "perfectowner");
 	succeed_if (keyDel (key) == 0, "could not delete key");
 
 	succeed_if (key = keyNew(0), "could not create new key");
-	succeed_if (strcmp (keyOwner(key), "") == 0, "Empty owner problem");
+	succeed_if_same_string (keyOwner(key), "");
 	succeed_if (keyGetOwnerSize(key) == 1, "Empty owner size problem");
 	succeed_if (keySetOwner (key,"") == 1, "could not set owner");
-	succeed_if (strcmp (keyOwner(key), "") == 0, "Empty owner problem");
+	succeed_if_same_string (keyOwner(key), "");
 	succeed_if (keyGetOwnerSize(key) == 1, "Empty owner size problem");
 	succeed_if (keyGetOwner(key, ret, 0) == -1, "Could not get empty owner");
 	succeed_if (keyGetOwner(key, ret, 1) == 1, "Could not get empty owner");
@@ -648,7 +648,7 @@ static void test_keyOwner()
 		ret[0] = i; ret[1] = i; ret[2] = 0;
 		succeed_if (keySetOwner (key,ret) == 3, "could not set owner");
 		// output_key (key);
-		succeed_if (strcmp (keyOwner(key), ret) == 0, "Owner not same as set");
+		succeed_if_same_string (keyOwner(key), ret);
 	}
 	succeed_if (keyDel (key) == 0, "could not delete key");
 }
@@ -720,7 +720,7 @@ static void test_keyDir (void)
 
 static void test_keyTime()
 {
-	Key * key = keyNew (KEY_END);
+	Key * key = keyNew (0);
 	time_t now = time(0);
 	time_t past= now - 60*60*24*356 * 10;
 	time_t future = now + 60*60*24*356 * 10;
@@ -859,7 +859,7 @@ static void test_keyNamespace()
 
 	printf ("Test namespaces\n");
 
-	key = keyNew (KEY_END);
+	key = keyNew (0);
 	succeed_if (keyNameGetNamespace (keyName(key)) == 0, "empty namespace not 0");
 	succeed_if (keyGetNamespace (key) == 0, "empty namespace not 0");
 	succeed_if (keyNameIsSystem (keyName(key)) == 0, "empty name is not system");
@@ -919,41 +919,87 @@ static void test_elektraKeySetName()
 	printf ("test elektraKeySetName\n");
 
 	Key *key = keyNew("", KEY_END);
+	Key *dup = 0;
+
 	succeed_if(elektraKeySetName(key, "/", KDB_O_CASCADING_NAME) != -1, "could not set cascading name");
 	succeed_if_same_string(keyName(key), "/");
 	elektraKeySetName(key, "/cascading", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/cascading");
+	keyDel(dup);
+
 	elektraKeySetName(key, "/cascading/s/deep/below", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading/s/deep/below");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/cascading/s/deep/below");
+	keyDel(dup);
+
 	elektraKeySetName(key, "user/cascading/s/deep/below", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "user/cascading/s/deep/below");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "user/cascading/s/deep/below");
+	keyDel(dup);
+
 	elektraKeySetName(key, "system/cascading/s/deep/below", KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "system/cascading/s/deep/below");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "system/cascading/s/deep/below");
+	keyDel(dup);
 
 	elektraKeySetName(key, "order", KDB_O_META_NAME);
 	succeed_if_same_string(keyName(key), "order");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "order");
+	keyDel(dup);
+
 	elektraKeySetName(key, "check/type", KDB_O_META_NAME);
 	succeed_if_same_string(keyName(key), "check/type");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "check/type");
+	keyDel(dup);
 
 	elektraKeySetName(key, "", KDB_O_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
 
 	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
 
 	keySetName(key, 0);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
 
 	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
-	succeed_if_same_string(keyName(key), "");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "");
+	keyDel(dup);
+
+	elektraKeySetName(key, "/cascading", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "/cascading");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/cascading");
+	keyDel(dup);
+
+	elektraKeySetName(key, "meta", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "meta");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "meta");
+	keyDel(dup);
 
 	keyDel(key);
 }
@@ -981,7 +1027,7 @@ static void test_keyLock()
 	succeed_if (keyCopyAllMeta(key, key2) == -1, "read only meta, not allowed to set");
 
 	keyDel (key);
-	key = keyNew(KEY_END);
+	key = keyNew(0);
 
 	keyLock(key, KEY_LOCK_NAME);
 	succeed_if (keySetName(key, "user") == -1, "read only name, not allowed to set");
@@ -990,7 +1036,7 @@ static void test_keyLock()
 	succeed_if (keyAddBaseName(key, "a") == -1, "read only name, not allowed to set");
 
 	keyDel (key);
-	key = keyNew(KEY_END);
+	key = keyNew(0);
 
 	keyLock(key, KEY_LOCK_VALUE);
 
@@ -998,7 +1044,7 @@ static void test_keyLock()
 	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
 
 	keyDel (key);
-	key = keyNew(KEY_END);
+	key = keyNew(0);
 
 	keyLock(key, KEY_LOCK_META);
 
@@ -1061,6 +1107,105 @@ static void test_keyAddName()
 	keyDel(k);
 }
 
+static void test_keyNeedSync()
+{
+	printf ("Test key need sync\n");
+
+	Key * k = keyNew(0);
+	succeed_if(!keyNeedSync(k), "no sync, because written like that in docu prior to 0.8.9");
+	keyDel(k);
+
+	k = keyNew("", KEY_END);
+	succeed_if(keyNeedSync(k), "fresh key should need sync");
+
+	set_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keyNeedSync(k), "sync bit was set");
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(!keyNeedSync(k), "sync bit was cleared");
+
+	keySetName(k, "");
+	succeed_if(keyNeedSync(k), "nothing done, but synced (impl-dep, could be optimized)");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetName(k, "user/abc");
+	succeed_if(keyNeedSync(k), "new name, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetString(k, "a str");
+	succeed_if(keyNeedSync(k), "new string, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetBinary(k, "a str", 4);
+	succeed_if(keyNeedSync(k), "new binary, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	keySetMeta(k, "metakey", "metaval");
+	succeed_if(keyNeedSync(k), "new meta, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	Key *d = keyDup(k);
+	succeed_if(keyNeedSync(d), "dup key, should definitely need sync");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	clear_bit(d->flags, KEY_FLAG_SYNC);
+	succeed_if(keyCopy(d, k) != -1, "copy not successful");
+	succeed_if(keyNeedSync(d), "copy key, should definitely need sync");
+	succeed_if(!keyNeedSync(k), "sources sync flag should not be affected");
+	keyDel(d);
+
+	keyIncRef(k);
+	succeed_if(!keyNeedSync(k), "ref counter should not affect sync");
+	keyDecRef(k);
+	succeed_if(!keyNeedSync(k), "ref counter should not affect sync");
+
+
+	keySetName(k, "");
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+
+	succeed_if(keySetBaseName(k, "") == -1, "could not set base name");
+	succeed_if(!keyNeedSync(k), "nothing done, so still no sync (impl-dep, could be deoptimized)");
+
+	keySetName(k, "user/abc");
+	succeed_if(keyNeedSync(k), "name set, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keySetBaseName(k, "xynz") != -1, "could not set base name");
+	succeed_if(keyNeedSync(k), "base name changed, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keyAddBaseName(k, "foo") != -1, "could not add base name");
+	succeed_if(keyNeedSync(k), "base name changed, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keyAddName(k, "bar") != -1, "could not add name");
+	succeed_if(keyNeedSync(k), "base name changed, sync should be there");
+
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if(keySetOwner(k, "someowner") != -1, "could not set owner");
+	succeed_if(keyNeedSync(k), "owner changed, sync should be there");
+
+	keyDel(k);
+}
+
+static void test_keyCopy()
+{
+	printf ("test copy key\n");
+	Key *k = keyNew("", KEY_END);
+	Key *c = keyNew("user/name", KEY_END);
+
+	succeed_if(keyCopy(c, k) != -1, "could not copy");
+	succeed_if_same_string(keyName(k), "");
+	succeed_if_same_string(keyName(c), "");
+
+	succeed_if (elektraKeySetName(k, "/abc", KDB_O_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if(keyCopy(c, k) != -1, "could not copy");
+	succeed_if_same_string(keyName(k), "/abc");
+	succeed_if_same_string(keyName(c), "/abc");
+
+	keyDel(k);
+	keyDel(c);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -1077,7 +1222,6 @@ int main(int argc, char** argv)
 	test_keyComment();
 	test_keyOwner();
 	test_keyComment();
-	test_keyOwner();
 	test_keyDir();
 	test_keyTime();
 	test_keyMeta();
@@ -1086,6 +1230,8 @@ int main(int argc, char** argv)
 	test_elektraKeySetName();
 	test_keyLock();
 	test_keyAddName();
+	test_keyNeedSync();
+	test_keyCopy();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

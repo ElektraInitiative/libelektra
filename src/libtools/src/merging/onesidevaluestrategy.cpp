@@ -33,7 +33,7 @@ void OneSideValueStrategy::resolveConflict(const MergeTask& task, Key& conflictK
 
 	// TODO: this is a subset of the onesidestrategy
 	// the onesidestrategy could be split up into several smaller strategies
-	if ((ourOperation == SAME && theirOperation == MODIFY) || (ourOperation == MODIFY && theirOperation == SAME))
+	if ((ourOperation == CONFLICT_SAME && theirOperation == CONFLICT_MODIFY) || (ourOperation == CONFLICT_MODIFY && theirOperation == CONFLICT_SAME))
 	{
 		string lookupPath;
 		Key winningKey;

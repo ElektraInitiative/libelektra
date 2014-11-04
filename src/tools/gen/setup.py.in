@@ -8,41 +8,37 @@ setup(name='elektra-gen',
       description='Elektra Front End Generator',
       long_description="""Generate Front Ends for static programming
       languages using Cheetah templates.""",
-      #entry_points = {
-      #    'dirs' : [
-      #        'templates = @CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@'
-      #    ],
-      #},
       platforms = get_platform(),
       license='bsd',
       author='Markus Raab',
       author_email='elektra@markus-raab.org',
       url='http://www.libelektra.org/',
-      package_dir={ '': '${CMAKE_CURRENT_SOURCE_DIR}' },
+      package_dir={
+          'support': '${CMAKE_CURRENT_SOURCE_DIR}/support',
+           '': '${CMAKE_CURRENT_BINARY_DIR}'
+      },
       scripts=['${CMAKE_CURRENT_SOURCE_DIR}/gen'],
-      py_modules = [
-          'cpp_support',
-          'c_support',
-          'gen_support',
-          'opt_support',
-          'nested_support',
-          'context_support',
-          ],
+      packages=['support'],
+      #py_modules = [
+      #    'util',
+      #    'cpp_util'
+      #    ],
       data_files = [
           ('@CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@', [
                  '${CMAKE_CURRENT_SOURCE_DIR}/README.md',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/specification.ini',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template_context.hpp',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.c',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template_genopt.h',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template.h',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template.hpp',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template.html',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template.man',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/template_nested.hpp',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/util.tmpl',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/visit_context.cpp',
-                 '${CMAKE_CURRENT_SOURCE_DIR}/visit_specification.ini',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/tests/lift.ini',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/context_static.hpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/genopt.c',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/genopt.h',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/template.h',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/template.hpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/template.html',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/template.man',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/template/nested.hpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/util/util.c',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/util/util.cpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/tests/visit_context.cpp',
+                 '${CMAKE_CURRENT_SOURCE_DIR}/tests/visit.ini',
                 ]
           )
       ]

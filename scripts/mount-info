@@ -1,0 +1,5 @@
+#!/bin/sh
+
+kdb mount --resolver noresolver /tmp system/info/constants constants
+kdb mount --resolver noresolver /tmp system/info/uname uname
+

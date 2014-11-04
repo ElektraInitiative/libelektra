@@ -55,7 +55,7 @@ public:
 		m_factory.insert(std::make_pair("list", new Cnstancer<ListChecker>()));
 
 		Key k;
-		while (k = config.next())
+		while ((k = config.next()))
 		{
 			if (!k.isDirectBelow(root)) throw "Factory: key for configuration is not direct below";
 

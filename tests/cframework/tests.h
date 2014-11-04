@@ -56,8 +56,8 @@ int init(int argc, char** argv);
 
 #define yield_error(message) \
 { \
-       nbError++; \
-       printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, message); \
+	nbError++; \
+	printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, message); \
 }
 
 #define succeed_if(expression, message) \
@@ -81,47 +81,67 @@ int init(int argc, char** argv);
 
 #define quote_string(x) #x
 
-#define compare_key_name(k1, k2) \
+#define compare_key_name(pk1, pk2) \
 { \
+	Key *nmmk1 = pk1; \
+	Key *nmmk2 = pk2; \
 	nbTest++; \
-	if (strcmp(keyName(k1), keyName(k2))) \
+	if (strcmp(keyName(nmmk1), keyName(nmmk2))) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
 		 \
 		strcpy(errorMsg, "key name "); \
-		strcat(errorMsg, keyName(k1)); \
+		strcat(errorMsg, keyName(nmmk1)); \
 		strcat(errorMsg, " is not equal "); \
-		strcat(errorMsg, keyName(k2)); \
+		strcat(errorMsg, keyName(nmmk2)); \
 		 \
 		yield_error(errorMsg); \
 	} \
 }
 
-#define compare_key_string(k1, k2) \
+#define compare_key_string(pk1, pk2) \
 { \
+	Key *smmk1 = pk1; \
+	Key *smmk2 = pk2; \
 	nbTest++; \
-	if (strcmp(keyString(k1), keyString(k2))) \
+	if (strcmp(keyString(smmk1), keyString(smmk2))) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
 		 \
 		strcpy(errorMsg, "key name "); \
-		strcat(errorMsg, keyName(k1)); \
+		strcat(errorMsg, keyName(smmk1)); \
 		strcat(errorMsg, " is not equal "); \
-		strcat(errorMsg, keyName(k2)); \
+		strcat(errorMsg, keyName(smmk2)); \
 		 \
 		yield_error(errorMsg); \
 	} \
 }
 
-#define ELEKTRA_GCC_WARNING(x) _Pragma(ELEKTRA_GCC_HELPER2(x))
-#define ELEKTRA_GCC_HELPER2(y) ELEKTRA_GCC_HELPER1(#y)
-#define ELEKTRA_GCC_HELPER1(x) ELEKTRA_GCC_HELPER0(GCC diagnostic ignored x)
-#define ELEKTRA_GCC_HELPER0(x) #x
+//GCC diagnostic not allowed inside functions
+//does not work with 4.4
+//4.6 and 4.7 as in debian work with it, that are:
+//4.6.3
+//4.7.2
+//(https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52116)
+#if __GNUC__ > 4 || \
+	(__GNUC__ == 4 && (__GNUC_MINOR__ > 6 || (__GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ > 2))) || \
+	(__GNUC__ == 4 && (__GNUC_MINOR__ > 7 || (__GNUC_MINOR__ == 7 && __GNUC_PATCHLEVEL__ > 1)))
+#define ELEKTRA_PRAGMA(x)  _Pragma(ELEKTRA_PRAGMA_STR(x))
+#else
+#define ELEKTRA_PRAGMA(x)
+#endif
+#define ELEKTRA_PRAGMA_STR(x) #x
+#define ELEKTRA_DIAG_STORE    ELEKTRA_PRAGMA(GCC diagnostic push)
+#define ELEKTRA_DIAG_OFF(x)   ELEKTRA_PRAGMA(GCC diagnostic ignored ELEKTRA_PRAGMA_STR(x))
+#define ELEKTRA_DIAG_RESTORE  ELEKTRA_PRAGMA(GCC diagnostic pop)
 
-#define succeed_if_same_string(s1, s2) \
+#define succeed_if_same_string(ps1, ps2) \
 { \
 	nbTest++; \
-	ELEKTRA_GCC_WARNING(-Waddress) \
+	const char* s1 = ps1; \
+	const char* s2 = ps2; \
+	ELEKTRA_DIAG_STORE \
+	ELEKTRA_DIAG_OFF(-Waddress) \
 	if (!s1) yield_error("left hand side is null pointer") \
 	else if (!s2) yield_error("right hand side is null pointer") \
 	else if (strcmp(s1, s2)) \
@@ -136,13 +156,15 @@ int init(int argc, char** argv);
 		 \
 		yield_error(errorMsg); \
 	} \
-	_Pragma("GCC diagnostic pop") \
+	ELEKTRA_DIAG_RESTORE \
 }
 
-// not recommended to use, only works with int (not size_t, ssize_t,...)
+// only works with types convertible to int
 #define succeed_if_same_int(s1, s2) \
 { \
 	nbTest++; \
+	int s1 = ps1; \
+	int s2 = ps2; \
 	if (s1 != s2) \
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
@@ -159,43 +181,47 @@ int init(int argc, char** argv);
 /**
  * Checks if two keys are equal.
  *
+ * Warning: messes up internal cursor
+ *
  */
-#define compare_key(k1, k2) \
+#define compare_key(pk1, pk2) \
 { \
 	nbTest++; \
-	if (k1 != k2) \
+	Key *mmk1 = (Key*) pk1; \
+	Key *mmk2 = (Key*) pk2; \
+	if (mmk1 != mmk2) \
 	{ \
-		compare_key_name(k1, k2); \
+		compare_key_name(mmk1, mmk2); \
 		 \
-		compare_key_string(k1, k2); \
+		compare_key_string(mmk1, mmk2); \
 		 \
 		const Key * meta; \
-		keyRewindMeta(k1); \
-		keyRewindMeta(k2); \
-		while ((meta = keyNextMeta (k1)) != 0) \
+		keyRewindMeta(mmk1); \
+		keyRewindMeta(mmk2); \
+		while ((meta = keyNextMeta (mmk1)) != 0) \
 		{ \
-			const Key *const metaCmp = keyNextMeta(k2); \
+			const Key *const metaCmp = keyNextMeta(mmk2); \
 			if (metaCmp == 0) \
 			{ \
 				nbError++; \
 				printf("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding meta key %s (k1 > k2)\n", \
 					__FILE__, __LINE__, __FUNCTION__, \
-					quote_string(k1), \
-					quote_string(k2), \
+					quote_string(mmk1), \
+					quote_string(mmk2), \
 					keyName(meta) \
 					); \
 				break; \
 			} \
 		} \
 	 \
-		const Key *const metaCmp = keyNextMeta(k2); \
+		const Key *const metaCmp = keyNextMeta(mmk2); \
 		if (metaCmp != 0) \
 		{ \
 			nbError++; \
 			printf("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many meta keys found (k1 < k2)\n", \
 				__FILE__, __LINE__, __FUNCTION__, \
-				quote_string(k1), \
-				quote_string(k2) \
+				quote_string(mmk1), \
+				quote_string(mmk2) \
 				); \
 		} \
 	} \
@@ -207,39 +233,41 @@ int init(int argc, char** argv);
  * Compare if two keysets contain the same keys.
  * @return 0 on success
  * */
-#define compare_keyset(ks1, ks2) \
+#define compare_keyset(pks1, pks2) \
 { \
 	nbTest++; \
-	if (ks1 != ks2) \
+	KeySet *mmks1 = (KeySet*) pks1; \
+	KeySet *mmks2 = (KeySet*) pks2; \
+	if (mmks1 != mmks2) \
 	{ \
-		Key	*key1 = 0; \
-		Key     *key2 = 0; \
+		Key	*cmmk1 = 0; \
+		Key     *cmmk2 = 0; \
  \
-		if (ksGetSize (ks1)  == 0) yield_error("real size of " quote_string(ks1) " was 0"); \
-		if (ksGetSize (ks2) == 0) yield_error("real size of " quote_string(ks2) " was 0"); \
+		if (ksGetSize (mmks1) == 0) yield_error("real size of " quote_string(mmks1) " was 0"); \
+		if (ksGetSize (mmks2) == 0) yield_error("real size of " quote_string(mmks2) " was 0"); \
  \
-		if (ksGetSize (ks1) != ksGetSize(ks2) ) \
+		if (ksGetSize (mmks1) != ksGetSize(mmks2) ) \
 		 { \
 			nbError++; \
 			printf("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(%s): %d, size(%s): %d\n", \
-				__FILE__, __LINE__, __FUNCTION__, quote_string(ks1), (int)ksGetSize(ks1), quote_string(ks2), (int)ksGetSize(ks2)); \
+				__FILE__, __LINE__, __FUNCTION__, quote_string(mmks1), (int)ksGetSize(mmks1), quote_string(mmks2), (int)ksGetSize(mmks2)); \
 		} \
 		else \
 		{ \
  \
-			ksRewind(ks1); \
-			ksRewind(ks2); \
+			ksRewind(mmks1); \
+			ksRewind(mmks2); \
  \
-			while ((key1 = ksNext(ks1)) != 0) \
+			while ((cmmk1 = ksNext(mmks1)) != 0) \
 			{ \
-				key2 = ksNext(ks2); \
-				if (!key2) \
+				cmmk2 = ksNext(mmks2); \
+				if (!cmmk2) \
 				{ \
-					yield_error("Compare keyset " quote_string(ks1) " with " quote_string(ks2) " failed, did not find corresponding key") \
+					yield_error("Compare keyset " quote_string(mmks1) " with " quote_string(mmks2) " failed, did not find corresponding key") \
 					break; \
 				} \
  \
-				compare_key (key1, key2); \
+				compare_key (cmmk1, cmmk2); \
 			} \
 		} \
 	} \

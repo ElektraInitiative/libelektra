@@ -37,23 +37,23 @@ ostream& operator << (ostream& os, parse_t& p)
 	   << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERRORF(number, key, text, ...) ELEKTRA_SET_ERRORF_HELPER\\" << endl
-	   << "	(number, key, text, __FILE__, __LINE__, ##__VA_ARGS__)" << endl
+	   << "	(number, key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERRORF_HELPER(number, key, text, file, line, ...) ELEKTRA_SET_ERRORF_HELPER_HELPER\\" << endl
-	   << "	(number, key, text, file, line, ##__VA_ARGS__)" << endl
+	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) elektraSetErrorf ## number\\" << endl
-	   << "	(key, text, file, #line,  ##__VA_ARGS__)" << endl
+	   << "	(key, text, file, #line,  __VA_ARGS__)" << endl
 	   << endl
 	   << endl
 	   << "#define ELEKTRA_ADD_WARNINGF(number, key, text, ...) ELEKTRA_ADD_WARNINGF_HELPER\\" << endl
-	   << "	(number, key, text, __FILE__, __LINE__, ##__VA_ARGS__)" << endl
+	   << "	(number, key, text, __FILE__, __LINE__, __VA_ARGS__)" << endl
 	   << "" << endl
 	   << "#define ELEKTRA_ADD_WARNINGF_HELPER(number, key, text, file, line, ...) ELEKTRA_ADD_WARNINGF_HELPER_HELPER\\" << endl
-	   << "	(number, key, text, file, line, ##__VA_ARGS__)" << endl
+	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << "" << endl
 	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...) elektraAddWarningf ## number\\" << endl
-	   << "	(key, text, file, #line, ##__VA_ARGS__)" << endl
+	   << "	(key, text, file, #line, __VA_ARGS__)" << endl
 	   << endl
 	   << endl;
 

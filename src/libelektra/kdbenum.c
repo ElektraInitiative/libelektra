@@ -3,17 +3,10 @@
  * to document them. */
 
 /**
- * Switches to denote the various Key attributes in methods throughout
- * this library.
- *
- * This enum switch provide a flag for every metadata in a key.
- *
- * In case of keyNew() they give Information what Parameter comes
- * next.
+ * Allows keyNew() to determine which information comes next.
  *
  * @ingroup key
  * @see keyNew()
- * @see ksToStream(), keyToStream()
  */
 enum keyswitch_t
 {
@@ -30,6 +23,7 @@ enum keyswitch_t
 	KEY_CTIME=1<<10,	/*!< Flag for the key status change time */
 	KEY_SIZE=1<<11,		/*!< Flag for maximum size to limit value */
 	KEY_DIR=1<<14,		/*!< Flag for the key directories*/
+	KEY_META=1<<15,		/*!< Flag for meta data*/
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
 };
 

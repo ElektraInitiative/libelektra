@@ -1,11 +1,178 @@
-# NEWS #
+# 0.8.9 Release
+
+author: Markus Raab
+guid: 38640673-3e07-4cff-9647-f6bdd89b1b08
+pubDate: Mon, 03 Nov 2014 14:26:38 +0100
+
+Again we managed to do an amazing feature release in just two month.
+In 416 commits we modified 393 files with 23462 insertions(+) and
+9046 deletions(-).
 
 
-%Author: Markus Raab
-%Date: 02.09.2014
+## Most awaited
+
+The most awaited feature in this release is certainly the qt-gui
+developed by Raffael Pancheri. It includes a rich feature set including
+searching, unmounting, importing and exporting. A lot of functionality
+is quite stable now, even though its version is 0.0.1 alpha. If you find
+any bugs or want to give general feedback, feel free to use the issue
+tracker of the Elektra project. A screenshot can be found at:
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/images/screenshot-qt-gui.png
+To compile it (together with Elektra), see the README in:
+https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/qt-gui
+
+Manuel Mausz also has been very active and developed glib+gi bindings.
+These bindings make Elektra more friendly to the glib/gtk/gnome world.
+Using the gobject introspection python3 and lua bindings were developed.
+Additionally he got rid of all clang warnings.
+
+Felix Berlakovich also made progress: ini now supports multiline and
+which can be dynamically turned on and off, i.e. during mounting
+(thanks to Felix)
+
+Last, but not least, Kai-Uwe ported Elektra to Windows7. MinGW is now
+one more supported compiler (tested on build-server, see later).
+There are still some minor glitches (likely only permission problems)
+that could not be reproduced with wine. It was only little effort
+necessary to come so far:
+Basically we only needed a new implementation of the resolver, called
+"wresolver". Different from the "resolver" it lacks the sophisticated
+multi-process and multi-thread atomicity properties. On the plus side
+we now have a resolver that is very easy to study and understand and
+still works as file resolver ("noresolver" did not).
 
 
-0.8.8 Release
+## Interfaces
+
+ABI/API of the C-API is still completely stable even though under the
+hood a lot was changed. All testcases compiled against the previous
+version still run against Elektra 0.8.9.
+
+This is, however, not the case for libtools. For MinGW porting it was
+necessary to rename an enum related to merging because it conflicted
+with an already defined MACRO.
+
+For maintainers also some changes are necessary. For MinGW and to
+actually use the flexibility of the new resolver variants two new CMake
+Variables are introduced: KDB_DEFAULT_RESOLVER and KDB_DEFAULT_STORAGE.
+
+More importantly for maintainers the CMake variables regarding SWIG
+bindings are now abandoned in favour to the new variable BINDINGS that
+works like PLUGINS and TOOLS. Just start with
+
+	-DBINDINGS=ALL
+
+and CMake should remove the bindings that have missing dependencies
+on your system. Remember that glib and gi (i.e. "gi_python3" and
+"gi_lua") bindings were introduced, too. Additionally, the "cpp"
+binding can now be deactivated if not added to BINDINGS.
+
+Finally, the "gen" tool added a Python package called "support".
+
+
+
+## Other Bits
+
+A proof of concept storage plugin "regexstore" was added. It allows to
+capture individual configuration options within an otherwise not
+understood configuration file (e.g. for vimrc or emacs where
+the configuration file may contain programming constructs).
+
+Most tests now also work with the BUILD_SHARED variant (from our
+knowledge all would work now, but some are still excluded if
+BUILD_FULL and BUILD_STATIC is disabled. Please report issues
+if you want to use uncommon CMake combinations).
+
+A small but very important step towards specifying configuration files
+is the new proposed API method ksLookupBySpec (and ksLookup implementing
+cascading search). It introduces a "logical view" of
+configuration that in difference to the "physical view" of
+configuration does not have namespaces, but everything is below the root
+"/". Additionally, contextual values now allow to be compile-time
+configured using C++-Policies. These are small puzzle pieces that will
+fit into a greater picture at a later time.
+
+A (data) race detection tool was implemented. Using it a configurable
+number of processes and threads it tries to kdbSet() a different
+configuration at (nearly) the same time.
+
+With this tool the resolver could be greatly be improved (again). It now
+uses stat with nanosecond precision that will be updated for every
+successful kdbSet(). Even if the configuration file was modified
+manually (not using Elektra) the next kdbSet() then is much more likely
+to fail.  Additionally a recursive mutex now protects the file locking
+mechanism.
+
+The build server now additionally has following build jobs:
+- http://build.libelektra.org:8080/job/elektra-gcc-i386/
+  Because we had an i386 regression and none of the developers
+  seems to use i386.
+- http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/
+  Calls the scripts/configure-debian(-wheezy).
+- http://build.libelektra.org:8080/job/elektra-local-installation/
+  We had an regression that local installation was not possible because
+  of a bash completion file installed to /etc. This build tests if it is
+  possible to install Elektra in your home directory (and calls kdb
+  run_all afterwards)
+- http://build.libelektra.org:8080/job/elektra-test-bindings/
+  Compiles and tests ALL bindings.
+- http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw/
+  Compiles Elektra using mingw.
+
+Many more examples were written and are used within doxygen. Most
+snippets now can also be found in compilable files:
+https://github.com/ElektraInitiative/libelektra/tree/master/examples
+- keyNew examples (keyNew.c)
+- keyCopy examples (keyCopy.c)
+https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/cpp/examples
+- C++ deep dup (cpp_example_dup.cpp)
+- How to put Key in different data structures (cpp_example_ordering.cpp)
+https://github.com/ElektraInitiative/libelektra/tree/master/scripts
+- mount-augeas
+- mount-info
+
+Most plugins now internally use the same CMake function "add_plugin"
+which makes plugin handling more consistent.
+
+Felix converted the METADATA spec to ini files and added a proposal
+how comments can be improved.
+
+Refactoring:
+- reuse of utilities in gen code generator
+- the gen support library is now in its own package ("support")
+- refactor array handling
+- internal comparision functions (keyCompareByName)
+
+Optimization:
+- lookupByName does not need to allocate two keys
+- lookups in generated code
+- prefer to use allocation on stack
+
+Fixes:
+- disable cast that segfaults on i386 (only testing code was affected)
+- fix keyAddBaseName in xmltool and testing code
+- support non-system installation (e.g. in home directory)
+- rewrote test cases to use succeed_if_same to avoid crashes on
+  null pointers
+- allow to use python 2.6 for kdb gen
+- improve exception messages
+- use memcasecmp (fix lookup ignoring case)
+- fix memory leaks (ini)
+- text messages for some warnings/errors
+- fix many issues regarding CMake, more variants of setting CMake
+  options are now allowed.
+- cmake policies fixes allow us to use cmake version > 3
+
+
+
+
+
+# 0.8.8 Release
+
+- author: Markus Raab
+- guid: eca69e19-5ddb-438c-ac06-57c20b1a9160
+- pubDate: Tue, 02 Sep 2014 17:31:42 +0200
+
 
 In this release we changed 578 files in 473 commits
 (68596 insertions(+), 59260 deletions(-) compared to Elektra 0.8.7).
@@ -54,7 +221,8 @@ to plugins having errors when they initialize themselves.
 
 So following plugins were added: sync noresolver line ini constants
 Nearly all plugins now have a README.md for further information
-(thanks to Ian).
+(thanks to Ian). An overview of all plugin is on with links to them:
+https://github.com/ElektraInitiative/libelektra/blob/master/src/plugins/
 
 The kdb tools were greatly improved (thanks to Felix):
 - added remount tool
@@ -65,7 +233,7 @@ The kdb tools were greatly improved (thanks to Felix):
 - mount is now more verbose when validation fails
 
 New/improved scripts/make targets (note that scripts can be executed by
-kdb <script>):
+kdb scriptname):
 - mounting, unmounting scripts were added
 - generate template for a new plugin was improved
 - configure-debian was added
@@ -135,19 +303,27 @@ for that purpose, but we also improved testing in other parts:
 - (New Test strategy)[/doc/TESTING.md]
 - New resolver tests for conflicts (needs tty)
 
+If you try to execute test_ks from 0.8.7 with libelektra 0.8.8 it will
+crash, but not because of any incompatibility, but because of strcmp in
+the test itself gets a null pointer. The pointer is now null, because
+ksNew correctly rewinds its internal cursor (see above). Amusingly,
+it says on that line 94 in test_ks.c:
+  // TODO: why is the cursor here?
+
 ## API Proposals
 
 see above for more information:
-keyAddName         ..  add key name without escaping, like keySetName
-keyUnescapedName   ..  get access to null-separated unescaped name
-keyLock            ..  to allow to secure keys against modifications
+- keyAddName         ..  add key name without escaping, like keySetName
+- keyUnescapedName   ..  get access to null-separated unescaped name
+- keyLock            ..  to allow to secure keys against modifications
 
 some new ideas:
-keySetStringF      ..  printf format-style changing of the key string
-elektraKeySetName  ..  to allow to set meta + cascading keys
+- keySetStringF      ..  printf format-style changing of the key string
+- elektraKeySetName  ..  to allow to set meta + cascading keys
 
 elektraArrayIncName() now works correctly with empty arrays embedded in
 other arrays (yajl+line plugin)
+
 elektraArrayValidateName() was also added, thanks to Felix.
 
 These methods are declared in the file kdbproposal.h
@@ -162,6 +338,7 @@ https://github.com/ElektraInitiative/libelektra/issues
 Alone for the milestone 0.8.8 we closed 17 issues, including
 those mentioned in "Compatibility". Other issues (not all were
 tracked on github):
+
 - fix undefined errors in kdbOpen() or kdbClose()
 - Now Python 2+3 work in parallel
 - python2 interpreter is found correctly (also on Arch)
@@ -186,6 +363,7 @@ Debian Continuous Integration http://ci.debian.net/packages/e/elektra
 greatly complement our tests running on http://build.libelektra.org:8080/
 
 Elektra's buildserver also was improved:
+
  - now also compiles with icc
  - runs make run_memcheck
  - checks if plugins are added correctly in-source
@@ -209,10 +387,11 @@ https://github.com/ElektraInitiative/libelektra/issues/25
 You can download the release from:
 
 http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.8.tar.gz
-size: 
-md5sum: 
-sha1: 
-sha256: 
+
+- size: 1644441
+- md5sum: fe11c6704b0032bdde2d0c8fa5e1c7e3
+- sha1: 16e43c63cd6d62b9fce82cb0a33288c390e39d12
+- sha256: ae75873966f4b5b5300ef5e5de5816542af50f35809f602847136a8cb21104e2
 
 
 already built API-Docu can be found here:
@@ -231,8 +410,12 @@ Markus
 
 ---------
 
-%Author: Markus Raab
-%Date: 22.08.2014
+
+# Augeas and Config::Model
+
+- author: Markus Raab
+- guid: eca69e19-5ddb-438c-ac06-57c20b1a9160
+- pubDate: Mon, 22 Oct 2014 17:31:42 +0200
 
 A common question is: now we have Augeas for editing config files,
 why do we need Elektra, Config::Model or something else?
@@ -289,9 +472,10 @@ the behaviour of the key database).
 
 -------------
 
-%Author: Markus Raab
-%Date: 28.07.2014
-%Subject: 0.8.7 release
+# 0.8.7 release
+
+- author: Markus Raab
+- date: 28.07.2014
 
 Again, we managed to have a great feature release with dozens of
 corrections!
@@ -540,9 +724,9 @@ wrongly tell that the API is not compatible, but this is not the case
 (thanks to Manuel Mausz).
 
 The C++ API changed, including:
-- does not wrongly convert garbage to default types using get<T>
-- getMeta now interally uses get<T> and both throw the KeyTypeConversion
-  Exception
+- does not wrongly convert garbage to default types using ```get<T>```
+- getMeta now interally uses ```get<T>``` and both throw the
+  KeyTypeConversion Exception
 - KeySet::at directly allows one to use ksAtCursor()
 - KeyTypeConversion (or former KeyBadMeta) is not thrown anymore if key
   is not available
@@ -672,7 +856,9 @@ kdb tool now smoothly integrates external tools. These tools can reside
 in external source repositories and even written in other programming
 languages. The approach is similar from "git". Any executable in the
 folder, given with the CMake Cache variable TARGET_TOOL_EXEC_FOLDER
-(default "/usr/lib/elektra/tool_exec"), can be executed by kdb <name>.
+(default "/usr/lib/elektra/tool_exec"), can be executed by
+
+   kdb name
 
 All tests (script+compiled) now install in this folder instead of
 directly to /usr/bin to minimise cluttering folders in the user's PATH.
