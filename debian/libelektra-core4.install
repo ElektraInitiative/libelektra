@@ -27,3 +27,8 @@ usr/lib/elektra4/libelektra-timeofday.so*
 usr/lib/elektra4/libelektra-simpleini.so*
 usr/lib/elektra4/libelektra-ini.so*
 usr/lib/elektra4/libelektra-tcl.so*
+usr/lib/elektra4/libelektra-sync.so*
+usr/lib/elektra4/libelektra-constants.so*
+usr/lib/elektra4/libelektra-keytometa.so*
+usr/lib/elektra4/libelektra-line.so*
+usr/lib/elektra4/libelektra-journald.so*
