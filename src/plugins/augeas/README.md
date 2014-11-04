@@ -12,7 +12,7 @@
 This is a plugin for reading and writing configuration files with help from Augeas.
 The plugin should be able to read all configuration files for which an Augeas lens exists.
 However, not all stock lenses of Augeas have been tested yet.
-A detailed description of the lens langauge and a tutorial on how to write new lenses"
+A detailed description of the lens language and a tutorial on how to write new lenses"
 can be found at http://augeas.net/
 
 
@@ -29,12 +29,21 @@ the path to the newer library to your ld search paths (consult your system docum
 
 ## MOUNTING AND CONFIGURATION ##
 
-The plugin can be mounted via the mount command like any other plugin.
-For example, in order to mount the hosts file with the augeas plugin, issue the following command:
+In order to mount the hosts file with the augeas plugin, issue the
+following command:
 
 	kdb mount /etc/hosts system/hosts augeas lens=Hosts.lns
 
-Without configuring a lens the plugin would bail out an error:
+The value of the plugin configuration option "lens" should be the
+module name of the lens (Hosts in the example) with a '.lns' suffix.
+Depending on your distribution and kind of installation, lenses can
+be found at `/usr/share/augeas/lenses/dist`,
+`/usr/local/share/augeas/lenses/dist`, or something similar.
+The lens module name is equal to the filename without extension in pascal notation.
+For example, the lens `/usr/share/augeas/lenses/dist/hosts.aug` contains the module Hosts.
+
+Note that, without configuring the plugin to use a lens, the plugin
+would bail out an error on the first usage:
 
 	kdb ls system/hosts
 	The command ls terminated unsuccessfully with the info: Error (#85) occurred!
@@ -44,22 +53,9 @@ Without configuring a lens the plugin would bail out an error:
 	At: /path/augeas.c:166
 	Reason: Lens not found
 
-This is because the plugin would not know which lens to use to read the configuration.
+because the plugin would not know which lens to use to read and write the configuration.
 For that reason, the lens configuration option was supplied together with the mount command.
-A lens can also be configured by setting the config/lens key in the mountpoint configuration manually:
 
-  kdb mount /etc/hosts system/hosts augeas
-	kdb mount
-	... output omitted ...
-	/etc/hosts on system/hosts with name system_hosts
-
-	kdb set system/elektra/mountpoints/system_hosts/config/lens Hosts.lns
-
-The value of this key should be the module name of the lens (Hosts in the example) with a '.lns' suffix.
-Depending on your distribution and kind of installation, lenses can be found at `/usr/share/augeas/lenses/dist`,
-`/usr/local/share/augeas/lenses/dist`, or something similar.
-The lens module name is equal to the filename without extension in pascal notation.
-For example, the lens `/usr/share/augeas/lenses/dist/hosts.aug` contains the module Hosts.
 
 
 ## RESTRICTIONS ##
