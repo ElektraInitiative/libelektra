@@ -18,20 +18,23 @@ is quite stable now, even though its version is 0.0.1 alpha. If you find
 any bugs or want to give general feedback, feel free to use the issue
 tracker of the Elektra project. A screenshot can be found at:
 https://github.com/ElektraInitiative/libelektra/blob/master/doc/images/screenshot-qt-gui.png
+To compile it (together with Elektra), see the README in:
+https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/qt-gui
 
 Manuel Mausz also has been very active and developed glib+gi bindings.
 These bindings make Elektra more friendly to the glib/gtk/gnome world.
 Using the gobject introspection python3 and lua bindings were developed.
 Additionally he got rid of all clang warnings.
 
-Felix Berlakovich also has been active: ini now supports multiline and
+Felix Berlakovich also made progress: ini now supports multiline and
 which can be dynamically turned on and off, i.e. during mounting
 (thanks to Felix)
 
 Last, but not least, Kai-Uwe ported Elektra to Windows7. MinGW is now
 one more supported compiler (tested on build-server, see later).
-There are still some minor glitches that could not be reproduced with
-wine, but it was only little effort necessary to come so far:
+There are still some minor glitches (likely only permission problems)
+that could not be reproduced with wine. It was only little effort
+necessary to come so far:
 Basically we only needed a new implementation of the resolver, called
 "wresolver". Different from the "resolver" it lacks the sophisticated
 multi-process and multi-thread atomicity properties. On the plus side
@@ -49,20 +52,22 @@ This is, however, not the case for libtools. For MinGW porting it was
 necessary to rename an enum related to merging because it conflicted
 with an already defined MACRO.
 
-For maintainers also some changes were necessary. For MinGW and to
+For maintainers also some changes are necessary. For MinGW and to
 actually use the flexibility of the new resolver variants two new CMake
 Variables are introduced: KDB_DEFAULT_RESOLVER and KDB_DEFAULT_STORAGE.
 
 More importantly for maintainers the CMake variables regarding SWIG
 bindings are now abandoned in favour to the new variable BINDINGS that
-work like PLUGINS and TOOLS. Just start with
+works like PLUGINS and TOOLS. Just start with
 
 	-DBINDINGS=ALL
 
 and CMake should remove the bindings that have missing dependencies
-on your system. (Remember that glib and gi (i.e. gi_python3 and gi_lua)
-bindings were introduced. Additionally, the cpp binding can now be
-deactivated if not added to BINDINGS.
+on your system. Remember that glib and gi (i.e. "gi_python3" and
+"gi_lua") bindings were introduced, too. Additionally, the "cpp"
+binding can now be deactivated if not added to BINDINGS.
+
+Finally, the "gen" tool added a Python package called "support".
 
 
 
@@ -71,11 +76,12 @@ deactivated if not added to BINDINGS.
 A proof of concept storage plugin "regexstore" was added. It allows to
 capture individual configuration options within an otherwise not
 understood configuration file (e.g. for vimrc or emacs where
-the configuration file contains programming constructs).
+the configuration file may contain programming constructs).
 
 Most tests now also work with the BUILD_SHARED variant (from our
-knowledge all work now, but some are still excluded if BUILD_FULL
-and BUILD_STATIC is disabled).
+knowledge all would work now, but some are still excluded if
+BUILD_FULL and BUILD_STATIC is disabled. Please report issues
+if you want to use uncommon CMake combinations).
 
 A small but very important step towards specifying configuration files
 is the new proposed API method ksLookupBySpec (and ksLookup implementing
@@ -90,16 +96,16 @@ A (data) race detection tool was implemented. Using it a configurable
 number of processes and threads it tries to kdbSet() a different
 configuration at (nearly) the same time.
 
-With this tool the resolver could be greatly be improved again. It now
+With this tool the resolver could be greatly be improved (again). It now
 uses stat with nanosecond precision that will be updated for every
 successful kdbSet(). Even if the configuration file was modified
 manually (not using Elektra) the next kdbSet() then is much more likely
 to fail.  Additionally a recursive mutex now protects the file locking
 mechanism.
 
-The build server now additionally tests:
+The build server now additionally has following build jobs:
 - http://build.libelektra.org:8080/job/elektra-gcc-i386/
-  because we had an undetected i386 regression. None of the developers
+  Because we had an i386 regression and none of the developers
   seems to use i386.
 - http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/
   Calls the scripts/configure-debian(-wheezy).
@@ -115,18 +121,25 @@ The build server now additionally tests:
 
 Many more examples were written and are used within doxygen. Most
 snippets now can also be found in compilable files:
-- C++ deep dup
-- keyNew examples
-- keyCopy examples
-- examples for what you can mount, see scripts/mount-*
+https://github.com/ElektraInitiative/libelektra/tree/master/examples
+- keyNew examples (keyNew.c)
+- keyCopy examples (keyCopy.c)
+https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/cpp/examples
+- C++ deep dup (cpp_example_dup.cpp)
+- How to put Key in different data structures (cpp_example_ordering.cpp)
+https://github.com/ElektraInitiative/libelektra/tree/master/scripts
+- mount-augeas
+- mount-info
 
-Most plugins now internally use the same CMake function add_plugin.
+Most plugins now internally use the same CMake function "add_plugin"
+which makes plugin handling more consistent.
 
-Felix converted the METADATA spec to ini files and added proposal
-for comments.
+Felix converted the METADATA spec to ini files and added a proposal
+how comments can be improved.
 
 Refactoring:
 - reuse of utilities in gen code generator
+- the gen support library is now in its own package ("support")
 - refactor array handling
 - internal comparision functions (keyCompareByName)
 
@@ -136,11 +149,8 @@ Optimization:
 - prefer to use allocation on stack
 
 Fixes:
-- disable cast that segfaults on i386 (in testing code)
-  (now unit tests run on i386, too)
+- disable cast that segfaults on i386 (only testing code was affected)
 - fix keyAddBaseName in xmltool and testing code
-- fix many issues regarding CMake, more variants of setting CMake
-  options are now allowed.
 - support non-system installation (e.g. in home directory)
 - rewrote test cases to use succeed_if_same to avoid crashes on
   null pointers
@@ -149,6 +159,8 @@ Fixes:
 - use memcasecmp (fix lookup ignoring case)
 - fix memory leaks (ini)
 - text messages for some warnings/errors
+- fix many issues regarding CMake, more variants of setting CMake
+  options are now allowed.
 - cmake policies fixes allow us to use cmake version > 3
 
 
