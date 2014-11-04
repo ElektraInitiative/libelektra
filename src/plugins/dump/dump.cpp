@@ -254,9 +254,9 @@ int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 			return -1;
 		}
 		std::string error_reason = 
-			"dump storage could not open file ";
+			"dump storage could not open file \"";
 		error_reason += keyString(parentKey);
-		error_reason += " because of ";
+		error_reason += "\" because of: ";
 		error_reason += strerror(errno);
 		ELEKTRA_SET_ERROR (75, parentKey, error_reason.c_str());
 		errno = saveerrno;
