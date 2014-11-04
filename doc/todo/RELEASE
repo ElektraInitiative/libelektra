@@ -150,7 +150,7 @@ Symlink current to latest version and add everything:
 
 == Commit source package ==
 
-Commit elektra-ftp to github:
+Commit elektra-ftp:
  cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz && git-add releases/elektra-$VERSION.tar.gz.hashsum && git-commit -a -m "Release $VERSION"
 
 
@@ -159,7 +159,7 @@ Commit elektra-ftp to github:
 Now we know that everything worked well:
 
 Now push release branch with tags to github:
- cd ~e && git-pull && git-push && git-push --tags
+ cd ~e && git-push && git-push --tags
 
 Push elektra-ftp:
  cd ~elektra-ftp && git-push

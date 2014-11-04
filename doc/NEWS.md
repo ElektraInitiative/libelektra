@@ -2,7 +2,7 @@
 
 author: Markus Raab
 guid: 38640673-3e07-4cff-9647-f6bdd89b1b08
-pubDate: Tue, 04 Nov 2014 09:48:14 +0100
+pubDate: Tue, 04 Nov 2014 10:48:14 +0100
 
 Again we managed to do an amazing feature release in just two month.
 In 416 commits we modified 393 files with 23462 insertions(+) and
@@ -32,14 +32,12 @@ which can be dynamically turned on and off, i.e. during mounting
 
 Last, but not least, Kai-Uwe ported Elektra to Windows7. MinGW is now
 one more supported compiler (tested on build-server, see later).
-There are still some minor glitches (likely only permission problems)
-that could not be reproduced with wine. It was only little effort
-necessary to come so far:
-Basically we only needed a new implementation of the resolver, called
-"wresolver". Different from the "resolver" it lacks the sophisticated
-multi-process and multi-thread atomicity properties. On the plus side
-we now have a resolver that is very easy to study and understand and
-still works as file resolver ("noresolver" did not).
+Astonishingly, it was only little effort necessary:
+Basically we only needed a new implementation of the resolver, which
+is now called "wresolver". Different from the "resolver" it lacks the
+sophisticated multi-process and multi-thread atomicity properties. On
+the plus side we now have a resolver that is very easy to study and
+understand and still works as file resolver ("noresolver" does not).
 
 
 ## Interfaces
@@ -162,6 +160,27 @@ Fixes:
 - fix many issues regarding CMake, more variants of setting CMake
   options are now allowed.
 - cmake policies fixes allow us to use cmake version > 3
+
+## Get It! ##
+
+You can download the release from:
+
+http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.9.tar.gz
+
+- size: 1936524
+- md5sum: 001c4ec67229046509a0cb9eda223dc6
+- sha1: 79ea9b83c08ed4c347ed0100b5e0e2d3309b9d04
+- sha256: e0895bba28a27fb37f36f59ef77c95235f3a9c54fb71aa6f648566774d276568
+
+
+already built API-Docu can be found here:
+
+http://doc.libelektra.org/api/0.8.9/html/
+
+For more information, see http://www.libelektra.org
+
+Best regards,
+Markus
 
 
 
