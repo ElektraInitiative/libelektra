@@ -2,7 +2,7 @@
 
 author: Markus Raab
 guid: 38640673-3e07-4cff-9647-f6bdd89b1b08
-pubDate: Mon, 03 Nov 2014 14:26:38 +0100
+pubDate: Tue, 04 Nov 2014 09:48:14 +0100
 
 Again we managed to do an amazing feature release in just two month.
 In 416 commits we modified 393 files with 23462 insertions(+) and

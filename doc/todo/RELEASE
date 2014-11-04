@@ -14,11 +14,6 @@ Following shell expansions are used in this document:
 
 - make sure no TODO is in this file (resolve them first!)
 
-debian package:
-installed is: augeas  ini  shell  xmltool  yajl
-should    be: augeas  ini  shell  yajl
-missing fstab, hosts, line
-
 
 = Cleanup =
 
@@ -49,7 +44,9 @@ If version numbers are correct in
 - CMakeLists.txt
 
 Rebuild cleanly, run all tests and also check for memleaks:
-  cd ~build && ~e/scripts/configure-debian ~e && make -j20 && make run_all && make run_memcheck
+  cd ~build && ~e/scripts/configure-debian-wheezy && make -j20 && make run_all && make run_memcheck
+
+Check if there are really >=76 or >=54 tests
 
 
 = Preperation =
@@ -57,11 +54,7 @@ Rebuild cleanly, run all tests and also check for memleaks:
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.8.8
-
-Now lets merge that to the release branch:
- git-checkout release
- git-merge --no-ff master -m "Merge for release $VERSION"
+ export VERSION=0.8.9
 
 
 == Prepare Source Package ==
@@ -84,7 +77,7 @@ export DVERSION=$VERSION-1
 
 Build deb:
  cd ~e && git-checkout debian
- git-merge --no-ff release -m "Merge for debian release $DVERSION"
+ git-merge --no-ff master -m "Merge for debian release $DVERSION"
 
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
