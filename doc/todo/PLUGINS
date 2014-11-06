@@ -94,14 +94,6 @@ allow to lock down configuration for guis
 
 Refactoring hosts + ini?
 
-## Absolute/Relative ##
-
-Some plugins persist the relative key name (ini, yajl), other the absolute name
-
-import/export and copying existing config files behaves very different
-on relative/absolute file names, so there should be a way to specify
-this properly
-
 
 # Storage plugins #
 
@@ -122,12 +114,6 @@ Build a generic storage plugin to replace dump:
   http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
 
 http://json-schema.org
-
-## HOSTS ##
-
-does not fully support ipv6
-canonical_name is not canonical anymore
-(solve by having ipv4 and ipv6 subhierarchies?)
 
 ## PRETTY ##
 
@@ -187,6 +173,8 @@ tcl:
 compile lenses as plugin:
 	+ no dependency at runtime
 	+ may be faster?
+
+xfconf file storage (see #47)
 
 ## ERROR ##
 
