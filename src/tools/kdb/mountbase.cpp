@@ -20,7 +20,7 @@ using namespace kdb::tools;
  *
  * @post will update mountConf
  */
-void MountBaseCommand::readMountConf()
+void MountBaseCommand::readMountConf(Cmdline const& cl)
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
@@ -28,7 +28,10 @@ void MountBaseCommand::readMountConf()
 	kdb.get(mountConf, parentKey);
 	kdb.close (parentKey);
 
-	printWarnings (cerr, parentKey);
+	if (!cl.null && cl.first && cl.second && cl.third)
+	{
+		printWarnings (cerr, parentKey);
+	}
 }
 
 

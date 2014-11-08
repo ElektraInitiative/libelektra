@@ -1,4 +1,8 @@
 Preparation for 0.8.10 release:
+- C++ I/O for key(s) now allows null-terminator
+- -0 option accepted
+- -123 options for hiding nth column in "kdb mount"
+- hide warnings during script usage of "kdb mount"
 - add two new error/warnings information: mountpoint and configfile
 - use signed release tags
 - fix error plugin: now use on_open/trigger_warnings to be consistent

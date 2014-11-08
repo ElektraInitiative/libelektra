@@ -28,7 +28,15 @@ int MetaLsCommand::execute (Cmdline const& cl)
 		k.rewindMeta();
 		while (const Key meta = k.nextMeta())
 		{
-			cout << meta.getName() << endl;
+			cout << meta.getName();
+			if (cl.null)
+			{
+				cout << '\0' << std::flush;
+			}
+			else
+			{
+				cout << endl;
+			}
 		}
 	}
 

@@ -23,7 +23,7 @@ namespace tools
 
 class MountCommand : public MountBaseCommand
 {
-	void outputMtab();
+	void outputMtab(Cmdline const& cl);
 	void processArguments(Cmdline const& cl);
 	void buildBackend(Cmdline const& cl);
 	void appendPlugins(Cmdline const& cl, kdb::tools::Backend & backend);
@@ -36,7 +36,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "idR";
+		return "idR0123";
 	}
 
 	virtual std::string getSynopsis()
@@ -59,10 +59,18 @@ public:
 			"written below the backend config. For example param1=value1\n"
 			"\n"
 			"With the -i option, the mounting will be done interactively\n"
-			"With no options and no arguments, the current mountpoints will be listed\n"
+			"\n"
+			"With no arguments and not in interactive mode, the current mountpoints will be listed\n"
+			"Then the options -0123 take effect (otherwise these options can be used to suppress warnings).\n"
+			"1,2 and 3 will suppress the output of the respective column\n"
+			"\n"
 			"\n"
 			"Examples:\n"
 			"\n"
+			"Null terminated output of path and backend name:\n"
+			"kdb mount -02 | xargs -0n 2 echo\n"
+			"\n"
+			"Mount /etc/file to system file with two plugins and a respective configuration option each:\n"
 			"kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2\n"
 			"\n"
 //			"recode will be used both for renaming of value+name\n"

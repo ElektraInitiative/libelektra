@@ -36,6 +36,10 @@ Cmdline::Cmdline (int argc,
 	verbose(),
 	version(),
 	withoutElektra(),
+	null(),
+	first(true),
+	second(true),
+	third(true),
 
 	executable(),
 	commandName()
@@ -174,6 +178,30 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-E --without-elektra     omit system/elektra directory\n";
 	}
+	if (acceptedOptions.find('0')!=string::npos)
+	{
+		option o = {"null", no_argument, 0, '0'};
+		long_options.push_back(o);
+		helpText += "-0 --null                use binary 0 termination\n";
+	}
+	if (acceptedOptions.find('1')!=string::npos)
+	{
+		option o = {"first", no_argument, 0, '1'};
+		long_options.push_back(o);
+		helpText += "-1 --first               suppress first column\n";
+	}
+	if (acceptedOptions.find('2')!=string::npos)
+	{
+		option o = {"second", no_argument, 0, '2'};
+		long_options.push_back(o);
+		helpText += "-2 --second              suppress second column\n";
+	}
+	if (acceptedOptions.find('3')!=string::npos)
+	{
+		option o = {"third", no_argument, 0, '3'};
+		long_options.push_back(o);
+		helpText += "-3 --third               suppress third column\n";
+	}
 
 
 	option o = {0, 0, 0, 0};
@@ -203,6 +231,10 @@ Cmdline::Cmdline (int argc,
 		case 'v': verbose = true; break;
 		case 'V': version = true; break;
 		case 'E': withoutElektra= true; break;
+		case '0': null= true; break;
+		case '1': first= false; break;
+		case '2': second= false; break;
+		case '3': third= false; break;
 
 		default: invalidOpt = true; break;
 		}
