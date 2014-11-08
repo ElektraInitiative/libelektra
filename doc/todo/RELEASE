@@ -57,6 +57,11 @@ commands below work for copy&paste:
  export VERSION=0.8.9
 
 
+== Tag the version ==
+
+ git tag --sign -f $VERSION
+
+
 == Prepare Source Package ==
 
 Build tar.gz and tag version and make hashsum:
