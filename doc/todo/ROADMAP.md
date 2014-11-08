@@ -8,14 +8,6 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.10 #
 
-fix types:
-	type checker should check like defined in schema
-	let json use same types (double, boolean, nothing for string)
-
-allow more key names
-	starting with /
-	meta keynames
-
 ## powerful cascading ##
 
 make / as logical root
@@ -61,3 +53,7 @@ full coverage of all plugins in end-to-end test
 
 rebase plugin
 xdg resolver
+
+fix types:
+	type checker should check like defined in schema
+	let json use same types (double, boolean, nothing for string)

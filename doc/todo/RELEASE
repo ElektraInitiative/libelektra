@@ -48,6 +48,8 @@ Rebuild cleanly, run all tests and also check for memleaks:
 
 Check if there are really >=76 or >=54 tests
 
+Check if [doc/todo/API] is fulfilled
+
 
 = Preperation =
 

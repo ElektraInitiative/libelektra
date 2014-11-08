@@ -184,6 +184,18 @@ cmd for commandline options overrides
 
 
 
+== META DATA LIBRARY ==
+
+warning/error iterators
+
+comment iterators
+
+documentation:
+	comment -> meta data
+	split real meta data functions + kdbhelpers
+
+
+
 == DATA STRUCTURES ==
 
 ksLookup (      ADD_IF_MISSING|NEW_KEY):
