@@ -1,8 +1,8 @@
 Preparation for 0.8.10 release:
 - C++ I/O for key(s) now allows null-terminator
 - -0 option accepted
-- -123 options for hiding nth column in "kdb mount"
-- hide warnings during script usage of "kdb mount"
+- -123 options for hiding nth column in `kdb mount`
+- hide warnings during script usage of `kdb mount`
 - add two new error/warnings information: mountpoint and configfile
 - use signed release tags
 - fix error plugin: now use on_open/trigger_warnings to be consistent
@@ -19,25 +19,26 @@ Again we managed to do an amazing feature release in just two month.
 In 416 commits we modified 393 files with 23462 insertions(+) and
 9046 deletions(-).
 
-
 ## Most awaited
 
-The most awaited feature in this release is certainly the qt-gui
+The most awaited feature in this release is certainly the *qt-gui*
 developed by Raffael Pancheri. It includes a rich feature set including
 searching, unmounting, importing and exporting. A lot of functionality
 is quite stable now, even though its version is 0.0.1 alpha. If you find
 any bugs or want to give general feedback, feel free to use the issue
-tracker of the Elektra project. A screenshot can be found at:
-https://github.com/ElektraInitiative/libelektra/blob/master/doc/images/screenshot-qt-gui.png
-To compile it (together with Elektra), see the README in:
-https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/qt-gui
+tracker of the Elektra project. A screenshot can be found
+[here](https://github.com/ElektraInitiative/libelektra/blob/master/doc/images/screenshot-qt-gui.png)
+To compile it (together with Elektra), see the README
+[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/qt-gui)
 
 Manuel Mausz also has been very active and developed glib+gi bindings.
 These bindings make Elektra more friendly to the glib/gtk/gnome world.
 Using the gobject introspection python3 and lua bindings were developed.
 Additionally he got rid of all clang warnings.
 
-Felix Berlakovich also made progress: ini now supports multiline and
+Felix Berlakovich also made progress: [the ini
+plugin](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/ini)
+now supports multiline and
 which can be dynamically turned on and off, i.e. during mounting
 (thanks to Felix)
 
@@ -45,10 +46,10 @@ Last, but not least, Kai-Uwe ported Elektra to Windows7. MinGW is now
 one more supported compiler (tested on build-server, see later).
 Astonishingly, it was only little effort necessary:
 Basically we only needed a new implementation of the resolver, which
-is now called "wresolver". Different from the "resolver" it lacks the
+is now called *wresolver*. Different from the *resolver* it lacks the
 sophisticated multi-process and multi-thread atomicity properties. On
 the plus side we now have a resolver that is very easy to study and
-understand and still works as file resolver ("noresolver" does not).
+understand and still works as file resolver (_noresolver_ does not).
 
 
 ## Interfaces
@@ -72,17 +73,17 @@ works like PLUGINS and TOOLS. Just start with
 	-DBINDINGS=ALL
 
 and CMake should remove the bindings that have missing dependencies
-on your system. Remember that glib and gi (i.e. "gi_python3" and
-"gi_lua") bindings were introduced, too. Additionally, the "cpp"
+on your system. Remember that glib and gi (i.e. *gi_python3* and
+*gi_lua*) bindings were introduced, too. Additionally, the *cpp*
 binding can now be deactivated if not added to BINDINGS.
 
-Finally, the "gen" tool added a Python package called "support".
+Finally, the *gen* tool added a Python package called `support`.
 
 
 
 ## Other Bits
 
-A proof of concept storage plugin "regexstore" was added. It allows to
+A proof of concept storage plugin `regexstore` was added. It allows to
 capture individual configuration options within an otherwise not
 understood configuration file (e.g. for vimrc or emacs where
 the configuration file may contain programming constructs).
@@ -94,8 +95,8 @@ if you want to use uncommon CMake combinations).
 
 A small but very important step towards specifying configuration files
 is the new proposed API method ksLookupBySpec (and ksLookup implementing
-cascading search). It introduces a "logical view" of
-configuration that in difference to the "physical view" of
+cascading search). It introduces a `logical view` of
+configuration that in difference to the `physical view` of
 configuration does not have namespaces, but everything is below the root
 "/". Additionally, contextual values now allow to be compile-time
 configured using C++-Policies. These are small puzzle pieces that will
@@ -140,24 +141,27 @@ https://github.com/ElektraInitiative/libelektra/tree/master/scripts
 - mount-augeas
 - mount-info
 
-Most plugins now internally use the same CMake function "add_plugin"
+Most plugins now internally use the same CMake function `add_plugin`
 which makes plugin handling more consistent.
 
 Felix converted the METADATA spec to ini files and added a proposal
 how comments can be improved.
 
-Refactoring:
+### Refactoring:
+
 - reuse of utilities in gen code generator
-- the gen support library is now in its own package ("support")
+- the gen support library is now in its own package (`support`)
 - refactor array handling
 - internal comparision functions (keyCompareByName)
 
-Optimization:
+### Optimization:
+
 - lookupByName does not need to allocate two keys
 - lookups in generated code
 - prefer to use allocation on stack
 
-Fixes:
+### Fixes:
+
 - disable cast that segfaults on i386 (only testing code was affected)
 - fix keyAddBaseName in xmltool and testing code
 - support non-system installation (e.g. in home directory)
@@ -174,9 +178,8 @@ Fixes:
 
 ## Get It! ##
 
-You can download the release from:
-
-http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.9.tar.gz
+You can download the release from
+[here](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.9.tar.gz)
 
 - size: 1936524
 - md5sum: 001c4ec67229046509a0cb9eda223dc6
@@ -184,9 +187,8 @@ http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.9.tar.gz
 - sha256: e0895bba28a27fb37f36f59ef77c95235f3a9c54fb71aa6f648566774d276568
 
 
-already built API-Docu can be found here:
-
-http://doc.libelektra.org/api/0.8.9/html/
+already built API-Docu can be found
+[here](http://doc.libelektra.org/api/0.8.9/html/)
 
 For more information, see http://www.libelektra.org
 

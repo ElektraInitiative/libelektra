@@ -18,12 +18,6 @@ cascading keys: keep place for namespaces
 
 
 
-== STORAGE ==
-
-use less write() syscalls in dump
-do not use c++ iostreams..
-
-
 == SEARCH ==
 
 profiler:

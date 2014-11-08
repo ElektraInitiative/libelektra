@@ -8,6 +8,9 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.10 #
 
+Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
+for other activities of the current release.
+
 ## powerful cascading ##
 
 make / as logical root
@@ -32,6 +35,7 @@ getRootKeys vs. fixed
 applications should only need to use:
 kdbGet("/path/to/my/application")
 ksLookup("/path/to/my/application/dir/key")
+	(and even the strings can be avoided by code generation)
 
 defaults are hardcoded (for system without /etc)
 	just for information in spec
