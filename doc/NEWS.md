@@ -1,3 +1,10 @@
+Preparation for 0.8.10 release:
+- add two new error/warnings information: mountpoint and configfile
+- use signed release tags
+- fix error plugin: now use on_open/trigger_warnings to be consistent
+- fix metaset: now correctly append new key
+
+
 # 0.8.9 Release
 
 - guid: 38640673-3e07-4cff-9647-f6bdd89b1b08

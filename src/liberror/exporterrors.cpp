@@ -106,10 +106,14 @@ ostream& operator << (ostream& os, parse_t& p)
 		   << "	keySetMeta(warningKey, buffer, \"" << p[i]["ingroup"] << "\");" << endl
 		   << "	buffer[12] = '\\0'; strcat(buffer, \"/module\");" << endl
 		   << "	keySetMeta(warningKey, buffer, \"" << p[i]["module"] << "\");" << endl
-		   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/file\");" << endl // should be called sourcefile
 		   << "	keySetMeta(warningKey, buffer, file);" << endl
 		   << "	buffer[12] = '\\0'; strcat(buffer, \"/line\");" << endl
 		   << "	keySetMeta(warningKey, buffer, line);" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/mountpoint\");" << endl
+		   << "	keySetMeta(warningKey, buffer, keyName(warningKey));" << endl
+		   << "	buffer[12] = '\\0'; strcat(buffer, \"/configfile\");" << endl
+		   << "	keySetMeta(warningKey, buffer, keyString(warningKey));" << endl
 		   << "	buffer[12] = '\\0'; strcat(buffer, \"/reason\");" << endl;
 		if (f==0)
 		{
@@ -148,7 +152,9 @@ ostream& operator << (ostream& os, parse_t& p)
 		   << "	keySetMeta(errorKey, \"error/ingroup\", \"" << p[i]["ingroup"] << "\");" << endl
 		   << "	keySetMeta(errorKey, \"error/module\", \"" << p[i]["module"] << "\");" << endl
 		   << "	keySetMeta(errorKey, \"error/file\", " << "file" << ");" << endl
-		   << "	keySetMeta(errorKey, \"error/line\", " << "line" << ");" << endl;
+		   << "	keySetMeta(errorKey, \"error/line\", " << "line" << ");" << endl
+		   << "	keySetMeta(errorKey, \"error/mountpoint\", " << "keyName(errorKey)" << ");" << endl
+		   << "	keySetMeta(errorKey, \"error/configfile\", " << "keyString(errorKey)" << ");" << endl;
 		if (f== 0)
 		{
 		os << "	va_list arg;" << endl

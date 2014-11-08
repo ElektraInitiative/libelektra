@@ -186,6 +186,11 @@ cmd for commandline options overrides
 
 == DATA STRUCTURES ==
 
+ksLookup (      ADD_IF_MISSING|NEW_KEY):
+	add a key and return it, if it was not found
+	very common operation
+
+
 keyAdd (.. until rootKey)
 
 Only implement what is really needed.

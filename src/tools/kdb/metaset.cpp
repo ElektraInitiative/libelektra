@@ -26,7 +26,11 @@ int MetaSetCommand::execute (Cmdline const& cl)
 	kdb.get(conf, parentKey);
 	Key k = conf.lookup(keyname);
 
-	if (!k) k = Key(keyname, KEY_END);
+	if (!k)
+	{
+		k = Key(keyname, KEY_END);
+		conf.append(k);
+	}
 	if (!k.isValid())
 	{
 		cout << "Could not create key" << endl;
@@ -46,6 +50,7 @@ int MetaSetCommand::execute (Cmdline const& cl)
 	}
 
 	kdb.set(conf,parentKey);
+	printWarnings(cerr,parentKey);
 
 	return 0;
 }
