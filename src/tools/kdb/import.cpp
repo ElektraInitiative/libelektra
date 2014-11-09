@@ -41,7 +41,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	KeySet importedKeys;
 
-	string format = "dump";
+	string format = cl.format;
 	if (argc > 1) format = cl.arguments[1];
 
 	string file = "/dev/stdin";

@@ -55,6 +55,8 @@ public:
 	bool first;
 	bool second;
 	bool third;
+	std::string format;
+	std::string plugins;
 
 	/** The path to the kdb exectuable. */
 	std::string executable;

@@ -1,5 +1,7 @@
 #include <cmdline.hpp>
 
+#include <kdb.hpp>
+#include <keysetio.hpp>
 #include <kdbconfig.h>
 
 #include <iostream>
@@ -40,6 +42,8 @@ Cmdline::Cmdline (int argc,
 	first(true),
 	second(true),
 	third(true),
+	format("dump"),
+	plugins("sync"),
 
 	executable(),
 	commandName()
@@ -203,6 +207,28 @@ Cmdline::Cmdline (int argc,
 		helpText += "-3 --third               suppress third column\n";
 	}
 
+	{
+		using namespace kdb;
+		/*XXX: Step 4: use default from KDB, if available.*/
+		std::string dirname = "/sw/kdb/current/";
+		Key parentKey(dirname.c_str(),
+				// KEY_CASCADING_NAME, // TODO: implement cascading kdb
+				KEY_END);
+		KDB kdb(parentKey);
+		KeySet conf;
+		kdb.get(conf, parentKey);
+
+		Key k;
+
+		k = conf.lookup(dirname+"resolver");
+		if (k) resolver = k.get<string>();
+
+		k = conf.lookup(dirname+"format");
+		if (k) format = k.get<string>();
+
+		k = conf.lookup(dirname+"plugins");
+		if (k) plugins = k.get<string>();
+	}
 
 	option o = {0, 0, 0, 0};
 	long_options.push_back(o);
@@ -216,7 +242,7 @@ Cmdline::Cmdline (int argc,
 	{
 		switch (opt)
 		{
-		/*XXX: Step 4: and now process the option.*/
+		/*XXX: Step 5: and now process the option.*/
 		case 'd': debug = true; break;
 		case 'f': force = true; break;
 		case 'h': humanReadable = true; break;

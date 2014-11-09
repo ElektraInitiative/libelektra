@@ -1,4 +1,9 @@
 Preparation for 0.8.10 release:
+- fix long help text in `kdb check`
+- kdb now uses KDB itself:
+  /sw/kdb/current/resolver .. want a different default resolver than was compiled in?
+  /sw/kdb/current/format .. annoyed by dump-default format
+  /sw/kdb/current/plugins .. if you always forget to add some plugins
 - allow to use -element syntax in TOOLS, BINDINGS and PLUGINS to remove
   it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-fstab"
 - C++ I/O for key(s) now allows null-terminator

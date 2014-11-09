@@ -123,6 +123,17 @@ void MountCommand::buildBackend(Cmdline const& cl)
 			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
 			KEY_END));
 
+	istringstream sstream(cl.plugins);
+	std::string plugin;
+	while (std::getline (sstream, plugin, ' '))
+	{
+		if (cl.debug)
+		{
+			cout << "Trying to add default plugin " << plugin << endl;
+		}
+		backend.addPlugin (plugin);
+	}
+
 
 	if (cl.interactive)
 	{
