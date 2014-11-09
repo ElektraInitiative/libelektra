@@ -211,12 +211,10 @@ Cmdline::Cmdline (int argc,
 		using namespace kdb;
 		/*XXX: Step 4: use default from KDB, if available.*/
 		std::string dirname = "/sw/kdb/current/";
-		Key parentKey(dirname.c_str(),
-				// KEY_CASCADING_NAME, // TODO: implement cascading kdb
-				KEY_END);
-		KDB kdb(parentKey);
+		KDB kdb;
 		KeySet conf;
-		kdb.get(conf, parentKey);
+		kdb.get(conf, std::string("user")+dirname);
+		kdb.get(conf, std::string("system")+dirname);
 
 		Key k;
 
