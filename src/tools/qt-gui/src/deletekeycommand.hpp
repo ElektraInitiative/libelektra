@@ -11,7 +11,7 @@ class DeleteKeyCommand : public QUndoCommand
 {
 
 public:
-    explicit DeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNode *node, int index, QUndoCommand *parent = 0);
+    explicit DeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNodePtr node, int index, QUndoCommand *parent = 0);
     ~DeleteKeyCommand();
 
     virtual void undo();
@@ -20,7 +20,7 @@ public:
 private:
 
     TreeViewModel   *m_model;
-    ConfigNode      *m_node;
+    ConfigNodePtr    m_node;
     int              m_index;
 
 };

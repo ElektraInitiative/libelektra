@@ -3,11 +3,12 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QSharedPointer>
+
 #include <kdb.hpp>
 #include <keyio.hpp>
 #include <cassert>
 
-#include "treeviewmodel.hpp"
 #include "printvisitor.hpp"
 
 class TreeViewModel;
@@ -22,7 +23,7 @@ public:
     explicit ConfigNode(const QString& name, const QString& path, const kdb::Key &key, TreeViewModel *parentModel);
     /// Needed by Qt. This copy constructor is supposed to create a DEEP COPY.
     ConfigNode(const ConfigNode& other);
-    /// Needed by Qt
+    /// Needed by Qt/QSharedPtr
     ConfigNode();
     ~ConfigNode();
 
@@ -66,7 +67,7 @@ public:
      * @brief Append a new child to this ConfigNode.
      * @param node The new child of this ConfigNode.
      */
-    void                        appendChild(ConfigNode* node);
+    void                        appendChild(QSharedPointer<ConfigNode> node);
 
     /**
      * @brief Returns if this ConfigNode has a child with a certain name.
@@ -98,14 +99,14 @@ public:
      * @param name The name of the child which is looked for.
      * @return The child with the given name if it is a child of this ConfigNode.
      */
-    ConfigNode*                 getChildByName(QString& name) const;
+    QSharedPointer<ConfigNode>      getChildByName(QString& name) const;
 
     /**
       * @brief Returns a child on a given index.
       * @param index The index of the wanted child.
       * @return The child on the given index.
       */
-    Q_INVOKABLE ConfigNode*     getChildByIndex(int index) const;
+    Q_INVOKABLE QSharedPointer<ConfigNode> getChildByIndex(int index) const;
 
     /**
      * @brief Change the path of this ConfigNode.
@@ -215,5 +216,7 @@ public slots:
 };
 
 Q_DECLARE_METATYPE(ConfigNode)
+
+typedef QSharedPointer<ConfigNode> ConfigNodePtr;
 
 #endif // CONFIGNODE_H

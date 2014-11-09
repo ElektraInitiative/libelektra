@@ -12,7 +12,6 @@
 #include "printvisitor.hpp"
 #include "keysetvisitor.hpp"
 
-class ConfigNode;
 class Visitor;
 
 class TreeViewModel : public QAbstractListModel
@@ -50,7 +49,7 @@ public:
     ~TreeViewModel();
 
     // @return the underlying model
-    QList<ConfigNode*>& model()
+    QList<ConfigNodePtr>& model()
     {
         return m_model;
     }
@@ -74,7 +73,7 @@ public:
      * @param path The current path of the ConfigNode.
      * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
      */
-    void                        sink(ConfigNode* node, QStringList keys, QString path, kdb::Key key);
+    void                        sink(ConfigNodePtr node, QStringList keys, QString path, kdb::Key key);
 
     void                        accept(Visitor &visitor);
 
@@ -98,7 +97,7 @@ public:
      * @param row The index the new ConfigNode is supposed to be inserted at.
      * @param node The ConfigNode that is supposed to be inserted.
      */
-    void                        insertMetaRow(int row, ConfigNode *node);
+    void                        insertMetaRow(int row, ConfigNodePtr node);
 
     /**
      * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding non metakey ConfigNodes.
@@ -106,7 +105,7 @@ public:
      * @param row The index the new ConfigNode is supposed to be inserted at.
      * @param node The ConfigNode that is supposed to be inserted.
      */
-    void                        insertRow(int row, ConfigNode* node);
+    void                        insertRow(int row, ConfigNodePtr node);
 
     /**
      * @brief Looks for valid ConfigNodes, adds them to a KeySet and repopulates this TreeViewModel based on the KeySet.
@@ -128,7 +127,7 @@ public:
      *
      * @param node The ConfigNode that is appended to this TreeViewModel.
      */
-    void                        append(ConfigNode *node);
+    void                        append(ConfigNodePtr node);
 
     /**
      * @brief A version of the mandatory setData method that can be called from QML without a QModelIndex. It creates a QModelIndex and calls the mandatory setData method.
@@ -161,7 +160,7 @@ public:
      * @param format Specifies the file format of the exported file.
      * @param file The path on the harddisk where the exported file is written to.
      */
-    Q_INVOKABLE void            exportConfiguration(ConfigNode *node, QString format, QString file);
+    Q_INVOKABLE void            exportConfiguration(ConfigNodePtr node, QString format, QString file);
 
     Q_INVOKABLE void            importConfiguration(const QString &name, const QString &file, QString &format, const QString &mergeStrategy);
 
@@ -183,9 +182,9 @@ private:
      * @param searchResults The TreeViewModel that holds the search results.
      * @param term The term that is searched for.
      */
-    void                        find(ConfigNode *node, TreeViewModel *searchResults, const QString term);
+    void                        find(ConfigNodePtr node, TreeViewModel *searchResults, const QString term);
 
-    QList<ConfigNode*>          m_model;
+    QList<ConfigNodePtr>        m_model;
     kdb::Key                    m_metaModelParent;
     kdb::KDB                    m_kdb;
     kdb::KeySet                 m_keySet;

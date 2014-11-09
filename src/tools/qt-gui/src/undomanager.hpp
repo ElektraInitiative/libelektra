@@ -94,7 +94,7 @@ public:
      * @param node The ConfigNode to put in the clipboard.
      * @param index The index of the ConfigNode.
      */
-    Q_INVOKABLE void putToClipboard(const QString &type, ConfigNode *source, int index);
+    Q_INVOKABLE void putToClipboard(const QString &type, ConfigNodePtr source, int index);
 
     /**
      * @brief Create a new EditKeyCommand.
@@ -119,7 +119,7 @@ public:
      * @param node The deleted ConfigNode.
      * @param index The index of the deleted ConfigNode.
      */
-    Q_INVOKABLE void createDeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNode *node, int index);
+    Q_INVOKABLE void createDeleteKeyCommand(const QString &type, TreeViewModel *model, ConfigNodePtr node, int index);
 
     /**
      * @brief Create a new NewKeyCommand.
@@ -129,21 +129,21 @@ public:
      * @param value The value of the new ConfigNode.
      * @param metaData The meta data of the new ConfigNode.
      */
-    Q_INVOKABLE void createNewKeyCommand(ConfigNode *node, const QString &name, const QString &value, const QVariantMap &metaData);
+    Q_INVOKABLE void createNewKeyCommand(ConfigNodePtr node, const QString &name, const QString &value, const QVariantMap &metaData);
 
     /**
      * @brief Create a new CopyKeyCommand.
      *
      * @param target The ConfigNode the copied ConfigNode will be the new child of.
      */
-    Q_INVOKABLE void createCopyKeyCommand(ConfigNode *target);
+    Q_INVOKABLE void createCopyKeyCommand(ConfigNodePtr target);
 
     /**
      * @brief Create a new CutKeyCommand.
      *
      * @param target The ConfigNode the cut ConfigNode will be the new child of.
      */
-    Q_INVOKABLE void createCutKeyCommand(ConfigNode *target);
+    Q_INVOKABLE void createCutKeyCommand(ConfigNodePtr target);
 
     Q_INVOKABLE void createImportConfigurationCommand(TreeViewModel *model, const QString &name, const QString &format, const QString &file, const QString &mergeStrategy);
 

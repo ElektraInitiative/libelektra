@@ -1,7 +1,7 @@
 #include "copykeycommand.hpp"
 #include "treeviewmodel.hpp"
 
-CopyKeyCommand::CopyKeyCommand(QString type, ConfigNode *source, ConfigNode *target, QUndoCommand *parent)
+CopyKeyCommand::CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_source(new ConfigNode(*source))
     , m_target(target)

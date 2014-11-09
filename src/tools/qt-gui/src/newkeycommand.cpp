@@ -1,6 +1,6 @@
 #include "newkeycommand.hpp"
 
-NewKeyCommand::NewKeyCommand(ConfigNode *parentNode, const QString &path, const QString &value, const QVariantMap &metaData, QUndoCommand *parent)
+NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, const QString &path, const QString &value, const QVariantMap &metaData, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_parentNode(parentNode)
     , m_newNode(NULL)

@@ -9,7 +9,7 @@ class KeySetVisitor : public Visitor
 {
 public:
     explicit KeySetVisitor();
-    void visit(ConfigNode *node);
+    void visit(ConfigNode &node);
     void visit(TreeViewModel *model);
     kdb::KeySet getKeySet();
 

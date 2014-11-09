@@ -1,20 +1,25 @@
 #include "printvisitor.hpp"
 
-void PrintVisitor::visit(ConfigNode *node)
+#include "confignode.hpp"
+#include "treeviewmodel.hpp"
+
+void PrintVisitor::visit(ConfigNode &node)
 {
-    QStringList path = node->getPath().split("/");
+    QStringList path = node.getPath().split("/");
     QString name;
 
     foreach(QString s, path)
         name += "> ";
 
-    name += node->getName();
+    name += node.getName();
 
     qDebug() << name;
 }
 
 void PrintVisitor::visit(TreeViewModel *model)
 {
-    foreach (ConfigNode *node, model->model())
+    foreach (ConfigNodePtr node, model->model())
+    {
         node->accept(*this);
+    }
 }

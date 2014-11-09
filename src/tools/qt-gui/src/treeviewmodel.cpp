@@ -60,7 +60,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
         return QVariant();
     }
 
-    ConfigNode* node = m_model.at(index.row());
+    ConfigNodePtr node = m_model.at(index.row());
 
     switch (role)
     {
@@ -120,7 +120,7 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
         return false;
     }
 
-    ConfigNode* node = m_model.at(index.row());
+    ConfigNodePtr node = m_model.at(index.row());
 
     switch (role)
     {
@@ -184,7 +184,7 @@ QString TreeViewModel::toString()
 {
     QString model = "\n";
 
-    foreach(ConfigNode *node, m_model){
+    foreach(ConfigNodePtr node, m_model){
         model += node->getPath();
         model += "\n";
     }
@@ -278,7 +278,7 @@ void TreeViewModel::importConfiguration(const QString &name, const QString &form
     populateModel();
 }
 
-void TreeViewModel::exportConfiguration(ConfigNode *node, QString format, QString file)
+void TreeViewModel::exportConfiguration(ConfigNodePtr node, QString format, QString file)
 {
     collectCurrentKeySet();
 
@@ -374,8 +374,8 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
 
 void TreeViewModel::populateModel()
 {
-    ConfigNode* system = new ConfigNode("system", "system", 0, this);
-    ConfigNode* user = new ConfigNode("user", "user", Key("user", KEY_END), this);
+    ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
+    ConfigNodePtr user(new ConfigNode("user", "user", Key("user", KEY_END), this));
 
 //    clear();
 //    //Why wont the treeview update anymore if list is cleared?
@@ -427,20 +427,20 @@ QVariant TreeViewModel::find(const QString& term)
 {
     TreeViewModel* searchResults = new TreeViewModel;
 
-    foreach (ConfigNode* node, m_model)
+    foreach (ConfigNodePtr node, m_model)
     {
         find(node, searchResults, term);
     }
 
     if (searchResults->model().count() == 0)
     {
-        searchResults->model().append(new ConfigNode("NotfoundNode", tr("There were no results matching your query."), 0, this));
+        searchResults->model().append(ConfigNodePtr(new ConfigNode("NotfoundNode", tr("There were no results matching your query."), 0, this)));
     }
 
     return QVariant::fromValue(searchResults);
 }
 
-void TreeViewModel::find(ConfigNode* node, TreeViewModel *searchResults, const QString term)
+void TreeViewModel::find(ConfigNodePtr node, TreeViewModel *searchResults, const QString term)
 {
     int tmpChildCount = node->getChildCount();
 
@@ -477,7 +477,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 
     int childCount = 0;
 
-    foreach (ConfigNode *node, m_model) {
+    foreach (ConfigNodePtr node, m_model) {
         childCount += node->getChildCount();
     }
 
@@ -490,7 +490,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
 {
     Q_UNUSED(parent);
-    ConfigNode *node = new ConfigNode;
+    ConfigNodePtr node(new ConfigNode);
     node->setName(QString::fromStdString(m_metaModelParent.getName()));
     node->setKey(m_metaModelParent);
     node->setParentModel(this);
@@ -502,7 +502,7 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
     return true;
 }
 
-void TreeViewModel::insertRow(int row, ConfigNode *node)
+void TreeViewModel::insertRow(int row, ConfigNodePtr node)
 {
     beginInsertRows(QModelIndex(), row, row);
     node->setParentModel(this);
@@ -510,7 +510,7 @@ void TreeViewModel::insertRow(int row, ConfigNode *node)
     endInsertRows();
 }
 
-void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
+void TreeViewModel::insertMetaRow(int row, ConfigNodePtr node)
 {
     m_metaModelParent = node->getKey();
 
@@ -529,7 +529,7 @@ void TreeViewModel::insertMetaRow(int row, ConfigNode *node)
     }
 }
 
-void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key key)
+void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, Key key)
 {
     if (keys.length() == 0)
         return;
@@ -544,12 +544,12 @@ void TreeViewModel::sink(ConfigNode* node, QStringList keys, QString path, Key k
     }
     else
     {
-        ConfigNode* newNode;
+        ConfigNodePtr newNode;
 
         if(isLeaf)
-            newNode = new ConfigNode(name, (path + "/" + name), key.dup(), node->getChildren());
+            newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), key.dup(), node->getChildren()));
         else
-            newNode = new ConfigNode(name, (path + "/" + name), NULL, node->getChildren());
+            newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), NULL, node->getChildren()));
 
         node->appendChild(newNode);
 
@@ -571,7 +571,7 @@ Key TreeViewModel::createNewKey(const QString &path, const QString &value, const
     return key;
 }
 
-void TreeViewModel::append(ConfigNode *node)
+void TreeViewModel::append(ConfigNodePtr node)
 {
     insertRow(rowCount(), node);
 }
@@ -626,11 +626,11 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 void TreeViewModel::refresh()
 {
-    QList<ConfigNode*> newModel(m_model);
+    QList<ConfigNodePtr> newModel(m_model);
 
     beginResetModel();
     m_model.clear();
-    foreach(ConfigNode *node, newModel){
+    foreach(ConfigNodePtr node, newModel){
         m_model.append(node);
     }
     endResetModel();
