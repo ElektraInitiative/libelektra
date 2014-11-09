@@ -52,6 +52,28 @@ recommended to use environment variables.
 Note that the file permissions apply, so it might be possible for
 non-root to modify keys in system.
 
+
+### XDG Compatibility ###
+
+The resolver is fully [XDG compatible](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
+if configured with the variant:
+
+- xp, xh or xu for user (either using passwd, HOME or USER as fallback
+  or any combination of these fallbacks)
+- x for system, no fallback necessary
+
+Additionally KDB_DB_USER needs to be left unchanged as `.config`.
+
+XDG_CONFIG_DIRS will be used to resolve system pathes the following
+way:
+
+- if unset or empty /etc/xdg will be used instead
+- all elements are searched in order of importance
+ - if a file was found, the search process is stopped
+ - if no file was found, the least important element will be used for
+   potential write attempts.
+
+
 ## Reading Configuration ##
 
  1.) stat the file

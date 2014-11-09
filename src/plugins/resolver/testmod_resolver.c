@@ -75,44 +75,6 @@ void test_resolve()
 	succeed_if_same_string (h->user.filename, path);
 	plugin->kdbClose(plugin, parentKey);
 
-#ifdef HAVE_SETENV
-	unsetenv("USER");
-	unsetenv("HOME");
-	plugin->kdbOpen(plugin, parentKey);
-	h = elektraPluginGetData(plugin);
-	exit_if_fail (h != 0, "no plugin handle");
-	succeed_if_same_string (h->system.path, "elektra.ecf");
-	succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
-	succeed_if_same_string (h->user.path, "elektra.ecf");
-	succeed_if_same_string (h->user.filename, KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf");
-	plugin->kdbClose(plugin, parentKey);
-
-	setenv("USER","other",1);
-	plugin->kdbOpen(plugin, parentKey);
-	h = elektraPluginGetData(plugin);
-	exit_if_fail (h != 0, "no plugin handle");
-	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->user.filename, KDB_DB_HOME "/other/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
-	plugin->kdbClose(plugin, parentKey);
-
-	setenv("HOME","/nfshome//max//",1);
-	plugin->kdbOpen(plugin, parentKey);
-	h = elektraPluginGetData(plugin);
-	exit_if_fail (h != 0, "no plugin handle");
-	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->user.filename, "/nfshome/max/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
-	plugin->kdbClose(plugin, parentKey);
-	unsetenv("HOME");
-	unsetenv("USER");
-#endif
-	plugin->kdbOpen(plugin, parentKey);
-	h = elektraPluginGetData(plugin);
-	exit_if_fail (h != 0, "no plugin handle");
-	keySetName(parentKey, "user");
-	succeed_if (!strcmp(h->user.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp(h->user.filename, KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf"), "filename not set correctly");
-	plugin->kdbClose(plugin, parentKey);
-
 	keyDel (parentKey);
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
@@ -152,10 +114,6 @@ void test_name()
 	succeed_if (!strcmp(keyString(parentKey), KDB_DB_SYSTEM "/elektra.ecf"),
 			"resulting filename not correct");
 
-	keySetName(parentKey, "user");
-	plugin->kdbGet(plugin, 0, parentKey);
-	succeed_if_same_string (keyString(parentKey), KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf");
-
 	keyDel (parentKey);
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
@@ -194,10 +152,6 @@ void test_lockname()
 	succeed_if (!strcmp(h->system.dirname, KDB_DB_SYSTEM),
 			"resulting filename not correct");
 
-	keySetName(parentKey, "user");
-	plugin->kdbGet(plugin, 0, parentKey);
-	succeed_if_same_string (h->user.dirname, KDB_DB_HOME "/" KDB_DB_USER);
-
 	keyDel (parentKey);
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
@@ -234,11 +188,6 @@ void test_tempname()
 	Key *parentKey= keyNew("system", KEY_END);
 	plugin->kdbGet(plugin, 0, parentKey);
 	succeed_if (!strncmp(h->system.tempfile, KDB_DB_SYSTEM "/elektra.ecf", sizeof(KDB_DB_SYSTEM)),
-			"resulting filename not correct");
-
-	keySetName(parentKey, "user");
-	plugin->kdbGet(plugin, 0, parentKey);
-	succeed_if (!strncmp(h->user.tempfile, KDB_DB_HOME "/" KDB_DB_USER "/elektra.ecf.tmp", sizeof(KDB_DB_HOME "/" KDB_DB_USER)),
 			"resulting filename not correct");
 
 	keyDel (parentKey);
