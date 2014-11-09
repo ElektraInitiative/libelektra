@@ -63,15 +63,7 @@ void Backend::checkFile (std::string file) const
 
 	int res = checkFileFunction(file.c_str());
 
-
-	if (mp.substr(0,6) == "system")
-	{
-		if (res == -1) throw FileNotValidException();
-		return;
-	}
-
-
-	if (res <= 0) throw FileNotValidException();
+	if (res == -1) throw FileNotValidException();
 }
 
 

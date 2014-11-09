@@ -23,7 +23,7 @@ rollbacks.
 
 Use following command to see to which file is resolved to:
 
-    kdb file
+    kdb file <Elektra path you are interested in>
 
 See the constants of this plugin for further information, that are:
 
@@ -34,8 +34,23 @@ See the constants of this plugin for further information, that are:
     system/elektra/modules/resolver/constants/KDB_DB_SYSTEM
     system/elektra/modules/resolver/constants/KDB_DB_USER
 
-Note that the VARIANT might change for different variants of the
-resolver plugin.
+The build-in resolving works like (with ~ resolved from system):
+
+- for system and absolute path: path
+- for system and relative path: KDB_DB_SYSTEM + path
+- for user and absolute path: ~ + path
+- for user and relative path: ~ + KDB_DB_USER + path
+
+Many variants might change this build for different variants of the
+resolver plugin, typically by using environment variables.
+
+Environment variables are very simple for one-time usage but their
+maintenance in start-up scripts is problematic. Additionally, they
+are controlled by the user, so they cannot be trusted. So it is not
+recommended to use environment variables.
+
+Note that the file permissions apply, so it might be possible for
+non-root to modify keys in system.
 
 ## Reading Configuration ##
 

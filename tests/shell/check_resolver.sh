@@ -17,7 +17,9 @@ else
 	exit 0
 fi
 
-ROOT_FILE=huhu/test/somewhere/resolver_check.ecf
+#enable with care: might remove more (empty) directories than it created
+#WRITE_TO_SYSTEM=YES
+
 ROOT_MOUNTPOINT=/test/script
 ROOT_MOUNTNAME=_test_script
 
@@ -37,23 +39,26 @@ check_resolver()
 		return
 	fi
 
-	$KDB mount --resolver $PLUGIN $ROOT_FILE $ROOT_MOUNTPOINT dump 1>/dev/null
-	succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT with resolver $PLUGIN"
+	$KDB mount --resolver $PLUGIN $3 $ROOT_MOUNTPOINT dump 1>/dev/null
+	succeed_if "could not mount root: $3 at $ROOT_MOUNTPOINT with resolver $PLUGIN"
 
 	FILE=`$KDB file -n $1$ROOT_MOUNTPOINT`
-	[ "x$FILE"  = "x$3" ]
-	succeed_if "resolving of user$ROOT_MOUNTPOINT did not yield $3 but $RES"
+	[ "x$FILE"  = "x$4" ]
+	succeed_if "resolving of user$ROOT_MOUNTPOINT did not yield $4 but $RES"
+	echo "got $FILE"
 
-	#if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
+	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
+		KEY=$1$ROOT_MOUNTPOINT/key
+		$KDB set $KEY value
+		succeed_if "could not set $KEY"
 
-	KEY=$1$ROOT_MOUNTPOINT/key
-	strace $KDB set $KEY value
-	succeed_if "could not set $KEY"
+		echo "remove $FILE and its directories"
+		rm $FILE
+		succeed_if "could not remove $FILE"
 
-	rm $FILE
-	succeed_if "could not remove $FILE"
-
-	#endif
+		dirname $FILE
+		rmdir -p --ignore-fail-on-non-empty `dirname $FILE`
+	fi
 
 	$KDB umount $ROOT_MOUNTNAME >/dev/null
 	succeed_if "could not umount $ROOT_MOUNTNAME"
@@ -62,15 +67,17 @@ check_resolver()
 unset HOME
 unset USER
 
-#check_resolver user b @KDB_DB_HOME@/@KDB_DB_USER@/$ROOT_FILE
+check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
+check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a
+check_resolver user b /a @KDB_DB_HOME@/a
 
-#export HOME=nowhere
+export HOME=nowhere
 
-#check_resolver user h /$HOME/@KDB_DB_USER@/$ROOT_FILE
+check_resolver user h x /$HOME/@KDB_DB_USER@/x
 
 unset HOME
 export USER=markus/somewhere/test
 
-check_resolver user u @KDB_DB_HOME@/$USER/@KDB_DB_USER@/$ROOT_FILE
+check_resolver user u abc @KDB_DB_HOME@/$USER/@KDB_DB_USER@/abc
 
 end_script resolver

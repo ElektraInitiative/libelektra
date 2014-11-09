@@ -177,7 +177,10 @@ static void elektraResolveUsingHome(resolverHandle *p, const char *home)
 	p->dirname = malloc(dirnameSize);
 	strcpy (p->dirname, keyName(canonify)
 			+4); // cut user, but leave slash
-	strcat (p->dirname, "/" KDB_DB_USER);
+	if (p->path[0] != '/')
+	{
+		strcat (p->dirname, "/" KDB_DB_USER);
+	}
 	keyDel(canonify);
 }
 
@@ -256,7 +259,10 @@ static int elektraResolveEnvUser(resolverHandle *p)
 	strcpy (p->dirname, KDB_DB_HOME "/");
 	strcat (p->dirname, keyName(canonify)
 			+5); // cut user/
-	strcat (p->dirname, "/" KDB_DB_USER);
+	if (p->path[0] != '/')
+	{
+		strcat (p->dirname, "/" KDB_DB_USER);
+	}
 	keyDel(canonify);
 
 	return 1;
@@ -269,8 +275,11 @@ static int elektraResolveBuildin(resolverHandle *p)
 		+ sizeof("/" KDB_DB_USER);
 
 	p->dirname= malloc (dirnameSize);
-	strcpy (p->dirname, KDB_DB_HOME "/");
-	strcat (p->dirname, KDB_DB_USER);
+	strcpy (p->dirname, KDB_DB_HOME);
+	if (p->path[0] != '/')
+	{
+		strcat (p->dirname,  "/" KDB_DB_USER);
+	}
 
 	return 1;
 }
@@ -291,7 +300,10 @@ static void elektraResolveFinish(resolverHandle *p)
 
 	p->filename = malloc (filenameSize);
 	strcpy (p->filename, p->dirname);
-	strcat (p->filename, "/");
+	if (p->path[0] != '/')
+	{
+		strcat (p->filename, "/");
+	}
 	strcat (p->filename, p->path);
 
 	// p->dirname might be wrong (too short), recalculate it:
