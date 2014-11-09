@@ -17,7 +17,7 @@ else
 	exit 0
 fi
 
-ROOT_FILE=resolver_check.ecf
+ROOT_FILE=huhu/test/somewhere/resolver_check.ecf
 ROOT_MOUNTPOINT=/test/script
 ROOT_MOUNTNAME=_test_script
 
@@ -40,9 +40,20 @@ check_resolver()
 	$KDB mount --resolver $PLUGIN $ROOT_FILE $ROOT_MOUNTPOINT dump 1>/dev/null
 	succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT with resolver $PLUGIN"
 
-	RES=`USER=nobody $KDB file -n user$ROOT_MOUNTPOINT`
-	[ "x$RES"  = "x$3" ]
-	succeed_if resolving of user$ROOT_MOUNTPOINT did not yield $3 but $RES
+	FILE=`$KDB file -n $1$ROOT_MOUNTPOINT`
+	[ "x$FILE"  = "x$3" ]
+	succeed_if "resolving of user$ROOT_MOUNTPOINT did not yield $3 but $RES"
+
+	#if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
+
+	KEY=$1$ROOT_MOUNTPOINT/key
+	strace $KDB set $KEY value
+	succeed_if "could not set $KEY"
+
+	rm $FILE
+	succeed_if "could not remove $FILE"
+
+	#endif
 
 	$KDB umount $ROOT_MOUNTNAME >/dev/null
 	succeed_if "could not umount $ROOT_MOUNTNAME"
@@ -51,15 +62,15 @@ check_resolver()
 unset HOME
 unset USER
 
-check_resolver user b @KDB_DB_HOME@/@KDB_DB_USER@/$ROOT_FILE
+#check_resolver user b @KDB_DB_HOME@/@KDB_DB_USER@/$ROOT_FILE
 
-export HOME=nowhere
+#export HOME=nowhere
 
-check_resolver user h /nowhere/@KDB_DB_USER@/$ROOT_FILE
+#check_resolver user h /$HOME/@KDB_DB_USER@/$ROOT_FILE
 
 unset HOME
-export USER=nobody
+export USER=markus/somewhere/test
 
-check_resolver user u @KDB_DB_HOME@/nobody/@KDB_DB_USER@/$ROOT_FILE
+check_resolver user u @KDB_DB_HOME@/$USER/@KDB_DB_USER@/$ROOT_FILE
 
 end_script resolver

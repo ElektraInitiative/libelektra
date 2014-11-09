@@ -41,13 +41,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 	/* Be strict, don't allow any .., even if it would be ok sometimes */
 	if(strstr (filename, "..") != 0) return -1;
 
-
 	if(filename[0] == '/') return 0;
-
-	/* subfolders (for non-absolute filenames) currently not
-	 * supported:
-	 * @see resolveFilename(), dirname is not set properly then */
-	if(strstr (filename, "/") != 0) return -1;
 
 	return 1;
 
@@ -253,7 +247,7 @@ static int elektraResolveEnvUser(resolverHandle *p)
 	}
 
 	Key *canonify = keyNew("user", KEY_END);
-	keyAddBaseName(canonify, owner);
+	keyAddName(canonify, owner);
 	size_t dirnameSize = sizeof(KDB_DB_HOME "/")
 			+ keyGetNameSize(canonify)
 			+ sizeof("/" KDB_DB_USER);
@@ -281,6 +275,14 @@ static int elektraResolveBuildin(resolverHandle *p)
 	return 1;
 }
 
+/**
+ * @brief Recalculates all pathes given p->dirname
+ *
+ * p->filename = p->dirname+p->path
+ * p->dirname = dirname(p->filename)
+ *
+ * @param p resolverHandle with dirname set
+ */
 static void elektraResolveFinish(resolverHandle *p)
 {
 	size_t filenameSize = strlen(p->dirname)
@@ -291,6 +293,14 @@ static void elektraResolveFinish(resolverHandle *p)
 	strcpy (p->filename, p->dirname);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
+
+	// p->dirname might be wrong (too short), recalculate it:
+	free(p->dirname);
+	p->dirname = malloc (filenameSize);
+	char * dup = strdup(p->filename);
+	//dirname might change the buffer, so better work on a copy
+	strcpy (p->dirname, dirname(dup));
+	free(dup);
 
 	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
 	elektraGenTempFilename(p->tempfile, p->filename);
