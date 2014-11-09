@@ -76,7 +76,6 @@ set (PLUGINS_LIST_POSIX
 	timeofday
 	simpleini
 	line
-	resolver_fm_uhb_xb  # handy for tests
 	validation
 	regexstore
 	)
@@ -93,6 +92,16 @@ if (PLUGINS MATCHES "NODEP")
 	set (PLUGINS_FORCE FORCE)
 endif ()
 
+#
+# some are handy for tests,
+# other are for standard-compliance
+#
+set (PLUGINS_LIST_RESOLVER
+	resolver_fm_b_b
+	resolver_fm_hb_b
+	resolver_fm_uhb_xb
+	resolver_fm_xb_xb
+	)
 
 #
 # plugins with dependencies
@@ -114,6 +123,7 @@ if (PLUGINS MATCHES "ALL")
 		${PLUGINS_LIST_COMPILE}
 		${PLUGINS_LIST_NODEP}
 		${PLUGINS_LIST_POSIX}
+		${PLUGINS_LIST_RESOLVER}
 		${PLUGINS_LIST_DEP}
 		)
 	set (PLUGINS_FORCE FORCE)
