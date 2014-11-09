@@ -1,4 +1,6 @@
 Preparation for 0.8.10 release:
+- allow to use -element syntax in TOOLS, BINDINGS and PLUGINS to remove
+  it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-fstab"
 - C++ I/O for key(s) now allows null-terminator
 - -0 option accepted
 - -123 options for hiding nth column in `kdb mount`

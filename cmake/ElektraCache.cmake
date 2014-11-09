@@ -5,8 +5,11 @@
 #
 #
 # If you add something here, make sure to also add it in
-# src/include/kdbversion.h.in
+# src/plugins/constants/
 
+include(LibAddMacros)
+
+remember_for_removal(PLUGINS TO_REMOVE_PLUGINS)
 
 #
 # the default list of plugins
@@ -132,7 +135,7 @@ set (PLUGINS
 	${PLUGINS_FORCE}
 	)
 
-list(REMOVE_DUPLICATES PLUGINS)
+removal(PLUGINS TO_REMOVE_PLUGINS)
 set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
 
 
@@ -147,6 +150,8 @@ set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
 #
 # set BINDINGS cache variable
 #
+
+remember_for_removal(BINDINGS TO_REMOVE_BINDINGS)
 
 set (BINDINGS_LIST_DEFAULT cpp)
 
@@ -185,10 +190,8 @@ set (BINDINGS
 	${BINDINGS_FORCE}
 	)
 
-
-list(REMOVE_DUPLICATES BINDINGS)
+removal(BINDINGS TO_REMOVE_BINDINGS)
 set(BINDINGS ${BINDINGS} CACHE STRING ${BINDINGS_DOC} FORCE)
-
 
 
 
@@ -201,6 +204,9 @@ set(BINDINGS ${BINDINGS} CACHE STRING ${BINDINGS_DOC} FORCE)
 #
 # set TOOLS cache variable
 #
+
+remember_for_removal(TOOLS TO_REMOVE_TOOLS)
+
 set (TOOLS_LIST_DEFAULT kdb)
 
 if (TOOLS MATCHES "DEFAULT")
@@ -231,6 +237,8 @@ set (TOOLS
 	${TOOLS_FORCE}
 	)
 
+removal(TOOLS TO_REMOVE_TOOLS)
+set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
 
 
 
