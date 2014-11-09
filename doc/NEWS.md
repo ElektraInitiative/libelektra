@@ -114,32 +114,32 @@ to fail.  Additionally a recursive mutex now protects the file locking
 mechanism.
 
 The build server now additionally has following build jobs:
-- http://build.libelektra.org:8080/job/elektra-gcc-i386/
-  Because we had an i386 regression and none of the developers
-  seems to use i386.
-- http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/
+
+- [i386 build:](http://build.libelektra.org:8080/job/elektra-gcc-i386/):
+  We had an i386 regression, because none of the developers
+  seems to use i386 anymore.
+- [Configure Debian Script](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/)
   Calls the scripts/configure-debian(-wheezy).
-- http://build.libelektra.org:8080/job/elektra-local-installation/
+- [Local Installation:](http://build.libelektra.org:8080/job/elektra-local-installation/)
   We had an regression that local installation was not possible because
   of a bash completion file installed to /etc. This build tests if it is
   possible to install Elektra in your home directory (and calls kdb
   run_all afterwards)
-- http://build.libelektra.org:8080/job/elektra-test-bindings/
+- [Test bindings:](http://build.libelektra.org:8080/job/elektra-test-bindings/)
   Compiles and tests ALL bindings.
-- http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw/
+- [Mingw:](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw/)
   Compiles Elektra using mingw.
 
 Many more examples were written and are used within doxygen. Most
 snippets now can also be found in compilable files:
-https://github.com/ElektraInitiative/libelektra/tree/master/examples
-- keyNew examples (keyNew.c)
-- keyCopy examples (keyCopy.c)
-https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/cpp/examples
-- C++ deep dup (cpp_example_dup.cpp)
-- How to put Key in different data structures (cpp_example_ordering.cpp)
-https://github.com/ElektraInitiative/libelektra/tree/master/scripts
-- mount-augeas
-- mount-info
+
+
+- [keyNew examples](https://github.com/ElektraInitiative/libelektra/tree/master/examples/keyNew.c)
+- [keyCopy examples](https://github.com/ElektraInitiative/libelektra/tree/master/examples/keyCopy.c)
+- [C++ deep dup](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/cpp/examples/cpp_example_dup.cpp)
+- [How to put Key in different data structures](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/cpp/examples/cpp_example_ordering.cpp)
+- [Mount some config files using augeas](https://github.com/ElektraInitiative/libelektra/tree/master/scripts/mount-augeas)
+- [Mount system information](https://github.com/ElektraInitiative/libelektra/tree/master/scripts/mount-info)
 
 Most plugins now internally use the same CMake function `add_plugin`
 which makes plugin handling more consistent.
