@@ -7,8 +7,8 @@
 class PrintVisitor : public Visitor
 {
 public:
-    void visit(ConfigNode &node);
-    void visit(TreeViewModel *model);
+	void visit(ConfigNode& node);
+	void visit(TreeViewModel* model);
 };
 
 #endif // PRINTVISITOR_HPP

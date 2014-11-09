@@ -9,17 +9,17 @@
 class CopyKeyCommand : public QUndoCommand
 {
 public:
-    explicit CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand *parent = 0);
+	explicit CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand* parent = 0);
 
-    virtual void undo();
-    virtual void redo();
+	virtual void undo();
+	virtual void redo();
 
 private:
 
-    ConfigNodePtr m_source;
-    ConfigNodePtr m_target;
-    bool          m_isExpanded;
-    int           m_index;
+	ConfigNodePtr m_source;
+	ConfigNodePtr m_target;
+	bool          m_isExpanded;
+	int           m_index;
 };
 
 #endif // COPYKEYCOMMAND_H

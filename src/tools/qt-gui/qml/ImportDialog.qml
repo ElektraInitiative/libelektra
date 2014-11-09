@@ -6,110 +6,110 @@ import QtQuick.Dialogs 1.1
 
 BasicWindow {
 
-    title: qsTr("Import Configuration from File")
-    height: Math.ceil(importMergeGroup.height*4)
+	title: qsTr("Import Configuration from File")
+	height: Math.ceil(importMergeGroup.height*4)
 
-    property alias importTextField: importTextField
+	property alias importTextField: importTextField
 
-    BasicRectangle {
-        anchors.fill: parent
+	BasicRectangle {
+		anchors.fill: parent
 
-        ColumnLayout {
+		ColumnLayout {
 
-            anchors.fill: parent
-            anchors.margins: defaultMargins
-            spacing: defaultSpacing
+			anchors.fill: parent
+			anchors.margins: defaultMargins
+			spacing: defaultSpacing
 
-            Label {
-                text: qsTr("Please select a file to import to \"" + path.text + "\": ")
-            }
-            RowLayout {
-                TextField {
-                    id: importTextField
-                    Layout.fillWidth: true
-                }
-                Button {
-                    text: "..."
-                    implicitWidth: importTextField.height
-                    onClicked: importFileDialog.open()
-                }
-            }
-            GroupBox {
-                id: importMergeGroup
+			Label {
+				text: qsTr("Please select a file to import to \"" + path.text + "\": ")
+			}
+			RowLayout {
+				TextField {
+					id: importTextField
+					Layout.fillWidth: true
+				}
+				Button {
+					text: "..."
+					implicitWidth: importTextField.height
+					onClicked: importFileDialog.open()
+				}
+			}
+			GroupBox {
+				id: importMergeGroup
 
-                title: qsTr("Merge Strategy:")
-                flat: true
+				title: qsTr("Merge Strategy:")
+				flat: true
 
-                RowLayout {
-                    ExclusiveGroup { id: group }
-                    Column {
-                        RadioButton {
-                            id: preserve
-                            text: qsTr("Preserve")
-                            exclusiveGroup: group
-                            checked: true
-                            property string command: "preserve"
-                        }
-                        RadioButton {
-                            text: qsTr("Ours")
-                            exclusiveGroup: group
-                            property string command: "ours"
-                        }
-                    }
-                    Column {
-                        RadioButton {
-                            text: qsTr("Theirs")
-                            exclusiveGroup: group
-                            property string command: "theirs"
-                        }
-                        RadioButton {
-                            text: qsTr("Base")
-                            exclusiveGroup: group
-                            property string command: "base"
-                        }
-                    }
-                    Column {
-                        RadioButton {
-                            text: qsTr("New Key")
-                            exclusiveGroup: group
-                            property string command: "newkey"
-                        }
-                        RadioButton {
-                            text: qsTr("Our Value")
-                            exclusiveGroup: group
-                            property string command: "ourvalue"
-                        }
-                    }
-                    Column {
-                        RadioButton {
-                            text: qsTr("Their Value")
-                            exclusiveGroup: group
-                            property string command: "theirvalue"
-                        }
-                        Item{
-                            height: preserve.height
-                            width: preserve.width
-                        }
-                    }
-                }
-            }
-        }
-    }
+				RowLayout {
+					ExclusiveGroup { id: group }
+					Column {
+						RadioButton {
+							id: preserve
+							text: qsTr("Preserve")
+							exclusiveGroup: group
+							checked: true
+							property string command: "preserve"
+						}
+						RadioButton {
+							text: qsTr("Ours")
+							exclusiveGroup: group
+							property string command: "ours"
+						}
+					}
+					Column {
+						RadioButton {
+							text: qsTr("Theirs")
+							exclusiveGroup: group
+							property string command: "theirs"
+						}
+						RadioButton {
+							text: qsTr("Base")
+							exclusiveGroup: group
+							property string command: "base"
+						}
+					}
+					Column {
+						RadioButton {
+							text: qsTr("New Key")
+							exclusiveGroup: group
+							property string command: "newkey"
+						}
+						RadioButton {
+							text: qsTr("Our Value")
+							exclusiveGroup: group
+							property string command: "ourvalue"
+						}
+					}
+					Column {
+						RadioButton {
+							text: qsTr("Their Value")
+							exclusiveGroup: group
+							property string command: "theirvalue"
+						}
+						Item{
+							height: preserve.height
+							width: preserve.width
+						}
+					}
+				}
+			}
+		}
+	}
 
-    cancelButton.onClicked: {
-        importTextField.text = ""
-        importDialog.close()
-    }
-    okButton.onClicked: {
-        if(importTextField.text !== ""){
-            undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, group.current.command)
-            externTreeModel.refresh()
-            importTextField.text = ""
-            preserve.checked = true
-            importDialog.close()
-        }
-        else{
-            showMessage(qsTr("No Input"), qsTr("Please enter the path of a compatible configuration file."), "", "", "w")
-        }
-    }
+	cancelButton.onClicked: {
+		importTextField.text = ""
+		importDialog.close()
+	}
+	okButton.onClicked: {
+		if(importTextField.text !== ""){
+			undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, group.current.command)
+			externTreeModel.refresh()
+			importTextField.text = ""
+			preserve.checked = true
+			importDialog.close()
+		}
+		else{
+			showMessage(qsTr("No Input"), qsTr("Please enter the path of a compatible configuration file."), "", "", "w")
+		}
+	}
 }

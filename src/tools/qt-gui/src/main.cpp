@@ -11,30 +11,30 @@
 
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+	QApplication app(argc, argv);
 
-    qRegisterMetaType<TreeViewModel> ("TreeViewModel");
-    qRegisterMetaType<ConfigNode> ("ConfigNode");
-    qRegisterMetaType<UndoManager> ("UndoManager");
+	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
+	qRegisterMetaType<ConfigNode> ("ConfigNode");
+	qRegisterMetaType<UndoManager> ("UndoManager");
 
-    QString locale = QLocale::system().name();
+	QString locale = QLocale::system().name();
 
-    QTranslator tr;
-    tr.load(QString(":/qml/i18n/lang_") + locale + QString(".qm"));
-    app.installTranslator(&tr);
+	QTranslator tr;
+	tr.load(QString(":/qml/i18n/lang_") + locale + QString(".qm"));
+	app.installTranslator(&tr);
 
-    QQmlApplicationEngine engine;
-    QQmlContext* ctxt = engine.rootContext();
+	QQmlApplicationEngine engine;
+	QQmlContext* ctxt = engine.rootContext();
 
-    UndoManager manager;
+	UndoManager manager;
 
-    TreeViewModel* model = new TreeViewModel;
-    model->populateModel();
+	TreeViewModel* model = new TreeViewModel;
+	model->populateModel();
 
-    ctxt->setContextProperty("undoManager", &manager);
-    ctxt->setContextProperty("externTreeModel", model);
+	ctxt->setContextProperty("undoManager", &manager);
+	ctxt->setContextProperty("externTreeModel", model);
 
-    engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
-    return app.exec();
+	return app.exec();
 }
