@@ -100,8 +100,10 @@ endif ()
 set (PLUGINS_LIST_RESOLVER
 	resolver_fm_b_b
 	resolver_fm_hb_b
-	resolver_fm_uhb_xb
-	resolver_fm_xb_xb
+	resolver_fm_hp_b
+	resolver_fm_ub_x
+	resolver_fm_xb_x
+	resolver_fm_xp_x
 	)
 
 #

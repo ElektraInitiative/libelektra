@@ -7,6 +7,8 @@
 #include <sys/time.h>
 #include <libgen.h>
 #include <stdio.h>
+#include <errno.h>
+#include <stdbool.h>
 
 #include <kdbproposal.h>
 
@@ -72,12 +74,27 @@ static void elektraGenTempFilename(char *where, const char *filename)
 			tv.tv_sec,
 			tv.tv_usec);
 }
+/**
+ * @brief Given filename, calcualtes dirname+tempfile
+ *
+ * @param p resolverHandle with filename set
+ */
+static void elektraResolveFinishByFilename(resolverHandle *p)
+{
+	size_t filenameSize = strlen(p->filename);
+	p->dirname = malloc (filenameSize);
+	char * dup = strdup(p->filename);
+	//dirname might change the buffer, so better work on a copy
+	strcpy (p->dirname, dirname(dup));
+	free(dup);
+
+	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
+	elektraGenTempFilename(p->tempfile, p->filename);
+}
+
 
 static int elektraResolveSystemBuildin(resolverHandle *p)
 {
-	p->dirname= malloc (sizeof(KDB_DB_SYSTEM));
-	strcpy (p->dirname, KDB_DB_SYSTEM);
-
 	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
 		+ strlen(p->path) + sizeof("/") + 1;
 	p->filename = malloc (filenameSize);
@@ -85,45 +102,60 @@ static int elektraResolveSystemBuildin(resolverHandle *p)
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
 
-	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
-	elektraGenTempFilename(p->tempfile, p->filename);
+	elektraResolveFinishByFilename(p);
 	return 1;
 }
 
-static int elektraResolveSystemXDG(resolverHandle *p, Key *warningsKey)
+static int elektraResolveSystemXDG(resolverHandle *p,
+		Key *warningsKey)
 {
 	const char * configDir = getenv("XDG_CONFIG_DIRS");
 
-	if (!configDir)
+	if (!configDir || !strcmp(configDir, ""))
 	{
-		return 0;
+		configDir = "/etc/xdg";
 	}
 
-	size_t configDirSize = elektraStrLen(configDir);
-
-
-	if (strchr(configDir , ':') != 0)
+	size_t pathSize = elektraStrLen(p->path);
+	char *saveptr = 0;
+	char *str = strdup(configDir);
+	char *result = strtok_r (str, ":", &saveptr);
+	struct stat buf;
+	int errnoSave = errno;
+	while (result)
 	{
-		ELEKTRA_ADD_WARNING(90, warningsKey,
-			"XDG specification not implemented, : will be interpreted as part of the path");
-		// TODO: now we should search..
-		// (see XDG specification
-		// http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-		// )
+		if (result[0] != '/')
+		{
+			ELEKTRA_ADD_WARNINGF(100,
+				warningsKey,
+				"XDG_CONFIG_DIRS contains a path that is "
+				"not absolute (violates XDG specification) and thus "
+			 	"it was skipped: %s",
+				result);
+			continue;
+		}
+
+		size_t configDirSize = elektraStrLen(result);
+
+		size_t filenameSize = configDirSize
+			+ pathSize + sizeof("/") + 1;
+		p->filename = realloc (p->filename, filenameSize);
+		strcpy (p->filename, result);
+		strcat (p->filename, "/");
+		strcat (p->filename, p->path);
+
+		if (stat(p->filename, &buf) == 0)
+		{
+			// we found a file!
+			break;
+		}
+
+		result = strtok_r (0, ":", &saveptr);
 	}
+	free(str);
+	errno = errnoSave;
 
-	p->dirname= malloc (configDirSize);
-	strcpy (p->dirname, configDir);
-
-	size_t filenameSize = configDirSize
-		+ strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
-	strcpy (p->filename, configDir);
-	strcat (p->filename, "/");
-	strcat (p->filename, p->path);
-
-	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
-	elektraGenTempFilename(p->tempfile, p->filename);
+	elektraResolveFinishByFilename(p);
 	return 1;
 }
 
@@ -141,16 +173,7 @@ static int elektraResolveSystem(char variant, resolverHandle *p, Key *warningsKe
 		p->filename = malloc (filenameSize);
 		strcpy (p->filename, p->path);
 
-		p->dirname = malloc (filenameSize);
-		strcpy (p->dirname, dirname(p->filename));
-
-		// dirname may have destroyed the content of
-		// filename, so write it again
-		strcpy (p->filename, p->path);
-
-		p->tempfile = malloc(filenameSize + POSTFIX_SIZE);
-		elektraGenTempFilename(p->tempfile, p->filename);
-
+		elektraResolveFinishByFilename(p);
 		return 1;
 	}
 
@@ -165,7 +188,9 @@ static int elektraResolveSystem(char variant, resolverHandle *p, Key *warningsKe
 	return -1;
 }
 
-static void elektraResolveUsingHome(resolverHandle *p, const char *home)
+static void elektraResolveUsingHome(resolverHandle *p,
+		const char *home,
+		bool addPostfix)
 {
 	size_t dirnameSize = 0;
 	Key *canonify = keyNew("user", KEY_END);
@@ -177,7 +202,7 @@ static void elektraResolveUsingHome(resolverHandle *p, const char *home)
 	p->dirname = malloc(dirnameSize);
 	strcpy (p->dirname, keyName(canonify)
 			+4); // cut user, but leave slash
-	if (p->path[0] != '/')
+	if (addPostfix && p->path[0] != '/')
 	{
 		strcat (p->dirname, "/" KDB_DB_USER);
 	}
@@ -221,21 +246,57 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 			pwd.pw_dir);
 	*/
 
-	elektraResolveUsingHome(p, pwd.pw_dir);
+	elektraResolveUsingHome(p, pwd.pw_dir, true);
 
 	return 1;
 }
 
-static int elektraResolveEnvHome(resolverHandle *p)
+static int elektraResolveUserXDG(resolverHandle *p, Key *warningsKey)
 {
-	const char * home = getenv("HOME");
+	const char * home = getenv("XDG_CONFIG_HOME");
 
-	if (!home)
+	if (!home || !strcmp(home, ""))
 	{
 		return 0;
 	}
 
-	elektraResolveUsingHome(p, home);
+	if (home[0] != '/')
+	{
+		ELEKTRA_ADD_WARNINGF(100,
+			warningsKey,
+			"XDG_CONFIG_HOME contains a path that is "
+			"not absolute (violates XDG specification) and thus "
+			"it was skipped: %s",
+			home);
+		return 0;
+	}
+
+	elektraResolveUsingHome(p, home, false);
+
+	return 1;
+}
+
+static int elektraResolveEnvHome(resolverHandle *p, Key *warningsKey)
+{
+	const char * home = getenv("HOME");
+
+	if (!home || !strcmp(home, ""))
+	{
+		return 0;
+	}
+
+	if (home[0] != '/')
+	{
+		ELEKTRA_ADD_WARNINGF(100,
+			warningsKey,
+			"HOME contains a path that is "
+			"not absolute and thus "
+			"it was skipped: %s",
+			home);
+		return 0;
+	}
+
+	elektraResolveUsingHome(p, home, true);
 
 	return 1;
 }
@@ -244,7 +305,7 @@ static int elektraResolveEnvUser(resolverHandle *p)
 {
 	const char* owner = getenv("USER");
 
-	if (!owner)
+	if (!owner || !strcmp(owner, ""))
 	{
 		return 0;
 	}
@@ -292,7 +353,7 @@ static int elektraResolveBuildin(resolverHandle *p)
  *
  * @param p resolverHandle with dirname set
  */
-static void elektraResolveFinish(resolverHandle *p)
+static void elektraResolveFinishByDirname(resolverHandle *p)
 {
 	size_t filenameSize = strlen(p->dirname)
 			+ strlen(p->path) +
@@ -308,14 +369,7 @@ static void elektraResolveFinish(resolverHandle *p)
 
 	// p->dirname might be wrong (too short), recalculate it:
 	free(p->dirname);
-	p->dirname = malloc (filenameSize);
-	char * dup = strdup(p->filename);
-	//dirname might change the buffer, so better work on a copy
-	strcpy (p->dirname, dirname(dup));
-	free(dup);
-
-	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
-	elektraGenTempFilename(p->tempfile, p->filename);
+	elektraResolveFinishByFilename(p);
 }
 
 
@@ -329,8 +383,10 @@ static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
 	{
 	case 'p':
 		return elektraResolvePasswd(p, warningsKey);
+	case 'x':
+		return elektraResolveUserXDG(p, warningsKey);
 	case 'h':
-		return elektraResolveEnvHome(p);
+		return elektraResolveEnvHome(p, warningsKey);
 	case 'u':
 		return elektraResolveEnvUser(p);
 	case 'b':
@@ -426,7 +482,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 			return -1;
 		}
 
-		elektraResolveFinish(p);
+		elektraResolveFinishByDirname(p);
 
 		return finished;
 	}

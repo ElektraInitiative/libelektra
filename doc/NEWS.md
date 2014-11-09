@@ -16,6 +16,14 @@ Preparation for 0.8.10 release:
 - fix error plugin: now use on_open/trigger_warnings to be consistent
 - fix metaset: now correctly append new key
 
+## XDG compatible resolving
+
+- .config as default folder in HOME
+- passwd used as default resolver again
+- implement XDG_CONFIG_DIRS
+- fix empty dirs and absolute pathes in envvar
+- add new shell based test suite for resolver
+
 
 # 0.8.9 Release
 
