@@ -5,7 +5,7 @@ Preparation for 0.8.10 release:
   /sw/kdb/current/format .. annoyed by dump-default format
   /sw/kdb/current/plugins .. if you always forget to add some plugins
 - allow to use -element syntax in TOOLS, BINDINGS and PLUGINS to remove
-  it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-fstab"
+  it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-xmltool"
 - C++ I/O for key(s) now allows null-terminator
 - -0 option accepted
 - -123 options for hiding nth column in `kdb mount`
