@@ -14,6 +14,9 @@ macro (do_gi_python_test source)
 			"LD_LIBRARY_PATH=${GELEKTRA_LIBRARY_DIR}"
 			"GI_TYPELIB_PATH=${GI_TYPELIB_DIR}"
 	)
+
+	set_property(TEST ${name} PROPERTY
+		LABELS memleak bindings)
 endmacro (do_gi_python_test)
 
 if (PYTHONINTERP_FOUND)
