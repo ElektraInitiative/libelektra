@@ -38,7 +38,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 	keyDel(check);
 	free(buffer);
 
-	/* Be strict, don't allow any .., even if it would be allowed sometimes */
+	/* Be strict, don't allow any .., even if it would be ok sometimes */
 	if(strstr (filename, "..") != 0) return -1;
 
 
