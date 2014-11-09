@@ -19,6 +19,8 @@ Preparation for 0.8.10 release:
 ## XDG compatible resolving
 
 - .config as default folder in HOME
+- default mode is now XDG compatible (0700 for dir 0600 for files)
+- remember mode as the file had before
 - passwd used as default resolver again
 - implement XDG_CONFIG_DIRS
 - fix empty dirs and absolute pathes in envvar

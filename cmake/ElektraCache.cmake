@@ -263,7 +263,6 @@ set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
 # Runtime pathes for KDB
 #
 
-# May be changed to /etc/config when XDG will be implemented
 set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
 		"The path to the system key database."
 		)
@@ -272,8 +271,7 @@ set (KDB_DB_HOME "/home" CACHE PATH
 		"The compiled-in fallback path to users home directories."
 		)
 
-# May be changed to .config when XDG will be implemented
-set (KDB_DB_USER ".kdb" CACHE PATH
+set (KDB_DB_USER ".config" CACHE PATH
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
 
