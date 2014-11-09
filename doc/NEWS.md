@@ -1,4 +1,5 @@
 Preparation for 0.8.10 release:
+- fix #136
 - fix long help text in `kdb check`
 - kdb now uses KDB itself:
   /sw/kdb/current/resolver .. want a different default resolver than was compiled in?
