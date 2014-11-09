@@ -67,9 +67,46 @@ static void addAddressHierarchy(Key* key, char* fieldbuffer)
 	}
 }
 
+int elektraGetLineCommentMetaKeys (KeySet *commentKey, Key *targetKey, char *commentStart, char *line)
+{
+	size_t lineLen = elektraStrLen(line);
+	size_t commentStartLen = elektraStrLen(commentStart);
+	size_t commentLen = lineLen - commentStartLen;
+	size_t spaces = 0;
+
+	for (i=0; i<lineLen; i++)
+	{
+		/* count the number of whitespace characters before the commen */
+		if (isblank(line[i]))
+		{
+			spaces++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if (line[0] == '\n')
+	{
+	}
+
+	if (!strncmp(line, commentStart, c))
+	{
+		strncat (comment, line+commentStartLen, commentLen);
+		return 1;
+	}
+
+
+
+	return 0;
+}
+
+int elektraAddLineCommentMeta (char *comment, char *commentStart, )
+
 /** Appends a comment to key found in line.
  *
- * Comments are marked with number signs, also called pound sign (#).
+ * Comments are marked with number signs, also called pound sign (#).size_t c = elektraStrLen(comment);
  *
  * White spaces are space and tab.
  * Lines can not start with blank or tab.
@@ -118,6 +155,7 @@ int elektraHostsAppendComment (char *comment, char *line)
 			return 0; /* There should be a key here */
 		}
 	}
+
 	return 0; /* No # found */
 }
 
@@ -169,7 +207,6 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	char *fret;
 	int   sret;
 	Key *alias;
-	char comment [HOSTS_KDB_BUFFER_SIZE] = "";
 	KeySet *append = 0;
 	size_t order = 1;
 
@@ -222,6 +259,7 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	Key *key = keyDup (parentKey);
 	ksAppendKey(append, key);
 
+	char *comment = 0;
 	while (1)
 	{
 		fret = fgets (readBuffer, HOSTS_KDB_BUFFER_SIZE, fp);
@@ -235,6 +273,11 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 			ksDel (append);
 			errno = errnosave;
 			return 1;
+		}
+
+		if (elektraGetLineComment(comment, "#", readBuffer) > 0)
+		{
+
 		}
 
 		/* search for a comment in the current line (if any) */
