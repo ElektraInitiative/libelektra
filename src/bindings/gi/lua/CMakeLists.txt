@@ -20,7 +20,7 @@ install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 # for the library. But that's better than nothing.
 find_package (Lua52)
 if (LUA52_FOUND)
-	message("-- Include Binding gi_lua")
+	message(STATUS "Include Binding gi_lua")
 
 	file (GLOB TESTS testgi_*.lua)
 	foreach (file ${TESTS})

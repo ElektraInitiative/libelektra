@@ -27,4 +27,4 @@ endif (NOT PLUGINS)
 #			libelektra-${BACKEND_DEFAULT}.so
 #			${CMAKE_BINARY_DIR}/dist/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}/libelektra-default.so
 #			)
-#	message ("-- Default backend: ${BACKEND_DEFAULT}")
+#	message (STATUS "Default backend: ${BACKEND_DEFAULT}")
