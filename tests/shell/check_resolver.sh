@@ -21,6 +21,7 @@ fi
 #root access required, writes into various pathes (they are listed,
 #even if WRITE_TO_SYSTEM is deactivated)
 #WRITE_TO_SYSTEM=YES
+WRITE_TO_SYSTEM=NO
 
 ROOT_MOUNTPOINT=/test/script
 ROOT_MOUNTNAME=_test_script
@@ -68,6 +69,12 @@ check_resolver()
 
 unset HOME
 unset USER
+
+if echo "@KDB_DEFAULT_RESOLVER@" | grep "resolver_.*_.*_x.*"
+then
+	echo "skipping tests where XDG_CONFIG_DIRS is manipulated, because default resolver itself would use those paths"
+else
+
 unset XDG_CONFIG_DIRS
 unset XDG_CONFIG_HOME
 
@@ -89,6 +96,8 @@ check_resolver user x app/config_file /xdg_dir1/app/config_file
 
 unset XDG_CONFIG_HOME
 
+fi
+
 check_resolver system b x @KDB_DB_SYSTEM@/x
 check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
 check_resolver system b /a /a
@@ -101,8 +110,6 @@ check_resolver user b /a @KDB_DB_HOME@/a
 # empty env must have no influence
 export HOME=""
 export USER=""
-export XDG_CONFIG_HOME=""
-export XDG_CONFIG_DIRS=""
 
 check_resolver system b x @KDB_DB_SYSTEM@/x
 check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
@@ -115,8 +122,6 @@ check_resolver user b /a @KDB_DB_HOME@/a
 
 unset HOME
 unset USER
-unset XDG_CONFIG_DIRS
-unset XDG_CONFIG_HOME
 
 export HOME=/nowhere/below
 
