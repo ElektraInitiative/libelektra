@@ -7,10 +7,14 @@ echo
 if pkg-config elektra
 then
 	echo "Installed Elektra will be used"
+	echo "We are assuming it is configured similarly"
+	echo "The test will fail if installed version does not use"
+	echo "same KDB."
 else
 	echo "Elektra or pkg-config not installed, will exit"
 	exit
 fi
+
 
 check_version
 
