@@ -247,6 +247,7 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 	*/
 
 	elektraResolveUsingHome(p, pwd.pw_dir, true);
+	free(buf);
 
 	return 1;
 }
