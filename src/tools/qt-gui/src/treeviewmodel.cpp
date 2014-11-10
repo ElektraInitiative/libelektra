@@ -38,8 +38,6 @@ TreeViewModel::TreeViewModel(const TreeViewModel& other)
 
 TreeViewModel::~TreeViewModel()
 {
-	// TODO: is this needed?
-	//qDeleteAll(m_model);
 }
 
 int TreeViewModel::rowCount(const QModelIndex& parent) const
@@ -393,8 +391,6 @@ void TreeViewModel::populateModel()
 	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
 	ConfigNodePtr user(new ConfigNode("user", "user", Key("user", KEY_END), this));
 
-//    clear();
-//    //Why wont the treeview update anymore if list is cleared?
 	m_model.clear();
 	m_model << system << user;
 
@@ -527,9 +523,9 @@ void TreeViewModel::insertRow(int row, ConfigNodePtr node)
 	endInsertRows();
 }
 
-void TreeViewModel::insertMetaRow(int row, ConfigNodePtr node)
+void TreeViewModel::insertMetaRow(int row, Key key, const QString &name)
 {
-	m_metaModelParent = node->getKey();
+	m_metaModelParent = key;
 
 	if (m_metaModelParent)
 	{
@@ -539,10 +535,10 @@ void TreeViewModel::insertMetaRow(int row, ConfigNodePtr node)
 	{
 		QString keyName;
 
-		if (node->getKey())
-			keyName = QString::fromStdString(node->getKey().getFullName());
+		if (key)
+			keyName = QString::fromStdString(key.getFullName());
 		else
-			keyName = node->getName();
+			keyName = name;
 
 		emit showMessage(tr("Error"), tr("Inserting metakey failed."), tr("Key \"%1\" is not valid.").arg(keyName), "", "c");
 	}

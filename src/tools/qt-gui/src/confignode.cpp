@@ -136,10 +136,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 
 	for(int i = 0; i < metaData.size(); i++)
 	{
-		//TODO: this is a very bad idea to back reference to this
-		// enabled_shared_from_this would allow to solve this problem,
-		// but that would be C++11 only
-		m_metaData->insertMetaRow(i, ConfigNodePtr(this));
+		m_metaData->insertMetaRow(i, m_key, m_name);
 	}
 
 	int counter = 0;

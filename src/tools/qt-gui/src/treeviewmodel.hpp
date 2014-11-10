@@ -97,7 +97,7 @@ public:
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param node The ConfigNode that is supposed to be inserted.
 	 */
-	void                        insertMetaRow(int row, ConfigNodePtr node);
+	void                        insertMetaRow(int row, kdb::Key key, const QString &name);
 
 	/**
 	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding non metakey ConfigNodes.
