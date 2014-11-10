@@ -28,7 +28,7 @@ ApplicationWindow {
 	property int    keyAreaHeight: Math.ceil(mainRow.height*0.7 - defaultSpacing)
 	property int    deltaKeyAreaHeight: Math.ceil(keyAreaHeight - searchResultsAreaHeight*0.5 - defaultSpacing)
 	property int    deltaKeyAreaWidth: Math.ceil(mainRow.width*0.7 - defaultSpacing)
-	property int    metaAreaHeight: Math.ceil(mainRow.height*0.3 - metaAreaLabel.font.pixelSize - defaultMargins)
+	property int    metaAreaHeight: Math.ceil(mainRow.height*0.3)
 	property int    deltaMetaAreaHeight: Math.ceil(metaAreaHeight - searchResultsAreaHeight*0.5)
 	property int    searchResultsAreaHeight: Math.ceil(mainRow.height*0.2)
 	property var    keyAreaSelectedItem: null
@@ -928,16 +928,16 @@ ApplicationWindow {
 						id: nameColumn
 
 						role: "name"
-						title: qsTr("Name")
-						width: Math.ceil(keyArea.width*0.5)
+						title: qsTr("Key Name")
+						width: Math.ceil(keyArea.width*0.5 - defaultSpacing*0.5)
 						delegate: tableViewColumnDelegate
 					}
 					TableViewColumn {
 						id: valueColumn
 
 						role: "value"
-						title: qsTr("Value")
-						width: Math.ceil(keyArea.width*0.5)
+						title: qsTr("Key Value")
+						width: Math.ceil(keyArea.width*0.5 - defaultSpacing*0.5)
 						delegate: tableViewColumnDelegate
 					}
 
@@ -989,33 +989,37 @@ ApplicationWindow {
 					}
 				}
 			}
-			Label {
-				id: metaAreaLabel
-				text: qsTr("Metadata")
-				anchors.left: metaArea.left
-				anchors.leftMargin: defaultSpacing
-			}
 			BasicRectangle {
 				id: metaArea
 
 				width: deltaKeyAreaWidth
 				height: metaAreaHeight
 
-				ScrollView {
-					id: metaAreaScrollView
+				TableView {
+					id: metaAreaTableView
 
 					anchors.fill: parent
-					anchors.margins: defaultMargins
+					anchors.margins: 2
+					frameVisible: false
+					alternatingRowColors: false
+					backgroundVisible: false
+					selectionMode: SelectionMode.NoSelection
 
-					ListView {
-						id: metaAreaListView
+					model: metaAreaModel
 
-						model: metaAreaModel
+					TableViewColumn {
+						id: metaNameColumn
 
-						delegate: Text {
-							color: activePalette.text
-							text: keyAreaSelectedItem === null ? "" : (name + ": " + value)
-						}
+						role: "name"
+						title: qsTr("Metakey Name")
+						width: Math.ceil(metaArea.width*0.5 - defaultSpacing*0.5)
+					}
+					TableViewColumn {
+						id: metaValueColumn
+
+						role: "value"
+						title: qsTr("Metakey Value")
+						width: Math.ceil(metaArea.width*0.5 - defaultSpacing*0.5)
 					}
 				}
 			}
