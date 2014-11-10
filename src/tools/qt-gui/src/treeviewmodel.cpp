@@ -92,7 +92,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 		return QVariant::fromValue(node->getMetaKeys());
 
 	case NodeRole:
-		return QVariant::fromValue(node);
+		return QVariant::fromValue(node.data());
 
 	case ParentModelRole:
 		return QVariant::fromValue(node->getParentModel());

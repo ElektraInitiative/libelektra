@@ -30,9 +30,10 @@ KeyWindow {
 		}
 
 		//create undo command
-		if(isEdited)
+		if(isEdited){
 			undoManager.createEditKeyCommand(selectedNode.parentModel, index, keyName.toString(), keyValue.toString(), selectedNode.metaValue,
 											 nameTextField.text, valueTextField.text, metaData)
+		}
 
 		qmlMetaKeyModel.clear()
 		selectedNode = null
@@ -44,4 +45,5 @@ KeyWindow {
 
 		accessFromSearchResults = false
 	}
+
 }

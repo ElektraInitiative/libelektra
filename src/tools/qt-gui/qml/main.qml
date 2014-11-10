@@ -97,7 +97,7 @@ ApplicationWindow {
 		keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
 		keyAreaView.currentNodePath = treeView.currentNode.path
 
-		undoManager.putToClipboard("cutKey", keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+		undoManager.putToClipboard("cutKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
 		isPasted = false
 	}
 
@@ -106,7 +106,7 @@ ApplicationWindow {
 		treeView.treeAreaCopyIndex = treeView.currentNode.index
 		keyAreaView.currentNodePath = treeView.currentNode.path
 
-		undoManager.putToClipboard("cutBranch", treeView.currentNode.node, treeView.currentNode.index)
+		undoManager.putToClipboard("cutBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
 		isPasted = false
 	}
 
@@ -116,7 +116,7 @@ ApplicationWindow {
 		keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
 		keyAreaView.currentNodePath = treeView.currentNode.path
 
-		undoManager.putToClipboard("copyKey", keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+		undoManager.putToClipboard("copyKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
 	}
 
 	function copyBranch() {
@@ -125,13 +125,13 @@ ApplicationWindow {
 		treeView.treeAreaCopyIndex = treeView.currentNode.index
 		treeView.currentNodePath = treeView.currentNode.path
 
-		undoManager.putToClipboard("copyBranch", treeView.currentNode.node, treeView.currentNode.index)
+		undoManager.putToClipboard("copyBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
 	}
 
 	function paste() {
 
 		if(undoManager.clipboardType === "copyKey"){
-			undoManager.createCopyKeyCommand(treeView.currentNode.node)
+			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 			keyAreaView.keyAreaCopyIndex = -1
 			keyAreaView.currentNodePath = ""
 			resetKeyAreaModel()
@@ -140,7 +140,7 @@ ApplicationWindow {
 			}
 		}
 		else if(undoManager.clipboardType === "copyBranch"){
-			undoManager.createCopyKeyCommand(treeView.currentNode.node)
+			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 			externTreeModel.refresh()
 		}
 		else if(undoManager.clipboardType === "cutKey"){
@@ -149,11 +149,11 @@ ApplicationWindow {
 			keyAreaView.currentNodePath = ""
 
 			if(!isPasted){
-				undoManager.createCutKeyCommand(treeView.currentNode.node)
+				undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 				isPasted = true
 			}
 			else{
-				undoManager.createCopyKeyCommand(treeView.currentNode.node)
+				undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 			}
 
 			if(keyAreaSelectedItem === null){
@@ -163,11 +163,11 @@ ApplicationWindow {
 		else if(undoManager.clipboardType === "cutBranch"){
 
 			if(!isPasted){
-				undoManager.createCutKeyCommand(treeView.currentNode.node)
+				undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 				isPasted = true
 			}
 			else{
-				undoManager.createCopyKeyCommand(treeView.currentNode.node)
+				undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 			}
 
 			externTreeModel.refresh()
@@ -180,7 +180,7 @@ ApplicationWindow {
 		//console.log("delete key")
 		var cr = keyAreaView.currentRow
 
-		undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.node, keyAreaSelectedItem.index)
+		undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
 
 		metaAreaModel = null
 		keyAreaSelectedItem = null
@@ -197,7 +197,7 @@ ApplicationWindow {
 	function deleteBranch() {
 		//console.log("delete branch")
 
-		undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.node, treeView.currentNode.index)
+		undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
 		treeView.currentNode = null
 		externTreeModel.refresh()
 	}

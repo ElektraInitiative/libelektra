@@ -1,9 +1,9 @@
 #include "deletekeycommand.hpp"
 
-DeleteKeyCommand::DeleteKeyCommand(const QString& type, TreeViewModel* model, ConfigNodePtr node, int index, QUndoCommand* parent)
+DeleteKeyCommand::DeleteKeyCommand(const QString& type, TreeViewModel* model, int index, QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_model(model)
-	, m_node(node)
+	, m_node(model->model().at(index))
 	, m_index(index)
 {
 	setText(type);

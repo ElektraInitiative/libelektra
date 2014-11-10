@@ -14,7 +14,7 @@ KeyWindow {
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
 		//create UndoCommand
-		undoManager.createNewKeyCommand(treeView.currentNode.node, nameTextField.text, valueTextField.text, metaData)
+		undoManager.createNewKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index, nameTextField.text, valueTextField.text, metaData)
 
 		nameTextField.text = ""
 		valueTextField.text = ""
