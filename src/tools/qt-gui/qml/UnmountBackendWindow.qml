@@ -11,13 +11,10 @@ BasicWindow {
 
 	contents: ColumnLayout {
 		anchors.fill: parent
-		anchors.margins: defaultMargins
-		anchors.centerIn: parent
-		spacing: defaultMargins
 
 		Text{
 			text: qsTr("Notice: To successfully unmount backends you need to be an administrator.")
-			color: disabledPalette.text
+			color: "#640000"
 		}
 
 		Label {
@@ -76,4 +73,6 @@ BasicWindow {
 			}
 		}
 	}
+	cancelButton.visible: false
+	okButton.text: qsTr("Close")
 }
