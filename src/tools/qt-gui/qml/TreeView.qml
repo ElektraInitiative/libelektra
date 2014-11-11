@@ -8,7 +8,7 @@ ScrollView {
 	anchors.fill: parent
 	anchors.margins: defaultSpacing
 
-	property var model: externTreeModel
+	property var treeModel: externTreeModel
 	property int rowHeight: 19
 	property int columnIndent: 22
 	property var currentNode: null
@@ -18,8 +18,9 @@ ScrollView {
 
 	property Component delegate: Label {
 		id: label
-		text: model === null ? "" : model.name
-		color: model === null ? "transparent" : (model.isNull ? disabledPalette.text : activePalette.text)
+
+		text: rowLoaderModel === null ? "" : rowLoaderModel.name
+		color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
 	}
 
 	contentItem: Loader {
@@ -27,145 +28,155 @@ ScrollView {
 
 		onLoaded: item.isRoot = true
 		sourceComponent: treeBranch
-		property var elements: treeView.model
+		property var elements: treeView.treeModel
+	}
 
-		Component {
-			id: treeBranch
+	property Component treeBranch: Component {
+		id: treeBranch
 
-			Item {
-				id: root
+		Item {
+			id: root
 
-				property bool isRoot: false
-				implicitHeight: column.implicitHeight
-				implicitWidth: column.implicitWidth
+			property bool isRoot: false
+			implicitHeight: column.implicitHeight
+			implicitWidth: column.implicitWidth
 
-				Column {
-					id: column
+			Column {
+				id: column
 
-					x: 2
+				x: 2
+
+				Item {
+					height: isRoot ? 0 : treeView.rowHeight
+					width: 1
+				}
+				Repeater {
+					id: repeater
+					model: elements
+
 					Item {
-						height: isRoot ? 0 : treeView.rowHeight
-						width: 1
-					}
-					Repeater {
-						id: repeater
-						model: elements
+						id: filler
 
-						Item {
-							id: filler
+						width: Math.max(itemLoader.width + treeView.columnIndent, row.width)
+						height: Math.max(row.height, itemLoader.height)
+						property var fillerModel: model
 
-							width: Math.max(loader.width + treeView.columnIndent, row.width)
-							height: Math.max(row.height, loader.height)
-							property var _model: model
+						Rectangle {
+							id: rowfill
 
-							Rectangle {
-								id: rowfill
+							x: treeView.mapToItem(rowfill, 0, 0).x
+							width: treeView.width
+							height: treeView.rowHeight
+							visible: treeView.currentNode === fillerModel
+							color: activePalette.highlight
+						}
+						Keys.onPressed: {
+							if(event.key === Qt.Key_Space){
+								treeView.currentNode = model
+								treeView.currentItem = itemLoader
+								keyAreaSelectedItem = null
+								editKeyWindow.selectedNode = treeView.currentNode
+								forceActiveFocus()
 
-								x: treeView.mapToItem(rowfill, 0, 0).x
-								width: treeView.width
+								if (treeView.currentNode !== null){
+									if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
+										keyAreaModel = treeView.currentNode.children
+									else
+										keyAreaModel = null
+								}
+							}
+							else if(event.key === Qt.Key_Up){
+								//console.log("up")
+
+							}
+							else if(event.key === Qt.Key_Down){
+								//console.log("down")
+							}
+						}
+						MouseArea {
+							anchors.fill: rowfill
+							acceptedButtons: Qt.LeftButton | Qt.RightButton
+							focus: true
+							onPressed: {
+								if(mouse.button == Qt.LeftButton){
+									treeView.currentNode = model
+									treeView.currentItem = itemLoader
+									keyAreaSelectedItem = null
+									editKeyWindow.selectedNode = treeView.currentNode
+									forceActiveFocus()
+
+									if (treeView.currentNode !== null){
+										if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
+											keyAreaModel = treeView.currentNode.children
+										else
+											keyAreaModel = null
+									}
+								}
+								else if(mouse.button == Qt.RightButton)
+									treeContextMenu.popup()
+							}
+							onDoubleClicked:{
+								if(!treeView.currentNode.isNull){
+									editKeyWindow.selectedNode = treeView.currentNode
+									editKeyWindow.show()
+									editKeyWindow.populateMetaArea()
+								}
+							}
+						}
+						Row {
+							id: row
+
+							Item {
+								width: treeView.rowHeight
 								height: treeView.rowHeight
-								visible: treeView.currentNode === model
-								color: activePalette.highlight
-							}
-							Keys.onPressed: {
+								opacity: model.childCount > 0 && !model.childrenHaveNoChildren ? 1 : 0
 
-								if(event.key === Qt.Key_Space){
-									if(model.childCount > 0 && !model.childrenHaveNoChildren){
-										loader.expanded = !loader.expanded
-										model.isExpanded = loader.expanded
-									}
-								}
-								else if(event.key === Qt.Key_Up){
-									//console.log("up")
+								Image {
+									id: expander
 
-								}
-								else if(event.key === Qt.Key_Down){
-									//console.log("down")
-								}
-							}
-							MouseArea {
-								anchors.fill: rowfill
-								acceptedButtons: Qt.LeftButton | Qt.RightButton
-								focus: true
-								onPressed: {
-									if(mouse.button == Qt.LeftButton){
-										treeView.currentNode = model
-										treeView.currentItem = loader
-										keyAreaSelectedItem = null
-										editKeyWindow.selectedNode = treeView.currentNode
-										forceActiveFocus()
+									source: "icons/arrow-right.png"
+									opacity: mouse.containsMouse ? 1 : 0.7
+									anchors.centerIn: parent
+									rotation: itemLoader.expanded ? 90 : 0
 
-										if (treeView.currentNode !== null){
-											if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
-												keyAreaModel = treeView.currentNode.children
-											else
-												keyAreaModel = null
-										}
-									}
-									else if(mouse.button == Qt.RightButton)
-										treeContextMenu.popup()
-								}
-								onDoubleClicked:{
-									if(!treeView.currentNode.isNull){
-										editKeyWindow.selectedNode = treeView.currentNode
-										editKeyWindow.show()
-										editKeyWindow.populateMetaArea()
-									}
-								}
-							}
-							Row {
-								id: row
-
-								Item {
-									width: treeView.rowHeight
-									height: treeView.rowHeight
-									opacity: model.childCount > 0 && !model.childrenHaveNoChildren ? 1 : 0
-
-									Image {
-										id: expander
-
-										source: "icons/arrow-right.png"
-										opacity: mouse.containsMouse ? 1 : 0.7
-										anchors.centerIn: parent
-										rotation: loader.expanded ? 90 : 0
-
-										Behavior on rotation {
-											NumberAnimation {
-												duration: 120
-											}
-										}
-									}
-									MouseArea {
-										id: mouse
-
-										anchors.fill: parent
-										hoverEnabled: true
-
-										onClicked: {
-											if(model.childCount > 0 && !model.childrenHaveNoChildren){
-												loader.expanded = !loader.expanded
-												model.isExpanded = loader.expanded
-											}
+									Behavior on rotation {
+										NumberAnimation {
+											duration: 120
 										}
 									}
 								}
-								Loader {
-									property var model: _model
-									sourceComponent: treeView.delegate
-									anchors.verticalCenter: parent.verticalCenter
+								MouseArea {
+									id: mouse
+
+									anchors.fill: parent
+									hoverEnabled: true
+
+									onClicked: {
+										if(model.childCount > 0 && !model.childrenHaveNoChildren){
+											itemLoader.expanded = !itemLoader.expanded
+											model.isExpanded = itemLoader.expanded
+										}
+									}
 								}
 							}
 							Loader {
-								id: loader
+								id: rowLoader
 
-								x: treeView.columnIndent
-								height: expanded ? implicitHeight : 0
-								property var node: model
-								property bool expanded: model.isExpanded
-								property var elements: model.children
-								property var text: model.name
-								sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined
+								property var rowLoaderModel: fillerModel
+								sourceComponent: treeView.delegate
+								anchors.verticalCenter: parent.verticalCenter
 							}
+						}
+						Loader {
+							id: itemLoader
+
+							x: treeView.columnIndent
+							height: expanded ? implicitHeight : 0
+							property var node: model
+							property bool expanded: model.isExpanded
+							property var elements: model.children
+							property var text: model.name
+							sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined
 						}
 					}
 				}
