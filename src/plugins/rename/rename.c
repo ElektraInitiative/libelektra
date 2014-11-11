@@ -18,8 +18,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
-static Key *cutKeyNamePart(Key *key, Key *parentKey, const char *cutPath)
+Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cutPath)
 {
 	size_t cutPathLen = strlen(cutPath);
 	size_t keyNameLen = strlen(keyName(key));
@@ -30,7 +29,6 @@ static Key *cutKeyNamePart(Key *key, Key *parentKey, const char *cutPath)
 	if (!strncmp(keyName(key) + parentKeyPathLen + 1, cutPath, cutPathLen))
 	{
 		Key *result = keyDup (key);
-		keyDel(key);
 		keySetName(result, keyName(parentKey));
 		keyAddName(result, keyName(key) + parentKeyPathLen + 1 + cutPathLen);
 		return result;
@@ -39,13 +37,31 @@ static Key *cutKeyNamePart(Key *key, Key *parentKey, const char *cutPath)
 	return 0;
 }
 
+
+static Key *cutGet(Key *key, Key *parentKey, KeySet *config)
+{
+	const char *cutPath;
+	const Key *cutMeta = keyGetMeta(key, "rename/cut");
+
+	if (cutMeta)
+	{
+		cutPath = keyString(cutMeta);
+	}
+	else
+	{
+		Key *cutConfig = ksLookupByName(config, "/cut", KDB_O_NONE);
+		cutPath = keyString(cutConfig);
+	}
+
+	return elektraKeyCutNamePart(key, parentKey, cutPath);
+}
+
 static Key *restoreKeyName(Key *key)
 {
 	const Key *origNameKey = keyGetMeta(key, "rename/origname");
 	if (origNameKey)
 	{
 		Key *result = keyDup(key);
-		keyDel(key);
 		keySetName(result, keyString(origNameKey));
 		keySetMeta(result, "rename/origname", 0);
 		return result;
@@ -69,7 +85,6 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UN
 
 
 	KeySet *config = elektraPluginGetConfig (handle);
-	Key* cutPath = ksLookupByName (config, "/cut", 0);
 	KeySet *iterateKs = ksDup(returned);
 
 	ksRewind(iterateKs);
@@ -77,7 +92,7 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UN
 	Key *key;
 	while ((key = ksNext (iterateKs)) != 0)
 	{
-		Key *renamedKey = cutKeyNamePart(key, parentKey, keyString(cutPath));
+		Key *renamedKey = cutGet(key, parentKey, config);
 
 		if (renamedKey)
 		{
@@ -92,8 +107,6 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UN
 
 	return 1; /* success */
 }
-
-
 
 int elektraRenameSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {

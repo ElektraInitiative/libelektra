@@ -18,6 +18,7 @@
 
 int elektraRenameGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraRenameSet(Plugin *handle, KeySet *ks, Key *parentKey);
+Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cutPath);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(rename);
 
