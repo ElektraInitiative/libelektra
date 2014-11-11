@@ -13,9 +13,9 @@ class QUndoStack;
  * @brief The UndoManager class
  *
  * To add your own command, implement a class that inherits from QUndoCommand. This class will have an undo and redo method respectively.
- * ATTENTION: you put the code of THE FIRST ACTION into the redo method. Redo will be called automatically when the command is put onto the QUndoStack.
- * If you put the code of the initial action somewhere in your code and then put the command on the stack, the action will be performed twice. In the undo
- * method you put the code that reverts the initial action. To execute the command, put your new command on the stack.
+ * ATTENTION: you have to put the code of THE FIRST ACTION into the redo method. Redo will be called automatically when the command is pushed onto the QUndoStack.
+ * If you put the code of the initial action somewhere in your code and then create the new command, the action will be performed twice. In the undo
+ * method you have to put the code that reverts the initial action. To execute the command, push your new command on the stack.
  */
 class UndoManager : public QObject
 {
@@ -101,15 +101,9 @@ public:
 	 *
 	 * @param model The TreeViewModel of the edited ConfigNode.
 	 * @param index The index of the edited ConfigNode.
-	 * @param oldName The old name of the edited ConfigNode.
-	 * @param oldValue The old value of the edited ConfigNode.
-	 * @param oldMetaData The old meta data of the edited ConfigNode.
-	 * @param newName The new name of the edited ConfigNode.
-	 * @param newValue The new value of the edited ConfigNode.
-	 * @param newMetaData The new meta data of the edited ConfigNode.
+	 * @param data This list holds the data needed to undo and redo the edit
 	 */
-	Q_INVOKABLE void createEditKeyCommand(TreeViewModel* model, int index, const QString& oldName, const QVariant& oldValue, const QVariant& oldMetaData,
-										  const QString& newName, const QVariant& newValue, const QVariant& newMetaData);
+	Q_INVOKABLE void createEditKeyCommand(TreeViewModel* model, int index, QVariantList data);
 
 	/**
 	 * @brief Create a new DeleteKeyCommand.

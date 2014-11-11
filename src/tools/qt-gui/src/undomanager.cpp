@@ -41,11 +41,10 @@ bool UndoManager::canRedo() const
 	return m_undoStack->canRedo();
 }
 
-void UndoManager::createEditKeyCommand(TreeViewModel* model, int index, const QString& oldName, const QVariant& oldValue, const QVariant& oldMetaData,
-									   const QString& newName, const QVariant& newValue, const QVariant& newMetaData)
+void UndoManager::createEditKeyCommand(TreeViewModel* model, int index, QVariantList data)
 {
 	//convert TreeViewModel to QVariantMap
-	TreeViewModel* tmpModel = qvariant_cast<TreeViewModel*>(oldMetaData);
+	TreeViewModel* tmpModel = qvariant_cast<TreeViewModel*>(data.takeAt(2));
 	QVariantMap oldMDMap;
 
 	foreach (ConfigNodePtr node, tmpModel->model())
@@ -53,7 +52,9 @@ void UndoManager::createEditKeyCommand(TreeViewModel* model, int index, const QS
 		oldMDMap.insert(node->getName(), node->getValue());
 	}
 
-	m_undoStack->push(new EditKeyCommand(model, index, oldName, oldValue, oldMDMap, newName, newValue, newMetaData.toMap()));
+	data.insert(2, oldMDMap);
+
+	m_undoStack->push(new EditKeyCommand(model, index, data));
 }
 
 void UndoManager::createDeleteKeyCommand(const QString& type, TreeViewModel* model, int index)

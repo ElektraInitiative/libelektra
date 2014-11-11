@@ -8,8 +8,7 @@ class EditKeyCommand : public QUndoCommand
 {
 
 public:
-	explicit        EditKeyCommand(TreeViewModel* model, int index, const QString& oldName, const QVariant& oldValue, const QVariantMap& oldMetaData,
-	                               const QString& newName, const QVariant& newValue, const QVariantMap& newMetaData, QUndoCommand* parent = 0);
+	explicit        EditKeyCommand(TreeViewModel* model, int index, QVariantList data, QUndoCommand* parent = 0);
 	virtual void    undo();
 	virtual void    redo();
 

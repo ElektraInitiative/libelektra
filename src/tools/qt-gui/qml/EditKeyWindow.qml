@@ -16,8 +16,8 @@ KeyWindow {
 
 	function editAccepted() {
 
-		var metaData = {};
-		var index;
+		var metaData = {}
+		var index
 
 		if(accessFromSearchResults)
 			index = selectedNode.parentModel.getIndexByName(selectedNode.name)
@@ -31,8 +31,10 @@ KeyWindow {
 
 		//create undo command
 		if(isEdited){
-			undoManager.createEditKeyCommand(selectedNode.parentModel, index, keyName.toString(), keyValue.toString(), selectedNode.metaValue,
-											 nameTextField.text, valueTextField.text, metaData)
+			var data = [keyName.toString(), keyValue.toString(), selectedNode.metaValue,
+						nameTextField.text, valueTextField.text, metaData]
+
+			undoManager.createEditKeyCommand(selectedNode.parentModel, index, data)
 		}
 
 		qmlMetaKeyModel.clear()
