@@ -184,7 +184,7 @@ public:
 	 */
 	void                        setParentModel(TreeViewModel* parent);
 	void                        clear();
-	bool                        getIsExpanded() const;
+	bool                        isExpanded() const;
 
 private:
 	// TODO: not needed if we hold the Key

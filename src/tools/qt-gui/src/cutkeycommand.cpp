@@ -5,7 +5,7 @@ CutKeyCommand::CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr t
 	, m_sourceParentModel(source->getParentModel())
 	, m_source(new ConfigNode(*source))
 	, m_target(target)
-	, m_isExpanded(false)
+	, m_isExpanded(target->isExpanded())
 	, m_sourceIndex(index)
 	, m_targetIndex(-1)
 {
@@ -17,7 +17,7 @@ CutKeyCommand::CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr t
 
 void CutKeyCommand::undo()
 {
-	m_isExpanded = m_target->getIsExpanded();
+	m_isExpanded = m_target->isExpanded();
 	m_sourceParentModel->insertRow(m_sourceIndex, m_source);
 	m_target->getChildren()->removeRow(m_targetIndex);
 

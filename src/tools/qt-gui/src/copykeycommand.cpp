@@ -5,7 +5,7 @@ CopyKeyCommand::CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr
 	: QUndoCommand(parent)
 	, m_source(new ConfigNode(*source))
 	, m_target(target)
-	, m_isExpanded(false)
+	, m_isExpanded(target->isExpanded())
 	, m_index(-1)
 {
 	setText(type);
@@ -16,10 +16,10 @@ CopyKeyCommand::CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr
 
 void CopyKeyCommand::undo()
 {
-	m_isExpanded = m_target->getIsExpanded();
+	m_isExpanded = m_target->isExpanded();
 	m_target->getChildren()->removeRow(m_index);
 
-	if (m_target->getIsExpanded() && m_target->childrenHaveNoChildren())
+	if (m_target->isExpanded() && m_target->childrenHaveNoChildren())
 		m_target->setIsExpanded(false);
 }
 

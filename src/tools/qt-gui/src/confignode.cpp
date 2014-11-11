@@ -32,7 +32,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_children(new TreeViewModel())
 	, m_metaData(new TreeViewModel())
 	, m_parentModel(new TreeViewModel())
-	, m_isExpanded(false)
+	, m_isExpanded(other.m_isExpanded)
 {
 
 	foreach(ConfigNodePtr node, other.m_children->model())
@@ -215,7 +215,7 @@ void ConfigNode::clear()
 		m_children->removeRow(m_children->getIndexByName(node->getName()));
 	}
 }
-bool ConfigNode::getIsExpanded() const
+bool ConfigNode::isExpanded() const
 {
 	return m_isExpanded;
 }

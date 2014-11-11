@@ -107,7 +107,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 	}
 
 	case IsExpandedRole:
-		return QVariant::fromValue(node->getIsExpanded());
+		return QVariant::fromValue(node->isExpanded());
 
 	default:
 		emit showMessage(tr("Error"), tr("Unknown role: %1").arg(role), "", "TreeViewModel::data", "c");
@@ -399,7 +399,6 @@ void TreeViewModel::populateModel()
 	while (m_keySet.next())
 	{
 		QString currentKey = QString::fromStdString(m_keySet.current().getName());
-		//        qDebug() << "current: " << currentKey;
 		QStringList keys = currentKey.split("/");
 		QString root = keys.takeFirst();
 

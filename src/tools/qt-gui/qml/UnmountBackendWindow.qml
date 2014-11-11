@@ -70,8 +70,12 @@ BasicWindow {
 						mountedBackendsView.currentIndex = -1
 
 				}
+
+				externTreeModel.refresh()
 			}
+
 		}
+
 	}
 	cancelButton.visible: false
 	okButton.text: qsTr("Close")
