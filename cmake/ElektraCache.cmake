@@ -5,8 +5,11 @@
 #
 #
 # If you add something here, make sure to also add it in
-# src/include/kdbversion.h.in
+# src/plugins/constants/
 
+include(LibAddMacros)
+
+remember_for_removal(PLUGINS TO_REMOVE_PLUGINS)
 
 #
 # the default list of plugins
@@ -54,6 +57,7 @@ set (PLUGINS_LIST_NODEP
 	type
 	constants
 	noresolver
+	wresolver
 	ini
 	)
 
@@ -72,7 +76,6 @@ set (PLUGINS_LIST_POSIX
 	timeofday
 	simpleini
 	line
-	resolver_c_b_b  # needed for tests
 	validation
 	regexstore
 	)
@@ -89,6 +92,18 @@ if (PLUGINS MATCHES "NODEP")
 	set (PLUGINS_FORCE FORCE)
 endif ()
 
+#
+# some are handy for tests,
+# other are for standard-compliance
+#
+set (PLUGINS_LIST_RESOLVER
+	resolver_fm_b_b
+	resolver_fm_hb_b
+	resolver_fm_hp_b
+	resolver_fm_ub_x
+	resolver_fm_xb_x
+	resolver_fm_xp_x
+	)
 
 #
 # plugins with dependencies
@@ -110,6 +125,7 @@ if (PLUGINS MATCHES "ALL")
 		${PLUGINS_LIST_COMPILE}
 		${PLUGINS_LIST_NODEP}
 		${PLUGINS_LIST_POSIX}
+		${PLUGINS_LIST_RESOLVER}
 		${PLUGINS_LIST_DEP}
 		)
 	set (PLUGINS_FORCE FORCE)
@@ -131,7 +147,7 @@ set (PLUGINS
 	${PLUGINS_FORCE}
 	)
 
-list(REMOVE_DUPLICATES PLUGINS)
+removal(PLUGINS TO_REMOVE_PLUGINS)
 set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
 
 
@@ -146,6 +162,8 @@ set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
 #
 # set BINDINGS cache variable
 #
+
+remember_for_removal(BINDINGS TO_REMOVE_BINDINGS)
 
 set (BINDINGS_LIST_DEFAULT cpp)
 
@@ -184,10 +202,8 @@ set (BINDINGS
 	${BINDINGS_FORCE}
 	)
 
-
-list(REMOVE_DUPLICATES BINDINGS)
+removal(BINDINGS TO_REMOVE_BINDINGS)
 set(BINDINGS ${BINDINGS} CACHE STRING ${BINDINGS_DOC} FORCE)
-
 
 
 
@@ -200,6 +216,9 @@ set(BINDINGS ${BINDINGS} CACHE STRING ${BINDINGS_DOC} FORCE)
 #
 # set TOOLS cache variable
 #
+
+remember_for_removal(TOOLS TO_REMOVE_TOOLS)
+
 set (TOOLS_LIST_DEFAULT kdb)
 
 if (TOOLS MATCHES "DEFAULT")
@@ -215,6 +234,7 @@ endif ()
 if (TOOLS MATCHES "ALL")
 	set (TOOLS_LIST
 		gen
+		race
 		qt-gui
 		)
 	set (TOOLS_FORCE FORCE)
@@ -229,6 +249,8 @@ set (TOOLS
 	${TOOLS_FORCE}
 	)
 
+removal(TOOLS TO_REMOVE_TOOLS)
+set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
 
 
 
@@ -240,7 +262,6 @@ set (TOOLS
 # Runtime pathes for KDB
 #
 
-# May be changed to /etc/config when XDG will be implemented
 set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
 		"The path to the system key database."
 		)
@@ -249,8 +270,7 @@ set (KDB_DB_HOME "/home" CACHE PATH
 		"The compiled-in fallback path to users home directories."
 		)
 
-# May be changed to .config when XDG will be implemented
-set (KDB_DB_USER ".kdb" CACHE PATH
+set (KDB_DB_USER ".config" CACHE PATH
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
 
@@ -258,13 +278,22 @@ set (KDB_DB_FILE "default.ecf" CACHE PATH
 		"This configuration file will be used initially (for bootstrapping)."
 		)
 
-set (KDB_DEFAULT_STORAGE "dump" CACHE PATH
+set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
 	"This storage plugin will be used initially (for bootstrapping).")
 
 
-set (KDB_DEFAULT_RESOLVER "resolver" CACHE PATH
+set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
 	"This resolver plugin will be used initially (for bootstrapping).")
 
+list (FIND PLUGINS ${KDB_DEFAULT_STORAGE} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
+endif()
+
+list (FIND PLUGINS ${KDB_DEFAULT_RESOLVER} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
+endif()
 
 
 #

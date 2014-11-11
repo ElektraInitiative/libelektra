@@ -38,7 +38,7 @@ TEST_F(NewKeyStrategyTest, AddEqualsKeyMerge)
 	task.ours.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);
-	result.addConflict (conflictKey, ADD, SAME);
+	result.addConflict (conflictKey, CONFLICT_ADD, CONFLICT_SAME);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);
@@ -55,7 +55,7 @@ TEST_F(NewKeyStrategyTest, EqualsAddKeyMerge)
 	task.theirs.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);
-	result.addConflict (conflictKey, SAME, ADD);
+	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_ADD);
 	conflictKey = result.getConflictSet ().at (0);
 
 	strategy.resolveConflict (task, conflictKey, result);

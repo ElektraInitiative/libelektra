@@ -36,8 +36,8 @@ void NewKeyStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, Me
 	// the automergestrategy could be split up into several smaller strategies
 	switch (ourOperation)
 	{
-	case SAME:
-		if (theirOperation == ADD)
+	case CONFLICT_SAME:
+		if (theirOperation == CONFLICT_ADD)
 		{
 			Key source = task.theirs.lookup(theirLookup);
 			conflictKey.setString(source.getString());
@@ -45,8 +45,8 @@ void NewKeyStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, Me
 			result.addMergeKey(conflictKey);
 		}
 		break;
-	case ADD:
-		if (theirOperation == SAME)
+	case CONFLICT_ADD:
+		if (theirOperation == CONFLICT_SAME)
 		{
 			Key source = task.ours.lookup(ourLookup);
 			conflictKey.setString(source.getString());

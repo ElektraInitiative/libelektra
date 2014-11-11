@@ -44,7 +44,11 @@ If version numbers are correct in
 - CMakeLists.txt
 
 Rebuild cleanly, run all tests and also check for memleaks:
-  cd ~build && ~e/scripts/configure-debian ~e && make -j20 && make run_all && make run_memcheck
+  cd ~build && ~e/scripts/configure-debian-wheezy && make -j20 && make run_all && make run_memcheck
+
+Check if there are really >=76 or >=54 tests
+
+Check if [doc/todo/API] is fulfilled
 
 
 = Preperation =
@@ -52,11 +56,12 @@ Rebuild cleanly, run all tests and also check for memleaks:
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.8.8
+ export VERSION=0.8.9
 
-Now lets merge that to the release branch:
- git-checkout release
- git-merge --no-ff master -m "Merge for release $VERSION"
+
+== Tag the version ==
+
+ git tag --sign -f $VERSION
 
 
 == Prepare Source Package ==
@@ -66,7 +71,7 @@ Build tar.gz and tag version and make hashsum:
 
 Unpack + compile (with all available plugins) + test those sources:
  tar xvzf elektra-$VERSION.tar.gz && mkdir build
- cd ~build/build && ~e/scripts/configure-debian ../elektra-$VERSION && make -j 20 && make run_all && make run_memcheck
+ cd ~build/build && ~e/scripts/configure-debian-wheezy ../elektra-$VERSION && make -j 20 && make run_all && make run_memcheck
 
 Now copy the packages to ftp (stay in same folder):
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
@@ -79,7 +84,7 @@ export DVERSION=$VERSION-1
 
 Build deb:
  cd ~e && git-checkout debian
- git-merge --no-ff release -m "Merge for debian release $DVERSION"
+ git-merge --no-ff master -m "Merge for debian release $DVERSION"
 
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
@@ -100,10 +105,11 @@ Run some basic commands, at least:
 
 Run local tests:
  kdb run_all
+ KDB=kdb kdb run_all
+ KDB=kdb-static kdb run_all
 
 Install libelektra-test of the previous version and run again:
-(TODO: disable version check + avoid strcmp but use succeed_if_same_string)
- kdb run_tests
+ CHECK_VERSION=NO kdb run_tests
 
 
 == Test external tools ==
@@ -114,6 +120,22 @@ Check if tools based on elektra still do:
 
 Run unit-tests in-source again (because some use installed Elektra):
  make run_all
+
+
+== Test external test suites ==
+
+#https://github.com/oyranos-cms/oyranos/blob/master/src/tests/test2.cpp#L185
+#https://github.com/oyranos-cms/oyranos/blob/master/src/liboyranos_config/oyranos_elektra.c#L195
+
+git clone git@github.com:oyranos-cms/oyranos.git
+cd oyranos
+mkdir build
+cd build
+cmake ..
+make
+make test2 # or make test-2 for the most of the tests
+src/tests/test2 Elektra
+
 
 == Documentation ==
 
@@ -135,7 +157,7 @@ Symlink current to latest version and add everything:
 
 == Commit source package ==
 
-Commit elektra-ftp to github:
+Commit elektra-ftp:
  cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz && git-add releases/elektra-$VERSION.tar.gz.hashsum && git-commit -a -m "Release $VERSION"
 
 
@@ -144,7 +166,7 @@ Commit elektra-ftp to github:
 Now we know that everything worked well:
 
 Now push release branch with tags to github:
- cd ~e && git-pull && git-push && git-push --tags
+ cd ~e && git-push && git-push --tags
 
 Push elektra-ftp:
  cd ~elektra-ftp && git-push

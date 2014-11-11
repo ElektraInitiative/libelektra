@@ -1,5 +1,9 @@
 #include <cmdline.hpp>
 
+#include <kdb.hpp>
+#include <keysetio.hpp>
+#include <kdbconfig.h>
+
 #include <iostream>
 #include <vector>
 #include <cstdio>
@@ -29,11 +33,17 @@ Cmdline::Cmdline (int argc,
 	noNewline(),
 	test(),
 	recursive(),
-	resolver("resolver"),
+	resolver(KDB_DEFAULT_RESOLVER),
 	strategy("preserve"),
 	verbose(),
 	version(),
 	withoutElektra(),
+	null(),
+	first(true),
+	second(true),
+	third(true),
+	format("dump"),
+	plugins("sync"),
 
 	executable(),
 	commandName()
@@ -172,7 +182,51 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-E --without-elektra     omit system/elektra directory\n";
 	}
+	if (acceptedOptions.find('0')!=string::npos)
+	{
+		option o = {"null", no_argument, 0, '0'};
+		long_options.push_back(o);
+		helpText += "-0 --null                use binary 0 termination\n";
+	}
+	if (acceptedOptions.find('1')!=string::npos)
+	{
+		option o = {"first", no_argument, 0, '1'};
+		long_options.push_back(o);
+		helpText += "-1 --first               suppress first column\n";
+	}
+	if (acceptedOptions.find('2')!=string::npos)
+	{
+		option o = {"second", no_argument, 0, '2'};
+		long_options.push_back(o);
+		helpText += "-2 --second              suppress second column\n";
+	}
+	if (acceptedOptions.find('3')!=string::npos)
+	{
+		option o = {"third", no_argument, 0, '3'};
+		long_options.push_back(o);
+		helpText += "-3 --third               suppress third column\n";
+	}
 
+	{
+		using namespace kdb;
+		/*XXX: Step 4: use default from KDB, if available.*/
+		std::string dirname = "/sw/kdb/current/";
+		KDB kdb;
+		KeySet conf;
+		kdb.get(conf, std::string("user")+dirname);
+		kdb.get(conf, std::string("system")+dirname);
+
+		Key k;
+
+		k = conf.lookup(dirname+"resolver");
+		if (k) resolver = k.get<string>();
+
+		k = conf.lookup(dirname+"format");
+		if (k) format = k.get<string>();
+
+		k = conf.lookup(dirname+"plugins");
+		if (k) plugins = k.get<string>();
+	}
 
 	option o = {0, 0, 0, 0};
 	long_options.push_back(o);
@@ -186,7 +240,7 @@ Cmdline::Cmdline (int argc,
 	{
 		switch (opt)
 		{
-		/*XXX: Step 4: and now process the option.*/
+		/*XXX: Step 5: and now process the option.*/
 		case 'd': debug = true; break;
 		case 'f': force = true; break;
 		case 'h': humanReadable = true; break;
@@ -201,6 +255,10 @@ Cmdline::Cmdline (int argc,
 		case 'v': verbose = true; break;
 		case 'V': version = true; break;
 		case 'E': withoutElektra= true; break;
+		case '0': null= true; break;
+		case '1': first= false; break;
+		case '2': second= false; break;
+		case '3': third= false; break;
 
 		default: invalidOpt = true; break;
 		}

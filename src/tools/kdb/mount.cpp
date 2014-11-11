@@ -33,15 +33,35 @@ MountCommand::MountCommand()
 /**
  * @brief Output what currently is mounted
  */
-void MountCommand::outputMtab()
+void MountCommand::outputMtab(Cmdline const& cl)
 {
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo(mountConf);
+	bool all = cl.first && cl.second && cl.third;
+	char delim = '\n';
+	if (cl.null) delim = '\0';
 
 	for (Backends::BackendInfoVector::const_iterator it=mtab.begin();
 			it!=mtab.end(); ++it)
 	{
-		std::cout << it->path << " on " << it->mountpoint
-			  << " with name " << it->name << std::endl;
+		if (cl.first)
+		{
+			std::cout << it->path;
+			if (all) std::cout << " on ";
+			else std::cout << delim << std::flush;
+		}
+
+		if (cl.second)
+		{
+			std::cout << it->mountpoint;
+			if (all) std::cout << " with name ";
+			else std::cout << delim << std::flush;
+		}
+
+		if (cl.third)
+		{
+			std::cout << it->name;
+			std::cout << delim << std::flush;
+		}
 	}
 }
 
@@ -102,6 +122,17 @@ void MountCommand::buildBackend(Cmdline const& cl)
 			KEY_VALUE, path.c_str(),
 			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
 			KEY_END));
+
+	istringstream sstream(cl.plugins);
+	std::string plugin;
+	while (std::getline (sstream, plugin, ' '))
+	{
+		if (cl.debug)
+		{
+			cout << "Trying to add default plugin " << plugin << endl;
+		}
+		backend.addPlugin (plugin);
+	}
 
 
 	if (cl.interactive)
@@ -268,12 +299,12 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
  */
 int MountCommand::execute(Cmdline const& cl)
 {
-	readMountConf();
+	readMountConf(cl);
 
 	if (!cl.interactive && cl.arguments.empty())
 	{
 		// no interactive mode, so lets output the mtab
-		outputMtab();
+		outputMtab(cl);
 		return 0;
 	}
 

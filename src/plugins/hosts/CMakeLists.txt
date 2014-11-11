@@ -6,4 +6,6 @@ add_plugin(hosts
 		hosts.c
 	)
 
+install(DIRECTORY hosts DESTINATION ${TARGET_TEST_DATA_FOLDER})
+
 add_plugintest(hosts)

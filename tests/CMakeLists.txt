@@ -49,6 +49,5 @@ add_subdirectory (cframework)
 add_subdirectory (shell)
 add_subdirectory (abi)
 add_subdirectory (ctest)
-add_subdirectory (parallel)
 
 include_directories ("${PROJECT_SOURCE_DIR}/tests")

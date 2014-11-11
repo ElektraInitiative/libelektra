@@ -56,7 +56,7 @@ TEST_F(ThreeWayMergeTest, DeleteModifyConflict)
 	EXPECT_TRUE(result.hasConflicts()) << "No conflict detected although conflicts should exist";
 	KeySet conflicts = result.getConflictSet ();
 	ASSERT_EQ(1, conflicts.size())<< "Wrong number of conflicts";
-	testConflictMeta (conflicts.at (0), DELETE, MODIFY);
+	testConflictMeta (conflicts.at (0), CONFLICT_DELETE, CONFLICT_MODIFY);
 	KeySet merged = result.getMergedKeys ();
 	EXPECT_EQ(4, merged.size ());
 	compareAllExceptKey1 (merged);
@@ -72,7 +72,7 @@ TEST_F(ThreeWayMergeTest, ModifyDeleteConflict)
 
 	KeySet conflicts = result.getConflictSet ();
 	EXPECT_EQ(1, conflicts.size()) << "Wrong number of conflicts";
-	testConflictMeta (conflicts.at (0), MODIFY, DELETE);
+	testConflictMeta (conflicts.at (0), CONFLICT_MODIFY, CONFLICT_DELETE);
 
 	KeySet merged = result.getMergedKeys ();
 	EXPECT_EQ(4, merged.size ());
@@ -89,7 +89,7 @@ TEST_F(ThreeWayMergeTest, SameModifyConflict)
 
 	KeySet conflicts = result.getConflictSet ();
 	EXPECT_EQ(1, conflicts.size ());
-	testConflictMeta (conflicts.at (0), MODIFY, MODIFY);
+	testConflictMeta (conflicts.at (0), CONFLICT_MODIFY, CONFLICT_MODIFY);
 
 	KeySet merged = result.getMergedKeys ();
 
@@ -124,7 +124,7 @@ TEST_F(ThreeWayMergeTest, SameAddedDifferentValueConflict)
 
 	KeySet conflicts = result.getConflictSet ();
 	EXPECT_EQ(1, conflicts.size ());
-	testConflictMeta (conflicts.at (0), ADD, ADD);
+	testConflictMeta (conflicts.at (0), CONFLICT_ADD, CONFLICT_ADD);
 
 	KeySet merged = result.getMergedKeys ();
 
@@ -143,7 +143,7 @@ TEST_F(ThreeWayMergeTest, SameMetaKeyModifyConflict)
 	ASSERT_TRUE (result.hasConflicts())<< "No conflict detected although conflicts should exist";
 	KeySet conflicts = result.getConflictSet ();
 	EXPECT_EQ(1, conflicts.size ());
-	testConflictMeta (conflicts.at (0), META, META);
+	testConflictMeta (conflicts.at (0), CONFLICT_META, CONFLICT_META);
 	KeySet merged = result.getMergedKeys ();
 	EXPECT_EQ(4, merged.size ());
 	compareAllExceptKey1 (merged);

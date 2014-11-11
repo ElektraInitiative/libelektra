@@ -28,13 +28,13 @@
 #ifndef PLUGIN_RESOLVER_H
 #define PLUGIN_RESOLVER_H
 
+#define _GNU_SOURCE // needed for recursive mutex
+
 #include <sys/stat.h>
 
 #include <kdbconfig.h>
 #include <kdbplugin.h>
 #include <kdberrors.h>
-
-#include "lock.h"
 
 #define ERROR_SIZE 1024
 
@@ -44,7 +44,7 @@ struct _resolverHandle
 {
 	int fd;       ///< Descriptor to the locking file
 	struct timespec mtime; ///< Previous timestamp of the file
-	mode_t mode;  ///< The mode to set
+	mode_t mode;  ///< The mode to set (from previous file)
 
 	char *dirname; ///< directory where real+temp file is
 	char *filename;///< the full path to the configuration file

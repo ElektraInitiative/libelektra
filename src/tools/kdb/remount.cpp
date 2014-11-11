@@ -81,7 +81,7 @@ int RemountCommand::execute(Cmdline const & cl)
 {
 	if (cl.arguments.size() != 3) throw invalid_argument("3 argument required");
 
-	readMountConf();
+	readMountConf(cl);
 	getExistingMountpoint(cl);
 	fixRootKey(cl);
 	getName(cl);

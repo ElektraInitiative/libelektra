@@ -15,7 +15,7 @@ To build pdf documentation you need pdflatex with
 For the debian package, please refer to debian/control (in the debian
 branch).
 
-For the plugins, please refer to the contract.h of the respective
+For the plugins, please refer to the README.md of the respective
 plugin.
 
 
@@ -23,7 +23,7 @@ plugin.
 ## PREPARATION ##
 
 Elektra is using cmake.
-Tested are cmake version 2.6-patch 0 and version 2.8.2.
+Tested are cmake version 2.8.9 and version 3.0.2.
 
 To configure Elektra graphically (with curses) run (.. belongs to command):
 
@@ -43,6 +43,8 @@ E.g.:
 
 	cmake -DPLUGINS="dump;resolver;yajl" ..
 
+Some scripts in the folder of the same name may help you running cmake.
+
 
 ### COMPILERS ###
 
@@ -55,12 +57,15 @@ Additional gcc 4.6 armhf is tested regularly.
 
 |   Compiler        |         Version             |      Target       |
 |-------------------|-----------------------------|-------------------|
+|      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      i386         |
 |      gcc          | gcc (Debian 4.7.2-5) 4.7.2  |      amd64        |
+|      gcc          | gcc 4.8                     |      amd64        |
+|      gcc          | gcc 4.9                     |      amd64        |
 |      gcc          | (Debian 4.4.5-8) 4.4.5      |      amd64        |
 |      gcc          | (Debian 4.4.5-8) 4.3        |      amd64        |
 |      gcc          | 4.6                         |      armhf        |
-|      gcc          | (Debian 4.4.5-8) 4.4.5      |      i386         |
-|     clang         | version 1.1 (Debian 2.7-3)  |x86_64-pc-linux-gnu|
+|      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
+|      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 
 
 To change the compiler, use  
@@ -76,20 +81,82 @@ for example to use gcc-4.3
 ### OPTIONS ###
 
 #### PLUGINS ####
+
 Because the core of elektra is minimal, plugins are needed to
 actually read and write to configuration files (storage plugins),
-commit the changes (resolver plugin) and also do many other
+commit the changes (resolver plugin, also takes care about how
+the configuration files are named) and also do many other
 tasks related to configuration.
+
 To add all plugins, you can use  
 
-		-DPLUGINS=ALL
+	-DPLUGINS=ALL
+
 To add all plugins not having additional dependencies
 (they need only POSIX), you can use  
-	
-		-DPLUGINS=NODEP
+
+	-DPLUGINS=NODEP
+
 To manually set the default (same as not setting PLUGINS), you can use  
 
-		-DPLUGINS=DEFAULT
+	-DPLUGINS=DEFAULT
+
+This only states the list of the plugins are the default list and does
+not mean that a different default is used after Elektra was installed.
+For this endeavour you need to change:
+
+	-DKDB_DEFAULT_RESOLVER=resolver
+
+and
+
+	-DKDB_DEFAULT_STORAGE=dump
+
+Alternatively, you can pass the list of plugins you want, e.g.:
+
+	-DPLUGINS="resolver;sync;dump"
+
+Some plugins are compile-time configureable. Then you can choose which
+features are compiled in or out. This is especially important in the
+bootstrapping phase, because then only the compiled in configuration
+applies. To compile-time-configure a plugin, you just pass a underscore
+(_) and flags after the name of the plugin.
+
+Note that the base-plugin itself need to be part of PLUGINS, so that the
+variants will work.
+
+The resolver even distinguish between 3 different kind of flags:
+
+	-DPLUGINS="resolver_baseflags_userflags_systemflags"
+
+Following baseflags are available:
+
+- 'c' for debugging conflicts
+- 'l' for enabling file locking
+- 'm' for enabling mutex locking
+
+
+The user flags are (the order matters!):
+
+- 'p' use passwd/ldap to lookup home directory using getpwuid_r
+- 'h' use the environment variable HOME
+- 'u' use the environment variable USER
+- 'b' use the built-in default CMAKE variable KDB_DB_HOME
+
+The system flags are (the order matters!):
+
+- if a path that begins with / is chosen the system flags are irrelevant
+  and the path is taken as-is.
+- 'x' use the environment variable XDG_CONFIG_DIRS
+  (: are interpreted as part of filename, no searching is done!)
+  This option is not recommended (unless for testing), because it
+  allows users to fake system configuration.
+- 'b' use the built-in default CMAKE variable KDB_DB_SYSTEM
+
+
+E.g. one may use:
+
+	-DPLUGINS="resolver;resolver_lm_uhpb_b"
+
 
 #### CMAKE_BUILD_TYPE  ####
 Debug, Release or RelWithDebInfo
@@ -100,9 +167,6 @@ http://www.cmake.org/Wiki/CMake_Useful_Variables
 Only needed by elektra developers.
 Make the library to output some or a lot of things.
 It is not recommended to use these options.
-
-#### KDB_DB_SYSTEM ####
-is the path where the system configuration is searched at runtime
 
 #### BUILD_DOCUMENTATION ####
 build documentation with doxygen the kdb tool does only have the integrated docu at the moment
@@ -159,7 +223,7 @@ To build the source use:
     make
 
 You can pass:
- -j for parallel builds (use nr of CPUs+1)
+ -j for parallel builds
  VERBOSE=1 to see the invocations of the compiler
 
 

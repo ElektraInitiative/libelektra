@@ -1,0 +1,7 @@
+#!/bin/sh
+
+for file in `find ~/.kde/share/config -name '*rc' -type f`
+do
+	f=`basename $file rc`
+	kdb mount $file system/user-kde-config/$f ini
+done

@@ -24,13 +24,14 @@ inline std::ostream & printError(std::ostream & os, kdb::Key const & error)
 			return os;
 		}
 
-		error.getMeta<std::string>("error");
 		os << "Error (#" << error.getMeta<std::string>("error/number") << ") occurred!" << std::endl;
 		os << "Description: " << error.getMeta<std::string>("error/description") << std::endl;
 		os << "Ingroup: " << error.getMeta<std::string>("error/ingroup") << std::endl;
 		os << "Module: " << error.getMeta<std::string>("error/module") << std::endl;
 		os << "At: " << error.getMeta<std::string>("error/file") << ":" << error.getMeta<std::string>("error/line") << std::endl;
 		os << "Reason: " << error.getMeta<std::string>("error/reason") << std::endl;
+		os << "Mountpoint: " << error.getMeta<std::string>("error/mountpoint") << std::endl;
+		os << "Configfile: " << error.getMeta<std::string>("error/configfile") << std::endl;
 	} catch (kdb::KeyTypeConversion const& e)
 	{
 		os << "Error meta data is not set correctly by a plugin: " << e.what() << std::endl;
@@ -70,6 +71,8 @@ inline std::ostream & printWarnings(std::ostream & os, kdb::Key const & error)
 			os << "\tAt: " << error.getMeta<std::string>(name.str() + "/file") << ":"
 				<< error.getMeta<std::string>(name.str() + "/line") << std::endl;
 			os << "\tReason: " << error.getMeta<std::string>(name.str() + "/reason") << std::endl;
+			os << "\tMountpoint: " << error.getMeta<std::string>(name.str() + "/mountpoint") << std::endl;
+			os << "\tConfigfile: " << error.getMeta<std::string>(name.str() + "/configfile") << std::endl;
 		}
 
 	} catch (kdb::KeyTypeConversion const& e)

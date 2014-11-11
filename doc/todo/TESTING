@@ -3,7 +3,16 @@
 need defined set of tests which only use tests.h (and not internal,..)
 deploy them correctly and run old tests with new elektra
 
+symbols:
+	check exported symbols
+	use symbol table
 
+
+make list of all symbols
+	exported symbols
+	reduce it hard
+	symbole, only export (sonst static)
+	Version info 4.0
 
 == integration tests ==
 
@@ -13,6 +22,9 @@ kdb convert
 converting (any to any storage plugin)
 
 locales
+
+all commandline parameters
+	compatibility tests
 
 == LEVELS ==
 

@@ -45,6 +45,12 @@ int elektraModulesInit (KeySet *modules, Key * error ELEKTRA_UNUSED)
 	return 0;
 }
 
+#ifdef _WIN32
+const char elektraPluginPostfix [] = ".dll";
+#else
+const char elektraPluginPostfix [] = ".so";
+#endif
+
 elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *errorKey)
 {
 	Key *moduleKey = keyNew ("system/elektra/modules", KEY_END);
@@ -57,11 +63,14 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 		return module->symbol.f;
 	}
 
-	char *moduleName = elektraMalloc (sizeof("libelektra-") + strlen(name) + sizeof (".so") + 1);
+	char *moduleName = elektraMalloc (sizeof("libelektra-")
+			+ strlen(name)
+			+ sizeof (elektraPluginPostfix)
+			+ 1);
 
 	strcpy (moduleName, "libelektra-");
 	strcat (moduleName, name);
-	strcat (moduleName, ".so");
+	strcat (moduleName, elektraPluginPostfix);
 
 	Module module;
 	module.handle = dlopen(moduleName, RTLD_LAZY);

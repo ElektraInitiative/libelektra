@@ -31,10 +31,6 @@ rebase:
 
 jenkins:
 	build packages for dfc
-	code coverage
-
-
-doxygen 0.8.* upgrade on server->wheezy upgrade
 
 chroot
 	-c option which allows you to chroot before doing
@@ -58,52 +54,7 @@ use error value as exit (does it start with 0?)
 printError usw. Nicht von makro abhängig machen?
 
 
-kdb-shell:
-	use import/export
-	automatic tests for functionality
-	Examples in --help
-
-kdb tool:
-	request -f for rm, mv in system/elektra
-	converting of config files (automated tests)
-	test mount/unmount
-
-kdb resolve feature:
-	output file how it would resolve for key
-
-error specification plugin:
-	parse error specification content into keyset
-
-tcl:
-	parse output?
-	struct output!
-
-documentation of the c++ binding
-	with copydoc
-	include files
-	mark functions which are API/ABI stable (kdb.h)
-
-git-buildpackage
-	should work before release
-
-api:
-	add examples
-	add tutorial
-
-chroot:
-	add -c --chroot option for all plugins
-
-kdb tool:
-	allow verification of local key database by exported file
-	tset (typesafe set)
-
-
 == CONTRACTS ==
-
-add following configuration for storage plugins:
-	use_absolute
-	use_namespaces
-	use_owner
 
 if given use information inside file rather then parent key
 if storage plugin cannot represent this information, make it as information only
@@ -184,7 +135,26 @@ cmd for commandline options overrides
 
 
 
+== META DATA LIBRARY ==
+
+(maybe generate similar to gen/liberror)
+
+warning/error iterators
+
+comment iterators
+
+documentation:
+	comment -> meta data
+	split real meta data functions + kdbhelpers
+
+
+
 == DATA STRUCTURES ==
+
+ksLookup (      ADD_IF_MISSING|NEW_KEY):
+	add a key and return it, if it was not found
+	very common operation
+
 
 keyAdd (.. until rootKey)
 

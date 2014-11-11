@@ -46,14 +46,11 @@
 #include <dirent.h>
 #include <kdberrors.h>
 
-#ifdef ELEKTRA_CONFLICT_DEBUG
-//has stop signals at certain points to let you test
-//concurrent access from shell scripts
-#include <signal.h>
-#endif
+#ifdef ELEKTRA_LOCK_MUTEX
+#include <pthread.h>
 
-#ifdef _GNU_SOURCE
-#error "Something turned _GNU_SOURCE on, this breaks strerror_r!"
+// every resolver should use the same mutex
+extern pthread_mutex_t elektra_resolver_mutex;
 #endif
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -61,6 +58,7 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->fd = -1;
 	p->mtime.tv_sec = 0;
 	p->mtime.tv_nsec = 0;
+	p->mode = KDB_FILE_MODE;
 
 	p->filename = 0;
 	p->dirname= 0;
@@ -85,6 +83,159 @@ static void resolverClose (resolverHandle *p)
 }
 
 /**
+ * Locks file for exclusive read/write mode.
+ *
+ * This function will not block until all reader
+ * and writer have left the file.
+ * -> conflict with other cooperative process detected,
+ *    but we were later (and lost)
+ *
+ * @exception 27 set if locking failed, most likely a conflict
+ *
+ * @param fd is a valid filedescriptor
+ * @return 0 on success
+ * @return -1 on failure
+ * @ingroup backendhelper
+ */
+static int elektraLockFile (int fd ELEKTRA_UNUSED,
+		Key *parentKey ELEKTRA_UNUSED)
+{
+#ifdef ELEKTRA_LOCK_FILE
+	struct flock l;
+	l.l_type = F_WRLCK; /*Do exclusive Lock*/
+	l.l_start= 0;	/*Start at begin*/
+	l.l_whence = SEEK_SET;
+	l.l_len = 0;	/*Do it with whole file*/
+	int ret = fcntl (fd, F_SETLK, &l);
+
+	if (ret == -1)
+	{
+		if (errno == EAGAIN || errno == EACCES)
+		{
+			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other process writes to configuration indicated by file lock");
+		}
+		else
+		{
+			char buffer[ERROR_SIZE];
+
+			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed file lock with message: %s",
+				strerror_r(errno, buffer, ERROR_SIZE));
+		}
+		return -1;
+	}
+
+	return ret;
+#else
+	return 0;
+#endif
+}
+
+
+/**
+ * Unlocks file.
+ *
+ * @param fd is a valid filedescriptor
+ * @return 0 on success
+ * @return -1 on failure
+ * @ingroup backendhelper
+ */
+static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
+		Key *parentKey ELEKTRA_UNUSED)
+{
+#ifdef ELEKTRA_LOCK_FILE
+	struct flock l;
+	l.l_type = F_UNLCK; /*Give Lock away*/
+	l.l_start= 0;	/*Start at begin*/
+	l.l_whence = SEEK_SET;
+	l.l_len = 0;	/*Do it with whole file*/
+	int ret = fcntl (fd, F_SETLK, &l);
+
+	if (ret == -1)
+	{
+		char buffer[ERROR_SIZE];
+		ELEKTRA_ADD_WARNINGF(32, parentKey, "fcntl SETLK unlocking failed with message: %s", 
+			strerror_r(errno, buffer, ERROR_SIZE));
+	}
+
+	return ret;
+#else
+	return 0;
+#endif
+}
+
+/**
+ * @brief mutex lock for multithread-safety
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
+{
+#ifdef ELEKTRA_LOCK_MUTEX
+	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
+	if (ret != 0)
+	{
+		if (errno == EBUSY // for trylock
+			|| errno == EDEADLK) // for error checking mutex, if enabled
+		{
+			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other thread writes to configuration indicated by mutex lock");
+		}
+		else
+		{
+			char buffer[ERROR_SIZE];
+			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed mutex lock with message: %s",
+				strerror_r(errno, buffer, ERROR_SIZE));
+		}
+		return -1;
+	}
+	return 0;
+#else
+	return 0;
+#endif
+}
+
+/**
+ * @brief mutex unlock for multithread-safety
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
+{
+#ifdef ELEKTRA_LOCK_MUTEX
+	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
+	if (ret != 0)
+	{
+		char buffer[ERROR_SIZE];
+		ELEKTRA_ADD_WARNINGF(32, parentKey, "mutex unlock failed with message: %s",
+			strerror_r(errno, buffer, ERROR_SIZE));
+		return -1;
+	}
+	return 0;
+#else
+	return 0;
+#endif
+}
+
+
+
+/**
+ * @brief Close a file
+ *
+ * @param fd the filedescriptor to close
+ * @param parentKey the key to write warnings to
+ */
+static void elektraCloseFile(int fd, Key *parentKey)
+{
+	if (close (fd) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		ELEKTRA_ADD_WARNINGF(33, parentKey, "close failed with message: %s",
+			strerror_r(errno, buffer, ERROR_SIZE));
+	}
+}
+
+/**
  * @brief Add error text received from strerror_r
  *
  * @param errorText should have at least ERROR_SIZE bytes in reserve
@@ -102,34 +253,15 @@ static void elektraAddErrnoText(char *errorText)
 	}
 	else
 	{
-		int error_ret = strerror_r(errno, buffer, ERROR_SIZE-2);
-		if (error_ret == -1)
-		{
-			if (errno == EINVAL)
-			{
-				strcat (errorText, "Got no valid errno!");
-			}
-			else if (errno == ERANGE)
-			{
-				strcat (errorText, "Not enough space for error text in buffer!");
-			}
-			else
-			{
-				strcat (errorText, "strerror_r returned wrong error value!");
-			}
-		}
-		else
-		{
-			strcat (errorText, buffer);
-		}
+		strcat(errorText, strerror_r(errno, buffer, ERROR_SIZE-2));
 	}
 }
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	(Plugin *handle, Key *errorKey)
 {
-
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
+	if (ksLookupByName(resolverConfig, "/module", 0)) return 0;
 	const char *path = keyString(ksLookupByName(resolverConfig, "/path", 0));
 
 	if (!path)
@@ -149,7 +281,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve system key");
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 
@@ -160,7 +292,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		resolverClose(&p->system);
 		free (p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve user key");
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 	keyDel (testKey);
@@ -193,9 +325,6 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
-	// might be useless, will not harm
-	keySetString(parentKey, pk->filename);
-
 	Key *root = keyNew("system/elektra/modules/"
 			ELEKTRA_PLUGIN_NAME , KEY_END);
 
@@ -210,6 +339,8 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 	}
 	keyDel (root);
 
+	keySetString(parentKey, pk->filename);
+
 	int errnoSave = errno;
 	struct stat buf;
 
@@ -221,6 +352,11 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 		pk->mtime.tv_sec = 0; // no file, so no time
 		pk->mtime.tv_nsec = 0; // no file, so no time
 		return 0;
+	}
+	else
+	{
+		// successful, remember mode
+		pk->mode = buf.st_mode;
 	}
 
 	/* Check if update needed */
@@ -434,11 +570,6 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
  */
 static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 {
-#ifdef ELEKTRA_CONFLICT_DEBUG
-	// we are somewhere in the middle of work
-	kill(getpid(), SIGSTOP);
-#endif
-
 	pk->fd = open (pk->filename, O_RDWR | O_CREAT, KDB_FILE_MODE);
 	// we can silently ignore an error, because we will retry later
 	if (pk->fd == -1)
@@ -451,25 +582,50 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 		}
 	}
 
-	// now we have a file, so lock immediately
-	if (elektraLockFile(pk->fd, parentKey) == -1)
+	if (elektraLockMutex(parentKey) != 0)
 	{
 		elektraCloseFile(pk->fd, parentKey);
 		return -1;
 	}
 
-#ifdef ELEKTRA_CONFLICT_DEBUG
-	kill(getpid(), SIGSTOP);
-#endif
+	// now we have a file, so lock immediately
+	if (elektraLockFile(pk->fd, parentKey) == -1)
+	{
+		elektraCloseFile(pk->fd, parentKey);
+		elektraUnlockMutex(parentKey);
+		return -1;
+	}
 
 	if (elektraCheckConflict(pk, parentKey) == -1)
 	{
 		elektraUnlockFile(pk->fd, parentKey);
 		elektraCloseFile(pk->fd, parentKey);
+		elektraUnlockMutex(parentKey);
 		return -1;
 	}
 
 	return 0;
+}
+
+
+/* Update timestamp of old file to provoke conflicts in
+ * stalling processes that might still wait with the old
+ * filedescriptor */
+static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
+{
+
+	const struct timespec times[2] = {
+		pk->mtime,  // atime
+		pk->mtime}; // mtime
+
+	if (futimens(pk->fd, times) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNINGF(99, parentKey,
+			"Could not update time stamp of \"%s\", because %s",
+			pk->filename, buffer);
+	}
 }
 
 /**
@@ -507,16 +663,16 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
 	}
 
-	/* Update timestamp of old file to provoke conflicts in
-	 * stalling processes that might still wait with the old
-	 * filedescriptor */
-	const struct timespec times[2] = {
-		pk->mtime,  // atime
-		pk->mtime}; // mtime
-	futimens(pk->fd, times);
+	elektraUpdateFileTime(pk, parentKey);
+	if (buf.st_mode != pk->mode)
+	{
+		// change mode to what it was before
+		chmod(pk->filename, pk->mode);
+	}
 
 	elektraUnlockFile(pk->fd, parentKey);
 	elektraCloseFile(pk->fd, parentKey);
+	elektraUnlockMutex(parentKey);
 
 	DIR * dirp = opendir(pk->dirname);
 	// checking dirp not needed, fsync will have EBADF
@@ -525,7 +681,7 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(88, parentKey,
-			"Could not sync directory %s because %s",
+			"Could not sync directory \"%s\", because %s",
 			pk->dirname, buffer);
 	}
 	closedir(dirp);

@@ -12,6 +12,9 @@ macro (do_gi_lua_test source)
 			"LD_LIBRARY_PATH=${GELEKTRA_LIBRARY_DIR}"
 			"GI_TYPELIB_PATH=${GI_TYPELIB_DIR}"
 	)
+
+	set_property(TEST ${name} PROPERTY
+		LABELS memleak bindings)
 endmacro (do_gi_lua_test)
 
 install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
@@ -20,7 +23,7 @@ install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 # for the library. But that's better than nothing.
 find_package (Lua52)
 if (LUA52_FOUND)
-	message("-- Include Binding gi_lua")
+	message(STATUS "Include Binding gi_lua")
 
 	file (GLOB TESTS testgi_*.lua)
 	foreach (file ${TESTS})

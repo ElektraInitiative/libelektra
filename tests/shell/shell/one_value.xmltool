@@ -5,7 +5,6 @@
 	xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
 >
 <key name="user/tests/script"
-        uid="-1" gid="-1" mode="0664"
 	value="root">
 
      <comment><![CDATA[]]></comment>

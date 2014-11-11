@@ -6,31 +6,10 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.9 #
+# 0.8.10 #
 
-Compile under MINGW
-
-32-bit build agent! (for variable size problems)
-
-Debug+improve installation of gen
-2.6 python-cheetah? (exclude 2.6 in setuptools)
-Compiling /usr/lib/pymodules/python2.6/nested_support.py ...
-SyntaxError: ('invalid syntax',
-		('/usr/lib/pymodules/python2.6/nested_support.py', 199,
-		 18, '\t\t\t\tcwc.update({c})\n'))
-
-
-kdb run all + allow disable version check
-
-constants plugin+docu of new CMake variables
-
-fix types:
-	type checker should check like defined in schema
-	let json use same types (double, boolean, nothing for string)
-
-allow more key names
-	starting with /
-	meta keynames
+Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
+for other activities of the current release.
 
 ## powerful cascading ##
 
@@ -56,6 +35,7 @@ getRootKeys vs. fixed
 applications should only need to use:
 kdbGet("/path/to/my/application")
 ksLookup("/path/to/my/application/dir/key")
+	(and even the strings can be avoided by code generation)
 
 defaults are hardcoded (for system without /etc)
 	just for information in spec
@@ -77,3 +57,7 @@ full coverage of all plugins in end-to-end test
 
 rebase plugin
 xdg resolver
+
+fix types:
+	type checker should check like defined in schema
+	let json use same types (double, boolean, nothing for string)

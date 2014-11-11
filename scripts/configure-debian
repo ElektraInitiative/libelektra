@@ -25,4 +25,4 @@ fi
 
 cd $BUILD
 
-cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.4 -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.4dm.so -DPLUGINS=ALL -DTOOLS=ALL -DBINDINGS=ALL $SOURCE
+cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 -DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.4 -DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.4dm.so -DPLUGINS="ALL" -DTOOLS="ALL" -DBINDINGS="ALL;-swig_python3" $SOURCE

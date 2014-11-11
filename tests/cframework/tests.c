@@ -391,6 +391,12 @@ int output_warnings(Key *warningKey)
 		buffer[12] = '\0'; strncat(buffer, "/reason" , sizeof(buffer) -1);
 		keyGetMeta(warningKey, buffer);
 		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+		buffer[12] = '\0'; strncat(buffer, "/mountpoint" , sizeof(buffer) -1);
+		keyGetMeta(warningKey, buffer);
+		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+		buffer[12] = '\0'; strncat(buffer, "/configfile" , sizeof(buffer) -1);
+		keyGetMeta(warningKey, buffer);
+		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
 	}
 
 	return 0;
@@ -417,6 +423,8 @@ int output_error(Key *errorKey)
 	printf ("module: : %s\n", keyString(keyGetMeta(errorKey, "error/module")));
 	printf ("at: %s:%s\n", keyString(keyGetMeta(errorKey,"error/file")), keyString(keyGetMeta(errorKey, "error/line")));
 	printf ("reason: : %s\n", keyString(keyGetMeta(errorKey, "error/reason")));
+	printf ("mountpoint: : %s\n", keyString(keyGetMeta(errorKey, "error/mountpoint")));
+	printf ("configfile: : %s\n", keyString(keyGetMeta(errorKey, "error/configfile")));
 
 	return 0;
 }

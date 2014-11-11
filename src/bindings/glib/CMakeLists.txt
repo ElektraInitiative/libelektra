@@ -8,7 +8,7 @@ if (NOT GOBJECT_FOUND)
 	list_filter(BINDINGS REGEX)
 	remove_binding (glib "No gobject found using pkg-config, also remove gi bindings because they depend on it")
 else()
-	message("-- Include Binding glib")
+	message(STATUS "Include Binding glib")
 
 	file (GLOB GELEKTRA_HDR_FILES *.h)
 	file (GLOB GELEKTRA_SRC_FILES *.c)

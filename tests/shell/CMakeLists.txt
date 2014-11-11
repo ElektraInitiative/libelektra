@@ -53,6 +53,7 @@ function (add_scripttest testname)
 					set (KDB_COMMAND "kdb")
 				endif (BUILD_STATIC)
 			endif (BUILD_FULL)
+			set(RACE_COMMAND "kdb race")
 			set(INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}if [ -z \"$KDB\" ]; then KDB=${KDB_COMMAND}; fi")
 			configure_file(
 				"${filename}"
@@ -82,6 +83,7 @@ function (add_scripttest testname)
 			else()
 				message(SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 			endif ()
+			set(RACE_COMMAND "${CMAKE_BINARY_DIR}/bin/race")
 			set(INCLUDE_COMMON
 				"${INCLUDE_COMMON_FILE}KDB=${KDB_COMMAND}"
 				)

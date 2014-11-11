@@ -660,7 +660,7 @@ static void test_keyDir (void)
 
 	printf ("Test directory keys\n");
 
-	succeed_if (keyGetMode(key) == 0664, "new key not 0664 by default");
+	succeed_if (keyGetMode(key) == 0600, "new key not 0600 by default");
 	succeed_if (keyIsDir (key) == 0, "new key should not be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");
@@ -678,13 +678,7 @@ static void test_keyDir (void)
 
 		if (/*getuid() == keyGetUID (key) &&*/ (keyGetMode (key) & 0100))
 		{
-			succeed_if (keyIsDir (key) == 1, "should be directory because of executable and uid match");
-		} else if (/*getuid() != keyGetUID (key) && getgid() == keyGetGID (key) &&*/ (keyGetMode (key) & 0010))
-		{
-			succeed_if (keyIsDir (key) == 1, "should be directory because of executable and gid match");
-		} else if (/*getuid() != keyGetUID (key) && getgid() != keyGetGID (key) &&*/ (keyGetMode (key) & 0001))
-		{
-			succeed_if (keyIsDir (key) == 1, "should be directory because of executable and other match");
+			succeed_if (keyIsDir (key) == 1, "should be directory because of executable match");
 		} else {
 			succeed_if (keyIsDir (key) == 0, "should not be directory");
 		}
@@ -695,7 +689,7 @@ static void test_keyDir (void)
 	keyDel (key);
 
 	key = keyNew ("user", KEY_DIR, KEY_END);
-	succeed_if (keyGetMode(key) == 0775, "new key with KEY_DIR not 0775 by default");
+	succeed_if (keyGetMode(key) == 0700, "new key with KEY_DIR not 0700 by default");
 	succeed_if (keyIsDir (key) == 1, "new key with KEY_DIR should be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");

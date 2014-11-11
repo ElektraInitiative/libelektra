@@ -23,8 +23,12 @@ public:
 
 	virtual std::string getShortHelpText()
 	{
-		return "Do some basic checks on a plugin.\n"
-			"If no arguments are given checks on key database\n"
+		return "Do some basic checks on a plugin.";
+	}
+
+	virtual std::string getLongHelpText()
+	{
+		return  "If no arguments are given checks on key database\n"
 			"are done instead.\n"
 			"\n"
 			"Return values on kdb checking:\n"
@@ -44,11 +48,6 @@ public:
 			"\n"
 			"Please report any issues you found on http://www.libelektra.org\n"
 			"\n";
-	}
-
-	virtual std::string getLongHelpText()
-	{
-		return "";
 	}
 
 	virtual int execute (Cmdline const& cmdline);
