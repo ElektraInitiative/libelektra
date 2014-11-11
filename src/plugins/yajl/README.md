@@ -57,7 +57,7 @@ This plugin was specifically designed and tested for the
 to it.
 
 Mount the plugin:
-        kdb mount OpenICC_device_config_DB.json /org/freedesktop/openicc yajl rebase
+        kdb mount --resolver=resolver_xhp_x color/settings/OpenICC_device_config_DB.json /org/freedesktop/openicc yajl rename cut=/org/freedesktop/openicc
 
 And configure so that it has the correct prefix/postfix inside the file:
          kdb set system/elektra/mountpoints/_org_freedesktop_openicc/config/remove org/freedesktop/openicc
