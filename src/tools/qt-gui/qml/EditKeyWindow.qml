@@ -46,6 +46,10 @@ KeyWindow {
 		}
 
 		accessFromSearchResults = false
+		nameTextField.undo()
+		valueTextField.undo()
+		qmlMetaKeyModel.clear()
+		selectedNode = null
 	}
 
 }

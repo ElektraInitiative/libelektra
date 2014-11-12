@@ -9,16 +9,15 @@ DeleteKeyCommand::DeleteKeyCommand(const QString& type, TreeViewModel* model, in
 	setText(type);
 }
 
-DeleteKeyCommand::~DeleteKeyCommand()
-{
-}
-
 void DeleteKeyCommand::undo()
 {
 	m_model->insertRow(m_index, m_node);
+	m_model->refreshArrayNumbers();
+	m_model->refresh();
 }
 
 void DeleteKeyCommand::redo()
 {
 	m_model->removeRow(m_index);
+	m_model->refreshArrayNumbers();
 }

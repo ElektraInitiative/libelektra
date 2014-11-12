@@ -268,30 +268,23 @@ ApplicationWindow {
 
 	EditKeyWindow {
 		id: editKeyWindow
+
+		onVisibleChanged: {
+			if(visible === true){
+				if(nameTextField.text.charAt(0) === '#'){
+					editKeyWindow.title = qsTr("Edit Array Entry")
+					nameTextField.textColor = disabledPalette.text
+					nameTextField.readOnly = true
+					valueTextField.forceActiveFocus()
+				}
+			}
+		}
 		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
 		addButton.onClicked: {
 			//add visual item
 			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
 		}
 	}
-
-//	NewKeyWindow {
-//		id: newMetaArrayWindow
-
-//		valueLabel.visible: false
-//		valueTextField.visible: false
-//		title: qsTr("Create new Array Entry")
-//		nameLabel.text: qsTr("Array Name: ")
-//		addButton.text: qsTr("New Array Entry")
-
-//		nameReadOnly: true
-//		valuePlaceHolder: "Array Value"
-//		isArray: true
-//		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
-//		addButton.onClicked: {
-//			qmlMetaKeyModel.append({"metaName" : "#" + modelIndex, "metaValue" : ""})
-//		}
-//	}
 
 	NewKeyWindow {
 		id: newArrayWindow
@@ -301,8 +294,10 @@ ApplicationWindow {
 		nameTextField.textColor: disabledPalette.text
 
 		onVisibleChanged: {
-			if(visible === true)
-				nameTextField.text = externTreeModel.getCurrentArrayNo(treeView.currentNode.children)
+			if(visible === true){
+				nameTextField.text = treeView.currentNode.children.getCurrentArrayNo()
+				valueTextField.forceActiveFocus()
+			}
 		}
 
 		addButton.onClicked: {
@@ -487,18 +482,18 @@ ApplicationWindow {
 
 			if(undoManager.undoText === "deleteKey"){
 				undoManager.undo()
-				resetKeyAreaModel()
+//				resetKeyAreaModel()
 
-				if(keyAreaModel !== null)
-					keyAreaModel.refresh()
+//				if(keyAreaModel !== null)
+//					keyAreaModel.refresh()
 
-				externTreeModel.refresh()
+//				externTreeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteBranch"){
 				undoManager.undo()
-				if(keyAreaModel !== null)
-					keyAreaModel.refresh()
-				externTreeModel.refresh()
+//				if(keyAreaModel !== null)
+//					keyAreaModel.refresh()
+//				externTreeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
@@ -507,11 +502,11 @@ ApplicationWindow {
 			else if(undoManager.undoText === "copyKey"){
 				undoManager.undo()
 
-				if(keyAreaView.currentRow >= keyAreaModel.count()) {
-					metaAreaModel = null
-					keyAreaSelectedItem = null
-					keyAreaModel.refresh()
-				}
+//				if(keyAreaView.currentRow >= keyAreaModel.count()) {
+//					metaAreaModel = null
+//					keyAreaSelectedItem = null
+//					keyAreaModel.refresh()
+//				}
 			}
 			else if(undoManager.undoText === "copyBranch"){
 				undoManager.undo()
@@ -531,11 +526,11 @@ ApplicationWindow {
 			else if(undoManager.undoText === "newKey"){
 				undoManager.undo()
 				externTreeModel.refresh()
-				keyAreaView.selection.clear()
+//				keyAreaView.selection.clear()
 			}
 			else{
 				undoManager.undo()
-				keyAreaView.selection.clear()
+//				keyAreaView.selection.clear()
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
@@ -554,17 +549,17 @@ ApplicationWindow {
 
 			if(undoManager.redoText === "deleteKey"){
 				undoManager.redo()
-				metaAreaModel = null
-				externTreeModel.refresh()
+//				metaAreaModel = null
+//				externTreeModel.refresh()
 			}
 			else if(undoManager.redoText === "deleteBranch"){
 				undoManager.redo()
 
-				if(metaAreaModel !== null)
-					metaAreaModel = null
+//				if(metaAreaModel !== null)
+//					metaAreaModel = null
 
-				if(keyAreaSelectedItem !== null)
-					keyAreaSelectedItem = null
+//				if(keyAreaSelectedItem !== null)
+//					keyAreaSelectedItem = null
 
 				externTreeModel.refresh()
 
@@ -575,12 +570,12 @@ ApplicationWindow {
 			}
 			else if(undoManager.redoText === "copyKey"){
 				undoManager.redo()
-				keyAreaModel.refresh()
+//				keyAreaModel.refresh()
 			}
 			else if(undoManager.redoText === "copyBranch"){
 				undoManager.redo()
 				externTreeModel.refresh()
-				resetKeyAreaModel()
+//				resetKeyAreaModel()
 			}
 			else if(undoManager.redoText === "cutKey"){
 				undoManager.redo()
@@ -598,7 +593,7 @@ ApplicationWindow {
 				externTreeModel.refresh()
 			}
 			else{
-				undoManager.redo()
+//				undoManager.redo()
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}

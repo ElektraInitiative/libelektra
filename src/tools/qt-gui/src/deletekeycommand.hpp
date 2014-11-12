@@ -12,7 +12,6 @@ class DeleteKeyCommand : public QUndoCommand
 
 public:
 	explicit DeleteKeyCommand(const QString& type, TreeViewModel* model, int index, QUndoCommand* parent = 0);
-	~DeleteKeyCommand();
 
 	virtual void undo();
 	virtual void redo();

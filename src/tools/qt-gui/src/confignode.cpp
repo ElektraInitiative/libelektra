@@ -87,11 +87,11 @@ void ConfigNode::setName(const QString& name)
 {
 	m_name = name;
 
-	int idx = m_path.lastIndexOf("/");
+	int index = m_path.lastIndexOf("/");
 
-	if(idx != -1)
+	if(index != -1)
 	{
-		m_path.replace(idx, m_path.length() - idx,"/" + name);
+		m_path.replace(index, m_path.length() - index,"/" + name);
 	}
 
 	if(m_key){

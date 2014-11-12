@@ -18,6 +18,7 @@ KeyWindow {
 
 		nameTextField.text = ""
 		valueTextField.text = ""
+		externTreeModel.refresh()
 		qmlMetaKeyModel.clear()
 		nameTextField.focus = true
 	}

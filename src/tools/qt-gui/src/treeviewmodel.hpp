@@ -160,7 +160,7 @@ public:
 	 * @param format Specifies the file format of the exported file.
 	 * @param file The path on the harddisk where the exported file is written to.
 	 */
-	Q_INVOKABLE void            exportConfiguration(ConfigNodePtr node, QString format, QString file);
+	Q_INVOKABLE void            exportConfiguration(TreeViewModel* model, int index, QString format, QString file);
 
 	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QString& mergeStrategy);
 
@@ -168,11 +168,12 @@ public:
 	void                        collectCurrentKeySet();
 	void                        clearMetaModel();
 
-	Q_INVOKABLE QStringList     getMountedBackends();
+	Q_INVOKABLE QStringList     getMountedBackends() const;
 	Q_INVOKABLE void            unMountBackend(QString backendName);
 	Q_INVOKABLE void            refresh();
 	Q_INVOKABLE int             count() const;
-	Q_INVOKABLE QString			getCurrentArrayNo(TreeViewModel* model) const;
+	Q_INVOKABLE QString			getCurrentArrayNo() const;
+	void						refreshArrayNumbers();
 
 private:
 

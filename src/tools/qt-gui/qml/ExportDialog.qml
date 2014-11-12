@@ -7,6 +7,6 @@ FileDialog {
 	selectExisting: false
 
 	onAccepted: {
-		externTreeModel.exportConfiguration(treeView.currentNode.node, "dump", exportDialog.fileUrl)
+		externTreeModel.exportConfiguration(treeView.currentNode.parentModel, treeView.currentNode.index, "dump", exportDialog.fileUrl)
 	}
 }

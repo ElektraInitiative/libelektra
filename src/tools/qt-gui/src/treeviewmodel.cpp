@@ -290,9 +290,11 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	populateModel();
 }
 
-void TreeViewModel::exportConfiguration(ConfigNodePtr node, QString format, QString file)
+void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString format, QString file)
 {
 	collectCurrentKeySet();
+
+	ConfigNodePtr node = model->model().at(index);
 
 	try
 	{
@@ -612,7 +614,7 @@ void TreeViewModel::clearMetaModel()
 	endResetModel();
 }
 
-QStringList TreeViewModel::getMountedBackends()
+QStringList TreeViewModel::getMountedBackends() const
 {
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo(m_keySet);
 
@@ -661,11 +663,11 @@ int TreeViewModel::count() const
 	return m_model.count();
 }
 
-QString TreeViewModel::getCurrentArrayNo(TreeViewModel *model) const
+QString TreeViewModel::getCurrentArrayNo() const
 {
 	ConfigNodePtr max(NULL);
 
-	foreach(ConfigNodePtr node, model->model()){
+	foreach(ConfigNodePtr node, m_model){
 		if(node->getName().startsWith("#")){
 			max = node;
 		}
@@ -673,11 +675,36 @@ QString TreeViewModel::getCurrentArrayNo(TreeViewModel *model) const
 
 	if(max){
 		Key k = max->getKey().dup();
-		elektraArrayIncName(k.getKey());
+		ckdb::elektraArrayIncName(k.getKey());
 		return QString::fromStdString(k.getBaseName());
 	}
 
 	return "#0";
+}
+
+void TreeViewModel::refreshArrayNumbers()
+{
+	QList<ConfigNodePtr> arrayElements;
+
+	foreach(ConfigNodePtr node, m_model){
+		if(node->getName().startsWith("#")){
+			arrayElements.append(node);
+		}
+	}
+
+	if(!arrayElements.isEmpty()){
+
+		arrayElements.at(0)->setName("#0");
+
+		if(arrayElements.count() > 1){
+
+			for(int i = 1; i < arrayElements.count(); i++){
+				Key k = arrayElements.at(i - 1)->getKey().dup();
+				ckdb::elektraArrayIncName(k.getKey());
+				arrayElements.at(i)->setName(QString::fromStdString(k.getBaseName()));
+			}
+		}
+	}
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
