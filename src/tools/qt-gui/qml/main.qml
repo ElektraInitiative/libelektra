@@ -275,21 +275,39 @@ ApplicationWindow {
 		}
 	}
 
+//	NewKeyWindow {
+//		id: newMetaArrayWindow
+
+//		valueLabel.visible: false
+//		valueTextField.visible: false
+//		title: qsTr("Create new Array Entry")
+//		nameLabel.text: qsTr("Array Name: ")
+//		addButton.text: qsTr("New Array Entry")
+
+//		nameReadOnly: true
+//		valuePlaceHolder: "Array Value"
+//		isArray: true
+//		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
+//		addButton.onClicked: {
+//			qmlMetaKeyModel.append({"metaName" : "#" + modelIndex, "metaValue" : ""})
+//		}
+//	}
+
 	NewKeyWindow {
 		id: newArrayWindow
 
-		valueLabel.visible: false
-		valueTextField.visible: false
 		title: qsTr("Create new Array Entry")
-		nameLabel.text: qsTr("Array Name: ")
-		addButton.text: qsTr("New Array Entry")
+		nameTextField.readOnly: true
+		nameTextField.textColor: disabledPalette.text
 
-		nameReadOnly: true
-		valuePlaceHolder: "Array Value"
-		isArray: true
-		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
+		onVisibleChanged: {
+			if(visible === true)
+				nameTextField.text = externTreeModel.getCurrentArrayNo(treeView.currentNode.children)
+		}
+
 		addButton.onClicked: {
-			qmlMetaKeyModel.append({"metaName" : "#" + modelIndex, "metaValue" : ""})
+			//add visual item
+			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
 		}
 	}
 
@@ -413,7 +431,7 @@ ApplicationWindow {
 
 		iconSource: "icons/new-array.png"
 		text: qsTr("Array Entry...")
-		enabled: false//treeView.currentItem !== null
+		enabled: treeView.currentItem !== null
 		onTriggered: newArrayWindow.show()
 	}
 

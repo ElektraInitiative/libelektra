@@ -172,6 +172,7 @@ public:
 	Q_INVOKABLE void            unMountBackend(QString backendName);
 	Q_INVOKABLE void            refresh();
 	Q_INVOKABLE int             count() const;
+	Q_INVOKABLE QString			getCurrentArrayNo(TreeViewModel* model) const;
 
 private:
 

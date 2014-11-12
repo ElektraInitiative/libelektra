@@ -5,6 +5,7 @@
 #include <external.hpp>
 #include <toolexcept.hpp>
 #include <backends.hpp>
+#include <kdbprivate.h>
 
 using namespace std;
 using namespace kdb;
@@ -658,6 +659,25 @@ void TreeViewModel::refresh()
 int TreeViewModel::count() const
 {
 	return m_model.count();
+}
+
+QString TreeViewModel::getCurrentArrayNo(TreeViewModel *model) const
+{
+	ConfigNodePtr max(NULL);
+
+	foreach(ConfigNodePtr node, model->model()){
+		if(node->getName().startsWith("#")){
+			max = node;
+		}
+	}
+
+	if(max){
+		Key k = max->getKey().dup();
+		elektraArrayIncName(k.getKey());
+		return QString::fromStdString(k.getBaseName());
+	}
+
+	return "#0";
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
