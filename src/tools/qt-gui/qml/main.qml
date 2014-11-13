@@ -402,6 +402,12 @@ ApplicationWindow {
 		id: importFileDialog
 
 		title: qsTr("Select File")
+
+		onVisibleChanged: {
+			if(visible)
+				importFileDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins()
+		}
+
 		onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
 	}
 
@@ -466,7 +472,10 @@ ApplicationWindow {
 		iconSource: "icons/export.png"
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
-		onTriggered: exportDialog.open()
+		onTriggered: {
+			exportDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins()
+			exportDialog.open()
+		}
 	}
 
 	Action {
@@ -619,7 +628,6 @@ ApplicationWindow {
 		text: qsTr("Create Backend...")
 		tooltip: qsTr("Create Backend")
 		onTriggered: wizardLoader.show()
-		enabled: false
 	}
 
 	Action {

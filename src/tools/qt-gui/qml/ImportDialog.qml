@@ -31,7 +31,10 @@ BasicWindow {
 				Button {
 					text: "..."
 					implicitWidth: importTextField.height
-					onClicked: importFileDialog.open()
+					onClicked: {
+						importFileDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins()
+						importFileDialog.open()
+					}
 				}
 			}
 			GroupBox {
@@ -100,9 +103,15 @@ BasicWindow {
 		importTextField.text = ""
 		importDialog.close()
 	}
+
 	okButton.onClicked: {
 		if(importTextField.text !== ""){
-			undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, "dump", importTextField.text, group.current.command)
+			var plugin = "dump";
+
+			if(importFileDialog.selectedNameFilter === "*.xml")
+				plugin = "xmltool"
+
+			undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
 			externTreeModel.refresh()
 			importTextField.text = ""
 			preserve.checked = true

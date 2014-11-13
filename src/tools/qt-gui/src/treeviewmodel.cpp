@@ -6,6 +6,7 @@
 #include <toolexcept.hpp>
 #include <backends.hpp>
 #include <kdbprivate.h>
+#include <modules.hpp>
 
 using namespace std;
 using namespace kdb;
@@ -705,6 +706,25 @@ void TreeViewModel::refreshArrayNumbers()
 			}
 		}
 	}
+}
+
+QStringList TreeViewModel::availablePlugins() const
+{
+	//TODO: get list of available storage plugins?
+	Modules modules;
+	QStringList plugins;
+	plugins.append("*.ecf");
+
+	try{
+		PluginPtr plugin = modules.load("xmltool");
+	}
+	catch(NoPlugin np){
+		return plugins;
+	}
+
+	plugins.append("*.xml");
+
+	return plugins;
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

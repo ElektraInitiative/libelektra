@@ -7,6 +7,13 @@ FileDialog {
 	selectExisting: false
 
 	onAccepted: {
-		externTreeModel.exportConfiguration(treeView.currentNode.parentModel, treeView.currentNode.index, "dump", exportDialog.fileUrl)
+		var plugin = "dump"
+
+		if(selectedNameFilter === "*.xml" || exportDialog.fileUrl.toString().substr(exportDialog.fileUrl.toString().lastIndexOf("."), 4) === ".xml"){
+			plugin = "xmltool"
+		}
+
+		externTreeModel.exportConfiguration(treeView.currentNode.parentModel, treeView.currentNode.index, plugin, exportDialog.fileUrl)
 	}
+
 }
