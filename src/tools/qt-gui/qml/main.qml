@@ -938,7 +938,7 @@ ApplicationWindow {
 					property string currentNodePath
 
 					anchors.fill: parent
-					anchors.margins: 2
+					anchors.margins: 1
 					frameVisible: false
 					alternatingRowColors: false
 					backgroundVisible: false
@@ -1020,7 +1020,7 @@ ApplicationWindow {
 					id: metaAreaTableView
 
 					anchors.fill: parent
-					anchors.margins: 2
+					anchors.margins: 1
 					frameVisible: false
 					alternatingRowColors: false
 					backgroundVisible: false

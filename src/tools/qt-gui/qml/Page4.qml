@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 
 Item {
 	id: page4
@@ -34,16 +35,50 @@ Item {
 				Button {
 					id: addButton
 
-					iconSource: "icons/list-add.png"
+					style: ButtonStyle {
+
+						background: BasicRectangle {
+							implicitWidth:  pluginDropdown.height
+							implicitHeight: pluginDropdown.height
+							border.color: activePalette.button
+							Image {
+								id: add
+
+								anchors.centerIn: parent
+								source: "icons/list-add.png"
+							}
+
+						}
+
+					}
 					tooltip: qsTr("Add Plugin")
+
 				}
 				Button {
 					id: subButton
 
-					iconSource: "icons/list-remove.png"
+					style: ButtonStyle {
+
+						background: BasicRectangle {
+							implicitWidth:  pluginDropdown.height
+							implicitHeight: pluginDropdown.height
+							border.color: activePalette.button
+
+							Image {
+								id: rem
+
+								anchors.centerIn: parent
+								source: "icons/list-remove.png"
+							}
+
+						}
+
+					}
 					tooltip: qsTr("Remove Plugin")
 				}
+
 			}
+
 		}
 		Item {
 			id: spacer
