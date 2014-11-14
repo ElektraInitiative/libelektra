@@ -13,4 +13,6 @@ add_plugin(ini
 		${INIH_INCLUDE}
 	)
 
+install(DIRECTORY ini DESTINATION ${TARGET_TEST_DATA_FOLDER})
+
 add_plugintest (ini)
