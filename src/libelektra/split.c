@@ -549,23 +549,6 @@ int elektraSplitSync(Split *split)
 	return needsSync;
 }
 
-/* Deeply copies from source to dest.
- */
-KeySet* ksDeepDup(const KeySet *source)
-{
-	size_t s = source->size;
-	size_t i = 0;
-	KeySet *keyset = 0;
-
-	keyset = ksNew(source->alloc,KS_END);
-	for (i=0; i<s; ++i)
-	{
-		ksAppendKey(keyset, keyDup(source->array[i]));
-	}
-
-	return keyset;
-}
-
 /** Prepares for kdbSet() mainloop afterwards.
  *
  * All splits which do not need sync are removed and a deep copy

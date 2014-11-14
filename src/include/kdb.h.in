@@ -181,6 +181,7 @@ KeySet *ksNew(size_t alloc, ...) ELEKTRA_SENTINEL;
 KeySet *ksVNew(size_t alloc, va_list ap);
 
 KeySet *ksDup(const KeySet * source);
+KeySet* ksDeepDup(const KeySet *source);
 int ksCopy(KeySet *dest, const KeySet *source);
 
 int ksClear(KeySet *ks);

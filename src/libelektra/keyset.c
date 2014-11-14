@@ -317,6 +317,35 @@ KeySet *ksDup (const KeySet * source)
 	return keyset;
 }
 
+/* Deeply copies from source to dest.
+ *
+ * The keyset as well as its containing keys are duplicated.
+ * This means that you have to keyDel() the contained keys and
+ * ksDel() the returned keyset..
+ *
+ * @param source has to be an initialized source KeySet
+ * @return a deep copy of source on success
+ * @return 0 on NULL pointer
+ * @see ksNew(), ksDel()
+ * @see keyDup() for key duplication
+ * @see ksDup() for flat copy
+ */
+KeySet* ksDeepDup(const KeySet *source)
+{
+	if (!source) return 0;
+
+	size_t s = source->size;
+	size_t i = 0;
+	KeySet *keyset = 0;
+
+	keyset = ksNew(source->alloc,KS_END);
+	for (i=0; i<s; ++i)
+	{
+		ksAppendKey(keyset, keyDup(source->array[i]));
+	}
+
+	return keyset;
+}
 
 
 /**
