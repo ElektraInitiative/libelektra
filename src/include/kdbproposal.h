@@ -27,11 +27,6 @@ extern "C" {
 #endif
 
 
-// is this needed?
-Key *ksPrev(KeySet *ks);
-Key *ksPopAtCursor(KeySet *ks, cursor_t c);
-Key *ksLookupBySpec(KeySet *ks, Key *specKey);
-
 // is the unescaped name useful for applications?
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
@@ -78,6 +73,10 @@ int keyLock(Key *key,
 ssize_t elektraKeySetName(Key *key, const char *newName,
 	/*option_t*/ enum elektraNameOptions options);
 
+
+// is this needed? -> rather not
+Key *ksPrev(KeySet *ks);
+Key *ksPopAtCursor(KeySet *ks, cursor_t c);
 
 #ifdef __cplusplus
 }
