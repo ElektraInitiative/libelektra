@@ -35,50 +35,23 @@ Item {
 				Button {
 					id: addButton
 
-					style: ButtonStyle {
+					implicitWidth:  pluginDropdown.height
+					implicitHeight: pluginDropdown.height
 
-						background: BasicRectangle {
-							implicitWidth:  pluginDropdown.height
-							implicitHeight: pluginDropdown.height
-							border.color: activePalette.button
-							Image {
-								id: add
-
-								anchors.centerIn: parent
-								source: "icons/list-add.png"
-							}
-
-						}
-
-					}
+					iconSource: "icons/list-add.png"
 					tooltip: qsTr("Add Plugin")
 
 				}
 				Button {
 					id: subButton
 
-					style: ButtonStyle {
+					implicitWidth:  pluginDropdown.height
+					implicitHeight: pluginDropdown.height
 
-						background: BasicRectangle {
-							implicitWidth:  pluginDropdown.height
-							implicitHeight: pluginDropdown.height
-							border.color: activePalette.button
-
-							Image {
-								id: rem
-
-								anchors.centerIn: parent
-								source: "icons/list-remove.png"
-							}
-
-						}
-
-					}
+					iconSource: "icons/list-remove.png"
 					tooltip: qsTr("Remove Plugin")
 				}
-
 			}
-
 		}
 		Item {
 			id: spacer
