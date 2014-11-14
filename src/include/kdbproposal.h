@@ -72,6 +72,9 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	/*option_t*/ enum elektraNameOptions options);
 
 
+int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k));
+int elektraKsFilterArgument (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
+
 #ifdef __cplusplus
 }
 }
