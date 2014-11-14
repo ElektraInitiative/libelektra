@@ -7,7 +7,7 @@ WizardTemplate {
 						  "\n\nPlease provide a unique name.\n\nAlready used are: " + usedNames)
 
 	label.text: qsTr("Backend name: ")
-	usedNames: "default"
+	usedNames: "default" + (externTreeModel.getMountedBackends().toString() === "empty" ? "" : ", " + externTreeModel.getMountedBackends().toString().replace(",", ", "))
 
 	buttonRow.backButton.enabled: false
 	buttonRow.finishButton.enabled: false

@@ -10,6 +10,7 @@ RowLayout {
 
 	anchors.bottom: parent.bottom
 	anchors.right: parent.right
+	anchors.margins: defaultMargins
 
 	property alias backButton: backButton
 	property alias nextButton: nextButton

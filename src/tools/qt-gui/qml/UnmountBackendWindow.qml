@@ -65,6 +65,7 @@ BasicWindow {
 				if(mountedBackendsView.model.toString() !== "empty"){
 					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
 					mountedBackendsView.model = externTreeModel.getMountedBackends()
+					externTreeModel.synchronize()
 
 					if(mountedBackendsView.model.toString() === "empty")
 						mountedBackendsView.currentIndex = -1

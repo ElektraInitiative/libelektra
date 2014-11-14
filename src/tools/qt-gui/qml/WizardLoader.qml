@@ -6,8 +6,8 @@ import QtQuick.Layouts 1.1
 Window {
 	id: wizardLoader
 
-	width: Math.ceil(mainWindow.width*0.4)
-	height: Math.ceil(mainWindow.height*0.5)
+	width: Math.ceil(mainWindow.width*0.3)
+	height: Math.ceil(mainWindow.height*0.33)
 
 	x: Math.ceil(Screen.desktopAvailableWidth*0.5-width*0.5)
 	y: Math.ceil(Screen.desktopAvailableHeight*0.5-height*0.5)

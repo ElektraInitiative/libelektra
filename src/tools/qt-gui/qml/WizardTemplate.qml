@@ -13,39 +13,52 @@ Item {
 	property alias label: label
 	property alias textField: textField
 
-	ColumnLayout {
-		id: wizardlayout
+	BasicRectangle {
+		id: wizardRectangle
 
-		anchors.fill: parent
+		anchors.top: parent.top
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.bottom: buttonRow.top
 		anchors.margins: defaultMargins
-		spacing: defaultMargins
 
 		Text {
 			id: wizardText
 
+			anchors.right: parent.right
+			anchors.left: parent.left
+			anchors.top: parent.top
+			anchors.bottom: wizardRow.top
+			anchors.margins: defaultMargins
+
+			verticalAlignment: Text.AlignVCenter
+
 			wrapMode: Text.WordWrap
 			color: activePalette.text
-			//height: Math.ceil(wizardLoader.height*0.7)
-			Layout.fillHeight: true
-			Layout.fillWidth: true
-			Layout.alignment:  Qt.AlignVCenter
-			text: ""
 		}
+
 		RowLayout {
+			id: wizardRow
+
+			anchors.left: parent.left
+			anchors.right: parent.right
+			anchors.bottom: parent.bottom
+			anchors.margins: defaultMargins
 			spacing: defaultSpacing
 
 			Label {
 				id:label
-				text: ""
 			}
 			TextField {
 				id:textField
+
 				Layout.fillWidth: true
 			}
 		}
-		ButtonRow {
-			id: buttonRow
-			cancelButton.onClicked: wizardLoader.close()
-		}
+	}
+	ButtonRow {
+		id: buttonRow
+
+		cancelButton.onClicked: wizardLoader.close()
 	}
 }

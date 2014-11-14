@@ -1,13 +1,16 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
-import QtQuick.Controls 1.2
+import QtQuick.Controls 1.1
 
 Item {
 	id: page4
 
 	ColumnLayout {
 
-		anchors.fill: parent
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.bottom: buttonRow.top
+		anchors.top: parent.top
 		anchors.margins: defaultMargins
 
 		RowLayout {
@@ -30,63 +33,73 @@ Item {
 
 				Button {
 					id: addButton
+
 					iconSource: "icons/list-add.png"
 					tooltip: qsTr("Add Plugin")
 				}
 				Button {
 					id: subButton
+
 					iconSource: "icons/list-remove.png"
 					tooltip: qsTr("Remove Plugin")
 				}
 			}
 		}
 		Item {
+			id: spacer
+
 			Layout.fillWidth: true
-			height: 18
+			height: 2*defaultMargins
 		}
+		Label {
+			id: includedPluginsLabel
+			text: qsTr("Included Plugins")
+			anchors.top: spacer.bottom
+			anchors.left: parent.left
+			anchors.bottomMargin: defaultSpacing
+		}
+		BasicRectangle {
+			id: includedPluginsRectangle
 
-		RowLayout {
-			spacing: defaultMargins
+			anchors.top: includedPluginsLabel.bottom
+			anchors.left: parent.left
+			anchors.right: pluginInfoRectangle.left
+			anchors.bottom: parent.bottom
+			anchors.topMargin: defaultSpacing
+			anchors.rightMargin: defaultMargins
+			width: Math.ceil(wizardLoader.width*0.4)
 
-			ColumnLayout {
-				spacing: defaultSpacing
+			ScrollView {
 
-				Label {
-					text: qsTr("Included Plugins")
-				}
-				BasicRectangle {
-					id: includedPluginsArea
-					width: Math.ceil(wizardLoader.width*0.3)
-					//Layout.fillWidth: true
-					Layout.fillHeight: true
-
-					ScrollView {
-
-					}
-				}
-			}
-			ColumnLayout {
-				spacing: defaultSpacing
-
-				Label {
-					text: qsTr("Plugin Info")
-				}
-				BasicRectangle {
-					id: pluginInfoArea
-					Layout.fillWidth: true
-					Layout.fillHeight: true
-
-					ScrollView {
-						//Markdown
-					}
-				}
 			}
 		}
-		ButtonRow {
-			backButton.onClicked: loader.source = "Page3.qml"
-			finishButton.enabled: true
-			nextButton.enabled: false
-			cancelButton.onClicked: wizardLoader.visible = false
+		Label {
+			id: pluginInfoLabel
+			text: qsTr("Plugin Info")
+			anchors.top: spacer.bottom
+			anchors.left: pluginInfoRectangle.left
 		}
+		BasicRectangle {
+			id: pluginInfoRectangle
+
+			anchors.top: pluginInfoLabel.bottom
+			anchors.right: parent.right
+			anchors.bottom: parent.bottom
+			anchors.topMargin: defaultSpacing
+			anchors.leftMargin: defaultMargins
+			width: Math.ceil(wizardLoader.width*0.6)
+
+			ScrollView {
+
+			}
+		}
+	}
+	ButtonRow {
+		id: buttonRow
+
+		backButton.onClicked: loader.source = "Page3.qml"
+		finishButton.enabled: true
+		nextButton.enabled: false
+		cancelButton.onClicked: wizardLoader.visible = false
 	}
 }
