@@ -96,6 +96,8 @@ ksDel (myConfig); // delete keyset and all keys appended
 #include <string.h>
 #endif
 
+#include <kdbtypes.h>
+
 #include "kdbinternal.h"
 
 
@@ -178,13 +180,12 @@ KeySet *ksNew(size_t alloc, ...)
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
 
-#ifndef WIN32
 Key *ksLookupBySpec(KeySet *ks, Key *specKey)
 {
 	int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
 	char buffer [ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE]
 		= "override/";
-	int64_t i=0;
+	kdb_long_long_t i=0;
 	const Key *m = 0;
 	Key *k = 0;
 	Key *ret = 0;
@@ -237,7 +238,6 @@ finished:
 	keyDel(k);
 	return ret;
 }
-#endif
 
 /**
  * @copydoc ksNew
@@ -1717,11 +1717,16 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 
 	if (!ks) return 0;
 
-	cursor = ksGetCursor (ks);
-
 	if (!key) return 0;
 	char * name = key->key;
 	if (!name) return 0;
+
+	if (options & KDB_O_SPEC)
+	{
+		return ksLookupBySpec(ks, key);
+	}
+
+	cursor = ksGetCursor (ks);
 
 	if (strcmp(name, "") && name[0] == '/')
 	{

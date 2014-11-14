@@ -52,8 +52,14 @@ enum elektraLockOptions
 	KEY_LOCK_META=1<<19
 };
 
+enum elektraLookupOptions
+{
+	KDB_O_SPEC=1<<15
+};
+
 enum elektraNameOptions
 {
+	// TODO should be KEY_ too?
 	KDB_O_CASCADING_NAME=1<<20,
 	KDB_O_META_NAME=1<<21,
 	KDB_O_EMPTY_NAME=1<<22
