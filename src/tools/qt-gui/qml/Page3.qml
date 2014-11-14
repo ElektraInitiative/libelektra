@@ -8,4 +8,5 @@ WizardTemplate {
 	buttonRow.backButton.onClicked: loader.source = "Page2.qml"
 	buttonRow.finishButton.enabled: false
 	buttonRow.nextButton.onClicked: loader.source = "Page4.qml"
+	buttonVisible: true
 }

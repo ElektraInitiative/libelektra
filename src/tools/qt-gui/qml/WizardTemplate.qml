@@ -8,10 +8,11 @@ Item {
 	id: template
 
 	property string usedNames
-	property alias wizardText: wizardText
-	property alias buttonRow: buttonRow
-	property alias label: label
-	property alias textField: textField
+	property alias	wizardText: wizardText
+	property alias	buttonRow: buttonRow
+	property alias	label: label
+	property alias	textField: textField
+	property bool	buttonVisible: false
 
 	BasicRectangle {
 		id: wizardRectangle
@@ -53,6 +54,18 @@ Item {
 				id:textField
 
 				Layout.fillWidth: true
+			}
+			Button {
+				id: fileDialogButton
+
+				implicitWidth: textField.height
+				implicitHeight: textField.height
+				text: "..."
+				visible: buttonVisible
+				onClicked: {
+					importFileDialog.nameFilters = ["All Files (*.*)"]
+					importFileDialog.open()
+				}
 			}
 		}
 	}

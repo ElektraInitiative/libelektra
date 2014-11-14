@@ -402,12 +402,6 @@ ApplicationWindow {
 		id: importFileDialog
 
 		title: qsTr("Select File")
-
-		onVisibleChanged: {
-			if(visible)
-				importFileDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins()
-		}
-
 		onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
 	}
 
