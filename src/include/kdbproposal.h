@@ -54,7 +54,8 @@ enum elektraLockOptions
 
 enum elektraLookupOptions
 {
-	KDB_O_SPEC=1<<15
+	KDB_O_SPEC=1<<15,
+	KDB_O_CREATE=1<<16
 };
 
 enum elektraNameOptions

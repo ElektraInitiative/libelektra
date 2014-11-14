@@ -1626,7 +1626,8 @@ Key *ksLookupByCascading(KeySet *ks, Key *key, option_t options)
 	key->key = newname+2;
 	key->keySize = length-2;
 	elektraFinalizeName(key);
-	Key *found = ksLookup(ks, key, options); // call me
+	// do not create key here, it might be in "system"
+	Key *found = ksLookup(ks, key, options & ~KDB_O_CREATE);
 
 	if (!found)
 	{
@@ -1634,7 +1635,7 @@ Key *ksLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname;
 		key->keySize = length;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options); // call me
+		found = ksLookup(ks, key, options);
 	}
 
 	key->key = name; // restore old cascading name
@@ -1791,7 +1792,21 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 			else if (!keyCompareByName(&key, &current)) break;
 		}
 		if (options & KDB_O_DEL) keyDel (key);
-		if (current == 0) ksSetCursor (ks, cursor);
+		if (current == 0)
+		{
+			Key *ret = 0;
+			if (options & KDB_O_CREATE)
+			{
+				ret = keyDup(key);
+				ksAppendKey(ks, ret);
+			}
+			else
+			{
+				/*Reset Cursor to old position*/
+				ksSetCursor (ks, cursor);
+			}
+			return ret;
+		}
 		return current;
 	} else {
 		Key ** found;
@@ -1821,9 +1836,18 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 				return (*found);
 			}
 		} else {
-			/*Reset Cursor to old position*/
-			ksSetCursor(ks, cursor);
-			return 0;
+			Key *ret = 0;
+			if (options & KDB_O_CREATE)
+			{
+				ret = keyDup(key);
+				ksAppendKey(ks, ret);
+			}
+			else
+			{
+				/*Reset Cursor to old position*/
+				ksSetCursor (ks, cursor);
+			}
+			return ret;
 		}
 	}
 }
