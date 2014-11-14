@@ -87,9 +87,9 @@ KDB * kdbOpen(Key *errorKey);
 int kdbClose(KDB *handle, Key *errorKey);
 
 int kdbGet(KDB *handle, KeySet *returned,
-	Key * parentKey);
+	Key *parentKey);
 int kdbSet(KDB *handle, KeySet *returned,
-	Key * parentKey);
+	Key *parentKey);
 
 
 
