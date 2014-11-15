@@ -71,6 +71,7 @@ set (PLUGINS_LIST_POSIX
 	network
 	path
 	keytometa
+	rename
 	syslog
 	uname
 	timeofday

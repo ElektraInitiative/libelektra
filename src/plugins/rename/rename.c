@@ -24,15 +24,20 @@ Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cut
 {
 	size_t cutPathLen = strlen(cutPath);
 	size_t keyNameLen = strlen(keyName(key));
-	size_t parentKeyPathLen = strlen(keyName(parentKey));
 
-	if (keyNameLen <= parentKeyPathLen + cutPathLen + 1) return 0;
+	/* marks the position in the key name where the parent key path ends */
+	size_t afterParentKey = strlen(keyName(parentKey)) + 1;
 
-	if (!strncmp(keyName(key) + parentKeyPathLen + 1, cutPath, cutPathLen))
+	/* marks the position in the key name where the retained parts start */
+	size_t afterCut = afterParentKey + cutPathLen;
+
+	if (keyNameLen <= afterCut) return 0;
+
+	if (!strncmp(keyName(key) + afterParentKey, cutPath, cutPathLen))
 	{
 		Key *result = keyDup (key);
 		keySetName(result, keyName(parentKey));
-		keyAddName(result, keyName(key) + parentKeyPathLen + 1 + cutPathLen);
+		keyAddName(result, keyName(key) + afterCut);
 		return result;
 	}
 
@@ -40,20 +45,13 @@ Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cut
 }
 
 
-static Key *cutGet(Key *key, Key *parentKey, KeySet *config)
+static Key *cutGet(Key *key, Key *parentKey, Key *configKey)
 {
 	const char *cutPath;
 	const Key *cutMeta = keyGetMeta(key, "rename/cut");
 
-	if (cutMeta)
-	{
-		cutPath = keyString(cutMeta);
-	}
-	else
-	{
-		Key *cutConfig = ksLookupByName(config, "/cut", KDB_O_NONE);
-		cutPath = keyString(cutConfig);
-	}
+	/* if the meta config exists, it takes precedence over the global config */
+	cutPath = cutMeta ? keyString(cutMeta) : keyString(configKey);
 
 	return elektraKeyCutNamePart(key, parentKey, cutPath);
 }
@@ -72,7 +70,7 @@ static Key *restoreKeyName(Key *key)
 	return 0;
 }
 
-int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
+int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* configuration only */
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/rename"))
@@ -91,10 +89,11 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UN
 
 	ksRewind(iterateKs);
 
+	Key *cutConfig = ksLookupByName(config, "/cut", KDB_O_NONE);
 	Key *key;
 	while ((key = ksNext (iterateKs)) != 0)
 	{
-		Key *renamedKey = cutGet(key, parentKey, config);
+		Key *renamedKey = cutGet(key, parentKey, cutConfig);
 
 		if (renamedKey)
 		{
