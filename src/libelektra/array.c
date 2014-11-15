@@ -23,7 +23,7 @@
  * @retval 0 if start
  * @retval 1 if array element
  */
-int elektraArrayValidateName(Key *key)
+int elektraArrayValidateName(const Key *key)
 {
 	if (!key)
 	{
@@ -192,4 +192,75 @@ int elektraArrayIncName(Key *key)
 	keySetBaseName(key, newName);
 
 	return 0;
+}
+
+static int arrayFilter(const Key *key, void *argument)
+{
+	const Key *arrayParent = (const Key *) argument;
+
+	if (!arrayParent) return 0;
+
+	return keyIsDirectBelow(arrayParent, key) && elektraArrayValidateName(key);
+}
+
+
+/**
+ *
+ * Return all the array keys below the given arrayparent
+ * The arrayparent itself is not returned.
+ * For example, if user/config/# is an array,
+ * user/config is the array parent.
+ * Only the direct array keys will be returned. This means
+ * that for eympale user/config/#1/key will not be included,
+ * but only user/config/#1
+ *
+ * @param arrayParent the parent of the array to be returned
+ * @param keys the keyset containing the array keys.
+ *
+ * @return a keyset containing the arraykeys (if any)
+ * @retval NULL on NULL pointers
+ */
+KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
+{
+	if (!arrayParent) return 0;
+
+	if (!keys) return 0;
+
+	KeySet *arrayKeys = ksNew(ksGetSize(keys), KS_END);
+	elektraKsFilterArgument(arrayKeys, keys, &arrayFilter, (void *)arrayParent);
+	return arrayKeys;
+}
+
+/**
+ *
+ * Return the next key in the given array.
+ * The function will automatically allocate memory
+ * for a new key and name it accordingly. The
+ * supplied keyset must contain only valid array keys.
+ *
+ * @param arraykeys the array where the new key will belong to
+ *
+ * @return the new array key on success
+ * @retval NULL if the passed array is empty
+ * @retval NULL on NULL pointers or if an error occurs
+ */
+Key *elektraArrayGetNextKey(KeySet *arrayKeys)
+{
+	if (!arrayKeys) return 0;
+
+	Key *last = ksPop(arrayKeys);
+
+	if (!last) return 0;
+
+	ksAppendKey(arrayKeys, last);
+	Key *newKey = keyDup(last);
+	int ret = elektraArrayIncName(newKey);
+
+	if (ret == -1)
+	{
+		keyDel(newKey);
+		return 0;
+	}
+
+	return newKey;
 }
