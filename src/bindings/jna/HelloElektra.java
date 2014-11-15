@@ -1,3 +1,5 @@
+import Elektra.*;
+
 /** Simple hello world example how Elektra could be wrapped to java. */
 public class HelloElektra {
 

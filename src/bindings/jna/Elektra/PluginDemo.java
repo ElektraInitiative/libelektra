@@ -1,5 +1,7 @@
+package Elektra;
+
 public class PluginDemo {
-	public static int open() {
+	public static int open(Key errorKey) {
 		System.out.println("open plugin");
 		return 0;
 	}
