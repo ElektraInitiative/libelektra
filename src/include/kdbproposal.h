@@ -27,11 +27,6 @@ extern "C" {
 #endif
 
 
-// is this needed?
-Key *ksPrev(KeySet *ks);
-Key *ksPopAtCursor(KeySet *ks, cursor_t c);
-Key *ksLookupBySpec(KeySet *ks, Key *specKey);
-
 // is the unescaped name useful for applications?
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
@@ -52,8 +47,15 @@ enum elektraLockOptions
 	KEY_LOCK_META=1<<19
 };
 
+enum elektraLookupOptions
+{
+	KDB_O_SPEC=1<<15,
+	KDB_O_CREATE=1<<16
+};
+
 enum elektraNameOptions
 {
+	// TODO should be KEY_ too?
 	KDB_O_CASCADING_NAME=1<<20,
 	KDB_O_META_NAME=1<<21,
 	KDB_O_EMPTY_NAME=1<<22
@@ -71,6 +73,10 @@ int keyLock(Key *key,
 ssize_t elektraKeySetName(Key *key, const char *newName,
 	/*option_t*/ enum elektraNameOptions options);
 
+
+// is this needed? -> rather not
+Key *ksPrev(KeySet *ks);
+Key *ksPopAtCursor(KeySet *ks, cursor_t c);
 
 #ifdef __cplusplus
 }

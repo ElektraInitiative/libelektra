@@ -140,6 +140,28 @@ static void test_cascadingLookup()
 	ksDel(ks);
 }
 
+static void test_creatingLookup()
+{
+	printf ("Test creating lookup\n");
+
+	KeySet *ks = ksNew(10, KS_END);
+
+	Key *searchKey = keyNew("user/something",
+		KEY_VALUE, "a value",
+		KEY_END);
+	Key *k0 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k0, "no key was created");
+	succeed_if_same_string(keyName(k0), keyName(searchKey));
+	succeed_if_same_string(keyName(k0), keyName(searchKey));
+
+	Key *k1 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k1, "no key was returned");
+	succeed_if(k0 == k1, "not the same key");
+
+	keyDel(searchKey);
+	ksDel(ks);
+}
+
 int main()
 {
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
@@ -148,6 +170,7 @@ int main()
 	test_elektraRenameKeys();
 	test_elektraEmptyKeys();
 	test_cascadingLookup();
+	test_creatingLookup();
 
 	return nbError;
 }

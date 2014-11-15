@@ -34,6 +34,7 @@
 #include <file.hpp>
 #include <sget.hpp>
 #include <merge.hpp>
+#include <list.hpp>
 
 class Instancer
 {
@@ -83,6 +84,7 @@ public:
 		m_factory.insert(std::make_pair("file", new Cnstancer<FileCommand>()));
 		m_factory.insert(std::make_pair("sget", new Cnstancer<ShellGetCommand>()));
 		m_factory.insert(std::make_pair("merge", new Cnstancer<MergeCommand>));
+		m_factory.insert(std::make_pair("list", new Cnstancer<ListCommand>()));
 	}
 
 	~Factory()

@@ -96,6 +96,8 @@ ksDel (myConfig); // delete keyset and all keys appended
 #include <string.h>
 #endif
 
+#include <kdbtypes.h>
+
 #include "kdbinternal.h"
 
 
@@ -175,69 +177,6 @@ KeySet *ksNew(size_t alloc, ...)
 
 	return ks;
 }
-
-#define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
-
-#ifndef WIN32
-Key *ksLookupBySpec(KeySet *ks, Key *specKey)
-{
-	int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
-	char buffer [ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE]
-		= "override/";
-	int64_t i=0;
-	const Key *m = 0;
-	Key *k = 0;
-	Key *ret = 0;
-	do {
-		elektraWriteArrayNumber(&buffer[prefixSize], i);
-		m = keyGetMeta(specKey, buffer);
-		if (!m) break;
-		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
-				KEY_END);
-		else elektraKeySetName(k, keyString(m),
-				KDB_O_CASCADING_NAME);
-		ret=ksLookup(ks, k, 0);
-		if (ret) goto finished;
-		++i;
-	} while(m);
-
-	{
-		ret=ksLookup(ks, specKey, 0);
-		if (ret) goto finished;
-	}
-
-	strcpy (buffer, "fallback/");
-	i=0;
-	m = 0;
-	do {
-		elektraWriteArrayNumber(&buffer[prefixSize], i);
-		m = keyGetMeta(specKey, buffer);
-		if (!m) break;
-		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
-				KEY_END);
-		else elektraKeySetName(k, keyString(m),
-				KDB_O_CASCADING_NAME);
-		ret=ksLookup(ks, k, 0);
-		if (ret) goto finished;
-		++i;
-	} while(m);
-
-	{
-		m = keyGetMeta(specKey, "default");
-		if (!m) goto finished;
-		ret=keyDup(specKey);
-		if (!ret) goto finished;
-		keySetString(ret, keyString(m));
-		ksAppendKey(ks, ret);
-	}
-
-finished:
-	keyDel(k);
-	return ret;
-}
-#endif
 
 /**
  * @copydoc ksNew
@@ -1608,6 +1547,189 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
+#define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
+
+/**
+ * @internal
+ * @brief Helper for ksLookup
+ */
+static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
+{
+	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
+	char buffer [ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE]
+		= "override/";
+	kdb_long_long_t i=0;
+	const Key *m = 0;
+	Key *k = 0;
+	Key *ret = 0;
+	do {
+		elektraWriteArrayNumber(&buffer[prefixSize], i);
+		m = keyGetMeta(specKey, buffer);
+		if (!m) break;
+		// optimization: lazy instanziation of k
+		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+				KEY_END);
+		else elektraKeySetName(k, keyString(m),
+				KDB_O_CASCADING_NAME);
+		ret=ksLookup(ks, k, 0);
+		if (ret) goto finished;
+		++i;
+	} while(m);
+
+	{
+		ret=ksLookup(ks, specKey, 0);
+		if (ret) goto finished;
+	}
+
+	strcpy (buffer, "fallback/");
+	i=0;
+	m = 0;
+	do {
+		elektraWriteArrayNumber(&buffer[prefixSize], i);
+		m = keyGetMeta(specKey, buffer);
+		if (!m) break;
+		// optimization: lazy instanziation of k
+		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+				KEY_END);
+		else elektraKeySetName(k, keyString(m),
+				KDB_O_CASCADING_NAME);
+		ret=ksLookup(ks, k, 0);
+		if (ret) goto finished;
+		++i;
+	} while(m);
+
+	{
+		m = keyGetMeta(specKey, "default");
+		if (!m) goto finished;
+		ret=keyDup(specKey);
+		if (!ret) goto finished;
+		keySetString(ret, keyString(m));
+		ksAppendKey(ks, ret);
+	}
+
+finished:
+	keyDel(k);
+	return ret;
+}
+
+/**
+ * @internal
+ * @brief Helper for ksLookup
+ */
+static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
+{
+	char * name = key->key;
+	size_t length = strlen (name) + sizeof ("system");
+	char newname[length*2];
+	strncpy (newname+2, "user", 4);
+	strcpy  (newname+6, name);
+	key->key = newname+2;
+	key->keySize = length-2;
+	elektraFinalizeName(key);
+	// do not create key here, it might be in "system"
+	Key *found = ksLookup(ks, key, options & ~KDB_O_CREATE);
+
+	if (!found)
+	{
+		strncpy (newname, "system",6);
+		key->key = newname;
+		key->keySize = length;
+		elektraFinalizeName(key);
+		found = ksLookup(ks, key, options);
+	}
+
+	key->key = name; // restore old cascading name
+	return found;
+}
+
+static Key * elektraLookupLinearSearch(KeySet *ks, Key * key, option_t options)
+{
+	cursor_t cursor = 0;
+	cursor = ksGetCursor (ks);
+	Key *current;
+	if (!(options & KDB_O_NOALL)) ksRewind(ks);
+	while ((current=ksNext(ks)) != 0)
+	{
+		if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
+		{
+			if (!keyCompareByNameOwnerCase(&key, &current)) break;
+		}
+		else if (options & KDB_O_WITHOWNER)
+		{
+			if (!keyCompareByNameOwner(&key, &current)) break;
+		}
+		else if (options & KDB_O_NOCASE)
+		{
+			if (!keyCompareByNameCase(&key, &current)) break;
+		}
+		else if (!keyCompareByName(&key, &current)) break;
+	}
+	if (options & KDB_O_DEL) keyDel (key);
+	if (current == 0)
+	{
+		Key *ret = 0;
+		if (options & KDB_O_CREATE)
+		{
+			ret = keyDup(key);
+			ksAppendKey(ks, ret);
+		}
+		else
+		{
+			/*Reset Cursor to old position*/
+			ksSetCursor (ks, cursor);
+		}
+		return ret;
+	}
+	return current;
+}
+
+static Key * elektraLookupBinarySearch(KeySet *ks, Key * key, option_t options)
+{
+	cursor_t cursor = 0;
+	cursor = ksGetCursor (ks);
+	Key ** found;
+	size_t jump = 0;
+	/*If there is a known offset in the beginning jump could be set*/
+	if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
+		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
+			sizeof (Key *), keyCompareByNameOwnerCase);
+	else if (options & KDB_O_WITHOWNER)
+		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
+			sizeof (Key *), keyCompareByNameOwner);
+	else if (options & KDB_O_NOCASE)
+		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
+			sizeof (Key *), keyCompareByNameCase);
+	else
+	found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
+		sizeof (Key *), keyCompareByName);
+	if (options & KDB_O_DEL) keyDel (key);
+	if (found)
+	{
+		cursor = found-ks->array;
+		if (options & KDB_O_POP)
+		{
+			return ksPopAtCursor(ks, cursor);
+		} else {
+			ksSetCursor(ks, cursor);
+			return (*found);
+		}
+	} else {
+		Key *ret = 0;
+		if (options & KDB_O_CREATE)
+		{
+			ret = keyDup(key);
+			ksAppendKey(ks, ret);
+		}
+		else
+		{
+			/*Reset Cursor to old position*/
+			ksSetCursor (ks, cursor);
+		}
+		return ret;
+	}
+}
+
+
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
  *
@@ -1713,38 +1835,20 @@ int f(KeySet *iterator, KeySet *lookup)
  */
 Key *ksLookup(KeySet *ks, Key * key, option_t options)
 {
-	cursor_t cursor = 0;
-
 	if (!ks) return 0;
-
-	cursor = ksGetCursor (ks);
-
 	if (!key) return 0;
-	char * name = key->key;
+
+	const char * name = key->key;
 	if (!name) return 0;
+
+	if (options & KDB_O_SPEC)
+	{
+		return elektraLookupBySpec(ks, key);
+	}
 
 	if (strcmp(name, "") && name[0] == '/')
 	{
-		size_t length = strlen (name) + sizeof ("system");
-		char newname[length*2];
-		strncpy (newname+2, "user", 4);
-		strcpy  (newname+6, name);
-		key->key = newname+2;
-		key->keySize = length-2;
-		elektraFinalizeName(key);
-		Key *found = ksLookup(ks, key, options); // call me
-
-		if (!found)
-		{
-			strncpy (newname, "system",6);
-			key->key = newname;
-			key->keySize = length;
-			elektraFinalizeName(key);
-			found = ksLookup(ks, key, options); // call me
-		}
-
-		key->key = name; // restore old cascading name
-		return found;
+		return elektraLookupByCascading(ks, key, options);
 	}
 
 	if ((options & KDB_O_NOALL)
@@ -1752,59 +1856,11 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		// || (options & KDB_O_WITHOWNER)
 		) // binary search with nocase won't work
 	{
-		Key *current;
-		if (!(options & KDB_O_NOALL)) ksRewind(ks);
-		while ((current=ksNext(ks)) != 0)
-		{
-			if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
-			{
-				if (!keyCompareByNameOwnerCase(&key, &current)) break;
-			}
-			else if (options & KDB_O_WITHOWNER)
-			{
-				if (!keyCompareByNameOwner(&key, &current)) break;
-			}
-			else if (options & KDB_O_NOCASE)
-			{
-				if (!keyCompareByNameCase(&key, &current)) break;
-			}
-			else if (!keyCompareByName(&key, &current)) break;
-		}
-		if (options & KDB_O_DEL) keyDel (key);
-		if (current == 0) ksSetCursor (ks, cursor);
-		return current;
-	} else {
-		Key ** found;
-		size_t jump = 0;
-		/*If there is a known offset in the beginning jump could be set*/
-		if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
-			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-				sizeof (Key *), keyCompareByNameOwnerCase);
-		else if (options & KDB_O_WITHOWNER)
-			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-				sizeof (Key *), keyCompareByNameOwner);
-		else if (options & KDB_O_NOCASE)
-			found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-				sizeof (Key *), keyCompareByNameCase);
-		else
-		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-			sizeof (Key *), keyCompareByName);
-		if (options & KDB_O_DEL) keyDel (key);
-		if (found)
-		{
-			cursor = found-ks->array;
-			if (options & KDB_O_POP)
-			{
-				return ksPopAtCursor(ks, cursor);
-			} else {
-				ksSetCursor(ks, cursor);
-				return (*found);
-			}
-		} else {
-			/*Reset Cursor to old position*/
-			ksSetCursor(ks, cursor);
-			return 0;
-		}
+		return elektraLookupLinearSearch(ks, key, options);
+	}
+	else
+	{
+		return elektraLookupBinarySearch(ks, key, options);
 	}
 }
 
