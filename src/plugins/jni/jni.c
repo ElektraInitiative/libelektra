@@ -84,24 +84,24 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	}
 	free(options);
 
-	data->cls = (*data->env)->FindClass(data->env, "PluginDemo");
+	data->cls = (*data->env)->FindClass(data->env, "Elektra/PluginDemo");
 	if (data->cls == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class DemoPlugin");
 		return -1;
 	}
 
-	data->clsKey = (*data->env)->FindClass(data->env, "Key");
+	data->clsKey = (*data->env)->FindClass(data->env, "Elektra/Key");
 	if (data->clsKey == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class Key");
 		return -1;
 	}
 
-	data->clsKeySet = (*data->env)->FindClass(data->env, "KeySet");
+	data->clsKeySet = (*data->env)->FindClass(data->env, "Elektra/KeySet");
 	if (data->clsKeySet == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class Key");
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class KeySet");
 		return -1;
 	}
 
@@ -131,7 +131,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	}
 
 	data->midOpen = (*data->env)->GetStaticMethodID(data->env, data->cls,
-			"open", "()I");
+			"open", "(LElektra/Key;)I");
 	if (data->midOpen == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
@@ -147,7 +147,8 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 
 	jint result = (*data->env)->CallStaticIntMethod(data->env,
 			data->cls,
-			data->midOpen);
+			data->midOpen,
+			jerrorKey);
 
 	elektraPluginSetData(handle, data);
 
