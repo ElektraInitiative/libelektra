@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define ORIGINAL_NAME_META "origname"
+
 Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cutPath)
 {
 	size_t cutPathLen = strlen(cutPath);
@@ -58,12 +60,12 @@ static Key *cutGet(Key *key, Key *parentKey, KeySet *config)
 
 static Key *restoreKeyName(Key *key)
 {
-	const Key *origNameKey = keyGetMeta(key, "rename/origname");
+	const Key *origNameKey = keyGetMeta (key, ORIGINAL_NAME_META);
 	if (origNameKey)
 	{
 		Key *result = keyDup(key);
 		keySetName(result, keyString(origNameKey));
-		keySetMeta(result, "rename/origname", 0);
+		keySetMeta(result, ORIGINAL_NAME_META, 0);
 		return result;
 	}
 
@@ -96,7 +98,7 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UN
 
 		if (renamedKey)
 		{
-			keySetMeta(renamedKey, "rename/origname", keyName(key));
+			keySetMeta (renamedKey, ORIGINAL_NAME_META, keyName (key));
 			ksLookup(returned, key, KDB_O_POP);
 			keyDel(key);
 			ksAppendKey(returned, renamedKey);
