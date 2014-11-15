@@ -762,6 +762,32 @@ QStringList TreeViewModel::mountPoints() const
 	return mountPoints;
 }
 
+QString TreeViewModel::pluginInfo(QString pluginName) const
+{
+	Modules modules;
+	KeySet conf;
+	QString info;
+
+	PluginPtr plugin = modules.load(pluginName.toStdString());
+	conf.append(plugin->getInfo());
+
+	Key root;
+	root.setName(std::string("system/elektra/modules/") + pluginName.toStdString() + "/infos");
+	Key k = conf.lookup (root);
+
+	if (k)
+	{
+		while ((k = conf.next()) && k.getDirName() == root.getName())
+		{
+			info.append(QString::fromStdString(k.getBaseName()) + ": " + QString::fromStdString(k.getString()) + "\n");
+		}
+	}
+	else
+		info.append("No information found.");
+
+	return info;
+}
+
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
 	QHash<int, QByteArray> roles;
