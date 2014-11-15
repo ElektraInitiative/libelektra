@@ -34,7 +34,11 @@
 
 #define KDB_DEFAULT_STORAGE      "@KDB_DEFAULT_STORAGE@"
 
-#define KDB_DEFAULT_RESOLVER      "@KDB_DEFAULT_RESOLVER@"
+#define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"
+
+#define ELEKTRA_PLUGINS          "@PLUGINS@"
+
+#define ELEKTRA_TOOLS            "@TOOLS@"
 
 /** Declares a parameter as unused. */
 #define ELEKTRA_UNUSED           @ELEKTRA_UNUSED@
