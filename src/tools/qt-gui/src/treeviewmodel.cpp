@@ -715,30 +715,25 @@ QStringList TreeViewModel::mountedBackends() const
 QStringList TreeViewModel::availablePlugins(QString type) const
 {
 	QStringList plugins;
+	QStringList availPlugins;
 
-	if(type == "all"){
-		vector<string> pluginVector = listAllAvailablePlugins();
+	vector<string> pluginVector = listAllAvailablePlugins();
 
-		foreach(string s, pluginVector)
-			plugins.append(QString::fromStdString(s));
+	foreach(string s, pluginVector)
+		availPlugins.append(QString::fromStdString(s));
 
-		return plugins;
+	if(type == "all")
+	{
+		return availPlugins;
 	}
 	else if(type == "storage")
 	{
-		Modules modules;
-
 		plugins.append("ECF (*.ecf)");
 
-		try{
-			PluginPtr plugin = modules.load("xmltool");
-		}
-		catch(NoPlugin np){
-			Q_UNUSED(np)
-			return plugins;
-		}
-
-		plugins.append("XML (*.xml)");
+		if(availPlugins.contains("xmltool"))
+			plugins.append("XML (*.xml)");
+		if(availPlugins.contains("ini"))
+			plugins.append("INI (*.ini)");
 	}
 
 	return plugins;

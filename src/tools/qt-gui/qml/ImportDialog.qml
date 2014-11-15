@@ -110,6 +110,8 @@ BasicWindow {
 
 			if(importFileDialog.selectedNameFilter === "XML (*.xml)")
 				plugin = "xmltool"
+//			else if(importFileDialog.selectedNameFilter === "INI (*.ini)")
+//				plugin = "ini"
 
 			undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
 			externTreeModel.refresh()

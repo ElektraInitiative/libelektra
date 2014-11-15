@@ -27,18 +27,18 @@ public:
 	 */
 	enum TreeViewModelRoles
 	{
-	 NameRole = Qt::UserRole + 1, ///< The role QML can access the name of a ConfigNode at a specified index.
-	 PathRole, ///< The role QML can access the path of a ConfigNode at a specified index.
-	 ValueRole, ///< The role QML can access the value of a ConfigNode at a specified index.
-	 ChildCountRole, ///< The role QML can access the number of children of a ConfigNode at a specified index.
-	 ChildrenRole, ///< The role QML can access the children model of a ConfigNode at a specified index.
-	 ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a ConfigNode at a specified index do have children on their own.
-	 MetaValueRole, ///< The role QML can access the meta model of a ConfigNode at a specified index.
-	 NodeRole, ///< The role QML can retrieve the ConfigNode at a specified index.
-	 ParentModelRole, ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
-	 IndexRole, ///< The role QML can retrieve the index of a ConfigNode.
-	 IsNullRole,
-	 IsExpandedRole
+		NameRole = Qt::UserRole + 1, ///< The role QML can access the name of a ConfigNode at a specified index.
+		PathRole, ///< The role QML can access the path of a ConfigNode at a specified index.
+		ValueRole, ///< The role QML can access the value of a ConfigNode at a specified index.
+		ChildCountRole, ///< The role QML can access the number of children of a ConfigNode at a specified index.
+		ChildrenRole, ///< The role QML can access the children model of a ConfigNode at a specified index.
+		ChildrenHaveNoChildrenRole, ///< The role QML can access if children of a ConfigNode at a specified index do have children on their own.
+		MetaValueRole, ///< The role QML can access the meta model of a ConfigNode at a specified index.
+		NodeRole, ///< The role QML can retrieve the ConfigNode at a specified index.
+		ParentModelRole, ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
+		IndexRole, ///< The role QML can retrieve the index of a ConfigNode.
+		IsNullRole,
+		IsExpandedRole
 	};
 
 	explicit TreeViewModel(QObject* parent =  0);

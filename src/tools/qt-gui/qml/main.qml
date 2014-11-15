@@ -467,7 +467,7 @@ ApplicationWindow {
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
-			exportDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins("storage")
+			exportDialog.nameFilters = externTreeModel.availablePlugins("storage")
 			exportDialog.open()
 		}
 	}
@@ -485,18 +485,18 @@ ApplicationWindow {
 
 			if(undoManager.undoText === "deleteKey"){
 				undoManager.undo()
-//				resetKeyAreaModel()
+				//				resetKeyAreaModel()
 
-//				if(keyAreaModel !== null)
-//					keyAreaModel.refresh()
+				//				if(keyAreaModel !== null)
+				//					keyAreaModel.refresh()
 
-//				externTreeModel.refresh()
+				//				externTreeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteBranch"){
 				undoManager.undo()
-//				if(keyAreaModel !== null)
-//					keyAreaModel.refresh()
-//				externTreeModel.refresh()
+				//				if(keyAreaModel !== null)
+				//					keyAreaModel.refresh()
+				//				externTreeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
@@ -505,11 +505,11 @@ ApplicationWindow {
 			else if(undoManager.undoText === "copyKey"){
 				undoManager.undo()
 
-//				if(keyAreaView.currentRow >= keyAreaModel.count()) {
-//					metaAreaModel = null
-//					keyAreaSelectedItem = null
-//					keyAreaModel.refresh()
-//				}
+				//				if(keyAreaView.currentRow >= keyAreaModel.count()) {
+				//					metaAreaModel = null
+				//					keyAreaSelectedItem = null
+				//					keyAreaModel.refresh()
+				//				}
 			}
 			else if(undoManager.undoText === "copyBranch"){
 				undoManager.undo()
@@ -529,11 +529,11 @@ ApplicationWindow {
 			else if(undoManager.undoText === "newKey"){
 				undoManager.undo()
 				externTreeModel.refresh()
-//				keyAreaView.selection.clear()
+				//				keyAreaView.selection.clear()
 			}
 			else{
 				undoManager.undo()
-//				keyAreaView.selection.clear()
+				//				keyAreaView.selection.clear()
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
@@ -552,17 +552,17 @@ ApplicationWindow {
 
 			if(undoManager.redoText === "deleteKey"){
 				undoManager.redo()
-//				metaAreaModel = null
-//				externTreeModel.refresh()
+				//				metaAreaModel = null
+				//				externTreeModel.refresh()
 			}
 			else if(undoManager.redoText === "deleteBranch"){
 				undoManager.redo()
 
-//				if(metaAreaModel !== null)
-//					metaAreaModel = null
+				//				if(metaAreaModel !== null)
+				//					metaAreaModel = null
 
-//				if(keyAreaSelectedItem !== null)
-//					keyAreaSelectedItem = null
+				//				if(keyAreaSelectedItem !== null)
+				//					keyAreaSelectedItem = null
 
 				externTreeModel.refresh()
 
@@ -573,12 +573,12 @@ ApplicationWindow {
 			}
 			else if(undoManager.redoText === "copyKey"){
 				undoManager.redo()
-//				keyAreaModel.refresh()
+				//				keyAreaModel.refresh()
 			}
 			else if(undoManager.redoText === "copyBranch"){
 				undoManager.redo()
 				externTreeModel.refresh()
-//				resetKeyAreaModel()
+				//				resetKeyAreaModel()
 			}
 			else if(undoManager.redoText === "cutKey"){
 				undoManager.redo()
@@ -596,7 +596,7 @@ ApplicationWindow {
 				externTreeModel.refresh()
 			}
 			else{
-//				undoManager.redo()
+				//				undoManager.redo()
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}

@@ -9,8 +9,8 @@
 
 UndoManager::UndoManager(QObject* parent) :
 	QObject(parent)
-	, m_undoStack(new QUndoStack(this))
-	, m_clipboardEmpty(true)
+  , m_undoStack(new QUndoStack(this))
+  , m_clipboardEmpty(true)
 {
 	connect(m_undoStack, SIGNAL(canRedoChanged(bool)), this, SIGNAL(canRedoChanged()));
 	connect(m_undoStack, SIGNAL(canUndoChanged(bool)), this, SIGNAL(canUndoChanged()));
