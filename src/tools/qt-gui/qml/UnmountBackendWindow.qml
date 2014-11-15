@@ -34,7 +34,7 @@ BasicWindow {
 					id: mountedBackendsView
 
 					anchors.fill: parent
-					model: externTreeModel.getMountedBackends()
+					model: externTreeModel.mountedBackends()
 					focus: true
 					interactive: true
 					currentIndex: -1

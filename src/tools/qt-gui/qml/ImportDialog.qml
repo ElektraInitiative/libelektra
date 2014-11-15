@@ -108,7 +108,7 @@ BasicWindow {
 		if(importTextField.text !== ""){
 			var plugin = "dump";
 
-			if(importFileDialog.selectedNameFilter === "*.xml")
+			if(importFileDialog.selectedNameFilter === "XML (*.xml)")
 				plugin = "xmltool"
 
 			undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)

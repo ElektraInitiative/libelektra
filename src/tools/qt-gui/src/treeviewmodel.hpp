@@ -168,13 +168,14 @@ public:
 	void                        collectCurrentKeySet();
 	void                        clearMetaModel();
 
-	Q_INVOKABLE QStringList     getMountedBackends() const;
 	Q_INVOKABLE void            unMountBackend(QString backendName);
 	Q_INVOKABLE void            refresh();
 	Q_INVOKABLE int             count() const;
 	Q_INVOKABLE QString			getCurrentArrayNo() const;
 	void						refreshArrayNumbers();
+	Q_INVOKABLE QStringList     mountedBackends() const;
 	Q_INVOKABLE QStringList		availablePlugins() const;
+	Q_INVOKABLE QStringList		mountPoints() const;
 
 private:
 

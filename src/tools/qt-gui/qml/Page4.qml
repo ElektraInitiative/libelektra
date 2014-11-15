@@ -4,7 +4,6 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 
 Item {
-	id: page4
 
 	ColumnLayout {
 
@@ -41,6 +40,11 @@ Item {
 					iconSource: "icons/list-add.png"
 					tooltip: qsTr("Add Plugin")
 
+					onClicked: {
+						if(!alreadyInList(pluginDropdown.currentText))
+							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
+					}
+
 				}
 				Button {
 					id: subButton
@@ -50,6 +54,12 @@ Item {
 
 					iconSource: "icons/list-remove.png"
 					tooltip: qsTr("Remove Plugin")
+
+					onClicked: {
+						for(var i = 0; i < includedPluginsModel.count; i++)
+							if(includedPluginsModel.get(i).pluginName === pluginDropdown.currentText)
+								includedPluginsModel.remove(i)
+					}
 				}
 			}
 		}
@@ -78,7 +88,21 @@ Item {
 			width: Math.ceil(wizardLoader.width*0.4)
 
 			ScrollView {
+				anchors.fill: parent
+				anchors.margins: defaultSpacing
 
+				ListView {
+					id: includedBackendsView
+
+					model: ListModel {
+						id: includedPluginsModel
+					}
+					delegate: Row {
+						Label {
+							text: pluginName
+						}
+					}
+				}
 			}
 		}
 		Label {
@@ -109,5 +133,14 @@ Item {
 		finishButton.enabled: true
 		nextButton.enabled: false
 		cancelButton.onClicked: wizardLoader.visible = false
+	}
+
+	function alreadyInList(plugin) {
+
+		for(var i = 0; i < includedPluginsModel.count; i++){
+			if(includedPluginsModel.get(i).pluginName === plugin)
+				return true
+		}
+		return false
 	}
 }

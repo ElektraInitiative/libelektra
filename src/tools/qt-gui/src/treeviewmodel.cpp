@@ -615,24 +615,6 @@ void TreeViewModel::clearMetaModel()
 	endResetModel();
 }
 
-QStringList TreeViewModel::getMountedBackends() const
-{
-	Backends::BackendInfoVector mtab = Backends::getBackendInfo(m_keySet);
-
-	QStringList mountedBackends;
-
-	for (Backends::BackendInfoVector::const_iterator it = mtab.begin(); it != mtab.end(); ++it)
-	{
-		mountedBackends.append(QString::fromStdString(it->name));
-	}
-
-	//cannot read the size of the QStringList in QML
-	if (mountedBackends.isEmpty())
-		mountedBackends.append("empty");
-
-	return mountedBackends;
-}
-
 void TreeViewModel::unMountBackend(QString backendName)
 {
 	const std::string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
@@ -708,12 +690,31 @@ void TreeViewModel::refreshArrayNumbers()
 	}
 }
 
+QStringList TreeViewModel::mountedBackends() const
+{
+	Backends::BackendInfoVector mtab = Backends::getBackendInfo(m_keySet);
+
+	QStringList mountedBackends;
+
+	for (Backends::BackendInfoVector::const_iterator it = mtab.begin(); it != mtab.end(); ++it)
+	{
+		mountedBackends.append(QString::fromStdString(it->name));
+	}
+
+	//cannot read the size of the QStringList in QML
+	if (mountedBackends.isEmpty())
+		mountedBackends.append("empty");
+
+	return mountedBackends;
+}
+
+
 QStringList TreeViewModel::availablePlugins() const
 {
 	//TODO: get list of available storage plugins?
 	Modules modules;
 	QStringList plugins;
-	plugins.append("*.ecf");
+	plugins.append("ECF (*.ecf)");
 
 	try{
 		PluginPtr plugin = modules.load("xmltool");
@@ -722,9 +723,43 @@ QStringList TreeViewModel::availablePlugins() const
 		return plugins;
 	}
 
-	plugins.append("*.xml");
+	plugins.append("XML (*.xml)");
 
 	return plugins;
+}
+
+QStringList TreeViewModel::mountPoints() const
+{
+	Key parentKey(Backends::mountpointsPath, KEY_END);
+	KeySet mountConf;
+	KDB kdb (parentKey);
+	kdb.get(mountConf, parentKey);
+
+	QStringList mountPoints;
+	mountPoints.append("system/elektra");
+
+	mountConf.rewind();
+
+	Key cur;
+
+	while ((cur = mountConf.next()))
+	{
+		if (cur.getBaseName() == "mountpoint")
+		{
+			if (cur.getString().at(0) == '/')
+			{
+				mountPoints.append(QString::fromStdString("user" + cur.getString()));
+				mountPoints.append(QString::fromStdString("system" + cur.getString()));
+			}
+			else
+			{
+				mountPoints.append(QString::fromStdString(cur.getString()));
+			}
+
+		}
+
+	}
+	return mountPoints;
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

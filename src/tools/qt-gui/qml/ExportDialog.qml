@@ -9,7 +9,7 @@ FileDialog {
 	onAccepted: {
 		var plugin = "dump"
 
-		if(selectedNameFilter === "*.xml" || exportDialog.fileUrl.toString().substr(exportDialog.fileUrl.toString().lastIndexOf("."), 4) === ".xml"){
+		if(selectedNameFilter === "XML (*.xml)" || exportDialog.fileUrl.toString().substr(exportDialog.fileUrl.toString().lastIndexOf("."), 4) === ".xml"){
 			plugin = "xmltool"
 		}
 
