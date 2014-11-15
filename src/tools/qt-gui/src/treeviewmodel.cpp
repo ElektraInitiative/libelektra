@@ -7,6 +7,8 @@
 #include <backends.hpp>
 #include <kdbprivate.h>
 #include <modules.hpp>
+#include <markdowndocument.h>
+#include <discountmarkdownconverter.h>
 
 using namespace std;
 using namespace kdb;
@@ -779,11 +781,14 @@ QString TreeViewModel::pluginInfo(QString pluginName) const
 	{
 		while ((k = conf.next()) && k.getDirName() == root.getName())
 		{
-			info.append(QString::fromStdString(k.getBaseName()) + ": " + QString::fromStdString(k.getString()) + "\n");
+			info.append(QString::fromStdString(k.getBaseName()) + ": " + QString::fromStdString(k.getString()) + "\n\n");
 		}
 	}
 	else
 		info.append(tr("No information found."));
+
+	DiscountMarkdownConverter dmc;
+	info = dmc.renderAsHtml(dmc.createDocument(info, DiscountMarkdownConverter::NoImagesOption));
 
 	return info;
 }

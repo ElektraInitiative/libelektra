@@ -127,7 +127,7 @@ Item {
 
 				anchors.fill: parent
 				anchors.margins: 1
-//				textFormat: Text.RichText
+				textFormat: Text.RichText
 				backgroundVisible: false
 				readOnly: true
 				wrapMode: Text.WordWrap

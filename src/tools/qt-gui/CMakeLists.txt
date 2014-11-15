@@ -12,22 +12,23 @@ if (NOT Qt5_FOUND)
 else()
 
 include_directories (
-	${CMAKE_SOURCE_DIR} 
+	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	${Qt5Quick_INCLUDE_DIRS} 
-	${Qt5Gui_INCLUDE_DIRS} 
-	${Qt5Core_INCLUDE_DIRS} 
-	${Qt5Qml_INCLUDE_DIRS} 
-	${Qt5Widgets_INCLUDE_DIRS}    
+	${Qt5Quick_INCLUDE_DIRS}
+	${Qt5Gui_INCLUDE_DIRS}
+	${Qt5Core_INCLUDE_DIRS}
+	${Qt5Qml_INCLUDE_DIRS}
+	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5Test_INCLUDE_DIRS}
 	../kdb
+	src/markdownconverter
 	../../libtools/include
 	../../libtools/include/merging
 	../../libtools/include/helper
 	)
 
-add_headers (qt-gui_HDRS)                                               
-add_cppheaders (qt-gui_HDRS)                                            
+add_headers (qt-gui_HDRS)
+add_cppheaders (qt-gui_HDRS)
 add_toolheaders (qt-gui_HDRS)
 
 set(qt-gui_HDRS
@@ -74,41 +75,41 @@ set(qt-gui_SRCS
 	src/copykeycommand.cpp
 	src/cutkeycommand.cpp
 	src/importconfigurationcommand.cpp
-	../kdb/check.cpp 
-	../kdb/cmdline.cpp 
-	../kdb/command.cpp 
-	../kdb/convert.cpp 
-	../kdb/cp.cpp 
-	../kdb/export.cpp 
-	../kdb/external.cpp 
-	../kdb/file.cpp 
-	../kdb/fstab.cpp 
-	../kdb/get.cpp 
-	../kdb/import.cpp 
-	../kdb/info.cpp 
-	../kdb/ls.cpp 
-	../kdb/merge.cpp 
-	../kdb/mergehelper.cpp 
-	../kdb/metaget.cpp 
-	../kdb/metals.cpp 
-	../kdb/metaset.cpp 
-	../kdb/mount.cpp 
-	../kdb/mountbase.cpp 
-	../kdb/mv.cpp 
-	../kdb/remount.cpp 
-	../kdb/rm.cpp 
-	../kdb/set.cpp 
-	../kdb/sget.cpp 
-	../kdb/shell.cpp 
-	../kdb/test.cpp 
-	../kdb/umount.cpp 
+	../kdb/check.cpp
+	../kdb/cmdline.cpp
+	../kdb/command.cpp
+	../kdb/convert.cpp
+	../kdb/cp.cpp
+	../kdb/export.cpp
+	../kdb/external.cpp
+	../kdb/file.cpp
+	../kdb/fstab.cpp
+	../kdb/get.cpp
+	../kdb/import.cpp
+	../kdb/info.cpp
+	../kdb/ls.cpp
+	../kdb/merge.cpp
+	../kdb/mergehelper.cpp
+	../kdb/metaget.cpp
+	../kdb/metals.cpp
+	../kdb/metaset.cpp
+	../kdb/mount.cpp
+	../kdb/mountbase.cpp
+	../kdb/mv.cpp
+	../kdb/remount.cpp
+	../kdb/rm.cpp
+	../kdb/set.cpp
+	../kdb/sget.cpp
+	../kdb/shell.cpp
+	../kdb/test.cpp
+	../kdb/umount.cpp
 	../kdb/validation.cpp
 	)
 
 set(qt-gui_RSCS
 	resources.qrc
 	)
-	
+
 qt5_add_resources(RSCS ${qt-gui_RSCS})
 
 add_executable(qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
