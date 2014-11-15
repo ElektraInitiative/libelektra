@@ -48,7 +48,8 @@ HEADERS += \
 	src/markdownconverter/template/template.h \
 	src/markdownconverter/discountmarkdownconverter.h \
 	src/markdownconverter/markdownconverter.h \
-	src/markdownconverter/markdowndocument.h
+	src/markdownconverter/markdowndocument.h \
+    ../kdb/list.hpp
 
 SOURCES += \
 	src/main.cpp \
@@ -93,7 +94,8 @@ SOURCES += \
 	../kdb/umount.cpp \
 	../kdb/validation.cpp \
 	src/markdownconverter/template/htmltemplate.cpp \
-	src/markdownconverter/discountmarkdownconverter.cpp
+	src/markdownconverter/discountmarkdownconverter.cpp \
+    ../kdb/list.cpp
 
 CONFIG += debug
 

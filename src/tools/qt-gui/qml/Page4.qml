@@ -26,7 +26,7 @@ Item {
 			ComboBox {
 				id: pluginDropdown
 				Layout.fillWidth: true
-				model: [ "hexcode", "simpleini", "syslog", "xmltool" ]
+				model: externTreeModel.availablePlugins()
 				onCurrentTextChanged: infoText.text = externTreeModel.pluginInfo(pluginDropdown.currentText)
 			}
 			RowLayout {

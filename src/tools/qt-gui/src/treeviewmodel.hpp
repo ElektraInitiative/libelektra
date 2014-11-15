@@ -174,7 +174,7 @@ public:
 	Q_INVOKABLE QString			getCurrentArrayNo() const;
 	void						refreshArrayNumbers();
 	Q_INVOKABLE QStringList     mountedBackends() const;
-	Q_INVOKABLE QStringList		availablePlugins() const;
+	Q_INVOKABLE QStringList		availablePlugins(QString type = "all") const;
 	Q_INVOKABLE QString			mountPoints() const;
 	Q_INVOKABLE QString			pluginInfo(QString pluginName) const;
 

@@ -467,7 +467,7 @@ ApplicationWindow {
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
-			exportDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins()
+			exportDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins("storage")
 			exportDialog.open()
 		}
 	}

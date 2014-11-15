@@ -7,6 +7,7 @@
 #include <backends.hpp>
 #include <kdbprivate.h>
 #include <modules.hpp>
+#include <plugins.hpp>
 #include <markdowndocument.h>
 #include <discountmarkdownconverter.h>
 
@@ -711,21 +712,34 @@ QStringList TreeViewModel::mountedBackends() const
 }
 
 
-QStringList TreeViewModel::availablePlugins() const
+QStringList TreeViewModel::availablePlugins(QString type) const
 {
-	//TODO: get list of available storage plugins?
-	Modules modules;
 	QStringList plugins;
-	plugins.append("ECF (*.ecf)");
 
-	try{
-		PluginPtr plugin = modules.load("xmltool");
-	}
-	catch(NoPlugin np){
+	if(type == "all"){
+		vector<string> pluginVector = listAllAvailablePlugins();
+
+		foreach(string s, pluginVector)
+			plugins.append(QString::fromStdString(s));
+
 		return plugins;
 	}
+	else if(type == "storage")
+	{
+		Modules modules;
 
-	plugins.append("XML (*.xml)");
+		plugins.append("ECF (*.ecf)");
+
+		try{
+			PluginPtr plugin = modules.load("xmltool");
+		}
+		catch(NoPlugin np){
+			Q_UNUSED(np)
+			return plugins;
+		}
+
+		plugins.append("XML (*.xml)");
+	}
 
 	return plugins;
 }
