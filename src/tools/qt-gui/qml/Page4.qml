@@ -86,7 +86,7 @@ Item {
 			anchors.bottom: parent.bottom
 			anchors.topMargin: defaultSpacing
 			anchors.rightMargin: defaultMargins
-			width: Math.ceil(wizardLoader.width*0.4)
+			width: Math.ceil(wizardLoader.width*0.3)
 
 			ScrollView {
 				anchors.fill: parent
@@ -120,7 +120,7 @@ Item {
 			anchors.bottom: parent.bottom
 			anchors.topMargin: defaultSpacing
 			anchors.leftMargin: defaultMargins
-			width: Math.ceil(wizardLoader.width*0.6)
+			width: Math.ceil(wizardLoader.width*0.7)
 
 			TextArea {
 				id: infoText

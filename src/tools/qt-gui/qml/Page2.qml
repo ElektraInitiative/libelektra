@@ -7,5 +7,5 @@ WizardTemplate {
 	buttonRow.backButton.onClicked: loader.source = "Page1.qml"
 	buttonRow.finishButton.enabled: false
 	buttonRow.nextButton.onClicked: loader.source = "Page3.qml"
-	usedNames: externTreeModel.mountPoints().toString().replace(",", ", ")
+	usedNames: externTreeModel.mountPoints()
 }

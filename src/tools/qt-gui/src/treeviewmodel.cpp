@@ -728,7 +728,7 @@ QStringList TreeViewModel::availablePlugins() const
 	return plugins;
 }
 
-QStringList TreeViewModel::mountPoints() const
+QString TreeViewModel::mountPoints() const
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConf;
@@ -759,7 +759,7 @@ QStringList TreeViewModel::mountPoints() const
 		}
 
 	}
-	return mountPoints;
+	return mountPoints.join(", ");
 }
 
 QString TreeViewModel::pluginInfo(QString pluginName) const
@@ -783,7 +783,7 @@ QString TreeViewModel::pluginInfo(QString pluginName) const
 		}
 	}
 	else
-		info.append("No information found.");
+		info.append(tr("No information found."));
 
 	return info;
 }
