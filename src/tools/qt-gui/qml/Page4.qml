@@ -26,7 +26,8 @@ Item {
 			ComboBox {
 				id: pluginDropdown
 				Layout.fillWidth: true
-				model: [ "hexcode", "simpleini", "syslog" ]
+				model: [ "hexcode", "simpleini", "syslog", "xmltool" ]
+				onCurrentTextChanged: infoText.text = externTreeModel.pluginInfo(pluginDropdown.currentText)
 			}
 			RowLayout {
 				spacing: defaultSpacing
@@ -121,8 +122,15 @@ Item {
 			anchors.leftMargin: defaultMargins
 			width: Math.ceil(wizardLoader.width*0.6)
 
-			ScrollView {
+			TextArea {
+				id: infoText
 
+				anchors.fill: parent
+				anchors.margins: 1
+//				textFormat: Text.RichText
+				backgroundVisible: false
+				readOnly: true
+				wrapMode: Text.WordWrap
 			}
 		}
 	}

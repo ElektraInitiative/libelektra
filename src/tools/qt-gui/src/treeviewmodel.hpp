@@ -176,6 +176,7 @@ public:
 	Q_INVOKABLE QStringList     mountedBackends() const;
 	Q_INVOKABLE QStringList		availablePlugins() const;
 	Q_INVOKABLE QStringList		mountPoints() const;
+	Q_INVOKABLE QString			pluginInfo(QString pluginName) const;
 
 private:
 

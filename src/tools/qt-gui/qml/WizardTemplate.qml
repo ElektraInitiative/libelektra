@@ -31,9 +31,7 @@ Item {
 			anchors.top: parent.top
 			anchors.bottom: wizardRow.top
 			anchors.margins: defaultMargins
-
 			verticalAlignment: Text.AlignVCenter
-
 			wrapMode: Text.WordWrap
 			color: activePalette.text
 		}
