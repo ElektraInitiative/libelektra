@@ -40,9 +40,17 @@ typedef struct
 {
 	JNIEnv *env;
 	JavaVM *jvm;
-	JavaVMInitArgs vm_args;
+	JavaVMInitArgs vmArgs;
 	jclass cls;
-	jmethodID mid;
+	jclass clsKey;
+	jclass clsKeySet;
+	jmethodID midKey;
+	jmethodID midKeySet;
+	jmethodID midOpen;
+	jmethodID midClose;
+	jmethodID midGet;
+	jmethodID midSet;
+	jmethodID midError;
 	jstring jstr;
 	jobjectArray args;
 } Data;
@@ -61,14 +69,14 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 
 	JavaVMOption* options = malloc(sizeof(JavaVMOption[1]));
 	options[0].optionString = "-Djava.class.path=/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
-	data->vm_args.version = JNI_VERSION_1_8;
-	data->vm_args.nOptions = 1;
-	data->vm_args.options = options;
-	data->vm_args.ignoreUnrecognized = 0;
+	data->vmArgs.version = JNI_VERSION_1_8;
+	data->vmArgs.nOptions = 1;
+	data->vmArgs.options = options;
+	data->vmArgs.ignoreUnrecognized = 0;
 
 	jint res = JNI_CreateJavaVM(&data->jvm,
 			(void**)&data->env,
-			(void**)&data->vm_args);
+			(void**)&data->vmArgs);
 	if (res < 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create Java VM");
@@ -79,40 +87,71 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	data->cls = (*data->env)->FindClass(data->env, "PluginDemo");
 	if (data->cls == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find DemoPlugin");
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class DemoPlugin");
 		return -1;
 	}
 
-	data->mid = (*data->env)->GetStaticMethodID(data->env,
-			data->cls, "main", "([Ljava/lang/String;)V");
-	if (data->mid == 0)
+	data->clsKey = (*data->env)->FindClass(data->env, "Key");
+	if (data->clsKey == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find main");
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class Key");
 		return -1;
 	}
 
-	data->jstr = (*data->env)->NewStringUTF(data->env, " from C!");
-	if (data->jstr == 0)
+	data->clsKeySet = (*data->env)->FindClass(data->env, "KeySet");
+	if (data->clsKeySet == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Out of memory, String");
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class Key");
 		return -1;
 	}
 
-	data->args = (*data->env)->NewObjectArray(data->env, 1, 
-		(*data->env)->FindClass(data->env, "java/lang/String"),
-		data->jstr);
-	if (data->args == 0)
+	data->midKey = (*data->env)->GetMethodID(data->env, data->clsKey,
+			"<init>", "(Lcom/sun/jna/Pointer;)V");
+	if (data->midKey == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Out of memory, ObjectArray");
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of Key");
 		return -1;
 	}
 
-	(*data->env)->CallStaticVoidMethod(data->env,
-		data->cls, data->mid, data->args);
+	data->midKeySet = (*data->env)->GetMethodID(data->env, data->clsKeySet,
+			"<init>", "(Lcom/sun/jna/Pointer;)V");
+	if (data->midKeySet == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of KeySet");
+		return -1;
+	}
+
+	jobject jerrorKey = (*data->env)->NewObject(data->env,
+			data->clsKey,
+			data->midKey, errorKey);
+	if (jerrorKey == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create errorKey");
+		return -1;
+	}
+
+	data->midOpen = (*data->env)->GetStaticMethodID(data->env, data->cls,
+			"open", "()I");
+	if (data->midOpen == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
+		return -1;
+	}
+
+	/*
+	jint result = (*data->env)->CallIntMethod(data->env, data->cls,
+			data->midOpen
+			// argument
+			);
+	*/
+
+	jint result = (*data->env)->CallStaticIntMethod(data->env,
+			data->cls,
+			data->midOpen);
 
 	elektraPluginSetData(handle, data);
 
-	return 1; /* success */
+	return result;
 }
 
 int elektraJniClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
