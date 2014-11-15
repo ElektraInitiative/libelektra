@@ -1,7 +1,5 @@
-127.0.0.1	localhost		#will lose that comment
+127.0.0.1	localhost 
 ::1		localhost6
 
 192.168.0.1	gateway.markus-raab.org		gateway gw
-# leader of the people
-# and more
-192.168.0.5	kirabyte.markus-raab.org	kirabyte kira k
+192.168.0.5	kirabyte.markus-raab.org	kirabyte kira

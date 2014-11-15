@@ -34,7 +34,6 @@ void test_readHostsSimple(char *fileName)
 	Key *key = ksLookupByName(ks, "user/tests/hosts/ipv4/localhost", 0);
 	exit_if_fail (key, "hostname localhost not found");
 	succeed_if (strcmp("127.0.0.1", keyValue(key)) == 0, "address not correct");
-	succeed_if (strcmp("will lose that comment", keyComment(key)) == 0, "comment not correct");
 
 	key = ksLookupByName(ks, "user/tests/hosts/ipv4/gateway.markus-raab.org", 0);
 	exit_if_fail (key, "hostname gateway.markus-raab.org not found");
@@ -43,7 +42,6 @@ void test_readHostsSimple(char *fileName)
 	key = ksLookupByName(ks, "user/tests/hosts/ipv4/kirabyte.markus-raab.org/kira", 0);
 	exit_if_fail (key, "hostname alias kira not found");
 	succeed_if (strcmp("192.168.0.5", keyValue(key)) == 0, "address not correct");
-	succeed_if (strcmp(" leader of the people\n and more\n", keyComment(key)) == 0, "comment not correct");
 
 	ksDel (ks);
 	keyDel(parentKey);
@@ -219,6 +217,124 @@ void test_writeHostsSimple(char *fileName)
 	;
 }
 
+void test_readHostsComments(char *fileName)
+{
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file(fileName), KEY_END);
+	KeySet *conf = 0;
+	PLUGIN_OPEN("hosts");
+
+	KeySet *ks=ksNew(0, KS_END);
+
+	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+
+	/* FIRST ENTRY */
+	Key *key = ksLookupByName(ks, "user/tests/hosts/ipv4/localhost", 0);
+	exit_if_fail (key, "hostname localhost not found");
+
+	/* inline comment */
+	const Key *inlineComment1 = keyGetMeta(key, "comment/#0");
+	succeed_if (inlineComment1, "inline comment for first host does not exist");
+	succeed_if (!strcmp(keyString(inlineComment1), "inline comment0"), "inline comment for first host contains wrong text");
+
+	const Key *inlineComment1Start = keyGetMeta(key, "comment/#0/start");
+	succeed_if (inlineComment1Start, "start key for inline  of first host does not exist");
+	succeed_if (!strcmp(keyString(inlineComment1Start), "#"), "start key for inline comment of first host contains wrong text");
+
+	const Key *inlineComment1Space = keyGetMeta(key, "comment/#0/space");
+	succeed_if (inlineComment1Space, "space key for inline comment of first host does not exist");
+	succeed_if (!strcmp(keyString(inlineComment1Space), "3"), "space key for inline comment of first host contains wrong number of spaces");
+
+
+	/* empty lines */
+	const Key *lineComment1 = keyGetMeta(key, "comment/#1");
+	succeed_if (lineComment1, "comment for first empty line does not exist");
+
+	const Key *lineComment2 = keyGetMeta(key, "comment/#2");
+	succeed_if (lineComment2, "comment for second empty line does not exist");
+
+
+	/* line comment */
+	const Key *lineComment3 = keyGetMeta(key, "comment/#3");
+	succeed_if (lineComment3, "comment key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment3), " comment for localhost"), "comment key for line comment contains wrong text");
+
+	const Key *lineComment3Start = keyGetMeta(key, "comment/#3/start");
+	succeed_if (lineComment3Start, "start key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment3Start), "#"), "start key for line comment contains wrong text");
+
+	const Key *lineComment3Spaces = keyGetMeta(key, "comment/#3/space");
+	succeed_if (lineComment3Spaces, "space key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment3Spaces), "0"), "space key for line comment contains wrong number of spaces");
+
+
+	/* SECOND ENTRY */
+	Key *key2 = ksLookupByName(ks, "user/tests/hosts/ipv4/testentry", 0);
+	exit_if_fail (key2, "hostname localhost not found");
+
+	/* inline comment */
+	const Key *inlineComment2 = keyGetMeta(key2, "comment/#0");
+	succeed_if (inlineComment2, "inline comment for second host does not exist");
+	succeed_if (!strcmp(keyString(inlineComment2), " inline comment1"), "inline comment for second host contains wrong text");
+
+	const Key *inlineComment2Start = keyGetMeta(key2, "comment/#0/start");
+	succeed_if (inlineComment2Start, "start key for inline  of second host does not exist");
+	succeed_if (!strcmp(keyString(inlineComment2Start), "#"), "start key for inline comment of second host contains wrong text");
+
+	const Key *inlineComment2Space = keyGetMeta(key2, "comment/#0/space");
+	succeed_if (inlineComment2Space, "space key for inline comment of second host does not exist");
+	succeed_if (!strcmp(keyString(inlineComment2Space), "1"), "space key for inline comment of second host contains wrong number of spaces");
+
+
+	/* empty line */
+	const Key *lineComment4 = keyGetMeta(key2, "comment/#1");
+	succeed_if (lineComment4, "comment key for line comment does not exist");
+
+	const Key *lineComment4Spaces = keyGetMeta(key2, "comment/#1/space");
+	succeed_if (lineComment4Spaces, "space key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment4Spaces), "2"), "space key for line comment contains wrong number of spaces");
+
+
+	/* line comment */
+	const Key *lineComment5 = keyGetMeta(key2, "comment/#2");
+	succeed_if (lineComment5, "comment key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment5), " comment for testentry"), "comment key for line comment contains wrong text");
+
+	const Key *lineComment5Start = keyGetMeta(key2, "comment/#2/start");
+	succeed_if (lineComment5Start, "start key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment5Start), "#"), "start key for line comment contains wrong text");
+
+	const Key *lineComment5Spaces = keyGetMeta(key2, "comment/#2/space");
+	succeed_if (lineComment5Spaces, "space key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment5Spaces), "2"), "space key for line comment contains wrong number of spaces");
+
+
+	/* NO ENTRY */
+
+	/* empty line */
+	const Key *lineComment6 = keyGetMeta(parentKey, "comment/#1");
+	succeed_if (lineComment6, "comment key for line comment does not exist");
+
+
+	/* line comment */
+	const Key *lineComment7 = keyGetMeta(parentKey, "comment/#2");
+	succeed_if (lineComment7, "comment key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment7), " comment without entry"), "comment key for line comment contains wrong text");
+
+	const Key *lineComment7Start = keyGetMeta(parentKey, "comment/#2/start");
+	succeed_if (lineComment7Start, "start key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment7Start), "#"), "start key for line comment contains wrong text");
+
+	const Key *lineComment7Spaces = keyGetMeta(parentKey, "comment/#2/space");
+	succeed_if (lineComment7Spaces, "space key for line comment does not exist");
+	succeed_if (!strcmp(keyString(lineComment7Spaces), "0"), "space key for line comment contains wrong number of spaces");
+
+
+	ksDel (ks);
+	keyDel(parentKey);
+
+	PLUGIN_CLOSE();
+}
+
 int main(int argc, char** argv)
 {
 	printf("MOUNT       TESTS\n");
@@ -232,7 +348,7 @@ int main(int argc, char** argv)
 	test_duplicateEntries("hosts/hosts-duplicate");
 	test_duplicateOrder("hosts/hosts-duporder");
 	test_writeHostsSimple("hosts/hosts-write-simple");
-
+	test_readHostsComments("hosts/hosts-read-comments");
 
 	printf("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

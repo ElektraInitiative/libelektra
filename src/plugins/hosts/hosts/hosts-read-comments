@@ -1,0 +1,9 @@
+
+
+# comment for localhost
+127.0.0.1	localhost   #inline comment0
+  
+  # comment for testentry
+192.168.0.1	testentry alias1 alias2 # inline comment1
+
+# comment without entry
