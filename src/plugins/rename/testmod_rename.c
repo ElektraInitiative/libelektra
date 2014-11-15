@@ -182,6 +182,40 @@ static void test_withoutConfig()
 	PLUGIN_CLOSE ();
 }
 
+static void test_metaConfigTakesPrecedence()
+{
+	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/cut", KEY_VALUE, "will/be", KEY_END), KS_END);
+	PLUGIN_OPEN("rename");
+
+	KeySet *ks = createSimpleMetaTestKeys();
+	ksAppendKey(ks, parentKey);
+
+	succeed_if(plugin->kdbGet (plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	/* the first two keys should have been renamed by their metadata */
+	Key* key = ksLookupByName (ks, "user/tests/rename/key1", KDB_O_NONE);
+	succeed_if(key, "key1 was not correctly renamed");
+	key = ksLookupByName (ks, "user/tests/rename/key2", KDB_O_NONE);
+	succeed_if(key, "key2 was not correctly renamed");
+
+	/* the third key should have been renamed by the global config */
+	key = ksLookupByName (ks, "user/tests/rename/stripped", KDB_O_NONE);
+	succeed_if(key, "key3 was renamed but would replace the parent key");
+
+	/* the fourth key was not renamed because the prefix did not match */
+	key = ksLookupByName (ks, "user/tests/rename/will/not/be/stripped/key4", KDB_O_NONE);
+	succeed_if(key, "key4 was renamed although its prefix did not match");
+
+	keyDel (parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE ();
+}
+
 static void test_keyCutNamePart()
 {
 	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
@@ -229,6 +263,7 @@ int main(int argc, char** argv)
 	test_simpleCutOnGet();
 	test_simpleCutRestoreOnSet();
 	test_metaCutOnGet();
+	test_metaConfigTakesPrecedence();
 
 	test_keyCutNamePart();
 
