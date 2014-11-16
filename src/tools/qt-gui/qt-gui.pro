@@ -49,7 +49,8 @@ HEADERS += \
 	src/markdownconverter/discountmarkdownconverter.h \
 	src/markdownconverter/markdownconverter.h \
 	src/markdownconverter/markdowndocument.h \
-    ../kdb/list.hpp
+    ../kdb/list.hpp \
+    ../../libtools/include/plugins.hpp
 
 SOURCES += \
 	src/main.cpp \

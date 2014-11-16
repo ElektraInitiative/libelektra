@@ -120,7 +120,7 @@ Item {
 			anchors.bottom: parent.bottom
 			anchors.topMargin: defaultSpacing
 			anchors.leftMargin: defaultMargins
-			width: Math.ceil(wizardLoader.width*0.7)
+			implicitWidth: Math.ceil(wizardLoader.width*0.7)
 
 			TextArea {
 				id: infoText

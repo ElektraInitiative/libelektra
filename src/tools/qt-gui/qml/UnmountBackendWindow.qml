@@ -14,6 +14,7 @@ BasicWindow {
 
 		Text{
 			text: qsTr("Notice: To successfully unmount backends you need to be an administrator.")
+			wrapMode: Text.WordWrap
 			color: "#640000"
 		}
 

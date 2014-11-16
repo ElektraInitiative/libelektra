@@ -321,8 +321,8 @@ ApplicationWindow {
 
 		title: qsTr("About Elektra Editor")
 
-		width: Math.ceil(mainWindow.width*0.2)
-		height: Math.ceil(mainWindow.width*0.2)
+		width: Math.ceil(mainWindow.width*0.3)
+		height: Math.ceil(mainWindow.width*0.3)
 
 		ColumnLayout {
 			anchors.fill: parent

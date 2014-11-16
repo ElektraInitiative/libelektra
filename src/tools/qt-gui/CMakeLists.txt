@@ -41,6 +41,8 @@ set(qt-gui_HDRS
 	src/cutkeycommand.hpp
 	src/copykeycommand.hpp
 	src/importconfigurationcommand.hpp
+	src/markdownconverter/discountmarkdownconverter.h
+	src/markdownconverter/template/htmltemplate.h
 	../../libtools/include/merging/automergestrategy.hpp
 	../../libtools/include/merging/interactivemergestrategy.hpp
 	../../libtools/include/merging/mergeconflict.hpp
@@ -75,6 +77,8 @@ set(qt-gui_SRCS
 	src/copykeycommand.cpp
 	src/cutkeycommand.cpp
 	src/importconfigurationcommand.cpp
+	src/markdownconverter/discountmarkdownconverter.cpp
+	src/markdownconverter/template/htmltemplate.cpp
 	../kdb/check.cpp
 	../kdb/cmdline.cpp
 	../kdb/command.cpp
@@ -86,6 +90,7 @@ set(qt-gui_SRCS
 	../kdb/fstab.cpp
 	../kdb/get.cpp
 	../kdb/import.cpp
+	../kdb/list.cpp
 	../kdb/info.cpp
 	../kdb/ls.cpp
 	../kdb/merge.cpp
@@ -116,7 +121,7 @@ add_executable(qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
 
 qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 
-target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} elektra elektratools)
+target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} elektra elektratools markdown)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
