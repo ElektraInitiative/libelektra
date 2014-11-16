@@ -147,9 +147,10 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	data->midOpen = (*data->env)->GetMethodID(data->env,
+	/*
+	data->midOpen = (*data->env)->GetStaticMethodID(data->env,
 			data->cls,
-			"open", "(LElektra/Key;)I");
+			"print", "()V");
 	if (data->midOpen == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
@@ -157,16 +158,17 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	}
 
 	jint result = 0;
-	result = (*data->env)->CallIntMethod(data->env,
+	result = (*data->env)->CallStaticIntMethod(data->env,
 			data->plugin,
 			data->midOpen,
 			jerrorKey
 			);
 	printf("After open()\n");
+	*/
 
 	elektraPluginSetData(handle, data);
 
-	return result;
+	return 0;
 }
 
 int elektraJniClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
