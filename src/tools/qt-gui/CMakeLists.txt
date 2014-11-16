@@ -61,7 +61,7 @@ set(qt-gui_HDRS
 	../../libtools/include/helper/keyhelper.hpp
 	)
 
-file(GLOB kdb_SRCS "../kdb*")
+file(GLOB kdb_SRCS "../kdb/*.cpp")
 
 set(qt-gui_SRCS
 	src/main.cpp
