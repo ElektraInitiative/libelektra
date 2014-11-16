@@ -83,6 +83,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
+	/*
 	data->cls = (*data->env)->FindClass(data->env, "Elektra/PluginDemo");
 	if (data->cls == 0)
 	{
@@ -147,7 +148,6 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	/*
 	data->midOpen = (*data->env)->GetStaticMethodID(data->env,
 			data->cls,
 			"print", "()V");
