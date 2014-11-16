@@ -1324,11 +1324,42 @@ static void test_ksLookupNameCascading()
 	succeed_if (ksLookupByName (ks, "///named/keyd", KDB_O_POP) == 0, "found part of key with cascading, bad postfix");
 	ksDel(ks);
 
+
 	ks = ksNew(10, KS_END);
 	ksAppendKey(ks, keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
 	ksAppendKey(ks, keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
 
 	succeed_if_same_string (keyString(ksLookupByName (ks, "/test/myapp/key", 0)), "correct");
+	Key *s=0;
+	succeed_if_same_string (keyString(s=ksLookupByName(ks, "/test/myapp/key", KDB_O_POP)), "correct");
+	keyDel(s);
+	succeed_if_same_string (keyString(s=ksLookupByName(ks, "/test/myapp/key", KDB_O_POP)), "wrong");
+	keyDel(s);
+
+
+	ks = ksNew(10, KS_END);
+	Key *k1;
+	Key *k2;
+	ksAppendKey(ks, k1=keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey(ks, k2=keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
+
+	succeed_if_same_string (keyString(ksLookup(ks, k2, KDB_O_POP)), "correct");
+	succeed_if_same_string (keyString(ksLookup(ks, k1, KDB_O_POP)), "wrong");
+
+	keyDel(k1);
+	keyDel(k2);
+	ksDel(ks);
+
+
+	ks = ksNew(10, KS_END);
+	ksAppendKey(ks, k1=keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey(ks, k2=keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
+
+	succeed_if_same_string (keyString(ksLookup(ks, k1, KDB_O_POP)), "wrong");
+	succeed_if_same_string (keyString(ksLookup(ks, k2, KDB_O_POP)), "correct");
+
+	keyDel(k1);
+	keyDel(k2);
 	ksDel(ks);
 }
 
