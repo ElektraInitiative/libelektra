@@ -1,7 +1,5 @@
 #include <get.hpp>
 
-#include <kdbproposal.h>
-
 #include <kdb.hpp>
 #include <cmdline.hpp>
 
@@ -18,7 +16,7 @@ int GetCommand::execute (Cmdline const& cl)
 	if (cl.arguments.size() != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
-	Key x(cl.arguments[0], ckdb::KDB_O_CASCADING_NAME, KEY_END);
+	Key x(cl.arguments[0], KEY_END);
 	if (!x.isValid())
 	{
 		throw invalid_argument(cl.arguments[0] + " is not an valid keyname");
