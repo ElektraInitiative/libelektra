@@ -26,23 +26,15 @@ include_directories (
 	../../libtools/include/helper
 	)
 
-set(qt-gui_HDRS
-	src/visitor.hpp
-	src/printvisitor.hpp
-	src/keysetvisitor.hpp
-	src/newkeycommand.hpp
-	src/editkeycommand.hpp
-	src/deletekeycommand.hpp
-	src/cutkeycommand.hpp
-	src/copykeycommand.hpp
-	src/importconfigurationcommand.hpp
-	)
+file(GLOB qt-gui_HDRS "../kdb/*.hpp")
 
-add_headers (qt-gui_HDRS)                                               
-add_cppheaders (qt-gui_HDRS)                                            
+add_headers (qt-gui_HDRS)
+add_cppheaders (qt-gui_HDRS)
 add_toolheaders (qt-gui_HDRS)
 
 file(GLOB kdb_SRCS "../kdb/*.cpp")
+file (GLOB kdb_NO_SRCS ../kdb/main.cpp ../kdb/factory.cpp)
+list (REMOVE_ITEM kdb_SRCS ${kdb_NO_SRCS})
 file(GLOB qt-gui_SRCS "src/*.cpp")
 
 set(qt-gui_RSCS
