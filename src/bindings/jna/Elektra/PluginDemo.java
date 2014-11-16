@@ -6,13 +6,7 @@ public class PluginDemo implements Plugin {
 	}
 
 	static public void print() {
-		for (int i=0; i<100; ++i)
-		{
-			System.out.println("open plugin: ");
-		}
-		System.out.println("open plugin: ");
-		System.out.println("open plugin: ");
-		System.out.println("open plugin: ");
+		System.out.println("open plugin");
 		try {
 			int pid = CLibrary.INSTANCE.getpid();
 			System.out.println("My Process id is " + pid);
@@ -23,7 +17,7 @@ public class PluginDemo implements Plugin {
 			System.out.println("got exception: " + e.toString());
 		}
 
-		System.out.println("NOT open plugin: ");
+		System.out.println("after open plugin");
 	}
 
 	public int open(Key errorKey) {
