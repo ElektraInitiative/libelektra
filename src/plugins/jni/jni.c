@@ -51,8 +51,7 @@ typedef struct
 	jmethodID midGet;
 	jmethodID midSet;
 	jmethodID midError;
-	jstring jstr;
-	jobjectArray args;
+	jobject plugin;
 } Data;
 
 int elektraJniOpen(Plugin *handle, Key *errorKey);
@@ -65,14 +64,16 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(jni);
 
 int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
+	// javap -s Elektra/Key
 	Data *data = malloc(sizeof(Data));
 
-	JavaVMOption* options = malloc(sizeof(JavaVMOption[1]));
-	options[0].optionString = "-Djava.class.path=/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
+	JavaVMOption options[2];
+	options[0].optionString = "-Djava.class.path=.:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
+	options[1].optionString = "-verbose:gc,class,jni";
 	data->vmArgs.version = JNI_VERSION_1_8;
-	data->vmArgs.nOptions = 1;
+	data->vmArgs.nOptions = 2;
 	data->vmArgs.options = options;
-	data->vmArgs.ignoreUnrecognized = 0;
+	data->vmArgs.ignoreUnrecognized = JNI_FALSE;
 
 	jint res = JNI_CreateJavaVM(&data->jvm,
 			(void**)&data->env,
@@ -82,12 +83,11 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create Java VM");
 		return -1;
 	}
-	free(options);
 
 	data->cls = (*data->env)->FindClass(data->env, "Elektra/PluginDemo");
 	if (data->cls == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class DemoPlugin");
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class PluginDemo");
 		return -1;
 	}
 
@@ -130,7 +130,26 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	data->midOpen = (*data->env)->GetStaticMethodID(data->env, data->cls,
+	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
+			data->env, data->cls,
+			"<init>", "()V");
+	if (midPluginConstructor == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of plugin");
+		return -1;
+	}
+
+	data->plugin = (*data->env)->NewObject(data->env,
+			data->cls,
+			midPluginConstructor);
+	if (data->plugin == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create plugin");
+		return -1;
+	}
+
+	data->midOpen = (*data->env)->GetMethodID(data->env,
+			data->cls,
 			"open", "(LElektra/Key;)I");
 	if (data->midOpen == 0)
 	{
@@ -138,17 +157,12 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	/*
-	jint result = (*data->env)->CallIntMethod(data->env, data->cls,
-			data->midOpen
-			// argument
-			);
-	*/
-
-	jint result = (*data->env)->CallStaticIntMethod(data->env,
-			data->cls,
+	jint result = 0;
+	result = (*data->env)->CallIntMethod(data->env,
+			data->plugin,
 			data->midOpen,
-			jerrorKey);
+			jerrorKey
+			);
 
 	elektraPluginSetData(handle, data);
 

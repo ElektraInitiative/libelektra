@@ -3,21 +3,6 @@ include (LibAddMacros)
 find_package (JNI)
 
 if (JNI_FOUND)
-	find_library(JAVA_MAWT_LIBRARY
-		mawt
-		HINTS
-		/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/amd64/headless
-		/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/headless
-		/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/headless
-		)
-
-	IF(EXISTS ${JAVA_LIB_DIR}/xawt)
-		LINK_DIRECTORIES(${JAVA_LIB_DIR}/xawt)
-	ENDIF(EXISTS ${JAVA_LIB_DIR}/xawt)
-	IF(EXISTS ${JAVA_LIB_DIR}/client)
-		LINK_DIRECTORIES(${JAVA_LIB_DIR}/client)
-	ENDIF(EXISTS ${JAVA_LIB_DIR}/client)
-
 	add_plugin(jni
 		SOURCES
 			jni.c
