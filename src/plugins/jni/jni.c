@@ -64,7 +64,6 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(jni);
 
 int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
-	// javap -s Elektra/Key
 	Data *data = malloc(sizeof(Data));
 
 	JavaVMOption options[2];
