@@ -323,27 +323,106 @@ static int keyCmpOrderWrapper(const void *a, const void *b)
 	return elektraKeyCmpOrder(*((const Key **)a), *((const Key **)b));
 }
 
-static void writeHostsComment(FILE *fp, Key *key)
+static void writeComment(const char *spaces, const char *start, const char *comment, FILE *fp)
 {
-	char *saveptr = 0;
-	char *commentLine;
-	char *commentCopy = malloc (keyGetCommentSize(key));
-	strcpy (commentCopy, keyComment(key));
-	commentLine = strtok_r (commentCopy, "\n", &saveptr);
-	while (commentLine != 0)
+	if (spaces)
 	{
-		fprintf (fp, "# %s\n", commentLine);
-		commentLine = strtok_r (NULL, "\n", &saveptr);
+		char *endptr;
+		long spaceValue = strtol (spaces, &endptr, 10);
+
+		if (*endptr == '\0')
+		{
+			for (int i = 0; i < spaceValue; i++)
+			{
+				fprintf (fp, " ");
+			}
+		}
 	}
-	free (commentCopy);
+
+	if (start)
+	{
+		fprintf (fp, "%s",  start);
+	}
+
+	if (comment)
+	{
+		fprintf (fp, "%s", comment);
+	}
+
+}
+
+static const char *getMetaValue(Key *key, const char *metaName)
+{
+	const Key *metaKey = keyGetMeta(key, metaName);
+
+	if (metaKey) return keyString(metaKey);
+
+	return 0;
+}
+
+static void writeLineComments(Key *key, FILE *fp)
+{
+	// TODO: this is really inefficient
+	KeySet *metaKeys = elektraKeyGetMetaKeySet(key);
+	Key *commentParent = keyNew("comment", KDB_O_META_NAME, KEY_END);
+	KeySet *comments = elektraArrayGet(commentParent, metaKeys);
+	keyDel(commentParent);
+
+	ksRewind(comments);
+	Key *current;
+	while ((current = ksNext (comments)))
+	{
+		if (strcmp (keyName (current), "comment/#0"))
+		{
+			Key *spaceKey = keyDup (current);
+			keyAddBaseName (spaceKey, "space");
+			Key *startKey = keyDup (current);
+			keyAddBaseName (startKey, "start");
+			const char *spaces = getMetaValue (key, keyName (spaceKey));
+			const char *start = getMetaValue (key, keyName (startKey));
+			const char *comment = getMetaValue (key, keyName (current));
+			keyDel (spaceKey);
+			keyDel (startKey);
+			writeComment (spaces, start, comment, fp);
+			fprintf (fp, "\n");
+		}
+	}
+
+	ksDel(metaKeys);
+	ksDel(comments);
+}
+
+static void writeInlineComment(Key *key, FILE *fp)
+{
+
+	const char *spaces = getMetaValue(key, "comment/#0/space");
+	const char *start = getMetaValue(key, "comment/#0/start");
+	const char *comment = getMetaValue(key, "comment/#0");
+
+	writeComment(spaces, start, comment, fp);
+}
+
+static void writeHostsEntry(Key* key, KeySet* returned, FILE* fp)
+{
+	fprintf (fp, "%s\t%s", (char*) keyValue (key), (char*) keyBaseName (key));
+	/* position the cursor at the current key and
+	 * iterate over its subkeys
+	 */
+	ksLookup (returned, key, KDB_O_NONE);
+	Key* alias;
+	while ((alias = ksNext (returned)) != 0)
+	{
+		if (keyRel (key, alias) < 1) break;
+
+		fprintf (fp, " %s", (char*) keyBaseName (alias));
+	}
 }
 
 int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;
 	FILE *fp;
-	Key *key, *alias=0;
-	char * lastline;
+	Key *key;
 
 	fp = fopen (keyString(parentKey), "w");
 
@@ -390,36 +469,14 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 		/* only process canonical name keys */
 		if (!keyIsDirectBelow(ipv4Base, key) && !keyIsDirectBelow(ipv6Base, key)) continue;
 
-		lastline = strrchr (keyComment(key), '\n');
-		if (lastline)
-		{
-			*lastline = '\0';
-			writeHostsComment (fp, key);
-			*lastline = '\n'; /* preserve comment */
-		}
-
-		fprintf (fp, "%s\t%s", (char*)keyValue(key), (char*)keyBaseName (key));
-
-		/* position the cursor at the current key and
-		 * iterate over its subkeys
-		 */
-		ksLookup(returned, key, KDB_O_NONE);
-		while ((alias = ksNext (returned)) != 0)
-		{
-			if (keyRel (key, alias) < 1) break;
-
-			fprintf (fp, " %s", (char*)keyBaseName(alias));
-		}
-
-		if (lastline)
-		{
-			if (*(lastline+1) != '\0') fprintf (fp, " # %s", lastline+1);
-		} else {
-			if (*keyComment(key) != '\0') fprintf (fp, " # %s", keyComment(key));
-		}
-
+		writeLineComments(key, fp);
+		writeHostsEntry (key, returned, fp);
+		writeInlineComment(key, fp);
 		fprintf (fp, "\n");
 	}
+
+	writeLineComments(parentKey, fp);
+
 	keyDel (ipv4Base);
 	keyDel (ipv6Base);
 

@@ -178,7 +178,8 @@ void test_writeHostsSimple(char *fileName)
 			keyNew ("user/tests/hosts/ipv4/localhost",
 					KEY_VALUE, "127.0.0.1",
 					KEY_META, "order", "10",
-					KEY_COMMENT, "these are for ipv4\n",
+					KEY_META, "comment/#1", " these are for ipv4",
+					KEY_META, "comment/#1/start", "#",
 					KEY_END),
 			keyNew ("user/tests/hosts/ipv4/testhost",
 					KEY_VALUE, "127.0.1.1",
@@ -189,7 +190,8 @@ void test_writeHostsSimple(char *fileName)
 			keyNew ("user/tests/hosts/ipv6/localhost",
 					KEY_VALUE, "::1",
 					KEY_META, "order", "30",
-					KEY_COMMENT, "The following lines are desirable for IPv6 capable hosts\n",
+					KEY_META, "comment/#1", " The following lines are desirable for IPv6 capable hosts",
+					KEY_META, "comment/#1/start", "#",
 					KEY_END),
 			keyNew ("user/tests/hosts/ipv6/localhost/ip6-localhost",
 					KEY_END),
@@ -335,6 +337,61 @@ void test_readHostsComments(char *fileName)
 	PLUGIN_CLOSE();
 }
 
+void test_writeHostsComments(char *fileName)
+{
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename(), KEY_END);
+	KeySet *conf = 0;
+	PLUGIN_OPEN("hosts");
+
+	KeySet *ks = ksNew (20,
+			keyNew ("user/tests/hosts/ipv4/localhost",
+					KEY_VALUE, "127.0.0.1",
+					KEY_META, "order", "10",
+					KEY_META, "comment/#0", "inline comment0",
+					KEY_META, "comment/#0/space", "3",
+					KEY_META, "comment/#0/start", "#",
+					KEY_META, "comment/#1", "",
+					KEY_META, "comment/#2", "",
+					KEY_META, "comment/#3", " comment for localhost",
+					KEY_META, "comment/#3/start", "#",
+					KEY_END),
+			keyNew ("user/tests/hosts/ipv4/testentry",
+					KEY_VALUE, "192.168.0.1",
+					KEY_META, "order", "20",
+					KEY_META, "comment/#0", " inline comment1",
+					KEY_META, "comment/#0/space", "1",
+					KEY_META, "comment/#0/start", "#",
+					KEY_META, "comment/#1", "",
+					KEY_META, "comment/#1/space", "2",
+					KEY_META, "comment/#2", " comment for testentry",
+					KEY_META, "comment/#2/space", "2",
+					KEY_META, "comment/#2/start", "#",
+					KEY_END),
+			keyNew ("user/tests/hosts/ipv4/testentry/alias1",
+					KEY_END),
+			keyNew ("user/tests/hosts/ipv4/testentry/alias2",
+					KEY_END),
+			KS_END);
+
+	keySetMeta(parentKey, "comment/#1", "");
+	keySetMeta(parentKey, "comment/#2", " comment without entry");
+	keySetMeta(parentKey, "comment/#2/start", "#");
+
+	ksAppendKey (ks, parentKey);
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	elektraUnlink (keyString (parentKey));
+	ksDel (ks);
+
+	PLUGIN_CLOSE();
+}
+
 int main(int argc, char** argv)
 {
 	printf("MOUNT       TESTS\n");
@@ -348,7 +405,8 @@ int main(int argc, char** argv)
 	test_duplicateEntries("hosts/hosts-duplicate");
 	test_duplicateOrder("hosts/hosts-duporder");
 	test_writeHostsSimple("hosts/hosts-write-simple");
-	test_readHostsComments("hosts/hosts-read-comments");
+	test_readHostsComments("hosts/hosts-comments");
+	test_writeHostsComments("hosts/hosts-comments");
 
 	printf("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
