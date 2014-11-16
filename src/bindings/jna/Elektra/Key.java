@@ -14,6 +14,11 @@ public class Key {
 		key = p;
 	}
 
+	public int print() {
+		System.out.println("The name is: "+name());
+		return 23;
+	}
+
 	public String name() {
 		return Elektra.INSTANCE.keyName(key);
 	}

@@ -7,6 +7,7 @@ public class HelloElektra {
 		Key key = Key.create("user/hello_world");
 		System.out.println(key.name());
 		System.out.println(key.string());
+		key.print();
 
 		KeySet ks = KeySet.create(0);
 		KDB kdb = KDB.open(key);
