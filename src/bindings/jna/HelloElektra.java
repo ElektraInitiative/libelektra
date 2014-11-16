@@ -11,10 +11,15 @@ public class HelloElektra {
 		System.out.println(key.string());
 		key.print();
 
-		KeySet ks = KeySet.create(0);
+		KeySet ks = KeySet.create(10,
+			key.get(),
+			KeySet.KS_END);
 		KDB kdb = KDB.open(key);
 		kdb.get(ks, key);
 		Key k = ks.lookup(key);
 		System.out.println(k.string());
+
+		PluginDemo dp = new PluginDemo();
+		dp.open(key);
 	}
 }

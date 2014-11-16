@@ -5,8 +5,34 @@ public class PluginDemo implements Plugin {
 		System.err.println("construct plugin");
 	}
 
+	private void print() {
+		for (int i=0; i<100; ++i)
+		{
+			System.out.println("open plugin: ");
+		}
+		System.out.println("open plugin: ");
+		System.out.println("open plugin: ");
+		System.out.println("open plugin: ");
+		try {
+			int pid = CLibrary.INSTANCE.getpid();
+			System.out.println("My Process id is " + pid);
+			Key key = Key.create("user/hello_world",
+				Key.KEY_VALUE, "Hello World",
+				Key.KEY_END);
+		} catch (Exception e) {
+			System.out.println("got exception: " + e.toString());
+		}
+
+		System.out.println("NOT open plugin: ");
+	}
+
 	public int open(Key errorKey) {
-		System.out.println("open plugin: " + errorKey.name());
+		/*
+		System.out.println(key.name());
+		System.out.println(key.string());
+		key.print();
+		*/
+		print();
 		return 0;
 	}
 

@@ -20,6 +20,7 @@ public class KeySet {
 	public static final int KDB_O_NOCASE=1<<12;
 	public static final int KDB_O_WITHOWNER=1<<13;
 	public static final int KDB_O_NOALL=1<<14;
+	public static final Pointer KS_END= null;
 
 	public static KeySet create(int alloc, Object... args) {
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
