@@ -1322,8 +1322,13 @@ static void test_ksLookupNameCascading()
 
 	succeed_if (ksLookupByName (ks, "///named/", KDB_O_POP) == 0, "found part of key with cascading");
 	succeed_if (ksLookupByName (ks, "///named/keyd", KDB_O_POP) == 0, "found part of key with cascading, bad postfix");
+	ksDel(ks);
 
+	ks = ksNew(10, KS_END);
+	ksAppendKey(ks, keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey(ks, keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
 
+	succeed_if_same_string (keyString(ksLookupByName (ks, "/test/myapp/key", 0)), "correct");
 	ksDel(ks);
 }
 
