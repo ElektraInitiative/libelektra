@@ -76,6 +76,7 @@ Rewrite unwanted characters with different techniques
 Transformations:
 
 - [keytometa](keytometa) transforms keys to metadata
+- [rename](rename) renames keys according to different rules
 
 Doing other stuff:
 

@@ -71,6 +71,7 @@ set (PLUGINS_LIST_POSIX
 	network
 	path
 	keytometa
+	rename
 	syslog
 	uname
 	timeofday
@@ -103,6 +104,7 @@ set (PLUGINS_LIST_RESOLVER
 	resolver_fm_ub_x
 	resolver_fm_xb_x
 	resolver_fm_xp_x
+	resolver_fm_xhp_x
 	)
 
 #
