@@ -1335,6 +1335,7 @@ static void test_ksLookupNameCascading()
 	keyDel(s);
 	succeed_if_same_string (keyString(s=ksLookupByName(ks, "/test/myapp/key", KDB_O_POP)), "wrong");
 	keyDel(s);
+	ksDel(ks);
 
 
 	ks = ksNew(10, KS_END);
