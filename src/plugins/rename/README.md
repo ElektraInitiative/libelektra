@@ -28,7 +28,7 @@ would be able to strip the following key name parts:
 However, it would refuse to strip the following
 * with/long/path/key1
 
-The reason is, that stripping the latter would cuase a parent key duplicate.
+The reason is, that stripping the latter would cause a parent key duplicate.
 
 ### CONFIGURATION ####
 
