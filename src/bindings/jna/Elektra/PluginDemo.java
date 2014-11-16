@@ -5,7 +5,7 @@ public class PluginDemo implements Plugin {
 		System.err.println("construct plugin");
 	}
 
-	private void print() {
+	static public void print() {
 		for (int i=0; i<100; ++i)
 		{
 			System.out.println("open plugin: ");
