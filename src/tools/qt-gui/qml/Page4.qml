@@ -4,6 +4,7 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 
 Item {
+	id: page4
 
 	ColumnLayout {
 

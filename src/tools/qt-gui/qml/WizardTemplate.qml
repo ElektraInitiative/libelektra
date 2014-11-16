@@ -13,6 +13,7 @@ Item {
 	property alias	label: label
 	property alias	textField: textField
 	property bool	buttonVisible: false
+	property alias	fileDialog: fileDialog
 
 	BasicRectangle {
 		id: wizardRectangle
@@ -61,8 +62,8 @@ Item {
 				text: "..."
 				visible: buttonVisible
 				onClicked: {
-					importFileDialog.nameFilters = ["All Files (*.*)"]
-					importFileDialog.open()
+					fileDialog.nameFilters = ["All Files (*.*)"]
+					fileDialog.open()
 				}
 			}
 		}
@@ -71,5 +72,12 @@ Item {
 		id: buttonRow
 
 		cancelButton.onClicked: wizardLoader.close()
+	}
+
+
+	FileDialog {
+		id: fileDialog
+
+		title: qsTr("Select File")
 	}
 }

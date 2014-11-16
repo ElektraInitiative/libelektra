@@ -36,6 +36,7 @@ ApplicationWindow {
 	property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
 	property var    keyAreaModel
 	property bool   isPasted
+	property var	backend: []
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultSpacing: 4
