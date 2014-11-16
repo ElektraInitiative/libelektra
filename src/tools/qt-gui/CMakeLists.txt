@@ -26,10 +26,6 @@ include_directories (
 	../../libtools/include/helper
 	)
 
-add_headers (qt-gui_HDRS)                                               
-add_cppheaders (qt-gui_HDRS)                                            
-add_toolheaders (qt-gui_HDRS)
-
 set(qt-gui_HDRS
 	src/visitor.hpp
 	src/printvisitor.hpp
@@ -40,44 +36,14 @@ set(qt-gui_HDRS
 	src/cutkeycommand.hpp
 	src/copykeycommand.hpp
 	src/importconfigurationcommand.hpp
-	../../libtools/include/merging/automergestrategy.hpp
-	../../libtools/include/merging/interactivemergestrategy.hpp
-	../../libtools/include/merging/mergeconflict.hpp
-	../../libtools/include/merging/mergeconflictstrategy.hpp
-	../../libtools/include/merging/mergeresult.hpp
-	../../libtools/include/merging/mergetask.hpp
-	../../libtools/include/merging/metamergestrategy.hpp
-	../../libtools/include/merging/newkeystrategy.hpp
-	../../libtools/include/merging/onesidestrategy.hpp
-	../../libtools/include/merging/onesidevaluestrategy.hpp
-	../../libtools/include/merging/threewaymerge.hpp
-	../../libtools/include/backend.hpp
-	../../libtools/include/backends.hpp
-	../../libtools/include/modules.hpp
-	../../libtools/include/plugin.hpp
-	../../libtools/include/plugins.hpp
-	../../libtools/include/toolexcept.hpp
-	../../libtools/include/helper/comparison.hpp
-	../../libtools/include/helper/keyhelper.hpp
 	)
+
+add_headers (qt-gui_HDRS)                                               
+add_cppheaders (qt-gui_HDRS)                                            
+add_toolheaders (qt-gui_HDRS)
 
 file(GLOB kdb_SRCS "../kdb/*.cpp")
-
-set(qt-gui_SRCS
-	src/main.cpp
-	src/treeviewmodel.cpp
-	src/confignode.cpp
-	src/printvisitor.cpp
-	src/keysetvisitor.cpp
-	src/undomanager.cpp
-	src/newkeycommand.cpp
-	src/deletekeycommand.cpp
-	src/editkeycommand.cpp
-	src/copykeycommand.cpp
-	src/cutkeycommand.cpp
-	src/importconfigurationcommand.cpp
-	${kdb_SRCS}
-	)
+file(GLOB qt-gui_SRCS "src/*.cpp")
 
 set(qt-gui_RSCS
 	resources.qrc
@@ -85,11 +51,14 @@ set(qt-gui_RSCS
 	
 qt5_add_resources(RSCS ${qt-gui_RSCS})
 
-add_executable(qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
+add_executable(qt-gui ${qt-gui_SRCS} ${kdb_SRCS} ${qt-gui_HDRS}
+	${UIS} ${RSCS} ${TRS})
 
 qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 
-target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Test_LIBRARIES} elektra elektratools)
+target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
+	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}
+	${Qt5Test_LIBRARIES} elektra elektratools)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
