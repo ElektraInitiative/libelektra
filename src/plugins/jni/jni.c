@@ -162,6 +162,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 			data->midOpen,
 			jerrorKey
 			);
+	printf("After open()\n");
 
 	elektraPluginSetData(handle, data);
 
