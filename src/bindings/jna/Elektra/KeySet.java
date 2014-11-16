@@ -6,6 +6,21 @@ import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 
 public class KeySet {
+	public static final int KDB_O_NONE=0;
+	public static final int KDB_O_DEL=1;
+	public static final int KDB_O_POP=1<<1;
+	public static final int KDB_O_NODIR=1<<2;
+	public static final int KDB_O_DIRONLY=1<<3;
+	public static final int KDB_O_NOREMOVE=1<<6;
+	public static final int KDB_O_REMOVEONLY=1<<7;
+	public static final int KDB_O_INACTIVE=1<<8;
+	public static final int KDB_O_SYNC=1<<9;
+	public static final int KDB_O_SORT=1<<10;
+	public static final int KDB_O_NORECURSIVE=1<<11;
+	public static final int KDB_O_NOCASE=1<<12;
+	public static final int KDB_O_WITHOWNER=1<<13;
+	public static final int KDB_O_NOALL=1<<14;
+
 	public static KeySet create(int alloc, Object... args) {
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
 	}

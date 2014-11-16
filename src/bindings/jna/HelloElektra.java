@@ -4,7 +4,9 @@ import Elektra.*;
 public class HelloElektra {
 
 	public static void main(String[] args) {
-		Key key = Key.create("user/hello_world");
+		Key key = Key.create("user/hello_world",
+			Key.KEY_VALUE, "Hello World",
+			Key.KEY_END);
 		System.out.println(key.name());
 		System.out.println(key.string());
 		key.print();

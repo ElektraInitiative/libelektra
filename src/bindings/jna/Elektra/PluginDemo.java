@@ -6,7 +6,7 @@ public class PluginDemo implements Plugin {
 	}
 
 	public int open(Key errorKey) {
-		System.out.println("open plugin");
+		System.out.println("open plugin: " + errorKey.name());
 		return 0;
 	}
 
