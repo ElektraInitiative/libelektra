@@ -61,6 +61,8 @@ set(qt-gui_HDRS
 	../../libtools/include/helper/keyhelper.hpp
 	)
 
+file(GLOB kdb_SRCS "../kdb*")
+
 set(qt-gui_SRCS
 	src/main.cpp
 	src/treeviewmodel.cpp
@@ -74,35 +76,7 @@ set(qt-gui_SRCS
 	src/copykeycommand.cpp
 	src/cutkeycommand.cpp
 	src/importconfigurationcommand.cpp
-	../kdb/check.cpp 
-	../kdb/cmdline.cpp 
-	../kdb/command.cpp 
-	../kdb/convert.cpp 
-	../kdb/cp.cpp 
-	../kdb/export.cpp 
-	../kdb/external.cpp 
-	../kdb/file.cpp 
-	../kdb/fstab.cpp 
-	../kdb/get.cpp 
-	../kdb/import.cpp 
-	../kdb/info.cpp 
-	../kdb/ls.cpp 
-	../kdb/merge.cpp 
-	../kdb/mergehelper.cpp 
-	../kdb/metaget.cpp 
-	../kdb/metals.cpp 
-	../kdb/metaset.cpp 
-	../kdb/mount.cpp 
-	../kdb/mountbase.cpp 
-	../kdb/mv.cpp 
-	../kdb/remount.cpp 
-	../kdb/rm.cpp 
-	../kdb/set.cpp 
-	../kdb/sget.cpp 
-	../kdb/shell.cpp 
-	../kdb/test.cpp 
-	../kdb/umount.cpp 
-	../kdb/validation.cpp
+	${kdb_SRCS}
 	)
 
 set(qt-gui_RSCS
