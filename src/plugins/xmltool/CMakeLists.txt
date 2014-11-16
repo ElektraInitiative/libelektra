@@ -2,30 +2,23 @@ find_package (LibXml2 REQUIRED)
 if (LIBXML2_FOUND)
 	include (LibAddMacros)
 
-	generate_readme (xmltool)
-	add_includes (elektra-full ${CMAKE_CURRENT_BINARY_DIR})
-	include_directories (${CMAKE_CURRENT_BINARY_DIR})
-
-	add_includes (elektra-full ${LIBXML2_INCLUDE_DIR})
-	include_directories (${LIBXML2_INCLUDE_DIR})
-
-	set (SOURCES xmltool.h xmltool.c stream.c kdbtools.c)
-	add_sources (elektra-full ${SOURCES})
-	add_headers (SOURCES)
-
-	set (PLUGIN_NAME elektra-xmltool)
-	add_library (${PLUGIN_NAME} MODULE ${SOURCES})
-	target_link_libraries (${PLUGIN_NAME} elektra)
-	install (TARGETS ${PLUGIN_NAME} DESTINATION
-		lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
-	target_link_libraries (${PLUGIN_NAME} ${LIBXML2_LIBRARIES})
-
-	add_libraries(elektra-full ${LIBXML2_LIBRARIES})
+	add_plugin(xmltool
+		SOURCES
+			xmltool.h
+			xmltool.c
+			stream.c
+			kdbtools.c
+		INCLUDE_DIRECTORIES
+			${LIBXML2_INCLUDE_DIR}
+		LINK_LIBRARIES
+			${LIBXML2_LIBRARIES}
+		)
 
 	add_plugintest (xmltool
 		MEMLEAK)
 
 	install(DIRECTORY xmltool DESTINATION ${TARGET_TEST_DATA_FOLDER})
+
 else (LIBXML2_FOUND)
 	remove_plugin (xmltool "libxml2 not found")
 endif (LIBXML2_FOUND)

@@ -44,7 +44,8 @@ public:
 	static T get(ELEKTRA_UNUSED kdb::KeySet & ks,
 		kdb::Key const& spec)
 	{
-		kdb::Key key = ksLookupBySpec(ks.getKeySet(), *spec);
+		kdb::Key key = ksLookup(ks.getKeySet(), *spec,
+				ckdb::KDB_O_SPEC);
 		if (key)
 		{
 			return key.get<T>();
