@@ -7,7 +7,7 @@ Item {
 	id: metaInfoItem
 
 	width: parent.width
-	height: metaNameField.height + defaultMargins
+	height: metaNameField.height + defaultSpacing
 
 	property alias metaNameField: metaNameField
 	property alias metaValueField: metaValueField
@@ -53,13 +53,7 @@ Item {
 
 			implicitHeight: metaNameField.height
 			implicitWidth: implicitHeight
-
-			style: ButtonStyle {
-				background: Image {
-					anchors.centerIn: parent
-					source: "icons/application-exit.png"
-				}
-			}
+			iconSource: "icons/application-exit.png"
 
 			onClicked: {
 				qmlMetaKeyModel.remove(index)// remove the visual item

@@ -27,7 +27,6 @@ BasicWindow {
 
 	contents: ColumnLayout {
 		anchors.fill: parent
-		anchors.margins: defaultMargins
 		anchors.centerIn: parent
 		spacing: defaultMargins
 
