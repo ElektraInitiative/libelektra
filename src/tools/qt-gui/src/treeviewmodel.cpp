@@ -7,6 +7,7 @@
 #include <backends.hpp>
 #include <kdbprivate.h>
 #include <modules.hpp>
+#include <plugin.hpp>
 #include <plugins.hpp>
 #include <markdowndocument.h>
 #include <discountmarkdownconverter.h>
@@ -776,30 +777,30 @@ QString TreeViewModel::mountPoints() const
 QString TreeViewModel::pluginInfo(QString pluginName) const
 {
 	Modules modules;
-	KeySet conf;
-	QString info;
+	KeySet info;
+	QString infoString;
 
 	PluginPtr plugin = modules.load(pluginName.toStdString());
-	conf.append(plugin->getInfo());
+	info = plugin->getInfo();
 
 	Key root;
-	root.setName(std::string("system/elektra/modules/") + pluginName.toStdString() + "/infos");
-	Key k = conf.lookup (root);
+	root.setName(std::string("system/elektra/modules/") + plugin->name() + "/infos");
+	Key k = info.lookup(root);
 
 	if (k)
 	{
-		while ((k = conf.next()) && k.getDirName() == root.getName())
+		while ((k = info.next()) && k.getDirName() == root.getName())
 		{
-			info.append(QString::fromStdString(k.getBaseName()) + ": " + QString::fromStdString(k.getString()) + "\n\n");
+			infoString.append(QString::fromStdString(k.getBaseName()) + ": " + QString::fromStdString(k.getString()) + "\n\n");
 		}
 	}
 	else
-		info.append(tr("No information found."));
+		infoString.append(tr("No information found."));
 
 	DiscountMarkdownConverter dmc;
-	info = dmc.renderAsHtml(dmc.createDocument(info, DiscountMarkdownConverter::NoImagesOption));
+	infoString = dmc.renderAsHtml(dmc.createDocument(infoString, DiscountMarkdownConverter::NoImagesOption));
 
-	return info;
+	return infoString;
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

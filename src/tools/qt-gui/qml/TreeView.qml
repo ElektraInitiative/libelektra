@@ -102,6 +102,7 @@ ScrollView {
 									treeView.currentNode = model
 									treeView.currentItem = itemLoader
 									keyAreaSelectedItem = null
+									metaAreaModel = null
 									editKeyWindow.selectedNode = treeView.currentNode
 									forceActiveFocus()
 
