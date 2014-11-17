@@ -617,7 +617,7 @@ public:
 		m_spec.setMeta("name", m_spec.getName());
 		ckdb::elektraKeySetName(*m_spec,
 				m_context.evaluate(m_spec.getName()).c_str(),
-				ckdb::KDB_O_CASCADING_NAME);
+				KDB_O_CASCADING_NAME);
 		syncCache();  // read what we have in our context
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
@@ -713,7 +713,7 @@ private:
 			syncKeySet(); // flush out what currently is in cache
 			ckdb::elektraKeySetName(*m_spec,
 					evaluated_name.c_str(),
-					ckdb::KDB_O_CASCADING_NAME);
+					KDB_O_CASCADING_NAME);
 			syncCache();  // read what we have under new context
 		}
 	}

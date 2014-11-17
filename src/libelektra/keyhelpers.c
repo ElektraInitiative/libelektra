@@ -580,7 +580,7 @@ void keyVInit (Key *key, const char *name, va_list va)
 	int valueSizeChanged = 0;
 	size_t valueSize = 0;
 	char *owner = 0;
-	enum elektraNameOptions nameOptions = 0;
+	option_t nameOptions = 0;
 	void (*p) (void) = 0;
 
 	if (!key) return;

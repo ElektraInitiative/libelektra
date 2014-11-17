@@ -130,7 +130,7 @@ TEST(test_contextual_basic, integer)
 	KeySet ks;
 	Context c;
 	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
-			ckdb::KDB_O_CASCADING_NAME,
+			KDB_O_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
 	i = 5;
@@ -255,7 +255,7 @@ TEST(test_contextual_basic, counting)
 	// is it a specification error to have counting
 	// two times?
 	Integer i(ks, c, Key("/%counting%/%counting%",
-				ckdb::KDB_O_CASCADING_NAME,
+				KDB_O_CASCADING_NAME,
 				KEY_META, "default", s_value, KEY_END));
 
 	ASSERT_EQ((*l)() , "0");
@@ -294,12 +294,12 @@ TEST(test_contextual_basic, groups)
 
 	Integer i(ks, c, Key(
 	"/%application%/%version profile thread module%/%manufacturer type family model%/serial_number",
-	ckdb::KDB_O_CASCADING_NAME,
+	KDB_O_CASCADING_NAME,
 	KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/serial_number");
 	c.activate<MainApplicationLayer>();
 	String s(ks, c, Key("/%x%",
-		ckdb::KDB_O_CASCADING_NAME,
+		KDB_O_CASCADING_NAME,
 		KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer>(s);
 	ASSERT_EQ(i.getSpec().getName() , "/main/%/%/serial_number");
@@ -344,7 +344,7 @@ TEST(test_contextual_basic, integer_copy)
 	KeySet ks;
 	Context c;
 	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
-		ckdb::KDB_O_CASCADING_NAME,
+		KDB_O_CASCADING_NAME,
 		KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
 	i = 5;
@@ -455,13 +455,13 @@ TEST(test_contextual_basic, evaluate)
 	KeySet ks;
 	Integer i(ks, c, Key(
 	"/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
-	ckdb::KDB_O_CASCADING_NAME,
+	KDB_O_CASCADING_NAME,
 	KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/%/%/%/%/%/%/serial_number");
 	c.activate<MainApplicationLayer>();
 	ASSERT_EQ(i.getSpec().getName() , "/main/%/%/%/%/%/%/%/%/serial_number");
 	String s(ks, c, Key("/%x%", 
-		ckdb::KDB_O_CASCADING_NAME,
+		KDB_O_CASCADING_NAME,
 		KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer>(s);
 	ASSERT_EQ(i.getSpec().getName() , "/main/%/anonymous/%/%/%/%/%/%/serial_number");
@@ -570,7 +570,7 @@ TEST(test_contextual_basic, threads)
 	KeySet ks;
 	Context c;
 	kdb::Integer n(ks, c,  Key("/%thread%/%printer%/test",
-					ckdb::KDB_O_CASCADING_NAME,
+					KDB_O_CASCADING_NAME,
 					KEY_META, "default", s_value, KEY_END));
 
 
