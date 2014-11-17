@@ -63,7 +63,7 @@ void elektraAddLineComment(KeySet *comments, size_t spaces, const char *commentS
 	/* initialize the comment key */
 	if (ksGetSize (comments) == 0)
 	{
-		lineComment = keyNew ("comment/#", KDB_O_META_NAME, KEY_END);
+		lineComment = keyNew ("comment/#", KEY_META_NAME, KEY_END);
 		elektraArrayIncName (lineComment);
 		elektraArrayIncName (lineComment);
 	}
@@ -71,7 +71,7 @@ void elektraAddLineComment(KeySet *comments, size_t spaces, const char *commentS
 	{
 		// TODO: doing all this every time is very unefficient. Arrayhandling
 		// definitely needs to be improved
-		Key *arrayBase = keyNew("comment", KDB_O_META_NAME, KEY_END);
+		Key *arrayBase = keyNew("comment", KEY_META_NAME, KEY_END);
 		KeySet *array = elektraArrayGet(arrayBase, comments);
 		lineComment = elektraArrayGetNextKey (array);
 		keyDel(arrayBase);
@@ -95,7 +95,7 @@ void elektraAddLineComment(KeySet *comments, size_t spaces, const char *commentS
  */
 void elektraAddInlineComment(KeySet *comments, size_t spaces, const char *commentStart, const char *comment)
 {
-	Key *inlineComment = keyNew ("comment/#", KDB_O_META_NAME, KEY_END);
+	Key *inlineComment = keyNew ("comment/#", KEY_META_NAME, KEY_END);
 	elektraArrayIncName (inlineComment);
 
 	elektraAddCommentInfo(comments, inlineComment, spaces, commentStart, comment);

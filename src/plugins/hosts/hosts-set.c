@@ -62,7 +62,7 @@ static void writeLineComments(Key *key, FILE *fp)
 {
 	// TODO: this is really inefficient
 	KeySet *metaKeys = elektraKeyGetMetaKeySet(key);
-	Key *commentParent = keyNew("comment", KDB_O_META_NAME, KEY_END);
+	Key *commentParent = keyNew("comment", KEY_META_NAME, KEY_END);
 	KeySet *comments = elektraArrayGet(commentParent, metaKeys);
 	keyDel(commentParent);
 
