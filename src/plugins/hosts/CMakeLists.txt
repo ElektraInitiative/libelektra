@@ -3,7 +3,8 @@ include(LibAddMacros)
 add_plugin(hosts
 	SOURCES
 		hosts.h
-		hosts.c
+		hosts-get.c
+		hosts-set.c
 		keymetaformatting.h
 		keymetaformatting.c
 	)
