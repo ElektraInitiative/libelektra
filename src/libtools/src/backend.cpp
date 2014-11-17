@@ -69,6 +69,7 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	{
 		names.push_back(it->mountpoint);
 		namesInString += it->mountpoint;
+		namesInString += " ";
 	}
 
 
@@ -98,6 +99,10 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 		};
 	}
 
+	mp = mountpoint.getName();
+	name = mountpoint.getName();
+	std::replace(name.begin(), name.end(), '/', '_');
+
 	if (mp.at(0) == '/')
 	{
 		Key skmp ("system" + mp, KEY_END);
@@ -123,10 +128,6 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 				);
 		}
 	}
-
-	mp = mountpoint.getName();
-	name = mountpoint.getName();
-	std::replace(name.begin(), name.end(), '/', '_');
 }
 
 

@@ -19,7 +19,6 @@ class MountBaseCommand : public Command
 protected:
 	void readMountConf(Cmdline const& cl);
 	void fixRootKey(Cmdline const& cl);
-	void getName(Cmdline const& cl);
 	void getMountpoint(Cmdline const& cl);
 	void askForConfirmation(Cmdline const& cl);
 	void doIt();

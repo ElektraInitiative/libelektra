@@ -84,7 +84,9 @@ void MountCommand::processArguments(Cmdline const& cl)
 
 void MountCommand::buildBackend(Cmdline const& cl)
 {
-	Backend backend (name, mp);
+	Backend backend;
+
+	backend.setMountpoint(Key(mp, ckdb::KDB_O_CASCADING_NAME, KEY_END), mountConf);
 
 	if (cl.debug)
 	{
@@ -310,7 +312,6 @@ int MountCommand::execute(Cmdline const& cl)
 
 	processArguments(cl);
 	fixRootKey(cl);
-	getName(cl);
 	getMountpoint(cl);
 	buildBackend(cl);
 	askForConfirmation(cl);

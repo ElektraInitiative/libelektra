@@ -11,6 +11,8 @@
 #include <backend.hpp>
 #include <backends.hpp>
 
+#include <kdbproposal.h>
+
 #include <iostream>
 #include <string>
 #include <kdb.hpp>
@@ -47,7 +49,7 @@ TEST(MergeResult, ResolveConflictDeletesConflictMeta)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint(Key("/", KDB_O_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
+	b.setMountpoint(Key("/", ckdb::KDB_O_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
 	b.addPlugin("resolver");
 	b.addPlugin("dump");
 	EXPECT_TRUE(b.validated());
