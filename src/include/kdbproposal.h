@@ -86,6 +86,8 @@ KeySet *elektraKeyGetMetaKeySet(const Key *key);
 
 int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
 
+KeySet* ksDeepDup(const KeySet *source);
+
 // is this needed? -> rather not
 Key *ksPrev(KeySet *ks);
 Key *ksPopAtCursor(KeySet *ks, cursor_t c);
