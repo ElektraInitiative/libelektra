@@ -65,7 +65,8 @@ void elektraAddLineComment(KeySet *comments, size_t spaces, const char *commentS
 	{
 		lineComment = keyNew ("comment/#", KEY_META_NAME, KEY_END);
 		elektraArrayIncName (lineComment);
-		elektraArrayIncName (lineComment);
+		ksAppendKey (comments, lineComment);
+		lineComment = elektraArrayGetNextKey (comments);
 	}
 	else
 	{
