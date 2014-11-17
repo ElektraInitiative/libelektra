@@ -194,25 +194,41 @@ int elektraArrayIncName(Key *key)
 	return 0;
 }
 
+/**
+ * Returns true (1) for all keys that are part of the array
+ * identified by the supplied array parent. Only the array
+ * eleements themself, but no subkeys of them will be filtered
+ *
+ * @pre The supplied argument has to be of type (const Key *)
+ * and is the parent of the array to be extracted. For example
+ * if the keys of the array comment/# are to be extracted, a key
+ * with the name "comment" has to be supplied
+ *
+ * @param key the key to be checked against the array
+ * @param argument the array parent
+ * @return 1 if the key is part of the array identified by the
+ * array parent, 0 otherwise
+ *
+ */
 static int arrayFilter(const Key *key, void *argument)
 {
 	const Key *arrayParent = (const Key *) argument;
-
-	if (!arrayParent) return 0;
 
 	return keyIsDirectBelow(arrayParent, key) && elektraArrayValidateName(key);
 }
 
 
 /**
- *
  * Return all the array keys below the given arrayparent
  * The arrayparent itself is not returned.
  * For example, if user/config/# is an array,
  * user/config is the array parent.
  * Only the direct array keys will be returned. This means
- * that for eympale user/config/#1/key will not be included,
- * but only user/config/#1
+ * that for example user/config/#1/key will not be included,
+ * but only user/config/#1.
+ *
+ * A new keyset will be allocated for the resulting keys.
+ * This means that the caller must ksDel the resulting keyset.
  *
  * @param arrayParent the parent of the array to be returned
  * @param keys the keyset containing the array keys.
@@ -235,8 +251,11 @@ KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
  *
  * Return the next key in the given array.
  * The function will automatically allocate memory
- * for a new key and name it accordingly. The
- * supplied keyset must contain only valid array keys.
+ * for a new key and name it accordingly.
+ *
+ * @pre The supplied keyset must contain only valid array keys.
+ *
+ * The caller has to keyDel the resulting key.
  *
  * @param arraykeys the array where the new key will belong to
  *

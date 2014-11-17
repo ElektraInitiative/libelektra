@@ -48,7 +48,7 @@ static void elektraAddCommentInfo(KeySet *comments, Key *commentBase, size_t spa
  *
  * The following rules apply to the comment subkeys (i.e. space, start)
  * - a space key is only omitted for newline comments that do not contain spaces
- *   each other line comment will have a space key (probably witht he value 0)
+ *   each other line comment will have a space key (probably with he value 0)
  * - the start key is only present if the comment start sequence is not NULL
  *
  * @param comments the keyset that should hold the created keys
