@@ -227,7 +227,7 @@ KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
 	if (!keys) return 0;
 
 	KeySet *arrayKeys = ksNew(ksGetSize(keys), KS_END);
-	elektraKsFilterArgument(arrayKeys, keys, &arrayFilter, (void *)arrayParent);
+	elektraKsFilter(arrayKeys, keys, &arrayFilter, (void *)arrayParent);
 	return arrayKeys;
 }
 

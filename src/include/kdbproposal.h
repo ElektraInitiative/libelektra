@@ -75,8 +75,8 @@ Key *elektraArrayGetNextKey(KeySet *arrayKeys);
 KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
 
 KeySet *elektraKeyGetMetaKeySet(const Key *key);
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k));
-int elektraKsFilterArgument (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
+
+int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
 
 #ifdef __cplusplus
 }
