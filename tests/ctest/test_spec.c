@@ -145,7 +145,7 @@ static void test_lookupCascading()
 	printf ("Test lookup cascading\n");
 
 	Key *specKey = keyNew("/abc",
-			KDB_O_CASCADING_NAME,
+			KEY_CASCADING_NAME,
 			KEY_META, "override/#0", "/something",
 			KEY_END);
 	Key *k = 0;
@@ -161,7 +161,7 @@ static void test_lookupCascading()
 	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find override key");
 	keySetMeta(specKey, "override/#0", "");
 	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
-	elektraKeySetName(specKey, "/else", KDB_O_CASCADING_NAME);
+	elektraKeySetName(specKey, "/else", KEY_CASCADING_NAME);
 	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find key itself");
 
 	keyDel(specKey);

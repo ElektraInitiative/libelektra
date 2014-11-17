@@ -1567,10 +1567,10 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 		m = keyGetMeta(specKey, buffer);
 		if (!m) break;
 		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+		if (!k) k = keyNew(keyString(m), KEY_CASCADING_NAME,
 				KEY_END);
 		else elektraKeySetName(k, keyString(m),
-				KDB_O_CASCADING_NAME);
+				KEY_CASCADING_NAME);
 		ret=ksLookup(ks, k, 0);
 		if (ret) goto finished;
 		++i;
@@ -1589,10 +1589,10 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 		m = keyGetMeta(specKey, buffer);
 		if (!m) break;
 		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KDB_O_CASCADING_NAME,
+		if (!k) k = keyNew(keyString(m), KEY_CASCADING_NAME,
 				KEY_END);
 		else elektraKeySetName(k, keyString(m),
-				KDB_O_CASCADING_NAME);
+				KEY_CASCADING_NAME);
 		ret=ksLookup(ks, k, 0);
 		if (ret) goto finished;
 		++i;
@@ -1953,7 +1953,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 
 	if (name[0] == 'u' && name[4] == ':')
 	{
-		Key *key = keyNew(name, KDB_O_CASCADING_NAME, KEY_END);
+		Key *key = keyNew(name, KEY_CASCADING_NAME, KEY_END);
 		found = ksLookup(ks, key, options);
 		keyDel (key);
 	}

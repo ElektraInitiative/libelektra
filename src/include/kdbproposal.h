@@ -53,14 +53,20 @@ enum elektraLookupOptions
 	KDB_O_CREATE=1<<16
 };
 
-enum elektraNameOptions
+/*
+TODO: implement
+enum elektraNamespace
 {
-	// TODO should be KEY_ too?
-	KDB_O_CASCADING_NAME=1<<20,
-	KDB_O_META_NAME=1<<21,
-	KDB_O_EMPTY_NAME=1<<22
-
+	KDB_NS_NONE=0,
+	KDB_NS_EMPTY=1,
+	KDB_NS_META=1<<1,
+	KDB_NS_CASCADING=1<<2,
+	KDB_NS_USER=1<<3,
+	KDB_NS_SYSTEM=1<<4
 };
+
+int keyGetNamespace(Key const* key);
+*/
 
 // alternative to keyAddBaseName (adds full name)
 ssize_t keyAddName(Key *key, const char *addName);
@@ -71,7 +77,7 @@ int keyLock(Key *key,
 
 // this might become the new keySetName
 ssize_t elektraKeySetName(Key *key, const char *newName,
-	/*option_t*/ enum elektraNameOptions options);
+	option_t options);
 
 
 // is this needed? -> rather not

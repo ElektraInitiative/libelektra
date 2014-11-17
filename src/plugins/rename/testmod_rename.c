@@ -104,7 +104,7 @@ static void test_simpleCutOnGet () {
 static void test_metaCutOnGet()
 {
 	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew (0, KS_END);
 	PLUGIN_OPEN("rename");
 
 	KeySet *ks = createSimpleMetaTestKeys();
@@ -160,7 +160,7 @@ static void test_withoutConfig()
 {
 	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
 	Key *parentKeyCopy = keyDup(parentKey);
-	KeySet *conf = ksNew (0);
+	KeySet *conf = ksNew (0, KS_END);
 	PLUGIN_OPEN("rename");
 
 	KeySet *ks = createSimpleTestKeys();

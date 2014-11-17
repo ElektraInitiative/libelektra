@@ -915,52 +915,52 @@ static void test_elektraKeySetName()
 	Key *key = keyNew("", KEY_END);
 	Key *dup = 0;
 
-	succeed_if(elektraKeySetName(key, "/", KDB_O_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if(elektraKeySetName(key, "/", KEY_CASCADING_NAME) != -1, "could not set cascading name");
 	succeed_if_same_string(keyName(key), "/");
-	elektraKeySetName(key, "/cascading", KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "/cascading", KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "/cascading");
 	keyDel(dup);
 
-	elektraKeySetName(key, "/cascading/s/deep/below", KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "/cascading/s/deep/below", KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading/s/deep/below");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "/cascading/s/deep/below");
 	keyDel(dup);
 
-	elektraKeySetName(key, "user/cascading/s/deep/below", KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "user/cascading/s/deep/below", KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "user/cascading/s/deep/below");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "user/cascading/s/deep/below");
 	keyDel(dup);
 
-	elektraKeySetName(key, "system/cascading/s/deep/below", KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "system/cascading/s/deep/below", KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "system/cascading/s/deep/below");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "system/cascading/s/deep/below");
 	keyDel(dup);
 
-	elektraKeySetName(key, "order", KDB_O_META_NAME);
+	elektraKeySetName(key, "order", KEY_META_NAME);
 	succeed_if_same_string(keyName(key), "order");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "order");
 	keyDel(dup);
 
-	elektraKeySetName(key, "check/type", KDB_O_META_NAME);
+	elektraKeySetName(key, "check/type", KEY_META_NAME);
 	succeed_if_same_string(keyName(key), "check/type");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "check/type");
 	keyDel(dup);
 
-	elektraKeySetName(key, "", KDB_O_EMPTY_NAME);
+	elektraKeySetName(key, "", KEY_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "");
 	keyDel(dup);
 
-	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_EMPTY_NAME);
+	elektraKeySetName(key, "", KEY_META_NAME | KEY_EMPTY_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
 	dup = keyDup(key);
@@ -974,21 +974,21 @@ static void test_elektraKeySetName()
 	succeed_if_same_string(keyName(dup), "");
 	keyDel(dup);
 
-	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "", KEY_META_NAME | KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "");
 	keyDel(dup);
 
-	elektraKeySetName(key, "/cascading", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "/cascading", KEY_META_NAME | KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading");
 	succeed_if(key->key != 0, "null pointer?");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "/cascading");
 	keyDel(dup);
 
-	elektraKeySetName(key, "meta", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "meta", KEY_META_NAME | KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "meta");
 	succeed_if(key->key != 0, "null pointer?");
 	dup = keyDup(key);
@@ -1191,7 +1191,7 @@ static void test_keyCopy()
 	succeed_if_same_string(keyName(k), "");
 	succeed_if_same_string(keyName(c), "");
 
-	succeed_if (elektraKeySetName(k, "/abc", KDB_O_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if (elektraKeySetName(k, "/abc", KEY_CASCADING_NAME) != -1, "could not set cascading name");
 	succeed_if(keyCopy(c, k) != -1, "could not copy");
 	succeed_if_same_string(keyName(k), "/abc");
 	succeed_if_same_string(keyName(c), "/abc");
