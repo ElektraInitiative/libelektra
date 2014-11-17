@@ -19,6 +19,9 @@ macro (do_glib_test file)
 		NAME ${name}
 		COMMAND "${CMAKE_BINARY_DIR}/bin/${name}" "${CMAKE_CURRENT_SOURCE_DIR}"
 	)
+
+	set_property(TEST ${name} PROPERTY
+		LABELS memleak bindings)
 endmacro (do_glib_test)
 
 file (GLOB TESTS testglib_*.c)

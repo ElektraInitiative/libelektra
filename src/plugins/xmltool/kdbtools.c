@@ -169,6 +169,8 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 		if (isdir) keySetDir(newKey);
 		if (isbin) keySetMeta (newKey, "binary", "");
 
+		// TODO: should parse arbitrary attributes as metadata
+
 		/* Parse everything else */
 		while (!end) {
 			xmlTextReaderRead(reader);

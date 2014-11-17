@@ -51,6 +51,12 @@ public:
 	bool verbose; /*!< Be more verbose. */
 	bool version; /*!< Return version info instead of the normal action.. */
 	bool withoutElektra;
+	bool null;
+	bool first;
+	bool second;
+	bool third;
+	std::string format;
+	std::string plugins;
 
 	/** The path to the kdb exectuable. */
 	std::string executable;

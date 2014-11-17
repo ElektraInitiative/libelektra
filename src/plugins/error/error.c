@@ -53,7 +53,7 @@ int elektraErrorOpen(Plugin *handle ELEKTRA_UNUSED, Key *parentKey)
 		return 0;
 	}
 
-	Key *warning = ksLookupByName(conf, "/on_open/warning", 0);
+	Key *warning = ksLookupByName(conf, "/on_open/warnings", 0);
 	if (warning)
 	{
 		elektraTriggerWarnings (atoi(keyString(warning)), parentKey, "from error plugin in kdbOpen");

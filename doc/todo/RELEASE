@@ -48,6 +48,8 @@ Rebuild cleanly, run all tests and also check for memleaks:
 
 Check if there are really >=76 or >=54 tests
 
+Check if [doc/todo/API] is fulfilled
+
 
 = Preperation =
 
@@ -55,6 +57,11 @@ Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
  export VERSION=0.8.9
+
+
+== Tag the version ==
+
+ git tag --sign -f $VERSION
 
 
 == Prepare Source Package ==

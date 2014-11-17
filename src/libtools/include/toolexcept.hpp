@@ -69,19 +69,14 @@ struct FileNotValidException : public BackendCheckException
 {
 	virtual const char* what() const throw()
 	{
-		return  "The path/mountpoint combination does not work this way.\n"
-			"Try to add another path or mountpoint instead.\n"
+		return  "The path you entered is invalid.\n"
+			"Try to add another path instead.\n"
 			"\n"
-			"Filenames for cascading and user mountpoints\n"
-			"are not allowed to be absolute (starting with /),\n"
-			"because user configuration files are by definition\n"
-			"different files per-user.\n"
+			"Filenames are typically (depending on\n"
+			"resolver) not allowed to contain '..'.\n"
 			"\n"
-			"If you want to mount an absolute filename, mount\n"
-			"it into system/ regardless if it is /etc or somewhere\n"
-			"else. Note that the file permissions will apply, so\n"
-			"it might be possible for non-root to modify this path\n"
-			"of the system-hierarchy.\n"
+			"For more information see:\n"
+			" kdb info <your resolver>\n"
 			;
 	}
 };
@@ -93,6 +88,23 @@ struct MountpointInvalidException : public BackendCheckException
 		return  "Given mountpoint is not a valid keyname, will abort\n"
 			"Examples: system/hosts or user/sw/app";
 	}
+};
+
+struct MountpointAlreadyInUseException : public BackendCheckException
+{
+	MountpointAlreadyInUseException(std::string str) :
+		m_str(str)
+	{}
+
+	virtual ~MountpointAlreadyInUseException() throw()
+	{}
+
+	virtual const char* what() const throw()
+	{
+		return m_str.c_str();
+	}
+
+	std::string m_str;
 };
 
 struct PluginAlreadyInserted: public PluginCheckException

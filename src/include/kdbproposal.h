@@ -27,11 +27,6 @@ extern "C" {
 #endif
 
 
-// is this needed?
-Key *ksPrev(KeySet *ks);
-Key *ksPopAtCursor(KeySet *ks, cursor_t c);
-Key *ksLookupBySpec(KeySet *ks, Key *specKey);
-
 // is the unescaped name useful for applications?
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
@@ -52,13 +47,26 @@ enum elektraLockOptions
 	KEY_LOCK_META=1<<19
 };
 
-enum elektraNameOptions
+enum elektraLookupOptions
 {
-	KDB_O_CASCADING_NAME=1<<20,
-	KDB_O_META_NAME=1<<21,
-	KDB_O_EMPTY_NAME=1<<22
-
+	KDB_O_SPEC=1<<15,
+	KDB_O_CREATE=1<<16
 };
+
+/*
+TODO: implement
+enum elektraNamespace
+{
+	KDB_NS_NONE=0,
+	KDB_NS_EMPTY=1,
+	KDB_NS_META=1<<1,
+	KDB_NS_CASCADING=1<<2,
+	KDB_NS_USER=1<<3,
+	KDB_NS_SYSTEM=1<<4
+};
+
+int keyGetNamespace(Key const* key);
+*/
 
 // alternative to keyAddBaseName (adds full name)
 ssize_t keyAddName(Key *key, const char *addName);
@@ -69,7 +77,7 @@ int keyLock(Key *key,
 
 // this might become the new keySetName
 ssize_t elektraKeySetName(Key *key, const char *newName,
-	/*option_t*/ enum elektraNameOptions options);
+	option_t options);
 
 Key *elektraArrayGetNextKey(KeySet *arrayKeys);
 KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
@@ -77,6 +85,10 @@ KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
 KeySet *elektraKeyGetMetaKeySet(const Key *key);
 
 int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
+
+// is this needed? -> rather not
+Key *ksPrev(KeySet *ks);
+Key *ksPopAtCursor(KeySet *ks, cursor_t c);
 
 #ifdef __cplusplus
 }

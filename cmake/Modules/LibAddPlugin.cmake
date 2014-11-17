@@ -1,44 +1,27 @@
 include(LibParseArguments)
 include(LibAddMacros)
 
-function(add_plugin_helper HELPER_NAME)
-	parse_arguments(ARG
-		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
-		"" # no option
-		${ARGN}
-		)
-
-	add_headers(ARG_SOURCES)
-	add_library (${HELPER_NAME} STATIC ${ARG_SOURCES})
-
-	set_property(TARGET ${HELPER_NAME}
-		APPEND PROPERTY COMPILE_DEFINITIONS
-		${ARG_COMPILE_DEFINITIONS}
-		"HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-		)
-
-	set_property(TARGET ${HELPER_NAME}
-		APPEND PROPERTY INCLUDE_DIRECTORIES
-		${ARG_INCLUDE_DIRECTORIES}
-		${CMAKE_BINARY_DIR}/src/include
-		${CMAKE_SOURCE_DIR}/src/include
-		)
-
-	set_property(TARGET ${HELPER_NAME}
-		APPEND PROPERTY COMPILE_FLAGS
-		${CMAKE_PIC_FLAGS}) # needed for shared libraries
-
-	# needs cmake 3.0:
-	#set_property(TARGET ${PLUGIN_OBJS}
-	#	PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
-endfunction()
-
-# do not add elektra as library
-# only add libraries found by cmake and helper libraries created with
-# add_plugin_helper
+# add_plugin: add a plugin to Elektra
+#
+# SOURCES:
+#  The sources of the plugin
+#
+# SHARED_SOURCES:
+#  Will be added only once without any per-variant macros nor
+#  COMPILE_DEFINITIONS.
+#
+# LINK_LIBRARIES:
+#  add here only add libraries found by cmake
+#  do not add dependencies to Elektra
+#
+# COMPILE_DEFINITIONS:
+#  Set additional macros for per-variant compilation.
+#
+# INCLUDE_DIRECTORIES:
+#  Append to include path (globally+plugin specific).
 function(add_plugin PLUGIN_SHORT_NAME)
 	parse_arguments(ARG
-		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
+		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
 		"CPP"
 		${ARGN}
 		)
@@ -47,6 +30,7 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	set (PLUGIN_NAME elektra-${PLUGIN_SHORT_NAME})
 	set (PLUGIN_OBJS ${PLUGIN_NAME}-objects)
 	set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:${PLUGIN_OBJS}>")
+	file(GLOB PLUGIN_SHARED_SOURCES ${ARG_SHARED_SOURCES})
 
 	#message (STATUS "name: ${PLUGIN_NAME}")
 	#message (STATUS "srcs are: ${ARG_SOURCES}")
@@ -91,7 +75,8 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	#	PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 	if (BUILD_SHARED)
-		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES})
+		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES}
+			${PLUGIN_SHARED_SOURCES})
 		target_link_libraries (${PLUGIN_NAME} elektra)
 		target_link_libraries (${PLUGIN_NAME}
 			${ARG_LINK_LIBRARIES})
@@ -113,8 +98,11 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	endif()
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS"
-		${PLUGIN_TARGET_OBJS})
+		${PLUGIN_TARGET_OBJS}
+		${PLUGIN_SHARED_SOURCES}
+		)
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_LIBRARIES"
-		"${ARG_LINK_LIBRARIES}")
+		"${ARG_LINK_LIBRARIES}"
+		)
 endfunction()

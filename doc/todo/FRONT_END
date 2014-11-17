@@ -1,0 +1,13 @@
+## array support ##
+
+allow iteration over array members
+
+
+## logging ##
+
+add Logging Policy to log individual access of (in-memory) keys
+
+
+## threading ##
+
+add multi-thread safe locking Policy

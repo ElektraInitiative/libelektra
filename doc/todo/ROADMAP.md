@@ -8,13 +8,8 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.10 #
 
-fix types:
-	type checker should check like defined in schema
-	let json use same types (double, boolean, nothing for string)
-
-allow more key names
-	starting with /
-	meta keynames
+Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
+for other activities of the current release.
 
 ## powerful cascading ##
 
@@ -40,6 +35,7 @@ getRootKeys vs. fixed
 applications should only need to use:
 kdbGet("/path/to/my/application")
 ksLookup("/path/to/my/application/dir/key")
+	(and even the strings can be avoided by code generation)
 
 defaults are hardcoded (for system without /etc)
 	just for information in spec
@@ -61,3 +57,7 @@ full coverage of all plugins in end-to-end test
 
 rebase plugin
 xdg resolver
+
+fix types:
+	type checker should check like defined in schema
+	let json use same types (double, boolean, nothing for string)

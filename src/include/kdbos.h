@@ -106,13 +106,13 @@
 
 /**Default Mode.
  * This mode will be used for new files*/
-#define KDB_FILE_MODE 0664
+#define KDB_FILE_MODE 0600
 
 /**Default directory mode.
  * This mode will be used for new directories.
  * Will be ORed together with KDB_FILE_MODE
  * to get the permissions of an directory.*/
-#define KDB_DIR_MODE 0111
+#define KDB_DIR_MODE 0100
 
 
 

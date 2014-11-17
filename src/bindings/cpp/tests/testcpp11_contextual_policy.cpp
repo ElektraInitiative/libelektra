@@ -22,7 +22,7 @@ TEST(test_contextual_policy, staticGetPolicy)
 	Context c;
 	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy<int>>> cv
 		(ks, c, Key("/test",
-			ckdb::KDB_O_CASCADING_NAME,
+			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
@@ -44,7 +44,8 @@ public:
 	static T get(ELEKTRA_UNUSED kdb::KeySet & ks,
 		kdb::Key const& spec)
 	{
-		kdb::Key key = ksLookupBySpec(ks.getKeySet(), *spec);
+		kdb::Key key = ksLookup(ks.getKeySet(), *spec,
+				ckdb::KDB_O_SPEC);
 		if (key)
 		{
 			return key.get<T>();
@@ -63,7 +64,7 @@ TEST(test_contextual_policy, dynamicGetPolicy)
 	Context c;
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy<int>>> cv
 		(ks, c, Key("/test",
-			ckdb::KDB_O_CASCADING_NAME,
+			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
 			KEY_META, "override/#0", "user/available",
 			KEY_END));
@@ -100,7 +101,7 @@ TEST(test_contextual_policy, root)
 	Context c;
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy<int>>> cv
 		(ks, c, Key("/",
-			ckdb::KDB_O_CASCADING_NAME,
+			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
 			KEY_META, "override/#0", "user/available",
 			KEY_END));
@@ -126,7 +127,7 @@ public:
 			context_,
 			kdb::Key(
 				"/",
-				ckdb::KDB_O_CASCADING_NAME,
+				KEY_CASCADING_NAME,
 				KEY_END))
 	{}
 };
@@ -181,7 +182,7 @@ public:
 			context_,
 			kdb::Key(
 				"/",
-				ckdb::KDB_O_CASCADING_NAME,
+				KEY_CASCADING_NAME,
 				KEY_END)),
 		m_m(ks_, context_)
 	{}

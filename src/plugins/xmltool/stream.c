@@ -79,7 +79,7 @@
  * String generated is of the form:
  * @verbatim
 	<key name="system/sw/xorg/Monitor/Monitor0/Name"
-		type="string" uid="root" gid="root" mode="0660">
+		type="string" uid="root" gid="root" mode="0600">
 
 		<value>Samsung TFT panel</value>
 		<comment>My monitor</comment>
@@ -89,7 +89,7 @@
 
  * @verbatim
 	<key parent="system/sw/xorg/Monitor/Monitor0" basename="Name"
-		type="string" uid="root" gid="root" mode="0660">
+		type="string" uid="root" gid="root" mode="0600">
 
 		<value>Samsung TFT panel</value>
 		<comment>My monitor</comment>
@@ -126,7 +126,7 @@ ssize_t keyToStream(const Key *key, FILE* stream, option_t options)
  * @c "system/sw/xorg", the generated string is of the form:
  * @verbatim
 	<key basename="Monitor/Monitor0/Name"
-		type="string" uid="root" gid="root" mode="0660">
+		type="string" uid="root" gid="root" mode="0600">
 
 		<value>Samsung TFT panel</value>
 		<comment>My monitor</comment>
@@ -171,9 +171,6 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 	ssize_t written=0;
 	char buffer[KDB_MAX_PATH_LENGTH];
 
-	uid_t uid = getuid();
-	gid_t gid = getgid();
-
 	/* Write key name */
 	if (parent) {
 		/* some logic to see if we should print only the relative basename */
@@ -198,11 +195,6 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 	}
 
 
-	if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
-	else written+=fprintf(stream,"\n       ");
-
-
-
 	/* Key type
 	TODO: xml schema does not output type
 	if (options & KDB_O_NUMBERS) {
@@ -216,16 +208,14 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 	}
 	*/
 
-	if (keyGetUID (key) != uid) written+=fprintf(stream," uid=\"%d\"", (int)keyGetUID (key));
-	if (keyGetGID (key) != gid) written+=fprintf(stream," gid=\"%d\"", (int)keyGetGID (key));
+	if (keyGetUID (key) != (uid_t)-1) written+=fprintf(stream," uid=\"%d\"", (int)keyGetUID (key));
+	if (keyGetGID (key) != (gid_t)-1) written+=fprintf(stream," gid=\"%d\"", (int)keyGetGID (key));
 
-#if defined(S_IRWXU) && defined(S_IRWXG) && defined(S_IRWXO)
-	written+=fprintf(stream," mode=\"0%o\"",
-		key->mode & (S_IRWXU|S_IRWXG|S_IRWXO));
-#else
-	written+=fprintf(stream," mode=\"0%o\"",
-		keyGetMode(key));
-#endif
+	if (keyGetMode(key) != KDB_FILE_MODE)
+	{
+		written+=fprintf(stream," mode=\"0%o\"",
+			keyGetMode(key));
+	}
 
 
 	if (!key->data.v && !keyComment(key)) { /* no data AND no comment */

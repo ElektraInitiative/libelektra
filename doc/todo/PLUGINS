@@ -49,30 +49,16 @@ on the file (in the value of the parentKey), including:
 
 # Helper plugins #
 
-## name conversion ##
+## rename ##
 
-rename plugin
+further renaming features
 
-trim
-encoding
-
+recode of names (using iconv)
 Namecencode
 nameutf8encode
 namehexencode
 
-make name lowercase
-	(case sensitivity can be error prone)
-
-rebase: remove/add a common prefix after parentKey
-	cut of common basename below mountpoint), e.g. with config
-rebase=org/freedesktop/openicc
-system/org/freedesktop/openicc/org/freedesktop/openicc/device ->
-system/org/freedesktop/openicc/device
-
-Additional interesting features: trim, lowercase, arbitrary recodings
-via python/lua function
-
-recode of names (using iconv)
+arbitrary encodings via python/lua function
 
 
 ## fix Limitations ##

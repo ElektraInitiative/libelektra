@@ -25,6 +25,19 @@ namespace kdb
 namespace tools
 {
 
+std::vector<std::string> listAllAvailablePlugins()
+{
+	std::vector<std::string> ret;
+	std::string allPlugins = ELEKTRA_PLUGINS;
+	std::istringstream ss(allPlugins);
+	std::string plugin;
+	while(getline(ss, plugin, ';'))
+	{
+		ret.push_back(plugin);
+	}
+	return ret;
+}
+
 
 Plugins::Plugins () :
 	plugins (NR_OF_PLUGINS),

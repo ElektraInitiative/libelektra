@@ -76,6 +76,7 @@ Rewrite unwanted characters with different techniques
 Transformations:
 
 - [keytometa](keytometa) transforms keys to metadata
+- [rename](rename) renames keys according to different rules
 
 Doing other stuff:
 
@@ -114,6 +115,7 @@ copied by another plugin just before):
 - [network](network) by using network APIs
 - [path](path) by checking files on filesystem
 - [type](type) using runtime type checking (CORBA types)
+
 
 
 ## Others ##

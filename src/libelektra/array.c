@@ -72,7 +72,7 @@ int elektraArrayValidateName(const Key *key)
 	return 1;
 }
 
-int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex)
+int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex)
 {
 
 	int errnosave = errno;
@@ -94,10 +94,13 @@ int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex)
 		return -1;
 	}
 
+	/*
+	overflow not possible, cannot be larger than largest number
 	if (*oldIndex >= INT64_MAX) // overflow
 	{
 		return -1;
 	}
+	*/
 	return 0;
 }
 
@@ -113,12 +116,12 @@ int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex)
  * @retval 0 on success
  * @retval -1 on error
  */
-int elektraWriteArrayNumber(char *newName, int64_t newIndex)
+int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex)
 {
 	// now we fill out newName
 	size_t index = 0; // index of newName
 	newName[index++] = '#';
-	int64_t i = newIndex/10;
+	kdb_long_long_t i = newIndex/10;
 
 	while (i>0)
 	{
@@ -170,7 +173,7 @@ int elektraArrayIncName(Key *key)
 		++baseName;
 	}
 
-	int64_t oldIndex  = 0;
+	kdb_long_long_t oldIndex  = 0;
 	if (!arrayElement)
 	{
 		// we have a start element
@@ -184,7 +187,7 @@ int elektraArrayIncName(Key *key)
 		}
 	}
 
-	int64_t newIndex = oldIndex+1; // we increment by one
+	kdb_long_long_t newIndex = oldIndex+1; // we increment by one
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 

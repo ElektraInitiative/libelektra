@@ -93,7 +93,7 @@ static void test_elektraEmptyKeys()
 	Key *key = keyNew("", KEY_END);
 	KeySet *ks = ksNew(0, KS_END);
 
-	elektraKeySetName(key, "", KDB_O_META_NAME | KDB_O_CASCADING_NAME);
+	elektraKeySetName(key, "", KEY_META_NAME | KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "");
 	succeed_if(key->key != 0, "null pointer?");
 	ksAppendKey(ks, key);
@@ -117,26 +117,48 @@ static void test_cascadingLookup()
 		k3 = keyNew("user/benchmark/override/#3",0),
 		KS_END);
 	Key *search = keyNew ("/benchmark/override/#0",
-		KDB_O_CASCADING_NAME, KEY_END);
+		KEY_CASCADING_NAME, KEY_END);
 	Key *found = ksLookup(ks, search, 0);
 	succeed_if(found == k0, "found wrong key");
 
 	elektraKeySetName(search, "/benchmark/override/#1",
-		KDB_O_CASCADING_NAME);
+		KEY_CASCADING_NAME);
 	found = ksLookup(ks, search, 0);
 	succeed_if(found == k1, "found wrong key");
 	keyDel(search);
 
 	search = keyNew ("/benchmark/override/#2",
-		KDB_O_CASCADING_NAME, KEY_END);
+		KEY_CASCADING_NAME, KEY_END);
 	found = ksLookup(ks, search, 0);
 	succeed_if(found == k2, "found wrong key");
 
 	elektraKeySetName(search, "/benchmark/override/#3",
-		KDB_O_CASCADING_NAME);
+		KEY_CASCADING_NAME);
 	found = ksLookup(ks, search, 0);
 	succeed_if(found == k3, "found wrong key");
 	keyDel(search);
+	ksDel(ks);
+}
+
+static void test_creatingLookup()
+{
+	printf ("Test creating lookup\n");
+
+	KeySet *ks = ksNew(10, KS_END);
+
+	Key *searchKey = keyNew("user/something",
+		KEY_VALUE, "a value",
+		KEY_END);
+	Key *k0 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k0, "no key was created");
+	succeed_if_same_string(keyName(k0), keyName(searchKey));
+	succeed_if_same_string(keyName(k0), keyName(searchKey));
+
+	Key *k1 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k1, "no key was returned");
+	succeed_if(k0 == k1, "not the same key");
+
+	keyDel(searchKey);
 	ksDel(ks);
 }
 
@@ -148,6 +170,7 @@ int main()
 	test_elektraRenameKeys();
 	test_elektraEmptyKeys();
 	test_cascadingLookup();
+	test_creatingLookup();
 
 	return nbError;
 }

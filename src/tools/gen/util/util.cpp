@@ -149,7 +149,7 @@ $cpp_util.generateForwardDecl(support, child)
 @if len($support.override(info)) > 0
 // override
 	kdb::Key search ("${support.override(info)[0]}",
-		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+		ckdb::elektraNameOptions::KEY_CASCADING_NAME);
 	kdb::Key found = ks.lookup(search, 0);
 	if (found)
 	{
@@ -159,7 +159,7 @@ $cpp_util.generateForwardDecl(support, child)
 @set $oa = $support.override(info)[1:]
 @for $o in oa
 	elektraKeySetName(*search, "$o",
-		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+		ckdb::elektraNameOptions::KEY_CASCADING_NAME);
 	found = ks.lookup(search, 0);
 	if (found)
 	{
@@ -169,11 +169,11 @@ $cpp_util.generateForwardDecl(support, child)
 @end for
 	// now the key itself
 	elektraKeySetName(*search, "$key",
-		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+		ckdb::elektraNameOptions::KEY_CASCADING_NAME);
 	found = ks.lookup(search, 0);
 @else
 kdb::Key search ("$key",
-		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+		ckdb::elektraNameOptions::KEY_CASCADING_NAME);
 	kdb::Key found = ks.lookup(search, 0);
 @end if
 	if(found)
@@ -186,7 +186,7 @@ kdb::Key search ("$key",
 	// fallback
 @for $f in $fa
 	elektraKeySetName(*search, "$f",
-		ckdb::elektraNameOptions::KDB_O_CASCADING_NAME);
+		ckdb::elektraNameOptions::KEY_CASCADING_NAME);
 	found = ks.lookup(search, 0);
 	if (found)
 	{
@@ -209,7 +209,7 @@ kdb::Key search ("$key",
 @else
 				"/",
 @end if
-				ckdb::KDB_O_CASCADING_NAME,
+				ckdb::KEY_CASCADING_NAME,
 @if $hierarchy.info.get('default') != None:
 				KEY_META, "default", $support.quote($hierarchy.info.get('default')),
 @end if

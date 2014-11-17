@@ -39,9 +39,6 @@ kdb-export:
 	in a way that it can be used as shell script to immediately
 	import
 
-kdb tool:
-	request -f for rm, mv in system/elektra
-
 kdb resolve feature:
 	output file how it would resolve for key
 
@@ -60,6 +57,15 @@ export should be able to export only configuration that was changed
 	(suppress default config)
 
 install config (mount+preload system config) by using meta struct
+
+kdb-shell:
+	import/export
+	automatic tests for functionality
+	Examples in --help
+
+kdb tool:
+	request -f for rm, mv in system/elektra
+
 
 == GEN ==
 

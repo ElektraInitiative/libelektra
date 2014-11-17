@@ -58,6 +58,7 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->fd = -1;
 	p->mtime.tv_sec = 0;
 	p->mtime.tv_nsec = 0;
+	p->mode = KDB_FILE_MODE;
 
 	p->filename = 0;
 	p->dirname= 0;
@@ -260,6 +261,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	(Plugin *handle, Key *errorKey)
 {
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
+	if (ksLookupByName(resolverConfig, "/module", 0)) return 0;
 	const char *path = keyString(ksLookupByName(resolverConfig, "/path", 0));
 
 	if (!path)
@@ -323,9 +325,6 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
-	// might be useless, will not harm
-	keySetString(parentKey, pk->filename);
-
 	Key *root = keyNew("system/elektra/modules/"
 			ELEKTRA_PLUGIN_NAME , KEY_END);
 
@@ -340,6 +339,8 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 	}
 	keyDel (root);
 
+	keySetString(parentKey, pk->filename);
+
 	int errnoSave = errno;
 	struct stat buf;
 
@@ -351,6 +352,11 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 		pk->mtime.tv_sec = 0; // no file, so no time
 		pk->mtime.tv_nsec = 0; // no file, so no time
 		return 0;
+	}
+	else
+	{
+		// successful, remember mode
+		pk->mode = buf.st_mode;
 	}
 
 	/* Check if update needed */
@@ -658,6 +664,11 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 	}
 
 	elektraUpdateFileTime(pk, parentKey);
+	if (buf.st_mode != pk->mode)
+	{
+		// change mode to what it was before
+		chmod(pk->filename, pk->mode);
+	}
 
 	elektraUnlockFile(pk->fd, parentKey);
 	elektraCloseFile(pk->fd, parentKey);
