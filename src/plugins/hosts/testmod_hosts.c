@@ -43,6 +43,15 @@ void test_readHostsSimple(char *fileName)
 	exit_if_fail (key, "hostname alias kira not found");
 	succeed_if (strcmp("192.168.0.5", keyValue(key)) == 0, "address not correct");
 
+	key = ksLookupByName(ks, "user/tests/hosts/ipv6/wikipedia-sample", 0);
+	exit_if_fail (key, "hostname wikipedia-sample not found");
+	succeed_if (strcmp("fd9e:21a7:a92c:2323::1", keyValue(key)) == 0, "address not correct");
+
+	key = ksLookupByName(ks, "user/tests/hosts/ipv6/wikipedia-sample/wikipedia-alias", 0);
+	exit_if_fail (key, "hostname alias wikipedia-alias not found");
+	succeed_if (strcmp("fd9e:21a7:a92c:2323::1", keyValue(key)) == 0, "address not correct");
+
+
 	ksDel (ks);
 	keyDel(parentKey);
 

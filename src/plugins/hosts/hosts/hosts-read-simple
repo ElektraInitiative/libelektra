@@ -3,3 +3,5 @@
 
 192.168.0.1	gateway.markus-raab.org		gateway gw
 192.168.0.5	kirabyte.markus-raab.org	kirabyte kira
+
+fd9e:21a7:a92c:2323::1	wikipedia-sample	wikipedia-alias
