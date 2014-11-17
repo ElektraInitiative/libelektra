@@ -90,6 +90,23 @@ struct MountpointInvalidException : public BackendCheckException
 	}
 };
 
+struct MountpointAlreadyInUseException : public BackendCheckException
+{
+	MountpointAlreadyInUseException(std::string str) :
+		m_str(str)
+	{}
+
+	virtual ~MountpointAlreadyInUseException() throw()
+	{}
+
+	virtual const char* what() const throw()
+	{
+		return m_str.c_str();
+	}
+
+	std::string m_str;
+};
+
 struct PluginAlreadyInserted: public PluginCheckException
 {
 	virtual const char* what() const throw()

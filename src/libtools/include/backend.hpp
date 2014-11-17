@@ -47,8 +47,14 @@ private:
 	void tryPlugin (std::string name);
 
 public:
-	Backend(std::string name = "", std::string mountpoint = "");
+	Backend();
 	~Backend();
+
+	void setMountpoint (Key mountpoint, KeySet mountConf);
+	std::string getName()
+	{
+		return name;
+	}
 
 	void addPlugin (std::string name);
 	void checkFile (std::string file) const;

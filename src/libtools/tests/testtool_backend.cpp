@@ -46,7 +46,8 @@ TEST(MergeResult, ResolveConflictDeletesConflictMeta)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
-	Backend b("my_backend", "/");
+	Backend b;
+	b.setMountpoint(Key("/", KDB_O_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
 	b.addPlugin("resolver");
 	b.addPlugin("dump");
 	EXPECT_TRUE(b.validated());
@@ -59,36 +60,36 @@ TEST(MergeResult, ResolveConflictDeletesConflictMeta)
 
 	mountConfig.rewind();
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "serialised Backend") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/errorplugins") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/errorplugins") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/errorplugins/#5#resolver#resolver#") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/errorplugins/#5#resolver#resolver#") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/getplugins") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/getplugins") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/getplugins/#0#resolver") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/getplugins/#0#resolver") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/getplugins/#5#dump#dump#") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/getplugins/#5#dump#dump#") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/mountpoint") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/mountpoint") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "/") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/setplugins") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/setplugins") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/setplugins/#0#resolver") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/setplugins/#0#resolver") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/setplugins/#5#dump") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/setplugins/#5#dump") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 	mountConfig.next();
-	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/my_backend/setplugins/#7#resolver") << "name of element in keyset wrong";
+	EXPECT_TRUE(mountConfig.current().getName() == "system/elektra/mountpoints/_/setplugins/#7#resolver") << "name of element in keyset wrong";
 	EXPECT_TRUE(mountConfig.current().getString() == "") << "string of element in keyset wrong";
 }

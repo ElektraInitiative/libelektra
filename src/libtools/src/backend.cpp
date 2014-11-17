@@ -11,11 +11,14 @@
 
 
 #include <backend.hpp>
+#include <backends.hpp>
 
 
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
+
+#include <algorithm>
 
 
 #include <kdb.hpp>
@@ -35,10 +38,95 @@ namespace tools
 
 /** Creates a new backend with a given name and mountpoint.
  * Parameters are needed for serialisation only, so you can
- * keep them empty if you do not want to serialise. */
-Backend::Backend(string name_, string mp_):
-	name(name_), mp(mp_)
+ * keep them empty if you do not want to serialise.
+ *
+ * */
+Backend::Backend()
 {
+}
+
+
+/**
+ * @brief Sets the mountpoint for the backend
+ *
+ * @throw MountpointInvalidException
+ * @throw MountpointAlreadyInUseException
+ *
+ * @param mountpoint the key name will be used as mountpoint.
+ *    It is allowed to pass a key with a KDB_O_CASCADING_NAME
+ *
+ * @param mountConf needs to include the keys below
+ * system/elektra/mountpoints
+ */
+void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
+{
+	std::vector <std::string> names;
+	std::string namesInString;
+	Backends::BackendInfoVector info = Backends::getBackendInfo(mountConf);
+	names.push_back("default");
+	for (Backends::BackendInfoVector::const_iterator it=info.begin();
+			it!=info.end(); ++it)
+	{
+		names.push_back(it->mountpoint);
+		namesInString += it->mountpoint;
+	}
+
+
+	if (std::find(names.begin(), names.end(), mountpoint.getName()) != names.end())
+	{
+		throw MountpointAlreadyInUseException(
+			std::string("Mountpoint ") + 
+			mountpoint.getName() +
+			" is one of the already used names: " +
+			namesInString
+			);
+	}
+
+	std::vector <std::string> mountpoints;
+	mountpoints.push_back("system/elektra");
+	mountConf.rewind();
+	Key cur;
+	while ((cur = mountConf.next()))
+	{
+		if (cur.getBaseName() == "mountpoint")
+		{
+			if (cur.getString().at(0) == '/')
+			{
+				mountpoints.push_back(Key ("user" + cur.getString(), KEY_END).getName());
+				mountpoints.push_back(Key ("system" + cur.getString(), KEY_END).getName());
+			}
+		};
+	}
+
+	if (mp.at(0) == '/')
+	{
+		Key skmp ("system" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end())
+		{
+			throw MountpointAlreadyInUseException("Cascading mountpoint not possible, because system mountpoint already exists");
+		}
+		Key ukmp ("user" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end())
+		{
+			throw MountpointAlreadyInUseException("Cascading mountpoint not possible, because user mountpoint already exists");
+		}
+	} else {
+		Key kmp (mp, KEY_END);
+		if (!kmp.isValid()) throw MountpointInvalidException();
+		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end())
+		{
+			throw MountpointAlreadyInUseException(
+				std::string("Mountpoint ") + 
+				mountpoint.getName() +
+				" is one of the already used cascading names: " +
+				namesInString
+				);
+		}
+	}
+
+	mp = mountpoint.getName();
+	name = mountpoint.getName();
+	std::replace(name.begin(), name.end(), '/', '_');
 }
 
 
