@@ -284,7 +284,7 @@ Key* keyDup(const Key *source)
 	dest->flags=KEY_FLAG_SYNC;
 
 	/* use any name as passed */
-	if (source->key && elektraKeySetName(dest,source->key,KDB_O_CASCADING_NAME|KDB_O_META_NAME|KDB_O_EMPTY_NAME) == -1) goto memerror;
+	if (source->key && elektraKeySetName(dest,source->key,KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1) goto memerror;
 	if (source->data.v && keySetRaw(dest,source->data.v,source->dataSize) == -1) goto memerror;
 	if (source->meta)
 	{
@@ -421,7 +421,7 @@ int keyCopy (Key *dest, const Key *source)
 	}
 
 	if (elektraKeySetName(dest,source->key,
-		KDB_O_CASCADING_NAME|KDB_O_META_NAME|KDB_O_EMPTY_NAME) == -1)
+		KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1)
 	{
 		return -1;
 	}

@@ -426,7 +426,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	}
 
 	rootLength=keyNameGetFullRootNameSize(newName)-1;
-	if (!(options & KDB_O_CASCADING_NAME) && !rootLength)
+	if (!(options & KEY_CASCADING_NAME) && !rootLength)
 	{
 		return -1;
 	}
@@ -436,12 +436,12 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	
 	if (ownerLength>0) --ownerLength;
 
-	if ((options & KDB_O_EMPTY_NAME) &&
+	if ((options & KEY_EMPTY_NAME) &&
 		(!strcmp(newName, "")))
 	{
 		return elektraFinalizeEmptyName(key);
 	}
-	if ((options & KDB_O_CASCADING_NAME) &&
+	if ((options & KEY_CASCADING_NAME) &&
 		(newName[0] == '/'))
 	{
 		if (!strcmp(newName, "/"))
@@ -455,7 +455,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		/* handle cascading key names */
 		rootLength = 1;
 	}
-	else if (options & KDB_O_META_NAME)
+	else if (options & KEY_META_NAME)
 	{
 		size_t size = 0;
 		p=keyNameGetOneLevel(newName,&size);
@@ -537,7 +537,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	key->key[rootLength-1] = '\0';
 
 	size_t size = 0;
-	if ((options & KDB_O_CASCADING_NAME) &&
+	if ((options & KEY_CASCADING_NAME) &&
 		(newName[0] == '/'))
 	{
 		p = (char*)newName;

@@ -53,7 +53,7 @@ Backend::Backend()
  * @throw MountpointAlreadyInUseException
  *
  * @param mountpoint the key name will be used as mountpoint.
- *    It is allowed to pass a key with a KDB_O_CASCADING_NAME
+ *    It is allowed to pass a key with a KEY_CASCADING_NAME
  *
  * @param mountConf needs to include the keys below
  * system/elektra/mountpoints

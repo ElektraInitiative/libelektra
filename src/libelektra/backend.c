@@ -118,7 +118,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				backend->mountpoint = keyNew("",
 						KEY_VALUE, keyBaseName(root), KEY_END);
 				elektraKeySetName(backend->mountpoint, keyString(cur),
-						KDB_O_CASCADING_NAME | KDB_O_EMPTY_NAME);
+						KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
 				if (!backend->mountpoint)
 				{

@@ -86,7 +86,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 {
 	Backend backend;
 
-	backend.setMountpoint(Key(mp, KDB_O_CASCADING_NAME, KEY_END), mountConf);
+	backend.setMountpoint(Key(mp, KEY_CASCADING_NAME, KEY_END), mountConf);
 
 	if (cl.debug)
 	{

@@ -649,20 +649,20 @@ void keyVInit (Key *key, const char *name, va_list va)
 					/*First parameter is name*/
 					keySetMeta (key, value, va_arg(va,char *));
 					break;
-				case KDB_O_CASCADING_NAME:
-					nameOptions |= KDB_O_CASCADING_NAME;
+				case KEY_CASCADING_NAME:
+					nameOptions |= KEY_CASCADING_NAME;
 					break;
-				case KDB_O_META_NAME:
-					nameOptions |= KDB_O_META_NAME;
+				case KEY_META_NAME:
+					nameOptions |= KEY_META_NAME;
 					break;
-				case KDB_O_EMPTY_NAME:
+				case KEY_EMPTY_NAME:
 					/* actually useless in current
 					 * implementation, empty name
 					 * is ok anyway. Maybe if error
 					 * handling is visible to user
 					 * in future the option still
 					 * might be interesting */
-					nameOptions |= KDB_O_EMPTY_NAME;
+					nameOptions |= KEY_EMPTY_NAME;
 					break;
 				default:
 #if DEBUG
