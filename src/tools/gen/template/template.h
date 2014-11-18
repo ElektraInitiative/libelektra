@@ -111,12 +111,12 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 @if len(support.override(info)) > 0
 	// override
 	Key * searchKey = keyNew("${support.override(info)[0]}",
-		KDB_O_CASCADING_NAME, KEY_END);
+		KEY_CASCADING_NAME, KEY_END);
 	Key * found = ksLookup(ks, searchKey, 0);
 @for $o in $support.override(info)[1:]
 	if (!found)
 	{
-		elektraKeySetName(searchKey, "$o", KDB_O_CASCADING_NAME);
+		elektraKeySetName(searchKey, "$o", KEY_CASCADING_NAME);
 		found = ksLookup(ks, searchKey, 0);
 	}
 @end for
@@ -124,12 +124,12 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 	if(!found)
 	{
 
-		elektraKeySetName(searchKey, "$key", KDB_O_CASCADING_NAME);
+		elektraKeySetName(searchKey, "$key", KEY_CASCADING_NAME);
 		found = ksLookup(ks, searchKey, 0);
 	}
 @else
 	Key * searchKey = keyNew("${key}",
-		KDB_O_CASCADING_NAME, KEY_END);
+		KEY_CASCADING_NAME, KEY_END);
 	Key * found = ksLookup(ks, searchKey, 0);
 @end if
 
@@ -138,7 +138,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 @for $f in $support.fallback(info)
 	if (!found)
 	{
-		elektraKeySetName(searchKey,  "$f", KDB_O_CASCADING_NAME);
+		elektraKeySetName(searchKey,  "$f", KEY_CASCADING_NAME);
 		found = ksLookup(ks, searchKey, 0);
 	}
 @end for

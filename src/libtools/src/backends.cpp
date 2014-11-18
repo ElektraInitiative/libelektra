@@ -1,5 +1,7 @@
 #include <backends.hpp>
 
+#include <algorithm>
+
 namespace kdb
 {
 
@@ -45,6 +47,7 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 
 std::string Backends::getConfigBasePath(std::string name)
 {
+	std::replace(name.begin(), name.end(), '/', '_'); 
 	std::string configPath = Backends::mountpointsPath;
 	configPath += "/";
 	configPath += name;

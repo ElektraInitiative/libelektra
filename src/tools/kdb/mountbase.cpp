@@ -60,45 +60,6 @@ void MountBaseCommand::fixRootKey(Cmdline const& cl)
 }
 
 
-
-/**
- * @brief Set variable name (either interactive or by parameter)
- */
-void MountBaseCommand::getName(Cmdline const& cl)
-{
-	std::vector <std::string> names;
-	Backends::BackendInfoVector info = Backends::getBackendInfo(mountConf);
-	names.push_back("default");
-	for (Backends::BackendInfoVector::const_iterator it=info.begin();
-			it!=info.end(); ++it)
-	{
-		names.push_back(it->name);
-	}
-
-	if (cl.interactive)
-	{
-		cout << "Already used are: ";
-		std::copy (names.begin(), names.end(), ostream_iterator<std::string>(cout, " "));
-		cout << endl;
-		std::cout << "Backend name: ";
-		cin >> name;
-	}
-	else
-	{
-		name = cl.arguments[1];
-		if (name == "/")
-		{
-			name = "root";
-		}
-		else
-		{
-			std::replace(name.begin(), name.end(), '/', '_');
-		}
-	}
-
-	if (std::find(names.begin(), names.end(), name) != names.end()) throw NameAlreadyInUseException();
-}
-
 /**
  * @brief set mp (interactive or by commandline)
  *
@@ -125,35 +86,23 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 		};
 	}
 
-	mp = "/";
-	if (name != "root")
+	if (cl.interactive)
 	{
-		if (cl.interactive)
-		{
-			cout << "Already used are: ";
-			std::copy (mountpoints.begin(), mountpoints.end(), ostream_iterator<std::string>(cout, " "));
-			cout << endl;
-			cout << "Please start with / for a cascading backend" << endl;
-			cout << "Enter the mountpoint: ";
-			cin >> mp;
-		}
-		else
-		{
-			mp = cl.arguments[1];
-		}
+		cout << "Already used are: ";
+		std::copy (mountpoints.begin(), mountpoints.end(),
+				ostream_iterator<std::string>(cout, " "));
+		cout << endl;
+		cout << "Please start with / for a cascading backend" << endl;
+		cout << "Enter the mountpoint: ";
+		cin >> mp;
+	}
+	else
+	{
+		mp = cl.arguments[1];
 	}
 
-	if (mp.at(0) == '/')
-	{
-		Key skmp ("system" + mp, KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
-		Key ukmp ("user" + mp, KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
-	} else {
-		Key kmp (mp, KEY_END);
-		if (!kmp.isValid()) throw MountpointNotValid();
-		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end()) throw MountpointAlreadyInUseException();
-	}
+	name = mp;
+	std::replace(name.begin(), name.end(), '/', '_');
 }
 
 void MountBaseCommand::askForConfirmation(Cmdline const& cl)

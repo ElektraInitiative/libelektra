@@ -20,10 +20,16 @@ check_version
 
 EXTERNAL_FOLDER=@CMAKE_SOURCE_DIR@/examples/external
 
+set -x
+
 do_tests()
 {
 	SKEY=system/test/myapp/key
 	UKEY=user/test/myapp/key
+
+	$KDB rm "$SKEY"
+	$KDB rm "$UKEY"
+
 	VALUE="Hello World"
 	$KDB set "$SKEY"  "$VALUE"
 	succeed_if "could not set key $SKEY"
