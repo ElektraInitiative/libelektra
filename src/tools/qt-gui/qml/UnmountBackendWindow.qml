@@ -74,6 +74,8 @@ BasicWindow {
 				}
 
 				externTreeModel.refresh()
+				metaAreaModel = null
+				keyAreaModel = null
 			}
 
 		}

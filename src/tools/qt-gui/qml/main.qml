@@ -26,11 +26,11 @@ ApplicationWindow {
 	//**Properties*********************************************************************************************//
 
 	property int    keyAreaHeight: Math.ceil(mainRow.height*0.7 - defaultSpacing)
-	property int    deltaKeyAreaHeight: Math.ceil(keyAreaHeight - searchResultsAreaHeight*0.5 - defaultSpacing)
-	property int    deltaKeyAreaWidth: Math.ceil(mainRow.width*0.7 - defaultSpacing)
-	property int    metaAreaHeight: Math.ceil(mainRow.height*0.3)
-	property int    deltaMetaAreaHeight: Math.ceil(metaAreaHeight - searchResultsAreaHeight*0.5)
-	property int    searchResultsAreaHeight: Math.ceil(mainRow.height*0.2)
+	property int    deltaKeyAreaHeight: Math.ceil(mainRow.height*0.5 - defaultSpacing)
+	property int    keyAreaWidth: Math.ceil(mainRow.width*0.7 - defaultSpacing)
+	property int    metaAreaHeight: Math.floor(mainRow.height*0.3)
+	property int    deltaMetaAreaHeight: Math.floor(mainRow.height*0.25 - defaultSpacing)
+	property int    searchResultsAreaHeight: Math.ceil(mainRow.height*0.25)
 	property var    keyAreaSelectedItem: null
 	property var    searchResultsSelectedItem: null
 	property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
@@ -886,6 +886,7 @@ ApplicationWindow {
 
 	Row {
 		id: mainRow
+
 		anchors.fill: parent
 		anchors.margins: defaultMargins
 		spacing: defaultSpacing
@@ -908,7 +909,7 @@ ApplicationWindow {
 			BasicRectangle {
 				id: keyArea
 
-				width: deltaKeyAreaWidth
+				width: keyAreaWidth
 				height: keyAreaHeight
 
 				Component {
@@ -1008,7 +1009,7 @@ ApplicationWindow {
 			BasicRectangle {
 				id: metaArea
 
-				width: deltaKeyAreaWidth
+				width: keyAreaWidth
 				height: metaAreaHeight
 
 				TableView {
@@ -1042,7 +1043,7 @@ ApplicationWindow {
 			BasicRectangle {
 				id: searchResultsArea
 
-				width: deltaKeyAreaWidth
+				width: keyAreaWidth
 				height: searchResultsAreaHeight
 				visible: false
 
