@@ -26,10 +26,6 @@
         <file>qml/ButtonRow.qml</file>
         <file>qml/NewKeyWindow.qml</file>
         <file>qml/NewMetaKey.qml</file>
-        <file>qml/Page1.qml</file>
-        <file>qml/Page2.qml</file>
-        <file>qml/Page3.qml</file>
-        <file>qml/Page4.qml</file>
         <file>qml/SearchField.qml</file>
         <file>qml/WizardTemplate.qml</file>
         <file>qml/UnmountBackendWindow.qml</file>
@@ -51,5 +47,8 @@
         <file>qml/icons/new-array.png</file>
         <file>qml/icons/elektra-logo.png</file>
         <file>qml/icons/elektra-logo-big.png</file>
+        <file>qml/Page1.qml</file>
+        <file>qml/Page2.qml</file>
+        <file>qml/Page3.qml</file>
     </qresource>
 </RCC>

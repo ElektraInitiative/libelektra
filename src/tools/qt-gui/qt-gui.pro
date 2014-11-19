@@ -114,12 +114,8 @@ OTHER_FILES += \
 	qml/main.qml\
 	qml/BasicWindow.qml\
 	qml/ButtonRow.qml\
-	qml/Page1.qml\
-	qml/Page2.qml\
-	qml/Page3.qml\
 	qml/WizardLoader.qml\
 	qml/WizardTemplate.qml\
-	qml/Page4.qml\
 	qml/NewMetaKey.qml\
 	qml/BasicRectangle.qml \
 	qml/UnmountBackendWindow.qml \

@@ -1,26 +1,136 @@
 import QtQuick 2.2
+import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 
-WizardTemplate {
+Item {
 	id: page3
 
-	wizardText.text: qsTr("Please enter a path to a file in the filesystem. This file is used by all plugins of this backend as fallback. " +
-						  "For user or cascading mountpoints it must be a relative path. " +
-						  "The actual path will be located dynamically by the resolver plugin.")
+	ColumnLayout {
 
-	label.text: qsTr("Path: ")
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.bottom: buttonRow.top
+		anchors.top: parent.top
+		anchors.margins: defaultMargins
 
-	Component.onCompleted: textField.text = (backend.length > 2 ? backend[2] : "")
-	buttonRow.backButton.onClicked: loader.source = "Page2.qml"
-	buttonRow.finishButton.enabled: false
-	buttonRow.nextButton.onClicked:  {
+		RowLayout {
+			spacing: defaultSpacing
 
-		if(textField.text !== ""){
-			loader.source = "Page4.qml"
-			backend[2] = textField.text
+			Text {
+				id: text
+				Layout.fillWidth: true
+				wrapMode: Text.WordWrap
+				color: activePalette.text
+				text: qsTr("Please select the plugins you want to include in the backend.")
+			}
+			ComboBox {
+				id: pluginDropdown
+				Layout.fillWidth: true
+				model: externTreeModel.availablePlugins()
+				onCurrentTextChanged: infoText.text = externTreeModel.pluginInfo(pluginDropdown.currentText)
+			}
+			Button {
+				id: addButton
+
+				implicitWidth:  pluginDropdown.height
+				implicitHeight: pluginDropdown.height
+
+				iconSource: "icons/list-add.png"
+				tooltip: qsTr("Add Plugin")
+
+				onClicked: {
+					if(!alreadyInList(pluginDropdown.currentText))
+						includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
+				}
+			}
 		}
-		else
-			showMessage(qsTr("No path provided"), qsTr("Please provide a path."), "", "", "w")
+		Item {
+			id: spacer
+
+			Layout.fillWidth: true
+			height: 2*defaultMargins
+		}
+		Label {
+			id: includedPluginsLabel
+			text: qsTr("Included Plugins")
+			anchors.top: spacer.bottom
+			anchors.left: parent.left
+			anchors.bottomMargin: defaultSpacing
+		}
+		BasicRectangle {
+			id: includedPluginsRectangle
+
+			anchors.top: includedPluginsLabel.bottom
+			anchors.left: parent.left
+			anchors.right: pluginInfoRectangle.left
+			anchors.bottom: parent.bottom
+			anchors.topMargin: defaultSpacing
+			anchors.rightMargin: defaultMargins
+			width: Math.ceil(wizardLoader.width*0.3)
+
+			ScrollView {
+				anchors.fill: parent
+				anchors.margins: defaultSpacing
+
+				ListView {
+					id: includedBackendsView
+
+					model: ListModel {
+						id: includedPluginsModel
+					}
+					delegate: Row {
+						Label {
+							text: pluginName
+						}
+					}
+				}
+			}
+		}
+		Label {
+			id: pluginInfoLabel
+			text: qsTr("Plugin Info")
+			anchors.top: spacer.bottom
+			anchors.left: pluginInfoRectangle.left
+		}
+		BasicRectangle {
+			id: pluginInfoRectangle
+
+			anchors.top: pluginInfoLabel.bottom
+			anchors.right: parent.right
+			anchors.bottom: parent.bottom
+			anchors.topMargin: defaultSpacing
+			anchors.leftMargin: defaultMargins
+			implicitWidth: Math.ceil(wizardLoader.width*0.7)
+
+			TextArea {
+				id: infoText
+
+				anchors.fill: parent
+				anchors.margins: 1
+				textFormat: Text.RichText
+				backgroundVisible: false
+				readOnly: true
+				wrapMode: Text.WordWrap
+			}
+		}
 	}
-	buttonVisible: true
-	fileDialog.onAccepted: textField.text = fileDialog.fileUrl.toString().replace("file://", "")
+	ButtonRow {
+		id: buttonRow
+
+		backButton.visible: false
+		finishButton.enabled: true
+		nextButton.visible: false
+		cancelButton.onClicked: wizardLoader.close()
+	}
+
+	function alreadyInList(plugin) {
+
+		for(var i = 0; i < includedPluginsModel.count; i++){
+			if(includedPluginsModel.get(i).pluginName === plugin)
+				return true
+		}
+		return false
+	}
+
 }

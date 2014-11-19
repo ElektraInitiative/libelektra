@@ -1,22 +1,22 @@
 import QtQuick 2.2
 
 WizardTemplate {
-	id: page2
+	id: page3
 
-	wizardText.text: qsTr("Please provide a mount point for the backend. For a cascading mount point start with \"/\".\n\nAlready used are:  " + usedNames)
-	label.text: qsTr("Mount point:  ")
+	wizardText.text: qsTr("Please enter a path to a file in the filesystem. This file is used by all plugins of this backend as fallback. " +
+						  "For user or cascading mountpoints it must be a relative path. " +
+						  "The actual path will be located dynamically by the resolver plugin.")
+
+	label.text: qsTr("Path: ")
 
 	Component.onCompleted: textField.text = (backend.length > 1 ? backend[1] : "")
-	buttonRow.backButton.onClicked: loader.source = "Page1.qml"
-	buttonRow.finishButton.enabled: false
-	buttonRow.nextButton.onClicked: {
-
-		if(textField.text !== ""){
-			loader.source = "Page3.qml"
-			backend[1] = textField.text
-		}
-		else
-			showMessage(qsTr("No mountpoint provided"), qsTr("Please provide a mountpoint."), "", "", "w")
+	buttonRow.backButton.visible: false
+	buttonRow.finishButton.visible: false
+	buttonRow.nextButton.enabled: textField.text !== ""
+	buttonRow.nextButton.onClicked:  {
+		loader.source = "Page3.qml"
+		backend[2] = textField.text
 	}
-	usedNames: externTreeModel.mountPoints()
+	buttonVisible: true
+	fileDialog.onAccepted: textField.text = fileDialog.fileUrl.toString().replace("file://", "")
 }
