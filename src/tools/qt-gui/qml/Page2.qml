@@ -9,7 +9,6 @@ WizardTemplate {
 
 	label.text: qsTr("Path: ")
 
-	buttonRow.backButton.visible: false
 	buttonRow.finishButton.visible: false
 	buttonRow.nextButton.enabled: textField.text !== ""
 	buttonRow.nextButton.onClicked:  {

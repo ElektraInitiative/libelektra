@@ -32,7 +32,7 @@ BasicWindow {
 					text: "..."
 					implicitWidth: importTextField.height
 					onClicked: {
-						importFileDialog.nameFilters = treeView.currentNode.parentModel.availablePlugins("storage")
+						importFileDialog.nameFilters = guiBackend.nameFilters()
 						importFileDialog.open()
 					}
 				}

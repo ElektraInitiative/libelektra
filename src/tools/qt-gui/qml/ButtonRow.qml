@@ -12,16 +12,10 @@ RowLayout {
 	anchors.right: parent.right
 	anchors.margins: defaultMargins
 
-	property alias backButton: backButton
 	property alias nextButton: nextButton
 	property alias finishButton: finishButton
 	property alias cancelButton: cancelButton
 
-	Button {
-		id:backButton
-		text: qsTr("&Back")
-		iconSource: "icons/go-previous.png"
-	}
 	Button {
 		id:nextButton
 		text: qsTr("&Next")

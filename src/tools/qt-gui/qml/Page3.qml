@@ -27,8 +27,8 @@ Item {
 			ComboBox {
 				id: pluginDropdown
 				Layout.fillWidth: true
-				model: externTreeModel.availablePlugins()
-				onCurrentTextChanged: infoText.text = externTreeModel.pluginInfo(pluginDropdown.currentText)
+				model: guiBackend.availablePlugins()
+				onCurrentTextChanged: infoText.text = guiBackend.pluginInfo(pluginDropdown.currentText)
 			}
 			Button {
 				id: addButton
@@ -118,7 +118,6 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
-		backButton.visible: false
 		finishButton.enabled: true
 		nextButton.visible: false
 		cancelButton.onClicked: wizardLoader.close()

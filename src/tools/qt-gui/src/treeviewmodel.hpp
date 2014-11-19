@@ -175,10 +175,6 @@ public:
 	Q_INVOKABLE QString			getCurrentArrayNo() const;
 	void						refreshArrayNumbers();
 	Q_INVOKABLE QStringList     mountedBackends() const;
-	Q_INVOKABLE QStringList		availablePlugins(QString type = "all") const;
-	Q_INVOKABLE QString			mountPoints() const;
-	Q_INVOKABLE QString			pluginInfo(QString pluginName) const;
-	Q_INVOKABLE void			createBackend(const QString &mountpoint);
 
 private:
 
@@ -195,7 +191,6 @@ private:
 	kdb::Key                    m_metaModelParent;
 	kdb::KDB                    m_kdb;
 	kdb::KeySet                 m_keySet;
-	kdb::tools::Backend*		m_backend;
 
 protected:
 	QHash<int, QByteArray>      roleNames() const;

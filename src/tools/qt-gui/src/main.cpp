@@ -8,6 +8,7 @@
 #include "treeviewmodel.hpp"
 #include "confignode.hpp"
 #include "undomanager.hpp"
+#include "guibackend.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char* argv[])
 	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
 	qRegisterMetaType<ConfigNode> ("ConfigNode");
 	qRegisterMetaType<UndoManager> ("UndoManager");
+	qRegisterMetaType<GUIBackend> ("GUIBackend");
 
 	QString locale = QLocale::system().name();
 
@@ -27,12 +29,14 @@ int main(int argc, char* argv[])
 	QQmlContext* ctxt = engine.rootContext();
 
 	UndoManager manager;
-
 	TreeViewModel* model = new TreeViewModel;
+	GUIBackend backend;
+
 	model->populateModel();
 
 	ctxt->setContextProperty("undoManager", &manager);
 	ctxt->setContextProperty("externTreeModel", model);
+	ctxt->setContextProperty("guiBackend", &backend);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 

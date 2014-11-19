@@ -9,13 +9,12 @@ WizardTemplate {
 
 	label.text: qsTr("Mount point:  ")
 
-	buttonRow.backButton.visible: false
 	buttonRow.finishButton.visible: false
 	buttonRow.nextButton.enabled: textField.text !== ""
 	buttonRow.nextButton.onClicked: {
-		externTreeModel.createBackend(textField.text)
+		guiBackend.createBackend(textField.text)
 		if(!error)
 			loader.source = "Page2.qml"
 	}
-	usedNames: externTreeModel.mountPoints()
+	usedNames: guiBackend.mountPoints()
 }

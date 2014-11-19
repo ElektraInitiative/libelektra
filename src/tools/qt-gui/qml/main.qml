@@ -44,9 +44,17 @@ ApplicationWindow {
 
 	//**Signals & Slots****************************************************************************************//
 
-	//Set up slots to catch signals from nodes/models
+	//Set up slots to catch signals from objects
 	Connections {
 		target: externTreeModel
+
+		onShowMessage: {
+			showMessage(title, text, informativeText, detailedText, icon)
+		}
+	}
+
+	Connections {
+		target: guiBackend
 
 		onShowMessage: {
 			showMessage(title, text, informativeText, detailedText, icon)
@@ -471,7 +479,7 @@ ApplicationWindow {
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
-			exportDialog.nameFilters = externTreeModel.availablePlugins("storage")
+			exportDialog.nameFilters = guiBackend.nameFilters()
 			exportDialog.open()
 		}
 	}

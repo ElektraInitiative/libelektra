@@ -50,7 +50,8 @@ HEADERS += \
 	src/markdownconverter/markdownconverter.h \
 	src/markdownconverter/markdowndocument.h \
     ../kdb/list.hpp \
-    ../../libtools/include/plugins.hpp
+    ../../libtools/include/plugins.hpp \
+    src/guibackend.hpp
 
 SOURCES += \
 	src/main.cpp \
@@ -96,7 +97,8 @@ SOURCES += \
 	../kdb/validation.cpp \
 	src/markdownconverter/template/htmltemplate.cpp \
 	src/markdownconverter/discountmarkdownconverter.cpp \
-    ../kdb/list.cpp
+    ../kdb/list.cpp \
+    src/guibackend.cpp
 
 CONFIG += debug
 
