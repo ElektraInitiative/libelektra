@@ -13,7 +13,7 @@ BasicWindow {
 		anchors.fill: parent
 
 		Text{
-			text: qsTr("Notice: To successfully unmount backends you need to be an administrator.")
+			text: qsTr("Notice: To successfully unmount backends you need to be an administrator. This action cannot be undone.")
 			wrapMode: Text.WordWrap
 			color: "#640000"
 		}
@@ -65,7 +65,7 @@ BasicWindow {
 			onClicked: {
 				if(mountedBackendsView.model.toString() !== "empty"){
 					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
-					mountedBackendsView.model = externTreeModel.getMountedBackends()
+					mountedBackendsView.model = externTreeModel.mountedBackends()
 					externTreeModel.synchronize()
 
 					if(mountedBackendsView.model.toString() === "empty")

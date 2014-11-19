@@ -5,6 +5,7 @@
 #include <backends.hpp>
 #include <vector>
 #include <string>
+#include <QDebug>
 
 using namespace std;
 using namespace kdb;
@@ -24,24 +25,30 @@ void GUIBackend::createBackend(const QString &mountpoint)
 {
 	m_backend = new Backend();
 
-	KeySet mountConf;
-
 	Key parentKey(Backends::mountpointsPath, KEY_END);
-
-	KDB kdb(parentKey);
 
 	try
 	{
-		kdb.get(mountConf, parentKey);
+		m_kdb.get(m_mountConf, parentKey);
 	}
 	catch(KDBException ex)
 	{
 		emit showMessage(tr("Error"), tr("Could not read configuration."), "", QString(ex.what()), "c");
 	}
 
+	Key cur = m_mountConf.lookup(parentKey);
+
+	if (!cur)
+	{
+		m_mountConf.append ( *Key(Backends::mountpointsPath,
+			KEY_COMMENT, "Below are the mountpoints.",
+			KEY_END));
+		m_mountConf.rewind();
+	}
+
 	try
 	{
-		m_backend->setMountpoint(Key(mountpoint.toStdString(), KEY_CASCADING_NAME, KEY_END), mountConf);
+		m_backend->setMountpoint(Key(mountpoint.toStdString(), KEY_CASCADING_NAME, KEY_END), m_mountConf);
 	}
 	catch(MountpointInvalidException ex)
 	{
@@ -58,6 +65,100 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	}
 	catch(PluginCheckException ex){
 		emit showMessage(tr("Error"), tr("Could not add plugin \"resolver\"."), "", ex.what(), "c");
+	}
+
+	m_name = mountpoint;
+	m_name.replace("/", "_");
+}
+
+void GUIBackend::addPath(const QString &path)
+{
+	try
+	{
+		m_backend->checkFile(path.toStdString());
+	}
+	catch(FileNotValidException ex)
+	{
+		emit showMessage(tr("Error"), tr("The file you have entered is not valid."), "", ex.what(), "c");
+	}
+
+	std::string configPath = Backends::getConfigBasePath(m_name.toStdString());
+
+	m_mountConf.append ( *Key(configPath,
+			KEY_VALUE, "",
+			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
+			KEY_END));
+	configPath += "/path";
+
+	QByteArray pathArr = path.toLocal8Bit();
+
+	m_mountConf.append ( *Key(configPath,
+			KEY_VALUE, pathArr.data(),
+			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
+							  KEY_END));
+}
+
+void GUIBackend::addPlugin(const QString &name)
+{
+	try
+	{
+		m_backend->addPlugin(name.toStdString());
+	}
+	catch(TooManyPlugins ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(OrderingViolation ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(ConflictViolation ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(ReferenceNotFound ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(MissingNeeded ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(MissingSymbol ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(SymbolMismatch ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(SymbolDuplicate ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(StoragePlugin ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(ResolverPlugin ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(PluginNoContract ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(PluginNoInfo ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(VersionInfoMismatch ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+	}
+	catch(PluginCheckException ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
 	}
 }
 
@@ -144,9 +245,29 @@ QStringList GUIBackend::nameFilters()
 	nameFilters.append("ECF (*.ecf)");
 
 	if(plugins.contains("xmltool"))
-		plugins.append("XML (*.xml)");
+		nameFilters.append("XML (*.xml)");
 	if(plugins.contains("ini"))
-		plugins.append("INI (*.ini)");
+		nameFilters.append("INI (*.ini)");
 
 	return nameFilters;
+}
+
+void GUIBackend::serialise()
+{
+	Key rootKey (Backends::mountpointsPath, KEY_END);
+	m_backend->serialise(rootKey, m_mountConf);
+
+	try
+	{
+		m_kdb.set(m_mountConf, rootKey);
+	}
+	catch (kdb::KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Writing to config failed."), "", QString(e.what()), "c");
+	}
+}
+
+bool GUIBackend::validated()
+{
+	return m_backend->validated();
 }

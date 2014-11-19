@@ -12,8 +12,10 @@ WizardTemplate {
 	buttonRow.finishButton.visible: false
 	buttonRow.nextButton.enabled: textField.text !== ""
 	buttonRow.nextButton.onClicked:  {
-		loader.source = "Page3.qml"
-		backend[2] = textField.text
+		guiBackend.addPath(textField.text)
+
+		if(!error)
+			loader.source = "Page3.qml"
 	}
 	buttonVisible: true
 	fileDialog.onAccepted: textField.text = fileDialog.fileUrl.toString().replace("file://", "")

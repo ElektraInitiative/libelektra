@@ -121,7 +121,7 @@ public:
 	 * @param value The value of the ConfigNode.
 	 * @param metaData The metada of the ConfigNode.
 	 */
-	Q_INVOKABLE kdb::Key createNewKey(const QString& path, const QString& value, const QVariantMap metaData);
+	Q_INVOKABLE kdb::Key		createNewKey(const QString& path, const QString& value, const QVariantMap metaData);
 
 	/**
 	 * @brief Appends a ConfigNode to this TreeViewModel. At the time of insertion the index of the ConfigNode will be the largest in this model.

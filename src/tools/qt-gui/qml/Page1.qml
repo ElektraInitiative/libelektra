@@ -13,6 +13,7 @@ WizardTemplate {
 	buttonRow.nextButton.enabled: textField.text !== ""
 	buttonRow.nextButton.onClicked: {
 		guiBackend.createBackend(textField.text)
+
 		if(!error)
 			loader.source = "Page2.qml"
 	}

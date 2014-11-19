@@ -40,8 +40,12 @@ Item {
 				tooltip: qsTr("Add Plugin")
 
 				onClicked: {
-					if(!alreadyInList(pluginDropdown.currentText))
-						includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
+					if(!alreadyInList(pluginDropdown.currentText)){
+						guiBackend.addPlugin(pluginDropdown.currentText)
+
+						if(!error)
+							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
+					}
 				}
 			}
 		}
@@ -110,6 +114,7 @@ Item {
 				anchors.margins: 1
 				textFormat: Text.RichText
 				backgroundVisible: false
+				frameVisible: false
 				readOnly: true
 				wrapMode: Text.WordWrap
 			}
@@ -118,7 +123,8 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
-		finishButton.enabled: true
+		finishButton.enabled: true//guiBackend.validated()
+		finishButton.onClicked: {guiBackend.serialise(); wizardLoader.close(); externTreeModel.populateModel()}
 		nextButton.visible: false
 		cancelButton.onClicked: wizardLoader.close()
 	}

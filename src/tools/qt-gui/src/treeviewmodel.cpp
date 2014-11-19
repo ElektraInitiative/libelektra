@@ -22,7 +22,7 @@ TreeViewModel::TreeViewModel(QObject* parent)
 	{
 		m_kdb.get(m_keySet, "/");
 	}
-	catch (kdb::KDBException const& e)
+	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Could not read configuration."), "", QString(e.what()), "c");
 	}
@@ -221,7 +221,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	{
 		m_kdb.set(m_keySet, "/");
 	}
-	catch (kdb::KDBException const& e)
+	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Importing the configuration from file failed because the current configuration could not be set.") , "", QString(e.what()), "c");
 		return;
@@ -253,7 +253,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 		{
 			cmd->execute(cl);
 		}
-		catch (std::invalid_argument const& ia)
+		catch (invalid_argument const& ia)
 		{
 			emit showMessage(tr("Error"), tr("Importing the configuration from file failed because there were invalid arguments passed."), "" , QString(ia.what()), "c");
 		}
@@ -262,7 +262,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	{
 		emit showMessage(tr("Error"), tr("Importing the configuration from file failed because of a faulty command."), "", QString(ce.what()), "c");
 	}
-	catch (kdb::Key& key)
+	catch (Key& key)
 	{
 		stringstream ws;
 		stringstream es;
@@ -272,7 +272,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 
 		emit showMessage(tr("Error"), tr("Importing the configuration from file failed while accessing the key database."), "" , QString::fromStdString(ws.str()) + QString::fromStdString(es.str()), "c");
 	}
-	catch (std::exception const& ce)
+	catch (exception const& ce)
 	{
 		emit showMessage(tr("Error"), tr("Importing the configuration from file terminated unsuccessfully."), "", QString(ce.what()), "c");
 	}
@@ -285,7 +285,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	{
 		m_kdb.get(m_keySet, "");
 	}
-	catch (kdb::KDBException const& e)
+	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Could not read configuration."), "", QString(e.what()), "c");
 	}
@@ -303,7 +303,7 @@ void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString
 	{
 		m_kdb.set(m_keySet, "/");
 	}
-	catch (kdb::KDBException const& e)
+	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Exporting the configuration to file failed because the current configuration could not be set."), "", QString(e.what()), "c");
 		return;
@@ -334,7 +334,7 @@ void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString
 		{
 			cmd->execute(cl);
 		}
-		catch (std::invalid_argument const& ia)
+		catch (invalid_argument const& ia)
 		{
 			emit showMessage(tr("Error"), tr("Exporting the configuration to file failed because there were invalid arguments passed."), "", QString(ia.what()), "c");
 			return;
@@ -345,7 +345,7 @@ void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString
 		emit showMessage(tr("Error"), tr("Exporting the configuration to file terminated unsuccessfully."), "", QString(ce.what()), "c");
 		return;
 	}
-	catch (kdb::Key& key)
+	catch (Key& key)
 	{
 		stringstream ws;
 		stringstream es;
@@ -356,7 +356,7 @@ void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString
 		emit showMessage(tr("Error"), tr("Exporting the configuration to file failed while accessing the key database."), "", QString::fromStdString(ws.str()) + QString::fromStdString(es.str()), "c");
 		return;
 	}
-	catch (std::exception const& ce)
+	catch (exception const& ce)
 	{
 		emit showMessage(tr("Error"), tr("Exporting the configuration to file terminated unsuccessfully."), "", QString(ce.what()), "c");
 		return;
@@ -604,7 +604,7 @@ void TreeViewModel::synchronize()
 	{
 		m_kdb.set(m_keySet, "/");
 	}
-	catch (kdb::KDBException const& e)
+	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Synchronizing failed."), "", QString(e.what()), "c");
 	}
@@ -619,7 +619,7 @@ void TreeViewModel::clearMetaModel()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
-	const std::string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
+	const string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
 
 	Key x(keyName, KEY_END);
 
