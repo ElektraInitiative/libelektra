@@ -36,7 +36,7 @@ ApplicationWindow {
 	property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
 	property var    keyAreaModel
 	property bool   isPasted
-	property var	backend: []
+	property bool	error: false
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultSpacing: 4
@@ -89,6 +89,7 @@ ApplicationWindow {
 		else if(icon === "c")
 			generalMessageDialog.icon = StandardIcon.Critical
 
+		error = true
 		generalMessageDialog.open()
 	}
 
@@ -397,6 +398,8 @@ ApplicationWindow {
 
 	MessageDialog {
 		id:generalMessageDialog
+
+		onAccepted: error = false
 	}
 
 	FileDialog {

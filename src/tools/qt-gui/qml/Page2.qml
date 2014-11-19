@@ -9,7 +9,6 @@ WizardTemplate {
 
 	label.text: qsTr("Path: ")
 
-	Component.onCompleted: textField.text = (backend.length > 1 ? backend[1] : "")
 	buttonRow.backButton.visible: false
 	buttonRow.finishButton.visible: false
 	buttonRow.nextButton.enabled: textField.text !== ""

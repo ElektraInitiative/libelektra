@@ -803,6 +803,46 @@ QString TreeViewModel::pluginInfo(QString pluginName) const
 	return infoString;
 }
 
+void TreeViewModel::createBackend(const QString &mountpoint)
+{
+	m_backend = new Backend();
+	KeySet mountConf;
+
+	Key parentKey(Backends::mountpointsPath, KEY_END);
+
+	KDB kdb(parentKey);
+
+	try
+	{
+		kdb.get(mountConf, parentKey);
+	}
+	catch(KDBException ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not read configuration."), "", QString(ex.what()), "c");
+	}
+
+	try
+	{
+		m_backend->setMountpoint(Key(mountpoint.toStdString(), KEY_CASCADING_NAME, KEY_END), mountConf);
+	}
+	catch(MountpointInvalidException ex)
+	{
+		emit showMessage(tr("Error"), tr("The provided mount point is invalid."), "", ex.what(), "c");
+	}
+	catch(MountpointAlreadyInUseException ex)
+	{
+		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), "", ex.what(), "c");
+	}
+
+	try
+	{
+		m_backend->addPlugin("resolver");
+	}
+	catch(PluginCheckException ex){
+		emit showMessage(tr("Error"), tr("Could not add plugin \"resolver\"."), "", ex.what(), "c");
+	}
+}
+
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
 	QHash<int, QByteArray> roles;
