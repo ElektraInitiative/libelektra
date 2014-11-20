@@ -734,7 +734,6 @@ ApplicationWindow {
 			id:tbLayout
 
 			anchors.fill: parent
-			anchors.rightMargin: defaultSpacing
 
 			ToolButton {
 				id:tbNew

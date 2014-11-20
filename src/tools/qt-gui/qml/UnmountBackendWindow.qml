@@ -15,8 +15,11 @@ BasicWindow {
 		anchors.fill: parent
 
 		Text{
-			text: qsTr("Notice: To successfully unmount backends you need to be an administrator. This action cannot be undone.")
-			wrapMode: Text.WordWrap
+			anchors.left: parent.left
+			anchors.right: parent.right
+			text: qsTr("Notice: To successfully unmount backends you need to be an administrator. " +
+					   "This action cannot be undone.")
+			wrapMode: Text.Wrap
 			color: "#640000"
 		}
 
@@ -25,9 +28,10 @@ BasicWindow {
 		}
 		BasicRectangle {
 			id: mountedBackendsFrame
-			Layout.fillWidth: true
+
+			anchors.left: parent.left
+			anchors.right: parent.right
 			Layout.fillHeight: true
-			Layout.alignment: Qt.AlignHCenter
 
 			ScrollView {
 				anchors.fill: parent
@@ -61,8 +65,11 @@ BasicWindow {
 			}
 		}
 		Button {
+			id: unmountButton
+
+			anchors.horizontalCenter: parent.horizontalCenter
 			text: qsTr("Unmount")
-			Layout.alignment: Qt.AlignHCenter
+
 			onClicked: {
 				if(mountedBackendsView.model.toString() !== "empty"){
 					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)

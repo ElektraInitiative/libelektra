@@ -11,7 +11,7 @@ Window {
 	property alias cancelButton: cancelButton
 	default property alias contents: placeholder.children
 
-	width: Math.ceil(mainWindow.width*0.45)
+	width: Math.ceil(mainWindow.width*0.4)
 	height: Math.ceil(mainWindow.height*0.6)
 
 	x: Math.ceil(Screen.desktopAvailableWidth*0.5-width*0.5)
@@ -26,6 +26,7 @@ Window {
 
 		Item {
 			id: placeholder
+
 			Layout.fillHeight: true
 			Layout.fillWidth: true
 			Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
