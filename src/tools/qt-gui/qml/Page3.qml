@@ -43,8 +43,10 @@ Item {
 					if(!alreadyInList(pluginDropdown.currentText)){
 						guiBackend.addPlugin(pluginDropdown.currentText)
 
-						if(!error)
+						if(!error){
 							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
+							buttonRow.finishButton.enabled = guiBackend.validated()
+						}
 					}
 				}
 			}
@@ -123,10 +125,24 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
-		finishButton.enabled: true//guiBackend.validated()
-		finishButton.onClicked: {guiBackend.serialise(); wizardLoader.close(); externTreeModel.populateModel()}
+		finishButton.onClicked: {
+			guiBackend.serialise()
+
+			if(!error){
+				wizardLoader.close()
+				externTreeModel.populateModel()
+				guiBackend.deleteBackend()
+				includedPluginsModel.clear()
+				loader.source = "Page1.qml"
+			}
+		}
 		nextButton.visible: false
-		cancelButton.onClicked: wizardLoader.close()
+		cancelButton.onClicked: {
+			wizardLoader.close()
+			guiBackend.deleteBackend()
+			includedPluginsModel.clear()
+			loader.source = "Page1.qml"
+		}
 	}
 
 	function alreadyInList(plugin) {

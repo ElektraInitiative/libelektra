@@ -33,7 +33,7 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	}
 	catch(KDBException ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not read configuration."), "", QString(ex.what()), "c");
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), "", QString(ex.what()), "c");
 	}
 
 	Key cur = m_mountConf.lookup(parentKey);
@@ -41,8 +41,8 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	if (!cur)
 	{
 		m_mountConf.append ( *Key(Backends::mountpointsPath,
-			KEY_COMMENT, "Below are the mountpoints.",
-			KEY_END));
+								  KEY_COMMENT, "Below are the mountpoints.",
+								  KEY_END));
 		m_mountConf.rewind();
 	}
 
@@ -84,18 +84,18 @@ void GUIBackend::addPath(const QString &path)
 
 	std::string configPath = Backends::getConfigBasePath(m_name.toStdString());
 
-	m_mountConf.append ( *Key(configPath,
-			KEY_VALUE, "",
-			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
-			KEY_END));
+	m_mountConf.append(*Key(configPath,
+							KEY_VALUE, "",
+							KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
+							KEY_END));
 	configPath += "/path";
 
 	QByteArray pathArr = path.toLocal8Bit();
 
-	m_mountConf.append ( *Key(configPath,
-			KEY_VALUE, pathArr.data(),
-			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
-							  KEY_END));
+	m_mountConf.append (*Key(configPath,
+							 KEY_VALUE, pathArr.data(),
+							 KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
+							 KEY_END));
 }
 
 void GUIBackend::addPlugin(const QString &name)
@@ -160,6 +160,31 @@ void GUIBackend::addPlugin(const QString &name)
 	{
 		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
 	}
+}
+
+void GUIBackend::serialise()
+{
+	Key rootKey (Backends::mountpointsPath, KEY_END);
+	m_backend->serialise(rootKey, m_mountConf);
+
+	try
+	{
+		m_kdb.set(m_mountConf, rootKey);
+	}
+	catch (kdb::KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not write backend to configuration."), "", QString(e.what()), "c");
+	}
+}
+
+bool GUIBackend::validated()
+{
+	return m_backend->validated();
+}
+
+void GUIBackend::deleteBackend()
+{
+	delete m_backend;
 }
 
 QString GUIBackend::mountPoints() const
@@ -250,24 +275,4 @@ QStringList GUIBackend::nameFilters()
 		nameFilters.append("INI (*.ini)");
 
 	return nameFilters;
-}
-
-void GUIBackend::serialise()
-{
-	Key rootKey (Backends::mountpointsPath, KEY_END);
-	m_backend->serialise(rootKey, m_mountConf);
-
-	try
-	{
-		m_kdb.set(m_mountConf, rootKey);
-	}
-	catch (kdb::KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Writing to config failed."), "", QString(e.what()), "c");
-	}
-}
-
-bool GUIBackend::validated()
-{
-	return m_backend->validated();
 }

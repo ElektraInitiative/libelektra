@@ -633,7 +633,10 @@ ApplicationWindow {
 
 		text: qsTr("Create Backend...")
 		tooltip: qsTr("Create Backend")
-		onTriggered: wizardLoader.show()
+		onTriggered: {
+			wizardLoader.usedNames = guiBackend.mountPoints()
+			wizardLoader.show()
+		}
 	}
 
 	Action {
@@ -641,7 +644,10 @@ ApplicationWindow {
 
 		text: qsTr("Unmount Backend...")
 		tooltip: qsTr("Unmount Backend")
-		onTriggered: unmountBackendWindow.show()
+		onTriggered: {
+			unmountBackendWindow.mountedBackendsView.model = externTreeModel.mountedBackends()
+			unmountBackendWindow.show()
+		}
 	}
 
 	Action {
@@ -928,7 +934,7 @@ ApplicationWindow {
 
 					Item {
 						anchors.fill: parent
-						anchors.margins: defaultSpacing
+						anchors.margins: defaultMargins
 
 						Text{
 							anchors.verticalCenter: parent.verticalCenter

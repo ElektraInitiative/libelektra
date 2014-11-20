@@ -12,7 +12,7 @@ void KeySetVisitor::visit(ConfigNode& node)
 
 	if (key && key.isValid())
 	{
-		//        qDebug() << "Appending key " << QString::fromStdString(key.getName());
+		//qDebug() << "Appending key " << QString::fromStdString(key.getName());
 		m_set.append(key.dup());
 	}
 	else if (!key)

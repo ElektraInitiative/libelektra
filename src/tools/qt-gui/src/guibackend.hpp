@@ -31,6 +31,8 @@ public:
 
 	Q_INVOKABLE bool		validated();
 
+	Q_INVOKABLE void		deleteBackend();
+
 private:
 	kdb::tools::Backend*	m_backend;
 	kdb::KeySet				m_mountConf;

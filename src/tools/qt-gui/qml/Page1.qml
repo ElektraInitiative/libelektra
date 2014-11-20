@@ -5,7 +5,7 @@ WizardTemplate {
 
 	wizardText.text: qsTr("Welcome to the Mounting Wizard! Here you can create and mount backends.\n\n" +
 						  "Please provide a mount point for the backend. For a cascading mount point start with \"/\".\n\n" +
-						  "Already used are:  " + usedNames)
+						  "Already used are:  " + wizardLoader.usedNames)
 
 	label.text: qsTr("Mount point:  ")
 
@@ -17,5 +17,4 @@ WizardTemplate {
 		if(!error)
 			loader.source = "Page2.qml"
 	}
-	usedNames: guiBackend.mountPoints()
 }

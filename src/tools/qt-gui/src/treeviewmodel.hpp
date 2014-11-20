@@ -174,7 +174,7 @@ public:
 	Q_INVOKABLE int             count() const;
 	Q_INVOKABLE QString			getCurrentArrayNo() const;
 	void						refreshArrayNumbers();
-	Q_INVOKABLE QStringList     mountedBackends() const;
+	Q_INVOKABLE QStringList     mountedBackends();
 
 private:
 

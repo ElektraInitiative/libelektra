@@ -7,7 +7,6 @@ import QtQuick.Dialogs 1.1
 Item {
 	id: template
 
-	property string usedNames
 	property alias	wizardText: wizardText
 	property alias	buttonRow: buttonRow
 	property alias	label: label
@@ -71,7 +70,15 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
-		cancelButton.onClicked: wizardLoader.close()
+		cancelButton.onClicked: {
+			wizardLoader.close()
+			textField.text = ""
+
+			if(loader.source.toString() !== "qrc:/qml/Page1.qml")
+				guiBackend.deleteBackend()
+
+			loader.source = "Page1.qml"
+		}
 	}
 
 

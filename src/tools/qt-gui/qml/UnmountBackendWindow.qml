@@ -9,6 +9,8 @@ BasicWindow {
 
 	title: qsTr("Unmount Backend")
 
+	property alias mountedBackendsView: mountedBackendsView
+
 	contents: ColumnLayout {
 		anchors.fill: parent
 
@@ -35,7 +37,6 @@ BasicWindow {
 					id: mountedBackendsView
 
 					anchors.fill: parent
-					model: externTreeModel.mountedBackends()
 					focus: true
 					interactive: true
 					currentIndex: -1
@@ -65,8 +66,8 @@ BasicWindow {
 			onClicked: {
 				if(mountedBackendsView.model.toString() !== "empty"){
 					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
+					//externTreeModel.synchronize()
 					mountedBackendsView.model = externTreeModel.mountedBackends()
-					externTreeModel.synchronize()
 
 					if(mountedBackendsView.model.toString() === "empty")
 						mountedBackendsView.currentIndex = -1
