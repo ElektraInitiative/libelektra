@@ -14,10 +14,10 @@ BasicRectangle {
 	property bool	autoHide: true
 	property alias	autoHideDelay: hideTimer.interval
 	property bool	destroyOnHide: true
-	property var	maxWidth
+	property int	maxWidth: 0
 
-	width: Math.max(layout.width + 8, metaView.contentWidth)
-	height: layout.height + 8
+	width: Math.max(maxWidth + 2*defaultMargins, keyText.paintedWidth + 2*defaultMargins)
+	height: metaView.height*2 + keyText.paintedHeight + 2*defaultMargins
 	color: activePalette.button
 
 	MouseArea {
@@ -25,38 +25,50 @@ BasicRectangle {
 		hoverEnabled: true
 		preventStealing: true
 		propagateComposedEvents: false
+
 		onEntered: {
 			hideTimer.stop()
-
 		}
 		onClicked: hide()
+	}
 
-		ColumnLayout {
-			id: layout
+	ColumnLayout {
+		id: layout
 
-			anchors.centerIn: parent
+		anchors.fill: parent
+		anchors.centerIn: parent
+		anchors.margins: defaultMargins
+		spacing: defaultMargins
 
-			spacing: defaultMargins*0.5
+		Row {
+			Text {
+				id: keyText
 
-			Row {
-				Label {
-					text: name + " : " + value
-				}
+				color: activePalette.text
+				text: name + " : " + value
 			}
-			Rectangle {
-				width: layout.width
-				height: metaView.contentHeight
+		}
+		ListView {
+			id: metaView
 
-				ListView {
-					id: metaView
+			width: parent.width
+			height: (keyText.paintedHeight)*model.count()
 
-					anchors.fill: parent
+			delegate: metaDelegate
+		}
+	}
 
-					delegate: Row {
-						Label {
-							text: name + " : " + value
-						}
-					}
+	Component {
+		id: metaDelegate
+
+		Row {
+			Text {
+				color: activePalette.text
+				text: name + " : " + value
+
+				Component.onCompleted: {
+					if(paintedWidth > maxWidth)
+						maxWidth = paintedWidth
 				}
 			}
 		}
