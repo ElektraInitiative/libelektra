@@ -129,7 +129,9 @@ OTHER_FILES += \
 	qml/ExitDialog.qml \
 	qml/MainMenuBar.qml \
 	qml/ExportDialog.qml \
-	qml/ImportDialog.qml
+	qml/ImportDialog.qml \
+    qml/ToolTip.qml \
+    qml/TooltipCreator.js
 
 SUBDIRS += \
 	unittest/unittest.pro \

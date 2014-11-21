@@ -1,5 +1,7 @@
 import QtQuick 2.2
+import QtQml 2.2
 import QtQuick.Controls 1.1
+import "TooltipCreator.js" as TooltipCreator
 
 //TreeView is based on code user "Jens" posted in the qt-project forum (http://qt-project.org/forums/viewthread/30521/#146845)
 
@@ -61,6 +63,26 @@ ScrollView {
 						height: Math.max(row.height, itemLoader.height)
 						property var fillerModel: model
 
+						DropArea {
+							anchors.fill: parent
+
+							//							onEntered: {
+							//								filler.color = "#FCC"
+							//							}
+							//							onExited: {
+							//								filler.color = "#EEE"
+							//							}
+							//							onDropped: {
+							//								filler.color = "#EEE"
+							//								if (drop.hasText) {
+							//									if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
+							//										item.display = drop.text
+							//										drop.acceptProposedAction()
+							//									}
+							//								}
+							//							}
+						}
+
 						Rectangle {
 							id: rowfill
 
@@ -69,34 +91,17 @@ ScrollView {
 							height: treeView.rowHeight
 							visible: treeView.currentNode === fillerModel
 							color: activePalette.highlight
-						}
-						Keys.onPressed: {
-							if(event.key === Qt.Key_Space){
-								treeView.currentNode = model
-								treeView.currentItem = itemLoader
-								keyAreaSelectedItem = null
-								editKeyWindow.selectedNode = treeView.currentNode
-								forceActiveFocus()
-
-								if (treeView.currentNode !== null){
-									if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
-										keyAreaModel = treeView.currentNode.children
-									else
-										keyAreaModel = null
-								}
-							}
-							else if(event.key === Qt.Key_Up){
-								//console.log("up")
-
-							}
-							else if(event.key === Qt.Key_Down){
-								//console.log("down")
-							}
+							//							Drag.active: dragArea.drag.active
 						}
 						MouseArea {
+							id: dragArea
+
 							anchors.fill: rowfill
 							acceptedButtons: Qt.LeftButton | Qt.RightButton
 							focus: true
+							//							drag.target: parent
+							hoverEnabled: true
+
 							onPressed: {
 								if(mouse.button == Qt.LeftButton){
 									treeView.currentNode = model
@@ -121,6 +126,21 @@ ScrollView {
 									editKeyWindow.selectedNode = treeView.currentNode
 									editKeyWindow.show()
 									editKeyWindow.populateMetaArea()
+								}
+							}
+							onEntered: timer.start()
+
+							Item {
+								Timer {
+									id: timer
+									//TODO: interval?
+									interval: 1500
+									repeat: false
+
+									onTriggered: {
+										if(dragArea.containsMouse)
+											TooltipCreator.create(name, value, metaValue, defaultMargins, rowLoader).show()
+									}
 								}
 							}
 						}

@@ -50,5 +50,7 @@
         <file>qml/Page1.qml</file>
         <file>qml/Page2.qml</file>
         <file>qml/Page3.qml</file>
+        <file>qml/ToolTip.qml</file>
+        <file>qml/TooltipCreator.js</file>
     </qresource>
 </RCC>

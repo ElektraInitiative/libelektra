@@ -39,8 +39,8 @@ ApplicationWindow {
 	property bool	error: false
 
 	//Spacing & Margins recommended by KDE HIG
-	property int    defaultSpacing: 4
 	property int    defaultMargins: 8
+	property int    defaultSpacing: defaultMargins*0.5
 
 	//**Signals & Slots****************************************************************************************//
 
