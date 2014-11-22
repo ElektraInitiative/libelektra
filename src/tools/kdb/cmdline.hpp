@@ -16,6 +16,11 @@
 
 class Command;
 
+namespace kdb
+{
+	class KeySet;
+}
+
 class Cmdline
 {
 public:
@@ -57,6 +62,9 @@ public:
 	bool third;
 	std::string format;
 	std::string plugins;
+	std::string pluginsConfig;
+
+	kdb::KeySet getPluginsConfig(std::string basepath="user/") const;
 
 	/** The path to the kdb exectuable. */
 	std::string executable;

@@ -12,6 +12,7 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
+
 InfoCommand::InfoCommand()
 {}
 
@@ -27,7 +28,7 @@ int InfoCommand::execute(Cmdline const& cl)
 	}
 	else
 	{
-		throw invalid_argument("Need 1 or 2 argument(s)");
+		throw invalid_argument("Need at 1 or 2 argument(s)");
 	}
 	std::string name = cl.arguments[0];
 
@@ -36,7 +37,6 @@ int InfoCommand::execute(Cmdline const& cl)
 
 	if (!cl.load)
 	{
-
 		kdb.get(conf, parentKey);
 	}
 
@@ -49,7 +49,16 @@ int InfoCommand::execute(Cmdline const& cl)
 		}
 
 		Modules modules;
-		PluginPtr plugin = modules.load(name);
+		KeySet ks = cl.getPluginsConfig();
+		PluginPtr plugin;
+		if (ks.size() == 0)
+		{
+			plugin = modules.load(name);
+		}
+		else
+		{
+			plugin = modules.load(name, ks);
+		}
 		conf.append(plugin->getInfo());
 	}
 
