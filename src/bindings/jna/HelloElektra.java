@@ -7,7 +7,7 @@ public class HelloElektra {
 		Key key = Key.create("user/hello_world",
 			Key.KEY_VALUE, "Hello World",
 			Key.KEY_END);
-		System.out.println(key.name());
+		System.out.println(key);
 		System.out.println(key.string());
 
 
@@ -21,6 +21,7 @@ public class HelloElektra {
 		for (Key k: ks) {
 			System.out.println("iter: " + k.name() + " " + k.string());
 		}
+		System.out.println(ks);
 
 		KeySet ks2 = ks.dup();
 		ks2.copy(ks);

@@ -23,7 +23,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 	public static final int KDB_O_NOALL=1<<14;
 	public static final Pointer KS_END= null;
 
-	// basic construction and destruction
+	// basics, construction and destruction
 	public static KeySet create(int alloc, Object... args) {
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
 	}
@@ -44,8 +44,20 @@ public class KeySet implements java.lang.Iterable<Key> {
 		Elektra.INSTANCE.ksDel(ks);
 	}
 
+	// java's specials
 	public java.util.Iterator<Key> iterator() {
 		return new KeySetIterator(this);
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		for (Key k:this) {
+			sb.append(sep);
+			sb.append(k);
+			sep = "\n";
+		}
+		return sb.toString();
 	}
 
 	// wrapped methods
@@ -79,7 +91,6 @@ public class KeySet implements java.lang.Iterable<Key> {
 
 	public Key pop() {
 		return new Key(Elektra.INSTANCE.ksPop(get()));
-
 	}
 
 	public Key current() {
@@ -94,15 +105,21 @@ public class KeySet implements java.lang.Iterable<Key> {
 		return Elektra.INSTANCE.ksRewind(get());
 	}
 
-	/*
-	Pointer ksHead(Pointer ks);
-	Pointer ksTail(Pointer ks);
+	public Key head() {
+		return new Key(Elektra.INSTANCE.ksHead(get()));
+	}
 
-	int ksGetCursor(Pointer ks);
-	int ksSetCursor(Pointer ks, int cursor);
+	public Key tail() {
+		return new Key(Elektra.INSTANCE.ksTail(get()));
+	}
 
-	Pointer ksLookup(Pointer ks, Pointer key, int options);
-	*/
+	public int getCursor() {
+		return Elektra.INSTANCE.ksGetCursor(get());
+	}
+
+	public int setCursor(int cursor) {
+		return Elektra.INSTANCE.ksSetCursor(get(), cursor);
+	}
 
 	public Key at(int cursor) {
 		return new Key(Elektra.INSTANCE.ksAtCursor(get(), cursor));
@@ -116,7 +133,7 @@ public class KeySet implements java.lang.Iterable<Key> {
 		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), 0));
 	}
 
-
+	// native pointer
 	public Pointer get() {
 		return ks;
 	}
