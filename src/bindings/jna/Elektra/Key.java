@@ -28,17 +28,31 @@ public class Key {
 		return new Key(Elektra.INSTANCE.keyNew(name, args));
 	}
 
+	public void incRef() {
+		Elektra.INSTANCE.keyIncRef(key);
+	}
+
+	public void decRef() {
+		Elektra.INSTANCE.keyDecRef(key);
+	}
+
 	public Key(long p) {
 		key = new Pointer(p);
+		incRef();
 	}
 
 	public Key(Pointer p) {
 		key = p;
+		incRef();
 	}
 
-	public int print() {
-		System.out.println("The name is: "+name());
-		return 23;
+	public void release() {
+		key = null;
+	}
+
+	protected void finalize() throws Throwable {
+		decRef();
+		Elektra.INSTANCE.keyDel(key);
 	}
 
 	public String name() {

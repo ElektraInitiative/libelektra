@@ -5,7 +5,8 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 
-public class KeySet {
+public class KeySet implements java.lang.Iterable<Key> {
+	// constants
 	public static final int KDB_O_NONE=0;
 	public static final int KDB_O_DEL=1;
 	public static final int KDB_O_POP=1<<1;
@@ -22,6 +23,7 @@ public class KeySet {
 	public static final int KDB_O_NOALL=1<<14;
 	public static final Pointer KS_END= null;
 
+	// basic construction and destruction
 	public static KeySet create(int alloc, Object... args) {
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
 	}
@@ -34,6 +36,78 @@ public class KeySet {
 		ks = p;
 	}
 
+	public void release() {
+		ks = null;
+	}
+
+	protected void finalize() throws Throwable {
+		Elektra.INSTANCE.ksDel(ks);
+	}
+
+	public java.util.Iterator<Key> iterator() {
+		return new KeySetIterator(this);
+	}
+
+	// wrapped methods
+	public KeySet dup() {
+		return new KeySet(Elektra.INSTANCE.ksDup(get()));
+	}
+
+	public int copy(KeySet other) {
+		return Elektra.INSTANCE.ksCopy(get(), other.get());
+	}
+
+	public int needsSync() {
+		return Elektra.INSTANCE.ksNeedSync(get());
+	}
+
+	public int length() {
+		return Elektra.INSTANCE.ksGetSize(get());
+	}
+
+	public int append(Key k) {
+		return Elektra.INSTANCE.ksAppendKey(get(), k.get());
+	}
+
+	public int append(KeySet ks) {
+		return Elektra.INSTANCE.ksAppendKey(get(), ks.get());
+	}
+
+	public KeySet cut(Key cutpoint) {
+		return new KeySet(Elektra.INSTANCE.ksCut(get(), cutpoint.get()));
+	}
+
+	public Key pop() {
+		return new Key(Elektra.INSTANCE.ksPop(get()));
+
+	}
+
+	public Key current() {
+		return new Key(Elektra.INSTANCE.ksCurrent(get()));
+	}
+
+	public Key next() {
+		return new Key(Elektra.INSTANCE.ksNext(get()));
+	}
+
+	public int rewind() {
+		return Elektra.INSTANCE.ksRewind(get());
+	}
+
+	/*
+	Pointer ksHead(Pointer ks);
+	Pointer ksTail(Pointer ks);
+
+	int ksGetCursor(Pointer ks);
+	int ksSetCursor(Pointer ks, int cursor);
+
+	Pointer ksLookup(Pointer ks, Pointer key, int options);
+	*/
+
+	public Key at(int cursor) {
+		return new Key(Elektra.INSTANCE.ksAtCursor(get(), cursor));
+	}
+
 	public Key lookup(Key find, int options) {
 		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), options));
 	}
@@ -41,6 +115,7 @@ public class KeySet {
 	public Key lookup(Key find) {
 		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), 0));
 	}
+
 
 	public Pointer get() {
 		return ks;
