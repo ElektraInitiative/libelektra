@@ -279,14 +279,16 @@ int elektraJniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraJniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraJniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	return 1; /* success */
+	Data *data = elektraPluginGetData(handle);
+	return call2Arg(data, returned, parentKey, "set");
 }
 
-int elektraJniError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraJniError(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	return 1; /* success */
+	Data *data = elektraPluginGetData(handle);
+	return call2Arg(data, returned, parentKey, "error");
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(jni)
