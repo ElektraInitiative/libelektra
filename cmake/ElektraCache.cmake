@@ -117,6 +117,7 @@ set (PLUGINS_LIST_DEP
 	xmltool
 	augeas
 	journald
+	jni
 	)
 
 #
