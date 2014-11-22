@@ -97,6 +97,42 @@ int keySetString(Pointer key, String newString);
 // int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
 //int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
 
+/**************************************
+ *
+ * KeySet methods
+ *
+ **************************************/
+
 Pointer ksNew(int alloc, Object... args);
+
+Pointer ksDup(Pointer source);
+int ksCopy(Pointer dest, Pointer source);
+
+int ksClear(Pointer ks); // not needed
+int ksDel(Pointer ks);
+
+int ksNeedSync(Pointer ks);
+
+int ksGetSize(Pointer ks);
+
+int ksAppendKey(Pointer ks, Pointer toAppend);
+
+int ksAppend(Pointer ks, Pointer toAppend);
+Pointer ksCut(Pointer ks, Pointer cutpoint);
+
+Pointer ksPop(Pointer ks);
+
+int ksRewind(Pointer ks);
+Pointer ksNext(Pointer ks);
+Pointer ksCurrent(Pointer ks);
+
+Pointer ksHead(Pointer ks);
+Pointer ksTail(Pointer ks);
+
+int ksGetCursor(Pointer ks);
+int ksSetCursor(Pointer ks, int cursor);
+Pointer ksAtCursor(Pointer ks, int cursor);
+
 Pointer ksLookup(Pointer ks, Pointer key, int options);
+Pointer ksLookupByName(Pointer ks, String name, int options);
 }
