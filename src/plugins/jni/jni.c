@@ -72,6 +72,59 @@ static void checkException(Data *data)
 	}
 }
 
+static int call1Arg(Data *data, Key *errorKey, const char *method)
+{
+	jobject jerrorKey = (*data->env)->NewObject(data->env,
+			data->clsKey,
+			data->midKey, errorKey);
+	if (jerrorKey == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create errorKey");
+		return -1;
+	}
+	checkException(data);
+
+	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
+			data->env, data->cls,
+			"<init>", "()V");
+	if (midPluginConstructor == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of plugin");
+		return -1;
+	}
+	checkException(data);
+
+	data->plugin = (*data->env)->NewObject(data->env,
+			data->cls,
+			midPluginConstructor);
+	if (data->plugin == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create plugin");
+		return -1;
+	}
+	checkException(data);
+
+	data->midOpen = (*data->env)->GetMethodID(data->env,
+			data->cls,
+			method, "(LElektra/Key;)I");
+	if (data->midOpen == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
+		return -1;
+	}
+	checkException(data);
+
+	jint result = 0;
+	result = (*data->env)->CallIntMethod(data->env,
+			data->plugin,
+			data->midOpen,
+			jerrorKey
+			);
+	checkException(data);
+
+	return result;
+}
+
 int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
 	Data *data = malloc(sizeof(Data));
@@ -135,67 +188,20 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	}
 	checkException(data);
 
-	jobject jerrorKey = (*data->env)->NewObject(data->env,
-			data->clsKey,
-			data->midKey, errorKey);
-	if (jerrorKey == 0)
-	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create errorKey");
-		return -1;
-	}
-	checkException(data);
-
-	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
-			data->env, data->cls,
-			"<init>", "()V");
-	if (midPluginConstructor == 0)
-	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of plugin");
-		return -1;
-	}
-	checkException(data);
-
-	data->plugin = (*data->env)->NewObject(data->env,
-			data->cls,
-			midPluginConstructor);
-	if (data->plugin == 0)
-	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create plugin");
-		return -1;
-	}
-	checkException(data);
-
-	data->midOpen = (*data->env)->GetMethodID(data->env,
-			data->cls,
-			"open", "(LElektra/Key;)I");
-	if (data->midOpen == 0)
-	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
-		return -1;
-	}
-	checkException(data);
-
-	jint result = 0;
-	result = (*data->env)->CallIntMethod(data->env,
-			data->plugin,
-			data->midOpen,
-			jerrorKey
-			);
-	checkException(data);
-
 	elektraPluginSetData(handle, data);
 
-	return result;
+	return call1Arg(data, errorKey, "open");
 }
 
 int elektraJniClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 {
 	Data *data = elektraPluginGetData(handle);
+	int ret = call1Arg(data, errorKey, "close");
 
 	(*data->jvm)->DestroyJavaVM(data->jvm);
 	free(data);
 
-	return 1; /* success */
+	return ret;
 }
 
 int elektraJniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
