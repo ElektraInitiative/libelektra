@@ -12,7 +12,20 @@ Allows you to write plugins in java.
 
 Needs Java 8 or later. While the plugin internally uses JNI, the Java
 binding for your java-plugin may use something different, e.g. JNA.
+The requirements for the java bindings are:
 
+- needs to have the classes Elektra/Key and Elektra/KeySet with
+ - an constructor that takes a C-Pointer as Long (J)
+ - an method "release" that gives up ownership (set internal pointer to NULL)
+
+The java plugin itself needs to have following methods:
+
+- constructor without arguments
+- open with argument Elektra/Key
+- close with argument Elektra/Key
+- get with arguments Elektra/KeySet and Elektra/Key
+- set with arguments Elektra/KeySet and Elektra/Key
+- error with arguments Elektra/KeySet and Elektra/Key
 
 
 ## Development ##

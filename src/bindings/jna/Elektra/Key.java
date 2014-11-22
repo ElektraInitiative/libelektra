@@ -28,6 +28,10 @@ public class Key {
 		return new Key(Elektra.INSTANCE.keyNew(name, args));
 	}
 
+	public Key(long p) {
+		key = new Pointer(p);
+	}
+
 	public Key(Pointer p) {
 		key = p;
 	}

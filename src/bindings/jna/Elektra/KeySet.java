@@ -26,6 +26,10 @@ public class KeySet {
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
 	}
 
+	public KeySet(long p) {
+		ks = new Pointer(p);
+	}
+
 	public KeySet(Pointer p) {
 		ks = p;
 	}
