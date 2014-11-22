@@ -14,8 +14,8 @@ public class HelloElektra {
 		KeySet ks = KeySet.create(10,
 			Key.create("user/hello_world2",
 				Key.KEY_VALUE, "Hello World2",
-				Key.KEY_END).get(),
-			key.get(),
+				Key.KEY_END),
+			key,
 			KeySet.KS_END);
 
 		for (Key k: ks) {

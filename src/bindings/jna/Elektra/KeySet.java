@@ -25,6 +25,12 @@ public class KeySet implements java.lang.Iterable<Key> {
 
 	// basics, construction and destruction
 	public static KeySet create(int alloc, Object... args) {
+		for (int i=0; i<args.length-1; ++i) {
+			if (args[i] instanceof Key) {
+				Key k = (Key) args[i];
+				args[i] = k.get();
+			}
+		}
 		return new KeySet(Elektra.INSTANCE.ksNew(alloc, args));
 	}
 
