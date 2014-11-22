@@ -48,17 +48,11 @@ typedef struct
 {
 	JNIEnv *env;
 	JavaVM *jvm;
-	JavaVMInitArgs vmArgs;
 	jclass cls;
 	jclass clsKey;
 	jclass clsKeySet;
 	jmethodID midKey;
 	jmethodID midKeySet;
-	jmethodID midOpen;
-	jmethodID midClose;
-	jmethodID midGet;
-	jmethodID midSet;
-	jmethodID midError;
 	jobject plugin;
 } Data;
 
@@ -84,30 +78,10 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 	}
 	checkException(data);
 
-	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
-			data->env, data->cls,
-			"<init>", "()V");
-	if (midPluginConstructor == 0)
-	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of plugin");
-		return -1;
-	}
-	checkException(data);
-
-	data->plugin = (*data->env)->NewObject(data->env,
-			data->cls,
-			midPluginConstructor);
-	if (data->plugin == 0)
-	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create plugin");
-		return -1;
-	}
-	checkException(data);
-
-	data->midOpen = (*data->env)->GetMethodID(data->env,
+	jmethodID mid = (*data->env)->GetMethodID(data->env,
 			data->cls,
 			method, "(LElektra/Key;)I");
-	if (data->midOpen == 0)
+	if (mid== 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
 		return -1;
@@ -117,7 +91,7 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 	jint result = 0;
 	result = (*data->env)->CallIntMethod(data->env,
 			data->plugin,
-			data->midOpen,
+			mid,
 			jerrorKey
 			);
 	checkException(data);
@@ -129,18 +103,19 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
 	Data *data = malloc(sizeof(Data));
 
+	JavaVMInitArgs vmArgs;
 	JavaVMOption options[2];
 	options[0].optionString = "-Djava.class.path=.:/usr/share/java/jna.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
 	// options[0].optionString = "-Djava.class.path=.:/usr/share/java/jna-3.2.7.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
 	options[1].optionString = "-verbose:gc,class,jni";
-	data->vmArgs.version = JNI_VERSION_1_8;
-	data->vmArgs.nOptions = 2;
-	data->vmArgs.options = options;
-	data->vmArgs.ignoreUnrecognized = JNI_FALSE;
+	vmArgs.version = JNI_VERSION_1_8;
+	vmArgs.nOptions = 2;
+	vmArgs.options = options;
+	vmArgs.ignoreUnrecognized = JNI_FALSE;
 
 	jint res = JNI_CreateJavaVM(&data->jvm,
 			(void**)&data->env,
-			(void**)&data->vmArgs);
+			(void**)&vmArgs);
 	if (res < 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create Java VM");
@@ -184,6 +159,26 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	if (data->midKeySet == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of KeySet");
+		return -1;
+	}
+	checkException(data);
+
+	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
+			data->env, data->cls,
+			"<init>", "()V");
+	if (midPluginConstructor == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of plugin");
+		return -1;
+	}
+	checkException(data);
+
+	data->plugin = (*data->env)->NewObject(data->env,
+			data->cls,
+			midPluginConstructor);
+	if (data->plugin == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create plugin");
 		return -1;
 	}
 	checkException(data);
