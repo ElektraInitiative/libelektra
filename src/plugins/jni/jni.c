@@ -48,11 +48,11 @@ typedef struct
 {
 	JNIEnv *env;
 	JavaVM *jvm;
-	jclass cls;
+	jclass clsPlugin;
 	jclass clsKey;
 	jclass clsKeySet;
-	jmethodID midKey;
-	jmethodID midKeySet;
+	jmethodID midKey; //! Java constructor for Key
+	jmethodID midKeySet; //! Java constructor for KeySet
 	jobject plugin;
 } Data;
 
@@ -79,11 +79,12 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 	checkException(data);
 
 	jmethodID mid = (*data->env)->GetMethodID(data->env,
-			data->cls,
+			data->clsPlugin,
 			method, "(LElektra/Key;)I");
 	if (mid== 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
+		ELEKTRA_SET_ERRORF(26, errorKey, "Cannot find %s",
+				method);
 		return -1;
 	}
 	checkException(data);
@@ -93,6 +94,51 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 			data->plugin,
 			mid,
 			jerrorKey
+			);
+	checkException(data);
+
+	return result;
+}
+
+static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
+{
+	jobject jks = (*data->env)->NewObject(data->env,
+			data->clsKeySet,
+			data->midKeySet, ks);
+	if (jks == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create ks");
+		return -1;
+	}
+	checkException(data);
+
+	jobject jkey = (*data->env)->NewObject(data->env,
+			data->clsKey,
+			data->midKey, errorKey);
+	if (jkey == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create key");
+		return -1;
+	}
+	checkException(data);
+
+	jmethodID mid = (*data->env)->GetMethodID(data->env,
+			data->clsPlugin,
+			method, "(LElektra/KeySet;LElektra/Key;)I");
+	if (mid== 0)
+	{
+		ELEKTRA_SET_ERRORF(26, errorKey, "Cannot find %s",
+				method);
+		return -1;
+	}
+	checkException(data);
+
+	jint result = 0;
+	result = (*data->env)->CallIntMethod(data->env,
+			data->plugin,
+			mid,
+			jks,
+			jkey
 			);
 	checkException(data);
 
@@ -123,8 +169,8 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	}
 
 	const char *classname = "Elektra/PluginDemo";
-	data->cls = (*data->env)->FindClass(data->env, classname);
-	if (data->cls == 0)
+	data->clsPlugin = (*data->env)->FindClass(data->env, classname);
+	if (data->clsPlugin == 0)
 	{
 		ELEKTRA_SET_ERRORF(26, errorKey,
 				"Cannot find class %s", classname);
@@ -164,7 +210,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	checkException(data);
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
-			data->env, data->cls,
+			data->env, data->clsPlugin,
 			"<init>", "()V");
 	if (midPluginConstructor == 0)
 	{
@@ -174,7 +220,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	checkException(data);
 
 	data->plugin = (*data->env)->NewObject(data->env,
-			data->cls,
+			data->clsPlugin,
 			midPluginConstructor);
 	if (data->plugin == 0)
 	{
@@ -188,7 +234,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	return call1Arg(data, errorKey, "open");
 }
 
-int elektraJniClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
+int elektraJniClose(Plugin *handle, Key *errorKey)
 {
 	Data *data = elektraPluginGetData(handle);
 	int ret = call1Arg(data, errorKey, "close");
@@ -199,8 +245,10 @@ int elektraJniClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	return ret;
 }
 
-int elektraJniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraJniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
+	Data *data = elektraPluginGetData(handle);
+	call2Arg(data, returned, parentKey, "get");
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/jni"))
 	{
 		KeySet *contract = ksNew (30,
