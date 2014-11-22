@@ -36,6 +36,14 @@
 #include <kdbplugin.h>
 #include <kdberrors.h>
 
+// forward declarations
+int elektraJniOpen(Plugin *handle, Key *errorKey);
+int elektraJniClose(Plugin *handle, Key *errorKey);
+int elektraJniGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraJniSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraJniError(Plugin *handle, KeySet *ks, Key *parentKey);
+
+// plugin's data handle
 typedef struct
 {
 	JNIEnv *env;
@@ -54,20 +62,23 @@ typedef struct
 	jobject plugin;
 } Data;
 
-int elektraJniOpen(Plugin *handle, Key *errorKey);
-int elektraJniClose(Plugin *handle, Key *errorKey);
-int elektraJniGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraJniSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraJniError(Plugin *handle, KeySet *ks, Key *parentKey);
-
-Plugin *ELEKTRA_PLUGIN_EXPORT(jni);
+static void checkException(Data *data)
+{
+	if ((*data->env)->ExceptionCheck(data->env))
+	{
+		(*data->env)->ExceptionDescribe(data->env);
+		// TODO: pack this in warning
+		(*data->env)->ExceptionClear(data->env);
+	}
+}
 
 int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
 	Data *data = malloc(sizeof(Data));
 
 	JavaVMOption options[2];
-	options[0].optionString = "-Djava.class.path=.:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
+	options[0].optionString = "-Djava.class.path=.:/usr/share/java/jna.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
+	// options[0].optionString = "-Djava.class.path=.:/usr/share/java/jna-3.2.7.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
 	options[1].optionString = "-verbose:gc,class,jni";
 	data->vmArgs.version = JNI_VERSION_1_8;
 	data->vmArgs.nOptions = 2;
@@ -83,11 +94,12 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	/*
-	data->cls = (*data->env)->FindClass(data->env, "Elektra/PluginDemo");
+	const char *classname = "Elektra/PluginDemo";
+	data->cls = (*data->env)->FindClass(data->env, classname);
 	if (data->cls == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class PluginDemo");
+		ELEKTRA_SET_ERRORF(26, errorKey,
+				"Cannot find class %s", classname);
 		return -1;
 	}
 
@@ -112,6 +124,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of Key");
 		return -1;
 	}
+	checkException(data);
 
 	data->midKeySet = (*data->env)->GetMethodID(data->env, data->clsKeySet,
 			"<init>", "(Lcom/sun/jna/Pointer;)V");
@@ -120,6 +133,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of KeySet");
 		return -1;
 	}
+	checkException(data);
 
 	jobject jerrorKey = (*data->env)->NewObject(data->env,
 			data->clsKey,
@@ -129,6 +143,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create errorKey");
 		return -1;
 	}
+	checkException(data);
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
 			data->env, data->cls,
@@ -138,6 +153,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of plugin");
 		return -1;
 	}
+	checkException(data);
 
 	data->plugin = (*data->env)->NewObject(data->env,
 			data->cls,
@@ -147,28 +163,29 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create plugin");
 		return -1;
 	}
+	checkException(data);
 
-	data->midOpen = (*data->env)->GetStaticMethodID(data->env,
+	data->midOpen = (*data->env)->GetMethodID(data->env,
 			data->cls,
-			"print", "()V");
+			"open", "(LElektra/Key;)I");
 	if (data->midOpen == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find open");
 		return -1;
 	}
+	checkException(data);
 
 	jint result = 0;
-	result = (*data->env)->CallStaticIntMethod(data->env,
+	result = (*data->env)->CallIntMethod(data->env,
 			data->plugin,
 			data->midOpen,
 			jerrorKey
 			);
-	printf("After open()\n");
-	*/
+	checkException(data);
 
 	elektraPluginSetData(handle, data);
 
-	return 0;
+	return result;
 }
 
 int elektraJniClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
