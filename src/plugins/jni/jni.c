@@ -51,8 +51,10 @@ typedef struct
 	jclass clsPlugin;
 	jclass clsKey;
 	jclass clsKeySet;
-	jmethodID midKey; //! Java constructor for Key
-	jmethodID midKeySet; //! Java constructor for KeySet
+	jmethodID midKeyConstr;
+	jmethodID midKeySetConstr;
+	jmethodID midKeyRelease;
+	jmethodID midKeySetRelease;
 	jobject plugin;
 } Data;
 
@@ -70,7 +72,7 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 {
 	jobject jerrorKey = (*data->env)->NewObject(data->env,
 			data->clsKey,
-			data->midKey, errorKey);
+			data->midKeyConstr, errorKey);
 	if (jerrorKey == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create errorKey");
@@ -97,6 +99,12 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 			);
 	checkException(data);
 
+	(*data->env)->CallVoidMethod(data->env,
+			jerrorKey,
+			data->midKeyRelease
+			);
+	checkException(data);
+
 	return result;
 }
 
@@ -104,7 +112,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 {
 	jobject jks = (*data->env)->NewObject(data->env,
 			data->clsKeySet,
-			data->midKeySet, ks);
+			data->midKeySetConstr, ks);
 	if (jks == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create ks");
@@ -114,7 +122,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 
 	jobject jkey = (*data->env)->NewObject(data->env,
 			data->clsKey,
-			data->midKey, errorKey);
+			data->midKeyConstr, errorKey);
 	if (jkey == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create key");
@@ -139,6 +147,18 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 			mid,
 			jks,
 			jkey
+			);
+	checkException(data);
+
+	(*data->env)->CallVoidMethod(data->env,
+			jks,
+			data->midKeySetRelease
+			);
+	checkException(data);
+
+	(*data->env)->CallVoidMethod(data->env,
+			jkey,
+			data->midKeyRelease
 			);
 	checkException(data);
 
@@ -191,23 +211,44 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	data->midKey = (*data->env)->GetMethodID(data->env, data->clsKey,
+	data->midKeyConstr = (*data->env)->GetMethodID(data->env,
+			data->clsKey,
 			"<init>", "(J)V");
-	if (data->midKey == 0)
+	if (data->midKeyConstr == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of Key");
 		return -1;
 	}
 	checkException(data);
 
-	data->midKeySet = (*data->env)->GetMethodID(data->env, data->clsKeySet,
+	data->midKeySetConstr = (*data->env)->GetMethodID(data->env, data->clsKeySet,
 			"<init>", "(J)V");
-	if (data->midKeySet == 0)
+	if (data->midKeySetConstr == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of KeySet");
 		return -1;
 	}
 	checkException(data);
+
+	data->midKeyRelease = (*data->env)->GetMethodID(data->env,
+			data->clsKey,
+			"release", "()V");
+	if (data->midKeyRelease == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find release of Key");
+		return -1;
+	}
+	checkException(data);
+
+	data->midKeySetRelease = (*data->env)->GetMethodID(data->env, data->clsKeySet,
+			"release", "()V");
+	if (data->midKeySetRelease == 0)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find release of KeySet");
+		return -1;
+	}
+	checkException(data);
+
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID(
 			data->env, data->clsPlugin,
