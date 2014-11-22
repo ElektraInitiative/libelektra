@@ -247,8 +247,6 @@ int elektraJniClose(Plugin *handle, Key *errorKey)
 
 int elektraJniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	Data *data = elektraPluginGetData(handle);
-	call2Arg(data, returned, parentKey, "get");
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/jni"))
 	{
 		KeySet *contract = ksNew (30,
@@ -271,6 +269,8 @@ int elektraJniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
+		Data *data = elektraPluginGetData(handle);
+		call2Arg(data, returned, parentKey, "get");
 
 		return 1; /* success */
 	}

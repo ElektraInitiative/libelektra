@@ -24,16 +24,9 @@ public class Key {
 	public static final int KEY_META=1<<15;
 	public static final int KEY_NULL=1<<16;
 
+	// basics, construction and destruction
 	public static Key create(String name, Object... args) {
 		return new Key(Elektra.INSTANCE.keyNew(name, args));
-	}
-
-	public void incRef() {
-		Elektra.INSTANCE.keyIncRef(key);
-	}
-
-	public void decRef() {
-		Elektra.INSTANCE.keyDecRef(key);
 	}
 
 	public Key(long p) {
@@ -55,6 +48,20 @@ public class Key {
 		Elektra.INSTANCE.keyDel(key);
 	}
 
+	// java's specials
+	public String toString() {
+		return name();
+	}
+
+	// wrapped methods
+	public void incRef() {
+		Elektra.INSTANCE.keyIncRef(key);
+	}
+
+	public void decRef() {
+		Elektra.INSTANCE.keyDecRef(key);
+	}
+
 	public String name() {
 		return Elektra.INSTANCE.keyName(key);
 	}
@@ -63,6 +70,7 @@ public class Key {
 		return Elektra.INSTANCE.keyString(key);
 	}
 
+	// native pointer
 	public Pointer get() {
 		return key;
 	}
