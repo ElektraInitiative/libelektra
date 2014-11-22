@@ -140,7 +140,7 @@ ScrollView {
 
 									onTriggered: {
 										if(dragArea.containsMouse && !isNull)
-											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, rowfill.width*0.15, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
+											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
 									}
 								}
 							}
