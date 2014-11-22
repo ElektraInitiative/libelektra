@@ -192,7 +192,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	}
 
 	data->midKey = (*data->env)->GetMethodID(data->env, data->clsKey,
-			"<init>", "(Lcom/sun/jna/Pointer;)V");
+			"<init>", "(J)V");
 	if (data->midKey == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of Key");
@@ -201,7 +201,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	checkException(data);
 
 	data->midKeySet = (*data->env)->GetMethodID(data->env, data->clsKeySet,
-			"<init>", "(Lcom/sun/jna/Pointer;)V");
+			"<init>", "(J)V");
 	if (data->midKeySet == 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of KeySet");
