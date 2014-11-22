@@ -51,6 +51,7 @@ typedef struct
 	jclass clsPlugin;
 	jclass clsKey;
 	jclass clsKeySet;
+	int module;
 	jmethodID midKeyConstr;
 	jmethodID midKeySetConstr;
 	jmethodID midKeyRelease;
@@ -168,27 +169,73 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
 	Data *data = malloc(sizeof(Data));
+	data->module = 0;
+	elektraPluginSetData(handle, data);
+
+	KeySet *config = elektraPluginGetConfig(handle);
+	Key *k = ksLookupByName(config, "/module", 0);
+	if (k)
+	{
+		data->module = 1;
+		return 0;
+	}
+
+	k = ksLookupByName(config, "/classpath", 0);
+	if (!k)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey,
+				"Could not find plugin config /classpath");
+		return -1;
+	}
+
+	char *classpath = malloc(20+keyGetValueSize(k));
+	strcpy(classpath, "-Djava.class.path=");
+	strcat(classpath, keyString(k));
+
+	k = ksLookupByName(config, "/option", 0);
+	char *option = 0;
+	if (!k)
+	{
+		option = "-verbose:gc,class,jni";
+	}
+	else
+	{
+		option = (char*) keyString(k);
+	}
+
+	k = ksLookupByName(config, "/ignore", 0);
+	jboolean ign = JNI_FALSE;
+	if (k) ign = JNI_TRUE;
 
 	JavaVMInitArgs vmArgs;
 	JavaVMOption options[2];
-	options[0].optionString = "-Djava.class.path=.:/usr/share/java/jna.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
-	// options[0].optionString = "-Djava.class.path=.:/usr/share/java/jna-3.2.7.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna";
-	options[1].optionString = "-verbose:gc,class,jni";
+	options[0].optionString = classpath;
+	options[1].optionString = option;
 	vmArgs.version = JNI_VERSION_1_8;
 	vmArgs.nOptions = 2;
 	vmArgs.options = options;
-	vmArgs.ignoreUnrecognized = JNI_FALSE;
+	vmArgs.ignoreUnrecognized = ign;
 
 	jint res = JNI_CreateJavaVM(&data->jvm,
 			(void**)&data->env,
 			(void**)&vmArgs);
+	free(classpath);
 	if (res < 0)
 	{
 		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create Java VM");
 		return -1;
 	}
 
-	const char *classname = "Elektra/PluginDemo";
+	k = ksLookupByName(config, "/classname", 0);
+	if (!k)
+	{
+		ELEKTRA_SET_ERROR(26, errorKey,
+				"Could not find plugin config /classname");
+		return -1;
+	}
+
+	const char *classname = keyString(k);
+
 	data->clsPlugin = (*data->env)->FindClass(data->env, classname);
 	if (data->clsPlugin == 0)
 	{
@@ -270,14 +317,16 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	}
 	checkException(data);
 
-	elektraPluginSetData(handle, data);
-
 	return call1Arg(data, errorKey, "open");
 }
 
 int elektraJniClose(Plugin *handle, Key *errorKey)
 {
 	Data *data = elektraPluginGetData(handle);
+	if (data->module == 1)
+	{
+		return 0;
+	}
 	int ret = call1Arg(data, errorKey, "close");
 
 	(*data->jvm)->DestroyJavaVM(data->jvm);
@@ -311,11 +360,13 @@ int elektraJniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksAppend (returned, contract);
 		ksDel (contract);
 	}
-	/* get all keys */
-	Data *data = elektraPluginGetData(handle);
-	call2Arg(data, returned, parentKey, "get");
 
-	return 1; /* success */
+	Data *data = elektraPluginGetData(handle);
+	if (data->module == 1)
+	{
+		return 0;
+	}
+	return call2Arg(data, returned, parentKey, "get");
 }
 
 int elektraJniSet(Plugin *handle, KeySet *returned, Key *parentKey)

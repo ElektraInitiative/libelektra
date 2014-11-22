@@ -27,6 +27,22 @@ The java plugin itself needs to have following methods:
 - set with arguments Elektra/KeySet and Elektra/Key
 - error with arguments Elektra/KeySet and Elektra/Key
 
+## Plugin Config ##
+
+You need to pass classname and classpath, e.g.:
+
+    classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna
+    classname=Elektra/DemoPlugin
+
+additional you can set:
+
+- option allows you to pass a option to the jvm, default: -verbose:gc,class,jni
+- ignore allows you to ignore broken options, default: false
+
+E.g.
+
+    option=-verbose:gc,class ignore
+
 
 ## Development ##
 
