@@ -1,6 +1,7 @@
 .pragma library
 
-var component = Qt.createComponent("ToolTip.qml");
+var component = Qt.createComponent("ToolTip.qml")
+var tooltip = null
 
 function create(name, value, meta, defaultMargins, x, y, parent) {
 
@@ -11,15 +12,21 @@ function create(name, value, meta, defaultMargins, x, y, parent) {
 	properties.meta = meta
 	properties.defaultMargins = defaultMargins
 
-	var tooltip = component.createObject(parent, properties);
+	tooltip = component.createObject(parent, properties);
 
 	if (tooltip === null)
 		console.error("error creating tooltip: " + component.errorString());
 
 	tooltip.x = x
 	tooltip.y = y
-	tooltip.z = parent.z + 1
 
 	return tooltip;
+}
+
+function destroy() {
+	if(tooltip){
+		tooltip.destroy()
+		tooltip = null
+	}
 }
 

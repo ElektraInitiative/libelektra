@@ -129,17 +129,18 @@ ScrollView {
 								}
 							}
 							onEntered: timer.start()
+							onExited: TooltipCreator.destroy()
 
 							Item {
 								Timer {
 									id: timer
-									//TODO: interval?
-									interval: 1500
+
+									interval: 1000
 									repeat: false
 
 									onTriggered: {
 										if(dragArea.containsMouse && !isNull)
-											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, rowfill.width*0.5, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
+											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, rowfill.width*0.15, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
 									}
 								}
 							}
