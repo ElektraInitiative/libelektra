@@ -193,11 +193,9 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
 
 		istringstream sstream(configString);
 
-		while (true)
+		// read until the next '=', this will be the keyname
+		while (std::getline (sstream, keyName, '='))
 		{
-			// read until the next '=', this will be the keyname
-			if (!std::getline (sstream, keyName, '=')) break;
-
 			// read until a ',' or the end of line
 			// if nothing is read because the '=' is the last character
 			// in the config string, consider the value empty

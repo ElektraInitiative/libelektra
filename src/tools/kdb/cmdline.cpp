@@ -44,6 +44,7 @@ Cmdline::Cmdline (int argc,
 	third(true),
 	format("dump"),
 	plugins("sync"),
+	pluginsConfig(""),
 
 	executable(),
 	commandName()
@@ -206,6 +207,14 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-3 --third               suppress third column\n";
 	}
+	optionPos = acceptedOptions.find('c');
+	if (optionPos!=string::npos)
+	{
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"plugins-config", no_argument, 0, 'c'};
+		long_options.push_back(o);
+		helpText += "-c --plugins-config      add a plugin configuration\n";
+	}
 
 	{
 		using namespace kdb;
@@ -259,6 +268,7 @@ Cmdline::Cmdline (int argc,
 		case '1': first= false; break;
 		case '2': second= false; break;
 		case '3': third= false; break;
+		case 'c': pluginsConfig = optarg; break;
 
 		default: invalidOpt = true; break;
 		}
@@ -269,6 +279,30 @@ Cmdline::Cmdline (int argc,
 	{
 		arguments.push_back(argv[optind++]);
 	}
+}
+
+kdb::KeySet Cmdline::getPluginsConfig(string basepath) const
+{
+	using namespace kdb;
+
+	string keyName;
+	string value;
+	KeySet ret;
+	istringstream sstream(pluginsConfig);
+
+	// read until the next '=', this will be the keyname
+	while (std::getline (sstream, keyName, '='))
+	{
+		// read until a ',' or the end of line
+		// if nothing is read because the '=' is the last character
+		// in the config string, consider the value empty
+		if (!std::getline (sstream, value, ',')) value = "";
+
+		Key configKey = Key (basepath + keyName, KEY_END);
+		configKey.setString (value);
+		ret.append (configKey);
+	}
+	return ret;
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)
