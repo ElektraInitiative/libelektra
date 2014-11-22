@@ -269,12 +269,10 @@ int elektraJniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
-		Data *data = elektraPluginGetData(handle);
-		call2Arg(data, returned, parentKey, "get");
-
-		return 1; /* success */
 	}
 	/* get all keys */
+	Data *data = elektraPluginGetData(handle);
+	call2Arg(data, returned, parentKey, "get");
 
 	return 1; /* success */
 }

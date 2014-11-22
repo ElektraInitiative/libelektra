@@ -17,6 +17,11 @@ public class PluginDemo implements Plugin {
 		System.out.println(parentKey);
 		System.out.println(parentKey.string());
 		System.out.println(ks);
+		String name = parentKey+"/infos/provides";
+		System.out.println("name: " + name);
+		ks.append(Key.create(name,
+				Key.KEY_VALUE, "java",
+				Key.KEY_END));
 		return 0;
 	}
 
