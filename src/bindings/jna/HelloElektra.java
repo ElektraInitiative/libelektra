@@ -39,7 +39,7 @@ public class HelloElektra {
 		}
 
 		PluginDemo dp = new PluginDemo();
-		dp.open(key);
+		dp.open(ks, key);
 		dp.get(ks, key);
 		dp.close(key);
 
