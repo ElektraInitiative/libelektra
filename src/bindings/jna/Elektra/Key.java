@@ -50,7 +50,7 @@ public class Key {
 
 	// java's specials
 	public String toString() {
-		return name();
+		return getName();
 	}
 
 	// wrapped methods
@@ -140,11 +140,11 @@ public class Key {
 		return Elektra.INSTANCE.keyIsString(get());
 	}
 
-	public String name() {
+	public String getName() {
 		return Elektra.INSTANCE.keyName(key);
 	}
 
-	public int nameSize() {
+	public int getNameSize() {
 		return Elektra.INSTANCE.keyGetNameSize(get());
 	}
 
@@ -152,11 +152,11 @@ public class Key {
 		return Elektra.INSTANCE.keySetName(get(), name);
 	}
 
-	public String baseName(String name) {
+	public String getBaseName(String name) {
 		return Elektra.INSTANCE.keyBaseName(get());
 	}
 
-	public int baseNameSize() {
+	public int getBaseNameSize() {
 		return Elektra.INSTANCE.keyGetBaseNameSize(get());
 	}
 
@@ -172,7 +172,7 @@ public class Key {
 		return Elektra.INSTANCE.keyGetValueSize(get());
 	}
 
-	public String string() {
+	public String getString() {
 		return Elektra.INSTANCE.keyString(key);
 	}
 
