@@ -5,16 +5,18 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 
-class KDBException extends java.io.IOError {
-	KDBException(Key k) {
-		super(new Throwable("failure in I/O to KDB"));
-		errorKey = k;
+public class KDB implements AutoCloseable {
+	// exceptions
+	public class KDBException extends java.io.IOException {
+		KDBException(Key k) {
+			super(new Throwable("failure in I/O to KDB"));
+			errorKey = k;
+		}
+
+		Key errorKey;
 	}
 
-	Key errorKey;
-}
 
-public class KDB implements AutoCloseable {
 	// basics, construction and destruction
 	public static KDB open(Key parentKey) {
 		return new KDB(Elektra.INSTANCE.kdbOpen(parentKey.get()));

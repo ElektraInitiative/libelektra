@@ -34,6 +34,8 @@ public class HelloElektra {
 			kdb.get(ks, key);
 			Key k = ks.lookup(key);
 			System.out.println(k.getString());
+		} catch (KDB.KDBException e) {
+			System.out.println(e);
 		}
 
 		PluginDemo dp = new PluginDemo();

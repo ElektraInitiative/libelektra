@@ -6,6 +6,7 @@ import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 
 public class Key {
+	// constants
 	public static final int KEY_END=0;
 	public static final int KEY_NAME=1;
 	public static final int KEY_VALUE=1<<1;
@@ -23,6 +24,12 @@ public class Key {
 	public static final int KEY_DIR=1<<14;
 	public static final int KEY_META=1<<15;
 	public static final int KEY_NULL=1<<16;
+
+	// exceptions
+	public class KeyException extends java.lang.RuntimeException{}
+	public class KeyInvalidName extends KeyException{}
+	public class KeyTypeConversion extends KeyException{}
+	public class KeyTypeMismatch extends KeyException{}
 
 	// basics, construction and destruction
 	public static Key create(String name, Object... args) {
@@ -148,8 +155,10 @@ public class Key {
 		return Elektra.INSTANCE.keyGetNameSize(get());
 	}
 
-	public int setName(String name) {
-		return Elektra.INSTANCE.keySetName(get(), name);
+	public void setName(String name) throws KeyInvalidName {
+		if (Elektra.INSTANCE.keySetName(get(), name) == -1) {
+			throw new KeyInvalidName();
+		}
 	}
 
 	public String getBaseName(String name) {
@@ -160,19 +169,26 @@ public class Key {
 		return Elektra.INSTANCE.keyGetBaseNameSize(get());
 	}
 
-	public int setBaseName(String baseName) {
-		return Elektra.INSTANCE.keySetBaseName(get(), baseName);
+	public void setBaseName(String baseName) throws KeyInvalidName {
+		if (Elektra.INSTANCE.keySetBaseName(get(), baseName) == -1) {
+			throw new KeyInvalidName();
+		}
 	}
 
-	public int addBaseName(String baseName) {
-		return Elektra.INSTANCE.keyAddBaseName(get(), baseName);
+	public void addBaseName(String baseName) throws KeyInvalidName {
+		if (Elektra.INSTANCE.keyAddBaseName(get(), baseName) == -1) {
+			throw new KeyInvalidName();
+		}
 	}
 
-	int getValueSize() {
+	public int getValueSize() {
 		return Elektra.INSTANCE.keyGetValueSize(get());
 	}
 
-	public String getString() {
+	public String getString() throws KeyTypeMismatch {
+		if (isBinary() != 0) {
+			throw new KeyTypeMismatch();
+		}
 		return Elektra.INSTANCE.keyString(key);
 	}
 
