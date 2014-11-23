@@ -8,7 +8,7 @@ public class HelloElektra {
 			Key.KEY_VALUE, "Hello World",
 			Key.KEY_END);
 		System.out.println(key);
-		System.out.println(key.string());
+		System.out.println(key.getString());
 
 
 		KeySet ks = KeySet.create(10,
@@ -19,7 +19,8 @@ public class HelloElektra {
 			KeySet.KS_END);
 
 		for (Key k: ks) {
-			System.out.println("iter: " + k.name() + " " + k.string());
+			System.out.println("iter: " + k.getName() + " " +
+					k.getString());
 		}
 		System.out.println(ks);
 
@@ -32,7 +33,7 @@ public class HelloElektra {
 		try (KDB kdb = KDB.open(key)) {
 			kdb.get(ks, key);
 			Key k = ks.lookup(key);
-			System.out.println(k.string());
+			System.out.println(k.getString());
 		}
 
 		PluginDemo dp = new PluginDemo();
