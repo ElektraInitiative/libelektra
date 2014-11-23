@@ -54,6 +54,14 @@ public class Key {
 	}
 
 	// wrapped methods
+	Key dup() {
+		return new Key(Elektra.INSTANCE.keyDup(get()));
+	}
+
+	void copy(Key source) {
+		Elektra.INSTANCE.keyCopy(get(), source.get());
+	}
+
 	public void incRef() {
 		Elektra.INSTANCE.keyIncRef(key);
 	}
@@ -62,13 +70,116 @@ public class Key {
 		Elektra.INSTANCE.keyDecRef(key);
 	}
 
+	public int getRef() {
+		return Elektra.INSTANCE.keyGetRef(get());
+	}
+
+	public int rewindMeta() {
+		return Elektra.INSTANCE.keyRewindMeta(get());
+	}
+
+	public Key nextMeta() {
+		return new Key(Elektra.INSTANCE.keyNextMeta(get()));
+	}
+
+	public Key currentMeta() {
+		return new Key(Elektra.INSTANCE.keyNextMeta(get()));
+	}
+
+	public int copyMeta(Key source, String metaName) {
+		return Elektra.INSTANCE.keyCopyMeta(get(), source.get(),
+				metaName);
+	}
+
+	public int copyAllMeta(Key source) {
+		return Elektra.INSTANCE.keyCopyAllMeta(get(), source.get());
+	}
+
+	public Key getMeta(String metaName) {
+		return new Key(Elektra.INSTANCE.keyGetMeta(get(), metaName));
+	}
+
+	public int setMeta(String metaName, String newMetaString) {
+		return Elektra.INSTANCE.keySetMeta(get(), metaName,
+				newMetaString);
+	}
+
+	public int cmp(Key other) {
+		return Elektra.INSTANCE.keyCmp(get(), other.get());
+	}
+
+	public int rel(Key other) {
+		return Elektra.INSTANCE.keyRel(get(), other.get());
+	}
+
+	public int needsSync() {
+		return Elektra.INSTANCE.keyNeedSync(get());
+	}
+
+	public int isBelow(Key other) {
+		return Elektra.INSTANCE.keyIsBelow(other.get(), get());
+	}
+
+	public int isBelowOrSame(Key other) {
+		return Elektra.INSTANCE.keyIsBelowOrSame(other.get(), get());
+	}
+
+	public int isDirectBelow(Key other) {
+		return Elektra.INSTANCE.keyIsDirectBelow(other.get(), get());
+	}
+
+	public int isInactive() {
+		return Elektra.INSTANCE.keyIsInactive(get());
+	}
+
+	public int isBinary() {
+		return Elektra.INSTANCE.keyIsBinary(get());
+	}
+
+	public int isString() {
+		return Elektra.INSTANCE.keyIsString(get());
+	}
+
 	public String name() {
 		return Elektra.INSTANCE.keyName(key);
+	}
+
+	public int nameSize() {
+		return Elektra.INSTANCE.keyGetNameSize(get());
+	}
+
+	public int setName(String name) {
+		return Elektra.INSTANCE.keySetName(get(), name);
+	}
+
+	public String baseName(String name) {
+		return Elektra.INSTANCE.keyBaseName(get());
+	}
+
+	public int baseNameSize() {
+		return Elektra.INSTANCE.keyGetBaseNameSize(get());
+	}
+
+	public int setBaseName(String baseName) {
+		return Elektra.INSTANCE.keySetBaseName(get(), baseName);
+	}
+
+	public int addBaseName(String baseName) {
+		return Elektra.INSTANCE.keyAddBaseName(get(), baseName);
+	}
+
+	int getValueSize() {
+		return Elektra.INSTANCE.keyGetValueSize(get());
 	}
 
 	public String string() {
 		return Elektra.INSTANCE.keyString(key);
 	}
+
+	public int setString(String newString) {
+		return Elektra.INSTANCE.keySetString(get(), newString);
+	}
+
 
 	// native pointer
 	public Pointer get() {
