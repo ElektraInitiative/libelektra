@@ -34,8 +34,7 @@ public class PropertiesStorage implements Plugin {
 			new BufferedInputStream(new FileInputStream(parentKey.getString()))) {
 			properties.load(stream);
 		} catch (Exception e) {
-			// TODO: write error
-			System.out.println ("Could not read file");
+			parentKey.setError("Could not read file");
 			return -1;
 		}
 		for (Map.Entry<Object, Object> e:properties.entrySet()) {
@@ -44,7 +43,11 @@ public class PropertiesStorage implements Plugin {
 					Key.KEY_VALUE, e.getValue(),
 					Key.KEY_END));
 		}
-		return 0;
+		for (int i=0; i< 100; i++) {
+			parentKey.addWarning("blah %4d", i);
+		}
+		parentKey.setError("blah %4d", 20);
+		return -1;
 	}
 
 	public int set(KeySet ks, Key parentKey) {
@@ -57,8 +60,7 @@ public class PropertiesStorage implements Plugin {
 			new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
 			properties.store(stream, "written by elektra using Java Properties");
 		} catch (Exception e) {
-			// TODO: write error
-			System.out.println ("Could not write file");
+			parentKey.setError("Could not write file");
 			return -1;
 		}
 		return 0;

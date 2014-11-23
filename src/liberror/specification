@@ -599,3 +599,9 @@ description:jni/java error
 severity:error
 ingroup:plugin
 module:jni
+
+number:103
+description:jni/java warning
+severity:warning
+ingroup:plugin
+module:jni

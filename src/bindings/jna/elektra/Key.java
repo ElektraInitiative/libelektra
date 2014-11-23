@@ -120,6 +120,52 @@ public class Key {
 		setString(Double.toString(v));
 	}
 
+	public void setError(String text, Object... args) {
+		StackTraceElement e[] = Thread.currentThread().getStackTrace();
+		setMeta("error", "number description ingroup module file line function reason");
+		setMeta("error/number", "102");
+		setMeta("error/description", "jni/java error");
+		setMeta("error/ingroup", "plugin");
+		setMeta("error/module", e[1].getClassName() + " " +  e[1].getMethodName());
+		setMeta("error/file", e[1].getFileName());
+		setMeta("error/line", Integer.toString(e[1].getLineNumber()));
+		setMeta("error/mountpoint", getName());
+		setMeta("error/configfile", getString());
+		setMeta("error/reason", String.format(text, args));
+	}
+
+	public void addWarning(String text, Object... args) {
+		StackTraceElement e[] = Thread.currentThread().getStackTrace();
+		Key k = getMeta("warnings");
+		StringBuffer buffer = new StringBuffer("warnings/#");
+		if (!k.isNull()) {
+			buffer.append(k.getString());
+			buffer.setCharAt(11, (char)(buffer.charAt(11)+1));
+			if (buffer.charAt(11) > '9')
+			{
+				buffer.setCharAt(11, '0');
+				buffer.setCharAt(10, (char)(buffer.charAt(10)+1));
+				if (buffer.charAt(10) > '9') {
+					buffer.setCharAt(10, '0');
+				}
+			}
+			setMeta("warnings", buffer.substring(10));
+		} else {
+			buffer.append("00");
+			setMeta("warnings", "00");
+		}
+		setMeta(buffer+"", "number description ingroup module file line function reason");
+		setMeta(buffer+"/number", "103");
+		setMeta(buffer+"/description", "jni/java warning");
+		setMeta(buffer+"/ingroup", "plugin");
+		setMeta(buffer+"/module", e[1].getClassName() + " " +  e[1].getMethodName());
+		setMeta(buffer+"/file", e[1].getFileName());
+		setMeta(buffer+"/line", Integer.toString(e[1].getLineNumber()));
+		setMeta(buffer+"/mountpoint", getName());
+		setMeta(buffer+"/configfile", getString());
+		setMeta(buffer+"/reason", String.format(text, args));
+	}
+
 	// wrapped methods
 	Key dup() {
 		return new Key(Elektra.INSTANCE.keyDup(get()));
