@@ -1,7 +1,7 @@
 package Elektra;
 
 public class PluginDemo implements Plugin {
-	public void PluginDemo() {
+	public PluginDemo() {
 		System.out.println("construct plugin");
 	}
 
@@ -9,8 +9,7 @@ public class PluginDemo implements Plugin {
 		System.out.println("open plugin");
 		System.out.println(errorKey);
 		System.out.println(errorKey.string());
-		throw new RuntimeException("blah");
-		// return 0;
+		return 0;
 	}
 
 	public int get(KeySet ks, Key parentKey) {

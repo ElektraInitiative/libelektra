@@ -593,3 +593,9 @@ description:java exception caught
 severity:warning
 ingroup:plugin
 module:jni
+
+number:102
+description:jni/java error
+severity:error
+ingroup:plugin
+module:jni

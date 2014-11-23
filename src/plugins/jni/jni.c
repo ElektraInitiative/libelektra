@@ -110,7 +110,7 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 	checkException(data, method, errorKey);
 	if (jerrorKey == 0)
 	{
-		ELEKTRA_SET_ERRORF(26,
+		ELEKTRA_SET_ERRORF(102,
 			errorKey,
 			"Cannot create errorKey in %s",
 			method);
@@ -123,7 +123,7 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 	checkException(data, method, errorKey);
 	if (mid== 0)
 	{
-		ELEKTRA_SET_ERRORF(26, errorKey, "Cannot find %s",
+		ELEKTRA_SET_ERRORF(102, errorKey, "Cannot find %s",
 				method);
 		return -1;
 	}
@@ -136,7 +136,7 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 			);
 	if ((*data->env)->ExceptionCheck(data->env))
 	{
-		ELEKTRA_SET_ERRORF(26,
+		ELEKTRA_SET_ERRORF(102,
 			errorKey,
 			"%s failed with exception",
 			method);
@@ -161,7 +161,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 	checkException(data, method, errorKey);
 	if (jks == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create ks");
+		ELEKTRA_SET_ERROR(102, errorKey, "Cannot create ks");
 		return -1;
 	}
 
@@ -171,7 +171,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 	checkException(data, method, errorKey);
 	if (jkey == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create key");
+		ELEKTRA_SET_ERROR(102, errorKey, "Cannot create key");
 		return -1;
 	}
 
@@ -181,7 +181,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 	checkException(data, method, errorKey);
 	if (mid== 0)
 	{
-		ELEKTRA_SET_ERRORF(26, errorKey, "Cannot find %s",
+		ELEKTRA_SET_ERRORF(102, errorKey, "Cannot find %s",
 				method);
 		return -1;
 	}
@@ -195,7 +195,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 			);
 	if ((*data->env)->ExceptionCheck(data->env))
 	{
-		ELEKTRA_SET_ERRORF(26,
+		ELEKTRA_SET_ERRORF(102,
 			errorKey,
 			"%s failed with exception",
 			method);
@@ -242,8 +242,8 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	k = ksLookupByName(config, "/classpath", 0);
 	if (!k)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey,
-				"Could not find plugin config /classpath");
+		ELEKTRA_SET_ERROR(102, errorKey,
+			"Could not find plugin config /classpath");
 		return -1;
 	}
 	char classpatharg[] = "-Djava.class.path=";
@@ -282,14 +282,15 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	free(classpath);
 	if (res < 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create Java VM");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot create Java VM");
 		return -1;
 	}
 
 	k = ksLookupByName(config, "/classname", 0);
 	if (!k)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey,
+		ELEKTRA_SET_ERROR(102, errorKey,
 				"Could not find plugin config /classname");
 		return -1;
 	}
@@ -299,7 +300,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	data->clsPlugin = (*data->env)->FindClass(data->env, classname);
 	if (data->clsPlugin == 0)
 	{
-		ELEKTRA_SET_ERRORF(26, errorKey,
+		ELEKTRA_SET_ERRORF(102, errorKey,
 				"Cannot find class %s", classname);
 		return -1;
 	}
@@ -307,14 +308,16 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	data->clsKey = (*data->env)->FindClass(data->env, "Elektra/Key");
 	if (data->clsKey == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class Key");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot find class Key");
 		return -1;
 	}
 
 	data->clsKeySet = (*data->env)->FindClass(data->env, "Elektra/KeySet");
 	if (data->clsKeySet == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find class KeySet");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot find class KeySet");
 		return -1;
 	}
 
@@ -323,15 +326,18 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 			"<init>", "(J)V");
 	if (data->midKeyConstr == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of Key");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot find constructor of Key");
 		return -1;
 	}
 
-	data->midKeySetConstr = (*data->env)->GetMethodID(data->env, data->clsKeySet,
+	data->midKeySetConstr = (*data->env)->GetMethodID(data->env,
+			data->clsKeySet,
 			"<init>", "(J)V");
 	if (data->midKeySetConstr == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of KeySet");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot find constructor of KeySet");
 		return -1;
 	}
 
@@ -340,15 +346,18 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 			"release", "()V");
 	if (data->midKeyRelease == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find release of Key");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot find release of Key");
 		return -1;
 	}
 
-	data->midKeySetRelease = (*data->env)->GetMethodID(data->env, data->clsKeySet,
+	data->midKeySetRelease = (*data->env)->GetMethodID(data->env,
+			data->clsKeySet,
 			"release", "()V");
 	if (data->midKeySetRelease == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find release of KeySet");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot find release of KeySet");
 		return -1;
 	}
 
@@ -357,7 +366,8 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 			"<init>", "()V");
 	if (midPluginConstructor == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot find constructor of plugin");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot find constructor of plugin");
 		return -1;
 	}
 
@@ -367,7 +377,8 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	checkException(data, "creating plugin", errorKey);
 	if (data->plugin == 0)
 	{
-		ELEKTRA_SET_ERROR(26, errorKey, "Cannot create plugin");
+		ELEKTRA_SET_ERROR(102, errorKey,
+				"Cannot create plugin");
 		return -1;
 	}
 
