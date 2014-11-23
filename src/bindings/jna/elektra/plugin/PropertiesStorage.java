@@ -38,16 +38,11 @@ public class PropertiesStorage implements Plugin {
 			return -1;
 		}
 		for (Map.Entry<Object, Object> e:properties.entrySet()) {
-			System.out.println(e.getKey() + " " + e.getValue());
 			ks.append(Key.create(parentKey.getName()+"/"+e.getKey(),
 					Key.KEY_VALUE, e.getValue(),
 					Key.KEY_END));
 		}
-		for (int i=0; i< 100; i++) {
-			parentKey.addWarning("blah %4d", i);
-		}
-		parentKey.setError("blah %4d", 20);
-		return -1;
+		return 0;
 	}
 
 	public int set(KeySet ks, Key parentKey) {
