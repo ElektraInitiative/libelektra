@@ -42,5 +42,13 @@ public class HelloElektra {
 		dp.open(key);
 		dp.get(ks, key);
 		dp.close(key);
+
+
+		Key b = Key.create("user/boolean",
+			Key.KEY_VALUE, "true",
+			Key.KEY_END);
+		System.out.println(b.getBoolean());
+		b.setBoolean(false);
+		System.out.println(b.getBoolean());
 	}
 }
