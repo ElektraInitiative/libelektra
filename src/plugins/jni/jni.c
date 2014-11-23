@@ -268,6 +268,13 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	jboolean ign = JNI_FALSE;
 	if (k) ign = JNI_TRUE;
 
+	/* TODO: check if JVM is already started:
+	jsize nVMs;
+	JNI_GetCreatedJavaVMs(NULL, 0, &nVMs); // get array length
+	JavaVM** buffer = malloc(nVMs, sizeof(JavaVM*));
+	JNI_GetCreatedJavaVMs(buffer, nVMs, &nVMs); // get data
+	*/
+
 	JavaVMInitArgs vmArgs;
 	JavaVMOption options[2];
 	options[0].optionString = classpath;
