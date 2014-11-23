@@ -382,7 +382,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	return call1Arg(data, errorKey, "open");
+	return call2Arg(data, config, errorKey, "open");
 }
 
 int elektraJniClose(Plugin *handle, Key *errorKey)

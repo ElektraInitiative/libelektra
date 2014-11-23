@@ -5,7 +5,7 @@ public class PluginException implements Plugin {
 		throw new RuntimeException("constr");
 	}
 
-	public int open(Key errorKey) {
+	public int open(KeySet conf, Key errorKey) {
 		throw new RuntimeException("open");
 	}
 

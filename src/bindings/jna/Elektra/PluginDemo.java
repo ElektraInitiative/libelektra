@@ -5,10 +5,11 @@ public class PluginDemo implements Plugin {
 		System.out.println("construct plugin");
 	}
 
-	public int open(Key errorKey) {
+	public int open(KeySet conf, Key errorKey) {
 		System.out.println("open plugin");
 		System.out.println(errorKey);
 		System.out.println(errorKey.getString());
+		System.out.println(conf);
 		return 0;
 	}
 

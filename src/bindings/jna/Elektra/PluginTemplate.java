@@ -4,7 +4,7 @@ public class PluginTemplate implements Plugin {
 	public PluginTemplate() {
 	}
 
-	public int open(Key errorKey) {
+	public int open(KeySet conf, Key errorKey) {
 		return 0;
 	}
 
