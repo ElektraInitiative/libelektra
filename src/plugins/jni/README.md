@@ -6,6 +6,8 @@
 - infos/placements =
 - infos/description =
 
+# Generic Java plugin #
+
 ## Introduction ##
 
 Allows you to write plugins in java.
@@ -15,12 +17,12 @@ binding for your java-plugin may use something different, e.g. JNA.
 The requirements for the java bindings are:
 
 - needs to have the classes elektra/Key and elektra/KeySet with
- - an constructor that takes a C-Pointer as Long (J)
+ - an constructor that takes a C-Pointer as long (J)
  - an method "release" that gives up ownership (set internal pointer to NULL)
 
 The java plugin itself needs to have following methods:
 
-- constructor without arguments
+- constructor without arguments (e.g. default constructor)
 - open with argument elektra/KeySet (the plugin's conf) and elektra/Key
 - close with argument elektra/Key
 - get with arguments elektra/KeySet and elektra/Key
@@ -29,11 +31,12 @@ The java plugin itself needs to have following methods:
 
 ## Plugin Config ##
 
-You need to pass classname and classpath, e.g.:
+You need to pass :
+- classname the classname to use as plugin, e.g. elektra/plugin/Echo
+- classpath the classpath where to find JNA, the package elektra and
+  other classes needed
 
-    classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna,classname=elektra/plugin/Echo
-
-additional you can set:
+Additionally, you can set:
 
 - option allows you to pass a option to the jvm, default: -verbose:gc,class,jni
 - ignore allows you to ignore broken options, default: false
@@ -41,8 +44,14 @@ additional you can set:
 
 E.g.
 
-    option=-verbose:gc,ignore=,print=
+    kdb info -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print= jni
+    kdb check -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print= jni
+    kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/src/bindings/jna,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print=
 
+Additionally, the java implementation can request any other additional
+configuration, read about it below in the section (specific java plugin).
+If you are reading this page on github, you won't see it, because the
+plugins dynamically append text after the end of this page.
 
 ## Development ##
 
@@ -59,9 +68,12 @@ Also explained
 
 ## Issues ##
 
-In Debian Wheezy you cannot use openjdk:
-you get a linker error because of some missing private SUN symbols.
-Maybe just the cmake mechanism to find java is broken.
+- In Debian Wheezy you cannot use openjdk:
+  you get a linker error because of some missing private SUN symbols.
+  Maybe just the cmake mechanism to find java is broken.
+- Only a single java plugin can be loaded
+- when this plugin is enabled, valgrind detects memory problems even if
+  the plugin is not mounted.
 
-## Usage ##
 
+# Specific Java Plugin #
