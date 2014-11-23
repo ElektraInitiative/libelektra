@@ -60,6 +60,62 @@ public class Key {
 		return getName();
 	}
 
+	public boolean getBoolean() {
+		return Boolean.parseBoolean(getString());
+	}
+
+	public Byte getByte() {
+		return Byte.parseByte(getString());
+	}
+
+	public Short getShort() {
+		return Short.parseShort(getString());
+	}
+
+	public Integer getInteger() {
+		return Integer.parseInt(getString());
+	}
+
+	public Long getLong() {
+		return Long.parseLong(getString());
+	}
+
+	public Float getFloat() {
+		return Float.parseFloat(getString());
+	}
+
+	public Double getDouble() {
+		return Double.parseDouble(getString());
+	}
+
+	public void setBoolean(boolean v) {
+		setString(Boolean.toString(v));
+	}
+
+	public void setByte(Byte v) {
+		setString(Byte.toString(v));
+	}
+
+	public void setShort(Short v) {
+		setString(Short.toString(v));
+	}
+
+	public void setInteger(Integer v) {
+		setString(Integer.toString(v));
+	}
+
+	public void setLong(Long v) {
+		setString(Long.toString(v));
+	}
+
+	public void setFloat(Float v) {
+		setString(Float.toString(v));
+	}
+
+	public void setDouble(Double v) {
+		setString(Double.toString(v));
+	}
+
 	// wrapped methods
 	Key dup() {
 		return new Key(Elektra.INSTANCE.keyDup(get()));
