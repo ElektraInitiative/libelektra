@@ -34,7 +34,7 @@ Pointer keyNew(String name, Object... args);
 Pointer keyDup(Pointer source);
 int keyCopy(Pointer dest, Pointer source);
 
-int keyClear(Pointer key);
+int keyClear(Pointer key); // not needed
 int keyDel(Pointer key);
 
 int keyIncRef(Pointer key);
@@ -72,16 +72,16 @@ int keyIsString(Pointer key);
 /* Name Manipulation Methods */
 String keyName(Pointer key);
 int keyGetNameSize(Pointer key);
-int keyGetName(Pointer key, String returnedName, int maxSize);
+int keyGetName(Pointer key, String returnedName, int maxSize); //not needed
 
 int keySetName(Pointer key, String newname);
 
-int keyGetFullNameSize(Pointer key);
-int keyGetFullName(Pointer key, String returnedName, int maxSize);
+int keyGetFullNameSize(Pointer key); //not implemented
+int keyGetFullName(Pointer key, String returnedName, int maxSize); //not implemented
 
-String keyBaseName(Pointer key);
-int keyGetBaseNameSize(Pointer key);
-int keyGetBaseName(Pointer key, String returned, int maxSize);
+String keyBaseName(Pointer key); //not implemented
+int keyGetBaseNameSize(Pointer key); //not implemented
+int keyGetBaseName(Pointer key, String returned, int maxSize); //not needed
 
 int keySetBaseName(Pointer key,String baseName);
 int keyAddBaseName(Pointer key,String baseName);
@@ -91,7 +91,7 @@ int keyAddBaseName(Pointer key,String baseName);
 int keyGetValueSize(Pointer key);
 
 String keyString(Pointer key);
-int keyGetString(Pointer key, String returnedString, int maxSize);
+int keyGetString(Pointer key, String returnedString, int maxSize); // not needed
 int keySetString(Pointer key, String newString);
 
 // int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
