@@ -7,7 +7,7 @@ import com.sun.jna.Pointer;
 
 public interface Elektra extends Library {
 	Elektra INSTANCE = (Elektra)
-		Native.loadLibrary(("/usr/lib/libelektra.so"), Elektra.class);
+		Native.loadLibrary(("libelektra.so"), Elektra.class);
 
 
 /**************************************
