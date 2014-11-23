@@ -1,4 +1,5 @@
-import Elektra.*;
+import elektra.*;
+import elektra.plugin.Echo;
 
 /** Simple hello world example how Elektra could be wrapped to java. */
 public class HelloElektra {
@@ -38,7 +39,7 @@ public class HelloElektra {
 			System.out.println(e);
 		}
 
-		PluginDemo dp = new PluginDemo();
+		Echo dp = new Echo();
 		dp.open(ks, key);
 		dp.get(ks, key);
 		dp.close(key);

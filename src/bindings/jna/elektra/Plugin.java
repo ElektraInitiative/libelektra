@@ -1,4 +1,4 @@
-package Elektra;
+package elektra;
 
 public interface Plugin {
 	public int open(KeySet conf, Key errorKey);

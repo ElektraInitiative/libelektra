@@ -1,7 +1,9 @@
-package Elektra;
+package elektra.plugin;
 
-public class PluginDemo implements Plugin {
-	public PluginDemo() {
+import elektra.*;
+
+public class Echo implements Plugin {
+	public Echo() {
 		System.out.println("construct plugin");
 	}
 

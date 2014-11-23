@@ -14,25 +14,24 @@ Needs Java 8 or later. While the plugin internally uses JNI, the Java
 binding for your java-plugin may use something different, e.g. JNA.
 The requirements for the java bindings are:
 
-- needs to have the classes Elektra/Key and Elektra/KeySet with
+- needs to have the classes elektra/Key and elektra/KeySet with
  - an constructor that takes a C-Pointer as Long (J)
  - an method "release" that gives up ownership (set internal pointer to NULL)
 
 The java plugin itself needs to have following methods:
 
 - constructor without arguments
-- open with argument Elektra/Key
-- close with argument Elektra/Key
-- get with arguments Elektra/KeySet and Elektra/Key
-- set with arguments Elektra/KeySet and Elektra/Key
-- error with arguments Elektra/KeySet and Elektra/Key
+- open with argument elektra/KeySet (the plugin's conf) and elektra/Key
+- close with argument elektra/Key
+- get with arguments elektra/KeySet and elektra/Key
+- set with arguments elektra/KeySet and elektra/Key
+- error with arguments elektra/KeySet and elektra/Key
 
 ## Plugin Config ##
 
 You need to pass classname and classpath, e.g.:
 
-    classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna
-    classname=Elektra/DemoPlugin
+    classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/home/markus/Projekte/Elektra/libelektra/src/bindings/jna,classname=elektra/plugin/Echo
 
 additional you can set:
 
