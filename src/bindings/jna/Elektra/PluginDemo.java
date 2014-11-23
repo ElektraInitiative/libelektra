@@ -9,7 +9,8 @@ public class PluginDemo implements Plugin {
 		System.out.println("open plugin");
 		System.out.println(errorKey);
 		System.out.println(errorKey.string());
-		return 0;
+		throw new RuntimeException();
+		// return 0;
 	}
 
 	public int get(KeySet ks, Key parentKey) {

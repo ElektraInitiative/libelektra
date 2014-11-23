@@ -587,3 +587,9 @@ description:environment variable is not absolute and cannot be used
 severity:warning
 ingroup:plugin
 module:resolver
+
+number:101
+description:java exception caught
+severity:warning
+ingroup:plugin
+module:jni
