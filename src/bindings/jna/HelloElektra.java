@@ -29,10 +29,11 @@ public class HelloElektra {
 		ks2.append(ks);
 		ks2.append(key);
 
-		KDB kdb = KDB.open(key);
-		kdb.get(ks, key);
-		Key k = ks.lookup(key);
-		System.out.println(k.string());
+		try (KDB kdb = KDB.open(key)) {
+			kdb.get(ks, key);
+			Key k = ks.lookup(key);
+			System.out.println(k.string());
+		}
 
 		PluginDemo dp = new PluginDemo();
 		dp.open(key);
