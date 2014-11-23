@@ -55,6 +55,10 @@ public class Key {
 		Elektra.INSTANCE.keyDel(key);
 	}
 
+	public boolean isNull() {
+		return key == null;
+	}
+
 	// java's specials
 	public String toString() {
 		return getName();
@@ -179,28 +183,28 @@ public class Key {
 		return Elektra.INSTANCE.keyNeedSync(get());
 	}
 
-	public int isBelow(Key other) {
-		return Elektra.INSTANCE.keyIsBelow(other.get(), get());
+	public boolean isBelow(Key other) {
+		return Elektra.INSTANCE.keyIsBelow(other.get(), get()) == 1;
 	}
 
-	public int isBelowOrSame(Key other) {
-		return Elektra.INSTANCE.keyIsBelowOrSame(other.get(), get());
+	public boolean isBelowOrSame(Key other) {
+		return Elektra.INSTANCE.keyIsBelowOrSame(other.get(), get()) == 1;
 	}
 
-	public int isDirectBelow(Key other) {
-		return Elektra.INSTANCE.keyIsDirectBelow(other.get(), get());
+	public boolean isDirectBelow(Key other) {
+		return Elektra.INSTANCE.keyIsDirectBelow(other.get(), get()) == 1;
 	}
 
-	public int isInactive() {
-		return Elektra.INSTANCE.keyIsInactive(get());
+	public boolean isInactive() {
+		return Elektra.INSTANCE.keyIsInactive(get()) == 1;
 	}
 
-	public int isBinary() {
-		return Elektra.INSTANCE.keyIsBinary(get());
+	public boolean isBinary() {
+		return Elektra.INSTANCE.keyIsBinary(get()) == 1;
 	}
 
-	public int isString() {
-		return Elektra.INSTANCE.keyIsString(get());
+	public boolean isString() {
+		return Elektra.INSTANCE.keyIsString(get()) == 1;
 	}
 
 	public String getName() {
@@ -242,7 +246,7 @@ public class Key {
 	}
 
 	public String getString() throws KeyTypeMismatch {
-		if (isBinary() != 0) {
+		if (isBinary()) {
 			throw new KeyTypeMismatch();
 		}
 		return Elektra.INSTANCE.keyString(key);

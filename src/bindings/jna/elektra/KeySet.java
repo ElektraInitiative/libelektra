@@ -139,6 +139,14 @@ public class KeySet implements java.lang.Iterable<Key> {
 		return new Key(Elektra.INSTANCE.ksLookup(ks, find.get(), 0));
 	}
 
+	public Key lookup(String find, int options) {
+		return new Key(Elektra.INSTANCE.ksLookupByName(ks, find, options));
+	}
+
+	public Key lookup(String find) {
+		return new Key(Elektra.INSTANCE.ksLookupByName(ks, find, 0));
+	}
+
 	// native pointer
 	public Pointer get() {
 		return ks;

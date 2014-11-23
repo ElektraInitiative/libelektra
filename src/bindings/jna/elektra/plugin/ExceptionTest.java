@@ -2,8 +2,8 @@ package elektra.plugin;
 
 import elektra.*;
 
-public class Exception implements Plugin {
-	public Exception() {
+public class ExceptionTest implements Plugin {
+	public ExceptionTest() {
 		throw new RuntimeException("constr");
 	}
 
