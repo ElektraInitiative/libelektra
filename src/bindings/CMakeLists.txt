@@ -1,6 +1,13 @@
 list (FIND BINDINGS "cpp" FINDEX)
 if (FINDEX GREATER -1)
+	message(STATUS "Include Binding cpp")
 	add_subdirectory (cpp)
+endif()
+
+list (FIND BINDINGS "jna" FINDEX)
+if (FINDEX GREATER -1)
+	message(STATUS "Include Binding jna")
+	add_subdirectory (jna)
 endif()
 
 set(regex "swig_.*")
