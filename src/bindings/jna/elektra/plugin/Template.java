@@ -1,7 +1,9 @@
-package Elektra;
+package elektra.plugin;
 
-public class PluginTemplate implements Plugin {
-	public PluginTemplate() {
+import elektra.*;
+
+public class Template implements Plugin {
+	public Template() {
 	}
 
 	public int open(KeySet conf, Key errorKey) {

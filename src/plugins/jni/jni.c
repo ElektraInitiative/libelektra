@@ -119,11 +119,12 @@ static int call1Arg(Data *data, Key *errorKey, const char *method)
 
 	jmethodID mid = (*data->env)->GetMethodID(data->env,
 			data->clsPlugin,
-			method, "(LElektra/Key;)I");
+			method, "(Lelektra/Key;)I");
 	checkException(data, method, errorKey);
 	if (mid== 0)
 	{
-		ELEKTRA_SET_ERRORF(102, errorKey, "Cannot find %s",
+		ELEKTRA_SET_ERRORF(102, errorKey,
+				"Cannot find elektra/Key in %s",
 				method);
 		return -1;
 	}
@@ -177,7 +178,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 
 	jmethodID mid = (*data->env)->GetMethodID(data->env,
 			data->clsPlugin,
-			method, "(LElektra/KeySet;LElektra/Key;)I");
+			method, "(Lelektra/KeySet;Lelektra/Key;)I");
 	checkException(data, method, errorKey);
 	if (mid== 0)
 	{
@@ -305,7 +306,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	data->clsKey = (*data->env)->FindClass(data->env, "Elektra/Key");
+	data->clsKey = (*data->env)->FindClass(data->env, "elektra/Key");
 	if (data->clsKey == 0)
 	{
 		ELEKTRA_SET_ERROR(102, errorKey,
@@ -313,7 +314,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	data->clsKeySet = (*data->env)->FindClass(data->env, "Elektra/KeySet");
+	data->clsKeySet = (*data->env)->FindClass(data->env, "elektra/KeySet");
 	if (data->clsKeySet == 0)
 	{
 		ELEKTRA_SET_ERROR(102, errorKey,

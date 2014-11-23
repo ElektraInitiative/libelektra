@@ -1,4 +1,4 @@
-package Elektra;
+package elektra;
 
 public class KeySetIterator implements java.util.Iterator<Key> {
 	private int pos= 0;
