@@ -38,10 +38,11 @@ additional you can set:
 
 - option allows you to pass a option to the jvm, default: -verbose:gc,class,jni
 - ignore allows you to ignore broken options, default: false
+- print allows you to print java exceptions for debugging purposes
 
 E.g.
 
-    option=-verbose:gc,class ignore
+    option=-verbose:gc,ignore=,print=
 
 
 ## Development ##

@@ -52,6 +52,7 @@ typedef struct
 	jclass clsKey;
 	jclass clsKeySet;
 	int module;
+	int printException;
 	jmethodID midKeyConstr;
 	jmethodID midKeySetConstr;
 	jmethodID midKeyRelease;
@@ -63,6 +64,10 @@ static void checkException(Data *data, const char *when, Key *warningKey)
 {
 	if ((*data->env)->ExceptionCheck(data->env))
 	{
+		if (data->printException)
+		{
+			(*data->env)->ExceptionDescribe(data->env);
+		}
 		jthrowable ex = (*data->env)->ExceptionOccurred(data->env);
 		jmethodID toString = (*data->env)->GetMethodID(
 			data->env,
@@ -73,21 +78,25 @@ static void checkException(Data *data, const char *when, Key *warningKey)
 			data->env,
 			ex, toString);
 
-		jboolean isCopy;
-		const char *message = (*data->env)->GetStringUTFChars(
-			data->env,
-			estr, &isCopy);
+		jboolean iseCopy = JNI_FALSE;
+		const char *which = "unknown";
+		if (estr)
+		{
+			which = (*data->env)->GetStringUTFChars(
+				data->env,
+				estr, &iseCopy);
+		}
 
 		ELEKTRA_ADD_WARNINGF(101, warningKey,
-			"During \"%s\", backtrace: %s",
+			"During \"%s\", exception was thrown: %s",
 			when,
-			message);
+			which);
 
-		if (isCopy == JNI_TRUE)
+		if (iseCopy == JNI_TRUE)
 		{
 			(*data->env)->ReleaseStringUTFChars(
 				data->env,
-				estr, message);
+				estr, which);
 		}
 		(*data->env)->ExceptionClear(data->env);
 	}
@@ -213,6 +222,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
 	Data *data = malloc(sizeof(Data));
 	data->module = 0;
+	data->printException = 0;
 	elektraPluginSetData(handle, data);
 
 	KeySet *config = elektraPluginGetConfig(handle);
@@ -223,6 +233,12 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return 0;
 	}
 
+	k = ksLookupByName(config, "/print", 0);
+	if (k)
+	{
+		data->printException = 1;
+	}
+
 	k = ksLookupByName(config, "/classpath", 0);
 	if (!k)
 	{
@@ -230,9 +246,10 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 				"Could not find plugin config /classpath");
 		return -1;
 	}
-
-	char *classpath = malloc(20+keyGetValueSize(k));
-	strcpy(classpath, "-Djava.class.path=");
+	char classpatharg[] = "-Djava.class.path=";
+	char *classpath = malloc(sizeof(classpatharg)
+				+keyGetValueSize(k));
+	strcpy(classpath, classpatharg);
 	strcat(classpath, keyString(k));
 
 	k = ksLookupByName(config, "/option", 0);

@@ -9,7 +9,7 @@ public class PluginDemo implements Plugin {
 		System.out.println("open plugin");
 		System.out.println(errorKey);
 		System.out.println(errorKey.string());
-		throw new RuntimeException();
+		throw new RuntimeException("blah");
 		// return 0;
 	}
 
