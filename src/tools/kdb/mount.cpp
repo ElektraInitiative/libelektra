@@ -239,7 +239,10 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 	while (pname != "." || !backend.validated())
 	{
 		try {
-			backend.addPlugin (pname);
+			KeySet pluginConfig;
+			pluginConfig.append(cl.getPluginsConfig("system/"));
+			// TODO: add per plugin config, too
+			backend.addPlugin (pname, pluginConfig);
 		}
 		catch (PluginCheckException const& e)
 		{
