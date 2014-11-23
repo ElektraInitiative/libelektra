@@ -10,4 +10,4 @@ HelloElektra:HelloElektra.java
 	/opt/jdk1.8.0_25/bin/java -classpath /usr/share/java/jna.jar:. HelloElektra
 
 clean:
-	rm *.class Elektra/*.class
+	rm -f *.class elektra/*.class elektra/plugin/*.class
