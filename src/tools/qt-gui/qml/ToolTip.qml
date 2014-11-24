@@ -12,12 +12,13 @@ BasicRectangle {
 	property int	fadeInDelay: 250
 	property int	fadeOutDelay: fadeInDelay
 	property int	maxWidth: 0
+	property int	metaHeight: 0
 
 	width: Math.max(maxWidth + 2*defaultMargins, keyText.paintedWidth + 2*defaultMargins)
-	height: (metaView.height > 0) ? (metaView.height +  keyText.paintedHeight + 3*defaultMargins) : (metaView.height +  keyText.paintedHeight + 2*defaultMargins)
+	height: (metaHeight > 0) ? (metaHeight +  keyText.paintedHeight + 3*defaultMargins) : (keyText.paintedHeight + 2*defaultMargins)
 	color: inActivePalette.base
 
-	ColumnLayout {
+	Column {
 		id: layout
 
 		anchors.fill: parent
@@ -28,6 +29,8 @@ BasicRectangle {
 		Row {
 			Label {
 				id: keyText
+
+				wrapMode: Text.Wrap
 				text: name + " : " + value
 			}
 		}
@@ -35,7 +38,7 @@ BasicRectangle {
 			id: metaView
 
 			width: parent.width
-			height: (keyText.paintedHeight)*model.count()
+			height: metaHeight
 
 			delegate: metaDelegate
 		}
@@ -44,13 +47,22 @@ BasicRectangle {
 	Component {
 		id: metaDelegate
 
-		Row {
+		Rectangle {
+			width: metaView.width
+			height: metaText.paintedHeight
+			color: inActivePalette.base
+
 			Label {
+				id: metaText
+
 				text: name + " : " + value
+				wrapMode: Text.Wrap
 
 				Component.onCompleted: {
 					if(paintedWidth > maxWidth)
 						maxWidth = paintedWidth
+
+					metaHeight += paintedHeight
 				}
 			}
 		}
