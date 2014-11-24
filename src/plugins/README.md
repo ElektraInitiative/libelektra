@@ -117,6 +117,12 @@ copied by another plugin just before):
 - [type](type) using runtime type checking (CORBA types)
 
 
+## Interpreter ##
+
+These plugins start an interpreter and allow you to use a bindings.
+
+- [jni](jni) java plugins started by jni, works with jna plugins
+
 
 ## Others ##
 

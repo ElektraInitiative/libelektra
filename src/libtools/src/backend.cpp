@@ -103,6 +103,11 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	name = mountpoint.getName();
 	std::replace(name.begin(), name.end(), '/', '_');
 
+	if (mp.empty()) {
+		throw MountpointAlreadyInUseException(
+			"Empty mountpoint not allowed");
+	}
+
 	if (mp.at(0) == '/')
 	{
 		Key skmp ("system" + mp, KEY_END);
@@ -156,7 +161,7 @@ void Backend::checkFile (std::string file) const
 }
 
 
-void Backend::tryPlugin (std::string pluginName)
+void Backend::tryPlugin (std::string pluginName, KeySet testConfig)
 {
 	int nr;
 	char *cPluginName = 0;
@@ -185,15 +190,6 @@ void Backend::tryPlugin (std::string pluginName)
 
 	if (realPluginName.find('#') != string::npos) throw BadPluginName();
 
-
-
-
-	KeySet testConfig(1,
-		*Key(	"system/test",
-			KEY_VALUE, "test",
-			KEY_COMMENT, "Test config for loading a plugin.",
-			KEY_END),
-		KS_END);
 
 
 	PluginPtr plugin = modules.load(realPluginName, testConfig);
@@ -230,9 +226,9 @@ void Backend::tryPlugin (std::string pluginName)
  *
  * For validation @see validated().
  */
-void Backend::addPlugin (std::string pluginName)
+void Backend::addPlugin (std::string pluginName, KeySet pluginConf)
 {
-	tryPlugin (pluginName);
+	tryPlugin (pluginName, pluginConf);
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());

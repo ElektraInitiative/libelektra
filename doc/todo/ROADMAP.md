@@ -11,6 +11,18 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
+## fix relative ##
+
+plugins should use relative pathes so that import/export/remount works
+
+- dump
+- ni
+
+## simplify cmake ##
+
+c++11
+DEFAULT_STORAGE/RESOLVER
+
 ## powerful cascading ##
 
 make / as logical root
@@ -27,10 +39,10 @@ cascading for ksLookup:
 	lookup in spec and use search folders and all requested domains
 
 terminology:
-	use consistent name for "user", "system", "local" and "spec"
-	e.g. domains or namespaces?
+	use consistent name for "user", "system", "local", "env" and "spec"
+	-> namespace
 
-getRootKeys vs. fixed
+getRootKeys vs. getNamespace
 
 applications should only need to use:
 kdbGet("/path/to/my/application")

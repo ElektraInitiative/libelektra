@@ -117,6 +117,7 @@ set (PLUGINS_LIST_DEP
 	xmltool
 	augeas
 	journald
+	jni
 	)
 
 #
@@ -193,6 +194,12 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 	set (BINDINGS_FORCE FORCE)
 endif ()
 
+if (BINDINGS MATCHES "ALL")
+	set(BINDINGS_LIST_ALL
+		jna
+		)
+endif()
+
 set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
 
 
@@ -200,6 +207,7 @@ set (BINDINGS
 	${BINDINGS_LIST_DEFAULT}
 	${BINDINGS_LIST_SWIG}
 	${BINDINGS_LIST_GI}
+	${BINDINGS_LIST_ALL}
 	CACHE STRING ${BINDINGS_DOC}
 	${BINDINGS_FORCE}
 	)

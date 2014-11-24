@@ -33,5 +33,5 @@ cmake -DCMAKE_PREFIX_PATH=/opt/Qt5.3.0/5.3/gcc_64/lib/cmake \
 	-DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so \
 	-DENABLE_CXX11=ON \
 	-DPLUGINS=ALL \
-	-DTOOLS=ALL -DBINDINGS="cpp;swig_python2;swig_python3" \
+	-DTOOLS=ALL -DBINDINGS="cpp;swig_python2;swig_python3;jna" \
 	$SOURCE

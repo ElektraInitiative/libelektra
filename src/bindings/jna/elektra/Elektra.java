@@ -1,4 +1,4 @@
-package Elektra;
+package elektra;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -7,7 +7,7 @@ import com.sun.jna.Pointer;
 
 public interface Elektra extends Library {
 	Elektra INSTANCE = (Elektra)
-		Native.loadLibrary(("/usr/lib/libelektra.so"), Elektra.class);
+		Native.loadLibrary(("libelektra.so"), Elektra.class);
 
 
 /**************************************
@@ -34,7 +34,7 @@ Pointer keyNew(String name, Object... args);
 Pointer keyDup(Pointer source);
 int keyCopy(Pointer dest, Pointer source);
 
-int keyClear(Pointer key);
+int keyClear(Pointer key); // not needed
 int keyDel(Pointer key);
 
 int keyIncRef(Pointer key);
@@ -72,16 +72,16 @@ int keyIsString(Pointer key);
 /* Name Manipulation Methods */
 String keyName(Pointer key);
 int keyGetNameSize(Pointer key);
-int keyGetName(Pointer key, String returnedName, int maxSize);
+int keyGetName(Pointer key, String returnedName, int maxSize); //not needed
 
 int keySetName(Pointer key, String newname);
 
-int keyGetFullNameSize(Pointer key);
-int keyGetFullName(Pointer key, String returnedName, int maxSize);
+int keyGetFullNameSize(Pointer key); //not implemented
+int keyGetFullName(Pointer key, String returnedName, int maxSize); //not implemented
 
-String keyBaseName(Pointer key);
-int keyGetBaseNameSize(Pointer key);
-int keyGetBaseName(Pointer key, String returned, int maxSize);
+String keyBaseName(Pointer key); //not implemented
+int keyGetBaseNameSize(Pointer key); //not implemented
+int keyGetBaseName(Pointer key, String returned, int maxSize); //not needed
 
 int keySetBaseName(Pointer key,String baseName);
 int keyAddBaseName(Pointer key,String baseName);
@@ -91,12 +91,48 @@ int keyAddBaseName(Pointer key,String baseName);
 int keyGetValueSize(Pointer key);
 
 String keyString(Pointer key);
-int keyGetString(Pointer key, String returnedString, int maxSize);
+int keyGetString(Pointer key, String returnedString, int maxSize); // not needed
 int keySetString(Pointer key, String newString);
 
 // int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
 //int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
 
+/**************************************
+ *
+ * KeySet methods
+ *
+ **************************************/
+
 Pointer ksNew(int alloc, Object... args);
+
+Pointer ksDup(Pointer source);
+int ksCopy(Pointer dest, Pointer source);
+
+int ksClear(Pointer ks); // not needed
+int ksDel(Pointer ks);
+
+int ksNeedSync(Pointer ks);
+
+int ksGetSize(Pointer ks);
+
+int ksAppendKey(Pointer ks, Pointer toAppend);
+
+int ksAppend(Pointer ks, Pointer toAppend);
+Pointer ksCut(Pointer ks, Pointer cutpoint);
+
+Pointer ksPop(Pointer ks);
+
+int ksRewind(Pointer ks);
+Pointer ksNext(Pointer ks);
+Pointer ksCurrent(Pointer ks);
+
+Pointer ksHead(Pointer ks);
+Pointer ksTail(Pointer ks);
+
+int ksGetCursor(Pointer ks);
+int ksSetCursor(Pointer ks, int cursor);
+Pointer ksAtCursor(Pointer ks, int cursor);
+
 Pointer ksLookup(Pointer ks, Pointer key, int options);
+Pointer ksLookupByName(Pointer ks, String name, int options);
 }
