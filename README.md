@@ -7,9 +7,24 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-[Read more about Goals ..](doc/GOALS.md)
-
 ![Elektra](doc/images/circle.jpg)
+
+## Goals ##
+
+- make configuration systems more safe
+- allow software to be better integrated on configuration level
+- postpone some decisions from programmers to
+  maintainers/administrators, including syntax and location of
+  configuration files
+- reduce duplication of configuration parsers in our ecosystem
+
+And in terms of quality, we want:
+
+1.) Robustness
+2.) Extensibility
+3.) Simplicity
+
+[Read here more about the Goals of Elektra ..](doc/GOALS.md)
 
 ## Facts and Features ##
 
@@ -36,6 +51,8 @@ applications' configurations, leveraging easy application integration.
 
 To get an introduction, it is best to take a look at the
 [presentation](http://www.libelektra.org/ftp/elektra/presentations/2012/lgm.odp),
+read our
+[tutorials](doc/tutorials),
 see the
 [poster](http://www.libelektra.org/ftp/elektra/poster.pdf)
 and read the
