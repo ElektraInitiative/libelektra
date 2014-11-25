@@ -18,12 +18,7 @@ ScrollView {
 	property int treeAreaCopyIndex
 	property var currentNodePath
 
-	property Component delegate: Label {
-		id: label
-
-		text: rowLoaderModel === null ? "" : rowLoaderModel.name
-		color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
-	}
+	Component.onCompleted: forceActiveFocus()
 
 	contentItem: Loader {
 		id: content
@@ -31,6 +26,13 @@ ScrollView {
 		onLoaded: item.isRoot = true
 		sourceComponent: treeBranch
 		property var elements: treeView.treeModel
+	}
+
+	property Component delegate: Label {
+		id: label
+
+		text: rowLoaderModel === null ? "" : rowLoaderModel.name
+		color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
 	}
 
 	property Component treeBranch: Component {
@@ -87,7 +89,7 @@ ScrollView {
 							id: rowfill
 
 							x: treeView.mapToItem(rowfill, 0, 0).x
-							width: treeView.width
+							width: Math.max(content.width + itemLoader.x, treeView.width)
 							height: treeView.rowHeight
 							visible: treeView.currentNode === fillerModel
 							color: activePalette.highlight
@@ -195,7 +197,7 @@ ScrollView {
 							x: treeView.columnIndent
 							height: expanded ? implicitHeight : 0
 							property var node: model
-							property bool expanded: model.isExpanded
+							property bool expanded: model.isExpanded && model.childrenHaveNoChildren ? false : model.isExpanded
 							property var elements: model.children
 							property var text: model.name
 							sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined

@@ -187,7 +187,7 @@ ApplicationWindow {
 	}
 
 	function deleteKey() {
-		//console.log("delete key")
+//		console.log("delete key")
 		var cr = keyAreaView.currentRow
 
 		undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
@@ -205,11 +205,12 @@ ApplicationWindow {
 	}
 
 	function deleteBranch() {
-		//console.log("delete branch")
+//		console.log("delete branch")
 
 		undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
-		treeView.currentNode = null
+
 		externTreeModel.refresh()
+		treeView.currentNode = null
 	}
 
 	function deleteSearchResult(){
@@ -350,7 +351,7 @@ ApplicationWindow {
 						color: activePalette.text
 					}
 					Text {
-						text: "Version: 0.0.1 (alpha)"
+						text: "Version: 0.0.2 (alpha)"
 						color: activePalette.text
 					}
 				}
@@ -508,7 +509,7 @@ ApplicationWindow {
 				undoManager.undo()
 				//				if(keyAreaModel !== null)
 				//					keyAreaModel.refresh()
-				//				externTreeModel.refresh()
+								externTreeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
@@ -912,6 +913,7 @@ ApplicationWindow {
 
 			width: Math.ceil(parent.width*0.3)
 			height: parent.height
+//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
 
 			TreeView {
 				id: treeView
@@ -927,6 +929,8 @@ ApplicationWindow {
 
 				width: keyAreaWidth
 				height: keyAreaHeight
+
+//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				Component {
 					id: tableViewColumnDelegate
@@ -1027,6 +1031,8 @@ ApplicationWindow {
 
 				width: keyAreaWidth
 				height: metaAreaHeight
+
+//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				TableView {
 					id: metaAreaTableView

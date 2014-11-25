@@ -21,6 +21,7 @@ KeyWindow {
 		//		externTreeModel.refresh()
 		if(treeView.currentNode.childCount === 1)
 			resetKeyAreaModel()
+		treeView.currentNode.parentModel.refresh()
 		qmlMetaKeyModel.clear()
 		nameTextField.focus = true
 	}
