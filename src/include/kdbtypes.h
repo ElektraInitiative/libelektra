@@ -37,6 +37,7 @@
 #if __cplusplus <= 199711L
 // for C++97 or older
 
+#include <stdint.h>
 #include <inttypes.h>
 
 namespace kdb

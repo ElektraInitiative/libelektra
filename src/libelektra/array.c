@@ -77,7 +77,7 @@ int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex)
 
 	int errnosave = errno;
 	errno = 0;
-	if (sscanf(baseName, "%"PRId64, oldIndex) != 1)
+	if (sscanf(baseName, "%"ELEKTRA_LONG_LONG_F, oldIndex) != 1)
 	{
 		errno = errnosave;
 		return -1;
@@ -129,7 +129,7 @@ int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex)
 		i/=10;
 	}
 	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE,
-				"%"PRId64, newIndex)  < 0)
+				"%"ELEKTRA_LONG_LONG_F, newIndex)  < 0)
 	{
 		return -1;
 	}
