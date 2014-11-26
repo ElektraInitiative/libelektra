@@ -79,6 +79,14 @@ int keyLock(Key *key,
 ssize_t elektraKeySetName(Key *key, const char *newName,
 	option_t options);
 
+Key *elektraArrayGetNextKey(KeySet *arrayKeys);
+KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
+
+KeySet *elektraKeyGetMetaKeySet(const Key *key);
+
+int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
+
+KeySet* ksDeepDup(const KeySet *source);
 
 // is this needed? -> rather not
 Key *ksPrev(KeySet *ks);

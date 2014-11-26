@@ -1,4 +1,5 @@
 #include <tests_internal.h>
+#include <kdbproposal.h>
 
 static void test_ro()
 {
@@ -209,6 +210,49 @@ static void test_mode()
 	keyDel (key);
 }
 
+static void test_metaKeySet()
+{
+	Key *key = keyNew("user/test", KEY_END);
+	keySetMeta(key, "meta/test1", "value1");
+	keySetMeta(key, "meta/test2", "value2");
+	keySetMeta(key, "meta/test3", "value3");
+
+	KeySet *metaKeys = elektraKeyGetMetaKeySet(key);
+
+	/* test whether the meta keyset contains all keys */
+	Key *metaKey = ksLookupByName(metaKeys, "meta/test1", KDB_O_NONE);
+	exit_if_fail(metaKey, "the first meta key was not found in the meta keyset");
+	succeed_if (!strcmp(keyString(metaKey), "value1"), "the first meta key in the meta keyset has a wrong value");
+
+	metaKey = ksLookupByName(metaKeys, "meta/test2", KDB_O_NONE);
+	exit_if_fail(metaKey, "the second meta key was not found in the meta keyset");
+	succeed_if (!strcmp(keyString(metaKey), "value2"), "the second meta key in the meta keyset has a wrong value");
+
+	metaKey = ksLookupByName(metaKeys, "meta/test3", KDB_O_NONE);
+	exit_if_fail(metaKey, "the third meta key was not found in the meta keyset");
+	succeed_if (!strcmp(keyString(metaKey), "value3"), "the third meta key in the meta keyset has a wrong value");
+
+	/* test whether the meta keyset is affected by deletions */
+	ksPop(metaKeys);
+
+	const Key *deletedKey = keyGetMeta(key, "meta/test3");
+	exit_if_fail (deletedKey, "key deleted from the meta keyset is not present on the original key anymore");
+	succeed_if (!strcmp(keyString(deletedKey), "value3"), "key deleted from the meta keyset has a wrong value afterwards");
+
+	ksDel(metaKeys);
+	metaKeys = elektraKeyGetMetaKeySet(key);
+	ksRewind(metaKeys);
+	metaKey = ksNext(metaKeys);
+	keySetString(metaKey, "newvalue");
+
+	const Key *modifiedKey = keyGetMeta(key, "meta/test1");
+	succeed_if (!strcmp(keyString(modifiedKey), "value1"), "meta key has incorrect value after a key from the meta keyset was modified");
+
+	ksDel(metaKeys);
+	keyDel(key);
+
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY META     TESTS\n");
@@ -221,6 +265,7 @@ int main(int argc, char** argv)
 	test_comment();
 	test_owner();
 	test_mode();
+	test_metaKeySet();
 
 	printf("\ntest_meta RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
