@@ -230,7 +230,7 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	ksAppendKey(append, key);
 
 	Key *currentKey = 0;
-	KeySet *comments = ksNew(0);
+	KeySet *comments = ksNew(0, KS_END);
 	size_t order = 1;
 	char *tokenPointer = 0;
 	char *fret = 0;
