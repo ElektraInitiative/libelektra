@@ -63,16 +63,11 @@ Mount the plugin:
 
         kdb mount --resolver=resolver_fm_xhp_x color/settings/OpenICC_device_config_DB.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
 
-And configure so that it has the correct prefix/postfix inside the file:
-
-         kdb set system/elektra/mountpoints/_org_freedesktop_openicc/config/remove org/freedesktop/openicc
-
-
 Then you can copy the OpenICC_device_config_DB.json
 to systemwide or user config, e.g.
 
-        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/kdb
-        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.kdb
+        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
+        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
 
         kdb ls system/org/freedesktop/openicc
 
