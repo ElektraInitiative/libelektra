@@ -16,13 +16,15 @@ KeyWindow {
 		//create UndoCommand
 		undoManager.createNewKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index, nameTextField.text, valueTextField.text, metaData)
 
-		nameTextField.text = ""
-		valueTextField.text = ""
-		//		externTreeModel.refresh()
 		if(treeView.currentNode.childCount === 1)
 			resetKeyAreaModel()
-		treeView.currentNode.parentModel.refresh()
+
+		if(nameTextField.text.lastIndexOf("/") > 0)
+			treeView.currentNode.parentModel.refresh()
+
 		qmlMetaKeyModel.clear()
+		nameTextField.text = ""
+		valueTextField.text = ""
 		nameTextField.focus = true
 	}
 }

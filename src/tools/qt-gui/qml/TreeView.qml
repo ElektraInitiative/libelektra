@@ -64,26 +64,8 @@ ScrollView {
 						width: Math.max(itemLoader.width + treeView.columnIndent, row.width)
 						height: Math.max(row.height, itemLoader.height)
 						property var fillerModel: model
-
-						DropArea {
-							anchors.fill: parent
-
-							//							onEntered: {
-							//								filler.color = "#FCC"
-							//							}
-							//							onExited: {
-							//								filler.color = "#EEE"
-							//							}
-							//							onDropped: {
-							//								filler.color = "#EEE"
-							//								if (drop.hasText) {
-							//									if (drop.proposedAction == Qt.MoveAction || drop.proposedAction == Qt.CopyAction) {
-							//										item.display = drop.text
-							//										drop.acceptProposedAction()
-							//									}
-							//								}
-							//							}
-						}
+						Drag.active: rowfillMouseArea.drag.active
+						Drag.dragType: Drag.Automatic
 
 						Rectangle {
 							id: rowfill
@@ -93,16 +75,16 @@ ScrollView {
 							height: treeView.rowHeight
 							visible: treeView.currentNode === fillerModel
 							color: activePalette.highlight
-							//							Drag.active: dragArea.drag.active
 						}
 						MouseArea {
-							id: dragArea
+							id: rowfillMouseArea
 
 							anchors.fill: rowfill
 							acceptedButtons: Qt.LeftButton | Qt.RightButton
 							focus: true
-							//							drag.target: parent
 							hoverEnabled: true
+//							drag.target: parent
+							onReleased: Drag.cancel()
 
 							onPressed: {
 								if(mouse.button == Qt.LeftButton){
@@ -141,7 +123,7 @@ ScrollView {
 									repeat: false
 
 									onTriggered: {
-										if(dragArea.containsMouse && !isNull)
+										if(rowfillMouseArea.containsMouse && !isNull)
 											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
 									}
 								}
@@ -189,6 +171,21 @@ ScrollView {
 								property var rowLoaderModel: fillerModel
 								sourceComponent: treeView.delegate
 								anchors.verticalCenter: parent.verticalCenter
+
+								DropArea {
+									anchors.fill: parent
+									width: 50; height: 50
+
+									Rectangle {
+										anchors.fill: parent
+										color: "green"
+
+										visible: parent.containsDrag
+									}
+									onEntered: console.log("entered")
+									onExited: console.log("exited")
+									onDropped: console.log("dropped")
+								}
 							}
 						}
 						Loader {
