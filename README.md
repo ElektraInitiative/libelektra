@@ -11,17 +11,21 @@ applications' configurations, leveraging easy application integration.
 
 ## Goals ##
 
-- make configuration systems more safe
-- allow software to be better integrated on configuration level
-- postpone some decisions from programmers to
-  maintainers/administrators, including syntax and location of
-  configuration files
-- reduce duplication of configuration parsers in our ecosystem
+- Make it simple for applications and administrators to access
+  configuration
+- Make configuration storage more safe: avoid that applications
+  receive wrong values.
+- Allow software to be better integrated on configuration level
+- Postpone some decisions from programmers to
+  maintainers/administrators, e.g. which syntax and the location of
+  configuration files.
+- Reduce rank growth of configuration parsers in our ecosystem, but use
+  well maintained libraries instead.
 
 And in terms of quality, we want:
 
 1.) Robustness
-2.) Extensibility
+2.) Extensibility and
 3.) Simplicity
 
 [Read here more about the Goals of Elektra ..](doc/GOALS.md)
