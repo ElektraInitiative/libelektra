@@ -1,0 +1,180 @@
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN20GenericGrowableArray12raw_allocateEi
+   fun:_GLOBAL__I_jvmtiRawMonitor.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_c1_LinearScan.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_c1_LinearScan.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_c1_LinearScan.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_c1_LinearScan.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_c1_LinearScan.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_c1_LinearScan.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN20GenericGrowableArray12raw_allocateEi
+   fun:_GLOBAL__I_reflectionUtils.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_reflectionUtils.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_memoryService.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_memoryService.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN11ResourceObjnwEmNS_15allocation_typeEt
+   fun:_GLOBAL__I_jvmtiRawMonitor.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN20GenericGrowableArray12raw_allocateEi
+   fun:_GLOBAL__I_memoryService.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN20GenericGrowableArray12raw_allocateEi
+   fun:_GLOBAL__I_memoryService.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN8CHeapObjILt1792EEnwEmPh
+   fun:_GLOBAL__I_metaspace.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN8CHeapObjILt1792EEnwEmPh
+   fun:_GLOBAL__I_diagnosticFramework.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN8CHeapObjILt1792EEnwEmPh
+   fun:_GLOBAL__I_decoder.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEmtPh
+   fun:_ZN8CHeapObjILt1024EEnwEmPh
+   fun:_GLOBAL__I_codeCache.cpp
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+   obj:/opt/jdk1.8.0_25/jre/lib/amd64/server/libjvm.so
+}

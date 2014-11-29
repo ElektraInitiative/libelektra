@@ -110,6 +110,56 @@ static void test_startArray()
 	keyDel(k);
 }
 
+static void test_getArray()
+{
+	printf ("Test get array");
+
+	KeySet *keys = ksNew(10,
+			keyNew("user/test/key1", KEY_END),
+			keyNew("user/test/key2", KEY_END),
+			keyNew("user/test/array", KEY_END),
+			keyNew("user/test/array/#0", KEY_END),
+			keyNew("user/test/array/#0/below", KEY_END),
+			keyNew("user/test/array/#1", KEY_END),
+			keyNew("user/test/yetanotherkey", KEY_END),
+			KS_END);
+
+	Key *arrayParent = keyNew("user/test/array", KEY_END);
+	KeySet *array = elektraArrayGet(arrayParent, keys);
+
+	succeed_if (array, "The getarray function did not return a proper keyset");
+	succeed_if (ksGetSize(array) == 2, "the array contains a wrong number of elements");
+	succeed_if (ksLookupByName(array, "user/test/array/#0", KDB_O_NONE), "the array does not contain #0");
+	succeed_if (ksLookupByName(array, "user/test/array/#1", KDB_O_NONE), "the array does not contain #1");
+
+	keyDel(arrayParent);
+	ksDel(array);
+	ksDel(keys);
+}
+
+
+static void test_getArrayNext()
+{
+	printf ("Test get array next");
+
+	KeySet *array = ksNew(10,
+			keyNew("user/test/array/#0", KEY_END),
+			keyNew("user/test/array/#1", KEY_END),
+
+			KS_END);
+
+	Key *nextKey = elektraArrayGetNextKey(array);
+	exit_if_fail(array, "The getnext function did not return a proper key");
+	succeed_if (!strcmp(keyName(nextKey), "user/test/array/#2"), "The getnext function did not use the correct keyname");
+
+	keyDel(nextKey);
+	ksClear(array);
+	nextKey = elektraArrayGetNextKey(array);
+	succeed_if (!nextKey, "The getnext function did not return NULL on an empty array");
+	keyDel(nextKey);
+
+	ksDel(array);
+}
 
 int main(int argc, char** argv)
 {
@@ -121,6 +171,8 @@ int main(int argc, char** argv)
 	test_array();
 	test_noArray();
 	test_startArray();
+	test_getArray();
+	test_getArrayNext();
 
 	printf("\ntest_array RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

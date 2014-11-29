@@ -487,8 +487,14 @@ set (LIB_SUFFIX ""
 set (MEMORYCHECK_COMMAND
 		/usr/bin/valgrind
 		CACHE FILEPATH
-		"Full path to valgrind the memory checker"
+		"Full path to valgrind"
     )
+
+set(MEMORYCHECK_SUPPRESSIONS_FILE
+		${CMAKE_SOURCE_DIR}/tests/valgrind.suppression
+		CACHE FILEPATH
+		"Full path to suppression file for valgrind")
+
 
 set(DISCLAMER "
 /***************************************************************************

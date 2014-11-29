@@ -23,7 +23,7 @@
  * @retval 0 if start
  * @retval 1 if array element
  */
-int elektraArrayValidateName(Key *key)
+int elektraArrayValidateName(const Key *key)
 {
 	if (!key)
 	{
@@ -77,7 +77,7 @@ int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex)
 
 	int errnosave = errno;
 	errno = 0;
-	if (sscanf(baseName, "%"PRId64, oldIndex) != 1)
+	if (sscanf(baseName, ELEKTRA_LONG_LONG_F, oldIndex) != 1)
 	{
 		errno = errnosave;
 		return -1;
@@ -129,7 +129,7 @@ int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex)
 		i/=10;
 	}
 	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE,
-				"%"PRId64, newIndex)  < 0)
+				ELEKTRA_LONG_LONG_F, newIndex)  < 0)
 	{
 		return -1;
 	}
@@ -195,4 +195,94 @@ int elektraArrayIncName(Key *key)
 	keySetBaseName(key, newName);
 
 	return 0;
+}
+
+/**
+ * Returns true (1) for all keys that are part of the array
+ * identified by the supplied array parent. Only the array
+ * eleements themself, but no subkeys of them will be filtered
+ *
+ * @pre The supplied argument has to be of type (const Key *)
+ * and is the parent of the array to be extracted. For example
+ * if the keys of the array comment/# are to be extracted, a key
+ * with the name "comment" has to be supplied
+ *
+ * @param key the key to be checked against the array
+ * @param argument the array parent
+ * @return 1 if the key is part of the array identified by the
+ * array parent, 0 otherwise
+ *
+ */
+static int arrayFilter(const Key *key, void *argument)
+{
+	const Key *arrayParent = (const Key *) argument;
+
+	return keyIsDirectBelow(arrayParent, key) && elektraArrayValidateName(key);
+}
+
+
+/**
+ * Return all the array keys below the given arrayparent
+ * The arrayparent itself is not returned.
+ * For example, if user/config/# is an array,
+ * user/config is the array parent.
+ * Only the direct array keys will be returned. This means
+ * that for example user/config/#1/key will not be included,
+ * but only user/config/#1.
+ *
+ * A new keyset will be allocated for the resulting keys.
+ * This means that the caller must ksDel the resulting keyset.
+ *
+ * @param arrayParent the parent of the array to be returned
+ * @param keys the keyset containing the array keys.
+ *
+ * @return a keyset containing the arraykeys (if any)
+ * @retval NULL on NULL pointers
+ */
+KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
+{
+	if (!arrayParent) return 0;
+
+	if (!keys) return 0;
+
+	KeySet *arrayKeys = ksNew(ksGetSize(keys), KS_END);
+	elektraKsFilter(arrayKeys, keys, &arrayFilter, (void *)arrayParent);
+	return arrayKeys;
+}
+
+/**
+ *
+ * Return the next key in the given array.
+ * The function will automatically allocate memory
+ * for a new key and name it accordingly.
+ *
+ * @pre The supplied keyset must contain only valid array keys.
+ *
+ * The caller has to keyDel the resulting key.
+ *
+ * @param arraykeys the array where the new key will belong to
+ *
+ * @return the new array key on success
+ * @retval NULL if the passed array is empty
+ * @retval NULL on NULL pointers or if an error occurs
+ */
+Key *elektraArrayGetNextKey(KeySet *arrayKeys)
+{
+	if (!arrayKeys) return 0;
+
+	Key *last = ksPop(arrayKeys);
+
+	if (!last) return 0;
+
+	ksAppendKey(arrayKeys, last);
+	Key *newKey = keyDup(last);
+	int ret = elektraArrayIncName(newKey);
+
+	if (ret == -1)
+	{
+		keyDel(newKey);
+		return 0;
+	}
+
+	return newKey;
 }

@@ -246,8 +246,7 @@ inline Key::Key (Key const & k) :
 /**
  * @copydoc keyNew
  *
- * @throw KeyInvalidName if key could not be constructed (typically name
- * wrong or at runtime on allocation problems)
+ * @throw bad_alloc if key could not be constructed (allocation problems)
  *
  * @param keyName the name of the new key
  */
@@ -259,7 +258,7 @@ inline Key::Key (const char * keyName, ...)
 	key = ckdb::keyVNew (keyName, ap);
 	va_end(ap);
 
-	if (!key) throw KeyInvalidName();
+	if (!key) throw std::bad_alloc();
 
 	operator++();
 }
@@ -267,8 +266,7 @@ inline Key::Key (const char * keyName, ...)
 /**
  * @copydoc keyNew
  *
- * @throw KeyInvalidName if key could not be constructed (typically name
- * wrong or at runtime on allocation problems)
+ * @throw bad_alloc if key could not be constructed (allocation problems)
  *
  * @warning Not supported on some compilers, e.g.
  * clang which require you to only pass non-POD
@@ -284,7 +282,7 @@ inline Key::Key (const std::string keyName, ...)
 	key = ckdb::keyVNew (keyName.c_str(), ap);
 	va_end(ap);
 
-	if (!key) throw KeyInvalidName();
+	if (!key) throw std::bad_alloc();
 
 	operator++();
 }
@@ -292,8 +290,7 @@ inline Key::Key (const std::string keyName, ...)
 /**
  * @copydoc keyNew
  *
- * @throw KeyInvalidName if key could not be constructed (typically name
- * wrong or at runtime on allocation problems)
+ * @throw bad_alloc if key could not be constructed (allocation problems)
  *
  * @param keyName the name of the new key
  * @param ap the variable argument list pointer
@@ -302,7 +299,7 @@ inline Key::Key (const char * keyName, va_list ap)
 {
 	key = ckdb::keyVNew (keyName, ap);
 
-	if (!key) throw KeyInvalidName();
+	if (!key) throw std::bad_alloc();
 
 	operator++();
 }

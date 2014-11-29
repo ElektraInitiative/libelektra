@@ -422,6 +422,14 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	return ret;
 }
 
+KeySet *elektraKeyGetMetaKeySet(const Key *key)
+{
+	if (!key) return 0;
+	if (!key->meta) return 0;
+
+	return ksDup(key->meta);
+}
+
 
 /**Set a new Meta-Information.
  *

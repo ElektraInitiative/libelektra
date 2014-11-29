@@ -256,6 +256,35 @@ KeySet *ksDup (const KeySet * source)
 	return keyset;
 }
 
+/* Deeply copies from source to dest.
+ *
+ * The keyset as well as its containing keys are duplicated.
+ * This means that you have to keyDel() the contained keys and
+ * ksDel() the returned keyset..
+ *
+ * @param source has to be an initialized source KeySet
+ * @return a deep copy of source on success
+ * @return 0 on NULL pointer
+ * @see ksNew(), ksDel()
+ * @see keyDup() for key duplication
+ * @see ksDup() for flat copy
+ */
+KeySet* ksDeepDup(const KeySet *source)
+{
+	if (!source) return 0;
+
+	size_t s = source->size;
+	size_t i = 0;
+	KeySet *keyset = 0;
+
+	keyset = ksNew(source->alloc,KS_END);
+	for (i=0; i<s; ++i)
+	{
+		ksAppendKey(keyset, keyDup(source->array[i]));
+	}
+
+	return keyset;
+}
 
 
 /**
@@ -1493,7 +1522,49 @@ Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
 	return ksPop(ks);
 }
 
+/**
+ * @brief return only those keys from the given
+ * keyset that pass the supplied filter function
+ * with the supplied argument
+ *
+ * @param result the keyset that should contain the filtered keys
+ * @param input the keyset whose keys should be filtered
+ * @param filter a function pointer to a function that will be used to
+ * filter the keyset. A key will be taken if the function returns a value
+ * greater than 0.
+ * @param argument an argument that will be passed to the filter function
+ * each time it is called
+ * @return the number of filtered keys if the filter function always
+ * returned a positive value, -1 otherwise
+ * @retval NULL on NULL pointer
+ */
+int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument)
+{
+	if (!result) return -1;
 
+	if (!input) return -1;
+
+	if (!filter) return -1;
+
+	int rc = 0;
+	int ret = 0;
+	Key *current;
+
+	cursor_t cursor = ksGetCursor (input);
+	ksRewind (input);
+	while ((current = ksNext (input)) != 0)
+	{
+		rc = filter (current, argument);
+		if (rc <= -1) return -1;
+		else if (rc > 0)
+		{
+			++ ret;
+			ksAppendKey(result, keyDup (current));
+		}
+	}
+	ksSetCursor(input, cursor);
+	return ret;
+}
 
 /**
  * Set the KeySet internal cursor.

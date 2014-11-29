@@ -504,7 +504,7 @@ int elektraValidateKeyNamePart(const char *name);
 
 #ifndef WIN32
 /*Internally used for array handling*/
-int elektraArrayValidateName(Key *key);
+int elektraArrayValidateName(const Key *key);
 int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex);
 int elektraWriteArrayNumber(char *newName, int64_t newIndex);
 #endif
