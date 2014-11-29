@@ -59,14 +59,6 @@ void GUIBackend::createBackend(const QString &mountpoint)
 		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), "", ex.what(), "c");
 	}
 
-	try
-	{
-		m_backend->addPlugin("resolver");
-	}
-	catch(PluginCheckException ex){
-		emit showMessage(tr("Error"), tr("Could not add plugin \"resolver\"."), "", ex.what(), "c");
-	}
-
 	m_name = mountpoint;
 	m_name.replace("/", "_");
 }
@@ -80,6 +72,10 @@ void GUIBackend::addPath(const QString &path)
 	catch(FileNotValidException ex)
 	{
 		emit showMessage(tr("Error"), tr("The file you have entered is not valid."), "", ex.what(), "c");
+	}
+	catch(MissingSymbol ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not add file."), "", ex.what(), "c");
 	}
 
 	std::string configPath = Backends::getConfigBasePath(m_name.toStdString());
@@ -167,7 +163,15 @@ void GUIBackend::addPlugin(QString name)
 void GUIBackend::serialise()
 {
 	Key rootKey (Backends::mountpointsPath, KEY_END);
-	m_backend->serialise(rootKey, m_mountConf);
+
+	try
+	{
+		m_backend->serialise(rootKey, m_mountConf);
+	}
+	catch(ToolException ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not serialise backend."), "", ex.what(), "c");
+	}
 
 	try
 	{
@@ -228,18 +232,10 @@ QString GUIBackend::pluginInfo(QString pluginName) const
 	Modules modules;
 	KeySet info;
 	QString infoString;
-	PluginPtr plugin;
+
 	pluginName.chop(pluginName.length() - pluginName.indexOf("[") + 1);
 
-	try
-	{
-		plugin = modules.load(pluginName.toStdString());
-	}
-	catch(NoPlugin ex)
-	{
-		emit showMessage(tr("Error"), tr("There is no plugin \"%1\".").arg(pluginName), "", ex.what(), "c");
-		return "";
-	}
+	PluginPtr plugin = modules.load(pluginName.toStdString());
 
 	info = plugin->getInfo();
 
@@ -278,6 +274,7 @@ QStringList GUIBackend::availablePlugins() const
 		}
 		catch(NoPlugin ex)
 		{
+			break;
 		}
 
 		ptr->loadInfo();

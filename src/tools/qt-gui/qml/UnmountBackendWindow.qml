@@ -22,7 +22,12 @@ BasicWindow {
 			wrapMode: Text.Wrap
 			color: "#640000"
 		}
+		Item {
+			id: placeHolder
 
+			width: parent.width
+			height: defaultMargins
+		}
 		Label {
 			text: qsTr("Mounted Backends")
 		}

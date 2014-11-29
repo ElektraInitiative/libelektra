@@ -3,7 +3,8 @@ import QtQuick 2.2
 WizardTemplate {
 	id: page1
 
-	wizardText.text: qsTr("Welcome to the Mounting Wizard! Here you can create and mount backends.\n\n" +
+	wizardText.text: qsTr("Welcome to the Mounting Wizard! Here you can create and mount backends. " +
+						  "You can only create backends with root administration rights.\n\n" +
 						  "Please provide a mount point for the backend.\n\n" +
 						  "Already used are:  " + wizardLoader.usedNames)
 
