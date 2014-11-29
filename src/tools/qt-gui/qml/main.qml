@@ -647,6 +647,7 @@ ApplicationWindow {
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
 			unmountBackendWindow.mountedBackendsView.model = externTreeModel.mountedBackends()
+			unmountBackendWindow.mountedBackendsView.currentIndex = -1
 			unmountBackendWindow.show()
 		}
 	}
