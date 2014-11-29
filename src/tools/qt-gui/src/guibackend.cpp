@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <QDebug>
+#include <QRegExp>
 
 using namespace std;
 using namespace kdb;
@@ -290,6 +291,8 @@ QStringList GUIBackend::nameFilters()
 {
 	QStringList nameFilters;
 	QStringList plugins = availablePlugins();
+
+	plugins.replaceInStrings(QRegExp("\\s\\[\\w*\\]"), "");
 
 	nameFilters.append("ECF (*.ecf)");
 
