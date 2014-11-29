@@ -98,8 +98,10 @@ void GUIBackend::addPath(const QString &path)
 							 KEY_END));
 }
 
-void GUIBackend::addPlugin(const QString &name)
+void GUIBackend::addPlugin(QString name)
 {
+	name.chop(name.length() - name.indexOf("[") + 1);
+
 	try
 	{
 		m_backend->addPlugin(name.toStdString());
@@ -226,8 +228,19 @@ QString GUIBackend::pluginInfo(QString pluginName) const
 	Modules modules;
 	KeySet info;
 	QString infoString;
+	PluginPtr plugin;
+	pluginName.chop(pluginName.length() - pluginName.indexOf("[") + 1);
 
-	PluginPtr plugin = modules.load(pluginName.toStdString());
+	try
+	{
+		plugin = modules.load(pluginName.toStdString());
+	}
+	catch(NoPlugin ex)
+	{
+		emit showMessage(tr("Error"), tr("There is no plugin \"%1\".").arg(pluginName), "", ex.what(), "c");
+		return "";
+	}
+
 	info = plugin->getInfo();
 
 	Key root;
@@ -253,11 +266,25 @@ QString GUIBackend::pluginInfo(QString pluginName) const
 QStringList GUIBackend::availablePlugins() const
 {
 	QStringList availPlugins;
+	Modules modules;
+	PluginPtr ptr;
 
 	vector<string> pluginVector = listAllAvailablePlugins();
 
-	foreach(string s, pluginVector)
-		availPlugins.append(QString::fromStdString(s));
+	foreach(string s, pluginVector){
+		try
+		{
+			ptr = modules.load(s);
+		}
+		catch(NoPlugin ex)
+		{
+		}
+
+		ptr->loadInfo();
+		availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(QString::fromStdString(ptr->lookupInfo("provides"))));
+	}
+
+	availPlugins.sort();
 
 	return availPlugins;
 }

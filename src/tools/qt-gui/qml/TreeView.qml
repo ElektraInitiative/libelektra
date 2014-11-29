@@ -112,8 +112,18 @@ ScrollView {
 									editKeyWindow.populateMetaArea()
 								}
 							}
-							onEntered: timer.start()
+							onEntered: {
+								if(mouse.pressed)
+									console.log("hold")
+								else
+									timer.start()
+							}
 							onExited: TooltipCreator.destroy()
+							onPressAndHold: undoManager.putToClipboard("cut", treeView.currentNode.parentModel, treeView.currentNode.index)
+							onPositionChanged: {
+								if(mouse.pressed)
+									console.log(mouse.x + " " + mouse.y)
+							}
 
 							Item {
 								Timer {

@@ -17,7 +17,7 @@ public:
 
 	Q_INVOKABLE void		addPath(const QString &path);
 
-	Q_INVOKABLE void		addPlugin(const QString &name);
+	Q_INVOKABLE void		addPlugin(QString name);
 
 	Q_INVOKABLE QString		pluginInfo(QString pluginName) const;
 

@@ -19,6 +19,7 @@ Item {
 
 			Text {
 				id: text
+
 				Layout.fillWidth: true
 				wrapMode: Text.WordWrap
 				color: activePalette.text
@@ -26,6 +27,7 @@ Item {
 			}
 			ComboBox {
 				id: pluginDropdown
+
 				Layout.fillWidth: true
 				model: guiBackend.availablePlugins()
 				onCurrentTextChanged: infoText.text = guiBackend.pluginInfo(pluginDropdown.currentText)
@@ -87,6 +89,8 @@ Item {
 					}
 					delegate: Row {
 						Label {
+							anchors.fill: parent
+							anchors.leftMargin: defaultSpacing
 							text: pluginName
 						}
 					}
@@ -113,7 +117,7 @@ Item {
 				id: infoText
 
 				anchors.fill: parent
-				anchors.margins: 1
+				anchors.margins: defaultSpacing
 				textFormat: Text.RichText
 				backgroundVisible: false
 				frameVisible: false
@@ -124,6 +128,8 @@ Item {
 	}
 	ButtonRow {
 		id: buttonRow
+
+		finishButton.enabled: guiBackend.validated()
 
 		finishButton.onClicked: {
 			guiBackend.serialise()
