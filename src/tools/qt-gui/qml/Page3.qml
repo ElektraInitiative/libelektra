@@ -1,11 +1,37 @@
 import QtQuick 2.2
 
 WizardTemplate {
-    id: page3
-    wizardText.text: qsTr("Please enter a path to a file in the filesystem. This file is used by all plugins of this backend as fallback. For user or cascading mountpoints it must be a relative path. The actual path will be located dynamically by the resolver plugin.")
-    label.text: qsTr("Path: ")
+	id: page3
 
-    buttonRow.backButton.onClicked: loader.source = "Page2.qml"
-    buttonRow.finishButton.enabled: false
-    buttonRow.nextButton.onClicked: loader.source = "Page4.qml"
+	wizardText.text: qsTr("Please enter a path to a file in the filesystem. This file is used by all plugins of this backend as fallback. " +
+						  "For user or cascading mountpoints it must be a relative path. " +
+						  "The actual path will be located dynamically by the resolver plugin.\n\n" +
+						  "Note that you cannot undo creating the backend. If you want to remove a backend use the unmount option.")
+
+	label.text: qsTr("Path: ")
+
+	buttonRow.nextButton.visible: false
+	buttonRow.finishButton.visible: true
+	buttonRow.finishButton.enabled: textField.text !== ""
+	buttonRow.finishButton.onClicked:  {
+		guiBackend.addPath(textField.text)
+
+		if(!error){
+			guiBackend.serialise()
+
+			if(!error){
+				wizardLoader.close()
+				externTreeModel.populateModel()
+				guiBackend.deleteBackend()
+				includedPluginsModel.clear()
+				loader.source = "Page1.qml"
+			}
+
+		}
+
+	}
+	buttonVisible: true
+	fileDialog.onAccepted: textField.text = fileDialog.fileUrl.toString().replace("file://", "")
 }
+
+

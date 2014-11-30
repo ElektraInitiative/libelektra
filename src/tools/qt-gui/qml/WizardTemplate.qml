@@ -5,47 +5,86 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 
 Item {
-    id: template
+	id: template
 
-    property string usedNames
-    property alias wizardText: wizardText
-    property alias buttonRow: buttonRow
-    property alias label: label
-    property alias textField: textField
+	property alias	wizardText: wizardText
+	property alias	buttonRow: buttonRow
+	property alias	label: label
+	property alias	textField: textField
+	property bool	buttonVisible: false
+	property alias	fileDialog: fileDialog
 
-    ColumnLayout {
-        id: wizardlayout
+	BasicRectangle {
+		id: wizardRectangle
 
-        anchors.fill: parent
-        anchors.margins: defaultMargins
-        spacing: defaultMargins
+		anchors.top: parent.top
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.bottom: buttonRow.top
+		anchors.margins: defaultMargins
 
-        Text {
-            id: wizardText
+		Text {
+			id: wizardText
 
-            wrapMode: Text.WordWrap
-            color: activePalette.text
-            //height: Math.ceil(wizardLoader.height*0.7)
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            Layout.alignment:  Qt.AlignVCenter
-            text: ""
-        }
-        RowLayout {
-            spacing: defaultSpacing
+			anchors.right: parent.right
+			anchors.left: parent.left
+			anchors.top: parent.top
+			anchors.bottom: wizardRow.top
+			anchors.margins: defaultMargins
+			verticalAlignment: Text.AlignVCenter
+			wrapMode: Text.WordWrap
+			color: activePalette.text
+		}
 
-            Label {
-                id:label
-                text: ""
-            }
-            TextField {
-                id:textField
-                Layout.fillWidth: true
-            }
-        }
-        ButtonRow {
-            id: buttonRow
-            cancelButton.onClicked: wizardLoader.close()
-        }
-    }
+		RowLayout {
+			id: wizardRow
+
+			anchors.left: parent.left
+			anchors.right: parent.right
+			anchors.bottom: parent.bottom
+			anchors.margins: defaultMargins
+			spacing: defaultSpacing
+
+			Label {
+				id:label
+			}
+			TextField {
+				id:textField
+
+				Layout.fillWidth: true
+			}
+			Button {
+				id: fileDialogButton
+
+				implicitWidth: textField.height
+				implicitHeight: textField.height
+				text: "..."
+				visible: buttonVisible
+				onClicked: {
+					fileDialog.nameFilters = ["All Files (*.*)"]
+					fileDialog.open()
+				}
+			}
+		}
+	}
+	ButtonRow {
+		id: buttonRow
+
+		cancelButton.onClicked: {
+			wizardLoader.close()
+			textField.text = ""
+
+			if(loader.source.toString() !== "qrc:/qml/Page1.qml")
+				guiBackend.deleteBackend()
+
+			loader.source = "Page1.qml"
+		}
+	}
+
+
+	FileDialog {
+		id: fileDialog
+
+		title: qsTr("Select File")
+	}
 }
