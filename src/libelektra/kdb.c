@@ -97,16 +97,16 @@
 thread1
 {
 	KDB * h;
-	h = kdbOpen(0);
+	h = kdbOpen(parent);
 	// fetch keys and work with them
-	kdbClose(h, 0);
+	kdbClose(h, parent);
 }
 thread2
 {
 	KDB * h;
-	h = kdbOpen(0);
+	h = kdbOpen(parent);
 	// fetch keys and work with them
-	kdbClose(h, 0);
+	kdbClose(h, parent);
 }
  * @endcode
  *
@@ -117,14 +117,19 @@ thread2
  *
  * @param errorKey the key which holds errors and warnings which were issued
  * @see kdbGet(), kdbClose() to end all affairs to the key database.
- * @return a KDB pointer on success
- * @return NULL on failure
+ * @retval handle on success
+ * @retval NULL on failure
  * @ingroup kdb
  */
 KDB * kdbOpen(Key *errorKey)
 {
 	KDB *handle;
 	KeySet *keys;
+
+	if (!errorKey)
+	{
+		return 0;
+	}
 
 	handle = elektraCalloc(sizeof(struct _KDB));
 
@@ -247,7 +252,7 @@ KDB * kdbOpen(Key *errorKey)
  */
 int kdbClose(KDB *handle, Key *errorKey)
 {
-	if (!handle)
+	if (!handle || !errorKey)
 	{
 		return -1;
 	}
