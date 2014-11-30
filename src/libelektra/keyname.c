@@ -652,6 +652,39 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 }
 
 
+/**
+ * For currently valid namespaces see #elektraNamespace.
+ *
+ * @version 0.8.10
+ * Added method to kdbproposal.h
+ *
+ * @note This method might be enhanced. You do not have any guarantee
+ * that, when for a specific name #KEY_NS_META
+ * is returned today, that it still will be returned after the next
+ * recompilation. So make sure that your compiler gives you a warning
+ * for unhandled switches (gcc: -Wswitch or -Wswitch-enum if you
+ * want to handle default) and look out for those warnings.
+ *
+ * @param key the key object to work with
+ * @return the namespace of a key.
+ * @ingroup keyname
+ *
+ */
+elektraNamespace keyGetNamespace(const Key *key)
+{
+	if (!key) return KEY_NS_NONE;
+	if (!key->key) return KEY_NS_EMPTY;
+
+	if (key->key[0] == '/') return KEY_NS_CASCADING;
+
+	if (keyIsUser (key)) return KEY_NS_USER;
+	if (keyIsSystem (key)) return KEY_NS_SYSTEM;
+
+	return KEY_NS_META;
+}
+
+
+
 
 /**
  * @brief Returns a pointer to the internal unescaped key name where the @p basename starts.

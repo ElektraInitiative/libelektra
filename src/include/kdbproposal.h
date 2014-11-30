@@ -53,20 +53,24 @@ enum elektraLookupOptions
 	KDB_O_CREATE=1<<16
 };
 
-/*
-TODO: implement
-enum elektraNamespace
+/**
+ * Elektra currently supported Key namespaces.
+ *
+ * @ingroup keyname
+ * @see kdbGet(), keyGetNamespace()
+ */
+typedef enum
 {
-	KDB_NS_NONE=0,
-	KDB_NS_EMPTY=1,
-	KDB_NS_META=1<<1,
-	KDB_NS_CASCADING=1<<2,
-	KDB_NS_USER=1<<3,
-	KDB_NS_SYSTEM=1<<4
-};
+	KEY_NS_NONE=0,          ///< no key given as parameter to keyGetNamespace()
+	KEY_NS_EMPTY=1,         ///< key name was empty, e.g. invalid key name
+	KEY_NS_META=1<<1,       ///< meta key, i.e. any key name not under other categories
+	KEY_NS_CASCADING=1<<2,  ///< cascading key, starts with /, abstract name for any of the namespaces below
+	KEY_NS_USER=1<<3,       ///< user key in the home directory of the current user
+	KEY_NS_SYSTEM=1<<4      ///< system key not in the home directory, shared for a computer system
+} elektraNamespace;
 
-int keyGetNamespace(Key const* key);
-*/
+elektraNamespace keyGetNamespace(Key const* key);
+
 
 // alternative to keyAddBaseName (adds full name)
 ssize_t keyAddName(Key *key, const char *addName);
