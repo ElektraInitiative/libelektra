@@ -807,9 +807,41 @@ keyDel(parentKey);
  */
 int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 {
-	if(!parentKey)
+	elektraNamespace ns = keyGetNamespace(parentKey);
+	if (ns == KEY_NS_NONE)
 	{
 		return -1;
+	}
+
+	if (ns == KEY_NS_EMPTY || ns == KEY_NS_META)
+	{
+		ELEKTRA_SET_ERROR(104, parentKey,
+			ns == KEY_NS_EMPTY ?
+				"empty name passed to kdbSet" :
+				"invalid key name passed to kdbSet"
+			);
+		return -1;
+	}
+
+	if (ns == KEY_NS_CASCADING)
+	{
+		Key *newParent = keyDup(parentKey);
+		keySetName(newParent, "user");
+		keyAddName(newParent, keyName(parentKey));
+		if (kdbSet(handle, ks, newParent) == -1)
+		{
+			keyDel(newParent);
+			return -1;
+		}
+
+		keySetName(newParent, "system");
+		keyAddName(newParent, keyName(parentKey));
+		if (kdbSet(handle, ks, newParent) == -1)
+		{
+			keyDel(newParent);
+			return -1;
+		}
+		keyDel(newParent);
 	}
 
 #if DEBUG && VERBOSE
