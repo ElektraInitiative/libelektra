@@ -12,7 +12,7 @@ ImportConfigurationCommand::ImportConfigurationCommand(TreeViewModel* model, con
 {
 	setText("import");
 
-	m_kdb.get(m_set, "");
+	m_kdb.get(m_set, "/");
 }
 
 void ImportConfigurationCommand::undo()
