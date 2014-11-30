@@ -1,3 +1,125 @@
+Prep for 0.8.10 Release
+
+- guid: e3cb90f5-86f7-4e9d-8b76-2af334c48c94
+- author: Markus Raab
+- pubDate: Sun, 30 Nov 2014 15:15:04 +0100
+
+## OpenICC / XDG Compatibility
+
+Elektra now is fully XDG conformant, if the resolver with variant "x"
+is used. Following changes were necessary:
+
+- newly created configuration files for user/ now have the permissions
+  0600
+- newly created configuration directories for user/ now have the
+  permissions 0700
+- existing configuration files will retain their permissions.
+- The default path to store user configuration is now ~/.config
+
+- .config as default folder in HOME
+- default mode is now XDG compatible (0700 for dir 0600 for files)
+- remember mode as the file had before
+- passwd used as default resolver again
+- implement XDG_CONFIG_DIRS
+- fix empty dirs and absolute pathes in envvar
+- add new shell based test suite for resolver
+
+resolver_fm_xhp_x
+
+
+## CMake
+
+It is now possible to remove a plugin/binding/tools by prefixing a name
+with "-".
+- allow to use -element syntax in TOOLS, BINDINGS and PLUGINS to remove
+  it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-xmltool"
+
+
+
+## Improved comments
+
+Comment preserving was improved a lot. Especially, the hosts plugin was
+rewritten completely. Now multiple different comment styles can be
+intermixed without losing information. E.g. some INI formats support
+both ; and # for comments. With the new comments it is possible to
+preserve which comment started with which -- and even better it can be
+programmatically checked using the meta data.
+
+The hosts plugin now seperates from ipv4 and ipv6 which makes the host
+names canonical.
+
+Additionally, a small API emerges for specific meta-data operations.
+These operations will be moved to a separate library and will not stay
+in Elektra's core library.
+
+## Proposal
+
+Filter?
+
+
+## Tools
+
+-c option for backend configuration
+
+
+
+## Reintroduce namespaces
+
+In one of the next versions of Elektra we will introduce new namespaces.
+
+
+## Key Names
+
+Different kinds of keys can now created:
+
+- empty names: this was always possible, because invalid names did not
+  cause keyNew to abort
+- meta names: this is a new feature that allows us to compare key names
+  with meta keys
+- cascading names: names starting with / have the special meaning that
+  they do not specify which namespace they have. When such names are
+  used for
+  - kdbGet() and kdbSet() keys are retrieved from all namespaces
+  - ksLookup() keys are searched in all namespaces
+
+
+
+## Java binding
+
+Elektra now fully supports applications written in Java and also Plugins
+written in the same language.
+
+The [new
+binding was developed using jna.](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/jna)
+
+For the [plugin interface
+JNI](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/jni)
+was used.
+
+We developed already [some
+plugins](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/jna/elektra/plugin).
+
+
+## Qt-Gui
+
+* added Backend Wizard
+* user can hover over TreeView items and quickly see keyname, keyvalue 
+  and metakeys
+* it is now possible to create and edit arrays
+* added header to MetaArea for better clarity
+* many small layout and view update fixes
+
+
+
+
+## Small fixes
+
+- C++ binding now throws bad_alloc on allocation problems (and not
+  InvalidName)
+
+
+## Further stuff
+
 Preparation for 0.8.10 release:
 - fix #136
 - fix long help text in `kdb check`
@@ -5,8 +127,6 @@ Preparation for 0.8.10 release:
   /sw/kdb/current/resolver .. want a different default resolver than was compiled in?
   /sw/kdb/current/format .. annoyed by dump-default format
   /sw/kdb/current/plugins .. if you always forget to add some plugins
-- allow to use -element syntax in TOOLS, BINDINGS and PLUGINS to remove
-  it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-xmltool"
 - C++ I/O for key(s) now allows null-terminator
 - -0 option accepted
 - -123 options for hiding nth column in `kdb mount`
@@ -16,15 +136,11 @@ Preparation for 0.8.10 release:
 - fix error plugin: now use on_open/trigger_warnings to be consistent
 - fix metaset: now correctly append new key
 
-## XDG compatible resolving
+Entries for latest Elektra for wheezy
 
-- .config as default folder in HOME
-- default mode is now XDG compatible (0700 for dir 0600 for files)
-- remember mode as the file had before
-- passwd used as default resolver again
-- implement XDG_CONFIG_DIRS
-- fix empty dirs and absolute pathes in envvar
-- add new shell based test suite for resolver
+
+
+
 
 
 # 0.8.9 Release

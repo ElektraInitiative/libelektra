@@ -6,7 +6,7 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.10 #
+# 0.8.11 #
 
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
@@ -22,6 +22,7 @@ plugins should use relative pathes so that import/export/remount works
 
 c++11
 DEFAULT_STORAGE/RESOLVER
+
 
 ## powerful cascading ##
 
@@ -52,8 +53,6 @@ ksLookup("/path/to/my/application/dir/key")
 defaults are hardcoded (for system without /etc)
 	just for information in spec
 
-## mount specification ##
-
 
 ## test ##
 
@@ -65,10 +64,10 @@ full coverage of all plugins in end-to-end test
 	create a directory value rewriter for ini+yajl
 
 
-## OpenICC ##
+## meta data ##
 
-rebase plugin
-xdg resolver
+fix comments:
+	all plugins should use new comment-approach
 
 fix types:
 	type checker should check like defined in schema
