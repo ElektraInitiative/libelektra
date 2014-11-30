@@ -4,10 +4,11 @@ Prep for 0.8.10 Release
 - author: Markus Raab
 - pubDate: Sun, 30 Nov 2014 15:15:04 +0100
 
-## OpenICC / XDG Compatibility
+## XDG Compatibility
 
-Elektra now is fully XDG conformant, if the resolver with variant "x"
-is used. Following changes were necessary:
+Elektra now is
+[fully XDG 0.8](http://standards.freedesktop.org/basedir-spec/basedir-spec-0.8.html)
+compliant. Following changes were necessary:
 
 - newly created configuration files for user/ now have the permissions
   0600
@@ -15,16 +16,26 @@ is used. Following changes were necessary:
   permissions 0700
 - existing configuration files will retain their permissions.
 - The default path to store user configuration is now ~/.config
-
-- .config as default folder in HOME
-- default mode is now XDG compatible (0700 for dir 0600 for files)
-- remember mode as the file had before
-- passwd used as default resolver again
-- implement XDG_CONFIG_DIRS
-- fix empty dirs and absolute pathes in envvar
+- A new resolver variant x is introduced
+ - implements handling of XDG environment variables
+ - ignores empty dirs and absolute pathes in envvar
 - add new shell based test suite for resolver
 
-resolver_fm_xhp_x
+For example, use resolver_fm_xhp_x if you want:
+
+- f .. file based locking
+- m .. mutex based locking
+- for user configuration
+ - x .. first check XDG_CONFIG_HOME environment
+ - h .. then check HOME environment
+ - p .. then fall back to passwd
+- for system configuration
+ - x .. check all XDG_CONFIG_DIRS and falls back to /etc/xdg
+
+## OpenICC Compatibility
+
+Elektra now also implements the draft for
+[the OpenICC specification](http://www.openicc.info/wiki/index.php?title=OpenICC_Configuration_0.1).
 
 
 ## CMake
