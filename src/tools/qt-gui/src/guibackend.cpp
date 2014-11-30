@@ -101,6 +101,8 @@ void GUIBackend::addPlugin(QString name)
 	{
 		m_backend->addPlugin(name.toStdString());
 	}
+	// TODO: if exceptions are not handled differently, catching
+	// base class is enough
 	catch(TooManyPlugins ex)
 	{
 		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
