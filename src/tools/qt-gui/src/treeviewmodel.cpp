@@ -558,7 +558,7 @@ void TreeViewModel::populateModel()
 	}
 	try
 	{
-		m_kdb.get(m_keySet, "");
+		m_kdb.get(m_keySet, "/");
 	}
 	catch (KDBException const& e)
 	{
