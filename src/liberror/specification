@@ -605,3 +605,9 @@ description:jni/java warning
 severity:warning
 ingroup:plugin
 module:jni
+
+number:104
+description:No key, empty key name or meta key passed as parentKey
+severity:error
+ingroup:kdb
+

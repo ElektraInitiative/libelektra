@@ -534,7 +534,7 @@ if (changes & KEY_UID)
  * 
  * @par Example of very powerful specific Key lookup in a KeySet:
  * @code
-KDB *handle = kdbOpen();
+KDB *handle = kdbOpen(0);
 KeySet *ks=ksNew(0, KS_END);
 Key *base = keyNew ("user/sw/MyApp/something", KEY_END);
 Key *current;

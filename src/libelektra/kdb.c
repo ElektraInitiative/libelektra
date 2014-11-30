@@ -110,7 +110,7 @@ thread2
 }
  * @endcode
  *
- * You don't need to use the kdbOpen() if you only want to
+ * You don't need kdbOpen() if you only want to
  * manipulate plain in-memory Key or KeySet objects.
  *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
@@ -452,9 +452,41 @@ keyDel(pkey);
  */
 int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 {
-	if (!parentKey)
+	elektraNamespace ns = keyGetNamespace(parentKey);
+	if (ns == KEY_NS_NONE)
 	{
 		return -1;
+	}
+
+	if (ns == KEY_NS_EMPTY || ns == KEY_NS_META)
+	{
+		ELEKTRA_SET_ERROR(104, parentKey,
+			ns == KEY_NS_EMPTY ?
+				"empty name passed to kdbGet" :
+				"invalid key name passed to kdbGet"
+			);
+		return -1;
+	}
+
+	if (ns == KEY_NS_CASCADING)
+	{
+		Key *newParent = keyDup(parentKey);
+		keySetName(newParent, "user");
+		keyAddName(newParent, keyName(parentKey));
+		if (kdbGet(handle, ks, newParent) == -1)
+		{
+			keyDel(newParent);
+			return -1;
+		}
+
+		keySetName(newParent, "system");
+		keyAddName(newParent, keyName(parentKey));
+		if (kdbGet(handle, ks, newParent) == -1)
+		{
+			keyDel(newParent);
+			return -1;
+		}
+		keyDel(newParent);
 	}
 
 #if DEBUG && VERBOSE
