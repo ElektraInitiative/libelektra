@@ -720,11 +720,11 @@ static void test_realworld()
 	ksDel (split6);
 	ksDel (split7);
 	ksDel (split8);
-	keyDel (parent);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
 
-	kdbClose (handle, 0);
+	kdbClose (handle, parent);
+	keyDel (parent);
 }
 
 

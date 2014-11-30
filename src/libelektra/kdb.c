@@ -246,13 +246,13 @@ KDB * kdbOpen(Key *errorKey)
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
  * @param errorKey the key which holds error information
- * @return 0 on success
- * @return -1 on NULL pointer
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
  * @ingroup kdb
  */
 int kdbClose(KDB *handle, Key *errorKey)
 {
-	if (!handle || !errorKey)
+	if (!handle)
 	{
 		return -1;
 	}
