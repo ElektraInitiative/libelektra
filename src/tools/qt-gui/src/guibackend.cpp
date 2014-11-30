@@ -1,7 +1,5 @@
 #include "guibackend.hpp"
 
-#include <markdowndocument.h>
-#include <discountmarkdownconverter.h>
 #include <backends.hpp>
 #include <vector>
 #include <string>
@@ -252,10 +250,9 @@ QString GUIBackend::pluginInfo(QString pluginName) const
 		}
 	}
 	else
+	{
 		infoString.append(tr("No information found."));
-
-	DiscountMarkdownConverter dmc;
-	infoString = dmc.renderAsHtml(dmc.createDocument(infoString, DiscountMarkdownConverter::NoImagesOption));
+	}
 
 	return infoString;
 }

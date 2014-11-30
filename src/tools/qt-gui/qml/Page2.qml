@@ -122,11 +122,10 @@ Item {
 
 				anchors.fill: parent
 				anchors.margins: defaultSpacing
-				textFormat: Text.RichText
+				textFormat: Text.PlainText
 				backgroundVisible: false
 				frameVisible: false
 				readOnly: true
-				wrapMode: Text.WordWrap
 			}
 		}
 	}
