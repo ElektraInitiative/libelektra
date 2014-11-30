@@ -492,6 +492,8 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 			return -1;
 		}
 		keyDel(newParent);
+
+		return 1;
 	}
 
 #if DEBUG && VERBOSE
@@ -813,13 +815,10 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		return -1;
 	}
 
-	if (ns == KEY_NS_EMPTY || ns == KEY_NS_META)
+	if (ns == KEY_NS_META)
 	{
 		ELEKTRA_SET_ERROR(104, parentKey,
-			ns == KEY_NS_EMPTY ?
-				"empty name passed to kdbSet" :
-				"invalid key name passed to kdbSet"
-			);
+				"invalid key name passed to kdbSet");
 		return -1;
 	}
 
@@ -842,6 +841,8 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 			return -1;
 		}
 		keyDel(newParent);
+
+		return 1;
 	}
 
 #if DEBUG && VERBOSE
