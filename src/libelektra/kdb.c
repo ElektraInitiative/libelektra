@@ -473,26 +473,30 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		return -1;
 	}
 
+	Key *initialParent = keyDup (parentKey);
+
 	if (ns == KEY_NS_CASCADING)
 	{
-		Key *newParent = keyDup(parentKey);
-		keySetName(newParent, "user");
-		keyAddName(newParent, keyName(parentKey));
-		if (kdbGet(handle, ks, newParent) == -1)
+		keySetName(parentKey, "user");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbGet(handle, ks, parentKey) == -1)
 		{
-			keyDel(newParent);
+			keySetName (parentKey, keyName(initialParent));
+			keyDel(initialParent);
 			return -1;
 		}
 
-		keySetName(newParent, "system");
-		keyAddName(newParent, keyName(parentKey));
-		if (kdbGet(handle, ks, newParent) == -1)
+		keySetName(parentKey, "system");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbGet(handle, ks, parentKey) == -1)
 		{
-			keyDel(newParent);
+			keySetName (parentKey, keyName(initialParent));
+			keyDel(initialParent);
 			return -1;
 		}
-		keyDel(newParent);
 
+		keySetName (parentKey, keyName(initialParent));
+		keyDel(initialParent);
 		return 1;
 	}
 
@@ -502,8 +506,6 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 #endif
 
 	Split *split = elektraSplitNew();
-
-	Key *initialParent = keyDup (parentKey);
 
 	if(!handle || !ks)
 	{
@@ -822,26 +824,37 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		return -1;
 	}
 
+	if(!handle || !ks)
+	{
+		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
+		return -1;
+	}
+
+	Key *initialParent = keyDup(parentKey);
+
 	if (ns == KEY_NS_CASCADING)
 	{
-		Key *newParent = keyDup(parentKey);
-		keySetName(newParent, "user");
-		keyAddName(newParent, keyName(parentKey));
-		if (kdbSet(handle, ks, newParent) == -1)
+		// TODO: does not guarantee atomic commit
+		keySetName(parentKey, "user");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbGet(handle, ks, parentKey) == -1)
 		{
-			keyDel(newParent);
+			keySetName (parentKey, keyName(initialParent));
+			keyDel(initialParent);
 			return -1;
 		}
 
-		keySetName(newParent, "system");
-		keyAddName(newParent, keyName(parentKey));
-		if (kdbSet(handle, ks, newParent) == -1)
+		keySetName(parentKey, "system");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbGet(handle, ks, parentKey) == -1)
 		{
-			keyDel(newParent);
+			keySetName (parentKey, keyName(initialParent));
+			keyDel(initialParent);
 			return -1;
 		}
-		keyDel(newParent);
 
+		keySetName (parentKey, keyName(initialParent));
+		keyDel(initialParent);
 		return 1;
 	}
 
@@ -849,14 +862,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	fprintf(stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
 #endif
 
-	if(!handle || !ks)
-	{
-		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
-		return -1;
-	}
-
 	Split *split = elektraSplitNew();
-	Key *initialParent = keyDup(parentKey);
 	Key *errorKey = 0;
 
 	if(elektraSplitBuildup(split, handle, parentKey) == -1)

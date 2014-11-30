@@ -2,6 +2,16 @@
 
 #include <stdio.h>
 
+void printError(char *what, Key const* parentKey)
+{
+	printf("%s \"%s\" returned error: %s and reason %s\n",
+		what,
+		keyName(parentKey),
+		keyString(keyGetMeta(parentKey, "error/number")),
+		keyString(keyGetMeta(parentKey, "error/reason"))
+		);
+}
+
 int main()
 {
 	Key *parentKey = keyNew("", KEY_END);
@@ -9,22 +19,19 @@ int main()
 	KeySet *ks = ksNew(0, KS_END);
 	if (kdbGet(kdb, ks, parentKey) == -1)
 	{
-		printf("kdbGet empty returned error: %s\n",
-			keyString(keyGetMeta(parentKey, "error/number")));
+		printError("kdbGet", parentKey);
 	}
 	keyDel(parentKey);
 	parentKey = keyNew("meta", KEY_META_NAME, KEY_END);
 	if (kdbGet(kdb, ks, parentKey) == -1)
 	{
-		printf("kdbGet meta returned error: %s\n",
-			keyString(keyGetMeta(parentKey, "error/number")));
+		printError("kdbGet", parentKey);
 	}
 	keyDel(parentKey);
 	parentKey = keyNew("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
 	if (kdbGet(kdb, ks, parentKey) == -1)
 	{
-		printf("kdbGet cascading returned error: %s\n",
-			keyString(keyGetMeta(parentKey, "error/number")));
+		printError("kdbGet", parentKey);
 	}
 	keyDel(parentKey);
 
@@ -38,22 +45,19 @@ int main()
 	parentKey = keyNew("", KEY_END);
 	if (kdbSet(kdb, ks, parentKey) == -1)
 	{
-		printf("kdbSet empty returned error: %s\n",
-			keyString(keyGetMeta(parentKey, "error/number")));
+		printError("kdbSet", parentKey);
 	}
 	keyDel(parentKey);
 	parentKey = keyNew("meta", KEY_META_NAME, KEY_END);
 	if (kdbSet(kdb, ks, parentKey) == -1)
 	{
-		printf("kdbSet meta returned error: %s\n",
-			keyString(keyGetMeta(parentKey, "error/number")));
+		printError("kdbSet", parentKey);
 	}
 	keyDel(parentKey);
 	parentKey = keyNew("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
 	if (kdbSet(kdb, ks, parentKey) == -1)
 	{
-		printf("kdbSet cascading returned error: %s\n",
-			keyString(keyGetMeta(parentKey, "error/number")));
+		printError("kdbSet", parentKey);
 	}
 
 	ksDel(ks);

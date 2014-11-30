@@ -151,8 +151,23 @@ Backend::~Backend()
 void Backend::checkFile (std::string file) const
 {
 	typedef int (*checkFilePtr) (const char*);
-	checkFilePtr checkFileFunction = (checkFilePtr) plugins.back()->getSymbol("checkfile");
-	assert(checkFileFunction);
+	checkFilePtr checkFileFunction = 0;
+
+	for (size_t i = 0; i < plugins.size(); ++i)
+	{
+		try {
+			checkFileFunction =
+				(checkFilePtr) plugins[i]->getSymbol("checkfile");
+			break;
+		}
+		catch(MissingSymbol ms)
+		{}
+	}
+
+	if (!checkFileFunction)
+	{
+		throw MissingSymbol("No resolver with checkfile found");
+	}
 
 
 	int res = checkFileFunction(file.c_str());
