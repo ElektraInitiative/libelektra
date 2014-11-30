@@ -375,7 +375,8 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	if (fh == 0)
 	{
-		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		// ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		return 0;
 	}
 
 	/* load its contents into a string */
