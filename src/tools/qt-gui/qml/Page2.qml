@@ -23,7 +23,7 @@ Item {
 				Layout.fillWidth: true
 				wrapMode: Text.WordWrap
 				color: activePalette.text
-				text: qsTr("Please select the plugins you want to include in the backend. Make sure to add exactly one resolver and storage plugin respectively.")
+				text: qsTr("Please select the plugins you want to include in the backend. Make sure to add exactly one resolver, one storage plugin and other plugins they might need.")
 			}
 			ComboBox {
 				id: pluginDropdown

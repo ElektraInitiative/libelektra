@@ -3,8 +3,8 @@ import QtQuick 2.2
 WizardTemplate {
 	id: page3
 
-	wizardText.text: qsTr("Please enter a path to a file in the filesystem. This file is used by all plugins of this backend as fallback. " +
-						  "For user or cascading mountpoints it must be a relative path. " +
+	wizardText.text: qsTr("Please enter a path to a file in the filesystem. This file is used by all plugins of this backend. " +
+						  "File names might be absolute or relative and have a different location for user and system pathes. " +
 						  "The actual path will be located dynamically by the resolver plugin.\n\n" +
 						  "Note that you cannot undo creating the backend. If you want to remove a backend use the unmount option.")
 
