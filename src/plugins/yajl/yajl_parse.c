@@ -241,8 +241,8 @@ static int elektraYajlParseStartArray(void *ctx)
 }
 
 /**
- * @brief Remove ___empty_map if thats the only thing which would be
- *        returned.
+ * @brief Remove ___empty_map and parentKey if thats the only thing
+ *        which would be returned (e.g. on empty and non-existent files)
  *
  * @param returned to remove the key from
  */
@@ -250,30 +250,27 @@ static void elektraYajlParseSuppressEmpty(KeySet *returned, Key* parentKey)
 {
 	if (ksGetSize(returned) == 2)
 	{
-		Key *lookupKey = keyDup(parentKey);
-		keyAddBaseName(lookupKey, "___empty_map");
-		Key *toRemove = ksLookup(returned, lookupKey, KDB_O_POP);
-
 #ifdef ELEKTRA_YAJL_VERBOSE
-		if (toRemove)
+		ksRewind(returned);
+		Key *cur;
+		while((cur=ksNext(returned))!=0)
 		{
-			printf("remove %s\n", keyName(toRemove));
-		}
-		else
-		{
-			ksRewind(returned);
-			Key *cur;
-			while((cur=ksNext(returned))!=0)
-			{
-				printf ("key %s has value %s\n",
+			printf ("yajl: key %s has value %s\n",
 					keyName(cur),
 					keyString(cur));
-			}
-
-			printf("did not find %s\n", keyName(lookupKey));
-			ksRewind(returned);
 		}
+
+		ksRewind(returned);
 #endif
+
+		Key *lookupKey = keyDup(parentKey);
+		Key *toRemove = ksLookup(returned, lookupKey, KDB_O_POP);
+		if (toRemove)
+		{
+			keyDel(toRemove);
+		}
+		keyAddBaseName(lookupKey, "___empty_map");
+		toRemove = ksLookup(returned, lookupKey, KDB_O_POP);
 		if (toRemove)
 		{
 			keyDel(toRemove);
