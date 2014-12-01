@@ -158,5 +158,7 @@ BasicWindow {
 		valueTextField.undo()
 		qmlMetaKeyModel.clear()
 		selectedNode = null
+		nameTextField.readOnly = false
+		nameTextField.textColor = activePalette.text
 	}
 }

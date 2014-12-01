@@ -18,21 +18,21 @@ TreeViewModel::TreeViewModel(QObject* parent)
 {
 	Q_UNUSED(parent);
 
-	try
-	{
-		m_kdb.get(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), "", QString(e.what()), "c");
-	}
+//	try
+//	{
+//		m_kdb.get(m_keySet, "/");
+//	}
+//	catch (KDBException const& e)
+//	{
+//		emit showMessage(tr("Error"), tr("Could not read from configuration."), "", QString(e.what()), "c");
+//	}
 }
 
-TreeViewModel::TreeViewModel(KeySet& keySet)
-	: m_keySet(keySet)
-{
-	populateModel();
-}
+//TreeViewModel::TreeViewModel(KeySet& keySet)
+//	: m_keySet(keySet)
+//{
+//	populateModel();
+//}
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
 	: QAbstractListModel()

@@ -43,7 +43,7 @@ public:
 	};
 
 	explicit TreeViewModel(QObject* parent =  0);
-	explicit TreeViewModel(kdb::KeySet& keySet);
+//	explicit TreeViewModel(kdb::KeySet& keySet);
 
 	// Needed for Qt
 	TreeViewModel(TreeViewModel const& other);

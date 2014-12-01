@@ -48,6 +48,9 @@ KeyWindow {
 		accessFromSearchResults = false
 		nameTextField.undo()
 		valueTextField.undo()
+		nameTextField.readOnly = false
+		nameTextField.textColor = activePalette.text
+
 		qmlMetaKeyModel.clear()
 		selectedNode = null
 	}
