@@ -105,6 +105,7 @@ set (PLUGINS_LIST_RESOLVER
 	resolver_fm_xb_x
 	resolver_fm_xp_x
 	resolver_fm_xhp_x
+	resolver_fm_uhb_xb
 	)
 
 #
