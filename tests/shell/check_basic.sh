@@ -20,20 +20,18 @@ exit_if_fail "could not get help"
 $KDB --help >/dev/null
 exit_if_fail "could not get help"
 
-$KDB -V | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
-exit_if_fail "could not get correct version"
-
 
 echo "Testing version"
 
-$KDB --version | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
-exit_if_fail "could not get correct version"
+if [ "x$CHECK_VERSION" != "xNO" ]
 
-$KDB -V | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
-exit_if_fail "could not get correct version"
+	$KDB -V | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
+	exit_if_fail "could not get correct version"
 
-$KDB --version | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
-exit_if_fail "could not get correct version"
+	$KDB --version | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
+	exit_if_fail "could not get correct version"
+
+fi
 
 
 echo "Testing invalid"
