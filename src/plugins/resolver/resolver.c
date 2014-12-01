@@ -590,6 +590,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 	if (elektraLockMutex(parentKey) != 0)
 	{
 		elektraCloseFile(pk->fd, parentKey);
+		pk->fd = -1;
 		return -1;
 	}
 
@@ -598,6 +599,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 	{
 		elektraCloseFile(pk->fd, parentKey);
 		elektraUnlockMutex(parentKey);
+		pk->fd = -1;
 		return -1;
 	}
 
@@ -606,6 +608,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 		elektraUnlockFile(pk->fd, parentKey);
 		elektraCloseFile(pk->fd, parentKey);
 		elektraUnlockMutex(parentKey);
+		pk->fd = -1;
 		return -1;
 	}
 
@@ -738,6 +741,13 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
 {
 	int errnoSave = errno;
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
+
+	if (pk->fd != -1)
+	{
+		elektraUnlockFile(pk->fd, parentKey);
+		elektraCloseFile(pk->fd, parentKey);
+		elektraUnlockMutex(parentKey);
+	}
 
 	if (unlink (pk->tempfile) == -1)
 	{
