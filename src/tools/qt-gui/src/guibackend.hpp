@@ -23,9 +23,9 @@ public:
 
 	Q_INVOKABLE QString		mountPoints() const;
 
-	Q_INVOKABLE QStringList availablePlugins() const;
+	Q_INVOKABLE QStringList 	availablePlugins(bool includeStorage, bool includeResolver) const;
 
-	Q_INVOKABLE QStringList nameFilters();
+	Q_INVOKABLE QStringList 	nameFilters();
 
 	Q_INVOKABLE void		serialise();
 

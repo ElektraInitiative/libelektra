@@ -23,7 +23,6 @@ WizardTemplate {
 				wizardLoader.close()
 				externTreeModel.populateModel()
 				guiBackend.deleteBackend()
-				includedPluginsModel.clear()
 				loader.source = "Page1.qml"
 			}
 

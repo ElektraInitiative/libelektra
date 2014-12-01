@@ -6,6 +6,9 @@ import QtQuick.Controls.Styles 1.1
 Item {
 	id: page2
 
+	property bool includeStorage: true
+	property bool includeResolver: true
+
 	ColumnLayout {
 
 		anchors.left: parent.left
@@ -29,7 +32,7 @@ Item {
 				id: pluginDropdown
 
 				Layout.fillWidth: true
-				model: guiBackend.availablePlugins()
+				model: guiBackend.availablePlugins(includeStorage, includeResolver)
 				onCurrentTextChanged: infoText.text = guiBackend.pluginInfo(pluginDropdown.currentText)
 			}
 			Button {
@@ -48,6 +51,11 @@ Item {
 						if(!error){
 							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
 							buttonRow.nextButton.enabled = guiBackend.validated()
+
+							if(pluginDropdown.currentText.indexOf("[storage]") > -1)
+							  includeStorage = false
+							if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
+							  includeResolver = false
 						}
 					}
 				}
@@ -138,12 +146,17 @@ Item {
 
 		nextButton.onClicked: {
 			loader.source = "Page3.qml"
+			includeStorage = true
+			includeResolver = true
+			includedPluginsModel.clear()
 		}
 		cancelButton.onClicked: {
 			wizardLoader.close()
 			guiBackend.deleteBackend()
 			includedPluginsModel.clear()
 			loader.source = "Page1.qml"
+			includeStorage = true
+			includeResolver = true
 		}
 	}
 

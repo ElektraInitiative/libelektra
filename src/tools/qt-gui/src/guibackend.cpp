@@ -259,26 +259,23 @@ QString GUIBackend::pluginInfo(QString pluginName) const
 	return infoString;
 }
 
-QStringList GUIBackend::availablePlugins() const
+QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolver) const
 {
 	QStringList availPlugins;
 	Modules modules;
 	PluginPtr ptr;
+	QString type;
 
 	vector<string> pluginVector = listAllAvailablePlugins();
 
 	foreach(string s, pluginVector){
-		try
-		{
-			ptr = modules.load(s);
-		}
-		catch(NoPlugin ex)
-		{
-			break;
-		}
-
+		ptr = modules.load(s);
 		ptr->loadInfo();
-		availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(QString::fromStdString(ptr->lookupInfo("provides"))));
+		type = QString::fromStdString(ptr->lookupInfo("provides"));
+
+		if(!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver"))){
+		  availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(type));
+		}
 	}
 
 	availPlugins.sort();
@@ -289,7 +286,7 @@ QStringList GUIBackend::availablePlugins() const
 QStringList GUIBackend::nameFilters()
 {
 	QStringList nameFilters;
-	QStringList plugins = availablePlugins();
+	QStringList plugins = availablePlugins(true, false);
 
 	plugins.replaceInStrings(QRegExp("\\s\\[\\w*\\]"), "");
 
