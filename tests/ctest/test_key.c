@@ -863,6 +863,14 @@ static void test_keyNamespace()
 	succeed_if (keyIsUser (key) == 0, "empty key is not user");
 	keyDel (key);
 
+	key = keyNew("", KEY_END);
+	succeed_if (keyGetNamespace (key) == KEY_NS_EMPTY, "empty namespace not empty");
+	succeed_if (keyNameIsSystem (keyName(key)) == 0, "empty name is not system");
+	succeed_if (keyIsSystem (key) == 0, "empty key is not system");
+	succeed_if (keyNameIsUser (keyName(key)) == 0, "empty name is not user");
+	succeed_if (keyIsUser (key) == 0, "empty key is not user");
+	keyDel (key);
+
 	key = keyNew ("user", KEY_END);
 	succeed_if (keyGetNamespace (key) == KEY_NS_USER, "user namespace not KEY_NS_USER");
 	succeed_if (keyNameIsSystem (keyName(key)) == 0, "user name is not system");
