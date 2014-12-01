@@ -43,11 +43,9 @@ public:
 	};
 
 	explicit TreeViewModel(QObject* parent =  0);
-	explicit TreeViewModel(kdb::KeySet& keySet);
 
 	// Needed for Qt
 	TreeViewModel(TreeViewModel const& other);
-	~TreeViewModel();
 
 	// @return the underlying model
 	QList<ConfigNodePtr>& model()

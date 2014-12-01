@@ -44,14 +44,14 @@ HEADERS += \
 	../kdb/test.hpp \
 	../kdb/umount.hpp \
 	../kdb/validation.hpp \
-	src/markdownconverter/template/htmltemplate.h \
-	src/markdownconverter/template/template.h \
-	src/markdownconverter/discountmarkdownconverter.h \
-	src/markdownconverter/markdownconverter.h \
-	src/markdownconverter/markdowndocument.h \
-    ../kdb/list.hpp \
-    ../../libtools/include/plugins.hpp \
-    src/guibackend.hpp
+#	src/markdownconverter/template/htmltemplate.h \
+#	src/markdownconverter/template/template.h \
+#	src/markdownconverter/discountmarkdownconverter.h \
+#	src/markdownconverter/markdownconverter.h \
+#	src/markdownconverter/markdowndocument.h \
+	../kdb/list.hpp \
+	../../libtools/include/plugins.hpp \
+	src/guibackend.hpp
 
 SOURCES += \
 	src/main.cpp \
@@ -95,10 +95,10 @@ SOURCES += \
 	../kdb/test.cpp \
 	../kdb/umount.cpp \
 	../kdb/validation.cpp \
-	src/markdownconverter/template/htmltemplate.cpp \
-	src/markdownconverter/discountmarkdownconverter.cpp \
-    ../kdb/list.cpp \
-    src/guibackend.cpp
+#	src/markdownconverter/template/htmltemplate.cpp \
+#	src/markdownconverter/discountmarkdownconverter.cpp \
+	../kdb/list.cpp \
+	src/guibackend.cpp
 
 CONFIG += debug
 
@@ -130,8 +130,8 @@ OTHER_FILES += \
 	qml/MainMenuBar.qml \
 	qml/ExportDialog.qml \
 	qml/ImportDialog.qml \
-    qml/ToolTip.qml \
-    qml/TooltipCreator.js
+	qml/ToolTip.qml \
+	qml/TooltipCreator.js
 
 SUBDIRS += \
 	unittest/unittest.pro \
