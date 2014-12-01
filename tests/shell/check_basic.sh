@@ -24,13 +24,12 @@ exit_if_fail "could not get help"
 echo "Testing version"
 
 if [ "x$CHECK_VERSION" != "xNO" ]
-
+then
 	$KDB -V | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
 	exit_if_fail "could not get correct version"
 
 	$KDB --version | grep KDB_VERSION | grep $KDB_VERSION > /dev/null
 	exit_if_fail "could not get correct version"
-
 fi
 
 
