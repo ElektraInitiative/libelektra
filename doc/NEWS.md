@@ -1,13 +1,14 @@
-Prep for 0.8.10 Release
+# 0.8.10 Release
 
 - guid: e3cb90f5-86f7-4e9d-8b76-2af334c48c94
 - author: Markus Raab
 - pubDate: Sun, 30 Nov 2014 15:15:04 +0100
 
-## OpenICC / XDG Compatibility
+## XDG Compatibility
 
-Elektra now is fully XDG conformant, if the resolver with variant "x"
-is used. Following changes were necessary:
+Elektra now is
+[fully XDG 0.8](http://standards.freedesktop.org/basedir-spec/basedir-spec-0.8.html)
+compliant. Following changes were necessary:
 
 - newly created configuration files for user/ now have the permissions
   0600
@@ -15,16 +16,43 @@ is used. Following changes were necessary:
   permissions 0700
 - existing configuration files will retain their permissions.
 - The default path to store user configuration is now ~/.config
-
-- .config as default folder in HOME
-- default mode is now XDG compatible (0700 for dir 0600 for files)
-- remember mode as the file had before
-- passwd used as default resolver again
-- implement XDG_CONFIG_DIRS
-- fix empty dirs and absolute pathes in envvar
+- A new resolver variant x is introduced
+ - implements handling of XDG environment variables
+ - ignores empty dirs and absolute pathes in envvar
 - add new shell based test suite for resolver
 
-resolver_fm_xhp_x
+For example, use resolver_fm_xhp_x if you want:
+
+- f .. file based locking
+- m .. mutex based locking
+- for user configuration
+ - x .. first check XDG_CONFIG_HOME environment
+ - h .. then check HOME environment
+ - p .. then fall back to passwd
+- for system configuration
+ - x .. check all XDG_CONFIG_DIRS and falls back to /etc/xdg
+
+A lot of such resolver variants are added when -DPLUGINS=ALL is used.
+
+## OpenICC Compatibility
+
+Elektra now also implements the draft for
+[the OpenICC specification](http://www.openicc.info/wiki/index.php?title=OpenICC_Configuration_0.1).
+
+
+## Compatibility
+
+- xmltool now does not output default uid,gid and mode
+- internal "mode" meta data default changed to 0700
+- ksLookupBySpec from kdbproposal.h was removed, is now integrated into
+    ksLookup
+- extension keyNameGetNamespace was removed
+- the hosts comment format has changed
+- the default resolver has changed (uses passwd)
+- kdb::tools::Backend::Backend constructor, tryPlugin and addPlugin has changed
+ - mountname is now automatically calculated
+ - addPlugin allows us to add a KeySet to validate plugins with different
+     contracts correctly
 
 
 ## CMake
@@ -54,8 +82,13 @@ in Elektra's core library.
 
 ## Proposal
 
-Filter?
-
+- lookup options:
+ - KDB_O_SPEC uses the lookup key as specification
+ - KDB_O_CREATE creates a key if it could not be found
+- elektraKeyGetMetaKeySet creates a KeySet from meta data
+- elektraKsFilter allows us to filter a KeySet arbitrarily (not only
+    keyIsBelow in case of ksCut). It reintroduces more functional
+    programming.
 
 ## Tools
 
@@ -102,13 +135,14 @@ plugins](https://github.com/ElektraInitiative/libelektra/tree/master/src/binding
 
 ## Qt-Gui
 
+A new version 0.0.2 was released:
+
 * added Backend Wizard
 * user can hover over TreeView items and quickly see keyname, keyvalue 
   and metakeys
-* it is now possible to create and edit arrays
+* it is now easily possible to create and edit arrays
 * added header to MetaArea for better clarity
 * many small layout and view update fixes
-
 
 
 
@@ -116,27 +150,30 @@ plugins](https://github.com/ElektraInitiative/libelektra/tree/master/src/binding
 
 - C++ binding now throws bad_alloc on allocation problems (and not
   InvalidName)
-
-
-## Further stuff
-
-Preparation for 0.8.10 release:
 - fix #136
 - fix long help text in `kdb check`
+
+
+## Tooling
+
+
 - kdb now uses KDB itself:
   /sw/kdb/current/resolver .. want a different default resolver than was compiled in?
   /sw/kdb/current/format .. annoyed by dump-default format
   /sw/kdb/current/plugins .. if you always forget to add some plugins
-- C++ I/O for key(s) now allows null-terminator
-- -0 option accepted
 - -123 options for hiding nth column in `kdb mount`
 - hide warnings during script usage of `kdb mount`
+- -0 option accepted in some tools (null termination)
+
+## Further stuff
+
 - add two new error/warnings information: mountpoint and configfile
+- C++ I/O for key(s) now allows null terminator next to new-line
+    terminator
 - use signed release tags
 - fix error plugin: now use on_open/trigger_warnings to be consistent
 - fix metaset: now correctly append new key
-
-Entries for latest Elektra for wheezy
+- arrays are compiled in mingw, too
 
 
 

@@ -12,6 +12,8 @@ allow --no-env --no-arg --no-default arguments?
 
 
 
+
+
 = KDB =
 
 reversemap from file to Elektra path (#74)
@@ -23,10 +25,7 @@ kdb tools meta description files
 allow key array increments with kdb tool
 
 list existing plugins
-	which are available? (src/plugins)
-	which are installed
-	kdb pls
-	(workaround: use ls /usr/lib/elektra)
+	dynamically detect them when installed
 
 allow change of symlink (resolver, storage)
 

@@ -103,6 +103,11 @@ typedef int (*CloseMapper)(Backend *);
  * Key Flags
  *****************/
 
+enum
+{
+	KEY_EMPTY_NAME=1<<22
+};
+
 /**
  * Key Flags.
  *

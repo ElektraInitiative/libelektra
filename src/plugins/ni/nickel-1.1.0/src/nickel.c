@@ -10,6 +10,8 @@
 #include <bohr/ni.h>
 #include <bohr/ds_hash.h>
 
+#include <kdbconfig.h>
+
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
@@ -887,7 +889,7 @@ static int RecursiveWrite(Ni_node restrict n, FILE * restrict stream,
 /* Compares a key with a Ni_node_struct's name for Ds_SearchHashTable().
  */
 static int Compare(const void * restrict key, size_t key_size,
-                   const void * restrict item, size_t item_size)
+                   const void * restrict item, size_t item_size ELEKTRA_UNUSED)
 {
    const struct Ni_node_struct * n;
    n = (const struct Ni_node_struct *)item;

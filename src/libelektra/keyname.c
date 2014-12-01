@@ -673,7 +673,9 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 elektraNamespace keyGetNamespace(const Key *key)
 {
 	if (!key) return KEY_NS_NONE;
+
 	if (!key->key) return KEY_NS_EMPTY;
+	if (!strcmp(key->key, "")) return KEY_NS_EMPTY;
 
 	if (key->key[0] == '/') return KEY_NS_CASCADING;
 

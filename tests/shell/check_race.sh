@@ -18,7 +18,7 @@ fi
 SHOULD=`$RACE 20 20 400 | grep won | wc -l`
 IS=`kdb ls user/test/race/keys | wc -l`
 
-[ "x$SHOULD" = "x$IS" ] && echo "The resolver might have a race condition: $SHOULD does not equal $IS"
+[ "x$SHOULD" = "x$IS" ] && echo "warning: The resolver might have a race condition: $SHOULD does not equal $IS"
 
 $KDB rm -r user/test/race/keys
 
