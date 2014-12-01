@@ -478,7 +478,9 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		keyAddName(parentKey, keyName(initialParent));
 		if (kdbGet(handle, ks, parentKey) == -1)
 		{
-			keySetName (parentKey, keyName(initialParent));
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
 			keyDel(initialParent);
 			return -1;
 		}
@@ -487,12 +489,16 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		keyAddName(parentKey, keyName(initialParent));
 		if (kdbGet(handle, ks, parentKey) == -1)
 		{
-			keySetName (parentKey, keyName(initialParent));
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
 			keyDel(initialParent);
 			return -1;
 		}
 
-		keySetName (parentKey, keyName(initialParent));
+		elektraKeySetName(parentKey,
+				keyName(initialParent),
+				KEY_CASCADING_NAME);
 		keyDel(initialParent);
 		return 1;
 	}
@@ -836,7 +842,9 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		keyAddName(parentKey, keyName(initialParent));
 		if (kdbSet(handle, ks, parentKey) == -1)
 		{
-			keySetName (parentKey, keyName(initialParent));
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
 			keyDel(initialParent);
 			return -1;
 		}
@@ -845,12 +853,16 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		keyAddName(parentKey, keyName(initialParent));
 		if (kdbSet(handle, ks, parentKey) == -1)
 		{
-			keySetName (parentKey, keyName(initialParent));
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
 			keyDel(initialParent);
 			return -1;
 		}
 
-		keySetName (parentKey, keyName(initialParent));
+		elektraKeySetName(parentKey,
+				keyName(initialParent),
+				KEY_CASCADING_NAME);
 		keyDel(initialParent);
 		return 1;
 	}
