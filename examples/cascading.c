@@ -42,6 +42,10 @@ int main()
 		printf ("%s = %s\n", keyName(k), keyString(k));
 	}
 
+	k = keyNew("user/test/shell/somewhere/key", KEY_VALUE, "value", KEY_END);
+	ksAppendKey(ks, k);
+	keyDel(k);
+
 	parentKey = keyNew("", KEY_END);
 	if (kdbSet(kdb, ks, parentKey) == -1)
 	{

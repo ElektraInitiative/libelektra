@@ -834,7 +834,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		// TODO: does not guarantee atomic commit
 		keySetName(parentKey, "user");
 		keyAddName(parentKey, keyName(initialParent));
-		if (kdbGet(handle, ks, parentKey) == -1)
+		if (kdbSet(handle, ks, parentKey) == -1)
 		{
 			keySetName (parentKey, keyName(initialParent));
 			keyDel(initialParent);
@@ -843,7 +843,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 		keySetName(parentKey, "system");
 		keyAddName(parentKey, keyName(initialParent));
-		if (kdbGet(handle, ks, parentKey) == -1)
+		if (kdbSet(handle, ks, parentKey) == -1)
 		{
 			keySetName (parentKey, keyName(initialParent));
 			keyDel(initialParent);
