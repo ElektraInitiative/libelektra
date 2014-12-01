@@ -25,6 +25,8 @@ BasicWindow {
 	property var    selectedNode: null
 	property bool   accessFromSearchResults: false
 
+	onClosing: cancelClicked()
+
 	contents: ColumnLayout {
 		anchors.fill: parent
 		anchors.centerIn: parent
