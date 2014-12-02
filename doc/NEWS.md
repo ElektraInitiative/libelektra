@@ -24,6 +24,17 @@ compliant. Following changes were necessary:
 For example, use resolver_fm_xhp_x:
 
     kdb mount --resolver=resolver_fm_xhp_x file.dump /example dump
+    kdb file user/example
+    kdb file system/example
+
+Will show you that for both user+system the file respect XDG environment
+variables, e.g. above lines will print:
+
+    /home/m/.config/file.dump
+    /etc/xdg/file.dump
+
+Of course any attempts to get and set keys below user/example and
+system/example will also be in these files.
 
 The letters after _ describe the variant of the resolver:
 
@@ -38,25 +49,140 @@ The letters after _ describe the variant of the resolver:
 
 A lot of such resolver variants are added when -DPLUGINS=ALL is used.
 
+
+
 ## OpenICC Compatibility
 
 Elektra now also implements the draft for
 [the OpenICC specification](http://www.openicc.info/wiki/index.php?title=OpenICC_Configuration_0.1).
 
+The mount command looks like quite complicated, but it consists of
+simple parts:
+
+    kdb mount --resolver=resolver_fm_xhp_x \
+      color/settings/openicc-devices.json /org/freedesktop/openicc \
+      yajl rename cut=org/freedesktop/openicc
+
+We already know the first two lines: we also use the XDG resolver,
+because OpenICC builds on that standard. Only the file name and the path
+where it should be mounted differs.
+
+The plugin yajl is a storage plugin that reads/writes json. The plugin
+rename was the missing link to support OpenICC -- now closed by Felix
+Berlakovich. It is needed, because every OpenICC file starts like this:
+
+    { "org": { "freedesktop": { "openicc": {
+
+Because the backend is mounted at /org/freedesktop/openicc, it would
+lead to keys like /org/freedesktop/openicc/org/freedesktop/openicc
+which we obviously do not want. So we simply get rid of the common
+prefix by cutting it out using the rename plugin.
+
+Of course this renaming functionality can be used in every situation and
+is not limited to OpenICC.
+
+
+
+
+## Tools
+
+A large number of old and new tools were added, mostly for convenience
+e.g.:
+
+    kdb mount-openicc
+
+saves you from writing the long mount command we had in the previous
+section.
+
+To get a list of all tools that are installed, now the command (which is
+also an external tool and as such currently not displayed in kdb --help):
+
+    kdb list-tools
+
+is available. Do not be surprised: on typical installations this will
+be a large list. Most of the tools, however, are part of the test suite,
+which you can run using:
+
+    kdb run_all
+
+Other tools are "old friends", e.g. convert-fstab written in 2006 by Avi
+Alkalay still works:
+
+    kdb convert-fstab | kdb import system/filesystems xmltool
+
+It will parse your /etc/fstab and generate XML. This XML then can be
+imported. Other convert tools directly produce kdb commands, though.
+
+- kdb now uses KDB itself for many commands:
+  - /sw/kdb/current/resolver .. You always want a different default
+      resolver than that was compiled in as default for mount?
+  - /sw/kdb/current/format .. if annoyed by the default format dump
+      (import/export)
+  - /sw/kdb/current/plugins .. if you always forget to add some plugins
+      when mounting something.
+
+By default the plugin "sync" is added automatically, you should not
+remove it from /sw/kdb/current/plugins otherwise the next mount command
+will not add it. To preserve it use, e.g.:
+
+    kdb set user/sw/kdb/current/plugins "sync syslog"
+
+Last, but not least, kdb get now supports cascading get:
+
+    kdb get /sw/kdb/current/plugins
+
+This feature allows you to see the configuration exactly as seen by the
+application.
+
+Other options:
+
+- -123 options for hiding nth column in `kdb mount`
+- hide warnings during script usage of `kdb mount`
+- -0 option accepted in some tools (null termination)
+- Mount got a new -c option for backend configuration. For example
+  -c cut=org/freedesktop/openicc would be the parameter cut for all
+  plugins. Have a look at #146 if you want to use it.
 
 ## Compatibility
 
-- xmltool now does not output default uid,gid and mode
-- internal "mode" meta data default changed to 0700
+- xmltool now does not output default (unchanged) uid,gid and mode
 - ksLookupBySpec from kdbproposal.h was removed, is now integrated into
     ksLookup
 - extension keyNameGetNamespace was removed
 - the hosts comment format has changed
 - the default resolver has changed (uses passwd)
-- kdb::tools::Backend::Backend constructor, tryPlugin and addPlugin has changed
+- kdb::tools::Backend::Backend constructor, tryPlugin and addPlugin
+  have changed:
  - mountname is now automatically calculated
  - addPlugin allows us to add a KeySet to validate plugins with different
      contracts correctly
+- C++ binding now throws bad_alloc on allocation problems (and not
+  InvalidName)
+
+
+The core API (kdb.h), as always, stayed API/ABI compatible. The only
+changes in kdb.h is the addition of KEY_CASCADING_NAME and
+KEY_META_NAME.
+
+It allows us to create different kinds of keys:
+
+- empty names: this was always possible, because invalid names did not
+  cause keyNew to abort
+- meta names: this is a new feature that allows us to compare key names
+  with meta keys
+- cascading names: names starting with / have the special meaning that
+  they do not specify which namespace they have. When such names are
+  used for
+  - kdbGet() and kdbSet() keys are retrieved from all namespaces
+  - ksLookup() keys are searched in all namespaces
+  - ksLookupByName() is now just a wrapper for ksLookup().
+      The method does not do much except creating a key and passing
+      that to ksLookup().
+
+Usage in C is (it is, of course, available in all bindings, too):
+
+    Key *c = keyNew("/org/freedesktop", KEY_CASCADING_NAME, KEY_END);
+    Key *m = keyNew("comment/#0", KEY_META_NAME, KEY_END);
 
 
 ## CMake
@@ -65,7 +191,6 @@ It is now possible to remove a plugin/binding/tools by prefixing a name
 with "-".
 - allow to use -element syntax in TOOLS, BINDINGS and PLUGINS to remove
   it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-xmltool"
-
 
 
 ## Improved comments
@@ -78,11 +203,13 @@ preserve which comment started with which -- and even better it can be
 programmatically checked using the meta data.
 
 The hosts plugin now seperates from ipv4 and ipv6 which makes the host
-names canonical.
+names canonical again.
 
 Additionally, a small API emerges for specific meta-data operations.
 These operations will be moved to a separate library and will not stay
 in Elektra's core library.
+
+
 
 ## Proposal
 
@@ -93,31 +220,10 @@ in Elektra's core library.
 - elektraKsFilter allows us to filter a KeySet arbitrarily (not only
     keyIsBelow in case of ksCut). It reintroduces more functional
     programming.
-
-## Tools
-
--c option for backend configuration
-
-
-
-## Reintroduce namespaces
-
-In one of the next versions of Elektra we will introduce new namespaces.
-
-
-## Key Names
-
-Different kinds of keys can now created:
-
-- empty names: this was always possible, because invalid names did not
-  cause keyNew to abort
-- meta names: this is a new feature that allows us to compare key names
-  with meta keys
-- cascading names: names starting with / have the special meaning that
-  they do not specify which namespace they have. When such names are
-  used for
-  - kdbGet() and kdbSet() keys are retrieved from all namespaces
-  - ksLookup() keys are searched in all namespaces
+- keyGetNamespace was reintroduced. In one of the next versions of
+  Elektra we will introduce new namespaces. keyGetNamespace allows the
+  compiler to output a warning when some namespaces are not handled in
+  your C/C++ code.
 
 
 
@@ -126,22 +232,20 @@ Different kinds of keys can now created:
 Elektra now fully supports applications written in Java and also Plugins
 written in the same language.
 
-The [new
-binding was developed using jna.](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/jna)
-
-For the [plugin interface
-JNI](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/jni)
+The
+[new binding was developed using jna.](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/jna)
+For the
+[plugin interface JNI](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/jni)
 was used.
-
-We developed already [some
-plugins](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/jna/elektra/plugin).
+We developed already
+[some plugins](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/jna/elektra/plugin).
 
 
 ## Qt-Gui
 
-A new version 0.0.2 was released:
+Raffael Pancheri released the version 0.0.2:
 
-* added Backend Wizard
+* added Backend Wizard for mounting
 * user can hover over TreeView items and quickly see keyname, keyvalue 
   and metakeys
 * it is now easily possible to create and edit arrays
@@ -149,35 +253,21 @@ A new version 0.0.2 was released:
 * many small layout and view update fixes
 
 
-
-## Small fixes
-
-- C++ binding now throws bad_alloc on allocation problems (and not
-  InvalidName)
-- fix #136
-- fix long help text in `kdb check`
-
-
-## Tooling
-
-
-- kdb now uses KDB itself:
-  /sw/kdb/current/resolver .. want a different default resolver than was compiled in?
-  /sw/kdb/current/format .. annoyed by dump-default format
-  /sw/kdb/current/plugins .. if you always forget to add some plugins
-- -123 options for hiding nth column in `kdb mount`
-- hide warnings during script usage of `kdb mount`
-- -0 option accepted in some tools (null termination)
-
-## Further stuff
+## Further stuff and small fixes
 
 - add two new error/warnings information: mountpoint and configfile
 - C++ I/O for key(s) now allows null terminator next to new-line
     terminator
-- use signed release tags
 - fix error plugin: now use on_open/trigger_warnings to be consistent
 - fix metaset: now correctly append new key
 - arrays are compiled in mingw, too
+- fix #136
+- fix long help text in `kdb check`
+- use signed release tags
+
+
+
+
 
 
 
