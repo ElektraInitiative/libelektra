@@ -21,15 +21,19 @@ compliant. Following changes were necessary:
  - ignores empty dirs and absolute pathes in envvar
 - add new shell based test suite for resolver
 
-For example, use resolver_fm_xhp_x if you want:
+For example, use resolver_fm_xhp_x:
+
+    kdb mount --resolver=resolver_fm_xhp_x file.dump /example dump
+
+The letters after _ describe the variant of the resolver:
 
 - f .. file based locking
 - m .. mutex based locking
-- for user configuration
+- for user configuration (after next _)
  - x .. first check XDG_CONFIG_HOME environment
  - h .. then check HOME environment
  - p .. then fall back to passwd
-- for system configuration
+- for system configuration (after next _)
  - x .. check all XDG_CONFIG_DIRS and falls back to /etc/xdg
 
 A lot of such resolver variants are added when -DPLUGINS=ALL is used.
