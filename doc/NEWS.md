@@ -1,8 +1,10 @@
 # 0.8.10 Release
 
-- guid: e3cb90f5-86f7-4e9d-8b76-2af334c48c94
+- guid: 6ce57ecf-420a-4a31-821e-1c5fe5532eb4
 - author: Markus Raab
-- pubDate: Sun, 30 Nov 2014 15:15:04 +0100
+- pubDate: Tue, 02 Dec 2014 11:37:51 +0100
+
+
 
 ## XDG Compatibility
 
@@ -100,7 +102,8 @@ also an external tool and as such currently not displayed in kdb --help):
     kdb list-tools
 
 is available. Do not be surprised: on typical installations this will
-be a large list. Most of the tools, however, are part of the test suite,
+be a large list. You can run each of these tools by using kdb <command>.
+Most of the tools, however, are part of the test suite,
 which you can run using:
 
     kdb run_all
@@ -202,8 +205,23 @@ both ; and # for comments. With the new comments it is possible to
 preserve which comment started with which -- and even better it can be
 programmatically checked using the meta data.
 
+To mount it use:
+
+    kdb mount /etc/hosts system/hosts hosts
+
 The hosts plugin now seperates from ipv4 and ipv6 which makes the host
-names canonical again.
+names canonical again, e.g.:
+
+    kdb get system/hosts/ipv4/localhost
+    kdb get system/hosts/ipv6/localhost
+
+To access the inline-comment, use:
+
+    kdb getmeta system/hosts/ipv4/localhost "comment/#0"
+
+For other meta information, see:
+
+    kdb lsmeta system/hosts/ipv4/localhost 
 
 Additionally, a small API emerges for specific meta-data operations.
 These operations will be moved to a separate library and will not stay
@@ -264,6 +282,34 @@ Raffael Pancheri released the version 0.0.2:
 - fix #136
 - fix long help text in `kdb check`
 - use signed release tags
+
+
+## Get It! ##
+
+You can download the release from
+[here](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.10.tar.gz)
+
+- size: 1915277
+- md5sum: 2b16a4b555bc187562a0b38919d822a1
+- sha1: 08b1d0139fc5eb0d03c52408478e68b91b1825dc
+- sha256: 526e2ed61e87d89966eb36ddad78d8139b976e01ce18aab340d8a1df47132355
+
+already built API-Docu can be found
+[here](http://doc.libelektra.org/api/0.8.10/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[new RSS feed](http://www.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+
+For more information, see http://www.libelektra.org
+
+Best regards,
+Markus
+
 
 
 
@@ -459,6 +505,11 @@ For more information, see http://www.libelektra.org
 
 Best regards,
 Markus
+
+
+
+
+
 
 
 # 0.8.8 Release

@@ -61,7 +61,7 @@ commands below work for copy&paste:
 
 == Tag the version ==
 
- git tag --sign -f $VERSION
+ git tag --sign -f $VERSION -m "Release $VERSION"
 
 
 == Prepare Source Package ==
@@ -73,7 +73,7 @@ Unpack + compile (with all available plugins) + test those sources:
  tar xvzf elektra-$VERSION.tar.gz && mkdir build
  cd ~build/build && ~e/scripts/configure-debian-wheezy ../elektra-$VERSION && make -j 20 && make run_all && make run_memcheck
 
-Now copy the packages to ftp (stay in same folder):
+Now copy the packages to ftp:
  cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
  cp ~build/elektra-$VERSION.tar.gz.hashsum ~elektra-ftp/releases
 
@@ -101,7 +101,7 @@ Now move and install:
 
 
 Run some basic commands, at least:
- kdb --version && kdb test_key && man kdb
+ kdb --version
 
 Run local tests:
  kdb run_all
@@ -141,7 +141,7 @@ src/tests/test2 Elektra
 
 And the API docu:
  mkdir ~elektra-doc/api/$VERSION/
- cd ~build && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
+ cd ~build && rm -rf doc && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
