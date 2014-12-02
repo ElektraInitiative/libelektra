@@ -7,12 +7,11 @@
 ##
 ## The correct way to use it is:
 ##
-## $ ./inittab-convert > init.xml
-## # kdb import init.xml
+## # kdb convert-inittab | kdb import system/init xmltool
 ##
 ## To make tests you can do:
 ##
-## $ ROOT=user/test ./inittab-convert > init.xml
+## $ ROOT=user/test kdb convert-inittab > init.xml
 ##
 ## Avi Alkalay <avi@unix.sh>
 ## March 2004

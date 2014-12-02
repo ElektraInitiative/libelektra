@@ -7,13 +7,12 @@
 ##
 ## The correct way to run it is:
 ##
-## # ./convert-fstab > fstab.xml
-## # kdb import fstab.xml
+## # kdb convert-fstab | kdb import system/filesystems xmltool
 ##
 ##
 ## To make tests you can do:
 ##
-## $ ROOT=user/test ./convert-fstab
+## $ ROOT=user/test kdb convert-fstab
 ##
 ## Avi Alkalay <avi@unix.sh>
 ## April 2004

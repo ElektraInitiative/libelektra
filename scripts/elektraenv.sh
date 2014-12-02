@@ -1,37 +1,37 @@
 #!/bin/sh
 
 ###########################################################################
-##
-## This is a /etc/profile.d script to set user environment and aliases
-## based on Elektra keys under 'user/env'.
-##
-## Bellow user/env there must be three priorities for environment
-## variables:
-##
-##     user/env/env1
-##     user/env/env2
-##     user/env/env3
-##
-## You should distribute your environment variables according to their
-## dependencies. For example, if we want to
-## set PATH as $JAVA_HOME/bin:$PATH, we'll have to set
-##
-##     user/env/env1/JAVA_HOME
-##     user/env/env2/PATH
-##
-## This way it is guaranteed that the variables under user/env/env1 are
-## set before those under user/env/env2, and before those under
-## user/env/env3
-##
-## The folder user/env/alias contains keys to define shell aliases.
-## For instance user/env/alias/ls may contain 'ls -Fh', to set an alias
-## to the 'ls' command.
-##
-## Avi Alkalay <avi at unix dot sh>
-## April 2004
-##
-## $Id$
-##
+#
+# This is a /etc/profile.d script to set user environment and aliases
+# based on Elektra keys under 'user/env'.
+#
+# Bellow user/env there must be three priorities for environment
+# variables:
+#
+#     user/env/env1
+#     user/env/env2
+#     user/env/env3
+#
+# You should distribute your environment variables according to their
+# dependencies. For example, if we want to
+# set PATH as $JAVA_HOME/bin:$PATH, we'll have to set
+#
+#     user/env/env1/JAVA_HOME
+#     user/env/env2/PATH
+#
+# This way it is guaranteed that the variables under user/env/env1 are
+# set before those under user/env/env2, and before those under
+# user/env/env3
+#
+# The folder user/env/alias contains keys to define shell aliases.
+# For instance user/env/alias/ls may contain 'ls -Fh', to set an alias
+# to the 'ls' command.
+#
+# Avi Alkalay <avi at unix dot sh>
+# April 2004
+#
+# $Id$
+#
 ###########################################################################
 
 
@@ -56,15 +56,15 @@ readEnvTree() {
 			fi
 			# This stuff is so complicated, with sed etc, because
 			# we need to superescape a '\$' for envs like PS1
-			echo -n "export "
-			$KDB get -s $key | sed -e 's/\([^\\]\)\\\$/\1\\\\\$/g;'
+			echo -n "export `basename $key`="
+			$KDB get $key | sed -e 's/\([^\\]\)\\\$/\1\\\\\$/g;'
 		done
 	done
 
 	echo
 	echo "# Aliases"
 	$KDB ls $1/alias 2>/dev/null | while read key; do
-		echo alias `$KDB get -s $key`
+		echo alias `basename $key`"='"`$KDB get -n $key`"'"
 	done
 }
 
@@ -79,7 +79,7 @@ readEnvTree() {
 
 readEnvTree system/env > $FILE
 (echo; echo; echo) >> $FILE
-readEnvTree user:$USER/env >> $FILE
+readEnvTree user/env >> $FILE
 
 # Execute it
 [ -f $FILE ] && . $FILE
