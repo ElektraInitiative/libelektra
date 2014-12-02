@@ -56,7 +56,7 @@ Check if [doc/todo/API] is fulfilled
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.8.9
+ export VERSION=0.8.10
 
 
 == Tag the version ==
