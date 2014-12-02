@@ -24,6 +24,8 @@ public class Key {
 	public static final int KEY_DIR=1<<14;
 	public static final int KEY_META=1<<15;
 	public static final int KEY_NULL=1<<16;
+	public static final int KEY_CASCADING_NAME=1<<20;
+	public static final int KEY_META_NAME=1<<21;
 
 	// exceptions
 	public class KeyException extends java.lang.RuntimeException{}
