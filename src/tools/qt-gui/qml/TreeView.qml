@@ -84,7 +84,7 @@ ScrollView {
 							focus: true
 							hoverEnabled: true
 //							drag.target: parent
-							onReleased: Drag.cancel()
+//							onReleased: Drag.cancel()
 
 							onPressed: {
 								if(mouse.button == Qt.LeftButton){
@@ -171,6 +171,7 @@ ScrollView {
 										if(model.childCount > 0 && !model.childrenHaveNoChildren){
 											itemLoader.expanded = !itemLoader.expanded
 											model.isExpanded = itemLoader.expanded
+											keyAreaView.selection.clear()
 										}
 									}
 								}
