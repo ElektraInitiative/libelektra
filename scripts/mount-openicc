@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -z "$KDB" ]; then
+	KDB=kdb
+fi
+
+$KDB mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc

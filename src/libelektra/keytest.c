@@ -499,6 +499,8 @@ int keyIsString(const Key *key)
 
 
 /**
+ * @internal
+ *
  * Compare 2 keys.
  *
  * The returned flags bit array has 1s (differ) or 0s (equal) for each key
@@ -534,15 +536,15 @@ if (changes & KEY_UID)
  * 
  * @par Example of very powerful specific Key lookup in a KeySet:
  * @code
-KDB *handle = kdbOpen();
+Key *base = keyNew ("/sw/MyApp/something", KEY_END);
+KDB *handle = kdbOpen(base);
 KeySet *ks=ksNew(0, KS_END);
-Key *base = keyNew ("user/sw/MyApp/something", KEY_END);
 Key *current;
 uint32_t match;
 uint32_t interests;
 
 
-kdbGetByName(handle, ks, "user/sw/MyApp", 0);
+kdbGet(handle, ks, base);
 
 // we are interested only in key type and access permissions
 interests=(KEY_TYPE | KEY_MODE);
@@ -572,9 +574,9 @@ while ((current=ksNext(ks))) {
 	// continue walking in the KeySet....
 }
 
-keyDel(base);
 ksDel(ks);
-kdbClose (handle);
+kdbClose (handle, base);
+keyDel(base);
  * @endcode
  * 
  * @return a bit array pointing the differences

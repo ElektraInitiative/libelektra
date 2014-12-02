@@ -13,12 +13,12 @@ int main()
 	keySetName(key, "user/test/myapp");
 	kdbGet(handle, myConfig, key);
 
-	// check for errors by in key
+	// check for errors in key
 	keyDel(key);
 
 	key = ksLookupByName(myConfig,"/test/myapp/key", 0);
+
 	// check if key is not 0 and work with it...
-	
 	if(key)
 	{
 		printf("%s\n", keyString(key));

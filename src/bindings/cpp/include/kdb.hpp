@@ -152,23 +152,8 @@ inline void KDB::close (Key & errorKey) throw()
  */
 inline int KDB::get (KeySet & returned, std::string const & keyname)
 {
-	int ret=0;
-	if (keyname[0] != '/')
-	{
-		Key parentKey (keyname.c_str(), KEY_END);
-		ret += get (returned, parentKey);
-	}
-	else
-	{
-		std::string userKeyname = "user" + keyname;
-		Key userParentKey (userKeyname.c_str(), KEY_END);
-		ret += get (returned, userParentKey);
-
-		std::string systemKeyname = "system" + keyname;
-		Key systemParentKey (systemKeyname.c_str(), KEY_END);
-		ret += get (returned, systemParentKey);
-	}
-	return ret;
+	Key parentKey (keyname.c_str(), KEY_CASCADING_NAME, KEY_END);
+	return get(returned, parentKey);
 }
 
 /**
@@ -209,23 +194,8 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
  */
 inline int KDB::set (KeySet & returned, std::string const & keyname)
 {
-	int ret = 0;
-	if (keyname[0] != '/')
-	{
-		Key parentKey (keyname.c_str(), KEY_END);
-		ret += set (returned, parentKey);
-	}
-	else
-	{
-		std::string userKeyname = "user" + keyname;
-		Key userParentKey (userKeyname.c_str(), KEY_END);
-		ret += set (returned, userParentKey);
-
-		std::string systemKeyname = "system" + keyname;
-		Key systemParentKey (systemKeyname.c_str(), KEY_END);
-		ret += set (returned, systemParentKey);
-	}
-	return ret;
+	Key parentKey (keyname.c_str(), KEY_CASCADING_NAME, KEY_END);
+	return set (returned, parentKey);
 }
 
 /**

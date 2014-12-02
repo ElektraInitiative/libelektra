@@ -405,7 +405,7 @@ ssize_t keySetName(Key *key, const char *newName)
 }
 
 ssize_t elektraKeySetName(Key *key, const char *newName,
-		enum elektraNameOptions options)
+		option_t options)
 {
 	size_t length;
 	size_t rootLength, userLength, systemLength, ownerLength;
@@ -426,7 +426,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	}
 
 	rootLength=keyNameGetFullRootNameSize(newName)-1;
-	if (!(options & KDB_O_CASCADING_NAME) && !rootLength)
+	if (!(options & KEY_CASCADING_NAME) && !rootLength)
 	{
 		return -1;
 	}
@@ -436,12 +436,12 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	
 	if (ownerLength>0) --ownerLength;
 
-	if ((options & KDB_O_EMPTY_NAME) &&
+	if ((options & KEY_EMPTY_NAME) &&
 		(!strcmp(newName, "")))
 	{
 		return elektraFinalizeEmptyName(key);
 	}
-	if ((options & KDB_O_CASCADING_NAME) &&
+	if ((options & KEY_CASCADING_NAME) &&
 		(newName[0] == '/'))
 	{
 		if (!strcmp(newName, "/"))
@@ -455,7 +455,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		/* handle cascading key names */
 		rootLength = 1;
 	}
-	else if (options & KDB_O_META_NAME)
+	else if (options & KEY_META_NAME)
 	{
 		size_t size = 0;
 		p=keyNameGetOneLevel(newName,&size);
@@ -537,7 +537,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	key->key[rootLength-1] = '\0';
 
 	size_t size = 0;
-	if ((options & KDB_O_CASCADING_NAME) &&
+	if ((options & KEY_CASCADING_NAME) &&
 		(newName[0] == '/'))
 	{
 		p = (char*)newName;
@@ -650,6 +650,41 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 
 	return length;
 }
+
+
+/**
+ * For currently valid namespaces see #elektraNamespace.
+ *
+ * @version 0.8.10
+ * Added method to kdbproposal.h
+ *
+ * @note This method might be enhanced. You do not have any guarantee
+ * that, when for a specific name #KEY_NS_META
+ * is returned today, that it still will be returned after the next
+ * recompilation. So make sure that your compiler gives you a warning
+ * for unhandled switches (gcc: -Wswitch or -Wswitch-enum if you
+ * want to handle default) and look out for those warnings.
+ *
+ * @param key the key object to work with
+ * @return the namespace of a key.
+ * @ingroup keyname
+ *
+ */
+elektraNamespace keyGetNamespace(const Key *key)
+{
+	if (!key) return KEY_NS_NONE;
+
+	if (!key->key) return KEY_NS_EMPTY;
+	if (!strcmp(key->key, "")) return KEY_NS_EMPTY;
+
+	if (key->key[0] == '/') return KEY_NS_CASCADING;
+
+	if (keyIsUser (key)) return KEY_NS_USER;
+	if (keyIsSystem (key)) return KEY_NS_SYSTEM;
+
+	return KEY_NS_META;
+}
+
 
 
 

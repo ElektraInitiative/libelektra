@@ -24,6 +24,8 @@ int MetaGetCommand::execute (Cmdline const& cl)
 	KeySet conf;
 	Key parentKey(keyname, KEY_END);
 	kdb.get(conf, parentKey);
+	printWarnings(cerr,parentKey);
+
 	Key k = conf.lookup(keyname);
 
 	if (!k)

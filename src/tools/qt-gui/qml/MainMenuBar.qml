@@ -3,107 +3,107 @@ import QtQuick.Controls 1.1
 
 MenuBar {
 
-    Menu {
-        id:dbdatabase
-        title: qsTr("&Database")
+	Menu {
+		id:dbdatabase
+		title: qsTr("&Database")
 
-        MenuItem {
-            id:dbImport
-            action: importAction
-        }
-        MenuItem {
-            id:dbExport
-            action: exportAction
-        }
+		MenuItem {
+			id:dbImport
+			action: importAction
+		}
+		MenuItem {
+			id:dbExport
+			action: exportAction
+		}
 
-        MenuSeparator{}
+		MenuSeparator{}
 
-        MenuItem {
-            id:dbCreateBackend
-            action: createBackendAction
-        }
-        MenuItem {
-            id:dbUnmountBackend
-            action: unmountBackendAction
-        }
+		MenuItem {
+			id:dbCreateBackend
+			action: createBackendAction
+		}
+		MenuItem {
+			id:dbUnmountBackend
+			action: unmountBackendAction
+		}
 
-        MenuSeparator{}
+		MenuSeparator{}
 
-        MenuItem {
-            id:dbExit
-            text: qsTr("Exit")
-            shortcut: StandardKey.Quit
-            onTriggered: {
-                if(!undoManager.isClean())
-                    exitDialog.open()
-                else
-                    Qt.quit()
-            }
-        }
-    }
+		MenuItem {
+			id:dbExit
+			text: qsTr("Exit")
+			shortcut: StandardKey.Quit
+			onTriggered: {
+				if(!undoManager.isClean())
+					exitDialog.open()
+				else
+					Qt.quit()
+			}
+		}
+	}
 
-    Menu {
-        id:edit
-        title: qsTr("&Edit")
+	Menu {
+		id:edit
+		title: qsTr("&Edit")
 
-        MenuItem {
-            id:edUndo
-            action: undoAction
-        }
-        MenuItem {
-            id:edRedo
-            action: redoAction
-        }
+		MenuItem {
+			id:edUndo
+			action: undoAction
+		}
+		MenuItem {
+			id:edRedo
+			action: redoAction
+		}
 
-        MenuSeparator{}
+		MenuSeparator{}
 
-        Menu {
-            id:edNew
-            title: qsTr("New")
+		Menu {
+			id:edNew
+			title: qsTr("New")
 
-            MenuItem {
-                id:edNewKey
-                action: newKeyAction
-            }
-            MenuItem {
-                id:edNewArray
-                action: newArrayAction
-            }
-        }
+			MenuItem {
+				id:edNewKey
+				action: newKeyAction
+			}
+			MenuItem {
+				id:edNewArray
+				action: newArrayAction
+			}
+		}
 
-        MenuItem {
-            id:edEdit
-            action: editAction
-        }
+		MenuItem {
+			id:edEdit
+			action: editAction
+		}
 
-        MenuSeparator{}
+		MenuSeparator{}
 
-        MenuItem {
-            id:edCut
-            action: cutAction
-        }
-        MenuItem {
-            id:edCopy
-            action: copyAction
-        }
-        MenuItem {
-            id:edPaste
-            action: pasteAction
-        }
-        MenuItem {
-            id:edDelete
-            action: deleteAction
-        }
-    }
+		MenuItem {
+			id:edCut
+			action: cutAction
+		}
+		MenuItem {
+			id:edCopy
+			action: copyAction
+		}
+		MenuItem {
+			id:edPaste
+			action: pasteAction
+		}
+		MenuItem {
+			id:edDelete
+			action: deleteAction
+		}
+	}
 
-    Menu {
-        id:about
-        title: qsTr("&About")
-        MenuItem {
-            text: qsTr("About Elektra Editor")
-            action: aboutAction
-        }
-    }
+	Menu {
+		id:about
+		title: qsTr("&About")
+		MenuItem {
+			text: qsTr("About Elektra Editor")
+			action: aboutAction
+		}
+	}
 }
 
 

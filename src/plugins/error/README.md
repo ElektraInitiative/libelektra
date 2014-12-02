@@ -8,19 +8,22 @@
 
 ## Introduction ##
 
-Some plugins rarely return error codes in some situations, e.g. writing
+Plugins (should) rarely return an error or warnings, e.g. writing
 the configuration basically only fails on filesystem problems. Such
-behaviour is difficult to produce for test cases.
+behaviour is difficult to produce for tests.
 
-This plugin tackles this issue by yielding errors on command.
+This plugin tackles this issue by yielding error/warnings on request.
 
 ## Usage ##
 
 ### by meta data ###
 
-Mount this plugin additionally to resolver or storage.
+Mount this plugin additionally with an working resolver and an storage
+e.g.:
 
-When following meta key is present in the keyset:
+	kdb mount error.dump /error error dump
+
+When following meta key is present during storing (kdbSet()) the keyset:
 
 	trigger/warnings
 
@@ -31,14 +34,45 @@ following meta key is present:
 
 the plugin will return with an error.
 
-The value of the meta data contains the error/warning number.
+The value of the meta data needs to contain the number of the requested
+error or warning.
 
-So errors can be injected directly with the kdb tool:
 
-	kdb setmeta $ROOT/error_trigger trigger/error 10
+So an error and warnings can be injected directly with the kdb tool.
+E.g. the warning number 3:
+
+	kdb setmeta system/error/key trigger/warnings 3
+
+or the error number 10 (will not modify the KDB because kdbSet() will
+fail for the error plugin then):
+
+	kdb setmeta user/error/key trigger/error 10
+
 
 
 ### by config ###
 
 To yield an error in kdbOpen() the meta data approach does not work. So
 the plugin also can yield warning/errors using configuration.
+
+To do that, configure the plugin using:
+
+	on_open/warnings
+	on_open/error
+
+E.g. you can use:
+
+	kdb mount error.dump /error error on_open/error=10 dump
+
+Then you get an error on any access, e.g.:
+
+	kdb ls system/error
+
+Will yield error #63:
+
+	Description: Tried to get a key from a missing backend
+	Mountpoint: system/error
+
+because the opening of the plugin failed (resulting to a missing
+backend).
+

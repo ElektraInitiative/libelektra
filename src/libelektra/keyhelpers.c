@@ -468,52 +468,6 @@ ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize)
 
 
 
-
-/**
- * @internal
- *
- * Return the namespace of a key name.
- *
- * Currently valid namespaces are KeyNamespace::KEY_NS_SYSTEM and KeyNamespace::KEY_NS_USER.
- *
- * @param keyName the name to deduce the namespace from
- * @return KeyNamespace::KEY_NS_SYSTEM, KeyNamespace::KEY_NS_USER
- * @return 0 for no valid namespace found (key has no name)
- * @see keyGetNamespace(), keyIsUser(), keyIsSystem()
- * @see #KeyNamespace
- * @ingroup keytest
- *
- */
-int keyNameGetNamespace(const char *name)
-{
-	if (keyNameIsSystem(name)) return KEY_NS_SYSTEM;
-	if (keyNameIsUser(name)) return KEY_NS_USER;
-	return 0;
-}
-
-
-
-/**
- * @internal
- *
- * Return the namespace of a key
- *
- * Currently valid namespaces are KeyNamespace::KEY_NS_SYSTEM and KeyNamespace::KEY_NS_USER.
- *
- * @param key the key object to work with
- * @return 0
- * @see keyIsUser(), keyIsSystem()
- * @ingroup keytest
- *
- */
-int keyGetNamespace(const Key *key)
-{
-	if (keyIsUser (key)) return KEY_NS_USER;
-	else if (keyIsSystem (key)) return KEY_NS_SYSTEM;
-	else return 0;
-}
-
-
 /**
  * @internal
  *
@@ -580,7 +534,7 @@ void keyVInit (Key *key, const char *name, va_list va)
 	int valueSizeChanged = 0;
 	size_t valueSize = 0;
 	char *owner = 0;
-	enum elektraNameOptions nameOptions = 0;
+	option_t nameOptions = 0;
 	void (*p) (void) = 0;
 
 	if (!key) return;
@@ -649,20 +603,20 @@ void keyVInit (Key *key, const char *name, va_list va)
 					/*First parameter is name*/
 					keySetMeta (key, value, va_arg(va,char *));
 					break;
-				case KDB_O_CASCADING_NAME:
-					nameOptions |= KDB_O_CASCADING_NAME;
+				case KEY_CASCADING_NAME:
+					nameOptions |= KEY_CASCADING_NAME;
 					break;
-				case KDB_O_META_NAME:
-					nameOptions |= KDB_O_META_NAME;
+				case KEY_META_NAME:
+					nameOptions |= KEY_META_NAME;
 					break;
-				case KDB_O_EMPTY_NAME:
+				case KEY_EMPTY_NAME:
 					/* actually useless in current
 					 * implementation, empty name
 					 * is ok anyway. Maybe if error
 					 * handling is visible to user
 					 * in future the option still
 					 * might be interesting */
-					nameOptions |= KDB_O_EMPTY_NAME;
+					nameOptions |= KEY_EMPTY_NAME;
 					break;
 				default:
 #if DEBUG

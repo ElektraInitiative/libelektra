@@ -6,7 +6,7 @@ find_package (Lua52)
 if (NOT LUA52_FOUND)
 	remove_binding(swig_lua "lua52 not found")
 else()
-	message("-- Include Binding swig_lua")
+	message(STATUS "Include Binding swig_lua")
 
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)

@@ -27,11 +27,6 @@ extern "C" {
 #endif
 
 
-// is this needed?
-Key *ksPrev(KeySet *ks);
-Key *ksPopAtCursor(KeySet *ks, cursor_t c);
-Key *ksLookupBySpec(KeySet *ks, Key *specKey);
-
 // is the unescaped name useful for applications?
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
@@ -52,13 +47,30 @@ enum elektraLockOptions
 	KEY_LOCK_META=1<<19
 };
 
-enum elektraNameOptions
+enum elektraLookupOptions
 {
-	KDB_O_CASCADING_NAME=1<<20,
-	KDB_O_META_NAME=1<<21,
-	KDB_O_EMPTY_NAME=1<<22
-
+	KDB_O_SPEC=1<<15,
+	KDB_O_CREATE=1<<16
 };
+
+/**
+ * Elektra currently supported Key namespaces.
+ *
+ * @ingroup keyname
+ * @see kdbGet(), keyGetNamespace()
+ */
+typedef enum
+{
+	KEY_NS_NONE=0,          ///< no key given as parameter to keyGetNamespace()
+	KEY_NS_EMPTY=1,         ///< key name was empty, e.g. invalid key name
+	KEY_NS_META=1<<1,       ///< meta key, i.e. any key name not under other categories
+	KEY_NS_CASCADING=1<<2,  ///< cascading key, starts with /, abstract name for any of the namespaces below
+	KEY_NS_USER=1<<3,       ///< user key in the home directory of the current user
+	KEY_NS_SYSTEM=1<<4      ///< system key not in the home directory, shared for a computer system
+} elektraNamespace;
+
+elektraNamespace keyGetNamespace(Key const* key);
+
 
 // alternative to keyAddBaseName (adds full name)
 ssize_t keyAddName(Key *key, const char *addName);
@@ -69,8 +81,20 @@ int keyLock(Key *key,
 
 // this might become the new keySetName
 ssize_t elektraKeySetName(Key *key, const char *newName,
-	/*option_t*/ enum elektraNameOptions options);
+	option_t options);
 
+Key *elektraArrayGetNextKey(KeySet *arrayKeys);
+KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
+
+KeySet *elektraKeyGetMetaKeySet(const Key *key);
+
+int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
+
+KeySet* ksDeepDup(const KeySet *source);
+
+// is this needed? -> rather not
+Key *ksPrev(KeySet *ks);
+Key *ksPopAtCursor(KeySet *ks, cursor_t c);
 
 #ifdef __cplusplus
 }

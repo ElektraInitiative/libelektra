@@ -97,34 +97,39 @@
 thread1
 {
 	KDB * h;
-	h = kdbOpen(0);
+	h = kdbOpen(parent);
 	// fetch keys and work with them
-	kdbClose(h, 0);
+	kdbClose(h, parent);
 }
 thread2
 {
 	KDB * h;
-	h = kdbOpen(0);
+	h = kdbOpen(parent);
 	// fetch keys and work with them
-	kdbClose(h, 0);
+	kdbClose(h, parent);
 }
  * @endcode
  *
- * You don't need to use the kdbOpen() if you only want to
+ * You don't need kdbOpen() if you only want to
  * manipulate plain in-memory Key or KeySet objects.
  *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * @param errorKey the key which holds errors and warnings which were issued
  * @see kdbGet(), kdbClose() to end all affairs to the key database.
- * @return a KDB pointer on success
- * @return NULL on failure
+ * @retval handle on success
+ * @retval NULL on failure
  * @ingroup kdb
  */
 KDB * kdbOpen(Key *errorKey)
 {
 	KDB *handle;
 	KeySet *keys;
+
+	if (!errorKey)
+	{
+		return 0;
+	}
 
 	handle = elektraCalloc(sizeof(struct _KDB));
 
@@ -241,8 +246,8 @@ KDB * kdbOpen(Key *errorKey)
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
  * @param errorKey the key which holds error information
- * @return 0 on success
- * @return -1 on NULL pointer
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
  * @ingroup kdb
  */
 int kdbClose(KDB *handle, Key *errorKey)
@@ -452,9 +457,50 @@ keyDel(pkey);
  */
 int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 {
-	if (!parentKey)
+	elektraNamespace ns = keyGetNamespace(parentKey);
+	if (ns == KEY_NS_NONE)
 	{
 		return -1;
+	}
+
+	if (ns == KEY_NS_META)
+	{
+		ELEKTRA_SET_ERROR(104, parentKey,
+				"invalid key name passed to kdbGet");
+		return -1;
+	}
+
+	Key *initialParent = keyDup (parentKey);
+
+	if (ns == KEY_NS_CASCADING)
+	{
+		keySetName(parentKey, "user");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbGet(handle, ks, parentKey) == -1)
+		{
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
+			keyDel(initialParent);
+			return -1;
+		}
+
+		keySetName(parentKey, "system");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbGet(handle, ks, parentKey) == -1)
+		{
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
+			keyDel(initialParent);
+			return -1;
+		}
+
+		elektraKeySetName(parentKey,
+				keyName(initialParent),
+				KEY_CASCADING_NAME);
+		keyDel(initialParent);
+		return 1;
 	}
 
 #if DEBUG && VERBOSE
@@ -463,8 +509,6 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 #endif
 
 	Split *split = elektraSplitNew();
-
-	Key *initialParent = keyDup (parentKey);
 
 	if(!handle || !ks)
 	{
@@ -770,14 +814,18 @@ keyDel(parentKey);
  */
 int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 {
-	if(!parentKey)
+	elektraNamespace ns = keyGetNamespace(parentKey);
+	if (ns == KEY_NS_NONE)
 	{
 		return -1;
 	}
 
-#if DEBUG && VERBOSE
-	fprintf(stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
-#endif
+	if (ns == KEY_NS_META)
+	{
+		ELEKTRA_SET_ERROR(104, parentKey,
+				"invalid key name passed to kdbSet");
+		return -1;
+	}
 
 	if(!handle || !ks)
 	{
@@ -785,8 +833,45 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		return -1;
 	}
 
-	Split *split = elektraSplitNew();
 	Key *initialParent = keyDup(parentKey);
+
+	if (ns == KEY_NS_CASCADING)
+	{
+		// TODO: does not guarantee atomic commit
+		keySetName(parentKey, "user");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbSet(handle, ks, parentKey) == -1)
+		{
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
+			keyDel(initialParent);
+			return -1;
+		}
+
+		keySetName(parentKey, "system");
+		keyAddName(parentKey, keyName(initialParent));
+		if (kdbSet(handle, ks, parentKey) == -1)
+		{
+			elektraKeySetName(parentKey,
+					keyName(initialParent),
+					KEY_CASCADING_NAME);
+			keyDel(initialParent);
+			return -1;
+		}
+
+		elektraKeySetName(parentKey,
+				keyName(initialParent),
+				KEY_CASCADING_NAME);
+		keyDel(initialParent);
+		return 1;
+	}
+
+#if DEBUG && VERBOSE
+	fprintf(stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
+#endif
+
+	Split *split = elektraSplitNew();
 	Key *errorKey = 0;
 
 	if(elektraSplitBuildup(split, handle, parentKey) == -1)

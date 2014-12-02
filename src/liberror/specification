@@ -570,14 +570,44 @@ severity:error
 ingroup:plugin
 module:storage
 
-number: 98
+number:98
 description:invalid ini syntax
 severity:error
 ingroup:plugin
 module:storage
 
-number: 99
+number:99
 description:could not update time of file
 severity:warning
 ingroup:plugin
 module:resolver
+
+number:100
+description:environment variable is not absolute and cannot be used
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:101
+description:java exception caught
+severity:warning
+ingroup:plugin
+module:jni
+
+number:102
+description:jni/java error
+severity:error
+ingroup:plugin
+module:jni
+
+number:103
+description:jni/java warning
+severity:warning
+ingroup:plugin
+module:jni
+
+number:104
+description:No key, empty key name or meta key passed as parentKey
+severity:error
+ingroup:kdb
+

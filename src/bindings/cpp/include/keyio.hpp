@@ -31,12 +31,20 @@ inline std::ostream & operator << (std::ostream & os, kdb::Key const & k)
  * @param is the stream to read from
  * @param k the key whose name will be set
  *
+ * Use unsetf(std::ios_base::skipws) on the stream if the keyname is
+ * terminated with an null character and not a newline.
+ *
  * @return the stream
  */
 inline std::istream & operator >> (std::istream & is, kdb::Key & k)
 {
 	std::string name;
-	getline(is, name);
+	char delim = '\0';
+	if (is.flags() & std::ios_base::skipws)
+	{
+		delim = '\n';
+	}
+	getline(is, name, delim);
 	k.setName(name);
 
 	return is;

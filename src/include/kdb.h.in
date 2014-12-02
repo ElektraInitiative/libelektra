@@ -45,7 +45,9 @@ enum {
 	KEY_FUNC=1<<12,
 	KEY_DIR=1<<14,
 	KEY_META=1<<15,
-	KEY_NULL=1<<16
+	KEY_NULL=1<<16,
+	KEY_CASCADING_NAME=1<<20,
+	KEY_META_NAME=1<<21
 };
 
 enum {
@@ -87,9 +89,9 @@ KDB * kdbOpen(Key *errorKey);
 int kdbClose(KDB *handle, Key *errorKey);
 
 int kdbGet(KDB *handle, KeySet *returned,
-	Key * parentKey);
+	Key *parentKey);
 int kdbSet(KDB *handle, KeySet *returned,
-	Key * parentKey);
+	Key *parentKey);
 
 
 

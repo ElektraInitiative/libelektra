@@ -26,6 +26,8 @@ namespace kdb
 namespace tools
 {
 
+std::vector<std::string> listAllAvailablePlugins();
+
 
 struct Place
 {

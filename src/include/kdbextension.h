@@ -100,25 +100,6 @@ int keyNameIsUser(const char *keyname);
  **************************************/
 
 /*****************
- * Namespaces
- *****************/
-
-/*
- * Elektra currently supported Key namespaces.
- *
- * @ingroup key
- * @see kdbGet(), keyGetNamespace(), keyNameGetNamespace()
- */
-enum {
-	KEY_NS_SYSTEM=1,       /*!< The @p system keys */
-	KEY_NS_USER=2          /*!< The @p user keys */
-};
-
-int keyGetNamespace(const Key *key);
-int keyNameGetNamespace(const char *keyname);
-
-
-/*****************
  * Misc Functions
  *****************/
 

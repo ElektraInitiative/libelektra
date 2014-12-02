@@ -45,7 +45,7 @@ file (GLOB SRC_FILES *.c)
 #remove those we don't want..
 file (GLOB RM_FILES exportsymbols.c kdbmainpage.c)
 if (WIN32)
-	file (GLOB WIN32_RM_FILES array.c keymoremeta.c)
+	file (GLOB WIN32_RM_FILES keymoremeta.c)
 endif (WIN32)
 list (REMOVE_ITEM SRC_FILES ${RM_FILES} ${WIN32_RM_FILES})
 

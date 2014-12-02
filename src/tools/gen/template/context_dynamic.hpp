@@ -55,7 +55,8 @@ static type get(kdb::KeySet &ks, kdb::Key const& spec)
 {
 	type value $support.valof($hierarchy.info)
 
-	Key found(ckdb::ksLookupBySpec(ks.getKeySet(), *spec));
+	Key found(ckdb::ksLookup(ks.getKeySet(), *spec,
+				ckdb::elektraLookupOptions::KDB_O_SPEC));
 	assert(found && "found empty is a problem of the code generator");
 	value = found.get<$support.typeof($hierarchy.info)>();
 

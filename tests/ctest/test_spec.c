@@ -13,15 +13,15 @@ static void test_lookupSingle()
 	KeySet *ks= ksNew(20,
 		k = keyNew("user/else", KEY_END),
 		KS_END);
-	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 	keySetMeta(specKey, "fallback/#0", "user/else");
-	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find fallback key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find fallback key");
 	keySetMeta(specKey, "fallback/#0", "");
-	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 	keySetMeta(specKey, "override/#0", "user/else");
-	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find override key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find override key");
 	keySetMeta(specKey, "override/#0", "");
-	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 
 	keyDel(specKey);
 	ksDel(ks);
@@ -45,17 +45,17 @@ static void test_lookupChain()
 		k4 = keyNew("user/4", KEY_END),
 		KS_END);
 
-	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
 	keySetMeta(specKey, "override/#0", "user/else");
-	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
 	keySetMeta(specKey, "override/#1", "user/wrong");
-	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
 	keySetMeta(specKey, "override/#2", "user/3");
-	succeed_if(ksLookupBySpec(ks, specKey) == k3, "did not find override key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k3, "did not find override key");
 	keySetMeta(specKey, "override/#1", "user/2");
-	succeed_if(ksLookupBySpec(ks, specKey) == k2, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k2, "found wrong key");
 	keySetMeta(specKey, "override/#0", "user/1");
-	succeed_if(ksLookupBySpec(ks, specKey) == k1, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k1, "found wrong key");
 
 	keyDel(specKey);
 	ksDel(ks);
@@ -72,18 +72,18 @@ static void test_lookupDefault()
 		KS_END);
 
 	succeed_if(ksGetSize(ks) == 0, "wrong size");
-	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 
 	keySetMeta(specKey, "default", "xyz");
-	k = ksLookupBySpec(ks, specKey);
+	k = ksLookup(ks, specKey, KDB_O_SPEC);
 	succeed_if(k != 0, "found no default key");
 	succeed_if(ksGetSize(ks) == 1, "wrong size");
 	succeed_if_same_string(keyName(k), "user/abc");
 	succeed_if_same_string(keyString(k), "xyz");
 
-	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find default key again");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find default key again");
 	keySetMeta(specKey, "default", "");
-	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find default key again");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find default key again");
 
 	keyDel(specKey);
 	ksDel(ks);
@@ -124,17 +124,17 @@ static void test_lookupLongChain()
 		k4 = keyNew("user/4", KEY_END),
 		KS_END);
 
-	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
 	keySetMeta(specKey, "override/#_16", "user/else");
-	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
 	keySetMeta(specKey, "override/#_17", "user/wrong");
-	succeed_if(ksLookupBySpec(ks, specKey) == k4, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k4, "found wrong key");
 	keySetMeta(specKey, "override/#_18", "user/3");
-	succeed_if(ksLookupBySpec(ks, specKey) == k3, "did not find override key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k3, "did not find override key");
 	keySetMeta(specKey, "override/#_10", "user/2");
-	succeed_if(ksLookupBySpec(ks, specKey) == k2, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k2, "found wrong key");
 	keySetMeta(specKey, "override/#5", "user/1");
-	succeed_if(ksLookupBySpec(ks, specKey) == k1, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k1, "found wrong key");
 
 	keyDel(specKey);
 	ksDel(ks);
@@ -145,24 +145,24 @@ static void test_lookupCascading()
 	printf ("Test lookup cascading\n");
 
 	Key *specKey = keyNew("/abc",
-			KDB_O_CASCADING_NAME,
+			KEY_CASCADING_NAME,
 			KEY_META, "override/#0", "/something",
 			KEY_END);
 	Key *k = 0;
 	KeySet *ks= ksNew(20,
 		k = keyNew("user/else", KEY_END),
 		KS_END);
-	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 	keySetMeta(specKey, "fallback/#0", "/else");
-	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find fallback key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find fallback key");
 	keySetMeta(specKey, "fallback/#0", "");
-	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 	keySetMeta(specKey, "override/#0", "/else");
-	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find override key");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find override key");
 	keySetMeta(specKey, "override/#0", "");
-	succeed_if(ksLookupBySpec(ks, specKey) == 0, "found wrong key");
-	elektraKeySetName(specKey, "/else", KDB_O_CASCADING_NAME);
-	succeed_if(ksLookupBySpec(ks, specKey) == k, "did not find key itself");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
+	elektraKeySetName(specKey, "/else", KEY_CASCADING_NAME);
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find key itself");
 
 	keyDel(specKey);
 	ksDel(ks);

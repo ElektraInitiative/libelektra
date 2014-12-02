@@ -413,13 +413,21 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	if (!key->meta) return 0;
 
 	search = keyNew (0);
-	elektraKeySetName(search, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
+	elektraKeySetName(search, metaName, KEY_META_NAME | KEY_EMPTY_NAME);
 
 	ret = ksLookup(key->meta, search, 0);
 
 	keyDel (search);
 
 	return ret;
+}
+
+KeySet *elektraKeyGetMetaKeySet(const Key *key)
+{
+	if (!key) return 0;
+	if (!key->meta) return 0;
+
+	return ksDup(key->meta);
 }
 
 
@@ -466,7 +474,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	toSet = keyNew(0);
 	if (!toSet) return -1;
 
-	elektraKeySetName(toSet, metaName, KDB_O_META_NAME | KDB_O_EMPTY_NAME);
+	elektraKeySetName(toSet, metaName, KEY_META_NAME | KEY_EMPTY_NAME);
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)

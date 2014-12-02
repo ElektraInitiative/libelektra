@@ -28,9 +28,12 @@ A validator can be found [here](http://jsonlint.com/).
 
 In json it is possible to have empty arrays and objects.
 In Elektra this is mapped using the special names
+
         ###empty_array
+
 and
-        ___empty_map.
+
+        ___empty_map
 
 Arrays are mapped to Elektra's array convention #0, #1,..
 
@@ -57,17 +60,18 @@ This plugin was specifically designed and tested for the
 to it.
 
 Mount the plugin:
-        kdb mount OpenICC_device_config_DB.json /org/freedesktop/openicc yajl rebase
 
-And configure so that it has the correct prefix/postfix inside the file:
-         kdb set system/elektra/mountpoints/_org_freedesktop_openicc/config/remove org/freedesktop/openicc
+        kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
 
+or:
+
+        kdb mount-openicc
 
 Then you can copy the OpenICC_device_config_DB.json
 to systemwide or user config, e.g.
 
-        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/kdb
-        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.kdb
+        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
+        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
 
         kdb ls system/org/freedesktop/openicc
 

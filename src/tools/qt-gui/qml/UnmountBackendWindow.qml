@@ -7,73 +7,91 @@ import QtQuick.Dialogs 1.1
 
 BasicWindow {
 
-    title: qsTr("Unmount Backend")
+	title: qsTr("Unmount Backend")
 
-    contents: ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: defaultMargins
-        anchors.centerIn: parent
-        spacing: defaultMargins
+	property alias mountedBackendsView: mountedBackendsView
 
-        Text{
-            text: qsTr("Notice: To successfully unmount backends you need to be an administrator.")
-            color: disabledPalette.text
-        }
+	contents: ColumnLayout {
+		anchors.fill: parent
 
-        Label {
-            text: qsTr("Mounted Backends")
-        }
-        BasicRectangle {
-            id: mountedBackendsFrame
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.alignment: Qt.AlignHCenter
+		Text{
+			anchors.left: parent.left
+			anchors.right: parent.right
+			text: qsTr("Notice: To successfully unmount backends you need to be an administrator. " +
+					   "This action cannot be undone.")
+			wrapMode: Text.Wrap
+			color: "#640000"
+		}
+		Item {
+			id: placeHolder
 
-            ScrollView {
-                anchors.fill: parent
-                anchors.margins: defaultMargins
+			width: parent.width
+			height: defaultMargins
+		}
+		Label {
+			text: qsTr("Mounted Backends")
+		}
+		BasicRectangle {
+			id: mountedBackendsFrame
 
-                ListView {
-                    id: mountedBackendsView
+			anchors.left: parent.left
+			anchors.right: parent.right
+			Layout.fillHeight: true
 
-                    anchors.fill: parent
-                    model: externTreeModel.getMountedBackends()
-                    focus: true
-                    interactive: true
-                    currentIndex: -1
-                    highlightMoveDuration: 0
-                    highlightResizeDuration: 0
-                    keyNavigationWraps: true
+			ScrollView {
+				anchors.fill: parent
+				anchors.margins: defaultMargins
 
-                    highlight: Rectangle {
-                        color: activePalette.highlight
-                        width: mountedBackendsFrame.width
-                    }
-                    delegate: Text {
-                        color: modelData === "empty" ? disabledPalette.text : activePalette.text
-                        text:  modelData === "empty" ? qsTr("There are currently no mounted backends.") : modelData
+				ListView {
+					id: mountedBackendsView
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: mountedBackendsView.currentIndex = index
-                        }
-                    }
-                }
-            }
-        }
-        Button {
-            text: qsTr("Unmount")
-            Layout.alignment: Qt.AlignHCenter
-            onClicked: {
-                if(mountedBackendsView.model.toString() !== "empty"){
-                    externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
-                    mountedBackendsView.model = externTreeModel.getMountedBackends()
+					anchors.fill: parent
+					focus: true
+					highlightMoveDuration: 0
+					highlightResizeDuration: 0
+					keyNavigationWraps: true
 
-                    if(mountedBackendsView.model.toString() === "empty")
-                        mountedBackendsView.currentIndex = -1
+					highlight: Rectangle {
+						color: activePalette.highlight
+						width: mountedBackendsFrame.width
+					}
+					delegate: Text {
+						color: modelData === "empty" ? disabledPalette.text : activePalette.text
+						text:  modelData === "empty" ? qsTr("There are currently no mounted backends.") : modelData
 
-                }
-            }
-        }
-    }
+						MouseArea {
+							anchors.fill: parent
+							onClicked: mountedBackendsView.currentIndex = index
+						}
+					}
+				}
+			}
+		}
+		Button {
+			id: unmountButton
+
+			anchors.horizontalCenter: parent.horizontalCenter
+			text: qsTr("Unmount")
+
+			onClicked: {
+				if(mountedBackendsView.model.toString() !== "empty"){
+					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
+					//externTreeModel.synchronize()
+					mountedBackendsView.model = externTreeModel.mountedBackends()
+
+					if(mountedBackendsView.model.toString() === "empty")
+						mountedBackendsView.currentIndex = -1
+
+				}
+
+				externTreeModel.refresh()
+				metaAreaModel = null
+				keyAreaModel = null
+			}
+
+		}
+
+	}
+	cancelButton.visible: false
+	okButton.text: qsTr("Close")
 }

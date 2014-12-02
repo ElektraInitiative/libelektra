@@ -48,13 +48,20 @@ Rebuild cleanly, run all tests and also check for memleaks:
 
 Check if there are really >=76 or >=54 tests
 
+Check if [doc/todo/API] is fulfilled
+
 
 = Preperation =
 
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.8.9
+ export VERSION=0.8.10
+
+
+== Tag the version ==
+
+ git tag --sign -f $VERSION
 
 
 == Prepare Source Package ==
@@ -150,7 +157,7 @@ Symlink current to latest version and add everything:
 
 == Commit source package ==
 
-Commit elektra-ftp to github:
+Commit elektra-ftp:
  cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz && git-add releases/elektra-$VERSION.tar.gz.hashsum && git-commit -a -m "Release $VERSION"
 
 
@@ -159,7 +166,7 @@ Commit elektra-ftp to github:
 Now we know that everything worked well:
 
 Now push release branch with tags to github:
- cd ~e && git-pull && git-push && git-push --tags
+ cd ~e && git-push && git-push --tags
 
 Push elektra-ftp:
  cd ~elektra-ftp && git-push

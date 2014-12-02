@@ -8,14 +8,14 @@
 class KeySetVisitor : public Visitor
 {
 public:
-    explicit KeySetVisitor();
-    void visit(ConfigNode *node);
-    void visit(TreeViewModel *model);
-    kdb::KeySet getKeySet();
+	explicit KeySetVisitor();
+	void visit(ConfigNode& node);
+	void visit(TreeViewModel* model);
+	kdb::KeySet getKeySet();
 
 
 private:
-    kdb::KeySet m_set;
+	kdb::KeySet m_set;
 };
 
 #endif // KEYSETVISITOR_HPP

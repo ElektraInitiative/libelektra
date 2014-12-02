@@ -12,7 +12,7 @@ elseif (NOT PYTHONLIBS_FOUND)
 elseif (PYTHONLIBS_VERSION_STRING MATCHES "^2\\.[0-9]+")
 	remove_binding(swig_python3 "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
 else()
-	message("-- Include Binding swig_python3")
+	message(STATUS "Include Binding swig_python3")
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
 

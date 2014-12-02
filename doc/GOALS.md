@@ -1,6 +1,6 @@
 ## Goals ##
 
-- improve robustness
+- improve robustness of configuration systems
   - reject invalid configuration
   - avoid common programming errors by using better bindings
 - allow software to be better integrated on configuration level
@@ -28,9 +28,22 @@
 
 ## Quality Goals ##
 
-1.) Extensibility
+1.) Robustness
+
+Configuration Systems today suffer badly from:
+
+- weak input validation
+- faulty transformations from strings to other types
+- no error messages
+- undefined behaviour
+
+We want to tackle this problem.
+
+
+2.) Extensibility
 
 There are so many variants of
+
 - storage formats
 - frontend integrations
 - bindings
@@ -43,8 +56,7 @@ Only key/value pairs are the common factor and a way to get and set
 them, everything else is an extension.
 
 
-
-2.) Simplicity
+3.) Simplicity
 
 An overly complex system cannot be managed nor understood.
 Extensibility brings some complex issues,
@@ -52,6 +64,7 @@ which need to be solved - but in a way so that the user
 sees either nothing of it or only needs to understand very
 simple concepts so that it works flawlessly.
 Special care for simplicity is taken for the users:
+
 - Endusers when reconfiguring or upgrading
   should never take any notice of Elektra, except that
   it works more robust, better integrated and with less problems.
@@ -64,7 +77,7 @@ Special care for simplicity is taken for the users:
   according to their needs
 
 
-3.) Performance
+4.) Performance
 
 Configuration is the main impact for bootup and startup time.
 Elektra needs to be similar fast then current solutions.

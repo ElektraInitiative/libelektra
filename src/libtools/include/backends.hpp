@@ -49,6 +49,13 @@ public:
 	 */
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
 
+	/**
+	 * @brief Get the name below system/elektra/mountpoints
+	 *
+	 * @param name mountpoint name, it is ok if it has / instead of _
+	 *
+	 * @return the key name
+	 */
 	static std::string getConfigBasePath(std::string name);
 
 	/**

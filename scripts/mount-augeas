@@ -1,8 +1,12 @@
 #!/bin/sh
 
-kdb mount /etc/fstab system/fstab augeas lens=Fstab.lns
-kdb mount /etc/hosts system/hosts augeas lens=Hosts.lns
-kdb mount /etc/passwd system/passwd augeas lens=Passwd.lns
-kdb mount /etc/vsftpd.conf system/sw/vsftpd augeas lens=Vsftpd.lns
-kdb mount /etc/ssh/sshd_config system/sw/sshd augeas lens=Sshd.lns
-kdb mount /etc/security/limits.conf system/limits augeas lens=Limits.lns
+if [ -z "$KDB" ]; then
+	KDB=kdb
+fi
+
+$KDB mount /etc/fstab system/fstab augeas lens=Fstab.lns
+$KDB mount /etc/hosts system/hosts augeas lens=Hosts.lns
+$KDB mount /etc/passwd system/passwd augeas lens=Passwd.lns
+$KDB mount /etc/vsftpd.conf system/sw/vsftpd augeas lens=Vsftpd.lns
+$KDB mount /etc/ssh/sshd_config system/sw/sshd augeas lens=Sshd.lns
+$KDB mount /etc/security/limits.conf system/limits augeas lens=Limits.lns

@@ -44,13 +44,19 @@ private:
 	kdb::KeySet config; // the global config, plugins might add something to it
 
 	std::vector <Plugin*> plugins;
-	void tryPlugin (std::string name);
+	void tryPlugin (std::string name, KeySet pluginConf);
 
 public:
-	Backend(std::string name = "", std::string mountpoint = "");
+	Backend();
 	~Backend();
 
-	void addPlugin (std::string name);
+	void setMountpoint (Key mountpoint, KeySet mountConf);
+	std::string getName()
+	{
+		return name;
+	}
+
+	void addPlugin (std::string name, KeySet pluginConf = KeySet());
 	void checkFile (std::string file) const;
 	void status (std::ostream & os) const;
 	bool validated () const;

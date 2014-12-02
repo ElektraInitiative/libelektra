@@ -11,11 +11,14 @@
 
 
 #include <backend.hpp>
+#include <backends.hpp>
 
 
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
+
+#include <algorithm>
 
 
 #include <kdb.hpp>
@@ -35,10 +38,101 @@ namespace tools
 
 /** Creates a new backend with a given name and mountpoint.
  * Parameters are needed for serialisation only, so you can
- * keep them empty if you do not want to serialise. */
-Backend::Backend(string name_, string mp_):
-	name(name_), mp(mp_)
+ * keep them empty if you do not want to serialise.
+ *
+ * */
+Backend::Backend()
 {
+}
+
+
+/**
+ * @brief Sets the mountpoint for the backend
+ *
+ * @throw MountpointInvalidException
+ * @throw MountpointAlreadyInUseException
+ *
+ * @param mountpoint the key name will be used as mountpoint.
+ *    It is allowed to pass a key with a KEY_CASCADING_NAME
+ *
+ * @param mountConf needs to include the keys below
+ * system/elektra/mountpoints
+ */
+void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
+{
+	std::vector <std::string> names;
+	std::string namesInString;
+	Backends::BackendInfoVector info = Backends::getBackendInfo(mountConf);
+	names.push_back("default");
+	for (Backends::BackendInfoVector::const_iterator it=info.begin();
+			it!=info.end(); ++it)
+	{
+		names.push_back(it->mountpoint);
+		namesInString += it->mountpoint;
+		namesInString += " ";
+	}
+
+
+	if (std::find(names.begin(), names.end(), mountpoint.getName()) != names.end())
+	{
+		throw MountpointAlreadyInUseException(
+			std::string("Mountpoint ") + 
+			mountpoint.getName() +
+			" is one of the already used names: " +
+			namesInString
+			);
+	}
+
+	std::vector <std::string> mountpoints;
+	mountpoints.push_back("system/elektra");
+	mountConf.rewind();
+	Key cur;
+	while ((cur = mountConf.next()))
+	{
+		if (cur.getBaseName() == "mountpoint")
+		{
+			if (cur.getString().at(0) == '/')
+			{
+				mountpoints.push_back(Key ("user" + cur.getString(), KEY_END).getName());
+				mountpoints.push_back(Key ("system" + cur.getString(), KEY_END).getName());
+			}
+		};
+	}
+
+	mp = mountpoint.getName();
+	name = mountpoint.getName();
+	std::replace(name.begin(), name.end(), '/', '_');
+
+	if (mp.empty()) {
+		throw MountpointAlreadyInUseException(
+			"Empty mountpoint not allowed");
+	}
+
+	if (mp.at(0) == '/')
+	{
+		Key skmp ("system" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end())
+		{
+			throw MountpointAlreadyInUseException("Cascading mountpoint not possible, because system mountpoint already exists");
+		}
+		Key ukmp ("user" + mp, KEY_END);
+		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end())
+		{
+			throw MountpointAlreadyInUseException("Cascading mountpoint not possible, because user mountpoint already exists");
+		}
+	} else {
+		Key kmp (mp, KEY_END);
+		if (!kmp.isValid()) throw MountpointInvalidException();
+		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end())
+		{
+			throw MountpointAlreadyInUseException(
+				std::string("Mountpoint ") + 
+				mountpoint.getName() +
+				" is one of the already used cascading names: " +
+				namesInString
+				);
+		}
+	}
 }
 
 
@@ -57,25 +151,32 @@ Backend::~Backend()
 void Backend::checkFile (std::string file) const
 {
 	typedef int (*checkFilePtr) (const char*);
-	checkFilePtr checkFileFunction = (checkFilePtr) plugins.back()->getSymbol("checkfile");
-	assert(checkFileFunction);
+	checkFilePtr checkFileFunction = 0;
+
+	for (size_t i = 0; i < plugins.size(); ++i)
+	{
+		try {
+			checkFileFunction =
+				(checkFilePtr) plugins[i]->getSymbol("checkfile");
+			break;
+		}
+		catch(MissingSymbol ms)
+		{}
+	}
+
+	if (!checkFileFunction)
+	{
+		throw MissingSymbol("No resolver with checkfile found");
+	}
 
 
 	int res = checkFileFunction(file.c_str());
 
-
-	if (mp.substr(0,6) == "system")
-	{
-		if (res == -1) throw FileNotValidException();
-		return;
-	}
-
-
-	if (res <= 0) throw FileNotValidException();
+	if (res == -1) throw FileNotValidException();
 }
 
 
-void Backend::tryPlugin (std::string pluginName)
+void Backend::tryPlugin (std::string pluginName, KeySet testConfig)
 {
 	int nr;
 	char *cPluginName = 0;
@@ -104,15 +205,6 @@ void Backend::tryPlugin (std::string pluginName)
 
 	if (realPluginName.find('#') != string::npos) throw BadPluginName();
 
-
-
-
-	KeySet testConfig(1,
-		*Key(	"system/test",
-			KEY_VALUE, "test",
-			KEY_COMMENT, "Test config for loading a plugin.",
-			KEY_END),
-		KS_END);
 
 
 	PluginPtr plugin = modules.load(realPluginName, testConfig);
@@ -149,9 +241,9 @@ void Backend::tryPlugin (std::string pluginName)
  *
  * For validation @see validated().
  */
-void Backend::addPlugin (std::string pluginName)
+void Backend::addPlugin (std::string pluginName, KeySet pluginConf)
 {
-	tryPlugin (pluginName);
+	tryPlugin (pluginName, pluginConf);
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());

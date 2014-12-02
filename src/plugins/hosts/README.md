@@ -24,8 +24,7 @@ Aliases are stored as sub keys with a read only duplicate of the
 associated ip address as value. 
 
 ####Comments
-Comments are stored using meta keys of
-type "comment" with the '#'-char stripped off.
+Comments are stored according to the comment metadata specification (see doc/METADATA.ini for more information)
 
 ####Multi-Line Comments
 Since line breaks are preserved, you can identify multi line comments

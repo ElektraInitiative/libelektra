@@ -18,6 +18,12 @@ namespace kdb
  * @param os the stream to write to
  * @param cks the keyset which should be streamed
  *
+ * Use unsetf(std::ios_base::skipws) or use noskipws iomanip on the stream
+ * if you want a null terminated sequence of key names.
+ *
+ * Use setf(std::ios_base::unitbuf) on the stream if you want to
+ * flush the buffer after each key.
+ *
  * @return the stream
  */
 inline std::ostream & operator << (std::ostream & os, kdb::KeySet const & cks)
@@ -28,7 +34,20 @@ inline std::ostream & operator << (std::ostream & os, kdb::KeySet const & cks)
 	kdb::Key k;
 	while ((k=ks.next()))
 	{
-		os << k << std::endl;
+		os << k;
+		if (os.flags() & std::ios_base::skipws)
+		{
+			os << '\n';
+		}
+		else
+		{
+			os << '\0';
+		}
+		
+		if (os.flags() & std::ios_base::unitbuf)
+		{
+			os << std::flush;
+		}
 	}
 	ks.setCursor(c);
 

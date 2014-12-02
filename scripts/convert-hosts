@@ -7,12 +7,12 @@
 ##
 ## The correct way to run it is:
 ##
-## # ./hosts-convert | sh -e
+## # kdb hosts-convert | sh -e
 ##
 ##
 ## To make tests you can do:
 ##
-## $ ROOT=user/test ./hosts-convert | sh -e
+## $ ROOT=user/test kdb hosts-convert | sh -e
 ##
 ## Vladimir Shabanov <virl@mail.ru>
 ## June 2004

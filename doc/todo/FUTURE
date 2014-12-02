@@ -1,13 +1,13 @@
-Some enhanced ideas which will not be part of 0.8.
+Some enhanced ideas which (most likely) will not be part of 0.8.
 
 
 == API Changes ==
 
-keyset:
-	ensure that every ks* has as @post a sorted keyset
-	ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
+ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
+	meta handling should be the same
 
-Single Interface: only get pointers, no memcopy (only one keyGetString)
+Single Interface: only get pointers, no memcopy (only one keyGetString, no
+	keyString)
 
 no "binary" metadata hack, just provide keyGetString and keyGetStringSize
 
@@ -41,7 +41,7 @@ allow non-file/resolver based backends
 == Error handling ==
 
 translation of exceptions to different languages
-(or by GUI only?)
+(or by GUI only?) -> exporttranslations already exists
 
 
 == Elektra types ==
@@ -93,7 +93,7 @@ Lazy+Bind Mounting
 
 GlobalPlugins:
 	for notification start/end
-	for shared plugins with expensive startup (typechecker)
+	for typechecker, constraintchecker that needs global view
 	for journaling
 	for git-commit
 
@@ -124,7 +124,7 @@ notification: new notification api (only for frontend!)
 	void kdbDeliverEvents(long iterations, int sleep);
 
 
-libcomment: -> define as metadata
+libelektra-metadata:
 	multilanguage comments
 	type of key (list, int, bool,...)
 	validator of key (what is valid?)
@@ -164,7 +164,7 @@ allow mounting for users?
 symbole, only export
 Version info
 release
-minimize API -> (split core and convienience?)
+minimize API -> (split core and convenience (e.g. libmetadata)?)
 
 
 == OVERVIEW ==

@@ -58,6 +58,8 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->fd = -1;
 	p->mtime.tv_sec = 0;
 	p->mtime.tv_nsec = 0;
+	p->filemode = KDB_FILE_MODE;
+	p->dirmode = KDB_FILE_MODE | KDB_DIR_MODE;
 
 	p->filename = 0;
 	p->dirname= 0;
@@ -260,6 +262,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	(Plugin *handle, Key *errorKey)
 {
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
+	if (ksLookupByName(resolverConfig, "/module", 0)) return 0;
 	const char *path = keyString(ksLookupByName(resolverConfig, "/path", 0));
 
 	if (!path)
@@ -271,6 +274,10 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	resolverHandles *p = malloc(sizeof(resolverHandles));
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
+	// system files need to be world-readable, otherwise they are
+	// useless
+	p->system.filemode = 0644;
+	p->system.dirmode = 0755;
 
 	Key *testKey = keyNew("system", KEY_END);
 	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
@@ -323,9 +330,6 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
-	// might be useless, will not harm
-	keySetString(parentKey, pk->filename);
-
 	Key *root = keyNew("system/elektra/modules/"
 			ELEKTRA_PLUGIN_NAME , KEY_END);
 
@@ -340,6 +344,8 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 	}
 	keyDel (root);
 
+	keySetString(parentKey, pk->filename);
+
 	int errnoSave = errno;
 	struct stat buf;
 
@@ -351,6 +357,11 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 		pk->mtime.tv_sec = 0; // no file, so no time
 		pk->mtime.tv_nsec = 0; // no file, so no time
 		return 0;
+	}
+	else
+	{
+		// successful, remember mode
+		pk->filemode = buf.st_mode;
 	}
 
 	/* Check if update needed */
@@ -393,7 +404,7 @@ static void elektraAddIdentity(char *errorText)
  */
 static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
 {
-	pk->fd = open (pk->filename, O_RDWR | O_CREAT, KDB_FILE_MODE);
+	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
 
 	if (pk->fd == -1)
 	{
@@ -424,9 +435,9 @@ static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
  * @retval 0 on success
  * @retval -1 on error + elektra error will be set
  */
-static int elektraMkdirParents(const char *pathname, Key *parentKey)
+static int elektraMkdirParents(resolverHandle *pk, const char *pathname, Key *parentKey)
 {
-	if (mkdir(pathname, KDB_DIR_MODE | KDB_FILE_MODE) == -1)
+	if (mkdir(pathname, pk->dirmode) == -1)
 	{
 		if (errno != ENOENT)
 		{
@@ -458,7 +469,7 @@ static int elektraMkdirParents(const char *pathname, Key *parentKey)
 		*p = 0;
 
 		/* Now call ourselves recursively */
-		if (elektraMkdirParents(pathname, parentKey) == -1)
+		if (elektraMkdirParents(pk, pathname, parentKey) == -1)
 		{
 			// do not yield an error, was already done
 			// before
@@ -469,7 +480,7 @@ static int elektraMkdirParents(const char *pathname, Key *parentKey)
 		/* Restore path. */
 		*p = '/';
 
-		if (mkdir (pathname, KDB_DIR_MODE | KDB_FILE_MODE) == -1)
+		if (mkdir (pathname, pk->dirmode) == -1)
 		{
 			goto error;
 		}
@@ -564,11 +575,11 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
  */
 static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 {
-	pk->fd = open (pk->filename, O_RDWR | O_CREAT, KDB_FILE_MODE);
+	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
 	// we can silently ignore an error, because we will retry later
 	if (pk->fd == -1)
 	{
-		elektraMkdirParents(pk->dirname, parentKey);
+		elektraMkdirParents(pk, pk->dirname, parentKey);
 		if (elektraOpenFile(pk, parentKey) == -1)
 		{
 			// no way to be successful
@@ -579,6 +590,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 	if (elektraLockMutex(parentKey) != 0)
 	{
 		elektraCloseFile(pk->fd, parentKey);
+		pk->fd = -1;
 		return -1;
 	}
 
@@ -587,6 +599,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 	{
 		elektraCloseFile(pk->fd, parentKey);
 		elektraUnlockMutex(parentKey);
+		pk->fd = -1;
 		return -1;
 	}
 
@@ -595,6 +608,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 		elektraUnlockFile(pk->fd, parentKey);
 		elektraCloseFile(pk->fd, parentKey);
 		elektraUnlockMutex(parentKey);
+		pk->fd = -1;
 		return -1;
 	}
 
@@ -658,6 +672,11 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 	}
 
 	elektraUpdateFileTime(pk, parentKey);
+	if (buf.st_mode != pk->filemode)
+	{
+		// change mode to what it was before
+		chmod(pk->filename, pk->filemode);
+	}
 
 	elektraUnlockFile(pk->fd, parentKey);
 	elektraCloseFile(pk->fd, parentKey);
@@ -722,6 +741,13 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
 {
 	int errnoSave = errno;
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
+
+	if (pk->fd != -1)
+	{
+		elektraUnlockFile(pk->fd, parentKey);
+		elektraCloseFile(pk->fd, parentKey);
+		elektraUnlockMutex(parentKey);
+	}
 
 	if (unlink (pk->tempfile) == -1)
 	{

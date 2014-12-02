@@ -16,6 +16,11 @@
 
 class Command;
 
+namespace kdb
+{
+	class KeySet;
+}
+
 class Cmdline
 {
 public:
@@ -51,6 +56,15 @@ public:
 	bool verbose; /*!< Be more verbose. */
 	bool version; /*!< Return version info instead of the normal action.. */
 	bool withoutElektra;
+	bool null;
+	bool first;
+	bool second;
+	bool third;
+	std::string format;
+	std::string plugins;
+	std::string pluginsConfig;
+
+	kdb::KeySet getPluginsConfig(std::string basepath="user/") const;
 
 	/** The path to the kdb exectuable. */
 	std::string executable;
