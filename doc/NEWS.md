@@ -2,7 +2,18 @@
 
 - guid: 6ce57ecf-420a-4a31-821e-1c5fe5532eb4
 - author: Markus Raab
-- pubDate: Tue, 02 Dec 2014 11:37:51 +0100
+- pubDate: Tue, 02 Dec 2014 18:37:51 +0100
+
+Hello,
+
+we are delighted to announce our latest feature release providing
+major updates in:
+
+- compatibility with standards,
+- tooling,
+- plugins (hosts, rename),
+- Qt-Gui and
+- a new Java binding
 
 
 
@@ -18,44 +29,52 @@ compliant. Following changes were necessary:
   permissions 0700
 - existing configuration files will retain their permissions.
 - The default path to store user configuration is now ~/.config
-- A new resolver variant x is introduced
+- A new resolver variant x (for user and system) is introduced
  - implements handling of XDG environment variables
  - ignores empty dirs and absolute pathes in envvar
-- add new shell based test suite for resolver
+- add new shell based test suite for (xdg)-resolver
 
-For example, use resolver_fm_xhp_x:
+For example, we could use resolver_fm_xhp_x:
 
     kdb mount --resolver=resolver_fm_xhp_x file.dump /example dump
     kdb file user/example
     kdb file system/example
 
-Will show you that for both user+system the file respect XDG environment
-variables, e.g. above lines will print:
+Will show you that for both user+system the resolver respects
+XDG environment variables, e.g. above lines will print:
 
     /home/m/.config/file.dump
     /etc/xdg/file.dump
 
-Of course any attempts to get and set keys below user/example and
+Of course, any attempts to get and set keys below user/example and
 system/example will also be in these files.
 
 The letters after _ describe the variant of the resolver:
 
 - f .. file based locking
-- m .. mutex based locking
+- m .. mutex based locking (for multiple KDB per process)
 - for user configuration (after next _)
  - x .. first check XDG_CONFIG_HOME environment
  - h .. then check HOME environment
  - p .. then fall back to passwd
 - for system configuration (after next _)
- - x .. check all XDG_CONFIG_DIRS and falls back to /etc/xdg
+ - x .. check all pathes in XDG_CONFIG_DIRS and falls back to /etc/xdg
 
 A lot of such resolver variants are added when -DPLUGINS=ALL is used.
+Of course you can create new variants with different behaviour by adding
+them to PLUGINS.
+
+To make your application (that uses Elektra) XDG aware, you have nothing
+to do: you get it to free. Make sure to always use cascading lookup.
+Additionally, an XDG conforming application should not write system/
+keys.
+
 
 
 
 ## OpenICC Compatibility
 
-Elektra now also implements the draft for
+Based on that, Elektra now also implements the draft for
 [the OpenICC specification](http://www.openicc.info/wiki/index.php?title=OpenICC_Configuration_0.1).
 
 The mount command looks like quite complicated, but it consists of
@@ -65,18 +84,19 @@ simple parts:
       color/settings/openicc-devices.json /org/freedesktop/openicc \
       yajl rename cut=org/freedesktop/openicc
 
-We already know the first two lines: we also use the XDG resolver,
-because OpenICC builds on that standard. Only the file name and the path
-where it should be mounted differs.
+We already know the first two lines: we use the XDG resolver already
+introduced above. Only the file name and the path where it should be
+mounted differs.
 
 The plugin yajl is a storage plugin that reads/writes json. The plugin
-rename was the missing link to support OpenICC -- now closed by Felix
-Berlakovich. It is needed, because every OpenICC file starts like this:
+rename was the missing link to support OpenICC (thanks to Felix
+Berlakovich for closing this gap). It is needed, because every OpenICC
+file starts like this:
 
     { "org": { "freedesktop": { "openicc": {
 
 Because the backend is mounted at /org/freedesktop/openicc, it would
-lead to keys like /org/freedesktop/openicc/org/freedesktop/openicc
+lead to keys below /org/freedesktop/openicc/org/freedesktop/openicc
 which we obviously do not want. So we simply get rid of the common
 prefix by cutting it out using the rename plugin.
 
@@ -113,20 +133,24 @@ Alkalay still works:
 
     kdb convert-fstab | kdb import system/filesystems xmltool
 
-It will parse your /etc/fstab and generate XML. This XML then can be
+It will parse your /etc/fstab and generate a XML. This XML then can be
 imported. Other convert tools directly produce kdb commands, though.
 
-- kdb now uses KDB itself for many commands:
-  - /sw/kdb/current/resolver .. You always want a different default
-      resolver than that was compiled in as default for mount?
-  - /sw/kdb/current/format .. if annoyed by the default format dump
-      (import/export)
-  - /sw/kdb/current/plugins .. if you always forget to add some plugins
-      when mounting something.
+kdb now uses KDB itself for many commands:
 
-By default the plugin "sync" is added automatically, you should not
-remove it from /sw/kdb/current/plugins otherwise the next mount command
-will not add it. To preserve it use, e.g.:
+- /sw/kdb/current/resolver .. You always want a different default
+    resolver than that was compiled in as default when mounting
+    backends?
+- /sw/kdb/current/format .. If you are annoyed by the default format
+    dump format for import/export.
+- /sw/kdb/current/plugins .. If you always forget to add some plugins
+    when mounting something.
+
+By default the plugin "sync" is added automatically (it makes sure that
+fsync is executed on config files, the directory is already done by the
+resolver), you should not remove it from /sw/kdb/current/plugins
+otherwise the next mount command will not add it. To preserve it use a
+space separated list, e.g.:
 
     kdb set user/sw/kdb/current/plugins "sync syslog"
 
@@ -146,7 +170,39 @@ Other options:
   -c cut=org/freedesktop/openicc would be the parameter cut for all
   plugins. Have a look at #146 if you want to use it.
 
+
+
 ## Compatibility
+
+The core API (kdb.h), as always, stayed API/ABI compatible. The only
+changes in kdb.h is the addition of KEY_CASCADING_NAME and
+KEY_META_NAME. So applications compiled against 0.8.10 and using these
+constants, will not work with Elektra 0.8.9.
+
+The constants allow us to create following kinds of keys:
+
+- empty names: this was always possible, because invalid names
+  (including empty names) did not cause keyNew to abort
+- meta names: this is a new feature that allows us to compare key names
+  with meta keys
+- cascading names: names starting with / have the special meaning that
+  they do not specify which namespace they have. When such names are
+  used for
+  - kdbGet() and kdbSet() keys are retrieved from all namespaces
+  - ksLookup() keys are searched in all namespaces
+  - ksLookupByName() is now just a wrapper for ksLookup().
+      The method does not do much except creating a key and passing
+      them to ksLookup().
+
+Usage in C is:
+
+    Key *c = keyNew("/org/freedesktop", KEY_CASCADING_NAME, KEY_END);
+    Key *m = keyNew("comment/#0", KEY_META_NAME, KEY_END);
+
+The same functionality exists, of course, in available in all bindings,
+too.
+
+Changes in non-core API are:
 
 - xmltool now does not output default (unchanged) uid,gid and mode
 - ksLookupBySpec from kdbproposal.h was removed, is now integrated into
@@ -159,41 +215,20 @@ Other options:
  - mountname is now automatically calculated
  - addPlugin allows us to add a KeySet to validate plugins with different
      contracts correctly
-- C++ binding now throws bad_alloc on allocation problems (and not
+- C++ binding now throws std::bad_alloc on allocation problems (and not
   InvalidName)
-
-
-The core API (kdb.h), as always, stayed API/ABI compatible. The only
-changes in kdb.h is the addition of KEY_CASCADING_NAME and
-KEY_META_NAME.
-
-It allows us to create different kinds of keys:
-
-- empty names: this was always possible, because invalid names did not
-  cause keyNew to abort
-- meta names: this is a new feature that allows us to compare key names
-  with meta keys
-- cascading names: names starting with / have the special meaning that
-  they do not specify which namespace they have. When such names are
-  used for
-  - kdbGet() and kdbSet() keys are retrieved from all namespaces
-  - ksLookup() keys are searched in all namespaces
-  - ksLookupByName() is now just a wrapper for ksLookup().
-      The method does not do much except creating a key and passing
-      that to ksLookup().
-
-Usage in C is (it is, of course, available in all bindings, too):
-
-    Key *c = keyNew("/org/freedesktop", KEY_CASCADING_NAME, KEY_END);
-    Key *m = keyNew("comment/#0", KEY_META_NAME, KEY_END);
 
 
 ## CMake
 
 It is now possible to remove a plugin/binding/tools by prefixing a name
-with "-".
-- allow to use -element syntax in TOOLS, BINDINGS and PLUGINS to remove
-  it. Very handy in combination with ALL, e.g. -DPLUGINS="ALL;-xmltool"
+with "-".  The new "-element" syntax is accepted by TOOLS, BINDINGS and
+PLUGINS. It is very handy in combination with ALL, e.g.:
+
+    -DPLUGINS="ALL;-xmltool"
+
+will include all plugins except xmltool.
+
 
 
 ## Improved comments
@@ -202,10 +237,11 @@ Comment preserving was improved a lot. Especially, the hosts plugin was
 rewritten completely. Now multiple different comment styles can be
 intermixed without losing information. E.g. some INI formats support
 both ; and # for comments. With the new comments it is possible to
-preserve which comment started with which -- and even better it can be
-programmatically checked using the meta data.
+preserve that information and even better: applications can iterate
+over that information (meta data).
 
-To mount it use:
+To mount the new hosts plugin use (if you already have mounted it, you
+have nothing to do):
 
     kdb mount /etc/hosts system/hosts hosts
 
@@ -223,7 +259,7 @@ For other meta information, see:
 
     kdb lsmeta system/hosts/ipv4/localhost 
 
-Additionally, a small API emerges for specific meta-data operations.
+Additionally, a small API for specific meta-data operations emerges.
 These operations will be moved to a separate library and will not stay
 in Elektra's core library.
 
@@ -261,7 +297,7 @@ We developed already
 
 ## Qt-Gui
 
-Raffael Pancheri released the version 0.0.2:
+Raffael Pancheri released the version 0.0.2 of the Qt-Gui:
 
 * added Backend Wizard for mounting
 * user can hover over TreeView items and quickly see keyname, keyvalue 
@@ -273,15 +309,17 @@ Raffael Pancheri released the version 0.0.2:
 
 ## Further stuff and small fixes
 
-- add two new error/warnings information: mountpoint and configfile
+- Two new error/warnings information: mountpoint and configfile.
+    It is added automatically and all tools will print it.
 - C++ I/O for key(s) now allows null terminator next to new-line
     terminator
 - fix error plugin: now use on_open/trigger_warnings to be consistent
 - fix metaset: now correctly append new key
-- arrays are compiled in mingw, too
+- arrays are also available when compiled with mingw
+   (but tests still have to be excluded for successful compilation)
 - fix #136
 - fix long help text in `kdb check`
-- use signed release tags
+- signed release tags are now used
 
 
 ## Get It! ##
@@ -301,9 +339,10 @@ already built API-Docu can be found
 ## Stay tuned! ##
 
 Subscribe to the
-[new RSS feed](http://www.libelektra.org/news/feed.rss)
+[new RSS feed](http://doc.libelektra.org/news/feed.rss)
 to always get the release notifications.
 
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/6ce57ecf-420a-4a31-821e-1c5fe5532eb4.html)
 
 For more information, see http://www.libelektra.org
 
