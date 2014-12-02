@@ -1,7 +1,8 @@
 #!/bin/sh
 
+EXEC_FOLDER=@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@
+
 # list all installed tools
+echo "External tools are located in $EXEC_FOLDER"
 
-echo "External tools are located in ${TARGET_TOOL_EXEC_FOLDER}"
-
-/bin/ls ${TARGET_TOOL_EXEC_FOLDER}
+/bin/ls $EXEC_FOLDER
