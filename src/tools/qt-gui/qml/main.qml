@@ -187,7 +187,7 @@ ApplicationWindow {
 	}
 
 	function deleteKey() {
-//		console.log("delete key")
+		//		console.log("delete key")
 		var cr = keyAreaView.currentRow
 
 		undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
@@ -205,7 +205,7 @@ ApplicationWindow {
 	}
 
 	function deleteBranch() {
-//		console.log("delete branch")
+		//		console.log("delete branch")
 
 		undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
 
@@ -509,7 +509,7 @@ ApplicationWindow {
 				undoManager.undo()
 				//				if(keyAreaModel !== null)
 				//					keyAreaModel.refresh()
-								externTreeModel.refresh()
+				externTreeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
@@ -551,6 +551,15 @@ ApplicationWindow {
 					searchResultsListView.model.refresh()
 			}
 		}
+	}
+
+	Action {
+		id: undoAllAction
+
+		text: qsTr("Undo All")
+		tooltip: qsTr("Undo All")
+		enabled: undoManager.canUndo
+		onTriggered: undoManager.undoAll()
 	}
 
 	Action {
@@ -609,11 +618,20 @@ ApplicationWindow {
 				externTreeModel.refresh()
 			}
 			else{
-				//				undoManager.redo()
+				undoManager.redo()
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
 		}
+	}
+
+	Action {
+		id: redoAllAction
+
+		text: qsTr("Redo All")
+		tooltip: qsTr("Redo All")
+		enabled: undoManager.canRedo
+		onTriggered: undoManager.redoAll()
 	}
 
 	Action {
@@ -758,8 +776,28 @@ ApplicationWindow {
 				action: undoAction
 			}
 			ToolButton {
+				id: tbUndoAll
+
+				implicitWidth: defaultMargins
+				menu: Menu {
+					MenuItem {
+						action: undoAllAction
+					}
+				}
+			}
+			ToolButton {
 				id:tbRedo
 				action: redoAction
+			}
+			ToolButton {
+				id: tbRedoAll
+
+				implicitWidth: defaultMargins
+				menu: Menu {
+					MenuItem {
+						action: redoAllAction
+					}
+				}
 			}
 			ToolButton {
 				id:tbSynchronize
@@ -914,7 +952,7 @@ ApplicationWindow {
 
 			width: Math.ceil(parent.width*0.3)
 			height: parent.height
-//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
+			//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
 
 			TreeView {
 				id: treeView
@@ -931,7 +969,7 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: keyAreaHeight
 
-//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
+				//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				Component {
 					id: tableViewColumnDelegate
@@ -951,8 +989,8 @@ ApplicationWindow {
 				TableView {
 					id: keyAreaView
 
-					property int keyAreaCopyIndex
-					property string currentNodePath
+					property int keyAreaCopyIndex:-1
+					property string currentNodePath:""
 
 					anchors.fill: parent
 					anchors.margins: 1
@@ -1033,7 +1071,7 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: metaAreaHeight
 
-//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
+				//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				TableView {
 					id: metaAreaTableView
