@@ -272,7 +272,15 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 	vector<string> pluginVector = listAllAvailablePlugins();
 
 	foreach(string s, pluginVector){
-		ptr = modules.load(s);
+		try
+		{
+			ptr = modules.load(s);
+		}
+		catch(NoPlugin ex)
+		{
+			break;
+		}
+
 		ptr->loadInfo();
 		type = QString::fromStdString(ptr->lookupInfo("provides"));
 

@@ -379,11 +379,22 @@ ApplicationWindow {
 					Tab {
 						title: qsTr("A&uthors")
 						TextArea {
-							property string mail: "mailto:e0003088@student.tuwien.ac.at"
+							property string pancheri: "mailto:e0003088@student.tuwien.ac.at"
+							property string loose: "mailto:christian.loose@hamburg.de"
+							property string jens: "http://qt-project.org/forums/viewthread/30521/#146845"
 							readOnly: true
 							textFormat: TextEdit.RichText
-							text: "Raffael Pancheri\n<html><style type=\"text/css\"></style><a href=\"" + mail + "\">e0003088@student.tuwien.ac.at</a></html>"
-							onLinkActivated: Qt.openUrlExternally(mail)
+							textMargin: defaultSpacing
+							wrapMode: Text.WordWrap
+							text: "<html>" +
+								  "<style type=\"text/css\"></style>" +
+								  "<p>Elektra Editor created by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
+								  "<p>DiscountMarkdownConverter used with kind permission by <a href=\"" + loose + "\">Christian Loose</a></p>" +
+								  "<p>TreeView based on code <a href=\"" + jens + "\">posted by Jens</a></p>" +
+								  "</html>"
+							onLinkActivated: {
+								Qt.openUrlExternally(link)
+							}
 						}
 					}
 				}

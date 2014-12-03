@@ -135,6 +135,9 @@ Item {
 				frameVisible: false
 				readOnly: true
 				wrapMode: Text.WordWrap
+				onLinkActivated: {
+					Qt.openUrlExternally(link)
+				}
 			}
 		}
 	}
