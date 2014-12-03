@@ -14,10 +14,6 @@ assert(type(kdb.VERSION_MINOR) == "number")
 assert(type(kdb.VERSION_MICRO) == "number")
 assert(kdb.KS_END == nil)
 
---[[
--- disabled until elektra libraries can be loaded by
--- the build system (and static build is gone)
-
 -- ctor
 assert(swig_type(kdb.KDB())      == "kdb::KDB *")
 error = kdb.Key()
@@ -55,4 +51,3 @@ do
 	db:get(ks, "user/MyApp")
 	assert(ks["user/MyApp/mykey"].value == "new_value")
 end
-]]--
