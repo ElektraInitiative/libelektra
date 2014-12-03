@@ -99,7 +99,7 @@ bool UndoManager::canPaste()
 
 void UndoManager::undoAll()
 {
-	m_undoStack->setIndex(0);
+	m_undoStack->setIndex(m_undoStack->cleanIndex());
 }
 
 void UndoManager::redoAll()
