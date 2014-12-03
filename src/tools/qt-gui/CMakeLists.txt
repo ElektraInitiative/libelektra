@@ -22,12 +22,13 @@ include_directories (
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5Test_INCLUDE_DIRS}
 	../kdb
+	src/markdownconverter
 	../../libtools/include
 	../../libtools/include/merging
 	../../libtools/include/helper
 	)
 
-file(GLOB qt-gui_HDRS "../kdb/*.hpp")
+file(GLOB qt-gui_HDRS "../kdb/*.hpp" "src/markdownconverter/*.h" "src/markdownconverter/template/*.h")
 
 add_headers (qt-gui_HDRS)
 add_cppheaders (qt-gui_HDRS)
@@ -37,7 +38,7 @@ file(GLOB kdb_SRCS "../kdb/*.cpp")
 file(GLOB kdb_NO_SRCS ../kdb/main.cpp ../kdb/factory.cpp)
 list(REMOVE_ITEM kdb_SRCS ${kdb_NO_SRCS})
 
-file(GLOB qt-gui_SRCS "src/*.cpp")
+file(GLOB qt-gui_SRCS "src/*.cpp" "src/markdownconverter/*.cpp" "src/markdownconverter/template/*.cpp")
 
 set(qt-gui_RSCS	resources.qrc)
 
@@ -49,7 +50,7 @@ qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}
-	${Qt5Test_LIBRARIES} elektra elektratools)
+	${Qt5Test_LIBRARIES} elektra elektratools markdown)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 

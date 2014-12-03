@@ -44,11 +44,11 @@ HEADERS += \
 	../kdb/test.hpp \
 	../kdb/umount.hpp \
 	../kdb/validation.hpp \
-#	src/markdownconverter/template/htmltemplate.h \
-#	src/markdownconverter/template/template.h \
-#	src/markdownconverter/discountmarkdownconverter.h \
-#	src/markdownconverter/markdownconverter.h \
-#	src/markdownconverter/markdowndocument.h \
+	src/markdownconverter/template/htmltemplate.h \
+	src/markdownconverter/template/template.h \
+	src/markdownconverter/discountmarkdownconverter.h \
+	src/markdownconverter/markdownconverter.h \
+	src/markdownconverter/markdowndocument.h \
 	../kdb/list.hpp \
 	../../libtools/include/plugins.hpp \
 	src/guibackend.hpp
@@ -95,8 +95,8 @@ SOURCES += \
 	../kdb/test.cpp \
 	../kdb/umount.cpp \
 	../kdb/validation.cpp \
-#	src/markdownconverter/template/htmltemplate.cpp \
-#	src/markdownconverter/discountmarkdownconverter.cpp \
+	src/markdownconverter/template/htmltemplate.cpp \
+	src/markdownconverter/discountmarkdownconverter.cpp \
 	../kdb/list.cpp \
 	src/guibackend.cpp
 
