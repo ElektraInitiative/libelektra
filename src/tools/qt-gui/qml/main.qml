@@ -301,11 +301,11 @@ ApplicationWindow {
 		id: newArrayWindow
 
 		title: qsTr("Create new Array Entry")
-		nameTextField.readOnly: true
-		nameTextField.textColor: disabledPalette.text
 
 		onVisibleChanged: {
 			if(visible === true){
+				nameTextField.readOnly = true
+				nameTextField.textColor = disabledPalette.text
 				nameTextField.text = treeView.currentNode.children.getCurrentArrayNo()
 				valueTextField.forceActiveFocus()
 			}
