@@ -157,6 +157,10 @@ public:
 
 	Q_INVOKABLE bool canPaste();
 
+	Q_INVOKABLE void undoAll();
+
+	Q_INVOKABLE void redoAll();
+
 Q_SIGNALS:
 
 	void canUndoChanged();

@@ -97,6 +97,16 @@ bool UndoManager::canPaste()
 	return !m_clipboardEmpty;
 }
 
+void UndoManager::undoAll()
+{
+	m_undoStack->setIndex(0);
+}
+
+void UndoManager::redoAll()
+{
+	m_undoStack->setIndex(m_undoStack->count());
+}
+
 void UndoManager::undo()
 {
 	m_undoStack->undo();
