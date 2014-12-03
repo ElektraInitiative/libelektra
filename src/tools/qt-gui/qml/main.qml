@@ -768,7 +768,16 @@ ApplicationWindow {
 
 			ToolButton {
 				id:tbNew
-				action: newKeyAction
+				iconSource: "icons/new-key.png"
+				enabled: newKeyAction.enabled
+				menu: Menu {
+					MenuItem {
+						action: newKeyAction
+					}
+					MenuItem {
+						action: newArrayAction
+					}
+				}
 			}
 			ToolButton {
 				id:tbDelete
@@ -790,6 +799,7 @@ ApplicationWindow {
 				id: tbUndoAll
 
 				implicitWidth: defaultMargins
+				enabled: undoAction.enabled
 				menu: Menu {
 					MenuItem {
 						action: undoAllAction
@@ -804,6 +814,7 @@ ApplicationWindow {
 				id: tbRedoAll
 
 				implicitWidth: defaultMargins
+				enabled: redoAction.enabled
 				menu: Menu {
 					MenuItem {
 						action: redoAllAction
@@ -815,7 +826,7 @@ ApplicationWindow {
 				action: synchronizeAction
 			}
 			Item {
-				width: Math.ceil(mainWindow.width*0.3 - 7*tbRedo.width - 7*defaultSpacing - defaultMargins)
+				width: Math.ceil(mainWindow.width*0.3 - 7*tbRedo.width - 9*defaultSpacing - 3*defaultMargins)
 				height: tbNew.height
 			}
 			Image {
