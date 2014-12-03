@@ -92,13 +92,8 @@ int main(int argc, char **argv)
 
 	init(argc, argv);
 
-#if 0
-#error disabled until elektra libraries can be loaded by \
-	the build system (and static build is gone)
-
 	test_open_close();
 	test_get_set();
-#endif
 
 	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n", argv[0],
 		nbTest, nbError);
