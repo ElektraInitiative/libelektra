@@ -1,3 +1,16 @@
+
+
+## test ##
+
+full coverage of all plugins in end-to-end test
+	create a directory value rewriter for ini+yajl
+
+test libelektratools:
+	addPlugin(Plugin) tests
+	usePath functionality?
+
+
+
 == ABI compatability tests ==
 
 need defined set of tests which only use tests.h (and not internal,..)

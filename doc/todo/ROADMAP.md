@@ -11,6 +11,10 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
+initial warnings 22, 93 when no /etc/kdb
+test racing
+
+
 ## fix relative ##
 
 plugins should use relative pathes so that import/export/remount works
@@ -28,22 +32,8 @@ DEFAULT_STORAGE/RESOLVER
 
 make / as logical root
 
-arbitrary cascading
-	ksLookup uses search folders (supplied by meta data)
-	(e.g. /system/keybindings /user/keybindings /system/sw/myapp/keybindings...)
-	allow fallback/override for contextual values
-
 cascading for kdbGet/Set:
 	read in spec and get/set needed subtrees
-
-cascading for ksLookup:
-	lookup in spec and use search folders and all requested domains
-
-terminology:
-	use consistent name for "user", "system", "local", "env" and "spec"
-	-> namespace
-
-getRootKeys vs. getNamespace
 
 applications should only need to use:
 kdbGet("/path/to/my/application")
@@ -52,16 +42,6 @@ ksLookup("/path/to/my/application/dir/key")
 
 defaults are hardcoded (for system without /etc)
 	just for information in spec
-
-
-## test ##
-
-test libelektratools:
-	addPlugin(Plugin) tests
-	usePath functionality?
-
-full coverage of all plugins in end-to-end test
-	create a directory value rewriter for ini+yajl
 
 
 ## meta data ##
