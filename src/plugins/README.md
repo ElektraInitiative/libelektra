@@ -94,10 +94,14 @@ Send out all changes to configuration to:
 - [journald](journald)
 - [syslog](syslog)
 
+
+## Debug ##
+
 Trace everything that happens within KDB:
 
-- [timeofday](timeofday)
+- [timeofday](timeofday) print timestamps
 - [tracer](tracer)
+- [counter](counter) count and print how often plugin is used
 
 
 ## Checker ##

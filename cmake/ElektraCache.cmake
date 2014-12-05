@@ -54,6 +54,7 @@ set (PLUGINS_LIST_NODEP
 	null
 	struct
 	tracer
+	counter
 	type
 	constants
 	noresolver
