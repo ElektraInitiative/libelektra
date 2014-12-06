@@ -95,9 +95,29 @@ void GUIBackend::addPath(const QString &path)
 							 KEY_END));
 }
 
-void GUIBackend::addPlugin(QString name)
+void GUIBackend::addPlugin(QString name, QStringList config)
 {
 	name.chop(name.length() - name.indexOf("[") + 1);
+
+	KDB kdb;
+	KeySet globalConf;
+	KeySet pluginConf;
+
+	try
+	{
+		kdb.get(globalConf, "/");
+	}
+	catch(KDBException const& ex)
+	{
+		//TODO: emit proper Error
+		qDebug() << "ERROR";
+	}
+
+	foreach(QString s, config)
+	{
+		Key k = globalConf.lookup(s.toStdString());
+		pluginConf.append(k.dup());
+	}
 
 	try
 	{
@@ -201,7 +221,16 @@ QString GUIBackend::mountPoints() const
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConf;
 	KDB kdb (parentKey);
-	kdb.get(mountConf, parentKey);
+
+	try
+	{
+		kdb.get(mountConf, parentKey);
+	}
+	catch(KDBException const& ex)
+	{
+		//TODO: emit proper Error
+		qDebug() << "ERROR";
+	}
 
 	QStringList mountPoints;
 	mountPoints.append("system/elektra");

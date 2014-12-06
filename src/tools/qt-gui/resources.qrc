@@ -52,5 +52,8 @@
         <file>qml/Page3.qml</file>
         <file>qml/ToolTip.qml</file>
         <file>qml/TooltipCreator.js</file>
+        <file>qml/ConfigSelector.qml</file>
+        <file>qml/icons/applications-system.png</file>
+        <file>qml/icons/help-about.png</file>
     </qresource>
 </RCC>

@@ -351,7 +351,7 @@ ApplicationWindow {
 						color: activePalette.text
 					}
 					Text {
-						text: "Version: 0.0.2 (alpha)"
+						text: "Version: 0.0.3 (alpha)"
 						color: activePalette.text
 					}
 				}

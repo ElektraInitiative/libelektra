@@ -65,8 +65,6 @@ ScrollView {
 						width: Math.max(itemLoader.width + columnIndent, row.width)
 						height: Math.max(row.height, itemLoader.height)
 						property var fillerModel: model
-						Drag.active: rowfillMouseArea.drag.active
-						Drag.dragType: Drag.Automatic
 
 						Rectangle {
 							id: rowfill
@@ -84,27 +82,13 @@ ScrollView {
 							acceptedButtons: Qt.LeftButton | Qt.RightButton
 							focus: true
 							hoverEnabled: true
-//							drag.target: parent
-//							onReleased: Drag.cancel()
 
 							onPressed: {
 								if(mouse.button == Qt.LeftButton){
 									currentNode = model
 									currentItem = itemLoader
-									keyAreaSelectedItem = null
-									metaAreaModel = null
-									editKeyWindow.selectedNode = currentNode
 									forceActiveFocus()
-
-									if (currentNode !== null){
-										if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
-											keyAreaModel = currentNode.children
-										else
-											keyAreaModel = null
-									}
 								}
-								else if(mouse.button == Qt.RightButton)
-									treeContextMenu.popup()
 							}
 							onDoubleClicked:{
 								if(!currentNode.isNull){
@@ -120,11 +104,6 @@ ScrollView {
 									timer.start()
 							}
 							onExited: TooltipCreator.destroy()
-							onPressAndHold: undoManager.putToClipboard("cut", currentNode.parentModel, currentNode.index)
-							onPositionChanged: {
-								if(mouse.pressed)
-									console.log(mouse.x + " " + mouse.y)
-							}
 
 							Item {
 								Timer {
@@ -135,7 +114,7 @@ ScrollView {
 
 									onTriggered: {
 										if(rowfillMouseArea.containsMouse && !isNull)
-											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
+											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, page2).show()
 									}
 								}
 							}
@@ -146,7 +125,7 @@ ScrollView {
 							Item {
 								width: rowHeight
 								height: rowHeight
-								opacity: model.childCount > 0 && !model.childrenHaveNoChildren ? 1 : 0
+								opacity: model.childCount > 0 ? 1 : 0
 
 								Image {
 									id: expander
@@ -168,13 +147,7 @@ ScrollView {
 									anchors.fill: parent
 									hoverEnabled: true
 
-									onClicked: {
-										if(model.childCount > 0 && !model.childrenHaveNoChildren){
-											itemLoader.expanded = !itemLoader.expanded
-											model.isExpanded = itemLoader.expanded
-											keyAreaView.selection.clear()
-										}
-									}
+									onClicked: itemLoader.expanded = !itemLoader.expanded
 								}
 							}
 							Loader {
@@ -183,21 +156,6 @@ ScrollView {
 								property var rowLoaderModel: fillerModel
 								sourceComponent: delegate
 								anchors.verticalCenter: parent.verticalCenter
-
-								DropArea {
-									anchors.fill: parent
-									width: 50; height: 50
-
-									Rectangle {
-										anchors.fill: parent
-										color: "green"
-
-										visible: parent.containsDrag
-									}
-									onEntered: console.log("entered")
-									onExited: console.log("exited")
-									onDropped: console.log("dropped")
-								}
 							}
 						}
 						Loader {
@@ -206,7 +164,7 @@ ScrollView {
 							x: columnIndent
 							height: expanded ? implicitHeight : 0
 							property var node: model
-							property bool expanded: model.isExpanded && model.childrenHaveNoChildren ? false : model.isExpanded
+							property bool expanded: false
 							property var elements: model.children
 							property var text: model.name
 							sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined

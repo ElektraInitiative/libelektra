@@ -6,8 +6,9 @@ import QtQuick.Controls.Styles 1.1
 Item {
 	id: page2
 
-	property bool includeStorage: true
-	property bool includeResolver: true
+	property bool	includeStorage: true
+	property bool	includeResolver: true
+	property var	config: []
 
 	ColumnLayout {
 
@@ -46,7 +47,7 @@ Item {
 
 				onClicked: {
 					if(!alreadyInList(pluginDropdown.currentText)){
-						guiBackend.addPlugin(pluginDropdown.currentText)
+						guiBackend.addPlugin(pluginDropdown.currentText, config)
 
 						if(!error){
 							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
@@ -56,6 +57,9 @@ Item {
 							  includeStorage = false
 							if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
 							  includeResolver = false
+
+							clearConfig()
+							page2.state = ""
 						}
 					}
 				}
@@ -119,11 +123,18 @@ Item {
 			id: pluginInfoRectangle
 
 			anchors.top: pluginInfoLabel.bottom
-			anchors.right: parent.right
+			anchors.right: addKeyToConfigButton.visible ? addKeyToConfigButton.left : configInfoSwitch.left
 			anchors.bottom: parent.bottom
 			anchors.topMargin: defaultSpacing
 			anchors.leftMargin: defaultMargins
+			anchors.rightMargin: defaultSpacing
 			implicitWidth: Math.ceil(wizardLoader.width*0.7)
+
+			ConfigSelector {
+				id: selector
+
+				visible: false
+			}
 
 			TextArea {
 				id: infoText
@@ -139,6 +150,38 @@ Item {
 					Qt.openUrlExternally(link)
 				}
 			}
+		}
+		Button {
+			id: addKeyToConfigButton
+
+			implicitWidth:  configInfoSwitch.implicitWidth
+			implicitHeight: implicitWidth
+
+			anchors.top: pluginInfoRectangle.top
+			anchors.right: configInfoSwitch.left
+
+			anchors.rightMargin: defaultSpacing
+
+			iconSource: "icons/list-add.png"
+			tooltip: qsTr("Add Key to Configuration for Plugin " + pluginDropdown.currentText.replace(/\[\w*\]/,""))
+			visible: false
+			enabled: selector.currentNode === null ? false : !selector.currentNode.isNull
+
+			onClicked: config.push(selector.currentNode.path)
+		}
+		Button {
+			id: configInfoSwitch
+
+			implicitWidth:  pluginDropdown.height
+			implicitHeight: implicitWidth
+
+			anchors.right: parent.right
+			anchors.top: pluginInfoRectangle.top
+
+			iconSource:  "icons/applications-system"
+			tooltip: qsTr("Show Configuration Selector")
+
+			onClicked: page2.state === "" ? page2.state = "SHOW_CONFIG_SELECTOR" : page2.state = ""
 		}
 	}
 	ButtonRow {
@@ -173,5 +216,39 @@ Item {
 		return false
 	}
 
+	function clearConfig() {
+
+		while(config.length > 0) {
+			config.pop();
+		}
+	}
+
+	states:
+		State {
+		name: "SHOW_CONFIG_SELECTOR"
+
+		PropertyChanges {
+			target: selector
+			visible: true
+		}
+		PropertyChanges {
+			target: infoText
+			visible: false
+		}
+		PropertyChanges {
+			target: addKeyToConfigButton
+			visible: true
+		}
+		PropertyChanges {
+			target: pluginInfoLabel
+			text: addKeyToConfigButton.tooltip
+
+		}
+		PropertyChanges {
+			target: configInfoSwitch
+			iconSource: "icons/help-about.png"
+			tooltip: qsTr("Show Plugin Info")
+		}
+	}
 }
 
