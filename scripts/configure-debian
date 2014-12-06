@@ -32,5 +32,5 @@ cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 \
 	-DENABLE_CXX11=ON \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="ALL;-swig_python3" \
+	-DBINDINGS="ALL" \
 	$SOURCE
