@@ -41,6 +41,7 @@ case
 + setup/teardown global+per test
 + supports death tests
 + writing many parts of it on our own adds to the total amount of code to write and maintain.
++ integrations into IDEs
 
 
 ## Implications
