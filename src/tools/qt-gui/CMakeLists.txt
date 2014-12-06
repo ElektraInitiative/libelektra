@@ -7,13 +7,14 @@ set(DISCOUNT_FIND_QUIETLY ON)
 
 add_definitions(-Wall)
 
-find_package(Qt5 COMPONENTS Core Quick Gui Qml Widgets Test)
+set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
+find_package(Qt5 COMPONENTS ${QCOMPONENTS})
 find_package(Discount)
 
 if (NOT Qt5_FOUND)
-	remove_tool(qt-gui "Did not find qt5")
+	remove_tool(qt-gui "qt5 (Components: ${QCOMPONENTS}) not found")
 elseif (NOT DISCOUNT_FOUND)
-	remove_tool(qt-gui "Did not find discount")
+	remove_tool(qt-gui "discount (libmarkdown) not found")
 else()
 
 include_directories (
