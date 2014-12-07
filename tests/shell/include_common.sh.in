@@ -19,14 +19,11 @@ nbTest=0
 # the script itself
 scriptName=`basename $0`
 
-#RANDOM does not work with testdata
-#RANDOM=`mktemp -u --tmpdir=/ XXXXXXXXXXXX`
-MOUNTPOINT="/tests/script$RANDOM"
-RANDOMNAME=`echo $RANDOM | tr / _`
-MOUNTNAME="_tests_script$RANDOMNAME"
+MOUNTPOINT="/tests/script"
+MOUNTNAME="_tests_script"
 
-USER_ROOT="user/tests/script$RANDOM"
-SYSTEM_ROOT="system/tests/script$RANDOM"
+USER_ROOT="user/tests/script"
+SYSTEM_ROOT="system/tests/script"
 
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]
@@ -197,6 +194,9 @@ is_plugin_available()
 	done
 	return 1
 }
+
+
+
 
 
 
