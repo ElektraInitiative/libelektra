@@ -119,6 +119,8 @@
 /**
  * @brief Opens the session with the Key database.
  *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
+ *
  * The method will bootstrap itself the following way.
  * The first step is to open the default backend. With it
  * system/elektra/mountpoints will be loaded and all needed
@@ -273,6 +275,10 @@ KDB * kdbOpen(Key *errorKey)
 /**
  * Closes the session with the Key database.
  *
+ * @pre The handle must be a valid handle as returned from kdbOpen()
+ *
+ * @pre errorKey must be a valid key, e.g. created with keyNew()
+ *
  * This is the counterpart of kdbOpen().
  *
  * You must call this method when you finished your affairs with the key
@@ -282,10 +288,6 @@ KDB * kdbOpen(Key *errorKey)
  *
  * The @p handle parameter will be finalized and all resources associated to it
  * will be freed. After a kdbClose(), the @p handle cannot be used anymore.
- *
- * @pre The handle must be a valid handle as returned from kdbOpen()
- *
- * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
@@ -417,6 +419,9 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
  *
+ * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
+ *     keyNew().
+ *
  * The @p returned KeySet may already contain some keys from previous
  * kdbGet() calls. The new retrieved keys will be appended using
  * ksAppendKey().
@@ -437,10 +442,7 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  *     Make sure to not touch or remove keys outside the keys of interest,
  *     because others may need them!
  *
- * @see ksCut() for further remarks on that topic.
- *
  * @par Example:
- *
  * This example demonstrates the typical usecase within an application
  * (without error handling).
  *
@@ -734,6 +736,16 @@ static void elektraSetRollback(Split *split, Key *parentKey)
 
 /** @brief Set keys in an atomic and universal way.
  *
+ * @pre kdbGet() must be called before kdbSet():
+ *    - initially (after kdbOpen())
+ *    - after conflict errors in kdbSet().
+ *
+ * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
+ *     with ksNew().
+ *
+ * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
+ *
+ *
  * With @p parentKey you can give an hint which part of the given keyset
  * was of interest for you. Then you promise, you did not modify or
  * remove any key not below this key.
@@ -819,10 +831,6 @@ keyDel(parentKey);
  * showElektraErrorDialog() and doElektraMerge() need to be implemented
  * by the user. For doElektraMerge a 3-way merge algorithm exists in
  * libelektra-tools.
- *
- * @pre kdbGet() must be called before kdbSet():
- *    - initially (after kdbOpen())
- *    - after conflict errors in kdbSet().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
