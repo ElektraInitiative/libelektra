@@ -1,0 +1,18 @@
+#include <kdb.h>
+#include <stdio.h>
+
+int main()
+{
+	KeySet *myConfig = ksNew(0, KS_END);
+	Key *parentKey = keyNew("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
+	KDB *handle = kdbOpen(parentKey);
+
+	kdbGet(handle, myConfig, parentKey); // kdbGet() must be first
+	// now any number of any kdbGet()/kdbSet() calls are allowed
+	kdbSet(handle, myConfig, parentKey);
+
+	ksDel (myConfig); // delete the in-memory configuration
+
+	kdbClose(handle, parentKey); // no more affairs with the key database.
+	keyDel(parentKey);
+}

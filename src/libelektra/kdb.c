@@ -33,6 +33,29 @@
  * See @link plugin writing a new plugin @endlink for information
  * about how to write a plugin.
  *
+ * @image html state.png "State"
+ * @image latex state.png "State"
+ *
+ * As we see in the figure, any number of kdbOpen() can be called in any
+ * number of threads.
+ *
+ * For every handle you got from kdbOpen(), for every parentKey with a
+ * different name, *only* the shown state transitions
+ * are valid. From a freshly opened KDB, only kdbGet() and kdbClose()
+ * are allowed, because otherwise conflicts would not be detected.
+ *
+ * Once kdbGet() was called (for a specific handle+parentKey),
+ * any number of kdbGet() and kdbSet() can be
+ * used with this handle respective parentKey.
+ * Every affair with KDB needs to be finished with kdbClose().
+ *
+ * The parentKey of kdbOpen() and kdbClose() do not matter.
+ *
+ * In the usual case we just have one parentKey and one handle. In
+ * these cases we just have to remember to use kdbGet() before kdbSet().
+ *
+ * @include getset.c
+ *
  * @{
  */
 
@@ -237,7 +260,7 @@ KDB * kdbOpen(Key *errorKey)
  * can run kdbClose() in the atexit() handler.
  *
  * The @p handle parameter will be finalized and all resources associated to it
- * will be freed. After a kdbClose(), the @p handle can't be used anymore.
+ * will be freed. After a kdbClose(), the @p handle cannot be used anymore.
  *
  * @pre The handle must be a valid handle as returned from kdbOpen()
  *
@@ -400,23 +423,7 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  * This example demonstrates the typical usecase within an application
  * (without error handling).
  *
- * @code
-KeySet *myConfig = ksNew(0,KS_END);
-Key *pkey = keyNew("system/sw/MyApp",KEY_END);
-KDB *handle = kdbOpen(pkey);
-
-kdbGet(handle, myConfig, pkey); // get the config initially
-
-Key *key = ksLookupByName(myConfig,"/sw/MyApp/key", 0);
-// check if key is not 0 and work with it...
-
-kdbGet(handle, myConfig, pkey); // get the config again
-
-ksDel (myConfig); // delete the in-memory configuration
-
-kdbClose(handle, pkey); // no more affairs with the key database.
-keyDel(pkey);
- * @endcode
+ * @include get.c
  *
  * @par Details:
  *
@@ -712,17 +719,13 @@ static void elektraSetRollback(Split *split, Key *parentKey)
  * When other keys also belong to a backend, they will be used too,
  * even when they are above @p parentKey.
  *
- * @par Details:
- *
- * If you pass a parentKey without a name the whole keyset will be set
- * in an atomic way.
+ * @par 
  *
  * Each key is checked with keyNeedSync() before being actually committed. So
  * only changed keys are updated. If no key of a backend needs to be synced
  * any affairs to backends omitted and 0 is returned.
  *
  * @par Errors:
- *
  * If some error occurs, kdbSet() will stop. In this situation the KeySet
  * internal cursor will be set on the key that generated the error.
  *
@@ -802,7 +805,11 @@ keyDel(parentKey);
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
- * @param parentKey holds the information below which key keys should be set, see above
+ * @param parentKey holds the information below which key keys should be set, either:
+ *           - cascading keys will set the path in all namespaces
+ *           - / will return all keys
+ *           - meta-names will be rejected (error 104)
+ *           - empty/invalid
  * @retval 1 on success
  * @retval 0 if nothing had to be done
  * @retval -1 on failure

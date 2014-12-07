@@ -4,12 +4,9 @@
 int main()
 {
 	KeySet *myConfig = ksNew(0, KS_END);
-	Key *key = keyNew("system/sw/MyApp",KEY_END);
+	Key *key = keyNew("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
 	KDB *handle = kdbOpen(key);
 
-	kdbGet(handle, myConfig, key);
-
-	keySetName(key, "user/sw/MyApp");
 	kdbGet(handle, myConfig, key);
 
 	// check for errors by in key
