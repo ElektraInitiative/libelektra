@@ -33,6 +33,7 @@
 #include <kdbhelper.h>
 
 #define BUFFER_LENGTH 4096
+#define ELEKTRA_TEST_ROOT "/test/ckdb/"
 
 extern int nbError;
 extern int nbTest;
