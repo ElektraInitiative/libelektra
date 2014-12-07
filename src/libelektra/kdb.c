@@ -26,30 +26,51 @@
  * The kdb*() methods are used to access the storage, to get and set
  * @link keyset KeySets @endlink.
  *
- * They use some backend implementation to know the details about how
- * to access the storage.
+ * Parameters common for all these functions are:
  *
+ * - *handle*, as returned by kdbOpen(), need to be passed to every call
+ * - *parentKey* is used for every call to add warnings and set an
+ *   error. For kdbGet() / kdbSet() it is used to give an hint which keys
+ *   should be retrieved/stored.
+ *
+ * @note The parentKey is an obligation for you, but only an hint for KDB.
+ * KDB does not remember anything
+ * about the configuration. You need to pass the same configuration
+ * back to kdbSet(), otherwise parts of the configuration get
+ * lost. Only keys below the parentKey are subject for change, the rest
+ * must be left untouched.
+ *
+ * KDB uses different backend implementations that know the details
+ * about how to access the storage.
  * One backend consists of multiple plugins.
  * See @link plugin writing a new plugin @endlink for information
  * about how to write a plugin.
+ * Backends are state-less regarding the configuration (because of that
+ * you must pass back the whole configuration for every backend), but
+ * have a state for:
+ *
+ * - a two phase-commit
+ * - a conflict detection (error 30) and
+ * - optimizations that avoid redoing already done operations.
  *
  * @image html state.png "State"
  * @image latex state.png "State"
  *
- * As we see in the figure, any number of kdbOpen() can be called in any
+ * As we see in the figure, kdbOpen() can be called arbitrarily often in any
  * number of threads.
  *
  * For every handle you got from kdbOpen(), for every parentKey with a
  * different name, *only* the shown state transitions
  * are valid. From a freshly opened KDB, only kdbGet() and kdbClose()
- * are allowed, because otherwise conflicts would not be detected.
+ * are allowed, because otherwise conflicts (error 30) would not be detected.
  *
  * Once kdbGet() was called (for a specific handle+parentKey),
  * any number of kdbGet() and kdbSet() can be
- * used with this handle respective parentKey.
+ * used with this handle respective parentKey, unless kdbSet() had
+ * a conflict (error 30) with another application.
  * Every affair with KDB needs to be finished with kdbClose().
  *
- * The parentKey of kdbOpen() and kdbClose() do not matter.
+ * The name of the parentKey in kdbOpen() and kdbClose() do not matter.
  *
  * In the usual case we just have one parentKey and one handle. In
  * these cases we just have to remember to use kdbGet() before kdbSet().
@@ -425,8 +446,6 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  *
  * @include get.c
  *
- * @par Details:
- *
  * If you pass NULL on any parameter kdbGet() will fail
  * immediately without doing anything.
  *
@@ -435,22 +454,22 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  * The parameter @p returned will not be changed.
  *
  * @par Updates:
- *
- * In the first run of kdbGet all keys are retrieved. On subsequent
+ * In the first run of kdbGet all requested (or more) keys are retrieved. On subsequent
  * calls only the keys are retrieved where something was changed
  * inside the key database. The other keys stay unchanged in the
- * keyset, even when they were manipulated.
+ * keyset, even if they were manipulated.
  *
  * It is your responsibility to save the original keyset if you
  * need it afterwards.
  *
- * If you must get the same keyset again, e.g. in another
- * thread you need to open a second handle to the key database
+ * If you want to get the same keyset again, you need to open a
+ * second handle to the key database
  * using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param parentKey parent key holds the information which keys should
- * 	be get (it is possible that more are retrieved) - an invalid name gets all keys
+ * @param parentKey is used to add warnings and set an error
+ *         information. Additionally, its name is an hint which keys
+ *         should be retrieved (it is possible that more are retrieved).
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
  * @see ksLookup(), ksLookupByName() for powerful
@@ -715,31 +734,33 @@ static void elektraSetRollback(Split *split, Key *parentKey)
 
 /** @brief Set keys in an atomic and universal way.
  *
- * With @p parentKey you can only store a part of the given keyset.
- * When other keys also belong to a backend, they will be used too,
- * even when they are above @p parentKey.
+ * With @p parentKey you can give an hint which part of the given keyset
+ * was of interest for you. Then you promise, you did not modify or
+ * remove any key not below this key.
  *
- * @par 
- *
- * Each key is checked with keyNeedSync() before being actually committed. So
- * only changed keys are updated. If no key of a backend needs to be synced
- * any affairs to backends omitted and 0 is returned.
- *
- * @par Errors:
+ * @par Errors
  * If some error occurs, kdbSet() will stop. In this situation the KeySet
  * internal cursor will be set on the key that generated the error.
+ * None of the keys are actually committed in this situation.
  *
- * None of the keys are actually commited.
- *
- * You should present the error message to the user and let the user decide what
+ * In case of errors you should present the error message to the user and let the user decide what
  * to do. Possible solutions are:
- * - repeat the same kdbSet (for temporary errors)
- * - remove the key and set it again (for validation or type errors)
- * - change the value and try it again (for validation errors)
- * - do a kdbGet and then (for conflicts ...)
+ * - remove the problematic key and use kdbSet() again (for validation or type errors)
+ * - change the value of the problematic key and use kdbSet() again (for validation errors)
+ * - do a kdbGet() (for conflicts, error 30) and then
  *   - set the same keyset again (in favour of what was set by this user)
  *   - drop the old keyset (in favour of what was set elsewhere)
+ *   - merge the original, your own and the other keyset
  * - export the configuration into a file (for unresolvable errors)
+ * - repeat the same kdbSet might be of limited use if the operator does
+ *   not request it, because temporary
+ *   errors are rare and its unlikely that it will be fixed by itself
+ *   (e.g. disc full)
+ *
+ * @par Optimization
+ * Each key is checked with keyNeedSync() before being actually committed. So
+ * only changed keys are updated. If no key of a backend needs to be synced
+ * any affairs to backends are omitted and 0 is returned.
  *
  * @par Example of how this method can be used:
  * @code
@@ -805,8 +826,10 @@ keyDel(parentKey);
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
- * @param parentKey holds the information below which key keys should be set, either:
- *           - cascading keys will set the path in all namespaces
+ * @param parentKey is used to add warnings and set an error
+ *         information. Additionally, its name is an hint which keys
+ *         should be committed (it is possible that more are changed).
+ *           - cascading names will set the path in all namespaces
  *           - / will return all keys
  *           - meta-names will be rejected (error 104)
  *           - empty/invalid
