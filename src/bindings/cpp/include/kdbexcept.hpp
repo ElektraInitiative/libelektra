@@ -30,7 +30,9 @@ public:
 
 	virtual const char* what() const throw()
 	{
-		if (m_str.empty())
+		if (m_str.empty() && !m_key.isValid())
+			return "Generic KDBException";
+		else if (m_str.empty())
 		{
 			// note that the code will be re-evaluated
 			// if it prints nothing, but an expensive
