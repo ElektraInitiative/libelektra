@@ -9,8 +9,10 @@ macro (do_glib_test file)
 
 	add_executable (${name} ${SOURCES})
 
-	set_target_properties (${name}
-		PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+	set_target_properties (
+		${name} PROPERTIES
+		COMPILE_DEFINITIONS HAVE_KDBCONFIG_H
+	)
 
 	set (GLIBS ${GELEKTRA_LIBRARY} ${GOBJECT_LIBRARIES})
 	target_link_libraries (${name} elektra ${GLIBS})
@@ -20,8 +22,17 @@ macro (do_glib_test file)
 		COMMAND "${CMAKE_BINARY_DIR}/bin/${name}" "${CMAKE_CURRENT_SOURCE_DIR}"
 	)
 
-	set_property(TEST ${name} PROPERTY
-		LABELS memleak bindings)
+	set_property (
+		TEST ${name}
+		PROPERTY LABELS memleak bindings
+	)
+
+	if (${name} MATCHES ".*_kdb")
+		set_property (
+			TEST ${name}
+			APPEND PROPERTY LABELS kdbtests
+		)
+	endif ()
 endmacro (do_glib_test)
 
 file (GLOB TESTS testglib_*.c)

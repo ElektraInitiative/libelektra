@@ -5,9 +5,24 @@ macro (do_lua_test source)
 	add_test (
 		NAME ${name}
 		COMMAND "lua" ${source}
+	)
+
+	set_property (
+		TEST ${name}
+		PROPERTY ENVIRONMENT "LUA_CPATH=${LUA_MODULEPATH}/?.so"
+	)
+
+	set_property (
+		TEST ${name}
+		PROPERTY LABELS memleak bindings
+	)
+
+	if (${name} MATCHES ".*_kdb")
+		set_property (
+			TEST ${name}
+			APPEND PROPERTY LABELS kdbtests
 		)
-	set_tests_properties (${name} PROPERTIES ENVIRONMENT "LUA_CPATH=${LUA_MODULEPATH}/?.so")
-	set_property(TEST ${name} PROPERTY LABELS memleak)
+	endif ()
 endmacro (do_lua_test)
 
 file (GLOB TESTS *.lua)
