@@ -18,6 +18,7 @@ ScrollView {
 	property var currentItem: null
 	property int treeAreaCopyIndex
 	property var currentNodePath
+	property var toolTipParent: mainWindow
 
 	Component.onCompleted: forceActiveFocus()
 
@@ -107,7 +108,7 @@ ScrollView {
 
 									onTriggered: {
 										if(rowfillMouseArea.containsMouse && !isNull)
-											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
+											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, toolTipParent).show()
 									}
 								}
 							}

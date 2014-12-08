@@ -121,10 +121,12 @@ void GUIBackend::addPlugin(QString name, QStringList config)
 
 	try
 	{
-		m_backend->addPlugin(name.toStdString());
+		m_backend->addPlugin(name.toStdString(), pluginConf);
 	}
 	// TODO: if exceptions are not handled differently, catching
 	// base class is enough
+	// Unfortunately if only the base class is catched, it is not possible to determine the cause of the
+	// exception, on every error the text will be: "When you read this, that means there was something wrong with the plugin."
 	catch(TooManyPlugins ex)
 	{
 		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");

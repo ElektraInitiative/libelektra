@@ -9,6 +9,9 @@ Item {
 	property bool	includeStorage: true
 	property bool	includeResolver: true
 	property var	config: []
+	property var	configModel: ListModel {
+		id: configModel
+	}
 
 	ColumnLayout {
 
@@ -59,6 +62,7 @@ Item {
 							  includeResolver = false
 
 							clearConfig()
+							configModel.clear()
 							page2.state = ""
 						}
 					}
@@ -94,7 +98,7 @@ Item {
 				anchors.margins: defaultSpacing
 
 				ListView {
-					id: includedBackendsView
+					id: includedPluginsView
 
 					model: ListModel {
 						id: includedPluginsModel
@@ -134,6 +138,7 @@ Item {
 				id: selector
 
 				visible: false
+				toolTipParent: page2
 
 				function expand(model, itemLoader){
 					itemLoader.expanded = !itemLoader.expanded
@@ -189,7 +194,12 @@ Item {
 			visible: false
 			enabled: selector.currentNode === null ? false : !selector.currentNode.isNull
 
-			onClicked: config.push(selector.currentNode.path)
+			onClicked: {
+				if(!alreadyInConfig(selector.currentNode.path)){
+					config.push(selector.currentNode.path)
+					configModel.append({"pluginName" : selector.currentNode.path})
+				}
+			}
 		}
 		Button {
 			id: configInfoSwitch
@@ -229,22 +239,6 @@ Item {
 		}
 	}
 
-	function alreadyInList(plugin) {
-
-		for(var i = 0; i < includedPluginsModel.count; i++){
-			if(includedPluginsModel.get(i).pluginName === plugin)
-				return true
-		}
-		return false
-	}
-
-	function clearConfig() {
-
-		while(config.length > 0) {
-			config.pop();
-		}
-	}
-
 	states:
 		State {
 		name: "SHOW_CONFIG_SELECTOR"
@@ -270,6 +264,38 @@ Item {
 			target: configInfoSwitch
 			iconSource: "icons/help-about.png"
 			tooltip: qsTr("Show Plugin Info")
+		}
+		PropertyChanges {
+			target: includedPluginsLabel
+			text: qsTr("Included Keys")
+		}
+		PropertyChanges {
+			target:  includedPluginsView
+			model: configModel
+		}
+	}
+
+	function alreadyInList(plugin) {
+
+		for(var i = 0; i < includedPluginsModel.count; i++){
+			if(includedPluginsModel.get(i).pluginName === plugin)
+				return true
+		}
+		return false
+	}
+
+	function alreadyInConfig(key) {
+		for(var i = 0; i < config.length; i++){
+			if(config[i].toString() === key)
+				return true
+			return false
+		}
+	}
+
+	function clearConfig() {
+
+		while(config.length > 0) {
+			config.pop();
 		}
 	}
 }
