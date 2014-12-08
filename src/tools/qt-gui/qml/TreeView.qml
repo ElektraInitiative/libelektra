@@ -65,8 +65,6 @@ ScrollView {
 						width: Math.max(itemLoader.width + columnIndent, row.width)
 						height: Math.max(row.height, itemLoader.height)
 						property var fillerModel: model
-						Drag.active: rowfillMouseArea.drag.active
-						Drag.dragType: Drag.Automatic
 
 						Rectangle {
 							id: rowfill
@@ -84,27 +82,9 @@ ScrollView {
 							acceptedButtons: Qt.LeftButton | Qt.RightButton
 							focus: true
 							hoverEnabled: true
-//							drag.target: parent
-//							onReleased: Drag.cancel()
 
 							onPressed: {
-								if(mouse.button == Qt.LeftButton){
-									currentNode = model
-									currentItem = itemLoader
-									keyAreaSelectedItem = null
-									metaAreaModel = null
-									editKeyWindow.selectedNode = currentNode
-									forceActiveFocus()
-
-									if (currentNode !== null){
-										if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
-											keyAreaModel = currentNode.children
-										else
-											keyAreaModel = null
-									}
-								}
-								else if(mouse.button == Qt.RightButton)
-									treeContextMenu.popup()
+								mousePressed(mouse, model, itemLoader)
 							}
 							onDoubleClicked:{
 								if(!currentNode.isNull){
@@ -114,17 +94,9 @@ ScrollView {
 								}
 							}
 							onEntered: {
-								if(mouse.pressed)
-									console.log("hold")
-								else
-									timer.start()
+								timer.start()
 							}
 							onExited: TooltipCreator.destroy()
-							onPressAndHold: undoManager.putToClipboard("cut", currentNode.parentModel, currentNode.index)
-							onPositionChanged: {
-								if(mouse.pressed)
-									console.log(mouse.x + " " + mouse.y)
-							}
 
 							Item {
 								Timer {
@@ -146,7 +118,7 @@ ScrollView {
 							Item {
 								width: rowHeight
 								height: rowHeight
-								opacity: model.childCount > 0 && !model.childrenHaveNoChildren ? 1 : 0
+								opacity: getOpacity(model)
 
 								Image {
 									id: expander
@@ -169,11 +141,7 @@ ScrollView {
 									hoverEnabled: true
 
 									onClicked: {
-										if(model.childCount > 0 && !model.childrenHaveNoChildren){
-											itemLoader.expanded = !itemLoader.expanded
-											model.isExpanded = itemLoader.expanded
-											keyAreaView.selection.clear()
-										}
+										expand(model, itemLoader)
 									}
 								}
 							}
@@ -183,21 +151,6 @@ ScrollView {
 								property var rowLoaderModel: fillerModel
 								sourceComponent: delegate
 								anchors.verticalCenter: parent.verticalCenter
-
-								DropArea {
-									anchors.fill: parent
-									width: 50; height: 50
-
-									Rectangle {
-										anchors.fill: parent
-										color: "green"
-
-										visible: parent.containsDrag
-									}
-									onEntered: console.log("entered")
-									onExited: console.log("exited")
-									onDropped: console.log("dropped")
-								}
 							}
 						}
 						Loader {
@@ -206,7 +159,7 @@ ScrollView {
 							x: columnIndent
 							height: expanded ? implicitHeight : 0
 							property var node: model
-							property bool expanded: model.isExpanded && model.childrenHaveNoChildren ? false : model.isExpanded
+							property bool expanded: getExpanded(model)
 							property var elements: model.children
 							property var text: model.name
 							sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined
@@ -215,5 +168,45 @@ ScrollView {
 				}
 			}
 		}
+	}
+
+	function expand(model, itemLoader) {
+		if(model.childCount > 0 && !model.childrenHaveNoChildren){
+			itemLoader.expanded = !itemLoader.expanded
+			model.isExpanded = itemLoader.expanded
+			keyAreaView.selection.clear()
+		}
+	}
+
+	function mousePressed(mouse, model, itemLoader) {
+		if(mouse.button === Qt.LeftButton){
+			currentNode = model
+			currentItem = itemLoader
+			keyAreaSelectedItem = null
+			metaAreaModel = null
+			editKeyWindow.selectedNode = currentNode
+			forceActiveFocus()
+
+			if (currentNode !== null){
+				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
+					keyAreaModel = currentNode.children
+				else
+					keyAreaModel = null
+			}
+		}
+		else if(mouse.button === Qt.RightButton)
+			treeContextMenu.popup()
+	}
+
+	function getOpacity(model) {
+		if(model.childCount > 0 && !model.childrenHaveNoChildren)
+			return 1
+		return 0
+	}
+
+	function getExpanded(model) {
+		if(model.isExpanded && model.childrenHaveNoChildren)
+			return false
+		return model.isExpanded
 	}
 }

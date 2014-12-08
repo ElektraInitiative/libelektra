@@ -130,10 +130,32 @@ Item {
 			anchors.rightMargin: defaultSpacing
 			implicitWidth: Math.ceil(wizardLoader.width*0.7)
 
-			ConfigSelector {
+			TreeView {
 				id: selector
 
 				visible: false
+
+				function expand(model, itemLoader){
+					itemLoader.expanded = !itemLoader.expanded
+				}
+
+				function mousePressed(mouse, model, itemLoader) {
+					if(mouse.button === Qt.LeftButton){
+						currentNode = model
+						currentItem = itemLoader
+						forceActiveFocus()
+					}
+				}
+
+				function getOpacity(model) {
+					if(model.childCount > 0)
+						return 1
+					return 0
+				}
+
+				function getExpanded(model) {
+					return false
+				}
 			}
 
 			TextArea {
