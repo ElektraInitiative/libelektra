@@ -54,5 +54,6 @@
         <file>qml/TooltipCreator.js</file>
         <file>qml/icons/applications-system.png</file>
         <file>qml/icons/help-about.png</file>
+        <file>qml/TreeViewFunctions.js</file>
     </qresource>
 </RCC>
