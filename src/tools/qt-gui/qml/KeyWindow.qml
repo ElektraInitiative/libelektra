@@ -4,6 +4,7 @@ import QtQuick.Window 2.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
+import "MainFunctions.js" as MFunctions
 
 BasicWindow {
 	id: keyWindow
@@ -148,7 +149,7 @@ BasicWindow {
 			editAccepted()
 		}
 		else
-			showMessage(qsTr("No Keyname"), qsTr("Please enter a keyname."), "", "", "w")
+			MFunctions.showMessage(qsTr("No Keyname"), qsTr("Please enter a keyname."), "", "", "w")
 	}
 
 	function cancelClicked() {

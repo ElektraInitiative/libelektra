@@ -4,6 +4,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
+import "MainFunctions.js" as MFunctions
 
 ApplicationWindow {
 	id: mainWindow
@@ -49,7 +50,7 @@ ApplicationWindow {
 		target: externTreeModel
 
 		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
 		}
 	}
 
@@ -57,7 +58,7 @@ ApplicationWindow {
 		target: guiBackend
 
 		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
 		}
 	}
 
@@ -65,7 +66,7 @@ ApplicationWindow {
 		target: treeView.currentNode === null ? null : treeView.currentNode.node
 
 		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
 		}
 	}
 
@@ -73,182 +74,11 @@ ApplicationWindow {
 		target: (keyAreaSelectedItem === null || keyAreaSelectedItem === 'undefined') ? null : keyAreaSelectedItem.node
 
 		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
 		}
 	}
 
-	//**Functions**********************************************************************************************//
 
-	//display an error message dialog
-	function showMessage(title, text, informativeText, detailedText, icon) {
-		generalMessageDialog.title = title
-		generalMessageDialog.text = text
-		generalMessageDialog.informativeText = informativeText
-		generalMessageDialog.detailedText = detailedText
-
-		if(icon === "")
-			generalMessageDialog.icon = StandardIcon.NoIcon
-		else if(icon === "q")
-			generalMessageDialog.icon = StandardIcon.Question
-		else if(icon === "i")
-			generalMessageDialog.icon = StandardIcon.Information
-		else if(icon === "w")
-			generalMessageDialog.icon = StandardIcon.Warning
-		else if(icon === "c")
-			generalMessageDialog.icon = StandardIcon.Critical
-
-		error = true
-		generalMessageDialog.open()
-	}
-
-	function cutKey() {
-		//console.log("cut Key")
-		//needed to mark the node
-		keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
-		keyAreaView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("cutKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-		isPasted = false
-	}
-
-	function cutBranch() {
-		//console.log("cut Branch")
-		treeView.treeAreaCopyIndex = treeView.currentNode.index
-		keyAreaView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("cutBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
-		isPasted = false
-	}
-
-	function copyKey() {
-		//console.log("copy Key")
-		//needed to mark the node
-		keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
-		keyAreaView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("copyKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-	}
-
-	function copyBranch() {
-		//console.log("copy Branch")
-		//needed to mark the node
-		treeView.treeAreaCopyIndex = treeView.currentNode.index
-		treeView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("copyBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
-	}
-
-	function paste() {
-
-		if(undoManager.clipboardType === "copyKey"){
-			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			keyAreaView.keyAreaCopyIndex = -1
-			keyAreaView.currentNodePath = ""
-			resetKeyAreaModel()
-			if(keyAreaSelectedItem === null){
-				keyAreaModel.refresh()
-			}
-		}
-		else if(undoManager.clipboardType === "copyBranch"){
-			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			externTreeModel.refresh()
-		}
-		else if(undoManager.clipboardType === "cutKey"){
-
-			keyAreaView.keyAreaCopyIndex = -1
-			keyAreaView.currentNodePath = ""
-
-			if(!isPasted){
-				undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-				isPasted = true
-			}
-			else{
-				undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			}
-
-			if(keyAreaSelectedItem === null){
-				keyAreaModel.refresh()
-			}
-		}
-		else if(undoManager.clipboardType === "cutBranch"){
-
-			if(!isPasted){
-				undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-				isPasted = true
-			}
-			else{
-				undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			}
-
-			externTreeModel.refresh()
-			if(keyAreaModel !== null)
-				keyAreaModel.refresh()
-		}
-	}
-
-	function deleteKey() {
-		//		console.log("delete key")
-		var cr = keyAreaView.currentRow
-
-		undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-
-		metaAreaModel = null
-		keyAreaSelectedItem = null
-		keyAreaModel.refresh()
-
-		if(keyAreaView.rowCount > 0){
-			keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
-			updateKeyAreaSelection()
-		}
-		else
-			keyAreaSelectedItem = null
-	}
-
-	function deleteBranch() {
-		//		console.log("delete branch")
-
-		undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
-
-		externTreeModel.refresh()
-		treeView.currentNode = null
-	}
-
-	function deleteSearchResult(){
-		//console.log("delete search result")
-		var ci = searchResultsListView.currentIndex
-
-		if(searchResultsSelectedItem !== null){
-
-			if(searchResultsSelectedItem.childCount > 0)
-				undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
-			else
-				undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
-
-			undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.node, searchResultsSelectedItem.index)
-
-			if(searchResultsListView.model.count() > 0){
-				searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.count() - 1)
-				searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
-			}
-			else
-				searchResultsSelectedItem = null
-		}
-	}
-
-	function updateKeyAreaSelection() {
-		keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
-		editKeyWindow.selectedNode = keyAreaSelectedItem
-		metaAreaModel = keyAreaSelectedItem.metaValue
-
-		keyAreaView.selection.clear()
-		keyAreaView.selection.select(keyAreaView.currentRow)
-		keyAreaView.forceActiveFocus()
-	}
-
-	function resetKeyAreaModel() {
-		keyAreaModel = null
-		keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
-	}
 
 	//**Colors*************************************************************************************************//
 
@@ -465,11 +295,11 @@ ApplicationWindow {
 
 		onTriggered: {
 			if(searchResultsSelectedItem !== null)
-				deleteSearchResult()
+				MFunctions.deleteSearchResult()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-				deleteBranch()
+				MFunctions.deleteBranch()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-				deleteKey()
+				MFunctions.deleteKey()
 		}
 	}
 
@@ -509,7 +339,7 @@ ApplicationWindow {
 
 			if(undoManager.undoText === "deleteKey"){
 				undoManager.undo()
-				//				resetKeyAreaModel()
+				//				MFunctions.resetKeyAreaModel()
 
 				//				if(keyAreaModel !== null)
 				//					keyAreaModel.refresh()
@@ -611,7 +441,7 @@ ApplicationWindow {
 			else if(undoManager.redoText === "copyBranch"){
 				undoManager.redo()
 				externTreeModel.refresh()
-				//				resetKeyAreaModel()
+				//				MFunctions.resetKeyAreaModel()
 			}
 			else if(undoManager.redoText === "cutKey"){
 				undoManager.redo()
@@ -710,9 +540,9 @@ ApplicationWindow {
 
 		onTriggered: {
 			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-				cutBranch()
+				MFunctions.cutBranch()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-				cutKey()
+				MFunctions.cutKey()
 		}
 	}
 
@@ -727,9 +557,9 @@ ApplicationWindow {
 
 		onTriggered: {
 			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-				copyBranch()
+				MFunctions.copyBranch()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-				copyKey()
+				MFunctions.copyKey()
 		}
 	}
 
@@ -742,7 +572,7 @@ ApplicationWindow {
 		shortcut: StandardKey.Paste
 		enabled: undoManager.canPaste
 
-		onTriggered: paste()
+		onTriggered: MFunctions.paste()
 	}
 
 	Action {
@@ -844,7 +674,7 @@ ApplicationWindow {
 						searchResultsListView.forceActiveFocus()
 					}
 					else
-						showMessage(qsTr("No Input"), qsTr("You need to enter a term to perform a search."),"","", "w")
+						MFunctions.showMessage(qsTr("No Input"), qsTr("You need to enter a term to perform a search."),"","", "w")
 				}
 			}
 		}
@@ -1056,13 +886,13 @@ ApplicationWindow {
 									}
 									else if(mouse.button === Qt.LeftButton){
 										keyAreaView.currentRow = styleData.row
-										updateKeyAreaSelection()
+										MFunctions.updateKeyAreaSelection()
 									}
 								}
 
 								onDoubleClicked: {
 									keyAreaView.currentRow = styleData.row
-									updateKeyAreaSelection()
+									MFunctions.updateKeyAreaSelection()
 									editKeyWindow.show()
 									editKeyWindow.populateMetaArea()
 								}
@@ -1073,14 +903,14 @@ ApplicationWindow {
 
 						if(event.key === Qt.Key_Up) {
 							keyAreaView.currentRow = keyAreaView.currentRow--
-							updateKeyAreaSelection()
+							MFunctions.updateKeyAreaSelection()
 						}
 						else if(event.key === Qt.Key_Down){
 							keyAreaView.currentRow = keyAreaView.currentRow++
-							updateKeyAreaSelection()
+							MFunctions.updateKeyAreaSelection()
 						}
 						else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
-							updateKeyAreaSelection()
+							MFunctions.updateKeyAreaSelection()
 							editKeyWindow.show()
 							editKeyWindow.populateMetaArea()
 						}

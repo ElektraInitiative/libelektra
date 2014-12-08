@@ -3,6 +3,7 @@ import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Dialogs 1.1
+import "MainFunctions.js" as MFunctions
 
 BasicWindow {
 
@@ -120,7 +121,7 @@ BasicWindow {
 			importDialog.close()
 		}
 		else{
-			showMessage(qsTr("No Input"), qsTr("Please enter the path of a compatible configuration file."), "", "", "w")
+			MFunctions.showMessage(qsTr("No Input"), qsTr("Please enter the path of a compatible configuration file."), "", "", "w")
 		}
 	}
 }
