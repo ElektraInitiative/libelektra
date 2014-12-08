@@ -1,0 +1,85 @@
+#include <kdb.h>
+
+#include <stdio.h>
+
+typedef enum
+{
+	INPUT_USE_OURS,
+	INPUT_DO_MERGE,
+	INPUT_USE_THEIRS
+} input;
+
+int showElektraErrorDialog (Key *parentKey, Key* problemKey)
+{
+	printf ("dialog for %s and %s\n",
+			keyName(parentKey),
+			keyName(problemKey));
+	int a;
+	scanf("%d", &a);
+	return a;
+}
+
+KeySet *doElektraMerge(KeySet *ours, KeySet *myConfig, KeySet *base)
+{
+	printf ("see libelektra-tools for merging"
+			" sizes are: %d %d %d\n",
+			(int) ksGetSize(ours),
+			(int) ksGetSize(myConfig),
+			(int) ksGetSize(base));
+	return ksNew(0, KS_END);
+}
+
+
+int main()
+{
+//! [set]
+KeySet *myConfig = ksNew(0, KS_END);
+Key *parentKey = keyNew("system/sw/MyApp",KEY_END);
+KDB *handle = kdbOpen(parentKey);
+
+kdbGet(handle, myConfig, parentKey); // kdbGet needs to be called first!
+KeySet *base = ksDup(myConfig); // save a copy of original keyset
+
+// change the keys within myConfig
+
+KeySet *ours = ksDup(myConfig); // save a copy of our keyset
+int ret=kdbSet(handle, myConfig, parentKey);
+while (ret == -1) // as long as we have an error
+{
+	// We got an error. Warn user.
+	Key *problemKey = ksCurrent(myConfig);
+	// parentKey has the errorInformation
+	// problemKey is the faulty key (may be null)
+	int userInput = showElektraErrorDialog (parentKey, problemKey);
+	switch (userInput)
+	{
+	case INPUT_USE_OURS:
+		kdbGet(handle, myConfig, parentKey); // refresh key database
+		ksDel(myConfig);
+		myConfig = ours;
+		break;
+	case INPUT_DO_MERGE:
+		kdbGet(handle, myConfig, parentKey); // refresh key database
+		KeySet * res=doElektraMerge(ours, myConfig, base);
+		ksDel(myConfig);
+		myConfig = res;
+		break;
+	case INPUT_USE_THEIRS:
+		// should always work, we just write what we got
+		// but to be sure always give the user another way
+		// to exit the loop
+		kdbGet(handle, myConfig, parentKey); // refresh key database
+		break;
+	// other cases ...
+	}
+	ret=kdbSet(handle, myConfig, parentKey);
+}
+
+ksDel (ours);
+ksDel (base);
+ksDel (myConfig); // delete the in-memory configuration
+
+kdbClose(handle, parentKey); // no more affairs with the key database.
+keyDel(parentKey);
+//! [set]
+}

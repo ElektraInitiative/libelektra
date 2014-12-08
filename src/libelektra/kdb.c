@@ -75,7 +75,7 @@
  * In the usual case we just have one parentKey and one handle. In
  * these cases we just have to remember to use kdbGet() before kdbSet().
  *
- * @include getset.c
+ * @include kdbintro.c
  *
  * @{
  */
@@ -139,22 +139,8 @@
  *
  * Get a @p KDB handle for every thread using elektra. Don't share the
  * handle across threads, and also not the pointer accessing it:
- * @code
-thread1
-{
-	KDB * h;
-	h = kdbOpen(parent);
-	// fetch keys and work with them
-	kdbClose(h, parent);
-}
-thread2
-{
-	KDB * h;
-	h = kdbOpen(parent);
-	// fetch keys and work with them
-	kdbClose(h, parent);
-}
- * @endcode
+ *
+ * @snippet kdbopen.c open
  *
  * You don't need kdbOpen() if you only want to
  * manipulate plain in-memory Key or KeySet objects.
@@ -446,7 +432,7 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  * This example demonstrates the typical usecase within an application
  * (without error handling).
  *
- * @include get.c
+ * @include kdbget.c
  *
  * If you pass NULL on any parameter kdbGet() will fail
  * immediately without doing anything.
@@ -774,59 +760,7 @@ static void elektraSetRollback(Split *split, Key *parentKey)
  * only changed keys are updated. If no key of a backend needs to be synced
  * any affairs to backends are omitted and 0 is returned.
  *
- * @par Example of how this method can be used:
- * @code
-int i;
-KeySet *myConfig = ksNew(0,KS_END);
-Key *parentKey = keyNew("system/sw/MyApp",KEY_END);
-KDB *handle = kdbOpen(pkey);
-
-kdbGet(handle, ks, parentKey); // kdbGet needs to be called first!
-KeySet *base = ksDup(ks); // save a copy of original keyset
-
-// change the keys within ks
-
-KeySet *ours = ksDup(ks); // save a copy of our keyset
-int ret=kdbSet(handle, ks, parentKey);
-while (ret == -1) // as long as we have an error
-{
-	// We got an error. Warn user.
-	Key *problemKey = ksCurrent(ks);
-	// parentKey has the errorInformation
-	// problemKey is the faulty key (may be null)
-	int userInput = showElektraErrorDialog (parentKey, problemKey);
-	switch (userInput)
-	{
-	case INPUT_USE_OURS:
-		kdbGet(handle, ks, parentKey); // refresh key database
-		ksDel(ks);
-		ks = ours;
-		break;
-	case INPUT_DO_MERGE:
-		kdbGet(handle, ks, parentKey); // refresh key database
-		KeySet * res=doElektraMerge(ours, ks, base);
-		ksDel(ks);
-		ks = res;
-		break;
-	case INPUT_USE_THEIRS:
-		// should always work, we just write what we got
-		// but to be sure always give the user another way
-		// to exit the loop
-		kdbGet(handle, ks, parentKey); // refresh key database
-		break;
-	...
-	}
-	ret=kdbSet(handle, ks, parentKey);
-}
-
-ksDel (ours);
-ksDel (base);
-ksDel (ks); // delete the in-memory configuration
-
-kdbClose(handle, parentKey); // no more affairs with the key database.
-keyDel(parentKey);
-
- * @endcode
+ * @snippet kdbset.c set
  *
  * showElektraErrorDialog() and doElektraMerge() need to be implemented
  * by the user. For doElektraMerge a 3-way merge algorithm exists in
