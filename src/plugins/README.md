@@ -10,7 +10,7 @@ The plugins are:
 ![Overview Plugins](/doc/images/overview_plugins.png)
 
 
-## Storage ##
+## Resolver ##
 
 Before configuration is actually written, the file name needs to be
 determined (will be automatically added by kdb mount):
@@ -24,9 +24,14 @@ harddisc (recommended to add at every kdb mount):
 
 - [sync](sync) uses POSIX APIs to sync configuration file with harddisc
 
+## Storage ##
+
+Are responsible for reading writing the configuration to configuration
+files.
+
 Read and write everything a KeySet might contain:
 
-- [dump](dump) makes a dump of a KeySet
+- [dump](dump) makes a dump of a KeySet in an Elektra-specific format
 
 Read (and write) standard config files of /etc:
 
@@ -37,8 +42,11 @@ Read (and write) standard config files of /etc:
 
 Using semi-structured data for config files:
 
-- [tcl](tcl)-like config files (including meta data)
-- [ini](ini) other hierarchical INI
+- [tcl](tcl)-like config files (including meta data).
+- [ni](ni) parses INI files based on
+    [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).
+- [ini](ini) parses INI files based on
+    [inih](http://code.google.com/p/inih/).
 - [xmltool](xmltool) uses XML.
 - [yajl](yajl#introduction) uses JSON.
 
@@ -46,7 +54,6 @@ Plugins that just show some functionality, (currently) not intended for
 productive use:
 
 - [fstab](fstab) reads fstab files.
-- [ni](ni) uses hierarchical INI files (with nested sections)
 - [regexstore](regexstore)
 - [simpleini](simpleini) is ini without sections
 
