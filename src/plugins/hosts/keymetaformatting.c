@@ -16,13 +16,14 @@
 
 static void elektraAddCommentInfo(KeySet *comments, Key *commentBase, size_t spaces, const char *commentStart, const char *comment)
 {
+	keySetString (commentBase, comment);
+
 	if (commentStart)
 	{
 		/* this comment contains actual comment data */
 		Key *commentStartKey = keyDup (commentBase);
 		keyAddBaseName (commentStartKey, "start");
 		keySetString (commentStartKey, commentStart);
-		keySetString (commentBase, comment);
 		ksAppendKey (comments, commentStartKey);
 	}
 
