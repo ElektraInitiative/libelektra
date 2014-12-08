@@ -279,6 +279,10 @@ void test_readHostsComments(char *fileName)
 	succeed_if (lineComment3Spaces, "space key for line comment does not exist");
 	succeed_if (!strcmp(keyString(lineComment3Spaces), "0"), "space key for line comment contains wrong number of spaces");
 
+	/* empty line */
+	const Key *emptyLine = keyGetMeta(key, "comment/#4");
+	succeed_if (emptyLine, "comment key for line comment does not exist");
+	succeed_if (!strcmp("", keyString(emptyLine)), "line comment key contains data although it shouldn't")
 
 	/* SECOND ENTRY */
 	Key *key2 = ksLookupByName(ks, "user/tests/hosts/ipv4/testentry", 0);
@@ -365,6 +369,7 @@ void test_writeHostsComments(char *fileName)
 					KEY_META, "comment/#2", "",
 					KEY_META, "comment/#3", " comment for localhost",
 					KEY_META, "comment/#3/start", "#",
+					KEY_META, "comment/#4", "",
 					KEY_END),
 			keyNew ("user/tests/hosts/ipv4/testentry",
 					KEY_VALUE, "192.168.0.1",
