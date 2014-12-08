@@ -330,14 +330,37 @@ QStringList GUIBackend::nameFilters()
 	QStringList nameFilters;
 	QStringList plugins = availablePlugins(true, false);
 
+	plugins = plugins.filter("[storage]");
 	plugins.replaceInStrings(QRegExp("\\s\\[\\w*\\]"), "");
 
-	nameFilters.append("ECF (*.ecf)");
+	nameFilters.append("DUMP (*.ecf)");
 
-	if(plugins.contains("xmltool"))
-		nameFilters.append("XML (*.xml)");
 	if(plugins.contains("ini"))
 		nameFilters.append("INI (*.ini)");
+	if(plugins.contains("ni"))
+		nameFilters.append("NICKEL (*.ini)");
+	if(plugins.contains("simpleini"))
+		nameFilters.append("SIMPLEINI (*.ini)");
+	if(plugins.contains("fstab"))
+		nameFilters.append("FSTAB (*.*)");
+	if(plugins.contains("hosts"))
+		nameFilters.append("HOSTS (*.*)");
+	if(plugins.contains("line"))
+		nameFilters.append("LINE (*.*)");
+	if(plugins.contains("regexstore"))
+		nameFilters.append("REGEXSTORE (*.*)");
+	if(plugins.contains("tcl"))
+		nameFilters.append("TCL (*.tcl)");
+	if(plugins.contains("xmltool"))
+		nameFilters.append("XMLTOOL (*.xml)");
+	if(plugins.contains("uname"))
+		nameFilters.append("UNAME (*.*)");
+	if(plugins.contains("yajl"))
+		nameFilters.append("YAJL (*.json)");
+	if(plugins.contains("constants"))
+		nameFilters.append("CONSTANTS (*.*)");
+
+	nameFilters.sort();
 
 	return nameFilters;
 }
