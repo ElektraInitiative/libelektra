@@ -24,7 +24,7 @@
  * @endcode
  *
  * The kdb*() methods are used to access the storage, to get and set
- * @link keyset KeySets @endlink.
+ * @link keyset KeySets@endlink.
  *
  * Parameters common for all these functions are:
  *
@@ -70,12 +70,21 @@
  * a conflict (error 30) with another application.
  * Every affair with KDB needs to be finished with kdbClose().
  *
- * The name of the parentKey in kdbOpen() and kdbClose() do not matter.
+ * The name of the parentKey in kdbOpen() and kdbClose() does not matter.
  *
  * In the usual case we just have one parentKey and one handle. In
- * these cases we just have to remember to use kdbGet() before kdbSet().
+ * these cases we just have to remember to use kdbGet() before
+ * kdbSet():
  *
  * @include kdbintro.c
+ *
+ * To output warnings, you can use following code:
+ *
+ * @snippet tests.c warnings
+ *
+ * To output the error, you can use following code:
+ *
+ * @snippet tests.c error
  *
  * @{
  */
@@ -131,7 +140,6 @@
  * You must always call this method before retrieving or committing any
  * keys to the database. In the end of the program,
  * after using the key database, you must not forget to kdbClose().
- * You can use the atexit () handler for it.
  *
  * The pointer to the @p KDB structure returned will be initialized
  * like described above, and it must be passed along on any kdb*()
@@ -269,15 +277,14 @@ KDB * kdbOpen(Key *errorKey)
  *
  * You must call this method when you finished your affairs with the key
  * database. You can manipulate Key and KeySet objects also after
- * kdbClose(), but you must not use any kdb*() call afterwards. You
- * can run kdbClose() in the atexit() handler.
+ * kdbClose(), but you must not use any kdb*() call afterwards.
  *
  * The @p handle parameter will be finalized and all resources associated to it
  * will be freed. After a kdbClose(), the @p handle cannot be used anymore.
  *
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
- * @param errorKey the key which holds error information
+ * @param errorKey the key which holds error/warning information
  * @retval 0 on success
  * @retval -1 on NULL pointer
  * @ingroup kdb

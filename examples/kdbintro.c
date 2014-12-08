@@ -1,5 +1,4 @@
 #include <kdb.h>
-#include <stdio.h>
 
 int main()
 {
@@ -8,11 +7,11 @@ int main()
 	KDB *handle = kdbOpen(parentKey);
 
 	kdbGet(handle, myConfig, parentKey); // kdbGet() must be first
-	// now any number of any kdbGet()/kdbSet() calls are allowed
+	// now any number of any kdbGet()/kdbSet() calls are allowed, e.g.:
 	kdbSet(handle, myConfig, parentKey);
 
 	ksDel (myConfig); // delete the in-memory configuration
 
 	kdbClose(handle, parentKey); // no more affairs with the key database.
-	keyDel(parentKey);
+	keyDel(parentKey); // working with key/ks does not need kdb
 }
