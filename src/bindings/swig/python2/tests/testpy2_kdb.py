@@ -54,7 +54,8 @@ class KDB(unittest.TestCase):
 			db.get(ks, TEST_NS)
 			self.assertEqual(ks[TEST_NS + "/mykey"].value, "new_value")
 
-	def tearDownClass():
+	@classmethod
+	def tearDownClass(cls):
 		# cleanup
 		with kdb.KDB() as db:
 			ks = kdb.KeySet(100)
