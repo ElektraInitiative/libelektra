@@ -27,7 +27,7 @@ namespace kdb
  * Key (static_cast<ckdb::Key*>(0));
  * or made empty afterwards by using release() or assign a null key.
  * To check if there is an associated managed object the user
- * can use operator bool().
+ * can use isNull().
  *
  * @par references
  * Copies of keys are cheap because they are only flat.
@@ -45,7 +45,7 @@ namespace kdb
  * @invariant Key either has a working underlying Elektra Key
  * object or a null pointer.
  * The Key, however, might be invalid (see isValid()) or null
- * (see operator bool()).
+ * (see isNull()).
  *
  * @note that the reference counting in the keys is mutable,
  * so that const keys can be passed around by value.
@@ -122,6 +122,7 @@ public:
 	inline bool operator > (const Key& other) const;
 	inline bool operator >= (const Key& other) const;
 
+	inline bool isNull() const;
 	inline operator bool() const;
 
 	// value operations
@@ -191,7 +192,7 @@ private:
  * @note That this is not a null key, so the key will
  * evaluate to true.
  *
- * @see isValid(), operator bool()
+ * @see isValid(), isNull()
  */
 inline Key::Key () :
 	key(ckdb::keyNew (0))
@@ -207,7 +208,7 @@ inline Key::Key () :
  *
  * @param k the key to work with
  *
- * @see isValid(), operator bool()
+ * @see isValid(), isNull()
  */
 inline Key::Key (ckdb::Key * k) :
 	key(k)
@@ -394,7 +395,7 @@ inline void Key::copy (const Key &other)
  * isValid() will, however, be false.
  *
  * @see release()
- * @see isValid(), operator bool()
+ * @see isValid(), isNull()
  *
  * @copydoc keyClear
  */
@@ -670,17 +671,31 @@ inline bool Key::operator >= (const Key& other) const
 /**
  * This is for loops and lookups only.
  *
+ * Opposite of isNull()
+ *
  * For loops it checks if there are still more keys.
  * For lookups it checks if a key could be found.
  *
  * @warning you should not construct or use null keys
  *
+ * @see isNull(), isValid()
  * @return false on null keys
  * @return true otherwise
  */
 inline Key::operator bool() const
 {
-	return key != 0;
+	return !isNull();
+}
+
+/**
+ * @brief Checks if C++ wrapper has an underlying key
+ *
+ * @see operator bool(), isValid()
+ * @return true if no underlying key exists
+ */
+inline bool Key::isNull() const
+{
+	return key == 0;
 }
 
 /**
