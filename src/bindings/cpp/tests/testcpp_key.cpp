@@ -10,12 +10,15 @@ void test_null()
 
 	Key key0(static_cast<ckdb::Key*>(0));
 	succeed_if (!key0, "key should evaluate to false");
+	succeed_if (key0.isNull(), "key should evaluate to false");
 
 	key0 = static_cast<ckdb::Key*>(0);
 	succeed_if (!key0, "key should evaluate to false");
+	succeed_if (key0.isNull(), "key should evaluate to false");
 
 	key0.release();
 	succeed_if (!key0, "key should evaluate to false");
+	succeed_if (key0.isNull(), "key should evaluate to false");
 }
 
 void test_keynew()
