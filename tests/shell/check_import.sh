@@ -32,21 +32,22 @@ do
 
 	if [ $PLUGIN = "ini" ]
 	then
-		#TODO: broken?
+		#TODO: broken
 		continue
 	fi
+
 
 	echo -------- $PLUGIN -----------
 
 	echo "Import with existing root"
 
-    if [ "x$PLUGIN" != "xyajl" ]
-    then
-        $KDB set $ROOT "root" >/dev/null
-    else
-        $KDB set $ROOT "" > /dev/null    
-    fi
-    
+	if [ "x$PLUGIN" != "xyajl" ]
+	then
+		$KDB set $ROOT "root" >/dev/null
+	else
+		$KDB set $ROOT "" > /dev/null    
+	fi
+
 	exit_if_fail "could not set root"
 
 	test `$KDB ls $ROOT` = $ROOT
@@ -60,7 +61,6 @@ do
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
-		#TODO: ini currently cannot represent the parentKey
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -88,7 +88,6 @@ do
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
-        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -119,7 +118,6 @@ do
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
-        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -162,7 +160,6 @@ user/tests/script/key"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
-        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -193,7 +190,6 @@ user/tests/script/key"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
-        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -235,7 +231,6 @@ user/tests/script/key"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
-        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $ROOT`" = root
@@ -250,7 +245,6 @@ user/tests/script/key"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
 	then
-        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $SIDE`" = val
