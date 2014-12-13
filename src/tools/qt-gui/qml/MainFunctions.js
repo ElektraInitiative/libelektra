@@ -1,23 +1,12 @@
 //display an error message dialog
 function showMessage(title, text, informativeText, detailedText, icon) {
-	generalMessageDialog.title = title
-	generalMessageDialog.text = text
-	generalMessageDialog.informativeText = informativeText
-	generalMessageDialog.detailedText = detailedText
-
-	if(icon === "")
-		generalMessageDialog.icon = StandardIcon.NoIcon
-	else if(icon === "q")
-		generalMessageDialog.icon = StandardIcon.Question
-	else if(icon === "i")
-		generalMessageDialog.icon = StandardIcon.Information
-	else if(icon === "w")
-		generalMessageDialog.icon = StandardIcon.Warning
-	else if(icon === "c")
-		generalMessageDialog.icon = StandardIcon.Critical
+	errorDialog.title = title
+	errorDialog.text = text
+	errorDialog.informativeText = informativeText
+	errorDialog.detailedText = detailedText
 
 	error = true
-	generalMessageDialog.open()
+	errorDialog.show()
 }
 
 function cutKey() {

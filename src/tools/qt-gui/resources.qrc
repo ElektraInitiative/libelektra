@@ -56,5 +56,8 @@
         <file>qml/icons/help-about.png</file>
         <file>qml/TreeViewFunctions.js</file>
         <file>qml/MainFunctions.js</file>
+        <file>qml/icons/dialog-error.png</file>
+        <file>qml/GeneralMessageDialog.qml</file>
+        <file>qml/icons/dialog-warning.png</file>
     </qresource>
 </RCC>

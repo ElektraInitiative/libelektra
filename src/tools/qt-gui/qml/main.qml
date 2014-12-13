@@ -244,10 +244,8 @@ ApplicationWindow {
 		id: importDialog
 	}
 
-	MessageDialog {
-		id:generalMessageDialog
-
-		onAccepted: error = false
+	GeneralMessageDialog {
+		id: errorDialog
 	}
 
 	FileDialog {
