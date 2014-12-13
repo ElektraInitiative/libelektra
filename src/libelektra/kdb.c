@@ -335,6 +335,7 @@ static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
 	{
 		int ret = 0;
 		Backend *backend = split->handles[i];
+		clear_bit(split->syncbits[i], 1);
 
 		if (backend->getplugins[0])
 		{
@@ -358,7 +359,7 @@ static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
 		if (ret == 1)
 		{
 			/* Seems like we need to sync that */
-			split->syncbits[i] |= 1;
+			set_bit(split->syncbits[i], 1);
 			++ updateNeededOccurred;
 		}
 	}
@@ -376,6 +377,11 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
 {
 	for (size_t i=0; i<split->size-1;i++)
 	{
+		if (test_bit(split->syncbits[i], 0))
+		{
+			// skip it, nothing needs to be done here
+			continue;
+		}
 		Backend *backend = split->handles[i];
 		ksRewind (split->keysets[i]);
 		keySetName (parentKey, keyName(split->parents[i]));
