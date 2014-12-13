@@ -7,8 +7,7 @@ FileDialog {
 	selectExisting: false
 
 	onAccepted: {
-		var plugin = selectedNameFilter.match(/[A-Z]+/).toString()
-		plugin = plugin.toLowerCase()
+		var plugin = selectedNameFilter.match(/[a-z]+/).toString()
 
 		externTreeModel.exportConfiguration(treeView.currentNode.parentModel, treeView.currentNode.index, plugin, exportDialog.fileUrl)
 	}
