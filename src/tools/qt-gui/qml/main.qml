@@ -50,7 +50,7 @@ ApplicationWindow {
 		target: externTreeModel
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -58,7 +58,7 @@ ApplicationWindow {
 		target: guiBackend
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -66,7 +66,7 @@ ApplicationWindow {
 		target: treeView.currentNode === null ? null : treeView.currentNode.node
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -74,7 +74,7 @@ ApplicationWindow {
 		target: (keyAreaSelectedItem === null || keyAreaSelectedItem === 'undefined') ? null : keyAreaSelectedItem.node
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, informativeText, detailedText, icon)
+			MFunctions.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -669,8 +669,6 @@ ApplicationWindow {
 						searchResultsListView.currentIndex = -1
 						searchResultsListView.forceActiveFocus()
 					}
-					else
-						MFunctions.showMessage(qsTr("No Input"), qsTr("You need to enter a term to perform a search."),"","", "w")
 				}
 			}
 		}

@@ -9,9 +9,12 @@ BasicWindow {
 
 	property string title
 	property string text
-	property string informativeText
 	property string detailedText
+	property alias	icon: icon
+
 	cancelButton.visible: false
+	detailsButton.visible: detailedText.length > 0
+	detailsButton.onClicked: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
 	okButton.onClicked: {
 		generalMessageDialog.close()
 		error = false
@@ -49,17 +52,6 @@ BasicWindow {
 				wrapMode: Text.WrapAnywhere
 			}
 		}
-
-		Button {
-			id: showDetailsButton
-
-			width: okButton.width
-			height: okButton.height
-			text: qsTr("Show Details")
-			visible: detailedText.length > 0
-			onClicked: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
-		}
-
 		BasicRectangle {
 			id: detailsRectangle
 
@@ -100,7 +92,7 @@ BasicWindow {
 						height: mainTextItem.height + detailedText.height + okButton.height
 					}
 					PropertyChanges {
-						target: showDetailsButton
+						target: detailsButton
 						text: qsTr("Hide Details")
 					}
 				}

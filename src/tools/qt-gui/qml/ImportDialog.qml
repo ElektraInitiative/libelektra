@@ -11,6 +11,7 @@ BasicWindow {
 	height: Math.ceil(importMergeGroup.height*4)
 
 	property alias importTextField: importTextField
+	okButton.enabled: importTextField.text !== ""
 
 	BasicRectangle {
 		anchors.fill: parent
@@ -106,18 +107,14 @@ BasicWindow {
 	}
 
 	okButton.onClicked: {
-		if(importTextField.text !== ""){
-			var plugin = importFileDialog.selectedNameFilter.match(/[A-Z]+/).toString()
-			plugin = plugin.toLowerCase()
 
-			undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
-			externTreeModel.refresh()
-			importTextField.text = ""
-			preserve.checked = true
-			importDialog.close()
-		}
-		else{
-			MFunctions.showMessage(qsTr("No Input"), qsTr("Please enter the path of a compatible configuration file."), "", "", "w")
-		}
+		var plugin = importFileDialog.selectedNameFilter.match(/[A-Z]+/).toString()
+		plugin = plugin.toLowerCase()
+
+		undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
+		externTreeModel.refresh()
+		importTextField.text = ""
+		preserve.checked = true
+		importDialog.close()
 	}
 }

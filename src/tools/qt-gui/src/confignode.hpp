@@ -209,7 +209,7 @@ private:
 	void populateMetaModel();
 
 signals:
-	void showMessage(QString title, QString text, QString informativeText, QString detailedText, QString icon);
+	void showMessage(QString title, QString text, QString detailedText);
 
 public slots:
 	void setIsExpanded(bool value);

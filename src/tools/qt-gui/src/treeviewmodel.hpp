@@ -194,7 +194,7 @@ protected:
 	QHash<int, QByteArray>      roleNames() const;
 
 signals:
-	void showMessage(QString title, QString text, QString informativeText, QString detailedText, QString icon) const;
+	void showMessage(QString title, QString text, QString detailedText) const;
 	void expandNode(bool);
 };
 

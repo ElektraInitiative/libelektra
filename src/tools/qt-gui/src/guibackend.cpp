@@ -34,7 +34,7 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	}
 	catch(KDBException ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), "", QString(ex.what()), "c");
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
 	}
 
 	Key cur = m_mountConf.lookup(parentKey);
@@ -53,11 +53,11 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	}
 	catch(MountpointInvalidException ex)
 	{
-		emit showMessage(tr("Error"), tr("The provided mount point is invalid."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("The provided mount point is invalid."), ex.what());
 	}
 	catch(MountpointAlreadyInUseException ex)
 	{
-		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), ex.what());
 	}
 
 	m_name = mountpoint;
@@ -72,11 +72,11 @@ void GUIBackend::addPath(const QString &path)
 	}
 	catch(FileNotValidException ex)
 	{
-		emit showMessage(tr("Error"), tr("The file you have entered is not valid."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("The file you have entered is not valid."), ex.what());
 	}
 	catch(MissingSymbol ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add file."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add file."), ex.what());
 	}
 
 	std::string configPath = Backends::getConfigBasePath(m_name.toStdString());
@@ -129,59 +129,59 @@ void GUIBackend::addPlugin(QString name, QStringList config)
 	// exception, on every error the text will be: "When you read this, that means there was something wrong with the plugin."
 	catch(TooManyPlugins ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(OrderingViolation ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(ConflictViolation ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(ReferenceNotFound ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(MissingNeeded ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(MissingSymbol ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(SymbolMismatch ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(SymbolDuplicate ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(StoragePlugin ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(ResolverPlugin ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(PluginNoContract ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(PluginNoInfo ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(VersionInfoMismatch ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 	catch(PluginCheckException ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
 }
 
@@ -195,16 +195,16 @@ void GUIBackend::serialise()
 	}
 	catch(ToolException ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not serialise backend."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not serialise backend."), ex.what());
 	}
 
 	try
 	{
 		m_kdb.set(m_mountConf, rootKey);
 	}
-	catch (kdb::KDBException const& e)
+	catch (kdb::KDBException const& ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not write backend to configuration."), "", QString(e.what()), "c");
+		emit showMessage(tr("Error"), tr("Could not write backend to configuration."), ex.what());
 	}
 }
 

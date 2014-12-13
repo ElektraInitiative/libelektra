@@ -135,21 +135,17 @@ BasicWindow {
 		}
 	}
 
+	okButton.enabled: nameTextField.text !== ""
 	okButton.onClicked: okClicked()
 	cancelButton.onClicked: cancelClicked()
 
 	function okClicked(){
+		//check if user has edited keyname or keyvalue
+		if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
+			isEdited = true
 
-		if(nameTextField.text !== ""){
-			//check if user has edited keyname or keyvalue
-			if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
-				isEdited = true
-
-			keyWindow.visible = false
-			editAccepted()
-		}
-		else
-			MFunctions.showMessage(qsTr("No Keyname"), qsTr("Please enter a keyname."), "", "", "w")
+		keyWindow.visible = false
+		editAccepted()
 	}
 
 	function cancelClicked() {

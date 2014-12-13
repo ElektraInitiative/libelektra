@@ -9,6 +9,7 @@ Window {
 
 	property alias okButton: okButton
 	property alias cancelButton: cancelButton
+	property alias detailsButton: detailsButton
 	default property alias contents: placeholder.children
 
 	width: Math.ceil(mainWindow.width*0.4)
@@ -36,6 +37,17 @@ Window {
 			anchors.bottom: parent.bottom
 			anchors.right: parent.right
 
+			Button {
+				id: detailsButton
+				anchors.left: parent.left
+				text: qsTr("Show Details")
+				visible: false
+			}
+			Item {
+				id: filler
+				height: okButton.height
+				Layout.fillWidth: true
+			}
 			Button {
 				id:okButton
 				text: "Ok"

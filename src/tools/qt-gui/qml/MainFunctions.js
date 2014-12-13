@@ -1,8 +1,7 @@
 //display an error message dialog
-function showMessage(title, text, informativeText, detailedText, icon) {
+function showMessage(title, text, detailedText) {
 	errorDialog.title = title
 	errorDialog.text = text
-	errorDialog.informativeText = informativeText
 	errorDialog.detailedText = detailedText
 
 	error = true

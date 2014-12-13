@@ -40,7 +40,7 @@ private:
 	QString					m_name;
 
 signals:
-	void showMessage(QString title, QString text, QString informativeText, QString detailedText, QString icon) const;
+	void showMessage(QString title, QString text, QString detailedText) const;
 };
 
 #endif // GUIBACKEND_HPP
