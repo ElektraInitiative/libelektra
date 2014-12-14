@@ -316,7 +316,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 		type = QString::fromStdString(ptr->lookupInfo("provides"));
 
 		if(!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver"))){
-		  availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(type));
+			availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(type));
 		}
 	}
 
@@ -333,32 +333,25 @@ QStringList GUIBackend::nameFilters()
 	plugins = plugins.filter("[storage]");
 	plugins.replaceInStrings(QRegExp("\\s\\[\\w*\\]"), "");
 
-	nameFilters.append("DUMP (*.ecf)");
+	foreach(QString plugin, plugins)
+	{
+		QString pattern;
 
-	if(plugins.contains("ini"))
-		nameFilters.append("INI (*.ini)");
-	if(plugins.contains("ni"))
-		nameFilters.append("NICKEL (*.ini)");
-	if(plugins.contains("simpleini"))
-		nameFilters.append("SIMPLEINI (*.ini)");
-	if(plugins.contains("fstab"))
-		nameFilters.append("FSTAB (*.*)");
-	if(plugins.contains("hosts"))
-		nameFilters.append("HOSTS (*.*)");
-	if(plugins.contains("line"))
-		nameFilters.append("LINE (*.*)");
-	if(plugins.contains("regexstore"))
-		nameFilters.append("REGEXSTORE (*.*)");
-	if(plugins.contains("tcl"))
-		nameFilters.append("TCL (*.tcl)");
-	if(plugins.contains("xmltool"))
-		nameFilters.append("XMLTOOL (*.xml)");
-	if(plugins.contains("uname"))
-		nameFilters.append("UNAME (*.*)");
-	if(plugins.contains("yajl"))
-		nameFilters.append("YAJL (*.json)");
-	if(plugins.contains("constants"))
-		nameFilters.append("CONSTANTS (*.*)");
+		if(plugin == "ini" || plugin == "simpleini" || plugin == "ni")
+			pattern = "*.ini";
+		else if(plugin == "xmltool")
+			pattern = "*.xml";
+		else if(plugin == "tcl")
+			pattern = "*.tcl";
+		else if(plugin == "yajl")
+			pattern = "*.json";
+		else if(plugin == "dump")
+			pattern = "*.ecf";
+		else
+			pattern = "*.*";
+
+			nameFilters.append(QString("%1 (%2)").arg(plugin, pattern));
+	}
 
 	nameFilters.sort();
 

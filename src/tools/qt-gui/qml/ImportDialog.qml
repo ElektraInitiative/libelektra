@@ -108,8 +108,7 @@ BasicWindow {
 
 	okButton.onClicked: {
 
-		var plugin = importFileDialog.selectedNameFilter.match(/[A-Z]+/).toString()
-		plugin = plugin.toLowerCase()
+			var plugin = importFileDialog.selectedNameFilter.match(/[a-z]+/).toString()
 
 		undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
 		externTreeModel.refresh()
