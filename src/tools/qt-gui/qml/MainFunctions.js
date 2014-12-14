@@ -57,9 +57,14 @@ function paste() {
 		}
 	}
 	else if(undoManager.clipboardType === "copyBranch"){
-		if(treeView.currentNode !== null){
-			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			externTreeModel.refresh()
+
+		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
+		refreshModel(externTreeModel)
+		if(!treeView.currentNode.childrenHaveNoChildren)
+			keyAreaModel = null
+		else{
+			if(keyAreaModel === null)
+			keyAreaModel = treeView.currentNode.children
 		}
 	}
 	else if(undoManager.clipboardType === "cutKey"){
@@ -89,9 +94,13 @@ function paste() {
 			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		}
 
-		externTreeModel.refresh()
-		if(keyAreaModel !== null)
-			keyAreaModel.refresh()
+		refreshModel(externTreeModel)
+		if(!treeView.currentNode.childrenHaveNoChildren)
+			keyAreaModel = null
+		else{
+			if(keyAreaModel === null)
+			keyAreaModel = treeView.currentNode.children
+		}
 	}
 }
 
@@ -157,4 +166,11 @@ function updateKeyAreaSelection() {
 function resetKeyAreaModel() {
 	keyAreaModel = null
 	keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
+}
+
+function refreshModel(treeModel) {
+	var currentModel = treeView.currentNode.parentModel
+	var index = treeView.currentNode.index
+	treeModel.refresh()
+	treeView.currentNode = currentModel.get(index)
 }
