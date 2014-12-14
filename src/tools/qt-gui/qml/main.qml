@@ -396,7 +396,11 @@ ApplicationWindow {
 		text: qsTr("Undo All")
 		tooltip: qsTr("Undo All")
 		enabled: undoManager.canUndo
-		onTriggered: undoManager.undoAll()
+		onTriggered: {
+			//cannot use UndoStack::setIndex() because View-Updates would get lost
+			for(var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
+				undoManager.undo()
+		}
 	}
 
 	Action {
@@ -468,7 +472,11 @@ ApplicationWindow {
 		text: qsTr("Redo All")
 		tooltip: qsTr("Redo All")
 		enabled: undoManager.canRedo
-		onTriggered: undoManager.redoAll()
+		onTriggered: {
+			//cannot use UndoStack::setIndex() because View-Updates would get lost
+			for(var i = undoManager.index(); i < undoManager.count(); i++)
+				undoManager.redo()
+		}
 	}
 
 	Action {

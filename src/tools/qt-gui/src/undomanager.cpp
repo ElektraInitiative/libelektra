@@ -97,14 +97,19 @@ bool UndoManager::canPaste()
 	return !m_clipboardEmpty;
 }
 
-void UndoManager::undoAll()
+int UndoManager::index() const
 {
-	m_undoStack->setIndex(m_undoStack->cleanIndex());
+	return m_undoStack->index();
 }
 
-void UndoManager::redoAll()
+int UndoManager::cleanIndex() const
 {
-	m_undoStack->setIndex(m_undoStack->count());
+	return m_undoStack->cleanIndex();
+}
+
+int UndoManager::count() const
+{
+	return m_undoStack->count();
 }
 
 void UndoManager::undo()
