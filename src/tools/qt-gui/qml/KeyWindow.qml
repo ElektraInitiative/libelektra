@@ -49,6 +49,7 @@ BasicWindow {
 				Layout.fillWidth: true
 				focus: true
 				text: keyName
+				clip: true
 				Keys.onPressed: {
 					if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 						okClicked()
@@ -68,6 +69,7 @@ BasicWindow {
 				id: valueTextField
 				Layout.fillWidth: true
 				text: keyValue
+				clip: true
 				Keys.onPressed: {
 					if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 						okClicked()

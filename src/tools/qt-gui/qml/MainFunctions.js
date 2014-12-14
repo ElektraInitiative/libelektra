@@ -57,8 +57,10 @@ function paste() {
 		}
 	}
 	else if(undoManager.clipboardType === "copyBranch"){
-		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-		externTreeModel.refresh()
+		if(treeView.currentNode !== null){
+			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
+			externTreeModel.refresh()
+		}
 	}
 	else if(undoManager.clipboardType === "cutKey"){
 
