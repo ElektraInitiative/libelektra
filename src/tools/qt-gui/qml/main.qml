@@ -160,8 +160,8 @@ ApplicationWindow {
 
 		title: qsTr("About Elektra Editor")
 
-		width: Math.ceil(mainWindow.width*0.3)
-		height: Math.ceil(mainWindow.width*0.3)
+		width: Math.ceil(mainWindow.width*0.25)
+		height: Math.ceil(mainWindow.width*0.25)
 
 		ColumnLayout {
 			anchors.fill: parent
@@ -186,7 +186,6 @@ ApplicationWindow {
 			}
 
 			RowLayout {
-
 				TabView {
 					id: tabs
 
@@ -195,7 +194,11 @@ ApplicationWindow {
 					Layout.fillWidth: true
 
 					Tab {
+						id: aboutTab
+
 						title: qsTr("&About")
+						focus: true
+
 						TextArea{
 							property string link: "http://www.libelektra.org"
 							readOnly: true
@@ -205,6 +208,8 @@ ApplicationWindow {
 						}
 					}
 					Tab {
+						id: authorsTab
+
 						title: qsTr("A&uthors")
 						TextArea {
 							property string pancheri: "mailto:e0003088@student.tuwien.ac.at"

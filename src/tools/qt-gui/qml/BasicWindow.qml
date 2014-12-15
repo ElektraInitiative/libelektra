@@ -15,6 +15,8 @@ Window {
 	width: Math.ceil(mainWindow.width*0.4)
 	height: Math.ceil(mainWindow.height*0.6)
 
+	modality: Qt.WindowModal
+
 	x: Math.ceil(Screen.desktopAvailableWidth*0.5-width*0.5)
 	y: Math.ceil(Screen.desktopAvailableHeight*0.5-height*0.5)
 
