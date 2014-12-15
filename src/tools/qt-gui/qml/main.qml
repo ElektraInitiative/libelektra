@@ -882,7 +882,6 @@ ApplicationWindow {
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-
 									if(mouse.button === Qt.RightButton){
 										keyContextMenu.popup()
 									}
@@ -893,10 +892,12 @@ ApplicationWindow {
 								}
 
 								onDoubleClicked: {
+
 									keyAreaView.currentRow = styleData.row
 									MFunctions.updateKeyAreaSelection()
-									editKeyWindow.show()
+									editKeyWindow.qmlMetaKeyModel.clear()
 									editKeyWindow.populateMetaArea()
+									editKeyWindow.show()
 								}
 							}
 						}

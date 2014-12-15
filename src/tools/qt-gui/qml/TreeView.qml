@@ -91,8 +91,9 @@ ScrollView {
 							onDoubleClicked:{
 								if(!currentNode.isNull){
 									editKeyWindow.selectedNode = currentNode
-									editKeyWindow.show()
+									editKeyWindow.qmlMetaKeyModel.clear()
 									editKeyWindow.populateMetaArea()
+									editKeyWindow.show()
 								}
 							}
 							onEntered: {
