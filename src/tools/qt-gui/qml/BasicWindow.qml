@@ -30,12 +30,10 @@ Window {
 
 			Layout.fillHeight: true
 			Layout.fillWidth: true
-			Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 		}
 
 		RowLayout {
 			anchors.bottom: parent.bottom
-			anchors.right: parent.right
 
 			Button {
 				id: detailsButton

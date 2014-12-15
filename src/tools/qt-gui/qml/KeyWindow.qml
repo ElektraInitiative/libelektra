@@ -30,13 +30,14 @@ BasicWindow {
 
 	contents: ColumnLayout {
 		anchors.fill: parent
-		anchors.centerIn: parent
 		spacing: defaultMargins
 
 		Text{
 			id: pathInfo
 			text: path
 			color: disabledPalette.text
+			Layout.fillWidth: true
+			wrapMode: Text.WrapAnywhere
 		}
 		GridLayout {
 			columns: 2
@@ -85,6 +86,7 @@ BasicWindow {
 
 		BasicRectangle {
 			id: metaArea
+
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 
