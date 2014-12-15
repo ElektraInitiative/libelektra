@@ -681,6 +681,7 @@ ApplicationWindow {
 						searchResultsListView.model = externTreeModel.find(text)
 						searchResultsListView.currentIndex = -1
 						searchResultsListView.forceActiveFocus()
+						searchResultsColorAnimation.running = true
 					}
 				}
 			}
@@ -811,7 +812,7 @@ ApplicationWindow {
 
 			width: Math.ceil(parent.width*0.3)
 			height: parent.height
-			//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
+//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
 
 			TreeView {
 				id: treeView
@@ -828,7 +829,7 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: keyAreaHeight
 
-				//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
+//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				Component {
 					id: tableViewColumnDelegate
@@ -931,7 +932,7 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: metaAreaHeight
 
-				//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
+//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				TableView {
 					id: metaAreaTableView
@@ -968,23 +969,34 @@ ApplicationWindow {
 				height: searchResultsAreaHeight
 				visible: false
 
-				Button {
+				SequentialAnimation {
+					id: searchResultsColorAnimation
+
+					ColorAnimation {
+						target: searchResultsArea
+						property: "border.color"
+						to: (searchResultsListView.model !== null && searchResultsListView.model.get(0).name === "NotfoundNode") ? "red" : "green"
+						duration: 0
+					}
+					ColorAnimation {
+						target: searchResultsArea
+						property: "border.color"
+						to: activePalette.dark
+						duration: 1000
+					}
+				}
+
+				ToolButton {
 					id: searchResultsCloseButton
 
 					iconSource: "icons/dialog-close.png"
 					anchors.right: parent.right
 					anchors.top: parent.top
-					anchors.margins: Math.ceil(defaultMargins*0.25)
+					anchors.margins: defaultSpacing
 					tooltip: qsTr("Close")
 					onClicked: {
 						keyMetaColumn.state = ""
 						searchResultsSelectedItem = null
-					}
-
-					style: ButtonStyle {
-						background: Rectangle {
-							color: searchResultsArea.color
-						}
 					}
 				}
 
@@ -1003,9 +1015,9 @@ ApplicationWindow {
 						highlightMoveDuration: 0
 						highlightResizeDuration: 0
 						keyNavigationWraps: true
+						model: null
 
 						Keys.onPressed: {
-
 							if(event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
 								currentIndex--
 								searchResultsSelectedItem = model.get(currentIndex)
