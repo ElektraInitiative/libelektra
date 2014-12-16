@@ -59,5 +59,6 @@
         <file>qml/icons/dialog-error.png</file>
         <file>qml/GeneralMessageDialog.qml</file>
         <file>qml/icons/dialog-warning.png</file>
+        <file>qml/AboutWindow.qml</file>
     </qresource>
 </RCC>
