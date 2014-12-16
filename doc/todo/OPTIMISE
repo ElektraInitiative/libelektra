@@ -12,11 +12,6 @@ general:
 Cow keys for mmap storage
 
 
-== faster lookup ==
-
-cascading keys: keep place for namespaces
-
-
 
 == SEARCH ==
 

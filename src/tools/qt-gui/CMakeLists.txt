@@ -3,13 +3,18 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 set(CMAKE_BUILD_TYPE Debug)
+set(DISCOUNT_FIND_QUIETLY ON)
 
 add_definitions(-Wall)
 
-find_package(Qt5 COMPONENTS Core Quick Gui Qml Widgets Test)
+set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
+find_package(Qt5 COMPONENTS ${QCOMPONENTS})
+find_package(Discount)
 
 if (NOT Qt5_FOUND)
-	remove_tool(qt-gui "Did not find qt5")
+	remove_tool(qt-gui "qt5 (Components: ${QCOMPONENTS}) not found")
+elseif (NOT DISCOUNT_FOUND)
+	remove_tool(qt-gui "discount (libmarkdown) not found")
 else()
 
 include_directories (
@@ -47,6 +52,9 @@ qt5_add_resources(RSCS ${qt-gui_RSCS})
 add_executable(qt-gui ${qt-gui_SRCS} ${kdb_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
 
 qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
+
+include_directories(${DISCOUNT_INCLUDES})
+target_link_libraries(qt-gui ${DISCOUNT_LIBRARIES})
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}

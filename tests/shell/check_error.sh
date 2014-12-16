@@ -49,6 +49,9 @@ then
 
 	grep "Error (#10) occurred!" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur"
+	echo "----------- tmpfile -----------"
+	cat $TMPFILE
+	echo "----------- tmpfile -----------"
 
 	grep "Reason: from error plugin" $TMPFILE > /dev/null
 	succeed_if "Error does not stem from error plugin"

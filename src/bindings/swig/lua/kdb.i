@@ -129,7 +129,8 @@
 %luacode %{
   local orig_call = kdb.Key
   kdb.Key = function(name, ...)
-    local key = orig_call(name)
+    -- make sure we call the proper constructor
+    local key = name and orig_call(name) or orig_call()
 
     if select("#", ...) > 0 then
       local t = { ... }
@@ -272,7 +273,7 @@
 
     key = new kdb::Key(it->get());
     (*it)++;
-    lua_Number i = lua_tonumber(L, -1);
+    lua_Integer i = lua_tointeger(L, -1);
     lua_pop(L, 2);
 
     lua_pushnumber(L, i + 1);
@@ -302,12 +303,12 @@
   int _my_KeySet_ipairs_it(lua_State* L)
   {
     const KeySet *ks;
-    lua_Number i;
+    lua_Integer i;
 
     if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void **)&ks, SWIGTYPE_p_kdb__KeySet, 0)))
       SWIG_fail_ptr("ipairs_it", 1, SWIGTYPE_p_kdb__KeySet);
 
-    i = lua_tonumber(L, 2);
+    i = lua_tointeger(L, 2);
     lua_pop(L, 2);
     if (i == ks->end().base())
       return 0;

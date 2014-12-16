@@ -19,14 +19,11 @@ nbTest=0
 # the script itself
 scriptName=`basename $0`
 
-#RANDOM does not work with testdata
-#RANDOM=`mktemp -u --tmpdir=/ XXXXXXXXXXXX`
-MOUNTPOINT="/tests/script$RANDOM"
-RANDOMNAME=`echo $RANDOM | tr / _`
-MOUNTNAME="_tests_script$RANDOMNAME"
+MOUNTPOINT="/tests/script"
+MOUNTNAME="_tests_script"
 
-USER_ROOT="user/tests/script$RANDOM"
-SYSTEM_ROOT="system/tests/script$RANDOM"
+USER_ROOT="user/tests/script"
+SYSTEM_ROOT="system/tests/script"
 
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]
@@ -109,7 +106,7 @@ check_version()
 
 	REAL_KDB_VERSION="`$KDB get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
-	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch"
+	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch use CHECK_VERSION=NO to disable"
 
 	REAL_SO_VERSION="`$KDB get system/elektra/version/constants/SO_VERSION 2> /dev/null`"
 	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
@@ -197,6 +194,9 @@ is_plugin_available()
 	done
 	return 1
 }
+
+
+
 
 
 

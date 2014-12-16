@@ -16,6 +16,8 @@
 #include <kdbproposal.h>
 #include <kdbextension.h>
 
+#define ELEKTRA_ORIGINAL_NAME_META "origname"
+
 int elektraRenameGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraRenameSet(Plugin *handle, KeySet *ks, Key *parentKey);
 Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cutPath);

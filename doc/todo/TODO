@@ -95,7 +95,6 @@ aka distributor+filebackend plugin
 change to proper 2phase algorithm?
 
 kdbGet
-* do not get empty files
 * only run on those parts where needed (not only shortcut on nothing changed)
 * create an error if no kdbGet was done (no plugin added)
 
@@ -107,9 +106,7 @@ kdbSet
 
 
 
-== FURTHER HIERARCHIES ==
-
-see also FUTURE/hierarchy for incompatible change
+== FURTHER NAMESPACES ==
 
 spec:
 	has metadata only for all other hierarchies
@@ -132,7 +129,7 @@ local/opt: will be used if installed to /usr/local or /opt?
 override/ (in memory override)
 env for environment options overrides
 cmd for commandline options overrides
-
+buildin for buildin data as fallback (spec buildin?)
 
 
 == META DATA LIBRARY ==

@@ -24,12 +24,12 @@ do
 		MOUNT_PLUGIN="tcl ccode null"
 		;;
 	"ini")
-		#TODO: broken?
+		#TODO: is broken
 		continue
 		;;
 	"yajl")
 		MOUNT_PLUGIN="$PLUGIN"
-		#TODO: add plugin to fix problem
+		#TODO: add dir2leaf plugin to fix problem
 		DO_NOT_TEST_ROOT_VALUE="yes"
 		;;
 	"simpleini")
@@ -78,7 +78,6 @@ do
 
 		if [ "x$DO_NOT_TEST_ROOT_VALUE" != "xyes" ]
 		then
-			#TODO: Fix by directoryvalue plugin
 			[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
 			succeed_if "could not get root"
 

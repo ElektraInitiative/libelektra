@@ -388,7 +388,7 @@ struct _Trie
 
 /** The private split structure.
  *
- * kdbSet() splits keysets. This structure contains arrays for
+ * kdbGet() and kdbSet() split keysets. This structure contains arrays for
  * various information needed to process the keysets afterwards.
  */
 struct _Split

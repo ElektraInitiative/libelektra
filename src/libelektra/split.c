@@ -411,7 +411,7 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 	/* Dont iterate the default split part */
 	for (size_t i=0; i<split->size-1; ++i)
 	{
-		if (!(split->syncbits[i] & 1))
+		if (test_bit(split->syncbits[i], 0))
 		{
 			/* Dont process keysets which come from the user
 			   and not from the backends */

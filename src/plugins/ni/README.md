@@ -8,7 +8,12 @@
 
 ## Introduction ##
 
-This plugin uses the nickel library in order to read/write configuration data in the nickel ini format.
+This plugin uses the nickel library in order to read/write configuration
+data in the nickel ini format.
+
+Supports arbitrary KeySet.
+Does not support metadata.
+
 
 ## Special Values ##
 

@@ -5,11 +5,24 @@ macro (do_python_test source)
 	add_test (
 		NAME ${name}
 		COMMAND ${PYTHON2_EXECUTABLE} -B ${source}
-		)
-	set_tests_properties (${name} PROPERTIES ENVIRONMENT "PYTHONPATH=${PYTHON2_MODULEPATH}")
+	)
 
-	# python is a huge memleaker
-	set_property(TEST ${name} PROPERTY LABELS memleak)
+	set_property (
+		TEST ${name}
+		PROPERTY ENVIRONMENT "PYTHONPATH=${PYTHON2_MODULEPATH}"
+	)
+
+	set_property (
+		TEST ${name}
+		PROPERTY LABELS memleak bindings
+	)
+
+	if (${name} MATCHES ".*_kdb")
+		set_property (
+			TEST ${name}
+			APPEND PROPERTY LABELS kdbtests
+		)
+	endif ()
 endmacro (do_python_test)
 
 file (GLOB TESTS *.py)

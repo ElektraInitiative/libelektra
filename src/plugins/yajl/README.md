@@ -22,6 +22,9 @@ The json grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
 
 A validator can be found [here](http://jsonlint.com/).
 
+Supports every KeySet except when arrays are intermixed with other keys.
+Has only limited support for metadata.
+
 
 
 ## Special values ##
@@ -61,7 +64,11 @@ to it.
 
 Mount the plugin:
 
-        kdb mount --resolver=resolver_fm_xhp_x color/settings/OpenICC_device_config_DB.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
+        kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
+
+or:
+
+        kdb mount-openicc
 
 Then you can copy the OpenICC_device_config_DB.json
 to systemwide or user config, e.g.

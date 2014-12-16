@@ -18,7 +18,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define ORIGINAL_NAME_META "origname"
+#define ELEKTRA_ORIGINAL_NAME_META "origname"
+
+// TODO defined privately in keyhelpers.c, API break possible..
+char *keyNameGetOneLevel(const char *name, size_t *size);
 
 Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cutPath)
 {
@@ -44,6 +47,20 @@ Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cut
 	return 0;
 }
 
+static void keyAddUnescapedBasePath(Key *key, const char *path)
+{
+	size_t size=0;
+	char *p=keyNameGetOneLevel(path+size,&size);
+	while (*p)
+	{
+		char *buffer = elektraMalloc(size+1);
+		strncpy(buffer, p, size);
+		buffer[size] = 0;
+		keyAddBaseName(key, buffer);
+		elektraFree(buffer);
+		p=keyNameGetOneLevel(p+size,&size);
+	}
+}
 
 static Key *cutGet(Key *key, Key *parentKey, Key *configKey)
 {
@@ -56,15 +73,30 @@ static Key *cutGet(Key *key, Key *parentKey, Key *configKey)
 	return elektraKeyCutNamePart(key, parentKey, cutPath);
 }
 
-static Key *restoreKeyName(Key *key)
+static Key *restoreKeyName(Key *key, const Key *parentKey, const Key *configKey)
 {
-	const Key *origNameKey = keyGetMeta (key, ORIGINAL_NAME_META);
+	const Key *origNameKey = keyGetMeta (key, ELEKTRA_ORIGINAL_NAME_META);
 	if (origNameKey)
 	{
-		Key *result = keyDup(key);
-		keySetName(result, keyString(origNameKey));
-		keySetMeta(result, ORIGINAL_NAME_META, 0);
-		return result;
+		if (strcmp (keyString(origNameKey), keyName(key)))
+		{
+			Key *result = keyDup(key);
+			keySetName(result, keyString(origNameKey));
+			keySetMeta(result, ELEKTRA_ORIGINAL_NAME_META, 0);
+			return result;
+		}
+	}
+	else
+	{
+		if (configKey)
+		{
+			Key *result = keyDup(key);
+			keySetName(result, keyName(parentKey));
+			keyAddUnescapedBasePath(result, keyString(configKey));
+			const char *relativePath = keyName(key) + keyGetNameSize(parentKey);
+			keyAddUnescapedBasePath(result, relativePath);
+			return result;
+		}
 	}
 
 	return 0;
@@ -97,10 +129,14 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		if (renamedKey)
 		{
-			keySetMeta (renamedKey, ORIGINAL_NAME_META, keyName (key));
+			keySetMeta (renamedKey, ELEKTRA_ORIGINAL_NAME_META, keyName (key));
 			ksLookup(returned, key, KDB_O_POP);
 			keyDel(key);
 			ksAppendKey(returned, renamedKey);
+		}
+		else
+		{
+			keySetMeta (key, ELEKTRA_ORIGINAL_NAME_META, keyName(key));
 		}
 	}
 
@@ -109,16 +145,19 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraRenameSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
+int elektraRenameSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 
 	KeySet *iterateKs = ksDup(returned);
+
+	KeySet *config = elektraPluginGetConfig (handle);
+	Key *cutConfig = ksLookupByName(config, "/cut", KDB_O_NONE);
 
 	ksRewind(iterateKs);
 	Key *key;
 	while((key = ksNext(iterateKs)) != 0)
 	{
-		Key *renamedKey = restoreKeyName(key);
+		Key *renamedKey = restoreKeyName(key, parentKey, cutConfig);
 
 		if (renamedKey)
 		{

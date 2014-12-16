@@ -68,6 +68,11 @@ kdb tool:
 
 == GEN ==
 
+use namespace elektra
+	rename to elektra.support
+
+using kdb for gen
+
 code generator always yields LONG_MIN, LONG_MAX on any type!
 
 cmake support for "kdb gen" (run kdb gen within cmake)

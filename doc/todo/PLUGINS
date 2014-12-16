@@ -283,20 +283,7 @@ tmp files:
 	thread ID + randomness?
 
 resolver:
-	configureable flush+locking
-
-XDG specification:
-	write a xdg plugin which does xdg conforming resolving
-	XDG_CONFIG_HOME
-	describe, implement, test
-	xdg mail announce
-
-
-## SYNC plugin ##
-
-fsync the file in keyname
-abort on error (needs to be pre-commit)
-
+	configureable fsync
 
 
 
