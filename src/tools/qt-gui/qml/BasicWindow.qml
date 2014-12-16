@@ -38,7 +38,6 @@ Window {
 			Layout.fillWidth: true
 			height: 2*defaultMargins
 		}
-
 		RowLayout {
 			anchors.bottom: parent.bottom
 

@@ -136,6 +136,10 @@ BasicWindow {
 
 			anchors.horizontalCenter: parent.horizontalCenter
 			text: qsTr("New Meta Key")
+			onClicked: {
+				//add visual item
+				qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
+			}
 		}
 	}
 

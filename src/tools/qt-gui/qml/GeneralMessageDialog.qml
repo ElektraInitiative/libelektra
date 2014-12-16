@@ -15,11 +15,12 @@ BasicWindow {
 	cancelButton.visible: false
 	detailsButton.visible: detailedText.length > 0
 	detailsButton.onClicked: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
+
 	okButton.onClicked: {
 		generalMessageDialog.close()
 		error = false
 	}
-	height: mainTextItem.height + okButton.height +  3*defaultMargins
+	height: mainTextItem.implicitHeight + okButton.implicitHeight +  3*defaultMargins
 	width: mainWindow.width*0.25
 
 	contents: ColumnLayout {
@@ -31,8 +32,8 @@ BasicWindow {
 		Item {
 			id: mainTextItem
 
-			width: parent.width
-			height: Math.max(icon.height, mainText.height + defaultMargins)
+			Layout.fillWidth: true
+			height: Math.max(icon.implicitHeight, mainText.implicitHeight)
 
 			Image {
 				id: icon
@@ -45,7 +46,7 @@ BasicWindow {
 				anchors.left: icon.right
 				anchors.leftMargin: defaultMargins
 				anchors.verticalCenter: icon.verticalCenter
-				width: contentColumn.width - icon.width - 2*defaultMargins
+				width: parent.width - icon.width - defaultMargins
 				text: generalMessageDialog.text
 				color: activePalette.text
 				font.weight: Font.Bold
@@ -55,27 +56,22 @@ BasicWindow {
 		BasicRectangle {
 			id: detailsRectangle
 
-			width: parent.width
-			implicitHeight: detailedText.implicitHeight + defaultSpacing
-			height: 0
 			visible: false
 			Layout.fillHeight: true
 			Layout.fillWidth: true
 
-			ScrollView {
+			TextArea {
+				id: detailedText
 
 				anchors.fill: parent
-
-				TextEdit {
-					id: detailedText
-
-					text: generalMessageDialog.detailedText
-					width: detailsRectangle.width
-					wrapMode: Text.WordWrap
-					color: activePalette.text
-					textMargin: defaultMargins
-					readOnly: true
-				}
+				frameVisible: false
+				backgroundVisible: false
+				text: generalMessageDialog.detailedText
+				width: detailsRectangle.width
+				wrapMode: Text.WordWrap
+				textColor: activePalette.text
+				textMargin: defaultMargins
+				readOnly: true
 			}
 
 			states: [
@@ -84,12 +80,11 @@ BasicWindow {
 
 					PropertyChanges {
 						target: detailsRectangle
-						height: Math.min(detailedText.height + 2*defaultMargins, Screen.desktopAvailableHeight*0.5)
 						visible: true
 					}
 					PropertyChanges {
 						target: generalMessageDialog
-						height: mainTextItem.height + detailedText.height + okButton.height
+						height: mainTextItem.implicitHeight + detailedText.contentItem.contentHeight + okButton.implicitHeight + 6*defaultMargins
 					}
 					PropertyChanges {
 						target: detailsButton

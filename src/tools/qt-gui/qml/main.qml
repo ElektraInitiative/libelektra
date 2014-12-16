@@ -98,11 +98,6 @@ ApplicationWindow {
 
 	NewKeyWindow {
 		id: newKeyWindow
-		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
-		addButton.onClicked: {
-			//add visual item
-			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
-		}
 	}
 
 	EditKeyWindow {
@@ -117,11 +112,6 @@ ApplicationWindow {
 					valueTextField.forceActiveFocus()
 				}
 			}
-		}
-		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
-		addButton.onClicked: {
-			//add visual item
-			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
 		}
 	}
 
@@ -138,17 +128,12 @@ ApplicationWindow {
 				valueTextField.forceActiveFocus()
 			}
 		}
-
-		addButton.onClicked: {
-			//add visual item
-			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
-		}
 	}
 
 	UnmountBackendWindow {
 		id: unmountBackendWindow
+
 		okButton.onClicked: unmountBackendWindow.close()
-		cancelButton.onClicked: unmountBackendWindow.close()
 	}
 
 	WizardLoader {

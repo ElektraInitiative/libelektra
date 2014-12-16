@@ -64,7 +64,7 @@ function paste() {
 			keyAreaModel = null
 		else{
 			if(keyAreaModel === null)
-			keyAreaModel = treeView.currentNode.children
+				keyAreaModel = treeView.currentNode.children
 		}
 	}
 	else if(undoManager.clipboardType === "cutKey"){
@@ -99,7 +99,7 @@ function paste() {
 			keyAreaModel = null
 		else{
 			if(keyAreaModel === null)
-			keyAreaModel = treeView.currentNode.children
+				keyAreaModel = treeView.currentNode.children
 		}
 	}
 }
