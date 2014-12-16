@@ -13,25 +13,25 @@ public:
 	explicit GUIBackend(QObject *parent = 0);
 	GUIBackend(const GUIBackend &other);
 
-	Q_INVOKABLE void		createBackend(const QString &mountpoint);
+	Q_INVOKABLE void			createBackend(const QString &mountpoint);
 
-	Q_INVOKABLE void		addPath(const QString &path);
+	Q_INVOKABLE void			addPath(const QString &path);
 
-	Q_INVOKABLE void		addPlugin(QString name, QStringList config);
+	Q_INVOKABLE void			addPlugin(QString name, QStringList config);
 
-	Q_INVOKABLE QString		pluginInfo(QString pluginName) const;
+	Q_INVOKABLE QString			pluginInfo(QString pluginName) const;
 
-	Q_INVOKABLE QString		mountPoints() const;
+	Q_INVOKABLE QString			mountPoints() const;
 
 	Q_INVOKABLE QStringList 	availablePlugins(bool includeStorage, bool includeResolver) const;
 
 	Q_INVOKABLE QStringList 	nameFilters();
 
-	Q_INVOKABLE void		serialise();
+	Q_INVOKABLE void			serialise();
 
-	Q_INVOKABLE bool		validated();
+	Q_INVOKABLE bool			validated();
 
-	Q_INVOKABLE void		deleteBackend();
+	Q_INVOKABLE void			deleteBackend();
 
 private:
 	kdb::tools::Backend*	m_backend;

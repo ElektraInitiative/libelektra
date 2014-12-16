@@ -15,18 +15,12 @@ BasicWindow {
 		anchors.fill: parent
 
 		Text{
-			anchors.left: parent.left
-			anchors.right: parent.right
+			anchors.bottomMargin: 2*defaultMargins
 			text: qsTr("Notice: To successfully unmount backends you need to be an administrator. " +
 					   "This action cannot be undone.")
-			wrapMode: Text.Wrap
+			Layout.fillWidth: true
+			wrapMode: Text.WrapAnywhere
 			color: "#640000"
-		}
-		Item {
-			id: placeHolder
-
-			width: parent.width
-			height: defaultMargins
 		}
 		Label {
 			text: qsTr("Mounted Backends")
@@ -34,8 +28,7 @@ BasicWindow {
 		BasicRectangle {
 			id: mountedBackendsFrame
 
-			anchors.left: parent.left
-			anchors.right: parent.right
+			Layout.fillWidth: true
 			Layout.fillHeight: true
 
 			ScrollView {
@@ -46,7 +39,7 @@ BasicWindow {
 					id: mountedBackendsView
 
 					anchors.fill: parent
-					focus: true
+//					focus: true
 					highlightMoveDuration: 0
 					highlightResizeDuration: 0
 					keyNavigationWraps: true
@@ -76,7 +69,6 @@ BasicWindow {
 			anchors.horizontalCenter: parent.horizontalCenter
 			action: unmountAction
 		}
-
 		Action {
 			id: unmountAction
 
