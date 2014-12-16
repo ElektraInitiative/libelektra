@@ -39,7 +39,7 @@ Item {
 				model: guiBackend.availablePlugins(includeStorage, includeResolver)
 				onCurrentTextChanged: infoText.text = guiBackend.pluginInfo(pluginDropdown.currentText)
 			}
-			Button {
+			ToolButton {
 				id: addButton
 
 				implicitWidth:  pluginDropdown.height
@@ -77,6 +77,7 @@ Item {
 		}
 		Label {
 			id: includedPluginsLabel
+
 			text: qsTr("Included Plugins")
 			anchors.top: spacer.bottom
 			anchors.left: parent.left
@@ -119,6 +120,7 @@ Item {
 		}
 		Label {
 			id: pluginInfoLabel
+
 			text: qsTr("Plugin Info")
 			anchors.top: spacer.bottom
 			anchors.left: pluginInfoRectangle.left
@@ -178,11 +180,8 @@ Item {
 				}
 			}
 		}
-		Button {
+		ToolButton {
 			id: addKeyToConfigButton
-
-			implicitWidth:  configInfoSwitch.implicitWidth
-			implicitHeight: implicitWidth
 
 			anchors.top: pluginInfoRectangle.top
 			anchors.right: configInfoSwitch.left
@@ -201,11 +200,8 @@ Item {
 				}
 			}
 		}
-		Button {
+		ToolButton {
 			id: configInfoSwitch
-
-			implicitWidth:  pluginDropdown.height
-			implicitHeight: implicitWidth
 
 			anchors.right: parent.right
 			anchors.top: pluginInfoRectangle.top

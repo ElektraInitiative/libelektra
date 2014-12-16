@@ -42,7 +42,7 @@ BasicWindow {
 				Tab {
 					id: aboutTab
 
-					title: qsTr("&About")
+					title: qsTr("About")
 					focus: true
 
 					TextArea{
@@ -56,7 +56,7 @@ BasicWindow {
 				Tab {
 					id: authorsTab
 
-					title: qsTr("A&uthors")
+					title: qsTr("Authors")
 					TextArea {
 						property string pancheri: "mailto:e0003088@student.tuwien.ac.at"
 						property string loose: "mailto:christian.loose@hamburg.de"

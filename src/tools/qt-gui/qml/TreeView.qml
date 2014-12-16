@@ -2,7 +2,6 @@ import QtQuick 2.2
 import QtQml 2.2
 import QtQuick.Controls 1.1
 import "TooltipCreator.js" as TooltipCreator
-import "TreeViewFunctions.js" as Function
 
 //TreeView is based on code user "Jens" posted in the qt-project forum (http://qt-project.org/forums/viewthread/30521/#146845)
 
@@ -86,7 +85,7 @@ ScrollView {
 							hoverEnabled: true
 
 							onPressed: {
-								Function.mousePressed(mouse, model, itemLoader)
+								mousePressed(mouse, model, itemLoader)
 							}
 							onDoubleClicked:{
 								if(!currentNode.isNull){
@@ -121,7 +120,7 @@ ScrollView {
 							Item {
 								width: rowHeight
 								height: rowHeight
-								opacity: Function.getOpacity(model)
+								opacity: getOpacity(model)
 
 								Image {
 									id: expander
@@ -144,7 +143,7 @@ ScrollView {
 									hoverEnabled: true
 
 									onClicked: {
-										Function.expand(model, itemLoader)
+										expand(model, itemLoader)
 									}
 								}
 							}
@@ -162,7 +161,7 @@ ScrollView {
 							x: columnIndent
 							height: expanded ? implicitHeight : 0
 							property var node: model
-							property bool expanded: Function.getExpanded(model)
+							property bool expanded: getExpanded(model)
 							property var elements: model.children
 							property var text: model.name
 							sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined
@@ -171,5 +170,45 @@ ScrollView {
 				}
 			}
 		}
+	}
+
+	function expand(model, itemLoader) {
+		if(model.childCount > 0 && !model.childrenHaveNoChildren){
+			itemLoader.expanded = !itemLoader.expanded
+			model.isExpanded = itemLoader.expanded
+			keyAreaView.selection.clear()
+		}
+	}
+
+	function mousePressed(mouse, model, itemLoader) {
+		if(mouse.button === Qt.LeftButton){
+			currentNode = model
+			currentItem = itemLoader
+			keyAreaSelectedItem = null
+			metaAreaModel = null
+			editKeyWindow.selectedNode = currentNode
+			forceActiveFocus()
+
+			if (currentNode !== null){
+				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
+					keyAreaModel = currentNode.children
+				else
+					keyAreaModel = null
+			}
+		}
+		else if(mouse.button === Qt.RightButton)
+			treeContextMenu.popup()
+	}
+
+	function getOpacity(model) {
+		if(model.childCount > 0 && !model.childrenHaveNoChildren)
+			return 1
+		return 0
+	}
+
+	function getExpanded(model) {
+		if(model.isExpanded && model.childrenHaveNoChildren)
+			return false
+		return model.isExpanded
 	}
 }
