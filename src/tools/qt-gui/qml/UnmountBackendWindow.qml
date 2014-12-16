@@ -61,7 +61,10 @@ BasicWindow {
 
 						MouseArea {
 							anchors.fill: parent
-							onClicked: mountedBackendsView.currentIndex = index
+							onClicked: {
+								if(modelData !== "empty")
+									mountedBackendsView.currentIndex = index
+							}
 						}
 					}
 				}
@@ -71,9 +74,14 @@ BasicWindow {
 			id: unmountButton
 
 			anchors.horizontalCenter: parent.horizontalCenter
-			text: qsTr("Unmount")
+			action: unmountAction
+		}
 
-			onClicked: {
+		Action {
+			id: unmountAction
+
+			text: qsTr("&Unmount")
+			onTriggered: {
 				if(mountedBackendsView.model.toString() !== "empty"){
 					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
 					//externTreeModel.synchronize()
@@ -94,4 +102,5 @@ BasicWindow {
 	}
 	cancelButton.visible: false
 	okButton.text: qsTr("Close")
+
 }

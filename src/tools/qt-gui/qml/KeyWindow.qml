@@ -19,7 +19,7 @@ BasicWindow {
 	property string valuePlaceHolder: "Meta Key Value..."
 	property int    modelIndex: 0
 	property bool   isArray: false
-	property string path: ""
+	property string path: (accessFromSearchResults && selectedNode !== null) ? selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/")) : (treeView.currentNode === null ? "" : treeView.currentNode.path)
 	property string keyName: ""
 	property string keyValue: ""
 	property bool   isEdited: false

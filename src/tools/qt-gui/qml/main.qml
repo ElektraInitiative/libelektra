@@ -525,8 +525,6 @@ ApplicationWindow {
 		id: treeContextMenu
 	}
 
-	//Key Area Context Menu
-
 	KeyAreaContextMenu {
 		id: keyAreaContextMenu
 	}
@@ -723,7 +721,7 @@ ApplicationWindow {
 					ColorAnimation {
 						target: searchResultsArea
 						property: "border.color"
-						to: (searchResultsListView.model !== null && searchResultsListView.model.get(0).name === "NotfoundNode") ? "red" : "green"
+						to: (searchResultsListView.model !== null && searchResultsListView.model !== "undefined" && searchResultsListView.model.get(0).name === "NotfoundNode") ? "red" : "green"
 						duration: 0
 					}
 					ColorAnimation {

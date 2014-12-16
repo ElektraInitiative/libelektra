@@ -33,6 +33,11 @@ Window {
 			Layout.fillHeight: true
 			Layout.fillWidth: true
 		}
+		Item {
+			id:spacer
+			Layout.fillWidth: true
+			height: 2*defaultMargins
+		}
 
 		RowLayout {
 			anchors.bottom: parent.bottom

@@ -4,7 +4,7 @@ KeyWindow {
 
 	title: qsTr("Edit Key")
 
-	path: treeView.currentNode === null ? "" : treeView.currentNode.path
+//	path: treeView.currentNode === null ? "" : treeView.currentNode.path
 	keyName: selectedNode === null ? "" : selectedNode.name
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
