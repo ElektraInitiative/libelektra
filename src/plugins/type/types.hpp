@@ -118,6 +118,7 @@ public:
 		if (!i.eof()) return false;
 
 		ostringstream o;
+		o.imbue (locale("C"));
 		o << n;
 		if (o.fail()) return false;
 		if (o.str() != k.getString()) return false;
