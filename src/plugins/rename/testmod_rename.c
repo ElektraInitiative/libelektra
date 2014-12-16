@@ -46,8 +46,12 @@ static KeySet *createSimpleMetaTestKeys()
 					KEY_VALUE, "value2",
 					KEY_META, "rename/cut", "will/be/stripped",
 					KEY_END),
-			keyNew("user/tests/rename/will/be/stripped", KEY_VALUE, "value3", KEY_END),
-			keyNew("user/tests/rename/will/not/be/stripped/key4", KEY_VALUE, "value4", KEY_END),
+			keyNew("user/tests/rename/will/be/stripped",
+					KEY_VALUE, "value3",
+					KEY_END),
+			keyNew("user/tests/rename/will/not/be/stripped/key4",
+					KEY_VALUE, "value4",
+					KEY_END),
 			KS_END);
 }
 
@@ -252,6 +256,42 @@ static void test_keyCutNamePart()
 	keyDel(parentKey);
 }
 
+static void test_rebaseOfNewKeys()
+{
+	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
+	PLUGIN_OPEN("rename");
+
+	KeySet *ks = ksNew(20,
+			/* this key was seen by rename before and wont be changed */
+			keyNew("user/tests/rename/key1",
+					KEY_VALUE, "value1",
+					KEY_META, ELEKTRA_ORIGINAL_NAME_META, "user/tests/rename/key1",
+					KEY_END),
+			/* this key was not seen by rename before and will be renamed */
+			keyNew("user/tests/rename/key2",
+					KEY_VALUE, "value2",
+					KEY_END),
+			KS_END);
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	Key* key = ksLookupByName (ks, "user/tests/rename/key1", KDB_O_NONE);
+	succeed_if(key, "key1 was not found anymore, but it should not have been renamed");
+
+	key = ksLookupByName (ks, "user/tests/rename/new/base/key2", KDB_O_NONE);
+	succeed_if(key, "key2 was not correctly renamed");
+
+	keyDel (parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE ();
+}
+
+
 int main(int argc, char** argv)
 {
 	printf ("RENAME       TESTS\n");
@@ -264,6 +304,7 @@ int main(int argc, char** argv)
 	test_simpleCutRestoreOnSet();
 	test_metaCutOnGet();
 	test_metaConfigTakesPrecedence();
+	test_rebaseOfNewKeys();
 
 	test_keyCutNamePart();
 
