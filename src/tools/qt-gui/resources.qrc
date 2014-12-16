@@ -60,5 +60,6 @@
         <file>qml/GeneralMessageDialog.qml</file>
         <file>qml/icons/dialog-warning.png</file>
         <file>qml/AboutWindow.qml</file>
+        <file>qml/MainToolBar.qml</file>
     </qresource>
 </RCC>
