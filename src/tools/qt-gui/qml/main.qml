@@ -525,97 +525,10 @@ ApplicationWindow {
 		id: treeContextMenu
 	}
 
-//	Menu {
-//		id: treeContextMenu
-
-//		Menu {
-//			id:tcmNew
-
-//			title: qsTr("New")
-
-//			MenuItem {
-//				id:tcmNewKey
-
-//				action: newKeyAction
-//			}
-//			MenuItem {
-//				id:tcmNewArray
-
-//				action: newArrayAction
-//			}
-//		}
-//		MenuItem {
-//			id: tcmEdit
-
-//			action: editAction
-//		}
-
-//		MenuSeparator{}
-
-//		MenuItem{
-//			id: tcmImport
-
-//			action: importAction
-//		}
-//		MenuItem{
-//			id: tcmExport
-
-//			action: exportAction
-//		}
-
-//		MenuSeparator{}
-
-//		MenuItem {
-//			id: tcmCut
-
-//			action: cutAction
-//		}
-//		MenuItem {
-//			id: tcmCopy
-
-//			action: copyAction
-//		}
-//		MenuItem {
-//			id: tcmPaste
-
-//			action: pasteAction
-//		}
-//		MenuItem {
-//			id:tcmDelete
-
-//			action: deleteAction
-//		}
-//	}
-
 	//Key Area Context Menu
 
-	Menu {
-		id: keyContextMenu
-
-		MenuItem {
-			id: kcmNewKey
-			action: newKeyAction
-		}
-		MenuItem {
-			id: kcmEdit
-			action: editAction
-		}
-		MenuItem {
-			id: kcmCut
-			action: cutAction
-		}
-		MenuItem {
-			id: kcmCopy
-			action: copyAction
-		}
-		MenuItem {
-			id: kcmPaste
-			action: pasteAction
-		}
-		MenuItem {
-			id: kcmDelete
-			action: deleteAction
-		}
+	KeyAreaContextMenu {
+		id: keyAreaContextMenu
 	}
 
 	//Search Results Area Context Menu
@@ -724,7 +637,7 @@ ApplicationWindow {
 
 								onClicked: {
 									if(mouse.button === Qt.RightButton){
-										keyContextMenu.popup()
+										keyAreaContextMenu.popup()
 									}
 									else if(mouse.button === Qt.LeftButton){
 										keyAreaView.currentRow = styleData.row

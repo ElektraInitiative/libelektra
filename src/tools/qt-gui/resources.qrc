@@ -62,5 +62,6 @@
         <file>qml/AboutWindow.qml</file>
         <file>qml/MainToolBar.qml</file>
         <file>qml/TreeContextMenu.qml</file>
+        <file>qml/KeyAreaContextMenu.qml</file>
     </qresource>
 </RCC>
