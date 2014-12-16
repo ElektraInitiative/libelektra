@@ -39,7 +39,6 @@ BasicWindow {
 					id: mountedBackendsView
 
 					anchors.fill: parent
-//					focus: true
 					highlightMoveDuration: 0
 					highlightResizeDuration: 0
 					keyNavigationWraps: true

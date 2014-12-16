@@ -562,21 +562,6 @@ ApplicationWindow {
 
 				//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
 
-				Component {
-					id: tableViewColumnDelegate
-
-					Item {
-						anchors.fill: parent
-						anchors.margins: defaultMargins
-
-						Text{
-							anchors.verticalCenter: parent.verticalCenter
-							text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
-							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
-						}
-					}
-				}
-
 				TableView {
 					id: keyAreaView
 
@@ -597,7 +582,6 @@ ApplicationWindow {
 						role: "name"
 						title: qsTr("Key Name")
 						width: Math.ceil(keyArea.width*0.5 - defaultSpacing*0.5)
-						delegate: tableViewColumnDelegate
 					}
 					TableViewColumn {
 						id: valueColumn
@@ -605,11 +589,18 @@ ApplicationWindow {
 						role: "value"
 						title: qsTr("Key Value")
 						width: Math.ceil(keyArea.width*0.5 - defaultSpacing*0.5)
-						delegate: tableViewColumnDelegate
+					}
+					itemDelegate: Item {
+						Text{
+							anchors.fill: parent
+							anchors.leftMargin: defaultMargins
+							anchors.verticalCenter: parent.verticalCenter
+							text: styleData.value.replace(/\n/g, " ")
+							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
+						}
 					}
 
 					rowDelegate: Component {
-
 						Rectangle {
 							width: keyAreaView.width
 							color: styleData.selected ? activePalette.highlight : "transparent"
@@ -640,7 +631,6 @@ ApplicationWindow {
 						}
 					}
 					Keys.onPressed: {
-
 						if(event.key === Qt.Key_Up) {
 							keyAreaView.currentRow = keyAreaView.currentRow--
 							MFunctions.updateKeyAreaSelection()
@@ -706,7 +696,7 @@ ApplicationWindow {
 					ColorAnimation {
 						target: searchResultsArea
 						property: "border.color"
-						to: (searchResultsListView.model !== null && searchResultsListView.model !== "undefined" && searchResultsListView.model.get(0).name === "NotfoundNode") ? "red" : "green"
+						to: (searchResultsArea.visible &&  searchResultsListView.model !== null) ? (searchResultsListView.model.get(0).name === "NotfoundNode" ? "red" : "green") : activePalette.dark
 						duration: 0
 					}
 					ColorAnimation {
