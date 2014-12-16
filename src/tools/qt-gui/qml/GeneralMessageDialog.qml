@@ -7,7 +7,6 @@ import QtQuick.Layouts 1.1
 BasicWindow {
 	id: generalMessageDialog
 
-	property string title
 	property string text
 	property string detailedText
 	property alias	icon: icon
