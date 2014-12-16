@@ -812,7 +812,7 @@ ApplicationWindow {
 
 			width: Math.ceil(parent.width*0.3)
 			height: parent.height
-//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
+			//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
 
 			TreeView {
 				id: treeView
@@ -829,7 +829,7 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: keyAreaHeight
 
-//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
+				//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				Component {
 					id: tableViewColumnDelegate
@@ -918,7 +918,7 @@ ApplicationWindow {
 							keyAreaView.currentRow = keyAreaView.currentRow++
 							MFunctions.updateKeyAreaSelection()
 						}
-						else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+						else if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
 							MFunctions.updateKeyAreaSelection()
 							editKeyWindow.show()
 							editKeyWindow.populateMetaArea()
@@ -932,7 +932,7 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: metaAreaHeight
 
-//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
+				//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				TableView {
 					id: metaAreaTableView
@@ -1026,7 +1026,7 @@ ApplicationWindow {
 								currentIndex++
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+							else if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
 								editKeyWindow.selectedNode = searchResultsSelectedItem
 								editKeyWindow.accessFromSearchResults = true
 								editKeyWindow.show()
@@ -1048,26 +1048,30 @@ ApplicationWindow {
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-									if(mouse.button === Qt.LeftButton){
-										searchResultsListView.currentIndex = index
-										searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
-										forceActiveFocus()
-									}
-									else if(mouse.button === Qt.RightButton) {
-										searchResultsListView.currentIndex = index
-										searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
-										forceActiveFocus()
-										editKeyWindow.accessFromSearchResults = true
-										searchResultsContextMenu.popup()
+									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
+										if(mouse.button === Qt.LeftButton){
+											searchResultsListView.currentIndex = index
+											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+											forceActiveFocus()
+										}
+										else if(mouse.button === Qt.RightButton) {
+											searchResultsListView.currentIndex = index
+											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+											forceActiveFocus()
+											editKeyWindow.accessFromSearchResults = true
+											searchResultsContextMenu.popup()
+										}
 									}
 								}
 								onDoubleClicked: {
-									searchResultsListView.currentIndex = index
-									forceActiveFocus()
-									editKeyWindow.accessFromSearchResults = true
-									editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
-									editKeyWindow.show()
-									editKeyWindow.populateMetaArea()
+									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
+										searchResultsListView.currentIndex = index
+										forceActiveFocus()
+										editKeyWindow.accessFromSearchResults = true
+										editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
+										editKeyWindow.show()
+										editKeyWindow.populateMetaArea()
+									}
 								}
 							}
 						}
