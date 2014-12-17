@@ -44,8 +44,10 @@ Window {
 			Button {
 				id: detailsButton
 				anchors.left: parent.left
-				text: qsTr("Show Details")
 				visible: false
+				action: Action {
+					text: qsTr("&Show Details")
+				}
 			}
 			Item {
 				id: filler
@@ -54,12 +56,17 @@ Window {
 			}
 			Button {
 				id:okButton
-				text: "Ok"
+				action: Action {
+					text: qsTr("&Ok")
+				}
+
 				isDefault: true
 			}
 			Button {
 				id:cancelButton
-				text: "Cancel"
+				action: Action {
+					text: qsTr("&Cancel")
+				}
 			}
 		}
 	}

@@ -212,20 +212,18 @@ Item {
 			onClicked: page2.state === "" ? page2.state = "SHOW_CONFIG_SELECTOR" : page2.state = ""
 		}
 	}
+
 	ButtonRow {
 		id: buttonRow
 
 		finishButton.visible: false
-
-		nextButton.enabled: guiBackend.validated()
-
-		nextButton.onClicked: {
+		nextButton.action.onTriggered: {
 			loader.source = "Page3.qml"
 			includeStorage = true
 			includeResolver = true
 			includedPluginsModel.clear()
 		}
-		cancelButton.onClicked: {
+		cancelButton.action.onTriggered: {
 			wizardLoader.close()
 			guiBackend.deleteBackend()
 			includedPluginsModel.clear()

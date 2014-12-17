@@ -80,8 +80,8 @@ BasicWindow {
 		}
 	}
 
-	cancelButton.visible: false
-	okButton.text: qsTr("&Close")
-	okButton.onClicked: aboutWindow.close()
+	okButton.visible: false
+	cancelButton.text: qsTr("&Close")
+	cancelButton.action.onTriggered: aboutWindow.close()
 }
 

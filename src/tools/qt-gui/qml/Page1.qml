@@ -11,9 +11,11 @@ WizardTemplate {
 
 	label.text: qsTr("Mount point:  ")
 
+	Component.onCompleted: textField.forceActiveFocus()
+
 	buttonRow.finishButton.visible: false
-	buttonRow.nextButton.enabled: textField.text !== ""
-	buttonRow.nextButton.onClicked: {
+	buttonRow.nextButton.action.enabled: textField.text !== ""
+	buttonRow.nextButton.action.onTriggered: {
 		if(textField.text.charAt(0) === "/")
 			guiBackend.createBackend(textField.text)
 		else

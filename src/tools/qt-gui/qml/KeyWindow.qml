@@ -135,17 +135,16 @@ BasicWindow {
 			id: addButton
 
 			anchors.horizontalCenter: parent.horizontalCenter
-			text: qsTr("New Meta Key")
-			onClicked: {
-				//add visual item
-				qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
+			action: Action {
+				text: qsTr("&New Meta Key")
+				onTriggered: qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})  //add visual item
 			}
 		}
 	}
 
-	okButton.enabled: nameTextField.text !== ""
-	okButton.onClicked: okClicked()
-	cancelButton.onClicked: cancelClicked()
+	okButton.action.enabled:  nameTextField.text !== ""
+	okButton.action.onTriggered: okClicked()
+	cancelButton.action.onTriggered: cancelClicked()
 
 	function okClicked(){
 		//check if user has edited keyname or keyvalue

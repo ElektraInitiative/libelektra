@@ -13,12 +13,8 @@ BasicWindow {
 
 	cancelButton.visible: false
 	detailsButton.visible: detailedText.length > 0
-	detailsButton.onClicked: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
+	detailsButton.action.onTriggered: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
 
-	okButton.onClicked: {
-		generalMessageDialog.close()
-		error = false
-	}
 	height: mainTextItem.implicitHeight + okButton.implicitHeight +  3*defaultMargins
 	width: mainWindow.width*0.25
 
@@ -87,10 +83,15 @@ BasicWindow {
 					}
 					PropertyChanges {
 						target: detailsButton
-						text: qsTr("Hide Details")
+						action.text: qsTr("&Hide Details")
 					}
 				}
 			]
 		}
+	}
+
+	okButton.action.onTriggered: {
+		generalMessageDialog.close()
+		error = false
 	}
 }

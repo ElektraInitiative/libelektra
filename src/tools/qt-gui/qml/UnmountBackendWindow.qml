@@ -66,32 +66,29 @@ BasicWindow {
 			id: unmountButton
 
 			anchors.horizontalCenter: parent.horizontalCenter
-			action: unmountAction
-		}
-		Action {
-			id: unmountAction
+			action: Action {
+				text: qsTr("&Unmount")
+				onTriggered: {
+					if(mountedBackendsView.model.toString() !== "empty"){
+						externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
+						//externTreeModel.synchronize()
+						mountedBackendsView.model = externTreeModel.mountedBackends()
 
-			text: qsTr("&Unmount")
-			onTriggered: {
-				if(mountedBackendsView.model.toString() !== "empty"){
-					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
-					//externTreeModel.synchronize()
-					mountedBackendsView.model = externTreeModel.mountedBackends()
+						if(mountedBackendsView.model.toString() === "empty")
+							mountedBackendsView.currentIndex = -1
+					}
 
-					if(mountedBackendsView.model.toString() === "empty")
-						mountedBackendsView.currentIndex = -1
-
+					externTreeModel.refresh()
+					metaAreaModel = null
+					keyAreaModel = null
 				}
 
-				externTreeModel.refresh()
-				metaAreaModel = null
-				keyAreaModel = null
 			}
 
 		}
 
 	}
-	cancelButton.visible: false
-	okButton.text: qsTr("Close")
-
+	okButton.visible: false
+	cancelButton.text: qsTr("&Close")
+	cancelButton.action.onTriggered: unmountBackendWindow.close()
 }

@@ -133,7 +133,7 @@ ApplicationWindow {
 	UnmountBackendWindow {
 		id: unmountBackendWindow
 
-		okButton.onClicked: unmountBackendWindow.close()
+		okButton.action.onTriggered: unmountBackendWindow.close()
 	}
 
 	WizardLoader {
@@ -184,8 +184,9 @@ ApplicationWindow {
 	Action {
 		id:newArrayAction
 
-		iconSource: "icons/new-array.png"
 		text: qsTr("Array Entry...")
+		iconSource: "icons/new-array.png"
+		tooltip: qsTr("New Array Entry")
 		enabled: treeView.currentItem !== null
 		onTriggered: newArrayWindow.show()
 	}
@@ -195,10 +196,9 @@ ApplicationWindow {
 
 		text: qsTr("Delete")
 		iconSource: "icons/delete.png"
-		tooltip: "Delete"
+		tooltip: qsTr("Delete")
 		shortcut: StandardKey.Delete
 		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
-
 		onTriggered: {
 			if(searchResultsSelectedItem !== null)
 				MFunctions.deleteSearchResult()
@@ -240,7 +240,6 @@ ApplicationWindow {
 		tooltip: qsTr("Undo")
 		shortcut: StandardKey.Undo
 		enabled: undoManager.canUndo
-
 		onTriggered: {
 
 			if(undoManager.undoText === "deleteKey"){
@@ -491,8 +490,9 @@ ApplicationWindow {
 
 	Action {
 		id: aboutAction
+
 		text: qsTr("About Elektra Editor")
-		iconSource: "icons/elektra-logo.png"
+		iconSource: "icons/elektra-logo-big.png"
 		onTriggered: aboutWindow.show()
 	}
 

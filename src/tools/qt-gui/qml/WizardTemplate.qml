@@ -70,7 +70,7 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
-		cancelButton.onClicked: {
+		cancelButton.action.onTriggered: {
 			wizardLoader.close()
 			textField.text = ""
 

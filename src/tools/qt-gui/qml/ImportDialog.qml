@@ -101,14 +101,14 @@ BasicWindow {
 		}
 	}
 
-	cancelButton.onClicked: {
+	cancelButton.action.onTriggered: {
 		importTextField.text = ""
 		importDialog.close()
 	}
 
-	okButton.onClicked: {
+	okButton.action.onTriggered: {
 
-			var plugin = importFileDialog.selectedNameFilter.match(/[a-z]+/).toString()
+		var plugin = importFileDialog.selectedNameFilter.match(/[a-z]+/).toString()
 
 		undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
 		externTreeModel.refresh()
