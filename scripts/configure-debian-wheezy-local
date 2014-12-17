@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source "$(dirname "$0")/configure-common"
+. "$(dirname "$0")/configure-common"
 
 export JAVA_HOME=/opt/jdk1.8.0_25
 
