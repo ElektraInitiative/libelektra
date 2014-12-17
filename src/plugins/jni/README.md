@@ -29,6 +29,21 @@ The java plugin itself needs to have following methods:
 - set with arguments elektra/KeySet and elektra/Key
 - error with arguments elektra/KeySet and elektra/Key
 
+
+
+## Installation ##
+
+Please install java8 as package, e.g.
+[for debian](http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html)
+and then let cmake actually find jdk8:
+
+      cd /usr/lib/jvm/ && sudo ln -s java-8-oracle default-java
+
+Then enable the plugin using:
+
+    cmake -DPLUGINS="...;jna" /path/to/libelektra
+
+
 ## Plugin Config ##
 
 You need to pass :
