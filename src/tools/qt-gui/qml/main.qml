@@ -309,7 +309,7 @@ ApplicationWindow {
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
 			for(var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
-				undoManager.undo()
+				undoAction.trigger()
 		}
 	}
 
@@ -385,7 +385,7 @@ ApplicationWindow {
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
 			for(var i = undoManager.index(); i < undoManager.count(); i++)
-				undoManager.redo()
+				redoAction.trigger()
 		}
 	}
 
@@ -595,7 +595,7 @@ ApplicationWindow {
 							anchors.fill: parent
 							anchors.leftMargin: defaultMargins
 							anchors.verticalCenter: parent.verticalCenter
-							text: styleData.value.replace(/\n/g, " ")
+							text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
 							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
 						}
 					}
