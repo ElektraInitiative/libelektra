@@ -8,3 +8,7 @@ You can can also use ALL (will add all tools):
 
 
 Dependencies: Qt5.3 and libdrm-dev
+
+If you have wheezy-backports enabled and do not use kde4, you can also install:
+
+    apt-get install qtdeclarative5-dev
