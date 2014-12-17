@@ -11,10 +11,6 @@ BasicWindow {
 	property string detailedText
 	property alias	icon: icon
 
-	cancelButton.visible: false
-	detailsButton.visible: detailedText.length > 0
-	detailsButton.action.onTriggered: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
-
 	height: mainTextItem.implicitHeight + okButton.implicitHeight +  3*defaultMargins
 	width: mainWindow.width*0.25
 
@@ -89,6 +85,10 @@ BasicWindow {
 			]
 		}
 	}
+
+	cancelButton.visible: false
+	detailsButton.visible: detailedText.length > 0
+	detailsButton.action.onTriggered: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
 
 	okButton.action.onTriggered: {
 		generalMessageDialog.close()

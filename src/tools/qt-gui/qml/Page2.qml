@@ -39,7 +39,7 @@ Item {
 				model: guiBackend.availablePlugins(includeStorage, includeResolver)
 				onCurrentTextChanged: infoText.text = guiBackend.pluginInfo(pluginDropdown.currentText)
 			}
-			ToolButton {
+			Button {
 				id: addButton
 
 				implicitWidth:  pluginDropdown.height
@@ -216,6 +216,7 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
+		Component.onCompleted: nextButton.enabled = false
 		finishButton.visible: false
 		nextButton.action.onTriggered: {
 			loader.source = "Page3.qml"

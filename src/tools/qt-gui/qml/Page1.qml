@@ -11,8 +11,6 @@ WizardTemplate {
 
 	label.text: qsTr("Mount point:  ")
 
-	Component.onCompleted: textField.forceActiveFocus()
-
 	buttonRow.finishButton.visible: false
 	buttonRow.nextButton.action.enabled: textField.text !== ""
 	buttonRow.nextButton.action.onTriggered: {
