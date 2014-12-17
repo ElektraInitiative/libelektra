@@ -1,5 +1,8 @@
-cmake_minimum_required (VERSION 2.8.11)
 #for add_jar INCLUDE_JARS
+cmake_minimum_required (VERSION 2.8.11)
+
+#versioning for libelektra.jar
+set(CMAKE_JAVA_TARGET_VERSION ${KDB_VERSION})
 
 find_package(Java)
 include(UseJava)
