@@ -15,16 +15,20 @@ else()
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
+	../kdb
+	../../libtools/include
+	../../libtools/include/merging
+	../../libtools/include/helper
+	)
+
+include_directories (
+	SYSTEM
 	${Qt5Quick_INCLUDE_DIRS}
 	${Qt5Gui_INCLUDE_DIRS}
 	${Qt5Core_INCLUDE_DIRS}
 	${Qt5Qml_INCLUDE_DIRS}
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5Test_INCLUDE_DIRS}
-	../kdb
-	../../libtools/include
-	../../libtools/include/merging
-	../../libtools/include/helper
 	)
 
 file(GLOB qt-gui_HDRS "../kdb/*.hpp")
