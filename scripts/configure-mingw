@@ -1,31 +1,13 @@
 #!/bin/sh
 
-SELF=$(readlink -f "$0")
-SCRIPTS=$(dirname "$SELF")
-SOURCE=$(dirname "$SCRIPTS")
-SBUILD=$(pwd)
-BUILD=$(readlink -f "$SBUILD")
-
-if [ -d "$1" ]
-then
-	SOURCE="$1"
-fi
-
-if [ "$SOURCE" = "$BUILD" ]
-then
-	echo "In source builds are not allowed, create a new directory and run $SELF there"
-	exit 1
-fi
-
-if [ "$SCRIPTS" = "$BUILD" ]
-then
-	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
-	exit 1
-fi
+source "$(dirname "$0")/configure-common"
 
 cd $BUILD
-
-cmake -DENABLE_TESTING=OFF -DBUILD_TESTING=OFF \
-       -DPLUGINS="wresolver;dump" -DKDB_DEFAULT_RESOLVER=wresolver  \
-       -DCMAKE_PIC_FLAGS="" -DCXX_STD=-std=gnu++98 \
-       -DCMAKE_TOOLCHAIN_FILE=$SOURCE/cmake/Toolchain/Toolchain-mingw32.cmake $SOURCE
+cmake	-DENABLE_TESTING=OFF \
+	-DBUILD_TESTING=OFF \
+	-DPLUGINS="wresolver;dump" \
+	-DKDB_DEFAULT_RESOLVER=wresolver  \
+	-DCMAKE_PIC_FLAGS="" \
+	-DCXX_STD=-std=gnu++98 \
+	-DCMAKE_TOOLCHAIN_FILE=$SOURCE/cmake/Toolchain/Toolchain-mingw32.cmake \
+	$*
