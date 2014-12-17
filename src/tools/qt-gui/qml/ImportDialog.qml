@@ -11,7 +11,11 @@ BasicWindow {
 	height: Math.ceil(importMergeGroup.height*4)
 
 	property alias importTextField: importTextField
-	okButton.enabled: importTextField.text !== ""
+	Component.onCompleted: {
+		importFileDialog.nameFilters = guiBackend.nameFilters()
+		importFileDialog.selectNameFilter("dump (*.ecf)")
+		importTextField.forceActiveFocus()
+	}
 
 	BasicRectangle {
 		anchors.fill: parent
@@ -34,9 +38,14 @@ BasicWindow {
 					text: "..."
 					implicitWidth: importTextField.height
 					onClicked: {
-						importFileDialog.nameFilters = guiBackend.nameFilters()
 						importFileDialog.open()
 					}
+				}
+				FileDialog {
+					id: importFileDialog
+
+					title: qsTr("Select File")
+					onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
 				}
 			}
 			GroupBox {
@@ -106,6 +115,7 @@ BasicWindow {
 		importDialog.close()
 	}
 
+	okButton.action.enabled: importTextField.text !== ""
 	okButton.action.onTriggered: {
 
 		var plugin = importFileDialog.selectedNameFilter.match(/[a-z]+/).toString()

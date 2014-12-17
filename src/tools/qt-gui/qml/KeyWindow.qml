@@ -26,6 +26,8 @@ BasicWindow {
 	property var    selectedNode: null
 	property bool   accessFromSearchResults: false
 
+	Component.onCompleted: accessFromSearchResults ? valueTextField.forceActiveFocus() : nameTextField.forceActiveFocus()
+
 	onClosing: cancelClicked()
 
 	contents: ColumnLayout {

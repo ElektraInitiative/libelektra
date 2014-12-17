@@ -158,13 +158,6 @@ ApplicationWindow {
 		id: errorDialog
 	}
 
-	FileDialog {
-		id: importFileDialog
-
-		title: qsTr("Select File")
-		onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
-	}
-
 	ExitDialog {
 		id: exitDialog
 	}
@@ -174,7 +167,7 @@ ApplicationWindow {
 	Action {
 		id:newKeyAction
 
-		text: qsTr("Key...")
+		text: qsTr("&Key...")
 		iconSource: "icons/new-key.png"
 		tooltip: qsTr("New Key")
 		enabled: treeView.currentItem !== null
@@ -184,7 +177,7 @@ ApplicationWindow {
 	Action {
 		id:newArrayAction
 
-		text: qsTr("Array Entry...")
+		text: qsTr("&Array Entry...")
 		iconSource: "icons/new-array.png"
 		tooltip: qsTr("New Array Entry")
 		enabled: treeView.currentItem !== null
@@ -212,7 +205,7 @@ ApplicationWindow {
 	Action {
 		id: importAction
 
-		text: qsTr("Import Configuration... ")
+		text: qsTr("&Import Configuration... ")
 		iconSource: "icons/import.png"
 		tooltip: qsTr("Import Configuration")
 		enabled: treeView.currentItem !== null
@@ -222,7 +215,7 @@ ApplicationWindow {
 	Action {
 		id: exportAction
 
-		text: qsTr("Export Configuration... ")
+		text: qsTr("E&xport Configuration... ")
 		iconSource: "icons/export.png"
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null

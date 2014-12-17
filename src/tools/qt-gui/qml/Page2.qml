@@ -12,6 +12,7 @@ Item {
 	property var	configModel: ListModel {
 		id: configModel
 	}
+	Component.onCompleted: pluginDropdown.forceActiveFocus()
 
 	ColumnLayout {
 

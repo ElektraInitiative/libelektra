@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 
 Window {
-	id: basicWindow
 
 	property alias okButton: okButton
 	property alias cancelButton: cancelButton
@@ -59,8 +58,6 @@ Window {
 				action: Action {
 					text: qsTr("&Ok")
 				}
-
-				isDefault: true
 			}
 			Button {
 				id:cancelButton
