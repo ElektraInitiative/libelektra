@@ -28,7 +28,7 @@ if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
 		INCLUDE_JARS ${jna}
 		SOURCES ${files} ${pfiles}
 		VERSION 1
-		OUTPUT_NAME elektra.jar
+		OUTPUT_NAME elektra
 		)
 
 	install_jar(elektrajar share/java)
