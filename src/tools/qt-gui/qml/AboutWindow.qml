@@ -48,7 +48,9 @@ BasicWindow {
 						property string link: "http://www.libelektra.org"
 						readOnly: true
 						textFormat: TextEdit.RichText
-						text: "<html><style type=\"text/css\"></style><b>Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database.</b><br><br><br>For further information and for reporting bugs <a href=\"" + link + "\">visit Elektra's Website</a></html>"
+						text: "<html><style type=\"text/css\"></style><b>Elektra provides a universal and secure framework to store configuration " +
+						"parameters in a global, hierarchical key database.</b><br><br><br>For further information and for reporting bugs " +
+						"<a href=\"" + link + "\">visit Elektra's Website</a></html>"
 						onLinkActivated: Qt.openUrlExternally(link)
 					}
 				}
