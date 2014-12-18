@@ -35,10 +35,6 @@
 
 HtmlTemplate::HtmlTemplate()
 {
-	QFile f(":/template.html");
-	if (f.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		htmlTemplate = f.readAll();
-	}
 }
 
 QString HtmlTemplate::render(const QString &body, RenderOptions options) const
