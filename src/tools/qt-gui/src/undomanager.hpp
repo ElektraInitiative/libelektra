@@ -153,9 +153,9 @@ public:
 	 *
 	 * @return True if the UndoStack is in a clean state.
 	 */
-	Q_INVOKABLE bool	isClean();
+	Q_INVOKABLE bool	isClean() const;
 
-	Q_INVOKABLE bool	canPaste();
+	Q_INVOKABLE bool	canPaste() const;
 
 	Q_INVOKABLE int		index() const;
 
