@@ -113,25 +113,35 @@ RESOURCES += \
 	i18n.qrc
 
 OTHER_FILES += \
-	qml/main.qml\
+	qml/AboutWindow.qml\
+	qml/BasicRectangle.qml\
 	qml/BasicWindow.qml\
 	qml/ButtonRow.qml\
+	qml/EditKeyWindow.qml\
+	qml/ExitDialog.qml\
+	qml/ExportDialog.qml\
+	qml/GeneralMessageDialog.qml\
+	qml/ImportDialog.qml\
+	qml/KeyAreaContextMenu.qml\
+	qml/KeyWindow.qml\
+	qml/MainMenuBar.qml\
+	qml/main.qml\
+	qml/MainToolBar.qml\
+	qml/NewArrayEntry.qml\
+	qml/NewKeyWindow.qml\
+	qml/NewMetaKey.qml\
+	qml/Page1.qml\
+	qml/Page2.qml\
+	qml/Page3.qml\
+	qml/SearchField.qml\
+	qml/ToolTip.qml\
+	qml/TreeContextMenu.qml\
+	qml/TreeView.qml\
+	qml/UnmountBackendWindow.qml\
 	qml/WizardLoader.qml\
 	qml/WizardTemplate.qml\
-	qml/NewMetaKey.qml\
-	qml/BasicRectangle.qml \
-	qml/UnmountBackendWindow.qml \
-	qml/NewArrayEntry.qml \
-	qml/TreeView.qml \
-	qml/KeyWindow.qml \
-	qml/NewKeyWindow.qml \
-	qml/EditKeyWindow.qml \
-	qml/ExitDialog.qml \
-	qml/MainMenuBar.qml \
-	qml/ExportDialog.qml \
-	qml/ImportDialog.qml \
-	qml/ToolTip.qml \
 	qml/TooltipCreator.js
+	qml/MainFunctions.js
 
 SUBDIRS += \
 	unittest/unittest.pro \

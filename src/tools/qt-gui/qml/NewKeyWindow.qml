@@ -26,6 +26,5 @@ KeyWindow {
 		qmlMetaKeyModel.clear()
 		nameTextField.text = ""
 		valueTextField.text = ""
-		nameTextField.focus = true
 	}
 }

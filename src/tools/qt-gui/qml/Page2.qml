@@ -12,7 +12,6 @@ Item {
 	property var	configModel: ListModel {
 		id: configModel
 	}
-	Component.onCompleted: pluginDropdown.forceActiveFocus()
 
 	ColumnLayout {
 
@@ -190,7 +189,7 @@ Item {
 			anchors.rightMargin: defaultSpacing
 
 			iconSource: "icons/list-add.png"
-			tooltip: qsTr("Add Key to Configuration for Plugin " + pluginDropdown.currentText.replace(/\[\w*\]/,""))
+			tooltip: qsTr("Add Key to Configuration for Plugin %1").arg(pluginDropdown.currentText.replace(/\[\w*\]/,""))
 			visible: false
 			enabled: selector.currentNode === null ? false : !selector.currentNode.isNull
 

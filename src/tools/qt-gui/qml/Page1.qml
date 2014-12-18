@@ -7,7 +7,7 @@ WizardTemplate {
 						  "You can only create backends if you have root administration rights.\n\n" +
 						  "The name must be a valid keyname or start with / for cascading mountpoints.\n\n" +
 						  "Please provide a mount point for the backend.\n\n" +
-						  "Already used are:  " + wizardLoader.usedNames)
+						  "Already used are: %1").arg(wizardLoader.usedNames)
 
 	label.text: qsTr("Mount point:  ")
 

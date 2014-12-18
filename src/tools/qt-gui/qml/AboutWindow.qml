@@ -43,7 +43,6 @@ BasicWindow {
 					id: aboutTab
 
 					title: qsTr("About")
-					focus: true
 
 					TextArea{
 						property string link: "http://www.libelektra.org"

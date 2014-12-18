@@ -50,7 +50,6 @@ BasicWindow {
 			TextField {
 				id: nameTextField
 				Layout.fillWidth: true
-				focus: true
 				text: keyName
 				clip: true
 				Keys.onPressed: {
@@ -116,7 +115,7 @@ BasicWindow {
 					//check if user has edited metakeyname or metakeyvalue. This comparison can only happen here since
 					//"metaNameField.text" cannot be accessed outside the delegate.
 					metaNameField.readOnly: nameReadOnly
-					metaValueField.placeholderText: qsTr(valuePlaceHolder)
+					metaValueField.placeholderText: valuePlaceHolder
 
 					metaNameField.onTextChanged:  {
 						if(metaName !== metaNameField.text){

@@ -811,6 +811,7 @@ ApplicationWindow {
 			}
 		}
 	}
+
 	statusBar: StatusBar {
 		id:mainStatusBar
 
