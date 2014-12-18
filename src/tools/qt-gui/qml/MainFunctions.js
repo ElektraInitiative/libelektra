@@ -8,6 +8,7 @@ function showMessage(title, text, detailedText) {
 	errorDialog.show()
 }
 
+//puts key to clipboard when cut key command for a key without children is executed
 function cutKey() {
 	//console.log("cut Key")
 	//needed to mark the node
@@ -18,6 +19,7 @@ function cutKey() {
 	isPasted = false
 }
 
+//puts key to clipboard when cut key command for a key with children is executed
 function cutBranch() {
 	//console.log("cut Branch")
 	treeView.treeAreaCopyIndex = treeView.currentNode.index
@@ -27,6 +29,7 @@ function cutBranch() {
 	isPasted = false
 }
 
+//puts key to clipboard when copy key command for a key without children is executed
 function copyKey() {
 	//console.log("copy Key")
 	//needed to mark the node
@@ -36,6 +39,7 @@ function copyKey() {
 	undoManager.putToClipboard("copyKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
 }
 
+//puts key to clipboard when copy key command for a key with children is executed
 function copyBranch() {
 	//console.log("copy Branch")
 	//needed to mark the node
@@ -45,6 +49,7 @@ function copyBranch() {
 	undoManager.putToClipboard("copyBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
 }
 
+//paste key that is stored in the clipboard to the new parent key
 function paste() {
 
 	if(undoManager.clipboardType === "copyKey"){
@@ -104,6 +109,7 @@ function paste() {
 	}
 }
 
+//deletes key when delete key command for a key without children is executed
 function deleteKey() {
 	//		console.log("delete key")
 	var cr = keyAreaView.currentRow
@@ -122,6 +128,7 @@ function deleteKey() {
 		keyAreaSelectedItem = null
 }
 
+//deletes key when delete key command for a key with children is executed
 function deleteBranch() {
 	//		console.log("delete branch")
 
@@ -131,6 +138,7 @@ function deleteBranch() {
 	treeView.currentNode = null
 }
 
+//deletes key when delete key command for a key located in the search results is executed
 function deleteSearchResult(){
 	//console.log("delete search result")
 	var ci = searchResultsListView.currentIndex
@@ -153,6 +161,7 @@ function deleteSearchResult(){
 	}
 }
 
+//refreshes the key area view
 function updateKeyAreaSelection() {
 	keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
 	editKeyWindow.selectedNode = keyAreaSelectedItem
@@ -163,11 +172,13 @@ function updateKeyAreaSelection() {
 	keyAreaView.forceActiveFocus()
 }
 
+//refreshes the model of the key area view
 function resetKeyAreaModel() {
 	keyAreaModel = null
 	keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
 }
 
+//refreshes a treeview model and preserves the current selected node
 function refreshModel(treeModel) {
 	var currentModel = treeView.currentNode.parentModel
 	var index = treeView.currentNode.index
