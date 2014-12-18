@@ -12,19 +12,19 @@ class GUIBackend : public QObject
 public:
 	explicit GUIBackend(QObject *parent = 0);
 	GUIBackend(const GUIBackend &other);
-	
-	
+
+
 
 	/**
 	 * @brief Creates a new backend on a mountpoint.
-	 * 
+	 *
 	 * @param mountpoint The mountpoint of the new backend.
 	 */
 	Q_INVOKABLE void			createBackend(const QString &mountpoint);
 
 	/**
-	 * @brief Add a path 
-	 * 
+	 * @brief Add a path
+	 *
 	 * @param path ...
 	 * @return void
 	 */
@@ -32,7 +32,7 @@ public:
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @param name ...
 	 * @param config ...
 	 * @return void
@@ -41,7 +41,7 @@ public:
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @param pluginName ...
 	 * @return QString
 	 */
@@ -49,14 +49,14 @@ public:
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @return QString
 	 */
 	Q_INVOKABLE QString			mountPoints() const;
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @param includeStorage ...
 	 * @param includeResolver ...
 	 * @return QStringList
@@ -65,28 +65,28 @@ public:
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @return QStringList
 	 */
 	Q_INVOKABLE QStringList 	nameFilters();
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @return void
 	 */
 	Q_INVOKABLE void			serialise();
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @return bool
 	 */
 	Q_INVOKABLE bool			validated();
 
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @return void
 	 */
 	Q_INVOKABLE void			deleteBackend();

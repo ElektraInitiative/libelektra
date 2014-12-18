@@ -18,6 +18,7 @@ GUIBackend::GUIBackend(QObject *parent) :
 }
 
 GUIBackend::GUIBackend(const GUIBackend &other)
+	: QObject()
 {
 	Q_UNUSED(other);
 }
