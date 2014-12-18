@@ -155,11 +155,35 @@ public:
 	 */
 	Q_INVOKABLE bool	isClean() const;
 
+	/**
+	 * @brief Returns if the clipboard is filled.
+	 *
+	 * @return True if the clipboard is filled.
+	 */
+
 	Q_INVOKABLE bool	canPaste() const;
+
+	/**
+	 * @brief Returns the current index of the UndoStack.
+	 *
+	 * @return The current index of the UndoStack.
+	 */
 
 	Q_INVOKABLE int		index() const;
 
+	/**
+	 * @brief Returns the clean index of the UndoStack.
+	 *
+	 * @return The clean index of the UndoStack.
+	 */
+
 	Q_INVOKABLE int		cleanIndex() const;
+
+	/**
+	 * @brief Returns the size of the UndoStack.
+	 *
+	 * @return The size of the UndoStack..
+	 */
 
 	Q_INVOKABLE int		count() const;
 

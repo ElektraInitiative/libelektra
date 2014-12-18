@@ -24,7 +24,6 @@ public:
 
 	/**
 	 * @brief The TreeViewModelRoles enum
-	 * @
 	 */
 	enum TreeViewModelRoles
 	{
@@ -38,8 +37,8 @@ public:
 		NodeRole, ///< The role QML can retrieve the ConfigNode at a specified index.
 		ParentModelRole, ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
 		IndexRole, ///< The role QML can retrieve the index of a ConfigNode.
-		IsNullRole,
-		IsExpandedRole
+		IsNullRole, ///< The role QML can retrieve if the key of this node is null.
+		IsExpandedRole ///< The role QML can retrieve if a ConfigNode is expanded.
 	};
 
 	explicit TreeViewModel(QObject* parent =  0);
@@ -138,22 +137,15 @@ public:
 	Q_INVOKABLE void            setData(int index, const QVariant& value, const QString& role);
 
 	/**
-	 * @brief This method exists only for debugging purposes and is very likely to be removed.
-	 *
-	 * @return QString A String representation of this model.
-	 */
-	QString                     toString();
-
-	/**
 	 * @brief Returns the index of a ConfigNode in this TreeViewModel based in the ConfigNode's name.
 	 *
 	 * @param name The name of the ConfigNode.
-	 * @return int The index of the ConfigNode, -1 if a ConfigNode with this name is not present in this TreeViewModel.
+	 * @return The index of the ConfigNode, -1 if a ConfigNode with this name is not present in this TreeViewModel.
 	 */
 	Q_INVOKABLE int             getIndexByName(const QString& name) const;
 
 	/**
-	 * @brief Export the configuration below a ConfigNode to a file on the harddrive.
+	 * @brief Export the configuration below a ConfigNode to a file on the harddisk.
 	 *
 	 * @param node The ConfigNode that is the root node of the exported configuration.
 	 * @param format Specifies the file format of the exported file.
@@ -161,17 +153,70 @@ public:
 	 */
 	Q_INVOKABLE void            exportConfiguration(TreeViewModel* model, int index, QString format, QString file);
 
+	/**
+	 * @brief Import a configuration from a file on the harddrive into the current configuration.
+	 *
+	 * @param name The name of the ConfigNode the configuration is imported to.
+	 * @param file The path of the file on the harddisk.
+	 * @param format The format of the file on the harddisk.
+	 * @param mergeStrategy The mergeStrategy in case of conflict.
+	 */
 	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QString& mergeStrategy);
 
+	/**
+	 * @brief Sets a new KeySet.
+	 *
+	 * @param set The new KeySet.
+	 */
 	void                        setKeySet(kdb::KeySet set);
+
+	/**
+	 * @brief Stores the current state of the configuration in the KeySet.
+	 */
 	void                        collectCurrentKeySet();
+
+	/**
+	 * @brief Clears this model if it holds metakeys.
+	 */
 	void                        clearMetaModel();
 
+	/**
+	 * @brief Unmounts a backend.
+	 *
+	 * @param backendName The name of the backend that is unmounted.
+	 */
 	Q_INVOKABLE void            unMountBackend(QString backendName);
+
+	/**
+	 * @brief Recreates the model. Needed to update the QML view.
+	 */
 	Q_INVOKABLE void            refresh();
+
+	/**
+	 * @brief The number of ConfigNodes in this model.
+	 *
+	 * @return The number of ConfigNodes in this model.
+	 */
 	Q_INVOKABLE int             count() const;
+
+	/**
+	 * @brief Returns the correct name for a new Array Entry.
+	 *
+	 * @return The correct name for a new Array Entry.
+	 */
 	Q_INVOKABLE QString			getCurrentArrayNo() const;
+
+	/**
+	 * @brief Renames all Array Entries in this model to prevent holes.
+	 */
 	void						refreshArrayNumbers();
+
+
+	/**
+	 * @brief Returns a list of the current mounted backends.
+	 *
+	 * @return A list of the current mounted backends.
+	 */
 	Q_INVOKABLE QStringList     mountedBackends();
 
 private:

@@ -56,10 +56,11 @@ function paste() {
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		keyAreaView.keyAreaCopyIndex = -1
 		keyAreaView.currentNodePath = ""
-		resetKeyAreaModel()
-		if(keyAreaSelectedItem === null){
-			keyAreaModel.refresh()
-		}
+		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
+			resetKeyAreaModel()
+//		if(keyAreaSelectedItem === null){
+//			keyAreaModel.refresh()
+//		}
 	}
 	else if(undoManager.clipboardType === "copyBranch"){
 

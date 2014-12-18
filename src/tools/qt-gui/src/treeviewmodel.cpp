@@ -170,19 +170,6 @@ void TreeViewModel::setData(int index, const QVariant& value, const QString& rol
 		return;
 }
 
-QString TreeViewModel::toString()
-{
-	QString model = "\n";
-
-	foreach (ConfigNodePtr node, m_model)
-	{
-		model += node->getPath();
-		model += "\n";
-	}
-
-	return model;
-}
-
 int TreeViewModel::getIndexByName(const QString& name) const
 {
 	for (int i = 0; i < m_model.count(); i++)

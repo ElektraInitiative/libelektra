@@ -9,6 +9,16 @@ class ImportConfigurationCommand : public QUndoCommand
 {
 
 public:
+	/**
+	 * @brief The command to import a configuration from a file.
+	 *
+	 * @param model The model the configuration is imported to.
+	 * @param keyName The
+	 * @param format ...
+	 * @param file ...
+	 * @param mergeStrategy ...
+	 * @param parent ...
+	 */
 	explicit ImportConfigurationCommand(TreeViewModel* model, const QString keyName, const QString format, const QString file, const QString mergeStrategy, QUndoCommand* parent = 0);
 
 	virtual void undo();

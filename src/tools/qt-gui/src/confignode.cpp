@@ -172,21 +172,6 @@ Key ConfigNode::getKey() const
 	return m_key;
 }
 
-void ConfigNode::deletePath(QStringList &path)
-{
-	if(path.count() == 0)
-		return;
-
-	QString name = path.takeFirst();
-	int index = getChildIndexByName(name);
-	ConfigNodePtr node = getChildByName(name);
-
-	node->deletePath(path);
-
-	if(node->getChildCount() == 0)
-		m_children->removeRow(index);
-}
-
 int ConfigNode::getChildIndexByName(const QString &name)
 {
 	for(int i = 0; i < m_children->model().count(); i++)
@@ -208,13 +193,6 @@ void ConfigNode::setParentModel(TreeViewModel *parent)
 	m_parentModel = parent;
 }
 
-void ConfigNode::clear()
-{
-	foreach(ConfigNodePtr node, m_children->model()){
-		node->clear();
-		m_children->removeRow(m_children->getIndexByName(node->getName()));
-	}
-}
 bool ConfigNode::isExpanded() const
 {
 	return m_isExpanded;
