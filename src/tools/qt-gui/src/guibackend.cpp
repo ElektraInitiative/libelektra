@@ -109,8 +109,7 @@ void GUIBackend::addPlugin(QString name, QStringList config)
 	}
 	catch(KDBException const& ex)
 	{
-		//TODO: emit proper Error
-		qDebug() << "ERROR";
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
 	}
 
 	foreach(QString s, config)
@@ -174,8 +173,8 @@ QString GUIBackend::mountPoints() const
 	}
 	catch(KDBException const& ex)
 	{
-		//TODO: emit proper Error
-		qDebug() << "ERROR";
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
+		return "";
 	}
 
 	QStringList mountPoints;
@@ -292,7 +291,7 @@ QStringList GUIBackend::nameFilters()
 		else if(plugin == "dump")
 			pattern = "*.ecf";
 		else
-			pattern = "*.*";
+			pattern = "*";
 
 			nameFilters.append(QString("%1 (%2)").arg(plugin, pattern));
 	}
