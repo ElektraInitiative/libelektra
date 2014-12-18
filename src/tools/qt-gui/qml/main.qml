@@ -168,7 +168,7 @@ ApplicationWindow {
 		id:newKeyAction
 
 		text: qsTr("&Key...")
-		iconSource: "icons/new-key.png"
+		iconSource: "icons/document-new.png"
 		tooltip: qsTr("New Key")
 		enabled: treeView.currentItem !== null
 		onTriggered: newKeyWindow.show()
@@ -188,7 +188,7 @@ ApplicationWindow {
 		id:deleteAction
 
 		text: qsTr("Delete")
-		iconSource: "icons/delete.png"
+		iconSource: "icons/document-close.png"
 		tooltip: qsTr("Delete")
 		shortcut: StandardKey.Delete
 		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
@@ -229,7 +229,7 @@ ApplicationWindow {
 		id: undoAction
 
 		text: qsTr("Undo")
-		iconSource: "icons/undo.png"
+		iconSource: "icons/edit-undo.png"
 		tooltip: qsTr("Undo")
 		shortcut: StandardKey.Undo
 		enabled: undoManager.canUndo
@@ -309,7 +309,7 @@ ApplicationWindow {
 		id: redoAction
 
 		text: qsTr("Redo")
-		iconSource: "icons/redo.png"
+		iconSource: "icons/edit-redo.png"
 		tooltip: qsTr("Redo")
 		shortcut: StandardKey.Redo
 		enabled: undoManager.canRedo
@@ -385,7 +385,7 @@ ApplicationWindow {
 		id: synchronizeAction
 
 		text: qsTr("Synchronize")
-		iconSource: "icons/synchronize.png"
+		iconSource: "icons/view-refresh.png"
 		tooltip: qsTr("Synchronize")
 		shortcut: StandardKey.Refresh
 		onTriggered: {
@@ -485,7 +485,7 @@ ApplicationWindow {
 		id: aboutAction
 
 		text: qsTr("About Elektra Editor")
-		iconSource: "icons/elektra-logo-big.png"
+		iconSource: "icons/elektra-logo.png"
 		onTriggered: aboutWindow.show()
 	}
 

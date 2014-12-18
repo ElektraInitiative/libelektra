@@ -16,7 +16,7 @@ BasicWindow {
 		RowLayout {
 			spacing: 2*defaultMargins
 			Image {
-				source: "icons/elektra-logo-big.png"
+				source: "icons/elektra-logo.png"
 			}
 			Column {
 				Text {

@@ -1,17 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/icons/arrow_export.png</file>
-        <file>qml/icons/arrow_import.png</file>
-        <file>qml/icons/clear.png</file>
-        <file>qml/icons/delete.png</file>
-        <file>qml/icons/emptyFile.png</file>
         <file>qml/icons/export.png</file>
         <file>qml/icons/import.png</file>
-        <file>qml/icons/new-key.png</file>
         <file>qml/icons/page-simple.png</file>
-        <file>qml/icons/redo.png</file>
-        <file>qml/icons/synchronize.png</file>
-        <file>qml/icons/undo.png</file>
         <file>qml/icons/dialog-close.png</file>
         <file>qml/icons/dialog-cancel.png</file>
         <file>qml/icons/dialog-ok.png</file>
@@ -46,7 +37,6 @@
         <file>qml/icons/edit-rename.png</file>
         <file>qml/icons/new-array.png</file>
         <file>qml/icons/elektra-logo.png</file>
-        <file>qml/icons/elektra-logo-big.png</file>
         <file>qml/Page1.qml</file>
         <file>qml/Page2.qml</file>
         <file>qml/Page3.qml</file>
@@ -62,5 +52,10 @@
         <file>qml/MainToolBar.qml</file>
         <file>qml/TreeContextMenu.qml</file>
         <file>qml/KeyAreaContextMenu.qml</file>
+        <file>qml/icons/document-close.png</file>
+        <file>qml/icons/document-new.png</file>
+        <file>qml/icons/edit-redo.png</file>
+        <file>qml/icons/edit-undo.png</file>
+        <file>qml/icons/view-refresh.png</file>
     </qresource>
 </RCC>

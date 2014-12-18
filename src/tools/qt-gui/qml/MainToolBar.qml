@@ -11,7 +11,7 @@ ToolBar {
 
 		ToolButton {
 			id:tbNew
-			iconSource: "icons/new-key.png"
+			iconSource: "icons/document-new.png"
 			enabled: newKeyAction.enabled
 			menu: Menu {
 				MenuItem {
