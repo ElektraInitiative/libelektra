@@ -58,9 +58,6 @@ function paste() {
 		keyAreaView.currentNodePath = ""
 		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
 			resetKeyAreaModel()
-//		if(keyAreaSelectedItem === null){
-//			keyAreaModel.refresh()
-//		}
 	}
 	else if(undoManager.clipboardType === "copyBranch"){
 
@@ -86,9 +83,8 @@ function paste() {
 			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		}
 
-		if(keyAreaSelectedItem === null){
-			keyAreaModel.refresh()
-		}
+		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
+			resetKeyAreaModel()
 	}
 	else if(undoManager.clipboardType === "cutBranch"){
 
