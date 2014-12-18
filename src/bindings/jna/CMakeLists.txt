@@ -1,5 +1,8 @@
-cmake_minimum_required (VERSION 2.8.11)
 #for add_jar INCLUDE_JARS
+cmake_minimum_required (VERSION 2.8.11)
+
+#versioning for libelektra.jar
+set(CMAKE_JAVA_TARGET_VERSION ${KDB_VERSION})
 
 find_package(Java)
 include(UseJava)
@@ -24,14 +27,14 @@ if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
 	# http://www.cmake.org/cmake/help/v3.0/module/UseJava.html
 	#set(CMAKE_JAVA_INCLUDE_PATH ${jna})
 
-	add_jar(elektrajar
+	add_jar(libelektra
 		INCLUDE_JARS ${jna}
 		SOURCES ${files} ${pfiles}
 		VERSION 1
-		OUTPUT_NAME elektra.jar
+		OUTPUT_NAME libelektra
 		)
 
-	install_jar(elektrajar share/java)
+	install_jar(libelektra share/java)
 
 else()
 	remove_binding(jna "Java is not greater version 8, but ${Java_VERSION} was found")

@@ -1,11 +1,6 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-
-set(CMAKE_BUILD_TYPE Debug)
 set(DISCOUNT_FIND_QUIETLY ON)
-
-add_definitions(-Wall)
 
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
@@ -20,17 +15,21 @@ else()
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
+	../kdb
+	../../libtools/include
+	../../libtools/include/merging
+	../../libtools/include/helper
+	)
+
+include_directories (
+	SYSTEM
 	${Qt5Quick_INCLUDE_DIRS}
 	${Qt5Gui_INCLUDE_DIRS}
 	${Qt5Core_INCLUDE_DIRS}
 	${Qt5Qml_INCLUDE_DIRS}
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5Test_INCLUDE_DIRS}
-	../kdb
 	src/markdownconverter
-	../../libtools/include
-	../../libtools/include/merging
-	../../libtools/include/helper
 	)
 
 file(GLOB qt-gui_HDRS "../kdb/*.hpp" "src/markdownconverter/*.h" "src/markdownconverter/template/*.h")
