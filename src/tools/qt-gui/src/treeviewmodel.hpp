@@ -77,14 +77,18 @@ public:
 
 	/**
 	 * @brief Get the roles of a ConfigNode at the specifies index. Needed to access roles from outside a delegate in QML.
+	 *
 	 * @param idx The index of the ConfigNode.
+	 *
 	 * @return A map of the roles of the ConfigNode at the specified index.
 	 */
 	Q_INVOKABLE QVariantMap     get(int idx) const;
 
 	/**
 	  * @brief Find a search term in the model.
+	  *
 	  * @param term The search term of interest.
+	  *
 	  * @return A model which includes all ConfigNodes that have the search term in their name or value.
 	  */
 	Q_INVOKABLE QVariant        find(const QString& term);
@@ -140,6 +144,7 @@ public:
 	 * @brief Returns the index of a ConfigNode in this TreeViewModel based in the ConfigNode's name.
 	 *
 	 * @param name The name of the ConfigNode.
+	 *
 	 * @return The index of the ConfigNode, -1 if a ConfigNode with this name is not present in this TreeViewModel.
 	 */
 	Q_INVOKABLE int             getIndexByName(const QString& name) const;

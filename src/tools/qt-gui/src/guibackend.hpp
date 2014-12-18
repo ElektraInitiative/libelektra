@@ -13,8 +13,6 @@ public:
 	explicit GUIBackend(QObject *parent = 0);
 	GUIBackend(const GUIBackend &other);
 
-
-
 	/**
 	 * @brief Creates a new backend on a mountpoint.
 	 *
@@ -23,71 +21,66 @@ public:
 	Q_INVOKABLE void			createBackend(const QString &mountpoint);
 
 	/**
-	 * @brief Add a path
+	 * @brief Add path to a backend fallback file.
 	 *
-	 * @param path ...
-	 * @return void
+	 * @param path The path to a backend fallback file.
 	 */
 	Q_INVOKABLE void			addPath(const QString &path);
 
 	/**
-	 * @brief ...
+	 * @brief Add a plugin to a backend.
 	 *
-	 * @param name ...
-	 * @param config ...
-	 * @return void
+	 * @param name The name of the plugin.
+	 * @param config The configuration for the plugin.
 	 */
 	Q_INVOKABLE void			addPlugin(QString name, QStringList config);
 
 	/**
-	 * @brief ...
+	 * @brief Provides information about a plugin.
 	 *
-	 * @param pluginName ...
-	 * @return QString
+	 * @param pluginName The plugin.
+	 * @return The information about the plugin.
 	 */
 	Q_INVOKABLE QString			pluginInfo(QString pluginName) const;
 
 	/**
-	 * @brief ...
+	 * @brief Returns a list of currently used mountpoints.
 	 *
-	 * @return QString
+	 * @return A list of currently used mountpoints.
 	 */
 	Q_INVOKABLE QString			mountPoints() const;
 
 	/**
-	 * @brief ...
+	 * @brief Returns a list of all currently available plugins.
 	 *
-	 * @param includeStorage ...
-	 * @param includeResolver ...
-	 * @return QStringList
+	 * @param includeStorage Determines if storage plugins should be included in the list.
+	 * @param includeResolver Determines if resolver plugins should be included in the list.
+	 *
+	 * @return A list of all currently available plugins.
 	 */
 	Q_INVOKABLE QStringList 	availablePlugins(bool includeStorage, bool includeResolver) const;
 
 	/**
-	 * @brief ...
+	 * @brief Returns a list of all currently available namefilters.
 	 *
-	 * @return QStringList
+	 * @return A list of all currently available namefilters.
 	 */
 	Q_INVOKABLE QStringList 	nameFilters();
 
 	/**
-	 * @brief ...
-	 *
-	 * @return void
+	 * @brief Writes the current backend permanently to storage.
 	 */
 	Q_INVOKABLE void			serialise();
 
 	/**
-	 * @brief ...
+	 * @brief Returns if the current backend is validated.
 	 *
-	 * @return bool
+	 * @return If the current backend is validated.
 	 */
 	Q_INVOKABLE bool			validated();
 
 	/**
-	 * @brief ...
-	 *
-	 * @return void
+	 * @brief Deletes the current backend.
 	 */
 	Q_INVOKABLE void			deleteBackend();
 
