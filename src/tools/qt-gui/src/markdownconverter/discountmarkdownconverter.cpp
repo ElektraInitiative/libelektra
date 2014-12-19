@@ -44,7 +44,7 @@ extern "C" {
 class DiscountMarkdownDocument : public MarkdownDocument
 {
 public:
-	explicit DiscountMarkdownDocument(MMIOT *document) : discountDocument(document) {}
+	explicit DiscountMarkdownDocument(MMIOT *document_) : discountDocument(document_) {}
 	~DiscountMarkdownDocument() { mkd_cleanup(discountDocument); }
 
 	MMIOT *document() const { return discountDocument; }
