@@ -138,7 +138,11 @@ MarkdownConverter::ConverterOptions DiscountMarkdownConverter::supportedOptions(
 
 unsigned long DiscountMarkdownConverter::translateConverterOptions(ConverterOptions options) const
 {
-	unsigned long converterOptions = MKD_TOC | MKD_NOSTYLE;
+	unsigned long converterOptions = MKD_TOC;
+
+#ifdef MKD_NOSTYLE
+	converterOptions |= MKD_NOSTYLE;
+#endif
 
 	// autolink
 	if (options.testFlag(MarkdownConverter::AutolinkOption)) {
