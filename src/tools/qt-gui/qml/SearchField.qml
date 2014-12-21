@@ -3,7 +3,9 @@ import QtQuick.Controls 1.1
 
 TextField {
 	id: searchField
+
 	placeholderText: qsTr("Find Key...")
+
 	onAccepted: {
 		if(searchField.state == "hasText")
 			keyMetaColumn.state = "SHOW_SEARCH_RESULTS"
@@ -22,13 +24,13 @@ TextField {
 		MouseArea {
 			anchors.fill: parent
 			onClicked: {
-				searchField.text = ''
+				searchField.text = ""
 			}
 		}
 	}
 	states: State {
 		name: "hasText"
-		when: searchField.text != ''
+		when: searchField.text !== ""
 
 		PropertyChanges {
 			target: clear

@@ -87,14 +87,29 @@ void UndoManager::setClean()
 	m_undoStack->setClean();
 }
 
-bool UndoManager::isClean()
+bool UndoManager::isClean() const
 {
 	return m_undoStack->isClean();
 }
 
-bool UndoManager::canPaste()
+bool UndoManager::canPaste() const
 {
 	return !m_clipboardEmpty;
+}
+
+int UndoManager::index() const
+{
+	return m_undoStack->index();
+}
+
+int UndoManager::cleanIndex() const
+{
+	return m_undoStack->cleanIndex();
+}
+
+int UndoManager::count() const
+{
+	return m_undoStack->count();
 }
 
 void UndoManager::undo()

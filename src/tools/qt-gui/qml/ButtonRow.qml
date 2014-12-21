@@ -6,7 +6,6 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 
 RowLayout {
-	id: buttonRow
 
 	anchors.bottom: parent.bottom
 	anchors.right: parent.right
@@ -18,17 +17,23 @@ RowLayout {
 
 	Button {
 		id:nextButton
-		text: qsTr("&Next")
-		iconSource: "icons/go-next.png"
+		action: Action {
+			text: qsTr("&Next")
+			iconSource: "icons/go-next.png"
+		}
 	}
 	Button {
 		id:finishButton
-		text: qsTr("&Finish")
-		iconSource: "icons/dialog-ok.png"
+		action: Action {
+			text: qsTr("&Finish")
+			iconSource: "icons/dialog-ok.png"
+		}
 	}
 	Button {
 		id:cancelButton
-		text: qsTr("&Cancel")
-		iconSource: "icons/dialog-cancel.png"
+		action: Action {
+			text: qsTr("&Cancel")
+			iconSource: "icons/dialog-cancel.png"
+		}
 	}
 }

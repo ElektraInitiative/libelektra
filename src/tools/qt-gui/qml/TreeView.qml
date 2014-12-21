@@ -6,6 +6,7 @@ import "TooltipCreator.js" as TooltipCreator
 //TreeView is based on code user "Jens" posted in the qt-project forum (http://qt-project.org/forums/viewthread/30521/#146845)
 
 ScrollView {
+	id: view
 
 	anchors.fill: parent
 	anchors.margins: defaultSpacing
@@ -17,6 +18,7 @@ ScrollView {
 	property var currentItem: null
 	property int treeAreaCopyIndex
 	property var currentNodePath
+	property var toolTipParent: mainWindow
 
 	Component.onCompleted: forceActiveFocus()
 
@@ -25,7 +27,7 @@ ScrollView {
 
 		onLoaded: item.isRoot = true
 		sourceComponent: treeBranch
-		property var elements: treeView.treeModel
+		property var elements: treeModel
 	}
 
 	property Component delegate: Label {
@@ -51,7 +53,7 @@ ScrollView {
 				x: 2
 
 				Item {
-					height: isRoot ? 0 : treeView.rowHeight
+					height: isRoot ? 0 : rowHeight
 					width: 1
 				}
 				Repeater {
@@ -61,19 +63,17 @@ ScrollView {
 					Item {
 						id: filler
 
-						width: Math.max(itemLoader.width + treeView.columnIndent, row.width)
+						width: Math.max(itemLoader.width + columnIndent, row.width)
 						height: Math.max(row.height, itemLoader.height)
 						property var fillerModel: model
-						Drag.active: rowfillMouseArea.drag.active
-						Drag.dragType: Drag.Automatic
 
 						Rectangle {
 							id: rowfill
 
-							x: treeView.mapToItem(rowfill, 0, 0).x
-							width: Math.max(content.width + itemLoader.x, treeView.width)
-							height: treeView.rowHeight
-							visible: treeView.currentNode === fillerModel
+							x: view.mapToItem(rowfill, 0, 0).x
+							width: Math.max(content.width + itemLoader.x, view.width)
+							height: rowHeight
+							visible: currentNode === fillerModel
 							color: activePalette.highlight
 						}
 						MouseArea {
@@ -83,47 +83,22 @@ ScrollView {
 							acceptedButtons: Qt.LeftButton | Qt.RightButton
 							focus: true
 							hoverEnabled: true
-//							drag.target: parent
-							onReleased: Drag.cancel()
 
 							onPressed: {
-								if(mouse.button == Qt.LeftButton){
-									treeView.currentNode = model
-									treeView.currentItem = itemLoader
-									keyAreaSelectedItem = null
-									metaAreaModel = null
-									editKeyWindow.selectedNode = treeView.currentNode
-									forceActiveFocus()
-
-									if (treeView.currentNode !== null){
-										if(treeView.currentNode.childCount > 0 && treeView.currentNode.childrenHaveNoChildren)
-											keyAreaModel = treeView.currentNode.children
-										else
-											keyAreaModel = null
-									}
-								}
-								else if(mouse.button == Qt.RightButton)
-									treeContextMenu.popup()
+								mousePressed(mouse, model, itemLoader)
 							}
 							onDoubleClicked:{
-								if(!treeView.currentNode.isNull){
-									editKeyWindow.selectedNode = treeView.currentNode
-									editKeyWindow.show()
+								if(!currentNode.isNull){
+									editKeyWindow.selectedNode = currentNode
+									editKeyWindow.qmlMetaKeyModel.clear()
 									editKeyWindow.populateMetaArea()
+									editKeyWindow.show()
 								}
 							}
 							onEntered: {
-								if(mouse.pressed)
-									console.log("hold")
-								else
-									timer.start()
+								timer.start()
 							}
 							onExited: TooltipCreator.destroy()
-							onPressAndHold: undoManager.putToClipboard("cut", treeView.currentNode.parentModel, treeView.currentNode.index)
-							onPositionChanged: {
-								if(mouse.pressed)
-									console.log(mouse.x + " " + mouse.y)
-							}
 
 							Item {
 								Timer {
@@ -134,7 +109,7 @@ ScrollView {
 
 									onTriggered: {
 										if(rowfillMouseArea.containsMouse && !isNull)
-											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, mainWindow).show()
+											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, filler.width + defaultMargins, 0).x, mapToItem(null, 0, 0).y, toolTipParent).show()
 									}
 								}
 							}
@@ -143,9 +118,9 @@ ScrollView {
 							id: row
 
 							Item {
-								width: treeView.rowHeight
-								height: treeView.rowHeight
-								opacity: model.childCount > 0 && !model.childrenHaveNoChildren ? 1 : 0
+								width: rowHeight
+								height: rowHeight
+								opacity: getOpacity(model)
 
 								Image {
 									id: expander
@@ -168,10 +143,7 @@ ScrollView {
 									hoverEnabled: true
 
 									onClicked: {
-										if(model.childCount > 0 && !model.childrenHaveNoChildren){
-											itemLoader.expanded = !itemLoader.expanded
-											model.isExpanded = itemLoader.expanded
-										}
+										expand(model, itemLoader)
 									}
 								}
 							}
@@ -179,32 +151,17 @@ ScrollView {
 								id: rowLoader
 
 								property var rowLoaderModel: fillerModel
-								sourceComponent: treeView.delegate
+								sourceComponent: delegate
 								anchors.verticalCenter: parent.verticalCenter
-
-								DropArea {
-									anchors.fill: parent
-									width: 50; height: 50
-
-									Rectangle {
-										anchors.fill: parent
-										color: "green"
-
-										visible: parent.containsDrag
-									}
-									onEntered: console.log("entered")
-									onExited: console.log("exited")
-									onDropped: console.log("dropped")
-								}
 							}
 						}
 						Loader {
 							id: itemLoader
 
-							x: treeView.columnIndent
+							x: columnIndent
 							height: expanded ? implicitHeight : 0
 							property var node: model
-							property bool expanded: model.isExpanded && model.childrenHaveNoChildren ? false : model.isExpanded
+							property bool expanded: getExpanded(model)
 							property var elements: model.children
 							property var text: model.name
 							sourceComponent: (expanded && !!model.childCount > 0) ? treeBranch : undefined
@@ -213,5 +170,45 @@ ScrollView {
 				}
 			}
 		}
+	}
+
+	function expand(model, itemLoader) {
+		if(model.childCount > 0 && !model.childrenHaveNoChildren){
+			itemLoader.expanded = !itemLoader.expanded
+			model.isExpanded = itemLoader.expanded
+			keyAreaView.selection.clear()
+		}
+	}
+
+	function mousePressed(mouse, model, itemLoader) {
+		if(mouse.button === Qt.LeftButton){
+			currentNode = model
+			currentItem = itemLoader
+			keyAreaSelectedItem = null
+			metaAreaModel = null
+			editKeyWindow.selectedNode = currentNode
+			forceActiveFocus()
+
+			if (currentNode !== null){
+				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
+					keyAreaModel = currentNode.children
+				else
+					keyAreaModel = null
+			}
+		}
+		else if(mouse.button === Qt.RightButton)
+			treeContextMenu.popup()
+	}
+
+	function getOpacity(model) {
+		if(model.childCount > 0 && !model.childrenHaveNoChildren)
+			return 1
+		return 0
+	}
+
+	function getExpanded(model) {
+		if(model.isExpanded && model.childrenHaveNoChildren)
+			return false
+		return model.isExpanded
 	}
 }

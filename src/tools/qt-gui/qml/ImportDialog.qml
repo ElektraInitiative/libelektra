@@ -3,6 +3,7 @@ import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Dialogs 1.1
+import "MainFunctions.js" as MFunctions
 
 BasicWindow {
 
@@ -10,6 +11,11 @@ BasicWindow {
 	height: Math.ceil(importMergeGroup.height*4)
 
 	property alias importTextField: importTextField
+	Component.onCompleted: {
+		importFileDialog.nameFilters = guiBackend.nameFilters()
+		importFileDialog.selectNameFilter("dump (*.ecf)")
+		importTextField.forceActiveFocus()
+	}
 
 	BasicRectangle {
 		anchors.fill: parent
@@ -21,7 +27,7 @@ BasicWindow {
 			spacing: defaultSpacing
 
 			Label {
-				text: qsTr("Please select a file to import to \"" + path.text + "\": ")
+				text: qsTr("Please select a file to import to \"%1\": ").arg(path.text)
 			}
 			RowLayout {
 				TextField {
@@ -32,9 +38,14 @@ BasicWindow {
 					text: "..."
 					implicitWidth: importTextField.height
 					onClicked: {
-						importFileDialog.nameFilters = guiBackend.nameFilters()
 						importFileDialog.open()
 					}
+				}
+				FileDialog {
+					id: importFileDialog
+
+					title: qsTr("Select File")
+					onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
 				}
 			}
 			GroupBox {
@@ -99,28 +110,20 @@ BasicWindow {
 		}
 	}
 
-	cancelButton.onClicked: {
+	cancelButton.action.onTriggered: {
 		importTextField.text = ""
 		importDialog.close()
 	}
 
-	okButton.onClicked: {
-		if(importTextField.text !== ""){
-			var plugin = "dump";
+	okButton.action.enabled: importTextField.text !== ""
+	okButton.action.onTriggered: {
 
-			if(importFileDialog.selectedNameFilter === "XML (*.xml)")
-				plugin = "xmltool"
-//			else if(importFileDialog.selectedNameFilter === "INI (*.ini)")
-//				plugin = "ini"
+		var plugin = importFileDialog.selectedNameFilter.match(/[a-z]+/).toString()
 
-			undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
-			externTreeModel.refresh()
-			importTextField.text = ""
-			preserve.checked = true
-			importDialog.close()
-		}
-		else{
-			showMessage(qsTr("No Input"), qsTr("Please enter the path of a compatible configuration file."), "", "", "w")
-		}
+		undoManager.createImportConfigurationCommand(externTreeModel, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
+		externTreeModel.refresh()
+		importTextField.text = ""
+		preserve.checked = true
+		importDialog.close()
 	}
 }

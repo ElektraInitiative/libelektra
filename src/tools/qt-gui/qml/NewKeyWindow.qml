@@ -1,4 +1,5 @@
 import QtQuick 2.2
+import "MainFunctions.js" as MFunctions
 
 KeyWindow {
 
@@ -17,7 +18,7 @@ KeyWindow {
 		undoManager.createNewKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index, nameTextField.text, valueTextField.text, metaData)
 
 		if(treeView.currentNode.childCount === 1)
-			resetKeyAreaModel()
+			MFunctions.resetKeyAreaModel()
 
 		if(nameTextField.text.lastIndexOf("/") > 0)
 			treeView.currentNode.parentModel.refresh()
@@ -25,6 +26,5 @@ KeyWindow {
 		qmlMetaKeyModel.clear()
 		nameTextField.text = ""
 		valueTextField.text = ""
-		nameTextField.focus = true
 	}
 }

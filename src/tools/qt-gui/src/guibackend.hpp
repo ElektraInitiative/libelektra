@@ -13,25 +13,76 @@ public:
 	explicit GUIBackend(QObject *parent = 0);
 	GUIBackend(const GUIBackend &other);
 
-	Q_INVOKABLE void		createBackend(const QString &mountpoint);
+	/**
+	 * @brief Creates a new backend on a mountpoint.
+	 *
+	 * @param mountpoint The mountpoint of the new backend.
+	 */
+	Q_INVOKABLE void			createBackend(const QString &mountpoint);
 
-	Q_INVOKABLE void		addPath(const QString &path);
+	/**
+	 * @brief Add path to a backend fallback file.
+	 *
+	 * @param path The path to a backend fallback file.
+	 */
+	Q_INVOKABLE void			addPath(const QString &path);
 
-	Q_INVOKABLE void		addPlugin(QString name);
+	/**
+	 * @brief Add a plugin to a backend.
+	 *
+	 * @param name The name of the plugin.
+	 * @param config The configuration for the plugin.
+	 */
+	Q_INVOKABLE void			addPlugin(QString name, QStringList config);
 
-	Q_INVOKABLE QString		pluginInfo(QString pluginName) const;
+	/**
+	 * @brief Provides information about a plugin.
+	 *
+	 * @param pluginName The plugin.
+	 * @return The information about the plugin.
+	 */
+	Q_INVOKABLE QString			pluginInfo(QString pluginName) const;
 
-	Q_INVOKABLE QString		mountPoints() const;
+	/**
+	 * @brief Returns a list of currently used mountpoints.
+	 *
+	 * @return A list of currently used mountpoints.
+	 */
+	Q_INVOKABLE QString			mountPoints() const;
 
-	Q_INVOKABLE QStringList availablePlugins() const;
+	/**
+	 * @brief Returns a list of all currently available plugins.
+	 *
+	 * @param includeStorage Determines if storage plugins should be included in the list.
+	 * @param includeResolver Determines if resolver plugins should be included in the list.
+	 *
+	 * @return A list of all currently available plugins.
+	 */
+	Q_INVOKABLE QStringList 	availablePlugins(bool includeStorage, bool includeResolver) const;
 
-	Q_INVOKABLE QStringList nameFilters();
+	/**
+	 * @brief Returns a list of all currently available namefilters.
+	 *
+	 * @return A list of all currently available namefilters.
+	 */
+	Q_INVOKABLE QStringList 	nameFilters();
 
-	Q_INVOKABLE void		serialise();
+	/**
+	 * @brief Writes the current backend permanently to storage.
+	 */
+	Q_INVOKABLE void			serialise();
 
-	Q_INVOKABLE bool		validated();
+	/**
+	 * @brief Returns if the current backend is validated.
+	 *
+	 * @return If the current backend is validated.
+	 */
+	Q_INVOKABLE bool			validated();
 
-	Q_INVOKABLE void		deleteBackend();
+	/**
+	 * @brief Deletes the current backend.
+	 */
+	Q_INVOKABLE void			deleteBackend();
 
 private:
 	kdb::tools::Backend*	m_backend;
@@ -40,7 +91,7 @@ private:
 	QString					m_name;
 
 signals:
-	void showMessage(QString title, QString text, QString informativeText, QString detailedText, QString icon) const;
+	void showMessage(QString title, QString text, QString detailedText) const;
 };
 
 #endif // GUIBACKEND_HPP

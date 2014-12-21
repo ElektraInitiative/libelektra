@@ -56,35 +56,35 @@ public:
 	 *
 	 * @return True if a command can be undone.
 	 */
-	bool canUndo() const;
+	bool				canUndo() const;
 
 	/**
 	 * @brief Returns if a command can be redone.
 	 *
 	 * @return True if a command can be redone.
 	 */
-	bool canRedo() const;
+	bool				canRedo() const;
 
 	/**
 	 * @brief Returns a textual description of the command on top of the UndoStack.
 	 *
 	 * @return A textual description of the command on top of the UndoStack.
 	 */
-	QString redoText() const;
+	QString				redoText() const;
 
 	/**
 	 * @brief Returns a textual description of the command on top of the UndoStack.
 	 *
 	 * @return A textual description of the command on top of the UndoStack.
 	 */
-	QString undoText() const;
+	QString				undoText() const;
 
 	/**
 	 * @brief Returns a textual description of the type of content currently in the clipboard.
 	 *
 	 * @return A textual description of the type of content currently in the clipboard.
 	 */
-	QString clipboardType() const;
+	QString				clipboardType() const;
 
 	/**
 	 * @brief Put some content into the clipboard.
@@ -94,7 +94,7 @@ public:
 	 * @param node The ConfigNode to put in the clipboard.
 	 * @param index The index of the ConfigNode.
 	 */
-	Q_INVOKABLE void putToClipboard(const QString& type, TreeViewModel* model, int index);
+	Q_INVOKABLE void	putToClipboard(const QString& type, TreeViewModel* model, int index);
 
 	/**
 	 * @brief Create a new EditKeyCommand.
@@ -103,7 +103,7 @@ public:
 	 * @param index The index of the edited ConfigNode.
 	 * @param data This list holds the data needed to undo and redo the edit
 	 */
-	Q_INVOKABLE void createEditKeyCommand(TreeViewModel* model, int index, QVariantList data);
+	Q_INVOKABLE void	createEditKeyCommand(TreeViewModel* model, int index, QVariantList data);
 
 	/**
 	 * @brief Create a new DeleteKeyCommand.
@@ -113,7 +113,7 @@ public:
 	 * @param node The deleted ConfigNode.
 	 * @param index The index of the deleted ConfigNode.
 	 */
-	Q_INVOKABLE void createDeleteKeyCommand(const QString& type, TreeViewModel* model, int index);
+	Q_INVOKABLE void	createDeleteKeyCommand(const QString& type, TreeViewModel* model, int index);
 
 	/**
 	 * @brief Create a new NewKeyCommand.
@@ -123,67 +123,97 @@ public:
 	 * @param value The value of the new ConfigNode.
 	 * @param metaData The meta data of the new ConfigNode.
 	 */
-	Q_INVOKABLE void createNewKeyCommand(TreeViewModel* model, int index, const QString& name, const QString& value, const QVariantMap& metaData);
+	Q_INVOKABLE void	createNewKeyCommand(TreeViewModel* model, int index, const QString& name, const QString& value, const QVariantMap& metaData);
 
 	/**
 	 * @brief Create a new CopyKeyCommand.
 	 *
 	 * @param target The ConfigNode the copied ConfigNode will be the new child of.
 	 */
-	Q_INVOKABLE void createCopyKeyCommand(TreeViewModel *model, int index);
+	Q_INVOKABLE void	createCopyKeyCommand(TreeViewModel *model, int index);
 
 	/**
 	 * @brief Create a new CutKeyCommand.
 	 *
 	 * @param target The ConfigNode the cut ConfigNode will be the new child of.
 	 */
-	Q_INVOKABLE void createCutKeyCommand(TreeViewModel* model, int index);
+	Q_INVOKABLE void	createCutKeyCommand(TreeViewModel* model, int index);
 
-	Q_INVOKABLE void createImportConfigurationCommand(TreeViewModel* model, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy);
+	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy);
 
 	/**
 	 * @brief This function is called when the configuration is saved; if the user closes the application
 	 * in a clean state, she will not be asked to save the configuration again.
 	 *
 	 */
-	Q_INVOKABLE void setClean();
+	Q_INVOKABLE void	setClean();
 
 	/**
 	 * @brief Returns if the UndoStack is in a clean state.
 	 *
 	 * @return True if the UndoStack is in a clean state.
 	 */
-	Q_INVOKABLE bool isClean();
+	Q_INVOKABLE bool	isClean() const;
 
-	Q_INVOKABLE bool canPaste();
+	/**
+	 * @brief Returns if the clipboard is filled.
+	 *
+	 * @return True if the clipboard is filled.
+	 */
+
+	Q_INVOKABLE bool	canPaste() const;
+
+	/**
+	 * @brief Returns the current index of the UndoStack.
+	 *
+	 * @return The current index of the UndoStack.
+	 */
+
+	Q_INVOKABLE int		index() const;
+
+	/**
+	 * @brief Returns the clean index of the UndoStack.
+	 *
+	 * @return The clean index of the UndoStack.
+	 */
+
+	Q_INVOKABLE int		cleanIndex() const;
+
+	/**
+	 * @brief Returns the size of the UndoStack.
+	 *
+	 * @return The size of the UndoStack..
+	 */
+
+	Q_INVOKABLE int		count() const;
 
 Q_SIGNALS:
 
-	void canUndoChanged();
+	void				canUndoChanged();
 
-	void canRedoChanged();
+	void				canRedoChanged();
 
-	void redoTextChanged();
+	void				redoTextChanged();
 
-	void undoTextChanged();
+	void				undoTextChanged();
 
-	void clipboardTypeChanged();
+	void				clipboardTypeChanged();
 
-	void canPasteChanged();
+	void				canPasteChanged();
 
 public Q_SLOTS:
 
-	void undo();
+	void				undo();
 
-	void redo();
+	void				redo();
 
 private:
 
-	QUndoStack*     m_undoStack;
-	QClipboard*     m_clipboard;
-	QString         m_clipboardType;
-	bool            m_clipboardEmpty;
-	TreeViewModel*  m_clipboardModel;
+	QUndoStack*			m_undoStack;
+	QClipboard*			m_clipboard;
+	QString				m_clipboardType;
+	bool				m_clipboardEmpty;
+	TreeViewModel*		m_clipboardModel;
 };
 
 Q_DECLARE_METATYPE(UndoManager)

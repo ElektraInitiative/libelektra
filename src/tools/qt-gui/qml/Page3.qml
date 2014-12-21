@@ -12,8 +12,8 @@ WizardTemplate {
 
 	buttonRow.nextButton.visible: false
 	buttonRow.finishButton.visible: true
-	buttonRow.finishButton.enabled: textField.text !== ""
-	buttonRow.finishButton.onClicked:  {
+	buttonRow.finishButton.action.enabled: textField.text !== ""
+	buttonRow.finishButton.action.onTriggered: {
 		guiBackend.addPath(textField.text)
 
 		if(!error){
@@ -23,7 +23,6 @@ WizardTemplate {
 				wizardLoader.close()
 				externTreeModel.populateModel()
 				guiBackend.deleteBackend()
-				includedPluginsModel.clear()
 				loader.source = "Page1.qml"
 			}
 

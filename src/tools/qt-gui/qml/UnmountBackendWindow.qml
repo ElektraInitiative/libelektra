@@ -15,18 +15,12 @@ BasicWindow {
 		anchors.fill: parent
 
 		Text{
-			anchors.left: parent.left
-			anchors.right: parent.right
+			anchors.bottomMargin: 2*defaultMargins
 			text: qsTr("Notice: To successfully unmount backends you need to be an administrator. " +
 					   "This action cannot be undone.")
-			wrapMode: Text.Wrap
+			Layout.fillWidth: true
+			wrapMode: Text.WrapAnywhere
 			color: "#640000"
-		}
-		Item {
-			id: placeHolder
-
-			width: parent.width
-			height: defaultMargins
 		}
 		Label {
 			text: qsTr("Mounted Backends")
@@ -34,8 +28,7 @@ BasicWindow {
 		BasicRectangle {
 			id: mountedBackendsFrame
 
-			anchors.left: parent.left
-			anchors.right: parent.right
+			Layout.fillWidth: true
 			Layout.fillHeight: true
 
 			ScrollView {
@@ -46,7 +39,6 @@ BasicWindow {
 					id: mountedBackendsView
 
 					anchors.fill: parent
-					focus: true
 					highlightMoveDuration: 0
 					highlightResizeDuration: 0
 					keyNavigationWraps: true
@@ -61,7 +53,10 @@ BasicWindow {
 
 						MouseArea {
 							anchors.fill: parent
-							onClicked: mountedBackendsView.currentIndex = index
+							onClicked: {
+								if(modelData !== "empty")
+									mountedBackendsView.currentIndex = index
+							}
 						}
 					}
 				}
@@ -71,27 +66,29 @@ BasicWindow {
 			id: unmountButton
 
 			anchors.horizontalCenter: parent.horizontalCenter
-			text: qsTr("Unmount")
+			action: Action {
+				text: qsTr("&Unmount")
+				onTriggered: {
+					if(mountedBackendsView.model.toString() !== "empty"){
+						externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
+						//externTreeModel.synchronize()
+						mountedBackendsView.model = externTreeModel.mountedBackends()
 
-			onClicked: {
-				if(mountedBackendsView.model.toString() !== "empty"){
-					externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
-					//externTreeModel.synchronize()
-					mountedBackendsView.model = externTreeModel.mountedBackends()
+						if(mountedBackendsView.model.toString() === "empty")
+							mountedBackendsView.currentIndex = -1
+					}
 
-					if(mountedBackendsView.model.toString() === "empty")
-						mountedBackendsView.currentIndex = -1
-
+					externTreeModel.refresh()
+					metaAreaModel = null
+					keyAreaModel = null
 				}
 
-				externTreeModel.refresh()
-				metaAreaModel = null
-				keyAreaModel = null
 			}
 
 		}
 
 	}
-	cancelButton.visible: false
-	okButton.text: qsTr("Close")
+	okButton.visible: false
+	cancelButton.text: qsTr("&Close")
+	cancelButton.action.onTriggered: unmountBackendWindow.close()
 }

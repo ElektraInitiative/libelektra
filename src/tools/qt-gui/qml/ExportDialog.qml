@@ -7,12 +7,7 @@ FileDialog {
 	selectExisting: false
 
 	onAccepted: {
-		var plugin = "dump"
-
-		if(selectedNameFilter === "XML (*.xml)" || exportDialog.fileUrl.toString().substr(exportDialog.fileUrl.toString().lastIndexOf("."), 4) === ".xml")
-			plugin = "xmltool"
-		else if(selectedNameFilter === "INI (*.ini)" || exportDialog.fileUrl.toString().substr(exportDialog.fileUrl.toString().lastIndexOf("."), 4) === ".ini")
-			plugin = "ini"
+		var plugin = selectedNameFilter.match(/[a-z]+/).toString()
 
 		externTreeModel.exportConfiguration(treeView.currentNode.parentModel, treeView.currentNode.index, plugin, exportDialog.fileUrl)
 	}

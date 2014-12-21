@@ -1,12 +1,12 @@
 #include "cutkeycommand.hpp"
 
-CutKeyCommand::CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, int index, QUndoCommand* parent)
+CutKeyCommand::CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_sourceParentModel(source->getParentModel())
 	, m_source(new ConfigNode(*source))
 	, m_target(target)
 	, m_isExpanded(target->isExpanded())
-	, m_sourceIndex(index)
+	, m_sourceIndex(sourceIndex)
 	, m_targetIndex(-1)
 {
 	setText(type);

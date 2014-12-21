@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
 
 BasicRectangle {
 	id:tooltip
@@ -9,13 +10,16 @@ BasicRectangle {
 	property var	value
 	property alias	meta: metaView.model
 	property var	defaultMargins
+	property int	parentWidth
+	property int	parentHeight
 	property int	fadeInDelay: 250
 	property int	fadeOutDelay: fadeInDelay
+	property int	keyWidth: 0
 	property int	maxWidth: 0
 	property int	metaHeight: 0
 
-	width: Math.max(maxWidth + 2*defaultMargins, keyText.paintedWidth + 2*defaultMargins)
-	height: (metaHeight > 0) ? (metaHeight +  keyText.paintedHeight + 3*defaultMargins) : (keyText.paintedHeight + 2*defaultMargins)
+	width: Math.min(parentWidth - x - defaultMargins, maxWidth + 2*defaultMargins)
+	height: (metaHeight > 0) ? Math.min((metaHeight +  keyText.height + 3*defaultMargins), parentHeight - y - defaultMargins) : (keyText.height + 2*defaultMargins)
 	color: inActivePalette.base
 
 	Column {
@@ -29,15 +33,19 @@ BasicRectangle {
 		Row {
 			Label {
 				id: keyText
-
-				wrapMode: Text.Wrap
+				width: tooltip.width - 2*defaultMargins
 				text: name + " : " + value
+				clip: true
+				Component.onCompleted: {
+					if(paintedWidth > maxWidth)
+						maxWidth = paintedWidth
+				}
 			}
 		}
 		ListView {
 			id: metaView
 
-			width: parent.width
+			width: tooltip.width - 2*defaultMargins
 			height: metaHeight
 
 			delegate: metaDelegate
@@ -55,14 +63,15 @@ BasicRectangle {
 			Label {
 				id: metaText
 
+				width: tooltip.width - 2*defaultMargins
+				clip: true
 				text: name + " : " + value
-				wrapMode: Text.Wrap
 
 				Component.onCompleted: {
 					if(paintedWidth > maxWidth)
 						maxWidth = paintedWidth
 
-					metaHeight += paintedHeight
+					metaHeight += height
 				}
 			}
 		}

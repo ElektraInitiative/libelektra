@@ -48,10 +48,10 @@ Item {
 				}
 			}
 		}
-		Button {
+		ToolButton {
 			id:deleteMetaButton
 
-			implicitHeight: metaNameField.height
+			implicitHeight: metaNameField.height + defaultSpacing
 			implicitWidth: implicitHeight
 			iconSource: "icons/application-exit.png"
 

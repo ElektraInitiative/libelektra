@@ -13,6 +13,7 @@ Item {
 	property alias	textField: textField
 	property bool	buttonVisible: false
 	property alias	fileDialog: fileDialog
+	Component.onCompleted: textField.forceActiveFocus()
 
 	BasicRectangle {
 		id: wizardRectangle
@@ -70,7 +71,7 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
-		cancelButton.onClicked: {
+		cancelButton.action.onTriggered: {
 			wizardLoader.close()
 			textField.text = ""
 

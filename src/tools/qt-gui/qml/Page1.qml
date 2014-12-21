@@ -7,13 +7,13 @@ WizardTemplate {
 						  "You can only create backends if you have root administration rights.\n\n" +
 						  "The name must be a valid keyname or start with / for cascading mountpoints.\n\n" +
 						  "Please provide a mount point for the backend.\n\n" +
-						  "Already used are:  " + wizardLoader.usedNames)
+						  "Already used are: %1").arg(wizardLoader.usedNames)
 
 	label.text: qsTr("Mount point:  ")
 
 	buttonRow.finishButton.visible: false
-	buttonRow.nextButton.enabled: textField.text !== ""
-	buttonRow.nextButton.onClicked: {
+	buttonRow.nextButton.action.enabled: textField.text !== ""
+	buttonRow.nextButton.action.onTriggered: {
 		if(textField.text.charAt(0) === "/")
 			guiBackend.createBackend(textField.text)
 		else

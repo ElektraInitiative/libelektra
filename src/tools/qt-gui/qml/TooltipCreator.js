@@ -11,6 +11,8 @@ function create(name, value, meta, defaultMargins, x, y, parent) {
 	properties.value = value
 	properties.meta = meta
 	properties.defaultMargins = defaultMargins
+	properties.parentWidth = parent.width
+	properties.parentHeight = parent.height
 
 	tooltip = component.createObject(parent, properties);
 
