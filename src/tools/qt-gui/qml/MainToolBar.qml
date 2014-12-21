@@ -82,7 +82,7 @@ ToolBar {
 			focus: true
 			onAccepted: {
 				if(text !== ""){
-					searchResultsListView.model = externTreeModel.find(text)
+					searchResultsListView.model = treeView.treeModel.find(text)
 					searchResultsListView.currentIndex = -1
 					searchResultsListView.forceActiveFocus()
 					searchResultsColorAnimation.running = true

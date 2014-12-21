@@ -344,6 +344,11 @@ void TreeViewModel::setKeySet(KeySet set)
 		m_keySet.append(Key(set.current().dup()));
 }
 
+KeySet TreeViewModel::getKeySet()
+{
+	return m_keySet;
+}
+
 void TreeViewModel::collectCurrentKeySet()
 {
 	KeySetVisitor ksVisit;
@@ -516,23 +521,6 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, Key
 
 void TreeViewModel::populateModel()
 {
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not write to configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
-	}
-	try
-	{
-		m_kdb.get(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
-	}
-
 	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
 	ConfigNodePtr user(new ConfigNode("user", "user", Key("user", KEY_END), this));
 
@@ -612,7 +600,7 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 	m_keySet.cut(x);
 
-	populateModel();
+	repopulateModel();
 }
 
 void TreeViewModel::refresh()
@@ -697,6 +685,28 @@ QStringList TreeViewModel::mountedBackends()
 		mountedBackends.append("empty");
 
 	return mountedBackends;
+}
+
+void TreeViewModel::repopulateModel()
+{
+	try
+	{
+		m_kdb.set(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not write to configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
+	}
+	try
+	{
+		m_kdb.get(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
+	}
+
+	populateModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

@@ -70,15 +70,15 @@ BasicWindow {
 				text: qsTr("&Unmount")
 				onTriggered: {
 					if(mountedBackendsView.model.toString() !== "empty"){
-						externTreeModel.unMountBackend(mountedBackendsView.currentItem.text)
-						//externTreeModel.synchronize()
-						mountedBackendsView.model = externTreeModel.mountedBackends()
+						treeView.treeModel.unMountBackend(mountedBackendsView.currentItem.text)
+						//treeView.treeModel.synchronize()
+						mountedBackendsView.model = treeView.treeModel.mountedBackends()
 
 						if(mountedBackendsView.model.toString() === "empty")
 							mountedBackendsView.currentIndex = -1
 					}
 
-					externTreeModel.refresh()
+					treeView.treeModel.refresh()
 					metaAreaModel = null
 					keyAreaModel = null
 				}

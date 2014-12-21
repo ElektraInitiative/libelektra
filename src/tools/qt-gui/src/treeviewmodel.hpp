@@ -60,11 +60,20 @@ public:
 	Q_INVOKABLE bool            removeRow(int row, const QModelIndex& parent = QModelIndex());
 	Qt::ItemFlags               flags(const QModelIndex& index) const;
 
-	// recursively populate the model
+	/**
+	 * @brief Populates this TreeViewModel with the *current* keyset.
+	 */
+
 	Q_INVOKABLE void            populateModel();
 
 	/**
-	 * @brief The method that populates this TreeViewModel.
+	 * @brief Populates this TreeViewModel with *an actualised* keyset (calls @see #kdbGet and @see #kdbSet before populating).
+	 */
+
+	Q_INVOKABLE void			repopulateModel();
+
+	/**
+	 * @brief The method that actually populates this TreeViewModel.
 	 *
 	 * @param node The ConfigNode that is supposed to find its place in the hierarchy.
 	 * @param keys The path of the ConfigNode that is supposed to find its place in the hierarchy, splitted up into a QStringList.
@@ -169,6 +178,13 @@ public:
 	 * @param set The new KeySet.
 	 */
 	void                        setKeySet(kdb::KeySet set);
+
+	/**
+	 * @brief Gets this model's current KeySet.
+	 *
+	 * @return This model's current KeySet.
+	 */
+	kdb::KeySet					getKeySet();
 
 	/**
 	 * @brief Stores the current state of the configuration in the KeySet.

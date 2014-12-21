@@ -29,7 +29,24 @@ int main(int argc, char* argv[])
 	QQmlContext* ctxt = engine.rootContext();
 
 	UndoManager manager;
+	kdb::KDB kdb;
+	kdb::KeySet config;
+	try
+	{
+		kdb.get(config, "/");
+	}
+	catch(kdb::KDBException const& e)
+	{
+		qDebug() << QString::fromStdString(e.what());
+	}
+
 	TreeViewModel* model = new TreeViewModel;
+	model->setKeySet(config);
+	kdb::KeySet pluginConfig;
+	pluginConfig.append(kdb::Key("system", KEY_END));
+	pluginConfig.append(kdb::Key("user", KEY_END));
+	TreeViewModel* pluginConfigModel = new TreeViewModel;
+	pluginConfigModel->setKeySet(pluginConfig);
 	GUIBackend backend;
 
 	model->populateModel();
@@ -37,6 +54,7 @@ int main(int argc, char* argv[])
 	ctxt->setContextProperty("undoManager", &manager);
 	ctxt->setContextProperty("externTreeModel", model);
 	ctxt->setContextProperty("guiBackend", &backend);
+	ctxt->setContextProperty("pluginConfig", pluginConfigModel);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 

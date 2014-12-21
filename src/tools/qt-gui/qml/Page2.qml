@@ -12,6 +12,9 @@ Item {
 	property var	configModel: ListModel {
 		id: configModel
 	}
+	property bool	contextMenuEnabled: pluginConfigTreeView.currentItem !== null
+
+	Component.onCompleted: pluginConfigTreeView.treeModel.populateModel()
 
 	ColumnLayout {
 
@@ -30,7 +33,8 @@ Item {
 				Layout.fillWidth: true
 				wrapMode: Text.WordWrap
 				color: activePalette.text
-				text: qsTr("Please select the plugins you want to include in the backend. Make sure to add exactly one resolver, one storage plugin and other plugins they might need.")
+				text: qsTr("Please select the plugins you want to include in the backend. Make sure to add exactly one resolver, " +
+						   "one storage plugin and other plugins they might need.")
 			}
 			ComboBox {
 				id: pluginDropdown
@@ -50,20 +54,21 @@ Item {
 
 				onClicked: {
 					if(!alreadyInList(pluginDropdown.currentText)){
-						guiBackend.addPlugin(pluginDropdown.currentText, config)
+						guiBackend.addPlugin(pluginDropdown.currentText, pluginConfig)
 
 						if(!error){
 							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
 							buttonRow.nextButton.enabled = guiBackend.validated()
 
 							if(pluginDropdown.currentText.indexOf("[storage]") > -1)
-							  includeStorage = false
+								includeStorage = false
 							if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
-							  includeResolver = false
+								includeResolver = false
 
 							clearConfig()
 							configModel.clear()
 							page2.state = ""
+							pluginConfigTreeView.treeModel.populateModel()
 						}
 					}
 				}
@@ -129,7 +134,7 @@ Item {
 			id: pluginInfoRectangle
 
 			anchors.top: pluginInfoLabel.bottom
-			anchors.right: addKeyToConfigButton.visible ? addKeyToConfigButton.left : configInfoSwitch.left
+			anchors.right: configInfoSwitch.left
 			anchors.bottom: parent.bottom
 			anchors.topMargin: defaultSpacing
 			anchors.leftMargin: defaultMargins
@@ -137,8 +142,9 @@ Item {
 			implicitWidth: Math.ceil(wizardLoader.width*0.7)
 
 			TreeView {
-				id: selector
+				id: pluginConfigTreeView
 
+				treeModel: pluginConfig
 				visible: false
 				toolTipParent: page2
 
@@ -151,6 +157,10 @@ Item {
 						currentNode = model
 						currentItem = itemLoader
 						forceActiveFocus()
+					}
+					else if(mouse.button === Qt.RightButton){
+						p2cmNew.action.enabled = contextMenuEnabled
+						page2ContextMenu.popup()
 					}
 				}
 
@@ -180,26 +190,7 @@ Item {
 				}
 			}
 		}
-		ToolButton {
-			id: addKeyToConfigButton
 
-			anchors.top: pluginInfoRectangle.top
-			anchors.right: configInfoSwitch.left
-
-			anchors.rightMargin: defaultSpacing
-
-			iconSource: "icons/list-add.png"
-			tooltip: qsTr("Add Key to Configuration for Plugin %1").arg(pluginDropdown.currentText.replace(/\[\w*\]/,""))
-			visible: false
-			enabled: selector.currentNode === null ? false : !selector.currentNode.isNull
-
-			onClicked: {
-				if(!alreadyInConfig(selector.currentNode.path)){
-					config.push(selector.currentNode.path)
-					configModel.append({"pluginName" : selector.currentNode.path})
-				}
-			}
-		}
 		ToolButton {
 			id: configInfoSwitch
 
@@ -207,9 +198,16 @@ Item {
 			anchors.top: pluginInfoRectangle.top
 
 			iconSource:  "icons/applications-system"
-			tooltip: qsTr("Show Configuration Selector")
+			tooltip: qsTr("Show Configuration pluginConfigViewer")
 
-			onClicked: page2.state === "" ? page2.state = "SHOW_CONFIG_SELECTOR" : page2.state = ""
+			onClicked: {
+				if(page2.state === ""){
+					pluginConfigTreeView.treeModel.refresh()
+					page2.state = "SHOW_CONFIG_pluginConfigViewer"
+				}
+				else
+					page2.state = ""
+			}
 		}
 	}
 
@@ -236,10 +234,10 @@ Item {
 
 	states:
 		State {
-		name: "SHOW_CONFIG_SELECTOR"
+		name: "SHOW_CONFIG_pluginConfigViewer"
 
 		PropertyChanges {
-			target: selector
+			target: pluginConfigTreeView
 			visible: true
 		}
 		PropertyChanges {
@@ -247,26 +245,13 @@ Item {
 			visible: false
 		}
 		PropertyChanges {
-			target: addKeyToConfigButton
-			visible: true
-		}
-		PropertyChanges {
 			target: pluginInfoLabel
-			text: addKeyToConfigButton.tooltip
-
+			text: qsTr("Add Key to Configuration for Plugin %1").arg(pluginDropdown.currentText.replace(/\[\w*\]/,""))
 		}
 		PropertyChanges {
 			target: configInfoSwitch
 			iconSource: "icons/help-about.png"
 			tooltip: qsTr("Show Plugin Info")
-		}
-		PropertyChanges {
-			target: includedPluginsLabel
-			text: qsTr("Included Keys")
-		}
-		PropertyChanges {
-			target:  includedPluginsView
-			model: configModel
 		}
 	}
 
@@ -291,6 +276,74 @@ Item {
 
 		while(config.length > 0) {
 			config.pop();
+		}
+	}
+
+	Menu {
+		id: page2ContextMenu
+
+		MenuItem {
+			id: p2cmNew
+			action: Action {
+				text: qsTr("New Key...")
+				iconSource: "icons/document-new.png"
+				tooltip: qsTr("New Key")
+				enabled: contextMenuEnabled
+				onTriggered: newPluginConfigWindow.show()
+			}
+		}
+		MenuItem {
+			id: p2cmEdit
+			action: Action {
+				iconSource: "icons/edit-rename.png"
+				text: qsTr("Edit...")
+				tooltip: qsTr("Edit")
+				enabled: contextMenuEnabled
+
+				onTriggered: {
+					editKeyWindow.selectedNode = pluginConfigTreeView.currentNode
+					editKeyWindow.populateMetaArea()
+					editKeyWindow.show()
+				}
+			}
+		}
+		MenuItem {
+			id: p2cmDelete
+			action: Action {
+				text: qsTr("Delete")
+				iconSource: "icons/document-close.png"
+				tooltip: qsTr("Delete")
+				shortcut: StandardKey.Delete
+				enabled: contextMenuEnabled
+				onTriggered: MFunctions.deleteBranch(pluginConfigTreeView)
+			}
+		}
+	}
+
+	NewKeyWindow {
+		id: newPluginConfigWindow
+
+		title: qsTr("Create new configuration Key for plugin %1").arg(pluginDropdown.currentText.replace(/\[\w*\]/,""))
+		path: pluginConfigTreeView.currentNode === null ? "" : pluginConfigTreeView.currentNode.path
+
+		function editAccepted() {
+
+			var metaData = {};
+
+			//collect metadata
+			for(var i = 0; i < qmlMetaKeyModel.count; i++)
+				metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
+
+			//create UndoCommand
+			undoManager.createNewKeyCommand(pluginConfigTreeView.currentNode.parentModel, pluginConfigTreeView.currentNode.index, nameTextField.text, valueTextField.text, metaData)
+
+			if(nameTextField.text.lastIndexOf("/") > 0)
+				pluginConfigTreeView.currentNode.parentModel.refresh()
+
+			qmlMetaKeyModel.clear()
+			nameTextField.text = ""
+			valueTextField.text = ""
+			pluginConfigTreeView.treeModel.refresh()
 		}
 	}
 }

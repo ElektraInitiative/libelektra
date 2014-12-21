@@ -11,7 +11,7 @@ ScrollView {
 	anchors.fill: parent
 	anchors.margins: defaultSpacing
 
-	property var treeModel: externTreeModel
+	property var treeModel
 	property int rowHeight: 19
 	property int columnIndent: 22
 	property var currentNode: null

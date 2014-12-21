@@ -18,7 +18,7 @@ ImportConfigurationCommand::ImportConfigurationCommand(TreeViewModel* model, con
 void ImportConfigurationCommand::undo()
 {
 	m_model->setKeySet(m_set);
-	m_model->populateModel();
+	m_model->repopulateModel();
 	m_model->synchronize();
 }
 

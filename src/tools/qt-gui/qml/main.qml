@@ -47,7 +47,7 @@ ApplicationWindow {
 
 	//Set up slots to catch signals from objects
 	Connections {
-		target: externTreeModel
+		target: treeView.treeModel
 
 		onShowMessage: {
 			MFunctions.showMessage(title, text, detailedText)
@@ -196,7 +196,7 @@ ApplicationWindow {
 			if(searchResultsSelectedItem !== null)
 				MFunctions.deleteSearchResult()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-				MFunctions.deleteBranch()
+				MFunctions.deleteBranch(treeView)
 			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
 				MFunctions.deleteKey()
 		}
@@ -242,13 +242,13 @@ ApplicationWindow {
 				//				if(keyAreaModel !== null)
 				//					keyAreaModel.refresh()
 
-				//				externTreeModel.refresh()
+				//				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteBranch"){
 				undoManager.undo()
 				//				if(keyAreaModel !== null)
 				//					keyAreaModel.refresh()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
@@ -265,22 +265,22 @@ ApplicationWindow {
 			}
 			else if(undoManager.undoText === "copyBranch"){
 				undoManager.undo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "cutKey"){
 				undoManager.undo()
 			}
 			else if(undoManager.undoText === "cutBranch"){
 				undoManager.undo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "import"){
 				undoManager.undo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "newKey"){
 				undoManager.undo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 				//				keyAreaView.selection.clear()
 			}
 			else{
@@ -318,7 +318,7 @@ ApplicationWindow {
 			if(undoManager.redoText === "deleteKey"){
 				undoManager.redo()
 				//				metaAreaModel = null
-				//				externTreeModel.refresh()
+				//				treeView.treeModel.refresh()
 			}
 			else if(undoManager.redoText === "deleteBranch"){
 				undoManager.redo()
@@ -329,7 +329,7 @@ ApplicationWindow {
 				//				if(keyAreaSelectedItem !== null)
 				//					keyAreaSelectedItem = null
 
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 
 			}
 			else if(undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
@@ -342,7 +342,7 @@ ApplicationWindow {
 			}
 			else if(undoManager.redoText === "copyBranch"){
 				undoManager.redo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 				//				MFunctions.resetKeyAreaModel()
 			}
 			else if(undoManager.redoText === "cutKey"){
@@ -350,15 +350,15 @@ ApplicationWindow {
 			}
 			else if(undoManager.redoText === "cutBranch"){
 				undoManager.redo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.redoText === "import"){
 				undoManager.redo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.redoText === "newKey"){
 				undoManager.redo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else{
 				undoManager.redo()
@@ -389,7 +389,7 @@ ApplicationWindow {
 		tooltip: qsTr("Synchronize")
 		shortcut: StandardKey.Refresh
 		onTriggered: {
-			externTreeModel.synchronize()
+			treeView.treeModel.synchronize()
 			undoManager.setClean()
 		}
 	}
@@ -411,7 +411,7 @@ ApplicationWindow {
 		text: qsTr("Unmount Backend...")
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
-			unmountBackendWindow.mountedBackendsView.model = externTreeModel.mountedBackends()
+			unmountBackendWindow.mountedBackendsView.model = treeView.treeModel.mountedBackends()
 			unmountBackendWindow.mountedBackendsView.currentIndex = -1
 			unmountBackendWindow.show()
 		}
@@ -540,6 +540,8 @@ ApplicationWindow {
 
 			TreeView {
 				id: treeView
+
+				treeModel: externTreeModel
 			}
 		}
 		Column {

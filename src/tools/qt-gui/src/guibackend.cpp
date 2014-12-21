@@ -95,32 +95,13 @@ void GUIBackend::addPath(const QString &path)
 							 KEY_END));
 }
 
-void GUIBackend::addPlugin(QString name, QStringList config)
+void GUIBackend::addPlugin(QString name, TreeViewModel *pluginConfig)
 {
 	name.chop(name.length() - name.indexOf("[") + 1);
 
-	KDB kdb;
-	KeySet globalConf;
-	KeySet pluginConf;
-
 	try
 	{
-		kdb.get(globalConf, "/");
-	}
-	catch(KDBException const& ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
-	}
-
-	foreach(QString s, config)
-	{
-		Key k = globalConf.lookup(s.toStdString());
-		pluginConf.append(k.dup());
-	}
-
-	try
-	{
-		m_backend->addPlugin(name.toStdString(), pluginConf);
+		m_backend->addPlugin(name.toStdString(), pluginConfig->getKeySet());
 	}
 	catch(PluginCheckException const &ex)
 	{

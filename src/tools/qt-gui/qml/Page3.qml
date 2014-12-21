@@ -21,7 +21,7 @@ WizardTemplate {
 
 			if(!error){
 				wizardLoader.close()
-				externTreeModel.populateModel()
+				treeView.treeModel.repopulateModel();
 				guiBackend.deleteBackend()
 				loader.source = "Page1.qml"
 			}
