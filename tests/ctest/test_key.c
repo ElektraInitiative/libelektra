@@ -1212,6 +1212,28 @@ static void test_keyCopy()
 	keyDel(c);
 }
 
+static void test_keyFixedNew()
+{
+	printf ("test fixed new");
+	Key *k1 = keyNew(0);
+	Key *k2 = keyNew("", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	compare_key(k1, k2);
+	keyDel(k1);
+	keyDel(k2);
+
+	k1 = keyNew("user/hello", KEY_END);
+	k2 = keyNew("user/hello", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	compare_key(k1, k2);
+	keyDel(k1);
+	keyDel(k2);
+
+	k1 = keyNew("user/hello", KEY_VALUE, "hello", KEY_END);
+	k2 = keyNew("user/hello", KEY_SIZE, 6, KEY_VALUE, "hello", KEY_END);
+	compare_key(k1, k2);
+	keyDel(k1);
+	keyDel(k2);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -1238,6 +1260,7 @@ int main(int argc, char** argv)
 	test_keyAddName();
 	test_keyNeedSync();
 	test_keyCopy();
+	test_keyFixedNew();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
