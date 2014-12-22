@@ -31,6 +31,7 @@ int main(int argc, char* argv[])
 	UndoManager manager;
 	kdb::KDB kdb;
 	kdb::KeySet config;
+
 	try
 	{
 		kdb.get(config, "/");
@@ -49,14 +50,13 @@ int main(int argc, char* argv[])
 	pluginConfigModel->setKeySet(pluginConfig);
 	GUIBackend backend;
 
-	model->populateModel();
-
 	ctxt->setContextProperty("undoManager", &manager);
 	ctxt->setContextProperty("externTreeModel", model);
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("pluginConfig", pluginConfigModel);
 
-	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
-
+	engine.load(QUrl(QStringLiteral("qrc:/qml/SplashScreen.qml")));
+//	model->populateModel();
+//	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 	return app.exec();
 }

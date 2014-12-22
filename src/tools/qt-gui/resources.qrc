@@ -58,5 +58,6 @@
         <file>qml/icons/edit-undo.png</file>
         <file>qml/icons/view-refresh.png</file>
         <file>qml/ErrorDialogCreator.js</file>
+        <file>qml/SplashScreen.qml</file>
     </qresource>
 </RCC>
