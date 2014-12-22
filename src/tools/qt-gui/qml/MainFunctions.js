@@ -1,13 +1,3 @@
-//display an error message dialog
-function showMessage(title, text, detailedText) {
-	errorDialog.title = title
-	errorDialog.text = text
-	errorDialog.detailedText = detailedText
-
-	error = true
-	errorDialog.show()
-}
-
 //puts key to clipboard when cut key command for a key without children is executed
 function cutKey() {
 	//console.log("cut Key")

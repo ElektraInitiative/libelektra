@@ -5,6 +5,7 @@ import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 import "MainFunctions.js" as MFunctions
+import "ErrorDialogCreator.js" as ErrorDialog
 
 ApplicationWindow {
 	id: mainWindow
@@ -50,7 +51,7 @@ ApplicationWindow {
 		target: treeView.treeModel
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, detailedText)
+			ErrorDialog.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -58,7 +59,7 @@ ApplicationWindow {
 		target: guiBackend
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, detailedText)
+			ErrorDialog.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -66,7 +67,7 @@ ApplicationWindow {
 		target: treeView.currentNode === null ? null : treeView.currentNode.node
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, detailedText)
+			ErrorDialog.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -74,7 +75,7 @@ ApplicationWindow {
 		target: (keyAreaSelectedItem === null || keyAreaSelectedItem === 'undefined') ? null : keyAreaSelectedItem.node
 
 		onShowMessage: {
-			MFunctions.showMessage(title, text, detailedText)
+			ErrorDialog.showMessage(title, text, detailedText)
 		}
 	}
 
@@ -154,7 +155,7 @@ ApplicationWindow {
 		id: importDialog
 	}
 
-	GeneralMessageDialog {
+	ErrorDialog {
 		id: errorDialog
 	}
 

@@ -17,12 +17,12 @@ function create(name, value, meta, defaultMargins, x, y, parent) {
 	tooltip = component.createObject(parent, properties);
 
 	if (tooltip === null)
-		console.error("error creating tooltip: " + component.errorString());
+		console.error("error creating tooltip: " + component.errorString())
 
 	tooltip.x = x
 	tooltip.y = y
 
-	return tooltip;
+	return tooltip
 }
 
 function destroy() {

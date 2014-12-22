@@ -17,14 +17,17 @@ KeyWindow {
 		//create UndoCommand
 		undoManager.createNewKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index, nameTextField.text, valueTextField.text, metaData)
 
-		if(treeView.currentNode.childCount === 1)
-			MFunctions.resetKeyAreaModel()
+		if(!error){
+			visible = false
+			if(treeView.currentNode.childCount === 1)
+				MFunctions.resetKeyAreaModel()
 
-		if(nameTextField.text.lastIndexOf("/") > 0)
-			treeView.currentNode.parentModel.refresh()
+			if(nameTextField.text.lastIndexOf("/") > 0)
+				treeView.currentNode.parentModel.refresh()
 
-		qmlMetaKeyModel.clear()
-		nameTextField.text = ""
-		valueTextField.text = ""
+			qmlMetaKeyModel.clear()
+			nameTextField.text = ""
+			valueTextField.text = ""
+		}
 	}
 }

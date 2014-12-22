@@ -85,8 +85,6 @@ QVariant ConfigNode::getValue() const
 
 void ConfigNode::setName(const QString& name)
 {
-	m_name = name;
-
 	int index = m_path.lastIndexOf("/");
 
 	if(index != -1)
@@ -100,8 +98,10 @@ void ConfigNode::setName(const QString& name)
 				m_key.setBaseName(name.toStdString());
 			}
 			catch(KeyInvalidName const& ex){
-				emit showMessage(tr("Error"), tr("Could not set name because Keyname \"") + QString::fromStdString(m_key.getFullName()) + tr("\" is invalid."), ex.what());
+				emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+				return;
 			}
+			m_name = name;
 		}
 	}
 }

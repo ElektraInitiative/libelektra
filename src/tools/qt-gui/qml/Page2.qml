@@ -198,12 +198,12 @@ Item {
 			anchors.top: pluginInfoRectangle.top
 
 			iconSource:  "icons/applications-system"
-			tooltip: qsTr("Show Configuration pluginConfigViewer")
+			tooltip: qsTr("Edit Plugin Configuration")
 
 			onClicked: {
 				if(page2.state === ""){
 					pluginConfigTreeView.treeModel.refresh()
-					page2.state = "SHOW_CONFIG_pluginConfigViewer"
+					page2.state = "SHOW_CONFIG_VIEWER"
 				}
 				else
 					page2.state = ""
@@ -234,7 +234,7 @@ Item {
 
 	states:
 		State {
-		name: "SHOW_CONFIG_pluginConfigViewer"
+		name: "SHOW_CONFIG_VIEWER"
 
 		PropertyChanges {
 			target: pluginConfigTreeView
@@ -340,6 +340,7 @@ Item {
 			if(nameTextField.text.lastIndexOf("/") > 0)
 				pluginConfigTreeView.currentNode.parentModel.refresh()
 
+			visible = false
 			qmlMetaKeyModel.clear()
 			nameTextField.text = ""
 			valueTextField.text = ""

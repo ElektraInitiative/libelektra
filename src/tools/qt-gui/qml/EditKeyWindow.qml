@@ -4,7 +4,6 @@ KeyWindow {
 
 	title: qsTr("Edit Key")
 
-//	path: treeView.currentNode === null ? "" : treeView.currentNode.path
 	keyName: selectedNode === null ? "" : selectedNode.name
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
@@ -37,22 +36,24 @@ KeyWindow {
 			undoManager.createEditKeyCommand(selectedNode.parentModel, index, data)
 		}
 
-		qmlMetaKeyModel.clear()
-		selectedNode = null
+		if(!error){
+			qmlMetaKeyModel.clear()
+			selectedNode = null
 
-		if(accessFromSearchResults){
-			searchResultsListView.model.refresh()
-			searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+			if(accessFromSearchResults){
+				searchResultsListView.model.refresh()
+				searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+			}
+
+			visible = false
+			accessFromSearchResults = false
+			nameTextField.undo()
+			valueTextField.undo()
+			nameTextField.readOnly = false
+			nameTextField.textColor = activePalette.text
+
+			qmlMetaKeyModel.clear()
+			selectedNode = null
 		}
-
-		accessFromSearchResults = false
-		nameTextField.undo()
-		valueTextField.undo()
-		nameTextField.readOnly = false
-		nameTextField.textColor = activePalette.text
-
-		qmlMetaKeyModel.clear()
-		selectedNode = null
 	}
-
 }
