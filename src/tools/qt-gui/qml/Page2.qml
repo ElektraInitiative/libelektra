@@ -150,6 +150,7 @@ Item {
 
 				function expand(model, itemLoader){
 					itemLoader.expanded = !itemLoader.expanded
+					model.isExpanded = itemLoader.expanded
 				}
 
 				function mousePressed(mouse, model, itemLoader) {
@@ -171,7 +172,7 @@ Item {
 				}
 
 				function getExpanded(model) {
-					return false
+					return model.isExpanded
 				}
 			}
 
