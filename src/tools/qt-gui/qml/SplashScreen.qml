@@ -25,6 +25,9 @@ ApplicationWindow {
 		onUpdateProgress: {
 			progressbar.setValue(value)
 		}
+		onFinished: {
+			mainLoader.source = "main.qml"
+		}
 	}
 
 	ColumnLayout {
@@ -67,27 +70,14 @@ ApplicationWindow {
 
 			Layout.fillWidth: true
 			maximumValue: 100
-			onValueChanged: console.log("new value " + value)
 		}
 	}
 	Loader {
-		id: main
+		id: mainLoader
 
 		anchors.fill: parent
 		asynchronous: true
+		visible: status == Loader.Ready
 		onLoaded: close()
 	}
-
-	PauseAnimation {
-		id: loadingDelay
-
-		duration: 25
-		onRunningChanged: {
-			if (!running) {
-				externTreeModel.populateModel()
-				main.source = "main.qml"
-			}
-		}
-	}
-	Component.onCompleted: loadingDelay.start()
 }

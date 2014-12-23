@@ -538,8 +538,7 @@ void TreeViewModel::populateModel()
 		QStringList keys = currentKey.split("/");
 		QString root = keys.takeFirst();
 		++i;
-
-		emit updateProgress((int) s*i);
+		emit updateProgress(s*i);
 
 		if (root == "system")
 		{
@@ -554,6 +553,8 @@ void TreeViewModel::populateModel()
 			qDebug() << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey;
 		}
 	}
+
+	emit finished();
 }
 
 Key TreeViewModel::createNewKey(const QString& path, const QString& value, const QVariantMap metaData)

@@ -1,5 +1,8 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QDebug>
+#include <QFuture>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QtQml>
 #include <QMetaType>
 #include <QtTest/qtestcase.h>
@@ -48,6 +51,7 @@ int main(int argc, char* argv[])
 	pluginConfig.append(kdb::Key("user", KEY_END));
 	TreeViewModel* pluginConfigModel = new TreeViewModel;
 	pluginConfigModel->setKeySet(pluginConfig);
+
 	GUIBackend backend;
 
 	ctxt->setContextProperty("undoManager", &manager);
@@ -55,8 +59,9 @@ int main(int argc, char* argv[])
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("pluginConfig", pluginConfigModel);
 
+	QFuture<void> modelPopulator = QtConcurrent::run(model, &TreeViewModel::populateModel);
+
 	engine.load(QUrl(QStringLiteral("qrc:/qml/SplashScreen.qml")));
-//	model->populateModel();
-//	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+
 	return app.exec();
 }

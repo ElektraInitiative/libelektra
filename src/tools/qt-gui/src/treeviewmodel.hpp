@@ -261,8 +261,9 @@ protected:
 
 signals:
 	void						showMessage(QString title, QString text, QString detailedText) const;
-	void						updateProgress(int value);
+	void						updateProgress(int value) const;
 	void						expandNode(bool);
+	void						finished() const;
 };
 
 Q_DECLARE_METATYPE(TreeViewModel)
