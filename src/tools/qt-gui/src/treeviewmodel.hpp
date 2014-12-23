@@ -264,6 +264,10 @@ signals:
 	void						updateProgress(int value) const;
 	void						expandNode(bool);
 	void						finished() const;
+
+public slots:
+	void						showConfigNodeMessage(QString title, QString text, QString detailedText);
+
 };
 
 Q_DECLARE_METATYPE(TreeViewModel)

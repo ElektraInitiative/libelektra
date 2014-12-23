@@ -58,8 +58,8 @@ int main(int argc, char* argv[])
 	ctxt->setContextProperty("externTreeModel", model);
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("pluginConfig", pluginConfigModel);
-
-	QFuture<void> modelPopulator = QtConcurrent::run(model, &TreeViewModel::populateModel);
+	//populate model in new thread, else the view is blocked
+	QtConcurrent::run(model, &TreeViewModel::populateModel);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/SplashScreen.qml")));
 

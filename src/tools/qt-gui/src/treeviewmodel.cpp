@@ -735,3 +735,8 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
 
 	return roles;
 }
+
+void TreeViewModel::showConfigNodeMessage(QString title, QString text, QString detailedText)
+{
+	emit showMessage(title, text, detailedText);
+}

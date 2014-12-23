@@ -21,6 +21,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 		populateMetaModel();
 
 	connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
+	connect(this, SIGNAL(showMessage(QString,QString,QString)), parentModel, SLOT(showConfigNodeMessage(QString,QString,QString)));
 }
 
 ConfigNode::ConfigNode(const ConfigNode& other)

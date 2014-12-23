@@ -224,8 +224,6 @@ private:
 
 	bool            m_isExpanded;
 
-
-
 	/**
 	 * @brief Populates the TreeViewModel which holds the metakeys of this ConfigNode.
 	 */
