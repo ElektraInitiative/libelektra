@@ -529,11 +529,17 @@ void TreeViewModel::populateModel()
 
 	m_keySet.rewind();
 
+	int i = 0;
+	double s = 100/(double) m_keySet.size();
+
 	while (m_keySet.next())
 	{
 		QString currentKey = QString::fromStdString(m_keySet.current().getName());
 		QStringList keys = currentKey.split("/");
 		QString root = keys.takeFirst();
+		++i;
+
+		emit updateProgress((int) s*i);
 
 		if (root == "system")
 		{

@@ -69,7 +69,7 @@ ToolBar {
 			action: synchronizeAction
 		}
 		Item {
-			width: Math.ceil(mainWindow.width*0.3 - 7*tbRedo.width - 9*defaultSpacing - 3*defaultMargins)
+			Layout.fillWidth: true
 			height: tbNew.height
 		}
 		Image {
@@ -78,7 +78,8 @@ ToolBar {
 		}
 		SearchField {
 			id: searchField
-			Layout.fillWidth: true
+
+			implicitWidth: keyAreaWidth - searchLogo.implicitWidth - defaultMargins
 			focus: true
 			onAccepted: {
 				if(text !== ""){

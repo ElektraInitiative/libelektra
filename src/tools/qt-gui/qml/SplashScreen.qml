@@ -1,74 +1,93 @@
 import QtQuick 2.2
 import QtQuick.Window 2.0
-import QtQuick.Controls 1.3
+import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
-Window {
-	id: splashscreen
+ApplicationWindow {
 
 	flags: Qt.SplashScreen
-	color: "black"
+	modality: Qt.ApplicationModal | Qt.WindowStaysOnTopHint
+	color: activePalette.alternateBase
 	visible: true
-	height: 250
-	width: 500
+	width: splashlogo.implicitWidth + splashTitle.contentWidth + 3*margins
+	height:splashlogo.implicitHeight + spacer.implicitHeight + progressbarLabel.implicitHeight + progressbar.implicitHeight + 3*margins
 
-	Item {
-		anchors.fill: parent
-		anchors.margins: 16
+	property int margins: 16
 
-		Image {
-			id:splashlogo
+	SystemPalette {
+		id: activePalette
+		colorGroup: SystemPalette.Active
+	}
 
-			anchors.left: parent.left
-			source: "icons/elektra-logo.png"
+	Connections {
+		target: externTreeModel
+
+		onUpdateProgress: {
+			progressbar.setValue(value)
 		}
-		Text {
-			id: splashTitle
+	}
 
-			anchors.left: splashlogo.right
-			anchors.verticalCenter: splashlogo.verticalCenter
-			anchors.leftMargin: 16
-			text: "Elektra Editor Dummy Splash Screen"
-			font.weight: Font.Black
-			color: "white"
+	ColumnLayout {
+		anchors.fill: parent
+		anchors.margins: margins
+
+		RowLayout {
+			spacing: margins
+
+			Image {
+				id:splashlogo
+
+				source: "icons/elektra-logo.png"
+			}
+			Text {
+				id: splashTitle
+
+				Layout.fillWidth: true
+				anchors.verticalCenter: splashlogo.verticalCenter
+				text: "Elektra Editor"
+				font.weight: Font.Black
+				font.pointSize: 26
+				font.capitalization: Font.SmallCaps
+				color: activePalette.text
+			}
+		}
+		Item {
+			id: spacer
+
+			Layout.fillWidth: true
+			implicitHeight: 2*margins
 		}
 		Label {
 			id: progressbarLabel
-			anchors.top: splashlogo.bottom
-			anchors.topMargin: progressbar.height*2
-			text: "Loading Configuration ..."
+
+			text: "Please wait, loading configuration ..."
 		}
 		ProgressBar {
 			id: progressbar
 
-			anchors.top: progressbarLabel.bottom
-			anchors.topMargin: 8
-			anchors.left: parent.left
-			anchors.right: parent.right
-			indeterminate: true
+			Layout.fillWidth: true
+			maximumValue: 100
+			onValueChanged: console.log("new value " + value)
 		}
 	}
-
 	Loader {
 		id: main
 
 		anchors.fill: parent
 		asynchronous: true
-		visible: Loader.Ready
+		onLoaded: close()
 	}
 
 	PauseAnimation {
-		id: fakeLoadingDelay
-		duration: 50
+		id: loadingDelay
+
+		duration: 25
 		onRunningChanged: {
 			if (!running) {
-				main.source = "main.qml"
 				externTreeModel.populateModel()
-				splashscreen.visible = false
+				main.source = "main.qml"
 			}
 		}
 	}
-	Component.onCompleted: fakeLoadingDelay.start()
+	Component.onCompleted: loadingDelay.start()
 }
-
-
