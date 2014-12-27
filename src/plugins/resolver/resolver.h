@@ -62,6 +62,7 @@ struct _resolverHandles
 {
 	resolverHandle user;
 	resolverHandle system;
+	resolverHandle spec;
 };
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, checkFile)

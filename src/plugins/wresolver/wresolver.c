@@ -27,6 +27,8 @@
 # include "kdbconfig.h"
 #endif
 
+#include <kdbproposal.h>
+
 #include <kdberrors.h>
 
 #include <string.h>
@@ -108,6 +110,34 @@ static void escapePath(char *home)
 	}
 }
 
+static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
+{
+	p->filename = malloc(PATH_MAX);
+
+# if defined(_WIN32)
+	CHAR home[MAX_PATH];
+	if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
+					0, home)))
+	{
+		escapePath(home);
+	}
+	else
+	{
+		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
+	}
+# else
+	char * home = (char*) getenv("HOME");
+	if(!home)
+	{
+		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
+	}
+# endif
+
+	strcpy (p->filename, home);
+	strcat (p->filename, "/");
+	strncat (p->filename, p->path, PATH_MAX);
+}
+
 static void elektraResolveSystem(resolverHandle *p)
 {
 	char * system = getenv("ALLUSERSPROFILE");
@@ -135,38 +165,51 @@ static void elektraResolveSystem(resolverHandle *p)
 	return;
 }
 
-void elektraWresolveFileName(Key *forKey, resolverHandle *p, Key *warningsKey)
+static void elektraResolveSpec(resolverHandle *p)
 {
-	if (!strncmp(keyName(forKey), "system", 6))
+	char * system = getenv("ALLUSERSPROFILE");
+
+	if (!system) system = "";
+	else escapePath(system);
+
+	if (p->path[0] == '/')
 	{
-		elektraResolveSystem(p);
+		/* Use absolute path */
+		size_t filenameSize = strlen(system)
+			+ strlen(p->path) + 1;
+		p->filename = malloc (filenameSize);
+		strcpy (p->filename, system);
+		strcat (p->filename, p->path);
+		return;
 	}
-	else if (!strncmp(keyName(forKey), "user", 4))
+	size_t filenameSize = sizeof(KDB_DB_SPEC)
+		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, system);
+	strcat (p->filename, KDB_DB_SPEC);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+	return;
+}
+
+void elektraWresolveFileName(elektraNamespace ns, resolverHandle *p, Key *warningsKey)
+{
+	switch (ns)
 	{
-		p->filename = malloc(PATH_MAX);
-
-# if defined(_WIN32)
-		CHAR home[MAX_PATH];
-		if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
-						0, home)))
-		{
-			escapePath(home);
-		}
-		else
-		{
-			ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
-		}
-# else
-		char * home = (char*) getenv("HOME");
-		if(!home)
-		{
-			ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
-		}
-# endif
-
-		strcpy (p->filename, home);
-		strcat (p->filename, "/");
-		strncat (p->filename, p->path, PATH_MAX);
+	case KEY_NS_USER:
+		elektraResolveUser(p, warningsKey);
+		break;
+	case KEY_NS_SYSTEM:
+		elektraResolveSystem(p);
+		break;
+	case KEY_NS_SPEC:
+		elektraResolveSpec(p);
+		break;
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
 	}
 }
 
@@ -185,11 +228,10 @@ int elektraWresolverOpen(Plugin *handle, Key *errorKey)
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
 
-	Key *testKey = keyNew("system", KEY_END);
-	elektraWresolveFileName(testKey, &p->system, errorKey);
-	keySetName(testKey, "user");
-	elektraWresolveFileName(testKey, &p->user, errorKey);
-	keyDel (testKey);
+	for (elektraNamespace i=KEY_NS_FIRST; i<=KEY_NS_LAST; ++i)
+	{
+		elektraWresolveFileName(i, &p->system, errorKey);
+	}
 
 	elektraPluginSetData(handle, p);
 

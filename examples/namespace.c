@@ -32,10 +32,21 @@ case KEY_NS_CASCADING:
 //! [namespace]
 }
 
+void loop()
+{
+//! [loop]
+for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
+{
+	// work with namespace
+	printf ("%d\n", ns);
+}
+//! [loop]
+}
+
 int main()
 {
 	char s[100];
-	scanf("%99s", &s[0]);
+	fgets(s, 100, stdin);
 
 	Key *k = keyNew(s,
 		KEY_CASCADING_NAME,

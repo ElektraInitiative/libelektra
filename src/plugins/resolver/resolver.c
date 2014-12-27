@@ -26,6 +26,8 @@
 
 #include "resolver.h"
 
+#include <kdbproposal.h>
+
 #include "kdbos.h"
 
 #include <stdlib.h>
@@ -71,8 +73,22 @@ static void resolverInit (resolverHandle *p, const char *path)
 static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 {
 	resolverHandles *pks = elektraPluginGetData(handle);
-	if (!strncmp(keyName(parentKey), "user", 4)) return &pks->user;
-	else return &pks->system;
+	switch (keyGetNamespace(parentKey))
+	{
+	case KEY_NS_USER:
+		return &pks->user;
+	case KEY_NS_SYSTEM:
+		return &pks->system;
+	case KEY_NS_SPEC:
+		return &pks->spec;
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		return 0;
+	}
+
+	return 0;
 }
 
 
@@ -274,16 +290,21 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	resolverHandles *p = malloc(sizeof(resolverHandles));
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
-	// system files need to be world-readable, otherwise they are
+	resolverInit (&p->spec, path);
+
+	// system and spec files need to be world-readable, otherwise they are
 	// useless
 	p->system.filemode = 0644;
 	p->system.dirmode = 0755;
+	p->spec.filemode = 0644;
+	p->spec.dirmode = 0755;
 
 	Key *testKey = keyNew("system", KEY_END);
 	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
+		resolverClose(&p->spec);
 		free (p);
 		keyDel (testKey);
 		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
@@ -295,9 +316,22 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	{
 		resolverClose(&p->user);
 		resolverClose(&p->system);
+		resolverClose(&p->spec);
 		free (p);
 		keyDel (testKey);
 		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
+		return -1;
+	}
+
+	keySetName(testKey, "spec");
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
+	{
+		resolverClose(&p->user);
+		resolverClose(&p->system);
+		resolverClose(&p->spec);
+		free (p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
 		return -1;
 	}
 	keyDel (testKey);

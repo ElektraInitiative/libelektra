@@ -673,7 +673,11 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
  * @version 0.8.10
  * Added method to kdbproposal.h
  *
+ * To handle every possible cases (including namespaces) a key can have:
  * @snippet namespace.c namespace
+ *
+ * To loop over all valid namespaces use:
+ * @snippet namespace.c loop
  *
  * @note This method might be enhanced. You do not have any guarantee
  * that, when for a specific name #KEY_NS_META
