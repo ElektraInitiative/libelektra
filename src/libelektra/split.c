@@ -164,17 +164,21 @@ ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int s
  */
 ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
 {
-	/* TODO: possible optimization: use an index to find already inserted backends */
 	for (size_t i=0; i<split->size; ++i)
 	{
 		if (backend == split->handles[i])
 		{
 			if (split->syncbits[i] & 2)
 			{
-				if ((keyIsUser(parent) == 1 && keyIsUser(split->parents[i]) == 1)  ||
-				    (keyIsSystem(parent) == 1 && keyIsSystem(split->parents[i]) == 1))
+				switch (keyGetNamespace(parent))
 				{
-					return i;
+				case KEY_NS_USER: if (keyIsUser(split->parents[i])) return i; break;
+				case KEY_NS_SYSTEM: if (keyIsSystem(split->parents[i])) return i; break;
+				case KEY_NS_SPEC: if (keyIsSpec(split->parents[i])) return i; break;
+				case KEY_NS_EMPTY: return -1;
+				case KEY_NS_NONE: return -1;
+				case KEY_NS_META: return -1;
+				case KEY_NS_CASCADING: return -1;
 				}
 				continue;
 			}
@@ -473,13 +477,15 @@ int elektraSplitUpdateSize (Split *split)
 	/* Iterate everything */
 	for (size_t i=0; i<split->size; ++i)
 	{
-		if (!strncmp(keyName(split->parents[i]), "system", 6))
+		switch (keyGetNamespace(split->parents[i]))
 		{
-			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
-		}
-		else if (!strncmp(keyName(split->parents[i]), "user", 4))
-		{
-			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
+		case KEY_NS_USER: split->handles[i]->usersize = ksGetSize(split->keysets[i]); break;
+		case KEY_NS_SYSTEM: split->handles[i]->systemsize = ksGetSize(split->keysets[i]); break;
+		case KEY_NS_SPEC:  split->handles[i]->specsize = ksGetSize(split->keysets[i]); break;
+		case KEY_NS_EMPTY: return -1;
+		case KEY_NS_NONE: return -1;
+		case KEY_NS_META: return -1;
+		case KEY_NS_CASCADING: return -1;
 		}
 	}
 	return 1;
