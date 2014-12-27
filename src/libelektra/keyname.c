@@ -673,6 +673,8 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
  * @version 0.8.10
  * Added method to kdbproposal.h
  *
+ * @snippet namespace.c namespace
+ *
  * @note This method might be enhanced. You do not have any guarantee
  * that, when for a specific name #KEY_NS_META
  * is returned today, that it still will be returned after the next
