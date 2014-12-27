@@ -64,6 +64,14 @@ static void test_keyNamespace()
 	succeed_if (keyIsUser (key) == 0, "system key is not system");
 	keyDel (key);
 
+	key = keyNew ("spec/key", KEY_END);
+	succeed_if (keyGetNamespace (key) == KEY_NS_SPEC, "Spec namespace not KEY_NS_SPEC");
+	succeed_if (keyNameIsSpec (keyName(key)) == 1, "Spec name is not Spec");
+	succeed_if (keyIsSpec (key) == 1, "Spec key is not Spec");
+	succeed_if (keyNameIsUser (keyName(key)) == 0, "Spec name is not Spec");
+	succeed_if (keyIsUser (key) == 0, "Spec key is not Spec");
+	keyDel (key);
+
 	key = keyNew ("/key", KEY_CASCADING_NAME, KEY_END);
 	succeed_if (keyGetNamespace(key) == KEY_NS_CASCADING, "not correct namespace");
 	keyDel (key);

@@ -372,6 +372,7 @@ ssize_t elektraFinalizeEmptyName(Key *key)
  * - @p system/something
  * - @p user/something
  * - @p user:username/something
+ * - @p spec/something
  *
  * The last form has explicitly set the owner, to let the library
  * know in which user folder to save the key. A owner is a user name.
@@ -408,7 +409,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		option_t options)
 {
 	size_t length;
-	size_t rootLength, userLength, systemLength, ownerLength;
+	size_t rootLength, userLength, systemLength, ownerLength, specLength;
 	char *p=0;
 
 	if (!key) return -1;
@@ -432,6 +433,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	}
 	userLength=sizeof("user")-1;
 	systemLength=sizeof("system")-1;
+	specLength=sizeof("spec")-1;
 	ownerLength=rootLength-userLength;
 	
 	if (ownerLength>0) --ownerLength;
@@ -463,7 +465,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	}
 	else if (keyNameIsUser(newName))
 	{
-		/* handle "user*" */
+		/* handle "user" */
 		if (length > userLength)
 		{
 			/* handle "user?*" */
@@ -496,9 +498,22 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 
 		rootLength  = userLength+1;
 	}
+	else if (keyNameIsSpec(newName))
+	{
+		/* handle "spec" */
+		if (length > specLength && *(newName+specLength)!=KDB_PATH_SEPARATOR)
+		{	/* handle when != "spec/ *" */
+			return -1;
+		}
+		key->keySize+=length;
+
+		keySetOwner (key, NULL);
+
+		rootLength  = specLength+1;
+	}
 	else if (keyNameIsSystem(newName))
 	{
-		/* handle "system*" */
+		/* handle "system" */
 		if (length > systemLength && *(newName+systemLength)!=KDB_PATH_SEPARATOR)
 		{	/* handle when != "system/ *" */
 			return -1;
@@ -681,6 +696,7 @@ elektraNamespace keyGetNamespace(const Key *key)
 
 	if (keyIsUser (key)) return KEY_NS_USER;
 	if (keyIsSystem (key)) return KEY_NS_SYSTEM;
+	if (keyIsSpec (key)) return KEY_NS_SPEC;
 
 	return KEY_NS_META;
 }

@@ -83,14 +83,13 @@ ssize_t keyGetParentNameSize(const Key *key);
 
 
 /* Conveniences Methods for Making Tests */
-int keyIsBelow(const Key *key, const Key *check);
-int keyIsDirectBelow(const Key *key, const Key *check);
-
 int keyIsSystem(const Key *key);
 int keyIsUser(const Key *key);
+int keyIsSpec(const Key *key);
 
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
+int keyNameIsSpec(const char *keyname);
 
 
 /***************************************

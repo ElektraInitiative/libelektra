@@ -66,7 +66,8 @@ typedef enum
 	KEY_NS_META=1<<1,       ///< meta key, i.e. any key name not under other categories
 	KEY_NS_CASCADING=1<<2,  ///< cascading key, starts with /, abstract name for any of the namespaces below
 	KEY_NS_USER=1<<3,       ///< user key in the home directory of the current user
-	KEY_NS_SYSTEM=1<<4      ///< system key not in the home directory, shared for a computer system
+	KEY_NS_SYSTEM=1<<4,     ///< system key is shared for a computer system
+	KEY_NS_SPEC=1<<5        ///< spec contains the specification of the other namespaces
 } elektraNamespace;
 
 elektraNamespace keyGetNamespace(Key const* key);

@@ -148,6 +148,14 @@ int keyIsUser(const Key *key)
 	else return 0;
 }
 
+int keyIsSpec(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsSpec(key->key);
+	else return 0;
+}
+
 /**
  * Check if the key check is below the key key or not.
  *
