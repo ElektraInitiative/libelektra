@@ -48,6 +48,8 @@ PLUGINS_NEWLINES=`echo "@PLUGINS@" | tr ';' '\n'`
 
 DATE=`date "+%b %d %H:%M"`
 
+KDB_DEFAULT_STORAGE="@KDB_DEFAULT_STORAGE@"
+KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
 
 #
@@ -194,8 +196,6 @@ is_plugin_available()
 	done
 	return 1
 }
-
-
 
 
 
