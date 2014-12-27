@@ -36,31 +36,6 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 
 
 /**
- * @brief Check for rootkey in  mountConf and add one if missing
- *
- * @param cl.verbose print text when it is missing
- */
-void MountBaseCommand::fixRootKey(Cmdline const& cl)
-{
-	Key rootKey (Backends::mountpointsPath, KEY_END);
-
-	Key cur;
-	cur = mountConf.lookup(rootKey);
-	if (!cur)
-	{
-		if (cl.verbose)
-		{
-			cout << "Did not find the root key, will add it" << endl;
-		}
-		mountConf.append ( *Key(Backends::mountpointsPath,
-			KEY_COMMENT, "Below are the mountpoints.",
-			KEY_END));
-		mountConf.rewind();
-	}
-}
-
-
-/**
  * @brief set mp (interactive or by commandline)
  *
  * @pre name must be set before

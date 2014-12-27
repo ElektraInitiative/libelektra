@@ -62,14 +62,7 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 	Key *cur;
 
 	ksRewind(config);
-	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, 0);
-
-	if (!root)
-	{
-		ELEKTRA_ADD_WARNING(22, errorKey, KDB_KEY_MOUNTPOINTS);
-		ksDel (config);
-		return -1;
-	}
+	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, KDB_O_CREATE);
 
 	int ret = 0;
 	while ((cur = ksNext(config)) != 0)

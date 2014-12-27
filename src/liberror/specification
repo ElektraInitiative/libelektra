@@ -133,7 +133,8 @@ severity:warning
 ingroup:kdb
 
 number:22
-description:Could not find any mountpoint configuration
+unused:yes
+description:system/elektra/mountpoints is appended if missing
 severity:warning
 ingroup:trie
 

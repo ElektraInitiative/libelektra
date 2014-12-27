@@ -83,7 +83,6 @@ int RemountCommand::execute(Cmdline const & cl)
 
 	readMountConf(cl);
 	getExistingMountpoint(cl);
-	fixRootKey(cl);
 	getMountpoint(cl);
 	cloneMountpoint(cl);
 	askForConfirmation(cl);
