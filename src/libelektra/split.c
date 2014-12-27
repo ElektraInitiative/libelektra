@@ -431,22 +431,18 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 			if (curHandle != split->handles[i])
 			{
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is hidden by other mountpoint");
-				continue;
 			}
 			if (keyGetNameSize(cur) == 0)
 			{
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has an empty name");
-				continue;
 			}
 			if (!strncmp(keyName(cur), "user", 4) && strncmp(keyName(split->parents[i]), "user", 4))
 			{
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not user");
-				continue;
 			}
 			if (!strncmp(keyName(cur), "system", 6) && strncmp(keyName(split->parents[i]), "system", 6))
 			{
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
-				continue;
 			}
 
 			keyClearSync (cur);
