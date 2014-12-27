@@ -306,7 +306,7 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 
 		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
 
-		if (curFound == -1) continue;
+		if (curFound == -1) continue; // key not relevant in this kdbSet
 
 		ksAppendKey (split->keysets[curFound], curKey);
 		if (keyNeedSync(curKey) == 1)
@@ -376,7 +376,9 @@ static void elektraDropCurrentKey(KeySet *ks,
 			strlen(msg) +
 			sizeOfStaticText);
 	strcpy(warningMsg, "drop key ");
-	strcat(warningMsg, keyName(k));
+	const char *name = keyName(k);
+	if (name) strcat(warningMsg, name);
+	else strcat(warningMsg, "(no name)");
 	strcat(warningMsg, " not belonging to ");
 	strcat(warningMsg, keyName(curHandle->mountpoint));
 	strcat(warningMsg, " with name ");
@@ -428,24 +430,38 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 			curHandle = elektraMountGetBackend(handle, cur);
 			if (!curHandle) return -1;
 
+			keyClearSync (cur);
+
 			if (curHandle != split->handles[i])
 			{
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is hidden by other mountpoint");
 			}
-			if (keyGetNameSize(cur) == 0)
+			switch (keyGetNamespace(cur))
 			{
+			case KEY_NS_USER:
+				if (!keyIsUser(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not user");
+				break;
+			case KEY_NS_SYSTEM:
+				if (!keyIsSystem(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
+				break;
+			case KEY_NS_SPEC:
+				if (!keyIsSpec(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not spec");
+				break;
+			case KEY_NS_EMPTY:
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has an empty name");
+				break;
+			case KEY_NS_META:
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has a meta name");
+				break;
+			case KEY_NS_CASCADING:
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has a cascading name");
+				break;
+			case KEY_NS_NONE:
+				return -1;
 			}
-			if (!strncmp(keyName(cur), "user", 4) && strncmp(keyName(split->parents[i]), "user", 4))
-			{
-				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not user");
-			}
-			if (!strncmp(keyName(cur), "system", 6) && strncmp(keyName(split->parents[i]), "system", 6))
-			{
-				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
-			}
-
-			keyClearSync (cur);
 		}
 
 		/* Update sizes */
