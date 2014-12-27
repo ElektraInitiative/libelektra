@@ -9,11 +9,13 @@ ksClear/keyClear weg (da mit *Copy(,0) ersetzbar)
 Single Interface: only get pointers, no memcopy (only one keyGetString, no
 	keyString)
 
-no "binary" metadata hack, just provide keyGetString and keyGetStringSize
+no "binary" metadata hack within API:
+	just provide keyGetValue and keyGetValueSize
+	no fixed strings when GetString on binary
 
 remove old metadata get/set
 
-remove null ptr checks? (speed? decision?)
+remove null ptr checks? (see decision)
 
 make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
 sentinel, have a single way how to terminate vaargs
@@ -24,7 +26,72 @@ should be renamed to something elektra specific
 size_t, ssize_t are not fixed size, use uint32_t.. to have no
 problems on binary serialisation + unified behaviour (array sizes..)
 
+KEY_* -> KEY_O_* to avoid clashes
+kdb.h -> elektra/kdb.h to avoid clashes
 
+Remove/Refactor/Rename obsolete/not needed methods:
+- keyClear
+- keyGetRef
+- keyRewindMeta
+- keyNextMeta
+- keyCurrentMeta
+- keyCmp
+- keyRel
+- keyNeedSync
+- keyIsBelow
+- keyIsBelowOrSame
+- keyIsDirectBelow
+- keyIsInactive
+- keyIsBinary
+- keyIsString
+- keyName
+- keyGetFullNameSize
+- keyGetFullName
+- keyGetBaseNameSize
+- keyGetBaseName
+- keyValue
+- keyString
+- keyGetString
+- keySetString
+- keyGetBinary
+- keySetBinary
+- ksClear
+- ksNeedSync
+- ksCut
+- ksPop
+- ksHead
+- ksTail
+- ksLookupByName
+
+
+== Libraries ==
+
+move meta data stuff to own library
+
+move data structure to libelektra_keyset
+move kdb to libelektra_kdb
+move plugin functions to libelektra_plugin
+
+
+so we would have:
+
+ --------        --------
+ | app  |        |plugin|
+ --------        --------
+    |               |
+ -------------   ----------------
+ |elektra_kdb|   |elektra_plugin|
+ -------------   ----------------
+          |        |
+          ----------
+              |
+          ----------------   ------------------------
+          |elektra_keyset|---|elektra_meta, tools,..|
+          ----------------   ------------------------
+
++ no circular deps
++ linking against minimal interfaces (applications do not need plugin
+  interface)
 
 
 
@@ -36,12 +103,11 @@ allow non-file/resolver based backends
 
 
 
-
-
 == Error handling ==
 
 translation of exceptions to different languages
 (or by GUI only?) -> exporttranslations already exists
+
 
 
 == Elektra types ==
@@ -161,7 +227,7 @@ allow mounting for users?
 
 = FINISH for 1.0.0 =
 
-symbole, only export
+only exported symbols should be available
 Version info
 release
 minimize API -> (split core and convenience (e.g. libmetadata)?)
