@@ -7,14 +7,17 @@ void printNamespace(Key const* k)
 //! [namespace]
 switch (keyGetNamespace(k))
 {
+case KEY_NS_SPEC:
+	printf ("spec namespace\n");
+	break;
+case KEY_NS_DIR:
+	printf ("dir namespace\n");
+	break;
 case KEY_NS_USER:
 	printf ("user namespace\n");
 	break;
 case KEY_NS_SYSTEM:
 	printf ("system namespace\n");
-	break;
-case KEY_NS_SPEC:
-	printf ("spec namespace\n");
 	break;
 case KEY_NS_EMPTY:
 	printf ("empty name\n");

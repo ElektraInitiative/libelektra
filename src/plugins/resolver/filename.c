@@ -504,12 +504,15 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 
 	switch (keyGetNamespace(forKey))
 	{
+	case KEY_NS_SPEC:
+		return elektraResolveSpec(p, warningsKey);
+	case KEY_NS_DIR:
+		return elektraResolveDir(p, warningsKey);
 	case KEY_NS_USER:
 		return elektraResolveMapperUser(p, warningsKey);
 	case KEY_NS_SYSTEM:
 		return elektraResolveMapperSystem(p, warningsKey);
-	case KEY_NS_SPEC:
-		return elektraResolveSpec(p, warningsKey);
+	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:

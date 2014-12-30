@@ -172,9 +172,11 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
 			{
 				switch (keyGetNamespace(parent))
 				{
+				case KEY_NS_SPEC: if (keyIsSpec(split->parents[i])) return i; break;
+				case KEY_NS_DIR: if (keyIsDir2(split->parents[i])) return i; break;
 				case KEY_NS_USER: if (keyIsUser(split->parents[i])) return i; break;
 				case KEY_NS_SYSTEM: if (keyIsSystem(split->parents[i])) return i; break;
-				case KEY_NS_SPEC: if (keyIsSpec(split->parents[i])) return i; break;
+				case KEY_NS_PROC: return -1;
 				case KEY_NS_EMPTY: return -1;
 				case KEY_NS_NONE: return -1;
 				case KEY_NS_META: return -1;
@@ -439,6 +441,14 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 			}
 			else switch (keyGetNamespace(cur))
 			{
+			case KEY_NS_SPEC:
+				if (!keyIsSpec(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not spec");
+				break;
+			case KEY_NS_DIR:
+				if (!keyIsDir(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not dir");
+				break;
 			case KEY_NS_USER:
 				if (!keyIsUser(split->parents[i]))
 					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not user");
@@ -446,10 +456,6 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 			case KEY_NS_SYSTEM:
 				if (!keyIsSystem(split->parents[i]))
 					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
-				break;
-			case KEY_NS_SPEC:
-				if (!keyIsSpec(split->parents[i]))
-					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not spec");
 				break;
 			case KEY_NS_EMPTY:
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has an empty name");
@@ -468,15 +474,19 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 		/* Update sizes */
 		switch (keyGetNamespace(split->parents[i]))
 		{
+		case KEY_NS_SPEC:
+			split->handles[i]->specsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_DIR:
+			split->handles[i]->dirsize = ksGetSize(split->keysets[i]);
+			break;
 		case KEY_NS_USER:
 			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
 			break;
 		case KEY_NS_SYSTEM:
 			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
 			break;
-		case KEY_NS_SPEC:
-			split->handles[i]->specsize = ksGetSize(split->keysets[i]);
-			break;
+		case KEY_NS_PROC:
 		case KEY_NS_EMPTY:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
@@ -501,15 +511,19 @@ int elektraSplitUpdateSize (Split *split)
 	{
 		switch (keyGetNamespace(split->parents[i]))
 		{
+		case KEY_NS_SPEC:
+			split->handles[i]->specsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_DIR:
+			split->handles[i]->dirsize = ksGetSize(split->keysets[i]);
+			break;
 		case KEY_NS_USER:
 			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
 			break;
 		case KEY_NS_SYSTEM:
 			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
 			break;
-		case KEY_NS_SPEC:
-			split->handles[i]->specsize = ksGetSize(split->keysets[i]);
-			break;
+		case KEY_NS_PROC:
 		case KEY_NS_EMPTY:
 		case KEY_NS_NONE:
 		case KEY_NS_META:
@@ -566,6 +580,22 @@ int elektraSplitSync(Split *split)
 
 		switch (keyGetNamespace(split->parents[i]))
 		{
+		case KEY_NS_SPEC:
+			/* Check for spec keyset for removed keys */
+			if (split->handles[i]->specsize != ksGetSize(split->keysets[i]))
+			{
+				split->syncbits[i] |= 1;
+				needsSync = 1;
+			}
+			break;
+		case KEY_NS_DIR:
+			/* Check for dir keyset for removed keys */
+			if (split->handles[i]->dirsize != ksGetSize(split->keysets[i]))
+			{
+				split->syncbits[i] |= 1;
+				needsSync = 1;
+			}
+			break;
 		case KEY_NS_USER:
 			/* Check for user keyset for removed keys */
 			if (split->handles[i]->usersize != ksGetSize(split->keysets[i]))
@@ -582,14 +612,7 @@ int elektraSplitSync(Split *split)
 				needsSync = 1;
 			}
 			break;
-		case KEY_NS_SPEC:
-			/* Check for spec keyset for removed keys */
-			if (split->handles[i]->specsize != ksGetSize(split->keysets[i]))
-			{
-				split->syncbits[i] |= 1;
-				needsSync = 1;
-			}
-			break;
+		case KEY_NS_PROC:
 		case KEY_NS_EMPTY:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:

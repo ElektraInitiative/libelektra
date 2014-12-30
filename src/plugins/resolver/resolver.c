@@ -75,12 +75,15 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 	resolverHandles *pks = elektraPluginGetData(handle);
 	switch (keyGetNamespace(parentKey))
 	{
+	case KEY_NS_SPEC:
+		return &pks->spec;
+	case KEY_NS_DIR:
+		return &pks->dir;
 	case KEY_NS_USER:
 		return &pks->user;
 	case KEY_NS_SYSTEM:
 		return &pks->system;
-	case KEY_NS_SPEC:
-		return &pks->spec;
+	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:

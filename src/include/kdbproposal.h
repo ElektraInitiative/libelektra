@@ -66,7 +66,6 @@ typedef enum
 	KEY_NS_EMPTY=1,         ///< key name was empty, e.g. invalid key name
 	KEY_NS_META=2,          ///< meta key, i.e. any key name not under other categories
 	KEY_NS_CASCADING=3,     ///< cascading key, starts with /, abstract name for any of the namespaces below
-	/*
 	KEY_NS_FIRST=4,         ///< For iteration over namespaces (first element, inclusive)
 	KEY_NS_SPEC=4,          ///< spec contains the specification of the other namespaces
 	KEY_NS_PROC=5,          ///< proc contains process-specific configuration
@@ -74,12 +73,6 @@ typedef enum
 	KEY_NS_USER=7,          ///< user key in the home directory of the current user
 	KEY_NS_SYSTEM=8,        ///< system key is shared for a computer system
 	KEY_NS_LAST=8           ///< For iteration over namespaces (last element, inclusive)
-	*/
-	KEY_NS_FIRST=4,         ///< For iteration over namespaces
-	KEY_NS_USER=4,          ///< user key in the home directory of the current user
-	KEY_NS_SYSTEM=5,        ///< system key is shared for a computer system
-	KEY_NS_SPEC=6,          ///< spec contains the specification of the other namespaces
-	KEY_NS_LAST=6           ///< For iteration over namespaces
 } elektraNamespace;
 
 elektraNamespace keyGetNamespace(Key const* key);

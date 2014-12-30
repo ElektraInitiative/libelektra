@@ -196,15 +196,19 @@ void elektraWresolveFileName(elektraNamespace ns, resolverHandle *p, Key *warnin
 {
 	switch (ns)
 	{
+	case KEY_NS_SPEC:
+		elektraResolveSpec(p);
+		break;
+	case KEY_NS_DIR:
+		elektraResolveDir(p, warningsKey);
+		break;
 	case KEY_NS_USER:
 		elektraResolveUser(p, warningsKey);
 		break;
 	case KEY_NS_SYSTEM:
 		elektraResolveSystem(p);
 		break;
-	case KEY_NS_SPEC:
-		elektraResolveSpec(p);
-		break;
+	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
