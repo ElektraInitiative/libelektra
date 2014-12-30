@@ -1683,6 +1683,8 @@ static Key *elektraLookupBySpecDefault(KeySet *ks, Key *specKey)
 	return ret;
 }
 
+static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options);
+
 /**
  * @internal
  * @brief Helper for elektraLookupBySpec
@@ -1701,7 +1703,9 @@ static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer
 	const Key *m = 0;
 
 	m = keyGetMeta(specKey, buffer);
-	if (!m) return ksLookup(ks, specKey, 0);
+	// no namespaces specified, so do a default cascading lookup
+	// (obviously w/o spec)
+	if (!m) return elektraLookupByCascading(ks, specKey, KDB_O_NOSPEC);
 
 	// store old name of specKey
 	char * name = specKey->key;
@@ -1787,13 +1791,53 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	size_t usize = key->keyUSize;
 	size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
 	char newname[length*2];
-	strncpy (newname+2, "user", 4);
+	Key *found = 0;
+	Key *specKey = 0;
+
+	if (!(options & KDB_O_NOSPEC))
+	{
+		strncpy (newname+2, "spec", 4);
+		strcpy  (newname+6, name);
+		key->key = newname+2;
+		key->keySize = length-2;
+		elektraFinalizeName(key);
+		specKey = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	}
+
+	if (specKey)
+	{
+		// we found a spec key, so we know what to do
+		found = elektraLookupBySpec(ks, specKey);
+		goto finished; // always leave here, regardless if found or not
+	}
+
+	// default cascading:
+	strncpy (newname+2, "proc", 4);
 	strcpy  (newname+6, name);
 	key->key = newname+2;
 	key->keySize = length-2;
 	elektraFinalizeName(key);
-	// do not create key here, it might be in "system"
-	Key *found = ksLookup(ks, key, options & ~KDB_O_CREATE);
+	found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+
+	if (!found)
+	{
+		strncpy (newname+3, "dir", 3);
+		strcpy  (newname+5, name);
+		key->key = newname+3;
+		key->keySize = length-3;
+		elektraFinalizeName(key);
+		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	}
+
+	if (!found)
+	{
+		strncpy (newname+2, "user", 4);
+		strcpy  (newname+6, name);
+		key->key = newname+2;
+		key->keySize = length-2;
+		elektraFinalizeName(key);
+		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	}
 
 	if (!found)
 	{
@@ -1801,9 +1845,10 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname;
 		key->keySize = length;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options);
+		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
 	}
 
+finished:
 	// restore old cascading name
 	key->key = name;
 	key->keySize = size;

@@ -306,6 +306,30 @@ static void test_lookupNamespace()
 	keyDel(specKey);
 }
 
+static void test_lookup()
+{
+	printf ("Test lookup namespace\n");
+
+	Key *s;
+	Key *p;
+	Key *d;
+	Key *u;
+	Key *y;
+	KeySet *ks= ksNew(20,
+		s = keyNew("spec/abc", KEY_END),
+		p = keyNew("proc/abc", KEY_END),
+		d = keyNew("dir/abc", KEY_END),
+		u = keyNew("user/abc", KEY_END),
+		y = keyNew("system/abc", KEY_END),
+		KS_END);
+
+	Key *k = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k == p, "did not find proc key");
+	printf ("%s\n", keyName(k));
+
+	ksDel(ks);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -322,6 +346,7 @@ int main(int argc, char** argv)
 	test_lookupLongChain();
 	test_lookupCascading();
 	test_lookupNamespace();
+	test_lookup();
 
 	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
 			argv[0], nbTest, nbError);
