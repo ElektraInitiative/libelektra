@@ -12,8 +12,6 @@ add_plugin(ni
 		ni.h
 		ni.c
 		${NI_FILES}
-	COMPILE_DEFINITIONS
-		ELEKTRA_NO_META
 	INCLUDE_DIRECTORIES
 		${NI}/include
 		${NI}/src/include
