@@ -7,16 +7,6 @@ the same configuration item from different sources, e.g.:
 
 To allow such keys to exist in parallel, Elektra uses namespaces.
 
-Keys that are not in a namespace (start with an `/`) are called cascading
-keys. Cascading keys do not stem from a configuration source, but are
-used by applications to lookup a key in different namespaces.  So,
-multiple keys can contribute to each cascading key name.
-
-Cascading is the same as a name resolution and provides a
-namespace unification as described in
-[Versatility and Unix semantics in namespace unification](http://dl.acm.org/citation.cfm?id=1138045).
-
-
 A namespace has following properties:
 
 - in-memory Keys can start with this name
@@ -38,6 +28,7 @@ In the rest of this document all currently available namespaces in the default o
 are described.
 
 
+
 ## spec
 
 Unlike the other namespaces, the specification namespace does not
@@ -50,13 +41,17 @@ done as specified, probably in a different order than the namespaces
 enlisted here.
 
 Usually, the spec-keys do not directly contribute to the value, with one
-notable exception: the default value (meta data `default`) might be used if
-every other way as specified in the spec-key failed.
+notable exception: the default value (meta data `default`, see in
+cascading below) might be used if every other way as specified in the
+spec-key failed.
 
 Spec-keys typically include a explanation and description for the key
 itself (but not comments which are specific for individual keys).
 
 The spec configuration files are below CMAKE_INSTALL_PREFIX/KDB_DB_SPEC.
+
+spec is not part of cascading mounts, because the specifications often
+are written in different syntax than the configuration files.
 
 
 ## proc
@@ -111,11 +106,22 @@ Other absolut pathes, e.g. below /opt or /usr/local/etc are possible
 too.
 
 
-## default
+## cascading
 
-Keys in the namespace default can not be stored by their nature. So they
+Keys that are not in a namespace (i.e. start with an `/`) are called cascading
+keys. Cascading keys do not stem from a configuration source, but are
+used by applications to lookup a key in different namespaces.  So,
+multiple keys can contribute to each cascading key name.
+
+Cascading is the same as a name resolution and provides a
+namespace unification as described in
+[Versatility and Unix semantics in namespace unification](http://dl.acm.org/citation.cfm?id=1138045).
+
+Keys without a namespace can not be stored by their nature. So they
 are transient: after a restart they are forgotten.
 
 Keys of that namespace are only used by ksLookup when no other suitable
 key was found. So they have the lowest possible priority, even fallback
 keys are preferred.
+
+

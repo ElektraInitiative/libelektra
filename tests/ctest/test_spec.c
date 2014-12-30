@@ -75,15 +75,103 @@ static void test_lookupDefault()
 	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
 
 	keySetMeta(specKey, "default", "xyz");
+
 	k = ksLookup(ks, specKey, KDB_O_SPEC);
 	succeed_if(k != 0, "found no default key");
 	succeed_if(ksGetSize(ks) == 1, "wrong size");
-	succeed_if_same_string(keyName(k), "user/abc");
+	succeed_if_same_string(keyName(k), "/abc");
 	succeed_if_same_string(keyString(k), "xyz");
 
 	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find default key again");
+	succeed_if(ksGetSize(ks) == 1, "wrong size");
 	keySetMeta(specKey, "default", "");
 	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find default key again");
+	succeed_if(ksGetSize(ks) == 1, "wrong size");
+
+	keyDel(specKey);
+	ksDel(ks);
+
+}
+
+static void test_lookupNoascading()
+{
+	printf ("Test lookup without cascading\n");
+
+	Key *specKey = keyNew("/abc",
+			KEY_CASCADING_NAME,
+			KEY_END);
+
+	Key *d = keyDup(specKey);
+	keySetString(d, "dup");
+	succeed_if_same_string(keyName(specKey), "/abc");
+	succeed_if_same_string(keyName(d), "/abc");
+
+	succeed_if (!keyCmp(d, specKey), "comparision to duplicate failed");
+	succeed_if_same_string(keyName(d), "/abc");
+	succeed_if_same_string(keyName(specKey), "/abc");
+
+	KeySet *ks= ksNew(20,
+		d,
+		KS_END);
+
+	Key *k = ksLookup(ks, specKey, KDB_O_NOCASCADING);
+	succeed_if_same_string(keyName(specKey), "/abc");
+	succeed_if (k != 0, "did not find cascading key");
+	succeed_if (k != specKey, "should not be specKey");
+	succeed_if (k == d, "should be dup key");
+
+	Key *a=keyNew(
+		keyName(specKey),
+		KEY_CASCADING_NAME,
+		KEY_VALUE, "a",
+		KEY_END);
+	ksAppendKey(ks, a);
+
+	for (int i=0; i<5; ++i)
+	{
+		k = ksLookup(ks, specKey, KDB_O_NOCASCADING);
+		succeed_if(keyGetNameSize(specKey) == 5, "size of spec key wrong");
+		succeed_if_same_string(keyName(specKey), "/abc");
+		succeed_if (k != 0, "did not find cascading key");
+		succeed_if (k != specKey, "should not be specKey");
+		succeed_if (k == a, "should be dup key");
+
+		// search without cascading
+		k = ksLookup(ks, specKey, 0);
+		succeed_if (k == 0, "should not be able to find cascading key");
+		succeed_if(keyGetNameSize(specKey) == 5, "size of spec key wrong");
+	}
+
+	ksDel(ks);
+	keyDel(specKey);
+}
+
+static void test_lookupDefaultCascading()
+{
+	printf ("Test lookup default with cascading\n");
+
+	Key *specKey = keyNew("/abc",
+			KEY_CASCADING_NAME,
+			KEY_END);
+	Key *k = 0;
+	KeySet *ks= ksNew(20,
+		KS_END);
+
+	succeed_if(ksGetSize(ks) == 0, "wrong size");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
+
+	keySetMeta(specKey, "default", "xyz");
+	k = ksLookup(ks, specKey, KDB_O_SPEC);
+	succeed_if(k != 0, "found no default key");
+	succeed_if(ksGetSize(ks) == 1, "wrong size");
+	succeed_if_same_string(keyName(k), "/abc");
+	succeed_if_same_string(keyString(k), "xyz");
+
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find default key again");
+	succeed_if(ksGetSize(ks) == 1, "wrong size");
+	keySetMeta(specKey, "default", "");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find default key again");
+	succeed_if(ksGetSize(ks) == 1, "wrong size");
 
 	keyDel(specKey);
 	ksDel(ks);
@@ -179,6 +267,8 @@ int main(int argc, char** argv)
 	test_lookupSingle();
 	test_lookupChain();
 	test_lookupDefault();
+	test_lookupNoascading();
+	test_lookupDefaultCascading();
 	test_lookupLongChain();
 	test_lookupCascading();
 

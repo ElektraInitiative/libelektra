@@ -984,6 +984,7 @@ static void test_ksLookup()
 	int i,j;
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
+		/* keys that are searched */
 		k[0]=keyNew ("user/rem3", KEY_DIR, KEY_END),
 		k[1]=keyNew ("user/rem2", KEY_DIR, KEY_END),
 		k[2]=keyNew ("user/rem1/key2", KEY_END),
@@ -1009,18 +1010,22 @@ static void test_ksLookup()
 		k[22]=keyNew ("user/dir5", KEY_DIR, KEY_END),
 		KS_END);
 
-	/* key 5 */
-	k[23] = keyNew ("user/DiR1", KEY_END);
-	/* key 6 */
-	k[24] = keyNew ("user/DiR1/KEY1", KEY_END);
-	k[25] = keyNew ("user:wrongowner/DiR1/KEY1", KEY_END);
-	k[26] = keyNew ("user:nop/DiR1/KEY1", KEY_END);
-	k[27] = keyNew ("user:wrongowner/dir1/key1", KEY_END);
-	k[28] = keyNew ("user:nop/dir1/key1", KEY_END);
-	/*key 13 */
-	k[29] = keyNew ("user:wrongowner/dir2/key1", KEY_END);
-	k[30] = keyNew ("user/dir2/key1", KEY_END);
-	k[31] = keyNew ("user:max/dir2/key1", KEY_END);
+	KeySet *lookupKeys = ksNew (30,
+		/* lookup keys, keyset only for ksDel */
+		k[23] = keyNew ("user/DiR1", KEY_END),
+		k[24] = keyNew ("user/DiR1/KEY1", KEY_END),
+		k[25] = keyNew ("user:wrongowner/DiR1/KEY1", KEY_END),
+		k[26] = keyNew ("user:nop/DiR1/KEY1", KEY_END),
+		k[27] = keyNew ("user:wrongowner/dir1/key1", KEY_END),
+		k[28] = keyNew ("user:nop/dir1/key1", KEY_END),
+		k[29] = keyNew ("user:wrongowner/dir2/key1", KEY_END),
+		k[30] = keyNew ("user/dir2/key1", KEY_END),
+		k[31] = keyNew ("user:max/dir2/key1", KEY_END),
+		k[32] = keyNew ("/dir1/key1", KEY_CASCADING_NAME, KEY_END),
+		k[33] = keyNew ("/dirX/keyY", KEY_CASCADING_NAME, KEY_END),
+		KS_END);
+	succeed_if (keyGetNameSize(k[32]) == 11, "initial size of name wrong");
+	succeed_if (keyGetNameSize(k[33]) == 11, "initial size of name wrong");
 
 	srand(23);
 
@@ -1041,6 +1046,11 @@ static void test_ksLookup()
 		succeed_if (ksLookup(ks, k[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[28], KDB_O_WITHOWNER) == 0, "found wrong key");
 		succeed_if (ksLookup(ks, k[31], KDB_O_WITHOWNER) == k[13], "did not find key");
+		succeed_if (ksLookup(ks, k[32], 0) == k[6], "did not find key");
+		succeed_if (ksLookup(ks, k[33], 0) == 0, "found wrong key");
+
+		succeed_if (keyGetNameSize(k[32]) == 11, "size of name was changed");
+		succeed_if (keyGetNameSize(k[33]) == 11, "size of name was changed");
 		/* Empty lines to add more tests:
 		succeed_if (ksLookup(ks, k[], ) == k[], "did not find key");
 		succeed_if (ksLookup(ks, k[], ) == 0, "found wrong key");
@@ -1048,7 +1058,7 @@ static void test_ksLookup()
 	}
 
 	ksDel (ks);
-	for (i=23; i<32;i++) keyDel (k[i]);
+	ksDel (lookupKeys);
 }
 
 static void test_ksLookupByName()
@@ -1341,6 +1351,34 @@ static void test_ksLookupNameCascading()
 	ks = ksNew(10, KS_END);
 	Key *k1;
 	Key *k2;
+	ksAppendKey(ks, k1=keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey(ks, k2=keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
+	ksAppendKey(ks, keyDup((s=keyNew("/test/myapp/key", KEY_CASCADING_NAME, KEY_END))));
+	succeed_if(ksGetSize(ks) == 3, "initial size of keyset");
+	succeed_if(keyGetNameSize(s) == 16, "initial name size");
+
+	succeed_if(ksLookup(ks, s, 0) == k2, "got wrong key (not user)");
+	succeed_if(ksLookup(ks, s, 0) != k1, "got system key first");
+	succeed_if(ksLookup(ks, s, 0) != s, "got cascading key");
+	succeed_if_same_string (keyString(ksLookup(ks, s, 0)), "correct");
+	succeed_if(ksGetSize(ks) == 3, "lookup without pop changed size");
+	succeed_if(keyGetNameSize(s) == 16, "size changed after lookup");
+
+	succeed_if_same_string (keyString(ksLookup(ks, s, KDB_O_POP)), "correct");
+	succeed_if(ksGetSize(ks) == 2, "lookup with pop did not change size");
+	succeed_if(keyGetNameSize(s) == 16, "size changed after lookup");
+
+	succeed_if(ksLookup(ks, s, 0) == k1, "got wrong key (not system)");
+	succeed_if(ksLookup(ks, s, 0) != k2, "got user key again");
+	succeed_if(ksLookup(ks, s, 0) != s, "got cascading key");
+	succeed_if_same_string (keyString(ksLookup(ks, s, KDB_O_POP)), "wrong");
+	succeed_if(ksGetSize(ks) == 1, "lookup with pop did not change size");
+	succeed_if(keyGetNameSize(s) == 16, "size changed after lookup");
+	ksDel(ks);
+	keyDel(s);
+
+
+	ks = ksNew(10, KS_END);
 	ksAppendKey(ks, k1=keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
 	ksAppendKey(ks, k2=keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
 

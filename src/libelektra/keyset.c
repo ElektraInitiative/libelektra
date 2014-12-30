@@ -1620,6 +1620,7 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
 
+
 /**
  * @internal
  * @brief Helper for ksLookup
@@ -1633,6 +1634,14 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 	const Key *m = 0;
 	Key *k = 0;
 	Key *ret = 0;
+
+	// strip away beginning of specKey
+	char * name = specKey->key;
+	specKey->key = strchr(name, '/'); // stays same if already cascading
+	size_t size = specKey->keySize;
+	specKey->keySize = size - (specKey->key - name);
+	elektraFinalizeName(specKey);
+
 	do {
 		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
@@ -1648,7 +1657,9 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 	} while(m);
 
 	{
+		// TODO lookup by namespaces (namespace/#)
 		ret=ksLookup(ks, specKey, 0);
+		// bug: resizes specKey??
 		if (ret) goto finished;
 	}
 
@@ -1670,15 +1681,25 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 	} while(m);
 
 	{
+		ret=ksLookup(ks, specKey, KDB_O_NOCASCADING);
+		if (ret) goto finished; // return previous added default key
+
 		m = keyGetMeta(specKey, "default");
 		if (!m) goto finished;
-		ret=keyDup(specKey);
+		ret=keyNew(
+			keyName(specKey),
+			KEY_CASCADING_NAME,
+			KEY_VALUE, keyString(m),
+			KEY_END);
 		if (!ret) goto finished;
-		keySetString(ret, keyString(m));
 		ksAppendKey(ks, ret);
 	}
 
 finished:
+	specKey->key = name;
+	specKey->keySize = size;
+	elektraFinalizeName(specKey);
+
 	keyDel(k);
 	return ret;
 }
@@ -1690,6 +1711,8 @@ finished:
 static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 {
 	char * name = key->key;
+	size_t size = key->keySize;
+	size_t usize = key->keyUSize;
 	size_t length = strlen (name) + sizeof ("system");
 	char newname[length*2];
 	strncpy (newname+2, "user", 4);
@@ -1709,7 +1732,10 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		found = ksLookup(ks, key, options);
 	}
 
-	key->key = name; // restore old cascading name
+	// restore old cascading name
+	key->key = name;
+	key->keySize = size;
+	key->keyUSize = usize ;
 	return found;
 }
 
@@ -1771,8 +1797,8 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key * key, option_t options)
 		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
 			sizeof (Key *), keyCompareByNameCase);
 	else
-	found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-		sizeof (Key *), keyCompareByName);
+		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
+			sizeof (Key *), keyCompareByName);
 	if (options & KDB_O_DEL) keyDel (key);
 	if (found)
 	{
@@ -1862,6 +1888,8 @@ if ((myKey = ksLookup(myConfig, key, 0)) == NULL)
  * @warning All cursors on the keyset will be invalid
  * iff you use KDB_O_POP, so don't use this if you rely on a cursor, see ksGetCursor().
  *
+ * @warning Do not use a cascading search key that is inserted in the KeySet.
+ *
  * You can solve this problem by using KDB_O_NOALL, risking you have to iterate n^2 instead of n.
  *
  * The more elegant way is to separate the keyset you use for ksLookup() and ksAppendKey():
@@ -1887,7 +1915,8 @@ int f(KeySet *iterator, KeySet *lookup)
  * @endcode
  *
  * @param ks where to look for
- * @param key the key object you are looking for
+ * @param key the key object you are looking for, must not be part of ks
+ *        when it is a cascading key
  * @param options some @p KDB_O_* option bits:
  * 	- @p KDB_O_NOCASE @n
  * 		Lookup ignoring case.
@@ -1917,7 +1946,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		return elektraLookupBySpec(ks, key);
 	}
 
-	if (strcmp(name, "") && name[0] == '/')
+	if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
 	{
 		return elektraLookupByCascading(ks, key, options);
 	}
