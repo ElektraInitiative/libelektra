@@ -1618,14 +1618,26 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
-#define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
+#define ELEKTRA_MAX_PREFIX_SIZE sizeof("namespace/")
+#define ELEKTRA_MAX_NAMESPACE_SIZE sizeof("system")
 
-
+/**
+ * @internal
+ * @brief Helper for elektraLookupBySpec
+ *
+ * Lookup using links (fallback or override passed as buffer)
+ *
+ * @param ks the keyset to search in
+ * @param specKey contains metadata as specified in buffer+#<number>
+ * @param buffer the buffer used for incrementing numbers
+ *
+ * @return 
+ */
 static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 {
 	Key *ret = 0;
 	Key *k = 0;
-	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
+	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 2;
 	kdb_long_long_t i=0;
 	const Key *m = 0;
 
@@ -1647,7 +1659,10 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 	return ret;
 }
 
-// lookup by default
+/**
+ * @internal
+ * @brief Helper for elektraLookupBySpec
+ */
 static Key *elektraLookupBySpecDefault(KeySet *ks, Key *specKey)
 {
 	Key *ret = 0;
@@ -1665,6 +1680,58 @@ static Key *elektraLookupBySpecDefault(KeySet *ks, Key *specKey)
 		KEY_END);
 	ksAppendKey(ks, ret);
 
+	return ret;
+}
+
+/**
+ * @internal
+ * @brief Helper for elektraLookupBySpec
+ *
+ * Lookup using namespaces
+ *
+ * @param ks the keyset to search in
+ * @param specKey contains metadata as specified in buffer+#<number>
+ * @param buffer the buffer used for incrementing numbers
+ */
+static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer)
+{
+	Key *ret = 0;
+	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
+	kdb_long_long_t i=0;
+	const Key *m = 0;
+
+	m = keyGetMeta(specKey, buffer);
+	if (!m) return ksLookup(ks, specKey, 0);
+
+	// store old name of specKey
+	char * name = specKey->key;
+	size_t size = specKey->keySize;
+	size_t usize = specKey->keyUSize;
+	size_t nameLength = strlen (name);
+	size_t maxSize = nameLength + ELEKTRA_MAX_NAMESPACE_SIZE;
+	char newname[maxSize*2]; // buffer for all new names (namespace + cascading key name)
+
+	do {
+		// lookup with given namespace
+		size_t namespaceSize = keyGetValueSize(m);
+		char *startOfName = newname+ELEKTRA_MAX_NAMESPACE_SIZE-namespaceSize;
+		strncpy (startOfName, keyString(m), namespaceSize);
+		strcpy  (newname+ELEKTRA_MAX_NAMESPACE_SIZE-1, name); // name starts with /
+		specKey->key = startOfName;
+		specKey->keySize = nameLength + namespaceSize;
+		elektraFinalizeName(specKey);
+		ret=ksLookup(ks, specKey, 0);
+		if (ret) break;
+		++i; // start with 1 (#0 was already in buffer)
+
+		elektraWriteArrayNumber(&buffer[prefixSize], i);
+		m = keyGetMeta(specKey, buffer);
+	} while(m);
+
+	// restore old cascading name
+	specKey->key = name;
+	specKey->keySize = size;
+	specKey->keyUSize = usize ;
 	return ret;
 }
 
@@ -1689,8 +1756,9 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 	ret = elektraLookupBySpecLinks(ks, specKey, buffer);
 	if (ret) goto finished;
 
-	// lookup by namespaces (TODO)
-	ret=ksLookup(ks, specKey, 0);
+	// lookup by namespaces
+	strcpy (buffer, "namespace/#0");
+	ret=elektraLookupBySpecNamespaces(ks, specKey, buffer);
 	if (ret) goto finished;
 
 	// lookup by fallback
@@ -1717,7 +1785,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	char * name = key->key;
 	size_t size = key->keySize;
 	size_t usize = key->keyUSize;
-	size_t length = strlen (name) + sizeof ("system");
+	size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
 	char newname[length*2];
 	strncpy (newname+2, "user", 4);
 	strcpy  (newname+6, name);

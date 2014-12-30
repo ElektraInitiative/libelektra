@@ -256,6 +256,56 @@ static void test_lookupCascading()
 	ksDel(ks);
 }
 
+static void test_lookupNamespace()
+{
+	printf ("Test lookup namespace\n");
+
+	Key *specKey = keyNew("/abc",
+			KEY_CASCADING_NAME,
+			KEY_META, "namespace/#0", "system",
+			KEY_END);
+	Key *k = 0;
+
+	KeySet *ks= ksNew(20,
+		k = keyNew("user/abc", KEY_END),
+		KS_END);
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key of other namespace");
+	keySetMeta(specKey, "namespace/#0", "user");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find key in correct namespace");
+	ksDel(ks);
+
+	ks= ksNew(20,
+		k = keyNew("system/abc", KEY_END),
+		KS_END);
+	keySetMeta(specKey, "namespace/#0", "user");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == 0, "found wrong key of other namespace");
+	keySetMeta(specKey, "namespace/#0", "system");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "did not find key in correct namespace");
+	ksDel(ks);
+
+
+	ks= ksNew(20,
+		keyNew("system/abc", KEY_END),
+		k = keyNew("user/abc", KEY_END),
+		KS_END);
+	keySetMeta(specKey, "namespace/#0", "user");
+	keySetMeta(specKey, "namespace/#1", "system");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "found wrong key of other namespace");
+	ksDel(ks);
+
+
+	ks= ksNew(20,
+		k = keyNew("system/abc", KEY_END),
+		keyNew("user/abc", KEY_END),
+		KS_END);
+	keySetMeta(specKey, "namespace/#0", "system");
+	keySetMeta(specKey, "namespace/#1", "user");
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k, "found wrong key of other namespace");
+	ksDel(ks);
+
+	keyDel(specKey);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -271,6 +321,7 @@ int main(int argc, char** argv)
 	test_lookupDefaultCascading();
 	test_lookupLongChain();
 	test_lookupCascading();
+	test_lookupNamespace();
 
 	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
 			argv[0], nbTest, nbError);
