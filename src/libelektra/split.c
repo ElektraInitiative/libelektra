@@ -173,7 +173,7 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
 				switch (keyGetNamespace(parent))
 				{
 				case KEY_NS_SPEC: if (keyIsSpec(split->parents[i])) return i; break;
-				case KEY_NS_DIR: if (keyIsDir2(split->parents[i])) return i; break;
+				case KEY_NS_DIR: if (keyIsDir(split->parents[i])) return i; break;
 				case KEY_NS_USER: if (keyIsUser(split->parents[i])) return i; break;
 				case KEY_NS_SYSTEM: if (keyIsSystem(split->parents[i])) return i; break;
 				case KEY_NS_PROC: return -1;

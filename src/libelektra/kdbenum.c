@@ -15,14 +15,14 @@ enum keyswitch_t
 	KEY_OWNER=1<<2,		/*!< Flag for the key user domain */
 	KEY_COMMENT=1<<3,	/*!< Flag for the key comment */
 	KEY_BINARY=1<<4,	/*!< Flag if the key is binary */
-	KEY_UID=1<<5,		/*!< Flag for the key UID */
-	KEY_GID=1<<6,		/*!< Flag for the key GID */
-	KEY_MODE=1<<7,		/*!< Flag for the key permissions */
-	KEY_ATIME=1<<8,		/*!< Flag for the key access time */
-	KEY_MTIME=1<<9,		/*!< Flag for the key change time */
-	KEY_CTIME=1<<10,	/*!< Flag for the key status change time */
+	KEY_UID=1<<5,		/*!< Flag for the key UID @deprecated do not use */
+	KEY_GID=1<<6,		/*!< Flag for the key GID @deprecated do not use  */
+	KEY_MODE=1<<7,		/*!< Flag for the key permissions @deprecated do not use  */
+	KEY_ATIME=1<<8,		/*!< Flag for the key access time @deprecated do not use  */
+	KEY_MTIME=1<<9,		/*!< Flag for the key change time @deprecated do not use  */
+	KEY_CTIME=1<<10,	/*!< Flag for the key status change time @deprecated do not use  */
 	KEY_SIZE=1<<11,		/*!< Flag for maximum size to limit value */
-	KEY_DIR=1<<14,		/*!< Flag for the key directories*/
+	KEY_DIR=1<<14,		/*!< Flag for the key directories @deprecated do not use */
 	KEY_META=1<<15,		/*!< Flag for meta data*/
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
 };
@@ -52,62 +52,87 @@ enum option_t
 
 /**
  * No Option set.
- * Will be recursive with no inactive keys.
  *
- * @see kdbGet(), kdbSet(), ksLookup()
+ * @see ksLookup()
  */
 	KDB_O_NONE=0,
 /**
- * Delete parentKey key in kdbGet(), kdbSet() or ksLookup().
+ * Delete parentKey key in ksLookup().
  *
- * @see kdbGet(), kdbSet()
+ * @see ksLookup()
  */
 	KDB_O_DEL=1,
-/** Pop Parent out of keyset key in kdbGet().
+/** Pop Parent out of keyset key in ksLookup().
  *
  * @see ksPop().
  */
 	KDB_O_POP=1<<1,
-/** Exclude keys containing other keys in result.
+/**
+ * Feature not available
  *
- * Only return leaves.
- *
- * @see keyIsDir() 
+ * TODO: remove for 1.0
  */
 	KDB_O_NODIR=1<<2,
-/** Retrieve only directory keys
-      (keys containing other keys).
-      This will give you an skeleton without leaves.
-      This must not be used together with KDB_O_NODIR.
-      @see keyIsDir() */
+/**
+ * Feature not available
+ *
+ * TODO: remove for 1.0
+ */
 	KDB_O_DIRONLY=1<<3,
-/** Don't remove any keys.
-      This must not be used together with KDB_O_REMOVEONLY.
-      */
+/**
+ * Feature not available
+ *
+ * TODO: remove for 1.0
+ */
 	KDB_O_NOREMOVE=1<<6,
-/** Only remove keys.
-      This must not be used together with KDB_O_NOREMOVE.
-      */
+/**
+ * Feature not available
+ *
+ * TODO: remove for 1.0
+ */
 	KDB_O_REMOVEONLY=1<<7,
-/** Do not ignore inactive keys (that name begins
-      with .).
-      @see keyIsInactive() */
+/**
+ * Feature not available
+ *
+ * TODO: remove for 1.0
+ */
 	KDB_O_INACTIVE=1<<8,
-/** Set keys independent of sync status.
-      @see keyNeedSync() */
+/**
+ * Feature not available
+ *
+ * TODO: remove for 1.0
+ */
 	KDB_O_SYNC=1<<9,
-/** This option has no effect.
-      KeySets are always sorted.
-      @deprecated don't use */
+/**
+ * Feature not available
+ *
+ * TODO: remove for 1.0
+ */
 	KDB_O_SORT=1<<10,
-/** Do not call kdbGet() for every key
-      containing other keys (keyIsDir()). */
+/**
+ * Feature not available
+ *
+ * TODO: remove for 1.0
+ */
 	KDB_O_NORECURSIVE=1<<11,
-/** Ignore case. */
+/** Ignore case.
+ *
+ * @see ksLookup()
+ * */
 	KDB_O_NOCASE=1<<12,
-/** Search with owner. */
+/** Search with owner.
+ *
+ * The owner concept is deprecated, do not use.
+ *
+ * TODO: remove for 1.0
+ *
+ * @see ksLookup()
+ * */
 	KDB_O_WITHOWNER=1<<13,
-/** Only search from start -> cursor to cursor -> end. */
+/** Linear search from start -> cursor to cursor -> end.
+ *
+ * @see ksLookup()
+ * */
 	KDB_O_NOALL=1<<14
 };
 

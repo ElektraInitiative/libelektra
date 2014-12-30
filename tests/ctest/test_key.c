@@ -661,54 +661,38 @@ static void test_keyDir (void)
 	printf ("Test directory keys\n");
 
 	succeed_if (keyGetMode(key) == 0600, "new key not 0600 by default");
-	succeed_if (keyIsDir (key) == 0, "new key should not be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyIsDir (key) == 0, "0644 should not be directory");
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
 
 	for (i = 0; i <= 0777; i++)
 	{
 		succeed_if (keySetMode(key, i) == 0, "could not set to 0000 <= i <= 0777");
 		succeed_if (keyGetMode(key) == i, "key is not correct 0000 <= i <= 0777");
-
-		if (/*getuid() == keyGetUID (key) &&*/ (keyGetMode (key) & 0100))
-		{
-			succeed_if (keyIsDir (key) == 1, "should be directory because of executable match");
-		} else {
-			succeed_if (keyIsDir (key) == 0, "should not be directory");
-		}
 	
 		succeed_if (keySetDir (key) == 0, "could not set directory key");
-		succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	}
 	keyDel (key);
 
 	key = keyNew ("user", KEY_DIR, KEY_END);
 	succeed_if (keyGetMode(key) == 0700, "new key with KEY_DIR not 0700 by default");
-	succeed_if (keyIsDir (key) == 1, "new key with KEY_DIR should be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyIsDir (key) == 0, "0644 should not be directory");
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
 	keyDel (key);
 
 	key = keyNew ("user/s", KEY_DIR, KEY_MODE, 0444, KEY_END);
 	succeed_if (keyGetMode(key) == 0444, "0444 set by keyNew");
-	succeed_if (keyIsDir (key) == 0, "0444 should be directory");
 	keyDel (key);
 	
 	key = keyNew ("user/s", KEY_MODE, 0444, KEY_DIR, KEY_END);
 	// succeed_if (keyGetMode(key) == 0555, "0555 set by keyNew");
-	succeed_if (keyIsDir (key) == 1, "0555 should be directory");
 	keyDel (key);
 }
 
