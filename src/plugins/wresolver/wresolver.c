@@ -22,7 +22,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
 #endif
@@ -36,6 +35,8 @@
 #include "wresolver.h"
 #include <sys/stat.h> /* mkdir() */
 #include <stdlib.h>
+#include <unistd.h> /* getcwd() */
+#include <errno.h> /* errno in getcwd() */
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -110,6 +111,64 @@ static void escapePath(char *home)
 	}
 }
 
+static void elektraResolveSpec(resolverHandle *p)
+{
+	char * system = getenv("ALLUSERSPROFILE");
+
+	if (!system) system = "";
+	else escapePath(system);
+
+	if (p->path[0] == '/')
+	{
+		/* Use absolute path */
+		size_t filenameSize = strlen(system)
+			+ strlen(p->path) + 1;
+		p->filename = malloc (filenameSize);
+		strcpy (p->filename, system);
+		strcat (p->filename, p->path);
+		return;
+	}
+	size_t filenameSize = sizeof(KDB_DB_SPEC)
+		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, system);
+	strcat (p->filename, KDB_DB_SPEC);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+	return;
+}
+
+static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
+{
+	p->filename = malloc(PATH_MAX);
+
+# if defined(_WIN32)
+	CHAR dir[MAX_PATH];
+	DWORD dwRet = GetCurrentDirectory(MAX_PATH, dir);
+	if (dwRet == 0)
+	{
+		ELEKTRA_ADD_WARNINGF(90, warningsKey, "GetCurrentDirectory failed: %s", GetLastError());
+	} else if (dwRet > MAX_PATH)
+	{
+		ELEKTRA_ADD_WARNINGF(90, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %s", dwRet);
+	}
+	escapePath(dir);
+#else
+	char dir[PATH_MAX];
+	if (getcwd(dir, PATH_MAX) == 0)
+	{
+		ELEKTRA_ADD_WARNINGF(90, warningsKey, "getcwd failed: %s", strerror(errno));
+	}
+#endif
+
+	strcpy (p->filename, dir);
+	strcat (p->filename, "/");
+	strncat (p->filename, p->path, PATH_MAX-strlen(dir)-3);
+	p->filename[PATH_MAX-1] = 0;
+
+	return;
+}
+
 static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 {
 	p->filename = malloc(PATH_MAX);
@@ -160,33 +219,6 @@ static void elektraResolveSystem(resolverHandle *p)
 	p->filename = malloc (filenameSize);
 	strcpy (p->filename, system);
 	strcat (p->filename, KDB_DB_SYSTEM);
-	strcat (p->filename, "/");
-	strcat (p->filename, p->path);
-	return;
-}
-
-static void elektraResolveSpec(resolverHandle *p)
-{
-	char * system = getenv("ALLUSERSPROFILE");
-
-	if (!system) system = "";
-	else escapePath(system);
-
-	if (p->path[0] == '/')
-	{
-		/* Use absolute path */
-		size_t filenameSize = strlen(system)
-			+ strlen(p->path) + 1;
-		p->filename = malloc (filenameSize);
-		strcpy (p->filename, system);
-		strcat (p->filename, p->path);
-		return;
-	}
-	size_t filenameSize = sizeof(KDB_DB_SPEC)
-		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
-	strcpy (p->filename, system);
-	strcat (p->filename, KDB_DB_SPEC);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
 	return;

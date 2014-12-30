@@ -346,6 +346,19 @@ static int elektraResolveBuildin(resolverHandle *p)
 	return 1;
 }
 
+static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
+{
+	size_t filenameSize = sizeof(KDB_DB_SPEC)
+		+ strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, KDB_DB_SPEC);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+
+	elektraResolveFinishByFilename(p);
+	return 1;
+}
+
 /**
  * @brief Recalculates all pathes given p->dirname
  *
@@ -373,6 +386,15 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 	elektraResolveFinishByFilename(p);
 }
 
+static int elektraResolveDir(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
+{
+	p->dirname = get_current_dir_name();
+
+	elektraResolveFinishByDirname(p);
+	return 1;
+}
+
+
 
 /**
  * @retval 0 if variant did not have a result
@@ -395,47 +417,6 @@ static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
 	// TODO: also document in doc/COMPILE.md
 	}
 	return -1;
-}
-
-static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
-{
-	size_t filenameSize = sizeof(KDB_DB_SPEC)
-		+ strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
-	strcpy (p->filename, KDB_DB_SPEC);
-	strcat (p->filename, "/");
-	strcat (p->filename, p->path);
-
-	elektraResolveFinishByFilename(p);
-	return 1;
-}
-
-static int elektraResolveMapperSystem(resolverHandle *p, Key *warningsKey)
-{
-	int finished = 0;
-	size_t i;
-	for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_SYSTEM); ++i)
-	{
-		finished = elektraResolveSystem(ELEKTRA_VARIANT_SYSTEM[i],
-				p, warningsKey);
-	}
-	if (finished == -1)
-	{
-		ELEKTRA_ADD_WARNINGF(83, warningsKey,
-			"system resolver failed at step %zu, the configuration is: %s",
-			i, ELEKTRA_VARIANT_SYSTEM);
-		return -1;
-	}
-
-	if (p->dirname == 0)
-	{
-		ELEKTRA_ADD_WARNINGF(83, warningsKey,
-			"no resolver set the system dirname, the configuration is: %s",
-			ELEKTRA_VARIANT_SYSTEM);
-		return -1;
-	}
-
-	return finished;
 }
 
 static int elektraResolveMapperUser(resolverHandle *p, Key *warningsKey)
@@ -464,6 +445,34 @@ static int elektraResolveMapperUser(resolverHandle *p, Key *warningsKey)
 	}
 
 	elektraResolveFinishByDirname(p);
+
+	return finished;
+}
+
+static int elektraResolveMapperSystem(resolverHandle *p, Key *warningsKey)
+{
+	int finished = 0;
+	size_t i;
+	for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_SYSTEM); ++i)
+	{
+		finished = elektraResolveSystem(ELEKTRA_VARIANT_SYSTEM[i],
+				p, warningsKey);
+	}
+	if (finished == -1)
+	{
+		ELEKTRA_ADD_WARNINGF(83, warningsKey,
+			"system resolver failed at step %zu, the configuration is: %s",
+			i, ELEKTRA_VARIANT_SYSTEM);
+		return -1;
+	}
+
+	if (p->dirname == 0)
+	{
+		ELEKTRA_ADD_WARNINGF(83, warningsKey,
+			"no resolver set the system dirname, the configuration is: %s",
+			ELEKTRA_VARIANT_SYSTEM);
+		return -1;
+	}
 
 	return finished;
 }

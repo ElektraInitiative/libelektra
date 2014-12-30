@@ -148,6 +148,14 @@ int keyIsUser(const Key *key)
 	else return 0;
 }
 
+int keyIsDir(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsDir(key->key);
+	else return 0;
+}
+
 int keyIsSpec(const Key *key)
 {
 	if (!key) return -1;

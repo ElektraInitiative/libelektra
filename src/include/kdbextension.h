@@ -81,13 +81,15 @@ ssize_t keyGetParentNameSize(const Key *key);
 
 
 /* Conveniences Methods for Making Tests */
+int keyIsSpec(const Key *key);
+int keyIsDir(const Key *key);
 int keyIsSystem(const Key *key);
 int keyIsUser(const Key *key);
-int keyIsSpec(const Key *key);
 
+int keyNameIsSpec(const char *keyname);
+int keyNameIsDir(const char *keyname);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
-int keyNameIsSpec(const char *keyname);
 
 
 /***************************************

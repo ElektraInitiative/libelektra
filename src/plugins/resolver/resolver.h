@@ -60,9 +60,10 @@ typedef struct _resolverHandles resolverHandles;
 
 struct _resolverHandles
 {
+	resolverHandle spec;
+	resolverHandle dir;
 	resolverHandle user;
 	resolverHandle system;
-	resolverHandle spec;
 };
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, checkFile)

@@ -485,6 +485,12 @@ int keyNameIsSystem(const char *name)
 	return 0;
 }
 
+int keyNameIsDir(const char *name)
+{
+	if (!strncmp("dir",name,sizeof("dir")-1)) return 1;
+	return 0;
+}
+
 int keyNameIsSpec(const char *name)
 {
 	if (!strncmp("spec",name,sizeof("spec")-1)) return 1;

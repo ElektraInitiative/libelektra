@@ -320,11 +320,13 @@ struct _Backend
 	Plugin *getplugins[NR_OF_PLUGINS];
 	Plugin *errorplugins[NR_OF_PLUGINS];
 
+	ssize_t specsize;	/*!< The size of the spec key from the previous get.
+		Needed to know if a key was removed from a keyset. */
+	ssize_t dirsize;	/*!< The size of the dir key from the previous get.
+		Needed to know if a key was removed from a keyset. */
 	ssize_t usersize;	/*!< The size of the users key from the previous get.
 		Needed to know if a key was removed from a keyset. */
 	ssize_t systemsize;	/*!< The size of the systems key from the previous get.
-		Needed to know if a key was removed from a keyset. */
-	ssize_t specsize;	/*!< The size of the spec key from the previous get.
 		Needed to know if a key was removed from a keyset. */
 
 	size_t refcounter;	/*!< This refcounter shows how often the backend

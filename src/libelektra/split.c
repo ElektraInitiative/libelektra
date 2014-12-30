@@ -457,6 +457,9 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 				if (!keyIsSystem(split->parents[i]))
 					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
 				break;
+			case KEY_NS_PROC:
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has a proc key name");
+				break;
 			case KEY_NS_EMPTY:
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has an empty name");
 				break;

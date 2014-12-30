@@ -10,6 +10,9 @@ switch (keyGetNamespace(k))
 case KEY_NS_SPEC:
 	printf ("spec namespace\n");
 	break;
+case KEY_NS_PROC:
+	printf ("proc namespace\n");
+	break;
 case KEY_NS_DIR:
 	printf ("dir namespace\n");
 	break;
