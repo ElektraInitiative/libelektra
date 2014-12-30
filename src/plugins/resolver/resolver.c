@@ -350,6 +350,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, close)
 	{
 		resolverClose(&ps->user);
 		resolverClose(&ps->system);
+		resolverClose(&ps->spec);
 
 		free (ps);
 		elektraPluginSetData(handle, 0);

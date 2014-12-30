@@ -437,7 +437,7 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 			{
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is hidden by other mountpoint");
 			}
-			switch (keyGetNamespace(cur))
+			else switch (keyGetNamespace(cur))
 			{
 			case KEY_NS_USER:
 				if (!keyIsUser(split->parents[i]))

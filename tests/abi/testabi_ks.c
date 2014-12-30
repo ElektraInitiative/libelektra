@@ -1376,6 +1376,8 @@ static void test_ksLookupNameCascading()
 	succeed_if(keyGetNameSize(s) == 16, "size changed after lookup");
 	ksDel(ks);
 	keyDel(s);
+	keyDel(k1);
+	keyDel(k2);
 
 
 	ks = ksNew(10, KS_END);
