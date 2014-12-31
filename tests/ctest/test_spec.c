@@ -325,7 +325,6 @@ static void test_lookup()
 
 	Key *k = ksLookupByName(ks, "/abc", 0);
 	succeed_if (k == p, "did not find proc key");
-	printf ("%s\n", keyName(k));
 
 	ksDel(ks);
 }
