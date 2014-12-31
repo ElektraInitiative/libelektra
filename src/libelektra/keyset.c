@@ -2061,42 +2061,37 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	if (!name) return 0;
 
 	Key *ret = 0;
-	Key *lookupKey = key;
-	if (!(options & KDB_O_NODUP))
-	{
-		lookupKey = keyDup(key);
-	}
 
 	if (options & KDB_O_SPEC)
 	{
+		Key *lookupKey = key;
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
 		ret = elektraLookupBySpec(ks, lookupKey);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
 	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
 	{
+		Key *lookupKey = key;
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
 		ret = elektraLookupByCascading(ks, lookupKey, options & ~KDB_O_DEL);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
 	else if ((options & KDB_O_NOALL)
 		// || (options & KDB_O_NOCASE)
 		// || (options & KDB_O_WITHOWNER)
 		) // TODO binary search with nocase won't work
 	{
-		ret = elektraLookupLinearSearch(ks, lookupKey, options & ~KDB_O_DEL);
+		ret = elektraLookupLinearSearch(ks, key, options & ~KDB_O_DEL);
 	}
 	else
 	{
-		ret = elektraLookupBinarySearch(ks, lookupKey, options & ~KDB_O_DEL);
+		ret = elektraLookupBinarySearch(ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (options & KDB_O_DEL)
 	{
 		keyDel (key);
 	}
-
-	if (!(options & KDB_O_NODUP))
-	{
-		keyDel(lookupKey);
-	}
-
 
 	return ret;
 }
@@ -2191,7 +2186,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 	if (name[0] == 'u' && name[4] == ':')
 	{
 		Key *key = keyNew(name, KEY_CASCADING_NAME, KEY_END);
-		found = ksLookup(ks, key, options | KDB_O_NODUP);
+		found = ksLookup(ks, key, options);
 		keyDel (key);
 	}
 	else
@@ -2206,7 +2201,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 		key.keySize = size;
 		elektraFinalizeName(&key);
 
-		found = ksLookup(ks, &key, options | KDB_O_NODUP);
+		found = ksLookup(ks, &key, options);
 	}
 	return found;
 }
