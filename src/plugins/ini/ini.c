@@ -298,28 +298,28 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		writeComments (current, fh);
 
+		/* TODO: make logic independent from meta data, just
+		 * check depth of key, see #138
 		if (keyIsDir(current))
 		{
 			fprintf (fh, "[%s]\n", keyBaseName(current));
 		}
+		*/
+		if (strstr (keyString (current), "\n") == 0)
+		{
+			fprintf (fh, "%s = %s\n", keyBaseName(current), keyString(current));
+		}
 		else
 		{
-			if (strstr (keyString (current), "\n") == 0)
+			if (multilineKey)
 			{
-				fprintf (fh, "%s = %s\n", keyBaseName(current), keyString(current));
+				writeMultilineKey(current, fh);
 			}
 			else
 			{
-				if (multilineKey)
-				{
-					writeMultilineKey(current, fh);
-				}
-				else
-				{
-					ELEKTRA_SET_ERROR(97, parentKey, "Encountered a multiline value but multiline support is not enabled. "
-							"Have a look at kdb info ini for more details");
-					ret = -1;
-				}
+				ELEKTRA_SET_ERROR(97, parentKey, "Encountered a multiline value but multiline support is not enabled. "
+						"Have a look at kdb info ini for more details");
+				ret = -1;
 			}
 		}
 

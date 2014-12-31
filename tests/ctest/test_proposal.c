@@ -61,7 +61,7 @@ static void test_ksToArray()
 
 int main(int argc, char** argv)
 {
-	printf("KEYSET       TESTS\n");
+	printf("KEY PROPOSAL TESTS\n");
 	printf("==================\n\n");
 
 	init (argc, argv);

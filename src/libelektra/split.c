@@ -164,17 +164,23 @@ ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int s
  */
 ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
 {
-	/* TODO: possible optimization: use an index to find already inserted backends */
 	for (size_t i=0; i<split->size; ++i)
 	{
 		if (backend == split->handles[i])
 		{
 			if (split->syncbits[i] & 2)
 			{
-				if ((keyIsUser(parent) == 1 && keyIsUser(split->parents[i]) == 1)  ||
-				    (keyIsSystem(parent) == 1 && keyIsSystem(split->parents[i]) == 1))
+				switch (keyGetNamespace(parent))
 				{
-					return i;
+				case KEY_NS_SPEC: if (keyIsSpec(split->parents[i])) return i; break;
+				case KEY_NS_DIR: if (keyIsDir(split->parents[i])) return i; break;
+				case KEY_NS_USER: if (keyIsUser(split->parents[i])) return i; break;
+				case KEY_NS_SYSTEM: if (keyIsSystem(split->parents[i])) return i; break;
+				case KEY_NS_PROC: return -1;
+				case KEY_NS_EMPTY: return -1;
+				case KEY_NS_NONE: return -1;
+				case KEY_NS_META: return -1;
+				case KEY_NS_CASCADING: return -1;
 				}
 				continue;
 			}
@@ -302,7 +308,7 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 
 		curFound = elektraSplitSearchBackend(split, curHandle, curKey);
 
-		if (curFound == -1) continue;
+		if (curFound == -1) continue; // key not relevant in this kdbSet
 
 		ksAppendKey (split->keysets[curFound], curKey);
 		if (keyNeedSync(curKey) == 1)
@@ -372,7 +378,9 @@ static void elektraDropCurrentKey(KeySet *ks,
 			strlen(msg) +
 			sizeOfStaticText);
 	strcpy(warningMsg, "drop key ");
-	strcat(warningMsg, keyName(k));
+	const char *name = keyName(k);
+	if (name) strcat(warningMsg, name);
+	else strcat(warningMsg, "(no name)");
 	strcat(warningMsg, " not belonging to ");
 	strcat(warningMsg, keyName(curHandle->mountpoint));
 	strcat(warningMsg, " with name ");
@@ -394,13 +402,14 @@ static void elektraDropCurrentKey(KeySet *ks,
  *
  * - check if keys are in correct backend
  * - remove syncbits
- * - update usersize and systemsize
+ * - update sizes in the backends
  *
  * @param split the split object to work with
  * @param warningKey postcondition violations are reported here
  * @param handle the handle to preprocess the keys
  * @return 1 on success
- * @return -1 if no backend was found for a key
+ * @return -1 if no backend was found for a key or split->parents
+ *         has invalid namespace
  * @ingroup split
  */
 int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
@@ -424,38 +433,68 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 			curHandle = elektraMountGetBackend(handle, cur);
 			if (!curHandle) return -1;
 
+			keyClearSync (cur);
+
 			if (curHandle != split->handles[i])
 			{
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is hidden by other mountpoint");
-				continue;
 			}
-			if (keyGetNameSize(cur) == 0)
+			else switch (keyGetNamespace(cur))
 			{
+			case KEY_NS_SPEC:
+				if (!keyIsSpec(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not spec");
+				break;
+			case KEY_NS_DIR:
+				if (!keyIsDir(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not dir");
+				break;
+			case KEY_NS_USER:
+				if (!keyIsUser(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not user");
+				break;
+			case KEY_NS_SYSTEM:
+				if (!keyIsSystem(split->parents[i]))
+					elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
+				break;
+			case KEY_NS_PROC:
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has a proc key name");
+				break;
+			case KEY_NS_EMPTY:
 				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has an empty name");
-				continue;
+				break;
+			case KEY_NS_META:
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has a meta name");
+				break;
+			case KEY_NS_CASCADING:
+				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it has a cascading name");
+				break;
+			case KEY_NS_NONE:
+				return -1;
 			}
-			if (!strncmp(keyName(cur), "user", 4) && strncmp(keyName(split->parents[i]), "user", 4))
-			{
-				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not user");
-				continue;
-			}
-			if (!strncmp(keyName(cur), "system", 6) && strncmp(keyName(split->parents[i]), "system", 6))
-			{
-				elektraDropCurrentKey(split->keysets[i], warningKey, curHandle, "it is not system");
-				continue;
-			}
-
-			keyClearSync (cur);
 		}
 
 		/* Update sizes */
-		if (!strncmp(keyName(split->parents[i]), "system", 6))
+		switch (keyGetNamespace(split->parents[i]))
 		{
-			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
-		}
-		else if (!strncmp(keyName(split->parents[i]), "user", 4))
-		{
+		case KEY_NS_SPEC:
+			split->handles[i]->specsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_DIR:
+			split->handles[i]->dirsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_USER:
 			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_SYSTEM:
+			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_PROC:
+		case KEY_NS_EMPTY:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+		case KEY_NS_NONE:
+			return -1;
 		}
 	}
 
@@ -473,13 +512,26 @@ int elektraSplitUpdateSize (Split *split)
 	/* Iterate everything */
 	for (size_t i=0; i<split->size; ++i)
 	{
-		if (!strncmp(keyName(split->parents[i]), "system", 6))
+		switch (keyGetNamespace(split->parents[i]))
 		{
-			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
-		}
-		else if (!strncmp(keyName(split->parents[i]), "user", 4))
-		{
+		case KEY_NS_SPEC:
+			split->handles[i]->specsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_DIR:
+			split->handles[i]->dirsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_USER:
 			split->handles[i]->usersize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_SYSTEM:
+			split->handles[i]->systemsize = ksGetSize(split->keysets[i]);
+			break;
+		case KEY_NS_PROC:
+		case KEY_NS_EMPTY:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			return -1;
 		}
 	}
 	return 1;
@@ -511,6 +563,7 @@ int elektraSplitMerge (Split *split, KeySet *dest)
  *
  * @return 0 if kdbSet() is not needed
  * @return 1 if kdbSet() is needed
+ * @return -1 on wrong split->parents
  * @pre user/system was split before.
  * @param split the split object to work with
  * @ingroup split
@@ -528,21 +581,46 @@ int elektraSplitSync(Split *split)
 			continue;
 		}
 
-		if (!strncmp(keyName(split->parents[i]), "system", 6))
+		switch (keyGetNamespace(split->parents[i]))
 		{
-			/* Check for system keyset for removed keys */
-			if (split->handles[i]->systemsize != ksGetSize(split->keysets[i]))
+		case KEY_NS_SPEC:
+			/* Check for spec keyset for removed keys */
+			if (split->handles[i]->specsize != ksGetSize(split->keysets[i]))
 			{
 				split->syncbits[i] |= 1;
 				needsSync = 1;
 			}
-		} else if (!strncmp(keyName(split->parents[i]), "user", 4)) {
+			break;
+		case KEY_NS_DIR:
+			/* Check for dir keyset for removed keys */
+			if (split->handles[i]->dirsize != ksGetSize(split->keysets[i]))
+			{
+				split->syncbits[i] |= 1;
+				needsSync = 1;
+			}
+			break;
+		case KEY_NS_USER:
 			/* Check for user keyset for removed keys */
 			if (split->handles[i]->usersize != ksGetSize(split->keysets[i]))
 			{
 				split->syncbits[i] |= 1;
 				needsSync = 1;
 			}
+			break;
+		case KEY_NS_SYSTEM:
+			/* Check for system keyset for removed keys */
+			if (split->handles[i]->systemsize != ksGetSize(split->keysets[i]))
+			{
+				split->syncbits[i] |= 1;
+				needsSync = 1;
+			}
+			break;
+		case KEY_NS_PROC:
+		case KEY_NS_EMPTY:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+		case KEY_NS_NONE:
+			return -1;
 		}
 	}
 

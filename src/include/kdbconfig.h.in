@@ -26,6 +26,9 @@
   * postfix to search for user configuration. */
 #define KDB_DB_USER              "@KDB_DB_USER@"
 
+/** Prefix to search specification configuration (spec/). */
+#define KDB_DB_SPEC              "@BUILTIN_SPEC_FOLDER@"
+
 /** Depending on the resolver this might be the root 
   * to search for user configuration. */
 #define KDB_DB_HOME              "@KDB_DB_HOME@"

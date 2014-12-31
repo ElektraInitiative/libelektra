@@ -22,10 +22,11 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
 #endif
+
+#include <kdbproposal.h>
 
 #include <kdberrors.h>
 
@@ -34,6 +35,8 @@
 #include "wresolver.h"
 #include <sys/stat.h> /* mkdir() */
 #include <stdlib.h>
+#include <unistd.h> /* getcwd() */
+#include <errno.h> /* errno in getcwd() */
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -108,6 +111,92 @@ static void escapePath(char *home)
 	}
 }
 
+static void elektraResolveSpec(resolverHandle *p)
+{
+	char * system = getenv("ALLUSERSPROFILE");
+
+	if (!system) system = "";
+	else escapePath(system);
+
+	if (p->path[0] == '/')
+	{
+		/* Use absolute path */
+		size_t filenameSize = strlen(system)
+			+ strlen(p->path) + 1;
+		p->filename = malloc (filenameSize);
+		strcpy (p->filename, system);
+		strcat (p->filename, p->path);
+		return;
+	}
+	size_t filenameSize = sizeof(KDB_DB_SPEC)
+		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, system);
+	strcat (p->filename, KDB_DB_SPEC);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+	return;
+}
+
+static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
+{
+	p->filename = malloc(PATH_MAX);
+
+# if defined(_WIN32)
+	CHAR dir[MAX_PATH];
+	DWORD dwRet = GetCurrentDirectory(MAX_PATH, dir);
+	if (dwRet == 0)
+	{
+		ELEKTRA_ADD_WARNINGF(90, warningsKey, "GetCurrentDirectory failed: %s", GetLastError());
+	} else if (dwRet > MAX_PATH)
+	{
+		ELEKTRA_ADD_WARNINGF(90, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %s", dwRet);
+	}
+	escapePath(dir);
+#else
+	char dir[PATH_MAX];
+	if (getcwd(dir, PATH_MAX) == 0)
+	{
+		ELEKTRA_ADD_WARNINGF(90, warningsKey, "getcwd failed: %s", strerror(errno));
+	}
+#endif
+
+	strcpy (p->filename, dir);
+	strcat (p->filename, "/");
+	strncat (p->filename, p->path, PATH_MAX-strlen(dir)-3);
+	p->filename[PATH_MAX-1] = 0;
+
+	return;
+}
+
+static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
+{
+	p->filename = malloc(PATH_MAX);
+
+# if defined(_WIN32)
+	CHAR home[MAX_PATH];
+	if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
+					0, home)))
+	{
+		escapePath(home);
+	}
+	else
+	{
+		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
+	}
+# else
+	char * home = (char*) getenv("HOME");
+	if(!home)
+	{
+		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
+	}
+# endif
+
+	strcpy (p->filename, home);
+	strcat (p->filename, "/");
+	strncat (p->filename, p->path, PATH_MAX);
+}
+
 static void elektraResolveSystem(resolverHandle *p)
 {
 	char * system = getenv("ALLUSERSPROFILE");
@@ -135,38 +224,28 @@ static void elektraResolveSystem(resolverHandle *p)
 	return;
 }
 
-void elektraWresolveFileName(Key *forKey, resolverHandle *p, Key *warningsKey)
+void elektraWresolveFileName(elektraNamespace ns, resolverHandle *p, Key *warningsKey)
 {
-	if (!strncmp(keyName(forKey), "system", 6))
+	switch (ns)
 	{
+	case KEY_NS_SPEC:
+		elektraResolveSpec(p);
+		break;
+	case KEY_NS_DIR:
+		elektraResolveDir(p, warningsKey);
+		break;
+	case KEY_NS_USER:
+		elektraResolveUser(p, warningsKey);
+		break;
+	case KEY_NS_SYSTEM:
 		elektraResolveSystem(p);
-	}
-	else if (!strncmp(keyName(forKey), "user", 4))
-	{
-		p->filename = malloc(PATH_MAX);
-
-# if defined(_WIN32)
-		CHAR home[MAX_PATH];
-		if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
-						0, home)))
-		{
-			escapePath(home);
-		}
-		else
-		{
-			ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
-		}
-# else
-		char * home = (char*) getenv("HOME");
-		if(!home)
-		{
-			ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
-		}
-# endif
-
-		strcpy (p->filename, home);
-		strcat (p->filename, "/");
-		strncat (p->filename, p->path, PATH_MAX);
+		break;
+	case KEY_NS_PROC:
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
 	}
 }
 
@@ -185,11 +264,10 @@ int elektraWresolverOpen(Plugin *handle, Key *errorKey)
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
 
-	Key *testKey = keyNew("system", KEY_END);
-	elektraWresolveFileName(testKey, &p->system, errorKey);
-	keySetName(testKey, "user");
-	elektraWresolveFileName(testKey, &p->user, errorKey);
-	keyDel (testKey);
+	for (elektraNamespace i=KEY_NS_FIRST; i<=KEY_NS_LAST; ++i)
+	{
+		elektraWresolveFileName(i, &p->system, errorKey);
+	}
 
 	elektraPluginSetData(handle, p);
 

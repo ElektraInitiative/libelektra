@@ -43,8 +43,6 @@ int keySetDir(Key *key);
 mode_t keyGetMode(const Key *key);
 int keySetMode(Key *key, mode_t mode);
 
-int keyIsDir(const Key *key);
-
 time_t keyGetATime(const Key *key);
 int keySetATime(Key *key, time_t atime);
 
@@ -83,12 +81,15 @@ ssize_t keyGetParentNameSize(const Key *key);
 
 
 /* Conveniences Methods for Making Tests */
-int keyIsBelow(const Key *key, const Key *check);
-int keyIsDirectBelow(const Key *key, const Key *check);
-
+int keyIsSpec(const Key *key);
+int keyIsProc(const Key *key);
+int keyIsDir(const Key *key);
 int keyIsSystem(const Key *key);
 int keyIsUser(const Key *key);
 
+int keyNameIsSpec(const char *keyname);
+int keyNameIsProc(const char *keyname);
+int keyNameIsDir(const char *keyname);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
 

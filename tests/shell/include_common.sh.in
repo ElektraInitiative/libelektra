@@ -22,8 +22,12 @@ scriptName=`basename $0`
 MOUNTPOINT="/tests/script"
 MOUNTNAME="_tests_script"
 
+NAMESPACES="user system"
+
 USER_ROOT="user/tests/script"
 SYSTEM_ROOT="system/tests/script"
+
+ROOTS="$USER_ROOT $SYSTEM_ROOT"
 
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]
@@ -196,10 +200,6 @@ is_plugin_available()
 	done
 	return 1
 }
-
-
-
-
 
 
 

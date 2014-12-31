@@ -148,15 +148,56 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 				keyNew("system", KEY_VALUE, "default", KEY_END), 2);
 	}
 
-	key = keyNew ("user", KEY_VALUE, "default", KEY_END);
-	backend = elektraMountGetBackend(kdb, key);
-	if (backend != kdb->defaultBackend)
+	for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
 	{
-		/* It does not matter that user is not reachable anymore */
-		keyDel (key);
-	} else {
-		/* User is reachable, so append that to split */
-		elektraSplitAppend(kdb->split, backend, key, 2);
+	switch (ns)
+	{
+	case KEY_NS_SPEC:
+		// TODO: disabled
+		key = keyNew ("spec", KEY_VALUE, "default", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It does not matter that spec is not reachable anymore */
+			keyDel (key);
+		} else {
+			/* User is reachable, so append that to split */
+			elektraSplitAppend(kdb->split, backend, key, 2);
+		}
+	case KEY_NS_DIR:
+		// TODO: disabled
+		key = keyNew ("dir", KEY_VALUE, "default", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It does not matter that dir is not reachable anymore */
+			keyDel (key);
+		} else {
+			/* User is reachable, so append that to split */
+			elektraSplitAppend(kdb->split, backend, key, 2);
+		}
+		break;
+	case KEY_NS_USER:
+		key = keyNew ("user", KEY_VALUE, "default", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It does not matter that user is not reachable anymore */
+			keyDel (key);
+		} else {
+			/* User is reachable, so append that to split */
+			elektraSplitAppend(kdb->split, backend, key, 2);
+		}
+		break;
+	case KEY_NS_SYSTEM:
+		// already handled above
+	case KEY_NS_EMPTY:
+	case KEY_NS_PROC:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
+	}
 	}
 
 	return 0;
@@ -247,28 +288,95 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 	else if (!strcmp (keyName(backend->mountpoint), "/"))
 	{
 		/* Root backend */
-		sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-
-		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
-		backend->refcounter = 2;
+		backend->refcounter = 0;
+		for (elektraNamespace ns=KEY_NS_LAST; ns>=KEY_NS_FIRST; --ns) // TODO: inverted for unit tests
+		{
+		switch (ns)
+		{
+		case KEY_NS_DIR:
+#if 0
+			// disabled because unit tests would break and
+			// resolver functionality is missing anyway.
+			sprintf(mountpoint, "dir%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("dir", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+#endif
+			break;
+		case KEY_NS_USER:
+			sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_SYSTEM:
+			sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_SPEC: // spec is excluded from cascading mountpoints
+		case KEY_NS_PROC:
+		case KEY_NS_EMPTY:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			break;
+		}
+		}
 	}
 	else if (keyName(backend->mountpoint)[0] == '/')
 	{
 		/* Cascading Backend */
-		sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend,
-			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
-
-		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend,
-			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
-		backend->refcounter = 2;
+		backend->refcounter = 0;
+		for (elektraNamespace ns=KEY_NS_LAST; ns>=KEY_NS_FIRST; --ns) // TODO: inverted for unit tests
+		{
+		switch (ns)
+		{
+		case KEY_NS_SPEC:
+#if 0
+			// TODO: excluded, because unit tests would
+			// break
+			sprintf(mountpoint, "spec%s/", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend,
+				keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+			++backend->refcounter;
+#endif
+			break;
+		case KEY_NS_DIR:
+#if 0
+			// TODO: excluded, because unit tests would
+			// break
+			sprintf(mountpoint, "dir%s/", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend,
+				keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+			++backend->refcounter;
+#endif
+			break;
+		case KEY_NS_USER:
+			sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend,
+				keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_SYSTEM:
+			sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend,
+				keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_EMPTY:
+		case KEY_NS_PROC:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			break;
+		}
+		}
 	} else {
 		/* Common single mounted backend */
 		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));

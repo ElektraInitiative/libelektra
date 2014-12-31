@@ -27,6 +27,9 @@ set (BUILTIN_DATA_FOLDER
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 
+set (BUILTIN_SPEC_FOLDER
+	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"

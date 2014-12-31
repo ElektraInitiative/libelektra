@@ -14,6 +14,32 @@
  ***************************************************************************/
 
 
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
+#endif
+
+#if DEBUG && defined(HAVE_STDIO_H)
+#include <stdio.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+#include <kdbtypes.h>
+
+#include "kdbinternal.h"
+
+
+
 /** @class doxygenFlatCopy
  *
  * @note Because the key is not copied,
@@ -75,31 +101,6 @@ ksDel (myConfig); // delete keyset and all keys appended
  *
  * @{
  */
-
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#include <kdbtypes.h>
-
-#include "kdbinternal.h"
-
 
 
 /**
@@ -1618,7 +1619,127 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
-#define ELEKTRA_MAX_PREFIX_SIZE sizeof("override/")
+#define ELEKTRA_MAX_PREFIX_SIZE sizeof("namespace/")
+#define ELEKTRA_MAX_NAMESPACE_SIZE sizeof("system")
+
+/**
+ * @internal
+ * @brief Helper for elektraLookupBySpec
+ *
+ * Lookup using links (fallback or override passed as buffer)
+ *
+ * @param ks the keyset to search in
+ * @param specKey contains metadata as specified in buffer+#<number>
+ * @param buffer the buffer used for incrementing numbers
+ *
+ * @return 
+ */
+static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
+{
+	Key *ret = 0;
+	Key *k = 0;
+	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 2;
+	kdb_long_long_t i=0;
+	const Key *m = 0;
+
+	do {
+		elektraWriteArrayNumber(&buffer[prefixSize], i);
+		m = keyGetMeta(specKey, buffer);
+		if (!m) break;
+		// optimization: lazy instanziation of k
+		if (!k) k = keyNew(keyString(m), KEY_CASCADING_NAME,
+				KEY_END);
+		else elektraKeySetName(k, keyString(m),
+				KEY_CASCADING_NAME);
+		ret=ksLookup(ks, k, 0);
+		if (ret) break;
+		++i;
+	} while(m);
+
+	keyDel(k);
+	return ret;
+}
+
+/**
+ * @internal
+ * @brief Helper for elektraLookupBySpec
+ */
+static Key *elektraLookupBySpecDefault(KeySet *ks, Key *specKey)
+{
+	Key *ret = 0;
+	const Key *m = 0;
+
+	ret=ksLookup(ks, specKey, KDB_O_NOCASCADING);
+	if (ret) return ret; // return previous added default key
+
+	m = keyGetMeta(specKey, "default");
+	if (!m) return ret;
+	ret=keyNew(
+		keyName(specKey),
+		KEY_CASCADING_NAME,
+		KEY_VALUE, keyString(m),
+		KEY_END);
+	ksAppendKey(ks, ret);
+
+	return ret;
+}
+
+static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options);
+
+/**
+ * @internal
+ * @brief Helper for elektraLookupBySpec
+ *
+ * Lookup using namespaces
+ *
+ * @param ks the keyset to search in
+ * @param specKey contains metadata as specified in buffer+#<number>
+ * @param buffer the buffer used for incrementing numbers
+ */
+static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer)
+{
+	Key *ret = 0;
+	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
+	kdb_long_long_t i=0;
+	const Key *m = 0;
+
+	m = keyGetMeta(specKey, buffer);
+	// no namespaces specified, so do a default cascading lookup
+	// (obviously w/o spec)
+	if (!m) return elektraLookupByCascading(ks, specKey, KDB_O_NOSPEC);
+
+	// store old name of specKey
+	char * name = specKey->key;
+	size_t size = specKey->keySize;
+	size_t usize = specKey->keyUSize;
+	size_t nameLength = strlen (name);
+	size_t maxSize = nameLength + ELEKTRA_MAX_NAMESPACE_SIZE;
+	char newname[maxSize*2]; // buffer for all new names (namespace + cascading key name)
+
+	do {
+		// lookup with given namespace
+		size_t namespaceSize = keyGetValueSize(m);
+		char *startOfName = newname+ELEKTRA_MAX_NAMESPACE_SIZE-namespaceSize;
+		strncpy (startOfName, keyString(m), namespaceSize);
+		strcpy  (newname+ELEKTRA_MAX_NAMESPACE_SIZE-1, name); // name starts with /
+		specKey->key = startOfName;
+		specKey->keySize = nameLength + namespaceSize;
+		elektraFinalizeName(specKey);
+		ret=ksLookup(ks, specKey, 0);
+		if (ret) break;
+		++i; // start with 1 (#0 was already in buffer)
+
+		elektraWriteArrayNumber(&buffer[prefixSize], i);
+		m = keyGetMeta(specKey, buffer);
+	} while(m);
+
+	// restore old cascading name
+	specKey->key = name;
+	specKey->keySize = size;
+	specKey->keyUSize = usize ;
+	return ret;
+}
+
 
 /**
  * @internal
@@ -1626,60 +1747,37 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  */
 static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 {
-	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
+	Key *ret = 0;
+	// strip away beginning of specKey
+	char * name = specKey->key;
+	specKey->key = strchr(name, '/'); // stays same if already cascading
+	size_t size = specKey->keySize;
+	specKey->keySize = size - (specKey->key - name);
+	elektraFinalizeName(specKey);
+
+	// lookup by override
 	char buffer [ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE]
 		= "override/";
-	kdb_long_long_t i=0;
-	const Key *m = 0;
-	Key *k = 0;
-	Key *ret = 0;
-	do {
-		elektraWriteArrayNumber(&buffer[prefixSize], i);
-		m = keyGetMeta(specKey, buffer);
-		if (!m) break;
-		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KEY_CASCADING_NAME,
-				KEY_END);
-		else elektraKeySetName(k, keyString(m),
-				KEY_CASCADING_NAME);
-		ret=ksLookup(ks, k, 0);
-		if (ret) goto finished;
-		++i;
-	} while(m);
+	ret = elektraLookupBySpecLinks(ks, specKey, buffer);
+	if (ret) goto finished;
 
-	{
-		ret=ksLookup(ks, specKey, 0);
-		if (ret) goto finished;
-	}
+	// lookup by namespaces
+	strcpy (buffer, "namespace/#0");
+	ret=elektraLookupBySpecNamespaces(ks, specKey, buffer);
+	if (ret) goto finished;
 
+	// lookup by fallback
 	strcpy (buffer, "fallback/");
-	i=0;
-	m = 0;
-	do {
-		elektraWriteArrayNumber(&buffer[prefixSize], i);
-		m = keyGetMeta(specKey, buffer);
-		if (!m) break;
-		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KEY_CASCADING_NAME,
-				KEY_END);
-		else elektraKeySetName(k, keyString(m),
-				KEY_CASCADING_NAME);
-		ret=ksLookup(ks, k, 0);
-		if (ret) goto finished;
-		++i;
-	} while(m);
+	ret = elektraLookupBySpecLinks(ks, specKey, buffer);
+	if (ret) goto finished;
 
-	{
-		m = keyGetMeta(specKey, "default");
-		if (!m) goto finished;
-		ret=keyDup(specKey);
-		if (!ret) goto finished;
-		keySetString(ret, keyString(m));
-		ksAppendKey(ks, ret);
-	}
+	ret = elektraLookupBySpecDefault(ks, specKey);
 
 finished:
-	keyDel(k);
+	specKey->key = name;
+	specKey->keySize = size;
+	elektraFinalizeName(specKey);
+
 	return ret;
 }
 
@@ -1690,15 +1788,64 @@ finished:
 static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 {
 	char * name = key->key;
-	size_t length = strlen (name) + sizeof ("system");
+	size_t size = key->keySize;
+	size_t usize = key->keyUSize;
+	size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
 	char newname[length*2];
-	strncpy (newname+2, "user", 4);
+	Key *found = 0;
+	Key *specKey = 0;
+
+	if (!(options & KDB_O_NOSPEC))
+	{
+		strncpy (newname+2, "spec", 4);
+		strcpy  (newname+6, name);
+		key->key = newname+2;
+		key->keySize = length-2;
+		elektraFinalizeName(key);
+		specKey = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	}
+
+	if (specKey)
+	{
+		// restore old name
+		key->key = name;
+		key->keySize = size;
+		key->keyUSize = usize ;
+
+		// we found a spec key, so we know what to do
+		specKey = keyDup(specKey);
+		found = elektraLookupBySpec(ks, specKey);
+		keyDel(specKey);
+		return found;
+	}
+
+	// default cascading:
+	strncpy (newname+2, "proc", 4);
 	strcpy  (newname+6, name);
 	key->key = newname+2;
 	key->keySize = length-2;
 	elektraFinalizeName(key);
-	// do not create key here, it might be in "system"
-	Key *found = ksLookup(ks, key, options & ~KDB_O_CREATE);
+	found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+
+	if (!found)
+	{
+		strncpy (newname+3, "dir", 3);
+		strcpy  (newname+5, name);
+		key->key = newname+3;
+		key->keySize = length-3;
+		elektraFinalizeName(key);
+		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	}
+
+	if (!found)
+	{
+		strncpy (newname+2, "user", 4);
+		strcpy  (newname+6, name);
+		key->key = newname+2;
+		key->keySize = length-2;
+		elektraFinalizeName(key);
+		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	}
 
 	if (!found)
 	{
@@ -1706,10 +1853,13 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname;
 		key->keySize = length;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options);
+		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
 	}
 
-	key->key = name; // restore old cascading name
+	// restore old cascading name
+	key->key = name;
+	key->keySize = size;
+	key->keyUSize = usize ;
 	return found;
 }
 
@@ -1735,7 +1885,6 @@ static Key * elektraLookupLinearSearch(KeySet *ks, Key * key, option_t options)
 		}
 		else if (!keyCompareByName(&key, &current)) break;
 	}
-	if (options & KDB_O_DEL) keyDel (key);
 	if (current == 0)
 	{
 		Key *ret = 0;
@@ -1771,9 +1920,8 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key * key, option_t options)
 		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
 			sizeof (Key *), keyCompareByNameCase);
 	else
-	found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-		sizeof (Key *), keyCompareByName);
-	if (options & KDB_O_DEL) keyDel (key);
+		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
+			sizeof (Key *), keyCompareByName);
 	if (found)
 	{
 		cursor = found-ks->array;
@@ -1912,27 +2060,40 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	const char * name = key->key;
 	if (!name) return 0;
 
+	Key *ret = 0;
+
 	if (options & KDB_O_SPEC)
 	{
-		return elektraLookupBySpec(ks, key);
+		Key *lookupKey = key;
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
+		ret = elektraLookupBySpec(ks, lookupKey);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
-
-	if (strcmp(name, "") && name[0] == '/')
+	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
 	{
-		return elektraLookupByCascading(ks, key, options);
+		Key *lookupKey = key;
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
+		ret = elektraLookupByCascading(ks, lookupKey, options & ~KDB_O_DEL);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
-
-	if ((options & KDB_O_NOALL)
+	else if ((options & KDB_O_NOALL)
 		// || (options & KDB_O_NOCASE)
 		// || (options & KDB_O_WITHOWNER)
-		) // binary search with nocase won't work
+		) // TODO binary search with nocase won't work
 	{
-		return elektraLookupLinearSearch(ks, key, options);
+		ret = elektraLookupLinearSearch(ks, key, options & ~KDB_O_DEL);
 	}
 	else
 	{
-		return elektraLookupBinarySearch(ks, key, options);
+		ret = elektraLookupBinarySearch(ks, key, options & ~KDB_O_DEL);
 	}
+
+	if (options & KDB_O_DEL)
+	{
+		keyDel (key);
+	}
+
+	return ret;
 }
 
 /**

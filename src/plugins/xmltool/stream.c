@@ -535,7 +535,6 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 		fprintf (stream,"Flags: ");
 		if (keyIsBinary(k)) fprintf(stream,"b");
 		if (keyIsString(k)) fprintf(stream,"s");
-		if (keyIsDir(k)) fprintf(stream,"d");
 		if (keyIsInactive(k)) fprintf(stream,"i");
 		if (keyNeedSync(k)) fprintf(stream,"s");
 	}
@@ -623,8 +622,6 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 		free (nam);
 	}
 
-	if (keyIsDir(key)) fprintf(stream,", KEY_DIR");
-
 	s = keyGetValueSize (key);
 	if (s>1)
 	{
@@ -646,7 +643,7 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 		free (com);
 	}
 
-	if (! (keyGetMode(key) == 0664 || (keyGetMode(key) == 0775 && keyIsDir(key))))
+	if (! (keyGetMode(key) == 0664 || (keyGetMode(key) == 0775)))
 	{
 		fprintf(stream,", KEY_MODE, 0%3o", keyGetMode(key));
 	}
@@ -684,8 +681,6 @@ int ksGenerate (const KeySet *ks, FILE *stream, option_t options)
 	fprintf(stream,"ksNew( %d ,\n", (int)ksGetSize(cks));
 	while ((key=ksNext(cks)) != 0)
 	{
-		if (options & KDB_O_NODIR) if (key && keyIsDir (key)) continue;
-		if (options & KDB_O_DIRONLY) if (key && !keyIsDir (key)) continue;
 		if (options & KDB_O_INACTIVE) if (key && keyIsInactive (key)) continue;
 
 		s++;

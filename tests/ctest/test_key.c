@@ -661,54 +661,38 @@ static void test_keyDir (void)
 	printf ("Test directory keys\n");
 
 	succeed_if (keyGetMode(key) == 0600, "new key not 0600 by default");
-	succeed_if (keyIsDir (key) == 0, "new key should not be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyIsDir (key) == 0, "0644 should not be directory");
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
 
 	for (i = 0; i <= 0777; i++)
 	{
 		succeed_if (keySetMode(key, i) == 0, "could not set to 0000 <= i <= 0777");
 		succeed_if (keyGetMode(key) == i, "key is not correct 0000 <= i <= 0777");
-
-		if (/*getuid() == keyGetUID (key) &&*/ (keyGetMode (key) & 0100))
-		{
-			succeed_if (keyIsDir (key) == 1, "should be directory because of executable match");
-		} else {
-			succeed_if (keyIsDir (key) == 0, "should not be directory");
-		}
 	
 		succeed_if (keySetDir (key) == 0, "could not set directory key");
-		succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	}
 	keyDel (key);
 
 	key = keyNew ("user", KEY_DIR, KEY_END);
 	succeed_if (keyGetMode(key) == 0700, "new key with KEY_DIR not 0700 by default");
-	succeed_if (keyIsDir (key) == 1, "new key with KEY_DIR should be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyIsDir (key) == 0, "0644 should not be directory");
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
 	keyDel (key);
 
 	key = keyNew ("user/s", KEY_DIR, KEY_MODE, 0444, KEY_END);
 	succeed_if (keyGetMode(key) == 0444, "0444 set by keyNew");
-	succeed_if (keyIsDir (key) == 0, "0444 should be directory");
 	keyDel (key);
 	
 	key = keyNew ("user/s", KEY_MODE, 0444, KEY_DIR, KEY_END);
 	// succeed_if (keyGetMode(key) == 0555, "0555 set by keyNew");
-	succeed_if (keyIsDir (key) == 1, "0555 should be directory");
 	keyDel (key);
 }
 
@@ -844,79 +828,6 @@ static void test_keyMeta(void)
 	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
 	succeed_if(keySetDir(key) == 0, "could not set dir");
 	succeed_if(keyGetMode(key) == (KDB_FILE_MODE | KDB_DIR_MODE), "directory key");
-	keyDel (key);
-}
-
-static void test_keyNamespace()
-{
-	Key *key;
-
-	printf ("Test namespaces\n");
-
-	succeed_if (keyGetNamespace (0) == KEY_NS_NONE, "null key");
-
-	key = keyNew (0);
-	succeed_if (keyGetNamespace (key) == KEY_NS_EMPTY, "empty namespace not empty");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "empty name is not system");
-	succeed_if (keyIsSystem (key) == 0, "empty key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "empty name is not user");
-	succeed_if (keyIsUser (key) == 0, "empty key is not user");
-	keyDel (key);
-
-	key = keyNew("", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_EMPTY, "empty namespace not empty");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "empty name is not system");
-	succeed_if (keyIsSystem (key) == 0, "empty key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "empty name is not user");
-	succeed_if (keyIsUser (key) == 0, "empty key is not user");
-	keyDel (key);
-
-	key = keyNew ("user", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_USER, "user namespace not KEY_NS_USER");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "user name is not system");
-	succeed_if (keyIsSystem (key) == 0, "user key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 1, "user name is not user");
-	succeed_if (keyIsUser (key) == 1, "user key is not user");
-	keyDel (key);
-
-	key = keyNew ("user/key", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_USER, "user namespace not KEY_NS_USER");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "user name is not system");
-	succeed_if (keyIsSystem (key) == 0, "user key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 1, "user name is not user");
-	succeed_if (keyIsUser (key) == 1, "user key is not user");
-	keyDel (key);
-
-	key = keyNew ("user:owner/key", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_USER, "user namespace not KEY_NS_USER");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "user name is not system");
-	succeed_if (keyIsSystem (key) == 0, "user key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 1, "user name is not user");
-	succeed_if (keyIsUser (key) == 1, "user key is not user");
-	keyDel (key);
-
-	key = keyNew ("system", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_SYSTEM, "system namespace not KEY_NS_SYSTEM");
-	succeed_if (keyNameIsSystem (keyName(key)) == 1, "system name is not system");
-	succeed_if (keyIsSystem (key) == 1, "system key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "system name is not system");
-	succeed_if (keyIsUser (key) == 0, "system key is not system");
-	keyDel (key);
-
-	key = keyNew ("system/key", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_SYSTEM, "system namespace not KEY_NS_SYSTEM");
-	succeed_if (keyNameIsSystem (keyName(key)) == 1, "system name is not system");
-	succeed_if (keyIsSystem (key) == 1, "system key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "system name is not system");
-	succeed_if (keyIsUser (key) == 0, "system key is not system");
-	keyDel (key);
-
-	key = keyNew ("/key", KEY_CASCADING_NAME, KEY_END);
-	succeed_if (keyGetNamespace(key) == KEY_NS_CASCADING, "not correct namespace");
-	keyDel (key);
-
-	key = keyNew ("type", KEY_META_NAME, KEY_END);
-	succeed_if (keyGetNamespace(key) == KEY_NS_META, "not correct namespace");
 	keyDel (key);
 }
 
@@ -1253,7 +1164,6 @@ int main(int argc, char** argv)
 	test_keyDir();
 	test_keyTime();
 	test_keyMeta();
-	test_keyNamespace();
 	test_owner();
 	test_elektraKeySetName();
 	test_keyLock();

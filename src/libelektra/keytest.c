@@ -108,6 +108,31 @@ int keyNeedSync(const Key *key)
 }
 
 
+int keyIsSpec(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsSpec(key->key);
+	else return 0;
+}
+
+int keyIsProc(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsProc(key->key);
+	else return 0;
+}
+
+
+int keyIsDir(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsDir(key->key);
+	else return 0;
+}
+
 
 /**
  * Check whether a key is under the @p system namespace or not
