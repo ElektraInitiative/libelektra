@@ -707,9 +707,11 @@ elektraNamespace keyGetNamespace(const Key *key)
 
 	if (key->key[0] == '/') return KEY_NS_CASCADING;
 
+	if (keyIsSpec (key)) return KEY_NS_SPEC;
+	if (keyIsProc (key)) return KEY_NS_PROC;
+	if (keyIsDir (key)) return KEY_NS_DIR;
 	if (keyIsUser (key)) return KEY_NS_USER;
 	if (keyIsSystem (key)) return KEY_NS_SYSTEM;
-	if (keyIsSpec (key)) return KEY_NS_SPEC;
 
 	return KEY_NS_META;
 }
