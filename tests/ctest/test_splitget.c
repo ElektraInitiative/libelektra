@@ -481,7 +481,7 @@ static void test_triesizes()
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 
-	succeed_if (split->size == 5, "not correct size after appointing");
+	succeed_if (split->size == 8, "not correct size after appointing"); // TODO check
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
 	succeed_if (ksGetSize(split->keysets[2]) == 2, "wrong size");
 	compare_key(split->parents[2], mp);
@@ -562,7 +562,7 @@ static void test_merge()
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 
-	succeed_if (split->size == 5, "not correct size after appointing");
+	succeed_if (split->size == 8, "not correct size after appointing"); // TODO check
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
 	succeed_if (ksGetSize(split->keysets[2]) == 2, "wrong size");
 	compare_key(split->parents[2], mp);
@@ -658,7 +658,7 @@ static void test_realworld()
 	succeed_if (output_error(parent), "error found");
 	succeed_if (output_warnings(parent), "warning(s) found");
 
-	succeed_if (split->size == 9, "size not correct");
+	succeed_if (split->size == 12, "size not correct");
 	succeed_if (split->handles[5] == split->handles[6], "root backends have same handle");
 	succeed_if (split->syncbits[5] == 2, "sync state for root not correct");
 	succeed_if (split->syncbits[6] == 2, "sync state for root not correct");
@@ -673,7 +673,7 @@ static void test_realworld()
 	succeed_if_same_string (keyName(split->parents[8]), "system/elektra");
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "should need sync");
-	succeed_if (split->size == 10, "size not correct");
+	succeed_if (split->size == 13, "size not correct");
 	succeed_if (split->syncbits[0] == 0, "sync state for root not correct");
 	succeed_if (split->syncbits[1] == 0, "sync state for root not correct");
 	succeed_if (split->syncbits[2] == 0, "sync state for root not correct");

@@ -18,10 +18,18 @@ KEY_CASCADING_NAME/meta data confusion?
 
 document METADATA.ini
 
-## shell tests ##
+## fix broken tests ##
 
-test resolver (dir, spec)
-test distribution (nesting+double slash issues)
+shell:
+	test resolver (dir, spec)
+	test distribution (nesting+double slash issues)
+
+ctest:
+	test_mountsplit
+	test_splitset
+	order
+	kdb
+
 
 ## Backend ##
 
