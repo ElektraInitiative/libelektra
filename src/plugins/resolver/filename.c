@@ -508,6 +508,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 {
 	if (!p)
 	{
+		ELEKTRA_ADD_WARNING(83, warningsKey, "no p");
 		return -1;
 	}
 
@@ -522,12 +523,22 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 	case KEY_NS_SYSTEM:
 		return elektraResolveMapperSystem(p, warningsKey);
 	case KEY_NS_PROC:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve proc");
+		return -1;
 	case KEY_NS_EMPTY:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve empty");
+		return -1;
 	case KEY_NS_NONE:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve none");
+		return -1;
 	case KEY_NS_META:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve meta");
+		return -1;
 	case KEY_NS_CASCADING:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve cascading");
 		return -1;
 	}
 
+	ELEKTRA_ADD_WARNING(83, warningsKey, "should not be reached");
 	return -1;
 }
