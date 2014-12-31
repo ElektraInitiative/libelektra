@@ -1807,9 +1807,16 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 
 	if (specKey)
 	{
+		// restore old name
+		key->key = name;
+		key->keySize = size;
+		key->keyUSize = usize ;
+
 		// we found a spec key, so we know what to do
+		specKey = keyDup(specKey);
 		found = elektraLookupBySpec(ks, specKey);
-		goto finished; // always leave here, regardless if found or not
+		keyDel(specKey);
+		return found;
 	}
 
 	// default cascading:
@@ -1849,7 +1856,6 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
 	}
 
-finished:
 	// restore old cascading name
 	key->key = name;
 	key->keySize = size;
