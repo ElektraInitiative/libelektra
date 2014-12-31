@@ -18,6 +18,16 @@ KEY_CASCADING_NAME/meta data confusion?
 
 document METADATA.ini
 
+## shell tests ##
+
+test resolver (dir, spec)
+test distribution (nesting+double slash issues)
+
+## Backend ##
+
+unserialize
+streaming
+
 ## simplify cmake ##
 
 c++11
