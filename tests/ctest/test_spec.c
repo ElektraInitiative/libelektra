@@ -306,25 +306,110 @@ static void test_lookupNamespace()
 	keyDel(specKey);
 }
 
-static void test_lookup()
+static void test_lookupIndirect()
 {
-	printf ("Test lookup namespace\n");
+	printf ("Test lookup by indirect spec\n");
 
 	Key *s;
 	Key *p;
 	Key *d;
 	Key *u;
 	Key *y;
+	Key *e;
 	KeySet *ks= ksNew(20,
 		s = keyNew("spec/abc", KEY_END),
 		p = keyNew("proc/abc", KEY_END),
 		d = keyNew("dir/abc", KEY_END),
 		u = keyNew("user/abc", KEY_END),
 		y = keyNew("system/abc", KEY_END),
+		e = keyNew("system/else", KEY_END),
 		KS_END);
+	succeed_if (ksGetSize(ks) == 6, "wrong size");
 
 	Key *k = ksLookupByName(ks, "/abc", 0);
 	succeed_if (k == p, "did not find proc key");
+
+	keySetMeta(s, "namespace/#0", "no");
+	keySetMeta(s, "default", "80");
+	k = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k != 0, "should find default");
+	succeed_if (ksGetSize(ks) == 7, "default key not added");
+	succeed_if_same_string(keyString(k), "80");
+
+	Key *k2 = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k == k2, "did not get same default");
+
+	keySetMeta(s, "fallback/#0", "/else");
+	k = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k == e, "did not find else");
+
+	keySetMeta(s, "namespace/#0", "system");
+	k = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k == y, "did not find system key");
+
+	keySetMeta(s, "namespace/#0", "system");
+	keySetMeta(s, "namespace/#1", "user");
+	k = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k == y, "did not find system key");
+
+	keySetMeta(s, "namespace/#0", "proc");
+	keySetMeta(s, "namespace/#1", "user");
+	k = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k == p, "did not find proc key");
+
+	keySetMeta(s, "override/#0", "/else");
+	k = ksLookupByName(ks, "/abc", 0);
+	succeed_if (k == e, "did not find override key");
+
+	ksDel(ks);
+}
+
+static void test_lookupDoubleIndirect()
+{
+	printf ("Test lookup by double indirect spec\n");
+
+	Key *s;
+	Key *p;
+	Key *d;
+	Key *u;
+	Key *y;
+	Key *se;
+	Key *pe;
+	KeySet *ks= ksNew(20,
+		se = keyNew("spec/first", KEY_END),
+		pe = keyNew("proc/first", KEY_END),
+		s = keyNew("spec/abc", KEY_END),
+		p = keyNew("proc/abc", KEY_END),
+		d = keyNew("dir/abc", KEY_END),
+		u = keyNew("user/abc", KEY_END),
+		y = keyNew("system/abc", KEY_END),
+		KS_END);
+	succeed_if (ksGetSize(ks) == 7, "wrong size");
+
+	Key *k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == pe, "did not find proc key");
+
+	keySetMeta(se, "override/#0", "/abc");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == p, "did not find proc/abc");
+
+	keySetMeta(s, "namespace/#0", "system");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == y, "did not find system key");
+
+	keySetMeta(s, "namespace/#0", "system");
+	keySetMeta(s, "namespace/#1", "user");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == y, "did not find system key");
+
+	keySetMeta(s, "namespace/#0", "proc");
+	keySetMeta(s, "namespace/#1", "user");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == p, "did not find proc key");
+
+	keySetMeta(s, "override/#0", "proc/first");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == pe, "did not find override key (double indirect)");
 
 	ksDel(ks);
 }
@@ -345,7 +430,8 @@ int main(int argc, char** argv)
 	test_lookupLongChain();
 	test_lookupCascading();
 	test_lookupNamespace();
-	test_lookup();
+	test_lookupIndirect();
+	test_lookupDoubleIndirect();
 
 	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
 			argv[0], nbTest, nbError);
