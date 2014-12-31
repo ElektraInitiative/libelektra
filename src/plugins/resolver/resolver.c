@@ -95,11 +95,20 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 }
 
 
-static void resolverClose (resolverHandle *p)
+static void resolverCloseOne (resolverHandle *p)
 {
 	free (p->filename); p->filename = 0;
 	free (p->dirname); p->dirname= 0;
 	free (p->tempfile); p->tempfile = 0;
+}
+
+static void resolverClose (resolverHandles *p)
+{
+	resolverCloseOne(&p->spec);
+	resolverCloseOne(&p->dir);
+	resolverCloseOne(&p->user);
+	resolverCloseOne(&p->system);
+	free (p);
 }
 
 /**
@@ -291,9 +300,10 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	}
 
 	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverInit (&p->spec, path);
+	resolverInit (&p->dir, path);
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
-	resolverInit (&p->spec, path);
 
 	// system and spec files need to be world-readable, otherwise they are
 	// useless
@@ -302,39 +312,39 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	p->spec.filemode = 0644;
 	p->spec.dirmode = 0755;
 
-	Key *testKey = keyNew("system", KEY_END);
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
+	Key *testKey = keyNew("", KEY_END);
+	keySetName(testKey, "spec");
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
 	{
-		resolverClose(&p->user);
-		resolverClose(&p->system);
-		resolverClose(&p->spec);
-		free (p);
+		resolverClose(p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
+		return -1;
+	}
+	keySetName(testKey, "dir");
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->dir, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve dir key");
 		return -1;
 	}
 
 	keySetName(testKey, "user");
 	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->user, errorKey) == -1)
 	{
-		resolverClose(&p->user);
-		resolverClose(&p->system);
-		resolverClose(&p->spec);
-		free (p);
+		resolverClose(p);
 		keyDel (testKey);
 		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
-	keySetName(testKey, "spec");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
+	keySetName(testKey, "system");
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
 	{
-		resolverClose(&p->user);
-		resolverClose(&p->system);
-		resolverClose(&p->spec);
-		free (p);
+		resolverClose(p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 	keyDel (testKey);
@@ -351,11 +361,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, close)
 
 	if (ps)
 	{
-		resolverClose(&ps->user);
-		resolverClose(&ps->system);
-		resolverClose(&ps->spec);
-
-		free (ps);
+		resolverClose(ps);
 		elektraPluginSetData(handle, 0);
 	}
 
