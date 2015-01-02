@@ -72,7 +72,7 @@ public:
 	/**
 	 * @brief Writes the current backend permanently to storage.
 	 */
-	Q_INVOKABLE void			serialise();
+	Q_INVOKABLE void			serialise(TreeViewModel *model);
 
 	/**
 	 * @brief Returns if the current backend is validated.

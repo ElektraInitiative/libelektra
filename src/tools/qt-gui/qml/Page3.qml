@@ -17,7 +17,7 @@ WizardTemplate {
 		guiBackend.addPath(textField.text)
 
 		if(!error){
-			guiBackend.serialise()
+			guiBackend.serialise(externTreeModel)
 
 			if(!error){
 				wizardLoader.close()

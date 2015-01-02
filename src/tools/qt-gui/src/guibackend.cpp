@@ -110,7 +110,7 @@ void GUIBackend::addPlugin(QString name, TreeViewModel *pluginConfig)
 	}
 }
 
-void GUIBackend::serialise()
+void GUIBackend::serialise(TreeViewModel *model)
 {
 	Key rootKey (Backends::mountpointsPath, KEY_END);
 
@@ -121,6 +121,24 @@ void GUIBackend::serialise()
 	catch(ToolException &ex)
 	{
 		emit showMessage(tr("Error"), tr("Could not serialise backend."), ex.what());
+	}
+
+	m_mountConf.rewind();
+
+	while (m_mountConf.next())
+	{
+		QString currentKey = QString::fromStdString(m_mountConf.current().getName());
+		QStringList keys = currentKey.split("/");
+		QString root = keys.takeFirst();
+
+		if (root == "system")
+		{
+			model->sink(model->model().at(0), keys, "system", m_mountConf.current());
+		}
+		else if (root == "user")
+		{
+			model->sink(model->model().at(1), keys, "user", m_mountConf.current());
+		}
 	}
 
 	try
