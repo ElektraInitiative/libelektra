@@ -67,7 +67,7 @@ do
 		succeed_if "found remaining files $SYSTEM_REMAINING in $SYSTEM_FOLDER"
 	}
 
-	for ROOT in $USER_ROOT $SYSTEM_ROOT
+	for ROOT in $ROOTS
 	do
 		#echo "do preparation for $PLUGIN in $ROOT"
 		$KDB set $ROOT "root" 1>/dev/null

@@ -64,6 +64,12 @@ int elektraNiGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey
 		Key *k = keyNew(0);
 		keySetName (k, Ni_GetName(current, NULL));
 		keySetString (k, Ni_GetValue (current, NULL));
+		Ni_node mcur = NULL;
+		while ((mcur = Ni_GetNextChild(current, mcur)) != NULL)
+		{
+			keySetMeta (k, Ni_GetName(mcur, NULL), Ni_GetValue (mcur, NULL));
+			// printf("set meta %s %s from %s\n", Ni_GetName(mcur, NULL), Ni_GetValue (mcur, NULL), keyName(k));
+		}
 		ksAppendKey (returned, k);
 	}
 
@@ -84,6 +90,13 @@ int elektraNiSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey
 	{
 		Ni_node add = Ni_GetChild(root, keyName(cur), keyGetNameSize(cur)-1, 1, 0);
 		Ni_SetValue (add, keyString(cur), keyGetValueSize(cur)-1);
+		const Key *m;
+		keyRewindMeta(cur);
+		while ((m = keyNextMeta(cur)) != 0)
+		{
+			Ni_node madd = Ni_GetChild(add, keyName(m), keyGetNameSize(m)-1, 1, 0);
+			Ni_SetValue (madd, keyString(m), keyGetValueSize(m)-1);
+		}
 	}
 
 	int error = Ni_WriteFile (root,  keyString(parentKey), 0);

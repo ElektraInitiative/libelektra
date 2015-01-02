@@ -14,35 +14,36 @@ for other activities of the current release.
 initial warnings 22, 93 when no /etc/kdb
 test racing
 
+KEY_CASCADING_NAME/meta data confusion?
 
-## fix relative ##
+document METADATA.ini
 
-plugins should use relative pathes so that import/export/remount works
+## fix broken tests ##
 
-- dump
-- ni
+shell:
+	test resolver (dir, spec)
+	test distribution (nesting+double slash issues)
+
+ctest:
+	test_mountsplit
+	test_splitset
+	order
+	kdb
+
+
+## Backend ##
+
+unserialize
+streaming
 
 ## simplify cmake ##
 
 c++11
 DEFAULT_STORAGE/RESOLVER
 
+# 0.8.12
 
-## powerful cascading ##
-
-make / as logical root
-
-cascading for kdbGet/Set:
-	read in spec and get/set needed subtrees
-
-applications should only need to use:
-kdbGet("/path/to/my/application")
-ksLookup("/path/to/my/application/dir/key")
-	(and even the strings can be avoided by code generation)
-
-defaults are hardcoded (for system without /etc)
-	just for information in spec
-
+better errnostore solution?
 
 ## meta data ##
 
@@ -52,3 +53,10 @@ fix comments:
 fix types:
 	type checker should check like defined in schema
 	let json use same types (double, boolean, nothing for string)
+
+## fix relative ##
+
+plugins should use relative pathes so that import/export/remount works
+
+- dump
+- ni

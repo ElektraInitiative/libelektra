@@ -248,9 +248,6 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 					end=1;
 				else {
 					/* found a sub <key> */
-					if (! keyIsDir(newKey)) {
-						keySetDir(newKey);
-					}
 					/* prepare the context (parent) */
 					consumeKeyNode(ks,newKey->key,reader);
 				}

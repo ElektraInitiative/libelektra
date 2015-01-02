@@ -372,6 +372,7 @@ ssize_t elektraFinalizeEmptyName(Key *key)
  * - @p system/something
  * - @p user/something
  * - @p user:username/something
+ * - @p spec/something
  *
  * The last form has explicitly set the owner, to let the library
  * know in which user folder to save the key. A owner is a user name.
@@ -408,7 +409,6 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		option_t options)
 {
 	size_t length;
-	size_t rootLength, userLength, systemLength, ownerLength;
 	char *p=0;
 
 	if (!key) return -1;
@@ -425,23 +425,19 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		return 0; // we need to return 0 because of specification
 	}
 
-	rootLength=keyNameGetFullRootNameSize(newName)-1;
+	size_t rootLength=keyNameGetFullRootNameSize(newName)-1;
+
 	if (!(options & KEY_CASCADING_NAME) && !rootLength)
 	{
 		return -1;
 	}
-	userLength=sizeof("user")-1;
-	systemLength=sizeof("system")-1;
-	ownerLength=rootLength-userLength;
-	
-	if (ownerLength>0) --ownerLength;
 
-	if ((options & KEY_EMPTY_NAME) &&
+	if ( (options & KEY_EMPTY_NAME) &&
 		(!strcmp(newName, "")))
 	{
 		return elektraFinalizeEmptyName(key);
 	}
-	if ((options & KEY_CASCADING_NAME) &&
+	if ( (options & KEY_CASCADING_NAME) &&
 		(newName[0] == '/'))
 	{
 		if (!strcmp(newName, "/"))
@@ -454,16 +450,48 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		}
 		/* handle cascading key names */
 		rootLength = 1;
+
+		keySetOwner (key, NULL);
 	}
 	else if (options & KEY_META_NAME)
 	{
+		/*
+		if (keyNameIsSpec(newName) || keyNameIsProc(newName) || keyNameIsDir(newName) ||
+					keyNameIsUser(newName) || keyNameIsSystem(newName))
+		{
+			return -1;
+		}
+		*/
 		size_t size = 0;
 		p=keyNameGetOneLevel(newName,&size);
 		rootLength = size+1;
 	}
+	else if (keyNameIsSpec(newName))
+	{
+		const size_t specLength=sizeof("spec")-1;
+		key->keySize+=length;
+		keySetOwner (key, NULL);
+		rootLength  = specLength+1;
+	}
+	else if (keyNameIsProc(newName))
+	{
+		const size_t procLength=sizeof("proc")-1;
+		key->keySize+=length;
+		keySetOwner (key, NULL);
+		rootLength  = procLength+1;
+	}
+	else if (keyNameIsDir(newName))
+	{
+		const size_t dirLength=sizeof("dir")-1;
+		key->keySize+=length;
+		keySetOwner (key, NULL);
+		rootLength  = dirLength+1;
+	}
 	else if (keyNameIsUser(newName))
 	{
-		/* handle "user*" */
+		const size_t userLength=sizeof("user")-1;
+		size_t ownerLength=rootLength-userLength;
+		if (ownerLength>0) --ownerLength;
 		if (length > userLength)
 		{
 			/* handle "user?*" */
@@ -498,20 +526,14 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	}
 	else if (keyNameIsSystem(newName))
 	{
-		/* handle "system*" */
-		if (length > systemLength && *(newName+systemLength)!=KDB_PATH_SEPARATOR)
-		{	/* handle when != "system/ *" */
-			return -1;
-		}
+		const size_t systemLength=sizeof("system")-1;
 		key->keySize+=length;
-
 		keySetOwner (key, NULL);
-
 		rootLength  = systemLength+1;
 	}
 	else
 	{
-		/**Unsupported key name */
+		/** Unsupported key name */
 		return -1;
 	}
 
@@ -658,6 +680,12 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
  * @version 0.8.10
  * Added method to kdbproposal.h
  *
+ * To handle every possible cases (including namespaces) a key can have:
+ * @snippet namespace.c namespace
+ *
+ * To loop over all valid namespaces use:
+ * @snippet namespace.c loop
+ *
  * @note This method might be enhanced. You do not have any guarantee
  * that, when for a specific name #KEY_NS_META
  * is returned today, that it still will be returned after the next
@@ -679,6 +707,9 @@ elektraNamespace keyGetNamespace(const Key *key)
 
 	if (key->key[0] == '/') return KEY_NS_CASCADING;
 
+	if (keyIsSpec (key)) return KEY_NS_SPEC;
+	if (keyIsProc (key)) return KEY_NS_PROC;
+	if (keyIsDir (key)) return KEY_NS_DIR;
 	if (keyIsUser (key)) return KEY_NS_USER;
 	if (keyIsSystem (key)) return KEY_NS_SYSTEM;
 

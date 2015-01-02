@@ -312,7 +312,6 @@ int MountCommand::execute(Cmdline const& cl)
 	}
 
 	processArguments(cl);
-	fixRootKey(cl);
 	getMountpoint(cl);
 	buildBackend(cl);
 	askForConfirmation(cl);

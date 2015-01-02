@@ -60,6 +60,8 @@ typedef struct _resolverHandles resolverHandles;
 
 struct _resolverHandles
 {
+	resolverHandle spec;
+	resolverHandle dir;
 	resolverHandle user;
 	resolverHandle system;
 };

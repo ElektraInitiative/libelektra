@@ -109,7 +109,7 @@ int init(int argc, char** argv);
 	{ \
 		char errorMsg [BUFFER_LENGTH]; \
 		 \
-		strcpy(errorMsg, "key name "); \
+		strcpy(errorMsg, "key value "); \
 		strcat(errorMsg, keyName(smmk1)); \
 		strcat(errorMsg, " is not equal "); \
 		strcat(errorMsg, keyName(smmk2)); \

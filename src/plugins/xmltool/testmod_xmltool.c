@@ -190,7 +190,6 @@ void test_keyset()
 			break;
 			// <key type="string" basename="dir-1-0">
 		case 3:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0") == 0,"name of 3. key not correct");
-			succeed_if (keyIsDir (cur), "Is not directory, but should be");
 			break;
 			// <key type="114" basename="0-294164813" value="0 216245011"><comment>18454108762891828026</comment></key>
 		case 4:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/0-294164813") == 0,"name of 4. key not correct");
@@ -204,7 +203,6 @@ void test_keyset()
 			break;
 			// <key type="string" basename="dir-2-0">
 		case 6:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0") == 0,"name of 3. key not correct");
-			succeed_if (keyIsDir (cur), "Is not directory, but should be");
 			break;
 			// <key type="144" basename="0-215571059" value="0 264857705"><comment>2188631490667217086</comment></key>
 		case 7:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0/0-215571059") == 0,"name of 4. key not correct");

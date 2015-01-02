@@ -467,24 +467,26 @@ ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize)
 }
 
 
-
-/**
- * @internal
- *
- * Check whether a key name is under the @p system namespace or not
- *
- * @return 1 if string begins with @p system , 0 otherwise
- * @param keyName the name of a key
- * @see keyIsSystem(), keyIsUser(), keyNameIsUser()
- * @ingroup keyname
- *
- */
-int keyNameIsSystem(const char *name)
+int keyNameIsSpec(const char *name)
 {
-	if (!strncmp("system",name,sizeof("system")-1)) return 1;
+	if (!strcmp("spec", name) ||
+		!strncmp("spec/",name,sizeof("spec/")-1)) return 1;
 	return 0;
 }
 
+int keyNameIsProc(const char *name)
+{
+	if (!strcmp("proc", name) ||
+		!strncmp("proc/",name,sizeof("proc/")-1)) return 1;
+	return 0;
+}
+
+int keyNameIsDir(const char *name)
+{
+	if (!strcmp("dir", name) ||
+		!strncmp("dir/",name,sizeof("dir/")-1)) return 1;
+	return 0;
+}
 
 /**
  * @internal
@@ -499,7 +501,27 @@ int keyNameIsSystem(const char *name)
  */
 int keyNameIsUser(const char *name)
 {
-	if (!strncmp("user",name,sizeof("user")-1)) return 1;
+	if (!strcmp("user", name) ||
+		!strncmp("user/",name,sizeof("user/")-1) ||
+		!strncmp("user:",name,sizeof("user:")-1)  ) return 1;
+	return 0;
+}
+
+/**
+ * @internal
+ *
+ * Check whether a key name is under the @p system namespace or not
+ *
+ * @return 1 if string begins with @p system , 0 otherwise
+ * @param keyName the name of a key
+ * @see keyIsSystem(), keyIsUser(), keyNameIsUser()
+ * @ingroup keyname
+ *
+ */
+int keyNameIsSystem(const char *name)
+{
+	if (!strcmp("system", name) ||
+		!strncmp("system/",name,sizeof("system/")-1)) return 1;
 	return 0;
 }
 
