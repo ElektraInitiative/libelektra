@@ -9,8 +9,6 @@ BasicWindow {
 	width: Math.ceil(mainWindow.width*0.25)
 	height: Math.ceil(mainWindow.width*0.25)
 
-	property string version: "Version: 0.0.4 (beta)"
-
 	ColumnLayout {
 		anchors.fill: parent
 		spacing: defaultMargins
@@ -27,7 +25,7 @@ BasicWindow {
 					color: activePalette.text
 				}
 				Text {
-					text: version
+					text: "Version: " + version
 					color: activePalette.text
 				}
 			}

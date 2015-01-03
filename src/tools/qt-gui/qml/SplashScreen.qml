@@ -12,7 +12,8 @@ ApplicationWindow {
 	width: splashlogo.implicitWidth + splashTitle.contentWidth + 3*margins
 	height:splashlogo.implicitHeight + spacer.implicitHeight + progressbarLabel.implicitHeight + progressbar.implicitHeight + 3*margins
 
-	property int margins: 16
+	property int	margins: 16
+	property string version: "0.0.4 (beta)"
 
 	SystemPalette {
 		id: activePalette
@@ -42,16 +43,21 @@ ApplicationWindow {
 
 				source: "icons/elektra-logo.png"
 			}
-			Text {
-				id: splashTitle
+			Column {
+				Text {
+					id: splashTitle
 
-				Layout.fillWidth: true
-				anchors.verticalCenter: splashlogo.verticalCenter
-				text: "Elektra Editor"
-				font.weight: Font.Black
-				font.pointSize: 26
-				font.capitalization: Font.SmallCaps
-				color: activePalette.text
+					Layout.fillWidth: true
+					text: "Elektra Editor"
+					font.weight: Font.Black
+					font.pointSize: 26
+					font.capitalization: Font.SmallCaps
+					color: activePalette.text
+				}
+				Label {
+					text: version
+					anchors.right: parent.right
+				}
 			}
 		}
 		Item {
@@ -69,6 +75,7 @@ ApplicationWindow {
 			id: progressbar
 
 			Layout.fillWidth: true
+			implicitHeight: 5
 			maximumValue: 100
 		}
 	}
