@@ -63,7 +63,7 @@ ApplicationWindow {
 		Label {
 			id: progressbarLabel
 
-			text: "Please wait, loading configuration ..."
+			text: qsTr("Please wait, loading configuration ...")
 		}
 		ProgressBar {
 			id: progressbar
