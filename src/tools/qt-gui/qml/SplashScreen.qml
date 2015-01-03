@@ -76,7 +76,9 @@ ApplicationWindow {
 		id: mainLoader
 
 		anchors.fill: parent
-		asynchronous: true
+		//Asynchronous loading destroys the TableView
+		//https://bugreports.qt-project.org/browse/QTBUG-36826
+		asynchronous: false//true
 		visible: status == Loader.Ready
 		onLoaded: close()
 	}

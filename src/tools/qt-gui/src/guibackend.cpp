@@ -250,7 +250,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 		{
 			ptr = modules.load(s);
 		}
-		catch(NoPlugin ex)
+		catch(NoPlugin &ex)
 		{
 			break;
 		}
