@@ -67,12 +67,6 @@ public:
 	Q_INVOKABLE void            populateModel();
 
 	/**
-	 * @brief Populates this TreeViewModel with *an actualised* keyset (calls @see #kdbGet and @see #kdbSet before populating).
-	 */
-
-	Q_INVOKABLE void			repopulateModel();
-
-	/**
 	 * @brief The method that actually populates this TreeViewModel.
 	 *
 	 * @param node The ConfigNode that is supposed to find its place in the hierarchy.

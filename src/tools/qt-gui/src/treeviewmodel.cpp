@@ -183,17 +183,7 @@ int TreeViewModel::getIndexByName(const QString& name) const
 
 void TreeViewModel::importConfiguration(const QString& name, const QString& format, QString& file, const QString& mergeStrategy)
 {
-	collectCurrentKeySet();
-
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Importing the configuration from file failed because the current configuration could not be set.") , QString(e.what()));
-		return;
-	}
+	synchronize();
 
 	file.remove("file://");
 
@@ -263,19 +253,9 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 
 void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString format, QString file)
 {
-	collectCurrentKeySet();
+	synchronize();
 
 	ConfigNodePtr node = model->model().at(index);
-
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Exporting the configuration to file failed because the current configuration could not be set."), QString(e.what()));
-		return;
-	}
 
 	file.remove("file://");
 
@@ -617,7 +597,7 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 	m_keySet.cut(x);
 
-	repopulateModel();
+	populateModel();
 }
 
 void TreeViewModel::refresh()
@@ -702,12 +682,6 @@ QStringList TreeViewModel::mountedBackends()
 		mountedBackends.append("empty");
 
 	return mountedBackends;
-}
-
-void TreeViewModel::repopulateModel()
-{
-	synchronize();
-	populateModel();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
