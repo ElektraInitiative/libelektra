@@ -71,7 +71,6 @@ BasicWindow {
 				onTriggered: {
 					if(mountedBackendsView.model.toString() !== "empty"){
 						treeView.treeModel.unMountBackend(mountedBackendsView.currentItem.text)
-						//treeView.treeModel.synchronize()
 						mountedBackendsView.model = treeView.treeModel.mountedBackends()
 
 						if(mountedBackendsView.model.toString() === "empty")

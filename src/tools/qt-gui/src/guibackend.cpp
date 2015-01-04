@@ -127,17 +127,18 @@ void GUIBackend::serialise(TreeViewModel *model)
 
 	while (m_mountConf.next())
 	{
-		QString currentKey = QString::fromStdString(m_mountConf.current().getName());
+		Key k = m_mountConf.current().dup();
+		QString currentKey = QString::fromStdString(k.getName());
 		QStringList keys = currentKey.split("/");
 		QString root = keys.takeFirst();
 
 		if (root == "system")
 		{
-			model->sink(model->model().at(0), keys, "system", m_mountConf.current());
+			model->sink(model->model().at(0), keys, "system", k);
 		}
 		else if (root == "user")
 		{
-			model->sink(model->model().at(1), keys, "user", m_mountConf.current());
+			model->sink(model->model().at(1), keys, "user", k);
 		}
 	}
 

@@ -74,7 +74,7 @@ public:
 	 * @param path The current path of the ConfigNode.
 	 * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
 	 */
-	void                        sink(ConfigNodePtr node, QStringList keys, QString path, kdb::Key key);
+	void                        sink(ConfigNodePtr node, QStringList keys, QString path, const kdb::Key &key);
 
 	void                        accept(Visitor& visitor);
 
@@ -85,7 +85,7 @@ public:
 	 *
 	 * @return A map of the roles of the ConfigNode at the specified index.
 	 */
-	Q_INVOKABLE QVariantMap     get(int idx) const;
+	Q_INVOKABLE QVariantMap     get(const int &idx) const;
 
 	/**
 	  * @brief Find a search term in the model.
@@ -176,7 +176,7 @@ public:
 	 *
 	 * @param set The new KeySet.
 	 */
-	void                        setKeySet(kdb::KeySet set);
+	void                        setKeySet(const kdb::KeySet &set);
 
 	/**
 	 * @brief Gets this model's current KeySet.
@@ -244,6 +244,8 @@ private:
 	 * @param term The term that is searched for.
 	 */
 	void                        find(ConfigNodePtr node, TreeViewModel* searchResults, const QString term);
+	void						setToKdb();
+	void						getFromKdb();
 
 	QList<ConfigNodePtr>        m_model;
 	kdb::Key                    m_metaModelParent;

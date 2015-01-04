@@ -155,7 +155,6 @@ void ConfigNode::deleteMeta(const QString &name)
 {
 	if(m_key)
 	{
-		//        qDebug() << "ConfigNode::deleteMeta: " << "metakey " << name << " of node " << m_name << " deleted";
 		m_key.delMeta(name.toStdString());
 	}
 }
@@ -213,7 +212,6 @@ void ConfigNode::populateMetaModel()
 
 		while (m_key.nextMeta())
 		{
-			//            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
 			ConfigNodePtr node(new ConfigNode());
 
 			node->setName(QString::fromStdString(m_key.getName()));

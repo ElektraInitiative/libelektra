@@ -239,14 +239,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 		emit showMessage(tr("Error"), tr("Unknown error"), "TreeViewModel::importConfiguration");
 	}
 
-	try
-	{
-		m_kdb.get(m_keySet, "");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(e.what()));
-	}
+	getFromKdb();
 
 	populateModel();
 }
@@ -315,13 +308,9 @@ void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString
 	}
 }
 
-void TreeViewModel::setKeySet(KeySet set)
+void TreeViewModel::setKeySet(const KeySet& set)
 {
-	m_keySet.clear();
-	set.rewind();
-
-	while (set.next())
-		m_keySet.append(Key(set.current().dup()));
+	m_keySet = set;
 }
 
 KeySet TreeViewModel::getKeySet()
@@ -350,7 +339,7 @@ void TreeViewModel::accept(Visitor& visitor)
 	visitor.visit(this);
 }
 
-QVariantMap TreeViewModel::get(int idx) const
+QVariantMap TreeViewModel::get(const int& idx) const
 {
 	QVariantMap map;
 
@@ -471,7 +460,7 @@ void TreeViewModel::insertMetaRow(int row, Key key, const QString &name)
 	}
 }
 
-void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, Key key)
+void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, const Key& key)
 {
 	if (keys.length() == 0)
 		return;
@@ -489,7 +478,7 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, Key
 		ConfigNodePtr newNode;
 
 		if (isLeaf)
-			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), key.dup(), node->getChildren()));
+			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), key, node->getChildren()));
 		else
 			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), NULL, node->getChildren()));
 
@@ -514,24 +503,26 @@ void TreeViewModel::populateModel()
 
 	while (m_keySet.next())
 	{
-		QString currentKey = QString::fromStdString(m_keySet.current().getName());
+		Key k = m_keySet.current().dup();
+		QString currentKey = QString::fromStdString(k.getName());
 		QStringList keys = currentKey.split("/");
 		QString root = keys.takeFirst();
-		++i;
-		emit updateProgress(s*i);
 
 		if (root == "system")
 		{
-			sink(m_model.at(0), keys, "system", m_keySet.current());
+			sink(m_model.at(0), keys, "system", k);
 		}
 		else if (root == "user")
 		{
-			sink(m_model.at(1), keys, "user", m_keySet.current());
+			sink(m_model.at(1), keys, "user", k);
 		}
 		else
 		{
-			qDebug() << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey;
+			cerr << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey.toStdString();
 		}
+
+		++i;
+		emit updateProgress(s*i);
 
 	}
 
@@ -559,25 +550,11 @@ void TreeViewModel::append(ConfigNodePtr node)
 
 void TreeViewModel::synchronize()
 {
-	try
-	{
-		m_kdb.get(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed."), e.what());
-	}
+	getFromKdb();
 
 	collectCurrentKeySet();
 
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed."), e.what());
-	}
+	setToKdb();
 }
 
 void TreeViewModel::clearMetaModel()
@@ -589,15 +566,36 @@ void TreeViewModel::clearMetaModel()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
-	collectCurrentKeySet();
+	getFromKdb();
 
 	const string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
-
 	Key x(keyName, KEY_END);
-
 	m_keySet.cut(x);
 
-	populateModel();
+	TreeViewModel *mountPoint;
+
+	QStringList path = QString::fromStdString(keyName).split("/");
+	path.removeLast();
+
+	ConfigNodePtr node;
+
+	QString root = path.takeFirst();
+
+	if(root == "system")
+		node = m_model.at(0);
+	else if(root == "user")
+		node = m_model.at(1);
+
+	while(path.length() > 0){
+		QString name = path.takeFirst();
+		node = node->getChildByName(name);
+	}
+
+	mountPoint = node->getChildren();
+
+	mountPoint->removeRow(node->getChildIndexByName(backendName));
+
+	setToKdb();
 }
 
 void TreeViewModel::refresh()
@@ -682,6 +680,30 @@ QStringList TreeViewModel::mountedBackends()
 		mountedBackends.append("empty");
 
 	return mountedBackends;
+}
+
+void TreeViewModel::setToKdb()
+{
+	try
+	{
+		m_kdb.set(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Synchronizing failed."), e.what());
+	}
+}
+
+void TreeViewModel::getFromKdb()
+{
+	try
+	{
+		m_kdb.get(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
+	}
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
