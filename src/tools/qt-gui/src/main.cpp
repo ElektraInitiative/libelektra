@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
 	UndoManager manager;
 	kdb::KDB kdb;
 	kdb::KeySet config;
+	kdb::KeySet pluginConfig;
+	GUIBackend backend;
 
 	try
 	{
@@ -41,23 +43,24 @@ int main(int argc, char* argv[])
 	}
 	catch(kdb::KDBException const& e)
 	{
-		qDebug() << QString::fromStdString(e.what());
+		std::cerr << e.what();
 	}
 
-	TreeViewModel* model = new TreeViewModel;
-	model->setKeySet(config);
-	kdb::KeySet pluginConfig;
+	TreeViewModel* treeModel = new TreeViewModel;
+	TreeViewModel* pluginConfigModel = new TreeViewModel;
+
 	pluginConfig.append(kdb::Key("system", KEY_END));
 	pluginConfig.append(kdb::Key("user", KEY_END));
-	TreeViewModel* pluginConfigModel = new TreeViewModel;
-	pluginConfigModel->setKeySet(pluginConfig);
 
-	GUIBackend backend;
+	pluginConfigModel->setKeySet(pluginConfig);
+	treeModel->setKeySet(config);
 
 	ctxt->setContextProperty("undoManager", &manager);
-	ctxt->setContextProperty("externTreeModel", model);
+	ctxt->setContextProperty("externTreeModel", treeModel);
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("pluginConfig", pluginConfigModel);
+
+	QtConcurrent::run(treeModel, &TreeViewModel::populateModel);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/SplashScreen.qml")));
 	//populate model in new thread, else the view is blocked
