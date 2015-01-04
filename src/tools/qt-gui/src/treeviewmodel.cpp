@@ -552,6 +552,7 @@ void TreeViewModel::populateModel()
 		{
 			qDebug() << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey;
 		}
+
 	}
 
 	emit finished();
@@ -578,6 +579,15 @@ void TreeViewModel::append(ConfigNodePtr node)
 
 void TreeViewModel::synchronize()
 {
+	try
+	{
+		m_kdb.get(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Synchronizing failed."), e.what());
+	}
+
 	collectCurrentKeySet();
 
 	try
@@ -696,23 +706,7 @@ QStringList TreeViewModel::mountedBackends()
 
 void TreeViewModel::repopulateModel()
 {
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not write to configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
-	}
-	try
-	{
-		m_kdb.get(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
-	}
-
+	synchronize();
 	populateModel();
 }
 
