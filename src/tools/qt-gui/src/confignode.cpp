@@ -60,7 +60,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 
 ConfigNode::ConfigNode()
 	: m_children(NULL)
-	, m_metaData(new TreeViewModel)
+	, m_metaData(NULL)
 	, m_parentModel(NULL)
 	, m_isExpanded(false)
 {
