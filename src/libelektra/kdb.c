@@ -492,9 +492,16 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	if (ns == KEY_NS_META)
 	{
-		ELEKTRA_SET_ERROR(104, parentKey,
-				"invalid key name passed to kdbGet");
+		ELEKTRA_SET_ERRORF(104, parentKey,
+				"metakey with name \"%s\" passed to kdbGet",
+				keyName(parentKey));
 		return -1;
+	}
+
+	if (ns == KEY_NS_EMPTY)
+	{
+		ELEKTRA_ADD_WARNING(105, parentKey,
+				"invalid key name passed to kdbGet");
 	}
 
 	Key *initialParent = keyDup (parentKey);
@@ -807,9 +814,16 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	if (ns == KEY_NS_META)
 	{
-		ELEKTRA_SET_ERROR(104, parentKey,
-				"invalid key name passed to kdbSet");
+		ELEKTRA_SET_ERRORF(104, parentKey,
+				"metakey with name \"%s\" passed to kdbSet",
+				keyName(parentKey));
 		return -1;
+	}
+
+	if (ns == KEY_NS_EMPTY)
+	{
+		ELEKTRA_ADD_WARNING(105, parentKey,
+				"invalid key name passed to kdbSet");
 	}
 
 	if(!handle || !ks)
