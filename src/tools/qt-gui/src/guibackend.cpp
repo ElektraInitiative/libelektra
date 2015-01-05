@@ -144,6 +144,7 @@ void GUIBackend::serialise(TreeViewModel *model)
 
 	try
 	{
+		m_kdb.get(m_mountConf, rootKey);
 		m_kdb.set(m_mountConf, rootKey);
 	}
 	catch (kdb::KDBException const& ex)
