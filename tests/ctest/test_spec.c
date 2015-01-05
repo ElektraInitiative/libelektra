@@ -414,6 +414,70 @@ static void test_lookupDoubleIndirect()
 	ksDel(ks);
 }
 
+static void test_lookupDoubleIndirectDefault()
+{
+	printf ("Test lookup by double indirect spec with default\n");
+
+	Key *s;
+	Key *p;
+	Key *u;
+	Key *y;
+	Key *se;
+	Key *pe;
+	KeySet *ks= ksNew(20,
+		se = keyNew("spec/first", KEY_END),
+		pe = keyNew("proc/first", KEY_END),
+		s = keyNew("spec/abc", KEY_END),
+		p = keyNew("proc/abc", KEY_END),
+		u = keyNew("user/abc", KEY_END),
+		y = keyNew("system/abc", KEY_END),
+		KS_END);
+	succeed_if (ksGetSize(ks) == 6, "wrong size");
+	keySetMeta(se, "default", "default is ok");
+	keySetMeta(s, "default", "default is NOT ok");
+
+	Key *k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == pe, "did not find proc key");
+
+	keySetMeta(se, "namespace/#0", "system");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if_same_string (keyString(k), "default is ok");
+
+	keySetMeta(se, "override/#0", "/abc");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == p, "did not find proc/abc");
+
+	keySetMeta(s, "namespace/#0", "system");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == y, "did not find system key");
+
+	keySetMeta(s, "namespace/#0", "system");
+	keySetMeta(s, "namespace/#1", "user");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == y, "did not find system key");
+
+	keySetMeta(s, "namespace/#0", "proc");
+	keySetMeta(s, "namespace/#1", "user");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == p, "did not find proc key");
+
+	keySetMeta(s, "namespace/#0", "dir");
+	keySetMeta(s, "namespace/#1", 0);
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if_same_string (keyString(k), "default is ok");
+
+	keySetMeta(s, "override/#0", "proc/first");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if (k == pe, "did not find override key (double indirect)");
+
+	keySetMeta(s, "override/#0", "dir/first");
+	k = ksLookupByName(ks, "/first", 0);
+	succeed_if_same_string (keyString(k), "default is ok");
+
+	ksDel(ks);
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -432,6 +496,7 @@ int main(int argc, char** argv)
 	test_lookupNamespace();
 	test_lookupIndirect();
 	test_lookupDoubleIndirect();
+	test_lookupDoubleIndirectDefault();
 
 	printf("\n%s RESULTS: %d test(s) done. %d error(s).\n",
 			argv[0], nbTest, nbError);
