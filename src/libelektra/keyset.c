@@ -223,7 +223,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 
 	}
 
-	ksRewind(keyset);
+	ksRewind(keyset); // ksAppendKey changed the internal cursor
 
 	return keyset;
 }
@@ -380,29 +380,18 @@ int ksDel(KeySet *ks)
  * @param ks the keyset object to work with
  * @see ksAppendKey() for details on how keys are inserted in KeySets
  * @return 0 on sucess
- * @return -1 on failure
+ * @return -1 on failure (memory)
  */
 int ksClear(KeySet *ks)
 {
 	ksClose (ks);
+	// ks->array empty now
 
-	if (ks->array)
-	{	/* go back to standard size KEYSET_SIZE */
-		if (elektraRealloc ((void**) &ks->array, sizeof(struct _Key *) * KEYSET_SIZE) == -1)
-		{
-			/*errno = KDB_ERR_NOMEM;*/
-			elektraFree (ks->array);
-			ks->array = 0;
-			ks->size = 0;
-			return -1;
-		}
-	} else {
-		if ((ks->array = elektraMalloc (sizeof(struct _Key *) * KEYSET_SIZE)) == 0)
-		{
-			/*errno = KDB_ERR_NOMEM;*/
-			ks->size = 0;
-			return -1;
-		}
+	if ((ks->array = elektraMalloc (sizeof(struct _Key *) * KEYSET_SIZE)) == 0)
+	{
+		/*errno = KDB_ERR_NOMEM;*/
+		ks->size = 0;
+		return -1;
 	}
 	ks->alloc = KEYSET_SIZE;
 
@@ -1651,7 +1640,7 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 				KEY_END);
 		else elektraKeySetName(k, keyString(m),
 				KEY_CASCADING_NAME);
-		ret=ksLookup(ks, k, 0);
+		ret=ksLookup(ks, k, KDB_O_NODEFAULT);
 		if (ret) break;
 		++i;
 	} while(m);
@@ -1706,7 +1695,7 @@ static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer
 	m = keyGetMeta(specKey, buffer);
 	// no namespaces specified, so do a default cascading lookup
 	// (obviously w/o spec)
-	if (!m) return elektraLookupByCascading(ks, specKey, KDB_O_NOSPEC);
+	if (!m) return elektraLookupByCascading(ks, specKey, KDB_O_NOSPEC | KDB_O_NODEFAULT);
 
 	// store old name of specKey
 	char * name = specKey->key;
@@ -1745,7 +1734,7 @@ static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer
  * @internal
  * @brief Helper for ksLookup
  */
-static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
+static Key *elektraLookupBySpec(KeySet *ks, Key *specKey, option_t options)
 {
 	Key *ret = 0;
 	// strip away beginning of specKey
@@ -1771,7 +1760,10 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey)
 	ret = elektraLookupBySpecLinks(ks, specKey, buffer);
 	if (ret) goto finished;
 
-	ret = elektraLookupBySpecDefault(ks, specKey);
+	if (!(options & KDB_O_NODEFAULT))
+	{
+		ret = elektraLookupBySpecDefault(ks, specKey);
+	}
 
 finished:
 	specKey->key = name;
@@ -1814,7 +1806,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 
 		// we found a spec key, so we know what to do
 		specKey = keyDup(specKey);
-		found = elektraLookupBySpec(ks, specKey);
+		found = elektraLookupBySpec(ks, specKey, options);
 		keyDel(specKey);
 		return found;
 	}
@@ -2066,7 +2058,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	{
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
-		ret = elektraLookupBySpec(ks, lookupKey);
+		ret = elektraLookupBySpec(ks, lookupKey, options & ~KDB_O_DEL);
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
 	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')

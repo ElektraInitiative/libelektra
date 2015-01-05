@@ -204,35 +204,35 @@ void Plugin::check(vector<string> & warnings)
 	if (plugin->kdbOpen)
 	{
 		if (symbols.find("open") == symbols.end()) warnings.push_back ("no open symbol exported");
-		else if (symbols["open"] != (func_t) plugin->kdbOpen) throw SymbolMismatch ("open");
+		else if (symbols["open"] != reinterpret_cast<func_t>(plugin->kdbOpen)) throw SymbolMismatch ("open");
 		ret = checkDups.insert(symbols["open"]);
 		if (!ret.second) throw SymbolDuplicate("open");
 	}
 	if (plugin->kdbClose)
 	{
 		if (symbols.find("close") == symbols.end()) warnings.push_back ("no close symbol exported");
-		else if (symbols["close"] != (func_t) plugin->kdbClose) throw SymbolMismatch ("close");
+		else if (symbols["close"] != reinterpret_cast<func_t>(plugin->kdbClose)) throw SymbolMismatch ("close");
 		ret = checkDups.insert(symbols["close"]);
 		if (!ret.second) throw SymbolDuplicate("close");
 	}
 	if (plugin->kdbGet)
 	{
 		if (symbols.find("get") == symbols.end()) warnings.push_back ("no get symbol exported");
-		else if (symbols["get"] != (func_t) plugin->kdbGet) throw SymbolMismatch ("get");
+		else if (symbols["get"] != reinterpret_cast<func_t>(plugin->kdbGet)) throw SymbolMismatch ("get");
 		ret = checkDups.insert(symbols["get"]);
 		if (!ret.second) throw SymbolDuplicate("get");
 	}
 	if (plugin->kdbSet)
 	{
 		if (symbols.find("set") == symbols.end()) warnings.push_back ("no set symbol exported");
-		else if (symbols["set"] != (func_t) plugin->kdbSet) throw SymbolMismatch ("set");
+		else if (symbols["set"] != reinterpret_cast<func_t>(plugin->kdbSet)) throw SymbolMismatch ("set");
 		ret = checkDups.insert(symbols["set"]);
 		if (!ret.second) throw SymbolDuplicate("set");
 	}
 	if (plugin->kdbError)
 	{
 		if (symbols.find("error") == symbols.end()) warnings.push_back ("no error symbol exported");
-		else if (symbols["error"] != (func_t) plugin->kdbError) throw SymbolMismatch ("error");
+		else if (symbols["error"] != reinterpret_cast<func_t>(plugin->kdbError)) throw SymbolMismatch ("error");
 		ret = checkDups.insert(symbols["error"]);
 		if (!ret.second) throw SymbolDuplicate("error");
 	}

@@ -157,7 +157,7 @@ void Backend::checkFile (std::string file) const
 	{
 		try {
 			checkFileFunction =
-				(checkFilePtr) plugins[i]->getSymbol("checkfile");
+				reinterpret_cast<checkFilePtr>(plugins[i]->getSymbol("checkfile"));
 			break;
 		}
 		catch(MissingSymbol ms)
