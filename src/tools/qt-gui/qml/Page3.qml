@@ -31,6 +31,7 @@ WizardTemplate {
 	}
 	buttonVisible: true
 	fileDialog.onAccepted: textField.text = fileDialog.fileUrl.toString().replace("file://", "")
+	textField.onAccepted: buttonRow.finishButton.action.trigger()
 }
 
 
