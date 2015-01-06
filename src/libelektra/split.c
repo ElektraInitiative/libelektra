@@ -219,9 +219,10 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
 
 
 /**
- * Walks through the trie and adds all backends below parentKey.
+ * Walks through kdb->split and adds all backends below parentKey to split.
  *
  * Sets syncbits to 2 if it is a default or root backend (which needs splitting).
+ * The information is copied from kdb->split.
  *
  * @pre split needs to be empty, directly after creation with elektraSplitNew().
  *
@@ -231,7 +232,7 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
  * @pre parentKey must be a valid key! (could be implemented more generally,
  *      but that would require splitting up of keysets of the same backend)
  *
- * @param split the split object to work with
+ * @param split will get all backends appended
  * @param kdb the handle to get information about backends
  * @param parentKey the information below which key the backends are from interest
  * @ingroup split
