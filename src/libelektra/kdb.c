@@ -834,38 +834,6 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	Key *initialParent = keyDup(parentKey);
 
-	if (ns == KEY_NS_CASCADING)
-	{
-		// TODO: does not guarantee atomic commit
-		keySetName(parentKey, "user");
-		keyAddName(parentKey, keyName(initialParent));
-		if (kdbSet(handle, ks, parentKey) == -1)
-		{
-			elektraKeySetName(parentKey,
-					keyName(initialParent),
-					KEY_CASCADING_NAME);
-			keyDel(initialParent);
-			return -1;
-		}
-
-		keySetName(parentKey, "system");
-		keyAddName(parentKey, keyName(initialParent));
-		if (kdbSet(handle, ks, parentKey) == -1)
-		{
-			elektraKeySetName(parentKey,
-					keyName(initialParent),
-					KEY_CASCADING_NAME);
-			keyDel(initialParent);
-			return -1;
-		}
-
-		elektraKeySetName(parentKey,
-				keyName(initialParent),
-				KEY_CASCADING_NAME);
-		keyDel(initialParent);
-		return 1;
-	}
-
 #if DEBUG && VERBOSE
 	fprintf(stderr, "now in new kdbSet (%s)\n", keyName(parentKey));
 #endif
