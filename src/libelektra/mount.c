@@ -288,19 +288,21 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 	{
 		/* Root backend */
 		backend->refcounter = 0;
-		for (elektraNamespace ns=KEY_NS_LAST; ns>=KEY_NS_FIRST; --ns) // TODO: inverted for unit tests
+		for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
 		{
 		switch (ns)
 		{
+		case KEY_NS_SPEC:
+			sprintf(mountpoint, "spec%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("dir", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+			break;
 		case KEY_NS_DIR:
-#if 0
-			// disabled because unit tests would break and
-			// resolver functionality is missing anyway.
 			sprintf(mountpoint, "dir%s", keyName(backend->mountpoint));
 			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
 			elektraSplitAppend(kdb->split, backend, keyNew("dir", KEY_VALUE, "root", KEY_END), 2);
 			++backend->refcounter;
-#endif
 			break;
 		case KEY_NS_USER:
 			sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
@@ -314,7 +316,6 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 			elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
 			++backend->refcounter;
 			break;
-		case KEY_NS_SPEC: // spec is excluded from cascading mountpoints
 		case KEY_NS_PROC:
 		case KEY_NS_EMPTY:
 		case KEY_NS_NONE:
