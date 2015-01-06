@@ -241,8 +241,10 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 {
 	/* For compatibility reasons invalid names are accepted, too.
 	 * This solution is faster than checking the name of parentKey
-	 * every time in loop. */
-	if (!strcmp(keyName(parentKey), "") || !strcmp(keyName(parentKey), "/"))
+	 * every time in loop.
+	 * The parentKey might be null in some unit tests, so also check
+	 * for this. */
+	if (!parentKey || !strcmp(keyName(parentKey), "") || !strcmp(keyName(parentKey), "/"))
 	{
 		parentKey = 0;
 	}
