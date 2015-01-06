@@ -153,7 +153,6 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 	switch (ns)
 	{
 	case KEY_NS_SPEC:
-		// TODO: disabled
 		key = keyNew ("spec", KEY_VALUE, "default", KEY_END);
 		backend = elektraMountGetBackend(kdb, key);
 		if (backend != kdb->defaultBackend)
@@ -164,8 +163,8 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 			/* User is reachable, so append that to split */
 			elektraSplitAppend(kdb->split, backend, key, 2);
 		}
+		break;
 	case KEY_NS_DIR:
-		// TODO: disabled
 		key = keyNew ("dir", KEY_VALUE, "default", KEY_END);
 		backend = elektraMountGetBackend(kdb, key);
 		if (backend != kdb->defaultBackend)
