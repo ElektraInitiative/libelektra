@@ -1,9 +1,6 @@
-#include <tests.h>
+#include <tests_internal.h>
 
 #define NAME_SIZE 250
-
-// allocation is a public api but it is a implementation detail how it
-// actually will resize
 
 static void test_ksResize()
 {
@@ -83,8 +80,7 @@ static void test_ksResize()
 
 	ksCopy (copy, ks);
 	succeed_if(ksGetSize(copy) == 102, "Problem copy keyset with 102 keys");
-	printf ("%d\n", ksGetAlloc(copy));
-	succeed_if(ksGetAlloc(copy) == 128, "alloc of copy size wrong");
+	succeed_if(ksGetAlloc(copy) == 127, "alloc of copy size wrong");
 
 	compare_keyset(copy, ks);
 
@@ -92,7 +88,7 @@ static void test_ksResize()
 	ksCopy (copy, ks);
 
 	succeed_if(ksGetSize(copy) == 102, "Problem copy keyset with 102 keys");
-	succeed_if(ksGetAlloc(copy) == 128, "alloc of copy size wrong");
+	succeed_if(ksGetAlloc(copy) == 127, "alloc of copy size wrong");
 	compare_keyset(copy, ks);
 
 	ksDel (copy);
@@ -108,7 +104,7 @@ int main(int argc, char** argv)
 
 	test_ksResize();
 
-	printf("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntest_size RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
