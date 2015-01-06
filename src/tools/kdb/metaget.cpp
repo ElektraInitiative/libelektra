@@ -34,6 +34,12 @@ int MetaGetCommand::execute (Cmdline const& cl)
 		return 1;
 	}
 
+	if (!k.getMeta<const Key>(metaname))
+	{
+		cerr << "Metakey not found" << endl;
+		return 2;
+	}
+
 	cout << k.getMeta<string>(metaname);
 	
 	if (!cl.noNewline)
