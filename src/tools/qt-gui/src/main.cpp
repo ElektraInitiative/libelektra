@@ -60,10 +60,12 @@ int main(int argc, char* argv[])
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("pluginConfig", pluginConfigModel);
 
-	engine.load(QUrl(QStringLiteral("qrc:/qml/SplashScreen.qml")));
+	treeModel->populateModel();
+
+	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
 	//populate model in new thread, else the view is blocked
-	QtConcurrent::run(treeModel, &TreeViewModel::populateModel);
+//	QtConcurrent::run(treeModel, &TreeViewModel::populateModel);
 
 	return app.exec();
 }

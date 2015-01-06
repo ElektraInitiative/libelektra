@@ -249,7 +249,6 @@ private:
 
 	QList<ConfigNodePtr>        m_model;
 	kdb::Key                    m_metaModelParent;
-	kdb::KDB                    m_kdb;
 	kdb::KeySet                 m_keySet;
 
 protected:
@@ -257,9 +256,7 @@ protected:
 
 signals:
 	void						showMessage(QString title, QString text, QString detailedText) const;
-	void						updateProgress(int value) const;
 	void						expandNode(bool);
-	void						finished() const;
 
 public slots:
 	void						showConfigNodeMessage(QString title, QString text, QString detailedText);

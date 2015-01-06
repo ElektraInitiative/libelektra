@@ -498,9 +498,6 @@ void TreeViewModel::populateModel()
 
 	m_keySet.rewind();
 
-	int i = 0;
-	double s = 100/(double) m_keySet.size();
-
 	while (m_keySet.next())
 	{
 		Key k = m_keySet.current().dup();
@@ -520,13 +517,7 @@ void TreeViewModel::populateModel()
 		{
 			cerr << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey.toStdString();
 		}
-
-		++i;
-		emit updateProgress(s*i);
-
 	}
-
-	emit finished();
 }
 
 Key TreeViewModel::createNewKey(const QString& path, const QString& value, const QVariantMap metaData)
@@ -684,9 +675,11 @@ QStringList TreeViewModel::mountedBackends()
 
 void TreeViewModel::setToKdb()
 {
+	KDB kdb;
+
 	try
 	{
-		m_kdb.set(m_keySet, "/");
+		kdb.set(m_keySet, "/");
 	}
 	catch (KDBException const& e)
 	{
@@ -696,9 +689,11 @@ void TreeViewModel::setToKdb()
 
 void TreeViewModel::getFromKdb()
 {
+	KDB kdb;
+
 	try
 	{
-		m_kdb.get(m_keySet, "/");
+		kdb.get(m_keySet, "/");
 	}
 	catch (KDBException const& e)
 	{
