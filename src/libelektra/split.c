@@ -261,10 +261,27 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 			/* this backend is completely below the parentKey, so lets add it. */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
-		else if (parentKey == 0)
+		else
 		{
-			/* We want every backend. */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
+			/* Decide if parentKey is a catch all (adding every backend) */
+			switch (keyGetNamespace(parentKey))
+			{
+			case KEY_NS_CASCADING:
+				/* cascading only if its / */
+				if (strcmp(keyName(parentKey), "/")) break;
+			case KEY_NS_NONE:
+				/* Seems to be impossible already */
+			case KEY_NS_EMPTY:
+				/* For compatibility reasons */
+				elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
+			case KEY_NS_SPEC:
+			case KEY_NS_DIR:
+			case KEY_NS_USER:
+			case KEY_NS_SYSTEM:
+			case KEY_NS_PROC:
+			case KEY_NS_META:
+				break;
+			}
 		}
 	}
 
