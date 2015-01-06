@@ -419,7 +419,7 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  * @retval 0 invalid namespace for kdbGet(), no action required
  * @retval 1 valid namespace for kdbGet()
  */
-static int elektraKeySetNamespaceName(Key *parentKey, elektraNamespace ns)
+static int elektraKeySetNameByNamespace(Key *parentKey, elektraNamespace ns)
 {
 	switch (ns)
 	{
@@ -548,7 +548,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	{
 		for (elektraNamespace ins=KEY_NS_FIRST; ins<=KEY_NS_LAST; ++ins)
 		{
-			if (!elektraKeySetNamespaceName(parentKey, ins)) continue;
+			if (!elektraKeySetNameByNamespace(parentKey, ins)) continue;
 			keyAddName(parentKey, keyName(initialParent));
 			if (kdbGet(handle, ks, parentKey) == -1)
 			{
