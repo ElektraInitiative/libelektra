@@ -40,6 +40,8 @@ ApplicationWindow {
 	property bool   isPasted
 	property bool	error: false
 
+	property string version: "0.0.4 (beta)"
+
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
 	property int    defaultSpacing: defaultMargins*0.5

@@ -239,7 +239,16 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 		emit showMessage(tr("Error"), tr("Unknown error"), "TreeViewModel::importConfiguration");
 	}
 
-	getFromKdb();
+	KDB kdb;
+
+	try
+	{
+		kdb.get(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
+	}
 
 	populateModel();
 }
@@ -498,9 +507,6 @@ void TreeViewModel::populateModel()
 
 	m_keySet.rewind();
 
-	int i = 0;
-	double s = 100/(double) m_keySet.size();
-
 	while (m_keySet.next())
 	{
 		Key k = m_keySet.current().dup();
@@ -520,13 +526,7 @@ void TreeViewModel::populateModel()
 		{
 			cerr << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey.toStdString();
 		}
-
-		++i;
-		emit updateProgress(s*i);
-
 	}
-
-	emit finished();
 }
 
 Key TreeViewModel::createNewKey(const QString& path, const QString& value, const QVariantMap metaData)
@@ -550,11 +550,27 @@ void TreeViewModel::append(ConfigNodePtr node)
 
 void TreeViewModel::synchronize()
 {
-	getFromKdb();
+	KDB kdb;
+
+	try
+	{
+		kdb.get(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
+	}
 
 	collectCurrentKeySet();
 
-	setToKdb();
+	try
+	{
+		kdb.set(m_keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not write to configuration."), e.what());
+	}
 }
 
 void TreeViewModel::clearMetaModel()
@@ -566,8 +582,6 @@ void TreeViewModel::clearMetaModel()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
-	getFromKdb();
-
 	const string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
 	Key x(keyName, KEY_END);
 	m_keySet.cut(x);
@@ -595,7 +609,7 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 	mountPoint->removeRow(node->getChildIndexByName(backendName));
 
-	setToKdb();
+	synchronize();
 }
 
 void TreeViewModel::refresh()
@@ -682,29 +696,33 @@ QStringList TreeViewModel::mountedBackends()
 	return mountedBackends;
 }
 
-void TreeViewModel::setToKdb()
-{
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed."), e.what());
-	}
-}
+//void TreeViewModel::setToKdb()
+//{
+//	KDB kdb;
 
-void TreeViewModel::getFromKdb()
-{
-	try
-	{
-		m_kdb.get(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
-	}
-}
+//	try
+//	{
+//		kdb.set(m_keySet, "/");
+//	}
+//	catch (KDBException const& e)
+//	{
+//		emit showMessage(tr("Error"), tr("Could not write to configuration."), e.what());
+//	}
+//}
+
+//void TreeViewModel::getFromKdb()
+//{
+//	KDB kdb;
+
+//	try
+//	{
+//		kdb.get(m_keySet, "/");
+//	}
+//	catch (KDBException const& e)
+//	{
+//		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
+//	}
+//}
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
