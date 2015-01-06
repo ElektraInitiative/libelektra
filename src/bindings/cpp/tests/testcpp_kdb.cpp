@@ -4,48 +4,52 @@ void test_kdbGetSet()
 {
 	cout << "testing kdbSet() and kdbGet()" << endl;
 
-	KeySet ks_set (5,
-		*Key ("user/tests/key3", KEY_DIR, KEY_END),
-		*Key ("user/tests/key3/1", KEY_END),
-		*Key ("user/tests/key3/2", KEY_END),
-		*Key ("user/tests/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
-	KDB kdb;
-	kdb.set (ks_set, Key("user/tests/key3", KEY_END));
-
-	/*
-	Key nonexist ("user/this/key/shuld/really/not/exist",KEY_END);
-	bool ok = false;
-	try {
-		kdb.get (nonexist);
-	} catch (KDBException) {
-		ok = true;
+	{
+		KeySet ks_set (5,
+			*Key ("user/tests/key3", KEY_DIR, KEY_END),
+			*Key ("user/tests/key3/1", KEY_END),
+			*Key ("user/tests/key3/2", KEY_END),
+			*Key ("user/tests/key3/3", KEY_VALUE, "value", KEY_END),
+			KS_END);
+		KeySet ks;
+		KDB kdb;
+		kdb.get (ks, "user/tests/key3");
+		ks.append(ks_set);
+		kdb.set (ks, "user/tests/key3");
 	}
-	succeed_if (ok, "get did not throw KDBException");
-	*/
 
-	KeySet ks_get;
-	kdb.get (ks_get, Key("user/tests/key3", KEY_END));
-	// ks_get.toStream();
-	// ks_set.generate();
-	
-	// now remove keys
-	kdb.set (ks_set, Key("user/tests", KEY_END), KDB_O_REMOVEONLY);
+	// check if they were written
+	{
+		KDB kdb;
+		KeySet ks;
+		kdb.get (ks, "user/tests/key3");
+		exit_if_fail(ks.lookup("user/tests/key3/3"), "could not find previously written key");
+		succeed_if(ks.lookup("user/tests/key3/3").get<std::string>() == "value", "could not get value");
+	}
+
+	// now remove keys (cleanup)
+	{
+		KeySet ks;
+		KDB kdb;
+		kdb.get (ks, "user/tests/key3");
+		ks.cut(Key("user/tests/key3", KEY_END));
+		kdb.set (ks, "user/tests/key3");
+	}
+
+	// check if its gone now
+	{
+		KDB kdb;
+		KeySet ks;
+		kdb.get (ks, "user/tests/key3");
+		succeed_if(!ks.lookup("user/tests/key3/3"), "key was not removed");
+	}
+
 }
-
-#include <cstdlib>
 
 int main()
 {
 	cout << "KDB CLASS TESTS" << endl;
 	cout << "==================" << endl << endl;
-
-#ifdef HAVE_CLEARENV
-	clearenv();
-#endif
-#ifdef HAVE_SETENV
-	setenv ("KDB_HOME",".",1);
-#endif
 
 	test_kdbGetSet();
 
