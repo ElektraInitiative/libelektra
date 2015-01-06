@@ -102,9 +102,4 @@ then
 	fi
 fi
 
-
-
-
-
-
 end_script

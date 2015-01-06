@@ -1157,6 +1157,8 @@ static void test_realworld()
 	ksDel (split3);
 	ksDel (split4);
 	ksDel (split7);
+	ksDel (splitX);
+	ksDel (splitY);
 	keyDel (parent);
 	kdb_close(handle);
 
