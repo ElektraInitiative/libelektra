@@ -239,8 +239,10 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
  */
 int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 {
-
-	if (!parentKey || !strcmp(keyName(parentKey), ""))
+	/* For compatibility reasons invalid names are accepted, too.
+	 * This solution is faster than checking the name of parentKey
+	 * every time in loop. */
+	if (!strcmp(keyName(parentKey), "") || !strcmp(keyName(parentKey), "/"))
 	{
 		parentKey = 0;
 	}
@@ -251,7 +253,12 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 
 	for (size_t i=0; i < kdb->split->size; ++i)
 	{
-		if (backend == kdb->split->handles[i] && keyRel(kdb->split->parents[i], parentKey) >= 0)
+		if (!parentKey)
+		{
+			/* Catch all: add all mountpoints */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
+		}
+		else if (backend == kdb->split->handles[i] && keyRel(kdb->split->parents[i], parentKey) >= 0)
 		{
 			/* parentKey is exactly in this backend, so add it! */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
@@ -260,28 +267,6 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 		{
 			/* this backend is completely below the parentKey, so lets add it. */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
-		}
-		else
-		{
-			/* Decide if parentKey is a catch all (adding every backend) */
-			switch (keyGetNamespace(parentKey))
-			{
-			case KEY_NS_CASCADING:
-				/* cascading only if its / */
-				if (strcmp(keyName(parentKey), "/")) break;
-			case KEY_NS_NONE:
-				/* Seems to be impossible already */
-			case KEY_NS_EMPTY:
-				/* For compatibility reasons */
-				elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
-			case KEY_NS_SPEC:
-			case KEY_NS_DIR:
-			case KEY_NS_USER:
-			case KEY_NS_SYSTEM:
-			case KEY_NS_PROC:
-			case KEY_NS_META:
-				break;
-			}
 		}
 	}
 
