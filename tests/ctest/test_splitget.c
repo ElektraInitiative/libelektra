@@ -464,9 +464,9 @@ static void test_triesizes()
 	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
-	split->syncbits[0] = 3; /* Simulate a kdbGet() */
-	split->syncbits[1] = 3; /* Simulate a kdbGet() */
-	split->syncbits[2] = 1; /* Simulate a kdbGet() */
+	split->syncbits[2] = 3; /* Simulate a kdbGet() */
+	split->syncbits[4] = 3; /* Simulate a kdbGet() */
+	split->syncbits[5] = 1; /* Simulate a kdbGet() */
 
 	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
 	succeed_if (output_error(parentKey), "error found");
@@ -481,13 +481,15 @@ static void test_triesizes()
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 
-	succeed_if (split->size == 8, "not correct size after appointing"); // TODO check
-	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
-	succeed_if (ksGetSize(split->keysets[2]) == 2, "wrong size");
-	compare_key(split->parents[2], mp);
-	succeed_if (split->handles[0] == rootBackend, "should be user backend");
+	succeed_if (split->size == 7, "not correct size after appointing");
+	succeed_if (ksGetSize(split->keysets[2]) == 3, "wrong size");
+	succeed_if (ksGetSize(split->keysets[4]) == 2, "wrong size");
+	compare_key(split->parents[4], mp);
+	succeed_if (split->handles[0] == rootBackend, "should be root backend");
 	succeed_if (split->handles[1] == rootBackend, "should be root backend");
-	succeed_if (split->handles[2] == backend, "should be root backend");
+	succeed_if (split->handles[2] == rootBackend, "should be root backend");
+	succeed_if (split->handles[3] == rootBackend, "should be root backend");
+	succeed_if (split->handles[4] == backend, "should be mountedbackend");
 
 
 	elektraSplitDel (split);
@@ -545,9 +547,9 @@ static void test_merge()
 	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
-	split->syncbits[0] = 3; /* Simulate a kdbGet() */
-	split->syncbits[1] = 3; /* Simulate a kdbGet() */
-	split->syncbits[2] = 1; /* Simulate a kdbGet() */
+	split->syncbits[2] = 3; /* Simulate a kdbGet() */
+	split->syncbits[4] = 3; /* Simulate a kdbGet() */
+	split->syncbits[5] = 1; /* Simulate a kdbGet() */
 
 	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
 	succeed_if (output_error(parentKey), "error found");
@@ -562,13 +564,15 @@ static void test_merge()
 	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 
-	succeed_if (split->size == 8, "not correct size after appointing"); // TODO check
-	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
-	succeed_if (ksGetSize(split->keysets[2]) == 2, "wrong size");
-	compare_key(split->parents[2], mp);
-	succeed_if (split->handles[0] == rootBackend, "should be user backend");
+	succeed_if (split->size == 7, "not correct size after appointing");
+	succeed_if (ksGetSize(split->keysets[2]) == 3, "wrong size");
+	succeed_if (ksGetSize(split->keysets[4]) == 2, "wrong size");
+	compare_key(split->parents[4], mp);
+	succeed_if (split->handles[0] == rootBackend, "should be root backend");
 	succeed_if (split->handles[1] == rootBackend, "should be root backend");
-	succeed_if (split->handles[2] == backend, "should be root backend");
+	succeed_if (split->handles[2] == rootBackend, "should be root backend");
+	succeed_if (split->handles[3] == rootBackend, "should be root backend");
+	succeed_if (split->handles[4] == backend, "should be backend");
 
 	KeySet *nks = ksNew(0, KS_END);
 	succeed_if (elektraSplitMerge (split, nks) == 1, "could not merge together keysets");
@@ -635,17 +639,17 @@ static void test_realworld()
 		keyNew ("system/hosts/mobilebyte", KEY_END),
 		keyNew ("system/hosts/n900", KEY_END),
 		KS_END);
-	KeySet *split6 = ksNew ( 3, 
+	KeySet *split7 = ksNew ( 3, 
 		keyNew ("user/outside", KEY_VALUE, "test", KEY_END),
 		KS_END);
-	KeySet *split7 = ksNew ( 9,
+	KeySet *split9 = ksNew ( 9,
 		keyNew ("system/users", KEY_END),
 		keyNew ("system/users/markus", KEY_END),
 		keyNew ("system/users/harald", KEY_END),
 		keyNew ("system/users/n", KEY_END),
 		keyNew ("system/users/albert", KEY_END),
 		KS_END);
-	KeySet *split8 = ksNew ( 9,
+	KeySet *split10 = ksNew ( 9,
 		keyNew ("system/elektra/mountpoints", KEY_END),
 		keyNew ("system/elektra/mountpoints/new", KEY_END),
 		keyNew ("system/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END),
@@ -658,7 +662,7 @@ static void test_realworld()
 	succeed_if (output_error(parent), "error found");
 	succeed_if (output_warnings(parent), "warning(s) found");
 
-	succeed_if (split->size == 12, "size not correct");
+	succeed_if (split->size == 11, "size not correct");
 	succeed_if (split->handles[5] == split->handles[6], "root backends have same handle");
 	succeed_if (split->syncbits[5] == 2, "sync state for root not correct");
 	succeed_if (split->syncbits[6] == 2, "sync state for root not correct");
@@ -667,27 +671,32 @@ static void test_realworld()
 	succeed_if_same_string (keyName(split->parents[2]), "system/groups");
 	succeed_if_same_string (keyName(split->parents[3]), "system/hosts");
 	succeed_if_same_string (keyName(split->parents[4]), "user/sw/kde/default");
-	succeed_if_same_string (keyName(split->parents[5]), "system");
-	succeed_if_same_string (keyName(split->parents[6]), "user");
-	succeed_if_same_string (keyName(split->parents[7]), "system/users");
-	succeed_if_same_string (keyName(split->parents[8]), "system/elektra");
+	succeed_if_same_string (keyName(split->parents[5]), "spec");
+	succeed_if_same_string (keyName(split->parents[6]), "dir");
+	succeed_if_same_string (keyName(split->parents[7]), "user");
+	succeed_if_same_string (keyName(split->parents[8]), "system");
+	succeed_if_same_string (keyName(split->parents[9]), "system/users");
+	succeed_if_same_string (keyName(split->parents[10]), "system/elektra");
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "should need sync");
-	succeed_if (split->size == 13, "size not correct");
-	succeed_if (split->syncbits[0] == 0, "sync state for root not correct");
-	succeed_if (split->syncbits[1] == 0, "sync state for root not correct");
-	succeed_if (split->syncbits[2] == 0, "sync state for root not correct");
-	succeed_if (split->syncbits[3] == 0, "sync state for root not correct");
-	succeed_if (split->syncbits[4] == 0, "sync state for root not correct");
-	succeed_if (split->syncbits[5] == 2, "sync state for root not correct");
-	succeed_if (split->syncbits[6] == 2, "sync state for root not correct");
-	succeed_if (split->syncbits[7] == 0, "sync state for root not correct");
-	succeed_if (split->syncbits[8] == 2, "sync state for root not correct");
+
+	succeed_if (split->size == 12, "size not correct (def not added)");
+	succeed_if (split->syncbits[0] == 0, "sync state not correct");
+	succeed_if (split->syncbits[1] == 0, "sync state not correct");
+	succeed_if (split->syncbits[2] == 0, "sync state not correct");
+	succeed_if (split->syncbits[3] == 0, "sync state not correct");
+	succeed_if (split->syncbits[4] == 0, "sync state not correct");
+	succeed_if (split->syncbits[5] == 2, "sync state not correct");
+	succeed_if (split->syncbits[6] == 2, "sync state not correct");
+	succeed_if (split->syncbits[7] == 2, "sync state not correct");
+	succeed_if (split->syncbits[8] == 2, "sync state not correct");
+	succeed_if (split->syncbits[9] == 0, "sync state not correct");
+	succeed_if (split->syncbits[10] == 2, "sync state not correct");
 	compare_keyset(split->keysets[0], split0);
 	compare_keyset(split->keysets[3], split3);
-	compare_keyset(split->keysets[6], split6);
 	compare_keyset(split->keysets[7], split7);
-	compare_keyset(split->keysets[8], split8);
+	compare_keyset(split->keysets[9], split9);
+	compare_keyset(split->keysets[10], split10);
 
 	split->syncbits[0] |= 1;
 	split->syncbits[3] |= 1;
@@ -700,7 +709,7 @@ static void test_realworld()
 	succeed_if (split->handles[0]->usersize == 6, "wrong size");
 	succeed_if (split->handles[3]->systemsize == 4, "wrong size");
 	succeed_if (split->handles[6]->usersize == 1, "wrong size");
-	succeed_if (split->handles[7]->systemsize == 5, "wrong size");
+	succeed_if (split->handles[9]->systemsize == 5, "wrong size");
 
 
 	KeySet *dest = ksNew(5,
@@ -717,9 +726,9 @@ static void test_realworld()
 	ksDel (ks);
 	ksDel (split0);
 	ksDel (split3);
-	ksDel (split6);
 	ksDel (split7);
-	ksDel (split8);
+	ksDel (split9);
+	ksDel (split10);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
 
