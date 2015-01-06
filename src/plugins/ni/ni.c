@@ -29,8 +29,6 @@
 # include "kdbconfig.h"
 #endif
 
-#include <kdberrors.h>
-
 #include <string.h>
 
 int elektraNiGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
@@ -58,12 +56,7 @@ int elektraNiGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey
 
 	Ni_node root = Ni_New();
 	int error = Ni_ReadFile(root, keyString(parentKey), 0);
-	if (error == 0)
-	{
-		ELEKTRA_SET_ERROR(9, parentKey, "could not open file for reading in ni plugin");
-		Ni_Free(root);
-		return -1;
-	}
+	if (error == 0) return 0;
 
 	Ni_node current = NULL;
 	while ((current = Ni_GetNextChild(root, current)) != NULL)
@@ -107,12 +100,8 @@ int elektraNiSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey
 	}
 
 	int error = Ni_WriteFile (root,  keyString(parentKey), 0);
-	Ni_Free(root);
 
-	if (error == 0)
-	{
-		ELEKTRA_SET_ERROR(9, parentKey, "could not open file for writing in ni plugin");
-	}
+	Ni_Free(root);
 
 	return error != 0; /* success */
 }
