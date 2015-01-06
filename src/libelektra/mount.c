@@ -295,7 +295,7 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 		case KEY_NS_SPEC:
 			sprintf(mountpoint, "spec%s", keyName(backend->mountpoint));
 			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-			elektraSplitAppend(kdb->split, backend, keyNew("dir", KEY_VALUE, "root", KEY_END), 2);
+			elektraSplitAppend(kdb->split, backend, keyNew("spec", KEY_VALUE, "root", KEY_END), 2);
 			++backend->refcounter;
 			break;
 		case KEY_NS_DIR:
