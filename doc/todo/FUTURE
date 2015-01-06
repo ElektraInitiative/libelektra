@@ -1,4 +1,5 @@
-Some enhanced ideas which (most likely) will not be part of 0.8.
+Some enhanced ideas which (most likely) will not be part of 0.8
+but should be decided until 1.0
 
 
 == API Changes ==
@@ -25,6 +26,8 @@ should be renamed to something elektra specific
 
 size_t, ssize_t are not fixed size, use uint32_t.. to have no
 problems on binary serialisation + unified behaviour (array sizes..)
+
+empty/invalid keys should lead to an error in kdbGet
 
 KEY_* -> KEY_O_* to avoid clashes
 kdb.h -> elektra/kdb.h to avoid clashes

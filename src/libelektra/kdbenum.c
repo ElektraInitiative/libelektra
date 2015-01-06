@@ -117,6 +117,10 @@ enum option_t
 	KDB_O_NORECURSIVE=1<<11,
 /** Ignore case.
  *
+ * do not use without KDB_O_NOALL
+ *
+ * TODO: remove for 1.0
+ *
  * @see ksLookup()
  * */
 	KDB_O_NOCASE=1<<12,
@@ -130,6 +134,8 @@ enum option_t
  * */
 	KDB_O_WITHOWNER=1<<13,
 /** Linear search from start -> cursor to cursor -> end.
+ *
+ * TODO: remove for 1.0
  *
  * @see ksLookup()
  * */

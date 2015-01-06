@@ -39,3 +39,6 @@ if (ENABLE_CXX11)
 		add_gtest(${name})
 	endforeach (file ${TESTS})
 endif (ENABLE_CXX11)
+
+set_property(TEST testcpp_kdb
+	PROPERTY LABELS kdbtests)

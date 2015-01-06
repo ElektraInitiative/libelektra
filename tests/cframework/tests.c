@@ -311,17 +311,21 @@ void output_trie(Trie *trie)
 
 void output_split(Split *split)
 {
+	printf ("Split - size: %zd, alloc: %zd\n",
+			split->size, split->alloc);
 	for (size_t i=0; i<split->size; ++i)
 	{
 		if (split->handles[i])
 		{
-			printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s), us: %zd, ss: %zd\n",
+			printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: %zd\n",
 				i,
 				ksGetSize(split->keysets[i]),
 				(void*)split->handles[i],
 				split->syncbits[i],
 				keyName(split->parents[i]),
 				keyString(split->parents[i]),
+				split->handles[i]->specsize,
+				split->handles[i]->dirsize,
 				split->handles[i]->usersize,
 				split->handles[i]->systemsize
 				);

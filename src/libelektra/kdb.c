@@ -411,6 +411,44 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
 
 
 /**
+ * @brief Map namespace to string and decide if it should be used for kdbGet()
+ *
+ * @param parentKey the key name that should be changed
+ * @param ns the namespace it should be changed to
+ *
+ * @retval 0 invalid namespace for kdbGet(), no action required
+ * @retval 1 valid namespace for kdbGet()
+ */
+static int elektraKeySetNameByNamespace(Key *parentKey, elektraNamespace ns)
+{
+	switch (ns)
+	{
+	case KEY_NS_SPEC:
+		keySetName(parentKey, "spec");
+		break;
+	case KEY_NS_PROC:
+		/* only transient, should fail */
+		return 0;
+	case KEY_NS_DIR:
+		keySetName(parentKey, "dir");
+		break;
+	case KEY_NS_USER:
+		keySetName(parentKey, "user");
+		break;
+	case KEY_NS_SYSTEM:
+		keySetName(parentKey, "system");
+		break;
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		return 0;
+	}
+	return 1;
+}
+
+
+/**
  * @brief Retrieve keys in an atomic and universal way.
  *
  * @pre kdbOpen() must be called before using this method.
@@ -508,26 +546,18 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	if (ns == KEY_NS_CASCADING)
 	{
-		keySetName(parentKey, "user");
-		keyAddName(parentKey, keyName(initialParent));
-		if (kdbGet(handle, ks, parentKey) == -1)
+		for (elektraNamespace ins=KEY_NS_FIRST; ins<=KEY_NS_LAST; ++ins)
 		{
-			elektraKeySetName(parentKey,
-					keyName(initialParent),
-					KEY_CASCADING_NAME);
-			keyDel(initialParent);
-			return -1;
-		}
-
-		keySetName(parentKey, "system");
-		keyAddName(parentKey, keyName(initialParent));
-		if (kdbGet(handle, ks, parentKey) == -1)
-		{
-			elektraKeySetName(parentKey,
-					keyName(initialParent),
-					KEY_CASCADING_NAME);
-			keyDel(initialParent);
-			return -1;
+			if (!elektraKeySetNameByNamespace(parentKey, ins)) continue;
+			keyAddName(parentKey, keyName(initialParent));
+			if (kdbGet(handle, ks, parentKey) == -1)
+			{
+				elektraKeySetName(parentKey,
+						keyName(initialParent),
+						KEY_CASCADING_NAME);
+				keyDel(initialParent);
+				return -1;
+			}
 		}
 
 		elektraKeySetName(parentKey,
@@ -833,38 +863,6 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	}
 
 	Key *initialParent = keyDup(parentKey);
-
-	if (ns == KEY_NS_CASCADING)
-	{
-		// TODO: does not guarantee atomic commit
-		keySetName(parentKey, "user");
-		keyAddName(parentKey, keyName(initialParent));
-		if (kdbSet(handle, ks, parentKey) == -1)
-		{
-			elektraKeySetName(parentKey,
-					keyName(initialParent),
-					KEY_CASCADING_NAME);
-			keyDel(initialParent);
-			return -1;
-		}
-
-		keySetName(parentKey, "system");
-		keyAddName(parentKey, keyName(initialParent));
-		if (kdbSet(handle, ks, parentKey) == -1)
-		{
-			elektraKeySetName(parentKey,
-					keyName(initialParent),
-					KEY_CASCADING_NAME);
-			keyDel(initialParent);
-			return -1;
-		}
-
-		elektraKeySetName(parentKey,
-				keyName(initialParent),
-				KEY_CASCADING_NAME);
-		keyDel(initialParent);
-		return 1;
-	}
 
 #if DEBUG && VERBOSE
 	fprintf(stderr, "now in new kdbSet (%s)\n", keyName(parentKey));

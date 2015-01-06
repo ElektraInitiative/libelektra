@@ -2030,7 +2030,7 @@ int f(KeySet *iterator, KeySet *lookup)
  * @param key the key object you are looking for
  * @param options some @p KDB_O_* option bits:
  * 	- @p KDB_O_NOCASE @n
- * 		Lookup ignoring case.
+ * 		Lookup ignoring case (needs KDB_O_NOALL).
  * 	- @p KDB_O_WITHOWNER @n
  * 		Also consider correct owner.
  * 	- @p KDB_O_NOALL @n
