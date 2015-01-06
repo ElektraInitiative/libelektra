@@ -126,27 +126,8 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 		return -1;
 	}
 
-	/* We want system/elektra still reachable
-	 * through default backend.
-	 * First check if it is still reachable.
-	 */
-	Key *key = keyNew ("system/elektra", KEY_END);
-	Backend* backend = elektraMountGetBackend(kdb, key);
-	keyDel (key);
-	if (backend != kdb->defaultBackend)
-	{
-		/* It is not reachable, mount it */
-		elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
-		/*elektraMountBackend will set refcounter*/
-		++ kdb->defaultBackend->refcounter;
-		kdb->split->syncbits[kdb->split->size-1] = 2;
-	} else {
-		/* Lets add the reachable default backend to split.
-		 Note that it is not possible that system/elektra has the default
-		 backend, but system has not. */
-		elektraSplitAppend(kdb->split, backend,
-				keyNew("system", KEY_VALUE, "default", KEY_END), 2);
-	}
+	Key *key = 0;
+	Backend* backend = 0;
 
 	for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
 	{
@@ -176,6 +157,29 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 			elektraSplitAppend(kdb->split, backend, key, 2);
 		}
 		break;
+	case KEY_NS_SYSTEM:
+		/* We want system/elektra still reachable
+		 * through default backend.
+		 * First check if it is still reachable.
+		 */
+		key = keyNew ("system/elektra", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
+		keyDel (key);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It is not reachable, mount it */
+			elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
+			/*elektraMountBackend will set refcounter*/
+			++ kdb->defaultBackend->refcounter;
+			kdb->split->syncbits[kdb->split->size-1] = 2;
+		} else {
+			/* Lets add the reachable default backend to split.
+			 Note that it is not possible that system/elektra has the default
+			 backend, but system has not. */
+			elektraSplitAppend(kdb->split, backend,
+					keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+		}
+		break;
 	case KEY_NS_USER:
 		key = keyNew ("user", KEY_VALUE, "default", KEY_END);
 		backend = elektraMountGetBackend(kdb, key);
@@ -188,8 +192,6 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 			elektraSplitAppend(kdb->split, backend, key, 2);
 		}
 		break;
-	case KEY_NS_SYSTEM:
-		// already handled above
 	case KEY_NS_EMPTY:
 	case KEY_NS_PROC:
 	case KEY_NS_NONE:
