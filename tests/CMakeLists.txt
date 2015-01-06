@@ -45,10 +45,10 @@ add_custom_target(run_memcheck
 	"$<CONFIGURATION>"
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
+include_directories(data)
+
 add_subdirectory (cframework)
 add_subdirectory (shell)
 add_subdirectory (abi)
 add_subdirectory (ctest)
 add_subdirectory (ckdb)
-
-include_directories ("${PROJECT_SOURCE_DIR}/tests")
