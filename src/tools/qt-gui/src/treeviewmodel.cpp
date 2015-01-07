@@ -680,35 +680,6 @@ QStringList TreeViewModel::mountedBackends()
 	return mountedBackends;
 }
 
-//void TreeViewModel::setToKdb()
-//{
-//	KDB kdb;
-
-
-//	try
-//	{
-//		kdb.set(m_keySet, "/");
-//	}
-//	catch (KDBException const& e)
-//	{
-//		emit showMessage(tr("Error"), tr("Could not write to configuration."), e.what());
-//	}
-//}
-
-//void TreeViewModel::getFromKdb()
-//{
-//	KDB kdb;
-
-//	try
-//	{
-//		kdb.get(m_keySet, "/");
-//	}
-//	catch (KDBException const& e)
-//	{
-//		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
-//	}
-//}
-
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
 	QHash<int, QByteArray> roles;

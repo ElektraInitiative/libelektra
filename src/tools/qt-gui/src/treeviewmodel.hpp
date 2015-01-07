@@ -212,7 +212,6 @@ public:
 	 */
 	void						refreshArrayNumbers();
 
-
 	/**
 	 * @brief Returns a list of the currently mounted backends.
 	 *
