@@ -17,7 +17,13 @@ then
 	exit 0
 fi
 
-echo "Doing race tests"
+if $RACE | grep "This program tests race condition in Elektra"
+then
+	echo "Doing race tests"
+else
+	echo "No $RACE tool installed"
+	exit 0
+fi
 
 do_race_test()
 {
