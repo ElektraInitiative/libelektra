@@ -22,7 +22,7 @@ echo "Doing race tests"
 do_race_test()
 {
 	SHOULD=`$RACE $* | grep won | wc -l`
-	IS=`kdb ls user/test/race/keys | wc -l`
+	IS=`$KDB ls user/test/race/keys | wc -l`
 
 	echo "$SHOULD - $IS in test $*"
 
