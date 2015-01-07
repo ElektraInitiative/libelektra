@@ -37,12 +37,33 @@ Please install java8 as package, e.g.
 [for debian](http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html)
 and then let cmake actually find jdk8:
 
-      cd /usr/lib/jvm/ && sudo ln -s java-8-oracle default-java
+    cd /usr/lib/jvm/ && sudo rm -f default-java && sudo ln -s java-8-oracle default-java
+
+and for the runtime, create the file
+`/etc/ld.so.conf.d/java-8-oracle.conf` with the content (for amd64):
+
+    /usr/lib/jvm/default-java/jre/lib/amd64
+    /usr/lib/jvm/default-java/lib/amd64
+    /usr/lib/jvm/default-java/jre/lib/amd64/server
+
+and run:
+
+    sudo ldconfig
 
 Then enable the plugin using:
 
-    cmake -DPLUGINS="...;jna" /path/to/libelektra
+    cmake -DPLUGINS="...;jni" /path/to/libelektra
 
+Running
+
+    kdb-full
+
+should work then, if you get one of these:
+
+    kdb-full: error while loading shared libraries: libmawt.so: cannot open shared object file: No such file or directory
+    kdb-full: error while loading shared libraries: libjawt.so: cannot open shared object file: No such file or directory
+
+You missed one of the ldconfig steps.
 
 ## Plugin Config ##
 
