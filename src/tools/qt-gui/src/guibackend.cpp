@@ -15,6 +15,8 @@ using namespace kdb::tools;
 GUIBackend::GUIBackend(QObject *parent) :
 	QObject(parent)
 {
+	m_pluginConfigModel = new TreeViewModel;
+	resetModel();
 }
 
 GUIBackend::GUIBackend(const GUIBackend &other)
@@ -96,18 +98,20 @@ void GUIBackend::addPath(const QString &path)
 							 KEY_END));
 }
 
-void GUIBackend::addPlugin(QString name, TreeViewModel *pluginConfig)
+void GUIBackend::addPlugin(QString name)
 {
 	name.chop(name.length() - name.indexOf("[") + 1);
 
 	try
 	{
-		m_backend->addPlugin(name.toStdString(), pluginConfig->getKeySet());
+		m_backend->addPlugin(name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
 	}
 	catch(PluginCheckException const &ex)
 	{
 		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
+
+	resetModel();
 }
 
 void GUIBackend::serialise(TreeViewModel *model)
@@ -161,6 +165,17 @@ bool GUIBackend::validated()
 void GUIBackend::deleteBackend()
 {
 	delete m_backend;
+}
+
+TreeViewModel *GUIBackend::pluginConfigModel() const
+{
+	return m_pluginConfigModel;
+}
+
+void GUIBackend::resetModel()
+{
+	KeySet emptySet;
+	m_pluginConfigModel->populateModel(emptySet);
 }
 
 QString GUIBackend::mountPoints() const

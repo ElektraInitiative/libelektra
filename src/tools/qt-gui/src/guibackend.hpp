@@ -35,7 +35,7 @@ public:
 	 * @param name The name of the plugin.
 	 * @param config The configuration for the plugin.
 	 */
-	Q_INVOKABLE void			addPlugin(QString name, TreeViewModel *pluginConfig);
+	Q_INVOKABLE void			addPlugin(QString name);
 
 	/**
 	 * @brief Provides information about a plugin.
@@ -86,11 +86,16 @@ public:
 	 */
 	Q_INVOKABLE void			deleteBackend();
 
+	Q_INVOKABLE TreeViewModel*	pluginConfigModel() const;
+
 private:
 	kdb::tools::Backend*	m_backend;
 	kdb::KeySet				m_mountConf;
 	kdb::KDB				m_kdb;
 	QString					m_name;
+	TreeViewModel*			m_pluginConfigModel;
+
+	void					resetModel();
 
 signals:
 	void showMessage(QString title, QString text, QString detailedText) const;

@@ -14,8 +14,6 @@ Item {
 	}
 	property bool	contextMenuEnabled: pluginConfigTreeView.currentItem !== null
 
-	Component.onCompleted: pluginConfigTreeView.treeModel.populateModel()
-
 	ColumnLayout {
 
 		anchors.left: parent.left
@@ -54,7 +52,7 @@ Item {
 
 				onClicked: {
 					if(!alreadyInList(pluginDropdown.currentText)){
-						guiBackend.addPlugin(pluginDropdown.currentText, pluginConfig)
+						guiBackend.addPlugin(pluginDropdown.currentText)
 
 						if(!error){
 							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
@@ -144,7 +142,7 @@ Item {
 			TreeView {
 				id: pluginConfigTreeView
 
-				treeModel: pluginConfig
+				treeModel: guiBackend.pluginConfigModel()
 				visible: false
 				toolTipParent: page2
 

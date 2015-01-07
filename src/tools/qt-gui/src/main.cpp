@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
 	UndoManager manager;
 	kdb::KDB kdb;
 	kdb::KeySet config;
-	kdb::KeySet pluginConfig;
 	GUIBackend backend;
 
 	try
@@ -47,25 +46,14 @@ int main(int argc, char* argv[])
 	}
 
 	TreeViewModel* treeModel = new TreeViewModel;
-	TreeViewModel* pluginConfigModel = new TreeViewModel;
-
-	pluginConfig.append(kdb::Key("system", KEY_END));
-	pluginConfig.append(kdb::Key("user", KEY_END));
-
-	pluginConfigModel->setKeySet(pluginConfig);
-	treeModel->setKeySet(config);
 
 	ctxt->setContextProperty("undoManager", &manager);
 	ctxt->setContextProperty("externTreeModel", treeModel);
 	ctxt->setContextProperty("guiBackend", &backend);
-	ctxt->setContextProperty("pluginConfig", pluginConfigModel);
 
-	treeModel->populateModel();
+	treeModel->populateModel(config);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
-
-	//populate model in new thread, else the view is blocked
-//	QtConcurrent::run(treeModel, &TreeViewModel::populateModel);
 
 	return app.exec();
 }

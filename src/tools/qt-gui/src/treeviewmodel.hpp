@@ -64,7 +64,7 @@ public:
 	 * @brief Populates this TreeViewModel with the *current* keyset.
 	 */
 
-	Q_INVOKABLE void            populateModel();
+	Q_INVOKABLE void            populateModel(kdb::KeySet keySet);
 
 	/**
 	 * @brief The method that actually populates this TreeViewModel.
@@ -172,23 +172,9 @@ public:
 	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QString& mergeStrategy);
 
 	/**
-	 * @brief Sets a new KeySet.
-	 *
-	 * @param set The new KeySet.
-	 */
-	void                        setKeySet(const kdb::KeySet &set);
-
-	/**
-	 * @brief Gets this model's current KeySet.
-	 *
-	 * @return This model's current KeySet.
-	 */
-	kdb::KeySet					getKeySet();
-
-	/**
 	 * @brief Stores the current state of the configuration in the KeySet.
 	 */
-	void                        collectCurrentKeySet();
+	kdb::KeySet					collectCurrentKeySet();
 
 	/**
 	 * @brief Clears this model if it holds metakeys.
@@ -228,7 +214,7 @@ public:
 
 
 	/**
-	 * @brief Returns a list of the current mounted backends.
+	 * @brief Returns a list of the currently mounted backends.
 	 *
 	 * @return A list of the current mounted backends.
 	 */
@@ -244,12 +230,9 @@ private:
 	 * @param term The term that is searched for.
 	 */
 	void                        find(ConfigNodePtr node, TreeViewModel* searchResults, const QString term);
-//	void						setToKdb();
-//	void						getFromKdb();
 
 	QList<ConfigNodePtr>        m_model;
 	kdb::Key                    m_metaModelParent;
-	kdb::KeySet                 m_keySet;
 
 protected:
 	QHash<int, QByteArray>      roleNames() const;

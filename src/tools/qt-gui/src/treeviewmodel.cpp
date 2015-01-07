@@ -240,17 +240,18 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	}
 
 	KDB kdb;
+	KeySet keySet;
 
 	try
 	{
-		kdb.get(m_keySet, "/");
+		kdb.get(keySet, "/");
 	}
 	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
 	}
 
-	populateModel();
+	populateModel(keySet);
 }
 
 void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString format, QString file)
@@ -317,22 +318,12 @@ void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString
 	}
 }
 
-void TreeViewModel::setKeySet(const KeySet& set)
-{
-	m_keySet = set;
-}
-
-KeySet TreeViewModel::getKeySet()
-{
-	return m_keySet;
-}
-
-void TreeViewModel::collectCurrentKeySet()
+KeySet TreeViewModel::collectCurrentKeySet()
 {
 	KeySetVisitor ksVisit;
 	accept(ksVisit);
 
-	setKeySet(ksVisit.getKeySet());
+	return ksVisit.getKeySet();
 }
 
 Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
@@ -497,7 +488,7 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, con
 	}
 }
 
-void TreeViewModel::populateModel()
+void TreeViewModel::populateModel(KeySet keySet)
 {
 	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
 	ConfigNodePtr user(new ConfigNode("user", "user", Key("user", KEY_END), this));
@@ -505,11 +496,11 @@ void TreeViewModel::populateModel()
 	m_model.clear();
 	m_model << system << user;
 
-	m_keySet.rewind();
+	keySet.rewind();
 
-	while (m_keySet.next())
+	while (keySet.next())
 	{
-		Key k = m_keySet.current().dup();
+		Key k = keySet.current().dup();
 		QString currentKey = QString::fromStdString(k.getName());
 		QStringList keys = currentKey.split("/");
 		QString root = keys.takeFirst();
@@ -551,21 +542,22 @@ void TreeViewModel::append(ConfigNodePtr node)
 void TreeViewModel::synchronize()
 {
 	KDB kdb;
+	KeySet keySet;
 
 	try
 	{
-		kdb.get(m_keySet, "/");
+		kdb.get(keySet, "/");
 	}
 	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
 	}
 
-	collectCurrentKeySet();
+	keySet = collectCurrentKeySet();
 
 	try
 	{
-		kdb.set(m_keySet, "/");
+		kdb.set(keySet, "/");
 	}
 	catch (KDBException const& e)
 	{
@@ -582,9 +574,10 @@ void TreeViewModel::clearMetaModel()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
+	KeySet keySet = collectCurrentKeySet();
 	const string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
 	Key x(keyName, KEY_END);
-	m_keySet.cut(x);
+	keySet.cut(x);
 
 	TreeViewModel *mountPoint;
 
@@ -614,16 +607,7 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 void TreeViewModel::refresh()
 {
-	QList<ConfigNodePtr> newModel(m_model);
-
 	beginResetModel();
-	m_model.clear();
-
-	foreach (ConfigNodePtr node, newModel)
-	{
-		m_model.append(node);
-	}
-
 	endResetModel();
 }
 
@@ -678,9 +662,9 @@ void TreeViewModel::refreshArrayNumbers()
 
 QStringList TreeViewModel::mountedBackends()
 {
-	collectCurrentKeySet();
+	KeySet keySet = collectCurrentKeySet();
 
-	Backends::BackendInfoVector mtab = Backends::getBackendInfo(m_keySet);
+	Backends::BackendInfoVector mtab = Backends::getBackendInfo(keySet);
 
 	QStringList mountedBackends;
 
