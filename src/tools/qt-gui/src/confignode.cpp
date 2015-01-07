@@ -34,7 +34,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_value(other.m_value)
 	, m_key(other.m_key.dup())
 	, m_children(new TreeViewModel)
-	, m_metaData(new TreeViewModel)
+	, m_metaData(NULL)
 	, m_parentModel(NULL)
 	, m_isExpanded(other.m_isExpanded)
 {
@@ -49,6 +49,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 
 	if(other.m_metaData)
 	{
+		m_metaData = new TreeViewModel;
 		foreach(ConfigNodePtr node, other.m_metaData->model())
 		{
 			m_metaData->append(ConfigNodePtr(new ConfigNode(*node)));
@@ -60,11 +61,11 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 
 ConfigNode::ConfigNode()
 	: m_children(NULL)
-	, m_metaData(new TreeViewModel)
+	, m_metaData(NULL)
 	, m_parentModel(NULL)
 	, m_isExpanded(false)
 {
-
+	//this constructor is used to create metanodes
 }
 
 ConfigNode::~ConfigNode()
