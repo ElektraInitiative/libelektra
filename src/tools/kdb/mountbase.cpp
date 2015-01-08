@@ -75,8 +75,6 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 	{
 		mp = cl.arguments[1];
 	}
-
-	name = Backends::escapeName(mp);
 }
 
 void MountBaseCommand::askForConfirmation(Cmdline const& cl)
@@ -85,7 +83,6 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 	{
 		cout << endl;
 		cout << "Ready to mount with following configuration:" << endl;
-		cout << "Name:       " << name << endl;
 		cout << "Mountpoint: " << mp << endl;
 		cout << "Path:       " << path << endl;
 	}
