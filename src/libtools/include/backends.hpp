@@ -42,9 +42,7 @@ public:
 
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
 
-	static std::string escapeName(std::string name);
-
-	static std::string getConfigBasePath(std::string name);
+	static std::string getBasePath(std::string name);
 
 	static const char * mountpointsPath;
 };

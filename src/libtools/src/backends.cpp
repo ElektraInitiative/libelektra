@@ -54,19 +54,18 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 }
 
 /**
- * @brief returns the config base path of a mounted backend
+ * @brief returns the base path of a mounted backend
  * below system/elektra/mountpoints
  *
  * @param mp the mountpoint (name will be derived from it)
  *
  * @return the properly prefixed and escaped name
  */
-std::string Backends::getConfigBasePath(std::string mp)
+std::string Backends::getBasePath(std::string mp)
 {
 	Key kmp(mp, KEY_CASCADING_NAME, KEY_END); // canonify name
 	Key k(Backends::mountpointsPath, KEY_END);
 	k.addBaseName(kmp.getName()); // escape name
-	k.addBaseName("config");
 	return k.getName();
 }
 

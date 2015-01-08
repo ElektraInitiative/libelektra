@@ -149,7 +149,7 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
 	string keyName;
 	string value;
 
-	const string configBasePath = Backends::getConfigBasePath (mp);
+	const string configBasePath = Backends::getBasePath (mp) + "/config";
 	if (cl.interactive)
 	{
 		cout << "Enter the plugin configuration" << endl;

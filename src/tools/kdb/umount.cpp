@@ -13,19 +13,6 @@ using namespace kdb::tools;
 UmountCommand::UmountCommand()
 {}
 
-int UmountCommand::deleteByBackendName(KeySet& conf, std::string const & backendName)
-{
-	const std::string keyName = string(Backends::mountpointsPath) + "/"  + backendName;
-	Key x(keyName, KEY_END);
-	if (!x)
-	{
-		throw invalid_argument(keyName + " is not a valid keyname");
-	}
-
-	KeySet ks = conf.cut (x);
-	return ks.size();
-}
-
 int UmountCommand::deleteByMountPath(KeySet& conf, std::string const & mountPath)
 {
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (conf);
@@ -35,19 +22,13 @@ int UmountCommand::deleteByMountPath(KeySet& conf, std::string const & mountPath
 	{
 		if (it->mountpoint == mountPath)
 		{
-			backendName = it->name;
-			break;
+			Key x(Backends::getBasePath (mountPath), KEY_END);
+			KeySet ks = conf.cut (x);
+			return ks.size();
 		}
 	}
 
-	if (!backendName.empty())
-	{
-		return deleteByBackendName (conf, backendName);
-	}
-	else
-	{
-		return 0;
-	}
+	return 0;
 }
 
 int UmountCommand::execute(Cmdline const& cl)
