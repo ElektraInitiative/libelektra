@@ -229,6 +229,7 @@ private:
 	 * @param term The term that is searched for.
 	 */
 	void                        find(ConfigNodePtr node, TreeViewModel* searchResults, const QString term);
+	void						createNewNodes(kdb::KeySet keySet);
 
 	QList<ConfigNodePtr>        m_model;
 	kdb::Key                    m_metaModelParent;

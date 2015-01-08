@@ -244,14 +244,14 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 
 	try
 	{
-		kdb.get(keySet, "/");
+		kdb.get(keySet, name.toStdString());
 	}
 	catch (KDBException const& e)
 	{
 		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
 	}
 
-	populateModel(keySet);
+	createNewNodes(keySet);
 }
 
 void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file)
@@ -496,6 +496,11 @@ void TreeViewModel::populateModel(KeySet keySet)
 	m_model.clear();
 	m_model << system << user;
 
+	createNewNodes(keySet);
+}
+
+void TreeViewModel::createNewNodes(KeySet keySet)
+{
 	keySet.rewind();
 
 	while (keySet.next())
