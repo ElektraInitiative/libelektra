@@ -1,3 +1,61 @@
+# 0.8.11 Release
+
+(Preparation of Release Notes)
+
+From the beginning of the Elektra Initiative, it aimed for avoiding hard coded
+information in the application. While avoiding any file system pathes in
+the binary is already reality by mounting configuration files from this
+release on, also hard coding Elektra's pathes, fallback mechanism and
+default values can be avoided.
+
+This novel technique does not only give you the obvious advantages, but
+also complete transparency how a program will fetch a configuration
+value. In practice that means that:
+
+    kdb get /sw/app/#0/promise
+
+will give you the exact same value as the application uses when it needs
+the key `promise`
+
+    Key *parentKey = keyNew("/sw/app/#0", KEY_CASCADING_NAME, KEY_END);
+    kdbGet(kdb, ks, parentKey);
+    
+    ksLookupByName(ks, "/sw/app/#0/key", 0);
+
+The administrator can find out how the application is configured
+completely without looking in the source code by two techniques:
+
+1.) by appending a logger plugin the KDB base path is printed to:
+
+- stdout in the case of the plugin tracer
+- syslog in the case of the plugin syslog
+- journald in the case of the plugin journald
+
+2.) Once the base path is known, the user can find out all Elektra
+pathes used by an application, through:
+
+    kdb ls spec/basepath
+
+The namespace "spec" is introduced with this release and allows us to
+specify which keys are read by the application, which fallbacks it might
+have and which is the default value.
+
+To have no unmodifiable hard coded path at all, even this path can
+(and should) be changeable by commandline arguments:
+
+    -k --kdb .. the KDB base path where an application can find its configuration
+    -p --profile .. the path to append to its KDB base path
+
+[some text missing]
+
+Note that the fallback works on *key level*, and not like most other
+systems have implemented on configuration *file level*.
+
+
+
+
+
+
 # 0.8.10 Release
 
 - guid: 6ce57ecf-420a-4a31-821e-1c5fe5532eb4
