@@ -350,7 +350,8 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 {
 	assert(!mp.empty());
 	Key backendRootKey (rootKey);
-	backendRootKey.addBaseName (mp);
+	Key kmp(mp, KEY_CASCADING_NAME, KEY_END); // canonify name
+	backendRootKey.addBaseName (kmp.getName());
 	backendRootKey.setString("This is a configuration for a backend, see subkeys for more information");
 	ret.append(backendRootKey);
 

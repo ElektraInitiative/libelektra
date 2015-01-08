@@ -54,38 +54,6 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 }
 
 /**
- * @brief returns the escaped name for backends
- *
- * @param name to escape
- *
- * @return the properly escaped name
- */
-std::string Backends::escapeName(std::string name)
-{
-	std::string configPath;
-
-	 // take care of double slashes, . and ..
-	Key n("user/"+name, KEY_END);
-	if (name == "/") return "\\/";
-	if (name[0] == '/') configPath+="\\/";
-
-	name = n.getName().substr(5);
-	// escape / and _
-	for (size_t i=0; i<name.length(); ++i)
-	{
-		if (name[i] == '/')
-		{
-			configPath += "\\/";
-		} else if (name[i] == '\\') {
-			configPath += "\\\\";
-		} else {
-			configPath += name[i];
-		}
-	}
-	return configPath;
-}
-
-/**
  * @brief returns the config base path of a mounted backend
  * below system/elektra/mountpoints
  *
@@ -95,11 +63,11 @@ std::string Backends::escapeName(std::string name)
  */
 std::string Backends::getConfigBasePath(std::string mp)
 {
-	std::string configPath = Backends::mountpointsPath;
-	configPath += "/";
-	configPath += Backends::escapeName(mp);
-	configPath += "/config";
-	return configPath;
+	Key kmp(mp, KEY_CASCADING_NAME, KEY_END); // canonify name
+	Key k(Backends::mountpointsPath, KEY_END);
+	k.addBaseName(kmp.getName()); // escape name
+	k.addBaseName("config");
+	return k.getName();
 }
 
 /**
