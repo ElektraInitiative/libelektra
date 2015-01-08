@@ -39,28 +39,13 @@ class Backends
 {
 public:
 	typedef std::vector<BackendInfo> BackendInfoVector;
-	/**
-	 * @brief give info about current mounted backends
-	 *
-	 * @param mountConf a keyset that contains everything below
-	 * Backends::mountpointsPath
-	 *
-	 * @return an vector of information about mounted backends
-	 */
+
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
 
-	/**
-	 * @brief Get the name below system/elektra/mountpoints
-	 *
-	 * @param name mountpoint name, it is ok if it has / instead of _
-	 *
-	 * @return the key name
-	 */
+	static std::string escapeName(std::string name);
+
 	static std::string getConfigBasePath(std::string name);
 
-	/**
-	 * @brief Below this path is the mountConf
-	 */
 	static const char * mountpointsPath;
 };
 

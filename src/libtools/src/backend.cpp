@@ -101,8 +101,7 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	}
 
 	mp = mountpoint.getName();
-	name = mountpoint.getName();
-	std::replace(name.begin(), name.end(), '/', '_');
+	name = Backends::escapeName(mountpoint.getName());
 
 	if (mp.empty())
 	{

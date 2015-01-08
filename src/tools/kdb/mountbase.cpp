@@ -76,8 +76,7 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 		mp = cl.arguments[1];
 	}
 
-	name = mp;
-	std::replace(name.begin(), name.end(), '/', '_');
+	name = Backends::escapeName(mp);
 }
 
 void MountBaseCommand::askForConfirmation(Cmdline const& cl)

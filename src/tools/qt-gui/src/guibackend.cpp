@@ -61,8 +61,7 @@ void GUIBackend::createBackend(const QString &mountpoint)
 		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), ex.what());
 	}
 
-	m_name = mountpoint;
-	m_name.replace("/", "_");
+	m_name = QString::fromStdString(Backends::escapeName(mountpoint.toUtf8().constData()));
 }
 
 void GUIBackend::addPath(const QString &path)
