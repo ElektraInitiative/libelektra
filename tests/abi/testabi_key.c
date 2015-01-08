@@ -2013,6 +2013,55 @@ succeed_if_same_string(keyBaseName(k), ".");
 	keyDel (k);
 }
 
+static void test_keyDirectBelow()
+{
+	printf ("Test direct below check\n");
+
+	Key *k1 = keyNew("/dir", KEY_CASCADING_NAME, KEY_END);
+	Key *k2 = keyNew("/dir/directbelow", KEY_CASCADING_NAME, KEY_END);
+	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/directbelow");
+	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/direct\\/below");
+	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/direct\\/");
+	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/direct\\");
+	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/direct\\\\\\/below");
+	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/direct\\\\below");
+	succeed_if(keyIsBelow(k1, k2) == 1, "below");
+	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+
+	/* TODO: name escaping broken:
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/direct\\\\/b");
+	succeed_if(keyIsBelow(k1, k2) == 1, "below");
+	succeed_if(keyIsDirectBelow(k1, k2) == 0, "direct below, but shouldnt be");
+
+	keySetName(k1, "user/dir");
+	keySetName(k2, "user/dir/direct\\\\/below");
+	succeed_if(keyIsBelow(k1, k2) == 1, "below");
+	succeed_if(keyIsDirectBelow(k1, k2) == 0, "direct below, but shouldnt be");
+	*/
+
+	keyDel(k1);
+	keyDel(k2);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -2040,6 +2089,7 @@ int main(int argc, char** argv)
 	test_keyBaseName();
 	test_keySetBaseName();
 	test_keyAddBaseName();
+	test_keyDirectBelow();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

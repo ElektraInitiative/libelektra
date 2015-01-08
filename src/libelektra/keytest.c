@@ -267,17 +267,17 @@ does not return true, because there is only a indirect relation
  */
 int keyIsDirectBelow(const Key *key, const Key *check)
 {
-	const char * checkname = 0;
-	ssize_t keysize = 0;
-
 	if (!key || !check) return -1;
 
-	checkname = keyName(check);
-	keysize = keyGetNameSize(key);
-
 	if (!keyIsBelow(key, check)) return 0;
-	if (strchr(checkname + keysize, '/')) return 0;
-	return 1;
+
+
+	const char * checkname = keyUnescapedName(check);
+	ssize_t keysize = keyGetUnescapedNameSize(key);
+	ssize_t checksize = keyGetUnescapedNameSize(check);
+	if (strchr(checkname + keysize, '\0') == checkname + checksize - 1) return 1;
+
+	return 0;
 }
 
 
