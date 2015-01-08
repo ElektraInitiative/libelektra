@@ -59,21 +59,10 @@ int UmountCommand::execute(Cmdline const& cl)
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey);
 
-	if (cl.arguments[0].find("/") != string::npos)
+	if (deleteByMountPath(conf, cl.arguments[0]) == 0)
 	{
-		if (deleteByMountPath(conf, cl.arguments[0]) == 0)
-		{
-			cerr << "Mountpoint " << cl.arguments[0] << " does not exist" << endl;
-			return 1;
-		}
-	}
-	else
-	{
-		if (deleteByBackendName (conf, cl.arguments[0]) == 0)
-		{
-			cerr << "Backend " << cl.arguments[0] << " does not exist" << endl;
-			return 1;
-		}
+		cerr << "Mountpoint " << cl.arguments[0] << " does not exist" << endl;
+		return 1;
 	}
 
 	kdb.set(conf, parentKey);
