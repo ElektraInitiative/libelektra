@@ -208,9 +208,9 @@ TreeViewModel *ConfigNode::getParentModel()
 	return m_parentModel;
 }
 
-void ConfigNode::setParentModel(TreeViewModel *parent)
+void ConfigNode::setParentModel(TreeViewModel *parentModel)
 {
-	m_parentModel = parent;
+	m_parentModel = parentModel;
 }
 
 bool ConfigNode::isExpanded() const
@@ -330,16 +330,16 @@ void ConfigNode::setPath(const QString &path)
 
 bool ConfigNode::childrenHaveNoChildren() const
 {
-	int children = 0;
+	int childcount = 0;
 
 	if(m_children)
 	{
 		foreach (ConfigNodePtr node, m_children->model())
 		{
-			children += node->getChildCount();
+			childcount += node->getChildCount();
 		}
 
 	}
 
-	return children == 0;
+	return childcount == 0;
 }

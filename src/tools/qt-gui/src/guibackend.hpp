@@ -11,7 +11,7 @@ class GUIBackend : public QObject
 	Q_OBJECT
 
 public:
-	explicit GUIBackend(QObject *parent = 0);
+	explicit GUIBackend(QObject *parentBackend = 0);
 	GUIBackend(const GUIBackend &other);
 
 

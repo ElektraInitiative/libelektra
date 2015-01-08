@@ -41,7 +41,7 @@ public:
 		IsExpandedRole ///< The role QML can retrieve if a ConfigNode is expanded.
 	};
 
-	explicit TreeViewModel(QObject* parent =  0);
+	explicit TreeViewModel(QObject* parentModel =  0);
 
 	// Needed for Qt
 	TreeViewModel(TreeViewModel const& other);
@@ -53,12 +53,12 @@ public:
 	}
 
 	//mandatory methods inherited from QAbstractItemModel
-	Q_INVOKABLE int             rowCount(const QModelIndex& parent = QModelIndex()) const;
-	QVariant                    data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-	bool                        setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-	Q_INVOKABLE bool            insertRow(int row, const QModelIndex& parent = QModelIndex());
-	Q_INVOKABLE bool            removeRow(int row, const QModelIndex& parent = QModelIndex());
-	Qt::ItemFlags               flags(const QModelIndex& index) const;
+	Q_INVOKABLE int             rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
+	QVariant                    data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
+	bool                        setData(const QModelIndex& idx, const QVariant& modelData, int role = Qt::EditRole);
+	Q_INVOKABLE bool            insertRow(int row, const QModelIndex& parentIndex = QModelIndex());
+	Q_INVOKABLE bool            removeRow(int row, const QModelIndex& parentIndex = QModelIndex());
+	Qt::ItemFlags               flags(const QModelIndex& idx) const;
 
 	/**
 	 * @brief Populates this TreeViewModel with the *current* keyset.
@@ -141,7 +141,7 @@ public:
 	 * @param value Holds the data to manipulate the ConfigNode.
 	 * @param role Holds the role name that determines the type of the manipulation.
 	 */
-	Q_INVOKABLE void            setData(int index, const QVariant& value, const QString& role);
+	Q_INVOKABLE void            setData(int idx, const QVariant& value, const QString& role);
 
 	/**
 	 * @brief Returns the index of a ConfigNode in this TreeViewModel based in the ConfigNode's name.
@@ -159,7 +159,7 @@ public:
 	 * @param format Specifies the file format of the exported file.
 	 * @param file The path on the harddisk where the exported file is written to.
 	 */
-	Q_INVOKABLE void            exportConfiguration(TreeViewModel* model, int index, QString format, QString file);
+	Q_INVOKABLE void            exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file);
 
 	/**
 	 * @brief Import a configuration from a file on the harddrive into the current configuration.

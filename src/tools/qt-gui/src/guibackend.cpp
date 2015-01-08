@@ -12,8 +12,8 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-GUIBackend::GUIBackend(QObject *parent) :
-	QObject(parent)
+GUIBackend::GUIBackend(QObject *parentBackend) :
+	QObject(parentBackend)
 {
 	m_pluginConfigModel = new TreeViewModel;
 	resetModel();
@@ -194,8 +194,8 @@ QString GUIBackend::mountPoints() const
 		return "";
 	}
 
-	QStringList mountPoints;
-	mountPoints.append("system/elektra");
+	QStringList mPoints;
+	mPoints.append("system/elektra");
 
 	mountConf.rewind();
 
@@ -207,18 +207,18 @@ QString GUIBackend::mountPoints() const
 		{
 			if (cur.getString().at(0) == '/')
 			{
-				mountPoints.append(QString::fromStdString("user" + cur.getString()));
-				mountPoints.append(QString::fromStdString("system" + cur.getString()));
+				mPoints.append(QString::fromStdString("user" + cur.getString()));
+				mPoints.append(QString::fromStdString("system" + cur.getString()));
 			}
 			else
 			{
-				mountPoints.append(QString::fromStdString(cur.getString()));
+				mPoints.append(QString::fromStdString(cur.getString()));
 			}
 
 		}
 
 	}
-	return mountPoints.join(", ");
+	return mPoints.join(", ");
 }
 
 QString GUIBackend::pluginInfo(QString pluginName) const
@@ -287,7 +287,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 
 QStringList GUIBackend::nameFilters()
 {
-	QStringList nameFilters;
+	QStringList nFilters;
 	QStringList plugins = availablePlugins(true, false);
 
 	plugins = plugins.filter("[storage]");
@@ -310,10 +310,10 @@ QStringList GUIBackend::nameFilters()
 		else
 			pattern = "*";
 
-			nameFilters.append(QString("%1 (%2)").arg(plugin, pattern));
+			nFilters.append(QString("%1 (%2)").arg(plugin, pattern));
 	}
 
-	nameFilters.sort();
+	nFilters.sort();
 
-	return nameFilters;
+	return nFilters;
 }

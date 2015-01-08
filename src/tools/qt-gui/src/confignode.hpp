@@ -203,7 +203,7 @@ public:
 	 *
 	 * @param parent The TreeViewModel this ConfigNode is in.
 	 */
-	void									setParentModel(TreeViewModel* parent);
+	void									setParentModel(TreeViewModel* parentModel);
 
 	/**
 	 * @brief Returns if this ConfigNode is expanded.

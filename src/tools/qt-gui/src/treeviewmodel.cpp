@@ -14,9 +14,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-TreeViewModel::TreeViewModel(QObject* parent)
+TreeViewModel::TreeViewModel(QObject* parentModel)
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentModel);
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
@@ -25,27 +25,27 @@ TreeViewModel::TreeViewModel(const TreeViewModel& other)
 	m_model = other.m_model; // copy from other list
 }
 
-int TreeViewModel::rowCount(const QModelIndex& parent) const
+int TreeViewModel::rowCount(const QModelIndex& parentIndex) const
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentIndex);
 	return m_model.count();
 }
 
-QVariant TreeViewModel::data(const QModelIndex& index, int role) const
+QVariant TreeViewModel::data(const QModelIndex& idx, int role) const
 {
-	if (!index.isValid())
+	if (!idx.isValid())
 	{
-		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::data: Index = %1,\nModel size = %2").arg(index.row()).arg(m_model.count()));
+		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::data: Index = %1,\nModel size = %2").arg(idx.row()).arg(m_model.count()));
 		return QVariant();
 	}
 
-	if (index.row() > (m_model.size() - 1))
+	if (idx.row() > (m_model.size() - 1))
 	{
-		emit showMessage(tr("Error"), QString(tr("Index too high. ")), QString("TreeViewModel::data: Index: %1").arg(index.row()));
+		emit showMessage(tr("Error"), QString(tr("Index too high. ")), QString("TreeViewModel::data: Index: %1").arg(idx.row()));
 		return QVariant();
 	}
 
-	ConfigNodePtr node = m_model.at(index.row());
+	ConfigNodePtr node = m_model.at(idx.row());
 
 	switch (role)
 	{
@@ -81,7 +81,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 		return QVariant::fromValue(node->getParentModel());
 
 	case IndexRole:
-		return QVariant::fromValue(index.row());
+		return QVariant::fromValue(idx.row());
 
 	case IsNullRole:
 	{
@@ -100,39 +100,39 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 	}
 }
 
-bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int role)
+bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, int role)
 {
-	if (!index.isValid() || index.row() > (m_model.size() - 1))
+	if (!idx.isValid() || idx.row() > (m_model.size() - 1))
 	{
-		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1,\nModel size = %2").arg(index.row()).arg(m_model.count()));
+		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1,\nModel size = %2").arg(idx.row()).arg(m_model.count()));
 		return false;
 	}
 
-	ConfigNodePtr node = m_model.at(index.row());
+	ConfigNodePtr node = m_model.at(idx.row());
 
 	switch (role)
 	{
 
 	case NameRole:
-		node->setName(data.toString());
+		node->setName(modelData.toString());
 		break;
 
 	case ValueRole:
-		node->setValue(data);
+		node->setValue(modelData);
 		break;
 
 	case MetaValueRole:
 	{
-		QVariantList valueList = data.toList();
+		QVariantList valueList = modelData.toList();
 		node->setMeta(valueList.at(0).toString(), valueList.at(1));
 		break;
 	}
 
 	case IsExpandedRole:
-		node->setIsExpanded(data.toBool());
+		node->setIsExpanded(modelData.toBool());
 	}
 
-	emit dataChanged(index, index);
+	emit dataChanged(idx, idx);
 
 	return true;
 }
@@ -140,15 +140,15 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
 // TODO: Why are there two implementations of setData needed?
 // Because QML cannot call setData() directly (see https://bugreports.qt-project.org/browse/QTBUG-7932)
 // and to make it possible to set data without a QModelIndex
-void TreeViewModel::setData(int index, const QVariant& value, const QString& role)
+void TreeViewModel::setData(int idx, const QVariant& value, const QString& role)
 {
-	if (index < 0 || index > m_model.size() - 1)
+	if (idx < 0 || idx > m_model.size() - 1)
 	{
-		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1, Model size = %2").arg(index).arg(m_model.size()));
+		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1, Model size = %2").arg(idx).arg(m_model.size()));
 		return;
 	}
 
-	QModelIndex modelIndex = this->index(index);
+	QModelIndex modelIndex = this->index(idx);
 
 	if (role == "Name")
 	{
@@ -254,11 +254,11 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	populateModel(keySet);
 }
 
-void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString format, QString file)
+void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file)
 {
 	synchronize();
 
-	ConfigNodePtr node = model->model().at(index);
+	ConfigNodePtr node = parentModel->model().at(idx);
 
 	file.remove("file://");
 
@@ -326,12 +326,12 @@ KeySet TreeViewModel::collectCurrentKeySet()
 	return ksVisit.getKeySet();
 }
 
-Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
+Qt::ItemFlags TreeViewModel::flags(const QModelIndex& idx) const
 {
-	if (!index.isValid())
+	if (!idx.isValid())
 		return Qt::ItemIsEnabled;
 
-	return QAbstractItemModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+	return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
 void TreeViewModel::accept(Visitor& visitor)
@@ -386,9 +386,9 @@ void TreeViewModel::find(ConfigNodePtr node, TreeViewModel* searchResults, const
 	}
 }
 
-bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
+bool TreeViewModel::removeRow(int row, const QModelIndex& parentIndex)
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentIndex);
 
 	if (row < 0 || row > m_model.size() - 1)
 	{
@@ -416,9 +416,9 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 	return true;
 }
 
-bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
+bool TreeViewModel::insertRow(int row, const QModelIndex& parentIndex)
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentIndex);
 	ConfigNodePtr node(new ConfigNode);
 	node->setName(QString::fromStdString(m_metaModelParent.getName()));
 	node->setKey(m_metaModelParent);
@@ -666,18 +666,18 @@ QStringList TreeViewModel::mountedBackends()
 
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo(keySet);
 
-	QStringList mountedBackends;
+	QStringList mountedBends;
 
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin(); it != mtab.end(); ++it)
 	{
-		mountedBackends.append(QString::fromStdString(it->name));
+		mountedBends.append(QString::fromStdString(it->name));
 	}
 
 	//cannot read the size of the QStringList in QML
-	if (mountedBackends.isEmpty())
-		mountedBackends.append("empty");
+	if (mountedBends.isEmpty())
+		mountedBends.append("empty");
 
-	return mountedBackends;
+	return mountedBends;
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
