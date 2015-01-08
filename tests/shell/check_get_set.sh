@@ -53,8 +53,8 @@ do
 
 	cleanup()
 	{
-		$KDB umount $MOUNTNAME >/dev/null
-		succeed_if "could not umount $MOUNTNAME"
+		$KDB umount $MOUNTPOINT >/dev/null
+		succeed_if "could not umount $MOUNTPOINT"
 		rm -f $USER_FOLDER/$FILE
 		rm -f $SYSTEM_FOLDER/$FILE
 

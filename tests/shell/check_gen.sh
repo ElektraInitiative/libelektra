@@ -47,25 +47,21 @@ LIFT_FILE=test_lift.ini
 LIFT_USERROOT=user/test/lift
 LIFT_SYSTEMROOT=system/test/lift
 LIFT_MOUNTPOINT=/test/lift
-LIFT_MOUNTNAME=_test_lift
 $KDB mount $LIFT_FILE $LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $LIFT_FILE at $LIFT_MOUNTPOINT"
 
 MATERIAL_LIFT_FILE=test_material_lift.ini
 MATERIAL_LIFT_MOUNTPOINT=/test/material_lift
-MATERIAL_LIFT_MOUNTNAME=_test_material_lift
 $KDB mount $MATERIAL_LIFT_FILE $MATERIAL_LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $MATERIAL_LIFT_FILE at $MATERIAL_LIFT_MOUNTPOINT"
 
 PERSON_LIFT_FILE=test_person_lift.ini
 PERSON_LIFT_MOUNTPOINT=/test/person_lift
-PERSON_LIFT_MOUNTNAME=_test_person_lift
 $KDB mount $PERSON_LIFT_FILE $PERSON_LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $PERSON_LIFT_FILE at $PERSON_LIFT_MOUNTPOINT"
 
 HEAVY_MATERIAL_LIFT_FILE=test_heavy_material_lift.ini
 HEAVY_MATERIAL_LIFT_MOUNTPOINT=/test/heavy_material_lift
-HEAVY_MATERIAL_LIFT_MOUNTNAME=_test_heavy_material_lift
 $KDB mount $HEAVY_MATERIAL_LIFT_FILE $HEAVY_MATERIAL_LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $HEAVY_MATERIAL_LIFT_FILE at $HEAVY_MATERIAL_LIFT_MOUNTPOINT"
 
@@ -372,17 +368,17 @@ make clean
 
 
 
-$KDB umount $LIFT_MOUNTNAME >/dev/null
-succeed_if "could not umount $LIFT_MOUNTNAME"
+$KDB umount $LIFT_MOUNTPOINT >/dev/null
+succeed_if "could not umount $LIFT_MOUNTPOINT"
 
-$KDB umount $MATERIAL_LIFT_MOUNTNAME >/dev/null
-succeed_if "could not umount $MATERIAL_LIFT_MOUNTNAME"
+$KDB umount $MATERIAL_LIFT_MOUNTPOINT >/dev/null
+succeed_if "could not umount $MATERIAL_LIFT_MOUNTPOINT"
 
-$KDB umount $PERSON_LIFT_MOUNTNAME >/dev/null
-succeed_if "could not umount $PERSON_LIFT_MOUNTNAME"
+$KDB umount $PERSON_LIFT_MOUNTPOINT >/dev/null
+succeed_if "could not umount $PERSON_LIFT_MOUNTPOINT"
 
-$KDB umount $HEAVY_MATERIAL_LIFT_MOUNTNAME >/dev/null
-succeed_if "could not umount $HEAVY_MATERIAL_LIFT_MOUNTNAME"
+$KDB umount $HEAVY_MATERIAL_LIFT_MOUNTPOINT >/dev/null
+succeed_if "could not umount $HEAVY_MATERIAL_LIFT_MOUNTPOINT"
 
 rm -f $USER_FOLDER/test_*lift.ini
 rm -f $SYSTEM_FOLDER/test_*lift.ini

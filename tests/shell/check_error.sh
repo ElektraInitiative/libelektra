@@ -13,7 +13,6 @@ check_remaining_files $FILE_SUFFIX
 ROOT=user/test/script
 ROOT_FILE=${FILE_SUFFIX}_root.ecf
 ROOT_MOUNTPOINT=/test/script
-ROOT_MOUNTNAME=_test_script
 if is_plugin_available dump
 then
 	$KDB mount $ROOT_FILE $ROOT_MOUNTPOINT dump > /dev/null 2>&1
@@ -34,7 +33,6 @@ ERROR_FILE=${FILE_SUFFIX}_error.ecf
 USER_ERROR_FILE=${USER_FOLDER}/${ERROR_FILE}
 SYSTEM_ERROR_FILE=${SYSTEM_FOLDER}/${ERROR_FILE}
 ERROR_MOUNTPOINT=/test/script/error
-ERROR_MOUNTNAME=_test_script_error
 if is_plugin_available error
 then
 	echo "Testing operations on errornous backends"
@@ -79,8 +77,8 @@ then
 	[ "x`$KDB get $ROOT/valueable_data 2> /dev/null`" = "ximportant_unrecoverable_data" ]
 	succeed_if "data would have been lost"
 
-	$KDB umount $ERROR_MOUNTNAME >/dev/null
-	succeed_if "could not umount $ERROR_MOUNTNAME"
+	$KDB umount $ERROR_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $ERROR_MOUNTPOINT"
 
 
 
@@ -115,8 +113,8 @@ then
 	succeed_if "Wrong description in output"
 
 
-	$KDB umount $ERROR_MOUNTNAME >/dev/null
-	succeed_if "could not umount $ERROR_MOUNTNAME"
+	$KDB umount $ERROR_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $ERROR_MOUNTPOINT"
 fi
 rm $TMPFILE
 
@@ -125,8 +123,8 @@ rm $TMPFILE
 
 if is_plugin_available dump
 then
-	$KDB umount $ROOT_MOUNTNAME >/dev/null
-	succeed_if "could not umount $ROOT_MOUNTNAME"
+	$KDB umount $ROOT_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $ROOT_MOUNTPOINT"
 fi
 
 rm -f $USER_FOLDER/$FILE_SUFFIX*

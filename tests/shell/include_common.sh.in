@@ -18,7 +18,6 @@ nbTest=0
 scriptName=`basename $0`
 
 MOUNTPOINT="/tests/script"
-MOUNTNAME="_tests_script"
 
 NAMESPACES="user system"
 
@@ -198,6 +197,7 @@ is_plugin_available()
 	done
 	return 1
 }
+
 
 
 
