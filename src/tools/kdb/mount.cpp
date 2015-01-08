@@ -111,19 +111,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		path = cl.arguments[0];
 	}
 
-	backend.checkFile (path);
-
-	std::string configPath = Backends::getConfigBasePath(name);
-
-	mountConf.append ( *Key(configPath,
-			KEY_VALUE, "",
-			KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
-			KEY_END));
-	configPath += "/path";
-	mountConf.append ( *Key(configPath,
-			KEY_VALUE, path.c_str(),
-			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
-			KEY_END));
+	backend.useConfigFile(path);
 
 	istringstream sstream(cl.plugins);
 	std::string plugin;
@@ -161,7 +149,7 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
 	string keyName;
 	string value;
 
-	const string configBasePath = Backends::getConfigBasePath (name);
+	const string configBasePath = Backends::getConfigBasePath (mp);
 	if (cl.interactive)
 	{
 		cout << "Enter the plugin configuration" << endl;
