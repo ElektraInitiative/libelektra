@@ -101,7 +101,6 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	}
 
 	mp = mountpoint.getName();
-	name = Backends::escapeName(mountpoint.getName());
 
 	if (mp.empty())
 	{
@@ -174,9 +173,9 @@ Backend::~Backend()
 
 
 /**@pre: resolver needs to be loaded first
- * Will check the filename.
+ * Will check the filename and use it as configFile for this backend.
  * @throw FileNotValidException if filename is not valid */
-void Backend::checkFile (std::string file) const
+void Backend::useConfigFile(std::string file)
 {
 	typedef int (*checkFilePtr) (const char*);
 	checkFilePtr checkFileFunction = 0;
@@ -201,6 +200,8 @@ void Backend::checkFile (std::string file) const
 	int res = checkFileFunction(file.c_str());
 
 	if (res == -1) throw FileNotValidException();
+
+	configFile = file;
 }
 
 
@@ -347,11 +348,10 @@ std::ostream & operator<<(std::ostream & os, Backend const & b)
  * Write plugin into keyset ret below rootKey. */
 void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 {
-	assert(!name.empty());
 	assert(!mp.empty());
 	Key backendRootKey (rootKey);
-	backendRootKey.addBaseName (name);
-	backendRootKey.setString("serialised Backend");
+	backendRootKey.addBaseName (mp);
+	backendRootKey.setString("This is a configuration for a backend, see subkeys for more information");
 	ret.append(backendRootKey);
 
 
@@ -409,6 +409,11 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 	errorplugins.serialise(backendRootKey, ret);
 	getplugins.serialise(backendRootKey, ret);
 	setplugins.serialise(backendRootKey, ret);
+
+	ret.append ( *Key(backendRootKey.getName()+"/config/path",
+			KEY_VALUE, configFile.c_str(),
+			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
+			KEY_END));
 }
 
 
