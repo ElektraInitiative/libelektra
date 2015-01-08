@@ -112,6 +112,11 @@ int UndoManager::count() const
 	return m_undoStack->count();
 }
 
+void UndoManager::setIndex(int idx)
+{
+	m_undoStack->setIndex(idx);
+}
+
 void UndoManager::undo()
 {
 	m_undoStack->undo();

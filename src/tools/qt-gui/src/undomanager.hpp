@@ -139,7 +139,7 @@ public:
 	 */
 	Q_INVOKABLE void	createCutKeyCommand(TreeViewModel* model, int idx);
 
-	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, int index, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy);
+	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, int idx, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy);
 
 	/**
 	 * @brief This function is called when the configuration is saved; if the user closes the application
@@ -186,6 +186,8 @@ public:
 	 */
 
 	Q_INVOKABLE int		count() const;
+
+	Q_INVOKABLE void	setIndex(int idx);
 
 Q_SIGNALS:
 

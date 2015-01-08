@@ -13,6 +13,7 @@ Item {
 		id: configModel
 	}
 	property bool	contextMenuEnabled: pluginConfigTreeView.currentItem !== null
+	property int	stackIndex: undoManager.index()
 
 	ColumnLayout {
 
@@ -220,6 +221,9 @@ Item {
 			includeStorage = true
 			includeResolver = true
 			includedPluginsModel.clear()
+
+			if(undoManager.index() > stackIndex)
+				undoManager.setIndex(stackIndex)
 		}
 		cancelButton.action.onTriggered: {
 			wizardLoader.close()
