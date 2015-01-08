@@ -88,7 +88,6 @@ private:
 	kdb::tools::Backend*	m_backend;
 	kdb::KeySet				m_mountConf;
 	kdb::KDB				m_kdb;
-	QString					m_name;
 
 signals:
 	void showMessage(QString title, QString text, QString detailedText) const;

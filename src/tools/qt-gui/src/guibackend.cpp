@@ -38,16 +38,6 @@ void GUIBackend::createBackend(const QString &mountpoint)
 		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
 	}
 
-	Key cur = m_mountConf.lookup(parentKey);
-
-	if (!cur)
-	{
-		m_mountConf.append ( *Key(Backends::mountpointsPath,
-								  KEY_COMMENT, "Below are the mountpoints.",
-								  KEY_END));
-		m_mountConf.rewind();
-	}
-
 	try
 	{
 		m_backend->setMountpoint(Key(mountpoint.toStdString(), KEY_CASCADING_NAME, KEY_END), m_mountConf);
@@ -60,15 +50,13 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	{
 		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), ex.what());
 	}
-
-	m_name = QString::fromStdString(Backends::escapeName(mountpoint.toUtf8().constData()));
 }
 
 void GUIBackend::addPath(const QString &path)
 {
 	try
 	{
-		m_backend->checkFile(path.toStdString());
+		m_backend->useConfigFile(path.toStdString());
 	}
 	catch(FileNotValidException const& ex)
 	{
@@ -78,21 +66,6 @@ void GUIBackend::addPath(const QString &path)
 	{
 		emit showMessage(tr("Error"), tr("Could not add file."), ex.what());
 	}
-
-	std::string configPath = Backends::getConfigBasePath(m_name.toStdString());
-
-	m_mountConf.append(*Key(configPath,
-							KEY_VALUE, "",
-							KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
-							KEY_END));
-	configPath += "/path";
-
-	QByteArray pathArr = path.toLocal8Bit();
-
-	m_mountConf.append (*Key(configPath,
-							 KEY_VALUE, pathArr.data(),
-							 KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
-							 KEY_END));
 }
 
 void GUIBackend::addPlugin(QString name, QStringList config)
