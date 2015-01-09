@@ -136,7 +136,35 @@ static void test_keyHelpers()
 			default: succeed_if (0, "should not reach case statement");
 		}
 	}
-	
+
+	/* with escaped sequence at the begin:*/
+	name="user////\\\\/abc/\\/def\\\\/ghi\\/jkl\\\\///";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "user");
+				succeed_if (size == 4, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\");
+				succeed_if (size == 2, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "abc");
+				succeed_if (size == 3, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "\\/def\\\\");
+				succeed_if (size == 7, "wrong size returned"); break;
+			case 5: succeed_if_same_string (buffer, "ghi\\/jkl\\");
+				succeed_if (size == 9, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
 
 	parentSize=keyGetParentNameSize(key);
 	parentName=malloc(parentSize);
@@ -300,6 +328,18 @@ static void test_keyUnescaped()
 
 	keySetBaseName(k, "%");
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0%", sizeof("system/something/else/%")), "unescaped name wrong");
+
+	keySetBaseName(k, "\\");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\\", sizeof("system/something/else/\\")), "unescaped name wrong");
+
+	keySetBaseName(k, "\\\\");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\\\\", sizeof("system/something/else/\\\\")), "unescaped name wrong");
+
+	keySetName(k, "system/something\\/else");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something/else", sizeof("system/something/else")), "unescaped name wrong");
+
+	keySetName(k, "system/something\\\\/else");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\\\0else", sizeof("system/something\\/else")), "unescaped name wrong");
 
 	/* print memory of keyUnescapedName
 	for (size_t i = 0; i<sizeof("system/something/else/\\%"); ++i)

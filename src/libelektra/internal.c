@@ -496,7 +496,7 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 	// skip all backslashes, but one, at start of a name
 	while (*sp == '\\')
 	{
-		++sp; 
+		++sp;
 		++skippedBackslashes;
 	}
 	size -= skippedBackslashes;
@@ -555,7 +555,7 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
  * @brief Unescapes (a part of) a key name.
  *
  * As described in Syntax for Key Names, slashes are
- * prefixed with a \\. This method removes all \\ that are such
+ * prefixed with a \\ (or uneven number thereof). This method removes all \\ that are such
  * escape characters.
  *
  * The new string will be written to dest.
@@ -572,11 +572,18 @@ char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest)
 {
 	const char *sp = source;
 	char *dp = dest;
+	size_t count = 0;
 
 	while (size--)
 	{
-		if (*sp == '\\' && *(sp+1) == '/')
+		if (*sp == '\\')
 		{
+			++ count;
+		} else if (sp == '/')
+		{
+			if ((count % 2) == 1) // uneven number
+			{
+			}
 			*dp='/';
 			dp++;
 			sp+=2; // skip both
@@ -609,13 +616,6 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
 	size_t size = 0;
 	while (*(sp=keyNameGetOneLevel(sp+size,&size)))
 	{
-		/* skip all repeating '/' in the beginning */
-		while (*sp && *sp == KDB_PATH_SEPARATOR)
-		{
-			++sp;
-			--size;
-		}
-
 		if (!elektraUnescapeKeyNamePartBegin(sp, size, &dp))
 		{
 			dp = elektraUnescapeKeyNamePart(sp, size, dp);

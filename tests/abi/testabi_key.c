@@ -2046,9 +2046,9 @@ static void test_keyDirectBelow()
 	succeed_if(keyIsBelow(k1, k2) == 1, "below");
 	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
 
-	/* TODO: name escaping broken:
 	keySetName(k1, "user/dir");
 	keySetName(k2, "user/dir/direct\\\\/b");
+	succeed_if_same_string(keyName(k2), "user/dir/direct\\\\/b");
 	succeed_if(keyIsBelow(k1, k2) == 1, "below");
 	succeed_if(keyIsDirectBelow(k1, k2) == 0, "direct below, but shouldnt be");
 
@@ -2056,7 +2056,6 @@ static void test_keyDirectBelow()
 	keySetName(k2, "user/dir/direct\\\\/below");
 	succeed_if(keyIsBelow(k1, k2) == 1, "below");
 	succeed_if(keyIsDirectBelow(k1, k2) == 0, "direct below, but shouldnt be");
-	*/
 
 	keyDel(k1);
 	keyDel(k2);

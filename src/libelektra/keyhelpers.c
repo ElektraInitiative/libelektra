@@ -43,7 +43,9 @@
  *
  * Returns one level of the key name.
  *
- * Interface should be build on top of Keys.
+ * Only needed for escaping engine, otherwise the unescaped key name
+ * should be used!
+ *
  * Interface is not const-correct (it does a const-cast).
  *
  * This method is used to skip repeating '/' and to find escaping chars.
@@ -108,7 +110,13 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 		switch (real[cursor])
 		{
 		case KDB_PATH_ESCAPE:
-			escapeNext=1;
+			if (escapeNext)
+			{
+				// we escaped an escape
+				escapeNext = 0;
+			} else {
+				escapeNext=1;
+			}
 			break;
 		case KDB_PATH_SEPARATOR:
 			if (! escapeNext)

@@ -102,8 +102,8 @@
  *   described here (and only these).
  *   The \\ character must only be escaped, when one of the following
  *   rules apply. So there is no stray escape character possible.
- * - \\/ allows to escape /
- * - \\\\/ allows to use \\ as character before / (and so on)
+ * - \\/ allows to escape / (or any uneven number of \\)
+ * - \\\\/ allows to use \\ as character before / (or any even number of \\)
  * - Use \\. and \\.. if you want your key name part to represent . and ..
  * - \\\\. and \\\\.. allows to use \\ as character before . and .. (and so on)
  * - Use \\% if you want your key name part to start with \% (and does
