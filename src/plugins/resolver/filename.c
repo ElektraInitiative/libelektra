@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdbool.h>
-
 #include <kdbproposal.h>
 
 #define POSTFIX_SIZE 50

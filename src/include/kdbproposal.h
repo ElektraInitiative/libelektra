@@ -80,8 +80,6 @@ typedef enum
 elektraNamespace keyGetNamespace(Key const* key);
 
 
-// alternative to keyAddBaseName (adds full name)
-ssize_t keyAddName(Key *key, const char *addName);
 
 // locks a key, is this needed externally?
 int keyLock(Key *key,

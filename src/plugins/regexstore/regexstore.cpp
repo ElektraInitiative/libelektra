@@ -38,7 +38,6 @@
 using namespace ckdb;
 
 #include <kdberrors.h>
-#include <kdbproposal.h>
 
 int elektraRegexstoreOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
