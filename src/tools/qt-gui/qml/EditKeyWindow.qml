@@ -54,6 +54,9 @@ KeyWindow {
 
 			qmlMetaKeyModel.clear()
 			selectedNode = null
+
+			if(keyAreaModel !== null)
+				keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
 		}
 	}
 }
