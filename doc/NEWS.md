@@ -46,9 +46,9 @@ we simply fetch and lookup the configuration by following code:
     
     ksLookupByName(ks, "/sw/app/#0/promise", 0);
 
-We see in that example that the only Elektra pathes are hardcoded in
+We see in that example that only Elektra pathes are hardcoded in
 the application.  But those can be found out easily, completely without
-looking in the source code. The technique is simple: simply append a
+looking in the source code. The technique is simple: append a
 logger plugin and the KDB base path is printed to:
 
 - stdout in the case of the plugin tracer
