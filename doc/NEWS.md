@@ -24,7 +24,9 @@ meta data. The implementation of these features happened in `ksLookup`.
 When cascading keys (tagged with KEY_CASCADING_NAME and starting with `/`)
 are used following features are now available:
 
-- `override/#`: use these keys *in favour* of the key itself
+- `override/#`: use these keys *in favour* of the key itself (note that
+    `#` is the syntax for arrays, e.g. `#0` for the first element,
+    `#_10` for the 11th and so on)
 - `namespace/#`: instead of using all namespaces in the predefined order,
     one can specify which namespaces should be searched in which order
 - `fallback/#`: when no key was found in any of the (specified) namespaces
@@ -77,8 +79,9 @@ when `promise` was not available.
 The value `20` will be used as default, even if no configuration file
 is found.
 
-Note that the fallback works on *key level*, and not like most other
-systems have implemented, on configuration *file level*.
+Note that the fallback, override and cascading works on *key level*,
+and not like most other systems have implemented, on
+configuration *file level*.
 
 
 ## Namespaces
@@ -91,12 +94,12 @@ configuration source. E.g. keys starting with:
 - `system` are keys from the `/etc` directory of the current system
 
 When a key name starts with an `/` it means that it is looked up by
-specification. Such a key is not really present in the keyset, except
-when the default value was found. Such keys are neither received
+specification. Such a key is not really present in the keyset (except
+when a default value was found). Such keys are neither received
 nor stored by `kdbGet` and `kdbSet`.
 
-Applications shall only look up this way. If no specification is
-present, cascading of all namespaces is used as before.
+Applications shall only lookup using cascading keys (starting with `/`).
+If no specification is present, cascading of all namespaces is used as before.
 
 Elektra will (always) continue to work for applications that do not have a
 specification. We strongly encourage you, however, to write such a
@@ -105,6 +108,13 @@ specification, because:
 - it helps the administrator to know which keys exist
 - it documents the keys (including lookup behaviour and default value)
 - and many more advantages to come in future releases..
+
+For a tutorial how to actually elektrify an application and for more
+background to Elektra, read:
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md
+
+For a full list of proposed and implemented meta-data, see:
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/METADATA.ini
 
 
 ## Mounting specifications
@@ -118,11 +128,18 @@ will mount the specification if app.ini has following metadata in the top-level 
 - `filename` the name to be used as configuration file
 - `needs/#` the plugins to be loaded
 
-Such specification mounts will do a cascading mount (mountpoint in every namespace)
-and mount the file `app.ini` itself in the `spec` namespace.
+For example we extend above file:
 
-Note that specifications are currently copied to `/usr/share/elektra/specification/`
-or however CMake is configured: `@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@`
+    []
+    filename=app.json
+    needs/#0=yajl
+
+Such specification mounts will do a cascading mount (mountpoint in every namespace)
+of `app.json` using the plugin `yajl` and mount the file `app.ini` itself in the
+`spec` namespace.
+
+Note that specifications are currently copied to `@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@`
+e.g.: `/usr/share/elektra/specification/`
 
 ## API
 
