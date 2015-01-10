@@ -201,7 +201,8 @@ Backend* elektraBackendOpenMissing(Key *mp)
 }
 
 /**
- * Opens a default backend using the plugin named dump and resolver.
+ * Opens a default backend using the plugin named KDB_DEFAULT_RESOLVER
+ * and KDB_DEFAULT_STORAGE.
  *
  * @param modules the modules to work with
  * @param errorKey the key to issue warnings and errors to

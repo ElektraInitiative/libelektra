@@ -33,9 +33,9 @@ public:
 		return
 			"Meta key are information about keys.\n"
 			"\n"
-			"Typically there should be a more specific get/set\n"
-			"interface because it is error-prone to directly\n"
-			"edit metadata."
+			"Return values:\n"
+			"1 .. key not found\n"
+			"2 .. metakey not found\n"
 			;
 	}
 

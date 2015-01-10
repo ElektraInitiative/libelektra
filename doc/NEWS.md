@@ -1,3 +1,287 @@
+# 0.8.11 Release
+
+From the beginning of the Elektra Initiative, Elektra aimed for avoiding
+hard coded information in the application and to make the application's
+configuration more transparent. While avoiding any pathes to files was
+reality from the first released Elektra version, now also hard coding
+default values, fallback mechanisms and even Elektra's pathes to keys
+can be avoided.
+
+How does that work?
+
+Elektra 0.8.11 introduces a so called specification for the
+application's configuration. It is located below its own namespace
+`spec`.
+
+Once the base path is known, the user can find out all Elektra
+pathes used by an application, through:
+
+    kdb ls spec/basepath
+
+Keys in `spec` allow us to specify which keys are read by the application,
+which fallback it might have and which is the default value using
+meta data. The implementation of these features happened in `ksLookup`.
+When cascading keys (tagged with KEY_CASCADING_NAME and starting with `/`)
+are used following features are now available:
+
+- `override/#`: use these keys *in favour* of the key itself (note that
+    `#` is the syntax for arrays, e.g. `#0` for the first element,
+    `#_10` for the 11th and so on)
+- `namespace/#`: instead of using all namespaces in the predefined order,
+    one can specify which namespaces should be searched in which order
+- `fallback/#`: when no key was found in any of the (specified) namespaces
+    these keys will be searched
+- `default`: this value will be used if nothing else was found
+
+Our novel technique does not only give you the obvious advantages, but
+also provides complete transparency how a program will fetch a configuration
+value. In practice that means that:
+
+    kdb get "/sw/app/#0/promise"
+
+will give you the *exact same value* as the application uses when it
+lookups the key `promise`. Many `if`s and hardcoded values are avoided,
+we simply fetch and lookup the configuration by following code:
+
+    Key *parentKey = keyNew("/sw/app/#0", KEY_CASCADING_NAME, KEY_END);
+    kdbGet(kdb, ks, parentKey);
+    
+    ksLookupByName(ks, "/sw/app/#0/promise", 0);
+
+We see in that example that only Elektra pathes are hardcoded in
+the application.  But those can be found out easily, completely without
+looking in the source code. The technique is simple: append a
+logger plugin and the KDB base path is printed to:
+
+- stdout in the case of the plugin tracer
+- syslog in the case of the plugin syslog
+- journald in the case of the plugin journald
+
+What we do not see in the program above are the default values and
+fallbacks. They are only present in the so specification (namespace `spec`).
+Luckily, the specification are key/value pairs, too. So we do not have
+to learn something new, e.g. using the ni plugin:
+
+    [promise]
+    default=20
+    fallback/#0=/somewhere/else
+    namespace/#0=user
+
+When this file is mounted to spec/sw/app/#0 we specify, that only the
+namespace `user` should be used.
+
+If this key was not found, but `/somewhere/else` is present, we will use
+this key instead.  The `fallback` technique is very powerful: it allows
+us to have (recursive) links between applications. In the example above,
+the application is tricked in receiving e.g. the key `user/somewhere/else`
+when `promise` was not available.
+
+The value `20` will be used as default, even if no configuration file
+is found.
+
+Note that the fallback, override and cascading works on *key level*,
+and not like most other systems have implemented, on
+configuration *file level*.
+
+
+## Namespaces
+
+The specification gives the namespaces much clearer semantics and
+purpose. Key names starting with a namespace are connected to a
+configuration source. E.g. keys starting with:
+
+- `user` are keys from the home directory of the current user
+- `system` are keys from the `/etc` directory of the current system
+
+When a key name starts with an `/` it means that it is looked up by
+specification. Such a key is not really present in the keyset (except
+when a default value was found). Such keys are neither received
+nor stored by `kdbGet` and `kdbSet`.
+
+Applications shall only lookup using cascading keys (starting with `/`).
+If no specification is present, cascading of all namespaces is used as before.
+
+Elektra will (always) continue to work for applications that do not have a
+specification. We strongly encourage you, however, to write such a
+specification, because:
+
+- it helps the administrator to know which keys exist
+- it documents the keys (including lookup behaviour and default value)
+- and many more advantages to come in future releases..
+
+For a tutorial how to actually elektrify an application and for more
+background to Elektra, read:
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md
+
+For a full list of proposed and implemented meta-data, see:
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/METADATA.ini
+
+
+## Mounting specifications
+
+Such specifications can also be used for mounting:
+
+    kdb mount-spec "app.ini" "/sw/app/#0"
+
+will mount the specification if app.ini has following metadata in the top-level `[]` section:
+
+- `filename` the name to be used as configuration file
+- `needs/#` the plugins to be loaded
+
+For example we extend above file:
+
+    []
+    filename=app.json
+    needs/#0=yajl
+
+Such specification mounts will do a cascading mount (mountpoint in every namespace)
+of `app.json` using the plugin `yajl` and mount the file `app.ini` itself in the
+`spec` namespace.
+
+Note that specifications are currently copied to `@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@`
+e.g.: `/usr/share/elektra/specification/`
+
+## API
+
+The main API kdb.h has one added line:
+
+    ssize_t keyAddName(Key *key, const char *addName);
+
+This method is already used heavily in many parts. Contrary to `keySetBaseName` and
+`keyAddBaseName` it allows us to extend the path with more than one Element at once,
+i.e. `/` are not escaped.
+
+A new proposed function is `keyNameGetOneLevel`. Unlike to the previous
+function with the same name it will operate on null terminated strings.
+Currently it has the signature:
+
+    const char *keyNameGetOneLevel(Key *key, size_t where);
+
+The enum for the method `keyGetNamespace` was extended according to the
+new namespaces added.
+
+Finally, a bunch of new lookup options was added, which might not be
+useful for the public API (they allow us to disable the features
+mentioned in the beginning).
+
+## Obsolete and removed concepts
+
+The concept that backends get a name is now gone. Backends will simply
+be with their escaped mountpath below system/elektra/mountpoints without
+any confusing additional name.
+
+So unmounting only works with the path as given for the mount command.
+
+Removing this concept makes Elektra easier to understand and it also
+removes some bugs. E.g. having mountpoints which do not differ except
+having a `_` instead of a `/` would have caused problems with the
+automatic name generation of Elektra 0.8.10.
+
+Old mountpoints, however, now need to be removed with their name
+(`_` instead of `/`).
+
+Additionally, the so called directory keys were also removed.
+
+## parentName
+
+While empty/invalid names are still accepted as parentName to `kdbGet`
+and `kdbSet` for compatibility reasons,
+
+    keyNew("/", KEY_CASCADING_NAME, KEY_END);
+
+should be used instead. They have identical behaviour, except that
+invalid names (that cannot be distinguished from empty names) will
+produce a warning. In the next major version it will produce an error.
+
+## Qt-Gui 0.0.3
+
+Raffael Pancheri was very busy and did a lot of stabilizing work:
+
+- Added markdown converter functionality for plugin documentation
+- Added credits to other authors
+- do not show storage/resolver plugins if a plugin of that kind has been selected
+- added menu to newkey toolbar button to allow new array entries
+- fixed Arrayname not shown in disabled color when creating a new array
+- added option to include a configuration keyset when adding a plugin
+- refactored TreeView to make it possible to define behaviour externally
+- show included keys when creating the plugin configuration
+- moved TreeView functions to separate file
+- moved main functions to separate file
+- Added all storageplugins to namefilters
+- Simplified namefilters
+- Reimplement ErrorDialog
+- Added undo/redo of all commands and correctly update the view
+- modified ToolTip size
+- TreeView copy/cut branch view-update fix
+- metakey view update fix when selecting a new key when editkeywindow is
+- Fixed messed up keyWindow when keyname/value are very long
+- changed window modality so open window is blocking input to parent/
+- Color animation on search results
+- Some view update fixes
+- Moved AboutWindow to separate file
+- Moved MainToolBar to separate file
+- Moved TreeContextMenu to separate file
+- Moved KeyAreaContextMenu to separate file
+- Minor view fixes
+- Fixed GeneralMessageDialog size issues
+- GeneralMessageDialog title fix
+- Need to place TreeView functions inside TreeView.qml, else they cannot
+- Merge remote-tracking branch 'upstream/master'
+- fixed freeze when opening UnmountBackendWindow
+- fixed qml assignment errors
+- Fixed undo/redo all view updates
+- Refactored Buttons to accept shortcuts
+- Fixed broken Next Button in Wizard
+- small focus and shortcut fixes
+- Updated Translations
+
+
+## Bug fixing
+
+- fix issue with escaped backslashes in front of slashes
+- many fixes in docu
+- atomic commits across namespaces work again
+- memleak on ReadFile error in ni plugin
+- `kdb getmeta` reports errorcode if key, but no meta was found
+- `ksLookup` now will also work if a key of the keyset is used as
+    search-key (aliasing problem fixed by dup() on namelock)
+- resolver regex does not match to wrongly written plugins
+- jna plugin is now named libelektra-0.8.11.jar, with proper symlink to current version, for every CMake version
+- fix bashism ($RANDOM)
+- new keys are correctly renamed, fixes OpenICC (thanks to Felix Berlakovich)
+- comments in host keys are correctly restored (thanks to Felix Berlakovich)
+- output stream in type checking is no longer locale dependent (thanks to Manuel Mausz)
+- simplify CMAKE_DL_LIBS (thanks to Manuel Mausz)
+
+## Further gems
+
+- Examples were improved, added (e.g. cascading, namespace) and included in doxygen
+- All plugins now use the cmake function `add_plugin`
+   (thanks to Ian for most of the work)
+- keyGetNamespace is now used internally everywhere where namespaces
+    are handled. It should be much easier now to add a namespace if it
+    should be required to do so.
+- data directory (keysets as C-files) is now shared between different
+    kinds of test suites.
+- allocation tests were readded
+- More compiler flags are added and many warnings are fixed
+- cleanup of old unused `keyName` methods
+- The key `system/elektra/mountpoints` itself was always created and a
+    left-over on a freshly installed system after the unit tests run the
+    first time. The physical presence of the key is now irrelevant and
+    it won't be created automatically.
+- Bash completion was greatly improved (thanks to Manuel Mausz)
+- Configure scripts were refactored and are now much shorter (thanks to Manuel Mausz)
+- New Debian build agents were added that are magnitutes faster than the old ones (a big thanks to Manuel Mausz)
+- Many KDB tests, written in C, lua and python were added (thanks to Manuel Mausz)
+- SWIG3 is preferred when available
+- add the plugin counter that counts how often the methods of a plugin are called
+- `kdb list-tools` is now advertised in `kdb --help`
+
+
+
+
+
 # 0.8.10 Release
 
 - guid: 6ce57ecf-420a-4a31-821e-1c5fe5532eb4

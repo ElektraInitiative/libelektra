@@ -1,0 +1,59 @@
+#include <tests.hpp>
+
+void test_kdbGetSet()
+{
+	cout << "testing kdbSet() and kdbGet()" << endl;
+
+	{
+		KeySet ks_set (5,
+			*Key ("user/tests/key3", KEY_DIR, KEY_END),
+			*Key ("user/tests/key3/1", KEY_END),
+			*Key ("user/tests/key3/2", KEY_END),
+			*Key ("user/tests/key3/3", KEY_VALUE, "value", KEY_END),
+			KS_END);
+		KeySet ks;
+		KDB kdb;
+		kdb.get (ks, "user/tests/key3");
+		ks.append(ks_set);
+		kdb.set (ks, "user/tests/key3");
+	}
+
+	// check if they were written
+	{
+		KDB kdb;
+		KeySet ks;
+		kdb.get (ks, "user/tests/key3");
+		exit_if_fail(ks.lookup("user/tests/key3/3"), "could not find previously written key");
+		succeed_if(ks.lookup("user/tests/key3/3").get<std::string>() == "value", "could not get value");
+	}
+
+	// now remove keys (cleanup)
+	{
+		KeySet ks;
+		KDB kdb;
+		kdb.get (ks, "user/tests/key3");
+		ks.cut(Key("user/tests/key3", KEY_END));
+		kdb.set (ks, "user/tests/key3");
+	}
+
+	// check if its gone now
+	{
+		KDB kdb;
+		KeySet ks;
+		kdb.get (ks, "user/tests/key3");
+		succeed_if(!ks.lookup("user/tests/key3/3"), "key was not removed");
+	}
+
+}
+
+int main()
+{
+	cout << "KDB CLASS TESTS" << endl;
+	cout << "==================" << endl << endl;
+
+	test_kdbGetSet();
+
+	cout << endl;
+	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
+	return nbError;
+}

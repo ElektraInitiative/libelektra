@@ -198,13 +198,13 @@ static void test_us()
 	succeed_if (elektraMountOpen(kdb, config, modules, 0) == 0, "could not open mount");
 	succeed_if (elektraMountDefault(kdb, modules, 0) == 0, "could not mount default backend");
 
-	succeed_if (kdb->split->size == 3, "size of split not correct");
+	succeed_if (kdb->split->size == 5, "size of split not correct");
 	mp = keyNew("system", KEY_VALUE, "system", KEY_END);
 	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user"); keySetString (mp, "user");
 	compare_key(mp, kdb->split->parents[1]);
 	keySetName(mp, "system/elektra"); keySetString (mp, "default");
-	compare_key(mp, kdb->split->parents[2]);
+	compare_key(mp, kdb->split->parents[4]);
 	keyDel (mp);
 
 	Key *key = keyNew("user/anywhere/backend/simple", KEY_END);
@@ -258,11 +258,13 @@ static void test_cascading()
 
 	exit_if_fail (kdb->trie, "kdb->trie was not build up successfully");
 
-	succeed_if (kdb->split->size == 4, "size of split not correct");
-	Key *mp = keyNew("system/tests/simple", KEY_VALUE, "simple", KEY_END);
+	succeed_if (kdb->split->size == 7, "size of split not correct");
+	Key *mp = keyNew("dir/tests/simple", KEY_VALUE, "simple", KEY_END);
 	compare_key(mp, kdb->split->parents[0]);
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
 	compare_key(mp, kdb->split->parents[1]);
+	keySetName(mp, "system/tests/simple"); keySetString (mp, "simple");
+	compare_key(mp, kdb->split->parents[2]);
 	keyDel (mp);
 
 	// output_split (kdb->split);
@@ -352,13 +354,17 @@ static void test_root()
 
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
-	succeed_if (kdb->split->size == 3, "size of split not correct");
-	Key *mp = keyNew("system", KEY_VALUE, "root", KEY_END);
+	succeed_if (kdb->split->size == 5, "size of split not correct");
+	Key *mp = keyNew("spec", KEY_VALUE, "root", KEY_END);
 	compare_key(mp, kdb->split->parents[0]);
-	keySetName(mp, "user"); keySetString (mp, "root");
+	keySetName(mp, "dir"); keySetString (mp, "root");
 	compare_key(mp, kdb->split->parents[1]);
-	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
+	keySetName(mp, "user"); keySetString (mp, "root");
 	compare_key(mp, kdb->split->parents[2]);
+	keySetName(mp, "system"); keySetString (mp, "root");
+	compare_key(mp, kdb->split->parents[3]);
+	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
+	compare_key(mp, kdb->split->parents[4]);
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
@@ -411,15 +417,21 @@ static void test_default()
 	succeed_if (elektraMountOpen(kdb, root_config(), modules, errorKey) == 0, "could not buildup mount");
 	succeed_if (elektraMountDefault(kdb, modules, errorKey) == 0, "could not mount default backend");
 
-	succeed_if (kdb->split->size == 4, "size of split not correct");
-	Key *mp = keyNew("system", KEY_VALUE, "root", KEY_END);
+	succeed_if (kdb->split->size == 6, "size of split not correct");
+	Key *mp = keyNew("spec", KEY_VALUE, "root", KEY_END);
 	compare_key(mp, kdb->split->parents[0]);
-	keySetName(mp, "user"); keySetString (mp, "root");
+	keySetName(mp, "dir"); keySetString (mp, "root");
 	compare_key(mp, kdb->split->parents[1]);
-	keySetName(mp, "system/elektra"); keySetString (mp, "default");
-	compare_key(mp, kdb->split->parents[3]);
-	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
+	keySetName(mp, "user"); keySetString (mp, "root");
 	compare_key(mp, kdb->split->parents[2]);
+	keySetName(mp, "system"); keySetString (mp, "root");
+	compare_key(mp, kdb->split->parents[3]);
+	keySetName(mp, "system/elektra"); keySetString (mp, "default");
+	compare_key(mp, kdb->split->parents[5]);
+
+	// must be last, needed later
+	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
+	compare_key(mp, kdb->split->parents[4]);
 
 	succeed_if(output_warnings (errorKey), "warnings found");
 	succeed_if(output_error (errorKey), "error found");
@@ -497,22 +509,25 @@ static void test_modules()
 	succeed_if(output_warnings (errorKey), "warnings found");
 	succeed_if(output_error (errorKey), "error found");
 
-	// output_split (kdb->split);
-
-	succeed_if (kdb->split->size > 5, "size of split not correct");
-	Key *mp = keyNew("system", KEY_VALUE, "root", KEY_END);
+	succeed_if (kdb->split->size == 8, "size of split not correct");
+	Key *mp = keyNew("spec", KEY_VALUE, "root", KEY_END);
 	compare_key(mp, kdb->split->parents[0]);
-	keySetName(mp, "user"); keySetString (mp, "root");
+	keySetName(mp, "dir"); keySetString (mp, "root");
 	compare_key(mp, kdb->split->parents[1]);
-	keySetName(mp, "system/elektra"); keySetString (mp, "default");
+	keySetName(mp, "user"); keySetString (mp, "root");
+	compare_key(mp, kdb->split->parents[2]);
+	keySetName(mp, "system"); keySetString (mp, "root");
 	compare_key(mp, kdb->split->parents[3]);
-	/*
-	keySetName(mp, "system/elektra/modules/default"); keySetString (mp, "modules");
+	/* we cannot exactly know where resolver+dump is located
+	 *(depending on alphabet)
+	keySetName(mp, "system/elektra/modules/"KDB_DEFAULT_RESOLVER); keySetString (mp, "modules");
 	compare_key(mp, kdb->split->parents[4]);
 	*/
+	keySetName(mp, "system/elektra"); keySetString (mp, "default");
+	compare_key(mp, kdb->split->parents[5]);
 
 	keySetName(mp, "user/tests/simple"); keySetString (mp, "simple");
-	compare_key(mp, kdb->split->parents[2]);
+	compare_key(mp, kdb->split->parents[4]);
 
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
@@ -595,11 +610,18 @@ static void test_defaultonly()
 	succeed_if (elektraMountOpen(kdb, minimal_config(), modules, errorKey) == 0, "could not buildup mount");
 	succeed_if (elektraMountDefault(kdb, modules, errorKey) == 0, "could not mount default backend");
 
-	succeed_if (kdb->split->size == 2, "size of split not correct");
-	Key *mp = keyNew("system", KEY_VALUE, "default", KEY_END);
+
+	// output_split (kdb->split);
+
+	succeed_if (kdb->split->size == 4, "size of split not correct");
+	Key *mp = keyNew("spec", KEY_VALUE, "default", KEY_END);
 	compare_key(mp, kdb->split->parents[0]);
-	keySetName(mp, "user"); keySetString (mp, "default");
+	keySetName(mp, "dir"); keySetString (mp, "default");
 	compare_key(mp, kdb->split->parents[1]);
+	keySetName(mp, "user"); keySetString (mp, "default");
+	compare_key(mp, kdb->split->parents[2]);
+	keySetName(mp, "system"); keySetString (mp, "default");
+	compare_key(mp, kdb->split->parents[3]);
 
 	succeed_if(output_warnings (errorKey), "warnings found");
 	succeed_if(output_error (errorKey), "error found");

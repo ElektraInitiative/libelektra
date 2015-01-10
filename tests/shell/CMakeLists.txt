@@ -53,7 +53,7 @@ function (add_scripttest testname)
 					set (KDB_COMMAND "kdb")
 				endif (BUILD_STATIC)
 			endif (BUILD_FULL)
-			set(RACE_COMMAND "kdb race")
+			set(RACE_COMMAND "$KDB race")
 			set(INCLUDE_COMMON "${INCLUDE_COMMON_INSTALLED_FILE}if [ -z \"$KDB\" ]; then KDB=${KDB_COMMAND}; fi")
 			configure_file(
 				"${filename}"

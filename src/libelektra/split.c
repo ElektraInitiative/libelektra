@@ -219,9 +219,10 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
 
 
 /**
- * Walks through the trie and adds all backends below parentKey.
+ * Walks through kdb->split and adds all backends below parentKey to split.
  *
  * Sets syncbits to 2 if it is a default or root backend (which needs splitting).
+ * The information is copied from kdb->split.
  *
  * @pre split needs to be empty, directly after creation with elektraSplitNew().
  *
@@ -231,7 +232,7 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
  * @pre parentKey must be a valid key! (could be implemented more generally,
  *      but that would require splitting up of keysets of the same backend)
  *
- * @param split the split object to work with
+ * @param split will get all backends appended
  * @param kdb the handle to get information about backends
  * @param parentKey the information below which key the backends are from interest
  * @ingroup split
@@ -239,8 +240,12 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey)
  */
 int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 {
-
-	if (!parentKey || !strcmp(keyName(parentKey), ""))
+	/* For compatibility reasons invalid names are accepted, too.
+	 * This solution is faster than checking the name of parentKey
+	 * every time in loop.
+	 * The parentKey might be null in some unit tests, so also check
+	 * for this. */
+	if (!parentKey || !strcmp(keyName(parentKey), "") || !strcmp(keyName(parentKey), "/"))
 	{
 		parentKey = 0;
 	}
@@ -251,7 +256,12 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 
 	for (size_t i=0; i < kdb->split->size; ++i)
 	{
-		if (backend == kdb->split->handles[i] && keyRel(kdb->split->parents[i], parentKey) >= 0)
+		if (!parentKey)
+		{
+			/* Catch all: add all mountpoints */
+			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
+		}
+		else if (backend == kdb->split->handles[i] && keyRel(kdb->split->parents[i], parentKey) >= 0)
 		{
 			/* parentKey is exactly in this backend, so add it! */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
@@ -259,11 +269,6 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 		else if (keyRel(parentKey, kdb->split->parents[i]) >= 0)
 		{
 			/* this backend is completely below the parentKey, so lets add it. */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
-		}
-		else if (parentKey == 0)
-		{
-			/* We want every backend. */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 	}

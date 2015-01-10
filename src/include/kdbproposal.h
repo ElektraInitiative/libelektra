@@ -53,7 +53,7 @@ enum elektraLookupOptions
 	KDB_O_CREATE=1<<16,        ///< Create the key if it was not found
 	KDB_O_NOCASCADING=1<<17,   ///< Disable cascading search for keys starting with /
 	KDB_O_NOSPEC=1<<18,        ///< Do not use specification for cascading keys (internal)
-	KDB_O_NODEFAULT=1<<19,     ///< Do not honor the default spec (internal)
+	KDB_O_NODEFAULT=1<<19      ///< Do not honor the default spec (internal)
 };
 
 /**
@@ -80,8 +80,6 @@ typedef enum
 elektraNamespace keyGetNamespace(Key const* key);
 
 
-// alternative to keyAddBaseName (adds full name)
-ssize_t keyAddName(Key *key, const char *addName);
 
 // locks a key, is this needed externally?
 int keyLock(Key *key,

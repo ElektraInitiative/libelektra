@@ -76,7 +76,7 @@ int SetCommand::execute(Cmdline const& cl)
 			key.setBinary(0, 0);
 		}
 	}
-	Key n;
+	Key n("/", KEY_CASCADING_NAME, KEY_END);
 	kdb.set(conf, n);
 	printWarnings(cerr, n);
 	printError(cerr, n);

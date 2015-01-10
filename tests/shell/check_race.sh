@@ -6,20 +6,54 @@ echo
 
 check_version
 
+#set -x
+
 RACE="@RACE_COMMAND@"
 RACEKEYS=user/test/race/keys
 
-if [ "x`$KDB ls $RACEKEYS | wc -l 2> /dev/null`" = "x0" ]
+if [ "x`$KDB ls $RACEKEYS | wc -l 2> /dev/null`" != "x0" ]
 then
 	echo "There are already keys in $RACEKEYS, I will skip the test"
 	exit 0
 fi
 
-SHOULD=`$RACE 20 20 400 | grep won | wc -l`
-IS=`kdb ls user/test/race/keys | wc -l`
+if $RACE | grep "This program tests race condition in Elektra"
+then
+	echo "Doing race tests"
+else
+	echo "No $RACE tool installed"
+	exit 0
+fi
 
-[ "x$SHOULD" = "x$IS" ] && echo "warning: The resolver might have a race condition: $SHOULD does not equal $IS"
+do_race_test()
+{
+	SHOULD=`$RACE $* | grep won | wc -l`
+	IS=`$KDB ls user/test/race/keys | wc -l`
 
-$KDB rm -r user/test/race/keys
+	echo "$SHOULD - $IS in test $*"
+
+	[ "x$SHOULD" = "x$IS" ] 
+	succeed_if "The resolver has a race condition: $SHOULD does not equal $IS for $*"
+
+	[ "x$SHOULD" = "x1" ] 
+	succeed_if "race had more than one winner"
+
+	[ "x$IS" = "x1" ] 
+	succeed_if "keyset now contains more than one key"
+
+	$KDB rm -r user/test/race/keys
+}
+
+do_race_test 13 1 13
+do_race_test 1 13 13
+
+do_race_test 20 1 20
+do_race_test 1 20 20
+
+do_race_test 1 200 200
+do_race_test 200 1 200
+
+do_race_test 1 333 333
+do_race_test 333 1 333
 
 end_script

@@ -1,7 +1,6 @@
 #include <kdb.h>
 #include <kdbconfig.h>
 #include <kdbplugin.h>
-#include <kdbproposal.h>
 
 #include <string.h>
 
