@@ -641,7 +641,8 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	if (strcmp(comment1, comment2))    ret|=KEY_COMMENT;
 	if (strcmp(owner1, owner2))        ret|=KEY_OWNER;
 	if (size1 != size2)                ret|=KEY_VALUE;
-	if (memcmp(value1, value2, size1)) ret|=KEY_VALUE;
+	if (!value1 || !value2) ret|=KEY_VALUE;
+	else if (memcmp(value1, value2, size1)) ret|=KEY_VALUE;
 
 	return ret;
 }
