@@ -102,10 +102,17 @@
  *   described here (and only these).
  *   The \\ character must only be escaped, when one of the following
  *   rules apply. So there is no stray escape character possible.
- * - \\/ allows to escape / (or any uneven number of \\)
- * - \\\\/ allows to use \\ as character before / (or any even number of \\)
+ * - \\/ allows to escape / (any uneven number of \\).
+ *   Does not introduce a new part.
+ * - Any uneven number N of \\ before / allows you to escape / with the
+ *   N/2 of \\ prefixed.
+ *   Does not introduce a new part.
+ * - \\\\/ allows to use \\ as character before / and introduces a new
+ *   part.
+ * - Any even number N of \\ before / allows you to have N/2 of \\
+ *   prefixed before a / which introduces a new part.
  * - Use \\. and \\.. if you want your key name part to represent . and ..
- * - \\\\. and \\\\.. allows to use \\ as character before . and .. (and so on)
+ * - \\\\. and \\\\.. allows us to use \\ as character before . and .. (and so on)
  * - Use \\% if you want your key name part to start with \% (and does
  *   not represent an empty name)
  * - Use \\\\% allows to use \\ as character before \% (and so on)
