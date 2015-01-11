@@ -2175,26 +2175,13 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 
 	if (!ks->size) return 0;
 
-	if (name[0] == 'u' && name[4] == ':')
-	{
-		Key *key = keyNew(name, KEY_CASCADING_NAME, KEY_END);
-		found = ksLookup(ks, key, options);
-		keyDel (key);
-	}
-	else
-	{
-		struct _Key key;
-		size_t size = strlen(name)+1;
-		char localname [size*2];
-		strcpy(localname, name);
+	struct _Key key;
 
-		keyInit(&key);
-		key.key = localname;
-		key.keySize = size;
-		elektraFinalizeName(&key);
+	keyInit(&key);
+	elektraKeySetName(&key, name, KEY_META_NAME);
 
-		found = ksLookup(ks, &key, options);
-	}
+	found = ksLookup(ks, &key, options);
+	free (key.key);
 	return found;
 }
 
