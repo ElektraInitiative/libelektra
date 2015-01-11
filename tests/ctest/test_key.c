@@ -617,8 +617,7 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in owner");
 
 	keySetString (key1, "myvalue");
-	succeed_if(keyCompare(key1,key2) == (KEY_VALUE), "the keys should differ in value");
-
+	succeed_if(keyCompare(key1,key2) == KEY_VALUE, "the keys should differ in value");
 	keySetString (key2, "myvalue");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in value");
 
