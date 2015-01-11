@@ -275,26 +275,37 @@ Key* keyDup(const Key *source)
 	dest = elektraKeyMalloc();
 	if (!dest) return 0;
 
-	/* Copy the struct data, including the "next" pointer */
+	/* Copy the struct data */
 	*dest=*source;
+
+	/* get rid of properties bound to old key */
+	dest->ksReference = 0;
+	dest->flags=KEY_FLAG_SYNC;
 
 	/* prepare to set dynamic properties */
 	dest->key=
 	dest->data.v=
 	dest->meta=0;
 
-	/* get rid of properties bound to old key */
-	dest->ksReference = 0;
-	dest->flags=KEY_FLAG_SYNC;
+	/* duplicate dynamic properties */
+	if (source->key)
+	{
+		dest->key = elektraStrNDup(source->key, source->keySize);
+		if (!dest->key) goto memerror;
+	}
 
-	/* use any name as passed */
-	if (source->key && elektraKeySetName(dest,source->key,KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1) goto memerror;
-	if (source->data.v && keySetRaw(dest,source->data.v,source->dataSize) == -1) goto memerror;
+	if (source->data.v)
+	{
+		dest->data.v = elektraStrNDup(source->data.v, source->dataSize);
+		if (!dest->data.v) goto memerror;
+	}
+
 	if (source->meta)
 	{
 		dest->meta = ksDup (source->meta);
+		if (!dest->meta) goto memerror;
 	}
-	
+
 	return dest;
 memerror:
 	keyDel (dest);
