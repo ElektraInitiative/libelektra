@@ -950,21 +950,20 @@ ssize_t keyAddName(Key *key, const char *newName)
 	size_t size=0;
 	const char * p = newName;
 	int cascading = 0;
+	int avoidSlash = 0;
 
 	if (*key->key == '/')
 	{
 		cascading = 1;
-		printf ("key->key: %s, size: %d\n", key->key, key->keySize);
+		avoidSlash = key->keySize == 2;
 	}
 
 	-- key->keySize; // loop assumes, key->key[key->keySize] is last character and not NULL
 
 	/* iterate over each single folder name removing repeated '/', .  and .. */
 	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		printf ("level: %s, size: %d\n", p, size);
 		if (size == 1 && strncmp (p, ".",1) == 0)
 		{
-			/* printf ("ignore .\n"); */
 			continue; /* just ignore current directory */
 		}
 		else if (size == 2 && strncmp (p, "..", 2) == 0) /* give away one level*/
@@ -982,19 +981,26 @@ ssize_t keyAddName(Key *key, const char *newName)
 			{
 				key->keySize -= sizeOfLastLevel+1;
 				key->key[key->keySize]=0;
-				printf ("levels: %d new size: %d, removed: %d, now we are here: %s\n", levels, key->keySize, sizeOfLastLevel, &key->key[key->keySize]);
 			}
 			else if (cascading)
 			{
 				// strip down to root
 				key->keySize=1;
+				avoidSlash = 1;
 			}
 			continue;
 		}
 
 		/* Add a '/' to the end of key name, except for cascading */
-		key->key[key->keySize]=KDB_PATH_SEPARATOR;
-		key->keySize++;
+		if (!avoidSlash)
+		{
+			key->key[key->keySize]=KDB_PATH_SEPARATOR;
+			key->keySize++;
+		}
+		else
+		{
+			avoidSlash = 0;
+		}
 
 		/* carefully append basenames */
 		memcpy(key->key+key->keySize,p,size);
