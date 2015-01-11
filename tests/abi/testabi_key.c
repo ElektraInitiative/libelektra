@@ -738,35 +738,26 @@ static void test_keyNameSlashes()
 	for(i = 0 ; tstKeyName[i].testName != NULL ; i++) {
 		key = keyNew(tstKeyName[i].keyName, KEY_END);
 
+		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
+		keyCopy (copy, key);
+		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
+
+		Key *dup = keyDup(key);
+		succeed_if (keyGetRef (dup) == 0, "reference of dup not correct");
+
+		compare_key (copy, key);
+		compare_key (copy, dup);
+		compare_key (dup, key);
+
 		/* keyName */
 		succeed_if_same_string(keyName(key), tstKeyName[i].expectedKeyName);
+		succeed_if_same_string(keyName(copy), tstKeyName[i].expectedKeyName);
+		succeed_if_same_string(keyName(dup), tstKeyName[i].expectedKeyName);
 
 		/* keyBaseName */
 		succeed_if_same_string(keyBaseName(key), tstKeyName[i].expectedBaseName);
-
-#if 0
-		/* keyGetFullRootNameSize */
-		size = keyGetFullRootNameSize(key);
-		succeed_if( (size == strlen(tstKeyName[i].expectedFRootName)+1), "keyGetFullRootNameSize" );
-		
-		/* keyGetFullRootName */
-		buf = malloc(size*sizeof(char));
-		keyGetFullRootName(key, buf, size);
-		// printf ("comp: %s - %s\n", buf, tstKeyName[i].expectedFRootName);
-		succeed_if( (strncmp(buf, tstKeyName[i].expectedFRootName, size) == 0), "keyGetFullRootName" );
-		free(buf);
-
-		/* keyGetParentNameSize */
-		size = keyGetParentNameSize(key);
-		succeed_if( (size == strlen(tstKeyName[i].expectedParentName)+1), "ketGetParentNameSize" );
-
-		/* keyGetParentName */
-		size = keyGetParentNameSize(key)+1;
-		buf = malloc(size*sizeof(char));
-		keyGetParentName(key, buf, size);
-		succeed_if( (strncmp(buf, tstKeyName[i].expectedParentName, size) == 0), "keyGetParentName" );
-		free(buf);
-#endif
+		succeed_if_same_string(keyBaseName(copy), tstKeyName[i].expectedBaseName);
+		succeed_if_same_string(keyBaseName(dup), tstKeyName[i].expectedBaseName);
 
 		/* keyGetBaseNameSize */
 		size = keyGetBaseNameSize(key);
@@ -790,12 +781,8 @@ static void test_keyNameSlashes()
 		succeed_if_same_string (buf, tstKeyName[i].expectedKeyName);
 		free(buf);
 
-		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
-		keyCopy (copy, key);
-		compare_key (copy, key);
-		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
-
 		keyDel(key);
+		keyDel(dup);
 	}
 	keyDel (copy);
 }
