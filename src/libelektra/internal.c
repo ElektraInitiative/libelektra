@@ -396,49 +396,34 @@ char *elektraFormat(const char *format, va_list arg_list)
 
 
 /**
- * Validates whether the supplied keyname part is valid
- * The function looks for escape characters that do not escape
- * anything and also for unescaped characters that have
- * to be escaped.
+ * Validates whether the supplied keyname is valid.
  *
- * @param the key name part that is to be checked
- * @return true if the supplied keyname part is valid, false otherwise
+ * The function looks for tangling escape characters in the end
+ * and for a minimum length.
+ *
+ * Does not check for valid namespaces
+ *
+ * @param name the key name that is to be checked
+ * @param size a elektraStrLen of the key name
+ * @retval true if the supplied keyname part is valid
+ * @retval false if its invalid
  */
-int elektraValidateKeyNamePart(const char *name)
+int elektraValidateKeyName(const char *name, size_t size)
 {
-	const char *current = name;
-	const char *last = name + strlen(name) - 1;
-	const char *escapable = "\\/%#.";
-	int escapeCount = 0;
+	size_t escapeCount = 0;
 
-	current = name;
-	while (*current)
+	if (size < 2) return 0; // false
+
+	size -= 2; // forward null character to last character
+
+	// now do backwards iteration
+	while (size && name[size] == '\\')
 	{
-		if (*current == '\\')
-		{
-			escapeCount++;
-			if (escapeCount % 2 != 0)
-			{
-				/* this backslash won't be able to escape anything */
-				if (current == last) return 0;
-
-				/* check if the following character is escapable */
-				if (!strchr (escapable, *(current+1))) return 0;
-			}
-		}
-		else
-		{
-			/* there are no escape characters left to escape this slash */
-			if (*current == '/' && escapeCount % 2 == 0) return 0;
-
-			escapeCount = 0;
-		}
-
-		current ++;
+		++escapeCount;
+		--size;
 	}
 
-
-	return 1;
+	return (escapeCount % 2) == 0; // only allow equal number of escapes in the end
 }
 
 /**
@@ -730,7 +715,7 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 		return dest;
 	}
 
-	size_t count;
+	size_t count=0;
 
 	const char *sp = source;
 	char *dp = dest;
@@ -761,7 +746,7 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 		++dp;
 		++sp;
 	}
-	// print other escaped slashes, end of part
+	// print other escaped backslashes at end of part
 	while (count)
 	{
 		*dp='\\';

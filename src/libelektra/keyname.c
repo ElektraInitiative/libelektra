@@ -101,7 +101,8 @@
  * - \\ (backslash) is the escape character for the situations as
  *   described here (and only these).
  *   The \\ character must only be escaped, when one of the following
- *   rules apply. So there is no stray escape character possible.
+ *   rules apply.
+ * - Stray escape characters are only possible in the end of the string.
  * - \\/ allows to escape / (any uneven number of \\).
  *   Does not introduce a new part.
  * - Any uneven number N of \\ before / allows you to escape / with the
@@ -920,11 +921,16 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
  * The same way as in keySetName() this method finds the canonical pathname.
  * Unlike, keySetName() it adds it to an already existing name.
  *
+ * The passed name needs to be valid according the @link keyname key name rules @endlink.
+ * It is not allowed to:
+ * - be empty
+ * - end with unequal number of \\
+ *
  * @param key the key where a name should be added
  * @param newName the new name to append
  *
  * @retval -1 if key is a null pointer or did not have a valid name before
- * @retval -1 if newName is a null pointer or not a valid name (contains \\ in beginning)
+ * @retval -1 if newName is a null pointer or not a valid escaped name
  * @retval -1 on allocation errors
  * @retval -1 if key was inserted to a keyset before
  * @retval size of the new key
@@ -934,10 +940,11 @@ ssize_t keyAddName(Key *key, const char *newName)
 	if (!key) return -1;
 	if (!newName) return key->keySize;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
-	// if (!elektraValidateKeyNamePart(newName)) return -1;
 	if (!key->key) return -1;
+	size_t const nameSize = elektraStrLen(newName);
+	if (!elektraValidateKeyName(newName, nameSize)) return -1;
 
-	size_t const newSize = key->keySize + elektraStrLen(newName);
+	size_t const newSize = key->keySize + nameSize;
 	size_t const rootLength = key->keySize;
 	elektraRealloc ((void**)&key->key, newSize*2);
 	if (!key->key) return -1;

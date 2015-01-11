@@ -390,15 +390,133 @@ static void test_keyPlugin()
 	keyDel (k);
 }
 
-static void test_keyUnescaped()
-{
-	printf ("test unescaped\n");
+#define TEST_ESCAPE_PART(A, S) \
+	do { \
+	char a [] = A; \
+	char s [] = S; \
+	elektraEscapeKeyNamePart(a, buffer); \
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong"); \
+	} while(0)
 
+
+static void test_keyNameEscape()
+{
 	char buffer [500];
 
-	char s1 [] = "user/a/test";
-	elektraUnescapeKeyName(s1, buffer);
-	
+	printf ("test escapeKeyNamePart\n");
+
+	TEST_ESCAPE_PART("a", "a");
+	TEST_ESCAPE_PART("test", "test");
+
+	TEST_ESCAPE_PART("", "%");
+	TEST_ESCAPE_PART("%", "\\%");
+	TEST_ESCAPE_PART("\\%", "\\\\%");
+	TEST_ESCAPE_PART("\\\\%", "\\\\\\%");
+	TEST_ESCAPE_PART("\\\\\\%", "\\\\\\\\%");
+
+	TEST_ESCAPE_PART("\\", "\\\\"); // 1->2
+	TEST_ESCAPE_PART("\\\\", "\\\\\\\\"); // 2 -> 4
+	TEST_ESCAPE_PART("\\\\\\", "\\\\\\\\\\\\"); // 3 -> 6
+	TEST_ESCAPE_PART("\\\\\\\\", "\\\\\\\\\\\\\\\\"); // 4 -> 8
+	TEST_ESCAPE_PART("\\\\\\\\\\", "\\\\\\\\\\\\\\\\\\\\"); // 5 -> 10
+
+	TEST_ESCAPE_PART("a\\\\\\", "a\\\\\\\\\\\\"); // 3 -> 6
+	TEST_ESCAPE_PART("a/test", "a\\/test");
+	TEST_ESCAPE_PART("a\\/test", "a\\\\\\/test");
+
+	for (size_t i = 0; i<10; ++i)
+	{
+		int z = buffer[i];
+		printf ("%c %d\n", (char)z, z);
+	}
+}
+
+static void test_keyNameUnescape()
+{
+	char buffer [500];
+
+	printf ("test unescapeKeyNamePart\n");
+	{
+	char a [] = "\\\\a";
+	char s [] = "\\a";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	for (size_t i = 0; i<sizeof(s); ++i)
+	{
+		int z = buffer[i];
+		printf ("%c %d\n", (char)z, z);
+	}
+	}
+
+	{
+	char a [] = "\\\\";
+	char s [] = "\\";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "a\\/test";
+	char s [] = "a/test";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "a\\\\\\/test";
+	char s [] = "a\\/test";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "a\\\\\\\\\\/test";
+	char s [] = "a\\\\/test";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+
+	printf ("test unescapeKeyName\n");
+
+	{
+	char a [] = "user/a/test";
+	char s [] = "user\0a\0test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "user/a\\/test";
+	char s [] = "user\0a/test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "user/a\\\\/test";
+	char s [] = "user\0a\\\0test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "user/\\\\/test";
+	char s [] = "user\0\\\0test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	/*
+	for (size_t i = 0; i<sizeof(s); ++i)
+	{
+		int z = buffer[i];
+		printf ("%c %d\n", (char)z, z);
+	}
+	*/
+
+
+	printf ("test keyUnescapedName\n");
 
 	Key *k = keyNew("user/something", KEY_END);
 	succeed_if (!memcmp(keyUnescapedName(k), "user\0something", sizeof("user/something")), "unescaped name wrong");
@@ -437,8 +555,12 @@ static void test_keyUnescaped()
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something/else", sizeof("system/something/else")), "unescaped name wrong");
 
 	keySetName(k, "system/something/else/\\");
-	char sol2[] = "system\0something\0else\0\\";
+	char sol2[] = "system\0something\0else\0\\\\";
 	succeed_if (!memcmp(keyUnescapedName(k), sol2, sizeof(sol2)), "unescaped name wrong");
+	for (size_t i = 0; i<sizeof(sol2); ++i)
+	{
+		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
+	}
 
 	keyDel(k);
 }
@@ -1337,7 +1459,8 @@ int main(int argc, char** argv)
 	test_keyRefcounter();
 	test_keyHelpers();
 	test_keyPlugin();
-	test_keyUnescaped();
+	test_keyNameEscape();
+	test_keyNameUnescape();
 	test_keyCompare();
 	test_keyNewExtensions();
 	test_keyComment();
