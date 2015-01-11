@@ -497,7 +497,10 @@ ssize_t elektraFinalizeName(Key *key);
 ssize_t elektraFinalizeEmptyName(Key *key);
 
 char *elektraEscapeKeyNamePart(const char *source, char *dest);
+
 size_t elektraUnescapeKeyName(const char *source, char *dest);
+int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest);
+char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest);
 
 int elektraValidateKeyNamePart(const char *name);
 
