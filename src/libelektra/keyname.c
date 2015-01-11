@@ -453,19 +453,6 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 
 		keySetOwner (key, NULL);
 	}
-	else if (options & KEY_META_NAME)
-	{
-		/*
-		if (keyNameIsSpec(newName) || keyNameIsProc(newName) || keyNameIsDir(newName) ||
-					keyNameIsUser(newName) || keyNameIsSystem(newName))
-		{
-			return -1;
-		}
-		*/
-		size_t size = 0;
-		p=keyNameGetOneLevel(newName,&size);
-		rootLength = size+1;
-	}
 	else if (keyNameIsSpec(newName))
 	{
 		const size_t specLength=sizeof("spec")-1;
@@ -530,6 +517,19 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		key->keySize+=length;
 		keySetOwner (key, NULL);
 		rootLength  = systemLength+1;
+	}
+	else if (options & KEY_META_NAME)
+	{
+		/*
+		if (keyNameIsSpec(newName) || keyNameIsProc(newName) || keyNameIsDir(newName) ||
+					keyNameIsUser(newName) || keyNameIsSystem(newName))
+		{
+			return -1;
+		}
+		*/
+		size_t size = 0;
+		p=keyNameGetOneLevel(newName,&size);
+		rootLength = size+1;
 	}
 	else
 	{
