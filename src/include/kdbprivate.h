@@ -502,7 +502,7 @@ size_t elektraUnescapeKeyName(const char *source, char *dest);
 int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest);
 char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest);
 
-int elektraValidateKeyNamePart(const char *name);
+int elektraValidateKeyName(const char *name, size_t size);
 
 /** The buffer size needed for an array name
  *
