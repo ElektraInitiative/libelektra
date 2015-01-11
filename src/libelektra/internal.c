@@ -729,22 +729,44 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 	{
 		return dest;
 	}
-	
+
+	size_t count;
 
 	const char *sp = source;
 	char *dp = dest;
-	/* slashes and backslashes are escaped everywhere */
 	while (*sp)
 	{
-		if (*sp == '/')
+		if (*sp == '\\')
 		{
+			++count;
+		}
+		else if (*sp == '/')
+		{
+			// escape every slash
 			*dp='\\';
 			++dp;
+			// and print escaped slashes
+			while (count)
+			{
+				*dp='\\';
+				++dp;
+				--count;
+			}
 		}
-
+		else
+		{
+			count = 0;
+		}
 		*dp = *sp;
 		++dp;
 		++sp;
+	}
+	// print other escaped slashes, end of part
+	while (count)
+	{
+		*dp='\\';
+		++dp;
+		--count;
 	}
 	*dp = 0;
 	return dest;
