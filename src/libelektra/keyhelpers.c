@@ -41,12 +41,14 @@
 /**
  * @internal
  *
- * Returns one level of the key name.
+ * Returns one level of the escaped key name.
  *
  * Only needed for escaping engine, otherwise the unescaped key name
- * should be used!
+ * should be used! In the unescaped version, every level is null
+ * terminated.
  *
- * Interface is not const-correct (it does a const-cast).
+ * Interface is not const-correct. It does a const-cast needed for
+ * many clients.
  *
  * This method is used to skip repeating '/' and to find escaping chars.
  * Given @p keyName, this method returns a pointer to the next name level
@@ -95,8 +97,8 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 {
 	char *real=(char *)name;
 	size_t cursor=0;
-	int escapeNext=0;
-	int end=0;
+	int end=0; // bool to check for end of level
+	int escapeCount=0; // counter to check if / was escaped
 
 	/* skip all repeating '/' in the beginning */
 	while (*real && *real == KDB_PATH_SEPARATOR)
@@ -110,22 +112,16 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 		switch (real[cursor])
 		{
 		case KDB_PATH_ESCAPE:
-			if (escapeNext)
-			{
-				// we escaped an escape
-				escapeNext = 0;
-			} else {
-				escapeNext=1;
-			}
+			++escapeCount;
 			break;
 		case KDB_PATH_SEPARATOR:
-			if (! escapeNext)
+			if (! (escapeCount % 2))
 			{
 				end=1;
 			}
 			// fallthrough
 		default:
-			escapeNext=0;
+			escapeCount = 0;
 		}
 		++cursor;
 	}

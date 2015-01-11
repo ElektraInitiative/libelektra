@@ -137,7 +137,7 @@ static void test_keyHelpers()
 		}
 	}
 
-	/* with escaped sequence at the begin:*/
+	/* with double escaped slashes:*/
 	name="user////\\\\/abc/\\/def\\\\/ghi\\/jkl\\\\///";
 	size=0;
 	level=0;
@@ -154,14 +154,97 @@ static void test_keyHelpers()
 		{
 			case 1: succeed_if_same_string (buffer, "user");
 				succeed_if (size == 4, "wrong size returned"); break;
-			case 2: succeed_if_same_string (buffer, "\\");
+			case 2: succeed_if_same_string (buffer, "\\\\");
 				succeed_if (size == 2, "wrong size returned"); break;
 			case 3: succeed_if_same_string (buffer, "abc");
 				succeed_if (size == 3, "wrong size returned"); break;
 			case 4: succeed_if_same_string (buffer, "\\/def\\\\");
 				succeed_if (size == 7, "wrong size returned"); break;
-			case 5: succeed_if_same_string (buffer, "ghi\\/jkl\\");
+			case 5: succeed_if_same_string (buffer, "ghi\\/jkl\\\\");
+				succeed_if (size == 10, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	/* with triple escaped slashes:*/
+	name="user////\\\\\\/ab/\\\\\\/def\\\\/ghi/jkl\\\\\\///";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "user");
+				succeed_if (size == 4, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\\\\\/ab");
+				succeed_if (size == 6, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "\\\\\\/def\\\\");
 				succeed_if (size == 9, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "ghi");
+				succeed_if (size == 3, "wrong size returned"); break;
+			case 5: succeed_if_same_string (buffer, "jkl\\\\\\/");
+				succeed_if (size == 7, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	/* backslashes only:*/
+	name="/\\/\\\\/\\\\\\/\\\\\\\\/\\\\\\\\\\/\\\\\\\\\\\\/\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "\\/\\\\");
+				succeed_if (size == 1+1+2, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\\\\\/\\\\\\\\");
+				succeed_if (size == 3+1+4, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "\\\\\\\\\\/\\\\\\\\\\\\");
+				succeed_if (size == 5+1+6, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\");
+				succeed_if (size == 7+1+8, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	/* backslashes with slashes:*/
+	name="////////\\/\\\\//////\\\\\\/\\\\\\\\////\\\\\\\\\\/\\\\\\\\\\\\//\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "\\/\\\\");
+				succeed_if (size == 1+1+2, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\\\\\/\\\\\\\\");
+				succeed_if (size == 3+1+4, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "\\\\\\\\\\/\\\\\\\\\\\\");
+				succeed_if (size == 5+1+6, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\");
+				succeed_if (size == 7+1+8, "wrong size returned"); break;
 			default: succeed_if (0, "should not reach case statement");
 		}
 	}
@@ -311,6 +394,12 @@ static void test_keyUnescaped()
 {
 	printf ("test unescaped\n");
 
+	char buffer [500];
+
+	char s1 [] = "user/a/test";
+	elektraUnescapeKeyName(s1, buffer);
+	
+
 	Key *k = keyNew("user/something", KEY_END);
 	succeed_if (!memcmp(keyUnescapedName(k), "user\0something", sizeof("user/something")), "unescaped name wrong");
 
@@ -330,7 +419,16 @@ static void test_keyUnescaped()
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0%", sizeof("system/something/else/%")), "unescaped name wrong");
 
 	keySetBaseName(k, "\\");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\\", sizeof("system/something/else/\\")), "unescaped name wrong");
+	succeed_if_same_string(keyBaseName(k), "\\");
+	char sol1[] = "system\0something\0else\0\\";
+	succeed_if (!memcmp(keyUnescapedName(k), sol1, sizeof(sol1)), "unescaped name wrong");
+
+	/* print memory of keyUnescapedName
+	for (size_t i = 0; i<sizeof(sol1); ++i)
+	{
+		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
+	}
+	*/
 
 	keySetBaseName(k, "\\\\");
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\\\\", sizeof("system/something/else/\\\\")), "unescaped name wrong");
@@ -338,15 +436,9 @@ static void test_keyUnescaped()
 	keySetName(k, "system/something\\/else");
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something/else", sizeof("system/something/else")), "unescaped name wrong");
 
-	keySetName(k, "system/something\\\\/else");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\\\0else", sizeof("system/something\\/else")), "unescaped name wrong");
-
-	/* print memory of keyUnescapedName
-	for (size_t i = 0; i<sizeof("system/something/else/\\%"); ++i)
-	{
-		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
-	}
-	*/
+	keySetName(k, "system/something/else/\\");
+	char sol2[] = "system\0something\0else\0\\";
+	succeed_if (!memcmp(keyUnescapedName(k), sol2, sizeof(sol2)), "unescaped name wrong");
 
 	keyDel(k);
 }
@@ -957,6 +1049,56 @@ static void test_elektraKeySetName()
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "meta");
 	keyDel(dup);
+
+	elektraKeySetName(key, "user:hello/test", KEY_META_NAME | KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "user/test");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "user/test");
+	keyDel(dup);
+
+	for(int i=0; i<8; ++i)
+	{
+		int flags = 0;
+		if (i&1) flags|=KEY_CASCADING_NAME;
+		if (i&2) flags|=KEY_META_NAME;
+		if (i&4) flags|=KEY_EMPTY_NAME;
+
+		elektraKeySetName(key, "spec/test", flags);
+		succeed_if_same_string(keyName(key), "spec/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "spec/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "proc/test", flags);
+		succeed_if_same_string(keyName(key), "proc/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "proc/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "dir/test", flags);
+		succeed_if_same_string(keyName(key), "dir/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "dir/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "user:hello/test", flags);
+		succeed_if_same_string(keyName(key), "user/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "user/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "system/test", flags);
+		succeed_if_same_string(keyName(key), "system/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "system/test");
+		keyDel(dup);
+	}
 
 	keyDel(key);
 }
