@@ -72,9 +72,9 @@
 #if DEBUG || defined(ELEKTRA_BMC)
 #undef NDEBUG
 #include <assert.h>
-#define ELEKTRA_ASSERT assert
+#define ELEKTRA_ASSERT(NX) assert(NX)
 #else
-#define ELEKTRA_ASSERT
+#define ELEKTRA_ASSERT(NX)
 #endif
 
 
