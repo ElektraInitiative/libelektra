@@ -945,35 +945,57 @@ ssize_t keyAddName(Key *key, const char *newName)
 	if (!elektraValidateKeyName(newName, nameSize)) return -1;
 
 	size_t const newSize = key->keySize + nameSize;
-	size_t const rootLength = key->keySize;
 	elektraRealloc ((void**)&key->key, newSize*2);
-	if (!key->key) return -1;
 
 	size_t size=0;
 	const char * p = newName;
+	int cascading = 0;
 
-	-- key->keySize; // fix keySize for loop below
+	if (*key->key == '/')
+	{
+		cascading = 1;
+		printf ("key->key: %s, size: %d\n", key->key, key->keySize);
+	}
+
+	-- key->keySize; // loop assumes, key->key[key->keySize] is last character and not NULL
 
 	/* iterate over each single folder name removing repeated '/', .  and .. */
 	while (*(p=keyNameGetOneLevel(p+size,&size))) {
-		// printf ("level: %s, size: %d\n", p, size);
+		printf ("level: %s, size: %d\n", p, size);
 		if (size == 1 && strncmp (p, ".",1) == 0)
 		{
 			/* printf ("ignore .\n"); */
 			continue; /* just ignore current directory */
 		}
-		else if (size == 2 && strncmp (p, "..",2) == 0) /* give away directory */
+		else if (size == 2 && strncmp (p, "..", 2) == 0) /* give away one level*/
 		{
-			key->key[key->keySize] = 0; /* initialize first (valgrind) */
-			while (key->keySize >= rootLength && key->key[key->keySize] != KDB_PATH_SEPARATOR) key->keySize--;
-			/* printf ("do .. (key->keySize: %d), key->key: %s, rootLength: %d, key->keySize: %d\n",
-					key->keySize, key->key, rootLength, key->keySize); */
+			int levels = 0;
+			char *x = key->key;
+			size_t xsize = 0;
+			size_t sizeOfLastLevel = 0;
+			while (*(x=keyNameGetOneLevel(x+xsize,&xsize)))
+			{
+				sizeOfLastLevel = xsize;
+				levels++;
+			}
+			if (levels > 1)
+			{
+				key->keySize -= sizeOfLastLevel+1;
+				key->key[key->keySize]=0;
+				printf ("levels: %d new size: %d, removed: %d, now we are here: %s\n", levels, key->keySize, sizeOfLastLevel, &key->key[key->keySize]);
+			}
+			else if (cascading)
+			{
+				// strip down to root
+				key->keySize=1;
+			}
 			continue;
 		}
-		/* Add a '/' to the end of key name */
+
+		/* Add a '/' to the end of key name, except for cascading */
 		key->key[key->keySize]=KDB_PATH_SEPARATOR;
 		key->keySize++;
-		
+
 		/* carefully append basenames */
 		memcpy(key->key+key->keySize,p,size);
 		key->keySize+=size;
@@ -1012,11 +1034,13 @@ ssize_t keyAddName(Key *key, const char *newName)
  * A simple example is:
  * @snippet basename.c set base basic
  *
- * If you do not want escaping, use keySetBaseName() instead. E.g. if
- * you want to add an inactive key, use:
+ * If you want to add and not change the basename, use keyAddBaseName()
+ * instead. If you do not want escaping, use keyAddName() instead.
+ *
+ * To add an inactive key name, use:
  * @snippet testabi_key.c base1
  *
- * or when you want to add an array item, use:
+ * When you want to add an array item, use:
  * @snippet testabi_key.c base2
  *
  * @see keyname for more details on special names
@@ -1057,7 +1081,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 
 	if (!baseName)
 	{
-		// just remove base name
+		// just remove base name, so we are finished
 		elektraFinalizeName(key);
 		return key->keySize;
 	}
