@@ -747,8 +747,8 @@ elektraNamespace keyGetNamespace(const Key *key)
  *
  * @param key the object to obtain the basename from
  * @return a pointer to the basename
- * @return "" when the key has no (base)name
- * @return 0 on NULL pointer
+ * @retval "" when the key has no (base)name
+ * @retval 0 on NULL pointer
  * @see keyGetBaseName(), keyGetBaseNameSize()
  * @see keyName() to get a pointer to the name
  * @see keyOwner() to get a pointer to the owner
