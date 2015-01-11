@@ -579,22 +579,50 @@ char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest)
 		if (*sp == '\\')
 		{
 			++ count;
-		} else if (sp == '/')
+		}
+		else if (*sp == '/')
 		{
-			if ((count % 2) == 1) // uneven number
+			// we escape a part, so there had to be a
+			// backslash
+			ELEKTRA_ASSERT(count > 0);
+			// we counted an uneven number of backslashes
+			ELEKTRA_ASSERT((count % 2) == 1);
+
+			count /= 2;
+			while (count)
 			{
+				*dp = '\\';
+				++dp;
+				--count;
 			}
-			*dp='/';
-			dp++;
-			sp+=2; // skip both
-			size --;
+
+			*dp = *sp;
+			++dp;
 		}
 		else
 		{
+			// output delayed backslashes
+			while (count)
+			{
+				*dp = '\\';
+				++dp;
+				--count;
+			}
+
 			*dp = *sp;
-			dp++;
-			sp++;
+			++dp;
 		}
+		++sp;
+	}
+	// we counted an even number of backslashes
+	// otherwise we would not be at the end
+	ELEKTRA_ASSERT((count % 2)==0);
+	count /= 2;
+	while (count)
+	{
+		*dp = '\\';
+		++dp;
+		--count;
 	}
 	return dp;
 }
