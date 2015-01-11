@@ -396,12 +396,15 @@ static void test_keyPlugin()
 	char s [] = S; \
 	elektraEscapeKeyNamePart(a, buffer); \
 	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong"); \
+	elektraUnescapeKeyName(buffer, buffer2); \
+	succeed_if_same_string(a, buffer2); \
 	} while(0)
 
 
 static void test_keyNameEscape()
 {
 	char buffer [500];
+	char buffer2 [500];
 
 	printf ("test escapeKeyNamePart\n");
 
@@ -424,10 +427,40 @@ static void test_keyNameEscape()
 	TEST_ESCAPE_PART("a/test", "a\\/test");
 	TEST_ESCAPE_PART("a\\/test", "a\\\\\\/test");
 
+	/*
 	for (size_t i = 0; i<10; ++i)
 	{
 		int z = buffer[i];
 		printf ("%c %d\n", (char)z, z);
+	}
+	*/
+
+	printf ("test roundtripping properties\n");
+	Key *k = keyNew("user/a", KEY_END);
+#ifdef LONG_TEST
+	char a [] = "abcd";
+#else
+	char a [] = "ab";
+#endif
+	for (int c0 = 0; c0<256; ++c0)
+	for (int c1 = 0; c1<256; ++c1)
+#ifdef LONG_TEST
+	for (int c2 = 0; c2<256; ++c2)
+	for (int c3 = 0; c3<256; ++c3)
+#endif
+	{
+		a[0] = c0;
+		a[1] = c1;
+#ifdef LONG_TEST
+		a[2] = c2;
+		a[3] = c3;
+#endif
+		elektraEscapeKeyNamePart(a, buffer);
+		elektraUnescapeKeyName(buffer, buffer2);
+		succeed_if_same_string(a, buffer2);
+
+		keySetBaseName(k, a);
+		succeed_if_same_string(a, keyBaseName(k));
 	}
 }
 
