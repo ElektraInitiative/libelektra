@@ -471,21 +471,16 @@ static void test_keyNameUnescape()
 	printf ("test unescapeKeyNamePart\n");
 	{
 	char a [] = "\\\\a";
-	char s [] = "\\a";
+	char s [] = "\\\\a";
 	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
 	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	/*
 	for (size_t i = 0; i<sizeof(s); ++i)
 	{
 		int z = buffer[i];
 		printf ("%c %d\n", (char)z, z);
 	}
-	}
-
-	{
-	char a [] = "\\\\";
-	char s [] = "\\";
-	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
-	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	*/
 	}
 
 	{
@@ -587,13 +582,17 @@ static void test_keyNameUnescape()
 	keySetName(k, "system/something\\/else");
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something/else", sizeof("system/something/else")), "unescaped name wrong");
 
-	keySetName(k, "system/something/else/\\");
-	char sol2[] = "system\0something\0else\0\\\\";
+	succeed_if(keySetName(k, "system/something/else/\\") == -1, "tangling backslash");
+
+	keySetName(k, "system/something/else/\\\\");
+	char sol2[] = "system\0something\0else\0\\";
 	succeed_if (!memcmp(keyUnescapedName(k), sol2, sizeof(sol2)), "unescaped name wrong");
+	/*
 	for (size_t i = 0; i<sizeof(sol2); ++i)
 	{
 		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
 	}
+	*/
 
 	keyDel(k);
 }
@@ -607,6 +606,7 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys don't differ of course");
 
 	keySetName (key1, "user/myname");
+	succeed_if_same_string(keyName(key1), "user/myname");
 	succeed_if(keyCompare(key1,key2) == KEY_NAME, "the keys should differ in name");
 	keySetName (key2, "user/myname");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in name");
@@ -834,7 +834,7 @@ static void test_keyComment()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 	
 	succeed_if (key = keyNew(0), "could not create new key");
-	for (i=1; i<255; i++)
+	for (i=1; i<256; i++)
 	{
 		ret[0] = i; ret[1] = i; ret[2] = 0;
 		succeed_if (keySetComment (key,ret) == 3, "could not set comment");
@@ -930,7 +930,7 @@ static void test_keyOwner()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 	
 	succeed_if (key = keyNew(0), "could not create new key");
-	for (i=1; i<255; i++)
+	for (i=1; i<256; i++)
 	{
 		ret[0] = i; ret[1] = i; ret[2] = 0;
 		succeed_if (keySetOwner (key,ret) == 3, "could not set owner");
@@ -1205,6 +1205,20 @@ static void test_elektraKeySetName()
 	succeed_if_same_string(keyName(dup), "meta");
 	keyDel(dup);
 
+	elektraKeySetName(key, "other", KEY_META_NAME | KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "other");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "other");
+	keyDel(dup);
+
+	elektraKeySetName(key, "other///meta", KEY_META_NAME | KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "other/meta");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "other/meta");
+	keyDel(dup);
+
 	elektraKeySetName(key, "user:hello/test", KEY_META_NAME | KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "user/test");
 	succeed_if(key->key != 0, "null pointer?");
@@ -1310,6 +1324,15 @@ static void test_keyLock()
 	keyDel (key2);
 }
 
+#define TEST_ADD_NAME(base, toadd, result) \
+	do { \
+	k = keyNew(base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END); \
+	succeed_if (keyAddName(k, toadd)==sizeof(result), "could not add name"); \
+	succeed_if_same_string(keyName(k), result); \
+	keyDel(k); \
+	} while(0)
+
+
 static void test_keyAddName()
 {
 	Key *k = keyNew("user", KEY_END);
@@ -1319,6 +1342,48 @@ static void test_keyAddName()
 	keyAddName(k, "with/slash");
 	succeed_if_same_string(keyName(k), "user/something/with/slash");
 	keyDel(k);
+
+	TEST_ADD_NAME("spec", "something", "spec/something");
+	TEST_ADD_NAME("proc", "something", "proc/something");
+	TEST_ADD_NAME("dir", "something", "dir/something");
+	TEST_ADD_NAME("user", "something", "user/something");
+	TEST_ADD_NAME("system", "something", "system/something");
+
+	TEST_ADD_NAME("meta", "something", "meta/something");
+	TEST_ADD_NAME("meta/", "something", "meta/something");
+	TEST_ADD_NAME("meta//", "something", "meta/something");
+
+	TEST_ADD_NAME("meta", "something/", "meta/something");
+	TEST_ADD_NAME("meta", "something//", "meta/something");
+
+	TEST_ADD_NAME("meta", "/something", "meta/something");
+	TEST_ADD_NAME("meta", "//something", "meta/something");
+
+	TEST_ADD_NAME("user", "./user", "user/user");
+	TEST_ADD_NAME("user/", "./user", "user/user");
+	TEST_ADD_NAME("user/", "/./user", "user/user");
+	TEST_ADD_NAME("user/", "/////./user", "user/user");
+	TEST_ADD_NAME("user", "../user", "user/user");
+
+	TEST_ADD_NAME("user/verylongstringtoremove", "../x", "user/x");
+	TEST_ADD_NAME("user/huhu", "../x", "user/x");
+	TEST_ADD_NAME("user/rem", "../x", "user/x");
+	TEST_ADD_NAME("user/more/level", "../../x", "user/x");
+
+	TEST_ADD_NAME("user/something", "../user", "user/user");
+
+	TEST_ADD_NAME("/something", "user", "/something/user");
+	TEST_ADD_NAME("/", "user", "/user");
+	TEST_ADD_NAME("/s", "user", "/s/user");
+	TEST_ADD_NAME("/s", "/user", "/s/user");
+	TEST_ADD_NAME("/s", "../user", "/user");
+	TEST_ADD_NAME("/s", "..//user", "/user");
+	TEST_ADD_NAME("/more/level", "../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "../../../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "../../../../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "..///../../../../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "..///../../..////../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "../../....///../../..////../../../..//user", "/user");
 
 	k = keyNew("system/elektra/mountpoints/_t_error/config", KEY_END);
 	keyAddName(k, "on_open/error");
@@ -1358,6 +1423,26 @@ static void test_keyAddName()
 	k = keyNew("system", KEY_END);
 	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("system/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string(keyName(k), "system/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("meta", KEY_META_NAME, KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("meta/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "meta/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("/", KEY_CASCADING_NAME, KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("/", KEY_CASCADING_NAME, KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("/", KEY_CASCADING_NAME, KEY_END);
+	succeed_if (keyAddName(k, "/\\\\/foo_bar\\//%")==sizeof("/\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "/\\\\/foo_bar\\//%");
 	keyDel(k);
 }
 
