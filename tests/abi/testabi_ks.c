@@ -1103,6 +1103,12 @@ static void test_ksLookupByName()
 	name[29] = "user:wrongowner/dir2/key1";
 	name[30] = "user/dir2/key1";
 	name[31] = "user:max/dir2/key1";
+	name[32] = "user//dir1";
+	name[33] = "user///dir1";
+	name[34] = "user///./dir1";
+	name[35] = "user///./../dir1";
+	name[36] = "user///./../dir1/";
+	name[37] = "user///./../dir1//";
 
 	srand(23);
 
@@ -1112,8 +1118,7 @@ static void test_ksLookupByName()
 	for (i=0; i<100; i++)
 	{
 		ksUnsort(ks);
-		for (j=0; j<23;j++)
-			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not find key");
+		for (j=0; j<23;j++) succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not find key");
 		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookupByName(ks, name[23], 0) == 0, "found wrong key");
 		succeed_if (ksLookupByName(ks, name[24], KDB_O_NOCASE) == k[6], "did not find key");
@@ -1123,6 +1128,7 @@ static void test_ksLookupByName()
 		succeed_if (ksLookupByName(ks, name[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[28], KDB_O_WITHOWNER) == 0, "found wrong key");
 		succeed_if (ksLookupByName(ks, name[31], KDB_O_WITHOWNER) == k[13], "did not find key");
+		for (int n=32; n<38; ++n) succeed_if (ksLookupByName(ks, name[n], 0) == k[5], "did not find key");
 		/* Empty lines to add more tests:
 		succeed_if (ksLookupByName(ks, name[], ) == name[], "did not find key");
 		succeed_if (ksLookupByName(ks, name[], ) == 0, "found wrong key");
