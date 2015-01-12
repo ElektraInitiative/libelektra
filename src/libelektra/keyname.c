@@ -448,18 +448,10 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	if ( (options & KEY_CASCADING_NAME) &&
 		(newName[0] == '/'))
 	{
-		if (!strcmp(newName, "/"))
-		{
-			key->key = elektraCalloc(4);
-			key->key[0] = '/';
-			key->keySize=2;
-			elektraFinalizeName(key);
-			return key->keySize;
-		}
-		/* handle cascading key names */
-		rootLength = 1;
-
 		keySetOwner (key, NULL);
+
+		/* handle cascading key names */
+		rootLength = 2;
 	}
 	else if (keyNameIsSpec(newName))
 	{
@@ -916,6 +908,47 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 }
 
 /**
+ * @internal
+ *
+ * @brief Used by keyAddName
+ *
+ * Will remove one level of key, even if key->key is not null terminated
+ * also handles cascading keys and sets avoidSlash properly.
+ *
+ * @param key to remove one level
+ * @param [out] avoidSlash set to 1 if / is already present (cascading)
+ */
+static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
+{
+	int levels = 0;
+	char *x = key->key;
+	size_t xsize = 0;
+	size_t sizeOfLastLevel = 0;
+	char * const last = &key->key[key->keySize];
+	const char save = *last;
+	*last = 0;
+
+	while (*(x=keyNameGetOneLevel(x+xsize,&xsize)))
+	{
+		sizeOfLastLevel = xsize;
+		levels++;
+	}
+
+	if (levels > 1)
+	{
+		key->keySize -= sizeOfLastLevel+1;
+		key->key[key->keySize]=0;
+	}
+	else if (*key->key == '/') // cascading key
+	{
+		// strip down to root
+		key->keySize = 1;
+		*avoidSlash = 1;
+	}
+	*last = save;
+}
+
+/**
  * @brief Add a already escaped name to the keyname.
  *
  * The same way as in keySetName() this method finds the canonical pathname.
@@ -949,51 +982,31 @@ ssize_t keyAddName(Key *key, const char *newName)
 
 	size_t size=0;
 	const char * p = newName;
-	int cascading = 0;
 	int avoidSlash = 0;
 
 	if (*key->key == '/')
 	{
-		cascading = 1;
 		avoidSlash = key->keySize == 2;
 	}
 
 	-- key->keySize; // loop assumes, key->key[key->keySize] is last character and not NULL
 
 	/* iterate over each single folder name removing repeated '/', .  and .. */
-	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	{
 		if (size == 1 && strncmp (p, ".",1) == 0)
 		{
 			continue; /* just ignore current directory */
 		}
 		else if (size == 2 && strncmp (p, "..", 2) == 0) /* give away one level*/
 		{
-			int levels = 0;
-			char *x = key->key;
-			size_t xsize = 0;
-			size_t sizeOfLastLevel = 0;
-			while (*(x=keyNameGetOneLevel(x+xsize,&xsize)))
-			{
-				sizeOfLastLevel = xsize;
-				levels++;
-			}
-			if (levels > 1)
-			{
-				key->keySize -= sizeOfLastLevel+1;
-				key->key[key->keySize]=0;
-			}
-			else if (cascading)
-			{
-				// strip down to root
-				key->keySize=1;
-				avoidSlash = 1;
-			}
+			elektraRemoveOneLevel(key, &avoidSlash);
 			continue;
 		}
 
-		/* Add a '/' to the end of key name, except for cascading */
 		if (!avoidSlash)
 		{
+			/* Add a '/' to the end of key name */
 			key->key[key->keySize]=KDB_PATH_SEPARATOR;
 			key->keySize++;
 		}
@@ -1008,8 +1021,8 @@ ssize_t keyAddName(Key *key, const char *newName)
 	}
 
 	/* remove unescaped trailing slashes */
-	while (key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
-	key->keySize ++; /*for \\0 ending*/
+	while (key->keySize > 1 && key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
+	++ key->keySize; /*for \\0 ending*/
 
 	elektraFinalizeName(key);
 
