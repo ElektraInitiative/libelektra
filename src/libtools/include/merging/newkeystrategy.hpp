@@ -20,7 +20,8 @@ namespace tools
 
 namespace merging
 {
-
+// This strategy is basically a subset of the AutoMergeStrategy. It resolves
+// only conflicts where one side added key, while the other side did nothing.
 class NewKeyStrategy : public MergeConflictStrategy
 {
 public:
