@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include <merging/threewaymerge.hpp>
 #include <merging/metamergestrategy.hpp>
@@ -41,23 +42,21 @@ int main()
 	//     writing the keys back
 	//   * remove the root key itself from the result KeySet because it usually
 	//     contains the mounted filename and cannot be merged anyway
+	// Also have a look at the documentation of kdbSet
+	// (http://doc.libelektra.org/api/latest/html/group__kdb.html#ga11436b058408f83d303ca5e996832bcf).
+	// The merging framework can also be used to resolve conflicts resulting from
+	// concurrent calls to kdbSet as described in the examples of kdbSet.
 	{
 		KDB lkdb;
 		lkdb.get (ours, oursRoot);
 		ours = ours.cut (oursRoot);
 		ours.lookup(oursRoot, KDB_O_POP);
-	}
-	{
-		KDB lkdb;
 		lkdb.get (theirs, theirsRoot);
 		theirs = theirs.cut (theirsRoot);
-		ours.lookup(oursRoot, KDB_O_POP);
-	}
-	{
-		KDB lkdb;
+		theirs.lookup(theirsRoot, KDB_O_POP);
 		lkdb.get (base, baseRoot);
 		base = base.cut (baseRoot);
-		ours.lookup(oursRoot, KDB_O_POP);
+		base.lookup(baseRoot, KDB_O_POP);
 	}
 
 
@@ -107,11 +106,11 @@ int main()
 	// above uses the same merger instance. Alternatively we could have instantiated and configured
 	// a different merger only for the MetaKeys.
 
-	MergeConflictStrategy *autoMerge = new AutoMergeStrategy();
-	MergeConflictStrategy *ourVersion = new OneSideStrategy(OURS);
+	std::unique_ptr<MergeConflictStrategy> autoMerge (new AutoMergeStrategy());
+	std::unique_ptr<MergeConflictStrategy> ourVersion (new OneSideStrategy(OURS));
 
-	merger.addConflictStrategy(autoMerge);
-	merger.addConflictStrategy(ourVersion);
+	merger.addConflictStrategy(autoMerge.get());
+	merger.addConflictStrategy(ourVersion.get());
 
 	// Step 4: Perform the actual merge
 	MergeResult result = merger.mergeKeySet (
@@ -130,6 +129,8 @@ int main()
 		// write the result
 		resultKeys.append(result.getMergedKeys());
 		kdb.set (resultKeys, resultRoot);
+
+		return 0;
 	}
 	else
 	{
@@ -154,20 +155,8 @@ int main()
 		}
 
 		cerr << "Merge unsuccessful." << endl;
-	}
 
-	// Step 6: clean the instantiated strategies
-	delete autoMerge;
-	delete ourVersion;
-
-	if (!result.hasConflicts())
-	{
-		return 0;
-	}
-	else
-	{
 		return -1;
 	}
-
 }
 
