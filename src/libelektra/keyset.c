@@ -2178,7 +2178,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 	struct _Key key;
 
 	keyInit(&key);
-	elektraKeySetName(&key, name, KEY_META_NAME);
+	elektraKeySetName(&key, name, KEY_META_NAME|KEY_CASCADING_NAME);
 
 	found = ksLookup(ks, &key, options);
 	free (key.key);
