@@ -2048,6 +2048,46 @@ static void test_keyDirectBelow()
 	keyDel(k2);
 }
 
+#define TEST_ESCAPE_PART(A, S) \
+	do { \
+	succeed_if(keySetBaseName(k, A)!=-1, "keySetBaseName returned an error"); \
+	succeed_if_same_string(keyBaseName(k), A); \
+	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
+	succeed_if_same_string(buffer, A); \
+	} while(0)
+
+static void test_keyEscape()
+{
+	printf ("test escape in basename\n");
+
+	Key *k = keyNew("/", KEY_END);
+	char buffer [500];
+
+#include <data_escape.c>
+
+	keySetName(k, "spec");
+
+#include <data_escape.c>
+
+	keySetName(k, "proc");
+
+#include <data_escape.c>
+
+	keySetName(k, "dir");
+
+#include <data_escape.c>
+
+	keySetName(k, "user");
+
+#include <data_escape.c>
+
+	keySetName(k, "system");
+
+#include <data_escape.c>
+
+
+	keyDel(k);
+}
 
 int main(int argc, char** argv)
 {
@@ -2076,6 +2116,7 @@ int main(int argc, char** argv)
 	test_keySetBaseName();
 	test_keyAddBaseName();
 	test_keyDirectBelow();
+	test_keyEscape();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

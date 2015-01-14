@@ -408,24 +408,8 @@ static void test_keyNameEscape()
 
 	printf ("test escapeKeyNamePart\n");
 
-	TEST_ESCAPE_PART("a", "a");
-	TEST_ESCAPE_PART("test", "test");
+#include <data_escape.c>
 
-	TEST_ESCAPE_PART("", "%");
-	TEST_ESCAPE_PART("%", "\\%");
-	TEST_ESCAPE_PART("\\%", "\\\\%");
-	TEST_ESCAPE_PART("\\\\%", "\\\\\\%");
-	TEST_ESCAPE_PART("\\\\\\%", "\\\\\\\\%");
-
-	TEST_ESCAPE_PART("\\", "\\\\"); // 1->2
-	TEST_ESCAPE_PART("\\\\", "\\\\\\\\"); // 2 -> 4
-	TEST_ESCAPE_PART("\\\\\\", "\\\\\\\\\\\\"); // 3 -> 6
-	TEST_ESCAPE_PART("\\\\\\\\", "\\\\\\\\\\\\\\\\"); // 4 -> 8
-	TEST_ESCAPE_PART("\\\\\\\\\\", "\\\\\\\\\\\\\\\\\\\\"); // 5 -> 10
-
-	TEST_ESCAPE_PART("a\\\\\\", "a\\\\\\\\\\\\"); // 3 -> 6
-	TEST_ESCAPE_PART("a/test", "a\\/test");
-	TEST_ESCAPE_PART("a\\/test", "a\\\\\\/test");
 
 	/*
 	for (size_t i = 0; i<10; ++i)
@@ -462,6 +446,7 @@ static void test_keyNameEscape()
 		keySetBaseName(k, a);
 		succeed_if_same_string(a, keyBaseName(k));
 	}
+	keyDel(k);
 }
 
 static void test_keyNameUnescape()
