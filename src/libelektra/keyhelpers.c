@@ -139,44 +139,6 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 
 
 
-/**
- * @internal
- *
- * Gets number of bytes needed to store root name of a key name
- *
- * Possible root key names are @p system, @p user or @p "user:someuser" .
- *
- * @return number of bytes needed with ending NULL
- * @param keyName the name of the key
- * @see keyGetFullRootNameSize()
- * @ingroup keyname
- */
-ssize_t keyNameGetFullRootNameSize(const char *name)
-{
-	char *end;
-	int length=strlen(name);
-
-	if (!length) return 0;
-
-	/*
-		Possible situations:
-		user:someuser
-		user:someuser/
-		user:someuser/key/name
-		user:some.user/key/name
-		.
-		\.
-		(empty)
-	*/
-	end=strchr(name,KDB_PATH_SEPARATOR);
-	if (!end) /* Reached end of string. Root is entire key. */
-		end = (char *)name + length;
-
-	return end-name+1;
-}
-
-
-
 
 
 /**

@@ -66,7 +66,6 @@ ssize_t keySetComment(Key *key, const char *newDesc);
 int elektraKeyCmpOrder(const Key *a, const Key *b);
 
 /* Name Manipulation Methods */
-ssize_t keyNameGetFullRootNameSize(const char *name);
 ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
 ssize_t keyGetParentNameSize(const Key *key);
 
