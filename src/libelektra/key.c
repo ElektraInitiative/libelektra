@@ -287,29 +287,14 @@ Key* keyDup(const Key *source)
 	dest->data.v=
 	dest->meta=0;
 
-	/* duplicate dynamic properties */
-	if (source->key)
+	/* copy dynamic properties */
+	if (keyCopy(dest, source) == -1)
 	{
-		dest->key = elektraStrNDup(source->key, source->keySize);
-		if (!dest->key) goto memerror;
-	}
-
-	if (source->data.v)
-	{
-		dest->data.v = elektraStrNDup(source->data.v, source->dataSize);
-		if (!dest->data.v) goto memerror;
-	}
-
-	if (source->meta)
-	{
-		dest->meta = ksDup (source->meta);
-		if (!dest->meta) goto memerror;
+		keyDel(dest);
+		return 0;
 	}
 
 	return dest;
-memerror:
-	keyDel (dest);
-	return 0;
 }
 
 
@@ -435,30 +420,40 @@ int keyCopy (Key *dest, const Key *source)
 		return 0;
 	}
 
-	if (elektraKeySetName(dest,source->key,
-		KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1)
+	// free old resources of destination
+	ksDel(dest->meta);
+	elektraFree(dest->key);
+	elektraFree(dest->data.v);
+
+	// we obviously modified dest
+	set_bit(dest->flags, KEY_FLAG_SYNC);
+
+	/* duplicate dynamic properties */
+	if (source->key)
 	{
-		return -1;
+		dest->key = elektraStrNDup(source->key, source->keySize + source->keyUSize);
+		if (!dest->key) goto memerror;
 	}
 
-	if (keySetRaw(dest,source->data.v,source->dataSize) == -1)
+	if (source->data.v)
 	{
-		keySetName(dest, "");
-		return -1;
+		dest->data.v = elektraStrNDup(source->data.v, source->dataSize);
+		if (!dest->data.v) goto memerror;
 	}
 
 	if (source->meta)
 	{
-		ksDel(dest->meta);
 		dest->meta = ksDup (source->meta);
-	}
-	else
-	{
-		ksDel(dest->meta);
-		dest->meta = 0;
+		if (!dest->meta) goto memerror;
 	}
 
 	return 1;
+
+memerror:
+	ksDel(dest->meta);
+	elektraFree(dest->key);
+	elektraFree(dest->data.v);
+	return -1;
 }
 
 
