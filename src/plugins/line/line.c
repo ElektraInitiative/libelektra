@@ -58,7 +58,6 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 			keyDel (read);
 			return -1;
 		}
-		// TODO: check for null keys
 		keySetString(read, value);
 
 		ksAppendKey (returned, read);

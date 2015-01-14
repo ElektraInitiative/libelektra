@@ -18,7 +18,7 @@ The keys to be converted are identified by metakeys below "convert" (e.g. "conve
 The keys receiving the resulting meta data are identified by append strategies. 
 The plugin currently supports the following metakeys for controlling the conversion:
 
-- convert/metaname: specifies the name of the resulting metakey. For example taggng the key user/config/key1 with "convert/metaname = comment" means that the key will be converted to a metakey with the name "comment".
+- convert/metaname: specifies the name of the resulting metakey. For example tagging the key user/config/key1 with "convert/metaname = comment" means that the key will be converted to a metakey with the name "comment".
 - convert/append: specifies the append strategy (see below)
 - convert/append/samelevel: specifies that the key should only be written to the metadata of a key with the same hiearchy level (see below). 
 

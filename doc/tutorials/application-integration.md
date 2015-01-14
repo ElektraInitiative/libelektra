@@ -23,7 +23,7 @@ applications.
 
 ## Get Started
 
-As first step you need to create an in-memory `Key`. Such a `Key` is
+As first step in a C-applicaiton you need to create an in-memory `Key`. Such a `Key` is
 Elektra's atomic unit and consists of:
 
 - a unique name
@@ -50,23 +50,22 @@ we always can create one:
  - `current` is the profile to be used. This is needed by administrators
      if they want to start up multiple applications with different
      configurations.
-- KEY_CACADING_NAME is needed to accept a name starting with `/`. Such a
+- `KEY_CACADING_NAME` is needed to accept a name starting with `/`. Such a
     name cannot physically exist in configuration files, but they are
     the most important keys to actually work with configuration within
     applications as we will see in this tutorial.
-- KEY_END is needed because C needs a proper termination of variable
+- `KEY_END` is needed because C needs a proper termination of variable
     length arguments.
 
-[See API doc](http://doc.libelektra.org/api/current/html/group__key.html)
+[See API doc of Key for more information.](http://doc.libelektra.org/api/current/html/group__key.html)
 
 
 Now we have the `Key` we will use to pass as argument.
-First we open our key database (KDB). This is simply
-done by:
+First we open our key database (KDB). This is done by:
 
 	KDB *repo = kdbOpen(parentKey);
 
-`Key`s are seldom alone, but they are often found in groups, e.g. in
+A `Key` is seldom alone, but they are often found in groups, e.g. in
 configuration files. To represent many keys (a set of keys) Elektra
 has the data structure `KeySet`. Because the `Key`'s name is unique we
 can easily lookup keys in a `KeySet` without ambiguity. Additionally, we
@@ -79,7 +78,7 @@ To create an empty `KeySet` we use:
 - 200 is an approximation for how many `Key`s we think we will have in
     the `KeySet` conf
 - After the first argument we can list hardcoded keys.
-- The last argument needs to be KS_END.
+- The last argument needs to be `KS_END`.
 
 Now we have everything ready to fetch the latest configuration:
 
@@ -110,5 +109,5 @@ Obviously, to do this manually has severe drawbacks:
 So (larger) applications should not directly use the `KeySet`, but
 instead use code generation that provides a type-safe front-end.
 
-For more information about that, see
+For more information about that, continue reading
 [here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen)
