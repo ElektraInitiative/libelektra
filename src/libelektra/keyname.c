@@ -701,21 +701,24 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 elektraNamespace keyGetNamespace(const Key *key)
 {
 	if (!key) return KEY_NS_NONE;
-
-	if (!key->key) return KEY_NS_EMPTY;
-	if (!strcmp(key->key, "")) return KEY_NS_EMPTY;
-
-	if (key->key[0] == '/') return KEY_NS_CASCADING;
-
-	if (keyIsSpec (key)) return KEY_NS_SPEC;
-	if (keyIsProc (key)) return KEY_NS_PROC;
-	if (keyIsDir (key)) return KEY_NS_DIR;
-	if (keyIsUser (key)) return KEY_NS_USER;
-	if (keyIsSystem (key)) return KEY_NS_SYSTEM;
-
-	return KEY_NS_META;
+	return keyGetNameNamespace(key->key);
 }
 
+/**
+ * @internal
+ */
+elektraNamespace keyGetNameNamespace(const char *name)
+{
+	if (!name) return KEY_NS_EMPTY;
+	if (!strcmp(name, "")) return KEY_NS_EMPTY;
+	if (name[0] == '/') return KEY_NS_CASCADING;
+	else if (keyNameIsSpec(name)) return KEY_NS_SPEC;
+	else if (keyNameIsProc(name)) return KEY_NS_PROC;
+	else if (keyNameIsDir(name)) return KEY_NS_DIR;
+	else if (keyNameIsUser(name)) return KEY_NS_USER;
+	else if (keyNameIsSystem(name)) return KEY_NS_SYSTEM;
+	return KEY_NS_META;
+}
 
 
 
