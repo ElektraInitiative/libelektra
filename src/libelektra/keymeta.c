@@ -485,6 +485,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		{
 			/*It was already there, so lets drop that one*/
 			keyDel (ret);
+			key->flags |= KEY_FLAG_SYNC;
 		}
 	}
 
@@ -494,6 +495,8 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		metaStringDup = elektraStrNDup(newMetaString, metaStringSize);
 		if (!metaStringDup)
 		{
+			// TODO: actually we might already have changed
+			// the key
 			keyDel (toSet);
 			return -1;
 		}
