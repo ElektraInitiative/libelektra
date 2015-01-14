@@ -86,6 +86,8 @@ Level 3 name: def\/ghi
 Level 4 name: jkl
  * @endcode
  *
+ * @pre name must be non-null and point to a null terminated string
+ *
  * @param name the string that will be searched
  * @param size the number of bytes of level name found in @p keyName until
  * 	the next delimiter ('/')
