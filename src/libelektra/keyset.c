@@ -1855,7 +1855,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	return found;
 }
 
-static Key * elektraLookupLinearSearch(KeySet *ks, Key * key, option_t options)
+static Key * elektraLookupLinearSearch(KeySet *ks, Key *key, option_t options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
@@ -1895,7 +1895,7 @@ static Key * elektraLookupLinearSearch(KeySet *ks, Key * key, option_t options)
 	return current;
 }
 
-static Key * elektraLookupBinarySearch(KeySet *ks, Key * key, option_t options)
+static Key * elektraLookupBinarySearch(KeySet *ks, Key *key, option_t options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
