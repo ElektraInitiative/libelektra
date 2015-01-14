@@ -627,6 +627,12 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
 	const char * sp = source;
 	char * dp = dest;
 	size_t size = 0;
+	if (*source == '/')
+	{
+		// handling for cascading names
+		*dp = 0;
+		++dp;
+	}
 	while (*(sp=keyNameGetOneLevel(sp+size,&size)))
 	{
 		if (!elektraUnescapeKeyNamePartBegin(sp, size, &dp))
