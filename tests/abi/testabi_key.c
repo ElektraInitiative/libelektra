@@ -738,8 +738,11 @@ static void test_keyNameSlashes()
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name");
 
 	printf("Test key's name manipulation\n");
+
 	Key * copy = keyNew (0);
-	for(i = 0 ; tstKeyName[i].testName != NULL ; i++) {
+
+	for(i = 0 ; tstKeyName[i].testName != NULL ; i++)
+	{
 		key = keyNew(tstKeyName[i].keyName, KEY_END);
 
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
