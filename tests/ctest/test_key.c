@@ -1111,6 +1111,18 @@ static void test_elektraKeySetName()
 
 	succeed_if(elektraKeySetName(key, "/", KEY_CASCADING_NAME) != -1, "could not set cascading name");
 	succeed_if_same_string(keyName(key), "/");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/");
+	keyDel(dup);
+
+	elektraKeySetName(key, "/c", KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "/c");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/c");
+	keyDel(dup);
+
+	succeed_if(elektraKeySetName(key, "/", KEY_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if_same_string(keyName(key), "/");
 	elektraKeySetName(key, "/cascading", KEY_CASCADING_NAME);
 	succeed_if_same_string(keyName(key), "/cascading");
 	dup = keyDup(key);
@@ -1145,6 +1157,12 @@ static void test_elektraKeySetName()
 	succeed_if_same_string(keyName(key), "check/type");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "check/type");
+	keyDel(dup);
+
+	elektraKeySetName(key, "a", KEY_META_NAME);
+	succeed_if_same_string(keyName(key), "a");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "a");
 	keyDel(dup);
 
 	elektraKeySetName(key, "", KEY_EMPTY_NAME);
@@ -1368,15 +1386,34 @@ static void test_keyAddName()
 	TEST_ADD_NAME("/much/more/level/1/2/3", "..///../../../../../../..//user", "/user");
 	TEST_ADD_NAME("/much/more/level/1/2/3", "..///../../..////../../../..//user", "/user");
 	TEST_ADD_NAME("/much/more/level/1/2/3", "../../....///../../..////../../../..//user", "/user");
+	TEST_ADD_NAME("/s", ".../user", "/s/.../user");
+	TEST_ADD_NAME("/s", "..a/user", "/s/..a/user");
+	TEST_ADD_NAME("/s", "..../user", "/s/..../user");
+
+	// TEST_ADD_NAME("user", "///sw/../sw//././MyApp", "user/sw/MyApp");
+	TEST_ADD_NAME("user", "sw/../sw", "user/sw");
+	TEST_ADD_NAME("/", "/", "/");
+
+	TEST_ADD_NAME("/", "//", "/");
+	TEST_ADD_NAME("//", "/", "/");
+	TEST_ADD_NAME("//", "//", "/");
+	TEST_ADD_NAME("///", "//", "/");
+	TEST_ADD_NAME("//", "///", "/");
+	TEST_ADD_NAME("///", "///", "/");
+	TEST_ADD_NAME("///.", "///", "/");
+	TEST_ADD_NAME("///.", "///.", "/");
+	TEST_ADD_NAME("///.", "///./", "/");
+	TEST_ADD_NAME("///./", "///.", "/");
+	TEST_ADD_NAME("///./", "///./", "/");
+	TEST_ADD_NAME("///./..", "///./", "/");
+	TEST_ADD_NAME("///./..", "///./..", "/");
+	TEST_ADD_NAME("///./..", "///./../", "/");
+	TEST_ADD_NAME("///./../", "///./..", "/");
+	TEST_ADD_NAME("///./../", "///./../", "/");
 
 	k = keyNew("system/elektra/mountpoints/_t_error/config", KEY_END);
 	keyAddName(k, "on_open/error");
 	succeed_if_same_string(keyName(k), "system/elektra/mountpoints/_t_error/config/on_open/error");
-	keyDel(k);
-
-	k = keyNew("user", KEY_END);
-	succeed_if (keyAddName(k, "///sw/../sw//././MyApp")==sizeof("user/sw/MyApp"), "could not add name");
-	succeed_if_same_string(keyName(k), "user/sw/MyApp");
 	keyDel(k);
 
 	k = keyNew("user", KEY_END);
@@ -1531,7 +1568,7 @@ static void test_keyCopy()
 
 static void test_keyFixedNew()
 {
-	printf ("test fixed new");
+	printf ("test fixed new\n");
 	Key *k1 = keyNew(0);
 	Key *k2 = keyNew("", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
 	compare_key(k1, k2);
@@ -1549,6 +1586,24 @@ static void test_keyFixedNew()
 	compare_key(k1, k2);
 	keyDel(k1);
 	keyDel(k2);
+}
+
+static void test_keyCanonify()
+{
+	printf ("test canonify\n");
+
+	Key *k = keyNew("/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key",
+		KEY_CASCADING_NAME,
+		KEY_END);
+	succeed_if_same_string(keyName(k), "/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key");
+	succeed_if(keyGetNameSize(k) == 105, "name size wrong");
+	succeed_if(keyGetUnescapedNameSize(k) == 103, "unescaped name size wrong");
+	succeed_if_same_string((char*)keyUnescapedName(k), "");
+	succeed_if_same_string((char*)keyUnescapedName(k)+1, "a");
+	succeed_if_same_string((char*)keyUnescapedName(k)+3, "very");
+	succeed_if_same_string((char*)keyUnescapedName(k)+99, "key");
+
+	keyDel(k);
 }
 
 int main(int argc, char** argv)
@@ -1578,6 +1633,7 @@ int main(int argc, char** argv)
 	test_keyNeedSync();
 	test_keyCopy();
 	test_keyFixedNew();
+	test_keyCanonify();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

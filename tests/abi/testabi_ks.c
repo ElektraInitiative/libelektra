@@ -3018,6 +3018,34 @@ static void test_cutafter()
 	ksDel (split2);
 }
 
+static void test_simpleLookup()
+{
+	printf ("Test simple lookup\n");
+
+	KeySet *ks = ksNew(10, KS_END);
+
+	Key *searchKey = keyNew("user/something",
+		KEY_VALUE, "a value",
+		KEY_END);
+	Key *k0 = ksLookup(ks, searchKey, 0);
+	succeed_if(!k0, "we have a problem: found not inserted key");
+
+	Key *dup = keyDup(searchKey);
+	succeed_if_same_string(keyName(dup), "user/something");
+	succeed_if_same_string(keyString(dup), "a value");
+	ksAppendKey(ks, dup);
+	output_keyset(ks);
+
+	Key *k1 = ksLookup(ks, searchKey, 0);
+	succeed_if(k1, "we have a problem: did not find key");
+	succeed_if(k1 != searchKey, "same key, even though dup was used");
+	succeed_if_same_string(keyName(k1), "user/something");
+	succeed_if_same_string(keyString(k1), "a value");
+
+	keyDel(searchKey);
+	ksDel(ks);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEYSET ABI   TESTS\n");
@@ -3061,6 +3089,7 @@ int main(int argc, char** argv)
 	test_morecut();
 	test_cutafter();
 	test_ksOrder();
+	test_simpleLookup();
 
 	// BUGS:
 	// test_ksLookupValue();
