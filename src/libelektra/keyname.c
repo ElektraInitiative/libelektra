@@ -372,6 +372,36 @@ ssize_t elektraFinalizeEmptyName(Key *key)
 	return key->keySize;
 }
 
+static void elektraHandleUserName(Key *key, const char* newName)
+{
+	const size_t userLength=sizeof("user");
+	key->keyUSize=key->keySize=userLength;
+
+	const char delim = newName[userLength-1];
+	// no owner, we are finished
+	if (delim == '/' || delim == '\0') return;
+	ELEKTRA_ASSERT(delim == ':');
+
+	// handle owner (compatibility, to be removed)
+	keyNameGetOneLevel(newName, &key->keyUSize);
+	const size_t ownerLength=key->keyUSize-userLength;
+	++key->keyUSize;
+	char *owner=elektraMalloc(ownerLength+1);
+	if (!owner) return; // out of memory, ok for owner
+	strncpy(owner,newName+userLength,ownerLength);
+	owner[ownerLength]=0;
+	keySetOwner(key, owner);
+	elektraFree (owner);
+}
+
+static void elektraRemoveKeyName(Key *key)
+{
+	if (key->key) elektraFree(key->key);
+	key->key=0;
+	key->keySize=0;
+	key->keyUSize=0;
+}
+
 
 /**
  * Set a new name to a key.
@@ -416,165 +446,42 @@ ssize_t keySetName(Key *key, const char *newName)
 ssize_t elektraKeySetName(Key *key, const char *newName,
 		option_t options)
 {
-	size_t length;
-	char *p=0;
-
 	if (!key) return -1;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
-	if (key->key) elektraFree(key->key);
-	key->key = 0;
-	key->keySize=1; /* equal to length plus room for \\0 */
+	elektraRemoveKeyName(key);
 
-	/* handle null new key name, removing the old name */
-	if (!newName || !(length=elektraStrLen(newName)-1))
+	if (!(options & KEY_META_NAME)) keySetOwner (key, NULL);
+
+	switch(keyGetNameNamespace(newName))
 	{
+	case KEY_NS_NONE: ELEKTRA_ASSERT(0);
+	case KEY_NS_EMPTY:
 		elektraFinalizeEmptyName(key);
-		return 0; // we need to return 0 because of specification
-	}
+		return 0; // as documented
+	case KEY_NS_CASCADING: key->keyUSize=1;key->keySize=sizeof("/"); break;
+	case KEY_NS_SPEC: key->keyUSize=key->keySize=sizeof("spec"); break;
+	case KEY_NS_PROC: key->keyUSize=key->keySize=sizeof("proc"); break;
+	case KEY_NS_DIR: key->keyUSize=key->keySize=sizeof("dir"); break;
+	case KEY_NS_USER: elektraHandleUserName(key, newName); break;
+	case KEY_NS_SYSTEM: key->keyUSize=key->keySize=sizeof("system"); break;
+	case KEY_NS_META:
+		if (!(options & KEY_META_NAME)) return -1;
+		keyNameGetOneLevel(newName,&key->keySize);
+		key->keyUSize = ++ key->keySize; // for null
+		break;
+	} // Note that we abused keyUSize for cascading and user:owner
 
-	size_t rootLength=keyNameGetFullRootNameSize(newName)-1;
-
-	if (!(options & KEY_CASCADING_NAME) && !rootLength)
-	{
-		return -1;
+	key->key=elektraStrNDup(newName, key->keySize*2);
+	const size_t length = elektraStrLen(newName);
+	if (length == key->keyUSize || length == key->keySize)
+	{	// use || because full length is USize in user, but Size for /
+		// newName consisted of root only
+		elektraFinalizeName(key);
+		return key->keyUSize;
 	}
-
-	if ( (options & KEY_EMPTY_NAME) &&
-		(!strcmp(newName, "")))
-	{
-		return elektraFinalizeEmptyName(key);
-	}
-	if ( (options & KEY_CASCADING_NAME) &&
-		(newName[0] == '/'))
-	{
-		keySetOwner (key, NULL);
-
-		/* handle cascading key names */
-		rootLength = 2;
-	}
-	else if (keyNameIsSpec(newName))
-	{
-		const size_t specLength=sizeof("spec")-1;
-		key->keySize+=length;
-		keySetOwner (key, NULL);
-		rootLength  = specLength+1;
-	}
-	else if (keyNameIsProc(newName))
-	{
-		const size_t procLength=sizeof("proc")-1;
-		key->keySize+=length;
-		keySetOwner (key, NULL);
-		rootLength  = procLength+1;
-	}
-	else if (keyNameIsDir(newName))
-	{
-		const size_t dirLength=sizeof("dir")-1;
-		key->keySize+=length;
-		keySetOwner (key, NULL);
-		rootLength  = dirLength+1;
-	}
-	else if (keyNameIsUser(newName))
-	{
-		const size_t userLength=sizeof("user")-1;
-		size_t ownerLength=rootLength-userLength;
-		if (ownerLength>0) --ownerLength;
-		if (length > userLength)
-		{
-			/* handle "user?*" */
-			if (*(newName+userLength)==':')
-			{
-				/* handle "user:*" */
-				if (ownerLength > 0)
-				{
-					char *owner;
-					p=elektraMalloc(ownerLength+1);
-					if (NULL==p) goto error_mem;
-					owner=p;
-					strncpy(owner,newName+userLength+1,ownerLength);
-					owner[ownerLength]=0;
-					keySetOwner(key, owner);
-					elektraFree (owner);
-				}
-				key->keySize+=length-ownerLength-1;  /* -1 is for the ':' */
-			} else if (*(newName+userLength)!=KDB_PATH_SEPARATOR) {
-				/* handle when != "user/ *" */
-				return -1;
-			} else {
-				/* handle regular "user/ *" */
-				key->keySize+=length;
-			}
-		} else {
-			/* handle "user" */
-			key->keySize+=userLength;
-		}
-
-		rootLength  = userLength+1;
-	}
-	else if (keyNameIsSystem(newName))
-	{
-		const size_t systemLength=sizeof("system")-1;
-		key->keySize+=length;
-		keySetOwner (key, NULL);
-		rootLength  = systemLength+1;
-	}
-	else if (options & KEY_META_NAME)
-	{
-		/*
-		if (keyNameIsSpec(newName) || keyNameIsProc(newName) || keyNameIsDir(newName) ||
-					keyNameIsUser(newName) || keyNameIsSystem(newName))
-		{
-			return -1;
-		}
-		*/
-		size_t size = 0;
-		p=keyNameGetOneLevel(newName,&size);
-		rootLength = size+1;
-	}
-	else
-	{
-		/** Unsupported key name */
-		return -1;
-	}
-
-	/*
-	   At this point:
-	   - key->key has no memory (re)allocated yet
-	   - key->keySize has number of bytes that will be allocated for key name
-	     with already removed owner. (even though we do not need it)
-	   - owner is already set
-	   - rootLength is sizeof("user") or sizeof("system")
-	*/
-
-	/* Allocate memory for key->key */
-	p=elektraCalloc(rootLength);
-	if (NULL==p) goto error_mem;
-	key->key=p;
-
-	/* copy the root of newName to final destination */
-	strncpy(key->key,newName,rootLength);
-
-	/* finish root name for keyAddName() */
-	key->keySize=rootLength;
-	key->key[rootLength-1] = '\0';
-
-	size_t size = 0;
-	if ((options & KEY_CASCADING_NAME) &&
-		(newName[0] == '/'))
-	{
-		p = (char*)newName;
-		size=1;
-	}
-	else
-	{
-		/* skip namespace we already processed */
-		p=keyNameGetOneLevel(newName,&size);
-	}
-
-	return keyAddName(key, p+size);
-
-error_mem:
-	return -1;
+	key->key[key->keySize-1] = '\0';
+	return keyAddName(key, newName+key->keyUSize);
 }
 
 
