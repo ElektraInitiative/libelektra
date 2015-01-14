@@ -420,15 +420,12 @@ int keyCopy (Key *dest, const Key *source)
 		return 0;
 	}
 
-	// free old resources of destination
-	ksDel(dest->meta);
-	elektraFree(dest->key);
-	elektraFree(dest->data.v);
+	// remember dynamic memory to be removed
+	KeySet *destMeta = dest->meta;
+	char *destKey = dest->key;
+	void *destData = dest->data.c;
 
-	// we obviously modified dest
-	set_bit(dest->flags, KEY_FLAG_SYNC);
-
-	/* duplicate dynamic properties */
+	// duplicate dynamic properties
 	if (source->key)
 	{
 		dest->key = elektraStrNDup(source->key, source->keySize + source->keyUSize);
@@ -447,12 +444,29 @@ int keyCopy (Key *dest, const Key *source)
 		if (!dest->meta) goto memerror;
 	}
 
+	// successful, now do the irreversible stuff: we obviously modified dest
+	set_bit(dest->flags, KEY_FLAG_SYNC);
+
+	// copy sizes accordingly
+	dest->keySize = source->keySize;
+	dest->keyUSize = source->keyUSize;
+	dest->dataSize = source->dataSize;
+
+	// free old resources of destination
+	elektraFree(destKey);
+	elektraFree(destData);
+	ksDel(destMeta);
+
 	return 1;
 
 memerror:
-	ksDel(dest->meta);
 	elektraFree(dest->key);
 	elektraFree(dest->data.v);
+	ksDel(dest->meta);
+
+	dest->key = destKey;
+	dest->data.v = destData;
+	dest->meta = destMeta;
 	return -1;
 }
 
