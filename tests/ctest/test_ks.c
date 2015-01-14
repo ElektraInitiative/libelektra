@@ -4,6 +4,7 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
 
 static void test_elektraRenameKeys()
 {
+	printf ("test rename keys\n");
 	KeySet *ks= ksNew(20,
 		keyNew("system/some/common/prefix", KEY_END),
 		keyNew("system/some/common/prefix/dir", KEY_END),
@@ -35,6 +36,7 @@ static void test_elektraRenameKeys()
 
 static void test_elektraEmptyKeys()
 {
+	printf ("test empty keys\n");
 	Key *key = keyNew("", KEY_END);
 	KeySet *ks = ksNew(0, KS_END);
 
@@ -107,14 +109,19 @@ static void test_creatingLookup()
 	ksDel(ks);
 }
 
-int main()
+int main(int argc, char**argv)
 {
-	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("KS         TESTS\n");
+	printf("==================\n\n");
+
+	init(argc, argv);
 
 	test_elektraRenameKeys();
 	test_elektraEmptyKeys();
 	test_cascadingLookup();
 	test_creatingLookup();
+
+	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
