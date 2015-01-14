@@ -57,6 +57,7 @@ struct test tstKeyName[] =
 	
 	},
 
+#ifdef COMPAT
 	{ "Key containing escaped separator", "user:yl///foo\\///bar\\/foo_bar\\",
 		"user/foo\\//bar\\/foo_bar\\", 	/* keyName 	*/
 		"bar/foo_bar\\", 		/* keyBaseName 	*/
@@ -64,6 +65,7 @@ struct test tstKeyName[] =
 		"user/foo\\/"			/* keyGetParentName	*/
 	
 	},
+#endif
 
 	{ "Key containing escaped separator at the end", "user:yl///foo\\///bar\\/foo_bar\\/",
 		"user/foo\\//bar\\/foo_bar\\/",	/* keyName 	*/
@@ -726,8 +728,10 @@ static void test_keyNameSlashes()
 	succeed_if (keyGetNameSize(key) == 1, "name size for invalid name");
 	succeed_if_same_string (keyName(key), "");
 
+#ifdef COMPAT
 	keySetName (key, "user/validname\\");
 	succeed_if_same_string (keyName(key), "user/validname\\");
+#endif
 
 	keySetName (key, "user/validname\\/");
 	succeed_if_same_string (keyName(key), "user/validname\\/");
