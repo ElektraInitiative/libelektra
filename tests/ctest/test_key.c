@@ -1326,14 +1326,6 @@ static void test_keyLock()
 	keyDel (key2);
 }
 
-#define TEST_ADD_NAME(base, toadd, result) \
-	do { \
-	k = keyNew(base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END); \
-	succeed_if (keyAddName(k, toadd)==sizeof(result), "could not add name"); \
-	succeed_if_same_string(keyName(k), result); \
-	keyDel(k); \
-	} while(0)
-
 
 static void test_keyAddName()
 {
@@ -1344,6 +1336,14 @@ static void test_keyAddName()
 	keyAddName(k, "with/slash");
 	succeed_if_same_string(keyName(k), "user/something/with/slash");
 	keyDel(k);
+
+#define TEST_ADD_NAME(base, toadd, result) \
+	do { \
+	k = keyNew(base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END); \
+	succeed_if (keyAddName(k, toadd)==sizeof(result), "could not add name"); \
+	succeed_if_same_string(keyName(k), result); \
+	keyDel(k); \
+	} while(0)
 
 	TEST_ADD_NAME("spec", "something", "spec/something");
 	TEST_ADD_NAME("proc", "something", "proc/something");
@@ -1392,8 +1392,19 @@ static void test_keyAddName()
 
 	// TEST_ADD_NAME("user", "///sw/../sw//././MyApp", "user/sw/MyApp");
 	TEST_ADD_NAME("user", "sw/../sw", "user/sw");
-	TEST_ADD_NAME("/", "/", "/");
 
+#undef TEST_ADD_NAME
+#define TEST_ADD_NAME(base, toadd, result) \
+	do { \
+	k = keyNew(base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END); \
+	succeed_if (keyAddName(k, toadd)==0, "adding irrelevant wrong return"); \
+	succeed_if_same_string(keyName(k), result); \
+	keyDel(k); \
+	} while(0)
+
+	TEST_ADD_NAME("/", 0, "/");
+	TEST_ADD_NAME("/", "", "/");
+	TEST_ADD_NAME("/", "/", "/");
 	TEST_ADD_NAME("/", "//", "/");
 	TEST_ADD_NAME("//", "/", "/");
 	TEST_ADD_NAME("//", "//", "/");

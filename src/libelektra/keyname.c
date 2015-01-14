@@ -450,7 +450,6 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 
 	elektraRemoveKeyName(key);
-
 	if (!(options & KEY_META_NAME)) keySetOwner (key, NULL);
 
 	switch(keyGetNameNamespace(newName))
@@ -480,8 +479,11 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		elektraFinalizeName(key);
 		return key->keyUSize;
 	}
+
 	key->key[key->keySize-1] = '\0';
-	return keyAddName(key, newName+key->keyUSize);
+	const ssize_t ret = keyAddName(key, newName+key->keyUSize);
+	if (ret == -1) elektraRemoveKeyName(key);
+	return ret;
 }
 
 
@@ -863,6 +865,7 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
  *
  * The same way as in keySetName() this method finds the canonical pathname.
  * Unlike, keySetName() it adds it to an already existing name.
+ * It cannot change the namespace of a key.
  *
  * The passed name needs to be valid according the @link keyname key name rules @endlink.
  * It is not allowed to:
@@ -872,32 +875,33 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
  * @param key the key where a name should be added
  * @param newName the new name to append
  *
+ * @retval size of the new key
  * @retval -1 if key is a null pointer or did not have a valid name before
- * @retval -1 if newName is a null pointer or not a valid escaped name
+ * @retval -1 if newName is not a valid escaped name
  * @retval -1 on allocation errors
  * @retval -1 if key was inserted to a keyset before
- * @retval size of the new key
+ * @retval 0 none of the above and if nothing was done (newName had only slashes, empty or null)
  */
 ssize_t keyAddName(Key *key, const char *newName)
 {
 	if (!key) return -1;
-	if (!newName) return key->keySize;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
+	if (!newName) return 0;
 	size_t const nameSize = elektraStrLen(newName);
+	if (nameSize < 2) return 0; // false
 	if (!elektraValidateKeyName(newName, nameSize)) return -1;
 
-	size_t const newSize = key->keySize + nameSize;
+	const size_t origSize = key->keySize;
+	const size_t newSize = origSize + nameSize;
 	elektraRealloc ((void**)&key->key, newSize*2);
+	if (!key->key) return -1;
 
 	size_t size=0;
 	const char * p = newName;
 	int avoidSlash = 0;
 
-	if (*key->key == '/')
-	{
-		avoidSlash = key->keySize == 2;
-	}
+	if (*key->key == '/') avoidSlash = key->keySize == 2;
 
 	-- key->keySize; // loop assumes, key->key[key->keySize] is last character and not NULL
 
@@ -930,9 +934,9 @@ ssize_t keyAddName(Key *key, const char *newName)
 		key->keySize+=size;
 	}
 
-	/* remove unescaped trailing slashes */
-	while (key->keySize > 1 && key->key[key->keySize-1] == KDB_PATH_SEPARATOR && key->key[key->keySize-2] != '\\') key->keySize--;
 	++ key->keySize; /*for \\0 ending*/
+
+	if (origSize == key->keySize) return 0; // no change in size
 
 	elektraFinalizeName(key);
 

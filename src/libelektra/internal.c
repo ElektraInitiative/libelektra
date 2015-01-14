@@ -403,6 +403,8 @@ char *elektraFormat(const char *format, va_list arg_list)
  *
  * Does not check for valid namespaces
  *
+ * @pre size must be at least 2
+ *
  * @param name the key name that is to be checked
  * @param size a elektraStrLen of the key name
  * @retval true if the supplied keyname part is valid
@@ -411,8 +413,6 @@ char *elektraFormat(const char *format, va_list arg_list)
 int elektraValidateKeyName(const char *name, size_t size)
 {
 	size_t escapeCount = 0;
-
-	if (size < 2) return 0; // false
 
 	size -= 2; // forward null character to last character
 

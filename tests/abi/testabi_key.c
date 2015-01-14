@@ -2089,6 +2089,21 @@ static void test_keyEscape()
 	keyDel(k);
 }
 
+static void test_keyAdd()
+{
+	printf ("test keyAdd\n");
+
+	/*
+	Key *k = keyNew("", KEY_END);
+	succeed_if (keyAddName(0, "valid") == -1, "cannot add to null name");
+	succeed_if (keyAddName(k, "valid") == -1, "cannot add to empty name");
+
+	keySetName("/");
+	succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name"); // TODO?
+	keyDel(k);
+	*/
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY ABI  TESTS\n");
@@ -2117,6 +2132,7 @@ int main(int argc, char** argv)
 	test_keyAddBaseName();
 	test_keyDirectBelow();
 	test_keyEscape();
+	test_keyAdd();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
