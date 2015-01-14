@@ -8,6 +8,7 @@ if (LIBXML2_FOUND)
 			xmltool.c
 			stream.c
 			kdbtools.c
+			kscompare.c
 		INCLUDE_DIRECTORIES
 			${LIBXML2_INCLUDE_DIR}
 		LINK_LIBRARIES

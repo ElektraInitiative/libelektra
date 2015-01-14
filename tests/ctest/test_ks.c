@@ -2,61 +2,6 @@
 
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
 
-#define MAX_SIZE 200
-static void test_ksCommonParentName()
-{
-	char ret [MAX_SIZE+1];
-	KeySet *ks = ksNew (10,
-		keyNew("system/sw/xorg/Monitors/Monitor1/vrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor1/hrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor2/vrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor2/hrefresh",0),
-		keyNew("system/sw/xorg/Devices/Device1/driver",0),
-		keyNew("system/sw/xorg/Devices/Device1/mode",0),KS_END);
-
-	printf ("Test common parentname\n");
-
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could not find correct parentname");
-	succeed_if_same_string (ret, "system/sw/xorg");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system",0),
-		keyNew("user",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if_same_string (ret, "");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/some/thing",0),
-		keyNew("system/other/thing",0), KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 7, "could find correct parentname");
-	succeed_if_same_string (ret, "system");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/here/in/deep/goes/ok/thing",0),
-		keyNew("system/here/in/deep/goes/ok/other/thing",0),
-		KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if_same_string (ret, "system/here/in/deep/goes/ok");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/here/in/deep/goes/ok/thing",0),
-		keyNew("system/here/in/deep/goes/ok/other/thing",0),
-		keyNew("user/unique/thing",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if_same_string (ret, "");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("user/unique/thing",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if_same_string (ret, "user/unique/thing");
-	ksDel (ks);
-}
-
 static void test_elektraRenameKeys()
 {
 	KeySet *ks= ksNew(20,
@@ -166,7 +111,6 @@ int main()
 {
 	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
-	test_ksCommonParentName();
 	test_elektraRenameKeys();
 	test_elektraEmptyKeys();
 	test_cascadingLookup();

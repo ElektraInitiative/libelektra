@@ -82,21 +82,8 @@ int keyNameIsProc(const char *keyname);
 int keyNameIsDir(const char *keyname);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
-
-
-/***************************************
- *
- * Functions which might be reintroduced
- *
- **************************************/
-
-/*****************
- * Misc Functions
- *****************/
-
 keyswitch_t keyCompare(const Key *key1, const Key *key2);
-ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,
-	size_t maxSize);
+
 
 
 /*****************
