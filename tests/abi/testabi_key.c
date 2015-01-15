@@ -1327,6 +1327,11 @@ static void test_keyCopy()
 	succeed_if (keyGetRef(orig) == 0, "orig ref counter should be 0");
 	succeed_if (keyGetRef(copy) == 0, "copy ref counter should be 0");
 	compare_key (orig, copy);
+
+	succeed_if( keyCopy(copy, orig) == 1, "keyCopy failed");
+	succeed_if (keyGetRef(orig) == 0, "orig ref counter should be 0");
+	succeed_if (keyGetRef(copy) == 0, "copy ref counter should be 0");
+	compare_key (orig, copy);
 	keyDel(orig); // everything independent from original!
 
 	// Check the duplication
@@ -1334,8 +1339,10 @@ static void test_keyCopy()
 	succeed_if( strncmp(keyValue(copy), "foobar", 6) == 0, "keyCopy: key value copy error");
 
 	orig = keyNew(0);
-	succeed_if (keyCopy(copy, 0) == 0, "make the key copy fresh");
+	succeed_if (keyCopy(copy, orig) == 1, "make a key copy of an unmodified key");
+	compare_key (orig, copy);
 
+	succeed_if (keyCopy(copy, 0) == 0, "make the key copy fresh");
 	compare_key (orig, copy);
 	keyDel (orig);
 
