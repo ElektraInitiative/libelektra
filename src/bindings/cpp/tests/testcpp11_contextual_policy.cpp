@@ -36,6 +36,25 @@ TEST(test_contextual_policy, staticGetPolicy)
 
 }
 
+/*
+TEST(test_contextual_policy, readonlyPolicy)
+{
+	using namespace kdb;
+	KeySet ks;
+	Context c;
+	ContextualValue<int, WritePolicyIs<ReadOnlyPolicy>> cv
+		(ks, c, Key("/test",
+			KEY_CASCADING_NAME,
+			KEY_VALUE, "/test",
+			KEY_META, "default", "88",
+			KEY_END));
+	EXPECT_EQ(cv, 88);
+	EXPECT_EQ(cv, 88);
+	cv = 40;
+}
+*/
+
+
 template<typename T>
 class MyDynamicGetPolicy
 {
