@@ -297,7 +297,7 @@ int keyNameIsSystem(const char *name)
  */
 int keyInit(Key *key)
 {
-	memset(key,0,sizeof(Key));
+	memset(key,0,sizeof(struct _Key));
 
 	return 0;
 }
@@ -324,6 +324,8 @@ void keyVInit (Key *key, const char *name, va_list va)
 	void (*p) (void) = 0;
 
 	if (!key) return;
+
+	keyInit(key);
 
 	if (name) {
 		action=va_arg(va, keyswitch_t);
