@@ -545,10 +545,12 @@ class Discriminator : public Base
 };
 
 template < typename Setter1,
-	   typename Setter2
+	   typename Setter2,
+	   typename Setter3
 >
 class PolicySelector : public Discriminator<Setter1,1>,
-			public Discriminator<Setter2,2>
+		       public Discriminator<Setter2,2>,
+		       public Discriminator<Setter3,3>
 {
 };
 
@@ -558,6 +560,7 @@ class DefaultPolicies
 public:
 	typedef DefaultGetPolicy<T> GetPolicy;
 	typedef DefaultSetPolicy SetPolicy;
+	typedef Context ContextPolicy;
 };
 
 template<typename T>
@@ -568,45 +571,62 @@ class DefaultPolicyArgs : virtual public DefaultPolicies<T>
 
 // class templates to override the default policy values
 
-/// Needed to set the event manager policy
+/// Needed by the user to set one of the policies
 ///
 /// @tparam Policy
 template <typename Policy>
 class GetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
 {
 public:
-	typedef Policy GetPolicy;  // overriding typedef
+	typedef Policy GetPolicy;
 };
 
 
-/// Needed to set the supervision policy
+/// Needed by the user to set one of the policies
 ///
 /// @tparam Policy
 template <typename Policy>
 class SetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
 {
 public:
-	typedef Policy SetPolicy;  // overriding typedef
+	typedef Policy SetPolicy;
 };
+
+
+/// Needed by the user to set one of the policies
+///
+/// @tparam Policy
+template <typename Policy>
+class ContextPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+{
+public:
+	typedef Policy Context;
+};
+
+
 
 // standard types
 
 template<typename T,
 	typename PolicySetter1 = DefaultPolicyArgs<T>,
-	typename PolicySetter2 = DefaultPolicyArgs<T>>
+	typename PolicySetter2 = DefaultPolicyArgs<T>,
+	typename PolicySetter3 = DefaultPolicyArgs<T>
+	>
 class ContextualValue :
 	public Observer
 {
 public:
 	typedef T type;
+
 	typedef PolicySelector<
 		PolicySetter1,
-		PolicySetter2
+		PolicySetter2,
+		PolicySetter3
 		>
 		Policies;
 
 	// not to be constructed yourself
-	ContextualValue<T, PolicySetter1, PolicySetter2>
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3>
 		(KeySet & ks, Context & context_, kdb::Key spec) :
 		m_cache(),
 		m_ks(ks),
@@ -622,7 +642,7 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	ContextualValue<T, PolicySetter1, PolicySetter2>
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3>
 		(ContextualValue<T> const & other, KeySet & ks) :
 		m_cache(other.m_cache),
 		m_ks(ks),
@@ -635,8 +655,7 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-public:
-	ContextualValue<T, PolicySetter1, PolicySetter2> const & operator= (type n)
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3> const & operator= (type n)
 	{
 		m_cache = n;
 
@@ -658,7 +677,7 @@ public:
 			return m_cache;
 	}
 
-	bool operator == (ContextualValue<T, PolicySetter1, PolicySetter2> const & other) const
+	bool operator == (ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3> const & other) const
 	{
 		return m_cache == other.m_cache ;
 	}
@@ -721,7 +740,7 @@ private:
 private:
 	mutable type m_cache;
 	KeySet & m_ks;
-	Context & m_context;
+	typename Policies::ContextPolicy & m_context;
 	mutable Key m_spec;
 };
 
