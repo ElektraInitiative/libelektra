@@ -37,6 +37,64 @@ TEST(test_contextual_policy, staticGetPolicy)
 }
 
 template<typename T>
+class MySetPolicy
+{
+public:
+	typedef T type;
+	static kdb::Key set(kdb::KeySet &ks, kdb::Key const& spec)
+	{
+		kdb::Key found = ks.lookup(spec.getName(), 0);
+
+		if(!found)
+		{
+			kdb::Key k("dir/"+spec.getName(), KEY_END);
+			ks.append(k);
+			found = k;
+		}
+
+		return found;
+	}
+};
+
+TEST(test_contextual_policy, setPolicy)
+{
+	using namespace kdb;
+	KeySet ks;
+	Context c;
+	ContextualValue<int, SetPolicyIs<MySetPolicy<int>>> cv
+		(ks, c, Key("/test",
+			KEY_CASCADING_NAME,
+			KEY_VALUE, "/test",
+			KEY_META, "default", "88",
+			KEY_END));
+	EXPECT_EQ(cv, 88);
+	EXPECT_EQ(cv, 88);
+	EXPECT_FALSE(ks.lookup("dir/test", 0)) << "found dir/test wrongly";
+	cv = 40;
+	EXPECT_EQ(cv, 40);
+	cv.syncKeySet();
+	EXPECT_EQ(cv, 40);
+	EXPECT_TRUE(ks.lookup("dir/test", 0)) << "could not find dir/test";
+}
+
+TEST(test_contextual_policy, readonlyPolicy)
+{
+	using namespace kdb;
+	KeySet ks;
+	Context c;
+	ContextualValue<int, WritePolicyIs<ReadOnlyPolicy<int>>> cv
+		(ks, c, Key("/test",
+			KEY_CASCADING_NAME,
+			KEY_VALUE, "/test",
+			KEY_META, "default", "88",
+			KEY_END));
+	EXPECT_EQ(cv, 88);
+	EXPECT_EQ(cv, 88);
+	// cv = 40; // read only, so this is a compile error
+}
+
+
+template<typename T>
 class MyDynamicGetPolicy
 {
 public:
