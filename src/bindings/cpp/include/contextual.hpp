@@ -512,10 +512,11 @@ public:
  *
  * The new value always can be written out
  */
+template<typename T>
 class DefaultSetPolicy
 {
 public:
-	typedef void type;
+	typedef T type;
 	static Key set(KeySet &ks, Key const& spec)
 	{
 		kdb::Key found = ks.lookup(spec.getName(), 0);
@@ -531,26 +532,43 @@ public:
 	}
 };
 
+template<typename T>
 class DefaultWritePolicy
 {
 public:
-	typedef bool type;
+	typedef T type;
 	static const bool allowed = true;
 };
 
+template<typename T>
 class ReadOnlyPolicy
 {
 public:
-	typedef bool type;
+	typedef T type;
 	static const bool allowed = false;
+};
+
+class DefaultObserverPolicy
+{
+public:
+	typedef double type;
+};
+
+class NoLockPolicy
+{
+public:
+	typedef char type;
+	void lock() {}
+	void unlock() {}
 };
 
 /**
  * This technique with the PolicySelector and Discriminator is taken
  * from the book  "C++ Templates - The Complete Guide"
- * by David Vandevoorde and Nicolai M. Josuttis, Addison-Wesley, 2002 
+ * by David Vandevoorde and Nicolai M. Josuttis, Addison-Wesley, 2002
+ * in Chapter 16 Templates and Inheritance: Named Template Arguments
  *
- * The technique allows users of the class Context to use any number
+ * The technique allows users of the class ContextualValue to use any number
  * and order of policies as desired.
  */
 template <typename Base, int D>
@@ -579,9 +597,11 @@ class DefaultPolicies
 {
 public:
 	typedef DefaultGetPolicy<T> GetPolicy;
-	typedef DefaultSetPolicy SetPolicy;
+	typedef DefaultSetPolicy<T> SetPolicy;
 	typedef Context ContextPolicy;
-	typedef DefaultWritePolicy WritePolicy;
+	typedef DefaultWritePolicy<T> WritePolicy;
+	typedef DefaultObserverPolicy ObserverPolicy;
+	typedef NoLockPolicy LockPolicy;
 };
 
 template<typename T>
@@ -635,6 +655,28 @@ public:
 	typedef Policy WritePolicy;
 };
 
+
+/// Needed by the user to set one of the policies
+///
+/// @tparam Policy
+template <typename Policy>
+class ObserverPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+{
+public:
+	typedef Policy ObserverPolicy;
+};
+
+
+
+/// Needed by the user to set one of the policies
+///
+/// @tparam Policy
+template <typename Policy>
+class LockPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+{
+public:
+	typedef Policy LockPolicy;
+};
 
 
 // standard types
@@ -769,6 +811,9 @@ public:
 private:
 	virtual void update() const
 	{
+		typename Policies::LockPolicy lock;
+		lock.lock();
+
 		std::string evaluated_name = m_context.evaluate(m_spec.getMeta<std::string>("name"));
 #if DEBUG && VERBOSE
 		std::cout << "update " << evaluated_name << " from " << m_spec.getName() << std::endl;
@@ -781,12 +826,14 @@ private:
 					KEY_CASCADING_NAME);
 			syncCache();  // read what we have under new context
 		}
+		lock.unlock();
 	}
 
 private:
 	mutable type m_cache;
 	KeySet & m_ks;
-	typename Policies::ContextPolicy & m_context;
+	// typename Policies::ContextPolicy & m_context;
+	Context & m_context;
 	mutable Key m_spec;
 };
 
