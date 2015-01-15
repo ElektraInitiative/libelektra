@@ -402,17 +402,25 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
  * @param source the key which should be copied
  *     or NULL to clean the destination key
  * @ingroup key
- * @return -1 on failure when a NULL pointer
+ * @retval -1 on failure when a NULL pointer
  *     was passed for dest or a dynamic property could not
- *     be written. Both name and value are
- *     empty then.
- * @return 0 when dest was cleaned
- * @return 1 when source was successfully copied
+ *     be written. The content will be unmodified then.
+ * @retval 0 when dest was cleaned
+ * @retval 1 when source was successfully copied
  * @see keyDup() to get a duplication of a key
  */
 int keyCopy (Key *dest, const Key *source)
 {
 	if (!dest) return -1;
+
+	if(test_bit(dest->flags, KEY_LOCK_NAME)
+	  || test_bit(dest->flags, KEY_LOCK_VALUE)
+	  || test_bit(dest->flags, KEY_LOCK_META)
+	//|| keyGetRef(dest) != 0
+	  )
+	{
+		return -1;
+	}
 
 	if (!source)
 	{
@@ -421,27 +429,33 @@ int keyCopy (Key *dest, const Key *source)
 	}
 
 	// remember dynamic memory to be removed
-	KeySet *destMeta = dest->meta;
 	char *destKey = dest->key;
 	void *destData = dest->data.c;
+	KeySet *destMeta = dest->meta;
 
 	// duplicate dynamic properties
 	if (source->key)
 	{
 		dest->key = elektraStrNDup(source->key, source->keySize + source->keyUSize);
 		if (!dest->key) goto memerror;
+	} else {
+		dest->key = 0;
 	}
 
 	if (source->data.v)
 	{
 		dest->data.v = elektraStrNDup(source->data.v, source->dataSize);
 		if (!dest->data.v) goto memerror;
+	} else {
+		dest->data.v = 0;
 	}
 
 	if (source->meta)
 	{
 		dest->meta = ksDup (source->meta);
 		if (!dest->meta) goto memerror;
+	} else {
+		dest->meta = 0;
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
