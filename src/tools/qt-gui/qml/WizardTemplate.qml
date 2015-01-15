@@ -53,6 +53,13 @@ Item {
 				id:textField
 
 				Layout.fillWidth: true
+
+				Keys.onPressed: {
+					if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return)
+						buttonRow.nextButton.action.trigger()
+					else if(event.key === Qt.Key_Escape)
+						buttonRow.cancelButton.action.trigger()
+				}
 			}
 			Button {
 				id: fileDialogButton

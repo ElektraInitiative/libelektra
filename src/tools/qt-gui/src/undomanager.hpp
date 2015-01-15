@@ -36,7 +36,7 @@ public:
 	 *
 	 * @param parent
 	 */
-	explicit    UndoManager(QObject* parent = 0);
+	explicit    UndoManager(QObject* parentManager = 0);
 
 	/**
 	 * @brief
@@ -94,7 +94,7 @@ public:
 	 * @param node The ConfigNode to put in the clipboard.
 	 * @param index The index of the ConfigNode.
 	 */
-	Q_INVOKABLE void	putToClipboard(const QString& type, TreeViewModel* model, int index);
+	Q_INVOKABLE void	putToClipboard(const QString& type, TreeViewModel* model, int idx);
 
 	/**
 	 * @brief Create a new EditKeyCommand.
@@ -103,7 +103,7 @@ public:
 	 * @param index The index of the edited ConfigNode.
 	 * @param data This list holds the data needed to undo and redo the edit
 	 */
-	Q_INVOKABLE void	createEditKeyCommand(TreeViewModel* model, int index, QVariantList data);
+	Q_INVOKABLE void	createEditKeyCommand(TreeViewModel* model, int idx, QVariantList data);
 
 	/**
 	 * @brief Create a new DeleteKeyCommand.
@@ -113,7 +113,7 @@ public:
 	 * @param node The deleted ConfigNode.
 	 * @param index The index of the deleted ConfigNode.
 	 */
-	Q_INVOKABLE void	createDeleteKeyCommand(const QString& type, TreeViewModel* model, int index);
+	Q_INVOKABLE void	createDeleteKeyCommand(const QString& type, TreeViewModel* model, int idx);
 
 	/**
 	 * @brief Create a new NewKeyCommand.
@@ -123,23 +123,23 @@ public:
 	 * @param value The value of the new ConfigNode.
 	 * @param metaData The meta data of the new ConfigNode.
 	 */
-	Q_INVOKABLE void	createNewKeyCommand(TreeViewModel* model, int index, const QString& name, const QString& value, const QVariantMap& metaData);
+	Q_INVOKABLE void	createNewKeyCommand(TreeViewModel* model, int idx, const QString& name, const QString& value, const QVariantMap& metaData);
 
 	/**
 	 * @brief Create a new CopyKeyCommand.
 	 *
 	 * @param target The ConfigNode the copied ConfigNode will be the new child of.
 	 */
-	Q_INVOKABLE void	createCopyKeyCommand(TreeViewModel *model, int index);
+	Q_INVOKABLE void	createCopyKeyCommand(TreeViewModel *model, int idx);
 
 	/**
 	 * @brief Create a new CutKeyCommand.
 	 *
 	 * @param target The ConfigNode the cut ConfigNode will be the new child of.
 	 */
-	Q_INVOKABLE void	createCutKeyCommand(TreeViewModel* model, int index);
+	Q_INVOKABLE void	createCutKeyCommand(TreeViewModel* model, int idx);
 
-	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy);
+	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, int idx, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy);
 
 	/**
 	 * @brief This function is called when the configuration is saved; if the user closes the application
@@ -186,6 +186,8 @@ public:
 	 */
 
 	Q_INVOKABLE int		count() const;
+
+	Q_INVOKABLE void	setIndex(int idx);
 
 Q_SIGNALS:
 

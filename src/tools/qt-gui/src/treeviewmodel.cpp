@@ -14,9 +14,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-TreeViewModel::TreeViewModel(QObject* parent)
+TreeViewModel::TreeViewModel(QObject* parentModel)
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentModel);
 }
 
 TreeViewModel::TreeViewModel(const TreeViewModel& other)
@@ -25,27 +25,27 @@ TreeViewModel::TreeViewModel(const TreeViewModel& other)
 	m_model = other.m_model; // copy from other list
 }
 
-int TreeViewModel::rowCount(const QModelIndex& parent) const
+int TreeViewModel::rowCount(const QModelIndex& parentIndex) const
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentIndex);
 	return m_model.count();
 }
 
-QVariant TreeViewModel::data(const QModelIndex& index, int role) const
+QVariant TreeViewModel::data(const QModelIndex& idx, int role) const
 {
-	if (!index.isValid())
+	if (!idx.isValid())
 	{
-		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::data: Index = %1,\nModel size = %2").arg(index.row()).arg(m_model.count()));
+		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::data: Index = %1,\nModel size = %2").arg(idx.row()).arg(m_model.count()));
 		return QVariant();
 	}
 
-	if (index.row() > (m_model.size() - 1))
+	if (idx.row() > (m_model.size() - 1))
 	{
-		emit showMessage(tr("Error"), QString(tr("Index too high. ")), QString("TreeViewModel::data: Index: %1").arg(index.row()));
+		emit showMessage(tr("Error"), QString(tr("Index too high. ")), QString("TreeViewModel::data: Index: %1").arg(idx.row()));
 		return QVariant();
 	}
 
-	ConfigNodePtr node = m_model.at(index.row());
+	ConfigNodePtr node = m_model.at(idx.row());
 
 	switch (role)
 	{
@@ -81,7 +81,7 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 		return QVariant::fromValue(node->getParentModel());
 
 	case IndexRole:
-		return QVariant::fromValue(index.row());
+		return QVariant::fromValue(idx.row());
 
 	case IsNullRole:
 	{
@@ -100,39 +100,39 @@ QVariant TreeViewModel::data(const QModelIndex& index, int role) const
 	}
 }
 
-bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int role)
+bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, int role)
 {
-	if (!index.isValid() || index.row() > (m_model.size() - 1))
+	if (!idx.isValid() || idx.row() > (m_model.size() - 1))
 	{
-		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1,\nModel size = %2").arg(index.row()).arg(m_model.count()));
+		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1,\nModel size = %2").arg(idx.row()).arg(m_model.count()));
 		return false;
 	}
 
-	ConfigNodePtr node = m_model.at(index.row());
+	ConfigNodePtr node = m_model.at(idx.row());
 
 	switch (role)
 	{
 
 	case NameRole:
-		node->setName(data.toString());
+		node->setName(modelData.toString());
 		break;
 
 	case ValueRole:
-		node->setValue(data);
+		node->setValue(modelData);
 		break;
 
 	case MetaValueRole:
 	{
-		QVariantList valueList = data.toList();
+		QVariantList valueList = modelData.toList();
 		node->setMeta(valueList.at(0).toString(), valueList.at(1));
 		break;
 	}
 
 	case IsExpandedRole:
-		node->setIsExpanded(data.toBool());
+		node->setIsExpanded(modelData.toBool());
 	}
 
-	emit dataChanged(index, index);
+	emit dataChanged(idx, idx);
 
 	return true;
 }
@@ -140,15 +140,15 @@ bool TreeViewModel::setData(const QModelIndex& index, const QVariant& data, int 
 // TODO: Why are there two implementations of setData needed?
 // Because QML cannot call setData() directly (see https://bugreports.qt-project.org/browse/QTBUG-7932)
 // and to make it possible to set data without a QModelIndex
-void TreeViewModel::setData(int index, const QVariant& value, const QString& role)
+void TreeViewModel::setData(int idx, const QVariant& value, const QString& role)
 {
-	if (index < 0 || index > m_model.size() - 1)
+	if (idx < 0 || idx > m_model.size() - 1)
 	{
-		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1, Model size = %2").arg(index).arg(m_model.size()));
+		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1, Model size = %2").arg(idx).arg(m_model.size()));
 		return;
 	}
 
-	QModelIndex modelIndex = this->index(index);
+	QModelIndex modelIndex = this->index(idx);
 
 	if (role == "Name")
 	{
@@ -183,17 +183,7 @@ int TreeViewModel::getIndexByName(const QString& name) const
 
 void TreeViewModel::importConfiguration(const QString& name, const QString& format, QString& file, const QString& mergeStrategy)
 {
-	collectCurrentKeySet();
-
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Importing the configuration from file failed because the current configuration could not be set.") , QString(e.what()));
-		return;
-	}
+	synchronize();
 
 	file.remove("file://");
 
@@ -249,33 +239,26 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 		emit showMessage(tr("Error"), tr("Unknown error"), "TreeViewModel::importConfiguration");
 	}
 
+	KDB kdb;
+	KeySet keySet;
+
 	try
 	{
-		m_kdb.get(m_keySet, "");
+		kdb.get(keySet, name.toStdString());
 	}
 	catch (KDBException const& e)
 	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(e.what()));
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
 	}
 
-	populateModel();
+	createNewNodes(keySet);
 }
 
-void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString format, QString file)
+void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file)
 {
-	collectCurrentKeySet();
+	synchronize();
 
-	ConfigNodePtr node = model->model().at(index);
-
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Exporting the configuration to file failed because the current configuration could not be set."), QString(e.what()));
-		return;
-	}
+	ConfigNodePtr node = parentModel->model().at(idx);
 
 	file.remove("file://");
 
@@ -335,29 +318,20 @@ void TreeViewModel::exportConfiguration(TreeViewModel* model, int index, QString
 	}
 }
 
-void TreeViewModel::setKeySet(KeySet set)
-{
-	m_keySet.clear();
-	set.rewind();
-
-	while (set.next())
-		m_keySet.append(Key(set.current().dup()));
-}
-
-void TreeViewModel::collectCurrentKeySet()
+KeySet TreeViewModel::collectCurrentKeySet()
 {
 	KeySetVisitor ksVisit;
 	accept(ksVisit);
 
-	setKeySet(ksVisit.getKeySet());
+	return ksVisit.getKeySet();
 }
 
-Qt::ItemFlags TreeViewModel::flags(const QModelIndex& index) const
+Qt::ItemFlags TreeViewModel::flags(const QModelIndex& idx) const
 {
-	if (!index.isValid())
+	if (!idx.isValid())
 		return Qt::ItemIsEnabled;
 
-	return QAbstractItemModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+	return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
 void TreeViewModel::accept(Visitor& visitor)
@@ -365,7 +339,7 @@ void TreeViewModel::accept(Visitor& visitor)
 	visitor.visit(this);
 }
 
-QVariantMap TreeViewModel::get(int idx) const
+QVariantMap TreeViewModel::get(const int& idx) const
 {
 	QVariantMap map;
 
@@ -412,9 +386,9 @@ void TreeViewModel::find(ConfigNodePtr node, TreeViewModel* searchResults, const
 	}
 }
 
-bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
+bool TreeViewModel::removeRow(int row, const QModelIndex& parentIndex)
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentIndex);
 
 	if (row < 0 || row > m_model.size() - 1)
 	{
@@ -442,9 +416,9 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parent)
 	return true;
 }
 
-bool TreeViewModel::insertRow(int row, const QModelIndex& parent)
+bool TreeViewModel::insertRow(int row, const QModelIndex& parentIndex)
 {
-	Q_UNUSED(parent);
+	Q_UNUSED(parentIndex);
 	ConfigNodePtr node(new ConfigNode);
 	node->setName(QString::fromStdString(m_metaModelParent.getName()));
 	node->setKey(m_metaModelParent);
@@ -486,7 +460,7 @@ void TreeViewModel::insertMetaRow(int row, Key key, const QString &name)
 	}
 }
 
-void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, Key key)
+void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, const Key& key)
 {
 	if (keys.length() == 0)
 		return;
@@ -504,7 +478,7 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, Key
 		ConfigNodePtr newNode;
 
 		if (isLeaf)
-			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), key.dup(), node->getChildren()));
+			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), key, node->getChildren()));
 		else
 			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), NULL, node->getChildren()));
 
@@ -514,50 +488,39 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, Key
 	}
 }
 
-void TreeViewModel::populateModel()
+void TreeViewModel::populateModel(KeySet keySet)
 {
-	try
-	{
-		m_kdb.set(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not write to configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
-	}
-	try
-	{
-		m_kdb.get(m_keySet, "/");
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString("TreeViewModel::populateModel: %1").arg(e.what()));
-	}
-
 	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
 	ConfigNodePtr user(new ConfigNode("user", "user", Key("user", KEY_END), this));
 
 	m_model.clear();
 	m_model << system << user;
 
-	m_keySet.rewind();
+	createNewNodes(keySet);
+}
 
-	while (m_keySet.next())
+void TreeViewModel::createNewNodes(KeySet keySet)
+{
+	keySet.rewind();
+
+	while (keySet.next())
 	{
-		QString currentKey = QString::fromStdString(m_keySet.current().getName());
+		Key k = keySet.current().dup();
+		QString currentKey = QString::fromStdString(k.getName());
 		QStringList keys = currentKey.split("/");
 		QString root = keys.takeFirst();
 
 		if (root == "system")
 		{
-			sink(m_model.at(0), keys, "system", m_keySet.current());
+			sink(m_model.at(0), keys, "system", k);
 		}
 		else if (root == "user")
 		{
-			sink(m_model.at(1), keys, "user", m_keySet.current());
+			sink(m_model.at(1), keys, "user", k);
 		}
 		else
 		{
-			qDebug() << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey;
+			cerr << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey.toStdString();
 		}
 	}
 }
@@ -583,15 +546,27 @@ void TreeViewModel::append(ConfigNodePtr node)
 
 void TreeViewModel::synchronize()
 {
-	collectCurrentKeySet();
+	KDB kdb;
+	KeySet keySet;
 
 	try
 	{
-		m_kdb.set(m_keySet, "/");
+		kdb.get(keySet, "/");
 	}
 	catch (KDBException const& e)
 	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed."), e.what());
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
+	}
+
+	keySet = collectCurrentKeySet();
+
+	try
+	{
+		kdb.set(keySet, "/");
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Could not write to configuration."), e.what());
 	}
 }
 
@@ -604,29 +579,40 @@ void TreeViewModel::clearMetaModel()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
-	collectCurrentKeySet();
-
+	KeySet keySet = collectCurrentKeySet();
 	const string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
-
 	Key x(keyName, KEY_END);
+	keySet.cut(x);
 
-	m_keySet.cut(x);
+	TreeViewModel *mountPoint;
 
-	populateModel();
+	QStringList path = QString::fromStdString(keyName).split("/");
+	path.removeLast();
+
+	ConfigNodePtr node;
+
+	QString root = path.takeFirst();
+
+	if(root == "system")
+		node = m_model.at(0);
+	else if(root == "user")
+		node = m_model.at(1);
+
+	while(path.length() > 0){
+		QString name = path.takeFirst();
+		node = node->getChildByName(name);
+	}
+
+	mountPoint = node->getChildren();
+
+	mountPoint->removeRow(node->getChildIndexByName(backendName));
+
+	synchronize();
 }
 
 void TreeViewModel::refresh()
 {
-	QList<ConfigNodePtr> newModel(m_model);
-
 	beginResetModel();
-	m_model.clear();
-
-	foreach (ConfigNodePtr node, newModel)
-	{
-		m_model.append(node);
-	}
-
 	endResetModel();
 }
 
@@ -681,22 +667,22 @@ void TreeViewModel::refreshArrayNumbers()
 
 QStringList TreeViewModel::mountedBackends()
 {
-	collectCurrentKeySet();
+	KeySet keySet = collectCurrentKeySet();
 
-	Backends::BackendInfoVector mtab = Backends::getBackendInfo(m_keySet);
+	Backends::BackendInfoVector mtab = Backends::getBackendInfo(keySet);
 
-	QStringList mountedBackends;
+	QStringList mountedBends;
 
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin(); it != mtab.end(); ++it)
 	{
-		mountedBackends.append(QString::fromStdString(it->name));
+		mountedBends.append(QString::fromStdString(it->name));
 	}
 
 	//cannot read the size of the QStringList in QML
-	if (mountedBackends.isEmpty())
-		mountedBackends.append("empty");
+	if (mountedBends.isEmpty())
+		mountedBends.append("empty");
 
-	return mountedBackends;
+	return mountedBends;
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
@@ -717,4 +703,9 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
 	roles[IsExpandedRole] = "isExpanded";
 
 	return roles;
+}
+
+void TreeViewModel::showConfigNodeMessage(QString title, QString text, QString detailedText)
+{
+	emit showMessage(title, text, detailedText);
 }

@@ -9,11 +9,11 @@ void PrintVisitor::visit(ConfigNode& node)
 	QString name;
 
 	foreach (QString s, path)
-		name += "> ";
+		name += " ";
 
 	name += node.getName();
 
-	qDebug() << name;
+	std::cout << name.toStdString() << std::endl;
 }
 
 void PrintVisitor::visit(TreeViewModel* model)

@@ -41,7 +41,7 @@ public:
 		IsExpandedRole ///< The role QML can retrieve if a ConfigNode is expanded.
 	};
 
-	explicit TreeViewModel(QObject* parent =  0);
+	explicit TreeViewModel(QObject* parentModel =  0);
 
 	// Needed for Qt
 	TreeViewModel(TreeViewModel const& other);
@@ -53,25 +53,28 @@ public:
 	}
 
 	//mandatory methods inherited from QAbstractItemModel
-	Q_INVOKABLE int             rowCount(const QModelIndex& parent = QModelIndex()) const;
-	QVariant                    data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-	bool                        setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-	Q_INVOKABLE bool            insertRow(int row, const QModelIndex& parent = QModelIndex());
-	Q_INVOKABLE bool            removeRow(int row, const QModelIndex& parent = QModelIndex());
-	Qt::ItemFlags               flags(const QModelIndex& index) const;
-
-	// recursively populate the model
-	Q_INVOKABLE void            populateModel();
+	Q_INVOKABLE int             rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
+	QVariant                    data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
+	bool                        setData(const QModelIndex& idx, const QVariant& modelData, int role = Qt::EditRole);
+	Q_INVOKABLE bool            insertRow(int row, const QModelIndex& parentIndex = QModelIndex());
+	Q_INVOKABLE bool            removeRow(int row, const QModelIndex& parentIndex = QModelIndex());
+	Qt::ItemFlags               flags(const QModelIndex& idx) const;
 
 	/**
-	 * @brief The method that populates this TreeViewModel.
+	 * @brief Populates this TreeViewModel with the *current* keyset.
+	 */
+
+	Q_INVOKABLE void            populateModel(kdb::KeySet keySet);
+
+	/**
+	 * @brief The method that actually populates this TreeViewModel.
 	 *
 	 * @param node The ConfigNode that is supposed to find its place in the hierarchy.
 	 * @param keys The path of the ConfigNode that is supposed to find its place in the hierarchy, splitted up into a QStringList.
 	 * @param path The current path of the ConfigNode.
 	 * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
 	 */
-	void                        sink(ConfigNodePtr node, QStringList keys, QString path, kdb::Key key);
+	void                        sink(ConfigNodePtr node, QStringList keys, QString path, const kdb::Key &key);
 
 	void                        accept(Visitor& visitor);
 
@@ -82,7 +85,7 @@ public:
 	 *
 	 * @return A map of the roles of the ConfigNode at the specified index.
 	 */
-	Q_INVOKABLE QVariantMap     get(int idx) const;
+	Q_INVOKABLE QVariantMap     get(const int &idx) const;
 
 	/**
 	  * @brief Find a search term in the model.
@@ -138,7 +141,7 @@ public:
 	 * @param value Holds the data to manipulate the ConfigNode.
 	 * @param role Holds the role name that determines the type of the manipulation.
 	 */
-	Q_INVOKABLE void            setData(int index, const QVariant& value, const QString& role);
+	Q_INVOKABLE void            setData(int idx, const QVariant& value, const QString& role);
 
 	/**
 	 * @brief Returns the index of a ConfigNode in this TreeViewModel based in the ConfigNode's name.
@@ -156,7 +159,7 @@ public:
 	 * @param format Specifies the file format of the exported file.
 	 * @param file The path on the harddisk where the exported file is written to.
 	 */
-	Q_INVOKABLE void            exportConfiguration(TreeViewModel* model, int index, QString format, QString file);
+	Q_INVOKABLE void            exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file);
 
 	/**
 	 * @brief Import a configuration from a file on the harddrive into the current configuration.
@@ -169,16 +172,9 @@ public:
 	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QString& mergeStrategy);
 
 	/**
-	 * @brief Sets a new KeySet.
-	 *
-	 * @param set The new KeySet.
-	 */
-	void                        setKeySet(kdb::KeySet set);
-
-	/**
 	 * @brief Stores the current state of the configuration in the KeySet.
 	 */
-	void                        collectCurrentKeySet();
+	kdb::KeySet					collectCurrentKeySet();
 
 	/**
 	 * @brief Clears this model if it holds metakeys.
@@ -216,9 +212,8 @@ public:
 	 */
 	void						refreshArrayNumbers();
 
-
 	/**
-	 * @brief Returns a list of the current mounted backends.
+	 * @brief Returns a list of the currently mounted backends.
 	 *
 	 * @return A list of the current mounted backends.
 	 */
@@ -234,18 +229,21 @@ private:
 	 * @param term The term that is searched for.
 	 */
 	void                        find(ConfigNodePtr node, TreeViewModel* searchResults, const QString term);
+	void						createNewNodes(kdb::KeySet keySet);
 
 	QList<ConfigNodePtr>        m_model;
 	kdb::Key                    m_metaModelParent;
-	kdb::KDB                    m_kdb;
-	kdb::KeySet                 m_keySet;
 
 protected:
 	QHash<int, QByteArray>      roleNames() const;
 
 signals:
-	void showMessage(QString title, QString text, QString detailedText) const;
-	void expandNode(bool);
+	void						showMessage(QString title, QString text, QString detailedText) const;
+	void						expandNode(bool);
+
+public slots:
+	void						showConfigNodeMessage(QString title, QString text, QString detailedText);
+
 };
 
 Q_DECLARE_METATYPE(TreeViewModel)

@@ -7,8 +7,8 @@
 #include "cutkeycommand.hpp"
 #include "importconfigurationcommand.hpp"
 
-UndoManager::UndoManager(QObject* parent) :
-	QObject(parent)
+UndoManager::UndoManager(QObject* parentManager) :
+	QObject(parentManager)
   , m_undoStack(new QUndoStack(this))
   , m_clipboardEmpty(true)
 {
@@ -41,7 +41,7 @@ bool UndoManager::canRedo() const
 	return m_undoStack->canRedo();
 }
 
-void UndoManager::createEditKeyCommand(TreeViewModel* model, int index, QVariantList data)
+void UndoManager::createEditKeyCommand(TreeViewModel* model, int idx, QVariantList data)
 {
 	//convert TreeViewModel to QVariantMap
 	TreeViewModel* tmpModel = qvariant_cast<TreeViewModel*>(data.takeAt(2));
@@ -54,32 +54,32 @@ void UndoManager::createEditKeyCommand(TreeViewModel* model, int index, QVariant
 
 	data.insert(2, oldMDMap);
 
-	m_undoStack->push(new EditKeyCommand(model, index, data));
+	m_undoStack->push(new EditKeyCommand(model, idx, data));
 }
 
-void UndoManager::createDeleteKeyCommand(const QString& type, TreeViewModel* model, int index)
+void UndoManager::createDeleteKeyCommand(const QString& type, TreeViewModel* model, int idx)
 {
-	m_undoStack->push(new DeleteKeyCommand(type, model, index));
+	m_undoStack->push(new DeleteKeyCommand(type, model, idx));
 }
 
-void UndoManager::createNewKeyCommand(TreeViewModel* model, int index, const QString& name, const QString& value, const QVariantMap& metaData)
+void UndoManager::createNewKeyCommand(TreeViewModel* model, int idx, const QString& name, const QString& value, const QVariantMap& metaData)
 {
-	m_undoStack->push(new NewKeyCommand(model->model().at(index), name, value, metaData));
+	m_undoStack->push(new NewKeyCommand(model->model().at(idx), name, value, metaData));
 }
 
-void UndoManager::createCopyKeyCommand(TreeViewModel *model, int index)
+void UndoManager::createCopyKeyCommand(TreeViewModel *model, int idx)
 {
-	m_undoStack->push(new CopyKeyCommand(m_clipboardType, qvariant_cast<ConfigNodePtr>(m_clipboard->property("source")), model->model().at(index)));
+	m_undoStack->push(new CopyKeyCommand(m_clipboardType, qvariant_cast<ConfigNodePtr>(m_clipboard->property("source")), model->model().at(idx)));
 }
 
-void UndoManager::createCutKeyCommand(TreeViewModel* model, int index)
+void UndoManager::createCutKeyCommand(TreeViewModel* model, int idx)
 {
-	m_undoStack->push(new CutKeyCommand(m_clipboardType, qvariant_cast<ConfigNodePtr>(m_clipboard->property("source")), model->model().at(index), m_clipboard->property("index").toInt()));
+	m_undoStack->push(new CutKeyCommand(m_clipboardType, qvariant_cast<ConfigNodePtr>(m_clipboard->property("source")), model->model().at(idx), m_clipboard->property("index").toInt()));
 }
 
-void UndoManager::createImportConfigurationCommand(TreeViewModel* model, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy)
+void UndoManager::createImportConfigurationCommand(TreeViewModel* model, int idx, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy)
 {
-	m_undoStack->push(new ImportConfigurationCommand(model, name, format, file, mergeStrategy));
+	m_undoStack->push(new ImportConfigurationCommand(model, idx, name, format, file, mergeStrategy));
 }
 
 void UndoManager::setClean()
@@ -112,6 +112,11 @@ int UndoManager::count() const
 	return m_undoStack->count();
 }
 
+void UndoManager::setIndex(int idx)
+{
+	m_undoStack->setIndex(idx);
+}
+
 void UndoManager::undo()
 {
 	m_undoStack->undo();
@@ -132,14 +137,14 @@ QString UndoManager::clipboardType() const
 	return m_clipboardType;
 }
 
-void UndoManager::putToClipboard(const QString& type, TreeViewModel* model, int index)
+void UndoManager::putToClipboard(const QString& type, TreeViewModel* model, int idx)
 {
 	m_clipboardType = type;
 
 	m_clipboard->clear();
 
-	m_clipboard->setProperty("source", QVariant::fromValue(model->model().at(index)));
-	m_clipboard->setProperty("index", QVariant::fromValue(index));
+	m_clipboard->setProperty("source", QVariant::fromValue(model->model().at(idx)));
+	m_clipboard->setProperty("index", QVariant::fromValue(idx));
 
 	m_clipboardEmpty = false;
 

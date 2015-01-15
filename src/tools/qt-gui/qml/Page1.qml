@@ -14,11 +14,7 @@ WizardTemplate {
 	buttonRow.finishButton.visible: false
 	buttonRow.nextButton.action.enabled: textField.text !== ""
 	buttonRow.nextButton.action.onTriggered: {
-		if(textField.text.charAt(0) === "/")
-			guiBackend.createBackend(textField.text)
-		else
-			guiBackend.createBackend("/" + textField.text)
-
+		guiBackend.createBackend(textField.text)
 		if(!error)
 			loader.source = "Page2.qml"
 	}

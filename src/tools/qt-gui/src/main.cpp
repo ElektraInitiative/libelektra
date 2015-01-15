@@ -1,5 +1,8 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QDebug>
+#include <QFuture>
+#include <QtConcurrent/QtConcurrentRun>
 #include <QtQml>
 #include <QMetaType>
 #include <QtTest/qtestcase.h>
@@ -29,14 +32,26 @@ int main(int argc, char* argv[])
 	QQmlContext* ctxt = engine.rootContext();
 
 	UndoManager manager;
-	TreeViewModel* model = new TreeViewModel;
+	kdb::KDB kdb;
+	kdb::KeySet config;
 	GUIBackend backend;
 
-	model->populateModel();
+	try
+	{
+		kdb.get(config, "/");
+	}
+	catch(kdb::KDBException const& e)
+	{
+		std::cerr << e.what();
+	}
+
+	TreeViewModel* treeModel = new TreeViewModel;
 
 	ctxt->setContextProperty("undoManager", &manager);
-	ctxt->setContextProperty("externTreeModel", model);
+	ctxt->setContextProperty("externTreeModel", treeModel);
 	ctxt->setContextProperty("guiBackend", &backend);
+
+	treeModel->populateModel(config);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 

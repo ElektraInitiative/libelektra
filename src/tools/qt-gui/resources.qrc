@@ -46,7 +46,7 @@
         <file>qml/icons/help-about.png</file>
         <file>qml/MainFunctions.js</file>
         <file>qml/icons/dialog-error.png</file>
-        <file>qml/GeneralMessageDialog.qml</file>
+        <file>qml/ErrorDialog.qml</file>
         <file>qml/icons/dialog-warning.png</file>
         <file>qml/AboutWindow.qml</file>
         <file>qml/MainToolBar.qml</file>
@@ -57,5 +57,6 @@
         <file>qml/icons/edit-redo.png</file>
         <file>qml/icons/edit-undo.png</file>
         <file>qml/icons/view-refresh.png</file>
+        <file>qml/ErrorDialogCreator.js</file>
     </qresource>
 </RCC>

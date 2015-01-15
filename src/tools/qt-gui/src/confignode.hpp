@@ -203,7 +203,7 @@ public:
 	 *
 	 * @param parent The TreeViewModel this ConfigNode is in.
 	 */
-	void									setParentModel(TreeViewModel* parent);
+	void									setParentModel(TreeViewModel* parentModel);
 
 	/**
 	 * @brief Returns if this ConfigNode is expanded.
@@ -223,8 +223,6 @@ private:
 	TreeViewModel*  m_parentModel;
 
 	bool            m_isExpanded;
-
-
 
 	/**
 	 * @brief Populates the TreeViewModel which holds the metakeys of this ConfigNode.
