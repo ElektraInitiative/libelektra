@@ -664,7 +664,8 @@ public:
 		Policies;
 
 	// not to be constructed yourself
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6>
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
+		PolicySetter4, PolicySetter5, PolicySetter6>
 		(KeySet & ks, Context & context_, kdb::Key spec) :
 		m_cache(),
 		m_ks(ks),
@@ -680,7 +681,8 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6>
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
+		PolicySetter4, PolicySetter5, PolicySetter6>
 		(ContextualValue<T> const & other, KeySet & ks) :
 		m_cache(other.m_cache),
 		m_ks(ks),
@@ -693,7 +695,10 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> const & operator= (type n)
+	typedef ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
+		PolicySetter4, PolicySetter5, PolicySetter6> CV;
+
+	CV const & operator= (type n)
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
@@ -718,7 +723,7 @@ public:
 			return m_cache;
 	}
 
-	bool operator == (ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> const & other) const
+	bool operator == (CV const & other) const
 	{
 		return m_cache == other.m_cache ;
 	}
