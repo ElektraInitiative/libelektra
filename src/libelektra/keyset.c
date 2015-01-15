@@ -248,11 +248,9 @@ KeySet *ksVNew (size_t alloc, va_list va)
  */
 KeySet *ksDup (const KeySet * source)
 {
-	KeySet *keyset=0;
-
 	if (!source) return 0;
 
-	keyset = ksNew(source->alloc,KS_END);
+	KeySet *keyset=ksNew(source->alloc,KS_END);
 	ksAppend (keyset, source);
 	return keyset;
 }
