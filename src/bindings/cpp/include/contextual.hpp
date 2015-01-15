@@ -531,6 +531,20 @@ public:
 	}
 };
 
+class DefaultWritePolicy
+{
+public:
+	typedef bool type;
+	static const bool allowed = true;
+};
+
+class ReadOnlyPolicy
+{
+public:
+	typedef bool type;
+	static const bool allowed = false;
+};
+
 /**
  * This technique with the PolicySelector and Discriminator is taken
  * from the book  "C++ Templates - The Complete Guide"
@@ -546,11 +560,17 @@ class Discriminator : public Base
 
 template < typename Setter1,
 	   typename Setter2,
-	   typename Setter3
->
+	   typename Setter3,
+	   typename Setter4,
+	   typename Setter5,
+	   typename Setter6
+	 >
 class PolicySelector : public Discriminator<Setter1,1>,
 		       public Discriminator<Setter2,2>,
-		       public Discriminator<Setter3,3>
+		       public Discriminator<Setter3,3>,
+		       public Discriminator<Setter4,4>,
+		       public Discriminator<Setter5,5>,
+		       public Discriminator<Setter6,6>
 {
 };
 
@@ -561,6 +581,7 @@ public:
 	typedef DefaultGetPolicy<T> GetPolicy;
 	typedef DefaultSetPolicy SetPolicy;
 	typedef Context ContextPolicy;
+	typedef DefaultWritePolicy WritePolicy;
 };
 
 template<typename T>
@@ -604,13 +625,27 @@ public:
 };
 
 
+/// Needed by the user to set one of the policies
+///
+/// @tparam Policy
+template <typename Policy>
+class WritePolicyIs : virtual public DefaultPolicies<typename Policy::type>
+{
+public:
+	typedef Policy WritePolicy;
+};
+
+
 
 // standard types
 
 template<typename T,
 	typename PolicySetter1 = DefaultPolicyArgs<T>,
 	typename PolicySetter2 = DefaultPolicyArgs<T>,
-	typename PolicySetter3 = DefaultPolicyArgs<T>
+	typename PolicySetter3 = DefaultPolicyArgs<T>,
+	typename PolicySetter4 = DefaultPolicyArgs<T>,
+	typename PolicySetter5 = DefaultPolicyArgs<T>,
+	typename PolicySetter6 = DefaultPolicyArgs<T>
 	>
 class ContextualValue :
 	public Observer
@@ -621,12 +656,15 @@ public:
 	typedef PolicySelector<
 		PolicySetter1,
 		PolicySetter2,
-		PolicySetter3
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
 		>
 		Policies;
 
 	// not to be constructed yourself
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3>
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6>
 		(KeySet & ks, Context & context_, kdb::Key spec) :
 		m_cache(),
 		m_ks(ks),
@@ -642,7 +680,7 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3>
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6>
 		(ContextualValue<T> const & other, KeySet & ks) :
 		m_cache(other.m_cache),
 		m_ks(ks),
@@ -655,8 +693,9 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3> const & operator= (type n)
+	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> const & operator= (type n)
 	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
 
 		return *this;
@@ -664,11 +703,13 @@ public:
 
 	type operator ++()
 	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		return ++m_cache;
 	}
 
 	type operator ++(int)
 	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		return m_cache++;
 	}
 
@@ -677,7 +718,7 @@ public:
 			return m_cache;
 	}
 
-	bool operator == (ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3> const & other) const
+	bool operator == (ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> const & other) const
 	{
 		return m_cache == other.m_cache ;
 	}
