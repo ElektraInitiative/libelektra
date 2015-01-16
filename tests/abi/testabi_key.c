@@ -7,6 +7,17 @@
 
 #include <tests.h>
 
+#define NUMBER_OF_NAMESPACES 6
+
+char *namespaces[] = {
+	"/",
+	"spec",
+	"proc",
+	"dir",
+	"user",
+	"system",
+	0};
+
 struct test {
 	char	*testName;
 	char	*keyName;
@@ -1574,7 +1585,7 @@ static void test_keyBelowOrSame()
 
 static void test_keyNameSpecial()
 {
-	printf ("Test special keynames");
+	printf ("Test special keynames\n");
 	Key *k = keyNew (0);
 	succeed_if_same_string (keyName(k), "");
 
@@ -1810,14 +1821,39 @@ static void test_keySetBaseName()
 	succeed_if_same_string(keyName(k), "");
 	succeed_if_same_string(keyBaseName(k), "");
 
-	keySetName (k, "system");
+	keySetName (k, "spec");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
-	succeed_if_same_string(keyName(k), "system");
+	succeed_if_same_string(keyName(k), "spec");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "proc");
+	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
+	succeed_if_same_string(keyName(k), "proc");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "dir");
+	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
+	succeed_if_same_string(keyName(k), "dir");
 	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "user");
 	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
 	succeed_if_same_string(keyName(k), "user");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "system");
+	succeed_if (keySetBaseName (k, 0) == -1, "could remove root name");
+	succeed_if_same_string(keyName(k), "system");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "system");
+	succeed_if (keySetBaseName (k, "valid") == -1, "add root name, but set was used");
+	succeed_if_same_string(keyName(k), "system");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName (k, "proc");
+	succeed_if (keySetBaseName (k, "a") == -1, "add root name, but set was used");
+	succeed_if_same_string(keyName(k), "proc");
 	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "system/valid");
@@ -1831,23 +1867,28 @@ static void test_keySetBaseName()
 	succeed_if_same_string(keyBaseName(k), "");
 
 	keySetName (k, "system/valid");
+	succeed_if (keySetBaseName (k, "a") >= 0, "escaped slash ok");
+	succeed_if_same_string(keyName(k), "system/a");
+	succeed_if_same_string(keyBaseName(k), "a");
+
+	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "/") >= 0, "escaped slash ok");
 	succeed_if_same_string(keyName(k), "system/\\/");
 	succeed_if_same_string(keyBaseName(k), "/");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\/") >= 0, "escaped slash ok");
-	succeed_if_same_string(keyName(k), "system/\\\\/");
+	succeed_if_same_string(keyName(k), "system/\\\\\\/");
 	succeed_if_same_string(keyBaseName(k), "\\/");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\/") >= 0, "backslash escaped, but slash unescaped");
-	succeed_if_same_string(keyName(k), "system/\\\\\\/");
+	succeed_if_same_string(keyName(k), "system/\\\\\\\\\\/");
 	succeed_if_same_string(keyBaseName(k), "\\\\/");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\\\/") >= 0, "backslash escaped, slash escaped");
-	succeed_if_same_string(keyName(k), "system/\\\\\\\\/");
+	succeed_if_same_string(keyName(k), "system/\\\\\\\\\\\\\\/");
 	succeed_if_same_string(keyBaseName(k), "\\\\\\/");
 
 	keySetName (k, "system/valid");
@@ -1870,12 +1911,12 @@ static void test_keySetBaseName()
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\\\\\") >= 0, "backslash escaped, backslash escaped");
-	succeed_if_same_string(keyName(k), "system/\\\\\\\\");
+	succeed_if_same_string(keyName(k), "system/\\\\\\\\\\\\\\\\");
 	succeed_if_same_string(keyBaseName(k), "\\\\\\\\");
 
 	keySetName (k, "system/valid");
 	succeed_if (keySetBaseName (k, "\\\\") >= 0, "escaped backslash ok");
-	succeed_if_same_string (keyName (k), "system/\\\\");
+	succeed_if_same_string (keyName (k), "system/\\\\\\\\");
 	succeed_if_same_string(keyBaseName(k), "\\\\");
 
 	keySetName (k, "system/valid");
@@ -2034,9 +2075,11 @@ static void test_keyDirectBelow()
 	keySetName(k2, "user/dir/direct\\/");
 	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
 
+	/* TODO compatibility: not allowed
 	keySetName(k1, "user/dir");
 	keySetName(k2, "user/dir/direct\\");
 	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
+	*/
 
 	keySetName(k1, "user/dir");
 	keySetName(k2, "user/dir/direct\\\\\\/below");
@@ -2062,6 +2105,13 @@ static void test_keyDirectBelow()
 	keyDel(k2);
 }
 
+static void test_keyEscape()
+{
+	printf ("test escape in basename\n");
+
+	Key *k = keyNew("/valid", KEY_END);
+	char buffer [500];
+
 #define TEST_ESCAPE_PART(A, S) \
 	do { \
 	succeed_if(keySetBaseName(k, A)!=-1, "keySetBaseName returned an error"); \
@@ -2070,35 +2120,66 @@ static void test_keyDirectBelow()
 	succeed_if_same_string(buffer, A); \
 	} while(0)
 
-static void test_keyEscape()
-{
-	printf ("test escape in basename\n");
+#include <data_escape.c>
 
-	Key *k = keyNew("/", KEY_END);
-	char buffer [500];
+	keySetName(k, "spec/valid");
 
 #include <data_escape.c>
 
-	keySetName(k, "spec");
+	keySetName(k, "proc/valid");
 
 #include <data_escape.c>
 
-	keySetName(k, "proc");
+	keySetName(k, "dir/valid");
 
 #include <data_escape.c>
 
-	keySetName(k, "dir");
+	keySetName(k, "user/valid");
 
 #include <data_escape.c>
 
-	keySetName(k, "user");
+	keySetName(k, "system/valid");
 
 #include <data_escape.c>
 
-	keySetName(k, "system");
+#undef TEST_ESCAPE_PART
+#define TEST_ESCAPE_PART(A, S) \
+	do { \
+	succeed_if(keySetBaseName(k, A)==-1, "keySetBaseName should have returned an error"); \
+	succeed_if_same_string(keyBaseName(k), ""); \
+	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
+	succeed_if_same_string(buffer, ""); \
+	} while(0)
+
+	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)
+	{
+		keySetName(k, namespaces[i]);
 
 #include <data_escape.c>
+	}
 
+	keySetName(k, "/");
+	succeed_if(keyAddBaseName(k, "valid")!=-1, "keyAddBaseName returned an error");
+	succeed_if_same_string(keyBaseName(k), "valid");
+	succeed_if_same_string(keyName(k), "/valid");
+
+
+	// generates huge key (but fits within 500)
+#undef TEST_ESCAPE_PART
+#define TEST_ESCAPE_PART(A, S) \
+	do { \
+	succeed_if(keyAddBaseName(k, A)!=-1, "keyAddBaseName returned an error"); \
+	succeed_if_same_string(keyBaseName(k), A); \
+	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName (for keyAddBaseName) returned an error"); \
+	succeed_if_same_string(buffer, A); \
+	} while(0)
+
+	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)
+	{
+		keySetName(k, namespaces[i]);
+
+#include <data_escape.c>
+	}
 
 	keyDel(k);
 }
@@ -2107,15 +2188,35 @@ static void test_keyAdd()
 {
 	printf ("test keyAdd\n");
 
-	/*
 	Key *k = keyNew("", KEY_END);
 	succeed_if (keyAddName(0, "valid") == -1, "cannot add to null name");
-	succeed_if (keyAddName(k, "valid") == -1, "cannot add to empty name");
+#if 0
+	succeed_if (keyAddName(k, "valid") == -1, "added to empty name?");
 
-	keySetName("/");
-	succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name"); // TODO?
+	keySetName(k, "/");
+	// succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name"); // TODO?
+	succeed_if (keyAddName(k, "valid") == sizeof("/valid"), "added invalid name");
+
+#undef TEST_ESCAPE_PART
+#define TEST_ESCAPE_PART(A, S) \
+	do { \
+	succeed_if(keyAddName(k, S)!=-1, "keySetBaseName returned an error"); \
+	succeed_if_same_string(keyBaseName(k), A); \
+	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
+	succeed_if_same_string(buffer, A); \
+	} while(0)
+	char buffer [500];
+
+	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)
+	{
+		keySetName(k, namespaces[i]);
+
+#include <data_escape.c>
+	}
+#endif
+
 	keyDel(k);
-	*/
+
 }
 
 int main(int argc, char** argv)
