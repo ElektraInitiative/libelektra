@@ -42,10 +42,10 @@ int main()
 	//     writing the keys back
 	//   * remove the root key itself from the result KeySet because it usually
 	//     contains the mounted filename and cannot be merged anyway
-	// Also have a look at the documentation of kdbSet
+	// Also have a look at the documentation of kdbSet()
 	// (http://doc.libelektra.org/api/latest/html/group__kdb.html#ga11436b058408f83d303ca5e996832bcf).
 	// The merging framework can also be used to resolve conflicts resulting from
-	// concurrent calls to kdbSet as described in the examples of kdbSet.
+	// concurrent calls to kdbSet() as described in the example of kdbSet().
 	{
 		KDB lkdb;
 		lkdb.get (ours, oursRoot);
@@ -76,7 +76,7 @@ int main()
 
 	ThreeWayMerge merger;
 
-	// Step 3: Decide which resolution strategies to use. The stratgies are registered
+	// Step 3: Decide which resolution strategies to use. The strategies are registered
 	// with the merge and applied in order as soon as a conflict is detected. If a strategy
 	// marks a conflict as resolved, no further strategies are consulted. Therefore the order
 	// in which they are registered is absolutely crucial. With this chaining the strategies
