@@ -66,8 +66,11 @@ commands below work for copy&paste:
 
 == Prepare Source Package ==
 
-Build tar.gz and tag version and make hashsum:
+Build tar.gz:
  cd ~build && make source-package
+
+Check if tar is reproduceable + sign it:
+ gpg --sign
 
 Unpack + compile (with all available plugins) + test those sources:
  tar xvzf elektra-$VERSION.tar.gz && mkdir build
