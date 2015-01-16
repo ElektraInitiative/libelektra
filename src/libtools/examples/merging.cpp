@@ -106,8 +106,8 @@ int main()
 	// above uses the same merger instance. Alternatively we could have instantiated and configured
 	// a different merger only for the MetaKeys.
 
-	std::unique_ptr<MergeConflictStrategy> autoMerge (new AutoMergeStrategy());
-	std::unique_ptr<MergeConflictStrategy> ourVersion (new OneSideStrategy(OURS));
+	MergeConflictStrategyPtr autoMerge (new AutoMergeStrategy());
+	MergeConflictStrategyPtr ourVersion (new OneSideStrategy(OURS));
 
 	merger.addConflictStrategy(autoMerge.get());
 	merger.addConflictStrategy(ourVersion.get());

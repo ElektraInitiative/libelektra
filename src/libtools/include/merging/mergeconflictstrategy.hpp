@@ -36,6 +36,12 @@ protected:
 	virtual ConflictOperation getTheirConflictOperation(Key& conflictKey);
 };
 
+#if __cplusplus > 199711L
+typedef std::unique_ptr<MergeConflictStrategy> MergeConflictStrategyPtr;
+#else
+typedef std::auto_ptr<MergeConflictStrategy> MergeConflictStrategyPtr;
+#endif
+
 }
 }
 }
