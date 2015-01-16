@@ -483,6 +483,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	key->key[key->keySize-1] = '\0';
 	const ssize_t ret = keyAddName(key, newName+key->keyUSize);
 	if (ret == -1) elektraRemoveKeyName(key);
+	else return key->keySize;
 	return ret;
 }
 
@@ -797,11 +798,18 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
-	size_t size=0;
 	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
 	elektraEscapeKeyNamePart(baseName, escaped);
-	size = strlen (escaped);
-	key->keySize += size + 1;
+	size_t len = strlen (escaped);
+	if (!strcmp(key->key, "/"))
+	{
+		key->keySize += len;
+	}
+	else
+	{
+		key->keySize += len + 1;
+	}
+
 	elektraRealloc ((void**)&key->key, key->keySize*2);
 	if (!key->key)
 	{
@@ -809,8 +817,11 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 		return -1;
 	}
 
-	key->key[key->keySize - size - 2] = KDB_PATH_SEPARATOR;
-	memcpy (key->key + key->keySize - size - 1, escaped, size);
+	if (strcmp(key->key, "/"))
+	{
+		key->key[key->keySize - len - 2] = KDB_PATH_SEPARATOR;
+	}
+	memcpy (key->key + key->keySize - len - 1, escaped, len);
 
 	elektraFree (escaped);
 
