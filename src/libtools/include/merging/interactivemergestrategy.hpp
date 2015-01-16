@@ -21,6 +21,10 @@ namespace tools
 namespace merging
 {
 
+// This strategy can be used to interactively merging keys. It will ask
+// the user for each conflict which key version should be used. All
+// questions will be asked via the supplied input stream and results
+// will only be printed to the supplied outputstream.
 class InteractiveMergeStrategy : public MergeConflictStrategy
 {
 public:

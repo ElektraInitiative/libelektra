@@ -20,6 +20,14 @@ namespace tools
 namespace merging
 {
 
+// This strategy resolves all conflicts where only one side was modified relative to
+// the base version. This means that the folllowing operation pairs can be resolved (ouroperation - theiroperation)
+// SAME - MODIFY
+// SAME - ADD
+// SAME - DELETE
+// MODIFY - SAME
+// ADD - SAME
+// DELETE - SAME
 class AutoMergeStrategy : public MergeConflictStrategy
 {
 public:
