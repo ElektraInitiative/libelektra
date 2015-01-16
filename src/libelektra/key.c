@@ -413,11 +413,9 @@ int keyCopy (Key *dest, const Key *source)
 {
 	if (!dest) return -1;
 
-	if(test_bit(dest->flags, KEY_LOCK_NAME)
-	  || test_bit(dest->flags, KEY_LOCK_VALUE)
-	  || test_bit(dest->flags, KEY_LOCK_META)
-	//|| keyGetRef(dest) != 0
-	  )
+	if(test_bit(dest->flags, KEY_FLAG_RO_NAME)
+	  || test_bit(dest->flags, KEY_FLAG_RO_VALUE)
+	  || test_bit(dest->flags, KEY_FLAG_RO_META))
 	{
 		return -1;
 	}
