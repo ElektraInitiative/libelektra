@@ -776,8 +776,7 @@ public:
 		return const_cast<Context&>(m_context);
 	}
 
-	/// Do not inline so that we can use it for debugging
-	ELEKTRA_NOINLINE Key const& getSpec() const
+	Key const& getSpec() const
 	{
 		return m_spec;
 	}
