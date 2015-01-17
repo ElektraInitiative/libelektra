@@ -20,12 +20,6 @@
 #include <kdbproposal.h>
 #include <keyset.hpp>
 
-#ifdef __GNUC__
-#define ELEKTRA_NOINLINE __attribute__((noinline))
-#else
-#define ELEKTRA_NOINLINE
-#endif
-
 namespace kdb
 {
 
@@ -782,8 +776,7 @@ public:
 		return const_cast<Context&>(m_context);
 	}
 
-	/// Do not inline so that we can use it for debugging
-	ELEKTRA_NOINLINE Key const& getSpec() const
+	Key const& getSpec() const
 	{
 		return m_spec;
 	}

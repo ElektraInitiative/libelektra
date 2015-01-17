@@ -51,28 +51,42 @@
  * @defgroup keyset KeySet
  * @brief Methods to manipulate KeySets.
  *
- * A KeySet is a sorted set of keys.
- * So the correct name actually would be KeyMap.
+ * A KeySet is a set of keys.
  *
- * With ksNew() you can create a new KeySet.
+ * Most important properties of a KeySet:
  *
- * You can add keys with ksAppendKey() in the keyset.
- * Using ksAppend() you can append a whole keyset.
+ * - Allows us to iterate over all keys (in any depth)
+ * - Iteration is always sorted
+ * - Fast key lookup
+ * - A Key may be shared among many KeySets.
+ *
+ * The most important methods of KeySet:
+ *
+ * - With ksNew() you can create a new KeySet.
+ * - You can add keys with ksAppendKey().
+ * - Using ksAppend() you can append a whole keyset.
+ * - Using ksLookup() you can lookup a key.
+ * - ksGetSize() tells you the current size.
  *
  * @copydoc doxygenFlatCopy
  *
- * ksGetSize() tells you the current size of the keyset.
+ * With ksRewind() and ksNext() you can iterate through the keyset.
+ * Be assured that you will get every key of the set in a stable
+ * order (parents before children).
  *
- * With ksRewind() and ksNext() you can navigate through the keyset. Don't
- * expect any particular order, but it is assured that you will get every
- * key of the set.
+ * KeySets have an @link ksCurrent() internal cursor @endlink.
+ * Methods should avoid to change this cursor, unless they want
+ * to communicate something with it.
+ * The internal cursor is used:
  *
- * KeySets have an @link ksCurrent() internal cursor @endlink. This is used
- * for ksLookup() and kdbSet().
+ * - in ksLookup(): points to the found key
+ * - in kdbSet(): points to the key which caused an error
  *
- * KeySet has a fundamental meaning inside elektra. It makes it possible
+ * KeySet is the most important data structure in Elektra. It makes it possible
  * to get and store many keys at once inside the database. In addition to
- * that the class can be used as high level datastructure in applications.
+ * that, the class can be used as high level datastructure in applications
+ * and it can be used in plugins to manipulate or check configuration.
+ *
  * With ksLookupByName() it is possible to fetch easily specific keys
  * out of the list of keys.
  *

@@ -471,6 +471,9 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (metaNameSize == -1) return -1;
 	if (newMetaString) metaStringSize = elektraStrLen (newMetaString);
 
+	// optimization: we have nothing and want to remove something:
+	if (!key->meta && !newMetaString) return 0;
+
 	toSet = keyNew(0);
 	if (!toSet) return -1;
 
