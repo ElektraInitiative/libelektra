@@ -49,6 +49,7 @@ install (FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	kdbextension.h
 	kdbtypes.h
+	kdbhelper.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
 	kdbmodule.h
 	kdbos.h
