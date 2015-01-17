@@ -20,12 +20,6 @@
 #include <kdbproposal.h>
 #include <keyset.hpp>
 
-#ifdef __GNUC__
-#define ELEKTRA_NOINLINE __attribute__((noinline))
-#else
-#define ELEKTRA_NOINLINE
-#endif
-
 namespace kdb
 {
 
