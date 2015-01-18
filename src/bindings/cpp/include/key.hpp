@@ -724,8 +724,10 @@ inline T Key::get() const
 	return x;
 }
 
+/*
 #if __cplusplus > 199711L
-// TODO: are locale dependent:
+// TODO: are locale dependent
+//   + throw wrong exception (easy to fix though)
 template <>
 inline int Key::get<int>() const
 {
@@ -774,6 +776,7 @@ inline long double Key::get<long double>() const
 	return stold(getString());
 }
 #endif
+*/
 
 
 template <>
@@ -803,8 +806,9 @@ inline void Key::set(T x)
 	setString (ost.str());
 }
 
+/*
 #if __cplusplus > 199711L
-// TODO: are locale dependent:
+// TODO: are locale dependent
 template <>
 inline void Key::set(int val)
 {
@@ -859,6 +863,7 @@ inline void Key::set(long double val)
 	setString(std::to_string(val));
 }
 #endif
+*/
 
 
 /**
