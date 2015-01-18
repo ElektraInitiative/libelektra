@@ -2,6 +2,7 @@
 #define ELEKTRA_KEY_HPP
 
 #include <string>
+#include <locale>
 #include <cstring>
 #include <cstdarg>
 #include <sstream>
@@ -713,6 +714,7 @@ inline T Key::get() const
 	std::string str;
 	str = getString();
 	std::istringstream ist(str);
+	ist.imbue(std::locale("C"));
 	T x;
 	ist >> x;	// convert string to type
 	if (ist.fail())
@@ -723,6 +725,7 @@ inline T Key::get() const
 }
 
 #if __cplusplus > 199711L
+// TODO: are locale dependent:
 template <>
 inline int Key::get<int>() const
 {
@@ -791,6 +794,7 @@ inline void Key::set(T x)
 {
 	std::string str;
 	std::ostringstream ost;
+	ost.imbue(std::locale("C"));
 	ost << x;	// convert type to string
 	if (ost.fail())
 	{
@@ -800,6 +804,7 @@ inline void Key::set(T x)
 }
 
 #if __cplusplus > 199711L
+// TODO: are locale dependent:
 template <>
 inline void Key::set(int val)
 {
