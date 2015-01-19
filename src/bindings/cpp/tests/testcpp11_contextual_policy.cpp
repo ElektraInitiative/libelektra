@@ -42,7 +42,7 @@ template<typename T,
 	typename PolicySetter3 = kdb::DefaultPolicyArgs<T>,
 	typename PolicySetter4 = kdb::DefaultPolicyArgs<T>,
 	typename PolicySetter5 = kdb::DefaultPolicyArgs<T>,
-	typename PolicySetter6 = kdb::DefaultPolicyArgs<T>
+	typename PolicySetter6 = kdb::GetPolicyIs<MyStaticGetPolicy<T>>
 	>
 class ValueWrapper : public kdb::ContextualValue<T,
 		PolicySetter1,
@@ -98,12 +98,12 @@ public:
 		>::operator=;
 };
 
-TEST(test_contextual_policy, staticGetPolicyWithWrapper)
+TEST(test_contextual_policy, ValueWrapper)
 {
 	using namespace kdb;
 	KeySet ks;
 	Context c;
-	ValueWrapper<int, GetPolicyIs<MyStaticGetPolicy<int>>> cv
+	ValueWrapper<int, WritePolicyIs<DefaultWritePolicy<int>>> cv
 		(ks, c, Key("/test",
 			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
