@@ -64,11 +64,9 @@ class NoContext
 /**
  * @brief simply lookup without spec
  */
-template<typename T>
 class DefaultGetPolicy
 {
 public:
-	typedef T type;
 	static type get(KeySet &ks, Key const& spec)
 	{
 		Key found = ks.lookup(spec.getName(), 0);
@@ -97,11 +95,9 @@ public:
  *
  * The new value always can be written out
  */
-template<typename T>
 class DefaultSetPolicy
 {
 public:
-	typedef T type;
 	static Key set(KeySet &ks, Key const& spec)
 	{
 		kdb::Key found = ks.lookup(spec.getName(), 0);
@@ -117,19 +113,15 @@ public:
 	}
 };
 
-template<typename T>
 class DefaultWritePolicy
 {
 public:
-	typedef T type;
 	static const bool allowed = true;
 };
 
-template<typename T>
 class ReadOnlyPolicy
 {
 public:
-	typedef T type;
 	static const bool allowed = false;
 };
 
@@ -142,7 +134,6 @@ public:
 class NoLockPolicy
 {
 public:
-	typedef char type;
 	void lock() {}
 	void unlock() {}
 };
@@ -181,10 +172,10 @@ template<typename T>
 class DefaultPolicies
 {
 public:
-	typedef DefaultGetPolicy<T> GetPolicy;
-	typedef DefaultSetPolicy<T> SetPolicy;
+	typedef DefaultGetPolicy GetPolicy;
+	typedef DefaultSetPolicy SetPolicy;
 	typedef NoContext ContextPolicy;
-	typedef DefaultWritePolicy<T> WritePolicy;
+	typedef DefaultWritePolicy WritePolicy;
 	typedef DefaultObserverPolicy ObserverPolicy;
 	typedef NoLockPolicy LockPolicy;
 };
@@ -345,6 +336,7 @@ public:
 		return m_cache++;
 	}
 
+	template < typename = typename std::enable_if< true >::type >
 	operator type() const
 	{
 			return m_cache;
