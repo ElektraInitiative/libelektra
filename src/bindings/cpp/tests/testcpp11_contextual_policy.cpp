@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+
 template<typename T>
 class MyStaticGetPolicy
 {
@@ -33,7 +34,90 @@ TEST(test_contextual_policy, staticGetPolicy)
 
 	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy<int>>> cv2(cv);
 	EXPECT_EQ(cv, cv2);
+}
 
+template<typename T,
+	typename PolicySetter1 = kdb::DefaultPolicyArgs<T>,
+	typename PolicySetter2 = kdb::DefaultPolicyArgs<T>,
+	typename PolicySetter3 = kdb::DefaultPolicyArgs<T>,
+	typename PolicySetter4 = kdb::DefaultPolicyArgs<T>,
+	typename PolicySetter5 = kdb::DefaultPolicyArgs<T>,
+	typename PolicySetter6 = kdb::DefaultPolicyArgs<T>
+	>
+class ValueWrapper : public kdb::ContextualValue<T,
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		>
+{
+public:
+	typedef kdb::PolicySelector<
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		>
+		Policies;
+
+	ValueWrapper<T, PolicySetter1, PolicySetter2, PolicySetter3,
+		PolicySetter4, PolicySetter5, PolicySetter6>
+		(kdb::KeySet & ks, kdb::Context & context_, kdb::Key spec) :
+		kdb::ContextualValue<T,
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		> (ks, context_, spec),
+		value(ks, context_, spec)
+	{
+	}
+
+	kdb::ContextualValue<T,
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		> value;
+
+	using kdb::ContextualValue<T,
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		>::operator=;
+};
+
+TEST(test_contextual_policy, staticGetPolicyWithWrapper)
+{
+	using namespace kdb;
+	KeySet ks;
+	Context c;
+	ValueWrapper<int, GetPolicyIs<MyStaticGetPolicy<int>>> cv
+		(ks, c, Key("/test",
+			KEY_CASCADING_NAME,
+			KEY_VALUE, "/test",
+			KEY_META, "default", "88",
+			KEY_END));
+	EXPECT_EQ(cv.value, 23);
+	EXPECT_EQ(cv.value, cv.value);
+	cv.value = 40;
+	EXPECT_EQ(cv.value, 40);
+
+	EXPECT_EQ(cv, 23);
+	EXPECT_EQ(cv, cv);
+	cv = 40;
+	EXPECT_EQ(cv, 40);
 }
 
 template<typename T>
