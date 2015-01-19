@@ -1,4 +1,5 @@
 #include <kdbvalue.hpp>
+#include <kdbcontext.hpp>
 
 #include <gtest/gtest.h>
 

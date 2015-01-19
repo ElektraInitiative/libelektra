@@ -7,6 +7,7 @@
 
 #include <set>
 #include <map>
+#include <string>
 #include <vector>
 #include <memory>
 #include <cassert>
@@ -17,8 +18,6 @@
 #include <functional>
 #include <unordered_map>
 
-#include <kdbcontext.hpp>
-
 #include <kdbproposal.h>
 #include <keyset.hpp>
 
@@ -26,12 +25,41 @@
 namespace kdb
 {
 
+
+// some widely used interfaces
+
+class Layer
+{
+public:
+	virtual std::string id() const = 0;
+	virtual std::string operator()() const = 0;
+};
+
+class Observer
+{
+public:
+	virtual ~Observer() = 0;
+	virtual void update() const = 0;
+
+	typedef std::reference_wrapper<Observer> reference;
+};
+
+bool operator <(Observer const & lhs, Observer const & rhs)
+{
+	return &lhs < &rhs;
+}
+
+inline Observer::~Observer()
+{}
+
+
+
+// Default Policies for Value
+
 class NoContext
 {
 //TODO: define interface
 };
-
-// Default Policies for ContextualValue
 
 /**
  * @brief simply lookup without spec
@@ -125,7 +153,7 @@ public:
  * by David Vandevoorde and Nicolai M. Josuttis, Addison-Wesley, 2002
  * in Chapter 16 Templates and Inheritance: Named Template Arguments
  *
- * The technique allows users of the class ContextualValue to use any number
+ * The technique allows users of the class Value to use any number
  * and order of policies as desired.
  */
 template <typename Base, int D>
@@ -155,7 +183,7 @@ class DefaultPolicies
 public:
 	typedef DefaultGetPolicy<T> GetPolicy;
 	typedef DefaultSetPolicy<T> SetPolicy;
-	typedef Context ContextPolicy; // TODO: NoContext by default
+	typedef NoContext ContextPolicy;
 	typedef DefaultWritePolicy<T> WritePolicy;
 	typedef DefaultObserverPolicy ObserverPolicy;
 	typedef NoLockPolicy LockPolicy;
@@ -246,7 +274,7 @@ template<typename T,
 	typename PolicySetter5 = DefaultPolicyArgs<T>,
 	typename PolicySetter6 = DefaultPolicyArgs<T>
 	>
-class ContextualValue :
+class Value :
 	public Observer
 {
 public:
@@ -263,9 +291,9 @@ public:
 		Policies;
 
 	// not to be constructed yourself
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
+	Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
 		PolicySetter4, PolicySetter5, PolicySetter6>
-		(KeySet & ks, Context & context_, kdb::Key spec) :
+		(KeySet & ks, typename Policies::ContextPolicy & context_, kdb::Key spec) :
 		m_cache(),
 		m_ks(ks),
 		m_context(context_),
@@ -280,9 +308,9 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
+	Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
 		PolicySetter4, PolicySetter5, PolicySetter6>
-		(ContextualValue<T> const & other, KeySet & ks) :
+		(Value<T> const & other, KeySet & ks) :
 		m_cache(other.m_cache),
 		m_ks(ks),
 		m_context(other.m_context),
@@ -294,7 +322,7 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	typedef ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
+	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
 		PolicySetter4, PolicySetter5, PolicySetter6> CV;
 
 	CV const & operator= (type n)
@@ -391,15 +419,10 @@ private:
 private:
 	mutable type m_cache;
 	KeySet & m_ks;
-	// typename Policies::ContextPolicy & m_context;
-	Context & m_context;
+	typename Policies::ContextPolicy & m_context;
 	mutable Key m_spec;
 	mutable Key m_key;
 };
-
-typedef ContextualValue<uint32_t>Integer;
-typedef ContextualValue<bool>Boolean;
-typedef ContextualValue<std::string>String;
 
 }
 

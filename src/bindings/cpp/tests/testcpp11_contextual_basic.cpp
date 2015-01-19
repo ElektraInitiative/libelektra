@@ -1,5 +1,6 @@
 #include "kdbconfig.h"
 
+#include <kdbcontext.hpp>
 #include <kdbvalue.hpp>
 
 #include <thread>

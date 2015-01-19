@@ -1,34 +1,18 @@
 #ifndef ELEKTRA_KDBCONTEXT_HPP
 #define ELEKTRA_KDBCONTEXT_HPP
 
+#include <kdbvalue.hpp>
+
+#include <set>
+#include <string>
+#include <vector>
+#include <memory>
+#include <cassert>
+#include <functional>
+#include <unordered_map>
+
 namespace kdb
 {
-
-
-class Layer
-{
-public:
-	virtual std::string id() const = 0;
-	virtual std::string operator()() const = 0;
-};
-
-
-class Observer
-{
-public:
-	virtual ~Observer() = 0;
-	virtual void update() const = 0;
-
-	typedef std::reference_wrapper<Observer> reference;
-};
-
-bool operator <(Observer const & lhs, Observer const & rhs)
-{
-	return &lhs < &rhs;
-}
-
-inline Observer::~Observer()
-{}
 
 class Subject
 {
@@ -445,6 +429,26 @@ private:
 	// invocation chain
 	WithStack m_with_stack;
 };
+
+template<typename T,
+	typename PolicySetter1 = DefaultPolicyArgs<T>,
+	typename PolicySetter2 = DefaultPolicyArgs<T>,
+	typename PolicySetter3 = DefaultPolicyArgs<T>,
+	typename PolicySetter4 = DefaultPolicyArgs<T>,
+	typename PolicySetter5 = DefaultPolicyArgs<T>
+	>
+using ContextualValue = Value <T,
+	ContextPolicyIs<Context>,
+	PolicySetter1,
+	PolicySetter2,
+	PolicySetter3,
+	PolicySetter4,
+	PolicySetter5
+	>;
+
+typedef ContextualValue<uint32_t>Integer;
+typedef ContextualValue<bool>Boolean;
+typedef ContextualValue<std::string>String;
 
 } // namespace kdb
 
