@@ -28,6 +28,22 @@ namespace kdb
 
 // some widely used interfaces
 
+class none_t
+{};
+
+template <>
+inline void Key::set(none_t)
+{}
+
+template <>
+inline none_t Key::get() const
+{
+	none_t ret;
+	return ret;
+}
+
+
+
 class Layer
 {
 public:
@@ -58,7 +74,13 @@ inline Observer::~Observer()
 
 class NoContext
 {
-//TODO: define interface
+public:
+	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  Observer & observer)
+	{}
+	std::string evaluate(std::string const & key_name) const
+	{
+		return key_name;
+	}
 };
 
 /**
@@ -67,26 +89,9 @@ class NoContext
 class DefaultGetPolicy
 {
 public:
-	static type get(KeySet &ks, Key const& spec)
+	static Key get(KeySet &ks, Key const& spec)
 	{
-		Key found = ks.lookup(spec.getName(), 0);
-		type val = type{};
-		if (found)
-		{
-			val = found.get<type>();
-#if DEBUG && VERBOSE
-		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
-#endif
-		}
-		else
-		{
-			val = spec.getMeta<type>("default");
-#if DEBUG && VERBOSE
-		std::cout << "got default name: " << m_spec.getName() << " to " << m_cache << std::endl;
-#endif
-		}
-
-		return val;
+		return ks.lookup(spec, ckdb::KDB_O_SPEC);
 	}
 };
 
@@ -168,7 +173,6 @@ class PolicySelector : public Discriminator<Setter1,1>,
 {
 };
 
-template<typename T>
 class DefaultPolicies
 {
 public:
@@ -180,8 +184,7 @@ public:
 	typedef NoLockPolicy LockPolicy;
 };
 
-template<typename T>
-class DefaultPolicyArgs : virtual public DefaultPolicies<T>
+class DefaultPolicyArgs : virtual public DefaultPolicies
 {
 };
 
@@ -192,7 +195,7 @@ class DefaultPolicyArgs : virtual public DefaultPolicies<T>
 ///
 /// @tparam Policy
 template <typename Policy>
-class GetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class GetPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy GetPolicy;
@@ -203,7 +206,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class SetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class SetPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy SetPolicy;
@@ -214,10 +217,10 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class ContextPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class ContextPolicyIs : virtual public DefaultPolicies
 {
 public:
-	typedef Policy Context;
+	typedef Policy ContextPolicy;
 };
 
 
@@ -225,7 +228,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class WritePolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class WritePolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy WritePolicy;
@@ -236,7 +239,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class ObserverPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class ObserverPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy ObserverPolicy;
@@ -248,7 +251,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class LockPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class LockPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy LockPolicy;
@@ -258,12 +261,12 @@ public:
 // standard types
 
 template<typename T,
-	typename PolicySetter1 = DefaultPolicyArgs<T>,
-	typename PolicySetter2 = DefaultPolicyArgs<T>,
-	typename PolicySetter3 = DefaultPolicyArgs<T>,
-	typename PolicySetter4 = DefaultPolicyArgs<T>,
-	typename PolicySetter5 = DefaultPolicyArgs<T>,
-	typename PolicySetter6 = DefaultPolicyArgs<T>
+	typename PolicySetter1 = DefaultPolicyArgs,
+	typename PolicySetter2 = DefaultPolicyArgs,
+	typename PolicySetter3 = DefaultPolicyArgs,
+	typename PolicySetter4 = DefaultPolicyArgs,
+	typename PolicySetter5 = DefaultPolicyArgs,
+	typename PolicySetter6 = DefaultPolicyArgs
 	>
 class Value :
 	public Observer
@@ -336,7 +339,7 @@ public:
 		return m_cache++;
 	}
 
-	template < typename = typename std::enable_if< true >::type >
+	// template < typename = typename std::enable_if< true >::type >
 	operator type() const
 	{
 			return m_cache;
@@ -367,8 +370,16 @@ public:
 	// keyset to cache
 	void syncCache() const
 	{
-		m_cache = Policies::GetPolicy::get(m_ks, m_spec);
-		// Policies::GetPolicy::get(this);
+		Key found = Policies::GetPolicy::get(m_ks, m_spec);
+
+		if (found)
+		{
+			m_cache = found.get<type>();
+		}
+
+#if DEBUG && VERBOSE
+		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
+#endif
 	}
 
 	// cache to keyset
@@ -378,11 +389,11 @@ public:
 		std::cout << "set name: " << m_spec.getName() << " to " << m_cache << std::endl;
 #endif
 		kdb::Key found = Policies::SetPolicy::set(m_ks, m_spec);
+
 		if (found)
 		{
 			found.set<type>(m_cache);
 		}
-		// Policies::SetPolicy::set(this);
 	}
 
 

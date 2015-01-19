@@ -431,11 +431,11 @@ private:
 };
 
 template<typename T,
-	typename PolicySetter1 = DefaultPolicyArgs<T>,
-	typename PolicySetter2 = DefaultPolicyArgs<T>,
-	typename PolicySetter3 = DefaultPolicyArgs<T>,
-	typename PolicySetter4 = DefaultPolicyArgs<T>,
-	typename PolicySetter5 = DefaultPolicyArgs<T>
+	typename PolicySetter1 = DefaultPolicyArgs,
+	typename PolicySetter2 = DefaultPolicyArgs,
+	typename PolicySetter3 = DefaultPolicyArgs,
+	typename PolicySetter4 = DefaultPolicyArgs,
+	typename PolicySetter5 = DefaultPolicyArgs
 	>
 using ContextualValue = Value <T,
 	ContextPolicyIs<Context>,
