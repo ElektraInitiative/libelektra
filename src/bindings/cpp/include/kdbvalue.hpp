@@ -302,24 +302,10 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
-		PolicySetter4, PolicySetter5, PolicySetter6>
-		(Value<T> const & other, KeySet & ks) :
-		m_cache(other.m_cache),
-		m_ks(ks),
-		m_context(other.m_context),
-		m_spec(other.m_spec)
-	{
-		assert(m_spec.getName()[0] == '/');
-		// cache already in sync
-		// attach copy, too:
-		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
-	}
-
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
-		PolicySetter4, PolicySetter5, PolicySetter6> CV;
+		PolicySetter4, PolicySetter5, PolicySetter6> V;
 
-	CV const & operator= (type n)
+	V const & operator= (type n)
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
@@ -345,7 +331,7 @@ public:
 			return m_cache;
 	}
 
-	bool operator == (CV const & other) const
+	bool operator == (V const & other) const
 	{
 		return m_cache == other.m_cache ;
 	}
