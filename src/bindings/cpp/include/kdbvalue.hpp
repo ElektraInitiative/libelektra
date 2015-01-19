@@ -7,6 +7,7 @@
 
 #include <set>
 #include <map>
+#include <string>
 #include <vector>
 #include <memory>
 #include <cassert>
@@ -17,8 +18,6 @@
 #include <functional>
 #include <unordered_map>
 
-#include <kdbcontext.hpp>
-
 #include <kdbproposal.h>
 #include <keyset.hpp>
 
@@ -26,41 +25,73 @@
 namespace kdb
 {
 
-class NoContext
+
+// some widely used interfaces
+
+class none_t
+{};
+
+template <>
+inline void Key::set(none_t)
+{}
+
+template <>
+inline none_t Key::get() const
 {
-//TODO: define interface
+	none_t ret;
+	return ret;
+}
+
+
+
+class Layer
+{
+public:
+	virtual std::string id() const = 0;
+	virtual std::string operator()() const = 0;
 };
 
-// Default Policies for ContextualValue
+class Observer
+{
+public:
+	virtual ~Observer() = 0;
+	virtual void update() const = 0;
+
+	typedef std::reference_wrapper<Observer> reference;
+};
+
+bool operator <(Observer const & lhs, Observer const & rhs)
+{
+	return &lhs < &rhs;
+}
+
+inline Observer::~Observer()
+{}
+
+
+
+// Default Policies for Value
+
+class NoContext
+{
+public:
+	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  Observer & observer)
+	{}
+	std::string evaluate(std::string const & key_name) const
+	{
+		return key_name;
+	}
+};
 
 /**
  * @brief simply lookup without spec
  */
-template<typename T>
 class DefaultGetPolicy
 {
 public:
-	typedef T type;
-	static type get(KeySet &ks, Key const& spec)
+	static Key get(KeySet &ks, Key const& spec)
 	{
-		Key found = ks.lookup(spec.getName(), 0);
-		type val = type{};
-		if (found)
-		{
-			val = found.get<type>();
-#if DEBUG && VERBOSE
-		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
-#endif
-		}
-		else
-		{
-			val = spec.getMeta<type>("default");
-#if DEBUG && VERBOSE
-		std::cout << "got default name: " << m_spec.getName() << " to " << m_cache << std::endl;
-#endif
-		}
-
-		return val;
+		return ks.lookup(spec, ckdb::KDB_O_SPEC);
 	}
 };
 
@@ -69,11 +100,9 @@ public:
  *
  * The new value always can be written out
  */
-template<typename T>
 class DefaultSetPolicy
 {
 public:
-	typedef T type;
 	static Key set(KeySet &ks, Key const& spec)
 	{
 		kdb::Key found = ks.lookup(spec.getName(), 0);
@@ -89,19 +118,15 @@ public:
 	}
 };
 
-template<typename T>
 class DefaultWritePolicy
 {
 public:
-	typedef T type;
 	static const bool allowed = true;
 };
 
-template<typename T>
 class ReadOnlyPolicy
 {
 public:
-	typedef T type;
 	static const bool allowed = false;
 };
 
@@ -114,7 +139,6 @@ public:
 class NoLockPolicy
 {
 public:
-	typedef char type;
 	void lock() {}
 	void unlock() {}
 };
@@ -125,7 +149,7 @@ public:
  * by David Vandevoorde and Nicolai M. Josuttis, Addison-Wesley, 2002
  * in Chapter 16 Templates and Inheritance: Named Template Arguments
  *
- * The technique allows users of the class ContextualValue to use any number
+ * The technique allows users of the class Value to use any number
  * and order of policies as desired.
  */
 template <typename Base, int D>
@@ -149,20 +173,18 @@ class PolicySelector : public Discriminator<Setter1,1>,
 {
 };
 
-template<typename T>
 class DefaultPolicies
 {
 public:
-	typedef DefaultGetPolicy<T> GetPolicy;
-	typedef DefaultSetPolicy<T> SetPolicy;
-	typedef Context ContextPolicy; // TODO: NoContext by default
-	typedef DefaultWritePolicy<T> WritePolicy;
+	typedef DefaultGetPolicy GetPolicy;
+	typedef DefaultSetPolicy SetPolicy;
+	typedef NoContext ContextPolicy;
+	typedef DefaultWritePolicy WritePolicy;
 	typedef DefaultObserverPolicy ObserverPolicy;
 	typedef NoLockPolicy LockPolicy;
 };
 
-template<typename T>
-class DefaultPolicyArgs : virtual public DefaultPolicies<T>
+class DefaultPolicyArgs : virtual public DefaultPolicies
 {
 };
 
@@ -173,7 +195,7 @@ class DefaultPolicyArgs : virtual public DefaultPolicies<T>
 ///
 /// @tparam Policy
 template <typename Policy>
-class GetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class GetPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy GetPolicy;
@@ -184,7 +206,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class SetPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class SetPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy SetPolicy;
@@ -195,10 +217,10 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class ContextPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class ContextPolicyIs : virtual public DefaultPolicies
 {
 public:
-	typedef Policy Context;
+	typedef Policy ContextPolicy;
 };
 
 
@@ -206,7 +228,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class WritePolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class WritePolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy WritePolicy;
@@ -217,7 +239,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class ObserverPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class ObserverPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy ObserverPolicy;
@@ -229,7 +251,7 @@ public:
 ///
 /// @tparam Policy
 template <typename Policy>
-class LockPolicyIs : virtual public DefaultPolicies<typename Policy::type>
+class LockPolicyIs : virtual public DefaultPolicies
 {
 public:
 	typedef Policy LockPolicy;
@@ -239,14 +261,14 @@ public:
 // standard types
 
 template<typename T,
-	typename PolicySetter1 = DefaultPolicyArgs<T>,
-	typename PolicySetter2 = DefaultPolicyArgs<T>,
-	typename PolicySetter3 = DefaultPolicyArgs<T>,
-	typename PolicySetter4 = DefaultPolicyArgs<T>,
-	typename PolicySetter5 = DefaultPolicyArgs<T>,
-	typename PolicySetter6 = DefaultPolicyArgs<T>
+	typename PolicySetter1 = DefaultPolicyArgs,
+	typename PolicySetter2 = DefaultPolicyArgs,
+	typename PolicySetter3 = DefaultPolicyArgs,
+	typename PolicySetter4 = DefaultPolicyArgs,
+	typename PolicySetter5 = DefaultPolicyArgs,
+	typename PolicySetter6 = DefaultPolicyArgs
 	>
-class ContextualValue :
+class Value :
 	public Observer
 {
 public:
@@ -263,9 +285,9 @@ public:
 		Policies;
 
 	// not to be constructed yourself
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
+	Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
 		PolicySetter4, PolicySetter5, PolicySetter6>
-		(KeySet & ks, Context & context_, kdb::Key spec) :
+		(KeySet & ks, typename Policies::ContextPolicy & context_, kdb::Key spec) :
 		m_cache(),
 		m_ks(ks),
 		m_context(context_),
@@ -280,24 +302,10 @@ public:
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 	}
 
-	ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
-		PolicySetter4, PolicySetter5, PolicySetter6>
-		(ContextualValue<T> const & other, KeySet & ks) :
-		m_cache(other.m_cache),
-		m_ks(ks),
-		m_context(other.m_context),
-		m_spec(other.m_spec)
-	{
-		assert(m_spec.getName()[0] == '/');
-		// cache already in sync
-		// attach copy, too:
-		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
-	}
+	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
+		PolicySetter4, PolicySetter5, PolicySetter6> V;
 
-	typedef ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3,
-		PolicySetter4, PolicySetter5, PolicySetter6> CV;
-
-	CV const & operator= (type n)
+	V const & operator= (type n)
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
@@ -317,12 +325,13 @@ public:
 		return m_cache++;
 	}
 
+	// template < typename = typename std::enable_if< true >::type >
 	operator type() const
 	{
 			return m_cache;
 	}
 
-	bool operator == (CV const & other) const
+	bool operator == (V const & other) const
 	{
 		return m_cache == other.m_cache ;
 	}
@@ -347,8 +356,16 @@ public:
 	// keyset to cache
 	void syncCache() const
 	{
-		m_cache = Policies::GetPolicy::get(m_ks, m_spec);
-		// Policies::GetPolicy::get(this);
+		Key found = Policies::GetPolicy::get(m_ks, m_spec);
+
+		if (found)
+		{
+			m_cache = found.get<type>();
+		}
+
+#if DEBUG && VERBOSE
+		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
+#endif
 	}
 
 	// cache to keyset
@@ -358,11 +375,11 @@ public:
 		std::cout << "set name: " << m_spec.getName() << " to " << m_cache << std::endl;
 #endif
 		kdb::Key found = Policies::SetPolicy::set(m_ks, m_spec);
+
 		if (found)
 		{
 			found.set<type>(m_cache);
 		}
-		// Policies::SetPolicy::set(this);
 	}
 
 
@@ -391,15 +408,10 @@ private:
 private:
 	mutable type m_cache;
 	KeySet & m_ks;
-	// typename Policies::ContextPolicy & m_context;
-	Context & m_context;
+	typename Policies::ContextPolicy & m_context;
 	mutable Key m_spec;
 	mutable Key m_key;
 };
-
-typedef ContextualValue<uint32_t>Integer;
-typedef ContextualValue<bool>Boolean;
-typedef ContextualValue<std::string>String;
 
 }
 
