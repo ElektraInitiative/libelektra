@@ -1,5 +1,5 @@
 import QtQuick 2.2
-import QtQuick.Window 2.0
+import QtQuick.Window 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
@@ -17,6 +17,8 @@ Window {
 	title: qsTr("Mount Backend")
 
 	color: activePalette.window
+
+	onClosing: buttonRow.cancelButton.action.triggered()
 
 	Loader {
 		id: loader
