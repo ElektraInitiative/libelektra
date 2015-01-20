@@ -9,8 +9,6 @@
 
 const uint32_t i_value = 55;
 const char * s_value = "55";
-const uint32_t othervalue = 66;
-const char * s_othervalue = "66";
 
 class CountryGermanyLayer : public kdb::Layer
 {
@@ -607,4 +605,18 @@ TEST(test_contextual_basic, threads)
 	std::thread t2(foo, std::ref(d));
 	t2.join();
 	ASSERT_EQ(d , 12);
+}
+
+TEST(test_contextual_basic, nocontext)
+{
+	using namespace kdb;
+	KeySet ks;
+	NoContext c;
+	kdb::Value<int> n(ks, c,  Key("/test",
+				KEY_CASCADING_NAME,
+				KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(n , i_value);
+
+	n = 18;
+	ASSERT_EQ(n , 18);
 }

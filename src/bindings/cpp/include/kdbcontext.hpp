@@ -116,8 +116,9 @@ public:
 	{
 	}
 
-	virtual void attachToThread(ELEKTRA_UNUSED ValueSubject &v,ELEKTRA_UNUSED  Post postFkt)
+	virtual void attachToThread(ELEKTRA_UNUSED ValueSubject &v, Post postFkt)
 	{
+		// postFkt();
 	}
 
 	/**

@@ -97,8 +97,9 @@ public:
 		return Key();
 	}
 
-	void attachToThread(ELEKTRA_UNUSED ValueSubject &v, ELEKTRA_UNUSED Post postFkt)
+	void attachToThread(ELEKTRA_UNUSED ValueSubject &v, Post postFkt)
 	{
+		// postFkt();
 	}
 };
 
@@ -318,7 +319,7 @@ public:
 		ckdb::elektraKeySetName(*m_spec,
 				m_context.evaluate(m_spec.getName()).c_str(),
 				KEY_CASCADING_NAME);
-		syncCache();  // read what we have in our context
+		syncCache();
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 		attachMeToThread();
 	}
@@ -327,9 +328,10 @@ public:
 	{
 		Post fun = [this]
 		{
-			// m_key = m_ks.lookup(m_spec);
+			this->syncCache();
+			m_key = m_ks.lookup(m_spec); //-> leads to segfault of gcc?
 			assert(m_key);
-			// m_cache = m_key.get<int>();
+			m_cache = m_key.get<T>();
 			return m_key;
 		};
 		m_context.attachToThread(*this, fun);
@@ -351,7 +353,7 @@ public:
 	{
 		m_context.post([this]()
 		{
-			m_key.set<int>(m_cache);
+			m_key.set<T>(m_cache);
 			return m_key;
 		});
 	}
@@ -365,8 +367,9 @@ public:
 	void notifyInThread()
 	{
 		assert(m_key);
+		syncCache();
 		// TODO:
-		//m_cache = m_key.get<int>();
+		m_cache = m_key.get<T>();
 	}
 
 	type operator ++()
