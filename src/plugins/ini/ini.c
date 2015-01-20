@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <kdberrors.h>
 #include <kdbextension.h>
+#include <kdbproposal.h>
 #include <inih.h>
 #include "ini.h"
 
@@ -102,11 +103,9 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
 
 	Key *appendKey = keyDup (handle->parentKey);
-	keySetString(appendKey, 0);
-
+	keySetBinary(appendKey, 0, 0);
 	keyAddBaseName(appendKey, section);
 	flushCollectedComment (handle, appendKey);
-	keySetDir(appendKey);
 	ksAppendKey(handle->result, appendKey);
 
 	return 1;
@@ -254,7 +253,7 @@ void writeComments(Key* current, FILE* fh)
 	}
 }
 
-void writeMultilineKey(Key *key, FILE *fh)
+void writeMultilineKey(Key *key, const char *iniName, FILE *fh)
 {
 	size_t valueSize = keyGetValueSize(key);
 	char *saveptr = 0;
@@ -263,7 +262,7 @@ void writeMultilineKey(Key *key, FILE *fh)
 	keyGetString(key, value, valueSize);
 	result = strtok_r (value, "\n", &saveptr);
 
-	fprintf (fh, "%s = %s\n", keyBaseName(key), result);
+	fprintf (fh, "%s = %s\n", iniName, result);
 
 	while ( (result = strtok_r (0, "\n", &saveptr)) != 0)
 	{
@@ -272,6 +271,42 @@ void writeMultilineKey(Key *key, FILE *fh)
 
 	free (value);
 }
+
+static short isSectionKey(Key *key)
+{
+	if (!key) return 0;
+
+	return keyIsBinary(key) && !keyValue(key);
+}
+
+static const char *getIniName(KeySet *keys, Key *parent, Key *key)
+{
+	cursor_t currentCursor = ksGetCursor(keys);
+
+	Key *temp = keyDup(key);
+	Key *section;
+
+	do
+	{
+		keySetBaseName(temp, 0);
+
+		if (!keyCmp(temp, parent))
+		{
+			// we reached the parent key, there won't be any more section keys
+			section = parent;
+			break;
+		}
+
+		section = ksLookup(keys, temp, KDB_O_NONE);
+	} while(!isSectionKey(section));
+
+	ksSetCursor(keys, currentCursor);
+	keyDel(temp);
+
+	return (char *)keyUnescapedName((key)) + keyGetUnescapedNameSize(section);
+
+}
+
 
 int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
@@ -298,31 +333,37 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		writeComments (current, fh);
 
-		/* TODO: make logic independent from meta data, just
-		 * check depth of key, see #138
-		if (keyIsDir(current))
+		// find the section the current key belongs to
+		const char *iniName = getIniName(returned, parentKey, current);
+
+		// keys with a NULL value are treated as sections
+		if (isSectionKey(current))
 		{
-			fprintf (fh, "[%s]\n", keyBaseName(current));
-		}
-		*/
-		if (strstr (keyString (current), "\n") == 0)
-		{
-			fprintf (fh, "%s = %s\n", keyBaseName(current), keyString(current));
+			fprintf (fh, "[%s]\n", iniName);
 		}
 		else
 		{
-			if (multilineKey)
+			// if the key value is only single line, write a singleline INI key
+			if (strstr (keyString (current), "\n") == 0)
 			{
-				writeMultilineKey(current, fh);
+				fprintf (fh, "%s = %s\n", iniName, keyString (current));
 			}
 			else
 			{
-				ELEKTRA_SET_ERROR(97, parentKey, "Encountered a multiline value but multiline support is not enabled. "
-						"Have a look at kdb info ini for more details");
-				ret = -1;
+				// otherwise check that multiline support is enabled and write a multiline INI key
+				if (multilineKey)
+				{
+					writeMultilineKey (current, iniName, fh);
+				}
+				else
+				{
+					ELEKTRA_SET_ERROR(97, parentKey,
+							"Encountered a multiline value but multiline support is not enabled. "
+									"Have a look at kdb info ini for more details");
+					ret = -1;
+				}
 			}
 		}
-
 		if (ret < 0) break;
 	}
 
