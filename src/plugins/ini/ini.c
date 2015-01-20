@@ -41,6 +41,10 @@ static void flushCollectedComment (CallbackHandle *handle, Key *key)
 	}
 }
 
+// TODO defined privately in internal.c, API break possible.
+// Might consider moving this to the public API as it might be used by more plugins
+size_t elektraUnescapeKeyName(const char *source, char *dest);
+
 // TODO: this is very similar to elektraKeyAppendMetaLine in keytometa
 static int elektraKeyAppendLine (Key *target, const char *line)
 {
@@ -279,7 +283,7 @@ static short isSectionKey(Key *key)
 	return keyIsBinary(key) && !keyValue(key);
 }
 
-static const char *getIniName(KeySet *keys, Key *parent, Key *key)
+static char *getIniName(KeySet *keys, Key *parent, Key *key)
 {
 	cursor_t currentCursor = ksGetCursor(keys);
 
@@ -292,7 +296,7 @@ static const char *getIniName(KeySet *keys, Key *parent, Key *key)
 
 		if (!keyCmp(temp, parent))
 		{
-			// we reached the parent key, there won't be any more section keys
+			/* we reached the parent key, there won't be any more section keys */
 			section = parent;
 			break;
 		}
@@ -303,7 +307,10 @@ static const char *getIniName(KeySet *keys, Key *parent, Key *key)
 	ksSetCursor(keys, currentCursor);
 	keyDel(temp);
 
-	return (char *)keyUnescapedName((key)) + keyGetUnescapedNameSize(section);
+	char *buffer = elektraMalloc(keyGetNameSize(key));
+	elektraUnescapeKeyName(keyName(key) + keyGetNameSize(section), buffer);
+
+	return buffer;
 
 }
 
@@ -333,24 +340,24 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		writeComments (current, fh);
 
-		// find the section the current key belongs to
-		const char *iniName = getIniName(returned, parentKey, current);
+		/* find the section the current key belongs to */
+		char *iniName = getIniName(returned, parentKey, current);
 
-		// keys with a NULL value are treated as sections
+		/* keys with a NULL value are treated as sections */
 		if (isSectionKey(current))
 		{
 			fprintf (fh, "[%s]\n", iniName);
 		}
 		else
 		{
-			// if the key value is only single line, write a singleline INI key
+			/* if the key value is only single line, write a singleline INI key */
 			if (strstr (keyString (current), "\n") == 0)
 			{
 				fprintf (fh, "%s = %s\n", iniName, keyString (current));
 			}
 			else
 			{
-				// otherwise check that multiline support is enabled and write a multiline INI key
+				/* otherwise check that multiline support is enabled and write a multiline INI key */
 				if (multilineKey)
 				{
 					writeMultilineKey (current, iniName, fh);
@@ -364,6 +371,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				}
 			}
 		}
+		elektraFree(iniName);
 		if (ret < 0) break;
 	}
 
