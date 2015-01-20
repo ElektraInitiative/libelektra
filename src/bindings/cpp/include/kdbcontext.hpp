@@ -80,7 +80,7 @@ inline void Subject::notifyByEvents(Events const & events) const
 	// now call any observer exactly once
 	for (auto & o: os)
 	{
-		o.get().update();
+		o.get().updateContext();
 	}
 }
 

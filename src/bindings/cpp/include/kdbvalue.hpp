@@ -56,7 +56,7 @@ class Observer
 {
 public:
 	virtual ~Observer() = 0;
-	virtual void update() const = 0;
+	virtual void updateContext() const = 0;
 
 	typedef std::reference_wrapper<Observer> reference;
 };
@@ -355,6 +355,7 @@ public:
 
 	void activate()
 	{
+		// TODO: use correct switching
 		m_spec.setName("user/activate");
 		attachMeToThread(); // reattach
 	}
@@ -425,10 +426,11 @@ public:
 	// cache to keyset
 	void syncKeySet() const
 	{
-#if DEBUG && VERBOSE
-		std::cout << "set name: " << m_key.getName() << " value: " << m_cache << std::endl;
-#endif
 		kdb::Key found = Policies::SetPolicy::set(m_ks, m_spec);
+
+#if DEBUG && VERBOSE
+		std::cout << "set name: " << found.getName() << " value: " << m_cache << std::endl;
+#endif
 
 		if (found)
 		{
@@ -438,7 +440,7 @@ public:
 
 
 private:
-	virtual void update() const
+	virtual void updateContext() const
 	{
 		// Policies::UpdatePolicy::update(this);
 		typename Policies::LockPolicy lock;
@@ -446,7 +448,7 @@ private:
 
 		std::string evaluated_name = m_context.evaluate(m_spec.getMeta<std::string>("name"));
 #if DEBUG && VERBOSE
-		std::cout << "update " << evaluated_name << " from " << m_spec.getName() << std::endl;
+		std::cout << "update context " << evaluated_name << " from " << m_spec.getName() << std::endl;
 #endif
 		if (evaluated_name != m_spec.getName())
 		{

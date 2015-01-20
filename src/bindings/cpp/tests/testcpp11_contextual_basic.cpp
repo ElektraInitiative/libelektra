@@ -480,7 +480,7 @@ struct MockObserver : kdb::Observer
 	MockObserver() : counter()
 	{}
 
-	virtual void update() const
+	virtual void updateContext() const
 	{
 		++ counter;
 	}
