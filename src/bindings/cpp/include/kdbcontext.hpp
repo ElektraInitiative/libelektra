@@ -19,7 +19,7 @@ class Subject
 public:
 	virtual ~Subject() = 0;
 	typedef std::vector<std::string> Events;
-	virtual void attachObserver(std::string const & event, Observer &);
+	virtual void attachObserver(std::string const & event, ValueObserver &);
 	// notify all given events
 	virtual void notifyByEvents(Events const & events) const;
 	// notify all events
@@ -29,7 +29,7 @@ protected:
 	Subject();
 
 private:
-	typedef std::set<Observer::reference> ObserverSet;
+	typedef std::set<ValueObserver::reference> ObserverSet;
 	mutable std::unordered_map<
 		std::string,
 		ObserverSet> m_observers;
@@ -41,7 +41,7 @@ inline Subject::Subject()
 inline Subject::~Subject()
 {}
 
-inline void Subject::attachObserver(std::string const & event, Observer & observer)
+inline void Subject::attachObserver(std::string const & event, ValueObserver & observer)
 {
 	auto it = m_observers.find(event);
 	if (it == m_observers.end())
@@ -145,7 +145,7 @@ public:
 	 * @param key_name the name with placeholders to be used for attaching
 	 * @param observer the observer to attach to
 	 */
-	void attachByName(std::string const & key_name, Observer & observer)
+	void attachByName(std::string const & key_name, ValueObserver & observer)
 	{
 		evaluate(key_name, [&](std::string const & current_id, std::string &, bool){
 			this->attachObserver(current_id, observer);

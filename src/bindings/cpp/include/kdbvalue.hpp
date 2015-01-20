@@ -52,21 +52,21 @@ public:
 	virtual std::string operator()() const = 0;
 };
 
-class Observer
+class ValueObserver
 {
 public:
-	virtual ~Observer() = 0;
+	virtual ~ValueObserver() = 0;
 	virtual void updateContext() const = 0;
 
-	typedef std::reference_wrapper<Observer> reference;
+	typedef std::reference_wrapper<ValueObserver> reference;
 };
 
-bool operator <(Observer const & lhs, Observer const & rhs)
+bool operator <(ValueObserver const & lhs, ValueObserver const & rhs)
 {
 	return &lhs < &rhs;
 }
 
-inline Observer::~Observer()
+inline ValueObserver::~ValueObserver()
 {}
 
 
@@ -84,7 +84,7 @@ public:
 class NoContext
 {
 public:
-	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  Observer & observer)
+	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  ValueObserver & ValueObserver)
 	{}
 
 	std::string evaluate(std::string const & key_name) const
@@ -287,7 +287,7 @@ template<typename T,
 	typename PolicySetter6 = DefaultPolicyArgs
 	>
 class Value :
-	public Observer,
+	public ValueObserver,
 	public ValueSubject
 {
 public:

@@ -475,7 +475,7 @@ TEST(test_contextual_basic, evaluate)
 }
 
 
-struct MockObserver : kdb::Observer
+struct MockObserver : kdb::ValueObserver
 {
 	MockObserver() : counter()
 	{}
@@ -489,7 +489,7 @@ struct MockObserver : kdb::Observer
 };
 
 // duplicates need to be filtered
-TEST(test_contextual_basic, observer)
+TEST(test_contextual_basic, valueObserver)
 {
 	kdb::Context c;
 	MockObserver o1;
