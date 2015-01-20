@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool   isPasted
 	property bool	error: false
 
-	property string version: "0.0.4 (beta)"
+	property string version: "0.0.5 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -398,10 +398,10 @@ ApplicationWindow {
 	}
 
 	Action {
-		id: createBackendAction
+		id: mountBackendAction
 
-		text: qsTr("Create Backend...")
-		tooltip: qsTr("Create Backend")
+		text: qsTr("Mount Backend...")
+		tooltip: qsTr("Mount Backend")
 		onTriggered: {
 			wizardLoader.usedNames = guiBackend.mountPoints()
 			wizardLoader.show()

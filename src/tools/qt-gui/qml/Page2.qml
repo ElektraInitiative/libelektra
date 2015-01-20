@@ -67,7 +67,7 @@ Item {
 							clearConfig()
 							configModel.clear()
 							page2.state = ""
-							pluginConfigTreeView.treeModel.populateModel()
+//							pluginConfigTreeView.treeModel.populateModel()
 						}
 					}
 				}
