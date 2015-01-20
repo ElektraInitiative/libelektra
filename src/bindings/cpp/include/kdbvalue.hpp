@@ -99,12 +99,12 @@ public:
 
 	void attachToThread(ELEKTRA_UNUSED ValueSubject &v, Post postFkt)
 	{
-		// postFkt();
+		postFkt();
 	}
 };
 
 /**
- * @brief simply lookup without spec
+ * @brief Implements lookup with spec.
  */
 class DefaultGetPolicy
 {
@@ -116,9 +116,7 @@ public:
 };
 
 /**
- * @brief Implements update when key is not found.
- *
- * The new value always can be written out
+ * @brief Implements creating user/ key when key is not found.
  */
 class DefaultSetPolicy
 {
@@ -319,7 +317,6 @@ public:
 		ckdb::elektraKeySetName(*m_spec,
 				m_context.evaluate(m_spec.getName()).c_str(),
 				KEY_CASCADING_NAME);
-		syncCache();
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
 		attachMeToThread();
 	}
@@ -329,9 +326,7 @@ public:
 		Post fun = [this]
 		{
 			this->syncCache();
-			m_key = m_ks.lookup(m_spec); //-> leads to segfault of gcc?
 			assert(m_key);
-			m_cache = m_key.get<T>();
 			return m_key;
 		};
 		m_context.attachToThread(*this, fun);
@@ -415,15 +410,15 @@ public:
 	// keyset to cache
 	void syncCache() const
 	{
-		Key found = Policies::GetPolicy::get(m_ks, m_spec);
+		m_key = Policies::GetPolicy::get(m_ks, m_spec);
 
-		if (found)
+		if (m_key)
 		{
-			m_cache = found.get<type>();
+			m_cache = m_key.get<type>();
 		}
 
 #if DEBUG && VERBOSE
-		std::cout << "got name: " << m_spec.getName() << " to " << m_cache << std::endl;
+		std::cout << "got name: " << m_key.getName() << " value: " << m_cache << std::endl;
 #endif
 	}
 
@@ -431,7 +426,7 @@ public:
 	void syncKeySet() const
 	{
 #if DEBUG && VERBOSE
-		std::cout << "set name: " << m_spec.getName() << " to " << m_cache << std::endl;
+		std::cout << "set name: " << m_key.getName() << " value: " << m_cache << std::endl;
 #endif
 		kdb::Key found = Policies::SetPolicy::set(m_ks, m_spec);
 
