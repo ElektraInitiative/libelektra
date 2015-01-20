@@ -1,6 +1,8 @@
 #ifndef ELEKTRA_KDBTHREAD_HPP
 #define ELEKTRA_KDBTHREAD_HPP
 
+#include <kdbcontext.hpp>
+
 #include <kdb.hpp>
 
 #include <mutex>
@@ -11,12 +13,8 @@
 #include <functional>
 #include <unordered_map>
 
-#include <kdbcontext.hpp>
-
 namespace kdb
 {
-
-typedef std::function<Key()> Post;
 
 class ThreadSubject
 {
@@ -61,10 +59,10 @@ public:
 	 * @brief Receive a function to be executed and remember
 	 * which keys need a update in the other ThreadContexts.
 	 */
-	Key post(Post post)
+	Key post(Post postFkt)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		Key k = post();
+		Key k = postFkt();
 		for (auto & c: m_updates)
 		{
 			// c.m_flag = true;
@@ -78,13 +76,7 @@ private:
 	std::mutex m_mutex;
 };
 
-class ValueSubject
-{
-public:
-	virtual void notify() = 0;
-};
-
-class ThreadContext : public ThreadSubject
+class ThreadContext : public ThreadSubject, public Context
 {
 public:
 	typedef std::reference_wrapper<ValueSubject> ValueRef ;
@@ -98,9 +90,9 @@ public:
 		m_gc.detach(this);
 	}
 
-	void attach(ValueSubject &v, Post post)
+	void attach(ValueSubject &v, Post postFkt)
 	{
-		Key key = m_gc.post(post);
+		Key key = m_gc.post(postFkt);
 		m_keys.insert(std::make_pair(key, ValueRef(v)));
 	}
 
@@ -109,7 +101,7 @@ public:
 		for(auto const & k: ks)
 		{
 			auto const& f = m_keys.find(k);
-			f->second.get().notify();
+			f->second.get().notifyInThread();
 		}
 	}
 
@@ -118,9 +110,9 @@ public:
 		m_gc.update(this);
 	}
 
-	void post(Post post)
+	void post(Post postFkt)
 	{
-		m_gc.post(post);
+		m_gc.post(postFkt);
 	}
 
 	bool m_flag;
@@ -131,3 +123,5 @@ private:
 };
 
 }
+
+#endif

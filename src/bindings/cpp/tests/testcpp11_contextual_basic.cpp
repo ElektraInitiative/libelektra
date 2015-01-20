@@ -1,7 +1,7 @@
 #include "kdbconfig.h"
 
-#include <kdbcontext.hpp>
 #include <kdbvalue.hpp>
+#include <kdbcontext.hpp>
 
 #include <thread>
 
@@ -503,26 +503,26 @@ TEST(test_contextual_basic, observer)
 	c.attachByName("/%eventX%", o3);
 	ASSERT_EQ(o1.counter , 0);
 	ASSERT_EQ(o2.counter , 0);
-	c.notify({"event1"});
+	c.notifyByEvents({"event1"});
 	ASSERT_EQ(o1.counter , 1);
 	ASSERT_EQ(o2.counter , 1);
-	c.notify({"event2"});
+	c.notifyByEvents({"event2"});
 	ASSERT_EQ(o1.counter , 2);
 	ASSERT_EQ(o2.counter , 1);
-	c.notify({"event3"});
+	c.notifyByEvents({"event3"});
 	ASSERT_EQ(o1.counter , 2);
 	ASSERT_EQ(o2.counter , 2);
-	c.notify({"event4"});
+	c.notifyByEvents({"event4"});
 	ASSERT_EQ(o1.counter , 2);
 	ASSERT_EQ(o2.counter , 2);
-	c.notify({"event1", "event2"});
+	c.notifyByEvents({"event1", "event2"});
 	ASSERT_EQ(o1.counter , 3);
 	ASSERT_EQ(o2.counter , 3);
-	c.notify({"event1", "event3"});
+	c.notifyByEvents({"event1", "event3"});
 	ASSERT_EQ(o1.counter , 4);
 	ASSERT_EQ(o2.counter , 4);
 	ASSERT_EQ(o3.counter , 0);
-	c.notify();
+	c.notifyAllEvents();
 	ASSERT_EQ(o1.counter , 5);
 	ASSERT_EQ(o2.counter , 5);
 	ASSERT_EQ(o3.counter , 1);

@@ -19,11 +19,11 @@ class Subject
 public:
 	virtual ~Subject() = 0;
 	typedef std::vector<std::string> Events;
-	virtual void attach(std::string const & event, Observer &);
+	virtual void attachObserver(std::string const & event, Observer &);
 	// notify all given events
-	virtual void notify(Events const & events) const;
+	virtual void notifyByEvents(Events const & events) const;
 	// notify all events
-	virtual void notify() const;
+	virtual void notifyAllEvents() const;
 
 protected:
 	Subject();
@@ -41,7 +41,7 @@ inline Subject::Subject()
 inline Subject::~Subject()
 {}
 
-inline void Subject::attach(std::string const & event, Observer & observer)
+inline void Subject::attachObserver(std::string const & event, Observer & observer)
 {
 	auto it = m_observers.find(event);
 	if (it == m_observers.end())
@@ -57,7 +57,7 @@ inline void Subject::attach(std::string const & event, Observer & observer)
 	}
 }
 
-inline void Subject::notify(Events const & events) const
+inline void Subject::notifyByEvents(Events const & events) const
 {
 	ObserverSet os;
 	for (auto & e: events)
@@ -84,14 +84,14 @@ inline void Subject::notify(Events const & events) const
 	}
 }
 
-inline void Subject::notify() const
+inline void Subject::notifyAllEvents() const
 {
 		Events events;
 		for (auto & o: m_observers)
 		{
 			events.push_back(o.first);
 		}
-		notify(events);
+		notifyByEvents(events);
 }
 
 
@@ -109,6 +109,10 @@ class Context : public Subject
 public:
 	Context() :
 		m_active_layers()
+	{
+	}
+
+	virtual void post(ELEKTRA_UNUSED Post postFkt)
 	{
 	}
 
@@ -139,7 +143,7 @@ public:
 	void attachByName(std::string const & key_name, Observer & observer)
 	{
 		evaluate(key_name, [&](std::string const & current_id, std::string &, bool){
-			this->attach(current_id, observer);
+			this->attachObserver(current_id, observer);
 			return false;
 		});
 	}
@@ -305,7 +309,7 @@ public:
 		{
 			p.first->second = layer; // update
 		}
-		notify({layer->id()});
+		notifyByEvents({layer->id()});
 #if DEBUG && VERBOSE
 		std::cout << "activate layer: " << layer->id() << std::endl;
 #endif
@@ -338,7 +342,7 @@ public:
 #if DEBUG && VERBOSE
 		std::cout << "deactivate layer: " << layer->id() << std::endl;
 #endif
-		notify({layer->id()});
+		notifyByEvents({layer->id()});
 	}
 
 public:
@@ -393,7 +397,7 @@ private:
 		{
 			to_notify.push_back(s.first);
 		}
-		notify(to_notify);
+		notifyByEvents(to_notify);
 
 		// now do the function call,
 		// keep roll back information on the stack
@@ -420,7 +424,7 @@ private:
 				}
 			}
 		}
-		notify(to_notify);
+		notifyByEvents(to_notify);
 	}
 
 	std::unordered_map<std::string, std::shared_ptr<Layer>> m_active_layers;

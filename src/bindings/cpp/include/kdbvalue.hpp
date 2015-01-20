@@ -21,6 +21,7 @@
 #include <kdbproposal.h>
 #include <keyset.hpp>
 
+// #include <kdbprivate.h> // for debugging (to see values of internal structures)
 
 namespace kdb
 {
@@ -69,6 +70,14 @@ inline Observer::~Observer()
 {}
 
 
+typedef std::function<Key()> Post;
+
+class ValueSubject
+{
+public:
+	virtual void notifyInThread() = 0;
+};
+
 
 // Default Policies for Value
 
@@ -77,9 +86,15 @@ class NoContext
 public:
 	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  Observer & observer)
 	{}
+
 	std::string evaluate(std::string const & key_name) const
 	{
 		return key_name;
+	}
+
+	Key post(ELEKTRA_UNUSED Post post_)
+	{
+		return Key();
 	}
 };
 
@@ -269,7 +284,8 @@ template<typename T,
 	typename PolicySetter6 = DefaultPolicyArgs
 	>
 class Value :
-	public Observer
+	public Observer,
+	public ValueSubject
 {
 public:
 	typedef T type;
@@ -300,6 +316,19 @@ public:
 				KEY_CASCADING_NAME);
 		syncCache();  // read what we have in our context
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
+		attachToThread();
+	}
+
+	void attachToThread()
+	{
+		/*
+		m_context.attach(*this, [this](){
+			m_key = m_ks.lookup(m_spec);
+			assert(m_key);
+			m_cache = m_key.get<int>();
+			return m_key;
+		});
+		*/
 	}
 
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
@@ -309,8 +338,31 @@ public:
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
+		post();
 
 		return *this;
+	}
+
+	void post()
+	{
+		m_context.post([this]()
+		{
+			m_key.set<int>(m_cache);
+			return m_key;
+		});
+	}
+
+	void activate()
+	{
+		m_spec.setName("user/activate");
+		attachToThread(); // reattach
+	}
+
+	void notifyInThread()
+	{
+		assert(m_key);
+		// TODO:
+		//m_cache = m_key.get<int>();
 	}
 
 	type operator ++()
