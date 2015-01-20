@@ -46,13 +46,11 @@ public:
 	void update(ThreadSubject *c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		// if (c.m_flag) return;
 		KeySet & toUpdate = m_updates[c];
 		// if (toUpdate.size() == 0) return;
 
 		c->notify(toUpdate);
 		toUpdate.clear();
-		// c.m_flag = false;
 	}
 
 	/**
@@ -65,7 +63,6 @@ public:
 		Key k = postFkt();
 		for (auto & c: m_updates)
 		{
-			// c.m_flag = true;
 			c.second.append(k);
 		}
 		return k;
@@ -90,7 +87,7 @@ public:
 		m_gc.detach(this);
 	}
 
-	void attach(ValueSubject &v, Post postFkt)
+	void attachToThread(ValueSubject &v, Post postFkt)
 	{
 		Key key = m_gc.post(postFkt);
 		m_keys.insert(std::make_pair(key, ValueRef(v)));
@@ -121,6 +118,27 @@ private:
 	Coordinator & m_gc;
 	std::unordered_map<Key, ValueRef> m_keys;
 };
+
+template<typename T,
+	typename PolicySetter1 = DefaultPolicyArgs,
+	typename PolicySetter2 = DefaultPolicyArgs,
+	typename PolicySetter3 = DefaultPolicyArgs,
+	typename PolicySetter4 = DefaultPolicyArgs,
+	typename PolicySetter5 = DefaultPolicyArgs
+	>
+using ThreadValue = Value <T,
+	ContextPolicyIs<ThreadContext>,
+	PolicySetter1,
+	PolicySetter2,
+	PolicySetter3,
+	PolicySetter4,
+	PolicySetter5
+	>;
+
+typedef ThreadValue<uint32_t>ThreadInteger;
+typedef ThreadValue<bool>ThreadBoolean;
+typedef ThreadValue<std::string>ThreadString;
+
 
 }
 

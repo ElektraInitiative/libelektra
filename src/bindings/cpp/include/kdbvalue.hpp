@@ -96,6 +96,10 @@ public:
 	{
 		return Key();
 	}
+
+	void attachToThread(ELEKTRA_UNUSED ValueSubject &v, ELEKTRA_UNUSED Post postFkt)
+	{
+	}
 };
 
 /**
@@ -316,19 +320,19 @@ public:
 				KEY_CASCADING_NAME);
 		syncCache();  // read what we have in our context
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
-		attachToThread();
+		attachMeToThread();
 	}
 
-	void attachToThread()
+	void attachMeToThread()
 	{
-		/*
-		m_context.attach(*this, [this](){
-			m_key = m_ks.lookup(m_spec);
+		Post fun = [this]
+		{
+			// m_key = m_ks.lookup(m_spec);
 			assert(m_key);
-			m_cache = m_key.get<int>();
+			// m_cache = m_key.get<int>();
 			return m_key;
-		});
-		*/
+		};
+		m_context.attachToThread(*this, fun);
 	}
 
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
@@ -355,7 +359,7 @@ public:
 	void activate()
 	{
 		m_spec.setName("user/activate");
-		attachToThread(); // reattach
+		attachMeToThread(); // reattach
 	}
 
 	void notifyInThread()
@@ -461,7 +465,7 @@ private:
 	mutable type m_cache;
 	KeySet & m_ks;
 	typename Policies::ContextPolicy & m_context;
-	mutable Key m_spec;
+	Key m_spec;
 	mutable Key m_key;
 };
 

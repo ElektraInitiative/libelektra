@@ -116,6 +116,10 @@ public:
 	{
 	}
 
+	virtual void attachToThread(ELEKTRA_UNUSED ValueSubject &v,ELEKTRA_UNUSED  Post postFkt)
+	{
+	}
+
 	/**
 	 * Lookup value for a current active layer
 	 *
