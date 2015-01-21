@@ -31,6 +31,11 @@ typedef struct {
 	char *collectedComment;	/* buffer for collecting comments until a non comment key is reached */
 } CallbackHandle;
 
+typedef struct {
+	short supportMultiline;	/* defines whether multiline keys are supported */
+	short autoSections;		/* defines whether sections for keys 2 levels or more below the parentKey are created */
+} IniPluginConfig;
+
 static void flushCollectedComment (CallbackHandle *handle, Key *key)
 {
 	if (handle->collectedComment)
@@ -148,8 +153,12 @@ static int iniCommentToMeta (void *vhandle, const char *comment)
 int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *config = elektraPluginGetConfig (handle);
-	Key* multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
-	elektraPluginSetData(handle, multilineKey);
+	IniPluginConfig *pluginConfig = (IniPluginConfig *)elektraMalloc (sizeof (IniPluginConfig));
+	Key *multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
+	Key *autoSectionKey = ksLookupByName(config, "/autosections", KDB_O_NONE);
+	pluginConfig->supportMultiline = multilineKey != 0;
+	pluginConfig->autoSections = autoSectionKey != 0;
+	elektraPluginSetData(handle, pluginConfig);
 
 	return 0;
 }
@@ -157,6 +166,8 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 
 int elektraIniClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
+	IniPluginConfig *pluginConfig = (IniPluginConfig *)elektraPluginGetData(handle);
+	elektraFree(pluginConfig);
 	elektraPluginSetData(handle, 0);
 	return 0;
 }
@@ -199,8 +210,8 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	iniConfig.sectionHandler = iniSectionToElektraKey;
 	iniConfig.commentHandler = iniCommentToMeta;
 
-	Key *multiLineKey = elektraPluginGetData(handle);
-	iniConfig.supportMultiline = multiLineKey != 0;
+	IniPluginConfig *pluginConfig = elektraPluginGetData(handle);
+	iniConfig.supportMultiline = pluginConfig->supportMultiline;
 
 	int ret = ini_parse_file(fh, &iniConfig, &cbHandle);
 
@@ -314,6 +325,17 @@ static char *getIniName(KeySet *keys, Key *parent, Key *key)
 
 }
 
+static Key *generateSectionKey(Key *key, Key *parentKey)
+{
+	Key *sectionKey = keyDup(key);
+	while (!keyIsDirectBelow(parentKey, sectionKey) && keyIsBelow(parentKey, sectionKey))
+	{
+		keySetBaseName(sectionKey, 0);
+	}
+
+	keySetBinary(sectionKey, 0, 0);
+	return sectionKey;
+}
 
 int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
@@ -330,12 +352,29 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 
-	Key* multilineKey = elektraPluginGetData(handle);
+	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
 
 	ksRewind (returned);
 	Key *current;
 	while ((current = ksNext (returned)))
 	{
+		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
+		{
+			Key *sectionKey = generateSectionKey(current, parentKey);
+
+			cursor_t cursor = ksGetCursor(returned);
+			if (!ksLookup(returned, sectionKey, KDB_O_NONE))
+			{
+				ksAppendKey(returned, sectionKey);
+				current = sectionKey;
+			}
+			else
+			{
+				keyDel(sectionKey);
+				ksSetCursor(returned, cursor);
+			}
+		}
+
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
 
 		writeComments (current, fh);
@@ -358,7 +397,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			else
 			{
 				/* otherwise check that multiline support is enabled and write a multiline INI key */
-				if (multilineKey)
+				if (pluginConfig->supportMultiline)
 				{
 					writeMultilineKey (current, iniName, fh);
 				}

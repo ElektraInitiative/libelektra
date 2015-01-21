@@ -367,12 +367,61 @@ static void test_sectionWrite(char *fileName)
 	PLUGIN_CLOSE ();
 }
 
+static void test_autoSectionWrite(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-section-write", KEY_VALUE,
+			elektraFilename(), KEY_END);
+	KeySet *conf = ksNew(30,
+			keyNew ("system/autosections", KEY_VALUE, "1", KEY_END),
+			KS_END);
+	PLUGIN_OPEN("ini");
+
+	// this time the sections directly below the parent key will be generated automatically
+	KeySet *ks = ksNew (30,
+			keyNew ("user/tests/ini-section-write/akey\\/looking\\/like\\/sections", KEY_VALUE, "value", KEY_END),
+			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY, KEY_END),
+			keyNew ("user/tests/ini-section-write/section1/key1",
+					KEY_VALUE, "value1",
+					KEY_END),
+			keyNew ("user/tests/ini-section-write/section1/key\\/with\\/subkey",
+					KEY_VALUE, "value2",
+					KEY_END),
+			keyNew("user/tests/ini-section-write/section2\\/with\\/subkey/key2",
+					KEY_VALUE, "value2",
+					KEY_END),
+			KS_END);
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
 int main(int argc, char** argv)
 {
 	printf ("INI       TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
+
+	succeed_if (keyIsDirectBelow(
+			keyNew("user/tests/ini-section-write", KEY_END),
+			keyNew("user/tests/ini-section-write/akey\\/looking\\/like\\/sections", KEY_END)),
+			"keyIsDirectBelow does not work correctly");
+
+
+	succeed_if (!keyIsDirectBelow(
+			keyNew("user/tests/ini-section-write", KEY_END),
+			keyNew("	user/tests/ini-section-write/section1/key\\/with\\/subkey", KEY_END)),
+			"keyIsDirectBelow does not work correctly");
 
 	test_plainIniRead ("ini/plainini");
 	test_plainIniWrite ("ini/plainini");
@@ -383,6 +432,7 @@ int main(int argc, char** argv)
 	test_multilineIniInvalidConfigWrite();
 	test_sectionRead("ini/sectionini");
 	test_sectionWrite("ini/sectionini");
+	test_autoSectionWrite("ini/sectionini");
 
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
