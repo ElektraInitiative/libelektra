@@ -22,6 +22,14 @@ public:
 	virtual void notify(KeySet &ks) = 0;
 };
 
+typedef std::vector<std::shared_ptr<Layer>> LayerVector;
+
+struct PerContext
+{
+	KeySet toUpdate;
+	LayerVector waitingGlobalLayers;
+};
+
 /**
  * @brief Thread safe coordination of ThreadContext per Threads
  */
@@ -31,7 +39,7 @@ public:
 	void attach(ThreadSubject *c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		m_updates.insert(std::make_pair(c, KeySet()));
+		m_updates.insert(std::make_pair(c, PerContext()));
 	}
 
 	void detach(ThreadSubject *c)
@@ -46,7 +54,7 @@ public:
 	void update(ThreadSubject *c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		KeySet & toUpdate = m_updates[c];
+		KeySet & toUpdate = m_updates[c].toUpdate;
 		// if (toUpdate.size() == 0) return;
 
 		c->notify(toUpdate);
@@ -63,14 +71,34 @@ public:
 		Key k = postFkt();
 		for (auto & c: m_updates)
 		{
-			c.second.append(k);
+			c.second.toUpdate.append(k);
 		}
 		return k;
 	}
 
+	void globalActivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
+	{
+		std::lock_guard<std::mutex> lock (m_activateMutex);
+		for (auto & c: m_updates)
+		{
+			 // caller itself has it already activated
+			if (cc == c.first) continue;
+			c.second.waitingGlobalLayers.push_back(layer);
+		}
+	}
+
+	LayerVector fetchGlobalActivation(ThreadSubject *cc)
+	{
+		std::lock_guard<std::mutex> lock (m_activateMutex);
+		LayerVector ret;
+		ret.swap(m_updates[cc].waitingGlobalLayers);
+		return std::move(ret);
+	}
+
 private:
-	std::unordered_map<ThreadSubject *, KeySet> m_updates;
+	std::unordered_map<ThreadSubject *, PerContext> m_updates;
 	std::mutex m_mutex;
+	std::mutex m_activateMutex;
 };
 
 class ThreadContext : public ThreadSubject, public Context
@@ -85,6 +113,26 @@ public:
 	~ThreadContext()
 	{
 		m_gc.detach(this);
+	}
+
+	template <typename T, typename... Args>
+	std::shared_ptr<Layer> activate(Args&&... args)
+	{
+		std::shared_ptr<Layer>layer = Context::activate<T>(std::forward<Args>(args)...);
+		m_gc.globalActivate(this, layer);
+		return layer;
+	}
+
+	void syncActivate()
+	{
+		LayerVector layers = m_gc.fetchGlobalActivation(this);
+		Events e;
+		for(auto const & l: layers)
+		{
+			lazyActivateLayer(l);
+			e.push_back(l->id());
+		}
+		notifyByEvents(e);
 	}
 
 	void attachToThread(ValueSubject &v, Post postFkt)

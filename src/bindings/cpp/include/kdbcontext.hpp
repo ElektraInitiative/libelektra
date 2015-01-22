@@ -269,7 +269,7 @@ public:
 		return ret;
 	}
 
-private:
+protected:
 	// activates layer, records it, but does not notify
 	template <typename T, typename... Args>
 	void lazyActivate(Args&&... args)
@@ -278,7 +278,7 @@ private:
 		lazyActivateLayer(layer);
 	}
 
-	void lazyActivateLayer(std::shared_ptr<Layer>&layer)
+	void lazyActivateLayer(std::shared_ptr<Layer> const & layer)
 	{
 		std::string const & id = layer->id(); // optimisation
 		auto p = m_active_layers.emplace(std::make_pair(id, layer));
@@ -306,7 +306,7 @@ public:
 	 * @param args the arguments to pass to layer construction
 	 */
 	template <typename T, typename... Args>
-	void activate(Args&&... args)
+	std::shared_ptr<Layer> activate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
 		auto p = m_active_layers.emplace(std::make_pair(layer->id(), layer));
@@ -318,6 +318,7 @@ public:
 #if DEBUG && VERBOSE
 		std::cout << "activate layer: " << layer->id() << std::endl;
 #endif
+		return layer;
 	}
 
 private:

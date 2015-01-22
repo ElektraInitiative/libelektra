@@ -90,6 +90,8 @@ void activate1(Coordinator & gc, KeySet & ks)
 	ThreadContext c1(gc);
 	ThreadValue<int> v1(ks, c1, specKey);
 	ASSERT_EQ(v1, 10);
+	c1.activate<Activate>();
+	ASSERT_EQ(v1, 22);
 }
 
 TEST(test_contextual_thread, activate)
@@ -106,10 +108,8 @@ TEST(test_contextual_thread, activate)
 	ASSERT_EQ(v, 10);
 
 	std::thread t1(activate1, std::ref(gc), std::ref(ks));
-	ASSERT_EQ(v, 10);
-
-	c.activate<Activate>();
-	ASSERT_EQ(v, 22);
 	t1.join();
+	ASSERT_EQ(v, 10);
+	c.syncActivate();
 	ASSERT_EQ(v, 22);
 }
