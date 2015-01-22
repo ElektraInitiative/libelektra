@@ -412,17 +412,6 @@ int main(int argc, char** argv)
 
 	init (argc, argv);
 
-	succeed_if (keyIsDirectBelow(
-			keyNew("user/tests/ini-section-write", KEY_END),
-			keyNew("user/tests/ini-section-write/akey\\/looking\\/like\\/sections", KEY_END)),
-			"keyIsDirectBelow does not work correctly");
-
-
-	succeed_if (!keyIsDirectBelow(
-			keyNew("user/tests/ini-section-write", KEY_END),
-			keyNew("	user/tests/ini-section-write/section1/key\\/with\\/subkey", KEY_END)),
-			"keyIsDirectBelow does not work correctly");
-
 	test_plainIniRead ("ini/plainini");
 	test_plainIniWrite ("ini/plainini");
 	test_commentIniRead ("ini/commentini");
