@@ -16,14 +16,17 @@
 namespace kdb
 {
 
+/// Subject from Observer pattern for ThreadContext
 class ThreadSubject
 {
 public:
 	virtual void notify(KeySet &ks) = 0;
 };
 
+/// A vector of layers
 typedef std::vector<std::shared_ptr<Layer>> LayerVector;
 
+/// A data structure that is stored by context inside the Coordinator
 struct PerContext
 {
 	KeySet toUpdate;
@@ -31,7 +34,7 @@ struct PerContext
 };
 
 /**
- * @brief Thread safe coordination of ThreadContext per Threads
+ * @brief Thread safe coordination of ThreadContext per Threads.
  */
 class Coordinator
 {
@@ -76,9 +79,16 @@ public:
 		return k;
 	}
 
+	/**
+	 * @brief Request that some layer needs to be globally
+	 * activated.
+	 *
+	 * @param cc requests it and already has it updated itself
+	 * @param layer to activate for all threads
+	 */
 	void globalActivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
 	{
-		std::lock_guard<std::mutex> lock (m_activateMutex);
+		std::lock_guard<std::mutex> lock (m_mutex);
 		for (auto & c: m_updates)
 		{
 			 // caller itself has it already activated
@@ -87,18 +97,25 @@ public:
 		}
 	}
 
+	/**
+	 * @param cc requester of its updates
+	 *
+	 * @see globalActivate
+	 * @return all layers for that subject
+	 */
 	LayerVector fetchGlobalActivation(ThreadSubject *cc)
 	{
-		std::lock_guard<std::mutex> lock (m_activateMutex);
+		std::lock_guard<std::mutex> lock (m_mutex);
 		LayerVector ret;
 		ret.swap(m_updates[cc].waitingGlobalLayers);
 		return std::move(ret);
 	}
 
 private:
+	/// stores per context updates not yet delievered
 	std::unordered_map<ThreadSubject *, PerContext> m_updates;
+	/// mutex protecting m_updates
 	std::mutex m_mutex;
-	std::mutex m_activateMutex;
 };
 
 class ThreadContext : public ThreadSubject, public Context
