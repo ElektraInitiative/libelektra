@@ -196,8 +196,11 @@ ScrollView {
 					keyAreaModel = null
 			}
 		}
-		else if(mouse.button === Qt.RightButton)
-			treeContextMenu.popup()
+		else if(mouse.button === Qt.RightButton){
+			if(!currentNode.isNull){
+				treeContextMenu.popup()
+			}
+		}
 	}
 
 	function getOpacity(model) {

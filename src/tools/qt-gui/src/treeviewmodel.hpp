@@ -74,7 +74,7 @@ public:
 	 * @param path The current path of the ConfigNode.
 	 * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
 	 */
-	void                        sink(ConfigNodePtr node, QStringList keys, QString path, const kdb::Key &key);
+	void                        sink(ConfigNodePtr node, QStringList keys, const kdb::Key &key);
 
 	void                        accept(Visitor& visitor);
 

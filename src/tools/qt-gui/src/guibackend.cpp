@@ -138,11 +138,11 @@ void GUIBackend::serialise(TreeViewModel *model)
 
 		if (root == "system")
 		{
-			model->sink(model->model().at(0), keys, "system", k);
+			model->sink(model->model().at(0), keys, k);
 		}
 		else if (root == "user")
 		{
-			model->sink(model->model().at(1), keys, "user", k);
+			model->sink(model->model().at(1), keys, k);
 		}
 	}
 

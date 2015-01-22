@@ -460,7 +460,7 @@ void TreeViewModel::insertMetaRow(int row, Key key, const QString &name)
 	}
 }
 
-void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, const Key& key)
+void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 {
 	if (keys.length() == 0)
 		return;
@@ -471,20 +471,20 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, QString path, con
 
 	if (node->hasChild(name))
 	{
-		sink(node->getChildByName(name), keys, node->getPath() + "/" + name, key);
+		sink(node->getChildByName(name), keys, key);
 	}
 	else
 	{
 		ConfigNodePtr newNode;
 
 		if (isLeaf)
-			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), key, node->getChildren()));
+			newNode = ConfigNodePtr(new ConfigNode(name, (node->getPath() + "/" + name), key, node->getChildren()));
 		else
-			newNode = ConfigNodePtr(new ConfigNode(name, (path + "/" + name), NULL, node->getChildren()));
+			newNode = ConfigNodePtr(new ConfigNode(name, (node->getPath() + "/" + name), NULL, node->getChildren()));
 
 		node->appendChild(newNode);
 
-		sink(newNode, keys, node->getPath() + "/" + name, key);
+		sink(newNode, keys, key);
 	}
 }
 
@@ -507,16 +507,16 @@ void TreeViewModel::createNewNodes(KeySet keySet)
 	{
 		Key k = keySet.current().dup();
 		QString currentKey = QString::fromStdString(k.getName());
-		QStringList keys = currentKey.split("/");
+		QStringList keys = currentKey.split(qApp->property("KEY_DELIMITER").toRegularExpression());
 		QString root = keys.takeFirst();
 
 		if (root == "system")
 		{
-			sink(m_model.at(0), keys, "system", k);
+			sink(m_model.at(0), keys, k);
 		}
 		else if (root == "user")
 		{
-			sink(m_model.at(1), keys, "user", k);
+			sink(m_model.at(1), keys, k);
 		}
 		else
 		{
@@ -562,7 +562,7 @@ void TreeViewModel::synchronize()
 
 	try
 	{
-		kdb.set(keySet, "/");
+		kdb.set(keySet, "/user");
 	}
 	catch (KDBException const& e)
 	{

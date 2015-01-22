@@ -16,6 +16,7 @@
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
+	app.setProperty("KEY_DELIMITER", QRegularExpression("(?<!\\\\)/"));
 
 	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
 	qRegisterMetaType<ConfigNode> ("ConfigNode");
