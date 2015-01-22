@@ -107,6 +107,7 @@ void ConfigNode::setName(const QString& name)
 
 	if(m_key){
 		if(QString::fromStdString(m_key.getName()) != ""){
+
 			try{
 				m_key.setBaseName(name.toStdString());
 			}
@@ -121,20 +122,20 @@ void ConfigNode::setName(const QString& name)
 
 void ConfigNode::setValue(const QVariant& value)
 {
-	m_value = value;
-
 	if(m_key)
+	{
 		m_key.setString(value.toString().toStdString());
+		m_value = value;
+	}
 }
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
-	m_name = name;
-	m_value = value;
-
 	if(m_key)
 	{
 		m_key.setMeta(name.toStdString(), value.toString().toStdString());
+		m_name = name;
+		m_value = value;
 	}
 }
 
@@ -168,9 +169,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 void ConfigNode::deleteMeta(const QString &name)
 {
 	if(m_key)
-	{
 		m_key.delMeta(name.toStdString());
-	}
 }
 
 void ConfigNode::accept(Visitor &visitor)
@@ -253,7 +252,15 @@ void ConfigNode::setKeyName(const QString &name)
 	if(!m_key)
 		m_key = Key();
 
-	m_key.setName(name.toStdString());
+	try
+	{
+		m_key.setName(name.toStdString());
+	}
+	catch(KeyInvalidName ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+		return;
+	}
 }
 
 void ConfigNode::appendChild(ConfigNodePtr node)
@@ -272,7 +279,9 @@ bool ConfigNode::hasChild(const QString& name) const
 			{
 				return true;
 			}
+
 		}
+
 	}
 
 	return false;
@@ -298,7 +307,9 @@ ConfigNodePtr ConfigNode::getChildByName(QString& name) const
 			{
 				return node;
 			}
+
 		}
+
 	}
 
 	return ConfigNodePtr();

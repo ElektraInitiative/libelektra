@@ -20,7 +20,7 @@ MenuBar {
 
 		MenuItem {
 			id:dbCreateBackend
-			action: createBackendAction
+			action: mountBackendAction
 		}
 		MenuItem {
 			id:dbUnmountBackend
