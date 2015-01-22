@@ -1,6 +1,8 @@
 #ifndef ELEKTRA_KDBCONTEXT_HPP
 #define ELEKTRA_KDBCONTEXT_HPP
 
+#include <kdbconfig.h>
+
 #include <kdbvalue.hpp>
 
 #include <set>
@@ -136,6 +138,14 @@ public:
 			return (*f->second)();
 		}
 		return ""; // this line is surprisingly expensive
+	}
+
+	/**
+	 * @return size of all current layers (to be used with operator[])
+	 */
+	size_t size() const
+	{
+		return m_active_layers.size();
 	}
 
 	/**

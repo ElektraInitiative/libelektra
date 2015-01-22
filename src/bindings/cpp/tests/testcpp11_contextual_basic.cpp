@@ -416,6 +416,7 @@ TEST(test_contextual_basic, evaluate)
 		ASSERT_EQ(c["language"] , "german");
 		ASSERT_EQ(c["country"] , "germany");
 		ASSERT_EQ(c["dialect"] , "");
+		ASSERT_EQ(c.size(), 2);
 		ASSERT_EQ(c.evaluate("/%language%/%country%/%dialect%/test") , "/german/germany/%/test");
 		c.with<CountryGPSLayer>()([&]()
 		{
