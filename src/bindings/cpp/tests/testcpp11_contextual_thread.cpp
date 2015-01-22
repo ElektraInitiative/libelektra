@@ -85,9 +85,14 @@ public:
 
 bool g_toggle = false;
 
-void toggle()
+void toggleOn()
 {
 	g_toggle = true;
+}
+
+void toggleOff()
+{
+	g_toggle = false;
 }
 
 void activate1(Coordinator & gc, KeySet & ks)
@@ -96,7 +101,8 @@ void activate1(Coordinator & gc, KeySet & ks)
 
 	ThreadContext c1(gc);
 	ThreadValue<int> v1(ks, c1, specKey);
-	c1.onLayerActivation<Activate>([](){toggle();});
+	c1.onLayerActivation<Activate>([](){toggleOn();});
+	c1.onLayerDeactivation<Activate>([](){toggleOff();});
 	ASSERT_EQ(v1, 10);
 	c1.activate<Activate>();
 	ASSERT_TRUE(g_toggle);
@@ -104,6 +110,7 @@ void activate1(Coordinator & gc, KeySet & ks)
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	ASSERT_EQ(v1, 22);
 	c1.deactivate<Activate>();
+	ASSERT_FALSE(g_toggle);
 	ASSERT_EQ(v1, 10);
 }
 
@@ -127,6 +134,7 @@ TEST(test_contextual_thread, activate)
 	c.syncActivate();
 	ASSERT_EQ(v, 22);
 	t1.join();
+	ASSERT_FALSE(g_toggle);
 	ASSERT_EQ(v, 22);
 	c.syncActivate();
 	ASSERT_EQ(v, 10);

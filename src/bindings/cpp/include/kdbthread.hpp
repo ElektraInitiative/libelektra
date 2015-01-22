@@ -226,7 +226,6 @@ public:
 		m_gc.onLayerActivation(layerid, f);
 	}
 
-	template <typename T>
 	void onLayerDeactivation(std::string const & layerid, std::function <void()> f)
 	{
 		m_gc.onLayerDeactivation(layerid, f);
