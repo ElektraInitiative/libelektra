@@ -92,6 +92,10 @@ void activate1(Coordinator & gc, KeySet & ks)
 	ASSERT_EQ(v1, 10);
 	c1.activate<Activate>();
 	ASSERT_EQ(v1, 22);
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	ASSERT_EQ(v1, 22);
+	c1.deactivate<Activate>();
+	ASSERT_EQ(v1, 10);
 }
 
 TEST(test_contextual_thread, activate)
@@ -108,8 +112,12 @@ TEST(test_contextual_thread, activate)
 	ASSERT_EQ(v, 10);
 
 	std::thread t1(activate1, std::ref(gc), std::ref(ks));
-	t1.join();
 	ASSERT_EQ(v, 10);
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	c.syncActivate();
 	ASSERT_EQ(v, 22);
+	t1.join();
+	ASSERT_EQ(v, 22);
+	c.syncActivate();
+	ASSERT_EQ(v, 10);
 }

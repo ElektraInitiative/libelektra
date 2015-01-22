@@ -321,11 +321,16 @@ public:
 		return layer;
 	}
 
-private:
+protected:
 	template <typename T, typename... Args>
 	void lazyDeactivate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
+		lazyDeactivateLayer(layer);
+	}
+
+	void lazyDeactivateLayer(std::shared_ptr<Layer> const & layer)
+	{
 		auto p = m_active_layers.find(layer->id());
 		if (p != m_active_layers.end())
 		{
@@ -341,7 +346,7 @@ private:
 
 public:
 	template <typename T, typename... Args>
-	void deactivate(Args&&... args)
+	std::shared_ptr<Layer> deactivate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
 		m_active_layers.erase(layer->id());
@@ -349,6 +354,7 @@ public:
 		std::cout << "deactivate layer: " << layer->id() << std::endl;
 #endif
 		notifyByEvents({layer->id()});
+		return layer;
 	}
 
 public:

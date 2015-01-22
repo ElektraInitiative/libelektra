@@ -30,7 +30,8 @@ typedef std::vector<std::shared_ptr<Layer>> LayerVector;
 struct PerContext
 {
 	KeySet toUpdate;
-	LayerVector waitingGlobalLayers;
+	LayerVector toActivate;
+	LayerVector toDeactivate;
 };
 
 /**
@@ -93,7 +94,18 @@ public:
 		{
 			 // caller itself has it already activated
 			if (cc == c.first) continue;
-			c.second.waitingGlobalLayers.push_back(layer);
+			c.second.toActivate.push_back(layer);
+		}
+	}
+
+	void globalDeactivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
+	{
+		std::lock_guard<std::mutex> lock (m_mutex);
+		for (auto & c: m_updates)
+		{
+			 // caller itself has it already deactivated
+			if (cc == c.first) continue;
+			c.second.toDeactivate.push_back(layer);
 		}
 	}
 
@@ -107,7 +119,15 @@ public:
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
 		LayerVector ret;
-		ret.swap(m_updates[cc].waitingGlobalLayers);
+		ret.swap(m_updates[cc].toActivate);
+		return std::move(ret);
+	}
+
+	LayerVector fetchGlobalDeactivation(ThreadSubject *cc)
+	{
+		std::lock_guard<std::mutex> lock (m_mutex);
+		LayerVector ret;
+		ret.swap(m_updates[cc].toDeactivate);
 		return std::move(ret);
 	}
 
@@ -140,13 +160,25 @@ public:
 		return layer;
 	}
 
+	template <typename T, typename... Args>
+	std::shared_ptr<Layer> deactivate(Args&&... args)
+	{
+		std::shared_ptr<Layer>layer = Context::deactivate<T>(std::forward<Args>(args)...);
+		m_gc.globalDeactivate(this, layer);
+		return layer;
+	}
+
 	void syncActivate()
 	{
-		LayerVector layers = m_gc.fetchGlobalActivation(this);
 		Events e;
-		for(auto const & l: layers)
+		for(auto const & l: m_gc.fetchGlobalActivation(this))
 		{
 			lazyActivateLayer(l);
+			e.push_back(l->id());
+		}
+		for(auto const & l: m_gc.fetchGlobalDeactivation(this))
+		{
+			lazyDeactivateLayer(l);
 			e.push_back(l->id());
 		}
 		notifyByEvents(e);
