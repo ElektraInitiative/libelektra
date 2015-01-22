@@ -127,7 +127,7 @@ ApplicationWindow {
 			if(visible === true){
 				nameTextField.readOnly = true
 				nameTextField.textColor = disabledPalette.text
-				nameTextField.text = treeView.currentNode.children.getCurrentArrayNo()
+				nameTextField.text = selectedNode.children.getCurrentArrayNo()
 				valueTextField.forceActiveFocus()
 			}
 		}
@@ -174,7 +174,16 @@ ApplicationWindow {
 		iconSource: "icons/document-new.png"
 		tooltip: qsTr("New Key")
 		enabled: treeView.currentItem !== null
-		onTriggered: newKeyWindow.show()
+		onTriggered: {
+
+			if(source.src === "keyBelow")
+				newKeyWindow.selectedNode = keyAreaSelectedItem
+			else
+				newKeyWindow.selectedNode = treeView.currentNode
+
+			newKeyWindow.show()
+		}
+
 	}
 
 	Action {
@@ -184,7 +193,15 @@ ApplicationWindow {
 		iconSource: "icons/new-array.png"
 		tooltip: qsTr("New Array Entry")
 		enabled: treeView.currentItem !== null
-		onTriggered: newArrayWindow.show()
+		onTriggered: {
+
+			if(source.src === "arrBelow")
+				newArrayWindow.selectedNode = keyAreaSelectedItem
+			else
+				newArrayWindow.selectedNode = treeView.currentNode
+
+			newArrayWindow.show()
+		}
 	}
 
 	Action {
@@ -260,11 +277,12 @@ ApplicationWindow {
 			else if(undoManager.undoText === "copyKey"){
 				undoManager.undo()
 
-				//				if(keyAreaView.currentRow >= keyAreaModel.count()) {
-				//					metaAreaModel = null
-				//					keyAreaSelectedItem = null
-				//					keyAreaModel.refresh()
-				//				}
+				if(keyAreaView.currentRow >= keyAreaModel.count()) {
+					metaAreaModel = null
+					keyAreaSelectedItem = null
+					keyAreaView.selection.clear()
+					keyAreaModel.refresh()
+				}
 			}
 			else if(undoManager.undoText === "copyBranch"){
 				undoManager.undo()

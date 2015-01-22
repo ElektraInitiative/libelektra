@@ -265,7 +265,6 @@ void ConfigNode::setKeyName(const QString &name)
 
 void ConfigNode::appendChild(ConfigNodePtr node)
 {
-	node->setParentModel(m_children);
 	m_children->append(node);
 }
 

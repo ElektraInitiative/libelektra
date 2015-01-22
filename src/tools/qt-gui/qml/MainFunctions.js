@@ -1,6 +1,5 @@
 //puts key to clipboard when cut key command for a key without children is executed
 function cutKey() {
-	//console.log("cut Key")
 	//needed to mark the node
 	keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
 	keyAreaView.currentNodePath = treeView.currentNode.path
@@ -11,7 +10,6 @@ function cutKey() {
 
 //puts key to clipboard when cut key command for a key with children is executed
 function cutBranch() {
-	//console.log("cut Branch")
 	treeView.treeAreaCopyIndex = treeView.currentNode.index
 	keyAreaView.currentNodePath = treeView.currentNode.path
 
@@ -21,7 +19,6 @@ function cutBranch() {
 
 //puts key to clipboard when copy key command for a key without children is executed
 function copyKey() {
-	//console.log("copy Key")
 	//needed to mark the node
 	keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
 	keyAreaView.currentNodePath = treeView.currentNode.path
@@ -31,7 +28,6 @@ function copyKey() {
 
 //puts key to clipboard when copy key command for a key with children is executed
 function copyBranch() {
-	//console.log("copy Branch")
 	//needed to mark the node
 	treeView.treeAreaCopyIndex = treeView.currentNode.index
 	treeView.currentNodePath = treeView.currentNode.path
@@ -43,9 +39,11 @@ function copyBranch() {
 function paste() {
 
 	if(undoManager.clipboardType === "copyKey"){
+
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		keyAreaView.keyAreaCopyIndex = -1
 		keyAreaView.currentNodePath = ""
+
 		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
 			resetKeyAreaModel()
 	}
@@ -87,6 +85,7 @@ function paste() {
 		}
 
 		refreshModel(treeView.treeModel)
+
 		if(!treeView.currentNode.childrenHaveNoChildren)
 			keyAreaModel = null
 		else{

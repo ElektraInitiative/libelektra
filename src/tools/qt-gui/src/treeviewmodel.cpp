@@ -399,7 +399,7 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parentIndex)
 	beginRemoveRows(QModelIndex(), row, row);
 
 	if (!m_model.isEmpty())
-		m_model.takeAt(row);
+		m_model.removeAt(row);
 
 	endRemoveRows();
 
