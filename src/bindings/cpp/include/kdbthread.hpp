@@ -26,6 +26,8 @@ public:
 /// A vector of layers
 typedef std::vector<std::shared_ptr<Layer>> LayerVector;
 
+typedef std::unordered_map<std::string, std::function<void()>> FunctionMap;
+
 /// A data structure that is stored by context inside the Coordinator
 struct PerContext
 {
@@ -40,6 +42,21 @@ struct PerContext
 class Coordinator
 {
 public:
+	void onLayerActivation(std::string layerid, std::function <void()> f)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		m_onActivate[layerid] = f;
+	}
+
+	void onLayerDeactivation(std::string layerid, std::function <void()> f)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
+		m_onDeactivate[layerid] = f;
+	}
+
+private:
+	friend class ThreadContext;
+
 	void attach(ThreadSubject *c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
@@ -89,6 +106,15 @@ public:
 	 */
 	void globalActivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
 	{
+		{
+			std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+			for (auto && f: m_onActivate)
+			{
+				f.second();
+			}
+			m_onActivate.clear();
+		}
+
 		std::lock_guard<std::mutex> lock (m_mutex);
 		for (auto & c: m_updates)
 		{
@@ -100,6 +126,15 @@ public:
 
 	void globalDeactivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
 	{
+		{
+			std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
+			for (auto && f: m_onDeactivate)
+			{
+				f.second();
+			}
+			m_onDeactivate.clear();
+		}
+
 		std::lock_guard<std::mutex> lock (m_mutex);
 		for (auto & c: m_updates)
 		{
@@ -131,18 +166,22 @@ public:
 		return std::move(ret);
 	}
 
-private:
 	/// stores per context updates not yet delievered
 	std::unordered_map<ThreadSubject *, PerContext> m_updates;
 	/// mutex protecting m_updates
 	std::mutex m_mutex;
+	FunctionMap m_onActivate;
+	std::mutex m_mutexOnActivate;
+	FunctionMap m_onDeactivate;
+	std::mutex m_mutexOnDeactivate;
 };
 
 class ThreadContext : public ThreadSubject, public Context
 {
 public:
 	typedef std::reference_wrapper<ValueSubject> ValueRef ;
-	ThreadContext(Coordinator & gc) : m_gc(gc)
+
+	explicit ThreadContext(Coordinator & gc) : m_gc(gc)
 	{
 		m_gc.attach(this);
 	}
@@ -168,7 +207,33 @@ public:
 		return layer;
 	}
 
-	void syncActivate()
+	template <typename T>
+	void onLayerActivation(std::function <void()> f)
+	{
+		std::shared_ptr<Layer>layer = std::make_shared<T>();
+		m_gc.onLayerActivation(layer->id(), f);
+	}
+
+	template <typename T>
+	void onLayerDeactivation(std::function <void()> f)
+	{
+		std::shared_ptr<Layer>layer = std::make_shared<T>();
+		m_gc.onLayerDeactivation(layer->id(), f);
+	}
+
+	void onLayerActivation(std::string const & layerid, std::function <void()> f)
+	{
+		m_gc.onLayerActivation(layerid, f);
+	}
+
+	template <typename T>
+	void onLayerDeactivation(std::string const & layerid, std::function <void()> f)
+	{
+		m_gc.onLayerDeactivation(layerid, f);
+	}
+
+
+	void syncActivate() // syncLayers?
 	{
 		Events e;
 		for(auto const & l: m_gc.fetchGlobalActivation(this))

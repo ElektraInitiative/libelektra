@@ -83,14 +83,23 @@ public:
 	}
 };
 
+bool g_toggle = false;
+
+void toggle()
+{
+	g_toggle = true;
+}
+
 void activate1(Coordinator & gc, KeySet & ks)
 {
 	Key specKey("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
 
 	ThreadContext c1(gc);
 	ThreadValue<int> v1(ks, c1, specKey);
+	c1.onLayerActivation<Activate>([](){toggle();});
 	ASSERT_EQ(v1, 10);
 	c1.activate<Activate>();
+	ASSERT_TRUE(g_toggle);
 	ASSERT_EQ(v1, 22);
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	ASSERT_EQ(v1, 22);
@@ -114,6 +123,7 @@ TEST(test_contextual_thread, activate)
 	std::thread t1(activate1, std::ref(gc), std::ref(ks));
 	ASSERT_EQ(v, 10);
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	ASSERT_TRUE(g_toggle);
 	c.syncActivate();
 	ASSERT_EQ(v, 22);
 	t1.join();
