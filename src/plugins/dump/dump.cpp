@@ -202,30 +202,18 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		void (*get) (void) = (void (*) (void)) elektraDumpGet;
-		void (*set) (void) = (void (*) (void)) elektraDumpSet;
-		void (*serialise) (void) = (void (*) (void)) dump::serialise;
-		void (*unserialise) (void) = (void (*) (void)) dump::unserialise;
 		KeySet *n = ksNew(50,
 			keyNew ("system/elektra/modules/dump",
 				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/get",
-				KEY_SIZE, sizeof (get),
-				KEY_BINARY,
-				KEY_VALUE, &get, KEY_END),
+				KEY_FUNC, elektraDumpGet, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/set",
-				KEY_SIZE, sizeof (set),
-				KEY_BINARY,
-				KEY_VALUE, &set, KEY_END),
+				KEY_FUNC, elektraDumpSet, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/serialise",
-				KEY_SIZE, sizeof (serialise),
-				KEY_BINARY,
-				KEY_VALUE, &serialise, KEY_END),
+				KEY_FUNC, dump::serialise, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/unserialise",
-				KEY_SIZE, sizeof (unserialise),
-				KEY_BINARY,
-				KEY_VALUE, &unserialise, KEY_END),
+				KEY_FUNC, dump::unserialise, KEY_END),
 #include "readme_dump.c"
 			keyNew ("system/elektra/modules/dump/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),

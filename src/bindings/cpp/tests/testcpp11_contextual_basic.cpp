@@ -1,6 +1,7 @@
 #include "kdbconfig.h"
 
-#include <contextual.hpp>
+#include <kdbvalue.hpp>
+#include <kdbcontext.hpp>
 
 #include <thread>
 
@@ -8,8 +9,6 @@
 
 const uint32_t i_value = 55;
 const char * s_value = "55";
-const uint32_t othervalue = 66;
-const char * s_othervalue = "66";
 
 class CountryGermanyLayer : public kdb::Layer
 {
@@ -354,6 +353,7 @@ TEST(test_contextual_basic, integer_copy)
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
 
+	/* TODO: cannot copy KeySet anymore? -> feature maybe not needed
 	KeySet ks2;
 	Integer i2(i, ks2);
 	ASSERT_EQ(i2 , 5);
@@ -363,6 +363,7 @@ TEST(test_contextual_basic, integer_copy)
 	i2.syncKeySet();
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
 	ASSERT_EQ(ks2.lookup("/%/%/%/test").getString() , "10");
+	*/
 }
 
 TEST(test_contextual_basic, evaluate)
@@ -474,12 +475,12 @@ TEST(test_contextual_basic, evaluate)
 }
 
 
-struct MockObserver : kdb::Observer
+struct MockObserver : kdb::ValueObserver
 {
 	MockObserver() : counter()
 	{}
 
-	virtual void update() const
+	virtual void updateContext() const
 	{
 		++ counter;
 	}
@@ -488,7 +489,7 @@ struct MockObserver : kdb::Observer
 };
 
 // duplicates need to be filtered
-TEST(test_contextual_basic, observer)
+TEST(test_contextual_basic, valueObserver)
 {
 	kdb::Context c;
 	MockObserver o1;
@@ -500,26 +501,26 @@ TEST(test_contextual_basic, observer)
 	c.attachByName("/%eventX%", o3);
 	ASSERT_EQ(o1.counter , 0);
 	ASSERT_EQ(o2.counter , 0);
-	c.notify({"event1"});
+	c.notifyByEvents({"event1"});
 	ASSERT_EQ(o1.counter , 1);
 	ASSERT_EQ(o2.counter , 1);
-	c.notify({"event2"});
+	c.notifyByEvents({"event2"});
 	ASSERT_EQ(o1.counter , 2);
 	ASSERT_EQ(o2.counter , 1);
-	c.notify({"event3"});
+	c.notifyByEvents({"event3"});
 	ASSERT_EQ(o1.counter , 2);
 	ASSERT_EQ(o2.counter , 2);
-	c.notify({"event4"});
+	c.notifyByEvents({"event4"});
 	ASSERT_EQ(o1.counter , 2);
 	ASSERT_EQ(o2.counter , 2);
-	c.notify({"event1", "event2"});
+	c.notifyByEvents({"event1", "event2"});
 	ASSERT_EQ(o1.counter , 3);
 	ASSERT_EQ(o2.counter , 3);
-	c.notify({"event1", "event3"});
+	c.notifyByEvents({"event1", "event3"});
 	ASSERT_EQ(o1.counter , 4);
 	ASSERT_EQ(o2.counter , 4);
 	ASSERT_EQ(o3.counter , 0);
-	c.notify();
+	c.notifyAllEvents();
 	ASSERT_EQ(o1.counter , 5);
 	ASSERT_EQ(o2.counter , 5);
 	ASSERT_EQ(o3.counter , 1);
@@ -604,4 +605,18 @@ TEST(test_contextual_basic, threads)
 	std::thread t2(foo, std::ref(d));
 	t2.join();
 	ASSERT_EQ(d , 12);
+}
+
+TEST(test_contextual_basic, nocontext)
+{
+	using namespace kdb;
+	KeySet ks;
+	NoContext c;
+	kdb::Value<int> n(ks, c,  Key("/test",
+				KEY_CASCADING_NAME,
+				KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(n , i_value);
+
+	n = 18;
+	ASSERT_EQ(n , 18);
 }
