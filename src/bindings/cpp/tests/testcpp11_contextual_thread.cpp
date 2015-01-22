@@ -131,11 +131,11 @@ TEST(test_contextual_thread, activate)
 	ASSERT_EQ(v, 10);
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	ASSERT_TRUE(g_toggle);
-	c.syncActivate();
+	c.syncLayers();
 	ASSERT_EQ(v, 22);
 	t1.join();
 	ASSERT_FALSE(g_toggle);
 	ASSERT_EQ(v, 22);
-	c.syncActivate();
+	c.syncLayers();
 	ASSERT_EQ(v, 10);
 }

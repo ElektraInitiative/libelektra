@@ -232,7 +232,7 @@ public:
 	}
 
 
-	void syncActivate() // syncLayers?
+	void syncLayers()
 	{
 		Events e;
 		for(auto const & l: m_gc.fetchGlobalActivation(this))
