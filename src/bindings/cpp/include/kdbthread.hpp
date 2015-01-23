@@ -26,7 +26,7 @@ public:
 /// A vector of layers
 typedef std::vector<std::shared_ptr<Layer>> LayerVector;
 
-typedef std::unordered_map<std::string, std::function<void()>> FunctionMap;
+typedef std::unordered_map<std::string, std::vector<std::function<void()>>> FunctionMap;
 
 /// A data structure that is stored by context inside the Coordinator
 struct PerContext
@@ -45,13 +45,13 @@ public:
 	void onLayerActivation(std::string layerid, std::function <void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
-		m_onActivate[layerid] = f;
+		m_onActivate[layerid].push_back(f);
 	}
 
 	void onLayerDeactivation(std::string layerid, std::function <void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
-		m_onDeactivate[layerid] = f;
+		m_onDeactivate[layerid].push_back(f);
 	}
 
 private:
@@ -97,6 +97,16 @@ private:
 		return k;
 	}
 
+	void runOnActivate(std::shared_ptr<Layer> layer)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		for (auto && f: m_onActivate[layer->id()])
+		{
+			f();
+		}
+		m_onActivate.clear();
+	}
+
 	/**
 	 * @brief Request that some layer needs to be globally
 	 * activated.
@@ -106,14 +116,7 @@ private:
 	 */
 	void globalActivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
 	{
-		{
-			std::lock_guard<std::mutex> lock (m_mutexOnActivate);
-			for (auto && f: m_onActivate)
-			{
-				f.second();
-			}
-			m_onActivate.clear();
-		}
+		runOnActivate(layer);
 
 		std::lock_guard<std::mutex> lock (m_mutex);
 		for (auto & c: m_updates)
@@ -124,16 +127,20 @@ private:
 		}
 	}
 
+	void runOnDeactivate(std::shared_ptr<Layer> layer)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
+		for (auto && f: m_onDeactivate[layer->id()])
+		{
+			f();
+		}
+		m_onDeactivate.clear();
+	}
+
+
 	void globalDeactivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
 	{
-		{
-			std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
-			for (auto && f: m_onDeactivate)
-			{
-				f.second();
-			}
-			m_onDeactivate.clear();
-		}
+		runOnDeactivate(layer);
 
 		std::lock_guard<std::mutex> lock (m_mutex);
 		for (auto & c: m_updates)
