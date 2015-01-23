@@ -1,14 +1,8 @@
-This is a technical preview of a new gui for Elektra.
+# qt-gui #
+## A GUI for Elektra ##
 
-To build it, make sure that you have Qt5 cmake files in your
-CMAKE PREFIX PATH and that you have added qt-gui in TOOLS.
-You can can also use ALL (will add all tools):
+This is a technical preview of a new GUI for Elektra. It can be used to perform basic operations on the Elektra
+Key Database such as creating, managing, editing, and deleting keys stored in KDB.
 
-    cmake -DTOOLS=ALL -DCMAKE_PREFIX_PATH=/opt/Qt5.3.0/5.3/gcc_64/lib/cmake .
+For information on this tool including how to compile and install it check our [documentation](doc/QT_GUI.md).
 
-
-Dependencies: Qt5.3 and libdrm-dev
-
-If you have wheezy-backports enabled and do not use kde4, you can also install:
-
-    apt-get install qtdeclarative5-dev
