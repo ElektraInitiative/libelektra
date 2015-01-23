@@ -70,6 +70,19 @@ TEST(test_contextual_thread, instanciation)
 	ASSERT_EQ(v, 88);
 }
 
+class Other: public kdb::Layer
+{
+public:
+	std::string id() const override
+	{
+		return "other";
+	}
+	std::string operator()() const override
+	{
+		return "notused";
+	}
+};
+
 class Activate: public kdb::Layer
 {
 public:
@@ -126,6 +139,9 @@ TEST(test_contextual_thread, activate)
 	ThreadContext c(gc);
 	ThreadValue<int> v(ks, c, specKey);
 	ASSERT_EQ(v, 10);
+	ASSERT_EQ(c.size(), 0);
+	ASSERT_EQ(c["other"], "");
+	ASSERT_EQ(c["activate"], "");
 
 	std::thread t1(activate1, std::ref(gc), std::ref(ks));
 	ASSERT_EQ(v, 10);
@@ -136,6 +152,9 @@ TEST(test_contextual_thread, activate)
 	t1.join();
 	ASSERT_FALSE(g_toggle);
 	ASSERT_EQ(v, 22);
-	c.syncLayers();
+	c.activate<Other>(); // also fetches updates
+	ASSERT_EQ(c.size(), 1);
+	ASSERT_EQ(c["other"], "notused");
+	ASSERT_EQ(c["activate"], "");
 	ASSERT_EQ(v, 10);
 }

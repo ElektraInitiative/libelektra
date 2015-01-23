@@ -21,6 +21,7 @@ class ThreadSubject
 {
 public:
 	virtual void notify(KeySet &ks) = 0;
+	virtual void syncLayers() = 0;
 };
 
 /// A vector of layers
@@ -117,6 +118,7 @@ private:
 	void globalActivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
 	{
 		runOnActivate(layer);
+		cc->syncLayers();
 
 		std::lock_guard<std::mutex> lock (m_mutex);
 		for (auto & c: m_updates)
@@ -141,6 +143,7 @@ private:
 	void globalDeactivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
 	{
 		runOnDeactivate(layer);
+		cc->syncLayers();
 
 		std::lock_guard<std::mutex> lock (m_mutex);
 		for (auto & c: m_updates)
