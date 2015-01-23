@@ -151,7 +151,6 @@ function deleteSearchResult(){
 function updateKeyAreaSelection() {
 	keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
 	editKeyWindow.selectedNode = keyAreaSelectedItem
-	metaAreaModel = keyAreaSelectedItem.metaValue
 
 	keyAreaView.selection.clear()
 	keyAreaView.selection.select(keyAreaView.currentRow)

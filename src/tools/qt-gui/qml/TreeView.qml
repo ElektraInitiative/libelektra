@@ -190,8 +190,10 @@ ScrollView {
 			forceActiveFocus()
 
 			if (currentNode !== null){
-				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
+				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren){
 					keyAreaModel = currentNode.children
+					keyAreaSelectedItem = null
+				}
 				else
 					keyAreaModel = null
 			}

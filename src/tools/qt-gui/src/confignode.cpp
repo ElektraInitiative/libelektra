@@ -38,7 +38,6 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_parentModel(NULL)
 	, m_isExpanded(other.m_isExpanded)
 {
-
 	if(other.m_children)
 	{
 		foreach(ConfigNodePtr node, other.m_children->model())
@@ -249,17 +248,17 @@ void ConfigNode::setKey(Key key)
 
 void ConfigNode::setKeyName(const QString &name)
 {
-	if(!m_key)
-		m_key = Key();
-
-	try
+	if(m_key)
 	{
-		m_key.setName(name.toStdString());
-	}
-	catch(KeyInvalidName ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
-		return;
+		try
+		{
+			m_key.setName(name.toStdString());
+		}
+		catch(KeyInvalidName ex)
+		{
+			emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+			return;
+		}
 	}
 }
 

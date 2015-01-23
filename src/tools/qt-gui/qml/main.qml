@@ -592,6 +592,11 @@ ApplicationWindow {
 
 					model: keyAreaModel
 
+					onCurrentRowChanged: {
+						keyAreaSelectedItem = model.get(currentRow)
+						metaAreaModel = keyAreaSelectedItem.metaValue
+					}
+
 					TableViewColumn {
 						id: nameColumn
 
@@ -647,15 +652,7 @@ ApplicationWindow {
 						}
 					}
 					Keys.onPressed: {
-						if(event.key === Qt.Key_Up) {
-							keyAreaView.currentRow = keyAreaView.currentRow--
-							MFunctions.updateKeyAreaSelection()
-						}
-						else if(event.key === Qt.Key_Down){
-							keyAreaView.currentRow = keyAreaView.currentRow++
-							MFunctions.updateKeyAreaSelection()
-						}
-						else if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
+						if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
 							MFunctions.updateKeyAreaSelection()
 							editKeyWindow.show()
 							editKeyWindow.populateMetaArea()
