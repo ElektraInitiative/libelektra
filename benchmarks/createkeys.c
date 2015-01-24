@@ -9,7 +9,8 @@ int main(int argc, char** argv)
 {
 	if (argc != 3)
 	{
-		printf ("no arguments given, assuming %d dirs %d keys\n", num_dir, num_key);
+		printf ("no arguments given, will exit\n");
+		printf ("usage %s dir key (both dir+key are numbers)\n");
 		exit(0);
 	}
 	else
