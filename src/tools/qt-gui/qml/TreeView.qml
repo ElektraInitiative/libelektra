@@ -193,6 +193,7 @@ ScrollView {
 				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren){
 					keyAreaModel = currentNode.children
 					keyAreaSelectedItem = null
+					metaAreaModel = null
 				}
 				else
 					keyAreaModel = null

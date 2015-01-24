@@ -47,10 +47,16 @@ void UndoManager::createEditKeyCommand(TreeViewModel* model, int idx, QVariantLi
 	TreeViewModel* tmpModel = qvariant_cast<TreeViewModel*>(data.takeAt(2));
 	QVariantMap oldMDMap;
 
-	foreach (ConfigNodePtr node, tmpModel->model())
+	if(tmpModel)
 	{
-		oldMDMap.insert(node->getName(), node->getValue());
+
+		foreach (ConfigNodePtr node, tmpModel->model())
+		{
+			oldMDMap.insert(node->getName(), node->getValue());
+		}
 	}
+	else
+		tmpModel = new TreeViewModel;
 
 	data.insert(2, oldMDMap);
 

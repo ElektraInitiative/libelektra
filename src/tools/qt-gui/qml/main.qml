@@ -641,7 +641,6 @@ ApplicationWindow {
 								}
 
 								onDoubleClicked: {
-
 									keyAreaView.currentRow = styleData.row
 									MFunctions.updateKeyAreaSelection()
 									editKeyWindow.qmlMetaKeyModel.clear()

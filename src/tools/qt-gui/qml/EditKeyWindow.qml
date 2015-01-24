@@ -8,8 +8,10 @@ KeyWindow {
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
 	function populateMetaArea() {
-		for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
-			qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
+		if(selectedNode.metaValue){
+			for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
+				qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
+			}
 		}
 	}
 
@@ -55,8 +57,10 @@ KeyWindow {
 			qmlMetaKeyModel.clear()
 			selectedNode = null
 
-			if(keyAreaModel !== null)
+			if(keyAreaModel !== null){
 				keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
+				metaAreaModel = keyAreaSelectedItem.metaValue
+			}
 		}
 	}
 }

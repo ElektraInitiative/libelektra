@@ -104,49 +104,58 @@ void ConfigNode::setName(const QString& name)
 		m_path.replace(index, m_path.length() - index,"/" + name);
 	}
 
-	if(m_key){
-		if(QString::fromStdString(m_key.getName()) != ""){
+	if(!m_key)
+		m_key = Key(m_path.toStdString(), KEY_END);
 
-			try{
-				m_key.setBaseName(name.toStdString());
-			}
-			catch(KeyInvalidName const& ex){
-				emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
-				return;
-			}
-			m_name = name;
+	if(QString::fromStdString(m_key.getName()) != ""){
+
+		try{
+			m_key.setBaseName(name.toStdString());
 		}
+		catch(KeyInvalidName const& ex){
+			emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+			return;
+		}
+		m_name = name;
 	}
+
 }
 
 void ConfigNode::setValue(const QVariant& value)
 {
-	if(m_key)
-	{
-		m_key.setString(value.toString().toStdString());
-		m_value = value;
-	}
+	if(!m_key)
+		m_key = Key(m_path.toStdString(), KEY_END);
+
+	m_key.setString(value.toString().toStdString());
+	m_value = value;
 }
+
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
-	if(m_key)
-	{
-		m_key.setMeta(name.toStdString(), value.toString().toStdString());
-		m_name = name;
-		m_value = value;
-	}
+	if(!m_key)
+		m_key = Key(m_path.toStdString(), KEY_END);
+
+	m_key.setMeta(name.toStdString(), value.toString().toStdString());
+	m_name = name;
+	m_value = value;
 }
+
 
 void ConfigNode::setMeta(const QVariantMap &metaData)
 {
-	//delete old metadata in key
-	for(int i = 0; i < m_metaData->model().size(); i++)
+	if(m_metaData)
 	{
-		m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
+		//delete old metadata in key
+		for(int i = 0; i < m_metaData->model().size(); i++)
+		{
+			m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
+		}
+		//delete old metadata in model
+		m_metaData->clearMetaModel();
 	}
-	//delete old metadata in model
-	m_metaData->clearMetaModel();
+	else
+		m_metaData = new TreeViewModel;
 
 	//create new metadata nodes in model
 	for(int i = 0; i < metaData.size(); i++)
