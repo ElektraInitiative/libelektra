@@ -6,9 +6,7 @@
 #include <memory>
 
 #include <merging/threewaymerge.hpp>
-#include <merging/metamergestrategy.hpp>
-#include <merging/automergestrategy.hpp>
-#include <merging/onesidestrategy.hpp>
+#include <merging/onesidemergeconfiguration.hpp>
 
 
 using namespace kdb;
@@ -84,33 +82,13 @@ int main()
 	// Have a look at the strategy documentation for further details on what they do and how they work.
 	// The unit tests also provide insight into how the strategies work.
 
-	// TODO:
-	// Currently the MetaMergeStrategy has to be registered first. Otherwise the meta information
-	// of merged keys is lost. This is due to the way that strategies are currently implemented and
-	// is subject to change.
-
-	// TODO:
-	// Currently the strategies have to be instantiated and freed manually. This is also subject to change
-	// and will be simplified in future versions.
-
-
-
-	MetaMergeStrategy metaStrategy(merger);
-	merger.addConflictStrategy(&metaStrategy);
-
+	// In order to simplify the initialization, predefined merge configurations exist.
 	// in this example we first resolve all the keys that can be automatically
-	// resolved (e.g. only one side was modified). This is done by the AutoMergeStrategy.
-	// If keys remain that cannot be automatically merged (e.g. both sides were modified)
-	// we unconditionally accept our version of the key. This is done by the OneSideStrategy.
-	// MetaKeys are merged in the exact same way, because the MetaMergeStrategy we instantiated
-	// above uses the same merger instance. Alternatively we could have instantiated and configured
-	// a different merger only for the MetaKeys.
+	// resolved (e.g. only one side was modified). This is exactly the use case of the
+	// OneSideMergeConfiguration.
 
-	MergeConflictStrategyPtr autoMerge (new AutoMergeStrategy());
-	MergeConflictStrategyPtr ourVersion (new OneSideStrategy(OURS));
-
-	merger.addConflictStrategy(autoMerge.get());
-	merger.addConflictStrategy(ourVersion.get());
+	OneSideMergeConfiguration configuration(OURS);
+	configuration.configureMerger(merger);
 
 	// Step 4: Perform the actual merge
 	MergeResult result = merger.mergeKeySet (

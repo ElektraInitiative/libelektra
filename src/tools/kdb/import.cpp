@@ -63,16 +63,9 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	KeySet base;
 
-	// TODO: this should not be neccessary, but
-	// applying threeway strategies to a twoway merge is hard
-	base = KeySet();
+	base = existingKeys;
 
-	// TODO: for now we have to position this strategy manually
-	// to avoid meta information loss
-	MetaMergeStrategy metaStrategy(merger);
-	merger.addConflictStrategy(&metaStrategy);
-
-	helper.parseStrategies (cl, merger);
+	helper.configureMerger (cl, merger);
 	MergeResult result = merger.mergeKeySet (
 			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (existingKeys, root),
 					TheirMergeKeys (importedKeys, root), root));
