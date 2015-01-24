@@ -401,6 +401,11 @@ public:
 		return const_cast<typename Policies::ContextPolicy&>(m_context);
 	}
 
+	typename Policies::ContextPolicy & c() const
+	{
+		return context();
+	}
+
 	Key const& getSpec() const
 	{
 		return m_spec;

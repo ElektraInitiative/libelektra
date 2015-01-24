@@ -217,6 +217,16 @@ public:
 		m_gc.detach(this);
 	}
 
+	Coordinator & global()
+	{
+		return m_gc;
+	}
+
+	Coordinator & g()
+	{
+		return m_gc;
+	}
+
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> activate(Args&&... args)
 	{
