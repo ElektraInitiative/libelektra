@@ -1093,10 +1093,28 @@ __attribute__((noinline)) void benchmark_layer_switch(kdb::Environment & s)
 //{benchmark/layerswitch}
 for (long long i=0; i<iterations/2; ++i)
 {
-	s.context().activate<Layer2>();
-	x ^= add_contextual(s.nested, s.nested);
 	s.context().activate<Layer1>();
 	x ^= add_contextual(s.nested, s.nested);
+	s.context().deactivate<Layer1>();
+	x ^= add_contextual(s.nested, s.nested);
+}
+//{end}
+	t.stop();
+	std::cout << t;
+	dump << "layer switch " << x << std::endl;
+}
+
+__attribute__((noinline)) void benchmark_layer_sync(kdb::Environment & s)
+{
+	s.nested = value;
+	kdb::ThreadInteger::type x = 0;
+
+	static Timer t("sync layers");
+	t.start();
+//{benchmark/layerswitch}
+for (long long i=0; i<iterations; ++i)
+{
+	s.context().syncLayers();
 }
 //{end}
 	t.stop();
@@ -1152,9 +1170,10 @@ int main(int argc, char**argv)
 	for (int i=0; i<benchmarkIterations; ++i)
 	{
 		std::cout << i << std::endl;
-		benchmark_nothing();
 
 		// if:
+		/*
+		benchmark_nothing();
 		benchmark_native();
 		benchmark_native_sum();
 		benchmark_native_sum_asm();
@@ -1174,6 +1193,7 @@ int main(int argc, char**argv)
 		benchmark_layer_with7out(s);
 		benchmark_layer_with8out(s);
 		benchmark_layer_with9out(s);
+		*/
 
 		/*
 		// 1-9 layer activations in a loop
@@ -1196,19 +1216,21 @@ int main(int argc, char**argv)
 		benchmark_contextual_wrongop(s);
 		benchmark_layer_activation(s);
 		benchmark_layer_activationval(s);
-		benchmark_layer_switch(s); // expensive
-
-		benchmark_evaluate_no_sub(s);
-		benchmark_evaluate(s);
-		benchmark_kslookup();
 
 		benchmark_layer_with1outin(s);
 		benchmark_layer_with1valout(s);
+		benchmark_evaluate_no_sub(s);
+		*/
+
+		benchmark_layer_sync(s);
 		benchmark_layer_with(s);
+		benchmark_layer_switch(s); // expensive
+
+		benchmark_evaluate(s);
+		benchmark_kslookup();
 
 		benchmark_hashmap();
 		benchmark_hashmap_find();
-		*/
 	}
 
 	data << "value,benchmark" << std::endl;
