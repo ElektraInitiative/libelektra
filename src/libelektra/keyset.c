@@ -226,7 +226,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	}
 	keyset->array[0] = 0;
 
-	if (va && alloc != 1)
+	if (alloc != 1) // is >0 because of increment earlier
 	{
 		key = (struct _Key *) va_arg (va, struct _Key *);
 		while (key)
