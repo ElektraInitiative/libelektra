@@ -18,7 +18,7 @@ Window {
 
 	color: activePalette.window
 
-	onClosing: buttonRow.cancelButton.action.triggered()
+//	onClosing: buttonRow.cancelButton.action.triggered()
 
 	Loader {
 		id: loader

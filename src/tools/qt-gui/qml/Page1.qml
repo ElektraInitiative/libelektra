@@ -11,7 +11,6 @@ WizardTemplate {
 
 	label.text: qsTr("Mount point:  ")
 
-	buttonRow.finishButton.visible: false
 	buttonRow.nextButton.action.enabled: textField.text !== ""
 	buttonRow.nextButton.action.onTriggered: {
 		guiBackend.createBackend(textField.text)
