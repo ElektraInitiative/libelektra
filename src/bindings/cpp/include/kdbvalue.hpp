@@ -1,9 +1,7 @@
 #ifndef ELEKTRA_KDBVALUE_HPP
 #define ELEKTRA_KDBVALUE_HPP
 
-#ifdef HAVE_KDBCONFIG_H
 #include <kdbconfig.h>
-#endif
 
 #include <set>
 #include <map>

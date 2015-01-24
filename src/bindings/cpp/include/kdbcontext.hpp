@@ -1,6 +1,8 @@
 #ifndef ELEKTRA_KDBCONTEXT_HPP
 #define ELEKTRA_KDBCONTEXT_HPP
 
+#include <kdbconfig.h>
+
 #include <kdbvalue.hpp>
 
 #include <set>
@@ -139,6 +141,14 @@ public:
 	}
 
 	/**
+	 * @return size of all current layers (to be used with operator[])
+	 */
+	size_t size() const
+	{
+		return m_active_layers.size();
+	}
+
+	/**
 	 * Attach observer using to all events given by
 	 * its specification (name)
 	 *
@@ -269,7 +279,7 @@ public:
 		return ret;
 	}
 
-private:
+protected:
 	// activates layer, records it, but does not notify
 	template <typename T, typename... Args>
 	void lazyActivate(Args&&... args)
@@ -278,7 +288,7 @@ private:
 		lazyActivateLayer(layer);
 	}
 
-	void lazyActivateLayer(std::shared_ptr<Layer>&layer)
+	void lazyActivateLayer(std::shared_ptr<Layer> const & layer)
 	{
 		std::string const & id = layer->id(); // optimisation
 		auto p = m_active_layers.emplace(std::make_pair(id, layer));
@@ -306,7 +316,7 @@ public:
 	 * @param args the arguments to pass to layer construction
 	 */
 	template <typename T, typename... Args>
-	void activate(Args&&... args)
+	std::shared_ptr<Layer> activate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
 		auto p = m_active_layers.emplace(std::make_pair(layer->id(), layer));
@@ -318,13 +328,19 @@ public:
 #if DEBUG && VERBOSE
 		std::cout << "activate layer: " << layer->id() << std::endl;
 #endif
+		return layer;
 	}
 
-private:
+protected:
 	template <typename T, typename... Args>
 	void lazyDeactivate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
+		lazyDeactivateLayer(layer);
+	}
+
+	void lazyDeactivateLayer(std::shared_ptr<Layer> const & layer)
+	{
 		auto p = m_active_layers.find(layer->id());
 		if (p != m_active_layers.end())
 		{
@@ -340,7 +356,7 @@ private:
 
 public:
 	template <typename T, typename... Args>
-	void deactivate(Args&&... args)
+	std::shared_ptr<Layer> deactivate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
 		m_active_layers.erase(layer->id());
@@ -348,6 +364,7 @@ public:
 		std::cout << "deactivate layer: " << layer->id() << std::endl;
 #endif
 		notifyByEvents({layer->id()});
+		return layer;
 	}
 
 public:
