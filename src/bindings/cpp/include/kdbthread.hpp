@@ -43,6 +43,22 @@ struct PerContext
 class Coordinator
 {
 public:
+	template <typename T>
+	void onLayerActivation(std::function <void()> f)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		std::shared_ptr<Layer>layer = std::make_shared<T>();
+		m_onActivate[layer->id()].push_back(f);
+	}
+
+	template <typename T>
+	void onLayerDeactivation(std::function <void()> f)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		std::shared_ptr<Layer>layer = std::make_shared<T>();
+		m_onActivate[layer->id()].push_back(f);
+	}
+
 	void onLayerActivation(std::string layerid, std::function <void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
@@ -216,31 +232,6 @@ public:
 		m_gc.globalDeactivate(this, layer);
 		return layer;
 	}
-
-	template <typename T>
-	void onLayerActivation(std::function <void()> f)
-	{
-		std::shared_ptr<Layer>layer = std::make_shared<T>();
-		m_gc.onLayerActivation(layer->id(), f);
-	}
-
-	template <typename T>
-	void onLayerDeactivation(std::function <void()> f)
-	{
-		std::shared_ptr<Layer>layer = std::make_shared<T>();
-		m_gc.onLayerDeactivation(layer->id(), f);
-	}
-
-	void onLayerActivation(std::string const & layerid, std::function <void()> f)
-	{
-		m_gc.onLayerActivation(layerid, f);
-	}
-
-	void onLayerDeactivation(std::string const & layerid, std::function <void()> f)
-	{
-		m_gc.onLayerDeactivation(layerid, f);
-	}
-
 
 	void syncLayers()
 	{

@@ -114,8 +114,8 @@ void activate1(Coordinator & gc, KeySet & ks)
 
 	ThreadContext c1(gc);
 	ThreadValue<int> v1(ks, c1, specKey);
-	c1.onLayerActivation<Activate>([](){toggleOn();});
-	c1.onLayerDeactivation<Activate>([](){toggleOff();});
+	gc.onLayerActivation<Activate>([](){toggleOn();});
+	gc.onLayerDeactivation<Activate>([](){toggleOff();});
 	ASSERT_EQ(v1, 10);
 	c1.activate<Activate>();
 	ASSERT_TRUE(g_toggle);
