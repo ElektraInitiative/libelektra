@@ -54,9 +54,9 @@ public:
 	template <typename T>
 	void onLayerDeactivation(std::function <void()> f)
 	{
-		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
 		std::shared_ptr<Layer>layer = std::make_shared<T>();
-		m_onActivate[layer->id()].push_back(f);
+		m_onDeactivate[layer->id()].push_back(f);
 	}
 
 	void onLayerActivation(std::string layerid, std::function <void()> f)
