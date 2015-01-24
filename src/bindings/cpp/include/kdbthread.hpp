@@ -71,6 +71,12 @@ public:
 		m_onDeactivate[layerid].push_back(f);
 	}
 
+	std::unique_lock<std::mutex> requireLock()
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+		return std::move(lock);
+	}
+
 private:
 	friend class ThreadContext;
 
