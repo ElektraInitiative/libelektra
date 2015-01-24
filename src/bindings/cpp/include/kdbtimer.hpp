@@ -35,11 +35,11 @@ public:
 	static const timer_t usec_factor = 1000000LL;
 };
 
-inline Timer::Timer(std::string const & name) :
+inline Timer::Timer(std::string const & name_) :
 		begin(),
 		end(),
 		results(),
-		name(name)
+		name(name_)
 {
 }
 
