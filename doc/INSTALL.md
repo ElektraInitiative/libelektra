@@ -15,9 +15,17 @@ to build a debian package.
 
 First follow the steps in COMPILE.
 
-To install elektra use:
+To install Elektra use:
 
 	sudo make install
+
+To uninstall Elektra use:
+
+	sudo make uninstall
+
+or in the build directory:
+
+	xargs rm < install_manifest.txt
 
 
 ## CPACK ##
