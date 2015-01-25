@@ -14,20 +14,26 @@ In order to compile and use the new `qt-gui` there are a few dependencies which 
 - qt5.3 or greater
 - libdrm-dev
 
-I was able to install the correct dependencies on KDE using the command:	
+Additionally, you may need `qtdeclarative5-dev` which is available in `wheezy-backports`.
+
+I was able to install the correct dependencies on my system, running Kubuntu 14.10 using the command:	
 `sudo apt-get install qt5-default qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtgraphicaleffects libdrm-dev`
 
-Note: If you install qt5 manually, make sure the qt5 libarires are inlcude in `LD_LIBRARY`.
+
 
 ### Compiling ###
-Compile Elektra as normal as per the [COMPILE document](COMPILE.md) making sure to include the `qt-gui` tool using the `DPLUGINS` flag.
+Compile Elektra as normal as per the [COMPILE document](COMPILE.md) making sure to include the `qt-gui` tool using the `DTOOLS` flag.
 
 For instance:	
-`-DPLUGINS=ALL` or `-DPLUGINS=qt-gui`
+`-DTOOLS=ALL` or `-DTOOLS=qt-gui`
+
+Note: If you install qt5 manually, you must either:	
+- make sure the qt5 libarires are inlcuded in `LD_LIBRARY_PATH`
+- OR make sure to specify `-DCMAKE_PREFIX_PATH=/opt/Qt5.3.0/5.3/gcc_64/lib/cmake` 
 
 ### Installing ###
 
-To install `qt-gui` just run `sudo make install` after running CMAKE.
+You can now install Elektra as you normally would or as descirbed in the [install documentation](doc/install).
 
 ## To Run ##
 
