@@ -74,7 +74,7 @@ ApplicationWindow {
 	}
 
 	Connections {
-		target: (keyAreaSelectedItem === null || keyAreaSelectedItem === 'undefined') ? null : keyAreaSelectedItem.node
+		target: (keyAreaSelectedItem === null || keyAreaSelectedItem.node === "undefined") ? null : keyAreaSelectedItem.node
 
 		onShowMessage: {
 			ErrorDialog.showMessage(title, text, detailedText)

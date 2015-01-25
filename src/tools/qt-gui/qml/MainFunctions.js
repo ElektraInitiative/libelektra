@@ -110,8 +110,10 @@ function deleteKey() {
 		keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
 		updateKeyAreaSelection()
 	}
-	else
+	else{
 		keyAreaSelectedItem = null
+		keyAreaView.selection.clear()
+	}
 }
 
 //deletes key when delete key command for a key with children is executed
