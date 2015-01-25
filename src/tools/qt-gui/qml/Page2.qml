@@ -14,6 +14,18 @@ Item {
 	}
 	property bool	contextMenuEnabled: pluginConfigTreeView.currentItem !== null
 	property int	stackIndex: undoManager.index()
+	property alias	includedPluginsModel: includedPluginsModel
+
+	Connections {
+		target: wizardLoader
+		onClosing: {
+			guiBackend.deleteBackend()
+			includedPluginsModel.clear()
+			loader.source = "Page1.qml"
+			includeStorage = true
+			includeResolver = true
+		}
+	}
 
 	Keys.onPressed: {
 		if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){

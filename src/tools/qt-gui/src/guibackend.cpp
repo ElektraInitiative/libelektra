@@ -13,7 +13,8 @@ using namespace kdb;
 using namespace kdb::tools;
 
 GUIBackend::GUIBackend(QObject *parentBackend) :
-	QObject(parentBackend)
+	QObject(parentBackend),
+	m_backend(NULL)
 {
 	m_pluginConfigModel = new TreeViewModel;
 	resetModel();
@@ -168,6 +169,7 @@ bool GUIBackend::validated()
 
 void GUIBackend::deleteBackend()
 {
+
 	delete m_backend;
 }
 

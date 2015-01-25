@@ -76,7 +76,7 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	if (std::find(names.begin(), names.end(), mountpoint.getName()) != names.end())
 	{
 		throw MountpointAlreadyInUseException(
-			std::string("Mountpoint ") + 
+			std::string("Mountpoint ") +
 			mountpoint.getName() +
 			" is one of the already used names: " +
 			namesInString
@@ -155,7 +155,7 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end())
 		{
 			throw MountpointAlreadyInUseException(
-				std::string("Mountpoint ") + 
+				std::string("Mountpoint ") +
 				mountpoint.getName() +
 				" is one of the already used cascading names: " +
 				namesInString
@@ -309,17 +309,17 @@ void Backend::status (std::ostream & os) const
 	else
 	{
 		os << "Backend is not validated" << std::endl;
-		if (!errorplugins.validated()) 
+		if (!errorplugins.validated())
 		{
 			os << "Error Plugins are not validated" << std::endl;
 		}
 
-		if (!getplugins.validated()) 
+		if (!getplugins.validated())
 		{
 			os << "Get Plugins are not validated" << std::endl;
 		}
 
-		if (!setplugins.validated()) 
+		if (!setplugins.validated())
 		{
 			os << "Set Plugins are not validated" << std::endl;
 		}

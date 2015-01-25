@@ -15,6 +15,15 @@ Item {
 	property alias	fileDialog: fileDialog
 	Component.onCompleted: textField.forceActiveFocus()
 
+	Connections {
+		target: wizardLoader
+		onClosing: {
+			guiBackend.deleteBackend()
+			textField.text = ""
+			loader.source = "Page1.qml"
+		}
+	}
+
 	BasicRectangle {
 		id: wizardRectangle
 

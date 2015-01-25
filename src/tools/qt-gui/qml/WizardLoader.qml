@@ -18,8 +18,6 @@ Window {
 
 	color: activePalette.window
 
-//	onClosing: buttonRow.cancelButton.action.triggered()
-
 	Loader {
 		id: loader
 		anchors.fill: parent
