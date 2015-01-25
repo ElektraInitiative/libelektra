@@ -1158,7 +1158,8 @@ int main(int argc, char**argv)
 	kdb::KeySet ks;
 	kdb::Environment s(ks, c);
 	computer_info();
-	std::cout << "provoke cache miss: " << s.nested << std::endl;
+	s.nested = 20;
+	s.bm = 20;
 	std::cout << std::endl;
 
 	if (argc==2)
