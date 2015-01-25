@@ -107,18 +107,16 @@ void ConfigNode::setName(const QString& name)
 	if(!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
 
-	if(QString::fromStdString(m_key.getName()) != ""){
 
-		try{
-			m_key.setBaseName(name.toStdString());
-		}
-		catch(KeyInvalidName const& ex){
-			emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
-			return;
-		}
-		m_name = name;
+	try{
+		m_key.setBaseName(name.toStdString());
+	}
+	catch(KeyInvalidName const& ex){
+		emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+		return;
 	}
 
+	m_name = name;
 }
 
 void ConfigNode::setValue(const QVariant& value)
