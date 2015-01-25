@@ -49,8 +49,6 @@ KeyWindow {
 
 			visible = false
 			accessFromSearchResults = false
-			nameTextField.undo()
-			valueTextField.undo()
 			nameTextField.readOnly = false
 			nameTextField.textColor = activePalette.text
 

@@ -64,7 +64,7 @@ ApplicationWindow {
 			ErrorDialog.showMessage(title, text, detailedText)
 		}
 	}
-	//Disabled due to Bug 43230 (https://snusmumriken.qtproject.c.bitbit.net/browse/QTBUG-43230)??
+
 	Connections {
 		target: treeView.currentNode === null ? null : treeView.currentNode.node
 

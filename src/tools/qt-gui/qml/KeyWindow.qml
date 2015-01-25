@@ -158,8 +158,6 @@ BasicWindow {
 	function cancelClicked() {
 		visible = false
 		isEdited = false
-		nameTextField.undo()
-		valueTextField.undo()
 		qmlMetaKeyModel.clear()
 		selectedNode = null
 		nameTextField.readOnly = false
