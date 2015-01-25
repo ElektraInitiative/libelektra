@@ -444,7 +444,7 @@ ApplicationWindow {
 		iconSource: "icons/edit-rename.png"
 		text: qsTr("Edit...")
 		tooltip: qsTr("Edit")
-		enabled: !((treeView.currentNode === null || treeView.currentNode.isNull) && keyAreaSelectedItem === null)
+		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
 		onTriggered: {
 			if(editKeyWindow.accessFromSearchResults){
