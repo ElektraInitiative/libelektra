@@ -200,7 +200,7 @@ ScrollView {
 			}
 		}
 		else if(mouse.button === Qt.RightButton){
-				treeContextMenu.popup()
+			treeContextMenu.popup()
 		}
 	}
 

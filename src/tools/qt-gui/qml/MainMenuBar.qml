@@ -97,10 +97,12 @@ MenuBar {
 	}
 
 	Menu {
-		id:about
-		title: qsTr("A&bout")
+		id: help
+		title: qsTr("&Help")
 		MenuItem {
-			text: qsTr("About Elektra Editor")
+			action: whatsThisAction
+		}
+		MenuItem {
 			action: aboutAction
 		}
 	}

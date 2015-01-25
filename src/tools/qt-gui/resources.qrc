@@ -58,5 +58,8 @@
         <file>qml/icons/edit-undo.png</file>
         <file>qml/icons/view-refresh.png</file>
         <file>qml/ErrorDialogCreator.js</file>
+        <file>qml/HelpArea.qml</file>
+        <file>qml/icons/whats_this.png</file>
+        <file>qml/Help.qml</file>
     </qresource>
 </RCC>

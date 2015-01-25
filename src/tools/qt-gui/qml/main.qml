@@ -39,6 +39,7 @@ ApplicationWindow {
 	property var    keyAreaModel
 	property bool   isPasted
 	property bool	error: false
+	property bool	helpMode: false;
 
 	property string version: "0.0.5 (beta)"
 
@@ -183,7 +184,6 @@ ApplicationWindow {
 
 			newKeyWindow.show()
 		}
-
 	}
 
 	Action {
@@ -510,6 +510,14 @@ ApplicationWindow {
 		onTriggered: aboutWindow.show()
 	}
 
+	Action {
+		id: whatsThisAction
+
+		text: qsTr("What's This?")
+		iconSource: "icons/whats_this.png"
+		onTriggered: helpMode ? helpMode = false : helpMode = true
+	}
+
 	//**Menus & Toolbars***************************************************************************************//
 
 	menuBar: MainMenuBar {
@@ -564,6 +572,9 @@ ApplicationWindow {
 
 				treeModel: externTreeModel
 			}
+			HelpArea {
+				helpText: "This is the treeview"
+			}
 		}
 		Column {
 			id: keyMetaColumn
@@ -577,6 +588,7 @@ ApplicationWindow {
 				height: keyAreaHeight
 
 				//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
+
 
 				TableView {
 					id: keyAreaView
@@ -658,6 +670,9 @@ ApplicationWindow {
 						}
 					}
 				}
+				HelpArea {
+					helpText: "This is the key area."
+				}
 			}
 			BasicRectangle {
 				id: metaArea
@@ -693,6 +708,9 @@ ApplicationWindow {
 						title: qsTr("Metakey Value")
 						width: Math.ceil(metaArea.width*0.5 - defaultSpacing*0.5)
 					}
+				}
+				HelpArea {
+					helpText: "This is the meta area."
 				}
 			}
 			BasicRectangle {

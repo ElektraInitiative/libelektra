@@ -25,18 +25,30 @@ ToolBar {
 		ToolButton {
 			id:tbDelete
 			action: deleteAction
+			HelpArea {
+				helpText: "This is the delete button."
+			}
 		}
 		ToolButton {
 			id:tbImport
 			action: importAction
+			HelpArea {
+				helpText: "This is the import button."
+			}
 		}
 		ToolButton {
 			id:tbExport
 			action: exportAction
+			HelpArea {
+				helpText: "This is the export button."
+			}
 		}
 		ToolButton {
 			id:tbUndo
 			action: undoAction
+			HelpArea {
+				helpText: "This is the undo button."
+			}
 		}
 		ToolButton {
 			id: tbUndoAll
@@ -52,6 +64,9 @@ ToolBar {
 		ToolButton {
 			id:tbRedo
 			action: redoAction
+			HelpArea {
+				helpText: "This is the redo button."
+			}
 		}
 		ToolButton {
 			id: tbRedoAll
@@ -67,6 +82,9 @@ ToolBar {
 		ToolButton {
 			id:tbSynchronize
 			action: synchronizeAction
+			HelpArea {
+				helpText: "This is the synchronize button."
+			}
 		}
 		Item {
 			Layout.fillWidth: true
@@ -88,6 +106,9 @@ ToolBar {
 					searchResultsListView.forceActiveFocus()
 					searchResultsColorAnimation.running = true
 				}
+			}
+			HelpArea {
+				helpText: "This is the search field."
 			}
 		}
 	}
