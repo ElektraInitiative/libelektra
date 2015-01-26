@@ -61,5 +61,7 @@
         <file>qml/HelpArea.qml</file>
         <file>qml/icons/whats_this.png</file>
         <file>qml/Help.qml</file>
+        <file>qml/icons/mount.png</file>
+        <file>qml/icons/unmount.png</file>
     </qresource>
 </RCC>

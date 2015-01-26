@@ -102,6 +102,7 @@ MenuBar {
 		MenuItem {
 			action: whatsThisAction
 		}
+		MenuSeparator{}
 		MenuItem {
 			action: aboutAction
 		}

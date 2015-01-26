@@ -419,6 +419,7 @@ ApplicationWindow {
 		id: mountBackendAction
 
 		text: qsTr("Mount Backend...")
+		iconSource: "icons/mount.png"
 		tooltip: qsTr("Mount Backend")
 		onTriggered: {
 			wizardLoader.usedNames = guiBackend.mountPoints()
@@ -430,6 +431,7 @@ ApplicationWindow {
 		id: unmountBackendAction
 
 		text: qsTr("Unmount Backend...")
+		iconSource: "icons/unmount.png"
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
 			unmountBackendWindow.mountedBackendsView.model = treeView.treeModel.mountedBackends()
@@ -516,6 +518,7 @@ ApplicationWindow {
 		text: qsTr("What's This?")
 		iconSource: "icons/whats_this.png"
 		onTriggered: helpMode ? helpMode = false : helpMode = true
+		shortcut: "Shift+F1"
 	}
 
 	//**Menus & Toolbars***************************************************************************************//
