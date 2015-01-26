@@ -1,13 +1,9 @@
 #include <kdbthread.hpp>
 #include <kdbtimer.hpp>
 
-// long long iterations = 100000000000LL; // elitebenchmark
-// long long iterations = 1000000000LL; // benchmark
-long long iterations = 100000000LL; //bit reduced
-// long long iterations = 10000000LL; // reduced
-// long long iterations = 100000LL; // check
-// long long iterations = 50000LL; // slow check
-// long long iterations = 10000LL; // valgrind
+// long long iterations = 100000000000LL; // elitebenchmark lookup
+long long iterations = 1000000LL; // elitebenchmark with/activate
+// long long iterations = 100LL; // valgrind
 
 // not needed in benchmarks:
 long long iterations1 = iterations / 100;
@@ -387,14 +383,7 @@ __attribute__((noinline)) void benchmark_layer_with(kdb::Environment & s)
 	t.start();
 	for (long long i=0; i<iterations/2; ++i)
 	{
-		{
-				s.context()
-					.with<Layer1>();
-		}
-		{
-				s.context()
-					.with<Layer2>();
-		}
+		s.context().with<Layer1>()([]{});
 	}
 	t.stop();
 	std::cout << t;
