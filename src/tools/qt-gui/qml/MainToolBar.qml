@@ -21,6 +21,9 @@ ToolBar {
 					action: newArrayAction
 				}
 			}
+			HelpArea {
+				helpText: "This is the button to create new keys/arrays."
+			}
 		}
 		ToolButton {
 			id:tbDelete
