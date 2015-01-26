@@ -22,35 +22,40 @@ ToolBar {
 				}
 			}
 			HelpArea {
-				helpText: "This is the button to create new keys/arrays."
+				//TODO: helptext
+				helpText: qsTr("This is the button to create new keys/arrays.")
 			}
 		}
 		ToolButton {
 			id:tbDelete
 			action: deleteAction
 			HelpArea {
-				helpText: "This is the delete button."
+				//TODO: helptext
+				helpText: qsTr("This is the delete button.")
 			}
 		}
 		ToolButton {
 			id:tbImport
 			action: importAction
 			HelpArea {
-				helpText: "This is the import button."
+				//TODO: helptext
+				helpText: qsTr("This is the import button.")
 			}
 		}
 		ToolButton {
 			id:tbExport
 			action: exportAction
 			HelpArea {
-				helpText: "This is the export button."
+				//TODO: helptext
+				helpText: qsTr("This is the export button.")
 			}
 		}
 		ToolButton {
 			id:tbUndo
 			action: undoAction
 			HelpArea {
-				helpText: "This is the undo button."
+				//TODO: helptext
+				helpText: qsTr("This is the undo button.")
 			}
 		}
 		ToolButton {
@@ -68,7 +73,8 @@ ToolBar {
 			id:tbRedo
 			action: redoAction
 			HelpArea {
-				helpText: "This is the redo button."
+				//TODO: helptext
+				helpText: qsTr("This is the redo button.")
 			}
 		}
 		ToolButton {
@@ -86,7 +92,8 @@ ToolBar {
 			id:tbSynchronize
 			action: synchronizeAction
 			HelpArea {
-				helpText: "This is the synchronize button."
+				//TODO: helptext
+				helpText: qsTr("This is the synchronize button.")
 			}
 		}
 		Item {
@@ -111,7 +118,8 @@ ToolBar {
 				}
 			}
 			HelpArea {
-				helpText: "This is the search field."
+				//TODO: helptext
+				helpText: qsTr("This is the search field.")
 			}
 		}
 	}

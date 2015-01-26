@@ -14,7 +14,7 @@ Rectangle {
 	width: text.width + defaultMargins
 	height: text.height + defaultMargins
 	color: inActivePalette.base
-	border.color: inActivePalette.text
+	border.color: inActivePalette.windowText
 
 	Text {
 		id: text
@@ -24,7 +24,7 @@ Rectangle {
 
 		anchors.centerIn: parent
 
-		color: inActivePalette.text
+		color: inActivePalette.windowText
 
 		text: helpText
 	}

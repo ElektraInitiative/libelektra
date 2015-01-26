@@ -20,12 +20,12 @@ KeyWindow {
 
 		if(!error){
 			visible = false
-			selectedNode = selectedNode.parentModel.get(selectedNode.index)
+//			selectedNode = selectedNode.parentModel.get(selectedNode.index)
 
-			if(selectedNode.childCount === 1){
-				treeView.treeModel.refresh()
+//			if(selectedNode.childCount === 1){
+//				treeView.treeModel.refresh()
 				MFunctions.resetKeyAreaModel()
-			}
+//			}
 
 			if(nameTextField.text.lastIndexOf("/") > 0)
 				selectedNode.parentModel.refresh()

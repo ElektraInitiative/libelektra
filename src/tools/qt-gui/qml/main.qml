@@ -75,7 +75,7 @@ ApplicationWindow {
 	}
 
 	Connections {
-		target: (keyAreaSelectedItem === null || keyAreaSelectedItem.node === "undefined") ? null : keyAreaSelectedItem.node
+		target: (keyAreaSelectedItem === null || keyAreaSelectedItem.node === 'undefined') ? null : keyAreaSelectedItem.node
 
 		onShowMessage: {
 			ErrorDialog.showMessage(title, text, detailedText)
@@ -576,7 +576,8 @@ ApplicationWindow {
 				treeModel: externTreeModel
 			}
 			HelpArea {
-				helpText: "This is the treeview"
+				//TODO: helptext
+				helpText: qsTr("This is the treeview.")
 			}
 		}
 		Column {
@@ -674,7 +675,8 @@ ApplicationWindow {
 					}
 				}
 				HelpArea {
-					helpText: "This is the key area."
+					//TODO: helptext
+					helpText: qsTr("This is the key area.")
 				}
 			}
 			BasicRectangle {
@@ -713,7 +715,8 @@ ApplicationWindow {
 					}
 				}
 				HelpArea {
-					helpText: "This is the meta area."
+					//TODO: helptext
+					helpText: qsTr("This is the meta area.")
 				}
 			}
 			BasicRectangle {

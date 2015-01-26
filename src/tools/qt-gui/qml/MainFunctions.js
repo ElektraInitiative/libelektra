@@ -163,6 +163,8 @@ function updateKeyAreaSelection() {
 //refreshes the model of the key area view
 function resetKeyAreaModel() {
 	keyAreaModel = null
+	keyAreaSelectedItem = null
+	metaAreaModel = null
 	keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
 }
 
