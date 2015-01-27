@@ -85,10 +85,6 @@ inline ValueObserver::~ValueObserver()
 {}
 
 
-/**
- * @brief Used by contexts for callbacks (to run code using a mutex).
- */
-typedef std::function<Key()> Post;
 
 class ValueSubject
 {
@@ -96,6 +92,38 @@ public:
 	virtual void notifyInThread() = 0;
 };
 
+/**
+ * @brief Used by contexts for callbacks (to run code using a mutex).
+ *
+ * Following scenarios are possible:
+ * !oldName && !newName: execute code, do nothing else
+ * !oldName && newName: attach
+ * oldName && newName: reattach
+ * oldName == newName: assignment, attach for inter-thread updates
+ * oldName && !newName: detach
+ */
+struct Command
+{
+public:
+	typedef std::function<Key()> Func;
+	Command(
+		ValueSubject const & v_,
+		Func & execute_,
+		Key & oldKey_,
+		Key newKey_ = Key()) :
+		v(const_cast<ValueSubject &>(v_)),
+		execute(execute_),
+		oldKey(oldKey_),
+		newKey(newKey_)
+	{}
+
+	Key operator()() {return execute();}
+
+	ValueSubject & v; // this pointer
+	Func & execute; // to be executed within lock
+	Key & oldKey; // null key if initial assignment
+	Key  newKey; // new name after assignment
+};
 
 // Default Policies for Value
 
@@ -121,31 +149,17 @@ public:
 	}
 
 	/**
-	 * @brief Thread safe call for assigning a value
+	 * @brief (Re)attaches a ValueSubject to a thread or simply
+	 *        execute code in a locked section.
 	 *
-	 * @param postFkt
+	 * NoContext just executes the function and does not
+	 * attach/reattach/detach
 	 *
-	 * @return 
+	 * @param c the command to apply
 	 */
-	Key post(ELEKTRA_UNUSED Post postFkt)
+	void execute(Command & c)
 	{
-		return postFkt();
-	}
-
-	/**
-	 * @brief Attaches a ValueSubject to a thread
-	 *
-	 * Delegates call to post
-	 *
-	 * NoContext just executes the function and does not attach
-	 *
-	 * @param v the value subject to add
-	 * @param postFkt the function to call thread safely, return
-	 *        value is the key to add.
-	 */
-	void attachToThread(ELEKTRA_UNUSED ValueSubject &v, Post postFkt)
-	{
-		postFkt();
+		c();
 	}
 };
 
@@ -157,7 +171,7 @@ class DefaultGetPolicy
 public:
 	static Key get(KeySet &ks, Key const& spec)
 	{
-		return ks.lookup(spec, ckdb::KDB_O_SPEC);
+		return ks.lookup(spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE );
 	}
 };
 
@@ -364,13 +378,7 @@ public:
 				m_context.evaluate(m_spec.getName()).c_str(),
 				KEY_CASCADING_NAME);
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
-		Post fun = [this]
-		{
-			this->syncCache();
-			assert(m_key);
-			return m_key;
-		};
-		m_context.attachToThread(*this, fun);
+		syncCache();
 	}
 
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
@@ -380,7 +388,7 @@ public:
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
-		post();
+		syncKeySet();
 
 		return *this;
 	}
@@ -388,13 +396,17 @@ public:
 	type operator ++()
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
-		return ++m_cache;
+		type ret = ++m_cache;
+		syncKeySet();
+		return ret;
 	}
 
 	type operator ++(int)
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
-		return m_cache++;
+		type ret = m_cache++;
+		syncKeySet();
+		return ret;
 	}
 
 	// template < typename = typename std::enable_if< true >::type >
@@ -458,16 +470,14 @@ public:
 	 */
 	void syncCache() const
 	{
-		m_key = Policies::GetPolicy::get(m_ks, m_spec);
-
-		if (m_key)
+		Command::Func fun = [this]
 		{
-			m_cache = m_key.get<type>();
-		}
-
-#if DEBUG && VERBOSE
-		std::cout << "got name: " << m_key.getName() << " value: " << m_cache << std::endl;
-#endif
+			this->unsafeSyncCache();
+			return m_key;
+		};
+		Key oldKey = m_key.dup();
+		Command command(*this, fun, oldKey);
+		m_context.execute(command);
 	}
 
 	/**
@@ -475,26 +485,44 @@ public:
 	 */
 	void syncKeySet() const
 	{
-		kdb::Key found = Policies::SetPolicy::set(m_ks, m_spec);
+		Command::Func fun = [this]
+		{
+			this->unsafeSyncKeySet();
+			return m_key;
+		};
+		Key oldKey = m_key.dup();
+		Command command(*this, fun, oldKey);
+		m_context.execute(command);
+	}
+
+private:
+
+	/**
+	 * @brief Execute this method *only* in a Command execution
+	 */
+	void unsafeSyncCache() const
+	{
+		m_key = Policies::GetPolicy::get(m_ks, m_spec);
+		assert (m_key);
+		m_cache = m_key.get<type>();
+
+#if DEBUG && VERBOSE
+		std::cout << "got name: " << m_key.getName() << " value: " << m_cache << std::endl;
+#endif
+	}
+
+	/**
+	 * @brief Execute this method *only* in a Command execution
+	 */
+	void unsafeSyncKeySet() const
+	{
+		m_key = Policies::SetPolicy::set(m_ks, m_spec);
+		assert (m_key);
+		m_key.set<type>(m_cache);
 
 #if DEBUG && VERBOSE
 		std::cout << "set name: " << found.getName() << " value: " << m_cache << std::endl;
 #endif
-
-		if (found)
-		{
-			found.set<type>(m_cache);
-		}
-	}
-
-private:
-	void post()
-	{
-		m_context.post([this]()
-		{
-			m_key.set<T>(m_cache);
-			return m_key;
-		});
 	}
 
 	/**
@@ -502,32 +530,34 @@ private:
 	 */
 	void notifyInThread()
 	{
-		assert(m_key);
-		syncCache();
-		// TODO:
-		m_cache = m_key.get<T>();
+		unsafeSyncCache(); // always called from save context
 	}
 
 
 	virtual void updateContext() const
 	{
-		// Policies::UpdatePolicy::update(this);
-		typename Policies::LockPolicy lock;
-		lock.lock();
-
 		std::string evaluated_name = m_context.evaluate(m_spec.getMeta<std::string>("name"));
 #if DEBUG && VERBOSE
 		std::cout << "update context " << evaluated_name << " from " << m_spec.getName() << std::endl;
 #endif
-		if (evaluated_name != m_spec.getName())
+		if (evaluated_name == m_spec.getName()) return; // nothing changed, same name
+
+		Key oldKey;
+		Command::Func fun = [this, &evaluated_name]
 		{
-			syncKeySet(); // flush out what currently is in cache
-			ckdb::elektraKeySetName(*m_spec,
+			this->unsafeSyncKeySet(); // flush out what currently is in cache
+			ckdb::elektraKeySetName(*this->m_spec,
 					evaluated_name.c_str(),
 					KEY_CASCADING_NAME);
-			syncCache();  // read what we have under new context
-		}
-		lock.unlock();
+			this->unsafeSyncCache();  // read what we have under new context
+
+#if DEBUG && VERBOSE
+			std::cout << "set name: " << found.getName() << " value: " << m_cache << std::endl;
+#endif
+			return m_key;
+		};
+		Command command(*this, fun, oldKey);
+		m_context.execute(command);
 	}
 
 private:

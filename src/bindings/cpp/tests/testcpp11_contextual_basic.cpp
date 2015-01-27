@@ -7,6 +7,37 @@
 
 #include <gtest/gtest.h>
 
+class TestValueSubject : public kdb::ValueSubject
+{
+	virtual void notifyInThread()
+	{}
+};
+
+void fooxx(kdb::Command &)
+{}
+
+TEST(test_contextual_basic, command)
+{
+	using namespace kdb;
+
+	TestValueSubject v;
+	Key k;
+	Command::Func f = [k](){return k;};
+	Key k1;
+	Key k2;
+
+	Command c(v, f, k1, k2);
+	fooxx(c);
+	c();
+	ASSERT_EQ(&k1, &c.oldKey);
+	ASSERT_EQ(k2, c.newKey);
+	ASSERT_EQ(&f, &c.execute);
+	ASSERT_EQ(&v, &c.v);
+
+	c.newKey = c();
+	ASSERT_EQ(k, c.newKey);
+}
+
 const uint32_t i_value = 55;
 const char * s_value = "55";
 
@@ -132,15 +163,15 @@ TEST(test_contextual_basic, integer)
 			KEY_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ(i , 5);
 	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/test");
-	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
 	i = 10;
 	ASSERT_EQ(i , 10);
-	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
+	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 
 	c.activate<LanguageGermanLayer>();
 	ASSERT_EQ(i , i_value);
@@ -149,10 +180,10 @@ ASSERT_EQ(i.context()["language"] , "german");
 ASSERT_EQ(i.getSpec().getName() , "/german/%/%/test");
 //{end}
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
+	ASSERT_TRUE(!ks.lookup("/german/%/%/test"));
 	i = 15;
 	ASSERT_EQ(i , 15);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
-	ASSERT_TRUE(!ks.lookup("/german/%/%/test"));
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 
@@ -186,6 +217,7 @@ ASSERT_EQ(i.getSpec().getName() , "/german/%/%/test");
 		ASSERT_EQ(i , i_value);
 		ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 		ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
+		ASSERT_TRUE(!ks.lookup("/german/germany/%/test"));
 		i = 20;
 		ASSERT_EQ(i.getSpec().getName() , "/german/germany/%/test");
 /*
@@ -200,7 +232,6 @@ break 1520 if i.getSpec().getName()
 //{end}
 */
 		ASSERT_EQ(i , 20);
-		ASSERT_TRUE(!ks.lookup("/german/germany/%/test"));
 	});
 	ASSERT_EQ(i , 10);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
@@ -212,9 +243,10 @@ break 1520 if i.getSpec().getName()
 		ASSERT_EQ(i , 20);
 		ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 		ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
+		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "20");
 		i = 30;
 		ASSERT_EQ(i , 30);
-		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "20");
+		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "30");
 	});
 	ASSERT_EQ(i , 10);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
@@ -346,10 +378,10 @@ TEST(test_contextual_basic, integer_copy)
 		KEY_CASCADING_NAME,
 		KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ(i , 5);
 	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/test");
-	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
 

@@ -17,13 +17,13 @@ TEST(test_contextual_nocontext, integer)
 			KEY_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
+	ASSERT_TRUE(!ks.lookup(name));
 	i = 5;
 	ASSERT_EQ(i , 5);
 	ASSERT_EQ(i.getSpec().getName() , name);
-	ASSERT_TRUE(!ks.lookup(name));
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup(name).getString() , "5");
 	i = 10;
 	ASSERT_EQ(i , 10);
-	ASSERT_EQ(ks.lookup(name).getString() , "5");
+	ASSERT_EQ(ks.lookup(name).getString() , "10");
 }

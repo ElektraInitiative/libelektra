@@ -114,13 +114,9 @@ public:
 	{
 	}
 
-	virtual void post(ELEKTRA_UNUSED Post postFkt)
+	virtual void execute(Command & c)
 	{
-	}
-
-	virtual void attachToThread(ELEKTRA_UNUSED ValueSubject &v, Post postFkt)
-	{
-		postFkt();
+		c();
 	}
 
 	/**

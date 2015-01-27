@@ -109,15 +109,15 @@ private:
 	 * @brief Receive a function to be executed and remember
 	 * which keys need a update in the other ThreadContexts.
 	 */
-	Key post(Post postFkt)
+	void execute(Command & c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		Key k = postFkt();
-		for (auto & c: m_updates)
+		c.newKey = c();
+		// potentially an assignment took place, notify others
+		for (auto & i: m_updates)
 		{
-			c.second.toUpdate.append(k);
+			i.second.toUpdate.append(c.newKey);
 		}
-		return k;
 	}
 
 	void runOnActivate(std::shared_ptr<Layer> layer)
@@ -265,10 +265,22 @@ public:
 		notifyByEvents(e);
 	}
 
-	void attachToThread(ValueSubject &v, Post postFkt)
+	/**
+	 * @brief Command dispatching
+	 *
+	 * @param c the command to execute
+	 */
+	void execute(Command & c)
 	{
-		Key key = m_gc.post(postFkt);
-		m_keys.insert(std::make_pair(key, ValueRef(v)));
+		m_gc.execute(c);
+		if (c.oldKey)
+		{
+			m_keys.erase(c.oldKey);
+		}
+		if (c.newKey)
+		{
+			m_keys.insert(std::make_pair(c.newKey, ValueRef(c.v)));
+		}
 	}
 
 	void notify(KeySet & ks)
@@ -283,11 +295,6 @@ public:
 	void update()
 	{
 		m_gc.update(this);
-	}
-
-	void post(Post postFkt)
-	{
-		m_gc.post(postFkt);
 	}
 
 private:
