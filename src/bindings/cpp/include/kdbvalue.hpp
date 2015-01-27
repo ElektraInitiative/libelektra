@@ -381,13 +381,6 @@ public:
 		});
 	}
 
-	void activate()
-	{
-		// TODO: use correct switching
-		m_spec.setName("user/activate");
-		attachMeToThread(); // reattach
-	}
-
 	void notifyInThread()
 	{
 		assert(m_key);

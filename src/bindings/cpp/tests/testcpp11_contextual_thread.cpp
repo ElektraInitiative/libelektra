@@ -64,10 +64,6 @@ TEST(test_contextual_thread, instanciation)
 
 	c.update();
 	ASSERT_EQ(v, 12);
-
-	ks.append(Key("user/activate", KEY_VALUE, "88", KEY_END));
-	v.activate();
-	ASSERT_EQ(v, 88);
 }
 
 class Other: public kdb::Layer
