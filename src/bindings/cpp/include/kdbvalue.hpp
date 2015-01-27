@@ -27,6 +27,9 @@ namespace kdb
 
 // some widely used interfaces
 
+/**
+ * @brief This type is being used as bottom type that always fails.
+ */
 class none_t
 {};
 
@@ -43,6 +46,9 @@ inline none_t Key::get() const
 
 
 
+/**
+ * @brief Base class for all layers.
+ */
 class Layer
 {
 public:
@@ -50,6 +56,12 @@ public:
 	virtual std::string operator()() const = 0;
 };
 
+/**
+ * @brief Base class for values to be observed.
+ *
+ * updateContext() is called whenever a context tells a value that it
+ * should reevaluate its name and update its cache.
+ */
 class ValueObserver
 {
 public:
@@ -59,6 +71,11 @@ public:
 	typedef std::reference_wrapper<ValueObserver> reference;
 };
 
+/**
+ * @brief Needed to put a ValueObserver in a map
+ *
+ * @return Comparision result
+ */
 bool operator <(ValueObserver const & lhs, ValueObserver const & rhs)
 {
 	return &lhs < &rhs;
@@ -68,6 +85,9 @@ inline ValueObserver::~ValueObserver()
 {}
 
 
+/**
+ * @brief Used by contexts for callbacks (to run code using a mutex).
+ */
 typedef std::function<Key()> Post;
 
 class ValueSubject
@@ -82,17 +102,27 @@ public:
 class NoContext
 {
 public:
+	/**
+	 * @brief attach a new value
+	 *
+	 * NoContext will never update anything
+	 */
 	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  ValueObserver & ValueObserver)
 	{}
 
+	/**
+	 * @brief The evaluated equals the non-evaluated name!
+	 *
+	 * @return NoContext always returns the same string
+	 */
 	std::string evaluate(std::string const & key_name) const
 	{
 		return key_name;
 	}
 
-	Key post(ELEKTRA_UNUSED Post post_)
+	Key post(ELEKTRA_UNUSED Post postFkt)
 	{
-		return Key();
+		return postFkt();
 	}
 
 	void attachToThread(ELEKTRA_UNUSED ValueSubject &v, Post postFkt)
