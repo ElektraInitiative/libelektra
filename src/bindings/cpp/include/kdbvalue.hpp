@@ -120,11 +120,29 @@ public:
 		return key_name;
 	}
 
+	/**
+	 * @brief Thread safe call for assigning a value
+	 *
+	 * @param postFkt
+	 *
+	 * @return 
+	 */
 	Key post(ELEKTRA_UNUSED Post postFkt)
 	{
 		return postFkt();
 	}
 
+	/**
+	 * @brief Attaches a ValueSubject to a thread
+	 *
+	 * Delegates call to post
+	 *
+	 * NoContext just executes the function and does not attach
+	 *
+	 * @param v the value subject to add
+	 * @param postFkt the function to call thread safely, return
+	 *        value is the key to add.
+	 */
 	void attachToThread(ELEKTRA_UNUSED ValueSubject &v, Post postFkt)
 	{
 		postFkt();
@@ -372,23 +390,6 @@ public:
 		return *this;
 	}
 
-	void post()
-	{
-		m_context.post([this]()
-		{
-			m_key.set<T>(m_cache);
-			return m_key;
-		});
-	}
-
-	void notifyInThread()
-	{
-		assert(m_key);
-		syncCache();
-		// TODO:
-		m_cache = m_key.get<T>();
-	}
-
 	type operator ++()
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
@@ -404,7 +405,7 @@ public:
 	// template < typename = typename std::enable_if< true >::type >
 	operator type() const
 	{
-			return m_cache;
+		return m_cache;
 	}
 
 	bool operator == (V const & other) const
@@ -412,29 +413,64 @@ public:
 		return m_cache == other.m_cache ;
 	}
 
-	type getDefault() const
-	{
-		return m_spec.getMeta<type>("default");
-	}
 
-	/// We allow manipulation of context for const
-	/// objects
+	/**
+	 * @return the context bound to the value
+	 */
 	typename Policies::ContextPolicy & context() const
 	{
+		/// We allow manipulation of context for const
+		/// objects
 		return const_cast<typename Policies::ContextPolicy&>(m_context);
 	}
 
+	/**
+	 * @brief Shortcut for context()
+	 *
+	 * @see context()
+	 */
 	typename Policies::ContextPolicy & c() const
 	{
 		return context();
 	}
 
+	/**
+	 * @note name is current interpretation
+	 * @see getName()
+	 *
+	 * meta key name contains original name
+	 *
+	 *
+	 * @return Specification Key
+	 */
 	Key const& getSpec() const
 	{
 		return m_spec;
 	}
 
-	// keyset to cache
+	/**
+	 * @brief Shortcut to return name
+	 *
+	 * @return name under contextual interpretation
+	 */
+	Key const& getName() const
+	{
+		return m_spec.getName();
+	}
+
+	/**
+	 * @return Get default value.
+	 *
+	 * @see getSpec()
+	 */
+	type getDefault() const
+	{
+		return m_spec.getMeta<type>("default");
+	}
+
+	/**
+	 * @brief Sync keyset to cache
+	 */
 	void syncCache() const
 	{
 		m_key = Policies::GetPolicy::get(m_ks, m_spec);
@@ -449,7 +485,9 @@ public:
 #endif
 	}
 
-	// cache to keyset
+	/**
+	 * @brief Sync cache to keyset
+	 */
 	void syncKeySet() const
 	{
 		kdb::Key found = Policies::SetPolicy::set(m_ks, m_spec);
@@ -464,8 +502,28 @@ public:
 		}
 	}
 
-
 private:
+	void post()
+	{
+		m_context.post([this]()
+		{
+			m_key.set<T>(m_cache);
+			return m_key;
+		});
+	}
+
+	/**
+	 * @brief Update to new value because of assignment
+	 */
+	void notifyInThread()
+	{
+		assert(m_key);
+		syncCache();
+		// TODO:
+		m_cache = m_key.get<T>();
+	}
+
+
 	virtual void updateContext() const
 	{
 		// Policies::UpdatePolicy::update(this);

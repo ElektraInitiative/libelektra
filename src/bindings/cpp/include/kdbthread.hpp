@@ -290,10 +290,11 @@ public:
 		m_gc.post(postFkt);
 	}
 
-	bool m_flag;
-
 private:
 	Coordinator & m_gc;
+	/**
+	 * @brief A map of values this ThreadContext is responsible for.
+	 */
 	std::unordered_map<Key, ValueRef> m_keys;
 };
 
