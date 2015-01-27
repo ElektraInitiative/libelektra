@@ -132,13 +132,14 @@ private:
 	}
 
 	/**
-	 * @brief Update the given ThreadContext
+	 * @brief Update the given ThreadContext with newly assigned
+	 * values.
 	 */
-	void update(ThreadSubject *c)
+	void updateNewlyAssignedValues(ThreadSubject *c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
 		KeySet & toUpdate = m_updates[c].toUpdate;
-		// if (toUpdate.size() == 0) return;
+		if (toUpdate.size() == 0) return;
 
 		c->notify(toUpdate);
 		toUpdate.clear();
@@ -290,6 +291,7 @@ public:
 
 	void syncLayers()
 	{
+		// now activate/deactive layers
 		Events e;
 		for(auto const & l: m_gc.fetchGlobalActivation(this))
 		{
@@ -302,6 +304,10 @@ public:
 			e.push_back(l->id());
 		}
 		notifyByEvents(e);
+
+		// pull in assignments from other threads
+		m_gc.updateNewlyAssignedValues(this);
+
 	}
 
 	/**
@@ -329,11 +335,6 @@ public:
 			auto const& f = m_keys.find(k);
 			f->second.get().notifyInThread();
 		}
-	}
-
-	void update()
-	{
-		m_gc.update(this);
 	}
 
 private:

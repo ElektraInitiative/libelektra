@@ -30,7 +30,7 @@ void foo2(Coordinator & gc, KeySet & ks)
 	ASSERT_EQ(v2, 5);
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	c2.update();
+	c2.syncLayers();
 	ASSERT_EQ(v2, 5);
 
 	v2 = 12;
@@ -55,14 +55,14 @@ TEST(test_contextual_thread, instanciation)
 	std::thread t1(foo1, std::ref(gc), std::ref(ks));
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	c.update();
+	c.syncLayers();
 	ASSERT_EQ(v, 5);
 
 	std::thread t2(foo2, std::ref(gc), std::ref(ks));
 	t1.join();
 	t2.join();
 
-	c.update();
+	c.syncLayers();
 	ASSERT_EQ(v, 12);
 }
 
