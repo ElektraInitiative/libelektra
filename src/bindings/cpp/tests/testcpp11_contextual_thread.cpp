@@ -154,3 +154,27 @@ TEST(test_contextual_thread, activate)
 	ASSERT_EQ(c["activate"], "");
 	ASSERT_EQ(v, 10);
 }
+
+const uint32_t i_value = 55;
+const char * s_value = "55";
+
+TEST(test_contextual_thread, ThreadNoContext)
+{
+	using namespace kdb;
+	KeySet ks;
+	ThreadNoContext c;
+	const char *name = "/%language%/%country%/%dialect%/test";
+	Value<int, ContextPolicyIs<ThreadNoContext>>i(ks, c, Key(name,
+			KEY_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(i , i_value);
+	ASSERT_TRUE(!ks.lookup(name));
+	i = 5;
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getSpec().getName() , name);
+	i.syncKeySet();
+	ASSERT_EQ(ks.lookup(name).getString() , "5");
+	i = 10;
+	ASSERT_EQ(i , 10);
+	ASSERT_EQ(ks.lookup(name).getString() , "10");
+}

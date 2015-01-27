@@ -37,6 +37,45 @@ struct PerContext
 	LayerVector toDeactivate;
 };
 
+class ThreadNoContext
+{
+public:
+	/**
+	 * @brief attach a new value
+	 *
+	 * NoContext will never update anything
+	 */
+	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  ValueObserver & ValueObserver)
+	{}
+
+	/**
+	 * @brief The evaluated equals the non-evaluated name!
+	 *
+	 * @return NoContext always returns the same string
+	 */
+	std::string evaluate(std::string const & key_name) const
+	{
+		return key_name;
+	}
+
+	/**
+	 * @brief (Re)attaches a ValueSubject to a thread or simply
+	 *        execute code in a locked section.
+	 *
+	 * NoContext just executes the function but does so in a
+	 * thread-safe way
+	 *
+	 * @param c the command to apply
+	 */
+	void execute(Command & c)
+	{
+		std::lock_guard<std::mutex> lock (m_mutex);
+		c();
+	}
+private:
+	std::mutex m_mutex;
+};
+
 /**
  * @brief Thread safe coordination of ThreadContext per Threads.
  */
