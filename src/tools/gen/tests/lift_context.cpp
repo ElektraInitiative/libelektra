@@ -13,13 +13,14 @@ int main()
 
 	KDB kdb;
 	KeySet ks;
-	Context c;
+	Coordinator c;
+	ThreadContext tc(c);
 	kdb.get(ks, "/test/lift");
 	kdb.get(ks, "/test/material_lift");
 	kdb.get(ks, "/test/heavy_material_lift");
 	kdb.get(ks, "/test/person_lift");
 
-	Parameters par(ks,c);
+	Environment par(ks,tc);
 
 	std::cout << std::boolalpha;
 	std::cout << "delay: " << par.test.lift.emergency.delay << std::endl;

@@ -57,28 +57,6 @@ inline $support.enumname(info) Key::get() const
 
 
 @@staticmethod
-@def generatenone()
-/**
- * @brief A none type, means that this contextual value actually does
- * not exist in the specification.
- */
-class none_t
-{};
-
-template <>
-inline void Key::set(kdb::none_t)
-{}
-
-template <>
-inline kdb::none_t Key::get() const
-{
-	kdb::none_t ret;
-	return ret;
-}
-@end def
-
-
-@@staticmethod
 @def generatebool(support)
 /** \brief Convert bool to string
  *
@@ -260,9 +238,8 @@ namespace $support.nsnpretty($n)
  * Dirname: $hierarchy.dirname
  * Basename: $hierarchy.basename
  * */
-class $hierarchy.prettyclassname(support) : public ContextualValue
-	<$support.typeof($hierarchy.info),
-	GetPolicyIs<${hierarchy.prettyclassname(support)}GetPolicy>>
+class $hierarchy.prettyclassname(support) : public ThreadValue
+	<$support.typeof($hierarchy.info)>
 {
 public:
 
@@ -270,9 +247,8 @@ public:
 	/** \brief Constructor for $hierarchy.prettyclassname(support)
 	 * \param ks keyset to work with
 	 */
-	${hierarchy.prettyclassname(support)}(kdb::KeySet & ks, kdb::Context & context)
-		: ContextualValue<$support.typeof($hierarchy.info),
-		  GetPolicyIs<${hierarchy.prettyclassname(support)}GetPolicy>>(ks,
+	${hierarchy.prettyclassname(support)}(kdb::KeySet & ks, kdb::ThreadContext & context)
+		: ThreadValue<$support.typeof($hierarchy.info)>(ks,
 			context,
 $cpp_util.generateSpecKey(support,$hierarchy)
 			)
@@ -284,7 +260,7 @@ $cpp_util.generateSpecKey(support,$hierarchy)
 @end for
 	{}
 
-	using ContextualValue<$support.typeof($hierarchy.info), GetPolicyIs<${hierarchy.prettyclassname(support)}GetPolicy>>::operator =;
+	using ThreadValue<$support.typeof($hierarchy.info)>::operator =;
 
 @for k in hierarchy.children
 @set nsname = $support.nspretty(k.dirname)
