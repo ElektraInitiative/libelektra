@@ -31,7 +31,9 @@ public:
 	inline KeySet(ckdb::KeySet *k);
 	inline KeySet(const KeySet &other);
 
-	inline explicit KeySet(size_t alloc, va_list ap);
+#if defined(__amd64__) || defined(__x86_64__) || defined(__i386__)
+	inline explicit KeySet(size_t alloc, va_list va)  __attribute__((deprecated("use 'KeySet::fromVA' instead!")));
+#endif
 	inline explicit KeySet(size_t alloc, ...);
 
 	inline ~KeySet ();
@@ -40,6 +42,7 @@ public:
 
 	ckdb::KeySet * getKeySet() const;
 	void setKeySet(ckdb::KeySet * k);
+	void fromVA(size_t alloc, va_list va);
 
 	KeySet& operator=(KeySet const& other);
 
@@ -387,14 +390,17 @@ inline KeySet::KeySet (const KeySet &other)
  * @brief Create a new keyset.
  *
  * @param alloc minimum number of keys to allocate
- * @param ap variable arguments list
+ * @param va variable arguments list
  *
  * @copydoc ksVNew
+ * @deprecated use fromVA instead!
  */
-inline KeySet::KeySet (size_t alloc, va_list av)
+#if defined(__amd64__) || defined(__x86_64__) || defined(__i386__)
+inline KeySet::KeySet (size_t alloc, va_list va)
 {
-	ks = ckdb::ksVNew (alloc, av);
+	ks = ckdb::ksVNew (alloc, va);
 }
+#endif
 
 /**
  * @brief Create a new keyset
@@ -458,6 +464,20 @@ inline void KeySet::setKeySet (ckdb::KeySet * k)
 {
 	ckdb::ksDel(ks);
 	ks = k;
+}
+
+/**
+ * @brief Creates a new keyset from variable arguments list and takes ownership.
+ *
+ * @param alloc minimum number of keys to allocate
+ * @param va variable arguments list
+ *
+ * @copydoc ksVNew
+ */
+inline void KeySet::fromVA (size_t alloc, va_list va)
+{
+	ckdb::ksDel(ks);
+	ks = ckdb::ksVNew (alloc, va);
 }
 
 /**
