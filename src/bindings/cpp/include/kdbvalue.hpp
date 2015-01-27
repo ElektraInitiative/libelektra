@@ -364,11 +364,6 @@ public:
 				m_context.evaluate(m_spec.getName()).c_str(),
 				KEY_CASCADING_NAME);
 		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
-		attachMeToThread();
-	}
-
-	void attachMeToThread()
-	{
 		Post fun = [this]
 		{
 			this->syncCache();
@@ -456,16 +451,6 @@ public:
 	Key const& getName() const
 	{
 		return m_spec.getName();
-	}
-
-	/**
-	 * @return Get default value.
-	 *
-	 * @see getSpec()
-	 */
-	type getDefault() const
-	{
-		return m_spec.getMeta<type>("default");
 	}
 
 	/**
