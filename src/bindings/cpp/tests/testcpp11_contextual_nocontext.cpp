@@ -13,11 +13,12 @@ TEST(test_contextual_nocontext, integer)
 	KeySet ks;
 	NoContext c;
 	const char *name = "/%language%/%country%/%dialect%/test";
+	ASSERT_TRUE(!ks.lookup(name));
 	Value<int, ContextPolicyIs<NoContext>>i(ks, c, Key(name,
 			KEY_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
-	ASSERT_TRUE(!ks.lookup(name));
+	ASSERT_TRUE(ks.lookup(name));
 	i = 5;
 	ASSERT_EQ(i , 5);
 	ASSERT_EQ(i.getSpec().getName() , name);

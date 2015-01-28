@@ -138,8 +138,11 @@ static void test_lookupNoascading()
 
 		// search without cascading
 		k = ksLookup(ks, specKey, 0);
-		succeed_if (k == 0, "should not be able to find cascading key");
 		succeed_if(keyGetNameSize(specKey) == 5, "size of spec key wrong");
+		succeed_if_same_string(keyName(specKey), "/abc");
+		succeed_if (k != 0, "did not find cascading key");
+		succeed_if (k != specKey, "should not be specKey");
+		succeed_if (k == a, "should be dup key");
 	}
 
 	ksDel(ks);

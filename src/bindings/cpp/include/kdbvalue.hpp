@@ -171,7 +171,7 @@ class DefaultGetPolicy
 public:
 	static Key get(KeySet &ks, Key const& spec)
 	{
-		return ks.lookup(spec, ckdb::KDB_O_SPEC);
+		return ks.lookup(spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE);
 	}
 };
 
@@ -183,11 +183,22 @@ class DefaultSetPolicy
 public:
 	static Key set(KeySet &ks, Key const& spec)
 	{
-		kdb::Key found = ks.lookup(spec.getName(), 0);
+		return setWithNamespace(ks, spec, "user");
+	}
+
+	static Key setWithNamespace(KeySet &ks, Key const& spec, std::string const & ns)
+	{
+		std::string name = spec.getName();
+		kdb::Key found(static_cast<ckdb::Key*>(0));
+
+		if (name.at(0) != '/')
+		{
+			found = ks.lookup(name);
+		}
 
 		if(!found)
 		{
-			kdb::Key k("user/"+spec.getName(), KEY_END);
+			kdb::Key k(ns+"/"+name, KEY_END);
 			ks.append(k);
 			found = k;
 		}

@@ -1808,7 +1808,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+2;
 		key->keySize = length-2;
 		elektraFinalizeName(key);
-		specKey = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		specKey = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (specKey)
@@ -1831,7 +1831,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	key->key = newname+2;
 	key->keySize = length-2;
 	elektraFinalizeName(key);
-	found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	found = ksLookup(ks, key, options & ~KDB_O_DEL);
 
 	if (!found)
 	{
@@ -1840,7 +1840,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+3;
 		key->keySize = length-3;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		found = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
@@ -1850,7 +1850,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+2;
 		key->keySize = length-2;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		found = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
@@ -1859,13 +1859,20 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname;
 		key->keySize = length;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		found = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	// restore old cascading name
 	key->key = name;
 	key->keySize = size;
 	key->keyUSize = usize ;
+
+	if (!found)
+	{
+		// search / key itself
+		found = ksLookup(ks, key, (options & ~KDB_O_DEL) | KDB_O_NOCASCADING);
+	}
+
 	return found;
 }
 
@@ -1893,18 +1900,8 @@ static Key * elektraLookupLinearSearch(KeySet *ks, Key * key, option_t options)
 	}
 	if (current == 0)
 	{
-		Key *ret = 0;
-		if (options & KDB_O_CREATE)
-		{
-			ret = keyDup(key);
-			ksAppendKey(ks, ret);
-		}
-		else
-		{
-			/*Reset Cursor to old position*/
-			ksSetCursor (ks, cursor);
-		}
-		return ret;
+		/*Reset Cursor to old position*/
+		ksSetCursor (ks, cursor);
 	}
 	return current;
 }
@@ -1939,19 +1936,16 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key * key, option_t options)
 			return (*found);
 		}
 	} else {
-		Key *ret = 0;
-		if (options & KDB_O_CREATE)
-		{
-			ret = keyDup(key);
-			ksAppendKey(ks, ret);
-		}
-		else
-		{
-			/*Reset Cursor to old position*/
-			ksSetCursor (ks, cursor);
-		}
-		return ret;
+		ksSetCursor (ks, cursor);
 	}
+	return 0;
+}
+
+static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option_t options)
+{
+	Key *ret = keyDup(key);
+	ksAppendKey(ks, ret);
+	return ret;
 }
 
 
@@ -2067,19 +2061,20 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	if (!name) return 0;
 
 	Key *ret = 0;
+	const int mask = ~KDB_O_DEL & ~KDB_O_CREATE;
 
 	if (options & KDB_O_SPEC)
 	{
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
-		ret = elektraLookupBySpec(ks, lookupKey, options & ~KDB_O_DEL);
+		ret = elektraLookupBySpec(ks, lookupKey, options & mask);
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
 	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
 	{
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
-		ret = elektraLookupByCascading(ks, lookupKey, options & ~KDB_O_DEL);
+		ret = elektraLookupByCascading(ks, lookupKey, options & mask);
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
 	else if ((options & KDB_O_NOALL)
@@ -2087,17 +2082,15 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		// || (options & KDB_O_WITHOWNER)
 		) // TODO binary search with nocase won't work
 	{
-		ret = elektraLookupLinearSearch(ks, key, options & ~KDB_O_DEL);
+		ret = elektraLookupLinearSearch(ks, key, options & mask);
 	}
 	else
 	{
-		ret = elektraLookupBinarySearch(ks, key, options & ~KDB_O_DEL);
+		ret = elektraLookupBinarySearch(ks, key, options & mask);
 	}
 
-	if (options & KDB_O_DEL)
-	{
-		keyDel (key);
-	}
+	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey(ks, key, options & mask);
+	if (options & KDB_O_DEL) keyDel (key);
 
 	return ret;
 }

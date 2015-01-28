@@ -159,11 +159,13 @@ TEST(test_contextual_basic, integer)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
 	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
 			KEY_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
-	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	// The value always needs a connection to a key
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ(i , 5);
 	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/test");
@@ -180,7 +182,7 @@ ASSERT_EQ(i.context()["language"] , "german");
 ASSERT_EQ(i.getSpec().getName() , "/german/%/%/test");
 //{end}
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
-	ASSERT_TRUE(!ks.lookup("/german/%/%/test"));
+	ASSERT_TRUE(ks.lookup("/german/%/%/test"));
 	i = 15;
 	ASSERT_EQ(i , 15);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
@@ -217,9 +219,10 @@ ASSERT_EQ(i.getSpec().getName() , "/german/%/%/test");
 		ASSERT_EQ(i , i_value);
 		ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 		ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
-		ASSERT_TRUE(!ks.lookup("/german/germany/%/test"));
+		ASSERT_TRUE(ks.lookup("/german/germany/%/test"));
 		i = 20;
-		ASSERT_EQ(i.getSpec().getName() , "/german/germany/%/test");
+		ASSERT_EQ(i.getSpec().getName(), "/german/germany/%/test");
+		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "20");
 /*
 //{debug/backtrace}
 #3  0x0000000000407a56 in operator() at first.cpp:1521
@@ -374,28 +377,17 @@ TEST(test_contextual_basic, integer_copy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
 	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
 		KEY_CASCADING_NAME,
 		KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
-	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ(i , 5);
 	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/test");
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
-
-	/* TODO: cannot copy KeySet anymore? -> feature maybe not needed
-	KeySet ks2;
-	Integer i2(i, ks2);
-	ASSERT_EQ(i2 , 5);
-	i2 = 10;
-	ASSERT_EQ(i2 , 10);
-	ASSERT_EQ(i , 5);
-	i2.syncKeySet();
-	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
-	ASSERT_EQ(ks2.lookup("/%/%/%/test").getString() , "10");
-	*/
 }
 
 TEST(test_contextual_basic, evaluate)

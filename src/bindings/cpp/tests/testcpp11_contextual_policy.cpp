@@ -121,16 +121,7 @@ public:
 	typedef T type;
 	static kdb::Key set(kdb::KeySet &ks, kdb::Key const& spec)
 	{
-		kdb::Key found = ks.lookup(spec.getName(), 0);
-
-		if(!found)
-		{
-			kdb::Key k("dir/"+spec.getName(), KEY_END);
-			ks.append(k);
-			found = k;
-		}
-
-		return found;
+		return kdb::DefaultSetPolicy::setWithNamespace(ks, spec, "dir");
 	}
 };
 
@@ -147,12 +138,15 @@ TEST(test_contextual_policy, setPolicy)
 			KEY_END));
 	EXPECT_EQ(cv, 88);
 	EXPECT_EQ(cv, 88);
-	EXPECT_FALSE(ks.lookup("dir/test", 0)) << "found dir/test wrongly";
+	EXPECT_TRUE(ks.lookup("/test")) << "did not find /test";
+	EXPECT_FALSE(ks.lookup("dir/test")) << "found dir/test wrongly";
 	cv = 40;
 	EXPECT_EQ(cv, 40);
 	cv.syncKeySet();
 	EXPECT_EQ(cv, 40);
-	EXPECT_TRUE(ks.lookup("dir/test", 0)) << "could not find dir/test";
+	// TODO: setPolicy not working correctly
+	EXPECT_TRUE(ks.lookup("/test")) << "did not find /test";
+	EXPECT_TRUE(ks.lookup("dir/test")) << "could not find dir/test";
 }
 
 TEST(test_contextual_policy, readonlyPolicy)
