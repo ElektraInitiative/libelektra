@@ -576,7 +576,6 @@ ApplicationWindow {
 				treeModel: externTreeModel
 			}
 			HelpArea {
-				//TODO: helptext
 				helpText: qsTr("This is a tree view of the Key Database.")
 			}
 		}
@@ -675,7 +674,6 @@ ApplicationWindow {
 					}
 				}
 				HelpArea {
-					//TODO: helptext
 					helpText: qsTr("Current Keys")
 				}
 			}
@@ -715,8 +713,7 @@ ApplicationWindow {
 					}
 				}
 				HelpArea {
-					//TODO: helptext
-					helpText: qsTr("Metadata attached to keys.")
+					helpText: qsTr("Metadata attached to keys")
 				}
 			}
 			BasicRectangle {

@@ -22,7 +22,6 @@ ToolBar {
 				}
 			}
 			HelpArea {
-				//TODO: helptext
 				helpText: qsTr("This is the button to create new keys/arrays.")
 			}
 		}
@@ -30,32 +29,28 @@ ToolBar {
 			id:tbDelete
 			action: deleteAction
 			HelpArea {
-				//TODO: helptext
-                helpText: qsTr("Delete Key")
+				helpText: qsTr("Delete Key")
 			}
 		}
 		ToolButton {
 			id:tbImport
 			action: importAction
 			HelpArea {
-				//TODO: helptext
-                helpText: qsTr("Import from File")
+				helpText: qsTr("Import from File")
 			}
 		}
 		ToolButton {
 			id:tbExport
 			action: exportAction
 			HelpArea {
-				//TODO: helptext
-                helpText: qsTr("Export to File")
+				helpText: qsTr("Export to File")
 			}
 		}
 		ToolButton {
 			id:tbUndo
 			action: undoAction
 			HelpArea {
-				//TODO: helptext
-                helpText: qsTr("Undo")
+				helpText: qsTr("Undo")
 			}
 		}
 		ToolButton {
@@ -73,8 +68,7 @@ ToolBar {
 			id:tbRedo
 			action: redoAction
 			HelpArea {
-				//TODO: helptext
-                helpText: qsTr("Redo")
+				  helpText: qsTr("Redo")
 			}
 		}
 		ToolButton {
@@ -92,8 +86,7 @@ ToolBar {
 			id:tbSynchronize
 			action: synchronizeAction
 			HelpArea {
-				//TODO: helptext
-                helpText: qsTr("Synchronize with Key Database")
+				helpText: qsTr("Synchronize with Key Database")
 			}
 		}
 		Item {
@@ -118,8 +111,7 @@ ToolBar {
 				}
 			}
 			HelpArea {
-				//TODO: helptext
-                helpText: qsTr("Search Database")
+				helpText: qsTr("Search Key Database")
 			}
 		}
 	}
