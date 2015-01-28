@@ -577,7 +577,7 @@ ApplicationWindow {
 			}
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the treeview.")
+				helpText: qsTr("This is a tree view of the Key Database.")
 			}
 		}
 		Column {
@@ -676,7 +676,7 @@ ApplicationWindow {
 				}
 				HelpArea {
 					//TODO: helptext
-					helpText: qsTr("This is the key area.")
+					helpText: qsTr("Current Keys")
 				}
 			}
 			BasicRectangle {
@@ -716,7 +716,7 @@ ApplicationWindow {
 				}
 				HelpArea {
 					//TODO: helptext
-					helpText: qsTr("This is the meta area.")
+					helpText: qsTr("Metadata attached to keys.")
 				}
 			}
 			BasicRectangle {

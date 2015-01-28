@@ -31,7 +31,7 @@ ToolBar {
 			action: deleteAction
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the delete button.")
+                helpText: qsTr("Delete Key")
 			}
 		}
 		ToolButton {
@@ -39,7 +39,7 @@ ToolBar {
 			action: importAction
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the import button.")
+                helpText: qsTr("Import from File")
 			}
 		}
 		ToolButton {
@@ -47,7 +47,7 @@ ToolBar {
 			action: exportAction
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the export button.")
+                helpText: qsTr("Export to File")
 			}
 		}
 		ToolButton {
@@ -55,7 +55,7 @@ ToolBar {
 			action: undoAction
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the undo button.")
+                helpText: qsTr("Undo")
 			}
 		}
 		ToolButton {
@@ -74,7 +74,7 @@ ToolBar {
 			action: redoAction
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the redo button.")
+                helpText: qsTr("Redo")
 			}
 		}
 		ToolButton {
@@ -93,7 +93,7 @@ ToolBar {
 			action: synchronizeAction
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the synchronize button.")
+                helpText: qsTr("Synchronize with Key Database")
 			}
 		}
 		Item {
@@ -119,7 +119,7 @@ ToolBar {
 			}
 			HelpArea {
 				//TODO: helptext
-				helpText: qsTr("This is the search field.")
+                helpText: qsTr("Search Database")
 			}
 		}
 	}
