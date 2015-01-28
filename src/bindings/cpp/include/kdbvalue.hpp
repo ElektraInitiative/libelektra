@@ -369,6 +369,7 @@ public:
 		PolicySetter4, PolicySetter5, PolicySetter6>
 		(KeySet & ks, typename Policies::ContextPolicy & context_, kdb::Key spec) :
 		m_cache(),
+		m_hasChanged(false),
 		m_ks(ks),
 		m_context(context_),
 		m_spec(spec)
@@ -386,6 +387,7 @@ public:
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
+		m_hasChanged = true;
 		syncKeySet();
 
 		return *this;
@@ -395,6 +397,7 @@ public:
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		type ret = ++m_cache;
+		m_hasChanged = true;
 		syncKeySet();
 		return ret;
 	}
@@ -403,6 +406,7 @@ public:
 	{
 		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
 		type ret = m_cache++;
+		m_hasChanged = true;
 		syncKeySet();
 		return ret;
 	}
@@ -518,8 +522,9 @@ private:
 	 */
 	void unsafeSyncKeySet() const
 	{
-		if (m_key.getName().at(0) == '/')
+		if (m_hasChanged && m_key.getName().at(0) == '/')
 		{
+			m_hasChanged = false;
 			Key spec(m_spec.dup());
 			// TODO: change to .setName() once
 			// KEY_CASCADING_NAME is fixed
@@ -571,6 +576,12 @@ private:
 	 * @brief A transient mutable cache for very fast read-access.
 	 */
 	mutable type m_cache;
+
+	/**
+	 * @brief triggers transition from transient to persistent keys
+	 * @retval true if m_cache was changed
+	 */
+	mutable bool m_hasChanged;
 
 	/**
 	 * @brief Reference to the keyset in use

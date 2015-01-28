@@ -175,6 +175,7 @@ TEST(test_contextual_basic, integer)
 	i = 10;
 	ASSERT_EQ(i , 10);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
 
 	c.activate<LanguageGermanLayer>();
 	ASSERT_EQ(i , i_value);
@@ -367,8 +368,9 @@ TEST(test_contextual_basic, groups)
 		ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 		c.without<KeyValueLayer>("type", "")([&]
 		{
-			ASSERT_EQ(i.getName() , "user/main/%4%anonymous%40%M1/%HP/serial_number");
+			ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP/serial_number");
 		});
+		ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 	});
 }
 
