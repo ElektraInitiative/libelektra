@@ -460,7 +460,7 @@ public:
 	 *
 	 * @return name under contextual interpretation
 	 */
-	Key const& getName() const
+	std::string getName() const
 	{
 		return m_spec.getName();
 	}
