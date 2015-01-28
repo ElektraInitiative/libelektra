@@ -318,6 +318,8 @@ public:
 	void execute(Command & c)
 	{
 		m_gc.execute(c);
+		// do it always, because oldKey==newKey for initial
+		// command
 		if (c.oldKey)
 		{
 			m_keys.erase(c.oldKey);

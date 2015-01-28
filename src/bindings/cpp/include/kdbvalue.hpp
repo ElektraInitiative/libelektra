@@ -188,22 +188,12 @@ public:
 
 	static Key setWithNamespace(KeySet &ks, Key const& spec, std::string const & ns)
 	{
-		std::string name = spec.getName();
-		kdb::Key found(static_cast<ckdb::Key*>(0));
+		std::string const & name = spec.getName();
 
-		if (name.at(0) != '/')
-		{
-			found = ks.lookup(name);
-		}
+		kdb::Key k(ns+"/"+name, KEY_END);
+		ks.append(k);
 
-		if(!found)
-		{
-			kdb::Key k(ns+"/"+name, KEY_END);
-			ks.append(k);
-			found = k;
-		}
-
-		return found;
+		return k;
 	}
 };
 
@@ -383,13 +373,10 @@ public:
 		m_context(context_),
 		m_spec(spec)
 	{
-		assert(m_spec.getName()[0] == '/');
-		m_spec.setMeta("name", m_spec.getName());
-		ckdb::elektraKeySetName(*m_spec,
-				m_context.evaluate(m_spec.getName()).c_str(),
-				KEY_CASCADING_NAME);
-		m_context.attachByName(m_spec.getMeta<std::string>("name"), *this);
-		syncCache();
+		assert(m_spec.getName()[0] == '/' && "spec keys are not yet supported");
+		m_context.attachByName(m_spec.getName(), *this);
+		updateKeyUsingContext(m_context.evaluate(m_spec.getName()));
+		syncCache(); // set m_cache
 	}
 
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
@@ -453,12 +440,6 @@ public:
 	}
 
 	/**
-	 * @note name is current interpretation
-	 * @see getName()
-	 *
-	 * meta key name contains original name
-	 *
-	 *
 	 * @return Specification Key
 	 */
 	Key const& getSpec() const
@@ -467,17 +448,17 @@ public:
 	}
 
 	/**
-	 * @brief Shortcut to return name
+	 * @brief Returns the current name of contextual value
 	 *
 	 * @return name under contextual interpretation
 	 */
 	std::string getName() const
 	{
-		return m_spec.getName();
+		return m_key.getName();
 	}
 
 	/**
-	 * @brief Sync keyset to cache
+	 * @brief Sync key(set) to cache
 	 */
 	void syncCache() const
 	{
@@ -492,7 +473,7 @@ public:
 	}
 
 	/**
-	 * @brief Sync cache to keyset
+	 * @brief Sync cache to key(set)
 	 */
 	void syncKeySet() const
 	{
@@ -507,18 +488,28 @@ public:
 	}
 
 private:
+	void updateKeyUsingContext(std::string const & evaluatedName) const
+	{
+		Key spec(m_spec.dup());
+		// TODO: change to .setName() once
+		// KEY_CASCADING_NAME is fixed
+		ckdb::elektraKeySetName(*spec,
+				evaluatedName.c_str(),
+				KEY_CASCADING_NAME);
+		m_key = Policies::GetPolicy::get(m_ks, spec);
+		assert(m_key);
+	}
 
 	/**
 	 * @brief Execute this method *only* in a Command execution
 	 */
 	void unsafeSyncCache() const
 	{
-		m_key = Policies::GetPolicy::get(m_ks, m_spec);
 		assert (m_key);
 		m_cache = m_key.get<type>();
 
 #if DEBUG && VERBOSE
-		std::cout << "got name: " << m_key.getName() << " value: " << m_cache << std::endl;
+		std::cout << "got name: " << m_key.getName() << " value: " << m_key.getString() << std::endl;
 #endif
 	}
 
@@ -527,12 +518,21 @@ private:
 	 */
 	void unsafeSyncKeySet() const
 	{
-		m_key = Policies::SetPolicy::set(m_ks, m_spec);
+		if (m_key.getName().at(0) == '/')
+		{
+			Key spec(m_spec.dup());
+			// TODO: change to .setName() once
+			// KEY_CASCADING_NAME is fixed
+			ckdb::elektraKeySetName(*spec,
+					m_key.getName().c_str(),
+					KEY_CASCADING_NAME);
+			m_key = Policies::SetPolicy::set(m_ks, spec);
+		}
 		assert (m_key);
 		m_key.set<type>(m_cache);
 
 #if DEBUG && VERBOSE
-		std::cout << "set name: " << found.getName() << " value: " << m_cache << std::endl;
+		std::cout << "set name: " << m_key.getName() << " value: " << m_key.getString() << std::endl;
 #endif
 	}
 
@@ -547,24 +547,19 @@ private:
 
 	virtual void updateContext() const
 	{
-		std::string evaluated_name = m_context.evaluate(m_spec.getMeta<std::string>("name"));
+		std::string evaluatedName = m_context.evaluate(m_spec.getName());
 #if DEBUG && VERBOSE
-		std::cout << "update context " << evaluated_name << " from " << m_spec.getName() << std::endl;
+		std::cout << "update context " << evaluatedName << " from " << m_spec.getName() << std::endl;
 #endif
-		if (evaluated_name == m_spec.getName()) return; // nothing changed, same name
+		if (evaluatedName == m_key.getName()) return; // nothing changed, same name
 
 		Key oldKey;
-		Command::Func fun = [this, &evaluated_name]
+		Command::Func fun = [this, &evaluatedName]
 		{
 			this->unsafeSyncKeySet(); // flush out what currently is in cache
-			ckdb::elektraKeySetName(*this->m_spec,
-					evaluated_name.c_str(),
-					KEY_CASCADING_NAME);
+			this->updateKeyUsingContext(evaluatedName);
 			this->unsafeSyncCache();  // read what we have under new context
 
-#if DEBUG && VERBOSE
-			std::cout << "set name: " << found.getName() << " value: " << m_cache << std::endl;
-#endif
 			return m_key;
 		};
 		Command command(*this, fun, oldKey);
@@ -572,10 +567,41 @@ private:
 	}
 
 private:
+	/**
+	 * @brief A transient mutable cache for very fast read-access.
+	 */
 	mutable type m_cache;
+
+	/**
+	 * @brief Reference to the keyset in use
+	 *
+	 * only accessed using
+	 * Command, that might be multi-thread safe depending on
+	 * ContextPolicyIs
+	 */
 	KeySet & m_ks;
+
+	/**
+	 * @brief 
+	 */
 	typename Policies::ContextPolicy & m_context;
+
+	/**
+	 * @brief The specification key
+	 *
+	 * Is only read and will not be changed.
+	 *
+	 * Might start with / or with spec/ (not implemented yet)
+	 */
 	Key m_spec;
+
+	/**
+	 * @brief The current key the Value is bound to.
+	 *
+	 * May change on assignments.
+	 *
+	 * @invariant: Is never a null key
+	 */
 	mutable Key m_key;
 };
 
