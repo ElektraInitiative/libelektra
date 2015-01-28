@@ -155,26 +155,26 @@ private:
 };
 
 template <typename T>
-class testContextualBasicTypes: public ::testing::Test {
+class test_contextual_basic: public ::testing::Test {
 public:
 	T context;
 };
 
 template <>
-class testContextualBasicTypes<kdb::ThreadContext>: public ::testing::Test {
+class test_contextual_basic<kdb::ThreadContext>: public ::testing::Test {
 public:
-	testContextualBasicTypes() :
+	test_contextual_basic() :
 		context(coordinator) {}
 	static kdb::Coordinator coordinator;
 	kdb::ThreadContext context;
 };
 
-kdb::Coordinator testContextualBasicTypes<kdb::ThreadContext>::coordinator{};
+kdb::Coordinator test_contextual_basic<kdb::ThreadContext>::coordinator{};
 
 typedef ::testing::Types<kdb::Context, kdb::ThreadContext> myContextualPolicies;
-TYPED_TEST_CASE(testContextualBasicTypes, myContextualPolicies);
+TYPED_TEST_CASE(test_contextual_basic, myContextualPolicies);
 
-TYPED_TEST(testContextualBasicTypes, integer)
+TYPED_TEST(test_contextual_basic, integer)
 {
 	using namespace kdb;
 	KeySet ks;
@@ -298,96 +298,95 @@ break 1520 if i.getName()
 }
 
 
-TEST(test_contextual_basic, counting)
+TYPED_TEST(test_contextual_basic, counting)
 {
 	using namespace kdb;
 
 	std::shared_ptr<kdb::Layer> l = std::make_shared<CountingLayer>();
 	KeySet ks;
-	Context c;
-	c.with<CountingLayer>()([&]
+	TypeParam c = this->context;
+	c.template with<CountingLayer>()([&]
 	{
 		ASSERT_EQ(c["counting"] , "0");
 	});
 	// is it a specification error to have counting
 	// two times?
-	Integer i(ks, c, Key("/%counting%/%counting%",
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key("/%counting%/%counting%",
 				KEY_CASCADING_NAME,
 				KEY_META, "default", s_value, KEY_END));
 
 	ASSERT_EQ((*l)() , "0");
 	ASSERT_EQ((*l)() , "1");
-	c.withl(l, [&]
+	c.template withl(l, [&]
 	{
 		ASSERT_EQ(c["counting"] , "4");
 		ASSERT_EQ(c["counting"] , "5");
 	});
 	ASSERT_EQ((*l)() , "6");
-	c.with<CountingLayer>()([&]
+	c.template with<CountingLayer>()([&]
 	{
 		ASSERT_EQ(c["counting"] , "2");
 		ASSERT_EQ(c["counting"] , "3");
 	});
 	ASSERT_TRUE(c["counting"].empty());
-	c.with<CountingLayer>()([&]
+	c.template with<CountingLayer>()([&]
 	{
 		ASSERT_EQ(c["counting"] , "2");
 		ASSERT_EQ(c["counting"] , "3");
 	});
 	ASSERT_TRUE(c["counting"].empty());
-	c.activate<CountingLayer>();
+	c.template activate<CountingLayer>();
 	ASSERT_EQ(c["counting"] , "2");
 	ASSERT_EQ(c["counting"] , "3");
-	c.deactivate<CountingLayer>();
+	c.template deactivate<CountingLayer>();
 	ASSERT_TRUE(c["counting"].empty());
 }
 
-TEST(test_contextual_basic, groups)
+TYPED_TEST(test_contextual_basic, groups)
 {
 	using namespace kdb;
 
 	KeySet ks;
-	Context c;
-
-	Integer i(ks, c, Key(
+	TypeParam c = this->context;
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key(
 	"/%application%/%version profile thread module%/%manufacturer type family model%/serial_number",
 	KEY_CASCADING_NAME,
 	KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i.getName() , "/%/%/%/serial_number");
-	c.activate<MainApplicationLayer>();
+	c.template activate<MainApplicationLayer>();
 	String s(ks, c, Key("/%x%",
 		KEY_CASCADING_NAME,
 		KEY_META, "default", "anonymous", KEY_END));
-	c.activate<ProfileLayer>(s);
+	c.template activate<ProfileLayer>(s);
 	ASSERT_EQ(i.getName() , "/main/%/%/serial_number");
-	c.activate<KeyValueLayer>("version", "1");
+	c.template activate<KeyValueLayer>("version", "1");
 	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%/serial_number");
-	c.activate<KeyValueLayer>("module", "M1");
+	c.template activate<KeyValueLayer>("module", "M1");
 	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%/serial_number");
-	c.activate<KeyValueLayer>("manufacturer", "hp");
+	c.template activate<KeyValueLayer>("manufacturer", "hp");
 	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp/serial_number");
-	c.activate<KeyValueLayer>("family", "EliteBook");
+	c.template activate<KeyValueLayer>("family", "EliteBook");
 	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp/serial_number");
-	c.activate<KeyValueLayer>("type", "MobileWorkstation");
+	c.template activate<KeyValueLayer>("type", "MobileWorkstation");
 	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
-	c.activate<KeyValueLayer>("model", "8570");
+	c.template activate<KeyValueLayer>("model", "8570");
 	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.activate<KeyValueLayer>("thread", "40");
+	c.template activate<KeyValueLayer>("thread", "40");
 	ASSERT_EQ(i.getName() , "/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.deactivate<KeyValueLayer>("version", "");
+	c.template deactivate<KeyValueLayer>("version", "");
 	ASSERT_EQ(i.getName() , "/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.activate<KeyValueLayer>("version", "4");
+	c.template activate<KeyValueLayer>("version", "4");
 	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.deactivate<KeyValueLayer>("manufacturer", "");
+	c.template deactivate<KeyValueLayer>("manufacturer", "");
 	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%/serial_number");
-	c.activate<KeyValueLayer>("manufacturer", "HP");
+	c.template activate<KeyValueLayer>("manufacturer", "HP");
 	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
-	c.deactivate<KeyValueLayer>("type", "");
+	c.template deactivate<KeyValueLayer>("type", "");
 	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP/serial_number");
-	c.with<KeyValueLayer>("type", "Notebook")([&]
+	c.template with<KeyValueLayer>("type", "Notebook")([&]
 	{
 		ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
-		c.without<KeyValueLayer>("type", "")([&]
+		c.template without<KeyValueLayer>("type", "")([&]
 		{
 			ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP/serial_number");
 		});
