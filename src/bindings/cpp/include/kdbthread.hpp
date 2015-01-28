@@ -333,6 +333,7 @@ public:
 		for(auto const & k: ks)
 		{
 			auto const& f = m_keys.find(k);
+			if (f == m_keys.end()) continue; // key already had context change
 			f->second.get().notifyInThread();
 		}
 	}
