@@ -25,6 +25,9 @@ class ContextSupport(NestedSupport):
 		"""The namespace name to be used to create a new namespace"""
 		return name.lower().replace('#','n')
 
+	def readonly(self, info):
+		return "readonly" in info
+
 	def typeof(self, info):
 		"""Return the type for given parameter"""
 		if not 'type' in info:

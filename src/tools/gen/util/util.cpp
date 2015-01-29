@@ -280,7 +280,11 @@ template<
 	typename PolicySetter3 = kdb::DefaultPolicyArgs,
 	typename PolicySetter4 = kdb::DefaultPolicyArgs,
 	typename PolicySetter5 = kdb::DefaultPolicyArgs,
+@if $support.readonly($hierarchy.info):
+	typename PolicySetter6 = kdb::WritePolicyIs<ReadOnlyPolicy>
+@else
 	typename PolicySetter6 = kdb::DefaultPolicyArgs
+@end if
 	>
 class $hierarchy.prettyclassname(support) : public Value
 	<$support.typeof($hierarchy.info),
