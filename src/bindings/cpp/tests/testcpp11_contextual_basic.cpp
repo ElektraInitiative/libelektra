@@ -317,7 +317,7 @@ TYPED_TEST(test_contextual_basic, counting)
 
 	ASSERT_EQ((*l)() , "0");
 	ASSERT_EQ((*l)() , "1");
-	c.template withl(l, [&]
+	c.withl(l, [&]
 	{
 		ASSERT_EQ(c["counting"] , "4");
 		ASSERT_EQ(c["counting"] , "5");
