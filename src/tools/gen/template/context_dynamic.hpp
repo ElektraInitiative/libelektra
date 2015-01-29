@@ -86,7 +86,7 @@ $hierarchy
 */
 
 
-$cpp_util.generateForwardDecl($support, $hierarchy)
+$cpp_util.generateForwardDeclContext($support, $hierarchy)
 $cpp_util.outputClasses($support, $hierarchy)
 
 } // namespace kdb

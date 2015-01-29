@@ -122,6 +122,42 @@ $cpp_util.generateForwardDecl(support, child)
 
 
 
+
+@@staticmethod
+@def generateForwardDeclContext(support, hierarchy)
+@if not hierarchy.children
+@return
+@end if
+
+@for n in hierarchy.name.split('/')[1:-1]
+namespace ${support.nsnpretty($n)}
+{
+@end for
+
+template<
+	typename PolicySetter1,
+	typename PolicySetter2,
+	typename PolicySetter3,
+	typename PolicySetter4,
+	typename PolicySetter5,
+	typename PolicySetter6
+	>
+class ${hierarchy.prettyclassname($support)};
+
+@for n in hierarchy.name.split('/')[1:-1]
+}
+@end for
+
+@for $child in hierarchy.children
+$cpp_util.generateForwardDeclContext(support, child)
+@end for
+
+@end def
+
+
+
+
+
 @@staticmethod
 @def generateGetBySpec(support, key, info)
 @if len($support.override(info)) > 0
@@ -238,17 +274,49 @@ namespace $support.nsnpretty($n)
  * Dirname: $hierarchy.dirname
  * Basename: $hierarchy.basename
  * */
-class $hierarchy.prettyclassname(support) : public ThreadValue
-	<$support.typeof($hierarchy.info)>
+template<
+	typename PolicySetter1 = kdb::DefaultPolicyArgs,
+	typename PolicySetter2 = kdb::DefaultPolicyArgs,
+	typename PolicySetter3 = kdb::DefaultPolicyArgs,
+	typename PolicySetter4 = kdb::DefaultPolicyArgs,
+	typename PolicySetter5 = kdb::DefaultPolicyArgs,
+	typename PolicySetter6 = kdb::DefaultPolicyArgs
+	>
+class $hierarchy.prettyclassname(support) : public Value
+	<$support.typeof($hierarchy.info),
+	PolicySetter1,
+	PolicySetter2,
+	PolicySetter3,
+	PolicySetter4,
+	PolicySetter5,
+	PolicySetter6
+	>
 {
 public:
+	typedef kdb::PolicySelector<
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		>
+		Policies;
+
 
 
 	/** \brief Constructor for $hierarchy.prettyclassname(support)
 	 * \param ks keyset to work with
 	 */
-	${hierarchy.prettyclassname(support)}(kdb::KeySet & ks, kdb::ThreadContext & context)
-		: ThreadValue<$support.typeof($hierarchy.info)>(ks,
+	${hierarchy.prettyclassname(support)}(kdb::KeySet & ks, typename Policies::ContextPolicy & context)
+		: Value<$support.typeof($hierarchy.info),
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		>(ks,
 			context,
 $cpp_util.generateSpecKey(support,$hierarchy)
 			)
@@ -260,17 +328,32 @@ $cpp_util.generateSpecKey(support,$hierarchy)
 @end for
 	{}
 
-	using ThreadValue<$support.typeof($hierarchy.info)>::operator =;
+	using Value<$support.typeof($hierarchy.info),
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		>::operator =;
 
 @for k in hierarchy.children
 @set nsname = $support.nspretty(k.dirname)
 @set nestedname = $support.nestedpretty(k.basename)
 @set nestedclassname = $support.classpretty(k.basename)
 	/** \return nested subclass */
-	$nsname$nestedclassname ${nestedname};
+	$nsname$nestedclassname<
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		> ${nestedname};
 @end for
 };
 
+#*
 @if $support.typeof($hierarchy.info)=='std::string':
 inline std::ostream & operator<<(std::ostream & os,
 		$hierarchy.prettyclassname(support) const & c)
@@ -279,6 +362,7 @@ inline std::ostream & operator<<(std::ostream & os,
 	return os;
 }
 @end if
+*#
 
 @for n in hierarchy.name.split('/')[1:-1]
 }

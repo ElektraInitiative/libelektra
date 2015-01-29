@@ -17,13 +17,16 @@ int main()
 	kdb.get(ks, "/test/person_lift");
 
 	// Environment<WritePolicyIs<ReadOnly>> env(ks,tc);
-	Environment env(ks,tc);
+	Environment <ContextPolicyIs<ThreadContext>> env(ks,tc);
 	std::cout << std::boolalpha;
 	std::cout << "delay: " << env.test.lift.emergency.delay << std::endl;
 	std::cout << "stops: " << env.test.lift.emergency.action.stops << std::endl;
-	kdb::test::Lift const & lift = env.test.lift;
+	kdb::test::Lift <ContextPolicyIs<ThreadContext>> const & lift = env.test.lift;
 	std::cout << "height #3: " << lift.floor.n3.height << std::endl;
 	std::cout << "limit: " << env.test.lift.limit << std::endl;
+
+	// kdb::test::lift::emergency::Delay <ContextPolicyIs<ThreadContext>, WritePolicyIs<ReadOnlyPolicy>> delay(ks, tc);
+	// delay = 20; // read only value!
 
 	bool write = lift.write;
 	env.test.lift.write = false;
