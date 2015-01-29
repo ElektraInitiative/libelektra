@@ -110,6 +110,18 @@ public:
 		m_onDeactivate[layerid].push_back(f);
 	}
 
+	void clearOnLayerActivation(std::string layerid)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		m_onActivate[layerid].clear();
+	}
+
+	void clearOnLayerDeactivation(std::string layerid)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
+		m_onDeactivate[layerid].clear();
+	}
+
 	std::unique_lock<std::mutex> requireLock()
 	{
 		std::unique_lock<std::mutex> lock(m_mutex);
@@ -167,7 +179,6 @@ private:
 		{
 			f();
 		}
-		m_onActivate.clear();
 	}
 
 	/**
@@ -198,7 +209,6 @@ private:
 		{
 			f();
 		}
-		m_onDeactivate.clear();
 	}
 
 
