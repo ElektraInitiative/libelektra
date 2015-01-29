@@ -384,6 +384,17 @@ void TreeViewModel::find(ConfigNodePtr node, TreeViewModel* searchResults, const
 	{
 		searchResults->model().append(node);
 	}
+
+	if(node->getMetaKeys())
+	{
+		foreach (ConfigNodePtr metaNode, node->getMetaKeys()->model())
+		{
+			if(metaNode->getName().contains(term) || metaNode->getValue().toString().contains(term))
+			{
+				searchResults->model().append(node);
+			}
+		}
+	}
 }
 
 bool TreeViewModel::removeRow(int row, const QModelIndex& parentIndex)
