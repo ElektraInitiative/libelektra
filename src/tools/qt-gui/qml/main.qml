@@ -576,7 +576,7 @@ ApplicationWindow {
 				treeModel: externTreeModel
 			}
 			HelpArea {
-				helpText: qsTr("This is a tree view of the Key Database.")
+                helpText: qsTr("This is a tree view of the Key Database.\nIt shows the entire tree of the Key Database\nand allows you to traverse the keys.")
 			}
 		}
 		Column {
@@ -674,7 +674,7 @@ ApplicationWindow {
 					}
 				}
 				HelpArea {
-					helpText: qsTr("Current Keys")
+                    helpText: qsTr("This shows the keys in the current selected KeySet.\nThis view shows the Key's name on the left and\nits value on the right. Double-clicking a Key\nwill let you edit it.")
 				}
 			}
 			BasicRectangle {
@@ -713,7 +713,7 @@ ApplicationWindow {
 					}
 				}
 				HelpArea {
-					helpText: qsTr("Metadata attached to keys")
+                    helpText: qsTr("This shows any metakeys attached to a Key. You can\nedit this metadata the same way you normally edit a\nKey, by double-clicking the key in the above view.")
 				}
 			}
 			BasicRectangle {
