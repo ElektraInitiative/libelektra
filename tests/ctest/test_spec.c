@@ -89,6 +89,7 @@ static void test_lookupNoOverride()
 
 	keyDel(specKey);
 	ksDel(ks);
+	keyDel(dup);
 }
 
 static void test_lookupDefault()

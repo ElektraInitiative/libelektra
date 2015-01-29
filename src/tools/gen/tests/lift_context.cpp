@@ -16,6 +16,7 @@ int main()
 	kdb.get(ks, "/test/heavy_material_lift");
 	kdb.get(ks, "/test/person_lift");
 
+	// Environment<WritePolicyIs<ReadOnly>> env(ks,tc);
 	Environment env(ks,tc);
 	std::cout << std::boolalpha;
 	std::cout << "delay: " << env.test.lift.emergency.delay << std::endl;
