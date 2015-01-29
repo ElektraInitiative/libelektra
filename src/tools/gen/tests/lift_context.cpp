@@ -1,8 +1,4 @@
-#ifdef DYNAMIC
 #include "lift_context_dynamic.hpp"
-#else
-#include "lift_context_static.hpp"
-#endif
 #include <kdb.hpp>
 
 #include <iostream>
@@ -20,17 +16,16 @@ int main()
 	kdb.get(ks, "/test/heavy_material_lift");
 	kdb.get(ks, "/test/person_lift");
 
-	Environment par(ks,tc);
-
+	Environment env(ks,tc);
 	std::cout << std::boolalpha;
-	std::cout << "delay: " << par.test.lift.emergency.delay << std::endl;
-	std::cout << "stops: " << par.test.lift.emergency.action.stops << std::endl;
-	kdb::test::Lift const & lift = par.test.lift;
+	std::cout << "delay: " << env.test.lift.emergency.delay << std::endl;
+	std::cout << "stops: " << env.test.lift.emergency.action.stops << std::endl;
+	kdb::test::Lift const & lift = env.test.lift;
 	std::cout << "height #3: " << lift.floor.n3.height << std::endl;
-	std::cout << "limit: " << par.test.lift.limit << std::endl;
+	std::cout << "limit: " << env.test.lift.limit << std::endl;
 
 	bool write = lift.write;
-	par.test.lift.write = false;
+	env.test.lift.write = false;
 
 	// write back to user/test/lift, see comments in lift.c
 	if(write)

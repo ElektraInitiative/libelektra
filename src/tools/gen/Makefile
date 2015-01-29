@@ -12,7 +12,7 @@
 #properly.
 
 GEN=./gen
-ELEKTRA=-lelektra-static
+ELEKTRA=-lelektra-static -pthread
 CFLAGS=-O0 -ggdb
 CXXFLAGS=-O0 -ggdb
 FLAGS = -I. -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
