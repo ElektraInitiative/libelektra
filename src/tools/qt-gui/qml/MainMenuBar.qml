@@ -30,6 +30,13 @@ MenuBar {
 		MenuSeparator{}
 
 		MenuItem {
+			id: dbSynchronize
+			action: synchronizeAction
+		}
+
+		MenuSeparator{}
+
+		MenuItem {
 			id: dbPluginInfo
 			action: pluginInfoAction
 		}
@@ -38,14 +45,7 @@ MenuBar {
 
 		MenuItem {
 			id:dbExit
-			text: qsTr("Exit")
-			shortcut: StandardKey.Quit
-			onTriggered: {
-				if(!undoManager.isClean())
-					exitDialog.open()
-				else
-					Qt.quit()
-			}
+			action: quitAction
 		}
 	}
 

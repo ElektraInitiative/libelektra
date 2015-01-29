@@ -53,7 +53,7 @@ Item {
 
 			implicitHeight: metaNameField.height + defaultSpacing
 			implicitWidth: implicitHeight
-			iconSource: "icons/application-exit.png"
+			iconSource: "icons/edit-delete.png"
 
 			onClicked: {
 				qmlMetaKeyModel.remove(index)// remove the visual item

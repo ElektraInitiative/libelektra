@@ -538,6 +538,19 @@ ApplicationWindow {
 		onTriggered: pluginInfo.show()
 	}
 
+	Action {
+		id: quitAction
+		text: qsTr("Quit")
+		iconSource: "icons/application-exit.png"
+		onTriggered: {
+			if(!undoManager.isClean())
+				exitDialog.open()
+			else
+				Qt.quit()
+		}
+		shortcut: StandardKey.Quit
+	}
+
 	//**Menus & Toolbars***************************************************************************************//
 
 	menuBar: MainMenuBar {
