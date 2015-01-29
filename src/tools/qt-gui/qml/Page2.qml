@@ -311,7 +311,7 @@ Item {
 		MenuItem {
 			id: p2cmNew
 			action: Action {
-				text: qsTr("New Key...")
+				text: qsTr("New Key ...")
 				iconSource: "icons/document-new.png"
 				tooltip: qsTr("New Key")
 				enabled: contextMenuEnabled
@@ -322,7 +322,7 @@ Item {
 			id: p2cmEdit
 			action: Action {
 				iconSource: "icons/edit-rename.png"
-				text: qsTr("Edit...")
+				text: qsTr("Edit ...")
 				tooltip: qsTr("Edit")
 				enabled: contextMenuEnabled
 

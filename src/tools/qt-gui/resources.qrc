@@ -63,5 +63,6 @@
         <file>qml/Help.qml</file>
         <file>qml/icons/mount.png</file>
         <file>qml/icons/unmount.png</file>
+        <file>qml/PluginInfo.qml</file>
     </qresource>
 </RCC>

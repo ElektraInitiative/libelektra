@@ -15,7 +15,7 @@ BasicWindow {
 	property alias  valueLabel: valueLabel
 	property alias  valueTextField: valueTextField
 	property bool   nameReadOnly: false
-	property string valuePlaceHolder: "Meta Key Value..."
+	property string valuePlaceHolder: "Meta Key Value ..."
 	property int    modelIndex: 0
 	property bool   isArray: false
 	property string path: !visible ? "" : (accessFromSearchResults && selectedNode !== null) ? selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/")) : (treeView.currentNode === null ? "" : treeView.currentNode.path)

@@ -148,6 +148,10 @@ ApplicationWindow {
 		id: aboutWindow
 	}
 
+	PluginInfo {
+		id: pluginInfo
+	}
+
 	//**Dialogs************************************************************************************************//
 
 	ExportDialog {
@@ -171,7 +175,7 @@ ApplicationWindow {
 	Action {
 		id:newKeyAction
 
-		text: qsTr("&Key...")
+		text: qsTr("&Key ...")
 		iconSource: "icons/document-new.png"
 		tooltip: qsTr("New Key")
 		enabled: treeView.currentItem !== null
@@ -189,7 +193,7 @@ ApplicationWindow {
 	Action {
 		id:newArrayAction
 
-		text: qsTr("&Array Entry...")
+		text: qsTr("&Array Entry ...")
 		iconSource: "icons/new-array.png"
 		tooltip: qsTr("New Array Entry")
 		enabled: treeView.currentItem !== null
@@ -225,7 +229,7 @@ ApplicationWindow {
 	Action {
 		id: importAction
 
-		text: qsTr("&Import Configuration... ")
+		text: qsTr("&Import Configuration ... ")
 		iconSource: "icons/import.png"
 		tooltip: qsTr("Import Configuration")
 		enabled: treeView.currentItem !== null
@@ -235,7 +239,7 @@ ApplicationWindow {
 	Action {
 		id: exportAction
 
-		text: qsTr("E&xport Configuration... ")
+		text: qsTr("E&xport Configuration ... ")
 		iconSource: "icons/export.png"
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
@@ -301,8 +305,14 @@ ApplicationWindow {
 			}
 			else if(undoManager.undoText === "newKey"){
 				undoManager.undo()
-				treeView.treeModel.refresh()
-				//				keyAreaView.selection.clear()
+//				treeView.treeModel.refresh()
+//				keyAreaView.selection.clear()
+				if(keyAreaView.currentRow >= keyAreaModel.count()) {
+					metaAreaModel = null
+					keyAreaSelectedItem = null
+					keyAreaView.selection.clear()
+					keyAreaModel.refresh()
+				}
 			}
 			else{
 				undoManager.undo()
@@ -379,7 +389,7 @@ ApplicationWindow {
 			}
 			else if(undoManager.redoText === "newKey"){
 				undoManager.redo()
-				treeView.treeModel.refresh()
+//				treeView.treeModel.refresh()
 			}
 			else{
 				undoManager.redo()
@@ -418,7 +428,7 @@ ApplicationWindow {
 	Action {
 		id: mountBackendAction
 
-		text: qsTr("Mount Backend...")
+		text: qsTr("Mount Backend ...")
 		iconSource: "icons/mount.png"
 		tooltip: qsTr("Mount Backend")
 		onTriggered: {
@@ -430,7 +440,7 @@ ApplicationWindow {
 	Action {
 		id: unmountBackendAction
 
-		text: qsTr("Unmount Backend...")
+		text: qsTr("Unmount Backend ...")
 		iconSource: "icons/unmount.png"
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
@@ -444,7 +454,7 @@ ApplicationWindow {
 		id: editAction
 
 		iconSource: "icons/edit-rename.png"
-		text: qsTr("Edit...")
+		text: qsTr("Edit ...")
 		tooltip: qsTr("Edit")
 		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
@@ -519,6 +529,13 @@ ApplicationWindow {
 		iconSource: "icons/whats_this.png"
 		onTriggered: helpMode ? helpMode = false : helpMode = true
 		shortcut: "Shift+F1"
+	}
+
+	Action {
+		id: pluginInfoAction
+		text: qsTr("Show Plugin Info ...")
+		iconSource: "icons/help-about.png"
+		onTriggered: pluginInfo.show()
 	}
 
 	//**Menus & Toolbars***************************************************************************************//
@@ -659,7 +676,6 @@ ApplicationWindow {
 								onDoubleClicked: {
 									keyAreaView.currentRow = styleData.row
 									MFunctions.updateKeyAreaSelection()
-									editKeyWindow.qmlMetaKeyModel.clear()
 									editKeyWindow.populateMetaArea()
 									editKeyWindow.show()
 								}

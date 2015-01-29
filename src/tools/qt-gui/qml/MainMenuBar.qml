@@ -30,6 +30,13 @@ MenuBar {
 		MenuSeparator{}
 
 		MenuItem {
+			id: dbPluginInfo
+			action: pluginInfoAction
+		}
+
+		MenuSeparator{}
+
+		MenuItem {
 			id:dbExit
 			text: qsTr("Exit")
 			shortcut: StandardKey.Quit
