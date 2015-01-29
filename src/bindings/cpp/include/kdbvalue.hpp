@@ -376,8 +376,15 @@ public:
 	{
 		assert(m_spec.getName()[0] == '/' && "spec keys are not yet supported");
 		m_context.attachByName(m_spec.getName(), *this);
-		updateKeyUsingContext(m_context.evaluate(m_spec.getName()));
-		syncCache(); // set m_cache
+		Key oldKey; // we had no previous key
+		Command::Func fun = [this]
+		{
+			this->unsafeUpdateKeyUsingContext(m_context.evaluate(m_spec.getName()));
+			this->unsafeSyncCache(); // set m_cache
+			return m_key;
+		};
+		Command command(*this, fun, oldKey);
+		m_context.execute(command);
 	}
 
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
@@ -492,7 +499,7 @@ public:
 	}
 
 private:
-	void updateKeyUsingContext(std::string const & evaluatedName) const
+	void unsafeUpdateKeyUsingContext(std::string const & evaluatedName) const
 	{
 		Key spec(m_spec.dup());
 		// TODO: change to .setName() once
@@ -556,13 +563,14 @@ private:
 #if DEBUG && VERBOSE
 		std::cout << "update context " << evaluatedName << " from " << m_spec.getName() << std::endl;
 #endif
-		if (evaluatedName == m_key.getName()) return; // nothing changed, same name
 
-		Key oldKey;
+		Key oldKey = m_key.dup();
 		Command::Func fun = [this, &evaluatedName]
 		{
+			if (evaluatedName == m_key.getName()) return m_key; // nothing changed, same name
+
 			this->unsafeSyncKeySet(); // flush out what currently is in cache
-			this->updateKeyUsingContext(evaluatedName);
+			this->unsafeUpdateKeyUsingContext(evaluatedName);
 			this->unsafeSyncCache();  // read what we have under new context
 
 			return m_key;
@@ -593,7 +601,10 @@ private:
 	KeySet & m_ks;
 
 	/**
-	 * @brief 
+	 * @brief The context that might be
+	 *
+	 * - thread safe
+	 * - allow COP
 	 */
 	typename Policies::ContextPolicy & m_context;
 
@@ -609,7 +620,11 @@ private:
 	/**
 	 * @brief The current key the Value is bound to.
 	 *
+	 * It as assumed that no one else writes into the key.
+	 * Access to the key must be of the same thread the Value is in.
+	 *
 	 * May change on assignments.
+	 * kdb::Key::operator++() is called
 	 *
 	 * @invariant: Is never a null key
 	 */
