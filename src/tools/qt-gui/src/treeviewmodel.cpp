@@ -410,10 +410,11 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parentIndex)
 	return true;
 }
 
-void TreeViewModel::insertRow(int row, ConfigNodePtr node)
+void TreeViewModel::insertRow(int row, ConfigNodePtr node, bool addParent)
 {
 	beginInsertRows(QModelIndex(), row, row);
-	node->setParentModel(this);
+	if(addParent)
+		node->setParentModel(this);
 	m_model.insert(row, node);
 	endInsertRows();
 }

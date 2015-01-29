@@ -33,7 +33,7 @@ void FindVisitor::visit(ConfigNode &node)
 
 	if(termFound)
 		//let the other model delete this node
-		m_searchResults->model().append(ConfigNodePtr(&node, &ConfigNode::deleter));
+		m_searchResults->insertRow(m_searchResults->count(), ConfigNodePtr(&node, &ConfigNode::dontDelete), false);
 }
 
 void FindVisitor::visit(TreeViewModel *model)

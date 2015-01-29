@@ -27,7 +27,7 @@ public:
 	ConfigNode();
 	~ConfigNode();
 
-	void deleter() {}
+	void dontDelete() {}
 
 	/**
 	 * @brief Returns the number of children of this ConfigNode.

@@ -111,7 +111,7 @@ public:
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param node The ConfigNode that is supposed to be inserted.
 	 */
-	void                        insertRow(int row, ConfigNodePtr node);
+	void                        insertRow(int row, ConfigNodePtr node, bool addParent = true);
 
 	/**
 	 * @brief Looks for valid ConfigNodes, adds them to a KeySet and repopulates this TreeViewModel based on the KeySet.

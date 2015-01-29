@@ -36,8 +36,8 @@ ApplicationWindow {
 	property var    keyAreaSelectedItem: null
 	property var    searchResultsSelectedItem: null
 	property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
-	property var    keyAreaModel
-	property bool   isPasted
+	property var    keyAreaModel: null
+	property bool   isPasted: false
 	property bool	error: false
 	property bool	helpMode: false;
 
