@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 
-BasicRectangle {
+Rectangle {
 	id:tooltip
 
 	property var	name
@@ -18,22 +18,23 @@ BasicRectangle {
 	property int	maxWidth: 0
 	property int	metaHeight: 0
 
-	width: Math.min(parentWidth - x - defaultMargins, maxWidth + 2*defaultMargins)
-	height: (metaHeight > 0) ? Math.min(metaHeight +  keyText.height + 3*defaultMargins, parentHeight - y - defaultMargins) : (keyText.height + 2*defaultMargins)
+	width: Math.min(parentWidth - x - defaultMargins, maxWidth + defaultMargins)
+	height: (metaHeight > 0) ? Math.min(metaHeight +  keyText.height + 2*defaultMargins, parentHeight - y - defaultMargins) : (keyText.height + defaultMargins)
 	color: inActivePalette.base
+	border.color: inActivePalette.windowText
 
 	Column {
 		id: layout
 
 		anchors.fill: parent
 		anchors.centerIn: parent
-		anchors.margins: defaultMargins
+		anchors.margins: defaultMargins*0.5
 		spacing: defaultMargins
 
 		Row {
 			Label {
 				id: keyText
-				width: tooltip.width - 2*defaultMargins
+				width: tooltip.width - defaultMargins
 				text: name + " : " + value
 				clip: true
 				Component.onCompleted: {
@@ -45,7 +46,7 @@ BasicRectangle {
 		ListView {
 			id: metaView
 
-			width: tooltip.width - 2*defaultMargins
+			width: tooltip.width - defaultMargins
 			height: metaHeight
 
 			delegate: metaDelegate
@@ -63,7 +64,7 @@ BasicRectangle {
 			Label {
 				id: metaText
 
-				width: tooltip.width - 2*defaultMargins
+				width: tooltip.width - defaultMargins
 				clip: true
 				text: name + " : " + value
 
