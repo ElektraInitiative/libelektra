@@ -12,6 +12,7 @@
 #include "confignode.hpp"
 #include "printvisitor.hpp"
 #include "keysetvisitor.hpp"
+#include "findvisitor.hpp"
 
 class Visitor;
 
@@ -220,15 +221,6 @@ public:
 	Q_INVOKABLE QStringList     mountedBackends();
 
 private:
-
-	/**
-	 * @brief A private method that is called from the public @see #find method. It performs the actual search.
-	 *
-	 * @param node The ConfigNode that is to be searched next.
-	 * @param searchResults The TreeViewModel that holds the search results.
-	 * @param term The term that is searched for.
-	 */
-	void                        find(ConfigNodePtr node, TreeViewModel* searchResults, const QString term);
 	void						createNewNodes(kdb::KeySet keySet);
 
 	QList<ConfigNodePtr>        m_model;

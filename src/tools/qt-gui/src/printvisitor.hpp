@@ -1,7 +1,6 @@
 #ifndef PRINTVISITOR_HPP
 #define PRINTVISITOR_HPP
 
-#include <QDebug>
 #include "visitor.hpp"
 
 class PrintVisitor : public Visitor

@@ -1,5 +1,4 @@
 #include "keysetvisitor.hpp"
-
 #include "treeviewmodel.hpp"
 
 using namespace kdb;

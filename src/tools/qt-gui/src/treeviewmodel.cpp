@@ -354,11 +354,8 @@ QVariantMap TreeViewModel::get(const int& idx) const
 QVariant TreeViewModel::find(const QString& term)
 {
 	TreeViewModel* searchResults = new TreeViewModel;
-
-	foreach (ConfigNodePtr node, m_model)
-	{
-		find(node, searchResults, term);
-	}
+	FindVisitor fVisit(searchResults, term);
+	accept(fVisit);
 
 	if (searchResults->model().count() == 0)
 	{
@@ -366,35 +363,6 @@ QVariant TreeViewModel::find(const QString& term)
 	}
 
 	return QVariant::fromValue(searchResults);
-}
-
-void TreeViewModel::find(ConfigNodePtr node, TreeViewModel* searchResults, const QString term)
-{
-	int tmpChildCount = node->getChildCount();
-
-	if (tmpChildCount > 0)
-	{
-		for (int i = 0; i < tmpChildCount; i++)
-		{
-			find(node->getChildByIndex(i), searchResults, term);
-		}
-	}
-
-	if (node->getName().contains(term) || node->getValue().toString().contains(term))
-	{
-		searchResults->model().append(node);
-	}
-
-	if(node->getMetaKeys())
-	{
-		foreach (ConfigNodePtr metaNode, node->getMetaKeys()->model())
-		{
-			if(metaNode->getName().contains(term) || metaNode->getValue().toString().contains(term))
-			{
-				searchResults->model().append(node);
-			}
-		}
-	}
 }
 
 bool TreeViewModel::removeRow(int row, const QModelIndex& parentIndex)

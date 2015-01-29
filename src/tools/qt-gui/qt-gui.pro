@@ -2,10 +2,10 @@ QT += quick  gui core  qml  widgets testlib
 
 HEADERS +=	$$files(src/*.hpp)\
 			$$files(src/markdownconverter/*.h, true)\
-			$$files(../kdb/*.hpp)
+			$$files(../kdb/*.hpp) \
 
 SOURCES +=	$$files(src/*.cpp,true)\
-			$$files(../kdb/*.cpp)
+			$$files(../kdb/*.cpp) \
 
 SOURCES -=	../kdb/main.cpp\
 			../kdb/factory.cpp
