@@ -7,7 +7,8 @@ BasicWindow {
 	title: qsTr("Plugin Info")
 	okButton.visible: false
 	cancelButton.action.text: qsTr("&Close")
-	cancelButton.action.onTriggered: close()
+	cancelButton.action.onTriggered: closeWindow()
+	onClosing: pluginDropdown.currentIndex = 0
 
 	contents: ColumnLayout {
 		anchors.fill: parent
@@ -44,6 +45,11 @@ BasicWindow {
 				}
 			}
 		}
+	}
+
+	function closeWindow() {
+		close()
+		pluginDropdown.currentIndex = 0
 	}
 }
 
