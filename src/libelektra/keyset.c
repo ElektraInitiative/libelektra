@@ -1867,7 +1867,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	key->keySize = size;
 	key->keyUSize = usize ;
 
-	if (!found)
+	if (!found && !(options & KDB_O_NODEFAULT))
 	{
 		// search / key itself
 		found = ksLookup(ks, key, (options & ~KDB_O_DEL) | KDB_O_NOCASCADING);
@@ -2090,6 +2090,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	}
 
 	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey(ks, key, options & mask);
+
 	if (options & KDB_O_DEL) keyDel (key);
 
 	return ret;

@@ -61,6 +61,36 @@ static void test_lookupChain()
 	ksDel(ks);
 }
 
+static void test_lookupNoOverride()
+{
+	printf ("Test lookup with override not found\n");
+
+	Key *specKey = keyNew("/test/lift/limit",
+			KEY_CASCADING_NAME,
+			KEY_META, "default", "1",
+			KEY_META, "override/#0", "/test/person_lift/limit",
+			KEY_META, "override/#1", "/test/material_lift/limit",
+			KEY_META, "override/#2", "/test/heavy_material_lift/limit",
+			KEY_END);
+	Key *dup = keyDup(specKey);
+
+	Key *k1 = 0;
+	Key *k2 = 0;
+	KeySet *ks= ksNew(20,
+		k1 = keyNew("user/test/lift/limit", KEY_VALUE, "22", KEY_END),
+		k2 = keyNew("/test/person_lift/limit", KEY_CASCADING_NAME, KEY_VALUE, "10", KEY_END),
+		KS_END);
+
+	succeed_if(ksLookup(ks, specKey, KDB_O_SPEC) == k1, "found wrong key");
+	succeed_if(ksLookup(ks, dup, KDB_O_SPEC) == k1, "found wrong key");
+	elektraKeySetName(dup, "/test/lift/limit", KEY_CASCADING_NAME);
+	succeed_if(ksLookup(ks, dup, KDB_O_SPEC) == k1, "found wrong key");
+	succeed_if(ksLookup(ks, dup, KDB_O_SPEC | KDB_O_CREATE) == k1, "found wrong key");
+
+	keyDel(specKey);
+	ksDel(ks);
+}
+
 static void test_lookupDefault()
 {
 	printf ("Test lookup default\n");
@@ -491,6 +521,7 @@ int main(int argc, char** argv)
 
 	test_lookupSingle();
 	test_lookupChain();
+	test_lookupNoOverride();
 	test_lookupDefault();
 	test_lookupNoascading();
 	test_lookupDefaultCascading();
