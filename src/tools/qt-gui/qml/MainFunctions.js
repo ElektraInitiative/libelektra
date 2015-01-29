@@ -134,11 +134,11 @@ function deleteSearchResult(){
 	if(searchResultsSelectedItem !== null){
 
 		if(searchResultsSelectedItem.childCount > 0)
-			undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+			undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
 		else
-			undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+			undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
 
-		undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.node, searchResultsSelectedItem.index)
+		undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.index)
 
 		if(searchResultsListView.model.count() > 0){
 			searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.count() - 1)
