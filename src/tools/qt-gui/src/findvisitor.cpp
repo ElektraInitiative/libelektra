@@ -10,21 +10,29 @@ FindVisitor::FindVisitor(TreeViewModel *searchResults, const QString &term) :
 
 void FindVisitor::visit(ConfigNode &node)
 {
+	bool termFound = false;
+
 	if (node.getName().contains(m_term) || node.getValue().toString().contains(m_term))
 	{
-		m_searchResults->model().append(ConfigNodePtr(&node));
+		termFound = true;
 	}
 
-	if(node.getMetaKeys())
+	if(node.getMetaKeys() && !termFound)
 	{
 		foreach (ConfigNodePtr metaNode, node.getMetaKeys()->model())
 		{
 			if(metaNode->getName().contains(m_term) || metaNode->getValue().toString().contains(m_term))
 			{
-				m_searchResults->model().append(ConfigNodePtr(&node));
+				termFound = true;
+				break;
 			}
+
 		}
+
 	}
+
+	if(termFound)
+		m_searchResults->model().append(ConfigNodePtr(&node));
 }
 
 void FindVisitor::visit(TreeViewModel *model)
