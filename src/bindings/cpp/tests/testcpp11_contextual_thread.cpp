@@ -63,19 +63,19 @@ TEST(test_contextual_thread, instanciation)
 	c.syncLayers();
 	ASSERT_TRUE(ks.lookup("user/hello"));
 	ASSERT_EQ(ks.lookup("user/hello").getString() , "5");
-	// ASSERT_EQ(v.getName(), "user/hello");
+	ASSERT_EQ(v.getName(), "user/hello");
 	ASSERT_EQ(ks.size() , 1);
-	// ASSERT_EQ(v, 5);
+	ASSERT_EQ(v, 5);
 
 	std::thread t2(foo2, std::ref(gc), std::ref(ks));
 	t1.join();
 	t2.join();
 
 	c.syncLayers();
-	// ASSERT_EQ(v.getName(), "user/hello");
+	ASSERT_EQ(v.getName(), "user/hello");
 	ASSERT_EQ(ks.lookup("user/hello").getString() , "12");
 	ASSERT_EQ(ks.size() , 1);
-	// ASSERT_EQ(v, 12);
+	ASSERT_EQ(v, 12);
 }
 
 class Other: public kdb::Layer
