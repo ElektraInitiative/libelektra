@@ -595,7 +595,7 @@ private:
 			this->unsafeUpdateKeyUsingContext(evaluatedName);
 			this->unsafeSyncCache();  // read what we have under new context
 
-			return std::make_pair(oldKey, evaluatedName);
+			return std::make_pair(oldKey, m_key.getName());
 		};
 		Command command(*this, fun);
 		m_context.execute(command);
