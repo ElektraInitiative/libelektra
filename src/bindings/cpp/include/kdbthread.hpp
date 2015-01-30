@@ -37,12 +37,67 @@ struct PerContext
 	LayerVector toDeactivate;
 };
 
+class ThreadNoContext
+{
+public:
+	/**
+	 * @brief attach a new value
+	 *
+	 * NoContext will never update anything
+	 */
+	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  ValueObserver & ValueObserver)
+	{}
+
+	/**
+	 * @brief The evaluated equals the non-evaluated name!
+	 *
+	 * @return NoContext always returns the same string
+	 */
+	std::string evaluate(std::string const & key_name) const
+	{
+		return key_name;
+	}
+
+	/**
+	 * @brief (Re)attaches a ValueSubject to a thread or simply
+	 *        execute code in a locked section.
+	 *
+	 * NoContext just executes the function but does so in a
+	 * thread-safe way
+	 *
+	 * @param c the command to apply
+	 */
+	void execute(Command & c)
+	{
+		std::lock_guard<std::mutex> lock (m_mutex);
+		c();
+	}
+private:
+	std::mutex m_mutex;
+};
+
 /**
  * @brief Thread safe coordination of ThreadContext per Threads.
  */
 class Coordinator
 {
 public:
+	template <typename T>
+	void onLayerActivation(std::function <void()> f)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		std::shared_ptr<Layer>layer = std::make_shared<T>();
+		m_onActivate[layer->id()].push_back(f);
+	}
+
+	template <typename T>
+	void onLayerDeactivation(std::function <void()> f)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
+		std::shared_ptr<Layer>layer = std::make_shared<T>();
+		m_onDeactivate[layer->id()].push_back(f);
+	}
+
 	void onLayerActivation(std::string layerid, std::function <void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
@@ -53,6 +108,24 @@ public:
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
 		m_onDeactivate[layerid].push_back(f);
+	}
+
+	void clearOnLayerActivation(std::string layerid)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
+		m_onActivate[layerid].clear();
+	}
+
+	void clearOnLayerDeactivation(std::string layerid)
+	{
+		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
+		m_onDeactivate[layerid].clear();
+	}
+
+	std::unique_lock<std::mutex> requireLock()
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+		return std::move(lock);
 	}
 
 private:
@@ -71,13 +144,14 @@ private:
 	}
 
 	/**
-	 * @brief Update the given ThreadContext
+	 * @brief Update the given ThreadContext with newly assigned
+	 * values.
 	 */
-	void update(ThreadSubject *c)
+	void updateNewlyAssignedValues(ThreadSubject *c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
 		KeySet & toUpdate = m_updates[c].toUpdate;
-		// if (toUpdate.size() == 0) return;
+		if (toUpdate.size() == 0) return;
 
 		c->notify(toUpdate);
 		toUpdate.clear();
@@ -87,15 +161,17 @@ private:
 	 * @brief Receive a function to be executed and remember
 	 * which keys need a update in the other ThreadContexts.
 	 */
-	Key post(Post postFkt)
+	void execute(Command & c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		Key k = postFkt();
-		for (auto & c: m_updates)
+		Command::Pair ret = c();
+		c.oldKey = ret.first;
+		c.newKey = ret.second;
+		// potentially an assignment took place, notify others
+		for (auto & i: m_updates)
 		{
-			c.second.toUpdate.append(k);
+			i.second.toUpdate.append(Key(c.newKey, KEY_CASCADING_NAME, KEY_END));
 		}
-		return k;
 	}
 
 	void runOnActivate(std::shared_ptr<Layer> layer)
@@ -105,7 +181,6 @@ private:
 		{
 			f();
 		}
-		m_onActivate.clear();
 	}
 
 	/**
@@ -136,7 +211,6 @@ private:
 		{
 			f();
 		}
-		m_onDeactivate.clear();
 	}
 
 
@@ -201,6 +275,16 @@ public:
 		m_gc.detach(this);
 	}
 
+	Coordinator & global()
+	{
+		return m_gc;
+	}
+
+	Coordinator & g()
+	{
+		return m_gc;
+	}
+
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> activate(Args&&... args)
 	{
@@ -217,33 +301,9 @@ public:
 		return layer;
 	}
 
-	template <typename T>
-	void onLayerActivation(std::function <void()> f)
-	{
-		std::shared_ptr<Layer>layer = std::make_shared<T>();
-		m_gc.onLayerActivation(layer->id(), f);
-	}
-
-	template <typename T>
-	void onLayerDeactivation(std::function <void()> f)
-	{
-		std::shared_ptr<Layer>layer = std::make_shared<T>();
-		m_gc.onLayerDeactivation(layer->id(), f);
-	}
-
-	void onLayerActivation(std::string const & layerid, std::function <void()> f)
-	{
-		m_gc.onLayerActivation(layerid, f);
-	}
-
-	void onLayerDeactivation(std::string const & layerid, std::function <void()> f)
-	{
-		m_gc.onLayerDeactivation(layerid, f);
-	}
-
-
 	void syncLayers()
 	{
+		// now activate/deactive layers
 		Events e;
 		for(auto const & l: m_gc.fetchGlobalActivation(this))
 		{
@@ -256,38 +316,55 @@ public:
 			e.push_back(l->id());
 		}
 		notifyByEvents(e);
+
+		// pull in assignments from other threads
+		m_gc.updateNewlyAssignedValues(this);
+
 	}
 
-	void attachToThread(ValueSubject &v, Post postFkt)
+	/**
+	 * @brief Command dispatching
+	 *
+	 * @param c the command to execute
+	 */
+	void execute(Command & c)
 	{
-		Key key = m_gc.post(postFkt);
-		m_keys.insert(std::make_pair(key, ValueRef(v)));
+		m_gc.execute(c);
+		// do it always, because oldKey==newKey for initial
+		// command
+		if (!c.oldKey.empty())
+		{
+			m_keys.erase(c.oldKey);
+		}
+		if (!c.newKey.empty())
+		{
+			m_keys.insert(std::make_pair(c.newKey, ValueRef(c.v)));
+		}
 	}
 
+	/**
+	 * @brief notify all keys
+	 *
+	 * Locked during execution, safe to use ks
+	 *
+	 * @param ks
+	 */
 	void notify(KeySet & ks)
 	{
 		for(auto const & k: ks)
 		{
-			auto const& f = m_keys.find(k);
+			auto const& f = m_keys.find(k.getName());
+			if (f == m_keys.end()) continue; // key already had context change
 			f->second.get().notifyInThread();
 		}
 	}
 
-	void update()
-	{
-		m_gc.update(this);
-	}
-
-	void post(Post postFkt)
-	{
-		m_gc.post(postFkt);
-	}
-
-	bool m_flag;
-
 private:
 	Coordinator & m_gc;
-	std::unordered_map<Key, ValueRef> m_keys;
+	/**
+	 * @brief A map of values this ThreadContext is responsible for.
+	 */
+	std::unordered_map<std::string, ValueRef> m_keys;
 };
 
 template<typename T,

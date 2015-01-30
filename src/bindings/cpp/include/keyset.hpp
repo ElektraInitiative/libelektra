@@ -391,14 +391,9 @@ inline KeySet::KeySet (const KeySet &other)
  *
  * @copydoc ksVNew
  */
-inline KeySet::KeySet (size_t alloc, va_list ap)
+inline KeySet::KeySet (size_t alloc, va_list av)
 {
-	if (ap == 0)
-	{
-		ks = ckdb::ksNew (alloc, KS_END);
-	} else {
-		ks = ckdb::ksVNew (alloc, ap);
-	}
+	ks = ckdb::ksVNew (alloc, av);
 }
 
 /**

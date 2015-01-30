@@ -24,6 +24,13 @@
 void timeInit (void);
 void timePrint (char * msg);
 
+void benchmarkCreate();
+void benchmarkFillup();
+
+extern int num_dir; // default = NUM_DIR;
+extern int num_key; // default = NUM_KEY;
+extern KeySet *large;
+
 #endif
 
 

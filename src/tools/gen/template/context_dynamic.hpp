@@ -7,7 +7,7 @@ cheetahVarStartToken = $
 @from cpp_util import cpp_util
 @set support = ContextSupport()
 $util.header($args.output)
-#include "contextual.hpp"
+#include "kdbthread.hpp"
 #include "kdbtypes.h"
 #include "kdbproposal.h"
 
@@ -18,7 +18,6 @@ namespace kdb
 
 $cpp_util.generateenum($support, $parameters)
 $cpp_util.generatebool($support)
-$cpp_util.generatenone()
 
 
 
@@ -87,8 +86,7 @@ $hierarchy
 */
 
 
-$cpp_util.generateForwardDecl($support, $hierarchy)
-$outputPolicies(support, hierarchy)
+$cpp_util.generateForwardDeclContext($support, $hierarchy)
 $cpp_util.outputClasses($support, $hierarchy)
 
 } // namespace kdb

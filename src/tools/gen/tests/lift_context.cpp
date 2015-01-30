@@ -1,8 +1,4 @@
-#ifdef DYNAMIC
 #include "lift_context_dynamic.hpp"
-#else
-#include "lift_context_static.hpp"
-#endif
 #include <kdb.hpp>
 
 #include <iostream>
@@ -13,23 +9,28 @@ int main()
 
 	KDB kdb;
 	KeySet ks;
-	Context c;
+	Coordinator c;
+	ThreadContext tc(c);
 	kdb.get(ks, "/test/lift");
 	kdb.get(ks, "/test/material_lift");
 	kdb.get(ks, "/test/heavy_material_lift");
 	kdb.get(ks, "/test/person_lift");
 
-	Parameters par(ks,c);
-
+	Environment <ContextPolicyIs<ThreadContext>> env(ks,tc);
+	// Environment <ContextPolicyIs<ThreadContext>, WritePolicyIs<ReadOnlyPolicy>> env(ks,tc);
 	std::cout << std::boolalpha;
-	std::cout << "delay: " << par.test.lift.emergency.delay << std::endl;
-	std::cout << "stops: " << par.test.lift.emergency.action.stops << std::endl;
-	kdb::test::Lift const & lift = par.test.lift;
+	std::cout << "delay: " << env.test.lift.emergency.delay << std::endl;
+	std::cout << "stops: " << env.test.lift.emergency.action.stops << std::endl;
+	// kdb::test::Lift <ContextPolicyIs<ThreadContext>, WritePolicyIs<ReadOnlyPolicy>> const & lift = env.test.lift;
+	kdb::test::Lift <ContextPolicyIs<ThreadContext>> const & lift = env.test.lift;
 	std::cout << "height #3: " << lift.floor.n3.height << std::endl;
-	std::cout << "limit: " << par.test.lift.limit << std::endl;
+	std::cout << "limit: " << env.test.lift.limit << std::endl;
+
+	// kdb::test::lift::emergency::Delay <ContextPolicyIs<ThreadContext>, WritePolicyIs<ReadOnlyPolicy>> delay(ks, tc);
+	// delay = 20; // read only value!
 
 	bool write = lift.write;
-	par.test.lift.write = false;
+	env.test.lift.write = false;
 
 	// write back to user/test/lift, see comments in lift.c
 	if(write)

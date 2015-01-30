@@ -13,9 +13,11 @@ void foo1(Coordinator & gc, KeySet & ks)
 	ThreadContext c1(gc);
 	ThreadValue<int> v1(ks, c1, specKey);
 	ASSERT_EQ(v1, 8);
+	ASSERT_EQ(ks.lookup("user/hello").getString() , "8");
 
 	v1 = 5;
 	ASSERT_EQ(v1, 5);
+	ASSERT_EQ(ks.lookup("user/hello").getString() , "5");
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	ASSERT_EQ(v1, 5);
@@ -30,7 +32,7 @@ void foo2(Coordinator & gc, KeySet & ks)
 	ASSERT_EQ(v2, 5);
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	c2.update();
+	c2.syncLayers();
 	ASSERT_EQ(v2, 5);
 
 	v2 = 12;
@@ -48,26 +50,32 @@ TEST(test_contextual_thread, instanciation)
 	ThreadContext c(gc);
 	ThreadValue<int> v(ks, c, specKey);
 	ASSERT_EQ(v, 22);
+	ASSERT_EQ(ks.lookup("user/hello").getString() , "22");
 
 	v = 8;
 	ASSERT_EQ(v, 8);
+	ASSERT_EQ(ks.lookup("user/hello").getString() , "8");
 
 	std::thread t1(foo1, std::ref(gc), std::ref(ks));
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	c.update();
-	ASSERT_EQ(v, 5);
+	ASSERT_EQ(ks.lookup("user/hello").getString() , "5");
+	c.syncLayers();
+	ASSERT_TRUE(ks.lookup("user/hello"));
+	ASSERT_EQ(ks.lookup("user/hello").getString() , "5");
+	// ASSERT_EQ(v.getName(), "user/hello");
+	ASSERT_EQ(ks.size() , 1);
+	// ASSERT_EQ(v, 5);
 
 	std::thread t2(foo2, std::ref(gc), std::ref(ks));
 	t1.join();
 	t2.join();
 
-	c.update();
-	ASSERT_EQ(v, 12);
-
-	ks.append(Key("user/activate", KEY_VALUE, "88", KEY_END));
-	v.activate();
-	ASSERT_EQ(v, 88);
+	c.syncLayers();
+	// ASSERT_EQ(v.getName(), "user/hello");
+	ASSERT_EQ(ks.lookup("user/hello").getString() , "12");
+	ASSERT_EQ(ks.size() , 1);
+	// ASSERT_EQ(v, 12);
 }
 
 class Other: public kdb::Layer
@@ -114,8 +122,8 @@ void activate1(Coordinator & gc, KeySet & ks)
 
 	ThreadContext c1(gc);
 	ThreadValue<int> v1(ks, c1, specKey);
-	c1.onLayerActivation<Activate>([](){toggleOn();});
-	c1.onLayerDeactivation<Activate>([](){toggleOff();});
+	gc.onLayerActivation<Activate>([](){toggleOn();});
+	gc.onLayerDeactivation<Activate>([](){toggleOff();});
 	ASSERT_EQ(v1, 10);
 	c1.activate<Activate>();
 	ASSERT_TRUE(g_toggle);
@@ -157,4 +165,29 @@ TEST(test_contextual_thread, activate)
 	ASSERT_EQ(c["other"], "notused");
 	ASSERT_EQ(c["activate"], "");
 	ASSERT_EQ(v, 10);
+}
+
+const uint32_t i_value = 55;
+const char * s_value = "55";
+
+TEST(test_contextual_thread, ThreadNoContext)
+{
+	using namespace kdb;
+	KeySet ks;
+	ThreadNoContext c;
+	const char *name = "/%language%/%country%/%dialect%/test";
+	ASSERT_TRUE(!ks.lookup(name));
+	Value<int, ContextPolicyIs<ThreadNoContext>>i(ks, c, Key(name,
+			KEY_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(i , i_value);
+	ASSERT_TRUE(ks.lookup(name));
+	i = 5;
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getSpec().getName() , name);
+	i.syncKeySet();
+	ASSERT_EQ(ks.lookup(name).getString() , "5");
+	i = 10;
+	ASSERT_EQ(i , 10);
+	ASSERT_EQ(ks.lookup(name).getString() , "10");
 }

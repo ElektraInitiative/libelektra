@@ -68,10 +68,7 @@ kdb tool:
 
 == GEN ==
 
-use namespace elektra
-	rename to elektra.support
-
-using kdb for gen
+using python kdb for gen
 
 code generator always yields LONG_MIN, LONG_MAX on any type!
 
@@ -80,21 +77,13 @@ cmake support for "kdb gen" (run kdb gen within cmake)
 use doc/METADATA.ini to validate config files
 	fix check/type vs. type and check/type/{min,max} vs. range problem
 
-cleanup: use utilities to avoid code duplication
-	see Makefile + util.tmpl
-
 environment parsing support
 static compilation model
 
 has_ queries
 (allows one to differ between default fallback and intentional set default)
 
-new generators:
-	all hardcoded (without elektra dependency)?
-
 type: set of enums (see libmount for options)
-
-read from
 
 limit range for bool/enum
 
@@ -103,10 +92,13 @@ override/fallback type inference
 docu
 validation of schema + line info
 
+add Args... flags to onLayerActivation
 
-make a commit model for configuration with a rollback when commit failed
-(set only on temporary object, until commit was done)
-separate commit to kdbSet
+helgrind: thread safety of layers?
+is stack correct in with() when activate/deactivate across threads?
+
+
+
 
 
 == GEN-BACKEND ==

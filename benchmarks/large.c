@@ -4,29 +4,6 @@ KDB * kdb;
 Key * key;
 KeySet * large;
 
-void benchmarkCreate()
-{
-	large = ksNew(NUM_KEY*NUM_DIR, KS_END);
-}
-
-void benchmarkFillup ()
-{
-	int i,j;
-	char name [KEY_NAME_LENGTH + 1];
-	char value [] = "data";
-
-	for (i=0; i< NUM_DIR; i++)
-	{
-		snprintf (name, KEY_NAME_LENGTH, "%s/%s%d", KEY_ROOT, "dir", i);
-		ksAppendKey(large, keyNew (name, KEY_VALUE, value, KEY_END));
-		for (j=0; j<NUM_KEY; j++)
-		{
-			snprintf (name, KEY_NAME_LENGTH, "%s/%s%d/%s%d", KEY_ROOT, "dir", i, "key", j);
-			ksAppendKey(large, keyNew (name, KEY_VALUE, value, KEY_END));
-		}
-	}
-}
-
 void benchmarkOpen()
 {
 	kdb = kdbOpen(key);

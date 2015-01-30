@@ -2,10 +2,35 @@
 
 #include <kdbvalue.hpp>
 #include <kdbcontext.hpp>
+#include <kdbthread.hpp>
 
 #include <thread>
 
 #include <gtest/gtest.h>
+
+class TestValueSubject : public kdb::ValueSubject
+{
+	virtual void notifyInThread()
+	{}
+};
+
+void fooxx(kdb::Command &)
+{}
+
+TEST(test_contextual_basic, command)
+{
+	using namespace kdb;
+
+	TestValueSubject v;
+	Key k;
+	Command::Func f = [k]()->Command::Pair{return Command::Pair("","");};
+
+	Command c(v, f);
+	fooxx(c);
+	c();
+	ASSERT_EQ(&f, &c.execute);
+	ASSERT_EQ(&v, &c.v);
+}
 
 const uint32_t i_value = 55;
 const char * s_value = "55";
@@ -122,51 +147,74 @@ private:
 	kdb::String const & m_profile;
 };
 
+template <typename T>
+class test_contextual_basic: public ::testing::Test {
+public:
+	T context;
+};
 
-TEST(test_contextual_basic, integer)
+template <>
+class test_contextual_basic<kdb::ThreadContext>: public ::testing::Test {
+public:
+	test_contextual_basic() :
+		context(coordinator) {}
+	static kdb::Coordinator coordinator;
+	kdb::ThreadContext context;
+};
+
+kdb::Coordinator test_contextual_basic<kdb::ThreadContext>::coordinator{};
+
+typedef ::testing::Types<kdb::Context, kdb::ThreadContext> myContextualPolicies;
+TYPED_TEST_CASE(test_contextual_basic, myContextualPolicies);
+
+TYPED_TEST(test_contextual_basic, integer)
 {
 	using namespace kdb;
 	KeySet ks;
-	Context c;
-	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
+	TypeParam c = this->context;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key("/%language%/%country%/%dialect%/test",
 			KEY_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
+	// The value always needs a connection to a key
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ(i , 5);
-	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/test");
-	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
 	i = 10;
 	ASSERT_EQ(i , 10);
-	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
+	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
 
-	c.activate<LanguageGermanLayer>();
+	c.template activate<LanguageGermanLayer>();
 	ASSERT_EQ(i , i_value);
 //{debug/ASSERT_TRUE}
 ASSERT_EQ(i.context()["language"] , "german");
-ASSERT_EQ(i.getSpec().getName() , "/german/%/%/test");
+ASSERT_EQ(i.getName() , "/german/%/%/test");
 //{end}
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
+	ASSERT_TRUE(ks.lookup("/german/%/%/test"));
 	i = 15;
 	ASSERT_EQ(i , 15);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
-	ASSERT_TRUE(!ks.lookup("/german/%/%/test"));
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 
-	c.deactivate<LanguageGermanLayer>();
+	c.template deactivate<LanguageGermanLayer>();
 	ASSERT_EQ(i , 10);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 
-	c.with<LanguageGermanLayer>()([&]()
+	c.template with<LanguageGermanLayer>()([&]()
 	{
 		ASSERT_EQ(i , 15);
 		ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 		ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
-		c.without<LanguageGermanLayer>()([&]()
+		c.template without<LanguageGermanLayer>()([&]()
 		{
 			ASSERT_EQ(i , 10);
 			ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
@@ -180,14 +228,16 @@ ASSERT_EQ(i.getSpec().getName() , "/german/%/%/test");
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 
-	c.with<LanguageGermanLayer>()
-	 .with<CountryGermanyLayer>()([&]()
+	c.template with<LanguageGermanLayer>()
+		.template with<CountryGermanyLayer>()([&]()
 	{
 		ASSERT_EQ(i , i_value);
 		ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 		ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
+		ASSERT_TRUE(ks.lookup("/german/germany/%/test"));
 		i = 20;
-		ASSERT_EQ(i.getSpec().getName() , "/german/germany/%/test");
+		ASSERT_EQ(i.getName(), "user/german/germany/%/test");
+		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "20");
 /*
 //{debug/backtrace}
 #3  0x0000000000407a56 in operator() at first.cpp:1521
@@ -195,40 +245,41 @@ ASSERT_EQ(i.getSpec().getName() , "/german/%/%/test");
           m_evaluated_name = "/german/germany/%/test" }
 //{end}
 //{debug/breakpoint}
-break 1520 if i.getSpec().getName()
+break 1520 if i.getName()
               .compare("/german/germany/%/test") == 0
 //{end}
 */
 		ASSERT_EQ(i , 20);
-		ASSERT_TRUE(!ks.lookup("/german/germany/%/test"));
 	});
 	ASSERT_EQ(i , 10);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 	ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "20");
 
-	c.with<LanguageGermanLayer>().with<CountryGermanyLayer>()([&]()
+	c.template with<LanguageGermanLayer>()
+		.template with<CountryGermanyLayer>()([&]()
 	{
 		ASSERT_EQ(i , 20);
 		ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 		ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
+		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "20");
 		i = 30;
 		ASSERT_EQ(i , 30);
-		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "20");
+		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "30");
 	});
 	ASSERT_EQ(i , 10);
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 	ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "30");
 
-	c.with<LanguageGermanLayer>()
-	 .with<CountryGermanyLayer>()([&]()
+	c.template with<LanguageGermanLayer>()
+	 .template with<CountryGermanyLayer>()([&]()
 	{
 		ASSERT_EQ(i , 30);
 		ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "10");
 		ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 		ASSERT_EQ(ks.lookup("/german/germany/%/test").getString() , "30");
-		c.with<CountryGPSLayer>()([&]()
+		c.template with<CountryGPSLayer>()([&]()
 		{
 			ASSERT_EQ(i , i_value);
 		});
@@ -240,20 +291,20 @@ break 1520 if i.getSpec().getName()
 }
 
 
-TEST(test_contextual_basic, counting)
+TYPED_TEST(test_contextual_basic, counting)
 {
 	using namespace kdb;
 
 	std::shared_ptr<kdb::Layer> l = std::make_shared<CountingLayer>();
 	KeySet ks;
-	Context c;
-	c.with<CountingLayer>()([&]
+	TypeParam c = this->context;
+	c.template with<CountingLayer>()([&]
 	{
 		ASSERT_EQ(c["counting"] , "0");
 	});
 	// is it a specification error to have counting
 	// two times?
-	Integer i(ks, c, Key("/%counting%/%counting%",
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key("/%counting%/%counting%",
 				KEY_CASCADING_NAME,
 				KEY_META, "default", s_value, KEY_END));
 
@@ -265,74 +316,74 @@ TEST(test_contextual_basic, counting)
 		ASSERT_EQ(c["counting"] , "5");
 	});
 	ASSERT_EQ((*l)() , "6");
-	c.with<CountingLayer>()([&]
+	c.template with<CountingLayer>()([&]
 	{
 		ASSERT_EQ(c["counting"] , "2");
 		ASSERT_EQ(c["counting"] , "3");
 	});
 	ASSERT_TRUE(c["counting"].empty());
-	c.with<CountingLayer>()([&]
+	c.template with<CountingLayer>()([&]
 	{
 		ASSERT_EQ(c["counting"] , "2");
 		ASSERT_EQ(c["counting"] , "3");
 	});
 	ASSERT_TRUE(c["counting"].empty());
-	c.activate<CountingLayer>();
+	c.template activate<CountingLayer>();
 	ASSERT_EQ(c["counting"] , "2");
 	ASSERT_EQ(c["counting"] , "3");
-	c.deactivate<CountingLayer>();
+	c.template deactivate<CountingLayer>();
 	ASSERT_TRUE(c["counting"].empty());
 }
 
-TEST(test_contextual_basic, groups)
+TYPED_TEST(test_contextual_basic, groups)
 {
 	using namespace kdb;
 
 	KeySet ks;
-	Context c;
-
-	Integer i(ks, c, Key(
+	TypeParam c = this->context;
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key(
 	"/%application%/%version profile thread module%/%manufacturer type family model%/serial_number",
 	KEY_CASCADING_NAME,
 	KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/serial_number");
-	c.activate<MainApplicationLayer>();
+	ASSERT_EQ(i.getName() , "/%/%/%/serial_number");
+	c.template activate<MainApplicationLayer>();
 	String s(ks, c, Key("/%x%",
 		KEY_CASCADING_NAME,
 		KEY_META, "default", "anonymous", KEY_END));
-	c.activate<ProfileLayer>(s);
-	ASSERT_EQ(i.getSpec().getName() , "/main/%/%/serial_number");
-	c.activate<KeyValueLayer>("version", "1");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%1%anonymous/%/serial_number");
-	c.activate<KeyValueLayer>("module", "M1");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%1%anonymous/%/serial_number");
-	c.activate<KeyValueLayer>("manufacturer", "hp");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%1%anonymous/%hp/serial_number");
-	c.activate<KeyValueLayer>("family", "EliteBook");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%1%anonymous/%hp/serial_number");
-	c.activate<KeyValueLayer>("type", "MobileWorkstation");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
-	c.activate<KeyValueLayer>("model", "8570");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.activate<KeyValueLayer>("thread", "40");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.deactivate<KeyValueLayer>("version", "");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.activate<KeyValueLayer>("version", "4");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
-	c.deactivate<KeyValueLayer>("manufacturer", "");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%4%anonymous%40%M1/%/serial_number");
-	c.activate<KeyValueLayer>("manufacturer", "HP");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
-	c.deactivate<KeyValueLayer>("type", "");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%4%anonymous%40%M1/%HP/serial_number");
-	c.with<KeyValueLayer>("type", "Notebook")([&]
+	c.template activate<ProfileLayer>(s);
+	ASSERT_EQ(i.getName() , "/main/%/%/serial_number");
+	c.template activate<KeyValueLayer>("version", "1");
+	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%/serial_number");
+	c.template activate<KeyValueLayer>("module", "M1");
+	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%/serial_number");
+	c.template activate<KeyValueLayer>("manufacturer", "hp");
+	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp/serial_number");
+	c.template activate<KeyValueLayer>("family", "EliteBook");
+	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp/serial_number");
+	c.template activate<KeyValueLayer>("type", "MobileWorkstation");
+	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
+	c.template activate<KeyValueLayer>("model", "8570");
+	ASSERT_EQ(i.getName() , "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	c.template activate<KeyValueLayer>("thread", "40");
+	ASSERT_EQ(i.getName() , "/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	c.template deactivate<KeyValueLayer>("version", "");
+	ASSERT_EQ(i.getName() , "/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	c.template activate<KeyValueLayer>("version", "4");
+	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	c.template deactivate<KeyValueLayer>("manufacturer", "");
+	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%/serial_number");
+	c.template activate<KeyValueLayer>("manufacturer", "HP");
+	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
+	c.template deactivate<KeyValueLayer>("type", "");
+	ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP/serial_number");
+	c.template with<KeyValueLayer>("type", "Notebook")([&]
 	{
-		ASSERT_EQ(i.getSpec().getName() , "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
-		c.without<KeyValueLayer>("type", "")([&]
+		ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
+		c.template without<KeyValueLayer>("type", "")([&]
 		{
-			ASSERT_EQ(i.getSpec().getName() , "/main/%4%anonymous%40%M1/%HP/serial_number");
+			ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP/serial_number");
 		});
+		ASSERT_EQ(i.getName() , "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 	});
 }
 
@@ -342,28 +393,17 @@ TEST(test_contextual_basic, integer_copy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
 	Integer i(ks, c, Key("/%language%/%country%/%dialect%/test",
 		KEY_CASCADING_NAME,
 		KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ(i , i_value);
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
 	i = 5;
 	ASSERT_EQ(i , 5);
-	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/test");
-	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
 	i.syncKeySet();
 	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
-
-	/* TODO: cannot copy KeySet anymore? -> feature maybe not needed
-	KeySet ks2;
-	Integer i2(i, ks2);
-	ASSERT_EQ(i2 , 5);
-	i2 = 10;
-	ASSERT_EQ(i2 , 10);
-	ASSERT_EQ(i , 5);
-	i2.syncKeySet();
-	ASSERT_EQ(ks.lookup("/%/%/%/test").getString() , "5");
-	ASSERT_EQ(ks2.lookup("/%/%/%/test").getString() , "10");
-	*/
 }
 
 TEST(test_contextual_basic, evaluate)
@@ -459,20 +499,20 @@ TEST(test_contextual_basic, evaluate)
 	"/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
 	KEY_CASCADING_NAME,
 	KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ(i.getSpec().getName() , "/%/%/%/%/%/%/%/%/%/serial_number");
+	ASSERT_EQ(i.getName() , "/%/%/%/%/%/%/%/%/%/serial_number");
 	c.activate<MainApplicationLayer>();
-	ASSERT_EQ(i.getSpec().getName() , "/main/%/%/%/%/%/%/%/%/serial_number");
+	ASSERT_EQ(i.getName() , "/main/%/%/%/%/%/%/%/%/serial_number");
 	String s(ks, c, Key("/%x%", 
 		KEY_CASCADING_NAME,
 		KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer>(s);
-	ASSERT_EQ(i.getSpec().getName() , "/main/%/anonymous/%/%/%/%/%/%/serial_number");
+	ASSERT_EQ(i.getName() , "/main/%/anonymous/%/%/%/%/%/%/serial_number");
 	c.activate<KeyValueLayer>("module", "M1");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%/anonymous/%/M1/%/%/%/%/serial_number");
+	ASSERT_EQ(i.getName() , "/main/%/anonymous/%/M1/%/%/%/%/serial_number");
 	c.activate<KeyValueLayer>("manufacturer", "hp");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%/anonymous/%/M1/hp/%/%/%/serial_number");
+	ASSERT_EQ(i.getName() , "/main/%/anonymous/%/M1/hp/%/%/%/serial_number");
 	c.activate<KeyValueLayer>("family", "EliteBook");
-	ASSERT_EQ(i.getSpec().getName() , "/main/%/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
+	ASSERT_EQ(i.getName() , "/main/%/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
 }
 
 
