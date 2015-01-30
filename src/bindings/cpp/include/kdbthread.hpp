@@ -183,10 +183,13 @@ private:
 		Command::Pair ret = c();
 		c.oldKey = ret.first;
 		c.newKey = ret.second;
-		// potentially an assignment took place, notify others
-		for (auto & i: m_updates)
+		if (c.hasChanged)
 		{
-			i.second.toUpdate.append(Key(c.newKey, KEY_CASCADING_NAME, KEY_END));
+			for (auto & i: m_updates)
+			{
+				i.second.toUpdate.append(Key(c.newKey,
+							KEY_CASCADING_NAME, KEY_END));
+			}
 		}
 	}
 

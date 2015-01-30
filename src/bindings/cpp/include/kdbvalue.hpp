@@ -112,9 +112,11 @@ public:
 	typedef std::function<Pair()> Func;
 	Command(
 		ValueSubject const & v_,
-		Func & execute_) :
+		Func & execute_,
+		bool hasChanged_ = false) :
 		v(const_cast<ValueSubject &>(v_)),
 		execute(execute_),
+		hasChanged(hasChanged_),
 		oldKey(),
 		newKey()
 	{}
@@ -123,6 +125,7 @@ public:
 
 	ValueSubject & v; // this pointer
 	Func & execute; // to be executed within lock
+	bool hasChanged; // if the value (m_cache) has changed and value propagation is needed
 	std::string oldKey; // old name before assignment
 	std::string newKey; // new name after assignment
 };
@@ -512,7 +515,7 @@ public:
 			this->unsafeSyncKeySet();
 			return std::make_pair(oldKey, m_key.getName());
 		};
-		Command command(*this, fun);
+		Command command(*this, fun, m_hasChanged);
 		m_context.execute(command);
 	}
 
