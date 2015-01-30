@@ -330,15 +330,16 @@ public:
 	void execute(Command & c)
 	{
 		m_gc.execute(c);
-		// do it always, because oldKey==newKey for initial
-		// command
-		if (!c.oldKey.empty())
+		if (c.oldKey != c.newKey)
 		{
-			m_keys.erase(c.oldKey);
-		}
-		if (!c.newKey.empty())
-		{
-			m_keys.insert(std::make_pair(c.newKey, ValueRef(c.v)));
+			if (!c.oldKey.empty())
+			{
+				m_keys.erase(c.oldKey);
+			}
+			if (!c.newKey.empty())
+			{
+				m_keys.insert(std::make_pair(c.newKey, ValueRef(c.v)));
+			}
 		}
 	}
 
