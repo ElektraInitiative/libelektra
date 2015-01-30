@@ -164,11 +164,13 @@ private:
 	void execute(Command & c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		c.newKey = c();
+		Command::Pair ret = c();
+		c.oldKey = ret.first;
+		c.newKey = ret.second;
 		// potentially an assignment took place, notify others
 		for (auto & i: m_updates)
 		{
-			i.second.toUpdate.append(c.newKey);
+			i.second.toUpdate.append(Key(c.newKey, KEY_CASCADING_NAME, KEY_END));
 		}
 	}
 
@@ -330,21 +332,28 @@ public:
 		m_gc.execute(c);
 		// do it always, because oldKey==newKey for initial
 		// command
-		if (c.oldKey)
+		if (!c.oldKey.empty())
 		{
 			m_keys.erase(c.oldKey);
 		}
-		if (c.newKey)
+		if (!c.newKey.empty())
 		{
 			m_keys.insert(std::make_pair(c.newKey, ValueRef(c.v)));
 		}
 	}
 
+	/**
+	 * @brief notify all keys
+	 *
+	 * Locked during execution, safe to use ks
+	 *
+	 * @param ks
+	 */
 	void notify(KeySet & ks)
 	{
 		for(auto const & k: ks)
 		{
-			auto const& f = m_keys.find(k);
+			auto const& f = m_keys.find(k.getName());
 			if (f == m_keys.end()) continue; // key already had context change
 			f->second.get().notifyInThread();
 		}
@@ -355,7 +364,7 @@ private:
 	/**
 	 * @brief A map of values this ThreadContext is responsible for.
 	 */
-	std::unordered_map<Key, ValueRef> m_keys;
+	std::unordered_map<std::string, ValueRef> m_keys;
 };
 
 template<typename T,

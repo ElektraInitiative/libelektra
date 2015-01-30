@@ -23,20 +23,13 @@ TEST(test_contextual_basic, command)
 
 	TestValueSubject v;
 	Key k;
-	Command::Func f = [k](){return k;};
-	Key k1;
-	Key k2;
+	Command::Func f = [k]()->Command::Pair{return Command::Pair("","");};
 
-	Command c(v, f, k1, k2);
+	Command c(v, f);
 	fooxx(c);
 	c();
-	ASSERT_EQ(&k1, &c.oldKey);
-	ASSERT_EQ(k2, c.newKey);
 	ASSERT_EQ(&f, &c.execute);
 	ASSERT_EQ(&v, &c.v);
-
-	c.newKey = c();
-	ASSERT_EQ(k, c.newKey);
 }
 
 const uint32_t i_value = 55;

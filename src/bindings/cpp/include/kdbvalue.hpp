@@ -105,24 +105,26 @@ public:
 struct Command
 {
 public:
-	typedef std::function<Key()> Func;
+	typedef std::pair<std::string, std::string> Pair;
+	/**
+	 * @brief Typedef for function that returs oldKey, newKey pair
+	 */
+	typedef std::function<Pair()> Func;
 	Command(
 		ValueSubject const & v_,
-		Func & execute_,
-		Key & oldKey_,
-		Key newKey_ = Key()) :
+		Func & execute_) :
 		v(const_cast<ValueSubject &>(v_)),
 		execute(execute_),
-		oldKey(oldKey_),
-		newKey(newKey_)
+		oldKey(),
+		newKey()
 	{}
 
-	Key operator()() {return execute();}
+	Pair operator()() {return execute();}
 
 	ValueSubject & v; // this pointer
 	Func & execute; // to be executed within lock
-	Key & oldKey; // null key if initial assignment
-	Key  newKey; // new name after assignment
+	std::string oldKey; // old name before assignment
+	std::string newKey; // new name after assignment
 };
 
 // Default Policies for Value
@@ -376,14 +378,13 @@ public:
 	{
 		assert(m_spec.getName()[0] == '/' && "spec keys are not yet supported");
 		m_context.attachByName(m_spec.getName(), *this);
-		Key oldKey; // we had no previous key
-		Command::Func fun = [this]
+		Command::Func fun = [this] () -> Command::Pair
 		{
 			this->unsafeUpdateKeyUsingContext(m_context.evaluate(m_spec.getName()));
 			this->unsafeSyncCache(); // set m_cache
-			return m_key;
+			return std::make_pair("", m_key.getName());
 		};
-		Command command(*this, fun, oldKey);
+		Command command(*this, fun);
 		m_context.execute(command);
 	}
 
@@ -473,13 +474,13 @@ public:
 	 */
 	void syncCache() const
 	{
-		Command::Func fun = [this]
+		Command::Func fun = [this] () -> Command::Pair
 		{
+			std::string const & oldKey = m_key.getName();
 			this->unsafeSyncCache();
-			return m_key;
+			return std::make_pair(oldKey, m_key.getName());
 		};
-		Key oldKey = m_key.dup();
-		Command command(*this, fun, oldKey);
+		Command command(*this, fun);
 		m_context.execute(command);
 	}
 
@@ -488,13 +489,13 @@ public:
 	 */
 	void syncKeySet() const
 	{
-		Command::Func fun = [this]
+		Command::Func fun = [this] () -> Command::Pair
 		{
+			std::string const & oldKey = m_key.getName();
 			this->unsafeSyncKeySet();
-			return m_key;
+			return std::make_pair(oldKey, m_key.getName());
 		};
-		Key oldKey = m_key.dup();
-		Command command(*this, fun, oldKey);
+		Command command(*this, fun);
 		m_context.execute(command);
 	}
 
@@ -564,18 +565,22 @@ private:
 		std::cout << "update context " << evaluatedName << " from " << m_spec.getName() << std::endl;
 #endif
 
-		Key oldKey = m_key.dup();
-		Command::Func fun = [this, &evaluatedName]
+		Command::Func fun = [this, &evaluatedName] () -> Command::Pair
 		{
-			if (evaluatedName == m_key.getName()) return m_key; // nothing changed, same name
+			std::string oldKey = m_key.getName();
+			if (evaluatedName == oldKey)
+			{
+				// nothing changed, same name
+				return std::make_pair(evaluatedName, evaluatedName);
+			}
 
 			this->unsafeSyncKeySet(); // flush out what currently is in cache
 			this->unsafeUpdateKeyUsingContext(evaluatedName);
 			this->unsafeSyncCache();  // read what we have under new context
 
-			return m_key;
+			return std::make_pair(oldKey, evaluatedName);
 		};
-		Command command(*this, fun, oldKey);
+		Command command(*this, fun);
 		m_context.execute(command);
 	}
 
@@ -619,12 +624,6 @@ private:
 
 	/**
 	 * @brief The current key the Value is bound to.
-	 *
-	 * It as assumed that no one else writes into the key.
-	 * Access to the key must be of the same thread the Value is in.
-	 *
-	 * May change on assignments.
-	 * kdb::Key::operator++() is called
 	 *
 	 * @invariant: Is never a null key
 	 */
