@@ -388,6 +388,23 @@ public:
 		m_context.execute(command);
 	}
 
+	~Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
+		PolicySetter4, PolicySetter5, PolicySetter6>
+		()
+	{
+		Command::Func fun = [this] () -> Command::Pair
+		{
+			std::string oldName = m_key.getName();
+			m_key = static_cast<ckdb::Key*>(0);
+			// after destructor we do not need to care about
+			// invariant anymore. But we need to care about
+			// thread safe m_key.
+			return std::make_pair(oldName, "");
+		};
+		Command command(*this, fun);
+		m_context.execute(command);
+	}
+
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
 		PolicySetter4, PolicySetter5, PolicySetter6> V;
 
