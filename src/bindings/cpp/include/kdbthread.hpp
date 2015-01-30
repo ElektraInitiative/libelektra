@@ -128,6 +128,22 @@ public:
 		return std::move(lock);
 	}
 
+	~Coordinator()
+	{
+#if DEBUG
+		for (auto & i: m_updates)
+		{
+			std::cout << "coordinator " << this
+				<< "left over : " << i.first
+				<< " with updates: " << i.second.toUpdate.size()
+				<< " activations: " << i.second.toActivate.size()
+				<< " deactivations: " << i.second.toDeactivate.size()
+				<< std::endl;
+		}
+#endif
+	}
+
+
 private:
 	friend class ThreadContext;
 
@@ -273,6 +289,12 @@ public:
 	~ThreadContext()
 	{
 		m_gc.detach(this);
+#if DEBUG
+		for (auto & i: m_keys)
+		{
+			std::cout << "threadcontext " << this << " left over: " << i.first << std::endl;
+		}
+#endif
 	}
 
 	Coordinator & global()
