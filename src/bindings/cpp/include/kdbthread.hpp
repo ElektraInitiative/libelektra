@@ -24,8 +24,18 @@ public:
 	virtual void syncLayers() = 0;
 };
 
+struct LayerAction
+{
+	LayerAction(bool activate_, std::shared_ptr<Layer> layer_) :
+		activate(activate_),
+		layer(layer_)
+	{ }
+	bool activate; // false if deactivate
+	std::shared_ptr<Layer> layer;
+};
+
 /// A vector of layers
-typedef std::vector<std::shared_ptr<Layer>> LayerVector;
+typedef std::vector<LayerAction> LayerVector;
 
 typedef std::unordered_map<std::string, std::vector<std::function<void()>>> FunctionMap;
 
@@ -34,7 +44,6 @@ struct PerContext
 {
 	KeySet toUpdate;
 	LayerVector toActivate;
-	LayerVector toDeactivate;
 };
 
 class ThreadNoContext
@@ -137,7 +146,6 @@ public:
 				<< "left over : " << i.first
 				<< " with updates: " << i.second.toUpdate.size()
 				<< " activations: " << i.second.toActivate.size()
-				<< " deactivations: " << i.second.toDeactivate.size()
 				<< std::endl;
 		}
 #endif
@@ -219,7 +227,7 @@ private:
 		{
 			 // caller itself has it already activated
 			if (cc == c.first) continue;
-			c.second.toActivate.push_back(layer);
+			c.second.toActivate.push_back(LayerAction(true, layer));
 		}
 	}
 
@@ -243,7 +251,7 @@ private:
 		{
 			 // caller itself has it already deactivated
 			if (cc == c.first) continue;
-			c.second.toDeactivate.push_back(layer);
+			c.second.toActivate.push_back(LayerAction(false, layer));
 		}
 	}
 
@@ -258,14 +266,6 @@ private:
 		std::lock_guard<std::mutex> lock (m_mutex);
 		LayerVector ret;
 		ret.swap(m_updates[cc].toActivate);
-		return std::move(ret);
-	}
-
-	LayerVector fetchGlobalDeactivation(ThreadSubject *cc)
-	{
-		std::lock_guard<std::mutex> lock (m_mutex);
-		LayerVector ret;
-		ret.swap(m_updates[cc].toDeactivate);
 		return std::move(ret);
 	}
 
@@ -334,13 +334,15 @@ public:
 		Events e;
 		for(auto const & l: m_gc.fetchGlobalActivation(this))
 		{
-			activateLayer(l);
-			e.push_back(l->id());
-		}
-		for(auto const & l: m_gc.fetchGlobalDeactivation(this))
-		{
-			deactivateLayer(l);
-			e.push_back(l->id());
+			if (l.activate)
+			{
+				activateLayer(l.layer);
+			}
+			else
+			{
+				deactivateLayer(l.layer);
+			}
+			e.push_back(l.layer->id());
 		}
 		notifyByEvents(e);
 
