@@ -332,12 +332,12 @@ public:
 		Events e;
 		for(auto const & l: m_gc.fetchGlobalActivation(this))
 		{
-			lazyActivateLayer(l);
+			activateLayer(l);
 			e.push_back(l->id());
 		}
 		for(auto const & l: m_gc.fetchGlobalDeactivation(this))
 		{
-			lazyDeactivateLayer(l);
+			deactivateLayer(l);
 			e.push_back(l->id());
 		}
 		notifyByEvents(e);

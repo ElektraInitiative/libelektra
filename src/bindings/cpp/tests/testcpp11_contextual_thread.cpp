@@ -191,3 +191,152 @@ TEST(test_contextual_thread, ThreadNoContext)
 	ASSERT_EQ(i , 10);
 	ASSERT_EQ(ks.lookup(name).getString() , "10");
 }
+
+
+/**
+ * @brief Dependent on layer Activate
+ */
+class Dep: public kdb::Layer
+{
+public:
+	Dep(ThreadValue<int> const & i) : m_i()
+	{
+		std::ostringstream is;
+		is << static_cast<int>(i);
+		m_i = is.str();
+		// capture current value of contextual value here
+	}
+	std::string id() const override
+	{
+		return "dep";
+	}
+	std::string operator()() const override
+	{
+		return m_i;
+	}
+	std::string m_i;
+};
+
+
+TEST(test_contextual_thread, activateDependency)
+{
+	Key specKey("/act/%activate%", KEY_CASCADING_NAME,  KEY_END);
+
+	KeySet ks;
+	ks.append(Key("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append(Key("user/act/active", KEY_VALUE, "22", KEY_END));
+
+	Coordinator gc;
+	ThreadContext c1(gc);
+	ThreadContext c2(gc);
+	ThreadValue<int> v(ks, c1, specKey);
+	ASSERT_EQ(v, 10);
+	ASSERT_EQ(c1.size(), 0);
+	ASSERT_EQ(c1["other"], "");
+	ASSERT_EQ(c1["activate"], "");
+
+	c2.activate<Dep>(v);
+	ASSERT_EQ(c2.size(), 1);
+	ASSERT_EQ(c2["dep"], "10");
+	c2.activate<Activate>();
+	ASSERT_EQ(c2.size(), 2);
+	ASSERT_EQ(c2["dep"], "10");
+	ASSERT_EQ(c2["activate"], "active");
+
+	c1.syncLayers();
+	ASSERT_EQ(c1["dep"], "10");
+	ASSERT_EQ(c2["activate"], "active");
+	ASSERT_EQ(v.getName(), "user/act/active");
+	ASSERT_EQ(v, 22);
+}
+
+
+TEST(test_contextual_thread, syncInWith)
+{
+	Key specKey("/act/%activate%", KEY_CASCADING_NAME,  KEY_END);
+
+	KeySet ks;
+	ks.append(Key("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append(Key("user/act/active", KEY_VALUE, "22", KEY_END));
+
+	Coordinator gc;
+	ThreadContext c1(gc);
+	ThreadContext c2(gc);
+	ThreadValue<int> v(ks, c1, specKey);
+	ASSERT_EQ(v, 10);
+	ASSERT_EQ(c1.size(), 0);
+	ASSERT_EQ(c1["other"], "");
+	ASSERT_EQ(c1["activate"], "");
+
+	c2.activate<Activate>();
+	ASSERT_EQ(c2.size(), 1);
+	ASSERT_EQ(c2["activate"], "active");
+
+	c1.with<Other>()([&]()
+	{
+		ASSERT_EQ(c1.size(), 1);
+		ASSERT_EQ(c1["other"], "notused");
+		ASSERT_EQ(c1["activate"], "");
+		ASSERT_EQ(v.getName(), "user/act/%");
+		ASSERT_EQ(v, 10);
+
+		c1.syncLayers();
+
+		ASSERT_EQ(c1.size(), 2);
+		ASSERT_EQ(c1["other"], "notused");
+		ASSERT_EQ(c1["activate"], "active");
+		ASSERT_EQ(v.getName(), "user/act/active");
+		ASSERT_EQ(v, 22);
+	});
+
+	ASSERT_EQ(c1.size(), 1);
+	ASSERT_EQ(c1["other"], "");
+	ASSERT_EQ(c1["activate"], "active");
+	ASSERT_EQ(v.getName(), "user/act/active");
+	ASSERT_EQ(v, 22);
+}
+
+
+TEST(test_contextual_thread, syncBeforeWith)
+{
+	Key specKey("/act/%activate%", KEY_CASCADING_NAME,  KEY_END);
+
+	KeySet ks;
+	ks.append(Key("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append(Key("user/act/active", KEY_VALUE, "22", KEY_END));
+
+	Coordinator gc;
+	ThreadContext c1(gc);
+	ThreadContext c2(gc);
+	ThreadValue<int> v(ks, c1, specKey);
+	ASSERT_EQ(v, 10);
+	ASSERT_EQ(c1.size(), 0);
+	ASSERT_EQ(c1["other"], "");
+	ASSERT_EQ(c1["activate"], "");
+
+	c2.activate<Activate>();
+	ASSERT_EQ(c2.size(), 1);
+	ASSERT_EQ(c2["activate"], "active");
+
+	c1.syncLayers();
+	ASSERT_EQ(c1.size(), 1);
+	ASSERT_EQ(c1["other"], "");
+	ASSERT_EQ(c1["activate"], "active");
+	ASSERT_EQ(v.getName(), "user/act/active");
+	ASSERT_EQ(v, 22);
+
+	c1.with<Other>()([&]()
+	{
+		ASSERT_EQ(c1.size(), 2);
+		ASSERT_EQ(c1["other"], "notused");
+		ASSERT_EQ(c1["activate"], "active");
+		ASSERT_EQ(v.getName(), "user/act/active");
+		ASSERT_EQ(v, 22);
+	});
+
+	ASSERT_EQ(c1.size(), 1);
+	ASSERT_EQ(c1["other"], "");
+	ASSERT_EQ(c1["activate"], "active");
+	ASSERT_EQ(v.getName(), "user/act/active");
+	ASSERT_EQ(v, 22);
+}

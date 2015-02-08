@@ -290,6 +290,94 @@ break 1520 if i.getName()
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 }
 
+TYPED_TEST(test_contextual_basic, mixedWithActivate)
+{
+	using namespace kdb;
+	KeySet ks;
+	TypeParam c = this->context;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key("/%language%/%country%/%dialect%/test",
+			KEY_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(i , i_value);
+	// The value always needs a connection to a key
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
+	i = 5;
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+
+	c.template activate<LanguageGermanLayer>();
+	i = 6;
+	ASSERT_EQ(i , 6);
+	ASSERT_EQ(i.getName() , "user/german/%/%/test");
+	ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+
+	c.template with<CountryGermanyLayer>()([&]()
+	{
+		i = 7;
+		ASSERT_EQ(i , 7);
+		ASSERT_EQ(i.getName() , "user/german/germany/%/test");
+		ASSERT_EQ(ks.lookup("user/german/germany/%/test").getString() , "7");
+	});
+
+	// LanguageGermanLayer still active
+	ASSERT_EQ(i , 6);
+	ASSERT_EQ(i.getName() , "user/german/%/%/test");
+	ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+
+	c.template deactivate<LanguageGermanLayer>();
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+}
+
+TYPED_TEST(test_contextual_basic, nestedWithActivate)
+{
+	using namespace kdb;
+	KeySet ks;
+	TypeParam c = this->context;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key("/%language%/%country%/%dialect%/test",
+			KEY_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(i , i_value);
+	// The value always needs a connection to a key
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
+	i = 5;
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+
+	c.template with<CountryGermanyLayer>()([&]()
+	{
+		i = 7;
+		ASSERT_EQ(i , 7);
+		ASSERT_EQ(i.getName() , "user/%/germany/%/test");
+		ASSERT_EQ(ks.lookup("user/%/germany/%/test").getString() , "7");
+
+		c.template without<CountryGermanyLayer>()([&]()
+		{
+			c.template activate<LanguageGermanLayer>();
+
+			i = 6;
+			ASSERT_EQ(i , 6);
+			ASSERT_EQ(i.getName() , "user/german/%/%/test");
+			ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+		});
+	});
+
+	// LanguageGermanLayer still active
+	ASSERT_EQ(i , 6);
+	ASSERT_EQ(i.getName() , "user/german/%/%/test");
+	ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+
+	c.template deactivate<LanguageGermanLayer>();
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+}
+
 
 TYPED_TEST(test_contextual_basic, counting)
 {
