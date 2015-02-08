@@ -218,7 +218,7 @@ public:
 };
 
 
-TEST(test_contextual_thread, activateDependency)
+TEST(test_contextual_thread, activateNoDependency)
 {
 	Key specKey("/act/%activate%", KEY_CASCADING_NAME,  KEY_END);
 
@@ -248,6 +248,44 @@ TEST(test_contextual_thread, activateDependency)
 	ASSERT_EQ(c2["activate"], "active");
 	ASSERT_EQ(v.getName(), "user/act/active");
 	ASSERT_EQ(v, 22);
+}
+
+
+TEST(test_contextual_thread, activateWithDependency)
+{
+	Key specKey("/act/%activate%", KEY_CASCADING_NAME,  KEY_END);
+
+	KeySet ks;
+	ks.append(Key("user/act/%", KEY_VALUE, "10", KEY_END)); // not active layer
+	ks.append(Key("user/act/active", KEY_VALUE, "22", KEY_END));
+
+	Coordinator gc;
+	ThreadContext c1(gc);
+	ThreadContext c2(gc);
+	ThreadValue<int> v1(ks, c1, specKey);
+	ThreadValue<int> v2(ks, c2, specKey);
+	ASSERT_EQ(v1, 10);
+	ASSERT_EQ(v2, 10);
+
+	ASSERT_EQ(c1.size(), 0);
+	ASSERT_EQ(c1["other"], "");
+	ASSERT_EQ(c1["activate"], "");
+
+	ASSERT_EQ(c2.size(), 0);
+	ASSERT_EQ(c2["other"], "");
+	ASSERT_EQ(c2["activate"], "");
+
+	c2.activate<Activate>();
+	ASSERT_EQ(c2.size(), 1);
+	ASSERT_EQ(c2["activate"], "active");
+
+	ASSERT_EQ(v1, 10);
+	ASSERT_EQ(v2, 22);
+
+	c1.activate<Dep>(v1);
+	ASSERT_EQ(c1.size(), 2);
+	ASSERT_EQ(c1["dep"], "22") << "dependency not correct, activate does not do syncLayer";
+	ASSERT_EQ(c2["activate"], "active");
 }
 
 

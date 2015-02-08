@@ -313,6 +313,7 @@ public:
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> activate(Args&&... args)
 	{
+		syncLayers();
 		std::shared_ptr<Layer>layer = Context::activate<T>(std::forward<Args>(args)...);
 		m_gc.globalActivate(this, layer);
 		return layer;
@@ -321,6 +322,7 @@ public:
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> deactivate(Args&&... args)
 	{
+		syncLayers();
 		std::shared_ptr<Layer>layer = Context::deactivate<T>(std::forward<Args>(args)...);
 		m_gc.globalDeactivate(this, layer);
 		return layer;
