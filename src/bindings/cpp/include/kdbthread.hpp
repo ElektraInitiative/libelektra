@@ -137,13 +137,19 @@ public:
 		return std::move(lock);
 	}
 
+	Coordinator()
+	{
+		std::lock_guard<std::mutex> lock (m_mutex);
+		m_updates.insert(std::make_pair(nullptr, PerContext()));
+	}
+
 	~Coordinator()
 	{
 #if DEBUG
 		for (auto & i: m_updates)
 		{
 			std::cout << "coordinator " << this
-				<< "left over : " << i.first
+				<< " left over: " << i.first
 				<< " with updates: " << i.second.toUpdate.size()
 				<< " activations: " << i.second.toActivate.size()
 				<< std::endl;
@@ -158,7 +164,7 @@ private:
 	void attach(ThreadSubject *c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		m_updates.insert(std::make_pair(c, PerContext()));
+		m_updates.insert(std::make_pair(c, m_updates[nullptr]));
 	}
 
 	void detach(ThreadSubject *c)
@@ -268,6 +274,7 @@ private:
 	}
 
 	/// stores per context updates not yet delievered
+	/// nullptr is for full history to be copied to new contexts
 	std::unordered_map<ThreadSubject *, PerContext> m_updates;
 	/// mutex protecting m_updates
 	std::mutex m_mutex;
