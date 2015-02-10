@@ -650,6 +650,27 @@ private:
 	mutable Key m_key;
 };
 
+template <typename T,
+	typename PolicySetter1,
+	typename PolicySetter2,
+	typename PolicySetter3,
+	typename PolicySetter4,
+	typename PolicySetter5,
+	typename PolicySetter6
+	>
+std::ostream & operator << (std::ostream & os, Value<T,
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		> const & v)
+{
+	os << static_cast<T>(v);
+	return os;
+}
+
 }
 
 #endif
