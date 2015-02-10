@@ -710,6 +710,8 @@ private:
 	mutable Key m_key;
 };
 
+#define VALUE Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6>
+
 template <typename T,
 	typename PolicySetter1,
 	typename PolicySetter2,
@@ -718,18 +720,40 @@ template <typename T,
 	typename PolicySetter5,
 	typename PolicySetter6
 	>
-std::ostream & operator << (std::ostream & os, Value<T,
-		PolicySetter1,
-		PolicySetter2,
-		PolicySetter3,
-		PolicySetter4,
-		PolicySetter5,
-		PolicySetter6
-		> const & v)
+std::ostream & operator << (std::ostream & os, VALUE const & v)
 {
 	os << static_cast<T>(v);
 	return os;
 }
+
+/* not needed because of cast operator
+#define DEFINE_OPERATOR(op) template <typename T, typename PolicySetter1, typename PolicySetter2, \
+	typename PolicySetter3, typename PolicySetter4, typename PolicySetter5, typename PolicySetter6 > \
+const typename VALUE::type operator op(VALUE const & lhs, VALUE const & rhs) \
+{ \
+	return static_cast<T>(lhs) op static_cast<T>(rhs); \
+}
+
+DEFINE_OPERATOR(+)
+DEFINE_OPERATOR(-)
+DEFINE_OPERATOR(*)
+DEFINE_OPERATOR(/)
+DEFINE_OPERATOR(%)
+DEFINE_OPERATOR(^)
+DEFINE_OPERATOR(&)
+DEFINE_OPERATOR(|)
+DEFINE_OPERATOR(<)
+DEFINE_OPERATOR(>)
+DEFINE_OPERATOR(==)
+DEFINE_OPERATOR(!=)
+DEFINE_OPERATOR(<=)
+DEFINE_OPERATOR(>=)
+DEFINE_OPERATOR(&&)
+DEFINE_OPERATOR(||)
+
+#undef DEFINE_OPERATOR
+#undef VALUE
+*/
 
 }
 
