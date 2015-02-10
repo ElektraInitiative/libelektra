@@ -35,15 +35,14 @@ struct LayerAction
 };
 
 /// A vector of layers
-typedef std::vector<LayerAction> LayerVector;
-
+typedef std::unordered_map<std::string, LayerAction> LayerMap;
 typedef std::unordered_map<std::string, std::vector<std::function<void()>>> FunctionMap;
 
 /// A data structure that is stored by context inside the Coordinator
 struct PerContext
 {
 	KeySet toUpdate;
-	LayerVector toActivate;
+	LayerMap toActivate;
 };
 
 class ThreadNoContext
@@ -232,7 +231,7 @@ private:
 		{
 			 // caller itself has it already activated
 			if (cc == c.first) continue;
-			c.second.toActivate.push_back(LayerAction(true, layer));
+			c.second.toActivate.insert(std::make_pair(layer->id(), LayerAction(true, layer)));
 		}
 	}
 
@@ -255,7 +254,7 @@ private:
 		{
 			 // caller itself has it already deactivated
 			if (cc == c.first) continue;
-			c.second.toActivate.push_back(LayerAction(false, layer));
+			c.second.toActivate.insert(std::make_pair(layer->id(), LayerAction(false, layer)));
 		}
 	}
 
@@ -265,10 +264,10 @@ private:
 	 * @see globalActivate
 	 * @return all layers for that subject
 	 */
-	LayerVector fetchGlobalActivation(ThreadSubject *cc)
+	LayerMap fetchGlobalActivation(ThreadSubject *cc)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		LayerVector ret;
+		LayerMap ret;
 		ret.swap(m_updates[cc].toActivate);
 		return std::move(ret);
 	}
@@ -339,15 +338,15 @@ public:
 		Events e;
 		for(auto const & l: m_gc.fetchGlobalActivation(this))
 		{
-			if (l.activate)
+			if (l.second.activate)
 			{
-				activateLayer(l.layer);
+				activateLayer(l.second.layer);
 			}
 			else
 			{
-				deactivateLayer(l.layer);
+				deactivateLayer(l.second.layer);
 			}
-			e.push_back(l.layer->id());
+			e.push_back(l.first);
 		}
 		notifyByEvents(e);
 
