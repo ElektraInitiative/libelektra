@@ -22,35 +22,35 @@ ToolBar {
 				}
 			}
 			HelpArea {
-				helpText: qsTr("This is the button to create new keys/arrays.")
+				helpText: qsTr("This is the button to create new keys/arrays. To create a key,\nprovide a name, a value and optional metadata. Array entries\nwill be named automatically.")
 			}
 		}
 		ToolButton {
 			id:tbDelete
 			action: deleteAction
 			HelpArea {
-                helpText: qsTr("This button will delete the current key and associated values\nthis will also delete the associated data from any configuration\nfiles mounted to this location upon synchronization.")
+				helpText: qsTr("This button will delete the current key and associated values.\nIt will also delete the associated data from any configuration\nfiles mounted to this location upon synchronization.")
 			}
 		}
 		ToolButton {
 			id:tbImport
 			action: importAction
 			HelpArea {
-                helpText: qsTr("This button allows you to import keys from a file. You can\nimport many types of files using Elektra plugins with this tool.")
+				helpText: qsTr("This button allows you to import keys from a file. You can import\nmany types of files using Elektra plugins with this tool.")
 			}
 		}
 		ToolButton {
 			id:tbExport
 			action: exportAction
 			HelpArea {
-                helpText: qsTr("This button allows you to export keys to a file. You can export\nmany types of files using Elektra plugins with this tool. The ecf\nfiletype is recommended if you want to preserve\nall aspects of the\ncurrent keys.")
+				helpText: qsTr("This button allows you to export keys to a file. You can export\nmany types of files using Elektra plugins with this tool. The ecf\nfiletype is recommended if you want to preserve all aspects of\nthe current keys.")
 			}
 		}
 		ToolButton {
 			id:tbUndo
 			action: undoAction
 			HelpArea {
-                helpText: qsTr("This button will undo the previous action.")
+				helpText: qsTr("This button will undo the previous action.")
 			}
 		}
 		ToolButton {
@@ -68,7 +68,7 @@ ToolBar {
 			id:tbRedo
 			action: redoAction
 			HelpArea {
-                  helpText: qsTr("This button will redo the last action.")
+				  helpText: qsTr("This button will redo the last action.")
 			}
 		}
 		ToolButton {
@@ -86,7 +86,7 @@ ToolBar {
 			id:tbSynchronize
 			action: synchronizeAction
 			HelpArea {
-                helpText: qsTr("This button will synchronize any changes you\nhave made with the Key Database. As such,if\nany changes were made to mounted configuration\nfiles then those files will be updated too.")
+				helpText: qsTr("This button will synchronize any changes you\nhave made with the Key Database. As such, if\nany changes were made to mounted config-\nuration files then those files will be updated\ntoo.")
 			}
 		}
 		Item {
@@ -111,7 +111,7 @@ ToolBar {
 				}
 			}
 			HelpArea {
-                helpText: qsTr("This is the search field. Any searches\nhere will search the entire Key Database\nfor matching keys, values, or metadata.")
+				helpText: qsTr("This is the search field. Any searches here\nwill search the entire Key Database for\nmatching keys, values, or metadata.")
 			}
 		}
 	}
