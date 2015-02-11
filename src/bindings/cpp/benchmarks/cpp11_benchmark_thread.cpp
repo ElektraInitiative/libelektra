@@ -2,7 +2,7 @@
 #include <kdbtimer.hpp>
 
 // long long iterations = 100000000000LL; // elitebenchmark lookup
-long long iterations = 1000000LL; // elitebenchmark with/activate
+long long iterations = 100000LL; // elitebenchmark with/activate
 // long long iterations = 100LL; // valgrind
 
 // not needed in benchmarks:
@@ -352,6 +352,78 @@ __attribute__((noinline)) void benchmark_evaluate(kdb::Environment & s)
 	std::cout << t;
 }
 
+__attribute__((noinline)) void benchmark_evaluate0(kdb::Environment & s)
+{
+	static Timer t("evaluate0");
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		s.context().evaluate("nolayer/_________________________________________________________/key");
+	}
+	t.stop();
+	std::cout << t;
+}
+
+__attribute__((noinline)) void benchmark_evaluate1(kdb::Environment & s)
+{
+	static Timer t("evaluate1");
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		s.context().evaluate("%layer%/_________________________________________________________/key");
+	}
+	t.stop();
+	std::cout << t;
+}
+
+__attribute__((noinline)) void benchmark_evaluate2(kdb::Environment & s)
+{
+	static Timer t("evaluate2");
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		s.context().evaluate("%layer%/%layer2%/________________________________________________/key");
+	}
+	t.stop();
+	std::cout << t;
+}
+
+__attribute__((noinline)) void benchmark_evaluate3(kdb::Environment & s)
+{
+	static Timer t("evaluate3");
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		s.context().evaluate("%layer%/%layer2%/%layer3%/_______________________________________/key");
+	}
+	t.stop();
+	std::cout << t;
+}
+
+__attribute__((noinline)) void benchmark_evaluate4(kdb::Environment & s)
+{
+	static Timer t("evaluate4");
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		s.context().evaluate("%layer%/%layer2%/%layer3%/%layer4%/______________________________/key");
+	}
+	t.stop();
+	std::cout << t;
+}
+
+__attribute__((noinline)) void benchmark_evaluate5(kdb::Environment & s)
+{
+	static Timer t("evaluate5");
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		s.context().evaluate("%layer%/%layer2%/%layer3%/%layer4%/%layer5%/_____________________/key");
+	}
+	t.stop();
+	std::cout << t;
+}
+
 __attribute__((noinline)) void benchmark_kslookup()
 {
 	static Timer t("kslookup");
@@ -384,6 +456,26 @@ __attribute__((noinline)) void benchmark_layer_with(kdb::Environment & s)
 	for (long long i=0; i<iterations/2; ++i)
 	{
 		s.context().with<Layer1>()([]{});
+	}
+	t.stop();
+	std::cout << t;
+}
+
+__attribute__((noinline)) void benchmark_layer_withx(kdb::Environment & s)
+{
+	s.nested = value;
+	s.context().with<Layer1>()([&]{
+					s.nested = othervalue;});
+	kdb::ThreadInteger::type x = 0;
+
+	static Timer t("layer withx");
+	t.start();
+	for (long long i=0; i<iterations/2; ++i)
+	{
+		s.context().with<Layer1>()([&]{
+			x ^= add_contextual(s.bm, s.bm);
+		});
+		x ^= add_contextual(s.bm, s.bm);
 	}
 	t.stop();
 	std::cout << t;
@@ -1072,6 +1164,42 @@ __attribute__((noinline)) void benchmark_layer_activationval(kdb::Environment & 
 	dump << "Layer ActivationVal " << x << std::endl;
 }
 
+__attribute__((noinline)) void benchmark_layer_withN(kdb::Environment &, long long N)
+{
+	kdb::Coordinator c;
+	kdb::ThreadContext tc(c);
+	kdb::KeySet ks;
+	kdb::ThreadInteger ti(ks,tc, kdb::Key("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	ti = 5;
+	kdb::ThreadInteger::type x = ti;
+
+	// N additional integers producing overhead
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi;
+	for (long long i = 0; i<N; ++i)
+	{
+		std::ostringstream os;
+		os << "/test/%layer1%/";
+		os << i;
+		// std::cout << os.str().c_str() << std::endl;
+		vi.push_back(std::make_shared<kdb::ThreadInteger>(ks,tc, kdb::Key(os.str().c_str(), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
+	}
+
+	static Timer *ts [10]{new Timer("layer with0"), new Timer("layer with1"), new Timer("layer with2"), new Timer("layer with3"), new Timer("layer with4"), new Timer("layer with5"), new Timer("layer with6"), new Timer("layer with7"), new Timer("layer with8"), new Timer("layer with9")};
+	Timer & t = *ts[N];
+	t.start();
+	for (long long i=0; i<iterations/2; ++i)
+	{
+		tc.with<Layer1>()([&]{
+			x ^= add_contextual(ti,ti);
+		});
+		x ^= add_contextual(ti,ti);
+	}
+	t.stop();
+	std::cout << t;
+	dump << t.name << x << std::endl;
+}
+
+
 __attribute__((noinline)) void benchmark_layer_switch(kdb::Environment & s)
 {
 	s.nested = value;
@@ -1092,6 +1220,43 @@ for (long long i=0; i<iterations/2; ++i)
 	std::cout << t;
 	dump << "layer switch " << x << std::endl;
 }
+
+
+__attribute__((noinline)) void benchmark_layer_switchN(kdb::Environment &, long long N)
+{
+	kdb::Coordinator c;
+	kdb::ThreadContext tc(c);
+	kdb::KeySet ks;
+	kdb::ThreadInteger ti(ks,tc, kdb::Key("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	ti = 5;
+	kdb::ThreadInteger::type x = ti;
+
+	// N additional integers producing overhead
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi;
+	for (long long i = 0; i<N; ++i)
+	{
+		std::ostringstream os;
+		os << "/test/%layer1%/";
+		os << i;
+		// std::cout << os.str().c_str() << std::endl;
+		vi.push_back(std::make_shared<kdb::ThreadInteger>(ks,tc, kdb::Key(os.str().c_str(), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
+	}
+
+	static Timer *ts [10]{new Timer("layer switch0"), new Timer("layer switch1"), new Timer("layer switch2"), new Timer("layer switch3"), new Timer("layer switch4"), new Timer("layer switch5"), new Timer("layer switch6"), new Timer("layer switch7"), new Timer("layer switch8"), new Timer("layer switch9")};
+	Timer & t = *ts[N];
+	t.start();
+	for (long long i=0; i<iterations/2; ++i)
+	{
+		tc.activate<Layer1>();
+		x ^= add_contextual(ti,ti);
+		tc.deactivate<Layer1>();
+		x ^= add_contextual(ti,ti);
+	}
+	t.stop();
+	std::cout << t;
+	dump << t.name << x << std::endl;
+}
+
 
 __attribute__((noinline)) void benchmark_layer_sync(kdb::Environment & s)
 {
@@ -1185,8 +1350,8 @@ int main(int argc, char**argv)
 		benchmark_layer_with9out(s);
 		*/
 
+		// 1-9 values with layer activations in a loop
 		/*
-		// 1-9 layer activations in a loop
 		benchmark_layer_with1val(s);
 		benchmark_layer_with2val(s);
 		benchmark_layer_with3val(s);
@@ -1209,14 +1374,30 @@ int main(int argc, char**argv)
 
 		benchmark_layer_with1outin(s);
 		benchmark_layer_with1valout(s);
-		benchmark_evaluate_no_sub(s);
 		*/
+		benchmark_evaluate_no_sub(s);
 
 		benchmark_layer_sync(s);
 		benchmark_layer_with(s);
-		benchmark_layer_switch(s); // expensive
+		benchmark_layer_withx(s);
+		for (int j=0; j<10; ++j)
+		{
+			benchmark_layer_withN(s, j);
+		}
+		benchmark_layer_switch(s);
+		for (int j=0; j<10; ++j)
+		{
+			benchmark_layer_switchN(s, j);
+		}
 
 		benchmark_evaluate(s);
+		benchmark_evaluate0(s);
+		benchmark_evaluate1(s);
+		benchmark_evaluate2(s);
+		benchmark_evaluate3(s);
+		benchmark_evaluate4(s);
+		benchmark_evaluate5(s);
+
 		benchmark_kslookup();
 
 		benchmark_hashmap();
