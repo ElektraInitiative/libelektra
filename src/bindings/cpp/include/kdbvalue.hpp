@@ -112,9 +112,11 @@ public:
 	typedef std::function<Pair()> Func;
 	Command(
 		ValueSubject const & v_,
-		Func & execute_) :
+		Func & execute_,
+		bool hasChanged_ = false) :
 		v(const_cast<ValueSubject &>(v_)),
 		execute(execute_),
+		hasChanged(hasChanged_),
 		oldKey(),
 		newKey()
 	{}
@@ -123,6 +125,7 @@ public:
 
 	ValueSubject & v; // this pointer
 	Func & execute; // to be executed within lock
+	bool hasChanged; // if the value (m_cache) has changed and value propagation is needed
 	std::string oldKey; // old name before assignment
 	std::string newKey; // new name after assignment
 };
@@ -388,6 +391,23 @@ public:
 		m_context.execute(command);
 	}
 
+	~Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
+		PolicySetter4, PolicySetter5, PolicySetter6>
+		()
+	{
+		Command::Func fun = [this] () -> Command::Pair
+		{
+			std::string oldName = m_key.getName();
+			m_key = static_cast<ckdb::Key*>(0);
+			// after destructor we do not need to care about
+			// invariant anymore. But we need to care about
+			// thread safe m_key.
+			return std::make_pair(oldName, "");
+		};
+		Command command(*this, fun);
+		m_context.execute(command);
+	}
+
 	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
 		PolicySetter4, PolicySetter5, PolicySetter6> V;
 
@@ -419,17 +439,77 @@ public:
 		return ret;
 	}
 
-	// template < typename = typename std::enable_if< true >::type >
+	type operator --()
+	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		type ret = --m_cache;
+		m_hasChanged = true;
+		syncKeySet();
+		return ret;
+	}
+
+	type operator --(int)
+	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		type ret = m_cache--;
+		m_hasChanged = true;
+		syncKeySet();
+		return ret;
+	}
+
+	V & operator = (V const & rhs)
+	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		if (this != &rhs)
+		{
+			m_cache = rhs;
+			m_hasChanged = true;
+			syncKeySet();
+		}
+		return *this;
+	}
+
+#define ELEKTRA_DEFINE_OPERATOR(op) \
+	V & operator op(type const & rhs) \
+	{ \
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value"); \
+		m_cache op rhs; \
+		m_hasChanged = true; \
+		syncKeySet(); \
+		return *this; \
+	}
+
+ELEKTRA_DEFINE_OPERATOR(-=)
+ELEKTRA_DEFINE_OPERATOR(+=)
+ELEKTRA_DEFINE_OPERATOR(*=)
+ELEKTRA_DEFINE_OPERATOR(/=)
+ELEKTRA_DEFINE_OPERATOR(%=)
+ELEKTRA_DEFINE_OPERATOR(^=)
+ELEKTRA_DEFINE_OPERATOR(&=)
+ELEKTRA_DEFINE_OPERATOR(|=)
+
+#undef ELEKTRA_DEFINE_OPERATOR
+
+	type operator-() const
+	{
+		return -m_cache;
+	}
+
+	type operator~() const
+	{
+		return ~m_cache;
+	}
+
+	type operator!() const
+	{
+		return !m_cache;
+	}
+
+	// type conversion
 	operator type() const
 	{
 		return m_cache;
 	}
-
-	bool operator == (V const & other) const
-	{
-		return m_cache == other.m_cache ;
-	}
-
 
 	/**
 	 * @return the context bound to the value
@@ -495,7 +575,7 @@ public:
 			this->unsafeSyncKeySet();
 			return std::make_pair(oldKey, m_key.getName());
 		};
-		Command command(*this, fun);
+		Command command(*this, fun, m_hasChanged);
 		m_context.execute(command);
 	}
 
@@ -578,7 +658,7 @@ private:
 			this->unsafeUpdateKeyUsingContext(evaluatedName);
 			this->unsafeSyncCache();  // read what we have under new context
 
-			return std::make_pair(oldKey, evaluatedName);
+			return std::make_pair(oldKey, m_key.getName());
 		};
 		Command command(*this, fun);
 		m_context.execute(command);
@@ -629,6 +709,27 @@ private:
 	 */
 	mutable Key m_key;
 };
+
+template <typename T,
+	typename PolicySetter1,
+	typename PolicySetter2,
+	typename PolicySetter3,
+	typename PolicySetter4,
+	typename PolicySetter5,
+	typename PolicySetter6
+	>
+std::ostream & operator << (std::ostream & os, Value<T,
+		PolicySetter1,
+		PolicySetter2,
+		PolicySetter3,
+		PolicySetter4,
+		PolicySetter5,
+		PolicySetter6
+		> const & v)
+{
+	os << static_cast<T>(v);
+	return os;
+}
 
 }
 

@@ -284,6 +284,7 @@ protected:
 		lazyActivateLayer(layer);
 	}
 
+	// needed for with
 	void lazyActivateLayer(std::shared_ptr<Layer> const & layer)
 	{
 		std::string const & id = layer->id(); // optimisation
@@ -303,6 +304,20 @@ protected:
 #endif
 	}
 
+	// needed for global activation
+	void activateLayer(std::shared_ptr<Layer> const & layer)
+	{
+		auto p = m_active_layers.emplace(std::make_pair(layer->id(), layer));
+		if (!p.second)
+		{
+			p.first->second = layer; // update
+		}
+
+#if DEBUG && VERBOSE
+		std::cout << "activate layer: " << layer->id() << std::endl;
+#endif
+	}
+
 public:
 	/**
 	 * @brief Globally activate the layer
@@ -315,15 +330,8 @@ public:
 	std::shared_ptr<Layer> activate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
-		auto p = m_active_layers.emplace(std::make_pair(layer->id(), layer));
-		if (!p.second)
-		{
-			p.first->second = layer; // update
-		}
+		activateLayer(layer);
 		notifyByEvents({layer->id()});
-#if DEBUG && VERBOSE
-		std::cout << "activate layer: " << layer->id() << std::endl;
-#endif
 		return layer;
 	}
 
@@ -350,15 +358,21 @@ protected:
 #endif
 	}
 
+	void deactivateLayer(std::shared_ptr<Layer> const & layer)
+	{
+		m_active_layers.erase(layer->id());
+
+#if DEBUG && VERBOSE
+		std::cout << "deactivate layer: " << layer->id() << std::endl;
+#endif
+	}
+
 public:
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> deactivate(Args&&... args)
 	{
 		std::shared_ptr<Layer>layer = std::make_shared<T>(std::forward<Args>(args)...);
-		m_active_layers.erase(layer->id());
-#if DEBUG && VERBOSE
-		std::cout << "deactivate layer: " << layer->id() << std::endl;
-#endif
+		deactivateLayer(layer);
 		notifyByEvents({layer->id()});
 		return layer;
 	}

@@ -11,10 +11,15 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
+genopt.hpp + include enforcement in template_dynamic?
+
+install kdb gen properly
+	search by default in installed pathes
+
 initial warnings 22, 93 when no /etc/kdb
 test racing
 
-KEY_CASCADING_NAME/meta data confusion?
+KEY_CASCADING_NAME must die
 
 document METADATA.ini
 
@@ -41,9 +46,16 @@ streaming
 c++11
 DEFAULT_STORAGE/RESOLVER
 
+
+
+
+
 # 0.8.12
 
 better errnostore solution?
+
+C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin
+exists for it
 
 ## meta data ##
 

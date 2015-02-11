@@ -290,6 +290,94 @@ break 1520 if i.getName()
 	ASSERT_EQ(ks.lookup("/german/%/%/test").getString() , "15");
 }
 
+TYPED_TEST(test_contextual_basic, mixedWithActivate)
+{
+	using namespace kdb;
+	KeySet ks;
+	TypeParam c = this->context;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key("/%language%/%country%/%dialect%/test",
+			KEY_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(i , i_value);
+	// The value always needs a connection to a key
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
+	i = 5;
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+
+	c.template activate<LanguageGermanLayer>();
+	i = 6;
+	ASSERT_EQ(i , 6);
+	ASSERT_EQ(i.getName() , "user/german/%/%/test");
+	ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+
+	c.template with<CountryGermanyLayer>()([&]()
+	{
+		i = 7;
+		ASSERT_EQ(i , 7);
+		ASSERT_EQ(i.getName() , "user/german/germany/%/test");
+		ASSERT_EQ(ks.lookup("user/german/germany/%/test").getString() , "7");
+	});
+
+	// LanguageGermanLayer still active
+	ASSERT_EQ(i , 6);
+	ASSERT_EQ(i.getName() , "user/german/%/%/test");
+	ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+
+	c.template deactivate<LanguageGermanLayer>();
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+}
+
+TYPED_TEST(test_contextual_basic, nestedWithActivate)
+{
+	using namespace kdb;
+	KeySet ks;
+	TypeParam c = this->context;
+	ASSERT_TRUE(!ks.lookup("/%/%/%/test"));
+	Value <int, ContextPolicyIs<TypeParam>> i(ks, c, Key("/%language%/%country%/%dialect%/test",
+			KEY_CASCADING_NAME,
+			KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(i , i_value);
+	// The value always needs a connection to a key
+	ASSERT_TRUE(ks.lookup("/%/%/%/test"));
+	i = 5;
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+
+	c.template with<CountryGermanyLayer>()([&]()
+	{
+		i = 7;
+		ASSERT_EQ(i , 7);
+		ASSERT_EQ(i.getName() , "user/%/germany/%/test");
+		ASSERT_EQ(ks.lookup("user/%/germany/%/test").getString() , "7");
+
+		c.template without<CountryGermanyLayer>()([&]()
+		{
+			c.template activate<LanguageGermanLayer>();
+
+			i = 6;
+			ASSERT_EQ(i , 6);
+			ASSERT_EQ(i.getName() , "user/german/%/%/test");
+			ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+		});
+	});
+
+	// LanguageGermanLayer still active
+	ASSERT_EQ(i , 6);
+	ASSERT_EQ(i.getName() , "user/german/%/%/test");
+	ASSERT_EQ(ks.lookup("user/german/%/%/test").getString() , "6");
+
+	c.template deactivate<LanguageGermanLayer>();
+	ASSERT_EQ(i , 5);
+	ASSERT_EQ(i.getName() , "user/%/%/%/test");
+	ASSERT_EQ(ks.lookup("user/%/%/%/test").getString() , "5");
+}
+
 
 TYPED_TEST(test_contextual_basic, counting)
 {
@@ -660,4 +748,94 @@ TEST(test_contextual_basic, nocontext)
 
 	n = 18;
 	ASSERT_EQ(n , 18);
+}
+
+TEST(test_contextual_basic, operators)
+{
+	using namespace kdb;
+	KeySet ks;
+	NoContext c;
+	kdb::Value<int> n(ks, c,  Key("/test/n",
+				KEY_CASCADING_NAME,
+				KEY_META, "default", s_value, KEY_END));
+	kdb::Value<int> m(ks, c,  Key("/test/m",
+				KEY_CASCADING_NAME,
+				KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ(n , i_value);
+	ASSERT_EQ(m , i_value);
+
+	n = 18;
+	ASSERT_EQ(n , 18);
+	ASSERT_EQ(18, n);
+	ASSERT_EQ(n, n);
+	ASSERT_EQ(!n, 0);
+	ASSERT_EQ(0, !n);
+	ASSERT_EQ(~n, ~18);
+	ASSERT_EQ(~18, ~n);
+
+	ASSERT_NE(n, 19);
+	ASSERT_NE(19, n);
+	ASSERT_NE(!n, n);
+	ASSERT_NE(~n, n);
+
+	ASSERT_LT(n, 19);
+	ASSERT_GT(n, 17);
+	ASSERT_LE(n, 19);
+	ASSERT_GE(n, 17);
+
+	ASSERT_LE(n, 18);
+	ASSERT_GE(n, 18);
+
+	n = 18;
+	m = 18;
+
+	ASSERT_EQ(n, m);
+	ASSERT_EQ(m, n);
+
+	n+=3;
+	m+=3;
+
+	ASSERT_EQ(n, m);
+	ASSERT_EQ(m, n);
+
+	m+=n;
+	ASSERT_EQ(n, 21);
+	ASSERT_EQ(m, 42);
+
+	ASSERT_EQ(n+n, m);
+	ASSERT_EQ(m, n+n);
+
+	n--;
+	ASSERT_EQ(n, 20);
+
+	ASSERT_EQ(n && n, true);
+
+	n-=10;
+	ASSERT_EQ(n, 10);
+
+	n*=2;
+	ASSERT_EQ(n, 20);
+
+	n/=2;
+	ASSERT_EQ(n, 10);
+
+	n%=12;
+	ASSERT_EQ(n, 10%12);
+
+	n = 4 | 8;
+	n |= 16;
+	ASSERT_EQ(n, 4 | 8 | 16);
+
+	n = 8;
+	n = n;
+	m = n;
+	ASSERT_EQ(n, 8);
+	ASSERT_EQ(m, 8);
+	ASSERT_EQ(8, n);
+	ASSERT_EQ(8, m);
+
+	n = -8;
+	m = 8;
+	ASSERT_EQ(n, -m);
+	ASSERT_EQ(-n, m);
 }
