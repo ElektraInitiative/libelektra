@@ -428,7 +428,7 @@ ApplicationWindow {
 	Action {
 		id: mountBackendAction
 
-		text: qsTr("Mount Backend ...")
+		text: qsTr("&Mount Backend ...")
 		iconSource: "icons/mount.png"
 		tooltip: qsTr("Mount Backend")
 		onTriggered: {
@@ -440,7 +440,7 @@ ApplicationWindow {
 	Action {
 		id: unmountBackendAction
 
-		text: qsTr("Unmount Backend ...")
+		text: qsTr("&Unmount Backend ...")
 		iconSource: "icons/unmount.png"
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
@@ -517,7 +517,7 @@ ApplicationWindow {
 	Action {
 		id: aboutAction
 
-		text: qsTr("About Elektra Editor")
+		text: qsTr("About E&lektra Editor")
 		iconSource: "icons/elektra-logo.png"
 		onTriggered: aboutWindow.show()
 	}
@@ -533,7 +533,7 @@ ApplicationWindow {
 
 	Action {
 		id: pluginInfoAction
-		text: qsTr("Show Plugin Info ...")
+		text: qsTr("Show &Plugin Info ...")
 		iconSource: "icons/help-about.png"
 		onTriggered: pluginInfo.show()
 	}

@@ -1,5 +1,5 @@
 import QtQuick 2.2
-import QtQuick.Controls 1.2
+import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
 BasicWindow {
@@ -9,6 +9,7 @@ BasicWindow {
 	cancelButton.action.text: qsTr("&Close")
 	cancelButton.action.onTriggered: closeWindow()
 	onClosing: pluginDropdown.currentIndex = 0
+	spacer.height: 0
 
 	contents: ColumnLayout {
 		anchors.fill: parent

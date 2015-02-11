@@ -77,6 +77,26 @@ BasicWindow {
 						}
 					}
 				}
+				Tab {
+					id: licenseTab
+
+					title: qsTr("License")
+					TextArea {
+						property string lgplUrl: "http://www.gnu.org/licenses/lgpl-3.0.txt"
+						property string oxygenUrl: "http://www.oxygen-icons.org/"
+						readOnly: true
+						textFormat: TextEdit.RichText
+						textMargin: defaultSpacing
+						wrapMode: Text.WordWrap
+						text: "<html>" +
+							  "<style type=\"text/css\"></style>" +
+							  "<p><a href=\"" + oxygenUrl + "\">Oxygen Icons</a> are used under <a href=\"" + lgplUrl + "\">LGPL3</a></p>" +
+							  "</html>"
+						onLinkActivated: {
+							Qt.openUrlExternally(link)
+						}
+					}
+				}
 			}
 		}
 	}
