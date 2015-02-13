@@ -439,17 +439,77 @@ public:
 		return ret;
 	}
 
-	// template < typename = typename std::enable_if< true >::type >
+	type operator --()
+	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		type ret = --m_cache;
+		m_hasChanged = true;
+		syncKeySet();
+		return ret;
+	}
+
+	type operator --(int)
+	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		type ret = m_cache--;
+		m_hasChanged = true;
+		syncKeySet();
+		return ret;
+	}
+
+	V & operator = (V const & rhs)
+	{
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		if (this != &rhs)
+		{
+			m_cache = rhs;
+			m_hasChanged = true;
+			syncKeySet();
+		}
+		return *this;
+	}
+
+#define ELEKTRA_DEFINE_OPERATOR(op) \
+	V & operator op(type const & rhs) \
+	{ \
+		static_assert(Policies::WritePolicy::allowed, "read only contextual value"); \
+		m_cache op rhs; \
+		m_hasChanged = true; \
+		syncKeySet(); \
+		return *this; \
+	}
+
+ELEKTRA_DEFINE_OPERATOR(-=)
+ELEKTRA_DEFINE_OPERATOR(+=)
+ELEKTRA_DEFINE_OPERATOR(*=)
+ELEKTRA_DEFINE_OPERATOR(/=)
+ELEKTRA_DEFINE_OPERATOR(%=)
+ELEKTRA_DEFINE_OPERATOR(^=)
+ELEKTRA_DEFINE_OPERATOR(&=)
+ELEKTRA_DEFINE_OPERATOR(|=)
+
+#undef ELEKTRA_DEFINE_OPERATOR
+
+	type operator-() const
+	{
+		return -m_cache;
+	}
+
+	type operator~() const
+	{
+		return ~m_cache;
+	}
+
+	type operator!() const
+	{
+		return !m_cache;
+	}
+
+	// type conversion
 	operator type() const
 	{
 		return m_cache;
 	}
-
-	bool operator == (V const & other) const
-	{
-		return m_cache == other.m_cache ;
-	}
-
 
 	/**
 	 * @return the context bound to the value
