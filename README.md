@@ -130,7 +130,7 @@ sources.list in wheezy:
         deb-src ftp://markus-raab.org/wheezy wheezy main
 
 If there are no packages available for your distribution, see the
-[installation document](doc/INSTALL).
+[installation document](doc/INSTALL.md).
 
 ## Develop ##
 
