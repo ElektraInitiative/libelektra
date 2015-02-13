@@ -2,13 +2,19 @@
 
 * Create a build directory and compile the library
 
+
 	mkdir build
+
 	cd build
+
 	cmake ..
+
 
 * Install the files using the generated Makefile
 
+
 	sudo make install 
+
 
 ## Troubleshooting ##
 
