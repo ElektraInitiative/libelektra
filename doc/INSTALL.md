@@ -38,7 +38,7 @@ Then use:
 which should create a package for distributions where a Generator is
 implemented. See cmake/ElektraPackaging.cmake for available Generators.
 
-## TROUBLESHOOTING ## 
+## TROUBLESHOOTING ##
 
 If you encounter the problem that the library can not be found (output like this)
 
