@@ -835,7 +835,8 @@ KeySet fill_vaargs(size_t size, ...)
 {
 	va_list ap;
 	va_start(ap, size);
-	KeySet ks(size, ap);
+	KeySet ks;
+	ks.fromVA(size, ap);
 	va_end(ap);
 	return ks;
 }
