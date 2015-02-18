@@ -747,14 +747,14 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
-	// might be useless (case of error), will not harm
-	keySetString(parentKey, pk->tempfile);
-
 	int errnoSave = errno;
 	int ret = 1;
 
 	if (pk->fd == -1)
 	{
+		// we operate on the tmp file
+		keySetString(parentKey, pk->tempfile);
+
 		/* no fd up to now, so we are in first phase*/
 		if (elektraSetPrepare(pk, parentKey) == -1)
 		{
@@ -765,6 +765,10 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
 	}
 	else
 	{
+		// now we do not operate on the temporary file anymore,
+		// but on the real file
+		keySetString(parentKey, pk->filename);
+
 		/* we have an fd, so we are in second phase*/
 		if (elektraSetCommit(pk, parentKey) == -1)
 		{

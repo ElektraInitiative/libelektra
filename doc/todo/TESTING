@@ -10,6 +10,12 @@ test libelektratools:
 	usePath functionality?
 
 
+## fuzz testing
+
+- for configuration files (import)
+- using kdb shell
+- using kdb mount spec
+
 
 == ABI compatability tests ==
 

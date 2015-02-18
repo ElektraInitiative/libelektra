@@ -261,6 +261,11 @@ resolver-posix
 
 ## improvements ##
 
+create new files securely:
+	fdopen(open("/tmp", O_TMPFILE | O_EXCL | O_RDWR, 0600), "rw");
+	linkat(AT_FDCWD, "/proc/self/fd/??", AT_FDCWD, pathname, AT_SYMLINK_FOLLOW)
+	pass "/proc/self/fd/??" to plugins
+
 better error messages:
 	#9 (when opening file failed)
 	resolver in kdbError should correct error message
