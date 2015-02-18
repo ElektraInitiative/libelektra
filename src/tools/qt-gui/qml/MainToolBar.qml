@@ -13,6 +13,7 @@ ToolBar {
 			id:tbNew
 			iconSource: "icons/document-new.png"
 			enabled: newKeyAction.enabled
+			tooltip: qsTr("New ...")
 			menu: Menu {
 				MenuItem {
 					action: newKeyAction
