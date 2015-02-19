@@ -3,6 +3,16 @@
 #include <vector>
 #include <algorithm>
 
+KeySet fun(size_t alloc, ...)
+{
+	va_list vl;
+
+	va_start (vl, alloc);
+	KeySet ks (va, alloc, vl);
+	va_end (vl);
+	return ks;
+}
+
 void test_ksnew()
 {
 	cout << "testing keyset new" << endl;
@@ -40,6 +50,12 @@ void test_ksnew()
 		KS_END);
 	// ks5.toStream(stdout, 0);
 	// k4, k5, k6 can still be used
+
+	KeySet ks6 = fun(5,
+		k4.dup(),
+		k5.dup(),
+		k6.dup(),
+		KS_END);
 }
 
 void test_ksdup()
@@ -835,7 +851,7 @@ KeySet fill_vaargs(size_t size, ...)
 {
 	va_list ap;
 	va_start(ap, size);
-	KeySet ks(size, ap);
+	KeySet ks(va, size, ap);
 	va_end(ap);
 	return ks;
 }
