@@ -713,16 +713,29 @@ static void elektraSetCommit(Split *split, Key *parentKey)
 			int ret = 0;
 			Backend *backend = split->handles[i];
 
-			ksRewind (split->keysets[i]);
 			if(backend->setplugins[p])
 			{
-				keySetString(parentKey,
-					keyString(split->parents[i]));
+				if (p!=COMMIT_PLUGIN)
+				{
+					keySetString(parentKey,
+						keyString(split->parents[i]));
+				}
 				keySetName(parentKey, keyName(split->parents[i]));
+#if DEBUG && VERBOSE
+				printf ("elektraSetCommit: %p # %d with %s - %s\n",
+						backend, p, keyName(parentKey), keyString(parentKey));
+#endif
+				ksRewind (split->keysets[i]);
 				ret = backend->setplugins[p]->kdbSet (
 						backend->setplugins[p],
 						split->keysets[i],
 						parentKey);
+				if (p==COMMIT_PLUGIN)
+				{
+					// name of non-temp file
+					keySetString (split->parents[i],
+						keyString(parentKey));
+				}
 			}
 
 			if (ret == -1)

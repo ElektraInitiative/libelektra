@@ -84,7 +84,7 @@ int MvCommand::execute (Cmdline const& cl)
 		cout << newConf;
 	}
 
-	Key parentKey;
+	Key parentKey("/", KEY_CASCADING_NAME, KEY_END);
 	kdb.set(newConf, parentKey);
 	printWarnings(cerr, parentKey);
 
