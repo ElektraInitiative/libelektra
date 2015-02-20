@@ -78,8 +78,8 @@ BasicWindow {
 					}
 
 					treeView.treeModel.refresh()
-					metaAreaModel = null
-					keyAreaModel = null
+//					metaAreaView.model = null
+//					keyAreaView.model = null
 				}
 
 			}

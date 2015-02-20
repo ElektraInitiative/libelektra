@@ -55,9 +55,9 @@ KeyWindow {
 			qmlMetaKeyModel.clear()
 			selectedNode = null
 
-			if(keyAreaModel !== null && !accessFromSearchResults){
-				keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
-				metaAreaModel = keyAreaSelectedItem.metaValue
+			if(keyAreaView.model !== null && !accessFromSearchResults){
+				keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+//				metaAreaView.model = keyAreaSelectedItem.metaValue
 			}
 		}
 	}

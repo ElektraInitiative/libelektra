@@ -28,6 +28,8 @@ BasicWindow {
 
 			Label {
 				text: qsTr("Please select a file to import to \"%1\": ").arg(path.text)
+				Layout.fillWidth: true
+				wrapMode: Text.WrapAnywhere
 			}
 			RowLayout {
 				TextField {

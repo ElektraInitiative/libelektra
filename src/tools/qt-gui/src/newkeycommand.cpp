@@ -1,6 +1,6 @@
 #include "newkeycommand.hpp"
 
-NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, QString path, const QString& value, const QVariantMap& metaData, QUndoCommand* parent)
+NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, QString path, const QString& value, const QVariantMap& metaData, bool isBelow, QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_parentNode(parentNode)
 	, m_newNode(NULL)
@@ -8,7 +8,10 @@ NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, QString path, const QStri
 	, m_value(value)
 	, m_metaData(metaData)
 {
-	setText("newKey");
+	if(path.split(qApp->property("KEY_DELIMITER").toRegularExpression()).count() > 1 || isBelow)
+		setText("newBranch");
+	else
+		setText("newKey");
 
 	kdb::Key newKey = m_parentNode->getChildren()->createNewKey(m_parentNode->getPath() + "/" + path, m_value, m_metaData);
 

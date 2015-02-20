@@ -51,12 +51,12 @@ function paste() {
 
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		refreshModel(treeView.treeModel)
-		if(!treeView.currentNode.childrenHaveNoChildren)
-			keyAreaModel = null
-		else{
-			if(keyAreaModel === null)
-				keyAreaModel = treeView.currentNode.children
-		}
+//		if(!treeView.currentNode.childrenHaveNoChildren)
+//			keyAreaView.model = null
+//		else{
+//			if(keyAreaView.model === null)
+//				keyAreaView.model = treeView.currentNode.children
+//		}
 	}
 	else if(undoManager.clipboardType === "cutKey"){
 
@@ -86,12 +86,12 @@ function paste() {
 
 		refreshModel(treeView.treeModel)
 
-		if(!treeView.currentNode.childrenHaveNoChildren)
-			keyAreaModel = null
-		else{
-			if(keyAreaModel === null)
-				keyAreaModel = treeView.currentNode.children
-		}
+//		if(!treeView.currentNode.childrenHaveNoChildren)
+//			keyAreaModelkeyAreaView.model = null
+//		else{
+//			if(keyAreaView.model === null)
+//				keyAreaView.model = treeView.currentNode.children
+//		}
 	}
 }
 
@@ -102,9 +102,9 @@ function deleteKey() {
 
 	undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
 
-	metaAreaModel = null
+//	metaAreaView.model = null
 	keyAreaSelectedItem = null
-	keyAreaModel.refresh()
+//	keyAreaView.model.refresh()
 
 	if(keyAreaView.rowCount > 0){
 		keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
@@ -151,9 +151,9 @@ function deleteSearchResult(){
 
 //refreshes the key area view
 function updateKeyAreaSelection() {
-	keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
+	keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
 	editKeyWindow.selectedNode = keyAreaSelectedItem
-	metaAreaModel = keyAreaSelectedItem.metaValue
+//	metaAreaView.model = keyAreaSelectedItem.metaValue
 
 	keyAreaView.selection.clear()
 	keyAreaView.selection.select(keyAreaView.currentRow)
@@ -161,12 +161,12 @@ function updateKeyAreaSelection() {
 }
 
 //refreshes the model of the key area view
-function resetKeyAreaModel() {
-	keyAreaModel = null
-	keyAreaSelectedItem = null
-	metaAreaModel = null
-	keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
-}
+//function resetKeyAreaModel() {
+//	keyAreaView.model = null
+//	keyAreaSelectedItem = null
+////	metaAreaView.model = null
+//	keyAreaView.model = treeView.currentNode === null ? null : treeView.currentNode.children
+//}
 
 //refreshes a treeview model and preserves the current selected node
 function refreshModel(treeModel) {

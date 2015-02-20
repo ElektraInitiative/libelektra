@@ -17,7 +17,7 @@ public:
 	 * @param metaData ...
 	 * @param parent ...
 	 */
-	explicit NewKeyCommand(ConfigNodePtr parentNode, QString path, const QString& value, const QVariantMap& metaData, QUndoCommand* parent = 0);
+	explicit NewKeyCommand(ConfigNodePtr parentNode, QString path, const QString& value, const QVariantMap& metaData, bool isBelow, QUndoCommand* parent = 0);
 
 	virtual void undo();
 	virtual void redo();

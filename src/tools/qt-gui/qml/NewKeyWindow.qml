@@ -7,6 +7,8 @@ KeyWindow {
 
 	path: selectedNode === null ? "" : selectedNode.path
 
+	property bool isBelow: false
+
 	function editAccepted() {
 
 		var metaData = {};
@@ -16,19 +18,16 @@ KeyWindow {
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
 		//create UndoCommand
-		undoManager.createNewKeyCommand(selectedNode.parentModel, selectedNode.index, nameTextField.text, valueTextField.text, metaData)
+		undoManager.createNewKeyCommand(selectedNode.parentModel, selectedNode.index, nameTextField.text, valueTextField.text, metaData, isBelow)
 
 		if(!error){
 			visible = false
-//			selectedNode = selectedNode.parentModel.get(selectedNode.index)
-
-//			if(selectedNode.childCount === 1){
-//				treeView.treeModel.refresh()
-				MFunctions.resetKeyAreaModel()
-//			}
-
-			if(nameTextField.text.lastIndexOf("/") > 0)
-				selectedNode.parentModel.refresh()
+			console.log(undoManager.undoText)
+			if(undoManager.undoText === "newBranch"){
+				keyAreaView.selection.clear()
+				treeView.treeModel.refresh()
+				keyAreaSelectedItem = null
+			}
 
 			qmlMetaKeyModel.clear()
 			nameTextField.text = ""

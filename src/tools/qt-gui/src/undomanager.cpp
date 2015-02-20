@@ -68,9 +68,9 @@ void UndoManager::createDeleteKeyCommand(const QString& type, TreeViewModel* mod
 	m_undoStack->push(new DeleteKeyCommand(type, model, idx));
 }
 
-void UndoManager::createNewKeyCommand(TreeViewModel* model, int idx, const QString& name, const QString& value, const QVariantMap& metaData)
+void UndoManager::createNewKeyCommand(TreeViewModel* model, int idx, const QString& name, const QString& value, const QVariantMap& metaData, bool isBelow)
 {
-	m_undoStack->push(new NewKeyCommand(model->model().at(idx), name, value, metaData));
+	m_undoStack->push(new NewKeyCommand(model->model().at(idx), name, value, metaData, isBelow));
 }
 
 void UndoManager::createCopyKeyCommand(TreeViewModel *model, int idx)
