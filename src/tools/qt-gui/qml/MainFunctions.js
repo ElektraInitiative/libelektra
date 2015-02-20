@@ -43,20 +43,11 @@ function paste() {
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		keyAreaView.keyAreaCopyIndex = -1
 		keyAreaView.currentNodePath = ""
-
-		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
-			resetKeyAreaModel()
 	}
 	else if(undoManager.clipboardType === "copyBranch"){
 
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		refreshModel(treeView.treeModel)
-//		if(!treeView.currentNode.childrenHaveNoChildren)
-//			keyAreaView.model = null
-//		else{
-//			if(keyAreaView.model === null)
-//				keyAreaView.model = treeView.currentNode.children
-//		}
 	}
 	else if(undoManager.clipboardType === "cutKey"){
 
@@ -70,9 +61,6 @@ function paste() {
 		else{
 			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		}
-
-		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
-			resetKeyAreaModel()
 	}
 	else if(undoManager.clipboardType === "cutBranch"){
 
@@ -85,26 +73,15 @@ function paste() {
 		}
 
 		refreshModel(treeView.treeModel)
-
-//		if(!treeView.currentNode.childrenHaveNoChildren)
-//			keyAreaModelkeyAreaView.model = null
-//		else{
-//			if(keyAreaView.model === null)
-//				keyAreaView.model = treeView.currentNode.children
-//		}
 	}
 }
 
 //deletes key when delete key command for a key without children is executed
 function deleteKey() {
-	//		console.log("delete key")
+
 	var cr = keyAreaView.currentRow
 
 	undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-
-//	metaAreaView.model = null
-	keyAreaSelectedItem = null
-//	keyAreaView.model.refresh()
 
 	if(keyAreaView.rowCount > 0){
 		keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
@@ -118,7 +95,6 @@ function deleteKey() {
 
 //deletes key when delete key command for a key with children is executed
 function deleteBranch(treeModel) {
-	//		console.log("delete branch")
 
 	undoManager.createDeleteKeyCommand("deleteBranch", treeModel.currentNode.parentModel, treeModel.currentNode.index)
 
@@ -128,7 +104,7 @@ function deleteBranch(treeModel) {
 
 //deletes key when delete key command for a key located in the search results is executed
 function deleteSearchResult(){
-	//console.log("delete search result")
+
 	var ci = searchResultsListView.currentIndex
 
 	if(searchResultsSelectedItem !== null){
@@ -153,20 +129,12 @@ function deleteSearchResult(){
 function updateKeyAreaSelection() {
 	keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
 	editKeyWindow.selectedNode = keyAreaSelectedItem
-//	metaAreaView.model = keyAreaSelectedItem.metaValue
 
+	keyAreaView.model.refresh()
 	keyAreaView.selection.clear()
 	keyAreaView.selection.select(keyAreaView.currentRow)
 	keyAreaView.forceActiveFocus()
 }
-
-//refreshes the model of the key area view
-//function resetKeyAreaModel() {
-//	keyAreaView.model = null
-//	keyAreaSelectedItem = null
-////	metaAreaView.model = null
-//	keyAreaView.model = treeView.currentNode === null ? null : treeView.currentNode.children
-//}
 
 //refreshes a treeview model and preserves the current selected node
 function refreshModel(treeModel) {

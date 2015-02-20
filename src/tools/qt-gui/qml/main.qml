@@ -260,69 +260,35 @@ ApplicationWindow {
 		shortcut: StandardKey.Undo
 		enabled: undoManager.canUndo
 		onTriggered: {
-//			undoManager.undo()
-//			if(undoManager.undoText === "deleteKey"){
-//				undoManager.undo()
-//				//				MFunctions.resetKeyAreaModel()
-
-//				//				if(keyAreaModel !== null)
-//				//					keyAreaModel.refresh()
-
-//				//				treeView.treeModel.refresh()
-//			}
-//			if(undoManager.undoText === "deleteBranch"){
-//				undoManager.undo()
-////				//				if(keyAreaModel !== null)
-////				//					keyAreaModel.refresh()
-//				treeView.treeModel.refresh()
-//			}
-			if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
+			if(undoManager.undoText === "deleteBranch"){
+				undoManager.undo()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
 				undoManager.undo()
 			}
-//			else if(undoManager.undoText === "copyKey"){
-//				undoManager.undo()
-
-//				if(keyAreaView.currentRow >= keyAreaView.model.count()) {
-//					metaAreaView.model = null
-//					keyAreaSelectedItem = null
-//					keyAreaView.selection.clear()
-//					keyAreaView.model.refresh()
-//				}
-//			}
-//			else if(undoManager.undoText === "copyBranch"){
-//				undoManager.undo()
-//				treeView.treeModel.refresh()
-//			}
-//			else if(undoManager.undoText === "cutKey"){
-//				undoManager.undo()
-//			}
-//			else if(undoManager.undoText === "cutBranch"){
-//				undoManager.undo()
-//				treeView.treeModel.refresh()
-//			}
-//			else if(undoManager.undoText === "import"){
-//				undoManager.undo()
-//				treeView.treeModel.refresh()
-//			}
+			else if(undoManager.undoText === "copyBranch"){
+				undoManager.undo()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.undoText === "cutBranch"){
+				undoManager.undo()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.undoText === "import"){
+				undoManager.undo()
+				treeView.treeModel.refresh()
+			}
 			else if(undoManager.undoText === "newBranch"){
 				undoManager.undo()
 				treeView.treeModel.refresh()
 				keyAreaView.selection.clear()
 			}
-
 			else if(undoManager.undoText === "newKey"){
 				undoManager.undo()
 				keyAreaView.selection.clear()
-				keyAreaSelectedItem = null
-////				treeView.treeModel.refresh()
-////				keyAreaView.selection.clear()
-//				if(keyAreaView.currentRow >= keyAreaView.model.count()) {
-////					metaAreaView.model = null
-//					keyAreaSelectedItem = null
-//					keyAreaView.selection.clear()
-////					keyAreaView.model.refresh()
-//				}
+				keyAreaView.currentRow = -1
 			}
 			else{
 				undoManager.undo()
@@ -354,52 +320,29 @@ ApplicationWindow {
 		shortcut: StandardKey.Redo
 		enabled: undoManager.canRedo
 		onTriggered: {
-//			undoManager.redo()
-//			if(undoManager.redoText === "deleteKey"){
-//				undoManager.redo()
-//				//				metaAreaModel = null
-//				//				treeView.treeModel.refresh()
-//			}
-//			else if(undoManager.redoText === "deleteBranch"){
-//				undoManager.redo()
-
-//				//				if(metaAreaModel !== null)
-//				//					metaAreaModel = null
-
-//				//				if(keyAreaSelectedItem !== null)
-//				//					keyAreaSelectedItem = null
-
-//				treeView.treeModel.refresh()
-
-//			}
-			if(undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
+			if(undoManager.redoText === "deleteBranch"){
+				undoManager.redo()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
 				undoManager.redo()
 				undoManager.redo()
 			}
-//			else if(undoManager.redoText === "copyKey"){
-//				undoManager.redo()
-//				//				keyAreaModel.refresh()
-//			}
-//			else if(undoManager.redoText === "copyBranch"){
-//				undoManager.redo()
-//				treeView.treeModel.refresh()
-//				//				MFunctions.resetKeyAreaModel()
-//			}
-//			else if(undoManager.redoText === "cutKey"){
-//				undoManager.redo()
-//			}
-//			else if(undoManager.redoText === "cutBranch"){
-//				undoManager.redo()
-//				treeView.treeModel.refresh()
-//			}
-//			else if(undoManager.redoText === "import"){
-//				undoManager.redo()
-//				treeView.treeModel.refresh()
-//			}
+			else if(undoManager.redoText === "copyBranch"){
+				undoManager.redo()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.redoText === "cutBranch"){
+				undoManager.redo()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.redoText === "import"){
+				undoManager.redo()
+				treeView.treeModel.refresh()
+			}
 			else if(undoManager.redoText === "newBranch"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
-//				keysVisible = false
 			}
 			else{
 				undoManager.redo()
@@ -608,7 +551,6 @@ ApplicationWindow {
 
 			width: Math.ceil(parent.width*0.3)
 			height: parent.height
-			//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
 
 			TreeView {
 				id: treeView
@@ -630,9 +572,6 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: keyAreaHeight
 
-				//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
-
-
 				TableView {
 					id: keyAreaView
 
@@ -646,10 +585,13 @@ ApplicationWindow {
 					backgroundVisible: false
 
 					model: treeView.currentNode === null ? null : (treeView.currentNode.childrenHaveNoChildren ? treeView.currentNode.children : null)
-//					onCurrentRowChanged: {
-//						keyAreaSelectedItem = model.get(currentRow)
-////						metaAreaView.model = keyAreaSelectedItem.metaValue
-//					}
+
+					onCurrentRowChanged: {
+						if(currentRow === -1)
+							keyAreaSelectedItem = null
+						else
+							keyAreaSelectedItem = model.get(currentRow)
+					}
 
 					TableViewColumn {
 						id: nameColumn
@@ -720,8 +662,6 @@ ApplicationWindow {
 
 				width: keyAreaWidth
 				height: metaAreaHeight
-
-				//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
 
 				TableView {
 					id: metaAreaView

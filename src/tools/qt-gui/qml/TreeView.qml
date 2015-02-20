@@ -88,12 +88,10 @@ ScrollView {
 								mousePressed(mouse, model, itemLoader)
 							}
 							onDoubleClicked:{
-								if(!currentNode.isNull){
-									editKeyWindow.selectedNode = currentNode
-									editKeyWindow.qmlMetaKeyModel.clear()
-									editKeyWindow.populateMetaArea()
-									editKeyWindow.show()
-								}
+								editKeyWindow.selectedNode = currentNode
+								editKeyWindow.qmlMetaKeyModel.clear()
+								editKeyWindow.populateMetaArea()
+								editKeyWindow.show()
 							}
 							onEntered: {
 								timer.start()
@@ -187,26 +185,6 @@ ScrollView {
 			keyAreaSelectedItem = null
 			editKeyWindow.selectedNode = currentNode
 			forceActiveFocus()
-
-//			if (currentNode !== null){
-//				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
-//					keysVisible = true
-//				else
-//					keysVisible = false
-
-//				keyAreaView.model = currentNode.children
-//				keyAreaSelectedItem = null
-//				metaAreaView.model = null
-
-//				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren){
-//					keysVisible = true
-//					keyAreaView.model = currentNode.children
-//					keyAreaSelectedItem = null
-//					metaAreaView.model = null
-//				}
-//				else
-//					keyAreaView.model = null
-//			}
 		}
 		else if(mouse.button === Qt.RightButton){
 			treeContextMenu.popup()
