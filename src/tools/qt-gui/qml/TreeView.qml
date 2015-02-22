@@ -30,11 +30,21 @@ ScrollView {
 		property var elements: treeModel
 	}
 
-	property Component delegate: Label {
-		id: label
+	property Component delegate: Row {
+		spacing: defaultSpacing
+		Label {
+			id: label
 
-		text: rowLoaderModel === null ? "" : rowLoaderModel.name
-		color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
+			text: rowLoaderModel === null ? "" : rowLoaderModel.name
+			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
+		}
+		Indicator {
+			paintcolor: label.color
+			width: label.font.pixelSize
+			height: width
+			anchors.verticalCenter: label.verticalCenter
+			opacity: rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+		}
 	}
 
 	property Component treeBranch: Component {

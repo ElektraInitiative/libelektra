@@ -97,7 +97,7 @@ BasicWindow {
 					id: metaKeyListView
 
 					anchors.fill: parent
-					spacing: defaultMargins
+					spacing: defaultSpacing
 					model: qmlMetaKeyModel
 					delegate: metaKeyDelegate
 				}

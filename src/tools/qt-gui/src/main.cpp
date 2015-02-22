@@ -16,6 +16,7 @@
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
+	//keynames are only split at unescaped slashes
 	app.setProperty("KEY_DELIMITER", QRegularExpression("(?<!\\\\)/"));
 
 	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
@@ -46,13 +47,13 @@ int main(int argc, char* argv[])
 		std::cerr << e.what();
 	}
 
-	TreeViewModel* treeModel = new TreeViewModel;
+	TreeViewModel treeModel;
 
 	ctxt->setContextProperty("undoManager", &manager);
-	ctxt->setContextProperty("externTreeModel", treeModel);
+	ctxt->setContextProperty("externTreeModel", &treeModel);
 	ctxt->setContextProperty("guiBackend", &backend);
 
-	treeModel->populateModel(config);
+	treeModel.populateModel(config);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 

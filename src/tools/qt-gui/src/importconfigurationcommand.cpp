@@ -16,10 +16,7 @@ ImportConfigurationCommand::ImportConfigurationCommand(TreeViewModel* model, int
 	setText("import");
 
 	m_model->importConfiguration(m_name, m_format, m_file, m_mergeStrategy);
-
 	m_after = model->model().at(index);
-
-//	m_model->removeRow(m_index);
 }
 
 void ImportConfigurationCommand::undo()

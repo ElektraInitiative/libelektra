@@ -53,12 +53,10 @@ KeyWindow {
 			nameTextField.textColor = activePalette.text
 
 			qmlMetaKeyModel.clear()
-			selectedNode = null
 
-			if(keyAreaView.model !== null && !accessFromSearchResults){
-				keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
-//				metaAreaView.model = keyAreaSelectedItem.metaValue
-			}
+//			if(keyAreaView.model !== null && !accessFromSearchResults){
+//				keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+//			}
 		}
 	}
 }

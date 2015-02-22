@@ -65,5 +65,6 @@
         <file>qml/icons/unmount.png</file>
         <file>qml/PluginInfo.qml</file>
         <file>qml/icons/edit-delete.png</file>
+        <file>qml/Indicator.qml</file>
     </qresource>
 </RCC>
