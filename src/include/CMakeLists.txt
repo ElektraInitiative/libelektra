@@ -4,6 +4,8 @@ include(CheckTypeSize)
 
 check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
+check_symbol_exists(futimens     "sys/stat.h"       HAVE_FUTIMENS)
+check_symbol_exists(futimes      "sys/time.h"       HAVE_FUTIMES)
 
 check_include_file(ctype.h      HAVE_CTYPE_H)
 check_include_file(errno.h      HAVE_ERRNO_H)
@@ -14,11 +16,11 @@ check_include_file(string.h     HAVE_STRING_H)
 check_include_file(time.h       HAVE_TIME_H)
 check_include_file(unistd.h     HAVE_UNISTD_H)
 
-check_type_size(int             SIZEOF_INT)
-check_type_size(long            SIZEOF_LONG)
-check_type_size("long long"     SIZEOF_LONG_LONG)
-check_type_size("long double"   SIZEOF_LONG_DOUBLE)
-check_type_size(mode_t          SIZEOF_MODE_T)
+check_type_size(int           SIZEOF_INT)
+check_type_size(long          SIZEOF_LONG)
+check_type_size(long long     SIZEOF_LONG_LONG)
+check_type_size(long double   SIZEOF_LONG_DOUBLE)
+check_type_size(mode_t        SIZEOF_MODE_T)
 
 set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
