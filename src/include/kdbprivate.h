@@ -511,11 +511,12 @@ int elektraValidateKeyNamePart(const char *name);
  */
 #define ELEKTRA_MAX_ARRAY_SIZE (21)
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(__cplusplus)
+#include <kdbtypes.h>
 /*Internally used for array handling*/
 int elektraArrayValidateName(const Key *key);
-int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex);
-int elektraWriteArrayNumber(char *newName, int64_t newIndex);
+int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex);
+int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
 #endif
 
 /** Test a bit. @see set_bit(), clear_bit() */
