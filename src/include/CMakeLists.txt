@@ -16,11 +16,11 @@ check_include_file(string.h     HAVE_STRING_H)
 check_include_file(time.h       HAVE_TIME_H)
 check_include_file(unistd.h     HAVE_UNISTD_H)
 
-check_type_size(int           SIZEOF_INT)
-check_type_size(long          SIZEOF_LONG)
-check_type_size(long long     SIZEOF_LONG_LONG)
-check_type_size(long double   SIZEOF_LONG_DOUBLE)
-check_type_size(mode_t        SIZEOF_MODE_T)
+check_type_size(int             SIZEOF_INT)
+check_type_size(long            SIZEOF_LONG)
+check_type_size("long long"     SIZEOF_LONG_LONG)
+check_type_size("long double"   SIZEOF_LONG_DOUBLE)
+check_type_size(mode_t          SIZEOF_MODE_T)
 
 set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
