@@ -677,6 +677,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
  * filedescriptor */
 static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 {
+#ifdef HAVE_FUTIMENS
 	const struct timespec times[2] = {
 		pk->mtime,  // atime
 		pk->mtime}; // mtime
@@ -689,6 +690,22 @@ static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 			"Could not update time stamp of \"%s\", because %s",
 			pk->filename, buffer);
 	}
+#elif defined(HAVE_FUTIMES)
+	const struct timeval times[2] = {
+		{pk->mtime.tv_sec, pk->mtime.tv_nsec/1000},  // atime
+		{pk->mtime.tv_sec, pk->mtime.tv_nsec/1000}}; // mtime
+
+	if (futimes(pk->fd, times) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNINGF(99, parentKey,
+			"Could not update time stamp of \"%s\", because %s",
+			pk->filename, buffer);
+	}
+#else
+	#warning futimens/futimes not defined
+#endif
 }
 
 /**
