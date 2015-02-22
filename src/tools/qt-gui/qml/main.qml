@@ -54,6 +54,9 @@ ApplicationWindow {
 		onShowMessage: {
 			ErrorDialog.showMessage(title, text, detailedText)
 		}
+		onUpdateIndicator: {
+			treeView.updateIndicator()
+		}
 	}
 
 	Connections {
@@ -77,6 +80,14 @@ ApplicationWindow {
 
 		onShowMessage: {
 			ErrorDialog.showMessage(title, text, detailedText)
+		}
+	}
+
+	Connections {
+		target: treeView.currentNode === null ? null : treeView.currentNode.children
+
+		onUpdateIndicator: {
+			treeView.updateIndicator()
 		}
 	}
 
@@ -264,6 +275,10 @@ ApplicationWindow {
 				undoManager.undo()
 				treeView.treeModel.refresh()
 			}
+			else if(undoManager.undoText === "deleteKey"){
+				undoManager.undo()
+				treeView.treeModel.refresh()
+			}
 			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
 				undoManager.undo()
@@ -321,6 +336,10 @@ ApplicationWindow {
 		enabled: undoManager.canRedo
 		onTriggered: {
 			if(undoManager.redoText === "deleteBranch"){
+				undoManager.redo()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.redoText === "deleteKey"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
 			}

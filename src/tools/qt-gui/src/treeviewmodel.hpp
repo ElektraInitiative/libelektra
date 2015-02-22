@@ -232,6 +232,7 @@ protected:
 signals:
 	void						showMessage(QString title, QString text, QString detailedText) const;
 	void						expandNode(bool);
+	void						updateIndicator() const;
 
 public slots:
 	void						showConfigNodeMessage(QString title, QString text, QString detailedText);

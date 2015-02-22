@@ -20,6 +20,8 @@ ScrollView {
 	property var currentNodePath
 	property var toolTipParent: mainWindow
 
+	signal updateIndicator()
+
 	Component.onCompleted: forceActiveFocus()
 
 	contentItem: Loader {
@@ -39,11 +41,15 @@ ScrollView {
 			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
 		}
 		Indicator {
+			signal updateIndicator()
+
+			Component.onCompleted: view.updateIndicator.connect(updateIndicator)
 			paintcolor: label.color
-			width: label.font.pixelSize
+			width: label.font.pixelSize*0.8
 			height: width
 			anchors.verticalCenter: label.verticalCenter
 			opacity: rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+			onUpdateIndicator: opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
 		}
 	}
 

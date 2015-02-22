@@ -392,6 +392,8 @@ bool TreeViewModel::removeRow(int row, const QModelIndex& parentIndex)
 	if (childCount == 0)
 		emit expandNode(false);
 
+	emit updateIndicator();
+
 	return true;
 }
 
@@ -407,6 +409,8 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parentIndex)
 	m_model.insert(row, node);
 	endInsertRows();
 
+	emit updateIndicator();
+
 	return true;
 }
 
@@ -417,6 +421,8 @@ void TreeViewModel::insertRow(int row, ConfigNodePtr node, bool addParent)
 		node->setParentModel(this);
 	m_model.insert(row, node);
 	endInsertRows();
+
+	emit updateIndicator();
 }
 
 void TreeViewModel::insertMetaRow(int row, Key key, const QString &name)

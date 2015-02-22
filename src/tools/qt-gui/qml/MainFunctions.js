@@ -90,6 +90,7 @@ function deleteKey() {
 	else{
 		keyAreaSelectedItem = null
 		keyAreaView.selection.clear()
+		treeView.treeModel.refresh()
 	}
 }
 
