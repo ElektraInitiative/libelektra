@@ -80,6 +80,16 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->tempfile = 0;
 
 	p->path = path;
+
+	{
+		pthread_mutexattr_t mutex_attr;
+
+		int result = pthread_mutexattr_init(&mutex_attr);
+		if(result == 0)
+			result = pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
+		if(result == 0)
+			result = pthread_mutex_init(&elektra_resolver_mutex, &mutex_attr);
+	}
 }
 
 static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
