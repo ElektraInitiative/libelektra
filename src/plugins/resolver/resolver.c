@@ -42,6 +42,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <fcntl.h>
 
 #include <sys/types.h>
@@ -50,6 +51,17 @@
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>
+
+#if defined(__APPLE__)
+#define statSeconds(status) status.st_mtime
+#define statNanoSeconds(status) status.st_mtimespec.tv_nsec
+#elif defined(WIN32)
+#define statSeconds(status) status.st_mtime
+#define statNanoSeconds(status) 0
+# else
+#define statSeconds(status) status.st_mtim.tv_sec
+#define statNanoSeconds(status) status.st_mtim.tv_nsec
+#endif
 
 // every resolver should use the same mutex
 extern pthread_mutex_t elektra_resolver_mutex;
@@ -409,16 +421,16 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 	}
 
 	/* Check if update needed */
-	if (pk->mtime.tv_sec == buf.st_mtim.tv_sec &&
-	    pk->mtime.tv_nsec == buf.st_mtim.tv_nsec)
+	if (pk->mtime.tv_sec == statSeconds(buf) &&
+	    pk->mtime.tv_nsec == statNanoSeconds(buf))
 	{
 		// no update, so storage has no job
 		errno = errnoSave;
 		return 0;
 	}
 
-	pk->mtime.tv_sec = buf.st_mtim.tv_sec;
-	pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
+	pk->mtime.tv_sec = statSeconds(buf);
+	pk->mtime.tv_nsec = statNanoSeconds(buf);
 
 	errno = errnoSave;
 	return 1;
@@ -590,13 +602,13 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 		return -1;
 	}
 
-	if (buf.st_mtim.tv_sec != pk->mtime.tv_sec ||
-	    buf.st_mtim.tv_nsec != pk->mtime.tv_nsec)
+	if (statSeconds(buf) != pk->mtime.tv_sec ||
+	    statNanoSeconds(buf) != pk->mtime.tv_nsec)
 	{
 		ELEKTRA_SET_ERRORF (30, parentKey,
 				"conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file name is \"%s\", "
 				"our identity is uid: %u, euid: %u, gid: %u, egid: %u",
-				buf.st_mtim.tv_sec, buf.st_mtim.tv_nsec,
+				statSeconds(buf), statNanoSeconds(buf),
 				pk->mtime.tv_sec, pk->mtime.tv_nsec,
 				pk->filename,
 				getuid(), geteuid(), getgid(), getegid());
@@ -665,7 +677,6 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
  * filedescriptor */
 static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 {
-
 	const struct timespec times[2] = {
 		pk->mtime,  // atime
 		pk->mtime}; // mtime
@@ -711,8 +722,8 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 	} else {
 		/* Update my timestamp */
-		pk->mtime.tv_sec = buf.st_mtim.tv_sec;
-		pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
+		pk->mtime.tv_sec = statSeconds(buf);
+		pk->mtime.tv_nsec = statNanoSeconds(buf);
 	}
 
 	elektraUpdateFileTime(pk, parentKey);
