@@ -19,8 +19,8 @@ class KeySetReverseIterator;
  *
  * when ... is same type as va_list
  */
-struct Va {};
-const Va va;
+struct Va {int i;};
+const Va va = {0};
 
 /**
  * @brief A keyset holds together a set of keys.
