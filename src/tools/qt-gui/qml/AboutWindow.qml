@@ -22,11 +22,11 @@ BasicWindow {
 				Text {
 					text: "Elektra Editor"
 					font.bold: true
-					color: activePalette.text
+					color: activePalette.windowText
 				}
 				Text {
 					text: "Version: " + version
-					color: activePalette.text
+					color: activePalette.windowText
 				}
 			}
 		}

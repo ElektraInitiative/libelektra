@@ -4,6 +4,7 @@ import QtQuick.Window 2.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
+import Qt.labs.settings 1.0
 import "MainFunctions.js" as MFunctions
 import "ErrorDialogCreator.js" as ErrorDialog
 
@@ -107,6 +108,17 @@ ApplicationWindow {
 		colorGroup: SystemPalette.Disabled
 	}
 
+	Settings {
+		id: settings
+
+		category: "colors"
+
+		property color highlightColor: activePalette.highlight
+		property color frameColor: activePalette.dark
+		property color nodeWithKeyColor: activePalette.windowText
+		property color nodeWithoutKeyColor: disabledPalette.windowText
+	}
+
 	//**Windows************************************************************************************************//
 
 	NewKeyWindow {
@@ -161,6 +173,10 @@ ApplicationWindow {
 		id: pluginInfo
 	}
 
+	ChooseColorWindow {
+		id: chooseColorWindow
+	}
+
 	//**Dialogs************************************************************************************************//
 
 	ExportDialog {
@@ -177,6 +193,31 @@ ApplicationWindow {
 
 	ExitDialog {
 		id: exitDialog
+	}
+
+	ColorDialog {
+		id: colorDialog
+
+		property string type
+
+		title: qsTr("Please choose a color")
+		modality: Qt.ApplicationModal
+
+		onAccepted: {
+			if(type === "highlight")
+				settings.highlightColor = colorDialog.color
+			else if(type === "frame")
+				settings.frameColor =  colorDialog.color
+			else if(type === "nodeWith")
+				settings.nodeWithKeyColor = colorDialog.color
+			else if(type === "nodeWithout")
+				settings.nodeWithoutKeyColor = colorDialog.color
+
+			close()
+		}
+		onRejected: {
+			close()
+		}
 	}
 
 	//**Actions************************************************************************************************//
@@ -523,6 +564,13 @@ ApplicationWindow {
 		shortcut: StandardKey.Quit
 	}
 
+	Action {
+		id: chooseColorAction
+		text: qsTr("Choose Colors ...")
+		iconSource: "icons/color.png"
+		onTriggered: chooseColorWindow.show()
+	}
+
 	//**Menus & Toolbars***************************************************************************************//
 
 	menuBar: MainMenuBar {
@@ -632,14 +680,14 @@ ApplicationWindow {
 							anchors.leftMargin: defaultMargins
 							anchors.verticalCenter: parent.verticalCenter
 							text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
-							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
+							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : settings.nodeWithKeyColor)
 						}
 					}
 
 					rowDelegate: Component {
 						Rectangle {
 							width: keyAreaView.width
-							color: styleData.selected ? activePalette.highlight : "transparent"
+							color: styleData.selected ? settings.highlightColor : "transparent"
 
 							MouseArea {
 								anchors.fill: parent
@@ -707,6 +755,15 @@ ApplicationWindow {
 						role: "value"
 						title: qsTr("Metakey Value")
 						width: Math.ceil(metaArea.width*0.5 - defaultSpacing*0.5)
+					}
+
+					itemDelegate: Item {
+						Text {
+							anchors.fill: parent
+							anchors.leftMargin: defaultMargins
+							text: styleData.value
+							color: settings.nodeWithKeyColor
+						}
 					}
 				}
 				HelpArea {
@@ -787,11 +844,11 @@ ApplicationWindow {
 
 						highlight: Rectangle {
 							id: highlightBar
-							color: activePalette.highlight
+							color: settings.highlightColor
 						}
 
 						delegate: Text {
-							color: activePalette.text
+							color: settings.nodeWithKeyColor
 							text: path
 
 							MouseArea {

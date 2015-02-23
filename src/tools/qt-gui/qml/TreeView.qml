@@ -38,9 +38,12 @@ ScrollView {
 			id: label
 
 			text: rowLoaderModel === null ? "" : rowLoaderModel.name
-			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
+			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? settings.nodeWithoutKeyColor : settings.nodeWithKeyColor)
+			onColorChanged: indicator.updateIndicator()
 		}
 		Indicator {
+			id: indicator
+
 			signal updateIndicator()
 
 			Component.onCompleted: view.updateIndicator.connect(updateIndicator)
@@ -49,7 +52,12 @@ ScrollView {
 			height: width
 			anchors.verticalCenter: label.verticalCenter
 			opacity: rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
-			onUpdateIndicator: opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+			onUpdateIndicator: {
+				paintcolor = label.color
+				indicator.markDirty()
+				paint(indicator)
+				opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+			}
 		}
 	}
 
@@ -90,7 +98,7 @@ ScrollView {
 							width: Math.max(content.width + itemLoader.x, view.width)
 							height: rowHeight
 							visible: currentNode === fillerModel
-							color: activePalette.highlight
+							color: settings.highlightColor
 						}
 						MouseArea {
 							id: rowfillMouseArea

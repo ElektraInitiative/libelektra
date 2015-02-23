@@ -104,6 +104,15 @@ MenuBar {
 	}
 
 	Menu {
+		id: settings
+		title: qsTr("Settings")
+
+		MenuItem {
+			action: chooseColorAction
+		}
+	}
+
+	Menu {
 		id: help
 		title: qsTr("&Help")
 		MenuItem {

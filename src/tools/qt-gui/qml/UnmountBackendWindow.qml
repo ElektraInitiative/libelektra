@@ -44,7 +44,7 @@ BasicWindow {
 					keyNavigationWraps: true
 
 					highlight: Rectangle {
-						color: activePalette.highlight
+						color: settings.highlightColor
 						width: mountedBackendsFrame.width
 					}
 					delegate: Text {

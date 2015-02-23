@@ -1,4 +1,4 @@
-QT += quick  gui core  qml  widgets testlib
+QT += quick  gui core  qml  quickwidgets testlib
 
 HEADERS +=	$$files(src/*.hpp)\
 			$$files(src/markdownconverter/*.h, true)\

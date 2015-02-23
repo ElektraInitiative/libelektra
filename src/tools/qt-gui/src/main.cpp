@@ -47,13 +47,13 @@ int main(int argc, char* argv[])
 		std::cerr << e.what();
 	}
 
-	TreeViewModel treeModel;
+	TreeViewModel*  treeModel = new TreeViewModel;
 
 	ctxt->setContextProperty("undoManager", &manager);
-	ctxt->setContextProperty("externTreeModel", &treeModel);
+	ctxt->setContextProperty("externTreeModel", treeModel);
 	ctxt->setContextProperty("guiBackend", &backend);
 
-	treeModel.populateModel(config);
+	treeModel->populateModel(config);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 
