@@ -138,8 +138,8 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 void MountCommand::addConfig (string const& configBasePath, string const& keyName, string const& value)
 {
-	Key configKey = Key (configBasePath + "/" + keyName, KEY_END);
-	// configKey.addName (keyName);
+	Key configKey = Key (configBasePath, KEY_END);
+	configKey.addName (keyName);
 	configKey.setString (value);
 	mountConf.append (configKey);
 }
@@ -150,6 +150,7 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
 	string value;
 
 	const string configBasePath = Backends::getBasePath (mp) + "/config";
+	mountConf.append(Key(configBasePath, KEY_END)); // add /config key itself
 	if (cl.interactive)
 	{
 		cout << "Enter the plugin configuration" << endl;
