@@ -1145,6 +1145,32 @@ static void test_keyFixedNew()
 	keyDel(k2);
 }
 
+static void test_keyFlags()
+{
+	printf ("Test KEY_FLAGS\n");
+
+	Key *key = keyNew("user/foo",
+		KEY_FLAGS, KEY_BINARY | KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META,
+		KEY_END);
+	Key *key2 = NULL;
+
+	succeed_if (keyIsBinary(key), "Could not set type to binary");
+
+	succeed_if (keySetName(key, "system") == -1, "read only name, not allowed to set");
+	succeed_if (keyAddName(key, "bar") == -1, "read only name, not allowed to set");
+	succeed_if (keyAddBaseName(key, "bar") == -1, "read only name, not allowed to set");
+
+	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");
+	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
+
+	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyMeta(key, key2,  "meta") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyAllMeta(key, key2) == -1, "read only meta, not allowed to set");
+
+	keyDel (key);
+	keyDel (key2);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -1171,6 +1197,7 @@ int main(int argc, char** argv)
 	test_keyNeedSync();
 	test_keyCopy();
 	test_keyFixedNew();
+	test_keyFlags();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -345,108 +345,111 @@ int keyInit(Key *key)
  * initialized, but really empty, object
  * @param va the variadic argument list
  */
-void keyVInit (Key *key, const char *name, va_list va)
+void keyVInit(Key *key, const char *name, va_list va)
 {
 	keyswitch_t action = 0;
+	size_t value_size = 0;
 	void *value = 0;
-	int valueSizeChanged = 0;
-	size_t valueSize = 0;
+	void (*func) (void) = 0;
+	uint64_t flags = 0;
 	char *owner = 0;
-	option_t nameOptions = 0;
-	void (*p) (void) = 0;
 
 	if (!key) return;
 
 	if (name) {
-		action=va_arg(va, keyswitch_t);
-		while (action) {
+		while ((action = va_arg(va, keyswitch_t))) {
 			switch (action) {
+				/* flags with an argument */
 				case KEY_SIZE:
-					valueSize=va_arg(va, size_t);
-					valueSizeChanged = 1;
-					break;
-				case KEY_BINARY:
-					keySetMeta (key, "binary", "");
+					value_size = va_arg(va, size_t);
 					break;
 				case KEY_VALUE:
 					value = va_arg(va, void *);
-					if (valueSizeChanged && keyIsBinary(key))
-					{
-						keySetBinary(key,value, valueSize);
-					} else if (keyIsBinary(key)) {
-						valueSize = elektraStrLen (value);
-						keySetBinary(key,value, valueSize);
-					} else {
-						keySetString(key,value);
-					}
+					if (value_size && keyIsBinary(key))
+						keySetBinary(key, value, value_size);
+					else if (keyIsBinary(key))
+						keySetBinary(key, value, elektraStrLen(value));
+					else
+						keySetString(key, value);
+					break;
+				case KEY_FUNC:
+					func = va_arg(va, void(*)(void));
+					keySetBinary(key, &func, sizeof(func));
+					break;
+				case KEY_META:
+					value = va_arg (va, char *);
+					/* First parameter is name */
+					keySetMeta(key, value, va_arg(va, char *));
+					break;
+
+				/* flags without an argument */
+				case KEY_FLAGS:
+					flags |= va_arg(va, uint64_t);
+				case KEY_BINARY:
+				case KEY_LOCK_NAME:
+				case KEY_LOCK_VALUE:
+				case KEY_LOCK_META:
+				case KEY_CASCADING_NAME:
+				case KEY_META_NAME:
+				case KEY_EMPTY_NAME:
+					if (action != KEY_FLAGS)
+						flags |= action;
+					if (test_bit(flags, KEY_BINARY))
+						keySetMeta(key, "binary", "");
+					if (test_bit(flags, KEY_LOCK_NAME))
+						keyLock(key, KEY_LOCK_NAME);
+					if (test_bit(flags, KEY_LOCK_VALUE))
+						keyLock(key, KEY_LOCK_VALUE);
+					if (test_bit(flags, KEY_LOCK_META))
+						keyLock(key, KEY_LOCK_META);
+					break;
+
+				/* deprecated flags */
+				case KEY_NAME:
+					name = va_arg(va, char *);
+					break;
+				case KEY_OWNER:
+					owner = va_arg(va, char *);
+					break;
+				case KEY_COMMENT:
+					keySetComment(key, va_arg(va, char *));
 					break;
 #ifndef WIN32
 				case KEY_UID:
-					keySetUID(key,va_arg(va,uid_t));
+					keySetUID(key, va_arg(va, uid_t));
 					break;
 				case KEY_GID:
-					keySetGID(key,va_arg(va,gid_t));
+					keySetGID(key, va_arg(va, gid_t));
+					break;
+				case KEY_DIR:
+					keySetDir(key);
 					break;
 				case KEY_MODE:
 					/* Theoretically this should be mode_t, but prefer using
 					   int to avoid troubles when sizeof(mode_t)!=sizeof(int)
 					 */
-					keySetMode(key,va_arg(va, int));
-					break;
-				case KEY_DIR:
-					keySetDir(key);
+					keySetMode(key, va_arg(va, int));
 					break;
 #endif
-				case KEY_OWNER:
-					owner = va_arg(va,char *);
+				/* deprecated flags, not working anymore */
+				case KEY_ATIME:
+				case KEY_MTIME:
+				case KEY_CTIME:
+					va_arg(va, time_t);
 					break;
-				case KEY_COMMENT:
-					keySetComment(key,va_arg(va,char *));
-					break;
-				case KEY_LOCK_NAME:
-					keyLock(key, KEY_LOCK_NAME);
-					break;
-				case KEY_LOCK_VALUE:
-					keyLock(key, KEY_LOCK_VALUE);
-					break;
-				case KEY_LOCK_META:
-					keyLock(key, KEY_LOCK_META);
-					break;
-				case KEY_FUNC:
-					p = va_arg(va, void(*)(void));
-					keySetBinary(key, &p, sizeof(p));
-					break;
-				case KEY_META:
-					value = va_arg (va,char *);
-					/*First parameter is name*/
-					keySetMeta (key, value, va_arg(va,char *));
-					break;
-				case KEY_CASCADING_NAME:
-					nameOptions |= KEY_CASCADING_NAME;
-					break;
-				case KEY_META_NAME:
-					nameOptions |= KEY_META_NAME;
-					break;
-				case KEY_EMPTY_NAME:
-					/* actually useless in current
-					 * implementation, empty name
-					 * is ok anyway. Maybe if error
-					 * handling is visible to user
-					 * in future the option still
-					 * might be interesting */
-					nameOptions |= KEY_EMPTY_NAME;
-					break;
+
 				default:
 #if DEBUG
-					fprintf (stderr, "Unknown option in keyVInit %ld\n", (long int)action);
+					fprintf (stderr, "Unknown option in keyVInit: %lu\n", (uint64_t)action);
 #endif
 					break;
 			}
-			action=va_arg(va, keyswitch_t);
 		}
 
-		elektraKeySetName(key, name, nameOptions);
+		option_t name_options = flags &
+			(KEY_CASCADING_NAME | KEY_META_NAME | KEY_EMPTY_NAME);
+		elektraKeySetName(key, name, name_options);
+
 		if (owner) keySetOwner(key, owner);
 	}
 }
-
