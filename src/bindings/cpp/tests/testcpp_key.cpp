@@ -241,7 +241,7 @@ void test_cast()
 	Key *k;
 
 	ck = ckdb::keyNew(0);
-	k = reinterpret_cast<Key*>(&ck); // no copy, just a cast
+	k = reinterpret_cast<Key*>(&ck); // not copied on purpose
 
 	/*
 	cout << "&ck:  " << (void*)&ck << endl;
