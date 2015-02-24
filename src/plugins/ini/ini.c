@@ -12,11 +12,9 @@
 #endif
 
 #include <errno.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <kdberrors.h>
-#include <kdbextension.h>
-#include <kdbproposal.h>
 #include <inih.h>
 #include "ini.h"
 
@@ -294,6 +292,13 @@ static short isSectionKey(Key *key)
 	return keyIsBinary(key) && !keyValue(key);
 }
 
+/**
+ * Returns the name of the corresponding ini key based on
+ * the structure and parentKey of the supplied key.
+ *
+ * The returned string has to be freed by the caller
+ *
+ */
 static char *getIniName(KeySet *keys, Key *parent, Key *key)
 {
 	cursor_t currentCursor = ksGetCursor(keys);
