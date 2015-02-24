@@ -25,7 +25,7 @@ BasicWindow {
 					color: activePalette.text
 				}
 				Text {
-					text: "Version: 0.0.3 (alpha)"
+					text: "Version: " + version
 					color: activePalette.text
 				}
 			}

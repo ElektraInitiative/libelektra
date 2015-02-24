@@ -8,7 +8,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 	, m_path(path)
 	, m_key(key)
 	, m_children(new TreeViewModel)
-	, m_metaData(new TreeViewModel)
+	, m_metaData(NULL)
 	, m_parentModel(parentModel)
 	, m_isExpanded(false)
 {
@@ -18,9 +18,13 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 		m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
 
 	if(m_key)
+	{
+		m_metaData = new TreeViewModel;
 		populateMetaModel();
+	}
 
 	connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
+	connect(this, SIGNAL(showMessage(QString,QString,QString)), parentModel, SLOT(showConfigNodeMessage(QString,QString,QString)));
 }
 
 ConfigNode::ConfigNode(const ConfigNode& other)
@@ -29,32 +33,39 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_path(other.m_path)
 	, m_value(other.m_value)
 	, m_key(other.m_key.dup())
-	, m_children(new TreeViewModel())
-	, m_metaData(new TreeViewModel())
-	, m_parentModel(new TreeViewModel())
+	, m_children(new TreeViewModel)
+	, m_metaData(NULL)
+	, m_parentModel(NULL)
 	, m_isExpanded(other.m_isExpanded)
 {
 
-	foreach(ConfigNodePtr node, other.m_children->model())
+	if(other.m_children)
 	{
-		m_children->append(ConfigNodePtr(new ConfigNode(*node)));
+		foreach(ConfigNodePtr node, other.m_children->model())
+		{
+			m_children->append(ConfigNodePtr(new ConfigNode(*node)));
+		}
 	}
 
-	foreach(ConfigNodePtr node, other.m_metaData->model())
+	if(other.m_metaData)
 	{
-		m_metaData->append(ConfigNodePtr(new ConfigNode(*node)));
+		m_metaData = new TreeViewModel;
+		foreach(ConfigNodePtr node, other.m_metaData->model())
+		{
+			m_metaData->append(ConfigNodePtr(new ConfigNode(*node)));
+		}
 	}
 
 	connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
 }
 
 ConfigNode::ConfigNode()
-	: m_children(new TreeViewModel)
-	, m_metaData(new TreeViewModel)
-	, m_parentModel(new TreeViewModel)
+	: m_children(NULL)
+	, m_metaData(NULL)
+	, m_parentModel(NULL)
 	, m_isExpanded(false)
 {
-	connect(m_children, SIGNAL(expandNode(bool)), this, SLOT(setIsExpanded(bool)));
+	//this constructor is used to create metanodes
 }
 
 ConfigNode::~ConfigNode()
@@ -65,7 +76,9 @@ ConfigNode::~ConfigNode()
 
 int ConfigNode::getChildCount() const
 {
-	return m_children->model().count();
+	if(m_children)
+		return m_children->model().count();
+	return 0;
 }
 
 QString ConfigNode::getName() const
@@ -85,8 +98,6 @@ QVariant ConfigNode::getValue() const
 
 void ConfigNode::setName(const QString& name)
 {
-	m_name = name;
-
 	int index = m_path.lastIndexOf("/");
 
 	if(index != -1)
@@ -100,8 +111,10 @@ void ConfigNode::setName(const QString& name)
 				m_key.setBaseName(name.toStdString());
 			}
 			catch(KeyInvalidName const& ex){
-				emit showMessage(tr("Error"), tr("Could not set name because Keyname \"") + QString::fromStdString(m_key.getFullName()) + tr("\" is invalid."), ex.what());
+				emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+				return;
 			}
+			m_name = name;
 		}
 	}
 }
@@ -127,20 +140,22 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
 
 void ConfigNode::setMeta(const QVariantMap &metaData)
 {
+	//delete old metadata in key
 	for(int i = 0; i < m_metaData->model().size(); i++)
 	{
 		m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
 	}
-
+	//delete old metadata in model
 	m_metaData->clearMetaModel();
 
+	//create new metadata nodes in model
 	for(int i = 0; i < metaData.size(); i++)
 	{
 		m_metaData->insertMetaRow(i, m_key, m_name);
 	}
 
 	int counter = 0;
-
+	//set new metadata
 	for(QVariantMap::const_iterator iter = metaData.begin(); iter != metaData.end(); iter++)
 	{
 		QVariantList tmp;
@@ -154,7 +169,6 @@ void ConfigNode::deleteMeta(const QString &name)
 {
 	if(m_key)
 	{
-		//        qDebug() << "ConfigNode::deleteMeta: " << "metakey " << name << " of node " << m_name << " deleted";
 		m_key.delMeta(name.toStdString());
 	}
 }
@@ -163,8 +177,11 @@ void ConfigNode::accept(Visitor &visitor)
 {
 	visitor.visit(*this);
 
-	foreach (ConfigNodePtr node, m_children->model())
-		node->accept(visitor);
+	if(m_children)
+	{
+		foreach (ConfigNodePtr node, m_children->model())
+			node->accept(visitor);
+	}
 }
 
 Key ConfigNode::getKey() const
@@ -174,10 +191,13 @@ Key ConfigNode::getKey() const
 
 int ConfigNode::getChildIndexByName(const QString &name)
 {
-	for(int i = 0; i < m_children->model().count(); i++)
+	if(m_children)
 	{
-		if(m_children->model().at(i)->getName() == name)
-			return i;
+		for(int i = 0; i < m_children->model().count(); i++)
+		{
+			if(m_children->model().at(i)->getName() == name)
+				return i;
+		}
 	}
 
 	return -1;
@@ -188,9 +208,9 @@ TreeViewModel *ConfigNode::getParentModel()
 	return m_parentModel;
 }
 
-void ConfigNode::setParentModel(TreeViewModel *parent)
+void ConfigNode::setParentModel(TreeViewModel *parentModel)
 {
-	m_parentModel = parent;
+	m_parentModel = parentModel;
 }
 
 bool ConfigNode::isExpanded() const
@@ -212,7 +232,6 @@ void ConfigNode::populateMetaModel()
 
 		while (m_key.nextMeta())
 		{
-			//            qDebug() << "ConfigNode::populateMetaModel: key " << QString::fromStdString(m_key.getName()) << " has metakey " << QString::fromStdString(m_key.currentMeta().getName());
 			ConfigNodePtr node(new ConfigNode());
 
 			node->setName(QString::fromStdString(m_key.getName()));
@@ -245,11 +264,14 @@ void ConfigNode::appendChild(ConfigNodePtr node)
 
 bool ConfigNode::hasChild(const QString& name) const
 {
-	foreach (ConfigNodePtr node, m_children->model())
+	if(m_children)
 	{
-		if (node->getName() == name)
+		foreach (ConfigNodePtr node, m_children->model())
 		{
-			return true;
+			if (node->getName() == name)
+			{
+				return true;
+			}
 		}
 	}
 
@@ -268,11 +290,14 @@ TreeViewModel* ConfigNode::getMetaKeys() const
 
 ConfigNodePtr ConfigNode::getChildByName(QString& name) const
 {
-	foreach (ConfigNodePtr node, m_children->model())
+	if(m_children)
 	{
-		if (node->getName() == name)
+		foreach (ConfigNodePtr node, m_children->model())
 		{
-			return node;
+			if (node->getName() == name)
+			{
+				return node;
+			}
 		}
 	}
 
@@ -281,8 +306,11 @@ ConfigNodePtr ConfigNode::getChildByName(QString& name) const
 
 ConfigNodePtr ConfigNode::getChildByIndex(int index) const
 {
-	if (index >= 0 && index < m_children->model().length())
-		return m_children->model().at(index);
+	if(m_children)
+	{
+		if (index >= 0 && index < m_children->model().length())
+			return m_children->model().at(index);
+	}
 
 	return ConfigNodePtr();
 }
@@ -292,19 +320,26 @@ void ConfigNode::setPath(const QString &path)
 	m_path = path;
 	setKeyName(path);
 
-	foreach(ConfigNodePtr node, m_children->model()){
-		node->setPath(m_path + "/" + node->getName());
+	if(m_children)
+	{
+		foreach(ConfigNodePtr node, m_children->model()){
+			node->setPath(m_path + "/" + node->getName());
+		}
 	}
 }
 
 bool ConfigNode::childrenHaveNoChildren() const
 {
-	int children = 0;
+	int childcount = 0;
 
-	foreach (ConfigNodePtr node, m_children->model())
+	if(m_children)
 	{
-		children += node->getChildCount();
+		foreach (ConfigNodePtr node, m_children->model())
+		{
+			childcount += node->getChildCount();
+		}
+
 	}
 
-	return children == 0;
+	return childcount == 0;
 }

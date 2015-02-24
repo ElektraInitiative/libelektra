@@ -51,28 +51,42 @@
  * @defgroup keyset KeySet
  * @brief Methods to manipulate KeySets.
  *
- * A KeySet is a sorted set of keys.
- * So the correct name actually would be KeyMap.
+ * A KeySet is a set of keys.
  *
- * With ksNew() you can create a new KeySet.
+ * Most important properties of a KeySet:
  *
- * You can add keys with ksAppendKey() in the keyset.
- * Using ksAppend() you can append a whole keyset.
+ * - Allows us to iterate over all keys (in any depth)
+ * - Iteration is always sorted
+ * - Fast key lookup
+ * - A Key may be shared among many KeySets.
+ *
+ * The most important methods of KeySet:
+ *
+ * - With ksNew() you can create a new KeySet.
+ * - You can add keys with ksAppendKey().
+ * - Using ksAppend() you can append a whole keyset.
+ * - Using ksLookup() you can lookup a key.
+ * - ksGetSize() tells you the current size.
  *
  * @copydoc doxygenFlatCopy
  *
- * ksGetSize() tells you the current size of the keyset.
+ * With ksRewind() and ksNext() you can iterate through the keyset.
+ * Be assured that you will get every key of the set in a stable
+ * order (parents before children).
  *
- * With ksRewind() and ksNext() you can navigate through the keyset. Don't
- * expect any particular order, but it is assured that you will get every
- * key of the set.
+ * KeySets have an @link ksCurrent() internal cursor @endlink.
+ * Methods should avoid to change this cursor, unless they want
+ * to communicate something with it.
+ * The internal cursor is used:
  *
- * KeySets have an @link ksCurrent() internal cursor @endlink. This is used
- * for ksLookup() and kdbSet().
+ * - in ksLookup(): points to the found key
+ * - in kdbSet(): points to the key which caused an error
  *
- * KeySet has a fundamental meaning inside elektra. It makes it possible
+ * KeySet is the most important data structure in Elektra. It makes it possible
  * to get and store many keys at once inside the database. In addition to
- * that the class can be used as high level datastructure in applications.
+ * that, the class can be used as high level datastructure in applications
+ * and it can be used in plugins to manipulate or check configuration.
+ *
  * With ksLookupByName() it is possible to fetch easily specific keys
  * out of the list of keys.
  *
@@ -212,7 +226,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
 	}
 	keyset->array[0] = 0;
 
-	if (va && alloc != 1)
+	if (alloc != 1) // is >0 because of increment earlier
 	{
 		key = (struct _Key *) va_arg (va, struct _Key *);
 		while (key)
@@ -1792,7 +1806,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+2;
 		key->keySize = length-2;
 		elektraFinalizeName(key);
-		specKey = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		specKey = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (specKey)
@@ -1815,7 +1829,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	key->key = newname+2;
 	key->keySize = length-2;
 	elektraFinalizeName(key);
-	found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+	found = ksLookup(ks, key, options & ~KDB_O_DEL);
 
 	if (!found)
 	{
@@ -1824,7 +1838,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+3;
 		key->keySize = length-3;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		found = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
@@ -1834,7 +1848,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+2;
 		key->keySize = length-2;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		found = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
@@ -1843,13 +1857,20 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname;
 		key->keySize = length;
 		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_CREATE & ~KDB_O_DEL);
+		found = ksLookup(ks, key, options & ~KDB_O_DEL);
 	}
 
 	// restore old cascading name
 	key->key = name;
 	key->keySize = size;
 	key->keyUSize = usize ;
+
+	if (!found && !(options & KDB_O_NODEFAULT))
+	{
+		// search / key itself
+		found = ksLookup(ks, key, (options & ~KDB_O_DEL) | KDB_O_NOCASCADING);
+	}
+
 	return found;
 }
 
@@ -1877,18 +1898,8 @@ static Key * elektraLookupLinearSearch(KeySet *ks, Key *key, option_t options)
 	}
 	if (current == 0)
 	{
-		Key *ret = 0;
-		if (options & KDB_O_CREATE)
-		{
-			ret = keyDup(key);
-			ksAppendKey(ks, ret);
-		}
-		else
-		{
-			/*Reset Cursor to old position*/
-			ksSetCursor (ks, cursor);
-		}
-		return ret;
+		/*Reset Cursor to old position*/
+		ksSetCursor (ks, cursor);
 	}
 	return current;
 }
@@ -1923,19 +1934,16 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key *key, option_t options)
 			return (*found);
 		}
 	} else {
-		Key *ret = 0;
-		if (options & KDB_O_CREATE)
-		{
-			ret = keyDup(key);
-			ksAppendKey(ks, ret);
-		}
-		else
-		{
-			/*Reset Cursor to old position*/
-			ksSetCursor (ks, cursor);
-		}
-		return ret;
+		ksSetCursor (ks, cursor);
 	}
+	return 0;
+}
+
+static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option_t options)
+{
+	Key *ret = keyDup(key);
+	ksAppendKey(ks, ret);
+	return ret;
 }
 
 
@@ -2051,19 +2059,20 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	if (!name) return 0;
 
 	Key *ret = 0;
+	const int mask = ~KDB_O_DEL & ~KDB_O_CREATE;
 
 	if (options & KDB_O_SPEC)
 	{
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
-		ret = elektraLookupBySpec(ks, lookupKey, options & ~KDB_O_DEL);
+		ret = elektraLookupBySpec(ks, lookupKey, options & mask);
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
 	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
 	{
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
-		ret = elektraLookupByCascading(ks, lookupKey, options & ~KDB_O_DEL);
+		ret = elektraLookupByCascading(ks, lookupKey, options & mask);
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
 	}
 	else if ((options & KDB_O_NOALL)
@@ -2071,17 +2080,16 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		// || (options & KDB_O_WITHOWNER)
 		) // TODO binary search with nocase won't work
 	{
-		ret = elektraLookupLinearSearch(ks, key, options & ~KDB_O_DEL);
+		ret = elektraLookupLinearSearch(ks, key, options & mask);
 	}
 	else
 	{
-		ret = elektraLookupBinarySearch(ks, key, options & ~KDB_O_DEL);
+		ret = elektraLookupBinarySearch(ks, key, options & mask);
 	}
 
-	if (options & KDB_O_DEL)
-	{
-		keyDel (key);
-	}
+	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey(ks, key, options & mask);
+
+	if (options & KDB_O_DEL) keyDel (key);
 
 	return ret;
 }

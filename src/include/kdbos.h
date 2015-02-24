@@ -74,6 +74,12 @@
 #define ELEKTRA_SENTINEL  __attribute__ ((sentinel))
 #endif
 
+#ifdef __GNUC__
+#define ELEKTRA_NOINLINE __attribute__((noinline))
+#else
+#define ELEKTRA_NOINLINE
+#endif
+
 #ifndef WIN32
 
 /***************************************************

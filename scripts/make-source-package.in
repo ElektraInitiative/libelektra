@@ -2,7 +2,7 @@
 
 set +ex
 
-git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz
+git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip --no-name > ${CMAKE_BINARY_DIR}/elektra-${KDB_VERSION}.tar.gz
 
 hashsum ()
 {

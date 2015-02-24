@@ -18,7 +18,10 @@ namespace tools
 
 namespace merging
 {
-
+// This strategy is a subset of the OneSideStrategy. It also uses
+// the key of the winning side in case of a conflict. However, different
+// than the OneSideStrategy it only resolves conflicts where no new keys are
+// introduced or old ones deleted.
 class OneSideValueStrategy : public MergeConflictStrategy
 {
 

@@ -9,7 +9,7 @@ FileDialog {
 	onAccepted: {
 		var plugin = selectedNameFilter.match(/[a-z]+/).toString()
 
-		externTreeModel.exportConfiguration(treeView.currentNode.parentModel, treeView.currentNode.index, plugin, exportDialog.fileUrl)
+		treeView.treeModel.exportConfiguration(treeView.currentNode.parentModel, treeView.currentNode.index, plugin, exportDialog.fileUrl)
 	}
 
 }

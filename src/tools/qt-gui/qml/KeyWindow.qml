@@ -7,7 +7,6 @@ import QtQuick.Dialogs 1.1
 import "MainFunctions.js" as MFunctions
 
 BasicWindow {
-	id: keyWindow
 
 	property alias  nameLabel: nameLabel
 	property alias  addButton: addButton
@@ -19,7 +18,7 @@ BasicWindow {
 	property string valuePlaceHolder: "Meta Key Value..."
 	property int    modelIndex: 0
 	property bool   isArray: false
-	property string path: !keyWindow.visible ? "" : (accessFromSearchResults && selectedNode !== null) ? selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/")) : (treeView.currentNode === null ? "" : treeView.currentNode.path)
+	property string path: !visible ? "" : (accessFromSearchResults && selectedNode !== null) ? selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/")) : (treeView.currentNode === null ? "" : treeView.currentNode.path)
 	property string keyName: ""
 	property string keyValue: ""
 	property bool   isEdited: false
@@ -152,12 +151,11 @@ BasicWindow {
 		if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
 			isEdited = true
 
-		keyWindow.visible = false
 		editAccepted()
 	}
 
 	function cancelClicked() {
-		keyWindow.visible = false
+		visible = false
 		isEdited = false
 		nameTextField.undo()
 		valueTextField.undo()

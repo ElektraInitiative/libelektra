@@ -8,7 +8,7 @@ MessageDialog {
 	informativeText: qsTr("Do you want to save your changes or discard them?")
 	standardButtons: StandardButton.Save | StandardButton.Discard | StandardButton.Cancel
 	onAccepted: {
-		externTreeModel.synchronize()
+		treeView.treeModel.synchronize()
 		Qt.quit()
 	}
 	onDiscard: {

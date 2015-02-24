@@ -50,13 +50,13 @@ do
 
 	exit_if_fail "could not set root"
 
-	test `$KDB ls $ROOT` = $ROOT
+	test "x`$KDB ls $ROOT`" = "x$ROOT"
 	succeed_if "Root key not found"
 
 	$KDB import $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 		
-	test "`$KDB ls $ROOT`" = "user/tests/script"
+	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct one_value"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
@@ -73,7 +73,7 @@ do
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	$KDB rm -r $ROOT
+	$KDB rm -r "$ROOT"
 	succeed_if "Could not remove root"
 
 
@@ -83,7 +83,7 @@ do
 	$KDB import $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "`$KDB ls $ROOT`" = "user/tests/script"
+	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct one_value empty root"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
@@ -113,7 +113,7 @@ do
 	$KDB import -s "newkey,theirvalue" $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "`$KDB ls $ROOT`" = "user/tests/script"
+	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
@@ -154,7 +154,7 @@ do
 	$KDB import $ROOT $PLUGIN < $DATADIR/two_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "`$KDB ls $ROOT`" = "user/tests/script
+	test "x`$KDB ls $ROOT`" = "xuser/tests/script
 user/tests/script/key"
 	succeed_if "key name not correct"
 
@@ -166,7 +166,7 @@ user/tests/script/key"
 		succeed_if "root value not correct"
 	fi
 
-	test "`$KDB get $ROOT/key`" = value
+	test "x`$KDB get $ROOT/key`" = "xvalue"
 	succeed_if "key value not correct"
 
 	$KDB export $ROOT $PLUGIN > $FILE
@@ -185,7 +185,7 @@ user/tests/script/key"
 	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "`$KDB ls $ROOT`" = "user/tests/script"
+	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
@@ -202,7 +202,7 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	test "`$KDB get $SIDE`" = val
+	test "x`$KDB get $SIDE`" = "xval"
 	succeed_if "side value not correct"
 
 	$KDB rm $SIDE
@@ -226,7 +226,7 @@ user/tests/script/key"
 	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
-	test "`$KDB ls $ROOT`" = "user/tests/script"
+	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct"
 
 	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]

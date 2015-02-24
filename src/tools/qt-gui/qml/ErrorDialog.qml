@@ -1,13 +1,13 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.1
-import QtQuick.Window 2.2
+import QtQuick.Window 2.1
 import QtQuick.Layouts 1.1
 
 BasicWindow {
-	id: generalMessageDialog
+	id: dialog
 
-	property string text
+	property string errorText
 	property string detailedText
 	property alias	icon: icon
 	flags: Qt.Dialog
@@ -39,7 +39,7 @@ BasicWindow {
 				anchors.leftMargin: defaultMargins
 				anchors.verticalCenter: icon.verticalCenter
 				width: parent.width - icon.width - defaultMargins
-				text: generalMessageDialog.text
+				text: errorText
 				color: activePalette.text
 				font.weight: Font.Bold
 				wrapMode: Text.WrapAnywhere
@@ -53,12 +53,12 @@ BasicWindow {
 			Layout.fillWidth: true
 
 			TextArea {
-				id: detailedText
+				id: detailedTextArea
 
 				anchors.fill: parent
 				frameVisible: false
 				backgroundVisible: false
-				text: generalMessageDialog.detailedText
+				text: detailedText
 				width: detailsRectangle.width
 				wrapMode: Text.WordWrap
 				textColor: activePalette.text
@@ -75,8 +75,8 @@ BasicWindow {
 						visible: true
 					}
 					PropertyChanges {
-						target: generalMessageDialog
-						height: mainTextItem.implicitHeight + detailedText.contentItem.contentHeight + okButton.implicitHeight + 6*defaultMargins
+						target: dialog
+						height: mainTextItem.implicitHeight + detailedTextArea.contentItem.contentHeight + okButton.implicitHeight + 6*defaultMargins
 					}
 					PropertyChanges {
 						target: detailsButton
@@ -92,7 +92,8 @@ BasicWindow {
 	detailsButton.action.onTriggered: detailsRectangle.state === "" ? detailsRectangle.state = "SHOW_DETAILED_TEXT" : detailsRectangle.state = ""
 
 	okButton.action.onTriggered: {
-		generalMessageDialog.close()
+		visible = false
+		destroy()
 		error = false
 	}
 }

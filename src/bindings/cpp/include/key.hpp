@@ -2,6 +2,7 @@
 #define ELEKTRA_KEY_HPP
 
 #include <string>
+#include <locale>
 #include <cstring>
 #include <cstdarg>
 #include <sstream>
@@ -713,6 +714,7 @@ inline T Key::get() const
 	std::string str;
 	str = getString();
 	std::istringstream ist(str);
+	ist.imbue(std::locale("C"));
 	T x;
 	ist >> x;	// convert string to type
 	if (ist.fail())
@@ -721,6 +723,61 @@ inline T Key::get() const
 	}
 	return x;
 }
+
+/*
+#if __cplusplus > 199711L
+// TODO: are locale dependent
+//   + throw wrong exception (easy to fix though)
+template <>
+inline int Key::get<int>() const
+{
+	return stoi(getString());
+}
+
+template <>
+inline long Key::get<long>() const
+{
+	return stol(getString());
+}
+
+template <>
+inline long long Key::get<long long>() const
+{
+	return stoll(getString());
+}
+
+template <>
+inline unsigned long Key::get<unsigned long>() const
+{
+	return stoul(getString());
+}
+
+template <>
+inline unsigned long long Key::get<unsigned long long>() const
+{
+	return stoull(getString());
+}
+
+template <>
+inline float Key::get<float>() const
+{
+	return stof(getString());
+}
+
+template <>
+inline double Key::get<double>() const
+{
+	return stod(getString());
+}
+
+template <>
+inline long double Key::get<long double>() const
+{
+	return stold(getString());
+}
+#endif
+*/
+
 
 template <>
 inline std::string Key::get() const
@@ -740,6 +797,7 @@ inline void Key::set(T x)
 {
 	std::string str;
 	std::ostringstream ost;
+	ost.imbue(std::locale("C"));
 	ost << x;	// convert type to string
 	if (ost.fail())
 	{
@@ -747,6 +805,65 @@ inline void Key::set(T x)
 	}
 	setString (ost.str());
 }
+
+/*
+#if __cplusplus > 199711L
+// TODO: are locale dependent
+template <>
+inline void Key::set(int val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(long long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(unsigned val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(unsigned long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(unsigned long long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(float val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(double val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(long double val)
+{
+	setString(std::to_string(val));
+}
+#endif
+*/
 
 
 /**
@@ -1206,6 +1323,23 @@ inline int Key::del ()
 
 
 } // end of namespace kdb
+
+#if __cplusplus > 199711L
+namespace std
+{
+	/**
+	 * @brief Support for putting Key in a hash
+	 */
+	template <> struct hash<kdb::Key>
+	{
+		size_t operator()(kdb::Key const & k) const
+		{
+			// use pointer value as hash value
+			return std::hash<ckdb::Key *>()(k.getKey());
+		}
+	};
+} // end of namespace std
+#endif
 
 #endif
 

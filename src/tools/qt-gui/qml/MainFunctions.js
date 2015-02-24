@@ -1,13 +1,3 @@
-//display an error message dialog
-function showMessage(title, text, detailedText) {
-	errorDialog.title = title
-	errorDialog.text = text
-	errorDialog.detailedText = detailedText
-
-	error = true
-	errorDialog.show()
-}
-
 //puts key to clipboard when cut key command for a key without children is executed
 function cutKey() {
 	//console.log("cut Key")
@@ -62,7 +52,7 @@ function paste() {
 	else if(undoManager.clipboardType === "copyBranch"){
 
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-		refreshModel(externTreeModel)
+		refreshModel(treeView.treeModel)
 		if(!treeView.currentNode.childrenHaveNoChildren)
 			keyAreaModel = null
 		else{
@@ -96,7 +86,7 @@ function paste() {
 			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		}
 
-		refreshModel(externTreeModel)
+		refreshModel(treeView.treeModel)
 		if(!treeView.currentNode.childrenHaveNoChildren)
 			keyAreaModel = null
 		else{
@@ -126,13 +116,13 @@ function deleteKey() {
 }
 
 //deletes key when delete key command for a key with children is executed
-function deleteBranch() {
+function deleteBranch(treeModel) {
 	//		console.log("delete branch")
 
-	undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
+	undoManager.createDeleteKeyCommand("deleteBranch", treeModel.currentNode.parentModel, treeModel.currentNode.index)
 
-	externTreeModel.refresh()
-	treeView.currentNode = null
+	treeModel.treeModel.refresh()
+	treeModel.currentNode = null
 }
 
 //deletes key when delete key command for a key located in the search results is executed

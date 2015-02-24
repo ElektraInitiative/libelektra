@@ -17,13 +17,13 @@ WizardTemplate {
 		guiBackend.addPath(textField.text)
 
 		if(!error){
-			guiBackend.serialise()
+			guiBackend.serialise(externTreeModel)
 
 			if(!error){
 				wizardLoader.close()
-				externTreeModel.populateModel()
 				guiBackend.deleteBackend()
 				loader.source = "Page1.qml"
+				externTreeModel.refresh()
 			}
 
 		}
@@ -31,6 +31,7 @@ WizardTemplate {
 	}
 	buttonVisible: true
 	fileDialog.onAccepted: textField.text = fileDialog.fileUrl.toString().replace("file://", "")
+	textField.onAccepted: buttonRow.finishButton.action.trigger()
 }
 
 

@@ -115,3 +115,10 @@ The script tests have different purposes:
 ### Other kind of Tests ###
 
 Bindings, other than C++ typically have their own way of testing.
+
+## Fuzz Testing
+
+ copy some import files to testcase_dir and run:
+
+ /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
+

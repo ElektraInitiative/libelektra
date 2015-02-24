@@ -19,7 +19,7 @@ BasicRectangle {
 	property int	metaHeight: 0
 
 	width: Math.min(parentWidth - x - defaultMargins, maxWidth + 2*defaultMargins)
-	height: (metaHeight > 0) ? Math.min((metaHeight +  keyText.height + 3*defaultMargins), parentHeight - y - defaultMargins) : (keyText.height + 2*defaultMargins)
+	height: (metaHeight > 0) ? Math.min(metaHeight +  keyText.height + 3*defaultMargins, parentHeight - y - defaultMargins) : (keyText.height + 2*defaultMargins)
 	color: inActivePalette.base
 
 	Column {
@@ -78,23 +78,23 @@ BasicRectangle {
 	}
 
 	function show() {
-		state = "showing"
+		state = "SHOW"
 	}
 
 	function hide() {
-		state = "hidden"
+		state = "HIDE"
 	}
 
 	states: [
 		State {
-			name: "showing"
+			name: "SHOW"
 			PropertyChanges {
 				target: tooltip
 				opacity: 1
 			}
 		},
 		State {
-			name: "hidden"
+			name: "HIDE"
 			PropertyChanges {
 				target: tooltip
 				opacity: 0
@@ -104,7 +104,7 @@ BasicRectangle {
 
 	transitions: [
 		Transition {
-			to: "showing"
+			to: "SHOW"
 			NumberAnimation {
 				target: tooltip
 				property: "opacity"
@@ -112,7 +112,7 @@ BasicRectangle {
 			}
 		},
 		Transition {
-			to: "hidden"
+			to: "HIDE"
 			NumberAnimation {
 				target: tooltip
 				property: "opacity"

@@ -33,7 +33,8 @@ fi
 GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
 GEN="$GEN_FOLDER/gen"
 
-TESTPROGS="./lift ./cpplift ./nestedlift ./staticcontextlift ./dynamiccontextlift"
+TESTPROGS="./lift ./cpplift ./nestedlift ./dynamiccontextlift"
+# ./staticcontextlift commented out
 
 if $GEN -h | grep "^usage:"
 then

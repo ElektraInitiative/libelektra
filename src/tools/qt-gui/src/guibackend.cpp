@@ -12,9 +12,11 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-GUIBackend::GUIBackend(QObject *parent) :
-	QObject(parent)
+GUIBackend::GUIBackend(QObject *parentBackend) :
+	QObject(parentBackend)
 {
+	m_pluginConfigModel = new TreeViewModel;
+	resetModel();
 }
 
 GUIBackend::GUIBackend(const GUIBackend &other)
@@ -68,40 +70,23 @@ void GUIBackend::addPath(const QString &path)
 	}
 }
 
-void GUIBackend::addPlugin(QString name, QStringList config)
+void GUIBackend::addPlugin(QString name)
 {
 	name.chop(name.length() - name.indexOf("[") + 1);
 
-	KDB kdb;
-	KeySet globalConf;
-	KeySet pluginConf;
-
 	try
 	{
-		kdb.get(globalConf, "/");
-	}
-	catch(KDBException const& ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
-	}
-
-	foreach(QString s, config)
-	{
-		Key k = globalConf.lookup(s.toStdString());
-		pluginConf.append(k.dup());
-	}
-
-	try
-	{
-		m_backend->addPlugin(name.toStdString(), pluginConf);
+		m_backend->addPlugin(name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
 	}
 	catch(PluginCheckException const &ex)
 	{
 		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
+
+	resetModel();
 }
 
-void GUIBackend::serialise()
+void GUIBackend::serialise(TreeViewModel *model)
 {
 	Key rootKey (Backends::mountpointsPath, KEY_END);
 
@@ -114,8 +99,28 @@ void GUIBackend::serialise()
 		emit showMessage(tr("Error"), tr("Could not serialise backend."), ex.what());
 	}
 
+	m_mountConf.rewind();
+
+	while (m_mountConf.next())
+	{
+		Key k = m_mountConf.current().dup();
+		QString currentKey = QString::fromStdString(k.getName());
+		QStringList keys = currentKey.split("/");
+		QString root = keys.takeFirst();
+
+		if (root == "system")
+		{
+			model->sink(model->model().at(0), keys, "system", k);
+		}
+		else if (root == "user")
+		{
+			model->sink(model->model().at(1), keys, "user", k);
+		}
+	}
+
 	try
 	{
+		m_kdb.get(m_mountConf, rootKey);
 		m_kdb.set(m_mountConf, rootKey);
 	}
 	catch (kdb::KDBException const& ex)
@@ -134,6 +139,17 @@ void GUIBackend::deleteBackend()
 	delete m_backend;
 }
 
+TreeViewModel *GUIBackend::pluginConfigModel() const
+{
+	return m_pluginConfigModel;
+}
+
+void GUIBackend::resetModel()
+{
+	KeySet emptySet;
+	m_pluginConfigModel->populateModel(emptySet);
+}
+
 QString GUIBackend::mountPoints() const
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
@@ -150,8 +166,8 @@ QString GUIBackend::mountPoints() const
 		return "";
 	}
 
-	QStringList mountPoints;
-	mountPoints.append("system/elektra");
+	QStringList mPoints;
+	mPoints.append("system/elektra");
 
 	mountConf.rewind();
 
@@ -163,18 +179,18 @@ QString GUIBackend::mountPoints() const
 		{
 			if (cur.getString().at(0) == '/')
 			{
-				mountPoints.append(QString::fromStdString("user" + cur.getString()));
-				mountPoints.append(QString::fromStdString("system" + cur.getString()));
+				mPoints.append(QString::fromStdString("user" + cur.getString()));
+				mPoints.append(QString::fromStdString("system" + cur.getString()));
 			}
 			else
 			{
-				mountPoints.append(QString::fromStdString(cur.getString()));
+				mPoints.append(QString::fromStdString(cur.getString()));
 			}
 
 		}
 
 	}
-	return mountPoints.join(", ");
+	return mPoints.join(", ");
 }
 
 QString GUIBackend::pluginInfo(QString pluginName) const
@@ -223,7 +239,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 		{
 			ptr = modules.load(s);
 		}
-		catch(NoPlugin ex)
+		catch(NoPlugin &ex)
 		{
 			break;
 		}
@@ -243,7 +259,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 
 QStringList GUIBackend::nameFilters()
 {
-	QStringList nameFilters;
+	QStringList nFilters;
 	QStringList plugins = availablePlugins(true, false);
 
 	plugins = plugins.filter("[storage]");
@@ -266,10 +282,10 @@ QStringList GUIBackend::nameFilters()
 		else
 			pattern = "*";
 
-			nameFilters.append(QString("%1 (%2)").arg(plugin, pattern));
+			nFilters.append(QString("%1 (%2)").arg(plugin, pattern));
 	}
 
-	nameFilters.sort();
+	nFilters.sort();
 
-	return nameFilters;
+	return nFilters;
 }

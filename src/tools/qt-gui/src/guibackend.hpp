@@ -4,14 +4,16 @@
 #include <QObject>
 #include <QStringList>
 #include <backend.hpp>
+#include "treeviewmodel.hpp"
 
 class GUIBackend : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit GUIBackend(QObject *parent = 0);
+	explicit GUIBackend(QObject *parentBackend = 0);
 	GUIBackend(const GUIBackend &other);
+
 
 	/**
 	 * @brief Creates a new backend on a mountpoint.
@@ -33,7 +35,7 @@ public:
 	 * @param name The name of the plugin.
 	 * @param config The configuration for the plugin.
 	 */
-	Q_INVOKABLE void			addPlugin(QString name, QStringList config);
+	Q_INVOKABLE void			addPlugin(QString name);
 
 	/**
 	 * @brief Provides information about a plugin.
@@ -70,7 +72,7 @@ public:
 	/**
 	 * @brief Writes the current backend permanently to storage.
 	 */
-	Q_INVOKABLE void			serialise();
+	Q_INVOKABLE void			serialise(TreeViewModel *model);
 
 	/**
 	 * @brief Returns if the current backend is validated.
@@ -84,10 +86,16 @@ public:
 	 */
 	Q_INVOKABLE void			deleteBackend();
 
+	Q_INVOKABLE TreeViewModel*	pluginConfigModel() const;
+
 private:
 	kdb::tools::Backend*	m_backend;
 	kdb::KeySet				m_mountConf;
 	kdb::KDB				m_kdb;
+	QString					m_name;
+	TreeViewModel*			m_pluginConfigModel;
+
+	void					resetModel();
 
 signals:
 	void showMessage(QString title, QString text, QString detailedText) const;
