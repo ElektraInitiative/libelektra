@@ -29,6 +29,7 @@
 
 
 enum {
+	KEY_FLAGS=3, // unique value, does not have to be a power of two
 	KEY_END=0,
 	KEY_NAME=1,
 	KEY_VALUE=1<<1,

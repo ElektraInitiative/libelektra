@@ -136,6 +136,16 @@ static Key *elektraKeyMalloc()
  *   Define a maximum length of the value. This is only used when setting
  *   a binary key.
  *   @snippet keyNew.c With Size
+ * - ::KEY_META \n
+ *   Next two parameter is a meta name and a meta value. See keySetMeta().
+ *   @snippet keyNew.c With Meta
+ * - ::KEY_END \n
+ *   Must be the last parameter passed to keyNew(). It is always
+ *   required, unless the @p keyName is 0.
+ * - ::KEY_FLAGS \n
+ *   Bitwise disjunction of flags, which don't require one or more values.
+ *   recommended way to set multiple flags. overrides previously defined flags.
+ *   @snippet keyNew.c With Flags
  * - ::KEY_BINARY \n
  *   Allows to change the key to a binary key.
  *   Make sure that you also pass ::KEY_SIZE before you set the value.
@@ -143,12 +153,6 @@ static Key *elektraKeyMalloc()
  *   So this value toggle from keySetString()
  *   to keySetBinary().
  *   @snippet keyNew.c With Binary
- * - ::KEY_META \n
- *   Next two parameter is a meta name and a meta value. See keySetMeta().
- *   @snippet keyNew.c With Meta
- * - ::KEY_END \n
- *   Must be the last parameter passed to keyNew(). It is always
- *   required, unless the @p keyName is 0.
  * - ::KEY_CASCADING_NAME allow the name to start with /
  *   useful for ksLookup() and kdbGet() parent/lookup keys
  * - ::KEY_META_NAME allow the name to start with arbitrary namespaces
