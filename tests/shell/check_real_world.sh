@@ -91,7 +91,7 @@ fi
 
 if is_plugin_available dump
 then
-	$KDB mount | grep "test_real_world_root.ecf on /test/script with name _test_script"
+	$KDB mount | grep "test_real_world_root.ecf on /test/script"
 	succeed_if "mountpoint $ROOT_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/next/key value
@@ -100,7 +100,7 @@ fi
 
 if is_plugin_available ni
 then
-	$KDB mount | grep "test_real_world_sys.ni on /test/script/sys with name _test_script_sys"
+	$KDB mount | grep "test_real_world_sys.ni on /test/script/sys"
 	succeed_if "mountpoint $SYS_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/sys/next/key value
@@ -111,7 +111,7 @@ fi
 
 if is_plugin_available hosts
 then
-	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts with name _test_script_sys_hosts"
+	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts"
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/sys/hosts/ipv4/localhost 127.0.0.1
@@ -127,7 +127,7 @@ fi
 
 if is_plugin_available simpleini
 then
-	$KDB mount | grep "test_real_world_apps.ini on /test/script/apps with name _test_script_apps"
+	$KDB mount | grep "test_real_world_apps.ini on /test/script/apps"
 	succeed_if "mountpoint $APPS_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/apps/next/x y
@@ -168,13 +168,13 @@ fi
 
 if is_plugin_available hosts
 then
-	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts with name _test_script_sys_hosts"
+	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts"
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT missing"
 
 	$KDB umount $HOSTS_MOUNTPOINT >/dev/null
 	succeed_if "could not umount $HOSTS_MOUNTPOINT"
 
-	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts with name _test_script_sys_hosts"
+	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts"
 	[ "$!" != "0"  ]
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT still there"
 fi
