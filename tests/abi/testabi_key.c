@@ -1015,6 +1015,18 @@ static void test_keyBinary(void)
 
 	key = keyNew ("user/binary",
 		KEY_BINARY,
+		KEY_END);
+
+	succeed_if (keyIsBinary(key) == 1, "should be binary");
+	succeed_if (keyIsString(key) == 0, "should not be string");
+	succeed_if (keyGetValueSize(key) == 0, "size not correct");
+	succeed_if (keyValue(key) == 0, "should be null key");
+	succeed_if (keyGetString(key, ret, 1000) == -1, "should be type mismatch");
+
+	keyDel (key);
+
+	key = keyNew ("user/binary",
+		KEY_BINARY,
 		KEY_SIZE, sizeof(binaryData),
 		KEY_VALUE, binaryData,
 		KEY_END);

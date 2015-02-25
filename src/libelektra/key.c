@@ -130,7 +130,7 @@ static Key *elektraKeyMalloc()
  * The Key attribute tags are the following:
  * - ::KEY_VALUE \n
  *   Next parameter is a pointer to the value that will be used.
- *   If no ::KEY_BINARY was used before, *   a string is assumed.
+ *   If no ::KEY_BINARY was used before, a string is assumed.
  *   @snippet keyNew.c With Value
  * - ::KEY_SIZE \n
  *   Define a maximum length of the value. This is only used when setting
@@ -150,8 +150,8 @@ static Key *elektraKeyMalloc()
  *   Allows to change the key to a binary key.
  *   Make sure that you also pass ::KEY_SIZE before you set the value.
  *   Otherwise it will be cut off with first \\0 in the string.
- *   So this value toggle from keySetString()
- *   to keySetBinary().
+ *   So this flag toggle from keySetString() to keySetBinary().
+ *   If no value (nor size) is given, it will be a NULL key.
  *   @snippet keyNew.c With Binary
  * - ::KEY_CASCADING_NAME allow the name to start with /
  *   useful for ksLookup() and kdbGet() parent/lookup keys
