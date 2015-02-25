@@ -7,38 +7,34 @@ Menu {
 
 		title: qsTr("New")
 
-		Menu {
-			title: qsTr("Create here ...")
 
-			MenuItem {
-				id:kcmNewKey
+		MenuItem {
+			id:kcmNewKey
 
-				action: newKeyAction
-			}
-			MenuItem {
-				id:kcmNewArray
-
-				action: newArrayAction
-			}
-
+			action: newKeyAction
+			text: qsTr("Create Key here ...")
 		}
-		Menu {
-			title: qsTr("Create below ...")
+		MenuItem {
+			id:kcmNewArray
 
-			MenuItem {
-				id:kcmNewKeyBelow
+			action: newArrayAction
+			text: qsTr("Create Array Entry here ...")
+		}
+		MenuItem {
+			id:kcmNewKeyBelow
 
-				property string src: "keyBelow"
+			property string src: "keyBelow"
 
-				action: newKeyAction
-			}
-			MenuItem {
-				id:kcmNewArrayBelow
+			action: newKeyAction
+			text: qsTr("Create Key below ...")
+		}
+		MenuItem {
+			id:kcmNewArrayBelow
 
-				property string src: "arrBelow"
+			property string src: "arrBelow"
 
-				action: newArrayAction
-			}
+			action: newArrayAction
+			text: qsTr("Create Array Entry below ...")
 		}
 	}
 	MenuItem {
