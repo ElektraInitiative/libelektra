@@ -53,10 +53,12 @@ ScrollView {
 			anchors.verticalCenter: label.verticalCenter
 			opacity: rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
 			onUpdateIndicator: {
-				paintcolor = label.color
-				indicator.markDirty()
-				paint(indicator)
-				opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+				if(rowLoaderModel !== null) {
+					paintcolor = label.color
+					indicator.markDirty()
+					paint(indicator)
+					opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+				}
 			}
 		}
 	}

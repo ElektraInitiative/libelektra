@@ -598,8 +598,8 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 void TreeViewModel::refresh()
 {
-	beginResetModel();
-	endResetModel();
+	layoutAboutToBeChanged();
+	layoutChanged();
 }
 
 int TreeViewModel::count() const
