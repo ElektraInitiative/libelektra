@@ -4,7 +4,6 @@ import QtQuick.Window 2.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
-import Qt.labs.settings 1.0
 import "MainFunctions.js" as MFunctions
 import "ErrorDialogCreator.js" as ErrorDialog
 
@@ -108,17 +107,6 @@ ApplicationWindow {
 		colorGroup: SystemPalette.Disabled
 	}
 
-	Settings {
-		id: settings
-
-		category: "colors"
-
-		property color highlightColor: activePalette.highlight
-		property color frameColor: activePalette.dark
-		property color nodeWithKeyColor: activePalette.windowText
-		property color nodeWithoutKeyColor: disabledPalette.windowText
-	}
-
 	//**Windows************************************************************************************************//
 
 	NewKeyWindow {
@@ -205,13 +193,13 @@ ApplicationWindow {
 
 		onAccepted: {
 			if(type === "highlight")
-				settings.highlightColor = colorDialog.color
+				guiSettings.highlightColor = colorDialog.color
 			else if(type === "frame")
-				settings.frameColor =  colorDialog.color
+				guiSettings.frameColor =  colorDialog.color
 			else if(type === "nodeWith")
-				settings.nodeWithKeyColor = colorDialog.color
+				guiSettings.nodeWithKeyColor = colorDialog.color
 			else if(type === "nodeWithout")
-				settings.nodeWithoutKeyColor = colorDialog.color
+				guiSettings.nodeWithoutKeyColor = colorDialog.color
 
 			close()
 		}
@@ -680,14 +668,14 @@ ApplicationWindow {
 							anchors.leftMargin: defaultMargins
 							anchors.verticalCenter: parent.verticalCenter
 							text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
-							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : settings.nodeWithKeyColor)
+							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : guiSettings.nodeWithKeyColor)
 						}
 					}
 
 					rowDelegate: Component {
 						Rectangle {
 							width: keyAreaView.width
-							color: styleData.selected ? settings.highlightColor : "transparent"
+							color: styleData.selected ? guiSettings.highlightColor : "transparent"
 
 							MouseArea {
 								anchors.fill: parent
@@ -762,7 +750,7 @@ ApplicationWindow {
 							anchors.fill: parent
 							anchors.leftMargin: defaultMargins
 							text: styleData.value
-							color: settings.nodeWithKeyColor
+							color: guiSettings.nodeWithKeyColor
 						}
 					}
 				}
@@ -844,11 +832,11 @@ ApplicationWindow {
 
 						highlight: Rectangle {
 							id: highlightBar
-							color: settings.highlightColor
+							color: guiSettings.highlightColor
 						}
 
 						delegate: Text {
-							color: settings.nodeWithKeyColor
+							color: guiSettings.nodeWithKeyColor
 							text: path
 
 							MouseArea {

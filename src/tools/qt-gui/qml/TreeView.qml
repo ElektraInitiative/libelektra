@@ -38,7 +38,7 @@ ScrollView {
 			id: label
 
 			text: rowLoaderModel === null ? "" : rowLoaderModel.name
-			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? settings.nodeWithoutKeyColor : settings.nodeWithKeyColor)
+			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? guiSettings.nodeWithoutKeyColor : guiSettings.nodeWithKeyColor)
 			onColorChanged: indicator.updateIndicator()
 		}
 		Indicator {
@@ -100,7 +100,7 @@ ScrollView {
 							width: Math.max(content.width + itemLoader.x, view.width)
 							height: rowHeight
 							visible: currentNode === fillerModel
-							color: settings.highlightColor
+							color: guiSettings.highlightColor
 						}
 						MouseArea {
 							id: rowfillMouseArea

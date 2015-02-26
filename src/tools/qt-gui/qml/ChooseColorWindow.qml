@@ -19,14 +19,14 @@ BasicWindow {
 				text: qsTr("Highlight Color")
 			}
 			Item {
-				height: resetButton .height
+				height: resetButton.height
 				Layout.fillWidth: true
 			}
 			Rectangle {
 				height: resetButton.height
 				width: resetButton.width
 				border.color: "black"
-				color: settings.highlightColor
+				color: guiSettings.highlightColor
 				MouseArea {
 					anchors.fill: parent
 					onDoubleClicked:{
@@ -47,7 +47,7 @@ BasicWindow {
 				height: resetButton.height
 				width: resetButton.width
 				border.color: "black"
-				color: settings.frameColor
+				color: guiSettings.frameColor
 				MouseArea {
 					anchors.fill: parent
 					onDoubleClicked:{
@@ -68,7 +68,7 @@ BasicWindow {
 				height: resetButton.height
 				width: resetButton.width
 				border.color: "black"
-				color: settings.nodeWithKeyColor
+				color: guiSettings.nodeWithKeyColor
 				MouseArea {
 					anchors.fill: parent
 					onDoubleClicked:{
@@ -89,7 +89,7 @@ BasicWindow {
 				height: resetButton.height
 				width: resetButton.width
 				border.color: "black"
-				color: settings.nodeWithoutKeyColor
+				color: guiSettings.nodeWithoutKeyColor
 				MouseArea {
 					anchors.fill: parent
 					onDoubleClicked:{
@@ -107,10 +107,10 @@ BasicWindow {
 				anchors.right: parent.right
 
 				onClicked: {
-					settings.highlightColor = activePalette.highlight
-					settings.frameColor =  activePalette.dark
-					settings.nodeWithKeyColor = activePalette.windowText
-					settings.nodeWithoutKeyColor = disabledPalette.windowText
+					guiSettings.highlightColor = activePalette.highlight
+					guiSettings.frameColor =  activePalette.dark
+					guiSettings.nodeWithKeyColor = activePalette.windowText
+					guiSettings.nodeWithoutKeyColor = disabledPalette.windowText
 				}
 			}
 		}
