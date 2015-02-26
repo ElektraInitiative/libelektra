@@ -22,7 +22,7 @@ public:
 	QColor				frameColor() const;
 	QColor				nodeWithKeyColor() const;
 	QColor				nodeWithoutKeyColor() const;
-	Q_INVOKABLE	void	setChanges();
+	Q_INVOKABLE	void	setKDB();
 
 public slots:
 	void		setHighlightColor(const QColor &color);

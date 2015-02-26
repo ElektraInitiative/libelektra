@@ -62,7 +62,7 @@ GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings
 		m_nodeWithoutKeyColor = lookup("nodeWithoutKeyColor");
 
 	//make sure there is a configuration, even on first start
-	m_kdb.set(m_config, m_base);
+	setKDB();
 }
 
 QColor GUISettings::highlightColor() const
@@ -83,18 +83,6 @@ QColor GUISettings::nodeWithKeyColor() const
 QColor GUISettings::nodeWithoutKeyColor() const
 {
 	return m_nodeWithoutKeyColor;
-}
-
-void GUISettings::setChanges()
-{
-	try
-	{
-		m_kdb.set(m_config, m_base);
-	}
-	catch(const KDBException &ex)
-	{
-		qDebug() << ex.what();
-	}
 }
 
 void GUISettings::setHighlightColor(const QColor &color)
@@ -150,6 +138,14 @@ QColor GUISettings::lookup(const QString &keyName) const
 	return color;
 }
 
-
-
-
+void GUISettings::setKDB()
+{
+	try
+	{
+		m_kdb.set(m_config, m_base);
+	}
+	catch(const KDBException &ex)
+	{
+		qDebug() << ex.what();
+	}
+}
