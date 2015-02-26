@@ -17,12 +17,12 @@ class GUISettings : public QObject
 public:
 	explicit GUISettings(QObject *parent = 0);
 	GUISettings(GUISettings const& other) : QObject() {Q_UNUSED(other)}
-	~GUISettings();
 
-	QColor		highlightColor() const;
-	QColor		frameColor() const;
-	QColor		nodeWithKeyColor() const;
-	QColor		nodeWithoutKeyColor() const;
+	QColor				highlightColor() const;
+	QColor				frameColor() const;
+	QColor				nodeWithKeyColor() const;
+	QColor				nodeWithoutKeyColor() const;
+	Q_INVOKABLE	void	setChanges();
 
 public slots:
 	void		setHighlightColor(const QColor &color);

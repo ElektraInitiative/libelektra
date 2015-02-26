@@ -117,6 +117,7 @@ BasicWindow {
 	}
 	cancelButton.action.text: qsTr("&Close")
 	cancelButton.action.onTriggered: {
+		guiSettings.setChanges()
 		close()
 	}
 	okButton.visible: false

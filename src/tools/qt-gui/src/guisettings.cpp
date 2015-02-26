@@ -38,7 +38,7 @@ GUISettings::GUISettings(QObject *parent) : QObject(parent)
 	//set base path for all colors
 	m_base = "user/sw/libelektra.org/qt-gui/#0/";
 
-	m_kdb.get(m_config, "/sw/libelektra.org/qt-gui/");
+	m_kdb.get(m_config, m_base);
 
 	//check if stored colors exist, else create keys
 	if(!m_config.lookup(m_base + "highlightColor"))
@@ -65,11 +65,6 @@ GUISettings::GUISettings(QObject *parent) : QObject(parent)
 	m_kdb.set(m_config, m_base);
 }
 
-GUISettings::~GUISettings()
-{
-	m_kdb.set(m_config, m_base);
-}
-
 QColor GUISettings::highlightColor() const
 {
 	return m_highlightColor;
@@ -88,6 +83,18 @@ QColor GUISettings::nodeWithKeyColor() const
 QColor GUISettings::nodeWithoutKeyColor() const
 {
 	return m_nodeWithoutKeyColor;
+}
+
+void GUISettings::setChanges()
+{
+	try
+	{
+		m_kdb.set(m_config, m_base);
+	}
+	catch(const KDBException &ex)
+	{
+		qDebug() << ex.what();
+	}
 }
 
 void GUISettings::setHighlightColor(const QColor &color)
@@ -125,7 +132,6 @@ void GUISettings::setNodeWithoutKeyColor(const QColor &color)
 void GUISettings::append(const QString &keyName, const QColor &color)
 {
 	m_config.append(Key(m_base + keyName.toStdString(), KEY_VALUE, color.name().toStdString().c_str(), KEY_END));
-	m_kdb.set(m_config, m_base);
 }
 
 QColor GUISettings::lookup(const QString &keyName) const
@@ -139,7 +145,6 @@ QColor GUISettings::lookup(const QString &keyName) const
 	catch(const KeyTypeConversion &ex)
 	{
 		qDebug() << ex.what();
-		return QColor("#000000");
 	}
 
 	return color;
