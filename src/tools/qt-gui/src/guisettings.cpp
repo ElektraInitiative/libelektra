@@ -21,7 +21,7 @@ inline QColor Key::get() const
 }
 }
 
-GUISettings::GUISettings(QObject *parent) : QObject(parent)
+GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings)
 {
 	QPalette palette;
 	palette.setCurrentColorGroup(QPalette::Active);
@@ -41,22 +41,22 @@ GUISettings::GUISettings(QObject *parent) : QObject(parent)
 	m_kdb.get(m_config, m_base);
 
 	//check if stored colors exist, else create keys
-	if(!m_config.lookup(m_base + "highlightColor"))
+	if(!lookup("highlightColor").isValid())
 		append("highlightColor", m_highlightColor);
 	else
 		m_highlightColor = lookup("highlightColor");
 
-	if(!m_config.lookup(m_base + "frameColor"))
+	if(!lookup("frameColor").isValid())
 		append("frameColor", m_frameColor);
 	else
 		m_frameColor = lookup("frameColor");
 
-	if(!m_config.lookup(m_base + "nodeWithKeyColor"))
+	if(!lookup("nodeWithKeyColor").isValid())
 		append("nodeWithKeyColor", m_nodeWithKeyColor);
 	else
 		m_nodeWithKeyColor = lookup("nodeWithKeyColor");
 
-	if(!m_config.lookup(m_base + "nodeWithoutKeyColor"))
+	if(!lookup("nodeWithoutKeyColor").isValid())
 		append("nodeWithoutKeyColor", m_nodeWithoutKeyColor);
 	else
 		m_nodeWithoutKeyColor = lookup("nodeWithoutKeyColor");

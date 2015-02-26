@@ -15,7 +15,7 @@ class GUISettings : public QObject
 	Q_PROPERTY(QColor nodeWithoutKeyColor	READ nodeWithoutKeyColor()	WRITE setNodeWithoutKeyColor(QColor)	NOTIFY nodeWithoutKeyColorChanged())
 
 public:
-	explicit GUISettings(QObject *parent = 0);
+	explicit GUISettings(QObject *parentGUISettings = 0);
 	GUISettings(GUISettings const& other) : QObject() {Q_UNUSED(other)}
 
 	QColor				highlightColor() const;
