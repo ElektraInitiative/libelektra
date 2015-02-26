@@ -124,7 +124,7 @@ void GUISettings::setNodeWithoutKeyColor(const QColor &color)
 
 void GUISettings::append(const QString &keyName, const QColor &color)
 {
-	m_config.append(Key(m_base + "/" + keyName.toStdString(), KEY_VALUE, color.name().toStdString().c_str(), KEY_END));
+	m_config.append(Key(m_base + keyName.toStdString(), KEY_VALUE, color.name().toStdString().c_str(), KEY_END));
 	m_kdb.set(m_config, m_base);
 }
 
@@ -134,7 +134,7 @@ QColor GUISettings::lookup(const QString &keyName) const
 
 	try
 	{
-		color = m_config.lookup(m_base + "/" + keyName.toStdString()).get<QColor>();
+		color = m_config.lookup(m_base + keyName.toStdString()).get<QColor>();
 	}
 	catch(const KeyTypeConversion &ex)
 	{
