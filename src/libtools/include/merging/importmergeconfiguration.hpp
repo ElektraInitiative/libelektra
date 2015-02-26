@@ -22,7 +22,9 @@ namespace tools
 
 namespace merging
 {
-
+// This strategy is primarily used for importing. It keeps all
+// keeps all keys present on both sides, but overwrites
+// the value of our side with theirs whenever keys conflict.
 class ImportMergeConfiguration : public AutoMergeConfiguration
 {
 public:

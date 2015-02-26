@@ -23,6 +23,8 @@ namespace tools
 namespace merging
 {
 
+// This configuration is like the auto merge configuration except
+// that it resolves any unresolved conflicts by using one side only
 class OneSideMergeConfiguration : public AutoMergeConfiguration
 {
 

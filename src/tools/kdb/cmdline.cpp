@@ -150,11 +150,14 @@ Cmdline::Cmdline (int argc,
 			"                         When and which strategies are used and what they do depends mostly on\n"
 			"                         the used base KeySet. For twoway-merge the base is our side of the keys\n"
 			"                         Currently the following strategies exist\n"
-			"                         preserve      .. automerge only those keys where just one side deviates from base (default)\n"
+			"                         preserve      .. automerge only those keys where just one"
+			"                                          side deviates from base (default)\n"
 			"                         ours          .. like preserve, but in case of conflict use our version\n"
 			"                         theirs        .. like preserve, but in case of conflict use their version\n"
-			"                         cut           .. primarily used for import. removes existing keys below the import point and always takes the imported version\n"
-			"                         import        .. primarily used for import. preserves existing keys if they do not existing in the imported keyset. in all other\n"
+			"                         cut           .. primarily used for import. removes existing keys below "
+			"                                          the import point and always takes the imported version\n"
+			"                         import        .. primarily used for import. preserves existing keys if "
+			"                                          they do not exist in the imported keyset. in all other\n"
 			"                                          cases the imported keys have precedence\n"
 			"";
 	}

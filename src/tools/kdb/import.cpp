@@ -36,7 +36,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	KeySet originalKeys;
 	kdb.get (originalKeys, root);
-	KeySet existingKeys = originalKeys.cut (root);
+	KeySet base = originalKeys.cut (root);
 	printWarnings (cerr, root);
 
 	KeySet importedKeys;
@@ -61,13 +61,9 @@ int ImportCommand::execute(Cmdline const& cl)
 	ThreeWayMerge merger;
 	MergeHelper helper;
 
-	KeySet base;
-
-	base = existingKeys;
-
 	helper.configureMerger (cl, merger);
 	MergeResult result = merger.mergeKeySet (
-			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (existingKeys, root),
+			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root),
 					TheirMergeKeys (importedKeys, root), root));
 
 	helper.reportResult (cl, result, cout, cerr);

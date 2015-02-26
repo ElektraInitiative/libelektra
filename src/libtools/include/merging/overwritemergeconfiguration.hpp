@@ -23,6 +23,9 @@ namespace tools
 namespace merging
 {
 
+// This configuration is primarily used for importing and simply
+// resolves all conflicts by taking one side. This can be used
+// during import to overwrite existing keys
 class OverwriteMergeConfiguration : public AutoMergeConfiguration
 {
 

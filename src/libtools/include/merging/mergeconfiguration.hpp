@@ -23,6 +23,11 @@ namespace tools
 namespace merging
 {
 
+
+// A merge configuration should configure a passed threeway merger with one or
+// morge merge configurations. A class subclassing this class may add
+// merge strategies to the allocatedStrategies vector and they will be
+// freed on destruction
 class MergeConfiguration
 {
 protected:
