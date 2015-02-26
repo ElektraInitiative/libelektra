@@ -137,39 +137,6 @@ bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, i
 	return true;
 }
 
-// TODO: Why are there two implementations of setData needed?
-// Because QML cannot call setData() directly (see https://bugreports.qt-project.org/browse/QTBUG-7932)
-// and to make it possible to set data without a QModelIndex
-void TreeViewModel::setData(int idx, const QVariant& value, const QString& role)
-{
-	if (idx < 0 || idx > m_model.size() - 1)
-	{
-		emit showMessage(tr("Error"), tr("Index not valid."), QString("TreeViewModel::setData: Index = %1, Model size = %2").arg(idx).arg(m_model.size()));
-		return;
-	}
-
-	QModelIndex modelIndex = this->index(idx);
-
-	if (role == "Name")
-	{
-		setData(modelIndex, value, NameRole);
-	}
-	else if (role == "Value")
-	{
-		setData(modelIndex, value, ValueRole);
-	}
-	else if (role == "MetaValue")
-	{
-		setData(modelIndex, value, MetaValueRole);
-	}
-	else if (role == "isExpanded")
-	{
-		setData(modelIndex, value, IsExpandedRole);
-	}
-	else
-		return;
-}
-
 int TreeViewModel::getIndexByName(const QString& name) const
 {
 	for (int i = 0; i < m_model.count(); i++)

@@ -16,14 +16,16 @@ EditKeyCommand::EditKeyCommand(TreeViewModel* model, int index, QVariantList dat
 
 void EditKeyCommand::undo()
 {
-	m_model->setData(m_index, m_oldName, "Name");
-	m_model->setData(m_index, m_oldValue, "Value");
+	QModelIndex index = m_model->index(m_index);
+	m_model->setData(index, m_oldName, TreeViewModel::NameRole);
+	m_model->setData(index, m_oldValue, TreeViewModel::ValueRole);
 	m_model->model().at(m_index)->setMeta(m_oldMetaData);
 }
 
 void EditKeyCommand::redo()
 {
-	m_model->setData(m_index, m_newName, "Name");
-	m_model->setData(m_index, m_newValue, "Value");
+	QModelIndex index = m_model->index(m_index);
+	m_model->setData(index, m_newName, TreeViewModel::NameRole);
+	m_model->setData(index, m_newValue, TreeViewModel::ValueRole);
 	m_model->model().at(m_index)->setMeta(m_newMetaData);
 }

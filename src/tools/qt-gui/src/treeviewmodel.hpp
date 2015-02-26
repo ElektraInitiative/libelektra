@@ -136,15 +136,6 @@ public:
 	void                        append(ConfigNodePtr node);
 
 	/**
-	 * @brief A version of the mandatory setData method that can be called from QML without a QModelIndex. It creates a QModelIndex and calls the mandatory setData method.
-	 *
-	 * @param index The index of the ConfigNode inside this TreeViewModel that is supposed to be manipulated.
-	 * @param value Holds the data to manipulate the ConfigNode.
-	 * @param role Holds the role name that determines the type of the manipulation.
-	 */
-	Q_INVOKABLE void            setData(int idx, const QVariant& value, const QString& role);
-
-	/**
 	 * @brief Returns the index of a ConfigNode in this TreeViewModel based in the ConfigNode's name.
 	 *
 	 * @param name The name of the ConfigNode.

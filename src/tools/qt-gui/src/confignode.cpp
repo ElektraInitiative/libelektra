@@ -167,7 +167,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 	{
 		QVariantList tmp;
 		tmp << iter.key() << iter.value();
-		m_metaData->setData(counter, tmp, "MetaValue");
+		m_metaData->setData(m_metaData->index(counter), tmp, TreeViewModel::MetaValueRole);
 		counter++;
 	}
 }
