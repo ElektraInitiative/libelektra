@@ -12,8 +12,7 @@ class GUIBackend : public QObject
 
 public:
 	explicit GUIBackend(QObject *parentBackend = 0);
-	GUIBackend(const GUIBackend &other);
-
+	GUIBackend(const GUIBackend &other) : QObject() {Q_UNUSED(other)}
 
 	/**
 	 * @brief Creates a new backend on a mountpoint.

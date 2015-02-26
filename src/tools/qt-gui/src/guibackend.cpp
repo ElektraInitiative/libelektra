@@ -20,12 +20,6 @@ GUIBackend::GUIBackend(QObject *parentBackend) :
 	resetModel();
 }
 
-GUIBackend::GUIBackend(const GUIBackend &other)
-	: QObject()
-{
-	Q_UNUSED(other);
-}
-
 void GUIBackend::createBackend(const QString &mountpoint)
 {
 	m_backend = new Backend();
