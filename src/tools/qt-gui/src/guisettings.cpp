@@ -1,7 +1,6 @@
 #include "guisettings.hpp"
 #include <QDebug>
-#include <QWidget>
-#include <QColor>
+#include <QPalette>
 
 using namespace kdb;
 
@@ -36,11 +35,18 @@ GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings
 	m_nodeWithoutKeyColor	= palette.windowText().color();
 
 	//set base path for all colors
-	m_base = "user/sw/libelektra.org/qt-gui/#0/";
+	m_base = "/sw/libelektra.org/qt-gui/#0/";
 
-	m_kdb.get(m_config, m_base);
+	try
+	{
+		m_kdb.get(m_config, m_base);
+	}
+	catch(const KDBException &ex)
+	{
+		qDebug() << ex.what();
+	}
 
-	//check if stored colors exist, else create keys
+	//check if stored colors exist, if so, load them,else create them
 	if(!lookup("highlightColor").isValid())
 		append("highlightColor", m_highlightColor);
 	else
@@ -61,7 +67,7 @@ GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings
 	else
 		m_nodeWithoutKeyColor = lookup("nodeWithoutKeyColor");
 
-	//make sure there is a configuration, even on first start
+	//make sure there is a configuration, even on the very first start of the gui
 	setKDB();
 }
 
@@ -119,16 +125,20 @@ void GUISettings::setNodeWithoutKeyColor(const QColor &color)
 
 void GUISettings::append(const QString &keyName, const QColor &color)
 {
-	m_config.append(Key(m_base + keyName.toStdString(), KEY_VALUE, color.name().toStdString().c_str(), KEY_END));
+	m_config.append(Key("user" + m_base + keyName.toStdString(), KEY_VALUE, color.name().toStdString().c_str(), KEY_END));
 }
 
 QColor GUISettings::lookup(const QString &keyName) const
 {
-	QColor color;
+	QColor	color;
+	Key		key = m_config.lookup(m_base + keyName.toStdString());
+
+	if(!key)
+		return color;
 
 	try
 	{
-		color = m_config.lookup(m_base + keyName.toStdString()).get<QColor>();
+		color = key.get<QColor>();
 	}
 	catch(const KeyTypeConversion &ex)
 	{
@@ -140,9 +150,10 @@ QColor GUISettings::lookup(const QString &keyName) const
 
 void GUISettings::setKDB()
 {
+	//won't set config without user prefix
 	try
 	{
-		m_kdb.set(m_config, m_base);
+		m_kdb.set(m_config, "user" + m_base);
 	}
 	catch(const KDBException &ex)
 	{
