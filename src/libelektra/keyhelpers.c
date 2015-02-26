@@ -34,6 +34,7 @@
 #endif
 
 #include "kdb.h"
+#include "kdbtypes.h"
 #include "kdbprivate.h"
 
 
@@ -351,7 +352,7 @@ void keyVInit(Key *key, const char *name, va_list va)
 	size_t value_size = 0;
 	void *value = 0;
 	void (*func) (void) = 0;
-	uint64_t flags = 0;
+	kdb_unsigned_long_long_t flags = 0;
 	char *owner = 0;
 
 	if (!key) return;
@@ -384,7 +385,7 @@ void keyVInit(Key *key, const char *name, va_list va)
 
 				/* flags without an argument */
 				case KEY_FLAGS:
-					flags |= va_arg(va, uint64_t);
+					flags |= va_arg(va, kdb_unsigned_long_long_t);
 				case KEY_BINARY:
 				case KEY_LOCK_NAME:
 				case KEY_LOCK_VALUE:
@@ -440,7 +441,9 @@ void keyVInit(Key *key, const char *name, va_list va)
 
 				default:
 #if DEBUG
-					fprintf (stderr, "Unknown option in keyVInit: %lu\n", (uint64_t)action);
+					fprintf (stderr, "Unknown option in keyVInit: "
+							ELEKTRA_UNSIGNED_LONG_LONG_F
+							"\n", (unsigned_long_long_t)action);
 #endif
 					break;
 			}
