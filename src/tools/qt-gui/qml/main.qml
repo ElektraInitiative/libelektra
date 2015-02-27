@@ -463,9 +463,8 @@ ApplicationWindow {
 			if(editKeyWindow.accessFromSearchResults){
 				editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
 			}
-
-			editKeyWindow.show()
 			editKeyWindow.populateMetaArea()
+			editKeyWindow.show()
 		}
 	}
 
@@ -694,8 +693,7 @@ ApplicationWindow {
 								onDoubleClicked: {
 									keyAreaView.currentRow = styleData.row
 									MFunctions.updateKeyAreaSelection()
-									editKeyWindow.populateMetaArea()
-									editKeyWindow.show()
+									editAction.trigger()
 								}
 							}
 						}
@@ -703,8 +701,7 @@ ApplicationWindow {
 					Keys.onPressed: {
 						if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
 							MFunctions.updateKeyAreaSelection()
-							editKeyWindow.show()
-							editKeyWindow.populateMetaArea()
+							editAction.trigger()
 						}
 					}
 				}
@@ -825,8 +822,7 @@ ApplicationWindow {
 							else if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
 								editKeyWindow.selectedNode = searchResultsSelectedItem
 								editKeyWindow.accessFromSearchResults = true
-								editKeyWindow.show()
-								editKeyWindow.populateMetaArea()
+								editAction.trigger()
 							}
 						}
 
@@ -865,8 +861,7 @@ ApplicationWindow {
 										forceActiveFocus()
 										editKeyWindow.accessFromSearchResults = true
 										editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
-										editKeyWindow.show()
-										editKeyWindow.populateMetaArea()
+										editAction.trigger()
 									}
 								}
 							}
