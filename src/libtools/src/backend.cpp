@@ -21,6 +21,7 @@
 #include <algorithm>
 
 
+
 #include <kdb.hpp>
 #include <cassert>
 
@@ -71,6 +72,7 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 		namesInString += it->mountpoint;
 		namesInString += " ";
 	}
+
 
 
 	if (std::find(names.begin(), names.end(), mountpoint.getName()) != names.end())
@@ -346,10 +348,10 @@ std::ostream & operator<<(std::ostream & os, Backend const & b)
 /**
  * @pre name and mountpoint set
  * Write plugin into keyset ret below rootKey. */
-void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
+void Backend::serialise (kdb::Key rootKey, kdb::KeySet ret)
 {
 	assert(!mp.empty());
-	Key backendRootKey (rootKey);
+	Key backendRootKey (rootKey.dup());
 	Key kmp(mp, KEY_CASCADING_NAME, KEY_END); // canonify name
 	backendRootKey.addBaseName (kmp.getName());
 	backendRootKey.setString("This is a configuration for a backend, see subkeys for more information");
