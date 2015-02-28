@@ -79,9 +79,8 @@ TEST(Backend, SimpleBackend)
 	b.useConfigFile("abc");
 	EXPECT_TRUE(b.validated());
 
-	Key rootKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConfig;
-	b.serialise(rootKey, mountConfig);
+	b.serialize(mountConfig);
 
 	// outputGTest(mountConfig, "mountConfig");
 
@@ -134,9 +133,8 @@ TEST(Backend, CrazyName)
 	b.addPlugin("dump");
 	EXPECT_TRUE(b.validated());
 
-	Key rootKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConfig;
-	b.serialise(rootKey, mountConfig);
+	b.serialize(mountConfig);
 
 	// outputGTest(mountConfig, "mountConfig");
 

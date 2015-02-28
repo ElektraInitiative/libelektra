@@ -88,11 +88,9 @@ void GUIBackend::addPlugin(QString name)
 
 void GUIBackend::serialise(TreeViewModel *model)
 {
-	Key rootKey (Backends::mountpointsPath, KEY_END);
-
 	try
 	{
-		m_backend->serialise(rootKey, m_mountConf);
+		m_backend->serialize(m_mountConf);
 	}
 	catch(ToolException &ex)
 	{
@@ -120,6 +118,7 @@ void GUIBackend::serialise(TreeViewModel *model)
 
 	try
 	{
+		Key rootKey (Backends::mountpointsPath, KEY_END);
 		m_kdb.get(m_mountConf, rootKey);
 		m_kdb.set(m_mountConf, rootKey);
 	}

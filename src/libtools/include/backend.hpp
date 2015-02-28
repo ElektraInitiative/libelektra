@@ -55,7 +55,7 @@ public:
 	void useConfigFile (std::string file);
 	void status (std::ostream & os) const;
 	bool validated () const;
-	void serialise (kdb::Key rootKey, kdb::KeySet ret);
+	void serialize (kdb::KeySet ret);
 
 	std::string getName() const;
 	std::string getMountpoint() const;

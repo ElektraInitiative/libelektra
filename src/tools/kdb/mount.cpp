@@ -132,8 +132,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	appendPlugins(cl, backend);
 
-	Key rootKey (Backends::mountpointsPath, KEY_END);
-	backend.serialise (rootKey, mountConf);
+	backend.serialize(mountConf);
 }
 
 void MountCommand::addConfig (string const& configBasePath, string const& keyName, string const& value)

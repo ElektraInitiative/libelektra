@@ -348,9 +348,10 @@ std::ostream & operator<<(std::ostream & os, Backend const & b)
 /**
  * @pre name and mountpoint set
  * Write plugin into keyset ret below rootKey. */
-void Backend::serialise (kdb::Key rootKey, kdb::KeySet ret)
+void Backend::serialize (kdb::KeySet ret)
 {
 	assert(!mp.empty());
+	Key rootKey (Backends::mountpointsPath, KEY_END);
 	Key backendRootKey (rootKey.dup());
 	Key kmp(mp, KEY_CASCADING_NAME, KEY_END); // canonify name
 	backendRootKey.addBaseName (kmp.getName());
