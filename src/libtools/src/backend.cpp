@@ -17,6 +17,7 @@
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
+#include <helper/keyhelper.hpp>
 
 #include <algorithm>
 
@@ -176,6 +177,15 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	std::swap(this->mp, smp);
 }
 
+/**
+ * @brief Backend Config to add to
+ *
+ * @param ks the config to add, should be below system/
+ */
+void Backend::setBackendConfig (KeySet const & ks)
+{
+	config.append(ks);
+}
 
 Backend::~Backend()
 {
@@ -219,7 +229,7 @@ void Backend::useConfigFile(std::string file)
 }
 
 
-void Backend::tryPlugin (std::string pluginName, KeySet testConfig)
+void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
 {
 	int nr;
 	char *cPluginName = 0;
@@ -250,7 +260,7 @@ void Backend::tryPlugin (std::string pluginName, KeySet testConfig)
 
 
 
-	PluginPtr plugin = modules.load(realPluginName, testConfig);
+	PluginPtr plugin = modules.load(realPluginName, pluginConfig);
 
 
 	// because PluginPtr might be auto_ptr we cannot make that more
@@ -290,7 +300,6 @@ void Backend::addPlugin (std::string pluginName, KeySet pluginConf)
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());
-
 
 	KeySet toAdd = plugins.back()->getNeededConfig();
 	config.append(toAdd);
@@ -401,22 +410,18 @@ void Backend::serialize (kdb::KeySet &ret)
 				KEY_END));
 	}
 
+	const string configBasePath = Backends::getBasePath (mp) + "/config";
+	ret.append(Key(configBasePath, KEY_END));
 
 	config.rewind();
 	Key common = config.next();
-	if (common)
-	{
-		string commonName = common.getName();
+	Key oldParent("system", KEY_END);
+	Key newParent(configBasePath, KEY_END);
 
-		while (Key k = config.next())
-		{
-			string newName = k.getName().substr (commonName.length());
-			Key x(k.dup());
-			x.setName(backendRootKey.getName());
-			x.addBaseName("config");
-			x.addBaseName(newName);
-			ret.append (x);
-		}
+	for (KeySet::iterator i = config.begin(); i != config.end(); ++i)
+	{
+		Key k(i->dup());
+		ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
 	}
 
 

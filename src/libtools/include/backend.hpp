@@ -51,6 +51,7 @@ public:
 	~Backend();
 
 	void setMountpoint (Key mountpoint, KeySet mountConf);
+	void setBackendConfig (KeySet const & ks);
 	void addPlugin (std::string name, KeySet pluginConf = KeySet());
 	void useConfigFile (std::string file);
 	void status (std::ostream & os) const;

@@ -89,6 +89,9 @@ TEST(Backend, SimpleBackend)
 	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/\\/") << "name of element in keyset wrong";
 	EXPECT_EQ(mountConfig.current().getString(), "This is a configuration for a backend, see subkeys for more information") << "string of element in keyset wrong";
 	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/\\//config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
 	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/\\//config/path") << "name of element in keyset wrong";
 	EXPECT_EQ(mountConfig.current().getString(), "abc") << "string of element in keyset wrong";
 	mountConfig.next();
@@ -143,6 +146,9 @@ TEST(Backend, CrazyName)
 	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d") << "name of element in keyset wrong";
 	EXPECT_EQ(mountConfig.current().getString(), "This is a configuration for a backend, see subkeys for more information") << "string of element in keyset wrong";
 	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
 	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/config/path") << "name of element in keyset wrong";
 	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
 	mountConfig.next();
@@ -175,4 +181,136 @@ TEST(Backend, CrazyName)
 	mountConfig.next();
 	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/\\/crazy\\/a..__.b\\/._.\\/._c__d/setplugins/#7#resolver") << "name of element in keyset wrong";
 	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+}
+
+TEST(Backend, SimpleBackendWithConf)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	Backend b;
+	b.setMountpoint(Key("user/somewhere", KEY_END), KeySet(0, KS_END));
+	EXPECT_EQ(b.getMountpoint(), "user/somewhere");
+	KeySet backendConf(5,
+		*Key("system/globalConf", KEY_VALUE, "for everywhere", KEY_END),
+		*Key("system/other_global_conf", KEY_VALUE, "more", KEY_END),
+		KS_END);
+	b.setBackendConfig(backendConf);
+	KeySet resConf(5,
+		*Key("user/res_conf", KEY_VALUE, "do resolving", KEY_END),
+		*Key("user/other_res_conf", KEY_VALUE, "do resolving too", KEY_END),
+		KS_END);
+	b.addPlugin("resolver", resConf);
+	KeySet dumpConf(5,
+		*Key("user/file_format", KEY_VALUE, "1", KEY_END),
+		*Key("user/other_dump_conf", KEY_VALUE, "some dump config", KEY_END),
+		KS_END);
+	b.addPlugin("dump", dumpConf);
+	b.useConfigFile("abc");
+	EXPECT_TRUE(b.validated());
+
+	KeySet mountConfig;
+	b.serialize(mountConfig);
+
+	// outputGTest(mountConfig, "mountConfig");
+
+	mountConfig.rewind();
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "This is a configuration for a backend, see subkeys for more information") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/config/globalConf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "for everywhere") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/config/other_global_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "more") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/config/path") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "abc") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/errorplugins") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/errorplugins/#5#resolver#resolver#") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/errorplugins/#5#resolver#resolver#/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/errorplugins/#5#resolver#resolver#/config/other_res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving too") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/errorplugins/#5#resolver#resolver#/config/res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#0#resolver") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#0#resolver/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#0#resolver/config/other_res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving too") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#0#resolver/config/res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#5#dump#dump#") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#5#dump#dump#/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#5#dump#dump#/config/file_format") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "1") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/getplugins/#5#dump#dump#/config/other_dump_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "some dump config") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/mountpoint") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "user/somewhere") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#0#resolver") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#0#resolver/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#0#resolver/config/other_res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving too") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#0#resolver/config/res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#5#dump") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#5#dump/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#5#dump/config/file_format") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "1") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#5#dump/config/other_dump_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "some dump config") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#7#resolver") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#7#resolver/config") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#7#resolver/config/other_res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving too") << "string of element in keyset wrong";
+	mountConfig.next();
+	EXPECT_EQ(mountConfig.current().getName(), "system/elektra/mountpoints/user\\/somewhere/setplugins/#7#resolver/config/res_conf") << "name of element in keyset wrong";
+	EXPECT_EQ(mountConfig.current().getString(), "do resolving") << "string of element in keyset wrong";
 }
