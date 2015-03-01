@@ -2188,6 +2188,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 
 	found = ksLookup(ks, &key, options);
 	free (key.key);
+	ksDel(key.meta); // sometimes owner is set
 	return found;
 }
 
