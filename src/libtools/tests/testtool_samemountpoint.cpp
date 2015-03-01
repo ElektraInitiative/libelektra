@@ -13,7 +13,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(SameMountpoint, setMountpoint)
+TEST(SameMountpoint, setMountpoints)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -42,6 +42,47 @@ TEST(SameMountpoint, setMountpoint)
 	EXPECT_EQ(b1.getMountpoint(), "user/hello");
 }
 
+TEST(SameMountpoint, strangeMountpoints)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	KeySet ks;
+
+	Backend b1;
+	b1.setMountpoint(Key("user/..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "user");
+
+	b1.setMountpoint(Key("user//../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "user");
+
+	b1.setMountpoint(Key("user//../..////../", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "user");
+
+	b1.setMountpoint(Key("spec//..//hello//..//.//..////../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "spec");
+
+	b1.setMountpoint(Key("proc//..//hello//..//.//..////../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "proc");
+
+	b1.setMountpoint(Key("dir//..//hello//..//.//..////../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "dir");
+
+	b1.setMountpoint(Key("user//..//hello//..//.//..////../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "user");
+
+	b1.setMountpoint(Key("system//..//hello//..//.//..////../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "system");
+
+	b1.setMountpoint(Key("/..//hello//..//.//..////../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "/");
+
+	b1.setMountpoint(Key("//..//hello//..//.//..////../..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "/");
+
+	b1.setMountpoint(Key("/is//../a//../complex/..///.", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "/");
+}
+
 TEST(SameMountpoint, wrongMountpoints)
 {
 	using namespace kdb;
@@ -57,18 +98,6 @@ TEST(SameMountpoint, wrongMountpoints)
 	EXPECT_EQ(b1.getMountpoint(), "");
 	ASSERT_THROW(b1.setMountpoint(Key("invalid", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ(b1.getMountpoint(), "");
-	/*
-	ASSERT_THROW(b1.setMountpoint(Key("/..", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ(b1.getMountpoint(), "");
-	ASSERT_THROW(b1.setMountpoint(Key("/../..", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ(b1.getMountpoint(), "");
-	ASSERT_THROW(b1.setMountpoint(Key("user/../..", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ(b1.getMountpoint(), "");
-	ASSERT_THROW(b1.setMountpoint(Key("system/../..", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ(b1.getMountpoint(), "");
-	ASSERT_THROW(b1.setMountpoint(Key("dir/../..", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ(b1.getMountpoint(), "");
-	*/
 }
 
 TEST(SameMountpoint, notSame)

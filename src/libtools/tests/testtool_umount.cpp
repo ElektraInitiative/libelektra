@@ -36,7 +36,7 @@ TEST(Umount, SimpleUser) { testUmount("user/hello"); }
 TEST(Umount, SimpleSystem) { testUmount("system/hello"); }
 TEST(Umount, SimpleCascading) { testUmount("/hello"); }
 
-// TEST(Umount, InvolvedRoot) { testUmount("/is//../a//../complex/..///."); }
+TEST(Umount, InvolvedRoot) { testUmount("/is//../a//../complex/..///."); }
 
 TEST(Umount, InvolvedSpec) { testUmount("spec/is///a//./more/complex/../complicated///issue//."); }
 TEST(Umount, InvolvedProc) { testUmount("proc/is///a//./more/complex/../complicated///issue//."); }

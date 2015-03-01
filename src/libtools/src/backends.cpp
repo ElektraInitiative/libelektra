@@ -65,6 +65,8 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
  */
 bool Backends::umount(std::string const & mountPath, KeySet & mountConf)
 {
+	if (mountPath.empty()) return false;
+
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
 
 	Key kmp(Backends::getBasePath(mountPath), KEY_END);
@@ -84,8 +86,13 @@ bool Backends::umount(std::string const & mountPath, KeySet & mountConf)
 	// fall back to compatibility pre 0.8.11 mountnames
 	// May umount wrong things, so its done as extra step so that
 	// it will never happen if something desired is present.
-	std::string oldMountpoint = mountPath;
-	std::replace(oldMountpoint.begin(), oldMountpoint.end(), '_', '/');
+	std::string soldMountpoint = mountPath;
+	std::replace(soldMountpoint.begin(), soldMountpoint.end(), '_', '/');
+	Key koldMountpoint("user/" + soldMountpoint, KEY_END);
+	std::string omp = koldMountpoint.getName();
+	std::string oldMountpoint(omp.begin()+4, omp.end());
+	if (soldMountpoint.at(0) != '/') oldMountpoint.erase(0,1); // fix non-cascading
+	if (koldMountpoint.getName() == "user") oldMountpoint = "/"; // fix root
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
 		if (it->mountpoint == oldMountpoint)
