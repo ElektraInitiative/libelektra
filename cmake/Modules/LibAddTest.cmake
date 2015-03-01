@@ -1,6 +1,13 @@
 # Allows to add test cases using Google Test
 #
 
+# recommended to use
+#
+# export GTEST_CATCH_EXCEPTIONS=0
+#
+# which disables a feature that seems to be popup-blocker for Windows
+
+
 macro (add_gtest source)
 	if (BUILD_TESTING)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
@@ -19,6 +26,7 @@ macro (add_gtest source)
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+
 	add_test (${source}
 			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
