@@ -42,6 +42,8 @@ public:
 
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
 
+	static BackendInfo findBackend(std::string const & backend, KeySet mountConf);
+
 	static bool umount(std::string const & backend, KeySet & mountConf);
 
 	static std::string getBasePath(std::string name);

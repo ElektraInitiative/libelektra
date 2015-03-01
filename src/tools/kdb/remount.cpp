@@ -17,53 +17,34 @@ RemountCommand::RemountCommand()
 
 void RemountCommand::getExistingMountpoint(Cmdline const & cl)
 {
-	string existingBackend;
-	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
-	bool byPath = cl.arguments[2].find ("/") != string::npos;
-	bool backendFound = false;
-	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
-	{
-		if (byPath)
-		{
-			if (it->mountpoint == cl.arguments[2])
-			{
-				backendFound = true;
-			}
-		}
-		else
-		{
-			if (it->name == cl.arguments[2])
-			{
-				backendFound = true;
-			}
-		}
+	std::string search = cl.arguments[2];
+	BackendInfo bi = Backends::findBackend(search, mountConf);
 
-		if (backendFound)
-		{
-			existingName = it->name;
-			break;
-		}
+	if (bi.name.empty())
+	{
+		throw invalid_argument ("could not find the mountpoint \"" + search + "\"");
 	}
 
-	if (!backendFound) throw invalid_argument ("the mount " + existingBackend + " does not exist");
+	existingName = bi.name;
 }
 
 void RemountCommand::cloneMountpoint(Cmdline const & cl)
 {
-	Key existingParent (string(Backends::mountpointsPath) + "/" + existingName, KEY_END);
-	Key newParent (string(Backends::mountpointsPath) + "/" + name, KEY_END);
-	kdb::KDB kdb (existingParent);
+	Key existingParent (Backends::getBasePath(existingName), KEY_END);
+	Key newParent (Backends::getBasePath(mp), KEY_END);
+
 	KeySet existingBackend = mountConf.cut(existingParent);
 	mountConf.append(existingBackend);
 	KeySet newBackend(existingBackend.size(), KS_END);
 	string configPath = newParent.getName() + "/config/path";
+	string mpPath = newParent.getName() + "/mountpoint";
 	existingBackend.rewind();
 	while (Key current = existingBackend.next())
 	{
 		Key newKey = rebaseKey (current, existingParent, newParent);
 		newBackend.append(newKey);
 
-		if (newKey.getBaseName() == "mountpoint")
+		if (newKey.getName() == mpPath)
 		{
 			newKey.setString(mp);
 		}

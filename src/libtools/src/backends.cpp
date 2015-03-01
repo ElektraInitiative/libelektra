@@ -54,18 +54,23 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 }
 
 /**
- * @brief Unmount a backend by given mountPath
+ * @brief Find a backend in the given name
  *
- * @param mountPath the given mountpoint (for backwards compatibility
- * names old-style / and _ are accepted if no modern-style
- * mountpoint was found, too)
+ * @param mountPath the given backend name to find
  *
- * @retval true if something was done
- * @retval false if nothing was done (but also no error)
+ * For backwards compatibility old-style names containing _ instead of escaped /
+ * are accepted if no modern-style mountpoint is found.
+ *
+ * @param mountConf the configuration to search (should contain keys
+ * below mountpointsPath to find something)
+ *
+ * @return the found backend or an empty BackendInfo if nothing found
+ *         (with empty strings)
  */
-bool Backends::umount(std::string const & mountPath, KeySet & mountConf)
+BackendInfo Backends::findBackend(std::string const & mountPath, KeySet mountConf)
 {
-	if (mountPath.empty()) return false;
+	BackendInfo ret;
+	if (mountPath.empty()) return ret;
 
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
 
@@ -76,10 +81,7 @@ bool Backends::umount(std::string const & mountPath, KeySet & mountConf)
 	{
 		if (it->mountpoint == kmp.getBaseName())
 		{
-			Key x(Backends::mountpointsPath, KEY_END);;
-			x.addBaseName(it->name);
-			mountConf.cut(x);
-			return true;
+			return *it;
 		}
 	};
 
@@ -97,12 +99,32 @@ bool Backends::umount(std::string const & mountPath, KeySet & mountConf)
 	{
 		if (it->mountpoint == oldMountpoint)
 		{
-			Key x(Backends::mountpointsPath, KEY_END);;
-			x.addBaseName(it->name);
-			mountConf.cut(x);
-			return true;
+			return *it;
 		}
 	};
+	return ret;
+}
+
+/**
+ * @brief Unmount a backend by given mountPath
+ *
+ * @param mountPath the given mountpoint 
+ *
+ * Uses findBackend() to locate the backend.
+ *
+ * @retval true if something was done
+ * @retval false if nothing was done (but also no error)
+ */
+bool Backends::umount(std::string const & mountPath, KeySet & mountConf)
+{
+	BackendInfo bi = Backends::findBackend(mountPath, mountConf);
+	if (!bi.name.empty())
+	{
+		Key x(Backends::mountpointsPath, KEY_END);;
+		x.addBaseName(bi.name);
+		mountConf.cut(x);
+		return true;
+	}
 
 	return false;
 }

@@ -38,7 +38,6 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 /**
  * @brief set mp (interactive or by commandline)
  *
- * @pre name must be set before
  * @see getName()
  */
 void MountBaseCommand::getMountpoint(Cmdline const& cl)
