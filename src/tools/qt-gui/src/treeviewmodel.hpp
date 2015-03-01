@@ -186,13 +186,6 @@ public:
 	Q_INVOKABLE void            refresh();
 
 	/**
-	 * @brief The number of ConfigNodes in this model.
-	 *
-	 * @return The number of ConfigNodes in this model.
-	 */
-	Q_INVOKABLE int             count() const;
-
-	/**
 	 * @brief Returns the correct name for a new Array Entry.
 	 *
 	 * @return The correct name for a new Array Entry.

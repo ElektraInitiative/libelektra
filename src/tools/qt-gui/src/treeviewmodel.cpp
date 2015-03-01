@@ -324,7 +324,7 @@ QVariant TreeViewModel::find(const QString& term)
 	FindVisitor fVisit(searchResults, term);
 	accept(fVisit);
 
-	if (searchResults->model().count() == 0)
+	if (searchResults->rowCount() == 0)
 	{
 		searchResults->model().append(ConfigNodePtr(new ConfigNode("NotfoundNode", tr("There were no results matching your query."), 0, this)));
 	}
@@ -567,11 +567,6 @@ void TreeViewModel::refresh()
 {
 	layoutAboutToBeChanged();
 	layoutChanged();
-}
-
-int TreeViewModel::count() const
-{
-	return m_model.count();
 }
 
 QString TreeViewModel::getCurrentArrayNo() const

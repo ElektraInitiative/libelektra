@@ -76,7 +76,7 @@ ConfigNode::~ConfigNode()
 int ConfigNode::getChildCount() const
 {
 	if(m_children)
-		return m_children->model().count();
+		return m_children->rowCount();
 	return 0;
 }
 
@@ -198,7 +198,7 @@ int ConfigNode::getChildIndexByName(const QString &name)
 {
 	if(m_children)
 	{
-		for(int i = 0; i < m_children->model().count(); i++)
+		for(int i = 0; i < m_children->rowCount(); i++)
 		{
 			if(m_children->model().at(i)->getName() == name)
 				return i;

@@ -117,8 +117,8 @@ function deleteSearchResult(){
 
 		undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.index)
 
-		if(searchResultsListView.model.count() > 0){
-			searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.count() - 1)
+		if(searchResultsListView.model.rowCount() > 0){
+			searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.rowCount() - 1)
 			searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 		}
 		else

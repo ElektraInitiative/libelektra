@@ -408,7 +408,7 @@ ApplicationWindow {
 		enabled: undoManager.canRedo
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
-			for(var i = undoManager.index(); i < undoManager.count(); i++)
+			for(var i = undoManager.index(); i < undoManager.rowCount(); i++)
 				redoAction.trigger()
 		}
 	}
@@ -815,7 +815,7 @@ ApplicationWindow {
 								currentIndex--
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.count() - 1){
+							else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.rowCount() - 1){
 								currentIndex++
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
