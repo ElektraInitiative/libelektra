@@ -37,8 +37,8 @@ private:
 	SetPlugins setplugins;
 	ErrorPlugins errorplugins;
 
-	std::string mp;
-	std::string configFile;
+	std::string mp; // empty or valid canonified mountpoint
+	std::string configFile; // empty or valid configuration file
 
 	Modules modules;
 	kdb::KeySet config; // the global config, plugins might add something to it

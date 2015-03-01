@@ -27,9 +27,9 @@ namespace tools
  */
 struct BackendInfo
 {
-	std::string name;
-	std::string mountpoint;
-	std::string path;
+	std::string name;       ///< escaped mountpoint name (except for old mountpoints)
+	std::string mountpoint; ///< where the backend is mounted
+	std::string path;       ///< the configuration file path to this backend
 };
 
 /**
@@ -41,6 +41,8 @@ public:
 	typedef std::vector<BackendInfo> BackendInfoVector;
 
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
+
+	static bool umount(std::string const & backend, KeySet & mountConf);
 
 	static std::string getBasePath(std::string name);
 

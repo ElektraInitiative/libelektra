@@ -166,7 +166,7 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 			throw MountpointAlreadyInUseException(
 				std::string("Mountpoint ") + 
 				smp +
-				" is one of the already used cascading names: " +
+				" is one of the already used names: " +
 				namesAsString
 				);
 		}
@@ -364,8 +364,7 @@ void Backend::serialize (kdb::KeySet &ret)
 {
 	assert(!mp.empty());
 	Key backendRootKey (Backends::mountpointsPath, KEY_END);
-	Key kmp(mp, KEY_CASCADING_NAME, KEY_END); // canonify name
-	backendRootKey.addBaseName (kmp.getName());
+	backendRootKey.addBaseName (mp);
 	backendRootKey.setString("This is a configuration for a backend, see subkeys for more information");
 	ret.append(backendRootKey);
 

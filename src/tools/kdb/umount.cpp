@@ -13,24 +13,6 @@ using namespace kdb::tools;
 UmountCommand::UmountCommand()
 {}
 
-int UmountCommand::deleteByMountPath(KeySet& conf, std::string const & mountPath)
-{
-	Backends::BackendInfoVector mtab = Backends::getBackendInfo (conf);
-
-	std::string backendName;
-	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
-	{
-		if (it->mountpoint == mountPath)
-		{
-			Key x(Backends::getBasePath (mountPath), KEY_END);
-			KeySet ks = conf.cut (x);
-			return ks.size();
-		}
-	}
-
-	return 0;
-}
-
 int UmountCommand::execute(Cmdline const& cl)
 {
 	if (cl.arguments.size() != 1) throw invalid_argument("1 argument required");
@@ -40,7 +22,7 @@ int UmountCommand::execute(Cmdline const& cl)
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey);
 
-	if (deleteByMountPath(conf, cl.arguments[0]) == 0)
+	if (Backends::umount(cl.arguments[0], conf) == 0)
 	{
 		cerr << "Mountpoint " << cl.arguments[0] << " does not exist" << endl;
 		return 1;
