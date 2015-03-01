@@ -643,8 +643,10 @@ static void test_keyNameSlashes()
 	succeed_if_same_string (keyName(key), "user/hidden");
 	succeed_if (keyGetNameSize(key) == 12, "name size minus slashes" );
 
+	keySetName(key,"user");
+	succeed_if_same_string (keyName(key), "user");
+
 	keySetName(key,"user/");
-	// printf ("Name: %s\n", keyName(key));
 	succeed_if_same_string (keyName(key), "user");
 
 	keySetName(key,"user/a");
@@ -2190,13 +2192,17 @@ static void test_keyAdd()
 
 	Key *k = keyNew("", KEY_END);
 	succeed_if (keyAddName(0, "valid") == -1, "cannot add to null name");
-#if 0
 	succeed_if (keyAddName(k, "valid") == -1, "added to empty name?");
 
 	keySetName(k, "/");
+	succeed_if (keyAddName(k, 0) == 0, "cannot add null pointer");
+	succeed_if (keyAddName(k, "") == 0, "cannot add empty name");
+	succeed_if (keyAddName(k, "//") == 0, "cannot add slashes");
+	succeed_if (keyAddName(k, "////") == 0, "cannot add slashes");
 	// succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name"); // TODO?
 	succeed_if (keyAddName(k, "valid") == sizeof("/valid"), "added invalid name");
 
+/*
 #undef TEST_ESCAPE_PART
 #define TEST_ESCAPE_PART(A, S) \
 	do { \
@@ -2213,10 +2219,90 @@ static void test_keyAdd()
 
 #include <data_escape.c>
 	}
-#endif
+*/
 
 	keyDel(k);
+}
 
+void test_keyCascading()
+{
+	printf ("test cascading\n");
+
+	Key * k = keyNew("/", KEY_END);
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if_same_string(keyName(k), "/");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	succeed_if(keyAddName(k, "valid")>0, "could not add valid");
+	succeed_if(keyGetNameSize(k)==7, "size not correct");
+	succeed_if_same_string(keyName(k), "/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName(k, "/");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/valid")==7, "could not add valid with starting slash");
+	succeed_if(keyGetNameSize(k)==7, "size not correct");
+	succeed_if_same_string(keyName(k), "/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName(k, "////");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/////valid")==7, "could not add valid with starting slash");
+	succeed_if(keyGetNameSize(k)==7, "size not correct");
+	succeed_if_same_string(keyName(k), "/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName(k, "/");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/////more/valid")>0, "could not add valid with starting slash");
+	succeed_if_same_string(keyName(k), "/more/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName(k, "/");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/////./valid")==7, "could not add valid with starting slash");
+	succeed_if(keyGetNameSize(k)==7, "size not correct");
+	succeed_if_same_string(keyName(k), "/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName(k, "/");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/////more/../valid")==7, "could not add valid with ..");
+	succeed_if(keyGetNameSize(k)==7, "size not correct");
+	succeed_if_same_string(keyName(k), "/valid");
+	succeed_if_same_string(keyBaseName(k), "valid");
+
+	keySetName(k, "/");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/////..")==0, "try to substract root with ..");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if_same_string(keyName(k), "/");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	keySetName(k, "/");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/////../more")==sizeof("/more"), "try to substract root with ..");
+	succeed_if(keyGetNameSize(k)==sizeof("/more"), "size not correct");
+	succeed_if_same_string(keyName(k), "/more");
+	succeed_if_same_string(keyBaseName(k), "more");
+
+
+	keySetName(k, "/");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if(keyAddName(k, "/////more/..")==0, "could not add nothing with ..");
+	succeed_if(keyGetNameSize(k)==2, "size not correct");
+	succeed_if_same_string(keyName(k), "/");
+	succeed_if_same_string(keyBaseName(k), "");
+
+
+	keySetName(k, "/");
+	succeed_if(keyAddName(k, "/is//../a//../complex/..///.")==0, "could not add complex stuff");
+	succeed_if_same_string(keyName(k), "/");
+	succeed_if_same_string(keyBaseName(k), "");
+
+	// printf ("%s\n", keyName(k));
+
+	keyDel (k);
 }
 
 int main(int argc, char** argv)
@@ -2248,6 +2334,7 @@ int main(int argc, char** argv)
 	test_keyDirectBelow();
 	test_keyEscape();
 	test_keyAdd();
+	test_keyCascading();
 
 	printf("\ntestabi_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -891,16 +891,17 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
  * @retval -1 if newName is not a valid escaped name
  * @retval -1 on allocation errors
  * @retval -1 if key was inserted to a keyset before
- * @retval 0 none of the above and if nothing was done (newName had only slashes, empty or null)
+ * @retval 0 if nothing was done because newName had only slashes, is too short, is empty or is null
  */
 ssize_t keyAddName(Key *key, const char *newName)
 {
 	if (!key) return -1;
 	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
+	if (!strcmp(key->key, "")) return -1;
 	if (!newName) return 0;
 	size_t const nameSize = elektraStrLen(newName);
-	if (nameSize < 2) return 0; // false
+	if (nameSize < 2) return 0;
 	if (!elektraValidateKeyName(newName, nameSize)) return -1;
 
 	const size_t origSize = key->keySize;
@@ -914,7 +915,7 @@ ssize_t keyAddName(Key *key, const char *newName)
 
 	if (*key->key == '/') avoidSlash = key->keySize == 2;
 
-	-- key->keySize; // loop assumes, key->key[key->keySize] is last character and not NULL
+	-- key->keySize; // loop assumes that key->key[key->keySize] is last character and not NULL
 
 	/* iterate over each single folder name removing repeated '/', .  and .. */
 	while (*(p=keyNameGetOneLevel(p+size,&size)))
@@ -941,17 +942,16 @@ ssize_t keyAddName(Key *key, const char *newName)
 		}
 
 		/* carefully append basenames */
-		memcpy(key->key+key->keySize,p,size);
+		char *d = key->key+key->keySize;
+		memcpy(d,p,size);
 		key->keySize+=size;
 	}
 
 	++ key->keySize; /*for \\0 ending*/
 
-	if (origSize == key->keySize) return 0; // no change in size
-
 	elektraFinalizeName(key);
 
-	return key->keySize;
+	return origSize == key->keySize ? 0 : key->keySize;
 }
 
 
