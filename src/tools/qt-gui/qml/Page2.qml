@@ -86,7 +86,7 @@ Item {
 
 							if(pluginDropdown.currentText.indexOf("[storage]") > -1)
 								includeStorage = false
-							if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
+							else if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
 								includeResolver = false
 
 							clearConfig()
