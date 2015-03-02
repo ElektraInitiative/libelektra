@@ -157,7 +157,30 @@ E.g. one may use:
 
 	-DPLUGINS="resolver;resolver_lm_uhpb_b"
 
+#### TOOLS ####
 
+Tools are used to add extra functionality to Elektra.
+The flag used to specify which tools are compiled is
+`-DTOOLS`, thus flag works similarly to the `-DPLUGINS` flag.
+
+To add all tools, you can use::
+
+	-DTOOLS=ALL
+
+To add all plugins not having additional dependencies
+(they need only POSIX), you can use:
+
+	-DTOOLS=NODEP
+
+To build only the default tools, you can use:
+
+	-DTOOLS=DEFAULT
+
+To specify specific tools you can use, e.g.:
+
+	-DTOOLS=qt-gui;kdb
+
+	
 #### CMAKE_BUILD_TYPE  ####
 Debug, Release or RelWithDebInfo
 See help bar at bottom of ccmake for that option or:

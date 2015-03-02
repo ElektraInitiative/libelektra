@@ -23,7 +23,6 @@ protected:
 	void doIt();
 
 	kdb::KeySet mountConf;
-	std::string name;
 	std::string path;
 	std::string mp;
 

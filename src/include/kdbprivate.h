@@ -70,9 +70,11 @@
 #endif
 
 #if DEBUG || defined(ELEKTRA_BMC)
-#define ELEKTRA_ASSERT assert
+#undef NDEBUG
+#include <assert.h>
+#define ELEKTRA_ASSERT(NX) assert(NX)
 #else
-#define ELEKTRA_ASSERT
+#define ELEKTRA_ASSERT(NX)
 #endif
 
 
@@ -475,6 +477,8 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where);
 Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 
 /*Private helper for keys*/
+elektraNamespace keyGetNameNamespace(const char *name);
+
 int keyInit(Key *key);
 void keyVInit(Key *key, const char *keyname, va_list ap);
 
@@ -495,9 +499,12 @@ ssize_t elektraFinalizeName(Key *key);
 ssize_t elektraFinalizeEmptyName(Key *key);
 
 char *elektraEscapeKeyNamePart(const char *source, char *dest);
-size_t elektraUnescapeKeyName(const char *source, char *dest);
 
-int elektraValidateKeyNamePart(const char *name);
+size_t elektraUnescapeKeyName(const char *source, char *dest);
+int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest);
+char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest);
+
+int elektraValidateKeyName(const char *name, size_t size);
 
 /** The buffer size needed for an array name
  *
@@ -511,12 +518,10 @@ int elektraValidateKeyNamePart(const char *name);
  */
 #define ELEKTRA_MAX_ARRAY_SIZE (21)
 
-#ifndef WIN32
 /*Internally used for array handling*/
 int elektraArrayValidateName(const Key *key);
 int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex);
 int elektraWriteArrayNumber(char *newName, int64_t newIndex);
-#endif
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

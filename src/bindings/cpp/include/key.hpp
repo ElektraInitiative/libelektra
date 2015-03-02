@@ -702,6 +702,18 @@ inline bool Key::isNull() const
  *
  * You can write your own template specialication, e.g.:
  * @code
+template <>
+inline QColor Key::get() const
+{
+	if (getStringSize() < 1)
+	{
+		throw KeyTypeConversion();
+	}
+
+	std::string str = getString();
+	QColor c(str.c_str());
+	return c;
+}
  * @endcode
  *
  * @copydoc getString

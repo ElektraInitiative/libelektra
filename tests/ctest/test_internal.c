@@ -66,21 +66,27 @@ static void test_elektraStrLen()
 	}
 }
 
-static void test_elektraValidateKeyNamePart()
-{
-	printf ("test validate key name part\n");
+#define TEST_VALIDATE_NAME_OK(NAME, MSG) \
+	succeed_if (elektraValidateKeyName(NAME, sizeof(NAME)), MSG " ok");
 
-	succeed_if (elektraValidateKeyNamePart("normalKey"), "key name part without special characters is invalid");
-	succeed_if (!elektraValidateKeyNamePart("Icontaina\\"), "unescaped backslash is valid");
-	succeed_if (!elektraValidateKeyNamePart("Icontaina/"), "unescaped slash is valid");
-	succeed_if (elektraValidateKeyNamePart("Icontaina%"), "unescaped % is invalid")
-	succeed_if (elektraValidateKeyNamePart("Icontaina#"), "unescaped # is invalid")
-	succeed_if (elektraValidateKeyNamePart("Icontaina."), "unescaped . is invalid")
-	succeed_if (elektraValidateKeyNamePart("Icontaina.."), "unescaped .. is invalid")
-	succeed_if (!elektraValidateKeyNamePart("\\x"), "invalid escape sequence is valid");
-	succeed_if (!elektraValidateKeyNamePart("textbefore\\x"), "invalid escape sequence is valid");
-	succeed_if (elektraValidateKeyNamePart("\\\\"), "escaped escape character is invalid");
-	succeed_if (elektraValidateKeyNamePart("\\/"), "escaped slash is invalid");
+#define TEST_VALIDATE_NAME_NOK(NAME, MSG) \
+	succeed_if (!elektraValidateKeyName(NAME, sizeof(NAME)), MSG " not ok");
+
+static void test_elektraValidateKeyName()
+{
+	printf ("test validate key name\n");
+
+	TEST_VALIDATE_NAME_OK ("normalKey", "normal key");
+	TEST_VALIDATE_NAME_OK ("nor\\malKey", "stray escape");
+	TEST_VALIDATE_NAME_OK ("nor\\\\malKey", "stray escape");
+	TEST_VALIDATE_NAME_OK ("nor\\\\mal\\Key", "stray escape");
+	TEST_VALIDATE_NAME_NOK("tanglingKey\\", "tangling escape");
+	TEST_VALIDATE_NAME_OK ("escapedEKey\\\\", "escape at end");
+	TEST_VALIDATE_NAME_NOK("tanglingKey\\\\\\", "tangling escape");
+	TEST_VALIDATE_NAME_OK ("escapedEKey\\\\\\\\", "escape at end");
+	TEST_VALIDATE_NAME_NOK("tanglingKey\\\\\\\\\\", "tangling escape");
+	TEST_VALIDATE_NAME_OK ("escapedEKey\\\\\\\\\\\\", "escape at end");
+	TEST_VALIDATE_NAME_NOK("tanglingKey\\\\\\\\\\\\\\", "tangling escape");
 }
 
 static void test_elektraEscapeKeyNamePart()
@@ -100,7 +106,6 @@ static void test_elektraEscapeKeyNamePart()
 	succeed_if_same_string (elektraEscapeKeyNamePart("a/../b", dest), "a\\/..\\/b");
 	succeed_if_same_string (elektraEscapeKeyNamePart("a/%/b", dest), "a\\/%\\/b");
 	succeed_if_same_string (elektraEscapeKeyNamePart("a/x/b", dest), "a\\/x\\/b");
-	succeed_if_same_string (elektraEscapeKeyNamePart("\\", dest), "\\");
 	succeed_if_same_string (elektraEscapeKeyNamePart("a\\.", dest), "a\\.");
 	succeed_if_same_string (elektraEscapeKeyNamePart("\\.", dest), "\\\\.");
 	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\.", dest), "\\\\\\.");
@@ -108,10 +113,13 @@ static void test_elektraEscapeKeyNamePart()
 	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\..", dest), "\\\\\\..");
 	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\\\..", dest), "\\\\\\\\..");
 	succeed_if_same_string (elektraEscapeKeyNamePart("/", dest), "\\/");
-	succeed_if_same_string (elektraEscapeKeyNamePart("\\/", dest), "\\\\/");
-	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\/", dest), "\\\\\\/");
-	succeed_if_same_string (elektraEscapeKeyNamePart("ab\\\\/", dest), "ab\\\\\\/");
-	succeed_if_same_string (elektraEscapeKeyNamePart("ab\\\\/de", dest), "ab\\\\\\/de");
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\/", dest), "\\\\\\/"); // 1 -> 3
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\/", dest), "\\\\\\\\\\/"); // 2 -> 5
+	succeed_if_same_string (elektraEscapeKeyNamePart("ab\\\\/", dest), "ab\\\\\\\\\\/"); // 2 -> 5
+	succeed_if_same_string (elektraEscapeKeyNamePart("ab\\\\/de", dest), "ab\\\\\\\\\\/de"); // 2 -> 5
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\", dest), "\\\\"); // 1 -> 2
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\", dest), "\\\\\\\\"); // 2 -> 4
+	succeed_if_same_string (elektraEscapeKeyNamePart("\\\\\\", dest), "\\\\\\\\\\\\"); // 3 -> 6
 }
 
 static void test_elektraUnescapeKeyName()
@@ -221,7 +229,7 @@ int main(int argc, char** argv)
 
 	test_elektraMalloc();
 	test_elektraStrLen();
-	test_elektraValidateKeyNamePart();
+	test_elektraValidateKeyName();
 	test_elektraEscapeKeyNamePart();
 	test_elektraUnescapeKeyName();
 	test_keyNameGetOneLevel();

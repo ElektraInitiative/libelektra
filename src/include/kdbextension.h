@@ -66,7 +66,6 @@ ssize_t keySetComment(Key *key, const char *newDesc);
 int elektraKeyCmpOrder(const Key *a, const Key *b);
 
 /* Name Manipulation Methods */
-ssize_t keyNameGetFullRootNameSize(const char *name);
 ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
 ssize_t keyGetParentNameSize(const Key *key);
 
@@ -83,21 +82,8 @@ int keyNameIsProc(const char *keyname);
 int keyNameIsDir(const char *keyname);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
-
-
-/***************************************
- *
- * Functions which might be reintroduced
- *
- **************************************/
-
-/*****************
- * Misc Functions
- *****************/
-
 keyswitch_t keyCompare(const Key *key1, const Key *key2);
-ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,
-	size_t maxSize);
+
 
 
 /*****************

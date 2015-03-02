@@ -38,7 +38,6 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 /**
  * @brief set mp (interactive or by commandline)
  *
- * @pre name must be set before
  * @see getName()
  */
 void MountBaseCommand::getMountpoint(Cmdline const& cl)
@@ -75,9 +74,6 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 	{
 		mp = cl.arguments[1];
 	}
-
-	name = mp;
-	std::replace(name.begin(), name.end(), '/', '_');
 }
 
 void MountBaseCommand::askForConfirmation(Cmdline const& cl)
@@ -86,7 +82,6 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 	{
 		cout << endl;
 		cout << "Ready to mount with following configuration:" << endl;
-		cout << "Name:       " << name << endl;
 		cout << "Mountpoint: " << mp << endl;
 		cout << "Path:       " << path << endl;
 	}

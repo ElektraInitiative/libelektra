@@ -119,7 +119,8 @@
  */
 %apply ssize_t { cursor_t }
 
-%ignore kdb::KeySet::KeySet(size_t alloc, va_list ap);
+%ignore kdb::Va;
+%ignore kdb::KeySet::KeySet(Va va, size_t alloc, va_list ap);
 %ignore kdb::KeySet::KeySet(size_t alloc, ...);
 %ignore kdb::KeySet::operator=;
 
