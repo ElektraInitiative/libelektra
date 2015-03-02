@@ -241,7 +241,7 @@ void test_cast()
 	Key *k;
 
 	ck = ckdb::keyNew(0);
-	k = reinterpret_cast<Key*>(&ck); // no copy, just a cast
+	k = reinterpret_cast<Key*>(&ck); // not copied on purpose
 
 	/*
 	cout << "&ck:  " << (void*)&ck << endl;
@@ -466,18 +466,22 @@ void test_valid()
 	succeed_if (i2, "even though it is invalid, it is still not a null key");
 
 	vector<string> invalid_names;
-	invalid_names.push_back ("/abc");
+	// invalid_names.push_back ("/abc");
+	// invalid_names.push_back ("/");
 	invalid_names.push_back ("use");
+	invalid_names.push_back ("users");
+	invalid_names.push_back ("users:");
 	invalid_names.push_back ("syste");
+	invalid_names.push_back ("systems");
+	invalid_names.push_back ("system:abc");
 	invalid_names.push_back ("error/somthing");
-	invalid_names.push_back ("/");
 	invalid_names.push_back (".");
 	invalid_names.push_back ("..");
 
 	for (size_t i = 0; i<invalid_names.size(); ++i)
 	{
 		Key i3 (invalid_names[i], KEY_END);
-		succeed_if (!i3.isValid(), "key should not be valid");
+		succeed_if (!i3.isValid(), "key " + invalid_names[i] + " should not be valid");
 		succeed_if (i3, "even though it is invalid, it is still not a null key");
 	}
 

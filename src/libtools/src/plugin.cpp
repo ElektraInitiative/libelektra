@@ -13,7 +13,7 @@
 #include <kdb.h>
 #include <kdbplugin.h>
 #include <kdbmodule.h>
-#include <kdbprivate.h>
+#include <kdbprivate.h> // currently needed for plugin handling
 
 #include <set>
 #include <algorithm>
@@ -31,17 +31,22 @@ namespace kdb
 namespace tools
 {
 
-Plugin::Plugin(std::string const& nameOfNewPlugin, KeySet &modules, KeySet const& testConfig) :
+Plugin::Plugin(std::string const& nameOfNewPlugin, KeySet &modules, KeySet const& pluginConfig) :
 	pluginName(nameOfNewPlugin),
 	firstRef (true)
 {
 	Key errorKey;
-	plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), testConfig.dup(), *errorKey);
+	plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), pluginConfig.dup(), *errorKey);
 
 	if (!plugin)
 	{
 		throw NoPlugin(errorKey);
 	}
+}
+
+kdb::KeySet Plugin::getConfig()
+{
+	return ksDup(elektraPluginGetConfig(plugin));
 }
 
 Plugin::Plugin(Plugin const& other) :

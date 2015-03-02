@@ -128,6 +128,15 @@ static void test_directbelow()
 	keySetName (k1, "system/a"); keySetName (k2, "system/a/a");
 	succeed_if (keyRel (k1, k2) == 1, "should be direct below");
 
+	keySetName (k1, "system/a\\/a"); keySetName (k2, "system/a\\/a/a");
+	succeed_if (keyRel (k1, k2) == 1, "should be direct below");
+
+	keySetName (k1, "system/a\\/a\\/a"); keySetName (k2, "system/a\\/a\\/a/b");
+	succeed_if (keyRel (k1, k2) == 1, "should be direct below");
+
+	keySetName (k1, "system/a\\/a\\/a"); keySetName (k2, "system/a\\/a\\/a/b");
+	succeed_if (keyRel (k1, k2) == 1, "should be direct below");
+
 
 	keyDel (k1);
 	keyDel (k2);

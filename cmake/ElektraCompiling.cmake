@@ -84,7 +84,7 @@ set (COMMON_FLAGS "${COMMON_FLAGS} -Wsign-compare -Wfloat-equal")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat-security")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
-set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized")
+set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized -Winit-self -Wmaybe-uninitialized")
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
 

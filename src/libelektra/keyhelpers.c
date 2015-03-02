@@ -42,10 +42,14 @@
 /**
  * @internal
  *
- * Returns one level of the key name.
+ * Returns one level of the escaped key name.
  *
- * Interface should be build on top of Keys.
- * Interface is not const-correct (it does a const-cast).
+ * Only needed for escaping engine, otherwise the unescaped key name
+ * should be used! In the unescaped version, every level is null
+ * terminated.
+ *
+ * Interface is not const-correct. It does a const-cast needed for
+ * many clients.
  *
  * This method is used to skip repeating '/' and to find escaping chars.
  * Given @p keyName, this method returns a pointer to the next name level
@@ -83,6 +87,8 @@ Level 3 name: def\/ghi
 Level 4 name: jkl
  * @endcode
  *
+ * @pre name must be non-null and point to a null terminated string
+ *
  * @param name the string that will be searched
  * @param size the number of bytes of level name found in @p keyName until
  * 	the next delimiter ('/')
@@ -94,8 +100,8 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 {
 	char *real=(char *)name;
 	size_t cursor=0;
-	int escapeNext=0;
-	int end=0;
+	int end=0; // bool to check for end of level
+	int escapeCount=0; // counter to check if / was escaped
 
 	/* skip all repeating '/' in the beginning */
 	while (*real && *real == KDB_PATH_SEPARATOR)
@@ -109,16 +115,16 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 		switch (real[cursor])
 		{
 		case KDB_PATH_ESCAPE:
-			escapeNext=1;
+			++escapeCount;
 			break;
 		case KDB_PATH_SEPARATOR:
-			if (! escapeNext)
+			if (! (escapeCount % 2))
 			{
 				end=1;
 			}
 			// fallthrough
 		default:
-			escapeNext=0;
+			escapeCount = 0;
 		}
 		++cursor;
 	}
@@ -133,44 +139,6 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 	return real;
 }
 
-
-
-
-/**
- * @internal
- *
- * Gets number of bytes needed to store root name of a key name
- *
- * Possible root key names are @p system, @p user or @p "user:someuser" .
- *
- * @return number of bytes needed with ending NULL
- * @param keyName the name of the key
- * @see keyGetFullRootNameSize()
- * @ingroup keyname
- */
-ssize_t keyNameGetFullRootNameSize(const char *name)
-{
-	char *end;
-	int length=strlen(name);
-
-	if (!length) return 0;
-
-	/*
-		Possible situations:
-		user:someuser
-		user:someuser/
-		user:someuser/key/name
-		user:some.user/key/name
-		.
-		\.
-		(empty)
-	*/
-	end=strchr(name,KDB_PATH_SEPARATOR);
-	if (!end) /* Reached end of string. Root is entire key. */
-		end = (char *)name + length;
-
-	return end-name+1;
-}
 
 
 
@@ -330,7 +298,7 @@ int keyNameIsSystem(const char *name)
  */
 int keyInit(Key *key)
 {
-	memset(key,0,sizeof(Key));
+	memset(key,0,sizeof(struct _Key));
 
 	return 0;
 }
@@ -356,6 +324,8 @@ void keyVInit(Key *key, const char *name, va_list va)
 	char *owner = 0;
 
 	if (!key) return;
+
+	keyInit(key);
 
 	if (name) {
 		while ((action = va_arg(va, keyswitch_t))) {

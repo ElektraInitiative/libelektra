@@ -396,49 +396,34 @@ char *elektraFormat(const char *format, va_list arg_list)
 
 
 /**
- * Validates whether the supplied keyname part is valid
- * The function looks for escape characters that do not escape
- * anything and also for unescaped characters that have
- * to be escaped.
+ * Validates whether the supplied keyname is valid.
  *
- * @param the key name part that is to be checked
- * @return true if the supplied keyname part is valid, false otherwise
+ * The function looks for tangling escape characters in the end
+ * and for a minimum length.
+ *
+ * Does not check for valid namespaces
+ *
+ * @pre size must be at least 2
+ *
+ * @param name the key name that is to be checked
+ * @param size a elektraStrLen of the key name
+ * @retval true if the supplied keyname part is valid
+ * @retval false if its invalid
  */
-int elektraValidateKeyNamePart(const char *name)
+int elektraValidateKeyName(const char *name, size_t size)
 {
-	const char *current = name;
-	const char *last = name + strlen(name) - 1;
-	const char *escapable = "\\/%#.";
-	int escapeCount = 0;
+	size_t escapeCount = 0;
 
-	current = name;
-	while (*current)
+	size -= 2; // forward null character to last character
+
+	// now do backwards iteration
+	while (size && name[size] == '\\')
 	{
-		if (*current == '\\')
-		{
-			escapeCount++;
-			if (escapeCount % 2 != 0)
-			{
-				/* this backslash won't be able to escape anything */
-				if (current == last) return 0;
-
-				/* check if the following character is escapable */
-				if (!strchr (escapable, *(current+1))) return 0;
-			}
-		}
-		else
-		{
-			/* there are no escape characters left to escape this slash */
-			if (*current == '/' && escapeCount % 2 == 0) return 0;
-
-			escapeCount = 0;
-		}
-
-		current ++;
+		++escapeCount;
+		--size;
 	}
 
-
-	return 1;
+	return (escapeCount % 2) == 0; // only allow equal number of escapes in the end
 }
 
 /**
@@ -496,7 +481,7 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 	// skip all backslashes, but one, at start of a name
 	while (*sp == '\\')
 	{
-		++sp; 
+		++sp;
 		++skippedBackslashes;
 	}
 	size -= skippedBackslashes;
@@ -555,7 +540,7 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
  * @brief Unescapes (a part of) a key name.
  *
  * As described in Syntax for Key Names, slashes are
- * prefixed with a \\. This method removes all \\ that are such
+ * prefixed with a \\ (or uneven number thereof). This method removes all \\ that are such
  * escape characters.
  *
  * The new string will be written to dest.
@@ -572,22 +557,57 @@ char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest)
 {
 	const char *sp = source;
 	char *dp = dest;
+	size_t count = 0;
 
 	while (size--)
 	{
-		if (*sp == '\\' && *(sp+1) == '/')
+		if (*sp == '\\')
 		{
-			*dp='/';
-			dp++;
-			sp+=2; // skip both
-			size --;
+			++ count;
+		}
+		else if (*sp == '/')
+		{
+			// we escape a part, so there had to be a
+			// backslash
+			ELEKTRA_ASSERT(count > 0);
+			// we counted an uneven number of backslashes
+			ELEKTRA_ASSERT((count % 2) == 1);
+
+			count /= 2;
+			while (count)
+			{
+				*dp = '\\';
+				++dp;
+				--count;
+			}
+
+			*dp = *sp;
+			++dp;
 		}
 		else
 		{
+			// output delayed backslashes
+			while (count)
+			{
+				*dp = '\\';
+				++dp;
+				--count;
+			}
+
 			*dp = *sp;
-			dp++;
-			sp++;
+			++dp;
 		}
+		++sp;
+	}
+	// we counted an even number of backslashes
+	// otherwise we would not be at the end
+	ELEKTRA_ASSERT((count % 2)==0);
+	count /= 2;
+	while (count)
+	{
+		*dp = '\\';
+		++dp;
+		--count;
 	}
 	return dp;
 }
@@ -607,15 +627,14 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
 	const char * sp = source;
 	char * dp = dest;
 	size_t size = 0;
+	if (*source == '/')
+	{
+		// handling for cascading names
+		*dp = 0;
+		++dp;
+	}
 	while (*(sp=keyNameGetOneLevel(sp+size,&size)))
 	{
-		/* skip all repeating '/' in the beginning */
-		while (*sp && *sp == KDB_PATH_SEPARATOR)
-		{
-			++sp;
-			--size;
-		}
-
 		if (!elektraUnescapeKeyNamePartBegin(sp, size, &dp))
 		{
 			dp = elektraUnescapeKeyNamePart(sp, size, dp);
@@ -701,22 +720,44 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 	{
 		return dest;
 	}
-	
+
+	size_t count=0;
 
 	const char *sp = source;
 	char *dp = dest;
-	/* slashes and backslashes are escaped everywhere */
 	while (*sp)
 	{
-		if (*sp == '/')
+		if (*sp == '\\')
 		{
+			++count;
+		}
+		else if (*sp == '/')
+		{
+			// escape every slash
 			*dp='\\';
 			++dp;
+			// and print escaped slashes
+			while (count)
+			{
+				*dp='\\';
+				++dp;
+				--count;
+			}
 		}
-
+		else
+		{
+			count = 0;
+		}
 		*dp = *sp;
 		++dp;
 		++sp;
+	}
+	// print other escaped backslashes at end of part
+	while (count)
+	{
+		*dp='\\';
+		++dp;
+		--count;
 	}
 	*dp = 0;
 	return dest;

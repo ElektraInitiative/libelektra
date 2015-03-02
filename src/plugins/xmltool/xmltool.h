@@ -29,6 +29,9 @@
 #include <kdbplugin.h>
 #include <stdio.h>
 
+
+ssize_t ksGetCommonParentName(const KeySet *ks,char *returnedCommonParent,
+	size_t maxSize);
 ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options);
 int ksFromXML(KeySet *ks, int fd);
 size_t elektraStrLen(const char *s);

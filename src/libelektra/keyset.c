@@ -262,11 +262,9 @@ KeySet *ksVNew (size_t alloc, va_list va)
  */
 KeySet *ksDup (const KeySet * source)
 {
-	KeySet *keyset=0;
-
 	if (!source) return 0;
 
-	keyset = ksNew(source->alloc,KS_END);
+	KeySet *keyset=ksNew(source->alloc,KS_END);
 	ksAppend (keyset, source);
 	return keyset;
 }
@@ -1876,7 +1874,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	return found;
 }
 
-static Key * elektraLookupLinearSearch(KeySet *ks, Key * key, option_t options)
+static Key * elektraLookupLinearSearch(KeySet *ks, Key *key, option_t options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
@@ -1906,7 +1904,7 @@ static Key * elektraLookupLinearSearch(KeySet *ks, Key * key, option_t options)
 	return current;
 }
 
-static Key * elektraLookupBinarySearch(KeySet *ks, Key * key, option_t options)
+static Key * elektraLookupBinarySearch(KeySet *ks, Key *key, option_t options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
@@ -2183,26 +2181,14 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 
 	if (!ks->size) return 0;
 
-	if (name[0] == 'u' && name[4] == ':')
-	{
-		Key *key = keyNew(name, KEY_CASCADING_NAME, KEY_END);
-		found = ksLookup(ks, key, options);
-		keyDel (key);
-	}
-	else
-	{
-		struct _Key key;
-		size_t size = strlen(name)+1;
-		char localname [size*2];
-		strcpy(localname, name);
+	struct _Key key;
 
-		keyInit(&key);
-		key.key = localname;
-		key.keySize = size;
-		elektraFinalizeName(&key);
+	keyInit(&key);
+	elektraKeySetName(&key, name, KEY_META_NAME|KEY_CASCADING_NAME);
 
-		found = ksLookup(ks, &key, options);
-	}
+	found = ksLookup(ks, &key, options);
+	free (key.key);
+	ksDel(key.meta); // sometimes owner is set
 	return found;
 }
 
@@ -2337,113 +2323,6 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
 	}
 
 	return 0;
-}
-
-
-
-/******************************************* 
- *    Other operations                     *
- *******************************************/
-
-
-
-
-/**
- * @internal
- *
- * Calculates the common parent to all keys in @p ks.
- *
- * This is a c-helper function, you need not implement it in bindings.
- *
- * Given the @p ks KeySet, calculates the parent name for all the keys.
- * So if @p ks contains this keys:
- *
- * @code
- *   system/sw/xorg/Monitors/Monitor1/vrefresh
- *   system/sw/xorg/Monitors/Monitor1/hrefresh
- *   system/sw/xorg/Devices/Device1/driver
- *   system/sw/xorg/Devices/Device1/mode
- * @endcode
- *
- * The common parent is @p system/sw/xorg .
- *
- * On the other hand, if we have this KeySet:
- *
- * @code
- *   system/some/thing
- *   system/other/thing
- *   user/unique/thing
- * @endcode
- *
- * No common parent is possible, so @p returnedCommonParent will contain nothing.
- *
- * @param working the Keyset to work with
- * @param returnedCommonParent a pre-allocated buffer that will receive the
- *        common parent, if found
- * @param maxSize size of the pre-allocated @p returnedCommonParent buffer
- * @return size in bytes of the parent name, or 0 if there is no common parent,
- *         or -1 to indicate an error, then @p errno must be checked.
- */
-ssize_t ksGetCommonParentName(const KeySet *working,char *returnedCommonParent, size_t maxSize)
-{
-	size_t parentSize=0;
-	Key *current=0;
-	cursor_t init;
-	KeySet *ks;
-	ssize_t sMaxSize;
-
-	if (maxSize > SSIZE_MAX) return -1;
-	sMaxSize = maxSize;
-
-	init = ksGetCursor (working);
-	ks = (KeySet *) working;
-
-	if (ks->size < 1) return 0;
-
-	ksRewind(ks);
-	current = ksNext(ks);
-	if (keyGetNameSize(current) > sMaxSize)
-	{
-		/*errno=KDB_ERR_TRUNC;*/
-		returnedCommonParent[0]=0;
-		return -1;
-	}
-
-	strcpy(returnedCommonParent,keyName(current));
-	parentSize=elektraStrLen(returnedCommonParent);
-
-	while (*returnedCommonParent)
-	{
-		ksRewind(ks);
-		while ((current = ksNext(ks)) != 0)
-		{
-			/* Test if a key doesn't match */
-			if (memcmp(returnedCommonParent,keyName(current),parentSize-1)) break;
-		}
-		if (current)
-		{
-			/* some key failed to be a child */
-			/* parent will be the parent of current parent... */
-			char *delim=0;
-
-			if ((delim=strrchr(returnedCommonParent,KDB_PATH_SEPARATOR)))
-			{
-				*delim=0;
-				parentSize=elektraStrLen(returnedCommonParent);
-			} else {
-				*returnedCommonParent=0;
-				parentSize=0;
-				break; /* Better don't make comparision with parentSize-1 now */
-			}
-		} else {
-			/* All keys matched (current==0) */
-			/* We have our common parent to return in commonParent */
-			ksSetCursor (ks, init );
-			return parentSize;
-		}
-	}
-	ksSetCursor (ks, init );
-	return parentSize; /* if reached, will be zero */
 }
 
 

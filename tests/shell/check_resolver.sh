@@ -24,7 +24,6 @@ fi
 WRITE_TO_SYSTEM=NO
 
 ROOT_MOUNTPOINT=/test/script
-ROOT_MOUNTNAME=_test_script
 
 #method that does all the checking
 check_resolver()
@@ -63,8 +62,8 @@ check_resolver()
 		rmdir -p --ignore-fail-on-non-empty `dirname $FILE`
 	fi
 
-	$KDB umount $ROOT_MOUNTNAME >/dev/null
-	succeed_if "could not umount $ROOT_MOUNTNAME"
+	$KDB umount $ROOT_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $ROOT_MOUNTPOINT"
 }
 
 unset HOME

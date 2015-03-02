@@ -279,30 +279,26 @@ Key* keyDup(const Key *source)
 	dest = elektraKeyMalloc();
 	if (!dest) return 0;
 
-	/* Copy the struct data, including the "next" pointer */
+	/* Copy the struct data */
 	*dest=*source;
+
+	/* get rid of properties bound to old key */
+	dest->ksReference = 0;
+	dest->flags=KEY_FLAG_SYNC;
 
 	/* prepare to set dynamic properties */
 	dest->key=
 	dest->data.v=
 	dest->meta=0;
 
-	/* get rid of properties bound to old key */
-	dest->ksReference = 0;
-	dest->flags=KEY_FLAG_SYNC;
-
-	/* use any name as passed */
-	if (source->key && elektraKeySetName(dest,source->key,KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1) goto memerror;
-	if (source->data.v && keySetRaw(dest,source->data.v,source->dataSize) == -1) goto memerror;
-	if (source->meta)
+	/* copy dynamic properties */
+	if (keyCopy(dest, source) == -1)
 	{
-		dest->meta = ksDup (source->meta);
+		keyDel(dest);
+		return 0;
 	}
-	
+
 	return dest;
-memerror:
-	keyDel (dest);
-	return 0;
 }
 
 
@@ -410,17 +406,23 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
  * @param source the key which should be copied
  *     or NULL to clean the destination key
  * @ingroup key
- * @return -1 on failure when a NULL pointer
+ * @retval -1 on failure when a NULL pointer
  *     was passed for dest or a dynamic property could not
- *     be written. Both name and value are
- *     empty then.
- * @return 0 when dest was cleaned
- * @return 1 when source was successfully copied
+ *     be written. The content will be unmodified then.
+ * @retval 0 when dest was cleaned
+ * @retval 1 when source was successfully copied
  * @see keyDup() to get a duplication of a key
  */
 int keyCopy (Key *dest, const Key *source)
 {
 	if (!dest) return -1;
+
+	if(test_bit(dest->flags, KEY_FLAG_RO_NAME)
+	  || test_bit(dest->flags, KEY_FLAG_RO_VALUE)
+	  || test_bit(dest->flags, KEY_FLAG_RO_META))
+	{
+		return -1;
+	}
 
 	if (!source)
 	{
@@ -428,30 +430,60 @@ int keyCopy (Key *dest, const Key *source)
 		return 0;
 	}
 
-	if (elektraKeySetName(dest,source->key,
-		KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1)
+	// remember dynamic memory to be removed
+	char *destKey = dest->key;
+	void *destData = dest->data.c;
+	KeySet *destMeta = dest->meta;
+
+	// duplicate dynamic properties
+	if (source->key)
 	{
-		return -1;
+		dest->key = elektraStrNDup(source->key, source->keySize + source->keyUSize);
+		if (!dest->key) goto memerror;
+	} else {
+		dest->key = 0;
 	}
 
-	if (keySetRaw(dest,source->data.v,source->dataSize) == -1)
+	if (source->data.v)
 	{
-		keySetName(dest, "");
-		return -1;
+		dest->data.v = elektraStrNDup(source->data.v, source->dataSize);
+		if (!dest->data.v) goto memerror;
+	} else {
+		dest->data.v = 0;
 	}
 
 	if (source->meta)
 	{
-		ksDel(dest->meta);
 		dest->meta = ksDup (source->meta);
-	}
-	else
-	{
-		ksDel(dest->meta);
+		if (!dest->meta) goto memerror;
+	} else {
 		dest->meta = 0;
 	}
 
+	// successful, now do the irreversible stuff: we obviously modified dest
+	set_bit(dest->flags, KEY_FLAG_SYNC);
+
+	// copy sizes accordingly
+	dest->keySize = source->keySize;
+	dest->keyUSize = source->keyUSize;
+	dest->dataSize = source->dataSize;
+
+	// free old resources of destination
+	elektraFree(destKey);
+	elektraFree(destData);
+	ksDel(destMeta);
+
 	return 1;
+
+memerror:
+	elektraFree(dest->key);
+	elektraFree(dest->data.v);
+	ksDel(dest->meta);
+
+	dest->key = destKey;
+	dest->data.v = destData;
+	dest->meta = destMeta;
+	return -1;
 }
 
 
