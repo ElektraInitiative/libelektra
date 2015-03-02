@@ -64,7 +64,7 @@
 #endif
 
 // every resolver should use the same mutex
-extern pthread_mutex_t elektra_resolver_mutex;
+extern pthread_mutex_t * getResolverMutex(void);
 #endif
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -88,7 +88,7 @@ static void resolverInit (resolverHandle *p, const char *path)
 		if(result == 0)
 			result = pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
 		if(result == 0)
-			result = pthread_mutex_init(&elektra_resolver_mutex, &mutex_attr);
+			result = pthread_mutex_init(getResolverMutex(), &mutex_attr);
 	}
 }
 
@@ -223,7 +223,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_trylock(getResolverMutex());
 	if (ret != 0)
 	{
 		if (errno == EBUSY // for trylock
@@ -254,7 +254,7 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_unlock(getResolverMutex());
 	if (ret != 0)
 	{
 		char buffer[ERROR_SIZE];
