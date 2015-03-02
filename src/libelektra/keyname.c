@@ -471,8 +471,9 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 		break;
 	} // Note that we abused keyUSize for cascading and user:owner
 
-	key->key=elektraStrNDup(newName, key->keySize*2);
 	const size_t length = elektraStrLen(newName);
+	key->key=elektraMalloc(key->keySize*2);
+	memcpy(key->key, newName, key->keySize);
 	if (length == key->keyUSize || length == key->keySize)
 	{	// use || because full length is USize in user, but Size for /
 		// newName consisted of root only
