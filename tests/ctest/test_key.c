@@ -1623,6 +1623,7 @@ static void test_keyFlags()
 
 	keyDel (key);
 	keyDel (key2);
+}
 
 static void test_keyCanonify()
 {
