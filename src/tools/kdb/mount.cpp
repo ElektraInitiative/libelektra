@@ -57,6 +57,7 @@ void MountCommand::outputMtab(Cmdline const& cl)
 			else std::cout << delim << std::flush;
 		}
 
+		// TODO: remove next version
 		if (cl.third)
 		{
 			std::cout << it->name;
@@ -87,6 +88,8 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	Backend backend;
 
 	backend.setMountpoint(Key(mp, KEY_CASCADING_NAME, KEY_END), mountConf);
+
+	backend.setBackendConfig(cl.getPluginsConfig("system/"));
 
 	if (cl.debug)
 	{
@@ -135,21 +138,11 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	backend.serialize(mountConf);
 }
 
-void MountCommand::addConfig (string const& configBasePath, string const& keyName, string const& value)
-{
-	Key configKey = Key (configBasePath, KEY_END);
-	configKey.addName (keyName);
-	configKey.setString (value);
-	mountConf.append (configKey);
-}
-
-bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
+bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token, KeySet & pluginConfig)
 {
 	string keyName;
 	string value;
 
-	const string configBasePath = Backends::getBasePath (mp) + "/config";
-	mountConf.append(Key(configBasePath, KEY_END)); // add /config key itself
 	if (cl.interactive)
 	{
 		cout << "Enter the plugin configuration" << endl;
@@ -165,7 +158,7 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
 			cout << "Enter the Key value: ";
 			cin >> value;
 
-			addConfig (configBasePath, keyName, value);
+			pluginConfig.append(Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
 		}
 	}
 	else
@@ -189,7 +182,7 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token)
 			// in the config string, consider the value empty
 			if (!std::getline (sstream, value, ',')) value = "";
 
-			addConfig (configBasePath, keyName, value);
+			pluginConfig.append(Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
 		}
 	}
 
@@ -200,11 +193,12 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 {
 	std::string pname;
 	size_t current_plugin = 2;
+	KeySet pluginConfig;
 	if (cl.interactive)
 	{
 		cout << "First Plugin: ";
 		cin >> pname;
-		readPluginConfig (cl, current_plugin);
+		readPluginConfig (cl, current_plugin, pluginConfig);
 	}
 	else
 	{
@@ -215,7 +209,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		else
 		{
 			pname = cl.arguments[current_plugin];
-			if (readPluginConfig (cl, current_plugin))
+			if (readPluginConfig (cl, current_plugin, pluginConfig))
 			{
 				current_plugin ++;
 			}
@@ -227,10 +221,8 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 	while (pname != "." || !backend.validated())
 	{
 		try {
-			KeySet pluginConfig;
-			pluginConfig.append(cl.getPluginsConfig("system/"));
-			// TODO: add per plugin config, too
 			backend.addPlugin (pname, pluginConfig);
+			pluginConfig.clear();
 		}
 		catch (PluginCheckException const& e)
 		{
@@ -251,7 +243,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 
 			if (pname != ".")
 			{
-				readPluginConfig (cl, current_plugin);
+				readPluginConfig (cl, current_plugin, pluginConfig);
 			}
 		}
 		else
@@ -263,7 +255,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 			else
 			{
 				pname = cl.arguments[current_plugin];
-				if (readPluginConfig (cl, current_plugin))
+				if (readPluginConfig (cl, current_plugin, pluginConfig))
 				{
 					current_plugin ++;
 				}

@@ -47,9 +47,6 @@ then
 
 	grep "Error (#10) occurred!" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur"
-	echo "----------- tmpfile -----------"
-	cat $TMPFILE
-	echo "----------- tmpfile -----------"
 
 	grep "Reason: from error plugin" $TMPFILE > /dev/null
 	succeed_if "Error does not stem from error plugin"
@@ -82,39 +79,40 @@ then
 
 
 
-	echo "Test error plugin when open"
+	#echo "Test error plugin when open"
 
-	$KDB mount $ERROR_FILE $ERROR_MOUNTPOINT dump error on_open/error=10 > /dev/null 2>&1
-	succeed_if "could not mount error at $ERROR_MOUNTPOINT"
+	#$KDB mount $ERROR_FILE $ERROR_MOUNTPOINT dump error on_open/error=10 > /dev/null 2>&1
+	#succeed_if "could not mount error at $ERROR_MOUNTPOINT"
 
-	$KDB get system > /dev/null 2>&1
-	[ $? -ne 0 ]
-	succeed_if "Was able to get from missing backend"
+	#$KDB get system > /dev/null 2>&1
+	#[ $? -ne 0 ]
+	#succeed_if "Was able to get from missing backend"
 
-	$KDB get user > /dev/null 2>&1
-	[ $? -ne 0 ]
-	succeed_if "Was able to get from missing backend"
+	#$KDB get user > /dev/null 2>&1
+	#[ $? -ne 0 ]
+	#succeed_if "Was able to get from missing backend"
 
-	$KDB get system$ROOT_MOUNTPOINT > /dev/null 2>&1
-	[ $? -ne 0 ]
-	succeed_if "Was able to get from missing backend"
+	#$KDB get system$ROOT_MOUNTPOINT > /dev/null 2>&1
+	#[ $? -ne 0 ]
+	#succeed_if "Was able to get from missing backend"
 
-	$KDB get system$ERROR_MOUNTPOINT > $TMPFILE 2>&1
-	[ $? -ne 0 ]
-	succeed_if "Was able to get from missing backend"
+	#$KDB get system$ERROR_MOUNTPOINT > $TMPFILE 2>&1
+	#[ $? -ne 0 ]
+	#succeed_if "Was able to get from missing backend"
 
-	#echo "Output was:"
+	#echo "----------- tmpfile -----------"
 	#cat $TMPFILE
+	#echo "----------- tmpfile -----------"
 
-	grep "Error (#62) occurred!" $TMPFILE > /dev/null
-	succeed_if "Error not found in output"
+	#grep "Error (#62) occurred!" $TMPFILE > /dev/null
+	#succeed_if "Error not found in output"
 
-	grep "Description: Tried to get a key from a missing backend" $TMPFILE > /dev/null
-	succeed_if "Wrong description in output"
+	#grep "Description: Tried to get a key from a missing backend" $TMPFILE > /dev/null
+	#succeed_if "Wrong description in output"
 
 
-	$KDB umount $ERROR_MOUNTPOINT >/dev/null
-	succeed_if "could not umount $ERROR_MOUNTPOINT"
+	#$KDB umount $ERROR_MOUNTPOINT >/dev/null
+	#succeed_if "could not umount $ERROR_MOUNTPOINT"
 fi
 rm $TMPFILE
 
