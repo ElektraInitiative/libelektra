@@ -21,10 +21,10 @@ class KeySetReverseIterator;
  */
 struct Va
 {
-	int i;
+	Va(){}
 };
 
-const Va va = {0};
+const Va va = Va();
 
 /**
  * @brief A keyset holds together a set of keys.
