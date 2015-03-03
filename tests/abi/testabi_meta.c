@@ -26,6 +26,8 @@ static void test_basic()
 	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
 
 	keySetMeta(key, "mode", "0644");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
+
 	keySetMeta(key, "time", "1271234264");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "mode")), "0644");

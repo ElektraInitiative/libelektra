@@ -27,9 +27,9 @@ namespace tools
  */
 struct BackendInfo
 {
-	std::string name;
-	std::string mountpoint;
-	std::string path;
+	std::string name;       ///< escaped mountpoint name (except for old mountpoints)
+	std::string mountpoint; ///< where the backend is mounted
+	std::string path;       ///< the configuration file path to this backend
 };
 
 /**
@@ -39,28 +39,15 @@ class Backends
 {
 public:
 	typedef std::vector<BackendInfo> BackendInfoVector;
-	/**
-	 * @brief give info about current mounted backends
-	 *
-	 * @param mountConf a keyset that contains everything below
-	 * Backends::mountpointsPath
-	 *
-	 * @return an vector of information about mounted backends
-	 */
+
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
 
-	/**
-	 * @brief Get the name below system/elektra/mountpoints
-	 *
-	 * @param name mountpoint name, it is ok if it has / instead of _
-	 *
-	 * @return the key name
-	 */
-	static std::string getConfigBasePath(std::string name);
+	static BackendInfo findBackend(std::string const & backend, KeySet mountConf);
 
-	/**
-	 * @brief Below this path is the mountConf
-	 */
+	static bool umount(std::string const & backend, KeySet & mountConf);
+
+	static std::string getBasePath(std::string name);
+
 	static const char * mountpointsPath;
 };
 

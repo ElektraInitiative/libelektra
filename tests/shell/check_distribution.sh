@@ -71,8 +71,8 @@ check_distribution()
 }
 
 check_distribution system$MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution/b2
-#TODO Bug: double slash leads to (null) as file name:
-#check_distribution system/$MOUNTPOINT/distribution/a1 system/$MOUNTPOINT/distribution/b2
+check_distribution system/$MOUNTPOINT/distribution/a1 system/$MOUNTPOINT/distribution/b2
+check_distribution system////$MOUNTPOINT/distribution///a1 system/////$MOUNTPOINT/distribution////b2
 
 #TODO Does not work (nested):
 #check_distribution system$MOUNTPOINT/distribution system$MOUNTPOINT/distribution/b2

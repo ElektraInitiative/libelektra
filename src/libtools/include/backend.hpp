@@ -37,8 +37,8 @@ private:
 	SetPlugins setplugins;
 	ErrorPlugins errorplugins;
 
-	std::string name;
-	std::string mp;
+	std::string mp; // empty or valid canonified mountpoint
+	std::string configFile; // empty or valid configuration file
 
 	Modules modules;
 	kdb::KeySet config; // the global config, plugins might add something to it
@@ -51,17 +51,27 @@ public:
 	~Backend();
 
 	void setMountpoint (Key mountpoint, KeySet mountConf);
-	std::string getName()
-	{
-		return name;
-	}
-
+	void setBackendConfig (KeySet const & ks);
 	void addPlugin (std::string name, KeySet pluginConf = KeySet());
-	void checkFile (std::string file) const;
+	void useConfigFile (std::string file);
 	void status (std::ostream & os) const;
 	bool validated () const;
-	void serialise (kdb::Key &rootKey, kdb::KeySet &ret);
+	void serialize (kdb::KeySet &ret);
+
+	std::string getName() const;
+	std::string getMountpoint() const;
+	std::string getConfigFile() const;
 };
+
+inline std::string Backend::getMountpoint() const
+{
+	return mp;
+}
+
+inline std::string Backend::getConfigFile() const
+{
+	return configFile;
+}
 
 std::ostream & operator<<(std::ostream & os, Backend const & b);
 

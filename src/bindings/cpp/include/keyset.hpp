@@ -19,7 +19,11 @@ class KeySetReverseIterator;
  *
  * when ... is same type as va_list
  */
-struct Va {int i;};
+struct Va
+{
+	int i;
+};
+
 const Va va = {0};
 
 /**

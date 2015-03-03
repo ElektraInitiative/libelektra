@@ -17,8 +17,10 @@
 #include <kdbmodule.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
+#include <helper/keyhelper.hpp>
 
 #include <algorithm>
+
 
 
 #include <kdb.hpp>
@@ -60,110 +62,130 @@ Backend::Backend()
  */
 void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 {
-	std::vector <std::string> names;
-	std::string namesInString;
 	Backends::BackendInfoVector info = Backends::getBackendInfo(mountConf);
-	names.push_back("default");
+	std::string namesAsString;
+	std::vector <std::string> alreadyUsedMountpoints;
+	alreadyUsedMountpoints.push_back("system/elektra");
 	for (Backends::BackendInfoVector::const_iterator it=info.begin();
 			it!=info.end(); ++it)
 	{
-		names.push_back(it->mountpoint);
-		namesInString += it->mountpoint;
-		namesInString += " ";
+		std::string const & name = it->mountpoint;
+		if (name == "/")
+		{
+			alreadyUsedMountpoints.push_back("spec");
+			alreadyUsedMountpoints.push_back("proc");
+			alreadyUsedMountpoints.push_back("dir");
+			alreadyUsedMountpoints.push_back("user");
+			alreadyUsedMountpoints.push_back("system");
+		}
+		else if (name.at(0) == '/')
+		{
+			alreadyUsedMountpoints.push_back(Key ("proc" + name, KEY_END).getName());
+			alreadyUsedMountpoints.push_back(Key ("dir" + name, KEY_END).getName());
+			alreadyUsedMountpoints.push_back(Key ("user" + name, KEY_END).getName());
+			alreadyUsedMountpoints.push_back(Key ("system" + name, KEY_END).getName());
+		}
+		else
+		{
+			alreadyUsedMountpoints.push_back(name);
+		}
+		namesAsString += name;
+		namesAsString += " ";
 	}
 
-
-	if (std::find(names.begin(), names.end(), mountpoint.getName()) != names.end())
+	// STEP 0: check for null key
+	if (!mountpoint)
 	{
 		throw MountpointAlreadyInUseException(
-			std::string("Mountpoint ") + 
-			mountpoint.getName() +
-			" is one of the already used names: " +
-			namesInString
-			);
+			"Null mountpoint not allowed");
 	}
 
-	std::vector <std::string> mountpoints;
-	mountpoints.push_back("system/elektra");
-	mountConf.rewind();
-	Key cur;
-	while ((cur = mountConf.next()))
-	{
-		if (cur.getBaseName() == "mountpoint")
-		{
-			if (cur.getString().at(0) == '/')
-			{
-				mountpoints.push_back(Key ("dir" + cur.getString(), KEY_END).getName());
-				mountpoints.push_back(Key ("user" + cur.getString(), KEY_END).getName());
-				mountpoints.push_back(Key ("system" + cur.getString(), KEY_END).getName());
-			}
-		};
-	}
+	std::string smp = mountpoint.getName();
 
-	mp = mountpoint.getName();
-	name = mountpoint.getName();
-	std::replace(name.begin(), name.end(), '/', '_');
-
-	if (mp.empty())
+	// STEP 1: check for empty name
+	if (smp.empty())
 	{
 		throw MountpointAlreadyInUseException(
 			"Empty mountpoint not allowed");
 	}
 
-	if (mp == "/")
+	// STEP 2: check for name match
+	if (smp == "/")
 	{
 		Key specmp ("spec", KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), specmp.getName()) != mountpoints.end())
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), specmp.getName()) != alreadyUsedMountpoints.end())
 		{
 			throw MountpointAlreadyInUseException("Root mountpoint not possible, because spec mountpoint already exists");
 		}
+		Key pkmp ("proc", KEY_END);
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), pkmp.getName()) != alreadyUsedMountpoints.end())
+		{
+			throw MountpointAlreadyInUseException("Root mountpoint not possible, because proc mountpoint already exists");
+		}
 		Key dkmp ("dir", KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), dkmp.getName()) != mountpoints.end())
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), dkmp.getName()) != alreadyUsedMountpoints.end())
 		{
 			throw MountpointAlreadyInUseException("Root mountpoint not possible, because dir mountpoint already exists");
 		}
 		Key ukmp ("user", KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end())
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), ukmp.getName()) != alreadyUsedMountpoints.end())
 		{
 			throw MountpointAlreadyInUseException("Root mountpoint not possible, because user mountpoint already exists");
 		}
 		Key skmp ("system", KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end())
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), skmp.getName()) != alreadyUsedMountpoints.end())
 		{
 			throw MountpointAlreadyInUseException("Root mountpoint not possible, because system mountpoint already exists");
 		}
-	} else if (mp.at(0) == '/')
+	} else if (smp.at(0) == '/')
 	{
-		Key dkmp ("dir" + mp, KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), dkmp.getName()) != mountpoints.end())
+		Key pkmp ("proc" + smp, KEY_END);
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), pkmp.getName()) != alreadyUsedMountpoints.end())
 		{
-			throw MountpointAlreadyInUseException("Cascading mountpoint not possible, because dir mountpoint already exists");
+			throw MountpointAlreadyInUseException("Cascading mountpoint " +smp+ " not possible, because proc mountpoint already exists");
 		}
-		Key ukmp ("user" + mp, KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), ukmp.getName()) != mountpoints.end())
+		Key dkmp ("dir" + smp, KEY_END);
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), dkmp.getName()) != alreadyUsedMountpoints.end())
 		{
-			throw MountpointAlreadyInUseException("Cascading mountpoint not possible, because user mountpoint already exists");
+			throw MountpointAlreadyInUseException("Cascading mountpoint " +smp+ " not possible, because dir mountpoint already exists");
 		}
-		Key skmp ("system" + mp, KEY_END);
-		if (std::find(mountpoints.begin(), mountpoints.end(), skmp.getName()) != mountpoints.end())
+		Key ukmp ("user" + smp, KEY_END);
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), ukmp.getName()) != alreadyUsedMountpoints.end())
 		{
-			throw MountpointAlreadyInUseException("Cascading mountpoint not possible, because system mountpoint already exists");
+			throw MountpointAlreadyInUseException("Cascading mountpoint " +smp+ " not possible, because user mountpoint already exists");
+		}
+		Key skmp ("system" + smp, KEY_END);
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), skmp.getName()) != alreadyUsedMountpoints.end())
+		{
+			throw MountpointAlreadyInUseException("Cascading mountpoint " +smp+ " not possible, because system mountpoint already exists");
 		}
 	} else {
-		Key kmp (mp, KEY_END);
+		Key kmp (smp, KEY_END);
 		if (!kmp.isValid()) throw MountpointInvalidException();
-		if (std::find(mountpoints.begin(), mountpoints.end(), kmp.getName()) != mountpoints.end())
+		if (std::find(alreadyUsedMountpoints.begin(), alreadyUsedMountpoints.end(), kmp.getName()) != alreadyUsedMountpoints.end())
 		{
 			throw MountpointAlreadyInUseException(
 				std::string("Mountpoint ") + 
-				mountpoint.getName() +
-				" is one of the already used cascading names: " +
-				namesInString
+				smp +
+				" is one of the already used names: " +
+				namesAsString
 				);
 		}
 	}
+
+	// everything worked, swap it
+	std::swap(this->mp, smp);
 }
 
+/**
+ * @brief Backend Config to add to
+ *
+ * @param ks the config to add, should be below system/
+ */
+void Backend::setBackendConfig (KeySet const & ks)
+{
+	config.append(ks);
+}
 
 Backend::~Backend()
 {
@@ -175,9 +197,9 @@ Backend::~Backend()
 
 
 /**@pre: resolver needs to be loaded first
- * Will check the filename.
+ * Will check the filename and use it as configFile for this backend.
  * @throw FileNotValidException if filename is not valid */
-void Backend::checkFile (std::string file) const
+void Backend::useConfigFile(std::string file)
 {
 	typedef int (*checkFilePtr) (const char*);
 	checkFilePtr checkFileFunction = 0;
@@ -202,10 +224,12 @@ void Backend::checkFile (std::string file) const
 	int res = checkFileFunction(file.c_str());
 
 	if (res == -1) throw FileNotValidException();
+
+	configFile = file;
 }
 
 
-void Backend::tryPlugin (std::string pluginName, KeySet testConfig)
+void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
 {
 	int nr;
 	char *cPluginName = 0;
@@ -236,7 +260,7 @@ void Backend::tryPlugin (std::string pluginName, KeySet testConfig)
 
 
 
-	PluginPtr plugin = modules.load(realPluginName, testConfig);
+	PluginPtr plugin = modules.load(realPluginName, pluginConfig);
 
 
 	// because PluginPtr might be auto_ptr we cannot make that more
@@ -276,7 +300,6 @@ void Backend::addPlugin (std::string pluginName, KeySet pluginConf)
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());
-
 
 	KeySet toAdd = plugins.back()->getNeededConfig();
 	config.append(toAdd);
@@ -345,20 +368,19 @@ std::ostream & operator<<(std::ostream & os, Backend const & b)
 
 /**
  * @pre name and mountpoint set
- * Write plugin into keyset ret below rootKey. */
-void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
+ * Add plugin serialization into keyset ret. */
+void Backend::serialize (kdb::KeySet &ret)
 {
-	assert(!name.empty());
 	assert(!mp.empty());
-	Key backendRootKey (rootKey);
-	backendRootKey.addBaseName (name);
-	backendRootKey.setString("serialised Backend");
+	Key backendRootKey (Backends::mountpointsPath, KEY_END);
+	backendRootKey.addBaseName (mp);
+	backendRootKey.setString("This is a configuration for a backend, see subkeys for more information");
 	ret.append(backendRootKey);
 
 
 	if (mp == "/")
 	{
-		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
+		ret.append ( *Key(	backendRootKey.getName() + "/mountpoint",
 				KEY_VALUE, "/",
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
 				"This is the root mountpoint.\n",
@@ -370,7 +392,7 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 		Key restrictedPath ("system/elektra", KEY_END);
 		if (!k) throw MountpointInvalidException();
 		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
-		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
+		ret.append ( *Key(	backendRootKey.getName() + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
 				"This is a cascading mountpoint.\n"
@@ -381,35 +403,36 @@ void Backend::serialise (kdb::Key &rootKey, kdb::KeySet &ret)
 		Key restrictedPath ("system/elektra", KEY_END);
 		if (!k) throw MountpointInvalidException();
 		if (restrictedPath.isBelow(k)) throw MountpointInvalidException();
-		ret.append ( *Key(	rootKey.getName() + "/mountpoint",
+		ret.append ( *Key(	backendRootKey.getName() + "/mountpoint",
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
 				"This is a normal mountpoint.\n",
 				KEY_END));
 	}
 
+	const string configBasePath = Backends::getBasePath (mp) + "/config";
+	ret.append(Key(configBasePath, KEY_END));
 
 	config.rewind();
 	Key common = config.next();
-	if (common)
-	{
-		string commonName = common.getName();
+	Key oldParent("system", KEY_END);
+	Key newParent(configBasePath, KEY_END);
 
-		while (Key k = config.next())
-		{
-			string newName = k.getName().substr (commonName.length());
-			Key x(k.dup());
-			x.setName(backendRootKey.getName());
-			x.addBaseName("config");
-			x.addBaseName(newName);
-			ret.append (x);
-		}
+	for (KeySet::iterator i = config.begin(); i != config.end(); ++i)
+	{
+		Key k(i->dup());
+		ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
 	}
 
 
 	errorplugins.serialise(backendRootKey, ret);
 	getplugins.serialise(backendRootKey, ret);
 	setplugins.serialise(backendRootKey, ret);
+
+	ret.append ( *Key(backendRootKey.getName()+"/config/path",
+			KEY_VALUE, configFile.c_str(),
+			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
+			KEY_END));
 }
 
 

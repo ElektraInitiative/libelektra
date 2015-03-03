@@ -149,6 +149,11 @@ static void test_owner()
 	succeed_if (keyValue(keyGetMeta(key, "owner")) == 0, "owner set for empty key with env");
 	succeed_if_same_string (keyOwner(key), "");
 	succeed_if (keyDel (key) == 0, "could not delete key with env");
+
+	succeed_if (key = keyNew("user/key", KEY_END), "could not create new key with env");
+	succeed_if (keySetMeta(key, "owner", "myowner") == 8, "owner set for empty key with env");
+	succeed_if_same_string (keyString(keyGetMeta(key, "owner")), "myowner");
+	succeed_if (keyDel (key) == 0, "could not delete key with env");
 }
 
 static void test_mode()

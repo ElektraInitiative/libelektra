@@ -12,7 +12,6 @@ echo "Test specification get"
 
 ROOT_FILE=spec_tests.ecf
 ROOT_MOUNTPOINT=/test/script/spec
-ROOT_MOUNTNAME=_test_script_spec
 
 if is_plugin_available dump
 then
@@ -47,10 +46,10 @@ then
 	[ "x`$KDB get $ROOT_MOUNTPOINT/first`" = "x20" ]
 	succeed_if "could not get default value"
 
-	$KDB umount $ROOT_MOUNTNAME
+	$KDB umount $ROOT_MOUNTPOINT
 	succeed_if "could not unmount previously mounted mountpoint"
 
-	$KDB umount spec$ROOT_MOUNTNAME
+	$KDB umount spec$ROOT_MOUNTPOINT
 	succeed_if "could not unmount previously mounted spec mountpoint"
 	
 	rm -f $SYSTEM_FILE

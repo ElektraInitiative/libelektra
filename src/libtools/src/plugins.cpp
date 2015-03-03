@@ -11,6 +11,7 @@
 
 
 #include <plugins.hpp>
+#include <helper/keyhelper.hpp>
 
 #include <kdbprivate.h>
 
@@ -423,6 +424,24 @@ bool SetPlugins::validated () const
 }
 
 
+namespace
+{
+	void serializeConfig(std::string name, KeySet const & ks, KeySet & ret)
+	{
+		if (!ks.size()) return;
+
+		Key oldParent("user", KEY_END);
+		Key newParent(name + "/config", KEY_END);
+
+		ret.append(newParent);
+
+		for (KeySet::iterator i = ks.begin(); i != ks.end(); ++i)
+		{
+			Key k(i->dup());
+			ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
+		}
+	}
+}
 
 
 
@@ -438,9 +457,9 @@ void ErrorPlugins::serialise (Key &baseKey, KeySet &ret)
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		ret.append (*Key (baseKey.getName() + "/errorplugins/#" + pluginNumber.str() + plugins[i]->refname(),
-			KEY_COMMENT, "A plugin",
-			KEY_END));
+		std::string name = baseKey.getName() + "/errorplugins/#" + pluginNumber.str() + plugins[i]->refname();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		serializeConfig(name, plugins[i]->getConfig(), ret);
 	}
 }
 
@@ -456,9 +475,9 @@ void GetPlugins::serialise (Key &baseKey, KeySet &ret)
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		ret.append (*Key (baseKey.getName() + "/getplugins/#" + pluginNumber.str() + plugins[i]->refname(),
-			KEY_COMMENT, "A plugin",
-			KEY_END));
+		std::string name = baseKey.getName() + "/getplugins/#" + pluginNumber.str() + plugins[i]->refname();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		serializeConfig(name, plugins[i]->getConfig(), ret);
 	}
 }
 
@@ -475,9 +494,9 @@ void SetPlugins::serialise (Key &baseKey, KeySet &ret)
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		ret.append (*Key (baseKey.getName() + "/setplugins/#" + pluginNumber.str() + plugins[i]->refname(),
-			KEY_COMMENT, "A plugin",
-			KEY_END));
+		std:: string name = baseKey.getName() + "/setplugins/#" + pluginNumber.str() + plugins[i]->refname();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		serializeConfig(name, plugins[i]->getConfig(), ret);
 	}
 }
 
