@@ -20,10 +20,7 @@
 
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
-#elif defined(__APPLE__)
-#include <errno.h>
 #endif
-
 
 
 /*********************************************
