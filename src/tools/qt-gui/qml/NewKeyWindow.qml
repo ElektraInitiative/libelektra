@@ -17,8 +17,13 @@ KeyWindow {
 		for(var i = 0; i < qmlMetaKeyModel.count; i++)
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
+		container.clearData()
+		container.setNewName(nameTextField.text)
+		container.setNewValue(valueTextField.text)
+		container.setNewMetadata(metaData)
+
 		//create UndoCommand
-		undoManager.createNewKeyCommand(selectedNode.parentModel, selectedNode.index, nameTextField.text, valueTextField.text, metaData, isBelow)
+		undoManager.createNewKeyCommand(selectedNode.parentModel, selectedNode.index, container, isBelow)
 
 		if(!error){
 			visible = false

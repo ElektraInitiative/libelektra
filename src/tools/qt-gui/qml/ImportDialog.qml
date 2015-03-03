@@ -122,7 +122,13 @@ BasicWindow {
 
 		var plugin = importFileDialog.selectedNameFilter.match(/[a-z]+/).toString()
 
-		undoManager.createImportConfigurationCommand(treeView.treeModel, treeView.currentNode.index, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
+		container.clearData()
+		container.setImportName(treeView.currentNode.path)
+		container.setFormat(plugin)
+		container.setFile(importTextField.text)
+		container.setMergeStrategy(group.current.command)
+
+		undoManager.createImportConfigurationCommand(treeView.treeModel, treeView.currentNode.index, container)
 		treeView.treeModel.refresh()
 		importTextField.text = ""
 		preserve.checked = true

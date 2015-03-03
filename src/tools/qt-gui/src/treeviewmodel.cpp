@@ -515,7 +515,7 @@ void TreeViewModel::synchronize()
 
 	try
 	{
-		kdb.set(keySet, "/user");
+		kdb.set(keySet, "user");
 	}
 	catch (KDBException const& e)
 	{

@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 import "MainFunctions.js" as MFunctions
 import "ErrorDialogCreator.js" as ErrorDialog
+import org.libelektra.qtgui 1.0
 
 ApplicationWindow {
 	id: mainWindow
@@ -44,6 +45,10 @@ ApplicationWindow {
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
 	property int    defaultSpacing: defaultMargins*0.5
+
+	DataContainer {
+		id:container
+	}
 
 	//**Signals & Slots****************************************************************************************//
 

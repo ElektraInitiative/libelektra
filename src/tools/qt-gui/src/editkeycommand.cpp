@@ -1,15 +1,15 @@
 #include "editkeycommand.hpp"
 
-EditKeyCommand::EditKeyCommand(TreeViewModel* model, int index, QVariantList data, QUndoCommand* parent)
+EditKeyCommand::EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent)
 	:  QUndoCommand(parent)
 	, m_model(model)
 	, m_index(index)
-	, m_oldName(data.at(0).toString())
-	, m_oldValue(data.at(1).toString())
-	, m_oldMetaData(data.at(2).toMap())
-	, m_newName(data.at(3).toString())
-	, m_newValue(data.at(4).toString())
-	, m_newMetaData(data.at(5).toMap())
+	, m_oldName(data->oldName())
+	, m_oldValue(data->oldValue())
+	, m_oldMetaData(data->oldMetadata())
+	, m_newName(data->newName())
+	, m_newValue(data->newValue())
+	, m_newMetaData(data->newMetadata())
 {
 	setText("edit");
 }

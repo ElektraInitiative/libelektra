@@ -32,10 +32,17 @@ KeyWindow {
 
 		//create undo command
 		if(isEdited){
-			var data = [keyName.toString(), keyValue.toString(), selectedNode.metaValue,
-						nameTextField.text, valueTextField.text, metaData]
+			container.clearData()
 
-			undoManager.createEditKeyCommand(selectedNode.parentModel, index, data)
+			container.setOldName(keyName.toString())
+			container.setOldValue(keyValue.toString())
+			container.setOldMetadata(selectedNode.metaValue)
+
+			container.setNewName(nameTextField.text)
+			container.setNewValue(valueTextField.text)
+			container.setNewMetadata(metaData)
+
+			undoManager.createEditKeyCommand(selectedNode.parentModel, index, container)
 		}
 
 		if(!error){

@@ -13,6 +13,7 @@
 #include "undomanager.hpp"
 #include "guibackend.hpp"
 #include "guisettings.hpp"
+#include "datacontainer.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -20,11 +21,12 @@ int main(int argc, char* argv[])
 	//keynames are only split at unescaped slashes
 	app.setProperty("KEY_DELIMITER", QRegularExpression("(?<!\\\\)/"));
 
-	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
-	qRegisterMetaType<ConfigNode> ("ConfigNode");
-	qRegisterMetaType<UndoManager> ("UndoManager");
-	qRegisterMetaType<GUIBackend> ("GUIBackend");
-	qRegisterMetaType<GUISettings> ("GUISettings");
+	qRegisterMetaType<TreeViewModel>("TreeViewModel");
+	qRegisterMetaType<ConfigNode>	("ConfigNode");
+	qRegisterMetaType<UndoManager>	("UndoManager");
+	qRegisterMetaType<GUIBackend>	("GUIBackend");
+	qRegisterMetaType<GUISettings>	("GUISettings");
+	qmlRegisterType<DataContainer>	("org.libelektra.qtgui", 1, 0, "DataContainer");
 
 	QString locale = QLocale::system().name();
 

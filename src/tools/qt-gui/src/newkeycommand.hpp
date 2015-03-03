@@ -3,6 +3,7 @@
 
 #include <QUndoCommand>
 #include "treeviewmodel.hpp"
+#include "datacontainer.hpp"
 
 class NewKeyCommand : public QUndoCommand
 {
@@ -17,7 +18,7 @@ public:
 	 * @param metaData ...
 	 * @param parent ...
 	 */
-	explicit NewKeyCommand(ConfigNodePtr parentNode, QString path, const QString& value, const QVariantMap& metaData, bool isBelow, QUndoCommand* parent = 0);
+	explicit NewKeyCommand(ConfigNodePtr parentNode, DataContainer* data, bool isBelow, QUndoCommand* parent = 0);
 
 	virtual void undo();
 	virtual void redo();

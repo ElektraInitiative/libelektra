@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QApplication>
 #include <QClipboard>
+#include "datacontainer.hpp"
 #include "treeviewmodel.hpp"
 
 class QUndoStack;
@@ -103,7 +104,7 @@ public:
 	 * @param index The index of the edited ConfigNode.
 	 * @param data This list holds the data needed to undo and redo the edit
 	 */
-	Q_INVOKABLE void	createEditKeyCommand(TreeViewModel* model, int idx, QVariantList data);
+	Q_INVOKABLE void	createEditKeyCommand(TreeViewModel* model, int idx, DataContainer *data);
 
 	/**
 	 * @brief Create a new DeleteKeyCommand.
@@ -123,7 +124,7 @@ public:
 	 * @param value The value of the new ConfigNode.
 	 * @param metaData The meta data of the new ConfigNode.
 	 */
-	Q_INVOKABLE void	createNewKeyCommand(TreeViewModel* model, int idx, const QString& name, const QString& value, const QVariantMap& metaData, bool isBelow);
+	Q_INVOKABLE void	createNewKeyCommand(TreeViewModel* model, int idx, DataContainer* data, bool isBelow);
 
 	/**
 	 * @brief Create a new CopyKeyCommand.
@@ -139,7 +140,7 @@ public:
 	 */
 	Q_INVOKABLE void	createCutKeyCommand(TreeViewModel* model, int idx);
 
-	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, int idx, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy);
+	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, int idx, DataContainer* data);
 
 	/**
 	 * @brief This function is called when the configuration is saved; if the user closes the application
