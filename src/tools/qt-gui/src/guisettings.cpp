@@ -66,9 +66,6 @@ GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings
 		append("nodeWithoutKeyColor", m_nodeWithoutKeyColor);
 	else
 		m_nodeWithoutKeyColor = lookup("nodeWithoutKeyColor");
-
-	//make sure there is a configuration, even on the very first start of the gui
-	setKDB();
 }
 
 QColor GUISettings::highlightColor() const
