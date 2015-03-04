@@ -94,24 +94,7 @@ void GUIBackend::serialise(TreeViewModel *model)
 		emit showMessage(tr("Error"), tr("Could not serialise backend."), ex.what());
 	}
 
-	m_mountConf.rewind();
-
-	while (m_mountConf.next())
-	{
-		Key k = m_mountConf.current().dup();
-		QString currentKey = QString::fromStdString(k.getName());
-		QStringList keys = currentKey.split("/");
-		QString root = keys.takeFirst();
-
-		if (root == "system")
-		{
-			model->sink(model->model().at(0), keys, k);
-		}
-		else if (root == "user")
-		{
-			model->sink(model->model().at(1), keys, k);
-		}
-	}
+	model->createNewNodes(m_mountConf);
 
 	try
 	{

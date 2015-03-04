@@ -443,11 +443,15 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 void TreeViewModel::populateModel(KeySet keySet)
 {
-	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
+	ConfigNodePtr spec(new ConfigNode("spec", "spec", 0, this));
+	ConfigNodePtr proc(new ConfigNode("proc", "proc", 0, this));
+	ConfigNodePtr dir(new ConfigNode("dir", "dir", 0, this));
 	ConfigNodePtr user(new ConfigNode("user", "user", Key("user", KEY_END), this));
+	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
+	ConfigNodePtr cascading(new ConfigNode("cascading", "cascading", 0, this));
 
 	m_model.clear();
-	m_model << system << user;
+	m_model << spec << proc << dir << user << system << cascading;
 
 	createNewNodes(keySet);
 }
@@ -463,17 +467,10 @@ void TreeViewModel::createNewNodes(KeySet keySet)
 		QStringList keys = currentKey.split(qApp->property("KEY_DELIMITER").toRegularExpression());
 		QString root = keys.takeFirst();
 
-		if (root == "system")
+		for(int i = 0; i < m_model.count(); i++)
 		{
-			sink(m_model.at(0), keys, k);
-		}
-		else if (root == "user")
-		{
-			sink(m_model.at(1), keys, k);
-		}
-		else
-		{
-			cerr << "TreeViewModel::populateModel: INVALID_KEY: " << currentKey.toStdString();
+			if(root == m_model.at(i)->getName())
+				sink(m_model.at(i), keys, k);
 		}
 	}
 }
@@ -532,35 +529,35 @@ void TreeViewModel::clearMetaModel()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
-	KeySet keySet = collectCurrentKeySet();
-	const string keyName = string(Backends::mountpointsPath) + "/"  + backendName.toStdString();
-	Key x(keyName, KEY_END);
-	keySet.cut(x);
+//	KeySet keySet = collectCurrentKeySet();
+//	const string keyName = string(Backends::mountpointsPath) + backendName.toStdString();
+//	Key x(keyName, KEY_END);
+//	keySet.cut(x);
 
-	TreeViewModel *mountPoint;
+//	TreeViewModel *mountPoint;
 
-	QStringList path = QString::fromStdString(keyName).split("/");
-	path.removeLast();
+//	QStringList path = QString::fromStdString(keyName).split("/");
+//	path.removeLast();
 
-	ConfigNodePtr node;
+//	ConfigNodePtr node;
+//	QString root = path.takeFirst();
 
-	QString root = path.takeFirst();
+//	for(int i = 0; i < m_model.count(); i++)
+//	{
+//		if(root == m_model.at(i)->getName())
+//			node = m_model.at(i);
+//	}
 
-	if(root == "system")
-		node = m_model.at(0);
-	else if(root == "user")
-		node = m_model.at(1);
+//	while(path.length() > 0){
+//		QString name = path.takeFirst();
+//		node = node->getChildByName(name);
+//	}
 
-	while(path.length() > 0){
-		QString name = path.takeFirst();
-		node = node->getChildByName(name);
-	}
+//	mountPoint = node->getChildren();
 
-	mountPoint = node->getChildren();
+//	mountPoint->removeRow(node->getChildIndexByName(backendName));
 
-	mountPoint->removeRow(node->getChildIndexByName(backendName));
-
-	synchronize();
+//	synchronize();
 }
 
 void TreeViewModel::refresh()

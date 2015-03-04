@@ -67,6 +67,8 @@ public:
 
 	Q_INVOKABLE void            populateModel(kdb::KeySet keySet);
 
+	void						createNewNodes(kdb::KeySet keySet);
+
 	/**
 	 * @brief The method that actually populates this TreeViewModel.
 	 *
@@ -205,8 +207,6 @@ public:
 	Q_INVOKABLE QStringList     mountedBackends();
 
 private:
-	void						createNewNodes(kdb::KeySet keySet);
-
 	QList<ConfigNodePtr>        m_model;
 	kdb::Key                    m_metaModelParent;
 
