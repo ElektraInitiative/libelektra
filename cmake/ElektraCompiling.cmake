@@ -7,6 +7,8 @@
 #
 # if new flags are added
 
+include(CheckCCompilerFlag)
+
 #
 # The mode (standard) to be used by the compiler
 #
@@ -85,10 +87,12 @@ set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat-security")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized -Winit-self")
-# Apple does not support -Wmaybe-uninitialized
-if (!APPLE)
+
+# Not every compiler understands -Wmaybe-uninitialized
+check_c_compiler_flag(-Wmaybe-uninitialized HAS_CFLAG_MAYBE_UNINITIALIZED)
+if (HAS_CFLAG_MAYBE_UNINITIALIZED)
 	set (COMMON_FLAGS "${COMMON_FLAGS} -Wmaybe-uninitialized")
-endif (!APPLE)
+endif (HAS_CFLAG_MAYBE_UNINITIALIZED)
 
 #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
 
