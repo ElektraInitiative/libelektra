@@ -18,7 +18,6 @@ Item {
 	Connections {
 		target: wizardLoader
 		onClosing: {
-			guiBackend.deleteBackend()
 			textField.text = ""
 			loader.source = "Page1.qml"
 		}
@@ -94,10 +93,6 @@ Item {
 		cancelButton.action.onTriggered: {
 			wizardLoader.close()
 			textField.text = ""
-
-			if(loader.source.toString() !== "qrc:/qml/Page1.qml")
-				guiBackend.deleteBackend()
-
 			loader.source = "Page1.qml"
 		}
 	}

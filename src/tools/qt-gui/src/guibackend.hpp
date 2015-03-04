@@ -80,21 +80,16 @@ public:
 	 */
 	Q_INVOKABLE bool			validated();
 
-	/**
-	 * @brief Deletes the current backend.
-	 */
-	Q_INVOKABLE void			deleteBackend();
-
 	Q_INVOKABLE TreeViewModel*	pluginConfigModel() const;
 
 private:
-	kdb::tools::Backend*	m_backend;
-	kdb::KeySet				m_mountConf;
-	kdb::KDB				m_kdb;
-	QString					m_name;
-	TreeViewModel*			m_pluginConfigModel;
+	QSharedPointer<kdb::tools::Backend>	m_backend;
+	kdb::KeySet							m_mountConf;
+	kdb::KDB							m_kdb;
+	QString								m_name;
+	TreeViewModel*						m_pluginConfigModel;
 
-	void					resetModel();
+	void								resetModel();
 
 signals:
 	void showMessage(QString title, QString text, QString detailedText) const;

@@ -22,7 +22,7 @@ GUIBackend::GUIBackend(QObject *parentBackend) :
 
 void GUIBackend::createBackend(const QString &mountpoint)
 {
-	m_backend = new Backend();
+	m_backend = QSharedPointer<Backend>(new Backend());
 
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
@@ -42,13 +42,11 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	catch(MountpointInvalidException const& ex)
 	{
 		emit showMessage(tr("Error"), tr("The provided mount point is invalid."), ex.what());
-		delete m_backend;
 		return;
 	}
 	catch(MountpointAlreadyInUseException const& ex)
 	{
 		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), ex.what());
-		delete m_backend;
 		return;
 	}
 }
@@ -130,12 +128,6 @@ void GUIBackend::serialise(TreeViewModel *model)
 bool GUIBackend::validated()
 {
 	return m_backend->validated();
-}
-
-void GUIBackend::deleteBackend()
-{
-
-	delete m_backend;
 }
 
 TreeViewModel *GUIBackend::pluginConfigModel() const

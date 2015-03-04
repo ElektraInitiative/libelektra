@@ -19,7 +19,6 @@ Item {
 	Connections {
 		target: wizardLoader
 		onClosing: {
-			guiBackend.deleteBackend()
 			includedPluginsModel.clear()
 			loader.source = "Page1.qml"
 			includeStorage = true
@@ -250,7 +249,6 @@ Item {
 		}
 		cancelButton.action.onTriggered: {
 			wizardLoader.close()
-			guiBackend.deleteBackend()
 			includedPluginsModel.clear()
 			loader.source = "Page1.qml"
 			includeStorage = true
