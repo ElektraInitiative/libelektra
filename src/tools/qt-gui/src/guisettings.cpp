@@ -20,7 +20,13 @@ inline QColor Key::get() const
 }
 }
 
-GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings)
+GUISettings::GUISettings(QObject *parentGUISettings)
+	: QObject(parentGUISettings)
+	, m_base("/sw/libelektra.org/qt-gui/#0/")
+	, m_highlightColorString("highlight_color")
+	, m_frameColorString("frame_color")
+	, m_nodeWKeyColorString("node_with_key_color")
+	, m_nodeWOKeyColorString("node_without_key_color")
 {
 	QPalette palette;
 	palette.setCurrentColorGroup(QPalette::Active);
@@ -34,9 +40,7 @@ GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings
 
 	m_nodeWithoutKeyColor	= palette.windowText().color();
 
-	//set base path for all colors
-	m_base = "/sw/libelektra.org/qt-gui/#0/";
-
+	//retrieve keys below base path
 	try
 	{
 		m_kdb.get(m_config, m_base);
@@ -47,25 +51,25 @@ GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings
 	}
 
 	//check if stored colors exist, if so, load them,else create them
-	if(!lookupColor("highlightColor").isValid())
-		append("highlightColor", m_highlightColor);
+	if(!lookupColor(m_highlightColorString).isValid())
+		append(m_highlightColorString, m_highlightColor);
 	else
-		m_highlightColor = lookupColor("highlightColor");
+		m_highlightColor = lookupColor(m_highlightColorString);
 
-	if(!lookupColor("frameColor").isValid())
-		append("frameColor", m_frameColor);
+	if(!lookupColor(m_frameColorString).isValid())
+		append(m_frameColorString, m_frameColor);
 	else
-		m_frameColor = lookupColor("frameColor");
+		m_frameColor = lookupColor(m_frameColorString);
 
-	if(!lookupColor("nodeWithKeyColor").isValid())
-		append("nodeWithKeyColor", m_nodeWithKeyColor);
+	if(!lookupColor(m_nodeWKeyColorString).isValid())
+		append(m_nodeWKeyColorString, m_nodeWithKeyColor);
 	else
-		m_nodeWithKeyColor = lookupColor("nodeWithKeyColor");
+		m_nodeWithKeyColor = lookupColor(m_nodeWKeyColorString);
 
-	if(!lookupColor("nodeWithoutKeyColor").isValid())
-		append("nodeWithoutKeyColor", m_nodeWithoutKeyColor);
+	if(!lookupColor(m_nodeWOKeyColorString).isValid())
+		append(m_nodeWOKeyColorString, m_nodeWithoutKeyColor);
 	else
-		m_nodeWithoutKeyColor = lookupColor("nodeWithoutKeyColor");
+		m_nodeWithoutKeyColor = lookupColor(m_nodeWOKeyColorString);
 }
 
 QColor GUISettings::highlightColor() const
@@ -91,7 +95,7 @@ QColor GUISettings::nodeWithoutKeyColor() const
 void GUISettings::setHighlightColor(const QColor &color)
 {
 	m_highlightColor = color;
-	append("highlightColor", color);
+	append(m_highlightColorString, color);
 
 	emit highlightColorChanged();
 }
@@ -99,7 +103,7 @@ void GUISettings::setHighlightColor(const QColor &color)
 void GUISettings::setFrameColor(const QColor &color)
 {
 	m_frameColor = color;
-	append("frameColor", color);
+	append(m_frameColorString, color);
 
 	emit frameColorChanged();
 }
@@ -107,7 +111,7 @@ void GUISettings::setFrameColor(const QColor &color)
 void GUISettings::setNodeWithKeyColor(const QColor &color)
 {
 	m_nodeWithKeyColor = color;
-	append("nodeWithKeyColor", color);
+	append(m_nodeWKeyColorString, color);
 
 	emit nodeWithKeyColorChanged();
 }
@@ -115,7 +119,7 @@ void GUISettings::setNodeWithKeyColor(const QColor &color)
 void GUISettings::setNodeWithoutKeyColor(const QColor &color)
 {
 	m_nodeWithoutKeyColor = color;
-	append("nodeWithoutKeyColor", color);
+	append(m_nodeWOKeyColorString, color);
 
 	emit nodeWithoutKeyColorChanged();
 }

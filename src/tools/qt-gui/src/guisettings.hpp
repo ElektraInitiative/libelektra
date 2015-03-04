@@ -46,6 +46,11 @@ private:
 	QColor		m_nodeWithKeyColor;
 	QColor		m_nodeWithoutKeyColor;
 
+	QString		m_highlightColorString;
+	QString		m_frameColorString;
+	QString		m_nodeWKeyColorString;
+	QString		m_nodeWOKeyColorString;
+
 	void		append(const QString &keyName, const QColor &color);
 	QColor		lookupColor(const QString &keyName) const;
 };
