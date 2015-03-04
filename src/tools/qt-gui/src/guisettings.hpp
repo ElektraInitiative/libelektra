@@ -47,7 +47,7 @@ private:
 	QColor		m_nodeWithoutKeyColor;
 
 	void		append(const QString &keyName, const QColor &color);
-	QColor		lookup(const QString &keyName) const;
+	QColor		lookupColor(const QString &keyName) const;
 };
 
 Q_DECLARE_METATYPE(GUISettings)

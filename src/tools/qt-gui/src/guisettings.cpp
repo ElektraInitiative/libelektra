@@ -47,25 +47,25 @@ GUISettings::GUISettings(QObject *parentGUISettings) : QObject(parentGUISettings
 	}
 
 	//check if stored colors exist, if so, load them,else create them
-	if(!lookup("highlightColor").isValid())
+	if(!lookupColor("highlightColor").isValid())
 		append("highlightColor", m_highlightColor);
 	else
-		m_highlightColor = lookup("highlightColor");
+		m_highlightColor = lookupColor("highlightColor");
 
-	if(!lookup("frameColor").isValid())
+	if(!lookupColor("frameColor").isValid())
 		append("frameColor", m_frameColor);
 	else
-		m_frameColor = lookup("frameColor");
+		m_frameColor = lookupColor("frameColor");
 
-	if(!lookup("nodeWithKeyColor").isValid())
+	if(!lookupColor("nodeWithKeyColor").isValid())
 		append("nodeWithKeyColor", m_nodeWithKeyColor);
 	else
-		m_nodeWithKeyColor = lookup("nodeWithKeyColor");
+		m_nodeWithKeyColor = lookupColor("nodeWithKeyColor");
 
-	if(!lookup("nodeWithoutKeyColor").isValid())
+	if(!lookupColor("nodeWithoutKeyColor").isValid())
 		append("nodeWithoutKeyColor", m_nodeWithoutKeyColor);
 	else
-		m_nodeWithoutKeyColor = lookup("nodeWithoutKeyColor");
+		m_nodeWithoutKeyColor = lookupColor("nodeWithoutKeyColor");
 }
 
 QColor GUISettings::highlightColor() const
@@ -125,7 +125,7 @@ void GUISettings::append(const QString &keyName, const QColor &color)
 	m_config.append(Key("user" + m_base + keyName.toStdString(), KEY_VALUE, color.name().toStdString().c_str(), KEY_END));
 }
 
-QColor GUISettings::lookup(const QString &keyName) const
+QColor GUISettings::lookupColor(const QString &keyName) const
 {
 	QColor	color;
 	Key		key = m_config.lookup(m_base + keyName.toStdString());
