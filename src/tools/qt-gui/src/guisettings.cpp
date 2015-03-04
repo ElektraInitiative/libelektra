@@ -47,7 +47,7 @@ GUISettings::GUISettings(QObject *parentGUISettings)
 	}
 	catch(const KDBException &ex)
 	{
-		qDebug() << ex.what();
+		qDebug() << tr("Could not read from database, unable to retrieve settings. The system responds: %1").arg(ex.what());
 	}
 
 	//check if stored colors exist, if so, load them,else create them
@@ -158,6 +158,6 @@ void GUISettings::setKDB()
 	}
 	catch(const KDBException &ex)
 	{
-		qDebug() << ex.what();
+		qDebug() << tr("Could not write to database, unable to store settings. The system responds: %1").arg(ex.what());
 	}
 }
