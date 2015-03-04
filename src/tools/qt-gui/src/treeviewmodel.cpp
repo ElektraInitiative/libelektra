@@ -529,35 +529,10 @@ void TreeViewModel::clearMetaModel()
 
 void TreeViewModel::unMountBackend(QString backendName)
 {
-//	KeySet keySet = collectCurrentKeySet();
-//	const string keyName = string(Backends::mountpointsPath) + backendName.toStdString();
-//	Key x(keyName, KEY_END);
-//	keySet.cut(x);
-
-//	TreeViewModel *mountPoint;
-
-//	QStringList path = QString::fromStdString(keyName).split("/");
-//	path.removeLast();
-
-//	ConfigNodePtr node;
-//	QString root = path.takeFirst();
-
-//	for(int i = 0; i < m_model.count(); i++)
-//	{
-//		if(root == m_model.at(i)->getName())
-//			node = m_model.at(i);
-//	}
-
-//	while(path.length() > 0){
-//		QString name = path.takeFirst();
-//		node = node->getChildByName(name);
-//	}
-
-//	mountPoint = node->getChildren();
-
-//	mountPoint->removeRow(node->getChildIndexByName(backendName));
-
-//	synchronize();
+	KeySet keySet = collectCurrentKeySet();
+	Backends::umount(backendName.toStdString(), keySet);
+	populateModel(keySet);
+	synchronize();
 }
 
 void TreeViewModel::refresh()

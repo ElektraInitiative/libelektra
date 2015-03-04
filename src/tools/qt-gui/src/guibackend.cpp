@@ -140,30 +140,25 @@ QString GUIBackend::mountPoints() const
 		return "";
 	}
 
+	Backends::BackendInfoVector vec = Backends::getBackendInfo(mountConf);
 	QStringList mPoints;
 	mPoints.append("system/elektra");
 
-	mountConf.rewind();
-
-	Key cur;
-
-	while ((cur = mountConf.next()))
+	foreach (BackendInfo info, vec)
 	{
-		if (cur.getBaseName() == "mountpoint")
+		QString backend = QString::fromStdString(info.name);
+
+		if(backend.startsWith("/"))
 		{
-			if (cur.getString().at(0) == '/')
-			{
-				mPoints.append(QString::fromStdString("user" + cur.getString()));
-				mPoints.append(QString::fromStdString("system" + cur.getString()));
-			}
-			else
-			{
-				mPoints.append(QString::fromStdString(cur.getString()));
-			}
-
+			mPoints.append("user" + backend);
+			mPoints.append("system" + backend);
 		}
-
+		else
+		{
+			mPoints.append(backend);
+		}
 	}
+
 	return mPoints.join(", ");
 }
 
