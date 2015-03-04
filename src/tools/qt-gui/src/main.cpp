@@ -52,14 +52,16 @@ int main(int argc, char* argv[])
 		std::cerr << e.what();
 	}
 
-	TreeViewModel*  treeModel = new TreeViewModel;
+	TreeViewModel treeModel;
+
+	engine.setObjectOwnership(&treeModel, QQmlApplicationEngine::CppOwnership);
 
 	ctxt->setContextProperty("undoManager", &manager);
-	ctxt->setContextProperty("externTreeModel", treeModel);
+	ctxt->setContextProperty("externTreeModel", &treeModel);
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("guiSettings", &settings);
 
-	treeModel->populateModel(config);
+	treeModel.populateModel(config);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 

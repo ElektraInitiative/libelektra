@@ -55,8 +55,6 @@ ScrollView {
 			onUpdateIndicator: {
 				if(rowLoaderModel !== null) {
 					paintcolor = label.color
-					indicator.markDirty()
-					paint(indicator)
 					opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
 				}
 			}
