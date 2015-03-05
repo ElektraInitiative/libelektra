@@ -78,10 +78,6 @@ namespace kdb
 #endif
 #else
 // for C
-#include <limits.h>
-#include <time.h>
-#include <stddef.h>
-#include <errno.h>
 
 typedef unsigned char             kdb_boolean_t;
 typedef unsigned char             kdb_char_t;
@@ -89,7 +85,7 @@ typedef unsigned char             kdb_octet_t;
 typedef signed short              kdb_short_t;
 typedef unsigned short            kdb_unsigned_short_t;
 
-#if (LONG_MAX == +2147483647)
+#if SIZEOF_LONG == 4
 #define ELEKTRA_LONG_F "%ld"
 typedef long                      kdb_long_t;
 #define ELEKTRA_UNSIGNED_LONG_F "%lu"
@@ -105,14 +101,14 @@ typedef unsigned int              kdb_unsigned_long_t;
 
 // typedef wchar_t                   kdb_wchar_t; // wchar_t not supported!
 
-#if (LONG_MAX == +9223372036854775807)
+#if SIZEOF_LONG == 8
 #define ELEKTRA_LONG_LONG_F "%ld"
 #define ELEKTRA_LONG_LONG_S strtol
 typedef long                      kdb_long_long_t;
 #define ELEKTRA_UNSIGNED_LONG_LONG_F "%lu"
 #define ELEKTRA_UNSIGNED_LONG_LONG_S strtoul
 typedef unsigned long             kdb_unsigned_long_long_t;
-#elif (LLONG_MAX == +9223372036854775807)
+#elif defined(HAVE_SIZEOF_LONG_LONG) && (SIZEOF_LONG_LONG == 8)
 #define ELEKTRA_LONG_LONG_F "%lld"
 #define ELEKTRA_LONG_LONG_S strtoll
 typedef long long                 kdb_long_long_t;
