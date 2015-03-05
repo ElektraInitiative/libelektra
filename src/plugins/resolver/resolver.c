@@ -62,10 +62,10 @@
 #define statSeconds(status) status.st_mtim.tv_sec
 #define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
-
-// every resolver should use the same mutex
-extern pthread_mutex_t * getResolverMutex(void);
 #endif
+
+#include "mutex.h"
+
 
 static void resolverInit (resolverHandle *p, const char *path)
 {
@@ -81,6 +81,13 @@ static void resolverInit (resolverHandle *p, const char *path)
 
 	p->path = path;
 
+#ifdef ELEKTRA_LOCK_MUTEX
+#if defined(__APPLE__)
+	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
+	// so we use another mutex for the initialization of the recursive mutex,
+	// since this section must be thread safe.
+	pthread_mutex_lock(getInitializerMutex());
+	if(getMutexUninitialized())
 	{
 		pthread_mutexattr_t mutex_attr;
 
@@ -89,7 +96,12 @@ static void resolverInit (resolverHandle *p, const char *path)
 			result = pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
 		if(result == 0)
 			result = pthread_mutex_init(getResolverMutex(), &mutex_attr);
+		// TODO add proper error handling - what if mutex initialization fails?
+		setMutexInitialized();
 	}
+	pthread_mutex_unlock(getInitializerMutex());
+#endif
+#endif
 }
 
 static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
