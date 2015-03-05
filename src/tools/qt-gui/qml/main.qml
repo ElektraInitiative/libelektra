@@ -73,22 +73,6 @@ ApplicationWindow {
 	}
 
 	Connections {
-		target: treeView.currentNode === null ? null : treeView.currentNode.node
-
-		onShowMessage: {
-			ErrorDialog.showMessage(title, text, detailedText)
-		}
-	}
-
-	Connections {
-		target: (keyAreaSelectedItem === null || keyAreaSelectedItem.node === 'undefined') ? null : keyAreaSelectedItem.node
-
-		onShowMessage: {
-			ErrorDialog.showMessage(title, text, detailedText)
-		}
-	}
-
-	Connections {
 		target: treeView.currentNode === null ? null : treeView.currentNode.children
 
 		onUpdateIndicator: {
