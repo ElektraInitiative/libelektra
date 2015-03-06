@@ -14,6 +14,10 @@
 namespace kdb
 {
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+class NameIterator;
+class NameReverseIterator;
+#endif
 
 /**
  * @copydoc key

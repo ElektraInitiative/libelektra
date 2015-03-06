@@ -10,8 +10,10 @@
 namespace kdb
 {
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
 class KeySetIterator;
 class KeySetReverseIterator;
+#endif
 
 
 /**
