@@ -11,6 +11,10 @@
 
 #include <kdb.h>
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+#include <kdbproposal.h> // TODO remove (for keyUnescapedName())
+#endif
+
 namespace kdb
 {
 
@@ -233,27 +237,52 @@ public:
 	typedef std::string reference;
 	typedef std::bidirectional_iterator_tag iterator_category;
 
-	NameIterator(Key const & k) : current(k.getUName()) {};
+	NameIterator(Key const & k, bool last) :
+		begin(static_cast<const char*>(keyUnescapedName(*k))),
+		end(begin+keyGetUnescapedNameSize(*k)),
+		current(last?end:begin)
+	{}
+
+	NameIterator(const char* begin_, const char* end_, const char* current_) :
+		begin(begin_),
+		end(end_),
+		current(current_)
+	{}
 
 	std::string get() const { return std::string(current); }
 
-	Name const & getName() const { return ks; }
+	const char *pos() const { return current; }
+
+	const char *findNext() const
+	{
+		const char *c = current;
+		if (c >= end) return end;
+
+		do { ++c; } while (c < end && *c != 0);
+		if (c != end) ++c; // skip past null character
+
+		return c;
+	}
+
+	const char *findPrevious() const
+	{
+		return 0;
+	}
 
 	// Forward iterator requirements
 	reference operator*() const { return get(); }
 	pointer operator->() const { return get(); }
-	NameIterator& operator++() { ++current; return *this; }
-	NameIterator operator++(int) { return NameIterator(ks, current++); }
+	NameIterator& operator++() { current = findNext(); return *this; }
+	NameIterator operator++(int) { return NameIterator(begin, end, findNext()); }
 
 	// Bidirectional iterator requirements
-	NameIterator& operator--() { --current; return *this; }
-	NameIterator operator--(int) { return NameIterator(ks, current--); }
-
-	char *pos() { return current; }
+	NameIterator& operator--() { current = findPrevious(); return *this; }
+	NameIterator operator--(int) { return NameIterator(begin, end, findPrevious()); }
 
 private:
-	Name const & ks;
-	char* current;
+	const char *begin;
+	const char *end;
+	const char* current;
 };
 
 
@@ -264,6 +293,7 @@ inline bool operator==(const NameIterator& lhs, const NameIterator& rhs)
 inline bool operator!=(const NameIterator& lhs, const NameIterator& rhs)
 { return lhs.pos() != rhs.pos()  ; }
 
+#if 0
 
 // some code duplication because std::reverse_iterator
 // does not work on value_types
@@ -325,28 +355,31 @@ operator-(const NameReverseIterator& lhs,
 inline NameReverseIterator
 operator+(NameReverseIterator::difference_type n, const NameReverseIterator& i)
 { return NameReverseIterator(i.getName(), i.base() + n); }
+#endif
 
 
 
 inline Key::iterator Key::begin()
 {
-	return Key::iterator(*this, 0);
+	return Key::iterator(*this, false);
 }
 
 inline Key::const_iterator Key::begin() const
 {
-	return Key::const_iterator(*this, 0);
+	return Key::const_iterator(*this, false);
 }
 
 inline Key::iterator Key::end()
 {
-	return Key::iterator(*this, size());
+	return Key::iterator(*this, true);
 }
 
 inline Key::const_iterator Key::end() const
 {
-	return Key::const_iterator(*this, size());
+	return Key::const_iterator(*this, true);
 }
+
+#if 0
 
 inline Key::reverse_iterator Key::rbegin()
 {
@@ -388,6 +421,7 @@ inline Key::const_reverse_iterator Key::crend() const noexcept
 {
 	return Key::const_reverse_iterator(*this, -1);
 }
+#endif
 #endif
 #endif //ELEKTRA_WITHOUT_ITERATOR
 
