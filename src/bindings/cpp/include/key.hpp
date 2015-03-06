@@ -233,7 +233,6 @@ class NameIterator
 {
 public:
 	typedef std::string value_type;
-	typedef std::string pointer;
 	typedef std::string reference;
 	typedef std::bidirectional_iterator_tag iterator_category;
 
@@ -249,7 +248,11 @@ public:
 		current(current_)
 	{}
 
-	std::string get() const { return std::string(current); }
+	std::string get() const
+	{
+		if (current == end || current == begin-1) return "";
+		return std::string(current);
+	}
 
 	const char *pos() const { return current; }
 
@@ -269,7 +272,7 @@ public:
 		const char *c = current;
 		if (c <= begin) return begin;
 
-		--c; // go to null ptr
+		--c; // go from start of string to null
 		do { --c; } while (c > begin && *c != 0);
 		if (c != begin && c+1 != current) ++c; // jump back to not-null
 
@@ -278,15 +281,24 @@ public:
 
 	// Forward iterator requirements
 	reference operator*() const { return get(); }
-	pointer operator->() const { return get(); }
 	NameIterator& operator++() { current = findNext(); return *this; }
-	NameIterator operator++(int) { return NameIterator(begin, end, findNext()); }
+	NameIterator operator++(int)
+	{
+		NameIterator ret(begin, end, current);
+		current = findNext();
+		return ret;
+	}
 
 	// Bidirectional iterator requirements
 	NameIterator& operator--() { current = findPrevious(); return *this; }
-	NameIterator operator--(int) { return NameIterator(begin, end, findPrevious()); }
+	NameIterator operator--(int)
+	{
+		NameIterator ret(begin, end, current);
+		current = findPrevious();
+		return ret;
+	}
 
-private:
+protected:
 	const char *begin;
 	const char *end;
 	const char* current;
@@ -300,69 +312,78 @@ inline bool operator==(const NameIterator& lhs, const NameIterator& rhs)
 inline bool operator!=(const NameIterator& lhs, const NameIterator& rhs)
 { return lhs.pos() != rhs.pos()  ; }
 
-#if 0
-
 // some code duplication because std::reverse_iterator
-// does not work on value_types
+// needs a difference_type
 /**
  * For C++ reverse Iteration over Names.
  * (External Iterator)
  */
-class NameReverseIterator
+class NameReverseIterator : private NameIterator
 {
 public:
 	typedef std::string value_type;
-	typedef std::string pointer;
 	typedef std::string reference;
 	typedef std::bidirectional_iterator_tag iterator_category;
 
+	NameReverseIterator(Key const & k, bool last) :
+		NameIterator(k, last)
+	{
+		if (!last) current = begin-1;
+		else current = findPrevious();
+	}
 
-	NameReverseIterator(Key const & k) : current(k.getUnescapedName()) {};
+	NameReverseIterator(const char* begin_, const char* end_, const char* current_) :
+		NameIterator(begin_, end_, current_)
+	{}
 
-	Key get() const { return Key(ckdb::ksAtCursor(ks.getName(), current)); }
-	Key get(cursor_t pos) const { return Key(ckdb::ksAtCursor(ks.getName(), pos)); }
+	const char *findPrevious() const
+	{
+		if (current <= begin) return begin-1;
+		return NameIterator::findPrevious();
+	}
 
-	Name const & getName() const { return ks;}
+	const char *findNext() const
+	{
+		if (current == begin-1) return begin;
+		return NameIterator::findNext();
+	}
+
+	std::string get() const
+	{
+		if (current == begin-1) return "";
+		return NameIterator::get();
+	}
+
+	const char *pos() const { return NameIterator::pos(); }
 
 	// Forward iterator requirements
 	reference operator*() const { return get(); }
-	pointer operator->() const { return get(); }
-	NameReverseIterator& operator++() { --current; return *this; }
-	NameReverseIterator operator++(int) { return NameReverseIterator(ks, current--); }
+	NameReverseIterator& operator++() { current = findPrevious(); return *this; }
+	NameReverseIterator operator++(int)
+	{
+		NameReverseIterator ret(begin, end, current);
+		current = findPrevious();
+		return ret;
+	}
 
 	// Bidirectional iterator requirements
-	NameReverseIterator& operator--() { ++current; return *this; }
-	NameReverseIterator operator--(int) { return NameReverseIterator(ks, current++); }
-
-private:
-	Name const & ks;
-	cursor_t current;
+	NameReverseIterator& operator--() { current = findNext(); return *this; }
+	NameReverseIterator operator--(int)
+	{
+		NameReverseIterator ret(begin, end, current);
+		current = findNext();
+		return ret;
+	}
 };
 
 
 
 // Forward iterator requirements
 inline bool operator==(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
-{ return &lhs.getName() == &rhs.getName() && lhs.base() == rhs.base(); }
+{ return lhs.pos() == rhs.pos(); }
 
 inline bool operator!=(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
-{ return &lhs.getName() != &rhs.getName() || lhs.base() != rhs.base()  ; }
-
-#if __cplusplus > 199711L
-// DR 685.
-inline auto operator-(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
-	-> decltype(lhs.base() - rhs.base())
-#else
-inline NameReverseIterator::difference_type
-operator-(const NameReverseIterator& lhs,
-	const NameReverseIterator& rhs)
-#endif
-{ return lhs.base() - rhs.base(); }
-
-inline NameReverseIterator
-operator+(NameReverseIterator::difference_type n, const NameReverseIterator& i)
-{ return NameReverseIterator(i.getName(), i.base() + n); }
-#endif
+{ return lhs.pos() != rhs.pos(); }
 
 
 
@@ -386,49 +407,46 @@ inline Key::const_iterator Key::end() const
 	return Key::const_iterator(*this, true);
 }
 
-#if 0
-
 inline Key::reverse_iterator Key::rbegin()
 {
-	return Key::reverse_iterator(*this, size()-1);
+	return Key::reverse_iterator(*this, true);
 }
 
 inline Key::const_reverse_iterator Key::rbegin() const
 {
-	return Key::const_reverse_iterator(*this, size()-1);
+	return Key::const_reverse_iterator(*this, true);
 }
 
 inline Key::reverse_iterator Key::rend()
 {
-	return Key::reverse_iterator(*this, -1);
+	return Key::reverse_iterator(*this, false);
 }
 
 inline Key::const_reverse_iterator Key::rend() const
 {
-	return Key::const_reverse_iterator(*this, -1);
+	return Key::const_reverse_iterator(*this, false);
 }
 
 #if __cplusplus > 199711L
 inline Key::const_iterator Key::cbegin() const noexcept
 {
-	return Key::const_iterator(*this, 0);
+	return Key::const_iterator(*this, true);
 }
 
 inline Key::const_iterator Key::cend() const noexcept
 {
-	return Key::const_iterator(*this, size());
+	return Key::const_iterator(*this, false);
 }
 
 inline Key::const_reverse_iterator Key::crbegin() const noexcept
 {
-	return Key::const_reverse_iterator(*this, size()-1);
+	return Key::const_reverse_iterator(*this, true);
 }
 
 inline Key::const_reverse_iterator Key::crend() const noexcept
 {
-	return Key::const_reverse_iterator(*this, -1);
+	return Key::const_reverse_iterator(*this, false);
 }
-#endif
 #endif
 #endif //ELEKTRA_WITHOUT_ITERATOR
 
