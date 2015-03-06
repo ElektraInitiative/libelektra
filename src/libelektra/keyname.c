@@ -651,6 +651,9 @@ elektraNamespace keyGetNameNamespace(const char *name)
  * method to change the name, but you should use keySetBaseName()
  * instead.
  *
+ * @note Do not assume that keyBaseName() points to the same region as
+ * keyName() does.
+ *
  * @param key the object to obtain the basename from
  * @return a pointer to the basename
  * @retval "" when the key has no (base)name

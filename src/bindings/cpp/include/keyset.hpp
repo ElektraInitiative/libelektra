@@ -10,8 +10,10 @@
 namespace kdb
 {
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
 class KeySetIterator;
 class KeySetReverseIterator;
+#endif
 
 
 /**
@@ -84,7 +86,7 @@ public:
 	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
 	Key at (cursor_t pos) const;
 
-#ifndef WITHOUT_KEYSET_ITERATOR
+#ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef KeySetIterator iterator;
 	typedef KeySetIterator const_iterator;
 	typedef KeySetReverseIterator reverse_iterator;
@@ -104,14 +106,14 @@ public:
 	const_reverse_iterator crbegin() const noexcept;
 	const_reverse_iterator crend() const noexcept;
 #endif
-#endif //WITHOUT_KEYSET_ITERATOR
+#endif //ELEKTRA_WITHOUT_ITERATOR
 
 private:
 	ckdb::KeySet *ks; ///< holds an elektra keyset
 };
 
 
-#ifndef WITHOUT_KEYSET_ITERATOR
+#ifndef ELEKTRA_WITHOUT_ITERATOR
 /**
  * For C++ forward Iteration over KeySets.
  * (External Iterator)
@@ -348,7 +350,7 @@ inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
 	return KeySet::const_reverse_iterator(*this, -1);
 }
 #endif
-#endif //WITHOUT_KEYSET_ITERATOR
+#endif //ELEKTRA_WITHOUT_ITERATOR
 
 
 /**
