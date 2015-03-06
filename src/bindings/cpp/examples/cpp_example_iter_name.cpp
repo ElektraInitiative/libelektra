@@ -8,10 +8,17 @@ int main()
 
 	Key k ("user/name/a/very/long\\/name/to\\\\/iterate\\with\\/some\\\\\\/escaping", KEY_END);
 
-	Key::iterator it = k.begin();
-
+	std::cout << "forward iterate output: ";
 	for (Key::iterator i = k.begin(); i != k.end(); ++i)
 	{
-		std::cout << *i << std::endl;
+		std::cout << *i << " ";
 	}
+	std::cout << std::endl;
+
+	std::cout << "output reverse except first: ";
+	for (Key::iterator i = --k.end(); i != k.begin(); --i)
+	{
+		std::cout << *i << " ";
+	}
+	std::cout << std::endl;
 }

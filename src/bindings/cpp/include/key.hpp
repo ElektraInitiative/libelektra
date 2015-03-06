@@ -266,7 +266,14 @@ public:
 
 	const char *findPrevious() const
 	{
-		return 0;
+		const char *c = current;
+		if (c <= begin) return begin;
+
+		--c; // go to null ptr
+		do { --c; } while (c > begin && *c != 0);
+		if (c != begin && c+1 != current) ++c; // jump back to not-null
+
+		return c;
 	}
 
 	// Forward iterator requirements
