@@ -64,13 +64,15 @@
 #endif
 #endif
 
-extern pthread_mutex_t elektra_resolver_mutex;
+extern pthread_mutex_t *getElektraResolverMutex();
 
 // for Apple-specific recursive mutex setup 
 #ifdef ELEKTRA_LOCK_MUTEX
 #if defined(__APPLE__)
-extern pthread_mutex_t elektra_resolver_init_mutex;
-extern int elektra_resolver_mutex_unitialized;
+// special mutex for recursive mutex creation
+static pthread_mutex_t elektra_resolver_init_mutex = PTHREAD_MUTEX_INITIALIZER;
+// marks if the recursive mutex has been initialized yet
+static int elektra_resolver_mutex_unitialized = 1;
 #endif
 #endif
 
@@ -221,7 +223,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_trylock(getElektraResolverMutex());
 	if (ret != 0)
 	{
 		if (errno == EBUSY // for trylock
@@ -252,7 +254,7 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_unlock(getElektraResolverMutex());
 	if (ret != 0)
 	{
 		char buffer[ERROR_SIZE];
@@ -348,7 +350,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 			pthread_mutex_unlock(&elektra_resolver_init_mutex);
 			return -1;
 		}
-		if(pthread_mutex_init(&elektra_resolver_mutex, &mutex_attr))
+		if(pthread_mutex_init(getElektraResolverMutex(), &mutex_attr))
 		{
 			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
 			pthread_mutex_unlock(&elektra_resolver_init_mutex);
