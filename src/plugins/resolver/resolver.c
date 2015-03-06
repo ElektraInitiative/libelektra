@@ -58,13 +58,21 @@
 #elif defined(WIN32)
 #define statSeconds(status) status.st_mtime
 #define statNanoSeconds(status) 0
-# else
+#else
 #define statSeconds(status) status.st_mtim.tv_sec
 #define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
 #endif
 
-#include "mutex.h"
+extern pthread_mutex_t elektra_resolver_mutex;
+
+// for Apple-specific recursive mutex setup 
+#ifdef ELEKTRA_LOCK_MUTEX
+#if defined(__APPLE__)
+extern pthread_mutex_t elektra_resolver_init_mutex;
+extern int elektra_resolver_mutex_unitialized;
+#endif
+#endif
 
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -80,28 +88,6 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->tempfile = 0;
 
 	p->path = path;
-
-#ifdef ELEKTRA_LOCK_MUTEX
-#if defined(__APPLE__)
-	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
-	// so we use another mutex for the initialization of the recursive mutex,
-	// since this section must be thread safe.
-	pthread_mutex_lock(getInitializerMutex());
-	if(getMutexUninitialized())
-	{
-		pthread_mutexattr_t mutex_attr;
-
-		int result = pthread_mutexattr_init(&mutex_attr);
-		if(result == 0)
-			result = pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
-		if(result == 0)
-			result = pthread_mutex_init(getResolverMutex(), &mutex_attr);
-		// TODO add proper error handling - what if mutex initialization fails?
-		setMutexInitialized();
-	}
-	pthread_mutex_unlock(getInitializerMutex());
-#endif
-#endif
 }
 
 static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
@@ -235,7 +221,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_trylock(getResolverMutex());
+	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
 	if (ret != 0)
 	{
 		if (errno == EBUSY // for trylock
@@ -266,7 +252,7 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_unlock(getResolverMutex());
+	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
 	if (ret != 0)
 	{
 		char buffer[ERROR_SIZE];
@@ -338,6 +324,41 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	resolverInit (&p->dir, path);
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
+
+	// setup recursive mutex on Apple systems
+#ifdef ELEKTRA_LOCK_MUTEX
+#if defined(__APPLE__)
+	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
+	// so we use another mutex for the initialization of the recursive mutex,
+	// since this section must be thread safe.
+	pthread_mutex_lock(&elektra_resolver_init_mutex);
+	if(elektra_resolver_mutex_unitialized)
+	{
+		pthread_mutexattr_t mutex_attr;
+
+		if(pthread_mutexattr_init(&mutex_attr))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock(&elektra_resolver_init_mutex);
+			return -1;
+		}
+		if(pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock(&elektra_resolver_init_mutex);
+			return -1;
+		}
+		if(pthread_mutex_init(&elektra_resolver_mutex, &mutex_attr))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock(&elektra_resolver_init_mutex);
+			return -1;
+		}
+		elektra_resolver_mutex_unitialized = 0;
+	}
+	pthread_mutex_unlock(&elektra_resolver_init_mutex);
+#endif
+#endif
 
 	// system and spec files need to be world-readable, otherwise they are
 	// useless
