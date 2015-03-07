@@ -76,8 +76,10 @@ namespace kdb
 	using octet_t = uint8_t; // default: 0
 }
 #endif
-#else
-// for C
+#endif // for c++
+
+
+// for C (and C++)
 
 typedef unsigned char             kdb_boolean_t;
 typedef unsigned char             kdb_char_t;
@@ -124,8 +126,6 @@ typedef double                    kdb_double_t;
 typedef long double               kdb_long_double_t;
 #elif defined(HAVE_SIZEOF_LONG_DOUBLE) && (SIZEOF_LONG_DOUBLE == 12) && defined(__i386__)
 typedef long double               kdb_long_double_t;
-#endif
-
 #endif
 
 #endif
