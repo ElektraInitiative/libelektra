@@ -368,7 +368,11 @@ std::ostream & operator<<(std::ostream & os, Backend const & b)
 
 /**
  * @pre name and mountpoint set
- * Add plugin serialization into keyset ret. */
+ * Add plugin serialization into keyset ret.
+ *
+ * Only can be done once!
+ * (see firstRef in Plugin)
+ * */
 void Backend::serialize (kdb::KeySet &ret)
 {
 	assert(!mp.empty());
