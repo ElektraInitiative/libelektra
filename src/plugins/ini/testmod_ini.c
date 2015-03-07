@@ -334,7 +334,7 @@ static void test_sectionWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-section-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
-	KeySet *conf = ksNew(0);
+	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,

@@ -1907,7 +1907,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	if (!found)
 	{
 		strncpy (newname+3, "dir", 3);
-		strcpy  (newname+5, name);
+		strcpy  (newname+6, name);
 		key->key = newname+3;
 		key->keySize = length-3;
 		elektraFinalizeName(key);
@@ -1927,6 +1927,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	if (!found)
 	{
 		strncpy (newname, "system",6);
+		strcpy  (newname+6, name);
 		key->key = newname;
 		key->keySize = length;
 		elektraFinalizeName(key);
