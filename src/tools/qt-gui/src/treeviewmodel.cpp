@@ -1,11 +1,13 @@
 #include "treeviewmodel.hpp"
-#include <factory.hpp>
-#include <command.hpp>
-#include <cmdline.hpp>
+#include <threewaymerge.hpp>
+#include <mergeconfiguration.hpp>
+#include <automergeconfiguration.hpp>
+#include <onesidemergeconfiguration.hpp>
+#include <overwritemergeconfiguration.hpp>
+#include <importmergeconfiguration.hpp>
 #include <external.hpp>
 #include <toolexcept.hpp>
 #include <backends.hpp>
-#include <kdbprivate.h>
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>
@@ -13,6 +15,7 @@
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
+using namespace kdb::tools::merging;
 
 TreeViewModel::TreeViewModel(QObject* parentModel)
 {
@@ -150,99 +153,72 @@ int TreeViewModel::getIndexByName(const QString& name) const
 
 void TreeViewModel::importConfiguration(const QString& name, const QString& format, QString& file, const QString& mergeStrategy)
 {
-	synchronize();
+	Key		root(name.toStdString(), KEY_END);
+	KeySet	originalKeys = collectCurrentKeySet();
+	KeySet	base = originalKeys.cut(root);
+	printWarnings (cerr, root);
 
-	file.remove("file://");
+	KeySet importedKeys;
 
-	Factory f;
+	string formatString = format.toStdString();
+	string fileString = file.remove("file://").toStdString();
 
-	QByteArray executable = QString("kdb").toLocal8Bit();
-	QByteArray commandName = QString("import").toLocal8Bit();
-	QByteArray importName = name.toLocal8Bit();
-	QByteArray importFormat = format.toLocal8Bit();
-	QByteArray importFile = file.toLocal8Bit();
-	QByteArray importMergeStrategy = QString("-s" + mergeStrategy).toLocal8Bit();
+	Modules modules;
+	PluginPtr plugin = modules.load (formatString);
 
-	char* argv[] = {executable.data(), commandName.data(), importName.data(), importFormat.data(), importFile.data(), importMergeStrategy.data()};
-	int argc = sizeof(argv) / sizeof(char*) - 1;
+	Key errorKey (root);
+	errorKey.setString (fileString);
 
-	string command = argv[1];
+	plugin->get (importedKeys, errorKey);
 
-	try
-	{
-		CommandPtr cmd = f.get(command);
+	printWarnings (cerr, errorKey);
+	printError (cerr, errorKey);
 
-		Cmdline cl(argc, argv, cmd.get());
+	ThreeWayMerge			merger;
+	AutoMergeConfiguration*	configuration;
 
-		try
-		{
-			cmd->execute(cl);
-		}
-		catch (invalid_argument const& ia)
-		{
-			emit showMessage(tr("Error"), tr("Importing the configuration from file failed because there were invalid arguments passed."), QString(ia.what()));
-		}
-	}
-	catch (CommandException const& ce)
-	{
-		emit showMessage(tr("Error"), tr("Importing the configuration from file failed because of a faulty command."), QString(ce.what()));
-	}
-	catch (Key& key)
-	{
-		stringstream ws;
-		stringstream es;
+	if(mergeStrategy == "preserve")
+		configuration = new AutoMergeConfiguration();
+	else if(mergeStrategy == "ours")
+		configuration = new OneSideMergeConfiguration(OURS);
+	else if(mergeStrategy == "theirs")
+		configuration = new OneSideMergeConfiguration(THEIRS);
+	else if(mergeStrategy == "cut")
+		configuration = new OverwriteMergeConfiguration(THEIRS);
+	else if(mergeStrategy == "import")
+		configuration = new ImportMergeConfiguration();
 
-		ws << printWarnings(cerr, key);
-		es << printError(cerr, key);
+	configuration->configureMerger(merger);
 
-		emit showMessage(tr("Error"), tr("Importing the configuration from file failed while accessing the key database."), QString::fromStdString(ws.str()) + QString::fromStdString(es.str()));
-	}
-	catch (exception const& ce)
-	{
-		emit showMessage(tr("Error"), tr("Importing the configuration from file terminated unsuccessfully."), QString(ce.what()));
-	}
-	catch (...)
-	{
-		emit showMessage(tr("Error"), tr("Unknown error"), "TreeViewModel::importConfiguration");
-	}
-
-	KDB kdb;
-	KeySet keySet;
+	MergeResult result;
 
 	try
 	{
-		kdb.get(keySet, name.toStdString());
+		result = merger.mergeKeySet(MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root), TheirMergeKeys (importedKeys, root), root));
 	}
-	catch (KDBException const& e)
+	catch(...)//TODO
 	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
+		qDebug() << "Could not merge keysets";
 	}
 
-	createNewNodes(keySet);
+	if (!result.hasConflicts ())
+	{
+		createNewNodes(result.getMergedKeys());
+	}
+	else
+	{
+		emit showMessage(tr("Error"), tr("Importing the configuration from file caused conflicts."), "");
+	}
 }
 
 void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file)
 {
-	synchronize();
-
-	KDB		kdb;
-	KeySet	ks;
+	KeySet	ks = collectCurrentKeySet();
 	Key		root = parentModel->model().at(idx)->getKey();
 
 	//Node is only a filler
 	if(!root)
-		root = Key(parentModel->model().at(idx)->getPath().toStdString());
-
-	try
-	{
-		kdb.get(ks, root);
-	}
-	catch (KDBException const& e)
-	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
-	}
-
-	printWarnings(cerr, root);
+		root = Key(parentModel->model().at(idx)->getPath().toStdString(), KEY_END);
 
 	KeySet part(ks.cut(root));
 
