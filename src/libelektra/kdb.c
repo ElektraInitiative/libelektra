@@ -534,6 +534,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	{
 	case 0: // We don't need an update so let's do nothing
 		keySetName (parentKey, keyName(initialParent));
+		elektraSplitUpdateFileName(split, handle, parentKey);
 		keyDel (initialParent);
 		elektraSplitDel (split);
 		return 0;
@@ -567,12 +568,14 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	elektraSplitMerge (split, ks);
 
 	keySetName (parentKey, keyName(initialParent));
+	elektraSplitUpdateFileName(split, handle, parentKey);
 	keyDel (initialParent);
 	elektraSplitDel (split);
 	return 1;
 
 error:
 	keySetName (parentKey, keyName(initialParent));
+	elektraSplitUpdateFileName(split, handle, parentKey);
 	keyDel (initialParent);
 	elektraSplitDel (split);
 	return -1;

@@ -390,6 +390,27 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 	return needsSync;
 }
 
+/**
+ * @brief Update the (configuration) file name for the parent key
+ *
+ * @param split the split to work with
+ * @param handle the handle to work with
+ * @param key the parentKey that should be updated (name must be
+ * correct)
+ */
+void elektraSplitUpdateFileName (Split *split, KDB *handle, Key *key)
+{
+	Backend *curHandle = elektraMountGetBackend(handle, key);
+	if (!curHandle) return;
+	ssize_t curFound = elektraSplitSearchBackend(split, curHandle, key);
+	if (curFound == -1) return;
+#if DEBUG && VERBOSE
+	printf ("Update string from %s to %s\n", keyString(key), keyString(split->parents[curFound]));
+	printf ("Names are: %s and %s\n\n", keyName(key), keyName(split->parents[curFound]));
+#endif
+	keySetString(key, keyString(split->parents[curFound]));
+}
+
 
 /**
  * Appoints all keys from ks to yet unsynced splits.

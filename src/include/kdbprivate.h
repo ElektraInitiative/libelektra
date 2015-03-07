@@ -428,6 +428,7 @@ ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int s
 ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *key);
 int elektraSplitSearchRoot(Split *split, Key *parentKey);
 int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
+void elektraSplitUpdateFileName (Split *split, KDB *handle, Key *key);
 
 /* for kdbGet() algorithm */
 int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks);

@@ -36,9 +36,17 @@ check_distribution()
 	[ "x$FILE"  = "x$FILE1" ]
 	succeed_if "resolving of $MOUNTPOINT1 did not yield $FILE1 but $FILE"
 
+	FILE=`$KDB file -n $MOUNTPOINT1/xxx`
+	[ "x$FILE"  = "x$FILE1" ]
+	succeed_if "resolving of $MOUNTPOINT1/xxx did not yield $FILE1 but $FILE"
+
 	FILE=`$KDB file -n $MOUNTPOINT2`
 	[ "x$FILE"  = "x$FILE2" ]
 	succeed_if "resolving of $MOUNTPOINT2 did not yield $FILE2 but $FILE"
+
+	FILE=`$KDB file -n $MOUNTPOINT2/xxx`
+	[ "x$FILE"  = "x$FILE2" ]
+	succeed_if "resolving of $MOUNTPOINT2/xxx did not yield $FILE2 but $FILE"
 
 	KEY1=$MOUNTPOINT1/key
 	$KDB set $KEY1 $VALUE1 > /dev/null
@@ -75,8 +83,8 @@ check_distribution system/$MOUNTPOINT/distribution/a1 system/$MOUNTPOINT/distrib
 check_distribution system////$MOUNTPOINT/distribution///a1 system/////$MOUNTPOINT/distribution////b2
 
 #TODO Does not work (nested):
-#check_distribution system$MOUNTPOINT/distribution system$MOUNTPOINT/distribution/b2
-#check_distribution system$MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution
+check_distribution system$MOUNTPOINT/distribution system$MOUNTPOINT/distribution/b2
+check_distribution system$MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution
 
 #TODO test all combinations:
 #root, normal
