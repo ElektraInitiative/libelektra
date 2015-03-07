@@ -7,6 +7,8 @@
 #
 # if new flags are added
 
+include(CheckCCompilerFlag)
+
 #
 # The mode (standard) to be used by the compiler
 #
@@ -38,7 +40,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+	#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
 
 	message (STATUS "Clang detected")
 endif()
@@ -50,7 +52,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	else(WIN32)
 		#not supported by icc:
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
-		set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+		#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
 
 		#not supported by icc/clang:
 		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
@@ -92,7 +94,13 @@ set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized -Winit-self")
 
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
+# Not every compiler understands -Wmaybe-uninitialized
+check_c_compiler_flag(-Wmaybe-uninitialized HAS_CFLAG_MAYBE_UNINITIALIZED)
+if (HAS_CFLAG_MAYBE_UNINITIALIZED)
+	set (COMMON_FLAGS "${COMMON_FLAGS} -Wmaybe-uninitialized")
+endif (HAS_CFLAG_MAYBE_UNINITIALIZED)
+
+#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
 
 
 if (ENABLE_COVERAGE)
