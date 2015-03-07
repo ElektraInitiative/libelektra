@@ -4,6 +4,8 @@ include(CheckTypeSize)
 
 check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
+check_symbol_exists(futimens     "sys/stat.h"       HAVE_FUTIMENS)
+check_symbol_exists(futimes      "sys/time.h"       HAVE_FUTIMES)
 
 check_include_file(ctype.h      HAVE_CTYPE_H)
 check_include_file(errno.h      HAVE_ERRNO_H)

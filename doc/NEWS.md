@@ -141,6 +141,22 @@ of `app.json` using the plugin `yajl` and mount the file `app.ini` itself in the
 Note that specifications are currently copied to `@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@`
 e.g.: `/usr/share/elektra/specification/`
 
+## Simplification in the merging framework
+
+As it turned out the concept of very granular merge strategies was hard to understand
+for users of the merging framework. While this granularity is desirable from a maintanence
+point of view, we wanted to come up with something easy to use. For that reason merge
+configurations were introduced. These are simply preconfigured configurations for a merger
+that arrange required strategies for the most common merging scenarios. Especially
+they make sure that meta merging is handled correctly. 
+
+For now the more granular strategies are removed from the public API in order to allow
+them to evolve freely. Once their documentation and testing is improved they may be
+reintroduced in future versions.
+
+Have a look at the changes in import.cpp and merge.cpp for an overview of the simplifications
+caused by this addition.  
+
 ## API
 
 The main API kdb.h has one added line:

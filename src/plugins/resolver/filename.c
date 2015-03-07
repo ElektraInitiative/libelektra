@@ -387,7 +387,12 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 
 static int elektraResolveDir(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
 {
+#ifdef __APPLE__
+	p->dirname = malloc(1024);
+	getcwd( p->dirname, 1024 );
+#else
 	p->dirname = get_current_dir_name();
+#endif
 
 	elektraResolveFinishByDirname(p);
 	return 1;

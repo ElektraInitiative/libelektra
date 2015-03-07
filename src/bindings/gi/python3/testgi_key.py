@@ -32,27 +32,27 @@ class Key(unittest.TestCase):
 
 		k = kdb.Key("/cascading/key")
 		self.assertIsInstance(k, kdb.Key)
-		self.assertTrue(k.isValid())
+		self.assertTrue(k.isvalid())
 
 		k = kdb.Key("spec/key")
 		self.assertIsInstance(k, kdb.Key)
-		self.assertTrue(k.isValid())
+		self.assertTrue(k.isvalid())
 
 		k = kdb.Key("proc/key")
 		self.assertIsInstance(k, kdb.Key)
-		self.assertTrue(k.isValid())
+		self.assertTrue(k.isvalid())
 
 		k = kdb.Key("dir/key")
 		self.assertIsInstance(k, kdb.Key)
-		self.assertTrue(k.isValid())
+		self.assertTrue(k.isvalid())
 
 		k = kdb.Key("user/key")
 		self.assertIsInstance(k, kdb.Key)
-		self.assertTrue(k.isValid())
+		self.assertTrue(k.isvalid())
 
 		k = kdb.Key("system/key")
 		self.assertIsInstance(k, kdb.Key)
-		self.assertTrue(k.isValid())
+		self.assertTrue(k.isvalid())
 
 		k = kdb.Key()
 		self.assertIsInstance(k, kdb.Key)

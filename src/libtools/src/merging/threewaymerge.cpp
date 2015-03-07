@@ -171,7 +171,7 @@ MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
 }
 
 MergeResult ThreeWayMerge::mergeKeySet(const KeySet& base, const KeySet& ours,
-		const KeySet& theirs, Key& mergeRoot)
+		const KeySet& theirs, const Key& mergeRoot)
 {
 	Key ourkey = ours.head ().dup ();
 	Key theirkey = theirs.head ().dup ();

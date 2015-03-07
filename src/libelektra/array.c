@@ -1,8 +1,6 @@
 #define __STDC_FORMAT_MACROS
 
-#include <kdbproposal.h>
 #include <kdbprivate.h>
-#include "kdbtypes.h"
 
 #include <stdlib.h>
 #include <stdio.h>
