@@ -12,10 +12,9 @@
 #endif
 
 #include <errno.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <kdberrors.h>
-#include <kdbextension.h>
 #include <inih.h>
 #include "ini.h"
 
@@ -30,6 +29,11 @@ typedef struct {
 	char *collectedComment;	/* buffer for collecting comments until a non comment key is reached */
 } CallbackHandle;
 
+typedef struct {
+	short supportMultiline;	/* defines whether multiline keys are supported */
+	short autoSections;		/* defines whether sections for keys 2 levels or more below the parentKey are created */
+} IniPluginConfig;
+
 static void flushCollectedComment (CallbackHandle *handle, Key *key)
 {
 	if (handle->collectedComment)
@@ -39,6 +43,10 @@ static void flushCollectedComment (CallbackHandle *handle, Key *key)
 		handle->collectedComment = 0;
 	}
 }
+
+// TODO defined privately in internal.c, API break possible.
+// Might consider moving this to the public API as it might be used by more plugins
+size_t elektraUnescapeKeyName(const char *source, char *dest);
 
 // TODO: this is very similar to elektraKeyAppendMetaLine in keytometa
 static int elektraKeyAppendLine (Key *target, const char *line)
@@ -102,11 +110,9 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
 
 	Key *appendKey = keyDup (handle->parentKey);
-	keySetString(appendKey, 0);
-
+	keySetBinary(appendKey, 0, 0);
 	keyAddBaseName(appendKey, section);
 	flushCollectedComment (handle, appendKey);
-	keySetDir(appendKey);
 	ksAppendKey(handle->result, appendKey);
 
 	return 1;
@@ -145,8 +151,12 @@ static int iniCommentToMeta (void *vhandle, const char *comment)
 int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet *config = elektraPluginGetConfig (handle);
-	Key* multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
-	elektraPluginSetData(handle, multilineKey);
+	IniPluginConfig *pluginConfig = (IniPluginConfig *)elektraMalloc (sizeof (IniPluginConfig));
+	Key *multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
+	Key *autoSectionKey = ksLookupByName(config, "/autosections", KDB_O_NONE);
+	pluginConfig->supportMultiline = multilineKey != 0;
+	pluginConfig->autoSections = autoSectionKey != 0;
+	elektraPluginSetData(handle, pluginConfig);
 
 	return 0;
 }
@@ -154,6 +164,8 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 
 int elektraIniClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
+	IniPluginConfig *pluginConfig = (IniPluginConfig *)elektraPluginGetData(handle);
+	elektraFree(pluginConfig);
 	elektraPluginSetData(handle, 0);
 	return 0;
 }
@@ -196,8 +208,8 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	iniConfig.sectionHandler = iniSectionToElektraKey;
 	iniConfig.commentHandler = iniCommentToMeta;
 
-	Key *multiLineKey = elektraPluginGetData(handle);
-	iniConfig.supportMultiline = multiLineKey != 0;
+	IniPluginConfig *pluginConfig = elektraPluginGetData(handle);
+	iniConfig.supportMultiline = pluginConfig->supportMultiline;
 
 	int ret = ini_parse_file(fh, &iniConfig, &cbHandle);
 
@@ -254,7 +266,7 @@ void writeComments(Key* current, FILE* fh)
 	}
 }
 
-void writeMultilineKey(Key *key, FILE *fh)
+void writeMultilineKey(Key *key, const char *iniName, FILE *fh)
 {
 	size_t valueSize = keyGetValueSize(key);
 	char *saveptr = 0;
@@ -263,7 +275,7 @@ void writeMultilineKey(Key *key, FILE *fh)
 	keyGetString(key, value, valueSize);
 	result = strtok_r (value, "\n", &saveptr);
 
-	fprintf (fh, "%s = %s\n", keyBaseName(key), result);
+	fprintf (fh, "%s = %s\n", iniName, result);
 
 	while ( (result = strtok_r (0, "\n", &saveptr)) != 0)
 	{
@@ -271,6 +283,63 @@ void writeMultilineKey(Key *key, FILE *fh)
 	}
 
 	free (value);
+}
+
+static short isSectionKey(Key *key)
+{
+	if (!key) return 0;
+
+	return keyIsBinary(key) && !keyValue(key);
+}
+
+/**
+ * Returns the name of the corresponding ini key based on
+ * the structure and parentKey of the supplied key.
+ *
+ * The returned string has to be freed by the caller
+ *
+ */
+static char *getIniName(KeySet *keys, Key *parent, Key *key)
+{
+	cursor_t currentCursor = ksGetCursor(keys);
+
+	Key *temp = keyDup(key);
+	Key *section;
+
+	do
+	{
+		keySetBaseName(temp, 0);
+
+		if (!keyCmp(temp, parent))
+		{
+			/* we reached the parent key, there won't be any more section keys */
+			section = parent;
+			break;
+		}
+
+		section = ksLookup(keys, temp, KDB_O_NONE);
+	} while(!isSectionKey(section));
+
+	ksSetCursor(keys, currentCursor);
+	keyDel(temp);
+
+	char *buffer = elektraMalloc(keyGetNameSize(key));
+	elektraUnescapeKeyName(keyName(key) + keyGetNameSize(section), buffer);
+
+	return buffer;
+
+}
+
+static Key *generateSectionKey(Key *key, Key *parentKey)
+{
+	Key *sectionKey = keyDup(key);
+	while (!keyIsDirectBelow(parentKey, sectionKey) && keyIsBelow(parentKey, sectionKey))
+	{
+		keySetBaseName(sectionKey, 0);
+	}
+
+	keySetBinary(sectionKey, 0, 0);
+	return sectionKey;
 }
 
 int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
@@ -288,41 +357,65 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 
-	Key* multilineKey = elektraPluginGetData(handle);
+	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
 
 	ksRewind (returned);
 	Key *current;
 	while ((current = ksNext (returned)))
 	{
+		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
+		{
+			Key *sectionKey = generateSectionKey(current, parentKey);
+
+			cursor_t cursor = ksGetCursor(returned);
+			if (!ksLookup(returned, sectionKey, KDB_O_NONE))
+			{
+				ksAppendKey(returned, sectionKey);
+				current = sectionKey;
+			}
+			else
+			{
+				keyDel(sectionKey);
+				ksSetCursor(returned, cursor);
+			}
+		}
+
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
 
 		writeComments (current, fh);
 
-		/* TODO: make logic independent from meta data, just
-		 * check depth of key, see #138
-		if (keyIsDir(current))
+		/* find the section the current key belongs to */
+		char *iniName = getIniName(returned, parentKey, current);
+
+		/* keys with a NULL value are treated as sections */
+		if (isSectionKey(current))
 		{
-			fprintf (fh, "[%s]\n", keyBaseName(current));
-		}
-		*/
-		if (strstr (keyString (current), "\n") == 0)
-		{
-			fprintf (fh, "%s = %s\n", keyBaseName(current), keyString(current));
+			fprintf (fh, "[%s]\n", iniName);
 		}
 		else
 		{
-			if (multilineKey)
+			/* if the key value is only single line, write a singleline INI key */
+			if (strstr (keyString (current), "\n") == 0)
 			{
-				writeMultilineKey(current, fh);
+				fprintf (fh, "%s = %s\n", iniName, keyString (current));
 			}
 			else
 			{
-				ELEKTRA_SET_ERROR(97, parentKey, "Encountered a multiline value but multiline support is not enabled. "
-						"Have a look at kdb info ini for more details");
-				ret = -1;
+				/* otherwise check that multiline support is enabled and write a multiline INI key */
+				if (pluginConfig->supportMultiline)
+				{
+					writeMultilineKey (current, iniName, fh);
+				}
+				else
+				{
+					ELEKTRA_SET_ERROR(97, parentKey,
+							"Encountered a multiline value but multiline support is not enabled. "
+									"Have a look at kdb info ini for more details");
+					ret = -1;
+				}
 			}
 		}
-
+		elektraFree(iniName);
 		if (ret < 0) break;
 	}
 

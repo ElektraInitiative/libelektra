@@ -110,7 +110,7 @@ do
 	$KDB set $ROOT "wrong_root" >/dev/null
 	exit_if_fail "could not set wrong_root"
 
-	$KDB import -s "newkey,theirvalue" $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s "import" $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
@@ -182,7 +182,7 @@ user/tests/script/key"
 	$KDB set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s "cut" $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
@@ -223,7 +223,7 @@ user/tests/script/key"
 	$KDB set $SIDE val
 	succeed_if "Could not set $SIDE"
 
-	$KDB import -s theirs $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
+	$KDB import -s "cut" $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
 
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"

@@ -46,7 +46,7 @@ public:
 	 *
 	 **/
 	MergeResult mergeKeySet(const KeySet& base, const KeySet& ours,
-			const KeySet& theirs, Key& mergeRoot);
+			const KeySet& theirs, const Key& mergeRoot);
 
 	/**
 	 * Performs a threeway merge based on the supplied KeySets. The result is the same

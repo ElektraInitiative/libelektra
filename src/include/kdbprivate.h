@@ -18,6 +18,7 @@
 #define KDBPRIVATE_H
 
 #include <kdb.h>
+#include <kdbtypes.h>
 #include <kdbhelper.h>
 #include <kdbconfig.h>
 #include <kdbplugin.h>
@@ -520,8 +521,8 @@ int elektraValidateKeyName(const char *name, size_t size);
 
 /*Internally used for array handling*/
 int elektraArrayValidateName(const Key *key);
-int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex);
-int elektraWriteArrayNumber(char *newName, int64_t newIndex);
+int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex);
+int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

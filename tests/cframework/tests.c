@@ -1,4 +1,5 @@
 #include <tests.h>
+#include <string.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -66,6 +67,15 @@ int init (int argc, char**argv)
 	{
 		tmpvar = "/tmp";
 	}
+	// check tempvar for trailing slash / 
+	if(strlen(tmpvar) > 2)
+	{
+		if(tmpvar[strlen(tmpvar) - 1] == '/') 
+		{
+			tmpvar[strlen(tmpvar) - 1] = '\0';
+		}
+	}
+
 	tempHomeLen = strlen (tmpvar) + 1 + 13 + 6 + 1;
 	tempHome = malloc (tempHomeLen);
 	succeed_if (tempHome != 0, "malloc failed");

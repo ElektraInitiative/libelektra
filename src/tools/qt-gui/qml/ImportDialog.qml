@@ -79,28 +79,16 @@ BasicWindow {
 							property string command: "theirs"
 						}
 						RadioButton {
-							text: qsTr("Base")
+							text: qsTr("Cut")
 							exclusiveGroup: group
-							property string command: "base"
+							property string command: "cut"
 						}
 					}
 					Column {
 						RadioButton {
-							text: qsTr("New Key")
+							text: qsTr("Import")
 							exclusiveGroup: group
-							property string command: "newkey"
-						}
-						RadioButton {
-							text: qsTr("Our Value")
-							exclusiveGroup: group
-							property string command: "ourvalue"
-						}
-					}
-					Column {
-						RadioButton {
-							text: qsTr("Their Value")
-							exclusiveGroup: group
-							property string command: "theirvalue"
+							property string command: "import"
 						}
 						Item{
 							height: preserve.height

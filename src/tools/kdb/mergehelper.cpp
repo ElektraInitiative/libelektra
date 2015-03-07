@@ -6,10 +6,11 @@
 #include <keysetio.hpp>
 
 #include <mergehelper.hpp>
-#include <merging/automergestrategy.hpp>
-#include <merging/onesidestrategy.hpp>
-#include <merging/newkeystrategy.hpp>
 #include <merging/interactivemergestrategy.hpp>
+#include <merging/automergeconfiguration.hpp>
+#include <merging/onesidemergeconfiguration.hpp>
+#include <merging/overwritemergeconfiguration.hpp>
+#include <merging/importmergeconfiguration.hpp>
 
 using namespace kdb;
 using namespace kdb::tools::merging;
@@ -21,29 +22,30 @@ MergeHelper::MergeHelper()
 	// without eager instantiating all the strategies. Maybe even automatically
 	// discover all available strategies
 	// comment markus: the factory could be part of libtools
-	strategyMap.insert (make_pair ("preserve", new AutoMergeStrategy()));
+	configurationMap.insert (make_pair ("preserve", new AutoMergeConfiguration()));
 
-	strategyMap.insert (make_pair ("ours", new OneSideStrategy(OURS)));
-	strategyMap.insert (make_pair ("theirs", new OneSideStrategy(THEIRS)));
-	strategyMap.insert (make_pair ("base", new OneSideStrategy(BASE)));
-	strategyMap.insert (make_pair ("newkey", new NewKeyStrategy()));
-	strategyMap.insert (make_pair ("ourvalue", new OneSideStrategy(OURS)));
-	strategyMap.insert (make_pair ("theirvalue", new OneSideStrategy(THEIRS)));
+	configurationMap.insert (make_pair ("ours", new OneSideMergeConfiguration(OURS)));
+	configurationMap.insert (make_pair ("theirs", new OneSideMergeConfiguration(THEIRS)));
+
+	// primarily used for import
+	configurationMap.insert (make_pair ("cut", new OverwriteMergeConfiguration(THEIRS)));
+	configurationMap.insert (make_pair ("import", new ImportMergeConfiguration()));
+
 }
 
 MergeHelper::~MergeHelper()
 {
-	vector<MergeConflictStrategy*> strategies = getAllStrategies();
-	for (vector<MergeConflictStrategy*>::iterator it = strategies.begin(); it != strategies.end (); ++it)
+	vector<MergeConfiguration *> configurations = getAllConfigurations();
+	for (vector<MergeConfiguration *>::iterator it = configurations.begin(); it != configurations.end (); ++it)
 	{
 		delete (*it);
 	}
 }
 
-vector<MergeConflictStrategy*> MergeHelper::getAllStrategies()
+vector<MergeConfiguration *> MergeHelper::getAllConfigurations()
 {
-	vector<MergeConflictStrategy*> result;
-	for (map<string, MergeConflictStrategy*>::iterator it = strategyMap.begin (); it != strategyMap.end (); ++it)
+	vector<MergeConfiguration *> result;
+	for (map<string, MergeConfiguration *>::iterator it = configurationMap.begin (); it != configurationMap.end (); ++it)
 	{
 		result.push_back ((*it).second);
 	}
@@ -51,10 +53,10 @@ vector<MergeConflictStrategy*> MergeHelper::getAllStrategies()
 	return result;
 }
 
-string MergeHelper::getStrategyList()
+string MergeHelper::getConfigurationList()
 {
 	ostringstream oss;
-	for (map<string, MergeConflictStrategy*>::iterator it = strategyMap.begin (); it != strategyMap.end (); ++it)
+	for (map<string, MergeConfiguration *>::iterator it = configurationMap.begin (); it != configurationMap.end (); ++it)
 	{
 		oss << (*it).first << ",";
 	}
@@ -62,7 +64,7 @@ string MergeHelper::getStrategyList()
 	return oss.str ();
 }
 
-void MergeHelper::parseStrategies(Cmdline const& cl, ThreeWayMerge& merger)
+void MergeHelper::configureMerger(Cmdline const& cl, ThreeWayMerge& merger)
 {
 
 
@@ -73,23 +75,14 @@ void MergeHelper::parseStrategies(Cmdline const& cl, ThreeWayMerge& merger)
 	}
 	else
 	{
-		if (cl.strategy.size () > 0)
+		if (configurationMap.find (cl.strategy) == configurationMap.end ())
 		{
-			// strategies are comma separated, split them
-			istringstream sstream (cl.strategy);
-			string current;
-			while (getline (sstream, current, ','))
-			{
-				if (strategyMap.find (current) == strategyMap.end ())
-				{
-					throw invalid_argument (
-							"'" + current + "' is not a valid strategy. Valid strategies are: " + getStrategyList ());
-				}
-
-				MergeConflictStrategy *strategy = strategyMap[current];
-				merger.addConflictStrategy (strategy);
-			}
+			throw invalid_argument (
+					"'" + cl.strategy + "' is not a valid strategy. Valid strategies are: " + getConfigurationList ());
 		}
+
+		MergeConfiguration *configuration = configurationMap[cl.strategy];
+		configuration->configureMerger(merger);
 	}
 }
 
