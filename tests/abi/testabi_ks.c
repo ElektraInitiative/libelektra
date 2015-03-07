@@ -2671,47 +2671,8 @@ static void test_cascadingCutpoint()
 	printf ("Testing operation cascading cut point\n");
 
 	Key *cutpoint = keyNew("/a/b/c", KEY_END);
-	KeySet *orig = ksNew(30,
-			keyNew("spec/a", KEY_END),
-			keyNew("spec/a/b", KEY_END),
-			keyNew("spec/a/b/c", KEY_END),
-			keyNew("spec/a/b/c/d", KEY_END),
-			keyNew("spec/a/b/c/d/e", KEY_END),
-			keyNew("spec/a/b/c/e", KEY_END),
-			keyNew("spec/a/b/c/e/d", KEY_END),
-
-			keyNew("proc/a", KEY_END),
-			keyNew("proc/a/b", KEY_END),
-			keyNew("proc/a/b/c", KEY_END),
-			keyNew("proc/a/b/c/d", KEY_END),
-			keyNew("proc/a/b/c/d/e", KEY_END),
-			keyNew("proc/a/b/c/e", KEY_END),
-			keyNew("proc/a/b/c/e/d", KEY_END),
-
-			keyNew("dir/a", KEY_END),
-			keyNew("dir/a/b", KEY_END),
-			keyNew("dir/a/b/c", KEY_END),
-			keyNew("dir/a/b/c/d", KEY_END),
-			keyNew("dir/a/b/c/d/e", KEY_END),
-			keyNew("dir/a/b/c/e", KEY_END),
-			keyNew("dir/a/b/c/e/d", KEY_END),
-
-			keyNew("user/a", KEY_END),
-			keyNew("user/a/b", KEY_END),
-			keyNew("user/a/b/c", KEY_END),
-			keyNew("user/a/b/c/d", KEY_END),
-			keyNew("user/a/b/c/d/e", KEY_END),
-			keyNew("user/a/b/c/e", KEY_END),
-			keyNew("user/a/b/c/e/d", KEY_END),
-
-			keyNew("system/a", KEY_END),
-			keyNew("system/a/b", KEY_END),
-			keyNew("system/a/b/c", KEY_END),
-			keyNew("system/a/b/c/d", KEY_END),
-			keyNew("system/a/b/c/d/e", KEY_END),
-			keyNew("system/a/b/c/e", KEY_END),
-			keyNew("system/a/b/c/e/d", KEY_END),
-			KS_END);
+	KeySet *orig =
+#include <data_nscut.c>
 	ksRewind(orig);
 	ksNext(orig);
 	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a");
@@ -2780,6 +2741,79 @@ static void test_cascadingCutpoint()
 	ksDel (cmp_part);
 	keyDel(cutpoint);
 }
+
+static void test_cascadingRootCutpoint()
+{
+	printf ("Testing operation cascading root cut point\n");
+
+	Key *cutpoint = keyNew("/", KEY_END);
+	KeySet *orig =
+#include <data_nscut.c>
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a");
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a/b");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if(ksGetSize(orig) == 0, "keyset not empty");
+	succeed_if(ksCurrent(orig) == 0, "empty keyset not rewinded");
+
+	KeySet *cmp_part =
+#include <data_nscut.c>
+	compare_keyset(part, cmp_part);
+	// output_keyset(part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
+static void test_cutpointRoot()
+{
+	printf ("Testing operation cut root point\n");
+
+	Key *cutpoint = keyNew("user");
+	KeySet *orig = ksNew(30,
+			keyNew("system/a", KEY_END),
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "system/a");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if_same_string (keyName(ksCurrent(orig)), "system/a");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("system/a", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
 
 static void test_cutpoint_1()
 {
@@ -3260,7 +3294,9 @@ int main(int argc, char** argv)
 	test_cut();
 	test_cutpoint();
 	test_cascadingCutpoint();
+	test_cascadingRootCutpoint();
 	test_cutpoint_1();
+	test_cutpointRoot();
 	test_unique_cutpoint();
 	test_cutbelow();
 	test_simple();
