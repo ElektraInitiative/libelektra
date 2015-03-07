@@ -59,10 +59,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 
 		message (STATUS "GCC detected")
 	endif(WIN32)
-
-	if (GCC_VERSION VERSION_GREATER 4.4)
-		set (COMMON_FLAGS "${COMMON_FLAGS} -Wmaybe-uninitialized")
-	endif ()
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 if (WIN32)
