@@ -46,6 +46,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
+	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
 		message (STATUS "mingw detected")
 	else(WIN32)
@@ -58,6 +59,10 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 
 		message (STATUS "GCC detected")
 	endif(WIN32)
+
+	if (GCC_VERSION VERSION_GREATER 4.4)
+		set (COMMON_FLAGS "${COMMON_FLAGS} -Wmaybe-uninitialized")
+	endif ()
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 if (WIN32)
@@ -78,6 +83,7 @@ endif ()
 
 #
 # Common flags can be used by both C and C++
+# and by all supported compilers (gcc, mingw, icc, clang)
 #
 set (COMMON_FLAGS "${COMMON_FLAGS} -pedantic -Wno-variadic-macros")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wall -Wextra")

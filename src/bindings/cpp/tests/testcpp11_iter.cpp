@@ -7,7 +7,6 @@
 
 TEST(test_iter, iterate)
 {
-	std::cout << "testing iterate" << std::endl;
 	KeySet ks2 (5,
 		*Key ("user/key2/1", KEY_END),
 		*Key ("user/key2/2", KEY_END),

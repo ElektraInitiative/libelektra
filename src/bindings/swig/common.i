@@ -126,4 +126,4 @@
 
 // iterators
 // we hide all iterator classes. users should use pairs/ipairs
-#define WITHOUT_KEYSET_ITERATOR
+#define ELEKTRA_WITHOUT_ITERATOR

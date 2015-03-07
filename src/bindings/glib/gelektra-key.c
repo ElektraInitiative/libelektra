@@ -149,6 +149,7 @@ GElektraKey *gelektra_key_new(const gchar *name, ...)
 	{
 		va_start(va, name);
 		keyVInit(key->key, name, va);
+		keyIncRef(key->key); // keyVInit will clear the refcount
 		va_end(va);
 	}
 	return key;
