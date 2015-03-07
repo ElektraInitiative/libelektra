@@ -1,8 +1,8 @@
 usr/bin/kdb
 usr/lib/libelektratools.so
 usr/lib/libelektratools.so*
-etc/profile.d/elektraenv.sh
-etc/bash_completion.d/kdb-bash-completion
+etc/profile.d/kdb
+etc/bash_completion.d/kdb
 usr/lib/elektra/tool_exec/benchmark-createtree
 usr/lib/elektra/tool_exec/elektra-merge
 usr/lib/elektra/tool_exec/elektra-mount
