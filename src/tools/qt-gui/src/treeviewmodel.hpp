@@ -206,6 +206,8 @@ public:
 	 */
 	Q_INVOKABLE QStringList     mountedBackends();
 
+	QStringList					getSplittedKeyname(const kdb::Key &key);
+
 private:
 	QList<ConfigNodePtr>        m_model;
 	kdb::Key                    m_metaModelParent;

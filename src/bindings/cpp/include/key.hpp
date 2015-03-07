@@ -11,9 +11,17 @@
 
 #include <kdb.h>
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+#include <kdbproposal.h> // TODO remove (for keyUnescapedName())
+#endif
+
 namespace kdb
 {
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+class NameIterator;
+class NameReverseIterator;
+#endif
 
 /**
  * @copydoc key
@@ -114,6 +122,28 @@ public:
 	inline ssize_t getFullNameSize() const;
 	inline std::string getFullName() const;
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+	typedef NameIterator iterator;
+	typedef NameIterator const_iterator;
+	typedef NameReverseIterator reverse_iterator;
+	typedef NameReverseIterator const_reverse_iterator;
+
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
+	reverse_iterator rbegin();
+	const_reverse_iterator rbegin() const;
+	reverse_iterator rend();
+	const_reverse_iterator rend() const;
+#if __cplusplus > 199711L
+	const_iterator cbegin() const noexcept;
+	const_iterator cend() const noexcept;
+	const_reverse_iterator crbegin() const noexcept;
+	const_reverse_iterator crend() const noexcept;
+#endif
+#endif //ELEKTRA_WITHOUT_ITERATOR
+
 	// operators
 
 	inline bool operator ==(const Key &k) const;
@@ -186,6 +216,240 @@ private:
 
 	ckdb::Key * key; ///< holds an elektra key
 };
+
+
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+/**
+ * For C++ forward Iteration over Names.
+ * (External Iterator)
+ * @code
+	for (std::string s:k3)
+	{
+		std::cout << s << std::endl;
+	}
+ * @endcode
+ */
+class NameIterator
+{
+public:
+	typedef std::string value_type;
+	typedef std::string reference;
+	typedef std::bidirectional_iterator_tag iterator_category;
+
+	NameIterator(Key const & k, bool last) :
+		begin(static_cast<const char*>(keyUnescapedName(*k))),
+		end(begin+keyGetUnescapedNameSize(*k)),
+		current(last?end:begin)
+	{}
+
+	NameIterator(const char* begin_, const char* end_, const char* current_) :
+		begin(begin_),
+		end(end_),
+		current(current_)
+	{}
+
+	std::string get() const
+	{
+		if (current == end || current == begin-1) return "";
+		return std::string(current);
+	}
+
+	const char *pos() const { return current; }
+
+	const char *findNext() const
+	{
+		const char *c = current;
+		if (c >= end) return end;
+
+		do { ++c; } while (c < end && *c != 0);
+		if (c != end) ++c; // skip past null character
+
+		return c;
+	}
+
+	const char *findPrevious() const
+	{
+		const char *c = current;
+		if (c <= begin) return begin;
+
+		--c; // go from start of string to null
+		do { --c; } while (c > begin && *c != 0);
+		if (c != begin && c+1 != current) ++c; // jump back to not-null
+
+		return c;
+	}
+
+	// Forward iterator requirements
+	reference operator*() const { return get(); }
+	NameIterator& operator++() { current = findNext(); return *this; }
+	NameIterator operator++(int)
+	{
+		NameIterator ret(begin, end, current);
+		current = findNext();
+		return ret;
+	}
+
+	// Bidirectional iterator requirements
+	NameIterator& operator--() { current = findPrevious(); return *this; }
+	NameIterator operator--(int)
+	{
+		NameIterator ret(begin, end, current);
+		current = findPrevious();
+		return ret;
+	}
+
+protected:
+	const char *begin;
+	const char *end;
+	const char* current;
+};
+
+
+// Forward iterator requirements
+inline bool operator==(const NameIterator& lhs, const NameIterator& rhs)
+{ return lhs.pos() == rhs.pos(); }
+
+inline bool operator!=(const NameIterator& lhs, const NameIterator& rhs)
+{ return lhs.pos() != rhs.pos()  ; }
+
+// some code duplication because std::reverse_iterator
+// needs a difference_type
+/**
+ * For C++ reverse Iteration over Names.
+ * (External Iterator)
+ */
+class NameReverseIterator : private NameIterator
+{
+public:
+	typedef std::string value_type;
+	typedef std::string reference;
+	typedef std::bidirectional_iterator_tag iterator_category;
+
+	NameReverseIterator(Key const & k, bool last) :
+		NameIterator(k, last)
+	{
+		if (!last) current = begin-1;
+		else current = findPrevious();
+	}
+
+	NameReverseIterator(const char* begin_, const char* end_, const char* current_) :
+		NameIterator(begin_, end_, current_)
+	{}
+
+	const char *findPrevious() const
+	{
+		if (current <= begin) return begin-1;
+		return NameIterator::findPrevious();
+	}
+
+	const char *findNext() const
+	{
+		if (current == begin-1) return begin;
+		return NameIterator::findNext();
+	}
+
+	std::string get() const
+	{
+		if (current == begin-1) return "";
+		return NameIterator::get();
+	}
+
+	const char *pos() const { return NameIterator::pos(); }
+
+	// Forward iterator requirements
+	reference operator*() const { return get(); }
+	NameReverseIterator& operator++() { current = findPrevious(); return *this; }
+	NameReverseIterator operator++(int)
+	{
+		NameReverseIterator ret(begin, end, current);
+		current = findPrevious();
+		return ret;
+	}
+
+	// Bidirectional iterator requirements
+	NameReverseIterator& operator--() { current = findNext(); return *this; }
+	NameReverseIterator operator--(int)
+	{
+		NameReverseIterator ret(begin, end, current);
+		current = findNext();
+		return ret;
+	}
+};
+
+
+
+// Forward iterator requirements
+inline bool operator==(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
+{ return lhs.pos() == rhs.pos(); }
+
+inline bool operator!=(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
+{ return lhs.pos() != rhs.pos(); }
+
+
+
+inline Key::iterator Key::begin()
+{
+	return Key::iterator(*this, false);
+}
+
+inline Key::const_iterator Key::begin() const
+{
+	return Key::const_iterator(*this, false);
+}
+
+inline Key::iterator Key::end()
+{
+	return Key::iterator(*this, true);
+}
+
+inline Key::const_iterator Key::end() const
+{
+	return Key::const_iterator(*this, true);
+}
+
+inline Key::reverse_iterator Key::rbegin()
+{
+	return Key::reverse_iterator(*this, true);
+}
+
+inline Key::const_reverse_iterator Key::rbegin() const
+{
+	return Key::const_reverse_iterator(*this, true);
+}
+
+inline Key::reverse_iterator Key::rend()
+{
+	return Key::reverse_iterator(*this, false);
+}
+
+inline Key::const_reverse_iterator Key::rend() const
+{
+	return Key::const_reverse_iterator(*this, false);
+}
+
+#if __cplusplus > 199711L
+inline Key::const_iterator Key::cbegin() const noexcept
+{
+	return Key::const_iterator(*this, true);
+}
+
+inline Key::const_iterator Key::cend() const noexcept
+{
+	return Key::const_iterator(*this, false);
+}
+
+inline Key::const_reverse_iterator Key::crbegin() const noexcept
+{
+	return Key::const_reverse_iterator(*this, true);
+}
+
+inline Key::const_reverse_iterator Key::crend() const noexcept
+{
+	return Key::const_reverse_iterator(*this, false);
+}
+#endif
+#endif //ELEKTRA_WITHOUT_ITERATOR
+
 
 /**
  * Constructs an empty, invalid key.

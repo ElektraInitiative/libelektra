@@ -25,11 +25,13 @@ public:
 
 private:
 
-	ConfigNodePtr m_parentNode;
-	ConfigNodePtr m_newNode;
-	QString       m_name;
-	QString       m_value;
-	QVariantMap   m_metaData;
+	ConfigNodePtr	m_parentNode;
+	ConfigNodePtr	m_newNode;
+	QString			m_name;
+	QString			m_value;
+	QVariantMap		m_metaData;
+
+	QStringList		cutListAtIndex(QStringList &list, int index);
 };
 
 #endif // NEWKEYCOMMAND_HPP

@@ -463,8 +463,7 @@ void TreeViewModel::createNewNodes(KeySet keySet)
 	while (keySet.next())
 	{
 		Key k = keySet.current().dup();
-		QString currentKey = QString::fromStdString(k.getName());
-		QStringList keys = currentKey.split(qApp->property("KEY_DELIMITER").toRegularExpression());
+		QStringList keys = getSplittedKeyname(k);
 		QString root = keys.takeFirst();
 
 		for(int i = 0; i < m_model.count(); i++)
@@ -603,6 +602,18 @@ QStringList TreeViewModel::mountedBackends()
 		mountedBends.append("empty");
 
 	return mountedBends;
+}
+
+QStringList TreeViewModel::getSplittedKeyname(const Key &key)
+{
+	QStringList names;
+
+	for (Key::iterator i = key.begin(); i != key.end(); ++i)
+	{
+			names.append(QString::fromStdString(*i));
+	}
+
+	return names;
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const
