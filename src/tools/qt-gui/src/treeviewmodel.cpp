@@ -225,64 +225,40 @@ void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QSt
 {
 	synchronize();
 
-	ConfigNodePtr node = parentModel->model().at(idx);
+	KDB		kdb;
+	KeySet	ks;
+	Key		root = parentModel->model().at(idx)->getKey();
 
-	file.remove("file://");
-
-	Factory f;
-
-	QByteArray executable = QString("kdb").toLocal8Bit();
-	QByteArray commandName = QString("export").toLocal8Bit();
-	QByteArray exportName = node->getPath().toLocal8Bit();
-	QByteArray exportFormat = format.toLocal8Bit();
-	QByteArray exportFile = file.toLocal8Bit();
-
-	char* argv[] = {executable.data(), commandName.data(), exportName.data(), exportFormat.data(), exportFile.data(), NULL};
-	int argc = sizeof(argv) / sizeof(char*) - 1;
-
-	string command = argv[1];
+	//Node is only a filler
+	if(!root)
+		root = Key(parentModel->model().at(idx)->getPath().toStdString());
 
 	try
 	{
-		CommandPtr cmd = f.get(command);
-
-		Cmdline cl(argc, argv, cmd.get());
-
-		try
-		{
-			cmd->execute(cl);
-		}
-		catch (invalid_argument const& ia)
-		{
-			emit showMessage(tr("Error"), tr("Exporting the configuration to file failed because there were invalid arguments passed."), QString(ia.what()));
-			return;
-		}
+		kdb.get(ks, root);
 	}
-	catch (CommandException const& ce)
+	catch (KDBException const& e)
 	{
-		emit showMessage(tr("Error"), tr("Exporting the configuration to file terminated unsuccessfully."), QString(ce.what()));
-		return;
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
 	}
-	catch (Key& key)
-	{
-		stringstream ws;
-		stringstream es;
 
-		ws << printWarnings(cerr, key);
-		es << printError(cerr, key);
+	printWarnings(cerr, root);
 
-		emit showMessage(tr("Error"), tr("Exporting the configuration to file failed while accessing the key database."), QString::fromStdString(ws.str()) + QString::fromStdString(es.str()));
-		return;
-	}
-	catch (exception const& ce)
-	{
-		emit showMessage(tr("Error"), tr("Exporting the configuration to file terminated unsuccessfully."), QString(ce.what()));
-		return;
-	}
-	catch (...)
-	{
-		emit showMessage(tr("Error"), tr("Unknown error."), "TreeViewModel::exportConfiguration");
-	}
+	KeySet part(ks.cut(root));
+
+	string formatString = format.toStdString();
+	string fileString = file.remove("file://").toStdString();
+
+	Modules modules;
+	PluginPtr plugin = modules.load(formatString);
+
+	Key errorKey(root);
+	errorKey.setString(fileString);
+
+	plugin->set(part, errorKey);
+
+	printWarnings(cerr, errorKey);
+	printError(cerr, errorKey);
 }
 
 KeySet TreeViewModel::collectCurrentKeySet()
