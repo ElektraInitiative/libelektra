@@ -25,7 +25,7 @@
  * See "OMG Language Mapping" if you want to map the types to another
  * programming language.
  *
- * This files defines mappings to C and C++11
+ * This files defines mappings to C89, C++03 and C++11
  * */
 
 #ifndef KDBTYPES_H
