@@ -1084,6 +1084,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 			strcpy  (newname+6, name);
 			key->key = newname+2;
 			key->keySize = length-2;
+			if (!strcmp(name, "/")) key->keySize = 5;
 			elektraFinalizeName(key);
 			break;
 		case KEY_NS_PROC:
@@ -1091,6 +1092,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 			strcpy  (newname+6, name);
 			key->key = newname+2;
 			key->keySize = length-2;
+			if (!strcmp(name, "/")) key->keySize = 5;
 			elektraFinalizeName(key);
 			break;
 		case KEY_NS_DIR:
@@ -1098,6 +1100,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 			strcpy  (newname+6, name);
 			key->key = newname+3;
 			key->keySize = length-3;
+			if (!strcmp(name, "/")) key->keySize = 4;
 			elektraFinalizeName(key);
 			break;
 		case KEY_NS_USER:
@@ -1105,6 +1108,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 			strcpy  (newname+6, name);
 			key->key = newname+2;
 			key->keySize = length-2;
+			if (!strcmp(name, "/")) key->keySize = 5;
 			elektraFinalizeName(key);
 			break;
 		case KEY_NS_SYSTEM:
@@ -1112,6 +1116,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 			strcpy  (newname+6, name);
 			key->key = newname;
 			key->keySize = length;
+			if (!strcmp(name, "/")) key->keySize = 7;
 			elektraFinalizeName(key);
 			break;
 		case KEY_NS_EMPTY:
