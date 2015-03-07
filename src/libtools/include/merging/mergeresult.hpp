@@ -36,8 +36,7 @@ public:
 
 	void resolveConflict(Key& key);
 
-	// TODO:  test this function
-	bool isConflict(Key& key)
+	bool isConflict(const Key& key)
 	{
 		return conflictSet.lookup(key);
 	}
@@ -47,12 +46,12 @@ public:
 		return conflictSet.size () != 0;
 	}
 
-	void addMergeKey(Key& key)
+	void addMergeKey(const Key& key)
 	{
 		mergedKeys.append (key);
 	}
 
-	void removeMergeKey(Key& key)
+	void removeMergeKey(const Key& key)
 	{
 		mergedKeys.lookup(key, KDB_O_POP);
 	}
@@ -67,7 +66,6 @@ public:
 		return mergedKeys;
 	}
 
-	// TODO:  test these functions
 	unsigned int getNumberOfResolvedKeys()
 	{
 		return resolvedKeys;
@@ -75,7 +73,7 @@ public:
 
 	unsigned int getNumberOfEqualKeys()
 	{
-		return mergedKeys.size() - resolvedKeys - conflictSet.size();
+		return mergedKeys.size() - resolvedKeys;
 	}
 private:
 	KeySet conflictSet;
