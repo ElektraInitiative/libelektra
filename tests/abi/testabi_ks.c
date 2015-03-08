@@ -2759,6 +2759,7 @@ static void test_cascadingRootCutpoint()
 
 	succeed_if(ksGetSize(orig) == 0, "keyset not empty");
 	succeed_if(ksCurrent(orig) == 0, "empty keyset not rewinded");
+	ksDel(orig);
 
 	KeySet *cmp_part =
 #include <data_nscut.c>
