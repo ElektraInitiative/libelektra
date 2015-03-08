@@ -1,3 +1,4 @@
+#include <kdb.hpp>
 #include "newkeycommand.hpp"
 
 NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, DataContainer *data, bool isBelow, QUndoCommand* parent)
@@ -11,7 +12,12 @@ NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, DataContainer *data, bool
 	kdb::Key newKey = model->createNewKey(m_parentNode->getPath() + "/" + data->newName(), m_value, m_metaData);
 
 	QStringList newNameSplit = model->getSplittedKeyname(newKey);
-	QStringList parentNameSplit = model->getSplittedKeyname(parentNode->getKey());
+	kdb::Key parentKey = parentNode->getKey();
+
+	if(!parentKey)
+		parentKey = kdb::Key(parentNode->getPath().toStdString());
+
+	QStringList parentNameSplit = model->getSplittedKeyname(parentKey);
 
 	//check if the new key is directly below the parent
 	QSet<QString> diff = newNameSplit.toSet().subtract(parentNameSplit.toSet());

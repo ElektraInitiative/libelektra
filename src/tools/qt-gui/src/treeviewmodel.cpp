@@ -1,5 +1,7 @@
 #include "treeviewmodel.hpp"
+#include "guibasickeyset.hpp"
 #include <threewaymerge.hpp>
+#include <onesidemergeconfiguration.hpp>
 #include <mergeconflictstrategy.hpp>
 #include <automergestrategy.hpp>
 #include <onesidestrategy.hpp>
@@ -395,6 +397,8 @@ void TreeViewModel::populateModel(KeySet keySet)
 	ConfigNodePtr user(new ConfigNode("user", "user", 0, this));
 	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
 
+	GUIBasicKeySet::setBasic(keySet);
+
 	m_model.clear();
 	m_model << system << user << spec;
 
@@ -440,28 +444,61 @@ void TreeViewModel::append(ConfigNodePtr node)
 
 void TreeViewModel::synchronize()
 {
+	KeySet ours = collectCurrentKeySet();
+	KeySet theirs;
+	KeySet base = GUIBasicKeySet::basic();
+	KeySet resultKeys;
+
+	Key root("user", KEY_END);
+
 	KDB kdb;
-	KeySet keySet;
 
 	try
 	{
-		kdb.get(keySet, "/");
+		kdb.get(theirs, root);
 	}
 	catch (KDBException const& e)
 	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), e.what());
+		emit showMessage(tr("Error"), tr("Synchronizing failed, could not read from configuration."), e.what());
+		return;
 	}
 
-	keySet = collectCurrentKeySet();
+	ours = ours.cut(root);
+	theirs = theirs.cut(root);
+	base = base.cut(root);
+
+	ThreeWayMerge merger;
+
+	OneSideMergeConfiguration configuration(OURS);
+	configuration.configureMerger(merger);
+
+	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
+													  OurMergeKeys(ours, root),
+													  TheirMergeKeys (theirs, root),
+													  root));
+	if (!result.hasConflicts ())
+	{
+		resultKeys.append(result.getMergedKeys());
+	}
+	else
+	{
+		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), "");
+		return;
+	}
 
 	try
 	{
-		kdb.set(keySet, "user");
+		kdb.set(resultKeys, root);
 	}
 	catch (KDBException const& e)
 	{
-		emit showMessage(tr("Error"), tr("Could not write to configuration."), e.what());
+		emit showMessage(tr("Error"), tr("Synchronizing failed, could not write to configuration."), e.what());
+		return;
 	}
+
+	GUIBasicKeySet::setBasic(resultKeys);
+
+	createNewNodes(resultKeys);
 }
 
 void TreeViewModel::clearMetaModel()
