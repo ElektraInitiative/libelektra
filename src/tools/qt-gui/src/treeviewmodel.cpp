@@ -1,10 +1,9 @@
 #include "treeviewmodel.hpp"
 #include <threewaymerge.hpp>
-#include <mergeconfiguration.hpp>
-#include <automergeconfiguration.hpp>
-#include <onesidemergeconfiguration.hpp>
-#include <overwritemergeconfiguration.hpp>
-#include <importmergeconfiguration.hpp>
+#include <mergeconflictstrategy.hpp>
+#include <automergestrategy.hpp>
+#include <onesidestrategy.hpp>
+#include <onesidevaluestrategy.hpp>
 #include <external.hpp>
 #include <toolexcept.hpp>
 #include <backends.hpp>
@@ -151,7 +150,7 @@ int TreeViewModel::getIndexByName(const QString& name) const
 	return -1;
 }
 
-void TreeViewModel::importConfiguration(const QString& name, const QString& format, QString& file, const QString& mergeStrategy)
+void TreeViewModel::importConfiguration(const QString& name, const QString& format, QString& file, const QVariantList &mergeStrategies)
 {
 	Key		root(name.toStdString(), KEY_END);
 	KeySet	originalKeys = collectCurrentKeySet();
@@ -174,21 +173,15 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
 
-	ThreeWayMerge			merger;
-	AutoMergeConfiguration*	configuration;
+	ThreeWayMerge merger;
 
-	if(mergeStrategy == "preserve")
-		configuration = new AutoMergeConfiguration();
-	else if(mergeStrategy == "ours")
-		configuration = new OneSideMergeConfiguration(OURS);
-	else if(mergeStrategy == "theirs")
-		configuration = new OneSideMergeConfiguration(THEIRS);
-	else if(mergeStrategy == "cut")
-		configuration = new OverwriteMergeConfiguration(THEIRS);
-	else if(mergeStrategy == "import")
-		configuration = new ImportMergeConfiguration();
+	foreach(QVariant s, mergeStrategies)
+	{
+		MergeConflictStrategy* strategy = getMergeStrategy(s.toString());
 
-	configuration->configureMerger(merger);
+		if(strategy)
+			merger.addConflictStrategy(strategy);
+	}
 
 	MergeResult result;
 
@@ -207,7 +200,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	}
 	else
 	{
-		emit showMessage(tr("Error"), tr("Importing the configuration from file caused conflicts."), "");
+		emit showMessage(tr("Error"), tr("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg(file, format, name), "");
 	}
 }
 
@@ -566,6 +559,24 @@ QStringList TreeViewModel::getSplittedKeyname(const Key &key)
 	}
 
 	return names;
+}
+
+MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrategy)
+{
+	if(mergeStrategy == "Preserve")
+		return new AutoMergeStrategy();
+	else if(mergeStrategy == "Ours")
+		return new OneSideStrategy(OURS);
+	else if(mergeStrategy == "Theirs")
+		return new OneSideStrategy(THEIRS);
+	else if(mergeStrategy == "Cut")
+		return NULL; //TODO
+	else if(mergeStrategy == "Import")
+		return NULL; //TODO
+	else if(mergeStrategy == "None")
+		return NULL;
+
+	return NULL;
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames() const

@@ -4,6 +4,7 @@
 #include <QUndoCommand>
 #include <kdb.hpp>
 #include "treeviewmodel.hpp"
+#include "datacontainer.hpp"
 
 class ImportConfigurationCommand : public QUndoCommand
 {
@@ -19,7 +20,7 @@ public:
 	 * @param mergeStrategy ...
 	 * @param parent ...
 	 */
-	explicit ImportConfigurationCommand(TreeViewModel* model, int index, const QString keyName, const QString format, const QString file, const QString mergeStrategy, QUndoCommand* parent = 0);
+	explicit ImportConfigurationCommand(TreeViewModel* model, int index, DataContainer *data, QUndoCommand* parent = 0);
 
 	virtual void undo();
 	virtual void redo();
@@ -33,7 +34,7 @@ private:
 	QString			m_name;
 	QString			m_format;
 	QString			m_file;
-	QString			m_mergeStrategy;
+	QVariantList	m_mergeStrategies;
 };
 
 #endif // IMPORTCONFIGURATIONCOMMAND_H

@@ -102,14 +102,14 @@ void DataContainer::setFile(const QString &file)
 	m_file = file;
 }
 
-QString DataContainer::mergeStrategy() const
+QVariantList DataContainer::mergeStrategies() const
 {
-	return m_mergeStrategy;
+	return m_mergeStrategies;
 }
 
-void DataContainer::setMergeStrategy(const QString &mergeStrategy)
+void DataContainer::setMergeStrategies(const QVariantList &mergeStrategies)
 {
-	m_mergeStrategy = mergeStrategy;
+	m_mergeStrategies = mergeStrategies;
 }
 
 void DataContainer::clearData()
@@ -125,15 +125,5 @@ void DataContainer::clearData()
 	m_importName = "";
 	m_format = "";
 	m_file = "";
-	m_mergeStrategy = "";
+	m_mergeStrategies = QVariantList();
 }
-
-
-
-
-
-
-
-
-
-

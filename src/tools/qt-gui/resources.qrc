@@ -68,5 +68,6 @@
         <file>qml/Indicator.qml</file>
         <file>qml/ChooseColorWindow.qml</file>
         <file>qml/icons/color.png</file>
+        <file>qml/MergeStrategyComboBox.qml</file>
     </qresource>
 </RCC>

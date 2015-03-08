@@ -8,6 +8,8 @@
 #include <kdb.hpp>
 #include <keyio.hpp>
 #include <backend.hpp>
+#include <mergeconfiguration.hpp>
+#include <automergeconfiguration.hpp>
 
 #include "confignode.hpp"
 #include "printvisitor.hpp"
@@ -163,7 +165,7 @@ public:
 	 * @param format The format of the file on the harddisk.
 	 * @param mergeStrategy The mergeStrategy in case of conflict.
 	 */
-	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QString& mergeStrategy);
+	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QVariantList &mergeStrategies);
 
 	/**
 	 * @brief Stores the current state of the configuration in the KeySet.
@@ -209,19 +211,20 @@ public:
 	QStringList					getSplittedKeyname(const kdb::Key &key);
 
 private:
-	QList<ConfigNodePtr>        m_model;
-	kdb::Key                    m_metaModelParent;
+	QList<ConfigNodePtr>							m_model;
+	kdb::Key										m_metaModelParent;
+	kdb::tools::merging::MergeConflictStrategy*		getMergeStrategy(const QString &mergeStrategy);
 
 protected:
-	QHash<int, QByteArray>      roleNames() const;
+	QHash<int, QByteArray>						roleNames() const;
 
 signals:
-	void						showMessage(QString title, QString text, QString detailedText) const;
-	void						expandNode(bool);
-	void						updateIndicator() const;
+	void										showMessage(QString title, QString text, QString detailedText) const;
+	void										expandNode(bool);
+	void										updateIndicator() const;
 
 public slots:
-	void						showConfigNodeMessage(QString title, QString text, QString detailedText);
+	void										showConfigNodeMessage(QString title, QString text, QString detailedText);
 
 };
 

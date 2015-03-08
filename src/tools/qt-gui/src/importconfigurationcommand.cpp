@@ -2,20 +2,20 @@
 
 using namespace kdb;
 
-ImportConfigurationCommand::ImportConfigurationCommand(TreeViewModel* model, int index, const QString keyName, const QString format, const QString file, const QString mergeStrategy, QUndoCommand* parent)
+ImportConfigurationCommand::ImportConfigurationCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_model(model)
 	, m_index(index)
 	, m_before(new ConfigNode(*model->model().at(index)))
 	, m_after(NULL)
-	, m_name(keyName)
-	, m_format(format)
-	, m_file(file)
-	, m_mergeStrategy(mergeStrategy)
+	, m_name(data->importName())
+	, m_format(data->format())
+	, m_file(data->file())
+	, m_mergeStrategies(data->mergeStrategies())
 {
 	setText("import");
 
-	m_model->importConfiguration(m_name, m_format, m_file, m_mergeStrategy);
+	m_model->importConfiguration(m_name, m_format, m_file, m_mergeStrategies);
 	m_after = model->model().at(index);
 }
 

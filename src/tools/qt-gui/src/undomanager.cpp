@@ -68,7 +68,7 @@ void UndoManager::createCutKeyCommand(TreeViewModel* model, int idx)
 
 void UndoManager::createImportConfigurationCommand(TreeViewModel* model, int idx, DataContainer* data)
 {
-	m_undoStack->push(new ImportConfigurationCommand(model, idx, data->importName(), data->format(), data->file(), data->mergeStrategy()));
+	m_undoStack->push(new ImportConfigurationCommand(model, idx, data));
 }
 
 void UndoManager::setClean()
