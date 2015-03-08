@@ -62,7 +62,7 @@ BasicWindow {
 
 			GridLayout {
 				rows: 2
-				columns: 6
+				columns: 4
 				columnSpacing: defaultMargins
 
 				Label {
@@ -77,12 +77,6 @@ BasicWindow {
 				}
 				MergeStrategyComboBox {
 					id: third
-				}
-				Label {
-					text: qsTr("Fifth: ")
-				}
-				MergeStrategyComboBox {
-					id: fifth
 				}
 				Label {
 					text: qsTr("Second: ")
@@ -115,7 +109,7 @@ BasicWindow {
 		container.setFormat(plugin)
 		container.setFile(importTextField.text)
 
-		var strategies = [first.currentText, second.currentText, third.currentText, fourth.currentText, fifth.currentText]
+		var strategies = [first.currentText, second.currentText, third.currentText, fourth.currentText]
 
 		container.setMergeStrategies(strategies)
 

@@ -389,14 +389,11 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 void TreeViewModel::populateModel(KeySet keySet)
 {
 	ConfigNodePtr spec(new ConfigNode("spec", "spec", 0, this));
-	ConfigNodePtr proc(new ConfigNode("proc", "proc", 0, this));
-	ConfigNodePtr dir(new ConfigNode("dir", "dir", 0, this));
 	ConfigNodePtr user(new ConfigNode("user", "user", 0, this));
 	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
-	ConfigNodePtr cascading(new ConfigNode("cascading", "cascading", 0, this));
 
 	m_model.clear();
-	m_model << spec << proc << dir << user << system << cascading;
+	m_model << system << user << spec;
 
 	createNewNodes(keySet);
 }
@@ -569,10 +566,8 @@ MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrat
 		return new OneSideStrategy(OURS);
 	else if(mergeStrategy == "Theirs")
 		return new OneSideStrategy(THEIRS);
-	else if(mergeStrategy == "Cut")
-		return NULL; //TODO
-	else if(mergeStrategy == "Import")
-		return NULL; //TODO
+	else if(mergeStrategy == "Base")
+		return new OneSideStrategy(BASE);
 	else if(mergeStrategy == "None")
 		return NULL;
 
