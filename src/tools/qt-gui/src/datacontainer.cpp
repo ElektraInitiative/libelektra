@@ -5,9 +5,9 @@ QString DataContainer::oldName() const
 	return m_oldName;
 }
 
-void DataContainer::setOldName(const QString &oldName)
+void DataContainer::setOldName(const QString &name)
 {
-	m_oldName = oldName;
+	m_oldName = name;
 }
 
 QString DataContainer::oldValue() const
@@ -15,9 +15,9 @@ QString DataContainer::oldValue() const
 	return m_oldValue;
 }
 
-void DataContainer::setOldValue(const QString &oldValue)
+void DataContainer::setOldValue(const QString &value)
 {
-	m_oldValue = oldValue;
+	m_oldValue = value;
 }
 
 QVariantMap DataContainer::oldMetadata() const
@@ -25,14 +25,14 @@ QVariantMap DataContainer::oldMetadata() const
 	return m_oldMetadata;
 }
 
-void DataContainer::setOldMetadata(TreeViewModel *oldMetadata)
+void DataContainer::setOldMetadata(TreeViewModel *metadata)
 {
 	//convert TreeViewModel to QVariantMap
 	QVariantMap oldMDMap;
 
-	if(oldMetadata)
+	if(metadata)
 	{
-		foreach (ConfigNodePtr node, oldMetadata->model())
+		foreach (ConfigNodePtr node, metadata->model())
 		{
 			oldMDMap.insert(node->getName(), node->getValue());
 		}
@@ -47,9 +47,9 @@ QString DataContainer::newName() const
 	return m_newName;
 }
 
-void DataContainer::setNewName(const QString &newName)
+void DataContainer::setNewName(const QString &name)
 {
-	m_newName = newName;
+	m_newName = name;
 }
 
 QString DataContainer::newValue() const
@@ -57,9 +57,9 @@ QString DataContainer::newValue() const
 	return m_newValue;
 }
 
-void DataContainer::setNewValue(const QString &newValue)
+void DataContainer::setNewValue(const QString &value)
 {
-	m_newValue = newValue;
+	m_newValue = value;
 }
 
 QVariantMap DataContainer::newMetadata() const
@@ -67,9 +67,9 @@ QVariantMap DataContainer::newMetadata() const
 	return m_newMetadata;
 }
 
-void DataContainer::setNewMetadata(const QVariantMap &newMetadata)
+void DataContainer::setNewMetadata(const QVariantMap &metadata)
 {
-	m_newMetadata = newMetadata;
+	m_newMetadata = metadata;
 }
 
 QString DataContainer::importName() const
@@ -77,9 +77,9 @@ QString DataContainer::importName() const
 	return m_importName;
 }
 
-void DataContainer::setImportName(const QString &importName)
+void DataContainer::setImportName(const QString &name)
 {
-	m_importName = importName;
+	m_importName = name;
 }
 
 QString DataContainer::format() const
@@ -87,9 +87,9 @@ QString DataContainer::format() const
 	return m_format;
 }
 
-void DataContainer::setFormat(const QString &format)
+void DataContainer::setFormat(const QString &form)
 {
-	m_format = format;
+	m_format = form;
 }
 
 QString DataContainer::file() const
@@ -97,9 +97,9 @@ QString DataContainer::file() const
 	return m_file;
 }
 
-void DataContainer::setFile(const QString &file)
+void DataContainer::setFile(const QString &fil)
 {
-	m_file = file;
+	m_file = fil;
 }
 
 QVariantList DataContainer::mergeStrategies() const
@@ -107,9 +107,9 @@ QVariantList DataContainer::mergeStrategies() const
 	return m_mergeStrategies;
 }
 
-void DataContainer::setMergeStrategies(const QVariantList &mergeStrategies)
+void DataContainer::setMergeStrategies(const QVariantList &strategies)
 {
-	m_mergeStrategies = mergeStrategies;
+	m_mergeStrategies = strategies;
 }
 
 void DataContainer::clearData()

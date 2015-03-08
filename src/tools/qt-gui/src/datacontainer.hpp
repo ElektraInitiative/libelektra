@@ -9,38 +9,38 @@ class DataContainer : public QObject
 	Q_OBJECT
 
 public:
-	explicit DataContainer(QObject *parent = 0) : QObject(parent) {}
-	DataContainer(const DataContainer &other) : QObject() {Q_UNUSED(other)}
+	explicit DataContainer(QObject *parentContainer = 0) : QObject(parentContainer) {}
+	DataContainer(const DataContainer &otherContainer) : QObject() {Q_UNUSED(otherContainer)}
 
 	Q_INVOKABLE QString			oldName() const;
-	Q_INVOKABLE void			setOldName(const QString &oldName);
+	Q_INVOKABLE void			setOldName(const QString &name);
 
 	Q_INVOKABLE QString			oldValue() const;
-	Q_INVOKABLE void			setOldValue(const QString &oldValue);
+	Q_INVOKABLE void			setOldValue(const QString &value);
 
 	Q_INVOKABLE QVariantMap		oldMetadata() const;
-	Q_INVOKABLE void			setOldMetadata(TreeViewModel *oldMetadata);
+	Q_INVOKABLE void			setOldMetadata(TreeViewModel *metadata);
 
 	Q_INVOKABLE QString			newName() const;
-	Q_INVOKABLE void			setNewName(const QString &newName);
+	Q_INVOKABLE void			setNewName(const QString &name);
 
 	Q_INVOKABLE QString			newValue() const;
-	Q_INVOKABLE void			setNewValue(const QString &newValue);
+	Q_INVOKABLE void			setNewValue(const QString &value);
 
 	Q_INVOKABLE QVariantMap		newMetadata() const;
-	Q_INVOKABLE void			setNewMetadata(const QVariantMap &newMetadata);
+	Q_INVOKABLE void			setNewMetadata(const QVariantMap &metadata);
 
 	Q_INVOKABLE QString			importName() const;
-	Q_INVOKABLE void			setImportName(const QString &importName);
+	Q_INVOKABLE void			setImportName(const QString &name);
 
 	Q_INVOKABLE QString			format() const;
-	Q_INVOKABLE void			setFormat(const QString &format);
+	Q_INVOKABLE void			setFormat(const QString &form);
 
 	Q_INVOKABLE QString			file() const;
-	Q_INVOKABLE void			setFile(const QString &file);
+	Q_INVOKABLE void			setFile(const QString &fil);
 
 	Q_INVOKABLE QVariantList	mergeStrategies() const;
-	Q_INVOKABLE void			setMergeStrategies(const QVariantList &mergeStrategies);
+	Q_INVOKABLE void			setMergeStrategies(const QVariantList &strategies);
 
 	Q_INVOKABLE void			clearData();
 
