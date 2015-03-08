@@ -197,7 +197,6 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
-	int ret = 1;
 	int errnosave = errno;
 	FILE *fstab=0;
 	Key *key=0;
@@ -234,7 +233,6 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 	while ((key = ksNext (ks)) != 0)
 	{
-		ret ++;
 		basename=strrchr(keyName(key), '/')+1;
 #if DEBUG && VERBOSE
 		printf ("key: %s %s\n", keyName(key), basename);
@@ -289,7 +287,7 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	
 	endmntent(fstab);
 	errno = errnosave;
-	return ret;
+	return 1;
 }
 
 
