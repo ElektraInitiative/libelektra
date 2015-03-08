@@ -4,7 +4,6 @@
 #include <automergestrategy.hpp>
 #include <onesidestrategy.hpp>
 #include <onesidevaluestrategy.hpp>
-#include <external.hpp>
 #include <toolexcept.hpp>
 #include <backends.hpp>
 #include <modules.hpp>
