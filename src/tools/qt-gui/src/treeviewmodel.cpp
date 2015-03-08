@@ -192,11 +192,15 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	catch(...)//TODO
 	{
 		qDebug() << "Could not merge keysets";
+		emit showMessage(tr("Error"), tr("Could not merge keys."),"");
 	}
 
 	if (!result.hasConflicts ())
 	{
 		createNewNodes(result.getMergedKeys());
+
+		if(importedKeys.size() > 0)
+			emit showMessage(tr("Information"), tr("Successfully imported %1 keys.").arg(importedKeys.size()), "");
 	}
 	else
 	{

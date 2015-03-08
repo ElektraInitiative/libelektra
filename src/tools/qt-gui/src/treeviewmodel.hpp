@@ -218,7 +218,7 @@ private:
 protected:
 	QHash<int, QByteArray>						roleNames() const;
 
-signals:
+signals:										//Use "Error", "Warning" and "Information" as title to display the according icon
 	void										showMessage(QString title, QString text, QString detailedText) const;
 	void										expandNode(bool);
 	void										updateIndicator() const;
