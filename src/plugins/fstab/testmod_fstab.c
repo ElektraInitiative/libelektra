@@ -140,6 +140,7 @@ void test_writefstab(const char * file)
 		    "files do not match as expected");
 
 	elektraUnlink(keyString (parentKey));
+	keyDel(parentKey);
 
 	ksDel (ks);
 
