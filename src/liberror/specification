@@ -617,3 +617,9 @@ description:Invalid (empty) key passed as parentKey. This is only accepted for c
 severity:warning
 ingroup:kdb
 
+number:106
+description:Wrong size detected in dumpfile
+severity:error
+ingroup:plugin
+module:dump
+

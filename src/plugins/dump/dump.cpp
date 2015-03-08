@@ -94,12 +94,25 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 	return 1;
 }
 
+#define CHECK_LENGTH(WHICH) \
+if (WHICH > length) \
+{ \
+	std::ostringstream eis; \
+	eis << WHICH; \
+	ELEKTRA_SET_ERROR (106, errorKey, eis.str().c_str()); \
+	return -1; \
+}
+
 int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 {
 	ckdb::Key *cur = 0;
 
-	std::vector<char> namebuffer(4048);
-	std::vector<char> valuebuffer(4048);
+	is.seekg(0, std::ios::end);
+	size_t length = is.tellg();
+	is.seekg(0, std::ios::beg);
+
+	std::vector<char> namebuffer(length);
+	std::vector<char> valuebuffer(length);
 	std::string line;
 	std::string command;
 	size_t nrKeys;
@@ -134,12 +147,12 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			CHECK_LENGTH(namesize);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 			ckdb::keySetName(cur, &namebuffer[0]);
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			CHECK_LENGTH(valuesize);
 			is.read(&valuebuffer[0], valuesize);
 			ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
 			std::getline (is, line);
@@ -149,11 +162,11 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			CHECK_LENGTH(namesize);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			CHECK_LENGTH(valuesize);
 			is.read(&valuebuffer[0], valuesize);
 
 			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
@@ -164,11 +177,11 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			CHECK_LENGTH(namesize);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			CHECK_LENGTH(valuesize);
 			is.read(&valuebuffer[0], valuesize);
 
 			ckdb::Key * search = ckdb::ksLookupByName(ks, &namebuffer[0], 0);
