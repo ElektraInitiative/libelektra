@@ -49,11 +49,11 @@ check_distribution()
 	succeed_if "resolving of $MOUNTPOINT2/xxx did not yield $FILE2 but $FILE"
 
 	KEY1=$MOUNTPOINT1/key
-	$KDB set $KEY1 $VALUE1 > /dev/null
+	$KDB set -N system $KEY1 $VALUE1 > /dev/null
 	succeed_if "could not set $KEY1"
 
 	KEY2=$MOUNTPOINT2/key
-	$KDB set $KEY2 $VALUE2 > /dev/null
+	$KDB set -N system $KEY2 $VALUE2 > /dev/null
 	succeed_if "could not set $KEY2"
 
 	[ "x`$KDB sget $KEY1 defvalue 2> /dev/null`" = "x$VALUE1" ]
@@ -68,6 +68,12 @@ check_distribution()
 	grep $VALUE2 $FILE2 >/dev/null
 	succeed_if "did not find $VALUE2 within $FILE2"
 
+	$KDB rm $KEY1
+	succeed_if "Could not remove $KEY1"
+
+	$KDB rm $KEY2
+	succeed_if "Could not remove $KEY2"
+
 	$KDB umount $MOUNTPOINT1 >/dev/null
 	succeed_if "could not umount $MOUNTPOINT1"
 
@@ -78,13 +84,37 @@ check_distribution()
 	rm -f $FILE2
 }
 
+echo "Testing sibling"
 check_distribution system$MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution/b2
 check_distribution system/$MOUNTPOINT/distribution/a1 system/$MOUNTPOINT/distribution/b2
 check_distribution system////$MOUNTPOINT/distribution///a1 system/////$MOUNTPOINT/distribution////b2
 
-#TODO Does not work (nested):
+echo "Testing direct below"
 check_distribution system$MOUNTPOINT/distribution system$MOUNTPOINT/distribution/b2
 check_distribution system$MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution
+check_distribution system///$MOUNTPOINT///distribution system//$MOUNTPOINT///distribution///b2
+check_distribution system//$MOUNTPOINT///distribution///a1 system//$MOUNTPOINT///distribution
+
+echo "Testing below"
+check_distribution system$MOUNTPOINT/distribution system$MOUNTPOINT/distribution/b2/more/below
+check_distribution system$MOUNTPOINT/distribution/a1/more/below system$MOUNTPOINT/distribution
+check_distribution system///$MOUNTPOINT////distribution system//$MOUNTPOINT//distribution/b2///more///below
+check_distribution system///$MOUNTPOINT//distribution///a1/more///below system//$MOUNTPOINT////distribution
+
+echo "Testing root with normal"
+#check_distribution / system$MOUNTPOINT/distribution
+#check_distribution / system//$MOUNTPOINT////distribution
+#check_distribution / proc//$MOUNTPOINT////distribution
+#check_distribution / dir//$MOUNTPOINT////distribution
+#check_distribution / user//$MOUNTPOINT////distribution
+#check_distribution system$MOUNTPOINT/distribution /
+#check_distribution system//$MOUNTPOINT////distribution /
+#check_distribution proc//$MOUNTPOINT////distribution /
+#check_distribution dir//$MOUNTPOINT////distribution /
+#check_distribution user//$MOUNTPOINT////distribution /
+
+echo "Testing cascading with normal"
+check_distribution $MOUNTPOINT/distribution/a1 system$MOUNTPOINT/distribution/b2
 
 #TODO test all combinations:
 #root, normal
