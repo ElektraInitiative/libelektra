@@ -559,6 +559,86 @@ static void test_keyName()
 	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
 	succeed_if_same_string (ret, "");
 	keyDel (key);
+
+	key = keyNew ("dir", KEY_END);
+	succeed_if_same_string(keyName(key), "dir");
+	succeed_if (keyGetNameSize (key) == 4, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("dir/", KEY_END);
+	succeed_if_same_string(keyName(key), "dir");
+	succeed_if (keyGetNameSize (key) == 4, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("proc", KEY_END);
+	succeed_if_same_string(keyName(key), "proc");
+	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("proc/", KEY_END);
+	succeed_if_same_string(keyName(key), "proc");
+	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("spec", KEY_END);
+	succeed_if_same_string(keyName(key), "spec");
+	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("spec/", KEY_END);
+	succeed_if_same_string(keyName(key), "spec");
+	succeed_if (keyGetNameSize (key) == 5, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("/", KEY_END);
+	succeed_if_same_string(keyName(key), "/");
+	succeed_if (keyGetNameSize (key) == 2, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
+
+	key = keyNew ("//", KEY_END);
+	succeed_if_same_string(keyName(key), "/");
+	succeed_if (keyGetNameSize (key) == 2, "name length checking");
+	succeed_if (keyGetBaseNameSize (key) == 1, "length checking");
+	succeed_if (keyGetBaseName (key,ret,1) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	succeed_if (keyGetBaseName (key,ret,2) == 1, "GetBaseName for root key");
+	succeed_if_same_string (ret, "");
+	keyDel (key);
 }
 
 
