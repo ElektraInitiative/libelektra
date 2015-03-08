@@ -402,6 +402,25 @@ static void elektraRemoveKeyName(Key *key)
 	key->keyUSize=0;
 }
 
+/**
+ * @brief Checks if in name is something else other than slashes
+ *
+ * @param name the name to check
+ *
+ * @retval 0 if not only slashes
+ * @retval 1 if only slashes
+ */
+static int elektraOnlySlashes(const char *name)
+{
+	size_t nameLen = strlen(name);
+	for (size_t i=0; i<nameLen; ++i)
+	{
+		if (name[i] != '/') return 0; // not only slashes
+	}
+	return 1; // only slashes
+}
+
+
 
 /**
  * Set a new name to a key.
@@ -475,10 +494,16 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	key->key=elektraMalloc(key->keySize*2);
 	memcpy(key->key, newName, key->keySize);
 	if (length == key->keyUSize || length == key->keySize)
-	{	// use || because full length is USize in user, but Size for /
+	{	// use || because full length is keyUSize in user, but keySize for /
 		// newName consisted of root only
 		elektraFinalizeName(key);
 		return key->keyUSize;
+	}
+
+	if (elektraOnlySlashes(newName+key->keyUSize-1))
+	{
+		elektraFinalizeName(key);
+		return key->keySize;
 	}
 
 	key->key[key->keySize-1] = '\0';
@@ -487,7 +512,6 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	else return key->keySize;
 	return ret;
 }
-
 
 
 
