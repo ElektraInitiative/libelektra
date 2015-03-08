@@ -42,11 +42,15 @@ void test_readfstab()
 
 	// output_keyset(ks);
 
-	Key *key = ksLookupByName(ks, "user/tests/fstab/mediaext4/device",0);
+	Key *key = ksLookupByName(ks, "user/tests/fstab/\\//device",0);
 	exit_if_fail (key, "rootfs device not found");
+	succeed_if (strcmp( "/dev/sda1", keyValue(key)) == 0, "device not correct");
+
+	key = ksLookupByName(ks, "user/tests/fstab/\\/media\\/ext4/device",0);
+	exit_if_fail (key, "media device not found");
 	succeed_if (strcmp( "/dev/sdg1", keyValue(key)) == 0, "device not correct");
 
-	exit_if_fail (key = ksLookupByName(ks, "user/tests/fstab/mediaext4/dumpfreq",0), "rootfs device not found");
+	exit_if_fail (key = ksLookupByName(ks, "user/tests/fstab/\\/media\\/ext4/dumpfreq",0), "rootfs device not found");
 	succeed_if (strcmp( "0", keyValue(key)) == 0, "dumpfreq not correct");
 
 	ksDel(ks);

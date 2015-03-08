@@ -1,1 +1,2 @@
 /dev/sdg1 /media/ext4 ext4 rw,noauto,user 0 0
+/dev/sda1 / ext4 rw,noauto,user 0 0
