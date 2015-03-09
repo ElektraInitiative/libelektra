@@ -6,12 +6,25 @@
 #include <backend.hpp>
 #include "treeviewmodel.hpp"
 
+/**
+ * @brief The GUIBackend class
+ */
+
 class GUIBackend : public QObject
 {
 	Q_OBJECT
 
 public:
+	/**
+	 * @brief GUIBackend
+	 * @param parentBackend
+	 */
 	explicit GUIBackend(QObject *parentBackend = 0);
+
+	/**
+	 * @brief GUIBackend
+	 * @param other
+	 */
 	GUIBackend(const GUIBackend &other) : QObject() {Q_UNUSED(other)}
 
 	/**
@@ -32,7 +45,6 @@ public:
 	 * @brief Add a plugin to a backend.
 	 *
 	 * @param name The name of the plugin.
-	 * @param config The configuration for the plugin.
 	 */
 	Q_INVOKABLE void			addPlugin(QString name);
 
@@ -80,6 +92,10 @@ public:
 	 */
 	Q_INVOKABLE bool			validated();
 
+	/**
+	 * @brief pluginConfigModel
+	 * @return
+	 */
 	Q_INVOKABLE TreeViewModel*	pluginConfigModel() const;
 
 private:
@@ -89,9 +105,18 @@ private:
 	QString								m_name;
 	TreeViewModel*						m_pluginConfigModel;
 
+	/**
+	 * @brief resetModel
+	 */
 	void								resetModel();
 
 signals:
+	/**
+	 * @brief showMessage
+	 * @param title
+	 * @param text
+	 * @param detailedText
+	 */
 	void showMessage(QString title, QString text, QString detailedText) const;
 };
 

@@ -3,11 +3,22 @@
 
 #include <kdb.hpp>
 
+/**
+ * @brief The GUIBasicKeySet class
+ */
 class GUIBasicKeySet
 {
 public:
-
+	/**
+	 * @brief basic
+	 * @return
+	 */
 	static kdb::KeySet basic();
+
+	/**
+	 * @brief setBasic
+	 * @param basic
+	 */
 	static void setBasic(const kdb::KeySet &basic);
 
 private:

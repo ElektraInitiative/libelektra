@@ -20,17 +20,6 @@ UndoManager::UndoManager(QObject* parentManager) :
 	m_clipboard = QApplication::clipboard();
 }
 
-UndoManager::UndoManager(const UndoManager& other)
-	: QObject()
-{
-	Q_UNUSED(other)
-}
-
-UndoManager::~UndoManager()
-{
-
-}
-
 bool UndoManager::canUndo() const
 {
 	return m_undoStack->canUndo();

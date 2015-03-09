@@ -18,6 +18,10 @@
 
 class Visitor;
 
+/**
+ * @brief The TreeViewModel class
+ */
+
 class TreeViewModel : public QAbstractListModel
 {
 
@@ -44,31 +48,68 @@ public:
 		IsExpandedRole ///< The role QML can retrieve if a ConfigNode is expanded.
 	};
 
+	/**
+	 * @brief TreeViewModel
+	 * @param parentModel
+	 */
 	explicit TreeViewModel(QObject* parentModel =  0);
 
-	// Needed for Qt
+	/**
+	 * @brief TreeViewModel
+	 * @param other
+	 */
 	TreeViewModel(TreeViewModel const& other);
 
-	// @return the underlying model
+	/**
+	 * @brief model
+	 * @return
+	 */
 	QList<ConfigNodePtr>& model()
 	{
 		return m_model;
 	}
 
 	//mandatory methods inherited from QAbstractItemModel
+
+	/**
+	 * @copydoc QAbstractListModel::rowCount()
+	 */
 	Q_INVOKABLE int             rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
+
+	/**
+	 * @copydoc QAbstractListModel::data()
+	 */
 	QVariant                    data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
+
+	/**
+	 * @copydoc QAbstractListModel::setData()
+	 */
 	bool                        setData(const QModelIndex& idx, const QVariant& modelData, int role = Qt::EditRole);
+
+	/**
+	 * @copydoc QAbstractListModel::insertRow()
+	 */
 	Q_INVOKABLE bool            insertRow(int row, const QModelIndex& parentIndex = QModelIndex());
+
+	/**
+	 * @copydoc QAbstractListModel::removeRow()
+	 */
 	Q_INVOKABLE bool            removeRow(int row, const QModelIndex& parentIndex = QModelIndex());
+
+	/**
+	 * @copydoc QAbstractListModel::flags()
+	 */
 	Qt::ItemFlags               flags(const QModelIndex& idx) const;
 
 	/**
-	 * @brief Populates this TreeViewModel with the *current* keyset.
+	 * @brief Populates this TreeViewModel with a keyset.
 	 */
-
 	Q_INVOKABLE void            populateModel(kdb::KeySet keySet);
 
+	/**
+	 * @brief createNewNodes
+	 * @param keySet
+	 */
 	void						createNewNodes(kdb::KeySet keySet);
 
 	/**
@@ -76,11 +117,14 @@ public:
 	 *
 	 * @param node The ConfigNode that is supposed to find its place in the hierarchy.
 	 * @param keys The path of the ConfigNode that is supposed to find its place in the hierarchy, splitted up into a QStringList.
-	 * @param path The current path of the ConfigNode.
 	 * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
 	 */
 	void                        sink(ConfigNodePtr node, QStringList keys, const kdb::Key &key);
 
+	/**
+	 * @brief accept
+	 * @param visitor
+	 */
 	void                        accept(Visitor& visitor);
 
 	/**
@@ -208,22 +252,54 @@ public:
 	 */
 	Q_INVOKABLE QStringList     mountedBackends();
 
+	/**
+	 * @brief getSplittedKeyname
+	 * @param key
+	 * @return
+	 */
 	QStringList					getSplittedKeyname(const kdb::Key &key);
 
 private:
-	QList<ConfigNodePtr>							m_model;
-	kdb::Key										m_metaModelParent;
-	kdb::tools::merging::MergeConflictStrategy*		getMergeStrategy(const QString &mergeStrategy);
+	QList<ConfigNodePtr>						m_model;
+	kdb::Key									m_metaModelParent;
+	/**
+	 * @brief getMergeStrategy
+	 * @param mergeStrategy
+	 * @return
+	 */
+	kdb::tools::merging::MergeConflictStrategy*	getMergeStrategy(const QString &mergeStrategy);
 
 protected:
+	/**
+	 * @brief roleNames
+	 * @return
+	 */
 	QHash<int, QByteArray>						roleNames() const;
 
 signals:										//Use "Error", "Warning" and "Information" as title to display the according icon
+	/**
+	 * @brief showMessage
+	 * @param title
+	 * @param text
+	 * @param detailedText
+	 */
 	void										showMessage(QString title, QString text, QString detailedText) const;
+	/**
+	 * @brief expandNode
+	 */
 	void										expandNode(bool);
+	/**
+	 * @brief updateIndicator
+	 */
 	void										updateIndicator() const;
 
 public slots:
+	/**
+	 * @brief showConfigNodeMessage
+	 * @param title
+	 * @param text
+	 * @param detailedText
+	 */
 	void										showConfigNodeMessage(QString title, QString text, QString detailedText);
 
 };

@@ -5,6 +5,9 @@
 #include "treeviewmodel.hpp"
 #include "datacontainer.hpp"
 
+/**
+ * @brief The EditKeyCommand class
+ */
 class EditKeyCommand : public QUndoCommand
 {
 
@@ -18,7 +21,15 @@ public:
 	 * @param parent ...
 	 */
 	explicit        EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent = 0);
+
+	/**
+	 * @brief undo
+	 */
 	virtual void    undo();
+
+	/**
+	 * @brief redo
+	 */
 	virtual void    redo();
 
 private:

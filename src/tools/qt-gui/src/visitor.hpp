@@ -16,7 +16,6 @@ public:
 	/**
 	 * @brief The abstract method a visitor who wants to visit a ConfigNode needs to implement.
 	 *
-	 * @fn visit
 	 * @param node
 	 */
 	virtual void visit(ConfigNode& node) = 0;
@@ -24,7 +23,6 @@ public:
 	/**
 	 * @brief The abstract method a visitor who wants to visit a TreeViewModel needs to implement.
 	 *
-	 * @fn visit
 	 * @param model
 	 */
 	virtual void visit(TreeViewModel* model) = 0;
