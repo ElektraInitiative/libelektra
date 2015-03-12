@@ -54,8 +54,6 @@ private:
 	std::map<std::string, func_t> symbols;
 	std::map<std::string, std::string> infos;
 
-	bool firstRef;
-
 	void uninit();
 
 public:
@@ -64,6 +62,13 @@ public:
 	Plugin(Plugin const& other);
 	Plugin& operator = (Plugin const& other);
 	~Plugin();
+
+	/**
+	 * @brief Is toggled during serialization.
+	 *
+	 * (is a hack, only allows a single serialization!)
+	 */
+	bool firstRef;
 
 	/**
 	 * Gets the configuration for the plugin.

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for i in $*
+do
+	kdb umount "$i"
+done

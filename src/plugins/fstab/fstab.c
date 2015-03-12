@@ -52,24 +52,9 @@ void elektraFstabFsName(char * fsname, struct mntent *fstabEntry,
 		++(*swapIndex);
 	} else if (!strcmp(fstabEntry->mnt_dir,"none")) {
 		strcpy(fsname,fstabEntry->mnt_type);
-	} else if (!strcmp(fstabEntry->mnt_dir,"/")) {
-		strcpy(fsname,"rootfs");
 	} else {
-		/* fsname will be the mount point without '/' char */
-		char *slash=0;
-		char *curr=fstabEntry->mnt_dir;
-		fsname[0]=0;
-		
-		while((slash=strchr(curr,KDB_PATH_SEPARATOR))) {
-			if (slash==curr) {
-				curr++;
-				continue;
-			}
-			
-			strncat(fsname,curr,slash-curr);
-			curr=slash+1;
-		}
-		strcat(fsname,curr);
+		// Otherwise take dir as-is
+		strcpy(fsname,fstabEntry->mnt_dir);
 	}
 }
 
@@ -212,7 +197,6 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
-	int ret = 1;
 	int errnosave = errno;
 	FILE *fstab=0;
 	Key *key=0;
@@ -249,7 +233,6 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 	while ((key = ksNext (ks)) != 0)
 	{
-		ret ++;
 		basename=strrchr(keyName(key), '/')+1;
 #if DEBUG && VERBOSE
 		printf ("key: %s %s\n", keyName(key), basename);
@@ -304,7 +287,7 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	
 	endmntent(fstab);
 	errno = errnosave;
-	return ret;
+	return 1;
 }
 
 

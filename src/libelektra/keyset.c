@@ -39,6 +39,10 @@
 #include "kdbinternal.h"
 
 
+#define ELEKTRA_MAX_PREFIX_SIZE sizeof("namespace/")
+#define ELEKTRA_MAX_NAMESPACE_SIZE sizeof("system")
+
+
 
 /** @class doxygenFlatCopy
  *
@@ -1055,7 +1059,86 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
-	if (!cutpoint->key) return 0;
+
+	char *name = cutpoint->key;
+	if (!name) return 0;
+	// if (strcmp(name, "")) return 0;
+
+	if (name[0] == '/')
+	{
+		Key *key = (Key *) cutpoint;
+		size_t size = key->keySize;
+		size_t usize = key->keyUSize;
+		size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
+		char newname[length*2];
+
+		KeySet *ret = ksNew(0, KS_END);
+
+		for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
+		{
+			int validNS = 1;
+		switch (ns)
+		{
+		case KEY_NS_SPEC:
+			strncpy (newname+2, "spec", 4);
+			strcpy  (newname+6, name);
+			key->key = newname+2;
+			key->keySize = length-2;
+			if (!strcmp(name, "/")) key->keySize = 5;
+			elektraFinalizeName(key);
+			break;
+		case KEY_NS_PROC:
+			strncpy (newname+2, "proc", 4);
+			strcpy  (newname+6, name);
+			key->key = newname+2;
+			key->keySize = length-2;
+			if (!strcmp(name, "/")) key->keySize = 5;
+			elektraFinalizeName(key);
+			break;
+		case KEY_NS_DIR:
+			strncpy (newname+3, "dir", 3);
+			strcpy  (newname+6, name);
+			key->key = newname+3;
+			key->keySize = length-3;
+			if (!strcmp(name, "/")) key->keySize = 4;
+			elektraFinalizeName(key);
+			break;
+		case KEY_NS_USER:
+			strncpy (newname+2, "user", 4);
+			strcpy  (newname+6, name);
+			key->key = newname+2;
+			key->keySize = length-2;
+			if (!strcmp(name, "/")) key->keySize = 5;
+			elektraFinalizeName(key);
+			break;
+		case KEY_NS_SYSTEM:
+			strncpy (newname, "system",6);
+			strcpy  (newname+6, name);
+			key->key = newname;
+			key->keySize = length;
+			if (!strcmp(name, "/")) key->keySize = 7;
+			elektraFinalizeName(key);
+			break;
+		case KEY_NS_EMPTY:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			validNS = 0;
+		}
+			if (validNS)
+			{
+				KeySet * n = ksCut(ks, key);
+				ksAppend(ret, n);
+				ksDel(n);
+			}
+		}
+
+		// restore old cascading name
+		key->key = name;
+		key->keySize = size;
+		key->keyUSize = usize ;
+		return ret;
+	}
 
 	// search the cutpoint
 	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 0)
@@ -1112,9 +1195,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 
 	if (ksCopyInternal(ks, found, it) == -1)
 	{
-#if DEBUG
-		printf ("ksCopyInternal returned an error inside ksCut\n");
-#endif
+		ELEKTRA_ASSERT(0 && "ksCopyInternal returned an error inside ksCut");
 	}
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];
@@ -1620,9 +1701,6 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
-#define ELEKTRA_MAX_PREFIX_SIZE sizeof("namespace/")
-#define ELEKTRA_MAX_NAMESPACE_SIZE sizeof("system")
-
 /**
  * @internal
  * @brief Helper for elektraLookupBySpec
@@ -1834,7 +1912,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	if (!found)
 	{
 		strncpy (newname+3, "dir", 3);
-		strcpy  (newname+5, name);
+		strcpy  (newname+6, name);
 		key->key = newname+3;
 		key->keySize = length-3;
 		elektraFinalizeName(key);
@@ -1854,6 +1932,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 	if (!found)
 	{
 		strncpy (newname, "system",6);
+		strcpy  (newname+6, name);
 		key->key = newname;
 		key->keySize = length;
 		elektraFinalizeName(key);

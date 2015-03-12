@@ -15,6 +15,16 @@
 
 #include <tests.h>
 
+#define NUMBER_OF_NAMESPACES 5
+
+char *namespaces[] = {
+	"spec",
+	"proc",
+	"dir",
+	"user",
+	"system",
+	0};
+
 static void test_ksNew()
 {
 	KeySet *ks=0;
@@ -2656,6 +2666,156 @@ static void test_cutpoint()
 	ksDel (cmp_part);
 }
 
+static void test_cascadingCutpoint()
+{
+	printf ("Testing operation cascading cut point\n");
+
+	Key *cutpoint = keyNew("/a/b/c", KEY_END);
+	KeySet *orig =
+#include <data_nscut.c>
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a");
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a/b");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a/b");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("spec/a", KEY_END),
+			keyNew("spec/a/b", KEY_END),
+
+			keyNew("proc/a", KEY_END),
+			keyNew("proc/a/b", KEY_END),
+
+			keyNew("dir/a", KEY_END),
+			keyNew("dir/a/b", KEY_END),
+
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+
+			keyNew("system/a", KEY_END),
+			keyNew("system/a/b", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	// output_keyset(orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(25,
+			keyNew("spec/a/b/c", KEY_END),
+			keyNew("spec/a/b/c/d", KEY_END),
+			keyNew("spec/a/b/c/d/e", KEY_END),
+			keyNew("spec/a/b/c/e", KEY_END),
+			keyNew("spec/a/b/c/e/d", KEY_END),
+
+			keyNew("proc/a/b/c", KEY_END),
+			keyNew("proc/a/b/c/d", KEY_END),
+			keyNew("proc/a/b/c/d/e", KEY_END),
+			keyNew("proc/a/b/c/e", KEY_END),
+			keyNew("proc/a/b/c/e/d", KEY_END),
+
+			keyNew("dir/a/b/c", KEY_END),
+			keyNew("dir/a/b/c/d", KEY_END),
+			keyNew("dir/a/b/c/d/e", KEY_END),
+			keyNew("dir/a/b/c/e", KEY_END),
+			keyNew("dir/a/b/c/e/d", KEY_END),
+
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+
+			keyNew("system/a/b/c", KEY_END),
+			keyNew("system/a/b/c/d", KEY_END),
+			keyNew("system/a/b/c/d/e", KEY_END),
+			keyNew("system/a/b/c/e", KEY_END),
+			keyNew("system/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	// output_keyset(part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
+static void test_cascadingRootCutpoint()
+{
+	printf ("Testing operation cascading root cut point\n");
+
+	Key *cutpoint = keyNew("/", KEY_END);
+	KeySet *orig =
+#include <data_nscut.c>
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a");
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a/b");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if(ksGetSize(orig) == 0, "keyset not empty");
+	succeed_if(ksCurrent(orig) == 0, "empty keyset not rewinded");
+	ksDel(orig);
+
+	KeySet *cmp_part =
+#include <data_nscut.c>
+	compare_keyset(part, cmp_part);
+	// output_keyset(part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
+static void test_cutpointRoot()
+{
+	printf ("Testing operation cut root point\n");
+
+	Key *cutpoint = keyNew("user");
+	KeySet *orig = ksNew(30,
+			keyNew("system/a", KEY_END),
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "system/a");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if_same_string (keyName(ksCurrent(orig)), "system/a");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("system/a", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
+
 static void test_cutpoint_1()
 {
 	printf ("Testing operation cut point 1\n");
@@ -3034,7 +3194,7 @@ static void test_simpleLookup()
 	succeed_if_same_string(keyName(dup), "user/something");
 	succeed_if_same_string(keyString(dup), "a value");
 	ksAppendKey(ks, dup);
-	output_keyset(ks);
+	// output_keyset(ks);
 
 	Key *k1 = ksLookup(ks, searchKey, 0);
 	succeed_if(k1, "we have a problem: did not find key");
@@ -3043,6 +3203,59 @@ static void test_simpleLookup()
 	succeed_if_same_string(keyString(k1), "a value");
 
 	keyDel(searchKey);
+	ksDel(ks);
+}
+
+static void test_nsLookup()
+{
+	printf ("Test lookup in all namespaces\n");
+
+	KeySet *ks =
+#include             <data_ns.c>
+
+	for (int i = 0; i<NUMBER_OF_NAMESPACES; ++i)
+	{
+		Key *searchKey = keyNew(namespaces[i],
+				KEY_VALUE, "value1",
+				KEY_COMMENT, "comment1",
+				KEY_END);
+		keyAddName(searchKey, "test/keyset/dir7/key1");
+
+		Key *lookupKey = keyNew(namespaces[i], KEY_END);
+		keyAddName(lookupKey, "something/not/found");
+		Key *k0 = ksLookup(ks, lookupKey, 0);
+		succeed_if(!k0, "we have a problem: found not inserted key");
+
+		keySetName(lookupKey, namespaces[i]);
+		keyAddName(lookupKey, "test/keyset/dir7/key1");
+		Key *k1 = ksLookup(ks, lookupKey, 0);
+		compare_key(k1, searchKey);
+
+		keySetName(lookupKey, "/test/keyset/dir7/key1");
+		if (!strcmp(namespaces[i], "spec"))
+		{
+			keySetName(searchKey, "proc");
+			keyAddName(searchKey, "test/keyset/dir7/key1");
+			Key *k2 = ksLookup(ks, lookupKey, 0);
+			compare_key(k2, searchKey);
+		}
+		else
+		{
+			Key *k2 = ksLookup(ks, lookupKey, 0);
+			compare_key(k2, searchKey);
+		}
+
+		keySetName(lookupKey, namespaces[i]);
+		ksDel(ksCut(ks, lookupKey));
+
+		keySetName(lookupKey, namespaces[i]);
+		keyAddName(lookupKey, "test/keyset/dir7/key1");
+		Key *k3 = ksLookup(ks, lookupKey, 0);
+		succeed_if(!k3, "we have a problem: found key cutted out");
+
+		keyDel(lookupKey);
+		keyDel(searchKey);
+	}
 	ksDel(ks);
 }
 
@@ -3081,7 +3294,10 @@ int main(int argc, char** argv)
 	test_ksModifyKey();
 	test_cut();
 	test_cutpoint();
+	test_cascadingCutpoint();
+	test_cascadingRootCutpoint();
 	test_cutpoint_1();
+	test_cutpointRoot();
 	test_unique_cutpoint();
 	test_cutbelow();
 	test_simple();
@@ -3090,6 +3306,7 @@ int main(int argc, char** argv)
 	test_cutafter();
 	test_ksOrder();
 	test_simpleLookup();
+	test_nsLookup();
 
 	// BUGS:
 	// test_ksLookupValue();

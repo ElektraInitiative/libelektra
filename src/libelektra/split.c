@@ -52,7 +52,7 @@
  * Splits up a keyset into multiple keysets where each
  * of them will passed to the correct kdbSet().
  *
- * Initially the size is APPROXIMATE_NR_OF_BACKENDS.
+ * Initially the size is 0 and alloc is APPROXIMATE_NR_OF_BACKENDS.
  *
  * @return a fresh allocated split object
  * @ingroup split
@@ -127,7 +127,7 @@ void elektraSplitResize(Split *split)
  * @param syncbits the initial syncstate which should be appended
  * @ingroup split
  * @retval -1 if no split is found
- * @return the size of split - 1
+ * @return the position of the new element: size-1
  */
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits)
 {
@@ -204,17 +204,53 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
  */
 int elektraSplitSearchRoot(Split *split, Key *parentKey)
 {
-	size_t splitSize = split->size;
-
 	if (!parentKey) return 0;
 
-	for (size_t i=0; i<splitSize; ++i)
+	for (size_t i=0; i<split->size; ++i)
 	{
 		if (keyRel (split->parents[i], parentKey) >= 0)
 			return 1;
 	}
 
 	return 0;
+}
+
+
+/**
+ * @brief Map namespace to string and decide if it should be used for kdbGet()
+ *
+ * @param parentKey the key name that should be changed
+ * @param ns the namespace it should be changed to
+ *
+ * @retval 0 invalid namespace for kdbGet(), no action required
+ * @retval 1 valid namespace for kdbGet()
+ */
+static int elektraKeySetNameByNamespace(Key *parentKey, elektraNamespace ns)
+{
+	switch (ns)
+	{
+	case KEY_NS_SPEC:
+		keySetName(parentKey, "spec");
+		break;
+	case KEY_NS_PROC:
+		/* only transient, should fail */
+		return 0;
+	case KEY_NS_DIR:
+		keySetName(parentKey, "dir");
+		break;
+	case KEY_NS_USER:
+		keySetName(parentKey, "user");
+		break;
+	case KEY_NS_SYSTEM:
+		keySetName(parentKey, "system");
+		break;
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		return 0;
+	}
+	return 1;
 }
 
 
@@ -245,29 +281,57 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 	 * every time in loop.
 	 * The parentKey might be null in some unit tests, so also check
 	 * for this. */
-	if (!parentKey || !strcmp(keyName(parentKey), "") || !strcmp(keyName(parentKey), "/"))
+	const char *name = keyName(parentKey);
+	if (!parentKey || !name || !strcmp(name, "") || !strcmp(name, "/"))
 	{
 		parentKey = 0;
+	}
+	else if (name[0] == '/')
+	{
+		Key *key = keyNew(0, KEY_END);
+		for (elektraNamespace ins=KEY_NS_FIRST; ins<=KEY_NS_LAST; ++ins)
+		{
+			if (!elektraKeySetNameByNamespace(key, ins)) continue;
+			keyAddName(key, keyName(parentKey));
+			elektraSplitBuildup(split, kdb, key);
+		}
+		keyDel (key);
+		return 1;
 	}
 
 	/* Returns the backend the key is in or the default backend
 	   otherwise */
 	Backend * backend = elektraMountGetBackend(kdb, parentKey);
 
+#if DEBUG && VERBOSE
+	printf (" with parent %s\n", keyName(parentKey));
+#endif
 	for (size_t i=0; i < kdb->split->size; ++i)
 	{
+#if DEBUG && VERBOSE
+		printf ("  %d with parent %s\n", i, keyName(kdb->split->parents[i]));
+#endif
 		if (!parentKey)
 		{
+#if DEBUG && VERBOSE
+			printf ("   def add %s\n", keyName(kdb->split->parents[i]));
+#endif
 			/* Catch all: add all mountpoints */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 		else if (backend == kdb->split->handles[i] && keyRel(kdb->split->parents[i], parentKey) >= 0)
 		{
+#if DEBUG && VERBOSE
+			printf ("   exa add %s\n", keyName(kdb->split->parents[i]));
+#endif
 			/* parentKey is exactly in this backend, so add it! */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 		else if (keyRel(parentKey, kdb->split->parents[i]) >= 0)
 		{
+#if DEBUG && VERBOSE
+			printf ("   rel add %s\n", keyName(kdb->split->parents[i]));
+#endif
 			/* this backend is completely below the parentKey, so lets add it. */
 			elektraSplitAppend (split, kdb->split->handles[i], keyDup(kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
@@ -324,6 +388,27 @@ int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
 	}
 
 	return needsSync;
+}
+
+/**
+ * @brief Update the (configuration) file name for the parent key
+ *
+ * @param split the split to work with
+ * @param handle the handle to work with
+ * @param key the parentKey that should be updated (name must be
+ * correct)
+ */
+void elektraSplitUpdateFileName (Split *split, KDB *handle, Key *key)
+{
+	Backend *curHandle = elektraMountGetBackend(handle, key);
+	if (!curHandle) return;
+	ssize_t curFound = elektraSplitSearchBackend(split, curHandle, key);
+	if (curFound == -1) return;
+#if DEBUG && VERBOSE
+	printf ("Update string from %s to %s\n", keyString(key), keyString(split->parents[curFound]));
+	printf ("Names are: %s and %s\n\n", keyName(key), keyName(split->parents[curFound]));
+#endif
+	keySetString(key, keyString(split->parents[curFound]));
 }
 
 
@@ -423,7 +508,8 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 	Backend *curHandle = 0;
 
 	/* Dont iterate the default split part */
-	for (size_t i=0; i<split->size-1; ++i)
+	const int bypassedSplits = 1;
+	for (size_t i=0; i<split->size-bypassedSplits; ++i)
 	{
 		if (test_bit(split->syncbits[i], 0))
 		{

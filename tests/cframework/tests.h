@@ -252,6 +252,10 @@ int init(int argc, char** argv);
 			nbError++; \
 			printf("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(%s): %d, size(%s): %d\n", \
 				__FILE__, __LINE__, __FUNCTION__, quote_string(mmks1), (int)ksGetSize(mmks1), quote_string(mmks2), (int)ksGetSize(mmks2)); \
+			printf ("mmks1:\n"); \
+			output_keyset(mmks1); \
+			printf ("mmks2:\n"); \
+			output_keyset(mmks2); \
 		} \
 		else \
 		{ \

@@ -11,25 +11,15 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
-genopt.hpp + include enforcement in template_dynamic?
-
-install kdb gen properly
-	search by default in installed pathes
-
 initial warnings 22, 93 when no /etc/kdb
-test racing
 
-KEY_CASCADING_NAME must die
+test racing
 
 document METADATA.ini
 
 wrong mounting with tracer
 
 ## fix broken tests ##
-
-shell:
-	test resolver (dir, spec)
-	test distribution (nesting+double slash issues)
 
 ctest:
 	test_mountsplit
@@ -38,21 +28,17 @@ ctest:
 	kdb
 
 
-## Backend ##
-
-unserialize
-streaming
-
-## simplify cmake ##
-
-c++11
-DEFAULT_STORAGE/RESOLVER
-
-
-
 
 
 # 0.8.12
+
+shell:
+	test resolver (dir)
+
+genopt.hpp + include enforcement in template_dynamic?
+
+install kdb gen properly
+	search by default in installed pathes
 
 better errnostore solution?
 
@@ -74,3 +60,15 @@ plugins should use relative pathes so that import/export/remount works
 
 - dump
 - ni
+
+
+## Backend ##
+
+unserialize
+streaming
+
+## simplify cmake ##
+
+c++11
+DEFAULT_STORAGE/RESOLVER
+

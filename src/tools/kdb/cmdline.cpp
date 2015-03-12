@@ -45,6 +45,7 @@ Cmdline::Cmdline (int argc,
 	format("dump"),
 	plugins("sync"),
 	pluginsConfig(""),
+	ns("user"),
 
 	executable(),
 	commandName()
@@ -203,6 +204,14 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-3 --third               suppress third column\n";
 	}
+	optionPos = acceptedOptions.find('N');
+	if (acceptedOptions.find('N')!=string::npos)
+	{
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"namespace", required_argument, 0, 'N'};
+		long_options.push_back(o);
+		helpText += "-N --namespace ns        namespace to use when writing cascading keys\n";
+	}
 	optionPos = acceptedOptions.find('c');
 	if (optionPos!=string::npos)
 	{
@@ -231,6 +240,9 @@ Cmdline::Cmdline (int argc,
 
 		k = conf.lookup(dirname+"plugins");
 		if (k) plugins = k.get<string>();
+
+		k = conf.lookup(dirname+"namespace");
+		if (k) ns = k.get<string>();
 	}
 
 	option o = {0, 0, 0, 0};
@@ -264,6 +276,7 @@ Cmdline::Cmdline (int argc,
 		case '1': first= false; break;
 		case '2': second= false; break;
 		case '3': third= false; break;
+		case 'N': ns = optarg; break;
 		case 'c': pluginsConfig = optarg; break;
 
 		default: invalidOpt = true; break;
