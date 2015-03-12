@@ -1203,7 +1203,15 @@ static void test_ksLookupName()
 	succeed_if (ksLookupByName (ks, "user/na/med/key", 0) == 0, "seperation that should be");
 
 	succeed_if (ksLookupByName (ks, "system/domain/key", 0) == 0, "found key in wrong domain");
-	
+
+	// broken names
+	succeed_if (ksLookupByName (ks, "sys", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "what", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "", 0) == 0, "found key with empty entry");
+	succeed_if (ksLookupByName (ks, "_", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "\\", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "\\/", 0) == 0, "found key with broken entry");
+
 	//now try to find them, and compare value
 	found = ksLookupByName (ks, "user/domain/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
@@ -2774,7 +2782,7 @@ static void test_cutpointRoot()
 {
 	printf ("Testing operation cut root point\n");
 
-	Key *cutpoint = keyNew("user");
+	Key *cutpoint = keyNew("user", KEY_END);
 	KeySet *orig = ksNew(30,
 			keyNew("system/a", KEY_END),
 			keyNew("user/a", KEY_END),
