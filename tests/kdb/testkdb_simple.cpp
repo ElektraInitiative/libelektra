@@ -14,20 +14,54 @@
 
 #include <gtest/gtest.h>
 
-class Simple : public ::testing::Test
+class Namespaces
 {
-protected:
-	static const std::string testRoot;
-	static const std::string configFile;
-	static const std::vector<std::string> namespaces;
+public:
+	struct Namespace
+	{
+		std::string name;
+		std::string configFile;
+	};
 
-	void mount(std::string mountpoint)
+	Namespaces(std::string configFile)
+	{
+		Namespace n;
+		n.name = "system";
+		n.configFile = configFile;
+		namespaces.push_back(n);
+	}
+
+	void unlinkConfigFiles()
+	{
+		for (size_t i=0; i<namespaces.size(); ++i)
+		{
+			unlink(namespaces[i].configFile.c_str());
+		}
+	}
+
+	Namespace & operator[](size_t i)
+	{
+		return namespaces[i];
+	}
+
+	size_t size()
+	{
+		return namespaces.size();
+	}
+
+	std::vector<Namespace> namespaces;
+};
+
+class Mounting
+{
+public:
+	static void mount(std::string mountpoint, std::string configFile)
 	{
 		using namespace kdb;
 		using namespace kdb::tools;
+
 		Backend b;
 		b.setMountpoint(Key(mountpoint, KEY_END), KeySet(0, KS_END));
-		unlink(configFile.c_str());
 		b.addPlugin("resolver");
 		b.useConfigFile(configFile);
 		b.addPlugin("dump");
@@ -39,7 +73,7 @@ protected:
 		kdb.set(ks, parentKey);
 	}
 
-	void umount(std::string mountpoint)
+	static void umount(std::string mountpoint)
 	{
 		using namespace kdb;
 		using namespace kdb::tools;
@@ -49,35 +83,38 @@ protected:
 		kdb.get(ks, parentKey);
 		Backends::umount(mountpoint, ks);
 		kdb.set(ks, parentKey);
-		unlink(configFile.c_str());
 	}
+};
+
+class Simple : public ::testing::Test
+{
+protected:
+	static const std::string testRoot;
+	static const std::string configFile;
+	Namespaces namespaces;
+
+	Simple() : namespaces(configFile)
+	{}
 
 	virtual void SetUp()
 	{
-		mount(testRoot);
-		mount("spec"+testRoot);
+		namespaces.unlinkConfigFiles();
+
+		Mounting::mount(testRoot, configFile);
+		Mounting::mount("spec"+testRoot, configFile);
 	}
 
 	virtual void TearDown()
 	{
-		umount("spec"+testRoot);
-		umount(testRoot);
+		Mounting::umount("spec"+testRoot);
+		Mounting::umount(testRoot);
+
+		namespaces.unlinkConfigFiles();
 	}
 };
 
-std::vector<std::string> initNamespaces()
-{
-	std::vector<std::string> ret;
-	// TODO: removing of spec+user files in cleanup missing
-	// ret.push_back("spec");
-	// ret.push_back("user");
-	ret.push_back("system");
-	return ret;
-}
-
-const std::string Simple::testRoot = "/tests/kdb/";
 const std::string Simple::configFile = "/tmp/kdbFile.dump";
-const std::vector<std::string> Simple::namespaces = initNamespaces();
+const std::string Simple::testRoot = "/tests/kdb/";
 
 std::string makeLiteralString(std::string str)
 {
@@ -186,12 +223,12 @@ TEST_F(Simple, GetAppendNamespaces)
 	{
 		KDB kdb;
 		KeySet ks;
-		ks.append(Key(namespaces[i] + testRoot + "/key", KEY_END));
+		ks.append(Key(namespaces[i].name + testRoot + "/key", KEY_END));
 		kdb.get(ks, testRoot);
-		ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends with namespace " << namespaces[i];
+		ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends with namespace " << namespaces[i].name;
 		ks.rewind();
 		ks.next();
-		EXPECT_EQ(ks.current().getName(), namespaces[i] + "/tests/kdb/key") << "name of element in keyset wrong";
+		EXPECT_EQ(ks.current().getName(), namespaces[i].name + "/tests/kdb/key") << "name of element in keyset wrong";
 		EXPECT_EQ(ks.current().getString(), "") << "string of element in keyset wrong";
 	}
 }
