@@ -87,7 +87,7 @@ public:
 	bool                        setData(const QModelIndex& idx, const QVariant& modelData, int role = Qt::EditRole);
 
 	/**
-	 * @copydoc QAbstractListModel::insertRow()
+	 * \copydoc QAbstractListModel::insertRow()
 	 */
 	Q_INVOKABLE bool            insertRow(int row, const QModelIndex& parentIndex = QModelIndex());
 
@@ -147,17 +147,17 @@ public:
 
 	/**
 	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding meta keys.
-	 *
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
-	 * @param node The ConfigNode that is supposed to be inserted.
+	 * @param key
+	 * @param name
 	 */
 	void                        insertMetaRow(int row, kdb::Key key, const QString &name);
 
 	/**
 	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding non metakey ConfigNodes.
-	 *
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param node The ConfigNode that is supposed to be inserted.
+	 * @param addParent
 	 */
 	void                        insertRow(int row, ConfigNodePtr node, bool addParent = true);
 
@@ -194,8 +194,8 @@ public:
 
 	/**
 	 * @brief Export the configuration below a ConfigNode to a file on the harddisk.
-	 *
-	 * @param node The ConfigNode that is the root node of the exported configuration.
+	 * @param parentModel
+	 * @param idx
 	 * @param format Specifies the file format of the exported file.
 	 * @param file The path on the harddisk where the exported file is written to.
 	 */
@@ -207,7 +207,7 @@ public:
 	 * @param name The name of the ConfigNode the configuration is imported to.
 	 * @param file The path of the file on the harddisk.
 	 * @param format The format of the file on the harddisk.
-	 * @param mergeStrategy The mergeStrategy in case of conflict.
+	 * @param mergeStrategies The mergeStrategies in case of conflict.
 	 */
 	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QVariantList &mergeStrategies);
 

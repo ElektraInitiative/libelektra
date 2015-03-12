@@ -29,7 +29,7 @@ public:
 	virtual void undo();
 
 	/**
-	 * @copydoc QUndoCommand::undo()
+	 * @copydoc QUndoCommand::redo()
 	 */
 	virtual void redo();
 

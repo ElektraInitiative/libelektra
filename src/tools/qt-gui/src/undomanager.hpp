@@ -33,8 +33,7 @@ public:
 
 	/**
 	 * @brief
-	 *
-	 * @param parent
+	 * @param parentManager
 	 */
 	explicit    UndoManager(QObject* parentManager = 0);
 

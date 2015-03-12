@@ -6,9 +6,8 @@
 #include <kdb.hpp>
 
 /**
- * @brief The GUISettings class
+ * @brief The GUISettings class. It manages the settings of the GUI. At the moment the only settings are colorsettings.
  */
-
 class GUISettings : public QObject
 {
 	Q_OBJECT
@@ -20,89 +19,91 @@ class GUISettings : public QObject
 
 public:
 	/**
-	 * @brief GUISettings
+	 * @brief GUISettings The default constructor
 	 * @param parentGUISettings
 	 */
 	explicit GUISettings(QObject *parentGUISettings = 0);
 
 	/**
-	 * @brief GUISettings
+	 * @brief GUISettings The copy contructor. Mandatory.
 	 * @param other
 	 */
 	GUISettings(GUISettings const& other) : QObject() {Q_UNUSED(other)}
 
 	/**
-	 * @brief highlightColor
-	 * @return
+	 * @brief highlightColor The color of the highlight bar in the views.
+	 * @return The color of the highlight bar in the views.
 	 */
 	QColor				highlightColor() const;
 
 	/**
-	 * @brief frameColor
-	 * @return
+	 * @brief frameColor The color of the window frames in the views.
+	 * @return The color of the window frames in the views.
 	 */
 	QColor				frameColor() const;
 
 	/**
-	 * @brief nodeWithKeyColor
-	 * @return
+	 * @brief nodeWithKeyColor The color of the ConfigNodes that contain a kdb::Key
+	 * @return The color of the ConfigNodes that contain a kdb::Key
 	 */
 	QColor				nodeWithKeyColor() const;
 
 	/**
-	 * @brief nodeWithoutKeyColor
-	 * @return
+	 * @brief nodeWithoutKeyColor The color of the ConfigNodes that do not contain a kdb::Key
+	 * @return The color of the ConfigNodes that do not contain a kdb::Key
 	 */
 	QColor				nodeWithoutKeyColor() const;
 
 	/**
-	 * @brief setKDB
+	 * @brief setKDB Makes the current color settings permanent.
 	 */
 	Q_INVOKABLE	void	setKDB();
 
 public slots:
 	/**
-	 * @brief setHighlightColor
-	 * @param color
+	 * @brief setHighlightColor Sets the new highlight color.
+	 * @param color The new highlight color.
 	 */
 	void		setHighlightColor(const QColor &color);
 
 	/**
-	 * @brief setFrameColor
-	 * @param color
+	 * @brief setFrameColor Sets the new frame color.
+	 * @param color The new frame color.
 	 */
 	void		setFrameColor(const QColor &color);
 
 	/**
-	 * @brief setNodeWithKeyColor
-	 * @param color
+	 * @brief setNodeWithKeyColor Sets the new color for ConfigNode s that contain a kdb::Key
+	 * @param color The new color for ConfigNodes that contain a kdb::Key
 	 */
 	void		setNodeWithKeyColor(const QColor &color);
 
 	/**
-	 * @brief setNodeWithoutKeyColor
-	 * @param color
+	 * @brief setNodeWithoutKeyColor Sets the new color for ConfigNode s that do not contain a kdb::Key
+	 * @param color The new color for ConfigNode s that do not contain a kdb::Key
 	 */
 	void		setNodeWithoutKeyColor(const QColor &color);
 
 signals:
 	/**
-	 * @brief highlightColorChanged
+	 * @brief highlightColorChanged This signal is emitted if the highlight color is changed. The view will update accordingly.
 	 */
 	void		highlightColorChanged();
 
 	/**
-	 * @brief frameColorChanged
+	 * @brief frameColorChanged This signal is emitted if the frame color is changed. The view will update accordingly.
 	 */
 	void		frameColorChanged();
 
 	/**
-	 * @brief nodeWithKeyColorChanged
+	 * @brief nodeWithKeyColorChanged This signal is emitted if the color for @link ConfigNode s that contain a @link kdb::Key
+	 * is changed. The view will update accordingly.
 	 */
 	void		nodeWithKeyColorChanged();
 
 	/**
-	 * @brief nodeWithoutKeyColorChanged
+	 * @brief nodeWithoutKeyColorChanged This signal is emitted if the color for @link ConfigNode s that do not contain
+	 * a @link kdb::Key is changed. The view will update accordingly.
 	 */
 	void		nodeWithoutKeyColorChanged();
 
@@ -122,15 +123,15 @@ private:
 	QString		m_nodeWOKeyColorString;
 
 	/**
-	 * @brief append
-	 * @param keyName
-	 * @param color
+	 * @brief append Updates a color. On the next @link setKDB() action this color will be permanent.
+	 * @param keyName The type of the color (e.g. "highlight_color")
+	 * @param color The color.
 	 */
 	void		append(const QString &keyName, const QColor &color);
 
 	/**
-	 * @brief lookupColor
-	 * @param keyName
+	 * @brief lookupColor Retrieves the current color for an item.
+	 * @param keyName The type of the color (e.g. "highlight_color")
 	 * @return
 	 */
 	QColor		lookupColor(const QString &keyName) const;
