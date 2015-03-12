@@ -4,20 +4,20 @@
 #include <kdb.hpp>
 
 /**
- * @brief The GUIBasicKeySet class
+ * @brief The GUIBasicKeySet class. It encapsules the current basic kdb::KeySet needed for threewaymerging.
  */
 class GUIBasicKeySet
 {
 public:
 	/**
-	 * @brief basic
-	 * @return
+	 * @brief basic Gets the current basic kdb::KeySet
+	 * @return The current basic kdb::KeySet
 	 */
 	static kdb::KeySet basic();
 
 	/**
-	 * @brief setBasic
-	 * @param basic
+	 * @brief setBasic Sets the current basic kdb::KeySet
+	 * @param basic The current basic kdb::KeySet
 	 */
 	static void setBasic(const kdb::KeySet &basic);
 
