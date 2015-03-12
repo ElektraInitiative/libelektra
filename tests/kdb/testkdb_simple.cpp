@@ -14,29 +14,27 @@
 
 #include <gtest/gtest.h>
 
+#include <kdbconfig.h>
+
 class Namespaces
 {
 public:
 	struct Namespace
 	{
 		std::string name;
-		std::string configFile;
 	};
 
-	Namespaces(std::string configFile)
+	Namespaces()
 	{
 		Namespace n;
 		n.name = "system";
-		n.configFile = configFile;
 		namespaces.push_back(n);
-	}
 
-	void unlinkConfigFiles()
-	{
-		for (size_t i=0; i<namespaces.size(); ++i)
-		{
-			unlink(namespaces[i].configFile.c_str());
-		}
+		n.name = "spec";
+		namespaces.push_back(n);
+
+		n.name = "user";
+		namespaces.push_back(n);
 	}
 
 	Namespace & operator[](size_t i)
@@ -52,9 +50,63 @@ public:
 	std::vector<Namespace> namespaces;
 };
 
-class Mounting
+/**
+ * @brief Cascading + Spec mountpoint
+ *
+ * Hardcoded with resolver+dump
+ *
+ * useful to quickly mount something in tests
+ * and determine the config file pathes (+unlink provided)
+ */
+class Mountpoint
 {
 public:
+	std::string mountpoint;
+	std::string userConfigFile;
+	std::string specConfigFile;
+	std::string systemConfigFile;
+
+	Mountpoint(std::string mountpoint_, std::string configFile_) :
+		mountpoint(mountpoint_)
+	{
+		unlink();
+		mount(mountpoint, configFile_);
+		mount("spec/" + mountpoint, configFile_);
+
+		userConfigFile = getConfigFileName("user", mountpoint);
+		specConfigFile = getConfigFileName("spec", mountpoint);
+		systemConfigFile = getConfigFileName("system", mountpoint);
+	}
+
+	~Mountpoint()
+	{
+		umount("spec/" + mountpoint);
+		umount(mountpoint);
+		unlink();
+	}
+
+	void unlink()
+	{
+		::unlink(userConfigFile.c_str());
+		::unlink(systemConfigFile.c_str());
+		::unlink(specConfigFile.c_str());
+	}
+
+	static std::string getConfigFileName(std::string ns, std::string mp)
+	{
+		using namespace kdb;
+		using namespace kdb;
+		using namespace kdb::tools;
+
+		using namespace kdb::tools;
+
+		KDB kdb;
+		Key parent(ns+"/"+mp, KEY_END);
+		KeySet ks;
+		kdb.get(ks, parent);
+		return parent.getString();
+	}
+
 	static void mount(std::string mountpoint, std::string configFile)
 	{
 		using namespace kdb;
@@ -91,29 +143,29 @@ class Simple : public ::testing::Test
 protected:
 	static const std::string testRoot;
 	static const std::string configFile;
-	Namespaces namespaces;
 
-	Simple() : namespaces(configFile)
+	Namespaces namespaces;
+#if __cplusplus > 199711L
+	std::unique_ptr<Mountpoint> mp;
+#else
+	std::auto_ptr<Mountpoint> mp;
+#endif
+
+	Simple() : namespaces()
 	{}
 
 	virtual void SetUp()
 	{
-		namespaces.unlinkConfigFiles();
-
-		Mounting::mount(testRoot, configFile);
-		Mounting::mount("spec"+testRoot, configFile);
+		mp.reset(new Mountpoint(testRoot, configFile));
 	}
 
 	virtual void TearDown()
 	{
-		Mounting::umount("spec"+testRoot);
-		Mounting::umount(testRoot);
-
-		namespaces.unlinkConfigFiles();
+		mp.reset();
 	}
 };
 
-const std::string Simple::configFile = "/tmp/kdbFile.dump";
+const std::string Simple::configFile = "kdbFile.dump";
 const std::string Simple::testRoot = "/tests/kdb/";
 
 std::string makeLiteralString(std::string str)
@@ -169,7 +221,7 @@ TEST_F(Simple, GetAppendCascading)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	ks.append(Key(testRoot + "/key", KEY_END));
+	ks.append(Key(testRoot + "key", KEY_END));
 	Key parentKey(testRoot, KEY_END);
 	kdb.get(ks, parentKey);
 	ASSERT_EQ(ks.size(), 1) << "no key stayed" << ks;
@@ -223,7 +275,7 @@ TEST_F(Simple, GetAppendNamespaces)
 	{
 		KDB kdb;
 		KeySet ks;
-		ks.append(Key(namespaces[i].name + testRoot + "/key", KEY_END));
+		ks.append(Key(namespaces[i].name + testRoot + "key", KEY_END));
 		kdb.get(ks, testRoot);
 		ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends with namespace " << namespaces[i].name;
 		ks.rewind();
@@ -239,12 +291,12 @@ TEST_F(Simple, SetSystemKey)
 	KDB kdb;
 	KeySet ks;
 	Key parentKey(testRoot, KEY_END);
-	ks.append(Key("system" + testRoot + "/key", KEY_END));
+	ks.append(Key("system" + testRoot + "key", KEY_END));
 	kdb.get(ks, parentKey);
 	ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends";
 	ks.rewind();
 	ks.next();
-	EXPECT_EQ(ks.current().getName(), "system/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ(ks.current().getName(), "system" + testRoot + "key") << "name of element in keyset wrong";
 	EXPECT_EQ(ks.current().getString(), "") << "string of element in keyset wrong";
 	kdb.set(ks, parentKey);
 	kdb.close(parentKey);
@@ -255,7 +307,7 @@ TEST_F(Simple, SetSystemKey)
 	ASSERT_EQ(ks2.size(), 1) << "wrong size";
 	ks2.rewind();
 	ks2.next();
-	EXPECT_EQ(ks2.current().getName(), "system/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ(ks2.current().getName(), "system" + testRoot + "key") << "name of element in keyset wrong";
 	EXPECT_EQ(ks2.current().getString(), "") << "string of element in keyset wrong";
 }
 
@@ -265,7 +317,7 @@ TEST_F(Simple, SetSystemGetAppend)
 	KDB kdb;
 	KeySet ks;
 	Key parentKey(testRoot, KEY_END);
-	ks.append(Key("system" + testRoot + "/key", KEY_VALUE, "value1", KEY_END));
+	ks.append(Key("system" + testRoot + "key", KEY_VALUE, "value1", KEY_END));
 	kdb.get(ks, parentKey);
 	ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends";
 	ks.rewind();
@@ -276,7 +328,7 @@ TEST_F(Simple, SetSystemGetAppend)
 	kdb.close(parentKey);
 
 	KeySet ks2;
-	ks2.append(Key("system" + testRoot + "/key", KEY_VALUE, "value2",  KEY_END));
+	ks2.append(Key("system" + testRoot + "key", KEY_VALUE, "value2",  KEY_END));
 	kdb.open(parentKey);
 	kdb.get(ks2, parentKey);
 	ASSERT_EQ(ks2.size(), 1) << "wrong size";
@@ -292,7 +344,7 @@ TEST_F(Simple, SetSystemGetAppend2)
 	KDB kdb;
 	KeySet ks;
 	Key parentKey(testRoot, KEY_END);
-	ks.append(Key("system" + testRoot + "/key", KEY_VALUE, "value1", KEY_END));
+	ks.append(Key("system" + testRoot + "key", KEY_VALUE, "value1", KEY_END));
 	kdb.get(ks, parentKey);
 	ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends";
 	ks.rewind();
@@ -303,7 +355,7 @@ TEST_F(Simple, SetSystemGetAppend2)
 	kdb.close(parentKey);
 
 	KeySet ks2;
-	ks2.append(Key("system" + testRoot + "/key2", KEY_VALUE, "value2",  KEY_END));
+	ks2.append(Key("system" + testRoot + "key2", KEY_VALUE, "value2",  KEY_END));
 	kdb.open(parentKey);
 	kdb.get(ks2, parentKey);
 	ks2.rewind();
