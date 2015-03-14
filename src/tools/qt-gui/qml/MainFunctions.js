@@ -1,6 +1,5 @@
 //puts key to clipboard when cut key command for a key without children is executed
 function cutKey() {
-	//console.log("cut Key")
 	//needed to mark the node
 	keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
 	keyAreaView.currentNodePath = treeView.currentNode.path
@@ -11,7 +10,6 @@ function cutKey() {
 
 //puts key to clipboard when cut key command for a key with children is executed
 function cutBranch() {
-	//console.log("cut Branch")
 	treeView.treeAreaCopyIndex = treeView.currentNode.index
 	keyAreaView.currentNodePath = treeView.currentNode.path
 
@@ -21,7 +19,6 @@ function cutBranch() {
 
 //puts key to clipboard when copy key command for a key without children is executed
 function copyKey() {
-	//console.log("copy Key")
 	//needed to mark the node
 	keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
 	keyAreaView.currentNodePath = treeView.currentNode.path
@@ -31,7 +28,6 @@ function copyKey() {
 
 //puts key to clipboard when copy key command for a key with children is executed
 function copyBranch() {
-	//console.log("copy Branch")
 	//needed to mark the node
 	treeView.treeAreaCopyIndex = treeView.currentNode.index
 	treeView.currentNodePath = treeView.currentNode.path
@@ -43,22 +39,15 @@ function copyBranch() {
 function paste() {
 
 	if(undoManager.clipboardType === "copyKey"){
+
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		keyAreaView.keyAreaCopyIndex = -1
 		keyAreaView.currentNodePath = ""
-		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
-			resetKeyAreaModel()
 	}
 	else if(undoManager.clipboardType === "copyBranch"){
 
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		refreshModel(treeView.treeModel)
-		if(!treeView.currentNode.childrenHaveNoChildren)
-			keyAreaModel = null
-		else{
-			if(keyAreaModel === null)
-				keyAreaModel = treeView.currentNode.children
-		}
 	}
 	else if(undoManager.clipboardType === "cutKey"){
 
@@ -72,9 +61,6 @@ function paste() {
 		else{
 			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		}
-
-		if(treeView.currentNode.parentModel.get(treeView.currentNode.index).childrenHaveNoChildren)
-			resetKeyAreaModel()
 	}
 	else if(undoManager.clipboardType === "cutBranch"){
 
@@ -87,37 +73,29 @@ function paste() {
 		}
 
 		refreshModel(treeView.treeModel)
-		if(!treeView.currentNode.childrenHaveNoChildren)
-			keyAreaModel = null
-		else{
-			if(keyAreaModel === null)
-				keyAreaModel = treeView.currentNode.children
-		}
 	}
 }
 
 //deletes key when delete key command for a key without children is executed
 function deleteKey() {
-	//		console.log("delete key")
+
 	var cr = keyAreaView.currentRow
 
 	undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-
-	metaAreaModel = null
-	keyAreaSelectedItem = null
-	keyAreaModel.refresh()
 
 	if(keyAreaView.rowCount > 0){
 		keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
 		updateKeyAreaSelection()
 	}
-	else
+	else{
 		keyAreaSelectedItem = null
+		keyAreaView.selection.clear()
+		treeView.treeModel.refresh()
+	}
 }
 
 //deletes key when delete key command for a key with children is executed
 function deleteBranch(treeModel) {
-	//		console.log("delete branch")
 
 	undoManager.createDeleteKeyCommand("deleteBranch", treeModel.currentNode.parentModel, treeModel.currentNode.index)
 
@@ -127,20 +105,20 @@ function deleteBranch(treeModel) {
 
 //deletes key when delete key command for a key located in the search results is executed
 function deleteSearchResult(){
-	//console.log("delete search result")
+
 	var ci = searchResultsListView.currentIndex
 
 	if(searchResultsSelectedItem !== null){
 
 		if(searchResultsSelectedItem.childCount > 0)
-			undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+			undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
 		else
-			undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
+			undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
 
-		undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.node, searchResultsSelectedItem.index)
+		undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.index)
 
-		if(searchResultsListView.model.count() > 0){
-			searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.count() - 1)
+		if(searchResultsListView.model.rowCount() > 0){
+			searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.rowCount() - 1)
 			searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 		}
 		else
@@ -150,19 +128,13 @@ function deleteSearchResult(){
 
 //refreshes the key area view
 function updateKeyAreaSelection() {
-	keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
+	keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
 	editKeyWindow.selectedNode = keyAreaSelectedItem
-	metaAreaModel = keyAreaSelectedItem.metaValue
 
+	keyAreaView.model.refresh()
 	keyAreaView.selection.clear()
 	keyAreaView.selection.select(keyAreaView.currentRow)
 	keyAreaView.forceActiveFocus()
-}
-
-//refreshes the model of the key area view
-function resetKeyAreaModel() {
-	keyAreaModel = null
-	keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
 }
 
 //refreshes a treeview model and preserves the current selected node

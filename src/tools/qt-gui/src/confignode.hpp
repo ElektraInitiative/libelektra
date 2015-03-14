@@ -14,18 +14,32 @@
 class TreeViewModel;
 class PrintVisitor;
 
+/**
+ * @brief The ConfigNode class
+ */
 class ConfigNode : public QObject
 {
 	Q_OBJECT
 
 public:
-
+	/**
+	 * @brief ConfigNode
+	 * @param name
+	 * @param path
+	 * @param key
+	 * @param parentModel
+	 */
 	explicit ConfigNode(const QString& name, const QString& path, const kdb::Key& key, TreeViewModel* parentModel);
 	/// Needed by Qt. This copy constructor is supposed to create a DEEP COPY.
 	ConfigNode(const ConfigNode& other);
 	/// Needed by Qt/QSharedPtr
 	ConfigNode();
 	~ConfigNode();
+
+	/**
+	 * @brief dontDelete
+	 */
+	void dontDelete() {}
 
 	/**
 	 * @brief Returns the number of children of this ConfigNode.
@@ -201,7 +215,7 @@ public:
 	/**
 	 * @brief Sets a pointer to the TreeViewModel this ConfigNode is in.
 	 *
-	 * @param parent The TreeViewModel this ConfigNode is in.
+	 * @param parentModel The TreeViewModel this ConfigNode is in.
 	 */
 	void									setParentModel(TreeViewModel* parentModel);
 
@@ -230,9 +244,19 @@ private:
 	void populateMetaModel();
 
 signals:
+	/**
+	 * @brief showMessage
+	 * @param title
+	 * @param text
+	 * @param detailedText
+	 */
 	void showMessage(QString title, QString text, QString detailedText);
 
 public slots:
+	/**
+	 * @brief setIsExpanded
+	 * @param value
+	 */
 	void setIsExpanded(bool value);
 };
 

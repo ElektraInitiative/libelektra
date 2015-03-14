@@ -15,7 +15,6 @@ else()
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	../kdb
 	../../libtools/include
 	../../libtools/include/merging
 	../../libtools/include/helper
@@ -32,15 +31,11 @@ include_directories (
 	src/markdownconverter
 	)
 
-file(GLOB qt-gui_HDRS "../kdb/*.hpp" "src/markdownconverter/*.h" "src/markdownconverter/template/*.h")
+file(GLOB qt-gui_HDRS "src/markdownconverter/*.h" "src/markdownconverter/template/*.h")
 
 add_headers (qt-gui_HDRS)
 add_cppheaders (qt-gui_HDRS)
 add_toolheaders (qt-gui_HDRS)
-
-file(GLOB kdb_SRCS "../kdb/*.cpp")
-file(GLOB kdb_NO_SRCS ../kdb/main.cpp ../kdb/factory.cpp)
-list(REMOVE_ITEM kdb_SRCS ${kdb_NO_SRCS})
 
 file(GLOB qt-gui_SRCS "src/*.cpp" "src/markdownconverter/*.cpp" "src/markdownconverter/template/*.cpp")
 
@@ -48,7 +43,7 @@ set(qt-gui_RSCS	resources.qrc)
 
 qt5_add_resources(RSCS ${qt-gui_RSCS})
 
-add_executable(qt-gui ${qt-gui_SRCS} ${kdb_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
+add_executable(qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
 
 qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 

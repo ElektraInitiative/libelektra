@@ -1,5 +1,5 @@
 import QtQuick 2.2
-import QtQuick.Window 2.0
+import QtQuick.Window 2.1
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
@@ -14,7 +14,7 @@ Window {
 	x: Math.ceil(Screen.desktopAvailableWidth*0.5-width*0.5)
 	y: Math.ceil(Screen.desktopAvailableHeight*0.5-height*0.5)
 
-	title: qsTr("Create Backend")
+	title: qsTr("Mount Backend")
 
 	color: activePalette.window
 

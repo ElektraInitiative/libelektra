@@ -4,7 +4,10 @@ import "MainFunctions.js" as MFunctions
 KeyWindow {
 
 	title: qsTr("Create new Key")
-	path: treeView.currentNode === null ? "" : treeView.currentNode.path
+
+	path: selectedNode === null ? "" : selectedNode.path
+
+	property bool isBelow: false
 
 	function editAccepted() {
 
@@ -14,16 +17,22 @@ KeyWindow {
 		for(var i = 0; i < qmlMetaKeyModel.count; i++)
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
+		container.clearData()
+		container.setNewName(nameTextField.text)
+		container.setNewValue(valueTextField.text)
+		container.setNewMetadata(metaData)
+
 		//create UndoCommand
-		undoManager.createNewKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index, nameTextField.text, valueTextField.text, metaData)
+		undoManager.createNewKeyCommand(selectedNode.parentModel, selectedNode.index, container, isBelow)
 
 		if(!error){
 			visible = false
-			if(treeView.currentNode.childCount === 1)
-				MFunctions.resetKeyAreaModel()
 
-			if(nameTextField.text.lastIndexOf("/") > 0)
-				treeView.currentNode.parentModel.refresh()
+			if(undoManager.undoText === "newBranch"){
+				keyAreaView.selection.clear()
+				treeView.treeModel.refresh()
+				keyAreaSelectedItem = null
+			}
 
 			qmlMetaKeyModel.clear()
 			nameTextField.text = ""

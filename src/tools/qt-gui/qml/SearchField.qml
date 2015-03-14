@@ -4,7 +4,7 @@ import QtQuick.Controls 1.1
 TextField {
 	id: searchField
 
-	placeholderText: qsTr("Find Key...")
+	placeholderText: qsTr("Find Key ...")
 
 	onAccepted: {
 		if(searchField.state == "hasText")

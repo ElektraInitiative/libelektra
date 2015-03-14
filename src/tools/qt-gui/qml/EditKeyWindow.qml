@@ -8,8 +8,10 @@ KeyWindow {
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
 	function populateMetaArea() {
-		for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
-			qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
+		if(selectedNode.metaValue){
+			for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
+				qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
+			}
 		}
 	}
 
@@ -30,10 +32,17 @@ KeyWindow {
 
 		//create undo command
 		if(isEdited){
-			var data = [keyName.toString(), keyValue.toString(), selectedNode.metaValue,
-						nameTextField.text, valueTextField.text, metaData]
+			container.clearData()
 
-			undoManager.createEditKeyCommand(selectedNode.parentModel, index, data)
+			container.setOldName(keyName.toString())
+			container.setOldValue(keyValue.toString())
+			container.setOldMetadata(selectedNode.metaValue)
+
+			container.setNewName(nameTextField.text)
+			container.setNewValue(valueTextField.text)
+			container.setNewMetadata(metaData)
+
+			undoManager.createEditKeyCommand(selectedNode.parentModel, index, container)
 		}
 
 		if(!error){
@@ -47,16 +56,14 @@ KeyWindow {
 
 			visible = false
 			accessFromSearchResults = false
-			nameTextField.undo()
-			valueTextField.undo()
 			nameTextField.readOnly = false
 			nameTextField.textColor = activePalette.text
 
 			qmlMetaKeyModel.clear()
-			selectedNode = null
 
-			if(keyAreaModel !== null)
-				keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
+//			if(keyAreaView.model !== null && !accessFromSearchResults){
+//				keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+//			}
 		}
 	}
 }

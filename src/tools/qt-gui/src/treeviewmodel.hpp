@@ -8,12 +8,19 @@
 #include <kdb.hpp>
 #include <keyio.hpp>
 #include <backend.hpp>
+#include <mergeconfiguration.hpp>
+#include <automergeconfiguration.hpp>
 
 #include "confignode.hpp"
 #include "printvisitor.hpp"
 #include "keysetvisitor.hpp"
+#include "findvisitor.hpp"
 
 class Visitor;
+
+/**
+ * @brief The TreeViewModel class
+ */
 
 class TreeViewModel : public QAbstractListModel
 {
@@ -41,41 +48,83 @@ public:
 		IsExpandedRole ///< The role QML can retrieve if a ConfigNode is expanded.
 	};
 
+	/**
+	 * @brief TreeViewModel
+	 * @param parentModel
+	 */
 	explicit TreeViewModel(QObject* parentModel =  0);
 
-	// Needed for Qt
+	/**
+	 * @brief TreeViewModel
+	 * @param other
+	 */
 	TreeViewModel(TreeViewModel const& other);
 
-	// @return the underlying model
+	/**
+	 * @brief model
+	 * @return
+	 */
 	QList<ConfigNodePtr>& model()
 	{
 		return m_model;
 	}
 
 	//mandatory methods inherited from QAbstractItemModel
+
+	/**
+	 * @copydoc QAbstractListModel::rowCount()
+	 */
 	Q_INVOKABLE int             rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
+
+	/**
+	 * @copydoc QAbstractListModel::data()
+	 */
 	QVariant                    data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
+
+	/**
+	 * @copydoc QAbstractListModel::setData()
+	 */
 	bool                        setData(const QModelIndex& idx, const QVariant& modelData, int role = Qt::EditRole);
+
+	/**
+	 * \copydoc QAbstractListModel::insertRow()
+	 */
 	Q_INVOKABLE bool            insertRow(int row, const QModelIndex& parentIndex = QModelIndex());
+
+	/**
+	 * @copydoc QAbstractListModel::removeRow()
+	 */
 	Q_INVOKABLE bool            removeRow(int row, const QModelIndex& parentIndex = QModelIndex());
+
+	/**
+	 * @copydoc QAbstractListModel::flags()
+	 */
 	Qt::ItemFlags               flags(const QModelIndex& idx) const;
 
 	/**
-	 * @brief Populates this TreeViewModel with the *current* keyset.
+	 * @brief Populates this TreeViewModel with a keyset.
 	 */
-
 	Q_INVOKABLE void            populateModel(kdb::KeySet keySet);
+
+	/**
+	 * @brief createNewNodes
+	 * @param keySet
+	 */
+	void						createNewNodes(kdb::KeySet keySet);
 
 	/**
 	 * @brief The method that actually populates this TreeViewModel.
 	 *
 	 * @param node The ConfigNode that is supposed to find its place in the hierarchy.
 	 * @param keys The path of the ConfigNode that is supposed to find its place in the hierarchy, splitted up into a QStringList.
-	 * @param path The current path of the ConfigNode.
 	 * @param key The Key that the ConfigNode holds. If it is no leaf node, the Key is NULL.
 	 */
-	void                        sink(ConfigNodePtr node, QStringList keys, QString path, const kdb::Key &key);
+	void                        sink(ConfigNodePtr node, QStringList keys, const kdb::Key &key);
 
+	/**
+	 * @brief accept
+	 * @param visitor
+	 */
 	void                        accept(Visitor& visitor);
 
 	/**
@@ -98,19 +147,19 @@ public:
 
 	/**
 	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding meta keys.
-	 *
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
-	 * @param node The ConfigNode that is supposed to be inserted.
+	 * @param key
+	 * @param name
 	 */
 	void                        insertMetaRow(int row, kdb::Key key, const QString &name);
 
 	/**
 	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding non metakey ConfigNodes.
-	 *
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param node The ConfigNode that is supposed to be inserted.
+	 * @param addParent
 	 */
-	void                        insertRow(int row, ConfigNodePtr node);
+	void                        insertRow(int row, ConfigNodePtr node, bool addParent = true);
 
 	/**
 	 * @brief Looks for valid ConfigNodes, adds them to a KeySet and repopulates this TreeViewModel based on the KeySet.
@@ -135,15 +184,6 @@ public:
 	void                        append(ConfigNodePtr node);
 
 	/**
-	 * @brief A version of the mandatory setData method that can be called from QML without a QModelIndex. It creates a QModelIndex and calls the mandatory setData method.
-	 *
-	 * @param index The index of the ConfigNode inside this TreeViewModel that is supposed to be manipulated.
-	 * @param value Holds the data to manipulate the ConfigNode.
-	 * @param role Holds the role name that determines the type of the manipulation.
-	 */
-	Q_INVOKABLE void            setData(int idx, const QVariant& value, const QString& role);
-
-	/**
 	 * @brief Returns the index of a ConfigNode in this TreeViewModel based in the ConfigNode's name.
 	 *
 	 * @param name The name of the ConfigNode.
@@ -154,8 +194,8 @@ public:
 
 	/**
 	 * @brief Export the configuration below a ConfigNode to a file on the harddisk.
-	 *
-	 * @param node The ConfigNode that is the root node of the exported configuration.
+	 * @param parentModel
+	 * @param idx
 	 * @param format Specifies the file format of the exported file.
 	 * @param file The path on the harddisk where the exported file is written to.
 	 */
@@ -167,9 +207,9 @@ public:
 	 * @param name The name of the ConfigNode the configuration is imported to.
 	 * @param file The path of the file on the harddisk.
 	 * @param format The format of the file on the harddisk.
-	 * @param mergeStrategy The mergeStrategy in case of conflict.
+	 * @param mergeStrategies The mergeStrategies in case of conflict.
 	 */
-	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QString& mergeStrategy);
+	Q_INVOKABLE void            importConfiguration(const QString& name, const QString& file, QString& format, const QVariantList &mergeStrategies);
 
 	/**
 	 * @brief Stores the current state of the configuration in the KeySet.
@@ -194,13 +234,6 @@ public:
 	Q_INVOKABLE void            refresh();
 
 	/**
-	 * @brief The number of ConfigNodes in this model.
-	 *
-	 * @return The number of ConfigNodes in this model.
-	 */
-	Q_INVOKABLE int             count() const;
-
-	/**
 	 * @brief Returns the correct name for a new Array Entry.
 	 *
 	 * @return The correct name for a new Array Entry.
@@ -219,30 +252,55 @@ public:
 	 */
 	Q_INVOKABLE QStringList     mountedBackends();
 
-private:
-
 	/**
-	 * @brief A private method that is called from the public @see #find method. It performs the actual search.
-	 *
-	 * @param node The ConfigNode that is to be searched next.
-	 * @param searchResults The TreeViewModel that holds the search results.
-	 * @param term The term that is searched for.
+	 * @brief getSplittedKeyname
+	 * @param key
+	 * @return
 	 */
-	void                        find(ConfigNodePtr node, TreeViewModel* searchResults, const QString term);
-	void						createNewNodes(kdb::KeySet keySet);
+	QStringList					getSplittedKeyname(const kdb::Key &key);
 
-	QList<ConfigNodePtr>        m_model;
-	kdb::Key                    m_metaModelParent;
+private:
+	QList<ConfigNodePtr>						m_model;
+	kdb::Key									m_metaModelParent;
+	/**
+	 * @brief getMergeStrategy
+	 * @param mergeStrategy
+	 * @return
+	 */
+	kdb::tools::merging::MergeConflictStrategy*	getMergeStrategy(const QString &mergeStrategy);
 
 protected:
-	QHash<int, QByteArray>      roleNames() const;
+	/**
+	 * @brief roleNames
+	 * @return
+	 */
+	QHash<int, QByteArray>						roleNames() const;
 
-signals:
-	void						showMessage(QString title, QString text, QString detailedText) const;
-	void						expandNode(bool);
+signals:										//Use "Error", "Warning" and "Information" as title to display the according icon
+	/**
+	 * @brief showMessage
+	 * @param title
+	 * @param text
+	 * @param detailedText
+	 */
+	void										showMessage(QString title, QString text, QString detailedText) const;
+	/**
+	 * @brief expandNode
+	 */
+	void										expandNode(bool);
+	/**
+	 * @brief updateIndicator
+	 */
+	void										updateIndicator() const;
 
 public slots:
-	void						showConfigNodeMessage(QString title, QString text, QString detailedText);
+	/**
+	 * @brief showConfigNodeMessage
+	 * @param title
+	 * @param text
+	 * @param detailedText
+	 */
+	void										showConfigNodeMessage(QString title, QString text, QString detailedText);
 
 };
 

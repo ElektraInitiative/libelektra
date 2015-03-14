@@ -44,7 +44,7 @@ BasicWindow {
 					keyNavigationWraps: true
 
 					highlight: Rectangle {
-						color: activePalette.highlight
+						color: guiSettings.highlightColor
 						width: mountedBackendsFrame.width
 					}
 					delegate: Text {
@@ -78,8 +78,8 @@ BasicWindow {
 					}
 
 					treeView.treeModel.refresh()
-					metaAreaModel = null
-					keyAreaModel = null
+//					metaAreaView.model = null
+//					keyAreaView.model = null
 				}
 
 			}

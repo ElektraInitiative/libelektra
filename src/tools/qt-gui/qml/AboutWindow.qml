@@ -22,11 +22,11 @@ BasicWindow {
 				Text {
 					text: "Elektra Editor"
 					font.bold: true
-					color: activePalette.text
+					color: activePalette.windowText
 				}
 				Text {
 					text: "Version: " + version
-					color: activePalette.text
+					color: activePalette.windowText
 				}
 			}
 		}
@@ -62,16 +62,37 @@ BasicWindow {
 						property string pancheri: "mailto:e0003088@student.tuwien.ac.at"
 						property string loose: "mailto:christian.loose@hamburg.de"
 						property string jens: "http://qt-project.org/forums/viewthread/30521/#146845"
+						property string ian: "mailto:easyxtarget@gmail.com"
 						readOnly: true
 						textFormat: TextEdit.RichText
 						textMargin: defaultSpacing
 						wrapMode: Text.WordWrap
 						text: "<html>" +
 							  "<style type=\"text/css\"></style>" +
-							  "<p>Elektra Editor created by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
+							  "<p>Elektra Editor designed and implemented by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
 							  "<p>DiscountMarkdownConverter used with kind permission by <a href=\"" + loose + "\">Christian Loose</a></p>" +
 							  "<p>TreeView based on code <a href=\"" + jens + "\">posted by Jens</a></p>" +
+							  "<p>Helptext by <a href=\"" + ian + "\">Ian Donelly</a></p>" +
 							  "</html>"
+						onLinkActivated: {
+							Qt.openUrlExternally(link)
+						}
+					}
+				}
+				Tab {
+					id: licenseTab
+
+					title: qsTr("License")
+					TextArea {
+						property string ccUrl: "https://creativecommons.org/licenses/by-sa/3.0/legalcode"
+						property string oxygenUrl: "http://www.oxygen-icons.org/"
+						readOnly: true
+						textFormat: TextEdit.RichText
+						textMargin: defaultSpacing
+						wrapMode: Text.WordWrap
+						text: "<html>" +
+							  "<style type=\"text/css\"></style>" +
+							  "<p><a href=\"" + oxygenUrl + "\">Oxygen Icons</a> are used under <a href=\"" + ccUrl + "\">Creative Commons BY-SA 3.0</a></p></html>"
 						onLinkActivated: {
 							Qt.openUrlExternally(link)
 						}

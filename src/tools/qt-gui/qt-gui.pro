@@ -2,13 +2,8 @@ QT += quick  gui core  qml  widgets testlib
 
 HEADERS +=	$$files(src/*.hpp)\
 			$$files(src/markdownconverter/*.h, true)\
-			$$files(../kdb/*.hpp)
 
 SOURCES +=	$$files(src/*.cpp,true)\
-			$$files(../kdb/*.cpp)
-
-SOURCES -=	../kdb/main.cpp\
-			../kdb/factory.cpp
 
 CONFIG += qml_debug
 
@@ -33,7 +28,6 @@ unix: LIBS += -L/usr/local/lib/ -lelektratools
 unix: LIBS += -L/usr/local/lib/ -lmarkdown
 
 INCLUDEPATH += /usr/local/include/elektra
-INCLUDEPATH += ../kdb/
 INCLUDEPATH += src/markdownconverter
 INCLUDEPATH += ../../libtools/include/
 INCLUDEPATH += ../../include/

@@ -20,6 +20,8 @@ ScrollView {
 	property var currentNodePath
 	property var toolTipParent: mainWindow
 
+	signal updateIndicator()
+
 	Component.onCompleted: forceActiveFocus()
 
 	contentItem: Loader {
@@ -30,11 +32,33 @@ ScrollView {
 		property var elements: treeModel
 	}
 
-	property Component delegate: Label {
-		id: label
+	property Component delegate: Row {
+		spacing: defaultSpacing
+		Label {
+			id: label
 
-		text: rowLoaderModel === null ? "" : rowLoaderModel.name
-		color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? disabledPalette.text : activePalette.text)
+			text: rowLoaderModel === null ? "" : rowLoaderModel.name
+			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? guiSettings.nodeWithoutKeyColor : guiSettings.nodeWithKeyColor)
+			onColorChanged: indicator.updateIndicator()
+		}
+		Indicator {
+			id: indicator
+
+			signal updateIndicator()
+
+			Component.onCompleted: view.updateIndicator.connect(updateIndicator)
+			paintcolor: label.color
+			width: label.font.pixelSize*0.8
+			height: width
+			anchors.verticalCenter: label.verticalCenter
+			opacity: rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+			onUpdateIndicator: {
+				if(rowLoaderModel !== null) {
+					paintcolor = label.color
+					opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+				}
+			}
+		}
 	}
 
 	property Component treeBranch: Component {
@@ -74,7 +98,7 @@ ScrollView {
 							width: Math.max(content.width + itemLoader.x, view.width)
 							height: rowHeight
 							visible: currentNode === fillerModel
-							color: activePalette.highlight
+							color: guiSettings.highlightColor
 						}
 						MouseArea {
 							id: rowfillMouseArea
@@ -88,12 +112,8 @@ ScrollView {
 								mousePressed(mouse, model, itemLoader)
 							}
 							onDoubleClicked:{
-								if(!currentNode.isNull){
-									editKeyWindow.selectedNode = currentNode
-									editKeyWindow.qmlMetaKeyModel.clear()
-									editKeyWindow.populateMetaArea()
-									editKeyWindow.show()
-								}
+								editKeyWindow.selectedNode = currentNode
+								editAction.trigger()
 							}
 							onEntered: {
 								timer.start()
@@ -185,19 +205,12 @@ ScrollView {
 			currentNode = model
 			currentItem = itemLoader
 			keyAreaSelectedItem = null
-			metaAreaModel = null
 			editKeyWindow.selectedNode = currentNode
 			forceActiveFocus()
-
-			if (currentNode !== null){
-				if(currentNode.childCount > 0 && currentNode.childrenHaveNoChildren)
-					keyAreaModel = currentNode.children
-				else
-					keyAreaModel = null
-			}
 		}
-		else if(mouse.button === Qt.RightButton)
+		else if(mouse.button === Qt.RightButton){
 			treeContextMenu.popup()
+		}
 	}
 
 	function getOpacity(model) {

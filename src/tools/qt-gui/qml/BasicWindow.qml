@@ -10,6 +10,7 @@ Window {
 	property alias cancelButton: cancelButton
 	property alias detailsButton: detailsButton
 	default property alias contents: placeholder.children
+	property alias spacer: spacer
 
 	width: Math.ceil(mainWindow.width*0.4)
 	height: Math.ceil(mainWindow.height*0.6)

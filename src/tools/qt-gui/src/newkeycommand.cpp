@@ -1,20 +1,38 @@
+#include <kdb.hpp>
 #include "newkeycommand.hpp"
 
-NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, const QString& path, const QString& value, const QVariantMap& metaData, QUndoCommand* parent)
+NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, DataContainer *data, bool isBelow, QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_parentNode(parentNode)
 	, m_newNode(NULL)
-	, m_path(path)
-	, m_name(m_path.split("/").at(0))
-	, m_value(value)
-	, m_metaData(metaData)
+	, m_value(data->newValue())
+	, m_metaData(data->newMetadata())
 {
-	setText("newKey");
+	TreeViewModel* model = m_parentNode->getChildren();
+	kdb::Key newKey = model->createNewKey(m_parentNode->getPath() + "/" + data->newName(), m_value, m_metaData);
 
-	m_parentNode->getChildren()->sink(m_parentNode, m_path.split("/"), m_path, m_parentNode->getChildren()->createNewKey(m_parentNode->getPath() + "/" + m_path, m_value, m_metaData));
+	QStringList newNameSplit = model->getSplittedKeyname(newKey);
+	kdb::Key parentKey = parentNode->getKey();
+
+	if(!parentKey)
+		parentKey = kdb::Key(parentNode->getPath().toStdString(), KEY_END);
+
+	QStringList parentNameSplit = model->getSplittedKeyname(parentKey);
+
+	//check if the new key is directly below the parent
+	QSet<QString> diff = newNameSplit.toSet().subtract(parentNameSplit.toSet());
+
+	if(diff.count() > 1 || isBelow)
+		setText("newBranch");
+	else
+		setText("newKey");
+
+	m_name = cutListAtIndex(newNameSplit, parentNameSplit.count()).first();
+
+	model->sink(m_parentNode, newNameSplit, newKey.dup());
+
 	m_newNode = m_parentNode->getChildByName(m_name);
-	m_newNode->setPath(m_parentNode->getPath() + "/" + m_name);
-	m_parentNode->getChildren()->removeRow(m_parentNode->getChildIndexByName(m_name));
+	model->removeRow(m_parentNode->getChildIndexByName(m_name));
 }
 
 void NewKeyCommand::undo()
@@ -27,4 +45,12 @@ void NewKeyCommand::redo()
 {
 	//insert new node
 	m_parentNode->getChildren()->append(m_newNode);
+}
+
+QStringList NewKeyCommand::cutListAtIndex(QStringList &list, int index)
+{
+	for(int i = 0; i < index; i++)
+		list.removeFirst();
+
+	return list;
 }

@@ -12,15 +12,19 @@
 #include "confignode.hpp"
 #include "undomanager.hpp"
 #include "guibackend.hpp"
+#include "guisettings.hpp"
+#include "datacontainer.hpp"
 
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
 
-	qRegisterMetaType<TreeViewModel> ("TreeViewModel");
-	qRegisterMetaType<ConfigNode> ("ConfigNode");
-	qRegisterMetaType<UndoManager> ("UndoManager");
-	qRegisterMetaType<GUIBackend> ("GUIBackend");
+	qRegisterMetaType<TreeViewModel>("TreeViewModel");
+	qRegisterMetaType<ConfigNode>	("ConfigNode");
+	qRegisterMetaType<UndoManager>	("UndoManager");
+	qRegisterMetaType<GUIBackend>	("GUIBackend");
+	qRegisterMetaType<GUISettings>	("GUISettings");
+	qmlRegisterType<DataContainer>	("org.libelektra.qtgui", 1, 0, "DataContainer");
 
 	QString locale = QLocale::system().name();
 
@@ -32,9 +36,10 @@ int main(int argc, char* argv[])
 	QQmlContext* ctxt = engine.rootContext();
 
 	UndoManager manager;
-	kdb::KDB kdb;
+	kdb::KDB	kdb;
 	kdb::KeySet config;
-	GUIBackend backend;
+	GUIBackend	backend;
+	GUISettings settings;
 
 	try
 	{
@@ -45,13 +50,16 @@ int main(int argc, char* argv[])
 		std::cerr << e.what();
 	}
 
-	TreeViewModel* treeModel = new TreeViewModel;
+	TreeViewModel treeModel;
+
+	engine.setObjectOwnership(&treeModel, QQmlApplicationEngine::CppOwnership);
 
 	ctxt->setContextProperty("undoManager", &manager);
-	ctxt->setContextProperty("externTreeModel", treeModel);
+	ctxt->setContextProperty("externTreeModel", &treeModel);
 	ctxt->setContextProperty("guiBackend", &backend);
+	ctxt->setContextProperty("guiSettings", &settings);
 
-	treeModel->populateModel(config);
+	treeModel.populateModel(config);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 

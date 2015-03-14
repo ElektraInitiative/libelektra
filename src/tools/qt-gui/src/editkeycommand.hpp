@@ -3,21 +3,33 @@
 
 #include <QUndoCommand>
 #include "treeviewmodel.hpp"
+#include "datacontainer.hpp"
 
+/**
+ * @brief The EditKeyCommand class
+ */
 class EditKeyCommand : public QUndoCommand
 {
 
 public:
 	/**
 	 * @brief ...
-	 * 
+	 *
 	 * @param model ...
 	 * @param index ...
 	 * @param data ...
 	 * @param parent ...
 	 */
-	explicit        EditKeyCommand(TreeViewModel* model, int index, QVariantList data, QUndoCommand* parent = 0);
+	explicit        EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent = 0);
+
+	/**
+	 * @brief undo
+	 */
 	virtual void    undo();
+
+	/**
+	 * @brief redo
+	 */
 	virtual void    redo();
 
 private:
@@ -26,11 +38,11 @@ private:
 	int             m_index;
 
 	QString         m_oldName;
-	QVariant        m_oldValue;
+	QString			m_oldValue;
 	QVariantMap     m_oldMetaData;
 
 	QString         m_newName;
-	QVariant        m_newValue;
+	QString			m_newValue;
 	QVariantMap     m_newMetaData;
 };
 

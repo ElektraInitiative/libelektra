@@ -58,5 +58,17 @@
         <file>qml/icons/edit-undo.png</file>
         <file>qml/icons/view-refresh.png</file>
         <file>qml/ErrorDialogCreator.js</file>
+        <file>qml/HelpArea.qml</file>
+        <file>qml/icons/whats_this.png</file>
+        <file>qml/Help.qml</file>
+        <file>qml/icons/mount.png</file>
+        <file>qml/icons/unmount.png</file>
+        <file>qml/PluginInfo.qml</file>
+        <file>qml/icons/edit-delete.png</file>
+        <file>qml/Indicator.qml</file>
+        <file>qml/ChooseColorWindow.qml</file>
+        <file>qml/icons/color.png</file>
+        <file>qml/MergeStrategyComboBox.qml</file>
+        <file>qml/icons/dialog-information.png</file>
     </qresource>
 </RCC>

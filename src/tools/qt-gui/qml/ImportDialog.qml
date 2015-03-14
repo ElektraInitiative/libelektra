@@ -8,103 +8,87 @@ import "MainFunctions.js" as MFunctions
 BasicWindow {
 
 	title: qsTr("Import Configuration from File")
-	height: Math.ceil(importMergeGroup.height*4)
+	height: Math.ceil(importMergeGroup.height + importTextField.height + okButton.implicitHeight + spacer.height + 6*defaultMargins)
+	width: Math.ceil(importMergeGroup.width + 2*defaultMargins)
 
 	property alias importTextField: importTextField
+
 	Component.onCompleted: {
 		importFileDialog.nameFilters = guiBackend.nameFilters()
 		importFileDialog.selectNameFilter("dump (*.ecf)")
 		importTextField.forceActiveFocus()
 	}
 
-	BasicRectangle {
+	contents: ColumnLayout {
+
 		anchors.fill: parent
+		spacing: defaultSpacing
 
-		ColumnLayout {
-
-			anchors.fill: parent
-			anchors.margins: defaultMargins
-			spacing: defaultSpacing
-
-			Label {
-				text: qsTr("Please select a file to import to \"%1\": ").arg(path.text)
+		Label {
+			text: qsTr("Please select a file to import to \"%1\": ").arg(path.text)
+			Layout.fillWidth: true
+			wrapMode: Text.WrapAnywhere
+		}
+		RowLayout {
+			TextField {
+				id: importTextField
+				Layout.fillWidth: true
 			}
-			RowLayout {
-				TextField {
-					id: importTextField
-					Layout.fillWidth: true
-				}
-				Button {
-					text: "..."
-					implicitWidth: importTextField.height
-					onClicked: {
-						importFileDialog.open()
-					}
-				}
-				FileDialog {
-					id: importFileDialog
-
-					title: qsTr("Select File")
-					onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
+			Button {
+				text: "..."
+				implicitWidth: importTextField.height
+				onClicked: {
+					importFileDialog.open()
 				}
 			}
-			GroupBox {
-				id: importMergeGroup
+			FileDialog {
+				id: importFileDialog
 
-				title: qsTr("Merge Strategy:")
-				flat: true
+				title: qsTr("Select File")
+				onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
+			}
+		}
+		Item {
+			id: spacer
+			height: defaultMargins
+			Layout.fillWidth: true
+		}
+		GroupBox {
+			id: importMergeGroup
 
-				RowLayout {
-					ExclusiveGroup { id: group }
-					Column {
-						RadioButton {
-							id: preserve
-							text: qsTr("Preserve")
-							exclusiveGroup: group
-							checked: true
-							property string command: "preserve"
-						}
-						RadioButton {
-							text: qsTr("Ours")
-							exclusiveGroup: group
-							property string command: "ours"
-						}
-					}
-					Column {
-						RadioButton {
-							text: qsTr("Theirs")
-							exclusiveGroup: group
-							property string command: "theirs"
-						}
-						RadioButton {
-							text: qsTr("Base")
-							exclusiveGroup: group
-							property string command: "base"
-						}
-					}
-					Column {
-						RadioButton {
-							text: qsTr("New Key")
-							exclusiveGroup: group
-							property string command: "newkey"
-						}
-						RadioButton {
-							text: qsTr("Our Value")
-							exclusiveGroup: group
-							property string command: "ourvalue"
-						}
-					}
-					Column {
-						RadioButton {
-							text: qsTr("Their Value")
-							exclusiveGroup: group
-							property string command: "theirvalue"
-						}
-						Item{
-							height: preserve.height
-							width: preserve.width
-						}
-					}
+			title: qsTr("Merge Strategy:")
+			flat: true
+			Layout.fillWidth: true
+
+			GridLayout {
+				rows: 2
+				columns: 4
+				columnSpacing: defaultMargins
+
+				Label {
+					text: qsTr("First: ")
+				}
+				MergeStrategyComboBox {
+					id: first
+					currentIndex: 1
+				}
+				Label {
+					text: qsTr("Third: ")
+				}
+				MergeStrategyComboBox {
+					id: third
+				}
+				Label {
+					text: qsTr("Second: ")
+				}
+				MergeStrategyComboBox {
+					id: second
+				}
+				Label {
+					text: qsTr("Fourth: ")
+				}
+				MergeStrategyComboBox {
+					id: fourth
 				}
 			}
 		}
@@ -120,10 +104,20 @@ BasicWindow {
 
 		var plugin = importFileDialog.selectedNameFilter.match(/[a-z]+/).toString()
 
-		undoManager.createImportConfigurationCommand(treeView.treeModel, treeView.currentNode.index, treeView.currentNode.path, plugin, importTextField.text, group.current.command)
+		container.clearData()
+		container.setImportName(treeView.currentNode.path)
+		container.setFormat(plugin)
+		container.setFile(importTextField.text)
+
+		var strategies = [first.currentText, second.currentText, third.currentText, fourth.currentText]
+
+		container.setMergeStrategies(strategies)
+
+		undoManager.createImportConfigurationCommand(treeView.treeModel, treeView.currentNode.index, container)
+
 		treeView.treeModel.refresh()
 		importTextField.text = ""
-		preserve.checked = true
+		first.currentIndex = 1
 		importDialog.close()
 	}
 }

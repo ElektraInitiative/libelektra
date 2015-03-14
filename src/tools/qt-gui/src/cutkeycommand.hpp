@@ -4,6 +4,11 @@
 #include <QUndoCommand>
 #include "treeviewmodel.hpp"
 
+/**
+ * @brief The CutKeyCommand class
+ *
+ * This class allows undoing/redoing copy and paste of a ConfigNode.
+ */
 class CutKeyCommand : public QUndoCommand
 {
 public:
@@ -13,15 +18,22 @@ public:
 	 * @param type Declares if the ConfigNode is a single key or a branch.
 	 * @param source The ConfigNode that is cut.
 	 * @param target The ConfigNode that is the new parent node of the cut ConfigNode.
-	 * @param index The index of the cut ConfigNode, needed to remove the cut ConfigNode.
+	 * @param sourceIndex The index of the cut ConfigNode, needed to remove the cut ConfigNode.
+	 * @param parent
 	 */
 	explicit CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand* parent = 0);
 
+	/**
+	 * @copydoc QUndoCommand::undo()
+	 */
 	virtual void undo();
+
+	/**
+	 * @copydoc QUndoCommand::redo()
+	 */
 	virtual void redo();
 
 private:
-
 	TreeViewModel*  m_sourceParentModel;
 	ConfigNodePtr   m_source;
 	ConfigNodePtr   m_target;

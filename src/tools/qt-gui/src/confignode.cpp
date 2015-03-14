@@ -38,7 +38,6 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_parentModel(NULL)
 	, m_isExpanded(other.m_isExpanded)
 {
-
 	if(other.m_children)
 	{
 		foreach(ConfigNodePtr node, other.m_children->model())
@@ -77,7 +76,7 @@ ConfigNode::~ConfigNode()
 int ConfigNode::getChildCount() const
 {
 	if(m_children)
-		return m_children->model().count();
+		return m_children->rowCount();
 	return 0;
 }
 
@@ -105,48 +104,56 @@ void ConfigNode::setName(const QString& name)
 		m_path.replace(index, m_path.length() - index,"/" + name);
 	}
 
-	if(m_key){
-		if(QString::fromStdString(m_key.getName()) != ""){
-			try{
-				m_key.setBaseName(name.toStdString());
-			}
-			catch(KeyInvalidName const& ex){
-				emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
-				return;
-			}
-			m_name = name;
-		}
+	if(!m_key)
+		m_key = Key(m_path.toStdString(), KEY_END);
+
+
+	try{
+		m_key.setBaseName(name.toStdString());
 	}
+	catch(KeyInvalidName const& ex){
+		emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+		return;
+	}
+
+	m_name = name;
 }
 
 void ConfigNode::setValue(const QVariant& value)
 {
-	m_value = value;
+	if(!m_key)
+		m_key = Key(m_path.toStdString(), KEY_END);
 
-	if(m_key)
-		m_key.setString(value.toString().toStdString());
+	m_key.setString(value.toString().toStdString());
+	m_value = value;
 }
+
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
+	if(!m_key)
+		m_key = Key(m_path.toStdString(), KEY_END);
+
+	m_key.setMeta(name.toStdString(), value.toString().toStdString());
 	m_name = name;
 	m_value = value;
-
-	if(m_key)
-	{
-		m_key.setMeta(name.toStdString(), value.toString().toStdString());
-	}
 }
+
 
 void ConfigNode::setMeta(const QVariantMap &metaData)
 {
-	//delete old metadata in key
-	for(int i = 0; i < m_metaData->model().size(); i++)
+	if(m_metaData)
 	{
-		m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
+		//delete old metadata in key
+		for(int i = 0; i < m_metaData->model().size(); i++)
+		{
+			m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
+		}
+		//delete old metadata in model
+		m_metaData->clearMetaModel();
 	}
-	//delete old metadata in model
-	m_metaData->clearMetaModel();
+	else
+		m_metaData = new TreeViewModel;
 
 	//create new metadata nodes in model
 	for(int i = 0; i < metaData.size(); i++)
@@ -160,7 +167,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 	{
 		QVariantList tmp;
 		tmp << iter.key() << iter.value();
-		m_metaData->setData(counter, tmp, "MetaValue");
+		m_metaData->setData(m_metaData->index(counter), tmp, TreeViewModel::MetaValueRole);
 		counter++;
 	}
 }
@@ -168,9 +175,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 void ConfigNode::deleteMeta(const QString &name)
 {
 	if(m_key)
-	{
 		m_key.delMeta(name.toStdString());
-	}
 }
 
 void ConfigNode::accept(Visitor &visitor)
@@ -193,7 +198,7 @@ int ConfigNode::getChildIndexByName(const QString &name)
 {
 	if(m_children)
 	{
-		for(int i = 0; i < m_children->model().count(); i++)
+		for(int i = 0; i < m_children->rowCount(); i++)
 		{
 			if(m_children->model().at(i)->getName() == name)
 				return i;
@@ -250,15 +255,22 @@ void ConfigNode::setKey(Key key)
 
 void ConfigNode::setKeyName(const QString &name)
 {
-	if(!m_key)
-		m_key = Key();
-
-	m_key.setName(name.toStdString());
+	if(m_key)
+	{
+		try
+		{
+			m_key.setName(name.toStdString());
+		}
+		catch(KeyInvalidName ex)
+		{
+			emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
+			return;
+		}
+	}
 }
 
 void ConfigNode::appendChild(ConfigNodePtr node)
 {
-	node->setParentModel(m_children);
 	m_children->append(node);
 }
 
@@ -272,7 +284,9 @@ bool ConfigNode::hasChild(const QString& name) const
 			{
 				return true;
 			}
+
 		}
+
 	}
 
 	return false;
@@ -298,7 +312,9 @@ ConfigNodePtr ConfigNode::getChildByName(QString& name) const
 			{
 				return node;
 			}
+
 		}
+
 	}
 
 	return ConfigNodePtr();

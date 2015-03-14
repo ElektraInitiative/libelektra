@@ -10,10 +10,10 @@ WizardTemplate {
 
 	label.text: qsTr("Path: ")
 
-	buttonRow.nextButton.visible: false
-	buttonRow.finishButton.visible: true
-	buttonRow.finishButton.action.enabled: textField.text !== ""
-	buttonRow.finishButton.action.onTriggered: {
+	buttonRow.nextButton.action.text: qsTr("&Finish")
+	buttonRow.nextButton.action.iconSource: "icons/dialog-ok.png"
+	buttonRow.nextButton.action.enabled: textField.text !== ""
+	buttonRow.nextButton.action.onTriggered: {
 		guiBackend.addPath(textField.text)
 
 		if(!error){
@@ -21,7 +21,6 @@ WizardTemplate {
 
 			if(!error){
 				wizardLoader.close()
-				guiBackend.deleteBackend()
 				loader.source = "Page1.qml"
 				externTreeModel.refresh()
 			}
@@ -31,7 +30,6 @@ WizardTemplate {
 	}
 	buttonVisible: true
 	fileDialog.onAccepted: textField.text = fileDialog.fileUrl.toString().replace("file://", "")
-	textField.onAccepted: buttonRow.finishButton.action.trigger()
 }
 
 

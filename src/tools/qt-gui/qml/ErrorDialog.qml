@@ -29,7 +29,16 @@ BasicWindow {
 
 			Image {
 				id: icon
-				source: "icons/dialog-error.png"
+				source: {
+					if(title === "Error")
+						"icons/dialog-error.png"
+					else if(title === "Information")
+						"icons/dialog-information.png"
+					else if(title === "Warning")
+						"icons/dialog-warning.png"
+					else
+						"icons/dialog-error.png"
+				}
 			}
 
 			Text {

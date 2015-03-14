@@ -14,12 +14,17 @@
         <translation>Über</translation>
     </message>
     <message>
-        <location filename="../AboutWindow.qml" line="58"/>
+        <location filename="../AboutWindow.qml" line="60"/>
         <source>Authors</source>
         <translation>Autoren</translation>
     </message>
     <message>
-        <location filename="../AboutWindow.qml" line="83"/>
+        <location filename="../AboutWindow.qml" line="85"/>
+        <source>License</source>
+        <translation>Lizenz</translation>
+    </message>
+    <message>
+        <location filename="../AboutWindow.qml" line="282"/>
         <source>&amp;Close</source>
         <translation>S&amp;chließen</translation>
     </message>
@@ -27,17 +32,17 @@
 <context>
     <name>BasicWindow</name>
     <message>
-        <location filename="../BasicWindow.qml" line="48"/>
+        <location filename="../BasicWindow.qml" line="49"/>
         <source>&amp;Show Details</source>
         <translation>&amp;Zeige Details</translation>
     </message>
     <message>
-        <location filename="../BasicWindow.qml" line="59"/>
+        <location filename="../BasicWindow.qml" line="60"/>
         <source>&amp;Ok</source>
         <translation>&amp;Ok</translation>
     </message>
     <message>
-        <location filename="../BasicWindow.qml" line="65"/>
+        <location filename="../BasicWindow.qml" line="66"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Abbrechen</translation>
     </message>
@@ -49,17 +54,16 @@
         <translation>&amp;Zurück</translation>
     </message>
     <message>
-        <location filename="../ButtonRow.qml" line="21"/>
+        <location filename="../ButtonRow.qml" line="23"/>
         <source>&amp;Next</source>
         <translation>&amp;Vor</translation>
     </message>
     <message>
-        <location filename="../ButtonRow.qml" line="28"/>
         <source>&amp;Finish</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../ButtonRow.qml" line="35"/>
+        <location filename="../ButtonRow.qml" line="31"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Abbrechen</translation>
     </message>
@@ -85,6 +89,14 @@
         <location filename="../EditKeyWindow.qml" line="5"/>
         <source>Edit Key</source>
         <translation>Schlüssel editieren</translation>
+    </message>
+</context>
+<context>
+    <name>ErrorDialog</name>
+    <message>
+        <location filename="../ErrorDialog.qml" line="83"/>
+        <source>&amp;Hide Details</source>
+        <translation type="unfinished">&amp;Details verstecken</translation>
     </message>
 </context>
 <context>
@@ -159,7 +171,6 @@
 <context>
     <name>GeneralMessageDialog</name>
     <message>
-        <location filename="../GeneralMessageDialog.qml" line="83"/>
         <source>&amp;Hide Details</source>
         <translation>&amp;Details verstecken</translation>
     </message>
@@ -223,14 +234,32 @@
     </message>
 </context>
 <context>
+    <name>KeyAreaContextMenu</name>
+    <message>
+        <location filename="../KeyAreaContextMenu.qml" line="8"/>
+        <source>New</source>
+        <translation>Neu</translation>
+    </message>
+    <message>
+        <location filename="../KeyAreaContextMenu.qml" line="11"/>
+        <source>Create here ...</source>
+        <translation>Erstelle hier ...</translation>
+    </message>
+    <message>
+        <location filename="../KeyAreaContextMenu.qml" line="26"/>
+        <source>Create below ...</source>
+        <translation>Erstelle darunter ...</translation>
+    </message>
+</context>
+<context>
     <name>KeyWindow</name>
     <message>
-        <location filename="../KeyWindow.qml" line="48"/>
+        <location filename="../KeyWindow.qml" line="47"/>
         <source>Key Name: </source>
         <translation>Schlüssel Name:</translation>
     </message>
     <message>
-        <location filename="../KeyWindow.qml" line="68"/>
+        <location filename="../KeyWindow.qml" line="67"/>
         <source>Key Value: </source>
         <translation>Schlüssel Wert:</translation>
     </message>
@@ -248,29 +277,93 @@
         <translation>&amp;Datenbank</translation>
     </message>
     <message>
-        <location filename="../MainMenuBar.qml" line="34"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="../MainMenuBar.qml" line="47"/>
+        <location filename="../MainMenuBar.qml" line="54"/>
         <source>&amp;Edit</source>
         <translation>&amp;Editieren</translation>
     </message>
     <message>
-        <location filename="../MainMenuBar.qml" line="62"/>
+        <location filename="../MainMenuBar.qml" line="69"/>
         <source>New</source>
         <translation>Neu</translation>
     </message>
     <message>
-        <location filename="../MainMenuBar.qml" line="101"/>
+        <location filename="../MainMenuBar.qml" line="108"/>
+        <source>&amp;Help</source>
+        <translation>&amp;Hilfe</translation>
+    </message>
+    <message>
         <source>A&amp;bout</source>
         <translation>Ü&amp;ber</translation>
     </message>
     <message>
-        <location filename="../MainMenuBar.qml" line="103"/>
         <source>About Elektra Editor</source>
         <translation>Über Elektra Editor</translation>
+    </message>
+</context>
+<context>
+    <name>MainToolBar</name>
+    <message>
+        <location filename="../MainToolBar.qml" line="16"/>
+        <source>New ...</source>
+        <translation>Neu ...</translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="26"/>
+        <source>This is the button to create new keys/arrays. To create a key,
+provide a name, a value and optional metadata. Array entries
+will be named automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="33"/>
+        <source>This button will delete the current key and associated values.
+It will also delete the associated data from any configuration
+files mounted to this location upon synchronization.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="40"/>
+        <source>This button allows you to import keys from a file. You can import
+many types of files using Elektra plugins with this tool.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="47"/>
+        <source>This button allows you to export keys to a file. You can export
+many types of files using Elektra plugins with this tool. The ecf
+filetype is recommended if you want to preserve all aspects of
+the current keys.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="54"/>
+        <source>This button will undo the previous action.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="72"/>
+        <source>This button will redo the last action.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="90"/>
+        <source>This button will synchronize any changes you
+have made with the Key Database. As such, if
+any changes were made to mounted config-
+uration files then those files will be updated
+too.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../MainToolBar.qml" line="115"/>
+        <source>This is the search field. Any searches here
+will search the entire Key Database for
+matching keys, values, or metadata.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -296,13 +389,17 @@
 <context>
     <name>NewMetaKey</name>
     <message>
-        <location filename="../NewMetaKey.qml" line="23"/>
         <source>Meta Key Name...</source>
         <translation>Meta Schlüssel Name...</translation>
     </message>
     <message>
         <source>Meta Key Value...</source>
         <translation>Meta Schlüssel Wert...</translation>
+    </message>
+    <message>
+        <location filename="../NewMetaKey.qml" line="23"/>
+        <source>Meta Key Name ...</source>
+        <translation>Meta Schlüssel Name ...</translation>
     </message>
 </context>
 <context>
@@ -312,7 +409,6 @@
         <translation>Backend Name:</translation>
     </message>
     <message>
-        <location filename="../Page1.qml" line="6"/>
         <source>Welcome to the Mounting Wizard! Here you can create and mount backends. You can only create backends if you have root administration rights.
 
 The name must be a valid keyname or start with / for cascading mountpoints.
@@ -321,6 +417,17 @@ Please provide a mount point for the backend.
 
 Already used are:  %1</source>
         <translation>Willkommen beim Backend Installationsassistenten! Hier können sie Backends erstellen und einhängen. Sie können nur Backends erstellen, wenn sie über Administratorrechte verfügen.\n\nDer Name muss ein gültiger Schlüsselname sein oder mit &quot;/&quot; für kaskadierende Einhängepunkte beginnen.\n\nBitte geben sie einen Einhängepunkt für das Backend an.\n\nBereits verwendet werden: %1</translation>
+    </message>
+    <message>
+        <location filename="../Page1.qml" line="6"/>
+        <source>Welcome to the Mounting Wizard! Here you can mount backends. You can only mount backends if you have root administration rights.
+
+The name must be a valid keyname or start with / for cascading mountpoints.
+
+Please provide a mount point for the backend.
+
+Already used are: %1</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../Page1.qml" line="12"/>
@@ -335,42 +442,76 @@ Already used are:  %1</source>
         <translation>Einhängepunkt:</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="33"/>
+        <location filename="../Page2.qml" line="60"/>
         <source>Please select the plugins you want to include in the backend. Make sure to add exactly one resolver, one storage plugin and other plugins they might need.</source>
         <translation>Bitte wählen sie die Plugins aus die sie im Backend inkludieren möchten. Stellen sie sicher, dass sie genau ein Resolver und ein Storage Plugin inkludieren.</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="49"/>
+        <location filename="../Page2.qml" line="77"/>
         <source>Add Plugin</source>
         <translation>Plugin Einfügen</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="81"/>
+        <location filename="../Page2.qml" line="109"/>
         <source>Included Plugins</source>
         <translation>Eingefügte Plugins</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="124"/>
+        <location filename="../Page2.qml" line="152"/>
         <source>Plugin Info</source>
         <translation>Plugin Information</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="192"/>
+        <location filename="../Page2.qml" line="225"/>
+        <source>Edit Plugin Configuration</source>
+        <translation>Bearbeite Plugin Konfiguration</translation>
+    </message>
+    <message>
+        <location filename="../Page2.qml" line="275"/>
         <source>Add Key to Configuration for Plugin %1</source>
         <translation>Schlüssel zur Konfiguration für Plugin %1 hinzufügen</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="210"/>
+        <location filename="../Page2.qml" line="314"/>
+        <source>New Key ...</source>
+        <translation>Neuer Schlüssel ...</translation>
+    </message>
+    <message>
+        <location filename="../Page2.qml" line="316"/>
+        <source>New Key</source>
+        <translation>Neuer Schlüssel</translation>
+    </message>
+    <message>
+        <location filename="../Page2.qml" line="325"/>
+        <source>Edit ...</source>
+        <translation>Editieren ...</translation>
+    </message>
+    <message>
+        <location filename="../Page2.qml" line="326"/>
+        <source>Edit</source>
+        <translation>Editieren</translation>
+    </message>
+    <message>
+        <location filename="../Page2.qml" line="339"/>
+        <location filename="../Page2.qml" line="341"/>
+        <source>Delete</source>
+        <translation>Löschen</translation>
+    </message>
+    <message>
+        <location filename="../Page2.qml" line="352"/>
+        <source>Create new configuration Key for plugin %1</source>
+        <translation>Erstelle neue Konfiguration für Plugin %1</translation>
+    </message>
+    <message>
         <source>Show Configuration Selector</source>
         <translation>Zeige Ansicht zum Auswählen der Konfiguration</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="261"/>
+        <location filename="../Page2.qml" line="280"/>
         <source>Show Plugin Info</source>
         <translation>Zeige Plugin Informationen</translation>
     </message>
     <message>
-        <location filename="../Page2.qml" line="265"/>
         <source>Included Keys</source>
         <translation>Inkludierte Schlüssel</translation>
     </message>
@@ -388,6 +529,11 @@ Note that you cannot undo creating the backend. If you want to remove a backend 
         <location filename="../Page3.qml" line="11"/>
         <source>Path: </source>
         <translation>Pfad:</translation>
+    </message>
+    <message>
+        <location filename="../Page3.qml" line="13"/>
+        <source>&amp;Finish</source>
+        <translation>&amp;Beenden</translation>
     </message>
 </context>
 <context>
@@ -414,11 +560,33 @@ Note that you cannot undo creating the backend. If you want to remove a backend 
     </message>
 </context>
 <context>
+    <name>PluginInfo</name>
+    <message>
+        <location filename="../PluginInfo.qml" line="7"/>
+        <source>Plugin Info</source>
+        <translation>Plugin Information</translation>
+    </message>
+    <message>
+        <location filename="../PluginInfo.qml" line="9"/>
+        <source>&amp;Close</source>
+        <translation>S&amp;chließen</translation>
+    </message>
+    <message>
+        <location filename="../PluginInfo.qml" line="20"/>
+        <source>Selected Plugin: </source>
+        <translation>Ausgewähltes Plugin:</translation>
+    </message>
+</context>
+<context>
     <name>SearchField</name>
     <message>
-        <location filename="../SearchField.qml" line="7"/>
         <source>Find Key...</source>
         <translation>Schlüssel finden...</translation>
+    </message>
+    <message>
+        <location filename="../SearchField.qml" line="7"/>
+        <source>Find Key ...</source>
+        <translation>Finde Schlüssel ...</translation>
     </message>
 </context>
 <context>
@@ -589,7 +757,7 @@ Model size = %2</source>
         <translation>A&amp;ushängen</translation>
     </message>
     <message>
-        <location filename="../UnmountBackendWindow.qml" line="92"/>
+        <location filename="../UnmountBackendWindow.qml" line="91"/>
         <source>&amp;Close</source>
         <translation>S&amp;chließen</translation>
     </message>
@@ -601,15 +769,19 @@ Model size = %2</source>
 <context>
     <name>WizardLoader</name>
     <message>
-        <location filename="../WizardLoader.qml" line="17"/>
         <source>Create Backend</source>
         <translation>Backend erstellen</translation>
+    </message>
+    <message>
+        <location filename="../WizardLoader.qml" line="17"/>
+        <source>Mount Backend</source>
+        <translation>Hänge Backend ein</translation>
     </message>
 </context>
 <context>
     <name>WizardTemplate</name>
     <message>
-        <location filename="../WizardTemplate.qml" line="89"/>
+        <location filename="../WizardTemplate.qml" line="109"/>
         <source>Select File</source>
         <translation>Datei auswählen</translation>
     </message>
@@ -625,7 +797,7 @@ Model size = %2</source>
         <translation>Schlüssel editieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="121"/>
+        <location filename="../main.qml" line="125"/>
         <source>Create new Array Entry</source>
         <translation>Neuen Array Eintrag erstellen</translation>
     </message>
@@ -634,7 +806,7 @@ Model size = %2</source>
         <translation>Array Name:</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="182"/>
+        <location filename="../main.qml" line="198"/>
         <source>New Array Entry</source>
         <translation>Neuer Array Eintrag</translation>
     </message>
@@ -647,7 +819,7 @@ Model size = %2</source>
         <translation>Schlüssel...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="172"/>
+        <location filename="../main.qml" line="180"/>
         <source>New Key</source>
         <translation>Neuer Schlüssel</translation>
     </message>
@@ -656,8 +828,8 @@ Model size = %2</source>
         <translation>Array Eintrag...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="190"/>
-        <location filename="../main.qml" line="192"/>
+        <location filename="../main.qml" line="214"/>
+        <location filename="../main.qml" line="216"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
@@ -666,7 +838,7 @@ Model size = %2</source>
         <translation>Konfiguration importieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="210"/>
+        <location filename="../main.qml" line="234"/>
         <source>Import Configuration</source>
         <translation>Konfiguration importieren</translation>
     </message>
@@ -675,135 +847,207 @@ Model size = %2</source>
         <translation>Konfiguration exportieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="109"/>
+        <location filename="../main.qml" line="113"/>
         <source>Edit Array Entry</source>
         <translation>Array Eintrag editieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="170"/>
         <source>&amp;Key...</source>
         <translation>Schlüssel</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="180"/>
         <source>&amp;Array Entry...</source>
         <translation>&amp;Array Eintrag...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="208"/>
         <source>&amp;Import Configuration... </source>
         <translation>Konfiguration &amp;Importieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="218"/>
         <source>E&amp;xport Configuration... </source>
         <translation>Konfiguration &amp;Exportieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="220"/>
+        <location filename="../main.qml" line="178"/>
+        <source>&amp;Key ...</source>
+        <translation>Schlüssel ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="196"/>
+        <source>&amp;Array Entry ...</source>
+        <translation>Array Eintrag ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="232"/>
+        <source>&amp;Import Configuration ... </source>
+        <translation>Konfiguration importieren ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="242"/>
+        <source>E&amp;xport Configuration ... </source>
+        <translation>Konfiguration exportieren ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="244"/>
         <source>Export Configuration</source>
         <translation>Konfiguration exportieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="231"/>
-        <location filename="../main.qml" line="233"/>
+        <location filename="../main.qml" line="255"/>
+        <location filename="../main.qml" line="257"/>
         <source>Undo</source>
         <translation>Rückggängig</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="298"/>
-        <location filename="../main.qml" line="299"/>
+        <location filename="../main.qml" line="329"/>
+        <location filename="../main.qml" line="330"/>
         <source>Undo All</source>
         <translation>Alles Rückgängig machen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="311"/>
-        <location filename="../main.qml" line="313"/>
+        <location filename="../main.qml" line="342"/>
+        <location filename="../main.qml" line="344"/>
         <source>Redo</source>
         <translation>Wiederholen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="374"/>
-        <location filename="../main.qml" line="375"/>
+        <location filename="../main.qml" line="405"/>
+        <location filename="../main.qml" line="406"/>
         <source>Redo All</source>
         <translation>Alles wiederherstellen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="387"/>
-        <location filename="../main.qml" line="389"/>
+        <location filename="../main.qml" line="418"/>
+        <location filename="../main.qml" line="420"/>
         <source>Synchronize</source>
         <translation>Synchronisieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="400"/>
+        <location filename="../main.qml" line="431"/>
+        <source>&amp;Mount Backend ...</source>
+        <translation>Backend einhängen ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="433"/>
+        <source>Mount Backend</source>
+        <translation>Backend einhängen</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="443"/>
+        <source>&amp;Unmount Backend ...</source>
+        <translation>Backend aushängen ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="457"/>
+        <source>Edit ...</source>
+        <translation>Editieren ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="520"/>
+        <source>About E&amp;lektra Editor</source>
+        <translation>Über E&amp;lektra Editor</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="528"/>
+        <source>What&apos;s This?</source>
+        <translation>Was ist das?</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="536"/>
+        <source>Show &amp;Plugin Info ...</source>
+        <translation>Zeige Informationen über Plugins ...</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="543"/>
+        <source>Quit</source>
+        <translation>Beenden</translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="609"/>
+        <source>This is a tree view of the Key Database. It shows
+the entire tree of the Key Database and allows
+you to traverse the keys.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="745"/>
+        <source>This shows any metakeys attached to a Key. You can
+edit this metadata the same way you normally edit a
+Key, by double-clicking the key in the above view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Create Backend...</source>
         <translation>Backend erstellen...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="401"/>
         <source>Create Backend</source>
         <translation>Backend erstellen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="411"/>
         <source>Unmount Backend...</source>
         <translation>Backend aushängen...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="412"/>
+        <location filename="../main.qml" line="445"/>
         <source>Unmount Backend</source>
         <translation>Backend aushängen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="424"/>
         <source>Edit...</source>
         <translation>Editieren...</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="425"/>
+        <location filename="../main.qml" line="458"/>
         <source>Edit</source>
         <translation>Editieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="442"/>
-        <location filename="../main.qml" line="443"/>
+        <location filename="../main.qml" line="475"/>
+        <location filename="../main.qml" line="476"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="459"/>
-        <location filename="../main.qml" line="460"/>
+        <location filename="../main.qml" line="492"/>
+        <location filename="../main.qml" line="493"/>
         <source>Copy</source>
         <translation>Kopieren</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="476"/>
-        <location filename="../main.qml" line="477"/>
+        <location filename="../main.qml" line="509"/>
+        <location filename="../main.qml" line="510"/>
         <source>Paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="487"/>
         <source>About Elektra Editor</source>
         <translation>Über Elektra Editor</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="576"/>
+        <location filename="../main.qml" line="649"/>
         <source>Key Name</source>
         <translation>Schlüssel Name</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="583"/>
+        <location filename="../main.qml" line="656"/>
         <source>Key Value</source>
         <translation>Schlüssel Wert</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="667"/>
+        <location filename="../main.qml" line="706"/>
+        <source>This view shows the keys in the current selected KeySet.
+It shows the Key&apos;s name on the left and its value on the
+right. Double-clicking a Key will let you edit it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.qml" line="733"/>
         <source>Metakey Name</source>
         <translation>Metaschlüssel Name</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="674"/>
+        <location filename="../main.qml" line="740"/>
         <source>Metakey Value</source>
         <translation>Metaschlüssel Wert</translation>
     </message>
@@ -836,7 +1080,7 @@ Model size = %2</source>
         <translation>Wert</translation>
     </message>
     <message>
-        <location filename="../main.qml" line="710"/>
+        <location filename="../main.qml" line="779"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>

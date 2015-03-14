@@ -14,14 +14,38 @@ Item {
 	}
 	property bool	contextMenuEnabled: pluginConfigTreeView.currentItem !== null
 	property int	stackIndex: undoManager.index()
+	property alias	includedPluginsModel: includedPluginsModel
+
+	Connections {
+		target: wizardLoader
+		onClosing: {
+			includedPluginsModel.clear()
+			loader.source = "Page1.qml"
+			includeStorage = true
+			includeResolver = true
+		}
+	}
+
+	Keys.onPressed: {
+		if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+			if(buttonRow.nextButton.action.enabled){
+				buttonRow.nextButton.action.trigger()
+				event.accepted = true
+			}
+		}
+		else if(event.key === Qt.Key_Escape)
+			buttonRow.cancelButton.action.trigger()
+	}
 
 	ColumnLayout {
 
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.bottom: buttonRow.top
-		anchors.top: parent.top
-		anchors.margins: defaultMargins
+		anchors {
+			left: parent.left
+			right: parent.right
+			bottom: buttonRow.top
+			top: parent.top
+			margins: defaultMargins
+		}
 
 		RowLayout {
 			spacing: defaultSpacing
@@ -57,17 +81,16 @@ Item {
 
 						if(!error){
 							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
-							buttonRow.nextButton.enabled = guiBackend.validated()
+							buttonRow.nextButton.action.enabled = guiBackend.validated()
 
 							if(pluginDropdown.currentText.indexOf("[storage]") > -1)
 								includeStorage = false
-							if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
+							else if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
 								includeResolver = false
 
 							clearConfig()
 							configModel.clear()
 							page2.state = ""
-							pluginConfigTreeView.treeModel.populateModel()
 						}
 					}
 				}
@@ -214,8 +237,7 @@ Item {
 	ButtonRow {
 		id: buttonRow
 
-		Component.onCompleted: nextButton.enabled = false
-		finishButton.visible: false
+		Component.onCompleted: nextButton.action.enabled = false
 		nextButton.action.onTriggered: {
 			loader.source = "Page3.qml"
 			includeStorage = true
@@ -227,7 +249,6 @@ Item {
 		}
 		cancelButton.action.onTriggered: {
 			wizardLoader.close()
-			guiBackend.deleteBackend()
 			includedPluginsModel.clear()
 			loader.source = "Page1.qml"
 			includeStorage = true
@@ -288,7 +309,7 @@ Item {
 		MenuItem {
 			id: p2cmNew
 			action: Action {
-				text: qsTr("New Key...")
+				text: qsTr("New Key ...")
 				iconSource: "icons/document-new.png"
 				tooltip: qsTr("New Key")
 				enabled: contextMenuEnabled
@@ -299,7 +320,7 @@ Item {
 			id: p2cmEdit
 			action: Action {
 				iconSource: "icons/edit-rename.png"
-				text: qsTr("Edit...")
+				text: qsTr("Edit ...")
 				tooltip: qsTr("Edit")
 				enabled: contextMenuEnabled
 

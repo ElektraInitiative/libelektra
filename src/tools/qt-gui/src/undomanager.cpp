@@ -20,17 +20,6 @@ UndoManager::UndoManager(QObject* parentManager) :
 	m_clipboard = QApplication::clipboard();
 }
 
-UndoManager::UndoManager(const UndoManager& other)
-	: QObject()
-{
-	Q_UNUSED(other)
-}
-
-UndoManager::~UndoManager()
-{
-
-}
-
 bool UndoManager::canUndo() const
 {
 	return m_undoStack->canUndo();
@@ -41,19 +30,8 @@ bool UndoManager::canRedo() const
 	return m_undoStack->canRedo();
 }
 
-void UndoManager::createEditKeyCommand(TreeViewModel* model, int idx, QVariantList data)
+void UndoManager::createEditKeyCommand(TreeViewModel* model, int idx, DataContainer* data)
 {
-	//convert TreeViewModel to QVariantMap
-	TreeViewModel* tmpModel = qvariant_cast<TreeViewModel*>(data.takeAt(2));
-	QVariantMap oldMDMap;
-
-	foreach (ConfigNodePtr node, tmpModel->model())
-	{
-		oldMDMap.insert(node->getName(), node->getValue());
-	}
-
-	data.insert(2, oldMDMap);
-
 	m_undoStack->push(new EditKeyCommand(model, idx, data));
 }
 
@@ -62,9 +40,9 @@ void UndoManager::createDeleteKeyCommand(const QString& type, TreeViewModel* mod
 	m_undoStack->push(new DeleteKeyCommand(type, model, idx));
 }
 
-void UndoManager::createNewKeyCommand(TreeViewModel* model, int idx, const QString& name, const QString& value, const QVariantMap& metaData)
+void UndoManager::createNewKeyCommand(TreeViewModel* model, int idx, DataContainer* data, bool isBelow)
 {
-	m_undoStack->push(new NewKeyCommand(model->model().at(idx), name, value, metaData));
+	m_undoStack->push(new NewKeyCommand(model->model().at(idx), data, isBelow));
 }
 
 void UndoManager::createCopyKeyCommand(TreeViewModel *model, int idx)
@@ -77,9 +55,9 @@ void UndoManager::createCutKeyCommand(TreeViewModel* model, int idx)
 	m_undoStack->push(new CutKeyCommand(m_clipboardType, qvariant_cast<ConfigNodePtr>(m_clipboard->property("source")), model->model().at(idx), m_clipboard->property("index").toInt()));
 }
 
-void UndoManager::createImportConfigurationCommand(TreeViewModel* model, int idx, const QString& name, const QString& format, const QString& file, const QString& mergeStrategy)
+void UndoManager::createImportConfigurationCommand(TreeViewModel* model, int idx, DataContainer* data)
 {
-	m_undoStack->push(new ImportConfigurationCommand(model, idx, name, format, file, mergeStrategy));
+	m_undoStack->push(new ImportConfigurationCommand(model, idx, data));
 }
 
 void UndoManager::setClean()

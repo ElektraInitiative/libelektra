@@ -13,21 +13,16 @@ using namespace kdb;
 using namespace kdb::tools;
 
 GUIBackend::GUIBackend(QObject *parentBackend) :
-	QObject(parentBackend)
+	QObject(parentBackend),
+	m_backend(NULL)
 {
 	m_pluginConfigModel = new TreeViewModel;
 	resetModel();
 }
 
-GUIBackend::GUIBackend(const GUIBackend &other)
-	: QObject()
-{
-	Q_UNUSED(other);
-}
-
 void GUIBackend::createBackend(const QString &mountpoint)
 {
-	m_backend = new Backend();
+	m_backend = QSharedPointer<Backend>(new Backend());
 
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
@@ -47,10 +42,12 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	catch(MountpointInvalidException const& ex)
 	{
 		emit showMessage(tr("Error"), tr("The provided mount point is invalid."), ex.what());
+		return;
 	}
 	catch(MountpointAlreadyInUseException const& ex)
 	{
 		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), ex.what());
+		return;
 	}
 }
 
@@ -97,24 +94,7 @@ void GUIBackend::serialise(TreeViewModel *model)
 		emit showMessage(tr("Error"), tr("Could not serialise backend."), ex.what());
 	}
 
-	m_mountConf.rewind();
-
-	while (m_mountConf.next())
-	{
-		Key k = m_mountConf.current().dup();
-		QString currentKey = QString::fromStdString(k.getName());
-		QStringList keys = currentKey.split("/");
-		QString root = keys.takeFirst();
-
-		if (root == "system")
-		{
-			model->sink(model->model().at(0), keys, "system", k);
-		}
-		else if (root == "user")
-		{
-			model->sink(model->model().at(1), keys, "user", k);
-		}
-	}
+	model->createNewNodes(m_mountConf);
 
 	try
 	{
@@ -131,11 +111,6 @@ void GUIBackend::serialise(TreeViewModel *model)
 bool GUIBackend::validated()
 {
 	return m_backend->validated();
-}
-
-void GUIBackend::deleteBackend()
-{
-	delete m_backend;
 }
 
 TreeViewModel *GUIBackend::pluginConfigModel() const
@@ -165,30 +140,25 @@ QString GUIBackend::mountPoints() const
 		return "";
 	}
 
+	Backends::BackendInfoVector vec = Backends::getBackendInfo(mountConf);
 	QStringList mPoints;
 	mPoints.append("system/elektra");
 
-	mountConf.rewind();
-
-	Key cur;
-
-	while ((cur = mountConf.next()))
+	foreach (BackendInfo info, vec)
 	{
-		if (cur.getBaseName() == "mountpoint")
+		QString backend = QString::fromStdString(info.name);
+
+		if(backend.startsWith("/"))
 		{
-			if (cur.getString().at(0) == '/')
-			{
-				mPoints.append(QString::fromStdString("user" + cur.getString()));
-				mPoints.append(QString::fromStdString("system" + cur.getString()));
-			}
-			else
-			{
-				mPoints.append(QString::fromStdString(cur.getString()));
-			}
-
+			mPoints.append("user" + backend);
+			mPoints.append("system" + backend);
 		}
-
+		else
+		{
+			mPoints.append(backend);
+		}
 	}
+
 	return mPoints.join(", ");
 }
 
