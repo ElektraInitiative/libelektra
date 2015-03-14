@@ -753,6 +753,7 @@ int elektraSplitSync(Split *split)
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
 		case KEY_NS_NONE:
+			ELEKTRA_ASSERT(0 && "Got keys that should not be here");
 			return -1;
 		}
 	}
