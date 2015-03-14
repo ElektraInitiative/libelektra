@@ -324,18 +324,23 @@ struct _Backend
 	Plugin *errorplugins[NR_OF_PLUGINS];
 
 	ssize_t specsize;	/*!< The size of the spec key from the previous get.
+		-1 if still uninitialized.
 		Needed to know if a key was removed from a keyset. */
 	ssize_t dirsize;	/*!< The size of the dir key from the previous get.
+		-1 if still uninitialized.
 		Needed to know if a key was removed from a keyset. */
 	ssize_t usersize;	/*!< The size of the users key from the previous get.
+		-1 if still uninitialized.
 		Needed to know if a key was removed from a keyset. */
 	ssize_t systemsize;	/*!< The size of the systems key from the previous get.
+		-1 if still uninitialized.
 		Needed to know if a key was removed from a keyset. */
 
 	size_t refcounter;	/*!< This refcounter shows how often the backend
 		is used.  Not cascading or default backends have 1 in it.
-		More than two is not possible, because a backend
-		can be only mounted in system and user each once.*/
+		More than three is not possible, because a backend
+		can be only mounted in dir, system and user each once
+		OR only in spec.*/
 };
 
 /**
@@ -430,12 +435,16 @@ int elektraSplitSearchRoot(Split *split, Key *parentKey);
 int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
 void elektraSplitUpdateFileName (Split *split, KDB *handle, Key *key);
 
+/* for kdbOpen() algorithm */
+void elektraSplitOpen(Split *split);
+
 /* for kdbGet() algorithm */
 int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks);
 int elektraSplitGet (Split *split, Key *warningKey, KDB *handle);
 int elektraSplitMerge (Split *split, KeySet *dest);
 
 /* for kdbSet() algorithm */
+int elektraSplitCheckSize (Split *split);
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
 int elektraSplitSync (Split *split);
 int elektraSplitPrepare (Split *split);

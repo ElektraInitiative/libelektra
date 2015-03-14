@@ -261,6 +261,8 @@ KDB * kdbOpen(Key *errorKey)
 
 	elektraMountVersion (handle, errorKey);
 
+	// elektraSplitOpen(handle->split);
+
 	keyDel (initialParent);
 	return handle;
 }
