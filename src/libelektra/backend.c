@@ -44,6 +44,29 @@
 
 #include <kdbinternal.h>
 
+/**
+ * @brief Allocate a backend
+ *
+ * Initialize everything with zero, except: sizes with -1
+ * and refcounter with 1
+ *
+ * @return 
+ */
+static Backend* elektraBackendAllocate()
+{
+	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+
+	backend->refcounter = 1;
+
+	/*
+	backend->specsize = -1;
+	backend->dirsize = -1;
+	backend->usersize = -1;
+	backend->systemsize = -1;
+	*/
+	return backend;
+}
+
 
 /**Builds a backend out of the configuration supplied
  * from:
@@ -90,8 +113,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 
 	root = ksNext (elektraConfig);
 
-	Backend *backend = elektraCalloc(sizeof(struct _Backend));
-	backend->refcounter = 1;
+	Backend *backend = elektraBackendAllocate();
 
 	while ((cur = ksNext(elektraConfig)) != 0)
 	{
@@ -178,8 +200,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
  */
 Backend* elektraBackendOpenMissing(Key *mp)
 {
-	Backend *backend = elektraCalloc(sizeof(struct _Backend));
-	backend->refcounter = 1;
+	Backend *backend = elektraBackendAllocate();
 
 	Plugin *plugin = elektraPluginMissing();
 	if (!plugin)
@@ -210,8 +231,7 @@ Backend* elektraBackendOpenMissing(Key *mp)
  */
 Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 {
-	Backend *backend = elektraCalloc(sizeof(struct _Backend));
-	backend->refcounter = 1;
+	Backend *backend = elektraBackendAllocate();
 
 	KeySet *resolverConfig = ksNew(5,
 		keyNew("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
@@ -264,8 +284,7 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
  */
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 {
-	Backend *backend = elektraCalloc(sizeof(struct _Backend));
-	backend->refcounter = 1;
+	Backend *backend = elektraBackendAllocate();
 
 	cursor_t save = ksGetCursor (modules);
 	KeySet *defaultConfig = ksNew(5,
@@ -304,8 +323,7 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
  */
 Backend* elektraBackendOpenVersion(Key * errorKey ELEKTRA_UNUSED)
 {
-	Backend *backend = elektraCalloc(sizeof(struct _Backend));
-	backend->refcounter = 1;
+	Backend *backend = elektraBackendAllocate();
 
 	Plugin *plugin = elektraPluginVersion();
 	if (!plugin)
