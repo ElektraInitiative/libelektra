@@ -65,6 +65,7 @@ public:
 	std::string userConfigFile;
 	std::string specConfigFile;
 	std::string systemConfigFile;
+	std::string dirConfigFile; // currently unused, but may disturb tests if present
 
 	Mountpoint(std::string mountpoint_, std::string configFile_) :
 		mountpoint(mountpoint_)
@@ -76,6 +77,10 @@ public:
 		userConfigFile = getConfigFileName("user", mountpoint);
 		specConfigFile = getConfigFileName("spec", mountpoint);
 		systemConfigFile = getConfigFileName("system", mountpoint);
+		dirConfigFile = getConfigFileName("dir", mountpoint);
+		// std::cout << "config files are: " << dirConfigFile << " "
+		// 	<< userConfigFile << " " << specConfigFile << " "
+		// 	<< systemConfigFile << std::endl;
 	}
 
 	~Mountpoint()
@@ -114,7 +119,7 @@ public:
 
 		Backend b;
 		b.setMountpoint(Key(mountpoint, KEY_END), KeySet(0, KS_END));
-		b.addPlugin("resolver");
+		b.addPlugin(KDB_DEFAULT_RESOLVER);
 		b.useConfigFile(configFile);
 		b.addPlugin("dump");
 		KeySet ks;
@@ -318,19 +323,19 @@ TEST_F(Simple, SetSystemGetAppend)
 	KeySet ks;
 	Key parentKey(testRoot, KEY_END);
 	ks.append(Key("system" + testRoot + "key", KEY_VALUE, "value1", KEY_END));
-	kdb.get(ks, parentKey);
+	ASSERT_NE(kdb.get(ks, parentKey), -1);
 	ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends";
 	ks.rewind();
 	ks.next();
 	EXPECT_EQ(ks.current().getName(), "system/tests/kdb/key") << "name of element in keyset wrong";
 	EXPECT_EQ(ks.current().getString(), "value1") << "string of element in keyset wrong";
-	kdb.set(ks, parentKey);
+	ASSERT_EQ(kdb.set(ks, parentKey), 1);
 	kdb.close(parentKey);
 
 	KeySet ks2;
 	ks2.append(Key("system" + testRoot + "key", KEY_VALUE, "value2",  KEY_END));
 	kdb.open(parentKey);
-	kdb.get(ks2, parentKey);
+	ASSERT_EQ(kdb.get(ks2, parentKey), 1);
 	ASSERT_EQ(ks2.size(), 1) << "wrong size";
 	ks2.rewind();
 	ks2.next();
