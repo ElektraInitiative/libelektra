@@ -37,6 +37,7 @@ KeyWindow {
 			qmlMetaKeyModel.clear()
 			nameTextField.text = ""
 			valueTextField.text = ""
+			isBelow = false
 		}
 	}
 }
