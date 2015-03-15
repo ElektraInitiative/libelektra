@@ -32,9 +32,11 @@ public:
 	virtual void redo();
 
 private:
-	TreeViewModel*   m_model;
-	ConfigNodePtr    m_node;
-	int              m_index;
+	TreeViewModel*  m_model;
+	ConfigNodePtr   m_node;
+	int             m_index;
+	bool			m_isRoot;
+	ConfigNodePtr	m_root;
 };
 
 #endif // DELETEKEYCOMMAND_HPP

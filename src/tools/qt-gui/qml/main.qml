@@ -328,7 +328,10 @@ ApplicationWindow {
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
+
+			treeView.updateIndicator()
 		}
+
 	}
 
 	Action {
@@ -388,7 +391,9 @@ ApplicationWindow {
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
+			treeView.updateIndicator()
 		}
+
 	}
 
 	Action {
