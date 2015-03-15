@@ -27,7 +27,10 @@ fi
 
 do_race_test()
 {
-	SHOULD=`$RACE $* | grep won | wc -l`
+	RES=`$RACE $*`
+	succeed_if "$RACE $* did not run successfully"
+
+	SHOULD=`echo $RES | grep won | wc -l`
 	IS=`$KDB ls user/test/race/keys | wc -l`
 
 	echo "$SHOULD - $IS in test $*"
