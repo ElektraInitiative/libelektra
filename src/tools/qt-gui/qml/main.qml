@@ -341,6 +341,8 @@ ApplicationWindow {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
 			for(var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
 				undoAction.trigger()
+
+			treeView.treeModel.refresh()
 		}
 	}
 
@@ -399,6 +401,8 @@ ApplicationWindow {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
 			for(var i = undoManager.index(); i < undoManager.count(); i++)
 				redoAction.trigger()
+
+			treeView.treeModel.refresh()
 		}
 	}
 
