@@ -201,14 +201,12 @@ ScrollView {
 	}
 
 	function mousePressed(mouse, model, itemLoader) {
-		if(mouse.button === Qt.LeftButton){
 			currentNode = model
 			currentItem = itemLoader
 			keyAreaSelectedItem = null
 			editKeyWindow.selectedNode = currentNode
 			forceActiveFocus()
-		}
-		else if(mouse.button === Qt.RightButton){
+		if(mouse.button === Qt.RightButton){
 			treeContextMenu.popup()
 		}
 	}
