@@ -520,6 +520,8 @@ void TreeViewModel::refresh()
 {
 	layoutAboutToBeChanged();
 	layoutChanged();
+
+	emit updateIndicator();
 }
 
 QString TreeViewModel::getCurrentArrayNo() const

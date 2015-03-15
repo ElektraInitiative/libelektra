@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-	property string version: "0.0.5 (beta)"
+	property string version: "0.0.6 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -397,7 +397,7 @@ ApplicationWindow {
 		enabled: undoManager.canRedo
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
-			for(var i = undoManager.index(); i < undoManager.rowCount(); i++)
+			for(var i = undoManager.index(); i < undoManager.count(); i++)
 				redoAction.trigger()
 		}
 	}
