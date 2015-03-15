@@ -40,6 +40,7 @@ The build-in resolving works like (with ~ resolved from system):
 - for system and relative path: KDB_DB_SYSTEM + path
 - for user and absolute path: ~ + path
 - for user and relative path: ~ + KDB_DB_USER + path
+- for spec with any path: KDB_DB_SPEC + path
 
 Many variants might change this build for different variants of the
 resolver plugin, typically by using environment variables.

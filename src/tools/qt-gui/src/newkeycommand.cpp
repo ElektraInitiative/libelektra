@@ -15,7 +15,7 @@ NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, DataContainer *data, bool
 	kdb::Key parentKey = parentNode->getKey();
 
 	if(!parentKey)
-		parentKey = kdb::Key(parentNode->getPath().toStdString());
+		parentKey = kdb::Key(parentNode->getPath().toStdString(), KEY_END);
 
 	QStringList parentNameSplit = model->getSplittedKeyname(parentKey);
 

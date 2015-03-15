@@ -72,3 +72,7 @@ streaming
 c++11
 DEFAULT_STORAGE/RESOLVER
 
+## bug hunting
+
+all plugins + kdb shell with afl
+

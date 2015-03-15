@@ -141,12 +141,15 @@ ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int s
 	++ split->size;
 	if (split->size > split->alloc) elektraSplitResize(split);
 
-	split->keysets[split->size-1]=ksNew(0, KS_END);
-	split->handles[split->size-1]=backend;
-	split->parents[split->size-1]=parentKey;
-	split->syncbits[split->size-1]=syncbits;
+	// index of the new element
+	const int n = split->size-1;
 
-	return split->size-1;
+	split->keysets[n]=ksNew(0, KS_END);
+	split->handles[n]=backend;
+	split->parents[n]=parentKey;
+	split->syncbits[n]=syncbits;
+
+	return n;
 }
 
 /**
@@ -593,6 +596,45 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 }
 
 /**
+ * @brief Check if any of the split is uninitialized
+ *
+ * @param split
+ *
+ * @retval -1 if size is wrong
+ * @retval 1 if everything is ok
+ */
+int elektraSplitCheckSize (Split *split)
+{
+	/* Iterate everything */
+	for (size_t i=0; i<split->size; ++i)
+	{
+		switch (keyGetNamespace(split->parents[i]))
+		{
+		case KEY_NS_SPEC:
+			if (split->handles[i]->specsize == -1) return -1;
+			break;
+		case KEY_NS_DIR:
+			if (split->handles[i]->dirsize == -1) return -1;
+			break;
+		case KEY_NS_USER:
+			if (split->handles[i]->usersize == -1) return -1;
+			break;
+		case KEY_NS_SYSTEM:
+			if (split->handles[i]->systemsize == -1) return -1;
+			break;
+		case KEY_NS_PROC:
+		case KEY_NS_EMPTY:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			return -1;
+		}
+	}
+	return 1;
+}
+
+
+/**
  * Also update sizes after kdbSet() to recognize multiple kdbSet() attempts.
  *
  * @warning cant use the same code with elektraSplitGet because there is
@@ -711,6 +753,7 @@ int elektraSplitSync(Split *split)
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
 		case KEY_NS_NONE:
+			ELEKTRA_ASSERT(0 && "Got keys that should not be here");
 			return -1;
 		}
 	}
