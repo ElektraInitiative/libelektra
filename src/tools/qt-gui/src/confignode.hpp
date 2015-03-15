@@ -226,6 +226,9 @@ public:
 	 */
 	bool									isExpanded() const;
 
+	bool									isDirty() const;
+	void									setIsDirty(bool dirty);
+
 private:
 	QString         m_name;
 	QString         m_path;
@@ -237,6 +240,7 @@ private:
 	TreeViewModel*  m_parentModel;
 
 	bool            m_isExpanded;
+	bool			m_isDirty;
 
 	/**
 	 * @brief Populates the TreeViewModel which holds the metakeys of this ConfigNode.

@@ -416,6 +416,7 @@ ApplicationWindow {
 		onTriggered: {
 			treeView.treeModel.synchronize()
 			undoManager.setClean()
+			treeView.updateIndicator()
 		}
 	}
 

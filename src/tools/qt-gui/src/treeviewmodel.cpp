@@ -118,6 +118,7 @@ bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, i
 
 	case NameRole:
 		node->setName(modelData.toString());
+		node->setIsDirty(true);
 		break;
 
 	case ValueRole:
@@ -372,12 +373,15 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 	QString name =  keys.takeFirst();
 
-	if (node->hasChild(name))
+	if (node->hasChild(name) && !node->getChildByName(name)->isDirty())
 	{
 		sink(node->getChildByName(name), keys, key);
 	}
 	else
 	{
+		if(node->hasChild(name))
+			node->getChildren()->removeRow(node->getChildIndexByName(name));
+
 		ConfigNodePtr newNode;
 
 		if (isLeaf)
