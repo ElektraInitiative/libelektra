@@ -29,7 +29,7 @@ BasicWindow {
 				color: guiSettings.highlightColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "highlight"
 						colorDialog.open()
 					}
@@ -50,7 +50,7 @@ BasicWindow {
 				color: guiSettings.frameColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "frame"
 						colorDialog.open()
 					}
@@ -71,7 +71,7 @@ BasicWindow {
 				color: guiSettings.nodeWithKeyColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "nodeWith"
 						colorDialog.open()
 					}
@@ -92,7 +92,7 @@ BasicWindow {
 				color: guiSettings.nodeWithoutKeyColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "nodeWithout"
 						colorDialog.open()
 					}
