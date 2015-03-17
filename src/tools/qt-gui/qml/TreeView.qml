@@ -34,6 +34,7 @@ ScrollView {
 
 	property Component delegate: Row {
 		spacing: defaultSpacing
+
 		Label {
 			id: label
 
@@ -138,10 +139,12 @@ ScrollView {
 							id: row
 
 							Item {
+								signal changed()
+								Component.onCompleted: view.updateIndicator.connect(changed)
 								width: rowHeight
 								height: rowHeight
 								opacity: getOpacity(model)
-
+								onChanged: opacity = getOpacity(model)
 								Image {
 									id: expander
 
@@ -209,6 +212,7 @@ ScrollView {
 		if(mouse.button === Qt.RightButton){
 			treeContextMenu.popup()
 		}
+		view.updateIndicator()
 	}
 
 	function getOpacity(model) {

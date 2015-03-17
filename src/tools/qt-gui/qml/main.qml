@@ -631,13 +631,26 @@ ApplicationWindow {
 					property int	keyAreaCopyIndex:-1
 					property string currentNodePath:""
 
+					signal updateModel()
+
 					anchors.fill: parent
 					anchors.margins: 1
 					frameVisible: false
 					alternatingRowColors: false
 					backgroundVisible: false
 
-					model: treeView.currentNode === null ? null : (treeView.currentNode.childrenHaveNoChildren ? treeView.currentNode.children : null)
+					Component.onCompleted: treeView.updateIndicator.connect(updateModel)
+
+					onUpdateModel: model = getModel()
+
+					model: getModel()
+
+					function getModel() {
+						if(treeView.currentNode === null)
+							return ""
+						else if(treeView.currentNode.childrenHaveNoChildren)
+							return treeView.currentNode.children
+					}
 
 					onCurrentRowChanged: {
 						if(currentRow === -1)
