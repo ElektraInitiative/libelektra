@@ -22,6 +22,7 @@ protected:
 	void askForConfirmation(Cmdline const& cl);
 	void doIt();
 
+	kdb::KDB kdb;
 	kdb::KeySet mountConf;
 	std::string path;
 	std::string mp;

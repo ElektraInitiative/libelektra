@@ -24,9 +24,7 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
-	kdb::KDB kdb (parentKey);
 	kdb.get(mountConf, parentKey);
-	kdb.close (parentKey);
 
 	if (!cl.null && cl.first && cl.second && cl.third)
 	{
@@ -117,9 +115,7 @@ void MountBaseCommand::doIt()
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
-	kdb::KDB kdb (parentKey);
 	kdb.set(mountConf, parentKey);
-	kdb.close (parentKey);
 
 	printWarnings(cerr, parentKey);
 }

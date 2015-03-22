@@ -48,9 +48,6 @@ int SetCommand::execute(Cmdline const& cl)
 	// the config
 	kdb.get(conf, k);
 
-	printWarnings(cerr, k);
-	printError(cerr, k);
-
 	Key key = conf.lookup(name);
 
 	if (!key)
@@ -81,10 +78,9 @@ int SetCommand::execute(Cmdline const& cl)
 			key.setBinary(0, 0);
 		}
 	}
-	Key n("/", KEY_CASCADING_NAME, KEY_END);
-	kdb.set(conf, n);
-	printWarnings(cerr, n);
-	printError(cerr, n);
+	kdb.set(conf, k);
+	printWarnings(cerr, k);
+	printError(cerr, k);
 
 	return 0;
 }
