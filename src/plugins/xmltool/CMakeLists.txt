@@ -1,4 +1,5 @@
-find_package (LibXml2 REQUIRED)
+find_package (LibXml2)
+
 if (LIBXML2_FOUND)
 	include (LibAddMacros)
 

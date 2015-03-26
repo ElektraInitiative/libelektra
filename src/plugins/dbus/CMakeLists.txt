@@ -1,4 +1,4 @@
-find_package(DBus REQUIRED)
+find_package(DBus)
 
 if (DBUS_FOUND)
 	add_plugin(dbus
