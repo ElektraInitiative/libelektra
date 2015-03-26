@@ -112,6 +112,12 @@ set(CPACK_RPM_USER_FILELIST
 	"%ignore /etc/bash_completion.d"
 	"%ignore /etc/bash_completion.d"
 	"%ignore /usr"
+	"%ignore /usr/bin"
+	"%ignore /usr/include"
+	"%ignore /usr/lib"
+	"%ignore /usr/share"
+	"%ignore /usr/share/doc"
+	"%ignore /usr/share/man"
 	)
 
 include (CPack)
