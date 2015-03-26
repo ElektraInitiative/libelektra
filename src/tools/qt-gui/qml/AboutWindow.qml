@@ -48,6 +48,9 @@ BasicWindow {
 						property string link: "http://www.libelektra.org"
 						readOnly: true
 						textFormat: TextEdit.RichText
+						backgroundVisible: false
+						textMargin: defaultMargins
+						frameVisible: false
 						text: "<html><style type=\"text/css\"></style><b>Elektra provides a universal and secure framework to store configuration " +
 						"parameters in a global, hierarchical key database.</b><br><br><br>For further information and for reporting bugs " +
 						"<a href=\"" + link + "\">visit Elektra's Website</a></html>"
@@ -65,8 +68,10 @@ BasicWindow {
 						property string ian: "mailto:easyxtarget@gmail.com"
 						readOnly: true
 						textFormat: TextEdit.RichText
-						textMargin: defaultSpacing
+						textMargin: defaultMargins
 						wrapMode: Text.WordWrap
+						backgroundVisible: false
+						frameVisible: false
 						text: "<html>" +
 							  "<style type=\"text/css\"></style>" +
 							  "<p>Elektra Editor designed and implemented by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
@@ -88,8 +93,10 @@ BasicWindow {
 						property string oxygenUrl: "http://www.oxygen-icons.org/"
 						readOnly: true
 						textFormat: TextEdit.RichText
-						textMargin: defaultSpacing
+						textMargin: defaultMargins
 						wrapMode: Text.WordWrap
+						backgroundVisible: false
+						frameVisible: false
 						text: "<html>" +
 							  "<style type=\"text/css\"></style>" +
 							  "<p><a href=\"" + oxygenUrl + "\">Oxygen Icons</a> are used under <a href=\"" + ccUrl + "\">Creative Commons BY-SA 3.0</a></p></html>"

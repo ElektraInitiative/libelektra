@@ -113,7 +113,7 @@ ScrollView {
 								mousePressed(mouse, model, itemLoader)
 							}
 							onDoubleClicked:{
-								editKeyWindow.selectedNode = currentNode
+								mousePressed(mouse, model, itemLoader)
 								editAction.trigger()
 							}
 							onEntered: {

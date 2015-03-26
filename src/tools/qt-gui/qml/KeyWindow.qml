@@ -18,14 +18,12 @@ BasicWindow {
 	property string valuePlaceHolder: "Meta Key Value ..."
 	property int    modelIndex: 0
 	property bool   isArray: false
-	property string path: !visible ? "" : (accessFromSearchResults && selectedNode !== null) ? selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/")) : (treeView.currentNode === null ? "" : treeView.currentNode.path)
+	property string path: !visible ? "" : selectedNode.path.lastIndexOf("/") === -1 ? selectedNode.path : selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/"))
 	property string keyName: ""
 	property string keyValue: ""
 	property bool   isEdited: false
 	property var    selectedNode: null
 	property bool   accessFromSearchResults: false
-
-	Component.onCompleted: accessFromSearchResults ? valueTextField.forceActiveFocus() : nameTextField.forceActiveFocus()
 
 	onClosing: cancelClicked()
 
@@ -158,6 +156,7 @@ BasicWindow {
 	function cancelClicked() {
 		visible = false
 		isEdited = false
+		accessFromSearchResults = false
 		qmlMetaKeyModel.clear()
 		selectedNode = null
 		nameTextField.readOnly = false
