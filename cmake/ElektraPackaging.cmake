@@ -85,4 +85,33 @@ if (UNIX)
 	message (STATUS "Detected ${CPACK_SYSTEM_NAME}. Use make package to build packages (${CPACK_GENERATOR}).")
 endif (UNIX)
 
+
+set(CPACK_RPM_SPEC_MORE_DEFINE "%define ignore \#") 
+set(CPACK_RPM_PACKAGE_RELOCATABLE FALSE)
+
+set(CPACK_RPM_USER_FILELIST
+	"%ignore /etc/profile.d"
+	"%ignore /etc"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /usr"
+	"%ignore /usr/local"
+	"%ignore /usr/local/bin"
+	"%ignore /usr/local/include"
+	"%ignore /usr/local/lib"
+	"%ignore /usr/local/share"
+	"%ignore /usr/local/share/man"
+	"%ignore /etc"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /usr"
+	)
+
 include (CPack)
