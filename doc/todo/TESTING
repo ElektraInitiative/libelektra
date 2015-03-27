@@ -5,6 +5,11 @@ test failing mount with error plugin
 test error plugin when mounted at open
 
 
+## errno
+
+check if errno is never changed
+
+
 ## test ##
 
 full coverage of all plugins in end-to-end test

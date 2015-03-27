@@ -41,6 +41,11 @@ install kdb gen properly
 	search by default in installed pathes
 
 better errnostore solution?
+	reset errno in user functions and avoid code in every plugin
+	always provide last errno in ADD_WARNING+SET_ERROR
+	use safe implementation see
+	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
+	(even strerrno_r seems to deadlock from time to time because of translations?)
 
 C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin
 exists for it
