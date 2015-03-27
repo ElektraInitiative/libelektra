@@ -1829,7 +1829,9 @@ static Key *elektraLookupBySpec(KeySet *ks, Key *specKey, option_t options)
 	Key *ret = 0;
 	// strip away beginning of specKey
 	char * name = specKey->key;
-	specKey->key = strchr(name, '/'); // stays same if already cascading
+	// stays same if already cascading and
+	// root must not be cascaded, so the usage of strchr is safe.
+	specKey->key = strchr(name, '/');
 	size_t size = specKey->keySize;
 	specKey->keySize = size - (specKey->key - name);
 	elektraFinalizeName(specKey);

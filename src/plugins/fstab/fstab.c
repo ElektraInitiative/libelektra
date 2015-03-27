@@ -200,7 +200,6 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	int errnosave = errno;
 	FILE *fstab=0;
 	Key *key=0;
-	char *basename = 0;
 	const void *rootname = 0;
 	struct mntent fstabEntry;
 
@@ -233,7 +232,7 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 	while ((key = ksNext (ks)) != 0)
 	{
-		basename=strrchr(keyName(key), '/')+1;
+		const char *basename=keyBaseName(key);
 #if DEBUG && VERBOSE
 		printf ("key: %s %s\n", keyName(key), basename);
 #endif
