@@ -25,6 +25,14 @@ set (CPACK_PACKAGE_EXECUTABLES kdb)
 set (CPACK_SOURCE_GENERATOR "TBZ2")
 set (CPACK_GENERATOR "TBZ2")
 
+# needed because otherwise files would be written to
+# system during creating the package
+SET (CPACK_SET_DESTDIR "ON")
+#package is not relocatable:
+unset(CPACK_RPM_PACKAGE_RELOCATABLE)
+unset(CPACK_RPM_PACKAGE_RELOCATABLE CACHE)
+
+
 if ("${CMAKE_BUILD_TYPE}" MATCHES "Release")
 	set (CPACK_STRIP_FILES TRUE)
 endif ("${CMAKE_BUILD_TYPE}" MATCHES "Release")
