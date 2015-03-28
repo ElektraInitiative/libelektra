@@ -232,8 +232,29 @@ void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QSt
 
 	plugin->set(part, errorKey);
 
-	printWarnings(cerr, errorKey);
-	printError(cerr, errorKey);
+	stringstream ws;
+	stringstream es;
+	QString warnings;
+	QString errors;
+
+	if(errorKey.getMeta<const kdb::Key>("warnings"))
+	{
+		ws << printWarnings(cerr, errorKey);
+		warnings = QString::fromStdString(ws.str());
+	}
+
+	if(errorKey.getMeta<const kdb::Key>("error"))
+	{
+		es << printError(cerr, errorKey);
+		errors  = QString::fromStdString(es.str());
+	}
+
+	if(errors.isEmpty() && warnings.isEmpty())
+		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), "");
+	else if(errors.isEmpty() && !warnings.isEmpty())
+		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2, warnings were issued.").arg(QString::fromStdString(root.getName()), file), "");
+	else if(!errors.isEmpty())
+		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), errors);
 }
 
 KeySet TreeViewModel::collectCurrentKeySet()
