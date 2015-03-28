@@ -9,6 +9,11 @@ test error plugin when mounted at open
 
 check if errno is never changed
 
+## fork
+
+fork-safety?
+https://github.com/fish-shell/fish-shell/wiki/fish's-Fork-and-Pthread-Manifesto
+
 
 ## test ##
 
