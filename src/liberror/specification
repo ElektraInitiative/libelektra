@@ -166,8 +166,7 @@ ingroup:plugin
 module:resolver
 
 number:28
-unused:yes
-description:could not remove file, obsolete, now 32 is used
+description:could not remove file
 severity:error
 ingroup:plugin
 module:resolver

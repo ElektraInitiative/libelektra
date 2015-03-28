@@ -98,6 +98,32 @@ void elektraSplitDel(Split *keysets)
 }
 
 /**
+ * @brief Remove one part of split.
+ *
+ * @param split the split object to work with
+ * @param where the position to cut away
+ *
+ * @pre where must be within the size of the split
+ * @post split will be removed
+ *
+ * @ingroup split
+ */
+void elektraSplitRemove(Split *split, size_t where)
+{
+	ELEKTRA_ASSERT(where < split->size && "cannot remove behind size");
+	ksDel(split->keysets[where]);
+	keyDel(split->parents[where]);
+	--split->size; // reduce size
+	for(size_t i=where; i<split->size; ++i)
+	{
+		split->keysets[i] = split->keysets[i+1];
+		split->handles[i] = split->handles[i+1];
+		split->parents[i] = split->parents[i+1];
+		split->syncbits[i] = split->syncbits[i+1];
+	}
+}
+
+/**
  * Doubles the size of how many parts of keysets can be appended.
  *
  * @param split the split object to work with
@@ -740,7 +766,7 @@ int elektraSplitSync(Split *split)
 			/* Check for spec keyset for removed keys */
 			if (split->handles[i]->specsize != ksGetSize(split->keysets[i]))
 			{
-				split->syncbits[i] |= 1;
+				set_bit(split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
 			}
 			break;
@@ -753,7 +779,7 @@ int elektraSplitSync(Split *split)
 			/* Check for dir keyset for removed keys */
 			if (split->handles[i]->dirsize != ksGetSize(split->keysets[i]))
 			{
-				split->syncbits[i] |= 1;
+				set_bit(split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
 			}
 			break;
@@ -766,7 +792,7 @@ int elektraSplitSync(Split *split)
 			/* Check for user keyset for removed keys */
 			if (split->handles[i]->usersize != ksGetSize(split->keysets[i]))
 			{
-				split->syncbits[i] |= 1;
+				set_bit(split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
 			}
 			break;
@@ -779,7 +805,7 @@ int elektraSplitSync(Split *split)
 			/* Check for system keyset for removed keys */
 			if (split->handles[i]->systemsize != ksGetSize(split->keysets[i]))
 			{
-				split->syncbits[i] |= 1;
+				set_bit(split->syncbits[i], SPLIT_FLAG_SYNC);
 				needsSync = 1;
 			}
 			break;
@@ -803,71 +829,22 @@ int elektraSplitSync(Split *split)
  *
  * @param split the split object to work with
  * @ingroup split
- * @retval 0 on success
  */
-int elektraSplitPrepare (Split *split)
+void elektraSplitPrepare (Split *split)
 {
-	size_t size = split->size;
-	for (size_t i=0; i<size; ++i)
+	for (size_t i=0; i<split->size; ++i)
 	{
 		if ((split->syncbits[i] & 1) == 1)
 		{
 			KeySet *n = ksDeepDup(split->keysets[i]);
 			ksDel (split->keysets[i]);
 			split->keysets[i] = n;
-			continue;
 		}
-
-		if ((split->syncbits[i] & 1) == 0)
+		else
 		{
 			/* We don't need i anymore */
-			for (size_t j = i+1; j<size; ++j)
-			{
-				if ((split->syncbits[j] & 1) == 1)
-				{
-					Backend *tmpBackend = 0;
-					Key *tmpParent = 0;
-					int tmpSyncbits = 0;
-
-					/* Ohh, we have found an important j... let's swap j and i */
-					ksDel (split->keysets[i]);
-					split->keysets[i] = ksDup(split->keysets[j]);
-
-					tmpBackend = split->handles[i];
-					split->handles[i] = split->handles[j];
-					split->handles[j] = tmpBackend;
-
-					tmpParent = split->parents[i];
-					split->parents[i] = split->parents[j];
-					split->parents[j] = tmpParent;
-
-					tmpSyncbits = split->syncbits[i];
-					split->syncbits[i] = split->syncbits[j];
-					split->syncbits[j] = tmpSyncbits;
-					goto cont; /* Continue the outer loop */
-				}
-			}
-
-			/* We are finished, search did not find anything which needed sync, so let's remove the rest */
-			for (size_t j = i; j<size; ++j)
-			{
-				if ((split->syncbits[j] & 1) == 0)
-				{
-					ksDel (split->keysets[j]);
-					keyDecRef (split->parents[j]);
-					keyDel (split->parents[j]);
-
-					split->keysets[j]=0;
-					split->handles[j]=0;
-					split->parents[j]=0;
-					split->syncbits[j]=0;
-					--split->size;
-				}
-			}
-			break;
+			elektraSplitRemove(split, i);
+			--i;
 		}
-cont: ;
 	}
-
-	return 0;
 }

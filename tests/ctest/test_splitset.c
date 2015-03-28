@@ -1159,7 +1159,7 @@ static void test_realworld()
 	split->handles[11]->systemsize = 3;
 	succeed_if (elektraSplitSync (split) == 1, "sync needed because one size not correct");
 
-	succeed_if( elektraSplitPrepare(split) == 0, "prepare did not work");
+	elektraSplitPrepare(split);
 	succeed_if (split->size == 1, "should be 1, only system/hosts to sync");
 	succeed_if_same_string (keyName(split->parents[0]), "system/hosts");
 	succeed_if_same_string (keyValue(split->parents[0]), "hosts");
@@ -1264,7 +1264,7 @@ static void test_nothingsync()
 	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "does not need sync anymore");
 	simulateGet(split);
 	succeed_if (elektraSplitSync (split) == 0, "nothing to sync");
-	succeed_if( elektraSplitPrepare(split) == 0, "prepare did not work");
+	elektraSplitPrepare(split);
 	succeed_if (split->size == 0, "there should be nothing to sync");
 
 	elektraSplitDel (split);
@@ -1308,7 +1308,7 @@ static void test_state()
 
 	split->handles[0]->usersize=3;
 	succeed_if (elektraSplitSync (split) == 1, "state should sync: other size");
-	succeed_if( elektraSplitPrepare(split) == 0, "prepare did not work");
+	elektraSplitPrepare(split);
 	succeed_if (split->size == 1, "there should be nothing to sync");
 
 	elektraSplitDel (split);

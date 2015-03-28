@@ -164,6 +164,53 @@ static void test_searchroot()
 	elektraSplitDel (split);
 }
 
+static void test_remove()
+{
+	printf ("Test remove from split\n");
+
+	Split *split = elektraSplitNew();
+	exit_if_fail (split, "there must be a split");
+
+	succeed_if (split->size == 0, "size should be zero");
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
+
+	for (size_t i=0; i<APPROXIMATE_NR_OF_BACKENDS; ++i)
+	{
+		elektraSplitAppend(split, 0, 0, i);
+		succeed_if (split->size == i+1, "size should be growing");
+		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
+	}
+
+	elektraSplitRemove(split, 3);
+	succeed_if(split->syncbits[0] == 0, "syncbits not correct");
+	succeed_if(split->syncbits[1] == 1, "syncbits not correct");
+	succeed_if(split->syncbits[2] == 2, "syncbits not correct");
+	succeed_if(split->syncbits[3] == 4, "did not remove third?");
+	succeed_if(split->syncbits[4] == 5, "did not remove third?");
+
+	elektraSplitAppend(split, 0, 0, 100);
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
+	elektraSplitAppend(split, 0, 0, 200);
+	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS*2, "should realloc");
+
+	elektraSplitRemove(split, 3);
+	succeed_if(split->syncbits[0] == 0, "syncbits not correct");
+	succeed_if(split->syncbits[1] == 1, "syncbits not correct");
+	succeed_if(split->syncbits[2] == 2, "syncbits not correct");
+	succeed_if(split->syncbits[3] == 5, "did not remove third (again)?");
+	succeed_if(split->syncbits[4] == 6, "did not remove third (again)?");
+
+	elektraSplitRemove(split, 0);
+	succeed_if(split->syncbits[0] == 1, "did not remove zeroth?");
+	succeed_if(split->syncbits[1] == 2, "did not remove zeroth?");
+	succeed_if(split->syncbits[2] == 5, "did not remove zeroth?");
+	succeed_if(split->syncbits[3] == 6, "did not remove zeroth?");
+	succeed_if(split->syncbits[4] == 7, "did not remove zeroth?");
+
+	elektraSplitDel (split);
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -176,6 +223,7 @@ int main(int argc, char** argv)
 	test_resize();
 	test_append();
 	test_searchroot();
+	test_remove();
 
 	printf("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

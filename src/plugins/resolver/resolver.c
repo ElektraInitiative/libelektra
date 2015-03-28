@@ -664,13 +664,36 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 	return 0;
 }
 
+/**
+ * @brief Check if setting keyset is needed.
+ *
+ * It is not needed, if the keyset is empty.
+ * The configuration file gets removed then.
+ *
+ * @param pk resolver information
+ * @param parentKey parent
+ *
+ * @retval 0 if nothing to do
+ * @retval 1 set will be needed
+ */
+static int elektraRemoveConfigurationFile(resolverHandle *pk, Key *parentKey)
+{
+	if (unlink(pk->filename) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_SET_ERROR(28, parentKey, buffer);
+	}
+
+	return 0;
+}
 
 /**
  * @brief Does everything needed before the storage plugin will be
  * invoked.
  *
- * @param pk
- * @param parentKey
+ * @param pk resolver information
+ * @param parentKey parent
  *
  * @retval 0 on success
  * @retval -1 on error
@@ -817,7 +840,7 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
-	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
+	(Plugin *handle, KeySet *ks, Key *parentKey)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
@@ -826,16 +849,32 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
 
 	if (pk->fd == -1)
 	{
+		// no fd up to now, so we are in first phase
+
 		// we operate on the tmp file
 		keySetString(parentKey, pk->tempfile);
 
-		/* no fd up to now, so we are in first phase*/
-		if (elektraSetPrepare(pk, parentKey) == -1)
+		if (ksGetSize(ks) == 0)
 		{
-			ret = -1;
-		}
+			ret = 0;
 
-		errno = errnoSave; // maybe some temporary error happened
+			// remove file on commit
+			pk->fd = -2;
+		} else {
+			// prepare phase
+			if (elektraSetPrepare(pk, parentKey) == -1)
+			{
+				ret = -1;
+			}
+		}
+	}
+	else if (pk->fd == -2)
+	{
+		// we commit the removal of the configuration file.
+		elektraRemoveConfigurationFile(pk, parentKey);
+
+		// reset for the next time
+		pk->fd = -1;
 	}
 	else
 	{
@@ -855,6 +894,8 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
 		pk->fd = -1;
 	}
 
+	errno = errnoSave; // maybe some temporary error happened
+
 	return ret;
 }
 
@@ -864,8 +905,15 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
 	int errnoSave = errno;
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
 
-	if (pk->fd != -1)
-	{
+	if (pk->fd == -2)
+	{ // removal state 
+		// reset for next time
+		pk->fd = -1;
+		return 0;
+	}
+
+	if (pk->fd > -1)
+	{ // with fd
 		elektraUnlockFile(pk->fd, parentKey);
 		elektraCloseFile(pk->fd, parentKey);
 		elektraUnlockMutex(parentKey);

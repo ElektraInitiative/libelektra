@@ -9,6 +9,9 @@ representation?
 
 ## Assumptions
 
+- User does not want empty files lying around everywhere.
+- User wants to come back to a clean situation using Elektra
+
 ## Considered Alternatives
 
 - no file, no empty directories
@@ -20,12 +23,18 @@ representation?
 
 ## Decision
 
+Remove files on empty KeySet.
+
 ## Argument
+
++ allows user to undo what a previous kdbSet() did
++ easy to understand semantics
++ makes storage plugins easier (do not need to remove files)
 
 ## Implications
 
-When something is written, a large grave of configuration files comes up
-over time.
+- less empty files are left
+- no invalid empty files (yajl bugs)
 
 ## Related decisions
 

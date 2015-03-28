@@ -599,9 +599,9 @@ error:
 static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 {
 	int any_error = 0;
-	for(size_t p=0; p<COMMIT_PLUGIN; ++p)
+	for(size_t i=0; i<split->size;i++)
 	{
-		for(size_t i=0; i<split->size;i++)
+		for(size_t p=0; p<COMMIT_PLUGIN; ++p)
 		{
 			int ret = 0; // last return value
 
@@ -620,8 +620,22 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 						backend->setplugins[p],
 						split->keysets[i],
 						parentKey);
+
+#if VERBOSE && DEBUG
+				printf ("Prepare %s with keys %d in plugin: %d, split: %d, ret: %d\n",
+						keyName(parentKey), ksGetSize(split->keysets[i]), p, i, ret);
+#endif
+
 				if(p == 0)
 				{
+					if (ret == 0)
+					{
+						// resolver says that sync is
+						// not needed, so we
+						// skip other pre-commit
+						// plugins
+						break;
+					}
 					keySetString (split->parents[i],
 						keyString(parentKey));
 				}

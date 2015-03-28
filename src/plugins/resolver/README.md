@@ -77,14 +77,13 @@ way:
 
 ## Reading Configuration ##
 
- 1.) stat the file
- 2.) check if the file stat has changed
- 3.) remember the time (last update)
+ 1.) If no update needed (unchanged modification time): ABORT
+ 2.) remember the last stat time (last update)
 
 
 ## Writing Configuration ##
 
-
+ 0.) On empty configuration: remove the configuration file and ABORT
  1.) Open the configuration file
      If not available recursively create directories and retry.
 #ifdef ELEKTRA_LOCK_MUTEX
@@ -94,23 +93,4 @@ way:
  1.) Try to lock the configuration file, if not possible -> conflict
 #endif
  2.) Check the update time -> conflict
- 3.) update the update time
-
-
-
-#ifdef ELEKTRA_CONFLICT_DEBUG
-
-## Debugging Conflicts ##
-
-You have build the resolver with an option that will send a signal
-SIGSTOP during its critical section.
-
-This way you can easily investigate problems.
-There is also a shellscript test, which does that.
-
-DO NOT USE THIS PLUGIN IN PRODUCTION!!!
-
-IT IS FOR DEBUG PURPOSES ONLY!!!
-
-#endif
-
+ 3.) Update the update time (in order to not self-conflict)
