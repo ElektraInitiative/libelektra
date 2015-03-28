@@ -199,6 +199,7 @@ public:
 	// Methods for Making tests
 
 	inline bool isValid() const;
+	inline std::string getNamespace() const;
 	inline bool isSystem() const;
 	inline bool isUser() const;
 
@@ -1490,11 +1491,27 @@ inline const Key Key::currentMeta() const
  * @retval true if the key has a valid name
  * @retval false if the key has an invalid name
  *
- * @see getName(), isUser(), isSystem()
+ * @see getName(), isUser(), isSystem(), getNamespace()
  */
 inline bool Key::isValid() const
 {
 	return ckdb::keyGetNameSize(getKey()) > 1;
+}
+
+/**
+ * @return namespace as string
+ *
+ * Will return slash for cascading names.
+ *
+ * @see getName(), isUser(), isSystem()
+ */
+inline std::string Key::getNamespace() const
+{
+	std::string name = getName();
+	size_t slash = name.find('/');
+	if (slash == 0) return "/";
+	if (slash != std::string::npos) return name.substr(0, slash);
+	return name;
 }
 
 

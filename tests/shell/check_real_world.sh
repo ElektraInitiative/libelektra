@@ -70,16 +70,16 @@ then
 fi
 
 
-DESKTOP_FILE=${FILE_SUFFIX}_desktop.ini
-DESKTOP_MOUNTPOINT=/test/script/apps/desktop
-if is_plugin_available yajl
-then
-	$KDB mount $DESKTOP_FILE $DESKTOP_MOUNTPOINT yajl
-	succeed_if "could not mount DESKTOP: $DESKTOP_FILE at $DESKTOP_MOUNTPOINT"
-
-	check_set_rm system/test/script/apps/desktop/x y
-	check_set_rm user/test/script/apps/desktop/x y
-fi
+#DESKTOP_FILE=${FILE_SUFFIX}_desktop.ini
+#DESKTOP_MOUNTPOINT=/test/script/apps/desktop
+#if is_plugin_available yajl
+#then
+#	$KDB mount $DESKTOP_FILE $DESKTOP_MOUNTPOINT yajl
+#	succeed_if "could not mount DESKTOP: $DESKTOP_FILE at $DESKTOP_MOUNTPOINT"
+#
+#	check_set_rm system/test/script/apps/desktop/x y
+#	check_set_rm user/test/script/apps/desktop/x y
+#fi
 
 
 
@@ -148,11 +148,11 @@ fi
 
 
 
-if is_plugin_available yajl
-then
-	$KDB umount $DESKTOP_MOUNTPOINT >/dev/null
-	succeed_if "could not umount $DESKTOP_MOUNTPOINT"
-fi
+#if is_plugin_available yajl
+#then
+#	$KDB umount $DESKTOP_MOUNTPOINT >/dev/null
+#	succeed_if "could not umount $DESKTOP_MOUNTPOINT"
+#fi
 
 if is_plugin_available simpleini
 then

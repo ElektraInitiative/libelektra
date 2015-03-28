@@ -59,9 +59,9 @@ do_race_test 200 1 200
 do_race_test 1 333 333
 do_race_test 333 1 333
 
-#do_race_test 10 20 200
-#do_race_test 20 10 200
-#
-#do_race_test 20 20 400
+do_race_test 10 20 200
+do_race_test 20 10 200
+
+do_race_test 20 20 400
 
 end_script

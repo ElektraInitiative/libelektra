@@ -85,8 +85,15 @@ static void test_simple()
 
 	parentKey = keyNew("user/tests/simple/below", KEY_END);
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
-
 	succeed_if (split->size == 1, "user root + simple");
+
+	succeed_if(split->handles[0]->specsize == -1, "spec size wrong");
+	succeed_if(split->handles[0]->usersize == -1, "user size wrong");
+	succeed_if(split->handles[0]->systemsize == -1, "system size wrong");
+	succeed_if(split->handles[0]->dirsize == -1, "dir size wrong");
+
+	// elektraGetCheckUpdateNeeded(split, parentKey)
+
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
@@ -99,6 +106,15 @@ static void test_simple()
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	succeed_if (split->size == 2, "not correct size after appointing");
+
+	succeed_if(split->handles[0] != -0, "no backend");
+	succeed_if(split->handles[0]->specsize == -1, "spec size wrong");
+	succeed_if(split->handles[0]->usersize == -1, "user size wrong");
+	succeed_if(split->handles[0]->systemsize == -1, "system size wrong");
+	succeed_if(split->handles[0]->dirsize == -1, "dir size wrong");
+
+	succeed_if(split->handles[1] == -0, "backend at bypass?");
+
 	succeed_if (ksGetSize(split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize(split->keysets[1]) == 3, "wrong size");
 	succeed_if (split->handles[0] == backend, "should be user backend");
@@ -138,11 +154,32 @@ static void test_get()
 	succeed_if (output_error(parentKey), "error found");
 	succeed_if (output_warnings(parentKey), "warning(s) found");
 
+	succeed_if (split->size == 1, "size of split wrong");
+	succeed_if(split->handles[0]->specsize == -1, "spec size wrong");
+	succeed_if(split->handles[0]->usersize == -1, "user size wrong");
+	succeed_if(split->handles[0]->systemsize == -1, "system size wrong");
+	succeed_if(split->handles[0]->dirsize == -1, "dir size wrong");
+
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys to split");
+
+	succeed_if (split->size == 2, "not correct size after appointing");
+	succeed_if(split->handles[0] != -0, "no backend");
+	succeed_if(split->handles[0]->specsize == -1, "spec size wrong");
+	succeed_if(split->handles[0]->usersize == -1, "user size wrong");
+	succeed_if(split->handles[0]->systemsize == -1, "system size wrong");
+	succeed_if(split->handles[0]->dirsize == -1, "dir size wrong");
+	succeed_if(split->handles[1] == -0, "backend at bypass?");
+
 	split->syncbits[0] = 3; /* Simulate a kdbGet() */
 	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
 	succeed_if (output_error(parentKey), "error found");
 	succeed_if (output_warnings(parentKey), "warning(s) found");
+	succeed_if (split->size == 2, "not correct size after get");
+	succeed_if(split->handles[0] != -0, "no backend");
+	succeed_if(split->handles[0]->specsize == -1, "spec size wrong");
+	succeed_if(split->handles[0]->usersize == 3, "user size wrong");
+	succeed_if(split->handles[0]->systemsize == -1, "system size wrong");
+	succeed_if(split->handles[0]->dirsize == -1, "dir size wrong");
 
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 3, "wrong size");
@@ -346,8 +383,10 @@ static void test_sizes()
 
 
 	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
-	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
-	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->usersize == -1, "usersize not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
@@ -363,9 +402,12 @@ static void test_sizes()
 	succeed_if (output_error(parentKey), "error found");
 	// there will be a warning
 	// succeed_if (output_warnings(parentKey), "warning(s) found");
+	succeed_if_same_string(keyString(keyGetMeta(parentKey, "warnings/#00/number")), "79") // drop key
 
 	succeed_if (handle->defaultBackend->usersize == 3, "usersize not updated by elektraSplitGet");
-	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 3, "wrong size");
 	succeed_if (keyNeedSync(split->keysets[0]->array[0]) == 0, "key should not need sync");
@@ -397,7 +439,9 @@ static void test_sizes()
 	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (handle->defaultBackend->usersize == 3, "usersize should not be updated");
-	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not set to zero");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
 	succeed_if (split->size == 2, "there is an empty keset");
 	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong size");
 	succeed_if (ksGetSize(split->keysets[1]) == 4, "default should stay untouched");
@@ -431,8 +475,10 @@ static void test_triesizes()
 
 	elektraMountOpen(handle, simple_config(), modules, 0);
 	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
-	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
-	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 
 	KeySet *ks = ksNew(15,
 			keyNew("user/testkey1/below/here", KEY_END),
@@ -444,7 +490,6 @@ static void test_triesizes()
 
 	Split *split;
 	Key *parentKey;
-	Key *mp;
 
 	split = elektraSplitNew();
 
@@ -453,11 +498,13 @@ static void test_triesizes()
 	rootBackend = elektraTrieLookup(handle->trie, parentKey);
 	keySetName (parentKey, "user/tests/simple/below");
 	backend = elektraTrieLookup(handle->trie, parentKey);
-	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
-	succeed_if (backend->usersize == 0, "usersize not initialized correct in backend");
-	succeed_if (backend->systemsize == 0, "systemsize not initialized correct in backend");
 
-	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	// now clear name so that we process all backends
+	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (output_error(parentKey), "error found");
@@ -468,33 +515,47 @@ static void test_triesizes()
 	split->syncbits[4] = 3; /* Simulate a kdbGet() */
 	split->syncbits[5] = 1; /* Simulate a kdbGet() */
 
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
+
 	succeed_if (elektraSplitGet (split, parentKey, handle) == 1, "could not postprocess get");
 	succeed_if (output_error(parentKey), "error found");
 	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (backend->usersize == 2, "usersize should be updated");
-	succeed_if (backend->systemsize == 0, "systemsize should not change");
+	succeed_if (backend->systemsize == -1, "systemsize should not change");
+	succeed_if (backend->dirsize == -1, "dirsize should not change");
+	succeed_if (backend->specsize == -1, "specsize should not change");
 
 	succeed_if (rootBackend->usersize == 3, "usersize of rootBackend should be updated");
-	succeed_if (rootBackend->systemsize == 0, "systemsize  of rootBackend should not change");
+	succeed_if (rootBackend->systemsize == 0, "systemsize of rootBackend should be updated");
+	succeed_if (rootBackend->dirsize == 0, "dirsize of rootBackend should be updated");
+	succeed_if (rootBackend->specsize == 0, "specsize of rootBackend should be updated");
 
-	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
-	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize should be updated");
 
 	succeed_if (split->size == 7, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[2]) == 3, "wrong size");
 	succeed_if (ksGetSize(split->keysets[4]) == 2, "wrong size");
-	compare_key(split->parents[4], mp);
+
 	succeed_if (split->handles[0] == rootBackend, "should be root backend");
 	succeed_if (split->handles[1] == rootBackend, "should be root backend");
 	succeed_if (split->handles[2] == rootBackend, "should be root backend");
 	succeed_if (split->handles[3] == rootBackend, "should be root backend");
 	succeed_if (split->handles[4] == backend, "should be mountedbackend");
+	succeed_if (split->handles[5] == handle->defaultBackend, "should be defaultBackend");
 
+	Key *mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
+	compare_key(split->parents[4], mp);
+	keyDel (mp);
 
 	elektraSplitDel (split);
 	keyDel (parentKey);
-	keyDel (mp);
 
 	ksDel (ks);
 	kdbClose (handle, 0);
@@ -514,8 +575,10 @@ static void test_merge()
 
 	elektraMountOpen(handle, simple_config(), modules, 0);
 	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
-	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
-	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
+	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 
 	KeySet *ks = ksNew(15,
 			keyNew("user/testkey1/below/here", KEY_END),
@@ -537,8 +600,10 @@ static void test_merge()
 	keySetName (parentKey, "user/tests/simple/below");
 	backend = elektraTrieLookup(handle->trie, parentKey);
 	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
-	succeed_if (backend->usersize == 0, "usersize not initialized correct in backend");
-	succeed_if (backend->systemsize == 0, "systemsize not initialized correct in backend");
+	succeed_if (backend->specsize == -1, "specsize not initialized correct");
+	succeed_if (backend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (backend->usersize == -1, "usersize  not initialized correct");
+	succeed_if (backend->systemsize == -1, "systemsize not initialized correct");
 
 	mp = keyNew("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 
@@ -556,14 +621,17 @@ static void test_merge()
 	succeed_if (output_warnings(parentKey), "warning(s) found");
 
 	succeed_if (backend->usersize == 2, "usersize should be updated");
-	succeed_if (backend->systemsize == 0, "systemsize should not change");
+	succeed_if (backend->systemsize == -1, "systemsize should not change");
 
 	succeed_if (rootBackend->usersize == 3, "usersize of rootBackend should be updated");
 	succeed_if (rootBackend->systemsize == 0, "systemsize  of rootBackend should not change");
 
-	succeed_if (handle->defaultBackend->usersize == 0, "usersize not initialized correct");
+	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
+	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
+	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
 	succeed_if (handle->defaultBackend->systemsize == 0, "systemsize not initialized correct");
 
+	// output_split(split);
 	succeed_if (split->size == 7, "not correct size after appointing");
 	succeed_if (ksGetSize(split->keysets[2]) == 3, "wrong size");
 	succeed_if (ksGetSize(split->keysets[4]) == 2, "wrong size");

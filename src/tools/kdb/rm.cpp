@@ -43,8 +43,7 @@ int RemoveCommand::execute(Cmdline const& cl)
 		}
 	}
 
-	Key n;
-	kdb.set(conf, n);
+	kdb.set(conf, x);
 
 	return 0;
 }

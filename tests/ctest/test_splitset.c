@@ -78,6 +78,18 @@ static void kdb_close(KDB *kdb)
 	kdbClose (kdb, 0);
 }
 
+void simulateGet(Split *split)
+{
+	for (size_t i=0; i<split->size; ++i)
+	{
+		split->handles[i]->specsize = 0;
+		split->handles[i]->dirsize = 0;
+		split->handles[i]->usersize = 0;
+		split->handles[i]->systemsize = 0;
+	}
+}
+
+
 
 static void test_needsync()
 {
@@ -535,7 +547,6 @@ static void test_three()
 	kdb_close(handle);
 }
 
-
 static void test_userremove()
 {
 	printf ("Test user removing\n");
@@ -543,7 +554,6 @@ static void test_userremove()
 	KDB *handle = kdb_open();
 
 	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
-	handle->defaultBackend->usersize = 2;
 	/* So we had 2 keys before in the keyset */
 
 	KeySet *ks = ksNew ( 3,
@@ -556,6 +566,9 @@ static void test_userremove()
 
 	succeed_if (elektraSplitBuildup (split, handle, 0) == 1, "should need sync");
 	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "should need sync");
+	succeed_if (elektraSplitSync (split) == -2, "should be out of sync");
+	simulateGet(split);
+	handle->defaultBackend->usersize = 2;
 	succeed_if (elektraSplitSync (split) == 1, "should need sync");
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -658,7 +671,7 @@ static void test_userremove()
 	keyDel (parent);
 
 	elektraSplitPrepare(split);
-	succeed_if (split->size == 0, "no remaining keyset");
+	succeed_if (split->size == 0, "split not empty");
 
 	elektraSplitDel (split);
 
@@ -676,8 +689,6 @@ static void test_systemremove()
 	KDB *handle = kdb_open();
 
 	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
-	handle->defaultBackend->systemsize = 2;
-	/* So we had 2 keys before in the keyset */
 
 	KeySet *ks = ksNew ( 3,
 		keyNew ("system/valid/key", KEY_END),
@@ -689,6 +700,9 @@ static void test_systemremove()
 
 	succeed_if (elektraSplitBuildup (split, handle, 0) == 1, "should need sync");
 	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "should need sync");
+	simulateGet(split);
+	handle->defaultBackend->systemsize = 2;
+	/* So we had 2 keys before in the keyset */
 	succeed_if (elektraSplitSync (split) == 1, "should need sync");
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -726,6 +740,7 @@ static void test_systemremove()
 	parent = keyNew ("user/valid", KEY_END);
 	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "should not need sync");
+	simulateGet(split);
 	succeed_if (elektraSplitSync (split) == 0, "should not need sync");
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -810,7 +825,6 @@ static void test_emptyremove()
 
 	Key *parent = 0;
 	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
-	/* So we had 2 keys before in the keyset */
 
 	KeySet *ks = ksNew ( 3, KS_END);
 
@@ -819,6 +833,7 @@ static void test_emptyremove()
 
 	succeed_if (elektraSplitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "should not need sync");
+	simulateGet(split);
 	succeed_if (elektraSplitSync (split) == 0, "should not need sync");
 
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -993,6 +1008,7 @@ static void test_realworld()
 	succeed_if (split->syncbits[11]== 3, "size of split not correct");
 	succeed_if (ksGetSize(split->keysets[11]) == 3, "wrong size");
 
+	simulateGet(split);
 	split->handles[5]->usersize = 5;
 	split->handles[8]->systemsize = 12;
 	succeed_if (elektraSplitSync (split) == 1, "should need sync");
@@ -1226,7 +1242,6 @@ static void test_emptysplit()
 	kdb_close(handle);
 }
 
-
 static void test_nothingsync()
 {
 	printf ("Test buildup with nothing to sync\n");
@@ -1247,6 +1262,7 @@ static void test_nothingsync()
 	succeed_if (split->syncbits[0] == 2, "should be marked as root");
 
 	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "does not need sync anymore");
+	simulateGet(split);
 	succeed_if (elektraSplitSync (split) == 0, "nothing to sync");
 	succeed_if( elektraSplitPrepare(split) == 0, "prepare did not work");
 	succeed_if (split->size == 0, "there should be nothing to sync");
@@ -1257,6 +1273,51 @@ static void test_nothingsync()
 	ksDel (ks);
 	kdb_close(handle);
 }
+
+static void test_state()
+{
+	printf ("Test state conflicts\n");
+	KDB *handle = kdb_open();
+	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+
+	Key *k;
+	KeySet *ks = ksNew(2, k=keyNew("user/abc", KEY_END), KS_END);
+
+	Split *split = elektraSplitNew();
+	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
+
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+
+	succeed_if (split->size == 1, "there is an empty keset");
+	succeed_if (ksGetSize(split->keysets[0]) == 0, "wrong init size");
+	compare_key(split->parents[0], parentKey);
+	succeed_if (split->handles[0] == handle->defaultBackend, "not correct backend");
+	succeed_if (split->syncbits[0] == 2, "should be marked as root");
+
+	succeed_if (elektraSplitDivide (split, handle, ks) == 1, "does not need sync anymore");
+	clear_bit(k->flags, KEY_FLAG_SYNC);
+	succeed_if (elektraSplitDivide (split, handle, ks) == 0, "should not need sync");
+
+	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
+	succeed_if (elektraSplitSync (split) == -2, "state error: should fail");
+
+	split->handles[0]->usersize=1;
+	succeed_if (ksGetSize(split->keysets[0]) == 1, "wrong size");
+	output_split(split);
+	succeed_if (elektraSplitSync (split) == 0, "state nothing to do: same size");
+
+	split->handles[0]->usersize=3;
+	succeed_if (elektraSplitSync (split) == 1, "state should sync: other size");
+	succeed_if( elektraSplitPrepare(split) == 0, "prepare did not work");
+	succeed_if (split->size == 1, "there should be nothing to sync");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+	ksDel (ks);
+	kdb_close(handle);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -1276,6 +1337,7 @@ int main(int argc, char** argv)
 	test_realworld();
 	test_emptysplit();
 	test_nothingsync();
+	test_state();
 
 	printf("\ntest_splitset RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

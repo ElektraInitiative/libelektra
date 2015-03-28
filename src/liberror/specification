@@ -623,3 +623,8 @@ severity:error
 ingroup:plugin
 module:dump
 
+number:107
+description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
+severity:error
+ingroup:kdb
+
