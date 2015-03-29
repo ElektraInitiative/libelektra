@@ -30,7 +30,6 @@ void testUmount(std::string mp)
 
 TEST(Umount, SimpleRoot) { testUmount("/"); }
 TEST(Umount, SimpleSpec) { testUmount("spec/hello"); }
-TEST(Umount, SimpleProc) { testUmount("proc/hello"); }
 TEST(Umount, SimpleDir) { testUmount("dir/hello"); }
 TEST(Umount, SimpleUser) { testUmount("user/hello"); }
 TEST(Umount, SimpleSystem) { testUmount("system/hello"); }
@@ -39,7 +38,6 @@ TEST(Umount, SimpleCascading) { testUmount("/hello"); }
 TEST(Umount, InvolvedRoot) { testUmount("/is//../a//../complex/..///."); }
 
 TEST(Umount, InvolvedSpec) { testUmount("spec/is///a//./more/complex/../complicated///issue//."); }
-TEST(Umount, InvolvedProc) { testUmount("proc/is///a//./more/complex/../complicated///issue//."); }
 TEST(Umount, InvolvedDir) { testUmount("dir/is///a//./more/complex/../complicated///issue//."); }
 TEST(Umount, InvolvedUser) { testUmount("user/is///a//./more/complex/../complicated///issue//."); }
 TEST(Umount, InvolvedSystem) { testUmount("system/is///a//./more/complex/../complicated///issue//."); }

@@ -1,4 +1,4 @@
-find_package(SystemdJournal REQUIRED)
+find_package(SystemdJournal)
 
 if(LIBSYSTEMD_JOURNAL_FOUND)
 

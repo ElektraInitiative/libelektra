@@ -100,6 +100,13 @@ ApplicationWindow {
 
 	NewKeyWindow {
 		id: newKeyWindow
+
+		onVisibleChanged: {
+			if(visible === true){
+
+				nameTextField.forceActiveFocus()
+			}
+		}
 	}
 
 	EditKeyWindow {
@@ -181,14 +188,22 @@ ApplicationWindow {
 		modality: Qt.ApplicationModal
 
 		onAccepted: {
-			if(type === "highlight")
+			if(type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
-			else if(type === "frame")
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "frame" && guiSettings.frameColor !== colorDialog.color) {
 				guiSettings.frameColor =  colorDialog.color
-			else if(type === "nodeWith")
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithKeyColor = colorDialog.color
-			else if(type === "nodeWithout")
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithoutKeyColor = colorDialog.color
+				chooseColorWindow.colorEdited = true
+			}
 
 			close()
 		}

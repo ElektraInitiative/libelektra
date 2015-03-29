@@ -351,6 +351,8 @@ static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
 			// store resolved filename
 			keySetString(split->parents[i],
 					keyString(parentKey));
+			// no keys in that backend
+			elektraBackendUpdateSize(backend, split->parents[i], 0);
 		}
 		if (ret == -1)
 		{
@@ -358,10 +360,10 @@ static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
 			// process.
 			return -1;
 		}
-		if (ret == 1)
+		else if (ret == 1)
 		{
 			/* Seems like we need to sync that */
-			set_bit(split->syncbits[i], 1);
+			set_bit(split->syncbits[i], SPLIT_FLAG_SYNC);
 			++ updateNeededOccurred;
 		}
 	}
@@ -837,20 +839,36 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		goto error;
 	}
 
-	if(elektraSplitDivide(split, handle, ks) == -1)
+	// 1.) Search for syncbits
+	int syncstate = elektraSplitDivide(split, handle, ks);
+	if(syncstate == -1)
 	{
 		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
 		goto error;
 	}
+	ELEKTRA_ASSERT(syncstate == 0 || syncstate == 1);
 
-	if(elektraSplitSync(split) == 0)
+	// 2.) Search for changed sizes
+	syncstate |= elektraSplitSync(split);
+	ELEKTRA_ASSERT(syncstate == 0 || syncstate == 1);
+	if (syncstate != 1)
 	{
 		/* No update is needed */
 		keySetName (parentKey, keyName(initialParent));
+		if(syncstate == -1)
+		{
+			ELEKTRA_SET_ERROR(107, parentKey, "Assert failed: invalid namespace");
+		}
+		else if(syncstate < -1)
+		{
+			ELEKTRA_SET_ERROR(107, parentKey,
+					 keyName(split->parents[-syncstate-2]));
+		}
 		keyDel (initialParent);
 		elektraSplitDel (split);
-		return 0;
+		return syncstate == 0 ? 0 : -1;
 	}
+	ELEKTRA_ASSERT(syncstate == 1);
 
 	elektraSplitPrepare(split);
 

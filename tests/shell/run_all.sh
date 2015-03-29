@@ -99,7 +99,7 @@ rm -rf "$EXPORTS"
 if [ $nbError != "0" ]
 then
 	echo "Following test cases failed:"
-	echo "$nbFailed"
+	echo -e "$nbFailed"
 fi
 
 end_script all

@@ -95,7 +95,8 @@ int ShellCommand::execute(Cmdline const&)
 			current.rewind();
 			while (current.next())
 			{
-				cout << current.current().getName() << " value: " << current.current().getString() << endl;
+				Key const & c = current.current();
+				cout << c.getName() << " value: " << c.getString() << endl;
 			}
 		} else {
 			cout << "unknown command!\n"

@@ -3,9 +3,6 @@ set (CPACK_PACKAGE_NAME "${PACKAGE_NAME}")
 set (PACKAGE_URL "http://www.libelektra.org/")
 set (PACKAGE_BUGREPORT "http://bugs.libelektra.org/")
 
-#see http://public.kitware.com/Bug/view.php?id=7000
-SET(CPACK_SET_DESTDIR "ON")
-
 
 set (PROJECT_VERSION "${KDB_VERSION}")
 set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
@@ -27,6 +24,14 @@ set (CPACK_SOURCE_IGNORE_FILES
 set (CPACK_PACKAGE_EXECUTABLES kdb)
 set (CPACK_SOURCE_GENERATOR "TBZ2")
 set (CPACK_GENERATOR "TBZ2")
+
+# needed because otherwise files would be written to
+# system during creating the package
+SET (CPACK_SET_DESTDIR "ON")
+#package is not relocatable:
+unset(CPACK_RPM_PACKAGE_RELOCATABLE)
+unset(CPACK_RPM_PACKAGE_RELOCATABLE CACHE)
+
 
 if ("${CMAKE_BUILD_TYPE}" MATCHES "Release")
 	set (CPACK_STRIP_FILES TRUE)
@@ -84,5 +89,39 @@ if (UNIX)
 	set (CPACK_SYSTEM_NAME "${LSB_DISTRIB}-${CPACK_PACKAGE_ARCHITECTURE}")
 	message (STATUS "Detected ${CPACK_SYSTEM_NAME}. Use make package to build packages (${CPACK_GENERATOR}).")
 endif (UNIX)
+
+
+set(CPACK_RPM_SPEC_MORE_DEFINE "%define ignore \#") 
+
+set(CPACK_RPM_USER_FILELIST
+	"%ignore /etc/profile.d"
+	"%ignore /etc"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /usr"
+	"%ignore /usr/local"
+	"%ignore /usr/local/bin"
+	"%ignore /usr/local/include"
+	"%ignore /usr/local/lib"
+	"%ignore /usr/local/share"
+	"%ignore /usr/local/share/man"
+	"%ignore /etc"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /etc/bash_completion.d"
+	"%ignore /usr"
+	"%ignore /usr/bin"
+	"%ignore /usr/include"
+	"%ignore /usr/lib"
+	"%ignore /usr/share"
+	"%ignore /usr/share/doc"
+	"%ignore /usr/share/man"
+	)
 
 include (CPack)

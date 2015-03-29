@@ -59,6 +59,8 @@ public:
 	 */
 	Q_INVOKABLE	void	setKDB();
 
+	Q_INVOKABLE void	reset();
+
 public slots:
 	/**
 	 * @brief setHighlightColor Sets the new highlight color.
@@ -108,7 +110,6 @@ signals:
 	void		nodeWithoutKeyColorChanged();
 
 private:
-	kdb::KDB	m_kdb;
 	kdb::KeySet m_config;
 	std::string m_base;
 

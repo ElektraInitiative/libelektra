@@ -221,6 +221,95 @@ TEST_F(Simple, GetNothing)
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
 }
 
+TEST_F(Simple, GetNothingEmpty)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key k;
+	ASSERT_EQ(kdb.get(ks, k), 1);
+	ASSERT_EQ(k.getMeta<int>("warnings/#00/number"), 105) << "did not get warning for empty key";
+	// got everything, so make no assumption of size
+}
+
+TEST_F(Simple, GetSystem)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parentKey("system" + testRoot, KEY_END);
+	ks.append(Key(parentKey.getName() + "/key", KEY_END));
+	EXPECT_NE(kdb.get(ks, parentKey), -1);
+	ASSERT_EQ(ks.size(), 1) << "no key stayed" << ks;
+	ks.rewind();
+	ks.next();
+	EXPECT_EQ(ks.current().getName(), "system/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ(ks.current().getString(), "") << "string of element in keyset wrong";
+
+	ASSERT_NE(kdb.set(ks, parentKey), -1);
+	ks.rewind();
+	ks.next();
+	EXPECT_EQ(ks.current().getName(), "system/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ(ks.current().getString(), "") << "string of element in keyset wrong";
+	kdb.close(parentKey);
+
+	KeySet ks2;
+	kdb.open(parentKey);
+	kdb.get(ks2, parentKey);
+	ks.rewind();
+	ks.next();
+	EXPECT_EQ(ks.current().getName(), "system/tests/kdb/key") << "name of element in keyset wrong";
+	EXPECT_EQ(ks.current().getString(), "") << "string of element in keyset wrong";
+}
+
+TEST_F(Simple, WrongStateSystem)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parentKey("system" + testRoot, KEY_END);
+	EXPECT_THROW(kdb.set(ks, parentKey), kdb::KDBException) << "kdb set without prior kdb get should have 107 Wrong State";
+	kdb.close(parentKey);
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
+}
+
+
+TEST_F(Simple, WrongStateUser)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parentKey("user" + testRoot, KEY_END);
+	EXPECT_THROW(kdb.set(ks, parentKey), kdb::KDBException) << "kdb set without prior kdb get should have 107 Wrong State";
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
+}
+
+
+TEST_F(Simple, WrongStateCascading)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parentKey(testRoot, KEY_END);
+	EXPECT_THROW(kdb.set(ks, parentKey), kdb::KDBException) << "kdb set without prior kdb get should have 107 Wrong State";
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
+}
+
+TEST_F(Simple, GetCascading)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parentKey(testRoot, KEY_END);
+	kdb.get(ks, parentKey);
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
+
+	Key setParentKey("system"+testRoot, KEY_END);
+	kdb.set(ks, setParentKey);
+	kdb.close(parentKey);
+}
+
+
 TEST_F(Simple, GetAppendCascading)
 {
 	using namespace kdb;
@@ -377,14 +466,5 @@ TEST_F(Simple, WrongParent)
 	Key parent("meta", KEY_META_NAME, KEY_END);
 	KeySet ks;
 	EXPECT_THROW(kdb.set(ks, parent), kdb::KDBException);
-	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
-}
-
-TEST_F(Simple, WrongState)
-{
-	using namespace kdb;
-	KDB kdb;
-	KeySet ks;
-	kdb.set(ks, testRoot);
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
 }

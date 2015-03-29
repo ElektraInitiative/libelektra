@@ -7,6 +7,8 @@ BasicWindow {
 
 	title: qsTr("Choose Colors")
 
+	property bool colorEdited: false
+
 	contents: BasicRectangle {
 		anchors.fill: parent
 		GridLayout {
@@ -111,14 +113,17 @@ BasicWindow {
 					guiSettings.frameColor =  activePalette.dark
 					guiSettings.nodeWithKeyColor = activePalette.windowText
 					guiSettings.nodeWithoutKeyColor = disabledPalette.windowText
+					guiSettings.reset()
 				}
 			}
 		}
 	}
 	cancelButton.action.text: qsTr("&Close")
 	cancelButton.action.onTriggered: {
-		guiSettings.setKDB()
+		if(colorEdited)
+			guiSettings.setKDB()
 		close()
+		colorEdited = false
 	}
 	okButton.visible: false
 }

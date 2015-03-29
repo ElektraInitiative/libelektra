@@ -61,9 +61,6 @@ TEST(SameMountpoint, strangeMountpoints)
 	b1.setMountpoint(Key("spec//..//hello//..//.//..////../..", KEY_END), ks);
 	EXPECT_EQ(b1.getMountpoint(), "spec");
 
-	b1.setMountpoint(Key("proc//..//hello//..//.//..////../..", KEY_END), ks);
-	EXPECT_EQ(b1.getMountpoint(), "proc");
-
 	b1.setMountpoint(Key("dir//..//hello//..//.//..////../..", KEY_END), ks);
 	EXPECT_EQ(b1.getMountpoint(), "dir");
 
@@ -97,6 +94,12 @@ TEST(SameMountpoint, wrongMountpoints)
 	ASSERT_THROW(b1.setMountpoint(Key(".", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ(b1.getMountpoint(), "");
 	ASSERT_THROW(b1.setMountpoint(Key("invalid", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("proc", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("proc/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("proc//..//hello//..//.//..////../..", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ(b1.getMountpoint(), "");
 }
 
@@ -160,19 +163,15 @@ void checkAllow(std::string name1, std::string name2)
 
 
 TEST(SameMountpoint, exactlySameHelloSpec) { checkSame("spec/hello", "spec/hello"); }
-TEST(SameMountpoint, exactlySameHelloProc) { checkSame("proc/hello", "proc/hello"); }
 TEST(SameMountpoint, exactlySameHelloDir) { checkSame("dir/hello", "dir/hello"); }
 TEST(SameMountpoint, exactlySameHelloUser) { checkSame("user/hello", "user/hello"); }
 TEST(SameMountpoint, exactlySameHelloSystem) { checkSame("system/hello", "system/hello"); }
 
 TEST(SameMountpoint, cascadingFirstSameHelloSpec) { checkAllow("/hello", "spec/hello"); }
-TEST(SameMountpoint, cascadingFirstSameHelloProc) { checkSame("/hello", "proc/hello"); }
-TEST(SameMountpoint, cascadingFirstSameHelloDir) { checkSame("/hello", "proc/hello"); }
 TEST(SameMountpoint, cascadingFirstSameHelloUser) { checkSame("/hello", "user/hello"); }
 TEST(SameMountpoint, cascadingFirstSameHelloSystem) { checkSame("/hello", "system/hello"); }
 
 TEST(SameMountpoint, cascadingSameHelloSpec) { checkAllow("spec/hello", "/hello"); }
-TEST(SameMountpoint, cascadingSameHelloProc) { checkSame("proc/hello", "/hello"); }
 TEST(SameMountpoint, cascadingSameHelloDir) { checkSame("dir/hello", "/hello"); }
 TEST(SameMountpoint, cascadingSameHelloUser) { checkSame("user/hello", "/hello"); }
 TEST(SameMountpoint, cascadingSameHelloSystem) { checkSame("system/hello", "/hello"); }
@@ -181,32 +180,27 @@ TEST(SameMountpoint, exactlySameElektraSystem) { checkSame("system/hello", "syst
 TEST(SameMountpoint, cascadingSameElektra) { checkSame("system/hello", "/elektra"); }
 
 TEST(SameMountpoint, exactlySameSpec) { checkSame("spec/an/more/involved/deeper/mountpoint", "spec/an/more/involved/deeper/mountpoint"); }
-TEST(SameMountpoint, exactlySameProc) { checkSame("proc/an/more/involved/deeper/mountpoint", "proc/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, exactlySameDir) { checkSame("dir/an/more/involved/deeper/mountpoint", "dir/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, exactlySameUser) { checkSame("user/an/more/involved/deeper/mountpoint", "user/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, exactlySameSystem) { checkSame("system/an/more/involved/deeper/mountpoint", "system/an/more/involved/deeper/mountpoint"); }
 
 TEST(SameMountpoint, cascadingFirstSameSpec) { checkAllow("/an/more/involved/deeper/mountpoint", "spec/an/more/involved/deeper/mountpoint"); }
-TEST(SameMountpoint, cascadingFirstSameProc) { checkSame("/an/more/involved/deeper/mountpoint", "proc/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, cascadingFirstSameDir) { checkSame("/an/more/involved/deeper/mountpoint", "dir/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, cascadingFirstSameUser) { checkSame("/an/more/involved/deeper/mountpoint", "user/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, cascadingFirstSameSystem) { checkSame("/an/more/involved/deeper/mountpoint", "system/an/more/involved/deeper/mountpoint"); }
 
 TEST(SameMountpoint, cascadingSameSpec) { checkAllow("spec/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
-TEST(SameMountpoint, cascadingSameProc) { checkSame("proc/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, cascadingSameDir) { checkSame("dir/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, cascadingSameUser) { checkSame("user/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, cascadingSameSystem) { checkSame("system/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
 
 TEST(SameMountpoint, sameRoot) { checkSame("/", "/"); }
 TEST(SameMountpoint, sameRootSpec) { checkSame("/", "spec"); }
-TEST(SameMountpoint, sameRootProc) { checkSame("/", "proc"); }
 TEST(SameMountpoint, sameRootDir) { checkSame("/", "dir"); }
 TEST(SameMountpoint, sameRootUser) { checkSame("/", "user"); }
 TEST(SameMountpoint, sameRootSystem) { checkSame("/", "system"); }
 
 TEST(SameMountpoint, sameRootSlashSpec) { checkSame("/", "spec/"); }
-TEST(SameMountpoint, sameRootSlashProc) { checkSame("/", "proc/"); }
 TEST(SameMountpoint, sameRootSlashDir) { checkSame("/", "dir/"); }
 TEST(SameMountpoint, sameRootSlashUser) { checkSame("/", "user/"); }
 TEST(SameMountpoint, sameRootSlashSystem) { checkSame("/", "system/"); }

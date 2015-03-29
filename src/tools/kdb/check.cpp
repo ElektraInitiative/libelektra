@@ -15,26 +15,37 @@ using namespace kdb::tools;
 CheckCommand::CheckCommand()
 {}
 
+int printProblems(Key k, std::string action, int off)
+{
+	bool wo = k.getMeta<const kdb::Key>("warnings");
+	bool eo = k.getMeta<const kdb::Key>("error");
+	if (wo || eo) std::cerr << action << " of kdb yield following problems:" << std::endl;
+	printWarnings(cerr, k);
+	return (wo + eo * 2) << off;
+}
+
 int CheckCommand::execute(Cmdline const& cl)
 {
 	if (cl.arguments.size() == 0)
 	{
+		int ret = 0;
 		Key x;
 		KDB kdb (x);
-		bool wo = x.getMeta<const kdb::Key>("warnings");
-		bool eo = x.getMeta<const kdb::Key>("error");
-		if (wo || eo) std::cerr << "opening of kdb yield following problems:" << std::endl;
-		printWarnings(cerr, x);
-		printError(cerr, x);
+		ret += printProblems(x, "opening", 0);
+
+		KeySet ks;
+		Key a("/", KEY_END);
+		kdb.get(ks, a);
+		ret += printProblems(a, "getting", 2);
+
+		Key b("/", KEY_END);
+		kdb.set(ks, b);
+		ret += printProblems(b, "setting", 4);
 
 		Key y;
 		kdb.close(y);
-		bool wc = y.getMeta<const kdb::Key>("warnings");
-		bool ec = y.getMeta<const kdb::Key>("error");
-		if (wc || ec) std::cerr << "closing of kdb yield following problems:" << std::endl;
-		printWarnings(cerr, y);
-		printError(cerr, y);
-		return  wo + wc*2 + eo * 4 + ec *8;
+		ret += printProblems(y, "closing", 6);
+		return  ret;
 	}
 
 	if (cl.arguments.size() != 1)

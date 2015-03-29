@@ -317,6 +317,11 @@ char *elektraStrNDup (const char *s, size_t l)
  * chars safe. While strlen() counts characters and ignores the final NULL,
  * elektraStrLen() count bytes including the ending NULL.
  *
+ * It must not be used to search for / in the name, because it does not
+ * consider escaping. Instead use the unescaped name.
+ *
+ * @see keyUnescapedName()
+ *
  * @ingroup internal
  * @param s the string to get the length from
  * @return number of bytes used by the string, including the final NULL.

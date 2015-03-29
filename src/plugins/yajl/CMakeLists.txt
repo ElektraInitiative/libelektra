@@ -1,4 +1,4 @@
-find_package(Yajl REQUIRED)
+find_package(Yajl)
 
 if (YAJL_FOUND)
 	configure_file (

@@ -293,6 +293,8 @@ struct _KDB {
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
 };
 
+
+
 /**
  * Holds all information related to a backend.
  *
@@ -397,6 +399,21 @@ struct _Trie
 	Backend *empty_value;		/*!< Pointer to a backend for the empty string "" */
 };
 
+typedef enum
+{
+	SPLIT_FLAG_SYNC=1,	/*!< KeySet in Split need sync.
+		Is there any key in there which need to be synced?
+		If keys were popped from the Keyset
+		this flag will be set, so that the backend will sync
+		the keys to database.
+		*/
+
+	SPLIT_FLAG_CASCADING=1<<1 /*!< Do we need relative checks?
+		Is this a cascading backend?
+		*/
+} splitflag_t;
+
+
 
 /** The private split structure.
  *
@@ -412,9 +429,7 @@ struct _Split
 	Key **parents;		/*!< The parentkey for the keyset.
 				Is either the mountpoint of the backend
 				or "user", "system", "spec" for the split root/cascading backends */
-	int *syncbits;		/*!< Bits for various options:
-				Bit 0: Is there any key in there which need to be synced?
-				Bit 1: Do we need relative checks? (cascading backend?)*/
+	splitflag_t *syncbits;	/*!< Bits for various options, see #splitflag_t for documentation */
 };
 
 /***************************************
@@ -458,6 +473,8 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenVersion(Key *errorKey);
 int elektraBackendClose(Backend *backend, Key *errorKey);
+
+int elektraBackendUpdateSize(Backend *backend, Key *parent, int size);
 
 /*Plugin handling*/
 int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName,

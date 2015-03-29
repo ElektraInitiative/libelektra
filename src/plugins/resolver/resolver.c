@@ -546,6 +546,7 @@ static int elektraMkdirParents(resolverHandle *pk, const char *pathname, Key *pa
 			goto error;
 		}
 
+		// last part of filename component (basename)
 		char *p = strrchr(pathname, '/');
 
 		/* nothing found */
