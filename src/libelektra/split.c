@@ -604,12 +604,10 @@ static int elektraSplitPostprocess (Split *split, int i, Key *warningKey, KDB *h
  */
 int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 {
-#if DEBUG && VERBOSE
-	printf ("in elektraSplitGet\n");
-#endif
-
+	int ret = 1;
 	/* Dont iterate the default split part */
 	const int bypassedSplits = 1;
+
 	for (size_t i=0; i<split->size-bypassedSplits; ++i)
 	{
 		if (test_bit(split->syncbits[i], 0))
@@ -625,12 +623,12 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle)
 #endif
 		// first we need postprocessing because that might
 		// reduce sizes
-		if (elektraSplitPostprocess(split, i, warningKey, handle) == -1) return -1;
+		if (elektraSplitPostprocess(split, i, warningKey, handle) == -1) ret = -1;
 		// then we can set the size
-		if (elektraBackendUpdateSize(split->handles[i], split->parents[i], ksGetSize(split->keysets[i])) == -1) return -1;
+		if (elektraBackendUpdateSize(split->handles[i], split->parents[i], ksGetSize(split->keysets[i])) == -1) ret = -1;
 	}
 
-	return 1;
+	return ret;
 }
 
 /**

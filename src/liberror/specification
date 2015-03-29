@@ -627,3 +627,8 @@ description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet
 severity:error
 ingroup:kdb
 
+number:108
+description:Wrong keys in postprocessing
+severity:warning
+ingroup:kdb
+

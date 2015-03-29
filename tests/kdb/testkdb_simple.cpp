@@ -234,6 +234,23 @@ TEST_F(Simple, SetNothing)
 	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "found wrong file";
 }
 
+TEST_F(Simple, TryChangeAfterSet)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key k("system" + testRoot + "try_change", KEY_END);
+	ks.append(k);
+	EXPECT_THROW(k.setName("user/x"), kdb::KeyInvalidName);
+	kdb.get(ks, testRoot);
+	ASSERT_EQ(ks.size(), 1) << "got no keys" << ks;
+	kdb.set(ks, testRoot);
+	EXPECT_THROW(k.setName("user/x"), kdb::KeyInvalidName);
+	ASSERT_EQ(ks.size(), 1) << "got no keys" << ks;
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), 0) << "did not find config file";
+}
+
 
 TEST_F(Simple, RemoveFile)
 {

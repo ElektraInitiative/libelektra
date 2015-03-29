@@ -563,8 +563,8 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	/* Now postprocess the updated keysets */
 	if (elektraSplitGet (split, parentKey, handle) == -1)
 	{
-		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
-		goto error;
+		ELEKTRA_ADD_WARNING(108, parentKey, keyName(ksCurrent(ks)));
+		// continue, because sizes are already updated
 	}
 
 	/* We are finished, now just merge everything to returned */
@@ -895,10 +895,15 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitUpdateSize(split);
 
+	for (size_t i=0; i<ks->size; ++i)
+	{
+		// remove all flags from all keys
+		clear_bit(ks->array[i]->flags, KEY_FLAG_SYNC);
+	}
+
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);
 	elektraSplitDel(split);
-	for (size_t i=0; i<ks->size; ++i) ks->array[i]->flags = 0;
 
 	return 1;
 
