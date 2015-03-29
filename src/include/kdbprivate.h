@@ -444,6 +444,7 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
 void elektraSplitResize(Split *ret);
+void elektraSplitRemove(Split *split, size_t where);
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits);
 ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *key);
 int elektraSplitSearchRoot(Split *split, Key *parentKey);
@@ -462,7 +463,7 @@ int elektraSplitMerge (Split *split, KeySet *dest);
 int elektraSplitCheckSize (Split *split);
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
 int elektraSplitSync (Split *split);
-int elektraSplitPrepare (Split *split);
+void elektraSplitPrepare (Split *split);
 int elektraSplitUpdateSize (Split *split);
 
 

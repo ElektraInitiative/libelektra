@@ -166,8 +166,7 @@ ingroup:plugin
 module:resolver
 
 number:28
-unused:yes
-description:could not remove file, obsolete, now 32 is used
+description:could not remove file
 severity:error
 ingroup:plugin
 module:resolver
@@ -626,5 +625,10 @@ module:dump
 number:107
 description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
 severity:error
+ingroup:kdb
+
+number:108
+description:Wrong keys in postprocessing
+severity:warning
 ingroup:kdb
 

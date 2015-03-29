@@ -143,6 +143,12 @@ do
 
 		$KDB rm -r "$ROOT"
 		succeed_if "could not remove all keys"
+
+		test ! -f $USER_FOLDER/$FILE
+		succeed_if "user file was not removed"
+
+		test ! -f $SYSTEM_FOLDER/$FILE
+		succeed_if "system file was not removed"
 	done
 
 	cleanup

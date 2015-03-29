@@ -221,6 +221,64 @@ TEST_F(Simple, GetNothing)
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
 }
 
+TEST_F(Simple, SetNothing)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	kdb.get(ks, testRoot);
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
+	kdb.set(ks, testRoot);
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "found wrong file";
+}
+
+TEST_F(Simple, TryChangeAfterSet)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key k("system" + testRoot + "try_change", KEY_END);
+	ks.append(k);
+	EXPECT_THROW(k.setName("user/x"), kdb::KeyInvalidName);
+	kdb.get(ks, testRoot);
+	ASSERT_EQ(ks.size(), 1) << "got no keys" << ks;
+	kdb.set(ks, testRoot);
+	EXPECT_THROW(k.setName("user/x"), kdb::KeyInvalidName);
+	ASSERT_EQ(ks.size(), 1) << "got no keys" << ks;
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), 0) << "did not find config file";
+}
+
+
+TEST_F(Simple, RemoveFile)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	kdb.get(ks, testRoot);
+	ks.append(Key("system" + testRoot + "remove", KEY_END));
+	ASSERT_EQ(ks.size(), 1) << "could not append key\n" << ks;
+	kdb.set(ks, testRoot);
+	ASSERT_EQ(ks.size(), 1) << "key gone after kdb.set?\n" << ks;
+
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), 0) << "found no file";
+
+	Key parentKey;
+	kdb.close(parentKey);
+	kdb.open(parentKey);
+
+	kdb.get(ks, testRoot);
+	ks.clear();
+	ASSERT_EQ(ks.size(), 0) << "keyset should be empty after clearing it\n" << ks;
+	kdb.set(ks, testRoot);
+
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "found wrong file";
+}
+
+
 TEST_F(Simple, GetNothingEmpty)
 {
 	using namespace kdb;

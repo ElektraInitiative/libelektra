@@ -563,8 +563,8 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	/* Now postprocess the updated keysets */
 	if (elektraSplitGet (split, parentKey, handle) == -1)
 	{
-		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
-		goto error;
+		ELEKTRA_ADD_WARNING(108, parentKey, keyName(ksCurrent(ks)));
+		// continue, because sizes are already updated
 	}
 
 	/* We are finished, now just merge everything to returned */
@@ -599,9 +599,9 @@ error:
 static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 {
 	int any_error = 0;
-	for(size_t p=0; p<COMMIT_PLUGIN; ++p)
+	for(size_t i=0; i<split->size;i++)
 	{
-		for(size_t i=0; i<split->size;i++)
+		for(size_t p=0; p<COMMIT_PLUGIN; ++p)
 		{
 			int ret = 0; // last return value
 
@@ -620,8 +620,22 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 						backend->setplugins[p],
 						split->keysets[i],
 						parentKey);
+
+#if VERBOSE && DEBUG
+				printf ("Prepare %s with keys %d in plugin: %d, split: %d, ret: %d\n",
+						keyName(parentKey), ksGetSize(split->keysets[i]), p, i, ret);
+#endif
+
 				if(p == 0)
 				{
+					if (ret == 0)
+					{
+						// resolver says that sync is
+						// not needed, so we
+						// skip other pre-commit
+						// plugins
+						break;
+					}
 					keySetString (split->parents[i],
 						keyString(parentKey));
 				}
@@ -881,10 +895,15 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitUpdateSize(split);
 
+	for (size_t i=0; i<ks->size; ++i)
+	{
+		// remove all flags from all keys
+		clear_bit(ks->array[i]->flags, KEY_FLAG_SYNC);
+	}
+
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);
 	elektraSplitDel(split);
-	for (size_t i=0; i<ks->size; ++i) ks->array[i]->flags = 0;
 
 	return 1;
 
