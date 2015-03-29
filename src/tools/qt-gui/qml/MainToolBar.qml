@@ -51,7 +51,7 @@ ToolBar {
 			id:tbUndo
 			action: undoAction
 			HelpArea {
-				helpText: qsTr("This button will undo the previous action.")
+				helpText: qsTr("This button will undo the last action.")
 			}
 		}
 		ToolButton {

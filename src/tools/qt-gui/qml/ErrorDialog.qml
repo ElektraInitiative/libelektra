@@ -89,7 +89,7 @@ BasicWindow {
 					}
 					PropertyChanges {
 						target: detailsButton
-						action.text: qsTr("&Hide Details")
+						action.text: qsTr("H&ide Details")
 					}
 				}
 			]
