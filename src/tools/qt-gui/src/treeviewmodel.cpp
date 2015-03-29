@@ -543,8 +543,8 @@ void TreeViewModel::unMountBackend(QString backendName)
 
 void TreeViewModel::refresh()
 {
-//	layoutAboutToBeChanged();
-//	layoutChanged();
+	layoutAboutToBeChanged();
+	layoutChanged();
 
 	emit updateIndicator();
 }
