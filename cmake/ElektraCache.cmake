@@ -20,6 +20,7 @@ set (PLUGINS_LIST_DEFAULT
 	dump
 	resolver
 	sync
+	error
 	)
 
 #
@@ -46,7 +47,6 @@ set (PLUGINS_LIST_COMPILE
 #
 set (PLUGINS_LIST_NODEP
 	ccode
-	error
 	fstab
 	hexcode
 	hidden

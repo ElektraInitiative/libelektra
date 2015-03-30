@@ -123,6 +123,7 @@ public:
 		b.addPlugin(KDB_DEFAULT_RESOLVER);
 		b.useConfigFile(configFile);
 		b.addPlugin("dump");
+		b.addPlugin("error");
 		KeySet ks;
 		KDB kdb;
 		Key parentKey("system/elektra/mountpoints", KEY_END);

@@ -399,3 +399,20 @@ TEST_F(Simple, WrongParent)
 	EXPECT_THROW(kdb.set(ks, parent), kdb::KDBException);
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
 }
+
+TEST_F(Simple, TriggerError)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	EXPECT_EQ(kdb.get(ks, testRoot), 0) << "nothing to do in get";
+	ks.append(Key("system"+testRoot+"a", KEY_END));
+	ks.append(Key("system"+testRoot+"k", KEY_META, "trigger/error", "10", KEY_END));
+	ks.append(Key("system"+testRoot+"z", KEY_END));
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "found wrong file";
+	EXPECT_THROW(kdb.set(ks, testRoot), kdb::KDBException) << "could not trigger error";
+	ASSERT_EQ(ks.size(), 3) << "key suddenly missing";
+	EXPECT_EQ(ks.current().getName(), "system"+testRoot+"k") << "ks should point to error key";
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "created file even though error triggered";
+}

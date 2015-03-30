@@ -84,6 +84,7 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->mtime.tv_nsec = 0;
 	p->filemode = KDB_FILE_MODE;
 	p->dirmode = KDB_FILE_MODE | KDB_DIR_MODE;
+	p->removalNeeded = 0;
 
 	p->filename = 0;
 	p->dirname= 0;
@@ -700,16 +701,29 @@ static int elektraRemoveConfigurationFile(resolverHandle *pk, Key *parentKey)
  */
 static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 {
-	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
-	// we can silently ignore an error, because we will retry later
+	pk->removalNeeded = 0;
+	// most common case: config file is there just to be opened
+	pk->fd = open (pk->filename, O_RDWR, pk->filemode);
+	// we can silently ignore an error, because we will retry
+	// with creation of file
 	if (pk->fd == -1)
 	{
-		elektraMkdirParents(pk, pk->dirname, parentKey);
-		if (elektraOpenFile(pk, parentKey) == -1)
+		// retry with creation:
+		pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
+		// we can silently ignore an error, because we will retry again
+		// with creation of underlying directory
+		if (pk->fd == -1)
 		{
-			// no way to be successful
-			return -1;
+			elektraMkdirParents(pk, pk->dirname, parentKey);
+			if (elektraOpenFile(pk, parentKey) == -1)
+			{
+				// no way to be successful
+				return -1;
+			}
 		}
+		// the file was created by us, so we need to remove it
+		// on error:
+		pk->removalNeeded = 1;
 	}
 
 	if (elektraLockMutex(parentKey) != 0)
@@ -899,35 +913,44 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
 	return ret;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
-	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
+static void elektraUnlinkFile(char *filename, Key *parentKey)
 {
 	int errnoSave = errno;
-	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
-
-	if (pk->fd == -2)
-	{ // removal state 
-		// reset for next time
-		pk->fd = -1;
-		return 0;
-	}
-
-	if (pk->fd > -1)
-	{ // with fd
-		elektraUnlockFile(pk->fd, parentKey);
-		elektraCloseFile(pk->fd, parentKey);
-		elektraUnlockMutex(parentKey);
-	}
-
-	if (unlink (pk->tempfile) == -1)
+	if (unlink (filename) == -1)
 	{
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
 		int written = strlen(buffer);
 		strcat(buffer, " the file: ");
-		strncat(buffer, pk->tempfile, ERROR_SIZE-written-10);
+		strncat(buffer, filename, ERROR_SIZE-written-10);
 		ELEKTRA_ADD_WARNING(36, parentKey, buffer);
 		errno = errnoSave;
+	}
+}
+
+int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
+	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
+{
+	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
+
+	if (pk->fd == -2)
+	{ // removal aborted state (= empty keyset, but error)
+		// reset for next time
+		pk->fd = -1;
+		return 0;
+	}
+
+	elektraUnlinkFile(pk->tempfile, parentKey);
+
+	if (pk->fd > -1)
+	{ // with fd
+		elektraUnlockFile(pk->fd, parentKey);
+		elektraCloseFile(pk->fd, parentKey);
+		if (pk->removalNeeded == 1)
+		{ // removal needed state (= resolver created file, but error)
+			elektraUnlinkFile(pk->filename, parentKey);
+		}
+		elektraUnlockMutex(parentKey);
 	}
 
 	// reset for next time
