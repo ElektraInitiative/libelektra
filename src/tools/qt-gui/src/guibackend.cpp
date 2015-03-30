@@ -150,6 +150,7 @@ QString GUIBackend::mountPoints() const
 
 		if(backend.startsWith("/"))
 		{
+			mPoints.append("dir" + backend);
 			mPoints.append("user" + backend);
 			mPoints.append("system" + backend);
 		}
