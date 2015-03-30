@@ -200,7 +200,6 @@ class Key(GElektra.Key):
 	name     = property(lambda self: self.get_property('name'), _setname)
 	value    = property(get, set, None, "Key value")
 	basename = property(lambda self: self.get_property('basename'), _setbasename)
-	dirname  = property(lambda self: self.get_property('dirname'))
 	fullname = property(lambda self: self.get_property('fullname'))
 
 Key = override(Key)

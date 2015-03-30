@@ -93,13 +93,11 @@
 // properties. thus we rename and create them using pure python code below
 //%attributestring(kdb::Key, std::string, name,     getName, setName);
 //%attributestring(kdb::Key, std::string, basename, getBaseName, setBaseName);
-//%attributestring(kdb::Key, std::string, dirname,  getDirName);
 //%attributestring(kdb::Key, std::string, fullname, getFullName);
 %rename("_%s") kdb::Key::getName;
 %rename("_%s") kdb::Key::setName;
 %rename("_%s") kdb::Key::getBaseName;
 %rename("_%s") kdb::Key::setBaseName;
-%rename("_%s") kdb::Key::getDirName;
 %rename("_%s") kdb::Key::getFullName;
 
 // only accept binary data in binary functions
@@ -168,7 +166,6 @@
     name     = property(_kdb.Key__getName, _kdb.Key__setName)
     value    = property(get, set, None, "Key value")
     basename = property(_kdb.Key__getBaseName, _kdb.Key__setBaseName)
-    dirname  = property(_kdb.Key__getDirName)
     fullname = property(_kdb.Key__getFullName)
 
     def __str__(self):

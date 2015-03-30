@@ -185,11 +185,6 @@ GElektra.Key._attribute.basename = {
 	end,
 	set = GElektra.Key._setbasename
 }
-GElektra.Key._attribute.dirname = {
-	get = function(self)
-		return GElektra.Key:_access_property(self, self._property.dirname)
-	end
-}
 GElektra.Key._attribute.fullname = {
 	get = function(self)
 		return GElektra.Key:_access_property(self, self._property.fullname)

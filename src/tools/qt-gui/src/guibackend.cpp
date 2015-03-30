@@ -180,7 +180,7 @@ QString GUIBackend::pluginInfo(QString pluginName) const
 
 	if (k)
 	{
-		while ((k = info.next()) && k.getDirName() == root.getName())
+		while ((k = info.next()) && k.isBelow(root))
 		{
 			infoString.append(QString::fromStdString(k.getBaseName()) + ": " + QString::fromStdString(k.getString()) + "\n\n");
 		}

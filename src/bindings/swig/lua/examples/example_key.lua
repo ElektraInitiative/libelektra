@@ -14,7 +14,6 @@ print("Properties of Key1:")
 print("  key1.name     = \"%s\"", key1.name)
 print("  key1.value    = \"%s\"", key1.value)
 print("  key1.basename = \"%s\"", key1.basename)
-print("  key1.dirname  = \"%s\"", key1.dirname)
 print("  key1.fullname = \"%s\"", key1.fullname)
 print("")
 
