@@ -105,21 +105,18 @@ static void create_global_keys()
 
 static void test_props()
 {
-	gchar *name, *basename, *dirname, *fullname;
+	gchar *name, *basename, *fullname;
 	g_object_get(g_key,
 		"name",     &name,
 		"basename", &basename,
-		"dirname",  &dirname,
 		"fullname", &fullname,
 		NULL
 		);
 	succeed_if(!strcmp(name,     "user/key"), "wrong value");
 	succeed_if(!strcmp(basename, "key"),      "wrong value");
-	succeed_if(!strcmp(dirname,  "user"),     "wrong value");
 	succeed_if(!strcmp(fullname, "user:myowner/key"), "wrong value");
 	g_free(name);
 	g_free(basename);
-	g_free(dirname);
 	g_free(fullname);
 
 	GElektraKey *key = g_object_new(GELEKTRA_TYPE_KEY, NULL);

@@ -7,7 +7,6 @@ enum
   PROP_0,
   PROP_KEY_NAME,
   PROP_KEY_BASENAME,
-  PROP_KEY_DIRNAME,
   PROP_KEY_FULLNAME,
   N_PROPERTIES
 };
@@ -40,14 +39,6 @@ static void gelektra_key_get_property(GObject *object, guint property_id,
 		break;
 	case PROP_KEY_BASENAME:
 		g_value_set_string(value, keyBaseName(self->key));
-		break;
-	case PROP_KEY_DIRNAME:
-		{
-			const char *val = keyName(self->key);
-			const char *pos = strrchr(val, '/');
-			gsize len = (pos != NULL) ? pos - val : keyGetNameSize(self->key);
-			g_value_take_string(value, g_strndup(val, len));
-		}
 		break;
 	case PROP_KEY_FULLNAME:
 		{
@@ -107,13 +98,6 @@ static void gelektra_key_class_init(GElektraKeyClass *klass)
 			"The basename of the key",
 			NULL,
 			G_PARAM_READWRITE);
-
-	obj_properties[PROP_KEY_DIRNAME] =
-		g_param_spec_string("dirname",
-			"Dirname",
-			"The directory name of the key",
-			NULL,
-			G_PARAM_READABLE);
 
 	obj_properties[PROP_KEY_FULLNAME] =
 		g_param_spec_string("fullname",

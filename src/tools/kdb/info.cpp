@@ -86,7 +86,7 @@ int InfoCommand::execute(Cmdline const& cl)
 	if (k)
 	{
 		cout << "Exported symbols: ";
-		while ((k = conf.next()) && k.getDirName() == root.getName())
+		while ((k = conf.next()) && k.isBelow(root))
 		{
 			cout << k.getBaseName() << " ";
 		}
@@ -99,7 +99,7 @@ int InfoCommand::execute(Cmdline const& cl)
 
 	if (k)
 	{
-		while ((k = conf.next()) && k.getDirName() == root.getName())
+		while ((k = conf.next()) && k.isBelow(root))
 		{
 			cout << k.getBaseName() << ": " << k.getString() << endl;
 		}

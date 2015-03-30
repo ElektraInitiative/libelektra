@@ -105,14 +105,14 @@ public:
 	inline ~Key ();
 
 
-	// name manipulation
+	// name operations
+
 
 	inline std::string getName() const;
 	inline ssize_t getNameSize() const;
 
 	inline std::string getBaseName() const;
 	inline ssize_t getBaseNameSize() const;
-	inline std::string getDirName() const;
 
 	inline void setName (const std::string &newName);
 	inline void addName (const std::string &addedName);
@@ -144,7 +144,9 @@ public:
 #endif
 #endif //ELEKTRA_WITHOUT_ITERATOR
 
+
 	// operators
+
 
 	inline bool operator ==(const Key &k) const;
 	inline bool operator !=(const Key &k) const;
@@ -156,7 +158,9 @@ public:
 	inline bool isNull() const;
 	inline operator bool() const;
 
+
 	// value operations
+
 
 	template <class T>
 	inline T get() const;
@@ -178,6 +182,8 @@ public:
 
 
 	// meta data
+	//
+	//
 	inline bool hasMeta(const std::string &metaName) const;
 
 	template <class T>
@@ -197,6 +203,7 @@ public:
 
 
 	// Methods for Making tests
+
 
 	inline bool isValid() const;
 	inline std::string getNamespace() const;
@@ -777,19 +784,6 @@ inline std::string Key::getBaseName() const
 {
 	return std::string (ckdb::keyBaseName(key));
 }
-
-/**
- * @return the dir name of the key
- *
- * e.g. system/sw/dir/key
- * will return system/sw/dir
- */
-inline std::string Key::getDirName() const
-{
-	std::string ret = ckdb::keyName(key);
-	return ret.substr(0, ret.rfind('/'));
-}
-
 
 /**
  * @copydoc keySetName

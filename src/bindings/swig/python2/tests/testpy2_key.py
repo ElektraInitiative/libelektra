@@ -74,13 +74,11 @@ class Key(unittest.TestCase):
 		self.assertEqual(self.key.name,      "user/foo/bar")
 		self.assertEqual(self.key.value,     "value")
 		self.assertEqual(self.key.basename,  "bar")
-		self.assertEqual(self.key.dirname,   "user/foo")
 		self.assertEqual(self.key.fullname,  "user:myowner/foo/bar")
 
 		self.assertEqual(self.bkey.name,     "system/bkey")
 		self.assertEqual(self.bkey.value,    "bvalue\0\0")
 		self.assertEqual(self.bkey.basename, "bkey")
-		self.assertEqual(self.bkey.dirname,  "system")
 		self.assertEqual(self.bkey.fullname, "system/bkey")
 
 		k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
