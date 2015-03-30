@@ -30,21 +30,26 @@ do_race_test()
 	RES=`$RACE $*`
 	succeed_if "$RACE $* did not run successfully"
 
-	SHOULD=`echo $RES | grep won | wc -l`
-	IS=`$KDB ls user/test/race/keys | wc -l`
+	WHERE=user/test/race/keys
 
-	echo "$SHOULD - $IS in test $*"
+	SHOULD=`echo $RES | grep won | wc -l`
+	IS=`$KDB ls $WHERE | wc -l`
+
+	echo "test $*: $SHOULD - $IS"
 
 	[ "x$SHOULD" = "x$IS" ] 
 	succeed_if "The resolver has a race condition: $SHOULD does not equal $IS for $*"
 
 	[ "x$SHOULD" = "x1" ]
-	succeed_if "race had more than one winner"
+	succeed_if "race had more not one, but $SHOULD, winner: $RES"
 
 	[ "x$IS" = "x1" ] 
-	succeed_if "keyset now contains more than one key"
+	succeed_if "keyset now does not contain one, but $IS, key: `$KDB ls $WHERE`"
 
-	$KDB rm -r user/test/race/keys
+	$KDB rm -r $WHERE
+	succeed_if "could not remove key"
+
+	ps aux | grep race | grep -v grep
 }
 
 do_race_test 13 1 13
@@ -58,6 +63,8 @@ do_race_test 200 1 200
 
 do_race_test 1 333 333
 do_race_test 333 1 333
+
+do_race_test 1 500 500
 
 do_race_test 10 20 200
 do_race_test 20 10 200
