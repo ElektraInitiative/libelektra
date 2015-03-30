@@ -419,7 +419,7 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
 /**
  * @brief Retrieve keys in an atomic and universal way.
  *
- * @pre kdbOpen() must be called before using this method.
+ * @pre The @p handle must be passed as returned from kdbOpen()
  *
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
@@ -427,7 +427,10 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *     keyNew().
  *
- * The @p returned KeySet may already contain some keys from previous
+ * If you pass NULL, which violates the preconditions,
+ * on any parameter kdbGet() will fail immediately without doing anything.
+ *
+ * The @p returned KeySet may already contain some keys, e.g. from previous
  * kdbGet() calls. The new retrieved keys will be appended using
  * ksAppendKey().
  *
@@ -453,9 +456,6 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  *
  * @include kdbget.c
  *
- * If you pass NULL on any parameter kdbGet() will fail
- * immediately without doing anything.
- *
  * When a backend fails kdbGet() will return -1 with all
  * error and warning information in the @p parentKey.
  * The parameter @p returned will not be changed.
@@ -470,17 +470,19 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  * need it afterwards.
  *
  * If you want to get the same keyset again, you need to open a
- * second handle to the key database
- * using kdbOpen().
+ * second handle to the key database using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param parentKey is used to add warnings and set an error
  *         information. Additionally, its name is an hint which keys
  *         should be retrieved (it is possible that more are retrieved).
+ *           - cascading keys (starting with /) will retrieve the same path in all namespaces
+ *           - / will retrieve all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
  * @see ksLookup(), ksLookupByName() for powerful
  * 	lookups after the KeySet was retrieved
+ * @see kdbOpen() which needs to be called before
  * @see kdbSet() to save the configuration afterwards and kdbClose() to
  * 	finish affairs with the key database.
  * @retval 1 if the keys were retrieved successfully
@@ -757,29 +759,29 @@ static void elektraSetRollback(Split *split, Key *parentKey)
  *
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *
- *
  * With @p parentKey you can give an hint which part of the given keyset
- * was of interest for you. Then you promise, you did not modify or
- * remove any key not below this key.
+ * is of interest for you. Then you promise, you only modified or
+ * removed keys below this key.
  *
  * @par Errors
  * If some error occurs, kdbSet() will stop. In this situation the KeySet
  * internal cursor will be set on the key that generated the error.
- * None of the keys are actually committed in this situation.
+ * None of the keys are actually committed in this situation (no
+ * configuration file will be modified).
  *
  * In case of errors you should present the error message to the user and let the user decide what
  * to do. Possible solutions are:
  * - remove the problematic key and use kdbSet() again (for validation or type errors)
  * - change the value of the problematic key and use kdbSet() again (for validation errors)
- * - do a kdbGet() (for conflicts, error 30) and then
+ * - do a kdbGet() (for conflicts, i.e. error 30) and then
  *   - set the same keyset again (in favour of what was set by this user)
- *   - drop the old keyset (in favour of what was set elsewhere)
+ *   - drop the old keyset (in favour of what was set from another application)
  *   - merge the original, your own and the other keyset
  * - export the configuration into a file (for unresolvable errors)
  * - repeat the same kdbSet might be of limited use if the operator does
- *   not request it, because temporary
- *   errors are rare and its unlikely that it will be fixed by itself
- *   (e.g. disc full)
+ *   not explicitly request it, because temporary
+ *   errors are rare and its unlikely that they fix themselves
+ *   (e.g. disc full, permission problems)
  *
  * @par Optimization
  * Each key is checked with keyNeedSync() before being actually committed. So
@@ -789,7 +791,7 @@ static void elektraSetRollback(Split *split, Key *parentKey)
  * @snippet kdbset.c set
  *
  * showElektraErrorDialog() and doElektraMerge() need to be implemented
- * by the user. For doElektraMerge a 3-way merge algorithm exists in
+ * by the user of Elektra. For doElektraMerge a 3-way merge algorithm exists in
  * libelektra-tools.
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
@@ -797,15 +799,15 @@ static void elektraSetRollback(Split *split, Key *parentKey)
  * @param parentKey is used to add warnings and set an error
  *         information. Additionally, its name is an hint which keys
  *         should be committed (it is possible that more are changed).
- *           - cascading names will set the path in all namespaces
- *           - / will return all keys
+ *           - cascading keys (starting with /) will set the path in all namespaces
+ *           - / will commit all keys
  *           - meta-names will be rejected (error 104)
- *           - empty/invalid
+ *           - empty/invalid (error 105)
  * @retval 1 on success
- * @retval 0 if nothing had to be done
- * @retval -1 on failure
+ * @retval 0 if nothing had to be done, no changes in KDB
+ * @retval -1 on failure, no changes in KDB
  * @see keyNeedSync()
- * @see ksNext(), ksCurrent() for iteration over the keyset
+ * @see ksCurrent() contains the error key
  * @see kdbOpen() and kdbGet() that must be called first
  * @see kdbClose() that must be called afterwards
  * @ingroup kdb
