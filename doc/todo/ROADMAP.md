@@ -11,21 +11,9 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
-initial warnings 22, 93 when no /etc/kdb
-
-test racing
-
 document METADATA.ini
 
 wrong mounting with tracer
-
-## fix broken tests ##
-
-ctest:
-	test_mountsplit
-	test_splitset
-	order
-	kdb
 
 
 

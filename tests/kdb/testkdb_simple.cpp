@@ -212,6 +212,8 @@ void outputGTest(kdb::KeySet tocheck, std::string name)
 	}
 }
 
+
+
 TEST_F(Simple, GetNothing)
 {
 	using namespace kdb;
@@ -219,6 +221,8 @@ TEST_F(Simple, GetNothing)
 	KeySet ks;
 	kdb.get(ks, testRoot);
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backends" << ks;
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "found wrong file";
 }
 
 TEST_F(Simple, SetNothing)
@@ -239,18 +243,62 @@ TEST_F(Simple, TryChangeAfterSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key k("system" + testRoot + "try_change", KEY_END);
+	std::string name = "system" + testRoot + "try_change";
+	Key k(name, KEY_END);
+	EXPECT_EQ(k.getName(), name);
 	ks.append(k);
 	EXPECT_THROW(k.setName("user/x"), kdb::KeyInvalidName);
+	EXPECT_EQ(k.getName(), name);
 	kdb.get(ks, testRoot);
-	ASSERT_EQ(ks.size(), 1) << "got no keys" << ks;
+	ASSERT_EQ(ks.size(), 1) << "lost keys in get\n" << ks;
 	kdb.set(ks, testRoot);
 	EXPECT_THROW(k.setName("user/x"), kdb::KeyInvalidName);
-	ASSERT_EQ(ks.size(), 1) << "got no keys" << ks;
+	EXPECT_EQ(k.getName(), name);
+	ASSERT_EQ(ks.size(), 1) << "got no keys\n" << ks;
 	struct stat buf;
 	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), 0) << "did not find config file";
 }
 
+TEST_F(Simple, MetaInSet)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parent(testRoot);
+	kdb.get(ks, parent);
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backend" << ks;
+
+	ks.append(Key("meta" + testRoot + "wrong_meta_key", KEY_META_NAME, KEY_END));
+
+	ASSERT_EQ(ks.size(), 1) << "key not inserted:\n" << ks;
+	kdb.set(ks, parent);
+	printError(std::cout, parent);
+	printWarnings(std::cout, parent);
+	ASSERT_EQ(ks.size(), 1) << "got wrong keys:\n" << ks;
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "did find config file";
+}
+
+TEST_F(Simple, InvalidKeysInSet)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parent(testRoot);
+	kdb.get(ks, parent);
+	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backend" << ks;
+
+	ks.append(Key(testRoot + "wrong_cascading_key", KEY_END));
+	ks.append(Key("meta" + testRoot + "wrong_meta_key", KEY_META_NAME, KEY_END));
+
+	ASSERT_EQ(ks.size(), 2) << "keys not inserted:\n" << ks;
+	kdb.set(ks, parent);
+	printError(std::cout, parent);
+	printWarnings(std::cout, parent);
+	ASSERT_EQ(ks.size(), 2) << "got wrong keys:\n" << ks;
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "did find config file";
+}
 
 TEST_F(Simple, RemoveFile)
 {
@@ -429,7 +477,7 @@ TEST_F(Simple, GetAppendNamespaces)
 		KeySet ks;
 		ks.append(Key(namespaces[i].name + testRoot + "key", KEY_END));
 		kdb.get(ks, testRoot);
-		ASSERT_EQ(ks.size(), 1) << "got keys from freshly mounted backends with namespace " << namespaces[i].name;
+		ASSERT_EQ(ks.size(), 1) << "did not got key appended first with namespace " << namespaces[i].name;
 		ks.rewind();
 		ks.next();
 		EXPECT_EQ(ks.current().getName(), namespaces[i].name + "/tests/kdb/key") << "name of element in keyset wrong";
