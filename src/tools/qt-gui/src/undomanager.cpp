@@ -42,7 +42,7 @@ void UndoManager::createDeleteKeyCommand(const QString& type, TreeViewModel* mod
 
 void UndoManager::createNewKeyCommand(TreeViewModel* model, int idx, DataContainer* data, bool isBelow)
 {
-	m_undoStack->push(new NewKeyCommand(model->model().at(idx), data, isBelow));
+	m_undoStack->push(new NewKeyCommand(model, idx, data, isBelow));
 }
 
 void UndoManager::createCopyKeyCommand(TreeViewModel *model, int idx)

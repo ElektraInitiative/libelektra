@@ -641,6 +641,11 @@ MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrat
 	return NULL;
 }
 
+void TreeViewModel::showConfigNodeMessage(QString title, QString text, QString detailedText)
+{
+	emit showMessage(title, text, detailedText);
+}
+
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
 	QHash<int, QByteArray> roles;
@@ -659,9 +664,4 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
 	roles[IsExpandedRole] = "isExpanded";
 
 	return roles;
-}
-
-void TreeViewModel::showConfigNodeMessage(QString title, QString text, QString detailedText)
-{
-	emit showMessage(title, text, detailedText);
 }

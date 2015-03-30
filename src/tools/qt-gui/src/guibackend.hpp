@@ -7,7 +7,7 @@
 #include "treeviewmodel.hpp"
 
 /**
- * @brief The GUIBackend class
+ * @brief The GUIBackend class. It interacts with the wizard in the GUI to create new backends.
  */
 
 class GUIBackend : public QObject
@@ -16,14 +16,13 @@ class GUIBackend : public QObject
 
 public:
 	/**
-	 * @brief GUIBackend
-	 * @param parentBackend
+	 * @brief GUIBackend The default constructor.
+	 * @param parentBackend An optional parent backend.
 	 */
 	explicit GUIBackend(QObject *parentBackend = 0);
 
 	/**
-	 * @brief GUIBackend
-	 * @param other
+	 * @brief GUIBackend The mandatory copy constructor.
 	 */
 	GUIBackend(const GUIBackend &other) : QObject() {Q_UNUSED(other)}
 
@@ -93,8 +92,8 @@ public:
 	Q_INVOKABLE bool			validated();
 
 	/**
-	 * @brief pluginConfigModel
-	 * @return
+	 * @brief pluginConfigModel Contains all keys that provide additonal configuration for a plugin.
+	 * @return All keys that provide additonal configuration for a plugin.
 	 */
 	Q_INVOKABLE TreeViewModel*	pluginConfigModel() const;
 
@@ -106,16 +105,16 @@ private:
 	TreeViewModel*						m_pluginConfigModel;
 
 	/**
-	 * @brief resetModel
+	 * @brief resetModel Clears the TreeViewModel that contains the keys for additional configuration for a plugin.
 	 */
 	void								resetModel();
 
 signals:
 	/**
-	 * @brief showMessage
-	 * @param title
-	 * @param text
-	 * @param detailedText
+	 * @brief Triggers a messagedialog in the GUI.
+	 * @param title The title of the messagedialog in the GUI.
+	 * @param text The text of the messagedialog in the GUI.This is the text that will be initially shown to the user.
+	 * @param detailedText The detailed text of the messagedialog in the GUI.The user will have to click on a button to access this text.
 	 */
 	void showMessage(QString title, QString text, QString detailedText) const;
 };

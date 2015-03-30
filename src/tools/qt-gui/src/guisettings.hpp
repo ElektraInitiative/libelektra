@@ -59,6 +59,9 @@ public:
 	 */
 	Q_INVOKABLE	void	setKDB();
 
+	/**
+	 * @brief reset Deletes all permanent keys and restores the colors to the default values.
+	 */
 	Q_INVOKABLE void	reset();
 
 public slots:

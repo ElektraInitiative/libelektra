@@ -5,7 +5,7 @@
 #include "treeviewmodel.hpp"
 
 /**
- * @brief Remembers a node for redo/undo
+ * @brief The DeleteKeyCommand class. Remembers a node for redo/undo.
  */
 class DeleteKeyCommand : public QUndoCommand
 {
@@ -17,18 +17,11 @@ public:
 	 * @param type Declares if the ConfigNode is a single key or a branch.
 	 * @param model The model that holds the ConfigNode that is deleted.
 	 * @param index The index of the ConfigNode that is deleted.
-	 * @param parent
+	 * @param parent An optional parent command.
 	 */
 	explicit DeleteKeyCommand(const QString& type, TreeViewModel* model, int index, QUndoCommand* parent = 0);
 
-	/**
-	 * @brief undo
-	 */
 	virtual void undo();
-
-	/**
-	 * @brief redo
-	 */
 	virtual void redo();
 
 private:

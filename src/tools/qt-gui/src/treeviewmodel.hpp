@@ -19,7 +19,7 @@
 class Visitor;
 
 /**
- * @brief The TreeViewModel class
+ * @brief The TreeViewModel class. It holds ConfigNodes.
  */
 
 class TreeViewModel : public QAbstractListModel
@@ -49,20 +49,20 @@ public:
 	};
 
 	/**
-	 * @brief TreeViewModel
-	 * @param parentModel
+	 * @brief The default constructor.
+	 * @param parentModel An optional parent.
 	 */
 	explicit TreeViewModel(QObject* parentModel =  0);
 
 	/**
-	 * @brief TreeViewModel
-	 * @param other
+	 * @brief The mandatory copy constructor.
+	 * @param The TreeViewModel that is copied.
 	 */
 	TreeViewModel(TreeViewModel const& other);
 
 	/**
-	 * @brief model
-	 * @return
+	 * @brief Returns the QList that holds the ConfigNodes.
+	 * @return The QList that holds the ConfigNodes.
 	 */
 	QList<ConfigNodePtr>& model()
 	{
@@ -102,18 +102,19 @@ public:
 	Qt::ItemFlags               flags(const QModelIndex& idx) const;
 
 	/**
-	 * @brief Populates this TreeViewModel with a keyset.
+	 * @brief Populates this TreeViewModel with a keyset. The root keys (system, user and spec) will be recreated.
+	 * @param keySet The KeySet that holds the Key objects.
 	 */
 	Q_INVOKABLE void            populateModel(kdb::KeySet keySet);
 
 	/**
-	 * @brief createNewNodes
-	 * @param keySet
+	 * @brief Populates this TreeViewModel with a keyset. The root keys (system, user and spec) will not be recreated.
+	 * @param keySet The KeySet that holds the Key objects.
 	 */
 	void						createNewNodes(kdb::KeySet keySet);
 
 	/**
-	 * @brief The method that actually populates this TreeViewModel.
+	 * @brief The recursive method that actually populates this TreeViewModel.
 	 *
 	 * @param node The ConfigNode that is supposed to find its place in the hierarchy.
 	 * @param keys The path of the ConfigNode that is supposed to find its place in the hierarchy, splitted up into a QStringList.
@@ -122,8 +123,8 @@ public:
 	void                        sink(ConfigNodePtr node, QStringList keys, const kdb::Key &key);
 
 	/**
-	 * @brief accept
-	 * @param visitor
+	 * @brief The method thats accepts a Visitor object to support the Vistor Pattern.
+	 * @param visitor The visitor that visits this TreeViewModel.
 	 */
 	void                        accept(Visitor& visitor);
 
@@ -141,15 +142,15 @@ public:
 	  *
 	  * @param term The search term of interest.
 	  *
-	  * @return A model which includes all ConfigNodes that have the search term in their name or value.
+	  * @return A model which includes all ConfigNodes that have the search term in their name, value or metakeys.
 	  */
 	Q_INVOKABLE QVariant        find(const QString& term);
 
 	/**
 	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding meta keys.
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
-	 * @param key
-	 * @param name
+	 * @param key The key that holds the metadata.
+	 * @param name The name of the parent ConfigNode that holds the metadata.
 	 */
 	void                        insertMetaRow(int row, kdb::Key key, const QString &name);
 
@@ -157,13 +158,13 @@ public:
 	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding non metakey ConfigNodes.
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param node The ConfigNode that is supposed to be inserted.
-	 * @param addParent
+	 * @param addParent Determines if the parentModel of the ConfigNode should be set with this TreeViewModel.
 	 */
 	void                        insertRow(int row, ConfigNodePtr node, bool addParent = true);
 
 	/**
-	 * @brief Looks for valid ConfigNodes, adds them to a KeySet and repopulates this TreeViewModel based on the KeySet.
-	 *
+	 * @brief Collects all current ConfigNodes, adds them to a KeySet, threewaymerges the KeySet with the permanent database
+	 * and populates this TreeViewModel with the result.
 	 */
 	Q_INVOKABLE void            synchronize();
 
@@ -194,8 +195,8 @@ public:
 
 	/**
 	 * @brief Export the configuration below a ConfigNode to a file on the harddisk.
-	 * @param parentModel
-	 * @param idx
+	 * @param parentModel The TreeViewModel that holds the ConfigNode.
+	 * @param idx The index of the ConfigNode in the TreeViewModel.
 	 * @param format Specifies the file format of the exported file.
 	 * @param file The path on the harddisk where the exported file is written to.
 	 */
@@ -229,7 +230,7 @@ public:
 	Q_INVOKABLE void            unMountBackend(QString backendName);
 
 	/**
-	 * @brief Recreates the model. Needed to update the QML view.
+	 * @brief Needed to update the QML view.
 	 */
 	Q_INVOKABLE void            refresh();
 
@@ -253,9 +254,9 @@ public:
 	Q_INVOKABLE QStringList     mountedBackends();
 
 	/**
-	 * @brief getSplittedKeyname
-	 * @param key
-	 * @return
+	 * @brief getSplittedKeyname Splits a keyname into pieces. Delimiter is an unescaped slash ("/").
+	 * @param key The key with the keyname of interest.
+	 * @return A QStringList that holds the splitted keyname.
 	 */
 	QStringList					getSplittedKeyname(const kdb::Key &key);
 
@@ -263,44 +264,40 @@ private:
 	QList<ConfigNodePtr>						m_model;
 	kdb::Key									m_metaModelParent;
 	/**
-	 * @brief getMergeStrategy
-	 * @param mergeStrategy
-	 * @return
+	 * @brief Returns a MergeConflictStrategy object based on the name of the MergeConflictStrategy.
+	 * @param mergeStrategy The name of the MergeConflictStrategy.
+	 * @return The MergeConflictStrategy object based on the name of the MergeConflictStrategy.
 	 */
 	kdb::tools::merging::MergeConflictStrategy*	getMergeStrategy(const QString &mergeStrategy);
 
 protected:
-	/**
-	 * @brief roleNames
-	 * @return
-	 */
 	QHash<int, QByteArray>						roleNames() const;
 
 signals:										//Use "Error", "Warning" and "Information" as title to display the according icon
 	/**
-	 * @brief showMessage
-	 * @param title
-	 * @param text
-	 * @param detailedText
+	 * @brief Triggers a messagedialog in the GUI.
+	 * @param title The title of the messagedialog in the GUI.
+	 * @param text The text of the messagedialog in the GUI.This is the text that will be initially shown to the user.
+	 * @param detailedText The detailed text of the messagedialog in the GUI.The user will have to click on a button to access this text.
 	 */
 	void										showMessage(QString title, QString text, QString detailedText) const;
 	/**
-	 * @brief expandNode
+	 * @brief Triggers the expanded property of a ConfigNode.
 	 */
 	void										expandNode(bool);
 	/**
-	 * @brief updateIndicator
+	 * @brief Triggers the update of the treeview in the GUI.
 	 */
 	void										updateIndicator() const;
 
 public slots:
-	/**
-	 * @brief showConfigNodeMessage
-	 * @param title
-	 * @param text
-	 * @param detailedText
-	 */
-	void										showConfigNodeMessage(QString title, QString text, QString detailedText);
+/**
+* @brief showConfigNodeMessage
+* @param title
+* @param text
+* @param detailedText
+*/
+void	showConfigNodeMessage(QString title, QString text, QString detailedText);
 
 };
 
