@@ -59,6 +59,11 @@ public:
 	 */
 	Q_INVOKABLE	void	setKDB();
 
+	/**
+	 * @brief reset Deletes all permanent keys and restores the colors to the default values.
+	 */
+	Q_INVOKABLE void	reset();
+
 public slots:
 	/**
 	 * @brief setHighlightColor Sets the new highlight color.
@@ -108,7 +113,6 @@ signals:
 	void		nodeWithoutKeyColorChanged();
 
 private:
-	kdb::KDB	m_kdb;
 	kdb::KeySet m_config;
 	std::string m_base;
 

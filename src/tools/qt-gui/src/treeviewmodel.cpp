@@ -118,6 +118,7 @@ bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, i
 
 	case NameRole:
 		node->setName(modelData.toString());
+		node->setIsDirty(true);
 		break;
 
 	case ValueRole:
@@ -231,8 +232,29 @@ void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QSt
 
 	plugin->set(part, errorKey);
 
-	printWarnings(cerr, errorKey);
-	printError(cerr, errorKey);
+	stringstream ws;
+	stringstream es;
+	QString warnings;
+	QString errors;
+
+	if(errorKey.getMeta<const kdb::Key>("warnings"))
+	{
+		ws << printWarnings(cerr, errorKey);
+		warnings = QString::fromStdString(ws.str());
+	}
+
+	if(errorKey.getMeta<const kdb::Key>("error"))
+	{
+		es << printError(cerr, errorKey);
+		errors  = QString::fromStdString(es.str());
+	}
+
+	if(errors.isEmpty() && warnings.isEmpty())
+		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), "");
+	else if(errors.isEmpty() && !warnings.isEmpty())
+		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2, warnings were issued.").arg(QString::fromStdString(root.getName()), file), "");
+	else if(!errors.isEmpty())
+		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), errors);
 }
 
 KeySet TreeViewModel::collectCurrentKeySet()
@@ -372,12 +394,15 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 	QString name =  keys.takeFirst();
 
-	if (node->hasChild(name))
+	if (node->hasChild(name) && !node->getChildByName(name)->isDirty())
 	{
 		sink(node->getChildByName(name), keys, key);
 	}
 	else
 	{
+		if(node->hasChild(name))
+			node->getChildren()->removeRow(node->getChildIndexByName(name));
+
 		ConfigNodePtr newNode;
 
 		if (isLeaf)
@@ -520,6 +545,8 @@ void TreeViewModel::refresh()
 {
 	layoutAboutToBeChanged();
 	layoutChanged();
+
+	emit updateIndicator();
 }
 
 QString TreeViewModel::getCurrentArrayNo() const
@@ -614,6 +641,11 @@ MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrat
 	return NULL;
 }
 
+void TreeViewModel::showConfigNodeMessage(QString title, QString text, QString detailedText)
+{
+	emit showMessage(title, text, detailedText);
+}
+
 QHash<int, QByteArray> TreeViewModel::roleNames() const
 {
 	QHash<int, QByteArray> roles;
@@ -632,9 +664,4 @@ QHash<int, QByteArray> TreeViewModel::roleNames() const
 	roles[IsExpandedRole] = "isExpanded";
 
 	return roles;
-}
-
-void TreeViewModel::showConfigNodeMessage(QString title, QString text, QString detailedText)
-{
-	emit showMessage(title, text, detailedText);
 }

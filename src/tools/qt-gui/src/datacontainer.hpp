@@ -5,7 +5,7 @@
 #include "treeviewmodel.hpp"
 
 /**
- * @brief The DataContainer class
+ * @brief The DataContainer class. It encapsulates various properties to avoid long method signatures.
  */
 
 class DataContainer : public QObject
@@ -14,139 +14,138 @@ class DataContainer : public QObject
 
 public:
 	/**
-	 * @brief DataContainer
-	 * @param parentContainer
+	 * @brief The default constructor.
+	 * @param parentContainer An optional parent object.
 	 */
 	explicit DataContainer(QObject *parentContainer = 0) : QObject(parentContainer) {}
 
 	/**
-	 * @brief DataContainer
-	 * @param otherContainer
+	 * @brief The mandatory copy construcor-
 	 */
 	DataContainer(const DataContainer &otherContainer) : QObject() {Q_UNUSED(otherContainer)}
 
 	/**
-	  * @brief oldName
-	  * @return
+	  * @brief The old name of a ConfigNode. Used when creating EditKeyCommands.
+	  * @return The old name of a ConfigNode.
 	  */
 	Q_INVOKABLE QString			oldName() const;
 
 	/**
-	  * @brief setOldName
-	  * @param name
+	  * @brief Sets the old name of a ConfigNode. Used when creating EditKeyCommands.
+	  * @param name The old name of a ConfigNode.
 	  */
 	Q_INVOKABLE void			setOldName(const QString &name);
 
 	/**
-	  * @brief oldValue
-	  * @return
+	  * @brief The old value of a ConfigNode. Used when creating EditKeyCommands.
+	  * @return The old value of a ConfigNode.
 	  */
 	Q_INVOKABLE QString			oldValue() const;
 
 	/**
-	  * @brief setOldValue
-	  * @param value
+	  * @brief Sets the old value of a ConfigNode. Used when creating EditKeyCommands.
+	  * @param value The old value of a ConfigNode.
 	  */
 	Q_INVOKABLE void			setOldValue(const QString &value);
 
 	/**
-	  * @brief oldMetadata
-	  * @return
+	  * @brief The old metadata of a ConfigNode. Used when creating EditKeyCommands.
+	  * @return The old metadata of a ConfigNode.
 	  */
 	Q_INVOKABLE QVariantMap		oldMetadata() const;
 
 	/**
-	  * @brief setOldMetadata
-	  * @param metadata
+	  * @brief Sets the old metadata of a ConfigNode. Used when creating EditKeyCommands.
+	  * @param metadata The old metadata of a ConfigNode.
 	  */
 	Q_INVOKABLE void			setOldMetadata(TreeViewModel *metadata);
 
 	/**
-	  * @brief newName
-	  * @return
+	  * @brief The new name of a ConfigNode. Used when creating EditKeyCommands and NewKeyCommands.
+	  * @return The new name of a ConfigNode.
 	  */
 	Q_INVOKABLE QString			newName() const;
 
 	/**
-	  * @brief setNewName
-	  * @param name
+	  * @brief Sets the new name of a ConfigNode. Used when creating EditKeyCommands and NewKeyCommands.
+	  * @param name The new name of a ConfigNode.
 	  */
 	Q_INVOKABLE void			setNewName(const QString &name);
 
 	/**
-	  * @brief newValue
-	  * @return
+	  * @brief The new value of a ConfigNode. Used when creating EditKeyCommands and NewKeyCommands.
+	  * @param name The new value of a ConfigNode.
 	  */
 	Q_INVOKABLE QString			newValue() const;
 
 	/**
-	  * @brief setNewValue
-	  * @param value
+	  * @brief Sets the new value of a ConfigNode. Used when creating EditKeyCommands and NewKeyCommands.
+	  * @param name The new value of a ConfigNode.
 	  */
 	Q_INVOKABLE void			setNewValue(const QString &value);
 
 	/**
-	  * @brief newMetadata
-	  * @return
+	  * @brief The new metadata of a ConfigNode. Used when creating EditKeyCommands and NewKeyCommands.
+	  * @param name The new metadata of a ConfigNode.
 	  */
 	Q_INVOKABLE QVariantMap		newMetadata() const;
 
 	/**
-	  * @brief setNewMetadata
-	  * @param metadata
+	  * @brief Sets the new metadata of a ConfigNode. Used when creating EditKeyCommands and NewKeyCommands.
+	  * @param name The new metadata of a ConfigNode.
 	  */
 	Q_INVOKABLE void			setNewMetadata(const QVariantMap &metadata);
 
 	/**
-	  * @brief importName
-	  * @return
+	  * @brief The name of the ConfigNode that will be the root ConfigNode when importing a configuration from file. Used when creating ImportConfigurationCommands.
+	  * @return The name of the ConfigNode that will be the root ConfigNode when importing a configuration from file.
 	  */
 	Q_INVOKABLE QString			importName() const;
 
 	/**
-	  * @brief setImportName
-	  * @param name
+	  * @brief Sets the name of the ConfigNode that will be the root ConfigNode when importing a configuration from file. Used when creating ImportConfigurationCommands.
+	  * @param name The name of the ConfigNode that will be the root ConfigNode when importing a configuration from file.
 	  */
 	Q_INVOKABLE void			setImportName(const QString &name);
 
 	/**
-	  * @brief format
-	  * @return
+	  * @brief The format of the file that contains the configuration to import. Used when creating ImportConfigurationCommands.
+	  * @return The format of the file that contains the configuration to import.
 	  */
 	Q_INVOKABLE QString			format() const;
 
 	/**
-	  * @brief setFormat
-	  * @param form
+	  * @brief Sets the format of the file that contains the configuration to import. Used when creating ImportConfigurationCommands.
+	  * @param form The format of the file that contains the configuration to import.
 	  */
 	Q_INVOKABLE void			setFormat(const QString &form);
 
 	/**
-	  * @brief file
-	  * @return
+	  * @brief The system path of the file that contains the configuration to import. Used when creating ImportConfigurationCommands.
+	  * @return The system path of the file that contains the configuration to import.
 	  */
 	Q_INVOKABLE QString			file() const;
 
 	/**
-	  * @brief setFile
-	  * @param fil
+	  * @brief Sets the system path of the file that contains the configuration to import. Used when creating ImportConfigurationCommands.
+	  * @param fil The system path of the file that contains the configuration to import.
 	  */
 	Q_INVOKABLE void			setFile(const QString &fil);
 
 	/**
-	  * @brief mergeStrategies
-	  * @return
+	  * @brief The merge strategies used when importing a configuration from file. Used when creating ImportConfigurationCommands.
+	  * @return The merge strategies used when importing a configuration from file.
 	  */
 	Q_INVOKABLE QVariantList	mergeStrategies() const;
 
 	/**
-	  * @brief setMergeStrategies
-	  * @param strategies
+	  * @brief Sets the merge strategies used when importing a configuration from file. Used when creating ImportConfigurationCommands.
+	  * @param strategies The merge strategies used when importing a configuration from file.
 	  */
 	Q_INVOKABLE void			setMergeStrategies(const QVariantList &strategies);
 
 	/**
-	  * @brief clearData
+	  * @brief Sets all properties to empty values.
 	  */
 	Q_INVOKABLE void			clearData();
 

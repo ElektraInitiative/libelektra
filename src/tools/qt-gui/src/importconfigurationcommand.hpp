@@ -17,21 +17,14 @@ public:
 	/**
 	 * @brief The command to import a configuration from a file.
 	 *
-	 * @param model The model the configuration is imported to.
-	 * @param index
-	 * @param data
-	 * @param parent
+	 * @param model The TreeViewModel the configuration is imported to.
+	 * @param index The index of the ConfigNode that is the root ConfigNode for the configuration to import.
+	 * @param data The data needed to undo/redo this command.
+	 * @param parent An optional parent command.
 	 */
 	explicit ImportConfigurationCommand(TreeViewModel* model, int index, DataContainer *data, QUndoCommand* parent = 0);
 
-	/**
-	 * @brief undo
-	 */
 	virtual void undo();
-
-	/**
-	 * @brief redo
-	 */
 	virtual void redo();
 
 private:

@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-	property string version: "0.0.5 (beta)"
+	property string version: "0.0.6 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -100,6 +100,13 @@ ApplicationWindow {
 
 	NewKeyWindow {
 		id: newKeyWindow
+
+		onVisibleChanged: {
+			if(visible === true){
+
+				nameTextField.forceActiveFocus()
+			}
+		}
 	}
 
 	EditKeyWindow {
@@ -181,14 +188,22 @@ ApplicationWindow {
 		modality: Qt.ApplicationModal
 
 		onAccepted: {
-			if(type === "highlight")
+			if(type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
-			else if(type === "frame")
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "frame" && guiSettings.frameColor !== colorDialog.color) {
 				guiSettings.frameColor =  colorDialog.color
-			else if(type === "nodeWith")
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithKeyColor = colorDialog.color
-			else if(type === "nodeWithout")
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithoutKeyColor = colorDialog.color
+				chooseColorWindow.colorEdited = true
+			}
 
 			close()
 		}
@@ -328,7 +343,10 @@ ApplicationWindow {
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
+
+			treeView.updateIndicator()
 		}
+
 	}
 
 	Action {
@@ -341,6 +359,8 @@ ApplicationWindow {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
 			for(var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
 				undoAction.trigger()
+
+			treeView.treeModel.refresh()
 		}
 	}
 
@@ -386,7 +406,9 @@ ApplicationWindow {
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
+			treeView.updateIndicator()
 		}
+
 	}
 
 	Action {
@@ -397,8 +419,10 @@ ApplicationWindow {
 		enabled: undoManager.canRedo
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
-			for(var i = undoManager.index(); i < undoManager.rowCount(); i++)
+			for(var i = undoManager.index(); i < undoManager.count(); i++)
 				redoAction.trigger()
+
+			treeView.treeModel.refresh()
 		}
 	}
 
@@ -412,6 +436,7 @@ ApplicationWindow {
 		onTriggered: {
 			treeView.treeModel.synchronize()
 			undoManager.setClean()
+			treeView.treeModel.refresh()
 		}
 	}
 
@@ -446,7 +471,7 @@ ApplicationWindow {
 		iconSource: "icons/edit-rename.png"
 		text: qsTr("Edit ...")
 		tooltip: qsTr("Edit")
-		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
+		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null)
 
 		onTriggered: {
 			if(editKeyWindow.accessFromSearchResults){
@@ -621,13 +646,26 @@ ApplicationWindow {
 					property int	keyAreaCopyIndex:-1
 					property string currentNodePath:""
 
+					signal updateModel()
+
 					anchors.fill: parent
 					anchors.margins: 1
 					frameVisible: false
 					alternatingRowColors: false
 					backgroundVisible: false
 
-					model: treeView.currentNode === null ? null : (treeView.currentNode.childrenHaveNoChildren ? treeView.currentNode.children : null)
+					Component.onCompleted: treeView.updateIndicator.connect(updateModel)
+
+					onUpdateModel: model = getModel()
+
+					model: getModel()
+
+					function getModel() {
+						if(treeView.currentNode === null)
+							return ""
+						else if(treeView.currentNode.childrenHaveNoChildren)
+							return treeView.currentNode.children
+					}
 
 					onCurrentRowChanged: {
 						if(currentRow === -1)

@@ -115,7 +115,7 @@ BasicWindow {
 
 		undoManager.createImportConfigurationCommand(treeView.treeModel, treeView.currentNode.index, container)
 
-		treeView.treeModel.refresh()
+//		treeView.treeModel.refresh()
 		importTextField.text = ""
 		first.currentIndex = 1
 		importDialog.close()

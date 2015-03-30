@@ -5,7 +5,7 @@
 #include "confignode.hpp"
 
 /**
- * @brief The FindVisitor class. It performs the search for a searchterm and includes all ConfigNode s that contain the search
+ * @brief The FindVisitor class. It performs the search for a term and includes all ConfigNodes that contain the search
  * term in their name, value or metadata.
  */
 class FindVisitor : public Visitor
@@ -19,14 +19,7 @@ public:
 	 */
 	explicit FindVisitor(TreeViewModel* searchResults, const QString& term);
 
-	/**
-	 * @copydoc Visitor::visit()
-	 */
 	void visit(ConfigNode& node);
-
-	/**
-	 * @copydoc Visitor::visit()
-	 */
 	void visit(TreeViewModel* model);
 
 private:

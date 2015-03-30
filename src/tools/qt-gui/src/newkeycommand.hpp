@@ -6,7 +6,7 @@
 #include "datacontainer.hpp"
 
 /**
- * @brief The NewKeyCommand class
+ * @brief The NewKeyCommand class. Will create a new ConfigNode.
  */
 
 class NewKeyCommand : public QUndoCommand
@@ -14,23 +14,16 @@ class NewKeyCommand : public QUndoCommand
 
 public:
 	/**
-	 * @brief ...
+	 * @brief The default constructor.
 	 *
-	 * @param parentNode ...
-	 * @param data
-	 * @param isBelow
-	 * @param parent ...
+	 * @param model The TreeViewModel that will contain the new ConfigNode.
+	 * @param index The index of the new ConfigNode.
+	 * @param isBelow Is set when a ConfigNode should be below another ConfigNode. Will trigger an update of the treeview.
+	 * @param parent An optional parent.
 	 */
-	explicit NewKeyCommand(ConfigNodePtr parentNode, DataContainer* data, bool isBelow, QUndoCommand* parent = 0);
+	explicit NewKeyCommand(TreeViewModel* model, int index, DataContainer* data, bool isBelow, QUndoCommand* parent = 0);
 
-	/**
-	 * @brief undo
-	 */
 	virtual void undo();
-
-	/**
-	 * @brief redo
-	 */
 	virtual void redo();
 
 private:
@@ -41,10 +34,10 @@ private:
 	QVariantMap		m_metaData;
 
 	/**
-	 * @brief cutListAtIndex
-	 * @param list
-	 * @param index
-	 * @return
+	 * @brief cutListAtIndex Helper method that cuts a QStringList at an index and returns the rest of the list.
+	 * @param list The QStringList to cut.
+	 * @param index The index where to cut the QStringList.
+	 * @return The cut QStringList.
 	 */
 	QStringList		cutListAtIndex(QStringList &list, int index);
 };

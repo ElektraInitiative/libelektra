@@ -1,23 +1,23 @@
 #include <kdb.hpp>
 #include "newkeycommand.hpp"
 
-NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, DataContainer *data, bool isBelow, QUndoCommand* parent)
+NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *data, bool isBelow, QUndoCommand* parent)
 	: QUndoCommand(parent)
-	, m_parentNode(parentNode)
+	, m_parentNode(model->model().at(index))
 	, m_newNode(NULL)
 	, m_value(data->newValue())
 	, m_metaData(data->newMetadata())
 {
-	TreeViewModel* model = m_parentNode->getChildren();
-	kdb::Key newKey = model->createNewKey(m_parentNode->getPath() + "/" + data->newName(), m_value, m_metaData);
+	TreeViewModel* parentModel = m_parentNode->getChildren();
+	kdb::Key newKey = parentModel->createNewKey(m_parentNode->getPath() + "/" + data->newName(), m_value, m_metaData);
 
-	QStringList newNameSplit = model->getSplittedKeyname(newKey);
-	kdb::Key parentKey = parentNode->getKey();
+	QStringList newNameSplit = parentModel->getSplittedKeyname(newKey);
+	kdb::Key parentKey = m_parentNode->getKey();
 
 	if(!parentKey)
-		parentKey = kdb::Key(parentNode->getPath().toStdString(), KEY_END);
+		parentKey = kdb::Key(m_parentNode->getPath().toStdString(), KEY_END);
 
-	QStringList parentNameSplit = model->getSplittedKeyname(parentKey);
+	QStringList parentNameSplit = parentModel->getSplittedKeyname(parentKey);
 
 	//check if the new key is directly below the parent
 	QSet<QString> diff = newNameSplit.toSet().subtract(parentNameSplit.toSet());
@@ -29,10 +29,10 @@ NewKeyCommand::NewKeyCommand(ConfigNodePtr parentNode, DataContainer *data, bool
 
 	m_name = cutListAtIndex(newNameSplit, parentNameSplit.count()).first();
 
-	model->sink(m_parentNode, newNameSplit, newKey.dup());
+	parentModel->sink(m_parentNode, newNameSplit, newKey.dup());
 
 	m_newNode = m_parentNode->getChildByName(m_name);
-	model->removeRow(m_parentNode->getChildIndexByName(m_name));
+	parentModel->removeRow(m_parentNode->getChildIndexByName(m_name));
 }
 
 void NewKeyCommand::undo()

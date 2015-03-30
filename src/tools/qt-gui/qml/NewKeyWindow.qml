@@ -30,13 +30,14 @@ KeyWindow {
 
 			if(undoManager.undoText === "newBranch"){
 				keyAreaView.selection.clear()
-				treeView.treeModel.refresh()
-				keyAreaSelectedItem = null
+//				treeView.treeModel.refresh()
+//				keyAreaSelectedItem = null
 			}
 
 			qmlMetaKeyModel.clear()
 			nameTextField.text = ""
 			valueTextField.text = ""
+			isBelow = false
 		}
 	}
 }

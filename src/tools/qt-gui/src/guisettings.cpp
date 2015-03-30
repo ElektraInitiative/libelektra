@@ -40,35 +40,27 @@ GUISettings::GUISettings(QObject *parentGUISettings)
 
 	m_nodeWithoutKeyColor	= palette.windowText().color();
 
+	KDB kdb;
+
 	//retrieve keys below base path
 	try
 	{
-		m_kdb.get(m_config, m_base);
+		kdb.get(m_config, m_base);
 	}
 	catch(const KDBException &ex)
 	{
 		qDebug() << tr("Could not read from database, unable to retrieve settings. The system responds: %1").arg(ex.what());
 	}
 
-	//check if stored colors exist, if so, load them,else create them
-	if(!lookupColor(m_highlightColorString).isValid())
-		append(m_highlightColorString, m_highlightColor);
-	else
+	//check if stored colors exist, if so, load them
+
+	if(lookupColor(m_highlightColorString).isValid())
 		m_highlightColor = lookupColor(m_highlightColorString);
-
-	if(!lookupColor(m_frameColorString).isValid())
-		append(m_frameColorString, m_frameColor);
-	else
+	if(lookupColor(m_frameColorString).isValid())
 		m_frameColor = lookupColor(m_frameColorString);
-
-	if(!lookupColor(m_nodeWKeyColorString).isValid())
-		append(m_nodeWKeyColorString, m_nodeWithKeyColor);
-	else
+	if(lookupColor(m_nodeWKeyColorString).isValid())
 		m_nodeWithKeyColor = lookupColor(m_nodeWKeyColorString);
-
-	if(!lookupColor(m_nodeWOKeyColorString).isValid())
-		append(m_nodeWOKeyColorString, m_nodeWithoutKeyColor);
-	else
+	if(lookupColor(m_nodeWOKeyColorString).isValid())
 		m_nodeWithoutKeyColor = lookupColor(m_nodeWOKeyColorString);
 }
 
@@ -94,34 +86,46 @@ QColor GUISettings::nodeWithoutKeyColor() const
 
 void GUISettings::setHighlightColor(const QColor &color)
 {
-	m_highlightColor = color;
-	append(m_highlightColorString, color);
+	if(color != m_highlightColor)
+	{
+		m_highlightColor = color;
+		append(m_highlightColorString, color);
 
-	emit highlightColorChanged();
+		emit highlightColorChanged();
+	}
 }
 
 void GUISettings::setFrameColor(const QColor &color)
 {
-	m_frameColor = color;
-	append(m_frameColorString, color);
+	if(color != m_frameColor)
+	{
+		m_frameColor = color;
+		append(m_frameColorString, color);
 
-	emit frameColorChanged();
+		emit frameColorChanged();
+	}
 }
 
 void GUISettings::setNodeWithKeyColor(const QColor &color)
 {
-	m_nodeWithKeyColor = color;
-	append(m_nodeWKeyColorString, color);
+	if(color != m_nodeWithKeyColor)
+	{
+		m_nodeWithKeyColor = color;
+		append(m_nodeWKeyColorString, color);
 
-	emit nodeWithKeyColorChanged();
+		emit nodeWithKeyColorChanged();
+	}
 }
 
 void GUISettings::setNodeWithoutKeyColor(const QColor &color)
 {
-	m_nodeWithoutKeyColor = color;
-	append(m_nodeWOKeyColorString, color);
+	if(color != m_nodeWithoutKeyColor)
+	{
+		m_nodeWithoutKeyColor = color;
+		append(m_nodeWOKeyColorString, color);
 
-	emit nodeWithoutKeyColorChanged();
+		emit nodeWithoutKeyColorChanged();
+	}
 }
 
 void GUISettings::append(const QString &keyName, const QColor &color)
@@ -151,10 +155,51 @@ QColor GUISettings::lookupColor(const QString &keyName) const
 
 void GUISettings::setKDB()
 {
+	KDB kdb;
+	KeySet dummySet;//cannot set without get
+
+	try
+	{
+		kdb.get(dummySet, m_base);
+	}
+	catch(const KDBException &ex)
+	{
+		qDebug() << tr("Could not read from database, unable to retrieve settings. The system responds: %1").arg(ex.what());
+	}
+
 	//won't set config without user prefix
 	try
 	{
-		m_kdb.set(m_config, "user" + m_base);
+		kdb.set(m_config, "user" + m_base);
+	}
+	catch(const KDBException &ex)
+	{
+		qDebug() << tr("Could not write to database, unable to store settings. The system responds: %1").arg(ex.what());
+	}
+}
+
+void GUISettings::reset()
+{
+	KDB kdb;
+
+	try
+	{
+		kdb.get(m_config, m_base);
+	}
+	catch(const KDBException &ex)
+	{
+		qDebug() << tr("Could not read from database, unable to retrieve settings. The system responds: %1").arg(ex.what());
+	}
+
+	m_config.lookup(m_base + m_highlightColorString.toStdString(), KDB_O_POP);
+	m_config.lookup(m_base + m_frameColorString.toStdString(), KDB_O_POP);
+	m_config.lookup(m_base + m_nodeWKeyColorString.toStdString(), KDB_O_POP);
+	m_config.lookup(m_base + m_nodeWOKeyColorString.toStdString(), KDB_O_POP);
+
+	//won't set config without user prefix
+	try
+	{
+		kdb.set(m_config, "user" + m_base);
 	}
 	catch(const KDBException &ex)
 	{

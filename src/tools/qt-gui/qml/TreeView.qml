@@ -34,6 +34,7 @@ ScrollView {
 
 	property Component delegate: Row {
 		spacing: defaultSpacing
+
 		Label {
 			id: label
 
@@ -112,7 +113,7 @@ ScrollView {
 								mousePressed(mouse, model, itemLoader)
 							}
 							onDoubleClicked:{
-								editKeyWindow.selectedNode = currentNode
+								mousePressed(mouse, model, itemLoader)
 								editAction.trigger()
 							}
 							onEntered: {
@@ -138,10 +139,12 @@ ScrollView {
 							id: row
 
 							Item {
+								signal changed()
+								Component.onCompleted: view.updateIndicator.connect(changed)
 								width: rowHeight
 								height: rowHeight
 								opacity: getOpacity(model)
-
+								onChanged: opacity = getOpacity(model)
 								Image {
 									id: expander
 
@@ -201,16 +204,15 @@ ScrollView {
 	}
 
 	function mousePressed(mouse, model, itemLoader) {
-		if(mouse.button === Qt.LeftButton){
 			currentNode = model
 			currentItem = itemLoader
 			keyAreaSelectedItem = null
 			editKeyWindow.selectedNode = currentNode
 			forceActiveFocus()
-		}
-		else if(mouse.button === Qt.RightButton){
+		if(mouse.button === Qt.RightButton){
 			treeContextMenu.popup()
 		}
+		view.updateIndicator()
 	}
 
 	function getOpacity(model) {

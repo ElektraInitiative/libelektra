@@ -11,6 +11,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 	, m_metaData(NULL)
 	, m_parentModel(parentModel)
 	, m_isExpanded(false)
+	, m_isDirty(false)
 {
 	if (m_key && m_key.isString())
 		m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
@@ -37,6 +38,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_metaData(NULL)
 	, m_parentModel(NULL)
 	, m_isExpanded(other.m_isExpanded)
+	, m_isDirty(false)
 {
 	if(other.m_children)
 	{
@@ -63,6 +65,7 @@ ConfigNode::ConfigNode()
 	, m_metaData(NULL)
 	, m_parentModel(NULL)
 	, m_isExpanded(false)
+	, m_isDirty(false)
 {
 	//this constructor is used to create metanodes
 }
@@ -221,6 +224,15 @@ void ConfigNode::setParentModel(TreeViewModel *parentModel)
 bool ConfigNode::isExpanded() const
 {
 	return m_isExpanded;
+}
+bool ConfigNode::isDirty() const
+{
+	return m_isDirty;
+}
+
+void ConfigNode::setIsDirty(bool dirty)
+{
+	m_isDirty = dirty;
 }
 
 void ConfigNode::setIsExpanded(bool value)

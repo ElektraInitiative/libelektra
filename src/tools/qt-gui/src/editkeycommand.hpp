@@ -6,30 +6,23 @@
 #include "datacontainer.hpp"
 
 /**
- * @brief The EditKeyCommand class
+ * @brief The EditKeyCommand class. Remembers a node for redo/undo.
  */
 class EditKeyCommand : public QUndoCommand
 {
 
 public:
 	/**
-	 * @brief ...
+	 * @brief The command to edit a ConfigNode.
 	 *
-	 * @param model ...
-	 * @param index ...
-	 * @param data ...
-	 * @param parent ...
+	 * @param model The TreeViewModel that contains the ConfigNode to edit.
+	 * @param index The index of the ConfigNode to edit.
+	 * @param data The data needed to undo/redo the edit.
+	 * @param parent An optional parent command.
 	 */
 	explicit        EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent = 0);
 
-	/**
-	 * @brief undo
-	 */
 	virtual void    undo();
-
-	/**
-	 * @brief redo
-	 */
 	virtual void    redo();
 
 private:

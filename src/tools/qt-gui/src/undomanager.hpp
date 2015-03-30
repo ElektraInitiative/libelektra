@@ -32,13 +32,13 @@ class UndoManager : public QObject
 public:
 
 	/**
-	 * @brief
+	 * @brief The default constructor.
 	 * @param parentManager
 	 */
 	explicit    UndoManager(QObject* parentManager = 0);
 
 	/**
-	 * @brief UndoManager
+	 * @brief The mandatory copy constructor.
 	 * @param other
 	 */
 	UndoManager(UndoManager const& other) : QObject() {Q_UNUSED(other)}
@@ -92,7 +92,7 @@ public:
 	 *
 	 * @param model The TreeViewModel of the edited ConfigNode.
 	 * @param idx The index of the edited ConfigNode.
-	 * @param data This list holds the data needed to undo and redo the edit
+	 * @param data This container holds the data needed to undo and redo the edit.
 	 */
 	Q_INVOKABLE void	createEditKeyCommand(TreeViewModel* model, int idx, DataContainer *data);
 
@@ -109,31 +109,31 @@ public:
 	 * @brief Create a new NewKeyCommand.
 	 *
 	 * @param model The TreeViewModel of the new ConfigNode.
-	 * @param idx
-	 * @param data
-	 * @param isBelow
+	 * @param idx The index of the new ConfigNode.
+	 * @param data This container holds the data needed to undo and redo the edit.
+	 * @param isBelow Determines if the new key is a treebranch that requires the treeview to update.
 	 */
 	Q_INVOKABLE void	createNewKeyCommand(TreeViewModel* model, int idx, DataContainer* data, bool isBelow);
 
 	/**
-	 * @brief createCopyKeyCommand
-	 * @param model
-	 * @param idx
+	 * @brief Copy a ConfigNode into a different TreeViewModel.
+	 * @param model The target TreeViewModel of the copied ConfigNode.
+	 * @param idx The index of the copied ConfigNode.
 	 */
 	Q_INVOKABLE void	createCopyKeyCommand(TreeViewModel *model, int idx);
 
 	/**
-	 * @brief createCutKeyCommand
-	 * @param model
-	 * @param idx
+	 * @brief Copy a ConfigNode into a different TreeViewModel and delete the source ConfigNode.
+	 * @param model The target TreeViewModel of the cut ConfigNode.
+	 * @param idx The index of the cut ConfigNode.
 	 */
 	Q_INVOKABLE void	createCutKeyCommand(TreeViewModel* model, int idx);
 
 	/**
-	 * @brief createImportConfigurationCommand
-	 * @param model
-	 * @param idx
-	 * @param data
+	 * @brief Import a configuration from file.
+	 * @param model The TreeViewModel to paste the configuration into.
+	 * @param idx The index of the ConfigNode that is the root of the imported configuration.
+	 * @param data This container holds the data needed to undo and redo the import.
 	 */
 	Q_INVOKABLE void	createImportConfigurationCommand(TreeViewModel* model, int idx, DataContainer* data);
 
@@ -187,45 +187,15 @@ public:
 	Q_INVOKABLE void	setIndex(int idx);
 
 Q_SIGNALS:
-	/**
-	 * @brief canUndoChanged
-	 */
 	void				canUndoChanged();
-
-	/**
-	 * @brief canRedoChanged
-	 */
 	void				canRedoChanged();
-
-	/**
-	 * @brief redoTextChanged
-	 */
 	void				redoTextChanged();
-
-	/**
-	 * @brief undoTextChanged
-	 */
 	void				undoTextChanged();
-
-	/**
-	 * @brief clipboardTypeChanged
-	 */
 	void				clipboardTypeChanged();
-
-	/**
-	 * @brief canPasteChanged
-	 */
 	void				canPasteChanged();
 
 public Q_SLOTS:
-	/**
-	 * @brief undo
-	 */
 	void				undo();
-
-	/**
-	 * @brief redo
-	 */
 	void				redo();
 
 private:

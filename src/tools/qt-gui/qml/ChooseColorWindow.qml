@@ -7,6 +7,8 @@ BasicWindow {
 
 	title: qsTr("Choose Colors")
 
+	property bool colorEdited: false
+
 	contents: BasicRectangle {
 		anchors.fill: parent
 		GridLayout {
@@ -29,7 +31,7 @@ BasicWindow {
 				color: guiSettings.highlightColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "highlight"
 						colorDialog.open()
 					}
@@ -50,7 +52,7 @@ BasicWindow {
 				color: guiSettings.frameColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "frame"
 						colorDialog.open()
 					}
@@ -71,7 +73,7 @@ BasicWindow {
 				color: guiSettings.nodeWithKeyColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "nodeWith"
 						colorDialog.open()
 					}
@@ -92,7 +94,7 @@ BasicWindow {
 				color: guiSettings.nodeWithoutKeyColor
 				MouseArea {
 					anchors.fill: parent
-					onDoubleClicked:{
+					onClicked: {
 						colorDialog.type = "nodeWithout"
 						colorDialog.open()
 					}
@@ -111,14 +113,17 @@ BasicWindow {
 					guiSettings.frameColor =  activePalette.dark
 					guiSettings.nodeWithKeyColor = activePalette.windowText
 					guiSettings.nodeWithoutKeyColor = disabledPalette.windowText
+					guiSettings.reset()
 				}
 			}
 		}
 	}
 	cancelButton.action.text: qsTr("&Close")
 	cancelButton.action.onTriggered: {
-		guiSettings.setKDB()
+		if(colorEdited)
+			guiSettings.setKDB()
 		close()
+		colorEdited = false
 	}
 	okButton.visible: false
 }
