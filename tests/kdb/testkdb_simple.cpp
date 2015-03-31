@@ -89,7 +89,7 @@ TEST_F(Simple, MetaInSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parent(testRoot);
+	Key parent(testRoot, KEY_END);
 	kdb.get(ks, parent);
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backend" << ks;
 
@@ -109,7 +109,7 @@ TEST_F(Simple, InvalidKeysInSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parent(testRoot);
+	Key parent(testRoot, KEY_END);
 	kdb.get(ks, parent);
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backend" << ks;
 
