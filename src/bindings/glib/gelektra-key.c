@@ -133,7 +133,7 @@ GElektraKey *gelektra_key_new(const gchar *name, ...)
 	{
 		va_start(va, name);
 		keyVInit(key->key, name, va);
-		keyIncRef(key->key); // keyVInit will clear the refcount
+		keyIncRef(key->key); // keyVInit cleared the refcount
 		va_end(va);
 	}
 	return key;
@@ -167,6 +167,39 @@ GElektraKey *gelektra_key_make(Key *key)
 GElektraKey *gelektra_key_gi_make(GElektraKey *key)
 {
 	return (key != NULL) ? gelektra_key_make(key->key) : NULL;
+}
+
+/* initialization */
+static void gelektra_key_gi_init_va(GElektraKey *key, const gchar *name, ...)
+{
+	if (!name)
+		return;
+	va_list va;
+	va_start(va, name);
+	keyVInit(key->key, name, va);
+	keyIncRef(key->key); // keyVInit cleared the refcount
+	va_end(va);
+}
+
+/**
+ * gelektra_key_gi_init
+ * @name valid name of a key or NULL
+ * @flags see usage of KEY_FLAGS in keyNew
+ * @value: (nullable): key value
+ * @data: (array length=data_size zero-terminated=0) (element-type guint8) (nullable): binary key value
+ * @data_size: size of the input data
+ *
+ * \note This is for GObject Introspection.
+ * \note Do NOT use! Use gelektra_key_new instead
+ */
+void gelektra_key_gi_init(GElektraKey *key, const gchar *name, guint64 flags,
+	const gchar *value, const void *data, gsize data_size)
+{
+	gelektra_key_gi_init_va(key, name,
+		KEY_FLAGS, flags,
+		KEY_SIZE,  (flags & KEY_BINARY) ? data_size : 0,
+		KEY_VALUE, (flags & KEY_BINARY) ? data : value,
+		KEY_END);
 }
 
 /* reference handling */
