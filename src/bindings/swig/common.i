@@ -1,5 +1,6 @@
 %include "attribute.i"
 %include "std_string.i"
+%include "stdint.i"
 %include "exception.i"
 
 %{
