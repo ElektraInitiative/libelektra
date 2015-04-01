@@ -612,7 +612,7 @@ severity:error
 ingroup:kdb
 
 number:105
-description:Invalid (empty) key passed as parentKey. This is only accepted for compatibility reasons. You should use KEY_CASCADING_KEY / instead.
+description:Invalid (empty) key passed as parentKey. This is only accepted for compatibility reasons. You should use the cascading key / instead.
 severity:warning
 ingroup:kdb
 
