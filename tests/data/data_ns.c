@@ -1,4 +1,5 @@
-ksNew(555,
+/*All valid namespaces, no meta or cascading (see data_allns.c)*/
+ksNew(510,
 	keyNew ("spec", KEY_DIR,0),
 	keyNew ("spec/test", KEY_DIR,0),
 	keyNew ("spec/test/keyset", KEY_DIR,0),
