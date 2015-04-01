@@ -93,8 +93,13 @@ static Key *restoreKeyName(Key *key, const Key *parentKey, const Key *configKey)
 			Key *result = keyDup(key);
 			keySetName(result, keyName(parentKey));
 			keyAddUnescapedBasePath(result, keyString(configKey));
-			const char *relativePath = keyName(key) + keyGetNameSize(parentKey);
-			keyAddUnescapedBasePath(result, relativePath);
+
+			if (keyGetNameSize(key) > keyGetNameSize(parentKey)) {
+				/* this calculation does not work for the parent key but is also not needed */
+				const char *relativePath = keyName(key) + keyGetNameSize(parentKey);
+				keyAddUnescapedBasePath(result, relativePath);
+			}
+
 			return result;
 		}
 	}

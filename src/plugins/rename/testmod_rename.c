@@ -291,6 +291,30 @@ static void test_rebaseOfNewKeys()
 	PLUGIN_CLOSE ();
 }
 
+static void test_addNewBaseToParentKey()
+{
+	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
+
+	PLUGIN_OPEN("rename");
+
+	KeySet *ks = ksNew(0);
+	ksAppendKey (ks, parentKey);
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	Key *key = ksLookupByName (ks, "user/tests/rename/new/base", KEY_END);
+	succeed_if (key, "new base was not correctly appended to parent key");
+
+	ksDel(ks);
+	PLUGIN_CLOSE ();
+
+}
+
 
 int main(int argc, char** argv)
 {
@@ -305,6 +329,7 @@ int main(int argc, char** argv)
 	test_metaCutOnGet();
 	test_metaConfigTakesPrecedence();
 	test_rebaseOfNewKeys();
+	test_addNewBaseToParentKey();
 
 	test_keyCutNamePart();
 
