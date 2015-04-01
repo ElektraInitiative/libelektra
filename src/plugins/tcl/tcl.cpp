@@ -48,8 +48,6 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 	{
 		/* get config */
 		KeySet *n;
-		void (*serialise) (void) = (void (*) (void)) elektra::serialise;
-		void (*unserialise) (void) = (void (*) (void)) elektra::unserialise;
 		ksAppend (returned, n=ksNew (30,
 			keyNew ("system/elektra/modules/tcl",
 				KEY_VALUE, "tcl plugin waits for your orders", KEY_END),
@@ -61,13 +59,13 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 				KEY_FUNC, elektraTclSet,
 				KEY_END),
 			keyNew ("system/elektra/modules/tcl/exports/cpp_serialise",
-				KEY_SIZE, sizeof (serialise),
+				KEY_SIZE, sizeof (&elektra::serialise),
 				KEY_BINARY,
-				KEY_VALUE, &serialise, KEY_END),
+				KEY_VALUE, &elektra::serialise, KEY_END),
 			keyNew ("system/elektra/modules/tcl/exports/cpp_unserialise",
-				KEY_SIZE, sizeof (unserialise),
+				KEY_SIZE, sizeof (&elektra::unserialise),
 				KEY_BINARY,
-				KEY_VALUE, &unserialise, KEY_END),
+				KEY_VALUE, &elektra::unserialise, KEY_END),
 #include "readme_tcl.c"
 			keyNew ("system/elektra/modules/tcl/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),

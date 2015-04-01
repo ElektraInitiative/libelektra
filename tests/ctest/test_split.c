@@ -182,11 +182,11 @@ static void test_remove()
 	}
 
 	elektraSplitRemove(split, 3);
-	succeed_if(split->syncbits[0] == 0, "syncbits not correct");
-	succeed_if(split->syncbits[1] == 1, "syncbits not correct");
-	succeed_if(split->syncbits[2] == 2, "syncbits not correct");
-	succeed_if(split->syncbits[3] == 4, "did not remove third?");
-	succeed_if(split->syncbits[4] == 5, "did not remove third?");
+	succeed_if((int)split->syncbits[0] == 0, "syncbits not correct");
+	succeed_if((int)split->syncbits[1] == 1, "syncbits not correct");
+	succeed_if((int)split->syncbits[2] == 2, "syncbits not correct");
+	succeed_if((int)split->syncbits[3] == 4, "did not remove third?");
+	succeed_if((int)split->syncbits[4] == 5, "did not remove third?");
 
 	elektraSplitAppend(split, 0, 0, 100);
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
@@ -194,18 +194,18 @@ static void test_remove()
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS*2, "should realloc");
 
 	elektraSplitRemove(split, 3);
-	succeed_if(split->syncbits[0] == 0, "syncbits not correct");
-	succeed_if(split->syncbits[1] == 1, "syncbits not correct");
-	succeed_if(split->syncbits[2] == 2, "syncbits not correct");
-	succeed_if(split->syncbits[3] == 5, "did not remove third (again)?");
-	succeed_if(split->syncbits[4] == 6, "did not remove third (again)?");
+	succeed_if((int)split->syncbits[0] == 0, "syncbits not correct");
+	succeed_if((int)split->syncbits[1] == 1, "syncbits not correct");
+	succeed_if((int)split->syncbits[2] == 2, "syncbits not correct");
+	succeed_if((int)split->syncbits[3] == 5, "did not remove third (again)?");
+	succeed_if((int)split->syncbits[4] == 6, "did not remove third (again)?");
 
 	elektraSplitRemove(split, 0);
-	succeed_if(split->syncbits[0] == 1, "did not remove zeroth?");
-	succeed_if(split->syncbits[1] == 2, "did not remove zeroth?");
-	succeed_if(split->syncbits[2] == 5, "did not remove zeroth?");
-	succeed_if(split->syncbits[3] == 6, "did not remove zeroth?");
-	succeed_if(split->syncbits[4] == 7, "did not remove zeroth?");
+	succeed_if((int)split->syncbits[0] == 1, "did not remove zeroth?");
+	succeed_if((int)split->syncbits[1] == 2, "did not remove zeroth?");
+	succeed_if((int)split->syncbits[2] == 5, "did not remove zeroth?");
+	succeed_if((int)split->syncbits[3] == 6, "did not remove zeroth?");
+	succeed_if((int)split->syncbits[4] == 7, "did not remove zeroth?");
 
 	elektraSplitDel (split);
 }
