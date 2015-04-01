@@ -28,6 +28,7 @@
 #endif
 
 #include "simpleini.h"
+#include <errno.h>
 
 #include <kdberrors.h>
 
@@ -89,18 +90,19 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		return 1;
 	}
 
-	int n;
 	char *key;
 	char *value;
+	int errnosave = errno;
 	FILE *fp = fopen (keyString(parentKey), "r");
 	if (!fp)
 	{
-		// ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
-		// return -1;
-		return 0; // we just ignore if we could not open file
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
+		return -1;
 	}
 
 
+	int n;
 	// icc warning #269: invalid format string conversion
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
 	{

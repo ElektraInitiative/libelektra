@@ -62,7 +62,14 @@ int elektraXmltoolGet(Plugin *handle ELEKTRA_UNUSED,
 	}
 
 	/* get all keys */
-	return ksFromXMLfile(returned, keyString(parentKey));
+	int errnosave = errno;
+	if (ksFromXMLfile(returned, keyString(parentKey)) == -1)
+	{
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
+		return -1;
+	}
+	return 1;
 }
 
 int elektraXmltoolSet(Plugin *handle ELEKTRA_UNUSED,
@@ -72,23 +79,21 @@ int elektraXmltoolSet(Plugin *handle ELEKTRA_UNUSED,
 
 	int errnosave = errno;
 	FILE *fout = fopen (keyString(parentKey), "w");
-	if (fout == 0 && errno == EACCES)
+
+	if (fout == 0)
 	{
-		ELEKTRA_SET_ERROR(9, parentKey, keyValue(parentKey));
-		errno = errnosave;
-		return -1;
-	}
-	else if (fout == 0)
-	{
-		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyString(parentKey), strerror(errno));
+		ELEKTRA_SET_ERROR_SET(parentKey);
 		errno = errnosave;
 		return -1;
 	}
 
+	// TODO: proper error handling + use correct errors
 	ksToStream (returned, fout, KDB_O_HEADER);
 
 	if (fclose (fout))
 	{
+		ELEKTRA_SET_ERROR_SET(parentKey);
+		errno = errnosave;
 		return -1;
 	}
 

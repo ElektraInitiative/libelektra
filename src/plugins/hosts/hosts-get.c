@@ -219,8 +219,9 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 	if (fp == 0)
 	{
+		ELEKTRA_SET_ERROR_GET(parentKey);
 		errno = errnosave;
-		return 0;
+		return -1;
 	}
 
 	ksClear (returned);

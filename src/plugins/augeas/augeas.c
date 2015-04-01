@@ -375,7 +375,9 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	if (fh == 0)
 	{
-		ELEKTRA_SET_ERRNO_ERROR(9, parentKey);
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
+		return -1;
 	}
 
 	/* load its contents into a string */
@@ -451,17 +453,9 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	FILE *fh = fopen (keyValue (parentKey), "w+");
 
-	if (fh == 0 && errno == EACCES)
+	if (fh == 0)
 	{
-		// we know its a permission problem
-		ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
-		errno = errnosave;
-		return -1;
-	}
-	else if(!fh)
-	{
-		// other problems..
-		ELEKTRA_SET_ERRNO_ERROR(75, parentKey);
+		ELEKTRA_SET_ERROR_SET(parentKey);
 		errno = errnosave;
 		return -1;
 	}

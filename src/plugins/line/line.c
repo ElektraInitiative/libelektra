@@ -15,6 +15,7 @@
 #include <kdberrors.h>
 #include <kdbproposal.h>
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -80,12 +81,14 @@ int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		return 1;
 	}
 
+	int errnosave = errno;
 	FILE *fp = fopen (keyString(parentKey), "r");
+
 	if (!fp)
 	{
-		// ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
-		// return -1;
-		return 0; // we just ignore if we could not open file
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
+		return -1;
 	}
 
 	Key *b= keyNew(keyName(parentKey), KEY_END);
@@ -119,11 +122,13 @@ int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 {
 	/* set all keys */
 
+	int errnosave = errno;
 	FILE *fp = fopen(keyString(parentKey), "w");
 
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+		ELEKTRA_SET_ERROR_SET(parentKey);
+		errno = errnosave;
 		return -1;
 	}
 

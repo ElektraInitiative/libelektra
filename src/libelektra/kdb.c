@@ -122,6 +122,10 @@
 #include <stdio.h>
 #endif
 
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
+
 #include <kdbinternal.h>
 
 
@@ -354,17 +358,22 @@ static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
 			// no keys in that backend
 			elektraBackendUpdateSize(backend, split->parents[i], 0);
 		}
-		if (ret == -1)
+		switch (ret)
 		{
+		case 1:
+			// Seems like we need to sync that
+			set_bit(split->syncbits[i], SPLIT_FLAG_SYNC);
+			++ updateNeededOccurred;
+			break;
+		case 0:
+			// Nothing to do here
+			break;
+		default:
+			ELEKTRA_ASSERT(0 && "resolver did not return 1 0 -1");
+		case -1:
 			// Ohh, an error occurred, lets stop the
 			// process.
 			return -1;
-		}
-		else if (ret == 1)
-		{
-			/* Seems like we need to sync that */
-			set_bit(split->syncbits[i], SPLIT_FLAG_SYNC);
-			++ updateNeededOccurred;
 		}
 	}
 	return updateNeededOccurred;
@@ -382,9 +391,9 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
 	const int bypassedSplits = 1;
 	for (size_t i=0; i<split->size-bypassedSplits;i++)
 	{
-		if (test_bit(split->syncbits[i], 0))
+		if (!test_bit(split->syncbits[i], SPLIT_FLAG_SYNC))
 		{
-			// skip it, nothing needs to be done here
+			// skip it, update is not needed
 			continue;
 		}
 		Backend *backend = split->handles[i];
