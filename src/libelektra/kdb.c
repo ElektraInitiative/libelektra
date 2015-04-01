@@ -175,6 +175,7 @@ KDB * kdbOpen(Key *errorKey)
 		return 0;
 	}
 
+	int errnosave = errno;
 	handle = elektraCalloc(sizeof(struct _KDB));
 
 	handle->modules = ksNew(0, KS_END);
@@ -184,6 +185,7 @@ KDB * kdbOpen(Key *errorKey)
 		elektraFree(handle);
 		ELEKTRA_SET_ERROR(94, errorKey,
 				"elektraModulesInit returned with -1");
+		errno = errnosave;
 		return 0;
 	}
 
@@ -195,6 +197,7 @@ KDB * kdbOpen(Key *errorKey)
 		elektraFree(handle);
 		ELEKTRA_SET_ERROR(40, errorKey,
 				"could not open default backend");
+		errno = errnosave;
 		return 0;
 	}
 
@@ -219,6 +222,7 @@ KDB * kdbOpen(Key *errorKey)
 
 		keySetName(errorKey, keyName(initialParent));
 		keyDel(initialParent);
+		errno = errnosave;
 		return handle;
 	}
 	keySetName(errorKey, keyName(initialParent));
@@ -254,6 +258,7 @@ KDB * kdbOpen(Key *errorKey)
 				"could not reopen and mount default backend");
 		kdbClose(handle, errorKey);
 		keyDel (initialParent);
+		errno = errnosave;
 		return 0;
 	}
 
@@ -268,6 +273,7 @@ KDB * kdbOpen(Key *errorKey)
 	// elektraSplitOpen(handle->split);
 
 	keyDel (initialParent);
+	errno = errnosave;
 	return handle;
 }
 
@@ -302,6 +308,7 @@ int kdbClose(KDB *handle, Key *errorKey)
 		return -1;
 	}
 
+	int errnosave = errno;
 	elektraSplitDel (handle->split);
 
 	elektraTrieClose(handle->trie, errorKey);
@@ -322,6 +329,7 @@ int kdbClose(KDB *handle, Key *errorKey)
 
 	elektraFree(handle);
 
+	errno = errnosave;
 	return 0;
 }
 
@@ -521,6 +529,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 				"invalid key name passed to kdbGet");
 	}
 
+	int errnosave = errno;
 	Key *initialParent = keyDup (parentKey);
 
 #if DEBUG && VERBOSE
@@ -552,6 +561,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		elektraSplitUpdateFileName(split, handle, parentKey);
 		keyDel (initialParent);
 		elektraSplitDel (split);
+		errno = errnosave;
 		return 0;
 	case -1: goto error;
 	// otherwise falltrough
@@ -586,6 +596,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	elektraSplitUpdateFileName(split, handle, parentKey);
 	keyDel (initialParent);
 	elektraSplitDel (split);
+	errno = errnosave;
 	return 1;
 
 error:
@@ -593,6 +604,7 @@ error:
 	elektraSplitUpdateFileName(split, handle, parentKey);
 	keyDel (initialParent);
 	elektraSplitDel (split);
+	errno = errnosave;
 	return -1;
 }
 
@@ -849,6 +861,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		return -1;
 	}
 
+	int errnosave = errno;
 	Key *initialParent = keyDup(parentKey);
 
 #if DEBUG && VERBOSE
@@ -891,6 +904,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		}
 		keyDel (initialParent);
 		elektraSplitDel (split);
+		errno = errnosave;
 		return syncstate == 0 ? 0 : -1;
 	}
 	ELEKTRA_ASSERT(syncstate == 1);
@@ -916,6 +930,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	keyDel(initialParent);
 	elektraSplitDel(split);
 
+	errno = errnosave;
 	return 1;
 
 error:
@@ -934,6 +949,7 @@ error:
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);
 	elektraSplitDel(split);
+	errno = errnosave;
 	return -1;
 }
 
