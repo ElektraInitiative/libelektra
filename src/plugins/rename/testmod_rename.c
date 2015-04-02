@@ -299,7 +299,8 @@ static void test_addNewBaseToParentKey()
 
 	PLUGIN_OPEN("rename");
 
-	KeySet *ks = ksNew(0);
+	KeySet *ks = ksNew(0, KS_END);
+	keyIncRef(parentKey);
 	ksAppendKey (ks, parentKey);
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
@@ -307,10 +308,12 @@ static void test_addNewBaseToParentKey()
 	succeed_if(output_error (parentKey), "error in kdbSet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
 
-	Key *key = ksLookupByName (ks, "user/tests/rename/new/base", KEY_END);
+	Key *key = ksLookupByName (ks, "user/tests/rename/new/base", 0);
 	succeed_if (key, "new base was not correctly appended to parent key");
 
 	ksDel(ks);
+	keyDecRef(parentKey);
+	keyDel(parentKey);
 	PLUGIN_CLOSE ();
 
 }
