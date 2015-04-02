@@ -654,9 +654,9 @@ ApplicationWindow {
 					alternatingRowColors: false
 					backgroundVisible: false
 
-					Component.onCompleted: treeView.updateIndicator.connect(updateModel)
+//					Component.onCompleted: treeView.updateIndicator.connect(updateModel)
 
-					onUpdateModel: model = getModel()
+//					onUpdateModel: model = getModel()
 
 					model: getModel()
 
