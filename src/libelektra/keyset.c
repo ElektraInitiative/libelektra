@@ -273,7 +273,9 @@ KeySet *ksDup (const KeySet * source)
 	return keyset;
 }
 
-/* Deeply copies from source to dest.
+/**
+ * @internal
+ * @brief Deeply copies from source to dest.
  *
  * The keyset as well as its containing keys are duplicated.
  * This means that you have to keyDel() the contained keys and
@@ -668,8 +670,6 @@ int elektraKeyCmpOrder(const Key *ka, const Key *kb)
 
 
 /**
- * @internal
- *
  * Checks if KeySet needs sync.
  *
  * When keys are changed this is reflected into keyNeedSync().
@@ -680,6 +680,9 @@ int elektraKeyCmpOrder(const Key *ka, const Key *kb)
  * ksNeedSync() allows the backends to know if a key was
  * popped from the keyset to know that this keyset needs
  * to be written out.
+ *
+ * @deprecated Backends now work differently and do not rely on this
+ * information.
  *
  * @param ks the keyset to work with
  * @return -1 on null keyset
@@ -1276,48 +1279,6 @@ Key *ksPop(KeySet *ks)
 	return ret;
 }
 
-/**
- * Builds an array of pointers to the keys in the supplied keyset.
- * The keys are not copied, calling keyDel may remove them from
- * the keyset.
- *
- * The size of the buffer can be easily allocated via ksGetSize. Example:
- * @code
- * KeySet *ks = somekeyset;
- * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
- * elektraKsToMemArray (ks, keyArray);
- * ... work with the array ...
- * free (keyArray);
- * @endcode
- *
- * @param ks the keyset object to work with
- * @param buffer the buffer to put the result into
- * @return the number of elements in the array if successful
- * @return a negative number on null pointers or if an error occurred
- */
-int elektraKsToMemArray(KeySet *ks, Key **buffer)
-{
-	if (!ks) return -1;
-	if (!buffer) return -1;
-
-	/* clear the received buffer */
-	memset (buffer, 0, ksGetSize (ks) * sizeof(Key *));
-
-	cursor_t cursor = ksGetCursor (ks);
-	ksRewind (ks);
-	size_t idx = 0;
-
-	Key *key;
-	while ((key = ksNext (ks)) != 0)
-	{
-		buffer[idx] = key;
-		++idx;
-	}
-	ksSetCursor (ks, cursor);
-
-	return idx;
-}
-
 
 /*******************************************
  *           KeySet browsing methods       *
@@ -1619,49 +1580,6 @@ Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
 	return ksPop(ks);
 }
 
-/**
- * @brief return only those keys from the given
- * keyset that pass the supplied filter function
- * with the supplied argument
- *
- * @param result the keyset that should contain the filtered keys
- * @param input the keyset whose keys should be filtered
- * @param filter a function pointer to a function that will be used to
- * filter the keyset. A key will be taken if the function returns a value
- * greater than 0.
- * @param argument an argument that will be passed to the filter function
- * each time it is called
- * @return the number of filtered keys if the filter function always
- * returned a positive value, -1 otherwise
- * @retval NULL on NULL pointer
- */
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument)
-{
-	if (!result) return -1;
-
-	if (!input) return -1;
-
-	if (!filter) return -1;
-
-	int rc = 0;
-	int ret = 0;
-	Key *current;
-
-	cursor_t cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
-	{
-		rc = filter (current, argument);
-		if (rc <= -1) return -1;
-		else if (rc > 0)
-		{
-			++ ret;
-			ksAppendKey(result, keyDup (current));
-		}
-	}
-	ksSetCursor(input, cursor);
-	return ret;
-}
 
 /**
  * Set the KeySet internal cursor.

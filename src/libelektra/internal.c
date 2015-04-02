@@ -767,3 +767,4 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 	*dp = 0;
 	return dest;
 }
+

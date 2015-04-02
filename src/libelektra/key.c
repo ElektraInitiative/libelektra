@@ -17,10 +17,10 @@
 /**
  * @defgroup key Key
  *
- * @brief A Key is the essential class that encapsulates key @link keyname name @endlink,
+ * @brief Key is an essential class that encapsulates key @link keyname name @endlink,
  * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  *
- * To use them:
+ * To use it include:
  * @code
 #include <kdb.h>
  * @endcode
@@ -299,66 +299,6 @@ Key* keyDup(const Key *source)
 	}
 
 	return dest;
-}
-
-
-/**
- * @brief Permanently locks a part of the key
- *
- * This can be:
- * - KEY_FLAG_LOCK_NAME to lock the name
- * - KEY_FLAG_LOCK_VALUE to lock the value
- * - KEY_FLAG_LOCK_META to lock the meta data
- *
- * To unlock the key, duplicate it.
- *
- * It is also possible to lock when the key is created with
- * keyNew().
- *
- * Some data structures need to lock the key (most likely
- * its name), so that the ordering does not get confused.
- *
- * @param key which name should be locked
- *
- * @see keyNew(), keyDup(), ksAppendKey()
- * @retval >0 the bits that were successfully locked
- * @retval 0 if everything was locked before
- * @retval -1 if it could not be locked (nullpointer)
- */
-int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
-{
-	int ret = 0;
-
-	if (!key) return -1;
-
-	if (test_bit(what, KEY_LOCK_NAME))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_NAME))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_NAME);
-			set_bit(ret, KEY_LOCK_NAME);
-		}
-	}
-
-	if (test_bit(what, KEY_LOCK_VALUE))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_VALUE))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_VALUE);
-			set_bit(ret, KEY_LOCK_VALUE);
-		}
-	}
-
-	if (test_bit(what, KEY_LOCK_META))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_META))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_META);
-			set_bit(ret, KEY_LOCK_META);
-		}
-	}
-
-	return ret;
 }
 
 

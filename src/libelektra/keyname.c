@@ -231,30 +231,6 @@ const char *keyName(const Key *key)
 }
 
 /**
- * @brief This keyname is null separated and does not use backslash for escaping
- *
- * This name is essential if you want to iterate over parts of the key
- * name, want to compare keynames and want to check relations of keys in
- * the hierarchy.
- *
- * @param key the object to work with
- *
- * @retval 0 on null pointers
- * @return the name in its unescaped form
- */
-const void *keyUnescapedName(const Key *key)
-{
-	if (!key) return 0;
-
-	if (!key->key) {
-		return "";
-	}
-
-	return key->key+key->keySize;
-}
-
-
-/**
  * Bytes needed to store the key name without owner.
  *
  * For an empty key name you need one byte to store the ending NULL.
@@ -277,18 +253,6 @@ ssize_t keyGetNameSize(const Key *key)
 		return 1;
 	}
 	else return key->keySize;
-}
-
-
-ssize_t keyGetUnescapedNameSize(const Key *key)
-{
-	if (!key) return -1;
-
-	if (!key->key)
-	{
-		return 0;
-	}
-	else return key->keyUSize;
 }
 
 
@@ -622,36 +586,6 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 
 
 /**
- * For currently valid namespaces see #elektraNamespace.
- *
- * @version 0.8.10
- * Added method to kdbproposal.h
- *
- * To handle every possible cases (including namespaces) a key can have:
- * @snippet namespace.c namespace
- *
- * To loop over all valid namespaces use:
- * @snippet namespace.c loop
- *
- * @note This method might be enhanced. You do not have any guarantee
- * that, when for a specific name #KEY_NS_META
- * is returned today, that it still will be returned after the next
- * recompilation. So make sure that your compiler gives you a warning
- * for unhandled switches (gcc: -Wswitch or -Wswitch-enum if you
- * want to handle default) and look out for those warnings.
- *
- * @param key the key object to work with
- * @return the namespace of a key.
- * @ingroup keyname
- *
- */
-elektraNamespace keyGetNamespace(const Key *key)
-{
-	if (!key) return KEY_NS_NONE;
-	return keyGetNameNamespace(key->key);
-}
-
-/**
  * @internal
  */
 elektraNamespace keyGetNameNamespace(const char *name)
@@ -925,6 +859,8 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
  *
  * @param key the key where a name should be added
  * @param newName the new name to append
+ *
+ * @since 0.8.11
  *
  * @retval size of the new key
  * @retval -1 if key is a null pointer or did not have a valid name before
