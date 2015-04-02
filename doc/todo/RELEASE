@@ -30,7 +30,7 @@ Clean up the mess left over:
  git-clean -df
 
 Make an empty builddirectory:
- mkdir ~build
+ rm -rf ~build && mkdir ~build
 
 
 == Check ==
@@ -56,7 +56,7 @@ Check if [doc/todo/API] is fulfilled
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.8.10
+ export VERSION=0.8.11
 
 
 == Tag the version ==

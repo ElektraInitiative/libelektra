@@ -6,19 +6,14 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.11 #
+
+
+# 0.8.12
 
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
 document METADATA.ini
-
-wrong mounting with tracer
-
-
-
-
-# 0.8.12
 
 shell:
 	test resolver (dir)

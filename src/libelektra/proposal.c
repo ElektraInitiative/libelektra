@@ -301,7 +301,7 @@ KeySet* elektraRenameKeys(KeySet *config, const char* name)
 /**
  * For currently valid namespaces see #elektraNamespace.
  *
- * @version 0.8.10
+ * @since 0.8.10
  * Added method to kdbproposal.h
  *
  * To handle every possible cases (including namespaces) a key can have:
