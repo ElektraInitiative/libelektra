@@ -235,6 +235,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		{
 			cerr << "Could not add that plugin" << endl;
 			cerr << e.what() << endl;
+			if (!cl.interactive) throw; // do not allow errors in non-interactive mode
 		}
 		if (cl.interactive)
 		{
