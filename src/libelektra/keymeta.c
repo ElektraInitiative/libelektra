@@ -14,7 +14,6 @@
  ***************************************************************************/
 
 
-
 /**
  * @defgroup keymeta Meta Info Manipulation Methods
  * @ingroup key
