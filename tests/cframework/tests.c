@@ -426,7 +426,7 @@ for (int i=0; i<=nrWarnings; ++i)
  *
  * @param errorKey keys to retrieve errors from
  *
- * @return 1 if no warnings (can be used within succeed_if)
+ * @return 1 if no error (can be used within succeed_if)
  */
 int output_error(Key *errorKey)
 {
