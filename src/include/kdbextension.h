@@ -31,6 +31,16 @@ namespace ckdb {
 extern "C" {
 #endif
 
+const char *keyOwner(const Key *key);
+ssize_t keyGetOwnerSize(const Key *key);
+ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
+ssize_t keySetOwner(Key *key, const char *owner);
+
+const char *keyComment(const Key *key);
+ssize_t keyGetCommentSize(const Key *key);
+ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
+ssize_t keySetComment(Key *key, const char *newDesc);
+
 #ifndef _WIN32
 /* Conveniences Methods regarding Meta Info */
 uid_t keyGetUID(const Key *key);
@@ -52,46 +62,6 @@ int keySetMTime(Key *key, time_t mtime);
 time_t keyGetCTime(const Key *key);
 int keySetCTime(Key *key, time_t ctime);
 #endif
-
-const char *keyOwner(const Key *key);
-ssize_t keyGetOwnerSize(const Key *key);
-ssize_t keyGetOwner(const Key *key, char *returned, size_t maxSize);
-ssize_t keySetOwner(Key *key, const char *owner);
-
-const char *keyComment(const Key *key);
-ssize_t keyGetCommentSize(const Key *key);
-ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
-ssize_t keySetComment(Key *key, const char *newDesc);
-
-int elektraKeyCmpOrder(const Key *a, const Key *b);
-
-/* Name Manipulation Methods */
-ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
-ssize_t keyGetParentNameSize(const Key *key);
-
-
-/* Conveniences Methods for Making Tests */
-int keyIsSpec(const Key *key);
-int keyIsProc(const Key *key);
-int keyIsDir(const Key *key);
-int keyIsSystem(const Key *key);
-int keyIsUser(const Key *key);
-
-int keyNameIsSpec(const char *keyname);
-int keyNameIsProc(const char *keyname);
-int keyNameIsDir(const char *keyname);
-int keyNameIsSystem(const char *keyname);
-int keyNameIsUser(const char *keyname);
-keyswitch_t keyCompare(const Key *key1, const Key *key2);
-
-
-
-/*****************
- * Allocation
- *****************/
-
-int ksResize(KeySet *ks, size_t size);
-size_t ksGetAlloc(const KeySet *ks);
 
 #ifdef __cplusplus
 }
