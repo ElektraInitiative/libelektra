@@ -565,6 +565,7 @@ ssize_t keyGetParentNameSize(const Key *key);
 
 
 /* Conveniences Methods for Making Tests */
+
 int keyIsSpec(const Key *key);
 int keyIsProc(const Key *key);
 int keyIsDir(const Key *key);
@@ -576,6 +577,7 @@ int keyNameIsProc(const char *keyname);
 int keyNameIsDir(const char *keyname);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
+
 keyswitch_t keyCompare(const Key *key1, const Key *key2);
 
 /** Test a bit. @see set_bit(), clear_bit() */
