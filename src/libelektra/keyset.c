@@ -46,6 +46,8 @@
 
 /** @class doxygenFlatCopy
  *
+ * @brief .
+ *
  * @note Because the key is not copied,
  * also the pointer to the current metadata keyNextMeta()
  * will be shared.
@@ -72,7 +74,7 @@
  * - Using ksLookup() you can lookup a key.
  * - ksGetSize() tells you the current size.
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
  * With ksRewind() and ksNext() you can iterate through the keyset.
  * Be assured that you will get every key of the set in a stable
@@ -326,7 +328,7 @@ KeySet* ksDeepDup(const KeySet *source)
  * but there reference counter is updated, so both keysets
  * need to be ksDel().
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
  * @code
 int f (KeySet *ks)
@@ -763,7 +765,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  * The reference counter of the key will be incremented
  * to show this ownership, and thus @p toAppend is not const.
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
  * @see keyGetRef().
  *
@@ -867,7 +869,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * If a key is both in toAppend and ks, the Key in ks will be
  * overridden.
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
  * @post Sorted KeySet ks with all keys it had before and additionally
  *       the keys from toAppend

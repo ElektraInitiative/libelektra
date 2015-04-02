@@ -14,6 +14,18 @@
  ***************************************************************************/
 
 
+/** @class doxygenNamespaces
+ *
+ * @brief .
+ *
+ * - @p spec/something for specification of other keys
+ * - @p proc/something for in-memory keys (e.g. command-line)
+ * - @p dir/something for dir keys in current working directory
+ * - @p system/something for system keys in /etc or /
+ * - @p user/something for user keys in home directory
+ * - @p user:username/something for other users (deprecated: kdbGet() + kdbSet() currently unsupported)
+ * - @p /something for cascading keys (actually refers to one of the above, see also ksLookup())
+ */
 
 
 /**
@@ -38,11 +50,12 @@
  *   separator.
  * - A *key base name* (see keySetBaseName() and keyAddBaseName()) is
  *   the last part of the key name.
- * - A namespace denotes the place the key comes from:
- *   - _user_ keys come from user's home directories
- *   - _system_ keys come from systems etc directories
  * - A *C-String* is a null terminated sequence of characters.
  *   So \\0 (null-character) must not occur within a C-String.
+ *
+ * @par Namespaces
+ * A namespace denotes the place the key comes from:
+ * @copydetails doxygenNamespaces
  *
  *
  * @note The rules are currently not formally specified and are subject
@@ -204,6 +217,9 @@ keySetName(key,"");
 keyName(key); // you would expect "" here
 keyDel(key);
  * @endcode
+ *
+ * Valid key names are:
+ * @copydetails doxygenNamespaces
  *
  * @note Note that the Key structure keeps its own size field that is calculated
  * by library internal calls, so to avoid inconsistencies, you
@@ -402,11 +418,13 @@ static int elektraOnlySlashes(const char *name)
 /**
  * Set a new name to a key.
  *
- * A valid name is of the forms:
- * - @p system/something
- * - @p user/something
- * - @p user:username/something
- * - @p spec/something
+ * A valid name is one of the forms:
+ * @copydetails doxygenNamespaces
+ *
+ * An invalid name either has an invalid namespace or
+ * a wrongly escaped \\ at the end of the name.
+ *
+ * See @link keyname key names @endlink for the exact rules.
  *
  * The last form has explicitly set the owner, to let the library
  * know in which user folder to save the key. A owner is a user name.
