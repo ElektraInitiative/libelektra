@@ -105,6 +105,9 @@ Key *elektraArrayGetNextKey(KeySet *arrayKeys);
 
 KeySet *elektraKeyGetMetaKeySet(const Key *key);
 
+Key *ksPrev(KeySet *ks);
+Key *ksPopAtCursor(KeySet *ks, cursor_t c);
+
 #ifdef __cplusplus
 }
 }

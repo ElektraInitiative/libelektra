@@ -487,6 +487,95 @@ KeySet *elektraKeyGetMetaKeySet(const Key *key)
 	return ksDup(key->meta);
 }
 
+
+/**
+ * Returns the previous Key in a KeySet.
+ *
+ * KeySets have an internal cursor that can be reset with ksRewind(). Every
+ * time ksPrev() is called the cursor is decremented and the new current Key
+ * is returned.
+ *
+ * You'll get a NULL pointer if the key before begin of the KeySet was reached.
+ *
+ * Don't delete the key, use ksPop() if you want to delete it.
+ *
+ * @return the new current Key
+ * @see ksRewind(), ksCurrent()
+ *
+ */
+Key *ksPrev(KeySet *ks)
+{
+	if (ks->size == 0) return 0;
+	if (ks->current <= 0)
+	{
+		ksRewind (ks);
+		return 0;
+	}
+	ks->current--;
+	return ks->cursor = ks->array[ks->current];
+}
+
+/**
+ * @brief Pop key at given cursor position
+ *
+ * @param ks the keyset to pop key from
+ * @param c where to pop
+ *
+ * The internal cursor will be rewinded using ksRewind(). You can use
+ * ksGetCursor() and ksSetCursor() jump back to the previous position.
+ * e.g. to pop at current position within ksNext() loop:
+ * @code
+ * cursor_t c = ksGetCursor(ks);
+ * keyDel (ksPopAtCursor(ks, c));
+ * ksSetCursor(ks, c);
+ * ksPrev(ks); // to have correct key after next ksNext()
+ * @endcode
+ *
+ * @warning do not use, will be superseded by external iterator API
+ *
+ * @return the popped key
+ * @retval 0 if ks is 0
+ */
+Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
+{
+	if (!ks) return 0;
+	if (pos<0) return 0;
+	if (pos>SSIZE_MAX) return 0;
+
+	size_t c = pos;
+	if (c>=ks->size) return 0;
+
+	if (c != ks->size-1)
+	{
+		Key ** found = ks->array+c;
+		Key * k = *found;
+		/* Move the array over the place where key was found
+		 *
+		 * e.g. c = 2
+		 *   size = 6
+		 *
+		 * 0  1  2  3  4  5  6
+		 * |--|--|c |--|--|--|size
+		 * move to (c/pos is overwritten):
+		 * |--|--|--|--|--|
+		 *
+		 * */
+		memmove (found,
+			found+1,
+			(ks->size-c-1) * sizeof(Key *));
+		*(ks->array+ks->size-1) = k; // prepare last element to pop
+	}
+	else
+	{
+		// if c is on last position it is just a ksPop..
+		// so do nothing..
+	}
+
+	ksRewind(ks);
+
+	return ksPop(ks);
+}
+
 /**
  * @}
  */

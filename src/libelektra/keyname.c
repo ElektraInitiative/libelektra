@@ -148,6 +148,7 @@
  *   Additionally, it is possible to start the old version of the app,
  *   using @p /sw/myapp/#2.
  *
+ * @{
  */
 
 
@@ -848,9 +849,18 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
 /**
  * @brief Add a already escaped name to the keyname.
  *
- * The same way as in keySetName() this method finds the canonical pathname.
- * Unlike, keySetName() it adds it to an already existing name.
- * It cannot change the namespace of a key.
+ * The same way as in keySetName() this method finds the canonical pathname:
+ * - it will ignore /./
+ * - it will remove a level when /../ is used
+ * - it will remove multiple slashes ////
+ *
+ * For example:
+ * @snippet keyName.c add name
+ *
+ * Unlike keySetName() it adds relative to the previous name and
+ * cannot change the namespace of a key.
+ * For example:
+ * @snippet keyName.c namespace
  *
  * The passed name needs to be valid according the @link keyname key name rules @endlink.
  * It is not allowed to:
@@ -868,6 +878,7 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
  * @retval -1 on allocation errors
  * @retval -1 if key was inserted to a keyset before
  * @retval 0 if nothing was done because newName had only slashes, is too short, is empty or is null
+ * @ingroup keyname
  */
 ssize_t keyAddName(Key *key, const char *newName)
 {
@@ -1216,3 +1227,8 @@ ssize_t keySetOwner(Key *key, const char *newOwner)
 	keySetMeta (key, "owner", newOwner);
 	return keyGetOwnerSize (key);
 }
+
+/**
+ * @}
+ */
+

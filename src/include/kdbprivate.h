@@ -554,9 +554,6 @@ int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
 
 KeySet* ksDeepDup(const KeySet *source);
 
-Key *ksPrev(KeySet *ks);
-Key *ksPopAtCursor(KeySet *ks, cursor_t c);
-
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))
 /** Set a bit. @see clear_bit() */
