@@ -21,8 +21,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef KDBEXTENSION_H
-#define KDBEXTENSION_H
+#ifndef KDBMETA_H
+#define KDBMETA_H
 
 #include "kdb.h"
 
@@ -62,6 +62,8 @@ int keySetMTime(Key *key, time_t mtime);
 time_t keyGetCTime(const Key *key);
 int keySetCTime(Key *key, time_t ctime);
 #endif
+
+int elektraKeyCmpOrder(const Key *a, const Key *b);
 
 #ifdef __cplusplus
 }

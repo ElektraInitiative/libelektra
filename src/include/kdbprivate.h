@@ -556,9 +556,6 @@ int elektraArrayValidateName(const Key *key);
 int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex);
 int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
 
-
-int elektraKeyCmpOrder(const Key *a, const Key *b);
-
 /* Name Manipulation Methods */
 ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
 ssize_t keyGetParentNameSize(const Key *key);

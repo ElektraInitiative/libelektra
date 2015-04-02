@@ -12,8 +12,14 @@
 #include <kdbprivate.h>
 
 /**
- * @defgroup proposal Proposals for API
- * @brief Might be added, changed or removed to future Elektra releases.
+ * @defgroup proposal Proposals for Elektra
+ * @brief Might be added to, changed or removed from future Elektra releases.
+ */
+
+/**
+ * @defgroup api API Proposals for Elektra
+ * @brief for kdb.h.
+ * @ingroup proposal
  *
  * @warning Do not use these methods if you do not want to depend on
  * exactly the Elektra version your binary was built for.

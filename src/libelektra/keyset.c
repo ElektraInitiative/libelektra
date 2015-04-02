@@ -623,53 +623,6 @@ int keyCmp (const Key *k1, const Key *k2)
 }
 
 /**
- * Compare the order metadata of two keys.
- *
- * @return a number less than, equal to or greater than zero if
- *    the order of k1 is found, respectively, to be less than,
- *    to match, or be greater than the order of k2. If one key is
- *    NULL, but the other isn't, the key which is not NULL is considered
- *    to be greater. If both keys are NULL, they are
- *    considered to be equal. If one key does have an order
- *    metadata but the other has not, the key with the metadata
- *    is considered greater. If no key has metadata,
- *    they are considered to be equal.
- *
- * @param ka key to compare with
- * @param kb other key to compare with
- */
-int elektraKeyCmpOrder(const Key *ka, const Key *kb)
-{
-
-	if (!ka && !kb) return 0;
-
-	if (ka && !kb) return 1;
-
-	if (!ka && kb) return -1;
-
-	int aorder = -1;
-	int border = -1;
-
-	const Key *kam = keyGetMeta (ka, "order");
-	const Key *kbm = keyGetMeta (kb, "order");
-
-	if (kam) aorder = atoi (keyString (kam));
-	if (kbm) border = atoi (keyString (kbm));
-
-	if (aorder > 0 && border > 0) return aorder - border;
-
-	if (aorder < 0 && border < 0) return 0;
-
-	if (aorder < 0 && border >= 0) return -1;
-
-	if (aorder >= 0 && border < 0) return 1;
-
-	/* cannot happen anyway */
-	return 0;
-}
-
-
-/**
  * Checks if KeySet needs sync.
  *
  * When keys are changed this is reflected into keyNeedSync().
