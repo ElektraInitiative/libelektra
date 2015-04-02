@@ -7,8 +7,8 @@
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS="ALL;-jni"
-ELEKTRA_TOOLS="ALL"
+ELEKTRA_PLUGINS='ALL;-jni'
+ELEKTRA_TOOLS='ALL'
 
 #workaround for hardening flags
 CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
