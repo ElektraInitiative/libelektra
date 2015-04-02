@@ -395,7 +395,7 @@ void Backend::serialize (kdb::KeySet &ret)
 				KEY_VALUE, mp.c_str(),
 				KEY_COMMENT, "The mountpoint says the location where the backend should be mounted.\n"
 				"This is a cascading mountpoint.\n"
-				"That means it is both mounted to user and system.",
+				"That means it is both mounted to dir, user and system.",
 				KEY_END));
 	} else {
 		Key k(mp, KEY_END);
