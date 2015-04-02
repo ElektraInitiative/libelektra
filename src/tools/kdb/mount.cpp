@@ -233,9 +233,14 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		}
 		catch (PluginCheckException const& e)
 		{
-			cerr << "Could not add that plugin" << endl;
-			cerr << e.what() << endl;
-			if (!cl.interactive) throw; // do not allow errors in non-interactive mode
+			if (!cl.interactive)
+			{
+				// do not allow errors in non-interactive mode
+				throw;
+			} else {
+				cerr << "Could not add that plugin" << endl;
+				cerr << e.what() << endl;
+			}
 		}
 		if (cl.interactive)
 		{
