@@ -2208,11 +2208,13 @@ static void test_keyDirectBelow()
 	keySetName(k2, "user/dir/direct\\/");
 	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
 
-	/* TODO compatibility: not allowed
 	keySetName(k1, "user/dir");
-	keySetName(k2, "user/dir/direct\\");
+	succeed_if(keySetName(k2, "user/dir/direct\\\\") > -1, "could not set correct name");
 	succeed_if(keyIsDirectBelow(k1, k2) == 1, "not direct below");
-	*/
+
+	keySetName(k1, "user/dir");
+	succeed_if(keySetName(k2, "user/dir/direct\\") == -1, "could set incorrect name");
+	succeed_if(keyIsDirectBelow(k1, k2) == 0, "invalid name: should not be direct below");
 
 	keySetName(k1, "user/dir");
 	keySetName(k2, "user/dir/direct\\\\\\/below");
@@ -2331,7 +2333,7 @@ static void test_keyAdd()
 	succeed_if (keyAddName(k, "/") == 0, "cannot add slashes");
 	succeed_if (keyAddName(k, "//") == 0, "cannot add slashes");
 	succeed_if (keyAddName(k, "////") == 0, "cannot add slashes");
-	// succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name"); // TODO?
+	succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name");
 	succeed_if (keyAddName(k, "valid") == sizeof("/valid"), "added valid name");
 
 	keySetName(k, "user");
@@ -2340,7 +2342,7 @@ static void test_keyAdd()
 	succeed_if (keyAddName(k, "/") == 0, "cannot add slashes");
 	succeed_if (keyAddName(k, "//") == 0, "cannot add slashes");
 	succeed_if (keyAddName(k, "////") == 0, "cannot add slashes");
-	// succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name"); // TODO?
+	succeed_if (keyAddName(k, "invalid\\") == -1, "added invalid name");
 	succeed_if (keyAddName(k, "valid") == sizeof("user/valid"), "added valid name");
 
 #undef TEST_NOESCAPE_PART
