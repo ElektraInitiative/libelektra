@@ -9,3 +9,4 @@ usr/share/libelektra-test/test-data/ini/*
 usr/share/libelektra-test/test-data/fstab/*
 usr/share/libelektra-test/test-data/hosts/*
 usr/share/libelektra-test/test-data/line/*
+usr/share/libelektra-test/test-data/xmltool/*
