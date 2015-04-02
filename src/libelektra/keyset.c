@@ -797,21 +797,35 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 /**
  * Appends a Key to the end of @p ks.
  *
- * A pointer to the key will
- * be stored, and not a private copy. So a future ksDel() on
- * @p ks may keyDel() the @p toAppend object, see keyGetRef().
+ * Will take ownership of the key @p toAppend.
+ * That means ksDel(ks) will remove the key unless
+ * the key:
+ * - was duplicated before inserting
+ * - got its refcount incremented by keyIncRef() before inserting
+ * - was also inserted into another keyset with ksAppendKey()
  *
- * The reference counter of the key will be incremented, and
- * thus toAppend is not const.
+ * The reference counter of the key will be incremented
+ * to show this ownership, and thus @p toAppend is not const.
  *
  * @copydoc doxygenFlatCopy
  *
- * If the keyname already existed, it will be replaced with
+ * @see keyGetRef().
+ *
+ * If the keyname already existed in the keyset, it will be replaced with
  * the new key.
  *
  * The KeySet internal cursor will be set to the new key.
  *
- * It is save to use ksAppendKey(ks, keyNew(..)).
+ * It is save to directly append newly created keys:
+ * @snippet keyset.c simple append
+ *
+ * If you want the key to outlive the keyset, make sure to
+ * do proper ref counting:
+ * @snippet keyset.c ref append
+ *
+ * Or if you want to avoid aliasing at all, you can duplicate the key.
+ * But then key in the keyset has another identity:
+ * @snippet keyset.c dup append
  *
  *
  * @return the size of the KeySet after insertion
