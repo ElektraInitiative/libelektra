@@ -1,6 +1,7 @@
 #include "yajl.h"
 
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 
 #include <kdberrors.h>
@@ -342,13 +343,16 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 	yajl_config(hand, yajl_allow_comments, 1);
 #endif
 
+	int errnosave = errno;
 	unsigned char fileData[65536];
 	int done = 0;
 	FILE * fileHandle = fopen(keyString(parentKey), "r");
 	if (!fileHandle)
 	{
 		yajl_free(hand);
-		return 0;
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
+		return -1;
 	}
 
 	while (!done)

@@ -46,6 +46,8 @@
 
 /** @class doxygenFlatCopy
  *
+ * @brief .
+ *
  * @note Because the key is not copied,
  * also the pointer to the current metadata keyNextMeta()
  * will be shared.
@@ -72,7 +74,7 @@
  * - Using ksLookup() you can lookup a key.
  * - ksGetSize() tells you the current size.
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
  * With ksRewind() and ksNext() you can iterate through the keyset.
  * Be assured that you will get every key of the set in a stable
@@ -273,7 +275,9 @@ KeySet *ksDup (const KeySet * source)
 	return keyset;
 }
 
-/* Deeply copies from source to dest.
+/**
+ * @internal
+ * @brief Deeply copies from source to dest.
  *
  * The keyset as well as its containing keys are duplicated.
  * This means that you have to keyDel() the contained keys and
@@ -324,7 +328,7 @@ KeySet* ksDeepDup(const KeySet *source)
  * but there reference counter is updated, so both keysets
  * need to be ksDel().
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
  * @code
 int f (KeySet *ks)
@@ -621,55 +625,6 @@ int keyCmp (const Key *k1, const Key *k2)
 }
 
 /**
- * Compare the order metadata of two keys.
- *
- * @return a number less than, equal to or greater than zero if
- *    the order of k1 is found, respectively, to be less than,
- *    to match, or be greater than the order of k2. If one key is
- *    NULL, but the other isn't, the key which is not NULL is considered
- *    to be greater. If both keys are NULL, they are
- *    considered to be equal. If one key does have an order
- *    metadata but the other has not, the key with the metadata
- *    is considered greater. If no key has metadata,
- *    they are considered to be equal.
- *
- * @param ka key to compare with
- * @param kb other key to compare with
- */
-int elektraKeyCmpOrder(const Key *ka, const Key *kb)
-{
-
-	if (!ka && !kb) return 0;
-
-	if (ka && !kb) return 1;
-
-	if (!ka && kb) return -1;
-
-	int aorder = -1;
-	int border = -1;
-
-	const Key *kam = keyGetMeta (ka, "order");
-	const Key *kbm = keyGetMeta (kb, "order");
-
-	if (kam) aorder = atoi (keyString (kam));
-	if (kbm) border = atoi (keyString (kbm));
-
-	if (aorder > 0 && border > 0) return aorder - border;
-
-	if (aorder < 0 && border < 0) return 0;
-
-	if (aorder < 0 && border >= 0) return -1;
-
-	if (aorder >= 0 && border < 0) return 1;
-
-	/* cannot happen anyway */
-	return 0;
-}
-
-
-/**
- * @internal
- *
  * Checks if KeySet needs sync.
  *
  * When keys are changed this is reflected into keyNeedSync().
@@ -680,6 +635,9 @@ int elektraKeyCmpOrder(const Key *ka, const Key *kb)
  * ksNeedSync() allows the backends to know if a key was
  * popped from the keyset to know that this keyset needs
  * to be written out.
+ *
+ * @deprecated Backends now work differently and do not rely on this
+ * information.
  *
  * @param ks the keyset to work with
  * @return -1 on null keyset
@@ -797,21 +755,35 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 /**
  * Appends a Key to the end of @p ks.
  *
- * A pointer to the key will
- * be stored, and not a private copy. So a future ksDel() on
- * @p ks may keyDel() the @p toAppend object, see keyGetRef().
+ * Will take ownership of the key @p toAppend.
+ * That means ksDel(ks) will remove the key unless
+ * the key:
+ * - was duplicated before inserting
+ * - got its refcount incremented by keyIncRef() before inserting
+ * - was also inserted into another keyset with ksAppendKey()
  *
- * The reference counter of the key will be incremented, and
- * thus toAppend is not const.
+ * The reference counter of the key will be incremented
+ * to show this ownership, and thus @p toAppend is not const.
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
- * If the keyname already existed, it will be replaced with
+ * @see keyGetRef().
+ *
+ * If the keyname already existed in the keyset, it will be replaced with
  * the new key.
  *
  * The KeySet internal cursor will be set to the new key.
  *
- * It is save to use ksAppendKey(ks, keyNew(..)).
+ * It is save to directly append newly created keys:
+ * @snippet keyset.c simple append
+ *
+ * If you want the key to outlive the keyset, make sure to
+ * do proper ref counting:
+ * @snippet keyset.c ref append
+ *
+ * Or if you want to avoid aliasing at all, you can duplicate the key.
+ * But then key in the keyset has another identity:
+ * @snippet keyset.c dup append
  *
  *
  * @return the size of the KeySet after insertion
@@ -897,7 +869,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * If a key is both in toAppend and ks, the Key in ks will be
  * overridden.
  *
- * @copydoc doxygenFlatCopy
+ * @copydetails doxygenFlatCopy
  *
  * @post Sorted KeySet ks with all keys it had before and additionally
  *       the keys from toAppend
@@ -927,36 +899,6 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 		ksAppendKey (ks, toAppend->array[i]);
 	}
 	return ks->size;
-}
-
-
-/**
- * @internal
- *
- * Returns the previous Key in a KeySet.
- *
- * KeySets have an internal cursor that can be reset with ksRewind(). Every
- * time ksPrev() is called the cursor is decremented and the new current Key
- * is returned.
- *
- * You'll get a NULL pointer if the key before begin of the KeySet was reached.
- *
- * Don't delete the key, use ksPop() if you want to delete it.
- *
- * @return the new current Key
- * @see ksRewind(), ksCurrent()
- *
- */
-Key *ksPrev(KeySet *ks)
-{
-	if (ks->size == 0) return 0;
-	if (ks->current <= 0)
-	{
-		ksRewind (ks);
-		return 0;
-	}
-	ks->current--;
-	return ks->cursor = ks->array[ks->current];
 }
 
 
@@ -1262,48 +1204,6 @@ Key *ksPop(KeySet *ks)
 	return ret;
 }
 
-/**
- * Builds an array of pointers to the keys in the supplied keyset.
- * The keys are not copied, calling keyDel may remove them from
- * the keyset.
- *
- * The size of the buffer can be easily allocated via ksGetSize. Example:
- * @code
- * KeySet *ks = somekeyset;
- * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
- * elektraKsToMemArray (ks, keyArray);
- * ... work with the array ...
- * free (keyArray);
- * @endcode
- *
- * @param ks the keyset object to work with
- * @param buffer the buffer to put the result into
- * @return the number of elements in the array if successful
- * @return a negative number on null pointers or if an error occurred
- */
-int elektraKsToMemArray(KeySet *ks, Key **buffer)
-{
-	if (!ks) return -1;
-	if (!buffer) return -1;
-
-	/* clear the received buffer */
-	memset (buffer, 0, ksGetSize (ks) * sizeof(Key *));
-
-	cursor_t cursor = ksGetCursor (ks);
-	ksRewind (ks);
-	size_t idx = 0;
-
-	Key *key;
-	while ((key = ksNext (ks)) != 0)
-	{
-		buffer[idx] = key;
-		++idx;
-	}
-	ksSetCursor (ks, cursor);
-
-	return idx;
-}
-
 
 /*******************************************
  *           KeySet browsing methods       *
@@ -1542,112 +1442,6 @@ Key *ksAtCursor(KeySet *ks, cursor_t pos)
 	return ks->array[pos];
 }
 
-/**
- * @internal
- *
- * @brief Pop key at given cursor position
- *
- * @param ks the keyset to pop key from
- * @param c where to pop
- *
- * The internal cursor will be rewinded using ksRewind(). You can use
- * ksGetCursor() and ksSetCursor() jump back to the previous position.
- * e.g. to pop at current position within ksNext() loop:
- * @code
- * cursor_t c = ksGetCursor(ks);
- * keyDel (ksPopAtCursor(ks, c));
- * ksSetCursor(ks, c);
- * ksPrev(ks); // to have correct key after next ksNext()
- * @endcode
- *
- * @warning do not use, will be superseded by external iterator API
- *
- * @return the popped key
- * @retval 0 if ks is 0
- */
-Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
-{
-	if (!ks) return 0;
-	if (pos<0) return 0;
-	if (pos>SSIZE_MAX) return 0;
-
-	size_t c = pos;
-	if (c>=ks->size) return 0;
-
-	if (c != ks->size-1)
-	{
-		Key ** found = ks->array+c;
-		Key * k = *found;
-		/* Move the array over the place where key was found
-		 *
-		 * e.g. c = 2
-		 *   size = 6
-		 *
-		 * 0  1  2  3  4  5  6
-		 * |--|--|c |--|--|--|size
-		 * move to (c/pos is overwritten):
-		 * |--|--|--|--|--|
-		 *
-		 * */
-		memmove (found,
-			found+1,
-			(ks->size-c-1) * sizeof(Key *));
-		*(ks->array+ks->size-1) = k; // prepare last element to pop
-	}
-	else
-	{
-		// if c is on last position it is just a ksPop..
-		// so do nothing..
-	}
-
-	ksRewind(ks);
-
-	return ksPop(ks);
-}
-
-/**
- * @brief return only those keys from the given
- * keyset that pass the supplied filter function
- * with the supplied argument
- *
- * @param result the keyset that should contain the filtered keys
- * @param input the keyset whose keys should be filtered
- * @param filter a function pointer to a function that will be used to
- * filter the keyset. A key will be taken if the function returns a value
- * greater than 0.
- * @param argument an argument that will be passed to the filter function
- * each time it is called
- * @return the number of filtered keys if the filter function always
- * returned a positive value, -1 otherwise
- * @retval NULL on NULL pointer
- */
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument)
-{
-	if (!result) return -1;
-
-	if (!input) return -1;
-
-	if (!filter) return -1;
-
-	int rc = 0;
-	int ret = 0;
-	Key *current;
-
-	cursor_t cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
-	{
-		rc = filter (current, argument);
-		if (rc <= -1) return -1;
-		else if (rc > 0)
-		{
-			++ ret;
-			ksAppendKey(result, keyDup (current));
-		}
-	}
-	ksSetCursor(input, cursor);
-	return ret;
-}
 
 /**
  * Set the KeySet internal cursor.

@@ -517,6 +517,10 @@ int keyClearSync (Key *key);
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
 
+int ksResize(KeySet *ks, size_t size);
+size_t ksGetAlloc(const KeySet *ks);
+KeySet* ksDeepDup(const KeySet *source);
+
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 
 /*Used for internal memcpy/memmove*/
@@ -551,6 +555,27 @@ int elektraValidateKeyName(const char *name, size_t size);
 int elektraArrayValidateName(const Key *key);
 int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex);
 int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
+
+/* Name Manipulation Methods */
+ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetParentNameSize(const Key *key);
+
+
+/* Conveniences Methods for Making Tests */
+
+int keyIsSpec(const Key *key);
+int keyIsProc(const Key *key);
+int keyIsDir(const Key *key);
+int keyIsSystem(const Key *key);
+int keyIsUser(const Key *key);
+
+int keyNameIsSpec(const char *keyname);
+int keyNameIsProc(const char *keyname);
+int keyNameIsDir(const char *keyname);
+int keyNameIsSystem(const char *keyname);
+int keyNameIsUser(const char *keyname);
+
+keyswitch_t keyCompare(const Key *key1, const Key *key2);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

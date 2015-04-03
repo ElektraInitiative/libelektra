@@ -55,6 +55,7 @@ __create_pseudomt(GElektra.Key(), {
 
 -- Key
 -- constructor
+__func_hide(GElektra.Key, 'gi_init', '_init')
 __func_hide(GElektra.Key, 'gi_make', '_make')
 function GElektra.Key:_new(arg0, ...)
 	if GElektra.Key:is_type_of(arg0) then
@@ -62,72 +63,44 @@ function GElektra.Key:_new(arg0, ...)
 	end
 
 	local key = GElektra.Key.new(self)
-	if arg0 then
-		GElektra.Key._method._setname(key, arg0)
+	if not arg0 then
+		return key
 	end
 
+	local flags = 0
+	local value = nil
+	local meta  = {}
 	local t = { ... }
 	local i, arg = next(t, nil)
 	while i do
 		if arg == GElektra.KEY_END then
 			break
-		elseif arg == GElektra.KEY_NAME then
-			i, key.name = next(t, i)
-		elseif arg == GElektra.KEY_VALUE then
-			if key:isbinary() then
-				i, key.binary = next(t, i)
-			else
-				i, key.string = next(t, i)
-			end
-		elseif arg == GElektra.KEY_OWNER then
-			i, arg = next(t, i)
-			key:setmeta("owner", arg)
-		elseif arg == GElektra.KEY_COMMENT then
-			i, arg = next(t, i)
-			key:setmeta("comment", arg)
-		elseif arg == GElektra.KEY_BINARY then
-			key:setmeta("binary", "")
-		elseif arg == GElektra.KEY_UID then
-			i, arg = next(t, i)
-			key:setmeta("uid", tostring(arg))
-		elseif arg == GElektra.KEY_GID then
-			i, arg = next(t, i)
-			key:setmeta("gid", tostring(arg))
-		elseif arg == GElektra.KEY_MODE then
-			i, arg = next(t, i)
-			key:setmeta("mode", string.format("%o", arg))
-		elseif arg == GElektra.KEY_ATIME then
-			i, arg = next(t, i)
-			key:setmeta("atime", string.format("%d", arg))
-		elseif arg == GElektra.KEY_MTIME then
-			i, arg = next(t, i)
-			key:setmeta("mtime", string.format("%d", arg))
-		elseif arg == GElektra.KEY_CTIME then
-			i, arg = next(t, i)
-			key:setmeta("ctime", string.format("%d", arg))
 		elseif arg == GElektra.KEY_SIZE then
-			-- nothing
+			-- ignore value
+			next(t, i)
+		elseif arg == GElektra.KEY_VALUE then
+			i, value = next(t, i)
 		elseif arg == GElektra.KEY_FUNC then
 			error("Unsupported meta type")
-		elseif arg == GElektra.KEY_DIR then
-			require("bit32");
-			local meta = key:getmeta("mode")
-			local mode = meta and not meta:isnull() and tonumber(meta.value, 8) or 0
-			key:setmeta("mode", string.format("%o", bit32.bor(mode, tonumber(111, 8))))
+		elseif arg == GElektra.KEY_FLAGS then
+			i, flags = next(t, i)
 		elseif arg == GElektra.KEY_META then
-			local tmp
-			i, tmp = next(t, i)
-			i, arg = next(t, i)
-			key:setmeta(tmp, arg)
-		elseif arg == GElektra.KEY_NULL then
-		else
-			if GElektra.DEBUG > 0 then
-				io.stderr:write("Unknown option in keyNew ", arg, "\n")
-			end
+			i, k = next(t, i)
+			i, meta[k] = next(t, i)
+		elseif type(arg) == "number" then
+			io.stderr:write("Deprecated option in keyNew: ", arg, "\n")
+			flags = bit32.bor(flags, arg)
+		elseif GElektra.DEBUG > 0 then
+			io.stderr:write("Unknown option in keyNew: ", arg, "\n")
 		end
 		i, arg = next(t, i)
 	end
 
+	-- _init clears our key
+	GElektra.Key._method._init(key, arg0, flags, value, value)
+	for k, v in pairs(meta) do
+		key:setmeta(k, v)
+	end
 	return key
 end
 

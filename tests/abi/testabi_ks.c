@@ -1688,7 +1688,6 @@ static void test_ksLookupValue()
 }
 */
 
-//copied out from example	
 static void test_ksExample()
 {
 	KeySet *ks=ksNew(0, KS_END);
@@ -1727,7 +1726,6 @@ static void test_ksExample()
 		KEY_END));                      // end of args
 	
 	ksRewind(ks);
-	// end of example
 
 	key=ksNext(ks);
 	succeed_if(key != NULL, "no next key");
@@ -3267,6 +3265,86 @@ static void test_nsLookup()
 	ksDel(ks);
 }
 
+static void test_ksAppend2()
+{
+	printf ("Test more involved appending\n");
+
+	Key *inks = keyNew("user/key_with_meta_data", KEY_END);
+	KeySet *ks = ksNew(0, KS_END);
+	ksAppendKey(ks, inks);
+
+	succeed_if (keyGetMeta(inks, "hello") == 0, "hello was not set up to now");
+	succeed_if (keyGetMeta(inks, "error") == 0, "hello was not set up to now");
+
+	keySetMeta(inks, "hello", "hello_world");
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "hello")), "hello_world");
+	succeed_if (keyGetMeta(inks, "error") == 0, "hello was not set up to now");
+
+	KeySet *ks2 = ksDup(ks);
+	ksRewind(ks2);
+	ksNext(ks2);
+	succeed_if_same_string (keyValue(keyGetMeta(ksCurrent(ks2), "hello")), "hello_world");
+	succeed_if (keyGetMeta(ksCurrent(ks2), "error") == 0, "hello was not set up to now");
+
+	Key *dup = keyDup(inks);
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "hello")), "hello_world");
+	succeed_if (keyGetMeta(inks, "error") == 0, "hello was not set up to now");
+
+	succeed_if_same_string (keyValue(keyGetMeta(dup, "hello")), "hello_world");
+	succeed_if (keyGetMeta(dup, "error") == 0, "hello was not set up to now");
+
+	keySetMeta(inks, "error", "some error information");
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "hello")), "hello_world");
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "error")), "some error information");
+
+	succeed_if_same_string (keyValue(keyGetMeta(dup, "hello")), "hello_world");
+	succeed_if (keyGetMeta(dup, "error") == 0, "hello was not set up to now");
+
+	ksDel(ks);
+	keyDel(dup);
+	ksDel(ks2);
+
+	Key *parent = keyNew("user/test/rename", KEY_END);
+	succeed_if(keyGetRef(parent) == 0, "ref wrong");
+	ks = ksNew(0, KS_END);
+	ksAppendKey(ks, parent);
+	succeed_if(keyGetRef(parent) == 1, "ref wrong");
+		KeySet *iter = ksDup(ks);
+		succeed_if(keyGetRef(parent) == 2, "ref wrong");
+		ksRewind(iter);
+		Key *key = ksNext(iter);
+		succeed_if(keyGetMeta(key, "name") == 0, "no such meta exists");
+		Key *result = keyDup(key);
+		succeed_if(keyGetRef(parent) == 2, "ref wrong");
+		succeed_if(keyGetRef(result) == 0, "ref wrong");
+		keySetName(result, keyName(parent));
+		keyAddBaseName(result, "cut");
+		Key * lok = ksLookup(ks, key, KDB_O_POP);
+		keyDel(lok);
+		succeed_if(keyGetRef(parent) == 1, "ref wrong");
+		succeed_if(keyGetRef(key) == 1, "ref wrong");
+		succeed_if(keyGetRef(result) == 0, "ref wrong");
+		ksAppendKey(ks, result);
+		succeed_if(keyGetRef(parent) == 1, "ref wrong");
+		succeed_if(keyGetRef(key) == 1, "ref wrong");
+		succeed_if(keyGetRef(result) == 1, "ref wrong");
+		keyDel(result);
+		keyDel(key);
+		ksDel(iter);
+		// parent+key removed!
+	succeed_if (ksLookupByName(ks, "user/test/rename/cut", 0)!=0, "did not find key");;
+	succeed_if (ksGetSize(ks) == 1, "only result in it")
+	ksDel(ks);
+
+	parent = keyNew("user/test/rename", KEY_END);
+	ks = ksNew(0, KS_END);
+	ksAppendKey(ks, parent);
+	Key * lk = ksLookup(ks, parent, KDB_O_POP);
+	keyDel(lk);
+	ksDel(ks);
+}
+
+
 int main(int argc, char** argv)
 {
 	printf("KEYSET ABI   TESTS\n");
@@ -3315,6 +3393,7 @@ int main(int argc, char** argv)
 	test_ksOrder();
 	test_simpleLookup();
 	test_nsLookup();
+	test_ksAppend2();
 
 	// BUGS:
 	// test_ksLookupValue();

@@ -14,6 +14,18 @@
  ***************************************************************************/
 
 
+/** @class doxygenNamespaces
+ *
+ * @brief .
+ *
+ * - @p spec/something for specification of other keys
+ * - @p proc/something for in-memory keys (e.g. command-line)
+ * - @p dir/something for dir keys in current working directory
+ * - @p system/something for system keys in /etc or /
+ * - @p user/something for user keys in home directory
+ * - @p user:username/something for other users (deprecated: kdbGet() + kdbSet() currently unsupported)
+ * - @p /something for cascading keys (actually refers to one of the above, see also ksLookup())
+ */
 
 
 /**
@@ -38,11 +50,12 @@
  *   separator.
  * - A *key base name* (see keySetBaseName() and keyAddBaseName()) is
  *   the last part of the key name.
- * - A namespace denotes the place the key comes from:
- *   - _user_ keys come from user's home directories
- *   - _system_ keys come from systems etc directories
  * - A *C-String* is a null terminated sequence of characters.
  *   So \\0 (null-character) must not occur within a C-String.
+ *
+ * @par Namespaces
+ * A namespace denotes the place the key comes from:
+ * @copydetails doxygenNamespaces
  *
  *
  * @note The rules are currently not formally specified and are subject
@@ -148,6 +161,7 @@
  *   Additionally, it is possible to start the old version of the app,
  *   using @p /sw/myapp/#2.
  *
+ * @{
  */
 
 
@@ -204,6 +218,9 @@ keyName(key); // you would expect "" here
 keyDel(key);
  * @endcode
  *
+ * Valid key names are:
+ * @copydetails doxygenNamespaces
+ *
  * @note Note that the Key structure keeps its own size field that is calculated
  * by library internal calls, so to avoid inconsistencies, you
  * must never use the pointer returned by keyName() method to set a new
@@ -231,30 +248,6 @@ const char *keyName(const Key *key)
 }
 
 /**
- * @brief This keyname is null separated and does not use backslash for escaping
- *
- * This name is essential if you want to iterate over parts of the key
- * name, want to compare keynames and want to check relations of keys in
- * the hierarchy.
- *
- * @param key the object to work with
- *
- * @retval 0 on null pointers
- * @return the name in its unescaped form
- */
-const void *keyUnescapedName(const Key *key)
-{
-	if (!key) return 0;
-
-	if (!key->key) {
-		return "";
-	}
-
-	return key->key+key->keySize;
-}
-
-
-/**
  * Bytes needed to store the key name without owner.
  *
  * For an empty key name you need one byte to store the ending NULL.
@@ -277,18 +270,6 @@ ssize_t keyGetNameSize(const Key *key)
 		return 1;
 	}
 	else return key->keySize;
-}
-
-
-ssize_t keyGetUnescapedNameSize(const Key *key)
-{
-	if (!key) return -1;
-
-	if (!key->key)
-	{
-		return 0;
-	}
-	else return key->keyUSize;
 }
 
 
@@ -437,11 +418,13 @@ static int elektraOnlySlashes(const char *name)
 /**
  * Set a new name to a key.
  *
- * A valid name is of the forms:
- * - @p system/something
- * - @p user/something
- * - @p user:username/something
- * - @p spec/something
+ * A valid name is one of the forms:
+ * @copydetails doxygenNamespaces
+ *
+ * An invalid name either has an invalid namespace or
+ * a wrongly escaped \\ at the end of the name.
+ *
+ * See @link keyname key names @endlink for the exact rules.
  *
  * The last form has explicitly set the owner, to let the library
  * know in which user folder to save the key. A owner is a user name.
@@ -620,36 +603,6 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 	return length;
 }
 
-
-/**
- * For currently valid namespaces see #elektraNamespace.
- *
- * @version 0.8.10
- * Added method to kdbproposal.h
- *
- * To handle every possible cases (including namespaces) a key can have:
- * @snippet namespace.c namespace
- *
- * To loop over all valid namespaces use:
- * @snippet namespace.c loop
- *
- * @note This method might be enhanced. You do not have any guarantee
- * that, when for a specific name #KEY_NS_META
- * is returned today, that it still will be returned after the next
- * recompilation. So make sure that your compiler gives you a warning
- * for unhandled switches (gcc: -Wswitch or -Wswitch-enum if you
- * want to handle default) and look out for those warnings.
- *
- * @param key the key object to work with
- * @return the namespace of a key.
- * @ingroup keyname
- *
- */
-elektraNamespace keyGetNamespace(const Key *key)
-{
-	if (!key) return KEY_NS_NONE;
-	return keyGetNameNamespace(key->key);
-}
 
 /**
  * @internal
@@ -914,9 +867,18 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
 /**
  * @brief Add a already escaped name to the keyname.
  *
- * The same way as in keySetName() this method finds the canonical pathname.
- * Unlike, keySetName() it adds it to an already existing name.
- * It cannot change the namespace of a key.
+ * The same way as in keySetName() this method finds the canonical pathname:
+ * - it will ignore /./
+ * - it will remove a level when /../ is used
+ * - it will remove multiple slashes ////
+ *
+ * For example:
+ * @snippet keyName.c add name
+ *
+ * Unlike keySetName() it adds relative to the previous name and
+ * cannot change the namespace of a key.
+ * For example:
+ * @snippet keyName.c namespace
  *
  * The passed name needs to be valid according the @link keyname key name rules @endlink.
  * It is not allowed to:
@@ -926,12 +888,15 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
  * @param key the key where a name should be added
  * @param newName the new name to append
  *
+ * @since 0.8.11
+ *
  * @retval size of the new key
  * @retval -1 if key is a null pointer or did not have a valid name before
  * @retval -1 if newName is not a valid escaped name
  * @retval -1 on allocation errors
  * @retval -1 if key was inserted to a keyset before
  * @retval 0 if nothing was done because newName had only slashes, is too short, is empty or is null
+ * @ingroup keyname
  */
 ssize_t keyAddName(Key *key, const char *newName)
 {
@@ -1094,189 +1059,7 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 }
 
 
-
-/*****************************************************
- *         General owner manipulation methods        *
- *****************************************************/
-
-
-
-
 /**
- * Return a pointer to the real internal @p key owner.
- *
- * This is a much more efficient version of keyGetOwner() and you
- * should use it if you are responsible enough to not mess up things.
- * You are not allowed to modify the returned string in any way.
- * If you need a copy of the string, consider to use keyGetOwner() instead.
- *
- * keyOwner() returns "" when there is no keyOwner. The reason is
- * @code
-key=keyNew(0);
-keySetOwner(key,"");
-keyOwner(key); // you would expect "" here
-keySetOwner(key,"system");
-keyOwner(key); // you would expect "" here
- * @endcode
- *
- * @note Note that the Key structure keeps its own size field that is calculated
- * by library internal calls, so to avoid inconsistencies, you
- * must never use the pointer returned by keyOwner() method to set a new
- * value. Use keySetOwner() instead.
- *
- * @param key the key object to work with
- * @return a pointer to internal owner
- * @retval "" when there is no (a empty) owner
- * @retval 0 iff key is a NULL pointer
- * @see keyGetOwnerSize() for the size of the string with concluding 0
- * @see keyGetOwner(), keySetOwner()
- * @see keyName() for name without owner
- * @see keyGetFullName() for name with owner
- * @ingroup keyname
+ * @}
  */
-const char *keyOwner(const Key *key)
-{
-	const char *owner;
 
-	if (!key) return 0;
-	owner = keyValue(keyGetMeta(key, "owner"));
-
-	if (!owner)
-	{
-		return "";
-	}
-
-	return owner;
-}
-
-
-
-
-
-
-/**
- * Return the size of the owner of the Key with concluding 0.
- *
- * The returned number can be used to allocate a string.
- * 1 will returned on an empty owner to store the concluding 0
- * on using keyGetOwner().
- *
- * @code
-char * buffer;
-buffer = malloc (keyGetOwnerSize (key));
-// use buffer and keyGetOwnerSize (key) for maxSize
- * @endcode
- *
- * @note that -1 might be returned on null pointer, so when you
- * directly allocate afterwards its best to check if you will pass
- * a null pointer before.
- *
- * @param key the key object to work with
- * @return number of bytes
- * @return 1 if there is no owner
- * @return -1 on NULL pointer
- * @see keyGetOwner()
- * @ingroup keyname
- */
-ssize_t keyGetOwnerSize(const Key *key)
-{
-	ssize_t size;
-	if (!key) return -1;
-
-	size = keyGetValueSize(keyGetMeta (key, "owner"));
-
-	if (!size || size == -1)
-	{
-		/*errno=KDB_ERR_NODESC;*/
-		return 1;
-	}
-
-	return size;
-}
-
-
-
-/**
- * Return the owner of the key.
- * - Given @p user:someuser/..... return @p someuser
- * - Given @p user:some.user/.... return @p some.user
- * - Given @p user/.... return the current user
- *
- * Only @p user/... keys have a owner.
- * For @p system/... keys (that doesn't have a key owner) an empty
- * string ("") is returned.
- *
- * Although usually the same, the owner of a key is not related to its
- * UID. Owner are related to WHERE the key is stored on disk, while
- * UIDs are related to mode controls of a key.
- *
- * @param key the object to work with
- * @param returnedOwner a pre-allocated space to store the owner
- * @param maxSize maximum number of bytes that fit returned
- * @return number of bytes written to buffer
- * @return 1 if there is no owner
- * @return -1 on NULL pointers
- * @return -1 when maxSize is 0, larger than SSIZE_MAX or too small for ownername
- * @see keySetName(), keySetOwner(), keyOwner(), keyGetFullName()
- * @ingroup keyname
- */
-ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
-{
-	const char *owner;
-	size_t ownerSize;
-	if (!key) return -1;
-
-	if (!maxSize) return -1;
-	if (!returnedOwner) return -1;
-	if (maxSize > SSIZE_MAX) return -1;
-
-	owner = keyValue(keyGetMeta(key, "owner"));
-	ownerSize = keyGetValueSize(keyGetMeta(key, "owner"));
-
-	if (!owner)
-	{
-		/*errno=KDB_ERR_NODESC;*/
-		returnedOwner[0]=0;
-		return 1;
-	}
-
-	strncpy(returnedOwner,owner,maxSize);
-	if (maxSize < ownerSize) {
-		/*errno=KDB_ERR_TRUNC;*/
-		return -1;
-	}
-	return ownerSize;
-}
-
-
-
-/**
- * Set the owner of a key.
- *
- * A owner is a name of a system user related to a UID.
- * The owner decides on which location on the disc the key
- * goes.
- *
- * A private copy is stored, so the passed parameter can be freed after
- * the call.
- *
- * @param key the key object to work with
- * @param newOwner the string which describes the owner of the key
- * @return the number of bytes actually saved including final NULL
- * @return 1 when owner is freed (by setting 0 or "")
- * @return -1 on null pointer or memory problems
- * @see keySetName(), keyGetOwner(), keyGetFullName()
- * @ingroup keyname
- */
-ssize_t keySetOwner(Key *key, const char *newOwner)
-{
-	if (!key) return -1;
-	if (!newOwner || *newOwner==0)
-	{
-		keySetMeta (key, "owner", 0);
-		return 1;
-	}
-
-	keySetMeta (key, "owner", newOwner);
-	return keyGetOwnerSize (key);
-}

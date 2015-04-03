@@ -119,9 +119,19 @@ void Plugins::addPlugin (Plugin &plugin, std::string which)
 	plugins[placementInfo[which].current++] = &plugin;
 }
 
+/**
+ * @brief check if this plugin can be placed in the unfortunately
+ * limited number of slots
+ *
+ * @param plugin the plugin to check
+ * @param which placementInfo it is
+ *
+ * @retval true if it should be added
+ * @retval false no placement (will not be added)
+ */
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
-	if (!plugin.findInfo(which, "placements")) return true;
+	if (!plugin.findInfo(which, "placements")) return false; // nothing to check, won't be added anyway
 
 	std::string stacking = plugin.lookupInfo("stacking");
 
@@ -157,7 +167,7 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 		throw TooManyPlugins(os.str());
 	}
 
-	return false;
+	return true;
 }
 
 bool Plugins::validateProvided() const
@@ -294,13 +304,11 @@ void ErrorPlugins::tryPlugin (Plugin &plugin)
 	checkOrdering(plugin);
 	checkConflicts(plugin);
 
-	if (	checkPlacement(plugin,"prerollback") &&
-		checkPlacement(plugin,"rollback") &&
-		checkPlacement(plugin,"postrollback"))
-	{
-		/* Wont be added to errorplugins anyway, so ignore it */
-		return;
-	}
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement(plugin,"prerollback");
+	willBeAdded |= checkPlacement(plugin,"rollback");
+	willBeAdded |= checkPlacement(plugin,"postrollback");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol("error"))
 	{
@@ -313,14 +321,12 @@ void ErrorPlugins::tryPlugin (Plugin &plugin)
 
 void GetPlugins::tryPlugin (Plugin &plugin)
 {
-	if (	checkPlacement(plugin, "getresolver") &&
-		checkPlacement(plugin, "pregetstorage") &&
-		checkPlacement(plugin, "getstorage") &&
-		checkPlacement(plugin, "postgetstorage"))
-	{
-		/* Wont be added to errorplugins anyway, so ignore it */
-		return;
-	}
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement(plugin, "getresolver");
+	willBeAdded |= checkPlacement(plugin, "pregetstorage");
+	willBeAdded |= checkPlacement(plugin, "getstorage");
+	willBeAdded |= checkPlacement(plugin, "postgetstorage");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol("get"))
 	{
@@ -333,16 +339,14 @@ void GetPlugins::tryPlugin (Plugin &plugin)
 
 void SetPlugins::tryPlugin (Plugin &plugin)
 {
-	if (	checkPlacement(plugin, "setresolver") &&
-		checkPlacement(plugin, "presetstorage") &&
-		checkPlacement(plugin, "setstorage") &&
-		checkPlacement(plugin, "precommit") &&
-		checkPlacement(plugin, "commit") &&
-		checkPlacement(plugin, "postcommit"))
-	{
-		/* Wont be added to errorplugins anyway, so ignore it */
-		return;
-	}
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement(plugin, "setresolver");
+	willBeAdded |= checkPlacement(plugin, "presetstorage");
+	willBeAdded |= checkPlacement(plugin, "setstorage");
+	willBeAdded |= checkPlacement(plugin, "precommit");
+	willBeAdded |= checkPlacement(plugin, "commit");
+	willBeAdded |= checkPlacement(plugin, "postcommit");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol("set"))
 	{

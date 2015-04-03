@@ -35,11 +35,17 @@ ssize_t keyGetUnescapedNameSize(const Key *key);
 // extension.
 ssize_t keySetStringF(Key *key, const char *format, ...);
 
-// could also be in an extension library.
+// could also be in an array extension library.
 int elektraArrayIncName(Key *key);
 int elektraKsToMemArray(KeySet *ks, Key **buffer);
+int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
 KeySet* elektraRenameKeys(KeySet *config, const char* name);
 
+/**
+ * @brief Lock options
+ *
+ * @ingroup proposal
+ */
 enum elektraLockOptions
 {
 	KEY_LOCK_NAME=1<<17,
@@ -47,6 +53,11 @@ enum elektraLockOptions
 	KEY_LOCK_META=1<<19
 };
 
+/**
+ * @brief More lookup options
+ *
+ * @ingroup proposal
+ */
 enum elektraLookupOptions
 {
 	KDB_O_SPEC=1<<15,          ///< Use the passed key as specification, instead of looking up the specification first
@@ -59,7 +70,7 @@ enum elektraLookupOptions
 /**
  * Elektra currently supported Key namespaces.
  *
- * @ingroup keyname
+ * @ingroup proposal
  * @see kdbGet(), keyGetNamespace()
  */
 typedef enum
@@ -89,16 +100,11 @@ int keyLock(Key *key,
 ssize_t elektraKeySetName(Key *key, const char *newName,
 	option_t options);
 
-Key *elektraArrayGetNextKey(KeySet *arrayKeys);
 KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
+Key *elektraArrayGetNextKey(KeySet *arrayKeys);
 
 KeySet *elektraKeyGetMetaKeySet(const Key *key);
 
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
-
-KeySet* ksDeepDup(const KeySet *source);
-
-// is this needed? -> rather not
 Key *ksPrev(KeySet *ks);
 Key *ksPopAtCursor(KeySet *ks, cursor_t c);
 

@@ -94,7 +94,11 @@ int keyClearSync (Key *key)
  * @note Note that the sync status will be updated on any change,
  * including meta data.
  *
- * @see keyNew()
+ * @deprecated The handling of synchronization is done internally and
+ * does not need to be checked by neither application nor plugins.
+ *
+ * @see after keyNew(), keyDup() keys need sync
+ *
  * @param key the key object to work with
  * @return 1 if @p key was changed in memory, 0 otherwise
  * @return -1 on NULL pointer

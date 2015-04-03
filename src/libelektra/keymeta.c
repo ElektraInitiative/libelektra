@@ -14,7 +14,6 @@
  ***************************************************************************/
 
 
-
 /**
  * @defgroup keymeta Meta Info Manipulation Methods
  * @ingroup key
@@ -420,14 +419,6 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	keyDel (search);
 
 	return ret;
-}
-
-KeySet *elektraKeyGetMetaKeySet(const Key *key)
-{
-	if (!key) return 0;
-	if (!key->meta) return 0;
-
-	return ksDup(key->meta);
 }
 
 

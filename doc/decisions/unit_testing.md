@@ -12,6 +12,9 @@ the assertion that failed).
 
 - Must be BSD licenced
 - Must be easy to use
+- should be portable
+- container testing?
+- mocking?
 
 ## Assumptions
 
@@ -19,7 +22,6 @@ the assertion that failed).
 
 - Continue with current framework
 - Boost Unit Testing framework
-
 
 ## Decision
 
@@ -30,8 +32,7 @@ the assertion that failed).
 
 ## Argument
 
-+ Having the output of current values when an assertion fails in any
-case
++ Having the output of current values when an assertion fails in any case
 + No listing of all test cases in main (but instead having test discovery)
 + No more commenting out if you only want to run parts of the test-suite
 + No more typos in test-suite namings
@@ -46,12 +47,13 @@ case
 
 ## Implications
 
-- It adds another dependency (even though libgtest-dev seems to be very lightweight)
+- It adds lots of code in the repository
 - It is not ideal to have different frameworks intermixed (C vs. C++ frameworks, but most code is C)
 - In the end we have to write a lot of functionality ourselves anyway (e.g.  comparing Keys and KeySets)
 - Testsuite execution are already handled by cmake and kdb run-all.
 - The selection of tests within a test suite does not play well with ctest.
 - Rewriting all current tests to have unified behaviour is a lot of work
+- Wont work for ABI compatibility tests
 - Mock only by extra framework
 
 

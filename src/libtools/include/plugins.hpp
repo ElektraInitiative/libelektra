@@ -79,7 +79,6 @@ public:
 	std::vector<std::string> getNeededMissing() const;
 	std::vector<std::string> getRecommendedMissing() const;
 
-	/** @return true if plugin should be ignored */
 	bool checkPlacement (Plugin &plugin, std::string which);
 	void checkStorage (Plugin &plugin);
 	void checkResolver (Plugin &plugin);

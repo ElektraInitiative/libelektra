@@ -48,8 +48,6 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 	{
 		/* get config */
 		KeySet *n;
-		void (*serialise) (void) = (void (*) (void)) elektra::serialise;
-		void (*unserialise) (void) = (void (*) (void)) elektra::unserialise;
 		ksAppend (returned, n=ksNew (30,
 			keyNew ("system/elektra/modules/tcl",
 				KEY_VALUE, "tcl plugin waits for your orders", KEY_END),
@@ -61,13 +59,13 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 				KEY_FUNC, elektraTclSet,
 				KEY_END),
 			keyNew ("system/elektra/modules/tcl/exports/cpp_serialise",
-				KEY_SIZE, sizeof (serialise),
+				KEY_SIZE, sizeof (&elektra::serialise),
 				KEY_BINARY,
-				KEY_VALUE, &serialise, KEY_END),
+				KEY_VALUE, &elektra::serialise, KEY_END),
 			keyNew ("system/elektra/modules/tcl/exports/cpp_unserialise",
-				KEY_SIZE, sizeof (unserialise),
+				KEY_SIZE, sizeof (&elektra::unserialise),
 				KEY_BINARY,
-				KEY_VALUE, &unserialise, KEY_END),
+				KEY_VALUE, &elektra::unserialise, KEY_END),
 #include "readme_tcl.c"
 			keyNew ("system/elektra/modules/tcl/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
@@ -76,8 +74,14 @@ int elektraTclGet(Plugin *, KeySet *returned, Key *parentKey)
 	}
 	/* get all keys */
 
+	int errnosave = errno;
 	std::ifstream in(keyString(parentKey), std::ios::binary);    // we get our input from this file
-	if (!in.is_open()) return 0;
+	if (!in.is_open())
+	{
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
+		return -1;
+	}
 
 	kdb::KeySet input (returned);
 
@@ -113,18 +117,12 @@ int elektraTclSet(Plugin *, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 
-	int saveerrno = errno;
+	int errnosave = errno;
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open())
 	{
-		if (errno == EACCES)
-		{
-			ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
-			errno = saveerrno;
-			return -1;
-		}
-		ELEKTRA_SET_ERRORF(75, parentKey, "File %s could not be written because %s", keyString(parentKey), strerror(errno));
-		errno = saveerrno;
+		ELEKTRA_SET_ERROR_SET(parentKey);
+		errno = errnosave;
 		return -1;
 	}
 

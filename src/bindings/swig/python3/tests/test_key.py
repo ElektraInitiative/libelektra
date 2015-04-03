@@ -2,27 +2,16 @@ import kdb, unittest
 
 class Key(unittest.TestCase):
 	def setUp(self):
-		self.key = kdb.Key("user/key",
-			kdb.KEY_NAME,    "user/foo/bar",
-			kdb.KEY_VALUE,   "value",
-			kdb.KEY_OWNER,   "myowner",
-			kdb.KEY_COMMENT, "mycomment",
-			kdb.KEY_UID,     "123",
-			kdb.KEY_GID,     456,
-			kdb.KEY_MODE,    0o644,
-			kdb.KEY_ATIME,   123,
-			kdb.KEY_MTIME,   "456",
-			kdb.KEY_CTIME,   789,
-			kdb.KEY_DIR,
-			kdb.KEY_META,    "by", "manuel",
-			kdb.KEY_NULL
+		self.key = kdb.Key("user/foo/bar",
+			kdb.KEY_VALUE, "value",
+			kdb.KEY_META,  "by",    "manuel",
+			kdb.KEY_META,  "owner", "myowner"
 			)
 
 		self.bkey = kdb.Key("system/bkey",
-			kdb.KEY_BINARY,
-			kdb.KEY_VALUE,   b"bvalue\0\0",
+			kdb.KEY_VALUE, b"bvalue\0\0",
 			kdb.KEY_END,
-			kdb.KEY_OWNER,   "lost"
+			kdb.KEY_META,  "lost", "lost"
 			)
 
 	def test_ctor(self):
@@ -72,7 +61,7 @@ class Key(unittest.TestCase):
 	def test_operator(self):
 		self.assertNotEqual(self.key, self.bkey)
 		self.assertEqual(kdb.Key(self.key), self.key)
-		self.assertEqual(self.key, kdb.Key("user/foo/bar", kdb.KEY_OWNER, "myowner"))
+		self.assertEqual(self.key, kdb.Key("user/foo/bar", kdb.KEY_META, "owner", "myowner"))
 		self.assertEqual(kdb.Key(), kdb.Key())
 		self.assertNotEqual(kdb.Key("user/key1"), kdb.Key("user/key2"))
 
@@ -130,16 +119,9 @@ class Key(unittest.TestCase):
 
 	def test_meta(self):
 		self.assertIsInstance(self.key.getMeta("owner"), kdb.Key)
-		self.assertEqual(self.key.getMeta("owner").value,   "myowner")
-		self.assertEqual(self.key.getMeta("owner").name,    "owner")
-		self.assertEqual(self.key.getMeta("comment").value, "mycomment")
-		self.assertEqual(self.key.getMeta("uid").value,     "123")
-		self.assertEqual(self.key.getMeta("gid").value,     "456")
-		self.assertEqual(self.key.getMeta("mode").value,    "755")
-		self.assertEqual(self.key.getMeta("atime").value,   "123")
-		self.assertEqual(self.key.getMeta("mtime").value,   "456")
-		self.assertEqual(self.key.getMeta("ctime").value,   "789")
-		self.assertEqual(self.key.getMeta("by").value,      "manuel")
+		self.assertEqual(self.key.getMeta("owner").name,  "owner")
+		self.assertEqual(self.key.getMeta("owner").value, "myowner")
+		self.assertEqual(self.key.getMeta("by").value,    "manuel")
 
 		self.assertFalse(self.key.hasMeta("doesnt_exist"))
 		self.assertIsNone(self.key.getMeta("doesnt_exist"))
@@ -150,7 +132,7 @@ class Key(unittest.TestCase):
 		k.setMeta("foo", "bar")
 		self.assertEqual(k.getMeta("foo").value, "bar")
 
-		self.assertEqual(sum(1 for _ in self.key.getMeta()),  9)
+		self.assertEqual(sum(1 for _ in self.key.getMeta()),  2)
 		self.assertEqual(sum(1 for _ in self.bkey.getMeta()), 1)
 
 if __name__ == '__main__':

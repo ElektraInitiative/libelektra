@@ -85,8 +85,10 @@
 }
 
 %extend kdb::Key {
-  Key(const char *keyName) {
-    return new kdb::Key(keyName, KEY_END);
+  Key(const char *name, uint64_t flags = 0) {
+    return new kdb::Key(name,
+      KEY_FLAGS, flags,
+      KEY_END);
   }
 
   bool isNull() {
@@ -126,72 +128,51 @@
 // add/override some other useful methods
 %luacode %{
   local orig_call = kdb.Key
-  kdb.Key = function(name, ...)
-    -- make sure we call the proper constructor
-    local key = name and orig_call(name) or orig_call()
-
-    if select("#", ...) > 0 then
+  kdb.Key = function(arg0, ...)
+    local flags = 0
+    local value = Nil
+    local meta  = {}
+    if select("#", ...) > 0 and swig_type(arg0) ~= "kdb.Key *" then
       local t = { ... }
       local i, arg = next(t, nil)
       while i do
         if arg == kdb.KEY_END then
           break
-        elseif arg == kdb.KEY_NAME then
-          i, key.name = next(t, i)
-        elseif arg == kdb.KEY_VALUE then
-          if key:isBinary() then
-            i, key.binary = next(t, i)
-          else
-            i, key.string = next(t, i)
-          end
-        elseif arg == kdb.KEY_OWNER then
-          i, arg = next(t, i)
-          key:setMeta("owner", arg)
-        elseif arg == kdb.KEY_COMMENT then
-          i, arg = next(t, i)
-          key:setMeta("comment", arg)
-        elseif arg == kdb.KEY_BINARY then
-          key:setMeta("binary", "")
-        elseif arg == kdb.KEY_UID then
-          i, arg = next(t, i)
-          key:setMeta("uid", tostring(arg))
-        elseif arg == kdb.KEY_GID then
-          i, arg = next(t, i)
-          key:setMeta("gid", tostring(arg))
-        elseif arg == kdb.KEY_MODE then
-          i, arg = next(t, i)
-          key:setMeta("mode", string.format("%o", arg))
-        elseif arg == kdb.KEY_ATIME then
-          i, arg = next(t, i)
-          key:setMeta("atime", string.format("%d", arg))
-        elseif arg == kdb.KEY_MTIME then
-          i, arg = next(t, i)
-          key:setMeta("mtime", string.format("%d", arg))
-        elseif arg == kdb.KEY_CTIME then
-          i, arg = next(t, i)
-          key:setMeta("ctime", string.format("%d", arg))
         elseif arg == kdb.KEY_SIZE then
-          -- nothing
+          -- ignore value
+          next(t, i)
+        elseif arg == kdb.KEY_VALUE then
+          i, value = next(t, i)
         elseif arg == kdb.KEY_FUNC then
           error("Unsupported meta type")
-        elseif arg == kdb.KEY_DIR then
-          require("bit32");
-          local meta = key:getMeta("mode")
-          local mode = not meta:isNull() and tonumber(meta.value, 8) or 0
-          key:setMeta("mode", string.format("%o", bit32.bor(mode, tonumber(111, 8))))
+        elseif arg == kdb.KEY_FLAGS then
+          i, flags = next(t, i)
         elseif arg == kdb.KEY_META then
-          local tmp
-          i, tmp = next(t, i)
-          i, arg = next(t, i)
-          key:setMeta(tmp, arg)
-        elseif arg == kdb.KEY_NULL then
-        else
-          if kdb.DEBUG > 0 then
-            io.stderr:write("Unknown option in keyNew ", arg, "\n")
-          end
+          i, k = next(t, i)
+          i, meta[k] = next(t, i)
+        elseif type(arg) == "number" then
+          io.stderr:write("Deprecated option in keyNew: ", arg, "\n")
+          flags = bit32.bor(flags, arg)
+        elseif kdb.DEBUG > 0 then
+          io.stderr:write("Unknown option in keyNew: ", arg, "\n")
         end
         i, arg = next(t, i)
       end
+    end
+
+    -- make sure we call the proper constructor
+    local key = flags > 0 and orig_call(arg0, flags)
+      or arg0 and orig_call(arg0) or orig_call()
+
+    if value then
+      if key:isBinary() then
+        key.binary = value
+      else
+        key.string = value
+      end
+    end
+    for k, v in pairs(meta) do
+      key:setMeta(k, v)
     end
 
     return key

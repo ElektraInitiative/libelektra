@@ -20,23 +20,26 @@ typedef struct _GElektraKey      GElektraKey;
 typedef struct _GElektraKeyClass GElektraKeyClass;
 
 typedef enum {
-	GELEKTRA_KEY_END     = KEY_END,
-	GELEKTRA_KEY_NAME    = KEY_NAME,
-	GELEKTRA_KEY_VALUE   = KEY_VALUE,
-	GELEKTRA_KEY_OWNER   = KEY_OWNER,
-	GELEKTRA_KEY_COMMENT = KEY_COMMENT,
-	GELEKTRA_KEY_BINARY  = KEY_BINARY,
-	GELEKTRA_KEY_UID     = KEY_UID,
-	GELEKTRA_KEY_GID     = KEY_GID,
-	GELEKTRA_KEY_MODE    = KEY_MODE,
-	GELEKTRA_KEY_ATIME   = KEY_ATIME,
-	GELEKTRA_KEY_MTIME   = KEY_MTIME,
-	GELEKTRA_KEY_CTIME   = KEY_CTIME,
-	GELEKTRA_KEY_SIZE    = KEY_SIZE,
-	GELEKTRA_KEY_FUNC    = KEY_FUNC,
-	GELEKTRA_KEY_DIR     = KEY_DIR,
-	GELEKTRA_KEY_META    = KEY_META,
-	GELEKTRA_KEY_NULL    = KEY_NULL
+	GELEKTRA_KEY_FLAGS          = KEY_FLAGS,
+	GELEKTRA_KEY_END            = KEY_END,
+	GELEKTRA_KEY_NAME           = KEY_NAME,
+	GELEKTRA_KEY_VALUE          = KEY_VALUE,
+	GELEKTRA_KEY_OWNER          = KEY_OWNER,
+	GELEKTRA_KEY_COMMENT        = KEY_COMMENT,
+	GELEKTRA_KEY_BINARY         = KEY_BINARY,
+	GELEKTRA_KEY_UID            = KEY_UID,
+	GELEKTRA_KEY_GID            = KEY_GID,
+	GELEKTRA_KEY_MODE           = KEY_MODE,
+	GELEKTRA_KEY_ATIME          = KEY_ATIME,
+	GELEKTRA_KEY_MTIME          = KEY_MTIME,
+	GELEKTRA_KEY_CTIME          = KEY_CTIME,
+	GELEKTRA_KEY_SIZE           = KEY_SIZE,
+	GELEKTRA_KEY_FUNC           = KEY_FUNC,
+	GELEKTRA_KEY_DIR            = KEY_DIR,
+	GELEKTRA_KEY_META           = KEY_META,
+	GELEKTRA_KEY_NULL           = KEY_NULL,
+	GELEKTRA_KEY_CASCADING_NAME = KEY_CASCADING_NAME,
+	GELEKTRA_KEY_META_NAME      = KEY_META_NAME
 } GElektraKeySwitch;
 
 struct _GElektraKey
@@ -66,6 +69,10 @@ GType gelektra_key_get_type(void);
 GElektraKey *gelektra_key_new(const gchar *name, ...);
 GElektraKey *gelektra_key_make(Key *key);
 GElektraKey *gelektra_key_gi_make(GElektraKey *key);
+
+/* initialization */
+void gelektra_key_gi_init(GElektraKey *key, const gchar *name, guint64 flags,
+	const gchar *value, const void *data, gsize data_size);
 
 /* reference handling */
 gssize gelektra_key_incref(GElektraKey *key);

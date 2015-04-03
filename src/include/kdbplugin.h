@@ -24,6 +24,18 @@
 
 #include <kdb.h>
 
+#define ELEKTRA_SET_ERROR_GET(parentKey) \
+	do { \
+		if (errno == EACCES) ELEKTRA_SET_ERROR(109, parentKey, strerror(errno)); \
+		else  ELEKTRA_SET_ERROR(110, parentKey, strerror(errno)); \
+	} while(0)
+
+#define ELEKTRA_SET_ERROR_SET(parentKey) \
+	do { \
+		if (errno == EACCES) ELEKTRA_SET_ERROR(9, parentKey, strerror(errno)); \
+		else  ELEKTRA_SET_ERROR(75, parentKey, strerror(errno)); \
+	} while(0)
+
 #define ELEKTRA_QUOTE(x)       #x
 
 #ifdef ELEKTRA_STATIC

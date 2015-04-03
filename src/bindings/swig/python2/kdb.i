@@ -16,33 +16,25 @@
   Key.__oldinit__ = Key.__init__
 
   def __Key_new_init__(self, *args):
-    passed  = []
-    skipped = []
+    passed = []
+    value  = None
 
     if len(args):
-      iargs = iter(args)
-      passed.append(next(iargs))
-      for arg in iargs:
+      args = iter(args)
+      passed.append(next(args))
+      for arg in args:
         if arg == KEY_VALUE:
-          skipped.append(arg)
-          skipped.append(next(iargs))
-        elif arg == KEY_BINARY:
-          skipped.append(arg)
+          value = next(args)
         else:
           passed.append(arg)
 
     self.__oldinit__(*passed)
 
-    if len(skipped):
-      iskipped = iter(skipped)
-      for arg in iskipped:
-        if arg == KEY_VALUE:
-          if self.isBinary():
-            self.binary = next(iskipped)
-          else:
-            self.string = next(iskipped)
-        elif arg == KEY_BINARY:
-          self.setMeta("binary", "")
+    if value:
+      if self.isBinary():
+        self.binary = value
+      else:
+        self.string = value
 
   Key.__init__ = __Key_new_init__
 %}

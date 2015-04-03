@@ -89,7 +89,7 @@ TEST_F(Simple, MetaInSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parent(testRoot);
+	Key parent(testRoot, KEY_END);
 	kdb.get(ks, parent);
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backend" << ks;
 
@@ -109,7 +109,7 @@ TEST_F(Simple, InvalidKeysInSet)
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
-	Key parent(testRoot);
+	Key parent(testRoot, KEY_END);
 	kdb.get(ks, parent);
 	ASSERT_EQ(ks.size(), 0) << "got keys from freshly mounted backend" << ks;
 
@@ -124,6 +124,70 @@ TEST_F(Simple, InvalidKeysInSet)
 	struct stat buf;
 	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "did find config file";
 }
+
+kdb::KeySet getAll()
+{
+	using namespace ckdb;
+	return
+#include <data_allns.c>
+}
+
+// TODO: replace with proper ContainerEq
+void compareKeySet(kdb::KeySet ks1, kdb::KeySet ks2)
+{
+	using namespace kdb;
+	KeySet::iterator i1 = ks1.begin();
+	for (KeySet::iterator i2 = ks2.begin(); i2 != ks2.end(); ++i1, ++i2)
+	{
+		EXPECT_EQ(*i1, *i2);
+	}
+	EXPECT_EQ(i1, ks1.end()) << "second iterator not at end";
+}
+
+TEST_F(Simple, EverythingInGetSet)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks = getAll();
+	Key parent(testRoot, KEY_END);
+	kdb.get(ks, parent);
+	ASSERT_EQ(ks.size(), 714) << "did not keep" << ks;
+
+	kdb.set(ks, parent);
+	printError(std::cout, parent);
+	printWarnings(std::cout, parent);
+	ASSERT_EQ(ks.size(), 714) << "got wrong keys:\n" << ks;
+	// KeySet cmp = getAll();
+	// ASSERT_EQ(ks, cmp);
+	// ASSERT_THAT(ks, ContainerEq(cmp));
+	compareKeySet(ks, getAll());
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "did find config file";
+}
+
+TEST_F(Simple, EverythingInSet)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+	Key parent(testRoot, KEY_END);
+	kdb.get(ks, parent);
+	ASSERT_EQ(ks.size(), 0) << "got from freshly mounted" << ks;
+	ks.append(getAll());
+	ASSERT_EQ(ks.size(), 714) << "did not keep" << ks;
+
+	kdb.set(ks, parent);
+	printError(std::cout, parent);
+	printWarnings(std::cout, parent);
+	ASSERT_EQ(ks.size(), 714) << "got wrong keys:\n" << ks;
+	// KeySet cmp = getAll();
+	// ASSERT_EQ(ks, cmp);
+	// ASSERT_THAT(ks, ContainerEq(cmp));
+	compareKeySet(ks, getAll());
+	struct stat buf;
+	ASSERT_EQ(stat(mp->systemConfigFile.c_str(), &buf), -1) << "did find config file";
+}
+
 
 TEST_F(Simple, RemoveFile)
 {

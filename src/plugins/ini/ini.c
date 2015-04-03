@@ -188,7 +188,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	FILE *fh = fopen (keyString (parentKey), "r");
 	if (!fh)
 	{
-		ELEKTRA_SET_ERROR(9, parentKey, strerror (errno));
+		ELEKTRA_SET_ERROR_GET(parentKey);
 		errno = errnosave;
 		return -1;
 	}
@@ -352,7 +352,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	if (!fh)
 	{
-		ELEKTRA_SET_ERROR(9, parentKey, strerror(errno));
+		ELEKTRA_SET_ERROR_SET(parentKey);
 		errno = errnosave;
 		return -1;
 	}

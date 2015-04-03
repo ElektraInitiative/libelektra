@@ -87,7 +87,14 @@ void MountCommand::buildBackend(Cmdline const& cl)
 {
 	Backend backend;
 
-	backend.setMountpoint(Key(mp, KEY_CASCADING_NAME, KEY_END), mountConf);
+	Key mpk(mp, KEY_CASCADING_NAME, KEY_END);
+
+	if (!mpk.isValid())
+	{
+		throw invalid_argument(mp + " is not a valid mountpoint");
+	}
+
+	backend.setMountpoint(mpk, mountConf);
 
 	backend.setBackendConfig(cl.getPluginsConfig("system/"));
 
@@ -226,8 +233,14 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 		}
 		catch (PluginCheckException const& e)
 		{
-			cerr << "Could not add that plugin" << endl;
-			cerr << e.what() << endl;
+			if (!cl.interactive)
+			{
+				// do not allow errors in non-interactive mode
+				throw;
+			} else {
+				cerr << "Could not add that plugin" << endl;
+				cerr << e.what() << endl;
+			}
 		}
 		if (cl.interactive)
 		{
