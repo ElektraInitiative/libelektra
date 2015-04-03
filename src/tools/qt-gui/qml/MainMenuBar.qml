@@ -1,5 +1,6 @@
-import QtQuick 2.2
-import QtQuick.Controls 1.1
+import QtQuick 2.3
+import QtQuick.Controls 1.2
+import QtQuick.Controls.Styles 1.2
 
 MenuBar {
 
@@ -20,7 +21,7 @@ MenuBar {
 
 		MenuItem {
 			id:dbCreateBackend
-			action: createBackendAction
+			action: mountBackendAction
 		}
 		MenuItem {
 			id:dbUnmountBackend
@@ -30,15 +31,22 @@ MenuBar {
 		MenuSeparator{}
 
 		MenuItem {
+			id: dbSynchronize
+			action: synchronizeAction
+		}
+
+		MenuSeparator{}
+
+		MenuItem {
+			id: dbPluginInfo
+			action: pluginInfoAction
+		}
+
+		MenuSeparator{}
+
+		MenuItem {
 			id:dbExit
-			text: qsTr("Exit")
-			shortcut: StandardKey.Quit
-			onTriggered: {
-				if(!undoManager.isClean())
-					exitDialog.open()
-				else
-					Qt.quit()
-			}
+			action: quitAction
 		}
 	}
 
@@ -97,10 +105,22 @@ MenuBar {
 	}
 
 	Menu {
-		id:about
-		title: qsTr("&About")
+		id: settings
+		title: qsTr("Settings")
+
 		MenuItem {
-			text: qsTr("About Elektra Editor")
+			action: chooseColorAction
+		}
+	}
+
+	Menu {
+		id: help
+		title: qsTr("&Help")
+		MenuItem {
+			action: whatsThisAction
+		}
+		MenuSeparator{}
+		MenuItem {
 			action: aboutAction
 		}
 	}

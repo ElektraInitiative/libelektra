@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <stdbool.h>
-
 #include <kdbproposal.h>
 
 #define POSTFIX_SIZE 50
@@ -346,6 +345,19 @@ static int elektraResolveBuildin(resolverHandle *p)
 	return 1;
 }
 
+static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
+{
+	size_t filenameSize = sizeof(KDB_DB_SPEC)
+		+ strlen(p->path) + sizeof("/") + 1;
+	p->filename = malloc (filenameSize);
+	strcpy (p->filename, KDB_DB_SPEC);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+
+	elektraResolveFinishByFilename(p);
+	return 1;
+}
+
 /**
  * @brief Recalculates all pathes given p->dirname
  *
@@ -373,6 +385,20 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 	elektraResolveFinishByFilename(p);
 }
 
+static int elektraResolveDir(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
+{
+#ifdef __APPLE__
+	p->dirname = malloc(1024);
+	getcwd( p->dirname, 1024 );
+#else
+	p->dirname = get_current_dir_name();
+#endif
+
+	elektraResolveFinishByDirname(p);
+	return 1;
+}
+
+
 
 /**
  * @retval 0 if variant did not have a result
@@ -395,6 +421,64 @@ static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
 	// TODO: also document in doc/COMPILE.md
 	}
 	return -1;
+}
+
+static int elektraResolveMapperUser(resolverHandle *p, Key *warningsKey)
+{
+	int finished = 0;
+	size_t i;
+	for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_USER); ++i)
+	{
+		finished = elektraResolveUser(ELEKTRA_VARIANT_USER[i],
+				p, warningsKey);
+	}
+	if (finished == -1)
+	{
+		ELEKTRA_ADD_WARNINGF(83, warningsKey,
+			"user resolver failed at step %zu, the configuration is: %s",
+			i, ELEKTRA_VARIANT_USER);
+		return -1;
+	}
+
+	if (p->dirname == 0)
+	{
+		ELEKTRA_ADD_WARNINGF(83, warningsKey,
+			"no resolver set the user dirname, the configuration is: %s",
+			ELEKTRA_VARIANT_USER);
+		return -1;
+	}
+
+	elektraResolveFinishByDirname(p);
+
+	return finished;
+}
+
+static int elektraResolveMapperSystem(resolverHandle *p, Key *warningsKey)
+{
+	int finished = 0;
+	size_t i;
+	for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_SYSTEM); ++i)
+	{
+		finished = elektraResolveSystem(ELEKTRA_VARIANT_SYSTEM[i],
+				p, warningsKey);
+	}
+	if (finished == -1)
+	{
+		ELEKTRA_ADD_WARNINGF(83, warningsKey,
+			"system resolver failed at step %zu, the configuration is: %s",
+			i, ELEKTRA_VARIANT_SYSTEM);
+		return -1;
+	}
+
+	if (p->dirname == 0)
+	{
+		ELEKTRA_ADD_WARNINGF(83, warningsKey,
+			"no resolver set the system dirname, the configuration is: %s",
+			ELEKTRA_VARIANT_SYSTEM);
+		return -1;
+	}
+
+	return finished;
 }
 
 /**Resolve the filename.
@@ -428,65 +512,37 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
 {
 	if (!p)
 	{
+		ELEKTRA_ADD_WARNING(83, warningsKey, "no p");
 		return -1;
 	}
 
-	if (!strncmp(keyName(forKey), "system", 6))
+	switch (keyGetNamespace(forKey))
 	{
-		int finished = 0;
-		size_t i;
-		for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_SYSTEM); ++i)
-		{
-			finished = elektraResolveSystem(ELEKTRA_VARIANT_SYSTEM[i],
-					p, warningsKey);
-		}
-		if (finished == -1)
-		{
-			ELEKTRA_ADD_WARNINGF(83, warningsKey,
-				"system resolver failed at step %zu, the configuration is: %s",
-				i, ELEKTRA_VARIANT_SYSTEM);
-			return -1;
-		}
-
-		if (p->dirname == 0)
-		{
-			ELEKTRA_ADD_WARNINGF(83, warningsKey,
-				"no resolver set the system dirname, the configuration is: %s",
-				ELEKTRA_VARIANT_SYSTEM);
-			return -1;
-		}
-
-		return finished;
-	}
-	else if (!strncmp(keyName(forKey), "user", 4))
-	{
-		int finished = 0;
-		size_t i;
-		for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_USER); ++i)
-		{
-			finished = elektraResolveUser(ELEKTRA_VARIANT_USER[i],
-					p, warningsKey);
-		}
-		if (finished == -1)
-		{
-			ELEKTRA_ADD_WARNINGF(83, warningsKey,
-				"user resolver failed at step %zu, the configuration is: %s",
-				i, ELEKTRA_VARIANT_USER);
-			return -1;
-		}
-
-		if (p->dirname == 0)
-		{
-			ELEKTRA_ADD_WARNINGF(83, warningsKey,
-				"no resolver set the user dirname, the configuration is: %s",
-				ELEKTRA_VARIANT_USER);
-			return -1;
-		}
-
-		elektraResolveFinishByDirname(p);
-
-		return finished;
+	case KEY_NS_SPEC:
+		return elektraResolveSpec(p, warningsKey);
+	case KEY_NS_DIR:
+		return elektraResolveDir(p, warningsKey);
+	case KEY_NS_USER:
+		return elektraResolveMapperUser(p, warningsKey);
+	case KEY_NS_SYSTEM:
+		return elektraResolveMapperSystem(p, warningsKey);
+	case KEY_NS_PROC:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve proc");
+		return -1;
+	case KEY_NS_EMPTY:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve empty");
+		return -1;
+	case KEY_NS_NONE:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve none");
+		return -1;
+	case KEY_NS_META:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve meta");
+		return -1;
+	case KEY_NS_CASCADING:
+		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve cascading");
+		return -1;
 	}
 
+	ELEKTRA_ADD_WARNING(83, warningsKey, "should not be reached");
 	return -1;
 }

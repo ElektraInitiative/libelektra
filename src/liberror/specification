@@ -71,6 +71,7 @@ number:9
 description:Insufficient permissions to open configuration file for writing. You might want to retry as root.
 severity:normal
 ingroup:kdb
+see:75 109 110
 
 number:10
 description:general parse error
@@ -133,7 +134,8 @@ severity:warning
 ingroup:kdb
 
 number:22
-description:Could not find any mountpoint configuration
+unused:yes
+description:system/elektra/mountpoints is appended if missing
 severity:warning
 ingroup:trie
 
@@ -165,8 +167,7 @@ ingroup:plugin
 module:resolver
 
 number:28
-unused:yes
-description:could not remove file, obsolete, now 32 is used
+description:could not remove file
 severity:error
 ingroup:plugin
 module:resolver
@@ -449,6 +450,7 @@ description:Could not open file for writing.
 severity:error
 ingroup:plugin
 module:storage
+see:9 109 110
 
 number:76
 description:Error while reading file
@@ -555,7 +557,7 @@ severity:fatal
 ingroup:kdb
 
 number:95
-description:Could not load config file
+description:Could not find plugin configuration
 severity:fatal
 module:regexstore
 
@@ -607,7 +609,41 @@ ingroup:plugin
 module:jni
 
 number:104
-description:No key, empty key name or meta key passed as parentKey
+description:Meta key passed as parentKey
 severity:error
 ingroup:kdb
 
+number:105
+description:Invalid (empty) key passed as parentKey. This is only accepted for compatibility reasons. You should use the cascading key / instead.
+severity:warning
+ingroup:kdb
+
+number:106
+description:Wrong size detected in dumpfile
+severity:error
+ingroup:plugin
+module:dump
+
+number:107
+description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
+severity:error
+ingroup:kdb
+
+number:108
+description:Wrong keys in postprocessing
+severity:warning
+ingroup:kdb
+
+number:109
+description:Insufficient permissions to open configuration file for reading. You might want to retry as root or change access using chmod.
+severity:error
+ingroup:plugin
+module:storage
+see:9 75 110
+
+number:110
+description:Could not open configuration file for reading.
+severity:normal
+ingroup:plugin
+module:storage
+see:9 75 109

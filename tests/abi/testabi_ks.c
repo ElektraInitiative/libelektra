@@ -15,6 +15,16 @@
 
 #include <tests.h>
 
+#define NUMBER_OF_NAMESPACES 5
+
+char *namespaces[] = {
+	"spec",
+	"proc",
+	"dir",
+	"user",
+	"system",
+	0};
+
 static void test_ksNew()
 {
 	KeySet *ks=0;
@@ -984,6 +994,7 @@ static void test_ksLookup()
 	int i,j;
 	Key *k[1000];
 	KeySet *ks = ksNew (30,
+		/* keys that are searched */
 		k[0]=keyNew ("user/rem3", KEY_DIR, KEY_END),
 		k[1]=keyNew ("user/rem2", KEY_DIR, KEY_END),
 		k[2]=keyNew ("user/rem1/key2", KEY_END),
@@ -1009,18 +1020,22 @@ static void test_ksLookup()
 		k[22]=keyNew ("user/dir5", KEY_DIR, KEY_END),
 		KS_END);
 
-	/* key 5 */
-	k[23] = keyNew ("user/DiR1", KEY_END);
-	/* key 6 */
-	k[24] = keyNew ("user/DiR1/KEY1", KEY_END);
-	k[25] = keyNew ("user:wrongowner/DiR1/KEY1", KEY_END);
-	k[26] = keyNew ("user:nop/DiR1/KEY1", KEY_END);
-	k[27] = keyNew ("user:wrongowner/dir1/key1", KEY_END);
-	k[28] = keyNew ("user:nop/dir1/key1", KEY_END);
-	/*key 13 */
-	k[29] = keyNew ("user:wrongowner/dir2/key1", KEY_END);
-	k[30] = keyNew ("user/dir2/key1", KEY_END);
-	k[31] = keyNew ("user:max/dir2/key1", KEY_END);
+	KeySet *lookupKeys = ksNew (30,
+		/* lookup keys, keyset only for ksDel */
+		k[23] = keyNew ("user/DiR1", KEY_END),
+		k[24] = keyNew ("user/DiR1/KEY1", KEY_END),
+		k[25] = keyNew ("user:wrongowner/DiR1/KEY1", KEY_END),
+		k[26] = keyNew ("user:nop/DiR1/KEY1", KEY_END),
+		k[27] = keyNew ("user:wrongowner/dir1/key1", KEY_END),
+		k[28] = keyNew ("user:nop/dir1/key1", KEY_END),
+		k[29] = keyNew ("user:wrongowner/dir2/key1", KEY_END),
+		k[30] = keyNew ("user/dir2/key1", KEY_END),
+		k[31] = keyNew ("user:max/dir2/key1", KEY_END),
+		k[32] = keyNew ("/dir1/key1", KEY_CASCADING_NAME, KEY_END),
+		k[33] = keyNew ("/dirX/keyY", KEY_CASCADING_NAME, KEY_END),
+		KS_END);
+	succeed_if (keyGetNameSize(k[32]) == 11, "initial size of name wrong");
+	succeed_if (keyGetNameSize(k[33]) == 11, "initial size of name wrong");
 
 	srand(23);
 
@@ -1041,6 +1056,11 @@ static void test_ksLookup()
 		succeed_if (ksLookup(ks, k[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookup(ks, k[28], KDB_O_WITHOWNER) == 0, "found wrong key");
 		succeed_if (ksLookup(ks, k[31], KDB_O_WITHOWNER) == k[13], "did not find key");
+		succeed_if (ksLookup(ks, k[32], 0) == k[6], "did not find key");
+		succeed_if (ksLookup(ks, k[33], 0) == 0, "found wrong key");
+
+		succeed_if (keyGetNameSize(k[32]) == 11, "size of name was changed");
+		succeed_if (keyGetNameSize(k[33]) == 11, "size of name was changed");
 		/* Empty lines to add more tests:
 		succeed_if (ksLookup(ks, k[], ) == k[], "did not find key");
 		succeed_if (ksLookup(ks, k[], ) == 0, "found wrong key");
@@ -1048,7 +1068,7 @@ static void test_ksLookup()
 	}
 
 	ksDel (ks);
-	for (i=23; i<32;i++) keyDel (k[i]);
+	ksDel (lookupKeys);
 }
 
 static void test_ksLookupByName()
@@ -1093,6 +1113,12 @@ static void test_ksLookupByName()
 	name[29] = "user:wrongowner/dir2/key1";
 	name[30] = "user/dir2/key1";
 	name[31] = "user:max/dir2/key1";
+	name[32] = "user//dir1";
+	name[33] = "user///dir1";
+	name[34] = "user///./dir1";
+	name[35] = "user///./../dir1";
+	name[36] = "user///./../dir1/";
+	name[37] = "user///./../dir1//";
 
 	srand(23);
 
@@ -1102,8 +1128,7 @@ static void test_ksLookupByName()
 	for (i=0; i<100; i++)
 	{
 		ksUnsort(ks);
-		for (j=0; j<23;j++)
-			succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not find key");
+		for (j=0; j<23;j++) succeed_if (ksLookupByName(ks, name[j], 0)==k[j], "did not find key");
 		succeed_if (ksLookupByName(ks, name[23], KDB_O_NOCASE) == k[5], "did not find key");
 		succeed_if (ksLookupByName(ks, name[23], 0) == 0, "found wrong key");
 		succeed_if (ksLookupByName(ks, name[24], KDB_O_NOCASE) == k[6], "did not find key");
@@ -1113,6 +1138,7 @@ static void test_ksLookupByName()
 		succeed_if (ksLookupByName(ks, name[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookupByName(ks, name[28], KDB_O_WITHOWNER) == 0, "found wrong key");
 		succeed_if (ksLookupByName(ks, name[31], KDB_O_WITHOWNER) == k[13], "did not find key");
+		for (int n=32; n<38; ++n) succeed_if (ksLookupByName(ks, name[n], 0) == k[5], "did not find key");
 		/* Empty lines to add more tests:
 		succeed_if (ksLookupByName(ks, name[], ) == name[], "did not find key");
 		succeed_if (ksLookupByName(ks, name[], ) == 0, "found wrong key");
@@ -1177,7 +1203,15 @@ static void test_ksLookupName()
 	succeed_if (ksLookupByName (ks, "user/na/med/key", 0) == 0, "seperation that should be");
 
 	succeed_if (ksLookupByName (ks, "system/domain/key", 0) == 0, "found key in wrong domain");
-	
+
+	// broken names
+	succeed_if (ksLookupByName (ks, "sys", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "what", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "", 0) == 0, "found key with empty entry");
+	succeed_if (ksLookupByName (ks, "_", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "\\", 0) == 0, "found key with broken entry");
+	succeed_if (ksLookupByName (ks, "\\/", 0) == 0, "found key with broken entry");
+
 	//now try to find them, and compare value
 	found = ksLookupByName (ks, "user/domain/key", 0);
 	succeed_if (ksCurrent(ks) == found, "current not set correctly");
@@ -1341,6 +1375,36 @@ static void test_ksLookupNameCascading()
 	ks = ksNew(10, KS_END);
 	Key *k1;
 	Key *k2;
+	ksAppendKey(ks, k1=keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey(ks, k2=keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
+	ksAppendKey(ks, keyDup((s=keyNew("/test/myapp/key", KEY_CASCADING_NAME, KEY_END))));
+	succeed_if(ksGetSize(ks) == 3, "initial size of keyset");
+	succeed_if(keyGetNameSize(s) == 16, "initial name size");
+
+	succeed_if(ksLookup(ks, s, 0) == k2, "got wrong key (not user)");
+	succeed_if(ksLookup(ks, s, 0) != k1, "got system key first");
+	succeed_if(ksLookup(ks, s, 0) != s, "got cascading key");
+	succeed_if_same_string (keyString(ksLookup(ks, s, 0)), "correct");
+	succeed_if(ksGetSize(ks) == 3, "lookup without pop changed size");
+	succeed_if(keyGetNameSize(s) == 16, "size changed after lookup");
+
+	succeed_if_same_string (keyString(ksLookup(ks, s, KDB_O_POP)), "correct");
+	succeed_if(ksGetSize(ks) == 2, "lookup with pop did not change size");
+	succeed_if(keyGetNameSize(s) == 16, "size changed after lookup");
+
+	succeed_if(ksLookup(ks, s, 0) == k1, "got wrong key (not system)");
+	succeed_if(ksLookup(ks, s, 0) != k2, "got user key again");
+	succeed_if(ksLookup(ks, s, 0) != s, "got cascading key");
+	succeed_if_same_string (keyString(ksLookup(ks, s, KDB_O_POP)), "wrong");
+	succeed_if(ksGetSize(ks) == 1, "lookup with pop did not change size");
+	succeed_if(keyGetNameSize(s) == 16, "size changed after lookup");
+	ksDel(ks);
+	keyDel(s);
+	keyDel(k1);
+	keyDel(k2);
+
+
+	ks = ksNew(10, KS_END);
 	ksAppendKey(ks, k1=keyNew("system/test/myapp/key",  KEY_VALUE, "wrong", KEY_END));
 	ksAppendKey(ks, k2=keyNew("user/test/myapp/key",  KEY_VALUE, "correct", KEY_END));
 
@@ -1624,7 +1688,6 @@ static void test_ksLookupValue()
 }
 */
 
-//copied out from example	
 static void test_ksExample()
 {
 	KeySet *ks=ksNew(0, KS_END);
@@ -1663,7 +1726,6 @@ static void test_ksExample()
 		KEY_END));                      // end of args
 	
 	ksRewind(ks);
-	// end of example
 
 	key=ksNext(ks);
 	succeed_if(key != NULL, "no next key");
@@ -2610,6 +2672,156 @@ static void test_cutpoint()
 	ksDel (cmp_part);
 }
 
+static void test_cascadingCutpoint()
+{
+	printf ("Testing operation cascading cut point\n");
+
+	Key *cutpoint = keyNew("/a/b/c", KEY_END);
+	KeySet *orig =
+#include <data_nscut.c>
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a");
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a/b");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a/b");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("spec/a", KEY_END),
+			keyNew("spec/a/b", KEY_END),
+
+			keyNew("proc/a", KEY_END),
+			keyNew("proc/a/b", KEY_END),
+
+			keyNew("dir/a", KEY_END),
+			keyNew("dir/a/b", KEY_END),
+
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+
+			keyNew("system/a", KEY_END),
+			keyNew("system/a/b", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	// output_keyset(orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(25,
+			keyNew("spec/a/b/c", KEY_END),
+			keyNew("spec/a/b/c/d", KEY_END),
+			keyNew("spec/a/b/c/d/e", KEY_END),
+			keyNew("spec/a/b/c/e", KEY_END),
+			keyNew("spec/a/b/c/e/d", KEY_END),
+
+			keyNew("proc/a/b/c", KEY_END),
+			keyNew("proc/a/b/c/d", KEY_END),
+			keyNew("proc/a/b/c/d/e", KEY_END),
+			keyNew("proc/a/b/c/e", KEY_END),
+			keyNew("proc/a/b/c/e/d", KEY_END),
+
+			keyNew("dir/a/b/c", KEY_END),
+			keyNew("dir/a/b/c/d", KEY_END),
+			keyNew("dir/a/b/c/d/e", KEY_END),
+			keyNew("dir/a/b/c/e", KEY_END),
+			keyNew("dir/a/b/c/e/d", KEY_END),
+
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+
+			keyNew("system/a/b/c", KEY_END),
+			keyNew("system/a/b/c/d", KEY_END),
+			keyNew("system/a/b/c/d/e", KEY_END),
+			keyNew("system/a/b/c/e", KEY_END),
+			keyNew("system/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	// output_keyset(part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
+static void test_cascadingRootCutpoint()
+{
+	printf ("Testing operation cascading root cut point\n");
+
+	Key *cutpoint = keyNew("/", KEY_END);
+	KeySet *orig =
+#include <data_nscut.c>
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a");
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "dir/a/b");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if(ksGetSize(orig) == 0, "keyset not empty");
+	succeed_if(ksCurrent(orig) == 0, "empty keyset not rewinded");
+	ksDel(orig);
+
+	KeySet *cmp_part =
+#include <data_nscut.c>
+	compare_keyset(part, cmp_part);
+	// output_keyset(part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
+static void test_cutpointRoot()
+{
+	printf ("Testing operation cut root point\n");
+
+	Key *cutpoint = keyNew("user", KEY_END);
+	KeySet *orig = ksNew(30,
+			keyNew("system/a", KEY_END),
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	ksRewind(orig);
+	ksNext(orig);
+	succeed_if_same_string (keyName(ksCurrent(orig)), "system/a");
+
+	KeySet *part = ksCut(orig, cutpoint);
+
+	succeed_if_same_string (keyName(ksCurrent(orig)), "system/a");
+
+	KeySet *cmp_orig = ksNew(15,
+			keyNew("system/a", KEY_END),
+			KS_END);
+	compare_keyset(orig, cmp_orig);
+	ksDel (orig);
+	ksDel (cmp_orig);
+
+	KeySet *cmp_part = ksNew(15,
+			keyNew("user/a", KEY_END),
+			keyNew("user/a/b", KEY_END),
+			keyNew("user/a/b/c", KEY_END),
+			keyNew("user/a/b/c/d", KEY_END),
+			keyNew("user/a/b/c/d/e", KEY_END),
+			keyNew("user/a/b/c/e", KEY_END),
+			keyNew("user/a/b/c/e/d", KEY_END),
+			KS_END);
+	compare_keyset(part, cmp_part);
+	ksDel (part);
+	ksDel (cmp_part);
+	keyDel(cutpoint);
+}
+
+
 static void test_cutpoint_1()
 {
 	printf ("Testing operation cut point 1\n");
@@ -2972,6 +3184,167 @@ static void test_cutafter()
 	ksDel (split2);
 }
 
+static void test_simpleLookup()
+{
+	printf ("Test simple lookup\n");
+
+	KeySet *ks = ksNew(10, KS_END);
+
+	Key *searchKey = keyNew("user/something",
+		KEY_VALUE, "a value",
+		KEY_END);
+	Key *k0 = ksLookup(ks, searchKey, 0);
+	succeed_if(!k0, "we have a problem: found not inserted key");
+
+	Key *dup = keyDup(searchKey);
+	succeed_if_same_string(keyName(dup), "user/something");
+	succeed_if_same_string(keyString(dup), "a value");
+	ksAppendKey(ks, dup);
+	// output_keyset(ks);
+
+	Key *k1 = ksLookup(ks, searchKey, 0);
+	succeed_if(k1, "we have a problem: did not find key");
+	succeed_if(k1 != searchKey, "same key, even though dup was used");
+	succeed_if_same_string(keyName(k1), "user/something");
+	succeed_if_same_string(keyString(k1), "a value");
+
+	keyDel(searchKey);
+	ksDel(ks);
+}
+
+static void test_nsLookup()
+{
+	printf ("Test lookup in all namespaces\n");
+
+	KeySet *ks =
+#include             <data_ns.c>
+
+	for (int i = 0; i<NUMBER_OF_NAMESPACES; ++i)
+	{
+		Key *searchKey = keyNew(namespaces[i],
+				KEY_VALUE, "value1",
+				KEY_COMMENT, "comment1",
+				KEY_END);
+		keyAddName(searchKey, "test/keyset/dir7/key1");
+
+		Key *lookupKey = keyNew(namespaces[i], KEY_END);
+		keyAddName(lookupKey, "something/not/found");
+		Key *k0 = ksLookup(ks, lookupKey, 0);
+		succeed_if(!k0, "we have a problem: found not inserted key");
+
+		keySetName(lookupKey, namespaces[i]);
+		keyAddName(lookupKey, "test/keyset/dir7/key1");
+		Key *k1 = ksLookup(ks, lookupKey, 0);
+		compare_key(k1, searchKey);
+
+		keySetName(lookupKey, "/test/keyset/dir7/key1");
+		if (!strcmp(namespaces[i], "spec"))
+		{
+			keySetName(searchKey, "proc");
+			keyAddName(searchKey, "test/keyset/dir7/key1");
+			Key *k2 = ksLookup(ks, lookupKey, 0);
+			compare_key(k2, searchKey);
+		}
+		else
+		{
+			Key *k2 = ksLookup(ks, lookupKey, 0);
+			compare_key(k2, searchKey);
+		}
+
+		keySetName(lookupKey, namespaces[i]);
+		ksDel(ksCut(ks, lookupKey));
+
+		keySetName(lookupKey, namespaces[i]);
+		keyAddName(lookupKey, "test/keyset/dir7/key1");
+		Key *k3 = ksLookup(ks, lookupKey, 0);
+		succeed_if(!k3, "we have a problem: found key cutted out");
+
+		keyDel(lookupKey);
+		keyDel(searchKey);
+	}
+	ksDel(ks);
+}
+
+static void test_ksAppend2()
+{
+	printf ("Test more involved appending\n");
+
+	Key *inks = keyNew("user/key_with_meta_data", KEY_END);
+	KeySet *ks = ksNew(0, KS_END);
+	ksAppendKey(ks, inks);
+
+	succeed_if (keyGetMeta(inks, "hello") == 0, "hello was not set up to now");
+	succeed_if (keyGetMeta(inks, "error") == 0, "hello was not set up to now");
+
+	keySetMeta(inks, "hello", "hello_world");
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "hello")), "hello_world");
+	succeed_if (keyGetMeta(inks, "error") == 0, "hello was not set up to now");
+
+	KeySet *ks2 = ksDup(ks);
+	ksRewind(ks2);
+	ksNext(ks2);
+	succeed_if_same_string (keyValue(keyGetMeta(ksCurrent(ks2), "hello")), "hello_world");
+	succeed_if (keyGetMeta(ksCurrent(ks2), "error") == 0, "hello was not set up to now");
+
+	Key *dup = keyDup(inks);
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "hello")), "hello_world");
+	succeed_if (keyGetMeta(inks, "error") == 0, "hello was not set up to now");
+
+	succeed_if_same_string (keyValue(keyGetMeta(dup, "hello")), "hello_world");
+	succeed_if (keyGetMeta(dup, "error") == 0, "hello was not set up to now");
+
+	keySetMeta(inks, "error", "some error information");
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "hello")), "hello_world");
+	succeed_if_same_string (keyValue(keyGetMeta(inks, "error")), "some error information");
+
+	succeed_if_same_string (keyValue(keyGetMeta(dup, "hello")), "hello_world");
+	succeed_if (keyGetMeta(dup, "error") == 0, "hello was not set up to now");
+
+	ksDel(ks);
+	keyDel(dup);
+	ksDel(ks2);
+
+	Key *parent = keyNew("user/test/rename", KEY_END);
+	succeed_if(keyGetRef(parent) == 0, "ref wrong");
+	ks = ksNew(0, KS_END);
+	ksAppendKey(ks, parent);
+	succeed_if(keyGetRef(parent) == 1, "ref wrong");
+		KeySet *iter = ksDup(ks);
+		succeed_if(keyGetRef(parent) == 2, "ref wrong");
+		ksRewind(iter);
+		Key *key = ksNext(iter);
+		succeed_if(keyGetMeta(key, "name") == 0, "no such meta exists");
+		Key *result = keyDup(key);
+		succeed_if(keyGetRef(parent) == 2, "ref wrong");
+		succeed_if(keyGetRef(result) == 0, "ref wrong");
+		keySetName(result, keyName(parent));
+		keyAddBaseName(result, "cut");
+		Key * lok = ksLookup(ks, key, KDB_O_POP);
+		keyDel(lok);
+		succeed_if(keyGetRef(parent) == 1, "ref wrong");
+		succeed_if(keyGetRef(key) == 1, "ref wrong");
+		succeed_if(keyGetRef(result) == 0, "ref wrong");
+		ksAppendKey(ks, result);
+		succeed_if(keyGetRef(parent) == 1, "ref wrong");
+		succeed_if(keyGetRef(key) == 1, "ref wrong");
+		succeed_if(keyGetRef(result) == 1, "ref wrong");
+		keyDel(result);
+		keyDel(key);
+		ksDel(iter);
+		// parent+key removed!
+	succeed_if (ksLookupByName(ks, "user/test/rename/cut", 0)!=0, "did not find key");;
+	succeed_if (ksGetSize(ks) == 1, "only result in it")
+	ksDel(ks);
+
+	parent = keyNew("user/test/rename", KEY_END);
+	ks = ksNew(0, KS_END);
+	ksAppendKey(ks, parent);
+	Key * lk = ksLookup(ks, parent, KDB_O_POP);
+	keyDel(lk);
+	ksDel(ks);
+}
+
+
 int main(int argc, char** argv)
 {
 	printf("KEYSET ABI   TESTS\n");
@@ -3007,7 +3380,10 @@ int main(int argc, char** argv)
 	test_ksModifyKey();
 	test_cut();
 	test_cutpoint();
+	test_cascadingCutpoint();
+	test_cascadingRootCutpoint();
 	test_cutpoint_1();
+	test_cutpointRoot();
 	test_unique_cutpoint();
 	test_cutbelow();
 	test_simple();
@@ -3015,6 +3391,9 @@ int main(int argc, char** argv)
 	test_morecut();
 	test_cutafter();
 	test_ksOrder();
+	test_simpleLookup();
+	test_nsLookup();
+	test_ksAppend2();
 
 	// BUGS:
 	// test_ksLookupValue();

@@ -12,7 +12,6 @@ check_remaining_files $FILE_SUFFIX
 
 ROOT_FILE=${FILE_SUFFIX}_root.ecf
 ROOT_MOUNTPOINT=/test/script
-ROOT_MOUNTNAME=_test_script
 if is_plugin_available dump
 then
 	$KDB mount $ROOT_FILE $ROOT_MOUNTPOINT dump 1>/dev/null
@@ -22,7 +21,6 @@ fi
 
 SYS_FILE=${FILE_SUFFIX}_sys.ni
 SYS_MOUNTPOINT=/test/script/sys
-SYS_MOUNTNAME=_test_script_sys
 if is_plugin_available ni
 then
 	$KDB mount $SYS_FILE $SYS_MOUNTPOINT ni 1>/dev/null
@@ -32,7 +30,6 @@ fi
 
 HOSTS_FILE=${FILE_SUFFIX}_hosts
 HOSTS_MOUNTPOINT=/test/script/sys/hosts
-HOSTS_MOUNTNAME=_test_script_sys_hosts
 if is_plugin_available hosts
 then
 	$KDB mount $HOSTS_FILE $HOSTS_MOUNTPOINT hosts 1>/dev/null
@@ -42,7 +39,6 @@ fi
 
 UNAME_FILE=${FILE_SUFFIX}_uname
 UNAME_MOUNTPOINT=system/test/script/sys/uname
-UNAME_MOUNTNAME=system_test_script_sys_uname
 if is_plugin_available uname
 then
 	touch $SYSTEM_FOLDER/$UNAME_FILE
@@ -67,17 +63,14 @@ fi
 
 APPS_FILE=${FILE_SUFFIX}_apps.ini
 APPS_MOUNTPOINT=/test/script/apps
-APPS_MOUNTNAME=_test_script_apps
 if is_plugin_available simpleini
 then
 	$KDB mount $APPS_FILE $APPS_MOUNTPOINT simpleini ccode null
 	succeed_if "could not mount simpleini: $APPS_FILE at $APPS_MOUNTPOINT"
 fi
 
-
-DESKTOP_FILE=${FILE_SUFFIX}_desktop.ini
+DESKTOP_FILE=${FILE_SUFFIX}_desktop.yajl
 DESKTOP_MOUNTPOINT=/test/script/apps/desktop
-DESKTOP_MOUNTNAME=_test_script_apps_desktop
 if is_plugin_available yajl
 then
 	$KDB mount $DESKTOP_FILE $DESKTOP_MOUNTPOINT yajl
@@ -94,10 +87,9 @@ fi
 
 
 
-
 if is_plugin_available dump
 then
-	$KDB mount | grep "test_real_world_root.ecf on /test/script with name _test_script"
+	$KDB mount | grep "test_real_world_root.ecf on /test/script"
 	succeed_if "mountpoint $ROOT_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/next/key value
@@ -106,7 +98,7 @@ fi
 
 if is_plugin_available ni
 then
-	$KDB mount | grep "test_real_world_sys.ni on /test/script/sys with name _test_script_sys"
+	$KDB mount | grep "test_real_world_sys.ni on /test/script/sys"
 	succeed_if "mountpoint $SYS_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/sys/next/key value
@@ -117,7 +109,7 @@ fi
 
 if is_plugin_available hosts
 then
-	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts with name _test_script_sys_hosts"
+	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts"
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/sys/hosts/ipv4/localhost 127.0.0.1
@@ -133,7 +125,7 @@ fi
 
 if is_plugin_available simpleini
 then
-	$KDB mount | grep "test_real_world_apps.ini on /test/script/apps with name _test_script_apps"
+	$KDB mount | grep "test_real_world_apps.ini on /test/script/apps"
 	succeed_if "mountpoint $APPS_MOUNTPOINT missing"
 
 	check_set_rm system/test/script/apps/next/x y
@@ -156,45 +148,45 @@ fi
 
 if is_plugin_available yajl
 then
-	$KDB umount $DESKTOP_MOUNTNAME >/dev/null
-	succeed_if "could not umount $DESKTOP_MOUNTNAME"
+	$KDB umount $DESKTOP_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $DESKTOP_MOUNTPOINT"
 fi
 
 if is_plugin_available simpleini
 then
-	$KDB umount $APPS_MOUNTNAME >/dev/null
-	succeed_if "could not umount $APPS_MOUNTNAME"
+	$KDB umount $APPS_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $APPS_MOUNTPOINT"
 fi
 
 if is_plugin_available uname
 then
-	$KDB umount $UNAME_MOUNTNAME >/dev/null
-	succeed_if "could not umount $UNAME_MOUNTNAME"
+	$KDB umount $UNAME_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $UNAME_MOUNTPOINT"
 fi
 
 if is_plugin_available hosts
 then
-	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts with name _test_script_sys_hosts"
+	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts"
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT missing"
 
-	$KDB umount $HOSTS_MOUNTNAME >/dev/null
-	succeed_if "could not umount $HOSTS_MOUNTNAME"
+	$KDB umount $HOSTS_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $HOSTS_MOUNTPOINT"
 
-	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts with name _test_script_sys_hosts"
+	$KDB mount | grep "test_real_world_hosts on /test/script/sys/hosts"
 	[ "$!" != "0"  ]
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT still there"
 fi
 
 if is_plugin_available ni
 then
-	$KDB umount $SYS_MOUNTNAME >/dev/null
-	succeed_if "could not umount $SYS_MOUNTNAME"
+	$KDB umount $SYS_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $SYS_MOUNTPOINT"
 fi
 
 if is_plugin_available dump
 then
-	$KDB umount $ROOT_MOUNTNAME >/dev/null
-	succeed_if "could not umount $ROOT_MOUNTNAME"
+	$KDB umount $ROOT_MOUNTPOINT >/dev/null
+	succeed_if "could not umount $ROOT_MOUNTPOINT"
 fi
 
 rm -f $USER_FOLDER/$FILE_SUFFIX*

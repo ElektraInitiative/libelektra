@@ -1,5 +1,7 @@
 #include "guibackend.hpp"
 
+#include <markdowndocument.h>
+#include <discountmarkdownconverter.h>
 #include <backends.hpp>
 #include <vector>
 #include <string>
@@ -10,19 +12,17 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-GUIBackend::GUIBackend(QObject *parent) :
-	QObject(parent)
+GUIBackend::GUIBackend(QObject *parentBackend) :
+	QObject(parentBackend),
+	m_backend(NULL)
 {
-}
-
-GUIBackend::GUIBackend(const GUIBackend &other)
-{
-	Q_UNUSED(other);
+	m_pluginConfigModel = new TreeViewModel;
+	resetModel();
 }
 
 void GUIBackend::createBackend(const QString &mountpoint)
 {
-	m_backend = new Backend();
+	m_backend = QSharedPointer<Backend>(new Backend());
 
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
@@ -30,67 +30,41 @@ void GUIBackend::createBackend(const QString &mountpoint)
 	{
 		m_kdb.get(m_mountConf, parentKey);
 	}
-	catch(KDBException ex)
+	catch(KDBException const& ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not read from configuration."), "", QString(ex.what()), "c");
-	}
-
-	Key cur = m_mountConf.lookup(parentKey);
-
-	if (!cur)
-	{
-		m_mountConf.append ( *Key(Backends::mountpointsPath,
-								  KEY_COMMENT, "Below are the mountpoints.",
-								  KEY_END));
-		m_mountConf.rewind();
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
 	}
 
 	try
 	{
 		m_backend->setMountpoint(Key(mountpoint.toStdString(), KEY_CASCADING_NAME, KEY_END), m_mountConf);
 	}
-	catch(MountpointInvalidException ex)
+	catch(MountpointInvalidException const& ex)
 	{
-		emit showMessage(tr("Error"), tr("The provided mount point is invalid."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("The provided mount point is invalid."), ex.what());
+		return;
 	}
-	catch(MountpointAlreadyInUseException ex)
+	catch(MountpointAlreadyInUseException const& ex)
 	{
-		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("The provided mount point is one of the already used cascading names."), ex.what());
+		return;
 	}
-
-	m_name = mountpoint;
-	m_name.replace("/", "_");
 }
 
 void GUIBackend::addPath(const QString &path)
 {
 	try
 	{
-		m_backend->checkFile(path.toStdString());
+		m_backend->useConfigFile(path.toStdString());
 	}
-	catch(FileNotValidException ex)
+	catch(FileNotValidException const& ex)
 	{
-		emit showMessage(tr("Error"), tr("The file you have entered is not valid."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("The file you have entered is not valid."), ex.what());
 	}
-	catch(MissingSymbol ex)
+	catch(MissingSymbol const& ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add file."), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add file."), ex.what());
 	}
-
-	std::string configPath = Backends::getConfigBasePath(m_name.toStdString());
-
-	m_mountConf.append(*Key(configPath,
-							KEY_VALUE, "",
-							KEY_COMMENT, "This is a configuration for a backend, see subkeys for more information",
-							KEY_END));
-	configPath += "/path";
-
-	QByteArray pathArr = path.toLocal8Bit();
-
-	m_mountConf.append (*Key(configPath,
-							 KEY_VALUE, pathArr.data(),
-							 KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
-							 KEY_END));
 }
 
 void GUIBackend::addPlugin(QString name)
@@ -99,88 +73,38 @@ void GUIBackend::addPlugin(QString name)
 
 	try
 	{
-		m_backend->addPlugin(name.toStdString());
+		m_backend->addPlugin(name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
 	}
-	// TODO: if exceptions are not handled differently, catching
-	// base class is enough
-	catch(TooManyPlugins ex)
+	catch(PluginCheckException const &ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
+		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), ex.what());
 	}
-	catch(OrderingViolation ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(ConflictViolation ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(ReferenceNotFound ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(MissingNeeded ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(MissingSymbol ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(SymbolMismatch ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(SymbolDuplicate ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(StoragePlugin ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(ResolverPlugin ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(PluginNoContract ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(PluginNoInfo ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(VersionInfoMismatch ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
-	catch(PluginCheckException ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not add plugin \"%1\".").arg(name), "", ex.what(), "c");
-	}
+
+	resetModel();
 }
 
-void GUIBackend::serialise()
+void GUIBackend::serialise(TreeViewModel *model)
 {
-	Key rootKey (Backends::mountpointsPath, KEY_END);
+	try
+	{
+		m_backend->serialize(m_mountConf);
+	}
+	catch(ToolException &ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not serialise backend."), ex.what());
+	}
+
+	model->createNewNodes(m_mountConf);
 
 	try
 	{
-		m_backend->serialise(rootKey, m_mountConf);
-	}
-	catch(ToolException ex)
-	{
-		emit showMessage(tr("Error"), tr("Could not serialise backend."), "", ex.what(), "c");
-	}
-
-	try
-	{
+		Key rootKey (Backends::mountpointsPath, KEY_END);
+		m_kdb.get(m_mountConf, rootKey);
 		m_kdb.set(m_mountConf, rootKey);
 	}
-	catch (kdb::KDBException const& e)
+	catch (kdb::KDBException const& ex)
 	{
-		emit showMessage(tr("Error"), tr("Could not write backend to configuration."), "", QString(e.what()), "c");
+		emit showMessage(tr("Error"), tr("Could not write backend to configuration."), ex.what());
 	}
 }
 
@@ -189,9 +113,15 @@ bool GUIBackend::validated()
 	return m_backend->validated();
 }
 
-void GUIBackend::deleteBackend()
+TreeViewModel *GUIBackend::pluginConfigModel() const
 {
-	delete m_backend;
+	return m_pluginConfigModel;
+}
+
+void GUIBackend::resetModel()
+{
+	KeySet emptySet;
+	m_pluginConfigModel->populateModel(emptySet);
 }
 
 QString GUIBackend::mountPoints() const
@@ -199,33 +129,38 @@ QString GUIBackend::mountPoints() const
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConf;
 	KDB kdb (parentKey);
-	kdb.get(mountConf, parentKey);
 
-	QStringList mountPoints;
-	mountPoints.append("system/elektra");
-
-	mountConf.rewind();
-
-	Key cur;
-
-	while ((cur = mountConf.next()))
+	try
 	{
-		if (cur.getBaseName() == "mountpoint")
-		{
-			if (cur.getString().at(0) == '/')
-			{
-				mountPoints.append(QString::fromStdString("user" + cur.getString()));
-				mountPoints.append(QString::fromStdString("system" + cur.getString()));
-			}
-			else
-			{
-				mountPoints.append(QString::fromStdString(cur.getString()));
-			}
-
-		}
-
+		kdb.get(mountConf, parentKey);
 	}
-	return mountPoints.join(", ");
+	catch(KDBException const& ex)
+	{
+		emit showMessage(tr("Error"), tr("Could not read from configuration."), QString(ex.what()));
+		return "";
+	}
+
+	Backends::BackendInfoVector vec = Backends::getBackendInfo(mountConf);
+	QStringList mPoints;
+	mPoints.append("system/elektra");
+
+	foreach (BackendInfo info, vec)
+	{
+		QString backend = QString::fromStdString(info.name);
+
+		if(backend.startsWith("/"))
+		{
+			mPoints.append("dir" + backend);
+			mPoints.append("user" + backend);
+			mPoints.append("system" + backend);
+		}
+		else
+		{
+			mPoints.append(backend);
+		}
+	}
+
+	return mPoints.join(", ");
 }
 
 QString GUIBackend::pluginInfo(QString pluginName) const
@@ -246,24 +181,26 @@ QString GUIBackend::pluginInfo(QString pluginName) const
 
 	if (k)
 	{
-		while ((k = info.next()) && k.getDirName() == root.getName())
+		while ((k = info.next()) && k.isBelow(root))
 		{
 			infoString.append(QString::fromStdString(k.getBaseName()) + ": " + QString::fromStdString(k.getString()) + "\n\n");
 		}
 	}
 	else
-	{
 		infoString.append(tr("No information found."));
-	}
+
+	DiscountMarkdownConverter dmc;
+	infoString = dmc.renderAsHtml(dmc.createDocument(infoString, DiscountMarkdownConverter::NoImagesOption));
 
 	return infoString;
 }
 
-QStringList GUIBackend::availablePlugins() const
+QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolver) const
 {
 	QStringList availPlugins;
 	Modules modules;
 	PluginPtr ptr;
+	QString type;
 
 	vector<string> pluginVector = listAllAvailablePlugins();
 
@@ -272,13 +209,17 @@ QStringList GUIBackend::availablePlugins() const
 		{
 			ptr = modules.load(s);
 		}
-		catch(NoPlugin ex)
+		catch(NoPlugin &ex)
 		{
 			break;
 		}
 
 		ptr->loadInfo();
-		availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(QString::fromStdString(ptr->lookupInfo("provides"))));
+		type = QString::fromStdString(ptr->lookupInfo("provides"));
+
+		if(!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver"))){
+			availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(type));
+		}
 	}
 
 	availPlugins.sort();
@@ -288,17 +229,33 @@ QStringList GUIBackend::availablePlugins() const
 
 QStringList GUIBackend::nameFilters()
 {
-	QStringList nameFilters;
-	QStringList plugins = availablePlugins();
+	QStringList nFilters;
+	QStringList plugins = availablePlugins(true, false);
 
+	plugins = plugins.filter("[storage]");
 	plugins.replaceInStrings(QRegExp("\\s\\[\\w*\\]"), "");
 
-	nameFilters.append("ECF (*.ecf)");
+	foreach(QString plugin, plugins)
+	{
+		QString pattern;
 
-	if(plugins.contains("xmltool"))
-		nameFilters.append("XML (*.xml)");
-	if(plugins.contains("ini"))
-		nameFilters.append("INI (*.ini)");
+		if(plugin == "ini" || plugin == "simpleini" || plugin == "ni")
+			pattern = "*.ini";
+		else if(plugin == "xmltool")
+			pattern = "*.xml";
+		else if(plugin == "tcl")
+			pattern = "*.tcl";
+		else if(plugin == "yajl")
+			pattern = "*.json";
+		else if(plugin == "dump")
+			pattern = "*.ecf";
+		else
+			pattern = "*";
 
-	return nameFilters;
+			nFilters.append(QString("%1 (%2)").arg(plugin, pattern));
+	}
+
+	nFilters.sort();
+
+	return nFilters;
 }

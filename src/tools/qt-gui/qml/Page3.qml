@@ -10,21 +10,19 @@ WizardTemplate {
 
 	label.text: qsTr("Path: ")
 
-	buttonRow.nextButton.visible: false
-	buttonRow.finishButton.visible: true
-	buttonRow.finishButton.enabled: textField.text !== ""
-	buttonRow.finishButton.onClicked:  {
+	buttonRow.nextButton.action.text: qsTr("&Finish")
+	buttonRow.nextButton.action.iconSource: "icons/dialog-ok.png"
+	buttonRow.nextButton.action.enabled: textField.text !== ""
+	buttonRow.nextButton.action.onTriggered: {
 		guiBackend.addPath(textField.text)
 
 		if(!error){
-			guiBackend.serialise()
+			guiBackend.serialise(externTreeModel)
 
 			if(!error){
 				wizardLoader.close()
-				externTreeModel.populateModel()
-				guiBackend.deleteBackend()
-				includedPluginsModel.clear()
 				loader.source = "Page1.qml"
+				externTreeModel.refresh()
 			}
 
 		}

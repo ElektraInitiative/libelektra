@@ -2,63 +2,9 @@
 
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);
 
-#define MAX_SIZE 200
-static void test_ksCommonParentName()
-{
-	char ret [MAX_SIZE+1];
-	KeySet *ks = ksNew (10,
-		keyNew("system/sw/xorg/Monitors/Monitor1/vrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor1/hrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor2/vrefresh",0),
-		keyNew("system/sw/xorg/Monitors/Monitor2/hrefresh",0),
-		keyNew("system/sw/xorg/Devices/Device1/driver",0),
-		keyNew("system/sw/xorg/Devices/Device1/mode",0),KS_END);
-
-	printf ("Test common parentname\n");
-
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could not find correct parentname");
-	succeed_if_same_string (ret, "system/sw/xorg");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system",0),
-		keyNew("user",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if_same_string (ret, "");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/some/thing",0),
-		keyNew("system/other/thing",0), KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 7, "could find correct parentname");
-	succeed_if_same_string (ret, "system");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/here/in/deep/goes/ok/thing",0),
-		keyNew("system/here/in/deep/goes/ok/other/thing",0),
-		KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if_same_string (ret, "system/here/in/deep/goes/ok");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("system/here/in/deep/goes/ok/thing",0),
-		keyNew("system/here/in/deep/goes/ok/other/thing",0),
-		keyNew("user/unique/thing",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
-	succeed_if_same_string (ret, "");
-	ksDel (ks);
-
-	ks = ksNew (10,
-		keyNew("user/unique/thing",0),KS_END);
-	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
-	succeed_if_same_string (ret, "user/unique/thing");
-	ksDel (ks);
-}
-
 static void test_elektraRenameKeys()
 {
+	printf ("test rename keys\n");
 	KeySet *ks= ksNew(20,
 		keyNew("system/some/common/prefix", KEY_END),
 		keyNew("system/some/common/prefix/dir", KEY_END),
@@ -90,6 +36,7 @@ static void test_elektraRenameKeys()
 
 static void test_elektraEmptyKeys()
 {
+	printf ("test empty keys\n");
 	Key *key = keyNew("", KEY_END);
 	KeySet *ks = ksNew(0, KS_END);
 
@@ -152,7 +99,7 @@ static void test_creatingLookup()
 	Key *k0 = ksLookup(ks, searchKey, KDB_O_CREATE);
 	exit_if_fail(k0, "no key was created");
 	succeed_if_same_string(keyName(k0), keyName(searchKey));
-	succeed_if_same_string(keyName(k0), keyName(searchKey));
+	succeed_if_same_string(keyString(k0), keyString(searchKey));
 
 	Key *k1 = ksLookup(ks, searchKey, KDB_O_CREATE);
 	exit_if_fail(k1, "no key was returned");
@@ -160,17 +107,91 @@ static void test_creatingLookup()
 
 	keyDel(searchKey);
 	ksDel(ks);
+
+
+
+
+	ks = ksNew(10, KS_END);
+
+	searchKey = keyNew("dir/something",
+		KEY_VALUE, "a value",
+		KEY_END);
+	k0 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k0, "no key was created");
+	succeed_if_same_string(keyName(k0), keyName(searchKey));
+	succeed_if_same_string(keyString(k0), keyString(searchKey));
+
+	k1 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k1, "no key was returned");
+	succeed_if(k0 == k1, "not the same key");
+
+	keyDel(searchKey);
+	ksDel(ks);
+
+
+
+
+	ks = ksNew(10, KS_END);
+
+	searchKey = keyNew("/something",
+		KEY_CASCADING_NAME,
+		KEY_VALUE, "a value",
+		KEY_END);
+
+	// check if duplication works:
+	Key *dupKey = keyDup(searchKey);
+	succeed_if_same_string(keyName(dupKey), keyName(searchKey));
+	succeed_if_same_string(keyString(dupKey), keyString(searchKey));
+	ksAppendKey(ks, dupKey);
+	keyDel(dupKey);
+
+	k0 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k0, "no key was created");
+	succeed_if_same_string(keyName(k0), keyName(searchKey));
+	succeed_if_same_string(keyString(k0), keyString(searchKey));
+
+	k1 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k1, "no key was returned");
+	succeed_if(k0 == k1, "not the same key");
+
+	keyDel(searchKey);
+	ksDel(ks);
+
+
+
+
+
+	ks = ksNew(10, KS_END);
+
+	searchKey = keyNew("proc/something",
+		KEY_VALUE, "a value",
+		KEY_END);
+	k0 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k0, "no key was created");
+	succeed_if_same_string(keyName(k0), keyName(searchKey));
+	succeed_if_same_string(keyString(k0), keyString(searchKey));
+
+	k1 = ksLookup(ks, searchKey, KDB_O_CREATE);
+	exit_if_fail(k1, "no key was returned");
+	succeed_if(k0 == k1, "not the same key");
+
+	keyDel(searchKey);
+	ksDel(ks);
 }
 
-int main()
+int main(int argc, char**argv)
 {
-	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("KS         TESTS\n");
+	printf("==================\n\n");
 
-	test_ksCommonParentName();
+	init(argc, argv);
+
 	test_elektraRenameKeys();
 	test_elektraEmptyKeys();
 	test_cascadingLookup();
 	test_creatingLookup();
+
+	printf("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

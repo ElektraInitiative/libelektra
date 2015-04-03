@@ -1,6 +1,6 @@
 from ..module import get_introspection_module
 from ..overrides import override
-import sys
+import warnings
 
 GElektra = get_introspection_module('GElektra')
 
@@ -45,9 +45,10 @@ __all__.extend([ 'Exception', 'KeyException', 'KeyInvalidName' ])
 
 ## Key
 # rename gi-specific functions
+__func_rename(GElektra.Key, 'gi_init',      '_init')
+__func_rename(GElektra.Key, 'gi_make',      '_make')
 __func_rename(GElektra.Key, 'gi_getstring', '_getstring')
 __func_rename(GElektra.Key, 'gi_getbinary', '_getbinary')
-__func_rename(GElektra.Key, 'gi_make',      '_make');
 
 # Python API convenience
 __func_rename(GElektra.Key, 'cmp', '__cmp__')
@@ -68,7 +69,8 @@ __func_rename(GElektra.Key, 'currentmeta', '_currentmeta')
 
 class Key(GElektra.Key):
 	def __new__(cls, *args):
-		if len(args) == 1 and isinstance(args[0], __class__):
+		# copy constructor
+		if len(args) == 1 and isinstance(args[0], cls):
 			return super()._make(args[0])
 		return super().__new__(cls, args)
 
@@ -78,50 +80,44 @@ class Key(GElektra.Key):
 			return
 
 		arg0, *args = args
-		if isinstance(arg0, __class__):
+		# copy constructor has been used, no init needed
+		if isinstance(arg0, self.__class__):
 			return
 
-		super()._setname(arg0)
-		args = iter(args)
+		flags = 0
+		value = None
+		meta  = {}
+		args  = iter(args)
 		for arg in args:
 			if arg == KEY_END:
 				break
-			elif arg == KEY_NAME:
-				self.name = next(args)
-			elif arg == KEY_VALUE:
-				self.value = next(args)
-			elif arg == KEY_OWNER:
-				self.setmeta("owner", next(args))
-			elif arg == KEY_COMMENT:
-				self.setmeta("comment", next(args))
-			elif arg == KEY_BINARY:
-				pass
-			elif arg == KEY_UID:
-				self.setmeta("uid", str(next(args)))
-			elif arg == KEY_GID:
-				self.setmeta("gid", str(next(args)))
-			elif arg == KEY_MODE:
-				self.setmeta("mode", "{0:o}".format(int(next(args))))
-			elif arg == KEY_ATIME:
-				self.setmeta("atime", "{0:d}".format(int(next(args))))
-			elif arg == KEY_MTIME:
-				self.setmeta("mtime", "{0:d}".format(int(next(args))))
-			elif arg == KEY_CTIME:
-				self.setmeta("ctime", "{0:d}".format(int(next(args))))
 			elif arg == KEY_SIZE:
-				pass
+				# ignore value
+				next(args)
+			elif arg == KEY_VALUE:
+				value = next(args)
 			elif arg == KEY_FUNC:
 				raise TypeError("Unsupported meta type")
-			elif arg == KEY_DIR:
-				meta = self.getmeta("mode")
-				mode = int(meta.value, 8) if meta else 0
-				self.setmeta("mode", "{0:o}".format(mode | 0o111))
+			elif arg == KEY_FLAGS:
+				flags = next(args)
 			elif arg == KEY_META:
-				self.setmeta(next(args), next(args))
-			elif arg == KEY_NULL:
-				pass
+				k = next(args)
+				meta[k] = next(args)
+			elif isinstance(arg, GElektra.KeySwitch):
+				warnings.warn("Deprecated option in keyNew: {0}".format(arg),
+					DeprecationWarning)
+				flags |= arg
 			else:
-				print("Unknown option in keyNew {0}".format(arg), file=sys.stderr)
+				warnings.warn("Unknown option in keyNew: {0}".format(arg),
+					RuntimeWarning)
+
+		# _init clears our key
+		if isinstance(value, bytes):
+			super()._init(arg0, flags | KEY_BINARY, None, value)
+		else:
+			super()._init(arg0, flags & ~KEY_BINARY, value, None)
+		for k in meta:
+			self.setmeta(k, meta[k])
 
 	def _setname(self, name):
 		ret = super()._setname(name)
@@ -200,7 +196,6 @@ class Key(GElektra.Key):
 	name     = property(lambda self: self.get_property('name'), _setname)
 	value    = property(get, set, None, "Key value")
 	basename = property(lambda self: self.get_property('basename'), _setbasename)
-	dirname  = property(lambda self: self.get_property('dirname'))
 	fullname = property(lambda self: self.get_property('fullname'))
 
 Key = override(Key)

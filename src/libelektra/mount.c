@@ -62,14 +62,7 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 	Key *cur;
 
 	ksRewind(config);
-	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, 0);
-
-	if (!root)
-	{
-		ELEKTRA_ADD_WARNING(22, errorKey, KDB_KEY_MOUNTPOINTS);
-		ksDel (config);
-		return -1;
-	}
+	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, KDB_O_CREATE);
 
 	int ret = 0;
 	while ((cur = ksNext(config)) != 0)
@@ -133,37 +126,79 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 		return -1;
 	}
 
-	/* We want system/elektra still reachable
-	 * through default backend.
-	 * First check if it is still reachable.
-	 */
-	Key *key = keyNew ("system/elektra", KEY_END);
-	Backend* backend = elektraMountGetBackend(kdb, key);
-	keyDel (key);
-	if (backend != kdb->defaultBackend)
-	{
-		/* It is not reachable, mount it */
-		elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
-		/*elektraMountBackend will set refcounter*/
-		++ kdb->defaultBackend->refcounter;
-		kdb->split->syncbits[kdb->split->size-1] = 2;
-	} else {
-		/* Lets add the reachable default backend to split.
-		 Note that it is not possible that system/elektra has the default
-		 backend, but system has not. */
-		elektraSplitAppend(kdb->split, backend,
-				keyNew("system", KEY_VALUE, "default", KEY_END), 2);
-	}
+	Key *key = 0;
+	Backend* backend = 0;
 
-	key = keyNew ("user", KEY_VALUE, "default", KEY_END);
-	backend = elektraMountGetBackend(kdb, key);
-	if (backend != kdb->defaultBackend)
+	for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
 	{
-		/* It does not matter that user is not reachable anymore */
+	switch (ns)
+	{
+	case KEY_NS_SPEC:
+		key = keyNew ("spec", KEY_VALUE, "default", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It does not matter that spec is not reachable anymore */
+			keyDel (key);
+		} else {
+			/* User is reachable, so append that to split */
+			elektraSplitAppend(kdb->split, backend, key, 2);
+		}
+		break;
+	case KEY_NS_DIR:
+		key = keyNew ("dir", KEY_VALUE, "default", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It does not matter that dir is not reachable anymore */
+			keyDel (key);
+		} else {
+			/* User is reachable, so append that to split */
+			elektraSplitAppend(kdb->split, backend, key, 2);
+		}
+		break;
+	case KEY_NS_SYSTEM:
+		/* We want system/elektra still reachable
+		 * through default backend.
+		 * First check if it is still reachable.
+		 */
+		key = keyNew ("system/elektra", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
 		keyDel (key);
-	} else {
-		/* User is reachable, so append that to split */
-		elektraSplitAppend(kdb->split, backend, key, 2);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It is not reachable, mount it */
+			elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
+			/*elektraMountBackend will set refcounter*/
+			++ kdb->defaultBackend->refcounter;
+			kdb->split->syncbits[kdb->split->size-1] = 2;
+		} else {
+			/* Lets add the reachable default backend to split.
+			 Note that it is not possible that system/elektra has the default
+			 backend, but system has not. */
+			elektraSplitAppend(kdb->split, backend,
+					keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+		}
+		break;
+	case KEY_NS_USER:
+		key = keyNew ("user", KEY_VALUE, "default", KEY_END);
+		backend = elektraMountGetBackend(kdb, key);
+		if (backend != kdb->defaultBackend)
+		{
+			/* It does not matter that user is not reachable anymore */
+			keyDel (key);
+		} else {
+			/* User is reachable, so append that to split */
+			elektraSplitAppend(kdb->split, backend, key, 2);
+		}
+		break;
+	case KEY_NS_EMPTY:
+	case KEY_NS_PROC:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
+	}
 	}
 
 	return 0;
@@ -254,28 +289,84 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSE
 	else if (!strcmp (keyName(backend->mountpoint), "/"))
 	{
 		/* Root backend */
-		sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
-
-		sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
-		backend->refcounter = 2;
+		backend->refcounter = 0;
+		for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
+		{
+		switch (ns)
+		{
+		case KEY_NS_SPEC:
+			sprintf(mountpoint, "spec%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("spec", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_DIR:
+			sprintf(mountpoint, "dir%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("dir", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_USER:
+			sprintf(mountpoint, "user%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("user", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_SYSTEM:
+			sprintf(mountpoint, "system%s", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend, keyNew("system", KEY_VALUE, "root", KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_PROC:
+		case KEY_NS_EMPTY:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			break;
+		}
+		}
 	}
 	else if (keyName(backend->mountpoint)[0] == '/')
 	{
 		/* Cascading Backend */
-		sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend,
-			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
-
-		sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
-		kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
-		elektraSplitAppend(kdb->split, backend,
-			keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
-		backend->refcounter = 2;
+		backend->refcounter = 0;
+		for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
+		{
+		switch (ns)
+		{
+		case KEY_NS_DIR:
+			sprintf(mountpoint, "dir%s/", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend,
+				keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_USER:
+			sprintf(mountpoint, "user%s/", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend,
+				keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_SYSTEM:
+			sprintf(mountpoint, "system%s/", keyName(backend->mountpoint));
+			kdb->trie = elektraTrieInsert(kdb->trie, mountpoint, backend);
+			elektraSplitAppend(kdb->split, backend,
+				keyNew(mountpoint, KEY_VALUE, keyString(backend->mountpoint), KEY_END), 2);
+			++backend->refcounter;
+			break;
+		case KEY_NS_SPEC:
+			// excluded on purpose because mounting spec is a separate step
+			// (see specmount)
+		case KEY_NS_EMPTY:
+		case KEY_NS_PROC:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			break;
+		}
+		}
 	} else {
 		/* Common single mounted backend */
 		sprintf(mountpoint, "%s/", keyName(backend->mountpoint));

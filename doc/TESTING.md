@@ -28,12 +28,16 @@ drive the tests.
 
 - All names of the test must start with test
 - No tests should run if ENABLE_TESTING is OFF.
-- No tests that access harddisc shall run, if ENABLE_KDB_TESTING is OFF.
+- All tests that access harddisc:
+ - should be tagged with kdbtests
+ - should not shall run, if ENABLE_KDB_TESTING is OFF.
+ - should only write below /tests ans system/mountpoints
 - If your test has memleaks, e.g. because the library used leaks and
   that cannot be fixed, give them the label memleak with following
   command:
 
     set_property(TEST testname PROPERTY LABELS memleak)
+
 
 
 
@@ -111,3 +115,10 @@ The script tests have different purposes:
 ### Other kind of Tests ###
 
 Bindings, other than C++ typically have their own way of testing.
+
+## Fuzz Testing
+
+ copy some import files to testcase_dir and run:
+
+ /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
+

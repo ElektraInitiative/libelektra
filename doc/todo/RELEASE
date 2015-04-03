@@ -44,9 +44,9 @@ If version numbers are correct in
 - CMakeLists.txt
 
 Rebuild cleanly, run all tests and also check for memleaks:
-  cd ~build && ~e/scripts/configure-debian-wheezy && make -j20 && make run_all && make run_memcheck
+  cd ~build && ~e/scripts/configure-debian-wheezy-local ~e && make -j5 && make run_all && make run_memcheck
 
-Check if there are really >=76 or >=54 tests
+Check if there are really >=91 or >=68 tests
 
 Check if [doc/todo/API] is fulfilled
 
@@ -56,26 +56,28 @@ Check if [doc/todo/API] is fulfilled
 Set environment variable VERSION to current version to make the
 commands below work for copy&paste:
 
- export VERSION=0.8.10
+ export VERSION=0.8.11
 
 
 == Tag the version ==
 
- git tag --sign -f $VERSION
+ git tag --sign -f $VERSION -m "Release $VERSION"
 
 
 == Prepare Source Package ==
 
-Build tar.gz and tag version and make hashsum:
+Build tar.gz:
  cd ~build && make source-package
+
+Check if tar is reproduceable + sign it:
+ gpg --sign elektra-$VERSION.tar.gz
 
 Unpack + compile (with all available plugins) + test those sources:
  tar xvzf elektra-$VERSION.tar.gz && mkdir build
- cd ~build/build && ~e/scripts/configure-debian-wheezy ../elektra-$VERSION && make -j 20 && make run_all && make run_memcheck
+ cd ~build/build && ~e/scripts/configure-debian-wheezy-local ../elektra-$VERSION && make -j5 && make run_all && make run_memcheck
 
-Now copy the packages to ftp (stay in same folder):
- cp ~build/elektra-$VERSION.tar.gz ~elektra-ftp/releases
- cp ~build/elektra-$VERSION.tar.gz.hashsum ~elektra-ftp/releases
+Now copy the packages to ftp:
+ cp ~build/elektra-$VERSION.tar.gz* ~elektra-ftp/releases
 
 
 == Debian Package ==
@@ -89,9 +91,9 @@ Build deb:
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
  git-commit -m "Debian Package $DVERSION"
- cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
+ cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
@@ -101,7 +103,7 @@ Now move and install:
 
 
 Run some basic commands, at least:
- kdb --version && kdb test_key && man kdb
+ kdb --version
 
 Run local tests:
  kdb run_all
@@ -132,7 +134,7 @@ cd oyranos
 mkdir build
 cd build
 cmake ..
-make
+make -j5
 make test2 # or make test-2 for the most of the tests
 src/tests/test2 Elektra
 
@@ -141,7 +143,7 @@ src/tests/test2 Elektra
 
 And the API docu:
  mkdir ~elektra-doc/api/$VERSION/
- cd ~build && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
+ cd ~build && cmake -DBUILD_PDF=ON . && rm -rf doc && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
  cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
@@ -153,7 +155,7 @@ Symlink current to latest version and add everything:
 
 == Debian Package ==
 
- cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_amd64.changes && update-reprepro
+ cd ~elektra/deb/$DVERSION && reprepro --ignore=wrongdistribution include wheezy elektra_${DVERSION}_`dpkg-architecture -qDEB_BUILD_ARCH`.changes && update-reprepro
 
 == Commit source package ==
 

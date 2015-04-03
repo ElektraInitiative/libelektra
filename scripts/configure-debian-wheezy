@@ -1,37 +1,10 @@
 #!/bin/sh
 
-SELF=$(readlink -f "$0")
-SCRIPTS=$(dirname "$SELF")
-SOURCE=$(dirname "$SCRIPTS")
-SBUILD=$(pwd)
-BUILD=$(readlink -f "$SBUILD")
-
-if [ -d "$1" ]
-then
-	SOURCE="$1"
-fi
-
-if [ "$SOURCE" = "$BUILD" ]
-then
-	echo "In source builds are not allowed, create a new directory and run $SELF there"
-	exit 1
-fi
-
-if [ "$SCRIPTS" = "$BUILD" ]
-then
-	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
-	exit 1
-fi
+. "$(dirname "$0")/configure-common"
 
 cd $BUILD
-
-export JAVA_HOME=/opt/jdk1.8.0_25
-
-cmake -DCMAKE_PREFIX_PATH=/opt/Qt5.3.0/5.3/gcc_64/lib/cmake \
-	-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 \
-	-DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.2 \
-	-DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so \
-	-DENABLE_CXX11=ON \
-	-DPLUGINS=ALL \
-	-DTOOLS=ALL -DBINDINGS="cpp;swig_python2;swig_python3;jna" \
-	$SOURCE
+cmake	-DENABLE_CXX11=ON \
+	-DPLUGINS="ALL" \
+	-DTOOLS="ALL" \
+	-DBINDINGS="cpp;swig_python2;swig_python3;jna" \
+	$*

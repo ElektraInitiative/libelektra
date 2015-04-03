@@ -26,6 +26,9 @@
   * postfix to search for user configuration. */
 #define KDB_DB_USER              "@KDB_DB_USER@"
 
+/** Prefix to search specification configuration (spec/). */
+#define KDB_DB_SPEC              "@BUILTIN_SPEC_FOLDER@"
+
 /** Depending on the resolver this might be the root 
   * to search for user configuration. */
 #define KDB_DB_HOME              "@KDB_DB_HOME@"
@@ -88,6 +91,12 @@
 
 /* cmakedefine if your system has the `setenv' function. */
 #cmakedefine HAVE_SETENV
+
+/* cmakedefine if your system has the `futimens' function. */
+#cmakedefine HAVE_FUTIMENS
+
+/* cmakedefine if your system has the `futimes' function. */
+#cmakedefine HAVE_FUTIMES
 
 /* cmakedefine if your system has the <stdio.h> header file. */
 #cmakedefine HAVE_STDIO_H

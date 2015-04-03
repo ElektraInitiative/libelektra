@@ -1,5 +1,5 @@
-find_package(Augeas REQUIRED)
-find_package (LibXml2 REQUIRED)
+find_package(Augeas)
+find_package (LibXml2)
 
 if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 

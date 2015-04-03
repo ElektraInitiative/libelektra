@@ -45,6 +45,7 @@ Cmdline::Cmdline (int argc,
 	format("dump"),
 	plugins("sync"),
 	pluginsConfig(""),
+	ns("user"),
 
 	executable(),
 	commandName()
@@ -148,21 +149,17 @@ Cmdline::Cmdline (int argc,
 			"-s --strategy <name>     the strategy which should be used on conflicts.\n"
 			"                         To be precise, strategies handle deviations from the base\n"
 			"                         When and which strategies are used and what they do depends mostly on\n"
-			"                         the used base KeySet. For twoway-merge the base stays empty\n"
-			"                         Strategies can be chained. That means if one strategy\n"
-			"                         is not able to solve a conflict (i.e. conflicting deviations)\n"
-			"                         the next strategy in the chain is tried. This happens until the conflict\n"
-			"                         is solved or no strategies are left\n"
-			"                         For example, if you want to accept all deviations that do not conflict to theirs,\n"
-			"                         but use theirs in case of conflict use -s ourvalue,theirs\n"
+			"                         the used base KeySet. For twoway-merge the base is our side of the keys\n"
 			"                         Currently the following strategies exist\n"
-			"                         preserve      .. no old key is overwritten (default)\n"
-			"                         ours          .. use always our version in case of conflict\n"
-			"                         theirs        .. use always their version in case of conflict\n"
-			"                         base          .. use always the base version in case of conflict\n"
-			"                         newkey        .. merge just those keys added by one side only\n"
-			"                         ourvalue      .. use our value if theirs is unmodified\n"
-			"                         theirvalue    .. use their value if ours is unmodified\n"
+			"                         preserve      .. automerge only those keys where just one"
+			"                                          side deviates from base (default)\n"
+			"                         ours          .. like preserve, but in case of conflict use our version\n"
+			"                         theirs        .. like preserve, but in case of conflict use their version\n"
+			"                         cut           .. primarily used for import. removes existing keys below "
+			"                                          the import point and always takes the imported version\n"
+			"                         import        .. primarily used for import. preserves existing keys if "
+			"                                          they do not exist in the imported keyset. in all other\n"
+			"                                          cases the imported keys have precedence\n"
 			"";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
@@ -207,6 +204,14 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-3 --third               suppress third column\n";
 	}
+	optionPos = acceptedOptions.find('N');
+	if (acceptedOptions.find('N')!=string::npos)
+	{
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"namespace", required_argument, 0, 'N'};
+		long_options.push_back(o);
+		helpText += "-N --namespace ns        namespace to use when writing cascading keys\n";
+	}
 	optionPos = acceptedOptions.find('c');
 	if (optionPos!=string::npos)
 	{
@@ -235,6 +240,9 @@ Cmdline::Cmdline (int argc,
 
 		k = conf.lookup(dirname+"plugins");
 		if (k) plugins = k.get<string>();
+
+		k = conf.lookup(dirname+"namespace");
+		if (k) ns = k.get<string>();
 	}
 
 	option o = {0, 0, 0, 0};
@@ -268,6 +276,7 @@ Cmdline::Cmdline (int argc,
 		case '1': first= false; break;
 		case '2': second= false; break;
 		case '3': third= false; break;
+		case 'N': ns = optarg; break;
 		case 'c': pluginsConfig = optarg; break;
 
 		default: invalidOpt = true; break;

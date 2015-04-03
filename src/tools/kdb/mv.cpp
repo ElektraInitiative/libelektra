@@ -13,6 +13,16 @@ using namespace kdb;
 MvCommand::MvCommand()
 {}
 
+Key baseName(Key key1, Key key2)
+{
+	if (key1.isBelowOrSame(key2)) return key2;
+	if (key2.isBelowOrSame(key1)) return key1;
+
+	if (key1.getNamespace() == key2.getNamespace()) return Key(key1.getNamespace(), KEY_END);
+
+	return Key("/", KEY_END);
+}
+
 int MvCommand::execute (Cmdline const& cl)
 {
 	if (cl.arguments.size() != 2)
@@ -34,10 +44,9 @@ int MvCommand::execute (Cmdline const& cl)
 	}
 	string newDirName = cl.arguments[1];
 
-	kdb.get(conf, sourceKey);
-	printWarnings(cerr, sourceKey);
-	kdb.get(conf, destKey);
-	printWarnings(cerr, destKey);
+	Key root = baseName(sourceKey, destKey);
+	if (cl.verbose) std::cout << "using common basename: " << root.getName() << std::endl;
+	kdb.get(conf, root);
 	KeySet tmpConf = conf;
 	KeySet oldConf;
 
@@ -48,7 +57,6 @@ int MvCommand::execute (Cmdline const& cl)
 	Key k;
 	oldConf.rewind();
 	std::string sourceName = sourceKey.getName();
-	if (cl.verbose) cout << "common name: " << sourceName << endl;
 	if (cl.recursive)
 	{
 		while ((k = oldConf.next()))
@@ -84,9 +92,8 @@ int MvCommand::execute (Cmdline const& cl)
 		cout << newConf;
 	}
 
-	Key parentKey;
-	kdb.set(newConf, parentKey);
-	printWarnings(cerr, parentKey);
+	kdb.set(newConf, root);
+	printWarnings(cerr, root);
 
 	return 0;
 }

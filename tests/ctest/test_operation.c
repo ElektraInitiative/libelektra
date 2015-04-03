@@ -236,7 +236,6 @@ int main(int argc, char** argv)
 	test_search();
 	test_cmpOrder();
 	test_format();
-	// test_copy(); // TODO has memory problems...
 
 	printf("\ntest_operation RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

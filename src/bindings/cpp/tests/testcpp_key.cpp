@@ -10,12 +10,15 @@ void test_null()
 
 	Key key0(static_cast<ckdb::Key*>(0));
 	succeed_if (!key0, "key should evaluate to false");
+	succeed_if (key0.isNull(), "key should evaluate to false");
 
 	key0 = static_cast<ckdb::Key*>(0);
 	succeed_if (!key0, "key should evaluate to false");
+	succeed_if (key0.isNull(), "key should evaluate to false");
 
 	key0.release();
 	succeed_if (!key0, "key should evaluate to false");
+	succeed_if (key0.isNull(), "key should evaluate to false");
 }
 
 void test_keynew()
@@ -37,40 +40,61 @@ void test_keynew()
 	Key key2 ("system/sw/test", KEY_END);
 	succeed_if (key2.getBaseName() == "test", "wrong base name");
 	succeed_if( key2.getName() == "system/sw/test", "key2 has wrong name");
-	succeed_if (key2.getDirName() == "system/sw", "wrong dir name");
+	// succeed_if (key2.getDirName() == "system/sw", "wrong dir name");
 	key2.copy(key0);
 	succeed_if( key2.getName() == "", "key0 has wrong name");
 	succeed_if (key2.getBaseName() == "", "wrong base name");
-	succeed_if (key2.getDirName() == "", "wrong dir name");
+	// succeed_if (key2.getDirName() == "", "wrong dir name");
 
 
 	// Key with name
 	Key key3 ("system/sw/test", KEY_END);
 	succeed_if(key3.getName() == "system/sw/test", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "test", "wrong base name");
-	succeed_if (key3.getDirName() == "system/sw", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system/sw", "wrong dir name");
 	key3.setName("system/other/name");
 	succeed_if(key3.getName() == "system/other/name", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "name", "wrong base name");
-	succeed_if (key3.getDirName() == "system/other", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system/other", "wrong dir name");
 	key3.addBaseName("base");
 	succeed_if(key3.getName() == "system/other/name/base", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "base", "wrong base name");
-	succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
 	key3.setBaseName("name");
 	succeed_if(key3.getName() == "system/other/name/name", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "name", "wrong base name");
-	succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
+	// succeed_if (key3.getDirName() == "system/other/name", "wrong dir name");
 	key3.setName("system/name");
 	succeed_if(key3.getName() == "system/name", "key3 has wrong name");
 	succeed_if(key3.getBaseName() == "name", "wrong base name");
-	succeed_if (key3.getDirName() == "system", "wrong dir name");
-	/*
-	key3.addName("some/more");
-	succeed_if(key3.getName() == "system/name/some/more", "key3 has wrong name");
-	succeed_if(key3.getBaseName() == "more", "wrong base name");
-	succeed_if (key3.getDirName() == "system/name/some", "wrong dir name");
-	*/
+	// succeed_if (key3.getDirName() == "system", "wrong dir name");
+
+	// Key with slash in name name
+	key3.setName("system/name\\/slash");
+	succeed_if(key3.getName() == "system/name\\/slash", "key3 has wrong name");
+	succeed_if(key3.getBaseName() == "name/slash", "wrong base name");
+	// succeed_if (key3.getDirName() == "system", "wrong dir name");
+
+	key3.setName("system/name/with\\/slash");
+	succeed_if(key3.getName() == "system/name/with\\/slash", "key3 has wrong name");
+	succeed_if(key3.getBaseName() == "with/slash", "wrong base name");
+	// succeed_if (key3.getDirName() == "system/name", "wrong dir name");
+
+	key3.setName("system/name");
+	key3.addName("some\\/more");
+	succeed_if(key3.getName() == "system/name/some\\/more", "key3 has wrong name");
+	succeed_if(key3.getBaseName() == "some/more", "wrong base name");
+	// succeed_if (key3.getDirName() == "system/name", "wrong dir name");
+
+	key3.setName("/name");
+	succeed_if(key3.getName() == "/name", "key3 has wrong name");
+	// succeed_if(key3.getBaseName() == "name", "wrong base name");
+
+	key3.setName("/name");
+	key3.addName("some\\/more");
+	succeed_if(key3.getName() == "/name/some\\/more", "key3 has wrong name");
+	succeed_if(key3.getBaseName() == "some/more", "wrong base name");
+	// succeed_if (key3.getDirName() == "/name", "wrong dir name");
 
 	// Key with name + value
 	Key key4 ("system/sw/test",
@@ -238,7 +262,7 @@ void test_cast()
 	Key *k;
 
 	ck = ckdb::keyNew(0);
-	k = (Key*) &ck; // no copy, just a cast
+	k = reinterpret_cast<Key*>(&ck); // not copied on purpose
 
 	/*
 	cout << "&ck:  " << (void*)&ck << endl;
@@ -463,18 +487,22 @@ void test_valid()
 	succeed_if (i2, "even though it is invalid, it is still not a null key");
 
 	vector<string> invalid_names;
-	invalid_names.push_back ("/abc");
+	// invalid_names.push_back ("/abc");
+	// invalid_names.push_back ("/");
 	invalid_names.push_back ("use");
+	invalid_names.push_back ("users");
+	invalid_names.push_back ("users:");
 	invalid_names.push_back ("syste");
+	invalid_names.push_back ("systems");
+	invalid_names.push_back ("system:abc");
 	invalid_names.push_back ("error/somthing");
-	invalid_names.push_back ("/");
 	invalid_names.push_back (".");
 	invalid_names.push_back ("..");
 
 	for (size_t i = 0; i<invalid_names.size(); ++i)
 	{
 		Key i3 (invalid_names[i], KEY_END);
-		succeed_if (!i3.isValid(), "key should not be valid");
+		succeed_if (!i3.isValid(), "key " + invalid_names[i] + " should not be valid");
 		succeed_if (i3, "even though it is invalid, it is still not a null key");
 	}
 
@@ -557,6 +585,31 @@ void test_cconv()
 	ckdb::keyDel (ck1);
 }
 
+void test_namespace()
+{
+	cout << "Test namespace" << endl;
+
+	succeed_if(Key("user", KEY_END).getNamespace() == "user", "namespace wrong");
+	succeed_if(Key("user/a", KEY_END).getNamespace() == "user", "namespace wrong");
+	std::cout << Key("user/a", KEY_END).getNamespace() << std::endl;
+	succeed_if(Key("user/a/b/c", KEY_END).getNamespace() == "user", "namespace wrong");
+	succeed_if(Key("user/a/../..", KEY_END).getNamespace() == "user", "namespace wrong");
+	succeed_if(Key("user/a/../../x/f/v", KEY_END).getNamespace() == "user", "namespace wrong");
+
+	succeed_if(Key("dir", KEY_END).getNamespace() == "dir", "namespace wrong");
+	succeed_if(Key("proc", KEY_END).getNamespace() == "proc", "namespace wrong");
+	succeed_if(Key("spec", KEY_END).getNamespace() == "spec", "namespace wrong");
+	succeed_if(Key("system", KEY_END).getNamespace() == "system", "namespace wrong");
+
+	succeed_if(Key("dir/abc", KEY_END).getNamespace() == "dir", "namespace wrong");
+	succeed_if(Key("proc/abc", KEY_END).getNamespace() == "proc", "namespace wrong");
+	succeed_if(Key("spec/abc", KEY_END).getNamespace() == "spec", "namespace wrong");
+	succeed_if(Key("system/abc", KEY_END).getNamespace() == "system", "namespace wrong");
+
+	succeed_if(Key("/", KEY_END).getNamespace() == "/", "namespace wrong");
+	succeed_if(Key("/abc", KEY_END).getNamespace() == "/", "namespace wrong");
+}
+
 int main()
 {
 	cout << "KEY CLASS TESTS" << endl;
@@ -576,6 +629,7 @@ int main()
 	test_valid();
 	test_clear();
 	test_cconv();
+	test_namespace();
 
 	cout << endl;
 	cout << "testcpp_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;

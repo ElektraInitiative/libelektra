@@ -2,6 +2,13 @@ from support.nested import *
 from support.kdb import *
 
 class ContextSupport(NestedSupport):
+	def classpretty(self, key):
+		"""Return pretty printed key name for classes"""
+		if (key == ''):
+			return "Environment"
+		else:
+			return key.title().replace('_','').replace('/','').replace('#','N')
+
 	def funcpretty(self, key):
 		"""Return pretty printed key name for functions"""
 		return key.title().replace('_','').replace('/','').replace('#','')
@@ -17,6 +24,9 @@ class ContextSupport(NestedSupport):
 	def nsnpretty(self, name):
 		"""The namespace name to be used to create a new namespace"""
 		return name.lower().replace('#','n')
+
+	def readonly(self, info):
+		return "readonly" in info
 
 	def typeof(self, info):
 		"""Return the type for given parameter"""

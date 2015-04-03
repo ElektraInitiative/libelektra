@@ -28,4 +28,5 @@ endmacro (do_benchmark)
 
 do_benchmark (large)
 do_benchmark (cmp)
+do_benchmark (createkeys)
 

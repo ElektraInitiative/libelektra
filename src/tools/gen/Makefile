@@ -12,14 +12,15 @@
 #properly.
 
 GEN=./gen
-ELEKTRA=-lelektra-static
+ELEKTRA=-lelektra-static -pthread
 CFLAGS=-O0 -ggdb
 CXXFLAGS=-O0 -ggdb
 FLAGS = -I. -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
-PYTHONPATH=`pwd`
 
 .PHONY:all
-all:lift cpplift nestedlift dynamiccontextlift staticcontextlift lift.html lift.3 contextvisit contexteditor
+all:lift cpplift nestedlift dynamiccontextlift lift.html lift.3
+
+#staticcontextlift contextvisit contexteditor
 
 util.py:util/util.c
 	${GEN} -p tests/lift.ini util/util.c -o util.py
@@ -45,14 +46,14 @@ lift_nested.hpp:${GEN} tests/lift.ini template/nested.hpp support/nested.py util
 lift_context_dynamic.hpp:${GEN} tests/lift.ini template/context_dynamic.hpp support/context.py util.py cpp_util.py
 	${GEN} tests/lift.ini template/context_dynamic.hpp -o lift_context_dynamic.hpp
 
-lift_context_static.hpp:${GEN} tests/lift.ini template/context_static.hpp support/context.py util.py cpp_util.py
-	${GEN} tests/lift.ini template/context_static.hpp -o lift_context_static.hpp
-
-visit_context.hpp:${GEN} tests/visit.ini template/context_static.hpp support/context.py util.py cpp_util.py
-	${GEN} tests/visit.ini template/context_static.hpp -o visit_context.hpp
-
-editor_context.hpp:${GEN} tests/editor.ini template/context_static.hpp support/context.py util.py cpp_util.py
-	${GEN} tests/editor.ini template/context_static.hpp -o editor_context.hpp
+#lift_context_static.hpp:${GEN} tests/lift.ini template/context_static.hpp support/context.py util.py cpp_util.py
+#	${GEN} tests/lift.ini template/context_static.hpp -o lift_context_static.hpp
+#
+#visit_context.hpp:${GEN} tests/visit.ini template/context_static.hpp support/context.py util.py cpp_util.py
+#	${GEN} tests/visit.ini template/context_static.hpp -o visit_context.hpp
+#
+#editor_context.hpp:${GEN} tests/editor.ini template/context_static.hpp support/context.py util.py cpp_util.py
+#	${GEN} tests/editor.ini template/context_static.hpp -o editor_context.hpp
 
 genopt.c:${GEN} tests/lift.ini template/genopt.c support/genopt.py util.py
 	${GEN} tests/lift.ini template/genopt.c -o genopt.c
@@ -66,20 +67,20 @@ lift:tests/lift.c lift.h genopt.c genopt.h
 cpplift:tests/lift.cpp lift.hpp
 	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift.cpp lift.hpp ${ELEKTRA}  -o cpplift
 
-nestedlift:lift_nested.hpp tests/lift_nested.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
-
 dynamiccontextlift:lift_context_dynamic.hpp tests/lift_context.cpp
 	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/lift_context.cpp lift_context_dynamic.hpp ${ELEKTRA}  -o dynamiccontextlift
 
-staticcontextlift:lift_context_static.hpp tests/lift_context.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_context.cpp lift_context_static.hpp ${ELEKTRA}  -o staticcontextlift
+nestedlift:lift_nested.hpp tests/lift_nested.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
 
-contextvisit:visit_context.hpp tests/visit_context.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/visit_context.cpp visit_context.hpp ${ELEKTRA}  -o contextvisit
-
-contexteditor:editor_context.hpp tests/editor_context.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/editor_context.cpp editor_context.hpp ${ELEKTRA}  -o contexteditor
+#staticcontextlift:lift_context_static.hpp tests/lift_context.cpp
+#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_context.cpp lift_context_static.hpp ${ELEKTRA}  -o staticcontextlift
+#
+#contextvisit:visit_context.hpp tests/visit_context.cpp
+#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/visit_context.cpp visit_context.hpp ${ELEKTRA}  -o contextvisit
+#
+#contexteditor:editor_context.hpp tests/editor_context.cpp
+#	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/editor_context.cpp editor_context.hpp ${ELEKTRA}  -o contexteditor
 
 .PHONY:clean
 clean:

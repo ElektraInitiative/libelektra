@@ -4,6 +4,6 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-$KDB mount --resolver noresolver /tmp system/info/constants constants
-$KDB mount --resolver noresolver /tmp system/info/uname uname
+$KDB mount --resolver noresolver none system/info/constants constants
+$KDB mount --resolver noresolver none system/info/uname uname
 

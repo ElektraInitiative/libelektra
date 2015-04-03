@@ -4,6 +4,9 @@ import QtQuick.Window 2.0
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
+import "MainFunctions.js" as MFunctions
+import "ErrorDialogCreator.js" as ErrorDialog
+import org.libelektra.qtgui 1.0
 
 ApplicationWindow {
 	id: mainWindow
@@ -33,23 +36,31 @@ ApplicationWindow {
 	property int    searchResultsAreaHeight: Math.ceil(mainRow.height*0.25)
 	property var    keyAreaSelectedItem: null
 	property var    searchResultsSelectedItem: null
-	property var    metaAreaModel: (keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue)
-	property var    keyAreaModel
-	property bool   isPasted
+	property bool   isPasted: false
 	property bool	error: false
+	property bool	helpMode: false
+
+	property string version: "0.0.6 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
 	property int    defaultSpacing: defaultMargins*0.5
 
+	DataContainer {
+		id:container
+	}
+
 	//**Signals & Slots****************************************************************************************//
 
 	//Set up slots to catch signals from objects
 	Connections {
-		target: externTreeModel
+		target: treeView.treeModel
 
 		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
+			ErrorDialog.showMessage(title, text, detailedText)
+		}
+		onUpdateIndicator: {
+			treeView.updateIndicator()
 		}
 	}
 
@@ -57,197 +68,16 @@ ApplicationWindow {
 		target: guiBackend
 
 		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
+			ErrorDialog.showMessage(title, text, detailedText)
 		}
 	}
 
 	Connections {
-		target: treeView.currentNode === null ? null : treeView.currentNode.node
+		target: treeView.currentNode === null ? null : treeView.currentNode.children
 
-		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
+		onUpdateIndicator: {
+			treeView.updateIndicator()
 		}
-	}
-
-	Connections {
-		target: (keyAreaSelectedItem === null || keyAreaSelectedItem === 'undefined') ? null : keyAreaSelectedItem.node
-
-		onShowMessage: {
-			showMessage(title, text, informativeText, detailedText, icon)
-		}
-	}
-
-	//**Functions**********************************************************************************************//
-
-	//display an error message dialog
-	function showMessage(title, text, informativeText, detailedText, icon) {
-		generalMessageDialog.title = title
-		generalMessageDialog.text = text
-		generalMessageDialog.informativeText = informativeText
-		generalMessageDialog.detailedText = detailedText
-
-		if(icon === "")
-			generalMessageDialog.icon = StandardIcon.NoIcon
-		else if(icon === "q")
-			generalMessageDialog.icon = StandardIcon.Question
-		else if(icon === "i")
-			generalMessageDialog.icon = StandardIcon.Information
-		else if(icon === "w")
-			generalMessageDialog.icon = StandardIcon.Warning
-		else if(icon === "c")
-			generalMessageDialog.icon = StandardIcon.Critical
-
-		error = true
-		generalMessageDialog.open()
-	}
-
-	function cutKey() {
-		//console.log("cut Key")
-		//needed to mark the node
-		keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
-		keyAreaView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("cutKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-		isPasted = false
-	}
-
-	function cutBranch() {
-		//console.log("cut Branch")
-		treeView.treeAreaCopyIndex = treeView.currentNode.index
-		keyAreaView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("cutBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
-		isPasted = false
-	}
-
-	function copyKey() {
-		//console.log("copy Key")
-		//needed to mark the node
-		keyAreaView.keyAreaCopyIndex = keyAreaView.currentRow
-		keyAreaView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("copyKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-	}
-
-	function copyBranch() {
-		//console.log("copy Branch")
-		//needed to mark the node
-		treeView.treeAreaCopyIndex = treeView.currentNode.index
-		treeView.currentNodePath = treeView.currentNode.path
-
-		undoManager.putToClipboard("copyBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
-	}
-
-	function paste() {
-
-		if(undoManager.clipboardType === "copyKey"){
-			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			keyAreaView.keyAreaCopyIndex = -1
-			keyAreaView.currentNodePath = ""
-			resetKeyAreaModel()
-			if(keyAreaSelectedItem === null){
-				keyAreaModel.refresh()
-			}
-		}
-		else if(undoManager.clipboardType === "copyBranch"){
-			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			externTreeModel.refresh()
-		}
-		else if(undoManager.clipboardType === "cutKey"){
-
-			keyAreaView.keyAreaCopyIndex = -1
-			keyAreaView.currentNodePath = ""
-
-			if(!isPasted){
-				undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-				isPasted = true
-			}
-			else{
-				undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			}
-
-			if(keyAreaSelectedItem === null){
-				keyAreaModel.refresh()
-			}
-		}
-		else if(undoManager.clipboardType === "cutBranch"){
-
-			if(!isPasted){
-				undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-				isPasted = true
-			}
-			else{
-				undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
-			}
-
-			externTreeModel.refresh()
-			if(keyAreaModel !== null)
-				keyAreaModel.refresh()
-		}
-	}
-
-	function deleteKey() {
-//		console.log("delete key")
-		var cr = keyAreaView.currentRow
-
-		undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
-
-		metaAreaModel = null
-		keyAreaSelectedItem = null
-		keyAreaModel.refresh()
-
-		if(keyAreaView.rowCount > 0){
-			keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
-			updateKeyAreaSelection()
-		}
-		else
-			keyAreaSelectedItem = null
-	}
-
-	function deleteBranch() {
-//		console.log("delete branch")
-
-		undoManager.createDeleteKeyCommand("deleteBranch", treeView.currentNode.parentModel, treeView.currentNode.index)
-
-		externTreeModel.refresh()
-		treeView.currentNode = null
-	}
-
-	function deleteSearchResult(){
-		//console.log("delete search result")
-		var ci = searchResultsListView.currentIndex
-
-		if(searchResultsSelectedItem !== null){
-
-			if(searchResultsSelectedItem.childCount > 0)
-				undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
-			else
-				undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.node, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
-
-			undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.node, searchResultsSelectedItem.index)
-
-			if(searchResultsListView.model.count() > 0){
-				searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.count() - 1)
-				searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
-			}
-			else
-				searchResultsSelectedItem = null
-		}
-	}
-
-	function updateKeyAreaSelection() {
-		keyAreaSelectedItem = keyAreaModel.get(keyAreaView.currentRow)
-		editKeyWindow.selectedNode = keyAreaSelectedItem
-		metaAreaModel = keyAreaSelectedItem.metaValue
-
-		keyAreaView.selection.clear()
-		keyAreaView.selection.select(keyAreaView.currentRow)
-		keyAreaView.forceActiveFocus()
-	}
-
-	function resetKeyAreaModel() {
-		keyAreaModel = null
-		keyAreaModel = treeView.currentNode === null ? null : treeView.currentNode.children
 	}
 
 	//**Colors*************************************************************************************************//
@@ -270,10 +100,12 @@ ApplicationWindow {
 
 	NewKeyWindow {
 		id: newKeyWindow
-		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
-		addButton.onClicked: {
-			//add visual item
-			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
+
+		onVisibleChanged: {
+			if(visible === true){
+
+				nameTextField.forceActiveFocus()
+			}
 		}
 	}
 
@@ -290,109 +122,43 @@ ApplicationWindow {
 				}
 			}
 		}
-		//in order to execute different actions for the same key, these actions have to be defined here and not inside the button
-		addButton.onClicked: {
-			//add visual item
-			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
-		}
 	}
 
 	NewKeyWindow {
 		id: newArrayWindow
 
 		title: qsTr("Create new Array Entry")
-		nameTextField.readOnly: true
-		nameTextField.textColor: disabledPalette.text
 
 		onVisibleChanged: {
 			if(visible === true){
-				nameTextField.text = treeView.currentNode.children.getCurrentArrayNo()
+				nameTextField.readOnly = true
+				nameTextField.textColor = disabledPalette.text
+				nameTextField.text = selectedNode.children.getCurrentArrayNo()
 				valueTextField.forceActiveFocus()
 			}
-		}
-
-		addButton.onClicked: {
-			//add visual item
-			qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})
 		}
 	}
 
 	UnmountBackendWindow {
 		id: unmountBackendWindow
-		okButton.onClicked: unmountBackendWindow.close()
-		cancelButton.onClicked: unmountBackendWindow.close()
+
+		okButton.action.onTriggered: unmountBackendWindow.close()
 	}
 
 	WizardLoader {
 		id: wizardLoader
 	}
 
-	BasicWindow {
+	AboutWindow {
 		id: aboutWindow
+	}
 
-		title: qsTr("About Elektra Editor")
+	PluginInfo {
+		id: pluginInfo
+	}
 
-		width: Math.ceil(mainWindow.width*0.3)
-		height: Math.ceil(mainWindow.width*0.3)
-
-		ColumnLayout {
-			anchors.fill: parent
-			spacing: defaultMargins
-
-			RowLayout {
-				spacing: 2*defaultMargins
-				Image {
-					source: "icons/elektra-logo-big.png"
-				}
-				Column {
-					Text {
-						text: "Elektra Editor"
-						font.bold: true
-						color: activePalette.text
-					}
-					Text {
-						text: "Version: 0.0.2 (alpha)"
-						color: activePalette.text
-					}
-				}
-			}
-
-			RowLayout {
-
-				TabView {
-					id: tabs
-
-					anchors.fill: parent
-					Layout.fillHeight: true
-					Layout.fillWidth: true
-
-					Tab {
-						title: qsTr("&About")
-						TextArea{
-							property string link: "http://www.libelektra.org"
-							readOnly: true
-							textFormat: TextEdit.RichText
-							text: "<html><style type=\"text/css\"></style><b>Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database.</b><br><br><br>For further information and for reporting bugs <a href=\"" + link + "\">visit Elektra's Website</a></html>"
-							onLinkActivated: Qt.openUrlExternally(link)
-						}
-					}
-					Tab {
-						title: qsTr("A&uthors")
-						TextArea {
-							property string mail: "mailto:e0003088@student.tuwien.ac.at"
-							readOnly: true
-							textFormat: TextEdit.RichText
-							text: "Raffael Pancheri\n<html><style type=\"text/css\"></style><a href=\"" + mail + "\">e0003088@student.tuwien.ac.at</a></html>"
-							onLinkActivated: Qt.openUrlExternally(mail)
-						}
-					}
-				}
-			}
-		}
-
-		cancelButton.visible: false
-		okButton.text: qsTr("&Close")
-		okButton.onClicked: aboutWindow.close()
+	ChooseColorWindow {
+		id: chooseColorWindow
 	}
 
 	//**Dialogs************************************************************************************************//
@@ -405,21 +171,45 @@ ApplicationWindow {
 		id: importDialog
 	}
 
-	MessageDialog {
-		id:generalMessageDialog
-
-		onAccepted: error = false
-	}
-
-	FileDialog {
-		id: importFileDialog
-
-		title: qsTr("Select File")
-		onAccepted: importDialog.importTextField.text = importFileDialog.fileUrl.toString().replace("file://", "")
+	ErrorDialog {
+		id: errorDialog
 	}
 
 	ExitDialog {
 		id: exitDialog
+	}
+
+	ColorDialog {
+		id: colorDialog
+
+		property string type
+
+		title: qsTr("Please choose a color")
+		modality: Qt.ApplicationModal
+
+		onAccepted: {
+			if(type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
+				guiSettings.highlightColor = colorDialog.color
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "frame" && guiSettings.frameColor !== colorDialog.color) {
+				guiSettings.frameColor =  colorDialog.color
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
+				guiSettings.nodeWithKeyColor = colorDialog.color
+				chooseColorWindow.colorEdited = true
+			}
+			else if(type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
+				guiSettings.nodeWithoutKeyColor = colorDialog.color
+				chooseColorWindow.colorEdited = true
+			}
+
+			close()
+		}
+		onRejected: {
+			close()
+		}
 	}
 
 	//**Actions************************************************************************************************//
@@ -427,45 +217,65 @@ ApplicationWindow {
 	Action {
 		id:newKeyAction
 
-		text: qsTr("Key...")
-		iconSource: "icons/new-key.png"
+		text: qsTr("&Key ...")
+		iconSource: "icons/document-new.png"
 		tooltip: qsTr("New Key")
 		enabled: treeView.currentItem !== null
-		onTriggered: newKeyWindow.show()
+		onTriggered: {
+
+			if(source.src === "keyBelow"){
+				newKeyWindow.selectedNode = keyAreaSelectedItem
+				newKeyWindow.isBelow = true
+			}
+			else
+				newKeyWindow.selectedNode = treeView.currentNode
+
+			newKeyWindow.show()
+		}
 	}
 
 	Action {
 		id:newArrayAction
 
+		text: qsTr("&Array Entry ...")
 		iconSource: "icons/new-array.png"
-		text: qsTr("Array Entry...")
+		tooltip: qsTr("New Array Entry")
 		enabled: treeView.currentItem !== null
-		onTriggered: newArrayWindow.show()
+		onTriggered: {
+
+			if(source.src === "arrBelow"){
+				newArrayWindow.selectedNode = keyAreaSelectedItem
+				newArrayWindow.isBelow = true
+			}
+			else
+				newArrayWindow.selectedNode = treeView.currentNode
+
+			newArrayWindow.show()
+		}
 	}
 
 	Action {
 		id:deleteAction
 
 		text: qsTr("Delete")
-		iconSource: "icons/delete.png"
-		tooltip: "Delete"
+		iconSource: "icons/document-close.png"
+		tooltip: qsTr("Delete")
 		shortcut: StandardKey.Delete
 		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
-
 		onTriggered: {
 			if(searchResultsSelectedItem !== null)
-				deleteSearchResult()
+				MFunctions.deleteSearchResult()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-				deleteBranch()
+				MFunctions.deleteBranch(treeView)
 			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-				deleteKey()
+				MFunctions.deleteKey()
 		}
 	}
 
 	Action {
 		id: importAction
 
-		text: qsTr("Import Configuration... ")
+		text: qsTr("&Import Configuration ... ")
 		iconSource: "icons/import.png"
 		tooltip: qsTr("Import Configuration")
 		enabled: treeView.currentItem !== null
@@ -475,7 +285,7 @@ ApplicationWindow {
 	Action {
 		id: exportAction
 
-		text: qsTr("Export Configuration... ")
+		text: qsTr("E&xport Configuration ... ")
 		iconSource: "icons/export.png"
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
@@ -489,67 +299,68 @@ ApplicationWindow {
 		id: undoAction
 
 		text: qsTr("Undo")
-		iconSource: "icons/undo.png"
+		iconSource: "icons/edit-undo.png"
 		tooltip: qsTr("Undo")
 		shortcut: StandardKey.Undo
 		enabled: undoManager.canUndo
-
 		onTriggered: {
-
-			if(undoManager.undoText === "deleteKey"){
+			if(undoManager.undoText === "deleteBranch"){
 				undoManager.undo()
-				//				resetKeyAreaModel()
-
-				//				if(keyAreaModel !== null)
-				//					keyAreaModel.refresh()
-
-				//				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
-			else if(undoManager.undoText === "deleteBranch"){
+			else if(undoManager.undoText === "deleteKey"){
 				undoManager.undo()
-				//				if(keyAreaModel !== null)
-				//					keyAreaModel.refresh()
-								externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
 				undoManager.undo()
 			}
-			else if(undoManager.undoText === "copyKey"){
-				undoManager.undo()
-
-				//				if(keyAreaView.currentRow >= keyAreaModel.count()) {
-				//					metaAreaModel = null
-				//					keyAreaSelectedItem = null
-				//					keyAreaModel.refresh()
-				//				}
-			}
 			else if(undoManager.undoText === "copyBranch"){
 				undoManager.undo()
-				externTreeModel.refresh()
-			}
-			else if(undoManager.undoText === "cutKey"){
-				undoManager.undo()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "cutBranch"){
 				undoManager.undo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.undoText === "import"){
 				undoManager.undo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
+			}
+			else if(undoManager.undoText === "newBranch"){
+				undoManager.undo()
+				treeView.treeModel.refresh()
+				keyAreaView.selection.clear()
 			}
 			else if(undoManager.undoText === "newKey"){
 				undoManager.undo()
-				externTreeModel.refresh()
-				//				keyAreaView.selection.clear()
+				keyAreaView.selection.clear()
+				keyAreaView.currentRow = -1
 			}
 			else{
 				undoManager.undo()
-				//				keyAreaView.selection.clear()
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
+
+			treeView.updateIndicator()
+		}
+
+	}
+
+	Action {
+		id: undoAllAction
+
+		text: qsTr("Undo All")
+		tooltip: qsTr("Undo All")
+		enabled: undoManager.canUndo
+		onTriggered: {
+			//cannot use UndoStack::setIndex() because View-Updates would get lost
+			for(var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
+				undoAction.trigger()
+
+			treeView.treeModel.refresh()
 		}
 	}
 
@@ -557,62 +368,61 @@ ApplicationWindow {
 		id: redoAction
 
 		text: qsTr("Redo")
-		iconSource: "icons/redo.png"
+		iconSource: "icons/edit-redo.png"
 		tooltip: qsTr("Redo")
 		shortcut: StandardKey.Redo
 		enabled: undoManager.canRedo
 		onTriggered: {
-
-			if(undoManager.redoText === "deleteKey"){
+			if(undoManager.redoText === "deleteBranch"){
 				undoManager.redo()
-				//				metaAreaModel = null
-				//				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
-			else if(undoManager.redoText === "deleteBranch"){
+			else if(undoManager.redoText === "deleteKey"){
 				undoManager.redo()
-
-				//				if(metaAreaModel !== null)
-				//					metaAreaModel = null
-
-				//				if(keyAreaSelectedItem !== null)
-				//					keyAreaSelectedItem = null
-
-				externTreeModel.refresh()
-
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
 				undoManager.redo()
 				undoManager.redo()
 			}
-			else if(undoManager.redoText === "copyKey"){
-				undoManager.redo()
-				//				keyAreaModel.refresh()
-			}
 			else if(undoManager.redoText === "copyBranch"){
 				undoManager.redo()
-				externTreeModel.refresh()
-				//				resetKeyAreaModel()
-			}
-			else if(undoManager.redoText === "cutKey"){
-				undoManager.redo()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.redoText === "cutBranch"){
 				undoManager.redo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else if(undoManager.redoText === "import"){
 				undoManager.redo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
-			else if(undoManager.redoText === "newKey"){
+			else if(undoManager.redoText === "newBranch"){
 				undoManager.redo()
-				externTreeModel.refresh()
+				treeView.treeModel.refresh()
 			}
 			else{
-				//				undoManager.redo()
+				undoManager.redo()
 				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
+			treeView.updateIndicator()
+		}
+
+	}
+
+	Action {
+		id: redoAllAction
+
+		text: qsTr("Redo All")
+		tooltip: qsTr("Redo All")
+		enabled: undoManager.canRedo
+		onTriggered: {
+			//cannot use UndoStack::setIndex() because View-Updates would get lost
+			for(var i = undoManager.index(); i < undoManager.count(); i++)
+				redoAction.trigger()
+
+			treeView.treeModel.refresh()
 		}
 	}
 
@@ -620,20 +430,22 @@ ApplicationWindow {
 		id: synchronizeAction
 
 		text: qsTr("Synchronize")
-		iconSource: "icons/synchronize.png"
+		iconSource: "icons/view-refresh.png"
 		tooltip: qsTr("Synchronize")
 		shortcut: StandardKey.Refresh
 		onTriggered: {
-			externTreeModel.synchronize()
+			treeView.treeModel.synchronize()
 			undoManager.setClean()
+			treeView.treeModel.refresh()
 		}
 	}
 
 	Action {
-		id: createBackendAction
+		id: mountBackendAction
 
-		text: qsTr("Create Backend...")
-		tooltip: qsTr("Create Backend")
+		text: qsTr("&Mount Backend ...")
+		iconSource: "icons/mount.png"
+		tooltip: qsTr("Mount Backend")
 		onTriggered: {
 			wizardLoader.usedNames = guiBackend.mountPoints()
 			wizardLoader.show()
@@ -643,10 +455,11 @@ ApplicationWindow {
 	Action {
 		id: unmountBackendAction
 
-		text: qsTr("Unmount Backend...")
+		text: qsTr("&Unmount Backend ...")
+		iconSource: "icons/unmount.png"
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
-			unmountBackendWindow.mountedBackendsView.model = externTreeModel.mountedBackends()
+			unmountBackendWindow.mountedBackendsView.model = treeView.treeModel.mountedBackends()
 			unmountBackendWindow.mountedBackendsView.currentIndex = -1
 			unmountBackendWindow.show()
 		}
@@ -656,17 +469,16 @@ ApplicationWindow {
 		id: editAction
 
 		iconSource: "icons/edit-rename.png"
-		text: qsTr("Edit...")
+		text: qsTr("Edit ...")
 		tooltip: qsTr("Edit")
-		enabled: !((treeView.currentNode === null || treeView.currentNode.isNull) && keyAreaSelectedItem === null)
+		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null)
 
 		onTriggered: {
 			if(editKeyWindow.accessFromSearchResults){
 				editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
 			}
-
-			editKeyWindow.show()
 			editKeyWindow.populateMetaArea()
+			editKeyWindow.show()
 		}
 	}
 
@@ -681,9 +493,9 @@ ApplicationWindow {
 
 		onTriggered: {
 			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-				cutBranch()
+				MFunctions.cutBranch()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-				cutKey()
+				MFunctions.cutKey()
 		}
 	}
 
@@ -698,9 +510,9 @@ ApplicationWindow {
 
 		onTriggered: {
 			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
-				copyBranch()
+				MFunctions.copyBranch()
 			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
-				copyKey()
+				MFunctions.copyKey()
 		}
 	}
 
@@ -713,14 +525,51 @@ ApplicationWindow {
 		shortcut: StandardKey.Paste
 		enabled: undoManager.canPaste
 
-		onTriggered: paste()
+		onTriggered: MFunctions.paste()
 	}
 
 	Action {
 		id: aboutAction
-		text: qsTr("About Elektra Editor")
+
+		text: qsTr("About E&lektra Editor")
 		iconSource: "icons/elektra-logo.png"
 		onTriggered: aboutWindow.show()
+	}
+
+	Action {
+		id: whatsThisAction
+
+		text: qsTr("What's This?")
+		iconSource: "icons/whats_this.png"
+		onTriggered: helpMode ? helpMode = false : helpMode = true
+		shortcut: "Shift+F1"
+	}
+
+	Action {
+		id: pluginInfoAction
+		text: qsTr("Show &Plugin Info ...")
+		iconSource: "icons/help-about.png"
+		onTriggered: pluginInfo.show()
+	}
+
+	Action {
+		id: quitAction
+		text: qsTr("Quit")
+		iconSource: "icons/application-exit.png"
+		onTriggered: {
+			if(!undoManager.isClean())
+				exitDialog.open()
+			else
+				Qt.quit()
+		}
+		shortcut: StandardKey.Quit
+	}
+
+	Action {
+		id: chooseColorAction
+		text: qsTr("Choose Colors ...")
+		iconSource: "icons/color.png"
+		onTriggered: chooseColorWindow.show()
 	}
 
 	//**Menus & Toolbars***************************************************************************************//
@@ -729,160 +578,16 @@ ApplicationWindow {
 		id:mainMenuBar
 	}
 
-	toolBar: ToolBar {
+	toolBar: MainToolBar {
 		id:mainToolbar
-
-		RowLayout {
-			id:tbLayout
-
-			anchors.fill: parent
-
-			ToolButton {
-				id:tbNew
-				action: newKeyAction
-			}
-			ToolButton {
-				id:tbDelete
-				action: deleteAction
-			}
-			ToolButton {
-				id:tbImport
-				action: importAction
-			}
-			ToolButton {
-				id:tbExport
-				action: exportAction
-			}
-			ToolButton {
-				id:tbUndo
-				action: undoAction
-			}
-			ToolButton {
-				id:tbRedo
-				action: redoAction
-			}
-			ToolButton {
-				id:tbSynchronize
-				action: synchronizeAction
-			}
-			Item {
-				width: Math.ceil(mainWindow.width*0.3 - 7*tbRedo.width - 7*defaultSpacing - defaultMargins)
-				height: tbNew.height
-			}
-			Image {
-				id: searchLogo
-				source: "icons/edit-find.png"
-			}
-			SearchField {
-				id: searchField
-				Layout.fillWidth: true
-				focus: true
-				onAccepted: {
-					if(text !== ""){
-						searchResultsListView.model = externTreeModel.find(text)
-						searchResultsListView.currentIndex = -1
-						searchResultsListView.forceActiveFocus()
-					}
-					else
-						showMessage(qsTr("No Input"), qsTr("You need to enter a term to perform a search."),"","", "w")
-				}
-			}
-		}
 	}
 
-	//TreeView Area Context Menu
-
-	Menu {
+	TreeContextMenu {
 		id: treeContextMenu
-
-		Menu {
-			id:tcmNew
-
-			title: qsTr("New")
-
-			MenuItem {
-				id:tcmNewKey
-
-				action: newKeyAction
-			}
-			MenuItem {
-				id:tcmNewArray
-
-				action: newArrayAction
-			}
-		}
-		MenuItem {
-			id: tcmEdit
-
-			action: editAction
-		}
-
-		MenuSeparator{}
-
-		MenuItem{
-			id: tcmImport
-
-			action: importAction
-		}
-		MenuItem{
-			id: tcmExport
-
-			action: exportAction
-		}
-
-		MenuSeparator{}
-
-		MenuItem {
-			id: tcmCut
-
-			action: cutAction
-		}
-		MenuItem {
-			id: tcmCopy
-
-			action: copyAction
-		}
-		MenuItem {
-			id: tcmPaste
-
-			action: pasteAction
-		}
-		MenuItem {
-			id:tcmDelete
-
-			action: deleteAction
-		}
 	}
 
-	//Key Area Context Menu
-
-	Menu {
-		id: keyContextMenu
-
-		MenuItem {
-			id: kcmNewKey
-			action: newKeyAction
-		}
-		MenuItem {
-			id: kcmEdit
-			action: editAction
-		}
-		MenuItem {
-			id: kcmCut
-			action: cutAction
-		}
-		MenuItem {
-			id: kcmCopy
-			action: copyAction
-		}
-		MenuItem {
-			id: kcmPaste
-			action: pasteAction
-		}
-		MenuItem {
-			id: kcmDelete
-			action: deleteAction
-		}
+	KeyAreaContextMenu {
+		id: keyAreaContextMenu
 	}
 
 	//Search Results Area Context Menu
@@ -914,10 +619,14 @@ ApplicationWindow {
 
 			width: Math.ceil(parent.width*0.3)
 			height: parent.height
-//			border.color: treeView.activeFocus ? activePalette.highlight : activePalette.dark
 
 			TreeView {
 				id: treeView
+
+				treeModel: externTreeModel
+			}
+			HelpArea {
+				helpText: qsTr("This is a tree view of the Key Database. It shows\nthe entire tree of the Key Database and allows\nyou to traverse the keys.")
 			}
 		}
 		Column {
@@ -931,28 +640,13 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: keyAreaHeight
 
-//				border.color: keyAreaView.activeFocus ? activePalette.highlight : activePalette.dark
-
-				Component {
-					id: tableViewColumnDelegate
-
-					Item {
-						anchors.fill: parent
-						anchors.margins: defaultMargins
-
-						Text{
-							anchors.verticalCenter: parent.verticalCenter
-							text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
-							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : activePalette.text)
-						}
-					}
-				}
-
 				TableView {
 					id: keyAreaView
 
-					property int keyAreaCopyIndex
-					property string currentNodePath
+					property int	keyAreaCopyIndex:-1
+					property string currentNodePath:""
+
+					signal updateModel()
 
 					anchors.fill: parent
 					anchors.margins: 1
@@ -960,7 +654,25 @@ ApplicationWindow {
 					alternatingRowColors: false
 					backgroundVisible: false
 
-					model: keyAreaModel
+					Component.onCompleted: treeView.updateIndicator.connect(updateModel)
+
+					onUpdateModel: model = getModel()
+
+					model: getModel()
+
+					function getModel() {
+						if(treeView.currentNode === null)
+							return ""
+						else if(treeView.currentNode.childrenHaveNoChildren)
+							return treeView.currentNode.children
+					}
+
+					onCurrentRowChanged: {
+						if(currentRow === -1)
+							keyAreaSelectedItem = null
+						else
+							keyAreaSelectedItem = model.get(currentRow)
+					}
 
 					TableViewColumn {
 						id: nameColumn
@@ -968,7 +680,6 @@ ApplicationWindow {
 						role: "name"
 						title: qsTr("Key Name")
 						width: Math.ceil(keyArea.width*0.5 - defaultSpacing*0.5)
-						delegate: tableViewColumnDelegate
 					}
 					TableViewColumn {
 						id: valueColumn
@@ -976,55 +687,53 @@ ApplicationWindow {
 						role: "value"
 						title: qsTr("Key Value")
 						width: Math.ceil(keyArea.width*0.5 - defaultSpacing*0.5)
-						delegate: tableViewColumnDelegate
+					}
+					itemDelegate: Item {
+						Text{
+							anchors.fill: parent
+							anchors.leftMargin: defaultMargins
+							anchors.verticalCenter: parent.verticalCenter
+							text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
+							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : guiSettings.nodeWithKeyColor)
+						}
 					}
 
 					rowDelegate: Component {
-
 						Rectangle {
 							width: keyAreaView.width
-							color: styleData.selected ? activePalette.highlight : "transparent"
+							color: styleData.selected ? guiSettings.highlightColor : "transparent"
 
 							MouseArea {
 								anchors.fill: parent
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-
 									if(mouse.button === Qt.RightButton){
-										keyContextMenu.popup()
+										keyAreaContextMenu.popup()
 									}
 									else if(mouse.button === Qt.LeftButton){
 										keyAreaView.currentRow = styleData.row
-										updateKeyAreaSelection()
+										MFunctions.updateKeyAreaSelection()
 									}
 								}
 
 								onDoubleClicked: {
 									keyAreaView.currentRow = styleData.row
-									updateKeyAreaSelection()
-									editKeyWindow.show()
-									editKeyWindow.populateMetaArea()
+									MFunctions.updateKeyAreaSelection()
+									editAction.trigger()
 								}
 							}
 						}
 					}
 					Keys.onPressed: {
-
-						if(event.key === Qt.Key_Up) {
-							keyAreaView.currentRow = keyAreaView.currentRow--
-							updateKeyAreaSelection()
-						}
-						else if(event.key === Qt.Key_Down){
-							keyAreaView.currentRow = keyAreaView.currentRow++
-							updateKeyAreaSelection()
-						}
-						else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
-							updateKeyAreaSelection()
-							editKeyWindow.show()
-							editKeyWindow.populateMetaArea()
+						if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
+							MFunctions.updateKeyAreaSelection()
+							editAction.trigger()
 						}
 					}
+				}
+				HelpArea {
+					helpText: qsTr("This view shows the keys in the current selected KeySet.\nIt shows the Key's name on the left and its value on the\nright. Double-clicking a Key will let you edit it.")
 				}
 			}
 			BasicRectangle {
@@ -1033,10 +742,8 @@ ApplicationWindow {
 				width: keyAreaWidth
 				height: metaAreaHeight
 
-//				border.color: metaAreaTableView.activeFocus ? activePalette.highlight : activePalette.dark
-
 				TableView {
-					id: metaAreaTableView
+					id: metaAreaView
 
 					anchors.fill: parent
 					anchors.margins: 1
@@ -1045,7 +752,7 @@ ApplicationWindow {
 					backgroundVisible: false
 					selectionMode: SelectionMode.NoSelection
 
-					model: metaAreaModel
+					model: keyAreaSelectedItem === null ? null : keyAreaSelectedItem.metaValue
 
 					TableViewColumn {
 						id: metaNameColumn
@@ -1061,6 +768,18 @@ ApplicationWindow {
 						title: qsTr("Metakey Value")
 						width: Math.ceil(metaArea.width*0.5 - defaultSpacing*0.5)
 					}
+
+					itemDelegate: Item {
+						Text {
+							anchors.fill: parent
+							anchors.leftMargin: defaultMargins
+							text: styleData.value
+							color: guiSettings.nodeWithKeyColor
+						}
+					}
+				}
+				HelpArea {
+					helpText: qsTr("This shows any metakeys attached to a Key. You can\nedit this metadata the same way you normally edit a\nKey, by double-clicking the key in the above view.")
 				}
 			}
 			BasicRectangle {
@@ -1070,23 +789,34 @@ ApplicationWindow {
 				height: searchResultsAreaHeight
 				visible: false
 
-				Button {
+				SequentialAnimation {
+					id: searchResultsColorAnimation
+
+					ColorAnimation {
+						target: searchResultsArea
+						property: "border.color"
+						to: (searchResultsArea.visible &&  searchResultsListView.model !== null) ? (searchResultsListView.model.get(0).name === "NotfoundNode" ? "red" : "green") : activePalette.dark
+						duration: 0
+					}
+					ColorAnimation {
+						target: searchResultsArea
+						property: "border.color"
+						to: activePalette.dark
+						duration: 1000
+					}
+				}
+
+				ToolButton {
 					id: searchResultsCloseButton
 
 					iconSource: "icons/dialog-close.png"
 					anchors.right: parent.right
 					anchors.top: parent.top
-					anchors.margins: Math.ceil(defaultMargins*0.25)
+					anchors.margins: defaultSpacing
 					tooltip: qsTr("Close")
 					onClicked: {
 						keyMetaColumn.state = ""
 						searchResultsSelectedItem = null
-					}
-
-					style: ButtonStyle {
-						background: Rectangle {
-							color: searchResultsArea.color
-						}
 					}
 				}
 
@@ -1105,32 +835,31 @@ ApplicationWindow {
 						highlightMoveDuration: 0
 						highlightResizeDuration: 0
 						keyNavigationWraps: true
+						model: null
 
 						Keys.onPressed: {
-
 							if(event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
 								currentIndex--
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.count() - 1){
+							else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.rowCount() - 1){
 								currentIndex++
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+							else if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
 								editKeyWindow.selectedNode = searchResultsSelectedItem
 								editKeyWindow.accessFromSearchResults = true
-								editKeyWindow.show()
-								editKeyWindow.populateMetaArea()
+								editAction.trigger()
 							}
 						}
 
 						highlight: Rectangle {
 							id: highlightBar
-							color: activePalette.highlight
+							color: guiSettings.highlightColor
 						}
 
 						delegate: Text {
-							color: activePalette.text
+							color: guiSettings.nodeWithKeyColor
 							text: path
 
 							MouseArea {
@@ -1138,26 +867,29 @@ ApplicationWindow {
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-									if(mouse.button === Qt.LeftButton){
-										searchResultsListView.currentIndex = index
-										searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
-										forceActiveFocus()
-									}
-									else if(mouse.button === Qt.RightButton) {
-										searchResultsListView.currentIndex = index
-										searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
-										forceActiveFocus()
-										editKeyWindow.accessFromSearchResults = true
-										searchResultsContextMenu.popup()
+									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
+										if(mouse.button === Qt.LeftButton){
+											searchResultsListView.currentIndex = index
+											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+											forceActiveFocus()
+										}
+										else if(mouse.button === Qt.RightButton) {
+											searchResultsListView.currentIndex = index
+											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+											forceActiveFocus()
+											editKeyWindow.accessFromSearchResults = true
+											searchResultsContextMenu.popup()
+										}
 									}
 								}
 								onDoubleClicked: {
-									searchResultsListView.currentIndex = index
-									forceActiveFocus()
-									editKeyWindow.accessFromSearchResults = true
-									editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
-									editKeyWindow.show()
-									editKeyWindow.populateMetaArea()
+									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
+										searchResultsListView.currentIndex = index
+										forceActiveFocus()
+										editKeyWindow.accessFromSearchResults = true
+										editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
+										editAction.trigger()
+									}
 								}
 							}
 						}
@@ -1183,6 +915,7 @@ ApplicationWindow {
 			}
 		}
 	}
+
 	statusBar: StatusBar {
 		id:mainStatusBar
 

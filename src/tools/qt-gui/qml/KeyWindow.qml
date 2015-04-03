@@ -4,9 +4,9 @@ import QtQuick.Window 2.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
+import "MainFunctions.js" as MFunctions
 
 BasicWindow {
-	id: keyWindow
 
 	property alias  nameLabel: nameLabel
 	property alias  addButton: addButton
@@ -15,10 +15,10 @@ BasicWindow {
 	property alias  valueLabel: valueLabel
 	property alias  valueTextField: valueTextField
 	property bool   nameReadOnly: false
-	property string valuePlaceHolder: "Meta Key Value..."
+	property string valuePlaceHolder: "Meta Key Value ..."
 	property int    modelIndex: 0
 	property bool   isArray: false
-	property string path: ""
+	property string path: !visible ? "" : selectedNode.path.lastIndexOf("/") === -1 ? selectedNode.path : selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/"))
 	property string keyName: ""
 	property string keyValue: ""
 	property bool   isEdited: false
@@ -29,13 +29,14 @@ BasicWindow {
 
 	contents: ColumnLayout {
 		anchors.fill: parent
-		anchors.centerIn: parent
 		spacing: defaultMargins
 
 		Text{
 			id: pathInfo
 			text: path
 			color: disabledPalette.text
+			Layout.fillWidth: true
+			wrapMode: Text.WrapAnywhere
 		}
 		GridLayout {
 			columns: 2
@@ -46,8 +47,8 @@ BasicWindow {
 			TextField {
 				id: nameTextField
 				Layout.fillWidth: true
-				focus: true
 				text: keyName
+				clip: true
 				Keys.onPressed: {
 					if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 						okClicked()
@@ -67,6 +68,7 @@ BasicWindow {
 				id: valueTextField
 				Layout.fillWidth: true
 				text: keyValue
+				clip: true
 				Keys.onPressed: {
 					if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 						okClicked()
@@ -82,6 +84,7 @@ BasicWindow {
 
 		BasicRectangle {
 			id: metaArea
+
 			Layout.fillWidth: true
 			Layout.fillHeight: true
 
@@ -90,8 +93,9 @@ BasicWindow {
 				anchors.margins: defaultSpacing
 				ListView {
 					id: metaKeyListView
+
 					anchors.fill: parent
-					spacing: defaultMargins
+					spacing: defaultSpacing
 					model: qmlMetaKeyModel
 					delegate: metaKeyDelegate
 				}
@@ -109,7 +113,7 @@ BasicWindow {
 					//check if user has edited metakeyname or metakeyvalue. This comparison can only happen here since
 					//"metaNameField.text" cannot be accessed outside the delegate.
 					metaNameField.readOnly: nameReadOnly
-					metaValueField.placeholderText: qsTr(valuePlaceHolder)
+					metaValueField.placeholderText: valuePlaceHolder
 
 					metaNameField.onTextChanged:  {
 						if(metaName !== metaNameField.text){
@@ -130,32 +134,29 @@ BasicWindow {
 			id: addButton
 
 			anchors.horizontalCenter: parent.horizontalCenter
-			text: qsTr("New Meta Key")
+			action: Action {
+				text: qsTr("&New Meta Key")
+				onTriggered: qmlMetaKeyModel.append({"metaName" : "", "metaValue" : ""})  //add visual item
+			}
 		}
 	}
 
-	okButton.onClicked: okClicked()
-	cancelButton.onClicked: cancelClicked()
+	okButton.action.enabled:  nameTextField.text !== ""
+	okButton.action.onTriggered: okClicked()
+	cancelButton.action.onTriggered: cancelClicked()
 
 	function okClicked(){
+		//check if user has edited keyname or keyvalue
+		if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
+			isEdited = true
 
-		if(nameTextField.text !== ""){
-			//check if user has edited keyname or keyvalue
-			if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
-				isEdited = true
-
-			keyWindow.visible = false
-			editAccepted()
-		}
-		else
-			showMessage(qsTr("No Keyname"), qsTr("Please enter a keyname."), "", "", "w")
+		editAccepted()
 	}
 
 	function cancelClicked() {
-		keyWindow.visible = false
+		visible = false
 		isEdited = false
-		nameTextField.undo()
-		valueTextField.undo()
+		accessFromSearchResults = false
 		qmlMetaKeyModel.clear()
 		selectedNode = null
 		nameTextField.readOnly = false

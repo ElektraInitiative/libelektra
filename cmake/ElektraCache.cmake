@@ -20,6 +20,7 @@ set (PLUGINS_LIST_DEFAULT
 	dump
 	resolver
 	sync
+	error
 	)
 
 #
@@ -46,7 +47,6 @@ set (PLUGINS_LIST_COMPILE
 #
 set (PLUGINS_LIST_NODEP
 	ccode
-	error
 	fstab
 	hexcode
 	hidden
@@ -54,6 +54,7 @@ set (PLUGINS_LIST_NODEP
 	null
 	struct
 	tracer
+	counter
 	type
 	constants
 	noresolver
@@ -283,6 +284,10 @@ set (KDB_DB_HOME "/home" CACHE PATH
 
 set (KDB_DB_USER ".config" CACHE PATH
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
+		)
+
+set (KDB_DB_SPEC "share/elektra/specification" CACHE PATH
+		"This path will be appended after the prefix. It completes the path to the specification key database."
 		)
 
 set (KDB_DB_FILE "default.ecf" CACHE PATH

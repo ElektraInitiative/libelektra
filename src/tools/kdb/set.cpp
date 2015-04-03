@@ -36,6 +36,11 @@ int SetCommand::execute(Cmdline const& cl)
 	}
 
 	KeySet conf;
+	if (name[0] == '/')
+	{
+		name = cl.ns + name;
+		std::cout << "Using name " << name << std::endl;
+	}
 	Key k(name, KEY_END);
 
 	// do not resume on any get errors
@@ -43,14 +48,11 @@ int SetCommand::execute(Cmdline const& cl)
 	// the config
 	kdb.get(conf, k);
 
-	printWarnings(cerr, k);
-	printError(cerr, k);
-
 	Key key = conf.lookup(name);
 
 	if (!key)
 	{
-		cout << "create a new key " << name;
+		cout << "Create a new key " << name;
 		key = Key(name, KEY_END);
 		if (!nullValue)
 		{
@@ -76,10 +78,9 @@ int SetCommand::execute(Cmdline const& cl)
 			key.setBinary(0, 0);
 		}
 	}
-	Key n;
-	kdb.set(conf, n);
-	printWarnings(cerr, n);
-	printError(cerr, n);
+	kdb.set(conf, k);
+	printWarnings(cerr, k);
+	printError(cerr, k);
 
 	return 0;
 }

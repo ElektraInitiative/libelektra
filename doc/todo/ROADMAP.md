@@ -6,63 +6,32 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.11 #
+
+
+# 0.8.12
 
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
-## fix relative ##
+document METADATA.ini
 
-plugins should use relative pathes so that import/export/remount works
+shell:
+	test resolver (dir)
 
-- dump
-- ni
+genopt.hpp + include enforcement in template_dynamic?
 
-## simplify cmake ##
+install kdb gen properly
+	search by default in installed pathes
 
-c++11
-DEFAULT_STORAGE/RESOLVER
+better errnostore solution?
+	reset errno in user functions and avoid code in every plugin
+	always provide last errno in ADD_WARNING+SET_ERROR
+	use safe implementation see
+	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
+	(even strerrno_r seems to deadlock from time to time because of translations?)
 
-
-## powerful cascading ##
-
-make / as logical root
-
-arbitrary cascading
-	ksLookup uses search folders (supplied by meta data)
-	(e.g. /system/keybindings /user/keybindings /system/sw/myapp/keybindings...)
-	allow fallback/override for contextual values
-
-cascading for kdbGet/Set:
-	read in spec and get/set needed subtrees
-
-cascading for ksLookup:
-	lookup in spec and use search folders and all requested domains
-
-terminology:
-	use consistent name for "user", "system", "local", "env" and "spec"
-	-> namespace
-
-getRootKeys vs. getNamespace
-
-applications should only need to use:
-kdbGet("/path/to/my/application")
-ksLookup("/path/to/my/application/dir/key")
-	(and even the strings can be avoided by code generation)
-
-defaults are hardcoded (for system without /etc)
-	just for information in spec
-
-
-## test ##
-
-test libelektratools:
-	addPlugin(Plugin) tests
-	usePath functionality?
-
-full coverage of all plugins in end-to-end test
-	create a directory value rewriter for ini+yajl
-
+C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin
+exists for it
 
 ## meta data ##
 
@@ -72,3 +41,26 @@ fix comments:
 fix types:
 	type checker should check like defined in schema
 	let json use same types (double, boolean, nothing for string)
+
+## fix relative ##
+
+plugins should use relative pathes so that import/export/remount works
+
+- dump
+- ni
+
+
+## Backend ##
+
+unserialize
+streaming
+
+## simplify cmake ##
+
+c++11
+DEFAULT_STORAGE/RESOLVER
+
+## bug hunting
+
+all plugins + kdb shell with afl
+

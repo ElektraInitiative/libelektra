@@ -21,14 +21,14 @@ namespace tools
 namespace merging
 {
 
-ConflictOperation MergeConflictStrategy::getOurConflictOperation(Key& conflictKey)
+ConflictOperation MergeConflictStrategy::getOurConflictOperation(const Key& conflictKey)
 {
 	string ourConflictName = conflictKey.getMeta<string>("conflict/operation/our");
 	ConflictOperation ourOperation = MergeConflictOperation::getFromName(ourConflictName);
 	return ourOperation;
 }
 
-ConflictOperation MergeConflictStrategy::getTheirConflictOperation(Key& conflictKey)
+ConflictOperation MergeConflictStrategy::getTheirConflictOperation(const Key& conflictKey)
 {
 	string theirConflictName = conflictKey.getMeta<string>("conflict/operation/their");
 	ConflictOperation theirOperation = MergeConflictOperation::getFromName(theirConflictName);

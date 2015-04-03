@@ -1,9 +1,13 @@
+install (PROGRAMS benchmark-createtree DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
 install (PROGRAMS elektra-merge DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS elektra-mount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS elektra-umount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+install (PROGRAMS configure-common DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-debian DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-debian-wheezy DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS configure-debian-wheezy-local DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-mingw DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-xdg DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
@@ -22,6 +26,8 @@ install (PROGRAMS mount-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS mount-kde DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS mount-openicc DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
 if (INSTALL_SYSTEM_FILES)
 	install (FILES kdb-bash-completion
 			DESTINATION /etc/bash_completion.d
@@ -39,6 +45,11 @@ configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/list-tools.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/list-tools")
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/list-tools" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/mount-spec.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/mount-spec")
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/mount-spec" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 ADD_CUSTOM_TARGET(source-package
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"

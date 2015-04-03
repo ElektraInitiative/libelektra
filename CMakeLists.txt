@@ -1,5 +1,8 @@
 cmake_minimum_required (VERSION 2.8.8)
 
+# allows us to override platform specific variables
+set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/cmake/Platform.cmake")
+
 project (Elektra)
 
 #additional modules for loading libraries
@@ -60,7 +63,7 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 10)
+set (KDB_VERSION_MICRO 11)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 

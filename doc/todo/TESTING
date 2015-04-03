@@ -1,3 +1,39 @@
+## error
+
+test failing mount with error plugin
+
+test error plugin when mounted at open
+
+
+## errno
+
+check if errno is never changed
+
+## fork
+
+fork-safety?
+https://github.com/fish-shell/fish-shell/wiki/fish's-Fork-and-Pthread-Manifesto
+
+
+## test ##
+
+full coverage of all plugins in end-to-end test
+	create a directory value rewriter for ini+yajl
+
+test libelektratools:
+	addPlugin(Plugin) tests
+	usePath functionality?
+
+
+trailingslashes in TMPDIR?
+
+## fuzz testing
+
+- for configuration files (import)
+- using kdb shell
+- using kdb mount spec
+
+
 == ABI compatability tests ==
 
 need defined set of tests which only use tests.h (and not internal,..)

@@ -1,4 +1,5 @@
-find_package (LibXml2 REQUIRED)
+find_package (LibXml2)
+
 if (LIBXML2_FOUND)
 	include (LibAddMacros)
 
@@ -8,6 +9,7 @@ if (LIBXML2_FOUND)
 			xmltool.c
 			stream.c
 			kdbtools.c
+			kscompare.c
 		INCLUDE_DIRECTORIES
 			${LIBXML2_INCLUDE_DIR}
 		LINK_LIBRARIES

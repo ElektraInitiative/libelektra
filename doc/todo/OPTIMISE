@@ -12,11 +12,6 @@ general:
 Cow keys for mmap storage
 
 
-== faster lookup ==
-
-cascading keys: keep place for namespaces
-
-
 
 == SEARCH ==
 
@@ -95,3 +90,6 @@ Implement order preserving perfect hashing functions
 	rebuilding on seldom lookups
 	if hash is available it will be used regardless of options
 
+
+improve memory footprint C structures:
+	http://www.catb.org/esr/structure-packing/?src=yc

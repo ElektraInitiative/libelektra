@@ -52,24 +52,9 @@ void elektraFstabFsName(char * fsname, struct mntent *fstabEntry,
 		++(*swapIndex);
 	} else if (!strcmp(fstabEntry->mnt_dir,"none")) {
 		strcpy(fsname,fstabEntry->mnt_type);
-	} else if (!strcmp(fstabEntry->mnt_dir,"/")) {
-		strcpy(fsname,"rootfs");
 	} else {
-		/* fsname will be the mount point without '/' char */
-		char *slash=0;
-		char *curr=fstabEntry->mnt_dir;
-		fsname[0]=0;
-		
-		while((slash=strchr(curr,KDB_PATH_SEPARATOR))) {
-			if (slash==curr) {
-				curr++;
-				continue;
-			}
-			
-			strncat(fsname,curr,slash-curr);
-			curr=slash+1;
-		}
-		strcat(fsname,curr);
+		// Otherwise take dir as-is
+		strcpy(fsname,fstabEntry->mnt_dir);
 	}
 }
 
@@ -142,7 +127,7 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	fstab=setmntent(keyString(parentKey), "r");
 	if (fstab == 0)
 	{
-		/* propagate errno */
+		ELEKTRA_SET_ERROR_GET(parentKey);
 		errno = errnosave;
 		return -1;
 	}
@@ -212,11 +197,9 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
-	int ret = 1;
 	int errnosave = errno;
 	FILE *fstab=0;
 	Key *key=0;
-	char *basename = 0;
 	const void *rootname = 0;
 	struct mntent fstabEntry;
 
@@ -232,15 +215,9 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 	fstab=setmntent(keyString(parentKey), "w");
 
-	if(fstab == 0 && errno == EACCES)
+	if(fstab == 0)
 	{
-		ELEKTRA_SET_ERROR(9, parentKey, strerror(errno));
-		errno = errnosave;
-		return -1;
-	}
-	else if(fstab == 0)
-	{
-		ELEKTRA_SET_ERROR(75, parentKey, strerror(errno));
+		ELEKTRA_SET_ERROR_SET(parentKey);
 		errno = errnosave;
 		return -1;
 	}
@@ -249,8 +226,7 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 	while ((key = ksNext (ks)) != 0)
 	{
-		ret ++;
-		basename=strrchr(keyName(key), '/')+1;
+		const char *basename=keyBaseName(key);
 #if DEBUG && VERBOSE
 		printf ("key: %s %s\n", keyName(key), basename);
 #endif
@@ -304,7 +280,7 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	
 	endmntent(fstab);
 	errno = errnosave;
-	return ret;
+	return 1;
 }
 
 

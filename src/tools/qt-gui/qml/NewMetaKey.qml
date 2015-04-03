@@ -20,7 +20,7 @@ Item {
 		TextField {
 			id: metaNameField
 			Layout.fillWidth: isArray ? false : true
-			placeholderText : qsTr("Meta Key Name...")
+			placeholderText : qsTr("Meta Key Name ...")
 			text: metaName
 			Keys.onPressed: {
 				if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
@@ -48,12 +48,12 @@ Item {
 				}
 			}
 		}
-		Button {
+		ToolButton {
 			id:deleteMetaButton
 
-			implicitHeight: metaNameField.height
+			implicitHeight: metaNameField.height + defaultSpacing
 			implicitWidth: implicitHeight
-			iconSource: "icons/application-exit.png"
+			iconSource: "icons/edit-delete.png"
 
 			onClicked: {
 				qmlMetaKeyModel.remove(index)// remove the visual item

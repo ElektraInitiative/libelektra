@@ -17,10 +17,10 @@
 /**
  * @defgroup key Key
  *
- * @brief A Key is the essential class that encapsulates key @link keyname name @endlink,
+ * @brief Key is an essential class that encapsulates key @link keyname name @endlink,
  * @link keyvalue value @endlink and @link keymeta metainfo @endlink.
  *
- * To use them:
+ * To use it include:
  * @code
 #include <kdb.h>
  * @endcode
@@ -130,25 +130,29 @@ static Key *elektraKeyMalloc()
  * The Key attribute tags are the following:
  * - ::KEY_VALUE \n
  *   Next parameter is a pointer to the value that will be used.
- *   If no ::KEY_BINARY was used before, *   a string is assumed.
+ *   If no ::KEY_BINARY was used before, a string is assumed.
  *   @snippet keyNew.c With Value
  * - ::KEY_SIZE \n
  *   Define a maximum length of the value. This is only used when setting
  *   a binary key.
  *   @snippet keyNew.c With Size
- * - ::KEY_BINARY \n
- *   Allows to change the key to a binary key.
- *   Make sure that you also pass ::KEY_SIZE before you set the value.
- *   Otherwise it will be cut off with first \\0 in the string.
- *   So this value toggle from keySetString()
- *   to keySetBinary().
- *   @snippet keyNew.c With Binary
  * - ::KEY_META \n
  *   Next two parameter is a meta name and a meta value. See keySetMeta().
  *   @snippet keyNew.c With Meta
  * - ::KEY_END \n
  *   Must be the last parameter passed to keyNew(). It is always
  *   required, unless the @p keyName is 0.
+ * - ::KEY_FLAGS \n
+ *   Bitwise disjunction of flags, which don't require one or more values.
+ *   recommended way to set multiple flags. overrides previously defined flags.
+ *   @snippet keyNew.c With Flags
+ * - ::KEY_BINARY \n
+ *   Allows to change the key to a binary key.
+ *   Make sure that you also pass ::KEY_SIZE before you set the value.
+ *   Otherwise it will be cut off with first \\0 in the string.
+ *   So this flag toggle from keySetString() to keySetBinary().
+ *   If no value (nor size) is given, it will be a NULL key.
+ *   @snippet keyNew.c With Binary
  * - ::KEY_CASCADING_NAME allow the name to start with /
  *   useful for ksLookup() and kdbGet() parent/lookup keys
  * - ::KEY_META_NAME allow the name to start with arbitrary namespaces
@@ -275,90 +279,26 @@ Key* keyDup(const Key *source)
 	dest = elektraKeyMalloc();
 	if (!dest) return 0;
 
-	/* Copy the struct data, including the "next" pointer */
+	/* Copy the struct data */
 	*dest=*source;
+
+	/* get rid of properties bound to old key */
+	dest->ksReference = 0;
+	dest->flags=KEY_FLAG_SYNC;
 
 	/* prepare to set dynamic properties */
 	dest->key=
 	dest->data.v=
 	dest->meta=0;
 
-	/* get rid of properties bound to old key */
-	dest->ksReference = 0;
-	dest->flags=KEY_FLAG_SYNC;
-
-	/* use any name as passed */
-	if (source->key && elektraKeySetName(dest,source->key,KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1) goto memerror;
-	if (source->data.v && keySetRaw(dest,source->data.v,source->dataSize) == -1) goto memerror;
-	if (source->meta)
+	/* copy dynamic properties */
+	if (keyCopy(dest, source) == -1)
 	{
-		dest->meta = ksDup (source->meta);
+		keyDel(dest);
+		return 0;
 	}
-	
+
 	return dest;
-memerror:
-	keyDel (dest);
-	return 0;
-}
-
-
-/**
- * @brief Permanently locks a part of the key
- *
- * This can be:
- * - KEY_FLAG_LOCK_NAME to lock the name
- * - KEY_FLAG_LOCK_VALUE to lock the value
- * - KEY_FLAG_LOCK_META to lock the meta data
- *
- * To unlock the key, duplicate it.
- *
- * It is also possible to lock when the key is created with
- * keyNew().
- *
- * Some data structures need to lock the key (most likely
- * its name), so that the ordering does not get confused.
- *
- * @param key which name should be locked
- *
- * @see keyNew(), keyDup(), ksAppendKey()
- * @retval >0 the bits that were successfully locked
- * @retval 0 if everything was locked before
- * @retval -1 if it could not be locked (nullpointer)
- */
-int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
-{
-	int ret = 0;
-
-	if (!key) return -1;
-
-	if (test_bit(what, KEY_LOCK_NAME))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_NAME))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_NAME);
-			set_bit(ret, KEY_LOCK_NAME);
-		}
-	}
-
-	if (test_bit(what, KEY_LOCK_VALUE))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_VALUE))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_VALUE);
-			set_bit(ret, KEY_LOCK_VALUE);
-		}
-	}
-
-	if (test_bit(what, KEY_LOCK_META))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_META))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_META);
-			set_bit(ret, KEY_LOCK_META);
-		}
-	}
-
-	return ret;
 }
 
 
@@ -406,17 +346,23 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
  * @param source the key which should be copied
  *     or NULL to clean the destination key
  * @ingroup key
- * @return -1 on failure when a NULL pointer
+ * @retval -1 on failure when a NULL pointer
  *     was passed for dest or a dynamic property could not
- *     be written. Both name and value are
- *     empty then.
- * @return 0 when dest was cleaned
- * @return 1 when source was successfully copied
+ *     be written. The content will be unmodified then.
+ * @retval 0 when dest was cleaned
+ * @retval 1 when source was successfully copied
  * @see keyDup() to get a duplication of a key
  */
 int keyCopy (Key *dest, const Key *source)
 {
 	if (!dest) return -1;
+
+	if(test_bit(dest->flags, KEY_FLAG_RO_NAME)
+	  || test_bit(dest->flags, KEY_FLAG_RO_VALUE)
+	  || test_bit(dest->flags, KEY_FLAG_RO_META))
+	{
+		return -1;
+	}
 
 	if (!source)
 	{
@@ -424,30 +370,60 @@ int keyCopy (Key *dest, const Key *source)
 		return 0;
 	}
 
-	if (elektraKeySetName(dest,source->key,
-		KEY_CASCADING_NAME|KEY_META_NAME|KEY_EMPTY_NAME) == -1)
+	// remember dynamic memory to be removed
+	char *destKey = dest->key;
+	void *destData = dest->data.c;
+	KeySet *destMeta = dest->meta;
+
+	// duplicate dynamic properties
+	if (source->key)
 	{
-		return -1;
+		dest->key = elektraStrNDup(source->key, source->keySize + source->keyUSize);
+		if (!dest->key) goto memerror;
+	} else {
+		dest->key = 0;
 	}
 
-	if (keySetRaw(dest,source->data.v,source->dataSize) == -1)
+	if (source->data.v)
 	{
-		keySetName(dest, "");
-		return -1;
+		dest->data.v = elektraStrNDup(source->data.v, source->dataSize);
+		if (!dest->data.v) goto memerror;
+	} else {
+		dest->data.v = 0;
 	}
 
 	if (source->meta)
 	{
-		ksDel(dest->meta);
 		dest->meta = ksDup (source->meta);
-	}
-	else
-	{
-		ksDel(dest->meta);
+		if (!dest->meta) goto memerror;
+	} else {
 		dest->meta = 0;
 	}
 
+	// successful, now do the irreversible stuff: we obviously modified dest
+	set_bit(dest->flags, KEY_FLAG_SYNC);
+
+	// copy sizes accordingly
+	dest->keySize = source->keySize;
+	dest->keyUSize = source->keyUSize;
+	dest->dataSize = source->dataSize;
+
+	// free old resources of destination
+	elektraFree(destKey);
+	elektraFree(destData);
+	ksDel(destMeta);
+
 	return 1;
+
+memerror:
+	elektraFree(dest->key);
+	elektraFree(dest->data.v);
+	ksDel(dest->meta);
+
+	dest->key = destKey;
+	dest->data.v = destData;
+	dest->meta = destMeta;
+	return -1;
 }
 
 

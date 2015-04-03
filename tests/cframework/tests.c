@@ -1,4 +1,5 @@
 #include <tests.h>
+#include <string.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -66,6 +67,15 @@ int init (int argc, char**argv)
 	{
 		tmpvar = "/tmp";
 	}
+	// check tempvar for trailing slash / 
+	if(strlen(tmpvar) > 2)
+	{
+		if(tmpvar[strlen(tmpvar) - 1] == '/') 
+		{
+			tmpvar[strlen(tmpvar) - 1] = '\0';
+		}
+	}
+
 	tempHomeLen = strlen (tmpvar) + 1 + 13 + 6 + 1;
 	tempHome = malloc (tempHomeLen);
 	succeed_if (tempHome != 0, "malloc failed");
@@ -311,17 +321,21 @@ void output_trie(Trie *trie)
 
 void output_split(Split *split)
 {
+	printf ("Split - size: %zd, alloc: %zd\n",
+			split->size, split->alloc);
 	for (size_t i=0; i<split->size; ++i)
 	{
 		if (split->handles[i])
 		{
-			printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s), us: %zd, ss: %zd\n",
+			printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: %zd\n",
 				i,
 				ksGetSize(split->keysets[i]),
 				(void*)split->handles[i],
 				split->syncbits[i],
 				keyName(split->parents[i]),
 				keyString(split->parents[i]),
+				split->handles[i]->specsize,
+				split->handles[i]->dirsize,
 				split->handles[i]->usersize,
 				split->handles[i]->systemsize
 				);
@@ -360,44 +374,46 @@ void generate_split (Split *split)
  */
 int output_warnings(Key *warningKey)
 {
-	const Key *metaWarnings = keyGetMeta(warningKey, "warnings");
-	if (!metaWarnings) return 1; /* There are no current warnings */
+//! [warnings]
+const Key *metaWarnings = keyGetMeta(warningKey, "warnings");
+if (!metaWarnings) return 1; /* There are no current warnings */
 
-	int nrWarnings = atoi(keyString(metaWarnings));
-	char buffer[] = "warnings/#00\0description";
+int nrWarnings = atoi(keyString(metaWarnings));
+char buffer[] = "warnings/#00\0description";
 
-	printf ("There are %d warnings\n", nrWarnings+1);
-	for (int i=0; i<=nrWarnings; ++i)
-	{
-		buffer[10] = i/10%10 + '0';
-		buffer[11] = i%10 + '0';
-		printf ("buffer is: %s\n", buffer);
-		strncat(buffer, "/number" , sizeof(buffer) -1);
-		printf ("number: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/description" , sizeof(buffer) -1);
-		printf ("description: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/ingroup" , sizeof(buffer) -1);
-		keyGetMeta(warningKey, buffer);
-		printf ("ingroup: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/module" , sizeof(buffer) -1);
-		keyGetMeta(warningKey, buffer);
-		printf ("module: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/file" , sizeof(buffer) -1);
-		keyGetMeta(warningKey, buffer);
-		printf ("file: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/line" , sizeof(buffer) -1);
-		keyGetMeta(warningKey, buffer);
-		printf ("line: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/reason" , sizeof(buffer) -1);
-		keyGetMeta(warningKey, buffer);
-		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/mountpoint" , sizeof(buffer) -1);
-		keyGetMeta(warningKey, buffer);
-		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-		buffer[12] = '\0'; strncat(buffer, "/configfile" , sizeof(buffer) -1);
-		keyGetMeta(warningKey, buffer);
-		printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
-	}
+printf ("There are %d warnings\n", nrWarnings+1);
+for (int i=0; i<=nrWarnings; ++i)
+{
+	buffer[10] = i/10%10 + '0';
+	buffer[11] = i%10 + '0';
+	printf ("buffer is: %s\n", buffer);
+	strncat(buffer, "/number" , sizeof(buffer) -1);
+	printf ("number: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/description" , sizeof(buffer) -1);
+	printf ("description: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/ingroup" , sizeof(buffer) -1);
+	keyGetMeta(warningKey, buffer);
+	printf ("ingroup: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/module" , sizeof(buffer) -1);
+	keyGetMeta(warningKey, buffer);
+	printf ("module: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/file" , sizeof(buffer) -1);
+	keyGetMeta(warningKey, buffer);
+	printf ("file: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/line" , sizeof(buffer) -1);
+	keyGetMeta(warningKey, buffer);
+	printf ("line: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/reason" , sizeof(buffer) -1);
+	keyGetMeta(warningKey, buffer);
+	printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/mountpoint" , sizeof(buffer) -1);
+	keyGetMeta(warningKey, buffer);
+	printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+	buffer[12] = '\0'; strncat(buffer, "/configfile" , sizeof(buffer) -1);
+	keyGetMeta(warningKey, buffer);
+	printf ("reason: %s\n", keyString(keyGetMeta(warningKey, buffer)));
+}
+//! [warnings]
 
 	return 0;
 }
@@ -410,21 +426,23 @@ int output_warnings(Key *warningKey)
  *
  * @param errorKey keys to retrieve errors from
  *
- * @return 1 if no warnings (can be used within succeed_if)
+ * @return 1 if no error (can be used within succeed_if)
  */
 int output_error(Key *errorKey)
 {
-	const Key * metaError = keyGetMeta(errorKey, "error");
-	if (!metaError) return 1; /* There is no current error */
+//! [error]
+const Key * metaError = keyGetMeta(errorKey, "error");
+if (!metaError) return 1; /* There is no current error */
 
-	printf ("number: %s\n", keyString(keyGetMeta(errorKey, "error/number")));
-	printf ("description: : %s\n", keyString(keyGetMeta(errorKey, "error/description")));
-	printf ("ingroup: : %s\n", keyString(keyGetMeta(errorKey, "error/ingroup")));
-	printf ("module: : %s\n", keyString(keyGetMeta(errorKey, "error/module")));
-	printf ("at: %s:%s\n", keyString(keyGetMeta(errorKey,"error/file")), keyString(keyGetMeta(errorKey, "error/line")));
-	printf ("reason: : %s\n", keyString(keyGetMeta(errorKey, "error/reason")));
-	printf ("mountpoint: : %s\n", keyString(keyGetMeta(errorKey, "error/mountpoint")));
-	printf ("configfile: : %s\n", keyString(keyGetMeta(errorKey, "error/configfile")));
+printf ("number: %s\n", keyString(keyGetMeta(errorKey, "error/number")));
+printf ("description: : %s\n", keyString(keyGetMeta(errorKey, "error/description")));
+printf ("ingroup: : %s\n", keyString(keyGetMeta(errorKey, "error/ingroup")));
+printf ("module: : %s\n", keyString(keyGetMeta(errorKey, "error/module")));
+printf ("at: %s:%s\n", keyString(keyGetMeta(errorKey,"error/file")), keyString(keyGetMeta(errorKey, "error/line")));
+printf ("reason: : %s\n", keyString(keyGetMeta(errorKey, "error/reason")));
+printf ("mountpoint: : %s\n", keyString(keyGetMeta(errorKey, "error/mountpoint")));
+printf ("configfile: : %s\n", keyString(keyGetMeta(errorKey, "error/configfile")));
+//! [error]
 
 	return 0;
 }

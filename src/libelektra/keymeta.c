@@ -14,7 +14,6 @@
  ***************************************************************************/
 
 
-
 /**
  * @defgroup keymeta Meta Info Manipulation Methods
  * @ingroup key
@@ -422,14 +421,6 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
 	return ret;
 }
 
-KeySet *elektraKeyGetMetaKeySet(const Key *key)
-{
-	if (!key) return 0;
-	if (!key->meta) return 0;
-
-	return ksDup(key->meta);
-}
-
 
 /**Set a new Meta-Information.
  *
@@ -471,6 +462,9 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 	if (metaNameSize == -1) return -1;
 	if (newMetaString) metaStringSize = elektraStrLen (newMetaString);
 
+	// optimization: we have nothing and want to remove something:
+	if (!key->meta && !newMetaString) return 0;
+
 	toSet = keyNew(0);
 	if (!toSet) return -1;
 
@@ -485,6 +479,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		{
 			/*It was already there, so lets drop that one*/
 			keyDel (ret);
+			key->flags |= KEY_FLAG_SYNC;
 		}
 	}
 
@@ -494,6 +489,8 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 		metaStringDup = elektraStrNDup(newMetaString, metaStringSize);
 		if (!metaStringDup)
 		{
+			// TODO: actually we might already have changed
+			// the key
 			keyDel (toSet);
 			return -1;
 		}

@@ -28,6 +28,7 @@
 #endif
 
 #include <regex.h>
+#include <errno.h>
 
 #include <string>
 #include <fstream>
@@ -38,7 +39,6 @@
 using namespace ckdb;
 
 #include <kdberrors.h>
-#include <kdbproposal.h>
 
 int elektraRegexstoreOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
@@ -235,11 +235,12 @@ int elektraRegexstoreGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 		return 1; /* success */
 	}
 
+	int errnosave = errno;
 	std::ifstream t(keyString(parentKey));
 	if (!t.is_open())
 	{
-		ELEKTRA_SET_ERRORF (95, parentKey, "could not open file %s",
-				keyString(parentKey));
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
 		return -1;
 	}
 	std::string str((std::istreambuf_iterator<char>(t)),

@@ -14,7 +14,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "v";
+		return "vN";
 	}
 
 	virtual std::string getSynopsis()

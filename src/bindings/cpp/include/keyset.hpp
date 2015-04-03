@@ -10,8 +10,23 @@
 namespace kdb
 {
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
 class KeySetIterator;
 class KeySetReverseIterator;
+#endif
+
+
+/**
+ * @brief Needed to avoid constructor ambiguity
+ *
+ * when ... is same type as va_list
+ */
+struct Va
+{
+	Va(){}
+};
+
+const Va va = Va();
 
 /**
  * @brief A keyset holds together a set of keys.
@@ -31,8 +46,8 @@ public:
 	inline KeySet(ckdb::KeySet *k);
 	inline KeySet(const KeySet &other);
 
-	inline explicit KeySet(size_t alloc, va_list ap);
 	inline explicit KeySet(size_t alloc, ...);
+	inline explicit KeySet(Va va, size_t alloc, va_list ap);
 
 	inline ~KeySet ();
 
@@ -71,7 +86,7 @@ public:
 	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
 	Key at (cursor_t pos) const;
 
-#ifndef WITHOUT_KEYSET_ITERATOR
+#ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef KeySetIterator iterator;
 	typedef KeySetIterator const_iterator;
 	typedef KeySetReverseIterator reverse_iterator;
@@ -91,14 +106,14 @@ public:
 	const_reverse_iterator crbegin() const noexcept;
 	const_reverse_iterator crend() const noexcept;
 #endif
-#endif //WITHOUT_KEYSET_ITERATOR
+#endif //ELEKTRA_WITHOUT_ITERATOR
 
 private:
 	ckdb::KeySet *ks; ///< holds an elektra keyset
 };
 
 
-#ifndef WITHOUT_KEYSET_ITERATOR
+#ifndef ELEKTRA_WITHOUT_ITERATOR
 /**
  * For C++ forward Iteration over KeySets.
  * (External Iterator)
@@ -335,7 +350,7 @@ inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
 	return KeySet::const_reverse_iterator(*this, -1);
 }
 #endif
-#endif //WITHOUT_KEYSET_ITERATOR
+#endif //ELEKTRA_WITHOUT_ITERATOR
 
 
 /**
@@ -389,16 +404,16 @@ inline KeySet::KeySet (const KeySet &other)
  * @param alloc minimum number of keys to allocate
  * @param ap variable arguments list
  *
+ * Use va as first argument to use this constructor, e.g.:
+ * @code
+ * KeySet ks(va, 23, ...);
+ * @endcode
+ *
  * @copydoc ksVNew
  */
-inline KeySet::KeySet (size_t alloc, va_list ap)
+inline KeySet::KeySet (Va, size_t alloc, va_list av)
 {
-	if (ap == 0)
-	{
-		ks = ckdb::ksNew (alloc, KS_END);
-	} else {
-		ks = ckdb::ksVNew (alloc, ap);
-	}
+	ks = ckdb::ksVNew (alloc, av);
 }
 
 /**
@@ -411,11 +426,11 @@ inline KeySet::KeySet (size_t alloc, va_list ap)
  */
 inline KeySet::KeySet (size_t alloc, ...)
 {
-	va_list va;
+	va_list vl;
 
-	va_start (va, alloc);
-	ks = ckdb::ksVNew (alloc, va);
-	va_end (va);
+	va_start (vl, alloc);
+	ks = ckdb::ksVNew (alloc, vl);
+	va_end (vl);
 }
 
 /**

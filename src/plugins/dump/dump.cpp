@@ -94,12 +94,25 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 	return 1;
 }
 
+#define CHECK_LENGTH(WHICH) \
+if (WHICH > length) \
+{ \
+	std::ostringstream eis; \
+	eis << WHICH; \
+	ELEKTRA_SET_ERROR (106, errorKey, eis.str().c_str()); \
+	return -1; \
+}
+
 int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 {
 	ckdb::Key *cur = 0;
 
-	std::vector<char> namebuffer(4048);
-	std::vector<char> valuebuffer(4048);
+	is.seekg(0, std::ios::end);
+	size_t length = is.tellg();
+	is.seekg(0, std::ios::beg);
+
+	std::vector<char> namebuffer(length);
+	std::vector<char> valuebuffer(length);
 	std::string line;
 	std::string command;
 	size_t nrKeys;
@@ -134,12 +147,12 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			CHECK_LENGTH(namesize);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 			ckdb::keySetName(cur, &namebuffer[0]);
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			CHECK_LENGTH(valuesize);
 			is.read(&valuebuffer[0], valuesize);
 			ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
 			std::getline (is, line);
@@ -149,11 +162,11 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			CHECK_LENGTH(namesize);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			CHECK_LENGTH(valuesize);
 			is.read(&valuebuffer[0], valuesize);
 
 			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
@@ -164,11 +177,11 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			CHECK_LENGTH(namesize);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			CHECK_LENGTH(valuesize);
 			is.read(&valuebuffer[0], valuesize);
 
 			ckdb::Key * search = ckdb::ksLookupByName(ks, &namebuffer[0], 0);
@@ -202,30 +215,18 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 	if (keyRel(root, parentKey) >= 0)
 	{
 		keyDel (root);
-		void (*get) (void) = (void (*) (void)) elektraDumpGet;
-		void (*set) (void) = (void (*) (void)) elektraDumpSet;
-		void (*serialise) (void) = (void (*) (void)) dump::serialise;
-		void (*unserialise) (void) = (void (*) (void)) dump::unserialise;
 		KeySet *n = ksNew(50,
 			keyNew ("system/elektra/modules/dump",
 				KEY_VALUE, "dump plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports", KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/get",
-				KEY_SIZE, sizeof (get),
-				KEY_BINARY,
-				KEY_VALUE, &get, KEY_END),
+				KEY_FUNC, elektraDumpGet, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/set",
-				KEY_SIZE, sizeof (set),
-				KEY_BINARY,
-				KEY_VALUE, &set, KEY_END),
+				KEY_FUNC, elektraDumpSet, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/serialise",
-				KEY_SIZE, sizeof (serialise),
-				KEY_BINARY,
-				KEY_VALUE, &serialise, KEY_END),
+				KEY_FUNC, dump::serialise, KEY_END),
 			keyNew ("system/elektra/modules/dump/exports/unserialise",
-				KEY_SIZE, sizeof (unserialise),
-				KEY_BINARY,
-				KEY_VALUE, &unserialise, KEY_END),
+				KEY_FUNC, dump::unserialise, KEY_END),
 #include "readme_dump.c"
 			keyNew ("system/elektra/modules/dump/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
@@ -235,31 +236,26 @@ int elektraDumpGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 		return 1;
 	}
 	keyDel (root);
+	int errnosave = errno;
 	std::ifstream ofs(keyString(parentKey), std::ios::binary);
-	if (!ofs.is_open()) return 0;
+	if (!ofs.is_open())
+	{
+		ELEKTRA_SET_ERROR_GET(parentKey);
+		errno = errnosave;
+		return -1;
+	}
 
 	return dump::unserialise (ofs, parentKey, returned);
 }
 
 int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
-	int saveerrno = errno;
+	int errnosave = errno;
 	std::ofstream ofs(keyString(parentKey), std::ios::binary);
 	if (!ofs.is_open())
 	{
-		if (errno == EACCES)
-		{
-			ELEKTRA_SET_ERROR(9, parentKey, keyString(parentKey));
-			errno = saveerrno;
-			return -1;
-		}
-		std::string error_reason = 
-			"dump storage could not open file \"";
-		error_reason += keyString(parentKey);
-		error_reason += "\" because of: ";
-		error_reason += strerror(errno);
-		ELEKTRA_SET_ERROR (75, parentKey, error_reason.c_str());
-		errno = saveerrno;
+		ELEKTRA_SET_ERROR_SET(parentKey);
+		errno = errnosave;
 		return -1;
 	}
 

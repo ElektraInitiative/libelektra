@@ -22,6 +22,9 @@ The json grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
 
 A validator can be found [here](http://jsonlint.com/).
 
+Supports every KeySet except when arrays are intermixed with other keys.
+Has only limited support for metadata.
+
 
 
 ## Special values ##

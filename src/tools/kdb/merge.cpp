@@ -106,12 +106,7 @@ int MergeCommand::execute(Cmdline const& cl)
 	MergeHelper helper;
 	ThreeWayMerge merger;
 
-	// TODO: for now we have to position this strategy manually
-	// to avoid meta information loss
-	MetaMergeStrategy metaStrategy(merger);
-	merger.addConflictStrategy(&metaStrategy);
-
-	helper.parseStrategies (cl, merger);
+	helper.configureMerger (cl, merger);
 
 	MergeResult result = merger.mergeKeySet (
 			MergeTask (BaseMergeKeys (base, baseRoot), OurMergeKeys (ours, oursRoot),

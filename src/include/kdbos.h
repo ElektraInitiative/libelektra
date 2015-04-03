@@ -63,7 +63,7 @@
 #define KDBOS_H
 
 #ifdef __cplusplus
-#define KS_END ((ckdb::Key*)0)
+#define KS_END (static_cast<ckdb::Key*>(0))
 #else
 #define KS_END ((Key*)0)
 #endif
@@ -72,6 +72,12 @@
 #ifdef __GNUC__
 #undef ELEKTRA_SENTINEL
 #define ELEKTRA_SENTINEL  __attribute__ ((sentinel))
+#endif
+
+#ifdef __GNUC__
+#define ELEKTRA_NOINLINE __attribute__((noinline))
+#else
+#define ELEKTRA_NOINLINE
 #endif
 
 #ifndef WIN32

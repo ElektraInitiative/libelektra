@@ -136,7 +136,118 @@ static void test_keyHelpers()
 			default: succeed_if (0, "should not reach case statement");
 		}
 	}
-	
+
+	/* with double escaped slashes:*/
+	name="user////\\\\/abc/\\/def\\\\/ghi\\/jkl\\\\///";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "user");
+				succeed_if (size == 4, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\\\");
+				succeed_if (size == 2, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "abc");
+				succeed_if (size == 3, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "\\/def\\\\");
+				succeed_if (size == 7, "wrong size returned"); break;
+			case 5: succeed_if_same_string (buffer, "ghi\\/jkl\\\\");
+				succeed_if (size == 10, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	/* with triple escaped slashes:*/
+	name="user////\\\\\\/ab/\\\\\\/def\\\\/ghi/jkl\\\\\\///";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "user");
+				succeed_if (size == 4, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\\\\\/ab");
+				succeed_if (size == 6, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "\\\\\\/def\\\\");
+				succeed_if (size == 9, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "ghi");
+				succeed_if (size == 3, "wrong size returned"); break;
+			case 5: succeed_if_same_string (buffer, "jkl\\\\\\/");
+				succeed_if (size == 7, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	/* backslashes only:*/
+	name="/\\/\\\\/\\\\\\/\\\\\\\\/\\\\\\\\\\/\\\\\\\\\\\\/\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "\\/\\\\");
+				succeed_if (size == 1+1+2, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\\\\\/\\\\\\\\");
+				succeed_if (size == 3+1+4, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "\\\\\\\\\\/\\\\\\\\\\\\");
+				succeed_if (size == 5+1+6, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\");
+				succeed_if (size == 7+1+8, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
+
+	/* backslashes with slashes:*/
+	name="////////\\/\\\\//////\\\\\\/\\\\\\\\////\\\\\\\\\\/\\\\\\\\\\\\//\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\";
+	size=0;
+	level=0;
+
+	p=name;
+	while (*(p=keyNameGetOneLevel(p+size,&size))) {
+		level++;
+
+		strncpy(buffer,p,size);
+		buffer[size]=0;
+
+		/* printf("Level %d name: \"%s\"\n",level,buffer);*/
+		switch (level)
+		{
+			case 1: succeed_if_same_string (buffer, "\\/\\\\");
+				succeed_if (size == 1+1+2, "wrong size returned"); break;
+			case 2: succeed_if_same_string (buffer, "\\\\\\/\\\\\\\\");
+				succeed_if (size == 3+1+4, "wrong size returned"); break;
+			case 3: succeed_if_same_string (buffer, "\\\\\\\\\\/\\\\\\\\\\\\");
+				succeed_if (size == 5+1+6, "wrong size returned"); break;
+			case 4: succeed_if_same_string (buffer, "\\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\");
+				succeed_if (size == 7+1+8, "wrong size returned"); break;
+			default: succeed_if (0, "should not reach case statement");
+		}
+	}
 
 	parentSize=keyGetParentNameSize(key);
 	parentName=malloc(parentSize);
@@ -279,9 +390,146 @@ static void test_keyPlugin()
 	keyDel (k);
 }
 
-static void test_keyUnescaped()
+#define TEST_ESCAPE_PART(A, S) \
+	do { \
+	char a [] = A; \
+	char s [] = S; \
+	elektraEscapeKeyNamePart(a, buffer); \
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong"); \
+	elektraUnescapeKeyName(buffer, buffer2); \
+	succeed_if_same_string(a, buffer2); \
+	} while(0)
+
+
+static void test_keyNameEscape()
 {
-	printf ("test unescaped\n");
+	char buffer [500];
+	char buffer2 [500];
+
+	printf ("test escapeKeyNamePart\n");
+
+#include <data_escape.c>
+
+
+	/*
+	for (size_t i = 0; i<10; ++i)
+	{
+		int z = buffer[i];
+		printf ("%c %d\n", (char)z, z);
+	}
+	*/
+
+	printf ("test roundtripping properties\n");
+	Key *k = keyNew("user/a", KEY_END);
+#ifdef LONG_TEST
+	char a [] = "abcd";
+#else
+	char a [] = "ab";
+#endif
+	for (int c0 = 0; c0<256; ++c0)
+	for (int c1 = 0; c1<256; ++c1)
+#ifdef LONG_TEST
+	for (int c2 = 0; c2<256; ++c2)
+	for (int c3 = 0; c3<256; ++c3)
+#endif
+	{
+		a[0] = c0;
+		a[1] = c1;
+#ifdef LONG_TEST
+		a[2] = c2;
+		a[3] = c3;
+#endif
+		elektraEscapeKeyNamePart(a, buffer);
+		elektraUnescapeKeyName(buffer, buffer2);
+		succeed_if_same_string(a, buffer2);
+
+		keySetBaseName(k, a);
+		succeed_if_same_string(a, keyBaseName(k));
+	}
+	keyDel(k);
+}
+
+static void test_keyNameUnescape()
+{
+	char buffer [500];
+
+	printf ("test unescapeKeyNamePart\n");
+	{
+	char a [] = "\\\\a";
+	char s [] = "\\\\a";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	/*
+	for (size_t i = 0; i<sizeof(s); ++i)
+	{
+		int z = buffer[i];
+		printf ("%c %d\n", (char)z, z);
+	}
+	*/
+	}
+
+	{
+	char a [] = "a\\/test";
+	char s [] = "a/test";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "a\\\\\\/test";
+	char s [] = "a\\/test";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "a\\\\\\\\\\/test";
+	char s [] = "a\\\\/test";
+	elektraUnescapeKeyNamePart(a, sizeof(a)-1, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+
+	printf ("test unescapeKeyName\n");
+
+	{
+	char a [] = "user/a/test";
+	char s [] = "user\0a\0test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "user/a\\/test";
+	char s [] = "user\0a/test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "user/a\\\\/test";
+	char s [] = "user\0a\\\0test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	{
+	char a [] = "user/\\\\/test";
+	char s [] = "user\0\\\0test";
+	elektraUnescapeKeyName(a, buffer);
+	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong");
+	}
+
+	/*
+	for (size_t i = 0; i<sizeof(s); ++i)
+	{
+		int z = buffer[i];
+		printf ("%c %d\n", (char)z, z);
+	}
+	*/
+
+
+	printf ("test keyUnescapedName\n");
 
 	Key *k = keyNew("user/something", KEY_END);
 	succeed_if (!memcmp(keyUnescapedName(k), "user\0something", sizeof("user/something")), "unescaped name wrong");
@@ -301,8 +549,31 @@ static void test_keyUnescaped()
 	keySetBaseName(k, "%");
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0%", sizeof("system/something/else/%")), "unescaped name wrong");
 
+	keySetBaseName(k, "\\");
+	succeed_if_same_string(keyBaseName(k), "\\");
+	char sol1[] = "system\0something\0else\0\\";
+	succeed_if (!memcmp(keyUnescapedName(k), sol1, sizeof(sol1)), "unescaped name wrong");
+
 	/* print memory of keyUnescapedName
-	for (size_t i = 0; i<sizeof("system/something/else/\\%"); ++i)
+	for (size_t i = 0; i<sizeof(sol1); ++i)
+	{
+		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
+	}
+	*/
+
+	keySetBaseName(k, "\\\\");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\\\\", sizeof("system/something/else/\\\\")), "unescaped name wrong");
+
+	keySetName(k, "system/something\\/else");
+	succeed_if (!memcmp(keyUnescapedName(k), "system\0something/else", sizeof("system/something/else")), "unescaped name wrong");
+
+	succeed_if(keySetName(k, "system/something/else/\\") == -1, "tangling backslash");
+
+	keySetName(k, "system/something/else/\\\\");
+	char sol2[] = "system\0something\0else\0\\";
+	succeed_if (!memcmp(keyUnescapedName(k), sol2, sizeof(sol2)), "unescaped name wrong");
+	/*
+	for (size_t i = 0; i<sizeof(sol2); ++i)
 	{
 		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
 	}
@@ -320,6 +591,7 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys don't differ of course");
 
 	keySetName (key1, "user/myname");
+	succeed_if_same_string(keyName(key1), "user/myname");
 	succeed_if(keyCompare(key1,key2) == KEY_NAME, "the keys should differ in name");
 	keySetName (key2, "user/myname");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in name");
@@ -330,8 +602,7 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in owner");
 
 	keySetString (key1, "myvalue");
-	succeed_if(keyCompare(key1,key2) == (KEY_VALUE), "the keys should differ in value");
-
+	succeed_if(keyCompare(key1,key2) == KEY_VALUE, "the keys should differ in value");
 	keySetString (key2, "myvalue");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in value");
 
@@ -547,7 +818,7 @@ static void test_keyComment()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 	
 	succeed_if (key = keyNew(0), "could not create new key");
-	for (i=1; i<255; i++)
+	for (i=1; i<256; i++)
 	{
 		ret[0] = i; ret[1] = i; ret[2] = 0;
 		succeed_if (keySetComment (key,ret) == 3, "could not set comment");
@@ -643,7 +914,7 @@ static void test_keyOwner()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 	
 	succeed_if (key = keyNew(0), "could not create new key");
-	for (i=1; i<255; i++)
+	for (i=1; i<256; i++)
 	{
 		ret[0] = i; ret[1] = i; ret[2] = 0;
 		succeed_if (keySetOwner (key,ret) == 3, "could not set owner");
@@ -661,54 +932,38 @@ static void test_keyDir (void)
 	printf ("Test directory keys\n");
 
 	succeed_if (keyGetMode(key) == 0600, "new key not 0600 by default");
-	succeed_if (keyIsDir (key) == 0, "new key should not be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyIsDir (key) == 0, "0644 should not be directory");
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
 
 	for (i = 0; i <= 0777; i++)
 	{
 		succeed_if (keySetMode(key, i) == 0, "could not set to 0000 <= i <= 0777");
 		succeed_if (keyGetMode(key) == i, "key is not correct 0000 <= i <= 0777");
-
-		if (/*getuid() == keyGetUID (key) &&*/ (keyGetMode (key) & 0100))
-		{
-			succeed_if (keyIsDir (key) == 1, "should be directory because of executable match");
-		} else {
-			succeed_if (keyIsDir (key) == 0, "should not be directory");
-		}
 	
 		succeed_if (keySetDir (key) == 0, "could not set directory key");
-		succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	}
 	keyDel (key);
 
 	key = keyNew ("user", KEY_DIR, KEY_END);
 	succeed_if (keyGetMode(key) == 0700, "new key with KEY_DIR not 0700 by default");
-	succeed_if (keyIsDir (key) == 1, "new key with KEY_DIR should be directory by default");
 
 	succeed_if (keySetMode(key, 0644) == 0, "could not set to 0644");
-	succeed_if (keyIsDir (key) == 0, "0644 should not be directory");
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	succeed_if (keyIsDir (key) == 1, "should be directory after keySetDir");
 	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
 	keyDel (key);
 
 	key = keyNew ("user/s", KEY_DIR, KEY_MODE, 0444, KEY_END);
 	succeed_if (keyGetMode(key) == 0444, "0444 set by keyNew");
-	succeed_if (keyIsDir (key) == 0, "0444 should be directory");
 	keyDel (key);
 	
 	key = keyNew ("user/s", KEY_MODE, 0444, KEY_DIR, KEY_END);
 	// succeed_if (keyGetMode(key) == 0555, "0555 set by keyNew");
-	succeed_if (keyIsDir (key) == 1, "0555 should be directory");
 	keyDel (key);
 }
 
@@ -847,85 +1102,24 @@ static void test_keyMeta(void)
 	keyDel (key);
 }
 
-static void test_keyNamespace()
-{
-	Key *key;
-
-	printf ("Test namespaces\n");
-
-	succeed_if (keyGetNamespace (0) == KEY_NS_NONE, "null key");
-
-	key = keyNew (0);
-	succeed_if (keyGetNamespace (key) == KEY_NS_EMPTY, "empty namespace not empty");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "empty name is not system");
-	succeed_if (keyIsSystem (key) == 0, "empty key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "empty name is not user");
-	succeed_if (keyIsUser (key) == 0, "empty key is not user");
-	keyDel (key);
-
-	key = keyNew("", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_EMPTY, "empty namespace not empty");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "empty name is not system");
-	succeed_if (keyIsSystem (key) == 0, "empty key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "empty name is not user");
-	succeed_if (keyIsUser (key) == 0, "empty key is not user");
-	keyDel (key);
-
-	key = keyNew ("user", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_USER, "user namespace not KEY_NS_USER");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "user name is not system");
-	succeed_if (keyIsSystem (key) == 0, "user key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 1, "user name is not user");
-	succeed_if (keyIsUser (key) == 1, "user key is not user");
-	keyDel (key);
-
-	key = keyNew ("user/key", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_USER, "user namespace not KEY_NS_USER");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "user name is not system");
-	succeed_if (keyIsSystem (key) == 0, "user key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 1, "user name is not user");
-	succeed_if (keyIsUser (key) == 1, "user key is not user");
-	keyDel (key);
-
-	key = keyNew ("user:owner/key", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_USER, "user namespace not KEY_NS_USER");
-	succeed_if (keyNameIsSystem (keyName(key)) == 0, "user name is not system");
-	succeed_if (keyIsSystem (key) == 0, "user key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 1, "user name is not user");
-	succeed_if (keyIsUser (key) == 1, "user key is not user");
-	keyDel (key);
-
-	key = keyNew ("system", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_SYSTEM, "system namespace not KEY_NS_SYSTEM");
-	succeed_if (keyNameIsSystem (keyName(key)) == 1, "system name is not system");
-	succeed_if (keyIsSystem (key) == 1, "system key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "system name is not system");
-	succeed_if (keyIsUser (key) == 0, "system key is not system");
-	keyDel (key);
-
-	key = keyNew ("system/key", KEY_END);
-	succeed_if (keyGetNamespace (key) == KEY_NS_SYSTEM, "system namespace not KEY_NS_SYSTEM");
-	succeed_if (keyNameIsSystem (keyName(key)) == 1, "system name is not system");
-	succeed_if (keyIsSystem (key) == 1, "system key is not system");
-	succeed_if (keyNameIsUser (keyName(key)) == 0, "system name is not system");
-	succeed_if (keyIsUser (key) == 0, "system key is not system");
-	keyDel (key);
-
-	key = keyNew ("/key", KEY_CASCADING_NAME, KEY_END);
-	succeed_if (keyGetNamespace(key) == KEY_NS_CASCADING, "not correct namespace");
-	keyDel (key);
-
-	key = keyNew ("type", KEY_META_NAME, KEY_END);
-	succeed_if (keyGetNamespace(key) == KEY_NS_META, "not correct namespace");
-	keyDel (key);
-}
-
 static void test_elektraKeySetName()
 {
 	printf ("test elektraKeySetName\n");
 
 	Key *key = keyNew("", KEY_END);
 	Key *dup = 0;
+
+	succeed_if(elektraKeySetName(key, "/", KEY_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if_same_string(keyName(key), "/");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/");
+	keyDel(dup);
+
+	elektraKeySetName(key, "/c", KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "/c");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "/c");
+	keyDel(dup);
 
 	succeed_if(elektraKeySetName(key, "/", KEY_CASCADING_NAME) != -1, "could not set cascading name");
 	succeed_if_same_string(keyName(key), "/");
@@ -963,6 +1157,12 @@ static void test_elektraKeySetName()
 	succeed_if_same_string(keyName(key), "check/type");
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "check/type");
+	keyDel(dup);
+
+	elektraKeySetName(key, "a", KEY_META_NAME);
+	succeed_if_same_string(keyName(key), "a");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "a");
 	keyDel(dup);
 
 	elektraKeySetName(key, "", KEY_EMPTY_NAME);
@@ -1006,6 +1206,70 @@ static void test_elektraKeySetName()
 	dup = keyDup(key);
 	succeed_if_same_string(keyName(dup), "meta");
 	keyDel(dup);
+
+	elektraKeySetName(key, "other", KEY_META_NAME | KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "other");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "other");
+	keyDel(dup);
+
+	elektraKeySetName(key, "other///meta", KEY_META_NAME | KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "other/meta");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "other/meta");
+	keyDel(dup);
+
+	elektraKeySetName(key, "user:hello/test", KEY_META_NAME | KEY_CASCADING_NAME);
+	succeed_if_same_string(keyName(key), "user/test");
+	succeed_if(key->key != 0, "null pointer?");
+	dup = keyDup(key);
+	succeed_if_same_string(keyName(dup), "user/test");
+	keyDel(dup);
+
+	for(int i=0; i<8; ++i)
+	{
+		int flags = 0;
+		if (i&1) flags|=KEY_CASCADING_NAME;
+		if (i&2) flags|=KEY_META_NAME;
+		if (i&4) flags|=KEY_EMPTY_NAME;
+
+		elektraKeySetName(key, "spec/test", flags);
+		succeed_if_same_string(keyName(key), "spec/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "spec/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "proc/test", flags);
+		succeed_if_same_string(keyName(key), "proc/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "proc/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "dir/test", flags);
+		succeed_if_same_string(keyName(key), "dir/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "dir/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "user:hello/test", flags);
+		succeed_if_same_string(keyName(key), "user/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "user/test");
+		keyDel(dup);
+
+		elektraKeySetName(key, "system/test", flags);
+		succeed_if_same_string(keyName(key), "system/test");
+		succeed_if(key->key != 0, "null pointer?");
+		dup = keyDup(key);
+		succeed_if_same_string(keyName(dup), "system/test");
+		keyDel(dup);
+	}
 
 	keyDel(key);
 }
@@ -1062,6 +1326,7 @@ static void test_keyLock()
 	keyDel (key2);
 }
 
+
 static void test_keyAddName()
 {
 	Key *k = keyNew("user", KEY_END);
@@ -1072,14 +1337,94 @@ static void test_keyAddName()
 	succeed_if_same_string(keyName(k), "user/something/with/slash");
 	keyDel(k);
 
+#define TEST_ADD_NAME(base, toadd, result) \
+	do { \
+	k = keyNew(base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END); \
+	succeed_if (keyAddName(k, toadd)==sizeof(result), "could not add name"); \
+	succeed_if_same_string(keyName(k), result); \
+	keyDel(k); \
+	} while(0)
+
+	TEST_ADD_NAME("spec", "something", "spec/something");
+	TEST_ADD_NAME("proc", "something", "proc/something");
+	TEST_ADD_NAME("dir", "something", "dir/something");
+	TEST_ADD_NAME("user", "something", "user/something");
+	TEST_ADD_NAME("system", "something", "system/something");
+
+	TEST_ADD_NAME("meta", "something", "meta/something");
+	TEST_ADD_NAME("meta/", "something", "meta/something");
+	TEST_ADD_NAME("meta//", "something", "meta/something");
+
+	TEST_ADD_NAME("meta", "something/", "meta/something");
+	TEST_ADD_NAME("meta", "something//", "meta/something");
+
+	TEST_ADD_NAME("meta", "/something", "meta/something");
+	TEST_ADD_NAME("meta", "//something", "meta/something");
+
+	TEST_ADD_NAME("user", "./user", "user/user");
+	TEST_ADD_NAME("user/", "./user", "user/user");
+	TEST_ADD_NAME("user/", "/./user", "user/user");
+	TEST_ADD_NAME("user/", "/////./user", "user/user");
+	TEST_ADD_NAME("user", "../user", "user/user");
+
+	TEST_ADD_NAME("user/verylongstringtoremove", "../x", "user/x");
+	TEST_ADD_NAME("user/huhu", "../x", "user/x");
+	TEST_ADD_NAME("user/rem", "../x", "user/x");
+	TEST_ADD_NAME("user/more/level", "../../x", "user/x");
+
+	TEST_ADD_NAME("user/something", "../user", "user/user");
+
+	TEST_ADD_NAME("/something", "user", "/something/user");
+	TEST_ADD_NAME("/", "user", "/user");
+	TEST_ADD_NAME("/s", "user", "/s/user");
+	TEST_ADD_NAME("/s", "/user", "/s/user");
+	TEST_ADD_NAME("/s", "../user", "/user");
+	TEST_ADD_NAME("/s", "..//user", "/user");
+	TEST_ADD_NAME("/more/level", "../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "../../../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "../../../../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "..///../../../../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "..///../../..////../../../..//user", "/user");
+	TEST_ADD_NAME("/much/more/level/1/2/3", "../../....///../../..////../../../..//user", "/user");
+	TEST_ADD_NAME("/s", ".../user", "/s/.../user");
+	TEST_ADD_NAME("/s", "..a/user", "/s/..a/user");
+	TEST_ADD_NAME("/s", "..../user", "/s/..../user");
+
+	// TEST_ADD_NAME("user", "///sw/../sw//././MyApp", "user/sw/MyApp");
+	TEST_ADD_NAME("user", "sw/../sw", "user/sw");
+
+#undef TEST_ADD_NAME
+#define TEST_ADD_NAME(base, toadd, result) \
+	do { \
+	k = keyNew(base, KEY_META_NAME, KEY_CASCADING_NAME, KEY_END); \
+	succeed_if (keyAddName(k, toadd)==0, "adding irrelevant wrong return"); \
+	succeed_if_same_string(keyName(k), result); \
+	keyDel(k); \
+	} while(0)
+
+	TEST_ADD_NAME("/", 0, "/");
+	TEST_ADD_NAME("/", "", "/");
+	TEST_ADD_NAME("/", "/", "/");
+	TEST_ADD_NAME("/", "//", "/");
+	TEST_ADD_NAME("//", "/", "/");
+	TEST_ADD_NAME("//", "//", "/");
+	TEST_ADD_NAME("///", "//", "/");
+	TEST_ADD_NAME("//", "///", "/");
+	TEST_ADD_NAME("///", "///", "/");
+	TEST_ADD_NAME("///.", "///", "/");
+	TEST_ADD_NAME("///.", "///.", "/");
+	TEST_ADD_NAME("///.", "///./", "/");
+	TEST_ADD_NAME("///./", "///.", "/");
+	TEST_ADD_NAME("///./", "///./", "/");
+	TEST_ADD_NAME("///./..", "///./", "/");
+	TEST_ADD_NAME("///./..", "///./..", "/");
+	TEST_ADD_NAME("///./..", "///./../", "/");
+	TEST_ADD_NAME("///./../", "///./..", "/");
+	TEST_ADD_NAME("///./../", "///./../", "/");
+
 	k = keyNew("system/elektra/mountpoints/_t_error/config", KEY_END);
 	keyAddName(k, "on_open/error");
 	succeed_if_same_string(keyName(k), "system/elektra/mountpoints/_t_error/config/on_open/error");
-	keyDel(k);
-
-	k = keyNew("user", KEY_END);
-	succeed_if (keyAddName(k, "///sw/../sw//././MyApp")==sizeof("user/sw/MyApp"), "could not add name");
-	succeed_if_same_string(keyName(k), "user/sw/MyApp");
 	keyDel(k);
 
 	k = keyNew("user", KEY_END);
@@ -1110,6 +1455,26 @@ static void test_keyAddName()
 	k = keyNew("system", KEY_END);
 	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("system/ba\\\\/foo_bar\\//%"), "could not add name");
 	succeed_if_same_string(keyName(k), "system/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("meta", KEY_META_NAME, KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("meta/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "meta/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("/", KEY_CASCADING_NAME, KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("/", KEY_CASCADING_NAME, KEY_END);
+	succeed_if (keyAddName(k, "ba\\\\/foo_bar\\//%")==sizeof("/ba\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "/ba\\\\/foo_bar\\//%");
+	keyDel(k);
+
+	k = keyNew("/", KEY_CASCADING_NAME, KEY_END);
+	succeed_if (keyAddName(k, "/\\\\/foo_bar\\//%")==sizeof("/\\\\/foo_bar\\//%"), "could not add name");
+	succeed_if_same_string(keyName(k), "/\\\\/foo_bar\\//%");
 	keyDel(k);
 }
 
@@ -1212,6 +1577,72 @@ static void test_keyCopy()
 	keyDel(c);
 }
 
+static void test_keyFixedNew()
+{
+	printf ("test fixed new\n");
+	Key *k1 = keyNew(0);
+	Key *k2 = keyNew("", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	compare_key(k1, k2);
+	keyDel(k1);
+	keyDel(k2);
+
+	k1 = keyNew("user/hello", KEY_END);
+	k2 = keyNew("user/hello", KEY_SIZE, 0, KEY_VALUE, 0, KEY_END);
+	compare_key(k1, k2);
+	keyDel(k1);
+	keyDel(k2);
+
+	k1 = keyNew("user/hello", KEY_VALUE, "hello", KEY_END);
+	k2 = keyNew("user/hello", KEY_SIZE, 6, KEY_VALUE, "hello", KEY_END);
+	compare_key(k1, k2);
+	keyDel(k1);
+	keyDel(k2);
+}
+
+static void test_keyFlags()
+{
+	printf ("Test KEY_FLAGS\n");
+
+	Key *key = keyNew("user/foo",
+		KEY_FLAGS, KEY_BINARY | KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META,
+		KEY_END);
+	Key *key2 = NULL;
+
+	succeed_if (keyIsBinary(key), "Could not set type to binary");
+
+	succeed_if (keySetName(key, "system") == -1, "read only name, not allowed to set");
+	succeed_if (keyAddName(key, "bar") == -1, "read only name, not allowed to set");
+	succeed_if (keyAddBaseName(key, "bar") == -1, "read only name, not allowed to set");
+
+	succeed_if (keySetString(key, "a") == -1, "read only string, not allowed to set");
+	succeed_if (keySetBinary(key, "a", 2) == -1, "read only string, not allowed to set");
+
+	succeed_if (keySetMeta(key, "meta", "value") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyMeta(key, key2,  "meta") == -1, "read only meta, not allowed to set");
+	succeed_if (keyCopyAllMeta(key, key2) == -1, "read only meta, not allowed to set");
+
+	keyDel (key);
+	keyDel (key2);
+}
+
+static void test_keyCanonify()
+{
+	printf ("test canonify\n");
+
+	Key *k = keyNew("/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key",
+		KEY_CASCADING_NAME,
+		KEY_END);
+	succeed_if_same_string(keyName(k), "/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key");
+	succeed_if(keyGetNameSize(k) == 105, "name size wrong");
+	succeed_if(keyGetUnescapedNameSize(k) == 103, "unescaped name size wrong");
+	succeed_if_same_string((char*)keyUnescapedName(k), "");
+	succeed_if_same_string((char*)keyUnescapedName(k)+1, "a");
+	succeed_if_same_string((char*)keyUnescapedName(k)+3, "very");
+	succeed_if_same_string((char*)keyUnescapedName(k)+99, "key");
+
+	keyDel(k);
+}
+
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -1222,7 +1653,8 @@ int main(int argc, char** argv)
 	test_keyRefcounter();
 	test_keyHelpers();
 	test_keyPlugin();
-	test_keyUnescaped();
+	test_keyNameEscape();
+	test_keyNameUnescape();
 	test_keyCompare();
 	test_keyNewExtensions();
 	test_keyComment();
@@ -1231,13 +1663,15 @@ int main(int argc, char** argv)
 	test_keyDir();
 	test_keyTime();
 	test_keyMeta();
-	test_keyNamespace();
 	test_owner();
 	test_elektraKeySetName();
 	test_keyLock();
 	test_keyAddName();
 	test_keyNeedSync();
 	test_keyCopy();
+	test_keyFixedNew();
+	test_keyFlags();
+	test_keyCanonify();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

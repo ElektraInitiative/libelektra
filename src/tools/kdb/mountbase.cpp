@@ -24,9 +24,7 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
-	kdb::KDB kdb (parentKey);
 	kdb.get(mountConf, parentKey);
-	kdb.close (parentKey);
 
 	if (!cl.null && cl.first && cl.second && cl.third)
 	{
@@ -36,34 +34,8 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 
 
 /**
- * @brief Check for rootkey in  mountConf and add one if missing
- *
- * @param cl.verbose print text when it is missing
- */
-void MountBaseCommand::fixRootKey(Cmdline const& cl)
-{
-	Key rootKey (Backends::mountpointsPath, KEY_END);
-
-	Key cur;
-	cur = mountConf.lookup(rootKey);
-	if (!cur)
-	{
-		if (cl.verbose)
-		{
-			cout << "Did not find the root key, will add it" << endl;
-		}
-		mountConf.append ( *Key(Backends::mountpointsPath,
-			KEY_COMMENT, "Below are the mountpoints.",
-			KEY_END));
-		mountConf.rewind();
-	}
-}
-
-
-/**
  * @brief set mp (interactive or by commandline)
  *
- * @pre name must be set before
  * @see getName()
  */
 void MountBaseCommand::getMountpoint(Cmdline const& cl)
@@ -100,9 +72,6 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 	{
 		mp = cl.arguments[1];
 	}
-
-	name = mp;
-	std::replace(name.begin(), name.end(), '/', '_');
 }
 
 void MountBaseCommand::askForConfirmation(Cmdline const& cl)
@@ -111,7 +80,6 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 	{
 		cout << endl;
 		cout << "Ready to mount with following configuration:" << endl;
-		cout << "Name:       " << name << endl;
 		cout << "Mountpoint: " << mp << endl;
 		cout << "Path:       " << path << endl;
 	}
@@ -147,9 +115,7 @@ void MountBaseCommand::doIt()
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
-	kdb::KDB kdb (parentKey);
 	kdb.set(mountConf, parentKey);
-	kdb.close (parentKey);
 
 	printWarnings(cerr, parentKey);
 }

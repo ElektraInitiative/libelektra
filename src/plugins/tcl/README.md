@@ -11,4 +11,6 @@
 This plugin is a storage plugin which write keys to lists in the style of
 the Tcl prograaming language.
 
+Supports arbitrary KeySets with metadata.
+
 

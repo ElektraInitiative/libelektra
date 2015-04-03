@@ -1,43 +1,52 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
+import QtQuick.Window 2.0
 
-BasicRectangle {
+Rectangle {
 	id:tooltip
 
 	property var	name
 	property var	value
 	property alias	meta: metaView.model
 	property var	defaultMargins
+	property int	parentWidth
+	property int	parentHeight
 	property int	fadeInDelay: 250
 	property int	fadeOutDelay: fadeInDelay
+	property int	keyWidth: 0
 	property int	maxWidth: 0
 	property int	metaHeight: 0
 
-	width: Math.max(maxWidth + 2*defaultMargins, keyText.paintedWidth + 2*defaultMargins)
-	height: (metaHeight > 0) ? (metaHeight +  keyText.paintedHeight + 3*defaultMargins) : (keyText.paintedHeight + 2*defaultMargins)
+	width: Math.min(parentWidth - x - defaultMargins, maxWidth + defaultMargins)
+	height: (metaHeight > 0) ? Math.min(metaHeight +  keyText.height + 2*defaultMargins, parentHeight - y - defaultMargins) : (keyText.height + defaultMargins)
 	color: inActivePalette.base
+	border.color: inActivePalette.windowText
 
 	Column {
 		id: layout
 
 		anchors.fill: parent
 		anchors.centerIn: parent
-		anchors.margins: defaultMargins
+		anchors.margins: defaultMargins*0.5
 		spacing: defaultMargins
 
 		Row {
 			Label {
 				id: keyText
-
-				wrapMode: Text.Wrap
+				width: tooltip.width - defaultMargins
 				text: name + " : " + value
+				clip: true
+				Component.onCompleted: {
+					if(paintedWidth > maxWidth)
+						maxWidth = paintedWidth
+				}
 			}
 		}
 		ListView {
 			id: metaView
 
-			width: parent.width
+			width: tooltip.width - defaultMargins
 			height: metaHeight
 
 			delegate: metaDelegate
@@ -55,37 +64,38 @@ BasicRectangle {
 			Label {
 				id: metaText
 
+				width: tooltip.width - defaultMargins
+				clip: true
 				text: name + " : " + value
-				wrapMode: Text.Wrap
 
 				Component.onCompleted: {
 					if(paintedWidth > maxWidth)
 						maxWidth = paintedWidth
 
-					metaHeight += paintedHeight
+					metaHeight += height
 				}
 			}
 		}
 	}
 
 	function show() {
-		state = "showing"
+		state = "SHOW"
 	}
 
 	function hide() {
-		state = "hidden"
+		state = "HIDE"
 	}
 
 	states: [
 		State {
-			name: "showing"
+			name: "SHOW"
 			PropertyChanges {
 				target: tooltip
 				opacity: 1
 			}
 		},
 		State {
-			name: "hidden"
+			name: "HIDE"
 			PropertyChanges {
 				target: tooltip
 				opacity: 0
@@ -95,7 +105,7 @@ BasicRectangle {
 
 	transitions: [
 		Transition {
-			to: "showing"
+			to: "SHOW"
 			NumberAnimation {
 				target: tooltip
 				property: "opacity"
@@ -103,7 +113,7 @@ BasicRectangle {
 			}
 		},
 		Transition {
-			to: "hidden"
+			to: "HIDE"
 			NumberAnimation {
 				target: tooltip
 				property: "opacity"

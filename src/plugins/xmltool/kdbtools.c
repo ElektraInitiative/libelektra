@@ -248,9 +248,6 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 					end=1;
 				else {
 					/* found a sub <key> */
-					if (! keyIsDir(newKey)) {
-						keySetDir(newKey);
-					}
 					/* prepare the context (parent) */
 					consumeKeyNode(ks,newKey->key,reader);
 				}
@@ -435,9 +432,10 @@ int ksFromXMLfile(KeySet *ks, const char *filename)
 	doc = xmlParseFile(filename);
 	if (doc==0)
 	{
-		// TODO: distinguish between parser errors and no file
+		// TODO: distinguish between parser errors and
+		// permission errors?
 		xmlCleanupParser();
-		return 0;
+		return -1;
 	}
 
 	reader=xmlReaderWalker(doc);

@@ -63,6 +63,7 @@ public:
 	std::string format;
 	std::string plugins;
 	std::string pluginsConfig;
+	std::string ns;
 
 	kdb::KeySet getPluginsConfig(std::string basepath="user/") const;
 

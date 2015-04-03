@@ -1,5 +1,6 @@
 #include <kdb.h>
 #include <stdio.h>
+#include <assert.h>
 
 void f (const Key * source)
 {
@@ -27,6 +28,44 @@ void h (Key *k)
 	/* the caller will see the changed key k */
 }
 
+void simpleAppend()
+{
+//! [simple append]
+KeySet *ks = ksNew(1, KS_END);
+ksAppendKey(ks,
+	keyNew("user/my/new/key", KEY_END));
+ksDel(ks);
+// key deleted, too!
+//! [simple append]
+}
+
+
+void refAppend()
+{
+//! [ref append]
+KeySet *ks = ksNew(1, KS_END);
+Key *k = keyNew("user/ref/key", KEY_END);
+keyIncRef(k);
+ksAppendKey(ks, k);
+ksDel(ks);
+// now we still can work with the key k!
+keyDecRef(k);
+keyDel(k);
+//! [ref append]
+}
+
+void dupAppend()
+{
+//! [dup append]
+KeySet *ks = ksNew(1, KS_END);
+Key *k = keyNew("user/ref/key", KEY_END);
+ksAppendKey(ks, keyDup(k));
+ksDel(ks);
+// now we still can work with the key k!
+keyDel(k);
+//! [dup append]
+}
+
 int main()
 {
 	Key * origKey;
@@ -49,6 +88,10 @@ int main()
 	h(key);
 	printf ("Key has changed to name %s with value %s\n",
 			keyName(key), keyString(key));
+
+	simpleAppend();
+	refAppend();
+	dupAppend();
 
 	/* key is yet independent */
 	keyDel (key);

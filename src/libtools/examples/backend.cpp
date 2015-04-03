@@ -11,11 +11,11 @@ int main()
 	b.setMountpoint(Key("/", KEY_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
 	b.addPlugin("resolver");
 	b.addPlugin("dump");
+	b.useConfigFile("file.ecf");
 	b.validated();
 
-	Key rootKey(Backends::mountpointsPath, KEY_END);
 	KeySet mountConfig;
-	b.serialise(rootKey, mountConfig);
+	b.serialize(mountConfig);
 
 	mountConfig.rewind();
 	while(mountConfig.next())

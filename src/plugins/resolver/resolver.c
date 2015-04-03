@@ -26,6 +26,8 @@
 
 #include "resolver.h"
 
+#include <kdbproposal.h>
+
 #include "kdbos.h"
 
 #include <stdlib.h>
@@ -40,6 +42,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <fcntl.h>
 
 #include <sys/types.h>
@@ -49,9 +52,30 @@
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>
 
-// every resolver should use the same mutex
-extern pthread_mutex_t elektra_resolver_mutex;
+#if defined(__APPLE__)
+#define statSeconds(status) status.st_mtime
+#define statNanoSeconds(status) status.st_mtimespec.tv_nsec
+#elif defined(WIN32)
+#define statSeconds(status) status.st_mtime
+#define statNanoSeconds(status) 0
+#else
+#define statSeconds(status) status.st_mtim.tv_sec
+#define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
+#endif
+
+extern pthread_mutex_t *getElektraResolverMutex();
+
+// for Apple-specific recursive mutex setup 
+#ifdef ELEKTRA_LOCK_MUTEX
+#if defined(__APPLE__)
+// special mutex for recursive mutex creation
+static pthread_mutex_t elektra_resolver_init_mutex = PTHREAD_MUTEX_INITIALIZER;
+// marks if the recursive mutex has been initialized yet
+static int elektra_resolver_mutex_unitialized = 1;
+#endif
+#endif
+
 
 static void resolverInit (resolverHandle *p, const char *path)
 {
@@ -60,6 +84,7 @@ static void resolverInit (resolverHandle *p, const char *path)
 	p->mtime.tv_nsec = 0;
 	p->filemode = KDB_FILE_MODE;
 	p->dirmode = KDB_FILE_MODE | KDB_DIR_MODE;
+	p->removalNeeded = 0;
 
 	p->filename = 0;
 	p->dirname= 0;
@@ -71,16 +96,42 @@ static void resolverInit (resolverHandle *p, const char *path)
 static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 {
 	resolverHandles *pks = elektraPluginGetData(handle);
-	if (!strncmp(keyName(parentKey), "user", 4)) return &pks->user;
-	else return &pks->system;
+	switch (keyGetNamespace(parentKey))
+	{
+	case KEY_NS_SPEC:
+		return &pks->spec;
+	case KEY_NS_DIR:
+		return &pks->dir;
+	case KEY_NS_USER:
+		return &pks->user;
+	case KEY_NS_SYSTEM:
+		return &pks->system;
+	case KEY_NS_PROC:
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		return 0;
+	}
+
+	return 0;
 }
 
 
-static void resolverClose (resolverHandle *p)
+static void resolverCloseOne (resolverHandle *p)
 {
 	free (p->filename); p->filename = 0;
 	free (p->dirname); p->dirname= 0;
 	free (p->tempfile); p->tempfile = 0;
+}
+
+static void resolverClose (resolverHandles *p)
+{
+	resolverCloseOne(&p->spec);
+	resolverCloseOne(&p->dir);
+	resolverCloseOne(&p->user);
+	resolverCloseOne(&p->system);
+	free (p);
 }
 
 /**
@@ -173,7 +224,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_trylock(getElektraResolverMutex());
 	if (ret != 0)
 	{
 		if (errno == EBUSY // for trylock
@@ -204,7 +255,7 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_unlock(getElektraResolverMutex());
 	if (ret != 0)
 	{
 		char buffer[ERROR_SIZE];
@@ -272,32 +323,86 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	}
 
 	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverInit (&p->spec, path);
+	resolverInit (&p->dir, path);
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
-	// system files need to be world-readable, otherwise they are
+
+	// setup recursive mutex on Apple systems
+#ifdef ELEKTRA_LOCK_MUTEX
+#if defined(__APPLE__)
+	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
+	// so we use another mutex for the initialization of the recursive mutex,
+	// since this section must be thread safe.
+	pthread_mutex_lock(&elektra_resolver_init_mutex);
+	if(elektra_resolver_mutex_unitialized)
+	{
+		pthread_mutexattr_t mutex_attr;
+
+		if(pthread_mutexattr_init(&mutex_attr))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock(&elektra_resolver_init_mutex);
+			return -1;
+		}
+		if(pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock(&elektra_resolver_init_mutex);
+			return -1;
+		}
+		if(pthread_mutex_init(getElektraResolverMutex(), &mutex_attr))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock(&elektra_resolver_init_mutex);
+			return -1;
+		}
+		elektra_resolver_mutex_unitialized = 0;
+	}
+	pthread_mutex_unlock(&elektra_resolver_init_mutex);
+#endif
+#endif
+
+	// system and spec files need to be world-readable, otherwise they are
 	// useless
 	p->system.filemode = 0644;
 	p->system.dirmode = 0755;
+	p->spec.filemode = 0644;
+	p->spec.dirmode = 0755;
 
-	Key *testKey = keyNew("system", KEY_END);
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
+	Key *testKey = keyNew("", KEY_END);
+	keySetName(testKey, "spec");
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
 	{
-		resolverClose(&p->user);
-		resolverClose(&p->system);
-		free (p);
+		resolverClose(p);
 		keyDel (testKey);
-		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
+		return -1;
+	}
+	keySetName(testKey, "dir");
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->dir, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve dir key");
 		return -1;
 	}
 
 	keySetName(testKey, "user");
 	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->user, errorKey) == -1)
 	{
-		resolverClose(&p->user);
-		resolverClose(&p->system);
-		free (p);
+		resolverClose(p);
 		keyDel (testKey);
 		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
+		return -1;
+	}
+
+	keySetName(testKey, "system");
+	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 	keyDel (testKey);
@@ -314,10 +419,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, close)
 
 	if (ps)
 	{
-		resolverClose(&ps->user);
-		resolverClose(&ps->system);
-
-		free (ps);
+		resolverClose(ps);
 		elektraPluginSetData(handle, 0);
 	}
 
@@ -365,16 +467,16 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, get)
 	}
 
 	/* Check if update needed */
-	if (pk->mtime.tv_sec == buf.st_mtim.tv_sec &&
-	    pk->mtime.tv_nsec == buf.st_mtim.tv_nsec)
+	if (pk->mtime.tv_sec == statSeconds(buf) &&
+	    pk->mtime.tv_nsec == statNanoSeconds(buf))
 	{
 		// no update, so storage has no job
 		errno = errnoSave;
 		return 0;
 	}
 
-	pk->mtime.tv_sec = buf.st_mtim.tv_sec;
-	pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
+	pk->mtime.tv_sec = statSeconds(buf);
+	pk->mtime.tv_nsec = statNanoSeconds(buf);
 
 	errno = errnoSave;
 	return 1;
@@ -445,6 +547,7 @@ static int elektraMkdirParents(resolverHandle *pk, const char *pathname, Key *pa
 			goto error;
 		}
 
+		// last part of filename component (basename)
 		char *p = strrchr(pathname, '/');
 
 		/* nothing found */
@@ -546,13 +649,13 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 		return -1;
 	}
 
-	if (buf.st_mtim.tv_sec != pk->mtime.tv_sec ||
-	    buf.st_mtim.tv_nsec != pk->mtime.tv_nsec)
+	if (statSeconds(buf) != pk->mtime.tv_sec ||
+	    statNanoSeconds(buf) != pk->mtime.tv_nsec)
 	{
 		ELEKTRA_SET_ERRORF (30, parentKey,
 				"conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file name is \"%s\", "
 				"our identity is uid: %u, euid: %u, gid: %u, egid: %u",
-				buf.st_mtim.tv_sec, buf.st_mtim.tv_nsec,
+				statSeconds(buf), statNanoSeconds(buf),
 				pk->mtime.tv_sec, pk->mtime.tv_nsec,
 				pk->filename,
 				getuid(), geteuid(), getgid(), getegid());
@@ -562,29 +665,65 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 	return 0;
 }
 
+/**
+ * @brief Check if setting keyset is needed.
+ *
+ * It is not needed, if the keyset is empty.
+ * The configuration file gets removed then.
+ *
+ * @param pk resolver information
+ * @param parentKey parent
+ *
+ * @retval 0 if nothing to do
+ * @retval 1 set will be needed
+ */
+static int elektraRemoveConfigurationFile(resolverHandle *pk, Key *parentKey)
+{
+	if (unlink(pk->filename) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_SET_ERROR(28, parentKey, buffer);
+	}
+
+	return 0;
+}
 
 /**
  * @brief Does everything needed before the storage plugin will be
  * invoked.
  *
- * @param pk
- * @param parentKey
+ * @param pk resolver information
+ * @param parentKey parent
  *
  * @retval 0 on success
  * @retval -1 on error
  */
 static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
 {
-	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
-	// we can silently ignore an error, because we will retry later
+	pk->removalNeeded = 0;
+	// most common case: config file is there just to be opened
+	pk->fd = open (pk->filename, O_RDWR, pk->filemode);
+	// we can silently ignore an error, because we will retry
+	// with creation of file
 	if (pk->fd == -1)
 	{
-		elektraMkdirParents(pk, pk->dirname, parentKey);
-		if (elektraOpenFile(pk, parentKey) == -1)
+		// retry with creation:
+		pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
+		// we can silently ignore an error, because we will retry again
+		// with creation of underlying directory
+		if (pk->fd == -1)
 		{
-			// no way to be successful
-			return -1;
+			elektraMkdirParents(pk, pk->dirname, parentKey);
+			if (elektraOpenFile(pk, parentKey) == -1)
+			{
+				// no way to be successful
+				return -1;
+			}
 		}
+		// the file was created by us, so we need to remove it
+		// on error:
+		pk->removalNeeded = 1;
 	}
 
 	if (elektraLockMutex(parentKey) != 0)
@@ -621,7 +760,7 @@ static int elektraSetPrepare(resolverHandle *pk, Key *parentKey)
  * filedescriptor */
 static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 {
-
+#ifdef HAVE_FUTIMENS
 	const struct timespec times[2] = {
 		pk->mtime,  // atime
 		pk->mtime}; // mtime
@@ -634,6 +773,22 @@ static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 			"Could not update time stamp of \"%s\", because %s",
 			pk->filename, buffer);
 	}
+#elif defined(HAVE_FUTIMES)
+	const struct timeval times[2] = {
+		{pk->mtime.tv_sec, pk->mtime.tv_nsec/1000},  // atime
+		{pk->mtime.tv_sec, pk->mtime.tv_nsec/1000}}; // mtime
+
+	if (futimes(pk->fd, times) == -1)
+	{
+		char buffer[ERROR_SIZE];
+		strerror_r(errno, buffer, ERROR_SIZE);
+		ELEKTRA_ADD_WARNINGF(99, parentKey,
+			"Could not update time stamp of \"%s\", because %s",
+			pk->filename, buffer);
+	}
+#else
+	#warning futimens/futimes not defined
+#endif
 }
 
 /**
@@ -667,8 +822,8 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
 	} else {
 		/* Update my timestamp */
-		pk->mtime.tv_sec = buf.st_mtim.tv_sec;
-		pk->mtime.tv_nsec = buf.st_mtim.tv_nsec;
+		pk->mtime.tv_sec = statSeconds(buf);
+		pk->mtime.tv_nsec = statNanoSeconds(buf);
 	}
 
 	elektraUpdateFileTime(pk, parentKey);
@@ -699,28 +854,48 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
-	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
+	(Plugin *handle, KeySet *ks, Key *parentKey)
 {
 	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
-
-	// might be useless (case of error), will not harm
-	keySetString(parentKey, pk->tempfile);
 
 	int errnoSave = errno;
 	int ret = 1;
 
 	if (pk->fd == -1)
 	{
-		/* no fd up to now, so we are in first phase*/
-		if (elektraSetPrepare(pk, parentKey) == -1)
-		{
-			ret = -1;
-		}
+		// no fd up to now, so we are in first phase
 
-		errno = errnoSave; // maybe some temporary error happened
+		// we operate on the tmp file
+		keySetString(parentKey, pk->tempfile);
+
+		if (ksGetSize(ks) == 0)
+		{
+			ret = 0;
+
+			// remove file on commit
+			pk->fd = -2;
+		} else {
+			// prepare phase
+			if (elektraSetPrepare(pk, parentKey) == -1)
+			{
+				ret = -1;
+			}
+		}
+	}
+	else if (pk->fd == -2)
+	{
+		// we commit the removal of the configuration file.
+		elektraRemoveConfigurationFile(pk, parentKey);
+
+		// reset for the next time
+		pk->fd = -1;
 	}
 	else
 	{
+		// now we do not operate on the temporary file anymore,
+		// but on the real file
+		keySetString(parentKey, pk->filename);
+
 		/* we have an fd, so we are in second phase*/
 		if (elektraSetCommit(pk, parentKey) == -1)
 		{
@@ -733,31 +908,49 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, set)
 		pk->fd = -1;
 	}
 
+	errno = errnoSave; // maybe some temporary error happened
+
 	return ret;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
-	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
+static void elektraUnlinkFile(char *filename, Key *parentKey)
 {
 	int errnoSave = errno;
-	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
-
-	if (pk->fd != -1)
-	{
-		elektraUnlockFile(pk->fd, parentKey);
-		elektraCloseFile(pk->fd, parentKey);
-		elektraUnlockMutex(parentKey);
-	}
-
-	if (unlink (pk->tempfile) == -1)
+	if (unlink (filename) == -1)
 	{
 		char buffer[ERROR_SIZE];
 		strerror_r(errno, buffer, ERROR_SIZE);
 		int written = strlen(buffer);
 		strcat(buffer, " the file: ");
-		strncat(buffer, pk->tempfile, ERROR_SIZE-written-10);
+		strncat(buffer, filename, ERROR_SIZE-written-10);
 		ELEKTRA_ADD_WARNING(36, parentKey, buffer);
 		errno = errnoSave;
+	}
+}
+
+int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
+	(Plugin *handle, KeySet *r ELEKTRA_UNUSED, Key *parentKey)
+{
+	resolverHandle *pk = elektraGetResolverHandle(handle, parentKey);
+
+	if (pk->fd == -2)
+	{ // removal aborted state (= empty keyset, but error)
+		// reset for next time
+		pk->fd = -1;
+		return 0;
+	}
+
+	elektraUnlinkFile(pk->tempfile, parentKey);
+
+	if (pk->fd > -1)
+	{ // with fd
+		elektraUnlockFile(pk->fd, parentKey);
+		elektraCloseFile(pk->fd, parentKey);
+		if (pk->removalNeeded == 1)
+		{ // removal needed state (= resolver created file, but error)
+			elektraUnlinkFile(pk->filename, parentKey);
+		}
+		elektraUnlockMutex(parentKey);
 	}
 
 	// reset for next time

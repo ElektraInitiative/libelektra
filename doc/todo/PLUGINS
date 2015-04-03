@@ -2,16 +2,6 @@ Ideas for new PLUGINS in elektra.
 Prefer using great frameworks to do that in short time with high quality.
 
 
-# Information Plugins #
-
-Idea: expose information of OS or Elektra to the user.
-
-## export BUILD INFORMATION ##
-
-similar to KDB_VERSION constants, all other CMake constants of the
-elektra installation should be included in a plugin like version
-
-
 ## Contract on Plugin configuration ##
 
 do not only depend on "provides" but on configuration another plugin
@@ -71,6 +61,7 @@ Needed for yajl+ini:
 fstab:
 	support for spaces and so on (with \040)
 
+
 ## add Limitations ##
 
 allow to lock down configuration for guis
@@ -117,9 +108,6 @@ literate data
 
 ## self written ##
 
-linenumber plugin
-	just store every line of a file in an array
-
 filesys:
 	reintroduce? (useful for 0.7 migrations)
 	empty folder will not show up (only with %%dirdata)
@@ -128,6 +116,7 @@ filesys:
 	remove keys the new way
 	compare sets between current and desired state (set operations)
 	could be default-storage plugin, integrated resolver for previous siutation
+
 
 ## library supported ##
 
@@ -261,42 +250,20 @@ resolver-posix
 
 ## improvements ##
 
+create new files securely:
+	fdopen(open("/tmp", O_TMPFILE | O_EXCL | O_RDWR, 0600), "rw");
+	linkat(AT_FDCWD, "/proc/self/fd/??", AT_FDCWD, pathname, AT_SYMLINK_FOLLOW)
+	pass "/proc/self/fd/??" to plugins
+
 better error messages:
 	#9 (when opening file failed)
 	resolver in kdbError should correct error message
 	the storage plugins do not have to state reason then
 
-race conditions:
-	the losing process must not remove the .tmp file, but it
-	has to remove all .tmp files it created before (in those cases
-		it won)
-	-> needs also some logic within kdbSet() to handle this
-
-use nanoseconds timestamps, maybe avoid locking completely
-fsync the directory
-
 make explicit state variable (for both user+system) or return fd!=-1
 
-remove files on empty keysets (also needs logic in kdbSet())
-
-tmp files:
-	thread ID + randomness?
-
 resolver:
-	configureable flush+locking
-
-XDG specification:
-	write a xdg plugin which does xdg conforming resolving
-	XDG_CONFIG_HOME
-	describe, implement, test
-	xdg mail announce
-
-
-## SYNC plugin ##
-
-fsync the file in keyname
-abort on error (needs to be pre-commit)
-
+	configureable fsync
 
 
 

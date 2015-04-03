@@ -1,8 +1,16 @@
-cmake_minimum_required (VERSION 2.8.11)
-#for add_jar INCLUDE_JARS
+#versioning for libelektra.jar
+set(CMAKE_JAVA_TARGET_VERSION ${KDB_VERSION})
 
 find_package(Java)
 include(UseJava)
+
+if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
+	if (CMAKE_PATCH_VERSION LESS 11)
+		#2.8.11 needed for add_jar INCLUDE_JARS
+		remove_binding(jna "cmake 2.8.11 needed for add_jar")
+		return()
+	endif()
+endif()
 
 if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
 	file(GLOB files elektra/*.java)
@@ -20,18 +28,22 @@ if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
 		PATHS /usr/share/java
 		)
 
-	# should work, too
-	# http://www.cmake.org/cmake/help/v3.0/module/UseJava.html
-	#set(CMAKE_JAVA_INCLUDE_PATH ${jna})
+	if (jna)
+		# should work, too
+		# http://www.cmake.org/cmake/help/v3.0/module/UseJava.html
+		#set(CMAKE_JAVA_INCLUDE_PATH ${jna})
+		add_jar(libelektra
+			INCLUDE_JARS ${jna}
+			SOURCES ${files} ${pfiles}
+			VERSION 1
+			OUTPUT_NAME libelektra
+			)
 
-	add_jar(elektrajar
-		INCLUDE_JARS ${jna}
-		SOURCES ${files} ${pfiles}
-		VERSION 1
-		OUTPUT_NAME elektra.jar
-		)
+		install_jar(libelektra share/java)
 
-	install_jar(elektrajar share/java)
+	else(jna)
+		remove_binding(jna "jna jar file not found, searched in standard pathes and /usr/share/java")
+	endif(jna)
 
 else()
 	remove_binding(jna "Java is not greater version 8, but ${Java_VERSION} was found")

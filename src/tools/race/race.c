@@ -10,7 +10,6 @@
 #include <sys/wait.h>
 
 pthread_barrier_t *bar;
-pthread_t *pwriter;
 
 void * writer (void * pV_data ELEKTRA_UNUSED)
 {
@@ -56,7 +55,8 @@ void * writer (void * pV_data ELEKTRA_UNUSED)
 	kdbClose (h, parent);
 	keyDel (parent);
 
-	pthread_exit (NULL);
+	// pthread_exit (NULL);
+	return 0;
 }
 
 int main (int argc, char **argv)
@@ -66,7 +66,7 @@ int main (int argc, char **argv)
 		printf ("Usage %s <procs> <threads> <barriers>\n", argv[0]);
 		printf ("This program tests race condition in Elektra\n");
 		printf ("If you set barriers procs*threads, all threads will\n");
-		printf ("start kdbSet() at exactly the same time");
+		printf ("start kdbSet() at roughly the same time");
 		return 1;
 	}
 
@@ -79,8 +79,6 @@ int main (int argc, char **argv)
 	{
 		return 1;
 	}
-
-	pwriter = malloc(num_threads*sizeof(pthread_t));
 
 	pthread_barrierattr_t attr;
 	if (pthread_barrierattr_init(&attr) != 0)
@@ -138,25 +136,31 @@ int main (int argc, char **argv)
 
 		if (pid == -1)
 		{
+			// fork not successful
 			return 12;
 		}
 		else if (pid == 0)
 		{
 			// child
-			for (i=0; i< num_threads; i++) if (pthread_create (&pwriter[i], NULL, writer, (void *) 0) != 0) return 20;
+			pthread_t *pwriter = malloc(num_threads*sizeof(pthread_t));
+			if (!pwriter) return 13;
+			for (i=0; i< num_threads; i++) if (pthread_create (&pwriter[i], NULL, writer, (void *) 0) != 0) return 14;
 			for (i=0; i< num_threads; i++) pthread_join (pwriter[i],NULL);
+			free(pwriter);
 			return 0;
 		}
 	}
 
 	int status = 0;
+	int sumexitstatus = 0;
 	for (i=0; i< num_procs; i++)
 	{
 		wait(&status);
+		int exitstatus = WEXITSTATUS(status);
 
-		if (!WIFEXITED(status))
+		if (exitstatus)
 		{
-			return 30;
+			sumexitstatus = 100 + exitstatus;
 		}
 	}
 
@@ -171,9 +175,7 @@ int main (int argc, char **argv)
 		return 41;
 	}
 
-	free(pwriter);
-
-	printf ("Test passed\n");
-	return 0;
+	printf ("Test run finished\n");
+	return sumexitstatus;
 }
 

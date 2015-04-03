@@ -86,6 +86,18 @@ keyDel(k);
 
 }{
 
+//! [With Flags]
+Key *k=keyNew("user/tmp/ex3",
+	KEY_FLAGS, KEY_BINARY | KEY_CASCADING_NAME, // flags
+	KEY_SIZE, 7,			// assume binary length 7
+	KEY_VALUE, "some data",		// value that will be truncated in 7 bytes
+	KEY_END);			// end of args
+//! [With Flags]
+printf ("%.7s\n", (char*)keyValue(k));
+keyDel(k);
+
+}{
+
 //! [With Everything]
 Key *k=keyNew("user/tmp/ex4",
 	KEY_BINARY,			// key type

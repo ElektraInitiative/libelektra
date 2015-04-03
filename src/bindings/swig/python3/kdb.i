@@ -17,6 +17,10 @@
     }
 %}
 
+%pythoncode {
+  import warnings
+}
+
 %exceptionclass kdb::Exception;
 %extend kdb::Exception {
   %pythoncode %{
@@ -38,54 +42,45 @@
 
 // constructors
 %pythonprepend kdb::Key::Key {
-  orig = []
-  if len(args):
-    orig = args[1:]
-    args = [ args[0] ]
+  value = None
+  meta  = {}
+  # check for copy constructor
+  if len(args) and not isinstance(args[0], self.__class__):
+    arg0, args = args[0], args[1:]
+
+    flags = 0
+    args = iter(args)
+    for arg in args:
+      if arg == KEY_END:
+        break
+      elif arg == KEY_SIZE:
+        # ignore value
+        next(args)
+      elif arg == KEY_VALUE:
+        value = next(args)
+      elif arg == KEY_FUNC:
+        #TODO swig directors?
+        raise TypeError("Unsupported meta type")
+      elif arg == KEY_FLAGS:
+        flags = next(args)
+      elif arg == KEY_META:
+        k = next(args)
+        meta[k] = next(args)
+      elif isinstance(arg, int):
+        warnings.warn("Deprecated option in keyNew: {0}".format(arg),
+          DeprecationWarning)
+        flags |= arg
+      else:
+        warnings.warn("Unknown option in keyNew {0}".format(arg),
+          RuntimeWarning)
+    args = [ arg0, flags ]
 }
 
 %pythonappend kdb::Key::Key {
-  args = iter(orig)
-  for arg in args:
-    if arg == KEY_END:
-      break
-    elif arg == KEY_NAME:
-      self.name = next(args)
-    elif arg == KEY_VALUE:
-      self.value = next(args)
-    elif arg == KEY_OWNER:
-      self.setMeta("owner", next(args))
-    elif arg == KEY_COMMENT:
-      self.setMeta("comment", next(args))
-    elif arg == KEY_BINARY:
-      pass
-    elif arg == KEY_UID:
-      self.setMeta("uid", str(next(args)))
-    elif arg == KEY_GID:
-      self.setMeta("gid", str(next(args)))
-    elif arg == KEY_MODE:
-      self.setMeta("mode", "{0:o}".format(int(next(args))))
-    elif arg == KEY_ATIME:
-      self.setMeta("atime", "{0:d}".format(int(next(args))))
-    elif arg == KEY_MTIME:
-      self.setMeta("mtime", "{0:d}".format(int(next(args))))
-    elif arg == KEY_CTIME:
-      self.setMeta("ctime", "{0:d}".format(int(next(args))))
-    elif arg == KEY_SIZE:
-      pass
-    elif arg == KEY_FUNC:
-      #TODO swig directors?
-      raise TypeError("Unsupported meta type")
-    elif arg == KEY_DIR:
-      meta = self.getMeta("mode")
-      mode = int(meta.value, 8) if meta else 0
-      self.setMeta("mode", "{0:o}".format(mode | 0o111))
-    elif arg == KEY_META:
-      self.setMeta(next(args), next(args))
-    elif arg == KEY_NULL:
-      pass
-    else:
-      pass # print("Unknown option in keyNew {0}".format(arg), file=sys.stderr)
+  if value:
+    self.value = value
+  for k in meta:
+    self.setMeta(k, meta[k])
 }
 
 // properties
@@ -93,13 +88,11 @@
 // properties. thus we rename and create them using pure python code below
 //%attributestring(kdb::Key, std::string, name,     getName, setName);
 //%attributestring(kdb::Key, std::string, basename, getBaseName, setBaseName);
-//%attributestring(kdb::Key, std::string, dirname,  getDirName);
 //%attributestring(kdb::Key, std::string, fullname, getFullName);
 %rename("_%s") kdb::Key::getName;
 %rename("_%s") kdb::Key::setName;
 %rename("_%s") kdb::Key::getBaseName;
 %rename("_%s") kdb::Key::setBaseName;
-%rename("_%s") kdb::Key::getDirName;
 %rename("_%s") kdb::Key::getFullName;
 
 // only accept binary data in binary functions
@@ -121,8 +114,10 @@
 
 // add some other useful methods
 %extend kdb::Key {
-  Key(const char *keyName) {
-    return new kdb::Key(keyName, KEY_END);
+  Key(const char *name, uint64_t flags = 0) {
+    return new kdb::Key(name,
+      KEY_FLAGS, flags,
+      KEY_END);
   }
 
   int __cmp__(const Key *o) {
@@ -168,7 +163,6 @@
     name     = property(_kdb.Key__getName, _kdb.Key__setName)
     value    = property(get, set, None, "Key value")
     basename = property(_kdb.Key__getBaseName, _kdb.Key__setBaseName)
-    dirname  = property(_kdb.Key__getDirName)
     fullname = property(_kdb.Key__getFullName)
 
     def __str__(self):

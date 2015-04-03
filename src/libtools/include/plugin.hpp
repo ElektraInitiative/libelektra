@@ -54,16 +54,21 @@ private:
 	std::map<std::string, func_t> symbols;
 	std::map<std::string, std::string> infos;
 
-	bool firstRef;
-
 	void uninit();
 
 public:
-	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& testConfig);
+	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& pluginConfig);
 
 	Plugin(Plugin const& other);
 	Plugin& operator = (Plugin const& other);
 	~Plugin();
+
+	/**
+	 * @brief Is toggled during serialization.
+	 *
+	 * (is a hack, only allows a single serialization!)
+	 */
+	bool firstRef;
 
 	/**
 	 * Gets the configuration for the plugin.
@@ -114,9 +119,18 @@ public:
 	 * properly.
 	 *
 	 * @return the keyset with the config needed for the backend.
+	 * @see getConfig()
 	 * @pre loadInfo()
 	 */
 	kdb::KeySet getNeededConfig();
+
+	/**
+	 * @brief return the plugin config
+	 *
+	 * @return the config supplied with constructor
+	 * @see getNeededConfig()
+	 */
+	kdb::KeySet getConfig();
 
 	/**
 	 * Returns symbol to a function.

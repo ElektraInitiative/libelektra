@@ -1,36 +1,10 @@
 #!/bin/sh
 
-SELF=$(readlink -f "$0")
-SCRIPTS=$(dirname "$SELF")
-SOURCE=$(dirname "$SCRIPTS")
-SBUILD=$(pwd)
-BUILD=$(readlink -f "$SBUILD")
-
-if [ -d "$1" ]
-then
-	SOURCE="$1"
-fi
-
-if [ "$SOURCE" = "$BUILD" ]
-then
-	echo "In source builds are not allowed, create a new directory and run $SELF there"
-	exit 1
-fi
-
-if [ "$SCRIPTS" = "$BUILD" ]
-then
-	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
-	exit 1
-fi
+. "$(dirname "$0")/configure-common"
 
 cd $BUILD
-
-#python3 has a strange crash on debian jessy
-cmake -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3 \
-	-DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.4 \
-	-DPYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.4dm.so \
-	-DENABLE_CXX11=ON \
+cmake	-DENABLE_CXX11=ON \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="ALL;-swig_python3" \
-	$SOURCE
+	-DBINDINGS="ALL" \
+	$*

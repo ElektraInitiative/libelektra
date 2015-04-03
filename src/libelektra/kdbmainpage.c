@@ -61,6 +61,7 @@
  * as shown by the figure:
  *
  * @image html classes.png "Elektra Classes"
+ * @image latex classes.png "Elektra Classes"
  *
  * Some general things you can do with each class are:
  *

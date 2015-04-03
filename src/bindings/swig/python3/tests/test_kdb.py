@@ -1,5 +1,7 @@
 import kdb, unittest
 
+TEST_NS = "user/tests/swig_py3"
+
 class Constants(unittest.TestCase):
 	def setUp(self):
 		pass
@@ -19,13 +21,6 @@ class Constants(unittest.TestCase):
 		self.assertIsNone(kdb.KS_END)
 
 class KDB(unittest.TestCase):
-	def setUp(self):
-		pass
-
-	'''
-	disabled until elektra libraries can be loaded by
-	the build system (and static build is gone)
-
 	def test_ctor(self):
 		self.assertIsInstance(kdb.KDB(), kdb.KDB)
 		error = kdb.Key()
@@ -42,22 +37,30 @@ class KDB(unittest.TestCase):
 	def test_set(self):
 		with kdb.KDB() as db:
 			ks = kdb.KeySet(100)
-			db.get(ks, "user/MyApp")
+			db.get(ks, TEST_NS)
 
 			try:
-				key = ks["user/MyApp/mykey"]
+				key = ks[TEST_NS + "/mykey"]
 			except KeyError:
-				key = kdb.Key("user/MyApp/mykey")
+				key = kdb.Key(TEST_NS + "/mykey")
 				ks.append(key)
 			key.value = "new_value"
 
-			db.set(ks, "user/MyApp")
+			db.set(ks, TEST_NS)
 
 		with kdb.KDB() as db:
 			ks = kdb.KeySet(100)
-			db.get(ks, "user/MyApp")
-			self.assertEqual(ks["user/MyApp/mykey"].value, "new_value")
-	'''
+			db.get(ks, TEST_NS)
+			self.assertEqual(ks[TEST_NS + "/mykey"].value, "new_value")
+
+	@classmethod
+	def tearDownClass(cls):
+		# cleanup
+		with kdb.KDB() as db:
+			ks = kdb.KeySet(100)
+			db.get(ks, TEST_NS)
+			ks.cut(kdb.Key(TEST_NS))
+			db.set(ks, TEST_NS)
 
 if __name__ == '__main__':
 	unittest.main()

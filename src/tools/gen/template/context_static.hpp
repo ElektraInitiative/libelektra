@@ -7,7 +7,7 @@ cheetahVarStartToken = $
 @from cpp_util import cpp_util
 @set support = ContextSupport()
 $util.header($args.output)
-#include "contextual.hpp"
+#include "kdbcontext.hpp"
 #include "kdbtypes.h"
 
 #include <string>
@@ -17,7 +17,6 @@ namespace kdb
 
 $cpp_util.generateenum($support, $parameters)
 $cpp_util.generatebool($support)
-$cpp_util.generatenone()
 
 
 
@@ -44,13 +43,13 @@ class ${hierarchy.prettyclassname(support)}GetPolicy
 public:
 typedef $support.typeof($hierarchy.info) type;
 @if $support.typeof($hierarchy.info) == "kdb::none_t"
-static type get(kdb::KeySet &, kdb::Key const&)
+static kdb::Key get(kdb::KeySet &, kdb::Key const&)
 {
 	none_t none;
 	return none;
 }
 @else
-static type get(kdb::KeySet &ks, kdb::Key const&)
+static kdb::Key get(kdb::KeySet &ks, kdb::Key const&)
 {
 	type value $support.valof($hierarchy.info)
 

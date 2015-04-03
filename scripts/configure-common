@@ -1,0 +1,24 @@
+# common configure script
+
+SELF=$(readlink -f "$0")
+SCRIPTS=$(dirname "$SELF")
+SOURCE=$(dirname "$SCRIPTS")
+SBUILD=$(pwd)
+BUILD=$(readlink -f "$SBUILD")
+
+if [ -d "$1" ]
+then
+	SOURCE=$(readlink -f "$1")
+fi
+
+if [ "$SOURCE" = "$BUILD" ]
+then
+	echo "In source builds are not allowed, create a new directory and run $SELF there"
+	exit 1
+fi
+
+if [ "$SCRIPTS" = "$BUILD" ]
+then
+	echo "You seem to be in the scripts directory, create a new directory and run $SELF there"
+	exit 1
+fi

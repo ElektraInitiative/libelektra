@@ -2,6 +2,7 @@
 #define ELEKTRA_KEY_HPP
 
 #include <string>
+#include <locale>
 #include <cstring>
 #include <cstdarg>
 #include <sstream>
@@ -10,9 +11,17 @@
 
 #include <kdb.h>
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+#include <kdbproposal.h> // TODO remove (for keyUnescapedName())
+#endif
+
 namespace kdb
 {
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+class NameIterator;
+class NameReverseIterator;
+#endif
 
 /**
  * @copydoc key
@@ -27,7 +36,7 @@ namespace kdb
  * Key (static_cast<ckdb::Key*>(0));
  * or made empty afterwards by using release() or assign a null key.
  * To check if there is an associated managed object the user
- * can use operator bool().
+ * can use isNull().
  *
  * @par references
  * Copies of keys are cheap because they are only flat.
@@ -45,7 +54,7 @@ namespace kdb
  * @invariant Key either has a working underlying Elektra Key
  * object or a null pointer.
  * The Key, however, might be invalid (see isValid()) or null
- * (see operator bool()).
+ * (see isNull()).
  *
  * @note that the reference counting in the keys is mutable,
  * so that const keys can be passed around by value.
@@ -96,24 +105,48 @@ public:
 	inline ~Key ();
 
 
-	// name manipulation
+	// name operations
+
 
 	inline std::string getName() const;
 	inline ssize_t getNameSize() const;
 
 	inline std::string getBaseName() const;
 	inline ssize_t getBaseNameSize() const;
-	inline std::string getDirName() const;
 
 	inline void setName (const std::string &newName);
-	// inline void addName (const std::string &addedName);
+	inline void addName (const std::string &addedName);
 	inline void setBaseName (const std::string &baseName);
 	inline void addBaseName (const std::string &baseName);
 
 	inline ssize_t getFullNameSize() const;
 	inline std::string getFullName() const;
 
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+	typedef NameIterator iterator;
+	typedef NameIterator const_iterator;
+	typedef NameReverseIterator reverse_iterator;
+	typedef NameReverseIterator const_reverse_iterator;
+
+	iterator begin();
+	const_iterator begin() const;
+	iterator end();
+	const_iterator end() const;
+	reverse_iterator rbegin();
+	const_reverse_iterator rbegin() const;
+	reverse_iterator rend();
+	const_reverse_iterator rend() const;
+#if __cplusplus > 199711L
+	const_iterator cbegin() const noexcept;
+	const_iterator cend() const noexcept;
+	const_reverse_iterator crbegin() const noexcept;
+	const_reverse_iterator crend() const noexcept;
+#endif
+#endif //ELEKTRA_WITHOUT_ITERATOR
+
+
 	// operators
+
 
 	inline bool operator ==(const Key &k) const;
 	inline bool operator !=(const Key &k) const;
@@ -122,9 +155,12 @@ public:
 	inline bool operator > (const Key& other) const;
 	inline bool operator >= (const Key& other) const;
 
+	inline bool isNull() const;
 	inline operator bool() const;
 
+
 	// value operations
+
 
 	template <class T>
 	inline T get() const;
@@ -146,6 +182,8 @@ public:
 
 
 	// meta data
+	//
+	//
 	inline bool hasMeta(const std::string &metaName) const;
 
 	template <class T>
@@ -166,7 +204,9 @@ public:
 
 	// Methods for Making tests
 
+
 	inline bool isValid() const;
+	inline std::string getNamespace() const;
 	inline bool isSystem() const;
 	inline bool isUser() const;
 
@@ -185,13 +225,247 @@ private:
 	ckdb::Key * key; ///< holds an elektra key
 };
 
+
+#ifndef ELEKTRA_WITHOUT_ITERATOR
+/**
+ * For C++ forward Iteration over Names.
+ * (External Iterator)
+ * @code
+	for (std::string s:k3)
+	{
+		std::cout << s << std::endl;
+	}
+ * @endcode
+ */
+class NameIterator
+{
+public:
+	typedef std::string value_type;
+	typedef std::string reference;
+	typedef std::bidirectional_iterator_tag iterator_category;
+
+	NameIterator(Key const & k, bool last) :
+		begin(static_cast<const char*>(keyUnescapedName(*k))),
+		end(begin+keyGetUnescapedNameSize(*k)),
+		current(last?end:begin)
+	{}
+
+	NameIterator(const char* begin_, const char* end_, const char* current_) :
+		begin(begin_),
+		end(end_),
+		current(current_)
+	{}
+
+	std::string get() const
+	{
+		if (current == end || current == begin-1) return "";
+		return std::string(current);
+	}
+
+	const char *pos() const { return current; }
+
+	const char *findNext() const
+	{
+		const char *c = current;
+		if (c >= end) return end;
+
+		do { ++c; } while (c < end && *c != 0);
+		if (c != end) ++c; // skip past null character
+
+		return c;
+	}
+
+	const char *findPrevious() const
+	{
+		const char *c = current;
+		if (c <= begin) return begin;
+
+		--c; // go from start of string to null
+		do { --c; } while (c > begin && *c != 0);
+		if (c != begin && c+1 != current) ++c; // jump back to not-null
+
+		return c;
+	}
+
+	// Forward iterator requirements
+	reference operator*() const { return get(); }
+	NameIterator& operator++() { current = findNext(); return *this; }
+	NameIterator operator++(int)
+	{
+		NameIterator ret(begin, end, current);
+		current = findNext();
+		return ret;
+	}
+
+	// Bidirectional iterator requirements
+	NameIterator& operator--() { current = findPrevious(); return *this; }
+	NameIterator operator--(int)
+	{
+		NameIterator ret(begin, end, current);
+		current = findPrevious();
+		return ret;
+	}
+
+protected:
+	const char *begin;
+	const char *end;
+	const char* current;
+};
+
+
+// Forward iterator requirements
+inline bool operator==(const NameIterator& lhs, const NameIterator& rhs)
+{ return lhs.pos() == rhs.pos(); }
+
+inline bool operator!=(const NameIterator& lhs, const NameIterator& rhs)
+{ return lhs.pos() != rhs.pos()  ; }
+
+// some code duplication because std::reverse_iterator
+// needs a difference_type
+/**
+ * For C++ reverse Iteration over Names.
+ * (External Iterator)
+ */
+class NameReverseIterator : private NameIterator
+{
+public:
+	typedef std::string value_type;
+	typedef std::string reference;
+	typedef std::bidirectional_iterator_tag iterator_category;
+
+	NameReverseIterator(Key const & k, bool last) :
+		NameIterator(k, last)
+	{
+		if (!last) current = begin-1;
+		else current = findPrevious();
+	}
+
+	NameReverseIterator(const char* begin_, const char* end_, const char* current_) :
+		NameIterator(begin_, end_, current_)
+	{}
+
+	const char *findPrevious() const
+	{
+		if (current <= begin) return begin-1;
+		return NameIterator::findPrevious();
+	}
+
+	const char *findNext() const
+	{
+		if (current == begin-1) return begin;
+		return NameIterator::findNext();
+	}
+
+	std::string get() const
+	{
+		if (current == begin-1) return "";
+		return NameIterator::get();
+	}
+
+	const char *pos() const { return NameIterator::pos(); }
+
+	// Forward iterator requirements
+	reference operator*() const { return get(); }
+	NameReverseIterator& operator++() { current = findPrevious(); return *this; }
+	NameReverseIterator operator++(int)
+	{
+		NameReverseIterator ret(begin, end, current);
+		current = findPrevious();
+		return ret;
+	}
+
+	// Bidirectional iterator requirements
+	NameReverseIterator& operator--() { current = findNext(); return *this; }
+	NameReverseIterator operator--(int)
+	{
+		NameReverseIterator ret(begin, end, current);
+		current = findNext();
+		return ret;
+	}
+};
+
+
+
+// Forward iterator requirements
+inline bool operator==(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
+{ return lhs.pos() == rhs.pos(); }
+
+inline bool operator!=(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
+{ return lhs.pos() != rhs.pos(); }
+
+
+
+inline Key::iterator Key::begin()
+{
+	return Key::iterator(*this, false);
+}
+
+inline Key::const_iterator Key::begin() const
+{
+	return Key::const_iterator(*this, false);
+}
+
+inline Key::iterator Key::end()
+{
+	return Key::iterator(*this, true);
+}
+
+inline Key::const_iterator Key::end() const
+{
+	return Key::const_iterator(*this, true);
+}
+
+inline Key::reverse_iterator Key::rbegin()
+{
+	return Key::reverse_iterator(*this, true);
+}
+
+inline Key::const_reverse_iterator Key::rbegin() const
+{
+	return Key::const_reverse_iterator(*this, true);
+}
+
+inline Key::reverse_iterator Key::rend()
+{
+	return Key::reverse_iterator(*this, false);
+}
+
+inline Key::const_reverse_iterator Key::rend() const
+{
+	return Key::const_reverse_iterator(*this, false);
+}
+
+#if __cplusplus > 199711L
+inline Key::const_iterator Key::cbegin() const noexcept
+{
+	return Key::const_iterator(*this, true);
+}
+
+inline Key::const_iterator Key::cend() const noexcept
+{
+	return Key::const_iterator(*this, false);
+}
+
+inline Key::const_reverse_iterator Key::crbegin() const noexcept
+{
+	return Key::const_reverse_iterator(*this, true);
+}
+
+inline Key::const_reverse_iterator Key::crend() const noexcept
+{
+	return Key::const_reverse_iterator(*this, false);
+}
+#endif
+#endif //ELEKTRA_WITHOUT_ITERATOR
+
+
 /**
  * Constructs an empty, invalid key.
  *
  * @note That this is not a null key, so the key will
  * evaluate to true.
  *
- * @see isValid(), operator bool()
+ * @see isValid(), isNull()
  */
 inline Key::Key () :
 	key(ckdb::keyNew (0))
@@ -207,7 +481,7 @@ inline Key::Key () :
  *
  * @param k the key to work with
  *
- * @see isValid(), operator bool()
+ * @see isValid(), isNull()
  */
 inline Key::Key (ckdb::Key * k) :
 	key(k)
@@ -394,7 +668,7 @@ inline void Key::copy (const Key &other)
  * isValid() will, however, be false.
  *
  * @see release()
- * @see isValid(), operator bool()
+ * @see isValid(), isNull()
  *
  * @copydoc keyClear
  */
@@ -512,19 +786,6 @@ inline std::string Key::getBaseName() const
 }
 
 /**
- * @return the dir name of the key
- *
- * e.g. system/sw/dir/key
- * will return system/sw/dir
- */
-inline std::string Key::getDirName() const
-{
-	std::string ret = ckdb::keyName(key);
-	return ret.substr(0, ret.rfind('/'));
-}
-
-
-/**
  * @copydoc keySetName
  *
  * @throw KeyInvalidName if the name is not valid
@@ -537,7 +798,6 @@ inline void Key::setName (const std::string &newName)
 	}
 }
 
-/*
 inline void Key::addName (const std::string &addedName)
 {
 	if (ckdb::keyAddName (getKey(), addedName.c_str()) == -1)
@@ -545,7 +805,6 @@ inline void Key::addName (const std::string &addedName)
 		throw KeyInvalidName();
 	}
 }
-*/
 
 /**Sets a base name for a key.
  *
@@ -670,17 +929,31 @@ inline bool Key::operator >= (const Key& other) const
 /**
  * This is for loops and lookups only.
  *
+ * Opposite of isNull()
+ *
  * For loops it checks if there are still more keys.
  * For lookups it checks if a key could be found.
  *
  * @warning you should not construct or use null keys
  *
+ * @see isNull(), isValid()
  * @return false on null keys
  * @return true otherwise
  */
 inline Key::operator bool() const
 {
-	return key != 0;
+	return !isNull();
+}
+
+/**
+ * @brief Checks if C++ wrapper has an underlying key
+ *
+ * @see operator bool(), isValid()
+ * @return true if no underlying key exists
+ */
+inline bool Key::isNull() const
+{
+	return key == 0;
 }
 
 /**
@@ -688,6 +961,18 @@ inline Key::operator bool() const
  *
  * You can write your own template specialication, e.g.:
  * @code
+template <>
+inline QColor Key::get() const
+{
+	if (getStringSize() < 1)
+	{
+		throw KeyTypeConversion();
+	}
+
+	std::string str = getString();
+	QColor c(str.c_str());
+	return c;
+}
  * @endcode
  *
  * @copydoc getString
@@ -700,6 +985,7 @@ inline T Key::get() const
 	std::string str;
 	str = getString();
 	std::istringstream ist(str);
+	ist.imbue(std::locale("C"));
 	T x;
 	ist >> x;	// convert string to type
 	if (ist.fail())
@@ -708,6 +994,61 @@ inline T Key::get() const
 	}
 	return x;
 }
+
+/*
+#if __cplusplus > 199711L
+// TODO: are locale dependent
+//   + throw wrong exception (easy to fix though)
+template <>
+inline int Key::get<int>() const
+{
+	return stoi(getString());
+}
+
+template <>
+inline long Key::get<long>() const
+{
+	return stol(getString());
+}
+
+template <>
+inline long long Key::get<long long>() const
+{
+	return stoll(getString());
+}
+
+template <>
+inline unsigned long Key::get<unsigned long>() const
+{
+	return stoul(getString());
+}
+
+template <>
+inline unsigned long long Key::get<unsigned long long>() const
+{
+	return stoull(getString());
+}
+
+template <>
+inline float Key::get<float>() const
+{
+	return stof(getString());
+}
+
+template <>
+inline double Key::get<double>() const
+{
+	return stod(getString());
+}
+
+template <>
+inline long double Key::get<long double>() const
+{
+	return stold(getString());
+}
+#endif
+*/
+
 
 template <>
 inline std::string Key::get() const
@@ -727,6 +1068,7 @@ inline void Key::set(T x)
 {
 	std::string str;
 	std::ostringstream ost;
+	ost.imbue(std::locale("C"));
 	ost << x;	// convert type to string
 	if (ost.fail())
 	{
@@ -734,6 +1076,65 @@ inline void Key::set(T x)
 	}
 	setString (ost.str());
 }
+
+/*
+#if __cplusplus > 199711L
+// TODO: are locale dependent
+template <>
+inline void Key::set(int val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(long long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(unsigned val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(unsigned long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(unsigned long long val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(float val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(double val)
+{
+	setString(std::to_string(val));
+}
+
+template <>
+inline void Key::set(long double val)
+{
+	setString(std::to_string(val));
+}
+#endif
+*/
 
 
 /**
@@ -1084,11 +1485,27 @@ inline const Key Key::currentMeta() const
  * @retval true if the key has a valid name
  * @retval false if the key has an invalid name
  *
- * @see getName(), isUser(), isSystem()
+ * @see getName(), isUser(), isSystem(), getNamespace()
  */
 inline bool Key::isValid() const
 {
 	return ckdb::keyGetNameSize(getKey()) > 1;
+}
+
+/**
+ * @return namespace as string
+ *
+ * Will return slash for cascading names.
+ *
+ * @see getName(), isUser(), isSystem()
+ */
+inline std::string Key::getNamespace() const
+{
+	std::string name = getName();
+	size_t slash = name.find('/');
+	if (slash == 0) return "/";
+	if (slash != std::string::npos) return name.substr(0, slash);
+	return name;
 }
 
 
@@ -1193,6 +1610,23 @@ inline int Key::del ()
 
 
 } // end of namespace kdb
+
+#if __cplusplus > 199711L
+namespace std
+{
+	/**
+	 * @brief Support for putting Key in a hash
+	 */
+	template <> struct hash<kdb::Key>
+	{
+		size_t operator()(kdb::Key const & k) const
+		{
+			// use pointer value as hash value
+			return std::hash<ckdb::Key *>()(k.getKey());
+		}
+	};
+} // end of namespace std
+#endif
 
 #endif
 

@@ -94,7 +94,11 @@ int keyClearSync (Key *key)
  * @note Note that the sync status will be updated on any change,
  * including meta data.
  *
- * @see keyNew()
+ * @deprecated The handling of synchronization is done internally and
+ * does not need to be checked by neither application nor plugins.
+ *
+ * @see after keyNew(), keyDup() keys need sync
+ *
  * @param key the key object to work with
  * @return 1 if @p key was changed in memory, 0 otherwise
  * @return -1 on NULL pointer
@@ -107,6 +111,31 @@ int keyNeedSync(const Key *key)
 	return (key->flags & KEY_FLAG_SYNC) == KEY_FLAG_SYNC;
 }
 
+
+int keyIsSpec(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsSpec(key->key);
+	else return 0;
+}
+
+int keyIsProc(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsProc(key->key);
+	else return 0;
+}
+
+
+int keyIsDir(const Key *key)
+{
+	if (!key) return -1;
+
+	if (key->key) return keyNameIsDir(key->key);
+	else return 0;
+}
 
 
 /**
@@ -242,17 +271,17 @@ does not return true, because there is only a indirect relation
  */
 int keyIsDirectBelow(const Key *key, const Key *check)
 {
-	const char * checkname = 0;
-	ssize_t keysize = 0;
-
 	if (!key || !check) return -1;
 
-	checkname = keyName(check);
-	keysize = keyGetNameSize(key);
-
 	if (!keyIsBelow(key, check)) return 0;
-	if (strchr(checkname + keysize, '/')) return 0;
-	return 1;
+
+
+	const char * checkname = keyUnescapedName(check);
+	ssize_t keysize = keyGetUnescapedNameSize(key);
+	ssize_t checksize = keyGetUnescapedNameSize(check);
+	if (strchr(checkname + keysize, '\0') == checkname + checksize - 1) return 1;
+
+	return 0;
 }
 
 
@@ -611,12 +640,20 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	if (keyGetGID(key1) != keyGetGID(key2))  ret|=KEY_GID;
 	if (keyGetMode(key1)!= keyGetMode(key2)) ret|=KEY_MODE;
 #endif
-	if (nsize1 != nsize2)              ret|=KEY_NAME;
-	if (strcmp(name1, name2))          ret|=KEY_NAME;
-	if (strcmp(comment1, comment2))    ret|=KEY_COMMENT;
-	if (strcmp(owner1, owner2))        ret|=KEY_OWNER;
-	if (size1 != size2)                ret|=KEY_VALUE;
-	if (memcmp(value1, value2, size1)) ret|=KEY_VALUE;
+
+	if (nsize1 != nsize2)                    ret|=KEY_NAME;
+	else if (!name1 || !name2)               ret|=KEY_NAME;
+	else if (strcmp(name1, name2))           ret|=KEY_NAME;
+
+	if (!comment1 || !comment2)              ret|=KEY_COMMENT;
+	else if (strcmp(comment1, comment2))     ret|=KEY_COMMENT;
+
+	if (!owner1 || !owner2)                  ret|=KEY_OWNER;
+	if (strcmp(owner1, owner2))              ret|=KEY_OWNER;
+
+	if (size1 != size2)                      ret|=KEY_VALUE;
+	else if (!value1 || !value2)             ret|=KEY_VALUE;
+	else if (memcmp(value1, value2, size1))  ret|=KEY_VALUE;
 
 	return ret;
 }

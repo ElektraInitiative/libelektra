@@ -34,6 +34,7 @@
 #endif
 
 #include "kdb.h"
+#include "kdbtypes.h"
 #include "kdbprivate.h"
 
 
@@ -41,10 +42,14 @@
 /**
  * @internal
  *
- * Returns one level of the key name.
+ * Returns one level of the escaped key name.
  *
- * Interface should be build on top of Keys.
- * Interface is not const-correct (it does a const-cast).
+ * Only needed for escaping engine, otherwise the unescaped key name
+ * should be used! In the unescaped version, every level is null
+ * terminated.
+ *
+ * Interface is not const-correct. It does a const-cast needed for
+ * many clients.
  *
  * This method is used to skip repeating '/' and to find escaping chars.
  * Given @p keyName, this method returns a pointer to the next name level
@@ -82,6 +87,8 @@ Level 3 name: def\/ghi
 Level 4 name: jkl
  * @endcode
  *
+ * @pre name must be non-null and point to a null terminated string
+ *
  * @param name the string that will be searched
  * @param size the number of bytes of level name found in @p keyName until
  * 	the next delimiter ('/')
@@ -93,8 +100,8 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 {
 	char *real=(char *)name;
 	size_t cursor=0;
-	int escapeNext=0;
-	int end=0;
+	int end=0; // bool to check for end of level
+	int escapeCount=0; // counter to check if / was escaped
 
 	/* skip all repeating '/' in the beginning */
 	while (*real && *real == KDB_PATH_SEPARATOR)
@@ -108,16 +115,16 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 		switch (real[cursor])
 		{
 		case KDB_PATH_ESCAPE:
-			escapeNext=1;
+			++escapeCount;
 			break;
 		case KDB_PATH_SEPARATOR:
-			if (! escapeNext)
+			if (! (escapeCount % 2))
 			{
 				end=1;
 			}
 			// fallthrough
 		default:
-			escapeNext=0;
+			escapeCount = 0;
 		}
 		++cursor;
 	}
@@ -130,248 +137,6 @@ char *keyNameGetOneLevel(const char *name, size_t *size)
 
 	*size=cursor;
 	return real;
-}
-
-
-
-
-/**
- * @internal
- *
- * Gets number of bytes needed to store root name of a key name
- *
- * Possible root key names are @p system, @p user or @p "user:someuser" .
- *
- * @return number of bytes needed with ending NULL
- * @param keyName the name of the key
- * @see keyGetFullRootNameSize()
- * @ingroup keyname
- */
-ssize_t keyNameGetFullRootNameSize(const char *name)
-{
-	char *end;
-	int length=strlen(name);
-
-	if (!length) return 0;
-
-	/*
-		Possible situations:
-		user:someuser
-		user:someuser/
-		user:someuser/key/name
-		user:some.user/key/name
-		.
-		\.
-		(empty)
-	*/
-	end=strchr(name,KDB_PATH_SEPARATOR);
-	if (!end) /* Reached end of string. Root is entire key. */
-		end = (char *)name + length;
-
-	return end-name+1;
-}
-
-
-
-/**
- * @internal
- *
- * Gets number of bytes needed to store root name of a key.
- *
- * Possible root key names are @p system or @p user .
- * This method does not consider the user domain in @p user:username keys.
- *
- * @param key the key object to work with
- * @return number of bytes needed with the ending NULL
- * @see keyGetFullRootNameSize()
- * @ingroup keyname
- */
-ssize_t keyGetRootNameSize(const Key *key)
-{
-	if (!key->key) return 0;
-
-	if (keyIsUser(key)) return sizeof("user");
-	else return sizeof("system");
-}
-
-
-
-/**
- * @internal
- *
- * Copy to @p returned the root name of @p key.
- *
- * Some examples:
- * - root of @p system/some/key is @p system
- * - root of @p user:denise/some/key is @p user
- * - root of @p user/env/env1 is @p user
- *
- * Use keyGetFullRootName() to get also the user domain.
- *
- * @param key the key to extract root from
- * @param returned a pre-allocated buffer to store the rootname
- * @param maxSize size of the @p returned buffer
- * @return number of bytes needed with ending NULL
- * @see keyGetRootNameSize(), keyGetFullRootName()
- * @ingroup keyname
- */
-ssize_t keyGetRootName(const Key *key, char *returned, size_t maxSize)
-{
-	size_t size;
-
-	if (!key->key) {
-		/*errno=KDB_ERR_NOKEY;*/
-		return -1;
-	}
-
-	if (!(size=keyGetRootNameSize(key))) {
-		/*errno=KDB_ERR_NOKEY;*/
-		return -1;
-	}
-
-	if (maxSize < size) {
-		/*errno=KDB_ERR_TRUNC;*/
-		return -1;
-	} else strncpy(returned,key->key,size-1);
-	returned[size-1]=0; /* null terminate it */
-	return size;
-}
-
-
-
-
-
-
-/**
- * @internal
- *
- * Gets number of bytes needed to store root name of a key name without
- * user domain.
- *
- * Some examples:
- * - root of @p system/some/key is @p system
- * - root of @p user:denise/some/key is @p user
- * - root of @p user/env/env1 is @p user
- *
- * @param keyName the name of the key
- * @return number of bytes needed with ending NULL or -1 if @p keyName is
- * 	not a valid name and @c errno is set to KDBErr::KDB_ERR_INVALIDKEY
- * @see keyGetRootNameSize()
- * @ingroup keyname
- */
-ssize_t keyNameGetRootNameSize(const char *name)
-{
-	int length=strlen(name);
-
-	if (!length) return 0;
-
-	/*
-		Possible situations:
-	user
-	user/
-	user/blabla
-	user:someuser
-	user:someuser/
-	user:someuser/key/name
-	system
-	system/
-	system/blabla
-	(empty)
-	*/
-	
-	if (keyNameIsUser(name)) return sizeof("user");
-	else if (keyNameIsSystem(name)) return sizeof("system");
-	else {
-		/*errno=KDB_ERR_INVALIDKEY;*/
-		return -1;
-	}
-}
-
-
-
-
-
-/**
- * @internal
- *
- * Calculates number of bytes needed to store full root name of a key.
- *
- * Possible root key names are @p system, @p user or @p user:someuser.
- * In contrast to keyGetRootNameSize(), this method considers the user
- * domain part, and you should prefer this one.
- *
- * @param key the key object to work with
- * @return number of bytes needed with ending NULL
- * @see keyGetRootNameSize()
- * @ingroup keyname
- */
-ssize_t keyGetFullRootNameSize(const Key *key)
-{
-	size_t size=0;
-
-	if (keyIsUser(key))
-	{
-		if (keyGetMeta(key, "owner")) size=keyGetValueSize(keyGetMeta(key, "owner"));
-		
-		return size+sizeof("user");
-	} else {
-		return keyNameGetRootNameSize(key->key);
-	}
-}
-
-
-/**
- * @internal
- *
- * Copy to @p returned the full root name of the key.
- *
- * Some examples:
- * - root of @p system/some/key is @p system
- * - root of @p user:denise/some/key is @p user:denise
- * - root of @p user/env/env1 is @p user:$USER
- *
- * This method is more robust then keyGetRootName()
- *
- * @param key the key to extract root from
- * @param returned a pre-allocated buffer to store the rootname
- * @param maxSize size of the @p returned buffer
- * @return number of bytes written to @p returned including ending NULL
- * @see keyGetFullRootNameSize(), keyGetRootName()
- * @ingroup keyname
- */
-ssize_t keyGetFullRootName(const Key *key, char *returned, size_t maxSize)
-{
-	size_t size;
-	size_t rootSize;
-	char *cursor;
-
-	if (!key->key) {
-		/*errno=KDB_ERR_NOKEY;*/
-		return 0;
-	}
-
-	if (!(size=keyGetFullRootNameSize(key))) {
-		/*errno=KDB_ERR_NOKEY;*/
-		return 0;
-	}
-
-	if (maxSize < size) {
-		/*errno=KDB_ERR_TRUNC;*/
-		return -1;
-	}
-	
-	rootSize = keyGetRootNameSize(key)-1;
-	strncpy(returned,key->key, rootSize); /* copy "user" or "system" */
-	if (keyIsUser(key) && keyGetMeta(key, "owner"))
-	{
-		cursor = returned + rootSize;
-		*cursor = ':'; cursor++;
-		strncpy (cursor, keyValue(keyGetMeta(key, "owner")), size - rootSize - 1); /* -1 for : */
-	} else {
-		returned[rootSize]=0;
-	}
-
-	return size;
 }
 
 
@@ -467,24 +232,26 @@ ssize_t keyGetParentName(const Key *key, char *returnedParent, size_t maxSize)
 }
 
 
-
-/**
- * @internal
- *
- * Check whether a key name is under the @p system namespace or not
- *
- * @return 1 if string begins with @p system , 0 otherwise
- * @param keyName the name of a key
- * @see keyIsSystem(), keyIsUser(), keyNameIsUser()
- * @ingroup keyname
- *
- */
-int keyNameIsSystem(const char *name)
+int keyNameIsSpec(const char *name)
 {
-	if (!strncmp("system",name,sizeof("system")-1)) return 1;
+	if (!strcmp("spec", name) ||
+		!strncmp("spec/",name,sizeof("spec/")-1)) return 1;
 	return 0;
 }
 
+int keyNameIsProc(const char *name)
+{
+	if (!strcmp("proc", name) ||
+		!strncmp("proc/",name,sizeof("proc/")-1)) return 1;
+	return 0;
+}
+
+int keyNameIsDir(const char *name)
+{
+	if (!strcmp("dir", name) ||
+		!strncmp("dir/",name,sizeof("dir/")-1)) return 1;
+	return 0;
+}
 
 /**
  * @internal
@@ -499,7 +266,27 @@ int keyNameIsSystem(const char *name)
  */
 int keyNameIsUser(const char *name)
 {
-	if (!strncmp("user",name,sizeof("user")-1)) return 1;
+	if (!strcmp("user", name) ||
+		!strncmp("user/",name,sizeof("user/")-1) ||
+		!strncmp("user:",name,sizeof("user:")-1)  ) return 1;
+	return 0;
+}
+
+/**
+ * @internal
+ *
+ * Check whether a key name is under the @p system namespace or not
+ *
+ * @return 1 if string begins with @p system , 0 otherwise
+ * @param keyName the name of a key
+ * @see keyIsSystem(), keyIsUser(), keyNameIsUser()
+ * @ingroup keyname
+ *
+ */
+int keyNameIsSystem(const char *name)
+{
+	if (!strcmp("system", name) ||
+		!strncmp("system/",name,sizeof("system/")-1)) return 1;
 	return 0;
 }
 
@@ -511,7 +298,7 @@ int keyNameIsUser(const char *name)
  */
 int keyInit(Key *key)
 {
-	memset(key,0,sizeof(Key));
+	memset(key,0,sizeof(struct _Key));
 
 	return 0;
 }
@@ -527,108 +314,115 @@ int keyInit(Key *key)
  * initialized, but really empty, object
  * @param va the variadic argument list
  */
-void keyVInit (Key *key, const char *name, va_list va)
+void keyVInit(Key *key, const char *name, va_list va)
 {
 	keyswitch_t action = 0;
+	size_t value_size = 0;
 	void *value = 0;
-	int valueSizeChanged = 0;
-	size_t valueSize = 0;
+	void (*func) (void) = 0;
+	kdb_unsigned_long_long_t flags = 0;
 	char *owner = 0;
-	option_t nameOptions = 0;
-	void (*p) (void) = 0;
 
 	if (!key) return;
 
+	keyInit(key);
+
 	if (name) {
-		action=va_arg(va, keyswitch_t);
-		while (action) {
+		while ((action = va_arg(va, keyswitch_t))) {
 			switch (action) {
+				/* flags with an argument */
 				case KEY_SIZE:
-					valueSize=va_arg(va, size_t);
-					valueSizeChanged = 1;
-					break;
-				case KEY_BINARY:
-					keySetMeta (key, "binary", "");
+					value_size = va_arg(va, size_t);
 					break;
 				case KEY_VALUE:
 					value = va_arg(va, void *);
-					if (valueSizeChanged && keyIsBinary(key))
-					{
-						keySetBinary(key,value, valueSize);
-					} else if (keyIsBinary(key)) {
-						valueSize = elektraStrLen (value);
-						keySetBinary(key,value, valueSize);
-					} else {
-						keySetString(key,value);
-					}
+					if (value_size && keyIsBinary(key))
+						keySetBinary(key, value, value_size);
+					else if (keyIsBinary(key))
+						keySetBinary(key, value, elektraStrLen(value));
+					else
+						keySetString(key, value);
+					break;
+				case KEY_FUNC:
+					func = va_arg(va, void(*)(void));
+					keySetBinary(key, &func, sizeof(func));
+					break;
+				case KEY_META:
+					value = va_arg (va, char *);
+					/* First parameter is name */
+					keySetMeta(key, value, va_arg(va, char *));
+					break;
+
+				/* flags without an argument */
+				case KEY_FLAGS:
+					flags |= va_arg(va, kdb_unsigned_long_long_t);
+				case KEY_BINARY:
+				case KEY_LOCK_NAME:
+				case KEY_LOCK_VALUE:
+				case KEY_LOCK_META:
+				case KEY_CASCADING_NAME:
+				case KEY_META_NAME:
+				case KEY_EMPTY_NAME:
+					if (action != KEY_FLAGS)
+						flags |= action;
+					if (test_bit(flags, KEY_BINARY))
+						keySetMeta(key, "binary", "");
+					if (test_bit(flags, KEY_LOCK_NAME))
+						keyLock(key, KEY_LOCK_NAME);
+					if (test_bit(flags, KEY_LOCK_VALUE))
+						keyLock(key, KEY_LOCK_VALUE);
+					if (test_bit(flags, KEY_LOCK_META))
+						keyLock(key, KEY_LOCK_META);
+					break;
+
+				/* deprecated flags */
+				case KEY_NAME:
+					name = va_arg(va, char *);
+					break;
+				case KEY_OWNER:
+					owner = va_arg(va, char *);
+					break;
+				case KEY_COMMENT:
+					keySetComment(key, va_arg(va, char *));
 					break;
 #ifndef WIN32
 				case KEY_UID:
-					keySetUID(key,va_arg(va,uid_t));
+					keySetUID(key, va_arg(va, uid_t));
 					break;
 				case KEY_GID:
-					keySetGID(key,va_arg(va,gid_t));
+					keySetGID(key, va_arg(va, gid_t));
+					break;
+				case KEY_DIR:
+					keySetDir(key);
 					break;
 				case KEY_MODE:
 					/* Theoretically this should be mode_t, but prefer using
 					   int to avoid troubles when sizeof(mode_t)!=sizeof(int)
 					 */
-					keySetMode(key,va_arg(va, int));
-					break;
-				case KEY_DIR:
-					keySetDir(key);
+					keySetMode(key, va_arg(va, int));
 					break;
 #endif
-				case KEY_OWNER:
-					owner = va_arg(va,char *);
+				/* deprecated flags, not working anymore */
+				case KEY_ATIME:
+				case KEY_MTIME:
+				case KEY_CTIME:
+					va_arg(va, time_t);
 					break;
-				case KEY_COMMENT:
-					keySetComment(key,va_arg(va,char *));
-					break;
-				case KEY_LOCK_NAME:
-					keyLock(key, KEY_LOCK_NAME);
-					break;
-				case KEY_LOCK_VALUE:
-					keyLock(key, KEY_LOCK_VALUE);
-					break;
-				case KEY_LOCK_META:
-					keyLock(key, KEY_LOCK_META);
-					break;
-				case KEY_FUNC:
-					p = va_arg(va, void(*)(void));
-					keySetBinary(key, &p, sizeof(p));
-					break;
-				case KEY_META:
-					value = va_arg (va,char *);
-					/*First parameter is name*/
-					keySetMeta (key, value, va_arg(va,char *));
-					break;
-				case KEY_CASCADING_NAME:
-					nameOptions |= KEY_CASCADING_NAME;
-					break;
-				case KEY_META_NAME:
-					nameOptions |= KEY_META_NAME;
-					break;
-				case KEY_EMPTY_NAME:
-					/* actually useless in current
-					 * implementation, empty name
-					 * is ok anyway. Maybe if error
-					 * handling is visible to user
-					 * in future the option still
-					 * might be interesting */
-					nameOptions |= KEY_EMPTY_NAME;
-					break;
+
 				default:
 #if DEBUG
-					fprintf (stderr, "Unknown option in keyVInit %ld\n", (long int)action);
+					fprintf (stderr, "Unknown option in keyVInit: "
+							ELEKTRA_UNSIGNED_LONG_LONG_F
+							"\n", (unsigned_long_long_t)action);
 #endif
 					break;
 			}
-			action=va_arg(va, keyswitch_t);
 		}
 
-		elektraKeySetName(key, name, nameOptions);
+		option_t name_options = flags &
+			(KEY_CASCADING_NAME | KEY_META_NAME | KEY_EMPTY_NAME);
+		elektraKeySetName(key, name, name_options);
+
 		if (owner) keySetOwner(key, owner);
 	}
 }
-

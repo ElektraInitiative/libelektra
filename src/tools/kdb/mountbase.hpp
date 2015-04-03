@@ -18,13 +18,12 @@ class MountBaseCommand : public Command
 
 protected:
 	void readMountConf(Cmdline const& cl);
-	void fixRootKey(Cmdline const& cl);
 	void getMountpoint(Cmdline const& cl);
 	void askForConfirmation(Cmdline const& cl);
 	void doIt();
 
+	kdb::KDB kdb;
 	kdb::KeySet mountConf;
-	std::string name;
 	std::string path;
 	std::string mp;
 

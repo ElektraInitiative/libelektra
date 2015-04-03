@@ -29,6 +29,7 @@
 
 
 enum {
+	KEY_FLAGS=3, // unique value, does not have to be a power of two
 	KEY_END=0,
 	KEY_NAME=1,
 	KEY_VALUE=1<<1,
@@ -149,6 +150,7 @@ ssize_t keyGetNameSize(const Key *key);
 ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
 
 ssize_t keySetName(Key *key, const char *newname);
+ssize_t keyAddName(Key *key, const char *addName);
 
 ssize_t keyGetFullNameSize(const Key *key);
 ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);

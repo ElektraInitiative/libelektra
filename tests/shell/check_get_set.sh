@@ -24,12 +24,12 @@ do
 		MOUNT_PLUGIN="tcl ccode null"
 		;;
 	"ini")
-		#TODO: broken?
+		#TODO: is broken
 		continue
 		;;
 	"yajl")
 		MOUNT_PLUGIN="$PLUGIN"
-		#TODO: add plugin to fix problem
+		#TODO: add dir2leaf plugin to fix problem
 		DO_NOT_TEST_ROOT_VALUE="yes"
 		;;
 	"simpleini")
@@ -53,8 +53,8 @@ do
 
 	cleanup()
 	{
-		$KDB umount $MOUNTNAME >/dev/null
-		succeed_if "could not umount $MOUNTNAME"
+		$KDB umount $MOUNTPOINT >/dev/null
+		succeed_if "could not umount $MOUNTPOINT"
 		rm -f $USER_FOLDER/$FILE
 		rm -f $SYSTEM_FOLDER/$FILE
 
@@ -67,7 +67,7 @@ do
 		succeed_if "found remaining files $SYSTEM_REMAINING in $SYSTEM_FOLDER"
 	}
 
-	for ROOT in $USER_ROOT $SYSTEM_ROOT
+	for ROOT in $ROOTS
 	do
 		#echo "do preparation for $PLUGIN in $ROOT"
 		$KDB set $ROOT "root" 1>/dev/null
@@ -78,7 +78,6 @@ do
 
 		if [ "x$DO_NOT_TEST_ROOT_VALUE" != "xyes" ]
 		then
-			#TODO: Fix by directoryvalue plugin
 			[ "x`$KDB get $ROOT 2> /dev/null`" = "xroot" ]
 			succeed_if "could not get root"
 
@@ -144,6 +143,12 @@ do
 
 		$KDB rm -r "$ROOT"
 		succeed_if "could not remove all keys"
+
+		test ! -f $USER_FOLDER/$FILE
+		succeed_if "user file was not removed"
+
+		test ! -f $SYSTEM_FOLDER/$FILE
+		succeed_if "system file was not removed"
 	done
 
 	cleanup

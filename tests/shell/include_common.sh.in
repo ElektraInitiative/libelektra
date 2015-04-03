@@ -1,11 +1,9 @@
 #!/bin/sh
-#set -x
 @DISCLAIMER@
 # This file is AUTO GENERATED, do not modify it or your changes might be
 # lost!
 #
-# shell test suite v0.4 for kdb command
-#set -x
+# shell test suite v0.5 for kdb command
 
 
 #
@@ -19,14 +17,14 @@ nbTest=0
 # the script itself
 scriptName=`basename $0`
 
-#RANDOM does not work with testdata
-#RANDOM=`mktemp -u --tmpdir=/ XXXXXXXXXXXX`
-MOUNTPOINT="/tests/script$RANDOM"
-RANDOMNAME=`echo $RANDOM | tr / _`
-MOUNTNAME="_tests_script$RANDOMNAME"
+MOUNTPOINT="/tests/script"
 
-USER_ROOT="user/tests/script$RANDOM"
-SYSTEM_ROOT="system/tests/script$RANDOM"
+NAMESPACES="user system"
+
+USER_ROOT="user/tests/script"
+SYSTEM_ROOT="system/tests/script"
+
+ROOTS="$USER_ROOT $SYSTEM_ROOT"
 
 IS_INSTALLED=@IS_INSTALLED@
 if [ "x$IS_INSTALLED" = "xYES" ]
@@ -51,6 +49,8 @@ PLUGINS_NEWLINES=`echo "@PLUGINS@" | tr ';' '\n'`
 
 DATE=`date "+%b %d %H:%M"`
 
+KDB_DEFAULT_STORAGE="@KDB_DEFAULT_STORAGE@"
+KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
 
 #

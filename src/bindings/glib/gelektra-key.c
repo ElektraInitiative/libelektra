@@ -7,7 +7,6 @@ enum
   PROP_0,
   PROP_KEY_NAME,
   PROP_KEY_BASENAME,
-  PROP_KEY_DIRNAME,
   PROP_KEY_FULLNAME,
   N_PROPERTIES
 };
@@ -40,14 +39,6 @@ static void gelektra_key_get_property(GObject *object, guint property_id,
 		break;
 	case PROP_KEY_BASENAME:
 		g_value_set_string(value, keyBaseName(self->key));
-		break;
-	case PROP_KEY_DIRNAME:
-		{
-			const char *val = keyName(self->key);
-			const char *pos = strrchr(val, '/');
-			gsize len = (pos != NULL) ? pos - val : keyGetNameSize(self->key);
-			g_value_take_string(value, g_strndup(val, len));
-		}
 		break;
 	case PROP_KEY_FULLNAME:
 		{
@@ -108,13 +99,6 @@ static void gelektra_key_class_init(GElektraKeyClass *klass)
 			NULL,
 			G_PARAM_READWRITE);
 
-	obj_properties[PROP_KEY_DIRNAME] =
-		g_param_spec_string("dirname",
-			"Dirname",
-			"The directory name of the key",
-			NULL,
-			G_PARAM_READABLE);
-
 	obj_properties[PROP_KEY_FULLNAME] =
 		g_param_spec_string("fullname",
 			"Fullname",
@@ -149,6 +133,7 @@ GElektraKey *gelektra_key_new(const gchar *name, ...)
 	{
 		va_start(va, name);
 		keyVInit(key->key, name, va);
+		keyIncRef(key->key); // keyVInit cleared the refcount
 		va_end(va);
 	}
 	return key;
@@ -182,6 +167,39 @@ GElektraKey *gelektra_key_make(Key *key)
 GElektraKey *gelektra_key_gi_make(GElektraKey *key)
 {
 	return (key != NULL) ? gelektra_key_make(key->key) : NULL;
+}
+
+/* initialization */
+static void gelektra_key_gi_init_va(GElektraKey *key, const gchar *name, ...)
+{
+	if (!name)
+		return;
+	va_list va;
+	va_start(va, name);
+	keyVInit(key->key, name, va);
+	keyIncRef(key->key); // keyVInit cleared the refcount
+	va_end(va);
+}
+
+/**
+ * gelektra_key_gi_init
+ * @name valid name of a key or NULL
+ * @flags see usage of KEY_FLAGS in keyNew
+ * @value: (nullable): key value
+ * @data: (array length=data_size zero-terminated=0) (element-type guint8) (nullable): binary key value
+ * @data_size: size of the input data
+ *
+ * \note This is for GObject Introspection.
+ * \note Do NOT use! Use gelektra_key_new instead
+ */
+void gelektra_key_gi_init(GElektraKey *key, const gchar *name, guint64 flags,
+	const gchar *value, const void *data, gsize data_size)
+{
+	gelektra_key_gi_init_va(key, name,
+		KEY_FLAGS, flags,
+		KEY_SIZE,  (flags & KEY_BINARY) ? data_size : 0,
+		KEY_VALUE, (flags & KEY_BINARY) ? data : value,
+		KEY_END);
 }
 
 /* reference handling */

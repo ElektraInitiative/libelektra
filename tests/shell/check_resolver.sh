@@ -24,7 +24,6 @@ fi
 WRITE_TO_SYSTEM=NO
 
 ROOT_MOUNTPOINT=/test/script
-ROOT_MOUNTNAME=_test_script
 
 #method that does all the checking
 check_resolver()
@@ -42,17 +41,19 @@ check_resolver()
 		return
 	fi
 
-	$KDB mount --resolver $PLUGIN $3 $ROOT_MOUNTPOINT dump 1>/dev/null
-	succeed_if "could not mount root: $3 at $ROOT_MOUNTPOINT with resolver $PLUGIN"
+	MOUNTPOINT=$1$ROOT_MOUNTPOINT
 
-	FILE=`$KDB file -n $1$ROOT_MOUNTPOINT`
+	$KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump 1>/dev/null
+	succeed_if "could not mount root: $3 at $MOUNTPOINT with resolver $PLUGIN"
+
+	FILE=`$KDB file -N $1 -n $ROOT_MOUNTPOINT`
 	[ "x$FILE"  = "x$4" ]
-	succeed_if "resolving of user$ROOT_MOUNTPOINT did not yield $4"
+	succeed_if "resolving of $MOUNTPOINT did not yield $4"
 	echo "got $FILE"
 
 	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
-		KEY=$1$ROOT_MOUNTPOINT/key
-		$KDB set $KEY value
+		KEY=$ROOT_MOUNTPOINT/key
+		$KDB set -N $1 $KEY value
 		succeed_if "could not set $KEY"
 
 		echo "remove $FILE and its directories"
@@ -63,8 +64,8 @@ check_resolver()
 		rmdir -p --ignore-fail-on-non-empty `dirname $FILE`
 	fi
 
-	$KDB umount $ROOT_MOUNTNAME >/dev/null
-	succeed_if "could not umount $ROOT_MOUNTNAME"
+	$KDB umount $MOUNTPOINT >/dev/null
+	succeed_if "could not umount $MOUNTPOINT"
 }
 
 unset HOME
@@ -102,6 +103,11 @@ check_resolver system b x @KDB_DB_SYSTEM@/x
 check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
 check_resolver system b /a /a
 check_resolver system b /a/b/c /a/b/c
+
+check_resolver spec b x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x
+check_resolver spec b x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x/a
+check_resolver spec b /x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@//x
+check_resolver spec b /x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@//x/a
 
 check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
 check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a

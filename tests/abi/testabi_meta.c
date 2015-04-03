@@ -18,14 +18,17 @@
 static void test_basic()
 {
 	Key *key;
-	key = keyNew("user/metakey", KEY_END);
+	key = keyNew("user/key_with_meta", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyGetMeta(key, "hello") == 0, "hello was not set up to now");
+	succeed_if (keyGetMeta(key, "error") == 0, "hello was not set up to now");
 
 	keySetMeta(key, "hello", "hello_world");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
 
 	keySetMeta(key, "mode", "0644");
+	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
+
 	keySetMeta(key, "time", "1271234264");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "hello")), "hello_world");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "mode")), "0644");

@@ -14,17 +14,17 @@ applications' configurations, leveraging easy application integration.
 - Make it simple for applications and administrators to access
   configuration
 - Make configuration storage more safe: avoid that applications
-  receive wrong values.
+  receive wrong or unexpected values without undefined behaviour.
 - Allow software to be better integrated on configuration level
 - Postpone some decisions from programmers to
   maintainers/administrators, e.g. which syntax and the location of
   configuration files.
-- Reduce rank growth of configuration parsers in our ecosystem, but use
-  well maintained libraries instead.
+- Reduce rank growth of configuration parsers in our ecosystem, but
+  foster well maintained plugins instead.
 
 And in terms of quality, we want:
 
-1.) Robustness
+1.) Robustness (no undefined behaviour)
 2.) Extensibility and
 3.) Simplicity
 
@@ -130,7 +130,7 @@ sources.list in wheezy:
         deb-src ftp://markus-raab.org/wheezy wheezy main
 
 If there are no packages available for your distribution, see the
-[installation document](doc/INSTALL).
+[installation document](doc/INSTALL.md).
 
 ## Develop ##
 

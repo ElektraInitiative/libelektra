@@ -4,13 +4,14 @@ KeyWindow {
 
 	title: qsTr("Edit Key")
 
-	path: treeView.currentNode === null ? "" : treeView.currentNode.path
 	keyName: selectedNode === null ? "" : selectedNode.name
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
 	function populateMetaArea() {
-		for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
-			qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
+		if(selectedNode.metaValue){
+			for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
+				qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
+			}
 		}
 	}
 
@@ -31,28 +32,38 @@ KeyWindow {
 
 		//create undo command
 		if(isEdited){
-			var data = [keyName.toString(), keyValue.toString(), selectedNode.metaValue,
-						nameTextField.text, valueTextField.text, metaData]
+			container.clearData()
 
-			undoManager.createEditKeyCommand(selectedNode.parentModel, index, data)
+			container.setOldName(keyName.toString())
+			container.setOldValue(keyValue.toString())
+			container.setOldMetadata(selectedNode.metaValue)
+
+			container.setNewName(nameTextField.text)
+			container.setNewValue(valueTextField.text)
+			container.setNewMetadata(metaData)
+
+			undoManager.createEditKeyCommand(selectedNode.parentModel, index, container)
 		}
 
-		qmlMetaKeyModel.clear()
-		selectedNode = null
+		if(!error){
+			qmlMetaKeyModel.clear()
+			selectedNode = null
 
-		if(accessFromSearchResults){
-			searchResultsListView.model.refresh()
-			searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+			if(accessFromSearchResults){
+				searchResultsListView.model.refresh()
+				searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
+			}
+
+			visible = false
+			accessFromSearchResults = false
+			nameTextField.readOnly = false
+			nameTextField.textColor = activePalette.text
+
+			qmlMetaKeyModel.clear()
+
+//			if(keyAreaView.model !== null && !accessFromSearchResults){
+//				keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
+//			}
 		}
-
-		accessFromSearchResults = false
-		nameTextField.undo()
-		valueTextField.undo()
-		nameTextField.readOnly = false
-		nameTextField.textColor = activePalette.text
-
-		qmlMetaKeyModel.clear()
-		selectedNode = null
 	}
-
 }

@@ -11,6 +11,7 @@
 
 
 #include <plugins.hpp>
+#include <helper/keyhelper.hpp>
 
 #include <kdbprivate.h>
 
@@ -118,9 +119,19 @@ void Plugins::addPlugin (Plugin &plugin, std::string which)
 	plugins[placementInfo[which].current++] = &plugin;
 }
 
+/**
+ * @brief check if this plugin can be placed in the unfortunately
+ * limited number of slots
+ *
+ * @param plugin the plugin to check
+ * @param which placementInfo it is
+ *
+ * @retval true if it should be added
+ * @retval false no placement (will not be added)
+ */
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
-	if (!plugin.findInfo(which, "placements")) return true;
+	if (!plugin.findInfo(which, "placements")) return false; // nothing to check, won't be added anyway
 
 	std::string stacking = plugin.lookupInfo("stacking");
 
@@ -156,7 +167,7 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 		throw TooManyPlugins(os.str());
 	}
 
-	return false;
+	return true;
 }
 
 bool Plugins::validateProvided() const
@@ -293,13 +304,11 @@ void ErrorPlugins::tryPlugin (Plugin &plugin)
 	checkOrdering(plugin);
 	checkConflicts(plugin);
 
-	if (	checkPlacement(plugin,"prerollback") &&
-		checkPlacement(plugin,"rollback") &&
-		checkPlacement(plugin,"postrollback"))
-	{
-		/* Wont be added to errorplugins anyway, so ignore it */
-		return;
-	}
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement(plugin,"prerollback");
+	willBeAdded |= checkPlacement(plugin,"rollback");
+	willBeAdded |= checkPlacement(plugin,"postrollback");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol("error"))
 	{
@@ -312,14 +321,12 @@ void ErrorPlugins::tryPlugin (Plugin &plugin)
 
 void GetPlugins::tryPlugin (Plugin &plugin)
 {
-	if (	checkPlacement(plugin, "getresolver") &&
-		checkPlacement(plugin, "pregetstorage") &&
-		checkPlacement(plugin, "getstorage") &&
-		checkPlacement(plugin, "postgetstorage"))
-	{
-		/* Wont be added to errorplugins anyway, so ignore it */
-		return;
-	}
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement(plugin, "getresolver");
+	willBeAdded |= checkPlacement(plugin, "pregetstorage");
+	willBeAdded |= checkPlacement(plugin, "getstorage");
+	willBeAdded |= checkPlacement(plugin, "postgetstorage");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol("get"))
 	{
@@ -332,16 +339,14 @@ void GetPlugins::tryPlugin (Plugin &plugin)
 
 void SetPlugins::tryPlugin (Plugin &plugin)
 {
-	if (	checkPlacement(plugin, "setresolver") &&
-		checkPlacement(plugin, "presetstorage") &&
-		checkPlacement(plugin, "setstorage") &&
-		checkPlacement(plugin, "precommit") &&
-		checkPlacement(plugin, "commit") &&
-		checkPlacement(plugin, "postcommit"))
-	{
-		/* Wont be added to errorplugins anyway, so ignore it */
-		return;
-	}
+	bool willBeAdded = false;
+	willBeAdded |= checkPlacement(plugin, "setresolver");
+	willBeAdded |= checkPlacement(plugin, "presetstorage");
+	willBeAdded |= checkPlacement(plugin, "setstorage");
+	willBeAdded |= checkPlacement(plugin, "precommit");
+	willBeAdded |= checkPlacement(plugin, "commit");
+	willBeAdded |= checkPlacement(plugin, "postcommit");
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol("set"))
 	{
@@ -423,6 +428,24 @@ bool SetPlugins::validated () const
 }
 
 
+namespace
+{
+	void serializeConfig(std::string name, KeySet const & ks, KeySet & ret)
+	{
+		if (!ks.size()) return;
+
+		Key oldParent("user", KEY_END);
+		Key newParent(name + "/config", KEY_END);
+
+		ret.append(newParent);
+
+		for (KeySet::iterator i = ks.begin(); i != ks.end(); ++i)
+		{
+			Key k(i->dup());
+			ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
+		}
+	}
+}
 
 
 
@@ -435,12 +458,13 @@ void ErrorPlugins::serialise (Key &baseKey, KeySet &ret)
 	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
+		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		ret.append (*Key (baseKey.getName() + "/errorplugins/#" + pluginNumber.str() + plugins[i]->refname(),
-			KEY_COMMENT, "A plugin",
-			KEY_END));
+		std::string name = baseKey.getName() + "/errorplugins/#" + pluginNumber.str() + plugins[i]->refname();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		if (fr) serializeConfig(name, plugins[i]->getConfig(), ret);
 	}
 }
 
@@ -453,12 +477,13 @@ void GetPlugins::serialise (Key &baseKey, KeySet &ret)
 	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
+		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		ret.append (*Key (baseKey.getName() + "/getplugins/#" + pluginNumber.str() + plugins[i]->refname(),
-			KEY_COMMENT, "A plugin",
-			KEY_END));
+		std::string name = baseKey.getName() + "/getplugins/#" + pluginNumber.str() + plugins[i]->refname();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		if (fr) serializeConfig(name, plugins[i]->getConfig(), ret);
 	}
 }
 
@@ -472,12 +497,13 @@ void SetPlugins::serialise (Key &baseKey, KeySet &ret)
 	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
 		if (plugins[i] == 0) continue;
+		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
-		ret.append (*Key (baseKey.getName() + "/setplugins/#" + pluginNumber.str() + plugins[i]->refname(),
-			KEY_COMMENT, "A plugin",
-			KEY_END));
+		std:: string name = baseKey.getName() + "/setplugins/#" + pluginNumber.str() + plugins[i]->refname();
+		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
+		if (fr) serializeConfig(name, plugins[i]->getConfig(), ret);
 	}
 }
 

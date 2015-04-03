@@ -5,14 +5,17 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 
 Window {
-	id: basicWindow
 
 	property alias okButton: okButton
 	property alias cancelButton: cancelButton
+	property alias detailsButton: detailsButton
 	default property alias contents: placeholder.children
+	property alias spacer: spacer
 
 	width: Math.ceil(mainWindow.width*0.4)
 	height: Math.ceil(mainWindow.height*0.6)
+
+	modality: Qt.WindowModal
 
 	x: Math.ceil(Screen.desktopAvailableWidth*0.5-width*0.5)
 	y: Math.ceil(Screen.desktopAvailableHeight*0.5-height*0.5)
@@ -29,21 +32,39 @@ Window {
 
 			Layout.fillHeight: true
 			Layout.fillWidth: true
-			Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 		}
-
+		Item {
+			id:spacer
+			Layout.fillWidth: true
+			height: 2*defaultMargins
+		}
 		RowLayout {
 			anchors.bottom: parent.bottom
-			anchors.right: parent.right
 
 			Button {
+				id: detailsButton
+				anchors.left: parent.left
+				visible: false
+				action: Action {
+					text: qsTr("&Show Details")
+				}
+			}
+			Item {
+				id: filler
+				height: okButton.height
+				Layout.fillWidth: true
+			}
+			Button {
 				id:okButton
-				text: "Ok"
-				isDefault: true
+				action: Action {
+					text: qsTr("&Ok")
+				}
 			}
 			Button {
 				id:cancelButton
-				text: "Cancel"
+				action: Action {
+					text: qsTr("&Cancel")
+				}
 			}
 		}
 	}

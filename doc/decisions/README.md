@@ -19,8 +19,11 @@ section here.
 ## In Discussion
 
 - [CMake spec](cmake_spec.md)
+- [Empty Files](empty_files.md)
+- [Internal Cache](internal_cache.md)
 
 ## Drafts
 
 - [Specification](specification.md)
 - [Script Testing](script_testing.md)
+- [Null Pointer Checks](null_pointer_checks.md)

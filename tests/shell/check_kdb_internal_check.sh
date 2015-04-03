@@ -18,6 +18,10 @@ do
 		# output on open/close
 		continue
 		;;
+	"counter")
+		# output on open/close
+		continue
+		;;
 	esac
 
 	> $FILE

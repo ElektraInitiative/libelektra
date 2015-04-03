@@ -16,6 +16,7 @@
 
 #include <tests_internal.h>
 
+#include "xmltool.h"
 #include "kdbtools.h"
 
 #include <unistd.h>
@@ -190,7 +191,6 @@ void test_keyset()
 			break;
 			// <key type="string" basename="dir-1-0">
 		case 3:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0") == 0,"name of 3. key not correct");
-			succeed_if (keyIsDir (cur), "Is not directory, but should be");
 			break;
 			// <key type="114" basename="0-294164813" value="0 216245011"><comment>18454108762891828026</comment></key>
 		case 4:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/0-294164813") == 0,"name of 4. key not correct");
@@ -204,7 +204,6 @@ void test_keyset()
 			break;
 			// <key type="string" basename="dir-2-0">
 		case 6:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0") == 0,"name of 3. key not correct");
-			succeed_if (keyIsDir (cur), "Is not directory, but should be");
 			break;
 			// <key type="144" basename="0-215571059" value="0 264857705"><comment>2188631490667217086</comment></key>
 		case 7:	succeed_if (strcmp (keyName(cur),"user/tests/filesys/dir-1-0/dir-2-0/0-215571059") == 0,"name of 4. key not correct");
@@ -217,6 +216,63 @@ void test_keyset()
 	ksDel(ks);
 }
 
+#include "kscompare.c"
+#define MAX_SIZE 200
+
+static void test_ksCommonParentName()
+{
+	char ret [MAX_SIZE+1];
+	KeySet *ks = ksNew (10,
+		keyNew("system/sw/xorg/Monitors/Monitor1/vrefresh",0),
+		keyNew("system/sw/xorg/Monitors/Monitor1/hrefresh",0),
+		keyNew("system/sw/xorg/Monitors/Monitor2/vrefresh",0),
+		keyNew("system/sw/xorg/Monitors/Monitor2/hrefresh",0),
+		keyNew("system/sw/xorg/Devices/Device1/driver",0),
+		keyNew("system/sw/xorg/Devices/Device1/mode",0),KS_END);
+
+	printf ("Test common parentname\n");
+
+	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could not find correct parentname");
+	succeed_if_same_string (ret, "system/sw/xorg");
+	ksDel (ks);
+
+	ks = ksNew (10,
+		keyNew("system",0),
+		keyNew("user",0),KS_END);
+	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
+	succeed_if_same_string (ret, "");
+	ksDel (ks);
+
+	ks = ksNew (10,
+		keyNew("system/some/thing",0),
+		keyNew("system/other/thing",0), KS_END);
+	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 7, "could find correct parentname");
+	succeed_if_same_string (ret, "system");
+	ksDel (ks);
+
+	ks = ksNew (10,
+		keyNew("system/here/in/deep/goes/ok/thing",0),
+		keyNew("system/here/in/deep/goes/ok/other/thing",0),
+		KS_END);
+	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
+	succeed_if_same_string (ret, "system/here/in/deep/goes/ok");
+	ksDel (ks);
+
+	ks = ksNew (10,
+		keyNew("system/here/in/deep/goes/ok/thing",0),
+		keyNew("system/here/in/deep/goes/ok/other/thing",0),
+		keyNew("user/unique/thing",0),KS_END);
+	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) == 0, "could find correct parentname");
+	succeed_if_same_string (ret, "");
+	ksDel (ks);
+
+	ks = ksNew (10,
+		keyNew("user/unique/thing",0),KS_END);
+	succeed_if (ksGetCommonParentName(ks, ret, MAX_SIZE) > 0, "could find correct parentname");
+	succeed_if_same_string (ret, "user/unique/thing");
+	ksDel (ks);
+}
+
 
 int main(int argc, char** argv)
 {
@@ -227,6 +283,7 @@ int main(int argc, char** argv)
 
 	test_key();
 	test_keyset();
+	test_ksCommonParentName();
 
 	/*
 	test_readwrite();

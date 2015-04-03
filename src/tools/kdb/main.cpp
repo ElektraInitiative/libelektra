@@ -24,7 +24,7 @@ void displayHelp(std::string app, std::vector<std::string> commands)
 		<< "Run a command with -H or --help as args to show a help text for\n"
 		<< "a specific command.\n"
 		<< std::endl;
-	std::cerr << "Known commands are:" << std::endl;
+	std::cout << "Known commands are:" << std::endl;
 	for (
 		std::vector<std::string>::iterator it =
 		commands.begin();
@@ -33,6 +33,7 @@ void displayHelp(std::string app, std::vector<std::string> commands)
 	{
 		std::cout << *it  << std::endl;
 	}
+	std::cout << "list-tools   List all external tools" << std::endl;
 }
 
 void displayVersion()

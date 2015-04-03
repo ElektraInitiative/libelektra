@@ -18,6 +18,7 @@
 #define KDBPRIVATE_H
 
 #include <kdb.h>
+#include <kdbtypes.h>
 #include <kdbhelper.h>
 #include <kdbconfig.h>
 #include <kdbplugin.h>
@@ -70,9 +71,11 @@
 #endif
 
 #if DEBUG || defined(ELEKTRA_BMC)
-#define ELEKTRA_ASSERT assert
+#undef NDEBUG
+#include <assert.h>
+#define ELEKTRA_ASSERT(NX) assert(NX)
 #else
-#define ELEKTRA_ASSERT
+#define ELEKTRA_ASSERT(NX)
 #endif
 
 
@@ -290,6 +293,8 @@ struct _KDB {
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
 };
 
+
+
 /**
  * Holds all information related to a backend.
  *
@@ -320,15 +325,24 @@ struct _Backend
 	Plugin *getplugins[NR_OF_PLUGINS];
 	Plugin *errorplugins[NR_OF_PLUGINS];
 
+	ssize_t specsize;	/*!< The size of the spec key from the previous get.
+		-1 if still uninitialized.
+		Needed to know if a key was removed from a keyset. */
+	ssize_t dirsize;	/*!< The size of the dir key from the previous get.
+		-1 if still uninitialized.
+		Needed to know if a key was removed from a keyset. */
 	ssize_t usersize;	/*!< The size of the users key from the previous get.
+		-1 if still uninitialized.
 		Needed to know if a key was removed from a keyset. */
 	ssize_t systemsize;	/*!< The size of the systems key from the previous get.
+		-1 if still uninitialized.
 		Needed to know if a key was removed from a keyset. */
 
 	size_t refcounter;	/*!< This refcounter shows how often the backend
 		is used.  Not cascading or default backends have 1 in it.
-		More than two is not possible, because a backend
-		can be only mounted in system and user each once.*/
+		More than three is not possible, because a backend
+		can be only mounted in dir, system and user each once
+		OR only in spec.*/
 };
 
 /**
@@ -385,10 +399,25 @@ struct _Trie
 	Backend *empty_value;		/*!< Pointer to a backend for the empty string "" */
 };
 
+typedef enum
+{
+	SPLIT_FLAG_SYNC=1,	/*!< KeySet in Split need sync.
+		Is there any key in there which need to be synced?
+		If keys were popped from the Keyset
+		this flag will be set, so that the backend will sync
+		the keys to database.
+		*/
+
+	SPLIT_FLAG_CASCADING=1<<1 /*!< Do we need relative checks?
+		Is this a cascading backend?
+		*/
+} splitflag_t;
+
+
 
 /** The private split structure.
  *
- * kdbSet() splits keysets. This structure contains arrays for
+ * kdbGet() and kdbSet() split keysets. This structure contains arrays for
  * various information needed to process the keysets afterwards.
  */
 struct _Split
@@ -399,10 +428,8 @@ struct _Split
 	Backend **handles;	/*!< The KDB for the keyset */
 	Key **parents;		/*!< The parentkey for the keyset.
 				Is either the mountpoint of the backend
-				or "user", "system" for the split root backends */
-	int *syncbits;		/*!< Bits for various options:
-				Bit 0: Is there any key in there which need to be synced?
-				Bit 1: Do we need relative checks? (cascading backend?)*/
+				or "user", "system", "spec" for the split root/cascading backends */
+	splitflag_t *syncbits;	/*!< Bits for various options, see #splitflag_t for documentation */
 };
 
 /***************************************
@@ -417,10 +444,15 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
 Split * elektraSplitNew(void);
 void elektraSplitDel(Split *keysets);
 void elektraSplitResize(Split *ret);
+void elektraSplitRemove(Split *split, size_t where);
 ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int syncbits);
 ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *key);
 int elektraSplitSearchRoot(Split *split, Key *parentKey);
 int elektraSplitBuildup (Split *split, KDB *handle, Key *parentKey);
+void elektraSplitUpdateFileName (Split *split, KDB *handle, Key *key);
+
+/* for kdbOpen() algorithm */
+void elektraSplitOpen(Split *split);
 
 /* for kdbGet() algorithm */
 int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks);
@@ -428,9 +460,10 @@ int elektraSplitGet (Split *split, Key *warningKey, KDB *handle);
 int elektraSplitMerge (Split *split, KeySet *dest);
 
 /* for kdbSet() algorithm */
+int elektraSplitCheckSize (Split *split);
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks);
 int elektraSplitSync (Split *split);
-int elektraSplitPrepare (Split *split);
+void elektraSplitPrepare (Split *split);
 int elektraSplitUpdateSize (Split *split);
 
 
@@ -441,6 +474,8 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenVersion(Key *errorKey);
 int elektraBackendClose(Backend *backend, Key *errorKey);
+
+int elektraBackendUpdateSize(Backend *backend, Key *parent, int size);
 
 /*Plugin handling*/
 int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName,
@@ -471,6 +506,8 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where);
 Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 
 /*Private helper for keys*/
+elektraNamespace keyGetNameNamespace(const char *name);
+
 int keyInit(Key *key);
 void keyVInit(Key *key, const char *keyname, va_list ap);
 
@@ -479,6 +516,10 @@ int keyClearSync (Key *key);
 /*Private helper for keyset*/
 int ksInit(KeySet *ks);
 int ksClose(KeySet *ks);
+
+int ksResize(KeySet *ks, size_t size);
+size_t ksGetAlloc(const KeySet *ks);
+KeySet* ksDeepDup(const KeySet *source);
 
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 
@@ -491,9 +532,12 @@ ssize_t elektraFinalizeName(Key *key);
 ssize_t elektraFinalizeEmptyName(Key *key);
 
 char *elektraEscapeKeyNamePart(const char *source, char *dest);
-size_t elektraUnescapeKeyName(const char *source, char *dest);
 
-int elektraValidateKeyNamePart(const char *name);
+size_t elektraUnescapeKeyName(const char *source, char *dest);
+int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest);
+char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest);
+
+int elektraValidateKeyName(const char *name, size_t size);
 
 /** The buffer size needed for an array name
  *
@@ -507,12 +551,31 @@ int elektraValidateKeyNamePart(const char *name);
  */
 #define ELEKTRA_MAX_ARRAY_SIZE (21)
 
-#ifndef WIN32
 /*Internally used for array handling*/
 int elektraArrayValidateName(const Key *key);
-int elektraReadArrayNumber(const char *baseName, int64_t *oldIndex);
-int elektraWriteArrayNumber(char *newName, int64_t newIndex);
-#endif
+int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex);
+int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
+
+/* Name Manipulation Methods */
+ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
+ssize_t keyGetParentNameSize(const Key *key);
+
+
+/* Conveniences Methods for Making Tests */
+
+int keyIsSpec(const Key *key);
+int keyIsProc(const Key *key);
+int keyIsDir(const Key *key);
+int keyIsSystem(const Key *key);
+int keyIsUser(const Key *key);
+
+int keyNameIsSpec(const char *keyname);
+int keyNameIsProc(const char *keyname);
+int keyNameIsDir(const char *keyname);
+int keyNameIsSystem(const char *keyname);
+int keyNameIsUser(const char *keyname);
+
+keyswitch_t keyCompare(const Key *key1, const Key *key2);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

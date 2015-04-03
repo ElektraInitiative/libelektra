@@ -20,7 +20,9 @@ namespace tools
 
 namespace merging
 {
-
+// This strategy is able to resolve every kind of conflict by always
+// using the key of the winning side. Note that this also includes removing
+// keys if the keys were deleted at the winning side.
 class OneSideStrategy : public MergeConflictStrategy
 {
 

@@ -1,5 +1,7 @@
 == C++ ==
 
+Add haskell binding for propellor
+
 iomanip using iword, pword, and xalloc
 	allow to define delimiters of key/value
 
