@@ -1,5 +1,9 @@
 # 0.8.11 Release
 
+- guid: 7d4647d4-4131-411e-9c2a-2aca39446e18
+- author: Markus Raab
+- pubDate: Fri, 03 Apr 2015 02:39:37 +0200
+
 From the beginning of the Elektra Initiative, Elektra aimed for avoiding
 hard coded information in the application and to make the application's
 configuration more transparent. While avoiding any pathes to files was
@@ -11,7 +15,7 @@ How does that work?
 
 Elektra 0.8.11 introduces a so called specification for the
 application's configuration. It is located below its own namespace
-`spec`.
+`spec` (next to user and system).
 
 Once the base path is known, the user can find out all Elektra
 pathes used by an application, through:
@@ -21,8 +25,8 @@ pathes used by an application, through:
 Keys in `spec` allow us to specify which keys are read by the application,
 which fallback it might have and which is the default value using
 meta data. The implementation of these features happened in `ksLookup`.
-When cascading keys (tagged with KEY_CASCADING_NAME and starting with `/`)
-are used following features are now available:
+When cascading keys (those starting with `/`) are used following features
+are now available (in the meta data of respective `spec`-keys):
 
 - `override/#`: use these keys *in favour* of the key itself (note that
     `#` is the syntax for arrays, e.g. `#0` for the first element,
@@ -30,10 +34,10 @@ are used following features are now available:
 - `namespace/#`: instead of using all namespaces in the predefined order,
     one can specify which namespaces should be searched in which order
 - `fallback/#`: when no key was found in any of the (specified) namespaces
-    these keys will be searched
+    the `fallback`-keys will be searched
 - `default`: this value will be used if nothing else was found
 
-Our novel technique does not only give you the obvious advantages, but
+This technique does not only give you the obvious advantages, but
 also provides complete transparency how a program will fetch a configuration
 value. In practice that means that:
 
@@ -60,15 +64,16 @@ logger plugin and the KDB base path is printed to:
 What we do not see in the program above are the default values and
 fallbacks. They are only present in the so specification (namespace `spec`).
 Luckily, the specification are key/value pairs, too. So we do not have
-to learn something new, e.g. using the ni plugin:
+to learn something new, e.g. using the ni plugin we can specify:
 
     [promise]
     default=20
     fallback/#0=/somewhere/else
     namespace/#0=user
 
-When this file is mounted to spec/sw/app/#0 we specify, that only the
-namespace `user` should be used.
+When this file is mounted to `spec/sw/app/#0` we specify, that only
+for the key `/sw/app/#0/promise` only the namespace `user` should be
+used.
 
 If this key was not found, but `/somewhere/else` is present, we will use
 this key instead.  The `fallback` technique is very powerful: it allows
@@ -86,16 +91,18 @@ configuration *file level*.
 
 ## Namespaces
 
-The specification gives the namespaces much clearer semantics and
+The specification gives the namespaces clearer semantics and
 purpose. Key names starting with a namespace are connected to a
 configuration source. E.g. keys starting with:
 
 - `user` are keys from the home directory of the current user
 - `system` are keys from the `/etc` directory of the current system
+- `spec` are keys from the specification directory (configurable
+    with KDB_DB_SPEC, typically `/usr/share/elektra/specification`)
 
 When a key name starts with an `/` it means that it is looked up by
-specification. Such a key is not really present in the keyset (except
-when a default value was found). Such keys are neither received
+specification. Such a cascading key is not really present in the keyset
+(except when a default value was found). They are neither received
 nor stored by `kdbGet` and `kdbSet`.
 
 Applications shall only lookup using cascading keys (starting with `/`).
@@ -114,32 +121,8 @@ background to Elektra, read:
 https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md
 
 For a full list of proposed and implemented meta-data, see:
-https://github.com/ElektraInitiative/libelektra/blob/master/doc/METADATA.ini
+https://github.com/ElektraInitiative/libelektra/blob/master/doc/NAMESPACES.md
 
-
-## Mounting specifications
-
-Such specifications can also be used for mounting:
-
-    kdb mount-spec "app.ini" "/sw/app/#0"
-
-will mount the specification if app.ini has following metadata in the top-level `[]` section:
-
-- `filename` the name to be used as configuration file
-- `needs/#` the plugins to be loaded
-
-For example we extend above file:
-
-    []
-    filename=app.json
-    needs/#0=yajl
-
-Such specification mounts will do a cascading mount (mountpoint in every namespace)
-of `app.json` using the plugin `yajl` and mount the file `app.ini` itself in the
-`spec` namespace.
-
-Note that specifications are currently copied to `@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@`
-e.g.: `/usr/share/elektra/specification/`
 
 ## Simplification in the merging framework
 
@@ -154,12 +137,30 @@ For now the more granular strategies are removed from the public API in order to
 them to evolve freely. Once their documentation and testing is improved they may be
 reintroduced in future versions.
 
-Have a look at the changes in import.cpp and merge.cpp for an overview of the simplifications
-caused by this addition.  
+Have a look at the changes in the example in src/libtools/examples/merging.cpp for an
+overview of the simplifications.
+
+The header files will be installed to /usr/include/elektra/merging, but they are
+subject to be changed in the future (e.g. as they did in this release).
+
+Thanks to Felix Berlakovich!
+
+## Compatibility
+
+From the merging improvements some minor incompatibility happened in
+`kdb import`. Not all merging strategies that worked in 0.8.10 work
+anymore. Luckily, now its much simpler to choose the strategies.
+
+Mac OS X support was greatly improved, thanks to Peter Nirschl
+and Kai-Uwe Behrmann. The feature rich resolver, now also works
+in Mac OS X.  wresolver is now only needed for mingw.
+
+Elektra still compiles with gcc, icc and clang.
+
 
 ## API
 
-The main API kdb.h has one added line:
+The main API kdb.h has two added lines. First a new method was added:
 
     ssize_t keyAddName(Key *key, const char *addName);
 
@@ -167,24 +168,33 @@ This method is already used heavily in many parts. Contrary to `keySetBaseName` 
 `keyAddBaseName` it allows us to extend the path with more than one Element at once,
 i.e. `/` are not escaped.
 
-A new proposed function is `keyNameGetOneLevel`. Unlike to the previous
-function with the same name it will operate on null terminated strings.
-Currently it has the signature:
+The other new line is the new enum value KEY_FLAGS.
+This feature allows bindings to use any flags in keyNew without actually
+building up variable argument lists.  (Thanks to Manuel Mausz)
 
-    const char *keyNameGetOneLevel(Key *key, size_t where);
+So as always, API+ABI is stable.
 
-The enum for the method `keyGetNamespace` was extended according to the
-new namespaces added.
+## Proposed
+
+Many new functions are proposed and can be found in
+[the doxygen docu](http://doc.libelektra.org/api/0.8.11/html) and in
+kdbproposal.h.
+
+Noteworthy is the method `keyGetNamespace` which allows us to query all
+namespaces. Since this release we changed every occurrence of namespaces
+(except documentation) with switch-statements around `keyGetNamespace`.
+This allows us to add new more namespaces more easily. (Although its
+currently not planned to add further namespaces.)
 
 Finally, a bunch of new lookup options was added, which might not be
-useful for the public API (they allow us to disable the features
-mentioned in the beginning).
+useful for the public API (they allow us to disable the
+specification-aware features mentioned in the beginning).
 
 ## Obsolete and removed concepts
 
-The concept that backends get a name is now gone. Backends will simply
-be with their escaped mountpath below system/elektra/mountpoints without
-any confusing additional name.
+The concept that backends have a name (other than their mountpoint)
+is now gone. Backends will simply be with their escaped mountpath
+below system/elektra/mountpoints without any confusing additional name.
 
 So unmounting only works with the path as given for the mount command.
 
@@ -193,64 +203,84 @@ removes some bugs. E.g. having mountpoints which do not differ except
 having a `_` instead of a `/` would have caused problems with the
 automatic name generation of Elektra 0.8.10.
 
-Old mountpoints, however, now need to be removed with their name
+Old mountpoints need to be removed with their 0.8.10 name
 (`_` instead of `/`).
 
 Additionally, the so called directory keys were also removed.
+Elektra was and still is completely key/value based. The `/` separator
+is only used for mountpoints.
+
+The plugin fstab now works the same way: Slashes in mountpoints are
+escaped properly with the internal escaping engine of keyAddBaseName()
+(i.e. without any heuristics).
+
+getDirName() was removed from C++, gi-lua, gi-python2, gi-python3,
+swig-lua, swig-python2 and swig-python3. It was never present in C and
+did not fit well with keyBaseName() (which returns an unescaped name,
+which is not possible for the dirname). (Thanks to Manuel Mausz)
+
 
 ## parentName
 
 While empty/invalid names are still accepted as parentName to `kdbGet`
-and `kdbSet` for compatibility reasons,
+and `kdbSet` for compatibility reasons, the parentKey
 
-    keyNew("/", KEY_CASCADING_NAME, KEY_END);
+    Key *parentKey = keyNew("/", KEY_END);
 
-should be used instead. They have identical behaviour, except that
+should be used instead (if you want to get or store everything).
+They have identical behaviour, except that
 invalid names (that cannot be distinguished from empty names) will
 produce a warning. In the next major version it will produce an error.
 
-## Qt-Gui 0.0.3
+
+## KDB Behaviour
+
+It is now enforced that before a kdbSet() on a specific path a kdbGet()
+on that path needs to be done. This was always documented that way and
+is the only way to correctly detect conflicts, updates and missing
+configuration files. Error #107 will be reported on violations.
+
+Additionally, the handling with missing files was improved. Empty
+keysets for a mountpoint now will remove a file. Such an empty file
+is always up-to-date. Removing files has the same atomicity guarantees
+as other operations.
+
+The concurrency behaviour is at a very high level: as expected many processes
+with many threads can each concurrently write to the key database,
+without any inconsistent states: This is noted here because Elektra
+works on standard configuration files without any guarding processes.
+
+Filesystem problems, e.g. permission, now always lead to the same errors
+(#9, #75, #109, #110), regardless of the storage plugin.
+
+
+## Qt-Gui 0.0.6
 
 Raffael Pancheri was very busy and did a lot of stabilizing work:
 
 - Added markdown converter functionality for plugin documentation
+- Integrated help (Whats this?)
 - Added credits to other authors
 - do not show storage/resolver plugins if a plugin of that kind has been selected
 - added menu to newkey toolbar button to allow new array entries
-- fixed Arrayname not shown in disabled color when creating a new array
 - added option to include a configuration keyset when adding a plugin
-- refactored TreeView to make it possible to define behaviour externally
 - show included keys when creating the plugin configuration
-- moved TreeView functions to separate file
-- moved main functions to separate file
 - Added all storageplugins to namefilters
-- Simplified namefilters
 - Reimplement ErrorDialog
 - Added undo/redo of all commands and correctly update the view
 - modified ToolTip size
-- TreeView copy/cut branch view-update fix
-- metakey view update fix when selecting a new key when editkeywindow is
-- Fixed messed up keyWindow when keyname/value are very long
-- changed window modality so open window is blocking input to parent/
 - Color animation on search results
-- Some view update fixes
-- Moved AboutWindow to separate file
-- Moved MainToolBar to separate file
-- Moved TreeContextMenu to separate file
-- Moved KeyAreaContextMenu to separate file
-- Minor view fixes
-- Fixed GeneralMessageDialog size issues
-- GeneralMessageDialog title fix
-- Need to place TreeView functions inside TreeView.qml, else they cannot
-- Merge remote-tracking branch 'upstream/master'
-- fixed freeze when opening UnmountBackendWindow
-- fixed qml assignment errors
-- Fixed undo/redo all view updates
 - Refactored Buttons to accept shortcuts
-- Fixed broken Next Button in Wizard
-- small focus and shortcut fixes
 - Updated Translations
+- Colors are now customizeable
+- Many small fixes
 
+The gui is already used and the remaining small bugs (see github)
+are going to be fixed soon. One of the highlights is undo for
+nearly every action, so nothing prevents you from trying it out!
+
+A huge thanks to Raffael Pancheri for his contributions. His thesis can
+be found at [here](http://www.libelektra.org/ftp/elektra/pancheri2015gui.pdf).
 
 ## Bug fixing
 
@@ -267,19 +297,29 @@ Raffael Pancheri was very busy and did a lot of stabilizing work:
 - new keys are correctly renamed, fixes OpenICC (thanks to Felix Berlakovich)
 - comments in host keys are correctly restored (thanks to Felix Berlakovich)
 - output stream in type checking is no longer locale dependent (thanks to Manuel Mausz)
+- cmake uninstall works again
 - simplify CMAKE_DL_LIBS (thanks to Manuel Mausz)
 
 ## Further gems
 
 - Examples were improved, added (e.g. cascading, namespace) and included in doxygen
+- [Doxygen docu](http://doc.libelektra.org/api/0.8.11/html) is improved
+- [METADATA specification](https://github.com/ElektraInitiative/libelektra/blob/master/doc/METADATA.ini)
+    nearly completely rewritten (thanks to Felix Berlakovich)
+- benchmarks were greatly enhanced (runtime+heap profiling),
+    and some important performance improvements were done
 - All plugins now use the cmake function `add_plugin`
-   (thanks to Ian for most of the work)
+    (thanks to Ian Donnelly for most of the work)
 - keyGetNamespace is now used internally everywhere where namespaces
     are handled. It should be much easier now to add a namespace if it
     should be required to do so.
 - data directory (keysets as C-files) is now shared between different
     kinds of test suites.
+- many more tests were added, e.g. distribution tests, KDB API tests
+- much more test data was added, see tests/data. Sometimes the same data
+    is included multiple times, e.g. for different namespaces.
 - allocation tests were readded
+- now all kdb commands accept cascading keys.
 - More compiler flags are added and many warnings are fixed
 - cleanup of old unused `keyName` methods
 - The key `system/elektra/mountpoints` itself was always created and a
@@ -293,6 +333,54 @@ Raffael Pancheri was very busy and did a lot of stabilizing work:
 - SWIG3 is preferred when available
 - add the plugin counter that counts how often the methods of a plugin are called
 - `kdb list-tools` is now advertised in `kdb --help`
+
+## Further Notes
+
+With 471 files changed, 27978 insertions(+), 11512 deletions(-) this
+release is huge. With 773 commits over four month much more changes
+happened which did not find their place in these release notes, even
+though the notes are much less detailed than usual.
+
+Thanks for all contributions that are not enlisted here!
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+or directly the maintainer elektra@markus-raab.org.
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.11.tar.gz)
+
+- name: elektra-0.8.11.tar.gz
+- size: 2020875
+- md5sum: 140b32031f4df91c5d410eba3d93f67b
+- sha1: 80bc91e5223ed2bdea3f94fae1bb11849dbff27d
+- sha256: 2e41ce50f1e94e288ce49aeafa28536e3e4dfec7cf7d401f5751db2f3224ef4e
+
+
+This release tarball now is also
+[signed by me using gpg](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.11.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.11/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[new RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/7d4647d4-4131-411e-9c2a-2aca39446e18.html)
+
+For more information, see http://www.libelektra.org
+
+Best regards,
+Markus
+
+
+
 
 
 
