@@ -410,6 +410,8 @@ ssize_t keySetComment(Key *key, const char *newComment)
 
 
 
+#ifndef _WIN32
+
 /*********************************************
  *       UID, GID access methods             *
  *********************************************/
@@ -1038,6 +1040,8 @@ int keySetCTime(Key *key, time_t ctime)
 
 	return 0;
 }
+
+#endif
 
 /**
  * Compare the order metadata of two keys.

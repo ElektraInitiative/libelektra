@@ -354,10 +354,10 @@ You can download the release from
 [here](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.11.tar.gz)
 
 - name: elektra-0.8.11.tar.gz
-- size: 2020875
-- md5sum: 140b32031f4df91c5d410eba3d93f67b
-- sha1: 80bc91e5223ed2bdea3f94fae1bb11849dbff27d
-- sha256: 2e41ce50f1e94e288ce49aeafa28536e3e4dfec7cf7d401f5751db2f3224ef4e
+- size: 
+- md5sum: 
+- sha1: 
+- sha256: 
 
 
 This release tarball now is also
