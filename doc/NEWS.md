@@ -4,10 +4,10 @@
 - author: Markus Raab
 - pubDate: Fri, 03 Apr 2015 02:39:37 +0200
 
-From the beginning of the Elektra Initiative, Elektra aimed for avoiding
-hard coded information in the application and to make the application's
+From the beginning of the Elektra Initiative, Elektra aimed at avoiding
+hard-coded information in the application and to make the application's
 configuration more transparent. While avoiding any pathes to files was
-reality from the first released Elektra version, now also hard coding
+reality from the first released Elektra version, now also hard-coding
 default values, fallback mechanisms and even Elektra's pathes to keys
 can be avoided.
 
@@ -18,7 +18,7 @@ application's configuration. It is located below its own namespace
 `spec` (next to user and system).
 
 Once the base path is known, the user can find out all Elektra
-pathes used by an application, through:
+pathes used by an application, using:
 
     kdb ls spec/basepath
 
@@ -144,6 +144,7 @@ The header files will be installed to /usr/include/elektra/merging, but they are
 subject to be changed in the future (e.g. as they did in this release).
 
 Thanks to Felix Berlakovich!
+
 
 ## Compatibility
 
