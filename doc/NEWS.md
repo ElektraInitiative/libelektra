@@ -352,13 +352,14 @@ You can download the release from
 [here](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.11.tar.gz)
 
 - name: elektra-0.8.11.tar.gz
-- size: 
-- md5sum: 
-- sha1: 
-- sha256: 
+- size: 2022129
+- md5sum: c53a8151aab760851842d745e904a4f8
+- sha1: d7929d17d1a6529089d156f1910d87f678b84998
+- sha256: c20fefcfba62cc906228f9b55d1f411ef8f884ff9d75774a0dd4f8eb8f5b48f6
 
 
-This release tarball now is also
+
+This release tarball now is also available
 [signed by me using gpg](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.11.tar.gz.gpg)
 
 already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.11/html/)

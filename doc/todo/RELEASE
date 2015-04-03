@@ -160,7 +160,7 @@ Symlink current to latest version and add everything:
 == Commit source package ==
 
 Commit elektra-ftp:
- cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz && git-add releases/elektra-$VERSION.tar.gz.hashsum && git-commit -a -m "Release $VERSION"
+ cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz* && git-commit -a -m "Release $VERSION"
 
 
 == push ==
