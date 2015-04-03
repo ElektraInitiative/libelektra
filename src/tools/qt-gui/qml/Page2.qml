@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import org.libelektra.qtgui 1.0
+import "MainFunctions.js" as MFunctions
 
 Item {
 	id: page2
