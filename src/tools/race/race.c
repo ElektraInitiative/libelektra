@@ -136,14 +136,15 @@ int main (int argc, char **argv)
 
 		if (pid == -1)
 		{
+			// fork not successful
 			return 12;
 		}
 		else if (pid == 0)
 		{
 			// child
 			pthread_t *pwriter = malloc(num_threads*sizeof(pthread_t));
-			if (!pwriter) return 1;
-			for (i=0; i< num_threads; i++) if (pthread_create (&pwriter[i], NULL, writer, (void *) 0) != 0) return 2;
+			if (!pwriter) return 13;
+			for (i=0; i< num_threads; i++) if (pthread_create (&pwriter[i], NULL, writer, (void *) 0) != 0) return 14;
 			for (i=0; i< num_threads; i++) pthread_join (pwriter[i],NULL);
 			free(pwriter);
 			return 0;
@@ -151,13 +152,15 @@ int main (int argc, char **argv)
 	}
 
 	int status = 0;
+	int sumexitstatus = 0;
 	for (i=0; i< num_procs; i++)
 	{
 		wait(&status);
+		int exitstatus = WEXITSTATUS(status);
 
-		if (!WIFEXITED(status))
+		if (exitstatus)
 		{
-			return 30 + WEXITSTATUS(status);
+			sumexitstatus = 100 + exitstatus;
 		}
 	}
 
@@ -173,6 +176,6 @@ int main (int argc, char **argv)
 	}
 
 	printf ("Test run finished\n");
-	return 0;
+	return sumexitstatus;
 }
 
