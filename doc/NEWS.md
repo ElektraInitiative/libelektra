@@ -71,18 +71,16 @@ to learn something new, e.g. using the ni plugin we can specify:
     fallback/#0=/somewhere/else
     namespace/#0=user
 
-When this file is mounted to `spec/sw/app/#0` we specify, that only
-for the key `/sw/app/#0/promise` only the namespace `user` should be
-used.
-
-If this key was not found, but `/somewhere/else` is present, we will use
-this key instead.  The `fallback` technique is very powerful: it allows
-us to have (recursive) links between applications. In the example above,
-the application is tricked in receiving e.g. the key `user/somewhere/else`
-when `promise` was not available.
-
-The value `20` will be used as default, even if no configuration file
-is found.
+1.) When this file is mounted to `spec/sw/app/#0` we specify, that
+    for the key `/sw/app/#0/promise` only the namespace `user` should be
+    used.
+2.) If this key was not found, but `/somewhere/else` is present, we will use
+    this key instead.  The `fallback` technique is very powerful: it allows
+    us to have (recursive) links between applications. In the example above,
+    the application is tricked in receiving e.g. the key `user/somewhere/else`
+    when `promise` was not available.
+3.) The value `20` will be used as default, even if no configuration file
+    is found.
 
 Note that the fallback, override and cascading works on *key level*,
 and not like most other systems have implemented, on
@@ -117,46 +115,35 @@ specification, because:
 - and many more advantages to come in future releases..
 
 For a tutorial how to actually elektrify an application and for more
-background to Elektra, read:
-https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md
+background to Elektra,
+[read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md).
 
-For a full list of proposed and implemented meta-data, see:
-https://github.com/ElektraInitiative/libelektra/blob/master/doc/NAMESPACES.md
+For a full list of proposed and implemented meta-data,
+[read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/NAMESPACES.md).
 
 
 ## Simplification in the merging framework
 
 As it turned out the concept of very granular merge strategies was hard to understand
-for users of the merging framework. While this granularity is desirable from a maintanence
-point of view, we wanted to come up with something easy to use. For that reason merge
+for users of the three-way merging framework that emerged in the last year's
+GSoC. While this granularity is desirable for flexibility, we
+additionally wanted something easy to use. For that reason merge
 configurations were introduced. These are simply preconfigured configurations for a merger
 that arrange required strategies for the most common merging scenarios. Especially
-they make sure that meta merging is handled correctly. 
+they make sure that meta merging is handled correctly.
 
-For now the more granular strategies are removed from the public API in order to allow
-them to evolve freely. Once their documentation and testing is improved they may be
-reintroduced in future versions.
+Have a look at the changes in the example
+[src/libtools/examples/merging.cpp](https://github.com/ElektraInitiative/libelektra/blob/master/src/libtools/examples/merging.cpp)
+for an glimpse of the simplifications.
 
-Have a look at the changes in the example in src/libtools/examples/merging.cpp for an
-overview of the simplifications.
+A big thanks to Felix Berlakovich!
 
 The header files will be installed to /usr/include/elektra/merging, but they are
 subject to be changed in the future (e.g. as they did in this release).
 
-Thanks to Felix Berlakovich!
-
-
-## Compatibility
-
 From the merging improvements some minor incompatibility happened in
 `kdb import`. Not all merging strategies that worked in 0.8.10 work
 anymore. Luckily, now its much simpler to choose the strategies.
-
-Mac OS X support was greatly improved, thanks to Peter Nirschl
-and Kai-Uwe Behrmann. The feature rich resolver, now also works
-in Mac OS X.  wresolver is now only needed for mingw.
-
-Elektra still compiles with gcc, icc and clang.
 
 
 ## API
@@ -169,17 +156,18 @@ This method is already used heavily in many parts. Contrary to `keySetBaseName` 
 `keyAddBaseName` it allows us to extend the path with more than one Element at once,
 i.e. `/` are not escaped.
 
-The other new line is the new enum value KEY_FLAGS.
+The other new line is the new enum value `KEY_FLAGS`.
 This feature allows bindings to use any flags in keyNew without actually
 building up variable argument lists.  (Thanks to Manuel Mausz)
 
-So as always, API+ABI is stable.
+As always, API+ABI is stable and compatible.
+
 
 ## Proposed
 
 Many new functions are proposed and can be found in
 [the doxygen docu](http://doc.libelektra.org/api/0.8.11/html) and in
-kdbproposal.h.
+[kdbproposal.h](https://github.com/ElektraInitiative/libelektra/blob/master/src/include/kdbproposal.h).
 
 Noteworthy is the method `keyGetNamespace` which allows us to query all
 namespaces. Since this release we changed every occurrence of namespaces
@@ -187,17 +175,20 @@ namespaces. Since this release we changed every occurrence of namespaces
 This allows us to add new more namespaces more easily. (Although its
 currently not planned to add further namespaces.)
 
-Finally, a bunch of new lookup options was added, which might not be
+Finally, a bunch of new lookup options were added, which might not be
 useful for the public API (they allow us to disable the
 specification-aware features mentioned in the beginning).
 
+
 ## Obsolete and removed concepts
 
+### umount
+
 The concept that backends have a name (other than their mountpoint)
-is now gone. Backends will simply be with their escaped mountpath
+is now gone. Backends will simply be named with their escaped mountpath
 below system/elektra/mountpoints without any confusing additional name.
 
-So unmounting only works with the path as given for the mount command.
+Unmounting still works with the mountpath.
 
 Removing this concept makes Elektra easier to understand and it also
 removes some bugs. E.g. having mountpoints which do not differ except
@@ -207,31 +198,37 @@ automatic name generation of Elektra 0.8.10.
 Old mountpoints need to be removed with their 0.8.10 name
 (`_` instead of `/`).
 
+### directory keys
+
 Additionally, the so called directory keys were also removed.
 Elektra was and still is completely key/value based. The `/` separator
 is only used for mountpoints.
 
-The plugin fstab now works the same way: Slashes in mountpoints are
+### fstab
+
+The plugin fstab is also improved: Slashes in mountpoints are
 escaped properly with the internal escaping engine of keyAddBaseName()
-(i.e. without any heuristics).
+(i.e. without any problematic `/` replacements).
+
+### dirname
 
 getDirName() was removed from C++, gi-lua, gi-python2, gi-python3,
 swig-lua, swig-python2 and swig-python3. It was never present in C and
 did not fit well with keyBaseName() (which returns an unescaped name,
 which is not possible for the dirname). (Thanks to Manuel Mausz)
 
+### invalid parent names
 
-## parentName
-
-While empty/invalid names are still accepted as parentName to `kdbGet`
-and `kdbSet` for compatibility reasons, the parentKey
+While empty (=invalid) names are still accepted as parentName to `kdbGet`
+and `kdbSet` for compatibility reasons, but the parentKey
 
     Key *parentKey = keyNew("/", KEY_END);
 
 should be used instead (if you want to get or store everything).
 They have identical behaviour, except that
 invalid names (that cannot be distinguished from empty names) will
-produce a warning. In the next major version it will produce an error.
+produce a warning. In the next major version invalid parentNames
+will produce an error.
 
 
 ## KDB Behaviour
@@ -283,10 +280,10 @@ nearly every action, so nothing prevents you from trying it out!
 A huge thanks to Raffael Pancheri for his contributions. His thesis can
 be found at [here](http://www.libelektra.org/ftp/elektra/pancheri2015gui.pdf).
 
+
 ## Bug fixing
 
-- fix issue with escaped backslashes in front of slashes
-- many fixes in docu
+- fix issues with escaped backslashes in front of slashes
 - atomic commits across namespaces work again
 - memleak on ReadFile error in ni plugin
 - `kdb getmeta` reports errorcode if key, but no meta was found
@@ -303,25 +300,20 @@ be found at [here](http://www.libelektra.org/ftp/elektra/pancheri2015gui.pdf).
 
 ## Further gems
 
-- Examples were improved, added (e.g. cascading, namespace) and included in doxygen
-- [Doxygen docu](http://doc.libelektra.org/api/0.8.11/html) is improved
+- Examples were improved, added (e.g. cascading, namespace) and included in
+  [Doxygen docu](http://doc.libelektra.org/api/0.8.11/html).
 - [METADATA specification](https://github.com/ElektraInitiative/libelektra/blob/master/doc/METADATA.ini)
-    nearly completely rewritten (thanks to Felix Berlakovich)
+    was nearly completely rewritten (thanks to Felix Berlakovich)
 - benchmarks were greatly enhanced (runtime+heap profiling),
     and some important performance improvements were done
 - All plugins now use the cmake function `add_plugin`
     (thanks to Ian Donnelly for most of the work)
-- keyGetNamespace is now used internally everywhere where namespaces
-    are handled. It should be much easier now to add a namespace if it
-    should be required to do so.
 - data directory (keysets as C-files) is now shared between different
     kinds of test suites.
-- many more tests were added, e.g. distribution tests, KDB API tests
-- much more test data was added, see tests/data. Sometimes the same data
-    is included multiple times, e.g. for different namespaces.
-- allocation tests were readded
+- many more tests were added, e.g. distribution tests, KDB API tests;
+  and allocation tests were readded
 - now all kdb commands accept cascading keys.
-- More compiler flags are added and many warnings are fixed
+- More compiler warning-flags are added and many warnings are fixed
 - cleanup of old unused `keyName` methods
 - The key `system/elektra/mountpoints` itself was always created and a
     left-over on a freshly installed system after the unit tests run the
@@ -334,6 +326,11 @@ be found at [here](http://www.libelektra.org/ftp/elektra/pancheri2015gui.pdf).
 - SWIG3 is preferred when available
 - add the plugin counter that counts how often the methods of a plugin are called
 - `kdb list-tools` is now advertised in `kdb --help`
+- Mac OS X support was greatly improved, thanks to Peter Nirschl
+  and Kai-Uwe Behrmann. The feature rich resolver, now also works
+  for Mac OS X.  wresolver is now only needed for mingw.
+- Elektra still compiles with gcc (also mingw variants), icc and clang.
+
 
 ## Further Notes
 
@@ -346,7 +343,7 @@ Thanks for all contributions that are not enlisted here!
 
 For any questions and comments, please contact the
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-or directly the maintainer elektra@markus-raab.org.
+or elektra@markus-raab.org.
 
 
 ## Get It!
