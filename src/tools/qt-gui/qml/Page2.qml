@@ -2,6 +2,7 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
+import org.libelektra.qtgui 1.0
 
 Item {
 	id: page2
@@ -358,8 +359,13 @@ Item {
 			for(var i = 0; i < qmlMetaKeyModel.count; i++)
 				metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
+			dataContainer.clearData()
+			dataContainer.setNewName(nameTextField.text)
+			dataContainer.setNewValue(valueTextField.text)
+			dataContainer.setNewMetadata(metaData)
+
 			//create UndoCommand
-			undoManager.createNewKeyCommand(pluginConfigTreeView.currentNode.parentModel, pluginConfigTreeView.currentNode.index, nameTextField.text, valueTextField.text, metaData)
+			undoManager.createNewKeyCommand(pluginConfigTreeView.currentNode.parentModel, pluginConfigTreeView.currentNode.index, dataContainer, false)
 
 			if(nameTextField.text.lastIndexOf("/") > 0)
 				pluginConfigTreeView.currentNode.parentModel.refresh()
@@ -370,6 +376,10 @@ Item {
 			valueTextField.text = ""
 			pluginConfigTreeView.treeModel.refresh()
 		}
+	}
+
+	DataContainer {
+		id: dataContainer
 	}
 }
 
