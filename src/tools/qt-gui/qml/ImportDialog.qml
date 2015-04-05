@@ -113,7 +113,7 @@ BasicWindow {
 
 		container.setMergeStrategies(strategies)
 
-		undoManager.createImportConfigurationCommand(treeView.treeModel, treeView.currentNode.index, container)
+		undoManager.createImportConfigurationCommand(treeView.currentNode.parentModel, treeView.currentNode.index, container)
 
 //		treeView.treeModel.refresh()
 		importTextField.text = ""

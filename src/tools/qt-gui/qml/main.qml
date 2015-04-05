@@ -73,8 +73,22 @@ ApplicationWindow {
 	}
 
 	Connections {
+		target: treeView.currentNode === null ? null : treeView.currentNode.parentModel
+
+		onShowMessage: {
+			ErrorDialog.showMessage(title, text, detailedText)
+		}
+		onUpdateIndicator: {
+			treeView.updateIndicator()
+		}
+	}
+
+	Connections {
 		target: treeView.currentNode === null ? null : treeView.currentNode.children
 
+		onShowMessage: {
+			ErrorDialog.showMessage(title, text, detailedText)
+		}
 		onUpdateIndicator: {
 			treeView.updateIndicator()
 		}
