@@ -218,8 +218,24 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	}
 	else
 	{
-		emit showMessage(tr("Error"), tr("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg(file, format, name), "");
+		KeySet conflictSet = result.getConflictSet();
+		QStringList conflicts;
+		conflictSet.rewind();
+		Key current;
+
+		while ((current = conflictSet.next()))
+		{
+			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+			conflicts.append(QString::fromStdString(current.getName()));
+			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+			conflicts.append("\n");
+		}
+
+		emit showMessage(tr("Error"), tr("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg(file, format, name), conflicts.join("\n"));
 	}
+
 }
 
 void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file)
@@ -512,7 +528,22 @@ void TreeViewModel::synchronize()
 	}
 	else
 	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), "");
+		KeySet conflictSet = result.getConflictSet();
+		QStringList conflicts;
+		conflictSet.rewind();
+		Key current;
+
+		while ((current = conflictSet.next()))
+		{
+			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+			conflicts.append(QString::fromStdString(current.getName()));
+			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+			conflicts.append("\n");
+		}
+
+		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), conflicts.join("\n"));
 		return;
 	}
 
