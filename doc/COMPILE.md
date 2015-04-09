@@ -186,7 +186,7 @@ Debug, Release or RelWithDebInfo
 See help bar at bottom of ccmake for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
-#### DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD  ####
+#### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD  ####
 Only needed by elektra developers.
 Make the library to output some or a lot of things.
 It is not recommended to use these options.
