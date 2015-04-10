@@ -645,7 +645,7 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 						parentKey);
 
 #if VERBOSE && DEBUG
-				printf ("Prepare %s with keys %d in plugin: %d, split: %d, ret: %d\n",
+				printf ("Prepare %s with keys %zd in plugin: %zu, split: %zu, ret: %d\n",
 						keyName(parentKey), ksGetSize(split->keysets[i]), p, i, ret);
 #endif
 
@@ -708,7 +708,7 @@ static void elektraSetCommit(Split *split, Key *parentKey)
 				}
 				keySetName(parentKey, keyName(split->parents[i]));
 #if DEBUG && VERBOSE
-				printf ("elektraSetCommit: %p # %d with %s - %s\n",
+				printf ("elektraSetCommit: %p # %zu with %s - %s\n",
 						backend, p, keyName(parentKey), keyString(parentKey));
 #endif
 				ksRewind (split->keysets[i]);
