@@ -1,5 +1,5 @@
 #include "gelektra-keyset.h"
-#include <kdbextension.h>
+#include <kdbprivate.h>
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKeySet, gelektra_keyset, G_TYPE_OBJECT)

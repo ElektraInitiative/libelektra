@@ -1,3 +1,5 @@
+set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
+
 list (FIND BINDINGS "swig_python2" FINDEX)
 if (FINDEX GREATER -1)
 	add_subdirectory (python2)
