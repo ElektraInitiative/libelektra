@@ -14,6 +14,10 @@ formatted files. It uses the libelektratools xml format.
 This plugin can be used for migration of Key Databases,
 e.g. from 0.7 -> 0.8.
 
+## Dependencies ##
+
+- `libxml2-dev`
+
 ## Restrictions ##
 
 This plugin has a difficult time recognizing whether a key has a null
