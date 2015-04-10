@@ -34,6 +34,10 @@
 
 #include <kdberrors.h>
 
+#if DEBUG && VERBOSE
+# include <stdio.h>
+#endif
+
 int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	int errnosave = errno;

@@ -382,8 +382,8 @@ int elektraBackendUpdateSize(Backend *backend, Key *parent, int size)
 	}
 
 #if DEBUG && VERBOSE
-	printf ("user: %d\n", backend->usersize);
-	printf ("system: %d\n", backend->systemsize);
+	printf ("user: %zd\n", backend->usersize);
+	printf ("system: %zd\n", backend->systemsize);
 #endif
 
 	return 0;
