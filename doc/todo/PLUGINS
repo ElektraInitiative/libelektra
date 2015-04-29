@@ -71,6 +71,10 @@ allow to lock down configuration for guis
 
 Refactoring hosts + ini?
 
+path plugin:
+	allow random-generated parts in filenames
+	check NFS, mounting properties
+
 
 # Storage plugins #
 
