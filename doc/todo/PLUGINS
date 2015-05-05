@@ -124,6 +124,8 @@ filesys:
 
 ## library supported ##
 
+https://github.com/toml-lang/toml
+
 xpath plugin:
 	on an xml file with an mapping from (reduced) xpath<->elektra keys
 
