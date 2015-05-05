@@ -165,15 +165,28 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	string fileString = file.remove("file://").toStdString();
 
 	Modules modules;
-	PluginPtr plugin = modules.load (formatString);
+	PluginPtr plugin = modules.load(formatString);
 
 	Key errorKey (root);
 	errorKey.setString (fileString);
 
-	plugin->get (importedKeys, errorKey);
+	plugin->get(importedKeys, errorKey);
 
-	printWarnings (cerr, errorKey);
-	printError (cerr, errorKey);
+	stringstream ws;
+	stringstream es;
+	QString warnings;
+	QString errors;
+
+	printWarnings(ws, errorKey);
+	warnings = QString::fromStdString(ws.str());
+	printError(es, errorKey);
+	errors  = QString::fromStdString(es.str());
+
+	if(!errors.isEmpty())
+	{
+		emit showMessage(tr("Error"), tr("Failed to import configuration from %1 to %2.").arg(file, QString::fromStdString(root.getName())), errors);
+		return;
+	}
 
 	ThreeWayMerge merger;
 
@@ -191,9 +204,8 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	{
 		result = merger.mergeKeySet(MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root), TheirMergeKeys (importedKeys, root), root));
 	}
-	catch(...)//TODO
+	catch(...)//TODO: Which exceptions are possible?
 	{
-		qDebug() << "Could not merge keysets";
 		emit showMessage(tr("Error"), tr("Could not merge keys."),"");
 	}
 
@@ -206,8 +218,24 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	}
 	else
 	{
-		emit showMessage(tr("Error"), tr("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg(file, format, name), "");
+		KeySet conflictSet = result.getConflictSet();
+		QStringList conflicts;
+		conflictSet.rewind();
+		Key current;
+
+		while ((current = conflictSet.next()))
+		{
+			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+			conflicts.append(QString::fromStdString(current.getName()));
+			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+			conflicts.append("\n");
+		}
+
+		emit showMessage(tr("Error"), tr("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg(file, format, name), conflicts.join("\n"));
 	}
+
 }
 
 void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file)
@@ -237,24 +265,17 @@ void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QSt
 	QString warnings;
 	QString errors;
 
-	if(errorKey.getMeta<const kdb::Key>("warnings"))
-	{
-		ws << printWarnings(cerr, errorKey);
-		warnings = QString::fromStdString(ws.str());
-	}
+	printWarnings(ws, errorKey);
+	warnings = QString::fromStdString(ws.str());
+	printError(es, errorKey);
+	errors  = QString::fromStdString(es.str());
 
-	if(errorKey.getMeta<const kdb::Key>("error"))
-	{
-		es << printError(cerr, errorKey);
-		errors  = QString::fromStdString(es.str());
-	}
-
-	if(errors.isEmpty() && warnings.isEmpty())
-		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), "");
-	else if(errors.isEmpty() && !warnings.isEmpty())
+	if(errors.isEmpty() && !warnings.isEmpty())
 		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2, warnings were issued.").arg(QString::fromStdString(root.getName()), file), "");
-	else if(!errors.isEmpty())
+	else if(!errors.isEmpty() && warnings.isEmpty())
 		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), errors);
+	else if(!errors.isEmpty() && !warnings.isEmpty())
+		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), warnings + "\n" + errors);
 }
 
 KeySet TreeViewModel::collectCurrentKeySet()
@@ -507,7 +528,22 @@ void TreeViewModel::synchronize()
 	}
 	else
 	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), "");
+		KeySet conflictSet = result.getConflictSet();
+		QStringList conflicts;
+		conflictSet.rewind();
+		Key current;
+
+		while ((current = conflictSet.next()))
+		{
+			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+			conflicts.append(QString::fromStdString(current.getName()));
+			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+			conflicts.append("\n");
+		}
+
+		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), conflicts.join("\n"));
 		return;
 	}
 
@@ -619,7 +655,7 @@ QStringList TreeViewModel::getSplittedKeyname(const Key &key)
 
 	for (Key::iterator i = key.begin(); i != key.end(); ++i)
 	{
-			names.append(QString::fromStdString(*i));
+		names.append(QString::fromStdString(*i));
 	}
 
 	return names;
