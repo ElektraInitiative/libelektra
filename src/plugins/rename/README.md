@@ -18,17 +18,13 @@ in the required format. If keys are renamed, their original name is stored in th
 ### OPERATION ###
 
 The cut operation can be used to strip parts of a keys name. The cut operation is able to cut anything starting after the path
-of the parent key. However, the resulting name must not be equal to the parent key. For example consider a KeySet with the 
+of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the 
 parent key `user/config`. If the KeySet contained a key with the name `user/config/with/long/path/key1`, the cut operation
 would be able to strip the following key name parts:
 * with
 * with/long
 * with/long/path
-
-However, it would refuse to strip the following
 * with/long/path/key1
-
-The reason is, that stripping the latter would cause a parent key duplicate.
 
 ### CONFIGURATION ####
 
