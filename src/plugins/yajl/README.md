@@ -27,7 +27,7 @@ Has only limited support for metadata.
 
 ## Dependencies ##
 
-- `libjayl-dev`
+- `libyajl-dev` (version 1 and 2 should work)
 
 ## Special values ##
 
