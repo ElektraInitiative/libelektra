@@ -126,16 +126,17 @@ filesys:
 
 https://github.com/toml-lang/toml
 
+MacOSX plist files
+
+http://rfc.zeromq.org/spec:4/ZPL
+	https://github.com/zeromq/czmq/blob/master/src/zconfig.c
+
 xpath plugin:
 	on an xml file with an mapping from (reduced) xpath<->elektra keys
 
 C/C++ serialization
 	(ksNew(keyNew()))
 	reading with llvm?
-
-libconfig
-eet
-tdb.samba (using tdb_traverse)
 
 /etc/groups plugin
 
@@ -157,6 +158,20 @@ compile lenses as plugin:
 
 xfconf file storage (see #47)
 
+### binary
+
+(may need orphan search or one file per plugin)
+
+Kyoto Cabinet
+unqlite
+libconfig
+eet
+tdb.samba (using tdb_traverse)
+sqlite
+
+
+
+
 ## ERROR ##
 
 ignore_error plugin:
@@ -176,6 +191,10 @@ or also some other scripts, e.g. git commit
 
 
 # FILTER Plugins #
+
+compression:
+	zlib
+	snappy
 
 Forensic Logging:
 	environment, pid, gid, uid
