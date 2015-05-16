@@ -29,7 +29,6 @@ endif (ENABLE_COVERAGE)
 if (ENABLE_TESTING)
 	enable_testing ()
 	include (Dart)
-	find_package (GTest)
 endif (ENABLE_TESTING)
 
 
@@ -86,6 +85,7 @@ if (BUILD_DOCUMENTATION)
 endif (BUILD_DOCUMENTATION)
 
 if (BUILD_TESTING)
+	find_package (GTest)
 	if (BUILD_FULL OR BUILD_STATIC)
 		add_subdirectory (tests)
 	else (BUILD_FULL OR BUILD_STATIC)
