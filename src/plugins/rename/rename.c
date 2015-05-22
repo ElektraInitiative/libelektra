@@ -34,7 +34,7 @@ Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cut
 	/* marks the position in the key name where the retained parts start */
 	size_t afterCut = afterParentKey + cutPathLen;
 
-	if (keyNameLen <= afterCut) return 0;
+	if (keyNameLen < afterCut) return 0;
 
 	if (!strncmp(keyName(key) + afterParentKey, cutPath, cutPathLen))
 	{
@@ -136,17 +136,37 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		if (renamedKey)
 		{
 			keySetMeta (renamedKey, ELEKTRA_ORIGINAL_NAME_META, keyName (key));
-			ksLookup(returned, key, KDB_O_POP);
-			keyDel(key);
-			ksAppendKey(returned, renamedKey);
+			ksLookup (returned, key, KDB_O_POP);
+			keyDel (key);
+
+			/*
+			 * if the parentKey is replaced by a rename operation
+			 * make sure that we do not loose its reference (ksAppendKey
+			 * would otherwise delete it)
+			 */
+			if (keyCmp (renamedKey, parentKey) == 0)
+			{
+				/* make sure the parent key is not deleted */
+				keyIncRef (parentKey);
+				ksAppendKey (returned, renamedKey);
+				keyDecRef (parentKey);
+			}
+			else
+			{
+				ksAppendKey (returned, renamedKey);
+			}
 		}
 		else
 		{
 			keySetMeta (key, ELEKTRA_ORIGINAL_NAME_META, keyName(key));
 		}
+
 	}
 
+	/* make sure the parent key is not deleted */
+	keyIncRef (parentKey);
 	ksDel(iterateKs);
+	keyDecRef (parentKey);
 
 	return 1; /* success */
 }
@@ -167,8 +187,15 @@ int elektraRenameSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		if (renamedKey)
 		{
-			ksLookup(returned, key, KDB_O_POP);
-			keyDel (key);
+			/*
+			 * if something is restored from the parentKey, do
+			 * not delete the parentKey (might cause troubles)
+			 */
+			if (keyCmp(key, parentKey) != 0)
+			{
+				ksLookup(returned, key, KDB_O_POP);
+				keyDel (key);
+			}
 			ksAppendKey(returned, renamedKey);
 		}
 	}

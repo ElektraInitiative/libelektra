@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-	property string version: "0.0.6 (beta)"
+	property string version: "0.0.7 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -73,8 +73,22 @@ ApplicationWindow {
 	}
 
 	Connections {
+		target: treeView.currentNode === null ? null : treeView.currentNode.parentModel
+
+		onShowMessage: {
+			ErrorDialog.showMessage(title, text, detailedText)
+		}
+		onUpdateIndicator: {
+			treeView.updateIndicator()
+		}
+	}
+
+	Connections {
 		target: treeView.currentNode === null ? null : treeView.currentNode.children
 
+		onShowMessage: {
+			ErrorDialog.showMessage(title, text, detailedText)
+		}
 		onUpdateIndicator: {
 			treeView.updateIndicator()
 		}
@@ -654,9 +668,9 @@ ApplicationWindow {
 					alternatingRowColors: false
 					backgroundVisible: false
 
-					Component.onCompleted: treeView.updateIndicator.connect(updateModel)
+//					Component.onCompleted: treeView.updateIndicator.connect(updateModel)
 
-					onUpdateModel: model = getModel()
+//					onUpdateModel: model = getModel()
 
 					model: getModel()
 

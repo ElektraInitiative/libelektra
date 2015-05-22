@@ -338,7 +338,7 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 	for (size_t i=0; i < kdb->split->size; ++i)
 	{
 #if DEBUG && VERBOSE
-		printf ("  %d with parent %s\n", i, keyName(kdb->split->parents[i]));
+		printf ("  %zu with parent %s\n", i, keyName(kdb->split->parents[i]));
 #endif
 		if (!parentKey)
 		{

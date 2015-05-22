@@ -1,8 +1,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QDebug>
-#include <QFuture>
-#include <QtConcurrent/QtConcurrentRun>
+#include <QTranslator>
 #include <QtQml>
 #include <QMetaType>
 #include <QtTest/qtestcase.h>
@@ -28,9 +27,9 @@ int main(int argc, char* argv[])
 
 	QString locale = QLocale::system().name();
 
-	QTranslator tr;
-	tr.load(QString(":/qml/i18n/lang_") + locale + QString(".qm"));
-	app.installTranslator(&tr);
+	QTranslator translator;
+	translator.load(QString(":/qml/i18n/lang_") + locale + QString(".qm"));
+	app.installTranslator(&translator);
 
 	QQmlApplicationEngine engine;
 	QQmlContext* ctxt = engine.rootContext();
@@ -40,6 +39,9 @@ int main(int argc, char* argv[])
 	kdb::KeySet config;
 	GUIBackend	backend;
 	GUISettings settings;
+	TreeViewModel treeModel;
+	bool loadingError = false;
+	QString exception;
 
 	try
 	{
@@ -47,10 +49,9 @@ int main(int argc, char* argv[])
 	}
 	catch(kdb::KDBException const& e)
 	{
-		std::cerr << e.what();
+		loadingError = true;
+		exception = e.what();
 	}
-
-	TreeViewModel treeModel;
 
 	engine.setObjectOwnership(&treeModel, QQmlApplicationEngine::CppOwnership);
 
@@ -62,6 +63,9 @@ int main(int argc, char* argv[])
 	treeModel.populateModel(config);
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
+
+	if(loadingError)
+		treeModel.showMessage(QObject::tr("Error"), QObject::tr("Populating model failed, could not read from configuration."), exception);
 
 	return app.exec();
 }

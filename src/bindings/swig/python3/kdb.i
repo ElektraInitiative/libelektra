@@ -41,7 +41,7 @@
 }
 
 // constructors
-%pythonprepend kdb::Key::Key {
+%pythonprepend kdb::Key::Key %{
   value = None
   meta  = {}
   # check for copy constructor
@@ -74,7 +74,7 @@
         warnings.warn("Unknown option in keyNew {0}".format(arg),
           RuntimeWarning)
     args = [ arg0, flags ]
-}
+%}
 
 %pythonappend kdb::Key::Key {
   if value:

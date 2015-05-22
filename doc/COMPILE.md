@@ -80,6 +80,19 @@ for example to use gcc-4.3
 
 ### OPTIONS ###
 
+Some options, i.e. PLUGINS, BINDINGS and TOOLS are either:
+
+- a list of elements separated with ;
+   (note that shells typically need ; to be escaped)
+- a special uppercase element that gets replaced by a list of elements, that are:
+  - ALL to include all elements (except elements with unfulfilled dependencies)
+  - NODEP to include all elements without dependencies
+  - DEFAULT to go back to the situation that was there when nothing was changed
+- elements prefixed with a minus symbol (-) to exclude an element
+
+Examples for this are especially in the subsection PLUGINS below, but they work in the
+same fashion for BINDINGS and TOOLS.
+
 #### PLUGINS ####
 
 Because the core of elektra is minimal, plugins are needed to
@@ -91,6 +104,15 @@ tasks related to configuration.
 To add all plugins, you can use  
 
 	-DPLUGINS=ALL
+
+Note that plugins get dropped when dependencies are not satisfied.
+To add all plugins except some plugins you can use:
+
+	-DPLUGINS="ALL;-plugin1;-plugin2"
+
+E.g. if you want all plugins except the jni plugin you would use:
+
+	-DPLUGINS="ALL;-jni"
 
 To add all plugins not having additional dependencies
 (they need only POSIX), you can use  
@@ -180,13 +202,17 @@ To specify specific tools you can use, e.g.:
 
 	-DTOOLS=qt-gui;kdb
 
-	
+
+#### BINDINGS ####
+
+Have additionally variables, see documentation of the CMake Variable.
+
 #### CMAKE_BUILD_TYPE  ####
 Debug, Release or RelWithDebInfo
 See help bar at bottom of ccmake for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
-#### DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD  ####
+#### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD  ####
 Only needed by elektra developers.
 Make the library to output some or a lot of things.
 It is not recommended to use these options.

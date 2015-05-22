@@ -15,7 +15,8 @@ macro (do_glib_test file)
 	)
 
 	set (GLIBS ${GELEKTRA_LIBRARY} ${GOBJECT_LIBRARIES})
-	target_link_libraries (${name} elektra ${GLIBS})
+	target_link_libraries (${name} ${GLIBS})
+	tool_link_elektra (${name})
 
 	add_test (
 		NAME ${name}

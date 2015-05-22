@@ -1,14 +1,3 @@
-#project (examples)
-
-#find_package (Elektra)
-
-#if (ELEKTRA_FOUND)
-#	include (${Elektra_USE_FILE})
-#	add_executable (hello hello.c)
-#	target_link_libraries (hello elektra)
-#endif (ELEKTRA_FOUND)
-
-
 include (LibAddMacros)
 
 #don't call add_headers in a loop
@@ -20,6 +9,7 @@ macro (do_example source)
 	add_executable (${source} ${SOURCES})
 
 	target_link_elektra(${source})
+
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)

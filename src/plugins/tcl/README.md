@@ -13,4 +13,8 @@ the Tcl prograaming language.
 
 Supports arbitrary KeySets with metadata.
 
+## Dependencies ##
+
+- `libboost-dev`
+
 

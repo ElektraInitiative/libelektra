@@ -50,24 +50,24 @@
 #include <kdberrors.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
-#include <pthread.h>
+# include <pthread.h>
+#endif
 
 #if defined(__APPLE__)
-#define statSeconds(status) status.st_mtime
-#define statNanoSeconds(status) status.st_mtimespec.tv_nsec
+# define statSeconds(status) status.st_mtime
+# define statNanoSeconds(status) status.st_mtimespec.tv_nsec
 #elif defined(WIN32)
-#define statSeconds(status) status.st_mtime
-#define statNanoSeconds(status) 0
+# define statSeconds(status) status.st_mtime
+# define statNanoSeconds(status) 0
 #else
-#define statSeconds(status) status.st_mtim.tv_sec
-#define statNanoSeconds(status) status.st_mtim.tv_nsec
-#endif
+# define statSeconds(status) status.st_mtim.tv_sec
+# define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
 
+#ifdef ELEKTRA_LOCK_MUTEX
 extern pthread_mutex_t *getElektraResolverMutex();
 
-// for Apple-specific recursive mutex setup 
-#ifdef ELEKTRA_LOCK_MUTEX
+// for Apple-specific recursive mutex setup
 #if defined(__APPLE__)
 // special mutex for recursive mutex creation
 static pthread_mutex_t elektra_resolver_init_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -75,7 +75,6 @@ static pthread_mutex_t elektra_resolver_init_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int elektra_resolver_mutex_unitialized = 1;
 #endif
 #endif
-
 
 static void resolverInit (resolverHandle *p, const char *path)
 {

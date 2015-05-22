@@ -85,8 +85,10 @@ need to confirm by saying:
 	.*add\W+to\W+whitelist.*
 or if just the pull request should be checked:  
 	.*build\W+allow.*
-or if just a single build should be started:  
-	.*build\W+start.*
+or if just a single build of the mergerequest should be started:
+	jenkins build please
+or if the bindings job should be started:
+	jenkins build bindings please
 
 If you want any configuration changes, please contact
 Markus Raab <elektra@markus-raab.org>
