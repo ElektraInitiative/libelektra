@@ -3,51 +3,69 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+/* check for warnings and print
+ * Note: not all available information will be printed.
+ * Fields for more information are listed in the value from
+ * the Key returned by keyGetMeta(key,"warnings/#XX") where XX
+ * is the Warning number, starting at 00.
+ * To print all MetaData have a look in examples/meta.c
+ */
+void printWarnings(Key * key)
+{
+	if(!keyGetMeta (key,"warnings")) return;
+	char * end;
+	int warn_count = strtol (keyString (keyGetMeta (key,"warnings")),&end,10);
+	if(*end)
+	{
+		printf ("strtol error\n");
+		return;
+	}
+	int warn_iter = 0;
+
+	char buffer [sizeof("warnings/#00/description")];
+
+	do{
+		if(warn_iter < 10)
+			sprintf(&buffer[0],"warnings/#0%i/description",warn_iter);
+		else
+			sprintf(&buffer[0],"warnings/#%i/description",warn_iter);
+
+		const Key * warnkey = keyGetMeta (key,buffer);
+		printf ("Warning occurred: %s\n",keyString (warnkey));
+		++warn_iter;
+	} while (warn_iter <= warn_count);
+}
+
 int main()
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
 	KDB * handle = kdbOpen (key);
 
+	if(!handle)
+	{
+		printf ("Error occurred: %s\n",
+			keyString(keyGetMeta (key,"error/description")));
+		//Note: not all available information will be printed.
+		//Fields for more information are listed in the value from
+		//the Key returned by keyGetMeta(key,"error")
+		//To print all MetaData have a look in examples/meta.c
+	}
+
+	printWarnings(key);
+
 	if( kdbGet(handle, myConfig, key) < 0)
 	{
 		printf ("Error occurred: %s\n",
-		keyString(keyGetMeta (key,"error/description")));
-		//fields for more information are listed in the value from
+			keyString(keyGetMeta (key,"error/description")));
+		//Note: not all available information will be printed.
+		//Fields for more information are listed in the value from
 		//the Key returned by keyGetMeta(key,"error")
+		//To print all MetaData have a look in examples/meta.c
 	}
 
-	//check for warnings
-	if(keyGetMeta (key,"warnings"))
-	{
-		int warn_count = strtol(keyString (keyGetMeta (key,"warnings")),NULL,10);
-		int warn_iter = 0;
-
-		char buffer [sizeof("warnings/#00/description")+1];
-
-		do{
-			if(warn_iter < 10)
-				sprintf(&buffer[0],"warnings/#0%i/description",warn_iter);
-			else
-				sprintf(&buffer[0],"warnings/#%i/description",warn_iter);
-
-			const Key * warnkey = keyGetMeta (key,buffer);
-			printf ("Warning occurred: %s\n",keyString (warnkey));
-			//fields for more information are listed in the value from
-			//the Key returned by keyGetMeta(key,"warnings/#00")
-			warn_iter++;
-		} while (warn_iter <= warn_count);
-
-		// if all meta data is desired, see following code
-
-		// const Key * meta;
-		// keyRewindMeta (key);
-		// while ((meta = keyNextMeta (key))!=0)
-		// {
-		//	printf ("%s=%s\n", keyName (meta), keyString (meta));
-		// }
-
-	}
+	printWarnings(key);
 
 	keyDel (key);
 
