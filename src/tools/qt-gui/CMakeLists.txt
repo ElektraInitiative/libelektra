@@ -52,7 +52,9 @@ target_link_libraries(qt-gui ${DISCOUNT_LIBRARIES})
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}
-	${Qt5Test_LIBRARIES} elektra elektratools markdown)
+	${Qt5Test_LIBRARIES} markdown)
+tool_link_elektra(qt-gui)
+tool_link_elektratools(qt-gui)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
