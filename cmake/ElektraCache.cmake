@@ -343,8 +343,6 @@ option (BUILD_SHARED "Build the shared version of elektra." ON)
 option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
 option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." ON)
 
-option (BUILD_EXAMPLES "Build example applications using elektra." ON)
-
 option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
 if (BUILD_DOCUMENTATION)
 	option (INSTALL_DOCUMENTATION "Install the documentation (API, man pages)" ON)

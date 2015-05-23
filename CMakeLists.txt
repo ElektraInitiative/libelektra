@@ -76,27 +76,22 @@ include (cmake/ElektraPackaging.cmake)
 add_subdirectory (cmake)
 add_subdirectory (scripts)
 
-if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
-	add_subdirectory (src)
-endif()
-
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
 endif (BUILD_DOCUMENTATION)
 
-if (BUILD_TESTING)
-	find_package (GTest)
-	if (BUILD_FULL OR BUILD_STATIC)
-		add_subdirectory (tests)
-	else (BUILD_FULL OR BUILD_STATIC)
-		message(WARNING "Requested to build testing, but is impossible because neither full or static build active")
-	endif (BUILD_FULL OR BUILD_STATIC)
-endif (BUILD_TESTING)
-
+#is there anything to build except documentation?
 if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
+	if (BUILD_TESTING)
+		find_package (GTest)
+	endif (BUILD_TESTING)
+
+	add_subdirectory (src)
 	add_subdirectory (examples)
+	add_subdirectory (benchmarks)
+
+	if (BUILD_TESTING)
+		add_subdirectory (tests)
+	endif (BUILD_TESTING)
 endif()
 
-if (BUILD_FULL OR BUILD_STATIC)
-	add_subdirectory (benchmarks)
-endif (BUILD_FULL OR BUILD_STATIC)
