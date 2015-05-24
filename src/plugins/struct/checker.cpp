@@ -8,8 +8,6 @@
 */
 
 
-#ifndef CHECKER_HPP
-
 #include "checker.hpp"
 #include "factory.hpp"
 
@@ -36,4 +34,3 @@ void ListChecker::buildup (Factory &f, std::string const& templateParameter)
 }
 
 } // end namespace elektra
-
