@@ -10,7 +10,7 @@
 #  PYTHON2_DEBUG_LIBRARIES     - path to the debug library (deprecated)
 #  PYTHON2LIBS_VERSION_STRING  - version of the Python libs found (since CMake 2.8.8)
 #
-# The Python_ADDITIONAL_VERSIONS variable can be used to specify a list of
+# The Python2_ADDITIONAL_VERSIONS variable can be used to specify a list of
 # version numbers that should be taken into account when searching for Python.
 # You need to set this variable before calling find_package(Python2Libs).
 #
@@ -69,8 +69,8 @@ ENDIF(Python2Libs_FIND_VERSION)
 
 # Set up the versions we know about, in the order we will search. Always add
 # the user supplied additional versions to the front.
-SET(_Python_VERSIONS
-  ${Python_ADDITIONAL_VERSIONS}
+SET(_Python2_VERSIONS
+  ${Python2_ADDITIONAL_VERSIONS}
   ${_PYTHON2_FIND_OTHER_VERSIONS}
   )
 
@@ -79,7 +79,7 @@ UNSET(_PYTHON21_VERSIONS)
 UNSET(_PYTHON22_VERSIONS)
 UNSET(_PYTHON23_VERSIONS)
 
-FOREACH(_CURRENT_VERSION ${_Python_VERSIONS})
+FOREACH(_CURRENT_VERSION ${_Python2_VERSIONS})
   STRING(REPLACE "." "" _CURRENT_VERSION_NO_DOTS ${_CURRENT_VERSION})
   IF(WIN32)
     FIND_LIBRARY(PYTHON2_DEBUG_LIBRARY
