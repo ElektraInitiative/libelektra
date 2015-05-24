@@ -4,10 +4,7 @@ set (SOURCES resolver.h resolver.c filename.c)
 
 
 find_package(Threads)
-
-if (UNIX AND NOT APPLE)
-	set(CMAKE_REALTIME_LIBS_INIT rt)
-endif()
+find_library(LIBRT_LIBRARIES NAMES rt)
 
 #TODO: remove "default" resolver
 add_plugin(resolver
@@ -17,7 +14,7 @@ add_plugin(resolver
 		mutex.c
 	LINK_LIBRARIES
 		${CMAKE_THREAD_LIBS_INIT}
-		${CMAKE_REALTIME_LIBS_INIT}
+		${LIBRT_LIBRARIES}
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hpu\"

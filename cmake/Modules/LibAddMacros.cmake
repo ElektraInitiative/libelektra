@@ -106,7 +106,7 @@ endmacro()
 # links the executeable (only if build_full)
 # and adds a test
 macro (add_plugintest testname)
-	if (BUILD_TESTING)
+	if (BUILD_TESTING AND (BUILD_STATIC OR BUILD_FULL))
 		parse_arguments(ARG
 			"" # no arguments
 			"MEMLEAK" #options
@@ -135,7 +135,7 @@ macro (add_plugintest testname)
 			set_property(TEST testmod_${testname} PROPERTY
 				LABELS memleak)
 		endif (ARG_MEMLEAK)
-	endif (BUILD_TESTING)
+	endif ()
 endmacro (add_plugintest)
 
 # Add a test for cpp plugins
@@ -173,7 +173,7 @@ macro (add_cpp_plugintest testname)
 			set_property(TEST testmod_${testname} PROPERTY
 				LABELS memleak)
 		endif (ARG_MEMLEAK)
-	endif(BUILD_TESTING)
+	endif()
 endmacro (add_cpp_plugintest testname)
 
 
