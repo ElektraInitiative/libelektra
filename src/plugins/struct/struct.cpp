@@ -1,26 +1,11 @@
-/***************************************************************************
-                     struct.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
+/**
+* \file
+*
+* \brief Implementation of Struct checker
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
 
 
 #include "struct.hpp"
@@ -32,57 +17,22 @@
 
 using namespace ckdb;
 #include <kdberrors.h>
+#include <kdbplugin.hpp>
 
-/** This function avoid that many return pathes need to release the
-  * configuration. */
-inline static int elektraStructOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& config, ckdb::Key *errorKey)
-{
-	if (config.lookup("/module"))
-	{
-		// suppress warnings if it is just a module
-		// don't buildup the struct then
-		return 0;
-	}
+typedef Delegator<elektra::Checker> Checker;
 
-	try {
-		elektra::Checker *c = static_cast<elektra::Checker*>(elektra::buildChecker(config));
-		elektraPluginSetData (handle, c);
-	}
-	catch (const char* msg)
-	{
-		ELEKTRA_ADD_WARNING (58, errorKey, msg);
-		return -1;
-	}
-
-	return 1;
-}
 
 extern "C"
 {
 
 int elektraStructOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
-	int ret;
-
-	/* plugin initialization logic */
-	kdb::KeySet config (elektraPluginGetConfig(handle));
-
-	ret = elektraStructOpenDelegator(handle, config, errorKey);
-
-	config.release();
-
-
-	return ret;
+	return Checker::open(handle, errorKey, elektra::buildChecker);
 }
 
-int elektraStructClose(ckdb::Plugin *handle, ckdb::Key *)
+int elektraStructClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
-	/* free all plugin resources and shut it down */
-	elektra::Checker *c = static_cast<elektra::Checker*>(elektraPluginGetData (handle));
-
-	delete c;
-
-	return 1; /* success */
+	return Checker::close(handle, errorKey);
 }
 
 int elektraStructGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *)
@@ -126,8 +76,7 @@ int elektraStructSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pa
 		if (strcmp (first_keyname, parentkeyname))
 			throw "first keyname is not equal the parentKey";
 
-		elektra::Checker *c = static_cast<elektra::Checker*>(elektraPluginGetData (handle));
-		doCheck (c, returned);
+		doCheck (Checker::get(handle), returned);
 	}
 	catch (const char* msg)
 	{

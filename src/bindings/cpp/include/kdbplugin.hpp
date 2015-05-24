@@ -28,10 +28,17 @@ template <typename Delegated>
 class Delegator
 {
 public:
-	inline static int open(ckdb::Plugin *handle, ckdb::Key *errorKey)
+	typedef Delegated* (*Builder)(kdb::KeySet config);
+
+	inline static Delegated* defaultBuilder(kdb::KeySet config)
+	{
+		return new Delegated(config);
+	}
+
+	inline static int open(ckdb::Plugin *handle, ckdb::Key *errorKey, Builder builder = defaultBuilder)
 	{
 		kdb::KeySet config (elektraPluginGetConfig(handle));
-		int ret = openHelper(handle, config, errorKey);
+		int ret = openHelper(handle, config, errorKey, builder);
 		config.release();
 		return ret;
 	}
@@ -54,6 +61,7 @@ private:
 #ifdef KDBERRORS_H
 			errorKey
 #endif
+			, Builder builder
 			)
 	{
 		if (config.lookup("/module"))
@@ -64,7 +72,7 @@ private:
 		}
 
 		try {
-			elektraPluginSetData (handle, new Delegated(config));
+			elektraPluginSetData (handle, (*builder)(config));
 		}
 		catch (const char* msg)
 		{
