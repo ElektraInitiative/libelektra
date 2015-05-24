@@ -1,3 +1,12 @@
+/**
+* \file
+*
+* \brief Tests for data type checker
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
+
 #include <tests.hpp>
 
 #include "type_checker.hpp"
