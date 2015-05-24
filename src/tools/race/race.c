@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 
 pthread_barrier_t *bar;
