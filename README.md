@@ -121,8 +121,8 @@ Available, but not up-to-date (Version 0.7):
  - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
  - [Linux Mint](http://community.linuxmint.com/software/view/elektra)
 
-For [CentOS, Fedora, OpenSUSE, RHEL and SLE](http://software.opensuse.org/download.html?project=home%3Abekun&package=elektra)
-Kai-Uwe Behrmann kindly provides packages.
+For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
+Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 For Debian stable amd64 we provide latest builds. Just add following lines to
 sources.list in wheezy:
 
