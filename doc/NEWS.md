@@ -1,3 +1,7 @@
+- open build service update
+  For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
+  Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
+
 # 0.8.11 Release
 
 - guid: 7d4647d4-4131-411e-9c2a-2aca39446e18
