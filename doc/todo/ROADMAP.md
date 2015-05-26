@@ -63,6 +63,11 @@ streaming
 
 c++11
 DEFAULT_STORAGE/RESOLVER
+to one cmake variable:
+	verbose/debug -> logging
+	pdf/on/off -> docu
+
+fix dependency problem with kdberrors.h
 
 ## bug hunting
 
