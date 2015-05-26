@@ -81,6 +81,8 @@ or one of the [authors](doc/AUTHORS).
 
 # Get Started #
 
+If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
+
 ## Download ##
 
 Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
