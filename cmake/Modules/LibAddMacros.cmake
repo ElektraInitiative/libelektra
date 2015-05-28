@@ -472,64 +472,6 @@ function (add_libraries target)
 endfunction (add_libraries)
 
 
-#- Wrapper of add_library to allow for static modules
-#
-#  MY_ADD_LIBRARY(<name> [STATIC|SHARED|MODULE]
-#                 [EXCLUDE_FROM_ALL]
-#                 [STATIC_NAME <static_name>]
-#                 <source1> ... <sourceN>)
-#
-# If STATIC_NAME <static_name> is given, the sources will be appended to
-# the global property MY_STATIC_MODULES_<static_name>_SOURCES which can
-# then be used with MY_ADD_STATIC_MODULE() to create a static module from
-# all of the sources.
-#
-#Thanks to Michael Wild <themiwi@gmail.com>
-#
-function(my_add_library name)
-	# parse arguments
-	set(next_is_static_name FALSE)
-	set(static_name)
-	set(srcs)
-	set(lib_type)
-	set(exclude_from_all)
-	foreach (src ${ARGN})
-		if(arg STREQUAL STATIC_NAME)
-			set(next_is_static_name TRUE)
-		elseif(arg MATCHES "STATIC|SHARED|MODULE")
-			set(lib_type ${arg})
-		elseif(arg STREQUAL EXCLUDE_FROM_ALL)
-			set(exclude_from_all ${arg})
-		elseif(next_is_static_name)
-			set(static_name ${arg})
-		else()
-			# ensure that sources are absolute paths
-			if(NOT IS_ABSOLUTE "${arg}")
-				get_filename_component(arg "${arg}" ABSOLUTE)
-			endif()
-			list(APPEND srcs "${arg}")
-		endif()
-	endforeach (src ${ARGN})
-	# require at least one source file
-	if (NOT srcs)
-		message(SEND_ERROR "At least one source file required")
-	endif (NOT srcs)
-	# if we have a STATIC_NAME, append the sources to the global property
-	if(static_name)
-		set(prop_name MY_STATIC_MODULES_${static_name}_SOURCES)
-		get_property(prop_defined GLOBAL PROPERTY ${prop_name} DEFINED)
-		if(NOT prop_defined)
-			define_property(GLOBAL PROPERTY ${prop_name}
-					BRIEF_DOCS "Sources for static module ${static_name}"
-					FULL_DOCS "Source files to be compiled into the static module ${static_name}")
-		endif()
-		set_property(GLOBAL APPEND PROPERTY ${prop_name} ${srcs})
-	endif()
-	# finally, create the normal library
-	add_library(${name} ${lib_type} ${exclude_from_all} ${srcs})
-endfunction()
-
-
 #- Create a static library from sources collected by MY_ADD_LIBRARY
 #
 #  MY_ADD_STATIC_MODULE(<name>)

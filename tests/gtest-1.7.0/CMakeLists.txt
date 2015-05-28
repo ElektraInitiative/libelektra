@@ -9,7 +9,7 @@ include_directories(
 #
 # Defines the gtest & gtest_main libraries.  User tests should link
 # with one of them.
-add_library(gtest src/gtest-all.cc)
-add_library(gtest_main src/gtest_main.cc)
+add_library(gtest STATIC src/gtest-all.cc)
+add_library(gtest_main STATIC src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
 
