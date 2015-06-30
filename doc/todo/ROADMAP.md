@@ -37,6 +37,9 @@ better errnostore solution?
 C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin
 exists for it
 
+system/env should be array
+kdb tool should work with arrays (add_entry, remove_entry)
+
 ## meta data ##
 
 fix comments:
@@ -58,6 +61,7 @@ plugins should use relative pathes so that import/export/remount works
 
 unserialize
 streaming
+generic simpleini (customizable printf/scanf format strings)
 
 ## simplify cmake ##
 

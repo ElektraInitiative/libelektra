@@ -94,8 +94,8 @@ Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/rel
 To use the debian repository of the releases put following files in
 /etc/apt/sources.list:
 
-         deb     http://build.libelektra.org/debian/ elektra-release-glue main
-         deb-src http://build.libelektra.org/debian/ elektra-release-glue main
+         deb     http://build.libelektra.org/debian/ wheezy main
+         deb-src http://build.libelektra.org/debian/ wheezy main
 
 The [build server](http://build.libelektra.org:8080/) builds
 Elektra on every commit in various ways and also produces [LCOV code

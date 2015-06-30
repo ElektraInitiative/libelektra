@@ -80,6 +80,13 @@ Run shell code at end of all plugins, e.g. especially doing
     git add
     git commit
 
+
+### Inference plugins
+
+The globbing would be more natural (derived from specification).
+Or even more advanced ways to copy information from specification to the keys, e.g. type inference
+
+
 ## Implications
 
 ### Default global plugins
