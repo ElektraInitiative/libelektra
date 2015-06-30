@@ -91,17 +91,6 @@ Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/rel
 
          ftp://ftp.libelektra.org/elektra/releases/
 
-To use the debian repository of the releases put following files in
-/etc/apt/sources.list:
-
-         deb     http://build.libelektra.org/debian/ wheezy main
-         deb-src http://build.libelektra.org/debian/ wheezy main
-
-The [build server](http://build.libelektra.org:8080/) builds
-Elektra on every commit in various ways and also produces [LCOV code
-coverage report](http://doc.libelektra.org/coverage/latest).
-
-
 ## Compile ##
 
 See this [document](doc/COMPILE.md) for documentation how to compile the software.
@@ -128,11 +117,25 @@ Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensus
 For Debian stable amd64 we provide latest builds. Just add following lines to
 sources.list in wheezy:
 
-        deb ftp://markus-raab.org/wheezy wheezy main
-        deb-src ftp://markus-raab.org/wheezy wheezy main
+        deb     [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
+        deb-src [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
 
 If there are no packages available for your distribution, see the
 [installation document](doc/INSTALL.md).
+
+
+## Build Server ##
+
+The [build server](http://build.libelektra.org:8080/) builds
+Elektra on every commit in various ways and also produces [LCOV code
+coverage report](http://doc.libelektra.org/coverage/latest).
+
+To use the debian repository of the latest builds from master put following files in
+/etc/apt/sources.list:
+
+         deb     [trusted=yes] http://build.libelektra.org/debian/ wheezy main
+         deb-src [trusted=yes] http://build.libelektra.org/debian/ wheezy main
+
 
 ## Develop ##
 
