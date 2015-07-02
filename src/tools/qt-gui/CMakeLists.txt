@@ -12,6 +12,11 @@ elseif (NOT DISCOUNT_FOUND)
 	remove_tool(qt-gui "discount (libmarkdown) not found")
 else()
 
+if (Qt5_POSITION_INDEPENDENT_CODE)
+	# Qt was built with -reduce-relocations
+	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
