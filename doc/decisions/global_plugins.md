@@ -56,12 +56,16 @@ Some nice features that will be implemented as global plugins.
 
 ### Transformation
 
-Read foreign key and transform it to be usable by the application:
+Transformation keys which are read and transformed to be usable by the application:
 
     [dir/a]
-    foreign=/x
+    transform=/x
     transform/python=...upper()
              /lua=..
+
+(actually two plugins are involved: one that fetches transformation keys, the other
+ that executes the transformation code)
+
 
 - preget: fetch all foreign keys (kdbGet)
 - postget: run transformation for all foreign keys
@@ -87,12 +91,21 @@ The globbing would be more natural (derived from specification).
 Or even more advanced ways to copy information from specification to the keys, e.g. type inference
 
 
+### Journalling plugins
+
+It should be possible to write plugins which need all file names of all resolver plugins.
+E.g. journalling, global mmap.
+
+
 ## Implications
 
 ### Default global plugins
 
 Its useful to have some important global plugins, e.g. locking by default.
 Internal list to be used when no system/elektra/global_mountpoints/ exists.
+
+State diagrams of plugins need to be redrawn to also include global plugin
+states.
 
 ## Related decisions
 
