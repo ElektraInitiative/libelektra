@@ -1,6 +1,74 @@
+# 0.8.12 Release
+
+Again we managed to do a release with new features, many build system
+fixes and also other improvements.
+
+## dir namespace
+
+This namespace adds per-project or per-directory (hence the name) configurations.
+E.g. think how the git works: not only /etc and ~ are relevant sources
+for configuration but also the nearest .git directory.
+
+This technique is, however, much more useful than just for git
+repositories! All other programs can benefit from such a per-dir
+configuration. Its almost certain that you have already run into the
+problem that different projects have different whitespace guidelines
+(coding conventions). Obviously, thats not a per-user configuration and
+its also not a per-file issue (thats how its usually solved).
+So in fact you want your editor to have an additional per-project layer
+to e.g. choose between tabs and spaces.
+
+The technique is useful for nearly every other tool, too:
+- different color palettes for different projects in gimp, inkscape,..
+- different languages for libreoffice
+- different security settings for media players, interpreters when in Download folder
+- for per-folder .htaccess in apache or other web servers
+- much, much more..
+
+It is simple to use, also for the administrative side. First, change to the folder:
+
+    cd ~/projects/abc
+
+Then add some user, system or spec configuration to have some default (and verify that
+we get this value back when we do a cascading lookup):
+
+    kdb set user/sw/editor/textwidth 72
+    kdb get /sw/editor/textwidth
+
+The default configuration file is .default.ecf and can be modified at compile-time with
+KDB_DB_DIR and at runtime with the resolver..
+
+    kdb file dir/sw/editor/textwidth
+
+We assume, that the project abc has the policy to use textwidth 120, so
+we change the dir-configuration:
+
+    kdb set dir/sw/editor/textwidth 120
+    kdb get /sw/editor/textwidth
+
+Now we will get the value 120 in the folder ~/projects/abc and its
+subdirectories, but everywhere else we still get 72.
+
+
+## mount files in dir namespaces
+
+
+
+
+## dir together with spec namespace
+
+In a project we had the following problem:
+
+
+
+
+
 - open build service update
   For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
   Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
+
+
+
 
 # 0.8.11 Release
 

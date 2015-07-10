@@ -12,6 +12,14 @@
 int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED);
 int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED);
 
+static void elektraAddKeyValue(KeySet *ks, Key *parentKey, const char *key, const char *value)
+{
+	Key *k = keyDup(parentKey);
+	keyAddName(k, key);
+	keySetString(key, value);
+	ksAppendKey(ks, key);
+}
+
 int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/constants"))
@@ -102,6 +110,8 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 	keySetString(key, "@KDB_DB_HOME@");
 	ksAppendKey(ks, key);
 
+	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DB_SPEC", "@KDB_DB_SPEC@");
+	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DB_DIR", "@KDB_DB_DIR@");
 
 	key = keyDup (parentKey);
 	keyAddName(key, "cmake/KDB_DB_USER");

@@ -13,9 +13,10 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
-KDB_DB_SPEC in constants
 run_all really should use dump
 xdg variable for spec?
+
+cascading export nickel?
 
 document METADATA.ini
 
