@@ -25,9 +25,17 @@ string rebasePath(const Key& key, const Key& oldParent,
 {
 	string oldKeyPath = key.getName ();
 
-	if (!key.isBelowOrSame(oldParent)) throw InvalidRebaseException("the supplied key is not below the old parent");
+	Key actualParent = oldParent.dup();
 
-	string relativePath = oldKeyPath.substr (oldParent.getName().length (),
+	if (oldParent.getNamespace() == "/")
+	{
+		actualParent = oldParent.dup();
+		actualParent.setName(key.getNamespace() + oldParent.getName());
+	}
+
+	if (!key.isBelowOrSame(actualParent)) throw InvalidRebaseException("the supplied key is not below the old parent");
+
+	string relativePath = oldKeyPath.substr (actualParent.getName().length (),
 			oldKeyPath.length ());
 	string newPath = newParent.getName () + relativePath;
 
