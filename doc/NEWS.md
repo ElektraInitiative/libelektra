@@ -10,59 +10,86 @@ E.g. think how the git works: not only /etc and ~ are relevant sources
 for configuration but also the nearest .git directory.
 
 This technique is, however, much more useful than just for git
-repositories! All other programs can benefit from such a per-dir
+repositories! Nearly every application can benefit from such a per-dir
 configuration. Its almost certain that you have already run into the
-problem that different projects have different whitespace guidelines
-(coding conventions). Obviously, thats not a per-user configuration and
-its also not a per-file issue (thats how its usually solved).
-So in fact you want your editor to have an additional per-project layer
-to e.g. choose between tabs and spaces.
+problem that different projects have different guidelines
+(e.g. coding conventions, languages, whitespace requirements, line breaks, ..).
+Obviously, thats not a per-user configuration and
+its also not a per-file issue (thats how its usually solved today).
+So in fact you want, e.g., your editor to have an additional per-project layer
+to choose between such settings.
 
-The technique is useful for nearly every other tool, too:
-- different color palettes for different projects in gimp, inkscape,..
+The technique is useful for nearly every other tool:
+- different color palettes in gimp, inkscape,..
 - different languages for libreoffice
 - different security settings for media players, interpreters when in Download folder
-- for per-folder .htaccess in apache or other web servers
-- much, much more..
+- per-folder .htaccess in apache or other web servers
+- any other per-dir configuration you can imagine..
 
-It is simple to use, also for the administrative side. First, change to the folder:
+It is simple to use, also for the administrative side. First, change to the folder to your
+folder (e.g. where a project is):
 
     cd ~/projects/abc
 
-Then add some user, system or spec configuration to have some default (and verify that
-we get this value back when we do a cascading lookup):
+Then add some user (or system or spec) configuration to have some default.
 
     kdb set user/sw/editor/textwidth 72
+
+Then verify that we get this value back when we do a cascading lookup:
+
     kdb get /sw/editor/textwidth
 
-The default configuration file is .default.ecf and can be modified at compile-time with
-KDB_DB_DIR and at runtime with the resolver..
+The default configuration file for the dir-namespace is `pwd`/KDB_DB_DIR/filename:
 
     kdb file dir/sw/editor/textwidth
+
+- KDB_DB_DIR can be modified at compile-time and is `.dir` per default
+- filename can be modified using mounting, see below, and is `default.ecf` per default
 
 We assume, that the project abc has the policy to use textwidth 120, so
 we change the dir-configuration:
 
     kdb set dir/sw/editor/textwidth 120
-    kdb get /sw/editor/textwidth
 
 Now we will get the value 120 in the folder ~/projects/abc and its
-subdirectories, but everywhere else we still get 72.
+subdirectories, but everywhere else we still get 72:
+
+    kdb get /sw/editor/textwidth
 
 
 ### mount files in dir namespaces
 
+For cascading mountpoints, the dir name is also automatically mounted, e.g.:
 
+    kdb mount editor.ini /sw/editor ini
+
+But its also possible to only mount for dir if no cascading mountpoint is
+present already:
+
+    kdb mount app.ini dir/sw/app tcl
+
+In both cases keys below dir/sw/editor would be in the INI file
+`.dir/editor.ini` and not in the file `.dir/default.ecf`.
 
 
 ### dir together with spec namespace
 
-In a project we had the following issue:
+In the project P we had the following issue: We needed on a specific computer the
+configuration in /etc to be used in favour of the dir config.
+
+We could easily solve the problem using the specification:
+
+    kdb setmeta spec/sw/P/current/org/base override/#0/sw/P/override/org/base
+
+Hence, we could create system/sw/P/override/org/base which would be in favour of dir/sw/P/current/org/base.
 
 
+### Conclusion
 
-The great thing is, that every elektrified application, automatically gets these features.
-Not even a recompilation is necessary.
+The great thing is, that every elektrified application, automatically gets all the mentioned features.
+Not even a recompilation of the application is necessary.
+
+Especially the specification provides flexibility not present in other configuration systems.
 
 
 ## Updates for plugins
