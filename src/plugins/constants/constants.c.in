@@ -16,8 +16,8 @@ static void elektraAddKeyValue(KeySet *ks, Key *parentKey, const char *key, cons
 {
 	Key *k = keyDup(parentKey);
 	keyAddName(k, key);
-	keySetString(key, value);
-	ksAppendKey(ks, key);
+	keySetString(k, value);
+	ksAppendKey(ks, k);
 }
 
 int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
