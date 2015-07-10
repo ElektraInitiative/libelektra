@@ -29,6 +29,14 @@ TEST(KeyDataEqualTest, IsFalseForDifferentValuedKeys)
 	EXPECT_FALSE(keyDataEqual (k1, k2));
 }
 
+TEST(KeyDataEqualTest, IsFalseForDifferentTypedKeys)
+{
+	Key k1 = Key ("user/test/config/key1", KEY_VALUE, "keyvalue1", KEY_END);
+	Key k2 = Key ("user/test/config/key2", KEY_VALUE, "keyvalue1", KEY_BINARY, KEY_END);
+
+	EXPECT_FALSE(keyDataEqual (k1, k2));
+}
+
 TEST(KeyDataEqualTest, HandlesNullKeys)
 {
 	Key k1 = Key ("user/test/config/key1", KEY_VALUE, "keyvalue1", KEY_END);
