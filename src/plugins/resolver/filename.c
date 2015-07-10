@@ -117,7 +117,7 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 
 	size_t pathSize = elektraStrLen(p->path);
 	char *saveptr = 0;
-	char *str = strdup(configDir);
+	char *str = elektraStrDup(configDir);
 	char *result = strtok_r (str, ":", &saveptr);
 	struct stat buf;
 	int errnoSave = errno;
@@ -138,7 +138,7 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 
 		size_t filenameSize = configDirSize
 			+ pathSize + sizeof("/") + 1;
-		p->filename = realloc (p->filename, filenameSize);
+		elektraRealloc ((void*)&p->filename, filenameSize);
 		strcpy (p->filename, result);
 		strcat (p->filename, "/");
 		strcat (p->filename, p->path);
@@ -151,7 +151,7 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 
 		result = strtok_r (0, ":", &saveptr);
 	}
-	free(str);
+	elektraFree(str);
 	errno = errnoSave;
 
 	elektraResolveFinishByFilename(p);
@@ -385,17 +385,22 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 	elektraResolveFinishByFilename(p);
 }
 
-static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
+/**
+ * @return freshly allocated buffer with current working directory
+ *
+ * @param warningsKey where warnings are added
+ */
+static char *elektraGetCwd(Key *warningsKey)
 {
 	int size = 4096;
-	char *ret = NULL;
-	char *cwd = malloc(size);
+	char *cwd = elektraMalloc(size);
 	if (cwd == NULL)
 	{
 		ELEKTRA_ADD_WARNING(83, warningsKey, "could not alloc for getcwd");
-		return -1;
+		return 0;
 	}
 
+	char *ret = NULL;
 	while (ret == NULL)
 	{
 		ret = getcwd(cwd, size);
@@ -407,7 +412,7 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 				// give up, we cannot handle the problem
 				free(cwd);
 				ELEKTRA_ADD_WARNINGF(83, warningsKey, "getcwd failed with errno %d", errno);
-				return -1;
+				return 0;
 			}
 
 			// try to double the space
@@ -416,15 +421,52 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 			if (cwd == NULL)
 			{
 				ELEKTRA_ADD_WARNINGF(83, warningsKey, "could not realloc for getcwd size %d", size);
-				return -1;
+				return 0;
 			}
 		}
 	}
 
-	// now put together the dirname
-	p->dirname = elektraFormat("%s/" KDB_DB_DIR, cwd);
-	free(cwd);
+	return ret;
+}
 
+static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
+{
+	char * cwd = elektraGetCwd(warningsKey);
+	if (!cwd) return -1;
+
+	char *dn = elektraStrDup(cwd);
+
+	while (true)
+	{
+		// now put together the dirname
+		p->dirname = elektraFormat("%s/" KDB_DB_DIR, dn);
+
+		struct stat buf;
+		if (stat(p->dirname, &buf) == 0)
+		{
+			// we found a file/directory!
+			break;
+		}
+
+		if (!strcmp(dn, "/"))
+		{
+			// we reached the end, dirname not useful anymore
+			break;
+		}
+
+		elektraFree(p->dirname);
+		dn = dirname(dn);
+	}
+
+	if (!strcmp(dn, "/"))
+	{
+		// nothing found, so we use most specific
+		free(p->dirname);
+		p->dirname = elektraFormat("%s/" KDB_DB_DIR, cwd);
+	}
+
+	elektraFree(cwd);
+	elektraFree(dn);
 	elektraResolveFinishByDirname(p);
 	return 1;
 }

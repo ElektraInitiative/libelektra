@@ -61,6 +61,10 @@ In a project we had the following issue:
 
 
 
+The great thing is, that every elektrified application, automatically gets these features.
+Not even a recompilation is necessary.
+
+
 ## Updates for plugins
 
 constants now additionally gives information about SPEC and DIR.
