@@ -119,7 +119,7 @@ ostream& operator << (ostream& os, parse_t& p)
 		{
 		os << "	va_list arg;" << endl
 		   << "	va_start(arg, line);" << endl
-		   << "	char * r = elektraFormat(reason, arg);" << endl
+		   << "	char * r = elektraVFormat(reason, arg);" << endl
 		   << "	keySetMeta(warningKey, buffer, r);" << endl
 		   << "	elektraFree(r);" << endl
 		   << "	va_end(arg);" << endl;
@@ -159,7 +159,7 @@ ostream& operator << (ostream& os, parse_t& p)
 		{
 		os << "	va_list arg;" << endl
 		   << "	va_start(arg, line);" << endl
-		   << "	char * r = elektraFormat(reason, arg);" << endl
+		   << "	char * r = elektraVFormat(reason, arg);" << endl
 		   << "	keySetMeta(errorKey, \"error/reason\", " << "r" << ");" << endl
 		   << "	elektraFree(r);" << endl
 		   << "	va_end(arg);" << endl;

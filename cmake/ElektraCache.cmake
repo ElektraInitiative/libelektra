@@ -294,8 +294,8 @@ set (KDB_DB_SPEC "share/elektra/specification" CACHE PATH
 		"This path will be appended after the prefix. It completes the path to the specification key database."
 		)
 
-set (KDB_DB_DIR ".default.ecf" CACHE PATH
-		"The configuration file for config files in dir namespace."
+set (KDB_DB_DIR ".dir" CACHE PATH
+		"The configuration directory for config files in dir namespace."
 		)
 
 set (KDB_DB_FILE "default.ecf" CACHE PATH

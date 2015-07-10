@@ -95,7 +95,7 @@ ssize_t keySetStringF(Key *key, const char *format, ...)
 	keySetMeta (key, "binary", 0);
 
 	va_start(arg_list, format);
-	char *p = elektraFormat(format, arg_list);
+	char *p = elektraVFormat(format, arg_list);
 	va_end(arg_list);
 
 	if (!p)

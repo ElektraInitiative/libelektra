@@ -385,14 +385,45 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 	elektraResolveFinishByFilename(p);
 }
 
-static int elektraResolveDir(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
+static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 {
-#ifdef __APPLE__
-	p->dirname = malloc(1024);
-	getcwd( p->dirname, 1024 );
-#else
-	p->dirname = get_current_dir_name();
-#endif
+	int size = 4096;
+	char *ret = NULL;
+	char *cwd = malloc(size);
+	if (cwd == NULL)
+	{
+		ELEKTRA_ADD_WARNING(83, warningsKey, "could not alloc for getcwd");
+		return -1;
+	}
+
+	while (ret == NULL)
+	{
+		ret = getcwd(cwd, size);
+
+		if (ret == NULL)
+		{
+			if (errno != ERANGE)
+			{
+				// give up, we cannot handle the problem
+				free(cwd);
+				ELEKTRA_ADD_WARNINGF(83, warningsKey, "getcwd failed with errno %d", errno);
+				return -1;
+			}
+
+			// try to double the space
+			size *= 2;
+			elektraRealloc((void**)&cwd, size);
+			if (cwd == NULL)
+			{
+				ELEKTRA_ADD_WARNINGF(83, warningsKey, "could not realloc for getcwd size %d", size);
+				return -1;
+			}
+		}
+	}
+
+	// now put together the dirname
+	p->dirname = elektraFormat("%s/" KDB_DB_DIR, cwd);
+	free(cwd);
 
 	elektraResolveFinishByDirname(p);
 	return 1;

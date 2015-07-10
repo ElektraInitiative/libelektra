@@ -50,22 +50,36 @@ Now we will get the value 120 in the folder ~/projects/abc and its
 subdirectories, but everywhere else we still get 72.
 
 
-## mount files in dir namespaces
+### mount files in dir namespaces
 
 
 
 
-## dir together with spec namespace
+### dir together with spec namespace
 
-In a project we had the following problem:
+In a project we had the following issue:
 
 
 
+## Updates for plugins
+
+constants now additionally gives information about SPEC and DIR.
+
+
+## Build Server
 
 
 - open build service update
   For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
   Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
+
+
+
+
+
+
+
+
 
 
 
