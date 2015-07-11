@@ -126,6 +126,7 @@ Raffael Pancheri again did a lot of stabilizing work:
 - CMake: fix BUILD_SHARED_LIBS
 - Doxygen: remove HTML_TIMESTAMP to make build reproduceable
 - CMake: allow to use qt-gui with qt built with -reduce-relocations
+- fix kdb ls to list warnings during open
 
 
 ## Build Server
