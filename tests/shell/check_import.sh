@@ -100,6 +100,39 @@ do
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
+	$KDB rm -r $ROOT
+	succeed_if "Could not remove root"
+
+
+
+
+
+	echo "Import as stream (using cat)"
+
+	cat $DATADIR/one_value.$PLUGIN | $KDB import $ROOT $PLUGIN
+	succeed_if "Could not run kdb import"
+
+	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
+	succeed_if "key name not correct one_value empty root"
+
+	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	then
+		#TODO: yajl currently cannot hold values within
+		#directories, do not hardcode that
+		test "`$KDB get $ROOT`" = root
+		succeed_if "root value not correct"
+	fi
+
+	$KDB export $ROOT $PLUGIN > $FILE
+	succeed_if "Could not run kdb export"
+
+	diff $DATADIR/one_value.$PLUGIN $FILE
+	succeed_if "Export file one_value.$PLUGIN was not equal"
+
+	$KDB rm -r $ROOT
+	succeed_if "Could not remove root"
+
+
 
 
 	echo "Import with wrong root (overwrite)"
