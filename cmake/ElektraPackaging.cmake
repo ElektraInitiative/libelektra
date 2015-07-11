@@ -61,6 +61,7 @@ if (UNIX)
 		set (CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 		set (CPACK_DEBIAN_PACKAGE_SECTION "libs")
 		set (CPACK_DEBIAN_PACKAGE_RECOMMENDS "")
+		set (CPACK_DEBIAN_PACKAGE_DEPENDS " ") # no dependencies without any PLUGINS
 
 		# We need to alter the architecture names as per distro rules
 		if ("${CPACK_PACKAGE_ARCHITECTURE}" MATCHES "i[3-6]86")
@@ -69,22 +70,6 @@ if (UNIX)
 		if ("${CPACK_PACKAGE_ARCHITECTURE}" MATCHES "x86_64")
 			set (CPACK_PACKAGE_ARCHITECTURE amd64)
 		endif ("${CPACK_PACKAGE_ARCHITECTURE}" MATCHES "x86_64")
-
-		# Set the dependencies based on the distro version
-		# thus only one package is build you must list here *any* depending libraries,
-		# even if they are only used in one module
-		if ("${LSB_DISTRIB}" MATCHES "Debian5.*")
-			set (CPACK_DEBIAN_PACKAGE_DEPENDS " ")
-		endif ("${LSB_DISTRIB}" MATCHES "Debian5.*")
-		if ("${LSB_DISTRIB}" MATCHES "Debian6.*")
-			set (CPACK_DEBIAN_PACKAGE_DEPENDS " ")
-		endif ("${LSB_DISTRIB}" MATCHES "Debian6.*")
-		if ("${LSB_DISTRIB}" MATCHES "Debian7.*")
-			set (CPACK_DEBIAN_PACKAGE_DEPENDS " ") # if build with no plugins
-		endif ("${LSB_DISTRIB}" MATCHES "Debian7.*")
-		if (NOT CPACK_DEBIAN_PACKAGE_DEPENDS)
-			message ("WARNING: ${LSB_DISTRIB} not supported yet.\nPlease set deps in cmake/ElektraPackaging.cmake before packaging.")
-		endif (NOT CPACK_DEBIAN_PACKAGE_DEPENDS)
 	endif ("${LSB_DISTRIB}" MATCHES "Ubuntu|Debian")
 	set (CPACK_SYSTEM_NAME "${LSB_DISTRIB}-${CPACK_PACKAGE_ARCHITECTURE}")
 	message (STATUS "Detected ${CPACK_SYSTEM_NAME}. Use make package to build packages (${CPACK_GENERATOR}).")
