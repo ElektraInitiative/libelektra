@@ -438,36 +438,36 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 
 	while (true)
 	{
-		// now put together the dirname
-		p->dirname = elektraFormat("%s/" KDB_DB_DIR, dn);
+		// now put together the filename
+		p->filename = p->path[0] == '/' ? elektraFormat("%s%s", dn, p->path) : elektraFormat("%s/" KDB_DB_DIR "/%s", dn, p->path);
 
 		struct stat buf;
-		if (stat(p->dirname, &buf) == 0)
+		if (stat(p->filename, &buf) == 0)
 		{
-			// we found a file/directory!
+			// we found a file!
 			break;
 		}
 
 		if (!strcmp(dn, "/"))
 		{
-			// we reached the end, dirname not useful anymore
+			// we reached the end, filename not useful anymore
 			break;
 		}
 
-		elektraFree(p->dirname);
+		elektraFree(p->filename);
 		dn = dirname(dn);
 	}
 
 	if (!strcmp(dn, "/"))
 	{
 		// nothing found, so we use most specific
-		free(p->dirname);
-		p->dirname = elektraFormat("%s/" KDB_DB_DIR, cwd);
+		free(p->filename);
+		p->filename = p->path[0] == '/' ? elektraFormat("%s%s", cwd, p->path) : elektraFormat("%s/" KDB_DB_DIR "/%s", cwd, p->path);
 	}
 
 	elektraFree(cwd);
 	elektraFree(dn);
-	elektraResolveFinishByDirname(p);
+	elektraResolveFinishByFilename(p);
 	return 1;
 }
 

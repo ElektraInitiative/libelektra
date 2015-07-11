@@ -8,13 +8,13 @@ A complete list of ideas what could be done can be found in the
 
 
 
-# 0.8.12
+# 0.8.13
 
 Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
 for other activities of the current release.
 
 run_all really should use dump
-xdg variable for spec?
+(xdg) variable for spec?
 
 cascading export nickel?
 
