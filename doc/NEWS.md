@@ -91,6 +91,8 @@ Not even a recompilation of the application is necessary.
 
 Especially the specification provides flexibility not present in other configuration systems.
 
+## Qt-Gui 0.0.7
+
 
 ## Updates for plugins
 

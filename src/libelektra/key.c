@@ -191,7 +191,8 @@ static Key *elektraKeyMalloc()
  * @ingroup key
  *
  */
-Key *keyNew(const char *name, ...) {
+Key *keyNew(const char *name, ...)
+{
 	Key * k;
 	va_list va;
 
