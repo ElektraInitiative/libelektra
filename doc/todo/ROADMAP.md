@@ -20,9 +20,6 @@ cascading export nickel?
 
 document METADATA.ini
 
-shell:
-	test resolver (dir)
-
 genopt.hpp + include enforcement in template_dynamic?
 
 install kdb gen properly
@@ -60,8 +57,6 @@ plugins should use relative pathes so that import/export/remount works
 
 ## Backend ##
 
-unserialize
-streaming
 generic simpleini (customizable printf/scanf format strings)
 
 ## simplify cmake ##
