@@ -196,6 +196,13 @@ check user/sw/app/folder/key
  *
  * returns also true because check is indirect below key
  *
+ * Obviously, there is no key above a namespace (e.g. user, system, /):
+ *
+@verbatim
+key *
+check user
+@endverbatim
+ *
  * @param key the key object to work with
  * @param check the key to find the relative position of
  * @return 1 if check is below key
@@ -220,7 +227,8 @@ int keyIsBelow(const Key *key, const Key *check)
 
 	if (keysize > checksize + 1) return 0;
 	if (strncmp (keyname, checkname, keysize - 1)) return 0;
-	if (checkname[keysize - 1] != '/') return 0;
+	if (!strcmp(checkname, "/")) return 0;
+	if (checkname[keysize - 1] != '/' && strcmp(keyname, "/")) return 0;
 	return 1;
 }
 

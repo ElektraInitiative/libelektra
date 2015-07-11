@@ -1345,6 +1345,51 @@ static void test_keyBelow()
 	succeed_if (keyIsBelow(key1,key2), "Key should be below");
 	succeed_if (!keyIsBelow(key2,key1), "Key should not be below");
 
+	keySetName(key1,"/valid");
+	keySetName(key2,"/valid/b/e");
+	succeed_if (keyIsBelow(key1,key2), "cascading Key should be below");
+	succeed_if (!keyIsBelow(key2,key1), "cascading Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"/valid/b/e");
+	succeed_if (keyIsBelow(key1,key2), "cascading Key should be below");
+	succeed_if (!keyIsBelow(key2,key1), "cascading Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"/v");
+	succeed_if (keyIsBelow(key1,key2), "cascading Key should be below");
+	succeed_if (!keyIsBelow(key2,key1), "cascading Key should not be below");
+
+	keySetName(key1,"user");
+	keySetName(key2,"user");
+	succeed_if (!keyIsBelow(key1,key2), "root Key should not be below");
+	succeed_if (!keyIsBelow(key2,key1), "root Key should not be below");
+
+	keySetName(key1,"dir");
+	keySetName(key2,"dir");
+	succeed_if (!keyIsBelow(key1,key2), "root Key should not be below");
+	succeed_if (!keyIsBelow(key2,key1), "root Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"dir");
+	succeed_if (!keyIsBelow(key1,key2), "root Key should not be below");
+	succeed_if (!keyIsBelow(key2,key1), "root Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"system");
+	succeed_if (!keyIsBelow(key1,key2), "root Key should not be below");
+	succeed_if (!keyIsBelow(key2,key1), "root Key should not be below");
+
+	keySetName(key1,"user/a");
+	keySetName(key2,"user/a");
+	succeed_if (!keyIsBelow(key1,key2), "cascading Key should not be below");
+	succeed_if (!keyIsBelow(key2,key1), "cascading Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"/");
+	succeed_if (!keyIsBelow(key1,key2), "cascading Key should not be below");
+	succeed_if (!keyIsBelow(key2,key1), "cascading Key should not be below");
+
 	keySetName(key1,"user/valide");
 	keySetName(key2,"user/valid/e");
 	succeed_if (!keyIsBelow(key1,key2), "Key should not be below");
@@ -1372,6 +1417,42 @@ static void test_keyBelow()
 
 	keySetName(key1,"user/valid/a");
 	keySetName(key2,"user/valid/b");
+	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid\\/");
+	keySetName(key2,"user/valid\\a");
+	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid\\/");
+	keySetName(key2,"user/valid\\/a");
+	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid\\/");
+	keySetName(key2,"user/valid\\/");
+	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid\\/");
+	keySetName(key2,"user/valid\\/a");
+	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid\\"); // this is an invalid name, so this situation cannot happen!
+	succeed_if_same_string(keyName(key1), "");
+	keySetName(key2,"user/valid\\/a");
+	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid\\/");
+	keySetName(key2,"user/valid\\/\\/");
+	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
+	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
+
+	keySetName(key1,"user/valid\\/");
+	keySetName(key2,"user/valid\\/ab");
 	succeed_if (!keyIsDirectBelow(key1,key2), "Key should not be below");
 	succeed_if (!keyIsDirectBelow(key2,key1), "Key should not be below");
 
@@ -1691,6 +1772,26 @@ static void test_keyBelowOrSame()
 	keySetName(key2,"user/valid/b/e");
 	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
 	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"/valid");
+	keySetName(key2,"/valid/b/e");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"/valid/b/e");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"/v");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (!keyIsBelowOrSame(key2,key1), "Key should not be below");
+
+	keySetName(key1,"/");
+	keySetName(key2,"/");
+	succeed_if (keyIsBelowOrSame(key1,key2), "Key should be below");
+	succeed_if (keyIsBelowOrSame(key2,key1), "Key should be below");
 
 	keySetName(key1,"user/valide");
 	keySetName(key2,"user/valid/e");
