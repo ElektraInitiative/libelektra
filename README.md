@@ -11,12 +11,12 @@ applications' configurations, leveraging easy application integration.
 
 ## Goals ##
 
-- Make it simple for applications and administrators to access
-  configuration
-- Make configuration storage more safe: avoid that applications
-  receive wrong or unexpected values without undefined behaviour.
-- Allow software to be better integrated on configuration level
+- Make it trivial for applications and administrators to access
+  any configuration
 - Postpone some decisions from programmers to
+- Make configuration storage more safe: avoid that applications
+  receive wrong or unexpected values that could lead to undefined behaviour.
+- Allow software to be better integrated on configuration level
   maintainers/administrators, e.g. which syntax and the location of
   configuration files.
 - Reduce rank growth of configuration parsers in our ecosystem, but
@@ -24,9 +24,9 @@ applications' configurations, leveraging easy application integration.
 
 And in terms of quality, we want:
 
-1.) Robustness (no undefined behaviour)
-2.) Extensibility and
-3.) Simplicity
+1. Robustness (no undefined behaviour of applications),
+2. Extensibility (gain control over configuration access) and
+3. Simplicity (make configuration tasks simple)
 
 [Read here more about the Goals of Elektra ..](doc/GOALS.md)
 
@@ -38,7 +38,7 @@ And in terms of quality, we want:
  * Elektra has dozens of [Plugins](src/plugins#introduction) that make it possible
    to have a tiny core, but still support many features, including:
    * Elektra can import and export configuration files in any [supported format](src/plugins#storage).
-   * Elektra is able to log and notify other software on any configuration changes using [Dbus](src/plugins/dbus) and [Journald](src/plugins/journald).
+   * Elektra is able to log and notify other software on any configuration changes, e.g., using [Dbus](src/plugins/dbus) and [Journald](src/plugins/journald).
    * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/regex) and more.
    * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver).
    * Elektra supports different ways to [escape](src/plugins/ccode) and [encode](src/plugins/iconv) content of configuration files.
@@ -46,7 +46,7 @@ And in terms of quality, we want:
  * Elektra (except for some [plugins](src/plugins#introduction)) is portable and completely written in Ansi-C99.
  * Elektra (except for some [plugins](src/plugins#introduction)) has no external dependency.
  * Elektra is suitable for embedded systems and early boot stage programs.
- * Elektra supports comments and other non-configuration information by meta data.
+ * Elektra supports comments and other non-configuration information by metadata.
  * Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
  * Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
 
@@ -82,7 +82,7 @@ Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/f
 
 ## Contact ##
 
-Do not hesitate to ask any question on [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+Do not hesitate to ask any question on github, [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 or one of the [authors](doc/AUTHORS).
 
 
@@ -102,7 +102,7 @@ Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/rel
 
 See this [document](doc/COMPILE.md) for documentation how to compile the software.
 You might find [configure](configure) useful: It will print the cmake
-commando you need when you are used to `./configure`.
+commando you need.
 
 
 ## Install ##
