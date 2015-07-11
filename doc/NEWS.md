@@ -1,5 +1,11 @@
 # 0.8.12 Release
 
+(preliminary Release Notes, not yet released!)
+
+- guid: 98770541-32a1-486a-98a1-d02f26afc81a
+- author: Markus Raab
+- pubDate: Sun, 12 Jul 2015 16:14:09 +0200
+
 Again we managed to do a release with new features, many build system
 fixes and also other improvements.
 
@@ -128,6 +134,46 @@ Raffael Pancheri again did a lot of stabilizing work:
 - open build service update
   For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
   Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.12.tar.gz)
+
+- name: elektra-0.8.12.tar.gz
+
+
+
+This release tarball now is also available
+[signed by me using gpg](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.12.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.12/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[new RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+or elektra@markus-raab.org.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/)
+
+For more information, see http://www.libelektra.org
+
+Also thanks for all contributions that are not enlisted here!
+
+Best regards,
+Markus
+
+
+
+
+
 
 
 
