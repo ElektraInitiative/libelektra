@@ -93,15 +93,38 @@ Especially the specification provides flexibility not present in other configura
 
 ## Qt-Gui 0.0.7
 
+Raffael Pancheri again did a lot of stabilizing work:
+- show errormessage on exception when starting gui
+- Correctly update keyAreaView property when selecting item in TreeView
+- Fix crash when creating key in MountingWizard
+- Remove information on successful export
+- Show error dialog on failed import
+- Remove namefilters (every syntax can have any file extension)
 
-## Updates for plugins
+## Other fixes
 
-constants now additionally gives information about SPEC and DIR.
+- constants now additionally gives information about SPEC and DIR.
+- Doku about CMake variables ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD fixed, thanks to Kurt Micheli
+- Fixed compilation of ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD, thanks to Manuel Mausz
+- Example with error handling added, thanks to Kurt Micheli
+- Add design decision about global plugins (to be implemented next release)
+- Split dependencies document to individual README.md, thanks to Ian Donnelly
+- Fix nearly all warnings of SWIG, thanks to Manuel Mausz
+- CMake: Fix gtest to be build if BUILD_TESTING activated, but not ENABLE_TESTING
+- CMake: Allow compilation without BUILD_STATIC
+- Explain compilation options more, thanks to Kai-Uwe Behrmann for asking the question
+- CMake: always build examples, allow to only build documentation
+- add common header file for C++ plugins (used by plugins struct and type)
+- fix compilation of race tool under oS-11.4 thanks to Kai-Uwe Behrmann
+- CMake: find python3 correctly
+- CMake: fix BUILD_SHARED_LIBS
+- Doxygen: remove HTML_TIMESTAMP to make build reproduceable
+- CMake: allow to use qt-gui with qt built with -reduce-relocations
 
 
 ## Build Server
 
-
+- special github command to build bindings "jenkins build bindings please", thanks to Manuel Mausz
 - open build service update
   For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
   Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
