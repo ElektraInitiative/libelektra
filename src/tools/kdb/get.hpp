@@ -16,7 +16,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "nv";
+		return "anv";
 	}
 
 	virtual std::string getSynopsis()
@@ -36,7 +36,8 @@ public:
 			"\n"
 			"Current limitation: only keys with the mountpoint will be considered\n"
 			"during a cascading lookup.\n"
-			"Check with \"kdb ls <same key>\" if a override/fallback key is considered\n"
+			"As workaround to get all keys: pass -a\n"
+			"Or check with \"kdb ls <same key>\" if a override/fallback key is considered\n"
 			"\n"
 			"Example:\n"
 			"\n"

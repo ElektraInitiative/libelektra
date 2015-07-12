@@ -42,6 +42,7 @@ Cmdline::Cmdline (int argc,
 	first(true),
 	second(true),
 	third(true),
+	all(),
 	format("dump"),
 	plugins("sync"),
 	pluginsConfig(""),
@@ -73,6 +74,12 @@ Cmdline::Cmdline (int argc,
 
 	vector<option> long_options;
 	/*XXX: Step 3: give it a long name.*/
+	if (acceptedOptions.find('a')!=string::npos)
+	{
+		option o = {"all", no_argument, 0, 'a'};
+		long_options.push_back(o);
+		helpText += "-a --all                 consider all keys\n";
+	}
 	if (acceptedOptions.find('d')!=string::npos)
 	{
 		option o = {"debug", no_argument, 0, 'd'};
@@ -258,6 +265,7 @@ Cmdline::Cmdline (int argc,
 		switch (opt)
 		{
 		/*XXX: Step 5: and now process the option.*/
+		case 'a': all = true; break;
 		case 'd': debug = true; break;
 		case 'f': force = true; break;
 		case 'h': humanReadable = true; break;
