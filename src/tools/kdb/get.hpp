@@ -7,6 +7,7 @@
 
 class GetCommand : public Command
 {
+	kdb::Key root;
 	kdb::KDB kdb;
 
 public:

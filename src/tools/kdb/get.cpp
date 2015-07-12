@@ -8,7 +8,7 @@
 using namespace std;
 using namespace kdb;
 
-GetCommand::GetCommand()
+GetCommand::GetCommand() : kdb(root)
 {}
 
 int GetCommand::execute (Cmdline const& cl)
@@ -16,14 +16,14 @@ int GetCommand::execute (Cmdline const& cl)
 	if (cl.arguments.size() != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
-	Key x(cl.arguments[0], KEY_CASCADING_NAME, KEY_END);
-	if (!x.isValid())
+	root.setName(cl.arguments[0]);
+	if (!root.isValid())
 	{
 		throw invalid_argument(cl.arguments[0] + " is not an valid keyname");
 	}
 
-	kdb.get(conf, x);
-	Key k = conf.lookup(x);
+	kdb.get(conf, root);
+	Key k = conf.lookup(root);
 
 	int ret = 0;
 
@@ -42,8 +42,8 @@ int GetCommand::execute (Cmdline const& cl)
 		cout << endl;
 	}
 
-	printWarnings(cerr, x);
-	printError(cerr, x);
+	printWarnings(cerr, root);
+	printError(cerr, root);
 
 	return ret;
 }
