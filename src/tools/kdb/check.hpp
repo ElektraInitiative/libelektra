@@ -45,7 +45,6 @@ public:
 			"\n"
 			"\n"
 			"\n"
-			"\n"
 			"If a plugin name is given, checks will only be done with given plugin.\n"
 			"Use -c to pass options to the plugin.\n"
 			"\n"

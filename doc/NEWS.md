@@ -125,6 +125,7 @@ Raffael Pancheri again did a lot of stabilizing work:
 - CMake: find python3 correctly
 - CMake: fix BUILD_SHARED_LIBS
 - Doxygen: remove HTML_TIMESTAMP to make build reproduceable
+- Doxygen: rewrite of main page+add info about all five namespaces
 - CMake: allow to use qt-gui with qt built with -reduce-relocations
 - fix kdb ls to list warnings during open
 - add -f option to kdb check+improve docu
