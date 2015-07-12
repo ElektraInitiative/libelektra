@@ -38,13 +38,14 @@ See the constants of this plugin for further information, that are:
 
 The build-in resolving works like (with ~ and `pwd` resolved from system):
 
-- for spec with any path: KDB_DB_SPEC + path
-- for dir and absolute path: `pwd` + path (or above when path is found)
-- for dir and relative path: `pwd` + KDB_DB_DIR + path (or above when path is found)
-- for user and absolute path: ~ + path
-- for user and relative path: ~ + KDB_DB_USER + path
-- for system and absolute path: path
-- for system and relative path: KDB_DB_SYSTEM + path
+- for spec with absolute path: path
+- for spec with relative path: KDB_DB_SPEC + path
+- for dir with absolute path: `pwd` + path (or above when path is found)
+- for dir with relative path: `pwd` + KDB_DB_DIR + path (or above when path is found)
+- for user with absolute path: ~ + path
+- for user with relative path: ~ + KDB_DB_USER + path
+- for system with absolute path: path
+- for system with relative path: KDB_DB_SYSTEM + path
 
 
 ## Variants ##

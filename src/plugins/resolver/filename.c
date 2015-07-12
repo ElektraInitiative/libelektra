@@ -350,9 +350,16 @@ static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED
 	size_t filenameSize = sizeof(KDB_DB_SPEC)
 		+ strlen(p->path) + sizeof("/") + 1;
 	p->filename = malloc (filenameSize);
-	strcpy (p->filename, KDB_DB_SPEC);
-	strcat (p->filename, "/");
-	strcat (p->filename, p->path);
+	if (p->path[0] == '/')
+	{
+		strcpy (p->filename, p->path);
+	}
+	else
+	{
+		strcpy (p->filename, KDB_DB_SPEC);
+		strcat (p->filename, "/");
+		strcat (p->filename, p->path);
+	}
 
 	elektraResolveFinishByFilename(p);
 	return 1;

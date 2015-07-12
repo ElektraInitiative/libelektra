@@ -85,9 +85,18 @@ configuration in /etc to be used in favour of the dir config.
 
 We could easily solve the problem using the specification:
 
-    kdb setmeta spec/sw/P/current/org/base override/#0/sw/P/override/org/base
+    kdb setmeta spec/sw/P/current/org/base override/#0 /sw/P/override/org/base
 
 Hence, we could create system/sw/P/override/org/base which would be in favour of dir/sw/P/current/org/base.
+
+Alternatively, one could also use the specification:
+
+    kdb setmeta spec/sw/P/current/org/base namespace proc user system dir
+
+Which makes dir the namespace with the least priority.
+This was less suitable for our purpose, because we needed the override
+only on one computer. For all other computers it was correct that dir
+should be preferred.
 
 
 ### Conclusion
@@ -131,6 +140,7 @@ Raffael Pancheri again did a lot of stabilizing work:
 - during kdbOpen() use Configfile: to state phase
 - add -f option to kdb check+improve docu
 - improve readability of warning output
+- absolute path for spec
 
 
 ## Build Server
