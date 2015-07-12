@@ -53,10 +53,10 @@ Check if [doc/todo/API] is fulfilled
 
 = Preperation =
 
-Set environment variable VERSION to current version to make the
+Set environment variable VERSION to current version (assumed its already locally installed) to make the
 commands below work for copy&paste:
 
- export VERSION=0.8.11
+ export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
 
 
 == Tag the version ==
@@ -146,7 +146,7 @@ And the API docu:
  cd ~build && cmake -DBUILD_PDF=ON . && rm -rf doc && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
- cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION
+ cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION && git-commit -a -m "$VERSION Release"
 
 
 
@@ -171,10 +171,10 @@ Now push release branch with tags to github:
  cd ~e && git-push && git-push --tags
 
 Push elektra-ftp:
- cd ~elektra-ftp && git-push
+ cd ~elektra-ftp && git push && git push github
 
 Push elektra-doc to github:
- cd ~elektra-doc && git-commit -a -m "$VERSION Release" && git-push
+ cd ~elektra-doc && git push && git push github
 
 
 == Announce ==
