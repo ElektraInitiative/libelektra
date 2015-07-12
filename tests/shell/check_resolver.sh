@@ -106,8 +106,8 @@ check_resolver system b /a/b/c /a/b/c
 
 check_resolver spec b x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x
 check_resolver spec b x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x/a
-check_resolver spec b /x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@//x
-check_resolver spec b /x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@//x/a
+check_resolver spec b /x /x
+check_resolver spec b /x/a /x/a
 
 check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
 check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a
