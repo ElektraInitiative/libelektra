@@ -64,6 +64,7 @@ Additional gcc 4.6 armhf is tested regularly.
 |      gcc          | (Debian 4.4.5-8) 4.4.5      |      amd64        |
 |      gcc          | (Debian 4.4.5-8) 4.3        |      amd64        |
 |      gcc          | 4.6                         |      armhf        |
+|      mingw        | 4.6                         |      i386         |
 |      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 
