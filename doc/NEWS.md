@@ -129,6 +129,7 @@ Raffael Pancheri again did a lot of stabilizing work:
 - CMake: allow to use qt-gui with qt built with -reduce-relocations
 - fix kdb ls, get to list warnings during open
 - add -f option to kdb check+improve docu
+- improve readability of warning output
 
 
 ## Build Server

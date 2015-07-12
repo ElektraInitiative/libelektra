@@ -64,7 +64,7 @@ inline std::ostream & printWarnings(std::ostream & os, kdb::Key const & error)
 			std::ostringstream name;
 			name << "warnings/#" << std::setfill('0') << std::setw(2) << i;
 			// os << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
-			os << "\tWarning number: " << error.getMeta<std::string>(name.str() + "/number") << std::endl;
+			os << " Warning number: " << error.getMeta<std::string>(name.str() + "/number") << std::endl;
 			os << "\tDescription: " << error.getMeta<std::string>(name.str() + "/description") << std::endl;
 			os << "\tIngroup: " << error.getMeta<std::string>(name.str() + "/ingroup") << std::endl;
 			os << "\tModule: " << error.getMeta<std::string>(name.str() + "/module") << std::endl;
