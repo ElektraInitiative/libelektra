@@ -141,6 +141,7 @@ Raffael Pancheri again did a lot of stabilizing work:
 - add -f option to kdb check+improve docu
 - improve readability of warning output
 - absolute path for spec
+- run_all always uses dump for backups
 
 
 ## Build Server
