@@ -33,17 +33,24 @@ See the constants of this plugin for further information, that are:
     system/elektra/modules/resolver/constants/KDB_DB_HOME
     system/elektra/modules/resolver/constants/KDB_DB_SYSTEM
     system/elektra/modules/resolver/constants/KDB_DB_USER
+    system/elektra/modules/resolver/constants/KDB_DB_SPEC
+    system/elektra/modules/resolver/constants/KDB_DB_DIR
 
-The build-in resolving works like (with ~ resolved from system):
+The build-in resolving works like (with ~ and `pwd` resolved from system):
 
-- for system and absolute path: path
-- for system and relative path: KDB_DB_SYSTEM + path
+- for spec with any path: KDB_DB_SPEC + path
+- for dir and absolute path: `pwd` + path (or above when path is found)
+- for dir and relative path: `pwd` + KDB_DB_DIR + path (or above when path is found)
 - for user and absolute path: ~ + path
 - for user and relative path: ~ + KDB_DB_USER + path
-- for spec with any path: KDB_DB_SPEC + path
+- for system and absolute path: path
+- for system and relative path: KDB_DB_SYSTEM + path
 
-Many variants might change this build for different variants of the
-resolver plugin, typically by using environment variables.
+
+## Variants ##
+
+Many variants exist that additionally influence the lookup
+process, typically by using environment variables.
 
 Environment variables are very simple for one-time usage but their
 maintenance in start-up scripts is problematic. Additionally, they
