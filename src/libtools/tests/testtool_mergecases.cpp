@@ -33,6 +33,24 @@ TEST_F(ThreeWayMergeTest, EqualKeySetsMerge)
 	compareAllKeys (merged);
 }
 
+TEST_F(ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)
+{
+	Key root("/", KEY_END);
+	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, Key("/parentb", KEY_END)),
+			  OurMergeKeys(ours, Key("/parento", KEY_END)),
+			  TheirMergeKeys (theirs, Key("/parentt", KEY_END)),
+			  root));
+	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+
+	Key current;
+	KeySet merged = result.getMergedKeys ();
+	merged.rewind();
+	while ((current = merged.next ()))
+	{
+		EXPECT_FALSE(current.getNamespace() == "/");
+	}
+}
+
 TEST_F(ThreeWayMergeTest, SameDeletedKeyMerge)
 {
 	ours.lookup ("user/parento/config/key1", KDB_O_POP);
