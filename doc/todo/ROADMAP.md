@@ -10,14 +10,23 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.13
 
-Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
+Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
-(xdg) variable for spec?
+Start with:
+	api! (Namespaces, encoded, versioning)
+	Cleanups
+
+kdb edit
+
+list plugin: processes all plugins in a row
+full jessie build+script+external
+
+(xdg) variable for spec namespace?
 
 cascading export nickel?
 
-document METADATA.ini
+more docu in METADATA.ini
 
 genopt.hpp + include enforcement in template_dynamic?
 
