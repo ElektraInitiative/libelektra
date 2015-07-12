@@ -128,6 +128,7 @@ Raffael Pancheri again did a lot of stabilizing work:
 - Doxygen: rewrite of main page+add info about all five namespaces
 - CMake: allow to use qt-gui with qt built with -reduce-relocations
 - fix kdb ls, get to list warnings during open
+- during kdbOpen() use Configfile: to state phase
 - add -f option to kdb check+improve docu
 - improve readability of warning output
 
