@@ -23,12 +23,20 @@ int GetCommand::execute (Cmdline const& cl)
 	}
 
 	kdb.get(conf, root);
+	if (cl.verbose)
+	{
+		cout << "got " << conf.size() << " keys" << std::endl;
+	}
 	Key k = conf.lookup(root);
 
 	int ret = 0;
 
 	if (k)
 	{
+		if (cl.verbose)
+		{
+			cout << "The resulting keyname is " << k.getName() << std::endl;
+		}
 		cout << k.getString();
 	}
 	else
