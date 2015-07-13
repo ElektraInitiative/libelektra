@@ -38,49 +38,15 @@
 # include <stdio.h>
 #endif
 
-int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+static void elektraAddUname(KeySet *returned, Key *parentKey)
 {
-	int errnosave = errno;
-	Key *key;
 	Key *dir;
-
-#if DEBUG && VERBOSE
-	printf ("get uname %s from %s\n", keyName(parentKey), keyString(parentKey));
-#endif
-
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/uname"))
-	{
-		KeySet *moduleConfig = ksNew (50,
-			keyNew ("system/elektra/modules/uname",
-				KEY_VALUE, "uname plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/uname/exports", KEY_END),
-			keyNew ("system/elektra/modules/uname/exports/get",
-				KEY_FUNC, elektraUnameGet,
-				KEY_END),
-			keyNew ("system/elektra/modules/uname/exports/set",
-				KEY_FUNC, elektraUnameSet,
-				KEY_END),
-#include "readme_uname.c"
-			keyNew ("system/elektra/modules/uname/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END);
-		ksAppend (returned, moduleConfig);
-		ksDel (moduleConfig);
-		return 1;
-	}
-
-	key = keyDup (parentKey);
+	Key *key = keyDup (parentKey);
 	ksAppendKey(returned, key);
 
 	struct utsname buf;
 
-	int ret = uname(&buf);
-
-	if (ret != 0)
-	{
-		// TODO: set error
-		return -1;
-	}
+	uname(&buf); // TODO: handle error
 
 	dir = keyDup (parentKey);
 	keyAddBaseName(dir, "sysname");
@@ -106,6 +72,37 @@ int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	keyAddBaseName(dir, "machine");
 	keySetString(dir,buf.machine);
 	ksAppendKey(returned,dir);
+}
+
+int elektraUnameGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+{
+	int errnosave = errno;
+#if DEBUG && VERBOSE
+	printf ("get uname %s from %s\n", keyName(parentKey), keyString(parentKey));
+#endif
+
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/uname"))
+	{
+		KeySet *moduleConfig = ksNew (50,
+			keyNew ("system/elektra/modules/uname",
+				KEY_VALUE, "uname plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/uname/exports", KEY_END),
+			keyNew ("system/elektra/modules/uname/exports/get",
+				KEY_FUNC, elektraUnameGet,
+				KEY_END),
+			keyNew ("system/elektra/modules/uname/exports/set",
+				KEY_FUNC, elektraUnameSet,
+				KEY_END),
+#include "readme_uname.c"
+			keyNew ("system/elektra/modules/uname/infos/version",
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END);
+		ksAppend (returned, moduleConfig);
+		ksDel (moduleConfig);
+		return 1;
+	}
+
+	elektraAddUname(returned, parentKey);
 
 	errno = errnosave;
 	return 1;
@@ -117,9 +114,24 @@ int elektraUnameSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUS
 	printf ("set uname %s from %s\n", keyName(parentKey), keyString(parentKey));
 #endif
 
-	ELEKTRA_SET_ERROR(84, parentKey, keyName(parentKey));
+	KeySet *info = ksNew(0, KS_END);
+	elektraAddUname(info, parentKey);
 
-	return -1;
+	Key *k;
+	ksRewind(info);
+	ksRewind(returned);
+	while ((k = ksNext(returned)))
+	{
+		Key *c = ksNext(info);
+		if (strcmp(keyName(k), keyName(c)) || strcmp(keyString(k), keyString(c)))
+		{
+			ELEKTRA_SET_ERRORF(84, parentKey, "the key %s (expected %s) was modified to %s (expected %s)", keyName(k), keyName(c), keyString(k), keyString(c));
+			return -1;
+		}
+	}
+
+	ksDel (info);
+	return 0;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(uname) {
