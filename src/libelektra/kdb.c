@@ -647,6 +647,8 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 				{
 					keySetString (parentKey,
 						keyString(split->parents[i]));
+				} else {
+					keySetString(parentKey, "");
 				}
 				keySetName (parentKey,
 					keyName(split->parents[i]));
