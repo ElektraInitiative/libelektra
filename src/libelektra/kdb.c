@@ -270,15 +270,15 @@ KDB * kdbOpen(Key *errorKey)
 		return 0;
 	}
 
+	keySetString(errorKey, "kdbOpen(): mountVersion");
+	elektraMountVersion (handle, errorKey);
+
 	keySetString(errorKey, "kdbOpen(): mountModules");
 	if (elektraMountModules(handle, handle->modules, errorKey) == -1)
 	{
 		ELEKTRA_ADD_WARNING(92, errorKey,
 				"Mounting modules did not work");
 	}
-
-	keySetString(errorKey, "kdbOpen(): mountVersion");
-	elektraMountVersion (handle, errorKey);
 
 	keySetName(errorKey, keyName(initialParent));
 	keySetString(errorKey, keyString(initialParent));
