@@ -549,6 +549,22 @@ void TreeViewModel::synchronize()
 	OneSideMergeConfiguration configuration(OURS);
 	configuration.configureMerger(merger);
 
+#if DEBUG && VERBOSE
+	theirs.rewind();
+	base.rewind();
+	for (Key o : ours)
+	{
+		Key t = theirs.next();
+		Key b = base.next();
+		std::cout << o.getName();
+		std::cout << "\t";
+		!b.isValid() ? std::cout << "none" : std::cout << b.getName();
+		std::cout << "\t";
+		!t.isValid() ? std::cout << "none" : std::cout << t.getName();
+		std::cout << std::endl;
+	}
+#endif
+
 	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
 													  OurMergeKeys(ours, root),
 													  TheirMergeKeys (theirs, root),
