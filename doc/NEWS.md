@@ -1,21 +1,19 @@
 # 0.8.12 Release
 
-(preliminary Release Notes, not yet released!)
-
 - guid: 98770541-32a1-486a-98a1-d02f26afc81a
 - author: Markus Raab
-- pubDate: Sun, 12 Jul 2015 16:14:09 +0200
+- pubDate: Sun, 12 Jul 2015 20:14:09 +0200
 
-Again we managed to do a release with new features, many build system
+Again we managed to release with new features, many build system
 fixes and also other improvements.
 
 ## dir namespace
 
 This namespace adds per-project or per-directory (hence the name) configurations.
-E.g. think how the git works: not only /etc and ~ are relevant sources
+E.g. think how git works: not only /etc and ~ are relevant sources
 for configuration but also the nearest .git directory.
 
-This technique is, however, much more useful than just for git
+This technique is, however, much more widely useful than just for git
 repositories! Nearly every application can benefit from such a per-dir
 configuration. Its almost certain that you have already run into the
 problem that different projects have different guidelines
@@ -28,7 +26,7 @@ to choose between such settings.
 The technique is useful for nearly every other tool:
 - different color palettes in gimp, inkscape,..
 - different languages for libreoffice
-- different security settings for media players, interpreters when in Download folder
+- different security settings for media players, interpreters (e.g. when in Download folder)
 - per-folder .htaccess in apache or other web servers
 - any other per-dir configuration you can imagine..
 
@@ -50,7 +48,7 @@ The default configuration file for the dir-namespace is `pwd`/KDB_DB_DIR/filenam
     kdb file dir/sw/editor/textwidth
 
 - KDB_DB_DIR can be modified at compile-time and is `.dir` per default
-- filename can be modified using mounting, see below, and is `default.ecf` per default
+- filename can be modified by mounting, see below, and is `default.ecf` by default
 
 We assume, that the project abc has the policy to use textwidth 120, so
 we change the dir-configuration:
@@ -58,9 +56,11 @@ we change the dir-configuration:
     kdb set dir/sw/editor/textwidth 120
 
 Now we will get the value 120 in the folder ~/projects/abc and its
-subdirectories, but everywhere else we still get 72:
+subdirectories (!), but everywhere else we still get 72:
 
     kdb get /sw/editor/textwidth
+
+Obviously, that does not only work with kdb, but with every elektrified tool.
 
 
 ### mount files in dir namespaces
@@ -69,7 +69,7 @@ For cascading mountpoints, the dir name is also automatically mounted, e.g.:
 
     kdb mount editor.ini /sw/editor ini
 
-But its also possible to only mount for dir if no cascading mountpoint is
+But its also possible to only mount for the namespace dir if no cascading mountpoint is
 present already:
 
     kdb mount app.ini dir/sw/app tcl
@@ -87,16 +87,22 @@ We could easily solve the problem using the specification:
 
     kdb setmeta spec/sw/P/current/org/base override/#0 /sw/P/override/org/base
 
+
 Hence, we could create system/sw/P/override/org/base which would be in favour of dir/sw/P/current/org/base.
+So we get system/sw/P/override/org/base when we do:
+
+    kdb get /sw/P/current/org/base
 
 Alternatively, one could also use the specification:
 
-    kdb setmeta spec/sw/P/current/org/base namespace proc user system dir
+    kdb setmeta spec/sw/P/current/org/base namespace/#0 user
+    kdb setmeta spec/sw/P/current/org/base namespace/#1 system
+    kdb setmeta spec/sw/P/current/org/base namespace/#2 dir
 
-Which makes dir the namespace with the least priority.
+Which makes dir the namespace with the least priority and system would be preferred.
 This was less suitable for our purpose, because we needed the override
-only on one computer. For all other computers it was correct that dir
-should be preferred.
+only on one computer. For all other computers we wanted dir
+to be preferred with only one specification.
 
 
 ### Conclusion
@@ -105,6 +111,7 @@ The great thing is, that every elektrified application, automatically gets all t
 Not even a recompilation of the application is necessary.
 
 Especially the specification provides flexibility not present in other configuration systems.
+
 
 ## Qt-Gui 0.0.7
 
@@ -115,21 +122,22 @@ Raffael Pancheri again did a lot of stabilizing work:
 - Remove information on successful export
 - Show error dialog on failed import
 - Remove namefilters (every syntax can have any file extension)
-- other namespaces are included
+- other namespaces (including dir) are included
 
-The GUI can be handy for many purposes, e.g. it was already used as json editor.
+The GUI can be handy for many purposes, e.g. we use it already as xml and json editor.
 Note that there are still [some bugs](http://git.libelektra.org/issues).
+
 
 ## Other fixes
 
 - constants now additionally gives information about SPEC and DIR.
-- Doku about CMake variables ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD fixed, thanks to Kurt Micheli
-- Fixed compilation of ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD, thanks to Manuel Mausz
+- Doku about CMake variables `ELEKTRA_DEBUG_BUILD` and `ELEKTRA_VERBOSE_BUILD` fixed, thanks to Kurt Micheli
+- Fixed compilation of `ELEKTRA_DEBUG_BUILD` and `ELEKTRA_VERBOSE_BUILD`, thanks to Manuel Mausz
 - Example with error handling added, thanks to Kurt Micheli
-- Add design decision about global plugins (to be implemented next release)
+- Add design decision about global plugins
 - Split dependencies document to individual README.md, thanks to Ian Donnelly
-- Fix nearly all warnings of SWIG, thanks to Manuel Mausz
-- CMake: Fix gtest to be build if BUILD_TESTING activated, but not ENABLE_TESTING
+- Fix nearly all compilation warnings of SWIG, thanks to Manuel Mausz
+- CMake: Fix gtest to be build if `BUILD_TESTING` activated, but not `ENABLE_TESTING`
 - CMake: Allow compilation without BUILD_STATIC
 - Explain compilation options more, thanks to Kai-Uwe Behrmann for asking the question
 - CMake: always build examples, allow to only build documentation
@@ -137,14 +145,14 @@ Note that there are still [some bugs](http://git.libelektra.org/issues).
 - fix compilation of race tool under oS-11.4 thanks to Kai-Uwe Behrmann
 - CMake: find python3 correctly
 - CMake: fix BUILD_SHARED_LIBS
-- Doxygen: remove HTML_TIMESTAMP to make build reproduceable
+- Doxygen: remove `HTML_TIMESTAMP` to make build reproduceable
 - Doxygen: rewrite of main page+add info about all five namespaces
 - CMake: allow to use qt-gui with qt built with -reduce-relocations
 - fix kdb ls, get to list warnings during open
 - during kdbOpen() use Configfile: to state phase
 - add -f option to kdb check+improve docu
 - improve readability of warning output
-- absolute path for spec
+- allow absolute path for spec
 - run_all always uses dump for backups
 - line plugin roundtrips correctly
 - untypical resolvers have their non-existant filename handled correctly + sync ignored them correctly
@@ -163,14 +171,15 @@ Note that there are still [some bugs](http://git.libelektra.org/issues).
 ## Get It!
 
 You can download the release from
-[here](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.12.tar.gz)
+[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.12.tar.gz)
+and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.12.tar.gz)
 
 - name: elektra-0.8.12.tar.gz
 
 
 
 This release tarball now is also available
-[signed by me using gpg](http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.12.tar.gz.gpg)
+[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.12.tar.gz.gpg)
 
 already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.12/html/)
 
@@ -178,18 +187,17 @@ already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.12/
 ## Stay tuned! ##
 
 Subscribe to the
-[new RSS feed](http://doc.libelektra.org/news/feed.rss)
+[RSS feed](http://doc.libelektra.org/news/feed.rss)
 to always get the release notifications.
 
 For any questions and comments, please contact the
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-or elektra@markus-raab.org.
+the issue tracker [on github](git.libelektra.org/issues)
+or by mail elektra@markus-raab.org.
 
-[Permalink to this NEWS entry](http://doc.libelektra.org/news/)
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a)
 
-For more information, see http://www.libelektra.org
-
-Also thanks for all contributions that are not enlisted here!
+For more information, see http://libelektra.org
 
 Best regards,
 Markus
