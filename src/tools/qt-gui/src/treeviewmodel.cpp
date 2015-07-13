@@ -11,6 +11,8 @@
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>
+#include <kdbproposal.h> // for namespaces
+#include <kdbconfig.h> // for DEBUG and VERBOSE
 
 using namespace std;
 using namespace kdb;
@@ -439,14 +441,43 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 void TreeViewModel::populateModel(KeySet keySet)
 {
-	ConfigNodePtr spec(new ConfigNode("spec", "spec", 0, this));
-	ConfigNodePtr user(new ConfigNode("user", "user", 0, this));
-	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
-
 	GUIBasicKeySet::setBasic(keySet);
 
 	m_model.clear();
-	m_model << system << user << spec;
+
+	using namespace ckdb; // for namespaces
+	for (int i=KEY_NS_FIRST; i<=KEY_NS_LAST; ++i)
+	{
+		elektraNamespace ns = static_cast<elektraNamespace>(i);
+		ConfigNodePtr toAdd;
+		switch (ns)
+		{
+		case KEY_NS_SPEC:
+			toAdd = ConfigNodePtr(new ConfigNode("spec", "spec", 0, this));
+			break;
+		case KEY_NS_PROC:
+			// TODO: add generic commandline parsing
+			break;
+		case KEY_NS_DIR:
+			toAdd = ConfigNodePtr(new ConfigNode("dir", "dir", 0, this));
+			break;
+		case KEY_NS_USER:
+			toAdd = ConfigNodePtr(new ConfigNode("user", "user", 0, this));
+			break;
+		case KEY_NS_SYSTEM:
+			toAdd = ConfigNodePtr(new ConfigNode("system", "system", 0, this));
+			break;
+		case KEY_NS_EMPTY:
+			break;
+		case KEY_NS_NONE:
+			break;
+		case KEY_NS_META:
+			break;
+		case KEY_NS_CASCADING:
+			break;
+		}
+		if (toAdd) m_model << toAdd;
+	}
 
 	createNewNodes(keySet);
 }
