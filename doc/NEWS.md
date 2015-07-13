@@ -115,6 +115,10 @@ Raffael Pancheri again did a lot of stabilizing work:
 - Remove information on successful export
 - Show error dialog on failed import
 - Remove namefilters (every syntax can have any file extension)
+- other namespaces are included
+
+The GUI can be handy for many purposes, e.g. it was already used as json editor.
+Note that there are still [some bugs](http://git.libelektra.org/issues).
 
 ## Other fixes
 
@@ -142,6 +146,10 @@ Raffael Pancheri again did a lot of stabilizing work:
 - improve readability of warning output
 - absolute path for spec
 - run_all always uses dump for backups
+- line plugin roundtrips correctly
+- untypical resolvers have their non-existant filename handled correctly + sync ignored them correctly
+- cmake-3.0 fixes
+- cascading merging, a big thanks to Felix Berlakovich for the last minute fix
 
 
 ## Build Server
