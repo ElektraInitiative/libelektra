@@ -366,6 +366,7 @@ static int elektraGetCheckUpdateNeeded(Split *split, Key *parentKey)
 			ksRewind(split->keysets[i]);
 			keySetName(parentKey,
 					keyName(split->parents[i]));
+			keySetString(parentKey, "");
 			ret = backend->getplugins[0]->kdbGet (
 					backend->getplugins[0],
 					split->keysets[i],
