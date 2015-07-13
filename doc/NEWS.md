@@ -211,7 +211,7 @@ For any questions and comments, please contact the
 the issue tracker [on github](http://git.libelektra.org/issues)
 or by mail elektra@markus-raab.org.
 
-[Permalink to this NEWS entry](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a)
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a.html)
 
 For more information, see http://libelektra.org
 
