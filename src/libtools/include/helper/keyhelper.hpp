@@ -51,6 +51,9 @@ Key rebaseKey(const Key& key, const Key& oldParent, const Key& newParent);
  * /user/example and the new parent /user/newexample/newpath would
  * result in /user/newexample/newpath/config/key1
  *
+ * If any of the parent keys is a cascading key the namespace of the
+ * key to be rebased is assumed instead.
+ *
  * @param key the key whose path should be rebased
  * @param oldParent the old parent of the key
  * @param newParent the new parent of the key
