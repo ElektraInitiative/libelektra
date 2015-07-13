@@ -48,6 +48,9 @@ kdb tool should work with arrays (add_entry, remove_entry)
 kdb edit
 	+markdown converter also for console tools?
 
+roresolver: check if something is modified
+	for version, constants, uname
+
 ## meta data ##
 
 fix comments:
