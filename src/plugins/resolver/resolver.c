@@ -917,12 +917,7 @@ static void elektraUnlinkFile(char *filename, Key *parentKey)
 	int errnoSave = errno;
 	if (unlink (filename) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		int written = strlen(buffer);
-		strcat(buffer, " the file: ");
-		strncat(buffer, filename, ERROR_SIZE-written-10);
-		ELEKTRA_ADD_WARNING(36, parentKey, buffer);
+		ELEKTRA_ADD_WARNINGF(36, parentKey, "the file \"%s\" because of \"%s\"", filename, strerror(errno));
 		errno = errnoSave;
 	}
 }
