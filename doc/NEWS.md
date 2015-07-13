@@ -152,12 +152,24 @@ Note that there are still [some bugs](http://git.libelektra.org/issues).
 - during kdbOpen() use Configfile: to state phase
 - add -f option to kdb check+improve docu
 - improve readability of warning output
-- allow absolute path for spec
 - run_all always uses dump for backups
 - line plugin roundtrips correctly
 - untypical resolvers have their non-existant filename handled correctly + sync ignored them correctly
 - cmake-3.0 fixes
 - cascading merging, a big thanks to Felix Berlakovich for the last minute fix
+
+## Compatibility
+
+As always, the API and API is fully compatible. Because nothing was added, its even
+possible to link against an older version of Elektra (if compiled against 0.8.12).
+
+In plugins some small changes may effect compatibility:
+- in rename the handling of parent key is different (see #206)
+- resolving of spec absolute and relative pathes are no more handled identical.
+  Instead absolute pathes will be searched absolutely, while relatives are below KDB_DB_SPEC (as before).
+  This behaviour is consistent to the behaviour of the other namespaces.
+
+These two points are also the only unit tests that fail when Elektra 0.8.12 is used with 0.8.11 unit tests.
 
 
 ## Build Server
@@ -175,6 +187,10 @@ You can download the release from
 and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.12.tar.gz)
 
 - name: elektra-0.8.12.tar.gz
+- size: 2102450
+- md5sum: a40a33ae6661ebfa096378f0986ede6c
+- sha1: 3594ef58b6e3b0ffa9589d787679b6e739fbb0dd
+- sha256: 562432bea9455a61ff6e6b3263078ea9b26bef2ed177a04b5f9b181d605bc021
 
 
 
@@ -192,7 +208,7 @@ to always get the release notifications.
 
 For any questions and comments, please contact the
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-the issue tracker [on github](git.libelektra.org/issues)
+the issue tracker [on github](http://git.libelektra.org/issues)
 or by mail elektra@markus-raab.org.
 
 [Permalink to this NEWS entry](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a)
