@@ -526,7 +526,7 @@ void TreeViewModel::synchronize()
 	KeySet base = GUIBasicKeySet::basic();
 	KeySet resultKeys;
 
-	Key root("user", KEY_END);
+	Key root("/", KEY_END);
 
 	KDB kdb;
 
