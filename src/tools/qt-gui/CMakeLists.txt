@@ -9,7 +9,7 @@ find_package(Discount)
 if (NOT Qt5_FOUND)
 	remove_tool(qt-gui "qt5 (Components: ${QCOMPONENTS}) not found")
 elseif (NOT DISCOUNT_FOUND)
-	remove_tool(qt-gui "discount (libmarkdown) not found")
+	remove_tool(qt-gui "discount or libmarkdown-dev not found")
 else()
 
 if (Qt5_POSITION_INDEPENDENT_CODE)

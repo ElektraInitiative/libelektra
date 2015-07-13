@@ -17,7 +17,6 @@ Start with:
 	api! (Namespaces, encoded, versioning)
 	Cleanups
 
-kdb edit
 
 list plugin: processes all plugins in a row
 full jessie build+script+external
@@ -45,6 +44,9 @@ exists for it
 
 system/env should be array
 kdb tool should work with arrays (add_entry, remove_entry)
+
+kdb edit
+	+markdown converter also for console tools?
 
 ## meta data ##
 
