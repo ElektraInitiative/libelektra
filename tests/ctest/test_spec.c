@@ -61,6 +61,77 @@ static void test_lookupChain()
 	ksDel(ks);
 }
 
+static void test_lookupChainLast()
+{
+	printf ("Test lookup chain last\n");
+
+	Key *k1 = 0;
+	Key *k2 = 0;
+	Key *k3 = 0;
+	Key *k4 = 0;
+	KeySet *ks= ksNew(20,
+		k1 = keyNew("spec/key",
+			KEY_VALUE, "spec value",
+			KEY_META, "override/#0", "/something",
+			KEY_META, "override/#1", "/something_else",
+			KEY_META, "override/#2", "/override",
+			KEY_END),
+		k2 = keyNew("user/key", KEY_VALUE, "wrong user value", KEY_END),
+		k3 = keyNew("dir/key", KEY_VALUE, "wrong dir value", KEY_END),
+		k4 = keyNew("user/override", KEY_VALUE, "ok", KEY_END),
+		KS_END);
+
+	Key *found = ksLookupByName(ks, "/key", 0);
+	succeed_if(found == k4, "found wrong key");
+	succeed_if_same_string(keyName(found), "user/override");
+	succeed_if_same_string(keyString(found), "ok");
+
+	Key *searchKey = keyNew("/key", KEY_END);
+	found = ksLookup(ks, searchKey, 0);
+	succeed_if(found == k4, "found wrong key");
+	succeed_if_same_string(keyName(found), "user/override");
+	succeed_if_same_string(keyString(found), "ok");
+	keyDel(searchKey);
+
+	ksDel(ks);
+}
+
+
+static void test_lookupChainRealWorld()
+{
+	printf ("Test lookup chain real world\n");
+
+	Key *k1 = 0;
+	Key *k2 = 0;
+	Key *k3 = 0;
+	Key *k4 = 0;
+	KeySet *ks= ksNew(20,
+		k1 = keyNew("spec/sw/P/current/editor",
+			KEY_META, "example", "vim",
+			KEY_META, "override/#0", "/sw/P/override/editor",
+			KEY_META, "override/#1", "/sw/override/editor",
+			KEY_META, "override/#2", "/sw/defaults/editor",
+			KEY_END),
+		k2 = keyNew("user/sw/defaults/editor", KEY_VALUE, "ok", KEY_END),
+		k3 = keyNew("dir/sw/P/current/editor", KEY_VALUE, "wrong dir value", KEY_END),
+		k4 = keyNew("user/sw/P/current/editor", KEY_VALUE, "wrong user value", KEY_END),
+		KS_END);
+
+	Key *found = ksLookupByName(ks, "/sw/P/current/editor", 0);
+	succeed_if(found == k2, "found wrong key");
+	succeed_if_same_string(keyName(found), "user/sw/defaults/editor");
+	succeed_if_same_string(keyString(found), "ok");
+
+	Key *searchKey = keyNew("/sw/P/current/editor", KEY_END);
+	found = ksLookup(ks, searchKey, 0);
+	succeed_if(found == k2, "found wrong key");
+	succeed_if_same_string(keyName(found), "user/sw/defaults/editor");
+	succeed_if_same_string(keyString(found), "ok");
+	keyDel(searchKey);
+
+	ksDel(ks);
+}
+
 static void test_lookupNoOverride()
 {
 	printf ("Test lookup with override not found\n");
@@ -522,6 +593,8 @@ int main(int argc, char** argv)
 
 	test_lookupSingle();
 	test_lookupChain();
+	test_lookupChainLast();
+	test_lookupChainRealWorld();
 	test_lookupNoOverride();
 	test_lookupDefault();
 	test_lookupNoascading();

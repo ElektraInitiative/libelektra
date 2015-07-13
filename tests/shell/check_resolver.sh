@@ -46,10 +46,10 @@ check_resolver()
 	$KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump 1>/dev/null
 	succeed_if "could not mount root: $3 at $MOUNTPOINT with resolver $PLUGIN"
 
-	FILE=`$KDB file -N $1 -n $ROOT_MOUNTPOINT`
+	FILE=`$KDB file -N $1 -n $ROOT_MOUNTPOINT 2> /dev/null`
+	echo "For $1 $2 $3 we got $FILE"
 	[ "x$FILE"  = "x$4" ]
 	succeed_if "resolving of $MOUNTPOINT did not yield $4"
-	echo "got $FILE"
 
 	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
 		KEY=$ROOT_MOUNTPOINT/key
@@ -106,8 +106,8 @@ check_resolver system b /a/b/c /a/b/c
 
 check_resolver spec b x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x
 check_resolver spec b x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x/a
-check_resolver spec b /x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@//x
-check_resolver spec b /x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@//x/a
+check_resolver spec b /x /x
+check_resolver spec b /x/a /x/a
 
 check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
 check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a
@@ -125,6 +125,36 @@ check_resolver system b /a/b/c /a/b/c
 check_resolver user b x @KDB_DB_HOME@/@KDB_DB_USER@/x
 check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a
 check_resolver user b /a @KDB_DB_HOME@/a
+
+OD=`pwd`
+cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
+check_resolver dir b /a /tmp/a
+check_resolver dir b /a/b /tmp/a/b
+check_resolver dir b a /tmp/@KDB_DB_DIR@/a
+check_resolver dir b a/b /tmp/@KDB_DB_DIR@/a/b
+
+T=`mktemp -d`
+cd $T
+check_resolver dir b /a $T/a
+check_resolver dir b /a/b $T/a/b
+check_resolver dir b a $T/@KDB_DB_DIR@/a
+check_resolver dir b a/b $T/@KDB_DB_DIR@/a/b
+
+mkdir $T/sub
+cd $T/sub
+touch $T/a
+check_resolver dir b /a $T/a
+check_resolver dir b /a/b $T/sub/a/b
+rm $T/a
+
+mkdir $T/@KDB_DB_DIR@
+touch $T/@KDB_DB_DIR@/a
+check_resolver dir b a $T/@KDB_DB_DIR@/a
+check_resolver dir b a/b $T/sub/@KDB_DB_DIR@/a/b
+rm $T/@KDB_DB_DIR@/a
+
+rm -r $T
+cd $OD
 
 unset HOME
 unset USER

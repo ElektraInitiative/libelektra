@@ -31,7 +31,7 @@ int ImportCommand::execute(Cmdline const& cl)
 	Key root (cl.arguments[0], KEY_END);
 	if (!root.isValid())
 	{
-        throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");
+		throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");
 	}
 
 	KeySet originalKeys;
@@ -53,7 +53,8 @@ int ImportCommand::execute(Cmdline const& cl)
 	Key errorKey (root);
 	errorKey.setString (file);
 
-	plugin->get (importedKeys, errorKey);
+	plugin->get(importedKeys, errorKey);
+	importedKeys = importedKeys.cut(root);
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);

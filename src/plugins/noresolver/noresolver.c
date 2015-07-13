@@ -40,7 +40,7 @@ static KeySet * elektraNoresolverModules()
 		KS_END);
 }
 
-int elektraNoresolverGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraNoresolverGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 
 	Key *root = keyNew("system/elektra/modules/"

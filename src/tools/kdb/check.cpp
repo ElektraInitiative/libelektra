@@ -38,9 +38,12 @@ int CheckCommand::execute(Cmdline const& cl)
 		kdb.get(ks, a);
 		ret += printProblems(a, "getting", 2);
 
-		Key b("/", KEY_END);
-		kdb.set(ks, b);
-		ret += printProblems(b, "setting", 4);
+		if (cl.force)
+		{
+			Key b("/", KEY_END);
+			kdb.set(ks, b);
+			ret += printProblems(b, "setting", 4);
+		}
 
 		Key y;
 		kdb.close(y);

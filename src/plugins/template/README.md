@@ -6,12 +6,10 @@
 - infos/placements =
 - infos/description =
 
-## Introduction ##
-
-Use this template if you want to start a new
-plugin written in C.
-
 ## Usage ##
+
+Copy this template if you want to start a new
+plugin written in C.
 
 You can use scripts/copy-template
 to automatically rename everything to your

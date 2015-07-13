@@ -12,29 +12,16 @@
 int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED);
 int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED);
 
-int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
+static void elektraAddKeyValue(KeySet *ks, Key *parentKey, const char *key, const char *value)
 {
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/constants"))
-	{
-		ksAppendKey(ks, keyNew ("system/elektra/modules/constants",
-			KEY_VALUE, "constants plugin waits for your orders", KEY_END));
-		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/exports", KEY_END));
-		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/exports/get",
-			KEY_FUNC, elektraConstantsGet,
-			KEY_END));
-		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/exports/set",
-			KEY_FUNC, elektraConstantsSet,
-			KEY_END));
-		KeySet *contract = ksNew(30,
-#include "readme_constants.c"
-			keyNew ("system/elektra/modules/constants/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END);
-		ksAppend(ks, contract);
-		ksDel(contract);
-		return 1;
-	}
+	Key *k = keyDup(parentKey);
+	keyAddName(k, key);
+	keySetString(k, value);
+	ksAppendKey(ks, k);
+}
 
+static void elektraAddConstants(KeySet *ks, Key *parentKey)
+{
 	Key * key = keyDup (parentKey);
 	ksAppendKey(ks, key);
 
@@ -102,6 +89,8 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 	keySetString(key, "@KDB_DB_HOME@");
 	ksAppendKey(ks, key);
 
+	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DB_SPEC", "@KDB_DB_SPEC@");
+	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DB_DIR", "@KDB_DB_DIR@");
 
 	key = keyDup (parentKey);
 	keyAddName(key, "cmake/KDB_DB_USER");
@@ -341,15 +330,56 @@ int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKe
 	keyAddName(key, "package/cflags");
 	keySetString(key, "-I@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@");
 	ksAppendKey(ks, key);
+}
+
+int elektraConstantsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
+{
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/constants"))
+	{
+		ksAppendKey(ks, keyNew ("system/elektra/modules/constants",
+			KEY_VALUE, "constants plugin waits for your orders", KEY_END));
+		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/exports", KEY_END));
+		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/exports/get",
+			KEY_FUNC, elektraConstantsGet,
+			KEY_END));
+		ksAppendKey(ks, keyNew ("system/elektra/modules/constants/exports/set",
+			KEY_FUNC, elektraConstantsSet,
+			KEY_END));
+		KeySet *contract = ksNew(30,
+#include "readme_constants.c"
+			keyNew ("system/elektra/modules/constants/infos/version",
+				KEY_VALUE, PLUGINVERSION, KEY_END),
+			KS_END);
+		ksAppend(ks, contract);
+		ksDel(contract);
+		return 1;
+	}
+
+	elektraAddConstants(ks, parentKey);
 
 	return 1; /* success */
 }
 
-int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
+int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
-	ELEKTRA_SET_ERROR(84, parentKey, keyName(parentKey));
+	KeySet *info = ksNew(0, KS_END);
+	elektraAddConstants(info, parentKey);
 
-	return -1;
+	Key *k;
+	ksRewind(info);
+	ksRewind(returned);
+	while ((k = ksNext(returned)))
+	{
+		Key *c = ksNext(info);
+		if (strcmp(keyName(k), keyName(c)) || strcmp(keyString(k), keyString(c)))
+		{
+			ELEKTRA_SET_ERRORF(84, parentKey, "the key %s (expected %s) was modified to %s (expected %s)", keyName(k), keyName(c), keyString(k), keyString(c));
+			return -1;
+		}
+	}
+
+	ksDel (info);
+	return 0;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(constants)

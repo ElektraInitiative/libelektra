@@ -338,11 +338,28 @@ size_t elektraStrLen(const char *s)
  * @brief Does string formating in fresh allocated memory
  *
  * @param format as in printf()
- * @param arg_list as in printf()
+ * @param ... as in printf()
  *
  * @return new allocated memory (free with elektraFree)
  */
-char *elektraFormat(const char *format, va_list arg_list)
+char *elektraFormat(const char *format, ...)
+{
+	va_list va;
+	va_start(va,format);
+	char * ret = elektraVFormat(format, va);
+	va_end (va);
+	return ret;
+}
+
+/**
+ * @brief Does string formating in fresh allocated memory
+ *
+ * @param format as in vprintf()
+ * @param arg_list as in vprintf()
+ *
+ * @return new allocated memory (free with elektraFree)
+ */
+char *elektraVFormat(const char *format, va_list arg_list)
 {
 	static int const default_size = 512;
 	char *buffer = elektraMalloc(default_size);

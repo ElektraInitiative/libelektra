@@ -413,7 +413,7 @@ void keyVInit(Key *key, const char *name, va_list va)
 #if DEBUG
 					fprintf (stderr, "Unknown option in keyVInit: "
 							ELEKTRA_UNSIGNED_LONG_LONG_F
-							"\n", (unsigned_long_long_t)action);
+							"\n", (kdb_unsigned_long_long_t)action);
 #endif
 					break;
 			}

@@ -23,10 +23,18 @@ namespace helper
 bool keyDataEqual(const Key& k1, const Key& k2)
 {
 	if (!k1 || !k2) return false;
-	if (k1.getString () != k2.getString ())
+
+	if (k1.isBinary() != k2.isBinary()) return false;
+
+	if (k1.isBinary() && k2.isBinary())
 	{
-		return false;
+		return k1.getBinary() == k2.getBinary();
 	}
+	else
+	{
+		return k1.getString() == k2.getString();
+	}
+
 	return true;
 }
 

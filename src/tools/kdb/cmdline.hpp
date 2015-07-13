@@ -60,6 +60,7 @@ public:
 	bool first;
 	bool second;
 	bool third;
+	bool all; /*!< Consider all keys for lookup */
 	std::string format;
 	std::string plugins;
 	std::string pluginsConfig;

@@ -9,7 +9,7 @@
 using namespace kdb;
 using namespace std;
 
-LsCommand::LsCommand()
+LsCommand::LsCommand() : kdb(root)
 {}
 
 int LsCommand::execute(Cmdline const& cl)
@@ -19,7 +19,7 @@ int LsCommand::execute(Cmdline const& cl)
 		throw invalid_argument("1 argument required");
 	}
 
-	Key root (cl.arguments[0], KEY_END);
+	root.setName(cl.arguments[0]);
 	if (!root.isValid())
 	{
 		throw invalid_argument(cl.arguments[0] +

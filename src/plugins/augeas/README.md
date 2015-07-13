@@ -15,6 +15,9 @@ However, not all stock lenses of Augeas have been tested yet.
 A detailed description of the lens language and a tutorial on how to write new lenses"
 can be found at http://augeas.net/
 
+## DEPENDENCIES ##
+
+- `libaugeas-dev` #note: You need version 0.16 or higher which is not in debian wheezy
 
 ## INSTALLATION ##
 

@@ -1,3 +1,12 @@
+/**
+* \file
+*
+* \brief Tests for template plugin
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -45,7 +54,7 @@ int main(int argc, char** argv)
 
 	test_basics();
 
-	printf ("\ntest_template RESULTS: %d test(s) done. %d error(s).\n",
+	printf ("\ntestmod_template RESULTS: %d test(s) done. %d error(s).\n",
 			nbTest, nbError);
 
 	return nbError;

@@ -8,12 +8,11 @@ int main()
 	KDB *handle = kdbOpen(key);
 
 	kdbGet(handle, myConfig, key);
-	// TODO: check for errors and warnings in key
+	// to get an intention of proper error handling see kdbget_error.c
 
-	keyDel(key);
+	keyDel (key);
 
-	Key * result = ksLookupByName(myConfig,"/sw/MyApp/Tests/TestKey1", 0);
-	// TODO: check if result is not 0 and work with it...
+	Key * result = ksLookupByName (myConfig,"/sw/MyApp/Tests/TestKey1", 0);
 
 	const char * key_name = keyName(result);
 	const char * key_value = keyString(result);

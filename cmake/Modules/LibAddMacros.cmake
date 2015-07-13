@@ -45,31 +45,58 @@ macro (add_testheaders HDR_FILES)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 endmacro (add_testheaders HDR_FILES)
 
-function (target_link_elektra source)
+# for generic targets (not tools) use this function to link against elektra
+function (target_link_elektra TARGET)
 	if (BUILD_FULL)
-		target_link_libraries (${source} elektra-full)
+		target_link_libraries (${TARGET} elektra-full)
 	elseif (BUILD_STATIC)
-		target_link_libraries (${source} elektra-static)
+		target_link_libraries (${TARGET} elektra-static)
 	elseif (BUILD_SHARED)
-		target_link_libraries (${source} elektra)
+		target_link_libraries (${TARGET} elektra)
 	else ()
-		message(SEND_ERROR "no elektra to link for ${source}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+		message(SEND_ERROR "no elektra to link for ${TARGET}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
 
 endfunction()
 
-function (target_link_elektratools source)
+function (target_link_elektratools TARGET)
 	if (BUILD_FULL)
-		target_link_libraries (${source} elektratools-full)
+		target_link_libraries (${TARGET} elektratools-full)
 	elseif (BUILD_STATIC)
-		target_link_libraries (${source} elektratools-static)
+		target_link_libraries (${TARGET} elektratools-static)
 	elseif (BUILD_SHARED)
-		target_link_libraries (${source} elektratools)
+		target_link_libraries (${TARGET} elektratools)
 	else ()
-		message(SEND_ERROR "no elektratools to link for ${source}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+		message(SEND_ERROR "no elektratools to link for ${TARGET}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
 
 endfunction()
+
+# for tools (not tests) use this function to link against elektra
+macro(tool_link_elektra TARGET)
+	if (BUILD_SHARED)
+		target_link_libraries (${TARGET} elektra)
+	elseif (BUILD_FULL)
+		target_link_libraries (${TARGET} elektra-full)
+	elseif (BUILD_STATIC)
+		target_link_libraries (${TARGET} elektra-static)
+	else ()
+		message(SEND_ERROR "no elektra to link for ${TARGET}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+	endif ()
+endmacro()
+
+macro(tool_link_elektratools TARGET)
+	if (BUILD_SHARED)
+		target_link_libraries (${TARGET} elektratools)
+	elseif (BUILD_FULL)
+		target_link_libraries (${TARGET} elektratools-full)
+	elseif (BUILD_STATIC)
+		target_link_libraries (${TARGET} elektratools-static)
+	else ()
+		message(SEND_ERROR "no elektratools to link for ${TARGET}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
+	endif ()
+endmacro()
+
 
 # Add a test for a plugin
 #
@@ -79,7 +106,7 @@ endfunction()
 # links the executeable (only if build_full)
 # and adds a test
 macro (add_plugintest testname)
-	if (BUILD_TESTING)
+	if (BUILD_TESTING AND (BUILD_STATIC OR BUILD_FULL))
 		parse_arguments(ARG
 			"" # no arguments
 			"MEMLEAK" #options
@@ -108,7 +135,7 @@ macro (add_plugintest testname)
 			set_property(TEST testmod_${testname} PROPERTY
 				LABELS memleak)
 		endif (ARG_MEMLEAK)
-	endif (BUILD_TESTING)
+	endif ()
 endmacro (add_plugintest)
 
 # Add a test for cpp plugins
@@ -146,7 +173,7 @@ macro (add_cpp_plugintest testname)
 			set_property(TEST testmod_${testname} PROPERTY
 				LABELS memleak)
 		endif (ARG_MEMLEAK)
-	endif(BUILD_TESTING)
+	endif()
 endmacro (add_cpp_plugintest testname)
 
 
@@ -443,64 +470,6 @@ function (add_libraries target)
 	# append to global property
 	set_property (GLOBAL APPEND PROPERTY "${target}_LIBRARIES" "${LIBRARIES}")
 endfunction (add_libraries)
-
-
-#- Wrapper of add_library to allow for static modules
-#
-#  MY_ADD_LIBRARY(<name> [STATIC|SHARED|MODULE]
-#                 [EXCLUDE_FROM_ALL]
-#                 [STATIC_NAME <static_name>]
-#                 <source1> ... <sourceN>)
-#
-# If STATIC_NAME <static_name> is given, the sources will be appended to
-# the global property MY_STATIC_MODULES_<static_name>_SOURCES which can
-# then be used with MY_ADD_STATIC_MODULE() to create a static module from
-# all of the sources.
-#
-#Thanks to Michael Wild <themiwi@gmail.com>
-#
-function(my_add_library name)
-	# parse arguments
-	set(next_is_static_name FALSE)
-	set(static_name)
-	set(srcs)
-	set(lib_type)
-	set(exclude_from_all)
-	foreach (src ${ARGN})
-		if(arg STREQUAL STATIC_NAME)
-			set(next_is_static_name TRUE)
-		elseif(arg MATCHES "STATIC|SHARED|MODULE")
-			set(lib_type ${arg})
-		elseif(arg STREQUAL EXCLUDE_FROM_ALL)
-			set(exclude_from_all ${arg})
-		elseif(next_is_static_name)
-			set(static_name ${arg})
-		else()
-			# ensure that sources are absolute paths
-			if(NOT IS_ABSOLUTE "${arg}")
-				get_filename_component(arg "${arg}" ABSOLUTE)
-			endif()
-			list(APPEND srcs "${arg}")
-		endif()
-	endforeach (src ${ARGN})
-	# require at least one source file
-	if (NOT srcs)
-		message(SEND_ERROR "At least one source file required")
-	endif (NOT srcs)
-	# if we have a STATIC_NAME, append the sources to the global property
-	if(static_name)
-		set(prop_name MY_STATIC_MODULES_${static_name}_SOURCES)
-		get_property(prop_defined GLOBAL PROPERTY ${prop_name} DEFINED)
-		if(NOT prop_defined)
-			define_property(GLOBAL PROPERTY ${prop_name}
-					BRIEF_DOCS "Sources for static module ${static_name}"
-					FULL_DOCS "Source files to be compiled into the static module ${static_name}")
-		endif()
-		set_property(GLOBAL APPEND PROPERTY ${prop_name} ${srcs})
-	endif()
-	# finally, create the normal library
-	add_library(${name} ${lib_type} ${exclude_from_all} ${srcs})
-endfunction()
 
 
 #- Create a static library from sources collected by MY_ADD_LIBRARY

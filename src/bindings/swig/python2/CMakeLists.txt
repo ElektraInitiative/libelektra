@@ -29,7 +29,7 @@ else()
 	swig_link_libraries (swig-python2 elektra ${PYTHON2_LIBRARIES})
 	set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
 
-	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "-DSWIG_TYPE_TABLE=kdb")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
 	set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 	execute_process (

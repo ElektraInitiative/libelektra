@@ -9,15 +9,8 @@ macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
 
-	if (BUILD_SHARED)
-		target_link_libraries (${source} elektratools)
-	elseif (BUILD_STATIC)
-		target_link_libraries (${source} elektratools-static)
-	elseif (BUILD_FULL)
-		target_link_libraries (${source} elektratools-full)
-	else ()
-		message(SEND_ERROR "no BUILD_ selected")
-	endif ()
+	target_link_elektra(${source})
+	target_link_elektratools(${source})
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)

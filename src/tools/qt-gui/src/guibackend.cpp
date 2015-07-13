@@ -237,22 +237,8 @@ QStringList GUIBackend::nameFilters()
 
 	foreach(QString plugin, plugins)
 	{
-		QString pattern;
-
-		if(plugin == "ini" || plugin == "simpleini" || plugin == "ni")
-			pattern = "*.ini";
-		else if(plugin == "xmltool")
-			pattern = "*.xml";
-		else if(plugin == "tcl")
-			pattern = "*.tcl";
-		else if(plugin == "yajl")
-			pattern = "*.json";
-		else if(plugin == "dump")
-			pattern = "*.ecf";
-		else
-			pattern = "*";
-
-			nFilters.append(QString("%1 (%2)").arg(plugin, pattern));
+		QString pattern = "*";
+		nFilters.append(QString("%1 (%2)").arg(plugin, pattern));
 	}
 
 	nFilters.sort();

@@ -20,7 +20,8 @@ int elektraStrCaseCmp (const char *s1, const char *s2);
 int elektraMemCaseCmp (const char *s1, const char *s2, size_t size);
 size_t elektraStrLen(const char *s);
 
-char *elektraFormat(const char *format, va_list arg_list);
+char *elektraFormat(const char *format, ...);
+char *elektraVFormat(const char *format, va_list arg_list);
 
 #ifdef __cplusplus
 }

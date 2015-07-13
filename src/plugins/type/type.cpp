@@ -1,62 +1,22 @@
-/***************************************************************************
-                     type.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
+/**
+* \file
+*
+* \brief Implementation of entry points
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
 
 
 #include "type.hpp"
-
-#include <key.hpp>
-#include <keyset.hpp>
 
 #include "type_checker.hpp"
 
 using namespace ckdb;
 #include <kdberrors.h>
+#include <kdbplugin.hpp>
 
-/**This function avoid that many return pathes need to release the
-  * configuration. */
-inline static int elektraTypeOpenDelegator(ckdb::Plugin *handle, kdb::KeySet& config, ckdb::Key *errorKey)
-{
-	if (config.lookup("/module"))
-	{
-		// suppress warnings if it is just a module
-		// don't buildup the struct then
-		return 0;
-	}
-
-	try {
-		elektraPluginSetData (handle, new elektra::TypeChecker(config));
-	}
-	catch (const char* msg)
-	{
-		// TODO: warnings are not always passed when plugin
-		// creation failed?
-		ELEKTRA_ADD_WARNING (69, errorKey, msg);
-		return -1;
-	}
-
-	return 1;
-}
+typedef Delegator<elektra::TypeChecker> TC;
 
 extern "C"
 {
@@ -64,25 +24,14 @@ extern "C"
 int elektraTypeOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	/* plugin initialization logic */
-	int ret;
-
-	kdb::KeySet config (elektraPluginGetConfig(handle));
-
-	ret = elektraTypeOpenDelegator(handle, config, errorKey);
-
-	config.release();
-
-	return ret;
+	return TC::open(handle, errorKey);
 
 }
 
-int elektraTypeClose(ckdb::Plugin *handle, ckdb::Key *)
+int elektraTypeClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	/* free all plugin resources and shut it down */
-
-	delete static_cast<elektra::TypeChecker*>(elektraPluginGetData (handle));
-
-	return 1; /* success */
+	return TC::close(handle, errorKey);
 }
 
 int elektraTypeGet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *)
@@ -118,8 +67,7 @@ int elektraTypeSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pare
 {
 	/* set all keys */
 
-	if (!static_cast<elektra::TypeChecker*>(elektraPluginGetData (handle))->check
-			(reinterpret_cast<kdb::KeySet&>(returned)))
+	if (!TC::get(handle)->check(reinterpret_cast<kdb::KeySet&>(returned)))
 	{
 		std::string msg = "None of supplied types matched for ";
 		const char *name = keyName (ksCurrent(returned));

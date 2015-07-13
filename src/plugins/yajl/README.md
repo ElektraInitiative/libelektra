@@ -25,7 +25,9 @@ A validator can be found [here](http://jsonlint.com/).
 Supports every KeySet except when arrays are intermixed with other keys.
 Has only limited support for metadata.
 
+## Dependencies ##
 
+- `libyajl-dev` (version 1 and 2 should work)
 
 ## Special values ##
 

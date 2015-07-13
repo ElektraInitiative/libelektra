@@ -67,6 +67,14 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - ksLookupByName
 
 
+
+== Conventions ==
+
+conventions should be used everywhere
+
+warnings should have array conventions #0, #10...
+
+
 == Libraries ==
 
 move meta data stuff to own library

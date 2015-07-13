@@ -1,3 +1,12 @@
+/**
+* \file
+*
+* \brief Tests for data type checker
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
+
 #include <tests.hpp>
 
 #include "type_checker.hpp"
@@ -460,6 +469,6 @@ int main()
 	test_minmax();
 
 	cout << endl;
-	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
+	cout << "testmod_type RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
 	return nbError;
 }

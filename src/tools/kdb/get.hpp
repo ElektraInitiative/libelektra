@@ -7,6 +7,7 @@
 
 class GetCommand : public Command
 {
+	kdb::Key root;
 	kdb::KDB kdb;
 
 public:
@@ -15,7 +16,7 @@ public:
 
 	virtual std::string getShortOptions()
 	{
-		return "n";
+		return "anv";
 	}
 
 	virtual std::string getSynopsis()
@@ -30,7 +31,18 @@ public:
 
 	virtual std::string getLongHelpText()
 	{
-		return "";
+		return  "When the key starts with / a cascading lookup will be done.\n"
+			"Use -v to see the keyname in that case\n"
+			"\n"
+			"Current limitation: only keys with the mountpoint will be considered\n"
+			"during a cascading lookup.\n"
+			"As workaround to get all keys: pass -a\n"
+			"Or check with \"kdb ls <same key>\" if a override/fallback key is considered\n"
+			"\n"
+			"Example:\n"
+			"\n"
+			"   kdb get system/elektra/version/constants/KDB_VERSION\n"
+			"";
 	}
 
 	virtual int execute (Cmdline const& cmdline);

@@ -129,7 +129,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins,
 							cut, systemConfig, errorKey) == -1)
 				{
-					ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
+					if (!failure) ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
 					failure = 1;
 				}
 			}
@@ -142,7 +142,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 
 				if (!backend->mountpoint)
 				{
-					ELEKTRA_ADD_WARNINGF(14, errorKey,
+					if (!failure) ELEKTRA_ADD_WARNINGF(14, errorKey,
 						"Could not create mountpoint with name %s and value %s",
 						keyString(cur), keyBaseName(root));
 					failure = 1;
@@ -156,7 +156,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins,
 							cut, systemConfig, errorKey) == -1)
 				{
-					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
+					if (!failure) ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
 					failure = 1;
 				}
 			}
@@ -165,12 +165,12 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 				if (elektraProcessPlugins(backend->errorplugins, modules, referencePlugins,
 							cut, systemConfig, errorKey) == -1)
 				{
-					ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
+					if (!failure) ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
 					failure = 1;
 				}
 			} else {
 				// no one cares about that config
-				ELEKTRA_ADD_WARNING(16, errorKey, keyBaseName(cur));
+				if (!failure) ELEKTRA_ADD_WARNING(16, errorKey, keyBaseName(cur));
 				ksDel (cut);
 			}
 		}
@@ -382,8 +382,8 @@ int elektraBackendUpdateSize(Backend *backend, Key *parent, int size)
 	}
 
 #if DEBUG && VERBOSE
-	printf ("user: %d\n", backend->usersize);
-	printf ("system: %d\n", backend->systemsize);
+	printf ("user: %zd\n", backend->usersize);
+	printf ("system: %zd\n", backend->systemsize);
 #endif
 
 	return 0;

@@ -1,3 +1,13 @@
+/**
+* \file
+*
+* \brief Testcases for Struct
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
+
+
 #include <tests.hpp>
 
 #include "checker.hpp"
@@ -9,11 +19,11 @@ using namespace elektra;
 
 int main()
 {
-	cout << "  TYPE  TESTS" << endl;
+	cout << "  STRUCT  TESTS" << endl;
 	cout << "===============" << endl << endl;
 
 
 	cout << endl;
-	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
+	cout << "testmod_struct RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
 	return nbError;
 }

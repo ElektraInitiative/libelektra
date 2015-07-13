@@ -2,12 +2,7 @@ include(LibAddPlugin)
 
 set (SOURCES resolver.h resolver.c filename.c)
 
-
 find_package(Threads)
-
-if (UNIX AND NOT APPLE)
-	set(CMAKE_REALTIME_LIBS_INIT rt)
-endif()
 
 #TODO: remove "default" resolver
 add_plugin(resolver

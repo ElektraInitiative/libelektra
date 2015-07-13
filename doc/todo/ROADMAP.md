@@ -8,15 +8,24 @@ A complete list of ideas what could be done can be found in the
 
 
 
-# 0.8.12
+# 0.8.13
 
-Also see [githubs issues](https://github.com/ElektraInitiative/libelektra/issues)
+Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
-document METADATA.ini
+Start with:
+	api! (Namespaces, encoded, versioning)
+	Cleanups
 
-shell:
-	test resolver (dir)
+
+list plugin: processes all plugins in a row
+full jessie build+script+external
+
+(xdg) variable for spec namespace?
+
+cascading export nickel?
+
+more docu in METADATA.ini
 
 genopt.hpp + include enforcement in template_dynamic?
 
@@ -32,6 +41,15 @@ better errnostore solution?
 
 C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin
 exists for it
+
+system/env should be array
+kdb tool should work with arrays (add_entry, remove_entry)
+
+kdb edit
+	+markdown converter also for console tools?
+
+roresolver: check if something is modified
+	for version, constants, uname
 
 ## meta data ##
 
@@ -52,13 +70,17 @@ plugins should use relative pathes so that import/export/remount works
 
 ## Backend ##
 
-unserialize
-streaming
+generic simpleini (customizable printf/scanf format strings)
 
 ## simplify cmake ##
 
 c++11
 DEFAULT_STORAGE/RESOLVER
+to one cmake variable:
+	verbose/debug -> logging
+	pdf/on/off -> docu
+
+fix dependency problem with kdberrors.h
 
 ## bug hunting
 

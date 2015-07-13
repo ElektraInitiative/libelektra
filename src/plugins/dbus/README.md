@@ -13,6 +13,10 @@ method is called. This plugin allows external programs to take action
 when dbus notifies the program that a certain method has taken place
 with Elektra.
 
+## Dependencies ##
+
+- `libdbus-1-dev`
+
 ## Usage ##
 
 Mount the plugin additionally to a storage plugin, e.g.

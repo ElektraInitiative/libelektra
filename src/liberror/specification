@@ -341,6 +341,7 @@ ingroup:plugin
 module:path
 
 number:58
+unused:yes
 description:could not build up structure checker
 severity:warning
 ingroup:plugin
@@ -406,7 +407,7 @@ severity:error
 ingroup:plugin
 
 number:69
-description:could not create type checker
+description:could not create C++ plugin
 severity:warning
 ingroup:plugin
 module:type

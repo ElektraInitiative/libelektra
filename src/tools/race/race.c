@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 
 pthread_barrier_t *bar;
@@ -66,7 +67,7 @@ int main (int argc, char **argv)
 		printf ("Usage %s <procs> <threads> <barriers>\n", argv[0]);
 		printf ("This program tests race condition in Elektra\n");
 		printf ("If you set barriers procs*threads, all threads will\n");
-		printf ("start kdbSet() at roughly the same time");
+		printf ("start kdbSet() at roughly the same time\n");
 		return 1;
 	}
 

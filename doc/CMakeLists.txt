@@ -10,6 +10,9 @@ find_package(Doxygen)
 #install is where it should be installed
 #
 macro (do_doc target folder file install)
+	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
+	file(MAKE_DIRECTORY(${folder}))
+
 	add_custom_command (
 		OUTPUT ${folder}/${file}
 		COMMAND ${DOXYGEN_EXECUTABLE}

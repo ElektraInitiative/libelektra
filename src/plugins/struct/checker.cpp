@@ -1,3 +1,13 @@
+/**
+* \file
+*
+* \brief Sourcefile of Struct checker
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
+
+
 #include "checker.hpp"
 #include "factory.hpp"
 
@@ -24,4 +34,3 @@ void ListChecker::buildup (Factory &f, std::string const& templateParameter)
 }
 
 } // end namespace elektra
-

@@ -6,6 +6,7 @@
 
 class LsCommand : public Command
 {
+	kdb::Key root;
 	kdb::KDB kdb;
 	kdb::KeySet ks;
 

@@ -10,7 +10,7 @@
 #  PYTHON2_VERSION_MINOR       - Python minor version found e.g. 5
 #  PYTHON2_VERSION_PATCH       - Python patch version found e.g. 2
 #
-# The Python_ADDITIONAL_VERSIONS variable can be used to specify a list of
+# The Python2_ADDITIONAL_VERSIONS variable can be used to specify a list of
 # version numbers that should be taken into account when searching for Python.
 # You need to set this variable before calling find_package(Python2Interp).
 
@@ -63,8 +63,8 @@ find_program(PYTHON2_EXECUTABLE NAMES ${_Python_NAMES})
 
 # Set up the versions we know about, in the order we will search. Always add
 # the user supplied additional versions to the front.
-set(_Python_VERSIONS
-  ${Python_ADDITIONAL_VERSIONS}
+set(_Python2_VERSIONS
+  ${Python2_ADDITIONAL_VERSIONS}
   ${_PYTHON2_FIND_OTHER_VERSIONS}
   )
 
@@ -73,7 +73,7 @@ unset(_PYTHON2_VERSIONS)
 
 # Search for newest python version if python executable isn't found
 if(NOT PYTHON2_EXECUTABLE)
-    foreach(_CURRENT_VERSION ${_Python_VERSIONS})
+    foreach(_CURRENT_VERSION ${_Python2_VERSIONS})
       set(_Python_NAMES python${_CURRENT_VERSION})
       if(WIN32)
         list(APPEND _Python_NAMES python)

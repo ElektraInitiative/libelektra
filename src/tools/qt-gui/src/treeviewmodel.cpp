@@ -11,6 +11,8 @@
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>
+#include <kdbproposal.h> // for namespaces
+#include <kdbconfig.h> // for DEBUG and VERBOSE
 
 using namespace std;
 using namespace kdb;
@@ -165,15 +167,28 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	string fileString = file.remove("file://").toStdString();
 
 	Modules modules;
-	PluginPtr plugin = modules.load (formatString);
+	PluginPtr plugin = modules.load(formatString);
 
 	Key errorKey (root);
 	errorKey.setString (fileString);
 
-	plugin->get (importedKeys, errorKey);
+	plugin->get(importedKeys, errorKey);
 
-	printWarnings (cerr, errorKey);
-	printError (cerr, errorKey);
+	stringstream ws;
+	stringstream es;
+	QString warnings;
+	QString errors;
+
+	printWarnings(ws, errorKey);
+	warnings = QString::fromStdString(ws.str());
+	printError(es, errorKey);
+	errors  = QString::fromStdString(es.str());
+
+	if(!errors.isEmpty())
+	{
+		emit showMessage(tr("Error"), tr("Failed to import configuration from %1 to %2.").arg(file, QString::fromStdString(root.getName())), errors);
+		return;
+	}
 
 	ThreeWayMerge merger;
 
@@ -191,9 +206,8 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	{
 		result = merger.mergeKeySet(MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root), TheirMergeKeys (importedKeys, root), root));
 	}
-	catch(...)//TODO
+	catch(...)//TODO: Which exceptions are possible?
 	{
-		qDebug() << "Could not merge keysets";
 		emit showMessage(tr("Error"), tr("Could not merge keys."),"");
 	}
 
@@ -206,8 +220,24 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	}
 	else
 	{
-		emit showMessage(tr("Error"), tr("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg(file, format, name), "");
+		KeySet conflictSet = result.getConflictSet();
+		QStringList conflicts;
+		conflictSet.rewind();
+		Key current;
+
+		while ((current = conflictSet.next()))
+		{
+			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+			conflicts.append(QString::fromStdString(current.getName()));
+			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+			conflicts.append("\n");
+		}
+
+		emit showMessage(tr("Error"), tr("The were conflicts importing %1 (%2 format) into %3, no configuration was imported.").arg(file, format, name), conflicts.join("\n"));
 	}
+
 }
 
 void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QString format, QString file)
@@ -237,24 +267,17 @@ void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QSt
 	QString warnings;
 	QString errors;
 
-	if(errorKey.getMeta<const kdb::Key>("warnings"))
-	{
-		ws << printWarnings(cerr, errorKey);
-		warnings = QString::fromStdString(ws.str());
-	}
+	printWarnings(ws, errorKey);
+	warnings = QString::fromStdString(ws.str());
+	printError(es, errorKey);
+	errors  = QString::fromStdString(es.str());
 
-	if(errorKey.getMeta<const kdb::Key>("error"))
-	{
-		es << printError(cerr, errorKey);
-		errors  = QString::fromStdString(es.str());
-	}
-
-	if(errors.isEmpty() && warnings.isEmpty())
-		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), "");
-	else if(errors.isEmpty() && !warnings.isEmpty())
+	if(errors.isEmpty() && !warnings.isEmpty())
 		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2, warnings were issued.").arg(QString::fromStdString(root.getName()), file), "");
-	else if(!errors.isEmpty())
+	else if(!errors.isEmpty() && warnings.isEmpty())
 		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), errors);
+	else if(!errors.isEmpty() && !warnings.isEmpty())
+		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), warnings + "\n" + errors);
 }
 
 KeySet TreeViewModel::collectCurrentKeySet()
@@ -418,14 +441,43 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 void TreeViewModel::populateModel(KeySet keySet)
 {
-	ConfigNodePtr spec(new ConfigNode("spec", "spec", 0, this));
-	ConfigNodePtr user(new ConfigNode("user", "user", 0, this));
-	ConfigNodePtr system(new ConfigNode("system", "system", 0, this));
-
 	GUIBasicKeySet::setBasic(keySet);
 
 	m_model.clear();
-	m_model << system << user << spec;
+
+	using namespace ckdb; // for namespaces
+	for (int i=KEY_NS_FIRST; i<=KEY_NS_LAST; ++i)
+	{
+		elektraNamespace ns = static_cast<elektraNamespace>(i);
+		ConfigNodePtr toAdd;
+		switch (ns)
+		{
+		case KEY_NS_SPEC:
+			toAdd = ConfigNodePtr(new ConfigNode("spec", "spec", 0, this));
+			break;
+		case KEY_NS_PROC:
+			// TODO: add generic commandline parsing
+			break;
+		case KEY_NS_DIR:
+			toAdd = ConfigNodePtr(new ConfigNode("dir", "dir", 0, this));
+			break;
+		case KEY_NS_USER:
+			toAdd = ConfigNodePtr(new ConfigNode("user", "user", 0, this));
+			break;
+		case KEY_NS_SYSTEM:
+			toAdd = ConfigNodePtr(new ConfigNode("system", "system", 0, this));
+			break;
+		case KEY_NS_EMPTY:
+			break;
+		case KEY_NS_NONE:
+			break;
+		case KEY_NS_META:
+			break;
+		case KEY_NS_CASCADING:
+			break;
+		}
+		if (toAdd) m_model << toAdd;
+	}
 
 	createNewNodes(keySet);
 }
@@ -474,7 +526,7 @@ void TreeViewModel::synchronize()
 	KeySet base = GUIBasicKeySet::basic();
 	KeySet resultKeys;
 
-	Key root("user", KEY_END);
+	Key root("/", KEY_END);
 
 	KDB kdb;
 
@@ -497,6 +549,22 @@ void TreeViewModel::synchronize()
 	OneSideMergeConfiguration configuration(OURS);
 	configuration.configureMerger(merger);
 
+#if DEBUG && VERBOSE
+	theirs.rewind();
+	base.rewind();
+	for (Key o : ours)
+	{
+		Key t = theirs.next();
+		Key b = base.next();
+		std::cout << o.getName() << " " << ckdb::keyNeedSync(*o);
+		std::cout << "\t";
+		!b.isValid() ? std::cout << "none" : std::cout << b.getName() << " " << ckdb::keyNeedSync(*b);
+		std::cout << "\t";
+		!t.isValid() ? std::cout << "none" : std::cout << t.getName() << " " << ckdb::keyNeedSync(*t);
+		std::cout << std::endl;
+	}
+#endif
+
 	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
 													  OurMergeKeys(ours, root),
 													  TheirMergeKeys (theirs, root),
@@ -507,7 +575,22 @@ void TreeViewModel::synchronize()
 	}
 	else
 	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), "");
+		KeySet conflictSet = result.getConflictSet();
+		QStringList conflicts;
+		conflictSet.rewind();
+		Key current;
+
+		while ((current = conflictSet.next()))
+		{
+			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+			conflicts.append(QString::fromStdString(current.getName()));
+			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+			conflicts.append("\n");
+		}
+
+		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), conflicts.join("\n"));
 		return;
 	}
 
@@ -619,7 +702,7 @@ QStringList TreeViewModel::getSplittedKeyname(const Key &key)
 
 	for (Key::iterator i = key.begin(); i != key.end(); ++i)
 	{
-			names.append(QString::fromStdString(*i));
+		names.append(QString::fromStdString(*i));
 	}
 
 	return names;

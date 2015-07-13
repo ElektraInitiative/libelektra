@@ -369,13 +369,24 @@ static int elektraVersionGet (Plugin *handle ELEKTRA_UNUSED,
 	return 1;
 }
 
-
 static int elektraVersionSet (Plugin *handle ELEKTRA_UNUSED,
-		KeySet *returned ELEKTRA_UNUSED, Key *error)
+		KeySet *returned, Key *error)
 {
-	ELEKTRA_SET_ERROR(84, error, keyName(error));
-
-	return -1;
+	KeySet *info = elektraVersionKeySet();
+	Key *k;
+	ksRewind(info);
+	ksRewind(returned);
+	while ((k = ksNext(returned)))
+	{
+		Key *c = ksNext(info);
+		if (strcmp(keyName(k), keyName(c)) || strcmp(keyString(k), keyString(c)))
+		{
+			ELEKTRA_SET_ERRORF(84, error, "the key %s (expected %s) was modified to %s (expected %s)", keyName(k), keyName(c), keyString(k), keyString(c));
+			return -1;
+		}
+	}
+	ksDel (info);
+	return 0;
 }
 
 Plugin *elektraPluginVersion(void)

@@ -50,24 +50,24 @@
 #include <kdberrors.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
-#include <pthread.h>
+# include <pthread.h>
+#endif
 
 #if defined(__APPLE__)
-#define statSeconds(status) status.st_mtime
-#define statNanoSeconds(status) status.st_mtimespec.tv_nsec
+# define statSeconds(status) status.st_mtime
+# define statNanoSeconds(status) status.st_mtimespec.tv_nsec
 #elif defined(WIN32)
-#define statSeconds(status) status.st_mtime
-#define statNanoSeconds(status) 0
+# define statSeconds(status) status.st_mtime
+# define statNanoSeconds(status) 0
 #else
-#define statSeconds(status) status.st_mtim.tv_sec
-#define statNanoSeconds(status) status.st_mtim.tv_nsec
-#endif
+# define statSeconds(status) status.st_mtim.tv_sec
+# define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
 
+#ifdef ELEKTRA_LOCK_MUTEX
 extern pthread_mutex_t *getElektraResolverMutex();
 
-// for Apple-specific recursive mutex setup 
-#ifdef ELEKTRA_LOCK_MUTEX
+// for Apple-specific recursive mutex setup
 #if defined(__APPLE__)
 // special mutex for recursive mutex creation
 static pthread_mutex_t elektra_resolver_init_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -75,7 +75,6 @@ static pthread_mutex_t elektra_resolver_init_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int elektra_resolver_mutex_unitialized = 1;
 #endif
 #endif
-
 
 static void resolverInit (resolverHandle *p, const char *path)
 {
@@ -918,12 +917,7 @@ static void elektraUnlinkFile(char *filename, Key *parentKey)
 	int errnoSave = errno;
 	if (unlink (filename) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		int written = strlen(buffer);
-		strcat(buffer, " the file: ");
-		strncat(buffer, filename, ERROR_SIZE-written-10);
-		ELEKTRA_ADD_WARNING(36, parentKey, buffer);
+		ELEKTRA_ADD_WARNINGF(36, parentKey, "the file \"%s\" because of \"%s\"", filename, strerror(errno));
 		errno = errnoSave;
 	}
 }

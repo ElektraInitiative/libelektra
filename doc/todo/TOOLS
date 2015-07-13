@@ -101,6 +101,17 @@ is stack correct in with() when activate/deactivate across threads?
 
 
 
+
+
+== GUI ==
+
+commandline arguments:
+	for self configuring
+	for proc namespace
+
+
+
+
 == GEN-BACKEND ==
 
 Code generator that does what "kdb mount" does but provides a statically

@@ -1,8 +1,18 @@
 # Introduction
 
-Applications should use Elektra to read (and store) configurations. Only
-then their configuration is fully integrated in Elektra's ecosystem with
-benefits like:
+Applications should use Elektra to read (and store) configurations for a
+overall better integrated system.
+A light integration would be to write parsers for the configuration files
+of your application. This yields following advantages:
+
+- applications and administrators can easily change individual values
+- import/export of configuration
+
+
+For a full integration, however, the application needs to be patched
+to directly access Elektra's key database.
+When the application is fully integrated in the Elektra's ecosystem
+additional benefits arise:
 
 - Benefits that shared libraries have, e.g.
  - All applications profit from fixes, optimization and new features
@@ -11,8 +21,10 @@ benefits like:
  - Faster development time, because many non-trivial problems (e.g.
      OS-dependent resolving of configuration file names with atomic
      updates) are already solved and tested properly
-- The administrator can choose the configuration file syntax
-     (e.g. XML or JSON)
+- The administrator can choose:
+ - the configuration file syntax (e.g. XML or JSON)
+ - notification and logging on configuration changes
+ - and all other features [the plugins provide](/src/plugins)
 - Other applications can use your configuration as override or as
     fallback
 

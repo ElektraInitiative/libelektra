@@ -144,20 +144,20 @@ int main(int argc, char**argv)
 		displayHelp(argv[0], f.getCommands());
 		return 4;
 	}
-	catch (kdb::Key& key)
+	catch (kdb::KDBException const& ce)
 	{
 		std::cerr << "The command "
-		 	<< command << " failed while accessing the key database"
+		 	<< command << " failed while accessing the key database with the info:"
+			<< std::endl
+			<< ce.what()
 			<< std::endl;
-		printWarnings(cerr, key);
-		printError(cerr, key);
 		return 5;
 	}
 	catch (std::exception const& ce)
 	{
 		std::cerr << "The command "
 			<< command
-			<< " terminated unsuccessfully with the info: "
+			<< " terminated unsuccessfully with the info:"
 			<< std::endl
 			<< ce.what()
 			<< std::endl;

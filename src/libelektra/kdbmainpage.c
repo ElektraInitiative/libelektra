@@ -41,12 +41,18 @@
  * #include <kdb.h>
  * @endcode
  *
- * To link an executable with the Elektra library, the correct way is to
+ * To link an executable with the Elektra library, one way is to
  * use the @c pkg-config tool:
  * @code
- * bash$ cc `pkg-config --libs elektra` -o myapp myapp.c
+ * $ gcc -o application `pkg-config --cflags --libs elektra` application.c
  * @endcode
  *
+ * Another way is to use CMake:
+ * @code
+ * find_package(Elektra REQUIRED)
+ * include_directories (${ELEKTRA_INCLUDE_DIR})
+ * target_link_libraries (application ${ELEKTRA_LIBRARIES})
+ * @endcode
  *
  *
  *
@@ -54,10 +60,9 @@
  * @section classes Elektra API
  *
  * The API was written in pure C because Elektra was designed to be useful
- * even for the most basic system programs, which are all made in C. Also,
- * being C, bindings to other languages can appear easily.
+ * even for the most basic system programs.
  *
- * The API follows an Object Oriented design, and there are 3 main classes
+ * The API follows an object-oriented design, and there are 3 main classes
  * as shown by the figure:
  *
  * @image html classes.png "Elektra Classes"
@@ -65,26 +70,21 @@
  *
  * Some general things you can do with each class are:
  *
- * @link kdb KDB @endlink
- *   - @link kdb The four lowlevel functions @endlink
- *   - @link kdbOpen() Open @endlink and @link kdbClose() Close @endlink the Database
+ * @link kdb KDB (Key Database) @endlink
+ *   - @link kdbOpen() Open @endlink and @link kdbClose() Close @endlink the Key Database
  *   - @link kdbGet() Get @endlink and @link kdbSet() Set @endlink
-*      @link keyset KeySet @endlink in the Database
+ *     @link keyset KeySet @endlink in the Key Database
  *   - See @ref kdb "class documentation" for more
  *
  * @link key Key @endlink
- *   - Get and Set key properties like @link keySetName() name @endlink,
- *     @link keySetString() string @endlink or @link keySetBinary() binary @endlink values,
- *     @link keyGetMode() permissions @endlink,
- *     @link keyGetMTime() changed time @endlink and
- *     @link keyGetComment() comment @endlink
- *   - Test if it is a
- *     @link keyIsUser() @p user/ @endlink or @link keyIsSystem() @p system/
- *     @endlink key, etc
+ *   - @link keyNew Create @endlink and @link keyDel Delete @endlink
+ *   - Get and Set key the @link keySetName() name @endlink
+ *   - Get and Set @link keySetString() string @endlink or @link keySetBinary() binary @endlink values
+ *   - Get and Set @link keymeta Meta Data @endlink
  *   - See @ref key "class documentation" for more
  *
  * @link keyset KeySet @endlink
- *   - Linked list of Key objects
+ *   - @link ksNew Create @endlink and @link ksDel Delete @endlink
  *   - Append @link ksAppendKey() a single key @endlink or an
  *     entire @link ksAppend() KeySet @endlink
  *   - @link ksNext() Work with @endlink its @link ksCurrent() internal
@@ -95,23 +95,48 @@
  *
  *
  *
- * @section keynames Key Names and Namespaces
+ * @section namespace Namespaces
  *
- * There are 2 trees of keys: @c system and @c user
+ * There are 5 trees (=namespaces) of keys: @c spec, @c proc, @c dir, @c user and @c system
+ * that are all unified (in the given order) in one cascading tree starting with @c /.
  *
- * - The "system" Subtree
- *   It is provided to store system-wide configuration keys, that is,
- *   configurations that daemons and system services will use.
- *   But all other programs will also try to fetch system keys to have
- *   a fallback managed by the distributor or admin when the user does
- *   not have configuration for its own.
+ * The cascading tree is the logical tree to be used in applications.
+ * The other trees are the physical ones that stem from configuration sources.
+ * When using cascading key the best key will be searched at runtime,
+ * which appears like a tree on its own.
+ * See @ref cascading in the documentation of ksLookupByName() how the selection
+ * of keys works.
  *
- * - The "user" Subtree
+ * - The @c spec tree\n
+ *   This tree specifies how the lookup should take place and also allows us to
+ *   define defaults or document a key.
+ *   The metadata of a key contains this information:
+ *   - `override/#`: use these keys *in favour* of the key itself (note that
+ *       `#` is the syntax for arrays, e.g. `#0` for the first element,
+ *       `#_10` for the 11th and so on)
+ *   - `namespace/#`: instead of using all namespaces in the predefined order,
+ *       one can specify which namespaces should be searched in which order
+ *   - `fallback/#`: when no key was found in any of the (specified) namespaces
+ *       the `fallback`-keys will be searched
+ *   - `default`: this value will be used if nothing else was found
+ *
+ * - The @c proc tree\n
+ *   Is the only read-only tree. The configuration does not stem from the
+ *   @link kdb KDB (Key Database) @endlink, but any other source, e.g. command-line arguments or environment.
+ *
+ * - The @c dir tree\n
+ *   Allows us to have a per-directory overwrite of configuration files, e.g.
+ *   for project specific settings.
+ *
+ * - The @c user" tree \n
  *   Used to store user-specific configurations, like the personal settings
  *   of a user to certain programs. The user subtree will always be favoured
  *   if present (except for security concerns the user subtree may not be considered).
- *   See @ref cascading in the documentation of ksLookupByName() how the selection
- *   of user and system keys works.
+ *
+ * - The @c system tree\n
+ *   It is provided to store system-wide configuration keys, that is,
+ *   the last fallback for applications but the only resort for
+ *   daemons and system services.
  *
  *
  *
@@ -119,30 +144,31 @@
  *
  * When using Elektra to store your application's configuration and state,
  * please keep in mind the following rules:
- * - You are not allowed to create keys right under @p system or @p user.
+ * - You are not allowed to create keys right under the root.
  *   They are reserved for more generic purposes.
- * - The keys for your application, called say @e MyApp, should be created under
- *   @p system/sw/MyApp/current and @p user/sw/MyApp/current
- * - current is the default configuration profile, users may symlink
- *   to the profile they want.
- * - That means you just need to kdbGet() @p system/sw/MyApp/profile and @p user/sw/MyApp/profile
- *   and then ksLookupByName() in @p /sw/MyApp/profile while profile defaults to current,
- *   but may be changed by the user or admin. See @ref cascading to learn more about that feature.
- *
+ * - The keys for your application, called say @e myapp, should be created under
+ *   @p /sw/org/myapp/#0/current
+ *   - sw is for software
+ *   - org is the organisation. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
+ *   - @p #0 is the major version of the configuration
+ *   - current is the default configuration profile.
+ *   - That means you just need to kdbGet() @p /sw/org/myapp/#0/profile
+ *     and then ksLookupByName() in @p /sw/org/myapp/#0/profile/key where
+ *     profile is from command-line arguments and defaults to current.
  *
  *
  *
  * @section backendsoverview Backend Overview
  *
- * The core of elektra does not store configuration itself to the
+ * The core of Elektra does not store configuration itself to the
  * harddisk. Instead this work is delegated to backends.
  *
  * If you want to develop a backend, you should already have some experience
  * with Elektra from the user point of view. You should be familiar with
  * the data structures: @link key Key @endlink and @link keyset KeySet @endlink
- * Then you can start reading about Backends, which are composed out of
+ * Then you can start reading about Backends that are composed out of
  * @ref plugin.
- *
+ * To get started with writing plugins, first read our plugin tutorial in doc/tutorials!
  *
  *
  *
