@@ -556,11 +556,11 @@ void TreeViewModel::synchronize()
 	{
 		Key t = theirs.next();
 		Key b = base.next();
-		std::cout << o.getName();
+		std::cout << o.getName() << " " << ckdb::keyNeedSync(*o);
 		std::cout << "\t";
-		!b.isValid() ? std::cout << "none" : std::cout << b.getName();
+		!b.isValid() ? std::cout << "none" : std::cout << b.getName() << " " << ckdb::keyNeedSync(*b);
 		std::cout << "\t";
-		!t.isValid() ? std::cout << "none" : std::cout << t.getName();
+		!t.isValid() ? std::cout << "none" : std::cout << t.getName() << " " << ckdb::keyNeedSync(*t);
 		std::cout << std::endl;
 	}
 #endif
