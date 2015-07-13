@@ -71,7 +71,7 @@ The API documentation can be found
 
 ## News ##
 
-- [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a) adds dir namespace
+- [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a.html) adds dir namespace
 - [03 Apr 2015 0.8.11](http://doc.libelektra.org/news/7d4647d4-4131-411e-9c2a-2aca39446e18.html) adds spec namespace
 - [02 Dec 2014 0.8.10](http://doc.libelektra.org/news/6ce57ecf-420a-4a31-821e-1c5fe5532eb4.html) adds XDG/OpenICC compatibility
 - [04 Nov 2014 0.8.9](http://doc.libelektra.org/news/38640673-3e07-4cff-9647-f6bdd89b1b08.html) adds qt-gui
