@@ -1,9 +1,6 @@
 #include <opmph_benchmarks.h>
 #include <search.h>
 
-#define BUCKET_MIN_STEP_COUNT 3
-#define BUCKET_MAX_STEP_COUNT 30
-
 
 void runBenchmark (void (*runInLoop) (int, int, int, ENTRY *, int *));
 void insert (int n, int k, int r, ENTRY * data, int * times);
@@ -56,6 +53,7 @@ void runBenchmark (void (*runInLoop) (int, int, int, ENTRY *, int *))
 		 * The step count is calculated with this function
 		 * roundup((rounddown(n/min)-rounddown(n/max))/2)
 		 */
+		//TODO KURT 4/2 + 1 = 3 but should be 2
 		int temp1 = (int) (n/BUCKET_MIN_STEP_COUNT);
 		int temp2 = (int) (n/BUCKET_MAX_STEP_COUNT);
 		int bucket_step = ((int)( (temp1-temp2) / 2 )) + 1;
@@ -64,6 +62,7 @@ void runBenchmark (void (*runInLoop) (int, int, int, ENTRY *, int *))
 		{
 			printf ("%i;%i",n,k);
 			int times[REPEATS];
+			//TODO KURT fix generateKeySet memory leakage
 			KeySet * ks = generateKeySet(n);
 
 			for (int r = 0;r < REPEATS;++r)
@@ -232,7 +231,7 @@ int searchNext (int keys_searched_for[], int size)
 int max (int values[], int count)
 {
 	int max = values[0];
-	for(int i = 1;i < count;++i)
+	for (int i = 1;i < count;++i)
 	{
 		max = (values[i] > max) ? values[i] : max;
 	}
@@ -252,5 +251,5 @@ int median (int values[], int count)
 {
 	//~ for(int i = 0;i < count;++i) printf("times[%i]=%i\n",i,values[i]);
 	qsort (&values[0] ,count ,sizeof (int) , comp_int);
-	return values[(int)count/2];
+	return values[(int)(count/2)];
 }
