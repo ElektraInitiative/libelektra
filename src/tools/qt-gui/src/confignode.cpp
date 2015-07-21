@@ -104,7 +104,7 @@ void ConfigNode::setName(const QString& name)
 
 	if(index != -1)
 	{
-		m_path.replace(index, m_path.length() - index,"/" + name);
+		m_path.replace(index, m_path.length() - index, "/" + name);
 	}
 
 	if(!m_key)
