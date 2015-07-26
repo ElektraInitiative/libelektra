@@ -1056,7 +1056,7 @@ Finally, the *gen* tool added a Python package called `support`.
 
 ## Other Bits
 
-A proof of concept storage plugin `regexstore` was added. It allows to
+A proof of concept storage plugin `regexstore` was added. It allows one to
 capture individual configuration options within an otherwise not
 understood configuration file (e.g. for vimrc or emacs where
 the configuration file may contain programming constructs).
@@ -1215,7 +1215,7 @@ cmake variables. Because such non-file based plugins (e.g. also uname)
 do not need resolving, the plugin noresolver was added. It supersedes
 the success plugin.
 
-Elektra now allows to correctly fsync its configuration files
+Elektra now allows one to correctly fsync its configuration files
 (sync plugin) and the folders where files are stored (resolver plugin).
 Just make sure to add the "sync" plugin using kdb mount.
 The resolver plugin now reads from passwd and no longer needs
@@ -1234,7 +1234,7 @@ https://github.com/ElektraInitiative/libelektra/blob/master/src/plugins/
 The kdb tools were greatly improved (thanks to Felix):
 - added remount tool
 - umount now also accepts mountpath
-- mount allows to specify different resolvers
+- mount allows one to specify different resolvers
 - import now can use merge strategies
 - check without arguments checks key database
 - mount is now more verbose when validation fails
@@ -1302,7 +1302,7 @@ behaviour. So in one of the next releases we will also avoid semantic
 interface changes when there is a valid use case for it (there is none
 if the program e.g.  crashes).
 
-Symbol versioning also allows to compile against old versions on
+Symbol versioning also allows one to compile against old versions on
 purpose if you do not want the new behaviour.
 
 We have prepared an ABI-test suite, that also checks behaviour,
