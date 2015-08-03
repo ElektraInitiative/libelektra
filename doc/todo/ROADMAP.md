@@ -13,12 +13,29 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
+Fix Race bug: with lock in global plugins
+
 Start with:
 	api! (Namespaces, encoded, versioning)
+	version rules ELEKTRA_ABI_13 ...
 	Cleanups
 
+list plugin (for global plugins): takes array of plugins
+	processes all plugins in a row
+	use it also for normal plugins (pre, postfilter)
 
-list plugin: processes all plugins in a row
+prefer simplicity to flexibility! (GOALS)
+metadata checker plugin: determines which metadata is present
+link resolver plugin: kdbGet() of all parts where links point to
+
+redo type checker plugin: take care of simplicity + working together with others
+	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
+	copy from thesis
+	look into haskell type classes
+
+execute all examples to see if they do not crash or memleak
+	assert test cases -> test cases (rename succeed_if)
+
 full jessie build+script+external
 
 (xdg) variable for spec namespace?

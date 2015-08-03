@@ -1,4 +1,4 @@
-# Allows to add test cases using Google Test
+# Allows one to add test cases using Google Test
 #
 
 # recommended to use

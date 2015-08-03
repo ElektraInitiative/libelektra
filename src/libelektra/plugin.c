@@ -405,7 +405,7 @@ Plugin *elektraPluginVersion(void)
 
 
 /**
- * @brief Allows to Export Methods for a Plugin.
+ * @brief Allows one to Export Methods for a Plugin.
  *
  * This function must be called within ELEKTRA_PLUGIN_EXPORT.
  * It define the plugin's methods that will be exported.
@@ -437,7 +437,7 @@ Plugin *elektraPluginVersion(void)
  * Don't allocate storage, it won't be freed.
  *
  * @param pluginName the name of this plugin
- * @return an object that contains all plugin informations needed by
+ * @return an object that contains all plugin information needed by
  * 	libelektra.so
  * @ingroup plugin
  */

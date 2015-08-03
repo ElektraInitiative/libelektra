@@ -73,7 +73,7 @@ exit_if_fail ()
 {
 	if [ $? != "0" ]
 	then
-		if type cleanup
+		if command -v cleanup > /dev/null
 		then
 			echo "fatal: $*"
 			cleanup

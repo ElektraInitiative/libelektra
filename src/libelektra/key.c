@@ -147,7 +147,7 @@ static Key *elektraKeyMalloc()
  *   recommended way to set multiple flags. overrides previously defined flags.
  *   @snippet keyNew.c With Flags
  * - ::KEY_BINARY \n
- *   Allows to change the key to a binary key.
+ *   Allows one to change the key to a binary key.
  *   Make sure that you also pass ::KEY_SIZE before you set the value.
  *   Otherwise it will be cut off with first \\0 in the string.
  *   So this flag toggle from keySetString() to keySetBinary().

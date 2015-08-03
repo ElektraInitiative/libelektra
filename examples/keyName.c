@@ -8,7 +8,7 @@ int main()
 //! [add name]
 Key *k = keyNew("user/x/r", KEY_END);
 keyAddName(k, "../y/a//././z");
-assert(!strcmp(keyName(k), "user/x/a/z"));
+assert(!strcmp(keyName(k), "user/x/y/a/z"));
 keyDel(k);
 //! [add name]
 //! [namespace]
