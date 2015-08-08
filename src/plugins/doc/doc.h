@@ -378,9 +378,9 @@ int elektraDocClose(Plugin *handle, Key *warningsKey);
  * @param parentKey contains the information below which key
  * the keys should be gotten.
  *
- * @return 1 on success
- * @return 0 when nothing was to do
- * @return -1 on failure, the current key in returned shows the position.
+ * @retval 1 on success
+ * @retval 0 when nothing was to do
+ * @retval -1 on failure, the current key in returned shows the position.
  *         use #ELEKTRA_SET_ERROR of kdberrors.h to define the error code.
  *         You additionally can add as many warnings as you would like
  *         to add.

@@ -52,8 +52,8 @@
  * @param modules the current list of loaded modules
  * @param config the configuration which should be used to build up the trie.
  * @param errorKey the key used to report warnings
- * @return -1 on failure
- * @return 0 on success
+ * @retval -1 on failure
+ * @retval 0 on success
  * @ingroup mount
  */
 int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
@@ -111,8 +111,8 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
  * @param errorKey the key used to report warnings
- * @return -1 on error
- * @return 0 on success
+ * @retval -1 on error
+ * @retval 0 on success
  * @ingroup mount
  */
 int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
@@ -264,8 +264,8 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
  * @param kdb the handle to work with
  * @param backend the backend to mount
  * @param errorKey the key used to report warnings
- * @return -1 on failure
- * @return 1 on success
+ * @retval -1 on failure
+ * @retval 1 on success
  * @ingroup mount
  */
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey ELEKTRA_UNUSED)

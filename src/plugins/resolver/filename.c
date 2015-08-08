@@ -18,9 +18,9 @@
  *
  * This symbol is exported and used during mounting.
  *
- * @return 1 on success (Relative path)
- * @returns 0 on success (Absolute path)
- * @return -1 on a non-valid file
+ * @retval 1 on success (Relative path)
+ * @retval 0 on success (Absolute path)
+ * @retval -1 on a non-valid file
  */
 int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 {

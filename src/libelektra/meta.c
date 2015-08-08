@@ -119,8 +119,8 @@ buffer = malloc (keyGetOwnerSize (key));
  *
  * @param key the key object to work with
  * @return number of bytes
- * @return 1 if there is no owner
- * @return -1 on NULL pointer
+ * @retval 1 if there is no owner
+ * @retval -1 on NULL pointer
  * @see keyGetOwner()
  */
 ssize_t keyGetOwnerSize(const Key *key)
@@ -159,9 +159,9 @@ ssize_t keyGetOwnerSize(const Key *key)
  * @param returnedOwner a pre-allocated space to store the owner
  * @param maxSize maximum number of bytes that fit returned
  * @return number of bytes written to buffer
- * @return 1 if there is no owner
- * @return -1 on NULL pointers
- * @return -1 when maxSize is 0, larger than SSIZE_MAX or too small for ownername
+ * @retval 1 if there is no owner
+ * @retval -1 on NULL pointers
+ * @retval -1 when maxSize is 0, larger than SSIZE_MAX or too small for ownername
  * @see keySetName(), keySetOwner(), keyOwner(), keyGetFullName()
  */
 ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
@@ -207,8 +207,8 @@ ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
  * @param key the key object to work with
  * @param newOwner the string which describes the owner of the key
  * @return the number of bytes actually saved including final NULL
- * @return 1 when owner is freed (by setting 0 or "")
- * @return -1 on null pointer or memory problems
+ * @retval 1 when owner is freed (by setting 0 or "")
+ * @retval -1 on null pointer or memory problems
  * @see keySetName(), keyGetOwner(), keyGetFullName()
  */
 ssize_t keySetOwner(Key *key, const char *newOwner)
@@ -259,8 +259,8 @@ keyDel(key);
  *
  * @param key the key object to work with
  * @return a pointer to the internal managed comment
- * @return "" when there is no comment
- * @return 0 on NULL pointer
+ * @retval "" when there is no comment
+ * @retval 0 on NULL pointer
  * @see keyGetCommentSize() for size and keyGetComment() as alternative
  */
 const char *keyComment(const Key *key)
@@ -303,8 +303,8 @@ buffer = malloc (keyGetCommentSize (key));
  *
  * @param key the key object to work with
  * @return number of bytes needed
- * @return 1 if there is no comment
- * @return -1 on NULL pointer
+ * @retval 1 if there is no comment
+ * @retval -1 on NULL pointer
  * @see keyGetComment(), keySetComment()
  */
 ssize_t keyGetCommentSize(const Key *key)
@@ -345,9 +345,9 @@ ssize_t keyGetCommentSize(const Key *key)
  * @param maxSize number of bytes that will fit returnedComment
  * @return the number of bytes actually copied to @p returnedString, including
  * 	final NULL
- * @return 1 if the string is empty
- * @return -1 on NULL pointer
- * @return -1 if maxSize is 0, not enough to store the comment or when larger then SSIZE_MAX
+ * @retval 1 if the string is empty
+ * @retval -1 on NULL pointer
+ * @retval -1 if maxSize is 0, not enough to store the comment or when larger then SSIZE_MAX
  * @see keyGetCommentSize(), keySetComment()
  */
 ssize_t keyGetComment(const Key *key, char *returnedComment, size_t maxSize)
@@ -391,8 +391,8 @@ ssize_t keyGetComment(const Key *key, char *returnedComment, size_t maxSize)
  * @param key the key object to work with
  * @param newComment the comment, that can be freed after this call.
  * @return the number of bytes actually saved including final NULL
- * @return 0 when the comment was freed (newComment NULL or empty string)
- * @return -1 on NULL pointer or memory problems
+ * @retval 0 when the comment was freed (newComment NULL or empty string)
+ * @retval -1 on NULL pointer or memory problems
  * @see keyGetComment()
  */
 ssize_t keySetComment(Key *key, const char *newComment)
@@ -436,7 +436,7 @@ ssize_t keySetComment(Key *key, const char *newComment)
  *
  * @param key the key object to work with
  * @return the system's UID of the key
- * @return (uid_t)-1 on NULL key
+ * @retval (uid_t)-1 on NULL key
  * @see keyGetGID(), keySetUID(), keyGetOwner()
  */
 uid_t keyGetUID(const Key *key)
@@ -483,8 +483,8 @@ cleanup:
  *
  * @param key the key object to work with
  * @param uid the user ID to set
- * @return 0 on success
- * @return -1 on NULL key or conversion error
+ * @retval 0 on success
+ * @retval -1 on NULL key or conversion error
  * @see keySetGID(), keyGetUID(), keyGetOwner()
  */
 int keySetUID(Key *key, uid_t uid)
@@ -523,7 +523,7 @@ int keySetUID(Key *key, uid_t uid)
  *
  * @param key the key object to work with
  * @return the system's GID of the key
- * @return (gid_t)-1 on NULL key or currently unknown ID
+ * @retval (gid_t)-1 on NULL key or currently unknown ID
  * @see keySetGID(), keyGetUID()
  */
 gid_t keyGetGID(const Key *key)
@@ -570,8 +570,8 @@ cleanup:
  *
  * @param key the key object to work with
  * @param gid is the group ID
- * @return 0 on success
- * @return -1 on NULL key
+ * @retval 0 on success
+ * @retval -1 on NULL key
  * @see keyGetGID(), keySetUID()
  */
 int keySetGID(Key *key, gid_t gid)
@@ -622,8 +622,8 @@ int keySetGID(Key *key, gid_t gid)
  * keys below.
  *
  * @param key the key to set permissions to be recognized as directory.
- * @return 0 on success
- * @return -1 on NULL pointer
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
  * @see keySetMode()
  */
 int keySetDir(Key *key)
@@ -654,8 +654,8 @@ int keySetDir(Key *key)
  *
  * @param key the key object to work with
  * @return mode permissions of the key
- * @return KDB_FILE_MODE as defaults
- * @return (mode_t)-1 on NULL pointer
+ * @retval KDB_FILE_MODE as defaults
+ * @retval (mode_t)-1 on NULL pointer
  * @see keySetMode()
  */
 mode_t keyGetMode(const Key *key)
@@ -756,8 +756,8 @@ cleanup:
  *
  * @param key the key to set mode permissions
  * @param mode the mode permissions
- * @return 0 on success
- * @return -1 on NULL key
+ * @retval 0 on success
+ * @retval -1 on NULL key
  * @see keyGetMode()
  */
 int keySetMode(Key *key, mode_t mode)
@@ -799,8 +799,8 @@ int keySetMode(Key *key, mode_t mode)
  *
  * @param key Key to get information from.
  * @return the time you got the key with kdbGet()
- * @return 0 on key that was never kdbGet()
- * @return (time_t)-1 on NULL pointer
+ * @retval 0 on key that was never kdbGet()
+ * @retval (time_t)-1 on NULL pointer
  * @see keySetATime()
  * @see kdbGet()
  */
@@ -850,8 +850,8 @@ cleanup:
  *
  * @param key The Key object to work with
  * @param atime The new access time for the key
- * @return 0 on success
- * @return -1 on NULL pointer
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
  * @see keyGetATime()
  */
 int keySetATime(Key *key, time_t atime)
@@ -895,7 +895,7 @@ int keySetATime(Key *key, time_t atime)
  * @param key Key to get information from.
  * @see keySetMTime()
  * @return the last modification time
- * @return (time_t)-1 on NULL pointer
+ * @retval (time_t)-1 on NULL pointer
  */
 time_t keyGetMTime(const Key *key)
 {
@@ -937,7 +937,7 @@ cleanup:
  *
  * @param key The Key object to work with
  * @param mtime The new modification time for the key
- * @return 0 on success
+ * @retval 0 on success
  * @see keyGetMTime()
  */
 int keySetMTime(Key *key, time_t mtime)
@@ -978,7 +978,7 @@ int keySetMTime(Key *key, time_t mtime)
  *
  * @param key Key to get information from.
  * @see keySetCTime()
- * @return (time_t)-1 on NULL pointer
+ * @retval (time_t)-1 on NULL pointer
  * @return the metadata change time
  */
 time_t keyGetCTime(const Key *key)
@@ -1022,8 +1022,8 @@ cleanup:
  *
  * @param key The Key object to work with
  * @param ctime The new change metadata time for the key
- * @return 0 on success
- * @return -1 on NULL pointer
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
  * @see keyGetCTime()
  */
 int keySetCTime(Key *key, time_t ctime)

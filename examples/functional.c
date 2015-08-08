@@ -17,7 +17,7 @@
  * @param ks the keyset to work with
  * @param func the function to execute on every key of the keyset
  * @return the sum of all return values
- * @return -1 if any function returned -1, the execution will stop there, but
+ * @retval -1 if any function returned -1, the execution will stop there, but
  * 	ksCurrent() will tell you where it stopped.
  * @see ksFilter()
  */
@@ -54,8 +54,8 @@ int ksForEach (KeySet *ks, int (*func) (Key *k))
  * @param filter is the function to execute on every key of the keyset to decide if
  * 	it should be ksAppendKey()ed to the result.
  * @return the number of keys added on success
- * @return 0 when nothing was done
- * @return -1 when filter returned an error (-1), ksCurrent() of input will
+ * @retval 0 when nothing was done
+ * @retval -1 when filter returned an error (-1), ksCurrent() of input will
  * 	be the problematic key.
  * @see ksForEach()
  **/
