@@ -232,7 +232,7 @@ int init(int argc, char** argv);
 /**Compare two keysets.
  *
  * Compare if two keysets contain the same keys.
- * @return 0 on success
+ * @retval 0 on success
  * */
 #define compare_keyset(pks1, pks2) \
 { \

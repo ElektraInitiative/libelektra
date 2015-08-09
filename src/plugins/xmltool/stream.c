@@ -434,8 +434,8 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options)
  * @param stream the file pointer where to send the stream
  * @param options see text above
  * @see ksOutput()
- * @return 1 on success
- * @return -1 on allocation errors
+ * @retval 1 on success
+ * @retval -1 on allocation errors
  * @ingroup stream
  */
 int keyOutput (const Key * k, FILE *stream, option_t options)
@@ -563,8 +563,8 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
  * @param stream the file pointer where to send the stream
  * @param options
  * @see keyOutput()
- * @return 1 on success
- * @return -1 on allocation errors
+ * @retval 1 on success
+ * @retval -1 on allocation errors
  * @ingroup stream
  */
 int ksOutput(const KeySet *ks, FILE *stream, option_t options)
@@ -598,7 +598,7 @@ int ksOutput(const KeySet *ks, FILE *stream, option_t options)
  * @param key the key object to work with
  * @param stream the file pointer where to send the stream
  * @param options KDB_O_SHOWINDICES, KDB_O_IGNORE_COMMENT, KDB_O_SHOWINFO
- * @return 1 on success
+ * @retval 1 on success
  * @ingroup stream
  */
 int keyGenerate(const Key * key, FILE *stream, option_t options)
@@ -667,7 +667,7 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
  * @param ks the keyset to work with
  * @param stream the file pointer where to send the stream
  * @param options which keys not to output
- * @return 1 on success
+ * @retval 1 on success
  * @ingroup stream
  */
 int ksGenerate (const KeySet *ks, FILE *stream, option_t options)

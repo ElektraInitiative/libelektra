@@ -185,7 +185,7 @@ ksDel (config);
  * @see ksDup() to duplicate an existing keyset
  * @param alloc gives a hint for the size how many Keys may be stored initially
  * @return a ready to use KeySet object
- * @return 0 on memory error
+ * @retval 0 on memory error
  */
 KeySet *ksNew(size_t alloc, ...)
 {
@@ -262,7 +262,7 @@ KeySet *ksVNew (size_t alloc, va_list va)
  *
  * @param source has to be an initialized source KeySet
  * @return a flat copy of source on success
- * @return 0 on NULL pointer
+ * @retval 0 on NULL pointer
  * @see ksNew(), ksDel()
  * @see keyDup() for key duplication
  */
@@ -285,7 +285,7 @@ KeySet *ksDup (const KeySet * source)
  *
  * @param source has to be an initialized source KeySet
  * @return a deep copy of source on success
- * @return 0 on NULL pointer
+ * @retval 0 on NULL pointer
  * @see ksNew(), ksDel()
  * @see keyDup() for key duplication
  * @see ksDup() for flat copy
@@ -343,9 +343,9 @@ int f (KeySet *ks)
  *
  * @param source has to be an initialized source KeySet or NULL
  * @param dest has to be an initialized KeySet where to write the keys
- * @return 1 on success
- * @return 0 if dest was cleared successfully (source is NULL)
- * @return -1 on NULL pointer
+ * @retval 1 on success
+ * @retval 0 if dest was cleared successfully (source is NULL)
+ * @retval -1 on NULL pointer
  * @see ksNew(), ksDel(), ksDup()
  * @see keyCopy() for copying keys
  */
@@ -372,8 +372,8 @@ int ksCopy (KeySet *dest, const KeySet *source)
  * allocated by ksNew()).
  *
  * @param ks the keyset object to work with
- * @return 0 when the keyset was freed
- * @return -1 on null pointer
+ * @retval 0 when the keyset was freed
+ * @retval -1 on null pointer
  * @see ksNew()
  */
 int ksDel(KeySet *ks)
@@ -399,8 +399,8 @@ int ksDel(KeySet *ks)
  *
  * @param ks the keyset object to work with
  * @see ksAppendKey() for details on how keys are inserted in KeySets
- * @return 0 on sucess
- * @return -1 on failure (memory)
+ * @retval 0 on sucess
+ * @retval -1 on failure (memory)
  */
 int ksClear(KeySet *ks)
 {
@@ -640,9 +640,9 @@ int keyCmp (const Key *k1, const Key *k2)
  * information.
  *
  * @param ks the keyset to work with
- * @return -1 on null keyset
- * @return 0 if it does not need sync
- * @return 1 if it needs sync
+ * @retval -1 on null keyset
+ * @retval 0 if it does not need sync
+ * @retval 1 if it needs sync
  */
 int ksNeedSync(const KeySet *ks)
 {
@@ -659,7 +659,7 @@ int ksNeedSync(const KeySet *ks)
  *
  * @param ks the keyset object to work with
  * @return the number of keys that @p ks contains.
- * @return -1 on NULL pointer
+ * @retval -1 on NULL pointer
  * @see ksNew(0, KS_END), ksDel()
  */
 ssize_t ksGetSize(const KeySet *ks)
@@ -787,8 +787,8 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  *
  *
  * @return the size of the KeySet after insertion
- * @return -1 on NULL pointers
- * @return -1 if insertion failed, the key will be deleted then.
+ * @retval -1 on NULL pointers
+ * @retval -1 if insertion failed, the key will be deleted then.
  * @param ks KeySet that will receive the key
  * @param toAppend Key that will be appended to ks or deleted
  * @see ksAppend(), keyNew(), ksDel()
@@ -874,7 +874,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * @post Sorted KeySet ks with all keys it had before and additionally
  *       the keys from toAppend
  * @return the size of the KeySet after transfer
- * @return -1 on NULL pointers
+ * @retval -1 on NULL pointers
  * @param ks the KeySet that will receive the keys
  * @param toAppend the KeySet that provides the keys that will be transferred
  * @see ksAppendKey()
@@ -1179,7 +1179,7 @@ ksDel (ks2);
  *@endcode
  *
  * @return the last key of @p ks
- * @return NULL if @p ks is empty or on NULL pointer
+ * @retval NULL if @p ks is empty or on NULL pointer
  * @param ks KeySet to work with
  * @see ksAppendKey(), ksAppend()
  * @see commandList() for an example
@@ -1224,8 +1224,8 @@ while ((key = ksNext (ks))!=0) {}
  * @endcode
  *
  * @param ks the keyset object to work with
- * @return 0 on success
- * @return -1 on NULL pointer
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
  * @see ksNext(), ksCurrent()
  */
 int ksRewind(KeySet *ks)
@@ -1254,8 +1254,8 @@ int ksRewind(KeySet *ks)
  *
  * @param ks the keyset object to work with
  * @return the new current Key
- * @return 0 when the end is reached
- * @return 0 on NULL pointer
+ * @retval 0 when the end is reached
+ * @retval 0 on NULL pointer
  * @see ksRewind(), ksCurrent()
  */
 Key *ksNext(KeySet *ks)
@@ -1286,7 +1286,7 @@ Key *ksNext(KeySet *ks)
  *
  * @param ks the keyset object to work with
  * @return pointer to the Key pointed by @p ks's cursor
- * @return 0 on NULL pointer
+ * @retval 0 on NULL pointer
  * @see ksNext(), ksRewind()
  */
 Key *ksCurrent(const KeySet *ks)
@@ -1309,7 +1309,7 @@ Key *ksCurrent(const KeySet *ks)
  *
  * @param ks the keyset object to work with
  * @return the first Key of a keyset
- * @return 0 on NULL pointer or empty keyset
+ * @retval 0 on NULL pointer or empty keyset
  * @see ksTail() for the last key
  * @see ksRewind(), ksCurrent() and ksNext() for iterating over the keyset
  */
@@ -1336,7 +1336,7 @@ Key *ksHead(const KeySet *ks)
  *
  * @param ks the keyset object to work with
  * @return the last Key of a keyset
- * @return 0 on NULL pointer or empty keyset
+ * @retval 0 on NULL pointer or empty keyset
  * @see ksHead() for the first key
  * @see ksRewind(), ksCurrent() and ksNext() for iterating over the keyset
  */
@@ -1469,9 +1469,9 @@ ksCurrent(ks); // in same position as before
  *
  * @param cursor the cursor to use
  * @param ks the keyset object to work with
- * @return 0 when the keyset is ksRewind()ed
- * @return 1 otherwise
- * @return -1 on NULL pointer
+ * @retval 0 when the keyset is ksRewind()ed
+ * @retval 1 otherwise
+ * @retval -1 on NULL pointer
  * @see ksNext(), ksGetCursor()
  */
 int ksSetCursor(KeySet *ks, cursor_t cursor)
@@ -1921,7 +1921,7 @@ int f(KeySet *iterator, KeySet *lookup)
  *	- @p KDB_O_DEL @n
  *		Delete the passed key.
  * @return pointer to the Key found, 0 otherwise
- * @return 0 on NULL pointers
+ * @retval 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string
  * @see ksCurrent(), ksRewind(), ksNext() for iterating over a keyset
  */
@@ -2043,7 +2043,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  *
  * 	Currently no options supported.
  * @return pointer to the Key found, 0 otherwise
- * @return 0 on NULL pointers
+ * @retval 0 on NULL pointers
  * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
@@ -2156,7 +2156,7 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
  * 	- @p KDB_O_NOALL @n
  * 		Only search from ksCurrent() to end of keyset, see above text.
  * @return the Key found, NULL otherwise
- * @return 0 on NULL pointer
+ * @retval 0 on NULL pointer
  * @see ksLookupByString()
  * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
@@ -2227,10 +2227,10 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
  *
  * @param ks the keyset which should be resized
  * @param alloc the size to which the array will be resized
- * @return 1 on success
- * @return 0 on nothing done because keyset would be too small.
- * @return -1 if alloc is smaller then current size of keyset.
- * @return -1 on memory error or null ptr
+ * @retval 1 on success
+ * @retval 0 on nothing done because keyset would be too small.
+ * @retval -1 if alloc is smaller then current size of keyset.
+ * @retval -1 on memory error or null ptr
  */
 int ksResize (KeySet *ks, size_t alloc)
 {
@@ -2307,7 +2307,7 @@ size_t ksGetAlloc (const KeySet *ks)
  * cleaned with ksClear().
  *
  * @see ksNew(), ksClose(), keyInit()
- * @return 1 on success
+ * @retval 1 on success
  */
 int ksInit(KeySet *ks)
 {
@@ -2329,7 +2329,7 @@ int ksInit(KeySet *ks)
  * KeySet object initializer.
  *
  * @see ksDel(), ksNew(), keyInit()
- * @return 1 on success
+ * @retval 1 on success
  */
 int ksClose(KeySet *ks)
 {

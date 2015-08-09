@@ -228,8 +228,8 @@ keyDel(key);
  *
  * @param key the key object to work with
  * @return a pointer to the keyname which must not be changed.
- * @return "" when there is no (a empty) keyname
- * @return 0 on NULL pointer
+ * @retval "" when there is no (a empty) keyname
+ * @retval 0 on NULL pointer
  * @see keyGetNameSize() for the string length
  * @see keyGetFullName(), keyGetFullNameSize() to get the full name
  * @see keyGetName() as alternative to get a copy
@@ -256,8 +256,8 @@ const char *keyName(const Key *key)
  * @param key the key object to work with
  * @return number of bytes needed, including ending NULL, to store key name
  * 	without owner
- * @return 1 if there is is no key Name
- * @return -1 on NULL pointer
+ * @retval 1 if there is is no key Name
+ * @retval -1 on NULL pointer
  * @see keyGetName(), keyGetFullNameSize()
  * @ingroup keyname
  */
@@ -293,8 +293,8 @@ keyGetName(key, getBack, keyGetNameSize(key));
  * @endcode
  *
  * @return number of bytes written to @p returnedName
- * @return 1 when only a null was written
- * @return -1 when keyname is longer then maxSize or 0 or any NULL pointer
+ * @retval 1 when only a null was written
+ * @retval -1 when keyname is longer then maxSize or 0 or any NULL pointer
  * @param key the key object to work with
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
@@ -516,8 +516,8 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
  *
  * @param key the key object to work with
  * @return number of bytes needed to store key name including user domain
- * @return 1 on empty name
- * @return -1 on NULL pointer
+ * @retval 1 on empty name
+ * @retval -1 on NULL pointer
  * @see keyGetFullName(), keyGetNameSize()
  * @ingroup keyname
  */
@@ -550,9 +550,9 @@ ssize_t keyGetFullNameSize(const Key *key)
  * Get key full name, including the user domain name.
  *
  * @return number of bytes written
- * @return 1 on empty name
- * @return -1 on NULL pointers
- * @return -1 if maxSize is 0 or larger than SSIZE_MAX
+ * @retval 1 on empty name
+ * @retval -1 on NULL pointers
+ * @retval -1 if maxSize is 0 or larger than SSIZE_MAX
  * @param key the key object
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
@@ -707,9 +707,9 @@ ssize_t keyGetBaseNameSize(const Key *key)
  * @param returned a pre-allocated buffer to store the basename
  * @param maxSize size of the @p returned buffer
  * @return number of bytes copied to @p returned
- * @return 1 on empty name
- * @return -1 on NULL pointers
- * @return -1 when maxSize is 0 or larger than SSIZE_MAX
+ * @retval 1 on empty name
+ * @retval -1 on NULL pointers
+ * @retval -1 when maxSize is 0 or larger than SSIZE_MAX
  * @see keyBaseName(), keyGetBaseNameSize()
  * @see keyName(), keyGetName(), keySetName()
  * @ingroup keyname
@@ -778,8 +778,8 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * @param key the key object to work with
  * @param baseName the string to append to the name
  * @return the size in bytes of the new key name including the ending NULL
- * @return -1 if the key had no name
- * @return -1 on NULL pointers
+ * @retval -1 if the key had no name
+ * @retval -1 on NULL pointers
  * @retval -1 if key was inserted to a keyset before
  * @ingroup keyname
  *
@@ -997,7 +997,7 @@ ssize_t keyAddName(Key *key, const char *newName)
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key
  * @return the size in bytes of the new key name
- * @return -1 on NULL pointers
+ * @retval -1 on NULL pointers
  * @retval -1 if key was inserted to a keyset before
  * @see keyAddBaseName()
  * @see keySetName() to set a new name

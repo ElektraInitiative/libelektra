@@ -135,10 +135,10 @@ while ((meta = keyNextMeta (key))!=0)
  * @endcode
  *
  * @param key the key object to work with
- * @return 0 on success
- * @return 0 if there is no meta information for that key
+ * @retval 0 on success
+ * @retval 0 if there is no meta information for that key
  *         (keyNextMeta() will always return 0 in that case)
- * @return -1 on NULL pointer
+ * @retval -1 on NULL pointer
  * @see keyNextMeta(), keyCurrentMeta()
  * @see ksRewind() for pedant in iterator interface of KeySet
  * @ingroup keymeta
@@ -170,8 +170,8 @@ int keyRewindMeta(Key *key)
  *
  * @param key the key object to work with
  * @return a key representing meta information
- * @return 0 when the end is reached
- * @return 0 on NULL pointer
+ * @retval 0 when the end is reached
+ * @retval 0 on NULL pointer
  *
  * @see ksNext() for pedant in iterator interface of KeySet
  * @ingroup keymeta
@@ -197,7 +197,7 @@ const Key *keyNextMeta(Key *key)
  *
  * @param key the key object to work with
  * @return a buffer to the value pointed by @p key's cursor
- * @return 0 on NULL pointer
+ * @retval 0 on NULL pointer
  * @see keyNextMeta(), keyRewindMeta()
  *
  * @see ksCurrent() for pedant in iterator interface of KeySet
@@ -259,10 +259,10 @@ void o(KeySet *ks)
  *
  * @post keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
- * @return 1 if was successfully copied
- * @return 0 if the meta data in dest was removed too
- * @return -1 on null pointers (source or dest)
- * @return -1 on memory problems
+ * @retval 1 if was successfully copied
+ * @retval 0 if the meta data in dest was removed too
+ * @retval -1 on null pointers (source or dest)
+ * @retval -1 on memory problems
  * @param dest the destination where the meta data should be copied too
  * @param source the key where the meta data should be copied from
  * @param metaName the name of the meta data which should be copied
@@ -346,10 +346,10 @@ int keyCopyMeta(Key *dest, const Key *source, const char *metaName)
  *
  * @post for every metaName present in source: keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
- * @return 1 if was successfully copied
- * @return 0 if source did not have any meta data
- * @return -1 on null pointer of dest or source
- * @return -1 on memory problems
+ * @retval 1 if was successfully copied
+ * @retval 0 if source did not have any meta data
+ * @retval -1 on null pointer of dest or source
+ * @retval -1 on memory problems
  * @param dest the destination where the meta data should be copied too
  * @param source the key where the meta data should be copied from
  * @ingroup keymeta
@@ -396,8 +396,8 @@ int f(Key *k)
  *
  * @param key the key object to work with
  * @param metaName the name of the meta information you want the value from
- * @return 0 if the key or metaName is 0
- * @return 0 if no such metaName is found
+ * @retval 0 if the key or metaName is 0
+ * @retval 0 if no such metaName is found
  * @return value of Meta-Information if Meta-Information is found
  * @see keyGetMeta(), keySetMeta()
  * @ingroup keymeta
@@ -439,9 +439,9 @@ const Key *keyGetMeta(const Key *key, const char* metaName)
  * @param metaName the name of the meta information where you
  *                 want to change the value
  * @param newMetaString the new value for the meta information
- * @return -1 on error if key or metaName is 0, out of memory
+ * @retval -1 on error if key or metaName is 0, out of memory
  *         or names are not valid
- * @return 0 if the Meta-Information for metaName was removed
+ * @retval 0 if the Meta-Information for metaName was removed
  * @return size (>0) of newMetaString if Meta-Information was
  *         successfully added
  * @see keyGetMeta()
