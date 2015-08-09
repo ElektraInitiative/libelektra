@@ -26,8 +26,8 @@ using namespace kdb;
 extern int nbError;
 extern int nbTest;
 
-#define warn_if_fail(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " warning in " <<  __FUNCTION__ << ": " << y << endl;}}
-#define succeed_if(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " error in " <<  __FUNCTION__ << ": " << y << endl; ++nbError;}}
-#define exit_if_fail(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " fatal in " <<  __FUNCTION__ << ": " << y << endl;  exit(1);}}
+#define warn_if_fail(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " warning in " <<  __func__ << ": " << y << endl;}}
+#define succeed_if(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " error in " <<  __func__ << ": " << y << endl; ++nbError;}}
+#define exit_if_fail(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " fatal in " <<  __func__ << ": " << y << endl;  exit(1);}}
 
 #endif
