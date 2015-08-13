@@ -29,7 +29,9 @@ int MetaSetCommand::execute (Cmdline const& cl)
 	if (!k)
 	{
 		k = Key(keyname, KEY_END);
+		// k.setBinary(0, 0); // conceptually maybe better, but would have confusing "binary" metadata
 		conf.append(k);
+		if (cl.verbose) cout << "Creating key " << keyname << endl;
 	}
 	if (!k.isValid())
 	{
