@@ -20,10 +20,6 @@ Start with:
 	version rules ELEKTRA_ABI_13 ...
 	Cleanups
 
-highlevel API: getenv()
-	ld_preload
-	--wrap=symbol __libc_start_main for argc /sw/argv[0]
-
 genopt.hpp + include enforcement in template_dynamic?
 	use spec namespace
 	generic command-line parsing
