@@ -1473,7 +1473,7 @@ static void test_keyBelow()
 
 	keySetName(key1,"user/tests/ini-section-write");
 	keySetName(key2,"user/tests/ini-section-write/akey\\/looking\\/like\\/sections");
-	succeed_if(keyIsDirectBelow(key1, key2), "looking like sections not recogniced");
+	succeed_if(keyIsDirectBelow(key1, key2), "looking like sections not recognised");
 	succeed_if(!keyIsDirectBelow(key2, key1), "Key should not be below");
 
 
