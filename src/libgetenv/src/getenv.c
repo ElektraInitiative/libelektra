@@ -1,6 +1,9 @@
+#define _GNU_SOURCE // RTLD_NEXT
+
 #include <kdb.h>
 #include <kdbconfig.h>
 
+#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,11 +60,15 @@ void elektraClose()
 
 int __real_main(int argc, char** argv, char** env);
 
-int __wrap_main(int argc, char** argv, char** env)
+typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
+int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
+	static union {void*d; fcn f;} start;
+	if (!start.d) start.d = dlsym(RTLD_NEXT, "__libc_start_main");
+
 	printf ("Main wrapped successfully\n");
 	elektraOpen(&argc, argv);
-	int ret = __real_main(argc, argv, env);
+	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 	//TODO: save configuration (on request)
 	elektraClose();
 	return ret;
@@ -78,12 +85,14 @@ char *elektraGetEnv(const char *name)
 	return (char*)keyString(key);
 }
 
-char *__wrap_getenv(const char *name)
+char *getenv(const char *name)
 {
-	return elektraGetEnv(name);
+	char *ret = elektraGetEnv(name);
+	return ret;
 }
 
-char *__wrap_secure_getenv(const char *name)
+char *secure_getenv(const char *name)
 {
-	return elektraGetEnv(name);
+	char * ret = elektraGetEnv(name);
+	return ret;
 }
