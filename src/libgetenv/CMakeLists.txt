@@ -1,5 +1,6 @@
 if (BUILD_SHARED)
 	add_subdirectory(include)
+	include_directories(include)
 	add_subdirectory(src)
 	add_subdirectory(examples)
 

@@ -1,6 +1,6 @@
 #define _GNU_SOURCE // RTLD_NEXT
 
-#include <kdb.h>
+#include <kdbgetenv.h>
 #include <kdbconfig.h>
 
 #include <dlfcn.h>
@@ -9,9 +9,9 @@
 #include <string.h>
 #include <signal.h>
 
-KDB *elektraRepo;
-KeySet *elektraConfig;
 Key *elektraParentKey;
+KeySet *elektraConfig;
+KDB *elektraRepo;
 
 volatile sig_atomic_t elektraReloadCounter;
 int elektraReloadCounterNext;
@@ -25,20 +25,38 @@ int elektraCheckReload()
 	return 0;
 }
 
+void elektraClose()
+{
+	if (!elektraRepo) return; // already closed
+
+	kdbClose(elektraRepo, elektraParentKey);
+	ksDel(elektraConfig);
+	keyDel(elektraParentKey);
+	elektraRepo = 0;
+}
+
 void elektraOpen(int* argc, char** argv)
 {
+	if (elektraRepo) elektraClose(); // already opened
+
 	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
+	elektraConfig = ksNew(20, KS_END);
+
+	if (argc && argv)
+	{
+		ksAppendKey(elektraConfig, keyNew("/sw/app/lift/HOME", KEY_VALUE, "/home/markus", KEY_END));
+		// TODO: parse argc, argv
+		for (int i=0; i<*argc; ++i)
+		{
+			printf ("argv[%d]: %s\n", i, argv[i]);
+		}
+	}
+
 	printf ("%s - %s\n", keyName(elektraParentKey), keyString(elektraParentKey));
 	elektraRepo = kdbOpen(elektraParentKey);
-	elektraConfig = ksNew(20, KS_END);
 	//TODO: install SIGHUP signal handler (on request)
 	//TODO: parse arguments -> spec, remove "env"
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
-
-	for (int i=1; i<*argc; ++i)
-	{
-		printf ("argv[%d]: %s\n", i, argv[i]);
-	}
 
 
 	/*
@@ -49,13 +67,6 @@ void elektraOpen(int* argc, char** argv)
 		printf ("%s - %s\n", keyName(c), keyString(c));
 	}
 	*/
-}
-
-void elektraClose()
-{
-	kdbClose(elektraRepo, elektraParentKey);
-	ksDel(elektraConfig);
-	keyDel(elektraParentKey);
 }
 
 int __real_main(int argc, char** argv, char** env);
@@ -80,8 +91,12 @@ char *elektraGetEnv(const char *name)
 	strcpy(fullName, "/sw/app/lift/");
 	strcat(fullName, name);
 	Key *key = ksLookupByName(elektraConfig, fullName, 0);
-	if (!key) return 0;
-	// printf ("getenv called with %s: %s\n", fullName, keyString(key));
+	if (!key)
+	{
+		printf ("getenv with %s: <nothing>\n", fullName);
+		return 0;
+	}
+	printf ("getenv with %s: %s\n", fullName, keyString(key));
 	return (char*)keyString(key);
 }
 
