@@ -5,6 +5,10 @@ test failing mount with error plugin
 test error plugin when mounted at open
 
 
+## afl
+
+test all plugins with it
+
 ## errno
 
 check if errno is never changed
