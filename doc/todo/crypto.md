@@ -13,38 +13,40 @@ Other features (like encrypting whole files) may be added later.
 The users of libelektra should not be bothered too much with the internals of the cryptographic operations.
 Also the cryptographic keys should not be exposed to the user, but rather be kept within a single crypto module.
 
+The provided functionality will be exposed within one or several filter-plugins.
+
 ## Features
 
-This can be realised in two ways:
+- Encryption of values (Key)
+- Decryption of values (Key)
+- Key derivation by metadata (password provided within a meta-key)
+- Key derivation by utilizing the pgp-agent
+- Key derivation by using a specified key-file (like the SSH client does)
 
-1. We provide a "KEY_CRYPTO_PASSWORD" key-flag which expects a string-password as following argument.
-   By applying the PBKDF2 to the password, the required keys and initialization vectors can be derived.
-   
-2. We provide a "KEY_CRYPTO_HANDLE" flag, which expects an identifier to a crypto-handle, 
-   which will be internally represented as a struct, holding the key and other parameters, that are required
-   for the cryptographic operations. However the contents of these structs will never be exposed to the user.
-   The Elektra user just gets a random identifier. Everything else is kept inside the crypto module.
+The encryption and decryption of values is a straight forward process, once the key and IV are supplied.
+The key-derivation process in a library is a bit tricky.
 
-The crypto module would expose the following functions to the API:
-   
-- **handle_create** - for creating and initializing a crypto handle. It takes
-  the key, the IV and all the other relevant information as input parameters and returns
-  a random identifier of the created crypto handle
-- **handle_release** - safely releases a given crypto handle (including zeroing of the memory, etc.)
-- **release_all** - tells the crypto module to clean up its memory and release all
-  crypto handles, close all open streams, etc.
-     
+The crypto plugin itself can hold configurtaion data about the order of the applied key derivation functions.
+For example, if a password is provided by a meta-key, it will be used, otherwise we look for a key file. 
+If no key file has been configured, we try to trigger the PGP agent, etc.
+
+The following example configuration illustrates this concept:
+
+	/system/elektra/crypto/config/key-derivation/#0#meta
+	/system/elektra/crypto/config/key-derivation/#1#file
+	/system/elektra/crypto/config/key-derivation/#2#agent
+	/system/elektra/crypto/config/key-file/#0#path=~/.elektra/id_aes
+	/system/elektra/crypto/config/key-file/#1#path=/etc/elektra/id_aes
+
+Since it does not make sense to encrypt every key in a KeySet, only keys marked with a certain
+meta-key will be considered for encryption/decryption.
+
 ## Adaptions
 
-1. Introduction of a new crypto module to Elektra, which exposes several functions
-   (let's call it *crypto.c* for now)
-2. Adding new key-flags (*key.c* ??)
-3. Processing the new key-flags (*key.c* ??)
-4. The backend should trigger the encryption of the values (and also the decryption after a key has been loaded?)
-
-## Open Issues
-
-- **Error handling**
-	- at runtime (e.g. wrong key given, data was not encrypted at all, ...)
-	- at compile-time (e.g. libgcrypt is not available)
+- Introduction of a new crypto module to Elektra, containing the filter-plugins for encryption and decryption
+- Adding the libgcrypt library as a dependency to the crypto module
+- Unit tests for basic cryptographic operations
+- Adding support for the PGP agent
+- Adding support for password-based key derivation
+- Adding support for file-system driven key derivation
 
