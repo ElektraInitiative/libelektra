@@ -14,8 +14,28 @@
  ***************************************************************************/
 
 #include "crypto.h"
+#include <gcrypt.h>
 
-#define ELEKTRA_PLUGIN_CRYPTO_SUCCESS 1
+#define ELEKTRA_PLUGIN_CRYPTO_SUCCESS (1)
+#define ELEKTRA_PLUGIN_CRYPTO_ERROR (-1)
+
+int initializeLibgcrypt();
+
+int initializeLibgcrypt()
+{
+	// libgcrypt initialization
+	if(!gcry_check_version (GCRYPT_VERSION))
+	{
+		// TODO proper error handling
+		return ELEKTRA_PLUGIN_CRYPTO_ERROR;
+	}
+	gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
+	// allocate 16kB of secure memory
+	gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
+	gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
+	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
+}
 
 int elektraCryptoOpen(Plugin *handle, Key *errorKey)
 {
