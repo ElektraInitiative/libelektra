@@ -97,6 +97,10 @@ if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
 	add_subdirectory (examples)
 	add_subdirectory (benchmarks)
 
+	if (BUILD_BENCHMARKS_KSLOOKUP)
+		add_subdirectory (benchmarks/kslookup)
+	endif (BUILD_BENCHMARKS_KSLOOKUP)
+
 	if (BUILD_TESTING)
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
