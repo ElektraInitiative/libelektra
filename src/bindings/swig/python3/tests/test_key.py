@@ -58,6 +58,11 @@ class Key(unittest.TestCase):
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
+		k = kdb.Key(self.key.dup())
+		self.assertIsInstance(k, kdb.Key)
+		self.assertTrue(k.isValid())
+		self.assertEqual(k, self.key)
+
 	def test_operator(self):
 		self.assertNotEqual(self.key, self.bkey)
 		self.assertEqual(kdb.Key(self.key), self.key)
