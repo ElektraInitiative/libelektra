@@ -124,6 +124,10 @@
     return ckdb::keyCmp($self->getKey(), o->getKey());
   }
 
+  kdb::Key *__copy__() {
+    return new kdb::Key($self->dup());
+  }
+
   %pythoncode %{
     def get(self):
       """returns the keys value"""
@@ -209,6 +213,19 @@
 %extend kdb::KeySet {
   KeySet(size_t alloc) {
    return new kdb::KeySet(alloc, KS_END);
+  }
+
+  kdb::KeySet *__copy__() {
+    return new kdb::KeySet(*$self);
+  }
+
+  kdb::KeySet *__deepcopy__(PyObject *memo) {
+    (void) PyDict_Check(memo);
+    ssize_t size = $self->size();
+    kdb::KeySet *ks = new kdb::KeySet(size, KS_END);
+    for(cursor_t cursor = 0; cursor < size; ++cursor)
+      ks->append($self->at(cursor)->dup());
+    return ks;
   }
 
   %pythoncode %{
