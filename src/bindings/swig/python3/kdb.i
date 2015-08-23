@@ -45,7 +45,7 @@
   value = None
   meta  = {}
   # check for copy constructor
-  if len(args) and not isinstance(args[0], self.__class__):
+  if len(args) and isinstance(args[0], str):
     arg0, args = args[0], args[1:]
 
     flags = 0

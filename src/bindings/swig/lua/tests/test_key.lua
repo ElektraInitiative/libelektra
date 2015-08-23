@@ -29,6 +29,10 @@ local k = kdb.Key(key)
 assert(swig_type(k) == "kdb::Key *")
 assert(k:isValid() == true)
 
+local k = kdb.Key(key:dup())
+assert(swig_type(k) == "kdb::Key *")
+assert(k:isValid() == true)
+
 -- operator
 assert(key ~= bkey)
 assert(kdb.Key(key) == key)
