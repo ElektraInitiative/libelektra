@@ -6,27 +6,26 @@ int main (int argc ELEKTRA_UNUSED, char** argv ELEKTRA_UNUSED)
 	//plugin open
 	KeySet * modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
-	KeySet *conf = ksNew (0, KS_END);
+	KeySet * conf = ksNew (0, KS_END);
 	Plugin * plugin = elektraPluginOpen("dump", modules, conf, 0);
 	if(!plugin)
 	{
-		printf("dump plugin could not be opened\n");
+		printf ("dump plugin could not be opened\n");
 		return EXIT_FAILURE;
 	}
 
 	Key * pkey = keyNew(0);
-	char filename[BUFFER_FILENAME_SIZE + 1];
+	char filename[BUFFER_FILENAME];
 
 	for (int n=MIN_KEYSET_SIZE;n <= MAX_KEYSET_SIZE;n+=STEP_KEYSET_SIZE)
 	{
-		for (int r=1;r <= KEYSETS_PER_SIZE;r++)
+		for (int v=1;v <= KEYSET_VERSIONS;++v)
 		{
-			//TODO KURT fix generateKeySet memory leakage
-			KeySet * ks = generateKeySet(n);
+			KeySet * ks = generateKeySet (n);
 
-			sprintf(&filename[0],"%i_%i.edf",n,r);
+			sprintf (&filename[0], "%i_%i.edf", n, v);
 
-			keySetString(pkey,&filename[0]);
+			keySetString (pkey, &filename[0]);
 
 			plugin->kdbSet (plugin, ks, pkey);
 
@@ -53,8 +52,9 @@ KeySet * generateKeySet (size_t size)
 
 	for (size_t i = 0;i < size;++i)
 	{
-		ksAppendKey(ks, keyNew(generateKeyName(ks),
-					KEY_VALUE, GENDATA_KEY_VALUE, KEY_END));
+		char * name = generateKeyName (ks);
+		ksAppendKey (ks, keyNew (name, KEY_VALUE, GENDATA_KEY_VALUE, KEY_END));
+		free (name);
 	}
 
 	return ks;
@@ -97,16 +97,17 @@ char * generateKeyName (KeySet * checkIfUnique)
 				++j;
 				randomString[i] = '/';
 			}else
-				randomString[i] = getRandomChar();
+				randomString[i] = getRandomChar ();
 		}
 		randomString[indexOfSlash[depth] - 1] = '\0';
 
 		//check unique
+		//TODO use ksLookup?? lol
 		ksRewind (checkIfUnique);
 		Key * iter_key;
 		while ((iter_key = ksNext (checkIfUnique)) != 0)
 		{
-			if(strcmp(keyName(iter_key),randomString) == 0)
+			if(strcmp(keyName(iter_key), randomString) == 0)
 				unique = false;
 		}
 		if(!unique) free (randomString);
