@@ -7,7 +7,6 @@ install (PROGRAMS elektra-umount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-common DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-debian DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-debian-wheezy DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install (PROGRAMS configure-debian-wheezy-local DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-mingw DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-xdg DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
