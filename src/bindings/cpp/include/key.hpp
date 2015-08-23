@@ -11,10 +11,6 @@
 
 #include <kdb.h>
 
-#ifndef ELEKTRA_WITHOUT_ITERATOR
-#include <kdbproposal.h> // TODO remove (for keyUnescapedName())
-#endif
-
 namespace kdb
 {
 
