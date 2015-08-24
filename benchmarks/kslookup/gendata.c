@@ -102,7 +102,7 @@ char * generateKeyName (KeySet * checkIfUnique)
 		randomString[indexOfSlash[depth] - 1] = '\0';
 
 		//check unique
-		//TODO use ksLookup?? lol
+		//TODO KURT use ksLookup?? lol
 		ksRewind (checkIfUnique);
 		Key * iter_key;
 		while ((iter_key = ksNext (checkIfUnique)) != 0)

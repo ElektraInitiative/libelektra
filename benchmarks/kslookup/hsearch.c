@@ -3,7 +3,7 @@
 
 //mode true=build false=search
 void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *));
-void insert (int n, int k, int r, ENTRY * data, int * times);
+void build (int n, int k, int r, ENTRY * data, int * times);
 void search (int n, int k, int r, ENTRY * data, int * times);
 
 //Data helpers
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	}
 
 	if (b_build)
-		runBenchmark (true, insert);
+		runBenchmark (true, build);
 
 	if (b_search)
 		runBenchmark (false, search);
@@ -52,11 +52,12 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *))
 			KeySet * ks = readKeySet (n,v);
 
 			char filename_out [BUFFER_FILENAME];
+			char c_mode;
 			if (mode)
-				filename_out[0]='b';
+				c_mode = 'b';
 			else
-				filename_out[0]='s';
-			sprintf(&filename_out[1], "_%i_%i.bench",n,v);
+				c_mode = 's';
+			sprintf (&filename_out[0], "hsearch_%c_%i_%i.bench",c_mode,n,v);
 			output = fopen (&filename_out[0], "w");
 			if (output == NULL)
 			{
@@ -117,10 +118,10 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *))
 	}
 }
 
-/* The actual benchmark procedure for the insert, executed for each
+/* The actual benchmark procedure for the build, executed for each
  * setting.
  */
-void insert (int n, int k, int r, ENTRY * data, int * times)
+void build (int n, int k, int r, ENTRY * data, int * times)
 {
 	ENTRY * ep;
 	struct timeval start;
@@ -195,7 +196,7 @@ void search (int n, int k, int r, ENTRY * data, int * times)
 							(end.tv_usec - start.tv_usec);
 
 		Key * validate = ep->data;
-		if (strcmp (keyValue(validate),GENDATA_KEY_VALUE) != 0)
+		if (strcmp (keyValue(validate), GENDATA_KEY_VALUE) != 0)
 		{
 			printf ("correctness error while search\n");
 			fclose (output);
@@ -231,7 +232,7 @@ KeySet * readKeySet (int size, int version)
 	keySetString (pkey, &filename_in[0]);
 
 	plugin->kdbGet (plugin, out, pkey);
-	//TODO check for errors
+	//TODO KURT check for errors
 	keyDel (pkey);
 
 	//plugin close

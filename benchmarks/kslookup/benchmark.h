@@ -1,7 +1,7 @@
 #ifndef BENCHMARKS_KSLOOKUP_BENCHMARK_H
 #define BENCHMARKS_KSLOOKUP_BENCHMARK_H
 
-// TODO QUEST strange valgrind in gendata and hsearch:
+// TODO KURT QUEST strange valgrind in gendata ,hsearch and kslookup:
 // still reachable: 72,704 bytes in 1 blocks
 
 #include <kdbinternal.h>
@@ -30,7 +30,9 @@
 /* syntax for KeySet dump files:
  * KeySetSize_version.edf
  * and benchmark output files:
- * [b|s]_KeySetSize_version.bench
+ * [hsearch|unorderedmap]_[b|s]_KeySetSize_version.bench
+ * or
+ * kslookup_[b|s]_version.bench
  * be CAREFUL with buffer size
  */
 #define BUFFER_FILENAME 50
