@@ -149,5 +149,12 @@ class Key(unittest.TestCase):
 		k.name = "user/copied"
 		self.assertNotEqual(k, self.key)
 
+	def test_iterator(self):
+		k = kdb.Key("user/a\/b/c")
+		self.assertEqual(sum(1 for _ in k),           3)
+		self.assertEqual(sum(1 for _ in reversed(k)), 3)
+		self.assertEqual(iter(k).value(),     "user")
+		self.assertEqual(reversed(k).value(), "c")
+
 if __name__ == '__main__':
 	unittest.main()
