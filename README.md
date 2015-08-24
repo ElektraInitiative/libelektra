@@ -82,7 +82,7 @@ Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/f
 
 ## Contact ##
 
-Do not hesitate to ask any question on github, [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 or one of the [authors](doc/AUTHORS).
 
 
