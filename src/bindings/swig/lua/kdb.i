@@ -2,6 +2,119 @@
 
 %include "../common.i"
 
+%fragment("LuaSTLIterator_T", "header") {
+  namespace myswig
+  {
+    /* simple class holding a STL forward iterator */
+    template<typename STLIterator,
+      typename Reference = typename std::iterator_traits<STLIterator>::reference >
+    class LuaSTLIterator_T
+    {
+    public:
+      typedef STLIterator iterator;
+      typedef Reference reference;
+
+      LuaSTLIterator_T(iterator cur, iterator _begin, iterator _end)
+        : current(cur), begin(_begin), end(_end)
+      {}
+
+      reference value()
+      {
+        return *current;
+      }
+
+      reference next()
+      {
+        reference cur = value();
+        incr();
+        return cur;
+      }
+
+      LuaSTLIterator_T *incr()
+      {
+        ++current;
+        return this;
+      }
+
+      bool hasNext()
+      {
+        return (current != end);
+      }
+
+    private:
+      iterator current;
+      iterator begin;
+      iterator end;
+    };
+
+    template<typename STLIterator>
+    inline LuaSTLIterator_T<STLIterator> *
+    make_lua_iterator(const STLIterator& current, const STLIterator& begin,
+      const STLIterator& end)
+    {
+      return new LuaSTLIterator_T<STLIterator>(current, begin, end);
+    }
+  }
+}
+
+%fragment("LuaSTLIterator", "header") {
+  namespace myswig {
+    template <class Type> struct LuaSTLIterator { };
+  }
+}
+
+/* macro generates a specialized class template (as fragment) containing
+ * static methods required by the output typemap below
+ */
+#define LuaSTLIterator_frag(Type...) "LuaSTLIterator_" {Type}
+%define %LuaSTLIterator(Type, IterFn...)
+%fragment(LuaSTLIterator_frag(Type), "header", fragment="LuaSTLIterator", fragment="LuaSTLIterator_T") {
+  namespace myswig {
+    template <>  struct LuaSTLIterator< myswig::LuaSTLIterator_T< Type > > {
+      typedef myswig::LuaSTLIterator_T< Type > luaiterator;
+
+      static int gc(lua_State *L) {
+        luaiterator *iter = *(luaiterator **)lua_touserdata(L, 1);
+        delete iter;
+        return 0;
+      }
+
+      static int iter(lua_State *L) {
+        luaiterator *iter = *(luaiterator **)lua_touserdata(L, lua_upvalueindex(1));
+        if (!iter->hasNext())
+          return 0;
+        IterFn(L, iter->value());
+        iter->next();
+        return 1;
+      }
+    };
+  }
+}
+
+/* add fragment */
+%fragment(LuaSTLIterator_frag(Type));
+
+/* store iterator in userdata and output closure
+ * with userdata/iterator as first upvalue
+ */
+%typemap(out) myswig::LuaSTLIterator_T< Type > * {
+  typedef $1_basetype luaiterator;
+
+  luaiterator **iter = (luaiterator **)lua_newuserdata(L, sizeof(luaiterator *));
+  *iter = $1;
+
+  /* create and set metatable */
+  lua_newtable(L);
+  lua_pushcfunction(L, myswig::LuaSTLIterator< luaiterator >::gc);
+  lua_setfield(L, -2, "__gc");
+  lua_setmetatable(L, -2);
+
+  lua_pushcclosure(L, myswig::LuaSTLIterator< luaiterator >::iter, 1);
+  SWIG_arg++;
+}
+%enddef
+
+
 %wrapper {
   /* adds a variable/property to a class */
   void add_class_variable(lua_State *L, const char *classname,
@@ -84,6 +197,18 @@
   SWIG_arg++;
 }
 
+
+%fragment("LuaSTLIterator_T");
+%{
+  inline static void name_iterator_iter(lua_State *L,
+    myswig::LuaSTLIterator_T<kdb::Key::iterator>::reference val)
+  {
+    lua_pushlstring(L, val.data(), val.size());
+  }
+%}
+%LuaSTLIterator(kdb::Key::iterator, name_iterator_iter);
+%LuaSTLIterator(kdb::Key::reverse_iterator, name_iterator_iter);
+
 %extend kdb::Key {
   Key(const char *name, uint64_t flags = 0) {
     return new kdb::Key(name,
@@ -98,13 +223,21 @@
   const char *__tostring() {
     return self->getName().c_str();
   }
+
+  myswig::LuaSTLIterator_T<kdb::Key::iterator> *name_iterator() {
+    return myswig::make_lua_iterator(self->begin(), self->begin(), self->end());
+  }
+
+  myswig::LuaSTLIterator_T<kdb::Key::reverse_iterator> *reverse_name_iterator() {
+    return myswig::make_lua_iterator(self->rbegin(), self->rbegin(), self->rend());
+  }
 };
 
 %{
   /*
    * returns string or binary value depending on the type of the key
    */
-  int _my_Key_getValue(lua_State* L)
+  static int _my_Key_getValue(lua_State* L)
   {
     lua_pushvalue(L, 1); /* push copy of self */
     lua_getfield(L, -1, "isBinary");
@@ -234,52 +367,7 @@
 };
 
 %{
-#if 0
-  /*
-   * advanced cursor variant: use KeySetIterator as invariant
-   * NOTE: light userdata misses a metadata table so no __gc
-   * causing the iterator to never get deleted
-   */
-  int _my_KeySet_ipairs_it(lua_State* L)
-  {
-    /* see comment of function below why this has been disabled */
-    KeySet::iterator *it;
-    const Key *key;
-
-    it = (KeySet::iterator*)lua_touserdata(L, -2);
-    if (*it == it->getKeySet().end())
-      return 0;
-
-    key = new kdb::Key(it->get());
-    (*it)++;
-    lua_Integer i = lua_tointeger(L, -1);
-    lua_pop(L, 2);
-
-    lua_pushnumber(L, i + 1);
-    SWIG_NewPointerObj(L, (void *)key, SWIGTYPE_p_kdb__Key, 1);
-    return 2;
-  }
-
-  int _my_KeySet_ipairs(lua_State* L)
-  {
-    KeySet::iterator *it;
-    const KeySet *ks;
-
-    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void **)&ks, SWIGTYPE_p_kdb__KeySet, 0)))
-      SWIG_fail_ptr("ipairs", 1, SWIGTYPE_p_kdb__KeySet);
-
-    lua_pushcfunction(L, _my_KeySet_ipairs_it); /* callback function */
-    lua_pushlightuserdata(L, new KeySet::iterator(ks->begin())); /* param (the iterator) */
-    lua_pushnumber(L, 0); /* start value (index param) */
-    return 3;
-
-  fail:
-    lua_error(L);
-    return 0;
-  }
-#endif
-
-  int _my_KeySet_ipairs_it(lua_State* L)
+  static int _my_KeySet_ipairs_it(lua_State *L)
   {
     const KeySet *ks;
     lua_Integer i;
@@ -289,11 +377,11 @@
 
     i = lua_tointeger(L, 2);
     lua_pop(L, 2);
-    if (i == ks->end().base())
+    if (i == ks->size())
       return 0;
 
     lua_pushnumber(L, i + 1);
-    SWIG_NewPointerObj(L, (void *)new kdb::Key(ks->begin()[i]), SWIGTYPE_p_kdb__Key, 1);
+    SWIG_NewPointerObj(L, (void *)new kdb::Key(ks->at(i)), SWIGTYPE_p_kdb__Key, 1);
     return 2;
 
   fail:
@@ -302,7 +390,7 @@
   }
 
   /* simple cursor variant: use the index param as cursor position */
-  int _my_KeySet_ipairs(lua_State* L)
+  static int _my_KeySet_ipairs(lua_State *L)
   {
     lua_pushcfunction(L, _my_KeySet_ipairs_it); /* callback function */
     lua_pushvalue(L, 1);  /* param (copy of Key) */
