@@ -1,3 +1,25 @@
+# 0.8.13 Release
+
+Still under construction, 0.8.13 is not yet released.
+
+https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
+- 0.8.12 packaged+migrated to testing, thanks to Pino Toscano <pino@debian.org>
+
+prefer simplicity to flexibility! (GOALS)
+	use it also for normal plugins (pre, postfilter)
+more "pythonic way", there should be one way to do it
+but every way is optional, if you want you can use Elektra:
+- as primitive key/value storage
+- with specification
+- with code generation
+- ...
+
+but no flexibility regarding:
+- namespaces are only useful for configuration (not for arbitrary key/value)
+- mounting and contracts functionality
+- error code meanings are fixed, if a resolver detects a conflict, error #30 must be used
+- of course ABI, API
+
 # 0.8.12 Release
 
 - guid: 98770541-32a1-486a-98a1-d02f26afc81a

@@ -188,7 +188,7 @@ ssize_t elektraSplitAppend(Split *split, Backend *backend, Key *parentKey, int s
  * @param backend the backend to search for
  * @param parent the key to check for domains in default/root backends.
  * @return pos of backend if it already exist
- * @return -1 if it does not exist
+ * @retval -1 if it does not exist
  * @ingroup split
  */
 ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
@@ -222,9 +222,9 @@ ssize_t elektraSplitSearchBackend(Split *split, Backend *backend, Key *parent)
 
 
 /**
- * @return 1 if one of the backends in split has all
+ * @retval 1 if one of the backends in split has all
  *          keys below parentKey
- * @return 0 if parentKey == 0 or there are keys below
+ * @retval 0 if parentKey == 0 or there are keys below
  *          or same than parentKey which do not fit
  *          in any of split keysets
  * @param split the split object to work with
@@ -301,7 +301,7 @@ static int elektraKeySetNameByNamespace(Key *parentKey, elektraNamespace ns)
  * @param kdb the handle to get information about backends
  * @param parentKey the information below which key the backends are from interest
  * @ingroup split
- * @return always 1
+ * @retval 1 always
  */
 int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
 {
@@ -386,9 +386,9 @@ int elektraSplitBuildup (Split *split, KDB *kdb, Key *parentKey)
  * @param handle to get information where the individual keys belong
  * @param ks the keyset to divide
  *
- * @return 0 if there were no sync bits
- * @return 1 if there were sync bits
- * @return -1 if no backend was found for any key
+ * @retval 0 if there were no sync bits
+ * @retval 1 if there were sync bits
+ * @retval -1 if no backend was found for any key
  * @ingroup split
  */
 int elektraSplitDivide (Split *split, KDB *handle, KeySet *ks)
@@ -451,8 +451,8 @@ void elektraSplitUpdateFileName (Split *split, KDB *handle, Key *key)
  * @param handle to determine to which backend a key belongs
  * @param ks the keyset to appoint to split
  *
- * @return 1 on success
- * @return -1 if no backend was found for a key
+ * @retval 1 on success
+ * @retval -1 if no backend was found for a key
  * @ingroup split
  */
 int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
@@ -597,8 +597,8 @@ static int elektraSplitPostprocess (Split *split, int i, Key *warningKey, KDB *h
  * @param split the split object to work with
  * @param warningKey postcondition violations are reported here
  * @param handle the handle to preprocess the keys
- * @return 1 on success
- * @return -1 if no backend was found for a key or split->parents
+ * @retval 1 on success
+ * @retval -1 if no backend was found for a key or split->parents
  *         has invalid namespace
  * @ingroup split
  */
@@ -711,7 +711,7 @@ int elektraSplitUpdateSize (Split *split)
  *
  * @param split the split object to work with
  * @param dest the destination keyset where all keysets are appended.
- * @return 1 on success
+ * @retval 1 on success
  * @ingroup split
  */
 int elektraSplitMerge (Split *split, KeySet *dest)

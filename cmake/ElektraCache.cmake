@@ -424,7 +424,7 @@ set (TARGET_INCLUDE_FOLDER
     )
 
 set (TARGET_CMAKE_FOLDER
-		"share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules"
+		"lib${LIB_SUFFIX}/cmake/Elektra"
 		CACHE STRING
 		"This folder (below prefix) will be used to install cmake files."
     )

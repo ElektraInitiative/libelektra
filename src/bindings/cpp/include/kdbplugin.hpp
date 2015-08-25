@@ -20,6 +20,9 @@ typedef Delegator<elektra::YourPluginClass> YPC;
 *
 */
 
+#ifndef KDBPLUGIN_HPP
+#define KDBPLUGIN_HPP
+
 #include <key.hpp>
 #include <keyset.hpp>
 #include <kdbplugin.h>
@@ -57,12 +60,7 @@ public:
 private:
 	/**This function avoid that every return path need to release the
 	  * configuration. */
-	inline static int openHelper(ckdb::Plugin *handle, kdb::KeySet & config, ckdb::Key *
-#ifdef KDBERRORS_H
-			errorKey
-#endif
-			, Builder builder
-			)
+	inline static int openHelper(ckdb::Plugin *handle, kdb::KeySet & config, ckdb::Key * errorKey , Builder builder)
 	{
 		if (config.lookup("/module"))
 		{
@@ -85,3 +83,5 @@ private:
 		return get(handle) != 0 ? 1 : -1;
 	}
 };
+
+#endif

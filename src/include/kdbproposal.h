@@ -27,10 +27,6 @@ extern "C" {
 #endif
 
 
-// is the unescaped name useful for applications?
-const void *keyUnescapedName(const Key *key);
-ssize_t keyGetUnescapedNameSize(const Key *key);
-
 // can be made simply without elektra's internals, so better keep it as
 // extension.
 ssize_t keySetStringF(Key *key, const char *format, ...);

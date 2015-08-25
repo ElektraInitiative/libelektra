@@ -144,8 +144,8 @@ static void resolverClose (resolverHandles *p)
  * @exception 27 set if locking failed, most likely a conflict
  *
  * @param fd is a valid filedescriptor
- * @return 0 on success
- * @return -1 on failure
+ * @retval 0 on success
+ * @retval -1 on failure
  * @ingroup backendhelper
  */
 static int elektraLockFile (int fd ELEKTRA_UNUSED,
@@ -186,8 +186,8 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED,
  * Unlocks file.
  *
  * @param fd is a valid filedescriptor
- * @return 0 on success
- * @return -1 on failure
+ * @retval 0 on success
+ * @retval -1 on failure
  * @ingroup backendhelper
  */
 static int elektraUnlockFile (int fd ELEKTRA_UNUSED,

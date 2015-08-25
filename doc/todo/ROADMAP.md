@@ -13,38 +13,59 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
-Fix Race bug: with lock in global plugins
+## start
 
 Start with:
 	api! (Namespaces, encoded, versioning)
 	version rules ELEKTRA_ABI_13 ...
 	Cleanups
 
+genopt.hpp + include enforcement in template_dynamic?
+	use spec namespace
+	generic command-line parsing
+
+link fetcher plugin: kdbGet() of all parts where links point to
+	test with ipe
+
+## global plugins
+
+design decisions
+
+Fix Race bug: with lock in global plugins
+
 list plugin (for global plugins): takes array of plugins
 	processes all plugins in a row
-	use it also for normal plugins (pre, postfilter)
 
-prefer simplicity to flexibility! (GOALS)
-metadata checker plugin: determines which metadata is present
-link resolver plugin: kdbGet() of all parts where links point to
+accumulate split info (nr changed, added, removed keys and at which mountpoints)
+needed for logging, notif plugins
 
-redo type checker plugin: take care of simplicity + working together with others
-	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
-	copy from thesis
-	look into haskell type classes
+## mount specification
+
+improve support for "provide"
+give defaults for provide using specification
+default storage, encode,...
+
+## tools
+
+global mountpoints with unserialize
+
+## testing
+
+cmd execution testing framework
+	execute commands, capture stdout, stderr and kdb
+	replay and see if same side-effects
 
 execute all examples to see if they do not crash or memleak
 	assert test cases -> test cases (rename succeed_if)
 
 full jessie build+script+external
+copy debian/ from official
 
 (xdg) variable for spec namespace?
 
 cascading export nickel?
 
 more docu in METADATA.ini
-
-genopt.hpp + include enforcement in template_dynamic?
 
 install kdb gen properly
 	search by default in installed pathes
@@ -70,12 +91,21 @@ roresolver: check if something is modified
 
 ## meta data ##
 
+provide information in spec/elektra/metadata
+
 fix comments:
 	all plugins should use new comment-approach
 
-fix types:
+fix types: (also in 0.8.14)
 	type checker should check like defined in schema
 	let json use same types (double, boolean, nothing for string)
+
+## qt-gui
+
+dbus-listener
+auto-completion for metadata
+
+"kdb check -a" rewrite file?
 
 ## fix relative ##
 
@@ -83,7 +113,7 @@ plugins should use relative pathes so that import/export/remount works
 
 - dump
 - ni
-
+- tcl
 
 ## Backend ##
 
@@ -99,7 +129,21 @@ to one cmake variable:
 
 fix dependency problem with kdberrors.h
 
-## bug hunting
 
-all plugins + kdb shell with afl
+# 0.8.14
 
+specification checker+application
+	replaces struct+glob
+	type inference with type classes
+	stacking: apply links for whole hierarchy
+	+ vendor overrides (apply additional data to specification)
+	(beware of featuritis, only if adapts nicely in rest)
+
+tooling:
+	mounting with specification
+	remove config without specification
+
+redo type checker plugin: take care of simplicity + working together with others
+	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
+	copy from thesis
+	look into haskell type classes

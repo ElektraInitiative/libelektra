@@ -164,9 +164,9 @@ kdbClose (handle);
  *
  * @param key the key object to work with
  * @return a pointer to internal value
- * @return "" when there is no data and key is not binary
- * @return 0 where there is no data and key is binary
- * @return 0 on NULL pointer
+ * @retval "" when there is no data and key is not binary
+ * @retval 0 where there is no data and key is binary
+ * @retval 0 on NULL pointer
  * @see keyGetValueSize(), keyGetString(), keyGetBinary()
  * @ingroup keyvalue
  */
@@ -249,9 +249,9 @@ buffer = malloc (keyGetValueSize (key));
  *
  * @param key the key object to work with
  * @return the number of bytes needed to store the key value
- * @return 1 when there is no data and type is not binary
- * @return 0 when there is no data and type is binary
- * @return -1 on null pointer
+ * @retval 1 when there is no data and type is not binary
+ * @retval 0 when there is no data and type is binary
+ * @retval -1 on null pointer
  * @see keyGetString(), keyGetBinary(), keyValue()
  * @ingroup keyvalue
  */
@@ -475,9 +475,9 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
  * @param newBinary is a pointer to any binary data or NULL to free the previous set data
  * @param dataSize number of bytes to copy from @p newBinary
  * @return the number of bytes actually copied to internal struct storage
- * @return 0 when the internal binary was freed and is now a null pointer
- * @return -1 if key is a NULL pointer
- * @return -1 when dataSize is 0 (but newBinary not NULL) or larger than SSIZE_MAX
+ * @retval 0 when the internal binary was freed and is now a null pointer
+ * @retval -1 if key is a NULL pointer
+ * @retval -1 when dataSize is 0 (but newBinary not NULL) or larger than SSIZE_MAX
  * @see keyGetBinary()
  * @see keyIsBinary() to check if the type is binary
  * @see keyGetString() and keySetString() as preferred alternative to binary
@@ -513,8 +513,8 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
  * @param newBinary array of bytes to set as the value
  * @param dataSize number bytes to use from newBinary, including the final NULL
  * @return The number of bytes actually set in internal buffer.
- * @return 1 if it was a string which was deleted
- * @return 0 if it was a binary which was deleted
+ * @retval 1 if it was a string which was deleted
+ * @retval 0 if it was a binary which was deleted
  * @see keySetType(), keySetString(), keySetBinary()
  * @ingroup keyvalue
  */

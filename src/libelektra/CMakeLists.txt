@@ -53,6 +53,9 @@ list (APPEND SRC_FILES ${elektra_SRCS})
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
 
+#the targets built to export
+set (targets_built)
+
 
 if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
@@ -78,7 +81,9 @@ if (BUILD_SHARED)
 	#those settings are needed to find the plugins at runtime even without ld.so.conf
 	set_target_properties ( elektra PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
-	install (TARGETS elektra DESTINATION lib${LIB_SUFFIX})
+	install (TARGETS elektra DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+
+	list (APPEND targets_built elektra)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL OR BUILD_STATIC)
@@ -111,7 +116,9 @@ if (BUILD_FULL)
 	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 	set_target_properties (elektra-full PROPERTIES LINKER_LANGUAGE CXX)
 
-	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX})
+	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+
+	list (APPEND targets_built elektra-full)
 endif (BUILD_FULL)
 
 
@@ -127,8 +134,13 @@ if (BUILD_STATIC)
 	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 	set_target_properties (elektra-static PROPERTIES LINKER_LANGUAGE CXX)
 
-	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX})
+	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+
+	list (APPEND targets_built elektra-static)
 endif (BUILD_STATIC)
+
+export (TARGETS ${targets_built} FILE "${CMAKE_CURRENT_BINARY_DIR}/ElektraTargetsLibelektra.cmake")
+install (EXPORT ElektraTargetsLibelektra DESTINATION "${TARGET_CMAKE_FOLDER}")
 
 #if you want the same name for those 3 libraries, here is how to do it:
 #http://www.itk.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F

@@ -370,7 +370,7 @@ void generate_split (Split *split)
  *
  * @see check_for_errors_and_warnings if you want errors to have a test case failed without output
  *
- * @return 1 if no warnings (can be used within succeed_if)
+ * @retval 1 if no warnings (can be used within succeed_if)
  */
 int output_warnings(Key *warningKey)
 {
@@ -426,7 +426,7 @@ for (int i=0; i<=nrWarnings; ++i)
  *
  * @param errorKey keys to retrieve errors from
  *
- * @return 1 if no error (can be used within succeed_if)
+ * @retval 1 if no error (can be used within succeed_if)
  */
 int output_error(Key *errorKey)
 {
