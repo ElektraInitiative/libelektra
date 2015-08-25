@@ -119,13 +119,17 @@ bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, i
 	{
 
 	case NameRole:
-		node->setName(modelData.toString());
-		node->setIsDirty(true);
-		break;
+        if(node->getName() != modelData.toString()){
+            node->setName(modelData.toString());
+            node->setIsDirty(true);
+        }
+        break;
 
 	case ValueRole:
-		node->setValue(modelData);
-		break;
+        if(node->getValue() != modelData){
+            node->setValue(modelData);
+        }
+        break;
 
 	case MetaValueRole:
 	{

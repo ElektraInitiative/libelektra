@@ -110,9 +110,9 @@ void ConfigNode::setName(const QString& name)
 	if(!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
 
-
 	try{
-		m_key.setBaseName(name.toStdString());
+        if(m_key.getBaseName().compare(name.toStdString()) != 0)
+            m_key.setBaseName(name.toStdString());
 	}
 	catch(KeyInvalidName const& ex){
 		emit showMessage(tr("Error"), tr("Could not set name because Keyname \"%1\" is invalid.").arg(name), ex.what());
@@ -127,8 +127,10 @@ void ConfigNode::setValue(const QVariant& value)
 	if(!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
 
-	m_key.setString(value.toString().toStdString());
-	m_value = value;
+    if(m_key.getString().compare(value.toString().toStdString()) != 0){
+        m_key.setString(value.toString().toStdString());
+        m_value = value;
+    }
 }
 
 
@@ -136,10 +138,10 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
 	if(!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
-
-	m_key.setMeta(name.toStdString(), value.toString().toStdString());
-	m_name = name;
-	m_value = value;
+        //is this critical in regard to #235 if the exact same key already exists?
+        m_key.setMeta(name.toStdString(), value.toString().toStdString());
+        m_name = name;
+        m_value = value;
 }
 
 
