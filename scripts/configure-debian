@@ -3,7 +3,8 @@
 . "$(dirname "$0")/configure-common"
 
 cd $BUILD
-cmake	-DENABLE_CXX11=ON \
+cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+	-DENABLE_CXX11=ON \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL" \
