@@ -45,18 +45,6 @@ void elektraOpen(int* argc, char** argv);
  */
 void elektraClose();
 
-/**
- * @brief Uses Elektra to get from environment.
- *
- * @param name to be looked up in the environment.
- *
- * @return the value found for that key
- * @see getenv
- * @see secure_getenv
- */
-char *elektraGetEnv(const char *name);
-char *getenv(const char *name);
-char *secure_getenv(const char *name);
 
 #ifdef __cplusplus
 }

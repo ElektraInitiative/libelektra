@@ -28,23 +28,12 @@ using namespace std;
 using namespace ckdb;
 
 namespace ckdb {
-extern "C" {
+
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
-}
-}
 
-extern "C" void elektraClose()
-{
-	if (!elektraRepo) return; // already closed
-
-	kdbClose(elektraRepo, elektraParentKey);
-	ksDel(elektraConfig);
-	keyDel(elektraParentKey);
-	elektraRepo = 0;
-}
-
+const char *appName = "/sw/app/current";
 const char *elektraHelpText =
 "This application is elektrified using libelektragetenv.\n"
 "This is a LD_PRELOAD technique to elektrify applications\n"
@@ -65,7 +54,7 @@ const char *elektraHelpText =
 " --elektra-app-name=key     .. the application name to be used instead of argv[0]\n"
 " --elektra-app-profile=key  .. the application profile to be used instead of current\n"
 " --elektra-env-profile=key  .. the environment profile to be used instead of current\n"
-" --elektra-proc:key=value   .. set a key/value below root to be preferred\n"
+" --elektra:key=value        .. set a key/value below root to be preferred\n"
 "                               (in proc-namespace)\n"
 "\n"
 "Note that keys can contain / to form hierarchies.\n"
@@ -82,7 +71,7 @@ const char *elektraHelpText =
 // "\n"
 "EXAMPLES\n"
 "\n"
-"> elektrify-getenv man man --elektra-proc:MANWIDTH=40\n"
+"> elektrify-getenv man man --elektra:MANWIDTH=40\n"
 "\n"
 "Will use MANWIDTH 40 for this invocation of man man.\n"
 "This feature is handy, if an option is only available\n"
@@ -106,76 +95,93 @@ const char *elektraHelpText =
 "\n"
 "\n";
 
+void printVersion()
+{
+	cout << "Elektra getenv is active" << std::endl;
+	Key *k = keyNew("system/elektra/version", KEY_END);
+	KDB *kdb = kdbOpen(k);
+	KeySet *c = ksNew(20, KS_END);
+	kdbGet (kdb, c, k);
+	kdbClose(kdb, k);
+	keyDel(k);
+	Key *kdb_version = ksLookupByName(c, "system/elektra/version/constants/KDB_VERSION", 0);
+	if (!kdb_version)
+	{
+		cerr << "Could not lookup KDB_VERSION key" << endl;
+	}
+	else
+	{
+		cout << "KDB_VERSION: " << keyString(kdb_version) << endl;
+	}
+	cout << "KDB_GETENV_VERSION: " << KDB_GETENV_VERSION << endl;
+	ksDel(c);
+}
+
+void addProc(string kv)
+{
+	cout << "kv is: " << kv << endl;
+	stringstream ss(kv);
+	string k, v;
+	getline(ss, k, '=');
+	getline(ss, v);
+	cout << "k is " << k << " and v is " << v << endl;
+
+	string fullName = "proc/";
+	fullName += k;
+	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+}
+
+void parseArgs(int* argc, char** argv)
+{
+	string prefix = "--elektra";
+
+	string rootPath = "/sw/app/lift/";
+
+	ksAppendKey(elektraConfig, keyNew("HOME", KEY_VALUE, "/home/markus", KEY_END));
+	// TODO: parse argc, argv
+	for (int i=0; i<*argc; ++i)
+	{
+		std::string argument = argv[i];
+		cout << "Process argument " << argument << std::endl;
+		if (argument.size() < prefix.size())
+		{
+			cout << "Skip argument " << argument << std::endl;
+			continue;
+		}
+		if (argument.substr(0, prefix.size()) == prefix)
+		{
+			string kv = argument.substr(prefix.size());
+			cout << "Handling kv: " << kv << endl;
+			if (kv == "-help")
+			{
+				cout << elektraHelpText << endl;
+				exit (0);
+			}
+			else if (kv == "-version")
+			{
+				printVersion();
+				exit(0);
+			}
+			else if (kv[0] == ':')
+			{
+				kv = kv.substr(1); // skip :
+				addProc(kv);
+			}
+		}
+		printf ("argv[%d]: %s\n", i, argv[i]);
+	}
+}
+
 extern "C" void elektraOpen(int* argc, char** argv)
 {
 	if (elektraRepo) elektraClose(); // already opened
 
-	// const char *appName = "/sw/app/current";
 	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
 	elektraConfig = ksNew(20, KS_END);
 
 	if (argc && argv)
 	{
-		string prefix = "--elektra";
-
-		string rootPath = "/sw/app/lift/";
-
-		ksAppendKey(elektraConfig, keyNew("HOME", KEY_VALUE, "/home/markus", KEY_END));
-		// TODO: parse argc, argv
-		for (int i=0; i<*argc; ++i)
-		{
-			std::string argument = argv[i];
-			cout << "Process argument " << argument << std::endl;
-			if (argument.size() < prefix.size())
-			{
-				cout << "Skip argument " << argument << std::endl;
-				continue;
-			}
-			if (argument.substr(0, prefix.size()) == prefix)
-			{
-				string kv = argument.substr(prefix.size());
-				cout << "Handling kv: " << kv << endl;
-				if (kv == "-help")
-				{
-					cout << elektraHelpText << endl;
-					exit (0);
-				}
-				else if (kv == "-version")
-				{
-					cout << "Elektra getenv is active" << std::endl;
-					Key *k = keyNew("system/elektra/version", KEY_END);
-					KDB *kdb = kdbOpen(k);
-					KeySet *c = ksNew(20, KS_END);
-					kdbGet (kdb, c, k);
-					kdbClose(kdb, k);
-					keyDel(k);
-					Key *kdb_version = ksLookupByName(c, "system/elektra/version/constants/KDB_VERSION", 0);
-					if (!kdb_version)
-					{
-						cerr << "Could not lookup KDB_VERSION key" << endl;
-					}
-					else
-					{
-						cout << "KDB_VERSION: " << keyString(kdb_version) << endl;
-					}
-					cout << "KDB_GETENV_VERSION: " << KDB_GETENV_VERSION << endl;
-					ksDel(c);
-					exit(0);
-				}
-				else if (kv[0] == ':')
-				{
-					kv = kv.substr(1); // skip :
-					cout << "kv is: " << kv << endl;
-					stringstream ss(kv);
-					string k, v;
-					getline(ss, k, '=');
-					getline(ss, v);
-					cout << "k is " << k << " and v is " << v << endl;
-					// ksAppendKey(elektraConfig, keyNew(k.c_str(), KEY_VALUE, v.c_str(), KEY_END));
-				}
-			}
-			printf ("argv[%d]: %s\n", i, argv[i]);
-		}
+		parseArgs(argc, argv);
 	}
 
 	printf ("%s - %s\n", keyName(elektraParentKey), keyString(elektraParentKey));
@@ -197,6 +203,16 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 }
 
+extern "C" void elektraClose()
+{
+	if (!elektraRepo) return; // already closed
+
+	kdbClose(elektraRepo, elektraParentKey);
+	ksDel(elektraConfig);
+	keyDel(elektraParentKey);
+	elektraRepo = 0;
+}
+
 extern "C" int __real_main(int argc, char** argv, char** env);
 
 typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
@@ -213,28 +229,59 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	return ret;
 }
 
-extern "C" char *elektraGetEnv(const char *name)
+typedef char *(* gfcn)(const char *);
+
+/**
+ * @brief Uses Elektra to get from environment.
+ *
+ * @param name to be looked up in the environment.
+ *
+ * @return the value found for that key
+ * @see getenv
+ * @see secure_getenv
+ */
+extern "C" char *elektraGetEnv(const char *name, gfcn getenv)
 {
-	std::string fullName = "/sw/app/lift/";
+	std::string fullName = "proc/";
 	fullName += name;
 	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
+	if (key)
+	{
+		cout << "getenv found " << fullName << endl;
+		return (char*)keyString(key);
+	}
+
+	fullName = "/sw/app/lift/";
+	fullName += name;
+	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (!key)
 	{
-		cout << "getenv with " << fullName << " returned nothing" << endl;
-		return 0;
+		cout << "getenv with " << fullName << ": " << keyString(key) << endl;
+		return (char*)keyString(key);
 	}
-	cout << "getenv with " << fullName << ": " << keyString(key) << endl;
-	return (char*)keyString(key);
-}
+	cout << "getenv with " << fullName << " returned nothing" << endl;
 
-char *getenv(const char *name) throw ()
-{
-	char *ret = elektraGetEnv(name);
+	char *ret = (*getenv)(name);
+	cout << "fallback to getenv returned " << ret << endl;
 	return ret;
 }
 
-char *secure_getenv(const char *name) throw ()
+extern "C" char *getenv(const char *name) // throw ()
 {
-	char * ret = elektraGetEnv(name);
+	static union {void*d; gfcn f;} sym;
+	if (!sym.d) sym.d = dlsym(RTLD_NEXT, "getenv");
+
+	char *ret = elektraGetEnv(name, sym.f);
 	return ret;
+}
+
+extern "C" char *secure_getenv(const char *name) // throw ()
+{
+	static union {void*d; gfcn f;} sym;
+	if (!sym.d) sym.d = dlsym(RTLD_NEXT, "secure_getenv");
+
+	char * ret = elektraGetEnv(name, sym.f);
+	return ret;
+}
+
 }
