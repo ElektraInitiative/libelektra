@@ -1,4 +1,4 @@
-if (BUILD_SHARED)
+if (BUILD_SHARED AND ENABLE_CXX11)
 	add_subdirectory(include)
 	include_directories(include)
 	add_subdirectory(src)

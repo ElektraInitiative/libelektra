@@ -14,6 +14,8 @@
 #include <kdbgetenv.h>
 #include <kdbconfig.h>
 
+#include <kdbcontext.hpp>
+
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +34,32 @@ namespace ckdb {
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
+
+namespace {
+
+class KeyValueLayer : public kdb::Layer
+{
+public:
+	KeyValueLayer(std::string const & key, std::string const & value_) :
+		m_key(key), m_value(value_) {}
+	std::string id() const { return m_key; }
+	std::string operator()() const { return m_value; }
+private:
+	std::string m_key;
+	std::string m_value;
+};
+
+}
+
+class GetEnvContext : public kdb::Context
+{
+public:
+	void addLayer(std::string layername, std::string layervalue)
+	{
+		std::shared_ptr<kdb::Layer> layer = make_shared<KeyValueLayer>(layername, layervalue);
+		activateLayer(layer);
+	}
+} elektraEnvContext;
 
 const char *appName = "/sw/app/current";
 const char *elektraHelpText =
@@ -95,7 +123,7 @@ const char *elektraHelpText =
 "\n"
 "\n";
 
-static pthread_mutex_t elektraGetEnvMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 void printVersion()
 {
@@ -140,6 +168,8 @@ void parseArgs(int* argc, char** argv)
 	string rootPath = "/sw/app/lift/";
 
 	ksAppendKey(elektraConfig, keyNew("HOME", KEY_VALUE, "/home/markus", KEY_END));
+	ksAppendKey(elektraConfig, keyNew("XDG_CONFIG_HOME", KEY_VALUE, "/home/markus", KEY_END));
+	ksAppendKey(elektraConfig, keyNew("XDG_CONFIG_DIRS", KEY_VALUE, "/etc", KEY_END));
 	// TODO: parse argc, argv
 	for (int i=0; i<*argc; ++i)
 	{
@@ -174,20 +204,13 @@ void parseArgs(int* argc, char** argv)
 	}
 }
 
-void elektraCloseHelper()
-{
-	if (!elektraRepo) return; // already closed
-
-	kdbClose(elektraRepo, elektraParentKey);
-	ksDel(elektraConfig);
-	keyDel(elektraParentKey);
-	elektraRepo = 0;
-}
-
 extern "C" void elektraOpen(int* argc, char** argv)
 {
 	pthread_mutex_lock(&elektraGetEnvMutex);
-	if (elektraRepo) elektraCloseHelper(); // already opened
+	if (elektraRepo) elektraClose(); // already opened
+
+	// elektraEnvContext.addLayer("abc", "def");
+	// std::cout << "evaluated: " << elektraEnvContext.evaluate("something/with/%abc%/more") << std::endl;
 
 	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
 	elektraConfig = ksNew(20, KS_END);
@@ -220,7 +243,12 @@ extern "C" void elektraOpen(int* argc, char** argv)
 extern "C" void elektraClose()
 {
 	pthread_mutex_lock(&elektraGetEnvMutex);
-	elektraCloseHelper();
+	if (!elektraRepo) return; // already closed
+
+	kdbClose(elektraRepo, elektraParentKey);
+	ksDel(elektraConfig);
+	keyDel(elektraParentKey);
+	elektraRepo = 0;
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
 
@@ -253,6 +281,13 @@ typedef char *(* gfcn)(const char *);
  */
 extern "C" char *elektraGetEnv(const char *name, gfcn getenv)
 {
+	if (!elektraRepo) // no open Repo
+	{
+		char *ret = (*getenv)(name);
+		cout << "special fallback to getenv returned " << ret << endl;
+		return ret;
+	}
+
 	std::string fullName = "proc/";
 	fullName += name;
 	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
@@ -265,7 +300,7 @@ extern "C" char *elektraGetEnv(const char *name, gfcn getenv)
 	fullName = "/sw/app/lift/";
 	fullName += name;
 	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
-	if (!key)
+	if (key)
 	{
 		cout << "getenv with " << fullName << ": " << keyString(key) << endl;
 		return (char*)keyString(key);

@@ -1,6 +1,7 @@
 include (LibAddMacros)
 
 add_headers(HDR_FILES)
+add_cppheaders(HDR_FILES)
 
 file (GLOB_RECURSE SRC_FILES *.cpp)
 
