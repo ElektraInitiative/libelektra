@@ -1,4 +1,15 @@
-#define _GNU_SOURCE // RTLD_NEXT
+/**
+ * \file
+ *
+ * \brief Source for the getenv library
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE // RTLD_NEXT
+#endif
 
 #include <kdbgetenv.h>
 #include <kdbconfig.h>
@@ -9,23 +20,22 @@
 #include <string.h>
 #include <signal.h>
 
+#include <string>
+#include <sstream>
+#include <iostream>
+
+using namespace std;
+using namespace ckdb;
+
+namespace ckdb {
+extern "C" {
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
-
-volatile sig_atomic_t elektraReloadCounter;
-int elektraReloadCounterNext;
-
-void elektraReload(int signal ELEKTRA_UNUSED)
-{
+}
 }
 
-int elektraCheckReload()
-{
-	return 0;
-}
-
-void elektraClose()
+extern "C" void elektraClose()
 {
 	if (!elektraRepo) return; // already closed
 
@@ -96,19 +106,74 @@ const char *elektraHelpText =
 "\n"
 "\n";
 
-void elektraOpen(int* argc, char** argv)
+extern "C" void elektraOpen(int* argc, char** argv)
 {
 	if (elektraRepo) elektraClose(); // already opened
 
+	// const char *appName = "/sw/app/current";
 	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
 	elektraConfig = ksNew(20, KS_END);
 
 	if (argc && argv)
 	{
-		ksAppendKey(elektraConfig, keyNew("/sw/app/lift/HOME", KEY_VALUE, "/home/markus", KEY_END));
+		string prefix = "--elektra";
+
+		string rootPath = "/sw/app/lift/";
+
+		ksAppendKey(elektraConfig, keyNew("HOME", KEY_VALUE, "/home/markus", KEY_END));
 		// TODO: parse argc, argv
 		for (int i=0; i<*argc; ++i)
 		{
+			std::string argument = argv[i];
+			cout << "Process argument " << argument << std::endl;
+			if (argument.size() < prefix.size())
+			{
+				cout << "Skip argument " << argument << std::endl;
+				continue;
+			}
+			if (argument.substr(0, prefix.size()) == prefix)
+			{
+				string kv = argument.substr(prefix.size());
+				cout << "Handling kv: " << kv << endl;
+				if (kv == "-help")
+				{
+					cout << elektraHelpText << endl;
+					exit (0);
+				}
+				else if (kv == "-version")
+				{
+					cout << "Elektra getenv is active" << std::endl;
+					Key *k = keyNew("system/elektra/version", KEY_END);
+					KDB *kdb = kdbOpen(k);
+					KeySet *c = ksNew(20, KS_END);
+					kdbGet (kdb, c, k);
+					kdbClose(kdb, k);
+					keyDel(k);
+					Key *kdb_version = ksLookupByName(c, "system/elektra/version/constants/KDB_VERSION", 0);
+					if (!kdb_version)
+					{
+						cerr << "Could not lookup KDB_VERSION key" << endl;
+					}
+					else
+					{
+						cout << "KDB_VERSION: " << keyString(kdb_version) << endl;
+					}
+					cout << "KDB_GETENV_VERSION: " << KDB_GETENV_VERSION << endl;
+					ksDel(c);
+					exit(0);
+				}
+				else if (kv[0] == ':')
+				{
+					kv = kv.substr(1); // skip :
+					cout << "kv is: " << kv << endl;
+					stringstream ss(kv);
+					string k, v;
+					getline(ss, k, '=');
+					getline(ss, v);
+					cout << "k is " << k << " and v is " << v << endl;
+					// ksAppendKey(elektraConfig, keyNew(k.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+				}
+			}
 			printf ("argv[%d]: %s\n", i, argv[i]);
 		}
 	}
@@ -119,44 +184,10 @@ void elektraOpen(int* argc, char** argv)
 	//TODO: parse arguments -> spec, remove "env"
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
-
-	/*
 	Key *c;
 	ksRewind(elektraConfig);
 	while ((c = ksNext(elektraConfig)))
-	const char *appName = "/sw/app/current";
-
-	// will be used to append configuration
-	elektraConfig = ksNew(20, KS_END);
-
-	if (argc && argv)
-	{
-		const char *argPrefix = "--elektra";
-		size_t argPrefixSize = sizeof(argPrefix);
-
-		const char *rootPath = "/sw/app/lift/";
-		size_t rootPathSize = sizeof(rootPath);
-
-		ksAppendKey(elektraConfig, keyNew("HOME", KEY_VALUE, "/home/markus", KEY_END));
-		// TODO: parse argc, argv
-		for (int i=0; i<*argc; ++i)
-		{
-			if (!strncmp(argv[i], argPrefix, argPrefixSize))
-			{
-				char *kv = argv[i]+argPrefixSize;
-				if (kv[0] == ':')
-				{
-					char *v = strchr(kv, '=');
-					char *keyname = elektraFormat("%s/%s", rootPath, kv);
-					ksAppendKey(elektraConfig, keyNew(keyname, KEY_VALUE, "", KEY_END));
-					free(keyname);
-				}
-				printf ("kv: %s\n", kv);
-			}
-			printf ("argv[%d]: %s\n", i, argv[i]);
-		}
-	}
-	*/
+	{}
 
 	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
 	printf ("%s - %s\n", keyName(elektraParentKey), keyString(elektraParentKey));
@@ -166,10 +197,10 @@ void elektraOpen(int* argc, char** argv)
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 }
 
-int __real_main(int argc, char** argv, char** env);
+extern "C" int __real_main(int argc, char** argv, char** env);
 
 typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
-int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
+extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
 	static union {void*d; fcn f;} start;
 	if (!start.d) start.d = dlsym(RTLD_NEXT, "__libc_start_main");
@@ -182,28 +213,27 @@ int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** a
 	return ret;
 }
 
-char *elektraGetEnv(const char *name)
+extern "C" char *elektraGetEnv(const char *name)
 {
-	char fullName[strlen(name)+strlen("/sw/app/lift")+2];
-	strcpy(fullName, "/sw/app/lift/");
-	strcat(fullName, name);
-	Key *key = ksLookupByName(elektraConfig, fullName, 0);
+	std::string fullName = "/sw/app/lift/";
+	fullName += name;
+	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (!key)
 	{
-		printf ("getenv with %s: <nothing>\n", fullName);
+		cout << "getenv with " << fullName << " returned nothing" << endl;
 		return 0;
 	}
-	printf ("getenv with %s: %s\n", fullName, keyString(key));
+	cout << "getenv with " << fullName << ": " << keyString(key) << endl;
 	return (char*)keyString(key);
 }
 
-char *getenv(const char *name)
+char *getenv(const char *name) throw ()
 {
 	char *ret = elektraGetEnv(name);
 	return ret;
 }
 
-char *secure_getenv(const char *name)
+char *secure_getenv(const char *name) throw ()
 {
 	char * ret = elektraGetEnv(name);
 	return ret;
