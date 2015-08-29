@@ -20,6 +20,8 @@ but no flexibility regarding:
 - error code meanings are fixed, if a resolver detects a conflict, error #30 must be used
 - of course ABI, API
 
+- XDG resolver: handle XDG_CONFIG_DIRS, where no path is valid, correctly
+
 # 0.8.12 Release
 
 - guid: 98770541-32a1-486a-98a1-d02f26afc81a
