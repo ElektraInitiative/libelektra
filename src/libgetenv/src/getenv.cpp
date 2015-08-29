@@ -95,6 +95,8 @@ const char *elektraHelpText =
 "\n"
 "\n";
 
+static pthread_mutex_t elektraGetEnvMutex = PTHREAD_MUTEX_INITIALIZER;
+
 void printVersion()
 {
 	cout << "Elektra getenv is active" << std::endl;
@@ -172,9 +174,20 @@ void parseArgs(int* argc, char** argv)
 	}
 }
 
+void elektraCloseHelper()
+{
+	if (!elektraRepo) return; // already closed
+
+	kdbClose(elektraRepo, elektraParentKey);
+	ksDel(elektraConfig);
+	keyDel(elektraParentKey);
+	elektraRepo = 0;
+}
+
 extern "C" void elektraOpen(int* argc, char** argv)
 {
-	if (elektraRepo) elektraClose(); // already opened
+	pthread_mutex_lock(&elektraGetEnvMutex);
+	if (elektraRepo) elektraCloseHelper(); // already opened
 
 	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
 	elektraConfig = ksNew(20, KS_END);
@@ -201,16 +214,14 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	//TODO: install SIGHUP signal handler (on request)
 	//TODO: parse arguments -> spec, remove "env"
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
+	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
 
 extern "C" void elektraClose()
 {
-	if (!elektraRepo) return; // already closed
-
-	kdbClose(elektraRepo, elektraParentKey);
-	ksDel(elektraConfig);
-	keyDel(elektraParentKey);
-	elektraRepo = 0;
+	pthread_mutex_lock(&elektraGetEnvMutex);
+	elektraCloseHelper();
+	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
 
 extern "C" int __real_main(int argc, char** argv, char** env);
@@ -268,19 +279,23 @@ extern "C" char *elektraGetEnv(const char *name, gfcn getenv)
 
 extern "C" char *getenv(const char *name) // throw ()
 {
+	pthread_mutex_lock(&elektraGetEnvMutex);
 	static union {void*d; gfcn f;} sym;
 	if (!sym.d) sym.d = dlsym(RTLD_NEXT, "getenv");
 
 	char *ret = elektraGetEnv(name, sym.f);
+	pthread_mutex_unlock(&elektraGetEnvMutex);
 	return ret;
 }
 
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
+	pthread_mutex_lock(&elektraGetEnvMutex);
 	static union {void*d; gfcn f;} sym;
 	if (!sym.d) sym.d = dlsym(RTLD_NEXT, "secure_getenv");
 
 	char * ret = elektraGetEnv(name, sym.f);
+	pthread_mutex_unlock(&elektraGetEnvMutex);
 	return ret;
 }
 
