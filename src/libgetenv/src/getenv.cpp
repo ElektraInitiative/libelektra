@@ -251,8 +251,22 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	{
 		parseArgs(argc, argv);
 	}
+	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
-	printf ("%s - %s\n", keyName(elektraParentKey), keyString(elektraParentKey));
+	Key *c;
+	while ((c = ksNext(elektraConfig)))
+	{
+		printf ("%s - %s\n", keyName(c), keyString(c));
+	}
+
+
+	// reopen everything (if wrong variable names were used before)
+	kdbClose(elektraRepo, elektraParentKey);
+	elektraRepo = kdbOpen(elektraParentKey);
+	std::string name = keyName(elektraParentKey);
+	keySetName(elektraParentKey, "/env");
+	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
+	keySetName(elektraParentKey, name.c_str());
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
@@ -276,7 +290,6 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 {
 	static union {void*d; fcn f;} start;
 	if (!start.d) start.d = dlsym(RTLD_NEXT, "__libc_start_main");
-	clearenv();
 
 	cout << "wrapping main" << endl;
 	elektraOpen(&argc, argv);
@@ -304,7 +317,7 @@ extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 	{
 		char *ret = (*origGetenv)(name);
 		if (!ret) cout << " orig getenv returned null pointer" << endl;
-		else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">(" << strlen(ret) << ")" << endl;
+		else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl;
 		return ret;
 	}
 
@@ -316,7 +329,7 @@ extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 		cout << " found " << fullName << endl;
 		return (char*)keyString(key);
 	}
-	cout << " with " << fullName << " returned nothing" << endl;
+	cout << " tried " << fullName << " , " ;
 
 	fullName = keyName(elektraParentKey);
 	fullName += "/";
@@ -327,19 +340,21 @@ extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 		cout << " found " << fullName << ": " << keyString(key) << endl;
 		return (char*)keyString(key);
 	}
-	cout << " with " << fullName << " returned nothing" << endl;
+	cout << " tried " << fullName << " , " ;
 
 	fullName = "/env/";
 	fullName += name;
+	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (key)
 	{
 		cout << " found " << fullName << ": " << keyString(key) << endl;
 		return (char*)keyString(key);
 	}
-	cout << " with " << fullName << " returned nothing" << endl;
+	cout << " tried " << fullName << " , " ;
 
 	char *ret = (*origGetenv)(name);
-	cout << " orig getenv returned " << ret << endl;
+	if (!ret) cout << " orig getenv returned null pointer" << endl;
+	else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl;
 	return ret;
 }
 
