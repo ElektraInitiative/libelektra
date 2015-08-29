@@ -5,6 +5,11 @@
 # This is a /etc/profile.d script to set user environment and aliases
 # based on Elektra keys under 'user/env'.
 #
+# Warning!
+#
+# It is not recommended anymore to use this approach.
+# Instead use libelektragetenv
+#
 # Bellow user/env there must be three priorities for environment
 # variables:
 #
