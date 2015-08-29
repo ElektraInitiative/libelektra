@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <libgen.h>
 
 #include <string>
 #include <sstream>
@@ -68,25 +69,29 @@ const char *elektraHelpText =
 "that use getenv().\n"
 "\n"
 "\n"
-"Instead of searching in the environment (environ), getenv() will use\n"
+"Additional to searching in the environment (environ), getenv() will use\n"
 "ksLookup() to lookup configuration.\n"
-"Two different ksLookup() will be done:\n"
-" - first an application-specific lookup using /sw/<app-name>/current\n"
-"   where <app-name> is different for every application.\n"
-" - second a fallback lookup using /sw/env/current\n"
-"   which is the same for every application\n"
+"\n"
+"Different lookups will be done:\n"
+" 1.) Commandline parameters will be prefered\n"
+" 2.) an application-specific lookup using /sw/env/<name>\n"
+"     where <name> is different for every application.\n"
+" 3.) a fallback lookup using /env\n"
+"     which is the same for every application\n"
+"     (think of an global environment)\n"
+" 4.) the environment will be requested\n"
+"\n"
 "\n"
 "OPTIONS\n"
 "\n"
 " --elektra-help             .. show this text\n"
-" --elektra-app-name=key     .. the application name to be used instead of argv[0]\n"
-" --elektra-app-profile=key  .. the application profile to be used instead of current\n"
-" --elektra-env-profile=key  .. the environment profile to be used instead of current\n"
+" --elektra-name=key         .. the application name to be used instead of\n"
+"                               the executable's basename\n"
 " --elektra:key=value        .. set a key/value below root to be preferred\n"
 "                               (in proc-namespace)\n"
 "\n"
 "Note that keys can contain / to form hierarchies.\n"
-"Every option starting with --elektra- will be discarded from argv\n"
+"Every option starting with --elektra will be discarded from argv\n"
 "before the application's main function is started.\n"
 "\n"
 "\n"
@@ -161,19 +166,26 @@ void addProc(string kv)
 	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
 }
 
+void giveName(string name)
+{
+	std::string fullName = "/sw/env/";
+	char * n = strdup(name.c_str());
+	fullName += basename(n);
+	free(n);
+	std::cout << "give name " << fullName << std::endl;
+	keySetName(elektraParentKey, fullName.c_str());
+}
+
 void parseArgs(int* argc, char** argv)
 {
-	cout << "parse args " << *argc << std::endl;
-	string prefix = "--elektra";
+	const string prefix = "--elektra";
+	const string prefixName = "-name=";
+	std::cout << "Parsing args " << *argc << endl;
 
-	string rootPath = "/sw/app/lift/";
-
-	ksAppendKey(elektraConfig, keyNew("HOME", KEY_VALUE, "/home/markus", KEY_END));
-	ksAppendKey(elektraConfig, keyNew("XDG_CONFIG_HOME", KEY_VALUE, "/home/markus", KEY_END));
-	ksAppendKey(elektraConfig, keyNew("XDG_CONFIG_DIRS", KEY_VALUE, "/etc", KEY_END));
+	giveName(argv[0]);
 
 	int length = *argc;
-	for (int i=0; i<length; ++i)
+	for (int i=1; i<length; ++i)
 	{
 		printf ("argv[%d]: %s\n", i, argv[i]);
 
@@ -182,16 +194,19 @@ void parseArgs(int* argc, char** argv)
 		if (argument.size() < prefix.size())
 		{
 			cout << "Skip argument " << argument << std::endl;
-			continue;
 		}
-		if (argument.substr(0, prefix.size()) == prefix)
+		else if (argument.substr(0, prefix.size()) == prefix)
 		{
 			string kv = argument.substr(prefix.size());
 			cout << "Handling kv: " << kv << endl;
 			if (kv == "-help")
 			{
 				cout << elektraHelpText << endl;
-				exit (0);
+				exit(0);
+			}
+			else if (kv.substr(0, prefixName.size()) == prefixName)
+			{
+				giveName(kv.substr(prefixName.size()));
 			}
 			else if (kv == "-version")
 			{
@@ -209,12 +224,10 @@ void parseArgs(int* argc, char** argv)
 		}
 	}
 	char **oldEnd = &argv[length];
-	char **newEnd = remove_if<char**>(argv, oldEnd, [](char *c) {printf ("c is: %p %s\n", c, c); return c==0;});
+	char **newEnd = remove_if<char**>(argv, oldEnd, [](char *c) {return c==0;});
 	*newEnd = 0;
 	const size_t toSubtract = oldEnd-newEnd;
 	*argc -= toSubtract;
-	printf ("reduced by %p : %p x %d - %d\n", oldEnd, newEnd, toSubtract, length);
-	std::cout << "reduced by " << toSubtract << " " << length << endl;
 }
 
 extern "C" void elektraOpen(int* argc, char** argv)
@@ -222,33 +235,24 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	pthread_mutex_lock(&elektraGetEnvMutex);
 	if (elektraRepo) elektraClose(); // already opened
 
+	cout << "opening elektra" << endl;
 	// elektraEnvContext.addLayer("abc", "def");
 	// std::cout << "evaluated: " << elektraEnvContext.evaluate("something/with/%abc%/more") << std::endl;
 
-	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
+	elektraParentKey = keyNew("/env", KEY_END);
 	elektraConfig = ksNew(20, KS_END);
+	cout << "kdbOpen" << endl;
+	elektraRepo = kdbOpen(elektraParentKey);
+	cout << "kdbGet" << endl;
+	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
+	keySetName(elektraParentKey, "/sw/env/default");
 	if (argc && argv)
 	{
 		parseArgs(argc, argv);
 	}
 
 	printf ("%s - %s\n", keyName(elektraParentKey), keyString(elektraParentKey));
-	elektraRepo = kdbOpen(elektraParentKey);
-	//TODO: install SIGHUP signal handler (on request)
-	//TODO: parse arguments -> spec, remove "env"
-	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
-
-	Key *c;
-	ksRewind(elektraConfig);
-	while ((c = ksNext(elektraConfig)))
-	{}
-
-	elektraParentKey = keyNew("user/sw/app/lift", KEY_END);
-	printf ("%s - %s\n", keyName(elektraParentKey), keyString(elektraParentKey));
-	elektraRepo = kdbOpen(elektraParentKey);
-	//TODO: install SIGHUP signal handler (on request)
-	//TODO: parse arguments -> spec, remove "env"
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
@@ -272,8 +276,9 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 {
 	static union {void*d; fcn f;} start;
 	if (!start.d) start.d = dlsym(RTLD_NEXT, "__libc_start_main");
+	clearenv();
 
-	printf ("Main wrapped successfully\n");
+	cout << "wrapping main" << endl;
 	elektraOpen(&argc, argv);
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 	//TODO: save configuration (on request)
@@ -292,12 +297,14 @@ typedef char *(* gfcn)(const char *);
  * @see getenv
  * @see secure_getenv
  */
-extern "C" char *elektraGetEnv(const char *name, gfcn getenv)
+extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 {
-	if (!elektraRepo) // no open Repo
+	cout << "elektraGetEnv(" << name << ")" ;
+	if (!elektraRepo) // no open Repo (needed for bootstrapping, if inside kdbOpen() getenv is used)
 	{
-		char *ret = (*getenv)(name);
-		cout << "special fallback to getenv returned " << ret << endl;
+		char *ret = (*origGetenv)(name);
+		if (!ret) cout << " orig getenv returned null pointer" << endl;
+		else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">(" << strlen(ret) << ")" << endl;
 		return ret;
 	}
 
@@ -306,22 +313,33 @@ extern "C" char *elektraGetEnv(const char *name, gfcn getenv)
 	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (key)
 	{
-		cout << "getenv found " << fullName << endl;
+		cout << " found " << fullName << endl;
 		return (char*)keyString(key);
 	}
+	cout << " with " << fullName << " returned nothing" << endl;
 
-	fullName = "/sw/app/lift/";
+	fullName = keyName(elektraParentKey);
+	fullName += "/";
 	fullName += name;
 	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (key)
 	{
-		cout << "getenv with " << fullName << ": " << keyString(key) << endl;
+		cout << " found " << fullName << ": " << keyString(key) << endl;
 		return (char*)keyString(key);
 	}
-	cout << "getenv with " << fullName << " returned nothing" << endl;
+	cout << " with " << fullName << " returned nothing" << endl;
 
-	char *ret = (*getenv)(name);
-	cout << "fallback to getenv returned " << ret << endl;
+	fullName = "/env/";
+	fullName += name;
+	if (key)
+	{
+		cout << " found " << fullName << ": " << keyString(key) << endl;
+		return (char*)keyString(key);
+	}
+	cout << " with " << fullName << " returned nothing" << endl;
+
+	char *ret = (*origGetenv)(name);
+	cout << " orig getenv returned " << ret << endl;
 	return ret;
 }
 

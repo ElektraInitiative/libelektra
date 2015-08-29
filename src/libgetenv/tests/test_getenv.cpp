@@ -99,6 +99,39 @@ TEST(GetEnv, ArgvParamUninvolved)
 	elektraClose();
 }
 
+TEST(GetEnv, Name)
+{
+	using namespace ckdb;
+	elektraOpen(0, 0);
+	EXPECT_EQ(keyName(elektraParentKey), std::string("/sw/env/default"));
+	elektraClose();
+}
+
+TEST(GetEnv, NameArgv0)
+{
+	using namespace ckdb;
+	int argc = 1;
+	const char *cargv[] = {"any-name", 0};
+	char **argv = const_cast<char **>(cargv);
+
+	elektraOpen(&argc, argv);
+	EXPECT_EQ(keyName(elektraParentKey), std::string("/sw/env/any-name"));
+	elektraClose();
+}
+
+
+TEST(GetEnv, NameExplicit)
+{
+	using namespace ckdb;
+	int argc = 2;
+	const char *cargv[] = {"any-name", "--elektra-name=other-name"};
+	char **argv = const_cast<char **>(cargv);
+
+	elektraOpen(&argc, argv);
+	EXPECT_EQ(keyName(elektraParentKey), std::string("/sw/env/other-name"));
+	elektraClose();
+}
+
 int main(int argc, char **argv)
 {
 	using namespace ckdb;

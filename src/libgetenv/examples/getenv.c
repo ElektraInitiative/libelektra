@@ -3,6 +3,7 @@
 
 int main(int argc, char** argv)
 {
+	printf ("Test application for Elektra to be used with LD_PRELOAD");
 	for (int i=0; i<argc; ++i)
 	{
 		printf ("argv[%d]: %s\n", i, argv[i]);
