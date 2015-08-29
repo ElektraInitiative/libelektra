@@ -163,6 +163,7 @@ void addProc(string kv)
 
 void parseArgs(int* argc, char** argv)
 {
+	cout << "parse args " << *argc << std::endl;
 	string prefix = "--elektra";
 
 	string rootPath = "/sw/app/lift/";
@@ -170,9 +171,12 @@ void parseArgs(int* argc, char** argv)
 	ksAppendKey(elektraConfig, keyNew("HOME", KEY_VALUE, "/home/markus", KEY_END));
 	ksAppendKey(elektraConfig, keyNew("XDG_CONFIG_HOME", KEY_VALUE, "/home/markus", KEY_END));
 	ksAppendKey(elektraConfig, keyNew("XDG_CONFIG_DIRS", KEY_VALUE, "/etc", KEY_END));
-	// TODO: parse argc, argv
-	for (int i=0; i<*argc; ++i)
+
+	int length = *argc;
+	for (int i=0; i<length; ++i)
 	{
+		printf ("argv[%d]: %s\n", i, argv[i]);
+
 		std::string argument = argv[i];
 		cout << "Process argument " << argument << std::endl;
 		if (argument.size() < prefix.size())
@@ -199,9 +203,18 @@ void parseArgs(int* argc, char** argv)
 				kv = kv.substr(1); // skip :
 				addProc(kv);
 			}
+			else continue;
+			// we consume a parameter
+			argv[i] = 0;
 		}
-		printf ("argv[%d]: %s\n", i, argv[i]);
 	}
+	char **oldEnd = &argv[length];
+	char **newEnd = remove_if<char**>(argv, oldEnd, [](char *c) {printf ("c is: %p %s\n", c, c); return c==0;});
+	*newEnd = 0;
+	const size_t toSubtract = oldEnd-newEnd;
+	*argc -= toSubtract;
+	printf ("reduced by %p : %p x %d - %d\n", oldEnd, newEnd, toSubtract, length);
+	std::cout << "reduced by " << toSubtract << " " << length << endl;
 }
 
 extern "C" void elektraOpen(int* argc, char** argv)

@@ -1,11 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main()
+int main(int argc, char** argv)
 {
+	for (int i=0; i<argc; ++i)
+	{
+		printf ("argv[%d]: %s\n", i, argv[i]);
+	}
+
 	char *c = getenv("algorithm");
-	printf ("%s\n", c?c:"getenv algorithm not successful");
+	printf ("getenv(\"algorithm\") -> ");
+	printf ("%s\n", c?c:"(null)");
 	c = getenv("limit");
-	printf ("%s\n", c?c:"getenv limit not successful");
+	printf ("getenv(\"limit\") -> ");
+	printf ("%s\n", c?c:"(null)");
 	return 0;
 }
