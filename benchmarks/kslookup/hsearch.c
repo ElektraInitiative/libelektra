@@ -146,7 +146,8 @@ int build (int n, int k, int r, ENTRY * data, int * times)
 	for (int i = 0;i < n;++i)
 	{
 		ep = hsearch (data[i], ENTER);
-		if (ep == NULL) {
+		if (ep == NULL)
+		{
 			printf ("ENTER failed\n");
 			return -1;
 		}
@@ -181,9 +182,10 @@ int search (int n, int k, int r, ENTRY * data, int * times)
 	for (int i = 0;i < n;++i)
 	{
 		ep = hsearch (data[i], ENTER);
-		if (ep == NULL) {
-		   printf ("ENTER failed\n");
-		   return -1;
+		if (ep == NULL)
+		{
+			printf ("ENTER failed\n");
+			return -1;
 		}
 	}
 
@@ -204,9 +206,10 @@ int search (int n, int k, int r, ENTRY * data, int * times)
 		keys_searched_for[search_for] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 							(end.tv_usec - start.tv_usec);
 
-		if (ep == NULL) {
-		   printf ("not found while search\n");
-		   return -1;
+		if (ep == NULL)
+		{
+			printf ("not found while search\n");
+			return -1;
 		}
 		Key * validate = ep->data;
 		if (strcmp (keyName(validate), lookfor) != 0)

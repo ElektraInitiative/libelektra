@@ -1,15 +1,12 @@
 #include <benchmark.h>
 
 //mode true=build false=search
-void runBenchmark (bool mode, void (*runInLoop) (int, int, KeySet *, int *));
-void build (int n, int r, KeySet * data, int * times);
-void search (int n, int r, KeySet * data, int * times);
+void runBenchmark (bool mode, int (*runInLoop) (int, int, KeySet *, int *));
+int build (int n, int r, KeySet * data, int * times);
+int search (int n, int r, KeySet * data, int * times);
 
 //Data helpers
 KeySet * readKeySet (int size, int version);
-
-//output file
-FILE * output;
 
 //TODO KURT print machine name + kernel bla
 //TODO KURT strange segfault with no input files
@@ -37,7 +34,7 @@ int main(int argc, char** argv)
 
 /* provides the skeleton for the benchmark runs.
  */
-void runBenchmark (bool mode, void (*runInLoop) (int, int, KeySet *, int *))
+void runBenchmark (bool mode, int (*runInLoop) (int, int, KeySet *, int *))
 {
 	for (int v=1;v <= KEYSET_VERSIONS;++v)
 	{
@@ -48,17 +45,22 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, KeySet *, int *))
 		else
 			c_mode = 's';
 		sprintf (&filename_out[0], "kslookup_%c_%i.bench",c_mode,v);
-		output = fopen (&filename_out[0], "w");
+		FILE * output = fopen (&filename_out[0], "w");
 		if (output == NULL)
 		{
 			printf ("output file could not be opened\n");
 			exit (EXIT_FAILURE);
 		}
-		fprintf (output, "KeySet size;bucket size;time\n");
+		fprintf (output, "KeySet size;time\n");
 
 		for (int n=MIN_KEYSET_SIZE;n <= MAX_KEYSET_SIZE;n+=STEP_KEYSET_SIZE)
 		{
 			KeySet * ks = readKeySet (n,v);
+			if (ks == NULL)
+			{
+				fclose (output);
+				exit (EXIT_FAILURE);
+			}
 
 			fprintf (output, "%i",n);
 			int times [REPEATS];
@@ -68,7 +70,13 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, KeySet *, int *))
 				KeySet * data = ksDup (ks);
 
 				//call for worker
-				runInLoop (n,r,data,&times[0]);
+				if(runInLoop (n,r,data,&times[0]) < 0)
+				{
+					fclose (output);
+					ksDel (data);
+					ksDel (ks);
+					exit (EXIT_FAILURE);
+				}
 
 				ksDel (data);
 			}
@@ -84,7 +92,7 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, KeySet *, int *))
 /* The actual benchmark procedure for the build, executed for each
  * setting.
  */
-void build (int n ELEKTRA_UNUSED, int r, KeySet * data, int * times)
+int build (int n ELEKTRA_UNUSED, int r, KeySet * data, int * times)
 {
 	struct timeval start;
 	struct timeval end;
@@ -94,18 +102,20 @@ void build (int n ELEKTRA_UNUSED, int r, KeySet * data, int * times)
 
 	//build
 	//TODO KURT set build flag here
+	//TODO KURT check for errors
 	ksLookup (data, NULL, KDB_O_NONE);
 
 	gettimeofday (&end, 0);
 	times[r] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 						(end.tv_usec - start.tv_usec);
 
+	return 1;
 }
 
 /* The actual benchmark procedure for the search, executed for each
  * setting.
  */
-void search (int n, int r, KeySet * data, int * times)
+int search (int n, int r, KeySet * data, int * times)
 {
 	Key * keysearchfor = keyNew(0);
 	Key * keyfound;
@@ -118,6 +128,7 @@ void search (int n, int r, KeySet * data, int * times)
 
 	//prepare hash map
 	//TODO KURT set build flag here
+	//TODO KURT check for errors
 	ksLookup (data, NULL, KDB_O_NONE);
 
 	// search for each key randomly and save the time
@@ -136,17 +147,30 @@ void search (int n, int r, KeySet * data, int * times)
 		keys_searched_for[search_for] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 							(end.tv_usec - start.tv_usec);
 
+		if (keyfound == NULL)
+		{
+			printf ("not found while search\n");
+			keyDel (keysearchfor);
+			return -1;
+		}
+		if (strcmp (keyName(keyfound), keyName(keysearchfor)) != 0)
+		{
+			printf ("found wrong Key while search\n");
+			keyDel (keysearchfor);
+			return -1;
+		}
 		if (strcmp (keyValue(keyfound), GENDATA_KEY_VALUE) != 0)
 		{
-			printf ("correctness error while search\n");
-			fclose (output);
-			exit (EXIT_FAILURE);
+			printf ("wrong Key value while search\n");
+			keyDel (keysearchfor);
+			return -1;
 		}
 	}
 	keyDel (keysearchfor);
 
 	// take the maximum for this run
 	times[r] = max (keys_searched_for, n);
+	return 1;
 }
 
 KeySet * readKeySet (int size, int version)
@@ -156,12 +180,11 @@ KeySet * readKeySet (int size, int version)
 	KeySet * modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 	KeySet *conf = ksNew (0, KS_END);
-	Plugin * plugin = elektraPluginOpen("dump", modules, conf, 0);
+	Plugin * plugin = elektraPluginOpen(EXPORT_PLUGIN, modules, conf, 0);
 	if(!plugin)
 	{
 		printf ("dump plugin could not be opened\n");
-		fclose (output);
-		exit (EXIT_FAILURE);
+		return NULL;
 	}
 
 	char filename_in [BUFFER_FILENAME];

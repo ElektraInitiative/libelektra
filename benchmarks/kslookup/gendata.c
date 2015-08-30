@@ -7,7 +7,7 @@ int main (int argc ELEKTRA_UNUSED, char** argv ELEKTRA_UNUSED)
 	KeySet * modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 	KeySet * conf = ksNew (0, KS_END);
-	Plugin * plugin = elektraPluginOpen("dump", modules, conf, 0);
+	Plugin * plugin = elektraPluginOpen(EXPORT_PLUGIN, modules, conf, 0);
 	if(!plugin)
 	{
 		printf ("dump plugin could not be opened\n");
