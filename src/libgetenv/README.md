@@ -1,3 +1,7 @@
+- infos = Information about dump plugin is in keys below
+- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/description =
+
 elektrify-getenv(1) -- elektrify the environment of applications
 ================================================================
 
@@ -81,6 +85,8 @@ before the application's main function is started.
 
 ## EXAMPLES
 
+For illustration this section gives some examples.
+
     elektrify-getenv man man --elektra:MANWIDTH=40
 
 Will use MANWIDTH 40 for this invocation of man man.
@@ -102,3 +108,4 @@ applications (either system, user or directory-wide).
 
 Will permanently and system-wide change the proxy for all applications
 that honor HTTP_PROXY, e.g. w3m.
+

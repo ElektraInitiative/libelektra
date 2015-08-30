@@ -64,88 +64,9 @@ public:
 } elektraEnvContext;
 
 const char *appName = "/sw/app/current";
-const char *elektraHelpText =
-"This application is elektrified using libelektragetenv.\n"
-"This is a LD_PRELOAD technique to elektrify applications\n"
-"that use getenv().\n"
-"\n"
-"\n"
-"Additional to searching in the environment (environ), getenv() will use\n"
-"ksLookup() to lookup configuration.\n"
-"\n"
-"Different lookups will be done:\n"
-" 1.) Commandline parameters will be preferred\n"
-" 2.) an application-specific lookup using /sw/env/<name>\n"
-"     where <name> is different for every application.\n"
-" 3.) a convenience fallback lookup using /env\n"
-"     which is the same for every application\n"
-"     (easies usage of already established environment-standards. In applications with a specification this should not be used. Here we make an exception, because the administrator would have to write the specification)\n"
-" 4.) the environment will be requested\n"
-"\n"
-"\n"
-"OPTIONS\n"
-"\n"
-" --elektra-help             .. show this text\n"
-" --elektra-name=key         .. the application name to be used instead of\n"
-"                               the executable's basename\n"
-" --elektra:key=value        .. set a key/value below root to be preferred\n"
-"                               (in proc-namespace)\n"
-"\n"
-"Note that keys can contain / to form hierarchies.\n"
-"Every option starting with --elektra will be discarded from argv\n"
-"before the application's main function is started.\n"
-"\n"
-"\n"
-"\n"
-"KDB\n"
-"\n"
-"/sw/env/<name>/%profile%/<key>\n"
-"/env/<key>\n"
-"  will be used preferable. The spec(ification) entries are:\n"
-"  - context .. do not use the key itself, but do a contextual lookup of the name, honoring layers , given in the metadata\n"
-"  - no_elektra .. disable Elektra functionality for that key and only use environment\n"
-"  - no_env .. disable environment fallback\n"
-"\n"
-"/sw/env/<name>/layers\n"
-"  Specification of all layers to be activated\n"
-"  Note that the profile layer??\n"
-"\n"
-"\n"
-"\n"
-"\n"
-"\n"
-// "INTERNAL OPTIONS\n"
-// "\n"
-// "Some options can be used to change the behaviour of the library itself.\n"
-// "\n"
-// "see spec/getenv/current\n"
-// "\n"
-// "\n"
-"EXAMPLES\n"
-"\n"
-"> elektrify-getenv man man --elektra:MANWIDTH=40\n"
-"\n"
-"Will use MANWIDTH 40 for this invocation of man man.\n"
-"This feature is handy, if an option is only available\n"
-"by environment, but not by command-line arguments,\n"
-"because sometimes environment variables are not trivial\n"
-"to set (e.g. in Makefiles)-\n"
-"\n"
-"\n"
-"> kdb set user/sw/env/man/MANOPT -- --regex\n"
-"\n"
-"Will permanently and user-wide change MANOPT to include --regex, so that -K\n"
-"and similar options automatically prefer regular expressions.\n"
-"This feature is handy to change the default behaviour of\n"
-"applications (either system, user or directory-wide).\n"
-"\n"
-"\n"
-"> kdb set system/env/HTTP_PROXY http://proxy.hogege.com:8000/\n"
-"\n"
-"Will permanently and system-wide change the proxy for all applications\n"
-"that honor HTTP_PROXY, e.g. w3m.\n"
-"\n"
-"\n";
+KeySet *elektraDocu = ksNew(20,
+#include "readme_elektrify-getenv.c"
+	KS_END);
 
 pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
@@ -220,7 +141,8 @@ void parseArgs(int* argc, char** argv)
 			if (elektraDebug) cout << "Handling kv: " << kv << endl;
 			if (kv == "-help")
 			{
-				cout << elektraHelpText << endl;
+				cout << keyString(ksLookupByName(elektraDocu,
+					"system/elektra/modules/elektrify-getenv/infos/description",0)) << endl;
 				exit(0);
 			}
 			else if (kv.substr(0, prefixName.size()) == prefixName)
