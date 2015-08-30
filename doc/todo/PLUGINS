@@ -33,6 +33,10 @@ Shell expansion
 Environment expansion
 
 
+## logging
+
+log all warnings that happened
+
 
 # File based plugins #
 
