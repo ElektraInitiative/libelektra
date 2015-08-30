@@ -15,15 +15,34 @@ TEST(GetEnv, NonExist)
 	EXPECT_EQ(getenv("du4Maiwi/does-not-exist"), static_cast<char*>(0));
 }
 
-TEST(GetEnv, Exist)
+TEST(GetEnv, ExistOverride)
 {
 	using namespace ckdb;
 	ksAppendKey(elektraConfig,
-			keyNew("user/sw/app/lift/does-exist",
+			keyNew("user/env/override/does-exist",
 				KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
 	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
 }
+
+TEST(GetEnv, ExistEnv)
+{
+	using namespace ckdb;
+	setenv("does-exist", "hello", 1);
+	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
+	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
+}
+
+TEST(GetEnv, ExistFallback)
+{
+	using namespace ckdb;
+	ksAppendKey(elektraConfig,
+			keyNew("user/env/fallback/does-exist",
+				KEY_VALUE, "hello", KEY_END));
+	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
+	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
+}
+
 
 TEST(GetEnv, OpenClose)
 {
@@ -33,7 +52,7 @@ TEST(GetEnv, OpenClose)
 	// EXPECT_NE(elektraConfig, oldElektraConfig); // even its a new object, it might point to same address
 	EXPECT_EQ(getenv("du4Maiwi/does-not-exist"), static_cast<char*>(0));
 	ksAppendKey(elektraConfig,
-			keyNew("user/sw/app/lift/does-exist",
+			keyNew("user/env/override/does-exist",
 				KEY_VALUE, "hello", KEY_END));
 
 	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
@@ -101,11 +120,13 @@ TEST(GetEnv, ArgvParamUninvolved)
 	elektraClose();
 }
 
+extern std::string elektraName;
+
 TEST(GetEnv, Name)
 {
 	using namespace ckdb;
 	elektraOpen(0, 0);
-	EXPECT_EQ(keyName(elektraParentKey), std::string("/sw/env/default"));
+	EXPECT_EQ(elektraName, std::string(""));
 	elektraClose();
 }
 
@@ -117,7 +138,7 @@ TEST(GetEnv, NameArgv0)
 	char **argv = const_cast<char **>(cargv);
 
 	elektraOpen(&argc, argv);
-	EXPECT_EQ(keyName(elektraParentKey), std::string("/sw/env/any-name"));
+	EXPECT_EQ(elektraName, std::string("any-name"));
 	elektraClose();
 }
 
@@ -130,7 +151,7 @@ TEST(GetEnv, NameExplicit)
 	char **argv = const_cast<char **>(cargv);
 
 	elektraOpen(&argc, argv);
-	EXPECT_EQ(keyName(elektraParentKey), std::string("/sw/env/other-name"));
+	EXPECT_EQ(elektraName, std::string("other-name"));
 	elektraClose();
 }
 

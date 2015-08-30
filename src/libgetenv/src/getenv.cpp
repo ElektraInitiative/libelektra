@@ -31,11 +31,13 @@ using namespace std;
 using namespace ckdb;
 
 namespace ckdb {
-
+extern "C" {
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
 bool elektraDebug;
+std::string elektraName;
+}
 
 namespace {
 
@@ -63,7 +65,6 @@ public:
 	}
 } elektraEnvContext;
 
-const char *appName = "/sw/app/current";
 KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
@@ -108,12 +109,11 @@ void addProc(string kv)
 
 void giveName(string name)
 {
-	std::string fullName = "/sw/env/";
 	char * n = strdup(name.c_str());
-	fullName += basename(n);
+	elektraName = basename(n);
 	free(n);
-	if (elektraDebug) std::cout << "give name " << fullName << std::endl;
-	keySetName(elektraParentKey, fullName.c_str());
+	if (elektraDebug) std::cout << "give name " << elektraName << std::endl;
+
 }
 
 void parseArgs(int* argc, char** argv)
@@ -147,7 +147,7 @@ void parseArgs(int* argc, char** argv)
 			}
 			else if (kv.substr(0, prefixName.size()) == prefixName)
 			{
-				giveName(kv.substr(prefixName.size()));
+				elektraName = kv.substr(prefixName.size());
 			}
 			else if (kv == "-version")
 			{
@@ -185,12 +185,10 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	elektraRepo = kdbOpen(elektraParentKey);
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
-	keySetName(elektraParentKey, "/sw/env/default");
 	if (argc && argv)
 	{
 		parseArgs(argc, argv);
 	}
-	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
 	Key *c;
 	while ((c = ksNext(elektraConfig)))
@@ -203,9 +201,6 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	kdbClose(elektraRepo, elektraParentKey);
 	elektraRepo = kdbOpen(elektraParentKey);
 	std::string name = keyName(elektraParentKey);
-	keySetName(elektraParentKey, "/env");
-	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
-	keySetName(elektraParentKey, name.c_str());
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
@@ -219,6 +214,8 @@ extern "C" void elektraClose()
 	ksDel(elektraConfig);
 	keyDel(elektraParentKey);
 	elektraRepo = 0;
+	elektraDebug = false;
+	elektraName = "";
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
 
@@ -238,6 +235,22 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	return ret;
 }
 
+char *elektraGetEnvKey(std::string const& fullName, bool & finish)
+{
+	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
+	if (key)
+	{
+		if (elektraDebug) cout << " found " << fullName << ": " << keyString(key) << endl;
+		finish = true;
+		if (keyIsBinary(key)) return 0;
+		return const_cast<char*>(keyString(key));
+	}
+
+	finish = false;
+	if (elektraDebug) cout << " tried " << fullName << " , " ;
+	return 0;
+}
+
 typedef char *(* gfcn)(const char *);
 
 /**
@@ -249,12 +262,12 @@ typedef char *(* gfcn)(const char *);
  * @see getenv
  * @see secure_getenv
  */
-extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
+extern "C" char *elektraGetEnv(std::string const& name, gfcn origGetenv)
 {
 	if (elektraDebug) cout << "elektraGetEnv(" << name << ")" ;
-	if (!elektraRepo) // no open Repo (needed for bootstrapping, if inside kdbOpen() getenv is used)
-	{
-		char *ret = (*origGetenv)(name);
+	if (!elektraRepo)
+	{	// no open Repo (needed for bootstrapping, if inside kdbOpen() getenv is used)
+		char *ret = (*origGetenv)(name.c_str());
 		if (elektraDebug) { if (!ret) cout << " orig getenv returned null pointer" << endl;
 		else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl; }
 		return ret;
@@ -270,31 +283,23 @@ extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 	}
 	if (elektraDebug) cout << " tried " << fullName << " , " ;
 
-	fullName = keyName(elektraParentKey);
-	fullName += "/";
-	fullName += name;
-	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
-	if (key)
-	{
-		if (elektraDebug) cout << " found " << fullName << ": " << keyString(key) << endl;
-		return (char*)keyString(key);
-	}
-	if (elektraDebug) cout << " tried " << fullName << " , " ;
+	bool finish = false;
+	char * ret = 0;
+	ret = elektraGetEnvKey("/env/override/"+name, finish);
+	if (finish) return ret;
 
-	fullName = "/env/";
-	fullName += name;
-	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
-	if (key)
+	ret = (*origGetenv)(name.c_str());
+	if (ret)
 	{
-		if (elektraDebug) cout << " found " << fullName << ": " << keyString(key) << endl;
-		return (char*)keyString(key);
-	}
-	if (elektraDebug) cout << " tried " << fullName << " , " ;
+		if (elektraDebug) cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl;
+		return ret;
+	} else if (elektraDebug) cout << " orig getenv returned null pointer" << endl;
 
-	char *ret = (*origGetenv)(name);
-	if (elektraDebug) { if (!ret) cout << " orig getenv returned null pointer" << endl;
-	else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl; }
-	return ret;
+	ret = elektraGetEnvKey("/env/fallback/"+name, finish);
+	if (finish) return ret;
+
+	// found absolutely nothing..
+	return 0;
 }
 
 extern "C" char *getenv(const char *name) // throw ()
