@@ -21,6 +21,7 @@ TEST(GetEnv, Exist)
 	ksAppendKey(elektraConfig,
 			keyNew("user/sw/app/lift/does-exist",
 				KEY_VALUE, "hello", KEY_END));
+	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
 	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
 }
 
@@ -35,6 +36,7 @@ TEST(GetEnv, OpenClose)
 			keyNew("user/sw/app/lift/does-exist",
 				KEY_VALUE, "hello", KEY_END));
 
+	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
 	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
 	EXPECT_EQ(getenv("du4Maiwi/does-not-exist"), static_cast<char*>(0));
 	elektraClose();

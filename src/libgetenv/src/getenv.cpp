@@ -35,6 +35,7 @@ namespace ckdb {
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
+bool elektraDebug;
 
 namespace {
 
@@ -73,12 +74,12 @@ const char *elektraHelpText =
 "ksLookup() to lookup configuration.\n"
 "\n"
 "Different lookups will be done:\n"
-" 1.) Commandline parameters will be prefered\n"
+" 1.) Commandline parameters will be preferred\n"
 " 2.) an application-specific lookup using /sw/env/<name>\n"
 "     where <name> is different for every application.\n"
-" 3.) a fallback lookup using /env\n"
+" 3.) a convenience fallback lookup using /env\n"
 "     which is the same for every application\n"
-"     (think of an global environment)\n"
+"     (easies usage of already established environment-standards. In applications with a specification this should not be used. Here we make an exception, because the administrator would have to write the specification)\n"
 " 4.) the environment will be requested\n"
 "\n"
 "\n"
@@ -93,6 +94,24 @@ const char *elektraHelpText =
 "Note that keys can contain / to form hierarchies.\n"
 "Every option starting with --elektra will be discarded from argv\n"
 "before the application's main function is started.\n"
+"\n"
+"\n"
+"\n"
+"KDB\n"
+"\n"
+"/sw/env/<name>/%profile%/<key>\n"
+"/env/<key>\n"
+"  will be used preferable. The spec(ification) entries are:\n"
+"  - context .. do not use the key itself, but do a contextual lookup of the name, honoring layers , given in the metadata\n"
+"  - no_elektra .. disable Elektra functionality for that key and only use environment\n"
+"  - no_env .. disable environment fallback\n"
+"\n"
+"/sw/env/<name>/layers\n"
+"  Specification of all layers to be activated\n"
+"  Note that the profile layer??\n"
+"\n"
+"\n"
+"\n"
 "\n"
 "\n"
 // "INTERNAL OPTIONS\n"
@@ -113,7 +132,7 @@ const char *elektraHelpText =
 "to set (e.g. in Makefiles)-\n"
 "\n"
 "\n"
-"> kdb set user/sw/man/current/MANOPT --regex\n"
+"> kdb set user/sw/env/man/MANOPT -- --regex\n"
 "\n"
 "Will permanently and user-wide change MANOPT to include --regex, so that -K\n"
 "and similar options automatically prefer regular expressions.\n"
@@ -121,7 +140,7 @@ const char *elektraHelpText =
 "applications (either system, user or directory-wide).\n"
 "\n"
 "\n"
-"> kdb set system/sw/env/current/HTTP_PROXY http://proxy.hogege.com:8000/\n"
+"> kdb set system/env/HTTP_PROXY http://proxy.hogege.com:8000/\n"
 "\n"
 "Will permanently and system-wide change the proxy for all applications\n"
 "that honor HTTP_PROXY, e.g. w3m.\n"
@@ -154,12 +173,12 @@ void printVersion()
 
 void addProc(string kv)
 {
-	cout << "kv is: " << kv << endl;
+	if (elektraDebug) cout << "kv is: " << kv << endl;
 	stringstream ss(kv);
 	string k, v;
 	getline(ss, k, '=');
 	getline(ss, v);
-	cout << "k is " << k << " and v is " << v << endl;
+	if (elektraDebug) cout << "k is " << k << " and v is " << v << endl;
 
 	string fullName = "proc/";
 	fullName += k;
@@ -172,7 +191,7 @@ void giveName(string name)
 	char * n = strdup(name.c_str());
 	fullName += basename(n);
 	free(n);
-	std::cout << "give name " << fullName << std::endl;
+	if (elektraDebug) std::cout << "give name " << fullName << std::endl;
 	keySetName(elektraParentKey, fullName.c_str());
 }
 
@@ -180,25 +199,25 @@ void parseArgs(int* argc, char** argv)
 {
 	const string prefix = "--elektra";
 	const string prefixName = "-name=";
-	std::cout << "Parsing args " << *argc << endl;
+	if (elektraDebug) std::cout << "Parsing args " << *argc << endl;
 
 	giveName(argv[0]);
 
 	int length = *argc;
 	for (int i=1; i<length; ++i)
 	{
-		printf ("argv[%d]: %s\n", i, argv[i]);
+		if (elektraDebug) printf ("argv[%d]: %s\n", i, argv[i]);
 
 		std::string argument = argv[i];
-		cout << "Process argument " << argument << std::endl;
+		if (elektraDebug) cout << "Process argument " << argument << std::endl;
 		if (argument.size() < prefix.size())
 		{
-			cout << "Skip argument " << argument << std::endl;
+			if (elektraDebug) cout << "Skip argument " << argument << std::endl;
 		}
 		else if (argument.substr(0, prefix.size()) == prefix)
 		{
 			string kv = argument.substr(prefix.size());
-			cout << "Handling kv: " << kv << endl;
+			if (elektraDebug) cout << "Handling kv: " << kv << endl;
 			if (kv == "-help")
 			{
 				cout << elektraHelpText << endl;
@@ -235,15 +254,13 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	pthread_mutex_lock(&elektraGetEnvMutex);
 	if (elektraRepo) elektraClose(); // already opened
 
-	cout << "opening elektra" << endl;
+	if (elektraDebug) cout << "opening elektra" << endl;
 	// elektraEnvContext.addLayer("abc", "def");
 	// std::cout << "evaluated: " << elektraEnvContext.evaluate("something/with/%abc%/more") << std::endl;
 
 	elektraParentKey = keyNew("/env", KEY_END);
 	elektraConfig = ksNew(20, KS_END);
-	cout << "kdbOpen" << endl;
 	elektraRepo = kdbOpen(elektraParentKey);
-	cout << "kdbGet" << endl;
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
 	keySetName(elektraParentKey, "/sw/env/default");
@@ -256,7 +273,7 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	Key *c;
 	while ((c = ksNext(elektraConfig)))
 	{
-		printf ("%s - %s\n", keyName(c), keyString(c));
+		if (elektraDebug) printf ("%s - %s\n", keyName(c), keyString(c));
 	}
 
 
@@ -291,7 +308,7 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	static union {void*d; fcn f;} start;
 	if (!start.d) start.d = dlsym(RTLD_NEXT, "__libc_start_main");
 
-	cout << "wrapping main" << endl;
+	if (elektraDebug) cout << "wrapping main" << endl;
 	elektraOpen(&argc, argv);
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 	//TODO: save configuration (on request)
@@ -312,12 +329,12 @@ typedef char *(* gfcn)(const char *);
  */
 extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 {
-	cout << "elektraGetEnv(" << name << ")" ;
+	if (elektraDebug) cout << "elektraGetEnv(" << name << ")" ;
 	if (!elektraRepo) // no open Repo (needed for bootstrapping, if inside kdbOpen() getenv is used)
 	{
 		char *ret = (*origGetenv)(name);
-		if (!ret) cout << " orig getenv returned null pointer" << endl;
-		else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl;
+		if (elektraDebug) { if (!ret) cout << " orig getenv returned null pointer" << endl;
+		else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl; }
 		return ret;
 	}
 
@@ -326,10 +343,10 @@ extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (key)
 	{
-		cout << " found " << fullName << endl;
+		if (elektraDebug) cout << " found " << fullName << endl;
 		return (char*)keyString(key);
 	}
-	cout << " tried " << fullName << " , " ;
+	if (elektraDebug) cout << " tried " << fullName << " , " ;
 
 	fullName = keyName(elektraParentKey);
 	fullName += "/";
@@ -337,24 +354,24 @@ extern "C" char *elektraGetEnv(const char *name, gfcn origGetenv)
 	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (key)
 	{
-		cout << " found " << fullName << ": " << keyString(key) << endl;
+		if (elektraDebug) cout << " found " << fullName << ": " << keyString(key) << endl;
 		return (char*)keyString(key);
 	}
-	cout << " tried " << fullName << " , " ;
+	if (elektraDebug) cout << " tried " << fullName << " , " ;
 
 	fullName = "/env/";
 	fullName += name;
 	key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
 	if (key)
 	{
-		cout << " found " << fullName << ": " << keyString(key) << endl;
+		if (elektraDebug) cout << " found " << fullName << ": " << keyString(key) << endl;
 		return (char*)keyString(key);
 	}
-	cout << " tried " << fullName << " , " ;
+	if (elektraDebug) cout << " tried " << fullName << " , " ;
 
 	char *ret = (*origGetenv)(name);
-	if (!ret) cout << " orig getenv returned null pointer" << endl;
-	else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl;
+	if (elektraDebug) { if (!ret) cout << " orig getenv returned null pointer" << endl;
+	else cout << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl; }
 	return ret;
 }
 
