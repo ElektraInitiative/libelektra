@@ -11,8 +11,7 @@ KeySet * readKeySet (int size, int version);
 ENTRY * prepareData (KeySet * ks);
 void freeData (ENTRY * data, int size);
 
-//TODO KURT print machine name + kernel bla
-//TODO KURT strange segfault with no input files
+//TODO KURT print machine name + kernel bla ? uname ?
 int main(int argc, char** argv)
 {
 	//clean up before benchmark
@@ -58,7 +57,7 @@ void runBenchmark (bool mode, int (*runInLoop) (int, int, int, ENTRY *, int *))
 			FILE * output = fopen (&filename_out[0], "w");
 			if (output == NULL)
 			{
-				printf ("output file could not be opened\n");
+				fprintf (stderr, "output file could not be opened\n");
 				ksDel(ks);
 				exit (EXIT_FAILURE);
 			}
@@ -148,7 +147,7 @@ int build (int n, int k, int r, ENTRY * data, int * times)
 		ep = hsearch (data[i], ENTER);
 		if (ep == NULL)
 		{
-			printf ("ENTER failed\n");
+			fprintf (stderr, "ENTER failed\n");
 			return -1;
 		}
 	}
@@ -184,7 +183,7 @@ int search (int n, int k, int r, ENTRY * data, int * times)
 		ep = hsearch (data[i], ENTER);
 		if (ep == NULL)
 		{
-			printf ("ENTER failed\n");
+			fprintf (stderr, "ENTER failed\n");
 			return -1;
 		}
 	}
@@ -208,18 +207,18 @@ int search (int n, int k, int r, ENTRY * data, int * times)
 
 		if (ep == NULL)
 		{
-			printf ("not found while search\n");
+			fprintf (stderr, "not found while search\n");
 			return -1;
 		}
 		Key * validate = ep->data;
 		if (strcmp (keyName(validate), lookfor) != 0)
 		{
-			printf ("found wrong Key while search\n");
+			fprintf (stderr, "found wrong Key while search\n");
 			return -1;
 		}
 		if (strcmp (keyValue(validate), GENDATA_KEY_VALUE) != 0)
 		{
-			printf ("wrong Key value while search\n");
+			fprintf (stderr, "wrong Key value while search\n");
 			return -1;
 		}
 	}
@@ -242,7 +241,7 @@ KeySet * readKeySet (int size, int version)
 	Plugin * plugin = elektraPluginOpen(EXPORT_PLUGIN, modules, conf, 0);
 	if(!plugin)
 	{
-		printf ("dump plugin could not be opened\n");
+		fprintf (stderr, "dump plugin could not be opened\n");
 		exit (EXIT_FAILURE);
 	}
 
@@ -253,7 +252,14 @@ KeySet * readKeySet (int size, int version)
 	keySetString (pkey, &filename_in[0]);
 
 	plugin->kdbGet (plugin, out, pkey);
-	//TODO KURT check for errors
+
+	const Key * ekey = keyGetMeta (pkey,"error/description");
+	if (ekey != 0)
+	{
+		fprintf (stderr, "%s\n", (char *) keyString(ekey));
+		exit (EXIT_FAILURE);
+	}
+
 	keyDel (pkey);
 
 	//plugin close
@@ -272,7 +278,7 @@ ENTRY * prepareData (KeySet * ks)
 	ENTRY * data = (ENTRY *) malloc (ksGetSize(ks) * sizeof (ENTRY));
 	if (data == NULL)
 	{
-		printf ("Malloc fail\n");
+		fprintf (stderr, "Malloc fail\n");
 		return NULL;
 	}
 	ksRewind (ks);
@@ -284,7 +290,7 @@ ENTRY * prepareData (KeySet * ks)
 		data[i].key = (char *) malloc (strlen(toCopy) + 1);
 		if (data[i].key == NULL)
 		{
-			printf ("Malloc fail\n");
+			fprintf (stderr, "Malloc fail\n");
 			for (int j=0;j < i;++j) free (data[j].key);
 			free (data);
 			return NULL;

@@ -19,8 +19,7 @@ kdb::KeySet * readKeySet (int size, int version);
 Data * prepareData (kdb::KeySet ks);
 
 
-//TODO KURT print machine name + kernel bla
-//TODO KURT strange segfault with no input files
+//TODO KURT print machine name + kernel bla ? uname ?
 int main (int argc, char**argv)
 {
 	bool b_build = true;
@@ -70,7 +69,7 @@ void runBenchmark (unorderedmap_Interface * bench)
 			if (!output.is_open ())
 			{
 				delete ks;
-				std::cout << "output file could not be opened\n" << std::endl;
+				std::cerr << "output file could not be opened\n" << std::endl;
 				std::exit (EXIT_FAILURE);
 			}
 			output << "KeySet size;suggested bucket size;bucket size;time" << std::endl;
@@ -150,7 +149,12 @@ kdb::KeySet * readKeySet (int size, int version)
 	pkey.setString (oss.str ());
 
 	plugin->get (*out, pkey);
-	//TODO KURT check for errors
+
+	if (pkey.getMeta<const kdb::Key>("error"))
+	{
+		std::cerr << pkey.getMeta<std::string>("error/description") << std::endl;
+		std::exit (EXIT_FAILURE);
+	}
 
 	return out;
 }

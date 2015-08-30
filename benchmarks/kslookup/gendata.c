@@ -10,7 +10,7 @@ int main (int argc ELEKTRA_UNUSED, char** argv ELEKTRA_UNUSED)
 	Plugin * plugin = elektraPluginOpen(EXPORT_PLUGIN, modules, conf, 0);
 	if(!plugin)
 	{
-		printf ("dump plugin could not be opened\n");
+		fprintf (stderr, "dump plugin could not be opened\n");
 		return EXIT_FAILURE;
 	}
 
@@ -70,13 +70,13 @@ char * generateKeyName (KeySet * checkIfUnique)
 	do
 	{
 		unique = true;
-		int depth = ( genRand() % (MAX_DEPTH - MIN_DEPTH) ) + MIN_DEPTH;
+		int depth = genRand(MAX_DEPTH - MIN_DEPTH) + MIN_DEPTH;
 		int indexOfSlash[depth + 1];
 		//starting slash
 		indexOfSlash[0]=0;
 		for (int i = 1;i < depth + 1;++i)
 		{
-			int wordlength = genRand() % (MAX_WORDLENGTH - MIN_WORDLENGTH);
+			int wordlength = genRand(MAX_WORDLENGTH - MIN_WORDLENGTH);
 			wordlength += MIN_WORDLENGTH;
 			//the last slash in the index array is the null termination
 			indexOfSlash[i] = indexOfSlash[i - 1] + wordlength + 1;
@@ -84,7 +84,7 @@ char * generateKeyName (KeySet * checkIfUnique)
 		randomString = (char *) malloc(indexOfSlash[depth]);
 		if (randomString == NULL)
 		{
-			printf ("Malloc fail\n");
+			fprintf (stderr, "Malloc fail\n");
 			exit (EXIT_FAILURE);
 		}
 
@@ -102,13 +102,10 @@ char * generateKeyName (KeySet * checkIfUnique)
 		randomString[indexOfSlash[depth] - 1] = '\0';
 
 		//check unique
-		//TODO KURT use ksLookup?? lol
-		ksRewind (checkIfUnique);
-		Key * iter_key;
-		while ((iter_key = ksNext (checkIfUnique)) != 0)
+		Key * key_found = ksLookupByName(checkIfUnique, randomString, KDB_O_NONE);
+		if (key_found != NULL)
 		{
-			if(strcmp(keyName(iter_key), randomString) == 0)
-				unique = false;
+			unique = false;
 		}
 		if(!unique) free (randomString);
 	}
@@ -124,7 +121,7 @@ char * generateKeyName (KeySet * checkIfUnique)
 
 char getRandomChar (void)
 {
-	unsigned int random = genRand() % 1000;
+	unsigned int random = genRand(1000);
 	unsigned int b = random;
 	for (unsigned int i = 0;i < random;++i)
 	{

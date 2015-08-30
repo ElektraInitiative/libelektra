@@ -1,11 +1,11 @@
 #include <benchmark.h>
 
-//TODO KURT rename or refactor
-unsigned int genRand (void)
+unsigned int genRand (int modul)
 {
 	struct timeval time;
 	gettimeofday (&time, 0);
-	return (int) time.tv_sec * 1000000 + time.tv_usec;
+	int out = (int) time.tv_sec * 1000000 + time.tv_usec;
+	return (out % modul);
 }
 
 /* Returns an random and free index for the search procedure,
@@ -19,7 +19,7 @@ int searchNext (int keys_searched_for[], int size)
 	{
 		if (keys_searched_for[i] == -1) ++free_fields;
 	}
-	int next = genRand() % free_fields;
+	int next = genRand(free_fields);
 	free_fields = 0;
 	//map the generated random number to the free fields
 	for (int i = 0;i < size;++i)

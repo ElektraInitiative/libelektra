@@ -45,7 +45,7 @@
 #define EXPORT_PLUGIN "dump"
 
 
-unsigned int genRand (void);
+unsigned int genRand (int modul);
 
 //stat helper
 int median (int values[], int count);

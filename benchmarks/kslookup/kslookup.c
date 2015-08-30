@@ -8,8 +8,7 @@ int search (int n, int r, KeySet * data, int * times);
 //Data helpers
 KeySet * readKeySet (int size, int version);
 
-//TODO KURT print machine name + kernel bla
-//TODO KURT strange segfault with no input files
+//TODO KURT print machine name + kernel bla ? uname ?
 int main(int argc, char** argv)
 {
 	bool b_build = true;
@@ -48,7 +47,7 @@ void runBenchmark (bool mode, int (*runInLoop) (int, int, KeySet *, int *))
 		FILE * output = fopen (&filename_out[0], "w");
 		if (output == NULL)
 		{
-			printf ("output file could not be opened\n");
+			fprintf (stderr, "output file could not be opened\n");
 			exit (EXIT_FAILURE);
 		}
 		fprintf (output, "KeySet size;time\n");
@@ -149,19 +148,19 @@ int search (int n, int r, KeySet * data, int * times)
 
 		if (keyfound == NULL)
 		{
-			printf ("not found while search\n");
+			fprintf (stderr, "not found while search\n");
 			keyDel (keysearchfor);
 			return -1;
 		}
 		if (strcmp (keyName(keyfound), keyName(keysearchfor)) != 0)
 		{
-			printf ("found wrong Key while search\n");
+			fprintf (stderr, "found wrong Key while search\n");
 			keyDel (keysearchfor);
 			return -1;
 		}
 		if (strcmp (keyValue(keyfound), GENDATA_KEY_VALUE) != 0)
 		{
-			printf ("wrong Key value while search\n");
+			fprintf (stderr, "wrong Key value while search\n");
 			keyDel (keysearchfor);
 			return -1;
 		}
@@ -183,7 +182,7 @@ KeySet * readKeySet (int size, int version)
 	Plugin * plugin = elektraPluginOpen(EXPORT_PLUGIN, modules, conf, 0);
 	if(!plugin)
 	{
-		printf ("dump plugin could not be opened\n");
+		fprintf (stderr, "dump plugin could not be opened\n");
 		return NULL;
 	}
 
@@ -194,7 +193,14 @@ KeySet * readKeySet (int size, int version)
 	keySetString (pkey, &filename_in[0]);
 
 	plugin->kdbGet (plugin, out, pkey);
-	//TODO KURT check for errors
+
+	const Key * ekey = keyGetMeta (pkey,"error/description");
+	if (ekey != 0)
+	{
+		fprintf (stderr, "%s\n", (char *) keyString(ekey));
+		return NULL;
+	}
+
 	keyDel (pkey);
 
 	//plugin close

@@ -45,7 +45,7 @@ int unorderedmap_Search::run (const int n,int k,int r, Data * data, int * values
 
 		if (got == map.end())
 		{
-			std::cout << "not found while search" << std::endl;
+			std::cerr << "not found while search" << std::endl;
 			delete[] keys_searched_for;
 			return -1;
 		}
@@ -53,13 +53,13 @@ int unorderedmap_Search::run (const int n,int k,int r, Data * data, int * values
 		{
 			if (lookfor.compare (got->second.getName()) != 0)
 			{
-				std::cout << "found wrong Key while search" << std::endl;
+				std::cerr << "found wrong Key while search" << std::endl;
 				delete[] keys_searched_for;
 				return -1;
 			}
 			if (std::string(GENDATA_KEY_VALUE).compare(got->second.getString()) != 0)
 			{
-				std::cout << "wrong Key value while search" << std::endl;
+				std::cerr << "wrong Key value while search" << std::endl;
 				delete[] keys_searched_for;
 				return -1;
 			}
@@ -72,7 +72,7 @@ int unorderedmap_Search::run (const int n,int k,int r, Data * data, int * values
 
 	if (bc != map.bucket_count())
 	{
-		std::cout << "rehashing occurred" << std::endl;
+		std::cerr << "rehashing occurred" << std::endl;
 		return -1;
 	}
 

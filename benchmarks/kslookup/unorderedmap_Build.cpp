@@ -30,7 +30,7 @@ int unorderedmap_Build::run (int n,int k,int r, Data * data, int * values)
 
 	if (bc != map.bucket_count())
 	{
-		std::cout << "rehashing occurred" << std::endl;
+		std::cerr << "rehashing occurred" << std::endl;
 		return -1;
 	}
 

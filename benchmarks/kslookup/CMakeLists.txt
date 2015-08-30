@@ -1,4 +1,3 @@
-#TODO KURT build all with one target
 include (LibAddMacros)
 
 add_headers (HDR_FILES)
@@ -38,3 +37,6 @@ if (ENABLE_CXX11)
 	set_target_properties (benchmark_kslookup_unorderedmap PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endif (ENABLE_CXX11)
+
+add_custom_target (benchmark_kslookup)
+add_dependencies (benchmark_kslookup benchmark_kslookup_gendata benchmark_kslookup_hsearch benchmark_kslookup_kslookup benchmark_kslookup_unorderedmap)
