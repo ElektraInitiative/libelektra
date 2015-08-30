@@ -40,6 +40,8 @@ using namespace ckdb;
 // #define LOG fout
 #define LOG if(elektraDebug) cerr
 
+
+
 namespace ckdb {
 extern "C" {
 Key *elektraParentKey;
@@ -48,6 +50,9 @@ KDB *elektraRepo;
 bool elektraDebug;
 std::string elektraName;
 std::string elektraProfile;
+KeySet *elektraDocu = ksNew(20,
+#include "readme_elektrify-getenv.c"
+	KS_END);
 }
 
 namespace {
@@ -76,9 +81,6 @@ public:
 	}
 } elektraEnvContext;
 
-KeySet *elektraDocu = ksNew(20,
-#include "readme_elektrify-getenv.c"
-	KS_END);
 
 pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
@@ -267,8 +269,7 @@ extern "C" int __real_main(int argc, char** argv, char** env);
 typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
-	static union {void*d; fcn f;} start;
-	if (!start.d) start.d = dlsym(RTLD_NEXT, "__libc_start_main");
+	static union Start{Start() {d = dlsym(RTLD_NEXT, "__libc_start_main");} void*d; fcn f;} start;
 
 	LOG << "wrapping main" << endl;
 	elektraOpen(&argc, argv);
@@ -358,8 +359,7 @@ extern "C" char *elektraGetEnv(std::string const& name, gfcn origGetenv)
 extern "C" char *getenv(const char *name) // throw ()
 {
 	pthread_mutex_lock(&elektraGetEnvMutex);
-	static union {void*d; gfcn f;} sym;
-	if (!sym.d) sym.d = dlsym(RTLD_NEXT, "getenv");
+	static union Sym{Sym() {d = dlsym(RTLD_NEXT, "getenv");} void*d; gfcn f;} sym;
 
 	char *ret = elektraGetEnv(name, sym.f);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
@@ -369,8 +369,7 @@ extern "C" char *getenv(const char *name) // throw ()
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
 	pthread_mutex_lock(&elektraGetEnvMutex);
-	static union {void*d; gfcn f;} sym;
-	if (!sym.d) sym.d = dlsym(RTLD_NEXT, "secure_getenv");
+	static union Sym{Sym() {d = dlsym(RTLD_NEXT, "secure_getenv");} void*d; gfcn f;} sym;
 
 	char * ret = elektraGetEnv(name, sym.f);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
