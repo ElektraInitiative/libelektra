@@ -2,17 +2,14 @@
 #include <search.h>
 
 //mode true=build false=search
-void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *));
-void build (int n, int k, int r, ENTRY * data, int * times);
-void search (int n, int k, int r, ENTRY * data, int * times);
+void runBenchmark (bool mode, int (*runInLoop) (int, int, int, ENTRY *, int *));
+int build (int n, int k, int r, ENTRY * data, int * times);
+int search (int n, int k, int r, ENTRY * data, int * times);
 
 //Data helpers
 KeySet * readKeySet (int size, int version);
 ENTRY * prepareData (KeySet * ks);
 void freeData (ENTRY * data, int size);
-
-//output file
-FILE * output;
 
 //TODO KURT print machine name + kernel bla
 //TODO KURT strange segfault with no input files
@@ -43,7 +40,7 @@ int main(int argc, char** argv)
 
 /* provides the skeleton for the benchmark runs.
  */
-void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *))
+void runBenchmark (bool mode, int (*runInLoop) (int, int, int, ENTRY *, int *))
 {
 	for (int v=1;v <= KEYSET_VERSIONS;++v)
 	{
@@ -58,10 +55,11 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *))
 			else
 				c_mode = 's';
 			sprintf (&filename_out[0], "hsearch_%c_%i_%i.bench",c_mode,n,v);
-			output = fopen (&filename_out[0], "w");
+			FILE * output = fopen (&filename_out[0], "w");
 			if (output == NULL)
 			{
 				printf ("output file could not be opened\n");
+				ksDel(ks);
 				exit (EXIT_FAILURE);
 			}
 			fprintf (output, "KeySet size;bucket size;time\n");
@@ -102,9 +100,21 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *))
 				for (int r = 0;r < REPEATS;++r)
 				{
 					ENTRY * data = prepareData (ks);
+					if (data == NULL)
+					{
+						fclose (output);
+						ksDel(ks);
+						exit (EXIT_FAILURE);
+					}
 
 					//call for worker
-					runInLoop (n,k,r,data,&times[0]);
+					if( runInLoop (n,k,r,data,&times[0]) < 0)
+					{
+						fclose (output);
+						ksDel(ks);
+						freeData (data,n);
+						exit (EXIT_FAILURE);
+					}
 
 					freeData (data,n);
 				}
@@ -121,7 +131,7 @@ void runBenchmark (bool mode, void (*runInLoop) (int, int, int, ENTRY *, int *))
 /* The actual benchmark procedure for the build, executed for each
  * setting.
  */
-void build (int n, int k, int r, ENTRY * data, int * times)
+int build (int n, int k, int r, ENTRY * data, int * times)
 {
 	ENTRY * ep;
 	struct timeval start;
@@ -137,10 +147,9 @@ void build (int n, int k, int r, ENTRY * data, int * times)
 	{
 		ep = hsearch (data[i], ENTER);
 		if (ep == NULL) {
-		   printf ("ENTER failed\n");
-		   fclose (output);
-		   exit (EXIT_FAILURE);
-	   }
+			printf ("ENTER failed\n");
+			return -1;
+		}
 	}
 
 	gettimeofday (&end, 0);
@@ -149,12 +158,13 @@ void build (int n, int k, int r, ENTRY * data, int * times)
 
 	//cleanup
 	hdestroy ();
+	return 1;
 }
 
 /* The actual benchmark procedure for the search, executed for each
  * setting.
  */
-void search (int n, int k, int r, ENTRY * data, int * times)
+int search (int n, int k, int r, ENTRY * data, int * times)
 {
 	ENTRY * ep;
 	ENTRY e;
@@ -173,9 +183,8 @@ void search (int n, int k, int r, ENTRY * data, int * times)
 		ep = hsearch (data[i], ENTER);
 		if (ep == NULL) {
 		   printf ("ENTER failed\n");
-		   fclose (output);
-		   exit (EXIT_FAILURE);
-	   }
+		   return -1;
+		}
 	}
 
 	// search for each key randomly and save the time
@@ -195,12 +204,20 @@ void search (int n, int k, int r, ENTRY * data, int * times)
 		keys_searched_for[search_for] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 							(end.tv_usec - start.tv_usec);
 
+		if (ep == NULL) {
+		   printf ("not found while search\n");
+		   return -1;
+		}
 		Key * validate = ep->data;
+		if (strcmp (keyName(validate), lookfor) != 0)
+		{
+			printf ("found wrong Key while search\n");
+			return -1;
+		}
 		if (strcmp (keyValue(validate), GENDATA_KEY_VALUE) != 0)
 		{
-			printf ("correctness error while search\n");
-			fclose (output);
-			exit (EXIT_FAILURE);
+			printf ("wrong Key value while search\n");
+			return -1;
 		}
 	}
 
@@ -209,6 +226,7 @@ void search (int n, int k, int r, ENTRY * data, int * times)
 
 	//cleanup
 	hdestroy ();
+	return 1;
 }
 
 KeySet * readKeySet (int size, int version)
@@ -218,7 +236,7 @@ KeySet * readKeySet (int size, int version)
 	KeySet * modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
 	KeySet *conf = ksNew (0, KS_END);
-	Plugin * plugin = elektraPluginOpen("dump", modules, conf, 0);
+	Plugin * plugin = elektraPluginOpen(EXPORT_PLUGIN, modules, conf, 0);
 	if(!plugin)
 	{
 		printf ("dump plugin could not be opened\n");
@@ -252,8 +270,7 @@ ENTRY * prepareData (KeySet * ks)
 	if (data == NULL)
 	{
 		printf ("Malloc fail\n");
-		fclose (output);
-		exit (EXIT_FAILURE);
+		return NULL;
 	}
 	ksRewind (ks);
 	Key * iter_key;
@@ -265,8 +282,9 @@ ENTRY * prepareData (KeySet * ks)
 		if (data[i].key == NULL)
 		{
 			printf ("Malloc fail\n");
-			fclose (output);
-			exit (EXIT_FAILURE);
+			for (int j=0;j < i;++j) free (data[j].key);
+			free (data);
+			return NULL;
 		}
 		strcpy (data[i].key,toCopy);
 		data[i].data = iter_key;
