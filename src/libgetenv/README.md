@@ -7,7 +7,7 @@ elektrify-getenv(1) -- elektrify the environment of applications
 
 ## SYNOPSIS
 
-`name` <application> <options>
+`elektrify-getenv` <application> <options>
 
 This application is elektrified using libelektragetenv.
 This is a LD_PRELOAD technique to elektrify applications
@@ -24,35 +24,55 @@ to the file
 
     /etc/ld.so.preload
 
-If you only want to use it for individual (non setuid) executions
+this can be done using Elektra:
 
-    LD_PRELOAD=/path/to/libelektragetenv.so ls
+    sudo kdb mount /etc/ld.so.preload system/ld/preload line null
+    sudo kdb set "system/ld/preload/new" /path/to/libelektragetenv.so
 
+Note, that some applications do weird stuff and will not work with any LD_PRELOAD trick,
+[e.g. firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=435683).
+
+If you only want to use it for individual (non setuid) executions, run
+
+    `elektrify-getenv` <application>
 
 ## LOOKUPS
 
-Additional to searching in the environment (environ), getenv() will use
-ksLookup() to lookup configuration.
+The main purpose of this approach is to finally have a well-defined
+way to set and get environment variables.
+Elektra's variables will be in use immediately for every newly
+started application (no relogin necessary).
 
-Different lookups will be done:
-1.) Commandline parameters will be preferred
-2.) an application-specific lookup using /sw/env/<name>
-where <name> is different for every application.
-3.) a convenience fallback lookup using /env
-which is the same for every application
-(easies usage of already established environment-standards. In applications with a specification this should not be used. Here we make an exception, because the administrator would have to write the specification)
-4.) the environment will be requested
+To do so, getenv(2) will lookup multiple sources next to searching in the environment
+(environ). As running example will use `getenv("HOME")`.
+
+1.) Given commandline parameters will always be preferred (see [OPTIONS](OPTIONS) below).
+    E.g. elektrify-getenv <application> --elektra:HOME=/path/to/home
+2.) Then /env/override/<key> will be looked up, where <key> is the parameter to `getenv`.
+    E.g. kdb set user/env/override/HOME /path/to/home
+3.) Then environment will be requested.
+    E.g. HOME=/path/to/home elektrify-getenv <application>
+3.) Then /env/fallback/<key> will be looked up.
+
 
 ## OPTIONS
 
 You are allowed to interleave Elektra's and the application's options.
 Elektra will parse its options (starting with --elektra) first and
-discard them. The application will not see that they were even there.
+discard them before main is started. The application will not see that they were even
+there, e.g.: given <application> -V --elektra-debug -L
+the application will be called with <application> -V -L
 
  * `--elektra-help`:
    Outputs this help.
  * `--elektra-version`:
    Gives version information
+ * `--elektra-debug`:
+   Trace all getenv() calls to stderr.
+ * `--elektra-clearenv`
+   Call clearenv(3) before entering main.
+   This is a recommended security feature.
+   Elektra itself, if configured that way, will still be able to use the environment.
  * `--elektra-name=key`:
    the application name to be used instead of the executable's basename
  * `--elektra:key=value`:
@@ -60,10 +80,13 @@ discard them. The application will not see that they were even there.
 
 Note that keys can contain / to form hierarchies.
 
-Every option starting with --elektra will be discarded from argv
-before the application's main function is started.
+Also note that all options can also be set below `/env/options/<option>`
+e.g. `kdb set user/env/options/clearenv` to clear the environment for all
+applications started by that user (note that at least `PATH` should to be set
+using `kdb set user/env/fallback/PATH "/bin:/usr/bin"` then).
 
-## KDB
+
+## CONTEXT
 
  * `/sw/env/<name>/%profile%/<key>`
  * `/env/<key>`
@@ -72,15 +95,29 @@ before the application's main function is started.
   - no_elektra .. disable Elektra functionality for that key and only use environment
   - no_env .. disable environment fallback
 
- * `/sw/env/<name>/layers`
+ * `/env/<name>/layers`
   Specification of all layers to be activated
   Note that the profile layer??
 
 
 ## ENVIRONMENT
 
- * ELEKTRA_DEBUG:
-   debug output
+Typically Elektra tries to avoid using the environment.
+Some resolvers, however, use it to be conform to some specifications, e.g. XDG.
+Depending on the setup you use, these parameters might be used.
+For more information see:
+
+    kdb info resolver
+
+
+Note that `--elektra-debug` does *not* log `getenv(3)` during the startup-phase.
+
+
+## BUGS
+
+Some applications do not use `getenv(3)` for requesting the environment,
+e.g. most shells.
+This approach does not work for them.
 
 
 ## EXAMPLES
@@ -96,16 +133,20 @@ because sometimes environment variables are not trivial
 to set (e.g. in Makefiles)-
 
 
-    kdb set user/sw/env/man/MANOPT -- --regex
+    kdb set user/env/override/MANOPT -- "--regex -LC"
 
-Will permanently and user-wide change MANOPT to include --regex, so that -K
-and similar options automatically prefer regular expressions.
+Will permanently and user-wide change MANOPT to include --regex, and -LC so
+that regular expressions will be used (note `man echo` will return many man
+pages then) and that they will be shown in English.
 This feature is handy to change the default behaviour of
 applications (either system, user or directory-wide).
 
 
-    kdb set system/env/HTTP_PROXY http://proxy.hogege.com:8000/
+    kdb set system/env/override/HTTP_PROXY http://proxy.hogege.com:8000/
 
 Will permanently and system-wide change the proxy for all applications
 that honor HTTP_PROXY, e.g. w3m.
+We can also link `http_proxy` to the value of `HTTP_PROXY`:
 
+    kdb setmeta spec/env/override/http_proxy "override/#0" /env/override/HTTP_PROXY
+    kdb get /env/override/http_proxy

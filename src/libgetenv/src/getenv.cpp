@@ -8,8 +8,9 @@
  */
 
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE // RTLD_NEXT
+# define _GNU_SOURCE // for RTLD_NEXT (except BSDI)
 #endif
+
 
 #include <kdbgetenv.h>
 #include <kdbconfig.h>
@@ -27,10 +28,17 @@
 #include <sstream>
 #include <iostream>
 
-#define LOG if(elektraDebug) cerr
+/* BSDI has this functionality, but its not defined */
+#if !defined(RTLD_NEXT)
+#define RTLD_NEXT ((void *) -1L)
+#endif
 
 using namespace std;
 using namespace ckdb;
+
+// ofstream fout("/tmp/elektra-getenv.log", fstream::app);
+// #define LOG fout
+#define LOG if(elektraDebug) cerr
 
 namespace ckdb {
 extern "C" {
@@ -123,7 +131,6 @@ void parseArgs(int* argc, char** argv)
 	const string prefix = "--elektra";
 	const string prefixName = "-name=";
 	const string prefixProfile = "-profile=";
-	const string prefixDebug = "-debug";
 	LOG << "Parsing args " << *argc << endl;
 
 	giveName(argv[0]);
@@ -131,8 +138,6 @@ void parseArgs(int* argc, char** argv)
 	int length = *argc;
 	for (int i=1; i<length; ++i)
 	{
-		if (elektraDebug) printf ("argv[%d]: %s\n", i, argv[i]);
-
 		std::string argument = argv[i];
 		LOG << "Process argument " << argument << std::endl;
 		if (argument.size() < prefix.size())
@@ -157,9 +162,13 @@ void parseArgs(int* argc, char** argv)
 			{
 				elektraProfile = kv.substr(prefixProfile.size());
 			}
-			else if (kv == prefixDebug)
+			else if (kv == "-clearenv")
 			{
-				elektraDebug = true;
+				ksAppendKey(elektraConfig, keyNew("proc/env/options/clearenv", KEY_END));
+			}
+			else if (kv == "-debug")
+			{
+				ksAppendKey(elektraConfig, keyNew("proc/env/options/debug", KEY_END));
 			}
 			else if (kv == "-version")
 			{
@@ -208,6 +217,8 @@ void applyOptions()
 {
 	Key *k = ksLookupByName(elektraConfig, "/env/options/debug", 0);
 	if (k) elektraDebug = true;
+	k = ksLookupByName(elektraConfig, "/env/options/clearenv", 0);
+	if (k) clearenv();
 }
 
 extern "C" void elektraOpen(int* argc, char** argv)
@@ -225,12 +236,6 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	if (argc && argv)
 	{
 		parseArgs(argc, argv);
-	}
-
-	Key *c;
-	while ((c = ksNext(elektraConfig)))
-	{
-		if (elektraDebug) printf ("%s - %s\n", keyName(c), keyString(c));
 	}
 
 	// reopen everything (if wrong variable names were used before)
