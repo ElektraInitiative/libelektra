@@ -2,6 +2,8 @@
 include (LibAddMacros)
 
 add_headers (HDR_FILES)
+add_cppheaders (HDR_FILES)
+add_toolheaders (HDR_FILES)
 
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -23,3 +25,16 @@ endmacro (benchmark_kslookup_c)
 
 benchmark_kslookup_c (hsearch)
 benchmark_kslookup_c (kslookup)
+
+# unorderedmap
+if (ENABLE_CXX11)
+	#no C++11 no unorderedmap
+	set (SOURCES ${HDR_FILES} benchmark.h benchmark.c unorderedmap_Interface.hpp
+			unorderedmap_Search.hpp unorderedmap_Build.hpp unorderedmap_Search.cpp
+			unorderedmap_Build.cpp unorderedmap.cpp)
+	add_executable (benchmark_kslookup_unorderedmap ${SOURCES})
+	target_link_elektra(benchmark_kslookup_unorderedmap)
+	target_link_elektratools(benchmark_kslookup_unorderedmap)
+	set_target_properties (benchmark_kslookup_unorderedmap PROPERTIES
+			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+endif (ENABLE_CXX11)

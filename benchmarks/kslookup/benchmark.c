@@ -1,5 +1,6 @@
 #include <benchmark.h>
 
+//TODO KURT rename or refactor
 unsigned int genRand (void)
 {
 	struct timeval time;

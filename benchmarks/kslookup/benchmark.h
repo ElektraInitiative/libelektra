@@ -1,8 +1,10 @@
 #ifndef BENCHMARKS_KSLOOKUP_BENCHMARK_H
 #define BENCHMARKS_KSLOOKUP_BENCHMARK_H
 
-// TODO KURT QUEST strange valgrind in gendata ,hsearch and kslookup:
+// TODO KURT QUEST strange valgrind in gendata ,hsearch, kslookup and unorderedmap:
 // still reachable: 72,704 bytes in 1 blocks
+
+#ifndef __cplusplus
 
 #include <kdbinternal.h>
 
@@ -11,6 +13,8 @@
 #include <stdlib.h>
 //~ #include <unistd.h>
 #include <sys/time.h>
+
+#endif
 
 // never set min = max
 #define MIN_KEYSET_SIZE 10
@@ -38,6 +42,7 @@
 #define BUFFER_FILENAME 50
 
 #define GENDATA_KEY_VALUE "some data"
+#define EXPORT_PLUGIN "dump"
 
 
 unsigned int genRand (void);
