@@ -13,7 +13,7 @@ if (LIBGCRYPT_FOUND)
 			${LIBGCRYPT_LIBRARIES}
 		)
 
-	#add_plugintest(crypto)
+	add_plugintest(crypto)
 	
 	install(DIRECTORY crypto DESTINATION ${TARGET_TEST_DATA_FOLDER})
 	
