@@ -120,8 +120,12 @@ TEST(GetEnv, ArgvParamUninvolved)
 	elektraClose();
 }
 
+namespace ckdb {
+extern "C" {
 extern std::string elektraName;
 extern ckdb::KeySet *elektraDocu;
+}
+}
 
 TEST(GetEnv, Name)
 {
