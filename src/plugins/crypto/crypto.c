@@ -1,9 +1,9 @@
 /***************************************************************************
-          crypto.c  -  Cryptographic filter plugin
-                             -------------------
-    begin                : Don Aug 20 11:28:43 CEST 2015
-    copyright            : (C) 2015 by Peter Nirschl
-    email                : peter.nirschl@gmail.com
+ crypto.c  -  Cryptographic filter plugin
+ -------------------
+ begin                : Don Aug 20 11:28:43 CEST 2015
+ copyright            : (C) 2015 by Peter Nirschl
+ email                : peter.nirschl@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,28 +14,9 @@
  ***************************************************************************/
 
 #include "crypto.h"
-#include <gcrypt.h>
 
 #define ELEKTRA_PLUGIN_CRYPTO_SUCCESS (1)
 #define ELEKTRA_PLUGIN_CRYPTO_ERROR (-1)
-
-int initializeLibgcrypt();
-
-int initializeLibgcrypt()
-{
-	// libgcrypt initialization
-	if(!gcry_check_version (GCRYPT_VERSION))
-	{
-		// TODO proper error handling
-		return ELEKTRA_PLUGIN_CRYPTO_ERROR;
-	}
-	gcry_control (GCRYCTL_SUSPEND_SECMEM_WARN);
-	// allocate 16kB of secure memory
-	gcry_control (GCRYCTL_INIT_SECMEM, 16384, 0);
-	gcry_control (GCRYCTL_RESUME_SECMEM_WARN);
-	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
-	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
-}
 
 int elektraCryptoOpen(Plugin *handle, Key *errorKey)
 {
@@ -62,11 +43,10 @@ int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey)
 	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
-{
-	return elektraPluginExport("crypto",
-		ELEKTRA_PLUGIN_GET,	&elektraCryptoGet,
-		ELEKTRA_PLUGIN_SET,	&elektraCryptoSet,
+Plugin *ELEKTRA_PLUGIN_EXPORT(crypto){
+return elektraPluginExport("crypto",
+		ELEKTRA_PLUGIN_GET, &elektraCryptoGet,
+		ELEKTRA_PLUGIN_SET, &elektraCryptoSet,
 		ELEKTRA_PLUGIN_END);
 }
 
