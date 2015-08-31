@@ -1,12 +1,18 @@
 find_package (LibGcrypt)
 
+set (SOURCES 
+	gcrypt_operations.h
+	gcrypt_operations.c
+	crypto.h
+	crypto.c
+)
+
 if (LIBGCRYPT_FOUND)
 	include(LibAddPlugin)
 
 	add_plugin(crypto
-		SOURCES
-			crypto.h
-			crypto.c
+		SOURCES 
+			${SOURCES}
 		INCLUDE_DIRECTORIES
 			${LIBGCRYPT_INCLUDE_DIR}
 		LINK_LIBRARIES
