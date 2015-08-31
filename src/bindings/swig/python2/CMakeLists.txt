@@ -13,6 +13,11 @@ elseif (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 	remove_binding(swig_python2 "python2 is for python 2.7 only and not ${PYTHON2LIBS_VERSION_STRING}")
 else()
 	message(STATUS "Include Binding swig_python2")
+	if (${SWIG_VERSION} MATCHES "^2\\.")
+		message(WARNING "Python bindings might crash if generated with SWIG 2."
+				" Please upgrade to SWIG 3 or later.")
+	endif()
+
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
 

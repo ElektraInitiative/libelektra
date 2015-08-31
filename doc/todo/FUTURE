@@ -18,6 +18,8 @@ remove old metadata get/set
 
 remove null ptr checks? (see decision)
 
+Start arrays with _ (and not with #)?
+
 make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
 sentinel, have a single way how to terminate vaargs
 
