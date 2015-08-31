@@ -1,4 +1,3 @@
-usr/share/cmake-2.8/Modules/FindElektra.cmake
 usr/lib/pkgconfig/elektra.pc
 usr/include/elektra
 usr/lib/libelektra*.a
