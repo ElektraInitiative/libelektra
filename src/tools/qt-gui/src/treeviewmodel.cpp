@@ -492,7 +492,7 @@ void TreeViewModel::createNewNodes(KeySet keySet)
 
 	while (keySet.next())
 	{
-		Key k = keySet.current().dup();
+		Key k = keySet.current();
 		QStringList keys = getSplittedKeyname(k);
 		QString root = keys.takeFirst();
 
@@ -544,73 +544,79 @@ void TreeViewModel::synchronize()
 		return;
 	}
 
-	ours = ours.cut(root);
-	theirs = theirs.cut(root);
-	base = base.cut(root);
-
-	ThreeWayMerge merger;
-
-	OneSideMergeConfiguration configuration(OURS);
-	configuration.configureMerger(merger);
-
-#if DEBUG && VERBOSE
-	theirs.rewind();
-	base.rewind();
-	for (Key o : ours)
-	{
-		Key t = theirs.next();
-		Key b = base.next();
-		std::cout << o.getName() << " " << ckdb::keyNeedSync(*o);
-		std::cout << "\t";
-		!b.isValid() ? std::cout << "none" : std::cout << b.getName() << " " << ckdb::keyNeedSync(*b);
-		std::cout << "\t";
-		!t.isValid() ? std::cout << "none" : std::cout << t.getName() << " " << ckdb::keyNeedSync(*t);
-		std::cout << std::endl;
-	}
-#endif
-
-	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
-													  OurMergeKeys(ours, root),
-													  TheirMergeKeys (theirs, root),
-													  root));
-	if (!result.hasConflicts ())
-	{
-		resultKeys.append(result.getMergedKeys());
-	}
-	else
-	{
-		KeySet conflictSet = result.getConflictSet();
-		QStringList conflicts;
-		conflictSet.rewind();
-		Key current;
-
-		while ((current = conflictSet.next()))
-		{
-			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
-			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
-
-			conflicts.append(QString::fromStdString(current.getName()));
-			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
-			conflicts.append("\n");
-		}
-
-		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), conflicts.join("\n"));
-		return;
-	}
-
 	try
 	{
-		kdb.set(resultKeys, root);
+		kdb.set(ours, root);
 	}
 	catch (KDBException const& e)
 	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed, could not write to configuration."), e.what());
-		return;
+		ours = ours.cut(root);
+		theirs = theirs.cut(root);
+		base = base.cut(root);
+
+		ThreeWayMerge merger;
+
+		OneSideMergeConfiguration configuration(OURS);
+		configuration.configureMerger(merger);
+
+	#if DEBUG && VERBOSE
+		theirs.rewind();
+		base.rewind();
+		for (Key o : ours)
+		{
+			Key t = theirs.next();
+			Key b = base.next();
+			std::cout << o.getName() << " " << ckdb::keyNeedSync(*o);
+			std::cout << "\t";
+			!b.isValid() ? std::cout << "none" : std::cout << b.getName() << " " << ckdb::keyNeedSync(*b);
+			std::cout << "\t";
+			!t.isValid() ? std::cout << "none" : std::cout << t.getName() << " " << ckdb::keyNeedSync(*t);
+			std::cout << std::endl;
+		}
+	#endif
+
+		MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
+														  OurMergeKeys(ours, root),
+														  TheirMergeKeys (theirs, root),
+														  root));
+		if (!result.hasConflicts ())
+		{
+			resultKeys.append(result.getMergedKeys());
+		}
+		else
+		{
+			KeySet conflictSet = result.getConflictSet();
+			QStringList conflicts;
+			conflictSet.rewind();
+			Key current;
+
+			while ((current = conflictSet.next()))
+			{
+				QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+				QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+				conflicts.append(QString::fromStdString(current.getName()));
+				conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+				conflicts.append("\n");
+			}
+
+			emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), conflicts.join("\n"));
+			return;
+		}
+
+		try
+		{
+			kdb.set(resultKeys, root);
+		}
+		catch (KDBException const& e)
+		{
+			emit showMessage(tr("Error"), tr("Synchronizing failed, could not write to configuration."), e.what());
+			return;
+		}
+
+		GUIBasicKeySet::setBasic(resultKeys);
+		createNewNodes(resultKeys);
 	}
-
-	GUIBasicKeySet::setBasic(resultKeys);
-
-	createNewNodes(resultKeys);
 }
 
 void TreeViewModel::clearMetaModel()
@@ -647,7 +653,7 @@ QString TreeViewModel::getCurrentArrayNo() const
 	}
 
 	if(max){
-		Key k = max->getKey().dup();
+		Key k = max->getKey();
 		ckdb::elektraArrayIncName(k.getKey());
 		return QString::fromStdString(k.getBaseName());
 	}

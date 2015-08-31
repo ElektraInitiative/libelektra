@@ -11,7 +11,7 @@ void KeySetVisitor::visit(ConfigNode& node)
 
 	if (key && key.isValid())
 	{
-		m_set.append(key.dup());
+		m_set.append(key);
 	}
 }
 

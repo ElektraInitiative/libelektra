@@ -109,6 +109,8 @@ void ConfigNode::setName(const QString& name)
 
 	if(!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
+	else
+		m_key = m_key.dup();
 
 	try{
         if(m_key.getBaseName().compare(name.toStdString()) != 0)
@@ -126,6 +128,8 @@ void ConfigNode::setValue(const QVariant& value)
 {
 	if(!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
+	else
+		m_key = m_key.dup();
 
     if(m_key.getString().compare(value.toString().toStdString()) != 0){
         m_key.setString(value.toString().toStdString());
@@ -138,10 +142,12 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
 	if(!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
-        //is this critical in regard to #235 if the exact same key already exists?
-        m_key.setMeta(name.toStdString(), value.toString().toStdString());
-        m_name = name;
-        m_value = value;
+	else
+		m_key = m_key.dup();
+
+	m_key.setMeta(name.toStdString(), value.toString().toStdString());
+	m_name = name;
+	m_value = value;
 }
 
 
