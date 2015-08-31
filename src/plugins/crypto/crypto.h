@@ -1,9 +1,9 @@
 /***************************************************************************
-          crypto.h  -  Cryptographic filter plugin
-                             -------------------
-    begin                : Don Aug 20 11:28:43 CEST 2015
-    copyright            : (C) 2015 by Peter Nirschl
-    email                : peter.nirschl@gmail.com
+ crypto.h  -  Cryptographic filter plugin
+ -------------------
+ begin                : Don Aug 20 11:28:43 CEST 2015
+ copyright            : (C) 2015 by Peter Nirschl
+ email                : peter.nirschl@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -12,12 +12,13 @@
  *   it under the terms of the BSD License (revised).                      *
  *                                                                         *
  ***************************************************************************/
- 
+
 #ifndef ELEKTRA_PLUGIN_CRYPTO_H
 #define ELEKTRA_PLUGIN_CRYPTO_H
 
 #include <kdbplugin.h>
 #include <stdio.h>
+#include "gcrypt_operations.h"
 
 int elektraCryptoOpen(Plugin *handle, Key *errorKey);
 int elektraCryptoClose(Plugin *handle, Key *errorKey);
