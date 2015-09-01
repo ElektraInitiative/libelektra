@@ -78,62 +78,62 @@ Cmdline::Cmdline (int argc,
 	{
 		option o = {"all", no_argument, 0, 'a'};
 		long_options.push_back(o);
-		helpText += "-a --all                 consider all keys\n";
+		helpText += "-a --all                 Consider all of the keys.\n";
 	}
 	if (acceptedOptions.find('d')!=string::npos)
 	{
 		option o = {"debug", no_argument, 0, 'd'};
 		long_options.push_back(o);
-		helpText += "-d --debug               give debug information or ask debug questions (in interactive mode)\n";
+		helpText += "-d --debug               Give debug information or ask debug questions (in interactive mode).\n";
 	}
 	if (acceptedOptions.find('f')!=string::npos)
 	{
 		option o = {"force", no_argument, 0, 'f'};
 		long_options.push_back(o);
-		helpText += "-f --force               force the action to be done\n";
+		helpText += "-f --force               Force the action to be done.\n";
 	}
 	if (acceptedOptions.find('l')!=string::npos)
 	{
 		option o = {"load", no_argument, 0, 'f'};
 		long_options.push_back(o);
-		helpText += "-l --load                load plugin even if system/elektra is available\n";
+		helpText += "-l --load                Load plugin even if system/elektra is available\n";
 	}
 	if (acceptedOptions.find('h')!=string::npos)
 	{
 		option o = {"human-readable", no_argument, 0, 'h'};
 		long_options.push_back(o);
-		helpText += "-h --human-readable      print numbers in an human readable way\n";
+		helpText += "-h --human-readable      Print numbers in an human readable way\n";
 	}
 	if (acceptedOptions.find('H')!=string::npos)
 	{
 		option o = {"help", no_argument, 0, 'H'};
 		long_options.push_back(o);
-		helpText += "-H --help                print help text\n";
+		helpText += "-H --help                Print help text.\n";
 	}
 	if (acceptedOptions.find('i')!=string::npos)
 	{
 		option o = {"interactive", no_argument, 0, 'i'};
 		long_options.push_back(o);
-		helpText += "-i --interactive         instead of passing all information by parameters\n";
-		helpText += "                         ask the user interactively\n";
+		helpText += "-i --interactive         Instead of passing all information by parameters\n";
+		helpText += "                         ask the user interactively.\n";
 	}
 	if (acceptedOptions.find('n')!=string::npos)
 	{
 		option o = {"no-newline", no_argument, 0, 'n'};
 		long_options.push_back(o);
-		helpText += "-n --no-newline          suppress the newline at the end of the output\n";
+		helpText += "-n --no-newline          Suppress the newline at the end of the output.\n";
 	}
 	if (acceptedOptions.find('t')!=string::npos)
 	{
 		option o = {"test", no_argument, 0, 't'};
 		long_options.push_back(o);
-		helpText += "-t --test                test\n";
+		helpText += "-t --test                Test.\n";
 	}
 	if (acceptedOptions.find('r')!=string::npos)
 	{
 		option o = {"recursive", no_argument, 0, 'r'};
 		long_options.push_back(o);
-		helpText += "-r --recursive           work in a recursive mode\n";
+		helpText += "-r --recursive           Work in a recursive mode.\n";
 	}
 	optionPos = acceptedOptions.find('R');
 	if (optionPos!=string::npos)
@@ -142,8 +142,8 @@ Cmdline::Cmdline (int argc,
 		option o = {"resolver", required_argument, 0, 'R'};
 		long_options.push_back (o);
 		helpText +=
-				"-R --resolver <name>     the resolver plugin to use\n"
-				"                         if no resolver is given, the default resolver is used\n"
+				"-R --resolver <name>     Specify the resolver plugin to use\n"
+				"                         if no resolver is given, the default resolver is used.\n"
 				"";
 	}
 	optionPos = acceptedOptions.find('s');
@@ -153,63 +153,66 @@ Cmdline::Cmdline (int argc,
 		option o = {"strategy", required_argument, 0, 's'};
 		long_options.push_back(o);
 		helpText +=
-			"-s --strategy <name>     the strategy which should be used on conflicts.\n"
-			"                         To be precise, strategies handle deviations from the base\n"
-			"                         When and which strategies are used and what they do depends mostly on\n"
-			"                         the used base KeySet. For twoway-merge the base is our side of the keys\n"
+			"-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n"  
+                        "                         More precisely, strategies are used to handle deviations from the\n"
+                        "                         base version of a key.\n"
+                        "                         When and which strategies are used and what they do depends\n"
+			"                         mostly on the used base KeySet.\n\n"  
+			"                         Note: For a two-way merge, the `ours` version of the keys is used\n"
+                        "                         in place of `base`\n\n"
 			"                         Currently the following strategies exist\n"
-			"                         preserve      .. automerge only those keys where just one"
-			"                                          side deviates from base (default)\n"
-			"                         ours          .. like preserve, but in case of conflict use our version\n"
-			"                         theirs        .. like preserve, but in case of conflict use their version\n"
-			"                         cut           .. primarily used for import. removes existing keys below "
-			"                                          the import point and always takes the imported version\n"
-			"                         import        .. primarily used for import. preserves existing keys if "
-			"                                          they do not exist in the imported keyset. in all other\n"
-			"                                          cases the imported keys have precedence\n"
+			"                           preserve      .. automerge only those keys where just one\n"
+			"                                            side deviates from base (default)\n"
+			"                           ours          .. like preserve, but in case of conflict use our version\n"
+			"                           theirs        .. like preserve, but in case of conflict use their version\n"
+			"                           cut           .. primarily used for import. removes existing keys below\n"
+			"                                            the import point and always takes the imported version\n"
+			"                           import        .. primarily used for import. preserves existing keys if\n"
+			"                                            they do not exist in the imported keyset. in all other\n"
+			"                                            cases the imported keys have precedence\n"
 			"";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
 		option o = {"verbose", no_argument, 0, 'v'};
 		long_options.push_back(o);
-		helpText += "-v --verbose             be more verbose\n";
+		helpText += "-v --verbose             Explain what is happening.\n";
 	}
 	if (acceptedOptions.find('V')!=string::npos)
 	{
 		option o = {"version", no_argument, 0, 'V'};
 		long_options.push_back(o);
-		helpText += "-V --version             print version info\n";
+		helpText += "-V --version             Print version info.\n";
 	}
 	if (acceptedOptions.find('E')!=string::npos)
 	{
 		option o = {"without-elektra", no_argument, 0, 'E'};
 		long_options.push_back(o);
-		helpText += "-E --without-elektra     omit system/elektra directory\n";
+		helpText += "-E --without-elektra     Omit the `system/elektra` directory.\n";
 	}
 	if (acceptedOptions.find('0')!=string::npos)
 	{
 		option o = {"null", no_argument, 0, '0'};
 		long_options.push_back(o);
-		helpText += "-0 --null                use binary 0 termination\n";
+		helpText += "-0 --null                Use binary 0 termination.\n";
 	}
 	if (acceptedOptions.find('1')!=string::npos)
 	{
 		option o = {"first", no_argument, 0, '1'};
 		long_options.push_back(o);
-		helpText += "-1 --first               suppress first column\n";
+		helpText += "-1 --first               Suppress the first column.\n";
 	}
 	if (acceptedOptions.find('2')!=string::npos)
 	{
 		option o = {"second", no_argument, 0, '2'};
 		long_options.push_back(o);
-		helpText += "-2 --second              suppress second column\n";
+		helpText += "-2 --second              Suppress the second column.\n";
 	}
 	if (acceptedOptions.find('3')!=string::npos)
 	{
 		option o = {"third", no_argument, 0, '3'};
 		long_options.push_back(o);
-		helpText += "-3 --third               suppress third column\n";
+		helpText += "-3 --third               Suppress the third column.\n";
 	}
 	optionPos = acceptedOptions.find('N');
 	if (acceptedOptions.find('N')!=string::npos)
@@ -217,7 +220,7 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"namespace", required_argument, 0, 'N'};
 		long_options.push_back(o);
-		helpText += "-N --namespace ns        namespace to use when writing cascading keys\n";
+		helpText += "-N --namespace ns        Sepcify the namespace to use when writing cascading keys.\n";
 	}
 	optionPos = acceptedOptions.find('c');
 	if (optionPos!=string::npos)
@@ -225,7 +228,7 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"plugins-config", no_argument, 0, 'c'};
 		long_options.push_back(o);
-		helpText += "-c --plugins-config      add a plugin configuration\n";
+		helpText += "-c --plugins-config      Add a plugin configuration.\n";
 	}
 
 	{
