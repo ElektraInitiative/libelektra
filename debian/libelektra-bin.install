@@ -9,8 +9,6 @@ usr/lib/elektra/tool_exec/elektra-mount
 usr/lib/elektra/tool_exec/elektra-umount
 usr/lib/elektra/tool_exec/configure-common
 usr/lib/elektra/tool_exec/configure-debian
-usr/lib/elektra/tool_exec/configure-debian-wheezy
-usr/lib/elektra/tool_exec/configure-debian-wheezy-local
 usr/lib/elektra/tool_exec/configure-mingw
 usr/lib/elektra/tool_exec/configure-xdg
 usr/lib/elektra/tool_exec/convert-fstab
