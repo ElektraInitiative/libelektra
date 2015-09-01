@@ -18,6 +18,11 @@
 
 static gcry_cipher_hd_t gcry_handle;
 
+void elektraCryptoGcryClearKeyIv()
+{
+	gcry_cipher_close(gcry_handle);
+}
+
 int elektraCryptoGcryInit()
 {
 	if (!gcry_check_version(GCRYPT_VERSION))
@@ -48,3 +53,12 @@ int elektraCryptoGcrySetKeyIv(const unsigned char *key, const short keyLen, cons
 	return ELEKTRA_CRYPTO_GCRY_OK;
 }
 
+int elektraCryptoGcryEncrypt(Key *k)
+{
+	return ELEKTRA_CRYPTO_GCRY_NOK;
+}
+
+int elektraCryptoGcryDecrypt(Key *k)
+{
+	return ELEKTRA_CRYPTO_GCRY_NOK;
+}
