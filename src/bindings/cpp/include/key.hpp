@@ -171,6 +171,9 @@ public:
 	typedef void (*func_t)();
 	inline func_t getFunc() const;
 
+	typedef ckdb::Key * (*callback_t) (ckdb::KeySet *ks, ckdb::Key *key, option_t options);
+	inline void setCallback(callback_t fct);
+
 	inline const void *getValue() const;
 	inline std::string getBinary() const;
 	inline ssize_t getBinarySize() const;
@@ -1187,6 +1190,9 @@ inline ssize_t Key::getStringSize() const
 inline Key::func_t Key::getFunc() const
 {
 	union {Key::func_t f; void* v;} conversation;
+#if __cplusplus > 199711L
+	static_assert(sizeof(conversation) == sizeof(func_t), "union does not have size of function pointer");
+#endif
 
 	if (ckdb::keyGetBinary(getKey(),
 			&conversation.v,
@@ -1195,6 +1201,19 @@ inline Key::func_t Key::getFunc() const
 
 	return conversation.f;
 }
+
+
+inline void Key::setCallback(callback_t fct)
+{
+	union {callback_t f; void* v;} conversation;
+#if __cplusplus > 199711L
+	static_assert(sizeof(conversation) == sizeof(callback_t), "union does not have size of function pointer");
+#endif
+
+	conversation.f = fct;
+	ckdb::keySetBinary(getKey(), &conversation.v, sizeof(conversation));
+}
+
 
 /**
  * @copydoc keySetString
