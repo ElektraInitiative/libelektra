@@ -267,11 +267,18 @@ extern "C" void elektraClose()
 extern "C" int __real_main(int argc, char** argv, char** env);
 
 typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
+typedef char *(* gfcn)(const char *);
+
+union Start{void*d; fcn f;} start; // symbol for libc pre-main
+union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
+
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
-	static union Start{Start() {d = dlsym(RTLD_NEXT, "__libc_start_main");} void*d; fcn f;} start;
-
 	LOG << "wrapping main" << endl;
+	start.d = dlsym(RTLD_NEXT, "__libc_start_main");
+	sym.d = dlsym(RTLD_NEXT, "getenv");
+	ssym.d = dlsym(RTLD_NEXT, "secure_getenv");
+
 	elektraOpen(&argc, argv);
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 	//TODO: save configuration (on request)
@@ -305,7 +312,6 @@ char *elektraGetEnvKey(std::string const& fullName, bool & finish)
 	return 0;
 }
 
-typedef char *(* gfcn)(const char *);
 
 /**
  * @brief Uses Elektra to get from environment.
@@ -316,17 +322,18 @@ typedef char *(* gfcn)(const char *);
  * @see getenv
  * @see secure_getenv
  */
-extern "C" char *elektraGetEnv(std::string const& name, gfcn origGetenv)
+extern "C" char *elektraGetEnv(const char * cname, gfcn origGetenv)
 {
-	LOG << "elektraGetEnv(" << name << ")" ;
+	LOG << "elektraGetEnv(" << cname << ")" ;
 	if (!elektraRepo)
 	{	// no open Repo (needed for bootstrapping, if inside kdbOpen() getenv is used)
-		char *ret = (*origGetenv)(name.c_str());
+		char *ret = (*origGetenv)(cname);
 		if (!ret) { LOG << " orig getenv returned null pointer" << endl; }
 		else LOG << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl;
 		return ret;
 	}
 
+	std::string name = cname;
 	std::string fullName = "proc/";
 	fullName += name;
 	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
@@ -356,10 +363,26 @@ extern "C" char *elektraGetEnv(std::string const& name, gfcn origGetenv)
 	return 0;
 }
 
+/*
+// Nice trick to find next execution of elektraMalloc
+int *foo = 0;
+extern "C" void* elektraMalloc (size_t size)
+{
+	// LOG << "malloc " << size << endl;
+	if (foo) printf("%d\n", *foo);
+	return malloc (size);
+}
+*/
+
 extern "C" char *getenv(const char *name) // throw ()
 {
 	pthread_mutex_lock(&elektraGetEnvMutex);
-	static union Sym{Sym() {d = dlsym(RTLD_NEXT, "getenv");} void*d; gfcn f;} sym;
+
+	if (!sym.f)
+	{
+		LOG << "jemalloc (firefox) bootstrap hack" << std::endl;
+		return 0;
+	}
 
 	char *ret = elektraGetEnv(name, sym.f);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
@@ -369,9 +392,14 @@ extern "C" char *getenv(const char *name) // throw ()
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
 	pthread_mutex_lock(&elektraGetEnvMutex);
-	static union Sym{Sym() {d = dlsym(RTLD_NEXT, "secure_getenv");} void*d; gfcn f;} sym;
 
-	char * ret = elektraGetEnv(name, sym.f);
+	if (!ssym.f)
+	{
+		LOG << "jemalloc (firefox) bootstrap hack" << std::endl;
+		return 0;
+	}
+
+	char * ret = elektraGetEnv(name, ssym.f);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 	return ret;
 }
