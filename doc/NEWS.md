@@ -2,13 +2,35 @@
 
 Still under construction, 0.8.13 is not yet released.
 
+
+## elektrify-getenv
+
+getenv(3) is one of the most popular ways to retrieve configuration,
+even though it has many known problems:
+- no standard way to modify it
+- relogin (or restart of shell) necessary
+- names are flat (no hierarchical structure)
+- cannot be set for individual applications
+
+With elektrify-getenv we wrote a solution which solves most of the
+problems. We use the LD_PRELOAD technique to additionally retrieve
+values from Elektra, and not only the environment.
+
+
+
+
+
+
+
+
+
 https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
 - 0.8.12 packaged+migrated to testing, thanks to Pino Toscano <pino@debian.org>
 
 prefer simplicity to flexibility! (GOALS)
 	use it also for normal plugins (pre, postfilter)
 more "pythonic way", there should be one way to do it
-but every way is optional, if you want you can use Elektra:
+but every way is optional, if you want you can use it, otherwise you can leave it out:
 - as primitive key/value storage
 - with specification
 - with code generation
@@ -21,6 +43,10 @@ but no flexibility regarding:
 - of course ABI, API
 
 - XDG resolver: handle XDG_CONFIG_DIRS, where no path is valid, correctly
+
+
+
+
 
 # 0.8.12 Release
 

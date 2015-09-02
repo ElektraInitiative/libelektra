@@ -1842,7 +1842,7 @@ static Key * elektraLookupSearch(KeySet *ks, Key *key, option_t options)
 	if (toUse != key)
 	{
 		Key *dupKey = (Key*) toUse;
-		// in this case we know its a non-const duplicated key
+		// in this case we know its a duplicated key
 		keyDel(dupKey);
 	}
 	return found;

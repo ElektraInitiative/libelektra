@@ -286,19 +286,47 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	return ret;
 }
 
+
+Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, Key *key, option_t options)
+{
+	std::cout << "DOING " << keyName(key) << endl;
+	/*
+	if (!strncmp(keyName(key), "spec/", 5) && options == KDB_O_CALLBACK)
+	{
+		cout << " in spec" << endl;
+		const Key *meta = keyGetMeta(key, "context");
+		if (meta)
+		{
+			cout << " in context" << endl;
+			string contextName = elektraEnvContext.evaluate(keyString(meta));
+			cout << " in context: " << contextName << endl;
+			// only consider context if key actually exists, otherwise continue searching
+			if (ksLookupByName(ks, contextName.c_str(), 0))
+			{
+				return keyNew(contextName.c_str(), KEY_END);
+			}
+		}
+		else
+		{
+			cout << " NO context" << endl;
+		}
+	}
+	cout << "finish " << keyName(key) << endl;
+	*/
+	return key;
+}
+
+Key *elektraLookupWithContext(std::string name)
+{
+	Key *search = keyNew(name.c_str(), KEY_FUNC, elektraContextEvaluation, KEY_END);
+	Key * ret = ksLookup(elektraConfig, search, 0);
+	keyDel(search);
+	return ret;
+}
+
 char *elektraGetEnvKey(std::string const& fullName, bool & finish)
 {
-	std::string specName = "spec"+fullName;
-	Key *spec = ksLookupByName(elektraConfig, specName.c_str(), 0);
-	const Key *meta = keyGetMeta(spec, "context");
-	if (meta)
-	{
-		string contextName = elektraEnvContext.evaluate(keyString(meta));
-		LOG << " in context: " << contextName;
-		char * ret = elektraGetEnvKey(contextName, finish);
-		if (finish) return ret;
-	}
-	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
+	Key *key = elektraLookupWithContext(fullName);
 	if (key)
 	{
 		LOG << " found " << fullName << ": " << keyString(key) << endl;

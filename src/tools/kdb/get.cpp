@@ -39,8 +39,23 @@ void printOptions(option_t options)
 	if(options & ckdb::KDB_O_CALLBACK) std::cout << "KDB_O_CALLBACK";
 }
 
+
+ckdb::Key * warnOnMeta(ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, option_t options)
+{
+	if (!strncmp(keyName(key), "spec/", 5) && options == ckdb::KDB_O_CALLBACK)
+	{
+		const ckdb::Key *meta = keyGetMeta(key, "context");
+		if (meta)
+		{
+			std::cout << keyName(key) << " is context dependent, shown result might be wrong, -v shows you the trace to the key" << std::endl;
+		}
+	}
+	return key;
+}
+
 ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, option_t options)
 {
+	warnOnMeta(ks, key, options);
 	Key k(key);
 	int depth = k.getMeta<int>("print_trace/depth");
 	if (k.getName().substr(0,5) == "spec/" && (options & ckdb::KDB_O_CALLBACK)) k.setMeta<int>("print_trace/depth", ++depth);
