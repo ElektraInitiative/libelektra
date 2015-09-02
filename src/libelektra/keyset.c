@@ -1680,7 +1680,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+2;
 		key->keySize = length-2;
 		elektraFinalizeName(key);
-		specKey = ksLookup(ks, key, options & ~KDB_O_DEL);
+		specKey = ksLookup(ks, key, (options & ~KDB_O_DEL) | KDB_O_CALLBACK);
 	}
 
 	if (specKey)
@@ -1920,6 +1920,10 @@ static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option
  * by using ksDup(). E.g., to separate ksLookup() with ::KDB_O_POP and ksAppendKey():
 
  * @snippet ksLookupPop.c f
+ *
+ * This is also a nice example how a complete application with ksLookup() can look like.
+ * The option ::KDB_O_CALLBACK provides information if the spec/ keys are treated
+ * as specification or only for their value.
  *
  * @par KDB_O_DEL
  * Passing ::KDB_O_DEL will cause the deletion of the parameter @p key using keyDel().

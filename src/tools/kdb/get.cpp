@@ -36,13 +36,14 @@ void printOptions(option_t options)
 	if(options & ckdb::KDB_O_NOCASCADING) std::cout << "KDB_O_NOCASCADING ";
 	if(options & ckdb::KDB_O_NOSPEC) std::cout << "KDB_O_NOSPEC ";
 	if(options & ckdb::KDB_O_NODEFAULT) std::cout << "KDB_O_NODEFAULT ";
+	if(options & ckdb::KDB_O_CALLBACK) std::cout << "KDB_O_CALLBACK";
 }
 
 ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, option_t options)
 {
 	Key k(key);
 	int depth = k.getMeta<int>("print_trace/depth");
-	if (k.getName().substr(0,5) == "spec") k.setMeta<int>("print_trace/depth", ++depth);
+	if (k.getName().substr(0,5) == "spec/" && (options & ckdb::KDB_O_CALLBACK)) k.setMeta<int>("print_trace/depth", ++depth);
 	for (int i=0; i<depth; ++i) std::cout << " ";
 	std::string lastKeyName = k.getMeta<std::string>("print_trace/last_key_name");
 	std::cout << "!!! searching " << k.getName() << " last: " << lastKeyName << " options: ";

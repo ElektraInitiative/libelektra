@@ -1,11 +1,12 @@
 //![callback]
 #include <kdb.h>
 #include <stdio.h>
-#include <kdbconfig.h>
+#include <kdbconfig.h> // for ELEKTRA_UNUSED
+#include <kdbproposal.h> // for KDB_O_CALLBACK
 
-Key * printTrace (ELEKTRA_UNUSED KeySet *ks, Key *key, ELEKTRA_UNUSED option_t options)
+Key * printTrace (ELEKTRA_UNUSED KeySet *ks, Key *key, option_t options)
 {
-	printf("name: %s\n", keyName(key));
+	printf("name: %s, %d\n", keyName(key), options & KDB_O_CALLBACK);
 	return key;
 }
 
