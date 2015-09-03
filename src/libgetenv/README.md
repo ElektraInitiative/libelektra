@@ -67,9 +67,9 @@ the application will be called with <application> -V -L
    Outputs this help.
  * `--elektra-version`:
    Gives version information
- * `--elektra-debug`:
-   Trace all getenv() calls to stderr.
- * `--elektra-clearenv`
+ * `--elektra-debug=file`, `ELEKTRA_DEBUG` or `env/options/debug`:
+   Trace all getenv() calls file or stderr if no file is given.
+ * `--elektra-clearenv`, `ELEKTRA_CLEARENV` or `env/options/clearenv`
    Call clearenv(3) before entering main.
    This is a recommended security feature.
    Elektra itself, if configured that way, will still be able to use the environment.
@@ -78,12 +78,20 @@ the application will be called with <application> -V -L
  * `--elektra:key=value`:
    set a key/value below root to be preferred (in proc-namespace)
 
-Note that keys can contain / to form hierarchies.
+Note that keys can contain / to form hierarchies, e.g. `--elektra-name=app/profile`
 
-Also note that all options can also be set below `/env/options/<option>`
-e.g. `kdb set user/env/options/clearenv` to clear the environment for all
-applications started by that user (note that at least `PATH` should to be set
-using `kdb set user/env/fallback/PATH "/bin:/usr/bin"` then).
+Note that the options are available in three different variants:
+
+1. as commandline parameter: `--elektra-<option>`,
+   which are *not* passed through exec(3) calls.
+1. as environment variable: `ELEKTRA_<OPTION>`.
+   which might be passed through exec(3) calls, but are removed by clearenv(3) calls.
+1. as Elektra KDB entry: `/env/options/<option>`,
+   which are the way to achieve an option to be enabled for every application.
+   e.g. `kdb set user/env/options/clearenv` to clear the environment for all
+   applications started by that user (note that at least `PATH` should to be set
+   using `kdb set user/env/fallback/PATH "/bin:/usr/bin"` then).
+
 
 
 ## CONTEXT
@@ -111,6 +119,12 @@ For more information see:
 
 
 Note that `--elektra-debug` does *not* log `getenv(3)` during the startup-phase.
+
+`elektrify-getenv` provides to use environment as alternative to its options, namely:
+
+
+ * `ELEKTRA_DEBUG`:
+   Outputs this help.
 
 
 ## BUGS

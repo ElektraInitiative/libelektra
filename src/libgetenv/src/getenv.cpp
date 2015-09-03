@@ -36,10 +36,9 @@
 using namespace std;
 using namespace ckdb;
 
-// ofstream fout("/tmp/elektra-getenv.log", fstream::app);
-// #define LOG fout
+// #define LOG cerr
 // #define LOG if(elektraDebug) cerr
-#define LOG cerr
+#define LOG if(elektraDebug) elektraLog
 
 
 
@@ -48,7 +47,8 @@ extern "C" {
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
-bool elektraDebug;
+bool elektraDebug = true; // TODO
+ofstream elektraLog("/tmp/elektra-getenv.log", fstream::app); // TODO
 std::string elektraName;
 std::string elektraProfile;
 KeySet *elektraDocu = ksNew(20,
@@ -135,12 +135,20 @@ void giveName(string name)
 
 }
 
+void appendEnv(const char *where, const char *env)
+{
+	char *v = (*sym.f)(env);
+	if (v)
+	{
+		ksAppendKey(elektraConfig, keyNew(where, KEY_VALUE, v, KEY_END));
+		LOG << "append " << v << " from " << env << " to " << where << std::endl;
+	}
+}
+
 void parseEnv()
 {
-	if ((*sym.f)("ELEKTRA_DEBUG"))
-	{
-		ksAppendKey(elektraConfig, keyNew("proc/env/options/debug", KEY_END));
-	}
+	appendEnv("proc/env/options/debug", "ELEKTRA_DEBUG");
+	appendEnv("proc/env/options/clearenv", "ELEKTRA_CLEARENV");
 }
 
 void parseArgs(int* argc, char** argv)
