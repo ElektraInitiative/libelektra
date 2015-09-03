@@ -1495,6 +1495,20 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
+static void elektraCopyCallbackMeta(Key *source, Key *dest)
+{
+	keyRewindMeta(source);
+	const Key *m = 0;
+	while ((m = keyNextMeta(source)))
+	{
+		const char *metaname = keyName(m);
+		if (!strncmp(metaname, "callback/", sizeof("callback")))
+		{
+			keyCopyMeta(source, dest, metaname);
+		}
+	}
+}
+
 /**
  * @internal
  * @brief Helper for elektraLookupBySpec
@@ -1520,8 +1534,13 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 		m = keyGetMeta(specKey, buffer);
 		if (!m) break;
 		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KEY_CASCADING_NAME,
+		if (!k)
+		{
+			k = keyNew(keyString(m), KEY_CASCADING_NAME,
 				KEY_END);
+			elektraCopyCallbackMeta(specKey, k);
+			keySetBinary(k, keyValue(specKey), keyGetValueSize(specKey));
+		}
 		else elektraKeySetName(k, keyString(m),
 				KEY_CASCADING_NAME);
 		ret=ksLookup(ks, k, KDB_O_NODEFAULT);
@@ -1529,7 +1548,11 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 		++i;
 	} while(m);
 
-	keyDel(k);
+	if (k)
+	{
+		elektraCopyCallbackMeta(k, specKey);
+		keyDel(k);
+	}
 	return ret;
 }
 
@@ -1697,7 +1720,10 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 
 		// we found a spec key, so we know what to do
 		specKey = keyDup(specKey);
+		keySetBinary(specKey, keyValue(key), keyGetValueSize(key));
+		elektraCopyCallbackMeta(key, specKey);
 		found = elektraLookupBySpec(ks, specKey, options);
+		elektraCopyCallbackMeta(specKey, key);
 		keyDel(specKey);
 		return found;
 	}
