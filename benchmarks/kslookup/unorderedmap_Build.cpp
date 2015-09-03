@@ -12,7 +12,7 @@ int unorderedmap_Build::run (int n,int k,int r, Data * data, int * values)
 	struct timeval end;
 
 	gettimeofday (&start, 0);
-	//measure
+//MEASURE START
 
 	std::unordered_map<std::string,kdb::Key> map;
 
@@ -23,7 +23,7 @@ int unorderedmap_Build::run (int n,int k,int r, Data * data, int * values)
 
 	for (int i = 0;i < n;++i)
 		map.insert (data[i]);
-
+//MEASURE END
 	gettimeofday (&end, 0);
 	values[r] = int ((end.tv_sec - start.tv_sec) * 1000000 +
 					(end.tv_usec - start.tv_usec));

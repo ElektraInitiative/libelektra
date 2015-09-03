@@ -27,7 +27,6 @@ benchmark_kslookup_c (kslookup)
 
 # unorderedmap
 if (ENABLE_CXX11)
-	#no C++11 no unorderedmap
 	set (SOURCES ${HDR_FILES} benchmark.h benchmark.c unorderedmap_Interface.hpp
 			unorderedmap_Search.hpp unorderedmap_Build.hpp unorderedmap_Search.cpp
 			unorderedmap_Build.cpp unorderedmap.cpp)

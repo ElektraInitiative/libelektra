@@ -22,6 +22,7 @@ Data * prepareData (kdb::KeySet ks);
 //TODO KURT print machine name + kernel bla ? uname ?
 int main (int argc, char**argv)
 {
+	initRand ();
 	bool b_build = true;
 	bool b_search = true;
 
@@ -98,7 +99,6 @@ void runBenchmark (unorderedmap_Interface * bench)
 			if(bucket_step_count > MAX_BUCKET_STEP)
 				bucket_step_count = MAX_BUCKET_STEP;
 			int bucket_step = int ( n/bucket_step_count );
-			// round up
 			if (bucket_step * bucket_step_count != n)
 				++bucket_step;
 

@@ -3,6 +3,7 @@
 
 // TODO KURT QUEST strange valgrind in gendata ,hsearch, kslookup and unorderedmap:
 // still reachable: 72,704 bytes in 1 blocks
+// ? target_link_elektra is responsible!! ?
 
 #ifndef __cplusplus
 
@@ -11,8 +12,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-//~ #include <unistd.h>
-#include <sys/time.h>
 
 #endif
 
@@ -44,7 +43,8 @@
 #define GENDATA_KEY_VALUE "some data"
 #define EXPORT_PLUGIN "dump"
 
-
+//rand
+void initRand (void);
 unsigned int genRand (int modul);
 
 //stat helper

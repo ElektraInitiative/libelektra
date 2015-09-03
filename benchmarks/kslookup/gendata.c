@@ -3,6 +3,7 @@
 
 int main (int argc ELEKTRA_UNUSED, char** argv ELEKTRA_UNUSED)
 {
+	initRand ();
 	//plugin open
 	KeySet * modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
@@ -43,8 +44,7 @@ int main (int argc ELEKTRA_UNUSED, char** argv ELEKTRA_UNUSED)
 	return EXIT_SUCCESS;
 }
 
-/* generateKeySet generates a KeySet
- * for the given size. Filled with random data.
+/* generates a KeySet for the given size. Filled with random data.
  */
 KeySet * generateKeySet (size_t size)
 {
@@ -113,19 +113,10 @@ char * generateKeyName (KeySet * checkIfUnique)
 	return randomString;
 }
 
-/* This function will be called in short intervals,
- * therefore some more work needs to be done to get
- * not always the same char.
- * But this function surely can be improved.
+/* returns a random char out of the ALPHABET string.
  */
 
 char getRandomChar (void)
 {
-	unsigned int random = genRand(1000);
-	unsigned int b = random;
-	for (unsigned int i = 0;i < random;++i)
-	{
-		b-=i;
-	}
-	return ALPHABET[b % strlen(ALPHABET)];
+	return ALPHABET[genRand (strlen (ALPHABET))];
 }

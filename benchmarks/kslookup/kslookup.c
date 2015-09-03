@@ -1,4 +1,5 @@
 #include <benchmark.h>
+#include <sys/time.h>
 
 //mode true=build false=search
 void runBenchmark (bool mode, int (*runInLoop) (int, int, KeySet *, int *));
@@ -11,6 +12,7 @@ KeySet * readKeySet (int size, int version);
 //TODO KURT print machine name + kernel bla ? uname ?
 int main(int argc, char** argv)
 {
+	initRand ();
 	bool b_build = true;
 	bool b_search = true;
 
@@ -97,13 +99,13 @@ int build (int n ELEKTRA_UNUSED, int r, KeySet * data, int * times)
 	struct timeval end;
 
 	gettimeofday (&start, 0);
-	//measure
+//MEASURE START
 
 	//build
 	//TODO KURT set build flag here
 	//TODO KURT check for errors
 	ksLookup (data, NULL, KDB_O_NONE);
-
+//MEASURE END
 	gettimeofday (&end, 0);
 	times[r] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 						(end.tv_usec - start.tv_usec);
@@ -137,11 +139,11 @@ int search (int n, int r, KeySet * data, int * times)
 		keySetName (keysearchfor, keyName (data->array[search_for]));
 
 		gettimeofday (&start, 0);
-		//measure
+//MEASURE START
 
 		//TODO KURT set hash search flag
 		keyfound = ksLookup(data, keysearchfor, KDB_O_NONE);
-
+//MEASURE END
 		gettimeofday (&end, 0);
 		keys_searched_for[search_for] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 							(end.tv_usec - start.tv_usec);

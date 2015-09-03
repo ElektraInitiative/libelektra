@@ -1,5 +1,6 @@
 #include <benchmark.h>
 #include <search.h>
+#include <sys/time.h>
 
 //mode true=build false=search
 void runBenchmark (bool mode, int (*runInLoop) (int, int, int, ENTRY *, int *));
@@ -14,6 +15,7 @@ void freeData (ENTRY * data, int size);
 //TODO KURT print machine name + kernel bla ? uname ?
 int main(int argc, char** argv)
 {
+	initRand ();
 	//clean up before benchmark
 	hdestroy ();
 
@@ -87,7 +89,6 @@ void runBenchmark (bool mode, int (*runInLoop) (int, int, int, ENTRY *, int *))
 			if(bucket_step_count > MAX_BUCKET_STEP)
 				bucket_step_count = MAX_BUCKET_STEP;
 			int bucket_step = (int) n/bucket_step_count;
-			// round up
 			if (bucket_step * bucket_step_count != n)
 				++bucket_step;
 
@@ -137,7 +138,7 @@ int build (int n, int k, int r, ENTRY * data, int * times)
 	struct timeval end;
 
 	gettimeofday (&start, 0);
-	//measure
+//MEASURE START
 
 	//create
 	hcreate (k);
@@ -151,7 +152,7 @@ int build (int n, int k, int r, ENTRY * data, int * times)
 			return -1;
 		}
 	}
-
+//MEASURE END
 	gettimeofday (&end, 0);
 	times[r] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 						(end.tv_usec - start.tv_usec);
@@ -197,10 +198,10 @@ int search (int n, int k, int r, ENTRY * data, int * times)
 		e.key = lookfor;
 
 		gettimeofday (&start, 0);
-		//measure
+//MEASURE START
 
 		ep = hsearch(e, FIND);
-
+//MEASURE END
 		gettimeofday (&end, 0);
 		keys_searched_for[search_for] = (int) (end.tv_sec - start.tv_sec) * 1000000 +
 							(end.tv_usec - start.tv_usec);
@@ -270,8 +271,7 @@ KeySet * readKeySet (int size, int version)
 	return out;
 }
 
-/* This helper generates the ENTRYs for the hash map, for having a fresh
- * data to insert on each run.
+/* generates the ENTRYs for the hash map
  */
 ENTRY * prepareData (KeySet * ks)
 {

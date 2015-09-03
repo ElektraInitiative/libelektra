@@ -32,10 +32,10 @@ int unorderedmap_Search::run (const int n,int k,int r, Data * data, int * values
 		std::unordered_map<std::string,kdb::Key>::const_iterator got;
 
 		gettimeofday (&start, 0);
-		//measure
+//MEASURE START
 
 		got = map.find (lookfor);
-
+//MEASURE END
 		gettimeofday (&end, 0);
 
 		int t = int ((end.tv_sec - start.tv_sec) * 1000000 +

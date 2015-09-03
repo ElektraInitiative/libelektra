@@ -1,10 +1,24 @@
 #include <benchmark.h>
 
+unsigned int seed = 0;
+
+/* change rand function here, if needed.
+ */
+int elektraRandr (unsigned int * r_seed)
+{
+	return rand_r(r_seed);
+}
+
+/* change seed here!
+ */
+void initRand (void)
+{
+	seed = 3;
+}
+
 unsigned int genRand (int modul)
 {
-	struct timeval time;
-	gettimeofday (&time, 0);
-	int out = (int) time.tv_sec * 1000000 + time.tv_usec;
+	int out = elektraRandr (&seed);
 	return (out % modul);
 }
 
