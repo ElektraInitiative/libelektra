@@ -119,17 +119,17 @@ bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, i
 	{
 
 	case NameRole:
-        if(node->getName() != modelData.toString()){
-            node->setName(modelData.toString());
-            node->setIsDirty(true);
-        }
-        break;
+		if(node->getName() != modelData.toString()){
+			node->setName(modelData.toString());
+			node->setIsDirty(true);
+		}
+		break;
 
 	case ValueRole:
-        if(node->getValue() != modelData){
-            node->setValue(modelData);
-        }
-        break;
+		if(node->getValue() != modelData){
+			node->setValue(modelData);
+		}
+		break;
 
 	case MetaValueRole:
 	{
@@ -544,20 +544,14 @@ void TreeViewModel::synchronize()
 		return;
 	}
 
-	try
-	{
-		kdb.set(ours, root);
-	}
-	catch (KDBException const& e)
-	{
-		ours = ours.cut(root);
-		theirs = theirs.cut(root);
-		base = base.cut(root);
+	ours = ours.cut(root);
+	theirs = theirs.cut(root);
+	base = base.cut(root);
 
-		ThreeWayMerge merger;
+	ThreeWayMerge merger;
 
-		OneSideMergeConfiguration configuration(OURS);
-		configuration.configureMerger(merger);
+	OneSideMergeConfiguration configuration(OURS);
+	configuration.configureMerger(merger);
 
 	#if DEBUG && VERBOSE
 		theirs.rewind();
@@ -575,48 +569,61 @@ void TreeViewModel::synchronize()
 		}
 	#endif
 
-		MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
-														  OurMergeKeys(ours, root),
-														  TheirMergeKeys (theirs, root),
-														  root));
-		if (!result.hasConflicts ())
-		{
-			resultKeys.append(result.getMergedKeys());
-		}
-		else
-		{
-			KeySet conflictSet = result.getConflictSet();
-			QStringList conflicts;
-			conflictSet.rewind();
-			Key current;
-
-			while ((current = conflictSet.next()))
-			{
-				QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
-				QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
-
-				conflicts.append(QString::fromStdString(current.getName()));
-				conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
-				conflicts.append("\n");
-			}
-
-			emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), conflicts.join("\n"));
-			return;
-		}
-
+	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
+													  OurMergeKeys(ours, root),
+													  TheirMergeKeys (theirs, root),
+													  root));
+	if(result.getNumberOfResolvedKeys() == 0)
+	{
 		try
 		{
-			kdb.set(resultKeys, root);
+			kdb.set(ours, root);
+			return;
 		}
 		catch (KDBException const& e)
 		{
 			emit showMessage(tr("Error"), tr("Synchronizing failed, could not write to configuration."), e.what());
 			return;
 		}
-
-		GUIBasicKeySet::setBasic(resultKeys);
-		createNewNodes(resultKeys);
 	}
+
+	if (!result.hasConflicts ())
+	{
+		resultKeys.append(result.getMergedKeys());
+	}
+	else
+	{
+		KeySet conflictSet = result.getConflictSet();
+		QStringList conflicts;
+		conflictSet.rewind();
+		Key current;
+
+		while ((current = conflictSet.next()))
+		{
+			QString ourConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/our"));
+			QString theirConflict = QString::fromStdString(current.getMeta<string>("conflict/operation/their"));
+
+			conflicts.append(QString::fromStdString(current.getName()));
+			conflicts.append("Ours: " + ourConflict + ", Theirs " + theirConflict);
+			conflicts.append("\n");
+		}
+
+		emit showMessage(tr("Error"), tr("Synchronizing failed, conflicts occured."), conflicts.join("\n"));
+		return;
+	}
+
+	try
+	{
+		kdb.set(resultKeys, root);
+	}
+	catch (KDBException const& e)
+	{
+		emit showMessage(tr("Error"), tr("Synchronizing failed, could not write to configuration."), e.what());
+		return;
+	}
+
+	GUIBasicKeySet::setBasic(resultKeys);
+	createNewNodes(resultKeys);
 }
 
 void TreeViewModel::clearMetaModel()
