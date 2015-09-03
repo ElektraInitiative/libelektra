@@ -116,13 +116,13 @@ BasicWindow {
 					metaValueField.placeholderText: valuePlaceHolder
 
 					metaNameField.onTextChanged:  {
-                        if(metaName.trim() !== metaNameField.text.trim()){
+						if(metaName !== metaNameField.text){
 							qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
 							isEdited = true
 						}
 					}
 					metaValueField.onTextChanged: {
-                        if(metaValue.trim() !== metaValueField.text.trim()){
+						if(metaValue !== metaValueField.text){
 							qmlMetaKeyModel.set(index, {"metaValue": metaValueField.text})
 							isEdited = true
 						}
@@ -147,7 +147,7 @@ BasicWindow {
 
 	function okClicked(){
 		//check if user has edited keyname or keyvalue
-        if(keyName.trim() !== nameTextField.text.trim() || keyValue.trim() !== valueTextField.text.trim())
+		if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
 			isEdited = true
 
 		editAccepted()
