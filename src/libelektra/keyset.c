@@ -1690,6 +1690,11 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->keySize = size;
 		key->keyUSize = usize ;
 
+		if (strncmp(keyName(specKey), "spec/", 5))
+		{ // the search was modified in a way that not a spec Key was returned
+			return specKey;
+		}
+
 		// we found a spec key, so we know what to do
 		specKey = keyDup(specKey);
 		found = elektraLookupBySpec(ks, specKey, options);
@@ -1821,10 +1826,12 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key const *key, option_t opti
  */
 static Key * elektraLookupSearch(KeySet *ks, Key *key, option_t options)
 {
-	typedef Key const * (*callback_t) (KeySet *ks, Key *key, option_t options);
+	typedef Key * (*callback_t) (KeySet *ks, Key *key, Key *found, option_t options);
 	union {callback_t f; void* v;} conversation;
 
-	Key const *toUse = key;
+	Key * found = elektraLookupBinarySearch(ks, key, options);
+
+	Key *ret = found;
 
 	if (keyGetBinary(key,
 			&conversation.v,
@@ -1832,20 +1839,11 @@ static Key * elektraLookupSearch(KeySet *ks, Key *key, option_t options)
 	{
 		if (conversation.v != 0)
 		{
-			toUse = (*conversation.f)(ks, key, options);
-			if (!toUse) return 0;
+			ret = (*conversation.f)(ks, key, found, options);
 		}
 	}
 
-	Key * found = elektraLookupBinarySearch(ks, toUse, options);
-
-	if (toUse != key)
-	{
-		Key *dupKey = (Key*) toUse;
-		// in this case we know its a duplicated key
-		keyDel(dupKey);
-	}
-	return found;
+	return ret;
 }
 
 static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option_t options)

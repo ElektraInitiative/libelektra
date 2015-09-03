@@ -171,7 +171,7 @@ public:
 	typedef void (*func_t)();
 	inline func_t getFunc() const;
 
-	typedef ckdb::Key * (*callback_t) (ckdb::KeySet *ks, ckdb::Key *key, option_t options);
+	typedef ckdb::Key * (*callback_t) (ckdb::KeySet *ks, ckdb::Key *key, ckdb::Key *found, option_t options);
 	inline void setCallback(callback_t fct);
 
 	inline const void *getValue() const;

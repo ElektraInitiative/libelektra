@@ -40,33 +40,38 @@ void printOptions(option_t options)
 }
 
 
-ckdb::Key * warnOnMeta(ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, option_t options)
+ckdb::Key * warnOnMeta(ELEKTRA_UNUSED ckdb::KeySet *ks, ELEKTRA_UNUSED ckdb::Key *key, ckdb::Key *found,  option_t options)
 {
-	if (!strncmp(keyName(key), "spec/", 5) && options == ckdb::KDB_O_CALLBACK)
+	if (!strncmp(keyName(found), "spec/", 5) && options == ckdb::KDB_O_CALLBACK)
 	{
-		const ckdb::Key *meta = keyGetMeta(key, "context");
+		const ckdb::Key *meta = keyGetMeta(found, "context");
 		if (meta)
 		{
-			std::cout << keyName(key) << " is context dependent, shown result might be wrong, -v shows you the trace to the key" << std::endl;
+			std::cout << keyName(found) << " is context dependent, shown result might be wrong, -v shows you the trace to the key" << std::endl;
 		}
 	}
-	return key;
+	return found;
 }
 
-ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, option_t options)
+ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, ckdb::Key *found, option_t options)
 {
-	warnOnMeta(ks, key, options);
+	warnOnMeta(ks, key, found, options);
+
 	Key k(key);
+	Key f(found);
+
 	int depth = k.getMeta<int>("print_trace/depth");
 	if (k.getName().substr(0,5) == "spec/" && (options & ckdb::KDB_O_CALLBACK)) k.setMeta<int>("print_trace/depth", ++depth);
 	for (int i=0; i<depth; ++i) std::cout << " ";
 	std::string lastKeyName = k.getMeta<std::string>("print_trace/last_key_name");
-	std::cout << "!!! searching " << k.getName() << " last: " << lastKeyName << " options: ";
+	std::cout << "!!! searching " << k.getName() << " found: " << f.getName() << " last: " << lastKeyName << " options: ";
 	printOptions(options);
 	std::cout << std::endl;
 	k.setMeta<string>("print_trace/last_key_name", k.getName());
+
 	k.release();
-	return key;
+	f.release();
+	return found;
 }
 
 

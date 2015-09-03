@@ -38,7 +38,8 @@ using namespace ckdb;
 
 // ofstream fout("/tmp/elektra-getenv.log", fstream::app);
 // #define LOG fout
-#define LOG if(elektraDebug) cerr
+// #define LOG if(elektraDebug) cerr
+#define LOG cerr
 
 
 
@@ -53,6 +54,12 @@ std::string elektraProfile;
 KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
+
+typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
+typedef char *(* gfcn)(const char *);
+
+union Start{void*d; fcn f;} start; // symbol for libc pre-main
+union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
 }
 
 namespace {
@@ -126,6 +133,14 @@ void giveName(string name)
 	free(n);
 	LOG << "give name " << elektraName << std::endl;
 
+}
+
+void parseEnv()
+{
+	if ((*sym.f)("ELEKTRA_DEBUG"))
+	{
+		ksAppendKey(elektraConfig, keyNew("proc/env/options/debug", KEY_END));
+	}
 }
 
 void parseArgs(int* argc, char** argv)
@@ -235,6 +250,7 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	elektraRepo = kdbOpen(elektraParentKey);
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
+	parseEnv();
 	if (argc && argv)
 	{
 		parseArgs(argc, argv);
@@ -266,12 +282,6 @@ extern "C" void elektraClose()
 
 extern "C" int __real_main(int argc, char** argv, char** env);
 
-typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
-typedef char *(* gfcn)(const char *);
-
-union Start{void*d; fcn f;} start; // symbol for libc pre-main
-union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
-
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
 	LOG << "wrapping main" << endl;
@@ -287,33 +297,28 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 }
 
 
-Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, Key *key, option_t options)
+Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, ELEKTRA_UNUSED Key *key, Key *found, option_t options)
 {
-	std::cout << "DOING " << keyName(key) << endl;
-	/*
-	if (!strncmp(keyName(key), "spec/", 5) && options == KDB_O_CALLBACK)
+	LOG << "evaluate ";
+	if (found && !strncmp(keyName(found), "spec/", 5) && options == KDB_O_CALLBACK)
 	{
-		cout << " in spec" << endl;
-		const Key *meta = keyGetMeta(key, "context");
+		LOG << " in spec" << keyName(found);
+		const Key *meta = keyGetMeta(found, "context");
 		if (meta)
 		{
-			cout << " in context" << endl;
 			string contextName = elektraEnvContext.evaluate(keyString(meta));
-			cout << " in context: " << contextName << endl;
+			LOG << " in context: " << contextName;
 			// only consider context if key actually exists, otherwise continue searching
-			if (ksLookupByName(ks, contextName.c_str(), 0))
-			{
-				return keyNew(contextName.c_str(), KEY_END);
-			}
+			Key *ret = ksLookupByName(ks, contextName.c_str(), 0);
+			if (ret) return ret; // use context override!
 		}
 		else
 		{
-			cout << " NO context" << endl;
+			LOG << " NO context";
 		}
 	}
-	cout << "finish " << keyName(key) << endl;
-	*/
-	return key;
+	LOG << ", ";
+	return found;
 }
 
 Key *elektraLookupWithContext(std::string name)
