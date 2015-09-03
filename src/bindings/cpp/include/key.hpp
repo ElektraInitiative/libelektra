@@ -713,18 +713,20 @@ Key* Key::operator-> ()
 }
 
 /**
- * Passes out the raw key pointer.
+ * Passes out the raw key pointer and resets internal key handle.
  *
  * \note that the ownership is moved outside.
  *
- * The key will stay empty.
+ * @retval 0 if no key is held (null pointer), no action is done then.
  */
 ckdb::Key* Key::release ()
 {
 	ckdb::Key* ret = key;
-	operator --();
-
-	key = 0;
+	if (key)
+	{
+		operator --();
+		key = 0;
+	}
 	return ret;
 }
 
@@ -745,17 +747,23 @@ ckdb::Key* Key::dup () const
  */
 inline Key::~Key ()
 {
-	del();
+	if (key)
+	{
+		del();
+	}
 }
 
 /**
  * @copydoc keyName
+ *
+ * @throw KeyException if key is null
  *
  * @note unlike in the C version, it is safe to change the returned
  * string.
  */
 inline std::string Key::getName() const
 {
+	if (!key) throw KeyException();
 	return std::string (ckdb::keyName(key));
 }
 
@@ -1615,12 +1623,18 @@ inline bool Key::isDirectBelow(const Key & k) const
  * If there are still references, the function will only
  * decrement the reference counter.
  *
+ * @retval -1 if no key is held (null pointer)
+ *
  * @copydoc keyDel
  */
 inline int Key::del ()
 {
-	operator --();
-	return ckdb::keyDel(key);
+	if (key)
+	{
+		operator --();
+		return ckdb::keyDel(key);
+	}
+	return -1;
 }
 
 

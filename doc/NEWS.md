@@ -45,6 +45,9 @@ but no flexibility regarding:
 - XDG resolver: handle XDG_CONFIG_DIRS, where no path is valid, correctly
 
 
+- Key::release() and Key::~Key will also work when Key holds a null-pointer
+- Key::getName(), avoid std::string exception
+
 
 
 
