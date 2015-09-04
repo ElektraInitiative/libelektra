@@ -83,7 +83,7 @@ TEST(GetEnv, ArgvParam)
 	EXPECT_EQ(argv[0], std::string("name"));
 	EXPECT_EQ(argv[1], static_cast<char*>(0));
 
-	ckdb::Key *k = ksLookupByName(elektraConfig, "proc/does-exist", 0);
+	ckdb::Key *k = ksLookupByName(elektraConfig, "proc/env/override/does-exist", 0);
 
 	ASSERT_NE(k, static_cast<ckdb::Key*>(0));
 	EXPECT_EQ(keyString(k), std::string("hello"));
@@ -110,7 +110,7 @@ TEST(GetEnv, ArgvParamUninvolved)
 	EXPECT_EQ(argv[6], std::string("-L"));
 	EXPECT_EQ(argv[7], static_cast<char*>(0));
 
-	ckdb::Key *k = ksLookupByName(elektraConfig, "proc/does-exist", 0);
+	ckdb::Key *k = ksLookupByName(elektraConfig, "proc/env/override/does-exist", 0);
 
 	ASSERT_NE(k, static_cast<ckdb::Key*>(0));
 	EXPECT_EQ(keyString(k), std::string("hello"));
@@ -120,29 +120,21 @@ TEST(GetEnv, ArgvParamUninvolved)
 	elektraClose();
 }
 
-namespace ckdb {
-extern "C" {
-extern std::string elektraName;
-}
-}
-
-TEST(GetEnv, Name)
-{
-	using namespace ckdb;
-	elektraOpen(0, 0);
-	EXPECT_EQ(elektraName, std::string(""));
-	elektraClose();
-}
-
 TEST(GetEnv, NameArgv0)
 {
 	using namespace ckdb;
 	int argc = 1;
-	const char *cargv[] = {"any-name", 0};
+	const char *cargv[] = {"path/to/any-name", 0};
 	char **argv = const_cast<char **>(cargv);
 
 	elektraOpen(&argc, argv);
-	EXPECT_EQ(elektraName, std::string("any-name"));
+	ckdb::Key *k = ksLookupByName(elektraConfig, "proc/env/layer/name", 0);
+	ASSERT_NE(k, static_cast<ckdb::Key*>(0));
+	EXPECT_EQ(keyString(k), std::string("path/to/any-name"));
+
+	k = ksLookupByName(elektraConfig, "proc/env/layer/basename", 0);
+	ASSERT_NE(k, static_cast<ckdb::Key*>(0));
+	EXPECT_EQ(keyString(k), std::string("any-name"));
 	elektraClose();
 }
 
@@ -151,11 +143,13 @@ TEST(GetEnv, NameExplicit)
 {
 	using namespace ckdb;
 	int argc = 2;
-	const char *cargv[] = {"any-name", "--elektra-name=other-name"};
+	const char *cargv[] = {"any-name", "--elektra%name%=other-name"};
 	char **argv = const_cast<char **>(cargv);
 
 	elektraOpen(&argc, argv);
-	EXPECT_EQ(elektraName, std::string("other-name"));
+	ckdb::Key *k = ksLookupByName(elektraConfig, "proc/env/layer/name", 0);
+	ASSERT_NE(k, static_cast<ckdb::Key*>(0));
+	EXPECT_EQ(keyString(k), std::string("other-name"));
 	elektraClose();
 }
 

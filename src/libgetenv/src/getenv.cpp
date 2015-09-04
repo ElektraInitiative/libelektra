@@ -47,8 +47,6 @@ Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
 ostream *elektraLog;
-std::string elektraName;
-std::string elektraProfile;
 KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
@@ -119,7 +117,7 @@ void addOverride(string kv)
 	getline(ss, v);
 	LOG << "add override " << k << " with " << v << endl;
 
-	string fullName = "proc/env/override";
+	string fullName = "proc/env/override/";
 	fullName += k;
 	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
 }
@@ -141,7 +139,8 @@ void addLayer(string kv)
 {
 	stringstream ss(kv);
 	string k, v;
-	getline(ss, k, '=');
+	getline(ss, k, '%');
+	if (ss.get() != '=') return;
 	getline(ss, v);
 	LOG << "add layer " << k << " with " << v << endl;
 
@@ -153,9 +152,11 @@ void addLayer(string kv)
 void giveName(string name)
 {
 	char * n = strdup(name.c_str());
-	elektraName = basename(n);
+	std::string basename = ::basename(n);
 	free(n);
-	LOG << "give name " << elektraName << std::endl;
+	LOG << "give name " << name << ", basename: " << basename << std::endl;
+	ksAppendKey(elektraConfig, keyNew("proc/env/layer/name", KEY_VALUE, name.c_str(), KEY_END));
+	ksAppendKey(elektraConfig, keyNew("proc/env/layer/basename", KEY_VALUE, basename.c_str(), KEY_END));
 
 }
 
@@ -242,8 +243,6 @@ void parseEnvironment()
 void addLayers()
 {
 	using namespace ckdb;
-	elektraEnvContext.addLayer("name", elektraName);
-	elektraEnvContext.addLayer("profile", elektraProfile);
 	Key *c;
 	ksRewind(elektraConfig);
 	std::string prefix = "/env/layer/";
@@ -260,17 +259,27 @@ void addLayers()
 	}
 }
 
+void elektraSingleCleanup()
+{
+	// make everything really proper clean:
+	ksDel(elektraDocu);
+	if (elektraLog && elektraLog != &std::cerr) delete elektraLog;
+}
+
 void applyOptions()
 {
 	Key *k = 0;
 	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)))
 	{
-		elektraLog = &cerr;
 		if (keyGetValueSize(k) > 1)
 		{
 			elektraLog = new ofstream(keyString(k), fstream::app);
 		}
-		LOG << "Starting log to " << (elektraLog == &cerr ? "stderr" : keyString(k)) << endl;
+		else
+		{
+			elektraLog = &cerr;
+		}
+		cerr << "Starting logging to " << (elektraLog == &cerr ? "stderr" : keyString(k)) << "size " << keyGetValueSize(k)<<endl;
 	}
 	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)))
 	{
@@ -325,10 +334,8 @@ extern "C" void elektraClose()
 
 	kdbClose(elektraRepo, elektraParentKey);
 	ksDel(elektraConfig);
-	ksDel(elektraDocu);
 	keyDel(elektraParentKey);
 	elektraRepo = 0;
-	elektraName = "";
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
 
