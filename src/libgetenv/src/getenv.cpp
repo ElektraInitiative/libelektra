@@ -307,25 +307,22 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 
 Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, ELEKTRA_UNUSED Key *key, Key *found, option_t options)
 {
-	LOG << "evaluate ";
 	if (found && !strncmp(keyName(found), "spec/", 5) && options == KDB_O_CALLBACK)
 	{
-		LOG << " in spec" << keyName(found);
 		const Key *meta = keyGetMeta(found, "context");
 		if (meta)
 		{
 			string contextName = elektraEnvContext.evaluate(keyString(meta));
-			LOG << " in context: " << contextName;
+			LOG << ", in context: " << contextName;
 			// only consider context if key actually exists, otherwise continue searching
 			Key *ret = ksLookupByName(ks, contextName.c_str(), 0);
 			if (ret) return ret; // use context override!
 		}
 		else
 		{
-			LOG << " NO context";
+			LOG << ", NO context";
 		}
 	}
-	LOG << ", ";
 	return found;
 }
 
@@ -374,6 +371,8 @@ extern "C" char *elektraGetEnv(const char * cname, gfcn origGetenv)
 		return ret;
 	}
 
+	// TODO kdbGet() if needed
+
 	std::string name = cname;
 	std::string fullName = "proc/";
 	fullName += name;
@@ -406,6 +405,7 @@ extern "C" char *elektraGetEnv(const char * cname, gfcn origGetenv)
 
 /*
 // Nice trick to find next execution of elektraMalloc
+// set foo to (int*)-1 to trigger it
 int *foo = 0;
 extern "C" void* elektraMalloc (size_t size)
 {
