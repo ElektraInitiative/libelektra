@@ -1495,16 +1495,28 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
-static void elektraCopyCallbackMeta(Key *source, Key *dest)
+static void elektraCopyCallbackMeta(Key *dest, Key *source)
 {
-	keyRewindMeta(source);
+	// possible optimization: only copy when callback is present (keyIsBinary && keyGetValueSize == sizeof(void(int))
 	const Key *m = 0;
+
+	keyRewindMeta(dest);
+	while ((m = keyNextMeta(dest)))
+	{
+		const char *metaname = keyName(m);
+		if (!strncmp(metaname, "callback/", sizeof("callback")))
+		{
+			keySetMeta(dest, metaname, 0);
+		}
+	}
+
+	keyRewindMeta(source);
 	while ((m = keyNextMeta(source)))
 	{
 		const char *metaname = keyName(m);
 		if (!strncmp(metaname, "callback/", sizeof("callback")))
 		{
-			keyCopyMeta(source, dest, metaname);
+			keyCopyMeta(dest, source, metaname);
 		}
 	}
 }
@@ -1538,8 +1550,8 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 		{
 			k = keyNew(keyString(m), KEY_CASCADING_NAME,
 				KEY_END);
-			elektraCopyCallbackMeta(specKey, k);
 			keySetBinary(k, keyValue(specKey), keyGetValueSize(specKey));
+			elektraCopyCallbackMeta(k, specKey);
 		}
 		else elektraKeySetName(k, keyString(m),
 				KEY_CASCADING_NAME);
@@ -1550,7 +1562,7 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 
 	if (k)
 	{
-		elektraCopyCallbackMeta(k, specKey);
+		elektraCopyCallbackMeta(specKey, k);
 		keyDel(k);
 	}
 	return ret;
@@ -1721,9 +1733,9 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		// we found a spec key, so we know what to do
 		specKey = keyDup(specKey);
 		keySetBinary(specKey, keyValue(key), keyGetValueSize(key));
-		elektraCopyCallbackMeta(key, specKey);
-		found = elektraLookupBySpec(ks, specKey, options);
 		elektraCopyCallbackMeta(specKey, key);
+		found = elektraLookupBySpec(ks, specKey, options);
+		elektraCopyCallbackMeta(key, specKey);
 		keyDel(specKey);
 		return found;
 	}
@@ -1993,14 +2005,22 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
 		ret = elektraLookupBySpec(ks, lookupKey, options & mask);
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME))
+		{
+			elektraCopyCallbackMeta(key, lookupKey);
+			keyDel(lookupKey);
+		}
 	}
 	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
 	{
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
 		ret = elektraLookupByCascading(ks, lookupKey, options & mask);
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME))
+		{
+			elektraCopyCallbackMeta(key, lookupKey);
+			keyDel(lookupKey);
+		}
 	}
 	else if ((options & KDB_O_NOALL)
 		// || (options & KDB_O_NOCASE)
