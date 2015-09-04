@@ -145,11 +145,6 @@ void appendEnv(const char *where, const char *env)
 	}
 }
 
-void parseEnv()
-{
-	appendEnv("proc/env/options/debug", "ELEKTRA_DEBUG");
-	appendEnv("proc/env/options/clearenv", "ELEKTRA_CLEARENV");
-}
 
 void parseArgs(int* argc, char** argv)
 {
@@ -215,6 +210,12 @@ void parseArgs(int* argc, char** argv)
 	*newEnd = 0;
 	const size_t toSubtract = oldEnd-newEnd;
 	*argc -= toSubtract;
+}
+
+void parseEnv()
+{
+	appendEnv("proc/env/options/debug", "ELEKTRA_DEBUG");
+	appendEnv("proc/env/options/clearenv", "ELEKTRA_CLEARENV");
 }
 
 void addLayers()

@@ -87,3 +87,4 @@ TEST(Context, ExistWithContextOverrideCascading)
 	EXPECT_EQ(k,f);
 }
 
+#include "main.cpp"

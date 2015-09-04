@@ -123,7 +123,6 @@ TEST(GetEnv, ArgvParamUninvolved)
 namespace ckdb {
 extern "C" {
 extern std::string elektraName;
-extern ckdb::KeySet *elektraDocu;
 }
 }
 
@@ -160,12 +159,4 @@ TEST(GetEnv, NameExplicit)
 	elektraClose();
 }
 
-int main(int argc, char **argv)
-{
-	using namespace ckdb;
-	::testing::InitGoogleTest(&argc, argv);
-	int ret = RUN_ALL_TESTS();
-	elektraClose(); // valgrind does not detect cleanup outside main, so lets do it here
-	ksDel(elektraDocu); // make everything clean
-	return ret;
-}
+#include "main.cpp"
