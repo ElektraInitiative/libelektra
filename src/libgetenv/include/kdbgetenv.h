@@ -13,6 +13,7 @@
 
 #include <kdb.h>
 
+
 #define KDB_GETENV_VERSION "0"
 
 #ifdef __cplusplus

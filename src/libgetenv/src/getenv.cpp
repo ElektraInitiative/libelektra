@@ -37,8 +37,7 @@ using namespace std;
 using namespace ckdb;
 
 // #define LOG cerr
-// #define LOG if(elektraDebug) cerr
-#define LOG if(elektraDebug) elektraLog
+#define LOG if(elektraLog) (*elektraLog)
 
 
 
@@ -47,8 +46,7 @@ extern "C" {
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
-bool elektraDebug = true; // TODO
-ofstream elektraLog("/tmp/elektra-getenv.log", fstream::app); // TODO
+ostream *elektraLog;
 std::string elektraName;
 std::string elektraProfile;
 KeySet *elektraDocu = ksNew(20,
@@ -113,15 +111,41 @@ void printVersion()
 	ksDel(c);
 }
 
-void addProc(string kv)
+void addOverride(string kv)
 {
 	stringstream ss(kv);
 	string k, v;
 	getline(ss, k, '=');
 	getline(ss, v);
-	LOG << "add proc (cmdline option) " << k << " with " << v << endl;
+	LOG << "add override " << k << " with " << v << endl;
 
-	string fullName = "proc/";
+	string fullName = "proc/env/override";
+	fullName += k;
+	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+}
+
+void addOption(string kv)
+{
+	stringstream ss(kv);
+	string k, v;
+	getline(ss, k, '=');
+	getline(ss, v);
+	LOG << "add option " << k << " with " << v << endl;
+
+	string fullName = "proc/env/option/";
+	fullName += k;
+	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+}
+
+void addLayer(string kv)
+{
+	stringstream ss(kv);
+	string k, v;
+	getline(ss, k, '=');
+	getline(ss, v);
+	LOG << "add layer " << k << " with " << v << endl;
+
+	string fullName = "proc/env/layer/";
 	fullName += k;
 	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
 }
@@ -135,22 +159,9 @@ void giveName(string name)
 
 }
 
-void appendEnv(const char *where, const char *env)
-{
-	char *v = (*sym.f)(env);
-	if (v)
-	{
-		ksAppendKey(elektraConfig, keyNew(where, KEY_VALUE, v, KEY_END));
-		LOG << "append " << v << " from " << env << " to " << where << std::endl;
-	}
-}
-
-
 void parseArgs(int* argc, char** argv)
 {
 	const string prefix = "--elektra";
-	const string prefixName = "-name=";
-	const string prefixProfile = "-profile=";
 	LOG << "Parsing args " << *argc << endl;
 
 	giveName(argv[0]);
@@ -168,40 +179,23 @@ void parseArgs(int* argc, char** argv)
 		{
 			string kv = argument.substr(prefix.size());
 			LOG << "Handling parameter: " << kv << endl;
-			if (kv == "-help")
+
+			if (kv.empty()); // ignore but consume --elektra
+			else if (kv[0] == '-')
 			{
-				cout << keyString(ksLookupByName(elektraDocu,
-					"system/elektra/modules/elektrify-getenv/infos/description",0)) << endl;
-				exit(0);
-			}
-			else if (kv.substr(0, prefixName.size()) == prefixName)
-			{
-				elektraName = kv.substr(prefixName.size());
-			}
-			else if (kv.substr(0, prefixProfile.size()) == prefixProfile)
-			{
-				elektraProfile = kv.substr(prefixProfile.size());
-			}
-			else if (kv == "-clearenv")
-			{
-				ksAppendKey(elektraConfig, keyNew("proc/env/options/clearenv", KEY_END));
-			}
-			else if (kv == "-debug")
-			{
-				ksAppendKey(elektraConfig, keyNew("proc/env/options/debug", KEY_END));
-			}
-			else if (kv == "-version")
-			{
-				printVersion();
-				exit(0);
+				addOption(kv.substr(1));
 			}
 			else if (kv[0] == ':')
 			{
-				kv = kv.substr(1); // skip :
-				addProc(kv);
+				addOverride(kv.substr(1));
 			}
-			else continue;
-			// we consume a parameter
+			else if (kv[0] == '%')
+			{
+				addLayer(kv.substr(1));
+			}
+			// ignore but consume all others
+
+			// we consumed a parameter
 			argv[i] = 0;
 		}
 	}
@@ -212,10 +206,37 @@ void parseArgs(int* argc, char** argv)
 	*argc -= toSubtract;
 }
 
-void parseEnv()
+void addEnvironment(string kv)
 {
-	appendEnv("proc/env/options/debug", "ELEKTRA_DEBUG");
-	appendEnv("proc/env/options/clearenv", "ELEKTRA_CLEARENV");
+	std::transform(kv.begin(), kv.end(), kv.begin(), ::tolower);
+	stringstream ss(kv);
+	string k, v;
+	getline(ss, k, '=');
+	getline(ss, v);
+	LOG << "add option " << k << " with " << v << endl;
+
+	string fullName = "proc/env/option/";
+	fullName += k;
+	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+}
+
+extern "C"
+{
+extern char **environ;
+}
+
+void parseEnvironment()
+{
+	const string prefix = "ELEKTRA_";
+	char** env;
+	for (env = environ; *env != 0; env++)
+	{
+		std::string argument = *env;
+		if (argument.substr(0, prefix.size()) == prefix)
+		{
+			addEnvironment(argument.substr(prefix.size()));
+		}
+	}
 }
 
 void addLayers()
@@ -241,10 +262,32 @@ void addLayers()
 
 void applyOptions()
 {
-	Key *k = ksLookupByName(elektraConfig, "/env/options/debug", 0);
-	if (k) elektraDebug = true;
-	k = ksLookupByName(elektraConfig, "/env/options/clearenv", 0);
-	if (k) clearenv();
+	Key *k = 0;
+	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)))
+	{
+		elektraLog = &cerr;
+		if (keyGetValueSize(k) > 1)
+		{
+			elektraLog = new ofstream(keyString(k), fstream::app);
+		}
+		LOG << "Starting log to " << (elektraLog == &cerr ? "stderr" : keyString(k)) << endl;
+	}
+	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)))
+	{
+		LOG << "clearing the environment" << endl;
+		clearenv();
+	}
+	if ((k = ksLookupByName(elektraConfig, "/env/option/help", 0)))
+	{
+		cout << keyString(ksLookupByName(elektraDocu,
+			"system/elektra/modules/elektrify-getenv/infos/description",0)) << endl;
+		exit(0);
+	}
+	if ((k = ksLookupByName(elektraConfig, "/env/option/version", 0)))
+	{
+		printVersion();
+		exit(0);
+	}
 }
 
 extern "C" void elektraOpen(int* argc, char** argv)
@@ -259,7 +302,7 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	elektraRepo = kdbOpen(elektraParentKey);
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
-	parseEnv();
+	parseEnvironment();
 	if (argc && argv)
 	{
 		parseArgs(argc, argv);
@@ -282,9 +325,9 @@ extern "C" void elektraClose()
 
 	kdbClose(elektraRepo, elektraParentKey);
 	ksDel(elektraConfig);
+	ksDel(elektraDocu);
 	keyDel(elektraParentKey);
 	elektraRepo = 0;
-	elektraDebug = false;
 	elektraName = "";
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 }
@@ -306,9 +349,9 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 }
 
 
-Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, ELEKTRA_UNUSED Key *key, Key *found, option_t options)
+Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, ELEKTRA_UNUSED Key *key, Key *found, option_t option)
 {
-	if (found && !strncmp(keyName(found), "spec/", 5) && options == KDB_O_CALLBACK)
+	if (found && !strncmp(keyName(found), "spec/", 5) && option == KDB_O_CALLBACK)
 	{
 		const Key *meta = keyGetMeta(found, "context");
 		if (meta)
@@ -375,16 +418,6 @@ extern "C" char *elektraGetEnv(const char * cname, gfcn origGetenv)
 	// TODO kdbGet() if needed
 
 	std::string name = cname;
-	std::string fullName = "proc/";
-	fullName += name;
-	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
-	if (key)
-	{
-		LOG << " found " << fullName << endl;
-		return (char*)keyString(key);
-	}
-	LOG << " tried " << fullName << ",";
-
 	bool finish = false;
 	char * ret = 0;
 	ret = elektraGetEnvKey("/env/override/"+name, finish);

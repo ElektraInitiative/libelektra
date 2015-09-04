@@ -67,9 +67,9 @@ the application will be called with <application> -V -L
    Outputs this help.
  * `--elektra-version`:
    Gives version information
- * `--elektra-debug=file`, `ELEKTRA_DEBUG` or `env/options/debug`:
+ * `--elektra-debug=file`, `ELEKTRA_DEBUG` or `env/option/debug`:
    Trace all getenv() calls file or stderr if no file is given.
- * `--elektra-clearenv`, `ELEKTRA_CLEARENV` or `env/options/clearenv`
+ * `--elektra-clearenv`, `ELEKTRA_CLEARENV` or `env/option/clearenv`
    Call clearenv(3) before entering main.
    This is a recommended security feature.
    Elektra itself, if configured that way, will still be able to use the environment.
@@ -80,15 +80,15 @@ the application will be called with <application> -V -L
 
 Note that keys can contain / to form hierarchies, e.g. `--elektra-name=app/profile`
 
-Note that the options are available in three different variants:
+Note that the option are available in three different variants:
 
 1. as commandline parameter: `--elektra-<option>`,
    which are *not* passed through exec(3) calls.
 1. as environment variable: `ELEKTRA_<OPTION>`.
    which might be passed through exec(3) calls, but are removed by clearenv(3) calls.
-1. as Elektra KDB entry: `/env/options/<option>`,
+1. as Elektra KDB entry: `/env/option/<option>`,
    which are the way to achieve an option to be enabled for every application.
-   e.g. `kdb set user/env/options/clearenv` to clear the environment for all
+   e.g. `kdb set user/env/option/clearenv` to clear the environment for all
    applications started by that user (note that at least `PATH` should to be set
    using `kdb set user/env/fallback/PATH "/bin:/usr/bin"` then).
 
