@@ -87,4 +87,23 @@ TEST(Context, ExistWithContextOverrideCascading)
 	EXPECT_EQ(k,f);
 }
 
+TEST(Context, NameExplicit)
+{
+	using namespace ckdb;
+	int argc = 2;
+	const char *cargv[] = {"any-name", "--elektra%name%=other-name", "--elektra%layer%=layer"};
+	char **argv = const_cast<char **>(cargv);
+
+	elektraOpen(&argc, argv);
+	ksAppendKey(elektraConfig,
+			keyNew("system/somewhere/other-name/layer/does-exist",
+				KEY_VALUE, "hello", KEY_END));
+	ksAppendKey(elektraConfig,
+			keyNew("system/env/override/akey",
+				KEY_META, "context", "/somewhere/%name%/%layer%/does-exist",
+				KEY_END));
+	elektraClose();
+}
+
+
 #include "main.cpp"
