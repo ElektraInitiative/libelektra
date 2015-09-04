@@ -50,7 +50,7 @@ ckdb::Key * warnOnMeta(ELEKTRA_UNUSED ckdb::KeySet *ks, ELEKTRA_UNUSED ckdb::Key
 		const ckdb::Key *meta = keyGetMeta(found, "context");
 		if (meta)
 		{
-			std::cout << keyName(found) << " is context dependent, shown result might be wrong, -v shows you the trace to the key" << std::endl;
+			std::cout << "WARNING " << keyName(found) << " is context dependent, shown result might be wrong, -v shows you the trace to the key" << std::endl;
 		}
 	}
 	return found;
@@ -75,7 +75,13 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, ckdb::K
 	int depth = k.getMeta<int>("callback/print_trace/depth");
 
 	for (int i=0; i<depth; ++i) std::cout << " ";
-	std::cout << "searching " << k.getName() << ", found: " << (found ? f.getName() : "<nothing>") << ", options: ";
+	
+	std::cout << "searching "
+		  << (k.getName()[0] == '/' ? "default of spec" : "")
+		  << k.getName()
+		  << ", found: "
+		  << (found ? f.getName() : "<nothing>")
+		  << ", options: ";
 
 	printOptions(options);
 	std::cout << std::endl;
@@ -126,6 +132,10 @@ int GetCommand::execute (Cmdline const& cl)
 		root.setName(n);
 	}
 
+	// do a lookup without tracer to warm up default cache
+	conf.lookup(root);
+
+	root.setCallback(warnOnMeta);
 	if (cl.verbose)
 	{
 		cout << "got " << conf.size() << " keys" << std::endl;
