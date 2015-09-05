@@ -94,7 +94,21 @@ public:
 } elektraEnvContext;
 
 
+
+
 pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+extern "C" void elektraLockMutex()
+{
+	pthread_mutex_lock(&elektraGetEnvMutex);
+}
+
+extern "C" void elektraUnlockMutex()
+{
+	pthread_mutex_unlock(&elektraGetEnvMutex);
+}
+
+
 
 void printVersion()
 {
@@ -325,7 +339,7 @@ void applyOptions()
 
 extern "C" void elektraOpen(int* argc, char** argv)
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
+	elektraLockMutex();
 	if (elektraRepo) elektraClose(); // already opened
 
 	LOG << "opening elektra" << endl;
@@ -348,19 +362,19 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 	addLayers();
 	applyOptions();
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraUnlockMutex();
 }
 
 extern "C" void elektraClose()
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
+	elektraLockMutex();
 	if (!elektraRepo) return; // already closed
 
 	kdbClose(elektraRepo, elektraParentKey);
 	ksDel(elektraConfig);
 	keyDel(elektraParentKey);
 	elektraRepo = 0;
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraUnlockMutex();
 }
 
 extern "C" int __real_main(int argc, char** argv, char** env);
@@ -543,9 +557,9 @@ extern "C" char *getenv(const char *name) // throw ()
 		return elektraBootstrapGetEnv(name);
 	}
 
-	pthread_mutex_lock(&elektraGetEnvMutex);
+	elektraLockMutex();
 	char *ret = elektraGetEnv(name, sym.f);
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraUnlockMutex();
 	return ret;
 }
 
@@ -556,9 +570,9 @@ extern "C" char *secure_getenv(const char *name) // throw ()
 		return elektraBootstrapSecureGetEnv(name);
 	}
 
-	pthread_mutex_lock(&elektraGetEnvMutex);
+	elektraLockMutex();
 	char * ret = elektraGetEnv(name, ssym.f);
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraUnlockMutex();
 	return ret;
 }
 
