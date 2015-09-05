@@ -84,7 +84,7 @@ int elektraCryptoGcryEncrypt(Key *k)
 	}
 
 	// encrypt content block by block (i = start of the current block)
-	for(i = 0; i < valueLen; i = i + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	for(i = 0; i < valueLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
 	{
 		// load content partition into the content buffer
 		long contentLen = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
@@ -94,7 +94,7 @@ int elektraCryptoGcryEncrypt(Key *k)
 			contentLen = valueLen - (i * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		}
 		memcpy(contentBuffer, (value + i), contentLen);
-		// TODO add padding to buffer
+		// TODO add PKCS#7 padding to buffer
 
 		gcry_err = gcry_cipher_encrypt(gcry_handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
@@ -115,5 +115,49 @@ int elektraCryptoGcryEncrypt(Key *k)
 
 int elektraCryptoGcryDecrypt(Key *k)
 {
-	return ELEKTRA_CRYPTO_GCRY_NOK;
+	const unsigned char *value = (unsigned char*)keyValue(k);
+	const size_t valueLen = keyGetValueSize(k);
+
+	unsigned char *output;
+	unsigned char cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
+	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
+	unsigned long i;
+	unsigned long written = 0;
+
+	// plausibility check
+	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
+	{
+		return ELEKTRA_CRYPTO_GCRY_NOK;
+	}
+
+	// prepare buffer for plain text output
+	output = (unsigned char*)malloc(valueLen);
+	if(output == NULL)
+	{
+		return ELEKTRA_CRYPTO_GCRY_NOK;
+	}
+
+	// decrypt content block by block (i = start of the current block)
+	for(i = 0; i < valueLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	{
+		// load cipher text partition into the cipher buffer
+		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+
+		gcry_err = gcry_cipher_decrypt(gcry_handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		if(gcry_err != 0)
+		{
+			// TODO forward detailed error description with gcry_strerror() and gcry_strsource()
+			free(output);
+			return ELEKTRA_CRYPTO_GCRY_NOK;
+		}
+		// TODO consider PKCS#7 padding
+		memcpy((output + i), contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		written += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	}
+
+	// write back the cipher text to the key
+	keySetBinary(k, output, written);
+	free(output);
+
+	return ELEKTRA_CRYPTO_GCRY_OK;
 }
