@@ -325,7 +325,7 @@ endif()
 #
 
 
-option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc" OFF)
+option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc" ON)
 
 set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 
