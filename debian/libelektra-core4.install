@@ -1,5 +1,7 @@
 usr/lib/libelektra.so
 usr/lib/libelektra.so.*
+usr/lib/libelektragetenv.so
+usr/lib/libelektragetenv.so.*
 usr/lib/elektra4/libelektra-dump.so*
 usr/lib/elektra4/libelektra-resolver.so*
 usr/lib/elektra4/libelektra-template.so*
