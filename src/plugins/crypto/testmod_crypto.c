@@ -134,6 +134,46 @@ void test_gcrypt_decryption()
 	keyDel(k);
 }
 
+void test_gcrypt_padding_with_string()
+{
+	const char original[] = "Short";
+	char content[64];
+	Key *k = keyNew("/user/plugins/crypto/gcrypt/test-padding", KEY_END);
+	keySetString(k, original);
+
+	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoGcryEncrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "encryption failed" );
+	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoGcryDecrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "decryption failed" );
+
+	succeed_if( keyIsString(k) == 1, "key is of non-string type");
+	succeed_if( keyGetString(k, content, sizeof(content)) > 0, "could not retrieve the value of the key" );
+	succeed_if( strcmp(original, content) == 0, "decrypted value differs from original");
+
+	keyDel(k);
+}
+
+void test_gcrypt_padding_with_binary()
+{
+	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
+	unsigned char content[64];
+	unsigned long read = 0;
+	Key *k = keyNew("/user/plugins/crypto/gcrypt/test-padding-bin", KEY_END);
+	keySetBinary(k, original, sizeof(original));
+
+	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoGcryEncrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "encryption failed" );
+	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoGcryDecrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "decryption failed" );
+
+	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
+	read = keyGetBinary(k, content, sizeof(content));
+	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
+	succeed_if( cmp_buffers(original, sizeof(original), content, read) == 0, "decrypted value differs from original");
+
+	keyDel(k);
+}
+
 int main(int argc, char** argv)
 {
 	printf("CYPTO        TESTS\n");
@@ -145,6 +185,8 @@ int main(int argc, char** argv)
 	test_gcrypt_handle_init();
 	test_gcrypt_encryption();
 	test_gcrypt_decryption();
+	test_gcrypt_padding_with_string();
+	test_gcrypt_padding_with_binary();
 
 	elektraCryptoGcryClearKeyIv();
 
