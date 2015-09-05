@@ -23,6 +23,8 @@
 #include <string.h>
 #include <signal.h>
 #include <libgen.h>
+#include <unistd.h> // euid
+#include <sys/types.h> // euid
 
 #include <string>
 #include <sstream>
@@ -456,13 +458,47 @@ extern "C" void* elektraMalloc (size_t size)
 }
 */
 
-extern "C" char *getenv(const char *name) // throw ()
+/**
+ * @brief Search in environ, should be identical to getenv
+ *
+ * implementation is needed for bootstrapping in pre-main phases
+ * where memory allocation hangs or crashes and thus dlsym cannot be used!
+ *
+ * @see getenv()
+ */
+char *elektraBootstrapGetEnv(const char *name)
 {
-
-	// if (!sym.f || !strcmp(name, "TMPDIR")  || !strcmp(name, "MOZ_PURGE_CACHES") || !strcmp(name, "MALLOC_CONF") || !strcmp(name, "MALLOC_TMPDIR") || !strcmp(name, "MALLOC_OPTIONS"))
-	if (!sym.f)
+	int len = strlen(name);
+	if (environ == NULL || len == 0)
 	{
 		return 0;
+	}
+
+	char** env;
+	for (env = environ; *env != 0; env++)
+	{
+		if (!strncmp(*env, name, len))
+		{
+			if ((*env)[len] == '=')
+			{
+				return &((*env)[len+1]);
+			}
+		}
+	}
+
+	return 0;
+}
+
+char *elektraBootstrapSecureGetEnv(const char *name)
+{
+	return (geteuid() != getuid() || getegid() != getgid()) ? NULL : elektraBootstrapGetEnv(name);
+}
+
+extern "C" char *getenv(const char *name) // throw ()
+{
+	if (!sym.f)
+	{
+		return elektraBootstrapGetEnv(name);
 	}
 
 	pthread_mutex_lock(&elektraGetEnvMutex);
@@ -473,10 +509,9 @@ extern "C" char *getenv(const char *name) // throw ()
 
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
-	// if (!ssym.f || !strcmp(name, "MALLOC_CONF") || !strcmp(name, "MALLOC_TMPDIR") || !strcmp(name, "MALLOC_OPTIONS"))
 	if (!ssym.f)
 	{
-		return 0;
+		return elektraBootstrapSecureGetEnv(name);
 	}
 
 	pthread_mutex_lock(&elektraGetEnvMutex);
