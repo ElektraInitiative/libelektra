@@ -309,7 +309,14 @@ void applyOptions()
 		{
 			elektraLog = shared_ptr<ostream>(&cerr, [](ostream*){});
 		}
-		LOG << "Elektra getenv starts logging to " << (*elektraLog == &cerr ? "stderr" : keyString(k)) << "size " << keyGetValueSize(k)<<endl;
+		LOG << "Elektra getenv starts logging to ";
+		if (*elektraLog == &cerr)
+		{
+			LOG << "stderr";
+		} else {
+			LOG << keyString(k);
+		}
+		LOG << endl;
 	}
 
 	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)))
