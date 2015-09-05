@@ -51,7 +51,7 @@ KeySet *elektraConfig;
 KDB *elektraRepo;
 std::chrono::milliseconds elektraReloadTimeout;
 std::chrono::system_clock::time_point elektraReloadNext;
-ostream *elektraLog;
+std::shared_ptr<ostream>elektraLog;
 KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
@@ -272,32 +272,34 @@ void elektraSingleCleanup()
 {
 	// make everything really proper clean:
 	ksDel(elektraDocu);
-	if (elektraLog && elektraLog != &std::cerr) delete elektraLog;
+	elektraLog.reset();
 }
 
 void applyOptions()
 {
 	Key *k = 0;
 
-	// TODO reset elektraLog
-
+	elektraLog.reset();
 	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)))
 	{
 		if (keyGetValueSize(k) > 1)
 		{
-			elektraLog = new ofstream(keyString(k), fstream::app);
+			elektraLog = make_shared<ofstream>(keyString(k), fstream::app);
 		}
 		else
 		{
-			elektraLog = &cerr;
+			elektraLog = shared_ptr<ostream>(&cerr, [](ostream*){});
 		}
-		cerr << "Starting logging to " << (elektraLog == &cerr ? "stderr" : keyString(k)) << "size " << keyGetValueSize(k)<<endl;
+		cerr << "Starting logging to " << (*elektraLog == &cerr ? "stderr" : keyString(k)) << "size " << keyGetValueSize(k)<<endl;
 	}
+
 	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)))
 	{
 		LOG << "clearing the environment" << endl;
 		clearenv();
 	}
+
+	elektraReloadTimeout = std::chrono::milliseconds::zero();
 	if ((k = ksLookupByName(elektraConfig, "/env/option/reload", 0)))
 	{
 		LOG << "activate reloading feature" << endl;
@@ -306,12 +308,14 @@ void applyOptions()
 		std::chrono::milliseconds::rep v = atoi(keyString(k));
 		elektraReloadTimeout = std::chrono::milliseconds(v);
 	}
+
 	if ((k = ksLookupByName(elektraConfig, "/env/option/help", 0)))
 	{
 		cout << keyString(ksLookupByName(elektraDocu,
 			"system/elektra/modules/elektrify-getenv/infos/description",0)) << endl;
 		exit(0);
 	}
+
 	if ((k = ksLookupByName(elektraConfig, "/env/option/version", 0)))
 	{
 		printVersion();
