@@ -22,6 +22,14 @@ but no flexibility regarding:
 
 - XDG resolver: handle XDG_CONFIG_DIRS, where no path is valid, correctly
 
+
+## qt-gui 0.0.8
+
+- made sure keys can only be renamed if the new name/value/metadata is different from the existing ones
+- fixed 1) and 2) of #233
+- fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
+- fixed qml warning when deleting key
+
 # 0.8.12 Release
 
 - guid: 98770541-32a1-486a-98a1-d02f26afc81a
