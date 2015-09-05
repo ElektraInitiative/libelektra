@@ -304,6 +304,11 @@ protected:
 #endif
 	}
 
+	void clearAllLayer()
+	{
+		m_active_layers.clear();
+	}
+
 	// needed for global activation
 	void activateLayer(std::shared_ptr<Layer> const & layer)
 	{

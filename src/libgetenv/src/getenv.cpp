@@ -3,6 +3,11 @@
  *
  * \brief Source for the getenv library
  *
+ * \note there are two necessary bootstrap phases:
+ *
+ * 1.) bootstrapping in pre-main phase when no allocation is possible
+ * 2.) bootstrapping when elektra modules use getenv()
+ *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
@@ -23,8 +28,11 @@
 #include <string.h>
 #include <signal.h>
 #include <libgen.h>
+#include <unistd.h> // euid
+#include <sys/types.h> // euid
 
 #include <string>
+#include <chrono>
 #include <sstream>
 #include <iostream>
 
@@ -36,26 +44,20 @@
 using namespace std;
 using namespace ckdb;
 
-// ofstream fout("/tmp/elektra-getenv.log", fstream::app);
-// #define LOG fout
-#define LOG if(elektraDebug) cerr
+#define LOG if(elektraLog) (*elektraLog)
 
+namespace ckdb
+{
 
-
-namespace ckdb {
-extern "C" {
+extern "C"
+{
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
-bool elektraDebug;
-std::string elektraName;
-std::string elektraProfile;
-KeySet *elektraDocu = ksNew(20,
-#include "readme_elektrify-getenv.c"
-	KS_END);
-}
+} // extern "C"
 
-namespace {
+namespace
+{
 
 class KeyValueLayer : public kdb::Layer
 {
@@ -69,8 +71,6 @@ private:
 	std::string m_value;
 };
 
-}
-
 class GetEnvContext : public kdb::Context
 {
 public:
@@ -79,10 +79,41 @@ public:
 		std::shared_ptr<kdb::Layer> layer = make_shared<KeyValueLayer>(layername, layervalue);
 		activateLayer(layer);
 	}
+	void clearAllLayer()
+	{
+		kdb::Context::clearAllLayer();
+	}
 } elektraEnvContext;
 
+typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
+typedef char *(* gfcn)(const char *);
+
+union Start{void*d; fcn f;} start; // symbol for libc pre-main
+union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
+
+std::chrono::milliseconds elektraReloadTimeout;
+std::chrono::system_clock::time_point elektraReloadNext;
+std::shared_ptr<ostream>elektraLog;
+KeySet *elektraDocu = ksNew(20,
+#include "readme_elektrify-getenv.c"
+	KS_END);
 
 pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+} // anonymous namespace
+
+
+
+extern "C" void elektraLockMutex()
+{
+	pthread_mutex_lock(&elektraGetEnvMutex);
+}
+
+extern "C" void elektraUnlockMutex()
+{
+	pthread_mutex_unlock(&elektraGetEnvMutex);
+}
+
+
 
 void printVersion()
 {
@@ -106,15 +137,42 @@ void printVersion()
 	ksDel(c);
 }
 
-void addProc(string kv)
+void addOverride(string kv)
 {
 	stringstream ss(kv);
 	string k, v;
 	getline(ss, k, '=');
 	getline(ss, v);
-	LOG << "add proc (cmdline option) " << k << " with " << v << endl;
+	LOG << "add override " << k << " with " << v << endl;
 
-	string fullName = "proc/";
+	string fullName = "proc/env/override/";
+	fullName += k;
+	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+}
+
+void addOption(string kv)
+{
+	stringstream ss(kv);
+	string k, v;
+	getline(ss, k, '=');
+	getline(ss, v);
+	LOG << "add option " << k << " with " << v << endl;
+
+	string fullName = "proc/env/option/";
+	fullName += k;
+	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+}
+
+void addLayer(string kv)
+{
+	stringstream ss(kv);
+	string k, v;
+	getline(ss, k, '%');
+	if (ss.get() != '=') return;
+	getline(ss, v);
+	LOG << "add layer " << k << " with " << v << endl;
+
+	string fullName = "proc/env/layer/";
 	fullName += k;
 	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
 }
@@ -122,17 +180,17 @@ void addProc(string kv)
 void giveName(string name)
 {
 	char * n = strdup(name.c_str());
-	elektraName = basename(n);
+	std::string basename = ::basename(n);
 	free(n);
-	LOG << "give name " << elektraName << std::endl;
+	LOG << "give name " << name << ", basename: " << basename << std::endl;
+	ksAppendKey(elektraConfig, keyNew("proc/env/layer/name", KEY_VALUE, name.c_str(), KEY_END));
+	ksAppendKey(elektraConfig, keyNew("proc/env/layer/basename", KEY_VALUE, basename.c_str(), KEY_END));
 
 }
 
 void parseArgs(int* argc, char** argv)
 {
 	const string prefix = "--elektra";
-	const string prefixName = "-name=";
-	const string prefixProfile = "-profile=";
 	LOG << "Parsing args " << *argc << endl;
 
 	giveName(argv[0]);
@@ -150,40 +208,23 @@ void parseArgs(int* argc, char** argv)
 		{
 			string kv = argument.substr(prefix.size());
 			LOG << "Handling parameter: " << kv << endl;
-			if (kv == "-help")
+
+			if (kv.empty()); // ignore but consume --elektra
+			else if (kv[0] == '-')
 			{
-				cout << keyString(ksLookupByName(elektraDocu,
-					"system/elektra/modules/elektrify-getenv/infos/description",0)) << endl;
-				exit(0);
-			}
-			else if (kv.substr(0, prefixName.size()) == prefixName)
-			{
-				elektraName = kv.substr(prefixName.size());
-			}
-			else if (kv.substr(0, prefixProfile.size()) == prefixProfile)
-			{
-				elektraProfile = kv.substr(prefixProfile.size());
-			}
-			else if (kv == "-clearenv")
-			{
-				ksAppendKey(elektraConfig, keyNew("proc/env/options/clearenv", KEY_END));
-			}
-			else if (kv == "-debug")
-			{
-				ksAppendKey(elektraConfig, keyNew("proc/env/options/debug", KEY_END));
-			}
-			else if (kv == "-version")
-			{
-				printVersion();
-				exit(0);
+				addOption(kv.substr(1));
 			}
 			else if (kv[0] == ':')
 			{
-				kv = kv.substr(1); // skip :
-				addProc(kv);
+				addOverride(kv.substr(1));
 			}
-			else continue;
-			// we consume a parameter
+			else if (kv[0] == '%')
+			{
+				addLayer(kv.substr(1));
+			}
+			// ignore but consume all others
+
+			// we consumed a parameter
 			argv[i] = 0;
 		}
 	}
@@ -194,11 +235,42 @@ void parseArgs(int* argc, char** argv)
 	*argc -= toSubtract;
 }
 
+void addEnvironment(string kv)
+{
+	std::transform(kv.begin(), kv.end(), kv.begin(), ::tolower);
+	stringstream ss(kv);
+	string k, v;
+	getline(ss, k, '=');
+	getline(ss, v);
+	LOG << "add option " << k << " with " << v << endl;
+
+	string fullName = "proc/env/option/";
+	fullName += k;
+	ksAppendKey(elektraConfig, keyNew(fullName.c_str(), KEY_VALUE, v.c_str(), KEY_END));
+}
+
+extern "C"
+{
+extern char **environ;
+}
+
+void parseEnvironment()
+{
+	const string prefix = "ELEKTRA_";
+	char** env;
+	for (env = environ; *env != 0; env++)
+	{
+		std::string argument = *env;
+		if (argument.substr(0, prefix.size()) == prefix)
+		{
+			addEnvironment(argument.substr(prefix.size()));
+		}
+	}
+}
+
 void addLayers()
 {
 	using namespace ckdb;
-	elektraEnvContext.addLayer("name", elektraName);
-	elektraEnvContext.addLayer("profile", elektraProfile);
 	Key *c;
 	ksRewind(elektraConfig);
 	std::string prefix = "/env/layer/";
@@ -215,17 +287,64 @@ void addLayers()
 	}
 }
 
+void elektraSingleCleanup()
+{
+	// make everything really proper clean:
+	ksDel(elektraDocu);
+	elektraLog.reset();
+}
+
 void applyOptions()
 {
-	Key *k = ksLookupByName(elektraConfig, "/env/options/debug", 0);
-	if (k) elektraDebug = true;
-	k = ksLookupByName(elektraConfig, "/env/options/clearenv", 0);
-	if (k) clearenv();
+	Key *k = 0;
+
+	elektraLog.reset();
+	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)))
+	{
+		if (keyGetValueSize(k) > 1)
+		{
+			elektraLog = make_shared<ofstream>(keyString(k), fstream::app);
+		}
+		else
+		{
+			elektraLog = shared_ptr<ostream>(&cerr, [](ostream*){});
+		}
+		LOG << "Elektra getenv starts logging to " << (*elektraLog == &cerr ? "stderr" : keyString(k)) << "size " << keyGetValueSize(k)<<endl;
+	}
+
+	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)))
+	{
+		LOG << "clearing the environment" << endl;
+		clearenv();
+	}
+
+	elektraReloadTimeout = std::chrono::milliseconds::zero();
+	if ((k = ksLookupByName(elektraConfig, "/env/option/reload", 0)))
+	{
+		LOG << "activate reloading feature" << endl;
+
+		// we do not care about errors, 0 is an invalid number anyway
+		std::chrono::milliseconds::rep v = atoi(keyString(k));
+		elektraReloadTimeout = std::chrono::milliseconds(v);
+	}
+
+	if ((k = ksLookupByName(elektraConfig, "/env/option/help", 0)))
+	{
+		cout << keyString(ksLookupByName(elektraDocu,
+			"system/elektra/modules/elektrify-getenv/infos/description",0)) << endl;
+		exit(0);
+	}
+
+	if ((k = ksLookupByName(elektraConfig, "/env/option/version", 0)))
+	{
+		printVersion();
+		exit(0);
+	}
 }
 
 extern "C" void elektraOpen(int* argc, char** argv)
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
+	elektraLockMutex();
 	if (elektraRepo) elektraClose(); // already opened
 
 	LOG << "opening elektra" << endl;
@@ -235,6 +354,7 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	elektraRepo = kdbOpen(elektraParentKey);
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 
+	parseEnvironment();
 	if (argc && argv)
 	{
 		parseArgs(argc, argv);
@@ -247,51 +367,69 @@ extern "C" void elektraOpen(int* argc, char** argv)
 	kdbGet(elektraRepo, elektraConfig, elektraParentKey);
 	addLayers();
 	applyOptions();
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraUnlockMutex();
 }
 
 extern "C" void elektraClose()
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
+	elektraLockMutex();
 	if (!elektraRepo) return; // already closed
 
 	kdbClose(elektraRepo, elektraParentKey);
 	ksDel(elektraConfig);
 	keyDel(elektraParentKey);
 	elektraRepo = 0;
-	elektraDebug = false;
-	elektraName = "";
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraUnlockMutex();
 }
 
 extern "C" int __real_main(int argc, char** argv, char** env);
 
-typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
-	static union Start{Start() {d = dlsym(RTLD_NEXT, "__libc_start_main");} void*d; fcn f;} start;
-
 	LOG << "wrapping main" << endl;
+	start.d = dlsym(RTLD_NEXT, "__libc_start_main");
+	sym.d = dlsym(RTLD_NEXT, "getenv");
+	ssym.d = dlsym(RTLD_NEXT, "secure_getenv");
+
 	elektraOpen(&argc, argv);
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
-	//TODO: save configuration (on request)
 	elektraClose();
+	return ret;
+}
+
+
+Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, ELEKTRA_UNUSED Key *key, Key *found, option_t option)
+{
+	if (found && !strncmp(keyName(found), "spec/", 5) && option == KDB_O_CALLBACK)
+	{
+		const Key *meta = keyGetMeta(found, "context");
+		if (meta)
+		{
+			string contextName = elektraEnvContext.evaluate(keyString(meta));
+			LOG << ", in context: " << contextName;
+			// only consider context if key actually exists, otherwise continue searching
+			Key *ret = ksLookupByName(ks, contextName.c_str(), 0);
+			if (ret) return ret; // use context override!
+		}
+		else
+		{
+			LOG << ", NO context";
+		}
+	}
+	return found;
+}
+
+Key *elektraLookupWithContext(std::string name)
+{
+	Key *search = keyNew(name.c_str(), KEY_FUNC, elektraContextEvaluation, KEY_END);
+	Key * ret = ksLookup(elektraConfig, search, 0);
+	keyDel(search);
 	return ret;
 }
 
 char *elektraGetEnvKey(std::string const& fullName, bool & finish)
 {
-	std::string specName = "spec"+fullName;
-	Key *spec = ksLookupByName(elektraConfig, specName.c_str(), 0);
-	const Key *meta = keyGetMeta(spec, "context");
-	if (meta)
-	{
-		string contextName = elektraEnvContext.evaluate(keyString(meta));
-		LOG << " in context: " << contextName;
-		char * ret = elektraGetEnvKey(contextName, finish);
-		if (finish) return ret;
-	}
-	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
+	Key *key = elektraLookupWithContext(fullName);
 	if (key)
 	{
 		LOG << " found " << fullName << ": " << keyString(key) << endl;
@@ -305,7 +443,6 @@ char *elektraGetEnvKey(std::string const& fullName, bool & finish)
 	return 0;
 }
 
-typedef char *(* gfcn)(const char *);
 
 /**
  * @brief Uses Elektra to get from environment.
@@ -316,27 +453,41 @@ typedef char *(* gfcn)(const char *);
  * @see getenv
  * @see secure_getenv
  */
-extern "C" char *elektraGetEnv(std::string const& name, gfcn origGetenv)
+char *elektraGetEnv(const char * cname, gfcn origGetenv)
 {
-	LOG << "elektraGetEnv(" << name << ")" ;
+	LOG << "elektraGetEnv(" << cname << ")" ;
 	if (!elektraRepo)
 	{	// no open Repo (needed for bootstrapping, if inside kdbOpen() getenv is used)
-		char *ret = (*origGetenv)(name.c_str());
+		char *ret = (*origGetenv)(cname);
 		if (!ret) { LOG << " orig getenv returned null pointer" << endl; }
 		else LOG << " orig getenv returned ("<< strlen(ret) << ") <" << ret << ">" << endl;
 		return ret;
 	}
 
-	std::string fullName = "proc/";
-	fullName += name;
-	Key *key = ksLookupByName(elektraConfig, fullName.c_str(), 0);
-	if (key)
+	// is reload feature enabled at all?
+	if (elektraReloadTimeout > std::chrono::milliseconds::zero())
 	{
-		LOG << " found " << fullName << endl;
-		return (char*)keyString(key);
-	}
-	LOG << " tried " << fullName << ",";
+		std::chrono::system_clock::time_point const now =
+			std::chrono::system_clock::now();
 
+		// are we now ready to reload?
+		if (now >= elektraReloadNext)
+		{
+			int ret = kdbGet(elektraRepo, elektraConfig, elektraParentKey);
+
+			// was there a change?
+			if (ret == 1)
+			{
+				elektraEnvContext.clearAllLayer();
+				addLayers();
+				applyOptions();
+			}
+		}
+
+		elektraReloadNext = now + elektraReloadTimeout;
+	}
+
+	std::string name = cname;
 	bool finish = false;
 	char * ret = 0;
 	ret = elektraGetEnvKey("/env/override/"+name, finish);
@@ -356,23 +507,77 @@ extern "C" char *elektraGetEnv(std::string const& name, gfcn origGetenv)
 	return 0;
 }
 
+/*
+// Nice trick to find next execution of elektraMalloc
+// set foo to (int*)-1 to trigger it
+int *foo = 0;
+extern "C" void* elektraMalloc (size_t size)
+{
+	// LOG << "malloc " << size << endl;
+	if (foo) printf("%d\n", *foo);
+	return malloc (size);
+}
+*/
+
+/**
+ * @brief Search in environ, should be identical to getenv
+ *
+ * implementation is needed for bootstrapping in pre-main phases
+ * where memory allocation hangs or crashes and thus dlsym cannot be used!
+ *
+ * @see getenv()
+ */
+char *elektraBootstrapGetEnv(const char *name)
+{
+	int len = strlen(name);
+	if (environ == NULL || len == 0)
+	{
+		return 0;
+	}
+
+	char** env;
+	for (env = environ; *env != 0; env++)
+	{
+		if (!strncmp(*env, name, len))
+		{
+			if ((*env)[len] == '=')
+			{
+				return &((*env)[len+1]);
+			}
+		}
+	}
+
+	return 0;
+}
+
+char *elektraBootstrapSecureGetEnv(const char *name)
+{
+	return (geteuid() != getuid() || getegid() != getgid()) ? NULL : elektraBootstrapGetEnv(name);
+}
+
 extern "C" char *getenv(const char *name) // throw ()
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
-	static union Sym{Sym() {d = dlsym(RTLD_NEXT, "getenv");} void*d; gfcn f;} sym;
+	if (!sym.f)
+	{
+		return elektraBootstrapGetEnv(name);
+	}
 
+	elektraLockMutex();
 	char *ret = elektraGetEnv(name, sym.f);
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraUnlockMutex();
 	return ret;
 }
 
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
-	static union Sym{Sym() {d = dlsym(RTLD_NEXT, "secure_getenv");} void*d; gfcn f;} sym;
+	if (!ssym.f)
+	{
+		return elektraBootstrapSecureGetEnv(name);
+	}
 
-	char * ret = elektraGetEnv(name, sym.f);
-	pthread_mutex_unlock(&elektraGetEnvMutex);
+	elektraLockMutex();
+	char * ret = elektraGetEnv(name, ssym.f);
+	elektraUnlockMutex();
 	return ret;
 }
 
