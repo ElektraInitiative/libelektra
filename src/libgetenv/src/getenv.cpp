@@ -458,14 +458,14 @@ extern "C" void* elektraMalloc (size_t size)
 
 extern "C" char *getenv(const char *name) // throw ()
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
 
+	// if (!sym.f || !strcmp(name, "TMPDIR")  || !strcmp(name, "MOZ_PURGE_CACHES") || !strcmp(name, "MALLOC_CONF") || !strcmp(name, "MALLOC_TMPDIR") || !strcmp(name, "MALLOC_OPTIONS"))
 	if (!sym.f)
 	{
-		LOG << "jemalloc (firefox) bootstrap hack" << std::endl;
 		return 0;
 	}
 
+	pthread_mutex_lock(&elektraGetEnvMutex);
 	char *ret = elektraGetEnv(name, sym.f);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 	return ret;
@@ -473,14 +473,13 @@ extern "C" char *getenv(const char *name) // throw ()
 
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
-	pthread_mutex_lock(&elektraGetEnvMutex);
-
+	// if (!ssym.f || !strcmp(name, "MALLOC_CONF") || !strcmp(name, "MALLOC_TMPDIR") || !strcmp(name, "MALLOC_OPTIONS"))
 	if (!ssym.f)
 	{
-		LOG << "jemalloc (firefox) bootstrap hack" << std::endl;
 		return 0;
 	}
 
+	pthread_mutex_lock(&elektraGetEnvMutex);
 	char * ret = elektraGetEnv(name, ssym.f);
 	pthread_mutex_unlock(&elektraGetEnvMutex);
 	return ret;
