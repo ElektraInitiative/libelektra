@@ -39,31 +39,20 @@
 using namespace std;
 using namespace ckdb;
 
-// #define LOG cerr
 #define LOG if(elektraLog) (*elektraLog)
 
+namespace ckdb
+{
 
-
-namespace ckdb {
-extern "C" {
+extern "C"
+{
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
-std::chrono::milliseconds elektraReloadTimeout;
-std::chrono::system_clock::time_point elektraReloadNext;
-std::shared_ptr<ostream>elektraLog;
-KeySet *elektraDocu = ksNew(20,
-#include "readme_elektrify-getenv.c"
-	KS_END);
+} // extern "C"
 
-typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
-typedef char *(* gfcn)(const char *);
-
-union Start{void*d; fcn f;} start; // symbol for libc pre-main
-union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
-}
-
-namespace {
+namespace
+{
 
 class KeyValueLayer : public kdb::Layer
 {
@@ -76,8 +65,6 @@ private:
 	std::string m_key;
 	std::string m_value;
 };
-
-}
 
 class GetEnvContext : public kdb::Context
 {
@@ -92,6 +79,20 @@ public:
 		kdb::Context::clearAllLayer();
 	}
 } elektraEnvContext;
+
+typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
+typedef char *(* gfcn)(const char *);
+
+union Start{void*d; fcn f;} start; // symbol for libc pre-main
+union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
+
+std::chrono::milliseconds elektraReloadTimeout;
+std::chrono::system_clock::time_point elektraReloadNext;
+std::shared_ptr<ostream>elektraLog;
+KeySet *elektraDocu = ksNew(20,
+#include "readme_elektrify-getenv.c"
+	KS_END);
+} // anonymous namespace
 
 
 
