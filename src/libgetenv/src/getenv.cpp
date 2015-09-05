@@ -27,6 +27,7 @@
 #include <sys/types.h> // euid
 
 #include <string>
+#include <chrono>
 #include <sstream>
 #include <iostream>
 
@@ -48,6 +49,8 @@ extern "C" {
 Key *elektraParentKey;
 KeySet *elektraConfig;
 KDB *elektraRepo;
+std::chrono::milliseconds elektraReloadTimeout;
+std::chrono::system_clock::time_point elektraReloadNext;
 ostream *elektraLog;
 KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
@@ -83,6 +86,10 @@ public:
 	{
 		std::shared_ptr<kdb::Layer> layer = make_shared<KeyValueLayer>(layername, layervalue);
 		activateLayer(layer);
+	}
+	void clearAllLayer()
+	{
+		kdb::Context::clearAllLayer();
 	}
 } elektraEnvContext;
 
@@ -271,6 +278,9 @@ void elektraSingleCleanup()
 void applyOptions()
 {
 	Key *k = 0;
+
+	// TODO reset elektraLog
+
 	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)))
 	{
 		if (keyGetValueSize(k) > 1)
@@ -287,6 +297,14 @@ void applyOptions()
 	{
 		LOG << "clearing the environment" << endl;
 		clearenv();
+	}
+	if ((k = ksLookupByName(elektraConfig, "/env/option/reload", 0)))
+	{
+		LOG << "activate reloading feature" << endl;
+
+		// we do not care about errors, 0 is an invalid number anyway
+		std::chrono::milliseconds::rep v = atoi(keyString(k));
+		elektraReloadTimeout = std::chrono::milliseconds(v);
 	}
 	if ((k = ksLookupByName(elektraConfig, "/env/option/help", 0)))
 	{
@@ -352,7 +370,6 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 
 	elektraOpen(&argc, argv);
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
-	//TODO: save configuration (on request)
 	elektraClose();
 	return ret;
 }
@@ -424,7 +441,28 @@ extern "C" char *elektraGetEnv(const char * cname, gfcn origGetenv)
 		return ret;
 	}
 
-	// TODO kdbGet() if needed
+	// is reload feature enabled at all?
+	if (elektraReloadTimeout > std::chrono::milliseconds::zero())
+	{
+		std::chrono::system_clock::time_point const now =
+			std::chrono::system_clock::now();
+
+		// are we now ready to reload?
+		if (now >= elektraReloadNext)
+		{
+			int ret = kdbGet(elektraRepo, elektraConfig, elektraParentKey);
+
+			// was there a change?
+			if (ret == 1)
+			{
+				elektraEnvContext.clearAllLayer();
+				addLayers();
+				applyOptions();
+			}
+		}
+
+		elektraReloadNext = now + elektraReloadTimeout;
+	}
 
 	std::string name = cname;
 	bool finish = false;
