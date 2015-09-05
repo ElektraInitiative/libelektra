@@ -1,14 +1,14 @@
 #include <kdb.h>
 
 //! [f]
-int f(KeySet *iterator, KeySet *lookup)
+void f(KeySet *iterator, KeySet *lookup)
 {
 	KeySet *append = ksNew (ksGetSize(lookup), KS_END);
 	Key *key;
 	Key *current;
 
 	ksRewind(iterator);
-	while (current=ksNext(iterator))
+	while ((current=ksNext(iterator)))
 	{
 		key = ksLookup (lookup, current, KDB_O_POP);
 		// do something...
