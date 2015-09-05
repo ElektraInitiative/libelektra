@@ -12,7 +12,7 @@ void FindVisitor::visit(ConfigNode &node)
 {
 	bool termFound = false;
 
-	if (node.getName().contains(m_term) || node.getValue().toString().contains(m_term))
+	if (node.getPath().contains(m_term) || node.getValue().toString().contains(m_term))
 	{
 		termFound = true;
 	}

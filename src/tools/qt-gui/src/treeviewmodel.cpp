@@ -119,12 +119,16 @@ bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, i
 	{
 
 	case NameRole:
-		node->setName(modelData.toString());
-		node->setIsDirty(true);
+		if(node->getName() != modelData.toString()){
+			node->setName(modelData.toString());
+			node->setIsDirty(true);
+		}
 		break;
 
 	case ValueRole:
-		node->setValue(modelData);
+		if(node->getValue() != modelData){
+			node->setValue(modelData);
+		}
 		break;
 
 	case MetaValueRole:
@@ -488,7 +492,7 @@ void TreeViewModel::createNewNodes(KeySet keySet)
 
 	while (keySet.next())
 	{
-		Key k = keySet.current().dup();
+		Key k = keySet.current();
 		QStringList keys = getSplittedKeyname(k);
 		QString root = keys.takeFirst();
 
@@ -549,26 +553,40 @@ void TreeViewModel::synchronize()
 	OneSideMergeConfiguration configuration(OURS);
 	configuration.configureMerger(merger);
 
-#if DEBUG && VERBOSE
-	theirs.rewind();
-	base.rewind();
-	for (Key o : ours)
-	{
-		Key t = theirs.next();
-		Key b = base.next();
-		std::cout << o.getName() << " " << ckdb::keyNeedSync(*o);
-		std::cout << "\t";
-		!b.isValid() ? std::cout << "none" : std::cout << b.getName() << " " << ckdb::keyNeedSync(*b);
-		std::cout << "\t";
-		!t.isValid() ? std::cout << "none" : std::cout << t.getName() << " " << ckdb::keyNeedSync(*t);
-		std::cout << std::endl;
-	}
-#endif
+	#if DEBUG && VERBOSE
+		theirs.rewind();
+		base.rewind();
+		for (Key o : ours)
+		{
+			Key t = theirs.next();
+			Key b = base.next();
+			std::cout << o.getName() << " " << ckdb::keyNeedSync(*o);
+			std::cout << "\t";
+			!b.isValid() ? std::cout << "none" : std::cout << b.getName() << " " << ckdb::keyNeedSync(*b);
+			std::cout << "\t";
+			!t.isValid() ? std::cout << "none" : std::cout << t.getName() << " " << ckdb::keyNeedSync(*t);
+			std::cout << std::endl;
+		}
+	#endif
 
 	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
 													  OurMergeKeys(ours, root),
 													  TheirMergeKeys (theirs, root),
 													  root));
+	if(result.getNumberOfResolvedKeys() == 0)
+	{
+		try
+		{
+			kdb.set(ours, root);
+			return;
+		}
+		catch (KDBException const& e)
+		{
+			emit showMessage(tr("Error"), tr("Synchronizing failed, could not write to configuration."), e.what());
+			return;
+		}
+	}
+
 	if (!result.hasConflicts ())
 	{
 		resultKeys.append(result.getMergedKeys());
@@ -605,7 +623,6 @@ void TreeViewModel::synchronize()
 	}
 
 	GUIBasicKeySet::setBasic(resultKeys);
-
 	createNewNodes(resultKeys);
 }
 
@@ -643,7 +660,7 @@ QString TreeViewModel::getCurrentArrayNo() const
 	}
 
 	if(max){
-		Key k = max->getKey().dup();
+		Key k = max->getKey();
 		ckdb::elektraArrayIncName(k.getKey());
 		return QString::fromStdString(k.getBaseName());
 	}
