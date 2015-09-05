@@ -3,6 +3,11 @@
  *
  * \brief Source for the getenv library
  *
+ * \note there are two necessary bootstrap phases:
+ *
+ * 1.) bootstrapping in pre-main phase when no allocation is possible
+ * 2.) bootstrapping when elektra modules use getenv()
+ *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
@@ -92,12 +97,11 @@ std::shared_ptr<ostream>elektraLog;
 KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
+
+pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 } // anonymous namespace
 
 
-
-
-pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 extern "C" void elektraLockMutex()
 {
@@ -305,7 +309,7 @@ void applyOptions()
 		{
 			elektraLog = shared_ptr<ostream>(&cerr, [](ostream*){});
 		}
-		cerr << "Starting logging to " << (*elektraLog == &cerr ? "stderr" : keyString(k)) << "size " << keyGetValueSize(k)<<endl;
+		LOG << "Elektra getenv starts logging to " << (*elektraLog == &cerr ? "stderr" : keyString(k)) << "size " << keyGetValueSize(k)<<endl;
 	}
 
 	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)))
@@ -449,7 +453,7 @@ char *elektraGetEnvKey(std::string const& fullName, bool & finish)
  * @see getenv
  * @see secure_getenv
  */
-extern "C" char *elektraGetEnv(const char * cname, gfcn origGetenv)
+char *elektraGetEnv(const char * cname, gfcn origGetenv)
 {
 	LOG << "elektraGetEnv(" << cname << ")" ;
 	if (!elektraRepo)
