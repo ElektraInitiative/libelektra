@@ -17,6 +17,8 @@
 #include <gcrypt.h>
 
 static gcry_cipher_hd_t gcry_handle;
+static gcry_error_t gcry_err;
+
 
 void elektraCryptoGcryClearKeyIv()
 {
@@ -36,6 +38,7 @@ int elektraCryptoGcryInit()
 
 int elektraCryptoGcrySetKeyIv(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen)
 {
+	elektraCryptoGcryClearKeyIv();
 	if (gcry_cipher_open(&gcry_handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0) != 0)
 	{
 		return ELEKTRA_CRYPTO_GCRY_NOK;
@@ -55,7 +58,59 @@ int elektraCryptoGcrySetKeyIv(const unsigned char *key, const short keyLen, cons
 
 int elektraCryptoGcryEncrypt(Key *k)
 {
-	return ELEKTRA_CRYPTO_GCRY_NOK;
+	const unsigned char *value = (unsigned char*)keyValue(k);
+	const size_t valueLen = keyGetValueSize(k);
+	size_t outputLen;
+
+	unsigned char *output;
+	unsigned char cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
+	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
+	unsigned long i;
+
+	// prepare buffer for cipher text output
+	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE == 0)
+	{
+		outputLen = valueLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	}
+	else
+	{
+		outputLen = (valueLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 1;
+	}
+	outputLen *= ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	output = (unsigned char*)malloc(outputLen);
+	if(output == NULL)
+	{
+		return ELEKTRA_CRYPTO_GCRY_NOK;
+	}
+
+	// encrypt content block by block (i = start of the current block)
+	for(i = 0; i < valueLen; i = i + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	{
+		// load content partition into the content buffer
+		long contentLen = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+
+		if((i + 1) * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE > valueLen)
+		{
+			contentLen = valueLen - (i * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		}
+		memcpy(contentBuffer, (value + i), contentLen);
+		// TODO add padding to buffer
+
+		gcry_err = gcry_cipher_encrypt(gcry_handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		if(gcry_err != 0)
+		{
+			// TODO forward detailed error description with gcry_strerror() and gcry_strsource()
+			free(output);
+			return ELEKTRA_CRYPTO_GCRY_NOK;
+		}
+		memcpy((output + i), cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	}
+
+	// write back the cipher text to the key
+	keySetBinary(k, output, outputLen);
+	free(output);
+
+	return ELEKTRA_CRYPTO_GCRY_OK;
 }
 
 int elektraCryptoGcryDecrypt(Key *k)
