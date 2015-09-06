@@ -13,6 +13,12 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
+execute all examples to see if they do not crash or memleak
+	assert test cases -> test cases (rename succeed_if)
+
+
+# 0.8.14
+
 ## start
 
 Start with:
@@ -54,9 +60,6 @@ global mountpoints with unserialize
 cmd execution testing framework
 	execute commands, capture stdout, stderr and kdb
 	replay and see if same side-effects
-
-execute all examples to see if they do not crash or memleak
-	assert test cases -> test cases (rename succeed_if)
 
 full jessie build+script+external
 copy debian/ from official
@@ -102,10 +105,8 @@ fix types: (also in 0.8.14)
 
 ## qt-gui
 
-dbus-listener
+dbus-listener + notify single events, maybe zeromq
 auto-completion for metadata
-
-"kdb check -a" rewrite file?
 
 ## fix relative ##
 
@@ -121,7 +122,7 @@ generic simpleini (customizable printf/scanf format strings)
 
 ## simplify cmake ##
 
-c++11
+c++11 -> by default
 DEFAULT_STORAGE/RESOLVER
 to one cmake variable:
 	verbose/debug -> logging
@@ -130,7 +131,9 @@ to one cmake variable:
 fix dependency problem with kdberrors.h
 
 
-# 0.8.14
+
+
+# 0.8.15
 
 specification checker+application
 	replaces struct+glob
