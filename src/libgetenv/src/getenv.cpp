@@ -310,7 +310,7 @@ void applyOptions()
 			elektraLog = shared_ptr<ostream>(&cerr, [](ostream*){});
 		}
 		LOG << "Elektra getenv starts logging to ";
-		if (*elektraLog == &cerr)
+		if (elektraLog.get() == &cerr)
 		{
 			LOG << "stderr";
 		} else {
