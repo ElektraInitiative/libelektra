@@ -1,0 +1,13 @@
+#!/bin/sh
+
+GETENV=@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektragetenv.so
+
+if [ "$#" -eq 0 ]
+then
+	echo "Usage: $0 <application> <arguments>"
+	echo "For help run $0 <application> --elektra-help"
+	echo "Path to library is:"
+	echo "$GETENV"
+else
+	LD_PRELOAD="$GETENV" $*
+fi

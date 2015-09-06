@@ -1,40 +1,32 @@
-- infos = Information about dump plugin is in keys below
+- infos = Information about elektrify getenv below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/description =
 
-elektrify-getenv(1) -- elektrify the environment of applications
+kdb-elektrify-getenv(1) -- elektrify the environment of applications
 ================================================================
 
 ## SYNOPSIS
 
-`elektrify-getenv` <application> <options>
+`kdb elektrify-getenv` <application> <options>
 
-This application is elektrified using libelektragetenv.
-This is a LD_PRELOAD technique to elektrify applications
-that use getenv().
 
-## USAGE
+## DESCRIPTION
 
-To always use Elektra's environment, simply add
+When an application is elektrified using libelektragetenv,
+it does not only request `environ`, but also Elektra for
+every getenv(3) and secure_getenv(3) library call.
 
-    /path/to/libelektragetenv.so
-    /usr/lib/libelektragetenv.so  (typically)
+Its main purpose is to:
 
-to the file
+- have standard ways to modify the environment
+- make relogin (or even restart!) of applications unnecessary
+- allow a hierarchical structure for environment
+- allow settings to only apply for individual applications or only in special context
+- still preserve the advantages (inheriting of environment to subprocesses)
 
-    /etc/ld.so.preload
+It is implemented using a LD_PRELOAD technique, see [USAGE](USAGE) below for
+global activation.
 
-this can be done using Elektra:
-
-    sudo kdb mount /etc/ld.so.preload system/ld/preload line null
-    sudo kdb set "system/ld/preload/new" /path/to/libelektragetenv.so
-
-Note, that some applications do weird stuff and will not work with any LD_PRELOAD trick,
-[e.g. firefox](https://bugzilla.mozilla.org/show_bug.cgi?id=435683).
-
-If you only want to use it for individual (non setuid) executions, run
-
-    `elektrify-getenv` <application>
 
 ## LOOKUPS
 
@@ -43,44 +35,48 @@ way to set and get environment variables.
 Elektra's variables will be in use immediately for every newly
 started application (no relogin necessary).
 
-To do so, getenv(2) will lookup multiple sources next to searching in the environment
-(environ). As running example will use `getenv("HOME")`.
+To do so, getenv(3) will lookup multiple sources next to searching in the environment
+(environ). As running example will use `getenv("HOME")`:
 
-1.) Given commandline parameters will always be preferred (see [OPTIONS](OPTIONS) below).
-    E.g. elektrify-getenv <application> --elektra:HOME=/path/to/home
-2.) Then /env/override/<key> will be looked up, where <key> is the parameter to `getenv`.
-    E.g. kdb set user/env/override/HOME /path/to/home
-3.) Then environment will be requested.
-    E.g. HOME=/path/to/home elektrify-getenv <application>
-3.) Then /env/fallback/<key> will be looked up.
+1. Given commandline parameters will always be preferred (see [OPTIONS](OPTIONS) below).
+   
+   E.g. `kdb elektrify-getenv <app> --elektra:HOME=/path/to/home`
+2. Then `/env/override/<key>` will be looked up, where <key> is the parameter to `getenv`.
+   
+   E.g. `kdb set user/env/override/HOME /path/to/home`
+3. Then environment will be requested.
+   
+   E.g. `HOME=/path/to/home kdb elektrify-getenv <application>`
+3. Then `/env/fallback/<key>` will be looked up.
+   
+   E.g. `kdb set user/env/fallback/HOME /path/to/home`
+
 
 
 ## OPTIONS
 
-You are allowed to interleave Elektra's and the application's options.
+When `elektrify-getenv` is active, every application additionally accepts
+Elektra's getenv options.
+Interleaving Elektra's and the application's options is allowed.
 Elektra will parse its options (starting with --elektra) first and
-discard them before main is started. The application will not see that they were even
-there, e.g.: given <application> -V --elektra-debug -L
-the application will be called with <application> -V -L
+discard them before the other application is started.
+Therefore the application will not see that they even
+existed, e.g.: given `kdb elektrify-getenv <application> -V --elektra-debug -L`
+the application will be called with `<application> -V -L`.
 
+### Internal Options
  * `--elektra-help`:
    Outputs this help.
  * `--elektra-version`:
-   Gives version information
- * `--elektra-debug=file`, `ELEKTRA_DEBUG` or `env/option/debug`:
-   Trace all getenv() calls file or stderr if no file is given.
- * `--elektra-clearenv`, `ELEKTRA_CLEARENV` or `env/option/clearenv`
+   Gives version information.
+ * `--elektra-debug=file`, `ELEKTRA_DEBUG` or `/env/option/debug`:
+   Trace all getenv(3) calls to a file (or stderr if no file is given).
+ * `--elektra-clearenv`, `ELEKTRA_CLEARENV` or `/env/option/clearenv`:
    Call clearenv(3) before entering main.
    This is a recommended security feature.
    Elektra itself, if configured that way, will still be able to use the environment.
- * `--elektra-name=key`:
-   the application name to be used instead of the executable's basename
- * `--elektra:key=value`:
-   set a key/value below root to be preferred (in proc-namespace)
 
-Note that keys can contain / to form hierarchies, e.g. `--elektra-name=app/profile`
-
-Note that the option are available in three different variants:
+Internal Options are available in three different variants:
 
 1. as commandline parameter: `--elektra-<option>`,
    which are *not* passed through exec(3) calls.
@@ -92,51 +88,72 @@ Note that the option are available in three different variants:
    applications started by that user (note that at least `PATH` should to be set
    using `kdb set user/env/fallback/PATH "/bin:/usr/bin"` then).
 
+### Contextual Options
+ * `--elektra%<name>%=<value>` or `/env/layer/<name>`:
+   Add the contextual information (=layer) `%<name>%` with it's value `<value>`.
+   Note that `%name%` is predefined with `argv[0]` and `%basename%` with
+   `basename(argv[0])`.
+
+Values can contain / to form hierarchies, e.g. `--elektra%name%=app/profile`
+
+### Options for Applications
+ * `--elektra:key=value`, `/env/override/<key>` or `/env/fallback/<key>`:
+   set a key/value to be preferred, i.e. the first to considered as explained in [LOOKUP](LOOKUP).
+
+Keys can contain / to form hierarchies, e.g. `--elektra:my/HOME=/path/to/home`.
+
+
+
+## USAGE
+
+To always use Elektra's getenv environment, simply add the output to the file:
+
+    kdb elektrify-getenv | tail -1 | sudo tee -a /etc/ld.so.preload
+
+this also can be done using Elektra:
+
+    sudo kdb mount /etc/ld.so.preload system/ld/preload line null
+    sudo kdb set "system/ld/preload/new"  `kdb elektrify-getenv | tail -1`
 
 
 ## CONTEXT
 
- * `/sw/env/<name>/%profile%/<key>`
- * `/env/<key>`
-  will be used preferable. The spec(ification) entries are:
-  - context .. do not use the key itself, but do a contextual lookup of the name, honoring layers , given in the metadata
-  - no_elektra .. disable Elektra functionality for that key and only use environment
-  - no_env .. disable environment fallback
+The metadata `context` in the specification can be used to facilitate a context-dependent lookup.
+In its metavalue all replacements of `%<name>%` will be replaced by the
+given contextual options `--elektra%<name>%=<value>` and `/env/layer/<name>` keys.
 
- * `/env/<name>/layers`
-  Specification of all layers to be activated
-  Note that the profile layer??
+E.g. to have a different home directory for any user and application:
+
+    kdb set user/env/layer/user markus
+    kdb set user/users/markus/konqueror/HOME /home/download
+    kdb setmeta spec/env/override/HOME context  /users/%user%/%name%/HOME
 
 
-## ENVIRONMENT
 
-Typically Elektra tries to avoid using the environment.
+## BUGS
+
+Some applications do not use `getenv(3)` or `secure_getenv(3)` for requesting the environment,
+e.g. shells. This approach cannot work for them.
+
+Elektra internally tries to avoid using the environment.
 Some resolvers, however, use it to be conform to some specifications, e.g. XDG.
 Depending on the setup you use, these parameters might be used.
 For more information see:
 
     kdb info resolver
 
+For these parameters, `/env/override/` or `/env/fallback` will *not* be used internally, but
+will be used if applications request them, too.
 
-Note that `--elektra-debug` does *not* log `getenv(3)` during the startup-phase.
+Also note that `--elektra-debug` or `ELEKTRA_DEBUG` does *not* log `getenv(3)` used by plugins
+during the startup-phase.
 
-`elektrify-getenv` provides to use environment as alternative to its options, namely:
-
-
- * `ELEKTRA_DEBUG`:
-   Outputs this help.
-
-
-## BUGS
-
-Some applications do not use `getenv(3)` for requesting the environment,
-e.g. most shells.
-This approach does not work for them.
+If you use the standard resolvers, the bug won't have any effect.
 
 
 ## EXAMPLES
 
-For illustration this section gives some examples.
+For illustration this section gives some more examples.
 
     elektrify-getenv man man --elektra:MANWIDTH=40
 
