@@ -35,15 +35,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// 4.7.2 supports %ms but yields warning using -Wformat together with
-// -ansi -pedantic
-// warning: ISO C does not support the 'm' scanf flag
-#define GCC_VERSION (__GNUC__ * 10000 \
-                              + __GNUC_MINOR__ * 100 \
-                              + __GNUC_PATCHLEVEL__)
-#if  GCC_VERSION < 40800
-# pragma GCC diagnostic ignored "-Wformat"
-#endif
 
 int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
@@ -103,10 +94,9 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 
 
 	int n;
-	#pragma GCC diagnostic ignored "-Wformat"
+#pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
-	#pragma GCC diagnostic pop
 	{
 		Key *read = keyNew(0);
 		if (keySetName(read, key) == -1)
@@ -122,6 +112,7 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		free (key);
 		free (value);
 	}
+#pragma GCC diagnostic pop
 
 	if (feof(fp) == 0)
 	{
