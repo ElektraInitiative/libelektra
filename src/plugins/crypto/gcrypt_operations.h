@@ -31,5 +31,7 @@ int elektraCryptoGcryInit();
 int elektraCryptoGcrySetKeyIv(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen);
 int elektraCryptoGcryEncrypt(Key *k);
 int elektraCryptoGcryDecrypt(Key *k);
+void elektraCryptoAddPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen);
+unsigned int elektraCryptoGetPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen);
 
 #endif

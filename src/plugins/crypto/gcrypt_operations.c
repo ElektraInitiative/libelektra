@@ -67,6 +67,9 @@ int elektraCryptoGcryEncrypt(Key *k)
 	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned long i;
 
+	// TODO consider that the original value might be a string value!
+	// This should be saved as meta information
+
 	// prepare buffer for cipher text output
 	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE == 0)
 	{
@@ -94,7 +97,10 @@ int elektraCryptoGcryEncrypt(Key *k)
 			contentLen = valueLen - (i * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		}
 		memcpy(contentBuffer, (value + i), contentLen);
-		// TODO add PKCS#7 padding to buffer
+		if(contentLen < ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+		{
+			elektraCryptoAddPkcs7Padding(contentBuffer, contentLen, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		}
 
 		gcry_err = gcry_cipher_encrypt(gcry_handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
@@ -123,6 +129,7 @@ int elektraCryptoGcryDecrypt(Key *k)
 	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned long i;
 	unsigned long written = 0;
+	unsigned long lastBlockLen;
 
 	// plausibility check
 	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
@@ -150,14 +157,65 @@ int elektraCryptoGcryDecrypt(Key *k)
 			free(output);
 			return ELEKTRA_CRYPTO_GCRY_NOK;
 		}
-		// TODO consider PKCS#7 padding
 		memcpy((output + i), contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		written += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	}
 
+	// consider that the last block may contain a PKCS#7 padding
+	lastBlockLen = elektraCryptoGetPkcs7PaddedContentLen((output + written - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) , ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	if(lastBlockLen < ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	{
+		written = written - (ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - lastBlockLen);
+	}
+
 	// write back the cipher text to the key
+	// TODO consider that the keySetString() function should be applied if the original value was of type string
 	keySetBinary(k, output, written);
 	free(output);
 
 	return ELEKTRA_CRYPTO_GCRY_OK;
 }
+
+void elektraCryptoAddPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen)
+{
+	/*
+	* this function adds a PKCS#7 padding to the buffer.
+	* Refer to RFC 5652 for more information:
+	* <http://tools.ietf.org/html/rfc5652#section-6.3>
+	*/
+	const unsigned char n = bufferLen - contentLen;
+	unsigned long i;
+
+	if(bufferLen <= contentLen)
+	{
+		return;
+	}
+
+	for(i = bufferLen - n; i < bufferLen; i++)
+	{
+		buffer[i] = n;
+	}
+}
+
+unsigned int elektraCryptoGetPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen)
+{
+	const unsigned char n = buffer[bufferLen - 1];
+	unsigned int i;
+
+	if(n <= 0 || n >= bufferLen)
+	{
+		// assume no padding -> full buffer size
+		return bufferLen;
+	}
+
+	for(i = bufferLen - 2; i >= bufferLen - n; i--)
+	{
+		if(buffer[i] != n)
+		{
+			// assume no padding -> full buffer size
+			return bufferLen;
+		}
+	}
+	return i + 1;
+}
+

@@ -174,6 +174,92 @@ void test_gcrypt_padding_with_binary()
 	keyDel(k);
 }
 
+void test_gcrypt_padding_function1()
+{
+	unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] = "Salty dog";
+	const unsigned char expected[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
+	{
+		0x53, 0x61, 0x6c, 0x74, 0x79, 0x20, 0x64, 0x6f,
+		0x67, 0x00, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06
+	};
+	const unsigned long contentLen = 10;
+
+	elektraCryptoAddPkcs7Padding(buffer, contentLen, sizeof(buffer));
+	succeed_if( cmp_buffers(buffer, sizeof(buffer), expected, sizeof(expected)) == 0, "PKCS#7 padding scheme was not set correctly");
+}
+
+void test_gcrypt_padding_function2()
+{
+	unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] = "This is the end";
+	const unsigned char expected[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
+	{
+		0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20,
+		0x74, 0x68, 0x65, 0x20, 0x65, 0x6e, 0x64, 0x00
+	};
+	const unsigned long contentLen = 16;
+
+	elektraCryptoAddPkcs7Padding(buffer, contentLen, sizeof(buffer));
+	succeed_if( cmp_buffers(buffer, sizeof(buffer), expected, sizeof(expected)) == 0, "PKCS#7 padding scheme was not set correctly");
+}
+
+void test_gcrypt_padding_function3()
+{
+	unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] = "Fooooooooooooo";
+	const unsigned char expected[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
+	{
+		0x46, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f,
+		0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x00, 0x01
+	};
+	const unsigned long contentLen = 15;
+
+	elektraCryptoAddPkcs7Padding(buffer, contentLen, sizeof(buffer));
+	succeed_if( cmp_buffers(buffer, sizeof(buffer), expected, sizeof(expected)) == 0, "PKCS#7 padding scheme was not set correctly");
+}
+
+void test_gcrypt_padding_length1()
+{
+	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
+	{
+		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
+		0x6d, 0x61, 0x6e, 0x00, 0x04, 0x04, 0x04, 0x04
+	};
+	const unsigned long expcetedLen = 12;
+	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
+}
+
+void test_gcrypt_padding_length2()
+{
+	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
+	{
+		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
+		0x6d, 0x61, 0x6e, 0x00, 0xff, 0x04, 0x04, 0x04
+	};
+	const unsigned long expcetedLen = 16;
+	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
+}
+
+void test_gcrypt_padding_length3()
+{
+	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
+	{
+		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
+		0x6d, 0x61, 0x6e, 0x00, 0xff, 0x03, 0x04, 0x05
+	};
+	const unsigned long expcetedLen = 16;
+	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
+}
+
+void test_gcrypt_padding_length4()
+{
+	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
+	{
+		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
+		0x6d, 0x61, 0x6e, 0x00, 0xff, 0x03, 0x04, 0x01
+	};
+	const unsigned long expcetedLen = 15;
+	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
+}
+
 int main(int argc, char** argv)
 {
 	printf("CYPTO        TESTS\n");
@@ -187,6 +273,13 @@ int main(int argc, char** argv)
 	test_gcrypt_decryption();
 	test_gcrypt_padding_with_string();
 	test_gcrypt_padding_with_binary();
+	test_gcrypt_padding_function1();
+	test_gcrypt_padding_function2();
+	test_gcrypt_padding_function3();
+	test_gcrypt_padding_length1();
+	test_gcrypt_padding_length2();
+	test_gcrypt_padding_length3();
+	test_gcrypt_padding_length4();
 
 	elektraCryptoGcryClearKeyIv();
 
