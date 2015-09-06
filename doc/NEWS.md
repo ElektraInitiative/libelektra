@@ -22,10 +22,16 @@ values from Elektra, and not only the environment.
 
 
 
-
+## Packaging
 
 https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
 - 0.8.12 packaged+migrated to testing, thanks to Pino Toscano <pino@debian.org>
+
+- According to [issue #262](libelektra.org/issues/262), we plan to remove the option ENABLE_CXX11
+  If you have any system you are not able to build Elektra with -DENABLE_CXX11=ON (which is
+  the default for 0.8.12) please report that immediately.
+
+## Goals
 
 prefer simplicity to flexibility! (GOALS)
 	use it also for normal plugins (pre, postfilter)
@@ -59,7 +65,6 @@ but no flexibility regarding:
 
 
 
->>>>>>> callback
 
 # 0.8.12 Release
 
