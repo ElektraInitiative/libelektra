@@ -11,6 +11,7 @@ even though it has many known problems:
 - relogin (or restart of shell) necessary
 - names are flat (no hierarchical structure)
 - cannot be set for individual applications
+- not available in at, cron and similar scripts
 
 With elektrify-getenv we wrote a solution which solves most of the
 problems. We use the LD_PRELOAD technique to additionally retrieve

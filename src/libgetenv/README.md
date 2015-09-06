@@ -23,6 +23,7 @@ Its main purpose is to:
 - allow a hierarchical structure for environment
 - allow settings to only apply for individual applications or only in special context
 - still preserve the advantages (inheriting of environment to subprocesses)
+- Availability in at, cron and similar scripts.
 
 It is implemented using a LD_PRELOAD technique, see [USAGE](USAGE) below for
 global activation.
@@ -134,6 +135,10 @@ E.g. to have a different home directory for any user and application:
 
 Some applications do not use `getenv(3)` or `secure_getenv(3)` for requesting the environment,
 e.g. shells. This approach cannot work for them.
+
+
+In the startup-phase, `getenv` will not consider `/env/override/` or `/env/fallback`.
+
 
 Elektra internally tries to avoid using the environment.
 Some resolvers, however, use it to be conform to some specifications, e.g. XDG.
