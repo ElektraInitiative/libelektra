@@ -8,6 +8,7 @@
 # if new flags are added
 
 include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
 
 #
 # The mode (standard) to be used by the compiler
@@ -20,6 +21,10 @@ endif()
 
 if (ENABLE_CXX11)
 	set (CXX_STD "-std=c++11")
+	check_cxx_compiler_flag(${CXX_STD} HAS_CXX_STD)
+	if (NOT HAS_CXX_STD)
+		message(WARNING "Your compiler does not know the flag ${CXX_STD}. If your compiler is new, it might already be default. If the compilation does not work, please report to libelektra.org/issues/262.")
+	endif (NOT HAS_CXX_STD)
 else()
 	if (CXX_STD)
 		message (STATUS "use CXX_STD as given by user: ${CXX_STD}")
