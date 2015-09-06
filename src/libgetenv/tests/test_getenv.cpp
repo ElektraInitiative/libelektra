@@ -18,29 +18,35 @@ TEST(GetEnv, NonExist)
 TEST(GetEnv, ExistOverride)
 {
 	using namespace ckdb;
+	elektraOpen(0, 0);
 	ksAppendKey(elektraConfig,
 			keyNew("user/env/override/does-exist",
 				KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
 	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
+	elektraClose();
 }
 
 TEST(GetEnv, ExistEnv)
 {
 	using namespace ckdb;
+	elektraOpen(0, 0);
 	setenv("does-exist", "hello", 1);
 	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
 	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
+	elektraClose();
 }
 
 TEST(GetEnv, ExistFallback)
 {
 	using namespace ckdb;
+	elektraOpen(0, 0);
 	ksAppendKey(elektraConfig,
 			keyNew("user/env/fallback/does-exist",
 				KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE(getenv("does-exist"), static_cast<char*>(0));
 	EXPECT_EQ(getenv("does-exist"), std::string("hello"));
+	elektraClose();
 }
 
 
