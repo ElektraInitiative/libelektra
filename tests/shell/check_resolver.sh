@@ -95,7 +95,16 @@ export XDG_CONFIG_HOME="/xdg_dir1"
 check_resolver system x app/config_file /etc/xdg/app/config_file
 check_resolver user x app/config_file /xdg_dir1/app/config_file
 
+export XDG_CONFIG_HOME="broken"
+check_resolver system x app/config_file /etc/xdg/app/config_file
+export XDG_CONFIG_HOME="(broken)"
+check_resolver system x app/config_file /etc/xdg/app/config_file
+export XDG_CONFIG_HOME="(even):(more):(broken):"
+check_resolver system x app/config_file /etc/xdg/app/config_file
+export XDG_CONFIG_HOME=""
+check_resolver system x app/config_file /etc/xdg/app/config_file
 unset XDG_CONFIG_HOME
+check_resolver system x app/config_file /etc/xdg/app/config_file
 
 fi
 

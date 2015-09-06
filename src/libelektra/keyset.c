@@ -1495,6 +1495,32 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
+static void elektraCopyCallbackMeta(Key *dest, Key *source)
+{
+	// possible optimization: only copy when callback is present (keyIsBinary && keyGetValueSize == sizeof(void(int))
+	const Key *m = 0;
+
+	keyRewindMeta(dest);
+	while ((m = keyNextMeta(dest)))
+	{
+		const char *metaname = keyName(m);
+		if (!strncmp(metaname, "callback/", sizeof("callback")))
+		{
+			keySetMeta(dest, metaname, 0);
+		}
+	}
+
+	keyRewindMeta(source);
+	while ((m = keyNextMeta(source)))
+	{
+		const char *metaname = keyName(m);
+		if (!strncmp(metaname, "callback/", sizeof("callback")))
+		{
+			keyCopyMeta(dest, source, metaname);
+		}
+	}
+}
+
 /**
  * @internal
  * @brief Helper for elektraLookupBySpec
@@ -1520,8 +1546,13 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 		m = keyGetMeta(specKey, buffer);
 		if (!m) break;
 		// optimization: lazy instanziation of k
-		if (!k) k = keyNew(keyString(m), KEY_CASCADING_NAME,
+		if (!k)
+		{
+			k = keyNew(keyString(m), KEY_CASCADING_NAME,
 				KEY_END);
+			keySetBinary(k, keyValue(specKey), keyGetValueSize(specKey));
+			elektraCopyCallbackMeta(k, specKey);
+		}
 		else elektraKeySetName(k, keyString(m),
 				KEY_CASCADING_NAME);
 		ret=ksLookup(ks, k, KDB_O_NODEFAULT);
@@ -1529,7 +1560,11 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 		++i;
 	} while(m);
 
-	keyDel(k);
+	if (k)
+	{
+		elektraCopyCallbackMeta(specKey, k);
+		keyDel(k);
+	}
 	return ret;
 }
 
@@ -1680,7 +1715,7 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->key = newname+2;
 		key->keySize = length-2;
 		elektraFinalizeName(key);
-		specKey = ksLookup(ks, key, options & ~KDB_O_DEL);
+		specKey = ksLookup(ks, key, (options & ~KDB_O_DEL) | KDB_O_CALLBACK);
 	}
 
 	if (specKey)
@@ -1690,9 +1725,17 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		key->keySize = size;
 		key->keyUSize = usize ;
 
+		if (strncmp(keyName(specKey), "spec/", 5))
+		{ // the search was modified in a way that not a spec Key was returned
+			return specKey;
+		}
+
 		// we found a spec key, so we know what to do
 		specKey = keyDup(specKey);
+		keySetBinary(specKey, keyValue(key), keyGetValueSize(key));
+		elektraCopyCallbackMeta(specKey, key);
 		found = elektraLookupBySpec(ks, specKey, options);
+		elektraCopyCallbackMeta(key, specKey);
 		keyDel(specKey);
 		return found;
 	}
@@ -1779,7 +1822,7 @@ static Key * elektraLookupLinearSearch(KeySet *ks, Key *key, option_t options)
 	return current;
 }
 
-static Key * elektraLookupBinarySearch(KeySet *ks, Key *key, option_t options)
+static Key * elektraLookupBinarySearch(KeySet *ks, Key const *key, option_t options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
@@ -1814,6 +1857,33 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key *key, option_t options)
 	return 0;
 }
 
+/**
+ * @brief Process Callback + maps to correct binary/hashmap search
+ *
+ * @return the found key
+ */
+static Key * elektraLookupSearch(KeySet *ks, Key *key, option_t options)
+{
+	typedef Key * (*callback_t) (KeySet *ks, Key *key, Key *found, option_t options);
+	union {callback_t f; void* v;} conversation;
+
+	Key * found = elektraLookupBinarySearch(ks, key, options);
+
+	Key *ret = found;
+
+	if (keyGetBinary(key,
+			&conversation.v,
+			sizeof(conversation)) == sizeof(conversation))
+	{
+		if (conversation.v != 0)
+		{
+			ret = (*conversation.f)(ks, key, found, options);
+		}
+	}
+
+	return ret;
+}
+
 static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option_t options)
 {
 	Key *ret = keyDup(key);
@@ -1825,55 +1895,54 @@ static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
  *
- * @section Introduction
- *
  * @p ksLookup() is designed to let you work with
- * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
+ * entirely pre-loaded KeySets. The
  * idea is to fully kdbGet() for your application root key and
  * process it all at once with @p ksLookup().
  *
- * This function is very efficient by using binary search. Together with
- * kdbGet() which can you load the whole configuration with only
- * some communication to backends you can write very effective but short
- * code for configuration.
+ * This function is efficient by using binary search. Together with
+ * kdbGet() which can you load the whole configuration
+ * you can write very effective but short
+ * code for configuration:
  *
- * @section Usage
+ * @snippet ksCallback.c basic usage
+ *
+ * This is the way programs should get their configuration and
+ * search after the values. It is guaranteed that more namespaces can be
+ * added easily and that all values can be set by admin and user.
+ * Furthermore, using the kdb-tool, it is possible to find out which value
+ * an application will find.
  *
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
  * If not found, @p ks internal cursor will not move, and a NULL pointer is
  * returned.
  *
- * Cascading is done if the first character is a /. This leads to ignoring
- * the prefix like system/ and user/.
- * @code
-if (kdbGet(handle, "user/myapp", myConfig, 0 ) == -1)
-	errorHandler ("Could not get Keys");
-
-if (kdbGet(handle, "system/myapp", myConfig, 0 ) == -1)
-	errorHandler ("Could not get Keys");
-
-if ((myKey = ksLookup(myConfig, key, 0)) == NULL)
-	errorHandler ("Could not Lookup Key");
- * @endcode
+ * Cascading is done if the first character is a /. This leads to search in
+ * all namespaces proc/, dir/, user/ and system/, but also correctly considers
+ * the specification (=metadata) in spec/:
  *
- * This is the way multi user Programs should get there configuration and
- * search after the values. It is guaranteed that more namespaces can be
- * added easily and that all values can be set by admin and user.
+ * - @p override/# will make sure that another key is considered before
+ * - @p namespace/# will change the number and/or order in which the
+ *   namespaces are searched
+ * - @p fallback/# will search for other keys when the other possibilities
+ *   up to now were not successful
+ * - @p default to return the given value when not even @p fallback keys were
+ *   found.
  *
- * @subsection KDB_O_NOALL
  *
- * When KDB_O_NOALL is set the keyset will be only searched from ksCurrent()
- * to ksTail(). You need to ksRewind() the keyset yourself. ksCurrent() is
- * always set properly after searching a key, so you can go on searching
- * another key after the found key.
+ * @note override and fallback work recursively, while default does not.
  *
- * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
- * are considered. A much more efficient binary search will be used then.
+ * This process is very flexible, but it would be boring to follow all this links
+ * in the head to find out which key will be taken.
+ * So use `kdb get -v` to trace the keys.
+ * Such traces can be easily implemented using callbacks:
  *
- * @subsection KDB_O_POP
+ * @snippet ksCallback.c callback
  *
- * When KDB_O_POP is set the key which was found will be ksPop()ed. ksCurrent()
+ *
+ * @par KDB_O_POP
+ * When ::KDB_O_POP is set the key which was found will be ksPop()ed. ksCurrent()
  * will not be changed, only iff ksCurrent() is the searched key, then the keyset
  * will be ksRewind()ed.
  *
@@ -1881,45 +1950,40 @@ if ((myKey = ksLookup(myConfig, key, 0)) == NULL)
  * if it is appended to another keyset.
  *
  * @warning All cursors on the keyset will be invalid
- * iff you use KDB_O_POP, so don't use this if you rely on a cursor, see ksGetCursor().
+ * iff you use ::KDB_O_POP, so don't use this if you rely on a cursor, see ksGetCursor().
  *
- * You can solve this problem by using KDB_O_NOALL, risking you have to iterate n^2 instead of n.
- *
- * The more elegant way is to separate the keyset you use for ksLookup() and ksAppendKey():
- * @code
-int f(KeySet *iterator, KeySet *lookup)
-{
-	KeySet *append = ksNew (ksGetSize(lookup), KS_END);
-	Key *key;
-	Key *current;
+ * The invalidation of cursors does not matter if you use multiple keysets, e.g.
+ * by using ksDup(). E.g., to separate ksLookup() with ::KDB_O_POP and ksAppendKey():
 
-	ksRewind(iterator);
-	while (current=ksNext(iterator))
-	{
-		key = ksLookup (lookup, current, KDB_O_POP);
-		// do something...
-		ksAppendKey(append, key); // now append it to append, not lookup!
-		keyDel (key); // make sure to ALWAYS delete poped keys.
-	}
-	ksAppend(lookup, append);
-	// now lookup needs to be sorted only once, append never
-	ksDel (append);
-}
- * @endcode
+ * @snippet ksLookupPop.c f
+ *
+ * This is also a nice example how a complete application with ksLookup() can look like.
+ * The option ::KDB_O_CALLBACK provides information if the spec/ keys are treated
+ * as specification or only for their value.
+ *
+ * @par KDB_O_DEL
+ * Passing ::KDB_O_DEL will cause the deletion of the parameter @p key using keyDel().
+ *
+ * @par KDB_O_NOALL (deprecated)
+ * When ::KDB_O_NOALL is set the keyset will be only searched from ksCurrent()
+ * to ksTail(). You need to ksRewind() the keyset yourself. ksCurrent() is
+ * always set properly after searching a key, so you can go on searching
+ * another key after the found key.
+ * \n
+ * When ::KDB_O_NOALL is not set the cursor will stay untouched and all keys
+ * are considered. A much more efficient binary search will be used then.
+ *
+ * @par KDB_O_WITHOWNER (deprecated)
+ * Also consider correct owner (needs ::KDB_O_NOALL).
+ *
+ * @par KDB_O_NOCASE (deprecated)
+ * Lookup ignoring case (needs ::KDB_O_NOALL).
+ *
+ *
  *
  * @param ks where to look for
  * @param key the key object you are looking for
- * @param options some @p KDB_O_* option bits:
- * 	- @p KDB_O_NOCASE @n
- * 		Lookup ignoring case (needs KDB_O_NOALL).
- * 	- @p KDB_O_WITHOWNER @n
- * 		Also consider correct owner.
- * 	- @p KDB_O_NOALL @n
- * 		Only search from ksCurrent() to end of keyset, see above text.
- * 	- @p KDB_O_POP @n
- * 		Pop the key which was found.
- *	- @p KDB_O_DEL @n
- *		Delete the passed key.
+ * @param options with some @p KDB_O_* option bits as explained above
  * @return pointer to the Key found, 0 otherwise
  * @retval 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string
@@ -1941,14 +2005,22 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
 		ret = elektraLookupBySpec(ks, lookupKey, options & mask);
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME))
+		{
+			elektraCopyCallbackMeta(key, lookupKey);
+			keyDel(lookupKey);
+		}
 	}
 	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
 	{
 		Key *lookupKey = key;
 		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
 		ret = elektraLookupByCascading(ks, lookupKey, options & mask);
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) keyDel(lookupKey);
+		if (test_bit(key->flags, KEY_FLAG_RO_NAME))
+		{
+			elektraCopyCallbackMeta(key, lookupKey);
+			keyDel(lookupKey);
+		}
 	}
 	else if ((options & KDB_O_NOALL)
 		// || (options & KDB_O_NOCASE)
@@ -1959,7 +2031,7 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	}
 	else
 	{
-		ret = elektraLookupBinarySearch(ks, key, options & mask);
+		ret = elektraLookupSearch(ks, key, options & mask);
 	}
 
 	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey(ks, key, options & mask);

@@ -210,6 +210,13 @@ Bindings are used in the same way as PLUGINS and TOOLS.
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
 
+The SWIG executable my be specified with:
+
+	-DSWIG_EXECUTABLE=...
+
+If this option is not used, cmake will find the first occurence of
+``swig`` in your environment's path.
+
 #### CMAKE_BUILD_TYPE  ####
 Debug, Release or RelWithDebInfo
 See help bar at bottom of ccmake for that option or:

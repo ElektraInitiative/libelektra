@@ -39,7 +39,7 @@ And in terms of quality, we want:
    to have a tiny core, but still support many features, including:
    * Elektra can import and export configuration files in any [supported format](src/plugins#storage).
    * Elektra is able to log and notify other software on any configuration changes, e.g., using [Dbus](src/plugins/dbus) and [Journald](src/plugins/journald).
-   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/regex) and more.
+   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/validation) and more.
    * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver).
    * Elektra supports different ways to [escape](src/plugins/ccode) and [encode](src/plugins/iconv) content of configuration files.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
@@ -82,7 +82,7 @@ Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/f
 
 ## Contact ##
 
-Do not hesitate to ask any question on github, [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 or one of the [authors](doc/AUTHORS).
 
 

@@ -7,7 +7,6 @@ install (PROGRAMS elektra-umount DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-common DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-debian DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-debian-wheezy DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install (PROGRAMS configure-debian-wheezy-local DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-mingw DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS configure-xdg DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
@@ -36,6 +35,11 @@ if (INSTALL_SYSTEM_FILES)
 			DESTINATION /etc/profile.d
 			RENAME kdb)
 endif()
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/elektrify-getenv.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv")
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/make-source-package.in"

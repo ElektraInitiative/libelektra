@@ -2,13 +2,43 @@
 
 Still under construction, 0.8.13 is not yet released.
 
+
+## elektrify-getenv
+
+getenv(3) is one of the most popular ways to retrieve configuration,
+even though it has many known problems:
+- no standard way to modify it
+- relogin (or restart of shell) necessary
+- names are flat (no hierarchical structure)
+- cannot be set for individual applications
+
+With elektrify-getenv we wrote a solution which solves most of the
+problems. We use the LD_PRELOAD technique to additionally retrieve
+values from Elektra, and not only the environment.
+
+
+
+
+
+
+
+
+
+## Packaging
+
 https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
 - 0.8.12 packaged+migrated to testing, thanks to Pino Toscano <pino@debian.org>
+
+- According to [issue #262](libelektra.org/issues/262), we plan to remove the option ENABLE_CXX11
+  If you have any system you are not able to build Elektra with -DENABLE_CXX11=ON (which is
+  the default for 0.8.12) please report that immediately.
+
+## Goals
 
 prefer simplicity to flexibility! (GOALS)
 	use it also for normal plugins (pre, postfilter)
 more "pythonic way", there should be one way to do it
-but every way is optional, if you want you can use Elektra:
+but every way is optional, if you want you can use it, otherwise you can leave it out:
 - as primitive key/value storage
 - with specification
 - with code generation
@@ -19,6 +49,24 @@ but no flexibility regarding:
 - mounting and contracts functionality
 - error code meanings are fixed, if a resolver detects a conflict, error #30 must be used
 - of course ABI, API
+
+- XDG resolver: handle XDG_CONFIG_DIRS, where no path is valid, correctly
+
+
+## qt-gui 0.0.8
+
+- made sure keys can only be renamed if the new name/value/metadata is different from the existing ones
+- fixed 1) and 2) of #233
+- fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
+- fixed qml warning when deleting key
+
+## other fixes
+
+- Key::release() and Key::~Key will also work when Key holds a null-pointer
+- Key::getName(), avoid std::string exception
+
+
+
 
 # 0.8.12 Release
 

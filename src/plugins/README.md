@@ -93,9 +93,9 @@ Doing other stuff:
 - [null](null) takes care of null values and other binary specialities
 
 
-## Notification ##
+## Notification and Logging ##
 
-Send out all changes to configuration to:
+Log/Send out all changes to configuration to:
 
 - [dbus](dbus)
 - [journald](journald)

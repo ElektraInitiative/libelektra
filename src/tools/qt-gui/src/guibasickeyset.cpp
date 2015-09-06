@@ -9,11 +9,5 @@ kdb::KeySet GUIBasicKeySet::basic()
 
 void GUIBasicKeySet::setBasic(const kdb::KeySet &basic)
 {
-	kdb::KeySet set;
-	basic.rewind();
-
-	while(basic.next())
-		set.append(basic.current().dup());
-
-	m_basic = set;
+	m_basic = basic;
 }

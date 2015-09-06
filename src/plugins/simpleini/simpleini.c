@@ -103,8 +103,10 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 
 
 	int n;
+	#pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
+	#pragma GCC diagnostic pop
 	{
 		Key *read = keyNew(0);
 		if (keySetName(read, key) == -1)

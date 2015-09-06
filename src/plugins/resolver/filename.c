@@ -105,22 +105,38 @@ static int elektraResolveSystemBuildin(resolverHandle *p)
 	return 1;
 }
 
+static void elektraResolveSystemXDGHelper(resolverHandle *p, const char *result)
+{
+	size_t configDirSize = elektraStrLen(result);
+	size_t pathSize = elektraStrLen(p->path);
+	size_t filenameSize = configDirSize
+		+ pathSize + sizeof("/") + 1;
+
+	elektraRealloc ((void*)&p->filename, filenameSize);
+	strcpy (p->filename, result);
+	strcat (p->filename, "/");
+	strcat (p->filename, p->path);
+}
+
 static int elektraResolveSystemXDG(resolverHandle *p,
 		Key *warningsKey)
 {
 	const char * configDir = getenv("XDG_CONFIG_DIRS");
+	const char *defaultDir = "/etc/xdg";
 
 	if (!configDir || !strcmp(configDir, ""))
 	{
-		configDir = "/etc/xdg";
+		elektraResolveSystemXDGHelper(p, defaultDir);
+		elektraResolveFinishByFilename(p);
+		return 1;
 	}
 
-	size_t pathSize = elektraStrLen(p->path);
 	char *saveptr = 0;
 	char *str = elektraStrDup(configDir);
 	char *result = strtok_r (str, ":", &saveptr);
 	struct stat buf;
 	int errnoSave = errno;
+	int success = 0;
 	while (result)
 	{
 		if (result[0] != '/')
@@ -131,17 +147,14 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 				"not absolute (violates XDG specification) and thus "
 			 	"it was skipped: %s",
 				result);
+
+			result = strtok_r (0, ":", &saveptr);
 			continue;
 		}
 
-		size_t configDirSize = elektraStrLen(result);
+		success = 1; // at least once we got a valid path
 
-		size_t filenameSize = configDirSize
-			+ pathSize + sizeof("/") + 1;
-		elektraRealloc ((void*)&p->filename, filenameSize);
-		strcpy (p->filename, result);
-		strcat (p->filename, "/");
-		strcat (p->filename, p->path);
+		elektraResolveSystemXDGHelper(p, result);
 
 		if (stat(p->filename, &buf) == 0)
 		{
@@ -153,6 +166,11 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 	}
 	elektraFree(str);
 	errno = errnoSave;
+
+	if (!success)
+	{
+		elektraResolveSystemXDGHelper(p, defaultDir);
+	}
 
 	elektraResolveFinishByFilename(p);
 	return 1;
