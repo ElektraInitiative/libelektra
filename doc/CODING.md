@@ -124,11 +124,11 @@ Use \copydoc, \copybrief and \copydetails intensively.
 Files should start with:
 
 	/**
-	* \file
+	* @file
 	*
-	* \brief <short statement about the content of the file>
+	* @brief <short statement about the content of the file>
 	*
-	* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+	* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 	*
 	*/
 
