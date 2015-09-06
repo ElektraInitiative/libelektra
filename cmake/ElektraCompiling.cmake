@@ -57,6 +57,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 		#not supported by icc/clang:
 		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
 
+		# needed by gcc4.7 when compiled with ENABLE_CXX11
+		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -D_GLIBCXX_USE_NANOSLEEP")
+
 		message (STATUS "GCC detected")
 	endif(WIN32)
 endif (CMAKE_COMPILER_IS_GNUCXX)
