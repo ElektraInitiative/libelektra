@@ -2,146 +2,16 @@
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: reachable
+   fun:_dl_init
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
    fun:calloc
    fun:_dlerror_run
    fun:dlsym
    fun:(below main)
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
 }
 {
    <insert_a_suppression_name_here>
