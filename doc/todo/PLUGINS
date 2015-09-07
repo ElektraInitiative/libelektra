@@ -347,7 +347,7 @@ mount: current implementation
 mount-mpi: current implementation, but multithreaded
 filesystem: implementation compatible with 0.7
 lazy-mount
-bind-mount
+bind-mount (using override)
 owner support
 user-mount
 
