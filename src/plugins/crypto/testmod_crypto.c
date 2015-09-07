@@ -1,17 +1,11 @@
-/*************************************************************************** 
- *           testmod_crypto.c  - Test suite for crypto
- *                  -------------------
- *  begin                : Mon Aug 31 10:32:51 CEST 2015
- *  copyright            : (C) 2015 by Peter Nirschl
- *  email                : peter.nirschl@gmail.com
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+* @file
+*
+* @brief test suite for the crypto plugin
+*
+* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
