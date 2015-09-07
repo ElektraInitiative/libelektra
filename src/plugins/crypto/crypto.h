@@ -1,17 +1,11 @@
-/***************************************************************************
- crypto.h  -  Cryptographic filter plugin
- -------------------
- begin                : Don Aug 20 11:28:43 CEST 2015
- copyright            : (C) 2015 by Peter Nirschl
- email                : peter.nirschl@gmail.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+* @file
+*
+* @brief filter plugin providing cryptographic operations
+*
+* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
 
 #ifndef ELEKTRA_PLUGIN_CRYPTO_H
 #define ELEKTRA_PLUGIN_CRYPTO_H
