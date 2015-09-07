@@ -10,8 +10,12 @@
 #include "gcrypt_operations.h"
 #include <gcrypt.h>
 
+// TODO remove global variables for thread safety's sake :)
 static gcry_cipher_hd_t gcry_handle;
 static gcry_error_t gcry_err;
+
+static void addPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen);
+static unsigned int getPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen);
 
 
 void elektraCryptoGcryClearKeyIv()
@@ -93,7 +97,7 @@ int elektraCryptoGcryEncrypt(Key *k)
 		memcpy(contentBuffer, (value + i), contentLen);
 		if(contentLen < ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
 		{
-			elektraCryptoAddPkcs7Padding(contentBuffer, contentLen, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+			addPkcs7Padding(contentBuffer, contentLen, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		}
 
 		gcry_err = gcry_cipher_encrypt(gcry_handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
@@ -156,7 +160,7 @@ int elektraCryptoGcryDecrypt(Key *k)
 	}
 
 	// consider that the last block may contain a PKCS#7 padding
-	lastBlockLen = elektraCryptoGetPkcs7PaddedContentLen((output + written - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) , ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	lastBlockLen = getPkcs7PaddedContentLen((output + written - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) , ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	if(lastBlockLen < ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
 	{
 		written = written - (ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - lastBlockLen);
@@ -170,7 +174,7 @@ int elektraCryptoGcryDecrypt(Key *k)
 	return ELEKTRA_CRYPTO_GCRY_OK;
 }
 
-void elektraCryptoAddPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen)
+static void addPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen)
 {
 	/*
 	* this function adds a PKCS#7 padding to the buffer.
@@ -191,7 +195,7 @@ void elektraCryptoAddPkcs7Padding(unsigned char *buffer, const unsigned int cont
 	}
 }
 
-unsigned int elektraCryptoGetPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen)
+static unsigned int getPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen)
 {
 	const unsigned char n = buffer[bufferLen - 1];
 	unsigned int i;
