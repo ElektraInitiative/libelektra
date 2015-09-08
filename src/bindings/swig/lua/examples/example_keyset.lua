@@ -5,7 +5,7 @@ print = function(s, ...)
   return orig_print(s:format(...))
 end
 
-ks1 = kdb.KeySet(100,
+local ks1 = kdb.KeySet(100,
 	kdb.Key("user/key1"),
 	kdb.Key("user/key2"),
 	kdb.Key("user/key3")
@@ -31,4 +31,10 @@ print("  KeySet1[1]=%s", ks1[1])
 print("  KeySet1[-1]=%s", ks1[-1])
 print("  KeySet1['user/key1']=%s", ks1["user/key1"])
 print("  KeySet1['doesnt_exist']=%s", ks1["doesnt_exist"])
+print("")
+
+print("We can create shallow copies and remove keys without affecting other keysets:")
+local ks2 = kdb.KeySet(ks1:dup())
+ks2:pop()
+print("  KeySet2 now has %d keys while KeySet1 still has %d keys", #ks2, #ks1)
 print("")

@@ -18,6 +18,12 @@ assert(swig_type(t) == "kdb::KeySet *")
 local t = kdb.KeySet(ks)
 assert(swig_type(t) == "kdb::KeySet *")
 
+local t = kdb.KeySet(ks:dup())
+assert(swig_type(t) == "kdb::KeySet *")
+assert(#t           == #ks)
+t:pop()
+assert(#t           == #ks - 1)
+
 -- operator
 assert(#ks            == 4)
 assert(#kdb.KeySet(0) == 0)

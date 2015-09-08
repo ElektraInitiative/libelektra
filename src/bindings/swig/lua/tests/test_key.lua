@@ -32,6 +32,9 @@ assert(k:isValid() == true)
 local k = kdb.Key(key:dup())
 assert(swig_type(k) == "kdb::Key *")
 assert(k:isValid() == true)
+assert(k == key)
+k.name = "user/copied"
+assert(k ~= key)
 
 -- operator
 assert(key ~= bkey)
