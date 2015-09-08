@@ -7,58 +7,75 @@
 *
 */
 
+#include "crypto.h"
 #include "gcrypt_operations.h"
+#include <stdlib.h>
 #include <gcrypt.h>
 
-// TODO remove global variables for thread safety's sake :)
-static gcry_cipher_hd_t gcry_handle;
-static gcry_error_t gcry_err;
 
 static void addPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen);
 static unsigned int getPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen);
 
 
-void elektraCryptoGcryClearKeyIv()
+void elektraCryptoGcryHandleDestroy(elektraCryptoHandle *handle)
 {
-	gcry_cipher_close(gcry_handle);
+	if(handle != NULL)
+	{
+		gcry_cipher_close(*handle);
+		free(handle);
+	}
 }
 
 int elektraCryptoGcryInit()
 {
 	if (!gcry_check_version(GCRYPT_VERSION))
 	{
-		return ELEKTRA_CRYPTO_GCRY_NOK;
+		// TODO throw gcrypt initialization error
+		return (-1);
 	}
 	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
 	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
-	return ELEKTRA_CRYPTO_GCRY_OK;
+	return 1;
 }
 
-int elektraCryptoGcrySetKeyIv(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen)
+elektraCryptoHandle *elektraCryptoGcryHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen)
 {
-	elektraCryptoGcryClearKeyIv();
-	if (gcry_cipher_open(&gcry_handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0) != 0)
+	elektraCryptoHandle *handle = (elektraCryptoHandle*)malloc(sizeof(elektraCryptoHandle));
+	if(handle == NULL)
 	{
-		return ELEKTRA_CRYPTO_GCRY_NOK;
+		// TODO throw memory error
+		return NULL;
 	}
 
-	if (gcry_cipher_setkey(gcry_handle, key, keyLen) != 0)
+	if (gcry_cipher_open(handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0) != 0)
 	{
-		return ELEKTRA_CRYPTO_GCRY_NOK;
+		goto error;
 	}
 
-	if (gcry_cipher_setiv(gcry_handle, iv, ivLen) != 0)
+	if (gcry_cipher_setkey(*handle, key, keyLen) != 0)
 	{
-		return ELEKTRA_CRYPTO_GCRY_NOK;
+		goto error;
 	}
-	return ELEKTRA_CRYPTO_GCRY_OK;
+
+	if (gcry_cipher_setiv(*handle, iv, ivLen) != 0)
+	{
+		goto error;
+	}
+	return handle;
+
+error:
+	// TODO throw generic crypto setup error
+	gcry_cipher_close(*handle);
+	free(handle);
+	return NULL;
 }
 
-int elektraCryptoGcryEncrypt(Key *k)
+int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
 {
 	const unsigned char *value = (unsigned char*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
 	size_t outputLen;
+	gcry_error_t gcry_err;
 
 	unsigned char *output;
 	unsigned char cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
@@ -81,7 +98,8 @@ int elektraCryptoGcryEncrypt(Key *k)
 	output = (unsigned char*)malloc(outputLen);
 	if(output == NULL)
 	{
-		return ELEKTRA_CRYPTO_GCRY_NOK;
+		// TODO throw memory error
+		return (-1);
 	}
 
 	// encrypt content block by block (i = start of the current block)
@@ -100,12 +118,12 @@ int elektraCryptoGcryEncrypt(Key *k)
 			addPkcs7Padding(contentBuffer, contentLen, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		}
 
-		gcry_err = gcry_cipher_encrypt(gcry_handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
 		{
 			// TODO forward detailed error description with gcry_strerror() and gcry_strsource()
 			free(output);
-			return ELEKTRA_CRYPTO_GCRY_NOK;
+			return (-1);
 		}
 		memcpy((output + i), cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	}
@@ -114,10 +132,10 @@ int elektraCryptoGcryEncrypt(Key *k)
 	keySetBinary(k, output, outputLen);
 	free(output);
 
-	return ELEKTRA_CRYPTO_GCRY_OK;
+	return 1;
 }
 
-int elektraCryptoGcryDecrypt(Key *k)
+int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k)
 {
 	const unsigned char *value = (unsigned char*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
@@ -128,18 +146,21 @@ int elektraCryptoGcryDecrypt(Key *k)
 	unsigned long i;
 	unsigned long written = 0;
 	unsigned long lastBlockLen;
+	gcry_error_t gcry_err;
 
 	// plausibility check
 	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
-		return ELEKTRA_CRYPTO_GCRY_NOK;
+		// TODO throw inconsistency error
+		return (-1);
 	}
 
 	// prepare buffer for plain text output
 	output = (unsigned char*)malloc(valueLen);
 	if(output == NULL)
 	{
-		return ELEKTRA_CRYPTO_GCRY_NOK;
+		// TODO throw memory allocation error
+		return (-1);
 	}
 
 	// decrypt content block by block (i = start of the current block)
@@ -148,12 +169,12 @@ int elektraCryptoGcryDecrypt(Key *k)
 		// load cipher text partition into the cipher buffer
 		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 
-		gcry_err = gcry_cipher_decrypt(gcry_handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
 		{
 			// TODO forward detailed error description with gcry_strerror() and gcry_strsource()
 			free(output);
-			return ELEKTRA_CRYPTO_GCRY_NOK;
+			return (-1);
 		}
 		memcpy((output + i), contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		written += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
@@ -171,7 +192,7 @@ int elektraCryptoGcryDecrypt(Key *k)
 	keySetBinary(k, output, written);
 	free(output);
 
-	return ELEKTRA_CRYPTO_GCRY_OK;
+	return 1;
 }
 
 static void addPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen)

@@ -8,33 +8,62 @@
 */
 
 #include "crypto.h"
+#include "gcrypt_operations.h"
 
-#define ELEKTRA_PLUGIN_CRYPTO_SUCCESS (1)
-#define ELEKTRA_PLUGIN_CRYPTO_ERROR (-1)
 
 int elektraCryptoOpen(Plugin *handle, Key *errorKey)
 {
-	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
+	return 1;
 }
 
 int elektraCryptoClose(Plugin *handle, Key *errorKey)
 {
-	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
+	return 1;
 }
 
 int elektraCryptoGet(Plugin *handle, KeySet *ks, Key *parentKey)
 {
-	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
+	return 1;
 }
 
 int elektraCryptoSet(Plugin *handle, KeySet *ks, Key *parentKey)
 {
-	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
+	return 1;
 }
 
 int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey)
 {
-	return ELEKTRA_PLUGIN_CRYPTO_SUCCESS;
+	return 1;
+}
+
+int elektraCryptoInit()
+{
+	return elektraCryptoGcryInit();
+}
+
+void elektraCryptoTeardown()
+{
+	// nothing to do for libgcrypt, but maybe other libraries need clean-up
+}
+
+elektraCryptoHandle *elektraCryptoHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen)
+{
+	return elektraCryptoGcryHandleCreate(key, keyLen, iv, ivLen);
+}
+
+void elektraCryptoHandleDestroy(elektraCryptoHandle *handle)
+{
+	elektraCryptoGcryHandleDestroy(handle);
+}
+
+int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k)
+{
+	return elektraCryptoGcryEncrypt(handle, k);
+}
+
+int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k)
+{
+	return elektraCryptoGcryDecrypt(handle, k);
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(crypto){
