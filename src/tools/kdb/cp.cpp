@@ -52,26 +52,34 @@ int CpCommand::execute (Cmdline const& cl)
 		Key k;
 		while ((k = oldConf.next()))
 		{
-			newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
+			Key rk = rename_key(k, sourceName, newDirName, cl.verbose);
+			if (tmpConf.lookup(rk))
+			{
+				std::cerr << "Coping of "
+					  << rk.getName()
+					  << " will have no effect (already exists)" << endl;
+			}
+			newConf.append(rk);
 		}
 	}
 	else
 	{
 		// just copy one key
 		Key k = oldConf.next();
-		newConf.append(rename_key(k, sourceName, newDirName, cl.verbose));
+		Key rk = rename_key(k, sourceName, newDirName, cl.verbose);
+		if (tmpConf.lookup(rk))
+		{
+			std::cerr << "Copy will have no effect, because "
+				  << rk.getName()
+				  << " already exists" << endl;
+		}
+		newConf.append(rk);
 	}
 
 	newConf.append(tmpConf); // these are unrelated keys
 	newConf.append(oldConf); // these are the original keys
 
 	newConf.rewind();
-	if (cl.verbose)
-	{
-		cout << "Will write out:" << endl;
-		cout << newConf;
-	}
-
 	kdb.set(newConf, destKey);
 
 	return 0;

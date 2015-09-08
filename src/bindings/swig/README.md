@@ -20,3 +20,7 @@ debian stable needs:
 	-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3
 	-DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.2
 	-DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so 
+
+Note that cmake does *not* automatically rebuild SWIG bindings
+when header files are changed. Remove the build directory
+in that case.

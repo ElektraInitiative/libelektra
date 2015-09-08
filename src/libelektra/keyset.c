@@ -1936,9 +1936,6 @@ static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option
  * This process is very flexible, but it would be boring to follow all this links
  * in the head to find out which key will be taken.
  * So use `kdb get -v` to trace the keys.
- * Such traces can be easily implemented using callbacks:
- *
- * @snippet ksCallback.c callback
  *
  *
  * @par KDB_O_POP
@@ -1958,8 +1955,6 @@ static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option
  * @snippet ksLookupPop.c f
  *
  * This is also a nice example how a complete application with ksLookup() can look like.
- * The option ::KDB_O_CALLBACK provides information if the spec/ keys are treated
- * as specification or only for their value.
  *
  * @par KDB_O_DEL
  * Passing ::KDB_O_DEL will cause the deletion of the parameter @p key using keyDel().
@@ -1983,7 +1978,7 @@ static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option
  *
  * @param ks where to look for
  * @param key the key object you are looking for
- * @param options with some @p KDB_O_* option bits as explained above
+ * @param options of type ::option_t with some @p KDB_O_* option bits as explained above
  * @return pointer to the Key found, 0 otherwise
  * @retval 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string
