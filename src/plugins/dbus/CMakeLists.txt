@@ -14,7 +14,9 @@ if (DBUS_FOUND)
 
 	include_directories(${DBUS_INCLUDE_DIR})
 	include_directories(${DBUS_ARCH_INCLUDE_DIR})
-	add_plugintest (dbus)
+	add_plugintest (dbus
+			sendmessage.c receivemessage.c
+			)
 else (DBUS_FOUND)
 	remove_plugin (dbus "dbus not found")
 endif (DBUS_FOUND)

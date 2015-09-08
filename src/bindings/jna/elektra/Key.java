@@ -5,7 +5,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 
-public class Key {
+public class Key implements java.lang.Iterable<String> {
 	// constants
 	public static final int KEY_END=0;
 	public static final int KEY_NAME=1;
@@ -64,6 +64,10 @@ public class Key {
 	// java's specials
 	public String toString() {
 		return getName();
+	}
+
+	public java.util.Iterator<String> iterator() {
+		return new KeyNameIterator(this);
 	}
 
 	public boolean getBoolean() {

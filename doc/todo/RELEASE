@@ -90,6 +90,12 @@ Build deb:
 
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
+ git-commit -m "Debian Package $DVERSION (UNRELEASED)"
+
+UNRELEASED -> unstable
+
+ dch --release $DVERSION "New upstream version"
+ git-add debian/changelog
  git-commit -m "Debian Package $DVERSION"
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:

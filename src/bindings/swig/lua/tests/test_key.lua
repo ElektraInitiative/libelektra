@@ -32,6 +32,9 @@ assert(k:isValid() == true)
 local k = kdb.Key(key:dup())
 assert(swig_type(k) == "kdb::Key *")
 assert(k:isValid() == true)
+assert(k == key)
+k.name = "user/copied"
+assert(k ~= key)
 
 -- operator
 assert(key ~= bkey)
@@ -118,3 +121,9 @@ function item_cnt(...)
 end
 assert(item_cnt(key:getMeta())  == 2)
 assert(item_cnt(bkey:getMeta()) == 1)
+
+local k = kdb.Key("user/a\\/b/c")
+assert(item_cnt(k:name_iterator())         == 3)
+assert(item_cnt(k:reverse_name_iterator()) == 3)
+assert(k:name_iterator()()         == "user")
+assert(k:reverse_name_iterator()() == "c")
