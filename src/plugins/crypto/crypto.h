@@ -23,6 +23,7 @@ int elektraCryptoGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoSet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey);
 
+
 int elektraCryptoInit();
 void elektraCryptoTeardown();
 elektraCryptoHandle *elektraCryptoHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen);
