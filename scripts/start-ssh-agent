@@ -1,0 +1,6 @@
+#!/bin/sh
+
+eval `ssh-agent`
+
+kdb set user/env/override/SSH_AUTH_SOCK "$SSH_AUTH_SOCK"
+kdb set user/env/override/SSH_AGENT_PID "$SSH_AGENT_PID"
