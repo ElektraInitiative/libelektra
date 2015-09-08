@@ -273,6 +273,50 @@ ssize_t keyGetNameSize(const Key *key)
 }
 
 
+/**
+ * @brief Returns a keyname which is null separated and does not use backslash for escaping
+ *
+ * This name is essential if you want to iterate over parts of the key
+ * name, want to compare keynames and want to check relations of keys in
+ * the hierarchy.
+ *
+ * @param key the object to work with
+ *
+ * @retval 0 on null pointers
+ * @retval "" if no name
+ * @return the name in its unescaped form
+ */
+const void *keyUnescapedName(const Key *key)
+{
+	if (!key) return 0;
+
+	if (!key->key) {
+		return "";
+	}
+
+	return key->key+key->keySize;
+}
+
+
+/**
+ * @brief return size of unescaped name with embedded and terminating null characters
+ *
+ * @param key the object to work with
+ *
+ * @retval -1 on null pointer
+ * @retval 0 if no name
+ */
+ssize_t keyGetUnescapedNameSize(const Key *key)
+{
+	if (!key) return -1;
+
+	if (!key->key)
+	{
+		return 0;
+	}
+	else return key->keyUSize;
+}
+
 
 
 /**
