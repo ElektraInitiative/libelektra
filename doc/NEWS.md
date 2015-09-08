@@ -81,6 +81,10 @@ but no flexibility regarding:
 - fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
 - fixed qml warning when deleting key
 
+## escaped key names
+- keyUnescapedName has been added to our main API (moved from proposal)
+- additional most of our bindings have been modified to allow easy iterations over key names. To see how the iterator works in the individual language check out their examples.
+
 ## other fixes
 
 - Key::release() and Key::~Key will also work when Key holds a null-pointer
