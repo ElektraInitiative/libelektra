@@ -241,8 +241,8 @@ class NameIterator
 public:
 	typedef std::string value_type;
 	typedef std::string reference;
-	typedef std::string pointer;
-	typedef int difference_type;
+	typedef std::string pointer; // STL typedef is required by SWIG
+	typedef int difference_type; // STL typedef is required by SWIG
 	typedef std::bidirectional_iterator_tag iterator_category;
 
 	NameIterator(Key const & k, bool last) :
@@ -332,8 +332,8 @@ class NameReverseIterator : private NameIterator
 public:
 	typedef std::string value_type;
 	typedef std::string reference;
-	typedef std::string pointer;
-	typedef int difference_type;
+	typedef std::string pointer; // STL typedef is required by SWIG
+	typedef int difference_type; // STL typedef is required by SWIG
 	typedef std::bidirectional_iterator_tag iterator_category;
 
 	NameReverseIterator(Key const & k, bool last) :
