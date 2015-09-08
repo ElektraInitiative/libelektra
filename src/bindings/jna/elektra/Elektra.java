@@ -76,6 +76,9 @@ int keyGetName(Pointer key, String returnedName, int maxSize); //not needed
 
 int keySetName(Pointer key, String newname);
 
+Pointer keyUnescapedName(Pointer key);
+int keyGetUnescapedNameSize(Pointer key);
+
 int keyGetFullNameSize(Pointer key); //not implemented
 int keyGetFullName(Pointer key, String returnedName, int maxSize); //not implemented
 
