@@ -1,17 +1,11 @@
-/*************************************************************************** 
- *           testmod_crypto.c  - Test suite for crypto
- *                  -------------------
- *  begin                : Mon Aug 31 10:32:51 CEST 2015
- *  copyright            : (C) 2015 by Peter Nirschl
- *  email                : peter.nirschl@gmail.com
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+* @file
+*
+* @brief test suite for the crypto plugin
+*
+* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
@@ -26,7 +20,7 @@
 #include <stdio.h>
 #include <kdb.h>
 #include <tests_plugin.h>
-#include "gcrypt_operations.h"
+#include "crypto.h"
 
 /*
  * The test vectors are taken from NIST SP 800-38A, section F.2.5 "CBC-AES256.Encrypt"
@@ -59,6 +53,8 @@ const unsigned char expectedCipherText[] =
 };
 
 /**
+ * @brief checks two buffers for equality
+ *
  * Helper function that returns zero (0) if the contents of the buffers b1 and b2 match
  * and non-zero otherwise.
  */
@@ -81,30 +77,39 @@ int cmp_buffers(const unsigned char *b1, size_t len1, const unsigned char* b2, s
 	return 0;
 }
 
-void test_gcrypt_init()
+void test_init()
 {
-	succeed_if( elektraCryptoGcryInit() == ELEKTRA_CRYPTO_GCRY_OK, "libgcrypt initialization failed" );
+	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
 }
 
-void test_gcrypt_handle_init()
+void test_handle_init()
 {
 	const unsigned char shortKey[] = { 0xca, 0xfe };
+	elektraCryptoHandle *handle;
 
-	succeed_if( elektraCryptoGcrySetKeyIv(shortKey, sizeof(shortKey), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_NOK, "key initialization with non-compliant key succeeded" );
-	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
+	handle = elektraCryptoHandleCreate(shortKey, sizeof(shortKey), iv, sizeof(iv));
+	succeed_if( handle == NULL, "key initialization with non-compliant key succeeded" );
+	elektraCryptoHandleDestroy(handle);
+
+	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
+	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
+	elektraCryptoHandleDestroy(handle);
 }
 
-void test_gcrypt_encryption()
+void test_encryption()
 {
+	elektraCryptoHandle *handle;
 	Key *k;
 	unsigned char buffer[64];
 	size_t len;
 
-	k = keyNew("/user/plugins/crypto/gcrypt/test-encryption", KEY_END);
+	k = keyNew("user/plugins/crypto/gcrypt/test-encryption", KEY_END);
 	keySetBinary(k, plainText, sizeof(plainText));
 
-	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
-	succeed_if( elektraCryptoGcryEncrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "encryption failed" );
+	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
+	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoEncrypt(handle, k) == 1, "encryption failed" );
+	elektraCryptoHandleDestroy(handle);
 
 	// compare encrypted value to the test vector
 	len = keyGetBinary(k, buffer, sizeof(buffer));
@@ -114,17 +119,20 @@ void test_gcrypt_encryption()
 	keyDel(k);
 }
 
-void test_gcrypt_decryption()
+void test_decryption()
 {
+	elektraCryptoHandle *handle;
 	Key *k;
 	unsigned char buffer[64];
 	size_t len;
 
-	k = keyNew("/user/plugins/crypto/gcrypt/test-decryption", KEY_END);
+	k = keyNew("user/plugins/crypto/gcrypt/test-decryption", KEY_END);
 	keySetBinary(k, expectedCipherText, sizeof(expectedCipherText));
 
-	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
-	succeed_if( elektraCryptoGcryDecrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "decryption failed" );
+	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
+	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoDecrypt(handle, k) == 1, "decryption failed" );
+	elektraCryptoHandleDestroy(handle);
 
 	// compare the decrypted value to original plain text
 	len = keyGetBinary(k, buffer, sizeof(buffer));
@@ -134,17 +142,25 @@ void test_gcrypt_decryption()
 	keyDel(k);
 }
 
-void test_gcrypt_padding_with_string()
+void test_enc_and_dec_with_string()
 {
+	elektraCryptoHandle *handle;
 	const char original[] = "Short";
-	char content[64];
-	Key *k = keyNew("/user/plugins/crypto/gcrypt/test-padding", KEY_END);
+	char content[64] = "";
+	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding", KEY_END);
 	keySetString(k, original);
 
-	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
-	succeed_if( elektraCryptoGcryEncrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "encryption failed" );
-	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
-	succeed_if( elektraCryptoGcryDecrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "decryption failed" );
+	// step 1 - encryption
+	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
+	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoEncrypt(handle, k) == 1, "encryption failed" );
+	elektraCryptoHandleDestroy(handle);
+
+	// step 2 - decryption
+	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
+	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoDecrypt(handle, k) == 1, "decryption failed" );
+	elektraCryptoHandleDestroy(handle);
 
 	succeed_if( keyIsString(k) == 1, "key is of non-string type");
 	succeed_if( keyGetString(k, content, sizeof(content)) > 0, "could not retrieve the value of the key" );
@@ -153,111 +169,34 @@ void test_gcrypt_padding_with_string()
 	keyDel(k);
 }
 
-void test_gcrypt_padding_with_binary()
+void test_enc_and_dec_with_binary()
 {
+	elektraCryptoHandle *handle;
 	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
 	unsigned char content[64];
 	unsigned long read = 0;
-	Key *k = keyNew("/user/plugins/crypto/gcrypt/test-padding-bin", KEY_END);
+	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding-bin", KEY_END);
 	keySetBinary(k, original, sizeof(original));
 
-	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
-	succeed_if( elektraCryptoGcryEncrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "encryption failed" );
-	succeed_if( elektraCryptoGcrySetKeyIv(key, sizeof(key), iv, sizeof(iv)) == ELEKTRA_CRYPTO_GCRY_OK, "key/IV initialization with compliant key failed" );
-	succeed_if( elektraCryptoGcryDecrypt(k) == ELEKTRA_CRYPTO_GCRY_OK, "decryption failed" );
+	// 1. encrypt
+	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
+	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoEncrypt(handle, k) == 1, "encryption failed" );
+	elektraCryptoHandleDestroy(handle);
 
+	// 2. decrypt
+	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
+	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
+	succeed_if( elektraCryptoDecrypt(handle, k) == 1, "decryption failed" );
+	elektraCryptoHandleDestroy(handle);
+
+	// 3. check result
 	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
 	read = keyGetBinary(k, content, sizeof(content));
 	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
 	succeed_if( cmp_buffers(original, sizeof(original), content, read) == 0, "decrypted value differs from original");
 
 	keyDel(k);
-}
-
-void test_gcrypt_padding_function1()
-{
-	unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] = "Salty dog";
-	const unsigned char expected[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
-	{
-		0x53, 0x61, 0x6c, 0x74, 0x79, 0x20, 0x64, 0x6f,
-		0x67, 0x00, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06
-	};
-	const unsigned long contentLen = 10;
-
-	elektraCryptoAddPkcs7Padding(buffer, contentLen, sizeof(buffer));
-	succeed_if( cmp_buffers(buffer, sizeof(buffer), expected, sizeof(expected)) == 0, "PKCS#7 padding scheme was not set correctly");
-}
-
-void test_gcrypt_padding_function2()
-{
-	unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] = "This is the end";
-	const unsigned char expected[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
-	{
-		0x54, 0x68, 0x69, 0x73, 0x20, 0x69, 0x73, 0x20,
-		0x74, 0x68, 0x65, 0x20, 0x65, 0x6e, 0x64, 0x00
-	};
-	const unsigned long contentLen = 16;
-
-	elektraCryptoAddPkcs7Padding(buffer, contentLen, sizeof(buffer));
-	succeed_if( cmp_buffers(buffer, sizeof(buffer), expected, sizeof(expected)) == 0, "PKCS#7 padding scheme was not set correctly");
-}
-
-void test_gcrypt_padding_function3()
-{
-	unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] = "Fooooooooooooo";
-	const unsigned char expected[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
-	{
-		0x46, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f,
-		0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f, 0x00, 0x01
-	};
-	const unsigned long contentLen = 15;
-
-	elektraCryptoAddPkcs7Padding(buffer, contentLen, sizeof(buffer));
-	succeed_if( cmp_buffers(buffer, sizeof(buffer), expected, sizeof(expected)) == 0, "PKCS#7 padding scheme was not set correctly");
-}
-
-void test_gcrypt_padding_length1()
-{
-	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
-	{
-		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
-		0x6d, 0x61, 0x6e, 0x00, 0x04, 0x04, 0x04, 0x04
-	};
-	const unsigned long expcetedLen = 12;
-	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
-}
-
-void test_gcrypt_padding_length2()
-{
-	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
-	{
-		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
-		0x6d, 0x61, 0x6e, 0x00, 0xff, 0x04, 0x04, 0x04
-	};
-	const unsigned long expcetedLen = 16;
-	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
-}
-
-void test_gcrypt_padding_length3()
-{
-	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
-	{
-		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
-		0x6d, 0x61, 0x6e, 0x00, 0xff, 0x03, 0x04, 0x05
-	};
-	const unsigned long expcetedLen = 16;
-	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
-}
-
-void test_gcrypt_padding_length4()
-{
-	const unsigned char buffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] =
-	{
-		0x53, 0x65, 0x6c, 0x66, 0x69, 0x73, 0x68, 0x20,
-		0x6d, 0x61, 0x6e, 0x00, 0xff, 0x03, 0x04, 0x01
-	};
-	const unsigned long expcetedLen = 15;
-	succeed_if( elektraCryptoGetPkcs7PaddedContentLen(buffer, sizeof(buffer)) == expcetedLen, "PKCS#7 padded content length calculation failed" );
 }
 
 int main(int argc, char** argv)
@@ -267,21 +206,14 @@ int main(int argc, char** argv)
 
 	init(argc, argv);
 
-	test_gcrypt_init();
-	test_gcrypt_handle_init();
-	test_gcrypt_encryption();
-	test_gcrypt_decryption();
-	test_gcrypt_padding_with_string();
-	test_gcrypt_padding_with_binary();
-	test_gcrypt_padding_function1();
-	test_gcrypt_padding_function2();
-	test_gcrypt_padding_function3();
-	test_gcrypt_padding_length1();
-	test_gcrypt_padding_length2();
-	test_gcrypt_padding_length3();
-	test_gcrypt_padding_length4();
+	test_init();
+	test_handle_init();
+	test_encryption();
+	test_decryption();
+	test_enc_and_dec_with_string();
+	test_enc_and_dec_with_binary();
 
-	elektraCryptoGcryClearKeyIv();
+	elektraCryptoTeardown();
 
 	printf("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
