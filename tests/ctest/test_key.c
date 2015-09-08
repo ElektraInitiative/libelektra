@@ -529,57 +529,6 @@ static void test_keyNameUnescape()
 	*/
 
 
-	printf ("test keyUnescapedName\n");
-
-	Key *k = keyNew("user/something", KEY_END);
-	succeed_if (!memcmp(keyUnescapedName(k), "user\0something", sizeof("user/something")), "unescaped name wrong");
-
-	keySetName(k, "system/something/else");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else", sizeof("system/something/else")), "unescaped name wrong");
-
-	keyAddBaseName(k, "more");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0more", sizeof("system/something/else/more")), "unescaped name wrong");
-
-	keySetBaseName(k, "else");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0else", sizeof("system/something/else/else")), "unescaped name wrong");
-
-	keySetBaseName(k, "");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\0", sizeof("system/something/else/")), "unescaped name wrong");
-
-	keySetBaseName(k, "%");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0%", sizeof("system/something/else/%")), "unescaped name wrong");
-
-	keySetBaseName(k, "\\");
-	succeed_if_same_string(keyBaseName(k), "\\");
-	char sol1[] = "system\0something\0else\0\\";
-	succeed_if (!memcmp(keyUnescapedName(k), sol1, sizeof(sol1)), "unescaped name wrong");
-
-	/* print memory of keyUnescapedName
-	for (size_t i = 0; i<sizeof(sol1); ++i)
-	{
-		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
-	}
-	*/
-
-	keySetBaseName(k, "\\\\");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else\0\\\\", sizeof("system/something/else/\\\\")), "unescaped name wrong");
-
-	keySetName(k, "system/something\\/else");
-	succeed_if (!memcmp(keyUnescapedName(k), "system\0something/else", sizeof("system/something/else")), "unescaped name wrong");
-
-	succeed_if(keySetName(k, "system/something/else/\\") == -1, "tangling backslash");
-
-	keySetName(k, "system/something/else/\\\\");
-	char sol2[] = "system\0something\0else\0\\";
-	succeed_if (!memcmp(keyUnescapedName(k), sol2, sizeof(sol2)), "unescaped name wrong");
-	/*
-	for (size_t i = 0; i<sizeof(sol2); ++i)
-	{
-		printf ("%c %d\n", (char)((char*)keyUnescapedName(k))[i], (int)((char*)keyUnescapedName(k))[i]);
-	}
-	*/
-
-	keyDel(k);
 }
 
 static void test_keyCompare()
@@ -1625,24 +1574,6 @@ static void test_keyFlags()
 	keyDel (key2);
 }
 
-static void test_keyCanonify()
-{
-	printf ("test canonify\n");
-
-	Key *k = keyNew("/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key",
-		KEY_CASCADING_NAME,
-		KEY_END);
-	succeed_if_same_string(keyName(k), "/a/very/long/#0/name\\/with/sec\\tion/and\\\\/subsection/and!/$%&/chars()/[about]/{some}/_-.,;:/€/»/|/key");
-	succeed_if(keyGetNameSize(k) == 105, "name size wrong");
-	succeed_if(keyGetUnescapedNameSize(k) == 103, "unescaped name size wrong");
-	succeed_if_same_string((char*)keyUnescapedName(k), "");
-	succeed_if_same_string((char*)keyUnescapedName(k)+1, "a");
-	succeed_if_same_string((char*)keyUnescapedName(k)+3, "very");
-	succeed_if_same_string((char*)keyUnescapedName(k)+99, "key");
-
-	keyDel(k);
-}
-
 int main(int argc, char** argv)
 {
 	printf("KEY      TESTS\n");
@@ -1671,7 +1602,6 @@ int main(int argc, char** argv)
 	test_keyCopy();
 	test_keyFixedNew();
 	test_keyFlags();
-	test_keyCanonify();
 
 	printf("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
