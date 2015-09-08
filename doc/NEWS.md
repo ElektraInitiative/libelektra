@@ -82,13 +82,23 @@ but no flexibility regarding:
 - fixed qml warning when deleting key
 
 ## escaped key names
+
 - keyUnescapedName has been added to our main API (moved from proposal)
-- additional most of our bindings have been modified to allow easy iterations over key names. To see how the iterator works in the individual language check out their examples.
+- additional most of our bindings have been modified to allow easy iterations over key names. To see how the iterator works see:
+ - [jna (java)](libelektra.org/blob/master/src/bindings/jna/HelloElektra.java)
+ - [lua](libelektra.org/blob/master/src/bindings/lua/tests/test_key.lua)
+ - [python2](libelektra.org/blob/master/src/bindings/python2/tests/testpy2_key.py)
+ - [python3](libelektra.org/blob/master/src/bindings/python3/tests/test_key.py)
+
+Thanks to Manuel Mausz for to this work on the bindings!
 
 ## other fixes
 
 - Key::release() and Key::~Key will also work when Key holds a null-pointer
 - Key::getName(), avoid std::string exception
+- dup() in python3 returned wrong type (SWIG wrapper), thanks to Toscano Pino for reporting, thanks to Manuel Mausz for fixing it
+- support for copy module was introduced, thanks to Manuel Mausz
+- doc: use @retval more, thanks to Pino Toscano
 
 
 
