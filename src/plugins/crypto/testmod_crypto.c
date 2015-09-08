@@ -146,7 +146,7 @@ void test_enc_and_dec_with_string()
 {
 	elektraCryptoHandle *handle;
 	const char original[] = "Short";
-	char content[64];
+	char content[64] = "";
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding", KEY_END);
 	keySetString(k, original);
 
