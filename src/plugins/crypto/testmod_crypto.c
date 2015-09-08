@@ -154,13 +154,13 @@ void test_enc_and_dec_with_string()
 	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
 	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k) == 1, "encryption failed" );
-	elektraCryptoGcryHandleDestroy(handle);
+	elektraCryptoHandleDestroy(handle);
 
 	// step 2 - decryption
 	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
 	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
 	succeed_if( elektraCryptoDecrypt(handle, k) == 1, "decryption failed" );
-	elektraCryptoGcryHandleDestroy(handle);
+	elektraCryptoHandleDestroy(handle);
 
 	succeed_if( keyIsString(k) == 1, "key is of non-string type");
 	succeed_if( keyGetString(k, content, sizeof(content)) > 0, "could not retrieve the value of the key" );
