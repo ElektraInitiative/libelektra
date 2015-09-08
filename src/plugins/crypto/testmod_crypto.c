@@ -53,6 +53,8 @@ const unsigned char expectedCipherText[] =
 };
 
 /**
+ * @brief checks two buffers for equality
+ *
  * Helper function that returns zero (0) if the contents of the buffers b1 and b2 match
  * and non-zero otherwise.
  */
