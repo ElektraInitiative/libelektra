@@ -12,13 +12,23 @@
 
 #include <kdbplugin.h>
 #include <stdio.h>
-#include "gcrypt_operations.h"
+
+// We may support other libraries in the future so we make the crypto-handle exchangeable
+#include <gcrypt.h>
+typedef gcry_cipher_hd_t elektraCryptoHandle;
 
 int elektraCryptoOpen(Plugin *handle, Key *errorKey);
 int elektraCryptoClose(Plugin *handle, Key *errorKey);
 int elektraCryptoGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoSet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey);
+
+int elektraCryptoInit();
+void elektraCryptoTeardown();
+elektraCryptoHandle *elektraCryptoHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen);
+void elektraCryptoHandleDestroy(elektraCryptoHandle *handle);
+int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k);
+int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(crypto);
 
