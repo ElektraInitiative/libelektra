@@ -23,6 +23,7 @@ Its main purpose is to:
 - allow a hierarchical structure for environment
 - allow settings to only apply for individual applications or only in special context
 - still preserve the advantages (inheriting of environment to subprocesses)
+- Availability in at, cron and similar scripts.
 
 It is implemented using a LD_PRELOAD technique, see [USAGE](USAGE) below for
 global activation.
@@ -75,6 +76,8 @@ the application will be called with `<application> -V -L`.
    Call clearenv(3) before entering main.
    This is a recommended security feature.
    Elektra itself, if configured that way, will still be able to use the environment.
+ * `--elektra-reload_timeout=time_in_ms`, `ELEKTRA_RELOAD_TIMEOUT` or `/env/option/reload_timeout`:
+   Activate a timeout based feature when a time is given in ms (and is not 0).
 
 Internal Options are available in three different variants:
 
@@ -134,6 +137,10 @@ E.g. to have a different home directory for any user and application:
 
 Some applications do not use `getenv(3)` or `secure_getenv(3)` for requesting the environment,
 e.g. shells. This approach cannot work for them.
+
+
+In the startup-phase, `getenv` will not consider `/env/override/` or `/env/fallback`.
+
 
 Elektra internally tries to avoid using the environment.
 Some resolvers, however, use it to be conform to some specifications, e.g. XDG.

@@ -21,6 +21,12 @@ class KeySet(unittest.TestCase):
 		ks = kdb.KeySet(self.ks)
 		self.assertIsInstance(ks, kdb.KeySet)
 
+		ks = kdb.KeySet(self.ks.dup())
+		self.assertIsInstance(ks, kdb.KeySet)
+		self.assertEqual(len(ks), len(self.ks))
+		ks.pop()
+		self.assertEqual(len(ks), len(self.ks) - 1)
+
 	def test_operator(self):
 		self.assertEqual(len(self.ks),       4)
 		self.assertEqual(len(kdb.KeySet(0)), 0)
@@ -101,6 +107,18 @@ class KeySet(unittest.TestCase):
 		self.assertEqual(sum(1 for _ in self.ks),           4)
 		self.assertEqual(sum(1 for _ in reversed(self.ks)), 4)
 		self.assertEqual(sum(1 for _ in kdb.KeySet(0)),     0)
+
+	def test_python_copy(self):
+		import copy
+		# shallow copy
+		ks = copy.copy(self.ks)
+		self.assertEqual(len(ks), len(self.ks))
+		self.assertEqual(ks[0].getKey(), self.ks[0].getKey())
+
+		# deep copy
+		ks = copy.deepcopy(self.ks)
+		self.assertEqual(len(ks), len(self.ks))
+		self.assertNotEqual(ks[0].getKey(), self.ks[0].getKey())
 
 if __name__ == '__main__':
 	unittest.main()

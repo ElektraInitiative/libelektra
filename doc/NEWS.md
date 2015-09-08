@@ -11,10 +11,31 @@ even though it has many known problems:
 - relogin (or restart of shell) necessary
 - names are flat (no hierarchical structure)
 - cannot be set for individual applications
+- not available in at, cron and similar scripts
 
 With elektrify-getenv we wrote a solution which solves most of the
 problems. We use the LD_PRELOAD technique to additionally retrieve
 values from Elektra, and not only the environment.
+
+
+...
+
+So is this the final solution for configuration and manual elektrification
+of applications is not needed anymore?
+
+The answer is: no and yes.
+
+It is quite satisfactory for configuration that is inherently sharable
+(not different from one application to another) *and* needs the environment
+semantics, i.e. some subprocesses should have different configuration
+than others, e.g. in a specific terminal.
+
+But it might not be a good solution for your own application, because
+libgetenv(3) implies many architectural decision, that other elektrified
+applications would decide differently, e.g.:
+- it uses global variables (getenv(3) has no handle)
+- it uses mutex for multi-threading safety
+- the API getenv(3) only returns `char*` and has no support for other data types
 
 
 
@@ -59,6 +80,10 @@ but no flexibility regarding:
 - fixed 1) and 2) of #233
 - fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
 - fixed qml warning when deleting key
+
+## escaped key names
+- keyUnescapedName has been added to our main API (moved from proposal)
+- additional most of our bindings have been modified to allow easy iterations over key names. To see how the iterator works in the individual language check out their examples.
 
 ## other fixes
 

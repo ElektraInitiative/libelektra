@@ -8,7 +8,7 @@ public class HelloElektra {
 		Key key = Key.create("user/hello_world",
 			Key.KEY_VALUE, "Hello World",
 			Key.KEY_END);
-		System.out.println(key);
+		System.out.println(key); // to get name
 		System.out.println(key.getString());
 
 
@@ -51,5 +51,11 @@ public class HelloElektra {
 		System.out.println(b.getBoolean());
 		b.setBoolean(false);
 		System.out.println(b.getBoolean());
+
+		Key n = Key.create("user/weird\\/name///\\\\/is/\\no/_\\\\problem",
+			Key.KEY_END);
+		for (String s: n) {
+			System.out.println("itername: " + s);
+		}
 	}
 }

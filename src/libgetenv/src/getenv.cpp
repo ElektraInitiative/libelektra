@@ -326,7 +326,7 @@ void applyOptions()
 	}
 
 	elektraReloadTimeout = std::chrono::milliseconds::zero();
-	if ((k = ksLookupByName(elektraConfig, "/env/option/reload", 0)))
+	if ((k = ksLookupByName(elektraConfig, "/env/option/reload_timeout", 0)))
 	{
 		LOG << "activate reloading feature" << endl;
 

@@ -124,6 +124,10 @@
     return ckdb::keyCmp($self->getKey(), o->getKey());
   }
 
+  kdb::Key *__copy__() {
+    return new kdb::Key($self->dup());
+  }
+
   %pythoncode %{
     def get(self):
       """returns the keys value"""
@@ -170,6 +174,22 @@
   %}
 };
 
+// define traits needed by SwigPyIterator
+%fragment("SwigPyIterator_T");
+%traits_swigtype(std::string);
+%fragment(SWIG_Traits_frag(std::string));
+%extend kdb::Key {
+  swig::SwigPyIterator* __iter__(PyObject **PYTHON_SELF) {
+    return swig::make_output_iterator(self->begin(), self->begin(),
+      self->end(), *PYTHON_SELF);
+  }
+
+  swig::SwigPyIterator* __reversed__(PyObject **PYTHON_SELF) {
+    return swig::make_output_iterator(self->rbegin(), self->rbegin(),
+      self->rend(), *PYTHON_SELF);
+  }
+};
+
 %include "key.hpp"
 
 // meta data
@@ -209,6 +229,19 @@
 %extend kdb::KeySet {
   KeySet(size_t alloc) {
    return new kdb::KeySet(alloc, KS_END);
+  }
+
+  kdb::KeySet *__copy__() {
+    return new kdb::KeySet(*$self);
+  }
+
+  kdb::KeySet *__deepcopy__(PyObject *memo) {
+    (void) PyDict_Check(memo);
+    ssize_t size = $self->size();
+    kdb::KeySet *ks = new kdb::KeySet(size, KS_END);
+    for(cursor_t cursor = 0; cursor < size; ++cursor)
+      ks->append($self->at(cursor)->dup());
+    return ks;
   }
 
   %pythoncode %{
