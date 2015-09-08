@@ -121,3 +121,9 @@ function item_cnt(...)
 end
 assert(item_cnt(key:getMeta())  == 2)
 assert(item_cnt(bkey:getMeta()) == 1)
+
+local k = kdb.Key("user/a\\/b/c")
+assert(item_cnt(k:name_iterator())         == 3)
+assert(item_cnt(k:reverse_name_iterator()) == 3)
+assert(k:name_iterator()()         == "user")
+assert(k:reverse_name_iterator()() == "c")

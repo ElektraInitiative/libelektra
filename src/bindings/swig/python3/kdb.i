@@ -174,6 +174,22 @@
   %}
 };
 
+// define traits needed by SwigPyIterator
+%fragment("SwigPyIterator_T");
+%traits_swigtype(std::string);
+%fragment(SWIG_Traits_frag(std::string));
+%extend kdb::Key {
+  swig::SwigPyIterator* __iter__(PyObject **PYTHON_SELF) {
+    return swig::make_output_iterator(self->begin(), self->begin(),
+      self->end(), *PYTHON_SELF);
+  }
+
+  swig::SwigPyIterator* __reversed__(PyObject **PYTHON_SELF) {
+    return swig::make_output_iterator(self->rbegin(), self->rbegin(),
+      self->rend(), *PYTHON_SELF);
+  }
+};
+
 %include "key.hpp"
 
 // meta data
