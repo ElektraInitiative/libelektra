@@ -18,13 +18,16 @@
  *
  * @brief .
  *
- * - @p spec/something for specification of other keys
- * - @p proc/something for in-memory keys (e.g. command-line)
+ * .
+ *
+ * - @p spec/something for specification of other keys.
+ * - @p proc/something for in-memory keys, e.g. commandline.
  * - @p dir/something for dir keys in current working directory
  * - @p system/something for system keys in /etc or /
  * - @p user/something for user keys in home directory
  * - @p user:username/something for other users (deprecated: kdbGet() + kdbSet() currently unsupported)
  * - @p /something for cascading keys (actually refers to one of the above, see also ksLookup())
+ *
  */
 
 
@@ -55,6 +58,7 @@
  *
  * @par Namespaces
  * A namespace denotes the place the key comes from:
+ *
  * @copydetails doxygenNamespaces
  *
  *
@@ -210,7 +214,7 @@
  * The name will be without owner, see keyGetFullName() if
  * you need the name with its owner.
  *
- * keyName() returns "" when there is no keyName. The reason is
+ * @retval "" when there is no keyName. The reason is
  * @code
 key=keyNew(0);
 keySetName(key,"");
@@ -219,6 +223,7 @@ keyDel(key);
  * @endcode
  *
  * Valid key names are:
+ *
  * @copydetails doxygenNamespaces
  *
  * @note Note that the Key structure keeps its own size field that is calculated
@@ -234,6 +239,7 @@ keyDel(key);
  * @see keyGetFullName(), keyGetFullNameSize() to get the full name
  * @see keyGetName() as alternative to get a copy
  * @see keyOwner() to get a pointer to owner
+ * @see keyUnescapedName to get an unescaped key name
  * @ingroup keyname
  */
 const char *keyName(const Key *key)
@@ -259,6 +265,7 @@ const char *keyName(const Key *key)
  * @retval 1 if there is is no key Name
  * @retval -1 on NULL pointer
  * @see keyGetName(), keyGetFullNameSize()
+ * @see keyGetUnescapedNameSize to get size of unescaped name
  * @ingroup keyname
  */
 ssize_t keyGetNameSize(const Key *key)
@@ -282,6 +289,8 @@ ssize_t keyGetNameSize(const Key *key)
  *
  * @param key the object to work with
  *
+ * @see keyGetUnescapedNameSize()
+ * @see keyName() for escaped variant
  * @retval 0 on null pointers
  * @retval "" if no name
  * @return the name in its unescaped form
@@ -303,6 +312,8 @@ const void *keyUnescapedName(const Key *key)
  *
  * @param key the object to work with
  *
+ * @see keyUnescapedName()
+ * @see keyGetNameSize() for size of escaped variant
  * @retval -1 on null pointer
  * @retval 0 if no name
  */
