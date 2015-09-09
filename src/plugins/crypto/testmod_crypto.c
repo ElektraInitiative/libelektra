@@ -211,7 +211,8 @@ int main(int argc, char** argv)
 	test_handle_init();
 	test_encryption();
 	test_decryption();
-	test_enc_and_dec_with_string();
+	// TODO uncomment test case below when implementation of string support starts
+	// test_enc_and_dec_with_string();
 	test_enc_and_dec_with_binary();
 
 	elektraCryptoTeardown();
