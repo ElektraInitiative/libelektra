@@ -648,3 +648,27 @@ severity:normal
 ingroup:plugin
 module:storage
 see:9 75 109
+
+number:111
+description:Libgcrypt failed to initialize due to a version mismatch.
+severity:normal
+ingroup:plugin
+module:crypto
+
+number:112
+description:Failed to set up the crypto handle correctly.
+severity:normal
+ingroup:plugin
+module:crypto
+
+number:113
+description:Encryption failed due to an error reported by the backend.
+severity:normal
+ingroup:plugin
+module:crypto
+
+number:114
+description:Decryption failed due to an error reported by the backend.
+severity:normal
+ingroup:plugin
+module:crypto
