@@ -10,7 +10,10 @@ cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
 
 nbFailed=""
 
-EXPORTS=`mktemp -d`
+alias mktempdir-elektra=`mktemp -d 2>/dev/null || mktemp -d -t 'libelektra-test'`
+alias mktempfile-elektra=`mktemp -t elektraenv.XXXXXXXXX  2>/dev/null || mktemp -t 'elektraenv'`
+
+EXPORTS=mktempdir-elektra
 
 if [ ! -d "$EXPORTS" ]
 then

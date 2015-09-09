@@ -6,7 +6,7 @@ echo
 
 check_version
 
-FILE=`mktemp`
+FILE=mktempfile-elektra
 for PLUGIN in $PLUGINS
 do
 	case "$PLUGIN" in
