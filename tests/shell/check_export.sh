@@ -16,10 +16,10 @@ cleanup()
 }
 
 [ -e /dev/stdout ]
-exit_if_fail "For export/import /dev (and /proc) must be mounted"
+exit_if_fail "For export/import /dev must be mounted"
 
-[ -e /proc/self/fd/0 ]
-exit_if_fail "For export/import /proc (and /dev) must be mounted"
+[ -e /dev/stdin ]
+exit_if_fail "For export/import /dev must be mounted"
 
 for PLUGIN in $PLUGINS
 do
