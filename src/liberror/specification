@@ -660,3 +660,27 @@ description:python warning
 severity:warning
 ingroup:plugin
 module:python
+
+number:113
+description:Libgcrypt failed to initialize due to a version mismatch.
+severity:normal
+ingroup:plugin
+module:crypto
+
+number:114
+description:Failed to set up the crypto handle correctly.
+severity:normal
+ingroup:plugin
+module:crypto
+
+number:115
+description:Encryption failed due to an error reported by the backend.
+severity:normal
+ingroup:plugin
+module:crypto
+
+number:116
+description:Decryption failed due to an error reported by the backend.
+severity:normal
+ingroup:plugin
+module:crypto
