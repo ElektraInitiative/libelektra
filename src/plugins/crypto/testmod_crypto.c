@@ -58,7 +58,7 @@ const unsigned char expectedCipherText[] =
  * Helper function that returns zero (0) if the contents of the buffers b1 and b2 match
  * and non-zero otherwise.
  */
-int cmp_buffers(const unsigned char *b1, size_t len1, const unsigned char* b2, size_t len2)
+static int cmp_buffers(const unsigned char *b1, size_t len1, const unsigned char* b2, size_t len2)
 {
 	unsigned int i;
 
@@ -150,18 +150,19 @@ void test_enc_and_dec_with_string()
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding", KEY_END);
 	keySetString(k, original);
 
-	// step 1 - encryption
+	// 1. encryption
 	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
 	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
 
-	// step 2 - decryption
+	// 2. decryption
 	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
 	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
 	succeed_if( elektraCryptoDecrypt(handle, k) == 1, "decryption failed" );
 	elektraCryptoHandleDestroy(handle);
 
+	// 3. check result
 	succeed_if( keyIsString(k) == 1, "key is of non-string type");
 	succeed_if( keyGetString(k, content, sizeof(content)) > 0, "could not retrieve the value of the key" );
 	succeed_if( strcmp(original, content) == 0, "decrypted value differs from original");
