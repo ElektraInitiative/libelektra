@@ -28,13 +28,13 @@ The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet
 `kdb merge [options] ourpath theirpath basepath resultpath`  
 
 * ourpath:
-  Path to the keyset to serve as ours  
+  Path to the keyset to serve as `ours`  
 
 * theirpath:
-  path to the keyset to serve as theirs  
+  path to the keyset to serve as `theirs`  
 
 * basepath:
-  path to the base keyset  
+  path to the `base` keyset  
 
 * resultpath:
   path without keys where the merged keyset will be saved    
@@ -50,10 +50,10 @@ Currently the following strategies exist:
    Merge only those keys where just one side deviates from base (default).  
 
  * ours:
-   Whenever a conflict exists, user our version.  
+   Whenever a conflict exists, use our version.  
 
  * theirs:
-   Whenever a conflict exists, user their version.  
+   Whenever a conflict exists, use their version.  
     
  * cut:
    Removes existing keys below the resultpath and repalces them with the merged keyset.  
