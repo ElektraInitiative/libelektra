@@ -1,5 +1,10 @@
 kdb-cp(1) -- Copy keys within the key database
 ================================
+## DESCRIPTION
+This command copies key(s) in the Key database.  
+You can copy keys to another directory within the database or even below another key.  
+Note that you can't copy a key below itself.  
+
 
 ## USAGE
 `kdb cp <source> <dest>`  
@@ -13,6 +18,10 @@ To copy a KeySet:
 
 To copy a single key:  
 	`kdb cp user\example\key1 user\example\key2`  
+
+To copy keys below an aexisting key:  
+	`kdb cp -r user\example user\example\key1`  
+Note that in this example, all keys in the example directory will be copied below `key1` EXCEPT `key1`.  
 	
 
 
