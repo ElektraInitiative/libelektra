@@ -1,6 +1,9 @@
 #!/bin/sh
 
-GETENV=@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektragetenv.so
+GETENV="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektragetenv.so"
+
+# so that kdb elektrify-getenv getenv works!
+export PATH="@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@:$PATH"
 
 if [ "$#" -eq 0 ]
 then
