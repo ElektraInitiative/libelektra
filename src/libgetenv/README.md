@@ -162,7 +162,7 @@ If you use the standard resolvers, the bug won't have any effect.
 
 For illustration this section gives some more examples.
 
-    elektrify-getenv man man --elektra:MANWIDTH=40
+    kdb elektrify-getenv man man --elektra:MANWIDTH=40
 
 Will use MANWIDTH 40 for this invocation of man man.
 This feature is handy, if an option is only available
@@ -172,6 +172,8 @@ to set (e.g. in Makefiles)-
 
 
     kdb set user/env/override/MANOPT -- "--regex -LC"
+    kdb elektrify-getenv getenv MANOPT   # to check if it is set as expected
+    kdb getenv MANOPT   # if /etc/ld.so.preload is active
 
 Will permanently and user-wide change MANOPT to include --regex, and -LC so
 that regular expressions will be used (note `man echo` will return many man
