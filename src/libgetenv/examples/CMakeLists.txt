@@ -8,6 +8,7 @@ macro (do_example source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
+	install(TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	target_link_elektra(${source})
 	target_link_elektratools(${source})
