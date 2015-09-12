@@ -79,7 +79,7 @@ the application will be called with `<application> -V -L`.
    Call clearenv(3) before entering main.
    This is a recommended security feature.
    Elektra itself, if configured that way, will still be able to use the environment.
- * `--elektra-reload_timeout=time_in_ms`, `ELEKTRA_RELOAD_TIMEOUT` or `/env/option/reload_timeout`:
+ * `--elektra-reload-timeout=time_in_ms`, `ELEKTRA_RELOAD_TIMEOUT` or `/env/option/reload_timeout`:
    Activate a timeout based feature when a time is given in ms (and is not 0).
 
 Internal Options are available in three different variants:

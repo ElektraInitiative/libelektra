@@ -99,6 +99,14 @@ KeySet *elektraDocu = ksNew(20,
 	KS_END);
 
 pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+
+
+int to_(int c)
+{
+	if (c == '-') return '_';
+	return c;
+}
+
 } // anonymous namespace
 
 
@@ -152,6 +160,7 @@ void addOverride(string kv)
 
 void addOption(string kv)
 {
+	std::transform(kv.begin(), kv.end(), kv.begin(), to_);
 	stringstream ss(kv);
 	string k, v;
 	getline(ss, k, '=');
