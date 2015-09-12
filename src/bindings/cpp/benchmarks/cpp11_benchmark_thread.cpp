@@ -1277,6 +1277,9 @@ for (long long i=0; i<iterations; ++i)
 }
 
 #include <unistd.h>
+#ifdef _WIN32
+# include <winsock2.h>
+#endif
 
 void computer_info()
 {
