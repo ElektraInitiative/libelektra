@@ -72,6 +72,8 @@ typedef struct _resolverHandles resolverHandles;
 
 struct _resolverHandles
 {
+	resolverHandle spec;
+	resolverHandle dir;
 	resolverHandle user;
 	resolverHandle system;
 };
@@ -79,8 +81,25 @@ struct _resolverHandles
 static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 {
 	resolverHandles *pks = elektraPluginGetData(handle);
-	if (!strncmp(keyName(parentKey), "user", 4)) return &pks->user;
-	else return &pks->system;
+	switch (keyGetNamespace(parentKey))
+	{
+	case KEY_NS_SPEC:
+		return &pks->spec;
+	case KEY_NS_DIR:
+		return &pks->dir;
+	case KEY_NS_USER:
+		return &pks->user;
+	case KEY_NS_SYSTEM:
+		return &pks->system;
+	case KEY_NS_PROC:
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
+	}
+	// ELEKTRA_ASSERT(0 && "namespace not valid for resolving");
+	return 0;
 }
 
 
@@ -111,12 +130,17 @@ static void escapePath(char *home)
 	}
 }
 
-static void elektraResolveSpec(resolverHandle *p)
+static void elektraResolveSpec(resolverHandle *p, Key *errorKey)
 {
 	char * system = getenv("ALLUSERSPROFILE");
 
-	if (!system) system = "";
+	if (!system)
+	{
+		system = "";
+		ELEKTRA_ADD_WARNING(90, errorKey, "could not get ALLUSERSPROFILE for spec, using /");
+	}
 	else escapePath(system);
+
 
 	if (p->path[0] == '/')
 	{
@@ -182,13 +206,15 @@ static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 	}
 	else
 	{
-		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
+		strcpy(home, "");
+		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home (CSIDL_PROFILE), using /");
 	}
 # else
 	char * home = (char*) getenv("HOME");
 	if(!home)
 	{
-		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home");
+		home = "";
+		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home, using /");
 	}
 # endif
 
@@ -197,11 +223,15 @@ static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 	strncat (p->filename, p->path, PATH_MAX);
 }
 
-static void elektraResolveSystem(resolverHandle *p)
+static void elektraResolveSystem(resolverHandle *p, Key *errorKey)
 {
 	char * system = getenv("ALLUSERSPROFILE");
 
-	if (!system) system = "";
+	if (!system)
+	{
+		system = "";
+		ELEKTRA_ADD_WARNING(90, errorKey, "could not get ALLUSERSPROFILE, using /");
+	}
 	else escapePath(system);
 
 	if (p->path[0] == '/')
@@ -224,31 +254,6 @@ static void elektraResolveSystem(resolverHandle *p)
 	return;
 }
 
-void elektraWresolveFileName(elektraNamespace ns, resolverHandle *p, Key *warningsKey)
-{
-	switch (ns)
-	{
-	case KEY_NS_SPEC:
-		elektraResolveSpec(p);
-		break;
-	case KEY_NS_DIR:
-		elektraResolveDir(p, warningsKey);
-		break;
-	case KEY_NS_USER:
-		elektraResolveUser(p, warningsKey);
-		break;
-	case KEY_NS_SYSTEM:
-		elektraResolveSystem(p);
-		break;
-	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
-	case KEY_NS_NONE:
-	case KEY_NS_META:
-	case KEY_NS_CASCADING:
-		break;
-	}
-}
-
 int elektraWresolverOpen(Plugin *handle, Key *errorKey)
 {
 	KeySet *resolverConfig = elektraPluginGetConfig(handle);
@@ -261,12 +266,31 @@ int elektraWresolverOpen(Plugin *handle, Key *errorKey)
 	}
 
 	resolverHandles *p = malloc(sizeof(resolverHandles));
-	resolverInit (&p->user, path);
-	resolverInit (&p->system, path);
 
-	for (elektraNamespace i=KEY_NS_FIRST; i<=KEY_NS_LAST; ++i)
+	// switch is only present to forget no namespace and to get
+	// a warning whenever a new namespace is present.
+	// (also used below in close)
+	// In fact its linear code executed:
+	switch (KEY_NS_SPEC)
 	{
-		elektraWresolveFileName(i, &p->system, errorKey);
+	case KEY_NS_SPEC:
+		resolverInit (&p->spec, path);
+		elektraResolveSpec(&p->spec, errorKey);
+	case KEY_NS_DIR:
+		resolverInit (&p->dir, path);
+		elektraResolveDir(&p->dir, errorKey);
+	case KEY_NS_USER:
+		resolverInit (&p->user, path);
+		elektraResolveUser(&p->user, errorKey);
+	case KEY_NS_SYSTEM:
+		resolverInit (&p->system, path);
+		elektraResolveSystem(&p->system, errorKey);
+	case KEY_NS_PROC:
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
 	}
 
 	elektraPluginSetData(handle, p);
@@ -280,8 +304,23 @@ int elektraWresolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 
 	if (ps)
 	{
-		resolverClose(&ps->user);
-		resolverClose(&ps->system);
+		switch (KEY_NS_SPEC)
+		{
+		case KEY_NS_SPEC:
+			resolverClose(&ps->spec);
+		case KEY_NS_DIR:
+			resolverClose(&ps->dir);
+		case KEY_NS_USER:
+			resolverClose(&ps->user);
+		case KEY_NS_SYSTEM:
+			resolverClose(&ps->system);
+		case KEY_NS_PROC:
+		case KEY_NS_EMPTY:
+		case KEY_NS_NONE:
+		case KEY_NS_META:
+		case KEY_NS_CASCADING:
+			break;
+		}
 
 		free (ps);
 		elektraPluginSetData(handle, 0);

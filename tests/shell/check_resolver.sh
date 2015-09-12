@@ -35,21 +35,23 @@ check_resolver()
 		PLUGIN=`echo "$PLUGINS_NEWLINES" | grep -m 1 "resolver_.*_.*_$2.*"`
 	fi
 
-	if [ -z "$PLUGIN" ]
+	if [ "$2" = "w" ]
 	then
-		echo "No plugin matching $2 for namespace $1"
-		return
+		PLUGIN=wresolver
 	fi
+
+	[ -n "$PLUGIN" ]
+	exit_if_fail "No plugin matching $2 for namespace $1"
 
 	MOUNTPOINT=$1$ROOT_MOUNTPOINT
 
 	$KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump 1>/dev/null
-	succeed_if "could not mount root: $3 at $MOUNTPOINT with resolver $PLUGIN"
+	succeed_if "could not mount root using: $KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
 
 	FILE=`$KDB file -N $1 -n $ROOT_MOUNTPOINT 2> /dev/null`
 	echo "For $1 $2 $3 we got $FILE"
 	[ "x$FILE"  = "x$4" ]
-	succeed_if "resolving of $MOUNTPOINT did not yield $4"
+	succeed_if "resolving of $MOUNTPOINT did not yield $4 but $FILE"
 
 	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
 		KEY=$ROOT_MOUNTPOINT/key
@@ -106,7 +108,51 @@ check_resolver system x app/config_file /etc/xdg/app/config_file
 unset XDG_CONFIG_HOME
 check_resolver system x app/config_file /etc/xdg/app/config_file
 
-fi
+OD=`pwd`
+cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
+check_resolver dir x /a /tmp/a
+check_resolver dir x /a/b /tmp/a/b
+check_resolver dir x a /tmp/@KDB_DB_DIR@/a
+check_resolver dir x a/b /tmp/@KDB_DB_DIR@/a/b
+cd $OD
+
+fi # end of XDG tests
+
+
+
+
+
+
+if is_plugin_available wresolver
+then
+
+export ALLUSERSPROFILE="/C"
+check_resolver spec w /app/config_file /C/app/config_file
+check_resolver spec w app/config_file /C@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/app/config_file
+check_resolver system w /app/config_file /C/app/config_file
+check_resolver system w app/config_file /C@KDB_DB_SYSTEM@/app/config_file
+unset ALLUSERSPROFILE
+
+export HOME="/D"
+check_resolver user w /app/config_file /D//app/config_file
+check_resolver user w app/config_file /D/app/config_file #@KDB_DB_USER@ not impl
+unset HOME
+
+OD=`pwd`
+cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
+check_resolver dir w /a /tmp//a
+check_resolver dir w /a/b /tmp//a/b
+check_resolver dir w a /tmp/a #@KDB_DB_DIR@ not impl
+check_resolver dir w a/b /tmp/a/b #@KDB_DB_DIR@ not impl
+cd $OD
+
+fi # end of wresolver tests
+
+
+
+
+
+
 
 check_resolver system b x @KDB_DB_SYSTEM@/x
 check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
