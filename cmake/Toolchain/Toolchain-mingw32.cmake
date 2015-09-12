@@ -6,12 +6,6 @@ SET(CMAKE_C_COMPILER i586-mingw32msvc-gcc)
 SET(CMAKE_CXX_COMPILER i586-mingw32msvc-g++)
 SET(CMAKE_RC_COMPILER i586-mingw32msvc-windres)
 
-# here is the target environment located
-# make sure also dlfcn.h and libdl.a is found there
-# you get it from https://github.com/dlfcn-win32/dlfcn-win32
-SET(CMAKE_FIND_ROOT_PATH /usr/i586-mingw32msvc)
-SET(PLATFORM_REQUIRE_DL 1)
-
 # adjust the default behaviour of the FIND_XXX() commands:
 # search headers and libraries in the target environment, search 
 # programs in the host environment
