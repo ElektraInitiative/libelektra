@@ -14,6 +14,7 @@ then
 	echo "dump available"
 else
 	echo "dump not available, skipping tests"
+	nbSkip=$(( $nbSkip + 100 ))
 	exit 0
 fi
 
@@ -37,11 +38,20 @@ check_resolver()
 
 	if [ "$2" = "w" ]
 	then
-		PLUGIN=wresolver
+		if is_plugin_available wresolver
+		then
+			PLUGIN=wresolver
+		else
+			PLUGIN=""
+		fi
 	fi
 
-	[ -n "$PLUGIN" ]
-	exit_if_fail "No plugin matching $2 for namespace $1"
+	if [ -z "$PLUGIN" ]
+	then
+		nbSkip=$(( $nbSkip + 1 ))
+		echo "skipping test because plugin variant $2 is missing, for $2 with $3"
+		return
+	fi
 
 	MOUNTPOINT=$1$ROOT_MOUNTPOINT
 
@@ -76,6 +86,7 @@ unset USER
 if echo "@KDB_DEFAULT_RESOLVER@" | grep "resolver_.*_.*_x.*"
 then
 	echo "skipping tests where XDG_CONFIG_DIRS is manipulated, because default resolver itself would use those paths"
+	nbSkip=$(( $nbSkip + 10 ))
 else
 
 unset XDG_CONFIG_DIRS
@@ -123,8 +134,6 @@ fi # end of XDG tests
 
 
 
-if is_plugin_available wresolver
-then
 
 export ALLUSERSPROFILE="/C"
 check_resolver spec w /app/config_file /C/app/config_file
@@ -146,7 +155,6 @@ check_resolver dir w a /tmp/a #@KDB_DB_DIR@ not impl
 check_resolver dir w a/b /tmp/a/b #@KDB_DB_DIR@ not impl
 cd $OD
 
-fi # end of wresolver tests
 
 
 
