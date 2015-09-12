@@ -2,13 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void doGetenv(const char *name)
-{
-	char *c = getenv(name);
-	printf ("getenv(\"%s\") -> ", name);
-	printf ("%s\n", c?c:"(null)");
-}
-
 int main(int argc, char** argv, char** environ)
 {
 	if (argc == 1)
@@ -16,18 +9,23 @@ int main(int argc, char** argv, char** environ)
 		char** env;
 		for (env = environ; *env != 0; env++)
 		{
-			size_t len = strcspn(*env, "=");
+			const size_t len = strcspn(*env, "=");
 			char name[len+1];
 			strncpy(name, *env, len);
 			name[len] = 0;
-			doGetenv(name);
+			const char *c = getenv(name);
+			printf ("getenv(\"%s\") -> ", name);
+			printf ("%s\n", c);
 		}
 	}
 	else
 	{
 		for (int i=1; i<argc; ++i)
 		{
-			doGetenv(argv[i]);
+			const char *name = argv[i];
+			const char *c = getenv(name);
+			if (!c) return 1;
+			printf ("%s\n", c);
 		}
 	}
 	return 0;
