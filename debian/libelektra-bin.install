@@ -5,6 +5,7 @@ etc/profile.d/kdb
 etc/bash_completion.d/kdb
 usr/lib/elektra/tool_exec/benchmark-createtree
 usr/lib/elektra/tool_exec/elektrify-getenv
+usr/lib/elektra/tool_exec/getenv
 usr/lib/elektra/tool_exec/elektra-merge
 usr/lib/elektra/tool_exec/elektra-mount
 usr/lib/elektra/tool_exec/elektra-umount
