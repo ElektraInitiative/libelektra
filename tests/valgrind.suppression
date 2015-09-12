@@ -22,6 +22,20 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    ...
+   fun:elektraOpen
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:kdbOpen
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
    fun:calloc
    fun:_dlerror_run
    fun:dlsym
