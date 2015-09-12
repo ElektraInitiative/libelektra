@@ -37,20 +37,23 @@ Elektra's variables will be in use immediately for every newly
 started application (no relogin necessary).
 
 To do so, getenv(3) will lookup multiple sources next to searching in the environment
-(environ). As running example will use `getenv("HOME")`:
+(environ). As running example will use `getenv("HOME") -> /path/to/home`:
 
 1. Given commandline parameters will always be preferred (see [OPTIONS](OPTIONS) below).
    
    E.g. `kdb elektrify-getenv <app> --elektra:HOME=/path/to/home`
 2. Then `/env/override/<key>` will be looked up, where <key> is the parameter to `getenv`.
+   If found, the key will be returned, if it is a null pointer, `getenv` will return `NULL`.
    
    E.g. `kdb set user/env/override/HOME /path/to/home`
 3. Then environment will be requested.
    
    E.g. `HOME=/path/to/home kdb elektrify-getenv <application>`
 3. Then `/env/fallback/<key>` will be looked up.
+   If found, the key will be returned, if it is a null pointer, `getenv` will return `NULL`.
    
    E.g. `kdb set user/env/fallback/HOME /path/to/home`
+
 
 
 
@@ -154,6 +157,9 @@ will be used if applications request them, too.
 
 Also note that `--elektra-debug` or `ELEKTRA_DEBUG` does *not* log `getenv(3)` used by plugins
 during the startup-phase.
+
+Commandline Arguments are always to the outmost command, e.g. `nice ls --elektra:COLUMNS=20`
+won't have any effect because only for `nice` `COLUMNS` will be set.
 
 If you use the standard resolvers, the bug won't have any effect.
 
