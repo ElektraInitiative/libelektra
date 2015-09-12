@@ -299,7 +299,7 @@ void applyOptions()
 	Key *k = 0;
 
 	elektraLog.reset();
-	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)))
+	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)) && !keyIsBinary(k))
 	{
 		if (keyGetValueSize(k) > 1)
 		{
@@ -319,14 +319,14 @@ void applyOptions()
 		LOG << endl;
 	}
 
-	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)))
+	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)) && !keyIsBinary(k))
 	{
 		LOG << "clearing the environment" << endl;
 		clearenv();
 	}
 
 	elektraReloadTimeout = std::chrono::milliseconds::zero();
-	if ((k = ksLookupByName(elektraConfig, "/env/option/reload_timeout", 0)))
+	if ((k = ksLookupByName(elektraConfig, "/env/option/reload_timeout", 0)) && !keyIsBinary(k))
 	{
 		LOG << "activate reloading feature" << endl;
 
@@ -335,14 +335,14 @@ void applyOptions()
 		elektraReloadTimeout = std::chrono::milliseconds(v);
 	}
 
-	if ((k = ksLookupByName(elektraConfig, "/env/option/help", 0)))
+	if ((k = ksLookupByName(elektraConfig, "/env/option/help", 0)) && !keyIsBinary(k))
 	{
 		cout << keyString(ksLookupByName(elektraDocu,
 			"system/elektra/modules/elektrify-getenv/infos/description",0)) << endl;
 		exit(0);
 	}
 
-	if ((k = ksLookupByName(elektraConfig, "/env/option/version", 0)))
+	if ((k = ksLookupByName(elektraConfig, "/env/option/version", 0)) && !keyIsBinary(k))
 	{
 		printVersion();
 		exit(0);
