@@ -52,6 +52,12 @@ DATE=`date "+%b %d %H:%M"`
 KDB_DEFAULT_STORAGE="@KDB_DEFAULT_STORAGE@"
 KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
+KDB_GETENV=`kdb elektrify-getenv getenv KDB`
+
+if [ $? -eq 0 ]
+then
+	KDB=${KDB_GETENV};
+fi
 
 #
 # ASSERTIONS
@@ -102,6 +108,12 @@ check_version()
 {
 	echo "Check if script tests the correct version"
 
+	if [ "x`kdb elektrify-getenv getenv CHECK_VERSION`" = "xNO" ]
+	then
+		return 0
+	fi
+
+	#if no kdb elektrify-getenv getenv is installed:
 	if [ "x$CHECK_VERSION" = "xNO" ]
 	then
 		return 0
@@ -197,18 +209,6 @@ is_plugin_available()
 	done
 	return 1
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
