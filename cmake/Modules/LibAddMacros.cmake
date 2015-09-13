@@ -1,5 +1,3 @@
-include(LibParseArguments)
-
 # Copy a file from source dir to binary dir
 #
 # copy_file or directory
@@ -107,11 +105,12 @@ endmacro()
 # and adds a test
 macro (add_plugintest testname)
 	if (BUILD_TESTING AND (BUILD_STATIC OR BUILD_FULL))
-		parse_arguments(ARG
-			"" # no arguments
-			"MEMLEAK" #options
+		cmake_parse_arguments (ARG
+			"MEMLEAK" # optional keywords
+			""        # one value keywords
+			""        # multi value keywords
 			${ARGN}
-			)
+		)
 		set (TEST_SOURCES
 				$<TARGET_OBJECTS:cframework>
 				${ARG_UNPARSED_ARGUMENTS}
@@ -141,11 +140,12 @@ endmacro (add_plugintest)
 # Add a test for cpp plugins
 macro (add_cpp_plugintest testname)
 	if (BUILD_TESTING)
-		parse_arguments(ARG
-			"" # no arguments
-			"MEMLEAK" #options
+		cmake_parse_arguments (ARG
+			"MEMLEAK" # optional keywords
+			""        # one value keywords
+			""        # multi value keywords
 			${ARGN}
-			)
+		)
 		set (source "testmod_${testname}")
 		include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 		include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
@@ -301,7 +301,7 @@ endmacro (remove_tool)
 #
 # copied from http://www.cmake.org/Wiki/CMakeMacroListOperations
 MACRO(list_filter)
-  parse_arguments(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
+  cmake_parse_arguments(LIST_FILTER "" "OUTPUT_VARIABLE" "" ${ARGV})
   # Check arguments.
   LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
   IF(${LIST_FILTER_default_length} EQUAL 0)
