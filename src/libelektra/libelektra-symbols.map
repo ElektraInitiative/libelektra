@@ -1,0 +1,9 @@
+{
+	global:
+		libelektra*;
+		elektra*;
+		kdb*;
+		key*;
+		ks*;
+	local: *;
+};
