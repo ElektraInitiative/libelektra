@@ -3,7 +3,7 @@
 _Elektra provides a universal and secure framework to store configuration
 parameters in a global, hierarchical key database._
 
-![Elektra](doc/images/circle.jpg)
+<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="50" />
 
 The core is a small library implemented in C. The plugin-based framework fulfills many
 configuration-related tasks to avoid any unnecessary code duplication
