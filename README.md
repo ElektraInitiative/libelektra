@@ -23,9 +23,9 @@ or one of the [authors](doc/AUTHORS).
 
 ## Quickstart ##
 
-### Installation ###
-
 If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
+
+### Installation ###
 
 The preferred way to install Elektra is by using packages provided for
 your distribution. On Debian/Ubuntu, this can be done by running the following
