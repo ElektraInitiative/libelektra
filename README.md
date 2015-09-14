@@ -15,59 +15,49 @@ applications' configurations, leveraging easy application integration.
 [Why should I use Elektra?](#goals)
 
 
-## Quickstart ##
+## Contact ##
 
-If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
+Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+or one of the [authors](doc/AUTHORS).
+
+
+## Quickstart ##
 
 ### Installation ###
 
+If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
+
 The preferred way to install Elektra is by using packages provided for
-your distribution:
- - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
- - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
- - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
- - [Debian](https://packages.debian.org/de/jessie/libelektra4)
- - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
+your distribution. On Debian/Ubuntu, this can be done by running the following
+command:
 
-Available, but not up-to-date (Version 0.7):
- - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
- - [Linux Mint](http://community.linuxmint.com/software/view/elektra)
+```bash
+sudo apt-get install elektra-bin libelektra-dev
+```
 
-For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
-Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
-For Debian stable amd64 we provide latest builds. Just add following lines to
-sources.list in wheezy:
+This will install the Elektra tools as well as everything needed to develop
+with Elektra.
 
-        deb     [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
-        deb-src [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
+If you're not running Debian/Ubuntu, check out the [package list](#packages),
+[download elektra directly](#download) or [compile it yourself](#compile).
 
-If there are no packages available for your distribution, see the
-[installation document](doc/INSTALL.md).
+### Usage ###
 
-### Download ###
+Now that we have Elektra installed, we can start using the `kdb` command and
+the `qt-gui`.
 
-Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
+The easiest way to use Elektra is running the `qt-gui`:
 
-You can clone the latest version of Elektra by running: `git clone https://github.com/ElektraInitiative/libelektra.git`
+```bash
+kdb qt-gui
+```
 
-Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
+Or you can use the `kdb` command to configure your applications:
 
-         ftp://ftp.libelektra.org/elektra/releases/
-
-### Compiling ###
-
-After downloading or cloning Elektra, `cd` to the directory and run the
-following commands to compile it:
-
- * `mkdir -p build`
- * `cd build`
- * `cmake ..`
- * `make`
-
-Then you can use `sudo make install` to install it.
-
-You can also use the [`./configure`](configure) command to generate a `cmake`
-command with special options.
+```bash
+kdb set user/test "something"
+kdb get user/test
+```
 
 
 ## Goals ##
@@ -142,10 +132,57 @@ The API documentation can be found
 [here](http://doc.libelektra.org/api/current/html).
 
 
-## Contact ##
+## Sources ##
 
-Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-or one of the [authors](doc/AUTHORS).
+### Packages ###
+
+The preferred way to install Elektra is by using packages provided for
+your distribution:
+ - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
+ - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
+ - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
+ - [Debian](https://packages.debian.org/de/jessie/libelektra4)
+ - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
+
+Available, but not up-to-date (Version 0.7):
+ - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
+ - [Linux Mint](http://community.linuxmint.com/software/view/elektra)
+
+For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
+Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
+For Debian stable amd64 we provide latest builds. Just add following lines to
+sources.list in wheezy:
+
+        deb     [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
+        deb-src [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
+
+If there are no packages available for your distribution, see the
+[installation document](doc/INSTALL.md).
+
+### Download ###
+
+Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
+
+You can clone the latest version of Elektra by running: `git clone https://github.com/ElektraInitiative/libelektra.git`
+
+Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
+
+         ftp://ftp.libelektra.org/elektra/releases/
+
+### Compiling ###
+
+After downloading or cloning Elektra, `cd` to the directory and run the
+following commands to compile it:
+
+ * `mkdir -p build`
+ * `cd build`
+ * `cmake ..`
+ * `make`
+
+Then you can use `sudo make install` to install it.
+
+You can also use the [`./configure`](configure) command to generate a `cmake`
+command with special options.
 
 
 ## Build Server ##
