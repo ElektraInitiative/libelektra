@@ -56,6 +56,7 @@ list (APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h")
 #the targets built to export
 set (targets_built)
 
+SET(__symbols_file ${CMAKE_CURRENT_SOURCE_DIR}/libelektra-symbols.map)
 
 if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
@@ -68,18 +69,22 @@ if (BUILD_SHARED)
 	include_directories (${elektra-shared_INCLUDES})
 
 	set_target_properties (elektra PROPERTIES
-			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-	set_target_properties (elektra PROPERTIES
-			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-	set_target_properties (elektra PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-
-	#search only in the prefix the user decided to install elektra
-	#(e.g. /usr/local/)
-	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION}
+		CLEAN_DIRECT_OUTPUT 1
+	)
+	if (${LD_ACCEPTS_VERSION_SCRIPT})
+		set_target_properties (elektra PROPERTIES
+			LINK_FLAGS "-Wl,--version-script=${__symbols_file}"
+		)
+	endif ()
 
 	#RPATH settings, see http://www.itk.org/Wiki/CMake_RPATH_handling
 	#those settings are needed to find the plugins at runtime even without ld.so.conf
-	set_target_properties ( elektra PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
+	#search only in the prefix the user decided to install elektra
+	#(e.g. /usr/local/)
+	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	set_target_properties (elektra PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
 	install (TARGETS elektra DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 
@@ -110,11 +115,16 @@ if (BUILD_FULL)
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
 	set_target_properties (elektra-full PROPERTIES
-			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
-	set_target_properties (elektra-full PROPERTIES
-			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-	set_target_properties (elektra-full PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-	set_target_properties (elektra-full PROPERTIES LINKER_LANGUAGE CXX)
+		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION}
+		CLEAN_DIRECT_OUTPUT 1
+		LINKER_LANGUAGE CXX
+	)
+	if (${LD_ACCEPTS_VERSION_SCRIPT})
+		set_target_properties (elektra-full PROPERTIES
+			LINK_FLAGS "-Wl,--version-script=${__symbols_file}"
+		)
+	endif ()
 
 	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 
@@ -128,11 +138,16 @@ if (BUILD_STATIC)
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
 
 	set_target_properties (elektra-static PROPERTIES
-			COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC")
-	set_target_properties (elektra-static PROPERTIES
-			VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION})
-	set_target_properties (elektra-static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-	set_target_properties (elektra-static PROPERTIES LINKER_LANGUAGE CXX)
+		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION}
+		CLEAN_DIRECT_OUTPUT 1
+		LINKER_LANGUAGE CXX
+	)
+	if (${LD_ACCEPTS_VERSION_SCRIPT})
+		set_target_properties (elektra-static PROPERTIES
+			LINK_FLAGS "-Wl,--version-script=${__symbols_file}"
+		)
+	endif ()
 
 	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 

@@ -9,11 +9,12 @@
 
 
 macro (add_gtest source)
-	parse_arguments(ARG
-		""
-		"NO_MAIN;NO_TOOLS"
+	cmake_parse_arguments (ARG
+		"NO_MAIN;NO_TOOLS" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
 		${ARGN}
-		)
+	)
 
 	if (BUILD_TESTING)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)

@@ -21,4 +21,9 @@ if (ENABLE_CXX11)
 		get_filename_component (name ${file} NAME_WE)
 		do_benchmark (${name})
 	endforeach (file ${TESTS})
+
+	if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+		# require by gethostname
+		target_link_libraries (cpp11_benchmark_thread "ws2_32")
+	endif ()
 endif (ENABLE_CXX11)

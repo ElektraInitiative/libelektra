@@ -20,4 +20,10 @@ add_plugin(ni
 include_directories(${NI}/include)
 file (GLOB NI_INI_FILES ${NI}/src/tests/*.ini)
 copy_file (${NI_INI_FILES} "${CMAKE_CURRENT_BINARY_DIR}")
-add_plugintest (ni)
+
+# testmod_ni mainly tests nickel functions so we need to
+# link against nickel objects
+add_plugintest (ni ${NI_FILES}
+	INCLUDE_DIRECTORIES
+		${NI}/include
+		${NI}/src/include)

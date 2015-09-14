@@ -1,0 +1,14 @@
+{
+	global:
+		libelektra*;
+		elektra*;
+		kdb*;
+		key*;
+		ks*;
+
+		extern "C++" {
+			*elektra::*;
+			*kdb::*;
+		};
+	local: *;
+};

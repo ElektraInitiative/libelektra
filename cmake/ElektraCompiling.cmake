@@ -35,6 +35,18 @@ endif()
 
 
 #
+# check if -Wl,--version-script linker option is supported
+# TODO: darwin ld only supports -Wl,-exported_symbols_list
+#       + the file syntax is different
+#
+set(__symbols_file "${CMAKE_CURRENT_BINARY_DIR}/test-symbols.map")
+file(WRITE ${__symbols_file} "{ local: *; };\n")
+set(CMAKE_REQUIRED_FLAGS "-Wl,--version-script=${__symbols_file}")
+check_cxx_compiler_flag("" LD_ACCEPTS_VERSION_SCRIPT)
+unset(CMAKE_REQUIRED_FLAGS)
+
+
+#
 # Extra handling/flags for specific compilers/OS
 #
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
