@@ -67,7 +67,7 @@ Backend* elektraTrieLookup(Trie *trie, const Key *key)
 	if (!trie) return 0;
 
 	len = keyGetNameSize(key) + 1;
-	if (len == 1) return 0; // would crash otherwise
+	if (len <= 1) return 0; // would crash otherwise
 	where = elektraMalloc(len);
 	strncpy(where, keyName(key), len);
 	where[len-2] = '/';
@@ -245,18 +245,18 @@ static char* elektraTrieStartsWith(const char *str, const char *substr)
 
 static Backend* elektraTriePrefixLookup(Trie *trie, const char *name)
 {
-	unsigned char idx;
-	void * ret=NULL;
 	if (trie==NULL) return NULL;
 
-	idx=(unsigned char) name[0];
+	unsigned char idx=(unsigned char) name[0];
+	const char * trieText = trie->text[idx];
 
-	if (trie->text[idx]==NULL)
+	if (trieText==NULL)
 	{
 		return trie->empty_value;
 	}
 
-	if (elektraTrieStartsWith((char*)name, (char*)trie->text[idx])==0)
+	void * ret=NULL;
+	if (elektraTrieStartsWith(name, trieText)==0)
 	{
 		ret=elektraTriePrefixLookup(trie->children[idx],name+trie->textlen[idx]);
 	} else {
