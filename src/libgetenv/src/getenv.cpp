@@ -402,6 +402,7 @@ extern "C" int __real_main(int argc, char** argv, char** env);
 
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
+	elektraLockMutex(); // lock for dlsym
 	LOG << "wrapping main" << endl;
 	start.d = dlsym(RTLD_NEXT, "__libc_start_main");
 	sym.d = dlsym(RTLD_NEXT, "getenv");
@@ -410,6 +411,7 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	elektraOpen(&argc, argv);
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 	elektraClose();
+	elektraUnlockMutex();
 	return ret;
 }
 
@@ -573,12 +575,12 @@ char *elektraBootstrapSecureGetEnv(const char *name)
 
 extern "C" char *getenv(const char *name) // throw ()
 {
+	elektraLockMutex();
 	if (!sym.f)
 	{
 		return elektraBootstrapGetEnv(name);
 	}
 
-	elektraLockMutex();
 	char *ret = elektraGetEnv(name, sym.f);
 	elektraUnlockMutex();
 	return ret;
@@ -586,12 +588,12 @@ extern "C" char *getenv(const char *name) // throw ()
 
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
+	elektraLockMutex();
 	if (!ssym.f)
 	{
 		return elektraBootstrapSecureGetEnv(name);
 	}
 
-	elektraLockMutex();
 	char * ret = elektraGetEnv(name, ssym.f);
 	elektraUnlockMutex();
 	return ret;
