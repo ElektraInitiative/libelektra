@@ -120,7 +120,7 @@ Use the appendant Get functions, to be not depend on that internal facts.
 
 	const void *keyValue(const Key *key);
 does not specify whether it is a binary or string, it will just return
-the pointer to it. When Key is a string (check with keyIsString()) at
+the pointer to it. When Key is a string (check with `keyIsString()`) at
 least "" will be returned, see below Return Values for strings.
 For binary data a NULL pointer is also possible
 to distinguish between no data and '\0'.
@@ -175,7 +175,7 @@ There are some functions which return an internal string:
 	const char *keyOwner(const Key *key);  
 	const char *keyComment(const Key *key);  
 
-and in the case that (keyIsBinary(key)==1) also:  
+and in the case that (`keyIsBinary(key)==1`) also:  
 
 	const void *keyValue(const Key *key);  
 
