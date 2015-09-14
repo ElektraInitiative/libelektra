@@ -404,6 +404,14 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 {
 	elektraLockMutex(); // lock for dlsym
 	LOG << "wrapping main" << endl;
+	if (start.d)
+	{ // double wrapping situation, do not reopen, just forward to next __libc_start_main
+		start.d = dlsym(RTLD_NEXT, "__libc_start_main");
+		int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
+		elektraUnlockMutex();
+		return ret;
+	}
+
 	start.d = dlsym(RTLD_NEXT, "__libc_start_main");
 	sym.d = dlsym(RTLD_NEXT, "getenv");
 	ssym.d = dlsym(RTLD_NEXT, "secure_getenv");
