@@ -19,8 +19,3 @@ build*
 
 #ignore emacs backup files
 \#*#
-
-#ignore cmake cache files
-CMakeFiles
-CMakeCache.txt
-DartConfiguration.tcl
