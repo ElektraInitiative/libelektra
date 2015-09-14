@@ -55,9 +55,18 @@ kdb qt-gui
 Or you can use the `kdb` command to configure your applications:
 
 ```bash
-kdb set user/test "something"
-kdb get user/test
+kdb set user/env/override/HTTP_PROXY "http://my.proxy:8080"
 ```
+
+This will set the `HTTP_PROXY` environment variable to `http://my.proxy:8080`.
+Configuration can be retrieved with `kdb get`:
+
+```bash
+kdb get user/env/override/HTTP_PROXY
+```
+
+For more information about environment variables and elektra, see
+[src/libgetenv/README.md](src/libgetenv/README.md)
 
 
 ## Goals ##
