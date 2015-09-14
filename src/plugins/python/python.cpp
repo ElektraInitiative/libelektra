@@ -11,15 +11,41 @@
 # include "kdbconfig.h"
 #endif
 
-#include "python.h"
+#include "python.hpp"
+#include <key.hpp>
+#include <keyset.hpp>
+#include <Python.h>
 #include <libgen.h>
 #include <pthread.h>
-#include <Python.h>
+#include <iostream>
+#include "runtime.h"
+
+using namespace ckdb;
 
 #define MODULE_NAME "python"
 
+static PyObject *Python_fromSWIG(ckdb::Key *key)
+{
+	swig_type_info *ti = SWIG_TypeQuery("kdb::Key *");
+	if (key == NULL || ti == NULL)
+		return Py_None;
+	return SWIG_NewPointerObj(new kdb::Key(key), ti, 0);
+}
+
+static PyObject *Python_fromSWIG(ckdb::KeySet *keyset)
+{
+	swig_type_info *ti = SWIG_TypeQuery("kdb::KeySet *");
+	if (keyset == NULL || ti == NULL)
+		return Py_None;
+	return SWIG_NewPointerObj(new kdb::KeySet(keyset), ti, 0);
+}
+
+extern "C"
+{
+
 typedef struct
 {
+	PyObject *kdbModule;
 	PyObject *pModule;
 } moduleData;
 
@@ -64,13 +90,13 @@ static int Python_CallFunction_Int(PyObject *object, PyObject *args)
 	PyObject *res = Python_CallFunction(object, args);
 	if (!res)
 	{
-		printf("Error while calling python function\n");
+		std::cerr << "Error while calling python function" << std::endl;
 		PyErr_Print();
 	}
 	else
 	{
 		if (!PyLong_Check(res))
-			printf("Error: return value is no integer\n");
+			std::cerr << "Error: return value is no integer" << std::endl;
 		else
 			ret = PyLong_AsLong(res);
 	}
@@ -85,27 +111,21 @@ static int Python_AppendToSysPath(const char *path)
 	if (path == NULL)
 		return 0;
 
-#define _APPENDTOSYS_STR \
-		"import sys\n" \
-		"if not '%s' in sys.path:\n" \
-		"	sys.path.append ('%s')\n"
-
-	char *buf = malloc(sizeof(_APPENDTOSYS_STR) + 2*strlen(path) - 2*2 + 1);
-	sprintf(buf, _APPENDTOSYS_STR, path, path);
+	std::ostringstream appendcmd;
+	appendcmd << "import sys\n" \
+	"if not '" << path << "' in sys.path:\n" \
+	"	sys.path.append ('" << path << "')\n";
 
 	PyGILState_STATE gstate = PyGILState_Ensure();
-
-	int ret = (PyRun_SimpleString(buf) == 0);
-
+	int ret = (PyRun_SimpleString(appendcmd.str().c_str()) == 0);
 	PyGILState_Release(gstate);
-	free(buf);
 	return ret;
 }
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static unsigned open_cnt = 0;
 
-int elektraPythonOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
+int elektraPythonOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	printf("[ELEKTRA] open -->\n");
 	KeySet *config = elektraPluginGetConfig(handle);
@@ -113,6 +133,7 @@ int elektraPythonOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	/* success if no script to execute */
 	if (script == NULL || keyString(script) == NULL)
 		return 0;
+	printf("open handle=%p\n", handle);
 
 	/* initialize python interpreter - only once */
 	pthread_mutex_lock(&mutex);
@@ -134,10 +155,19 @@ int elektraPythonOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	const char *dname = dirname(tmpScript);
 	if (!Python_AppendToSysPath(dname))
 	{
-		printf("ERROR: Unable to extend sys.path");
+		std::cerr << "ERROR: Unable to extend sys.path" << std::endl;
 		return -1;
 	}
 	free(tmpScript);
+
+	/* import kdb */
+	PyObject *kdbModule = Python_ImportModule("kdb");
+	if (kdbModule == NULL)
+	{
+		std::cerr << "ERROR: Failed to import kdb module" << std::endl;
+		PyErr_Print();
+		return -1;
+	}
 
 	/* import module/script */
 	tmpScript = strdup(keyString(script));
@@ -149,14 +179,15 @@ int elektraPythonOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	PyObject *pModule = Python_ImportModule(bname);
 	if (pModule == NULL)
 	{
-		printf("ERROR: Failed to import module\n");
+		std::cerr << "ERROR: Failed to import python module" << std::endl;
 		PyErr_Print();
 		return -1;
 	}
 	free(tmpScript);
 
-	/* store module */
-	moduleData *data = malloc(sizeof(moduleData));
+	/* store modules */
+	moduleData *data = new moduleData;
+	data->kdbModule = kdbModule;
 	data->pModule = pModule;
 	elektraPluginSetData(handle, data);
 
@@ -166,7 +197,11 @@ int elektraPythonOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	PyObject *func = PyObject_GetAttrString(pModule, "elektraOpen");
 	if (func)
 	{
-		ret = Python_CallFunction_Int(func, NULL);
+		PyObject *pyErrorKey = Python_fromSWIG(errorKey);
+		PyObject *args = Py_BuildValue("(O)", pyErrorKey);
+		ret = Python_CallFunction_Int(func, args);
+		Py_DECREF(pyErrorKey);
+		Py_DECREF(args);
 		Py_DECREF(func);
 	}
 	PyGILState_Release(gstate);
@@ -174,13 +209,15 @@ int elektraPythonOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	return ret;
 }
 
-int elektraPythonClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
+int elektraPythonClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	printf("[ELEKTRA] <-- close\n");
-	moduleData *data = elektraPluginGetData(handle);
+	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
 	if (data == NULL)
 		return 0;
+	printf("close handle=%p\n", handle);
 
+	/* call python function */
 	int ret = 0;
 	PyGILState_STATE gstate = PyGILState_Ensure();
 	if (data->pModule != NULL)
@@ -188,32 +225,43 @@ int elektraPythonClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 		PyObject *func = PyObject_GetAttrString(data->pModule, "elektraClose");
 		if (func)
 		{
-			ret = Python_CallFunction_Int(func, NULL);
+			PyObject *pyErrorKey = Python_fromSWIG(errorKey);
+			PyObject *args = Py_BuildValue("(O)", pyErrorKey);
+			ret = Python_CallFunction_Int(func, args);
+			Py_DECREF(pyErrorKey);
+			Py_DECREF(args);
 			Py_DECREF(func);
 		}
 
-		Py_XDECREF(data->pModule);
+		Py_DECREF(data->pModule);
 	}
+
+	Py_XDECREF(data->kdbModule);
+
 	PyGILState_Release(gstate);
 
 	/* destroy python if plugin isn't used anymore */
+	printf("destroying python\n");
 	pthread_mutex_lock(&mutex);
 	open_cnt--;
 	if (!open_cnt && Py_IsInitialized())
 		Py_Finalize();
 	pthread_mutex_unlock(&mutex);
 
-	free(data);
+	delete data;
 	return ret;
 }
 
-int elektraPythonGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraPythonGet(ckdb::Plugin *handle ELEKTRA_UNUSED, ckdb::KeySet *returned,
+	ckdb::Key *parentKey)
 {
 #define _MODULE_CONFIG_PATH "system/elektra/modules/" MODULE_NAME
 
 	printf("XXX get %s\n", keyName(parentKey));
+	printf("get handle=%p\n", handle);
 
 	KeySet *config = elektraPluginGetConfig(handle);
+
 	Key *k = ksLookupByName(config, "/path", 0);
 	printf("%p\n", k);
 	if (!strcmp(keyName(parentKey), _MODULE_CONFIG_PATH))
@@ -257,27 +305,29 @@ int elektraPythonGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *paren
 	return 1;
 }
 
-int elektraPythonSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraPythonSet(ckdb::Plugin *handle ELEKTRA_UNUSED,
+	ckdb::KeySet *returned ELEKTRA_UNUSED, ckdb::Key *parentKey ELEKTRA_UNUSED)
 {
 	printf("XXX set\n");
 	return 1;
 }
 
-int elektraPythonError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED,
-	Key *parentKey ELEKTRA_UNUSED)
+int elektraPythonError(ckdb::Plugin *handle ELEKTRA_UNUSED,
+	ckdb::KeySet *returned ELEKTRA_UNUSED, ckdb::Key *parentKey ELEKTRA_UNUSED)
 {
 	printf("XXX error\n");
 	return 0;
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(python)
+ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(python)
 {
-	printf("loaded\n");
 	return elektraPluginExport(MODULE_NAME,
-		ELEKTRA_PLUGIN_OPEN,	&elektraPythonOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraPythonClose,
-		ELEKTRA_PLUGIN_GET,	&elektraPythonGet,
-		ELEKTRA_PLUGIN_SET,	&elektraPythonSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraPythonError,
+		ELEKTRA_PLUGIN_OPEN,  &elektraPythonOpen,
+		ELEKTRA_PLUGIN_CLOSE, &elektraPythonClose,
+		ELEKTRA_PLUGIN_GET,   &elektraPythonGet,
+		ELEKTRA_PLUGIN_SET,   &elektraPythonSet,
+		ELEKTRA_PLUGIN_ERROR, &elektraPythonError,
 		ELEKTRA_PLUGIN_END);
+}
+
 }
