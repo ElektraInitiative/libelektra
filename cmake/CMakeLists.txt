@@ -34,4 +34,7 @@ install ( FILES
 	)
 
 ADD_CUSTOM_TARGET(uninstall
-	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/ElektraUninstall.cmake")
+	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/ElektraUninstall.cmake"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	COMMENT "Uninstalling Elektra from system or DESTDIR"
+	)
