@@ -444,8 +444,6 @@ Backend* elektraMountGetBackend(KDB *handle, const Key *key)
 {
 	if (!key || !strcmp(keyName(key), "")) return handle->defaultBackend;
 
-	if (!handle) return NULL; // TODO: what is the best way to handle this
-	
 	Backend *ret = elektraTrieLookup(handle->trie, key);
 	if (!ret) return handle->defaultBackend;
 	return ret;
