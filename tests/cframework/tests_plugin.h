@@ -17,7 +17,7 @@
 		KeySet *modules = ksNew(0, KS_END); \
 		elektraModulesInit(modules, 0); \
 		Plugin *plugin = elektraPluginOpen(NAME, modules, conf, 0); \
-		exit_if_fail (plugin != 0, "could not open " NAME " plugin"); \
+		succeed_if (plugin != 0, "could not open " NAME " plugin"); \
 
 #define PLUGIN_CLOSE() \
 		elektraPluginClose (plugin, 0); \
