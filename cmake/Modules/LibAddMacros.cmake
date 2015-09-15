@@ -108,7 +108,7 @@ macro (add_plugintest testname)
 		cmake_parse_arguments (ARG
 			"MEMLEAK" # optional keywords
 			""        # one value keywords
-			"INCLUDE_DIRECTORIES" # multi value keywords
+			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;WORKING_DIRECTORY" # multi value keywords
 			${ARGN}
 		)
 		set (TEST_SOURCES
@@ -124,14 +124,15 @@ macro (add_plugintest testname)
 				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 		endif (INSTALL_TESTING)
 		target_link_elektra(testmod_${testname})
+		target_link_libraries (testmod_${testname} ${ARG_LINK_LIBRARIES})
 		set_target_properties (testmod_${testname} PROPERTIES
-				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+				COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;${ARG_COMPILE_DEFINITIONS}")
 		set_property(TARGET testmod_${testname}
 				APPEND PROPERTY INCLUDE_DIRECTORIES
 				${ARG_INCLUDE_DIRECTORIES})
-		add_test (testmod_${testname}
-				"${CMAKE_BINARY_DIR}/bin/testmod_${testname}"
-				"${CMAKE_CURRENT_SOURCE_DIR}"
+		add_test (NAME testmod_${testname}
+				COMMAND "${CMAKE_BINARY_DIR}/bin/testmod_${testname}" "${CMAKE_CURRENT_SOURCE_DIR}"
+				WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
 				)
 		if (ARG_MEMLEAK)
 			set_property(TEST testmod_${testname} PROPERTY
