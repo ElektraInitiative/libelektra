@@ -8,10 +8,10 @@ This command will list the name of all keys below a given path.
 
 ## EXAMPLES
 
-To list all keys below `user\example`:  
-	`kdb ls user\example`  
+To list all keys below `user/example`:  
+	`kdb ls user/example`  
 
-Note: If you would instead like to see the values of the keys below `path` then you should user the `export` command.
+Note: If the user would also like to see the values of the keys below `path` then you should user the `export` command.
 	
 
 
