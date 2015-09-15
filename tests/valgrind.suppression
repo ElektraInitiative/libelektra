@@ -49,3 +49,16 @@
    obj:*/libjvm.so
    obj:*/libjvm.so
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr4
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   ...
+   fun:JNI_CreateJavaVM
+   fun:elektraJniOpen
+   fun:elektraPluginOpen
+}
