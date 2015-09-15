@@ -196,7 +196,7 @@ check_resolver dir b /a/b /tmp/a/b
 check_resolver dir b a /tmp/@KDB_DB_DIR@/a
 check_resolver dir b a/b /tmp/@KDB_DB_DIR@/a/b
 
-T="$(mktempfile_elektra)"
+T="$(mktempdir_elektra)"
 cd $T
 check_resolver dir b /a $T/a
 check_resolver dir b /a/b $T/a/b
