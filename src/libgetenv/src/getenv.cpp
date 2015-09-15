@@ -583,12 +583,12 @@ char *elektraBootstrapSecureGetEnv(const char *name)
 
 extern "C" char *getenv(const char *name) // throw ()
 {
-	elektraLockMutex();
 	if (!sym.f)
 	{
 		return elektraBootstrapGetEnv(name);
 	}
 
+	elektraLockMutex();
 	char *ret = elektraGetEnv(name, sym.f);
 	elektraUnlockMutex();
 	return ret;
@@ -596,12 +596,12 @@ extern "C" char *getenv(const char *name) // throw ()
 
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
-	elektraLockMutex();
 	if (!ssym.f)
 	{
 		return elektraBootstrapSecureGetEnv(name);
 	}
 
+	elektraLockMutex();
 	char * ret = elektraGetEnv(name, ssym.f);
 	elektraUnlockMutex();
 	return ret;
