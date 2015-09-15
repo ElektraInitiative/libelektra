@@ -7,7 +7,7 @@ echo
 check_version
 
 ROOT=$USER_ROOT
-FILE=`mktemp 2>/dev/null || mktemp -t 'libelektra-test'`
+FILE=mktempfile-elektra
 PLUGIN=$PLUGIN
 
 cleanup()
