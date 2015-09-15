@@ -32,7 +32,7 @@ if (JNI_FOUND)
 				)
 
 			include_directories(${CMAKE_CURRENT_BINARY_DIR})
-			add_plugintest(jni)
+			add_plugintest(jni MEMLEAK)
 		endif()
 	else()
 		remove_plugin(jni "jni.h does not define JNI_VERSION_1_8")
