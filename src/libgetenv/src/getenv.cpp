@@ -402,7 +402,6 @@ extern "C" int __real_main(int argc, char** argv, char** env);
 
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
-	elektraLockMutex(); // lock for dlsym
 	LOG << "wrapping main" << endl;
 	if (start.d)
 	{ // double wrapping situation, do not reopen, just forward to next __libc_start_main
@@ -419,7 +418,6 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	elektraOpen(&argc, argv);
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 	elektraClose();
-	elektraUnlockMutex();
 	return ret;
 }
 
