@@ -22,7 +22,7 @@ To uninstall Elektra use:
 
 	sudo make uninstall
 
-or in the build directory:
+or in the build directory (will not honor DESTDIR!):
 
 	xargs rm < install_manifest.txt
 
