@@ -216,6 +216,15 @@ is_plugin_available()
 	return 1
 }
 
+mktempdir_elektra()
+{
+	command mktemp -d 2>/dev/null || mktemp -d -t 'libelektra-test'
+}
+
+mktempfile_elektra()
+{
+	command mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv'
+}
 
 
 

@@ -7,7 +7,7 @@ echo
 check_version
 
 ROOT=$USER_ROOT
-FILE=mktempfile-elektra
+FILE="$(mktempfile_elektra)"
 PLUGIN=$PLUGIN
 
 cleanup()

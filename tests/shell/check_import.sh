@@ -8,7 +8,7 @@ check_version
 
 
 ROOT=$USER_ROOT
-FILE=mktempfile-elektra
+FILE="$(mktempfile_elektra)"
 SIDE=$ROOT/../side_val
 
 cleanup()
