@@ -64,8 +64,10 @@
 # define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
 
-#ifdef ELEKTRA_LOCK_MUTEX
-extern pthread_mutex_t *getElektraResolverMutex();
+#if defined(__APPLE__) && defined(__MACH__)
+static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#else
+static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 #endif
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -215,7 +217,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_trylock(getElektraResolverMutex());
+	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
 	if (ret != 0)
 	{
 		if (errno == EBUSY // for trylock
@@ -246,7 +248,7 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_unlock(getElektraResolverMutex());
+	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
 	if (ret != 0)
 	{
 		char buffer[ERROR_SIZE];
