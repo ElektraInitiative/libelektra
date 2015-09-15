@@ -37,11 +37,11 @@ static void test_helloWorld()
 	succeed_if(plugin->kdbGet (plugin, ks, parentKey) == 10,
 			"call to kdbGet was not successful");
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 20,
-			"call to kdbGet was not successful");
+			"call to kdbSet was not successful");
 	succeed_if(plugin->kdbError (plugin, ks, parentKey) == 30,
-			"call to kdbGet was not successful");
-	succeed_if(output_error (parentKey), "error in kdbSet");
-	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+			"call to kdbError was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet/kdbSet/kdbError");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet/kdbSet/kdbError");
 
 	PLUGIN_CLOSE();
 
