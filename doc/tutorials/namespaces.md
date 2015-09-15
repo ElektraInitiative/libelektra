@@ -2,7 +2,7 @@
 
 ## Definition ##
 
-In Elektra multiple key may refer to the same part of the configuration.
+In Elektra multiple keys may refer to the same part of the configuration.
 A _namespace_ is the part of the key that refers to the key's origin (like a unique path).
 
 Possible sources are: 
