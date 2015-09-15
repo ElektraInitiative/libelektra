@@ -14,13 +14,13 @@ Where `source` is the path of the key(s) you want to copy and `dest` is the path
 ## EXAMPLES
 
 To copy a KeySet:  
-	`kdb cp -r user\example1 user\example2`  
+	`kdb cp -r user/example1 user/example2`  
 
 To copy a single key:  
-	`kdb cp user\example\key1 user\example\key2`  
+	`kdb cp user/example/key1 user/example/key2`  
 
 To copy keys below an aexisting key:  
-	`kdb cp -r user\example user\example\key1`  
+	`kdb cp -r user/example user/example/key1`  
 Note that in this example, all keys in the example directory will be copied below `key1` EXCEPT `key1`.  
 	
 
