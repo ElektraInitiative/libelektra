@@ -618,7 +618,7 @@ void TreeViewModel::synchronize()
 	}
 	catch (KDBException const& e)
 	{
-		emit showMessage(tr("Error"), tr("Synchronizing failed, could not write to configuration."), e.what());
+		emit showMessage(tr("Error"), tr("Synchronizing failed, could not (again) write to configuration."), e.what());
 		return;
 	}
 
