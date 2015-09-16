@@ -21,7 +21,7 @@ Having namespaces enables both admins and users to set specific parts of the app
 Let's say your app requires the following configuration data:
 
 - **sw/org/myapp/policy** - a security policy to be applied
-- **sw/org/myapp/defaultDir** - a place where the application stores its data per default
+- **sw/org/myapp/default_dir** - a place where the application stores its data per default
 
 We now want to enter this configuration by using the **kdb** tool.
 
@@ -34,7 +34,7 @@ The key **system/app/policy** will be stored in the system namespace (probably a
 
 Then the user sets his app directory by issuing:
 
-	kdb set "user/sw/org/myapp/defaultDir" "/home/user/.myapp"
+	kdb set "user/sw/org/myapp/default_dir" "/home/user/.myapp"
 
 This key will be stored in the user namespace (at the home directory) and thus may vary from user to user.
 Elektra loads the value for the current user and passes it to the application.
@@ -49,30 +49,25 @@ You do not need to search every namespace by yourself.
 Just make a lookup for **/sw/org/myapp**, like this:
 
 	kdb get /sw/org/myapp/policy
-	kdb get /sw/org/myapp/defaultDir
+	kdb get /sw/org/myapp/default_dir
 
 When using cascading key the best key will be searched at runtime.
+If you are only interested in the system key, you would use:
+
+	kdb get system/sw/org/myapp/policy
 
 ## How it works in C ##
 
 The idea is to call **kdbGet()** to retrieve the root key for the application.
 Looking for a specific part of the configuration is done by **ksLookup()**.
 
-The documentation provides the following example to illustrate the intended usage:
+The documentation provides the following example to illustrate the intended usage.
+If you want to use a _cascading key_ (starting with /),
+you use the **ksLookup()** or **ksLookupByName()** function
+(also see [doxygen](http://doc.libelektra.org/api/current/html/group__keyset.html#gaa34fc43a081e6b01e4120daa6c112004) ):
 
-	if (kdbGet(handle, "user/sw/org/myapp", myConfig, 0 ) == -1)
-		errorHandler ("Could not get Keys");
-	if (kdbGet(handle, "system/sw/org/myapp", myConfig, 0 ) == -1)
-		errorHandler ("Could not get Keys");
-	if ((myKey = ksLookup(myConfig, key, 0)) == NULL)
-		errorHandler ("Could not Lookup Key");
-
-If you want to use a _cascading key_, you use the **ksLookupByName()** function.
-
-	if (kdbGet(handle, "user/sw/org/myapp", myConfig, parentKey ) == -1)
+	if (kdbGet(handle, myConfig,  p=keyNew("/sw/org/myapp", KEY_END)) == -1)
 		errorHandler ("Could not get Keys", parentKey);
-	if (kdbGet(handle, "system/sw/org/myapp", myConfig, parentKey ) == -1)
-		errorHandler ("Could not get Keys", parentKey);
-	if ((myKey = ksLookupByName (myConfig, "/org/myapp/mykey", 0)) == NULL)
+	if ((myKey = ksLookupByName (myConfig, "/sw/org/myapp/mykey", 0)) == NULL)
 		errorHandler ("Could not Lookup Key");
 
