@@ -120,6 +120,7 @@ set (PLUGINS_LIST_DEP
 	augeas
 	journald
 	jni
+	python
 	)
 
 #
