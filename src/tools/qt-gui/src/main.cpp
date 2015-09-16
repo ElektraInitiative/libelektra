@@ -35,23 +35,9 @@ int main(int argc, char* argv[])
 	QQmlContext* ctxt = engine.rootContext();
 
 	UndoManager manager;
-	kdb::KDB	kdb;
-	kdb::KeySet config;
 	GUIBackend	backend;
 	GUISettings settings;
 	TreeViewModel treeModel;
-	bool loadingError = false;
-	QString exception;
-
-	try
-	{
-		kdb.get(config, "/");
-	}
-	catch(kdb::KDBException const& e)
-	{
-		loadingError = true;
-		exception = e.what();
-	}
 
 	engine.setObjectOwnership(&treeModel, QQmlApplicationEngine::CppOwnership);
 
@@ -60,12 +46,9 @@ int main(int argc, char* argv[])
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("guiSettings", &settings);
 
-	treeModel.populateModel(config);
+	treeModel.populateModel();
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
-
-	if(loadingError)
-		treeModel.showMessage(QObject::tr("Error"), QObject::tr("Populating model failed, could not read from configuration."), exception);
 
 	return app.exec();
 }
