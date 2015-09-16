@@ -98,6 +98,7 @@ end_script()
 	then
 		cleanup
 	fi
+
 	echo -n "$scriptName RESULTS: $nbTest test(s) done"
 	if [ $nbSkip -ne 0 ]
 	then
@@ -229,20 +230,6 @@ mktempfile_elektra()
 {
 	mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv'
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
