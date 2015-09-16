@@ -650,25 +650,31 @@ module:storage
 see:9 75 109
 
 number:111
-description:Libgcrypt failed to initialize due to a version mismatch.
-severity:normal
+description:Failed to initialize the crypto library.
+severity:error
 ingroup:plugin
 module:crypto
 
 number:112
-description:Failed to set up the crypto handle correctly.
-severity:normal
+description:The crypto library reported an internal error.
+severity:error
 ingroup:plugin
 module:crypto
 
 number:113
-description:Encryption failed due to an error reported by the backend.
-severity:normal
+description:Encryption failed due to an error reported by the crypto library.
+severity:error
 ingroup:plugin
 module:crypto
 
 number:114
-description:Decryption failed due to an error reported by the backend.
-severity:normal
+description:Decryption failed due to an error reported by the crypto library.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:115
+description:Decryption failed due to an error reported by the crypto library.
+severity:warning
 ingroup:plugin
 module:crypto

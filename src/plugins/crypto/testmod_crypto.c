@@ -26,7 +26,7 @@
  * The test vectors are taken from NIST SP 800-38A, section F.2.5 "CBC-AES256.Encrypt"
  * See <http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf> for further information.
  */
-const unsigned char key[] =
+static const unsigned char key[] =
 {
 	0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe,
 	0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
@@ -34,19 +34,19 @@ const unsigned char key[] =
 	0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4
 };
 
-const unsigned char iv[] =
+static const unsigned char iv[] =
 {
 	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
 	0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 };
 
-const unsigned char plainText[] =
+static const unsigned char plainText[] =
 {
 	0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
 	0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a
 };
 
-const unsigned char expectedCipherText[] =
+static const unsigned char expectedCipherText[] =
 {
 	0xf5, 0x8c, 0x4c, 0x04, 0xd6, 0xe5, 0xf1, 0xba,
 	0x77, 0x9e, 0xab, 0xfb, 0x5f, 0x7b, 0xfb, 0xd6
@@ -77,12 +77,12 @@ static int cmp_buffers(const unsigned char *b1, size_t len1, const unsigned char
 	return 0;
 }
 
-void test_init()
+static void test_init()
 {
 	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
 }
 
-void test_handle_init()
+static void test_handle_init()
 {
 	const unsigned char shortKey[] = { 0xca, 0xfe };
 	elektraCryptoHandle *handle;
@@ -96,7 +96,7 @@ void test_handle_init()
 	elektraCryptoHandleDestroy(handle);
 }
 
-void test_encryption()
+static void test_encryption()
 {
 	elektraCryptoHandle *handle;
 	Key *k;
@@ -119,7 +119,7 @@ void test_encryption()
 	keyDel(k);
 }
 
-void test_decryption()
+static void test_decryption()
 {
 	elektraCryptoHandle *handle;
 	Key *k;
@@ -142,7 +142,7 @@ void test_decryption()
 	keyDel(k);
 }
 
-void test_enc_and_dec_with_string()
+static void test_enc_and_dec_with_string()
 {
 	elektraCryptoHandle *handle;
 	const char original[] = "Short";
@@ -170,7 +170,7 @@ void test_enc_and_dec_with_string()
 	keyDel(k);
 }
 
-void test_enc_and_dec_with_binary()
+static void test_enc_and_dec_with_binary()
 {
 	elektraCryptoHandle *handle;
 	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };

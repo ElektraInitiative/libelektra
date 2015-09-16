@@ -28,11 +28,11 @@ The key derivation is still WIP.
 
 ### Planned Features ###
 
-- Encryption of values (Key)
-- Decryption of values (Key)
+- Encryption of values
+- Decryption of values
 - Key derivation by metadata (password provided within a meta-key)
-- Key derivation by utilizing the pgp-agent
 - Key derivation by using a specified key-file (like the SSH client does)
+- Key derivation by utilizing the pgp-agent
 
 The encryption and decryption of values is a straight forward process, once the key and IV are supplied.
 The key-derivation process in a library is a bit tricky.
@@ -43,14 +43,13 @@ If no key file has been configured, we try to trigger the PGP agent, etc.
 
 The following example configuration illustrates this concept:
 
-	system/elektra/crypto/config/key-derivation/#0#meta
-	system/elektra/crypto/config/key-derivation/#1#file
-	system/elektra/crypto/config/key-derivation/#2#agent
-	system/elektra/crypto/config/key-file/#0#path=~/.elektra/id_aes
-	system/elektra/crypto/config/key-file/#1#path=/etc/elektra/id_aes
+	system/elektra/crypto/config/key-derivation/#0 = meta
+	system/elektra/crypto/config/key-derivation/#1 = file
+	system/elektra/crypto/config/key-derivation/#2 = agent
+	system/elektra/crypto/config/key-file/path/#0 = ~/.elektra/id_aes
+	system/elektra/crypto/config/key-file/path/#1 = /etc/elektra/id_aes
 
-Since it does not make sense to encrypt every key in a KeySet, only Keys marked with a certain
-meta-key will be considered for encryption/decryption.
+Only keys marked with a certain meta-key will be considered for encryption/decryption.
 
 ## Examples ##
 
