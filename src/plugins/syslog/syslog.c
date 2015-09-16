@@ -87,9 +87,22 @@ int elektraSyslogGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *paren
 
 int elektraSyslogSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
-	syslog (LOG_NOTICE, "committed configuration %s with %zd keys",
+	size_t changed = 0;
+	Key *k=0;
+	ksRewind(returned);
+	while ((k = ksNext(returned)))
+	{
+		if (keyNeedSync(k))
+		{
+			syslog(LOG_NOTICE, "change %s to %s", keyName(k), keyString(k));
+			changed ++;
+		}
+	}
+
+	syslog (LOG_NOTICE, "committed configuration %s with %zd keys (%zd changed)",
 			keyName(parentKey),
-			ksGetSize(returned));
+			ksGetSize(returned),
+			changed);
 
 	return 1;
 }
