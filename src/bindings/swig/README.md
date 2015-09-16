@@ -1,3 +1,5 @@
+Please note that the python2 bindings has been deprecated!
+
 To use python2 on debian you might need following cmake defines:
 
 	-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python2.7

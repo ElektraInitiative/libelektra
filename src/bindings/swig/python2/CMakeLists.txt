@@ -1,3 +1,5 @@
+message(DEPRECATION "Python 2.7 bindings has been deprecated")
+
 include (${SWIG_USE_FILE})
 include(LibAddMacros)
 
