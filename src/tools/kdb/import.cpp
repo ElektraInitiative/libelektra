@@ -71,7 +71,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	if (!result.hasConflicts ())
 	{
-        if (cl.verbose)
+		if (cl.verbose)
 		{
 			cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
 			cout << result.getMergedKeys();
