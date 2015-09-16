@@ -11,16 +11,15 @@
 # error Build system error, SWIG_TYPE_TABLE is not defined
 #endif
 
-extern "C"
-{
 #include <Python.h>
-#ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
-#endif
-#include SWIG_RUNTIME
-}
 
+#ifndef HAVE_KDBCONFIG
+# include <kdbconfig.h>
+#endif
+#include <kdbhelper.h>
+#include SWIG_RUNTIME
 #include "python.hpp"
+
 #include <key.hpp>
 #include <keyset.hpp>
 #include <libgen.h>
@@ -28,6 +27,7 @@ extern "C"
 #include <iostream>
 
 using namespace ckdb;
+#include <kdberrors.h>
 
 static PyObject *Python_fromSWIG(ckdb::Key *key)
 {
@@ -50,8 +50,9 @@ extern "C"
 
 typedef struct
 {
-	PyObject *kdbModule;
 	PyObject *instance;
+	int printError;
+	int shutdown;
 } moduleData;
 
 /* pythons repr() - a little debug helper - misses all Py_DECREF calls! */
@@ -87,7 +88,8 @@ static PyObject *Python_CallFunction(PyObject *object, PyObject *args)
 	return res;
 }
 
-static int Python_CallFunction_Int(PyObject *object, PyObject *args)
+static int Python_CallFunction_Int(moduleData *data, PyObject *object,
+		PyObject *args, ckdb::Key *errorKey)
 {
 	int ret = -1;
 	PyGILState_STATE gstate = PyGILState_Ensure();
@@ -95,8 +97,10 @@ static int Python_CallFunction_Int(PyObject *object, PyObject *args)
 	PyObject *res = Python_CallFunction(object, args);
 	if (!res)
 	{
-		std::cerr << "Error while calling python function" << std::endl;
-		PyErr_Print();
+		ELEKTRA_SET_ERROR(111, errorKey,
+				"Error while calling python function");
+		if (data->printError)
+			PyErr_Print();
 	}
 	else
 	{
@@ -105,13 +109,54 @@ static int Python_CallFunction_Int(PyObject *object, PyObject *args)
 #else
 		if (!PyInt_Check(res))
 #endif
-			std::cerr << "Error: return value is no integer" << std::endl;
+			ELEKTRA_SET_ERROR(111, errorKey,
+					"Error: return value is no integer");
 		else
 			ret = PyLong_AsLong(res);
 	}
 
 	PyGILState_Release(gstate);
 	Py_XDECREF(res);
+	return ret;
+}
+
+static int Python_CallFunction_Helper1(moduleData *data, const char *funcName,
+	ckdb::Key *errorKey)
+{
+	int ret = 0;
+	PyGILState_STATE gstate = PyGILState_Ensure();
+	PyObject *func = PyObject_GetAttrString(data->instance, funcName);
+	if (func)
+	{
+		PyObject *arg0 = Python_fromSWIG(errorKey);
+		PyObject *args = Py_BuildValue("(O)", arg0);
+		ret = Python_CallFunction_Int(data, func, args, errorKey);
+		Py_DECREF(arg0);
+		Py_DECREF(args);
+		Py_DECREF(func);
+	}
+	PyGILState_Release(gstate);
+	return ret;
+}
+
+static int Python_CallFunction_Helper2(moduleData *data, const char *funcName,
+	ckdb::KeySet *returned, ckdb::Key *parentKey)
+{
+	int ret = 0;
+	PyGILState_STATE gstate = PyGILState_Ensure();
+	PyObject *func = PyObject_GetAttrString(data->instance, funcName);
+	if (func)
+	{
+		PyObject *arg0 = Python_fromSWIG(returned);
+		PyObject *arg1 = Python_fromSWIG(parentKey);
+		PyObject *args = Py_BuildValue("(OO)", arg0, arg1);
+		ret = Python_CallFunction_Int(data, func, args, parentKey);
+		Py_DECREF(arg0);
+		Py_DECREF(arg1);
+		Py_DECREF(args);
+		Py_DECREF(func);
+	}
+	PyGILState_Release(gstate);
 	return ret;
 }
 
@@ -134,12 +179,25 @@ static unsigned open_cnt = 0;
 
 int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
-	KeySet *config = elektraPluginGetConfig(handle);
-	Key *script = ksLookupByName(config, "/script", 0);
-	/* success if no script to execute */
+	/* store modules */
+	moduleData *data = new moduleData;
+	data->instance   = NULL;
+	data->printError = 0;
+	data->shutdown   = 0;
+	elektraPluginSetData(handle, data);
 
-	if (script == NULL || keyString(script) == NULL)
-		return 0;
+	KeySet *config = elektraPluginGetConfig(handle);
+	data->printError = (ksLookupByName(config, "/print", 0) != NULL);
+	data->shutdown   = (!!strcmp(keyString(ksLookupByName(config, "/shutdown", 0)), "0"));
+
+	Key *script = ksLookupByName(config, "/script", 0);
+	if (script == NULL)
+		return 0; // success if no script to execute
+	if (keyString(script) == NULL)
+	{
+		ELEKTRA_SET_ERROR(111, errorKey, "No python script set");
+		return -1;
+	}
 
 	/* initialize python interpreter - only once */
 	pthread_mutex_lock(&mutex);
@@ -160,25 +218,26 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *error
 	PyObject *kdbModule = Python_ImportModule("kdb");
 	if (kdbModule == NULL)
 	{
-		std::cerr << "ERROR: Failed to import kdb module" << std::endl;
-		PyErr_Print();
+		ELEKTRA_SET_ERROR(111, errorKey, "Unable to import kdb module");
+		if (data->printError)
+			PyErr_Print();
 		return -1;
 	}
 	Py_XDECREF(kdbModule);
 
 	/* extend sys path */
-	char *tmpScript = strdup(keyString(script));
+	char *tmpScript = elektraStrDup(keyString(script));
 	const char *dname = dirname(tmpScript);
 	if (!Python_AppendToSysPath(dname))
 	{
-		std::cerr << "ERROR: Unable to extend sys.path" << std::endl;
-		free(tmpScript);
+		ELEKTRA_SET_ERROR(111, errorKey, "Unable to extend sys.path");
+		elektraFree(tmpScript);
 		return -1;
 	}
-	free(tmpScript);
+	elektraFree(tmpScript);
 
 	/* import module/script */
-	tmpScript = strdup(keyString(script));
+	tmpScript = elektraStrDup(keyString(script));
 	char *bname = basename(tmpScript);
 	size_t bname_len = strlen(bname);
 	if (bname_len >= 4 && strcmp(bname + bname_len - 3, ".py") == 0)
@@ -187,13 +246,14 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *error
 	PyObject *pModule = Python_ImportModule(bname);
 	if (pModule == NULL)
 	{
-		std::cerr << "ERROR: Failed to import python script "
-			<< keyString(script) << std::endl;
-		PyErr_Print();
-		free(tmpScript);
+		ELEKTRA_SET_ERRORF(111, errorKey,"Unable to import python script %s",
+				keyString(script));
+		if (data->printError)
+			PyErr_Print();
+		elektraFree(tmpScript);
 		return -1;
 	}
-	free(tmpScript);
+	elektraFree(tmpScript);
 
 	/* get class */
 	PyGILState_STATE gstate = PyGILState_Ensure();
@@ -202,8 +262,10 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *error
 	PyGILState_Release(gstate);
 	if (klass == NULL)
 	{
-		std::cerr << "ERROR: Module doesn't provide a ElektraPlugin class" << std::endl;
-		PyErr_Print();
+		ELEKTRA_SET_ERROR(111, errorKey,
+				"Module doesn't provide a ElektraPlugin class");
+		if (data->printError)
+			PyErr_Print();
 		return -1;
 	}
 
@@ -216,32 +278,16 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *error
 	PyGILState_Release(gstate);
 	if (inst == NULL)
 	{
-		std::cerr << "ERROR: Unable to call ElektraPlugin.class()" << std::endl;
-		PyErr_Print();
+		ELEKTRA_SET_ERROR(111, errorKey,
+				"Unable to create instance of ElektraPlugin");
+		if (data->printError)
+			PyErr_Print();
 		return -1;
 	}
-
-	/* store modules */
-	moduleData *data = new moduleData;
 	data->instance = inst;
-	elektraPluginSetData(handle, data);
 
 	/* call python function */
-	int ret = 0;
-	gstate = PyGILState_Ensure();
-	PyObject *func = PyObject_GetAttrString(data->instance, "open");
-	if (func)
-	{
-		PyObject *arg0 = Python_fromSWIG(errorKey);
-		PyObject *args = Py_BuildValue("(O)", arg0);
-		ret = Python_CallFunction_Int(func, args);
-		Py_DECREF(arg0);
-		Py_DECREF(args);
-		Py_DECREF(func);
-	}
-	PyGILState_Release(gstate);
-
-	return ret;
+	return Python_CallFunction_Helper1(data, "open", errorKey);
 }
 
 int ELEKTRA_PLUGIN_FUNCTION(Python, Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
@@ -255,16 +301,7 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Close)(ckdb::Plugin *handle, ckdb::Key *erro
 	PyGILState_STATE gstate = PyGILState_Ensure();
 	if (data->instance != NULL)
 	{
-		PyObject *func = PyObject_GetAttrString(data->instance, "close");
-		if (func)
-		{
-			PyObject *arg0 = Python_fromSWIG(errorKey);
-			PyObject *args = Py_BuildValue("(O)", arg0);
-			ret = Python_CallFunction_Int(func, args);
-			Py_DECREF(arg0);
-			Py_DECREF(args);
-			Py_DECREF(func);
-		}
+		ret = Python_CallFunction_Helper1(data, "close", errorKey);
 
 		/* clean up references */
 		Py_DECREF(data->instance);
@@ -276,7 +313,7 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Close)(ckdb::Plugin *handle, ckdb::Key *erro
 	//FIXME python reinitialization is known to be buggy
 	pthread_mutex_lock(&mutex);
 	open_cnt--;
-	if (!open_cnt && Py_IsInitialized())
+	if (!open_cnt && data->shutdown && Py_IsInitialized())
 		Py_Finalize();
 	pthread_mutex_unlock(&mutex);
 
@@ -289,25 +326,8 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Get)(ckdb::Plugin *handle, ckdb::KeySet *ret
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
 	if (data != NULL)
-	{
-		/* call python function */
-		int ret = 0;
-		PyGILState_STATE gstate = PyGILState_Ensure();
-		PyObject *func = PyObject_GetAttrString(data->instance, "get");
-		if (func)
-		{
-			PyObject *arg0 = Python_fromSWIG(returned);
-			PyObject *arg1 = Python_fromSWIG(parentKey);
-			PyObject *args = Py_BuildValue("(OO)", arg0, arg1);
-			ret = Python_CallFunction_Int(func, args);
-			Py_DECREF(arg0);
-			Py_DECREF(arg1);
-			Py_DECREF(args);
-			Py_DECREF(func);
-		}
-		PyGILState_Release(gstate);
-		return ret;
-	}
+		return Python_CallFunction_Helper2(data, "get", returned,
+				parentKey);
 
 #define _MODULE_CONFIG_PATH "system/elektra/modules/" ELEKTRA_PLUGIN_NAME
 	if (!strcmp(keyName(parentKey), _MODULE_CONFIG_PATH))
@@ -342,23 +362,8 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Set)(ckdb::Plugin *handle, ckdb::KeySet *ret
 	int ret = 0;
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
 	if (data != NULL)
-	{
-		/* call python function */
-		PyGILState_STATE gstate = PyGILState_Ensure();
-		PyObject *func = PyObject_GetAttrString(data->instance, "set");
-		if (func)
-		{
-			PyObject *arg0 = Python_fromSWIG(returned);
-			PyObject *arg1 = Python_fromSWIG(parentKey);
-			PyObject *args = Py_BuildValue("(OO)", arg0, arg1);
-			ret = Python_CallFunction_Int(func, args);
-			Py_DECREF(arg0);
-			Py_DECREF(arg1);
-			Py_DECREF(args);
-			Py_DECREF(func);
-		}
-		PyGILState_Release(gstate);
-	}
+		ret = Python_CallFunction_Helper2(data, "set", returned,
+				parentKey);
 	return ret;
 }
 
@@ -368,23 +373,8 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Error)(ckdb::Plugin *handle, ckdb::KeySet *r
 	int ret = 0;
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
 	if (data != NULL)
-	{
-		/* call python function */
-		PyGILState_STATE gstate = PyGILState_Ensure();
-		PyObject *func = PyObject_GetAttrString(data->instance, "error");
-		if (func)
-		{
-			PyObject *arg0 = Python_fromSWIG(returned);
-			PyObject *arg1 = Python_fromSWIG(parentKey);
-			PyObject *args = Py_BuildValue("(OO)", arg0, arg1);
-			ret = Python_CallFunction_Int(func, args);
-			Py_DECREF(arg0);
-			Py_DECREF(arg1);
-			Py_DECREF(args);
-			Py_DECREF(func);
-		}
-		PyGILState_Release(gstate);
-	}
+		ret = Python_CallFunction_Helper2(data, "error", returned,
+				parentKey);
 	return ret;
 }
 
