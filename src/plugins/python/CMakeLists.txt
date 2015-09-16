@@ -66,6 +66,7 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND AND FINDEX GREATER -1)
 	# we workaround this by changing the current directory to our bindings
 	# output directory + our test adds the current directory to pythons sys.path
 	add_plugintest (python
+		MEMLEAK
 		INCLUDE_DIRECTORIES
 			${PYTHON_INCLUDE_DIR}
 		LINK_LIBRARIES
@@ -78,6 +79,7 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND AND FINDEX GREATER -1)
 
 	if (FALSE)
 	add_plugintest (python2
+		MEMLEAK
 		INCLUDE_DIRECTORIES
 			${PYTHON2_INCLUDE_DIR}
 		LINK_LIBRARIES
