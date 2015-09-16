@@ -80,6 +80,7 @@ but no flexibility regarding:
 - fixed 1) and 2) of #233
 - fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
 - fixed qml warning when deleting key
+- fixed qml typerror when accepting an edit
 
 ## Other OS
 `kdb-full` and `kdb-static` work fine now for Mac OS X and Windows 64bit.
@@ -102,6 +103,9 @@ Thanks to Manuel Mausz for to this work on the bindings!
 - dup() in python3 returned wrong type (SWIG wrapper), thanks to Toscano Pino for reporting, thanks to Manuel Mausz for fixing it
 - support for copy module was introduced, thanks to Manuel Mausz
 - doc: use @retval more, thanks to Pino Toscano
+- fix build with external gtest, thanks to Pino Toscano
+- typo fix: "allows to" to "allows one to", "informations" to "information" thanks to Pino Toscano
+- be more POSIX compatible in shell scripts (`type` to `command -v` and avoid `echo -e`) thanks to Pino Toscano
 
 
 
