@@ -10,7 +10,7 @@ cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
 
 nbFailed=""
 
-EXPORTS=`mktemp -d`
+EXPORTS="$(mktempdir_elektra)"
 
 if [ ! -d "$EXPORTS" ]
 then

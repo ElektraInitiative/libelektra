@@ -460,7 +460,8 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 	if (!cwd) return -1;
 
 	char *dn = elektraStrDup(cwd);
-
+	char *dnOrig = dn;
+	
 	while (true)
 	{
 		// now put together the filename
@@ -491,7 +492,7 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 	}
 
 	elektraFree(cwd);
-	elektraFree(dn);
+	elektraFree(dnOrig);
 	elektraResolveFinishByFilename(p);
 	return 1;
 }
