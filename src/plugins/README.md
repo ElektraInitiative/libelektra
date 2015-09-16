@@ -133,6 +133,7 @@ copied by another plugin just before):
 These plugins start an interpreter and allow you to use a bindings.
 
 - [jni](jni) java plugins started by jni, works with jna plugins
+- [python](python) Python 3 plugins
 
 
 ## Others ##
