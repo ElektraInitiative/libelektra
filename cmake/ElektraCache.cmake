@@ -121,6 +121,7 @@ set (PLUGINS_LIST_DEP
 	journald
 	jni
 	python
+	python2
 	)
 
 #

@@ -29,6 +29,10 @@
 using namespace ckdb;
 #include <kdberrors.h>
 
+#define __stringify(x) __stringify2(x)
+#define __stringify2(x) #x
+#define PYTHON_PLUGIN_NAME_STR __stringify(PYTHON_PLUGIN_NAME)
+
 static PyObject *Python_fromSWIG(ckdb::Key *key)
 {
 	swig_type_info *ti = SWIG_TypeQuery("kdb::Key *");
@@ -177,7 +181,7 @@ static int Python_AppendToSysPath(const char *path)
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static unsigned open_cnt = 0;
 
-int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
+int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	/* store modules */
 	moduleData *data = new moduleData;
@@ -290,7 +294,7 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *error
 	return Python_CallFunction_Helper1(data, "open", errorKey);
 }
 
-int ELEKTRA_PLUGIN_FUNCTION(Python, Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
+int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
 	if (data == NULL)
@@ -321,12 +325,12 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Close)(ckdb::Plugin *handle, ckdb::Key *erro
 	return ret;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION(Python, Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
+int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
 
-#define _MODULE_CONFIG_PATH "system/elektra/modules/" ELEKTRA_PLUGIN_NAME
+#define _MODULE_CONFIG_PATH "system/elektra/modules/" PYTHON_PLUGIN_NAME_STR
 	if (!strcmp(keyName(parentKey), _MODULE_CONFIG_PATH))
 	{
 		KeySet *n;
@@ -335,21 +339,23 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Get)(ckdb::Plugin *handle, ckdb::KeySet *ret
 				KEY_VALUE, "python interpreter waits for your orders", KEY_END),
 			keyNew(_MODULE_CONFIG_PATH "/exports", KEY_END),
 			keyNew(_MODULE_CONFIG_PATH "/exports/get",
-				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Get),
+				KEY_FUNC, PYTHON_PLUGIN_FUNCTION(Get),
 				KEY_END),
 			keyNew(_MODULE_CONFIG_PATH "/exports/set",
-				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Set),
+				KEY_FUNC, PYTHON_PLUGIN_FUNCTION(Set),
 				KEY_END),
 			keyNew(_MODULE_CONFIG_PATH "/exports/error",
-				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Error),
+				KEY_FUNC, PYTHON_PLUGIN_FUNCTION(Error),
 				KEY_END),
 			keyNew(_MODULE_CONFIG_PATH "/exports/open",
-				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Open),
+				KEY_FUNC, PYTHON_PLUGIN_FUNCTION(Open),
 				KEY_END),
 			keyNew(_MODULE_CONFIG_PATH "/exports/close",
-				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Close),
+				KEY_FUNC, PYTHON_PLUGIN_FUNCTION(Close),
 				KEY_END),
-#include "readme_python.c"
+#define __readme_header(x) __readme_header2(x)
+#define __readme_header2(x) __stringify(readme_##x.c)
+#include __readme_header(PYTHON_PLUGIN_NAME)
 			keyNew(_MODULE_CONFIG_PATH "/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END));
@@ -362,7 +368,7 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Get)(ckdb::Plugin *handle, ckdb::KeySet *ret
 	return 0;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION(Python, Set)(ckdb::Plugin *handle, ckdb::KeySet *returned,
+int PYTHON_PLUGIN_FUNCTION(Set)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 	int ret = 0;
@@ -373,7 +379,7 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Set)(ckdb::Plugin *handle, ckdb::KeySet *ret
 	return ret;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION(Python, Error)(ckdb::Plugin *handle, ckdb::KeySet *returned,
+int PYTHON_PLUGIN_FUNCTION(Error)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 	int ret = 0;
@@ -384,14 +390,14 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Error)(ckdb::Plugin *handle, ckdb::KeySet *r
 	return ret;
 }
 
-ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(python)
+ckdb::Plugin *PYTHON_PLUGIN_EXPORT(PYTHON_PLUGIN_NAME)
 {
-	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-		ELEKTRA_PLUGIN_OPEN,  &ELEKTRA_PLUGIN_FUNCTION(Python, Open),
-		ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION(Python, Close),
-		ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(Python, Get),
-		ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(Python, Set),
-		ELEKTRA_PLUGIN_ERROR, &ELEKTRA_PLUGIN_FUNCTION(Python, Error),
+	return elektraPluginExport(PYTHON_PLUGIN_NAME_STR,
+		ELEKTRA_PLUGIN_OPEN,  &PYTHON_PLUGIN_FUNCTION(Open),
+		ELEKTRA_PLUGIN_CLOSE, &PYTHON_PLUGIN_FUNCTION(Close),
+		ELEKTRA_PLUGIN_GET,   &PYTHON_PLUGIN_FUNCTION(Get),
+		ELEKTRA_PLUGIN_SET,   &PYTHON_PLUGIN_FUNCTION(Set),
+		ELEKTRA_PLUGIN_ERROR, &PYTHON_PLUGIN_FUNCTION(Error),
 		ELEKTRA_PLUGIN_END);
 }
 }

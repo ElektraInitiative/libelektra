@@ -134,6 +134,7 @@ These plugins start an interpreter and allow you to use a bindings.
 
 - [jni](jni) java plugins started by jni, works with jna plugins
 - [python](python) Python 3 plugins
+- [python2](python2) Python 2 plugins (deprecated)
 
 
 ## Others ##
