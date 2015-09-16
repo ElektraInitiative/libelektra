@@ -81,6 +81,9 @@ but no flexibility regarding:
 - fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
 - fixed qml warning when deleting key
 
+## Other OS
+`kdb-full` and `kdb-static` work fine now for Mac OS X and Windows 64bit.
+
 ## escaped key names
 
 - keyUnescapedName has been added to our main API (moved from proposal)
