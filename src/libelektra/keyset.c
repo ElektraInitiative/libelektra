@@ -283,6 +283,8 @@ KeySet *ksDup (const KeySet * source)
  * This means that you have to keyDel() the contained keys and
  * ksDel() the returned keyset..
  *
+ * the sync status will be as in the original KeySet
+ *
  * @param source has to be an initialized source KeySet
  * @return a deep copy of source on success
  * @retval 0 on NULL pointer
@@ -301,7 +303,13 @@ KeySet* ksDeepDup(const KeySet *source)
 	keyset = ksNew(source->alloc,KS_END);
 	for (i=0; i<s; ++i)
 	{
-		ksAppendKey(keyset, keyDup(source->array[i]));
+		Key *k = source->array[i];
+		Key *d = keyDup(k);
+		if (!test_bit(k->flags, KEY_FLAG_SYNC))
+		{
+			keyClearSync(d);
+		}
+		ksAppendKey(keyset, d);
 	}
 
 	return keyset;
