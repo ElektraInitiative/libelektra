@@ -6,18 +6,10 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-
-
-# 0.8.13
+# 0.8.14
 
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
-
-execute all examples to see if they do not crash or memleak
-	assert test cases -> test cases (rename succeed_if)
-
-
-# 0.8.14
 
 ## start
 
@@ -56,6 +48,9 @@ default storage, encode,...
 global mountpoints with unserialize
 
 ## testing
+
+execute all examples to see if they do not crash or memleak
+	assert test cases -> test cases (rename succeed_if)
 
 cmd execution testing framework
 	execute commands, capture stdout, stderr and kdb
