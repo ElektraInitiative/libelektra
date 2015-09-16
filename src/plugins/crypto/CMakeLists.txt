@@ -16,9 +16,7 @@ if (LIBGCRYPT_FOUND)
 		)
 
 	add_plugintest(crypto)
-	
-	install(DIRECTORY crypto DESTINATION ${TARGET_TEST_DATA_FOLDER})
-	
+
 else (LIBGCRYPT_FOUND)
 	remove_plugin (crypto "libgcrypt not found")
 endif (LIBGCRYPT_FOUND)
