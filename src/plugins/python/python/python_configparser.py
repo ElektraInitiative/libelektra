@@ -22,7 +22,7 @@ class ElektraPlugin(object):
 		config.readfp(open(parentKey.value))
 		for s in config.sections():
 			for o in config.options(s):
-				returned.append(kdb.Key(parentKey.name+"/"+s+"/"+o), config.get(s, o))
+				returned.append(kdb.Key(parentKey.name+"/"+s+"/"+o, kdb.KEY_VALUE, config.get(s, o)))
 		return 1
 
 	def set(self, returned, parentKey):
