@@ -325,9 +325,6 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Get)(ckdb::Plugin *handle, ckdb::KeySet *ret
 	ckdb::Key *parentKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL)
-		return Python_CallFunction_Helper2(data, "get", returned,
-				parentKey);
 
 #define _MODULE_CONFIG_PATH "system/elektra/modules/" ELEKTRA_PLUGIN_NAME
 	if (!strcmp(keyName(parentKey), _MODULE_CONFIG_PATH))
@@ -346,14 +343,23 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Get)(ckdb::Plugin *handle, ckdb::KeySet *ret
 			keyNew(_MODULE_CONFIG_PATH "/exports/error",
 				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Error),
 				KEY_END),
+			keyNew(_MODULE_CONFIG_PATH "/exports/open",
+				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Open),
+				KEY_END),
+			keyNew(_MODULE_CONFIG_PATH "/exports/close",
+				KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(Python, Close),
+				KEY_END),
 #include "readme_python.c"
 			keyNew(_MODULE_CONFIG_PATH "/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END));
 		ksDel(n);
-		return 1;
 	}
-	return 1;
+
+	if (data != NULL)
+		return Python_CallFunction_Helper2(data, "get", returned,
+				parentKey);
+	return 0;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION(Python, Set)(ckdb::Plugin *handle, ckdb::KeySet *returned,
