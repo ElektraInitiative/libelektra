@@ -7,3 +7,7 @@
 - infos/description = magic things require magic plugins
 
 The plugin uses Python to do magic things.
+
+## USAGE
+
+    kdb mount file.ini /python python script=/path/to/python/python_configparser.py,print=

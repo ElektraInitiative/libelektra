@@ -188,7 +188,7 @@ int ELEKTRA_PLUGIN_FUNCTION(Python, Open)(ckdb::Plugin *handle, ckdb::Key *error
 
 	KeySet *config = elektraPluginGetConfig(handle);
 	data->printError = (ksLookupByName(config, "/print", 0) != NULL);
-	data->shutdown   = (!!strcmp(keyString(ksLookupByName(config, "/shutdown", 0)), "0"));
+	data->shutdown   = (ksLookupByName(config, "/shutdown", 0) != NULL);
 
 	Key *script = ksLookupByName(config, "/script", 0);
 	if (script == NULL)
