@@ -55,6 +55,7 @@ bug fixing
 Patrick Sabin <patricksabin@gmx.at>
 trie development, previous python bindings
 
+
 Studio-HB <contact@studio-hb.com>
 Elektra logo, design of previous website
 
@@ -74,3 +75,6 @@ previous Debian packaging and 0.7 scheme bindings
 Simon Law <sfllaw@debian.org>
 previous Debian Packaging
 
+
+Daniel Bugl <me@omnidan.net>
+documentation, new README.md, zeromq, web ui
