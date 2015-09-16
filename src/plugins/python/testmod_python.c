@@ -41,7 +41,7 @@ static void test_variable_passing()
 	init_python();
 
 	KeySet *conf = ksNew(1,
-		keyNew("user/script", KEY_VALUE, srcdir_file("python/python_plugin.py"), KEY_END),
+		keyNew("user/script", KEY_VALUE, srcdir_file(ELEKTRA_PLUGIN_NAME "/python_plugin.py"), KEY_END),
 		keyNew("user/print", KEY_END),
 		KS_END);
 	PLUGIN_OPEN(ELEKTRA_PLUGIN_NAME);
@@ -69,12 +69,12 @@ static void test_two_scripts()
 	elektraModulesInit(modules, 0);
 
 	KeySet *conf = ksNew(2,
-		keyNew("user/script", KEY_VALUE, srcdir_file("python/python_plugin.py"), KEY_END),
+		keyNew("user/script", KEY_VALUE, srcdir_file(ELEKTRA_PLUGIN_NAME "/python_plugin.py"), KEY_END),
 		keyNew("user/print", KEY_END),
 		KS_END);
 
 	KeySet *conf2 = ksNew(2,
-		keyNew("user/script", KEY_VALUE, srcdir_file("python/python_plugin2.py"), KEY_END),
+		keyNew("user/script", KEY_VALUE, srcdir_file(ELEKTRA_PLUGIN_NAME "/python_plugin2.py"), KEY_END),
 		keyNew("user/print", KEY_END),
 		KS_END);
 
@@ -106,7 +106,7 @@ static void test_fail()
 	init_python();
 
 	KeySet *conf = ksNew(2,
-		keyNew("user/script", KEY_VALUE, srcdir_file("python/python_plugin_fail.py"), KEY_END),
+		keyNew("user/script", KEY_VALUE, srcdir_file(ELEKTRA_PLUGIN_NAME "/python_plugin_fail.py"), KEY_END),
 		keyNew("user/print", KEY_END),
 		KS_END);
 	PLUGIN_OPEN(ELEKTRA_PLUGIN_NAME);
@@ -135,7 +135,7 @@ static void test_wrong()
 	elektraModulesInit(modules, 0);
 
 	KeySet *conf = ksNew(2,
-		keyNew("user/script", KEY_VALUE, srcdir_file("python/python_plugin_wrong.py"), KEY_END),
+		keyNew("user/script", KEY_VALUE, srcdir_file(ELEKTRA_PLUGIN_NAME "/python_plugin_wrong.py"), KEY_END),
 		keyNew("user/print", KEY_END),
 		KS_END);
 
