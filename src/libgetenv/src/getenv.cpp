@@ -338,8 +338,9 @@ void applyOptions()
 #ifdef HAVE_CLEARENV
 		clearenv();
 #else
-		environ = NULL;
+# warning Your system does not provide clearenv, this might be a security problem
 #endif
+		environ = NULL;
 	}
 
 	elektraReloadTimeout = std::chrono::milliseconds::zero();
