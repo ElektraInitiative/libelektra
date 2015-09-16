@@ -94,6 +94,11 @@ exit_if_fail ()
 
 end_script()
 {
+	if command -v cleanup > /dev/null
+	then
+		cleanup
+	fi
+
 	echo -n "$scriptName RESULTS: $nbTest test(s) done"
 	if [ $nbSkip -ne 0 ]
 	then
@@ -216,20 +221,15 @@ is_plugin_available()
 	return 1
 }
 
+mktempdir_elektra()
+{
+	mktemp -d 2>/dev/null || mktemp -d -t 'libelektra-test'
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+mktempfile_elektra()
+{
+	mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv'
+}
 
 
 

@@ -45,7 +45,7 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-FILE="`mktemp -t elektraenv.XXXXXXXXX`"
+FILE="`mktemp -t elektraenv.XXXXXXXXX  2>/dev/null || mktemp -t 'elektraenv'`"
 
 
 readEnvTree() {

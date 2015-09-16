@@ -98,7 +98,11 @@ KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
 
-pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#if defined(__APPLE__) && defined(__MACH__)
+	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#else
+	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#endif
 
 
 int to_(int c)
@@ -331,7 +335,12 @@ void applyOptions()
 	if ((k = ksLookupByName(elektraConfig, "/env/option/clearenv", 0)) && !keyIsBinary(k))
 	{
 		LOG << "clearing the environment" << endl;
+#ifdef HAVE_CLEARENV
 		clearenv();
+#else
+# warning Your system does not provide clearenv, this might be a security problem
+#endif
+		environ = NULL;
 	}
 
 	elektraReloadTimeout = std::chrono::milliseconds::zero();
