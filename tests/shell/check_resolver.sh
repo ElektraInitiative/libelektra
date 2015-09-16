@@ -197,6 +197,12 @@ check_resolver dir b a /tmp/@KDB_DB_DIR@/a
 check_resolver dir b a/b /tmp/@KDB_DB_DIR@/a/b
 
 T="$(mktempdir_elektra)"
+
+cleanup()
+{
+	rm -rf "$T"
+}
+
 cd $T
 check_resolver dir b /a $T/a
 check_resolver dir b /a/b $T/a/b
@@ -216,7 +222,6 @@ check_resolver dir b a $T/@KDB_DB_DIR@/a
 check_resolver dir b a/b $T/sub/@KDB_DB_DIR@/a/b
 rm $T/@KDB_DB_DIR@/a
 
-rm -r $T
 cd $OD
 
 unset HOME

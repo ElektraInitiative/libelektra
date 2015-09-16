@@ -26,6 +26,12 @@ then
 fi
 
 TMPFILE="$(mktempfile_elektra)"
+cleanup()
+{
+	rm -f "$TMPFILE"
+}
+
+
 ERROR_FILE=${FILE_SUFFIX}_error.ecf
 #subfolders not supported:
 #USER_ERROR_FOLDER=${USER_FOLDER}/subfolder

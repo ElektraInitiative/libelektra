@@ -82,5 +82,6 @@ do
 
 	cleanup
 done
+unset -f cleanup
 
 end_script basic commands

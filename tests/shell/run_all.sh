@@ -12,6 +12,11 @@ nbFailed=""
 
 EXPORTS="$(mktempdir_elektra)"
 
+cleanup()
+{
+	rm -rf "$EXPORTS"
+}
+
 if [ ! -d "$EXPORTS" ]
 then
 	echo "Failed to create temporary directory"
@@ -123,7 +128,6 @@ do
 	fi
 done
 
-rm -rf "$EXPORTS"
 
 if [ $nbError != "0" ]
 then

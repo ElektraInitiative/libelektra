@@ -94,6 +94,10 @@ exit_if_fail ()
 
 end_script()
 {
+	if command -v cleanup > /dev/null
+	then
+		cleanup
+	fi
 	echo -n "$scriptName RESULTS: $nbTest test(s) done"
 	if [ $nbSkip -ne 0 ]
 	then

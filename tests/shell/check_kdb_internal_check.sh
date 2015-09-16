@@ -7,6 +7,11 @@ echo
 check_version
 
 FILE="$(mktempfile_elektra)"
+cleanup()
+{
+	rm -f "$FILE"
+}
+
 for PLUGIN in $PLUGINS
 do
 	case "$PLUGIN" in
@@ -31,6 +36,5 @@ do
 	test ! -s $FILE
 	succeed_if "check of plugin $PLUGIN produced: \"`cat $FILE`\""
 done
-rm $FILE
 
 end_script basic commands
