@@ -411,12 +411,13 @@ extern "C" int __real_main(int argc, char** argv, char** env);
 
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
 {
+	elektraLockMutex(); // dlsym mutex
 	LOG << "wrapping main" << endl;
 	if (start.d)
 	{ // double wrapping situation, do not reopen, just forward to next __libc_start_main
 		start.d = dlsym(RTLD_NEXT, "__libc_start_main");
 		int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
-		elektraUnlockMutex();
+		elektraUnlockMutex(); // dlsym mutex end
 		return ret;
 	}
 
@@ -425,6 +426,7 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	ssym.d = dlsym(RTLD_NEXT, "secure_getenv");
 
 	elektraOpen(&argc, argv);
+	elektraUnlockMutex(); // dlsym mutex end
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 	elektraClose();
 	return ret;
@@ -590,12 +592,12 @@ char *elektraBootstrapSecureGetEnv(const char *name)
 
 extern "C" char *getenv(const char *name) // throw ()
 {
+	elektraLockMutex();
 	if (!sym.f)
 	{
 		return elektraBootstrapGetEnv(name);
 	}
 
-	elektraLockMutex();
 	char *ret = elektraGetEnv(name, sym.f);
 	elektraUnlockMutex();
 	return ret;
@@ -603,12 +605,12 @@ extern "C" char *getenv(const char *name) // throw ()
 
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
+	elektraLockMutex();
 	if (!ssym.f)
 	{
 		return elektraBootstrapSecureGetEnv(name);
 	}
 
-	elektraLockMutex();
 	char * ret = elektraGetEnv(name, ssym.f);
 	elektraUnlockMutex();
 	return ret;
