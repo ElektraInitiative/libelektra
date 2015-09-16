@@ -23,7 +23,7 @@ void elektraCryptoGcryHandleDestroy(elektraCryptoHandle *handle)
 	if(handle != NULL)
 	{
 		gcry_cipher_close(*handle);
-		free(handle);
+		elektraFree(handle);
 	}
 }
 
@@ -42,7 +42,7 @@ int elektraCryptoGcryInit()
 elektraCryptoHandle *elektraCryptoGcryHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen)
 {
 	gcry_error_t gcry_err;
-	elektraCryptoHandle *handle = (elektraCryptoHandle*)malloc(sizeof(elektraCryptoHandle));
+	elektraCryptoHandle *handle = elektraMalloc(sizeof(elektraCryptoHandle));
 
 	if(handle == NULL)
 	{
@@ -69,7 +69,7 @@ elektraCryptoHandle *elektraCryptoGcryHandleCreate(const unsigned char *key, con
 error:
 	ELEKTRA_SET_ERRORF(112, NULL, "Failed to create handle because: %s", gcry_strerror(gcry_err));
 	gcry_cipher_close(*handle);
-	free(handle);
+	elektraFree(handle);
 	return NULL;
 }
 
@@ -98,7 +98,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
 		outputLen = (valueLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 1;
 	}
 	outputLen *= ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-	output = (unsigned char*)malloc(outputLen);
+	output = elektraMalloc(outputLen);
 	if(output == NULL)
 	{
 		ELEKTRA_SET_ERROR(87, NULL, "Memory allocation failed");
@@ -125,7 +125,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
 		if(gcry_err != 0)
 		{
 			ELEKTRA_SET_ERRORF(113, k, "Encryption failed because: %s", gcry_strerror(gcry_err));
-			free(output);
+			elektraFree(output);
 			return (-1);
 		}
 		memcpy((output + i), cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
@@ -133,7 +133,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
 
 	// write back the cipher text to the key
 	keySetBinary(k, output, outputLen);
-	free(output);
+	elektraFree(output);
 
 	return 1;
 }
@@ -159,7 +159,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k)
 	}
 
 	// prepare buffer for plain text output
-	output = (unsigned char*)malloc(valueLen);
+	output = elektraMalloc(valueLen);
 	if(output == NULL)
 	{
 		ELEKTRA_SET_ERROR(87, NULL, "Memory allocation failed");
@@ -176,7 +176,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k)
 		if(gcry_err != 0)
 		{
 			ELEKTRA_SET_ERRORF(114, k, "Decryption failed because: %s", gcry_strerror(gcry_err));
-			free(output);
+			elektraFree(output);
 			return (-1);
 		}
 		memcpy((output + i), contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
@@ -193,7 +193,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k)
 	// write back the cipher text to the key
 	// TODO consider that the keySetString() function should be applied if the original value was of type string
 	keySetBinary(k, output, written);
-	free(output);
+	elektraFree(output);
 
 	return 1;
 }

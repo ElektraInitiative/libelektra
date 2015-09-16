@@ -80,12 +80,15 @@ static int cmp_buffers(const unsigned char *b1, size_t len1, const unsigned char
 static void test_init()
 {
 	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
+	elektraCryptoTeardown();
 }
 
 static void test_handle_init()
 {
 	const unsigned char shortKey[] = { 0xca, 0xfe };
 	elektraCryptoHandle *handle;
+
+	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
 
 	handle = elektraCryptoHandleCreate(shortKey, sizeof(shortKey), iv, sizeof(iv));
 	succeed_if( handle == NULL, "key initialization with non-compliant key succeeded" );
@@ -94,6 +97,7 @@ static void test_handle_init()
 	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
 	succeed_if( handle != NULL, "key/IV initialization with compliant key failed" );
 	elektraCryptoHandleDestroy(handle);
+	elektraCryptoTeardown();
 }
 
 static void test_encryption()
@@ -102,6 +106,8 @@ static void test_encryption()
 	Key *k;
 	unsigned char buffer[64];
 	size_t len;
+
+	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
 
 	k = keyNew("user/plugins/crypto/gcrypt/test-encryption", KEY_END);
 	keySetBinary(k, plainText, sizeof(plainText));
@@ -117,6 +123,7 @@ static void test_encryption()
 	succeed_if( cmp_buffers(buffer, len, expectedCipherText, sizeof(expectedCipherText)) == 0, "ciphertext does not match the test vector" );
 
 	keyDel(k);
+	elektraCryptoTeardown();
 }
 
 static void test_decryption()
@@ -125,6 +132,8 @@ static void test_decryption()
 	Key *k;
 	unsigned char buffer[64];
 	size_t len;
+
+	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
 
 	k = keyNew("user/plugins/crypto/gcrypt/test-decryption", KEY_END);
 	keySetBinary(k, expectedCipherText, sizeof(expectedCipherText));
@@ -140,6 +149,7 @@ static void test_decryption()
 	succeed_if( cmp_buffers(buffer, len, plainText, sizeof(plainText)) == 0, "decrypted value does not match the test vector" );
 
 	keyDel(k);
+	elektraCryptoTeardown();
 }
 
 static void test_enc_and_dec_with_string()
@@ -147,6 +157,9 @@ static void test_enc_and_dec_with_string()
 	elektraCryptoHandle *handle;
 	const char original[] = "Short";
 	char content[64] = "";
+
+	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
+
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding", KEY_END);
 	keySetString(k, original);
 
@@ -168,6 +181,7 @@ static void test_enc_and_dec_with_string()
 	succeed_if( strcmp(original, content) == 0, "decrypted value differs from original");
 
 	keyDel(k);
+	elektraCryptoTeardown();
 }
 
 static void test_enc_and_dec_with_binary()
@@ -176,8 +190,11 @@ static void test_enc_and_dec_with_binary()
 	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
 	unsigned char content[64];
 	unsigned long read = 0;
+
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding-bin", KEY_END);
 	keySetBinary(k, original, sizeof(original));
+
+	succeed_if( elektraCryptoInit() == 1, "crypto initialization failed" );
 
 	// 1. encrypt
 	handle = elektraCryptoHandleCreate(key, sizeof(key), iv, sizeof(iv));
@@ -198,6 +215,7 @@ static void test_enc_and_dec_with_binary()
 	succeed_if( cmp_buffers(original, sizeof(original), content, read) == 0, "decrypted value differs from original");
 
 	keyDel(k);
+	elektraCryptoTeardown();
 }
 
 int main(int argc, char** argv)
@@ -215,10 +233,7 @@ int main(int argc, char** argv)
 	// test_enc_and_dec_with_string();
 	test_enc_and_dec_with_binary();
 
-	elektraCryptoTeardown();
-
 	printf("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
-
 	return nbError;
 }
 
