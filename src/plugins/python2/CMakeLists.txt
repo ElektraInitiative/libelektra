@@ -49,6 +49,8 @@ elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 			COMPILE_DEFINITIONS
 				ELEKTRA_PLUGIN_NAME=\"python2\"
 		)
+
+		install(DIRECTORY python2 DESTINATION ${TARGET_TEST_DATA_FOLDER})
 	else ()
 		message (WARNING "swig_python2 bindings are required for testing, test deactivated")
 	endif ()

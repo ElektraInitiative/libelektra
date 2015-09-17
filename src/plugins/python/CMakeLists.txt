@@ -45,6 +45,8 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 			COMPILE_DEFINITIONS
 				ELEKTRA_PLUGIN_NAME=\"python\"
 		)
+
+		install(DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
 	else ()
 		message (WARNING "swig_python3 bindings are required for testing, test deactivated")
 	endif ()
