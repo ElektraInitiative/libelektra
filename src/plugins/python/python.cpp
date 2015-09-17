@@ -211,7 +211,10 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	moduleData *data = new moduleData;
 	data->instance   = NULL;
 	data->printError = (ksLookupByName(config, "/print", 0) != NULL);
-	data->shutdown   = (ksLookupByName(config, "/shutdown", 0) != NULL);
+	/* shutdown flag is integer by design. This way users can set the
+	 * expected behaviour without worring about default values
+	 */
+	data->shutdown   = (!!strcmp(keyString(ksLookupByName(config, "/shutdown", 0)), "0"));
 
 	{
 		/* initialize python interpreter - only once */
