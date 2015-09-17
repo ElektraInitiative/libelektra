@@ -133,7 +133,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	fp = fopen(fileName, "rb");
 	if(!fp)
 	{
-		ELEKTRA_SET_ERROR(114, parentKey, "couldn't open file");
+		ELEKTRA_SET_ERROR(116, parentKey, "couldn't open file");
 		return -1;
 	}
 
@@ -141,7 +141,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	length = getLineLength(fp);
 	if(length == 0)
 	{
-		ELEKTRA_ADD_WARNING(116, parentKey, "Empty file");
+		ELEKTRA_ADD_WARNING(118, parentKey, "Empty file");
 		fclose(fp);
 		return 1;
 	}
@@ -150,12 +150,12 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	lineBuffer = malloc(length * sizeof(char)+1);
 	if(!lineBuffer)
 	{
-		ELEKTRA_SET_ERROR(117, parentKey, "Out of memory");
+		ELEKTRA_SET_ERROR(119, parentKey, "Out of memory");
 		return -1;
 	}
 	if(!fgets(lineBuffer, length, fp))
 	{
-		ELEKTRA_SET_ERROR(114, parentKey, "Cant read File");
+		ELEKTRA_SET_ERROR(116, parentKey, "Cant read File");
 		return -1;
 	}
 	
@@ -222,7 +222,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 		if(colCounter != columns)
 		{
-			ELEKTRA_ADD_WARNING(116, parentKey, "illegal number of columns");
+			ELEKTRA_ADD_WARNING(118, parentKey, "illegal number of columns");
 		}
 		++lineCounter;
 		keyDel(dirKey);
@@ -268,7 +268,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	fp = fopen(keyString(parentKey), "w");
 	if(!fp)
 	{
-		ELEKTRA_SET_ERROR(114, parentKey, "File not found");
+		ELEKTRA_SET_ERROR(116, parentKey, "File not found");
 		return -1;
 	}
 
@@ -287,7 +287,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			{
 				if(colCounter == ULONG_MAX)
 				{
-					ELEKTRA_SET_ERROR(115, parentKey, "number of columns exceeds ULONG_MAX");
+					ELEKTRA_SET_ERROR(117, parentKey, "number of columns exceeds ULONG_MAX");
 					return -1;
 				}
 				toWrite = getKeyByOrderNr(toWriteKS, colCounter);
@@ -301,7 +301,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			fprintf(fp, "\n");
 			if(!colCounter)
 			{
-				ELEKTRA_SET_ERROR(115, parentKey, "no columns");
+				ELEKTRA_SET_ERROR(117, parentKey, "no columns");
 				fclose(fp);
 				return -1;
 			}
@@ -331,7 +331,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			columns = colCounter;
 		if(colCounter != columns)
 		{    
-			ELEKTRA_SET_ERROR(115, parentKey, "illegal number of columns\n");
+			ELEKTRA_SET_ERROR(117, parentKey, "illegal number of columns\n");
 			fclose(fp);
 			return -1;
 		}

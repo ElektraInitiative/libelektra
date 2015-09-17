@@ -49,7 +49,6 @@ Using semi-structured data for config files:
     [inih](http://code.google.com/p/inih/).
 - [xmltool](xmltool) uses XML.
 - [yajl](yajl#introduction) uses JSON.
-- [csvstorage](csvstogre) uses CSV.
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
@@ -57,7 +56,7 @@ productive use:
 - [fstab](fstab) reads fstab files.
 - [regexstore](regexstore)
 - [simpleini](simpleini) is ini without sections
-
+- [csvstorage](csvstorage) uses csv files
 
 ## System Information ##
 
@@ -134,6 +133,8 @@ copied by another plugin just before):
 These plugins start an interpreter and allow you to use a bindings.
 
 - [jni](jni) java plugins started by jni, works with jna plugins
+- [python](python) Python 3 plugins (technical preview)
+- [python2](python2) Python 2 plugins (technical preview, deprecated)
 
 
 ## Others ##
@@ -141,8 +142,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [doc](doc) contains the documentation of the plugin interface
 - [error](error) yields errors as described in metadata
 - [template](template) to be copied for new plugins
-- [lineendings](lineendings) checks for line ending consistency
-- [switchparent](switchparent) switches parent with a childnode identified by its order number
+- [lineendings](lineendings) tests file for consistent line endings
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:

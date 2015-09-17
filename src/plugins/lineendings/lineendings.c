@@ -130,7 +130,7 @@ int elektraLineendingsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTR
 	ret = checkLineEndings(keyString(parentKey), validLineEnding);
 	if(ret == (-3))
 	{
-			ELEKTRA_SET_ERROR(113, parentKey, "Inconsistent line endings");
+			ELEKTRA_SET_ERROR(115, parentKey, "Inconsistent line endings");
 			return -1;
 	}
 	else
@@ -147,15 +147,15 @@ int elektraLineendingsSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *
 	switch(ret)
 	{
 		case (-1):
-			ELEKTRA_SET_ERRORF(111, parentKey, "Couldn't open file %s\n", keyString(parentKey));
+			ELEKTRA_SET_ERRORF(113, parentKey, "Couldn't open file %s\n", keyString(parentKey));
 			return 1;
 			break;
 		case (-2):
-			ELEKTRA_SET_ERROR(112, parentKey, "Invalid line ending");
+			ELEKTRA_SET_ERROR(114, parentKey, "Invalid line ending");
 			return -1;
 			break;
 		case (-3):
-			ELEKTRA_SET_ERROR(113, parentKey, "inconsistent line endings");
+			ELEKTRA_SET_ERROR(115, parentKey, "inconsistent line endings");
 			return -1;
 			break;
 		case 0:
