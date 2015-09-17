@@ -11,19 +11,45 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
-## start
+## start with
 
-Start with:
-	api! (Namespaces, encoded, versioning)
+api:
+	add keyGetNamespace
 	version rules ELEKTRA_ABI_13 ...
-	Cleanups
+
+c++11 -> by default
+
+cleanups/code reviews
+
+DEFAULT_STORAGE/RESOLVER
+
+to one cmake variable:
+	verbose/debug -> logging
+	pdf/on/off -> docu
+
+
+
+## docu
+
+man pages:
+	create good man pages for main tools
+
+more docu in METADATA.ini
+
+checking for broken links
+
+API docu improvements+pdf export
+
+
+# further
 
 genopt.hpp + include enforcement in template_dynamic?
 	use spec namespace
 	generic command-line parsing
+	%% context evaluation?
 
 link fetcher plugin: kdbGet() of all parts where links point to
-	test with ipe
+
 
 ## global plugins
 
@@ -47,6 +73,16 @@ default storage, encode,...
 
 global mountpoints with unserialize
 
+kdb edit
+	+markdown converter also for console tools?
+
+kdb tool should work with arrays (add_entry, remove_entry)
+
+cascading export, e.g. for nickel?
+
+install kdb gen properly
+	search by default in installed pathes
+
 ## testing
 
 execute all examples to see if they do not crash or memleak
@@ -59,15 +95,6 @@ cmd execution testing framework
 full jessie build+script+external
 copy debian/ from official
 
-(xdg) variable for spec namespace?
-
-cascading export nickel?
-
-more docu in METADATA.ini
-
-install kdb gen properly
-	search by default in installed pathes
-
 better errnostore solution?
 	reset errno in user functions and avoid code in every plugin
 	always provide last errno in ADD_WARNING+SET_ERROR
@@ -75,17 +102,11 @@ better errnostore solution?
 	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
 	(even strerrno_r seems to deadlock from time to time because of translations?)
 
-C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin
-exists for it
-
-system/env should be array
-kdb tool should work with arrays (add_entry, remove_entry)
-
-kdb edit
-	+markdown converter also for console tools?
+C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin exists for it
 
 roresolver: check if something is modified
 	for version, constants, uname
+	and/or remove value comparision in those plugins
 
 ## meta data ##
 
@@ -114,16 +135,6 @@ plugins should use relative pathes so that import/export/remount works
 ## Backend ##
 
 generic simpleini (customizable printf/scanf format strings)
-
-## simplify cmake ##
-
-c++11 -> by default
-DEFAULT_STORAGE/RESOLVER
-to one cmake variable:
-	verbose/debug -> logging
-	pdf/on/off -> docu
-
-fix dependency problem with kdberrors.h
 
 
 
