@@ -112,7 +112,6 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		free (key);
 		free (value);
 	}
-#pragma GCC diagnostic pop
 
 	if (feof(fp) == 0)
 	{

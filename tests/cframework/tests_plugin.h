@@ -16,7 +16,7 @@
 #define PLUGIN_OPEN(NAME) \
 		KeySet *modules = ksNew(0, KS_END); \
 		elektraModulesInit(modules, 0); \
-		Key *errorKey = keyNew(KEY_END); \
+		Key *errorKey = keyNew("", KEY_END); \
 		Plugin *plugin = elektraPluginOpen(NAME, modules, conf, errorKey); \
 		succeed_if(output_warnings (errorKey), "warnings in kdbOpen for plugin " NAME); \
 		succeed_if(output_error (errorKey), "error in kdbOpen for plugin " NAME); \
