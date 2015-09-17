@@ -600,8 +600,9 @@ QStringList getConflicts(KeySet const & conflictSet)
 	return conflicts;
 }
 
-KeySet handleConflict(KeySet const & theirs, KeySet & ours)
+KeySet handleConflict(KeySet & ours)
 {
+	Key root("/", KEY_END);
 	KeySet base = GUIBasicKeySet::basic();
 
 	ThreeWayMerge merger;
@@ -609,9 +610,13 @@ KeySet handleConflict(KeySet const & theirs, KeySet & ours)
 	AutoMergeConfiguration configuration;
 	configuration.configureMerger(merger);
 
+	// get theirs config
+	KDB kdb;
+	KeySet theirs;
+	kdb.get(theirs, root);
+
 	printKeys(theirs, base, ours);
 
-	Key root("/", KEY_END);
 	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
 							  OurMergeKeys(ours, root),
 							  TheirMergeKeys (theirs, root),
@@ -651,13 +656,23 @@ void TreeViewModel::synchronize()
 	}
 	catch (KDBException const&)
 	{
-		// get theirs config
-		KeySet theirs;
-		m_kdb.get(theirs, m_root);
-
 		try
 		{
-			KeySet result = handleConflict(theirs, ours);
+			KeySet renew;
+
+			KeySet result = handleConflict(ours);
+
+			// bring our database also to situation where it can be reset
+			m_kdb.get(renew, m_root);
+
+			/* TODO: should be added to fix race condition, currently not possible
+			   because some plugins prevent kdb.get() from returning 0
+			if (m_kdb.get(renew, m_root) == 0)
+			{
+			} else {
+				emit showMessage(tr("Error"), tr("Database changed during merging."), "");
+			}
+			*/
 
 			// TODO: will rewrite everything because of current limitation in merger
 			m_kdb.set(result, m_root);
@@ -666,7 +681,6 @@ void TreeViewModel::synchronize()
 		catch (KDBException const& e)
 		{
 			emit showMessage(tr("Error"), tr("Synchronizing failed, could not write merged configuration."), e.what());
-			return;
 		}
 		catch (QStringList const& conflicts)
 		{
