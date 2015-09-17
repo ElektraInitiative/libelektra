@@ -180,6 +180,14 @@ macro (add_cpp_plugintest testname)
 	endif()
 endmacro (add_cpp_plugintest testname)
 
+macro(find_swig)
+	find_package(SWIG 3)
+	if (NOT SWIG_FOUND)
+		message(STATUS "Search for swig2 instead")
+		find_package(SWIG 2 QUIET)
+	endif()
+endmacro(find_swig)
+
 
 function(find_util util output_loc output_arg)
 	if (CMAKE_CROSSCOMPILING)

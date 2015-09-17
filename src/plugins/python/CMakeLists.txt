@@ -1,5 +1,5 @@
 find_package(PythonLibs 3)
-find_package(SWIG 2)
+find_swig()
 
 if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 	include (LibAddMacros)
