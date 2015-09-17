@@ -1,9 +1,14 @@
 # 0.8.13 Release
 
-Still under construction, 0.8.13 is not yet released.
+- guid: 3c00a5f1-c017-4555-92b5-a2cf6e0803e3
+- author: Markus Raab
+- pubDate: Thu, 17 Sep 2015 17:32:16 +0200
+
+Again we managed to release with many new features, many fixes
+and also other improvements.
 
 
-## elektrify-getenv
+## Elektrify-getenv
 
 getenv(3) is one of the most popular ways to retrieve configuration,
 even though it has many known problems:
@@ -53,24 +58,33 @@ i.e. programs compiled against 0.8.13, might *not* work with older 0.8 libraries
 The function `keyUnescapedName` provides access to an unescaped name, i.e. one where `/` and `\\` are
 literal symbols and do not have any special meaning. `NULL` characters are used as path separators.
 This function makes it trivial and efficient to iterate over all path names, as already exploited
-in all bindings (python, lua, C++, java).
-Additionally, it is needed for name comparisons.
+in all bindings:
+ - [jna (java)](libelektra.org/blob/master/src/bindings/jna/HelloElektra.java)
+ - [lua](libelektra.org/blob/master/src/bindings/lua/tests/test_key.lua)
+ - [python2](libelektra.org/blob/master/src/bindings/python2/tests/testpy2_key.py)
+ - [python3](libelektra.org/blob/master/src/bindings/python3/tests/test_key.py)
 
+Other small changes/additions in bindings:
+- fix key constructor, thanks to Manuel Mausz
+- add copy and deepcopy in python (+examples,+testcases), thanks to Manuel Mausz
+
+Doxygen 1.8.8 is preferred and the configfile was updated to this version.
 
 The symbols of nickel (for the ni plugin) do not longer leak from the Elektra library.
 As such, old versions of testmod_ni won't work with Elektra 0.8.13.
 
+In this release, ENABLE_CXX11 was changed to `ON` by default.
 
-
-
-## Packaging
-
-https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
-- 0.8.12 packaged+migrated to testing, thanks to Pino Toscano <pino@debian.org>
-
+Note that in the next release there will be two changes:
 - According to [issue #262](libelektra.org/issues/262), we plan to remove the option ENABLE_CXX11
   If you have any system you are not able to build Elektra with -DENABLE_CXX11=ON (which is
   the default for 0.8.12) please report that immediately.
+- the python3 bindings will be renamed to python
+
+Not having to care for pre-C++11, we hope to attract more developers.
+The core part is still in C99 so that Elektra can be used on systems where libc++ is not available.
+Many new plugins are still written in C, also with the purpose of not depending on C++.
+
 
 ## Goals
 
@@ -103,7 +117,7 @@ Note there is no issue the other way round: special characteristics of configura
 files can always be captured in Elektra's metadata.
 
 
-## python
+## Python Plugins
 
 A technical preview of [python3](http://libelektra.org/blob/master/src/plugins/python)
 and [python2](http://libelektra.org/blob/master/src/plugins/python2) plugins has been added.
@@ -112,9 +126,16 @@ With them its possible to write any plugin with python scripts.
 
 Note, they are a technical preview. They might have severe bugs
 and the API might change in the future.
+Because of that, it is not included in ALL, to not break systems.
+To use it, you have to specify it:
+
+    -PLUGINS="ALL;python;python2"
+
+Thanks to Manuel Mausz for to this work on the plugins and the patience in all
+the last minute fixes!
 
 
-## qt-gui 0.0.8
+## Qt-gui 0.0.8
 
 The GUI
 
@@ -124,7 +145,24 @@ The GUI
 - fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
 - fixed qml warning when deleting key
 - fixed qml typerror when accepting an edit
+- use merging in a way that only a conflict free merge will be written, thanks to Felix Berlakovich 
 
+
+
+## KDB Tool
+
+The commandline tool `kdb` also get some improvements.
+Most noteworthy is that `kdb get -v` now gives a complete trace for
+every key that was tried. This is very handy if you have a complex
+specification with many fallback and override links.
+
+It also shows default values and warnings in the case of context-oriented
+features.
+
+Furthermore:
+- Add `-v` for setmeta
+- improve help text, thanks to Ian Donnelly
+- Copy will warn when it won't overwrite another key (behaviour did not change)
 
 ## Documentation Initiative
 
@@ -132,39 +170,80 @@ As Michael Haberler from [machinekit](http://www.machinekit.io/) pointed out its
 to get started with Elektra. With the documentation initiative we are going to change that.
 
 - Daniel Bugl already restructed the main page
-- 
+- Daniel Bugl also improved formatting
+- SVG logo is preferred, thanks to Daniel Bugl
+- A lot of discussion in github issues and also in design decisions
+- We start writing man pages in ronn-format(7), thanks to Ian Donnelly
 
 Any further help is very welcome! This call is especially addressed to beginners in Elektra because
 they obviously know best which documentation is lacking and what they would need.
 
 
-## Other OS
+## Portability
 
-`kdb-full` and `kdb-static` work fine now for Windows 64bit.
+`kdb-full` and `kdb-static` work fine now for Windows 64bit, thanks to Manuel Mausz.
+The wresolver is now more relaxed with unset environment.
 
-All issues for Mac OS X were resolved. With the exception of elektrify-getenv everything should work now.
+To make that work, a version-script is now in use to only export following symbols:
+- kdb*
+- key*
+- ks*
+- libelektra* for module loading system
+- elektra* for proposed and other functions (no ABI/API compatibility here!)
 
-## escaped key names
 
-- keyUnescapedName has been added to our main API (moved from proposal)
-- additional most of our bindings have been modified to allow easy iterations over key names. To see how the iterator works see:
- - [jna (java)](libelektra.org/blob/master/src/bindings/jna/HelloElektra.java)
- - [lua](libelektra.org/blob/master/src/bindings/lua/tests/test_key.lua)
- - [python2](libelektra.org/blob/master/src/bindings/python2/tests/testpy2_key.py)
- - [python3](libelektra.org/blob/master/src/bindings/python3/tests/test_key.py)
+All issues for Mac OS X were resolved. With the exception of elektrify-getenv
+everything should work now, thanks to Mihael Pranjic:
+- fix mktemp
+- testscripts
+- recursive mutex simplification
+- clearenv ifdef
 
-Thanks to Manuel Mausz for to this work on the bindings!
+and thanks to Daniel Bugl:
 
-## other fixes
+- RPATH fixed, so that `kdb` works
+
+- fix `__FUNCTION__` to `__func__` (C99), thanks to Pino Toscano
+- avoid compilation error when JNI_VERSION_1_8 is missing
+- fix (twice, because of an accidental revert) the TARGET_CMAKE_FOLDER, thanks to Pino Toscano
+
+Thanks to Manuel Mausz for to testing and improving portability!
+
+
+## Packaging and Build System
+
+https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
+- 0.8.12 packaged+migrated to testing, thanks to Pino Toscano <pino@debian.org>
+
+- fix build with external gtest, thanks to Pino Toscano
+- switch from FindElektra.cmake to ElektraConfig.cmake, thanks to Pino Toscano
+- use `cmake_parse_arguments` instead of `parse_arguments`, thanks to Manuel Mausz
+
+
+## Further Fixes
 
 - Key::release() and Key::~Key will also work when Key holds a null-pointer
 - Key::getName(), avoid std::string exception
 - dup() in python3 returned wrong type (SWIG wrapper), thanks to Toscano Pino for reporting, thanks to Manuel Mausz for fixing it
 - support for copy module was introduced, thanks to Manuel Mausz
 - doc: use @retval more, thanks to Pino Toscano
-- fix build with external gtest, thanks to Pino Toscano
-- typo fix: "allows to" to "allows one to", "informations" to "information" thanks to Pino Toscano
+- many typo fixes, thanks to Pino Toscano
 - be more POSIX compatible in shell scripts (`type` to `command -v` and avoid `echo -e`) thanks to Pino Toscano
+- fix vararg type for KEY_FLAGS, thanks to Pino Toscano
+- fix broken links, thanks to Manuel Mausz, Daniel Bugl and Michael Haberler
+- fix crash of example, thanks to Pino Toscano
+- add proper licence file for Modules (COPYING-CMAKE-SCRIPTS), thanks to Pino Toscano
+- fix XDG resolver issue when no given path is valid
+- make dbus example work again
+- doc: use @retval more, thanks to Pino Toscano
+- fix compiler warnings for gcc and clang
+- fix valgrind suppressions
+- doxygen: fix template to use `@` and not `\\`.
+- Installation of GI binding is fixed, thanks to Dāvis
+- make uninstall is fixed and docu improved
+
+
+
 
 
 
