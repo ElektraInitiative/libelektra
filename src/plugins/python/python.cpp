@@ -186,11 +186,8 @@ static void Python_Shutdown(moduleData *data)
 	/* destroy python if plugin isn't used anymore */
 	//FIXME python reinitialization is known to be buggy
 	pthread_mutex_lock(&mutex);
-	if (data->shutdown && Py_IsInitialized())
-	{
-		if (!--open_cnt)
-			Py_Finalize();
-	}
+	if (Py_IsInitialized() && !--open_cnt && data->shutdown) // order matters!
+		Py_Finalize();
 	pthread_mutex_unlock(&mutex);
 }
 
