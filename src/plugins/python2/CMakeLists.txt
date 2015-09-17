@@ -28,6 +28,12 @@ elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 			PYTHON_PLUGIN_SYMBOL_NAME=Python2
 	)
 
+	# generate readme from pythons readme.
+	set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
+	set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../python")
+	generate_readme (python2)
+	set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_SAFE})
+
 	# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 	set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 	set_source_files_properties (python.cpp PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
