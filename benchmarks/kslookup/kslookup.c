@@ -8,6 +8,7 @@ int search (int n, int r, KeySet * data, int * times);
 
 //Data helpers
 KeySet * readKeySet (int size, int version);
+KeySet * copyKeySet (KeySet * ks);
 
 //TODO KURT print machine name + kernel bla ? uname ?
 int main(int argc, char** argv)
@@ -68,7 +69,7 @@ void runBenchmark (bool mode, int (*runInLoop) (int, int, KeySet *, int *))
 
 			for (int r = 0;r < REPEATS;++r)
 			{
-				KeySet * data = ksDup (ks);
+				KeySet * data = copyKeySet (ks);
 
 				//call for worker
 				if(runInLoop (n,r,data,&times[0]) < 0)
@@ -84,7 +85,7 @@ void runBenchmark (bool mode, int (*runInLoop) (int, int, KeySet *, int *))
 
 			fprintf (output, ";%i\n",median (times, REPEATS));
 
-			ksDel(ks);
+			ksDel (ks);
 		}
 		fclose (output);
 	}
@@ -210,5 +211,16 @@ KeySet * readKeySet (int size, int version)
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
 
+	return out;
+}
+
+KeySet * copyKeySet (KeySet * ks)
+{
+	KeySet * out = ksNew (ksGetSize(ks), KS_END);
+	Key * iter_key;
+	while ((iter_key = ksNext (ks)) != 0)
+	{
+		ksAppendKey (out, keyDup (iter_key));
+	}
 	return out;
 }

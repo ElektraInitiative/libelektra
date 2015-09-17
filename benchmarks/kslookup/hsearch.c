@@ -66,7 +66,7 @@ void runBenchmark (bool mode, int (*runInLoop) (int, int, int, ENTRY *, int *))
 			fprintf (output, "KeySet size;bucket size;time\n");
 
 			/* k is the bucket count and goes from n to 2n.
-			 * The number of steps from n to 2n is calculated
+			 * The number of steps from n to 3n is calculated
 			 * with a mapping form the interval starting with
 			 * the MIN_KEYSET_SIZE  and ending at MAX_KEYSET_SIZE
 			 * to the interval starting at MIN_BUCKET_STEP and ending
@@ -92,7 +92,7 @@ void runBenchmark (bool mode, int (*runInLoop) (int, int, int, ENTRY *, int *))
 			if (bucket_step * bucket_step_count != n)
 				++bucket_step;
 
-			for (int k = n; k < n*2;k+=bucket_step)
+			for (int k = n; k < n*3;k+=bucket_step)
 			{
 				fprintf (output, "%i;%i",n,k);
 				int times [REPEATS];
