@@ -42,6 +42,24 @@ applications would decide differently, e.g.:
 
 
 
+## Compatibility
+
+As always, the API and API is fully forward-compatible, i.e. programs compiled against an
+older 0.8 versions of Elektra will continue to work.
+
+Because `keyUnescapedName` and `keyGetUnescapedNameSize` is added in this release, it is not backward-compatible,
+i.e. programs compiled against 0.8.13, might *not* work with older 0.8 libraries.
+
+The function `keyUnescapedName` provides access to an unescaped name, i.e. one where `/` and `\\` are
+literal symbols and do not have any special meaning. `NULL` characters are used as path separators.
+This function makes it trivial and efficient to iterate over all path names, as already exploited
+in all bindings (python, lua, C++, java).
+Additionally, it is needed for name comparisons.
+
+
+The symbols of nickel (for the ni plugin) do not longer leak from the Elektra library.
+As such, old versions of testmod_ni won't work with Elektra 0.8.13.
+
 
 
 
@@ -73,17 +91,58 @@ but no flexibility regarding:
 
 - XDG resolver: handle XDG_CONFIG_DIRS, where no path is valid, correctly
 
+There are some misconceptions about Elektra and semi structured data (like XML, JSON).
+Elektra is a key/value storage, that internally represents everything with key and values.
+Even though, Elektra can use XML and JSON files elegantly, there are limitations what
+XML and JSON can represent. XML, e.g., cannot have holes within its structure, while this
+is obviously easily possible with key/value. And JSON, e.g., cannot have non-array entries
+within an array. This is a more general issue of that configuration files in general
+are constrained in what they are able to express. The solution to this problem is
+validation, i.e. keys that does not fit in the underlying format are rejected.
+Note there is no issue the other way round: special characteristics of configuration
+files can always be captured in Elektra's metadata.
+
+
+## python
+
+A technical preview of [python3](http://libelektra.org/blob/master/src/plugins/python)
+and [python2](http://libelektra.org/blob/master/src/plugins/python2) plugins has been added.
+
+With them its possible to write any plugin with python scripts.
+
+Note, they are a technical preview. They might have severe bugs
+and the API might change in the future.
+
 
 ## qt-gui 0.0.8
 
+The GUI
+
+- only reload and write config files if something has changed
 - made sure keys can only be renamed if the new name/value/metadata is different from the existing ones
 - fixed 1) and 2) of #233
 - fixed #235, is the current situation with duplication ok (in Confignode::setName() etc) or should this be changed?
 - fixed qml warning when deleting key
 - fixed qml typerror when accepting an edit
 
+
+## Documentation Initiative
+
+As Michael Haberler from [machinekit](http://www.machinekit.io/) pointed out its certainly not easy for a novice
+to get started with Elektra. With the documentation initiative we are going to change that.
+
+- Daniel Bugl already restructed the main page
+- 
+
+Any further help is very welcome! This call is especially addressed to beginners in Elektra because
+they obviously know best which documentation is lacking and what they would need.
+
+
 ## Other OS
-`kdb-full` and `kdb-static` work fine now for Mac OS X and Windows 64bit.
+
+`kdb-full` and `kdb-static` work fine now for Windows 64bit.
+
+All issues for Mac OS X were resolved. With the exception of elektrify-getenv everything should work now.
 
 ## escaped key names
 
