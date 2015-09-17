@@ -65,7 +65,7 @@ Configuration can be retrieved with `kdb get`:
 kdb get user/env/override/HTTP_PROXY
 ```
 
-For more information about environment variables and elektra, see
+For more information about elektrified environment variables, see
 [src/libgetenv/README.md](src/libgetenv/README.md)
 
 

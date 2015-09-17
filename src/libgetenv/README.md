@@ -147,9 +147,8 @@ E.g. to have a different home directory for any user and application:
 Some applications do not use `getenv(3)` or `secure_getenv(3)` for requesting the environment,
 e.g. shells. This approach cannot work for them.
 
-
-In the startup-phase, `getenv` will not consider `/env/override/` or `/env/fallback`.
-
+In the startup-phase (before main is even entered), `getenv(3)` will
+not consider `/env/override/` or `/env/fallback`.
 
 Elektra internally tries to avoid using the environment.
 Some resolvers, however, use it to be conform to some specifications, e.g. XDG.
@@ -161,13 +160,13 @@ For more information see:
 For these parameters, `/env/override/` or `/env/fallback` will *not* be used internally, but
 will be used if applications request them, too.
 
+If you use the standard resolvers, the bug won't have any effect.
+
 Also note that `--elektra-debug` or `ELEKTRA_DEBUG` does *not* log `getenv(3)` used by plugins
 during the startup-phase.
 
 Commandline Arguments are always to the outmost command, e.g. `nice ls --elektra:COLUMNS=20`
 won't have any effect because only for `nice` `COLUMNS` will be set.
-
-If you use the standard resolvers, the bug won't have any effect.
 
 
 ## EXAMPLES
@@ -180,7 +179,9 @@ Will use MANWIDTH 40 for this invocation of man man.
 This feature is handy, if an option is only available
 by environment, but not by command-line arguments,
 because sometimes environment variables are not trivial
-to set (e.g. in Makefiles)-
+to set (e.g. in Makefiles).
+
+Some more examples:
 
 
     kdb set user/env/override/MANOPT -- "--regex -LC"

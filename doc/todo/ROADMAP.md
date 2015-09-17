@@ -137,6 +137,23 @@ plugins should use relative pathes so that import/export/remount works
 generic simpleini (customizable printf/scanf format strings)
 
 
+## Announce goal
+
+We shifted our [goals](http://git.libelektra.org/blob/master/doc/GOALS.md) a bit:
+We want to prefer simplicity to flexibility!
+	use it also for normal plugins (pre, postfilter)
+but every way is optional, if you want you can use it, otherwise you can leave it out:
+- as primitive key/value storage
+- with specification
+- with code generation
+- ...
+
+but no flexibility regarding:
+- namespaces are only useful for configuration (not for arbitrary key/value)
+- mounting and contracts functionality
+- error code meanings are fixed, if a resolver detects a conflict, error #30 must be used
+- of course ABI, API
+
 
 
 # 0.8.15
