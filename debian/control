@@ -142,6 +142,8 @@ Package: libelektra-test
 Section: admin
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
+ libelektra-python4,
+ libelektra-full4,
  ${shlibs:Depends},
  ${misc:Depends}
 Description: tests for a framework to get and set configuration
@@ -232,7 +234,7 @@ Depends: libelektra-core4 (>= ${source:Version}),
  swig2.0,
  ${shlibs:Depends},
  ${misc:Depends}
-Description: Python bindings for Elektra
+Description: Python2 bindings for Elektra
  Elektra provides a universal and secure framework to store
  configuration parameters in a global, hierarchical key database. The
  core is a small library implemented in C. The plugin-based framework
@@ -243,7 +245,7 @@ Description: Python bindings for Elektra
  applications to be aware of other applications' configurations,
  leveraging easy application integration.
  .
- This package contains the python bindings allowing libelektra integration with python.
+ This package contains the python2 bindings allowing libelektra integration with python.
 
 Package: libelektra-gen
 Architecture: any
