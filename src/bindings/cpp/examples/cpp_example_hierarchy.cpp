@@ -44,7 +44,7 @@ std::string nth_level_of_name(Key k, unsigned long n)
 unsigned long name_depth(Key k)
 {
 	std::string name = k.getName();
-	unsigned long pos = name.find("/", 0);
+	size_t pos = name.find("/", 0);
 	unsigned long depth = 0;
 
 	while (pos != std::string::npos)

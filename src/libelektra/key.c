@@ -147,7 +147,7 @@ static Key *elektraKeyMalloc()
  *   recommended way to set multiple flags. overrides previously defined flags.
  *   @snippet keyNew.c With Flags
  * - ::KEY_BINARY \n
- *   Allows to change the key to a binary key.
+ *   Allows one to change the key to a binary key.
  *   Make sure that you also pass ::KEY_SIZE before you set the value.
  *   Otherwise it will be cut off with first \\0 in the string.
  *   So this flag toggle from keySetString() to keySetBinary().
@@ -266,7 +266,7 @@ int g (const Key * source, KeySet * ks)
  * is known to be valid.
  *
  * @param source has to be an initialized source Key
- * @return 0 failure or on NULL pointer
+ * @retval 0 failure or on NULL pointer
  * @return a fully copy of source on success
  * @see ksAppend(), keyDel(), keyNew()
  * @ingroup key
@@ -453,8 +453,8 @@ memerror:
  * @see keyNew(), keyIncRef(), keyGetRef()
  * @return the value of the reference counter
  *         if the key is within keyset(s)
- * @return 0 when the key was freed
- * @return -1 on null pointers
+ * @retval 0 when the key was freed
+ * @retval -1 on null pointers
  * @ingroup key
  *
  */
@@ -497,8 +497,8 @@ int f (Key *k)
 }
  * @endcode
  *
- * @return returns 0 on success
- * @return -1 on null pointer
+ * @retval returns 0 on success
+ * @retval -1 on null pointer
  *
  * @param key the key object to work with
  * @ingroup key
@@ -545,8 +545,8 @@ int keyClear(Key *key)
  * @note keyDup() will reset the references for dupped key.
  *
  * @return the value of the new reference counter
- * @return -1 on null pointer
- * @return SSIZE_MAX when maximum exceeded
+ * @retval -1 on null pointer
+ * @retval SSIZE_MAX when maximum exceeded
  * @param key the key object to work with
  * @see keyGetRef() for longer explanation, keyDecRef(), keyDel()
  * @ingroup key
@@ -578,8 +578,8 @@ ssize_t keyIncRef(Key *key)
  * @note keyDup() will reset the references for dupped key.
  *
  * @return the value of the new reference counter
- * @return -1 on null pointer
- * @return 0 when the key is ready to be freed
+ * @retval -1 on null pointer
+ * @retval 0 when the key is ready to be freed
  * @param key the key object to work with
  * @see keyGetRef() for longer explanation, keyDel(), keyIncRef()
  * @ingroup key
@@ -630,7 +630,7 @@ ssize_t keyDecRef(Key *key)
  *
  * @param key the key object to work with
  * @return the number of references
- * @return -1 on null pointer
+ * @retval -1 on null pointer
  * @see keyIncRef() and keyDecRef()
  * @ingroup key
  **/

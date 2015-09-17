@@ -10,7 +10,12 @@ cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
 
 nbFailed=""
 
-EXPORTS=`mktemp -d`
+EXPORTS="$(mktempdir_elektra)"
+
+cleanup()
+{
+	rm -rf "$EXPORTS"
+}
 
 if [ ! -d "$EXPORTS" ]
 then
@@ -123,12 +128,10 @@ do
 	fi
 done
 
-rm -rf "$EXPORTS"
 
 if [ $nbError != "0" ]
 then
-	echo "Following test cases failed:"
-	echo -e "$nbFailed"
+	echo "Following test cases failed: $nbFailed"
 fi
 
 end_script all

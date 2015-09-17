@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-	property string version: "0.0.7 (beta)"
+	property string version: "0.0.8 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -676,7 +676,7 @@ ApplicationWindow {
 
 					function getModel() {
 						if(treeView.currentNode === null)
-							return ""
+							return null
 						else if(treeView.currentNode.childrenHaveNoChildren)
 							return treeView.currentNode.children
 					}
@@ -685,7 +685,7 @@ ApplicationWindow {
 						if(currentRow === -1)
 							keyAreaSelectedItem = null
 						else
-							keyAreaSelectedItem = model.get(currentRow)
+							model !== null ? keyAreaSelectedItem = model.get(currentRow) : keyAreaSelectedItem = null
 					}
 
 					TableViewColumn {

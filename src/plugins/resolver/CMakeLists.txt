@@ -8,8 +8,6 @@ find_package(Threads)
 add_plugin(resolver
 	SOURCES
 		${SOURCES}
-	SHARED_SOURCES
-		mutex.c
 	LINK_LIBRARIES
 		${CMAKE_THREAD_LIBS_INIT}
 		${CMAKE_REALTIME_LIBS_INIT}
@@ -54,8 +52,6 @@ foreach (plugin ${PLUGINS})
 		add_plugin(${plugin}
 			SOURCES
 				${SOURCES}
-			SHARED_SOURCES
-				mutex.c
 			LINK_LIBRARIES
 				${FURTHER_LIBRARIES}
 			COMPILE_DEFINITIONS

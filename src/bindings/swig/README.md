@@ -1,3 +1,5 @@
+Please note that the python2 bindings has been deprecated!
+
 To use python2 on debian you might need following cmake defines:
 
 	-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python2.7
@@ -20,3 +22,7 @@ debian stable needs:
 	-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python3
 	-DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.2
 	-DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so 
+
+Note that cmake does *not* automatically rebuild SWIG bindings
+when header files are changed. Remove the build directory
+in that case.

@@ -14,6 +14,7 @@ then
 	echo "dump available"
 else
 	echo "dump not available, skipping tests"
+	nbSkip=$(( $nbSkip + 100 ))
 	exit 0
 fi
 
@@ -35,21 +36,32 @@ check_resolver()
 		PLUGIN=`echo "$PLUGINS_NEWLINES" | grep -m 1 "resolver_.*_.*_$2.*"`
 	fi
 
+	if [ "$2" = "w" ]
+	then
+		if is_plugin_available wresolver
+		then
+			PLUGIN=wresolver
+		else
+			PLUGIN=""
+		fi
+	fi
+
 	if [ -z "$PLUGIN" ]
 	then
-		echo "No plugin matching $2 for namespace $1"
+		nbSkip=$(( $nbSkip + 1 ))
+		echo "skipping test because plugin variant $2 is missing, for $2 with $3"
 		return
 	fi
 
 	MOUNTPOINT=$1$ROOT_MOUNTPOINT
 
 	$KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump 1>/dev/null
-	succeed_if "could not mount root: $3 at $MOUNTPOINT with resolver $PLUGIN"
+	succeed_if "could not mount root using: $KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
 
 	FILE=`$KDB file -N $1 -n $ROOT_MOUNTPOINT 2> /dev/null`
 	echo "For $1 $2 $3 we got $FILE"
 	[ "x$FILE"  = "x$4" ]
-	succeed_if "resolving of $MOUNTPOINT did not yield $4"
+	succeed_if "resolving of $MOUNTPOINT did not yield $4 but $FILE"
 
 	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
 		KEY=$ROOT_MOUNTPOINT/key
@@ -74,6 +86,7 @@ unset USER
 if echo "@KDB_DEFAULT_RESOLVER@" | grep "resolver_.*_.*_x.*"
 then
 	echo "skipping tests where XDG_CONFIG_DIRS is manipulated, because default resolver itself would use those paths"
+	nbSkip=$(( $nbSkip + 10 ))
 else
 
 unset XDG_CONFIG_DIRS
@@ -95,9 +108,59 @@ export XDG_CONFIG_HOME="/xdg_dir1"
 check_resolver system x app/config_file /etc/xdg/app/config_file
 check_resolver user x app/config_file /xdg_dir1/app/config_file
 
+export XDG_CONFIG_HOME="broken"
+check_resolver system x app/config_file /etc/xdg/app/config_file
+export XDG_CONFIG_HOME="(broken)"
+check_resolver system x app/config_file /etc/xdg/app/config_file
+export XDG_CONFIG_HOME="(even):(more):(broken):"
+check_resolver system x app/config_file /etc/xdg/app/config_file
+export XDG_CONFIG_HOME=""
+check_resolver system x app/config_file /etc/xdg/app/config_file
 unset XDG_CONFIG_HOME
+check_resolver system x app/config_file /etc/xdg/app/config_file
 
-fi
+OD=`pwd`
+cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
+check_resolver dir x /a /tmp/a
+check_resolver dir x /a/b /tmp/a/b
+check_resolver dir x a /tmp/@KDB_DB_DIR@/a
+check_resolver dir x a/b /tmp/@KDB_DB_DIR@/a/b
+cd $OD
+
+fi # end of XDG tests
+
+
+
+
+
+
+
+export ALLUSERSPROFILE="/C"
+check_resolver spec w /app/config_file /C/app/config_file
+check_resolver spec w app/config_file /C@CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/app/config_file
+check_resolver system w /app/config_file /C/app/config_file
+check_resolver system w app/config_file /C@KDB_DB_SYSTEM@/app/config_file
+unset ALLUSERSPROFILE
+
+export HOME="/D"
+check_resolver user w /app/config_file /D//app/config_file
+check_resolver user w app/config_file /D/app/config_file #@KDB_DB_USER@ not impl
+unset HOME
+
+OD=`pwd`
+cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
+check_resolver dir w /a /tmp//a
+check_resolver dir w /a/b /tmp//a/b
+check_resolver dir w a /tmp/a #@KDB_DB_DIR@ not impl
+check_resolver dir w a/b /tmp/a/b #@KDB_DB_DIR@ not impl
+cd $OD
+
+
+
+
+
+
+
 
 check_resolver system b x @KDB_DB_SYSTEM@/x
 check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
@@ -133,7 +196,13 @@ check_resolver dir b /a/b /tmp/a/b
 check_resolver dir b a /tmp/@KDB_DB_DIR@/a
 check_resolver dir b a/b /tmp/@KDB_DB_DIR@/a/b
 
-T=`mktemp -d`
+T="$(mktempdir_elektra)"
+
+cleanup()
+{
+	rm -rf "$T"
+}
+
 cd $T
 check_resolver dir b /a $T/a
 check_resolver dir b /a/b $T/a/b
@@ -153,7 +222,6 @@ check_resolver dir b a $T/@KDB_DB_DIR@/a
 check_resolver dir b a/b $T/sub/@KDB_DB_DIR@/a/b
 rm $T/@KDB_DB_DIR@/a
 
-rm -r $T
 cd $OD
 
 unset HOME

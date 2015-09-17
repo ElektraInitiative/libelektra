@@ -21,7 +21,7 @@
 
 #include <tests_plugin.h>
 
-void test_hostLensRead(char *fileName)
+static void test_hostLensRead(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
 			srcdir_file (fileName), KEY_END);
@@ -72,7 +72,7 @@ void test_hostLensRead(char *fileName)
 	keyDel(parentKey);
 }
 
-void test_hostLensWrite(char *fileName)
+static void test_hostLensWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
 			elektraFilename(), KEY_END);
@@ -124,7 +124,7 @@ void test_hostLensWrite(char *fileName)
 	PLUGIN_CLOSE ();
 }
 
-void test_hostLensDelete(char *sourceFile, char *compFile)
+static void test_hostLensDelete(char *sourceFile, char *compFile)
 {
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
 			srcdir_file (sourceFile), KEY_END);
@@ -180,7 +180,7 @@ void test_hostLensDelete(char *sourceFile, char *compFile)
 
 }
 
-void test_hostLensModify(char *sourceFile, char *compFile)
+static void test_hostLensModify(char *sourceFile, char *compFile)
 {
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
 			srcdir_file (sourceFile), KEY_END);
@@ -226,7 +226,7 @@ void test_hostLensModify(char *sourceFile, char *compFile)
 	keyDel (parentKey);
 }
 
-void test_order(char *fileName)
+static void test_order(char *fileName)
 {
 	Key * parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
 			srcdir_file (fileName), KEY_END);
@@ -301,7 +301,7 @@ void test_order(char *fileName)
 	PLUGIN_CLOSE() ;
 }
 
-void test_hostLensFormatting(char *fileName)
+static void test_hostLensFormatting(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/augeas-hosts", KEY_VALUE,
 			srcdir_file (fileName), KEY_END);
@@ -351,7 +351,7 @@ int main(int argc, char** argv)
 	test_hostLensFormatting("augeas/hosts-formatting");
 	test_order ("augeas/hosts-big");
 
-	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest,
+	printf ("\ntest_augeas RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
 
 	return nbError;

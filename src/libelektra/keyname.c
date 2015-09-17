@@ -18,13 +18,16 @@
  *
  * @brief .
  *
- * - @p spec/something for specification of other keys
- * - @p proc/something for in-memory keys (e.g. command-line)
+ * .
+ *
+ * - @p spec/something for specification of other keys.
+ * - @p proc/something for in-memory keys, e.g. commandline.
  * - @p dir/something for dir keys in current working directory
  * - @p system/something for system keys in /etc or /
  * - @p user/something for user keys in home directory
  * - @p user:username/something for other users (deprecated: kdbGet() + kdbSet() currently unsupported)
  * - @p /something for cascading keys (actually refers to one of the above, see also ksLookup())
+ *
  */
 
 
@@ -55,6 +58,7 @@
  *
  * @par Namespaces
  * A namespace denotes the place the key comes from:
+ *
  * @copydetails doxygenNamespaces
  *
  *
@@ -116,12 +120,12 @@
  *   The \\ character must only be escaped, when one of the following
  *   rules apply.
  * - Stray escape characters are only possible in the end of the string.
- * - \\/ allows to escape / (any uneven number of \\).
+ * - \\/ allows one to escape / (any uneven number of \\).
  *   Does not introduce a new part.
  * - Any uneven number N of \\ before / allows you to escape / with the
  *   N/2 of \\ prefixed.
  *   Does not introduce a new part.
- * - \\\\/ allows to use \\ as character before / and introduces a new
+ * - \\\\/ allows one to use \\ as character before / and introduces a new
  *   part.
  * - Any even number N of \\ before / allows you to have N/2 of \\
  *   prefixed before a / which introduces a new part.
@@ -129,7 +133,7 @@
  * - \\\\. and \\\\.. allows us to use \\ as character before . and .. (and so on)
  * - Use \\% if you want your key name part to start with \% (and does
  *   not represent an empty name)
- * - Use \\\\% allows to use \\ as character before \% (and so on)
+ * - Using \\\\% allows one to use \\ as character before \% (and so on)
 
  *
  *
@@ -210,7 +214,7 @@
  * The name will be without owner, see keyGetFullName() if
  * you need the name with its owner.
  *
- * keyName() returns "" when there is no keyName. The reason is
+ * @retval "" when there is no keyName. The reason is
  * @code
 key=keyNew(0);
 keySetName(key,"");
@@ -219,6 +223,7 @@ keyDel(key);
  * @endcode
  *
  * Valid key names are:
+ *
  * @copydetails doxygenNamespaces
  *
  * @note Note that the Key structure keeps its own size field that is calculated
@@ -228,12 +233,13 @@ keyDel(key);
  *
  * @param key the key object to work with
  * @return a pointer to the keyname which must not be changed.
- * @return "" when there is no (a empty) keyname
- * @return 0 on NULL pointer
+ * @retval "" when there is no (a empty) keyname
+ * @retval 0 on NULL pointer
  * @see keyGetNameSize() for the string length
  * @see keyGetFullName(), keyGetFullNameSize() to get the full name
  * @see keyGetName() as alternative to get a copy
  * @see keyOwner() to get a pointer to owner
+ * @see keyUnescapedName to get an unescaped key name
  * @ingroup keyname
  */
 const char *keyName(const Key *key)
@@ -256,9 +262,10 @@ const char *keyName(const Key *key)
  * @param key the key object to work with
  * @return number of bytes needed, including ending NULL, to store key name
  * 	without owner
- * @return 1 if there is is no key Name
- * @return -1 on NULL pointer
+ * @retval 1 if there is is no key Name
+ * @retval -1 on NULL pointer
  * @see keyGetName(), keyGetFullNameSize()
+ * @see keyGetUnescapedNameSize to get size of unescaped name
  * @ingroup keyname
  */
 ssize_t keyGetNameSize(const Key *key)
@@ -272,6 +279,54 @@ ssize_t keyGetNameSize(const Key *key)
 	else return key->keySize;
 }
 
+
+/**
+ * @brief Returns a keyname which is null separated and does not use backslash for escaping
+ *
+ * This name is essential if you want to iterate over parts of the key
+ * name, want to compare keynames and want to check relations of keys in
+ * the hierarchy.
+ *
+ * @param key the object to work with
+ *
+ * @see keyGetUnescapedNameSize()
+ * @see keyName() for escaped variant
+ * @retval 0 on null pointers
+ * @retval "" if no name
+ * @return the name in its unescaped form
+ */
+const void *keyUnescapedName(const Key *key)
+{
+	if (!key) return 0;
+
+	if (!key->key) {
+		return "";
+	}
+
+	return key->key+key->keySize;
+}
+
+
+/**
+ * @brief return size of unescaped name with embedded and terminating null characters
+ *
+ * @param key the object to work with
+ *
+ * @see keyUnescapedName()
+ * @see keyGetNameSize() for size of escaped variant
+ * @retval -1 on null pointer
+ * @retval 0 if no name
+ */
+ssize_t keyGetUnescapedNameSize(const Key *key)
+{
+	if (!key) return -1;
+
+	if (!key->key)
+	{
+		return 0;
+	}
+	else return key->keyUSize;
+}
 
 
 
@@ -293,8 +348,8 @@ keyGetName(key, getBack, keyGetNameSize(key));
  * @endcode
  *
  * @return number of bytes written to @p returnedName
- * @return 1 when only a null was written
- * @return -1 when keyname is longer then maxSize or 0 or any NULL pointer
+ * @retval 1 when only a null was written
+ * @retval -1 when keyname is longer then maxSize or 0 or any NULL pointer
  * @param key the key object to work with
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
@@ -516,8 +571,8 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
  *
  * @param key the key object to work with
  * @return number of bytes needed to store key name including user domain
- * @return 1 on empty name
- * @return -1 on NULL pointer
+ * @retval 1 on empty name
+ * @retval -1 on NULL pointer
  * @see keyGetFullName(), keyGetNameSize()
  * @ingroup keyname
  */
@@ -550,9 +605,9 @@ ssize_t keyGetFullNameSize(const Key *key)
  * Get key full name, including the user domain name.
  *
  * @return number of bytes written
- * @return 1 on empty name
- * @return -1 on NULL pointers
- * @return -1 if maxSize is 0 or larger than SSIZE_MAX
+ * @retval 1 on empty name
+ * @retval -1 on NULL pointers
+ * @retval -1 if maxSize is 0 or larger than SSIZE_MAX
  * @param key the key object
  * @param returnedName pre-allocated memory to write the key name
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
@@ -707,9 +762,9 @@ ssize_t keyGetBaseNameSize(const Key *key)
  * @param returned a pre-allocated buffer to store the basename
  * @param maxSize size of the @p returned buffer
  * @return number of bytes copied to @p returned
- * @return 1 on empty name
- * @return -1 on NULL pointers
- * @return -1 when maxSize is 0 or larger than SSIZE_MAX
+ * @retval 1 on empty name
+ * @retval -1 on NULL pointers
+ * @retval -1 when maxSize is 0 or larger than SSIZE_MAX
  * @see keyBaseName(), keyGetBaseNameSize()
  * @see keyName(), keyGetName(), keySetName()
  * @ingroup keyname
@@ -778,8 +833,8 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * @param key the key object to work with
  * @param baseName the string to append to the name
  * @return the size in bytes of the new key name including the ending NULL
- * @return -1 if the key had no name
- * @return -1 on NULL pointers
+ * @retval -1 if the key had no name
+ * @retval -1 on NULL pointers
  * @retval -1 if key was inserted to a keyset before
  * @ingroup keyname
  *
@@ -997,7 +1052,7 @@ ssize_t keyAddName(Key *key, const char *newName)
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key
  * @return the size in bytes of the new key name
- * @return -1 on NULL pointers
+ * @retval -1 on NULL pointers
  * @retval -1 if key was inserted to a keyset before
  * @see keyAddBaseName()
  * @see keySetName() to set a new name

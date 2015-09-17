@@ -1,4 +1,4 @@
-# Allows to add test cases using Google Test
+# Allows one to add test cases using Google Test
 #
 
 # recommended to use
@@ -9,15 +9,29 @@
 
 
 macro (add_gtest source)
+	cmake_parse_arguments (ARG
+		"NO_MAIN;NO_TOOLS" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN}
+	)
+
 	if (BUILD_TESTING)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
 
-	#do not hardcode tools here:
-	target_link_elektratools(${source})
+	if (NOT ARG_NO_TOOLS)
+		# invert logic?
+		target_link_elektratools(${source})
+	endif (NOT ARG_NO_TOOLS)
 
-	target_link_libraries(${source} gtest gtest_main)
+	target_link_libraries(${source} gtest)
+	if (NOT ARG_NO_MAIN)
+		target_link_libraries(${source} gtest_main)
+	endif (NOT ARG_NO_MAIN)
+
 	include_directories(SYSTEM ${GOOGLETEST_ROOT}/include)
+	include_directories(${CMAKE_SOURCE_DIR}/tests/gtest-framework)
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source}

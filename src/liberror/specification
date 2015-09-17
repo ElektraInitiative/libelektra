@@ -648,3 +648,15 @@ severity:normal
 ingroup:plugin
 module:storage
 see:9 75 109
+
+number:111
+description:python error
+severity:error
+ingroup:plugin
+module:python
+
+number:112
+description:python warning
+severity:warning
+ingroup:plugin
+module:python

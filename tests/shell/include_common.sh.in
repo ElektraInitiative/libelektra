@@ -13,6 +13,7 @@
 # variables to count up errors and tests
 nbError=0
 nbTest=0
+nbSkip=0
 
 # the script itself
 scriptName=`basename $0`
@@ -52,6 +53,12 @@ DATE=`date "+%b %d %H:%M"`
 KDB_DEFAULT_STORAGE="@KDB_DEFAULT_STORAGE@"
 KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
+KDB_GETENV=`kdb elektrify-getenv getenv KDB 2> /dev/null`
+
+if [ -x "${KDB_GETENV}" ]
+then
+	KDB=${KDB_GETENV};
+fi
 
 #
 # ASSERTIONS
@@ -73,7 +80,7 @@ exit_if_fail ()
 {
 	if [ $? != "0" ]
 	then
-		if type cleanup
+		if command -v cleanup > /dev/null
 		then
 			echo "fatal: $*"
 			cleanup
@@ -87,7 +94,17 @@ exit_if_fail ()
 
 end_script()
 {
-	echo "$scriptName RESULTS: $nbTest test(s) done $nbError error(s)."
+	if command -v cleanup > /dev/null
+	then
+		cleanup
+	fi
+
+	echo -n "$scriptName RESULTS: $nbTest test(s) done"
+	if [ $nbSkip -ne 0 ]
+	then
+		echo -n " $nbSkip skipped"
+	fi
+	echo " $nbError error(s)."
 	exit "$nbError"
 }
 
@@ -102,6 +119,12 @@ check_version()
 {
 	echo "Check if script tests the correct version"
 
+	if [ "x`kdb elektrify-getenv getenv CHECK_VERSION 2> /dev/null`" = "xNO" ]
+	then
+		return 0
+	fi
+
+	#if no kdb elektrify-getenv getenv is installed:
 	if [ "x$CHECK_VERSION" = "xNO" ]
 	then
 		return 0
@@ -198,38 +221,15 @@ is_plugin_available()
 	return 1
 }
 
+mktempdir_elektra()
+{
+	mktemp -d 2>/dev/null || mktemp -d -t 'libelektra-test'
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+mktempfile_elektra()
+{
+	mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv'
+}
 
 
 

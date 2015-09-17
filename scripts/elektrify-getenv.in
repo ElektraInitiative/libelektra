@@ -1,0 +1,23 @@
+#!/bin/sh
+
+GETENV="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektragetenv.so"
+
+if [ ! -f "$GETENV" ]
+then
+	echo "You do not have $GETENV installed"
+	echo "Maybe your system is not supported (currently needs to be glibc-based)"
+	exit 0
+fi
+
+# so that kdb elektrify-getenv getenv works!
+export PATH="@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@:$PATH"
+
+if [ "$#" -eq 0 ]
+then
+	echo "Usage: $0 <application> <arguments>"
+	echo "For help run $0 <application> --elektra-help"
+	echo "Path to library is:"
+	echo "$GETENV"
+else
+	LD_PRELOAD="$GETENV" $*
+fi

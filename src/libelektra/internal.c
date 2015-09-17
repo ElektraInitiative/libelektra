@@ -73,8 +73,8 @@
  * @param array1 the destination
  * @param array2 the source
  * @param size how many pointer to Keys to copy
- * @return -1 on null pointers
- * @return 0 if nothing was done
+ * @retval -1 on null pointers
+ * @retval 0 if nothing was done
  * @return size how many keys were copied
  */
 ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size)
@@ -97,8 +97,8 @@ ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size)
  * @param array1 the destination
  * @param array2 the source
  * @param size how many pointer to Keys to copy
- * @return -1 on null pointers
- * @return 0 if nothing was done
+ * @retval -1 on null pointers
+ * @retval 0 if nothing was done
  * @return size how many keys were copied
  */
 ssize_t elektraMemmove (Key** array1, Key** array2, size_t size)
@@ -188,8 +188,8 @@ if (elektraRealloc ((void **) & buffer, new_length) < 0) {
  *
  * @param buffer is a pointer to a malloc
  * @param size is the new size for the memory
- * @return -1 on failure
- * @return 0 on success
+ * @retval -1 on failure
+ * @retval 0 on success
  * @ingroup internal
  */
 int elektraRealloc (void ** buffer, size_t size)

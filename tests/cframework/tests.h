@@ -51,14 +51,14 @@ int init(int argc, char** argv);
 	nbTest++; \
 	if (!(expression)) \
 	{ \
-		printf("%s:%d: warn in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, message); \
+		printf("%s:%d: warn in %s: %s\n", __FILE__, __LINE__, __func__, message); \
 	} \
 }
 
 #define yield_error(message) \
 { \
 	nbError++; \
-	printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, message); \
+	printf("%s:%d: error in %s: %s\n", __FILE__, __LINE__, __func__, message); \
 }
 
 #define succeed_if(expression, message) \
@@ -75,7 +75,7 @@ int init(int argc, char** argv);
 	nbTest++; \
 	if (!(expression)) \
 	{ \
-		printf("%s:%d: fatal in %s: %s\n", __FILE__, __LINE__, __FUNCTION__, message); \
+		printf("%s:%d: fatal in %s: %s\n", __FILE__, __LINE__, __func__, message); \
 		exit(1); \
 	} \
 }
@@ -206,7 +206,7 @@ int init(int argc, char** argv);
 			{ \
 				nbError++; \
 				printf("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding meta key %s (k1 > k2)\n", \
-					__FILE__, __LINE__, __FUNCTION__, \
+					__FILE__, __LINE__, __func__, \
 					quote_string(mmk1), \
 					quote_string(mmk2), \
 					keyName(meta) \
@@ -220,7 +220,7 @@ int init(int argc, char** argv);
 		{ \
 			nbError++; \
 			printf("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many meta keys found (k1 < k2)\n", \
-				__FILE__, __LINE__, __FUNCTION__, \
+				__FILE__, __LINE__, __func__, \
 				quote_string(mmk1), \
 				quote_string(mmk2) \
 				); \
@@ -232,7 +232,7 @@ int init(int argc, char** argv);
 /**Compare two keysets.
  *
  * Compare if two keysets contain the same keys.
- * @return 0 on success
+ * @retval 0 on success
  * */
 #define compare_keyset(pks1, pks2) \
 { \
@@ -251,7 +251,7 @@ int init(int argc, char** argv);
 		 { \
 			nbError++; \
 			printf("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(%s): %d, size(%s): %d\n", \
-				__FILE__, __LINE__, __FUNCTION__, quote_string(mmks1), (int)ksGetSize(mmks1), quote_string(mmks2), (int)ksGetSize(mmks2)); \
+				__FILE__, __LINE__, __func__, quote_string(mmks1), (int)ksGetSize(mmks1), quote_string(mmks2), (int)ksGetSize(mmks2)); \
 			printf ("mmks1:\n"); \
 			output_keyset(mmks1); \
 			printf ("mmks2:\n"); \

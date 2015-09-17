@@ -1,4 +1,3 @@
-include(LibParseArguments)
 include(LibAddMacros)
 
 # add_plugin: add a plugin to Elektra
@@ -20,12 +19,12 @@ include(LibAddMacros)
 # INCLUDE_DIRECTORIES:
 #  Append to include path (globally+plugin specific).
 function(add_plugin PLUGIN_SHORT_NAME)
-	parse_arguments(ARG
-		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES"
-		"CPP"
+	cmake_parse_arguments (ARG
+		"CPP" # optional keywords
+		"" # one value keywords
+		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES" # multi value keywords
 		${ARGN}
-		)
-
+	)
 
 	set (PLUGIN_NAME elektra-${PLUGIN_SHORT_NAME})
 	set (PLUGIN_OBJS ${PLUGIN_NAME}-objects)

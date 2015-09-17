@@ -59,6 +59,13 @@ class Key(unittest.TestCase):
 		self.assertIsInstance(k, kdb.Key)
 		self.assertTrue(k.isValid())
 
+		k = kdb.Key(self.key.dup())
+		self.assertIsInstance(k, kdb.Key)
+		self.assertTrue(k.isValid())
+		self.assertEqual(k, self.key)
+		k.name = "user/copied"
+		self.assertNotEqual(k, self.key)
+
 	def test_operator(self):
 		self.assertNotEqual(self.key, self.bkey)
 		self.assertEqual(kdb.Key(self.key), self.key)
@@ -133,6 +140,20 @@ class Key(unittest.TestCase):
 
 		self.assertEqual(sum(1 for _ in self.key.getMeta()),  2)
 		self.assertEqual(sum(1 for _ in self.bkey.getMeta()), 1)
+
+	def test_python_copy(self):
+		import copy
+		k = copy.copy(self.key)
+		self.assertEqual(k, self.key)
+		k.name = "user/copied"
+		self.assertNotEqual(k, self.key)
+
+	def test_iterator(self):
+		k = kdb.Key("user/a\/b/c")
+		self.assertEqual(sum(1 for _ in k),           3)
+		self.assertEqual(sum(1 for _ in reversed(k)), 3)
+		self.assertEqual(iter(k).value(),     "user")
+		self.assertEqual(reversed(k).value(), "c")
 
 if __name__ == '__main__':
 	unittest.main()

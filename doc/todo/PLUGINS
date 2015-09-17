@@ -1,6 +1,8 @@
 Ideas for new PLUGINS in elektra.
 Prefer using great frameworks to do that in short time with high quality.
 
+wait for python/lua plugins for easy prototyping
+
 
 ## Contract on Plugin configuration ##
 
@@ -30,6 +32,10 @@ ulimit
 Shell expansion
 Environment expansion
 
+
+## logging
+
+log all warnings that happened
 
 
 # File based plugins #
@@ -115,7 +121,7 @@ literate data
 	needs two more special characters next to seperator, but is
 	otherwise alike
 
-## self written ##
+## folders ##
 
 filesys:
 	reintroduce? (useful for 0.7 migrations)
@@ -125,6 +131,10 @@ filesys:
 	remove keys the new way
 	compare sets between current and desired state (set operations)
 	could be default-storage plugin, integrated resolver for previous siutation
+
+folder:
+	make subdirectires folders and individual files
+	(multi-resolver)
 
 
 ## library supported ##
@@ -300,14 +310,6 @@ resolver:
 
 # Improve the plugin system itself #
 
-## global plugins ##
-
-needed for
-
-- global constraints and type checking
-- single notifications per kdbGet/kdbSet
-
-
 ## VERSION IN CONTRACT ##
 
 Configure file for plugin.h
@@ -321,6 +323,8 @@ add dependencies in contract?
 ## plugin commands ##
 
 metadata that is evaluated by plugins
+
+metadata checker plugin: determines which metadata is present
 
 selective commit phases:
 	define phases, minimum:
@@ -343,7 +347,7 @@ mount: current implementation
 mount-mpi: current implementation, but multithreaded
 filesystem: implementation compatible with 0.7
 lazy-mount
-bind-mount
+bind-mount (using override)
 owner support
 user-mount
 

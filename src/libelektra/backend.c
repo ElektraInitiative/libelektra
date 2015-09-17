@@ -95,7 +95,7 @@ system/elektra/mountpoints/<name>
  * @return a pointer to a freshly allocated backend
  *         this could be the requested backend or a so called
  *         "missing backend".
- * @return 0 if out of memory
+ * @retval 0 if out of memory
  * @ingroup backend
  */
 Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKey)

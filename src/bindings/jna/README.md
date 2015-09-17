@@ -2,9 +2,23 @@ A full java binding using JNA.
 
 ## Usage ##
 
-See [here](HelloElektra.java) and the [plugins](elektra/plugin).
-See also [here](/src/plugins/jni) for more information about how to
-write plugins.
+For using the binding as standalone (to write applications using Elektra),
+make sure that CLASSPATH includes jna.jar and libelektra.jar (or this directory
+which contains the elektra subdirectory), e.g.:
+
+    export CLASSPATH="/usr/share/java/libelektra.jar:/usr/share/java/jna.jar"
+    export CLASSPATH="~e/src/bindings/jna:/usr/share/java/jna.jar"
+
+to set it permanently for your user, you can use:
+
+    kdb set user/env/override/CLASSPATH "/usr/share/java/libelektra.jar:/usr/share/java/jna.jar"
+
+then you can compile and run [HelloElektra](HelloElektra.java):
+
+    javac HelloElektra.java && java HelloElektra
+
+For plugin development, see [plugins](elektra/plugin)
+and also [here](/src/plugins/jni) for more information.
 
 
 ## Limitations ##

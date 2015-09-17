@@ -85,9 +85,9 @@ int main()
 	// In order to simplify the initialization, predefined merge configurations exist.
 	// in this example we first resolve all the keys that can be automatically
 	// resolved (e.g. only one side was modified). This is exactly the use case of the
-	// OneSideMergeConfiguration.
+	// AutoMergeConfiguration.
 
-	OneSideMergeConfiguration configuration(OURS);
+	AutoMergeConfiguration configuration;
 	configuration.configureMerger(merger);
 
 	// Step 4: Perform the actual merge

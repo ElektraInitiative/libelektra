@@ -1,13 +1,73 @@
-Elektra provides a universal and secure framework to store configuration
-parameters in a global, hierarchical key database.  The core is a small
-library implemented in C. The plugin-based framework fulfills many
+# libelektra #
+
+_Elektra provides a universal and secure framework to store configuration
+parameters in a global, hierarchical key database._
+
+<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="50" />
+
+The core is a small library implemented in C. The plugin-based framework fulfills many
 configuration-related tasks to avoid any unnecessary code duplication
 across applications while it still allows the core to stay without any
 external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-![Elektra](doc/images/circle.jpg)
+[Why should I use Elektra?](#goals)
+
+
+## Contact ##
+
+Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+or one of the [authors](doc/AUTHORS).
+
+
+## Quickstart ##
+
+If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
+
+### Installation ###
+
+The preferred way to install Elektra is by using packages provided for
+your distribution. On Debian/Ubuntu, this can be done by running the following
+command:
+
+```bash
+sudo apt-get install elektra-bin libelektra-dev
+```
+
+This will install the Elektra tools as well as everything needed to develop
+with Elektra.
+
+If you're not running Debian/Ubuntu, check out the [package list](#packages),
+[download elektra directly](#download) or [compile it yourself](#compile).
+
+### Usage ###
+
+Now that we have Elektra installed, we can start using the `kdb` command and
+the `qt-gui`.
+
+The easiest way to use Elektra is running the `qt-gui`:
+
+```bash
+kdb qt-gui
+```
+
+Or you can use the `kdb` command to configure your applications:
+
+```bash
+kdb set user/env/override/HTTP_PROXY "http://my.proxy:8080"
+```
+
+This will set the `HTTP_PROXY` environment variable to `http://my.proxy:8080`.
+Configuration can be retrieved with `kdb get`:
+
+```bash
+kdb get user/env/override/HTTP_PROXY
+```
+
+For more information about elektrified environment variables, see
+[src/libgetenv/README.md](src/libgetenv/README.md)
+
 
 ## Goals ##
 
@@ -28,7 +88,8 @@ And in terms of quality, we want:
 2. Extensibility (gain control over configuration access) and
 3. Simplicity (make configuration tasks simple)
 
-[Read here more about the Goals of Elektra ..](doc/GOALS.md)
+[Read more about the goals of Elektra](doc/GOALS.md)
+
 
 ## Facts and Features ##
 
@@ -39,7 +100,7 @@ And in terms of quality, we want:
    to have a tiny core, but still support many features, including:
    * Elektra can import and export configuration files in any [supported format](src/plugins#storage).
    * Elektra is able to log and notify other software on any configuration changes, e.g., using [Dbus](src/plugins/dbus) and [Journald](src/plugins/journald).
-   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/regex) and more.
+   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/validation) and more.
    * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver).
    * Elektra supports different ways to [escape](src/plugins/ccode) and [encode](src/plugins/iconv) content of configuration files.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
@@ -49,6 +110,17 @@ And in terms of quality, we want:
  * Elektra supports comments and other non-configuration information by metadata.
  * Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
  * Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
+
+
+## News ##
+
+ - [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a.html) adds dir namespace
+ - [03 Apr 2015 0.8.11](http://doc.libelektra.org/news/7d4647d4-4131-411e-9c2a-2aca39446e18.html) adds spec namespace
+ - [02 Dec 2014 0.8.10](http://doc.libelektra.org/news/6ce57ecf-420a-4a31-821e-1c5fe5532eb4.html) adds XDG/OpenICC compatibility
+ - [04 Nov 2014 0.8.9](http://doc.libelektra.org/news/38640673-3e07-4cff-9647-f6bdd89b1b08.html) adds qt-gui
+ - [02 Sep 2014 0.8.8](http://doc.libelektra.org/news/eca69e19-5ddb-438c-ac06-57c20b1a9160.html) adds 3-way merging
+
+Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/feed.rss).
 
 
 ## Further Information ##
@@ -69,43 +141,9 @@ The API documentation can be found
 [here](http://doc.libelektra.org/api/current/html).
 
 
-## News ##
+## Sources ##
 
-- [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a) adds dir namespace
-- [03 Apr 2015 0.8.11](http://doc.libelektra.org/news/7d4647d4-4131-411e-9c2a-2aca39446e18.html) adds spec namespace
-- [02 Dec 2014 0.8.10](http://doc.libelektra.org/news/6ce57ecf-420a-4a31-821e-1c5fe5532eb4.html) adds XDG/OpenICC compatibility
-- [04 Nov 2014 0.8.9](http://doc.libelektra.org/news/38640673-3e07-4cff-9647-f6bdd89b1b08.html) adds qt-gui
-- [02 Sep 2014 0.8.8](http://doc.libelektra.org/news/eca69e19-5ddb-438c-ac06-57c20b1a9160.html) adds 3-way merging
-
-Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/feed.rss).
-
-
-## Contact ##
-
-Do not hesitate to ask any question on github, [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-or one of the [authors](doc/AUTHORS).
-
-
-# Get Started #
-
-If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
-
-## Download ##
-
-Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
-
-Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
-
-         ftp://ftp.libelektra.org/elektra/releases/
-
-## Compile ##
-
-See this [document](doc/COMPILE.md) for documentation how to compile the software.
-You might find [configure](configure) useful: It will print the cmake
-commando you need.
-
-
-## Install ##
+### Packages ###
 
 The preferred way to install Elektra is by using packages provided for
 your distribution:
@@ -129,6 +167,31 @@ sources.list in wheezy:
 
 If there are no packages available for your distribution, see the
 [installation document](doc/INSTALL.md).
+
+### Download ###
+
+Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
+
+You can clone the latest version of Elektra by running: `git clone https://github.com/ElektraInitiative/libelektra.git`
+
+Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
+
+         ftp://ftp.libelektra.org/elektra/releases/
+
+### Compiling ###
+
+After downloading or cloning Elektra, `cd` to the directory and run the
+following commands to compile it:
+
+ * `mkdir -p build`
+ * `cd build`
+ * `cmake ..`
+ * `make`
+
+Then you can use `sudo make install` to install it.
+
+You can also use the [`./configure`](configure) command to generate a `cmake`
+command with special options.
 
 
 ## Build Server ##
@@ -158,4 +221,3 @@ To start development, just clone the repo and start hacking!
   design relevant decisions.
 - You can always peek into the [TODOs](doc/todo), if you don't know
   what to do.
-

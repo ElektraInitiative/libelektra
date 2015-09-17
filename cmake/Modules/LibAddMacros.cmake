@@ -1,5 +1,3 @@
-include(LibParseArguments)
-
 # Copy a file from source dir to binary dir
 #
 # copy_file or directory
@@ -107,11 +105,12 @@ endmacro()
 # and adds a test
 macro (add_plugintest testname)
 	if (BUILD_TESTING AND (BUILD_STATIC OR BUILD_FULL))
-		parse_arguments(ARG
-			"" # no arguments
-			"MEMLEAK" #options
+		cmake_parse_arguments (ARG
+			"MEMLEAK" # optional keywords
+			""        # one value keywords
+			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;WORKING_DIRECTORY" # multi value keywords
 			${ARGN}
-			)
+		)
 		set (TEST_SOURCES
 				$<TARGET_OBJECTS:cframework>
 				${ARG_UNPARSED_ARGUMENTS}
@@ -125,11 +124,15 @@ macro (add_plugintest testname)
 				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 		endif (INSTALL_TESTING)
 		target_link_elektra(testmod_${testname})
+		target_link_libraries (testmod_${testname} ${ARG_LINK_LIBRARIES})
 		set_target_properties (testmod_${testname} PROPERTIES
-				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-		add_test (testmod_${testname}
-				"${CMAKE_BINARY_DIR}/bin/testmod_${testname}"
-				"${CMAKE_CURRENT_SOURCE_DIR}"
+				COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;${ARG_COMPILE_DEFINITIONS}")
+		set_property(TARGET testmod_${testname}
+				APPEND PROPERTY INCLUDE_DIRECTORIES
+				${ARG_INCLUDE_DIRECTORIES})
+		add_test (NAME testmod_${testname}
+				COMMAND "${CMAKE_BINARY_DIR}/bin/testmod_${testname}" "${CMAKE_CURRENT_SOURCE_DIR}"
+				WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
 				)
 		if (ARG_MEMLEAK)
 			set_property(TEST testmod_${testname} PROPERTY
@@ -141,11 +144,12 @@ endmacro (add_plugintest)
 # Add a test for cpp plugins
 macro (add_cpp_plugintest testname)
 	if (BUILD_TESTING)
-		parse_arguments(ARG
-			"" # no arguments
-			"MEMLEAK" #options
+		cmake_parse_arguments (ARG
+			"MEMLEAK" # optional keywords
+			""        # one value keywords
+			""        # multi value keywords
 			${ARGN}
-			)
+		)
 		set (source "testmod_${testname}")
 		include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 		include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
@@ -175,6 +179,16 @@ macro (add_cpp_plugintest testname)
 		endif (ARG_MEMLEAK)
 	endif()
 endmacro (add_cpp_plugintest testname)
+
+macro(find_swig)
+	if (NOT SWIG_FOUND)
+		find_package(SWIG 3)
+		if (NOT SWIG_FOUND)
+			message(STATUS "Search for swig2 instead")
+			find_package(SWIG 2 QUIET)
+		endif()
+	endif (NOT SWIG_FOUND)
+endmacro(find_swig)
 
 
 function(find_util util output_loc output_arg)
@@ -301,7 +315,7 @@ endmacro (remove_tool)
 #
 # copied from http://www.cmake.org/Wiki/CMakeMacroListOperations
 MACRO(list_filter)
-  parse_arguments(LIST_FILTER "OUTPUT_VARIABLE" "" ${ARGV})
+  cmake_parse_arguments(LIST_FILTER "" "OUTPUT_VARIABLE" "" ${ARGV})
   # Check arguments.
   LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
   IF(${LIST_FILTER_default_length} EQUAL 0)

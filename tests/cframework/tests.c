@@ -24,15 +24,15 @@ gid_t nbGid;
 
 char file [KDB_MAX_PATH_LENGTH];
 char srcdir [KDB_MAX_PATH_LENGTH];
-char *tmpfilename;
-int tmpfilenameLen;
 
 #ifdef HAVE_CLEARENV
 int clearenv();
 #endif
 
+char *tmpfilename;
 char *tempHome;
 int tempHomeLen;
+char *tempHomeConf;
 
 static void clean_temp_home (void);
 
@@ -78,14 +78,16 @@ int init (int argc, char**argv)
 
 	tempHomeLen = strlen (tmpvar) + 1 + 13 + 6 + 1;
 	tempHome = malloc (tempHomeLen);
+	tempHomeConf = malloc (tempHomeLen+strlen (KDB_DB_USER)+2);
 	succeed_if (tempHome != 0, "malloc failed");
 	snprintf (tempHome, tempHomeLen, "%s/elektra-test.XXXXXX", tmpvar);
+	snprintf (tempHomeConf, tempHomeLen, "%s/elektra-test.XXXXXX/" KDB_DB_USER, tmpvar);
 	succeed_if (mkdtemp (tempHome) != 0, "mkdtemp failed");
 	setenv("HOME",tempHome,1);
 
 	atexit (clean_temp_home);
 
-	tmpfilenameLen = tempHomeLen + 1 + 12 + 6 + 1;
+	int tmpfilenameLen = tempHomeLen + 1 + 12 + 6 + 1;
 	tmpfilename = malloc (tmpfilenameLen);
 	succeed_if (tmpfilenameLen != 0, "malloc failed");
 	snprintf (tmpfilename, tmpfilenameLen, "%s/elektra-tmp.XXXXXX", tempHome);
@@ -370,7 +372,7 @@ void generate_split (Split *split)
  *
  * @see check_for_errors_and_warnings if you want errors to have a test case failed without output
  *
- * @return 1 if no warnings (can be used within succeed_if)
+ * @retval 1 if no warnings (can be used within succeed_if)
  */
 int output_warnings(Key *warningKey)
 {
@@ -426,7 +428,7 @@ for (int i=0; i<=nrWarnings; ++i)
  *
  * @param errorKey keys to retrieve errors from
  *
- * @return 1 if no error (can be used within succeed_if)
+ * @retval 1 if no error (can be used within succeed_if)
  */
 int output_error(Key *errorKey)
 {
@@ -449,18 +451,25 @@ printf ("configfile: : %s\n", keyString(keyGetMeta(errorKey, "error/configfile")
 
 static void clean_temp_home (void)
 {
-	if (!tempHome) return;
-
 	if (tmpfilename)
 	{
 		elektraUnlink (tmpfilename);
 		free (tmpfilename);
 		tmpfilename = NULL;
-		tmpfilenameLen = 0;
 	}
 
-	rmdir (tempHome);
-	free (tempHome);
-	tempHome = NULL;
-	tempHomeLen = 0;
+	if (tempHomeConf)
+	{
+		rmdir (tempHomeConf);
+		free (tempHomeConf);
+		tempHomeConf = NULL;
+	}
+
+	if (tempHome)
+	{
+		rmdir (tempHome);
+		free (tempHome);
+		tempHome = NULL;
+		tempHomeLen = 0;
+	}
 }

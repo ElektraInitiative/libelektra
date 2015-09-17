@@ -62,7 +62,7 @@ do
 		rm -f $USER_FOLDER/$FILE
 		rm -f $SYSTEM_FOLDER/$FILE
 
-		echo "Failed during $PLUGIN"
+		echo "Cleanup for $PLUGIN"
 
 		USER_REMAINING="`find $USER_FOLDER -maxdepth 1 -name $FILE'*' -print -exec rm {} +`"
 		test -z "$USER_REMAINING"
@@ -82,5 +82,6 @@ do
 
 	cleanup
 done
+unset -f cleanup
 
 end_script basic commands

@@ -93,9 +93,9 @@ Doing other stuff:
 - [null](null) takes care of null values and other binary specialities
 
 
-## Notification ##
+## Notification and Logging ##
 
-Send out all changes to configuration to:
+Log/Send out all changes to configuration to:
 
 - [dbus](dbus)
 - [journald](journald)
@@ -133,6 +133,8 @@ copied by another plugin just before):
 These plugins start an interpreter and allow you to use a bindings.
 
 - [jni](jni) java plugins started by jni, works with jna plugins
+- [python](python) Python 3 plugins (technical preview)
+- [python2](python2) Python 2 plugins (technical preview, deprecated)
 
 
 ## Others ##

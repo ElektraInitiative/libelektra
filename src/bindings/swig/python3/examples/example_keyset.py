@@ -39,3 +39,18 @@ print("")
 print("You asked for slices? You get slices:")
 print("  KeySet1[1:3]={0}".format([ str(k) for k in ks1[1:3] ]))
 print("")
+
+print("We can create shallow copies and remove keys without affecting other keysets:")
+ks2 = kdb.KeySet(ks1.dup())
+# or ks2 = copy.copy(ks1)
+ks2.pop()
+print("  KeySet2 now has {0} keys while KeySet1 still has {1} keys".format(len(ks2), len(ks1)))
+
+print("In Python we can even create deep copies and modify the keys inside:")
+ks1[0].setMeta("foo", "bar")
+import copy
+ks2 = copy.deepcopy(ks1)
+ks2[0].setMeta("foo", "changed")
+print("  KeySet1[0].getMeta('foo').value={0}".format(ks1[0].getMeta("foo").value))
+print("  KeySet2[0].getMeta('foo').value={0}".format(ks2[0].getMeta("foo").value))
+print("")

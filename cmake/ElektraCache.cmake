@@ -122,6 +122,11 @@ set (PLUGINS_LIST_DEP
 	jni
 	)
 
+set (PLUGINS_PREVIEW
+	python
+	python2
+    )
+
 #
 # force all plugins
 #
@@ -325,7 +330,7 @@ endif()
 #
 
 
-option (ENABLE_CXX11 "Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc" OFF)
+option (ENABLE_CXX11 "WARNING: Option will be removed with 0.8.13. See libelektra.org/issues/262. Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc." ON)
 
 set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 
@@ -424,7 +429,7 @@ set (TARGET_INCLUDE_FOLDER
     )
 
 set (TARGET_CMAKE_FOLDER
-		"share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules"
+		"lib${LIB_SUFFIX}/cmake/Elektra"
 		CACHE STRING
 		"This folder (below prefix) will be used to install cmake files."
     )

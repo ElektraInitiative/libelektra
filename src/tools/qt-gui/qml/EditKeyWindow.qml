@@ -4,7 +4,7 @@ KeyWindow {
 
 	title: qsTr("Edit Key")
 
-	keyName: selectedNode === null ? "" : selectedNode.name
+    keyName: (selectedNode === null || selectedNode.name === undefined) ? "" : selectedNode.name
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
 	function populateMetaArea() {

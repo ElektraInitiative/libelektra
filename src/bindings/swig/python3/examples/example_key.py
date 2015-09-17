@@ -17,6 +17,7 @@ print("Key1 is now binary: {0}".format(key1.isBinary()))
 print("")
 
 key2 = kdb.Key(key1.dup())
+# or key2 = copy.copy(key1)
 print("Key2 is a copy of Key1. Do they match? {0}".format(key1 == key2))
 print("")
 

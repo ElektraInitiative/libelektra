@@ -8,6 +8,7 @@
 # if new flags are added
 
 include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
 
 #
 # The mode (standard) to be used by the compiler
@@ -20,6 +21,10 @@ endif()
 
 if (ENABLE_CXX11)
 	set (CXX_STD "-std=c++11")
+	check_cxx_compiler_flag(${CXX_STD} HAS_CXX_STD)
+	if (NOT HAS_CXX_STD)
+		message(WARNING "Your compiler does not know the flag ${CXX_STD}. If your compiler is new, it might already be default. If the compilation does not work, please report to libelektra.org/issues/262.")
+	endif (NOT HAS_CXX_STD)
 else()
 	if (CXX_STD)
 		message (STATUS "use CXX_STD as given by user: ${CXX_STD}")
@@ -27,6 +32,18 @@ else()
 		set (CXX_STD "-std=c++98")
 	endif()
 endif()
+
+
+#
+# check if -Wl,--version-script linker option is supported
+# TODO: darwin ld only supports -Wl,-exported_symbols_list
+#       + the file syntax is different
+#
+set(__symbols_file "${CMAKE_CURRENT_BINARY_DIR}/test-symbols.map")
+file(WRITE ${__symbols_file} "{ local: *; };\n")
+set(CMAKE_REQUIRED_FLAGS "-Wl,--version-script=${__symbols_file}")
+check_cxx_compiler_flag("" LD_ACCEPTS_VERSION_SCRIPT)
+unset(CMAKE_REQUIRED_FLAGS)
 
 
 #
@@ -56,6 +73,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 
 		#not supported by icc/clang:
 		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
+
+		# needed by gcc4.7 when compiled with ENABLE_CXX11
+		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -D_GLIBCXX_USE_NANOSLEEP")
 
 		message (STATUS "GCC detected")
 	endif(WIN32)

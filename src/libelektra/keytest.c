@@ -58,7 +58,7 @@
  * Clear sync flag of a key.
  *
  * @param key the key object to work with
- * @return -1 on null key
+ * @retval -1 on null key
  * @return new flags for that key otherwise
  * @ingroup keytest
  *
@@ -100,8 +100,8 @@ int keyClearSync (Key *key)
  * @see after keyNew(), keyDup() keys need sync
  *
  * @param key the key object to work with
- * @return 1 if @p key was changed in memory, 0 otherwise
- * @return -1 on NULL pointer
+ * @retval 1 if @p key was changed in memory, 0 otherwise
+ * @retval -1 on NULL pointer
  * @ingroup keytest
  */
 int keyNeedSync(const Key *key)
@@ -142,8 +142,8 @@ int keyIsDir(const Key *key)
  * Check whether a key is under the @p system namespace or not
  *
  * @param key the key object to work with
- * @return 1 if key name begins with @p system, 0 otherwise
- * @return -1 on NULL pointer
+ * @retval 1 if key name begins with @p system, 0 otherwise
+ * @retval -1 on NULL pointer
  * @see keyIsUser(), keySetName(), keyName()
  * @ingroup keytest
  *
@@ -163,8 +163,8 @@ int keyIsSystem(const Key *key)
  * Check whether a key is under the @p user namespace or not.
  *
  * @param key the key object to work with
- * @return 1 if key name begins with @p user, 0 otherwise
- * @return -1 on NULL pointer
+ * @retval 1 if key name begins with @p user, 0 otherwise
+ * @retval -1 on NULL pointer
  * @see keyIsSystem(), keySetName(), keyName()
  * @ingroup keytest
  *
@@ -205,8 +205,8 @@ check user
  *
  * @param key the key object to work with
  * @param check the key to find the relative position of
- * @return 1 if check is below key
- * @return 0 if it is not below or if it is the same key
+ * @retval 1 if check is below key
+ * @retval 0 if it is not below or if it is the same key
  * @see keySetName(), keyGetName(), keyIsDirectBelow()
  * @ingroup keytest
  *
@@ -270,9 +270,9 @@ does not return true, because there is only a indirect relation
  *
  * @param key the key object to work with
  * @param check the key to find the relative position of
- * @return 1 if check is below key
- * @return 0 if it is not below or if it is the same key
- * @return -1 on null pointer
+ * @retval 1 if check is below key
+ * @retval 0 if it is not below or if it is the same key
+ * @retval -1 on null pointer
  * @see keyIsBelow(), keySetName(), keyGetName()
  * @ingroup keytest
  *
@@ -405,15 +405,15 @@ user/key/sibling/any/depth/deeper/grand-nephew
  *       keyRel() does not give you the information if it did not
  *       find a relation or if it is the same key.
  *
- * @return dependend on the relation:
- *   2.. if below
- *   1.. if direct below
- *   0.. if the same
- *  -1.. on null or invalid keys
- *  -2.. if none of any other relation
- *  -3.. if same hierarchy (none of those below)
- *  -4.. if sibling (in same hierarchy)
- *  -5.. if nephew (in same hierarchy)
+ * @return depending on the relation
+ * @retval 2 if below
+ * @retval 1 if direct below
+ * @retval 0 if the same
+ * @retval -1 on null or invalid keys
+ * @retval -2 if none of any other relation
+ * @retval -3 if same hierarchy (none of those below)
+ * @retval -4 if sibling (in same hierarchy)
+ * @retval -5 if nephew (in same hierarchy)
  *
  * @param key the key object to work with
  * @param check the second key object to check the relation with
@@ -493,9 +493,9 @@ int keyIsInactive (const Key *key)
  * Make sure to use this function and don't test the binary type another way to
  * ensure compatibility and to write less error prone programs.
  *
- * @return 1 if it is binary
- * @return 0 if it is not
- * @return -1 on NULL pointer
+ * @retval 1 if it is binary
+ * @retval 0 if it is not
+ * @retval -1 on NULL pointer
  * @see keyGetBinary(), keySetBinary()
  * @param key the key to check
  * @ingroup keytest
@@ -517,9 +517,9 @@ int keyIsBinary(const Key *key)
  * Make sure to use this function and don't test the string type another way to
  * ensure compatibility and to write less error prone programs.
  *
- * @return 1 if it is string
- * @return 0 if it is not
- * @return -1 on NULL pointer
+ * @retval 1 if it is string
+ * @retval 0 if it is not
+ * @retval -1 on NULL pointer
  * @see keyGetString(), keySetString()
  * @param key the key to check
  * @ingroup keytest

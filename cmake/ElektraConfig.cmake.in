@@ -1,0 +1,39 @@
+# - Config file for Elektra
+#
+# Variables for the Elektra library:
+#
+#  Elektra_INCLUDE_DIRS  - where to find kdb.h, etc.
+#  Elektra_LIBRARIES     - List of libraries when using Elektra.
+#
+# Find the kdb tools:
+#
+#  Elektra_TEMPLATES_DIR - Folder where to find templates for kdb gen
+
+# Compute paths
+get_filename_component (ELEKTRA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+if (NOT elektra_imported_targets)
+	include ("${ELEKTRA_CMAKE_DIR}/ElektraTargetsLibelektra.cmake")
+	set (elektra_imported_targets TRUE)
+endif()
+
+set (Elektra_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@")
+set (Elektra_LIBRARIES elektra)
+
+find_path (Elektra_TEMPLATES_DIR
+	NAMES template.h
+	PATHS @CMAKE_INSTALL_PREFIX@/@TARGET_TEMPLATE_FOLDER@
+	NO_DEFAULT_PATH
+)
+
+# Set compatibility variables for existing users
+set (ELEKTRA_FOUND TRUE)
+set (ELEKTRA_LIBRARY ${Elektra_LIBRARIES})
+set (ELEKTRA_LIBRARIES ${Elektra_LIBRARIES})
+set (ELEKTRA_INCLUDE_DIR ${Elektra_INCLUDE_DIRS})
+set (ELEKTRA_INCLUDE_DIRS ${Elektra_INCLUDE_DIRS})
+set (ELEKTRA_TEMPLATES ${Elektra_TEMPLATES_DIR})
+set (ELEKTRA_VERSION ${Elektra_VERSION})
+set (ELEKTRA_VERSION_MAJOR ${Elektra_VERSION_MAJOR})
+set (ELEKTRA_VERSION_MINOR ${Elektra_VERSION_MINOR})
+set (ELEKTRA_VERSION_MICRO ${Elektra_VERSION_MICRO})

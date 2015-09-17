@@ -103,9 +103,14 @@ public:
 
 	/**
 	 * @brief Populates this TreeViewModel with a keyset. The root keys (system, user and spec) will be recreated.
+	 */
+	Q_INVOKABLE void            populateModel();
+
+	/**
+	 * @brief Populates this TreeViewModel with a keyset. The root keys (system, user and spec) will be recreated.
 	 * @param keySet The KeySet that holds the Key objects.
 	 */
-	Q_INVOKABLE void            populateModel(kdb::KeySet keySet);
+	void                        populateModel(kdb::KeySet const & keySet);
 
 	/**
 	 * @brief Populates this TreeViewModel with a keyset. The root keys (system, user and spec) will not be recreated.
@@ -261,8 +266,10 @@ public:
 	QStringList					getSplittedKeyname(const kdb::Key &key);
 
 private:
-	QList<ConfigNodePtr>						m_model;
-	kdb::Key									m_metaModelParent;
+	QList<ConfigNodePtr> m_model;
+	kdb::Key m_root;
+	kdb::KDB m_kdb;
+	kdb::Key m_metaModelParent;
 	/**
 	 * @brief Returns a MergeConflictStrategy object based on the name of the MergeConflictStrategy.
 	 * @param mergeStrategy The name of the MergeConflictStrategy.

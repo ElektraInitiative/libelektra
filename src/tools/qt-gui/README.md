@@ -22,7 +22,7 @@ I was able to install the correct dependencies on my system, running Kubuntu 14.
 
 
 ### Compiling ###
-Compile Elektra as normal as per the [COMPILE document](COMPILE.md) making sure to include the `qt-gui` tool using the `DTOOLS` flag.
+Compile Elektra as normal as per the [COMPILE document](http://libelektra.org/tree/master/doc/COMPILE.md) making sure to include the `qt-gui` tool using the `DTOOLS` flag.
 
 For instance:	
 `-DTOOLS=ALL` or `-DTOOLS=qt-gui`
@@ -33,7 +33,7 @@ Note: If you install qt5 manually, you must either:
 
 ### Installing ###
 
-You can now install Elektra as you normally would or as descirbed in the [install documentation](doc/install).
+You can now install Elektra as you normally would or as described in the [install documentation](http://libelektra.org/tree/master/doc/INSTALL.md).
 
 ## To Run ##
 

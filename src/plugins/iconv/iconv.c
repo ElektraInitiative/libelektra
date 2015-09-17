@@ -99,8 +99,8 @@ setlocale (LC_ALL, "");
  * @param inputOutputByteSize before the call: the size of the string including
  * 	leading NULL; after the call: the size of the converted string including
  * 	leading NULL
- * @return 0 on success
- * @return -1 on failure
+ * @retval 0 on success
+ * @retval -1 on failure
  * @ingroup backendhelper
  *
  */

@@ -90,6 +90,12 @@ Build deb:
 
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
+ git-commit -m "Debian Package $DVERSION (UNRELEASED)"
+
+UNRELEASED -> unstable
+
+ dch --release $DVERSION "New upstream version"
+ git-add debian/changelog
  git-commit -m "Debian Package $DVERSION"
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
@@ -111,7 +117,7 @@ Run local tests:
  KDB=kdb-static kdb run_all
 
 Install libelektra-test of the previous version and run again:
- CHECK_VERSION=NO kdb run_tests
+ CHECK_VERSION=NO kdb run_all
 
 
 == Test external tools ==
@@ -179,8 +185,8 @@ Push elektra-doc to github:
 
 == Announce ==
 
-Finish NEWS for new release (hashsum, add links where to download release):
- editor doc/NEWS
+Finish NEWS.md for new release (hashsum, add links where to download release, check them):
+ editor doc/NEWS.md
 
 Finally check links and send out mail to list
 (Personal notice: see also NOTIFY)

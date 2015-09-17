@@ -1,10 +1,45 @@
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   fun:malloc
+   match-leak-kinds: reachable
    ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
+   fun:call_init.part.0
+   fun:call_init
+   fun:_dl_init
+   ...
+   obj:*/ld-2.19.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:elektraOpen
+   fun:(below main)
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:elektraOpen
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:kdbOpen
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlsym
+   fun:(below main)
 }
 {
    <insert_a_suppression_name_here>
@@ -16,129 +51,14 @@
 }
 {
    <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
+   Memcheck:Addr4
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
    ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
+   fun:JNI_CreateJavaVM
+   fun:elektraJniOpen
+   fun:elektraPluginOpen
 }

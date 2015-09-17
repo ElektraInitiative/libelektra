@@ -52,11 +52,11 @@
 
 
 /**
- * @returns 1 and an allocated string of the pluginName if a new plugins should be created.
- * @returns 2 and an allocated string of the referenceName if an old plugin should be used
- * @returns 3 and both if a new plugin should be created and made available for later
- *          back referencing.
- * @returns -1 on error
+ * @retval 1 and an allocated string of the pluginName if a new plugins should be created.
+ * @retval 2 and an allocated string of the referenceName if an old plugin should be used
+ * @retval 3 and both if a new plugin should be created and made available for later
+ *         back referencing.
+ * @retval -1 on error
  */
 int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **referenceName, Key *errorKey)
 {
@@ -142,7 +142,7 @@ int elektraProcessPlugin(Key *cur, int *pluginNumber, char **pluginName, char **
  * @param systemConfig the shared (system) config for the plugins.
  *        Every plugin additional get this config.
  *
- * @return -1 on failure
+ * @retval -1 on failure
  */
 int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePlugins, KeySet *config, KeySet *systemConfig, Key *errorKey)
 {
@@ -405,7 +405,7 @@ Plugin *elektraPluginVersion(void)
 
 
 /**
- * @brief Allows to Export Methods for a Plugin.
+ * @brief Allows one to Export Methods for a Plugin.
  *
  * This function must be called within ELEKTRA_PLUGIN_EXPORT.
  * It define the plugin's methods that will be exported.
@@ -437,7 +437,7 @@ Plugin *elektraPluginVersion(void)
  * Don't allocate storage, it won't be freed.
  *
  * @param pluginName the name of this plugin
- * @return an object that contains all plugin informations needed by
+ * @return an object that contains all plugin information needed by
  * 	libelektra.so
  * @ingroup plugin
  */

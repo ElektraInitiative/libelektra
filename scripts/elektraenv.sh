@@ -3,28 +3,34 @@
 ###########################################################################
 #
 # This is a /etc/profile.d script to set user environment and aliases
-# based on Elektra keys under 'user/env'.
+# based on Elektra keys under 'system/env' and 'user/env'.
 #
-# Bellow user/env there must be three priorities for environment
+# Warning!
+#
+# It is not recommended anymore to use env1, env2 or env3!
+# Instead use libelektragetenv (which provides
+# /env/override and /env/fallback).
+#
+# Below /env there must be three priorities for environment
 # variables:
 #
-#     user/env/env1
-#     user/env/env2
-#     user/env/env3
+#     /env/env1
+#     /env/env2
+#     /env/env3
 #
 # You should distribute your environment variables according to their
 # dependencies. For example, if we want to
 # set PATH as $JAVA_HOME/bin:$PATH, we'll have to set
 #
-#     user/env/env1/JAVA_HOME
-#     user/env/env2/PATH
+#     /env/env1/JAVA_HOME
+#     /env/env2/PATH
 #
-# This way it is guaranteed that the variables under user/env/env1 are
-# set before those under user/env/env2, and before those under
-# user/env/env3
+# This way it is guaranteed that the variables under /env/env1 are
+# set before those under /env/env2, and before those under
+# /env/env3
 #
-# The folder user/env/alias contains keys to define shell aliases.
-# For instance user/env/alias/ls may contain 'ls -Fh', to set an alias
+# The folder /env/alias contains keys to define shell aliases.
+# For instance /env/alias/ls may contain 'ls -Fh', to set an alias
 # to the 'ls' command.
 #
 # Avi Alkalay <avi at unix dot sh>
@@ -39,7 +45,7 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-FILE="`mktemp -t elektraenv.XXXXXXXXX`"
+FILE="`mktemp -t elektraenv.XXXXXXXXX  2>/dev/null || mktemp -t 'elektraenv'`"
 
 
 readEnvTree() {

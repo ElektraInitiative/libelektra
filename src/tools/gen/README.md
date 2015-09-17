@@ -28,7 +28,7 @@ important implementation tasks.
 
 ## Specification
 
-To avoid the problems we initally stated, we use [a specification](specification.ini).
+To avoid the problems we initially stated, we use [a specification](tests/lift.ini).
 Using the specification, we can generate code similar to the code above, but without any of the errors.
 To generate the code we use:
 
@@ -45,7 +45,7 @@ and access the keys as if they were variables:
 
 	std::cout << "delay: " << par.test.lift.emergency.delay << std::endl;
 
-For a full example, see [here](lift_context.cpp).
+For a full example, see [here](tests/lift_context.cpp).
 
 
 ## Contextual Values
@@ -124,7 +124,7 @@ the generated function:
 	kdb::ksGetOpt(argc, argv, ks); 
 
 Then we can implement firefox-like profiles as shown
-[here](visit_context.cpp) by activating what we got from
+[here](tests/visit_context.cpp) by activating what we got from
 commandline:
 
 	par.activate<ProfileLayer>(par.profile);

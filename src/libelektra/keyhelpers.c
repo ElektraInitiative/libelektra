@@ -320,7 +320,7 @@ void keyVInit(Key *key, const char *name, va_list va)
 	size_t value_size = 0;
 	void *value = 0;
 	void (*func) (void) = 0;
-	kdb_unsigned_long_long_t flags = 0;
+	int flags = 0;
 	char *owner = 0;
 
 	if (!key) return;
@@ -355,7 +355,7 @@ void keyVInit(Key *key, const char *name, va_list va)
 
 				/* flags without an argument */
 				case KEY_FLAGS:
-					flags |= va_arg(va, kdb_unsigned_long_long_t);
+					flags |= va_arg(va, int);
 				case KEY_BINARY:
 				case KEY_LOCK_NAME:
 				case KEY_LOCK_VALUE:
