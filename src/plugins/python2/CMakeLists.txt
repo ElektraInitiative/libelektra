@@ -50,7 +50,7 @@ elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 				PYTHON_PLUGIN_NAME=\"python2\"
 		)
 
-		install(DIRECTORY python2 DESTINATION ${TARGET_TEST_DATA_FOLDER})
+		install (DIRECTORY ../python/python/ DESTINATION "${TARGET_TEST_DATA_FOLDER}/python2")
 	else ()
 		message (WARNING "swig_python2 bindings are required for testing, test deactivated")
 	endif ()
