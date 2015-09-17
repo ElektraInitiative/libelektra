@@ -1,7 +1,7 @@
 #include "treeviewmodel.hpp"
 #include "guibasickeyset.hpp"
 #include <threewaymerge.hpp>
-#include <onesidemergeconfiguration.hpp>
+#include <automergeconfiguration.hpp>
 #include <mergeconflictstrategy.hpp>
 #include <automergestrategy.hpp>
 #include <onesidestrategy.hpp>
@@ -606,7 +606,7 @@ KeySet handleConflict(KeySet const & theirs, KeySet & ours)
 
 	ThreeWayMerge merger;
 
-	OneSideMergeConfiguration configuration(OURS);
+	AutoMergeConfiguration configuration;
 	configuration.configureMerger(merger);
 
 	printKeys(theirs, base, ours);
