@@ -124,7 +124,7 @@ the generated function:
 	kdb::ksGetOpt(argc, argv, ks); 
 
 Then we can implement firefox-like profiles as shown
-[here](visit_context.cpp) by activating what we got from
+[here](tests/visit_context.cpp) by activating what we got from
 commandline:
 
 	par.activate<ProfileLayer>(par.profile);
