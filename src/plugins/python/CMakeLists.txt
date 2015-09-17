@@ -46,7 +46,7 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 				ELEKTRA_PLUGIN_NAME=\"python\"
 		)
 	else ()
-		message (FATAL_ERROR "swig_python3 bindings are required for testing")
+		message (WARNING "swig_python3 bindings are required for testing, test deactivated")
 	endif ()
 elseif (NOT PYTHONLIBS_FOUND)
 	remove_plugin (python "python 3 libs not found")

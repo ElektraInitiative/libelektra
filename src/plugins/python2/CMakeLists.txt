@@ -50,7 +50,7 @@ elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 				ELEKTRA_PLUGIN_NAME=\"python2\"
 		)
 	else ()
-		message (FATAL_ERROR "swig_python2 bindings are required for testing")
+		message (WARNING "swig_python2 bindings are required for testing, test deactivated")
 	endif ()
 elseif (NOT PYTHON2LIBS_FOUND)
 	remove_plugin (python2 "python 2 libs not found")
