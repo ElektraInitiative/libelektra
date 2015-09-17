@@ -36,12 +36,10 @@ if (INSTALL_SYSTEM_FILES)
 			RENAME kdb)
 endif()
 
-if (BUILD_SHARED AND ENABLE_CXX11 AND HAVE_GLIBC)
-	configure_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/elektrify-getenv.in"
-		"${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv")
-		install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-endif ()
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/elektrify-getenv.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv")
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/make-source-package.in"
