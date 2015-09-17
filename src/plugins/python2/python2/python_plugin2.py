@@ -1,9 +1,25 @@
-import sys, os
+class ElektraPlugin(object):
+	def __init__(self):
+		self.x = 1
+		pass
 
-py2dir = os.path.dirname(__file__)
-pydir  = os.path.abspath(py2dir + "/../../python")
-sys.path.append(pydir)
+	def open(self, errorKey):
+		print("[CLASS-PYTHON-2] open -->")
+		self.x = self.x + 1
+		return 1
 
-import importlib
-py2module = os.path.splitext(os.path.basename(__file__))[0]
-ElektraPlugin = importlib.import_module("python.%s" % py2module).ElektraPlugin
+	def get(self, returned, parentKey):
+		print("[CLASS-PYTHON-2] get")
+		return 1
+
+	def set(self, returned, parentKey):
+		print("[CLASS-PYTHON-2] set")
+		return 1
+
+	def error(self, returned, parentKey):
+		print("[CLASS-PYTHON-2] error")
+		return 1
+
+	def close(self, errorKey):
+		print("[CLASS-PYTHON-2] <-- close")
+		return 0

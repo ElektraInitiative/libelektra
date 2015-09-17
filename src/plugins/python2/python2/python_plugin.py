@@ -1,9 +1,27 @@
-import sys, os
+import kdb
 
-py2dir = os.path.dirname(__file__)
-pydir  = os.path.abspath(py2dir + "/../../python")
-sys.path.append(pydir)
+class ElektraPlugin(object):
+	def __init__(self):
+		pass
 
-import importlib
-py2module = os.path.splitext(os.path.basename(__file__))[0]
-ElektraPlugin = importlib.import_module("python.%s" % py2module).ElektraPlugin
+	def open(self, errorKey):
+		print("[CLASS-PYTHON-1] open -->")
+		return 0
+
+	def get(self, returned, parentKey):
+		print("[CLASS-PYTHON-1] get")
+		if parentKey.name == 'user/from_c':
+			returned.append(kdb.Key("user/from_python"))
+		return 1
+
+	def set(self, returned, parentKey):
+		print("[CLASS-PYTHON-1] set")
+		return 1
+
+	def error(self, returned, parentKey):
+		print("[CLASS-PYTHON-1] error")
+		return 1
+
+	def close(self, errorKey):
+		print("[CLASS-PYTHON-1] <-- close")
+		return 0
