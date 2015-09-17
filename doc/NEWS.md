@@ -223,7 +223,7 @@ Thanks to Manuel Mausz for to testing and improving portability!
 
 ## Packaging and Build System
 
-- [0.8.12 packaged+migrated to testing](https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html), thanks to Pino Toscano <pino@debian.org>
+- [0.8.12 packaged+migrated to testing](https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html), thanks to Pino Toscano
 - fix build with external gtest, thanks to Pino Toscano
 - switch from FindElektra.cmake to ElektraConfig.cmake, thanks to Pino Toscano
 - use `cmake_parse_arguments` instead of `parse_arguments`, thanks to Manuel Mausz
