@@ -181,11 +181,13 @@ macro (add_cpp_plugintest testname)
 endmacro (add_cpp_plugintest testname)
 
 macro(find_swig)
-	find_package(SWIG 3)
 	if (NOT SWIG_FOUND)
-		message(STATUS "Search for swig2 instead")
-		find_package(SWIG 2 QUIET)
-	endif()
+		find_package(SWIG 3)
+		if (NOT SWIG_FOUND)
+			message(STATUS "Search for swig2 instead")
+			find_package(SWIG 2 QUIET)
+		endif()
+	endif (NOT SWIG_FOUND)
 endmacro(find_swig)
 
 
