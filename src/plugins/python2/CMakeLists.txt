@@ -1,7 +1,7 @@
 message(DEPRECATION "Python 2.7 plugin has been deprecated")
 
 find_package(Python2Libs 2.7)
-find_package(SWIG 2)
+find_swig()
 
 if (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 	remove_plugin (python2 "python2 is for python 2.7 only and not ${PYTHON2LIBS_VERSION_STRING}")
