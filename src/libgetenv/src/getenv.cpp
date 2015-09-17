@@ -399,12 +399,13 @@ extern "C" void elektraOpen(int* argc, char** argv)
 extern "C" void elektraClose()
 {
 	elektraLockMutex();
-	if (!elektraRepo) return; // already closed
-
-	kdbClose(elektraRepo, elektraParentKey);
-	ksDel(elektraConfig);
-	keyDel(elektraParentKey);
-	elektraRepo = 0;
+	if (elektraRepo)
+	{
+		kdbClose(elektraRepo, elektraParentKey);
+		ksDel(elektraConfig);
+		keyDel(elektraParentKey);
+		elektraRepo = 0;
+	}
 	elektraUnlockMutex();
 }
 
@@ -596,7 +597,9 @@ extern "C" char *getenv(const char *name) // throw ()
 	elektraLockMutex();
 	if (!sym.f || elektraInGetEnv)
 	{
-		return elektraBootstrapGetEnv(name);
+		char * ret = elektraBootstrapGetEnv(name);
+		elektraUnlockMutex();
+		return ret;
 	}
 
 	elektraInGetEnv = true;
@@ -611,7 +614,9 @@ extern "C" char *secure_getenv(const char *name) // throw ()
 	elektraLockMutex();
 	if (!ssym.f || elektraInGetEnv)
 	{
-		return elektraBootstrapSecureGetEnv(name);
+		char * ret = elektraBootstrapSecureGetEnv(name);
+		elektraUnlockMutex();
+		return ret;
 	}
 
 	elektraInGetEnv = true;
