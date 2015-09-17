@@ -44,7 +44,7 @@ If version numbers are correct in
 - CMakeLists.txt
 
 Rebuild cleanly, run all tests and also check for memleaks:
-  cd ~build && ~e/scripts/configure-debian-wheezy-local ~e && make -j5 && make run_all && make run_memcheck
+  cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all && make run_memcheck
 
 Check if there are really >=91 or >=68 tests
 
@@ -74,7 +74,7 @@ Check if tar is reproduceable + sign it:
 
 Unpack + compile (with all available plugins) + test those sources:
  tar xvzf elektra-$VERSION.tar.gz && mkdir build
- cd ~build/build && ~e/scripts/configure-debian-wheezy-local ../elektra-$VERSION && make -j5 && make run_all && make run_memcheck
+ cd ~build/build && ~e/scripts/configure-debian ../elektra-$VERSION && make -j5 && make run_all && make run_memcheck
 
 Now copy the packages to ftp:
  cp ~build/elektra-$VERSION.tar.gz* ~elektra-ftp/releases

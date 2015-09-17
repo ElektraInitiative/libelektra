@@ -268,7 +268,10 @@ You can download the release from
 and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.13.tar.gz)
 
 - name: elektra-0.8.13.tar.gz
-- TODO: Signatures will be added after tagging the release
+- size: 2141758
+- md5sum: 6e7640338f440e67aba91bd64b64f613
+- sha1: ca58524d78e5d39a540a4db83ad527354524db5e
+- sha256: f5c672ef9f7826023a577ca8643d0dcf20c3ad85720f36e39f98fe61ffe74637
 
 
 
