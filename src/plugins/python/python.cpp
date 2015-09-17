@@ -181,117 +181,134 @@ static int Python_AppendToSysPath(const char *path)
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static unsigned open_cnt = 0;
 
+static void Python_Shutdown(moduleData *data)
+{
+	/* destroy python if plugin isn't used anymore */
+	//FIXME python reinitialization is known to be buggy
+	pthread_mutex_lock(&mutex);
+	if (Py_IsInitialized() && !--open_cnt && data->shutdown) // order matters!
+		Py_Finalize();
+	pthread_mutex_unlock(&mutex);
+}
+
 int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
-	/* store modules */
-	moduleData *data = new moduleData;
-	data->instance   = NULL;
-	data->printError = 0;
-	data->shutdown   = 0;
-	elektraPluginSetData(handle, data);
-
 	KeySet *config = elektraPluginGetConfig(handle);
-	data->printError = (ksLookupByName(config, "/print", 0) != NULL);
-	data->shutdown   = (ksLookupByName(config, "/shutdown", 0) != NULL);
-
 	Key *script = ksLookupByName(config, "/script", 0);
 	if (script == NULL)
 		return 0; // success if no script to execute
+
 	if (keyString(script) == NULL)
 	{
 		ELEKTRA_SET_ERROR(111, errorKey, "No python script set");
 		return -1;
 	}
 
-	/* initialize python interpreter - only once */
-	pthread_mutex_lock(&mutex);
-	if (!Py_IsInitialized())
+	/* create module data */
+	moduleData *data = new moduleData;
+	data->instance   = NULL;
+	data->printError = (ksLookupByName(config, "/print", 0) != NULL);
+	/* shutdown flag is integer by design. This way users can set the
+	 * expected behaviour without worring about default values
+	 */
+	data->shutdown = (ksLookupByName(config, "/shutdown", 0) &&
+			!!strcmp(keyString(ksLookupByName(config, "/shutdown", 0)), "0"));
+
 	{
-		Py_Initialize();
-		PyEval_InitThreads();
+		/* initialize python interpreter - only once */
+		pthread_mutex_lock(&mutex);
 		if (!Py_IsInitialized())
 		{
-			pthread_mutex_unlock(&mutex);
-			return -1;
+			Py_Initialize();
+			PyEval_InitThreads();
+			if (!Py_IsInitialized())
+			{
+				pthread_mutex_unlock(&mutex);
+				goto error;
+			}
 		}
-	}
-	open_cnt++;
-	pthread_mutex_unlock(&mutex);
+		open_cnt++;
+		pthread_mutex_unlock(&mutex);
 
-	/* import kdb */
-	PyObject *kdbModule = Python_ImportModule("kdb");
-	if (kdbModule == NULL)
-	{
-		ELEKTRA_SET_ERROR(111, errorKey, "Unable to import kdb module");
-		if (data->printError)
-			PyErr_Print();
-		return -1;
-	}
-	Py_XDECREF(kdbModule);
+		/* import kdb */
+		PyObject *kdbModule = Python_ImportModule("kdb");
+		if (kdbModule == NULL)
+		{
+			ELEKTRA_SET_ERROR(111, errorKey, "Unable to import kdb module");
+			goto error_print;
+		}
+		Py_XDECREF(kdbModule);
 
-	/* extend sys path */
-	char *tmpScript = elektraStrDup(keyString(script));
-	const char *dname = dirname(tmpScript);
-	if (!Python_AppendToSysPath(dname))
-	{
-		ELEKTRA_SET_ERROR(111, errorKey, "Unable to extend sys.path");
+		/* extend sys path */
+		char *tmpScript = elektraStrDup(keyString(script));
+		const char *dname = dirname(tmpScript);
+		if (!Python_AppendToSysPath(dname))
+		{
+			ELEKTRA_SET_ERROR(111, errorKey, "Unable to extend sys.path");
+			elektraFree(tmpScript);
+			goto error;
+		}
 		elektraFree(tmpScript);
-		return -1;
-	}
-	elektraFree(tmpScript);
 
-	/* import module/script */
-	tmpScript = elektraStrDup(keyString(script));
-	char *bname = basename(tmpScript);
-	size_t bname_len = strlen(bname);
-	if (bname_len >= 4 && strcmp(bname + bname_len - 3, ".py") == 0)
-		bname[bname_len - 3] = '\0';
+		/* import module/script */
+		tmpScript = elektraStrDup(keyString(script));
+		char *bname = basename(tmpScript);
+		size_t bname_len = strlen(bname);
+		if (bname_len >= 4 && strcmp(bname + bname_len - 3, ".py") == 0)
+			bname[bname_len - 3] = '\0';
 
-	PyObject *pModule = Python_ImportModule(bname);
-	if (pModule == NULL)
-	{
-		ELEKTRA_SET_ERRORF(111, errorKey,"Unable to import python script %s",
-				keyString(script));
-		if (data->printError)
-			PyErr_Print();
+		PyObject *pModule = Python_ImportModule(bname);
+		if (pModule == NULL)
+		{
+			ELEKTRA_SET_ERRORF(111, errorKey,"Unable to import python script %s",
+					keyString(script));
+			elektraFree(tmpScript);
+			goto error_print;
+		}
 		elektraFree(tmpScript);
-		return -1;
-	}
-	elektraFree(tmpScript);
 
-	/* get class */
-	PyGILState_STATE gstate = PyGILState_Ensure();
-	PyObject *klass = PyObject_GetAttrString(pModule, "ElektraPlugin");
-	Py_DECREF(pModule);
-	PyGILState_Release(gstate);
-	if (klass == NULL)
-	{
-		ELEKTRA_SET_ERROR(111, errorKey,
-				"Module doesn't provide a ElektraPlugin class");
-		if (data->printError)
-			PyErr_Print();
-		return -1;
+		/* get class */
+		PyGILState_STATE gstate = PyGILState_Ensure();
+		PyObject *klass = PyObject_GetAttrString(pModule, "ElektraPlugin");
+		Py_DECREF(pModule);
+		PyGILState_Release(gstate);
+		if (klass == NULL)
+		{
+			ELEKTRA_SET_ERROR(111, errorKey,
+					"Module doesn't provide a ElektraPlugin class");
+			goto error_print;
+		}
+
+		/* create instance of class */
+		gstate = PyGILState_Ensure();
+		PyObject *inst_args = Py_BuildValue("()");
+		PyObject *inst = PyEval_CallObject(klass, inst_args);
+		Py_DECREF(klass);
+		Py_DECREF(inst_args);
+		PyGILState_Release(gstate);
+		if (inst == NULL)
+		{
+			ELEKTRA_SET_ERROR(111, errorKey,
+					"Unable to create instance of ElektraPlugin");
+			goto error_print;
+		}
+		data->instance = inst;
 	}
 
-	/* create instance of class */
-	gstate = PyGILState_Ensure();
-	PyObject *inst_args = Py_BuildValue("()");
-	PyObject *inst = PyEval_CallObject(klass, inst_args);
-	Py_DECREF(klass);
-	Py_DECREF(inst_args);
-	PyGILState_Release(gstate);
-	if (inst == NULL)
-	{
-		ELEKTRA_SET_ERROR(111, errorKey,
-				"Unable to create instance of ElektraPlugin");
-		if (data->printError)
-			PyErr_Print();
-		return -1;
-	}
-	data->instance = inst;
+	/* store module data after everything is set up */
+	elektraPluginSetData(handle, data);
 
 	/* call python function */
 	return Python_CallFunction_Helper1(data, "open", errorKey);
+
+error_print:
+	if (data->printError)
+		PyErr_Print();
+error:
+	/* destroy python */
+	Python_Shutdown(data);
+	delete data;
+	return -1;
 }
 
 int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
@@ -302,7 +319,7 @@ int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 
 	/* call python function */
 	int ret = 0;
-	if (data->instance != NULL)
+	if (data != NULL)
 	{
 		PyGILState_STATE gstate = PyGILState_Ensure();
 		ret = Python_CallFunction_Helper1(data, "close", errorKey);
@@ -313,14 +330,8 @@ int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		PyGILState_Release(gstate);
 	}
 
-	/* destroy python if plugin isn't used anymore */
-	//FIXME python reinitialization is known to be buggy
-	pthread_mutex_lock(&mutex);
-	open_cnt--;
-	if (!open_cnt && data->shutdown && Py_IsInitialized())
-		Py_Finalize();
-	pthread_mutex_unlock(&mutex);
-
+	/* destroy python */
+	Python_Shutdown(data);
 	delete data;
 	return ret;
 }
@@ -361,7 +372,7 @@ int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	}
 
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL && data->instance != NULL)
+	if (data != NULL)
 		return Python_CallFunction_Helper2(data, "get", returned,
 				parentKey);
 	return 0;
@@ -371,7 +382,7 @@ int PYTHON_PLUGIN_FUNCTION(Set)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL && data->instance != NULL)
+	if (data != NULL)
 		return Python_CallFunction_Helper2(data, "set", returned,
 				parentKey);
 	return 0;
@@ -381,7 +392,7 @@ int PYTHON_PLUGIN_FUNCTION(Error)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL && data->instance != NULL)
+	if (data != NULL)
 		return Python_CallFunction_Helper2(data, "error", returned,
 				parentKey);
 	return 0;
