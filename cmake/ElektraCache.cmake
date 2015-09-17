@@ -48,6 +48,8 @@ set (PLUGINS_LIST_COMPILE
 set (PLUGINS_LIST_NODEP
 	ccode
 	fstab
+	csvstorage
+	lineendings
 	hexcode
 	hidden
 	ni

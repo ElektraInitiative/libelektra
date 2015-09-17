@@ -650,13 +650,43 @@ module:storage
 see:9 75 109
 
 number:111
-description:python error
+description:couldnt open file.
 severity:error
 ingroup:plugin
-module:python
+module:lineendings
 
 number:112
-description:python warning
+description:invalid line ending.
+severity:error
+ingroup:plugin
+module:lineendings
+
+number:113
+description:inconsistent line endings
+severity:error
+ingroup:plugin
+module:lineendings 
+
+number:114
+description: couldn't open file.
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:115
+description:invalid number of columns
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:116
+description:see Reason.
 severity:warning
 ingroup:plugin
-module:python
+module:csvstorage
+
+number:117
+description:out of memory.
+severity:error
+ingroup:plugin
+module:csvstorage
