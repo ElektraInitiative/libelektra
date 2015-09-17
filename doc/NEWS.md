@@ -89,9 +89,9 @@ This function makes it trivial and efficient to iterate over all path names, as 
 in all bindings:
 
  - [jna (java)](http://git.libelektra.org/blob/master/src/bindings/jna/HelloElektra.java)
- - [lua](http://git.libelektra.org/blob/master/src/bindings/lua/tests/test_key.lua)
- - [python2](http://git.libelektra.org/blob/master/src/bindings/python2/tests/testpy2_key.py)
- - [python3](http://git.libelektra.org/blob/master/src/bindings/python3/tests/test_key.py)
+ - [lua](http://git.libelektra.org/blob/master/src/bindings/swig/lua/tests/test_key.lua)
+ - [python2](http://git.libelektra.org/blob/master/src/bindings/swig/python2/tests/testpy2_key.py)
+ - [python3](http://git.libelektra.org/blob/master/src/bindings/swig/python3/tests/test_key.py)
 
 Other small changes/additions in bindings:
 
