@@ -7,7 +7,7 @@
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS='ALL;-jni'
+ELEKTRA_PLUGINS='ALL;-jni;-python'
 ELEKTRA_TOOLS='ALL'
 
 #workaround for hardening flags
