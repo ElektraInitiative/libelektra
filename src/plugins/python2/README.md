@@ -7,3 +7,12 @@
 - infos/description = magic things require magic plugins
 
 The plugin uses Python to do magic things.
+
+## Deprecation
+
+It is recommended to use [python3](../python/README.md).
+
+## DISCLAIMER
+
+Note, this is a technical preview. It might have severe bugs
+and the API might change in the future.
