@@ -302,16 +302,16 @@ int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 
 	/* call python function */
 	int ret = 0;
-	PyGILState_STATE gstate = PyGILState_Ensure();
 	if (data->instance != NULL)
 	{
+		PyGILState_STATE gstate = PyGILState_Ensure();
 		ret = Python_CallFunction_Helper1(data, "close", errorKey);
 
 		/* clean up references */
 		Py_DECREF(data->instance);
 		data->instance = NULL;
+		PyGILState_Release(gstate);
 	}
-	PyGILState_Release(gstate);
 
 	/* destroy python if plugin isn't used anymore */
 	//FIXME python reinitialization is known to be buggy
@@ -328,8 +328,6 @@ int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
-	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-
 #define _MODULE_CONFIG_PATH "system/elektra/modules/" PYTHON_PLUGIN_NAME_STR
 	if (!strcmp(keyName(parentKey), _MODULE_CONFIG_PATH))
 	{
@@ -362,7 +360,8 @@ int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 		ksDel(n);
 	}
 
-	if (data != NULL)
+	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
+	if (data != NULL && data->instance != NULL)
 		return Python_CallFunction_Helper2(data, "get", returned,
 				parentKey);
 	return 0;
@@ -371,23 +370,21 @@ int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 int PYTHON_PLUGIN_FUNCTION(Set)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
-	int ret = 0;
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL)
-		ret = Python_CallFunction_Helper2(data, "set", returned,
+	if (data != NULL && data->instance != NULL)
+		return Python_CallFunction_Helper2(data, "set", returned,
 				parentKey);
-	return ret;
+	return 0;
 }
 
 int PYTHON_PLUGIN_FUNCTION(Error)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
-	int ret = 0;
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL)
-		ret = Python_CallFunction_Helper2(data, "error", returned,
+	if (data != NULL && data->instance != NULL)
+		return Python_CallFunction_Helper2(data, "error", returned,
 				parentKey);
-	return ret;
+	return 0;
 }
 
 ckdb::Plugin *PYTHON_PLUGIN_EXPORT(PYTHON_PLUGIN_NAME)
