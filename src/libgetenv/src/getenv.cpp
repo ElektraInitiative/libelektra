@@ -94,6 +94,7 @@ union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
 std::chrono::milliseconds elektraReloadTimeout;
 std::chrono::system_clock::time_point elektraReloadNext;
 std::shared_ptr<ostream>elektraLog;
+bool elektraInGetEnv;
 KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
@@ -593,12 +594,14 @@ char *elektraBootstrapSecureGetEnv(const char *name)
 extern "C" char *getenv(const char *name) // throw ()
 {
 	elektraLockMutex();
-	if (!sym.f)
+	if (!sym.f || elektraInGetEnv)
 	{
 		return elektraBootstrapGetEnv(name);
 	}
 
+	elektraInGetEnv = true;
 	char *ret = elektraGetEnv(name, sym.f);
+	elektraInGetEnv = false;
 	elektraUnlockMutex();
 	return ret;
 }
@@ -606,12 +609,14 @@ extern "C" char *getenv(const char *name) // throw ()
 extern "C" char *secure_getenv(const char *name) // throw ()
 {
 	elektraLockMutex();
-	if (!ssym.f)
+	if (!ssym.f || elektraInGetEnv)
 	{
 		return elektraBootstrapSecureGetEnv(name);
 	}
 
+	elektraInGetEnv = true;
 	char * ret = elektraGetEnv(name, ssym.f);
+	elektraInGetEnv = false;
 	elektraUnlockMutex();
 	return ret;
 }
