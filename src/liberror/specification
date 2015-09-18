@@ -715,3 +715,20 @@ severity:error
 ingroup:plugin
 module:enum
 
+number:122
+description:not a valid Polish prefix notation syntax
+severity:error
+ingroup:plugin
+module:calculate
+
+number:123
+description:invalid value
+severity:error
+ingroup:plugin
+module:calculate
+
+number:124
+description:key doesn't exist
+severity:error
+ingroup:plugin
+module:calculate
