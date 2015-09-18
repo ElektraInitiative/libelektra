@@ -702,3 +702,16 @@ description:out of memory.
 severity:error
 ingroup:plugin
 module:csvstorage
+
+number:120
+description: Couldn't compile regex.
+severity: error
+ingroup:plugin
+module:enum
+
+number:121
+description:Validation failed.
+severity:error
+ingroup:plugin
+module:enum
+

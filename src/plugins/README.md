@@ -126,7 +126,7 @@ copied by another plugin just before):
 - [network](network) by using network APIs
 - [path](path) by checking files on filesystem
 - [type](type) using runtime type checking (CORBA types)
-
+- [enum](enum) compares the keyvalue against a list of valid values
 
 ## Interpreter ##
 

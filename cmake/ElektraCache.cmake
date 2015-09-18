@@ -73,6 +73,7 @@ set (PLUGINS_LIST_POSIX
 	iconv
 	network
 	path
+	enum
 	keytometa
 	rename
 	syslog
