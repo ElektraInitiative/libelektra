@@ -19,7 +19,6 @@ kdb::KeySet * readKeySet (int size, int version);
 Data * prepareData (kdb::KeySet ks);
 
 
-//TODO KURT print machine name + kernel bla ? uname ?
 int main (int argc, char**argv)
 {
 	initRand ();
@@ -95,10 +94,10 @@ void runBenchmark (unorderedmap_Interface * bench)
 			double diff_n = MAX_KEYSET_SIZE - MIN_KEYSET_SIZE;
 			double diff_k = MAX_BUCKET_STEP - MIN_BUCKET_STEP;
 			double ratio = diff_k/diff_n;
-			int bucket_step_count = int ( (n*ratio) + MIN_BUCKET_STEP );
+			int bucket_step_count = static_cast<int> ( (n*ratio) + MIN_BUCKET_STEP );
 			if(bucket_step_count > MAX_BUCKET_STEP)
 				bucket_step_count = MAX_BUCKET_STEP;
-			int bucket_step = int ( n/bucket_step_count );
+			int bucket_step = static_cast<int> ( n/bucket_step_count );
 			if (bucket_step * bucket_step_count != n)
 				++bucket_step;
 

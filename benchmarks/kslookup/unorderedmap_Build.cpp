@@ -25,7 +25,7 @@ int unorderedmap_Build::run (int n,int k,int r, Data * data, int * values)
 		map.insert (data[i]);
 //MEASURE END
 	gettimeofday (&end, 0);
-	values[r] = int ((end.tv_sec - start.tv_sec) * 1000000 +
+	values[r] = static_cast<int> ((end.tv_sec - start.tv_sec) * 1000000 +
 					(end.tv_usec - start.tv_usec));
 
 	if (bc != map.bucket_count())
@@ -34,7 +34,7 @@ int unorderedmap_Build::run (int n,int k,int r, Data * data, int * values)
 		return -1;
 	}
 
-	return int (bc);
+	return static_cast<int> (bc);
 }
 
 bool unorderedmap_Build::getMode ()

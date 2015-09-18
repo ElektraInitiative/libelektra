@@ -38,7 +38,7 @@ int unorderedmap_Search::run (const int n,int k,int r, Data * data, int * values
 //MEASURE END
 		gettimeofday (&end, 0);
 
-		int t = int ((end.tv_sec - start.tv_sec) * 1000000 +
+		int t = static_cast<int> ((end.tv_sec - start.tv_sec) * 1000000 +
 					(end.tv_usec - start.tv_usec));
 
 		keys_searched_for[search_for] = t;
@@ -76,7 +76,7 @@ int unorderedmap_Search::run (const int n,int k,int r, Data * data, int * values
 		return -1;
 	}
 
-	return int (bc);
+	return static_cast<int> (bc);
 }
 
 bool unorderedmap_Search::getMode ()

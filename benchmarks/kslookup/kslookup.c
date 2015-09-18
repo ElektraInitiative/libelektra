@@ -10,7 +10,6 @@ int search (int n, int r, KeySet * data, int * times);
 KeySet * readKeySet (int size, int version);
 KeySet * copyKeySet (KeySet * ks);
 
-//TODO KURT print machine name + kernel bla ? uname ?
 int main(int argc, char** argv)
 {
 	initRand ();
@@ -217,6 +216,7 @@ KeySet * readKeySet (int size, int version)
 KeySet * copyKeySet (KeySet * ks)
 {
 	KeySet * out = ksNew (ksGetSize(ks), KS_END);
+	ksRewind (ks);
 	Key * iter_key;
 	while ((iter_key = ksNext (ks)) != 0)
 	{

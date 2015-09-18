@@ -12,7 +12,6 @@ KeySet * readKeySet (int size, int version);
 ENTRY * prepareData (KeySet * ks);
 void freeData (ENTRY * data, int size);
 
-//TODO KURT print machine name + kernel bla ? uname ?
 int main(int argc, char** argv)
 {
 	initRand ();

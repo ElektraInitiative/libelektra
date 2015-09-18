@@ -1,10 +1,6 @@
 #ifndef BENCHMARKS_KSLOOKUP_BENCHMARK_H
 #define BENCHMARKS_KSLOOKUP_BENCHMARK_H
 
-// TODO KURT QUEST strange valgrind in gendata ,hsearch, kslookup and unorderedmap:
-// still reachable: 72,704 bytes in 1 blocks
-// ? target_link_elektra is responsible!! ?
-
 #ifndef __cplusplus
 
 #include <kdbinternal.h>
