@@ -27,6 +27,7 @@ to one cmake variable:
 	verbose/debug -> logging
 	pdf/on/off -> docu
 
+malloc -> elektraMalloc
 
 
 ## docu
