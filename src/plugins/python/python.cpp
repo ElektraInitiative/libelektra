@@ -29,9 +29,7 @@
 using namespace ckdb;
 #include <kdberrors.h>
 
-#define __stringify(x) __stringify2(x)
-#define __stringify2(x) #x
-#define PYTHON_PLUGIN_NAME_STR __stringify(PYTHON_PLUGIN_NAME)
+#define PYTHON_PLUGIN_NAME_STR ELEKTRA_QUOTE(PYTHON_PLUGIN_NAME)
 
 static PyObject *Python_fromSWIG(ckdb::Key *key)
 {
@@ -362,9 +360,7 @@ int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 			keyNew(_MODULE_CONFIG_PATH "/exports/close",
 				KEY_FUNC, PYTHON_PLUGIN_FUNCTION(Close),
 				KEY_END),
-#define __readme_header(x) __readme_header2(x)
-#define __readme_header2(x) __stringify(readme_##x.c)
-#include __readme_header(PYTHON_PLUGIN_NAME)
+#include ELEKTRA_README(PYTHON_PLUGIN_NAME)
 			keyNew(_MODULE_CONFIG_PATH "/infos/version",
 				KEY_VALUE, PLUGINVERSION, KEY_END),
 			KS_END));
