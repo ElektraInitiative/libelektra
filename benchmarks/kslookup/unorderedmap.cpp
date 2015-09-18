@@ -153,6 +153,7 @@ kdb::KeySet * readKeySet (int size, int version)
 	if (pkey.getMeta<const kdb::Key>("error"))
 	{
 		std::cerr << pkey.getMeta<std::string>("error/description") << std::endl;
+		delete out;
 		std::exit (EXIT_FAILURE);
 	}
 
