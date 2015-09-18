@@ -120,12 +120,9 @@ set (PLUGINS_LIST_DEP
 	augeas
 	journald
 	jni
-	)
-
-set (PLUGINS_PREVIEW
 	python
 	python2
-    )
+	)
 
 #
 # force all plugins
