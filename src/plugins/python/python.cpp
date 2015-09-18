@@ -24,7 +24,6 @@
 #include <keyset.hpp>
 #include <libgen.h>
 #include <pthread.h>
-#include <iostream>
 
 using namespace ckdb;
 #include <kdberrors.h>
