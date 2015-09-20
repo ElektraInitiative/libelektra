@@ -40,18 +40,20 @@ static Lineending strToLE(const char *str)
 	}
 	return NA;
 }
-static int checkLineEndings(const char *fileName, Lineending validLineEnding)
+static int checkLineEndings(const char *fileName, Lineending validLineEnding, Key *parentKey)
 {
 	FILE *fp;
-	Lineending lineEnding = NA;
-	Lineending found = NA;
-	uint8_t fc, sc;
-	fc = sc = 0;
 	fp = fopen(fileName, "rb");
 	if(fp == NULL)
 	{
 		return -1;
 	}
+
+	Lineending lineEnding = NA;
+	Lineending found = NA;
+	uint8_t fc, sc;
+	unsigned long line = 1;
+	fc = sc = 0;
 	fread(&fc, 1, 1, fp);
 	while(!feof(fp))
 	{
@@ -85,6 +87,7 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding)
 			if(validLineEnding != NA && lineEnding != validLineEnding)
 			{
 				fclose(fp);
+				ELEKTRA_SET_ERRORF(114, parentKey, "Invalid line ending at line %lu", line);
 				return -2;
 			}  
 			found = NA;
@@ -92,7 +95,12 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding)
 		else if(lineEnding != found && found != NA)
 		{
 			fclose(fp);
+			ELEKTRA_SET_ERRORF(115, parentKey, "inconsistent line endings at line %lu", line);
 			return -3;
+		}
+		else
+		{
+			++line;
 		}
 		fc = sc;
 		found = NA;
@@ -127,10 +135,9 @@ int elektraLineendingsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTR
 	Key *valid = ksLookupByName(config, "/valid", 0);
 	Lineending validLineEnding = strToLE(keyString(valid));
 	int ret;
-	ret = checkLineEndings(keyString(parentKey), validLineEnding);
+	ret = checkLineEndings(keyString(parentKey), validLineEnding, parentKey);
 	if(ret == (-3))
 	{
-			ELEKTRA_SET_ERROR(115, parentKey, "Inconsistent line endings");
 			return -1;
 	}
 	else
@@ -143,7 +150,7 @@ int elektraLineendingsSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *
 	Key *valid = ksLookupByName(config, "/valid", 0);
 	Lineending validLineEnding = strToLE(keyString(valid));
 	int ret;
-	ret = checkLineEndings(keyString(parentKey), validLineEnding);
+	ret = checkLineEndings(keyString(parentKey), validLineEnding, parentKey);
 	switch(ret)
 	{
 		case (-1):
@@ -151,11 +158,9 @@ int elektraLineendingsSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *
 			return 1;
 			break;
 		case (-2):
-			ELEKTRA_SET_ERROR(114, parentKey, "Invalid line ending");
 			return -1;
 			break;
 		case (-3):
-			ELEKTRA_SET_ERROR(115, parentKey, "inconsistent line endings");
 			return -1;
 			break;
 		case 0:

@@ -1,5 +1,5 @@
 - infos = Information about the csvstorage plugin is in keys below
-- infos/author = Thomas Waser
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage
@@ -12,17 +12,12 @@ This plugin allowes Elektra to read and write CSV files.
 
 ## Configuration ##
 
-`config/delimiter`
+`delimiter`
 Tells the plugin what delimiter is used in the file.
-The default delimiter is ; and will be used if config/delimiter is not set.
+The default delimiter is `;` and will be used if `delimiter` is not set.
 
-`config/useheader = 1`
-Tells the plugin to use the first line as a header. The columns will get the
-coresponding names.
-
-`config/outputdelim`
-Tells the plugin what delimiter should be used for output.
-If not set, ; will be used
+`useheader`
+Tells the plugin to use the first line as a header if it's set to "1". The columns will get the coresponding names.
 
 ## Example ##
 

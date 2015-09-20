@@ -662,13 +662,13 @@ ingroup:plugin
 module:python
 
 number:113
-description:couldnt open file.
+description:couldnt open file
 severity:error
 ingroup:plugin
 module:lineendings
 
 number:114
-description:invalid line ending.
+description:invalid line ending
 severity:error
 ingroup:plugin
 module:lineendings
@@ -680,7 +680,7 @@ ingroup:plugin
 module:lineendings 
 
 number:116
-description: couldn't open file.
+description: couldn't open file
 severity:error
 ingroup:plugin
 module:csvstorage
@@ -692,25 +692,25 @@ ingroup:plugin
 module:csvstorage
 
 number:118
-description:see Reason.
+description:problem during parsing of csvfile (see reason)
 severity:warning
 ingroup:plugin
 module:csvstorage
 
 number:119
-description:out of memory.
+description:out of memory
 severity:error
 ingroup:plugin
 module:csvstorage
 
 number:120
-description: Couldn't compile regex.
+description: Couldn't compile regex
 severity: error
 ingroup:plugin
 module:enum
 
 number:121
-description:Validation failed.
+description:Validation failed
 severity:error
 ingroup:plugin
 module:enum

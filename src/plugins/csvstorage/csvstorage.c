@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Source for csvstorage plugin
+ * @brief Source for csvstorage plugin
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -15,23 +15,27 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <kdberrors.h>
-
+#include <kdbhelper.h>
 #include "csvstorage.h"
 
-static char *parseLine(char *_line, char delim, unsigned long offset)
+#define INTSTR_MAX 15
+static char *parseLine(char *origLine, char delim, unsigned long offset)
 {
-	char *line = (_line + offset);
+	char *line = (origLine + offset);
 	if(*line == '\0')
 		return NULL;
 	char *ptr = strchr(line, delim);
 
 	if(ptr == NULL)
 	{
-		line[strlen(line)-1]='\0';
+		line[elektraStrLen(line)-2]='\0';
 	}
 	else
+	{
 		*ptr = '\0';
+	}
 	return line;
 }
 
@@ -66,7 +70,7 @@ static unsigned long getColumnCount(char *lineBuffer, char delim)
 	return counter;
 }
 
-char *itostr(char *buf, unsigned long i, uint8_t len)
+static char *itostr(char *buf, unsigned long i, uint8_t len)
 {
 	snprintf(buf, len, "%lu", i);
 	return buf;
@@ -75,65 +79,25 @@ char *itostr(char *buf, unsigned long i, uint8_t len)
 static Key *getKeyByOrderNr(KeySet *ks, unsigned long n)
 {
 	Key *cur;
-	char buf[16];
+	char buf[INTSTR_MAX];
 	ksRewind(ks);
 	while((cur = ksNext(ks)) != NULL)
 	{
-		if(!strcmp(keyString(keyGetMeta(cur, "csvOrder")), itostr(buf, n, sizeof(buf)-1)))
+		if(!strcmp(keyString(keyGetMeta(cur, "csv/order")), itostr(buf, n, sizeof(buf)-1)))
 			return cur; 
 	}
 	return NULL;
 }
-int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
-{
-	if (!strcmp(keyName(parentKey), "system/elektra/modules/csvstorage"))
-	{
-		KeySet *contract = ksNew (30,
-				keyNew ("system/elektra/modules/csvstorage",
-					KEY_VALUE, "csvstorage plugin waits for your orders", KEY_END),
-				keyNew ("system/elektra/modules/csvstorage/exports", KEY_END),
-				keyNew ("system/elektra/modules/csvstorage/exports/get",
-					KEY_FUNC, elektraCsvstorageGet, KEY_END),
-				keyNew ("system/elektra/modules/csvstorage/exports/set",
-					KEY_FUNC, elektraCsvstorageSet, KEY_END),
-#include ELEKTRA_README(csvstorage)
-				keyNew ("system/elektra/modules/csvstorage/infos/version",
-					KEY_VALUE, PLUGINVERSION, KEY_END),
-				KS_END);
-		ksAppend (returned, contract);
-		ksDel (contract);
 
-		return 1; /* success */
-	}
-	/* get all keys */
-	KeySet *config = elektraPluginGetConfig(handle);
-	Key *delimKey = ksLookupByName(config, "/delimiter", 0);
-	Key *readHeaderKey = ksLookupByName(config, "/useheader", 0);
-	Key *key;
-	KeySet *header = ksNew(0, KS_END);
-	Key *dirKey;
-	Key *cur;
-	FILE *fp = NULL;
-	char *col;
-	char buf[15];
-	int nr_keys = 1;
-	
-	char delim = ';';
-	if(delimKey)
-		delim = ((char *)keyString(delimKey))[0];
-	
-	uint8_t useHeader = 0;
-	if(readHeaderKey)
-	{
-		if((((char *)keyString(readHeaderKey))[0] - '0') == 1)
-			useHeader = 1;
-	}
+static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader)
+{
 	const char *fileName;
 	fileName = keyString(parentKey);
+	FILE *fp = NULL;
 	fp = fopen(fileName, "rb");
 	if(!fp)
 	{
-		ELEKTRA_SET_ERROR(116, parentKey, "couldn't open file");
+		ELEKTRA_SET_ERRORF(116, parentKey, "couldn't open file %s\n", fileName);
 		return -1;
 	}
 
@@ -143,14 +107,14 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		ELEKTRA_ADD_WARNING(118, parentKey, "Empty file");
 		fclose(fp);
-		return 1;
+		return -2;
 	}
 
 	char *lineBuffer;
-	lineBuffer = malloc(length * sizeof(char)+1);
+	lineBuffer = elektraMalloc((length * sizeof(char))+1);
 	if(!lineBuffer)
 	{
-		ELEKTRA_SET_ERROR(119, parentKey, "Out of memory");
+		ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 		return -1;
 	}
 	if(!fgets(lineBuffer, length, fp))
@@ -165,16 +129,22 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	unsigned long colCounter = 0;
 	unsigned long lineCounter = 0;
 	unsigned long offset = 0;
+	char *col;
+	char buf[INTSTR_MAX];
+	int nr_keys = 1;
+	KeySet *header = ksNew(0, KS_END);
+	Key *key;
+	
 	if(useHeader == 1)
 	{
 		colCounter = 0;
 		offset = 0;
 		while((col = parseLine(lineBuffer, delim, offset)) != NULL)
 		{
-			offset += strlen(col)+1;
+			offset += elektraStrLen(col);
 			key = keyDup(parentKey);
 			keyAddBaseName(key, col);
-			keySetMeta(key, "csvOrder", itostr(buf, colCounter, sizeof(buf)-1));
+			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
 			ksAppendKey(header, key);
 			++colCounter;
 		}
@@ -182,23 +152,33 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	else
 	{
 		colCounter = 0;
+		//if no headerline exists name the columns 0..N where N is the number of columns
 		while(colCounter < columns)
 		{
 			key = keyDup(parentKey);
 			col = itostr(buf, colCounter, sizeof(buf)-1);
 			keyAddBaseName(key, col);
-			keySetMeta(key, "csvOrder", col);
+			keySetMeta(key, "csv/order", col);
 			ksAppendKey(header, key);
 			++colCounter;
 		}
 	}
 
+	Key *dirKey;
+	Key *cur;
 	while(!feof(fp))
 	{
 		length = getLineLength(fp);
 		if(length == 0)
 			break;
-		lineBuffer = realloc(lineBuffer, length * sizeof(char)+1);
+		if(elektraRealloc((void **)&lineBuffer, (length * sizeof(char))+1) < 0)
+		{
+			fclose(fp);
+			free(lineBuffer);
+			ksDel(header);
+			ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
+			return -1;
+		}
 		fgets(lineBuffer, length, fp);
 		dirKey = keyDup(parentKey);
 		snprintf(buf, sizeof(buf)-1, "#%lu", lineCounter);
@@ -210,11 +190,11 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		while((col = parseLine(lineBuffer, delim, offset)) != NULL)
 		{
 			cur = getKeyByOrderNr(header, colCounter);
-			offset += strlen(col)+1;
+			offset += elektraStrLen(col);
 			key = keyDup(dirKey);
 			keyAddBaseName(key, keyBaseName(cur));
 			keySetString(key, col);
-			keySetMeta(key, "csvOrder", itostr(buf, colCounter, sizeof(buf)-1));
+			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
 			ksAppendKey(returned, key);
 			keyDel(key);
 			++nr_keys;
@@ -239,41 +219,79 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return nr_keys;
 }
 
-int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
-	unsigned long colCounter = 0;
-	unsigned long columns = 0;
-	uint8_t printHeader = 0;
-	Key *cur;
-	KeySet *toWriteKS;
-	Key *toWrite;
-	FILE *fp;
-	char outputDelim;
-	KeySet *config = elektraPluginGetConfig(handle);
-	Key *delimKey = ksLookupByName(config, "/outputdelim", 0);
-	Key *printHeaderKey = ksLookupByName(config, "/useheader", 0);
-	if(delimKey)
-		outputDelim = ((char *)keyValue(delimKey))[0];
-	else
-		outputDelim = ';';
-	if(printHeaderKey)
+	if (!strcmp(keyName(parentKey), "system/elektra/modules/csvstorage"))
 	{
-		if((((char *)keyString(printHeaderKey))[0] - '0') == 1)
-			printHeader = 1;
-		else
-			printHeader = 0;
+		KeySet *contract = ksNew (30,
+				keyNew ("system/elektra/modules/csvstorage",
+					KEY_VALUE, "csvstorage plugin waits for your orders", KEY_END),
+				keyNew ("system/elektra/modules/csvstorage/exports", KEY_END),
+				keyNew ("system/elektra/modules/csvstorage/exports/get",
+					KEY_FUNC, elektraCsvstorageGet, KEY_END),
+				keyNew ("system/elektra/modules/csvstorage/exports/set",
+					KEY_FUNC, elektraCsvstorageSet, KEY_END),
+#include ELEKTRA_README(csvstorage)
+				keyNew ("system/elektra/modules/csvstorage/infos/version",
+					KEY_VALUE, PLUGINVERSION, KEY_END),
+				KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
+
+		return 1; /* success */
 	}
-	else
-		printHeader = 0;
+
+	KeySet *config = elektraPluginGetConfig(handle);
+	Key *delimKey = ksLookupByName(config, "/delimiter", 0);
+	char delim = ';';
+	if(delimKey)
+	{
+		delim = ((char *)keyString(delimKey))[0];
+	}
+	
+	Key *readHeaderKey = ksLookupByName(config, "/useheader", 0);
+	short useHeader = 0;
+	if(readHeaderKey)
+	{
+		if((((char *)keyString(readHeaderKey))[0] - '0') == 1)
+		{
+			useHeader = 1;
+		}
+	}
+	int nr_keys;
+	nr_keys = csvRead(returned, parentKey, delim, useHeader);
+	
+	switch(nr_keys)
+	{
+		case (-2):
+			return 1;
+			break;
+		case (-1):
+			return -1;
+			break;
+		default:
+			return nr_keys;
+			break;
+	}
+}
+
+static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHeader)
+{
+	FILE *fp;
 	fp = fopen(keyString(parentKey), "w");
 	if(!fp)
 	{
-		ELEKTRA_SET_ERROR(116, parentKey, "File not found");
+		ELEKTRA_SET_ERROR_SET(parentKey);
 		return -1;
 	}
 
 	ksLookup(returned, parentKey, KDB_O_POP);
 	
+	unsigned long colCounter = 0;
+	unsigned long columns = 0;
+	Key *cur;
+	KeySet *toWriteKS;
+	Key *toWrite;
 	while((cur = ksNext(returned)) != NULL)
 	{
 		if(keyRel(parentKey, cur) != 1)
@@ -288,13 +306,14 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				if(colCounter == ULONG_MAX)
 				{
 					ELEKTRA_SET_ERROR(117, parentKey, "number of columns exceeds ULONG_MAX");
+					fclose(fp);
 					return -1;
 				}
 				toWrite = getKeyByOrderNr(toWriteKS, colCounter);
 				if(!toWrite)
 					break;
 				if(colCounter)
-					fprintf(fp, "%c", outputDelim);
+					fprintf(fp, "%c", delim);
 				++colCounter;
 				fprintf(fp, "%s", keyBaseName(toWrite));
 			}
@@ -319,7 +338,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				if(!toWrite)
 					break;
 				if(colCounter)
-					fprintf(fp, "%c", outputDelim);
+					fprintf(fp, "%c", delim);
 				++colCounter;
 				fprintf(fp, "%s", keyString(toWrite));
 
@@ -337,7 +356,45 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 	}
 	fclose(fp);
-	return 1; /* success */
+	return 1;
+}
+
+int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
+{
+	KeySet *config = elektraPluginGetConfig(handle);
+	Key *delimKey = ksLookupByName(config, "/delimiter", 0);
+	char outputDelim;
+	if(delimKey)
+	{
+		outputDelim = ((char *)keyValue(delimKey))[0];
+	}
+	else
+	{
+		outputDelim = ';';
+	}
+	
+	Key *printHeaderKey = ksLookupByName(config, "/useheader", 0);
+	short printHeader = 0;
+	if(printHeaderKey)
+	{
+		if((((char *)keyString(printHeaderKey))[0] - '0') == 1)
+			printHeader = 1;
+		else
+			printHeader = 0;
+	}
+	else
+	{
+		printHeader = 0;
+	}
+
+	if(csvWrite(returned, parentKey, outputDelim, printHeader) == -1)
+	{
+		return -1;
+	}
+	else
+	{
+		return 1; /* success */
+	}
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(csvstorage)
