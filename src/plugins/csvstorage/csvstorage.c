@@ -161,6 +161,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			keySetMeta(key, "csv/order", col);
 			ksAppendKey(header, key);
 			++colCounter;
+			fseek(fp, 0, SEEK_SET);
 		}
 	}
 
@@ -209,7 +210,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		keyDel(dirKey);
 	}
 
-	key	= keyDup(parentKey);
+	key = keyDup(parentKey);
 	snprintf(buf, sizeof(buf)-1, "#%lu", lineCounter);
 	keySetString(key, buf);
 	ksAppendKey(returned, key);
@@ -247,14 +248,17 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	char delim = ';';
 	if(delimKey)
 	{
-		delim = ((char *)keyString(delimKey))[0];
+		const char *delimString = keyString(delimKey);
+		delim = delimString[0];
 	}
 	
 	Key *readHeaderKey = ksLookupByName(config, "/useheader", 0);
 	short useHeader = 0;
 	if(readHeaderKey)
 	{
-		if((((char *)keyString(readHeaderKey))[0] - '0') == 1)
+		const char *printHeaderString = keyString(readHeaderKey);
+		printf("printHeaderString: %s\n", printHeaderString);
+		if((printHeaderString[0] - '0') == 1)
 		{
 			useHeader = 1;
 		}
@@ -365,7 +369,8 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	char outputDelim;
 	if(delimKey)
 	{
-		outputDelim = ((char *)keyValue(delimKey))[0];
+		const char *delimString = keyString(delimKey);
+		outputDelim = delimString[0];
 	}
 	else
 	{
@@ -376,7 +381,9 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	short printHeader = 0;
 	if(printHeaderKey)
 	{
-		if((((char *)keyString(printHeaderKey))[0] - '0') == 1)
+		const char *printHeaderString = keyString(printHeaderKey);
+		printf("printHeaderString: %s\n", printHeaderString);
+		if((printHeaderString[0] - '0') == 1)
 			printHeader = 1;
 		else
 			printHeader = 0;
