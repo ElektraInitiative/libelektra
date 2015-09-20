@@ -21,5 +21,5 @@ Tells the plugin to use the first line as a header if it's set to "1". The colum
 
 ## Example ##
 
-`kdb mount test.csv /csv csvstorage delimiter=";" useheader=1`
+`kdb mount test.csv /csv csvstorage delimiter=";" useheader="1"`
 

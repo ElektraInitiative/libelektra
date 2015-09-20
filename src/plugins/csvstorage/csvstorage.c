@@ -174,7 +174,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		if(elektraRealloc((void **)&lineBuffer, (length * sizeof(char))+1) < 0)
 		{
 			fclose(fp);
-			free(lineBuffer);
+			elektraFree(lineBuffer);
 			ksDel(header);
 			ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 			return -1;
@@ -183,6 +183,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		dirKey = keyDup(parentKey);
 		snprintf(buf, sizeof(buf)-1, "#%lu", lineCounter);
 		keyAddBaseName(dirKey, buf);
+		keySetString(dirKey, buf);
 		ksAppendKey(returned, dirKey);
 		++nr_keys;
 		offset = 0;
@@ -214,7 +215,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	ksAppendKey(returned, key);
 	
 	fclose(fp);
-	free(lineBuffer);
+	elektraFree(lineBuffer);
 	ksDel(header);
 	return nr_keys;
 }

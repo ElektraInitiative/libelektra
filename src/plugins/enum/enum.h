@@ -13,11 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraEnumOpen(Plugin *handle, Key *errorKey);
-int elektraEnumClose(Plugin *handle, Key *errorKey);
 int elektraEnumGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraEnumSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraEnumError(Plugin *handle, KeySet *ks, Key *parentKey);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(enum);
 
