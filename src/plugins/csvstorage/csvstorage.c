@@ -332,8 +332,6 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHea
 		{
 			while(1)
 			{
-				if(colCounter > columns)
-					break;
 				toWrite = getKeyByOrderNr(toWriteKS, colCounter);
 				if(!toWrite)
 					break;

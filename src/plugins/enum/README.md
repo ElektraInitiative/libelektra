@@ -1,5 +1,5 @@
 - infos = Information about the enum plugin is in keys below
-- infos/author = Thomas Waser <>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = check
