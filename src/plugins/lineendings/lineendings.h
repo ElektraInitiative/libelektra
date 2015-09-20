@@ -1,9 +1,9 @@
 /**
-* \file
+* @file
 *
-* \brief Header for lineendings plugin
+* @brief Header for lineendings plugin
 *
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *
 */
 
@@ -15,7 +15,6 @@
 
 int elektraLineendingsGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraLineendingsSet(Plugin *handle, KeySet *ks, Key *parentKey);
-//int elektraLineendingsError(Plugin *handle, KeySet *ks, Key *parentKey);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(lineendings);
 

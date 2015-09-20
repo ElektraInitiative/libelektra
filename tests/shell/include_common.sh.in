@@ -206,7 +206,8 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xuname" \
 	-o "x$PLUGIN" = "xconstants" \
 	-o "x$PLUGIN" = "xaugeas" \
-	-o "x$PLUGIN" = "xregexstore"
+	-o "x$PLUGIN" = "csvstorage" \
+	-o "x$PLUGIN" = "xregexstore" 
 }
 
 is_plugin_available()

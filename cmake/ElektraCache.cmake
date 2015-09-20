@@ -74,7 +74,6 @@ set (PLUGINS_LIST_POSIX
 	network
 	path
 	enum
-	calculate
 	keytometa
 	rename
 	syslog

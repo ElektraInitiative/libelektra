@@ -1,9 +1,9 @@
 /**
-* \file
+* @file
 *
-* \brief Source for enum plugin
+* @brief Source for enum plugin
 *
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *
 */
 

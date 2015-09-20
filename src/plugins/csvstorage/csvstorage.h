@@ -1,9 +1,9 @@
 /**
-* \file
+* @file
 *
-* \brief Header for csvstorage plugin
+* @brief Header for csvstorage plugin
 *
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *
 */
 
