@@ -649,37 +649,37 @@ ingroup:plugin
 module:storage
 see:9 75 109
 
-number:111
+number:113
 description:Failed to initialize the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:112
+number:114
 description:The crypto library reported an internal error.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:113
+number:115
 description:Encryption failed due to an error reported by the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:114
+number:116
 description:Decryption failed due to an error reported by the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:115
+number:117
 description:Decryption failed due to an error reported by the crypto library.
 severity:warning
 ingroup:plugin
 module:crypto
 
-number:116
+number:118
 description:The configuration is invalid or incomplete.
 severity:error
 ingroup:plugin
