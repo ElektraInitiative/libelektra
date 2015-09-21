@@ -13,13 +13,16 @@ This plugin uses if-then-else like conditions stored in the metakey `check/condi
 ## Syntax ##
 
 `(IF Condition) ? (THEN Condition) : (ELSE Condition)` where the ELSE-condition is optional
+
 Condition:  `Key` *Operation* `('String' | '1234.56' | Key | '')`
+
 Operations: `!=, ==, <, <=, =>, >`
 
 
 ## Example ##
 
 `(if/this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')` 
+
 Meaning: IF `if/this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/other/key` ELSE `or/key` MUST BE LESS THAN `125`
 
 
