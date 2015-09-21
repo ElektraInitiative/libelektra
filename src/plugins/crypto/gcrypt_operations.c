@@ -27,11 +27,11 @@ void elektraCryptoGcryHandleDestroy(elektraCryptoHandle *handle)
 	}
 }
 
-int elektraCryptoGcryInit()
+int elektraCryptoGcryInit(Key *errorKey)
 {
 	if (!gcry_check_version(GCRYPT_VERSION))
 	{
-		ELEKTRA_SET_ERRORF(111, NULL, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
+		ELEKTRA_SET_ERRORF(111, errorKey, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
 		return (-1);
 	}
 	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
@@ -39,41 +39,66 @@ int elektraCryptoGcryInit()
 	return 1;
 }
 
-elektraCryptoHandle *elektraCryptoGcryHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen)
+int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
 {
 	gcry_error_t gcry_err;
-	elektraCryptoHandle *handle = elektraMalloc(sizeof(elektraCryptoHandle));
+	unsigned char keyBuffer[64], ivBuffer[64];
+	size_t keyLength, ivLength;
+	const char *keyPath = "/elektra/modules/crypto/key-derivation/key";
+	const char *ivPath = "/elektra/modules/crypto/key-derivation/iv";
 
-	if(handle == NULL)
+	// retrieve keys from configuration
+	Key *key = ksLookupByName(config, keyPath, 0);
+	if(key == NULL)
 	{
-		ELEKTRA_SET_ERROR(87, NULL, "Memory allocation failed");
-		return NULL;
+		ELEKTRA_SET_ERRORF(116, errorKey, "missing %s in configuration", keyPath);
+		return -1;
 	}
 
-	if ((gcry_err = gcry_cipher_open(handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0)) != 0)
+	Key *iv = ksLookupByName(config, ivPath, 0);
+	if(iv == NULL)
+	{
+		ELEKTRA_SET_ERRORF(116, errorKey, "missing %s in configuration", ivPath);
+		return -1;
+	}
+
+	keyLength = keyGetBinary(key, keyBuffer, sizeof(keyBuffer));
+	ivLength = keyGetBinary(iv, ivBuffer, sizeof(ivBuffer));
+
+	// create the handle
+	(*handle) = elektraMalloc(sizeof(elektraCryptoHandle));
+	if(*handle == NULL)
+	{
+		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
+		return -1;
+	}
+
+	if((gcry_err = gcry_cipher_open(*handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0)) != 0)
 	{
 		goto error;
 	}
 
-	if ((gcry_err = gcry_cipher_setkey(*handle, key, keyLen)) != 0)
+	if((gcry_err = gcry_cipher_setkey(**handle, keyBuffer, keyLength)) != 0)
 	{
 		goto error;
 	}
 
-	if ((gcry_err = gcry_cipher_setiv(*handle, iv, ivLen)) != 0)
+	if((gcry_err = gcry_cipher_setiv(**handle, ivBuffer, ivLength)) != 0)
 	{
 		goto error;
 	}
-	return handle;
+
+	return 1;
 
 error:
-	ELEKTRA_SET_ERRORF(112, NULL, "Failed to create handle because: %s", gcry_strerror(gcry_err));
-	gcry_cipher_close(*handle);
-	elektraFree(handle);
-	return NULL;
+	ELEKTRA_SET_ERRORF(116, errorKey, "Failed to create handle because: %s", gcry_strerror(gcry_err));
+	gcry_cipher_close(**handle);
+	elektraFree(*handle);
+	(*handle) = NULL;
+	return -1;
 }
 
-int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
+int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
 	const unsigned char *value = (unsigned char*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
@@ -101,7 +126,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
 	output = elektraMalloc(outputLen);
 	if(output == NULL)
 	{
-		ELEKTRA_SET_ERROR(87, NULL, "Memory allocation failed");
+		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
 		return (-1);
 	}
 
@@ -124,7 +149,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
 		gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
 		{
-			ELEKTRA_SET_ERRORF(113, k, "Encryption failed because: %s", gcry_strerror(gcry_err));
+			ELEKTRA_SET_ERRORF(113, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
 			elektraFree(output);
 			return (-1);
 		}
@@ -138,7 +163,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k)
 	return 1;
 }
 
-int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k)
+int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
 	const unsigned char *value = (unsigned char*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
@@ -162,7 +187,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k)
 	output = elektraMalloc(valueLen);
 	if(output == NULL)
 	{
-		ELEKTRA_SET_ERROR(87, NULL, "Memory allocation failed");
+		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
 		return (-1);
 	}
 
@@ -175,7 +200,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k)
 		gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
 		{
-			ELEKTRA_SET_ERRORF(114, k, "Decryption failed because: %s", gcry_strerror(gcry_err));
+			ELEKTRA_SET_ERRORF(114, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
 			elektraFree(output);
 			return (-1);
 		}

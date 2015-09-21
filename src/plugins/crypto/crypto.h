@@ -24,12 +24,12 @@ int elektraCryptoSet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey);
 
 
-int elektraCryptoInit();
+int elektraCryptoInit(Key *errorKey);
 void elektraCryptoTeardown();
-elektraCryptoHandle *elektraCryptoHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen);
+int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey);
 void elektraCryptoHandleDestroy(elektraCryptoHandle *handle);
-int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k);
-int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k);
+int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey);
+int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(crypto);
 

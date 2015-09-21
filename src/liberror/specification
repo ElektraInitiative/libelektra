@@ -690,3 +690,9 @@ description:Decryption failed due to an error reported by the crypto library.
 severity:warning
 ingroup:plugin
 module:crypto
+
+number:116
+description:The configuration is invalid or incomplete.
+severity:error
+ingroup:plugin
+module:crypto

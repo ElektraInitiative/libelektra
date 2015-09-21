@@ -14,16 +14,31 @@
 #include "gcrypt_operations.h"
 
 
+/**
+ * @brief TBD
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraCryptoOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	return 1;
 }
 
+/**
+ * @brief TBD
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraCryptoClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	return 1;
 }
 
+/**
+ * @brief establish the Elektra plugin contract and decrypt values, if possible
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
 	// Publish module configuration to Elektra
@@ -40,11 +55,21 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	return 1;
 }
 
+/**
+ * @brief TBD
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 1;
 }
 
+/**
+ * @brief TBD
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraCryptoError(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 1;
@@ -55,9 +80,9 @@ int elektraCryptoError(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED,
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoInit()
+int elektraCryptoInit(Key *errorKey)
 {
-	return elektraCryptoGcryInit();
+	return elektraCryptoGcryInit(errorKey);
 }
 
 /**
@@ -72,11 +97,30 @@ void elektraCryptoTeardown()
 
 /**
  * @brief allocate a new crypto handle
- * @returns a new crypto handle, or NULL if an error occurs
+ *
+ * A pointer to a new crypto handle will be stored at handle. In order to obtain
+ * the key and the initialization vector (IV) for the handle, the KeySet config
+ * is being used.
+ *
+ * The function may look for the following keys in config:
+ *
+ * - /elektra/modules/crypto/key-derivation/key
+ * - /elektra/modules/crypto/key-derivation/iv
+ *
+ * The caller of this function must provide this keys in config!
+ *
+ * The caller of this function is also responsible for calling elektraCryptoHandleDestroy()
+ * on the handle to avoid memory leaks.
+ *
+ * @param handle the memory location where the address of the new crypto handle will be stored
+ * @param config the KeySet holding the key and IV parameters for key derivation
+ * @param errorKey the key holding error messages that might occur during the creation
+ * @returns 1 on success
+ * @returns -1 on failure
  */
-elektraCryptoHandle *elektraCryptoHandleCreate(const unsigned char *key, const short keyLen, const unsigned char *iv, const short ivLen)
+int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
 {
-	return elektraCryptoGcryHandleCreate(key, keyLen, iv, ivLen);
+	return elektraCryptoGcryHandleCreate(handle, config, errorKey);
 }
 
 /**
@@ -94,9 +138,9 @@ void elektraCryptoHandleDestroy(elektraCryptoHandle *handle)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k)
+int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
-	return elektraCryptoGcryEncrypt(handle, k);
+	return elektraCryptoGcryEncrypt(handle, k, errorKey);
 }
 
 /**
@@ -104,9 +148,9 @@ int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k)
+int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
-	return elektraCryptoGcryDecrypt(handle, k);
+	return elektraCryptoGcryDecrypt(handle, k, errorKey);
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(crypto){
