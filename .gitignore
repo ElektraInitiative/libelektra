@@ -19,6 +19,3 @@ build*
 
 #ignore emacs backup files
 \#*#
-
-#ignore stupid test file
-src/plugins/ni/nickel-1.1.0/src/tests/ni_parse_spaces_quotes.ini
