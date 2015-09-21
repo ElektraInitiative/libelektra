@@ -9,10 +9,10 @@
 ## Introduction ##
 
 Compares a key value to a mathematical expression using polish prefix notation defined in the `check/calc` metakey. 
-Operations are +, -, / and * . Operants are keys with names relative to the parent key.
-How the values are compared is specified at the begining of the Metakey using the conditions <, <=, ==, !=, =>, > 
+Operations are `+ - / *` . Operants are keys with names relative to the parent key.
+How the values are compared is specified at the begining of the Metakey using the conditions `<, <=, ==, !=, =>, >`
 
 ## Examples ##
 
-`check/calc = "== + testval1 + testval2 testval3` compares the keyvalue to the sum of testval1-3 and yields an error if the values are not equal.
-`check/calc = "<= - testval1 * testval2 testval3` tests if the keyvalue is less than or equal to testval1 - (testval2 * testval3) and yields an error if not.
+`check/calc = "== + testval1 + testval2 testval3"` compares the keyvalue to the sum of testval1-3 and yields an error if the values are not equal.
+`check/calc = "<= - testval1 * testval2 testval3"` tests if the keyvalue is less than or equal to testval1 - (testval2 * testval3) and yields an error if not.
