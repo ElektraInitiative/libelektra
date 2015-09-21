@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = 
-- infos/placements = pregetstorage presetstorage precommit 
+- infos/placements = pregetstorage precommit 
 - infos/description =
 
 ## Introduction ##
