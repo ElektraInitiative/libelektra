@@ -26,6 +26,7 @@ typedef struct{
 	Operation op;
 }PNElem;
 
+
 int elektraCalculateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/calculate"))
@@ -100,6 +101,11 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 					stackPtr->op = VAL;
 					break;
 				case DIV:
+					if(e2.value == 0)
+					{
+						result.op = ERROR;
+						return result;
+					}
 					stackPtr->value = e1.value / e2.value; 
 					stackPtr->op = VAL;
 					break;
@@ -131,7 +137,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	Key *key;
 	//PNElem stack[100];
 	
-	PNElem *stack = elektraMalloc(3*sizeof(PNElem));
+	PNElem *stack = malloc(3*sizeof(PNElem));
 
 	PNElem *stackPtr = stack;
 	PNElem result;
@@ -202,8 +208,8 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 					ELEKTRA_SET_ERRORF(122, parentKey, "%c isn't a valid operation", prefixString[start]);
 					regfree(&regex);
 					if(searchKey)
-						elektraFree(searchKey);
-					elektraFree(stack);
+						free(searchKey);
+					free(stack);
 					ksDel(ks);
 					return result;	
 					break;
@@ -212,7 +218,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		else
 		{
 			ksRewind(ks);
-			elektraRealloc((void **)&searchKey, len+2+strlen(keyName(parentKey)));
+			searchKey = realloc(searchKey, len+2+strlen(keyName(parentKey)));
 			strcpy(searchKey, keyName(parentKey));
 			strcat(searchKey, "/");
 			strncat(searchKey, ptr+1, len);
@@ -221,9 +227,9 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 			{
 				ELEKTRA_SET_ERRORF(124, parentKey, "Couldn't find Key %s", searchKey);
 				regfree(&regex);
-				elektraFree(searchKey);
+				free(searchKey);
 				ksDel(ks);
-				elektraFree(stack);
+				free(stack);
 				return result;
 			}
 			stackPtr->value = atof(keyString(key));
@@ -231,19 +237,19 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 			++stackPtr;
 		}
 		int offset = stackPtr - stack;
-		elektraRealloc((void **)&stack, (offset + 1)*sizeof(PNElem));
+		stack = realloc(stack, (offset + 1)*sizeof(PNElem));
 		stackPtr = stack;
 		stackPtr += offset;
 		ptr += match.rm_eo;
 	}
 	regfree(&regex);
-	elektraFree(searchKey);
+	free(searchKey);
 	ksDel(ks);
 	stackPtr->op = END;
 	result = doPrefixCalculation(stack, stackPtr);	
 	if(result.op != ERROR)
 		result.op = resultOp;
-	elektraFree(stack);
+	free(stack);
 	return result;
 }
 
@@ -265,7 +271,7 @@ int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 		}
 		else if(result.op == EQU)
 		{
-			if(fabs(atof(keyString(cur))-result.value) >= 0.00001)
+			if(fabs(atof(keyString(cur)) - result.value) > 0.00001)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%f !=%f", atof(keyString(cur)), result.value);
 				return -1;

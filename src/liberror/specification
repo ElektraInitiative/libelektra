@@ -732,3 +732,21 @@ description:key doesn't exist
 severity:error
 ingroup:plugin
 module:calculate
+
+number:125
+description:Key doesn't exist
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:126
+description:Syntax error
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:127
+description:Validation failed
+severity:error
+ingroup:plugin
+module:conditionals

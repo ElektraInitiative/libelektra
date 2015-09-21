@@ -75,6 +75,7 @@ set (PLUGINS_LIST_POSIX
 	path
 	enum
 	calculate
+	conditionals
 	keytometa
 	rename
 	syslog

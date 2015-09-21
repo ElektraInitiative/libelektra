@@ -1,9 +1,9 @@
 /**
-* @file
+* \file
 *
-* @brief Tests for calculate plugin
+* \brief Tests for calculate plugin
 *
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *
 */
 

@@ -128,6 +128,7 @@ copied by another plugin just before):
 - [type](type) using runtime type checking (CORBA types)
 - [enum](enum) compares the keyvalue against a list of valid values
 - [calculate](calculate) by mathematical expressions using keysvalues as operants
+- [conditionals](conditionals) by using if-then-else like statements
 
 ## Interpreter ##
 
