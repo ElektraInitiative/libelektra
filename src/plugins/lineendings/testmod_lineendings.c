@@ -23,7 +23,7 @@ void testvalid(const char *file)
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) == 1,  "kdbget failed");
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == 1, "kdbset failed");
 	ksDel(ks);
-
+	keyDel(parentKey);
 	PLUGIN_CLOSE();
 
 }
@@ -37,7 +37,7 @@ void testinconsistent(const char *file)
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) == (-1),  "should have failed");
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == (-1), "should have failed");
 	ksDel(ks);
-
+	keyDel(parentKey);
 	PLUGIN_CLOSE();
 
 }
@@ -51,7 +51,7 @@ void testinvalid(const char *file)
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) == 1,  "kdbget failed");
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == (-1), "should have failed");
 	ksDel(ks);
-
+	keyDel(parentKey);
 	PLUGIN_CLOSE();
 
 }

@@ -49,7 +49,7 @@ static void testreadwriteinvalid(const char *file)
 	succeed_if(!output_warnings(parentKey), "no warnings in kdbGet");	
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == (-1), "error: wrote invalid data");
 	ksDel(ks);
-
+	keyDel(parentKey);
 	PLUGIN_CLOSE();
 }
 

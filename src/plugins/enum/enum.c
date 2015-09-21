@@ -75,6 +75,7 @@ static int validateKey(Key *key)
 		end = match[1].rm_eo + (ptr - validValues);
 		elektraRealloc((void **)&value, (end - start)+1);
 		strncpy(value, validValues+start, end-start);
+		value[(end-start)] = '\0';
 		if(strcmp(keyString(key), value) == 0)
 		{
 			regfree(&regex);
