@@ -14,10 +14,6 @@
 #include <gcrypt.h>
 
 
-static void addPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen);
-static unsigned int getPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen);
-
-
 void elektraCryptoGcryHandleDestroy(elektraCryptoHandle *handle)
 {
 	if(handle != NULL)
@@ -101,26 +97,40 @@ error:
 int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
 	const unsigned char *value = (unsigned char*)keyValue(k);
-	const size_t valueLen = keyGetValueSize(k);
 	size_t outputLen;
 	gcry_error_t gcry_err;
 
+	struct ElektraCryptoHeader header;
 	unsigned char *output;
 	unsigned char cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned long i;
 
-	// TODO consider that the original value might be a string value!
-	// This should be saved as meta information
+	// prepare the crypto header
+	header.contentLen = keyGetValueSize(k);
+	header.flags = ELEKTRA_CRYPTO_FLAG_NONE;
+
+	switch(keyIsString(k))
+	{
+	case 1: // string
+		header.flags = ELEKTRA_CRYPTO_FLAG_STRING;
+		break;
+	case 0: // binary
+		break;
+	case -1: // NULL pointer
+		header.flags = ELEKTRA_CRYPTO_FLAG_NULL;
+		break;
+	}
 
 	// prepare buffer for cipher text output
-	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE == 0)
+	// NOTE the header goes into the first block
+	if(header.contentLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE == 0)
 	{
-		outputLen = valueLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+		outputLen = (header.contentLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 1;
 	}
 	else
 	{
-		outputLen = (valueLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 1;
+		outputLen = (header.contentLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 2;
 	}
 	outputLen *= ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	output = elektraMalloc(outputLen);
@@ -130,21 +140,27 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 		return (-1);
 	}
 
+	// encrypt the header (1st block)
+	memcpy(contentBuffer, &header, sizeof(struct ElektraCryptoHeader));
+	gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	if(gcry_err != 0)
+	{
+		ELEKTRA_SET_ERRORF(115, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
+		elektraFree(output);
+		return (-1);
+	}
+	memcpy(output, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+
 	// encrypt content block by block (i = start of the current block)
-	for(i = 0; i < valueLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	for(i = 0; i < header.contentLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
 	{
 		// load content partition into the content buffer
 		long contentLen = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-
-		if((i + 1) * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE > valueLen)
+		if((i + 1) * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE > header.contentLen)
 		{
-			contentLen = valueLen - (i * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+			contentLen = header.contentLen - (i * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		}
 		memcpy(contentBuffer, (value + i), contentLen);
-		if(contentLen < ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
-		{
-			addPkcs7Padding(contentBuffer, contentLen, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
-		}
 
 		gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
@@ -153,7 +169,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 			elektraFree(output);
 			return (-1);
 		}
-		memcpy((output + i), cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		memcpy((output + i + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE), cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	}
 
 	// write back the cipher text to the key
@@ -168,18 +184,18 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	const unsigned char *value = (unsigned char*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
 
+	struct ElektraCryptoHeader header;
 	unsigned char *output;
 	unsigned char cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned long i;
 	unsigned long written = 0;
-	unsigned long lastBlockLen;
 	gcry_error_t gcry_err;
 
 	// plausibility check
 	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
-		// TODO throw inconsistency error
+		ELEKTRA_SET_ERROR(116, errorKey, "value length is not a multiple of the block size");
 		return (-1);
 	}
 
@@ -191,12 +207,22 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 		return (-1);
 	}
 
-	// decrypt content block by block (i = start of the current block)
-	for(i = 0; i < valueLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	// decrypt the header (1st block)
+	memcpy(cipherBuffer, value, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+	if(gcry_err != 0)
 	{
-		// load cipher text partition into the cipher buffer
-		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		ELEKTRA_SET_ERRORF(116, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
+		elektraFree(output);
+		return (-1);
+	}
+	memcpy(&header, contentBuffer, sizeof(struct ElektraCryptoHeader));
 
+	// decrypt content block by block
+	// (i = start of the current block and the 1st block has already been consumed)
+	for(i = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE; i < valueLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	{
+		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
 		{
@@ -204,65 +230,31 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 			elektraFree(output);
 			return (-1);
 		}
-		memcpy((output + i), contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+		memcpy((output + i - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE), contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		written += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	}
 
-	// consider that the last block may contain a PKCS#7 padding
-	lastBlockLen = getPkcs7PaddedContentLen((output + written - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) , ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
-	if(lastBlockLen < ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	if(written < header.contentLen)
 	{
-		written = written - (ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - lastBlockLen);
+		ELEKTRA_SET_ERROR(116, errorKey, "Content was shorter than described in the header");
+		elektraFree(output);
+		return (-1);
 	}
 
 	// write back the cipher text to the key
-	// TODO consider that the keySetString() function should be applied if the original value was of type string
-	keySetBinary(k, output, written);
-	elektraFree(output);
+	if((header.flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING)
+	{
+		keySetString(k, (const char*)output);
+	}
+	else if((header.flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || header.contentLen == 0)
+	{
+		keySetBinary(k, NULL, 0);
+	}
+	else
+	{
+		keySetBinary(k, output, header.contentLen);
+	}
 
+	elektraFree(output);
 	return 1;
 }
-
-static void addPkcs7Padding(unsigned char *buffer, const unsigned int contentLen, const unsigned int bufferLen)
-{
-	/*
-	* this function adds a PKCS#7 padding to the buffer.
-	* Refer to RFC 5652 for more information:
-	* <http://tools.ietf.org/html/rfc5652#section-6.3>
-	*/
-	const unsigned char n = bufferLen - contentLen;
-	unsigned long i;
-
-	if(bufferLen <= contentLen)
-	{
-		return;
-	}
-
-	for(i = bufferLen - n; i < bufferLen; i++)
-	{
-		buffer[i] = n;
-	}
-}
-
-static unsigned int getPkcs7PaddedContentLen(const unsigned char *buffer, const unsigned int bufferLen)
-{
-	const unsigned char n = buffer[bufferLen - 1];
-	unsigned int i;
-
-	if(n <= 0 || n >= bufferLen)
-	{
-		// assume no padding -> full buffer size
-		return bufferLen;
-	}
-
-	for(i = bufferLen - 2; i >= bufferLen - n; i--)
-	{
-		if(buffer[i] != n)
-		{
-			// assume no padding -> full buffer size
-			return bufferLen;
-		}
-	}
-	return i + 1;
-}
-

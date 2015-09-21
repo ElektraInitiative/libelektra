@@ -40,17 +40,6 @@ static const unsigned char iv[] =
 	0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 };
 
-static const unsigned char plainText[] =
-{
-	0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
-	0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a
-};
-
-static const unsigned char expectedCipherText[] =
-{
-	0xf5, 0x8c, 0x4c, 0x04, 0xd6, 0xe5, 0xf1, 0xba,
-	0x77, 0x9e, 0xab, 0xfb, 0x5f, 0x7b, 0xfb, 0xd6
-};
 
 /**
  * @brief checks two buffers for equality
@@ -170,66 +159,6 @@ static void test_handle_init()
 	keyDel(errorKey);
 }
 
-static void test_encryption()
-{
-	elektraCryptoHandle *handle;
-	KeySet *config;
-	Key *errorKey = keyNew(KEY_END);
-	Key *k;
-	unsigned char buffer[64];
-	size_t len;
-
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	k = keyNew("user/plugins/crypto/gcrypt/test-encryption", KEY_END);
-	keySetBinary(k, plainText, sizeof(plainText));
-
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// compare encrypted value to the test vector
-	len = keyGetBinary(k, buffer, sizeof(buffer));
-	succeed_if( len > 0, "encrypted value has length 0");
-	succeed_if( cmp_buffers(buffer, len, expectedCipherText, sizeof(expectedCipherText)) == 0, "ciphertext does not match the test vector" );
-
-	keyDel(k);
-	keyDel(errorKey);
-	ksDel(config);
-	elektraCryptoTeardown();
-}
-
-static void test_decryption()
-{
-	elektraCryptoHandle *handle;
-	KeySet *config;
-	Key *errorKey = keyNew(KEY_END);
-	Key *k;
-	unsigned char buffer[64];
-	size_t len;
-
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	k = keyNew("user/plugins/crypto/gcrypt/test-decryption", KEY_END);
-	keySetBinary(k, expectedCipherText, sizeof(expectedCipherText));
-
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// compare the decrypted value to original plain text
-	len = keyGetBinary(k, buffer, sizeof(buffer));
-	succeed_if( len > 0, "decrypted value has length 0");
-	succeed_if( cmp_buffers(buffer, len, plainText, sizeof(plainText)) == 0, "decrypted value does not match the test vector" );
-
-	keyDel(k);
-	keyDel(errorKey);
-	ksDel(config);
-	elektraCryptoTeardown();
-}
-
 static void test_enc_and_dec_with_string()
 {
 	elektraCryptoHandle *handle;
@@ -241,7 +170,7 @@ static void test_enc_and_dec_with_string()
 	getWorkingConfiguration(&config);
 	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
 
-	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding", KEY_END);
+	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-string", KEY_END);
 	keySetString(k, original);
 
 	// 1. encryption
@@ -274,7 +203,7 @@ static void test_enc_and_dec_with_binary()
 	unsigned char content[64];
 	unsigned long read = 0;
 
-	Key *k = keyNew("user/plugins/crypto/gcrypt/test-padding-bin", KEY_END);
+	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-bin", KEY_END);
 	keySetBinary(k, original, sizeof(original));
 
 	getWorkingConfiguration(&config);
@@ -302,6 +231,38 @@ static void test_enc_and_dec_with_binary()
 	elektraCryptoTeardown();
 }
 
+static void test_enc_and_dec_with_null()
+{
+	elektraCryptoHandle *handle;
+	KeySet *config;
+	Key *errorKey = keyNew(KEY_END);
+
+	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-null", KEY_END);
+	keySetBinary(k, 0, 0);
+	succeed_if( keyGetValueSize(k) == 0, "key is not NULL");
+
+	getWorkingConfiguration(&config);
+	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
+
+	// 1. encrypt
+	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
+	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
+	elektraCryptoHandleDestroy(handle);
+
+	// 2. decrypt
+	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
+	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
+	elektraCryptoHandleDestroy(handle);
+
+	// 3. check result
+	succeed_if( keyGetValueSize(k) == 0, "key is not NULL");
+
+	keyDel(k);
+	keyDel(errorKey);
+	ksDel(config);
+	elektraCryptoTeardown();
+}
+
 int main(int argc, char** argv)
 {
 	printf("CYPTO        TESTS\n");
@@ -311,11 +272,9 @@ int main(int argc, char** argv)
 
 	test_init();
 	test_handle_init();
-	test_encryption();
-	test_decryption();
-	// TODO uncomment test case below when implementation of string support starts
-	// test_enc_and_dec_with_string();
+	test_enc_and_dec_with_string();
 	test_enc_and_dec_with_binary();
+	test_enc_and_dec_with_null();
 
 	printf("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;

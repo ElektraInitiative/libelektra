@@ -7,7 +7,7 @@ keyNew ("system/elektra/modules/crypto/infos", KEY_VALUE, "Information about cry
 keyNew ("system/elektra/modules/crypto/infos/author", KEY_VALUE, "Peter Nirschl <peter.nirschl@gmail.com>", KEY_END),
 keyNew ("system/elektra/modules/crypto/infos/licence", KEY_VALUE, "BSD", KEY_END),
 keyNew ("system/elektra/modules/crypto/infos/needs", KEY_VALUE, "", KEY_END),
-keyNew ("system/elektra/modules/crypto/infos/provides", KEY_VALUE, "", KEY_END),
+keyNew ("system/elektra/modules/crypto/infos/provides", KEY_VALUE, "filefilter", KEY_END),
 keyNew ("system/elektra/modules/crypto/infos/placements", KEY_VALUE, "postgetstorage presetstorage", KEY_END),
 keyNew ("system/elektra/modules/crypto/infos/description", KEY_VALUE, "filter plugin for cryptographic operations", KEY_END),
 #include ELEKTRA_README(crypto)

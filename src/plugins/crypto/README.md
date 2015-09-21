@@ -2,7 +2,7 @@
 - infos/author = Peter Nirschl <peter.nirschl@gmail.com>
 - infos/licence = BSD
 - infos/needs = 
-- infos/provides = storage
+- infos/provides = filefilter
 - infos/placements = postgetstorage presetstorage
 - infos/description = Cryptographic operations
 

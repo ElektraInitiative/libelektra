@@ -13,6 +13,20 @@
 #include <kdbplugin.h>
 #include <stdio.h>
 
+
+enum ElektraCryptoHeaderFlags
+{
+	ELEKTRA_CRYPTO_FLAG_NONE = 0,
+	ELEKTRA_CRYPTO_FLAG_STRING = 1,
+	ELEKTRA_CRYPTO_FLAG_NULL = 2
+};
+
+struct ElektraCryptoHeader
+{
+	unsigned short flags;
+	unsigned long contentLen;
+};
+
 // We may support other libraries in the future so we make the crypto-handle exchangeable
 #include <gcrypt.h>
 typedef gcry_cipher_hd_t elektraCryptoHandle;
