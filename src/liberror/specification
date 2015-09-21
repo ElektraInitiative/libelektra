@@ -691,7 +691,7 @@ severity:warning
 ingroup:plugin
 module:crypto
 
-number:116
+number:118
 description:The configuration is invalid or incomplete.
 severity:error
 ingroup:plugin
