@@ -733,38 +733,39 @@ severity:error
 ingroup:plugin
 module:calculate
 
-number:150
+number:125
 description:Failed to initialize the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:151
+number:126
 description:The crypto library reported an internal error.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:152
+number:127
 description:Encryption failed due to an error reported by the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:153
+number:128
 description:Decryption failed due to an error reported by the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:154
+number:129
 description:Decryption failed due to an error reported by the crypto library.
 severity:warning
 ingroup:plugin
 module:crypto
 
-number:155
+number:130
 description:The configuration is invalid or incomplete.
 severity:error
 ingroup:plugin
 module:crypto
+

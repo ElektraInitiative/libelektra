@@ -27,7 +27,7 @@ int elektraCryptoGcryInit(Key *errorKey)
 {
 	if (!gcry_check_version(GCRYPT_VERSION))
 	{
-		ELEKTRA_SET_ERRORF(150, errorKey, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
+		ELEKTRA_SET_ERRORF(125, errorKey, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
 		return (-1);
 	}
 	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
@@ -49,14 +49,14 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 	Key *key = ksLookupByName(config, keyPath, 0);
 	if(key == NULL)
 	{
-		ELEKTRA_SET_ERRORF(155, errorKey, "missing %s in configuration", keyPath);
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", keyPath);
 		return -1;
 	}
 
 	Key *iv = ksLookupByName(config, ivPath, 0);
 	if(iv == NULL)
 	{
-		ELEKTRA_SET_ERRORF(155, errorKey, "missing %s in configuration", ivPath);
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ivPath);
 		return -1;
 	}
 
@@ -89,7 +89,7 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 	return 1;
 
 error:
-	ELEKTRA_SET_ERRORF(155, errorKey, "Failed to create handle because: %s", gcry_strerror(gcry_err));
+	ELEKTRA_SET_ERRORF(130, errorKey, "Failed to create handle because: %s", gcry_strerror(gcry_err));
 	gcry_cipher_close(**handle);
 	elektraFree(*handle);
 	(*handle) = NULL;
@@ -155,7 +155,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	if(gcry_err != 0)
 	{
-		ELEKTRA_SET_ERRORF(152, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
+		ELEKTRA_SET_ERRORF(127, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
 		elektraFree(output);
 		return (-1);
 	}
@@ -175,7 +175,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 		gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
 		{
-			ELEKTRA_SET_ERRORF(152, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
+			ELEKTRA_SET_ERRORF(127, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
 			elektraFree(output);
 			return (-1);
 		}
@@ -214,7 +214,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	// plausibility check
 	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
-		ELEKTRA_SET_ERROR(153, errorKey, "value length is not a multiple of the block size");
+		ELEKTRA_SET_ERROR(128, errorKey, "value length is not a multiple of the block size");
 		return (-1);
 	}
 
@@ -231,7 +231,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	if(gcry_err != 0)
 	{
-		ELEKTRA_SET_ERRORF(153, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
+		ELEKTRA_SET_ERRORF(128, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
 		elektraFree(output);
 		return (-1);
 	}
@@ -245,7 +245,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 		gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if(gcry_err != 0)
 		{
-			ELEKTRA_SET_ERRORF(153, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
+			ELEKTRA_SET_ERRORF(128, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
 			elektraFree(output);
 			return (-1);
 		}
@@ -255,7 +255,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	if(written < header.contentLen)
 	{
-		ELEKTRA_SET_ERROR(153, errorKey, "Content was shorter than described in the header");
+		ELEKTRA_SET_ERROR(128, errorKey, "Content was shorter than described in the header");
 		elektraFree(output);
 		return (-1);
 	}

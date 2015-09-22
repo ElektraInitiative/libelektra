@@ -480,8 +480,7 @@
 }
 {
    <insert_a_suppression_name_here>
-   Memcheck:*
-   ...
+   Memcheck:Leak
    fun:elektraCryptoGcryInit
    fun:test_init
    fun:main
