@@ -384,12 +384,15 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		outputDelim = ';';
 	}
-	
+
+	// TODO: strange name printHeaderKey
 	Key *printHeaderKey = ksLookupByName(config, "/useheader", 0);
 	short printHeader = 0;
 	if(printHeaderKey)
 	{
 		const char *printHeaderString = keyString(printHeaderKey);
+		// TODO: a bit strange logic, why is "100" true, and "true" or "yes" is false?
+		// (provide function for true evaluation in libease)
 		if((printHeaderString[0] - '0') == 1)
 			printHeader = 1;
 		else
