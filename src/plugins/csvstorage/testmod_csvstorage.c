@@ -43,9 +43,10 @@ static void testreadwriteinvalid(const char *file)
 
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
 	KeySet *conf = 0;
-	PLUGIN_OPEN("csvstorage");
 	KeySet *ks = ksNew(0, KS_END);
-	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >=1,  "call to kdbGet was not successful");
+	PLUGIN_OPEN("csvstorage");
+	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >0,  "call to kdbGet was not successful");
+	output_keyset(ks);
 	succeed_if(!output_warnings(parentKey), "no warnings in kdbGet");	
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == (-1), "error: wrote invalid data");
 	ksDel(ks);
