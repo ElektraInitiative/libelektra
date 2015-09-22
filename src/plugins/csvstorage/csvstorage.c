@@ -234,7 +234,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	fclose(fp);
 	elektraFree(lineBuffer);
 	ksDel(header);
-	return nr_keys;
+	return 1;
 }
 
 int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
@@ -280,19 +280,9 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	int nr_keys;
 	nr_keys = csvRead(returned, parentKey, delim, useHeader);
-	
-	switch(nr_keys)
-	{
-		case (-2):
-			return 1;
-			break;
-		case (-1):
-			return -1;
-			break;
-		default:
-			return nr_keys;
-			break;
-	}
+
+	if (nr_keys == -1) return -1;
+	return 1;
 }
 
 static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHeader)
