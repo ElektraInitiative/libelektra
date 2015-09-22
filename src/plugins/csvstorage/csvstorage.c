@@ -288,7 +288,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			return -1;
 			break;
 		default:
-			return nr_keys;
+			return 1;
 			break;
 	}
 }
