@@ -15,17 +15,17 @@
 
 
 /**
- * @brief TBD
+ * @brief open the crypto plugin
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int elektraCryptoOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey)
 {
-	return 1;
+	return elektraCryptoInit(errorKey);
 }
 
 /**
- * @brief TBD
+ * @brief close the crypto plugin
  * @retval 1 on success
  * @retval -1 on failure
  */
@@ -35,13 +35,20 @@ int elektraCryptoClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUS
 }
 
 /**
- * @brief establish the Elektra plugin contract and decrypt values, if possible
+ * @brief establish the Elektra plugin contract and decrypt values, if possible.
+ *
+ * The crypto configuration is expected to be contained within the KeySet ks.
+ * All keys having a metakey "crypto/encrypted" with a strlen() > 0 are being decrypted.
+ *
  * @retval 1 on success
  * @retval -1 on failure
  */
 int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
-	// Publish module configuration to Elektra
+	Key *k;
+	elektraCryptoHandle *cryptoHandle;
+
+	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/crypto"))
 	{
 		KeySet *moduleConfig = ksNew (30,
@@ -52,17 +59,68 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 		return 1;
 	}
 
+	// the actual decryption
+
+	// for now we expect the crypto configuration to be stored in the KeySet ks
+	// we may add more options in the future
+
+	if(elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
+	{
+		goto error;
+	}
+
+	ksRewind (ks);
+	while ((k = ksNext (ks)) != 0)
+	{
+		if(elektraCryptoDecrypt(cryptoHandle, k, parentKey) != 1)
+		{
+			goto error;
+		}
+	}
+	elektraCryptoHandleDestroy(cryptoHandle);
 	return 1;
+
+error:
+	elektraCryptoHandleDestroy(cryptoHandle);
+	return -1;
 }
 
 /**
- * @brief TBD
+ * @brief Encrypt values marked for encryption.
+ *
+ * If a key has the metakey "crypto/encrypt" with a strlen() > 0, then the value
+ * will be encrypted using the configuration stored in the KeySet ks.
+ *
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 {
+	Key *k;
+	elektraCryptoHandle *cryptoHandle;
+
+	// for now we expect the crypto configuration to be stored in the KeySet ks
+	// we may add more options in the future
+
+	if(elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
+	{
+		goto error;
+	}
+
+	ksRewind (ks);
+	while ((k = ksNext (ks)) != 0)
+	{
+		if(elektraCryptoEncrypt(cryptoHandle, k, parentKey) != 1)
+		{
+			goto error;
+		}
+	}
+	elektraCryptoHandleDestroy(cryptoHandle);
 	return 1;
+
+error:
+	elektraCryptoHandleDestroy(cryptoHandle);
+	return -1;
 }
 
 /**

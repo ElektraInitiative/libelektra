@@ -43,6 +43,8 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 	const char *keyPath = "/elektra/modules/crypto/key-derivation/key";
 	const char *ivPath = "/elektra/modules/crypto/key-derivation/iv";
 
+	(*handle) = NULL;
+
 	// retrieve keys from configuration
 	Key *key = ksLookupByName(config, keyPath, 0);
 	if(key == NULL)
@@ -105,6 +107,14 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	unsigned char cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned long i;
+
+	// check if key has been marked for encryption
+	const Key *metaEncrypt = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT);
+	if(metaEncrypt == NULL || strlen(keyValue(metaEncrypt)) == 0)
+	{
+		// nothing to do
+		return 1;
+	}
 
 	// prepare the crypto header
 	header.contentLen = keyGetValueSize(k);
@@ -174,6 +184,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	// write back the cipher text to the key
 	keySetBinary(k, output, outputLen);
+	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "X");
 	elektraFree(output);
 
 	return 1;
@@ -191,6 +202,14 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	unsigned long i;
 	unsigned long written = 0;
 	gcry_error_t gcry_err;
+
+	// check if key has been encrypted in the first place
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	if(metaEncrypted == NULL || strlen(keyValue(metaEncrypted)) == 0)
+	{
+		// nothing to do
+		return 1;
+	}
 
 	// plausibility check
 	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
@@ -254,6 +273,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	{
 		keySetBinary(k, output, header.contentLen);
 	}
+	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "");
 
 	elektraFree(output);
 	return 1;

@@ -27,6 +27,9 @@ struct ElektraCryptoHeader
 	unsigned long contentLen;
 };
 
+#define ELEKTRA_CRYPTO_META_ENCRYPT ("crypto/encrypt")
+#define ELEKTRA_CRYPTO_META_ENCRYPTED ("crypto/encrypted")
+
 // We may support other libraries in the future so we make the crypto-handle exchangeable
 #include <gcrypt.h>
 typedef gcry_cipher_hd_t elektraCryptoHandle;

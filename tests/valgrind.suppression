@@ -478,3 +478,12 @@
    fun:test_init
    fun:main
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:*
+   ...
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+   obj:*/libgcrypt.so.20*
+}

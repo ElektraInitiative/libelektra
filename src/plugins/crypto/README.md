@@ -24,6 +24,8 @@ Also the cryptographic keys must never be exposed to the outside of the crypto m
 
 ## Restrictions ##
 
+The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
+
 The key derivation is still WIP.
 
 ### Planned Features ###
@@ -53,5 +55,23 @@ Only keys marked with a certain meta-key will be considered for encryption/decry
 
 ## Examples ##
 
-TBD
+### Metadata based encyption ###
+
+You specify the parameters of the cryptographic operations in a KeySet together with the keys to be encrypted.
+The following parameters are required:
+
+- **Key** - the symmetric cryptographic key for encryption
+- **IV** - the initialization vector (IV) that is required by the CBC mode
+
+The following keys are required for metadata based encryption:
+
+	/elektra/modules/crypto/key-derivation/key
+	/elektra/modules/crypto/key-derivation/iv
+
+You can use the following meta-key to mark a key for encryption:
+
+	crypto/encrypt
+
+If this meta-key has a value with a string-length greater than 0 (``strlen() > 0``) then
+the crypto-plugin will try to encrypt it.
 
