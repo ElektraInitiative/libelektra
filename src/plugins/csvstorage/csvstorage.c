@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbproposal.h>
 #include "csvstorage.h"
 
 #define INTSTR_MAX 15
@@ -153,20 +154,29 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	{
 		colCounter = 0;
 		//if no headerline exists name the columns 0..N where N is the number of columns
+		key = keyDup(parentKey);
+		keyAddName(key, "#");
 		while(colCounter < columns)
 		{
-			key = keyDup(parentKey);
-			col = itostr(buf, colCounter, sizeof(buf)-1);
-			keyAddBaseName(key, col);
-			keySetMeta(key, "csv/order", col);
-			ksAppendKey(header, key);
+			if(elektraArrayIncName(key) == -1)
+			{
+				elektraFree(lineBuffer);
+				keyDel(key);
+				ksDel(header);
+				fclose(fp);
+				return -1;
+			}
+			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
+			ksAppendKey(header, keyDup(key));
 			++colCounter;
-			fseek(fp, 0, SEEK_SET);
 		}
+		keyDel(key);
+		fseek(fp, 0, SEEK_SET);
 	}
-
 	Key *dirKey;
 	Key *cur;
+	dirKey = keyDup(parentKey);
+	keyAddName(dirKey, "#");
 	while(!feof(fp))
 	{
 		length = getLineLength(fp);
@@ -177,18 +187,23 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			fclose(fp);
 			elektraFree(lineBuffer);
 			ksDel(header);
+			keyDel(dirKey);
 			ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 			return -1;
 		}
 		fgets(lineBuffer, length, fp);
-		dirKey = keyDup(parentKey);
-		snprintf(buf, sizeof(buf)-1, "#%lu", lineCounter);
-		keyAddBaseName(dirKey, buf);
-		keySetString(dirKey, buf);
-		ksAppendKey(returned, dirKey);
+		if(elektraArrayIncName(dirKey) == -1)
+		{
+			elektraFree(lineBuffer);
+			keyDel(dirKey);
+			ksDel(header);
+			fclose(fp);
+			return -1;
+		}
 		++nr_keys;
 		offset = 0;
 		colCounter = 0;
+		char *lastIndex = "#0";
 		while((col = parseLine(lineBuffer, delim, offset)) != NULL)
 		{
 			cur = getKeyByOrderNr(header, colCounter);
@@ -198,23 +213,22 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			keySetString(key, col);
 			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
 			ksAppendKey(returned, key);
-			keyDel(key);
+			lastIndex = (char *)keyString(key);
 			++nr_keys;
 			++colCounter;
 		}
+		keySetString(dirKey, lastIndex);
+		ksAppendKey(returned, keyDup(dirKey));
 		if(colCounter != columns)
 		{
 			ELEKTRA_ADD_WARNING(118, parentKey, "illegal number of columns");
 		}
 		++lineCounter;
-		keyDel(dirKey);
 	}
-
 	key = keyDup(parentKey);
-	snprintf(buf, sizeof(buf)-1, "#%lu", lineCounter);
-	keySetString(key, buf);
+	keySetString(key, keyBaseName(dirKey));
 	ksAppendKey(returned, key);
-	
+	keyDel(dirKey);
 	fclose(fp);
 	elektraFree(lineBuffer);
 	ksDel(header);
@@ -257,7 +271,6 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if(readHeaderKey)
 	{
 		const char *printHeaderString = keyString(readHeaderKey);
-		printf("printHeaderString: %s\n", printHeaderString);
 		if((printHeaderString[0] - '0') == 1)
 		{
 			useHeader = 1;
@@ -290,7 +303,7 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHea
 		return -1;
 	}
 
-	ksLookup(returned, parentKey, KDB_O_POP);
+	keyDel(ksLookup(returned, parentKey, KDB_O_POP));
 	
 	unsigned long colCounter = 0;
 	unsigned long columns = 0;
@@ -382,7 +395,6 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if(printHeaderKey)
 	{
 		const char *printHeaderString = keyString(printHeaderKey);
-		printf("printHeaderString: %s\n", printHeaderString);
 		if((printHeaderString[0] - '0') == 1)
 			printHeader = 1;
 		else
