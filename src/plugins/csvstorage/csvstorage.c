@@ -152,6 +152,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			ksAppendKey(header, key);
 			++colCounter;
 		}
+		fseek(fp, 0, SEEK_SET);
 	}
 	else
 	{
@@ -207,6 +208,9 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		offset = 0;
 		colCounter = 0;
 		char *lastIndex = "#0";
+		if(getColumnCount(lineBuffer, delim) != columns)
+		{
+		}
 		while((col = parseLine(lineBuffer, delim, offset)) != NULL)
 		{
 			cur = getKeyByOrderNr(header, colCounter);
@@ -216,7 +220,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			keySetString(key, col);
 			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
 			ksAppendKey(returned, key);
-			lastIndex = (char *)keyString(key);
+			lastIndex = (char *)keyBaseName(key);
 			++nr_keys;
 			++colCounter;
 		}
@@ -224,7 +228,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		ksAppendKey(returned, keyDup(dirKey));
 		if(colCounter != columns)
 		{
-			ELEKTRA_ADD_WARNING(118, parentKey, "illegal number of columns");
+			ELEKTRA_ADD_WARNINGF(118, parentKey, "illegal number of columns in line %lu", lineCounter);
 		}
 		++lineCounter;
 	}
@@ -286,7 +290,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHeader)
+static int csvWrite(KeySet *returned, Key *parentKey, char delim)
 {
 	FILE *fp;
 	fp = fopen(keyString(parentKey), "w");
@@ -309,53 +313,18 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHea
 			continue;
 		toWriteKS = ksCut(returned, cur);
 		colCounter = 0;
-		if(printHeader)
+		while(1)
 		{
-		
-			ksAppend(returned, toWriteKS);
-			ksRewind(returned);
-	    		while(1)
-			{
-				if(colCounter == ULONG_MAX)
-				{
-					ELEKTRA_SET_ERROR(117, parentKey, "number of columns exceeds ULONG_MAX");
-					fclose(fp);
-					return -1;
-				}
-				toWrite = getKeyByOrderNr(toWriteKS, colCounter);
-				if(!toWrite)
-					break;
-				if(colCounter)
-					fprintf(fp, "%c", delim);
-				++colCounter;
-				fprintf(fp, "%s", keyBaseName(toWrite));
-			}
-			fprintf(fp, "\n");
-			if(!colCounter)
-			{
-				ELEKTRA_SET_ERROR(117, parentKey, "no columns");
-				fclose(fp);
-				return -1;
-			}
-			columns = colCounter;
-			printHeader = 0;
+			toWrite = getKeyByOrderNr(toWriteKS, colCounter);
+			if(!toWrite)
+				break;
+			if(colCounter)
+				fprintf(fp, "%c", delim);
+			++colCounter;
+			fprintf(fp, "%s", keyString(toWrite));
 		}
-		else
-		{
-			while(1)
-			{
-				toWrite = getKeyByOrderNr(toWriteKS, colCounter);
-				if(!toWrite)
-					break;
-				if(colCounter)
-					fprintf(fp, "%c", delim);
-				++colCounter;
-				fprintf(fp, "%s", keyString(toWrite));
-
-			}
-			ksDel(toWriteKS);
-			fprintf(fp, "\n");
-		}
+		ksDel(toWriteKS);
+		fprintf(fp, "\n");
 		if(columns == 0)
 		{
 			columns = colCounter;
@@ -387,25 +356,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		outputDelim = ';';
 	}
 
-	// TODO: strange name printHeaderKey
-	Key *printHeaderKey = ksLookupByName(config, "/useheader", 0);
-	short printHeader = 0;
-	if(printHeaderKey)
-	{
-		const char *printHeaderString = keyString(printHeaderKey);
-		// TODO: a bit strange logic, why is "100" true, and "true" or "yes" is false?
-		// (provide function for true evaluation in libease)
-		if((printHeaderString[0] - '0') == 1)
-			printHeader = 1;
-		else
-			printHeader = 0;
-	}
-	else
-	{
-		printHeader = 0;
-	}
-
-	if(csvWrite(returned, parentKey, outputDelim, printHeader) == -1)
+	if(csvWrite(returned, parentKey, outputDelim) == -1)
 	{
 		return -1;
 	}
