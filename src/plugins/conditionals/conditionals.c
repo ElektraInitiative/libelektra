@@ -99,7 +99,6 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 		}
 		memset(compareTo, 0, endPos-rightSide);
 		strncat(compareTo, rightSide+1, endPos-rightSide-1);
-	//	printf("compareTo-String: %s\n", compareTo);
 	}
 	else if(rightSide && elektraStrLen(rightSide) > 1)
 	{
@@ -141,53 +140,33 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 		result = -1;
 		goto Cleanup;
 	}
-//	printf("Key %s has value: %s\n", keyName(key), keyString(key));
-//	printf("comparing %s to %s:\t", keyString(key), compareTo);
 	long ret;
 	ret = compareStrings(keyString(key), compareTo);
 	switch(cmpOp)
 	{
 		case EQU:
 			if(!ret)
-			{
-//				printf("EQUAL\n");
 				result = 1;
-			}
 			break;
 		case NOT:
 			if(ret)
-			{
-//				printf("NOT EQUAL\n");
 				result = 1;
-			}
 			break;
 		case LT:
 			if(ret < 0)
-			{
-//				printf("LESS THAN\n");
 				result = 1;
-			}
 			break;
 		case LE:
 			if(ret <= 0)
-			{
-//				printf("LESS OR EQUAL\n");
 				result = 1;
-			}
 			break;
 		case GT:
 			if(ret > 0)
-			{
-//				printf("GREATER THAN\n");
 				result = 1;
-			}
 			break;
 		case GE:
 			if(ret >= 0)
-			{
-//				printf("GREATER OR EQUAL\n");
 				result = 1;
-			}
 			break;
 		default:
 			result = -1;
@@ -245,8 +224,6 @@ static int checkCondition(const char *condition, KeySet *ks, Key *parentKey)
 	leftSide = elektraMalloc(len);
 	strncpy(leftSide, condition+startPos, len-2);
 	leftSide[len-2] = '\0';
-//	printf("Left Side : _%s_\n", leftSide);
-//	printf("Operation: %.*s\n", opLen, opStr);
 	startPos = 0;
 	endPos = 0;
 	ptr = opStr+opLen;
@@ -266,15 +243,8 @@ static int checkCondition(const char *condition, KeySet *ks, Key *parentKey)
 	rightSide = elektraMalloc(len);
 	strncpy(rightSide, opStr+opLen+startPos, len-1);
 	rightSide[len-1] = '\0';
-//	printf("Right Side : _%s_\n", rightSide);
 	int ret;
 	ret = evalCondition(leftSide, cmpOp, rightSide, ks, parentKey);
-//	if(ret == 1)
-//		printf("TRUE\n");
-//	else if(ret == 0)
-//		printf("FALSE\n");
-//	else if(ret == -1)
-//		printf("ERROR\n");
 	elektraFree(rightSide);
 	elektraFree(leftSide);
 	return ret;
@@ -282,7 +252,6 @@ static int checkCondition(const char *condition, KeySet *ks, Key *parentKey)
 static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 {
 	const char *conditionString = keyString(meta);
-//	printf("conditionString: %s\n", conditionString);
 	const char *regexString = "(\\(([^\\)]*)\\))\\s*(\\?)\\s*(\\(([^\\)]*)\\))\\s*(:\\s*(\\(([^\\)]*)\\))){0,1}";
 	regex_t regex;
 	int ret;
@@ -320,28 +289,21 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 	condition = elektraMalloc(endPos - startPos +1);
 	strncpy(condition, conditionString+startPos, endPos - startPos);
 	condition[endPos-startPos] = '\0';
-//	printf("If: %s\n", condition);
 
 	startPos = m[5].rm_so + (ptr - conditionString);
 	endPos = m[5].rm_eo + (ptr - conditionString);
 	thenexpr = elektraMalloc(endPos - startPos +1);
 	strncpy(thenexpr, conditionString+startPos, endPos - startPos);
 	thenexpr[endPos-startPos] = '\0';
-//	printf("Then: %s\n", thenexpr);
 
 
-	if(m[8].rm_so == -1)
-	{
-//		printf("No else branch\n");
-	}
-	else
+	if(m[8].rm_so != -1)
 	{
 		startPos = m[8].rm_so + (ptr - conditionString);
 		endPos = m[8].rm_eo + (ptr - conditionString);
 		elseexpr = elektraMalloc(endPos - startPos +1);
 		strncpy(elseexpr, conditionString+startPos, endPos - startPos);
 		elseexpr[endPos-startPos] = '\0';
-//		printf("Else: %s\n", elseexpr);
 	}
 	ret = checkCondition(condition, ks, parentKey);
 	if(ret == 1)
@@ -383,7 +345,6 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 
 		return 1; /* success */
 	}
-	/* get all keys */
 	Key *cur;
 	const Key *meta;
 	int result;
@@ -396,18 +357,15 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 		result = parseConditionString(meta, parentKey, ksDup(returned));
 		if(result == -1)
 		{
-//			printf("ERROR\n");
 			ret |= -1;
 		}
 		else if(result == 0)
 		{
-//			printf("Expression:\tINVALID\n");
 			ELEKTRA_SET_ERRORF(127, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
 		else if(result == 1)
 		{
-//			printf("Expression:\tVALID\n");
 			ret |= 1;
 		}
 	}	
@@ -417,7 +375,6 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 
 int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
-	/* set all keys */
 	Key *cur;
 	const Key *meta;
 	int result;
@@ -430,18 +387,15 @@ int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 		result = parseConditionString(meta, parentKey, ksDup(returned));
 		if(result == -1)
 		{
-//			printf("ERROR\n");
 			ret |= -1;
 		}
 		else if(result == 0)
 		{
-//			printf("Expression:\tINVALID\n");
 			ELEKTRA_SET_ERRORF(127, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
 		else if(result == 1)
 		{
-//			printf("Expression:\tVALID\n");
 			ret |= 1;
 		}
 	}	
