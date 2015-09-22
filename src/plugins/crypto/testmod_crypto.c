@@ -42,31 +42,6 @@ static const unsigned char iv[] =
 
 
 /**
- * @brief checks two buffers for equality
- *
- * Helper function that returns zero (0) if the contents of the buffers b1 and b2 match
- * and non-zero otherwise.
- */
-static int cmp_buffers(const unsigned char *b1, size_t len1, const unsigned char* b2, size_t len2)
-{
-	unsigned int i;
-
-	if (len1 != len2)
-	{
-		return 1;
-	}
-
-	for(i = 0; i < len1 && i < len2; i++)
-	{
-		if (b1[i] != b2[i])
-		{
-			return 1;
-		}
-	}
-	return 0;
-}
-
-/**
  * @brief create new KeySet and add a working configuration to it.
  */
 static void getWorkingConfiguration(KeySet **ks)
@@ -223,7 +198,10 @@ static void test_enc_and_dec_with_binary()
 	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
 	read = keyGetBinary(k, content, sizeof(content));
 	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
-	succeed_if( cmp_buffers(original, sizeof(original), content, read) == 0, "decrypted value differs from original");
+	if(read == sizeof(original))
+	{
+		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
+	}
 
 	keyDel(k);
 	keyDel(errorKey);
