@@ -64,7 +64,9 @@ static unsigned long getColumnCount(char *lineBuffer, char delim)
 	while(*ptr != '\0')
 	{
 		if(*ptr == delim)
+		{
 			++counter;
+		}
 		++ptr;
 	}
 	++counter;
@@ -363,7 +365,10 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHea
 			fprintf(fp, "\n");
 		}
 		if(columns == 0)
+		{
 			columns = colCounter;
+		}
+
 		if(colCounter != columns)
 		{    
 			ELEKTRA_SET_ERROR(117, parentKey, "illegal number of columns\n");
