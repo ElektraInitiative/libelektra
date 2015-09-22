@@ -122,6 +122,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	}
 	if(!fgets(lineBuffer, length, fp))
 	{
+		// TODO: add line information
 		ELEKTRA_SET_ERROR(116, parentKey, "Cant read File");
 		return -1;
 	}
