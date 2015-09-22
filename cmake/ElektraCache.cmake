@@ -48,6 +48,8 @@ set (PLUGINS_LIST_COMPILE
 set (PLUGINS_LIST_NODEP
 	ccode
 	fstab
+	csvstorage
+	lineendings
 	hexcode
 	hidden
 	ni
@@ -71,6 +73,7 @@ set (PLUGINS_LIST_POSIX
 	iconv
 	network
 	path
+	enum
 	keytometa
 	rename
 	syslog

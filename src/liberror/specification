@@ -662,36 +662,108 @@ ingroup:plugin
 module:python
 
 number:113
+description:couldnt open file
+severity:error
+ingroup:plugin
+module:lineendings
+
+number:114
+description:invalid line ending
+severity:error
+ingroup:plugin
+module:lineendings
+
+number:115
+description:inconsistent line endings
+severity:error
+ingroup:plugin
+module:lineendings 
+
+number:116
+description: couldn't open file
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:117
+description:invalid number of columns
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:118
+description:problem during parsing of csvfile (see reason)
+severity:warning
+ingroup:plugin
+module:csvstorage
+
+number:119
+description:out of memory
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:120
+description: Couldn't compile regex
+severity: error
+ingroup:plugin
+module:enum
+
+number:121
+description:Validation failed
+severity:error
+ingroup:plugin
+module:enum
+
+number:122
+description:not a valid Polish prefix notation syntax
+severity:error
+ingroup:plugin
+module:calculate
+
+number:123
+description:invalid value
+severity:error
+ingroup:plugin
+module:calculate
+
+number:124
+description:key doesn't exist
+severity:error
+ingroup:plugin
+module:calculate
+
+number:150
 description:Failed to initialize the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:114
+number:151
 description:The crypto library reported an internal error.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:115
+number:152
 description:Encryption failed due to an error reported by the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:116
+number:153
 description:Decryption failed due to an error reported by the crypto library.
 severity:error
 ingroup:plugin
 module:crypto
 
-number:117
+number:154
 description:Decryption failed due to an error reported by the crypto library.
 severity:warning
 ingroup:plugin
 module:crypto
 
-number:118
+number:155
 description:The configuration is invalid or incomplete.
 severity:error
 ingroup:plugin
