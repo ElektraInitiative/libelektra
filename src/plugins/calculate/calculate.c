@@ -20,7 +20,7 @@
 #include <kdberrors.h>
 #include "calculate.h"
 
-typedef enum{ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, EMPTY}Operation;
+typedef enum{ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, EMPTY}Operation;
 typedef struct{
 	double value;
 	Operation op;
@@ -131,11 +131,10 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 }
 static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *parentKey)
 {
-	char *regexString = "((([[:alnum:]]*/)+[[:alnum:]]+))|([-+/<>=!{*])";
+	char *regexString = "((([[:alnum:]]*/)+[[:alnum:]]+))|([-+:/<>=!{*])";
 	char *ptr = (char *)prefixString;
 	regex_t regex;
 	Key *key;
-	//PNElem stack[100];
 	
 	PNElem *stack = malloc(3*sizeof(PNElem));
 
@@ -183,6 +182,9 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 					stackPtr->op = MUL;
 					++stackPtr;
 					break;
+				case ':':
+					resultOp = SET;
+				break;
 				case '=':
 					if(resultOp == LT)
 						resultOp = LE;
@@ -194,6 +196,8 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 						resultOp = EQU;
 					else if(resultOp == NOT)
 						resultOp = NOT;
+					else if(resultOp == SET)
+						resultOp = SET;
 					break;
 				case '<':
 					resultOp = LT;
@@ -316,6 +320,12 @@ int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 				ELEKTRA_SET_ERRORF(123, parentKey, "%f not >= %f", atof(keyString(cur)), result.value);
 				return -1;
 			}
+		}
+		else if(result.op == SET)
+		{
+			char stringBuffer[16]; //15 digits max + \0 arbitrary value for now
+			snprintf(stringBuffer, sizeof(stringBuffer)-1, "%f", result.value); 
+			keySetString(cur, stringBuffer);
 		}
 	}
 	return 1; /* success */

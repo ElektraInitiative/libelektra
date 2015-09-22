@@ -21,7 +21,7 @@
 #include <math.h>
 #include "conditionals.h"
 
-typedef enum{EQU, NOT, LT, LE, GT, GE}Comparator;
+typedef enum{EQU, NOT, LT, LE, GT, GE, SET}Comparator;
 
 static int isNumber(const char *s)
 {
@@ -168,6 +168,10 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 			if(ret >= 0)
 				result = 1;
 			break;
+		case SET:
+			keySetString(key, compareTo);
+			result = 1;
+			break;
 		default:
 			result = -1;
 			break;
@@ -198,6 +202,8 @@ static int checkCondition(const char *condition, KeySet *ks, Key *parentKey)
 		cmpOp = GE;
 	else if((opStr = strstr(condition, ">")))
 		cmpOp = GT;
+	else if((opStr = strstr(condition, ":=")))
+		cmpOp = SET;
 	else
 		return -1;
 	int opLen;
