@@ -56,7 +56,7 @@ productive use:
 - [fstab](fstab) reads fstab files.
 - [regexstore](regexstore)
 - [simpleini](simpleini) is ini without sections
-
+- [csvstorage](csvstorage) for csv files
 
 ## System Information ##
 
@@ -126,7 +126,7 @@ copied by another plugin just before):
 - [network](network) by using network APIs
 - [path](path) by checking files on filesystem
 - [type](type) using runtime type checking (CORBA types)
-
+- [enum](enum) compares the keyvalue against a list of valid values
 
 ## Interpreter ##
 
@@ -142,6 +142,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [doc](doc) contains the documentation of the plugin interface
 - [error](error) yields errors as described in metadata
 - [template](template) to be copied for new plugins
+- [lineendings](lineendings) tests file for consistent line endings
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:
