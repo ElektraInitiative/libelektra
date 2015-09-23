@@ -89,7 +89,8 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 				fclose(fp);
 				ELEKTRA_SET_ERRORF(114, parentKey, "Invalid line ending at line %lu", line);
 				return -2;
-			}  
+			} 
+		    ++line;	
 			found = NA;
 		}
 		else if(lineEnding != found && found != NA)
@@ -97,10 +98,6 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 			fclose(fp);
 			ELEKTRA_SET_ERRORF(115, parentKey, "inconsistent line endings at line %lu", line);
 			return -3;
-		}
-		else
-		{
-			++line;
 		}
 		fc = sc;
 		found = NA;
