@@ -308,11 +308,13 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHea
 		if(keyRel(parentKey, cur) != 1)
 			continue;
 		toWriteKS = ksCut(returned, cur);
-		ksRewind(toWriteKS);
 		colCounter = 0;
 		if(printHeader)
 		{
-			while(1)
+		
+			ksAppend(returned, toWriteKS);
+			ksRewind(returned);
+	    		while(1)
 			{
 				if(colCounter == ULONG_MAX)
 				{
@@ -336,7 +338,6 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short printHea
 				return -1;
 			}
 			columns = colCounter;
-			colCounter = 0;
 			printHeader = 0;
 		}
 		else
