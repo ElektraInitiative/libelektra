@@ -1,5 +1,6 @@
 elektra (0.8.13-1) unstable; urgency=medium
 
+  * added 3 plugins in debian/libelektra-core4.install (not yet merged/released)
   * New upstream version.
 
  -- Markus Raab <debian@markus-raab.org>  Thu, 17 Sep 2015 19:42:21 +0200
