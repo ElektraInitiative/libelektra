@@ -333,7 +333,6 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim)
 	}
 	ksDel(toWriteKS);
 	fprintf(fp, "\n");
-	printf("columns:%lu\tcolcounter:%lu\n", columns,colCounter);
 	if(columns == 0)
 	    columns = colCounter;
 	if(colCounter != columns)
