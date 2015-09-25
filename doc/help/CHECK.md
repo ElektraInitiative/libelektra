@@ -2,9 +2,11 @@ kdb-check(1) -- Perform internal checks
 =======================================
 
 ## DESCRIPTION
+
 This command is used to perform checks on the key database or an Elektra plugin.  
 
 ## USAGE
+
 `kdb check [<plugin>]`  
 
 Where the option argument, `plugin` is the plugin that a user wants to check.  
@@ -14,6 +16,7 @@ The user can also use this tool to perform write tests by passing the `-f` optio
 Special values are returned to represent the outcome of a check.  
 
 ## RETURNED VALUES
+
 Their are two different types of checks, a check on a plugin (by specifying the name of a plugin as an argument) or a check on the key database itself.  
 
 The outcome of a check on the key database is returned as an 8-bit pattern.  
