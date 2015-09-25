@@ -2,16 +2,16 @@ kdb-check(1) -- Perform internal checks
 =======================================
 
 ## DESCRIPTION
-This command is used to perform checks on the key database or an elektra plugin.  
+This command is used to perform checks on the key database or an Elektra plugin.  
 
 ## USAGE
-`kdb check <plugin>`  
+`kdb check [<plugin>]`  
 
-Where `plugin` is the plugin that a user wants to check.  
+Where the option argument, `plugin` is the plugin that a user wants to check.  
 Use `-c` to pass options to that plugin.  
 If no `plugin` argument is provided a check will be performed on the key database itself.  
 The user can also use this tool to perform write tests by passing the `-f` option (please note that this can result in configuration files being changed!).  
-Special values are [returned](#RETURNED VALUES) to represent the outcome of a check.  
+Special values are returned to represent the outcome of a check.  
 
 ## RETURNED VALUES
 Their are two different types of checks, a check on a plugin (by specifying the name of a plugin as an argument) or a check on the key database itself.  
@@ -46,8 +46,8 @@ Each bit represents a specific outcome as described below:
  * Bit 8:
    Error on close.  
 
-So if the following bit pattern was returned: `010100000`  
-The user would know that their was a warning on open and a warning on get.  
+So if the following number was returned `#9` the user could figure out more detail by considering the bits: `00001001`  
+The user would know that their was a warning on open and an error on get.  
 
 If a plugin name is given, checks will only be done on the given plugin.  
 The returned values for a check on a plugin are returned as much simpler numbers.  
@@ -66,7 +66,7 @@ Return values on plugin checking:
  * 3:
    Plugin has warnings.  
 
-Please report any output caused by official plugins to http://www.libelektra.org  
+Please report any output caused by official plugins to [http://git.libelektra.org/issues](http://git.libelektra.org/issues).  
 
 
 ## EXAMPLES

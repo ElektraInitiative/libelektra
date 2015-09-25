@@ -9,7 +9,7 @@ Note that you can't copy a key below itself.
 ## USAGE
 `kdb cp <source> <dest>`  
 
-Where `source` is the path of the key(s) you want to copy and `dest` is the path where you would like to copy the key(s) to.
+Where `source` is the path of the key(s) you want to copy and `dest` is the path where you would like to copy the key(s) to.  
 
 ## EXAMPLES
 

@@ -1,12 +1,15 @@
 kdb-convert(1) -- Convert configuration files using elektra
 ===========================================================
 ## DESCRIPTION
-This command allows a user to convert a file from any format supported by elektra to any other supported format.  
-This command relies on the functionality of elektra but does not actually modify the key database in any way.  
 
-This command uses plugins to specify and convert between formats, it is only limited by the plugins available for elektra.  
+This command allows a user to convert a file from any format supported by Elektra to any other supported format.  
+
+This command relies on the functionality of Elektra but does not actually modify the key database in any way.  
+
+This command uses plugins to specify and convert between formats, it is only limited by the plugins available for Elektra.  
 
 ## USAGE
+
 `kdb convert [<import-format>] [<export-format>] [<import-file>] [export-file]`  
 
 Where `import-format` is the format that the current configuration file is using, `export-format` is the format the user wishes to convert it to, `import-file` is the full path to the current configration file, and `export-file` is where the converted configuration file should be saved.  
@@ -16,10 +19,10 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
 
 ## EXAMPLES
 
-To convert an elektra dump file to xml:  
+To convert an Elektra dump file to xml:  
 	`cat sw.ecf | kdb convert dump xmltool > sw.xml`  
 
-Another way to convert an elektra dump file to xml:  
+Another way to convert an Elektra dump file to xml:  
 	`kdb convert dump xmltool /home/user/dump_file.ecf /home/user/xml_file.xml`  
 
 To print an xml file using the `line` format:  
