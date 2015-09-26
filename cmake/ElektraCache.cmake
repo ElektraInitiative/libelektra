@@ -62,7 +62,6 @@ set (PLUGINS_LIST_NODEP
 	noresolver
 	wresolver
 	ini
-	list
 	)
 
 #

@@ -145,7 +145,6 @@ These plugins start an interpreter and allow you to use a bindings.
 - [error](error) yields errors as described in metadata
 - [template](template) to be copied for new plugins
 - [lineendings](lineendings) tests file for consistent line endings
-- [list](list) loads and executes a list of plugins
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:
