@@ -20,6 +20,9 @@
 #include <kdberrors.h>
 #include "calculate.h"
 
+#define MIN_VALID_STACK 3
+#define EPSILON 0.00001
+
 typedef enum{ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, EMPTY}Operation;
 typedef struct{
 	double value;
@@ -27,7 +30,7 @@ typedef struct{
 }PNElem;
 
 
-int elektraCalculateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraCalculateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/calculate"))
 	{
@@ -42,13 +45,14 @@ int elektraCalculateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 #include ELEKTRA_README(calculate)
 				keyNew ("system/elektra/modules/calculate/infos/version",
 					KEY_VALUE, PLUGINVERSION, KEY_END),
+				keyNew ("system/elektra/modules/calculate/export/constants", KEY_END),
+				keyNew ("system/elektra/modules/calculate/export/constants/EPSILON", KEY_VALUE, EPSILON, KEY_END),
 				KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
 		return 1; /* success */
 	}
-	/* get all keys */
 
 	return 1; /* success */
 }
@@ -84,7 +88,9 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 			continue;
 		}
 		else if(stackPtr->op == VAL && stackPtr == stack)
+		{
 			break;
+		}
 		PNElem e1 = nextVal(stackPtr);
 		PNElem e2 = nextVal(stackPtr);
 		if(e1.op == VAL && e2.op == VAL)
@@ -101,7 +107,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 					stackPtr->op = VAL;
 					break;
 				case DIV:
-					if(e2.value == 0)
+					if(e2.value < EPSILON)
 					{
 						result.op = ERROR;
 						return result;
@@ -131,12 +137,12 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 }
 static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *parentKey)
 {
-	char *regexString = "((([[:alnum:]]*/)+[[:alnum:]]+))|([-+:/<>=!{*])";
+	const char *regexString = "((([[:alnum:]]*/)+[[:alnum:]]+))|([-+:/<>=!{*])";
 	char *ptr = (char *)prefixString;
 	regex_t regex;
 	Key *key;
-	
-	PNElem *stack = malloc(3*sizeof(PNElem));
+
+	PNElem *stack = malloc(MIN_VALID_STACK*sizeof(PNElem));
 
 	PNElem *stackPtr = stack;
 	PNElem result;
@@ -257,9 +263,8 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	return result;
 }
 
-int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
-	/* set all keys */
 	Key *cur;
 	const Key *meta;
 	PNElem result;
@@ -275,7 +280,7 @@ int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 		}
 		else if(result.op == EQU)
 		{
-			if(fabs(atof(keyString(cur)) - result.value) > 0.00001)
+			if(fabs(atof(keyString(cur)) - result.value) > EPSILON)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%f !=%f", atof(keyString(cur)), result.value);
 				return -1;
@@ -283,7 +288,7 @@ int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_
 		}
 		else if(result.op == NOT)
 		{
-			if(fabs(atof(keyString(cur)) - result.value) < 0.00001)
+			if(fabs(atof(keyString(cur)) - result.value) < EPSILON)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%f == %f but requirement was !=", atof(keyString(cur)), result.value);
 				return -1;

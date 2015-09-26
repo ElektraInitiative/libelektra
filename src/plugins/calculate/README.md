@@ -10,7 +10,9 @@
 
 Compares a key value to a mathematical expression using polish prefix notation defined in the `check/calc` metakey. 
 Operations are `+ - / *` . Operants are keys with names relative to the parent key.
-How the values are compared is specified at the begining of the Metakey using the conditions `<, <=, ==, !=, =>, >`
+How the values are compared is specified at the begining of the Metakey using the conditions `<, <=, ==, !=, =>, >, :=`
+`:=` is used to set key values.
+To prevent loss of precision all values are interpreted as floating point values.
 
 ## Examples ##
 

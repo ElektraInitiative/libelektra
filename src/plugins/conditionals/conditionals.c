@@ -19,23 +19,44 @@
 #include <regex.h>
 #include <ctype.h>
 #include <math.h>
+#include <errno.h>
 #include "conditionals.h"
 
 typedef enum{EQU, NOT, LT, LE, GT, GE, SET}Comparator;
 
 static int isNumber(const char *s)
 {
-	char *ptr = (char *)s;
-	int ret = 1;
-	while(*ptr != '\0')
+	char *endPtr = NULL;
+	int ret;
+	ret = strtol(s, &endPtr, 10);
+	if(*endPtr != 0)
 	{
-		if(*ptr == '.' && ret == 1)
-			ret = 2;
-		else if(!isdigit(*ptr))
-			return 0;
-		++ptr;
+		return 0;
 	}
-	return ret;
+	else if(ret == 0 && errno == EINVAL)
+	{
+		return 0;
+	}
+	else if(*endPtr == '.')
+	{
+		ret = strtof(s, &endPtr);
+		if(*endPtr != 0)
+		{
+			return 0;
+		}
+		else if(ret == 0 && errno == EINVAL)
+		{
+			return 0;
+		}
+		else
+		{
+			return 2;
+		}
+	}
+	else
+	{
+		return 1;
+	}
 }
 static int compareStrings(const char *s1, const char *s2)
 {
@@ -107,6 +128,7 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 		{
 			ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 			result = -1;
+			goto Cleanup;
 		}
 		snprintf(lookupName, len, "%s/%s", keyName(parentKey), rightSide);
 		key = ksLookupByName(ks, lookupName, 0);
