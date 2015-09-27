@@ -62,7 +62,6 @@ static void testwriteinvalidheader(const char *file)
 	KeySet *conf = ksNew (20,
 			keyNew ("system/useheader", KEY_VALUE, "1", KEY_END), KS_END);
 
-	printf("%s\n", srcdir_file(file));
 	KeySet *ks = ksNew(0, KS_END);
 	PLUGIN_OPEN("csvstorage");
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >0,  "call to kdbGet was not successful");

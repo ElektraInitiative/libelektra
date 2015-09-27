@@ -208,9 +208,6 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		offset = 0;
 		colCounter = 0;
 		char *lastIndex = "#0";
-		if(getColumnCount(lineBuffer, delim) != columns)
-		{
-		}
 		while((col = parseLine(lineBuffer, delim, offset)) != NULL)
 		{
 			cur = getKeyByOrderNr(header, colCounter);
@@ -301,7 +298,7 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim)
 	}
 
 	keyDel(ksLookup(returned, parentKey, KDB_O_POP));
-	
+
 	unsigned long colCounter = 0;
 	unsigned long columns = 0;
 	Key *cur;
