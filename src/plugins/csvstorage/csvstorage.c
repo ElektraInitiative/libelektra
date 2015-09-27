@@ -126,7 +126,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		ELEKTRA_SET_ERROR(116, parentKey, "Cant read File");
 		return -1;
 	}
-	
+
 	unsigned long columns = 0;
 	columns = getColumnCount(lineBuffer, delim);
 
@@ -138,7 +138,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	int nr_keys = 1;
 	KeySet *header = ksNew(0, KS_END);
 	Key *key;
-	
+
 	if(useHeader == 1)
 	{
 		colCounter = 0;
@@ -272,7 +272,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		const char *delimString = keyString(delimKey);
 		delim = delimString[0];
 	}
-	
+
 	Key *readHeaderKey = ksLookupByName(config, "/useheader", 0);
 	short useHeader = 0;
 	if(readHeaderKey)
@@ -301,7 +301,7 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim)
 	}
 
 	keyDel(ksLookup(returned, parentKey, KDB_O_POP));
-	
+
 	unsigned long colCounter = 0;
 	unsigned long columns = 0;
 	Key *cur;
