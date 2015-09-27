@@ -338,13 +338,13 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
    fun:elektraCryptoGcryInit
    fun:test_init
    fun:main
@@ -354,13 +354,13 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
    fun:elektraCryptoGcryInit
    fun:test_init
    fun:main
@@ -370,12 +370,12 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
    fun:elektraCryptoGcryInit
    fun:test_init
    fun:main
@@ -385,13 +385,13 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
    fun:elektraCryptoGcryInit
    fun:test_init
    fun:main
@@ -401,10 +401,10 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
    fun:elektraCryptoGcryInit
    fun:test_init
    fun:main
@@ -414,10 +414,10 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
    fun:elektraCryptoGcryInit
    fun:test_init
    fun:main
@@ -427,12 +427,9 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
+   obj:*libgcrypt.so.20*
    fun:gcry_control
-   fun:elektraCryptoGcryInit
-   fun:test_init
+   ...
    fun:main
 }
 {
@@ -440,12 +437,8 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   fun:gcry_control
-   fun:elektraCryptoGcryInit
-   fun:test_init
+   obj:*libgcrypt.so.20.*
+   ...
    fun:main
 }
 {
@@ -453,36 +446,13 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   fun:elektraCryptoGcryInit
-   fun:test_init
+   obj:*libgcrypt.so.20*
+   ...
    fun:main
 }
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: reachable
    fun:malloc
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   obj:/lib/x86_64-linux-gnu/libgcrypt.so.20.0.3
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-   obj:*/libgcrypt.so.20*
+   obj:*libstdc++.so.6*
 }
