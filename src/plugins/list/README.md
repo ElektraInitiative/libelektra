@@ -8,7 +8,7 @@
 
 ## Introduction ##
 
-The List plugin is a workaround for the placement slot limitation. It takes a list of plugins + configurations 
+The List plugin can be used everywhere a list of plugins is required. It takes a list of plugins + configurations 
 for every placement it's placed in and loads them.
 
 ## Configuration ##
@@ -20,9 +20,9 @@ Specifies the set-placements for the list plugin, e.g. "presetstorage precommit"
 
 Specifies the get-placements for the list plugin.
 
-`placements/err`
+`placements/error`
 
-Specifies the err-placements for the list plugin.
+Specifies the error-placements for the list plugin.
 
 `plugins/#`
 
@@ -30,7 +30,7 @@ The name of the plugin to load.
 
 `plugins/#/placements/set`
 
-A list of set-placements for the plugin. Same for "get" and "err"
+A list of set-placements for the plugin. Same for "get" and "error"
 
 `plugins/#/config/`
 
