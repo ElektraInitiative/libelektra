@@ -90,7 +90,7 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 				ELEKTRA_SET_ERRORF(114, parentKey, "Invalid line ending at line %lu", line);
 				return -2;
 			} 
-		    ++line;	
+			++line;	
 			found = NA;
 		}
 		else if(lineEnding != found && found != NA)
@@ -135,7 +135,7 @@ int elektraLineendingsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTR
 	ret = checkLineEndings(keyString(parentKey), validLineEnding, parentKey);
 	if(ret == (-3))
 	{
-			return -1;
+		return -1;
 	}
 	else
 		return 1;
