@@ -11,8 +11,7 @@ Build-Depends: debhelper (>= 8),
  libdbus-1-dev,
  libaugeas-dev (>= 1.0.0),
  libyajl-dev,
- python-support (>= 0.90),
- python-dev,
+ python2.7-dev,
  swig2.0,
  liblua5.2-dev,
  libsystemd-journal-dev
@@ -230,7 +229,6 @@ Description: dbus plugin for a framework to get and set configuration
 Package: libelektra-python4
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
- python-support (>= 0.90),
  swig2.0,
  ${shlibs:Depends},
  ${misc:Depends}
@@ -254,7 +252,6 @@ Depends: libelektra-bin (>= ${source:Version}),
  python (>= 2.7.3~),
  python-setuptools,
  python-cheetah,
- python-support (>= 0.90),
  ${shlibs:Depends},
  ${misc:Depends}
 Description: gen tool for Elektra
