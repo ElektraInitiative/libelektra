@@ -28,7 +28,8 @@
 using namespace ckdb;
 #include <kdberrors.h>
 
-#define PYTHON_PLUGIN_NAME_STR ELEKTRA_QUOTE(PYTHON_PLUGIN_NAME)
+#define PYTHON_PLUGIN_NAME_STR2(x) ELEKTRA_QUOTE(x)
+#define PYTHON_PLUGIN_NAME_STR PYTHON_PLUGIN_NAME_STR2(PYTHON_PLUGIN_NAME)
 
 static PyObject *Python_fromSWIG(ckdb::Key *key)
 {
