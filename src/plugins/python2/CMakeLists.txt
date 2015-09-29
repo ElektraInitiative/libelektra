@@ -8,9 +8,8 @@ if (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 	include (LibAddMacros)
 
-	execute_process (
+	add_custom_command (OUTPUT runtime.h
 		COMMAND ${SWIG_EXECUTABLE} -c++ -python -external-runtime runtime.h
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)
 
 	add_plugin(python2

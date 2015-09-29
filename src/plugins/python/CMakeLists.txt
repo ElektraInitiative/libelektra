@@ -4,9 +4,8 @@ find_swig()
 if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 	include (LibAddMacros)
 
-	execute_process (
+	add_custom_command (OUTPUT runtime.h
 		COMMAND ${SWIG_EXECUTABLE} -c++ -python -py3 -external-runtime runtime.h
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)
 
 	add_plugin(python
