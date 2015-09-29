@@ -111,7 +111,7 @@ static int Python_CallFunction_Int(moduleData *data, PyObject *object,
 		if (!PyInt_Check(res))
 #endif
 			ELEKTRA_SET_ERROR(111, errorKey,
-					"Error: return value is no integer");
+					"Return value is no integer");
 		else
 			ret = PyLong_AsLong(res);
 	}

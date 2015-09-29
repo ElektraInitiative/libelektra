@@ -73,7 +73,7 @@ static void test_variable_passing()
 	KeySet *ks = ksNew(0, KS_END);
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if(ksGetSize(ks) == 1, "keyset size is still 0");
-	succeed_if(!strcmp(keyName(ksHead(ks)), "user/from_python"), "key in keyset has wrong name");
+	succeed_if(ksGetSize(ks) == 1 && !strcmp(keyName(ksHead(ks)), "user/from_python"), "key in keyset has wrong name");
 
 	ksDel(ks);
 	keyDel(parentKey);
@@ -165,7 +165,7 @@ static void test_wrong()
 	Key *errorKey = keyNew("", KEY_END);
 	Plugin *plugin = elektraPluginOpen(PYTHON_PLUGIN_NAME, modules, conf, errorKey);
 	succeed_if(!output_warnings(errorKey), "we expect some warnings");
-	succeed_if(!output_error(errorKey),    "we exepect some errors");
+	succeed_if(!output_error(errorKey),    "we expect some errors");
 	succeed_if(plugin == NULL, "python plugin shouldn't be loadable");
 	keyDel(errorKey);
 
