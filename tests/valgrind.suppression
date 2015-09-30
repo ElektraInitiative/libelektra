@@ -415,19 +415,6 @@
    match-leak-kinds: reachable
    fun:malloc
    obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
    fun:gcry_control
    ...
    fun:main
