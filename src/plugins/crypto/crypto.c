@@ -13,27 +13,6 @@
 #include "crypto.h"
 #include "gcrypt_operations.h"
 
-
-/**
- * @brief open the crypto plugin
- * @retval 1 on success
- * @retval -1 on failure
- */
-int elektraCryptoOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey)
-{
-	return elektraCryptoInit(errorKey);
-}
-
-/**
- * @brief close the crypto plugin
- * @retval 1 on success
- * @retval -1 on failure
- */
-int elektraCryptoClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
-{
-	return 1;
-}
-
 /**
  * @brief establish the Elektra plugin contract and decrypt values, if possible.
  *
@@ -178,6 +157,11 @@ void elektraCryptoTeardown()
  */
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
 {
+	if(elektraCryptoInit(errorKey) != 1)
+	{
+		return (-1);
+	}
+
 	return elektraCryptoGcryHandleCreate(handle, config, errorKey);
 }
 

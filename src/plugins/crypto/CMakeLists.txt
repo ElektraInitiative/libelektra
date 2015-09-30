@@ -1,18 +1,17 @@
 find_package (LibGcrypt)
 
-configure_file (
-	"${CMAKE_CURRENT_SOURCE_DIR}/crypto_internal.h.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/crypto_internal.h"
-)
-
-install (FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/crypto_internal.h"
-	DESTINATION include/${TARGET_INCLUDE_FOLDER}
-)
-
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-
 if (LIBGCRYPT_FOUND)
+	configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/crypto_internal.h.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/crypto_internal.h"
+	)
+
+	install (FILES
+		"${CMAKE_CURRENT_BINARY_DIR}/crypto_internal.h"
+		DESTINATION include/${TARGET_INCLUDE_FOLDER}
+	)
+
+	include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 	include(LibAddPlugin)
 
 	add_plugin(crypto

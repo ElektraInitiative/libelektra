@@ -15,15 +15,12 @@
 
 #include <crypto_internal.h>
 
-int elektraCryptoOpen(Plugin *handle, Key *errorKey);
-int elektraCryptoClose(Plugin *handle, Key *errorKey);
 int elektraCryptoGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoSet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey);
 
 
 int elektraCryptoInit(Key *errorKey);
-void elektraCryptoTeardown();
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey);
 void elektraCryptoHandleDestroy(elektraCryptoHandle *handle);
 int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey);
