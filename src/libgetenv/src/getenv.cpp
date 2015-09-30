@@ -16,6 +16,8 @@
 # define _GNU_SOURCE // for RTLD_NEXT (except BSDI)
 #endif
 
+#define ELEKTRA_GETENV_USE_LOCKS 0
+
 
 #include <kdbgetenv.h>
 #include <kdbconfig.h>
@@ -99,18 +101,22 @@ KeySet *elektraDocu = ksNew(20,
 #include "readme_elektrify-getenv.c"
 	KS_END);
 
-#if defined(__APPLE__) && defined(__MACH__)
-	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-#else
-	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-#endif
-
-
 int to_(int c)
 {
 	if (c == '-') return '_';
 	return c;
 }
+
+
+#if ELEKTRA_GETENV_USE_LOCKS
+# if defined(__APPLE__) && defined(__MACH__)
+	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+# else
+	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+# endif
+#endif
+
+
 
 } // anonymous namespace
 
@@ -118,12 +124,16 @@ int to_(int c)
 
 extern "C" void elektraLockMutex()
 {
+#if ELEKTRA_GETENV_USE_LOCKS
 	pthread_mutex_lock(&elektraGetEnvMutex);
+#endif
 }
 
 extern "C" void elektraUnlockMutex()
 {
+#if ELEKTRA_GETENV_USE_LOCKS
 	pthread_mutex_unlock(&elektraGetEnvMutex);
+#endif
 }
 
 
