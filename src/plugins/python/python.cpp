@@ -47,45 +47,54 @@ static PyObject *Python_fromSWIG(ckdb::KeySet *keyset)
 	return SWIG_NewPointerObj(new kdb::KeySet(keyset), ti, 0);
 }
 
+class Python_LockSwap
+{
+public:
+	Python_LockSwap(PyThreadState *newstate)
+	{
+		gstate = PyGILState_Ensure();
+		tstate = PyThreadState_Swap(newstate);
+	}
+
+	~Python_LockSwap()
+	{
+		PyThreadState_Swap(tstate);
+		PyGILState_Release(gstate);
+	}
+
+private:
+	PyGILState_STATE gstate;
+	PyThreadState *tstate;
+};
+
 extern "C"
 {
-
 typedef struct
 {
+	PyThreadState *tstate;
 	PyObject *instance;
 	int printError;
 	int shutdown;
 } moduleData;
 
-/* pythons repr() - a little debug helper - misses all Py_DECREF calls! */
-#define Python_Repr(obj) \
-	PyBytes_AS_STRING( \
-		PyUnicode_AsEncodedString(PyObject_Repr(obj), "utf-8", "Error ~") \
-	)
-
-static PyObject *Python_ImportModule(const char *name)
+static int Python_AppendToSysPath(const char *path)
 {
-	if (!name)
-		return NULL;
+	if (path == NULL)
+		return 0;
 
-	PyGILState_STATE gstate = PyGILState_Ensure();
-	PyObject *module = PyImport_ImportModule(name);
-	PyGILState_Release(gstate);
-	return module;
+	PyObject *sysPath = PySys_GetObject((char *)"path");
+	PyObject *pyPath  = PyUnicode_FromString(path);
+	PyList_Append(sysPath, pyPath);
+	Py_DECREF(pyPath);
+	return 1;
 }
 
 static PyObject *Python_CallFunction(PyObject *object, PyObject *args)
 {
-	PyGILState_STATE gstate = PyGILState_Ensure();
-
 	if (!PyCallable_Check(object))
-	{
-		PyGILState_Release(gstate);
 		return NULL;
-	}
 
 	PyObject *res = PyObject_CallObject(object, args ? args : PyTuple_New (0));
-	PyGILState_Release(gstate);
 	Py_XINCREF(res);
 	return res;
 }
@@ -94,8 +103,6 @@ static int Python_CallFunction_Int(moduleData *data, PyObject *object,
 		PyObject *args, ckdb::Key *errorKey)
 {
 	int ret = -1;
-	PyGILState_STATE gstate = PyGILState_Ensure();
-
 	PyObject *res = Python_CallFunction(object, args);
 	if (!res)
 	{
@@ -117,7 +124,6 @@ static int Python_CallFunction_Int(moduleData *data, PyObject *object,
 			ret = PyLong_AsLong(res);
 	}
 
-	PyGILState_Release(gstate);
 	Py_XDECREF(res);
 	return ret;
 }
@@ -126,7 +132,7 @@ static int Python_CallFunction_Helper1(moduleData *data, const char *funcName,
 	ckdb::Key *errorKey)
 {
 	int ret = 0;
-	PyGILState_STATE gstate = PyGILState_Ensure();
+	Python_LockSwap pylock(data->tstate);
 	PyObject *func = PyObject_GetAttrString(data->instance, funcName);
 	if (func)
 	{
@@ -137,7 +143,6 @@ static int Python_CallFunction_Helper1(moduleData *data, const char *funcName,
 		Py_DECREF(args);
 		Py_DECREF(func);
 	}
-	PyGILState_Release(gstate);
 	return ret;
 }
 
@@ -145,7 +150,7 @@ static int Python_CallFunction_Helper2(moduleData *data, const char *funcName,
 	ckdb::KeySet *returned, ckdb::Key *parentKey)
 {
 	int ret = 0;
-	PyGILState_STATE gstate = PyGILState_Ensure();
+	Python_LockSwap pylock(data->tstate);
 	PyObject *func = PyObject_GetAttrString(data->instance, funcName);
 	if (func)
 	{
@@ -158,22 +163,7 @@ static int Python_CallFunction_Helper2(moduleData *data, const char *funcName,
 		Py_DECREF(args);
 		Py_DECREF(func);
 	}
-	PyGILState_Release(gstate);
 	return ret;
-}
-
-static int Python_AppendToSysPath(const char *path)
-{
-	if (path == NULL)
-		return 0;
-
-	PyGILState_STATE gstate = PyGILState_Ensure();
-	PyObject *sysPath = PySys_GetObject((char *)"path");
-	PyObject *pyPath  = PyUnicode_FromString(path);
-	PyList_Append(sysPath, pyPath);
-	Py_DECREF(pyPath);
-	PyGILState_Release(gstate);
-	return 1;
 }
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -182,11 +172,24 @@ static unsigned open_cnt = 0;
 static void Python_Shutdown(moduleData *data)
 {
 	/* destroy python if plugin isn't used anymore */
-	//FIXME python reinitialization is known to be buggy
-	pthread_mutex_lock(&mutex);
-	if (Py_IsInitialized() && !--open_cnt && data->shutdown) // order matters!
-		Py_Finalize();
-	pthread_mutex_unlock(&mutex);
+	if (Py_IsInitialized())
+	{
+		if (data->tstate)
+		{
+			Python_LockSwap pylock(data->tstate);
+
+			/* clean up references */
+			Py_XDECREF(data->instance);
+			data->instance = NULL;
+
+			/* destroy sub interpreter */
+			Py_EndInterpreter(data->tstate);
+		}
+		pthread_mutex_lock(&mutex);
+		if (open_cnt && !--open_cnt && data->shutdown) // order matters!
+			Py_Finalize();
+		pthread_mutex_unlock(&mutex);
+	}
 }
 
 int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
@@ -204,6 +207,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 
 	/* create module data */
 	moduleData *data = new moduleData;
+	data->tstate     = NULL;
 	data->instance   = NULL;
 	data->printError = (ksLookupByName(config, "/print", 0) != NULL);
 	/* shutdown flag is integer by design. This way users can set the
@@ -213,23 +217,39 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 			!!strcmp(keyString(ksLookupByName(config, "/shutdown", 0)), "0"));
 
 	{
-		/* initialize python interpreter - only once */
+		/* initialize python interpreter if necessary */
 		pthread_mutex_lock(&mutex);
 		if (!Py_IsInitialized())
 		{
 			Py_Initialize();
-			PyEval_InitThreads();
 			if (!Py_IsInitialized())
 			{
 				pthread_mutex_unlock(&mutex);
 				goto error;
 			}
+			open_cnt++;
 		}
-		open_cnt++;
+		else if (open_cnt) // we have initialized python before
+			open_cnt++;
 		pthread_mutex_unlock(&mutex);
 
+		/* init threads */
+		PyEval_InitThreads();
+
+		/* acquire GIL */
+		Python_LockSwap pylock(NULL);
+
+		/* create a new sub-interpreter */
+		data->tstate = Py_NewInterpreter();
+		if (data->tstate == NULL)
+		{
+			ELEKTRA_SET_ERROR(111, errorKey, "Unable to create sub intepreter");
+			goto error;
+		}
+		PyThreadState_Swap(data->tstate);
+
 		/* import kdb */
-		PyObject *kdbModule = Python_ImportModule("kdb");
+		PyObject *kdbModule = PyImport_ImportModule("kdb");
 		if (kdbModule == NULL)
 		{
 			ELEKTRA_SET_ERROR(111, errorKey, "Unable to import kdb module");
@@ -255,7 +275,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		if (bname_len >= 4 && strcmp(bname + bname_len - 3, ".py") == 0)
 			bname[bname_len - 3] = '\0';
 
-		PyObject *pModule = Python_ImportModule(bname);
+		PyObject *pModule = PyImport_ImportModule(bname);
 		if (pModule == NULL)
 		{
 			ELEKTRA_SET_ERRORF(111, errorKey,"Unable to import python script %s",
@@ -266,10 +286,8 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		elektraFree(tmpScript);
 
 		/* get class */
-		PyGILState_STATE gstate = PyGILState_Ensure();
 		PyObject *klass = PyObject_GetAttrString(pModule, "ElektraPlugin");
 		Py_DECREF(pModule);
-		PyGILState_Release(gstate);
 		if (klass == NULL)
 		{
 			ELEKTRA_SET_ERROR(111, errorKey,
@@ -278,12 +296,10 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		}
 
 		/* create instance of class */
-		gstate = PyGILState_Ensure();
 		PyObject *inst_args = Py_BuildValue("()");
 		PyObject *inst = PyEval_CallObject(klass, inst_args);
 		Py_DECREF(klass);
 		Py_DECREF(inst_args);
-		PyGILState_Release(gstate);
 		if (inst == NULL)
 		{
 			ELEKTRA_SET_ERROR(111, errorKey,
@@ -315,18 +331,7 @@ int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	if (data == NULL)
 		return 0;
 
-	/* call python function */
-	int ret = 0;
-	if (data != NULL)
-	{
-		PyGILState_STATE gstate = PyGILState_Ensure();
-		ret = Python_CallFunction_Helper1(data, "close", errorKey);
-
-		/* clean up references */
-		Py_DECREF(data->instance);
-		data->instance = NULL;
-		PyGILState_Release(gstate);
-	}
+	int ret = Python_CallFunction_Helper1(data, "close", errorKey);
 
 	/* destroy python */
 	Python_Shutdown(data);
