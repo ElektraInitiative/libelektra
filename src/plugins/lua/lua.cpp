@@ -48,26 +48,12 @@ static void Lua_fromSWIG(lua_State *L, ckdb::KeySet *keyset)
 		SWIG_NewPointerObj(L, new kdb::KeySet(keyset), ti, 0);
 }
 
-extern "C"
-{
-
 typedef struct
 {
 	lua_State *L;
 	int printError;
 	int shutdown;
 } moduleData;
-
-static void *Lua_alloc(void *ud ELEKTRA_UNUSED, void *ptr,
-		size_t osize ELEKTRA_UNUSED, size_t nsize)
-{
-	if (nsize == 0)
-	{
-		elektraFree(ptr);
-		return NULL;
-	}
-	return (elektraRealloc(&ptr, nsize) < 0) ? NULL : ptr;
-}
 
 static void Lua_Shutdown(lua_State *L)
 {
@@ -132,6 +118,19 @@ static int Lua_CallFunction_Helper2(lua_State *L, const char *funcName,
 	return ret;
 }
 
+extern "C"
+{
+static void *Lua_alloc(void *ud ELEKTRA_UNUSED, void *ptr,
+		size_t osize ELEKTRA_UNUSED, size_t nsize)
+{
+	if (nsize == 0)
+	{
+		elektraFree(ptr);
+		return NULL;
+	}
+	return (elektraRealloc(&ptr, nsize) < 0) ? NULL : ptr;
+}
+
 int elektraLuaOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
@@ -188,10 +187,7 @@ int elektraLuaClose(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	if (data == NULL)
 		return 0;
 
-	/* call lua function */
-	int ret = 0;
-	if (data != NULL)
-		ret = Lua_CallFunction_Helper1(data->L, "elektraClose", errorKey);
+	int ret = Lua_CallFunction_Helper1(data->L, "elektraClose", errorKey);
 
 	/* destroy lua */
 	Lua_Shutdown(data->L);
