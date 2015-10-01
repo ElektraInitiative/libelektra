@@ -23,7 +23,7 @@
 #include <key.hpp>
 #include <keyset.hpp>
 #include <libgen.h>
-#include <pthread.h>
+#include <mutex>
 
 using namespace ckdb;
 #include <kdberrors.h>
@@ -67,8 +67,6 @@ private:
 	PyThreadState *tstate;
 };
 
-extern "C"
-{
 typedef struct
 {
 	PyThreadState *tstate;
@@ -166,7 +164,7 @@ static int Python_CallFunction_Helper2(moduleData *data, const char *funcName,
 	return ret;
 }
 
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static std::mutex mutex;
 static unsigned open_cnt = 0;
 
 static void Python_Shutdown(moduleData *data)
@@ -185,13 +183,15 @@ static void Python_Shutdown(moduleData *data)
 			/* destroy sub interpreter */
 			Py_EndInterpreter(data->tstate);
 		}
-		pthread_mutex_lock(&mutex);
+		mutex.lock();
 		if (open_cnt && !--open_cnt && data->shutdown) // order matters!
 			Py_Finalize();
-		pthread_mutex_unlock(&mutex);
+		mutex.unlock();
 	}
 }
 
+extern "C"
+{
 int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
@@ -218,20 +218,20 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 
 	{
 		/* initialize python interpreter if necessary */
-		pthread_mutex_lock(&mutex);
+		mutex.lock();
 		if (!Py_IsInitialized())
 		{
 			Py_Initialize();
 			if (!Py_IsInitialized())
 			{
-				pthread_mutex_unlock(&mutex);
+				mutex.unlock();
 				goto error;
 			}
 			open_cnt++;
 		}
 		else if (open_cnt) // we have initialized python before
 			open_cnt++;
-		pthread_mutex_unlock(&mutex);
+		mutex.unlock();
 
 		/* init threads */
 		PyEval_InitThreads();
