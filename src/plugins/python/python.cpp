@@ -192,11 +192,11 @@ static void Python_Shutdown(moduleData *data)
 int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
-	Key *script = ksLookupByName(config, "/script", 0);
-	if (script == NULL)
-		return 0; // success if no script to execute
+	if (ksLookupByName(config, "/module", 0) != NULL)
+		return 0; // by convention: success if /module exists
 
-	if (keyString(script) == NULL)
+	Key *script = ksLookupByName(config, "/script", 0);
+	if (script == NULL || !strlen(keyString(script)))
 	{
 		ELEKTRA_SET_ERROR(111, errorKey, "No python script set");
 		return -1;
