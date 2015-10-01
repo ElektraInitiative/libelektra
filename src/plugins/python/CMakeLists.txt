@@ -35,10 +35,6 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 		# output directory + our test adds the current directory to pythons sys.path
 		add_plugintest (python
 			MEMLEAK
-			INCLUDE_DIRECTORIES
-				${PYTHON_INCLUDE_DIR}
-			LINK_LIBRARIES
-				${PYTHON_LIBRARIES}
 			WORKING_DIRECTORY
 				${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python3/
 			COMPILE_DEFINITIONS

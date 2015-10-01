@@ -3,7 +3,6 @@
  */
 
 #include <stdlib.h>
-#include <Python.h>
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
@@ -11,26 +10,10 @@
 
 #include <tests_plugin.h>
 
-static int Python_AppendToSysPath(const char *path)
-{
-	if (path == NULL)
-		return 0;
-
-	PyGILState_STATE gstate = PyGILState_Ensure();
-	PyObject *sysPath = PySys_GetObject((char *)"path");
-	PyObject *pyPath  = PyUnicode_FromString(path);
-	PyList_Append(sysPath, pyPath);
-	Py_DECREF(pyPath);
-	PyGILState_Release(gstate);
-	return 1;
-}
-
-static void init_python()
+static void init_env()
 {
 	setenv("PYTHONDONTWRITEBYTECODE", "1", 1);
-	if (!Py_IsInitialized())
-		Py_Initialize();
-	Python_AppendToSysPath(".");
+	setenv("PYTHONPATH", ".", 1);
 }
 
 char filebuf[KDB_MAX_PATH_LENGTH];
@@ -61,8 +44,6 @@ static void test_variable_passing()
 {
 	printf("Testing simple variable passing...\n");
 
-	init_python();
-
 	KeySet *conf = ksNew(1,
 		keyNew("user/script", KEY_VALUE, python_file("python_plugin.py"), KEY_END),
 		keyNew("user/print", KEY_END),
@@ -85,8 +66,6 @@ static void test_variable_passing()
 static void test_two_scripts()
 {
 	printf("Testing loading of two active python plugins...\n");
-
-	init_python();
 
 	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
@@ -126,8 +105,6 @@ static void test_fail()
 {
 	printf("Testing return values from python functions...\n");
 
-	init_python();
-
 	KeySet *conf = ksNew(2,
 		keyNew("user/script", KEY_VALUE, python_file("python_plugin_fail.py"), KEY_END),
 		keyNew("user/print", KEY_END),
@@ -151,8 +128,6 @@ static void test_fail()
 static void test_wrong()
 {
 	printf("Testing python script with wrong class name...\n");
-
-	init_python();
 
 	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit(modules, 0);
@@ -191,6 +166,7 @@ int main(int argc, char** argv)
 			*srcdir_rewrite = '\0';
 		}
 	}
+	init_env();
 
 	test_variable_passing();
 	test_two_scripts();
