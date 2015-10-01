@@ -61,7 +61,8 @@ typedef struct
 static void *Lua_alloc(void *ud ELEKTRA_UNUSED, void *ptr,
 		size_t osize ELEKTRA_UNUSED, size_t nsize)
 {
-	if (nsize == 0) {
+	if (nsize == 0)
+	{
 		elektraFree(ptr);
 		return NULL;
 	}
@@ -134,11 +135,11 @@ static int Lua_CallFunction_Helper2(lua_State *L, const char *funcName,
 int elektraLuaOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
-	Key *script = ksLookupByName(config, "/script", 0);
-	if (script == NULL)
-		return 0; // success if no script to execute
+	if (ksLookupByName(config, "/module", 0) != NULL)
+		return 0; // by convention: success if /module exists
 
-	if (keyString(script) == NULL)
+	Key *script = ksLookupByName(config, "/script", 0);
+	if (script == NULL || !strlen(keyString(script)))
 	{
 		ELEKTRA_SET_ERROR(131, errorKey, "No lua script set");
 		return -1;
