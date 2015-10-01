@@ -32,10 +32,6 @@ if (LUA52_FOUND AND SWIG_FOUND)
 		# output directory + per default lua loads modules from current directory
 		add_plugintest (lua
 			MEMLEAK
-			INCLUDE_DIRECTORIES
-				${LUA_INCLUDE_DIR}
-			LINK_LIBRARIES
-				${LUA_LIBRARIES}
 			WORKING_DIRECTORY
 				${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/lua/
 		)
