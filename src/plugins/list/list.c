@@ -209,10 +209,7 @@ int elektraListClose(Plugin *handle , Key *errorKey)
 	return 1; /* success */
 }
 
-Key *(*traversalFuntion)(const KeySet *);
-
-
-static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet *configOrig, KeySet *returned, Key *parentKey, OP op)
+static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet *configOrig, KeySet *returned, Key *parentKey, OP op, Key *(*traversalFunction)(KeySet *))
 {
 	Key *current;
 
@@ -220,7 +217,7 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 
 	//for every plugin in our list: load it, run the expected function (set/get/error) and close it again
 	KeySet *realPluginConfig = NULL;
-	while((current = ksNext(pluginKS)) != NULL)
+	while((current = traversalFunction(pluginKS)) != NULL)
 	{
 		const char *name = keyString(current);
 		Key *searchKey = keyNew("/", KEY_END);
@@ -327,7 +324,7 @@ int elektraListGet(Plugin *handle , KeySet *returned , Key *parentKey )
 	GetPlacements currentPlacement = placements->getCurrent;
 	KeySet *pluginKS = ksDup((placements)->getKS[currentPlacement]);
 	ksRewind(pluginKS);
-	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, GET);
+	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, GET, ksNext);
 	placements->getCurrent = ((++currentPlacement)%getEnd);
 	while(!placements->getCurrent)
 		placements->getCurrent = ((++currentPlacement)%getEnd);
@@ -342,7 +339,7 @@ int elektraListSet(Plugin *handle , KeySet *returned , Key *parentKey )
 	SetPlacements currentPlacement = placements->setCurrent;
 	KeySet *pluginKS = ksDup((placements)->setKS[currentPlacement]);
 	ksRewind(pluginKS);
-	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, SET);
+	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, SET, ksPop);
 	placements->setCurrent = ((++currentPlacement)%setEnd);
 	while(!placements->setCurrent)
 		placements->setCurrent = ((++currentPlacement)%setEnd);
@@ -358,7 +355,7 @@ int elektraListError(Plugin *handle , KeySet *returned , Key *parentKey )
 	ErrPlacements currentPlacement = placements->errCurrent;
 	KeySet *pluginKS = ksDup((placements)->errKS[currentPlacement]);
 	ksRewind(pluginKS);
-	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, ERR);
+	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, ERR, ksPop);
 	placements->errCurrent = ((++currentPlacement)%errEnd);
 	while(!placements->errCurrent)
 		placements->errCurrent = ((++currentPlacement)%errEnd);
