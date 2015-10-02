@@ -16,7 +16,7 @@
 # define _GNU_SOURCE // for RTLD_NEXT (except BSDI)
 #endif
 
-#define ELEKTRA_GETENV_USE_LOCKS 0
+#define ELEKTRA_GETENV_USE_LOCKS 1
 
 
 #include <kdbgetenv.h>
@@ -428,8 +428,8 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	if (start.d)
 	{ // double wrapping situation, do not reopen, just forward to next __libc_start_main
 		start.d = dlsym(RTLD_NEXT, "__libc_start_main");
-		int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 		elektraUnlockMutex(); // dlsym mutex end
+		int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
 		return ret;
 	}
 
