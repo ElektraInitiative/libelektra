@@ -40,7 +40,6 @@
 #include "kdbinternal.h"
 
 
-
 /**
  * Creates a trie from a given configuration.
  *
@@ -203,7 +202,80 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 
 	return 0;
 }
+int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
+{
+	Key *root;
+	root=ksLookupByName(keys, "system/elektra/globalplugins", 0);
+	if(!root)
+	{
+#if DEBUG && VERBOSE
+		printf("no global configuration exists\n");
+#endif
+		return -1;
+	}
+	KeySet *global = ksCut(keys, root);
+	Key *cur;
+	KeySet *referencePlugins = ksNew(0, KS_END);
+	while((cur = ksNext(global)) != NULL)
+	{
+		if(keyRel(root, cur) != 1)
+			continue;
+		const char *placement = keyBaseName(cur);
+		const char *pluginName = keyString(cur);
+		const char *globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback", "postrollback", 
+			"pregetstorage", "postgetstorage", "presetstorage", 
+			"precommit", "postcommit"};
 
+
+		if(!strcmp(pluginName, ""))
+		{
+			continue;
+		}
+		for(Globalpluginpositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
+		{
+			if(!strcmp(placement, globalPlacements[i]))
+			{
+#if DEBUG && VERBOSE
+				printf("mounting global plugin %s to %s\n", pluginName, placement);
+#endif	
+				Plugin *slave;
+				Key *refKey;
+				refKey=ksLookup(referencePlugins, cur, 0);
+				if(refKey)
+				{
+					slave = *(Plugin**)keyValue(refKey);
+				}
+				else
+				{
+					Key *sysConfigCutKey = keyDup(cur);
+					keyAddBaseName(sysConfigCutKey, "system");
+					Key *usrConfigCutKey = keyDup(cur);
+					keyAddBaseName(usrConfigCutKey, "user");
+					KeySet *sysConfigKS = ksCut(global, sysConfigCutKey);
+					KeySet *usrConfigKS = ksCut(global, usrConfigCutKey);
+					KeySet *renamedSysConfig = elektraRenameKeys(sysConfigKS, "system");
+					KeySet *renamedUsrConfig = elektraRenameKeys(usrConfigKS, "user");
+					ksDel(sysConfigKS);
+					ksDel(usrConfigKS);
+					keyDel(usrConfigCutKey);
+					keyDel(sysConfigCutKey);
+					KeySet *config = ksNew(0, KS_END);
+					ksAppend(config, renamedSysConfig);
+					ksAppend(config, renamedUsrConfig);
+					ksDel(renamedSysConfig);
+					ksDel(renamedUsrConfig);
+					slave = elektraPluginOpen(pluginName, modules, ksDup(config), errorKey);
+					ksAppendKey(referencePlugins, keyNew(keyName(cur), KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END));
+					ksDel(config);
+				}
+				kdb->globalPlugins[i] = slave;
+			}
+		}
+			
+	}
+	ksDel(referencePlugins);
+	return 0;
+}
 
 /** Mount all module configurations.
  *

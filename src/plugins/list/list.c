@@ -158,7 +158,7 @@ int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 				}
 				++getPlacement;
 			}
-		}	
+		}
 		keySetBaseName(lookup, "error");
 		sub = ksLookup(cutKS, lookup, 0);	
 		if(sub)
@@ -215,7 +215,6 @@ Key *(*traversalFuntion)(const KeySet *);
 static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet *configOrig, KeySet *returned, Key *parentKey, OP op)
 {
 	Key *current;
-	Key *errorKey = parentKey;
 
 	Plugin *slave = NULL;
 
@@ -234,15 +233,6 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 		}
 		else
 		{
-			elektraPluginFactory pluginFactory = 0;
-			pluginFactory = elektraModulesLoad(modules, name, errorKey);
-			if(pluginFactory == NULL)
-			{
-				goto error;
-			}		
-			slave = pluginFactory();
-			if(slave == NULL)
-				goto error;
 			Key *userCutPoint = keyNew("user", 0);
 			Key *sysConfCutPoint = keyNew("system", 0);
 			KeySet *config = ksDup(configOrig);
@@ -264,21 +254,13 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 			keyDel(userCutPoint);
 			keyDel(sysConfCutPoint);
 			keyDel(toRemove);
-			slave->refcounter = 1;
-			slave->config = ksDup(realPluginConfig);
-			ksDel(realPluginConfig);
-			if(slave->kdbOpen)
-			{
-				if((slave->kdbOpen(slave, errorKey)) == -1)
-				{
-					goto error;
-				}
-				Key *slaveKey = keyNew(name, KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
-				keySetName(slaveKey, "/");
-				keyAddBaseName(slaveKey, name);
-				ksAppendKey(plugins, keyDup(slaveKey));
-				keyDel(slaveKey);			
-			}
+			slave = elektraPluginOpen(name, modules, realPluginConfig, parentKey);
+			Key *slaveKey = keyNew(name, KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
+			keySetName(slaveKey, "/");
+			keyAddBaseName(slaveKey, name);
+			ksAppendKey(plugins, keyDup(slaveKey));
+			keyDel(slaveKey);			
+
 		}
 		if(op == GET)
 		{
@@ -310,6 +292,7 @@ error:
 		elektraPluginClose(slave, parentKey);
 	if(realPluginConfig)
 		ksDel(realPluginConfig);
+	elektraModulesClose(modules, NULL);
 	return -1;
 }
 int elektraListGet(Plugin *handle , KeySet *returned , Key *parentKey )
@@ -343,17 +326,13 @@ int elektraListGet(Plugin *handle , KeySet *returned , Key *parentKey )
 	KeySet *config = elektraPluginGetConfig(handle);
 	GetPlacements currentPlacement = placements->getCurrent;
 	KeySet *pluginKS = ksDup((placements)->getKS[currentPlacement]);
-	//skip if there's nothing to do
-	if(ksGetSize(pluginKS)<=0)
-	{
-		ksDel(pluginKS);
-		return 1;
-	}	
 	ksRewind(pluginKS);
-	runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, GET);
+	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, GET);
 	placements->getCurrent = ((++currentPlacement)%getEnd);
+	while(!placements->getCurrent)
+		placements->getCurrent = ((++currentPlacement)%getEnd);
 	ksDel(pluginKS);
-	return 1; /* success */
+	return ret; /* success */
 }
 
 int elektraListSet(Plugin *handle , KeySet *returned , Key *parentKey )
@@ -362,18 +341,14 @@ int elektraListSet(Plugin *handle , KeySet *returned , Key *parentKey )
 	KeySet *config = elektraPluginGetConfig(handle);
 	SetPlacements currentPlacement = placements->setCurrent;
 	KeySet *pluginKS = ksDup((placements)->setKS[currentPlacement]);
-	//skip if there's nothing to do
-	if(ksGetSize(pluginKS)<=0)
-	{
-		ksDel(pluginKS);
-		return 1;
-	}	
 	ksRewind(pluginKS);
-	runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, SET);
+	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, SET);
 	placements->setCurrent = ((++currentPlacement)%setEnd);
+	while(!placements->setCurrent)
+		placements->setCurrent = ((++currentPlacement)%setEnd);
 	ksDel(pluginKS);
 
-	return 1; /* success */
+	return ret; /* success */
 }
 
 int elektraListError(Plugin *handle , KeySet *returned , Key *parentKey )
@@ -382,17 +357,13 @@ int elektraListError(Plugin *handle , KeySet *returned , Key *parentKey )
 	KeySet *config = elektraPluginGetConfig(handle);
 	ErrPlacements currentPlacement = placements->errCurrent;
 	KeySet *pluginKS = ksDup((placements)->errKS[currentPlacement]);
-	//skip if there's nothing to do
-	if(ksGetSize(pluginKS)<=0)
-	{
-		ksDel(pluginKS);
-		return 1;
-	}
 	ksRewind(pluginKS);
-	runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, ERR);
+	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, ERR);
 	placements->errCurrent = ((++currentPlacement)%errEnd);
+	while(!placements->errCurrent)
+		placements->errCurrent = ((++currentPlacement)%errEnd);
 	ksDel(pluginKS);
-	return 1; /* success */
+	return ret; /* success */
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(list)

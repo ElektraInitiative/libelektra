@@ -204,7 +204,6 @@ KDB * kdbOpen(Key *errorKey)
 	handle->split = elektraSplitNew();
 	elektraSplitAppend (handle->split, handle->defaultBackend,
 			keyNew (KDB_KEY_MOUNTPOINTS, KEY_END), 2);
-
 	keys=ksNew(0, KS_END);
 
 	Key *initialParent = keyDup (errorKey);
@@ -226,6 +225,14 @@ KDB * kdbOpen(Key *errorKey)
 		errno = errnosave;
 		return handle;
 	}
+	if(elektraMountGlobals(handle, keys, handle->modules, errorKey) == -1)
+	{
+	    //TODO: errorhandling here
+#if DEBUG && VERBOSE
+	    printf("Mounting global plugins failed\n");
+#endif
+	}
+
 	keySetName(errorKey, keyName(initialParent));
 	keySetString(errorKey, "kdbOpen(): backendClose");
 
@@ -563,7 +570,6 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 				"error in elektraSplitBuildup");
 		goto error;
 	}
-
 	// Check if a update is needed at all
 	switch(elektraGetCheckUpdateNeeded(split, parentKey))
 	{
@@ -584,24 +590,26 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitAppoint");
 		goto error;
 	}
-
+	
 	/* Now do the real updating,
 	  but not for bypassed keys in split->size-1 */
 	if(elektraGetDoUpdate(split, parentKey) == -1)
 	{
 		goto error;
 	}
-
 	/* Now postprocess the updated keysets */
 	if (elektraSplitGet (split, parentKey, handle) == -1)
 	{
 		ELEKTRA_ADD_WARNING(108, parentKey, keyName(ksCurrent(ks)));
 		// continue, because sizes are already updated
 	}
-
-	/* We are finished, now just merge everything to returned */
+		/* We are finished, now just merge everything to returned */
 	ksClear (ks);
 	elektraSplitMerge (split, ks);
+	ksRewind(ks);
+	if(handle->globalPlugins[POSTGETSTORAGE])
+		handle->globalPlugins[POSTGETSTORAGE]->kdbGet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+	ksRewind(ks);
 
 	keySetName (parentKey, keyName(initialParent));
 	elektraSplitUpdateFileName(split, handle, parentKey);
@@ -611,6 +619,9 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	return 1;
 
 error:
+	if(handle->globalPlugins[POSTGETSTORAGE])
+		handle->globalPlugins[POSTGETSTORAGE]->kdbSet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+
 	keySetName (parentKey, keyName(initialParent));
 	elektraSplitUpdateFileName(split, handle, parentKey);
 	keyDel (initialParent);
@@ -638,7 +649,7 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 		for(size_t p=0; p<COMMIT_PLUGIN; ++p)
 		{
 			int ret = 0; // last return value
-
+			printf("*********Placement %zd***********\n", p);
 			Backend *backend = split->handles[i];
 			ksRewind (split->keysets[i]);
 			if(backend->setplugins[p])
@@ -889,7 +900,6 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		ELEKTRA_SET_ERROR(38, parentKey, "error in elektraSplitBuildup");
 		goto error;
 	}
-
 	// 1.) Search for syncbits
 	int syncstate = elektraSplitDivide(split, handle, ks);
 	if(syncstate == -1)
@@ -924,13 +934,15 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitPrepare(split);
 
+	printf("***********PreSetStorage**********\n");
 	if (elektraSetPrepare(split, parentKey, &errorKey) == -1)
 	{
 		goto error;
 	}
-
+	printf("*********PreCommit here ??********\n");
+	printf("parent key:%s:(%s)\n", keyName(parentKey), keyString(parentKey));
 	elektraSetCommit(split, parentKey);
-
+	printf("***********PostCommit*************\n");
 	elektraSplitUpdateSize(split);
 
 	for (size_t i=0; i<ks->size; ++i)
@@ -938,6 +950,8 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		// remove all flags from all keys
 		clear_bit(ks->array[i]->flags, KEY_FLAG_SYNC);
 	}
+	if(handle->globalPlugins[POSTCOMMIT])
+		handle->globalPlugins[POSTCOMMIT]->kdbSet(handle->globalPlugins[POSTCOMMIT], ks, parentKey);
 
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);
@@ -947,6 +961,8 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	return 1;
 
 error:
+	if(handle->globalPlugins[PREROLLBACK])
+		handle->globalPlugins[PREROLLBACK]->kdbError(handle->globalPlugins[PREROLLBACK], ks, parentKey);
 	elektraSetRollback(split, parentKey);
 
 	if(errorKey)
@@ -958,6 +974,8 @@ error:
 					keyName(errorKey));
 		}
 	}
+	if(handle->globalPlugins[POSTROLLBACK])
+		handle->globalPlugins[POSTROLLBACK]->kdbError(handle->globalPlugins[POSTROLLBACK], ks, parentKey);
 
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);
