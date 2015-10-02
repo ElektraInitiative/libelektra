@@ -17,6 +17,9 @@
 #include <string.h>
 extern "C" char **environ;
 
+
+const long long nr_keys = 100;
+
 // long long iterations = 100000000000LL; // elitebenchmark lookup
 long long iterations = 100000000LL; // elitebenchmark
 // long long iterations = 100LL; // valgrind
@@ -187,7 +190,7 @@ __attribute__((noinline)) void benchmark_kslookup()
 			*kdb::Key("user/env/override/d/key", KEY_END),
 			*/
 			KS_END);
-	for (int i=0; i<1000; ++i)
+	for (int i=0; i<nr_keys; ++i)
 	{
 		char x[100];
 		sprintf(x, "user/env/override/hello%d_%d", i, i);
@@ -238,7 +241,7 @@ int main(int argc, char**argv)
 	computer_info();
 
 	clearenv();
-	for (int i=0; i<1000; ++i)
+	for (int i=0; i<nr_keys; ++i)
 	{
 		char x[100];
 		sprintf(x, "hello%d_%d", i, i);
