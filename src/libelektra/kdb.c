@@ -225,11 +225,11 @@ KDB * kdbOpen(Key *errorKey)
 		errno = errnosave;
 		return handle;
 	}
-	if(elektraMountGlobals(handle, keys, handle->modules, errorKey) == -1)
+	if(elektraMountGlobals(handle, ksDup(keys), handle->modules, errorKey) == -1)
 	{
-	    //TODO: errorhandling here
+		//TODO: errorhandling here
 #if DEBUG && VERBOSE
-	    printf("Mounting global plugins failed\n");
+		printf("Mounting global plugins failed\n");
 #endif
 	}
 
@@ -514,12 +514,12 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  *           - cascading keys (starting with /) will retrieve the same path in all namespaces
  *           - / will retrieve all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
- * 	will not be changed on error or if no update is required
+ *	will not be changed on error or if no update is required
  * @see ksLookup(), ksLookupByName() for powerful
- * 	lookups after the KeySet was retrieved
+ *	lookups after the KeySet was retrieved
  * @see kdbOpen() which needs to be called before
  * @see kdbSet() to save the configuration afterwards and kdbClose() to
- * 	finish affairs with the key database.
+ *	finish affairs with the key database.
  * @retval 1 if the keys were retrieved successfully
  * @retval 0 if there was no update - no changes are made to the keyset then
  * @retval -1 on failure - no changes are made to the keyset then
@@ -590,13 +590,16 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitAppoint");
 		goto error;
 	}
-	
+	if(handle->globalPlugins[PREGETSTORAGE])
+		handle->globalPlugins[PREGETSTORAGE]->kdbGet(handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
+
 	/* Now do the real updating,
 	  but not for bypassed keys in split->size-1 */
 	if(elektraGetDoUpdate(split, parentKey) == -1)
 	{
 		goto error;
 	}
+
 	/* Now postprocess the updated keysets */
 	if (elektraSplitGet (split, parentKey, handle) == -1)
 	{
@@ -620,7 +623,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 
 error:
 	if(handle->globalPlugins[POSTGETSTORAGE])
-		handle->globalPlugins[POSTGETSTORAGE]->kdbSet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+		handle->globalPlugins[POSTGETSTORAGE]->kdbGet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
 
 	keySetName (parentKey, keyName(initialParent));
 	elektraSplitUpdateFileName(split, handle, parentKey);
@@ -649,7 +652,6 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 		for(size_t p=0; p<COMMIT_PLUGIN; ++p)
 		{
 			int ret = 0; // last return value
-			printf("*********Placement %zd***********\n", p);
 			Backend *backend = split->handles[i];
 			ksRewind (split->keysets[i]);
 			if(backend->setplugins[p])
@@ -934,15 +936,17 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitPrepare(split);
 
-	printf("***********PreSetStorage**********\n");
+	if(handle->globalPlugins[PRESETSTORAGE])
+		handle->globalPlugins[PRESETSTORAGE]->kdbSet(handle->globalPlugins[PRESETSTORAGE], ks, parentKey);
+
 	if (elektraSetPrepare(split, parentKey, &errorKey) == -1)
 	{
 		goto error;
 	}
-	printf("*********PreCommit here ??********\n");
-	printf("parent key:%s:(%s)\n", keyName(parentKey), keyString(parentKey));
+	if(handle->globalPlugins[PRECOMMIT])
+		handle->globalPlugins[PRECOMMIT]->kdbSet(handle->globalPlugins[PRECOMMIT], ks, parentKey);
+
 	elektraSetCommit(split, parentKey);
-	printf("***********PostCommit*************\n");
 	elektraSplitUpdateSize(split);
 
 	for (size_t i=0; i<ks->size; ++i)

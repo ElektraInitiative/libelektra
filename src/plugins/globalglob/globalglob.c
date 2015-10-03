@@ -80,7 +80,7 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 		}
 		else
 		{
-			printf("key %s doesn't exist\n");
+			printf("key %s doesn't exist\n", keyName(curKey));
 		}
 		keyDel(curKey);
 	}

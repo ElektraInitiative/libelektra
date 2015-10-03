@@ -33,19 +33,51 @@ int elektraLoggerClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUS
 
 static void writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 {
-	printf("writeErrors\n");
-    Key *errParent = keyGetMeta(parentKey, "error");
-	int nr_errors = atoi(keyString(errParent)) + 1;
-	printf("got %d errors\n", nr_errors);
+	Key *errors = keyGetMeta(parentKey, "error");
+	if(!errors)
+		return;
+	fprintf(fp, "\t===========ERRORS===========\n");
+	char *metaName = NULL;
+	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
+	if(elektraRealloc((void **)&metaName, 21) == -1)
+	{
+		printf("out of memory\n");
+		return;
+	}
+	for(int j = 0; elements[j] != NULL; ++j)
+	{
+		snprintf(metaName, 21, "error/%s",  elements[j]);
+		Key *meta = keyGetMeta(parentKey, metaName);
+		fprintf(fp, "%s: %s: %s\n", timeString, elements[j], keyString(meta));
+	}
 
 }
+
 static void writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 {
-   	printf("writeErrors\n"); 
-	Key *warningParent = keyGetMeta(parentKey, "warnings");
-	int nr_warnings = atoi(keyString(warningParent)) + 1;
-	printf("got %d warnings\n", nr_warnings);
-
+	Key *warnings = keyGetMeta(parentKey, "warnings");
+	int nr_warnings = -1;
+	if(warnings)
+		nr_warnings = atoi(keyString(warnings)) + 1;
+	if(nr_warnings == -1)
+		return;
+	fprintf(fp, "\t==========WARNINGS==========\n");
+	char *metaName = NULL;
+	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
+	for(int i = 0; i < nr_warnings; ++i)
+	{
+		if(elektraRealloc((void **)&metaName, 25) == -1)
+		{
+			printf("out of memory\n");
+			return;
+		}
+		for(int j = 0; elements[j] != NULL; ++j)
+		{
+			snprintf(metaName, 25, "warnings/#%02d/%s", i, elements[j]);
+			Key *meta = keyGetMeta(parentKey, metaName);
+			fprintf(fp, "%s: %s: %s\n", timeString, elements[j], keyString(meta));
+		}
+	}
 }
 static void writeLoggingInfo(FILE *fp, const char *timeString, KeySet *ks)
 {
@@ -54,14 +86,14 @@ static void writeLoggingInfo(FILE *fp, const char *timeString, KeySet *ks)
 }
 static void log(const char *fileName, KeySet *ks, Key *parentKey)
 {
-	printf("log()\n");
 	FILE *fp = fopen(fileName, "a");
 	if(!fp)
 	{
 		printf("error while opening %s\n", fileName);
 	}
 	time_t t = time(NULL);
-	const char *timeString = asctime(localtime(&t));
+	char *timeString = asctime(localtime(&t));
+	timeString[elektraStrLen(timeString)-2] = '\0';
 	writeErrors(fp, timeString, parentKey);
 	writeWarnings(fp, timeString, parentKey);
 	writeLoggingInfo(fp, timeString, ks);
@@ -96,7 +128,7 @@ int elektraLoggerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return 1; /* success */
 	}
 	/* get all keys */
-	KeySet *config = elektraPluginGetConfig(handle);
+	KeySet *config = elektraPluginGetConfig(handle);		
 	Key *fnKey = ksLookupByName(config, "/logfile", 0);
 	const char *fileName = "/tmp/elektra.log";
 	if(fnKey)
@@ -121,6 +153,8 @@ int elektraLoggerError(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 	KeySet *config = elektraPluginGetConfig(handle);
+	Key *cur;
+	ksRewind(config);
 	Key *fnKey = ksLookupByName(config, "/logfile", 0);
 	const char *fileName = "/tmp/elektra.log";
 	if(fnKey)

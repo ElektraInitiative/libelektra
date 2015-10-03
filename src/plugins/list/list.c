@@ -165,7 +165,7 @@ int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 		{
 
 			const char *errString = keyString(sub);
-			const char *errStrings[] = {"preRollback", "postRollback"};
+			const char *errStrings[] = {"prerollback", "postrollback"};
 			ErrPlacements errPlacement = preRollback;
 			while(errPlacement != errEnd)
 			{	
@@ -214,7 +214,7 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 	Key *current;
 
 	Plugin *slave = NULL;
-
+	ksRewind(pluginKS);
 	//for every plugin in our list: load it, run the expected function (set/get/error) and close it again
 	KeySet *realPluginConfig = NULL;
 	while((current = traversalFunction(pluginKS)) != NULL)

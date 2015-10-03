@@ -211,6 +211,7 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 #if DEBUG && VERBOSE
 		printf("no global configuration exists\n");
 #endif
+		ksDel(keys);
 		return -1;
 	}
 	KeySet *global = ksCut(keys, root);
@@ -240,7 +241,10 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 #endif	
 				Plugin *slave;
 				Key *refKey;
-				refKey=ksLookup(referencePlugins, cur, 0);
+				Key *searchKey = keyNew("/", KEY_END);
+				keyAddBaseName(searchKey, keyString(cur));
+				refKey=ksLookup(referencePlugins, searchKey, 0);
+				keyDel(searchKey);
 				if(refKey)
 				{
 					slave = *(Plugin**)keyValue(refKey);
@@ -265,7 +269,13 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 					ksDel(renamedSysConfig);
 					ksDel(renamedUsrConfig);
 					slave = elektraPluginOpen(pluginName, modules, ksDup(config), errorKey);
-					ksAppendKey(referencePlugins, keyNew(keyName(cur), KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END));
+					slave->config = ksDup(config);
+					if(slave->kdbOpen)
+						slave->kdbOpen(slave, errorKey);
+					refKey = keyNew("/", KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
+					keyAddBaseName(refKey, keyString(cur));
+					int ret = ksAppendKey(referencePlugins, refKey);
+					keyDel(refKey);
 					ksDel(config);
 				}
 				kdb->globalPlugins[i] = slave;
@@ -273,6 +283,8 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 		}
 			
 	}
+	ksDel(global);
+	ksDel(keys);
 	ksDel(referencePlugins);
 	return 0;
 }
