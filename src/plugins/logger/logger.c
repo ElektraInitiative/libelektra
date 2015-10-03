@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <kdbhelper.h>
 #include "logger.h"
 
 int elektraLoggerOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
@@ -50,7 +51,7 @@ static void writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 		Key *meta = keyGetMeta(parentKey, metaName);
 		fprintf(fp, "%s: %s: %s\n", timeString, elements[j], keyString(meta));
 	}
-
+	elektraFree(metaName);
 }
 
 static void writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
@@ -78,6 +79,7 @@ static void writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 			fprintf(fp, "%s: %s: %s\n", timeString, elements[j], keyString(meta));
 		}
 	}
+	elektraFree(metaName);
 }
 static void writeLoggingInfo(FILE *fp, const char *timeString, KeySet *ks)
 {

@@ -269,12 +269,12 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 					ksDel(renamedSysConfig);
 					ksDel(renamedUsrConfig);
 					slave = elektraPluginOpen(pluginName, modules, ksDup(config), errorKey);
-					slave->config = ksDup(config);
+					//slave->config = ksDup(config);
 					if(slave->kdbOpen)
 						slave->kdbOpen(slave, errorKey);
 					refKey = keyNew("/", KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
 					keyAddBaseName(refKey, keyString(cur));
-					int ret = ksAppendKey(referencePlugins, refKey);
+					ksAppendKey(referencePlugins, refKey);
 					keyDel(refKey);
 					ksDel(config);
 				}

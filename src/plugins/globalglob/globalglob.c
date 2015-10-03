@@ -85,7 +85,7 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 		keyDel(curKey);
 	}
 	ksAppend(returned, spec);
-
+	ksDel(spec);
 	return 1; /* success */
 }
 
