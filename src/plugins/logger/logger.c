@@ -42,7 +42,6 @@ static void writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
 	if(elektraRealloc((void **)&metaName, 21) == -1)
 	{
-		printf("out of memory\n");
 		return;
 	}
 	for(int j = 0; elements[j] != NULL; ++j)
@@ -69,7 +68,6 @@ static void writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 	{
 		if(elektraRealloc((void **)&metaName, 25) == -1)
 		{
-			printf("out of memory\n");
 			return;
 		}
 		for(int j = 0; elements[j] != NULL; ++j)
@@ -91,7 +89,7 @@ static void log(const char *fileName, KeySet *ks, Key *parentKey)
 	FILE *fp = fopen(fileName, "a");
 	if(!fp)
 	{
-		printf("error while opening %s\n", fileName);
+		return;
 	}
 	time_t t = time(NULL);
 	char *timeString = asctime(localtime(&t));

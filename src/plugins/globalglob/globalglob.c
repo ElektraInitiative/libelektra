@@ -80,7 +80,7 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 		}
 		else
 		{
-			printf("key %s doesn't exist\n", keyName(curKey));
+			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
 		}
 		keyDel(curKey);
 	}
@@ -92,6 +92,31 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
+	Key *specCutKey = keyNew("spec", KEY_END);
+	KeySet *spec = ksCut(returned, specCutKey);
+	keyDel(specCutKey);
+	Key *specKey;
+	ksRewind(spec);
+	while((specKey = ksNext(spec)) != NULL)
+	{
+		Key *curKey = cutNSName(specKey);
+		Key *lookup = ksLookup(returned, curKey, 0);
+		if(lookup)
+		{
+			keyCopyAllMeta(lookup, curKey);	
+		}
+		else
+		{
+			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
+			ksAppend(returned, spec);
+			keyDel(spec);
+			keyDel(curKey);
+			return -1;
+		}
+		keyDel(curKey);
+	}
+	ksAppend(returned, spec);
+	ksDel(spec);
 
 	return 1; /* success */
 }

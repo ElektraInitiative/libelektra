@@ -732,3 +732,9 @@ description:key doesn't exist
 severity:error
 ingroup:plugin
 module:calculate
+
+number:125
+description:can't find corresponding key in other namespaces
+severity:error
+ingroup:plugin
+module:globalglob
