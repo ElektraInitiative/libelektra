@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Source for calculate plugin
+ * @brief Source for mathcheck plugin
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <kdberrors.h>
-#include "calculate.h"
+#include "mathcheck.h"
 
 #define MIN_VALID_STACK 3
 #define EPSILON 0.00001
@@ -30,23 +30,23 @@ typedef struct{
 }PNElem;
 
 
-int elektraCalculateGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
+int elektraMatchcheckGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
-	if (!strcmp(keyName(parentKey), "system/elektra/modules/calculate"))
+	if (!strcmp(keyName(parentKey), "system/elektra/modules/mathcheck"))
 	{
 		KeySet *contract = ksNew (30,
-				keyNew ("system/elektra/modules/calculate",
-					KEY_VALUE, "calculate plugin waits for your orders", KEY_END),
-				keyNew ("system/elektra/modules/calculate/exports", KEY_END),
-				keyNew ("system/elektra/modules/calculate/exports/get",
-					KEY_FUNC, elektraCalculateGet, KEY_END),
-				keyNew ("system/elektra/modules/calculate/exports/set",
-					KEY_FUNC, elektraCalculateSet, KEY_END),
-#include ELEKTRA_README(calculate)
-				keyNew ("system/elektra/modules/calculate/infos/version",
+				keyNew ("system/elektra/modules/mathcheck",
+					KEY_VALUE, "mathcheck plugin waits for your orders", KEY_END),
+				keyNew ("system/elektra/modules/mathcheck/exports", KEY_END),
+				keyNew ("system/elektra/modules/mathcheck/exports/get",
+					KEY_FUNC, elektraMatchcheckGet, KEY_END),
+				keyNew ("system/elektra/modules/mathcheck/exports/set",
+					KEY_FUNC, elektraMatchcheckSet, KEY_END),
+#include ELEKTRA_README(mathcheck)
+				keyNew ("system/elektra/modules/mathcheck/infos/version",
 					KEY_VALUE, PLUGINVERSION, KEY_END),
-				keyNew ("system/elektra/modules/calculate/export/constants", KEY_END),
-				keyNew ("system/elektra/modules/calculate/export/constants/EPSILON", KEY_VALUE, EPSILON, KEY_END),
+				keyNew ("system/elektra/modules/mathcheck/export/constants", KEY_END),
+				keyNew ("system/elektra/modules/mathcheck/export/constants/EPSILON", KEY_VALUE, EPSILON, KEY_END),
 				KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -235,7 +235,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 			key = ksLookupByName(ks, searchKey, 0);
 			if(!key)
 			{
-				ELEKTRA_SET_ERRORF(124, parentKey, "Couldn't find Key %s", searchKey);
+				ELEKTRA_SET_ERRORF(124, parentKey, "Operant key %s doesn't exist", searchKey);
 				regfree(&regex);
 				free(searchKey);
 				ksDel(ks);
@@ -263,14 +263,14 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	return result;
 }
 
-int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraMatchcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	Key *cur;
 	const Key *meta;
 	PNElem result;
 	while((cur = ksNext(returned)) != NULL)
 	{
-		meta = keyGetMeta(cur, "check/calc");
+		meta = keyGetMeta(cur, "check/math");
 		if(!meta)
 			continue;
 		result = parsePrefixString(keyString(meta), ksDup(returned), parentKey);
@@ -329,18 +329,18 @@ int elektraCalculateSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		else if(result.op == SET)
 		{
 			char stringBuffer[16]; //15 digits max + \0 arbitrary value for now
-			snprintf(stringBuffer, sizeof(stringBuffer)-1, "%f", result.value); 
+			snprintf(stringBuffer, sizeof(stringBuffer), "%f", result.value); 
 			keySetString(cur, stringBuffer);
 		}
 	}
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(calculate)
+Plugin *ELEKTRA_PLUGIN_EXPORT(mathcheck)
 {
-	return elektraPluginExport("calculate",
-			ELEKTRA_PLUGIN_GET,	&elektraCalculateGet,
-			ELEKTRA_PLUGIN_SET,	&elektraCalculateSet,
+	return elektraPluginExport("mathcheck",
+			ELEKTRA_PLUGIN_GET,	&elektraMatchcheckGet,
+			ELEKTRA_PLUGIN_SET,	&elektraMatchcheckSet,
 			ELEKTRA_PLUGIN_END);
 }
 

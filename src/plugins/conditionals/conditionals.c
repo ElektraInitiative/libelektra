@@ -1,4 +1,4 @@
-/**
+									     /**
  * @file
  *
  * @brief Source for conditionals plugin
@@ -21,6 +21,8 @@
 #include <math.h>
 #include <errno.h>
 #include "conditionals.h"
+
+#define EPSILON 0.00001
 
 typedef enum{EQU, NOT, LT, LE, GT, GE, SET}Comparator;
 
@@ -77,7 +79,7 @@ static int compareStrings(const char *s1, const char *s2)
 		if(ret == 2 || ret2 == 2)
 		{
 			result = (fabs(atof(s1)-atof(s2)));
-			if(result < 0.00001)
+			if(result < EPSILON)
 				retval = 0;
 			else if(result > 0)
 				retval = 1;
@@ -198,7 +200,7 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 			result = -1;
 			break;
 	}
-
+//freeing allocated heap
 Cleanup:
 	if(lookupName)
 		elektraFree(lookupName);
@@ -208,7 +210,7 @@ Cleanup:
 }
 
 
-static int checkCondition(const char *condition, KeySet *ks, Key *parentKey)
+static int parseSingleCondition(const char *condition, KeySet *ks, Key *parentKey)
 {
 	Comparator cmpOp;
 	char *opStr;
@@ -333,13 +335,13 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 		strncpy(elseexpr, conditionString+startPos, endPos - startPos);
 		elseexpr[endPos-startPos] = '\0';
 	}
-	ret = checkCondition(condition, ks, parentKey);
+	ret = parseSingleCondition(condition, ks, parentKey);
 	if(ret == 1)
-		ret = checkCondition(thenexpr, ks, parentKey);
+		ret = parseSingleCondition(thenexpr, ks, parentKey);
 	else if(ret == 0)
 	{
 		if(elseexpr)
-			ret = checkCondition(elseexpr, ks, parentKey);
+			ret = parseSingleCondition(elseexpr, ks, parentKey);
 	}
 
 

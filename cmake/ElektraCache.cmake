@@ -74,7 +74,7 @@ set (PLUGINS_LIST_POSIX
 	network
 	path
 	enum
-	calculate
+	mathcheck
 	conditionals
 	keytometa
 	rename
