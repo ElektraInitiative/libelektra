@@ -2,10 +2,7 @@ kdb-get(1) -- Get the value of a key stored in the key database
 ================================================================
 ## DESCRIPTION
 
-This command is used to retrieve the value of a ket.  
-You can copy keys to another directory within the database or even below another key.  
-Note that you can't copy a key below itself.  
-
+This command is used to retrieve the value of a key.  
 
 ## USAGE
 
