@@ -165,7 +165,7 @@ int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 		{
 
 			const char *errString = keyString(sub);
-			const char *errStrings[] = {"preRollback", "postRollback"};
+			const char *errStrings[] = {"prerollback", "postrollback"};
 			ErrPlacements errPlacement = preRollback;
 			while(errPlacement != errEnd)
 			{	
