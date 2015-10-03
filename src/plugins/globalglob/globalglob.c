@@ -1,11 +1,11 @@
 /**
-* \file
-*
-* \brief Source for globalglob plugin
-*
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * \file
+ *
+ * \brief Source for globalglob plugin
+ *
+ * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 
 #ifndef HAVE_KDBCONFIG
@@ -13,7 +13,8 @@
 #endif
 
 #include <string.h>
-
+#include <kdberrors.h>
+#include <fnmatch.h>
 #include "globalglob.h"
 
 int elektraGlobalglobOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
@@ -37,28 +38,28 @@ static Key *cutNSName(Key *toCut)
 	keySetName(ret, ptr);
 	return ret;
 }
-int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/globalglob"))
 	{
 		KeySet *contract = ksNew (30,
-		keyNew ("system/elektra/modules/globalglob",
-			KEY_VALUE, "globalglob plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/globalglob/exports", KEY_END),
-		keyNew ("system/elektra/modules/globalglob/exports/open",
-			KEY_FUNC, elektraGlobalglobOpen, KEY_END),
-		keyNew ("system/elektra/modules/globalglob/exports/close",
-			KEY_FUNC, elektraGlobalglobClose, KEY_END),
-		keyNew ("system/elektra/modules/globalglob/exports/get",
-			KEY_FUNC, elektraGlobalglobGet, KEY_END),
-		keyNew ("system/elektra/modules/globalglob/exports/set",
-			KEY_FUNC, elektraGlobalglobSet, KEY_END),
-		keyNew ("system/elektra/modules/globalglob/exports/error",
-			KEY_FUNC, elektraGlobalglobError, KEY_END),
+				keyNew ("system/elektra/modules/globalglob",
+					KEY_VALUE, "globalglob plugin waits for your orders", KEY_END),
+				keyNew ("system/elektra/modules/globalglob/exports", KEY_END),
+				keyNew ("system/elektra/modules/globalglob/exports/open",
+					KEY_FUNC, elektraGlobalglobOpen, KEY_END),
+				keyNew ("system/elektra/modules/globalglob/exports/close",
+					KEY_FUNC, elektraGlobalglobClose, KEY_END),
+				keyNew ("system/elektra/modules/globalglob/exports/get",
+					KEY_FUNC, elektraGlobalglobGet, KEY_END),
+				keyNew ("system/elektra/modules/globalglob/exports/set",
+					KEY_FUNC, elektraGlobalglobSet, KEY_END),
+				keyNew ("system/elektra/modules/globalglob/exports/error",
+					KEY_FUNC, elektraGlobalglobError, KEY_END),
 #include ELEKTRA_README(globalglob)
-		keyNew ("system/elektra/modules/globalglob/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END);
+				keyNew ("system/elektra/modules/globalglob/infos/version",
+					KEY_VALUE, PLUGINVERSION, KEY_END),
+				KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -73,23 +74,32 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 	while((specKey = ksNext(spec)) != NULL)
 	{
 		Key *curKey = cutNSName(specKey);
-		Key *lookup = ksLookup(returned, curKey, 0);
-		if(lookup)
+		ksRewind(returned);
+		Key *cur;
+		int found = 0;
+		while((cur = ksNext(returned)) != NULL)
 		{
-			keyCopyAllMeta(lookup, curKey);	
+			Key *tmp = cutNSName(cur);
+			if(fnmatch(keyName(curKey), keyName(tmp), 0) == 0)
+			{
+				found = 1;
+				keyCopyAllMeta(cur, specKey);
+			}
+			keyDel(tmp);
 		}
-		else
+		if(!found)
 		{
 			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
+			int ret = keySetMeta(specKey, "validation/failed", "globalglob struct check failed");
 		}
-		keyDel(curKey);
+		keyDel(curKey);		
 	}
 	ksAppend(returned, spec);
 	ksDel(spec);
 	return 1; /* success */
 }
 
-int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 	Key *specCutKey = keyNew("spec", KEY_END);
@@ -97,28 +107,35 @@ int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 	keyDel(specCutKey);
 	Key *specKey;
 	ksRewind(spec);
+	int retval = 1;
 	while((specKey = ksNext(spec)) != NULL)
 	{
 		Key *curKey = cutNSName(specKey);
-		Key *lookup = ksLookup(returned, curKey, 0);
-		if(lookup)
+		ksRewind(returned);
+		Key *cur;
+		int found = 0;
+		while((cur = ksNext(returned)) != NULL)
 		{
-			keyCopyAllMeta(lookup, curKey);	
+			Key *tmp = cutNSName(cur);
+			if(fnmatch(keyName(curKey), keyName(tmp), 0) == 0)
+			{
+				found = 1;
+				keyCopyAllMeta(cur, specKey);
+			}
+			keyDel(tmp);
 		}
-		else
+		if(!found)
 		{
 			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
-			ksAppend(returned, spec);
-			keyDel(spec);
-			keyDel(curKey);
-			return -1;
+			keySetMeta(specKey, "validation/failed", "globalglob struct check failed");
+			retval = -1;
 		}
-		keyDel(curKey);
+		keyDel(curKey);		
 	}
 	ksAppend(returned, spec);
 	ksDel(spec);
 
-	return 1; /* success */
+	return retval; /* success */
 }
 
 int elektraGlobalglobError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
@@ -131,11 +148,11 @@ int elektraGlobalglobError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 Plugin *ELEKTRA_PLUGIN_EXPORT(globalglob)
 {
 	return elektraPluginExport("globalglob",
-		ELEKTRA_PLUGIN_OPEN,	&elektraGlobalglobOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraGlobalglobClose,
-		ELEKTRA_PLUGIN_GET,	&elektraGlobalglobGet,
-		ELEKTRA_PLUGIN_SET,	&elektraGlobalglobSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraGlobalglobError,
-		ELEKTRA_PLUGIN_END);
+			ELEKTRA_PLUGIN_OPEN,	&elektraGlobalglobOpen,
+			ELEKTRA_PLUGIN_CLOSE,	&elektraGlobalglobClose,
+			ELEKTRA_PLUGIN_GET,	&elektraGlobalglobGet,
+			ELEKTRA_PLUGIN_SET,	&elektraGlobalglobSet,
+			ELEKTRA_PLUGIN_ERROR,	&elektraGlobalglobError,
+			ELEKTRA_PLUGIN_END);
 }
 

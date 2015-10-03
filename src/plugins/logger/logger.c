@@ -32,11 +32,11 @@ int elektraLoggerClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUS
 	return 1; /* success */
 }
 
-static void writeErrors(FILE *fp, const char *timeString, Key *parentKey)
+static int writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 {
 	Key *errors = keyGetMeta(parentKey, "error");
 	if(!errors)
-		return;
+		return 0;
 	fprintf(fp, "\t===========ERRORS===========\n");
 	char *metaName = NULL;
 	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
@@ -51,16 +51,17 @@ static void writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 		fprintf(fp, "%s: %s: %s\n", timeString, elements[j], keyString(meta));
 	}
 	elektraFree(metaName);
+	return 1;
 }
 
-static void writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
+static int writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 {
 	Key *warnings = keyGetMeta(parentKey, "warnings");
 	int nr_warnings = -1;
 	if(warnings)
 		nr_warnings = atoi(keyString(warnings)) + 1;
 	if(nr_warnings == -1)
-		return;
+		return 0;
 	fprintf(fp, "\t==========WARNINGS==========\n");
 	char *metaName = NULL;
 	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
@@ -78,11 +79,20 @@ static void writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 		}
 	}
 	elektraFree(metaName);
+	return 1;
 }
 static void writeLoggingInfo(FILE *fp, const char *timeString, KeySet *ks)
 {
-
-
+	ksRewind(ks);
+	Key *cur;
+	fprintf(fp,"\t====LOGGING  INFORMATIONS====\n");
+	while((cur = ksNext(ks)) != NULL)
+	{
+		Key *meta = keyGetMeta(cur, "validation/failed");
+		if(!meta)
+			continue;
+		fprintf(fp, "%s\t %s:%s\n", timeString, keyString(meta), keyName(cur));
+	}
 }
 static void log(const char *fileName, KeySet *ks, Key *parentKey)
 {
@@ -94,9 +104,11 @@ static void log(const char *fileName, KeySet *ks, Key *parentKey)
 	time_t t = time(NULL);
 	char *timeString = asctime(localtime(&t));
 	timeString[elektraStrLen(timeString)-2] = '\0';
-	writeErrors(fp, timeString, parentKey);
-	writeWarnings(fp, timeString, parentKey);
-	writeLoggingInfo(fp, timeString, ks);
+	int ret = 0;
+	ret |= writeErrors(fp, timeString, parentKey);
+	ret |= writeWarnings(fp, timeString, parentKey);
+	if(ret)
+		writeLoggingInfo(fp, timeString, ks);
 	fclose(fp);
 	
 }

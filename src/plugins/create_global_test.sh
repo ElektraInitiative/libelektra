@@ -10,6 +10,7 @@ kdb set system/elektra/globalplugins/postcommit/user/plugins
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#0 globalglob 
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get "postgetstorage"
+kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set "pregetstorage"
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#1 logger
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#1/placements
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#1/placements/set "presetstorage precommit postcommit"
