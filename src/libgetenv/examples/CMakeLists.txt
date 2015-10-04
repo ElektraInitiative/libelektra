@@ -10,9 +10,6 @@ macro (do_example source)
 	add_executable (${source} ${SOURCES})
 	install(TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-	target_link_elektra(${source})
-	target_link_elektratools(${source})
-
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
 endmacro (do_example)
