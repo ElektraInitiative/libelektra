@@ -125,6 +125,7 @@ set (PLUGINS_LIST_DEP
 	jni
 	python
 	python2
+	crypto
 	)
 
 #

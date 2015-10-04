@@ -87,6 +87,7 @@ Transformations:
 
 Doing other stuff:
 
+- [crypto](crypto) encrypts / decrypts confidential values
 - [iconv](iconv) make sure the configuration will have correct
   charachter encoding
 - [hidden](hidden) 
