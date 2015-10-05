@@ -136,7 +136,7 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 		key = ksLookupByName(ks, lookupName, 0);
 		if(!key)
 		{
-			ELEKTRA_SET_ERRORF(125, parentKey, "Key %s doesn't exist", lookupName);
+			ELEKTRA_SET_ERRORF(133, parentKey, "Key %s doesn't exist", lookupName);
 			result = -1;
 			goto Cleanup;
 		}
@@ -160,7 +160,7 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	key = ksLookupByName(ks, lookupName, 0);
 	if(!key)
 	{
-		ELEKTRA_SET_ERRORF(125, parentKey, "Key %s doesn't exist", lookupName);
+		ELEKTRA_SET_ERRORF(133, parentKey, "Key %s doesn't exist", lookupName);
 		result = -1;
 		goto Cleanup;
 	}
@@ -297,14 +297,14 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 	int nomatch = regexec(&regex, ptr, subMatches, m, 0);
 	if(nomatch)
 	{
-		ELEKTRA_SET_ERRORF(126, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
+		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
 		regfree(&regex);
 		ksDel(ks);
 		return -1;
 	}
 	if(m[2].rm_so == -1 || m[5].rm_so == -1)
 	{
-		ELEKTRA_SET_ERRORF(126, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
+		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
 		regfree(&regex);
 		ksDel(ks);
 		return -1;
@@ -391,7 +391,7 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 		}
 		else if(result == 0)
 		{
-			ELEKTRA_SET_ERRORF(127, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
+			ELEKTRA_SET_ERRORF(135, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
 		else if(result == 1)
@@ -421,7 +421,7 @@ int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 		}
 		else if(result == 0)
 		{
-			ELEKTRA_SET_ERRORF(127, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
+			ELEKTRA_SET_ERRORF(135, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
 		else if(result == 1)
