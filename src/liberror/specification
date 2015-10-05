@@ -769,3 +769,14 @@ severity:error
 ingroup:plugin
 module:crypto
 
+number:131
+description:lua error
+severity:error
+ingroup:plugin
+module:lua
+
+number:132
+description:lua warning
+severity:warning
+ingroup:plugin
+module:lua
