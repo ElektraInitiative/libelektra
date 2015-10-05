@@ -212,7 +212,7 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 		printf("no global configuration exists\n");
 #endif
 		ksDel(keys);
-		return -1;
+		return;
 	}
 	KeySet *global = ksCut(keys, root);
 	Key *cur;

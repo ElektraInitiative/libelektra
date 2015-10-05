@@ -227,7 +227,6 @@ KDB * kdbOpen(Key *errorKey)
 	}
 	if(elektraMountGlobals(handle, ksDup(keys), handle->modules, errorKey) == -1)
 	{
-		//TODO: errorhandling here
 #if DEBUG && VERBOSE
 		printf("Mounting global plugins failed\n");
 #endif
@@ -546,7 +545,6 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		ELEKTRA_ADD_WARNING(105, parentKey,
 				"invalid key name passed to kdbGet");
 	}
-
 	int errnosave = errno;
 	Key *initialParent = keyDup (parentKey);
 
@@ -563,6 +561,8 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 				"handle or ks null pointer");
 		goto error;
 	}
+	if(handle->globalPlugins[PREGETSTORAGE])
+		handle->globalPlugins[PREGETSTORAGE]->kdbGet(handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
 
 	if(elektraSplitBuildup (split, handle, parentKey) == -1)
 	{
@@ -590,8 +590,6 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitAppoint");
 		goto error;
 	}
-	if(handle->globalPlugins[PREGETSTORAGE])
-		handle->globalPlugins[PREGETSTORAGE]->kdbGet(handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
 
 	/* Now do the real updating,
 	  but not for bypassed keys in split->size-1 */
@@ -644,7 +642,7 @@ error:
  * @retval -1 on error
  * @retval 0 on success
  */
-static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
+static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey, Plugin *hook)
 {
 	int any_error = 0;
 	for(size_t i=0; i<split->size;i++)
@@ -677,6 +675,12 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 
 				if(p == 0)
 				{
+				    if(hook)
+				    {
+				    	ksRewind(split->keysets[i]);
+					hook->kdbSet(hook, split->keysets[i], parentKey);
+				    	ksRewind(split->keysets[i]);
+				    }
 					if (ret == 0)
 					{
 						// resolver says that sync is
@@ -886,7 +890,6 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		return -1;
 	}
-
 	int errnosave = errno;
 	Key *initialParent = keyDup(parentKey);
 
@@ -896,7 +899,6 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	Split *split = elektraSplitNew();
 	Key *errorKey = 0;
-
 	if(elektraSplitBuildup(split, handle, parentKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(38, parentKey, "error in elektraSplitBuildup");
@@ -935,11 +937,8 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	ELEKTRA_ASSERT(syncstate == 1);
 
 	elektraSplitPrepare(split);
-
-	if(handle->globalPlugins[PRESETSTORAGE])
-		handle->globalPlugins[PRESETSTORAGE]->kdbSet(handle->globalPlugins[PRESETSTORAGE], ks, parentKey);
-
-	if (elektraSetPrepare(split, parentKey, &errorKey) == -1)
+	
+	if (elektraSetPrepare(split, parentKey, &errorKey, handle->globalPlugins[PRESETSTORAGE]) == -1)
 	{
 		goto error;
 	}
