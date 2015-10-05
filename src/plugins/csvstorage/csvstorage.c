@@ -64,7 +64,9 @@ static unsigned long getColumnCount(char *lineBuffer, char delim)
 	while(*ptr != '\0')
 	{
 		if(*ptr == delim)
+		{
 			++counter;
+		}
 		++ptr;
 	}
 	++counter;
@@ -120,10 +122,11 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	}
 	if(!fgets(lineBuffer, length, fp))
 	{
+		// TODO: add line information
 		ELEKTRA_SET_ERROR(116, parentKey, "Cant read File");
 		return -1;
 	}
-
+	
 	unsigned long columns = 0;
 	columns = getColumnCount(lineBuffer, delim);
 
@@ -135,7 +138,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	int nr_keys = 1;
 	KeySet *header = ksNew(0, KS_END);
 	Key *key;
-
+	
 	if(useHeader == 1)
 	{
 		colCounter = 0;
@@ -205,9 +208,6 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		offset = 0;
 		colCounter = 0;
 		char *lastIndex = "#0";
-		if(getColumnCount(lineBuffer, delim) != columns)
-		{
-		}
 		while((col = parseLine(lineBuffer, delim, offset)) != NULL)
 		{
 			cur = getKeyByOrderNr(header, colCounter);
@@ -236,7 +236,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	fclose(fp);
 	elektraFree(lineBuffer);
 	ksDel(header);
-	return nr_keys;
+	return 1;
 }
 
 int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
@@ -269,7 +269,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		const char *delimString = keyString(delimKey);
 		delim = delimString[0];
 	}
-
+	
 	Key *readHeaderKey = ksLookupByName(config, "/useheader", 0);
 	short useHeader = 0;
 	if(readHeaderKey)
@@ -283,18 +283,8 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	int nr_keys;
 	nr_keys = csvRead(returned, parentKey, delim, useHeader);
 
-	switch(nr_keys)
-	{
-		case (-2):
-			return 1;
-			break;
-		case (-1):
-			return -1;
-			break;
-		default:
-			return 1;
-			break;
-	}
+	if (nr_keys == -1) return -1;
+	return 1;
 }
 
 static int csvWrite(KeySet *returned, Key *parentKey, char delim)
@@ -329,12 +319,14 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim)
 				fprintf(fp, "%c", delim);
 			++colCounter;
 			fprintf(fp, "%s", keyString(toWrite));
-
 		}
 		ksDel(toWriteKS);
 		fprintf(fp, "\n");
 		if(columns == 0)
+		{
 			columns = colCounter;
+		}
+
 		if(colCounter != columns)
 		{    
 			ELEKTRA_SET_ERROR(117, parentKey, "illegal number of columns\n");

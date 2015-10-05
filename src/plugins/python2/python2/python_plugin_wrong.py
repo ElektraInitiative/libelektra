@@ -1,2 +1,0 @@
-class ElektraPluginFoo(object):
-	pass

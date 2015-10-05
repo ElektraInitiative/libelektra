@@ -112,7 +112,6 @@ http://json-schema.org
 latex plugin to make pretty printed key/value pairs
 dot/graphviz plugin to visualize graph of keys
 html plugin (to show elektra config in html format)
-csv plugin with metadata as additional columns (configureable)
 
 literate data
 	good for documentation

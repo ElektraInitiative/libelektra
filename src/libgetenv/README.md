@@ -74,7 +74,10 @@ the application will be called with `<application> -V -L`.
  * `--elektra-version`:
    Gives version information.
  * `--elektra-debug=file`, `ELEKTRA_DEBUG` or `/env/option/debug`:
-   Trace all getenv(3) calls to a file (or stderr if no file is given).
+   Trace all getenv(3) calls to a file.
+   stderr if no file is given, e.g. `kdb set user/env/option/debug ""`.
+   Note that null values (no forth argument), will disable debug messages.
+   See examples below.
  * `--elektra-clearenv`, `ELEKTRA_CLEARENV` or `/env/option/clearenv`:
    Call clearenv(3) before entering main.
    This is a recommended security feature.
@@ -181,8 +184,18 @@ by environment, but not by command-line arguments,
 because sometimes environment variables are not trivial
 to set (e.g. in Makefiles).
 
-Some more examples:
+Debugging:
 
+    # system wide to stderr (not recommended!):
+    sudo kdb set system/env/option/debug ""
+    # system wide to /var/log/elektra.log:
+    sudo kdb set system/env/option/debug "/var/log/error.log"
+    # but for my user to ~/.elektra.log:
+    kdb set user/env/option/debug "$HOME/.elektra.log"
+    # or disable it for my user:
+    kdb set user/env/option/debug
+
+Some more examples:
 
     kdb set user/env/override/MANOPT -- "--regex -LC"
     kdb elektrify-getenv getenv MANOPT   # to check if it is set as expected
