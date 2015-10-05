@@ -12,6 +12,7 @@ and also other improvements.
 
 getenv(3) is one of the most popular ways to retrieve configuration,
 even though it has many known problems:
+
 - no standard way to modify it
 - relogin (or restart of shell) necessary
 - names are flat (no hierarchical structure)
@@ -66,6 +67,7 @@ than others, e.g. in a specific terminal.
 But it might not be a good solution for your own application, because
 libgetenv(3) implies many architectural decision, that other elektrified
 applications would decide differently, e.g.:
+
 - it uses global variables (getenv(3) has no handle)
 - it uses mutex for multi-threading safety
 - the API getenv(3) only returns `char*` and has no support for other data types
@@ -114,6 +116,7 @@ A version-script is now in use to only export following symbols:
 In this release, ENABLE_CXX11 was changed to `ON` by default.
 
 Note that in the next release 0.8.14 there will be two changes:
+
 - According to [issue #262](http://git.libelektra.org/issues/262), we plan to remove the option ENABLE_CXX11
   and require the compiler to be C++11 compatible.
   If you have any system you are not able to build Elektra with -DENABLE_CXX11=ON (which is
@@ -171,6 +174,7 @@ It also shows default values and warnings in the case of context-oriented
 features.
 
 Furthermore:
+
 - Add `-v` for setmeta
 - Copy will warn when it won't overwrite another key (behaviour did not change)
 - improve help text, thanks to Ian Donnelly
@@ -203,6 +207,7 @@ The wresolver is now more relaxed with unset environment.
 
 All issues for Mac OS X were resolved. With the exception of elektrify-getenv
 everything should work now, thanks to Mihael Pranjic:
+
 - fix mktemp
 - testscripts
 - recursive mutex simplification

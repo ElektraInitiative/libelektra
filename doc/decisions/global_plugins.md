@@ -33,7 +33,7 @@
 
 Configuration will be in arrays below the keys:
 
-    system/elektra/global_mountpoints/
+    system/elektra/globalplugins/
         prerollback
         postrollback
         preget
@@ -48,6 +48,12 @@ do not need to work on individual config files, when following contract
 is present:
 
     infos/global
+
+The `kdb`-tool should have following list-like interface:
+
+    kdb global-plugin-add
+    kdb global-plugin-del
+    kdb global-plugin-list
 
 
 ## Argument
@@ -115,3 +121,14 @@ states.
 
 - How to test global plugins?
 - locker plugins can lead to deadlocks? (must be avoided by contract?)
+
+## Implementation Hints
+
+- add `Plugin *globalPlugins [NR_OF_PLUGINS]` to `_KDB`
+- during `kdbOpen`, `system/elektra/globalplugins/` is read and plugins are constructed and placed into `globalPlugins`.
+- In kdbGet and kdbSet hooks execute one of these plugins
+- by default
+ - the plugins are all the same `list` plugins, and their subplugins are executed, when `system/elektra/globalplugins/_` states they should be executed
+ - a `lock` plugin that executes at begin and end of kdbGet and kdbSet, respective, i.e.  postrollback preget postget preset postcommit
+ - the `lock` plugin contains the code currently found in resolver
+

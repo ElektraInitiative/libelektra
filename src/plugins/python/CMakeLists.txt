@@ -4,9 +4,8 @@ find_swig()
 if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 	include (LibAddMacros)
 
-	execute_process (
+	add_custom_command (OUTPUT runtime.h
 		COMMAND ${SWIG_EXECUTABLE} -c++ -python -py3 -external-runtime runtime.h
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)
 
 	add_plugin(python
@@ -36,17 +35,13 @@ if (PYTHONLIBS_FOUND AND SWIG_FOUND)
 		# output directory + our test adds the current directory to pythons sys.path
 		add_plugintest (python
 			MEMLEAK
-			INCLUDE_DIRECTORIES
-				${PYTHON_INCLUDE_DIR}
-			LINK_LIBRARIES
-				${PYTHON_LIBRARIES}
 			WORKING_DIRECTORY
 				${CMAKE_CURRENT_BINARY_DIR}/../../bindings/swig/python3/
 			COMPILE_DEFINITIONS
 				PYTHON_PLUGIN_NAME=\"python\"
 		)
 
-		install(DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
+		install (DIRECTORY python DESTINATION ${TARGET_TEST_DATA_FOLDER})
 	else ()
 		message (WARNING "swig_python3 bindings are required for testing, test deactivated")
 	endif ()

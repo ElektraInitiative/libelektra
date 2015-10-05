@@ -62,3 +62,384 @@
    fun:elektraJniOpen
    fun:elektraPluginOpen
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetBinary
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetBinary
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:realloc
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:is_overlap
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:is_overlap
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:__memcmp_sse4_1
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:__memcmp_sse4_1
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_null
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_null
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_null
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_null
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   fun:gcry_control
+   ...
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20.*
+   ...
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   ...
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   obj:*libstdc++.so.6*
+}

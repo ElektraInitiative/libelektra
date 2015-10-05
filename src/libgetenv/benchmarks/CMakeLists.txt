@@ -2,20 +2,22 @@ include(LibAddMacros)
 
 add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
-add_toolheaders (HDR_FILES)
 
-macro (do_example source)
+macro (do_benchmark source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-	set (SOURCES ${HDR_FILES} ${source}.c)
+	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
-	install(TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+	target_link_elektra(${source})
+	target_link_libraries(${source} elektragetenv)
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-endmacro (do_example)
+endmacro (do_benchmark)
 
-file (GLOB TESTS *.c)
+
+file (GLOB TESTS benchmark_*.cpp)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
-	do_example (${name})
+	do_benchmark (${name})
 endforeach (file ${TESTS})

@@ -13,15 +13,16 @@ if (BUILD_SHARED AND ENABLE_CXX11 AND HAVE_GLIBC)
 
 	add_subdirectory(src)
 	add_subdirectory(examples)
+	add_subdirectory(benchmarks)
 
 	if (ENABLE_TESTING)
 		if (BUILD_FULL OR BUILD_STATIC)
-			add_subdirectory (tests)
+			add_subdirectory(tests)
 		endif (BUILD_FULL OR BUILD_STATIC)
 	endif(ENABLE_TESTING)
 
 	find_program(RONN_LOC ronn)
-	if (RONN_LOC)
+	if (BUILD_DOCUMENTATION AND RONN_LOC)
 		set(SECTION 1)
 		set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.${SECTION})
 
@@ -38,7 +39,7 @@ if (BUILD_SHARED AND ENABLE_CXX11 AND HAVE_GLIBC)
 			FILES ${OUTFILE}
 			DESTINATION share/man/man${SECTION}
 			)
-	else(RONN_LOC)
+	else()
 		message(WARNING "did not find ronn")
-	endif(RONN_LOC)
+	endif()
 endif ()
