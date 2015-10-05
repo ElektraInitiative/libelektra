@@ -1,20 +1,13 @@
 - infos = Information about the logger plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Name <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
-- infos/placements =
+- infos/global =
+- infos/provides = logging
+- infos/placements = prerollback postrollback postcommit postgetstorage
 - infos/description =
 
-## Usage ##
+## Introduction ##
 
-Copy this logger if you want to start a new
-plugin written in C.
-
-You can use scripts/copy-logger
-to automatically rename everything to your
-plugin name:
-
-	cd src/plugins
-	../../scripts/copy-logger yourplugin
-
+This Plugin writes all Error and Warnings metadata to a log file specified by `config/log`.
+Additionally it checks every key for metakeys starting with `log/` and logs the keyname, keystring and metakey name.

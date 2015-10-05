@@ -88,10 +88,15 @@ static void writeLoggingInfo(FILE *fp, const char *timeString, KeySet *ks)
 	fprintf(fp,"\t====LOGGING  INFORMATIONS====\n");
 	while((cur = ksNext(ks)) != NULL)
 	{
-		Key *meta = keyGetMeta(cur, "validation/failed");
-		if(!meta)
-			continue;
-		fprintf(fp, "%s\t %s:%s\n", timeString, keyString(meta), keyName(cur));
+		keyRewindMeta(cur);
+		while(keyNextMeta(cur) != NULL)
+		{
+		    Key *meta = keyCurrentMeta(cur);
+		    if(strncmp(keyName(meta), "log/", 4) == 0)
+		    {
+			fprintf(fp, "%s: %s  %s: %s\n", timeString, keyName(meta), keyString(meta), keyName(cur));
+		    }
+		}
 	}
 }
 static void log(const char *fileName, KeySet *ks, Key *parentKey)

@@ -13,6 +13,8 @@
 #endif
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <kdberrors.h>
 #include <fnmatch.h>
 #include "globalglob.h"
@@ -90,7 +92,27 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 		if(!found)
 		{
 			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
-			int ret = keySetMeta(specKey, "validation/failed", "globalglob struct check failed");
+			const Key *meta=keyGetMeta(specKey, "log/validation/failed");
+			if(meta)
+			{
+				const char *lastIndex = keyString(meta);
+				unsigned short index = atoi(lastIndex+1);
+				char *newName = elektraMalloc(elektraStrLen(keyName(meta))+elektraStrLen(lastIndex)+5); // 6 digits should be more than enough ?
+				if(newName)
+				{
+					sprintf(newName, "%s/#%u", keyName(meta), index);
+					keySetMeta(specKey, newName, "globalglob struct check failed");
+					sprintf(newName, "#%u", index);
+					keySetMeta(specKey, "log/validation/failed", newName);
+					elektraFree(newName);
+				}
+			}
+			else
+			{
+			    	keySetMeta(specKey, "log/validation/failed", "#0");
+				keySetMeta(specKey, "log/validation/failed/#0", "globalglob struct check failed");
+			}
+
 		}
 		keyDel(curKey);		
 	}
@@ -127,7 +149,27 @@ int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 		if(!found)
 		{
 			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
-			keySetMeta(specKey, "validation/failed", "globalglob struct check failed");
+			
+			const Key *meta=keyGetMeta(specKey, "log/validation/failed");
+			if(meta)
+			{
+				const char *lastIndex = keyString(meta);
+				unsigned short index = atoi(lastIndex+1);
+				char *newName = elektraMalloc(elektraStrLen(keyName(meta))+elektraStrLen(lastIndex)+5); // 6 digits should be more than enough ?
+				if(newName)
+				{
+					sprintf(newName, "%s/#%u", keyName(meta), index);
+					keySetMeta(specKey, newName, "globalglob struct check failed");
+					sprintf(newName, "#%u", index);
+					keySetMeta(specKey, "log/validation/failed", newName);
+					elektraFree(newName);
+				}
+			}
+			else
+			{
+			    	keySetMeta(specKey, "log/validation/failed", "#0");
+				keySetMeta(specKey, "log/validation/failed/#0", "globalglob struct check failed");
+			}
 			retval = -1;
 		}
 		keyDel(curKey);		

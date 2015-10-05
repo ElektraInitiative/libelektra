@@ -230,6 +230,9 @@ KDB * kdbOpen(Key *errorKey)
 #if DEBUG && VERBOSE
 		printf("Mounting global plugins failed\n");
 #endif
+		kdbClose(handle, errorKey);
+		keyDel(initialParent);
+		return 0;
 	}
 
 	keySetName(errorKey, keyName(initialParent));
