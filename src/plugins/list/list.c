@@ -195,6 +195,7 @@ int elektraListClose(Plugin *handle , Key *errorKey)
 	ksDel(placements->errKS[0]);
 	ksDel(placements->errKS[1]);
 	Key *cur;
+	ksRewind(placements->plugins);
 	while((cur = ksNext(placements->plugins)) != NULL)
 	{
 		Plugin *slave;
@@ -252,6 +253,8 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 			keyDel(sysConfCutPoint);
 			keyDel(toRemove);
 			slave = elektraPluginOpen(name, modules, realPluginConfig, parentKey);
+			if(!slave)
+			    goto error;
 			Key *slaveKey = keyNew(name, KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
 			keySetName(slaveKey, "/");
 			keyAddBaseName(slaveKey, name);
@@ -286,7 +289,9 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 error:
 	ksDel(configOrig);
 	if(slave)
+	{
 		elektraPluginClose(slave, parentKey);
+	}
 	if(realPluginConfig)
 		ksDel(realPluginConfig);
 	elektraModulesClose(modules, NULL);
