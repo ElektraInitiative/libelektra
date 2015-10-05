@@ -734,6 +734,72 @@ ingroup:plugin
 module:calculate
 
 number:125
+description:Failed to initialize the crypto library.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:126
+description:The crypto library reported an internal error.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:127
+description:Encryption failed due to an error reported by the crypto library.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:128
+description:Decryption failed due to an error reported by the crypto library.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:129
+description:Decryption failed due to an error reported by the crypto library.
+severity:warning
+ingroup:plugin
+module:crypto
+
+number:130
+description:The configuration is invalid or incomplete.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:131
+description:lua error
+severity:error
+ingroup:plugin
+module:lua
+
+number:132
+description:lua warning
+severity:warning
+ingroup:plugin
+module:lua
+
+number:133
+description:Key doesn't exist
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:134
+description:Syntax error
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:135
+description:Validation failed
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:136
 description:can't find corresponding key in other namespaces
 severity:error
 ingroup:plugin

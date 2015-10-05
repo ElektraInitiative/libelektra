@@ -91,7 +91,7 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 		}
 		if(!found)
 		{
-			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
+			ELEKTRA_SET_ERRORF(136, parentKey, "key: %s\n", keyName(curKey));
 			const Key *meta=keyGetMeta(specKey, "log/validation/failed");
 			if(meta)
 			{
@@ -148,7 +148,7 @@ int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 		}
 		if(!found)
 		{
-			ELEKTRA_SET_ERRORF(125, parentKey, "key: %s\n", keyName(curKey));
+			ELEKTRA_SET_ERRORF(136, parentKey, "key: %s\n", keyName(curKey));
 			
 			const Key *meta=keyGetMeta(specKey, "log/validation/failed");
 			if(meta)

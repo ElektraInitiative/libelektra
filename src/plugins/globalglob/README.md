@@ -2,7 +2,6 @@
 - infos/author = Name <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/global =
 - infos/provides =
 - infos/placements = postgetstorage presetstorage
 - infos/description =

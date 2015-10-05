@@ -100,7 +100,7 @@ Log/Send out all changes to configuration to:
 - [dbus](dbus)
 - [journald](journald)
 - [syslog](syslog)
-
+- [logger](logger) logs errors, warnings and other informations to a file
 
 ## Debug ##
 
@@ -118,6 +118,7 @@ Copies meta data to keys:
 - [glob](glob) using globbing techniques
 - [struct](struct) using a defined structure (may also reject
   configuration not conforming to that structure)
+- [globalglob](globalglob) copies from spec to other namespaces using globbing techniques and does a structure check
 
 Plugins that check if values are valid based on meta data (typically
 copied by another plugin just before):
