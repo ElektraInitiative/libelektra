@@ -6,5 +6,5 @@ cd $BUILD
 cmake	-DENABLE_CXX11=ON \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="cpp;swig_python2;swig_python3;jna" \
+	-DBINDINGS="cpp;swig_python2;swig_python;jna" \
 	$*
