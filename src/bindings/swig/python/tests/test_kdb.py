@@ -31,8 +31,10 @@ class KDB(unittest.TestCase):
 			ks = kdb.KeySet()
 			db.get(ks, "system/elektra")
 
-			key = ks["system/elektra/version/constants/KDB_VERSION"]
-			self.assertEqual(key.value, kdb.VERSION)
+			import os
+			if os.getenv("CHECK_VERSION") is None:
+				key = ks["system/elektra/version/constants/KDB_VERSION"]
+				self.assertEqual(key.value, kdb.VERSION)
 
 	def test_set(self):
 		with kdb.KDB() as db:
