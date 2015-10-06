@@ -128,6 +128,8 @@ copied by another plugin just before):
 - [path](path) by checking files on filesystem
 - [type](type) using runtime type checking (CORBA types)
 - [enum](enum) compares the keyvalue against a list of valid values
+- [mathcheck](mathcheck) by mathematical expressions using keysvalues as operants
+- [conditionals](conditionals) by using if-then-else like statements
 
 ## Interpreter ##
 

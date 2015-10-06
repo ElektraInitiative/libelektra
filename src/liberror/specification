@@ -780,3 +780,21 @@ description:lua warning
 severity:warning
 ingroup:plugin
 module:lua
+
+number:133
+description:Key doesn't exist
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:134
+description:Syntax error
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:135
+description:Validation failed
+severity:error
+ingroup:plugin
+module:conditionals

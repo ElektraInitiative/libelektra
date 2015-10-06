@@ -75,6 +75,8 @@ set (PLUGINS_LIST_POSIX
 	network
 	path
 	enum
+	mathcheck
+	conditionals
 	keytometa
 	rename
 	syslog
