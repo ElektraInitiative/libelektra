@@ -41,6 +41,13 @@ checking for broken links
 
 API docu improvements+pdf export
 
+generate graphic for overview of plugins
+
+
+## bugs
+
+strace mounted as non-dir access dir?
+
 
 # further
 
@@ -51,6 +58,7 @@ genopt.hpp + include enforcement in template_dynamic?
 
 link fetcher plugin: kdbGet() of all parts where links point to
 
+single file plugins for /proc
 
 ## global plugins
 

@@ -62,6 +62,7 @@ set (PLUGINS_LIST_NODEP
 	noresolver
 	wresolver
 	ini
+	list
 	)
 
 #
@@ -74,6 +75,8 @@ set (PLUGINS_LIST_POSIX
 	network
 	path
 	enum
+	mathcheck
+	conditionals
 	keytometa
 	rename
 	syslog
@@ -125,6 +128,8 @@ set (PLUGINS_LIST_DEP
 	jni
 	python
 	python2
+	lua
+	crypto
 	)
 
 #
@@ -190,9 +195,16 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 	set (BINDINGS_LIST_SWIG
 		swig_lua
 		swig_python2
-		swig_python3
+		swig_python
 		)
 	set (BINDINGS_FORCE FORCE)
+endif ()
+# rename swig_python3 to swig_python - TODO remove sometime in the future
+list (FIND BINDINGS "swig_python3" FINDEX)
+if (FINDEX GREATER -1)
+	message (STATUS "swig_python3 has been renamed to swig_python")
+	list (REMOVE_ITEM BINDINGS swig_python3)
+	list (APPEND BINDINGS swig_python)
 endif ()
 
 list (FIND BINDINGS "GI" FINDEX)
@@ -200,7 +212,7 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 	set (BINDINGS_LIST_GI
 		glib
 		gi_lua
-		gi_python3
+		gi_python
 		)
 	set (BINDINGS_FORCE FORCE)
 endif ()

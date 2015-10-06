@@ -87,6 +87,7 @@ Transformations:
 
 Doing other stuff:
 
+- [crypto](crypto) encrypts / decrypts confidential values
 - [iconv](iconv) make sure the configuration will have correct
   charachter encoding
 - [hidden](hidden) 
@@ -127,6 +128,8 @@ copied by another plugin just before):
 - [path](path) by checking files on filesystem
 - [type](type) using runtime type checking (CORBA types)
 - [enum](enum) compares the keyvalue against a list of valid values
+- [mathcheck](mathcheck) by mathematical expressions using keysvalues as operants
+- [conditionals](conditionals) by using if-then-else like statements
 
 ## Interpreter ##
 
@@ -135,6 +138,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [jni](jni) java plugins started by jni, works with jna plugins
 - [python](python) Python 3 plugins (technical preview)
 - [python2](python2) Python 2 plugins (technical preview, deprecated)
+- [lua](lua) Lua plugins (technical preview)
 
 
 ## Others ##
@@ -143,6 +147,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [error](error) yields errors as described in metadata
 - [template](template) to be copied for new plugins
 - [lineendings](lineendings) tests file for consistent line endings
+- [list](list) loads other plugins
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:

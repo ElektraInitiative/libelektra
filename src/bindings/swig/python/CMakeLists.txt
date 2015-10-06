@@ -6,13 +6,13 @@ find_package (PythonInterp 3)
 find_package (PythonLibs 3)
 
 if (NOT PYTHONINTERP_FOUND)
-	remove_binding(swig_python3 "python3 interpreter not found")
+	remove_binding(swig_python "python3 interpreter not found")
 elseif (NOT PYTHONLIBS_FOUND)
-	remove_binding(swig_python3 "python3 libs not found")
+	remove_binding(swig_python "python3 libs not found")
 elseif (PYTHONLIBS_VERSION_STRING MATCHES "^2\\.[0-9]+")
-	remove_binding(swig_python3 "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
+	remove_binding(swig_python "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
 else()
-	message(STATUS "Include Binding swig_python3")
+	message(STATUS "Include Binding swig_python")
 	if (${SWIG_VERSION} MATCHES "^2\\.")
 		message(WARNING "Python bindings might crash if generated with SWIG 2."
 				" Please upgrade to SWIG 3 or later.")
@@ -30,9 +30,9 @@ else()
 
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
 	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-	swig_add_module (swig-python3 python kdb.i)
-	swig_link_libraries (swig-python3 elektra ${PYTHON_LIBRARIES})
-	set_target_properties (_swig-python3 PROPERTIES OUTPUT_NAME _kdb)
+	swig_add_module (swig-python python kdb.i)
+	swig_link_libraries (swig-python elektra ${PYTHON_LIBRARIES})
+	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
 
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
@@ -49,7 +49,7 @@ else()
 	)
 
 	install (
-		TARGETS _swig-python3
+		TARGETS _swig-python
 		LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES}
 	)
 
