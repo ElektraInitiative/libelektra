@@ -13,41 +13,42 @@ Where the option argument, `plugin` is the plugin that a user wants to check.
 Use `-c` to pass options to that plugin.  
 If no `plugin` argument is provided a check will be performed on the key database itself.  
 The user can also use this tool to perform write tests by passing the `-f` option (please note that this can result in configuration files being changed!).  
-Special values are returned to represent the outcome of a check.  
+Special values are returned upon exit to represent the outcome of a check.  
 
-## RETURNED VALUES
+## EXIT STATUS
 
 Their are two different types of checks, a check on a plugin (by specifying the name of a plugin as an argument) or a check on the key database itself.  
 
-The outcome of a check on the key database is returned as an integer representing an 8-bit pattern.  
+The outcome of a check on the key database is returned as an exit status.  
+This integer represents an 8-bit pattern.  
 Each bit represents a specific outcome as described below:  
 
  * 0:
    No errors (no output)  
 
  * Bit 1: 
-   Warning on open.  
+   Warning on opening the key database.  
 
  * Bit 2:
-   Error on open.  
+   Error on opening th ekey database.  
 
  * Bit 3:
-   Warning on get.  
+   Warning on getting the value of a key.  
 
  * Bit 4:
-   Error on get.  
+   Error on getting the value of a key.  
 
  * Bit 5:
-   Warning on set. (only checked when `-f` is used)  
+   Warning on setting the value of a key. (only checked when `-f` is used)  
 
  * Bit 6:
-   Error on set (only checked when `-f` is used)  
+   Error on setting the value of a key (only checked when `-f` is used)  
 
  * Bit 7:
-   Warning on close.  
+   Warning on closing the key database.  
 
  * Bit 8:
-   Error on close.  
+   Error on closing the key database.  
 
 So if the following number was returned `9` the user could figure out more detail by considering the bits: `00001001`  
 The user would know that their was a warning on open and an error on get.  

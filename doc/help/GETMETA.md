@@ -5,9 +5,9 @@ kdb-getmeta(1) -- Get the value of a meta key stored in the key database
 This command is used to print the value of a meta key.  
 A meta key is information stored in a key which describes that key.  
 
-## RETURN VALUES
+## EXIT STATUS
 
-This command will return the following values:  
+This command will return the following values as an exit status:  
 * 0:
   No errors.  
 * 1:
