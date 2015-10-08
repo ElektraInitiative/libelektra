@@ -188,5 +188,8 @@ Push elektra-doc to github:
 Finish NEWS.md for new release (hashsum, add links where to download release, check them):
  editor doc/NEWS.md
 
+Add entry for release at main page
+ editor README.md
+
 Finally check links and send out mail to list
 (Personal notice: see also NOTIFY)
