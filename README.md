@@ -128,7 +128,7 @@ Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/f
 ## Further Information ##
 
 To get an introduction, it is best to take a look at the
-[presentation](http://www.libelektra.org/ftp/elektra/presentations/2012/lgm.odp),
+[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp),
 read our
 [tutorials](doc/tutorials),
 see the
