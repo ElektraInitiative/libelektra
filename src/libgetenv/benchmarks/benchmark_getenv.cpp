@@ -21,7 +21,7 @@ extern "C" char **environ;
 const long long nr_keys = 100;
 
 // long long iterations = 100000000000LL; // elitebenchmark lookup
-long long iterations = 100000000LL; // elitebenchmark
+long long iterations = 1000000LL; // elitebenchmark
 // long long iterations = 100LL; // valgrind
 
 // not needed in benchmarks:
