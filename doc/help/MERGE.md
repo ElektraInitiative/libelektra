@@ -1,5 +1,5 @@
-kdb-merge(1) -- Three-way merge of KeySets.
-================================
+kdb-merge(1) -- Three-way merge of KeySets
+==========================================
 ## DESCRIPTION
 
 Does a three-way merge between keysets.  
