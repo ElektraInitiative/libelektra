@@ -22,6 +22,8 @@
 
 #define MIN_VALID_STACK 3
 #define EPSILON 0.00001
+#define str(s) #s
+#define xstr(s) str(s)
 
 typedef enum{ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, EMPTY}Operation;
 typedef struct{
@@ -46,7 +48,7 @@ int elektraMatchcheckGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 				keyNew ("system/elektra/modules/mathcheck/infos/version",
 					KEY_VALUE, PLUGINVERSION, KEY_END),
 				keyNew ("system/elektra/modules/mathcheck/export/constants", KEY_END),
-				keyNew ("system/elektra/modules/mathcheck/export/constants/EPSILON", KEY_VALUE, EPSILON, KEY_END),
+				keyNew ("system/elektra/modules/mathcheck/export/constants/EPSILON", KEY_VALUE, xstr(EPSILON), KEY_END),
 				KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -97,7 +99,6 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 		{
 			switch(stackPtr->op)
 			{
-
 				case ADD:
 					stackPtr->value = e1.value + e2.value; 
 					stackPtr->op = VAL;
@@ -166,12 +167,14 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		{
 			break;
 		}
+
 		len = match.rm_eo - match.rm_so;
 		start = match.rm_so + (ptr - prefixString);
 		if(len == 1)
 		{
 			switch(prefixString[start])
 			{
+
 				case '+':
 					stackPtr->op = ADD;
 					++stackPtr;
@@ -190,7 +193,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 					break;
 				case ':':
 					resultOp = SET;
-				break;
+					break;
 				case '=':
 					if(resultOp == LT)
 						resultOp = LE;
