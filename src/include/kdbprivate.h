@@ -265,6 +265,16 @@ struct _KeySet
 
 
 /**
+ * Helper for identifying global plugin positions
+ */
+
+typedef enum {
+	PREROLLBACK = 0, POSTROLLBACK, PREGETSTORAGE, 
+	POSTGETSTORAGE, PRESETSTORAGE, PRECOMMIT, 
+	POSTCOMMIT, NR_GLOBAL_PLUGINS
+}Globalpluginpositions;
+
+/**
  * The access point to the key database.
  *
  * The structure which holds all information about loaded backends.
@@ -281,7 +291,6 @@ typedef struct _KDB KDB;
  * @see kdbOpen() and kdbClose() for external use
  * @ingroup backend
  */
-typedef enum{PREROLLBACK = 0, POSTROLLBACK, PREGETSTORAGE, POSTGETSTORAGE, PRESETSTORAGE, PRECOMMIT, POSTCOMMIT, NR_GLOBAL_PLUGINS}Globalpluginpositions;
 
 struct _KDB {
 	Trie *trie;		/*!< The pointer to the trie holding backends.*/

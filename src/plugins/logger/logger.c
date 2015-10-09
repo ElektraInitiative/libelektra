@@ -14,27 +14,14 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <kdbhelper.h>
 #include "logger.h"
 
-int elektraLoggerOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
-{
-	/* plugin initialization logic */
-
-	return 1; /* success */
-}
-
-int elektraLoggerClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
-{
-	/* free all plugin resources and shut it down */
-
-	return 1; /* success */
-}
-
 static int writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 {
-	Key *errors = keyGetMeta(parentKey, "error");
+	const Key *errors = keyGetMeta(parentKey, "error");
 	if(!errors)
 		return 0;
 	fprintf(fp, "\t===========ERRORS===========\n");
@@ -42,12 +29,12 @@ static int writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
 	if(elektraRealloc((void **)&metaName, 21) == -1)
 	{
-		return;
+		return 0;
 	}
 	for(int j = 0; elements[j] != NULL; ++j)
 	{
 		snprintf(metaName, 21, "error/%s",  elements[j]);
-		Key *meta = keyGetMeta(parentKey, metaName);
+		const Key *meta = keyGetMeta(parentKey, metaName);
 		fprintf(fp, "%s: %s: %s\n", timeString, elements[j], keyString(meta));
 	}
 	elektraFree(metaName);
@@ -56,7 +43,7 @@ static int writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 
 static int writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 {
-	Key *warnings = keyGetMeta(parentKey, "warnings");
+	const Key *warnings = keyGetMeta(parentKey, "warnings");
 	int nr_warnings = -1;
 	if(warnings)
 		nr_warnings = atoi(keyString(warnings)) + 1;
@@ -69,12 +56,12 @@ static int writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 	{
 		if(elektraRealloc((void **)&metaName, 25) == -1)
 		{
-			return;
+			return 0;
 		}
 		for(int j = 0; elements[j] != NULL; ++j)
 		{
 			snprintf(metaName, 25, "warnings/#%02d/%s", i, elements[j]);
-			Key *meta = keyGetMeta(parentKey, metaName);
+			const Key *meta = keyGetMeta(parentKey, metaName);
 			fprintf(fp, "%s: %s: %s\n", timeString, elements[j], keyString(meta));
 		}
 	}
@@ -91,7 +78,7 @@ static void writeLoggingInfo(FILE *fp, const char *timeString, KeySet *ks)
 		keyRewindMeta(cur);
 		while(keyNextMeta(cur) != NULL)
 		{
-		    Key *meta = keyCurrentMeta(cur);
+		    const Key *meta = keyCurrentMeta(cur);
 		    if(strncmp(keyName(meta), "log/", 4) == 0)
 		    {
 			fprintf(fp, "%s: %s  %s: %s\n", timeString, keyName(meta), keyString(meta), keyName(cur));
@@ -113,7 +100,10 @@ static void log(const char *fileName, KeySet *ks, Key *parentKey)
 	ret |= writeErrors(fp, timeString, parentKey);
 	ret |= writeWarnings(fp, timeString, parentKey);
 	if(ret)
+	{
+		ksAppendKey(ks, parentKey);
 		writeLoggingInfo(fp, timeString, ks);
+	}
 	fclose(fp);
 	
 }
@@ -125,10 +115,6 @@ int elektraLoggerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		keyNew ("system/elektra/modules/logger",
 			KEY_VALUE, "logger plugin waits for your orders", KEY_END),
 		keyNew ("system/elektra/modules/logger/exports", KEY_END),
-		keyNew ("system/elektra/modules/logger/exports/open",
-			KEY_FUNC, elektraLoggerOpen, KEY_END),
-		keyNew ("system/elektra/modules/logger/exports/close",
-			KEY_FUNC, elektraLoggerClose, KEY_END),
 		keyNew ("system/elektra/modules/logger/exports/get",
 			KEY_FUNC, elektraLoggerGet, KEY_END),
 		keyNew ("system/elektra/modules/logger/exports/set",
@@ -170,7 +156,6 @@ int elektraLoggerError(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
 	KeySet *config = elektraPluginGetConfig(handle);
-	Key *cur;
 	ksRewind(config);
 	Key *fnKey = ksLookupByName(config, "/logfile", 0);
 	const char *fileName = "/tmp/elektra.log";
@@ -183,8 +168,6 @@ int elektraLoggerError(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(logger)
 {
 	return elektraPluginExport("logger",
-		ELEKTRA_PLUGIN_OPEN,	&elektraLoggerOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraLoggerClose,
 		ELEKTRA_PLUGIN_GET,	&elektraLoggerGet,
 		ELEKTRA_PLUGIN_SET,	&elektraLoggerSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraLoggerError,

@@ -40,6 +40,7 @@
 #include "kdbinternal.h"
 
 
+
 /**
  * Creates a trie from a given configuration.
  *

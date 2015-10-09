@@ -96,7 +96,7 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 			if(meta)
 			{
 				const char *lastIndex = keyString(meta);
-				unsigned short index = atoi(lastIndex+1);
+				unsigned short index = atoi(lastIndex+1)+1;
 				char *newName = elektraMalloc(elektraStrLen(keyName(meta))+elektraStrLen(lastIndex)+5); // 6 digits should be more than enough ?
 				if(newName)
 				{
@@ -154,7 +154,7 @@ int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 			if(meta)
 			{
 				const char *lastIndex = keyString(meta);
-				unsigned short index = atoi(lastIndex+1);
+				unsigned short index = atoi(lastIndex+1)+1;
 				char *newName = elektraMalloc(elektraStrLen(keyName(meta))+elektraStrLen(lastIndex)+5); // 6 digits should be more than enough ?
 				if(newName)
 				{
