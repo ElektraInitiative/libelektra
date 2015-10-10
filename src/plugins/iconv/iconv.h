@@ -48,4 +48,5 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 
 int elektraIconvGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraIconvSet(Plugin *handle, KeySet *ks, Key *parentKey);
+
 Plugin *ELEKTRA_PLUGIN_EXPORT(iconv);

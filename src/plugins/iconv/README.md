@@ -3,12 +3,13 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = conv
-- infos/placements = postgetstorage presetstorage
+- infos/placements = pregetstorage postgetstorage presetstorage
 - infos/description = Converts values of keys between charsets
 
 ## Introduction ##
 
-This plugin is a filter plugin that converts between different character encodings.
+This plugin is a filter plugin that converts between different character encodings,
+or, if the `checkfile` key is set, validates the fileencoding.
 
 ## Purpose ##
 

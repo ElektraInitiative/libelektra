@@ -26,6 +26,11 @@
 
 
 #include "iconv.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+
+#define CHAR_SIZE_MAX 4
 
 static inline const char* getFrom(Plugin *handle)
 {
@@ -49,6 +54,14 @@ static inline const char* getTo(Plugin *handle)
 	else to = keyString(k);
 
 	return to;
+}
+
+static inline int getFileFlag(Plugin *handle)
+{
+	Key *k;
+	k = ksLookupByName(elektraPluginGetConfig(handle), "/checkfile", 0);
+	if(!k) return 0;
+	else return 1;
 }
 
 /**
@@ -93,12 +106,12 @@ setlocale (LC_ALL, "");
  * this plugin can't be used.
  *
  * @param direction must be @c UTF8_TO (convert from current non-UTF-8 to
- * 	UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
+ *	UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
  * @param string before the call: the string to be converted; after the call:
- * 	reallocated to carry the converted string
+ *	reallocated to carry the converted string
  * @param inputOutputByteSize before the call: the size of the string including
- * 	leading NULL; after the call: the size of the converted string including
- * 	leading NULL
+ *	leading NULL; after the call: the size of the converted string including
+ *	leading NULL
  * @retval 0 on success
  * @retval -1 on failure
  * @ingroup backendhelper
@@ -117,7 +130,6 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	iconv_t converter;
 
 	if (!*inputOutputByteSize) return 0;
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
 
 	if (direction==UTF8_TO) converter=iconv_open(getTo(handle),getFrom(handle));
 	else converter=iconv_open(getFrom(handle),getTo(handle));
@@ -158,6 +170,40 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	return 0;
 }
 
+static int validate_file(Plugin *handle, Key *parentKey)
+{
+	iconv_t conv = iconv_open(getFrom(handle), getFrom(handle));
+	if(conv == (iconv_t)(-1))
+	    return -1;
+	const char *fileName = keyString(parentKey);
+	FILE *fp = fopen(fileName, "rb");
+	char inputBuffer[CHAR_SIZE_MAX];
+	char outputBuffer[CHAR_SIZE_MAX];
+	unsigned long counter = 0;
+	int retval = 0;
+	while(!feof(fp))
+	{
+		size_t bytesRead = fread(inputBuffer, 1, sizeof(inputBuffer), fp);
+		char *ptr = inputBuffer;
+		char *outptr = outputBuffer;
+		size_t inBytes = bytesRead;
+		size_t outSize = sizeof(outputBuffer);
+		int ret = iconv(conv, &ptr, &inBytes, &outptr, &outSize);
+		if(ret == -1 && errno==EILSEQ)
+		{
+			unsigned long position = (counter + (ptr - inputBuffer));
+			if(!retval)
+			{
+				ELEKTRA_SET_ERRORF(46, parentKey, "Invalid byte sequence detected at byte %lu", position);
+			}
+			retval |= ret;
+		}
+		counter += bytesRead;
+	}
+	fclose(fp);
+	iconv_close(conv);
+	return retval;
+}
 
 int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
@@ -184,8 +230,15 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksDel (pluginConfig);
 		return 1;
 	}
-
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+	
+	if(getFileFlag(handle))
+	{
+		int ret = validate_file(handle, parentKey);
+		if(ret)
+		{
+			return -1;
+		}
+	}
 
 	while ((cur = ksNext(returned)) != 0)
 	{
@@ -231,8 +284,6 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	Key *cur;
 	const Key *meta;
-
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
 
 	ksRewind (returned);
 
