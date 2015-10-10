@@ -9,17 +9,11 @@ usr/lib/elektra/tool_exec/getenv
 usr/lib/elektra/tool_exec/elektra-merge
 usr/lib/elektra/tool_exec/elektra-mount
 usr/lib/elektra/tool_exec/elektra-umount
-usr/lib/elektra/tool_exec/configure-common
-usr/lib/elektra/tool_exec/configure-debian
-usr/lib/elektra/tool_exec/configure-mingw
-usr/lib/elektra/tool_exec/configure-xdg
 usr/lib/elektra/tool_exec/convert-fstab
 usr/lib/elektra/tool_exec/convert-hosts
 usr/lib/elektra/tool_exec/convert-inittab
 usr/lib/elektra/tool_exec/convert-users
 usr/lib/elektra/tool_exec/example-xorg
-usr/lib/elektra/tool_exec/copy-template
-usr/lib/elektra/tool_exec/generate-news-entry
 usr/lib/elektra/tool_exec/mount-augeas
 usr/lib/elektra/tool_exec/mount-info
 usr/lib/elektra/tool_exec/mount-kde
