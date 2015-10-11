@@ -124,6 +124,7 @@ int elektraLoggerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 #include ELEKTRA_README(logger)
 		keyNew ("system/elektra/modules/logger/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
+		keyNew ("system/elektra/modules/logger/needs
 		KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -134,7 +135,7 @@ int elektraLoggerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	KeySet *config = elektraPluginGetConfig(handle);		
 	Key *fnKey = ksLookupByName(config, "/logfile", 0);
 	const char *fileName = "/tmp/elektra.log";
-	if(fnKey)
+	if(fnKey):
 		fileName = keyString(fnKey);
 	log(fileName, returned, parentKey);
 	return 1; /* success */

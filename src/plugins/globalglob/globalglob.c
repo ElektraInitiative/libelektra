@@ -19,19 +19,6 @@
 #include <fnmatch.h>
 #include "globalglob.h"
 
-int elektraGlobalglobOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
-{
-	/* plugin initialization logic */
-
-	return 1; /* success */
-}
-
-int elektraGlobalglobClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
-{
-	/* free all plugin resources and shut it down */
-
-	return 1; /* success */
-}
 static Key *cutNSName(Key *toCut)
 {
 	Key *ret = keyDup(toCut);
@@ -39,6 +26,32 @@ static Key *cutNSName(Key *toCut)
 	char *ptr = strchr(name, '/');
 	keySetName(ret, ptr);
 	return ret;
+}
+
+static void log(Key *key)
+{
+
+	const Key *meta=keyGetMeta(key, "log/validation/failed");
+	if(meta)
+	{
+		const char *lastIndex = keyString(meta);
+		unsigned short index = atoi(lastIndex+1)+1;
+		char *newName = elektraMalloc(elektraStrLen(keyName(meta))+elektraStrLen(lastIndex)+5); // 6 digits should be more than enough ?
+		if(newName)
+		{
+			sprintf(newName, "%s/#%u", keyName(meta), index);
+			keySetMeta(key, newName, "globalglob struct check failed");
+			sprintf(newName, "#%u", index);
+			keySetMeta(key, "log/validation/failed", newName);
+			elektraFree(newName);
+		}
+	}
+	else
+	{
+		keySetMeta(key, "log/validation/failed", "#0");
+		keySetMeta(key, "log/validation/failed/#0", "globalglob struct check failed");
+	}
+
 }
 int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
@@ -48,16 +61,10 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 				keyNew ("system/elektra/modules/globalglob",
 					KEY_VALUE, "globalglob plugin waits for your orders", KEY_END),
 				keyNew ("system/elektra/modules/globalglob/exports", KEY_END),
-				keyNew ("system/elektra/modules/globalglob/exports/open",
-					KEY_FUNC, elektraGlobalglobOpen, KEY_END),
-				keyNew ("system/elektra/modules/globalglob/exports/close",
-					KEY_FUNC, elektraGlobalglobClose, KEY_END),
 				keyNew ("system/elektra/modules/globalglob/exports/get",
 					KEY_FUNC, elektraGlobalglobGet, KEY_END),
 				keyNew ("system/elektra/modules/globalglob/exports/set",
 					KEY_FUNC, elektraGlobalglobSet, KEY_END),
-				keyNew ("system/elektra/modules/globalglob/exports/error",
-					KEY_FUNC, elektraGlobalglobError, KEY_END),
 #include ELEKTRA_README(globalglob)
 				keyNew ("system/elektra/modules/globalglob/infos/version",
 					KEY_VALUE, PLUGINVERSION, KEY_END),
@@ -92,27 +99,7 @@ int elektraGlobalglobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 		if(!found)
 		{
 			ELEKTRA_SET_ERRORF(136, parentKey, "key: %s\n", keyName(curKey));
-			const Key *meta=keyGetMeta(specKey, "log/validation/failed");
-			if(meta)
-			{
-				const char *lastIndex = keyString(meta);
-				unsigned short index = atoi(lastIndex+1)+1;
-				char *newName = elektraMalloc(elektraStrLen(keyName(meta))+elektraStrLen(lastIndex)+5); // 6 digits should be more than enough ?
-				if(newName)
-				{
-					sprintf(newName, "%s/#%u", keyName(meta), index);
-					keySetMeta(specKey, newName, "globalglob struct check failed");
-					sprintf(newName, "#%u", index);
-					keySetMeta(specKey, "log/validation/failed", newName);
-					elektraFree(newName);
-				}
-			}
-			else
-			{
-			    	keySetMeta(specKey, "log/validation/failed", "#0");
-				keySetMeta(specKey, "log/validation/failed/#0", "globalglob struct check failed");
-			}
-
+			log(specKey);
 		}
 		keyDel(curKey);		
 	}
@@ -149,27 +136,7 @@ int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 		if(!found)
 		{
 			ELEKTRA_SET_ERRORF(136, parentKey, "key: %s\n", keyName(curKey));
-			
-			const Key *meta=keyGetMeta(specKey, "log/validation/failed");
-			if(meta)
-			{
-				const char *lastIndex = keyString(meta);
-				unsigned short index = atoi(lastIndex+1)+1;
-				char *newName = elektraMalloc(elektraStrLen(keyName(meta))+elektraStrLen(lastIndex)+5); // 6 digits should be more than enough ?
-				if(newName)
-				{
-					sprintf(newName, "%s/#%u", keyName(meta), index);
-					keySetMeta(specKey, newName, "globalglob struct check failed");
-					sprintf(newName, "#%u", index);
-					keySetMeta(specKey, "log/validation/failed", newName);
-					elektraFree(newName);
-				}
-			}
-			else
-			{
-			    	keySetMeta(specKey, "log/validation/failed", "#0");
-				keySetMeta(specKey, "log/validation/failed/#0", "globalglob struct check failed");
-			}
+			log(specKey);
 			retval = -1;
 		}
 		keyDel(curKey);		
@@ -180,21 +147,11 @@ int elektraGlobalglobSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 	return retval; /* success */
 }
 
-int elektraGlobalglobError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
-{
-	/* set all keys */
-
-	return 1; /* success */
-}
-
 Plugin *ELEKTRA_PLUGIN_EXPORT(globalglob)
 {
 	return elektraPluginExport("globalglob",
-			ELEKTRA_PLUGIN_OPEN,	&elektraGlobalglobOpen,
-			ELEKTRA_PLUGIN_CLOSE,	&elektraGlobalglobClose,
 			ELEKTRA_PLUGIN_GET,	&elektraGlobalglobGet,
 			ELEKTRA_PLUGIN_SET,	&elektraGlobalglobSet,
-			ELEKTRA_PLUGIN_ERROR,	&elektraGlobalglobError,
 			ELEKTRA_PLUGIN_END);
 }
 

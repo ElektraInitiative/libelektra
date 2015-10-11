@@ -13,11 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraGlobalglobOpen(Plugin *handle, Key *errorKey);
-int elektraGlobalglobClose(Plugin *handle, Key *errorKey);
 int elektraGlobalglobGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraGlobalglobSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraGlobalglobError(Plugin *handle, KeySet *ks, Key *parentKey);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(globalglob);
 
