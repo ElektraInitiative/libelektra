@@ -1,5 +1,6 @@
 kdb-cp(1) -- Copy keys within the key database
-================================
+==============================================
+
 ## DESCRIPTION
 
 This command copies key(s) in the Key database.  
