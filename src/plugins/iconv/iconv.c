@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#define CHAR_SIZE_MAX 4
+#define CHAR_SIZE_MAX 4 //biggest character encoding, let the OS deal with the buffering
 
 static inline const char* getFrom(Plugin *handle)
 {
@@ -61,7 +61,8 @@ static inline int getFileFlag(Plugin *handle)
 	Key *k;
 	k = ksLookupByName(elektraPluginGetConfig(handle), "/checkfile", 0);
 	if(!k) return 0;
-	else return 1;
+	if(strcmp(keyString(k), "0")) return 1;
+	else return 0;
 }
 
 /**
@@ -106,12 +107,12 @@ setlocale (LC_ALL, "");
  * this plugin can't be used.
  *
  * @param direction must be @c UTF8_TO (convert from current non-UTF-8 to
- *	UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
+ * 		UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
  * @param string before the call: the string to be converted; after the call:
- *	reallocated to carry the converted string
+ *		reallocated to carry the converted string
  * @param inputOutputByteSize before the call: the size of the string including
- *	leading NULL; after the call: the size of the converted string including
- *	leading NULL
+ *		leading NULL; after the call: the size of the converted string including
+ *		leading NULL
  * @retval 0 on success
  * @retval -1 on failure
  * @ingroup backendhelper
@@ -170,7 +171,7 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	return 0;
 }
 
-static int validate_file(Plugin *handle, Key *parentKey)
+static int validateFile(Plugin *handle, Key *parentKey)
 {
 	iconv_t conv = iconv_open(getFrom(handle), getFrom(handle));
 	if(conv == (iconv_t)(-1))
@@ -233,7 +234,7 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	
 	if(getFileFlag(handle))
 	{
-		int ret = validate_file(handle, parentKey);
+		int ret = validateFile(handle, parentKey);
 		if(ret)
 		{
 			return -1;

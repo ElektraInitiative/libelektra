@@ -9,7 +9,7 @@
 ## Introduction ##
 
 This plugin is a filter plugin that converts between different character encodings,
-or, if the `checkfile` key is set, validates the fileencoding.
+or, if the `checkfile` key is set, validates the fileencoding before reading the file.
 
 ## Purpose ##
 
