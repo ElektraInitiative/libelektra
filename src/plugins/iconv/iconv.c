@@ -109,10 +109,10 @@ setlocale (LC_ALL, "");
  * @param direction must be @c UTF8_TO (convert from current non-UTF-8 to
  * 	UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
  * @param string before the call: the string to be converted; after the call:
- *	reallocated to carry the converted string
+ * 	reallocated to carry the converted string
  * @param inputOutputByteSize before the call: the size of the string including
- *	leading NULL; after the call: the size of the converted string including
- *	leading NULL
+ * 	leading NULL; after the call: the size of the converted string including
+ * 	leading NULL
  * @retval 0 on success
  * @retval byte position of the wrong encoded character on failure
  * @ingroup backendhelper
@@ -136,16 +136,16 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	else converter=iconv_open(getFrom(handle),getTo(handle));
 
 	if (converter == (iconv_t)(-1)) return -1;
-	
+
 	int Multiplier;
-	
+
 	if(kdbbNeedsUTF8Conversion(handle))
 	{
 		Multiplier = 4;
 	}
 	else
 	{
-    	Multiplier = 1;
+		Multiplier = 1;
 	}
 
 	/* work with worst case, when all chars are wide */
@@ -162,7 +162,7 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
 		free(converted);
 		iconv_close(converter);
-		return (readCursor - *string);
+		return (readCursor - *string)+1;
 	}
 
 	/* calculate the UTF-8 string byte size, that will be returned */
@@ -196,11 +196,11 @@ static int validateFile(Plugin *handle, Key *parentKey)
 		unsigned long ret;
 		if ((ret = kdbbUTF8Engine(handle, UTF8_FROM, &ptr, &inBytes)))
 		{
-				char message[1024];
-				snprintf(message, sizeof(message), "Wrong encoding at: %lu", (counter+ret));
-				ELEKTRA_SET_ERROR (46, parentKey, message);
-				fclose(fp);
-				return -1;
+			char message[1024];
+			snprintf(message, sizeof(message), "Wrong encoding at: %lu", (counter+ret));
+			ELEKTRA_SET_ERROR (46, parentKey, message);
+			fclose(fp);
+			return -1;
 		}
 		counter += bytesRead;
 	}
@@ -232,7 +232,7 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksDel (pluginConfig);
 		return 1;
 	}
-	
+
 	if(getFileFlag(handle))
 	{
 		int ret = validateFile(handle, parentKey);
@@ -286,6 +286,8 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	Key *cur;
 	const Key *meta;
+
+	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
 
 	ksRewind (returned);
 
