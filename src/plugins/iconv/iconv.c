@@ -107,14 +107,14 @@ setlocale (LC_ALL, "");
  * this plugin can't be used.
  *
  * @param direction must be @c UTF8_TO (convert from current non-UTF-8 to
- * 		UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
+ * 	UTF-8) or @c UTF8_FROM (convert from UTF-8 to current non-UTF-8)
  * @param string before the call: the string to be converted; after the call:
- *		reallocated to carry the converted string
+ *	reallocated to carry the converted string
  * @param inputOutputByteSize before the call: the size of the string including
- *		leading NULL; after the call: the size of the converted string including
- *		leading NULL
+ *	leading NULL; after the call: the size of the converted string including
+ *	leading NULL
  * @retval 0 on success
- * @retval -1 on failure
+ * @retval byte position of the wrong encoded character on failure
  * @ingroup backendhelper
  *
  */
@@ -136,9 +136,20 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	else converter=iconv_open(getFrom(handle),getTo(handle));
 
 	if (converter == (iconv_t)(-1)) return -1;
+	
+	int Multiplier;
+	
+	if(kdbbNeedsUTF8Conversion(handle))
+	{
+		Multiplier = 4;
+	}
+	else
+	{
+    	Multiplier = 1;
+	}
 
 	/* work with worst case, when all chars are wide */
-	bufferSize=*inputOutputByteSize * 4;
+	bufferSize=*inputOutputByteSize * Multiplier;
 	converted=malloc(bufferSize);
 	if (!converted) return -1;
 
@@ -151,7 +162,7 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
 		free(converted);
 		iconv_close(converter);
-		return -1;
+		return (readCursor - *string);
 	}
 
 	/* calculate the UTF-8 string byte size, that will be returned */
@@ -173,37 +184,27 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 
 static int validateFile(Plugin *handle, Key *parentKey)
 {
-	iconv_t conv = iconv_open(getFrom(handle), getFrom(handle));
-	if(conv == (iconv_t)(-1))
-	    return -1;
 	const char *fileName = keyString(parentKey);
 	FILE *fp = fopen(fileName, "rb");
-	char inputBuffer[CHAR_SIZE_MAX];
-	char outputBuffer[CHAR_SIZE_MAX];
+	char inputBuffer[4096];
 	unsigned long counter = 0;
-	int retval = 0;
 	while(!feof(fp))
 	{
-		size_t bytesRead = fread(inputBuffer, 1, sizeof(inputBuffer), fp);
-		char *ptr = inputBuffer;
-		char *outptr = outputBuffer;
+		size_t bytesRead = fread(inputBuffer, CHAR_SIZE_MAX, (sizeof(inputBuffer)/CHAR_SIZE_MAX), fp);
 		size_t inBytes = bytesRead;
-		size_t outSize = sizeof(outputBuffer);
-		int ret = iconv(conv, &ptr, &inBytes, &outptr, &outSize);
-		if(ret == -1 && errno==EILSEQ)
+		char *ptr = inputBuffer;	
+		unsigned long ret;
+		if ((ret = kdbbUTF8Engine(handle, UTF8_FROM, &ptr, &inBytes)))
 		{
-			unsigned long position = (counter + (ptr - inputBuffer));
-			if(!retval)
-			{
-				ELEKTRA_SET_ERRORF(46, parentKey, "Invalid byte sequence detected at byte %lu", position);
-			}
-			retval |= ret;
+				char message[1024];
+				snprintf(message, sizeof(message), "Wrong encoding at: %lu", (counter+ret));
+				ELEKTRA_SET_ERROR (46, parentKey, message);
+				fclose(fp);
+				return -1;
 		}
 		counter += bytesRead;
 	}
-	fclose(fp);
-	iconv_close(conv);
-	return retval;
+	return 0;
 }
 
 int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
