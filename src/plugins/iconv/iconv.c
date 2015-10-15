@@ -242,6 +242,8 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 	}
 
+	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+
 	while ((cur = ksNext(returned)) != 0)
 	{
 		if (keyIsString (cur))
