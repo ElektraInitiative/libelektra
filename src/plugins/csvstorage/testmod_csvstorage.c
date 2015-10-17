@@ -37,7 +37,23 @@ static void testread(const char *file)
 
 	PLUGIN_CLOSE();
 }
+static void testreadfixcolcount(const char *file)
+{
+	printf("testing on %s:%s\n", srcdir_file(file), file);
+	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
+	KeySet *conf = ksNew (20,
+			keyNew ("system/useheader", KEY_VALUE, "1", KEY_END), 
+			keyNew ("system/columns", KEY_VALUE, "4", KEY_END),
+			KS_END);
+	PLUGIN_OPEN("csvstorage");
+	KeySet *ks = ksNew(0, KS_END);
+	int ret = plugin->kdbGet(plugin, ks, parentKey);
+	succeed_if (ret == (-1), "call to kdbGet was successful but shouldn't have been");
+	ksDel(ks);
+	keyDel(parentKey);
 
+	PLUGIN_CLOSE();
+}
 static void testreadwriteinvalid(const char *file)
 {
 
@@ -96,6 +112,7 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	testread("csvstorage/valid.csv");
+	testreadfixcolcount("csvstorage/valid.csv");
 	testreadwriteinvalid("csvstorage/invalid_columns.csv");
 	testwriteinvalidheader("csvstorage/invalid_columns_header2.csv");
 	testwritevalidemptycol("csvstorage/valid_empty_col.csv");
