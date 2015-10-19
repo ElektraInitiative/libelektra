@@ -18,7 +18,7 @@
 extern "C" char **environ;
 
 
-const long long nr_keys = 100;
+const long long nr_keys = 30;
 
 // long long iterations = 100000000000LL; // elitebenchmark lookup
 long long iterations = 1000000LL; // elitebenchmark
@@ -143,12 +143,49 @@ __attribute__((noinline)) void benchmark_libc_getenv()
 	dump << t.name << std::endl;
 }
 
+__attribute__((noinline)) void benchmark_getenv()
+{
+	static Timer t("elektra getenv");
+
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		getenv("HELLO");
+		__asm__("");
+	}
+	t.stop();
+	std::cout << t;
+	dump << t.name << std::endl;
+}
+
+__attribute__((noinline)) void benchmark_dl_next_getenv()
+{
+	static Timer t("dl next getenv");
+	typedef char *(* gfcn)(const char *);
+	union Sym{void*d; gfcn f;} sym;
+	sym.d = dlsym(RTLD_NEXT, "getenv");
+	gfcn dl_libc_getenv = sym.f;
+
+	t.start();
+	for (long long i=0; i<iterations; ++i)
+	{
+		dl_libc_getenv("HELLO");
+		__asm__("");
+	}
+	t.stop();
+	std::cout << t;
+	dump << t.name << std::endl;
+}
+
+
 __attribute__((noinline)) void benchmark_dl_libc_getenv()
 {
 	static Timer t("dl libc getenv");
 	typedef char *(* gfcn)(const char *);
 	union Sym{void*d; gfcn f;} sym;
-	sym.d = dlsym(RTLD_NEXT, "getenv");
+
+	void * handle = dlopen("/lib/x86_64-linux-gnu/libc-2.19.so", RTLD_NOW);
+	sym.d = dlsym(handle, "getenv");
 	gfcn dl_libc_getenv = sym.f;
 
 	t.start();
@@ -259,8 +296,10 @@ int main(int argc, char**argv)
 		std::cout << i << std::endl;
 
 		benchmark_nothing();
+		benchmark_getenv();
 		benchmark_libc_getenv();
-		// benchmark_dl_libc_getenv(); //TODO
+		benchmark_dl_libc_getenv(); //TODO
+		benchmark_dl_next_getenv(); //TODO
 		benchmark_bootstrap_getenv();
 
 		benchmark_kslookup();
