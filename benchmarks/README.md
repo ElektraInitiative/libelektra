@@ -14,7 +14,7 @@ and run the same benchmarks again.
 
 For running benchmarks you can use on unix:
 
- make benchmark
+   make benchmark
 
 which will run valgrind on it.
 
