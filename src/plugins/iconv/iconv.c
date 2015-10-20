@@ -26,6 +26,11 @@
 
 
 #include "iconv.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+
+#define CHAR_SIZE_MAX 4 //biggest character encoding, let the OS deal with the buffering
 
 static inline const char* getFrom(Plugin *handle)
 {
@@ -49,6 +54,15 @@ static inline const char* getTo(Plugin *handle)
 	else to = keyString(k);
 
 	return to;
+}
+
+static inline int getFileFlag(Plugin *handle)
+{
+	Key *k;
+	k = ksLookupByName(elektraPluginGetConfig(handle), "/checkfile", 0);
+	if(!k) return 0;
+	if(strcmp(keyString(k), "0")) return 1;
+	else return 0;
 }
 
 /**
@@ -100,7 +114,7 @@ setlocale (LC_ALL, "");
  * 	leading NULL; after the call: the size of the converted string including
  * 	leading NULL
  * @retval 0 on success
- * @retval -1 on failure
+ * @retval byte position of the wrong encoded character on failure
  * @ingroup backendhelper
  *
  */
@@ -117,15 +131,25 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	iconv_t converter;
 
 	if (!*inputOutputByteSize) return 0;
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
 
 	if (direction==UTF8_TO) converter=iconv_open(getTo(handle),getFrom(handle));
 	else converter=iconv_open(getFrom(handle),getTo(handle));
 
 	if (converter == (iconv_t)(-1)) return -1;
 
+	int Multiplier;
+
+	if(kdbbNeedsUTF8Conversion(handle))
+	{
+		Multiplier = 4;
+	}
+	else
+	{
+		Multiplier = 1;
+	}
+
 	/* work with worst case, when all chars are wide */
-	bufferSize=*inputOutputByteSize * 4;
+	bufferSize=*inputOutputByteSize * Multiplier;
 	converted=malloc(bufferSize);
 	if (!converted) return -1;
 
@@ -138,7 +162,7 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
 		free(converted);
 		iconv_close(converter);
-		return -1;
+		return (readCursor - *string)+1;
 	}
 
 	/* calculate the UTF-8 string byte size, that will be returned */
@@ -158,6 +182,30 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	return 0;
 }
 
+static int validateFile(Plugin *handle, Key *parentKey)
+{
+	const char *fileName = keyString(parentKey);
+	FILE *fp = fopen(fileName, "rb");
+	char inputBuffer[4096];
+	unsigned long counter = 0;
+	while(!feof(fp))
+	{
+		size_t bytesRead = fread(inputBuffer, CHAR_SIZE_MAX, (sizeof(inputBuffer)/CHAR_SIZE_MAX), fp);
+		size_t inBytes = bytesRead;
+		char *ptr = inputBuffer;	
+		unsigned long ret;
+		if ((ret = kdbbUTF8Engine(handle, UTF8_FROM, &ptr, &inBytes)))
+		{
+			char message[1024];
+			snprintf(message, sizeof(message), "Wrong encoding at: %lu", (counter+ret));
+			ELEKTRA_SET_ERROR (46, parentKey, message);
+			fclose(fp);
+			return -1;
+		}
+		counter += bytesRead;
+	}
+	return 0;
+}
 
 int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
@@ -183,6 +231,15 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return 1;
+	}
+
+	if(getFileFlag(handle))
+	{
+		int ret = validateFile(handle, parentKey);
+		if(ret)
+		{
+			return -1;
+		}
 	}
 
 	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
