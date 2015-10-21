@@ -47,3 +47,4 @@ usr/lib/elektra4/libelektra-rename.so*
 usr/lib/elektra4/libelektra-csvstorage.so*
 usr/lib/elektra4/libelektra-enum.so*
 usr/lib/elektra4/libelektra-lineendings.so*
+usr/lib/elektra4/libelektra-conditionals.so*
