@@ -9,7 +9,7 @@ There is some special handling for the metadata atime, mtime and ctime. They wil
 
 ## USAGE
 
-`kdb set <path> <meta-name> <meta-value>`  
+`kdb setmeta <path> <meta-name> <meta-value>`  
 
 Where `path` is the path to the key that the meta key is associated with,
 `meta-name` is the name of the meta key the user would like to set the value of (or create),
@@ -20,9 +20,9 @@ Note: Setting a meta key using this tool can be error-prone.
 ## EXAMPLES
 
 To set a meta key called `message` associated with the key `user/example/key` to the value `Hello World!`:  
-	`kdb set user/example/key message "Hello World!"`  
+	`kdb setmeta user/example/key message "Hello World!"`  
 
 To create a new key with a null value and a meta key associated with it to the value `10`:  
-	`kdb set user/example/key metakey 10`  
+	`kdb setmeta user/example/key metakey 10`  
 
 
