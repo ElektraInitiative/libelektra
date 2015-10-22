@@ -4,21 +4,57 @@
 #include <stdbool.h>
 #include <string.h>
 
+#if defined(WIN32)
+#define FSEP '\\'
+#else
 #define FSEP '/'
+#endif
+
+/* Slashes or backslashes to the elektra root.
+ * Depends on the place of the executable, ex:
+ * /foo/bar/elektra/bin/executable
+ * E:\\foo\bar\elektra\bin\executable
+ * In both cases the FSEP_UNTIL_ROOT = 3
+ */
 #define FSEP_UNTIL_ROOT 3
 #define TEMP_OUTPUTFILENAME "temp"
 
-// do not convert links with the following starting and ending
-// needs to be null terminated
+// Link Blacklist: do not convert links with the following starting and ending
 char * ignoreTargetEnd [] = { ".h", ".c" , ".cpp" , ".hpp" , "\0"};
 // ignore http, @ref and #anchor
 char * ignoreTargetStart [] = { "#", "@" , "http" , "\0"};
+// both need to be null terminated
 
-//t[char][state]
+void printHeader(FILE * output, char * filename, int FileDeliToRoot);
+void exitError (FILE * f1, FILE * f2, char * mes);
+
+/* These structs represent the transitions from the state machines.
+ * Means if char c is read and the state machine is in state s
+ * the next state is t[c][s].
+ */
 struct transitionLink { int t[10][7]; };
-struct transitionTitle { int t[10][7]; };
+struct transitionTitle { int t[10][4]; };
 
-//QUEST wtf??  stack?
+/* This transition array represents the regex for a link, namely:
+ *
+ * not(\!)\[.*\][' '\n\t]*\(.*\)
+ *
+ * 0 is the initial state and 5 the goal state.
+ * If the trap will be reached the input will be
+ * set back. This transition array matches the
+ * regex multiple times, witch is correct due to the
+ * fact that links can not be nested.
+ */
+
+#define LINK_START 0
+#define LINK_POSSIBLE(old, new) ((old == 0 || old == 5) && new == 2)
+#define LINK_FOUND(old, new) (state == 4 && newstate == 5)
+#define LINK_NAME(old, new) (((old == 2 || old == 3) && (new == 2  || new == 3)) \
+								|| (old == 3 && new == 4))
+#define LINK_TARGET(old, new) (state == 4 && newstate == 4)
+#define LINK_TRAP(old, new) (new == 6)
+#define LINK_NOLINK(old, new) (newstate == 0 || newstate == 1)
+
 struct transitionLink genLinkTransitionTable() {
     struct transitionLink out = {
         {//char\state    0  1  2  3  4  5  6(trap)
@@ -30,26 +66,36 @@ struct transitionLink genLinkTransitionTable() {
 		/* ( */			{0, 0, 2, 4, 4, 0, 0},
 		/* ) */			{0, 0, 2, 6, 5, 0, 0},
 		/* # */			{0, 0, 2, 6, 4, 0, 0},
-		/* [a-z0-9] */	{0, 0, 2, 6, 4, 0, 0},
 		/* other*/		{0, 0, 2, 6, 4, 0, 0},
         }
     };
     return out;
 }
 
+/* The next transition array matches the first title,
+ * with the following regex:
+ *
+ * ^' '*#+.*$
+ *
+ * TITLE_START defines the start state and TITLE_ISGOAL ()
+ * checks whether a title has matched.
+ */
+
+#define TITLE_START 0
+#define TITLE_ISGOAL(old, new) (old == 3 && new == 0)
+
 struct transitionTitle genTitleTransitionTable() {
     struct transitionTitle out = {
-        {//char\state    0  1  2  3  4  5  6(trap)
-		/* ! */			{1, 1, 7, 7, 7, 5, 0},
-		/* [ */			{1, 1, 7, 7, 7, 5, 0},
-		/* ] */			{1, 1, 7, 7, 7, 5, 0},
-		/* blank */		{2, 1, 2, 4, 4, 5, 0},
-		/* \n */		{0, 0, 7, 7, 7, 0, 0},
-		/* ( */			{1, 1, 7, 7, 7, 5, 0},
-		/* ) */			{1, 1, 7, 7, 7, 5, 0},
-		/* # */			{1, 1, 3, 3, 7, 5, 0},
-		/* [a-z0-9] */	{1, 1, 7, 7, 5, 5, 0},
-		/* other*/		{1, 1, 7, 7, 7, 5, 0},
+        {//char\state    0  1  2  3
+		/* ! */			{1, 1, 1, 3},
+		/* [ */			{1, 1, 1, 3},
+		/* ] */			{1, 1, 1, 3},
+		/* blank */		{2, 1, 2, 3},
+		/* \n */		{0, 0, 1, 0},
+		/* ( */			{1, 1, 1, 3},
+		/* ) */			{1, 1, 1, 3},
+		/* # */			{3, 1, 3, 3},
+		/* other*/		{1, 1, 1, 3},
         }
     };
     return out;
@@ -58,7 +104,6 @@ struct transitionTitle genTitleTransitionTable() {
 // Maps a given char to a int, used for the transition table
 int resolveChar (char c)
 {
-	if (isalnum (c)) return 8;
 	if (c != '\n' && isblank (c)) return 3;
 	switch (c)
 	{
@@ -69,55 +114,75 @@ int resolveChar (char c)
 		case '(': return 5;
 		case ')': return 6;
 		case '#': return 7;
-		default: return 9; // all other
+		default: return 8; // all other
 	}
 }
 
-
-int main (int argc, char *argv[])
+/* This function prints out the input to the output, while printing the title
+ * regex is applied. If a title is found a header ("{ #header }") will
+ * be printed out additionally to the output and at the end true will
+ * be returned. If no title is found false will be returned.
+ */
+bool convertTitle (FILE * input, FILE *  output, char * filename, int FileDeliToRoot)
 {
-	if (argc < 2)
+	int state = TITLE_START;
+	int newstate;
+	char c;
+	bool titleFound = false;
+	struct transitionTitle transitions = genTitleTransitionTable ();
+	while ((c = fgetc (input)) != EOF)
 	{
-		fprintf (stderr, "args error\n");
-		return EXIT_FAILURE;
+		newstate = transitions.t[resolveChar (c)][state];
+
+		if (!titleFound && TITLE_ISGOAL (state, newstate))
+		{
+			titleFound = true;
+			printHeader (output, filename, FileDeliToRoot);
+		}
+
+		fprintf (output, "%c", c);
+
+		state = newstate;
 	}
+	return titleFound;
+}
 
-	// detect the project folder depth
-	int cFileDeliToRoot = -(FSEP_UNTIL_ROOT-1);
-	for (int i = strlen (argv[0]);i >= 0;--i)
-	{
-		if(argv[0][i] == FSEP) ++cFileDeliToRoot;
-	}
-	//~ fprintf (stderr, "%i\n", cFileDeliToRoot);
-
-	FILE * input = fopen (argv[1], "r");
-	FILE * output = fopen (TEMP_OUTPUTFILENAME, "w");
-
+/* This procedure reads from the input and writes to the output, while
+ * processing the file it converts all not Blacklisted links.
+ */
+void convertLinks (FILE * input, FILE * output)
+{
 	char c;
 	fpos_t pos;
-	int state = 0;
+	int state = LINK_START;
 	int newstate;
 	int index = 0;
 	unsigned int len = 0;
-	/*  |--index--||-len-|
+	/* index and len help to convert a link if found.
+	 *
+	 *  |--index--||-len-|
 	 * [link name](foo/bar)
 	 */
 	struct transitionLink transitions = genLinkTransitionTable ();
 	while ((c = fgetc (input)) != EOF)
 	{
 		newstate = transitions.t[resolveChar (c)][state];
-		if ((state == 0 || state == 5)  && newstate == 2)
+		if (LINK_POSSIBLE (state, newstate))
 		{
 			// first [, possible link
-			fgetpos (input, &pos);
+			// position is saved for setting back
+			if (fgetpos (input, &pos))
+				exitError (input, output, "fgetpos");
+
 			index = 0;
 			len = 0;
 		}
-		if (state == 4 && newstate == 5)
+		if (LINK_FOUND (state, newstate))
 		{
-			// found link
-			fprintf (output, "link  i=%i  l=%i\n",index,len);
-			fsetpos (input, &pos);
+			//set back and convert link if not blacklisted
+			if (fsetpos (input, &pos))
+				exitError (input, output, "fsetpos");
+
 			fprintf (output, "["); //first char got lost
 			//print link name
 			while (index > 0)
@@ -127,7 +192,9 @@ int main (int argc, char *argv[])
 			}
 			//extract target
 			char target [len * sizeof (char) + 1];
-			fread (&target[0], sizeof (char), len, input);
+			if (fread (&target[0], sizeof (char), len, input) != len)
+				exitError (input, output, "fread");
+
 			target[len] = '\0';
 
 			//check target
@@ -159,65 +226,128 @@ int main (int argc, char *argv[])
 			//print target
 			if (targetOK)
 			{
+				fprintf (output, "@ref ");
 				for (unsigned int i = 0;i < len;++i)
 				{
 					switch (target[i])
 					{
+						case '.':
 						case FSEP: fprintf (output, "_");
-									break;
-						case '.': i = len; // abort
 									break;
 						default: fprintf (output, "%c", target[i]);
 					}
 				}
 			}
-			else fprintf (output, "%s",target);
+			else fprintf (output, "%s", target);
 			fprintf (output, "%c", fgetc (input)); // print ")"
 		}
-		if (((state == 2 || state == 3) && (newstate == 2  || newstate == 3))
-			|| (state == 3 && newstate == 4)	)
+		if (LINK_NAME (state, newstate))
 		{
 			++index;
 		}
-		if (state == 4 && newstate == 4) ++len;
-		if (newstate == 6)
+		if (LINK_TARGET (state, newstate)) ++len;
+		if (LINK_TRAP (state, newstate))
 		{
 			//trap, reset
-			fsetpos (input, &pos);
+			if (fsetpos (input, &pos))
+				exitError (input, output, "fsetpos");
 			fprintf (output, "["); //first char got lost
-			state = 0;
+			state = LINK_START;
 			continue;
 		}
-		if(newstate == 0 || newstate == 1)
+		if(LINK_NOLINK (state, newstate))
 		{
-			// print all other then links
+			// print all other content
 			fprintf (output, "%c", c);
 		}
 		state = newstate;
 	}
-	fclose (input);
-	fclose (output);
+}
 
-	//2nd pass
-	input = fopen (TEMP_OUTPUTFILENAME, "r");
-	fpos_t startPos;
-	fgetpos (&startPos);
-	state = 0;
-	while ((c = fgetc (input)) != EOF)
+int main (int argc, char *argv[])
+{
+	if (argc < 2)
 	{
-		fprintf (stdout, "%c", c);
+		fprintf (stderr, "args error\n");
+		return EXIT_FAILURE;
 	}
 
+	// detect the project folder depth
+	int cFileDeliToRoot = -(FSEP_UNTIL_ROOT-1);
+	for (int i = strlen (argv[0]);i >= 0;--i)
+	{
+		if(argv[0][i] == FSEP) ++cFileDeliToRoot;
+	}
+	//~ fprintf (stderr, "%i\n", cFileDeliToRoot);
 
 
+	//1st pass
+	FILE * input = fopen (argv[1], "r");
+	FILE * output = fopen (TEMP_OUTPUTFILENAME, "w+");
 
+	//save start of each file
+	fpos_t startInput;
+	fpos_t startTempFile;
+	fgetpos (input, &startInput);
+	fgetpos (output, &startTempFile);
 
-
-
-
-
+	if(!convertTitle (input, output, argv[1], cFileDeliToRoot))
+	{
+		//reset input file
+		fsetpos (input, &startInput);
+		fclose (output);
+		output = stdout;
+		//Generate Title
+		char * title = strrchr (argv[1], FSEP);
+		fprintf (output, "# %s #", &title[1]);
+		printHeader (output, argv[1], cFileDeliToRoot);
+		fprintf (output, "\n");
+		//2nd pass
+		convertLinks (input, output);
+	} else
+	{
+		//reset temp file
+		fsetpos (output, &startTempFile);
+		//2nd pass
+		convertLinks (output, stdout);
+		fclose (output);
+	}
 	fclose (input);
 	remove (TEMP_OUTPUTFILENAME);
+
 	return EXIT_SUCCESS;
 }
 
+void printHeader(FILE * output, char * filename, int FileDeliToRoot)
+{
+	fprintf (output, " {#");
+	int FileDeliCount = 0;
+	for (size_t i = 0; i < strlen (filename);++i)
+	{
+		if (FileDeliToRoot <= FileDeliCount)
+		{
+			switch (filename[i])
+			{
+				case '.':
+				case FSEP: fprintf (output, "_");
+							break;
+				default: fprintf (output, "%c", filename[i]);
+			}
+		}
+		if (filename[i] == FSEP) ++FileDeliCount;
+	}
+	fprintf (output, "}");
+}
+
+void exitError (FILE * f1, FILE * f2, char * mes)
+{
+	if (f1 != stdout)
+		fclose (f1);
+
+	if (f2 != stdout)
+		fclose (f2);
+
+	remove (TEMP_OUTPUTFILENAME);
+	fprintf (stderr ,"%s Error", mes);
+	exit (EXIT_FAILURE);
+}

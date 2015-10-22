@@ -57,6 +57,8 @@ if (DOXYGEN_FOUND)
 
 	find_package(Perl)
 
+	set (MARKDOWN_FILTER ${CMAKE_BINARY_DIR}/bin/markdown_filter)
+
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
 		"${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
@@ -85,6 +87,9 @@ if (DOXYGEN_FOUND)
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf
 		)
 	endif (WITH_LATEX)
+
+	add_executable (markdown_filter markdown_filter/markdown_filter.c)
+	add_dependencies (html markdown_filter)
 else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)

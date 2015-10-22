@@ -768,7 +768,8 @@ INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
                          @PROJECT_SOURCE_DIR@/src/libtools \
                          @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
                          @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
-                         @PROJECT_SOURCE_DIR@/src/libloader/doc.c
+                         @PROJECT_SOURCE_DIR@/src/libloader/doc.c \
+                         @PROJECT_SOURCE_DIR@/README.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -911,7 +912,7 @@ INPUT_FILTER           =
 # filters are used. If the FILTER_PATTERNS tag is empty or if none of the
 # patterns match the file name, INPUT_FILTER is applied.
 
-FILTER_PATTERNS        =
+FILTER_PATTERNS        = *.md=@MARKDOWN_FILTER@
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using
 # INPUT_FILTER ) will also be used to filter the input files that are used for
