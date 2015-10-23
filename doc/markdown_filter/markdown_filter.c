@@ -11,13 +11,13 @@
 #endif
 
 /* Slashes or backslashes to the elektra root.
- * Depends on the place of the executable, ex:
- * /foo/bar/elektra/bin/executable
- * E:\\foo\bar\elektra\bin\executable
+ * Depends on the place of the executable, example:
+ * /foo/bar/elektra/build/bin/executable
+ * E:\\foo\bar\elektra\build\bin\executable
  * In both cases the FSEP_UNTIL_ROOT = 3
  */
 #define FSEP_UNTIL_ROOT 3
-#define TEMP_OUTPUTFILENAME "temp"
+#define TEMP_FILENAME "temp"
 
 // Link Blacklist: do not convert links with the following starting and ending
 char * ignoreTargetEnd [] = { ".h", ".c" , ".cpp" , ".hpp" , "\0"};
@@ -172,7 +172,7 @@ void convertLinks (FILE * input, FILE * output)
 			// first [, possible link
 			// position is saved for setting back
 			if (fgetpos (input, &pos))
-				exitError (input, output, "fgetpos");
+				exitError (input, NULL, "fgetpos");
 
 			index = 0;
 			len = 0;
@@ -181,7 +181,7 @@ void convertLinks (FILE * input, FILE * output)
 		{
 			//set back and convert link if not blacklisted
 			if (fsetpos (input, &pos))
-				exitError (input, output, "fsetpos");
+				exitError (input, NULL, "fsetpos");
 
 			fprintf (output, "["); //first char got lost
 			//print link name
@@ -193,7 +193,7 @@ void convertLinks (FILE * input, FILE * output)
 			//extract target
 			char target [len * sizeof (char) + 1];
 			if (fread (&target[0], sizeof (char), len, input) != len)
-				exitError (input, output, "fread");
+				exitError (input, NULL, "fread");
 
 			target[len] = '\0';
 
@@ -250,7 +250,8 @@ void convertLinks (FILE * input, FILE * output)
 		{
 			//trap, reset
 			if (fsetpos (input, &pos))
-				exitError (input, output, "fsetpos");
+				exitError (input, NULL, "fsetpos");
+
 			fprintf (output, "["); //first char got lost
 			state = LINK_START;
 			continue;
@@ -272,52 +273,84 @@ int main (int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	// detect the project folder depth
+	/* Detect the project folder depth by counting the slashes or
+	 * backslashes to the root of the path.
+	 */
 	int cFileDeliToRoot = -(FSEP_UNTIL_ROOT-1);
 	for (int i = strlen (argv[0]);i >= 0;--i)
 	{
 		if(argv[0][i] == FSEP) ++cFileDeliToRoot;
 	}
-	//~ fprintf (stderr, "%i\n", cFileDeliToRoot);
-
 
 	//1st pass
 	FILE * input = fopen (argv[1], "r");
-	FILE * output = fopen (TEMP_OUTPUTFILENAME, "w+");
+	if (!input)
+	{
+		fprintf (stderr ,"fopen Error\n");
+		return EXIT_FAILURE;
+	}
+	FILE * output = fopen (TEMP_FILENAME, "w+");
+	if (!output)
+	{
+		fclose (input);
+		fprintf (stderr ,"fopen Error\n");
+		return EXIT_FAILURE;
+	}
 
 	//save start of each file
 	fpos_t startInput;
 	fpos_t startTempFile;
-	fgetpos (input, &startInput);
-	fgetpos (output, &startTempFile);
+	if (fgetpos (input, &startInput))
+		exitError (input, output, "fgetpos");
+	if (fgetpos (output, &startTempFile))
+		exitError (input, output, "fgetpos");
 
 	if(!convertTitle (input, output, argv[1], cFileDeliToRoot))
 	{
+		/* No title found in file, therefore generate one and
+		 * print it out.
+		 */
 		//reset input file
-		fsetpos (input, &startInput);
+		if (fsetpos (input, &startInput))
+			exitError (input, output, "fsetpos");
+
 		fclose (output);
 		output = stdout;
 		//Generate Title
 		char * title = strrchr (argv[1], FSEP);
+		if (!title)
+			exitError (input, NULL, "strrchr");
+
 		fprintf (output, "# %s #", &title[1]);
 		printHeader (output, argv[1], cFileDeliToRoot);
 		fprintf (output, "\n");
 		//2nd pass
 		convertLinks (input, output);
+		fclose (input);
 	} else
 	{
+		fclose (input);
 		//reset temp file
-		fsetpos (output, &startTempFile);
+		if (fsetpos (output, &startTempFile))
+			exitError (output, NULL, "fsetpos");
+
 		//2nd pass
 		convertLinks (output, stdout);
 		fclose (output);
 	}
-	fclose (input);
-	remove (TEMP_OUTPUTFILENAME);
+	remove (TEMP_FILENAME);
 
 	return EXIT_SUCCESS;
 }
 
+/* Prints a header with the information given in filename, the
+ * elektraroot is determined with the number of slashes or backslashes
+ * from the system root to the elektra root folder.
+ * Folder separator and dots will be replaced with underscores. Example:
+ * /foo/bar/elektraroot/doc/help/help.md
+ * is translated to:
+ * doc_help_help_md
+ */
 void printHeader(FILE * output, char * filename, int FileDeliToRoot)
 {
 	fprintf (output, " {#");
@@ -341,13 +374,13 @@ void printHeader(FILE * output, char * filename, int FileDeliToRoot)
 
 void exitError (FILE * f1, FILE * f2, char * mes)
 {
-	if (f1 != stdout)
+	if (f1)
 		fclose (f1);
 
-	if (f2 != stdout)
+	if (f2)
 		fclose (f2);
 
-	remove (TEMP_OUTPUTFILENAME);
-	fprintf (stderr ,"%s Error", mes);
+	remove (TEMP_FILENAME);
+	fprintf (stderr ,"%s Error\n", mes);
 	exit (EXIT_FAILURE);
 }
