@@ -48,8 +48,6 @@ generate graphic for overview of plugins
 
 ## bugs
 
-strace mounted as non-dir access dir?
-
 start writing/updating FAQ
 
 
