@@ -317,7 +317,7 @@ TEST_F(Simple, GetAppendCascading)
 	EXPECT_EQ(parentKey.getString(), "");
 	kdb.get(ks, parentKey);
 	EXPECT_EQ(parentKey.getName(), myRoot);
-	EXPECT_EQ(basename(parentKey.getString().c_str()), "kdbFile.dump");
+	EXPECT_EQ(parentKey.getString(), KDB_DB_SYSTEM "/kdbFile.dump");
 	parentKey.setString("");
 
 	ASSERT_EQ(ks.size(), 1) << "no key stayed" << ks;
@@ -342,7 +342,7 @@ TEST_F(Simple, GetAppendCascading)
 	EXPECT_EQ(parentKey.getString(), "");
 	kdb.get(ks2, parentKey);
 	EXPECT_EQ(parentKey.getName(), myRoot);
-	EXPECT_EQ(basename(parentKey.getString().c_str()), "kdbFile.dump");
+	EXPECT_EQ(parentKey.getString(), KDB_DB_SYSTEM "/kdbFile.dump");
 	ASSERT_EQ(ks2.size(), 0) << "got keys from freshly mounted backends";
 }
 
