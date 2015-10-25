@@ -451,8 +451,12 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 extern "C" pid_t fork()
 {
 	pid_t ret = ffork.f();
-	// reinitialize mutex (fixes deadlock in akonadictl)
-	elektraGetEnvMutex = ELEKTRA_MUTEX_INIT;
+	if (ret==0)
+	{
+		// reinitialize mutex in new process
+		// fixes deadlock in akonadictl
+		elektraGetEnvMutex = ELEKTRA_MUTEX_INIT;
+	}
 	return ret;
 }
 
