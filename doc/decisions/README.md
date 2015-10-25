@@ -21,6 +21,7 @@ section here.
 - [CMake spec](cmake_spec.md)
 - [Empty Files](empty_files.md)
 - [Internal Cache](internal_cache.md)
+- [Definition of Bool](bool.md)
 
 ## Drafts
 

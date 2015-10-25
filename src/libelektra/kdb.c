@@ -177,6 +177,7 @@ KDB * kdbOpen(Key *errorKey)
 
 	int errnosave = errno;
 	handle = elektraCalloc(sizeof(struct _KDB));
+	Key *initialParent = keyDup (errorKey);
 
 	handle->modules = ksNew(0, KS_END);
 	if(elektraModulesInit(handle->modules, errorKey) == -1)
@@ -185,6 +186,10 @@ KDB * kdbOpen(Key *errorKey)
 		elektraFree(handle);
 		ELEKTRA_SET_ERROR(94, errorKey,
 				"elektraModulesInit returned with -1");
+
+		keySetName(errorKey, keyName(initialParent));
+		keySetString(errorKey, keyString(initialParent));
+		keyDel (initialParent);
 		errno = errnosave;
 		return 0;
 	}
@@ -197,6 +202,10 @@ KDB * kdbOpen(Key *errorKey)
 		elektraFree(handle);
 		ELEKTRA_SET_ERROR(40, errorKey,
 				"could not open default backend");
+
+		keySetName(errorKey, keyName(initialParent));
+		keySetString(errorKey, keyString(initialParent));
+		keyDel (initialParent);
 		errno = errnosave;
 		return 0;
 	}
@@ -207,7 +216,6 @@ KDB * kdbOpen(Key *errorKey)
 
 	keys=ksNew(0, KS_END);
 
-	Key *initialParent = keyDup (errorKey);
 	keySetName(errorKey, KDB_KEY_MOUNTPOINTS);
 	keySetString(errorKey, "kdbOpen(): get");
 
@@ -222,6 +230,7 @@ KDB * kdbOpen(Key *errorKey)
 		handle->trie = 0;
 
 		keySetName(errorKey, keyName(initialParent));
+		keySetString(errorKey, keyString(initialParent));
 		keyDel(initialParent);
 		errno = errnosave;
 		return handle;
@@ -318,6 +327,7 @@ int kdbClose(KDB *handle, Key *errorKey)
 		return -1;
 	}
 
+	Key *initialParent = keyDup (errorKey);
 	int errnosave = errno;
 	elektraSplitDel (handle->split);
 
@@ -339,6 +349,9 @@ int kdbClose(KDB *handle, Key *errorKey)
 
 	elektraFree(handle);
 
+	keySetName(errorKey, keyName(initialParent));
+	keySetString(errorKey, keyString(initialParent));
+	keyDel(initialParent);
 	errno = errnosave;
 	return 0;
 }

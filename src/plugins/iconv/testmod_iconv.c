@@ -15,7 +15,7 @@
 #include <langinfo.h>
 
 #include <tests_internal.h>
-
+#include <tests_plugin.h>
 #define NR_KEYS 1
 
 void test_latin1_to_utf8()
@@ -181,7 +181,21 @@ void test_utf8_conversation()
 	ksDel (modules);
 }
 
+static void test_checkfile_invalid()
+{
+	Key *parentKey = keyNew ("user/tests/iconv", KEY_VALUE, srcdir_file("iconv/invalid_file"), KEY_END);
+	KeySet *conf = ksNew (2,
+			keyNew ("user/from", KEY_VALUE, "UTF-8", KEY_END),
+			keyNew ("user/checkfile", KEY_VALUE, "1", KEY_END),
+			KS_END);
+	KeySet *ks = ksNew(0, KS_END);
+	PLUGIN_OPEN("iconv");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) != 1, "error, should have failed");
+	ksDel(ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE();	
 
+}
 
 int main(int argc, char** argv)
 {
@@ -194,7 +208,7 @@ int main(int argc, char** argv)
 	test_utf8_to_latin1();
 	test_utf8_needed();
 	test_utf8_conversation();
-
+	test_checkfile_invalid();
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

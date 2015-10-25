@@ -74,7 +74,7 @@ files:
 
 ## Filter ##
 
-Rewrite unwanted characters with different techniques
+Rewrite unwanted characters with different techniques:
 
 - [ccode](ccode) using the technique from arrays in the programming
   language C
@@ -89,7 +89,7 @@ Doing other stuff:
 
 - [crypto](crypto) encrypts / decrypts confidential values
 - [iconv](iconv) make sure the configuration will have correct
-  charachter encoding
+  character encoding
 - [hidden](hidden) 
 - [null](null) takes care of null values and other binary specialities
 

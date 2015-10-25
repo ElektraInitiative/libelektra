@@ -62,7 +62,7 @@ static void test_ifthenltint()
 	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("conditionals");
 	ksRewind(ks);
-	succeed_if(plugin->kdbGet(plugin, ks, parentKey) == -1, "error");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) == 1, "error");
 	ksDel(ks);
 	keyDel(parentKey);
 	PLUGIN_CLOSE();

@@ -92,7 +92,7 @@ static Key *getKeyByOrderNr(KeySet *ks, unsigned long n)
 	return NULL;
 }
 
-static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader)
+static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader, unsigned long fixColumnCount)
 {
 	const char *fileName;
 	fileName = keyString(parentKey);
@@ -129,7 +129,16 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	
 	unsigned long columns = 0;
 	columns = getColumnCount(lineBuffer, delim);
-
+	if(fixColumnCount)
+	{
+		if(columns != fixColumnCount)
+		{
+			ELEKTRA_SET_ERROR(117, parentKey, "illegal number of columns in Header line");
+			elektraFree(lineBuffer);
+			fclose(fp);
+			return -1;
+		}
+	}
 	unsigned long colCounter = 0;
 	unsigned long lineCounter = 0;
 	unsigned long offset = 0;
@@ -225,6 +234,15 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		ksAppendKey(returned, keyDup(dirKey));
 		if(colCounter != columns)
 		{
+			if(fixColumnCount)
+			{
+				ELEKTRA_SET_ERRORF(117, parentKey, "illegal number of columns in line %lu", lineCounter);
+				elektraFree(lineBuffer);
+				fclose(fp);
+				keyDel(dirKey);
+				ksDel(header);
+				return -1;
+			}
 			ELEKTRA_ADD_WARNINGF(118, parentKey, "illegal number of columns in line %lu", lineCounter);
 		}
 		++lineCounter;
@@ -275,13 +293,22 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if(readHeaderKey)
 	{
 		const char *printHeaderString = keyString(readHeaderKey);
-		if((printHeaderString[0] - '0') == 1)
+		if(strcmp(printHeaderString, "0"))
 		{
 			useHeader = 1;
 		}
 	}
+	unsigned long fixColumnCount = 0;
+	Key *fixColumnCountKey = ksLookupByName(config, "/columns", 0);
+	if(fixColumnCountKey)
+	{
+	    if(keyString(fixColumnCountKey))
+	    {
+		fixColumnCount = atol(keyString(fixColumnCountKey));
+	    }
+	}
 	int nr_keys;
-	nr_keys = csvRead(returned, parentKey, delim, useHeader);
+	nr_keys = csvRead(returned, parentKey, delim, useHeader, fixColumnCount);
 
 	if (nr_keys == -1) return -1;
 	return 1;

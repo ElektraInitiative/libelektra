@@ -16,9 +16,6 @@
 # define _GNU_SOURCE // for RTLD_NEXT (except BSDI)
 #endif
 
-#define ELEKTRA_GETENV_USE_LOCKS 1
-
-
 #include <kdbgetenv.h>
 #include <kdbconfig.h>
 
@@ -47,6 +44,16 @@ using namespace std;
 using namespace ckdb;
 
 #define LOG if(elektraLog) (*elektraLog)
+
+#define ELEKTRA_GETENV_USE_LOCKS 1
+
+#if ELEKTRA_GETENV_USE_LOCKS
+# if defined(__APPLE__) && defined(__MACH__)
+#  define ELEKTRA_MUTEX_INIT PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+# else
+#  define ELEKTRA_MUTEX_INIT PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+# endif
+#endif
 
 namespace ckdb
 {
@@ -93,6 +100,9 @@ typedef char *(* gfcn)(const char *);
 union Start{void*d; fcn f;} start; // symbol for libc pre-main
 union Sym{void*d; gfcn f;} sym, ssym; // symbols for libc (secure) getenv
 
+typedef pid_t(* ffcn)(void);
+union Fork{void*d; ffcn f;} ffork; // symbols for libc fork
+
 std::chrono::milliseconds elektraReloadTimeout;
 std::chrono::system_clock::time_point elektraReloadNext;
 std::shared_ptr<ostream>elektraLog;
@@ -107,14 +117,7 @@ int to_(int c)
 	return c;
 }
 
-
-#if ELEKTRA_GETENV_USE_LOCKS
-# if defined(__APPLE__) && defined(__MACH__)
-	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
-# else
-	pthread_mutex_t elektraGetEnvMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-# endif
-#endif
+pthread_mutex_t elektraGetEnvMutex = ELEKTRA_MUTEX_INIT;
 
 
 
@@ -436,6 +439,7 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	start.d = dlsym(RTLD_NEXT, "__libc_start_main");
 	sym.d = dlsym(RTLD_NEXT, "getenv");
 	ssym.d = dlsym(RTLD_NEXT, "secure_getenv");
+	ffork.d = dlsym(RTLD_NEXT, "fork");
 
 	elektraOpen(&argc, argv);
 	elektraUnlockMutex(); // dlsym mutex end
@@ -444,6 +448,17 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	return ret;
 }
 
+extern "C" pid_t fork()
+{
+	pid_t ret = ffork.f();
+	if (ret==0)
+	{
+		// reinitialize mutex in new process
+		// fixes deadlock in akonadictl
+		elektraGetEnvMutex = ELEKTRA_MUTEX_INIT;
+	}
+	return ret;
+}
 
 Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, ELEKTRA_UNUSED Key *key, Key *found, option_t option)
 {

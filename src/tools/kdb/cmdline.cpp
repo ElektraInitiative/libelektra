@@ -220,7 +220,8 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"namespace", required_argument, 0, 'N'};
 		long_options.push_back(o);
-		helpText += "-N --namespace ns        Specify the namespace to use when writing cascading keys.\n";
+		helpText += "-N --namespace ns        Specify the namespace to use when writing cascading keys\n"
+			    "                         Default: value of /sw/kdb/current/namespace or user.\n";
 	}
 	optionPos = acceptedOptions.find('c');
 	if (optionPos!=string::npos)
