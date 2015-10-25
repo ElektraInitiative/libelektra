@@ -299,6 +299,7 @@ void addLayers()
 {
 	using namespace ckdb;
 	Key *c;
+	KeySet  * lookupConfig = ksDup(elektraConfig);
 	ksRewind(elektraConfig);
 	std::string prefix = "/env/layer/";
 	while ((c = ksNext(elektraConfig)))
@@ -306,12 +307,15 @@ void addLayers()
 		std::string fullName = keyName(c);
 		if (fullName.substr(fullName.find('/'), prefix.size()) == prefix)
 		{
-			string name = fullName.substr(fullName.find_last_of('/')+1);
-			string value = keyString(c);
+			std::string cascadingName = fullName.substr(fullName.find('/'));
+			Key * found = ksLookupByName(lookupConfig, cascadingName.c_str(), 0);
+			string name = fullName.substr(fullName.find('/')+prefix.size());
+			string value = keyString(found);
 			LOG << "Will add layer " << name << " with " << value << endl;
 			elektraEnvContext.addLayer(name, value);
 		}
 	}
+	ksDel(lookupConfig);
 }
 
 void elektraSingleCleanup()
