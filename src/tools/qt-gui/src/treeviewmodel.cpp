@@ -617,6 +617,10 @@ KeySet handleConflict(KeySet const & theirs, KeySet const & ours)
 							  TheirMergeKeys (theirs, root),
 							  root));
 
+	std::cout << "guitest: now after merge" << std::endl;
+
+	printKeys(theirs, base, result.getMergedKeys());
+
 	if (!result.hasConflicts ())
 	{
 		KeySet resultKeys = result.getMergedKeys();
