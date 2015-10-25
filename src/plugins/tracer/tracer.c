@@ -38,7 +38,7 @@ int elektraTracerOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSE
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key *k;
 
-	printf ("tracer: open(%p): ", (void*)handle);
+	printf ("tracer: open(%p, %s = %s): ", (void*)handle, keyName(errorKey), keyString(errorKey));
 	while ((k = ksNext(config))!=0) { printf ("%s=%s ", keyName(k), keyString(k)); ++nr_keys; }
 	printf ("%zd\n", nr_keys);
 	*/
@@ -49,10 +49,10 @@ int elektraTracerOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSE
 int elektraTracerClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
 	/*
-	printf ("tracer: close(%p)\n", (void*)handle);
+	printf ("tracer: close(%p, %s = %s)\n", (void*)handle, keyName(errorKey), keyString(errorKey));
 	*/
 
-	return 0; /* success */
+	return 0;
 }
 
 int elektraTracerGet(Plugin *handle, KeySet *returned, Key *parentKey)
