@@ -10,10 +10,11 @@ This command removes key(s) from the Key database.
 `kdb rm <path>`  
 
 Where `path` is the path of the key(s) you want to remove.  
+Note that when using the `-r` flag, `path` as well as all of the keys below it will be removed.  
 
 ## EXAMPLES
 
-To remove a KeySet:  
+To remove a multiple keys:  
 	`kdb rm -r user/example`  
 
 To remove a single key:  
