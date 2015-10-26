@@ -36,17 +36,22 @@ int SetCommand::execute(Cmdline const& cl)
 	}
 
 	KeySet conf;
-	if (name[0] == '/')
-	{
-		name = cl.ns + name;
-		std::cout << "Using name " << name << std::endl;
-	}
 	Key k(name, KEY_END);
 
 	// do not resume on any get errors
 	// otherwise the user might break
 	// the config
 	kdb.get(conf, k);
+
+	if (name[0] == '/')
+	{
+		// fix name for lookup
+		name = cl.ns + name;
+		std::cout << "Using name " << name << std::endl;
+
+		// fix k for kdb.set later
+		k.setName(name);
+	}
 
 	Key key = conf.lookup(name);
 

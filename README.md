@@ -95,6 +95,7 @@ And in terms of quality, we want:
 
  * Elektra uses the [BSD licence](doc/COPYING).
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
+ * Elektra can be thought of a virtual file system for configuration.
  * Elektra supports mounting of existing configuration files into the global key database.
  * Elektra has dozens of [Plugins](src/plugins#introduction) that make it possible
    to have a tiny core, but still support many features, including:
@@ -107,13 +108,14 @@ And in terms of quality, we want:
  * Elektra (except for some [plugins](src/plugins#introduction)) is portable and completely written in Ansi-C99.
  * Elektra (except for some [plugins](src/plugins#introduction)) has no external dependency.
  * Elektra is suitable for embedded systems and early boot stage programs.
- * Elektra supports comments and other non-configuration information by metadata.
+ * Elektra uses simple key/value pairs that include metadata for any other information.
  * Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
  * Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
 
 
 ## News ##
 
+ - [17 Sep 2015 0.8.13](http://doc.libelektra.org/news/3c00a5f1-c017-4555-92b5-a2cf6e0803e3.html) adds elektrify-getenv
  - [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a.html) adds dir namespace
  - [03 Apr 2015 0.8.11](http://doc.libelektra.org/news/7d4647d4-4131-411e-9c2a-2aca39446e18.html) adds spec namespace
  - [02 Dec 2014 0.8.10](http://doc.libelektra.org/news/6ce57ecf-420a-4a31-821e-1c5fe5532eb4.html) adds XDG/OpenICC compatibility
@@ -126,7 +128,7 @@ Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/f
 ## Further Information ##
 
 To get an introduction, it is best to take a look at the
-[presentation](http://www.libelektra.org/ftp/elektra/presentations/2012/lgm.odp),
+[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp),
 read our
 [tutorials](doc/tutorials),
 see the

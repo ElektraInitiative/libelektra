@@ -1,6 +1,7 @@
-import kdb, unittest
+import unittest
+from gi.repository import GElektra as kdb
 
-TEST_NS = "user/tests/swig_py3"
+TEST_NS = "user/tests/gi_py3"
 
 class Constants(unittest.TestCase):
 	def setUp(self):
@@ -31,8 +32,10 @@ class KDB(unittest.TestCase):
 			ks = kdb.KeySet()
 			db.get(ks, "system/elektra")
 
-			key = ks["system/elektra/version/constants/KDB_VERSION"]
-			self.assertEqual(key.value, kdb.VERSION)
+			import os
+			if os.getenv("CHECK_VERSION") is None:
+				key = ks["system/elektra/version/constants/KDB_VERSION"]
+				self.assertEqual(key.value, kdb.VERSION)
 
 	def test_set(self):
 		with kdb.KDB() as db:
@@ -53,8 +56,7 @@ class KDB(unittest.TestCase):
 			db.get(ks, TEST_NS)
 			self.assertEqual(ks[TEST_NS + "/mykey"].value, "new_value")
 
-	@classmethod
-	def tearDownClass(cls):
+	def tearDownClass():
 		# cleanup
 		with kdb.KDB() as db:
 			ks = kdb.KeySet(100)

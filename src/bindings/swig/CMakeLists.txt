@@ -5,9 +5,9 @@ if (FINDEX GREATER -1)
 	add_subdirectory (python2)
 endif ()
 
-list (FIND BINDINGS "swig_python3" FINDEX)
+list (FIND BINDINGS "swig_python" FINDEX)
 if (FINDEX GREATER -1)
-	add_subdirectory (python3)
+	add_subdirectory (python)
 endif ()
 
 list (FIND BINDINGS "swig_lua" FINDEX)

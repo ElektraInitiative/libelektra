@@ -74,7 +74,7 @@ files:
 
 ## Filter ##
 
-Rewrite unwanted characters with different techniques
+Rewrite unwanted characters with different techniques:
 
 - [ccode](ccode) using the technique from arrays in the programming
   language C
@@ -89,7 +89,7 @@ Doing other stuff:
 
 - [crypto](crypto) encrypts / decrypts confidential values
 - [iconv](iconv) make sure the configuration will have correct
-  charachter encoding
+  character encoding
 - [hidden](hidden) 
 - [null](null) takes care of null values and other binary specialities
 
@@ -129,6 +129,8 @@ copied by another plugin just before):
 - [path](path) by checking files on filesystem
 - [type](type) using runtime type checking (CORBA types)
 - [enum](enum) compares the keyvalue against a list of valid values
+- [mathcheck](mathcheck) by mathematical expressions using keysvalues as operants
+- [conditionals](conditionals) by using if-then-else like statements
 
 ## Interpreter ##
 

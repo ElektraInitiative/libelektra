@@ -56,9 +56,9 @@ if (INTROSPECTION_FOUND)
 		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${GIR_TYPELIB} DESTINATION ${INTROSPECTION_TYPELIBDIR})
 	endif()
 
-	list (FIND BINDINGS "gi_python3" FINDEX)
+	list (FIND BINDINGS "gi_python" FINDEX)
 	if (FINDEX GREATER -1)
-		add_subdirectory (python3)
+		add_subdirectory (python)
 	endif()
 
 	list (FIND BINDINGS "gi_lua" FINDEX)
