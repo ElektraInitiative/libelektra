@@ -302,6 +302,76 @@ static void elektraAddErrnoText(char *errorText)
 	}
 }
 
+static int needsMapping(Key * testKey, Key * errorKey)
+{
+	elektraNamespace ns = keyGetNamespace(errorKey);
+
+	if (ns == KEY_NS_NONE) return 1; // for unit tests
+	if (ns == KEY_NS_EMPTY) return 1; // for default backend
+	if (ns == KEY_NS_CASCADING) return 1; // init all namespaces for cascading
+
+	return ns == keyGetNamespace(testKey); // otherwise only init if same ns
+}
+
+static int mapFilesForNamespaces(resolverHandles * p, Key * errorKey)
+{
+	Key *testKey = keyNew("", KEY_END);
+	// switch is only present to forget no namespace and to get
+	// a warning whenever a new namespace is present.
+	// In fact its linear code executed:
+	switch (KEY_NS_SPEC)
+	{
+	case KEY_NS_SPEC:
+	keySetName(testKey, "spec");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
+		return -1;
+	}
+
+	case KEY_NS_DIR:
+	keySetName(testKey, "dir");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->dir, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve dir key");
+		return -1;
+	}
+
+	case KEY_NS_USER:
+	keySetName(testKey, "user");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->user, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
+		return -1;
+	}
+
+	case KEY_NS_SYSTEM:
+	keySetName(testKey, "system");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
+		return -1;
+	}
+
+	case KEY_NS_PROC:
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
+	}
+	keyDel (testKey);
+	return 0;
+}
+
 int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	(Plugin *handle, Key *errorKey)
 {
@@ -329,46 +399,11 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	p->spec.filemode = 0644;
 	p->spec.dirmode = 0755;
 
-	Key *testKey = keyNew("", KEY_END);
-	keySetName(testKey, "spec");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
-		return -1;
-	}
-	keySetName(testKey, "dir");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->dir, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve dir key");
-		return -1;
-	}
-
-	keySetName(testKey, "user");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->user, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
-		return -1;
-	}
-
-	keySetName(testKey, "system");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
-		return -1;
-	}
-	keyDel (testKey);
+	int ret = mapFilesForNamespaces(p, errorKey);
 
 	elektraPluginSetData(handle, p);
 
-	return 0; /* success */
+	return ret; /* success */
 }
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, close)

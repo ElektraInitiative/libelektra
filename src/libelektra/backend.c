@@ -275,6 +275,8 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 		keyNew("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
 		KS_END);
 
+	elektraKeySetName(errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+
 	Plugin *resolver = elektraPluginOpen(KDB_DEFAULT_RESOLVER,
 			modules, resolverConfig, errorKey);
 	if (!resolver)
@@ -330,6 +332,8 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
 		keyNew("user/module", KEY_VALUE, "1", KEY_END),
 		KS_END);
 	Key *cur = ksCurrent(modules);
+
+	elektraKeySetName(errorKey, keyName(cur), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
 	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig, errorKey);
 	if (!plugin)

@@ -32,8 +32,10 @@ KeySet *set_pluginconf()
 
 void test_resolve()
 {
-	char *path;
-	int pathLen;
+	int pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
+	char *path = malloc (pathLen);
+	exit_if_fail (path != 0, "malloc failed");
+	snprintf (path, pathLen, "%s/%s/elektra.ecf", tempHome, KDB_DB_USER);
 
 	printf ("Resolve Filename\n");
 
@@ -62,17 +64,17 @@ void test_resolve()
 	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if (!strcmp(h->system.path, "elektra.ecf"), "path not set correctly");
 	succeed_if (!strcmp(h->system.filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+	succeed_if_same_string (h->user.path, "elektra.ecf");
+	succeed_if_same_string (h->user.filename, path);
 	plugin->kdbClose(plugin, parentKey);
 
+	// reinit with system path only
 	plugin->kdbOpen(plugin, parentKey);
 	h = elektraPluginGetData(plugin);
 	exit_if_fail (h != 0, "no plugin handle");
-	pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
-	path = malloc (pathLen);
-	exit_if_fail (path != 0, "malloc failed");
-	snprintf (path, pathLen, "%s/%s/elektra.ecf", tempHome, KDB_DB_USER);
-	succeed_if_same_string (h->user.path, "elektra.ecf");
-	succeed_if_same_string (h->user.filename, path);
+	succeed_if (!strcmp(h->system.path, "elektra.ecf"), "path not set correctly");
+	succeed_if (!strcmp(h->system.filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+	succeed_if(h->user.filename == NULL, "user was initialized, but is not needed");
 	plugin->kdbClose(plugin, parentKey);
 
 	keyDel (parentKey);
