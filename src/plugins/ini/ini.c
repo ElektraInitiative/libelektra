@@ -365,6 +365,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *current;
 	while ((current = ksNext (returned)))
 	{
+		Key *sectionKey = NULL;
 		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
 		{
 			Key *sectionKey = generateSectionKey(current, parentKey);
@@ -383,12 +384,23 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
-
+		if(keyIsDirectBelow(parentKey, current))
+		{
+			if(*(keyString(current)) == NULL)
+			{
+				sectionKey = keyDup(current);
+				keySetBinary(sectionKey, 0, 0);
+				current = sectionKey;
+			}
+		}
 		writeComments (current, fh);
 
 		/* find the section the current key belongs to */
-		char *iniName = getIniName(returned, parentKey, current);
-
+		char *iniName;
+		if(keyIsDirectBelow(parentKey, current))
+			iniName = getIniName(returned, parentKey, current);
+		else
+			iniName = strdup(keyBaseName(current));
 		/* keys with a NULL value are treated as sections */
 		if (isSectionKey(current))
 		{
@@ -401,7 +413,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			{
 				printf("writing empty key\n");
 				fprintf(fh, "%s\n", iniName);
-				
+
 			}
 			else if (strstr (keyString (current), "\n") == 0)
 			{
@@ -425,6 +437,8 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 		elektraFree(iniName);
 		if (ret < 0) break;
+		if(sectionKey)
+			keyDel(sectionKey);
 	}
 
 	fclose (fh);
