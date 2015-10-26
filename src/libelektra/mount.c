@@ -231,9 +231,9 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 
 		if(!strcmp(pluginName, ""))
 		{
-			continue;
+			continue;  //strict consistency: skip empty parent keys
 		}
-		for(Globalpluginpositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
+		for(GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
 		{
 			if(!strcmp(placement, globalPlacements[i]))
 			{

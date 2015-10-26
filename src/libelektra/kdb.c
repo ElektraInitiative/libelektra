@@ -232,6 +232,7 @@ KDB * kdbOpen(Key *errorKey)
 		printf("Mounting global plugins failed\n");
 #endif
 		kdbClose(handle, errorKey);
+		keySetName(errorKey, keyName(initialParent));
 		keyDel(initialParent);
 		return 0;
 	}

@@ -24,7 +24,6 @@ static int writeErrors(FILE *fp, const char *timeString, Key *parentKey)
 	const Key *errors = keyGetMeta(parentKey, "error");
 	if(!errors)
 		return 0;
-	fprintf(fp, "\t===========ERRORS===========\n");
 	char *metaName = NULL;
 	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
 	if(elektraRealloc((void **)&metaName, 21) == -1)
@@ -49,7 +48,6 @@ static int writeWarnings(FILE *fp, const char *timeString, Key *parentKey)
 		nr_warnings = atoi(keyString(warnings)) + 1;
 	if(nr_warnings == -1)
 		return 0;
-	fprintf(fp, "\t==========WARNINGS==========\n");
 	char *metaName = NULL;
 	const char *elements[] = {"number", "description", "ingroup", "module", "reason", "mountpoint", "configfile", NULL};
 	for(int i = 0; i < nr_warnings; ++i)
@@ -72,7 +70,6 @@ static void writeLoggingInfo(FILE *fp, const char *timeString, KeySet *ks)
 {
 	ksRewind(ks);
 	Key *cur;
-	fprintf(fp,"\t====LOGGING  INFORMATIONS====\n");
 	while((cur = ksNext(ks)) != NULL)
 	{
 		keyRewindMeta(cur);
@@ -124,7 +121,6 @@ int elektraLoggerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 #include ELEKTRA_README(logger)
 		keyNew ("system/elektra/modules/logger/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
-		keyNew ("system/elektra/modules/logger/needs
 		KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -135,7 +131,7 @@ int elektraLoggerGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	KeySet *config = elektraPluginGetConfig(handle);		
 	Key *fnKey = ksLookupByName(config, "/logfile", 0);
 	const char *fileName = "/tmp/elektra.log";
-	if(fnKey):
+	if(fnKey)
 		fileName = keyString(fnKey);
 	log(fileName, returned, parentKey);
 	return 1; /* success */

@@ -272,7 +272,7 @@ typedef enum {
 	PREROLLBACK = 0, POSTROLLBACK, PREGETSTORAGE, 
 	POSTGETSTORAGE, PRESETSTORAGE, PRECOMMIT, 
 	POSTCOMMIT, NR_GLOBAL_PLUGINS
-}Globalpluginpositions;
+}GlobalpluginPositions;
 
 /**
  * The access point to the key database.
