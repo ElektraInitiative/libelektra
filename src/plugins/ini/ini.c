@@ -84,6 +84,8 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 
 	keyAddBaseName (appendKey, name);
 
+	if(value == NULL)
+		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
 	{
 		flushCollectedComment (handle, appendKey);
@@ -226,15 +228,15 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		switch (ret)
 		{
-		case -1:
-			ELEKTRA_SET_ERROR(9, parentKey, "Unable to open the ini file");
-			break;
-		case -2:
-			ELEKTRA_SET_ERROR(87, parentKey, "Memory allocation error while reading the ini file");
-			break;
-		default:
-			ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First error at line %d", keyString(parentKey), ret);
-			break;
+			case -1:
+				ELEKTRA_SET_ERROR(9, parentKey, "Unable to open the ini file");
+				break;
+			case -2:
+				ELEKTRA_SET_ERROR(87, parentKey, "Memory allocation error while reading the ini file");
+				break;
+			default:
+				ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First error at line %d", keyString(parentKey), ret);
+				break;
 		}
 		ret = -1;
 	}
@@ -363,6 +365,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *current;
 	while ((current = ksNext (returned)))
 	{
+		Key *sectionKey = NULL;
 		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
 		{
 			Key *sectionKey = generateSectionKey(current, parentKey);
@@ -381,12 +384,23 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
-
+		if(keyIsDirectBelow(parentKey, current))
+		{
+			if(*(keyString(current)) == NULL)
+			{
+				sectionKey = keyDup(current);
+				keySetBinary(sectionKey, 0, 0);
+				current = sectionKey;
+			}
+		}
 		writeComments (current, fh);
 
 		/* find the section the current key belongs to */
-		char *iniName = getIniName(returned, parentKey, current);
-
+		char *iniName;
+		if(keyIsDirectBelow(parentKey, current))
+			iniName = getIniName(returned, parentKey, current);
+		else
+			iniName = strdup(keyBaseName(current));
 		/* keys with a NULL value are treated as sections */
 		if (isSectionKey(current))
 		{
@@ -395,7 +409,13 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		else
 		{
 			/* if the key value is only single line, write a singleline INI key */
-			if (strstr (keyString (current), "\n") == 0)
+			if(keyGetMeta(current, "ini/empty"))
+			{
+				printf("writing empty key\n");
+				fprintf(fh, "%s\n", iniName);
+
+			}
+			else if (strstr (keyString (current), "\n") == 0)
 			{
 				fprintf (fh, "%s = %s\n", iniName, keyString (current));
 			}
@@ -410,13 +430,15 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				{
 					ELEKTRA_SET_ERROR(97, parentKey,
 							"Encountered a multiline value but multiline support is not enabled. "
-									"Have a look at kdb info ini for more details");
+							"Have a look at kdb info ini for more details");
 					ret = -1;
 				}
 			}
 		}
 		elektraFree(iniName);
 		if (ret < 0) break;
+		if(sectionKey)
+			keyDel(sectionKey);
 	}
 
 	fclose (fh);
@@ -428,10 +450,10 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(ini)
 {
 	return elektraPluginExport("ini",
-		ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
-		ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
-		ELEKTRA_PLUGIN_GET,	&elektraIniGet,
-		ELEKTRA_PLUGIN_SET,	&elektraIniSet,
-		ELEKTRA_PLUGIN_END);
+			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
+			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
+			ELEKTRA_PLUGIN_GET,	&elektraIniGet,
+			ELEKTRA_PLUGIN_SET,	&elektraIniSet,
+			ELEKTRA_PLUGIN_END);
 }
 

@@ -103,7 +103,49 @@ static void test_plainIniWrite(char *fileName)
 	PLUGIN_CLOSE ();
 }
 
+static void test_plainIniEmptyWrite(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
+			elektraFilename(), KEY_END);
+	KeySet *conf = ksNew(0, KS_END);
+	PLUGIN_OPEN("ini");
 
+	KeySet *ks = ksNew (30,
+			keyNew ("user/tests/ini-write/nosectionkey",
+					KEY_VALUE, "nosectionvalue",
+					KEY_END),
+			keyNew ("user/tests/ini-write/section1",
+					KEY_BINARY,
+					KEY_END),
+			keyNew ("user/tests/ini-write/section1/key1",
+					KEY_VALUE, "value1",
+					KEY_END),
+			keyNew ("user/tests/ini-write/section1/key2",
+					KEY_VALUE, "value2",
+					KEY_END),
+			keyNew ("user/tests/ini-write/section2",
+					KEY_BINARY,
+					KEY_END),
+			keyNew ("user/tests/ini-write/section2/key3",
+					KEY_VALUE, "value3",
+					KEY_END),
+			keyNew ("user/tests/ini-write/section2/emptykey", KEY_META, "ini/empty", "", KEY_END),
+			KS_END);
+
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(
+			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
 static void test_commentIniRead(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
@@ -414,6 +456,8 @@ int main(int argc, char** argv)
 
 	test_plainIniRead ("ini/plainini");
 	test_plainIniWrite ("ini/plainini");
+	test_plainIniRead ("ini/emptyval");
+	test_plainIniEmptyWrite ("ini/emptyval");
 	test_commentIniRead ("ini/commentini");
 	test_commentIniWrite ("ini/commentini");
 	test_multilineIniRead ("ini/multilineini");
