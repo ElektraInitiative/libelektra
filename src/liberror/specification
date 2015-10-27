@@ -804,3 +804,8 @@ description:can't find corresponding key in other namespaces
 severity:error
 ingroup:plugin
 module:globalglob
+
+number:137
+description:failed to mount global plugins
+severity:warning
+ingroup:kdb

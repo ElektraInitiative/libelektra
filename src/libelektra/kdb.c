@@ -231,10 +231,7 @@ KDB * kdbOpen(Key *errorKey)
 #if DEBUG && VERBOSE
 		printf("Mounting global plugins failed\n");
 #endif
-		kdbClose(handle, errorKey);
-		keySetName(errorKey, keyName(initialParent));
-		keyDel(initialParent);
-		return 0;
+		ELEKTRA_ADD_WARNING(137, errorKey, "Mounting global plugins failed");
 	}
 
 	keySetName(errorKey, keyName(initialParent));
