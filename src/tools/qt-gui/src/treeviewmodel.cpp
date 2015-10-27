@@ -600,7 +600,7 @@ QStringList getConflicts(KeySet const & conflictSet)
 	return conflicts;
 }
 
-KeySet handleConflict(KeySet & ours)
+KeySet handleConflict(KeySet const & theirs, KeySet const & ours)
 {
 	Key root("/", KEY_END);
 	KeySet base = GUIBasicKeySet::basic();
@@ -610,17 +610,16 @@ KeySet handleConflict(KeySet & ours)
 	AutoMergeConfiguration configuration;
 	configuration.configureMerger(merger);
 
-	// get theirs config
-	KDB kdb;
-	KeySet theirs;
-	kdb.get(theirs, root);
-
 	printKeys(theirs, base, ours);
 
 	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
 							  OurMergeKeys(ours, root),
 							  TheirMergeKeys (theirs, root),
 							  root));
+
+	std::cout << "guitest: now after merge" << std::endl;
+
+	printKeys(theirs, base, result.getMergedKeys());
 
 	if (!result.hasConflicts ())
 	{
@@ -658,21 +657,10 @@ void TreeViewModel::synchronize()
 	{
 		try
 		{
-			KeySet renew;
+			KeySet theirs = ours.dup();
+			m_kdb.get(theirs, m_root);
 
-			KeySet result = handleConflict(ours);
-
-			// bring our database also to situation where it can be reset
-			m_kdb.get(renew, m_root);
-
-			/* TODO: should be added to fix race condition, currently not possible
-			   because some plugins prevent kdb.get() from returning 0
-			if (m_kdb.get(renew, m_root) == 0)
-			{
-			} else {
-				emit showMessage(tr("Error"), tr("Database changed during merging."), "");
-			}
-			*/
+			KeySet result = handleConflict(theirs, ours);
 
 			// TODO: will rewrite everything because of current limitation in merger
 			m_kdb.set(result, m_root);

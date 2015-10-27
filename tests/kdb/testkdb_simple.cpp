@@ -312,22 +312,37 @@ TEST_F(Simple, GetAppendCascading)
 	KeySet ks;
 	ks.append(Key(testRoot + "key", KEY_END));
 	Key parentKey(testRoot, KEY_END);
+	std::string myRoot = testRoot.substr(0, testRoot.length()-1);
+	EXPECT_EQ(parentKey.getName(), myRoot);
+	EXPECT_EQ(parentKey.getString(), "");
 	kdb.get(ks, parentKey);
+	EXPECT_EQ(parentKey.getName(), myRoot);
+	EXPECT_EQ(parentKey.getString(), KDB_DB_SYSTEM "/kdbFile.dump");
+	parentKey.setString("");
+
 	ASSERT_EQ(ks.size(), 1) << "no key stayed" << ks;
 	ks.rewind();
 	ks.next();
 	EXPECT_EQ(ks.current().getName(), "/tests/kdb/key") << "name of element in keyset wrong";
 	EXPECT_EQ(ks.current().getString(), "") << "string of element in keyset wrong";
 	kdb.set(ks, parentKey);
+	EXPECT_EQ(parentKey.getName(), myRoot);
+	EXPECT_EQ(parentKey.getString(), "");
 	ks.rewind();
 	ks.next();
 	EXPECT_EQ(ks.current().getName(), "/tests/kdb/key") << "name of element in keyset wrong";
 	EXPECT_EQ(ks.current().getString(), "") << "string of element in keyset wrong";
 	kdb.close(parentKey);
+	EXPECT_EQ(parentKey.getName(), myRoot);
+	EXPECT_EQ(parentKey.getString(), "");
 
 	KeySet ks2;
 	kdb.open(parentKey);
+	EXPECT_EQ(parentKey.getName(), myRoot);
+	EXPECT_EQ(parentKey.getString(), "");
 	kdb.get(ks2, parentKey);
+	EXPECT_EQ(parentKey.getName(), myRoot);
+	EXPECT_EQ(parentKey.getString(), KDB_DB_SYSTEM "/kdbFile.dump");
 	ASSERT_EQ(ks2.size(), 0) << "got keys from freshly mounted backends";
 }
 

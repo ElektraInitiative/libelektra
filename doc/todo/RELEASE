@@ -110,6 +110,13 @@ Now move and install:
 
 Run some basic commands, at least:
  kdb --version
+ kdb qt-gui
+ strace kdb mount file.ecf user/release_test
+ strace kdb file user/release_test/b
+ strace kdb set user/release_test/b
+ strace kdb get user/release_test/b
+ strace kdb rm user/release_test/b
+
 
 Run local tests:
  kdb run_all

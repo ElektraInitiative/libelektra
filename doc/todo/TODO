@@ -16,6 +16,12 @@ generator for:
 	human readable text
 
 
+== VARIANTS ==
+
+for python plugin
+ - fix symbol generator
+ - avoid full/static for symbol clashes
+
 == OpenICC ==
 
 

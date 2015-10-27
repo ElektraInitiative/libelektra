@@ -153,6 +153,7 @@ public:
 
 	inline bool isNull() const;
 	inline operator bool() const;
+	inline bool needSync() const;
 
 
 	// value operations
@@ -965,6 +966,14 @@ inline Key::operator bool() const
 inline bool Key::isNull() const
 {
 	return key == 0;
+}
+
+/**
+ * @copydoc keyNeedSync
+ */
+inline bool Key::needSync() const
+{
+	return ckdb::keyNeedSync(key);
 }
 
 /**
