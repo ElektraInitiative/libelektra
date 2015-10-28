@@ -62,7 +62,7 @@ BasicWindow {
 
 					title: qsTr("Authors")
 					TextArea {
-						property string pancheri: "mailto:e0003088@student.tuwien.ac.at"
+                        property string pancheri: "mailto:raffael@libelektra.org"
 						property string loose: "mailto:christian.loose@hamburg.de"
 						property string jens: "http://qt-project.org/forums/viewthread/30521/#146845"
 						property string ian: "mailto:easyxtarget@gmail.com"
