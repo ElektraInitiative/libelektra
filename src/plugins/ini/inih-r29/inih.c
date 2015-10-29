@@ -147,11 +147,11 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
                     error = lineno;
             }
             else if (!error) {
-        	end = find_char_or_comment(start, '\0');
-		name = rstrip(start);
-		strncpy0(prev_name, name, sizeof(prev_name));
-		if(!config->keyHandler(user, section, name, "", 0) && ! error)
-		    error = lineno;
+				end = find_char_or_comment(start, '\0');
+				name = rstrip(start);
+				strncpy0(prev_name, name, sizeof(prev_name));
+				if(!config->keyHandler(user, section, name, "", 0) && ! error)
+					error = lineno;
             }
         }
 

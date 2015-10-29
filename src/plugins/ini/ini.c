@@ -228,15 +228,15 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		switch (ret)
 		{
-			case -1:
-				ELEKTRA_SET_ERROR(9, parentKey, "Unable to open the ini file");
-				break;
-			case -2:
-				ELEKTRA_SET_ERROR(87, parentKey, "Memory allocation error while reading the ini file");
-				break;
-			default:
-				ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First error at line %d", keyString(parentKey), ret);
-				break;
+		case -1:
+			ELEKTRA_SET_ERROR(9, parentKey, "Unable to open the ini file");
+			break;
+		case -2:
+			ELEKTRA_SET_ERROR(87, parentKey, "Memory allocation error while reading the ini file");
+			break;
+		default:
+			ELEKTRA_SET_ERRORF(98, parentKey, "Could not parse ini file %s. First error at line %d", keyString(parentKey), ret);
+			break;
 		}
 		ret = -1;
 	}
@@ -306,7 +306,6 @@ static char *getIniName(KeySet *keys, Key *parent, Key *key)
 	if(!strcmp(keyName(parent), keyName(key)))
 		return strdup(keyBaseName(key));
 	char *buffer = malloc(strlen(keyName(key)) - strlen(keyName(parent)));
-	//strncpy(buffer, keyName(key)+strlen(keyName(parent))+1, strlen(keyName(key)) - strlen(keyName(parent)));
 	char *dest = buffer;
 	for(char *ptr = keyName(key)+strlen(keyName(parent))+1; *ptr; ++ptr)
 	{
@@ -418,7 +417,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				{
 					ELEKTRA_SET_ERROR(97, parentKey,
 							"Encountered a multiline value but multiline support is not enabled. "
-							"Have a look at kdb info ini for more details");
+									"Have a look at kdb info ini for more details");
 					ret = -1;
 				}
 			}
@@ -438,10 +437,10 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 Plugin *ELEKTRA_PLUGIN_EXPORT(ini)
 {
 	return elektraPluginExport("ini",
-			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
-			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
-			ELEKTRA_PLUGIN_GET,	&elektraIniGet,
-			ELEKTRA_PLUGIN_SET,	&elektraIniSet,
-			ELEKTRA_PLUGIN_END);
+		ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
+		ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
+		ELEKTRA_PLUGIN_GET,	&elektraIniGet,
+		ELEKTRA_PLUGIN_SET,	&elektraIniSet,
+		ELEKTRA_PLUGIN_END);
 }
 
