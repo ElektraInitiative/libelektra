@@ -161,11 +161,7 @@ Available, but not up-to-date (Version 0.7):
 
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
-For Debian stable amd64 we provide latest builds. Just add following lines to
-sources.list in wheezy:
-
-        deb     [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
-        deb-src [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
+For Debian wheezy and jessie amd64 we provide latest builds. See build server below.
 
 If there are no packages available for your distribution, see the
 [installation document](doc/INSTALL.md).
@@ -203,10 +199,17 @@ Elektra on every commit in various ways and also produces [LCOV code
 coverage report](http://doc.libelektra.org/coverage/latest).
 
 To use the debian repository of the latest builds from master put following files in
-/etc/apt/sources.list:
+/etc/apt/sources.list.
+For jessie:
+
+        deb     [trusted=yes] http://194.117.254.29/elektra-stable/ jessie main
+        deb-src [trusted=yes] http://194.117.254.29/elektra-stable/ jessie main
+
+For wheezy:
 
          deb     [trusted=yes] http://build.libelektra.org/debian/ wheezy main
          deb-src [trusted=yes] http://build.libelektra.org/debian/ wheezy main
+
 
 
 ## Develop ##
