@@ -83,7 +83,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 
 	keyAddBaseName (appendKey, name);
 
-	if(*value == NULL)
+	if(*value == '\0')
 		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
 	{
@@ -299,13 +299,13 @@ static short isSectionKey(Key *key)
  * The returned string has to be freed by the caller
  *
  */
-static char *getIniName(KeySet *keys, Key *parent, Key *key)
+static char *getIniName(Key *section, Key *key)
 {
-	if(!strcmp(keyName(parent), keyName(key)))
+	if(!strcmp(keyName(section), keyName(key)))
 		return strdup(keyBaseName(key));
-	char *buffer = malloc(strlen(keyName(key)) - strlen(keyName(parent)));
+	char *buffer = malloc(strlen(keyName(key)) - strlen(keyName(section)));
 	char *dest = buffer;
-	for(char *ptr = keyName(key)+strlen(keyName(parent))+1; *ptr; ++ptr)
+	for(char *ptr = (char *)keyName(key)+strlen(keyName(section))+1; *ptr; ++ptr)
 	{
 		if(*ptr != '\\')
 		{
@@ -353,17 +353,17 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
 		{
-			Key *sectionKey = generateSectionKey(current, parentKey);
+			Key *sectionKey2 = generateSectionKey(current, parentKey);
 
 			cursor_t cursor = ksGetCursor(returned);
-			if (!ksLookup(returned, sectionKey, KDB_O_NONE))
+			if (!ksLookup(returned, sectionKey2, KDB_O_NONE))
 			{
-				ksAppendKey(returned, sectionKey);
-				current = sectionKey;
+				ksAppendKey(returned, sectionKey2);
+				current = sectionKey2;
 			}
 			else
 			{
-				keyDel(sectionKey);
+				keyDel(sectionKey2);
 				ksSetCursor(returned, cursor);
 			}
 		}
@@ -371,7 +371,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
 		if(keyIsDirectBelow(parentKey, current))
 		{
-			if(*(keyString(current)) == NULL)
+			if(*(keyString(current)) == '\0')
 			{
 				keyDel(sectionKey);
 				sectionKey = keyDup(current);
@@ -384,9 +384,9 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		/* find the section the current key belongs to */
 		char *iniName;
 		if(sectionKey)
-			iniName = getIniName(returned, sectionKey, current);
+			iniName = getIniName(sectionKey, current);
 		else
-			iniName = getIniName(returned, parentKey, current);
+			iniName = getIniName(parentKey, current);
 		/* keys with a NULL value are treated as sections */
 		if (isSectionKey(current))
 		{

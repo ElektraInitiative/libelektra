@@ -151,7 +151,7 @@ static void test_plainIniEmptyWrite(char *fileName)
 	ksDel(readKS);
 	ksDel (ks);
 	keyDel (parentKey);
-
+	keyDel (searchKey);
 	PLUGIN_CLOSE ();
 }
 static void test_commentIniRead(char *fileName)
