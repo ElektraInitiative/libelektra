@@ -141,6 +141,14 @@ static void test_plainIniEmptyWrite(char *fileName)
 			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
 			"files do not match as expected");
 
+	KeySet *readKS = ksNew(0, KS_END);
+	succeed_if(plugin->kdbGet(plugin, readKS, parentKey) >= 0, "kdbGet failed");
+	const Key *meta;
+	Key *searchKey = keyNew ("user/tests/ini-write/section2/emptykey", KEY_META, "ini/empty", "", KEY_END);
+	Key *key = ksLookup(readKS, searchKey, KDB_O_NONE);
+	meta = keyGetMeta(key, "ini/empty");
+	succeed_if(meta != NULL, "reading empty key again failed");
+	ksDel(readKS);
 	ksDel (ks);
 	keyDel (parentKey);
 

@@ -73,7 +73,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
 
 	Key *appendKey = keyDup (handle->parentKey);
-
 	if (section)
 	{
 		if (*section != '\0')
@@ -84,7 +83,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 
 	keyAddBaseName (appendKey, name);
 
-	if(value == NULL)
+	if(*value == NULL)
 		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
 	{
@@ -96,7 +95,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	{
 		Key *existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE);
 		keyDel (appendKey);
-
 		/* something went wrong before because this key should exist */
 		if (!existingKey) return -1;
 
