@@ -19,11 +19,10 @@ static void testread(const char *file)
 	printf("testing on %s:%s\n", srcdir_file(file), file);
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
 	KeySet *conf = ksNew (20,
-			keyNew ("system/useheader", KEY_VALUE, "1", KEY_END), KS_END);
+			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
 	PLUGIN_OPEN("csvstorage");
 	KeySet *ks = ksNew(0, KS_END);
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	output_keyset(ks);
 	Key *key;
 	key = ksLookupByName(ks, "user/tests/csvstorage/#1/col1", 0);
 	exit_if_fail(key, "key not found");
@@ -42,7 +41,7 @@ static void testreadfixcolcount(const char *file)
 	printf("testing on %s:%s\n", srcdir_file(file), file);
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
 	KeySet *conf = ksNew (20,
-			keyNew ("system/useheader", KEY_VALUE, "1", KEY_END), 
+			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), 
 			keyNew ("system/columns", KEY_VALUE, "4", KEY_END),
 			KS_END);
 	PLUGIN_OPEN("csvstorage");
@@ -63,7 +62,8 @@ static void testreadwriteinvalid(const char *file)
 	KeySet *ks = ksNew(0, KS_END);
 	PLUGIN_OPEN("csvstorage");
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >0,  "call to kdbGet was not successful");
-	succeed_if(!output_warnings(parentKey), "no warnings in kdbGet");	
+	succeed_if(!output_warnings(parentKey), "no warnings in kdbGet");
+	output_keyset(ks);	
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == (-1), "error: wrote invalid data");
 	ksDel(ks);
 	keyDel(parentKey);
@@ -76,7 +76,7 @@ static void testwriteinvalidheader(const char *file)
 
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
 	KeySet *conf = ksNew (20,
-			keyNew ("system/useheader", KEY_VALUE, "1", KEY_END), KS_END);
+			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
 
 	KeySet *ks = ksNew(0, KS_END);
 	PLUGIN_OPEN("csvstorage");
@@ -93,7 +93,7 @@ static void testwritevalidemptycol(const char *file)
 
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
 	KeySet *conf = ksNew (20,
-			keyNew ("system/useheader", KEY_VALUE, "1", KEY_END), KS_END);
+			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
 
 	printf("%s\n", srcdir_file(file));
 	KeySet *ks = ksNew(0, KS_END);
@@ -109,11 +109,11 @@ static void testSetColnames(const char *file)
 	printf("testing on %s:%s\n", srcdir_file(file), file);
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
 	KeySet *conf = ksNew (20,
-			keyNew ("system/useheader", KEY_VALUE, "1", KEY_END), 
+			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), 
 			keyNew ("system/columns", KEY_VALUE, "2", KEY_END),
-			keyNew ("system/colNames", KEY_VALUE, "", KEY_END),
-			keyNew ("system/colNames/#0", KEY_VALUE, "col0Name", KEY_END),
-			keyNew ("system/colNames/#1", KEY_VALUE, "col1Name", KEY_END),
+			keyNew ("system/columns/names", KEY_VALUE, "", KEY_END),
+			keyNew ("system/columns/names/#0", KEY_VALUE, "col0Name", KEY_END),
+			keyNew ("system/columns/names/#1", KEY_VALUE, "col1Name", KEY_END),
 			KS_END);
 	PLUGIN_OPEN("csvstorage");
 	KeySet *ks = ksNew(0, KS_END);

@@ -16,24 +16,26 @@ This plugin allowes Elektra to read and write CSV files.
 Tells the plugin what delimiter is used in the file.
 The default delimiter is `;` and will be used if `delimiter` is not set.
 
-`useheader`
-Tells the plugin to use the first line as a header if it's set to "1". The columns will get the coresponding names.
-Ignore the first line if it's set to "-1" or treat the first line as a record if it's set to "0". 
-If useheader is not set, or set to "0", the columns get namend #0,#1,...
+`header`
+Tells the plugin to use the first line as a header if it's set to "colname". The columns will get the coresponding names.
+Skip the first line if it's set to "skip" or treat the first line as a record if it's set to "record".
+If useheader is not set, or set to "record", the columns get named #0,#1,... (array key naming)
 
 `columns`
 If this key is set the plugin will yield an error for every file that doesn't have exactly the amount of columns ans specified in `columns`.
 
-`colNames`
+`columns/names`
 Sets the column names. Only useable in combination with the `columns` key. The number of subkeys must match the number of columns.
+
+## Examples ##
+
+`kdb mount test.csv /csv csvstorage delimiter=";" header="colname"`
+
 ```
 columns = 2
-colNames
-colNames/#0 = col0Name
-colNames/#1 = col1Name
+columns/names
+columns/names/#0 = col0Name
+columns/names/#1 = col1Name
 ```
 
-## Example ##
-
-`kdb mount test.csv /csv csvstorage delimiter=";" useheader="1"`
 
