@@ -105,6 +105,10 @@ ToolBar {
 			focus: true
 			onAccepted: {
 				if(text !== ""){
+					if(searchResultsListView.model !== null) {
+						searchResultsListView.model.discardModel()
+						searchResultsListView.model = null
+					}
 					searchResultsListView.model = treeView.treeModel.find(text)
 					searchResultsListView.currentIndex = -1
 					searchResultsListView.forceActiveFocus()
