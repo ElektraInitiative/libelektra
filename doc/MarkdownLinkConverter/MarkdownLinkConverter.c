@@ -5,18 +5,18 @@
 #include <string.h>
 
 #if defined(WIN32)
-#define FSEP '\\'
+#define FOLDER_DELIMITER '\\'
 #else
-#define FSEP '/'
+#define FOLDER_DELIMITER '/'
 #endif
 
 /* Slashes or backslashes to the elektra root.
  * Depends on the place of the executable, example:
  * /foo/bar/elektra/build/bin/executable
  * E:\\foo\bar\elektra\build\bin\executable
- * In both cases the FSEP_UNTIL_ROOT = 3
+ * In both cases the there are 3 slashes or backslashes
  */
-#define FSEP_UNTIL_ROOT 3
+#define FOLDER_DELIMITER_TO_ELEKTRA_ROOT 3
 #define TEMP_FILENAME "temp"
 
 // Link Blacklist: do not convert links with the following starting and ending
@@ -25,7 +25,10 @@ char * ignoreTargetEnd [] = { ".h", ".c" , ".cpp" , ".hpp" , "\0"};
 char * ignoreTargetStart [] = { "#", "@" , "http" , "\0"};
 // both need to be null terminated
 
-void printHeader(FILE * output, char * filename, int FileDeliToRoot);
+// helpers
+void printTarget(FILE * output, char * target, char * filenameInElektra);
+void printConvertedPath (FILE * output ,char * path);
+char * getPathInElektraRoot (char * executablename, char * filename);
 void exitError (FILE * f1, FILE * f2, char * mes);
 
 /* These structs represent the transitions from the state machines.
@@ -123,7 +126,7 @@ int resolveChar (char c)
  * be printed out additionally to the output and at the end true will
  * be returned. If no title is found false will be returned.
  */
-bool convertTitle (FILE * input, FILE *  output, char * filename, int FileDeliToRoot)
+bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra)
 {
 	int state = TITLE_START;
 	int newstate;
@@ -137,7 +140,10 @@ bool convertTitle (FILE * input, FILE *  output, char * filename, int FileDeliTo
 		if (!titleFound && TITLE_ISGOAL (state, newstate))
 		{
 			titleFound = true;
-			printHeader (output, filename, FileDeliToRoot);
+			// print Header
+			fprintf (output, " {#");
+			printConvertedPath (output, filenameInElektra);
+			fprintf (output, "}");
 		}
 
 		fprintf (output, "%c", c);
@@ -150,7 +156,7 @@ bool convertTitle (FILE * input, FILE *  output, char * filename, int FileDeliTo
 /* This procedure reads from the input and writes to the output, while
  * processing the file it converts all not Blacklisted links.
  */
-void convertLinks (FILE * input, FILE * output)
+void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 {
 	char c;
 	fpos_t pos;
@@ -226,17 +232,7 @@ void convertLinks (FILE * input, FILE * output)
 			//print target
 			if (targetOK)
 			{
-				fprintf (output, "@ref ");
-				for (unsigned int i = 0;i < len;++i)
-				{
-					switch (target[i])
-					{
-						case '.':
-						case FSEP: fprintf (output, "_");
-									break;
-						default: fprintf (output, "%c", target[i]);
-					}
-				}
+				printTarget (output,target, filenameInElektra);
 			}
 			else fprintf (output, "%s", target);
 			fprintf (output, "%c", fgetc (input)); // print ")"
@@ -273,17 +269,16 @@ int main (int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	/* Detect the project folder depth by counting the slashes or
-	 * backslashes to the root of the path.
-	 */
-	int cFileDeliToRoot = -(FSEP_UNTIL_ROOT-1);
-	for (int i = strlen (argv[0]);i >= 0;--i)
-	{
-		if(argv[0][i] == FSEP) ++cFileDeliToRoot;
-	}
+	char executablename[strlen (argv[0]) + 1];
+	char filename[strlen (argv[1]) + 1];
+
+	strcpy (executablename, argv[0]);
+	strcpy (filename, argv[1]);
+
+	char * filenameInElektra = getPathInElektraRoot (executablename, filename);
 
 	//1st pass
-	FILE * input = fopen (argv[1], "r");
+	FILE * input = fopen (filename, "r");
 	if (!input)
 	{
 		fprintf (stderr ,"fopen Error\n");
@@ -305,7 +300,7 @@ int main (int argc, char *argv[])
 	if (fgetpos (output, &startTempFile))
 		exitError (input, output, "fgetpos");
 
-	if(!convertTitle (input, output, argv[1], cFileDeliToRoot))
+	if(!convertTitle (input, output, filenameInElektra))
 	{
 		/* No title found in file, therefore generate one and
 		 * print it out.
@@ -317,15 +312,16 @@ int main (int argc, char *argv[])
 		fclose (output);
 		output = stdout;
 		//Generate Title
-		char * title = strrchr (argv[1], FSEP);
-		if (!title)
-			exitError (input, NULL, "strrchr");
+		char * title = strrchr (filename, FOLDER_DELIMITER);
+		if (title == NULL)
+			exitError (input, NULL, "parsed file path invalid");
 
-		fprintf (output, "# %s #", &title[1]);
-		printHeader (output, argv[1], cFileDeliToRoot);
-		fprintf (output, "\n");
+		// print Title + Header
+		fprintf (output, "# %s # {#", &title[1]);
+		printConvertedPath (output, filenameInElektra);
+		fprintf (output, "}\n");
 		//2nd pass
-		convertLinks (input, output);
+		convertLinks (input, output, filenameInElektra);
 		fclose (input);
 	} else
 	{
@@ -335,7 +331,7 @@ int main (int argc, char *argv[])
 			exitError (output, NULL, "fsetpos");
 
 		//2nd pass
-		convertLinks (output, stdout);
+		convertLinks (output, stdout, filenameInElektra);
 		fclose (output);
 	}
 	remove (TEMP_FILENAME);
@@ -343,33 +339,98 @@ int main (int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-/* Prints a header with the information given in filename, the
- * elektraroot is determined with the number of slashes or backslashes
- * from the system root to the elektra root folder.
- * Folder separator and dots will be replaced with underscores. Example:
- * /foo/bar/elektraroot/doc/help/help.md
- * is translated to:
- * doc_help_help_md
- */
-void printHeader(FILE * output, char * filename, int FileDeliToRoot)
+void printTarget(FILE * output, char * target, char * filenameInElektra)
 {
-	fprintf (output, " {#");
-	int FileDeliCount = 0;
-	for (size_t i = 0; i < strlen (filename);++i)
+	fprintf (output, "@ref ");
+	//copy filenameInElektra and extend it with FOLDER_DELIMITER at start.
+	char copyFilenameData[strlen (filenameInElektra) + 2];
+	strcpy (&copyFilenameData[1], filenameInElektra);
+	copyFilenameData[0] = FOLDER_DELIMITER;
+	char * copyFilename = copyFilenameData;
+	// determine how many times "../" is used in the target
+	int folderBack = 0;
+	while (!strncmp ("../", target, 3))
 	{
-		if (FileDeliToRoot <= FileDeliCount)
-		{
-			switch (filename[i])
-			{
-				case '.':
-				case FSEP: fprintf (output, "_");
-							break;
-				default: fprintf (output, "%c", filename[i]);
-			}
-		}
-		if (filename[i] == FSEP) ++FileDeliCount;
+		++folderBack;
+		target = target + 3;
 	}
-	fprintf (output, "}");
+	// go folderBack times upwards in filenameInElektra
+	char * lastFolderDelimiter = strrchr (&copyFilenameData[1], FOLDER_DELIMITER);
+	if (lastFolderDelimiter != NULL)
+	{
+		*lastFolderDelimiter = '\0';
+		// not in root so target needs to be extended with path
+		while (folderBack>0)
+		{
+			--folderBack;
+			lastFolderDelimiter = strrchr (copyFilename, FOLDER_DELIMITER);
+			if (lastFolderDelimiter == NULL)
+			{
+				fprintf (output, "INVALID LINK");
+				return;
+			}
+			*lastFolderDelimiter = '\0';
+		}
+		//~ printf ("\n\n\n %s \n\n\n", copyFilename);
+		// if copyFilename was not reduced print it
+		if (copyFilename[0] != '\0')
+		{
+			printConvertedPath (output, &copyFilename[1]);
+			fprintf (output, "_");
+		}
+	}
+	//~ printf ("\n\n\n %s \n\n\n", target);
+	printConvertedPath (output, target);
+}
+
+/* This helper converts and prints a given path, all slashes or backslashes
+ * and points will be replaced by underscore.
+ */
+void printConvertedPath (FILE * output, char * path)
+{
+	char * workPath = path;
+	while (*workPath != '\0')
+	{
+		switch (*workPath)
+		{
+			case '.':
+			case '/':
+			case '\\': fprintf (output, "_");
+						break;
+			default: fprintf (output, "%c", *workPath);
+		}
+		++workPath;
+	}
+	if (*(--workPath) == '/') fprintf (output, "README_md");
+}
+
+/* Detect the absolute path (in the elektra root folder) of the parsed
+ * file, by counting the slashes or backslashes from the executable
+ * back to the Filesystem root, taking in to account the FOLDER_DELIMITER_TO_ELEKTRA_ROOT
+ * constant. This count will then be used to determine the beginning of the
+ * elektra root. The returned char pointer points to the beginning of
+ * the the parsed file path in the Elektra root folder.
+ * Example:
+ * /foo/bar/test/elektra_src/build/bin/exe
+ * /foo/bar/test/elektra_src/doc/help.md
+ * with the FOLDER_DELIMITER_TO_ELEKTRA_ROOT set to 3 will return:
+ * doc/help.md
+ */
+char * getPathInElektraRoot (char * executablename, char * filename)
+{
+	int countDeliToFsRoot = -(FOLDER_DELIMITER_TO_ELEKTRA_ROOT-1);
+	for (int i = strlen (executablename);i >= 0;--i)
+	{
+		if(executablename[i] == FOLDER_DELIMITER) ++countDeliToFsRoot;
+	}
+	int fileDeliCount = 0;
+	char * out = filename;
+	while (countDeliToFsRoot > fileDeliCount)
+	{
+		if (*out == FOLDER_DELIMITER) ++fileDeliCount;
+		++out;
+	}
+	return out;
 }
 
 void exitError (FILE * f1, FILE * f2, char * mes)

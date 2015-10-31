@@ -57,7 +57,7 @@ if (DOXYGEN_FOUND)
 
 	find_package(Perl)
 
-	set (MARKDOWN_FILTER ${CMAKE_BINARY_DIR}/bin/markdown_filter)
+	set (MARKDOWN_LINK_CONVERTER ${CMAKE_BINARY_DIR}/bin/MarkdownLinkConverter)
 
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
@@ -88,8 +88,8 @@ if (DOXYGEN_FOUND)
 		)
 	endif (WITH_LATEX)
 
-	add_executable (markdown_filter markdown_filter/markdown_filter.c)
-	add_dependencies (html markdown_filter)
+	add_executable (MarkdownLinkConverter MarkdownLinkConverter/MarkdownLinkConverter.c)
+	add_dependencies (html MarkdownLinkConverter)
 else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)
