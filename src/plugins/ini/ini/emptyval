@@ -1,0 +1,7 @@
+nosectionkey = nosectionvalue
+[section1]
+key1 = value1
+key2 = value2
+[section2]
+emptykey
+key3 = value3
