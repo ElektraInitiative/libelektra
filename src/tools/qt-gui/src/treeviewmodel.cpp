@@ -778,6 +778,11 @@ QStringList TreeViewModel::getSplittedKeyname(const Key &key)
 	return names;
 }
 
+void TreeViewModel::discardModel()
+{
+	delete this;
+}
+
 MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrategy)
 {
 	if(mergeStrategy == "Preserve")

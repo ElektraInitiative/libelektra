@@ -831,6 +831,8 @@ ApplicationWindow {
 					onClicked: {
 						keyMetaColumn.state = ""
 						searchResultsSelectedItem = null
+						searchResultsListView.model.discardModel()
+						searchResultsListView.model = null
 					}
 				}
 

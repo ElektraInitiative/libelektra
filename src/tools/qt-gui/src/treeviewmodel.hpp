@@ -265,6 +265,11 @@ public:
 	 */
 	QStringList					getSplittedKeyname(const kdb::Key &key);
 
+	/**
+	 * @brief discardModel Allow the QML side to destroy this model, even if this model is owned by C++.
+	 */
+	Q_INVOKABLE void			discardModel();
+
 private:
 	QList<ConfigNodePtr> m_model;
 	kdb::Key m_root;
