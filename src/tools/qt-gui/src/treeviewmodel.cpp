@@ -333,6 +333,8 @@ QVariant TreeViewModel::find(const QString& term)
 		searchResults->model().append(ConfigNodePtr(new ConfigNode("NotfoundNode", tr("There were no results matching your query."), 0, this)));
 	}
 
+	QQmlEngine::setObjectOwnership(searchResults, QQmlApplicationEngine::CppOwnership);
+
 	return QVariant::fromValue(searchResults);
 }
 
@@ -774,6 +776,11 @@ QStringList TreeViewModel::getSplittedKeyname(const Key &key)
 	}
 
 	return names;
+}
+
+void TreeViewModel::discardModel()
+{
+	delete this;
 }
 
 MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrategy)

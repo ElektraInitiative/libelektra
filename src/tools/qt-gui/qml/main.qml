@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-	property string version: "0.0.8 (beta)"
+    property string version: "0.0.9 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -831,6 +831,8 @@ ApplicationWindow {
 					onClicked: {
 						keyMetaColumn.state = ""
 						searchResultsSelectedItem = null
+						searchResultsListView.model.discardModel()
+						searchResultsListView.model = null
 					}
 				}
 
