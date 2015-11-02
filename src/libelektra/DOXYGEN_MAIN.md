@@ -43,6 +43,8 @@ Another way is to use CMake:
 	include_directories (${ELEKTRA_INCLUDE_DIR})
 	target_link_libraries (application ${ELEKTRA_LIBRARIES})
 
+Read about [compiling elektra](/doc/COMPILE.md).
+
 ### Tutorials ###
 
 * [Application Integration](/doc/tutorials/application-integration.md)
@@ -54,6 +56,7 @@ Another way is to use CMake:
 * [Namespaces](/doc/tutorials/namespaces.md)
 * [Plugins](/doc/tutorials/plugins.md)
 
+[List of all available Plugins](/src/plugins/)
 
 ##  Elektra API ##
 
