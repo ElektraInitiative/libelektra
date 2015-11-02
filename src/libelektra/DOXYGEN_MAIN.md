@@ -9,7 +9,7 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-See the website for more information http://www.libelektra.org
+See the Readme for more information [Readme](../../README.md)
 
 ## API docu ##
 
