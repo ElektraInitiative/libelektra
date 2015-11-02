@@ -1,3 +1,5 @@
+# Compilation Variants
+
 To create different variants of the same feature, but avoid code
 duplications within plugins, you have multiple options:
 - Define a needs clause in a [contract](contract.md) and reuse another

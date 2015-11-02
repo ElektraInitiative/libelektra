@@ -9,7 +9,7 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-See the Readme for more information [Readme](../../README.md)
+See the Readme for more information [Readme](/README.md)
 
 ## API docu ##
 
@@ -42,6 +42,18 @@ Another way is to use CMake:
 	find_package(Elektra REQUIRED)
 	include_directories (${ELEKTRA_INCLUDE_DIR})
 	target_link_libraries (application ${ELEKTRA_LIBRARIES})
+
+### Tutorials ###
+
+* [Application Integration](/doc/tutorials/application-integration.md)
+* [Compilation Variants](/doc/tutorials/compilation_variants.md)
+* [Merge Integration](/doc/tutorials/elektra-merge-integration.md)
+* [Export](/doc/tutorials/export.md)
+* [Import](/doc/tutorials/import.md)
+* [Merge](/doc/tutorials/merge.md)
+* [Namespaces](/doc/tutorials/namespaces.md)
+* [Plugins](/doc/tutorials/plugins.md)
+
 
 ##  Elektra API ##
 

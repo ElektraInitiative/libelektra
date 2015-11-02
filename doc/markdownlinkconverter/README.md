@@ -25,4 +25,3 @@ happens in 2 passes, witch is needed because there can be files with no title.
 ## Further improvements (which will be introduced in a later version):
 
 * redirect links to code files right
-* absolute targets in links

@@ -342,44 +342,49 @@ int main (int argc, char *argv[])
 void printTarget(FILE * output, char * target, char * filenameInElektra)
 {
 	fprintf (output, "@ref ");
-	//copy filenameInElektra and extend it with FOLDER_DELIMITER at start.
-	char copyFilenameData[strlen (filenameInElektra) + 2];
-	strcpy (&copyFilenameData[1], filenameInElektra);
-	copyFilenameData[0] = FOLDER_DELIMITER;
-	char * copyFilename = copyFilenameData;
-	// determine how many times "../" is used in the target
-	int folderBack = 0;
-	while (!strncmp ("../", target, 3))
+	// distinguish between relative and absolute targets
+	if (target[0] != '/')
 	{
-		++folderBack;
-		target = target + 3;
-	}
-	// go folderBack times upwards in filenameInElektra
-	char * lastFolderDelimiter = strrchr (&copyFilenameData[1], FOLDER_DELIMITER);
-	if (lastFolderDelimiter != NULL)
-	{
-		*lastFolderDelimiter = '\0';
-		// not in root so target needs to be extended with path
-		while (folderBack>0)
+		//copy filenameInElektra and extend it with FOLDER_DELIMITER at start.
+		char copyFilenameData[strlen (filenameInElektra) + 2];
+		strcpy (&copyFilenameData[1], filenameInElektra);
+		copyFilenameData[0] = FOLDER_DELIMITER;
+		char * copyFilename = copyFilenameData;
+		// determine how many times "../" is used in the target
+		int folderBack = 0;
+		while (!strncmp ("../", target, 3))
 		{
-			--folderBack;
-			lastFolderDelimiter = strrchr (copyFilename, FOLDER_DELIMITER);
-			if (lastFolderDelimiter == NULL)
-			{
-				fprintf (output, "INVALID LINK");
-				return;
-			}
+			++folderBack;
+			target = target + 3;
+		}
+		// go folderBack times upwards in filenameInElektra
+		char * lastFolderDelimiter = strrchr (&copyFilenameData[1], FOLDER_DELIMITER);
+		if (lastFolderDelimiter != NULL)
+		{
 			*lastFolderDelimiter = '\0';
+			// not in root so target needs to be extended with path
+			while (folderBack>0)
+			{
+				--folderBack;
+				lastFolderDelimiter = strrchr (copyFilename, FOLDER_DELIMITER);
+				if (lastFolderDelimiter == NULL)
+				{
+					fprintf (output, "INVALID LINK");
+					return;
+				}
+				*lastFolderDelimiter = '\0';
+			}
+			// if copyFilename was not reduced print it
+			if (copyFilename[0] != '\0')
+			{
+				printConvertedPath (output, &copyFilename[1]);
+				fprintf (output, "_");
+			}
 		}
-		//~ printf ("\n\n\n %s \n\n\n", copyFilename);
-		// if copyFilename was not reduced print it
-		if (copyFilename[0] != '\0')
-		{
-			printConvertedPath (output, &copyFilename[1]);
-			fprintf (output, "_");
-		}
+	}else
+	{
+		++target; // remove starting /
 	}
-	//~ printf ("\n\n\n %s \n\n\n", target);
 	printConvertedPath (output, target);
 }
 
