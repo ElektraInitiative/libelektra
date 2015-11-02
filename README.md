@@ -41,6 +41,10 @@ with Elektra.
 If you're not running Debian/Ubuntu, check out the [package list](#packages),
 [download elektra directly](#download) or [compile it yourself](#compile).
 
+It is preferable to use a recent version: They contain many bug fixes and
+additional features. See [INSTALL](doc/INSTALL.md) for other ways to install
+Elektra.
+
 ### Usage ###
 
 Now that we have Elektra installed, we can start using the `kdb` command and
