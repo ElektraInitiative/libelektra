@@ -3,9 +3,13 @@ kdb-mount(1) - Mount a file to the key database
 
 ## DESCRIPTION
 
-This command allows a user to mount a new "backend".  
-A backend allows a file to be interpreted as keys in the key database such that any edits to the keys are reflected in the file and vice versa.  
+This command allows a user to mount a new *backend*.  
+Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a parition into the current filesystem by creating a *backend*.  
+This functionality is key to Elektra as it allows users to build a global key database comprised of many different conifguration files.  
+A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa.  
 Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments.  
+
+Note: This command writes into the `/etc` directory and as such it requires root permissions.  
 
 ## USAGE
 
@@ -35,6 +39,9 @@ Print a null-terminated output of paths and backend names:
 
 To mount the /etc/file system file with two plugins with a respective configuration option each:  
 	`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`  
+
+To mount the /etc/file system file with two plugins and setting both to be verbose:  
+	`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
 
 To recode and rename a configuration file using Elektra:  
 	`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`  
