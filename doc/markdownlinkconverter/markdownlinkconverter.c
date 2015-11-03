@@ -10,13 +10,21 @@
 #define FOLDER_DELIMITER '/'
 #endif
 
-/* Slashes or backslashes to the elektra root.
+/* Slashes or backslashes to the build root.
  * Depends on the place of the executable, example:
- * /foo/bar/elektra/build/bin/executable
- * E:\\foo\bar\elektra\build\bin\executable
- * In both cases the there are 3 slashes or backslashes
+ * /foo/bar/build/bin/executable
+ * E:\\foo\bar\build\bin\executable
+ * In both cases the there are 2 slashes or backslashes
  */
-#define FOLDER_DELIMITER_TO_ELEKTRA_ROOT 3
+const int folderDelimiterToBuildRoot = 2;
+
+/* The CMAKE_CACHE_FILENAME will be parsed to get the value of CMAKE_CACHE_VARNAME
+ * which should be the absolute path the the source directory.
+ * Each line of CMAKE_CACHE_FILENAME must fit in the CmakecacheFileReadBuffer.
+ */
+const int CmakecacheFileReadBuffer = 1024;
+#define CMAKE_CACHE_FILENAME "CMakeCache.txt"
+#define CMAKE_CACHE_VARNAME "Elektra_SOURCE_DIR"
 #define TEMP_FILENAME "temp"
 
 // Link Blacklist: do not convert links with the following starting and ending
@@ -276,6 +284,8 @@ int main (int argc, char *argv[])
 	strcpy (filename, argv[1]);
 
 	char * filenameInElektra = getPathInElektraRoot (executablename, filename);
+	if (!filenameInElektra)
+		return EXIT_FAILURE;
 
 	//1st pass
 	FILE * input = fopen (filename, "r");
@@ -410,31 +420,55 @@ void printConvertedPath (FILE * output, char * path)
 }
 
 /* Detect the absolute path (in the elektra root folder) of the parsed
- * file, by counting the slashes or backslashes from the executable
- * back to the Filesystem root, taking in to account the FOLDER_DELIMITER_TO_ELEKTRA_ROOT
- * constant. This count will then be used to determine the beginning of the
- * elektra root. The returned char pointer points to the beginning of
- * the the parsed file path in the Elektra root folder.
- * Example:
- * /foo/bar/test/elektra_src/build/bin/exe
- * /foo/bar/test/elektra_src/doc/help.md
- * with the FOLDER_DELIMITER_TO_ELEKTRA_ROOT set to 3 will return:
- * doc/help.md
+ * file, by parsing the CMAKE_CACHE_FILENAME file and getting the CMAKE_CACHE_VARNAME,
+ * which contains the source path.
  */
 char * getPathInElektraRoot (char * executablename, char * filename)
 {
-	int countDeliToFsRoot = -(FOLDER_DELIMITER_TO_ELEKTRA_ROOT-1);
-	for (int i = strlen (executablename);i >= 0;--i)
+	//compose path of CMAKE_CACHE_FILENAME
+	char * endOfExecutablename = executablename + strlen (executablename);
+	int countDelimToBuildRoot = 0;
+	while (folderDelimiterToBuildRoot > countDelimToBuildRoot)
 	{
-		if(executablename[i] == FOLDER_DELIMITER) ++countDeliToFsRoot;
+		if (*endOfExecutablename == FOLDER_DELIMITER)
+		{
+			++countDelimToBuildRoot;
+		}
+		--endOfExecutablename;
 	}
-	int fileDeliCount = 0;
-	char * out = filename;
-	while (countDeliToFsRoot > fileDeliCount)
+	endOfExecutablename += 2; // the executablename should end with FOLDER_DELIMITER
+	*endOfExecutablename = '\0';
+	int len = strlen (executablename) + strlen(CMAKE_CACHE_FILENAME) + 1;
+	char pathToCmakecacheFilename [len];
+	strcpy (pathToCmakecacheFilename, executablename);
+	strcat (pathToCmakecacheFilename, CMAKE_CACHE_FILENAME);
+	//parse file to get the value of CMAKE_CACHE_VARNAME
+	FILE * input = fopen (pathToCmakecacheFilename, "r");
+	if (!input)
 	{
-		if (*out == FOLDER_DELIMITER) ++fileDeliCount;
-		++out;
+		fprintf (stderr, "fopen Error: file %s not found\n", pathToCmakecacheFilename);
+		return NULL;
 	}
+	char line [CmakecacheFileReadBuffer];
+	char lenCmakecacheVar = strlen (CMAKE_CACHE_VARNAME);
+	bool foundCmakecacheVar = false;
+	while (fgets (line, CmakecacheFileReadBuffer, input))
+	{
+		if (strncmp (CMAKE_CACHE_VARNAME, line, lenCmakecacheVar) == 0)
+		{
+			foundCmakecacheVar = true;
+			break;
+		}
+	}
+	if (!foundCmakecacheVar)
+	{
+		fprintf (stderr, "%s parse Error: Variable %s not found\n", CMAKE_CACHE_FILENAME, CMAKE_CACHE_VARNAME);
+		return NULL;
+	}
+	char * CmakecacheVarValue = line;
+	while (*CmakecacheVarValue && *CmakecacheVarValue != FOLDER_DELIMITER) ++CmakecacheVarValue;
+	//calculate filename in elektra root
+	char * out = filename + strlen (CmakecacheVarValue);
 	return out;
 }
 
