@@ -18,7 +18,7 @@ applications' configurations, leveraging easy application integration.
 ## Contact ##
 
 Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-or one of the [authors](doc/AUTHORS).
+or directly to one of the [authors](doc/AUTHORS).
 
 
 ## Quickstart ##
@@ -39,7 +39,7 @@ This will install the Elektra tools as well as everything needed to develop
 with Elektra.
 
 If you're not running Debian/Ubuntu, check out the [package list](#packages),
-[download elektra directly](#download) or [compile it yourself](#compile).
+[download elektra directly](#download) or [compile it yourself](#compiling).
 
 It is preferable to use a recent version: They contain many bug fixes and
 additional features. See [INSTALL](doc/INSTALL.md) for other ways to install
@@ -174,11 +174,12 @@ If there are no packages available for your distribution, see the
 
 Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
 
-You can clone the latest version of Elektra by running: `git clone https://github.com/ElektraInitiative/libelektra.git`
+You can clone the latest version of Elektra by running:
+
+         git clone https://github.com/ElektraInitiative/libelektra.git
 
 Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
-
-         ftp://ftp.libelektra.org/elektra/releases/
+`ftp://ftp.libelektra.org/elektra/releases/`
 
 ### Compiling ###
 
@@ -194,6 +195,8 @@ Then you can use `sudo make install` to install it.
 
 You can also use the [`./configure`](configure) command to generate a `cmake`
 command with special options.
+
+For more information, especially how to set CMake Cache, see [here](doc/COMPILE.md).
 
 
 ## Build Server ##
