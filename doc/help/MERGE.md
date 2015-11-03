@@ -1,11 +1,13 @@
-kdb-merge(1) -- Three-way merge of KeySets.
-================================
+kdb-merge(1) -- Three-way merge of KeySets
+==========================================
 ## DESCRIPTION
+
 Does a three-way merge between keysets.  
 On success the resulting keyset will be saved to mergepath.  
 On unresolved conflicts nothing will be changed.  
 
 ## THREE-WAY MERGE
+
 The `kdb merge` command uses a three-way merge by default.  
 A three-way merge is when three versions of a file (or in this case, KeySet) are compared in order to automatically merge the changes made to the KeySet over time.  
 These three versions of the KeySet are:  
@@ -25,6 +27,7 @@ These three versions of the KeySet are:
 The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet to the `base` KeySet. By looking for differences  in these KeySets, a new KeySet called `result` is created that represents a merge of these KeySets.  
 
 ## USAGE
+
 `kdb merge [options] ourpath theirpath basepath resultpath`  
 
 * ourpath:
@@ -40,10 +43,12 @@ The three-way merge works by comparing the `ours` KeySet and the `theirs` KeySet
   path without keys where the merged keyset will be saved    
 
 ## CONFLICTS
+
 Conflicts occur when a Key has a different value in all three KeySets.  
 Conflicts in a merge can be resolved using a [strategy](#STRATEGIES) with the `-s` argument.  
 
 ## STRATEGIES
+
 Currently the following strategies exist:  
 
  * preserve:
@@ -63,6 +68,7 @@ Currently the following strategies exist:
    If the key does exist in the merged keyset, it will be overwritten.   
 
 ## EXAMPLES
+
 To complete a simple merge of three KeySets:  
     `kdb merge user/ours user/theirs user/base user/result`  
 
