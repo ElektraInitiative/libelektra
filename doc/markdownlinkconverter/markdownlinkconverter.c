@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define UNUSED __attribute__ ((unused))
+
 #if defined(WIN32)
 #define FOLDER_DELIMITER '\\'
 #else
@@ -28,16 +30,16 @@ const int CmakecacheFileReadBuffer = 1024;
 #define TEMP_FILENAME "temp"
 
 // Link Blacklist: do not convert links with the following starting and ending
-char * ignoreTargetEnd [] = { ".h", ".c" , ".cpp" , ".hpp" , "\0"};
+const char * const ignoreTargetEnd [] = { ".h", ".c" , ".cpp" , ".hpp" , ""};
 // ignore http, @ref and #anchor
-char * ignoreTargetStart [] = { "#", "@" , "http" , "\0"};
-// both need to be null terminated
+const char * const ignoreTargetStart [] = { "#", "@" , "http" , ""};
+// both need to be terminated with an empty string
 
 // helpers
 void printTarget(FILE * output, char * target, char * filenameInElektra);
-void printConvertedPath (FILE * output ,char * path);
+void printConvertedPath (FILE * output, char * path);
 char * getPathInElektraRoot (char * executablename, char * filename);
-void exitError (FILE * f1, FILE * f2, char * mes);
+void exitError (FILE * f1, FILE * f2, const char * mes);
 
 /* These structs represent the transitions from the state machines.
  * Means if char c is read and the state machine is in state s
@@ -57,14 +59,32 @@ struct transitionTitle { int t[10][4]; };
  * fact that links can not be nested.
  */
 
-#define LINK_START 0
-#define LINK_POSSIBLE(old, new) ((old == 0 || old == 5) && new == 2)
-#define LINK_FOUND(old, new) (state == 4 && newstate == 5)
-#define LINK_NAME(old, new) (((old == 2 || old == 3) && (new == 2  || new == 3)) \
-								|| (old == 3 && new == 4))
-#define LINK_TARGET(old, new) (state == 4 && newstate == 4)
-#define LINK_TRAP(old, new) (new == 6)
-#define LINK_NOLINK(old, new) (newstate == 0 || newstate == 1)
+const int linkStart = 0;
+static inline int linkPossible (int old, int new)
+{
+	return (old == 0 || old == 5) && new == 2;
+}
+static inline int linkFound (int old, int new)
+{
+	return old == 4 && new == 5;
+}
+static inline int linkName (int old, int new)
+{
+	return ((old == 2 || old == 3) && (new == 2  || new == 3))
+								|| (old == 3 && new == 4);
+}
+static inline int linkTarget (int old, int new)
+{
+	return old == 4 && new == 4;
+}
+static inline int linkTrap (int old UNUSED, int new)
+{
+	return new == 6;
+}
+static inline int linkNolink (int old UNUSED, int new)
+{
+	return new == 0 || new == 1;
+}
 
 struct transitionLink genLinkTransitionTable() {
     struct transitionLink out = {
@@ -92,8 +112,11 @@ struct transitionLink genLinkTransitionTable() {
  * checks whether a title has matched.
  */
 
-#define TITLE_START 0
-#define TITLE_ISGOAL(old, new) (old == 3 && new == 0)
+const int titleStart = 0;
+static inline int titleIsGoal (int old, int new)
+{
+	return old == 3 && new == 0;
+}
 
 struct transitionTitle genTitleTransitionTable() {
     struct transitionTitle out = {
@@ -136,7 +159,7 @@ int resolveChar (char c)
  */
 bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra)
 {
-	int state = TITLE_START;
+	int state = titleStart;
 	int newstate;
 	char c;
 	bool titleFound = false;
@@ -145,7 +168,7 @@ bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra)
 	{
 		newstate = transitions.t[resolveChar (c)][state];
 
-		if (!titleFound && TITLE_ISGOAL (state, newstate))
+		if (!titleFound && titleIsGoal (state, newstate))
 		{
 			titleFound = true;
 			// print Header
@@ -168,7 +191,7 @@ void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 {
 	char c;
 	fpos_t pos;
-	int state = LINK_START;
+	int state = linkStart;
 	int newstate;
 	int index = 0;
 	unsigned int len = 0;
@@ -181,7 +204,7 @@ void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 	while ((c = fgetc (input)) != EOF)
 	{
 		newstate = transitions.t[resolveChar (c)][state];
-		if (LINK_POSSIBLE (state, newstate))
+		if (linkPossible (state, newstate))
 		{
 			// first [, possible link
 			// position is saved for setting back
@@ -191,7 +214,7 @@ void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			index = 0;
 			len = 0;
 		}
-		if (LINK_FOUND (state, newstate))
+		else if (linkFound (state, newstate))
 		{
 			//set back and convert link if not blacklisted
 			if (fsetpos (input, &pos))
@@ -214,7 +237,7 @@ void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			//check target
 			bool targetOK = true;
 			//start
-			for (int i = 0;strcmp (ignoreTargetStart[i], "\0") != 0;++i)
+			for (int i = 0;strcmp (ignoreTargetStart[i], "") != 0;++i)
 			{
 				if (strncmp (ignoreTargetStart[i], target,
 					strlen (ignoreTargetStart[i])) == 0)
@@ -224,7 +247,7 @@ void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 				}
 			}
 			//end
-			for (int i = 0;strcmp (ignoreTargetEnd[i], "\0") != 0;++i)
+			for (int i = 0;strcmp (ignoreTargetEnd[i], "") != 0;++i)
 			{
 				if(len < strlen (ignoreTargetEnd[i]))
 					continue;
@@ -245,22 +268,22 @@ void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			else fprintf (output, "%s", target);
 			fprintf (output, "%c", fgetc (input)); // print ")"
 		}
-		if (LINK_NAME (state, newstate))
+		else if (linkName (state, newstate))
 		{
 			++index;
 		}
-		if (LINK_TARGET (state, newstate)) ++len;
-		if (LINK_TRAP (state, newstate))
+		else if (linkTarget (state, newstate)) ++len;
+		else if (linkTrap (state, newstate))
 		{
 			//trap, reset
 			if (fsetpos (input, &pos))
 				exitError (input, NULL, "fsetpos");
 
 			fprintf (output, "["); //first char got lost
-			state = LINK_START;
+			state = linkStart;
 			continue;
 		}
-		if(LINK_NOLINK (state, newstate))
+		else if(linkNolink (state, newstate))
 		{
 			// print all other content
 			fprintf (output, "%c", c);
@@ -273,7 +296,7 @@ int main (int argc, char *argv[])
 {
 	if (argc < 2)
 	{
-		fprintf (stderr, "args error\n");
+		fprintf (stderr, "Argument Error: expected format <filter> <input-file>\n");
 		return EXIT_FAILURE;
 	}
 
@@ -291,14 +314,14 @@ int main (int argc, char *argv[])
 	FILE * input = fopen (filename, "r");
 	if (!input)
 	{
-		fprintf (stderr ,"fopen Error\n");
+		fprintf (stderr ,"fopen Error: file %s not found\n", filename);
 		return EXIT_FAILURE;
 	}
 	FILE * output = fopen (TEMP_FILENAME, "w+");
 	if (!output)
 	{
 		fclose (input);
-		fprintf (stderr ,"fopen Error\n");
+		fprintf (stderr ,"fopen Error: tempfile %s not found\n", TEMP_FILENAME);
 		return EXIT_FAILURE;
 	}
 
@@ -330,17 +353,16 @@ int main (int argc, char *argv[])
 		fprintf (output, "# %s # {#", &title[1]);
 		printConvertedPath (output, filenameInElektra);
 		fprintf (output, "}\n");
-		//2nd pass
+		//2nd pass (see README.md)
 		convertLinks (input, output, filenameInElektra);
 		fclose (input);
-	} else
-	{
+	} else {
 		fclose (input);
 		//reset temp file
 		if (fsetpos (output, &startTempFile))
 			exitError (output, NULL, "fsetpos");
 
-		//2nd pass
+		//2nd pass (see README.md)
 		convertLinks (output, stdout, filenameInElektra);
 		fclose (output);
 	}
@@ -391,8 +413,7 @@ void printTarget(FILE * output, char * target, char * filenameInElektra)
 				fprintf (output, "_");
 			}
 		}
-	}else
-	{
+	} else {
 		++target; // remove starting /
 	}
 	printConvertedPath (output, target);
@@ -460,6 +481,7 @@ char * getPathInElektraRoot (char * executablename, char * filename)
 			break;
 		}
 	}
+	fclose (input);
 	if (!foundCmakecacheVar)
 	{
 		fprintf (stderr, "%s parse Error: Variable %s not found\n", CMAKE_CACHE_FILENAME, CMAKE_CACHE_VARNAME);
@@ -472,7 +494,7 @@ char * getPathInElektraRoot (char * executablename, char * filename)
 	return out;
 }
 
-void exitError (FILE * f1, FILE * f2, char * mes)
+void exitError (FILE * f1, FILE * f2, const char * mes)
 {
 	if (f1)
 		fclose (f1);
