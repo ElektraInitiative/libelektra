@@ -15,11 +15,11 @@
 
 The Markdown Link Converter (MLC) is used as input filter in doxygen, if a markdown
 file is desired to be in the API documentation it only must have the extension
-`md` and be in the `INPUT` path.
+`.md` and be in the `INPUT` path.
 
-The MLC gives each markdown file a header `{ #header }` witch is attached to a title
-and converts the links of other markdown files to refer to this header. This conversions
-happens in 2 passes, witch is needed because there can be files with no title.
+The MLC gives each markdown file a header `{ #header }` which is attached to a title
+and converts the links of other markdown files to refer to this header. This conversion
+happens in 2 passes, which is needed because there can be files with no title.
 
 
 ## Further improvements (which will be introduced in a later version):

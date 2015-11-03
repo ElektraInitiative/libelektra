@@ -55,7 +55,7 @@ struct transitionTitle { int t[10][4]; };
  * 0 is the initial state and 5 the goal state.
  * If the trap will be reached the input will be
  * set back. This transition array matches the
- * regex multiple times, witch is correct due to the
+ * regex multiple times, which is correct due to the
  * fact that links can not be nested.
  */
 

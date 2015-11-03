@@ -96,12 +96,12 @@ with `ks`, `key` or `kdb`.
 
 ### Doxygen Guidelines ###
 
-`doxygen` is used to document the API, if available. We support also the import
+`doxygen` is used to document the API. We support also the import
 of markdown pages, but a minimum version of 1.8.8 of Doxygen is required for this
 feature (Anyways you can find the [API Doc](http://doc.libelektra.org/api/latest/html/) online).
-The markdown link converter, witch filters markdown pages before the processing
+The markdown link converter, which filters markdown pages before the processing
 of doxygen, converts the links in markdown pages. Read more about the
-[Markdown Link Converter](MarkdownLinkConverter/README.md).
+[Markdown Link Converter](markdownlinkconverter/README.md).
 
 Do not duplicate information available in git in doxygen.
 Use `\copydoc`, `\copybrief` and `\copydetails` intensively.
@@ -110,6 +110,7 @@ Use `\copydoc`, `\copybrief` and `\copydetails` intensively.
 Files should start with:
 
 \verbatim
+
 	/**
 	* @file
 	*
@@ -118,6 +119,7 @@ Files should start with:
 	* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 	*
 	*/
+
 \endverbatim
 
 Note:
