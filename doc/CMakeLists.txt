@@ -17,7 +17,7 @@ macro (do_doc target folder file install)
 		OUTPUT ${folder}/${file}
 		COMMAND ${DOXYGEN_EXECUTABLE}
 		ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
 	)
 
 	#get_filename_component (name ${target} NAME_WE)
@@ -57,7 +57,8 @@ if (DOXYGEN_FOUND)
 
 	find_package(Perl)
 
-	set (MARKDOWN_LINK_CONVERTER ${CMAKE_BINARY_DIR}/bin/markdownlinkconverter)
+	add_executable (markdownlinkconverter markdownlinkconverter/markdownlinkconverter.c)
+	find_util (markdownlinkconverter MARKDOWN_LINK_CONVERTER "")
 
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
@@ -79,7 +80,7 @@ if (DOXYGEN_FOUND)
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
-			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex
+			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/
 		)
 
@@ -87,9 +88,6 @@ if (DOXYGEN_FOUND)
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf
 		)
 	endif (WITH_LATEX)
-
-	add_executable (markdownlinkconverter markdownlinkconverter/markdownlinkconverter.c)
-	add_dependencies (html markdownlinkconverter)
 else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)

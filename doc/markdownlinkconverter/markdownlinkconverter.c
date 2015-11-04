@@ -471,7 +471,7 @@ char * getPathInElektraRoot (char * executablename, char * filename)
 		return NULL;
 	}
 	char line [CmakecacheFileReadBuffer];
-	char lenCmakecacheVar = strlen (CMAKE_CACHE_VARNAME);
+	int lenCmakecacheVar = strlen (CMAKE_CACHE_VARNAME);
 	bool foundCmakecacheVar = false;
 	while (fgets (line, CmakecacheFileReadBuffer, input))
 	{
@@ -484,7 +484,8 @@ char * getPathInElektraRoot (char * executablename, char * filename)
 	fclose (input);
 	if (!foundCmakecacheVar)
 	{
-		fprintf (stderr, "%s parse Error: Variable %s not found\n", CMAKE_CACHE_FILENAME, CMAKE_CACHE_VARNAME);
+		fprintf (stderr, "%s parse Error: Variable %s not found\n",
+							CMAKE_CACHE_FILENAME, CMAKE_CACHE_VARNAME);
 		return NULL;
 	}
 	char * CmakecacheVarValue = line;

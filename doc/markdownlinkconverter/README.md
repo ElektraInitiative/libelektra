@@ -1,5 +1,14 @@
 # Markdown Link Converter
 
+The Markdown link Converter, which filters markdown pages before the processing
+of doxygen, converts the links in markdown pages. It is set up as input filter
+in doxygen, if a markdown file is desired to be in the API documentation
+it only must have the extension `.md` and be in the `INPUT` path.
+
+The Markdown link Converter gives each markdown file a header `{ #header }` which is attached to a title
+and converts the links to refer to this headers. This conversion
+happens in 2 passes, which is needed because there can be files with no title.
+
 ## Conventions
 
 * Links starting with `@ref`, `#` for anchors and `http` for extern links
@@ -11,17 +20,7 @@
   `/` will be changed to `/README.md`.
 * Anchors wont work in imported markdown pages.
 
-## About
-
-The Markdown Link Converter (MLC) is used as input filter in doxygen, if a markdown
-file is desired to be in the API documentation it only must have the extension
-`.md` and be in the `INPUT` path.
-
-The MLC gives each markdown file a header `{ #header }` which is attached to a title
-and converts the links of other markdown files to refer to this header. This conversion
-happens in 2 passes, which is needed because there can be files with no title.
-
-
 ## Further improvements (which will be introduced in a later version):
 
 * redirect links to code files right
+* optimize pdf output

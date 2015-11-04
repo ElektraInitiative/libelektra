@@ -96,12 +96,14 @@ with `ks`, `key` or `kdb`.
 
 ### Doxygen Guidelines ###
 
-`doxygen` is used to document the API. We support also the import
-of markdown pages, but a minimum version of 1.8.8 of Doxygen is required for this
-feature (Anyways you can find the [API Doc](http://doc.libelektra.org/api/latest/html/) online).
-The markdown link converter, which filters markdown pages before the processing
-of doxygen, converts the links in markdown pages. Read more about the
+`doxygen` is used to document the API and to build the html and pdf output.
+We support also the import of markdown pages, but a minimum version of 1.8.8
+of Doxygen is required for this feature (Anyways you can find the
+[API Doc](http://doc.libelektra.org/api/latest/html/) online).
+Links between markdown files will be converted with the
 [Markdown Link Converter](markdownlinkconverter/README.md).
+**Markdown pages are used in the pdf, therefore watch your characters and
+provide a proper encoding!**
 
 Do not duplicate information available in git in doxygen.
 Use `\copydoc`, `\copybrief` and `\copydetails` intensively.
