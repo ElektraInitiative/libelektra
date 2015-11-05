@@ -23,4 +23,4 @@ happens in 2 passes, which is needed because there can be files with no title.
 ## Further improvements (which will be introduced in a later version):
 
 * redirect links to code files right
-* optimize pdf output
+* optimize pdf output (also UTF-8 encoding)

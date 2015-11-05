@@ -36,10 +36,10 @@ const char * const ignoreTargetStart [] = { "#", "@" , "http" , ""};
 // both need to be terminated with an empty string
 
 // helpers
-void printTarget(FILE * output, char * target, char * filenameInElektra);
-void printConvertedPath (FILE * output, char * path);
-char * getPathInElektraRoot (char * executablename, char * filename);
-void exitError (FILE * f1, FILE * f2, const char * mes);
+static void printTarget(FILE * output, char * target, char * filenameInElektra);
+static void printConvertedPath (FILE * output, char * path);
+static char * getPathInElektraRoot (char * executablename, char * filename);
+static void exitError (FILE * f1, FILE * f2, const char * mes);
 
 /* These structs represent the transitions from the state machines.
  * Means if char c is read and the state machine is in state s
@@ -136,7 +136,7 @@ struct transitionTitle genTitleTransitionTable() {
 }
 
 // Maps a given char to a int, used for the transition table
-int resolveChar (char c)
+static int resolveChar (char c)
 {
 	if (c != '\n' && isblank (c)) return 3;
 	switch (c)
@@ -157,7 +157,7 @@ int resolveChar (char c)
  * be printed out additionally to the output and at the end true will
  * be returned. If no title is found false will be returned.
  */
-bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra)
+static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra)
 {
 	int state = titleStart;
 	int newstate;
@@ -187,7 +187,7 @@ bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra)
 /* This procedure reads from the input and writes to the output, while
  * processing the file it converts all not Blacklisted links.
  */
-void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
+static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 {
 	char c;
 	fpos_t pos;
@@ -371,7 +371,7 @@ int main (int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-void printTarget(FILE * output, char * target, char * filenameInElektra)
+static void printTarget(FILE * output, char * target, char * filenameInElektra)
 {
 	fprintf (output, "@ref ");
 	// distinguish between relative and absolute targets
@@ -422,7 +422,7 @@ void printTarget(FILE * output, char * target, char * filenameInElektra)
 /* This helper converts and prints a given path, all slashes or backslashes
  * and points will be replaced by underscore.
  */
-void printConvertedPath (FILE * output, char * path)
+static void printConvertedPath (FILE * output, char * path)
 {
 	char * workPath = path;
 	while (*workPath != '\0')
@@ -444,7 +444,7 @@ void printConvertedPath (FILE * output, char * path)
  * file, by parsing the CMAKE_CACHE_FILENAME file and getting the CMAKE_CACHE_VARNAME,
  * which contains the source path.
  */
-char * getPathInElektraRoot (char * executablename, char * filename)
+static char * getPathInElektraRoot (char * executablename, char * filename)
 {
 	//compose path of CMAKE_CACHE_FILENAME
 	char * endOfExecutablename = executablename + strlen (executablename);
@@ -495,7 +495,7 @@ char * getPathInElektraRoot (char * executablename, char * filename)
 	return out;
 }
 
-void exitError (FILE * f1, FILE * f2, const char * mes)
+static void exitError (FILE * f1, FILE * f2, const char * mes)
 {
 	if (f1)
 		fclose (f1);

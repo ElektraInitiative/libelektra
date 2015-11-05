@@ -58,6 +58,8 @@ if (DOXYGEN_FOUND)
 	find_package(Perl)
 
 	add_executable (markdownlinkconverter markdownlinkconverter/markdownlinkconverter.c)
+	# fix usage with wine
+	# https://github.com/ElektraInitiative/libelektra/pull/340#discussion_r44044444
 	find_util (markdownlinkconverter MARKDOWN_LINK_CONVERTER "")
 
 	configure_file (
