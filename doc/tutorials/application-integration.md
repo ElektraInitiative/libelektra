@@ -24,7 +24,7 @@ additional benefits arise:
 - The administrator can choose:
  - the configuration file syntax (e.g. XML or JSON)
  - notification and logging on configuration changes
- - and all other features [the plugins provide](/src/plugins)
+ - and all other features [the plugins provide](/src/plugins/)
 - Other applications can use your configuration as override or as
     fallback
 

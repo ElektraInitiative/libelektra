@@ -101,16 +101,16 @@ And in terms of quality, we want:
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
  * Elektra can be thought of a virtual file system for configuration.
  * Elektra supports mounting of existing configuration files into the global key database.
- * Elektra has dozens of [Plugins](src/plugins#introduction) that make it possible
+ * Elektra has dozens of [Plugins](src/plugins/) that make it possible
    to have a tiny core, but still support many features, including:
-   * Elektra can import and export configuration files in any [supported format](src/plugins#storage).
-   * Elektra is able to log and notify other software on any configuration changes, e.g., using [Dbus](src/plugins/dbus) and [Journald](src/plugins/journald).
-   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/validation) and more.
-   * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver).
-   * Elektra supports different ways to [escape](src/plugins/ccode) and [encode](src/plugins/iconv) content of configuration files.
+   * Elektra can import and export configuration files in any [supported format](src/plugins/).
+   * Elektra is able to log and notify other software on any configuration changes, e.g., using [Dbus](src/plugins/dbus/) and [Journald](src/plugins/journald/).
+   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type/), [regex](src/plugins/validation/) and more.
+   * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver/).
+   * Elektra supports different ways to [escape](src/plugins/ccode/) and [encode](src/plugins/iconv/) content of configuration files.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
- * Elektra (except for some [plugins](src/plugins#introduction)) is portable and completely written in Ansi-C99.
- * Elektra (except for some [plugins](src/plugins#introduction)) has no external dependency.
+ * Elektra (except for some [plugins](src/plugins/)) is portable and completely written in Ansi-C99.
+ * Elektra (except for some [plugins](src/plugins/)) has no external dependency.
  * Elektra is suitable for embedded systems and early boot stage programs.
  * Elektra uses simple key/value pairs that include metadata for any other information.
  * Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
