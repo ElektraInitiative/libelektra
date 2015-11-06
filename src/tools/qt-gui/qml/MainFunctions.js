@@ -83,8 +83,8 @@ function deleteKey() {
 
 	undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
 
-	if(keyAreaView.rowCount > 0){
-		keyAreaView.currentRow = Math.min(cr--, keyAreaView.rowCount - 1)
+    if(keyAreaView.rowCount > 0 && cr > 0){
+        keyAreaView.currentRow = Math.min(cr-1, keyAreaView.rowCount - 1)
 		updateKeyAreaSelection()
 	}
 	else{

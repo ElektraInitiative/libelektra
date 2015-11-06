@@ -621,7 +621,7 @@ ApplicationWindow {
 
 	//**Layouts & Views****************************************************************************************//
 
-	Row {
+    Row {
 		id: mainRow
 
 		anchors.fill: parent
