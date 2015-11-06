@@ -186,11 +186,13 @@ static int validateFile(Plugin *handle, Key *parentKey)
 {
 	const char *fileName = keyString(parentKey);
 	FILE *fp = fopen(fileName, "rb");
-	char inputBuffer[4096];
+	char *inputBuffer = NULL;
+	const int inputBufferSize = 4096;
 	unsigned long counter = 0;
 	while(!feof(fp))
 	{
-		size_t bytesRead = fread(inputBuffer, CHAR_SIZE_MAX, (sizeof(inputBuffer)/CHAR_SIZE_MAX), fp);
+		inputBuffer = realloc(inputBuffer, inputBufferSize);
+		size_t bytesRead = fread(inputBuffer, CHAR_SIZE_MAX, (inputBufferSize/CHAR_SIZE_MAX), fp);
 		size_t inBytes = bytesRead;
 		char *ptr = inputBuffer;	
 		unsigned long ret;
@@ -199,6 +201,7 @@ static int validateFile(Plugin *handle, Key *parentKey)
 			char message[1024];
 			snprintf(message, sizeof(message), "Wrong encoding at: %lu", (counter+ret));
 			ELEKTRA_SET_ERROR (46, parentKey, message);
+			free(inputBuffer);
 			fclose(fp);
 			return -1;
 		}
