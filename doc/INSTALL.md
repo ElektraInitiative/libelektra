@@ -3,12 +3,18 @@
 
 ## DEBIAN ##
 
-You might want to use:
+If you want to rebuild Elektra from Debian unstable or
+our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
+and then run:
+
+	apt-get source -b elektra
+
+
+To build Debian Packages from the source you might want to use:
 
 	dpkg-buildpackage -us -uc -sa
 
-to build a debian package.
-(In the Debian branch, see GIT)
+(You need to be in the Debian branch, see [GIT](GIT.md))
 
 ## GENERIC ##
 

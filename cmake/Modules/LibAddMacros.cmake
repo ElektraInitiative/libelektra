@@ -190,7 +190,31 @@ macro(find_swig)
 	endif (NOT SWIG_FOUND)
 endmacro(find_swig)
 
-
+#
+# find an util to pass to add_custom_command later
+#
+# Parameters:
+#
+# 1. util        [in] : the utility fo search for. Must be added using
+#                       add_executable first.
+# 2. EXE_SYM_LOC [out]: a name for a variable where the program to be executed
+#                       is written to.
+#                       Note: you must pass this value to COMMAND of add_custom_command
+# 3. EXE_SYM_ARG [out]: a name for a variable where the argument to be executed
+#                       is written to.
+#                       Note: you must pass this value to ARGS in add_custom_command
+#
+# Example Usage:
+# add_executable (exportsymbols ...)
+# include(LibAddMacros)
+# find_util(exportsymbols EXE_SYM_LOC EXE_SYM_ARG)
+#
+# add_custom_command (
+#		DEPENDS exportsymbols
+#		COMMAND ${EXE_SYM_LOC}
+#		ARGS ${EXE_SYM_ARG} ... other arguments
+#		)
+#
 function(find_util util output_loc output_arg)
 	if (CMAKE_CROSSCOMPILING)
 		if (WIN32)
