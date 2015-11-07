@@ -54,7 +54,16 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 			// keydata matches, see if metakeys match
 			if (keyMetaEqual (our, theirLookupResult))
 			{
-				mergeResult.addMergeKey (mergeKey);
+				if (task.ourParent.getFullName() == task.mergeRoot.getFullName())
+				{
+					// the key was not rebased, we can reuse our (prevents that the key is rewritten)
+					mergeResult.addMergeKey (our);
+				}
+				else
+				{
+					// the key causes no merge conflict, but the merge result is below a new parent
+					mergeResult.addMergeKey (mergeKey);
+				}
 			}
 			else
 			{
@@ -115,7 +124,16 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 						if (keyMetaEqual (our, theirLookupResult))
 						{
 							// the key was added on both sides with the same value
-							mergeResult.addMergeKey (mergeKey);
+							if (task.ourParent.getFullName() == task.mergeRoot.getFullName())
+							{
+								// the key was not rebased, we can reuse our and prevent the sync flag being set
+								mergeResult.addMergeKey (our);
+							}
+							else
+							{
+								// the key causes no merge conflict, but the merge result is below a new parent
+								mergeResult.addMergeKey (mergeKey);
+							}
 						}
 						else
 						{
