@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-    property string version: "0.0.9 (beta)"
+	property string version: "0.0.9 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -621,7 +621,7 @@ ApplicationWindow {
 
 	//**Layouts & Views****************************************************************************************//
 
-    Row {
+	Row {
 		id: mainRow
 
 		anchors.fill: parent
