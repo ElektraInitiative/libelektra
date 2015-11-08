@@ -517,9 +517,9 @@ void TreeViewModel::createNewNodes(KeySet keySet)
 		QStringList keys = getSplittedKeyname(k);
 		QString root = keys.takeFirst();
 
-		for(int i = 0; i < m_model.count(); i++)
+		for (int i = 0; i < m_model.count(); i++)
 		{
-			if(root == m_model.at(i)->getName())
+			if (root == m_model.at(i)->getName())
 				sink(m_model.at(i), keys, k);
 		}
 	}
