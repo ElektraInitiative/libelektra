@@ -562,17 +562,19 @@ std::string printKey(Key const & k)
 	}
 	return ret;
 }
-#endif
 
-void printKeys(KeySet const & theirs ELEKTRA_UNUSED, KeySet const & base ELEKTRA_UNUSED, KeySet const & ours ELEKTRA_UNUSED)
+void printKeys(KeySet const & theirs, KeySet const & base, KeySet const & ours)
 {
-#if DEBUG && VERBOSE
 	theirs.rewind();
 	base.rewind();
 	for (Key o : ours)
 	{
+		std::string prefix("user/guitest");
 		Key t = theirs.next();
 		Key b = base.next();
+		if (!  ((o && !o.getName().compare(0, prefix.size(), prefix)) &&
+			(t && !t.getName().compare(0, prefix.size(), prefix)) &&
+			(b && !b.getName().compare(0, prefix.size(), prefix)))) continue;
 		std::cout << printKey(o);;
 		std::cout << "\t";
 		!b.isValid() ? std::cout << "none" : std::cout << printKey(b);
@@ -580,8 +582,8 @@ void printKeys(KeySet const & theirs ELEKTRA_UNUSED, KeySet const & base ELEKTRA
 		!t.isValid() ? std::cout << "none" : std::cout << printKey(t);
 		std::cout << std::endl;
 	}
-#endif
 }
+#endif
 
 QStringList getConflicts(KeySet const & conflictSet)
 {
@@ -611,24 +613,24 @@ KeySet handleConflict(KeySet const & theirs, KeySet const & ours)
 	AutoMergeConfiguration configuration;
 	configuration.configureMerger(merger);
 
+#if DEBUG && VERBOSE
+	std::cout << "guitest: handleConflict: before merge" << std::endl;
 	printKeys(theirs, base, ours);
+#endif
 
 	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
 							  OurMergeKeys(ours, root),
 							  TheirMergeKeys (theirs, root),
 							  root));
 
-	std::cout << "guitest: now after merge" << std::endl;
-
+#if DEBUG && VERBOSE
+	std::cout << "guitest: handleConflict: after merge" << std::endl;
 	printKeys(theirs, base, result.getMergedKeys());
+#endif
 
 	if (!result.hasConflicts ())
 	{
 		KeySet resultKeys = result.getMergedKeys();
-
-		// 3-way merging allowed use to succeed anyway
-		// store the base for next time:
-		GUIBasicKeySet::setBasic(resultKeys);
 		return resultKeys;
 	}
 	else
@@ -646,10 +648,20 @@ void TreeViewModel::synchronize()
 
 	try
 	{
+#if DEBUG && VERBOSE
+		std::cout << "guitest: start" << std::endl;
+		printKeys(ours, ours, ours);
+#endif
+
 		// write our config
 		m_kdb.set(ours, m_root);
 		// update our config (if no conflict)
 		m_kdb.get(ours, m_root);
+
+#if DEBUG && VERBOSE
+		std::cout << "guitest: after get" << std::endl;
+		printKeys(ours, ours, ours);
+#endif
 
 		GUIBasicKeySet::setBasic(ours);
 		createNewNodes(ours);
@@ -665,6 +677,13 @@ void TreeViewModel::synchronize()
 
 			// TODO: will rewrite everything because of current limitation in merger
 			m_kdb.set(result, m_root);
+
+#if DEBUG && VERBOSE
+			std::cout << "guitest: exception: now after set" << std::endl;
+			printKeys(theirs, result, ours);
+#endif
+
+			GUIBasicKeySet::setBasic(ours);
 			createNewNodes(result);
 		}
 		catch (KDBException const& e)
