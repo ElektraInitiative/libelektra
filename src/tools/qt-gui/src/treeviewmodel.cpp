@@ -1,5 +1,4 @@
 #include "treeviewmodel.hpp"
-#include "guibasickeyset.hpp"
 #include <threewaymerge.hpp>
 #include <automergeconfiguration.hpp>
 #include <mergeconflictstrategy.hpp>
@@ -21,7 +20,16 @@ using namespace kdb::tools::merging;
 
 TreeViewModel::TreeViewModel(QObject* parentModel) :
 	m_root("/", KEY_END),
-	m_kdb(m_root)
+	m_kdb(0),
+	m_base()
+{
+	Q_UNUSED(parentModel);
+}
+
+TreeViewModel::TreeViewModel(KDB * kdb, QObject* parentModel) :
+	m_root("/", KEY_END),
+	m_kdb(kdb),
+	m_base()
 {
 	Q_UNUSED(parentModel);
 }
@@ -33,6 +41,7 @@ TreeViewModel::TreeViewModel(const TreeViewModel& other)
 	m_model = other.m_model;
 	m_root = other.m_root;
 	m_kdb = other.m_kdb;
+	m_base = other.m_base;
 }
 
 int TreeViewModel::rowCount(const QModelIndex& parentIndex) const
@@ -455,7 +464,7 @@ void TreeViewModel::populateModel()
 	try
 	{
 		kdb::KeySet config;
-		m_kdb.get(config, m_root);
+		m_kdb->get(config, m_root);
 		populateModel(config);
 	}
 	catch(kdb::KDBException const& e)
@@ -503,7 +512,7 @@ void TreeViewModel::populateModel(KeySet const & keySet)
 		if (toAdd) m_model << toAdd;
 	}
 
-	GUIBasicKeySet::setBasic(keySet);
+	m_base = keySet;
 	createNewNodes(keySet);
 }
 
@@ -603,10 +612,10 @@ QStringList getConflicts(KeySet const & conflictSet)
 	return conflicts;
 }
 
-KeySet handleConflict(KeySet const & theirs, KeySet const & ours)
+KeySet handleConflict(KeySet const & theirs, KeySet const & m_base, KeySet const & ours)
 {
 	Key root("/", KEY_END);
-	KeySet base = GUIBasicKeySet::basic();
+	KeySet base = m_base;
 
 	ThreeWayMerge merger;
 
@@ -654,9 +663,9 @@ void TreeViewModel::synchronize()
 #endif
 
 		// write our config
-		m_kdb.set(ours, m_root);
+		m_kdb->set(ours, m_root);
 		// update our config (if no conflict)
-		m_kdb.get(ours, m_root);
+		m_kdb->get(ours, m_root);
 
 #if DEBUG && VERBOSE
 		std::cout << "guitest: after get" << std::endl;
@@ -674,12 +683,11 @@ void TreeViewModel::synchronize()
 		try
 		{
 			KeySet theirs = ours.dup();
-			m_kdb.get(theirs, m_root);
+			m_kdb->get(theirs, m_root);
 
-			KeySet result = handleConflict(theirs, ours);
+			KeySet result = handleConflict(theirs, m_base, ours);
 
-			// TODO: will rewrite everything because of current limitation in merger
-			m_kdb.set(result, m_root);
+			m_kdb->set(result, m_root);
 
 #if DEBUG && VERBOSE
 			std::cout << "guitest: exception: now after set" << std::endl;
