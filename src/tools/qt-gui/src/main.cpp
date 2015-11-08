@@ -37,7 +37,8 @@ int main(int argc, char* argv[])
 	UndoManager manager;
 	GUIBackend	backend;
 	GUISettings settings;
-	TreeViewModel treeModel;
+	kdb::KDB kdb;
+	TreeViewModel treeModel(&kdb);
 
 	engine.setObjectOwnership(&treeModel, QQmlApplicationEngine::CppOwnership);
 

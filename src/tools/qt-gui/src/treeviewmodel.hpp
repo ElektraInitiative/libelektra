@@ -55,6 +55,12 @@ public:
 	explicit TreeViewModel(QObject* parentModel =  0);
 
 	/**
+	 * @brief Constructor for root node.
+	 * @param parentModel An optional parent.
+	 */
+	explicit TreeViewModel(kdb::KDB * kdb, QObject* parentModel =  0);
+
+	/**
 	 * @brief The mandatory copy constructor.
 	 * @param The TreeViewModel that is copied.
 	 */
@@ -273,7 +279,8 @@ public:
 private:
 	QList<ConfigNodePtr> m_model;
 	kdb::Key m_root;
-	kdb::KDB m_kdb;
+	kdb::KDB * m_kdb; // only held by root node of TreeViewModel
+	kdb::KeySet m_base; // only held by root node of TreeViewModel
 	kdb::Key m_metaModelParent;
 	/**
 	 * @brief Returns a MergeConflictStrategy object based on the name of the MergeConflictStrategy.
