@@ -430,6 +430,11 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 	if (node->hasChild(name) && !node->getChildByName(name)->isDirty())
 	{
+		if(node->getChildByName(name)->getKey())
+		{
+			node->getChildByName(name)->updateNode(key);
+		}
+
 		sink(node->getChildByName(name), keys, key);
 	}
 	else

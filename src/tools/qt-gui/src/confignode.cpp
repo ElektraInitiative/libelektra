@@ -13,10 +13,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 	, m_isExpanded(false)
 	, m_isDirty(false)
 {
-	if (m_key && m_key.isString())
-		m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
-	else if (m_key && m_key.isBinary())
-		m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
+	setValue();
 
 	if(m_key)
 	{
@@ -244,6 +241,13 @@ void ConfigNode::setIsDirty(bool dirty)
 	m_isDirty = dirty;
 }
 
+void ConfigNode::updateNode(Key key)
+{
+	m_key = key;
+	setValue();
+	populateMetaModel();
+}
+
 void ConfigNode::setIsExpanded(bool value)
 {
 	m_isExpanded = value;
@@ -267,6 +271,14 @@ void ConfigNode::populateMetaModel()
 			m_metaData->model().append(node);
 		}
 	}
+}
+
+void ConfigNode::setValue()
+{
+	if (m_key && m_key.isString())
+		m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
+	else if (m_key && m_key.isBinary())
+		m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
 }
 
 void ConfigNode::setKey(Key key)

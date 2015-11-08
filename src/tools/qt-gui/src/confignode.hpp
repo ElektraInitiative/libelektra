@@ -228,6 +228,7 @@ public:
 
 	bool									isDirty() const;
 	void									setIsDirty(bool dirty);
+	void									updateNode(kdb::Key key);
 
 private:
 	QString         m_name;
@@ -246,6 +247,7 @@ private:
 	 * @brief Populates the TreeViewModel which holds the metakeys of this ConfigNode.
 	 */
 	void populateMetaModel();
+	void setValue();
 
 signals:
 	/**
