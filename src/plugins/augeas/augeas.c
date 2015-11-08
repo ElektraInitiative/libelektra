@@ -344,7 +344,11 @@ int elektraAugeasClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	augeas *augeasHandle = elektraPluginGetData (handle);
 
-	if (augeasHandle) aug_close (augeasHandle);
+	if (augeasHandle)
+	{
+		aug_close (augeasHandle);
+		augeasHandle = 0;
+	}
 
 	return 0;
 }
