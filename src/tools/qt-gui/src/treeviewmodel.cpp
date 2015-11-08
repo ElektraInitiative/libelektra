@@ -467,8 +467,6 @@ void TreeViewModel::populateModel()
 
 void TreeViewModel::populateModel(KeySet const & keySet)
 {
-	GUIBasicKeySet::setBasic(keySet);
-
 	m_model.clear();
 
 	using namespace ckdb; // for namespaces
@@ -505,6 +503,7 @@ void TreeViewModel::populateModel(KeySet const & keySet)
 		if (toAdd) m_model << toAdd;
 	}
 
+	GUIBasicKeySet::setBasic(keySet);
 	createNewNodes(keySet);
 }
 
