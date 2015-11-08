@@ -708,7 +708,9 @@ ApplicationWindow {
 							anchors.leftMargin: defaultMargins
 							anchors.verticalCenter: parent.verticalCenter
 							text: (treeView.currentNode === null || styleData.value === undefined) ? "" : styleData.value.replace(/\n/g, " ")
-							color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row && treeView.currentNode.path === keyAreaView.currentNodePath && keyAreaSelectedItem !== null) ? disabledPalette.text : guiSettings.nodeWithKeyColor)
+                            color: treeView.currentNode === null ? "transparent" : ((keyAreaView.keyAreaCopyIndex === styleData.row &&
+                                                                                     treeView.currentNode.path === keyAreaView.currentNodePath &&
+                                                                                     keyAreaSelectedItem !== null) ? disabledPalette.text : (guiSettings !== null ? guiSettings.nodeWithKeyColor : activePalette.text))
 						}
 					}
 
