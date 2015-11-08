@@ -58,7 +58,6 @@ public:
 	bool validated () const;
 	void serialize (kdb::KeySet &ret);
 
-	std::string getName() const;
 	std::string getMountpoint() const;
 	std::string getConfigFile() const;
 };
