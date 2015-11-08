@@ -457,7 +457,7 @@ static char *elektraGetCwd(Key *warningsKey)
 static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 {
 	char * cwd = elektraGetCwd(warningsKey);
-	if (!cwd) cwd = "/";
+	if (!cwd) cwd = elektraStrDup("/");
 
 	char *dn = elektraStrDup(cwd);
 	char *dnOrig = dn;
