@@ -25,8 +25,10 @@
 static char *parseLine(char *origLine, char delim, unsigned long offset, Key *parentKey, unsigned long lineNr)
 {
 	char *line = (origLine + offset);
+
 	if(*line == '\0')
 		return NULL;
+
 	char *ptr = strchr(line, delim);
 
 	if(ptr == NULL)
@@ -50,9 +52,7 @@ static char *parseLine(char *origLine, char delim, unsigned long offset, Key *pa
 			ELEKTRA_ADD_WARNINGF(136, parentKey, "Unexpected end of line(%lu) , expected \\n, but got 0x%x \n %s\n", lineNr, line[len-2], origLine);
 
 		}
-	}
-	else
-	{
+	} else {
 		*ptr = '\0';
 	}
 	return line;
@@ -459,9 +459,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if(csvWrite(returned, parentKey, outputDelim, useHeader) == -1)
 	{
 		return -1;
-	}
-	else
-	{
+	} else {
 		return 1; /* success */
 	}
 }
