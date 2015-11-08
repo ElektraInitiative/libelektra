@@ -48,7 +48,10 @@ public:
 
 	void addMergeKey(const Key& key)
 	{
-		mergedKeys.append (key);
+		if (!mergedKeys.lookup(key))
+		{
+			mergedKeys.append (key);
+		}
 	}
 
 	void removeMergeKey(const Key& key)

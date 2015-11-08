@@ -1879,13 +1879,16 @@ static Key * elektraLookupSearch(KeySet *ks, Key *key, option_t options)
 
 	Key *ret = found;
 
-	if (keyGetBinary(key,
+	if (keyGetMeta(key, "callback"))
+	{
+		if (keyGetBinary(key,
 			&conversation.v,
 			sizeof(conversation)) == sizeof(conversation))
-	{
-		if (conversation.v != 0)
 		{
-			ret = (*conversation.f)(ks, key, found, options);
+			if (conversation.v != 0)
+			{
+				ret = (*conversation.f)(ks, key, found, options);
+			}
 		}
 	}
 
