@@ -487,7 +487,7 @@ Key *elektraContextEvaluation(ELEKTRA_UNUSED KeySet *ks, ELEKTRA_UNUSED Key *key
 
 Key *elektraLookupWithContext(std::string name)
 {
-	Key *search = keyNew(name.c_str(), KEY_FUNC, elektraContextEvaluation, KEY_END);
+	Key *search = keyNew(name.c_str(), KEY_META, "callback", "", KEY_FUNC, elektraContextEvaluation, KEY_END);
 	Key * ret = ksLookup(elektraConfig, search, 0);
 	keyDel(search);
 	return ret;

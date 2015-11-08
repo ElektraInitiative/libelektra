@@ -1233,6 +1233,7 @@ inline void Key::setCallback(callback_t fct)
 
 	conversation.f = fct;
 	ckdb::keySetBinary(getKey(), &conversation.v, sizeof(conversation));
+	ckdb::keySetMeta(getKey(), "callback", "");
 }
 
 
