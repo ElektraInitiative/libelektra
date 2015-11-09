@@ -134,6 +134,9 @@ key exists, the plugin treats lines starting with whitespaces as continuations o
 Keep in mind, that writing multiline values is also only supported if the multiline support is turned on.
 Otherwise the plugin will refuse to write key values with newlines.
 
+## METAKEY SUPPORT ##
+
+The ini plugin supports turning keys into metakeys (similar to the ni plugin) by adding the config key `meta`
 
 
 ## RESTRICTIONS ##

@@ -17,7 +17,7 @@ extern "C" {
 
 #include <stdio.h>
 
-typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short lineContinuation);
+typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short, unsigned short lineContinuation);
 typedef int (*SectionHandler)(void *, const char *);
 typedef int (*CommentHandler)(void *, const char *);
 
@@ -27,6 +27,7 @@ struct IniConfig
 	SectionHandler sectionHandler;
 	CommentHandler commentHandler;
 	unsigned short supportMultiline;
+    unsigned short keyToMeta;
 };
 
 /* Parse given INI-style file. May have [section]s, name=value pairs

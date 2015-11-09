@@ -32,6 +32,7 @@ typedef struct {
 typedef struct {
 	short supportMultiline;	/* defines whether multiline keys are supported */
 	short autoSections;		/* defines whether sections for keys 2 levels or more below the parentKey are created */
+	short keyToMeta;
 } IniPluginConfig;
 
 static void flushCollectedComment (CallbackHandle *handle, Key *key)
@@ -67,11 +68,10 @@ static int elektraKeyAppendLine (Key *target, const char *line)
 	return keyGetValueSize(target);
 }
 
-static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value, unsigned short lineContinuation)
+static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value, unsigned short toMeta, unsigned short lineContinuation)
 {
 
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
-
 	Key *appendKey = keyDup (handle->parentKey);
 	if (section)
 	{
@@ -80,7 +80,17 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 			keyAddBaseName(appendKey, section);
 		}
 	}
-
+	if(toMeta)
+	{
+		Key *sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
+		if(!sectionKey)
+			sectionKey = appendKey;
+		keySetMeta(sectionKey, name, value);
+		ksAppendKey(handle->result, sectionKey);
+		keyDel(appendKey);
+        return 1;
+	}
+	
 	keyAddBaseName (appendKey, name);
 
 	if(*value == '\0')
@@ -154,8 +164,10 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	IniPluginConfig *pluginConfig = (IniPluginConfig *)elektraMalloc (sizeof (IniPluginConfig));
 	Key *multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
 	Key *autoSectionKey = ksLookupByName(config, "/autosections", KDB_O_NONE);
+	Key *toMetaKey = ksLookupByName(config, "/meta", KDB_O_NONE);
 	pluginConfig->supportMultiline = multilineKey != 0;
 	pluginConfig->autoSections = autoSectionKey != 0;
+    pluginConfig->keyToMeta = toMetaKey != 0;
 	elektraPluginSetData(handle, pluginConfig);
 
 	return 0;
@@ -207,9 +219,10 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	iniConfig.keyHandler=iniKeyToElektraKey;
 	iniConfig.sectionHandler = iniSectionToElektraKey;
 	iniConfig.commentHandler = iniCommentToMeta;
-
 	IniPluginConfig *pluginConfig = elektraPluginGetData(handle);
 	iniConfig.supportMultiline = pluginConfig->supportMultiline;
+
+	iniConfig.keyToMeta = pluginConfig->keyToMeta;
 
 	int ret = ini_parse_file(fh, &iniConfig, &cbHandle);
 
@@ -328,6 +341,18 @@ static Key *generateSectionKey(Key *key, Key *parentKey)
 	keySetBinary(sectionKey, 0, 0);
 	return sectionKey;
 }
+static void writeMeta(Key *key, FILE *fh)
+{
+	keyRewindMeta(key);
+	while(keyNextMeta(key) != NULL)
+	{
+		const Key *meta = keyCurrentMeta(key);
+		if(strcmp(keyName(meta), "comment") && strcmp(keyName(meta), "binary"))
+		{
+			fprintf(fh, "%s = %s\n", keyName(meta), keyString(meta));
+		}
+	}
+}
 
 int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
@@ -345,7 +370,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
-
+	unsigned short toMeta = pluginConfig->keyToMeta;
 	ksRewind (returned);
 	Key *current;
 	Key *sectionKey = NULL;
@@ -391,6 +416,10 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		if (isSectionKey(current))
 		{
 			fprintf (fh, "[%s]\n", iniName);
+			if(toMeta)
+			{
+				writeMeta(current, fh);
+			}
 		}
 		else
 		{
