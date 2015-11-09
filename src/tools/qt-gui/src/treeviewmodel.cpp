@@ -64,7 +64,7 @@ QVariant TreeViewModel::data(const QModelIndex& idx, int role) const
 		return QVariant();
 	}
 
-	ConfigNodePtr node = m_model.at(idx.row());
+	ConfigNode* node = m_model.at(idx.row()).data();
 
 	switch (role)
 	{
@@ -94,7 +94,7 @@ QVariant TreeViewModel::data(const QModelIndex& idx, int role) const
 		return QVariant::fromValue(node->getMetaKeys());
 
 	case NodeRole:
-		return QVariant::fromValue(node.data());
+		return QVariant::fromValue(node);
 
 	case ParentModelRole:
 		return QVariant::fromValue(node->getParentModel());
