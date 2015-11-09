@@ -258,7 +258,7 @@ void ConfigNode::populateMetaModel()
 	if (m_key)
 	{
 		m_key.rewindMeta();
-		m_metaData->model().clear();
+		m_metaData->clearMetaModel();
 
 		while (m_key.nextMeta())
 		{
@@ -268,7 +268,7 @@ void ConfigNode::populateMetaModel()
 			node->setKey(m_key);
 			node->setMeta(QString::fromStdString(m_key.currentMeta().getName()), QVariant::fromValue(QString::fromStdString(m_key.currentMeta().getString())));
 
-			m_metaData->model().append(node);
+			m_metaData->insertRow(m_metaData->rowCount(), node, false);
 		}
 	}
 }
