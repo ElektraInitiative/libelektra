@@ -9,6 +9,12 @@ The Markdown link Converter gives each markdown file a header `{ #header }` whic
 and converts the links to refer to this headers. This conversion
 happens in 2 passes, which is needed because there can be files with no title.
 
+## Usage for manual invocation
+
+	markdownlinkconverter [<cmake-cache-file>] <input-file>
+
+**The <input-file> parameter must be an absolute path!**
+
 ## Conventions
 
 * Links starting with `@ref`, `#` for anchors and `http` for extern links

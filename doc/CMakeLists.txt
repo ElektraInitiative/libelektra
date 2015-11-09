@@ -18,6 +18,7 @@ macro (do_doc target folder file install)
 		COMMAND ${DOXYGEN_EXECUTABLE}
 		ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 
 	#get_filename_component (name ${target} NAME_WE)
