@@ -205,7 +205,9 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			}
 			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
 			if(colNames && (colNames+colCounter))
-				keySetBaseName(key, colNames[colCounter]);
+				keySetString(key, colNames[colCounter]);
+			else
+				keySetString(key, keyBaseName(key));
 			ksAppendKey(header, keyDup(key));
 			++colCounter;
 		}
@@ -249,7 +251,10 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			cur = getKeyByOrderNr(header, colCounter);
 			offset += elektraStrLen(col);
 			key = keyDup(dirKey);
-			keyAddBaseName(key, keyBaseName(cur));
+			if(useHeader != 1)
+				keyAddBaseName(key, keyString(cur));
+			else
+				keyAddBaseName(key, keyBaseName(cur));
 			keySetString(key, col);
 			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
 			ksAppendKey(returned, key);
