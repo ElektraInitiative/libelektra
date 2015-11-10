@@ -138,6 +138,9 @@ Otherwise the plugin will refuse to write key values with newlines.
 
 The ini plugin supports turning keys into metakeys (similar to the ni plugin) by adding the config key `meta`
 
+## PRESERVE ORDER ##
+
+If the `preserveorder` config key is set, the ini plugin preserves the original order of the file.
 
 ## RESTRICTIONS ##
 

@@ -33,6 +33,7 @@ typedef struct {
 	short supportMultiline;	/* defines whether multiline keys are supported */
 	short autoSections;		/* defines whether sections for keys 2 levels or more below the parentKey are created */
 	short keyToMeta;
+	short preserverOrder;
 } IniPluginConfig;
 
 static void flushCollectedComment (CallbackHandle *handle, Key *key)
@@ -70,7 +71,7 @@ static int elektraKeyAppendLine (Key *target, const char *line)
 
 static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value, unsigned short toMeta, unsigned short lineContinuation)
 {
-
+	static long lastIndex = 0;
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
 	Key *appendKey = keyDup (handle->parentKey);
 	if (section)
@@ -79,7 +80,19 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		{
 			keyAddBaseName(appendKey, section);
 		}
+		Key *sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
+		if(sectionKey)
+		{
+			if(!(keyGetMeta(sectionKey, "ini/index")))
+			{
+				char buf[16];
+				snprintf(buf, sizeof(buf), "%ld", lastIndex);
+				++lastIndex;
+				keySetMeta(sectionKey, "ini/index", buf);
+			}
+		}
 	}
+
 	if(toMeta)
 	{
 		Key *sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
@@ -92,7 +105,11 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	}
 	
 	keyAddBaseName (appendKey, name);
-
+	char buf[16];
+	snprintf(buf, sizeof(buf), "%ld", lastIndex);
+	++lastIndex;
+	keySetMeta(appendKey, "ini/index", buf);
+	
 	if(*value == '\0')
 		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
@@ -165,6 +182,8 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	Key *multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
 	Key *autoSectionKey = ksLookupByName(config, "/autosections", KDB_O_NONE);
 	Key *toMetaKey = ksLookupByName(config, "/meta", KDB_O_NONE);
+	Key *preserveKey = ksLookupByName(config, "/preserveorder", KDB_O_NONE);
+	pluginConfig->preserverOrder = preserveKey != 0;	
 	pluginConfig->supportMultiline = multilineKey != 0;
 	pluginConfig->autoSections = autoSectionKey != 0;
     pluginConfig->keyToMeta = toMetaKey != 0;
@@ -347,11 +366,31 @@ static void writeMeta(Key *key, FILE *fh)
 	while(keyNextMeta(key) != NULL)
 	{
 		const Key *meta = keyCurrentMeta(key);
-		if(strcmp(keyName(meta), "comment") && strcmp(keyName(meta), "binary"))
+		if(strncmp(keyName(meta), "ini/", 4) && strcmp(keyName(meta), "binary"))
 		{
 			fprintf(fh, "%s = %s\n", keyName(meta), keyString(meta));
 		}
 	}
+}
+
+static Key *ksNextByNumber(KeySet *returned, long *index)
+{
+	Key *retKey;
+	ksRewind(returned);
+	while((retKey = ksNext(returned)) != NULL)
+	{
+		if(atol(keyString(keyGetMeta(retKey, "ini/index"))) == *index)
+		{
+			++(*index);
+			return retKey;
+		}
+	}
+	return NULL;
+}
+
+static Key *ksNextWrapper(KeySet *returned, long *index ELEKTRA_UNUSED)
+{
+	return ksNext(returned);
 }
 
 int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
@@ -374,7 +413,14 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	ksRewind (returned);
 	Key *current;
 	Key *sectionKey = NULL;
-	while ((current = ksNext (returned)))
+	long index = 0;
+	Key *(*traversalFunction)(KeySet *, long *);
+	if(pluginConfig->preserverOrder)
+		traversalFunction = ksNextByNumber;
+	else
+		traversalFunction = ksNextWrapper;
+
+	while ((current = traversalFunction (returned, &index)))
 	{
 		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
 		{
