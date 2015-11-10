@@ -286,29 +286,24 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 
 int main (int argc, char *argv[])
 {
-	if (argc < 2)
+	if (argc < 2 || argc > 3)
 	{
 		fprintf (stderr, "Argument Error: expected format <filter> [<cmake-cache-file>] <input-file>\n");
 		return EXIT_FAILURE;
 	}
 
-	char * inputFilename = NULL;
-	char * cmakeCacheFilename = NULL;
-
-	if (argc == 2)
+	char inputFilename [strlen (argv[argc - 1]) + 1];
+	strcpy (inputFilename, argv[argc - 1]);
+	char * filenameInElektra = NULL;
+	if (argc == 3)
 	{
-		inputFilename = alloca (strlen (argv[1]) + 1);
-		strcpy (inputFilename, argv[1]);
-	} else
-	{
-		//argv[1] = cmakeCacheFilename, argv[2] = inputFilename, rest ignored
-		cmakeCacheFilename = alloca (strlen (argv[1]) + 1);
-		inputFilename = alloca (strlen (argv[2]) + 1);
+		char cmakeCacheFilename [strlen (argv[1]) + 1];
 		strcpy (cmakeCacheFilename, argv[1]);
-		strcpy (inputFilename, argv[2]);
+		filenameInElektra = getPathInElektraRoot (inputFilename, cmakeCacheFilename);
+	} else {
+		filenameInElektra = getPathInElektraRoot (inputFilename, NULL);
 	}
 
-	char * filenameInElektra = getPathInElektraRoot (inputFilename, cmakeCacheFilename);
 	if (!filenameInElektra)
 		return EXIT_FAILURE;
 
@@ -449,22 +444,15 @@ static void printConvertedPath (FILE * output, char * path)
 static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilename)
 {
 	FILE * input = NULL;
-	if (cmakeCacheFilename)
+	if (!cmakeCacheFilename)
 	{
-		input = fopen (cmakeCacheFilename, "r");
-		if (!input)
-		{
-			fprintf (stderr, "Warning: CmakeCacheFile %s not found\n", cmakeCacheFilename);
-		}
+		cmakeCacheFilename = CMAKE_CACHE_FILENAME;
 	}
+	input = fopen (cmakeCacheFilename, "r");
 	if (!input)
 	{
-		input = fopen (CMAKE_CACHE_FILENAME, "r");
-		if (!input)
-		{
-			fprintf (stderr, "fopen Error: file %s not found\n", CMAKE_CACHE_FILENAME);
-			return NULL;
-		}
+		fprintf (stderr, "fopen Error: CmakeCacheFile %s not found\n", cmakeCacheFilename);
+		return NULL;
 	}
 	char line [CmakecacheFileReadBuffer];
 	int lenCmakecacheVar = strlen (CMAKE_CACHE_VARNAME);

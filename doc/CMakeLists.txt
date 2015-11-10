@@ -78,6 +78,9 @@ if (DOXYGEN_FOUND)
 		do_doc(latex ${OUTPUT_DIRECTORY}/latex/ refman.tex
 			${TARGET_DOCUMENTATION_LATEX_FOLDER})
 
+		file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
+				DESTINATION "${OUTPUT_DIRECTORY}/latex/")
+
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
