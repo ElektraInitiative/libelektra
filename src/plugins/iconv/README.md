@@ -38,6 +38,6 @@ are still properly encoded for anyone.
 
 If a user wants to validate a files encoding before reading the file,
 the `checkfile` key has to be set. When set to `0` the feature is turned
-off, every other value turns it on. File validation returns an error if
+off, every other value turns it on. file validation returns an error if
 a byte sequence thats not legal in `from` is detected and the file will
 not be read.
