@@ -24,14 +24,14 @@ Additionally, there is one more function called
 where once again `Plugin` should be replaced with the name of the plug-in, this time in lower-case. So for my line plugin this function would be 
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 
-The KDB relies on the first five functions for interacting with configuration files stored in the key database.  
+The KDB relies on the first five functions for interacting with configuration files stored in the key database.
 Calls for kdbGet() and kdbClose() will call the functions elektraPluginGet() and elektraPluginClose() respectively for the 
-plugin that was used to mount the configuration data. kdbSet() calls elektraPluginSet() but also elektraPluginError() when an error occurs. 
-elektraPluginOpen() is called before the first call to elektraPluginGet() or elektraPluginSet(). These functions serve different purposes 
+plugin that was used to mount the configuration data. kdbSet() calls elektraPluginSet() but also elektraPluginError() when an error occurs.
+elektraPluginOpen() is called before the first call to elektraPluginGet() or elektraPluginSet(). These functions serve different purposes 
 that allow the plug-in to work:
 
 - elektraPluginOpen() is designed to allow each plug-in to do initialization if necessary.	
-- elektraPluginGet() is designed to turn information from a configuration file into a usable KeySet, this is technically the only function that is REQUIRED in a plug-in.	
+- elektraPluginGet() is designed to turn information from a configuration file into a usable KeySet, this is technically the only function that is REQUIRED in a plug-in.
 - elektraPluginSet() is designed to store the information from the keyset back into a configuration file.		
 - elektraPluginError() is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation. This allows exception-safety.	
 - elektraPluginClose() is used to free resources that might be required for the plug-in.	
@@ -41,7 +41,7 @@ Most simply put: most plug-ins consist of five major functions, `elektraPluginOp
 and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin. 
-The skeleton plugin is called "template" and a new plugin can be created by calling the 
+The skeleton plugin is called "template" and a new plugin can be created by calling the
 [copy-template script](scripts/copy-template) . 
 For example for my plugin I called `../../scripts/copy-template line` from within the plugins directory. Afterwards two 
 important things are left to be done:
