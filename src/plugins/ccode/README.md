@@ -17,7 +17,7 @@ The user can conﬁgure this mapping.
 ## Restrictions ##
 
 This method of encoding characters is not as powerful as the hexcode plugin in terms of reduction. 
-The hexcode plugin allows reduction of the character set to '0'−'9', 'a'−'f' and one escape character. 
+The hexcode plugin allows reduction of the character set to '0'-'9', 'a'-'f' and one escape character. 
 So it can represent any key value with only 17 characters. 
 On the other hand, ccode cannot reduce the set more than by half.
 
