@@ -27,7 +27,7 @@ struct IniConfig
 	SectionHandler sectionHandler;
 	CommentHandler commentHandler;
 	unsigned short supportMultiline;
-    unsigned short keyToMeta;
+	unsigned short keyToMeta;
 };
 
 /* Parse given INI-style file. May have [section]s, name=value pairs

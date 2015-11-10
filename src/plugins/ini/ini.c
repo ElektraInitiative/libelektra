@@ -83,12 +83,12 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		Key *sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
 		if(sectionKey)
 		{
-			if(!(keyGetMeta(sectionKey, "ini/index")))
+			if(!(keyGetMeta(sectionKey, "order")))
 			{
 				char buf[16];
 				snprintf(buf, sizeof(buf), "%ld", lastIndex);
 				++lastIndex;
-				keySetMeta(sectionKey, "ini/index", buf);
+				keySetMeta(sectionKey, "order", buf);
 			}
 		}
 	}
@@ -108,7 +108,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	char buf[16];
 	snprintf(buf, sizeof(buf), "%ld", lastIndex);
 	++lastIndex;
-	keySetMeta(appendKey, "ini/index", buf);
+	keySetMeta(appendKey, "order", buf);
 	
 	if(*value == '\0')
 		keySetMeta(appendKey, "ini/empty", "");
@@ -366,7 +366,7 @@ static void writeMeta(Key *key, FILE *fh)
 	while(keyNextMeta(key) != NULL)
 	{
 		const Key *meta = keyCurrentMeta(key);
-		if(strncmp(keyName(meta), "ini/", 4) && strcmp(keyName(meta), "binary"))
+		if(strcmp(keyName(meta), "ini/empty") && strcmp(keyName(meta), "binary") && strcmp(keyName(meta), "order"))
 		{
 			fprintf(fh, "%s = %s\n", keyName(meta), keyString(meta));
 		}
@@ -379,7 +379,7 @@ static Key *ksNextByNumber(KeySet *returned, long *index)
 	ksRewind(returned);
 	while((retKey = ksNext(returned)) != NULL)
 	{
-		if(atol(keyString(keyGetMeta(retKey, "ini/index"))) == *index)
+		if(atol(keyString(keyGetMeta(retKey, "order"))) == *index)
 		{
 			++(*index);
 			return retKey;
