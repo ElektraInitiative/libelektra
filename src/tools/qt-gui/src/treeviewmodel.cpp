@@ -672,11 +672,11 @@ void TreeViewModel::synchronize()
 		printKeys(ours, ours, ours);
 #endif
 
-		// #348
-		// GUIBasicKeySet::setBasic(ours);
-		// createNewNodes(ours);
+		m_base = ours;
+		createNewNodes(ours);
 
-		populateModel(ours);
+		// #348
+		// populateModel(ours);
 	}
 	catch (KDBException const&)
 	{
@@ -694,11 +694,11 @@ void TreeViewModel::synchronize()
 			printKeys(theirs, result, ours);
 #endif
 
-			// #348
-			// GUIBasicKeySet::setBasic(result);
-			// createNewNodes(result);
+			m_base = result;
+			createNewNodes(result);
 
-			populateModel(result);
+			// #348
+			// populateModel(result);
 		}
 		catch (KDBException const& e)
 		{
