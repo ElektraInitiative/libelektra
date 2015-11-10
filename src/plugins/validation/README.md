@@ -23,7 +23,7 @@ message that will be passed with the error information.
 The implementation consists of a loop checking for every key if it has
 the mentioned metakey. The check itself is done by the POSIX regular
 expression library with the interface `regcomp`, `regexec`, `regerror`
-and `regfree`. The ﬂag `REG_EXTENDED` is passed so that the regular
+and `regfree`. The flag `REG_EXTENDED` is passed so that the regular
 expression will be compiled as an extended regular expression. `REG_NOSUB`
 gives a better performance and subexpressions cannot be used in this
 setup anyway.
