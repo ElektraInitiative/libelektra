@@ -247,7 +247,7 @@ Thanks to Manuel Mausz for to testing and improving portability!
 - make dbus example work again
 - fix compiler warnings for gcc and clang
 - fix valgrind suppressions
-- Installation of GI binding is fixed, thanks to Davis
+- Installation of GI binding is fixed, thanks to Dāvis
 - make uninstall is fixed and docu improved
 
 
