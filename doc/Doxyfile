@@ -768,7 +768,11 @@ INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
                          @PROJECT_SOURCE_DIR@/src/libtools \
                          @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
                          @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
-                         @PROJECT_SOURCE_DIR@/src/libloader/doc.c
+                         @PROJECT_SOURCE_DIR@/src/libloader/doc.c \
+                         @PROJECT_SOURCE_DIR@/src/libgetenv/README.md \
+                         @PROJECT_SOURCE_DIR@/doc \
+                         @PROJECT_SOURCE_DIR@/src/plugins \
+                         @PROJECT_SOURCE_DIR@/README.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -842,7 +846,13 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = */doc/todo/* \
+                         */doc/old/* \
+                         */plugins/*.c \
+                         */plugins/*.h \
+                         */plugins/*.cpp \
+                         */plugins/*.hpp \
+                         */plugins/*.in
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -911,7 +921,7 @@ INPUT_FILTER           =
 # filters are used. If the FILTER_PATTERNS tag is empty or if none of the
 # patterns match the file name, INPUT_FILTER is applied.
 
-FILTER_PATTERNS        =
+FILTER_PATTERNS        = *.md=@MARKDOWN_LINK_CONVERTER@
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using
 # INPUT_FILTER ) will also be used to filter the input files that are used for
@@ -933,7 +943,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE =
+USE_MDFILE_AS_MAINPAGE = DOXYGEN_MAIN.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
@@ -1668,7 +1678,7 @@ PAPER_TYPE             = a4
 # If left blank no extra packages will be included.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-EXTRA_PACKAGES         =
+EXTRA_PACKAGES         = elektraSpecialCharacters
 
 # The LATEX_HEADER tag can be used to specify a personal LaTeX header for the
 # generated LaTeX document. The header should contain everything until the first

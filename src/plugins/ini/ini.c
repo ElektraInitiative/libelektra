@@ -73,7 +73,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
 
 	Key *appendKey = keyDup (handle->parentKey);
-
 	if (section)
 	{
 		if (*section != '\0')
@@ -84,6 +83,8 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 
 	keyAddBaseName (appendKey, name);
 
+	if(*value == '\0')
+		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
 	{
 		flushCollectedComment (handle, appendKey);
@@ -94,7 +95,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	{
 		Key *existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE);
 		keyDel (appendKey);
-
 		/* something went wrong before because this key should exist */
 		if (!existingKey) return -1;
 
@@ -299,35 +299,22 @@ static short isSectionKey(Key *key)
  * The returned string has to be freed by the caller
  *
  */
-static char *getIniName(KeySet *keys, Key *parent, Key *key)
+static char *getIniName(Key *section, Key *key)
 {
-	cursor_t currentCursor = ksGetCursor(keys);
-
-	Key *temp = keyDup(key);
-	Key *section;
-
-	do
+	if(!strcmp(keyName(section), keyName(key)))
+		return strdup(keyBaseName(key));
+	char *buffer = malloc(strlen(keyName(key)) - strlen(keyName(section)));
+	char *dest = buffer;
+	for(char *ptr = (char *)keyName(key)+strlen(keyName(section))+1; *ptr; ++ptr)
 	{
-		keySetBaseName(temp, 0);
-
-		if (!keyCmp(temp, parent))
+		if(*ptr != '\\')
 		{
-			/* we reached the parent key, there won't be any more section keys */
-			section = parent;
-			break;
+			*dest = *ptr;
+			++dest;
 		}
-
-		section = ksLookup(keys, temp, KDB_O_NONE);
-	} while(!isSectionKey(section));
-
-	ksSetCursor(keys, currentCursor);
-	keyDel(temp);
-
-	char *buffer = elektraMalloc(keyGetNameSize(key));
-	elektraUnescapeKeyName(keyName(key) + keyGetNameSize(section), buffer);
-
+	}
+	*dest = 0;
 	return buffer;
-
 }
 
 static Key *generateSectionKey(Key *key, Key *parentKey)
@@ -361,32 +348,45 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	ksRewind (returned);
 	Key *current;
+	Key *sectionKey = NULL;
 	while ((current = ksNext (returned)))
 	{
 		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
 		{
-			Key *sectionKey = generateSectionKey(current, parentKey);
+			Key *sectionKey2 = generateSectionKey(current, parentKey);
 
 			cursor_t cursor = ksGetCursor(returned);
-			if (!ksLookup(returned, sectionKey, KDB_O_NONE))
+			if (!ksLookup(returned, sectionKey2, KDB_O_NONE))
 			{
-				ksAppendKey(returned, sectionKey);
-				current = sectionKey;
+				ksAppendKey(returned, sectionKey2);
+				current = sectionKey2;
 			}
 			else
 			{
-				keyDel(sectionKey);
+				keyDel(sectionKey2);
 				ksSetCursor(returned, cursor);
 			}
 		}
 
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
-
+		if(keyIsDirectBelow(parentKey, current))
+		{
+			if(*(keyString(current)) == '\0')
+			{
+				keyDel(sectionKey);
+				sectionKey = keyDup(current);
+				keySetBinary(sectionKey, 0, 0);
+				current = sectionKey;
+			}
+		}
 		writeComments (current, fh);
 
 		/* find the section the current key belongs to */
-		char *iniName = getIniName(returned, parentKey, current);
-
+		char *iniName;
+		if(sectionKey)
+			iniName = getIniName(sectionKey, current);
+		else
+			iniName = getIniName(parentKey, current);
 		/* keys with a NULL value are treated as sections */
 		if (isSectionKey(current))
 		{
@@ -395,7 +395,12 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		else
 		{
 			/* if the key value is only single line, write a singleline INI key */
-			if (strstr (keyString (current), "\n") == 0)
+			if(keyGetMeta(current, "ini/empty"))
+			{
+				fprintf(fh, "%s\n", iniName);
+
+			}
+			else if (strstr (keyString (current), "\n") == 0)
 			{
 				fprintf (fh, "%s = %s\n", iniName, keyString (current));
 			}
@@ -418,6 +423,8 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		elektraFree(iniName);
 		if (ret < 0) break;
 	}
+	if(sectionKey)
+		keyDel(sectionKey);
 
 	fclose (fh);
 

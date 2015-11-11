@@ -800,10 +800,10 @@ ingroup:plugin
 module:conditionals
 
 number:136
-description:can't find corresponding key in other namespaces
-severity:error
+description:Missing lineending
+severity:warning
 ingroup:plugin
-module:globalglob
+module:csvstorage
 
 number:137
 description:failed to mount global plugins

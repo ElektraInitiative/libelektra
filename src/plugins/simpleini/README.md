@@ -10,6 +10,8 @@
 ## Introduction ##
 
 This plugin reads and writes files written in a basic ini format.
+It is very simplistic, the [ini](../ini/) plugin and for specifications the [ni](../ni/) plugin
+should be preferred.
 
 ## Restrictions ##
 
@@ -20,4 +22,5 @@ is used to handle null values.
 ##Examples##
 
 Mount the plugin:
->$ kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini
+
+    $ kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini

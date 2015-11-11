@@ -38,8 +38,8 @@ ScrollView {
 		Label {
 			id: label
 
-			text: rowLoaderModel === null ? "" : rowLoaderModel.name
-			color: rowLoaderModel === null ? "transparent" : (rowLoaderModel.isNull ? guiSettings.nodeWithoutKeyColor : guiSettings.nodeWithKeyColor)
+			text: rowLoaderModel === null || rowLoaderModel === undefined ? "" : rowLoaderModel.name
+			color: rowLoaderModel === null || rowLoaderModel === undefined ? "transparent" : (rowLoaderModel.isNull ? guiSettings.nodeWithoutKeyColor : guiSettings.nodeWithKeyColor)
 			onColorChanged: indicator.updateIndicator()
 		}
 		Indicator {
@@ -56,7 +56,7 @@ ScrollView {
 			onUpdateIndicator: {
 				if(rowLoaderModel !== null) {
 					paintcolor = label.color
-					opacity = rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
+					opacity = rowLoaderModel === null || rowLoaderModel === undefined ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
 				}
 			}
 		}

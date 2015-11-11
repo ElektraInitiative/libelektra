@@ -17,7 +17,8 @@ macro (do_doc target folder file install)
 		OUTPUT ${folder}/${file}
 		COMMAND ${DOXYGEN_EXECUTABLE}
 		ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 
 	#get_filename_component (name ${target} NAME_WE)
@@ -57,6 +58,11 @@ if (DOXYGEN_FOUND)
 
 	find_package(Perl)
 
+	add_executable (markdownlinkconverter markdownlinkconverter/markdownlinkconverter.c)
+	# fix usage with wine
+	# https://github.com/ElektraInitiative/libelektra/pull/340#discussion_r44044444
+	find_util (markdownlinkconverter MARKDOWN_LINK_CONVERTER "")
+
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
 		"${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
@@ -72,12 +78,15 @@ if (DOXYGEN_FOUND)
 		do_doc(latex ${OUTPUT_DIRECTORY}/latex/ refman.tex
 			${TARGET_DOCUMENTATION_LATEX_FOLDER})
 
+		file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
+				DESTINATION "${OUTPUT_DIRECTORY}/latex/")
+
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
-			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex
+			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/
 		)
 

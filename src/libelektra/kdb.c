@@ -528,12 +528,12 @@ static int elektraGetDoUpdate(Split *split, Key *parentKey)
  *           - cascading keys (starting with /) will retrieve the same path in all namespaces
  *           - / will retrieve all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
- *	will not be changed on error or if no update is required
+ * 	will not be changed on error or if no update is required
  * @see ksLookup(), ksLookupByName() for powerful
- *	lookups after the KeySet was retrieved
+ * 	lookups after the KeySet was retrieved
  * @see kdbOpen() which needs to be called before
  * @see kdbSet() to save the configuration afterwards and kdbClose() to
- *	finish affairs with the key database.
+ * 	finish affairs with the key database.
  * @retval 1 if the keys were retrieved successfully
  * @retval 0 if there was no update - no changes are made to the keyset then
  * @retval -1 on failure - no changes are made to the keyset then

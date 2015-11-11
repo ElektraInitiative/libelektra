@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <gtest/gtest.h>
+#include <kdbprivate.h>
 #include "mergetestutils.cpp"
 
 using namespace kdb;
@@ -31,6 +32,25 @@ TEST_F(ThreeWayMergeTest, EqualKeySetsMerge)
 
 	EXPECT_EQ(5, merged.size ());
 	compareAllKeys (merged);
+}
+
+TEST_F(ThreeWayMergeTest, EqualKeySetsWontCauseSync)
+{
+	unsyncKeys(ours);
+	unsyncKeys(theirs);
+	unsyncKeys(base);
+
+	MergeResult result = merger.mergeKeySet (base, ours, theirs, ourParent);
+	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+
+	KeySet merged = result.getMergedKeys();
+
+	Key current;
+	merged.rewind();
+	while ((current = merged.next ()))
+	{
+		EXPECT_FALSE(current.needSync());
+	}
 }
 
 TEST_F(ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)

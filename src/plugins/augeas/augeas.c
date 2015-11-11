@@ -66,22 +66,44 @@ static const char *getLensPath(Plugin *handle)
 
 static const char *getAugeasError(augeas* augeasHandle)
 {
-	const char* message = 0;
+	const char* reason = 0;
 	if (aug_error (augeasHandle) != 0)
 	{
-		message = aug_error_message (augeasHandle);
+		reason = aug_error_message (augeasHandle);
 	}
 	else
 	{
-		aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/message",
-				&message);
-		if (!message) message = "No specific reason was reported";
+		const char *augeasError;
+		aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error", &augeasError);
+
+		if (augeasError)
+		{
+			const char *lens;
+			const char *line;
+			const char *character;
+			const char *message;
+
+			aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/lens", &lens);
+			aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/line", &line);
+			aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/char", &character);
+			aug_get (augeasHandle, "/augeas/text"AUGEAS_TREE_ROOT"/error/message", &message);
+
+			const char *format = "%s\n\tposition: %s:%s\n\tmessage: %s\n\tlens: %s";
+			size_t messageSize = strlen(lens) + strlen(line) + strlen(character) + strlen(message) + strlen(format);
+			char *buffer = malloc (messageSize);
+			sprintf(buffer, format, augeasError, line, character, message);
+			reason = buffer;
+		}
+		else
+		{
+			reason = "No specific reason was reported";
+		}
 	}
 
 	/* should not happen, but avoid 0 return */
-	if (!message) message = "";
+	if (!reason) reason = "";
 
-	return message;
+	return reason;
 }
 
 static Key *createKeyFromPath(Key *parentKey, const char *treePath)
@@ -344,7 +366,11 @@ int elektraAugeasClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	augeas *augeasHandle = elektraPluginGetData (handle);
 
-	if (augeasHandle) aug_close (augeasHandle);
+	if (augeasHandle)
+	{
+		aug_close (augeasHandle);
+		augeasHandle = 0;
+	}
 
 	return 0;
 }
