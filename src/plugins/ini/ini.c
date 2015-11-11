@@ -360,6 +360,13 @@ static Key *generateSectionKey(Key *key, Key *parentKey)
 	keySetBinary(sectionKey, 0, 0);
 	return sectionKey;
 }
+
+/**
+ * Loops through all metakeys belonging to the (section)key.
+ * If the metakey doesn't match any of the reserved keywords (order, ini/empty, binary):
+ * write it to the file.
+ */
+
 static void writeMeta(Key *key, FILE *fh)
 {
 	keyRewindMeta(key);
@@ -454,7 +461,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		/* find the section the current key belongs to */
 		char *iniName;
-		if(sectionKey)
+		if(sectionKey && keyIsBelow(sectionKey, current))
 			iniName = getIniName(sectionKey, current);
 		else
 			iniName = getIniName(parentKey, current);
