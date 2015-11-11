@@ -48,3 +48,4 @@ usr/lib/elektra4/libelektra-csvstorage.so*
 usr/lib/elektra4/libelektra-enum.so*
 usr/lib/elektra4/libelektra-lineendings.so*
 usr/lib/elektra4/libelektra-conditionals.so*
+usr/lib/elektra4/libelektra-mathcheck.so*
