@@ -313,7 +313,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key *delimKey = ksLookupByName(config, "/delimiter", 0);
-	char delim = ';';
+	char delim = ',';
 	if(delimKey)
 	{
 		const char *delimString = keyString(delimKey);
@@ -456,7 +456,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	else
 	{
-		outputDelim = ';';
+		outputDelim = ',';
 	}
 	Key *useHeaderKey = ksLookupByName(config, "/header", 0);
 	short useHeader = 0;
