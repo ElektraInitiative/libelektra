@@ -14,7 +14,7 @@ This plugin allowes Elektra to read and write CSV files.
 
 `delimiter`
 Tells the plugin what delimiter is used in the file.
-The default delimiter is `;` and will be used if `delimiter` is not set.
+The default delimiter is `,` and will be used if `delimiter` is not set.
 
 `header`
 Tells the plugin to use the first line as a header if it's set to "colname". The columns will get the corresponding names.
