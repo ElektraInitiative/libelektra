@@ -12,12 +12,14 @@ This plugin uses if-then-else like conditions stored in the metakey `check/condi
 
 ## Syntax ##
 
-`(IF Condition) ? (THEN Condition) : (ELSE Condition)` where the ELSE-condition is optional
+`(IF-condition) ? (THEN-condition) : (ELSE-condition)` where the ELSE-condition is optional
 
 Condition:  `Key` *Operation* `('String' | '1234.56' | Key | '')`
 
-Operations: `!=, ==, <, <=, =>, >, :=`
-	`:=` is used to set a keyvalue
+Operations: `!=, ==, <, <=, =>, >, :=`, where:
+
+- `:=` is used to set a key value
+- others are for comparison as in C
 
 
 ## Example ##
@@ -27,3 +29,10 @@ Operations: `!=, ==, <, <=, =>, >, :=`
 Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/other/key` ELSE `or/key` MUST BE LESS THAN `125`
 
 
+Another full example:
+
+    kdb mount conditionals.dump /tmount/conditionals conditionals dump
+    kdb set user/tmount/conditionals/fkey 3.0
+    kdb set user/tmount/conditionals/hkey hello
+    kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
+    kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
