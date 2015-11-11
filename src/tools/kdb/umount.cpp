@@ -22,6 +22,8 @@ int UmountCommand::execute(Cmdline const& cl)
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey);
 
+	if (cl.verbose) Backends::findBackend(cl.arguments[0], conf, true);
+
 	if (Backends::umount(cl.arguments[0], conf) == 0)
 	{
 		cerr << "Mountpoint " << cl.arguments[0] << " does not exist" << endl;

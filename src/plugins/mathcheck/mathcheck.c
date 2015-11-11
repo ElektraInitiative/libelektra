@@ -138,7 +138,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 }
 static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *parentKey)
 {
-	const char *regexString = "((([[:alnum:]]*/)+[[:alnum:]]+))|([-+:/<>=!{*])";
+	const char *regexString = "((([[:alnum:]]*/)*[[:alnum:]]+))|([-+:/<>=!{*])";
 	char *ptr = (char *)prefixString;
 	regex_t regex;
 	Key *key;
@@ -167,10 +167,9 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		{
 			break;
 		}
-
 		len = match.rm_eo - match.rm_so;
 		start = match.rm_so + (ptr - prefixString);
-		if(len == 1)
+		if(len == 1 && !isalpha(prefixString[start]))
 		{
 			switch(prefixString[start])
 			{

@@ -18,6 +18,7 @@ macro (do_doc target folder file install)
 		COMMAND ${DOXYGEN_EXECUTABLE}
 		ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 
 	#get_filename_component (name ${target} NAME_WE)
@@ -76,6 +77,9 @@ if (DOXYGEN_FOUND)
 	if (WITH_LATEX)
 		do_doc(latex ${OUTPUT_DIRECTORY}/latex/ refman.tex
 			${TARGET_DOCUMENTATION_LATEX_FOLDER})
+
+		file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
+				DESTINATION "${OUTPUT_DIRECTORY}/latex/")
 
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
