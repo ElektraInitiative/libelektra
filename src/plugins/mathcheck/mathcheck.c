@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <kdberrors.h>
+#include <ctype.h>
 #include "mathcheck.h"
 
 #define MIN_VALID_STACK 3
@@ -32,7 +33,7 @@ typedef struct{
 }PNElem;
 
 
-int elektraMatchcheckGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
+int elektraMathcheckGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey)
 {
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/mathcheck"))
 	{
@@ -41,9 +42,9 @@ int elektraMatchcheckGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 					KEY_VALUE, "mathcheck plugin waits for your orders", KEY_END),
 				keyNew ("system/elektra/modules/mathcheck/exports", KEY_END),
 				keyNew ("system/elektra/modules/mathcheck/exports/get",
-					KEY_FUNC, elektraMatchcheckGet, KEY_END),
+					KEY_FUNC, elektraMathcheckGet, KEY_END),
 				keyNew ("system/elektra/modules/mathcheck/exports/set",
-					KEY_FUNC, elektraMatchcheckSet, KEY_END),
+					KEY_FUNC, elektraMathcheckSet, KEY_END),
 #include ELEKTRA_README(mathcheck)
 				keyNew ("system/elektra/modules/mathcheck/infos/version",
 					KEY_VALUE, PLUGINVERSION, KEY_END),
@@ -138,7 +139,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 }
 static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *parentKey)
 {
-	const char *regexString = "((([[:alnum:]]*/)*[[:alnum:]]+))|([-+:/<>=!{*])";
+	const char *regexString = "((([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[,.]{0,1}[0-9]*')|([-+:/<>=!{*])";
 	char *ptr = (char *)prefixString;
 	regex_t regex;
 	Key *key;
@@ -229,22 +230,37 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		}
 		else
 		{
-			ksRewind(ks);
-			searchKey = realloc(searchKey, len+2+strlen(keyName(parentKey)));
-			strcpy(searchKey, keyName(parentKey));
-			strcat(searchKey, "/");
-			strncat(searchKey, ptr+1, len);
-			key = ksLookupByName(ks, searchKey, 0);
-			if(!key)
+			char *subString = malloc(len+1);
+			strncpy(subString, prefixString+start, len);
+			subString[len] = '\0';
+			if(subString[0] == '\'' && subString[len-1] == '\'')
 			{
-				ELEKTRA_SET_ERRORF(124, parentKey, "Operant key %s doesn't exist", searchKey);
-				regfree(&regex);
-				free(searchKey);
-				ksDel(ks);
-				free(stack);
-				return result;
+				subString[len-1] = '\0';
+				char *subPtr = (subString+1);
+				stackPtr->value = atof(subPtr);
+				free(subString);
 			}
-			stackPtr->value = atof(keyString(key));
+			else
+			{
+				ksRewind(ks);
+				searchKey = realloc(searchKey, len+2+strlen(keyName(parentKey)));
+				strcpy(searchKey, keyName(parentKey));
+				strcat(searchKey, "/");
+				strcat(searchKey, subString);
+				key = ksLookupByName(ks, searchKey, 0);
+				if(!key)
+				{
+					ELEKTRA_SET_ERRORF(124, parentKey, "Operant key %s doesn't exist", searchKey);
+					regfree(&regex);
+					free(searchKey);
+					ksDel(ks);
+					free(stack);
+					free(subString);
+					return result;
+				}
+				stackPtr->value = atof(keyString(key));
+				free(subString);
+			}
 			stackPtr->op = VAL;
 			++stackPtr;
 		}
@@ -261,11 +277,13 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	result = doPrefixCalculation(stack, stackPtr);	
 	if(result.op != ERROR)
 		result.op = resultOp;
+	else
+		ELEKTRA_SET_ERRORF(122, parentKey, "%s\n", prefixString);
 	free(stack);
 	return result;
 }
 
-int elektraMatchcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	Key *cur;
 	const Key *meta;
@@ -341,8 +359,8 @@ int elektraMatchcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 Plugin *ELEKTRA_PLUGIN_EXPORT(mathcheck)
 {
 	return elektraPluginExport("mathcheck",
-			ELEKTRA_PLUGIN_GET,	&elektraMatchcheckGet,
-			ELEKTRA_PLUGIN_SET,	&elektraMatchcheckSet,
+			ELEKTRA_PLUGIN_GET,	&elektraMathcheckGet,
+			ELEKTRA_PLUGIN_SET,	&elektraMathcheckSet,
 			ELEKTRA_PLUGIN_END);
 }
 

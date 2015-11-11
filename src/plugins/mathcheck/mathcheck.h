@@ -13,8 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraMatchcheckGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraMatchcheckSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraMathcheckGet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraMathcheckSet(Plugin *handle, KeySet *ks, Key *parentKey);
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(mathcheck);
 
