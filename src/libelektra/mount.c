@@ -205,8 +205,7 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 }
 int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 {
-	Key *root;
-	root=ksLookupByName(keys, "system/elektra/globalplugins", 0);
+	Key *root = ksLookupByName(keys, "system/elektra/globalplugins", 0);
 	if(!root)
 	{
 #if DEBUG && VERBOSE
@@ -240,7 +239,7 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 #if DEBUG && VERBOSE
 				printf("mounting global plugin %s to %s\n", pluginName, placement);
 #endif	
-				Plugin *slave;
+				Plugin *plugin;
 				Key *refKey;
 				Key *searchKey = keyNew("/", KEY_END);
 				keyAddBaseName(searchKey, keyString(cur));
@@ -248,7 +247,7 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 				keyDel(searchKey);
 				if(refKey)
 				{
-					slave = *(Plugin**)keyValue(refKey);
+					plugin = *(Plugin**)keyValue(refKey);
 				}
 				else
 				{
@@ -269,21 +268,19 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 					ksAppend(config, renamedUsrConfig);
 					ksDel(renamedSysConfig);
 					ksDel(renamedUsrConfig);
-					slave = elektraPluginOpen(pluginName, modules, ksDup(config), errorKey);
-					if(!slave)
+					plugin = elektraPluginOpen(pluginName, modules, ksDup(config), errorKey);
+					if(!plugin)
 					{
 						ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
 						return -1;
 					}
-					if(slave->kdbOpen)
-						slave->kdbOpen(slave, errorKey);
-					refKey = keyNew("/", KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
+					refKey = keyNew("/", KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &plugin, KEY_END);
 					keyAddBaseName(refKey, keyString(cur));
 					ksAppendKey(referencePlugins, refKey);
 					keyDel(refKey);
 					ksDel(config);
 				}
-				kdb->globalPlugins[i] = slave;
+				kdb->globalPlugins[i] = plugin;
 			}
 		}
 			
