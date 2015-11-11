@@ -29,6 +29,8 @@ to one cmake variable:
 
 malloc -> elektraMalloc
 
+introduce libease and start to move functionality there
+
 
 ## docu
 
@@ -46,7 +48,7 @@ generate graphic for overview of plugins
 
 ## bugs
 
-strace mounted as non-dir access dir?
+start writing/updating FAQ
 
 
 # further
@@ -116,6 +118,7 @@ C representation (ksNew(..keyNew(...))) is the *most* common representation, sti
 roresolver: check if something is modified
 	for version, constants, uname
 	and/or remove value comparision in those plugins
+	kdbGet should return 0 if nothing modified, too
 
 ## meta data ##
 

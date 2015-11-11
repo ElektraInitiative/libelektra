@@ -8,13 +8,30 @@
 
 ## INTRODUCTION ##
 
-This plugin allows reading of INI files. INI files consist of simple
+This plugin allows read/write of INI files. INI files consist of simple
 key value pairs of the form "key = value". Additionally keys can be
 categorised into different sections. Sections must be enclosed in "[]",
 for example "[section]". Each section is converted into a directory key
 (without value) and keys below the section are located below the section
 key. If the same section appears multiple times, the keys of all sections
 with the same name are merged together under the section key.
+
+## USAGE ##
+
+If you want to add a ini file to the global key database, simply use mount:
+
+    kdb mount file.ini /test ini
+
+Then you can modify the contents of the ini file using set:
+
+    kdb set user/test/key value
+    kdb set user/test/section
+    kdb set user/test/section/key value
+
+Find out which file you modified:
+
+    kdb file user/test
+
 
 ## SECTIONS ##
 

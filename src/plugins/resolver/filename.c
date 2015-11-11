@@ -421,7 +421,7 @@ static char *elektraGetCwd(Key *warningsKey)
 	char *cwd = elektraMalloc(size);
 	if (cwd == NULL)
 	{
-		ELEKTRA_ADD_WARNING(83, warningsKey, "could not alloc for getcwd");
+		ELEKTRA_ADD_WARNING(83, warningsKey, "could not alloc for getcwd, defaulting to /");
 		return 0;
 	}
 
@@ -436,7 +436,7 @@ static char *elektraGetCwd(Key *warningsKey)
 			{
 				// give up, we cannot handle the problem
 				free(cwd);
-				ELEKTRA_ADD_WARNINGF(83, warningsKey, "getcwd failed with errno %d", errno);
+				ELEKTRA_ADD_WARNINGF(83, warningsKey, "getcwd failed with errno %d, defaulting to /", errno);
 				return 0;
 			}
 
@@ -445,7 +445,7 @@ static char *elektraGetCwd(Key *warningsKey)
 			elektraRealloc((void**)&cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_WARNINGF(83, warningsKey, "could not realloc for getcwd size %d", size);
+				ELEKTRA_ADD_WARNINGF(83, warningsKey, "could not realloc for getcwd size %d, defaulting to /", size);
 				return 0;
 			}
 		}
@@ -457,7 +457,7 @@ static char *elektraGetCwd(Key *warningsKey)
 static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 {
 	char * cwd = elektraGetCwd(warningsKey);
-	if (!cwd) return -1;
+	if (!cwd) cwd = elektraStrDup("/");
 
 	char *dn = elektraStrDup(cwd);
 	char *dnOrig = dn;

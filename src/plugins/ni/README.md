@@ -8,15 +8,20 @@
 
 ## Introduction ##
 
-This plugin uses the nickel library in order to read/write configuration
-and meta data in the nickel ini format.
+This plugin uses the nickel library in order to read/write
+meta data in the nickel ini format. It's purpose is to be
+used in the `spec`-namespace or when any metadata should be
+stored.
 
-Supports most KeySets, but `kdb test` currently reports some errors
-(likely because of the UTF-8 handling happening within ni).
+For ini files for applications, e.g. smb.conf you should prefer the
+[ini plugin](/src/plugins/ini).
+
+## Usage
+
 
 To mount a ni plugin you can simply use:
 
-    kdb mount file.ini /ni ni
+    kdb mount file.ini spec/ni ni
 
 The strength and usage of this plugin is that it supports arbitrary meta
 data and is still human readable.
@@ -39,7 +44,7 @@ Line continuation works by ending the line with `\\`.
 
 Exporting a KeySet to the nickle format:
 
-   kdb export system/example ni > example.ni
+    kdb export spec/ni ni > example.ni
 
 
 For in-detail explanation of the syntax
@@ -47,15 +52,13 @@ For in-detail explanation of the syntax
 [see nickel-1.1.0/include/bohr/ni.h](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
 
 
+## Limitations ##
 
-## Restrictions ##
-
+- Supports most KeySets, but `kdb test` currently reports some errors
+  (likely because of the UTF-8 handling happening within ni).
 - Keys have a random order when written out.
 - No comments are preserved, they are simply removed.
 - Parse errors simply result to ignoring (and removing) these parts.
-
-So for ini files of applications, e.g. smb.conf you should prefer the
-[ini plugin](/src/plugins/ini).
 
 
 ## Nickel ##
@@ -85,5 +88,4 @@ rewrote first ) line ini file with 1.1MB size is 16.88 MB.
 The sort order is not stable, even not with the same file
 rewritten again.
 
-http://chaoslizard.sourceforge.net/nickel
-http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
+[https://github.com/chazomaticus/bohr](bohr libraries)

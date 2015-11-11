@@ -798,3 +798,10 @@ description:Validation failed
 severity:error
 ingroup:plugin
 module:conditionals
+
+number:136
+description:Missing lineending
+severity:warning
+ingroup:plugin
+module:csvstorage
+

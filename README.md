@@ -18,7 +18,7 @@ applications' configurations, leveraging easy application integration.
 ## Contact ##
 
 Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-or one of the [authors](doc/AUTHORS).
+or directly to one of the [authors](doc/AUTHORS).
 
 
 ## Quickstart ##
@@ -39,7 +39,11 @@ This will install the Elektra tools as well as everything needed to develop
 with Elektra.
 
 If you're not running Debian/Ubuntu, check out the [package list](#packages),
-[download elektra directly](#download) or [compile it yourself](#compile).
+[download elektra directly](#download) or [compile it yourself](#compiling).
+
+It is preferable to use a recent version: They contain many bug fixes and
+additional features. See [INSTALL](doc/INSTALL.md) for other ways to install
+Elektra.
 
 ### Usage ###
 
@@ -97,16 +101,16 @@ And in terms of quality, we want:
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
  * Elektra can be thought of a virtual file system for configuration.
  * Elektra supports mounting of existing configuration files into the global key database.
- * Elektra has dozens of [Plugins](src/plugins#introduction) that make it possible
+ * Elektra has dozens of [Plugins](src/plugins/) that make it possible
    to have a tiny core, but still support many features, including:
-   * Elektra can import and export configuration files in any [supported format](src/plugins#storage).
-   * Elektra is able to log and notify other software on any configuration changes, e.g., using [Dbus](src/plugins/dbus) and [Journald](src/plugins/journald).
-   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type), [regex](src/plugins/validation) and more.
-   * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver).
-   * Elektra supports different ways to [escape](src/plugins/ccode) and [encode](src/plugins/iconv) content of configuration files.
+   * Elektra can import and export configuration files in any [supported format](src/plugins/).
+   * Elektra is able to log and notify other software on any configuration changes, e.g., using [Dbus](src/plugins/dbus/) and [Journald](src/plugins/journald/).
+   * Elektra can improve robustness by rejecting invalid configuration via [type checking](src/plugins/type/), [regex](src/plugins/validation/) and more.
+   * Elektra provides different mechanisms to [locate configuration files](src/plugins/resolver/).
+   * Elektra supports different ways to [escape](src/plugins/ccode/) and [encode](src/plugins/iconv/) content of configuration files.
  * Elektra is multi-process safe and can be used in multi-threaded programs.
- * Elektra (except for some [plugins](src/plugins#introduction)) is portable and completely written in Ansi-C99.
- * Elektra (except for some [plugins](src/plugins#introduction)) has no external dependency.
+ * Elektra (except for some [plugins](src/plugins/)) is portable and completely written in Ansi-C99.
+ * Elektra (except for some [plugins](src/plugins/)) has no external dependency.
  * Elektra is suitable for embedded systems and early boot stage programs.
  * Elektra uses simple key/value pairs that include metadata for any other information.
  * Elektra provides many powerful [Bindings](src/bindings) to avoid low-level access code.
@@ -128,7 +132,7 @@ Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/f
 ## Further Information ##
 
 To get an introduction, it is best to take a look at the
-[presentation](http://www.libelektra.org/ftp/elektra/presentations/2012/lgm.odp),
+[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp),
 read our
 [tutorials](doc/tutorials),
 see the
@@ -161,11 +165,7 @@ Available, but not up-to-date (Version 0.7):
 
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
-For Debian stable amd64 we provide latest builds. Just add following lines to
-sources.list in wheezy:
-
-        deb     [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
-        deb-src [trusted=yes] ftp://markus-raab.org/wheezy wheezy main
+For Debian wheezy and jessie amd64 we provide latest builds. See build server below.
 
 If there are no packages available for your distribution, see the
 [installation document](doc/INSTALL.md).
@@ -174,11 +174,12 @@ If there are no packages available for your distribution, see the
 
 Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
 
-You can clone the latest version of Elektra by running: `git clone https://github.com/ElektraInitiative/libelektra.git`
+You can clone the latest version of Elektra by running:
+
+         git clone https://github.com/ElektraInitiative/libelektra.git
 
 Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
-
-         ftp://ftp.libelektra.org/elektra/releases/
+`ftp://ftp.libelektra.org/elektra/releases/`
 
 ### Compiling ###
 
@@ -195,6 +196,8 @@ Then you can use `sudo make install` to install it.
 You can also use the [`./configure`](configure) command to generate a `cmake`
 command with special options.
 
+For more information, especially how to set CMake Cache, see [here](doc/COMPILE.md).
+
 
 ## Build Server ##
 
@@ -203,10 +206,17 @@ Elektra on every commit in various ways and also produces [LCOV code
 coverage report](http://doc.libelektra.org/coverage/latest).
 
 To use the debian repository of the latest builds from master put following files in
-/etc/apt/sources.list:
+/etc/apt/sources.list.
+For jessie:
+
+        deb     [trusted=yes] http://194.117.254.29/elektra-stable/ jessie main
+        deb-src [trusted=yes] http://194.117.254.29/elektra-stable/ jessie main
+
+For wheezy:
 
          deb     [trusted=yes] http://build.libelektra.org/debian/ wheezy main
          deb-src [trusted=yes] http://build.libelektra.org/debian/ wheezy main
+
 
 
 ## Develop ##

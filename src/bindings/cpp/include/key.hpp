@@ -153,6 +153,7 @@ public:
 
 	inline bool isNull() const;
 	inline operator bool() const;
+	inline bool needSync() const;
 
 
 	// value operations
@@ -968,6 +969,14 @@ inline bool Key::isNull() const
 }
 
 /**
+ * @copydoc keyNeedSync
+ */
+inline bool Key::needSync() const
+{
+	return ckdb::keyNeedSync(key);
+}
+
+/**
  * Get a key value.
  *
  * You can write your own template specialication, e.g.:
@@ -1224,6 +1233,7 @@ inline void Key::setCallback(callback_t fct)
 
 	conversation.f = fct;
 	ckdb::keySetBinary(getKey(), &conversation.v, sizeof(conversation));
+	ckdb::keySetMeta(getKey(), "callback", "");
 }
 
 

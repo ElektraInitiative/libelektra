@@ -9,7 +9,6 @@ macro (do_benchmark source)
 	add_executable (${source} ${SOURCES})
 
 	target_link_elektra(${source})
-	target_link_libraries(${source} elektragetenv)
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
@@ -21,3 +20,5 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_benchmark (${name})
 endforeach (file ${TESTS})
+
+target_link_libraries(benchmark_getenv elektragetenv)

@@ -42,7 +42,7 @@ public:
 
 	static BackendInfoVector getBackendInfo(KeySet mountConf);
 
-	static BackendInfo findBackend(std::string const & backend, KeySet mountConf);
+	static BackendInfo findBackend(std::string const & backend, KeySet mountConf, bool verbose = false);
 
 	static bool umount(std::string const & backend, KeySet & mountConf);
 

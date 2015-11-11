@@ -342,6 +342,9 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 	{
 		if(elseexpr)
 			ret = parseSingleCondition(elseexpr, ks, parentKey);
+		else 
+		    ret = 1;
+
 	}
 
 

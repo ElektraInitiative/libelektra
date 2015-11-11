@@ -379,11 +379,21 @@ static int elektraVersionSet (Plugin *handle ELEKTRA_UNUSED,
 	while ((k = ksNext(returned)))
 	{
 		Key *c = ksNext(info);
+		if (!c)
+		{
+			ELEKTRA_SET_ERRORF(84, error, "the key %s (value %s) was added", keyName(k), keyString(k));
+			return -1;
+		}
 		if (strcmp(keyName(k), keyName(c)) || strcmp(keyString(k), keyString(c)))
 		{
 			ELEKTRA_SET_ERRORF(84, error, "the key %s (expected %s) was modified to %s (expected %s)", keyName(k), keyName(c), keyString(k), keyString(c));
 			return -1;
 		}
+	}
+	if ((k = ksNext(info)) != 0)
+	{
+		ELEKTRA_SET_ERRORF(84, error, "the key %s (value %s) was removed", keyName(k), keyString(k));
+		return -1;
 	}
 	ksDel (info);
 	return 0;

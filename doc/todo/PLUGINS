@@ -1,7 +1,10 @@
 Ideas for new PLUGINS in elektra.
 Prefer using great frameworks to do that in short time with high quality.
 
-wait for python/lua plugins for easy prototyping
+
+## Python plugins
+
+resolver/storage hybrid
 
 
 ## Contract on Plugin configuration ##
@@ -28,6 +31,8 @@ chroot
 hostname
 uname also to set
 ulimit
+
+getenv plugin: for /env/current
 
 Shell expansion
 Environment expansion
