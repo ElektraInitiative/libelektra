@@ -520,6 +520,34 @@ static void test_plainIniPreserveOrder(char *fileName)
 	PLUGIN_CLOSE ();
 }
 
+static void test_emptySectionBug(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
+			elektraFilename(), KEY_END);
+	KeySet *conf = ksNew(0, KS_END);
+	KeySet *ks = ksNew (30,
+		keyNew ("user/tests/ini-write/MyApp/mykey",  
+				KEY_VALUE, "new_value",
+				KEY_END),
+		keyNew ("user/tests/ini-write/binarytest", KEY_BINARY,
+				KEY_END),
+        keyNew ("user/tests/ini-write/debienna/test", KEY_VALUE, "value"), 
+		KS_END);
+
+	PLUGIN_OPEN("ini");
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(
+			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	ksDel (ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE ();
+}
 int main(int argc, char** argv)
 {
 	printf ("INI       TESTS\n");
@@ -541,6 +569,7 @@ int main(int argc, char** argv)
 	test_sectionWrite("ini/sectionini");
 	test_autoSectionWrite("ini/sectionini");
 	test_plainIniPreserveOrder("ini/plaininireverse");
+	test_emptySectionBug("ini/emptySectionBugTest");
 
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);

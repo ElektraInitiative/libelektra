@@ -186,7 +186,7 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	pluginConfig->preserverOrder = preserveKey != 0;	
 	pluginConfig->supportMultiline = multilineKey != 0;
 	pluginConfig->autoSections = autoSectionKey != 0;
-    pluginConfig->keyToMeta = toMetaKey != 0;
+	pluginConfig->keyToMeta = toMetaKey != 0;
 	elektraPluginSetData(handle, pluginConfig);
 
 	return 0;
