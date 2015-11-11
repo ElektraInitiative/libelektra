@@ -379,6 +379,9 @@ static void writeMeta(Key *key, FILE *fh)
 		}
 	}
 }
+/**
+ * Returns key with the order number (metakey order) index and increases index afterwards.
+ */
 
 static Key *ksNextByNumber(KeySet *returned, long *index)
 {
@@ -395,7 +398,7 @@ static Key *ksNextByNumber(KeySet *returned, long *index)
 	return NULL;
 }
 
-static Key *ksNextWrapper(KeySet *returned, long *index ELEKTRA_UNUSED)
+static Key *ksNextCallback(KeySet *returned, long *index ELEKTRA_UNUSED)
 {
 	return ksNext(returned);
 }
@@ -425,8 +428,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if(pluginConfig->preserverOrder)
 		traversalFunction = ksNextByNumber;
 	else
-		traversalFunction = ksNextWrapper;
-
+		traversalFunction = ksNextCallback;
 	while ((current = traversalFunction (returned, &index)))
 	{
 		if (pluginConfig->autoSections && !keyIsDirectBelow(parentKey, current))
