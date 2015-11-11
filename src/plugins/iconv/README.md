@@ -3,14 +3,12 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = conv
-- infos/placements = pregetstorage postgetstorage presetstorage
+- infos/placements = postgetstorage presetstorage
 - infos/description = Converts values of keys between charsets
 
 ## Introduction ##
 
-This plugin is a filter plugin that converts between different character encodings, 
-or, if the `checkfile` configuration key is set to anything except "0", validates 
-the fileencoding before reading the file.
+This plugin is a filter plugin that converts between different character encodings.
 
 ## Purpose ##
 
@@ -35,9 +33,3 @@ Note that for writing the conﬁguration `from` and `to` is swapped. A
 key database that requires a speciﬁc encoding can make use of it. To
 sum up, every user can select a different encoding, but the key databases
 are still properly encoded for anyone.
-
-If a user wants to validate a files encoding before reading the file,
-the `checkfile` key has to be set. When set to `0` the feature is turned
-off, every other value turns it on. File validation returns an error if
-a byte sequence thats not legal in `from` is detected and the file will
-not be read.
