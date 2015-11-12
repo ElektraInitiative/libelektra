@@ -8,6 +8,17 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.14
 
+c++11 -> by default
+
+man pages:
+	setup with ronn for help system
+	create good man pages for main tools
+	implement --help to show man page
+
+malloc -> elektraMalloc
+
+# 0.8.15
+
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
@@ -17,8 +28,6 @@ api:
 	add keyGetNamespace
 	version rules ELEKTRA_ABI_13 ...
 
-c++11 -> by default
-
 cleanups/code reviews
 
 DEFAULT_STORAGE/RESOLVER
@@ -27,15 +36,18 @@ to one cmake variable:
 	verbose/debug -> logging
 	pdf/on/off -> docu
 
-malloc -> elektraMalloc
-
 introduce libease and start to move functionality there
+
+split elektra:
+	Libelektra-core (only key+keyset)
+	libelektra-kdb
+	libelektra-meta
+	libelektra-ease
+	libelektra-proposal
+	libelektra links everything together
 
 
 ## docu
-
-man pages:
-	create good man pages for main tools
 
 more docu in METADATA.ini
 
@@ -126,6 +138,7 @@ provide information in spec/elektra/metadata
 
 fix comments:
 	all plugins should use new comment-approach
+	(also iconv)
 
 fix types: (also in 0.8.14)
 	type checker should check like defined in schema
@@ -168,7 +181,7 @@ but no flexibility regarding:
 
 
 
-# 0.8.15
+# 0.8.16
 
 specification checker+application
 	replaces struct+glob
