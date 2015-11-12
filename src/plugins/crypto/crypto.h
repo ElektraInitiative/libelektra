@@ -21,6 +21,7 @@ int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey);
 
 
 int elektraCryptoInit(Key *errorKey);
+void elektraCryptoTeardown();
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey);
 void elektraCryptoHandleDestroy(elektraCryptoHandle *handle);
 int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey);
