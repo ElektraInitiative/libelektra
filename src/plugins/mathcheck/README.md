@@ -21,13 +21,23 @@ All values are interpreted as `double` floating point values.
 
 Full example:
 
-	kdb mount mathcheck.dump /tmount/mathcheck dump mathcheck
-	kdb set user/tmount/mathcheck/a 3.1
-	kdb set user/tmount/mathcheck/b 4.5
-	kdb set user/tmount/mathcheck/k 7.6
-	kdb setmeta user/tmount/mathcheck/k check/math "== + a b"
-	kdb set user/tmount/mathcheck/k 7.7 # fails
+	kdb mount mathcheck.dump /example/mathcheck dump mathcheck
+	kdb set user/example/mathcheck/a 3.1
+	kdb set user/example/mathcheck/b 4.5
+	kdb set user/example/mathcheck/k 7.6
+	kdb setmeta user/example/mathcheck/k check/math "== + a b"
+	kdb set user/example/mathcheck/k 7.7   # fails
 
-	kdb setmeta user/tmount/mathcheck/k check/math ":= + a b"
-	kdb set user/tmount/mathcheck/a 5.5
-	kdb get user/tmount/mathcheck/k
+To calculate values on-demand you can use:
+
+	kdb setmeta user/example/mathcheck/k check/math ":= + a b"
+	kdb get user/example/mathcheck/k       # 12.5
+	kdb set user/example/mathcheck/a 5.5
+	kdb get user/example/mathcheck/k       # 10
+
+It also works with constants:
+
+	kdb setmeta user/example/mathcheck/k check/math ":= + a '5'"
+	kdb get user/example/mathcheck/k       # 10.5
+	kdb set user/example/mathcheck/a 8.0
+	kdb get user/example/mathcheck/k       # 13
