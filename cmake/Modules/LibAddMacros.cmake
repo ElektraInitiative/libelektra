@@ -141,45 +141,6 @@ macro (add_plugintest testname)
 	endif ()
 endmacro (add_plugintest)
 
-# Add a test for cpp plugins
-macro (add_cpp_plugintest testname)
-	if (BUILD_TESTING)
-		cmake_parse_arguments (ARG
-			"MEMLEAK" # optional keywords
-			""        # one value keywords
-			""        # multi value keywords
-			${ARGN}
-		)
-		set (source "testmod_${testname}")
-		include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-		include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
-		set (SOURCES ${HDR_FILES} ${source}.cpp ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp)
-		add_executable (${source} ${SOURCES})
-
-		if (BUILD_FULL)
-			target_link_libraries (${source} elektra-full)
-		else (BUILD_FULL)
-			target_link_libraries (${source} elektra-static)
-		endif (BUILD_FULL)
-
-		if (INSTALL_TESTING)
-			install (TARGETS ${source}
-				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-		endif (INSTALL_TESTING)
-
-		set_target_properties (${source} PROPERTIES
-				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-		add_test (${source}
-				"${CMAKE_BINARY_DIR}/bin/${source}"
-				"${CMAKE_CURRENT_BINARY_DIR}/"
-				)
-		if (ARG_MEMLEAK)
-			set_property(TEST testmod_${testname} PROPERTY
-				LABELS memleak)
-		endif (ARG_MEMLEAK)
-	endif()
-endmacro (add_cpp_plugintest testname)
-
 macro(find_swig)
 	if (NOT SWIG_FOUND)
 		find_package(SWIG 3)

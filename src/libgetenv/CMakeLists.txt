@@ -1,7 +1,7 @@
 include(CheckSymbolExists)
 check_symbol_exists(__GNU_LIBRARY__ "features.h"    HAVE_GLIBC)
 
-if (BUILD_SHARED AND ENABLE_CXX11 AND HAVE_GLIBC)
+if (BUILD_SHARED AND HAVE_GLIBC)
 	add_subdirectory(include)
 	include_directories(include)
 

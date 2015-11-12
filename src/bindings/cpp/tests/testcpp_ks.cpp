@@ -13,10 +13,8 @@ KeySet fun(size_t alloc, ...)
 	return ks;
 }
 
-void test_ksnew()
+TEST(ks, new)
 {
-	cout << "testing keyset new" << endl;
-
 	KeySet ks1;
 
 	KeySet ks2 (5,
@@ -58,10 +56,9 @@ void test_ksnew()
 		KS_END);
 }
 
-void test_ksdup()
-{
-	cout << "testing ksdup" << endl;
 
+TEST(ks, dup)
+{
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -84,10 +81,8 @@ void test_ksdup()
 	// ks4.toStream(stdout, 0);
 }
 
-void test_kscopy()
+TEST(ks, copy)
 {
-	cout << "testing ksdup" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -112,10 +107,8 @@ void test_kscopy()
 	// ks4.toStream(stdout, 0);
 }
 
-void test_iterate()
+TEST(ks, iterate)
 {
-	cout << "testing iterate" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -197,10 +190,8 @@ void test_iterate()
 	}
 }
 
-void test_cursor()
+TEST(ks, cursor)
 {
-	cout << "testing cursor" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -221,10 +212,8 @@ void test_cursor()
 	succeed_if (k1 == ks3.head(), "first key not head key");
 }
 
-void test_pop()
+TEST(ks, pop)
 {
-	cout << "testing pop" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -260,11 +249,8 @@ void test_pop()
 	}
 }
 
-
-void test_lookup()
+TEST(ks, lookup)
 {
-	cout << "testing lookup" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -288,8 +274,7 @@ void test_lookup()
 	succeed_if (!k4, "Key does not exist");
 }
 
-
-void test_append()
+TEST(ks, append)
 {
 	cout << "testing keyset append" << endl;
 
@@ -339,7 +324,7 @@ void test_append()
 	// ks3.toStream();
 }
 
-void test_per()
+TEST(ks, permutations)
 {
 	cout << "testing keyset append with all permutations" << endl;
 
@@ -426,13 +411,10 @@ void test_per()
 			succeed_if (*ks.next() == *solution[i], "wrong order");
 		}
 	} while (next_permutation(permutation.begin(), permutation.end()));
-
 }
 
-void test_appendowner()
+TEST(ks, appendOwner)
 {
-	cout << "testing appending with owner" << endl;
-
 	KeySet ks;
 	std::vector<Key> v(3);
 	ks.append(v[1]=Key("user/s/1", KEY_OWNER, "markus", KEY_END));
@@ -446,10 +428,8 @@ void test_appendowner()
 	}
 }
 
-void test_perowner()
+TEST(ks, permutateOwner)
 {
-	cout << "testing keyset append with owner with all permutations" << endl;
-
 	vector <Key> solution;
 	solution.push_back(Key("user/s", KEY_END));
 	solution.push_back(Key("user/s", KEY_OWNER, "albert", KEY_END));
@@ -525,59 +505,57 @@ void test_perowner()
 
 }
 
-void test_cmp()
+TEST(ks, comparision)
 {
-	cout << "testing comparison of keys" << endl;
-
 	Key ke1, ke2;
 
-	succeed_if (ke1 == ke2, "two empty keys are not the same?")
-	succeed_if (!(ke1 != ke2), "two empty keys are not the same?")
+	succeed_if (ke1 == ke2, "two empty keys are not the same?");
+	succeed_if (!(ke1 != ke2), "two empty keys are not the same?");
 
 	Key k1("user/a", KEY_END), k2("user/b", KEY_END);
 
-	succeed_if (ke1 < k1, "compare empty key with user/a")
-	succeed_if (ke1 <= k1, "compare empty key with user/a")
-	succeed_if (!(ke1 > k1), "compare empty key with user/a")
-	succeed_if (!(ke1 >= k1), "compare empty key with user/a")
+	succeed_if (ke1 < k1, "compare empty key with user/a");
+	succeed_if (ke1 <= k1, "compare empty key with user/a");
+	succeed_if (!(ke1 > k1), "compare empty key with user/a");
+	succeed_if (!(ke1 >= k1), "compare empty key with user/a");
 
-	succeed_if (ke1 < k2, "compare empty key with user/b")
-	succeed_if (ke1 <= k2, "compare empty key with user/b")
-	succeed_if (!(ke1 > k2), "compare empty key with user/b")
-	succeed_if (!(ke1 >= k2), "compare empty key with user/b")
+	succeed_if (ke1 < k2, "compare empty key with user/b");
+	succeed_if (ke1 <= k2, "compare empty key with user/b");
+	succeed_if (!(ke1 > k2), "compare empty key with user/b");
+	succeed_if (!(ke1 >= k2), "compare empty key with user/b");
 
-	succeed_if (k1 < k2, "compare key user/a with user/b")
-	succeed_if (k1 <= k2, "compare key user/a with user/b")
-	succeed_if (!(k1 > k2), "compare key user/a with user/b")
-	succeed_if (!(k1 >= k2), "compare key user/a with user/b")
-	succeed_if (k1 != k2, "compare key user/a with user/b")
-	succeed_if (!(k1 == k2), "compare key user/a with user/b")
+	succeed_if (k1 < k2, "compare key user/a with user/b");
+	succeed_if (k1 <= k2, "compare key user/a with user/b");
+	succeed_if (!(k1 > k2), "compare key user/a with user/b");
+	succeed_if (!(k1 >= k2), "compare key user/a with user/b");
+	succeed_if (k1 != k2, "compare key user/a with user/b");
+	succeed_if (!(k1 == k2), "compare key user/a with user/b");
 
 	Key ko1("user/a", KEY_OWNER, "markus", KEY_END), ko2("user/b", KEY_OWNER, "max", KEY_END);
 
-	succeed_if (ko1 > k1, "compare key with user/a")
-	succeed_if (ko1 >= k1, "compare key with user/a")
-	succeed_if (!(ko1 < k1), "compare key with user/a")
-	succeed_if (!(ko1 <= k1), "compare key with user/a")
+	succeed_if (ko1 > k1, "compare key with user/a");
+	succeed_if (ko1 >= k1, "compare key with user/a");
+	succeed_if (!(ko1 < k1), "compare key with user/a");
+	succeed_if (!(ko1 <= k1), "compare key with user/a");
 
-	succeed_if (ko2 > k2, "compare key with user/b")
-	succeed_if (ko2 >= k2, "compare key with user/b")
-	succeed_if (!(ko2 < k2), "compare key with user/b")
-	succeed_if (!(ko2 <= k2), "compare key with user/b")
+	succeed_if (ko2 > k2, "compare key with user/b");
+	succeed_if (ko2 >= k2, "compare key with user/b");
+	succeed_if (!(ko2 < k2), "compare key with user/b");
+	succeed_if (!(ko2 <= k2), "compare key with user/b");
 
 	Key ko ("user/a", KEY_OWNER, "max", KEY_END);
 
-	succeed_if (ko1 < ko, "compare key with user/b")
-	succeed_if (ko1 <= ko, "compare key with user/b")
-	succeed_if (!(ko1 > ko), "compare key with user/b")
-	succeed_if (!(ko1 >= ko), "compare key with user/b")
+	succeed_if (ko1 < ko, "compare key with user/b");
+	succeed_if (ko1 <= ko, "compare key with user/b");
+	succeed_if (!(ko1 > ko), "compare key with user/b");
+	succeed_if (!(ko1 >= ko), "compare key with user/b");
 
-	succeed_if (ko1 < ko2, "compare key user/a with     user/a owner max")
-	succeed_if (ko1 <= ko2, "compare key user/a with    user/a owner max")
-	succeed_if (!(ko1 > ko2), "compare key user/a with  user/a owner max")
-	succeed_if (!(ko1 >= ko2), "compare key user/a with user/a owner max")
-	succeed_if (ko1 != ko2, "compare key user/a with    user/a owner max")
-	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max")
+	succeed_if (ko1 < ko2, "compare key user/a with     user/a owner max");
+	succeed_if (ko1 <= ko2, "compare key user/a with    user/a owner max");
+	succeed_if (!(ko1 > ko2), "compare key user/a with  user/a owner max");
+	succeed_if (!(ko1 >= ko2), "compare key user/a with user/a owner max");
+	succeed_if (ko1 != ko2, "compare key user/a with    user/a owner max");
+	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max");
 }
 
 void call (KeySet ks3)
@@ -598,10 +576,8 @@ void refcall (KeySet &ks3)
 	succeed_if (ks3.size() == 3, "size not correct");
 }
 
-void test_kscall()
+TEST(ks, call)
 {
-	cout << "test call with keyset" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -652,10 +628,9 @@ void refccall (KeySet &ks3)
 	ks3.append(Key("user/key3/refccall", KEY_END));
 	ks3.lookup("user/key3/1").setString("will change again");
 }
-void test_ksccall()
-{
-	cout << "test changing call with keyset" << endl;
 
+TEST(ks, call2)
+{
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -717,7 +692,7 @@ void rcall(KeySet ks)
 	ks.release();
 }
 
-void test_ksrelease()
+TEST(ks, release)
 {
 	KeySet ks1;
 
@@ -746,7 +721,7 @@ void test_ksrelease()
 	ckdb::ksDel (ks);
 }
 
-void test_lookuppop()
+TEST(ks, lookupPop)
 {
 	cout << "testing lookup pop" << endl;
 
@@ -820,7 +795,7 @@ void test_lookuppop()
 	}
 }
 
-void test_duplicate()
+TEST(ks, duplicate)
 {
 	cout << "testing ksdup" << endl;
 
@@ -856,7 +831,7 @@ KeySet fill_vaargs(size_t size, ...)
 	return ks;
 }
 
-void test_vaargs()
+TEST(ks, vaargs)
 {
 	cout << "testing vaargs" << endl;
 
@@ -866,34 +841,4 @@ void test_vaargs()
 			KS_END);
 	succeed_if (ks.lookup("user/a"), "could not find key");
 	succeed_if (ks.lookup("user/b"), "could not find key");
-}
-
-
-int main()
-{
-	cout << "KEYSET CLASS TESTS" << endl;
-	cout << "==================" << endl << endl;
-
-	test_ksnew();
-	test_ksdup();
-	test_kscopy();
-	test_iterate();
-	test_cursor();
-	test_pop();
-	test_lookup();
-	test_append();
-	test_per();
-	test_appendowner();
-	test_perowner();
-	test_cmp();
-	test_kscall();
-	test_ksccall();
-	test_ksrelease();
-	test_lookuppop();
-	test_duplicate();
-	test_vaargs();
-
-	cout << endl;
-	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
-	return nbError;
 }

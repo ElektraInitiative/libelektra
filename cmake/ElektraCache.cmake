@@ -341,9 +341,6 @@ endif()
 # Compile options
 #
 
-
-option (ENABLE_CXX11 "WARNING: Option will be removed with 0.8.13. See libelektra.org/issues/262. Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc." ON)
-
 set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 
 set (CMAKE_PIC_FLAGS "-fPIC"

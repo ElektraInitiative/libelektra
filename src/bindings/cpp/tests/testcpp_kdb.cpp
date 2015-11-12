@@ -1,6 +1,6 @@
 #include <tests.hpp>
 
-void test_kdbGetSet()
+TEST(kdb, get_set)
 {
 	cout << "testing kdbSet() and kdbGet()" << endl;
 
@@ -45,16 +45,4 @@ void test_kdbGetSet()
 		succeed_if(!ks.lookup("user/tests/key3/3"), "key was not removed");
 	}
 
-}
-
-int main()
-{
-	cout << "KDB CLASS TESTS" << endl;
-	cout << "==================" << endl << endl;
-
-	test_kdbGetSet();
-
-	cout << endl;
-	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
-	return nbError;
 }

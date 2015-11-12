@@ -26,7 +26,7 @@ if(NOT GOOGLETEST_ROOT)
 	endif()
 endif()
 
-add_subdirectory(${GOOGLETEST_ROOT} ${CMAKE_CURRENT_BINARY_DIR}/gtest)
+add_subdirectory(${GOOGLETEST_ROOT} ${CMAKE_BINARY_DIR}/gtest)
 
 set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-w" )
 set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-w" )

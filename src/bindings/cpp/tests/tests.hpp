@@ -20,14 +20,12 @@
 #include <cstring>
 #include <cstdlib>
 
+#include <gtest/gtest.h>
+
 using namespace std;
 using namespace kdb;
 
-extern int nbError;
-extern int nbTest;
-
-#define warn_if_fail(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " warning in " <<  __func__ << ": " << y << endl;}}
-#define succeed_if(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " error in " <<  __func__ << ": " << y << endl; ++nbError;}}
-#define exit_if_fail(x,y) {++nbTest; if (!(x)) { cout << __FILE__ << ":" << __LINE__ << " fatal in " <<  __func__ << ": " << y << endl;  exit(1);}}
+#define succeed_if(x,y) do {ASSERT_TRUE(x) << y;} while (0)
+#define exit_if_fail(x,y) do {ASSERT_TRUE(x) << y;} while (0)
 
 #endif

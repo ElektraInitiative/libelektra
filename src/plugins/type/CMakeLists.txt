@@ -1,4 +1,4 @@
-add_plugin(type
+add_plugin (type
 	CPP
 	SOURCES
 		type.hpp type.cpp
@@ -6,4 +6,6 @@ add_plugin(type
 		type_checker.hpp
 	)
 
-add_cpp_plugintest(type MEMLEAK)
+include (LibAddTest)
+include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
+add_gtest (testmod_type MEMLEAK)

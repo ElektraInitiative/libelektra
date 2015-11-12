@@ -15,15 +15,13 @@ macro (do_benchmark source)
 endmacro (do_benchmark)
 
 
-if (ENABLE_CXX11)
-	file (GLOB TESTS cpp11*.cpp)
-	foreach (file ${TESTS})
-		get_filename_component (name ${file} NAME_WE)
-		do_benchmark (${name})
-	endforeach (file ${TESTS})
+file (GLOB TESTS *.cpp)
+foreach (file ${TESTS})
+	get_filename_component (name ${file} NAME_WE)
+	do_benchmark (${name})
+endforeach (file ${TESTS})
 
-	if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-		# require by gethostname
-		target_link_libraries (cpp11_benchmark_thread "ws2_32")
-	endif ()
-endif (ENABLE_CXX11)
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	# require by gethostname
+	target_link_libraries (cpp11_benchmark_thread "ws2_32")
+endif ()

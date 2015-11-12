@@ -4,8 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-
-void test_basic()
+TEST(meta, basic)
 {
 	cout << "testing metainfo" << endl;
 	Key test;
@@ -66,10 +65,8 @@ void test_basic()
 	}
 }
 
-void test_iter()
+TEST(meta, iter)
 {
-	cout << "testing iterating" << endl;
-
 	Key k ("user/metakey",
 		KEY_META, "a", "meta",
 		KEY_META, "b", "my",
@@ -97,7 +94,7 @@ void test_iter()
 	succeed_if (count == 5, "Not the correct number of meta data");
 }
 
-void test_copy()
+TEST(test, copy)
 {
 	cout << "testing copy meta" << std::endl;
 
@@ -156,9 +153,8 @@ void test_copy()
 			"copy meta did not work in the loop");
 }
 
-void test_string()
+TEST(meta, string)
 {
-	cout << "testing string inside meta" << std::endl;
 	Key k("user/anything",
 			KEY_META, "", "meta value",
 			KEY_META, "a", "a meta value",
@@ -176,10 +172,8 @@ void test_string()
 	succeed_if (!m1, "got not existing meta key");
 }
 
-void test_copyAll()
+TEST(meta, copyAll)
 {
-	cout << "testing copy all meta" << std::endl;
-
 	Key k ("user/metakey",
 			KEY_META, "", "meta value",
 			KEY_META, "a", "a meta value",
@@ -216,21 +210,4 @@ void test_copyAll()
 	succeed_if (d.getMeta<std::string>("c") == "c meta value", "did not copy meta value in the loop");
 	succeed_if (k.getMeta<const ckdb::Key*>("c") == d.getMeta<const ckdb::Key*>("c"),
 			"copy meta did not work in the loop");
-}
-
-
-int main()
-{
-	cout << "KEY META TESTS" << endl;
-	cout << "===============" << endl << endl;
-
-	test_basic();
-	test_iter();
-	test_copy();
-	test_string();
-	test_copyAll();
-
-	cout << endl;
-	cout << "testcpp_meta RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
-	return nbError;
 }
