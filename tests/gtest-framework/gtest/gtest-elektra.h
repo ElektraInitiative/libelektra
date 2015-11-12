@@ -160,11 +160,7 @@ std::string makeLiteralString(std::string str)
 	return ret;
 }
 
-#if __cplusplus > 199711L
 typedef std::unique_ptr<testing::Mountpoint> MountpointPtr;
-#else
-typedef std::auto_ptr<testing::Mountpoint> MountpointPtr;
-#endif
 
 
 void outputGTest(kdb::KeySet tocheck, std::string name)

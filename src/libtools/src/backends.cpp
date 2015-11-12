@@ -9,12 +9,6 @@ namespace kdb
 namespace tools
 {
 
-#if __cplusplus > 199711L
-using std::move;
-#else
-#define move(x) x
-#endif
-
 /**
  * @brief give info about current mounted backends
  *
@@ -51,7 +45,7 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 			ret.push_back(bi);
 		}
 	}
-	return move(ret);
+	return std::move(ret);
 }
 
 /**
