@@ -14,20 +14,17 @@
 
 #include <tests_plugin.h>
 
-static void test(KeySet *ks, int retval)
-{
-	Key *parentKey = keyNew("user/tests/mathcheck", KEY_VALUE, "", KEY_END);
-
-
-	KeySet *conf = ksNew(0, KS_END);
-	PLUGIN_OPEN("mathcheck");
-	ksRewind(ks);
-	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == retval, "error");
-	keyDel(parentKey);
-	PLUGIN_CLOSE();
-
-
+#define test(ks,retval) \
+{ \
+	Key *parentKey = keyNew("user/tests/mathcheck", KEY_VALUE, "", KEY_END);  \
+	KeySet *conf = ksNew(0, KS_END); \
+	PLUGIN_OPEN("mathcheck");  \
+	ksRewind(ks); \
+	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == retval, "error"); \
+	keyDel(parentKey); \
+	PLUGIN_CLOSE(); \
 }
+
 static KeySet *create_ks(const char *res, const char *meta)
 {
 	return ksNew(5,
