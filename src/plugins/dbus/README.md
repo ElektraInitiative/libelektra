@@ -3,8 +3,8 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = notification
-- infos/placements = postcommit
-- infos/description = Prints timestamps when a method is called.
+- infos/placements = postgetstorage postcommit
+- infos/description = Sends DBus signals when a method is called
 
 ## Introduction ##
 
