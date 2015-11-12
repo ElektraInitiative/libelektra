@@ -59,6 +59,18 @@ int main(int argc, char** argv)
 	ks = create_ks("1", "== / bla/val1 bla/val3");
 	test(ks, (-1));
 	ksDel(ks);
+	ks = create_ks("3", "== + '1.5' '1.5'");
+	test(ks, 1);
+	ksDel(ks);
+	ks = create_ks("4.5", "== + '1.5' + '1.5' '1.5'");
+	test(ks, 1);
+	ksDel(ks);
+	ks = create_ks("1", "== + '1.5' '1.5'");
+	test(ks, (-1));
+	ksDel(ks);
+	ks = create_ks("10", "== + bla/val3 '7'");
+	test(ks, 1);
+	ksDel(ks);
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n",
 			nbTest, nbError);
 

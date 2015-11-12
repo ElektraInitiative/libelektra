@@ -719,19 +719,19 @@ number:122
 description:not a valid Polish prefix notation syntax
 severity:error
 ingroup:plugin
-module:calculate
+module:mathcheck
 
 number:123
 description:invalid value
 severity:error
 ingroup:plugin
-module:calculate
+module:mathcheck
 
 number:124
 description:key doesn't exist
 severity:error
 ingroup:plugin
-module:calculate
+module:mathcheck
 
 number:125
 description:Failed to initialize the crypto library.
