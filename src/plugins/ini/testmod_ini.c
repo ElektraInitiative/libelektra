@@ -454,7 +454,100 @@ static void test_autoSectionWrite(char *fileName)
 
 	PLUGIN_CLOSE ();
 }
+static void test_iniToMeta(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
+			srcdir_file(fileName), KEY_END);
+	KeySet *conf = ksNew(10, 
+		   keyNew("system/meta", KEY_VALUE, "1", KEY_END),
+	   	   KS_END);
+	PLUGIN_OPEN("ini");
 
+	KeySet *readKS = ksNew(0, KS_END);
+	succeed_if(plugin->kdbGet(plugin, readKS, parentKey) >= 0, "kdbGet failed");
+	const Key *meta;
+	Key *searchKey = keyNew ("user/tests/ini-write/section1", KEY_END);
+	Key *key = ksLookup(readKS, searchKey, KDB_O_NONE);
+	meta = keyGetMeta(key, "key1");
+	succeed_if(meta != NULL, "converting key to metakey failed");
+	succeed_if(strcmp(keyString(meta), "value1") == 0, "wrong value in metakey");
+	ksDel(readKS);
+	keyDel (parentKey);
+	keyDel (searchKey);
+	PLUGIN_CLOSE ();
+}
+static void test_plainIniPreserveOrder(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
+			elektraFilename() , KEY_END);
+	KeySet *conf = ksNew(1,
+		   	keyNew("system/preserveorder", KEY_VALUE, "1", KEY_END)
+			, KS_END);
+	KeySet *ks = ksNew (30,
+		keyNew ("user/tests/ini-write/nosectionkey", KEY_META, "order", "0", 
+				KEY_VALUE, "nosectionvalue",
+				KEY_END),
+		keyNew ("user/tests/ini-write/section1", KEY_META, "order", "1", 
+				KEY_BINARY,
+				KEY_END),
+		keyNew ("user/tests/ini-write/section1/key1", KEY_META, "order", "3", 
+				KEY_VALUE, "value1",
+				KEY_END),
+		keyNew ("user/tests/ini-write/section1/key2", KEY_META, "order", "2", 
+				KEY_VALUE, "value2",
+				KEY_END),
+		keyNew ("user/tests/ini-write/section2", KEY_META, "order", "4", 
+				KEY_BINARY,
+				KEY_END),
+		keyNew ("user/tests/ini-write/section2/key3", KEY_META, "order", "6", 
+				KEY_VALUE, "value3",
+				KEY_END),
+		keyNew ("user/tests/ini-write/section2/zemptykey", KEY_META, "order", "5" , KEY_END),
+		KS_END);
+
+	PLUGIN_OPEN("ini");
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(
+			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	ksDel (ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_emptySectionBug(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
+			elektraFilename(), KEY_END);
+	KeySet *conf = ksNew(0, KS_END);
+	KeySet *ks = ksNew (30,
+		keyNew ("user/tests/ini-write/MyApp/mykey",  
+				KEY_VALUE, "new_value",
+				KEY_END),
+		keyNew ("user/tests/ini-write/binarytest", KEY_BINARY,
+				KEY_END),
+        keyNew ("user/tests/ini-write/debienna/test", KEY_VALUE, "value"), 
+		KS_END);
+
+	PLUGIN_OPEN("ini");
+	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
+			"call to kdbSet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbSet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if(
+			compare_line_files (srcdir_file (fileName), keyString (parentKey)),
+			"files do not match as expected");
+
+	ksDel (ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE ();
+}
 int main(int argc, char** argv)
 {
 	printf ("INI       TESTS\n");
@@ -464,6 +557,7 @@ int main(int argc, char** argv)
 
 	test_plainIniRead ("ini/plainini");
 	test_plainIniWrite ("ini/plainini");
+	test_iniToMeta ("ini/plainini");
 	test_plainIniRead ("ini/emptyval");
 	test_plainIniEmptyWrite ("ini/emptyval");
 	test_commentIniRead ("ini/commentini");
@@ -474,6 +568,8 @@ int main(int argc, char** argv)
 	test_sectionRead("ini/sectionini");
 	test_sectionWrite("ini/sectionini");
 	test_autoSectionWrite("ini/sectionini");
+	test_plainIniPreserveOrder("ini/plaininireverse");
+	test_emptySectionBug("ini/emptySectionBugTest");
 
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
