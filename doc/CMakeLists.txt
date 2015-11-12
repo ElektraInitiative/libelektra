@@ -98,3 +98,4 @@ else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)
 
+add_subdirectory(help)
