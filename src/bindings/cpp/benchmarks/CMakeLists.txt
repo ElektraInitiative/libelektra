@@ -23,5 +23,5 @@ endforeach (file ${TESTS})
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 	# require by gethostname
-	target_link_libraries (cpp11_benchmark_thread "ws2_32")
+	target_link_libraries (benchmark_thread "ws2_32")
 endif ()
