@@ -337,14 +337,40 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 	}
 	ret = parseSingleCondition(condition, ks, parentKey);
 	if(ret == 1)
+	{
 		ret = parseSingleCondition(thenexpr, ks, parentKey);
+		if(ret == 0)
+		{
+				ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, thenexpr);
+		}
+		else if(ret == (-1))
+		{
+			ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", thenexpr);
+		}
+	}
 	else if(ret == 0)
 	{
 		if(elseexpr)
+		{
 			ret = parseSingleCondition(elseexpr, ks, parentKey);
-		else 
+			if(ret == 0)
+			{
+				ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, elseexpr);
+			}
+			else if(ret == (-1))
+			{
+				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", elseexpr);
+			}
+		}
+		else
+		{
+			ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed) ", conditionString, condition);
 		    ret = 1;
-
+		}
+	}
+	else if(ret == (-1))
+	{
+		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", condition);
 	}
 
 
@@ -394,7 +420,6 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 		}
 		else if(result == 0)
 		{
-			ELEKTRA_SET_ERRORF(135, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
 		else if(result == 1)
@@ -424,7 +449,6 @@ int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 		}
 		else if(result == 0)
 		{
-			ELEKTRA_SET_ERRORF(135, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
 		else if(result == 1)
