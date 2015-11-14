@@ -101,6 +101,7 @@ Log/Send out all changes to configuration to:
 - [dbus](dbus/)
 - [journald](journald/)
 - [syslog](syslog/)
+- [logchange](logchange/) prints the change of every key on the console
 
 
 ## Debug ##
