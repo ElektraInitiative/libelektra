@@ -461,17 +461,9 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 void TreeViewModel::populateModel()
 {
-	try
-	{
-		kdb::KeySet config;
-		m_kdb->get(config, m_root);
-		populateModel(config);
-	}
-	catch(kdb::KDBException const& e)
-	{
-		emit showMessage(QObject::tr("Error"), QObject::tr("Populating model failed, could not read from configuration."), e.what());
-		throw;
-	}
+	kdb::KeySet config;
+	m_kdb->get(config, m_root);
+	populateModel(config);
 }
 
 void TreeViewModel::populateModel(KeySet const & keySet)
