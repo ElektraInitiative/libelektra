@@ -11,11 +11,13 @@ function elektraGet(returned, parentKey)
 	mod = "system/elektra/modules/lua"
 	if parentKey.name == mod then
 		print("[LUA-FILTER] contract")
-		returned.append(kdb.Key(mod, kdb.KEY_VALUE, "contract below"))
-		returned.append(kdb.Key(mod+"/infos", kdb.KEY_VALUE, "infos below"))
-		returned.append(kdb.Key(mod+"/infos/provides", kdb.KEY_VALUE, "filter"))
-		returned.append(kdb.Key(mod+"/infos/placements", kdb.KEY_VALUE, "postgetstorage postcommit"))
-		return 1
+		returned:append(kdb.Key(mod, kdb.KEY_VALUE, "contract below"))
+		returned:append(kdb.Key(mod.."/infos", kdb.KEY_VALUE, "infos below"))
+		returned:append(kdb.Key(mod.."/infos/provides", kdb.KEY_VALUE, "filter"))
+		returned:append(kdb.Key(mod.."/infos/placements", kdb.KEY_VALUE, "postgetstorage postcommit"))
+		-- for i, k in ipairs(returned) do
+		-- 	print(i, k, k.value)
+		-- end
 	end
 	print("[LUA-FILTER] get")
 	return 1
