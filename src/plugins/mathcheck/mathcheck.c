@@ -238,7 +238,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 			{
 				subString[len-1] = '\0';
 				char *subPtr = (subString+1);
-				stackPtr->value = atof(subPtr);
+				stackPtr->value = elektraEFtoF(subPtr);
 				free(subString);
 			}
 			else
@@ -259,7 +259,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 					free(subString);
 					return result;
 				}
-				stackPtr->value = atof(keyString(key));
+				stackPtr->value = elektraEFtoF(keyString(key));
 				free(subString);
 			}
 			stackPtr->op = VAL;
@@ -295,63 +295,65 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		if(!meta)
 			continue;
 		result = parsePrefixString(keyString(meta), ksDup(returned), parentKey);
+		char val1[24];
+		char val2[24];
+		strncpy(val1, keyString(cur), sizeof(val1));
+		elektraFtoA(val2, sizeof(val2), result.value);
 		if(result.op == ERROR)
 		{
 			return 1;
 		}
 		else if(result.op == EQU)
 		{
-			if(fabs(atof(keyString(cur)) - result.value) > EPSILON)
+			if(fabs(elektraEFtoF(keyString(cur)) - result.value) > EPSILON)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%g != %g", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%s != %s", val1, val2);
 				return -1;
 			}
 		}
 		else if(result.op == NOT)
 		{
-			if(fabs(atof(keyString(cur)) - result.value) < EPSILON)
+			if(fabs(elektraEFtoF(keyString(cur)) - result.value) < EPSILON)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%g == %g but requirement was !=", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%s == %s but requirement was !=", val1, val2);
 				return -1;
 			}
 		}
 		else if(result.op == LT)
 		{
-			if(atof(keyString(cur)) >= result.value)
+			if(elektraEFtoF(keyString(cur)) >= result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%g not < %g", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%s not < %s", val1, val2);
 				return -1;
 			}
 		}
 		else if(result.op == GT)
 		{
-			if(atof(keyString(cur)) <= result.value)
+			if(elektraEFtoF(keyString(cur)) <= result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%g not > %g", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%s not > %s", val1, val2);
 				return -1;
 			}
 		}
 		else if(result.op == LE)
 		{
-			if(atof(keyString(cur)) > result.value)
+			if(elektraEFtoF(keyString(cur)) > result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%g not <=  %g", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%s not <=  %s", val1, val2);
 				return -1;
 			}
 		}
 		else if(result.op == GE)
 		{
-			if(atof(keyString(cur)) < result.value)
+			if(elektraEFtoF(keyString(cur)) < result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%g not >= %g", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%s not >= %s", val1, val2);
 				return -1;
 			}
 		}
 		else if(result.op == SET)
 		{
-			char stringBuffer[16]; //15 digits max + \0 arbitrary value for now
-			snprintf(stringBuffer, sizeof(stringBuffer), "%f", result.value); 
-			keySetString(cur, stringBuffer);
+			keySetString(cur, val2);
 		}
 	}
 	return 1; /* success */
