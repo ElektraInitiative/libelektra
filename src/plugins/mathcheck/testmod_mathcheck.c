@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	test(ks, (-1));
 	ksDel(ks);
 	
-    ks = create_ks("10", "== + bla/val3 '7'");
+	ks = create_ks("10", "== + bla/val3 '7'");
 	test(ks, 1);
 	ksDel(ks);
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n",
@@ -79,9 +79,9 @@ int main(int argc, char** argv)
 	char buffer[24];
 	elektraFtoA(buffer, sizeof(buffer), (1.5));
 	succeed_if(!(strcmp(buffer, "1.5")), "elektraFtoA failed");
-    fprintf(stderr, "elektraFtoA: val: %g, ret: %s\n", (1.5), buffer);
+	fprintf(stderr, "elektraFtoA: val: %g, ret: %s\n", (1.5), buffer);
 	fprintf(stderr, "elektraEFtoF: string: %s, ret: %g\n", buffer, elektraEFtoF(buffer));
-    succeed_if((elektraEFtoF(buffer) - (1.5))< 0.00001, "elektraEFtoF failed");
+	succeed_if((elektraEFtoF(buffer) - (1.5))< 0.00001, "elektraEFtoF failed");
 	return nbError;
 }
 

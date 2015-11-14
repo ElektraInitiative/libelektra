@@ -6,8 +6,6 @@
 
 #include "floathelper.h"
 
-#define ELEKTRA_DEFAULT_DECIMAL_POINT '.'
-#define MAX_CHARS_DOUBLE 24
 char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 {
 	if(buffer == NULL)

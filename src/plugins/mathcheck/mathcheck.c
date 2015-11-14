@@ -140,7 +140,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 }
 static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *parentKey)
 {
-	const char *regexString = "((([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[,.]{0,1}[0-9]*')|([-+:/<>=!{*])";
+	const char *regexString = "((([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|([-+:/<>=!{*])";
 	char *ptr = (char *)prefixString;
 	regex_t regex;
 	Key *key;
@@ -295,8 +295,8 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		if(!meta)
 			continue;
 		result = parsePrefixString(keyString(meta), ksDup(returned), parentKey);
-		char val1[24];
-		char val2[24];
+		char val1[MAX_CHARS_DOUBLE];
+		char val2[MAX_CHARS_DOUBLE];
 		strncpy(val1, keyString(cur), sizeof(val1));
 		elektraFtoA(val2, sizeof(val2), result.value);
 		if(result.op == ERROR)
