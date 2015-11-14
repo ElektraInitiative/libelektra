@@ -29,6 +29,8 @@ int elektraLogchangeGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 			KEY_FUNC, elektraLogchangeGet, KEY_END),
 		keyNew ("system/elektra/modules/logchange/exports/set",
 			KEY_FUNC, elektraLogchangeSet, KEY_END),
+		keyNew ("system/elektra/modules/logchange/exports/close",
+			KEY_FUNC, elektraLogchangeClose, KEY_END),
 #include ELEKTRA_README(logchange)
 		keyNew ("system/elektra/modules/logchange/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
