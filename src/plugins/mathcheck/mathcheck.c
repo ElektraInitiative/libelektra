@@ -20,6 +20,7 @@
 #include <kdberrors.h>
 #include <ctype.h>
 #include "mathcheck.h"
+#include "floathelper.h"
 
 #define MIN_VALID_STACK 3
 #define EPSILON 0.00001
@@ -302,7 +303,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		{
 			if(fabs(atof(keyString(cur)) - result.value) > EPSILON)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%f !=%f", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%g != %g", atof(keyString(cur)), result.value);
 				return -1;
 			}
 		}
@@ -310,7 +311,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		{
 			if(fabs(atof(keyString(cur)) - result.value) < EPSILON)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%f == %f but requirement was !=", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%g == %g but requirement was !=", atof(keyString(cur)), result.value);
 				return -1;
 			}
 		}
@@ -318,7 +319,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		{
 			if(atof(keyString(cur)) >= result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%f not < %f", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%g not < %g", atof(keyString(cur)), result.value);
 				return -1;
 			}
 		}
@@ -326,7 +327,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		{
 			if(atof(keyString(cur)) <= result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%f not > %f", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%g not > %g", atof(keyString(cur)), result.value);
 				return -1;
 			}
 		}
@@ -334,7 +335,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		{
 			if(atof(keyString(cur)) > result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%f not <=  %f", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%g not <=  %g", atof(keyString(cur)), result.value);
 				return -1;
 			}
 		}
@@ -342,7 +343,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		{
 			if(atof(keyString(cur)) < result.value)
 			{
-				ELEKTRA_SET_ERRORF(123, parentKey, "%f not >= %f", atof(keyString(cur)), result.value);
+				ELEKTRA_SET_ERRORF(123, parentKey, "%g not >= %g", atof(keyString(cur)), result.value);
 				return -1;
 			}
 		}
