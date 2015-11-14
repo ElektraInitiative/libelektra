@@ -60,9 +60,10 @@ static void logKeys(KeySet * ks, const char * message)
 int elektraLogchangeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
 {
 	KeySet * oldKeys = (KeySet*) elektraPluginGetData (handle);
+	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
+	// we know that oldKeys must exist here!
 	ksRewind (oldKeys);
 	ksRewind (returned);
-
 
 	KeySet * addedKeys = ksDup(returned);
 	KeySet * changedKeys = ksNew (0, KS_END);
@@ -90,6 +91,21 @@ int elektraLogchangeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	logKeys (changedKeys, "changed key");
 	logKeys (removedKeys, "removed key");
 
+	ksDel (oldKeys);
+	ksDel (addedKeys);
+	ksDel (changedKeys);
+	ksDel (removedKeys);
+
+	// for next invocation of elektraLogchangeSet, remember our current keyset
+	elektraPluginSetData (handle, ksDup (returned));
+
+	return 1; /* success */
+}
+
+int elektraLogchangeClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
+{
+	KeySet * ks = (KeySet*) elektraPluginGetData (handle);
+	if (ks) ksDel( ks);
 	return 1; /* success */
 }
 
@@ -98,6 +114,7 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(logchange)
 	return elektraPluginExport("logchange",
 		ELEKTRA_PLUGIN_GET,	&elektraLogchangeGet,
 		ELEKTRA_PLUGIN_SET,	&elektraLogchangeSet,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraLogchangeClose,
 		ELEKTRA_PLUGIN_END);
 }
 
