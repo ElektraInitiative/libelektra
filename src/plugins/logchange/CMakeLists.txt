@@ -5,5 +5,3 @@ add_plugin(logchange
 		logchange.h
 		logchange.c
 	)
-
-add_plugintest(logchange)

@@ -6,15 +6,15 @@
 - infos/placements = postgetstorage postcommit
 - infos/description =
 
+## Purpose ##
+
+The purpose of this plugin is to demonstrate how one can
+be notified of every removed, added or changed key easily.
+
+
 ## Usage ##
 
-Copy this logchange if you want to start a new
-plugin written in C.
+Prints every added, changed or deleted key on the console.
+To use it, add it during mounting:
 
-You can use scripts/copy-logchange
-to automatically rename everything to your
-plugin name:
-
-	cd src/plugins
-	../../scripts/copy-logchange yourplugin
-
+    kdb mount logchange.dump user/logchange dump logchange
