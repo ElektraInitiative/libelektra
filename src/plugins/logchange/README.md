@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
-- infos/placements =
+- infos/placements = postgetstorage postcommit
 - infos/description =
 
 ## Usage ##
