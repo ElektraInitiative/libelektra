@@ -547,3 +547,12 @@
    fun:dlopen_doit
    fun:_dl_catch_error
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:aug_init
+   fun:elektraAugeasOpen
+   ...
+}
