@@ -119,14 +119,14 @@ Files should start with:
 	* @brief <short statement about the content of the file>
 	*
 	* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-	*
 	*/
 
 \endverbatim
 
 Note:
-- file has *no* parameters.
-- brief should contain a short statement about the content of the file.
+
+- `@file` has *no* parameters.
+- `@brief` is optional and should contain a short statement about the content of the file.
 
 The duplication of the filename, author and date is not needed, because
-this information is tracked using git.
+this information is tracked using git and doc/AUTHORS already.
