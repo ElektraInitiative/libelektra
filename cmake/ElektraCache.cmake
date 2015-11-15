@@ -87,7 +87,8 @@ set (PLUGINS_LIST_POSIX
 	line
 	validation
 	regexstore
-	)
+	filecheck
+    )
 
 #
 # force no dependency list
