@@ -1,3 +1,8 @@
+elektra-namespaces(7) -- namespaces
+===================================
+
+## INTRODUCTION
+
 Every key in Elektra has a unique name. Sometimes, multiple keys denote
 the same configuration item from different sources, e.g.:
 
