@@ -14,6 +14,7 @@
 #include <kdbplugin.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h> // currently needed for plugin handling
+#include <helper/keyhelper.hpp>
 
 #include <set>
 #include <algorithm>
@@ -310,7 +311,17 @@ kdb::KeySet Plugin::getNeededConfig()
 	neededConfigKey.addName("config/needs");
 
 	KeySet d (info.dup());
-	return d.cut(neededConfigKey);
+	KeySet config = d.cut(neededConfigKey);
+
+	KeySet ret;
+	Key oldParent = neededConfigKey;
+	Key newParent("system", KEY_END);
+	for (KeySet::iterator i = config.begin(); i != config.end(); ++i)
+	{
+		Key k(i->dup());
+		ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
+	}
+	return ret;
 }
 
 int Plugin::open (kdb::Key & errorKey)

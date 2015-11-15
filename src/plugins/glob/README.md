@@ -24,9 +24,9 @@ globbing key are copied.
 
 ### GLOBBING DIRECTION ###
 
-Globbing keys located directly below the configuration (e.g config/#1) are applied in both directions
-(get and set). Keys below "get" (e.g. config/get/#1) are applied only in the get direction and keys below set
-(e.g. config/set/#1) are applied only in the set direction. 
+Globbing keys located directly below the configuration (e.g `config/glob/#1`) are applied in both directions
+(get and set). Keys below "get" (e.g. `config/glob/get/#1`) are applied only in the get direction and keys below set
+(e.g. `config/glob/set/#1`) are applied only in the set direction. 
 
 ### GLOBBING FLAGS ###
 
