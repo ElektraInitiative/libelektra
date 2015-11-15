@@ -1,12 +1,13 @@
-== C++ ==
-
 Add haskell binding for propellor
+
+Rust bindings
+
+== C++ ==
 
 iomanip using iword, pword, and xalloc
 	allow to define delimiters of key/value
 
-KeyName(Reverse)Iterator:
-	allow iterations over key name (/, with respect of \/?)
-
 KeyMeta(Reverse)Iterator:
 	allow iterations over meta keys
+
+type safe get/set from/to collections

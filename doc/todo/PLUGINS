@@ -7,6 +7,11 @@ Prefer using great frameworks to do that in short time with high quality.
 resolver/storage hybrid
 
 
+## Lua plugin
+
+value transformations
+
+
 ## Contract on Plugin configuration ##
 
 do not only depend on "provides" but on configuration another plugin
@@ -36,6 +41,8 @@ getenv plugin: for /env/current
 
 Shell expansion
 Environment expansion
+
+noresolver: make it always return 0?
 
 
 ## logging

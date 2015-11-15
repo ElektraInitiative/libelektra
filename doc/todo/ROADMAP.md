@@ -8,13 +8,6 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.14
 
-c++11 -> by default
-
-man pages:
-	setup with ronn for help system
-	create good man pages for main tools
-	implement --help to show man page
-
 malloc -> elektraMalloc
 
 # 0.8.15
