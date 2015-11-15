@@ -2,7 +2,8 @@
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
 - infos/needs =
-- infos/ordering = check
+- infos/ordering = check keytometa
+- infos/stacking = no
 - infos/provides = 
 - infos/placements = presetstorage postgetstorage
 - infos/description = copies metadata to keys with the help of globbing
