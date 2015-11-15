@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <kdbconfig.h>
+#include "floathelper.h"
 
 #include <tests_plugin.h>
 
@@ -65,12 +66,19 @@ int main(int argc, char** argv)
 	ks = create_ks("1", "== + '1.5' '1.5'");
 	test(ks, (-1));
 	ksDel(ks);
+	
 	ks = create_ks("10", "== + bla/val3 '7'");
 	test(ks, 1);
 	ksDel(ks);
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n",
 			nbTest, nbError);
 
+	char buffer[24];
+	elektraFtoA(buffer, sizeof(buffer), (1.5));
+	succeed_if(!(strcmp(buffer, "1.5")), "elektraFtoA failed");
+	fprintf(stderr, "elektraFtoA: val: %g, ret: %s\n", (1.5), buffer);
+	fprintf(stderr, "elektraEFtoF: string: %s, ret: %g\n", buffer, elektraEFtoF(buffer));
+	succeed_if((elektraEFtoF(buffer) - (1.5))< 0.00001, "elektraEFtoF failed");
 	return nbError;
 }
 
