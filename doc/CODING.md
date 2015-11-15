@@ -105,21 +105,24 @@ Links between markdown files will be converted with the
 **Markdown pages are used in the pdf, therefore watch your characters and
 provide a proper encoding!**
 
-Do not duplicate information available in git in doxygen.
-Use `\copydoc`, `\copybrief` and `\copydetails` intensively.
+ * use `@` to start doxygen tags 
+ * Do not duplicate information available in git in doxygen.
+ * Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file header).
 
+### File Headers ###
 
 Files should start with:
 
 \verbatim
 
 	/**
-	* @file
-	*
-	* @brief <short statement about the content of the file>
-	*
-	* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-	*/
+	 * @file
+	 *
+	 * @brief <short statement about the content of the file>
+	 *
+	 * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+	 */
+	
 
 \endverbatim
 
