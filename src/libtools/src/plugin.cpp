@@ -306,8 +306,8 @@ bool Plugin::findInfo(std::string compare, std::string item, std::string section
 kdb::KeySet Plugin::getNeededConfig()
 {
 	Key neededConfigKey ("system/elektra/modules", KEY_END);
-	neededConfigKey.addBaseName(pluginName);
-	neededConfigKey.addBaseName("config/needs");
+	neededConfigKey.addName(pluginName);
+	neededConfigKey.addName("config/needs");
 
 	KeySet d (info.dup());
 	return d.cut(neededConfigKey);
