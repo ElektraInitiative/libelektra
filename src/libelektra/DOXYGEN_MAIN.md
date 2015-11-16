@@ -93,6 +93,8 @@ entire [KeySet](@ref ksAppend)
 - [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
 - See [class documentation](@ref keyset) for more
 
+[More background information about the classes](/doc/help/elektra-classes.md)
+
 ## Namespaces ##
 
 There are 5 trees (=namespaces) of keys: `spec`, `proc`, `dir`, `user` and `system`
