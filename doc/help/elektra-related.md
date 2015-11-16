@@ -1,0 +1,99 @@
+elektra-related -- related configuration systems
+================================================
+
+Settings and preferences are ubiquitous in every software.
+For this reason,
+a vast amount of
+software has emerged on this topic.
+Most of the other projects,
+however, do not devote their work exclusively to configuration.
+
+## Configuration Libraries
+
+We have already mentioned that Elektra provides the features of a
+configuration library.
+There are countless libraries out there that
+parse and some even generate configuration files.
+But there is a big catch:
+These libraries do not provide an abstract view of configuration.
+They require programmers to open the files
+themselves or at least to remember the path
+to them.
+Such information is itself configuration and
+inherently operating system dependent.
+Therefore,
+it is not possible to give default values that just work.
+
+Another feature mostly missing in these libraries is cascading.
+It is not difficult to implement, but
+disturbing if it is not available at all or does not work correctly.
+
+
+## Augeas
+
+Augeas is not intended for applications themselves, so it only
+creates a new view to configuration files which is not necessarily
+the same as applications see it.
+Additionally, Augeas has a rather poor level of abstraction and many
+syntactical details must be reflected in the configuration tree.
+Nevertheless, Elektra provides an [/src/plugins/augeas/](augeas plugin)
+which allows parts of Elektra's global configuration tree to
+be implemented using lenses. Lenses are a promising technology,
+which allow mapping from and to configuration files to be specified
+with a single program.
+
+
+## Uniconf
+
+A project that shares some of the goals with Elektra,
+but uses a different
+approach is *Uniconf*.
+Besides a stand-alone library it supports a daemon mode.
+With the daemon running, it has the
+disadvantage of protocol overhead and a single point of failure.
+On the other hand, Uniconf can also notify applications
+when configuration files change and
+can work in a distributed mode.
+The project does not solve the problem of how to configure the
+configuration system. So we still have to pass a so-called
+*moniker string*
+that contains the knowledge
+where to find the configuration. The plugin system is
+flexible, but does not depend on the key name. So it is not possible to
+use different plugins for different applications and still have a global
+key database.
+
+## Debconf
+
+Debconf is a set of Debian-tools
+that separates user interaction from the configuration process
+for the system's
+configuration when packages are installed or upgraded.
+Debconf itself does not change the configuration files.
+Instead, the administrator is asked questions depending on template files
+using different front ends.
+These answers are then cached.
+The configuration changes themselves are
+applied by post-install scripts of the particular package.
+Exactly for this last step Elektra could yield much
+better results, because it can compare configuration on a per-key basis
+and thus handle conflicts in a much more fine-grained way.
+
+## Freedesktop.org
+
+The [freedesktop.org](freedesktop.org) initiative unifies different desktops
+using the X Window System in various ways.
+The main focus, however, lies in KDE and Gnome integration.
+One of the most disturbing and
+still unresolved problems is configuration. Elektra intends to
+fill this gap in the future.
+
+Already available is the so-called XDG Base Directory
+Specification. Perhaps it will define file formats
+in the future, but currently only the paths
+are specified.
+To do so, it introduces some environment variables that help to find the
+actual configuration. Only if they are unset or empty,
+a built-in fallback should be used. If desired,
+elektrified applications behave in a XDG conforming way.
+(See the configuration x for [the resolver](/src/plugins/resolver/)).
