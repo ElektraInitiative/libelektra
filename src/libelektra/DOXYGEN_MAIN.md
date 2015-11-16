@@ -9,7 +9,9 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-See the Readme for more information [Readme](/README.md)
+See the Readme for more information [Readme](/README.md).
+See the [glossary](/doc/help/elektra-glossary.md) for the used
+terminology.
 
 ## API docu ##
 
@@ -162,10 +164,3 @@ Then you can start reading about Backends that are composed out of
 [Plugin](@ref plugin).
 To get started with writing plugins, first read our plugin tutorial in doc/tutorials!
 
-## Glossary ##
-
-- **pop**, used in ksPop() and @ref KDB_O_POP means to remove
-a key from a keyset.
-- **delete**, or abbr. del, used in keyDel(), ksDel() and @ref KDB_O_DEL means to free a key or keyset. The memory
-can be used for something else afterwards.
-- **remove**  means that the key/value information in the physical database will be removed permanently.
