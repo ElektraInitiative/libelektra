@@ -259,3 +259,5 @@ the plug-in exists and which methods it implements. The code from the line plugi
 		ELEKTRA_PLUGIN_END);
 	}
 
+
+For further information see [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
