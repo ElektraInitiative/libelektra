@@ -50,7 +50,7 @@ Read about [compiling elektra](/doc/COMPILE.md).
 ### Tutorials ###
 
 * [Application Integration](/doc/tutorials/application-integration.md)
-* [Compilation Variants](/doc/tutorials/compilation_variants.md)
+* [Compilation Variants](/doc/tutorials/compilation-variants.md)
 * [Merge Integration](/doc/tutorials/elektra-merge-integration.md)
 * [Export](/doc/tutorials/export.md)
 * [Import](/doc/tutorials/import.md)
