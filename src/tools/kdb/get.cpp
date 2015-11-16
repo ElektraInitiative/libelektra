@@ -59,6 +59,7 @@ ckdb::Key * warnOnMeta(ELEKTRA_UNUSED ckdb::KeySet *ks, ELEKTRA_UNUSED ckdb::Key
 std::string getCascadingName(std::string name)
 {
 	if (name[0] == '/') return name;
+	if (name.find('/') == std::string::npos) return "/";
 	return name.substr(name.find('/'));
 }
 
