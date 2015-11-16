@@ -129,4 +129,4 @@ Keys of that namespace are only used by ksLookup when no other suitable
 key was found. So they have the lowest possible priority, even fallback
 keys are preferred.
 
-
+[Read more about cascading.](/doc/help/elektra-cascading.md)
