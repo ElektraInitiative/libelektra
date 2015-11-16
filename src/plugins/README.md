@@ -149,6 +149,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [template](template/) to be copied for new plugins
 - [lineendings](lineendings/) tests file for consistent line endings
 - [list](list/) loads other plugins
+- [filecheck](filecheck/) does sanity checks on a file
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:
