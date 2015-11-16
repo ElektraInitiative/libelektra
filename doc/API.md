@@ -138,6 +138,9 @@ It is provided to store system-wide configuration keys, that is,
 the last fallback for applications but the only resort for
 daemons and system services.
 
+Read more about [namespaces](/doc/help/elektra-namespaces.md)
+and a tutorial for [namespaces](/doc/tutorials/namespaces.md).
+
 ## Rules for Key Names ##
 
 When using Elektra to store your application's configuration and state,
@@ -154,6 +157,8 @@ They are reserved for more generic purposes.
 	and then ksLookupByName() in `/sw/org/myapp/#0/profile/key` where
 	profile is from command-line arguments and defaults to current.
 
+Read more about [key names](/doc/help/elektra-key-names.md)
+
 ## Backend Overview ##
 
 The core of Elektra does not store configuration itself to the
@@ -166,3 +171,4 @@ Then you can start reading about Backends that are composed out of
 [Plugin](@ref plugin).
 To get started with writing plugins, first read our plugin tutorial in doc/tutorials!
 
+Read more about [mounting](/doc/help/elektra-mounting.md)

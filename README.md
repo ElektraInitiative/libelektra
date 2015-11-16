@@ -47,7 +47,7 @@ Elektra.
 
 ### Usage ###
 
-Now that we have Elektra installed, we can start using the `kdb` command and
+Now that we have Elektra installed, we can start using the [kdb command](/doc/help/kdb.md) and
 the `qt-gui`.
 
 The easiest way to use Elektra is running the `qt-gui`:
