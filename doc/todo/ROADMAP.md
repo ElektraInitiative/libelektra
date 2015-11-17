@@ -8,6 +8,7 @@ A complete list of ideas what could be done can be found in the
 
 # 0.8.14
 
+md_src_plugins_keytometa_README.3elektra
 malloc -> elektraMalloc
 
 # 0.8.15
@@ -21,15 +22,11 @@ api:
 	add keyGetNamespace
 	version rules ELEKTRA_ABI_13 ...
 
-cleanups/code reviews
-
 DEFAULT_STORAGE/RESOLVER
 
 to one cmake variable:
 	verbose/debug -> logging
 	pdf/on/off -> docu
-
-introduce libease and start to move functionality there
 
 split elektra:
 	Libelektra-core (only key+keyset)
@@ -49,12 +46,6 @@ checking for broken links
 API docu improvements+pdf export
 
 generate graphic for overview of plugins
-
-
-## bugs
-
-start writing/updating FAQ
-
 
 # further
 
@@ -117,8 +108,6 @@ better errnostore solution?
 	use safe implementation see
 	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
 	(even strerrno_r seems to deadlock from time to time because of translations?)
-
-C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin exists for it
 
 roresolver: check if something is modified
 	for version, constants, uname
