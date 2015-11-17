@@ -1,6 +1,18 @@
 kdb-mount(1) - Mount a file to the key database
 ===============================================
 
+## SYNOPSIS
+
+`kdb mount [<path> <mountpoint>] [<plugin> [<config>] [..]]`  
+
+- Where `path` is the path to the file the user wants to mount.
+  See `kdb info resolver` for details what an absolute and relative path means.
+- `mountpoint` is where in the key database the new backend should be mounted. (For a cascading mount pount, `mountpoint` should start with `/`)  
+- `plugin` should be an Elektra plugin.
+  A list of such plugins with configuration can be given.
+- Plugins may be followed by a `,` separated list of keys and their corresponding values which will be written below the backend configuration.  
+
+
 ## DESCRIPTION
 
 This command allows a user to mount a new *backend*.
@@ -12,22 +24,47 @@ This functionality is key to Elektra as it allows users to build a global key da
 A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa.  
 Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments.  
 
-Note: This command writes into the `/etc` directory and as such it requires root permissions.  
 
-## USAGE
+Note:
+This command writes into the `/etc` directory and as such it requires root permissions.
+Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
-`kdb mount [<path> <mountpoint>] [<plugin> [<config>] [..]]`  
 
-Where `path` is the path to the file the user wants to mount. (Absolute for system files, relative for user files)  
-`mountpoint` is where in the key database the new backend should be mounted. (For a cascading mount pount, `mountpoint` should start with `/`)  
-`plugin` should be an Elektra plugin, or a list of plugins, as well as any necessary configuration arguments for those plugins.  
-Plugins may be followed by a `,` seperated list of keys and their corresponding values which will be written below the backend configuration.  
+## CONFIGURATION
 
-## DEFAULT PLUGINS
+The default resolver will be added automatically.
+Which resolver will be used can be changed by:
+`/sw/kdb/current/resolver`
 
-Some plugins, such as `sync` are added automatically when mounting a backend.  
-The user can change which plugins are added by editing the space-separated list stored in the follwing key:  
-`/sw/kdb/current/plugins`  
+Some plugins are added automatically (by default sync).
+Which plugins that are can be changed by the space separated list in:
+`/sw/kdb/current/plugins`
+
+
+
+## OPTIONS
+
+- `-H`, `--help`:
+  Print help text.
+- `-V`, `--version`:
+  Print version info.
+- `-d`, `--debug`:
+  Give debug information or ask debug questions (in interactive mode).
+- `-i`, `--interactive`:
+  Instead of passing all mounting information by parameters ask the user interactively.
+- `-R`, `--resolver <name>`:
+  Specify the resolver plugin to use if no resolver is given, the default resolver is used.
+- `-0`, `--null`:
+  Use binary 0 termination.
+- `-1`, `--first`:
+  Suppress the first column.
+- `-2`, `--second`:
+  Suppress the second column.
+- `-3`, `--third`:
+  Suppress the third column.
+- `-c`, `--plugins-config`:
+  Add a plugin configuration for all plugins.
+
 
 ## EXAMPLES
 
@@ -49,3 +86,7 @@ To mount the /etc/file system file with two plugins and setting both to be verbo
 To recode and rename a configuration file using Elektra:  
 	`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`  
 
+## SEE ALSO
+
+- [elektra-mounting(7)](elektra-mounting.md).
+- [elektra-plugins(7)](elektra-plugins.md).

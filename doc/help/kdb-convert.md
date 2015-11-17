@@ -3,7 +3,6 @@ kdb-convert(1) -- Convert configuration files using elektra
 
 ## SYNOPSIS
 
-
 `kdb convert [<import-format>] [<export-format>] [<import-file>] [export-file]`  
 
 
@@ -24,7 +23,13 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
 
 ## OPTIONS
 
-TODO
+- `-H`, `--help`:
+  Print help text.
+- `-V`, `--version`:
+  Print version info.
+- `-v`, `--verbose`:
+  Explain what is happening.
+
 
 ## EXAMPLES
 

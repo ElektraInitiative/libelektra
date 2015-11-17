@@ -1,5 +1,5 @@
-cascading(7) -- of key names
-============================
+elektra-cascading(7) -- of key names
+====================================
 
 **Cascading** is the triggering of secondary actions.
 For configuration it means that first the user configuration is read

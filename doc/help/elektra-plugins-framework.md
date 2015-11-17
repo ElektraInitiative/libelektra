@@ -1,5 +1,5 @@
-ELEKTRA PLUGIN FRAMEWORK(7) -- Background about plugin framework
-================================================================
+elektra-plugins-framework(7) -- Background about plugins framework
+==================================================================
 
 Many component systems pass information between the various components
 by calling methods of each other.  This is not the way Elektra's plugin

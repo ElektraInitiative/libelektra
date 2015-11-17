@@ -1,20 +1,20 @@
 kdb-import(1) -- Import an existing configuration into the key database
 =======================================================================
 
-## DESCRIPTION
-
-This command allows a user to import an existing configuration into the key database.  
-The configuration that the user wants to import is read from `stdin`.  
-The user should specify the format that the current configuration or keys are in, otherwise the default format will be used.  
-The default format is `dump` but can be changed by editing the value of the `sw/kdb/current/format` key.  
-
-## USAGE
+## SYNOPSIS
 
 `kdb import <destination> [<format>]`
 
 Where `destination` is the destination where the user want's the keys to be imported into and `format` is the format the current keys or configuration is stored in.  
 If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key. By default, that key is set to the `dump` format.  
 The `format` attribute relies on Elektra's plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.   
+
+## DESCRIPTION
+
+This command allows a user to import an existing configuration into the key database.  
+The configuration that the user wants to import is read from `stdin`.  
+The user should specify the format that the current configuration or keys are in, otherwise the default format will be used.  
+The default format is `dump` but can be changed by editing the value of the `sw/kdb/current/format` key.  
 
 ## CONFLICTS
 
@@ -25,14 +25,26 @@ Conflicts when importing can be resolved using a [strategy](#STRATEGIES) with th
 
 Currently the following strategies exist for importing configurations:  
 
- * cut:
-   Removes existing keys below `destination` and repalces them with the keys resulting from the import.  
-   This is the default strategy.  
+- `cut`:
+  Removes existing keys below `destination` and repalces them with the keys resulting from the import.  
+  This is the default strategy.  
 
- * import:
-   Preserves existing keys below `destination` only if they do not exist in the keys being imported.  
-   If the key does exist in the imported keys, the current version will be overwritten.  
-    
+- `import`:
+  Preserves existing keys below `destination` only if they do not exist in the keys being imported.  
+  If the key does exist in the imported keys, the current version will be overwritten.
+
+
+## OPTIONS
+
+- `-H`, `--help`:
+  Print help text.
+- `-V`, `--version`:
+  Print version info.
+- `s`, `--strategy <name>`:
+  Specify which strategy should be used to resolve conflicts.
+- `-v`, `--verbose`:
+  Explain what is happening.
+
 
 ## EXAMPLES
 
@@ -47,3 +59,7 @@ To import a configuration stored in the `ini` format in a file called `example.i
 
 To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:  
 	`cat sw.ecf | kdb import system/sw`
+
+## SEE ALSO
+
+- [elektra-merge-strategies(7)](elektra-merge-strategies)
