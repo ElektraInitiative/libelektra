@@ -805,3 +805,14 @@ severity:warning
 ingroup:plugin
 module:csvstorage
 
+number:137
+description:filecheck validation failed
+severity:error
+ingroup:plugin
+module:filecheck
+
+number:138
+description:failed to initialize filecheck data
+severity:error
+ingroup:plugin
+module:filecheck

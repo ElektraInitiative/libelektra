@@ -87,6 +87,7 @@ set (PLUGINS_LIST_POSIX
 	line
 	validation
 	regexstore
+	filecheck
 	)
 
 #
