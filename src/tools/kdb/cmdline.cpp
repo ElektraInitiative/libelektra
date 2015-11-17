@@ -78,13 +78,13 @@ Cmdline::Cmdline (int argc,
 	{
 		option o = {"help", no_argument, 0, 'H'};
 		long_options.push_back(o);
-		helpText += "- `-H`, `--help`:\n  Print help text.\n";
+		helpText += "- `-H`, `--help`\n  Print help text.\n";
 	}
 	if (acceptedOptions.find('V')!=string::npos)
 	{
 		option o = {"version", no_argument, 0, 'V'};
 		long_options.push_back(o);
-		helpText += "- `-V`, `--version`:\n  Print version info.\n";
+		helpText += "- `-V`, `--version`\n  Print version info.\n";
 	}
 	if (acceptedOptions.find('a')!=string::npos)
 	{
