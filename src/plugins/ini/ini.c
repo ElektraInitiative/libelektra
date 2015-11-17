@@ -78,7 +78,21 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	{
 		if (*section != '\0')
 		{
-			keyAddBaseName(appendKey, section);
+			char *sectionString = strdup(section);
+			char *newBaseName = strtok(sectionString, "/");
+			if(newBaseName != NULL)
+			{
+				keyAddBaseName(appendKey, newBaseName);
+			}
+			while(newBaseName != NULL)
+			{
+				newBaseName = strtok(NULL, "/");
+				if(newBaseName != NULL)
+				{
+					keyAddBaseName(appendKey, newBaseName);
+				}
+			}
+			free(sectionString);
 		}
 		Key *sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
 		if(sectionKey)
@@ -103,13 +117,25 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		keyDel(appendKey);
         return 1;
 	}
-	
-	keyAddBaseName (appendKey, name);
+	char *nameString = strdup(name);
+	char *newBaseName = strtok(nameString, "/");
+	if(newBaseName != NULL)
+	{
+		keyAddBaseName(appendKey, newBaseName);
+	}
+	while(newBaseName != NULL)
+	{
+		newBaseName = strtok(NULL, "/");
+		if(newBaseName != NULL)
+		{
+			keyAddBaseName(appendKey, newBaseName);
+		}
+	}
+	free(nameString);
 	char buf[16];
 	snprintf(buf, sizeof(buf), "%ld", lastIndex);
 	++lastIndex;
 	keySetMeta(appendKey, "order", buf);
-	
 	if(*value == '\0')
 		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
@@ -138,7 +164,23 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 
 	Key *appendKey = keyDup (handle->parentKey);
 	keySetBinary(appendKey, 0, 0);
-	keyAddBaseName(appendKey, section);
+	char *sectionString = strdup(section);
+	char *newBaseName = strtok(sectionString, "/");
+	if(newBaseName != NULL)
+	{
+		keyAddBaseName(appendKey, newBaseName);
+	}
+	while(newBaseName != NULL)
+	{
+		newBaseName = strtok(NULL, "/");
+		if(newBaseName != NULL)
+		{
+			keyAddBaseName(appendKey, newBaseName);
+		}
+	}
+
+	keySetMeta(appendKey, "ini/section", "1");
+	free(sectionString);
 	flushCollectedComment (handle, appendKey);
 	ksAppendKey(handle->result, appendKey);
 
@@ -358,6 +400,7 @@ static Key *generateSectionKey(Key *key, Key *parentKey)
 	}
 
 	keySetBinary(sectionKey, 0, 0);
+	keySetMeta(sectionKey, "ini/section", "");
 	return sectionKey;
 }
 
@@ -449,16 +492,13 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
-		if(keyIsDirectBelow(parentKey, current))
-		{
-			if(*(keyString(current)) == '\0')
+			if(keyGetMeta(current, "ini/section"))
 			{
 				keyDel(sectionKey);
 				sectionKey = keyDup(current);
 				keySetBinary(sectionKey, 0, 0);
 				current = sectionKey;
 			}
-		}
 		writeComments (current, fh);
 
 		/* find the section the current key belongs to */
