@@ -26,7 +26,7 @@ This command will return the following values as an exit status:
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-n`, `--no-newline`:          Suppress the newline at the end of the output.

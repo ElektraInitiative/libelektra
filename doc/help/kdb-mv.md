@@ -17,7 +17,7 @@ You can move keys to another directory within the database or even below another
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-r`, `--recursive`:

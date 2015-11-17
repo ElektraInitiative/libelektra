@@ -19,7 +19,7 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-v`, `--verbose`:

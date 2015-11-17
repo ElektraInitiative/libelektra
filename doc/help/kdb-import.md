@@ -37,7 +37,7 @@ Currently the following strategies exist for importing configurations:
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `s`, `--strategy <name>`:

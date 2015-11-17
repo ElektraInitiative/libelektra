@@ -13,7 +13,7 @@ If no meta keys are associated with the given key, nothing will be printed.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-0`, `--null`:

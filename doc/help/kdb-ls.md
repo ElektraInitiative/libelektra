@@ -14,7 +14,7 @@ This command will list the name of all keys below a given path.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-v`, `--verbose`:

@@ -22,7 +22,7 @@ The `format` attribute relies on Elektra's plugin system to export the keys in t
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-E`, `--without-elektra`:

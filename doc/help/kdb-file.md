@@ -17,7 +17,7 @@ This command makes use of Elektra's `resolver` plugin which the uer can learn mo
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-n`, `--no-newline`:

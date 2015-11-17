@@ -19,7 +19,7 @@ The following tests are available: basic string umlauts binary naming meta
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 

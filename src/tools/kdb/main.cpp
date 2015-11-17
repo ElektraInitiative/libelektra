@@ -103,8 +103,8 @@ int main(int argc, char**argv)
 
 		if (cl.help)
 		{
-			cerr << cl << endl;
-			return 0;
+			runManPage(command);
+			// does not return, but may throw
 		}
 
 		if (cl.invalidOpt)

@@ -108,7 +108,7 @@ Cmdline::Cmdline (int argc,
 	{
 		option o = {"help", no_argument, 0, 'H'};
 		long_options.push_back(o);
-		helpText += "-H --help                Print help text.\n";
+		helpText += "-H --help                Show the man page.\n";
 	}
 	if (acceptedOptions.find('i')!=string::npos)
 	{
@@ -153,24 +153,7 @@ Cmdline::Cmdline (int argc,
 		option o = {"strategy", required_argument, 0, 's'};
 		long_options.push_back(o);
 		helpText +=
-			"-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n"  
-                        "                         More precisely, strategies are used to handle deviations from the\n"
-                        "                         base version of a key.\n"
-                        "                         When and which strategies are used and what they do depends\n"
-			"                         mostly on the used base KeySet.\n\n"  
-			"                         Note: For a two-way merge, the `ours` version of the keys is used\n"
-                        "                         in place of `base`\n\n"
-			"                         Currently the following strategies exist\n"
-			"                           preserve      .. automerge only those keys where just one\n"
-			"                                            side deviates from base (default)\n"
-			"                           ours          .. like preserve, but in case of conflict use our version\n"
-			"                           theirs        .. like preserve, but in case of conflict use their version\n"
-			"                           cut           .. primarily used for import. removes existing keys below\n"
-			"                                            the import point and always takes the imported version\n"
-			"                           import        .. primarily used for import. preserves existing keys if\n"
-			"                                            they do not exist in the imported keyset. in all other\n"
-			"                                            cases the imported keys have precedence\n"
-			"";
+			"-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{

@@ -36,6 +36,6 @@ The man pages are also displayed when invoking a kdb-tool with `--help`.
 Commonly used options for all programs:
 
 - `-H`, `--help`:
-   Print help text.
+   Show the man page.
 - `-V`, `--version`:
    Print version info.

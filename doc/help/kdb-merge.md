@@ -51,7 +51,7 @@ To interactively resolve conflicts, use the `-i` option.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `s`, `--strategy <name>`:

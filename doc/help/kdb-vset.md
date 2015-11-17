@@ -20,7 +20,7 @@ Note: In order for this command to work, the `validation` plugin must be mounted
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 

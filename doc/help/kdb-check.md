@@ -17,7 +17,7 @@ Special values are returned upon exit to represent the outcome of a check.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-f`, `--force`:

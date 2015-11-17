@@ -21,7 +21,7 @@ Additionally, a user can use the command `kdb ls <same key>` to see if an overri
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-a`, `--all`:

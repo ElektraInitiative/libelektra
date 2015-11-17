@@ -34,7 +34,7 @@ The kdb shell offers a number of commands to interact with the key database.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 

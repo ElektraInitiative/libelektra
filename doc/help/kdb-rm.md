@@ -15,7 +15,7 @@ This command removes key(s) from the Key database.
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-r`, `--recursive`:

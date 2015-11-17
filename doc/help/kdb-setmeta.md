@@ -18,7 +18,7 @@ There is some special handling for the metadata atime, mtime and ctime. They wil
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-v`, `--verbose`:

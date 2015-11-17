@@ -16,7 +16,7 @@ This command allows a user to use an existing backend (such as one from a previo
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-d`, `--debug`:

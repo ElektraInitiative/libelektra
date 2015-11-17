@@ -12,7 +12,7 @@ This command will list all the available Elektra plugins that were compiled toge
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-v`, `--verbose`:

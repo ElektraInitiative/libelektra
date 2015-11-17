@@ -118,3 +118,21 @@ void tryExternalCommand(char** argv)
 
 	throw UnknownCommand();
 }
+
+void runManPage(std::string command)
+{
+	const char * man = "/usr/bin/man";
+	command = "kdb-"+command;
+	char * const argv [3] = {const_cast<char*>(man),
+		const_cast<char*>(command.c_str()),
+		0};
+
+
+#ifdef _WIN32
+	execve(man, argv, 0);
+#else
+	execve(man, argv, environ);
+#endif
+
+	throw UnknownCommand();
+}

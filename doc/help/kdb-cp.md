@@ -19,7 +19,7 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-r`, `--recursive`:

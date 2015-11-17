@@ -20,7 +20,7 @@ This command will create the new entry with a name of `ZZZNewFstabName` which sh
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-v`, `--verbose`:

@@ -45,7 +45,7 @@ Which plugins that are can be changed by the space separated list in:
 ## OPTIONS
 
 - `-H`, `--help`:
-  Print help text.
+  Show the man page.
 - `-V`, `--version`:
   Print version info.
 - `-d`, `--debug`:
