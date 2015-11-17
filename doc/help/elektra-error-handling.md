@@ -1,33 +1,33 @@
 elektra-error-handling(7) -- error handling in Elektra
 ======================================================
 
-You might want to read [about data structures
-first](elektra-data-structures.md).
+You might want to read
+[about data structures first](elektra-data-structures.md).
 
 ## Terminology
 
-It is sometimes unavoidable that \intro[error]{errors} or other problems
+It is sometimes unavoidable that errors
 occur that ultimately have an impact for the user.  Examples for such an
-error are that memory and hard disc space is exhausted.  For a library it
+error are that hard disc space is exhausted.  For a library it
 is necessary to pass information about the facts and circumstances to the
 user because the user wants to be informed why a requested action failed.
 So Elektra gathers all information in these situations.  We call this
-resulting information \intro{error information} and \intro{warning
-information} depending on the severity.
+resulting information **error information** and
+**warning information** depending on the severity.
 
 If the occurred error is critical and ultimately causes a situation that
 the post conditions cannot be fulfilled we say that Elektra comes into a
-\intro{faulty state}.  Such a faulty state will change the control flow
+**faulty state**.  Such a faulty state will change the control flow
 inside Elektra completely.  Elektra is unable to resolve the problem
 without assistance.  After cleaning up resources, a faulty state leads
-to immediate return from the function with an \intro{error code}.  As a
+to immediate return from the function with an **error code**.  As a
 user expects from a library, Elektra never calls `exit()` or something
 similar, regardless of how fatal the error is.  In this situation error
 information should be set.
 
 On the other hand, for many problems the work can go on with reasonable
 defaults. Nevertheless, the user will be warned that a problem occurred
-using the \emph{warning information}.  These situations do not influence
+using the **warning information**.  These situations do not influence
 the control flow.  But applications can choose to react differently in
 the presence of warning information.  They may not be interested in any
 warning information at all.  It is no problem if warning information is
@@ -36,7 +36,7 @@ buffer.  The implementation prevents an overflow of the buffer.
 Instead the oldest warnings are overwritten.
 
 When error or warning information is presented to the user, it is called
-\intro{error message} or \intro{warning message}.  The user may reply
+*error message* or *warning message*.  The user may reply
 to this message in which way to continue.
 
 
@@ -49,30 +49,28 @@ would cause a faulty state, otherwise, the error information must be
 omitted or transformed to a warning information.  In some places only
 the adding of warning information is possible:
 
-\begin{itemize} \item The main purpose of `kdbClose()` is to free the
-handle.  This operation is always successful and is carried out even
-if some of the resources cannot be freed.  Therefore, in `kdbClose()`,
-setting error information is prohibited.  Warning information is, however,
-very useful to tell the user the circumstance that some actions during
-cleanup failed.
-
-\item Also in `kdbOpen()`, only adding warning information is allowed.
-If `kdbOpen()` is not able to open a plugin, the affected backend will be
-dropped out.  The user is certainly interested why that happened.  But it
-was decided not to make it an faulty state, because the application might
-not even access the faulty part of the key hierarchy.  An exception
-to this rule is if `kdbOpen()` fails to open the default backend.
-This situation will induce an faulty state.
-
-\item In `kdbSet()`, the cleaning up of resources involves calling
-plugins.  But during this process Elektra is in a faulty state, so only
-adding of warning information is allowed.  This ensures that the original
-error information is passed unchanged to the user.
-
-\end{itemize}
+- The main purpose of `kdbClose()` is to free the
+  handle.  This operation is always successful and is carried out even
+  if some of the resources cannot be freed.  Therefore, in `kdbClose()`,
+  setting error information is prohibited.  Warning information is, however,
+  very useful to tell the user the circumstance that some actions during
+  cleanup failed.
+  
+- Also in `kdbOpen()`, only adding warning information is allowed.
+  If `kdbOpen()` is not able to open a plugin, the affected backend will be
+  dropped out.  The user is certainly interested why that happened.  But it
+  was decided not to make it an faulty state, because the application might
+  not even access the faulty part of the key hierarchy.  An exception
+  to this rule is if `kdbOpen()` fails to open the default backend.
+  This situation will induce an faulty state.
+  
+- In `kdbSet()`, the cleaning up of resources involves calling
+  plugins.  But during this process Elektra is in a faulty state, so only
+  adding of warning information is allowed.  This ensures that the original
+  error information is passed unchanged to the user.
 
 On the other hand, any access to the key database can produce
-\emph{warning information}.  Plugins are allowed to yield warning
+warning information.  Plugins are allowed to yield warning
 information at any place and for any reason.  For example, the storage
 plugin reading a configuration file with an old syntax, is free to report
 the circumstance as warning information.  Warning information is also
@@ -177,7 +175,7 @@ everything needed to add a particular error or warning information.
 With that file we achieved a central place for error-related information.
 All other locations are automatically generated instead of having
 error-prone duplicated code.  This principle is called ''Don't repeat
-yourself''\cite{general:00}.
+yourself''.
 
 In Elektra's core and plugins, C macros are responsible for setting
 the error information and adding warning information.  In C only a
@@ -204,7 +202,7 @@ an error situation.
 ## Exceptions
 
 Exceptions are a mechanism of the language and not just an implementation
-detail\cite{stroustrup:04}. Exceptions are not intended to force the
+detail. Exceptions are not intended to force the
 user to do something, but to enrich the possibilities.  In this section,
 we discuss two issues related to exceptions.  On the one hand, we will
 see how Elektra supports programming languages that provide exceptions.
@@ -215,8 +213,7 @@ Elektra to provide more robustness.
 
 C does not know anything about exceptions.  But Elektra was designed
 so that both plugins and applications can be written in languages
-that provide exceptions as shown in Figure~\ref{fig:exception
-flow}.  One design goal of Elektra's error system is to transport
+that provide exceptions.  One design goal of Elektra's error system is to transport
 exception-related information in a language neutral way from the plugins
 to the applications.  To do so, a language binding of the plugin needs
 to catch every exception and transform it into error information and
@@ -233,9 +230,9 @@ translates the error code to an exception and throws it. It is worth
 noting that the source and target language do not need to be the same.
 
 Such a system needs a central specification of error information.
-We already introduced such a specification file in \secref{error
-specification}.  The exception classes and converters can be generated
-from it.  An \intro{exception converter} is either a long sequence
+We already introduced such a specification file in error
+specification.  The exception classes and converters can be generated
+from it.  An exception converter is either a long sequence
 of try-catch statements that transforms every known exception into an
 appropriate metakeys.  Each exception thrown by the plugin has to be
 caught.  Alternatively, a converter can be a long switch statement for
@@ -258,11 +255,11 @@ application.  We see that Elektra is minimally invasive in this regard.
 ### Exception Safety
 
 We can learn from the way languages define the semantics for
-\intro{exception safety}.  Exception safety is a concept which
+**exception safety**.  Exception safety is a concept which
 ensures that all resources are freed regardless of the chosen return
-path\cite{exc:01}.  \empha[guarantee!basic]{Basic guarantees} make sure
+path. **Basic guarantees** make sure
 that some invariants remain on an object even in exceptional cases.
-On the other hand, \empha[guarantee!strong]{strong guarantees} assure
+On the other hand, **strong guarantees** assure
 that the investigated operation is successful or has no effect at all.
 Methods are said to be exception safe if the object remains in a valid
 state.  The idea of exception safety is to ensure that no resource
