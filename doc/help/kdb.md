@@ -30,3 +30,12 @@ Documentation of plugins is available using the
 Run `kdb list` for a list of plugins.
 
 The man pages are also displayed when invoking a kdb-tool with `--help`.
+
+## OPTIONS
+
+Commonly used options for all programs:
+
+- `-H`, `--help`:
+   Print help text.
+- `-V`, `--version`:
+   Print version info.

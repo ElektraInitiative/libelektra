@@ -74,41 +74,47 @@ Cmdline::Cmdline (int argc,
 
 	vector<option> long_options;
 	/*XXX: Step 3: give it a long name.*/
+	if (acceptedOptions.find('H')!=string::npos)
+	{
+		option o = {"help", no_argument, 0, 'H'};
+		long_options.push_back(o);
+		helpText += "- `-H`, `--help`\n  Print help text.\n";
+	}
+	if (acceptedOptions.find('V')!=string::npos)
+	{
+		option o = {"version", no_argument, 0, 'V'};
+		long_options.push_back(o);
+		helpText += "- `-V`, `--version`\n  Print version info.\n";
+	}
 	if (acceptedOptions.find('a')!=string::npos)
 	{
 		option o = {"all", no_argument, 0, 'a'};
 		long_options.push_back(o);
-		helpText += "-a --all                 Consider all of the keys.\n";
+		helpText += "- `-a`, `--all`:\n  Consider all of the keys.\n";
 	}
 	if (acceptedOptions.find('d')!=string::npos)
 	{
 		option o = {"debug", no_argument, 0, 'd'};
 		long_options.push_back(o);
-		helpText += "-d --debug               Give debug information or ask debug questions (in interactive mode).\n";
+		helpText += "- `-d`, `--debug`:\n  Give debug information or ask debug questions (in interactive mode).\n";
 	}
 	if (acceptedOptions.find('f')!=string::npos)
 	{
 		option o = {"force", no_argument, 0, 'f'};
 		long_options.push_back(o);
-		helpText += "-f --force               Force the action to be done.\n";
+		helpText += "- `-f`, `--force`:\n  Force the action to be done.\n";
 	}
 	if (acceptedOptions.find('l')!=string::npos)
 	{
 		option o = {"load", no_argument, 0, 'f'};
 		long_options.push_back(o);
-		helpText += "-l --load                Load plugin even if system/elektra is available\n";
+		helpText += "- `-l`, `--load`:\n  Load plugin even if system/elektra is available\n";
 	}
 	if (acceptedOptions.find('h')!=string::npos)
 	{
 		option o = {"human-readable", no_argument, 0, 'h'};
 		long_options.push_back(o);
 		helpText += "-h --human-readable      Print numbers in an human readable way\n";
-	}
-	if (acceptedOptions.find('H')!=string::npos)
-	{
-		option o = {"help", no_argument, 0, 'H'};
-		long_options.push_back(o);
-		helpText += "-H --help                Print help text.\n";
 	}
 	if (acceptedOptions.find('i')!=string::npos)
 	{
@@ -176,13 +182,7 @@ Cmdline::Cmdline (int argc,
 	{
 		option o = {"verbose", no_argument, 0, 'v'};
 		long_options.push_back(o);
-		helpText += "-v --verbose             Explain what is happening.\n";
-	}
-	if (acceptedOptions.find('V')!=string::npos)
-	{
-		option o = {"version", no_argument, 0, 'V'};
-		long_options.push_back(o);
-		helpText += "-V --version             Print version info.\n";
+		helpText += "- `-v`, `--verbose`:\n  Explain what is happening.\n";
 	}
 	if (acceptedOptions.find('E')!=string::npos)
 	{
@@ -194,7 +194,7 @@ Cmdline::Cmdline (int argc,
 	{
 		option o = {"null", no_argument, 0, '0'};
 		long_options.push_back(o);
-		helpText += "-0 --null                Use binary 0 termination.\n";
+		helpText += "- `-0`, `--null`:\nUse binary 0 termination.\n";
 	}
 	if (acceptedOptions.find('1')!=string::npos)
 	{
