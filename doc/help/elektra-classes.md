@@ -95,4 +95,8 @@ Then, attempts to use `kdbSet()` lead to a conflict.
 `KDB` detects such situations gracefully and lets the application decide
 which configuration should be used.
 
-For further information see [the API documentation](http://doc.libelektra.org/api/current/html/).
+For details and background
+[read more about elektra data structures](elektra-data-structures.md).
+For further information see
+[the API documentation](http://doc.libelektra.org/api/current/html/).
+
