@@ -48,15 +48,9 @@ Elektra.
 ### Usage ###
 
 Now that we have Elektra installed, we can start using the [kdb command](/doc/help/kdb.md) and
-the `qt-gui`.
+the [qt-gui](/src/tools/qt-gui/).
 
-The easiest way to use Elektra is running the `qt-gui`:
-
-```bash
-kdb qt-gui
-```
-
-Or you can use the `kdb` command to configure your applications:
+You can use the `kdb` command to configure your applications:
 
 ```bash
 kdb set user/env/override/HTTP_PROXY "http://my.proxy:8080"
@@ -66,11 +60,22 @@ This will set the `HTTP_PROXY` environment variable to `http://my.proxy:8080`.
 Configuration can be retrieved with `kdb get`:
 
 ```bash
-kdb get user/env/override/HTTP_PROXY
+kdb get /env/override/HTTP_PROXY
 ```
 
-For more information about elektrified environment variables, see
+For information about elektrified environment variables, see
 [src/libgetenv/README.md](src/libgetenv/README.md)
+
+
+### Documentation ###
+
+You can read the documentation for the kdb tool, either
+
+- [on github](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/kdb.md)
+- [in the API docu](http://doc.libelektra.org/api/latest/html/)
+- by using `kdb --help`
+- by using `man kdb`
+
 
 
 ## Goals ##
