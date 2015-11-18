@@ -321,7 +321,30 @@ int elektraIniClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	elektraPluginSetData(handle, 0);
 	return 0;
 }
-
+static void stripInternalMeta(KeySet *ks)
+{
+	ksRewind(ks);
+	Key *cur;
+	while((cur = ksNext(ks)) != NULL)
+	{
+		keySetMeta(cur, "ini/section", 0);
+		keySetMeta(cur, "ini/lastSection", 0);
+		keySetMeta(cur, "ini/lastKey", 0);
+		keySetMeta(cur, "binary", 0);
+		keySetMeta(cur, "order", 0);
+		keySetMeta(cur, "order/parent", 0);
+	}
+}
+static void stripInternalSections(KeySet *ks)
+{
+	ksRewind(ks);
+	Key *cur;
+	while((cur = ksNext(ks)) != NULL)
+	{
+		if(!keyIsBinary(cur) && !keyGetMeta(cur, "ini/section"))
+			keyDel(ksLookup(ks, cur, KDB_O_POP));
+	}
+}
 int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
@@ -374,6 +397,9 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (ret == 0)
 	{
 		ksClear(returned);
+		if(pluginConfig->keyToMeta)
+			stripInternalMeta(cbHandle.result);
+		stripInternalSections(cbHandle.result);
 		ksAppend(returned, cbHandle.result);
 		ret = 1;
 	}
