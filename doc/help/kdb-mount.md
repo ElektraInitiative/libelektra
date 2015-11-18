@@ -25,7 +25,9 @@ A backend acts as a worker to allow Elektra to interpret configuration files as 
 Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments.  
 
 
-Note:
+
+## IMPORTANT
+
 This command writes into the `/etc` directory and as such it requires root permissions.
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
