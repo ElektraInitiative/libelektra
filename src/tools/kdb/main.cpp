@@ -33,6 +33,7 @@ void displayHelp(std::string app, std::vector<std::string> commands)
 	{
 		std::cout << *it  << std::endl;
 	}
+	std::cout << "help         View the man page of a tool" << std::endl;
 	std::cout << "list-tools   List all external tools" << std::endl;
 }
 
@@ -74,8 +75,12 @@ int main(int argc, char**argv)
 
 	string command = argv[1];
 
-	if (command == "-H" || command == "--help")
+	if (command == "help" || command == "-H" || command == "--help")
 	{
+		if (argc == 3)
+		{
+			runManPage(argv[2]);
+		}
 		displayHelp(argv[0], f.getCommands());
 		return 0;
 	}
