@@ -90,7 +90,8 @@ we always can create one:
 - The first argument of `keyNew` always is the name of the key.
  - `sw` is for software
  - `org` is a URL/organisation name to avoid name clashes with other
-     application names
+     application names. Use only one part of the URL/organisation,
+     so e.g. `kde` is enough.
  - `myapp` is the name of the most specific component that has its own
      configuration
  - `#0` is the version number of the configuration
@@ -140,6 +141,8 @@ To lookup a key, we simply use, e.g.:
 		"/sw/org/myapp/#0/current/section/subsection/key",
 		0);
 
+We see in that example that only Elektra pathes are hardcoded in
+the application, no configuration file or similar.
 Thus we are interested in the value we use:
 
 	char *val = keyString(k);
@@ -158,3 +161,72 @@ instead use code generation that provides a type-safe front-end.
 
 For more information about that, continue reading
 [here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen)
+
+
+
+## Specification
+
+Now, we have a fully working configuration system without any hard-coded
+information (such as configuration files). So we already gained something.
+But, we did not discuss how we can actually achieve application integration,
+the goal of Elektra.
+
+Elektra 0.8.11 introduces the so called specification for the
+application's configuration. It is located below its own [namespace](/doc/help/elektra-namespaces.md)
+`spec` (next to user and system).
+
+Keys in `spec` allow us to specify which keys are read by the application,
+which fallback they might have and which is the default value using
+meta data. The implementation of these features happened in `ksLookup`.
+When cascading keys (those starting with `/`) are used following features
+are now available (in the meta data of respective `spec`-keys):
+
+- `override/#`: use these keys *in favour* of the key itself (note that
+    `#` is the syntax for arrays, e.g. `#0` for the first element,
+    `#_10` for the 11th and so on)
+- `namespace/#`: instead of using all namespaces in the predefined order,
+    one can specify which namespaces should be searched in which order
+- `fallback/#`: when no key was found in any of the (specified) namespaces
+    the `fallback`-keys will be searched
+- `default`: this value will be used if nothing else was found
+
+This technique provides complete transparency how a program will fetch a configuration
+value. In practice that means that:
+
+    kdb get "/sw/org/myapp/#0/current/section/subsection/key",
+
+will give you the *exact same value* as the application gets when it uses the
+above lookup C-code.
+
+What we do not see in the program above are the default values and
+fallbacks. They are only present in the so specification (namespace `spec`).
+Luckily, the specification are (meta) key/value pairs, too. So we do not have
+to learn something new.
+
+So lets say, that another application `otherapp` exactly has the
+value we actually want. We want to better integrate the system, that
+in the case we do not have a value for `/sw/org/myapp/#0/current/section/subsection/key`
+we want to use `/sw/otherorg/otherapp/#0/current/section/subsection/key`.
+
+So we specify:
+
+    kdb setmeta spec/sw/org/myapp/#0/current/section/subsection/key "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
+
+Voila, we have done a system integration between `myapp` and `otherapp`!
+
+Note that the fallback, override and cascading works on *key level*,
+and not like most other systems have implemented, on
+configuration *file level*.
+
+## Conclusion
+
+Elektra does not hardcode any configuration data in your application.
+Using the `default` specification, we even can startup applications without
+any configuration file *at all* and still do not have anything hardcoded
+in the applications binary.
+Furthermore, by only using cascading keys for `kdbGet()` and `ksLookup()`
+Elektra gives you a possibility to specify how configuration data
+should be retrieved. In this specification you can define, that
+configuration data from other applications or shared places should
+be considered or even preferred. Doing so, we can achieve configuration
+integration.
