@@ -17,7 +17,9 @@ applications' configurations, leveraging easy application integration.
 
 ## Contact ##
 
-Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+Do not hesitate to ask any question on
+[github issue tracker](https://github.com/ElektraInitiative/libelektra/issues),
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 or directly to one of the [authors](doc/AUTHORS).
 
 
