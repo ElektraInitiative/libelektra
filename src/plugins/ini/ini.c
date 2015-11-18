@@ -111,6 +111,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		if (*section != '\0')
 		{
 			keySetBinary(appendKey, 0, 0);
+			keySetMeta(appendKey, "ini/section", 0);
 			appendKey = createUnescapedKey(appendKey, handle->result, section);
 		}
 		sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
@@ -141,9 +142,8 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		return 1;
 	}
 	sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
-	keySetMeta(appendKey, "ini/section", keyString(keyGetMeta(sectionKey, "ini/section")));
 	appendKey = createUnescapedKey(appendKey, handle->result, name);
-	
+	keySetMeta(appendKey, "ini/section", keyString(keyGetMeta(sectionKey, "ini/section")));
 	char buf[16];
 	unsigned int lastIndex;
 	if(sectionKey)
@@ -201,9 +201,9 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	keySetBinary(appendKey, 0, 0);
 	keySetMeta(appendKey, "ini/lastKey", "0");
 	keySetMeta(appendKey, "ini/lastSection", 0);
-	
-	keySetMeta(appendKey, "ini/section", newSectionIndex);
+	keySetMeta(appendKey, "ini/section", 0);	
 	appendKey = createUnescapedKey(appendKey, handle->result, section);
+	keySetMeta(appendKey, "ini/section", newSectionIndex);
 	keySetMeta(handle->parentKey, "ini/lastSection", newSectionIndex);
 	flushCollectedComment (handle, appendKey);
 	ksAppendKey(handle->result, appendKey);
