@@ -58,4 +58,6 @@ tool_link_elektratools(qt-gui)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+
 endif()

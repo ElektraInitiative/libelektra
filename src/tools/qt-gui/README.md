@@ -41,5 +41,3 @@ You can now install Elektra as you normally would or as described in the [instal
 The following command will launch the Qt-GUI:
 
     kdb qt-gui
-
-Note that the tool might need about 1.5GB Ram, depending of the number of keys and mountpoints you have.
