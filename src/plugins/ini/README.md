@@ -136,7 +136,7 @@ Otherwise the plugin will refuse to write key values with newlines.
 
 ## METAKEY SUPPORT ##
 
-The ini plugin supports turning keys into metakeys (similar to the ni plugin) by adding the config key `meta`
+The ini plugin supports turning keys into [metakeys](/doc/help/elektra-meta-data.md) by adding the config key `meta`.
 
 ## PRESERVE ORDER ##
 
