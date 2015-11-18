@@ -22,3 +22,10 @@ key database.
 Mounting works for file systems only if the file system below is
 accessible and a directory exists at the mount point.  Elektra does not
 enforce such restrictions.
+
+## SEE ALSO
+
+- More information about [elektra-backends(7)](elektra-backends.md)
+- More information about [elektra-plugins(7)](elektra-plugins.md)
+- The tool for mounting plugins is [kdb-mount(1)](kdb-mount.md)
+- The plugins are ordered as described in [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

@@ -32,3 +32,4 @@ elektra-glossary(7) -- glossary of Elektra
 
 - To **elektrify** an application:
   to change the application so that it uses Elektra afterwards.
+  See also [elektra-elektrify(7)](elektra-elektrify.md).

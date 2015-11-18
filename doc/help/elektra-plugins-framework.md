@@ -137,3 +137,9 @@ plugins.  But this term is misleading in our case, because components
 usually can choose which interfaces they implement.  Elektra's plugins,
 however, are restricted to implement one specific interface.  Without
 contracts, plugins could not interact as described in this chapter.
+
+
+## SEE ALSO
+
+- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)
+- [elektra-contracts(7)](elektra-contracts.md)
