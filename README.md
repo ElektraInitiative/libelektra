@@ -197,6 +197,7 @@ You can also use the [`./configure`](configure) command to generate a `cmake`
 command with special options.
 
 For more information, especially how to set CMake Cache, see [here](doc/COMPILE.md).
+Make sure to read how to add plugins, tools and bindings.
 
 
 ## Build Server ##

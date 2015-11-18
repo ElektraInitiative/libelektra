@@ -102,7 +102,7 @@ commit the changes (resolver plugin, also takes care about how
 the configuration files are named) and also do many other
 tasks related to configuration.
 
-To add all plugins, you can use  
+To add all plugins, you can use:
 
 	-DPLUGINS=ALL
 
