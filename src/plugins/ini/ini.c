@@ -102,6 +102,7 @@ static Key *createUnescapedKey(Key *key, KeySet *ks, const char *name)
 			found = 1;
 			sectionName = keyString(keyGetMeta(searchKey, "ini/section"));
 			parentName = keyName(searchKey);
+			keyDel(key);
 			key = keyDup(searchKey);
 			keySetMeta(key, "binary", 0);
 			keySetMeta(key, "ini/section", 0);
@@ -126,6 +127,7 @@ static Key *createUnescapedKey(Key *key, KeySet *ks, const char *name)
 				//sectionName = keyString(keyGetMeta(searchKey, "ini/section"));
 				if(isSectionKey(searchKey))
 					parentName = keyName(searchKey);
+				keyDel(key);
 				key = keyDup(searchKey);
 				keySetMeta(key, "binary", 0);
 				keySetMeta(key, "ini/section", 0);
@@ -194,6 +196,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	unsigned int lastIndex;
 	if(sectionKey)
 	{
+		fprintf(stderr, "[info] copy order from sectionKey: %s:%s\n", keyName(sectionKey), keyString(keyGetMeta(sectionKey, "ini/lastKey")));
 		keySetMeta(appendKey, "ini/section", keyString(keyGetMeta(sectionKey, "ini/section")));
 		lastIndex = atoi(keyString(keyGetMeta(sectionKey, "ini/lastKey")));
 		++lastIndex;
@@ -205,6 +208,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	}
 	else
 	{
+		fprintf(stderr, "[info] copy order from parentKey: %s:%s\n", keyName(handle->parentKey), keyString(keyGetMeta(handle->parentKey, "ini/lastKey")));
 		lastIndex = atoi(keyString(keyGetMeta(handle->parentKey, "ini/lastKey")));
 		++lastIndex;
 		snprintf(buf, sizeof(buf), "%u", lastIndex);
@@ -214,7 +218,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		keySetMeta(appendKey, "order/parent", keyName(sectionKey));
 	}
 	keySetMeta(appendKey, "binary", 0);
-	if(*value == '\0')
+	if(value == NULL)
 		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
 	{
@@ -240,7 +244,6 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 {
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
 	Key *appendKey = keyDup (handle->parentKey);
-	fprintf(stderr, "[INFO] creating section key with section name %s\n", section);
 	keySetString(appendKey, NULL);
 	keySetBinary(appendKey, 0, 0);
 	keySetMeta(appendKey, "ini/lastSection", 0);
@@ -564,6 +567,12 @@ static Key *nextKeyByOrderNumber(KeySet *returned, Key *sectionKey, int *index)
 	}
 	return NULL;
 }
+static short isEmptyKey(Key *key)
+{
+	if(keyGetMeta(key, "ini/empty"))
+		return 1;
+	return 0;
+}
 static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *pluginConfig)
 {
 	int order = 1;
@@ -585,7 +594,10 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 			while((key = nextKeyByOrderNumber(cutKS, sectionKey, &order)) != NULL)
 			{
 				char *iniName = getIniName(sectionKey, key);
-				fprintf(fp, "%s = %s\n", iniName, keyString(key));
+				if(isEmptyKey(key))
+					fprintf(fp, "%s\n", iniName);
+				else
+					fprintf(fp, "%s = %s\n", iniName, keyString(key));
 				keyDel(ksLookup(cutKS, key, KDB_O_POP));
 				free(iniName);
 			}
@@ -604,12 +616,16 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 				while((key = nextKeyByOrderNumber(cutKS, internalSectionKey, &order)) != NULL)
 				{
 					iniName = getIniName(internalSectionKey, key);
-					fprintf(fp, "%s = %s\n", iniName, keyString(key));
+					if(isEmptyKey(key))
+						fprintf(fp, "%s\n", iniName);
+					else
+						fprintf(fp, "%s = %s\n", iniName, keyString(key));
 					keyDel(ksLookup(cutKS, key, KDB_O_POP));
 					free(iniName);
 				}
 				keyDel(ksLookup(cutKS, internalSectionKey, KDB_O_POP));
 				ksAppend(workingKS, cutKS);
+				ksDel(cutKS);
 				ksRewind(workingKS);
 				internalSectionKey = nextKeyBySectionIndex(workingKS, sectionIndex);
 				cutKS = ksCut(workingKS, internalSectionKey);	
@@ -617,8 +633,11 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 		}
 		keyDel(ksLookup(cutKS, sectionKey, KDB_O_POP));
 		ksAppend(workingKS, cutKS);
+		ksDel(cutKS);
 		++sectionIndex;
 	}
+	ksDel(workingKS);
+	ksDel(returned);
 }
 static void outputDebug(KeySet *ks)
 {
