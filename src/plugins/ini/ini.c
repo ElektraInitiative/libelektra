@@ -196,7 +196,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	unsigned int lastIndex;
 	if(sectionKey)
 	{
-		fprintf(stderr, "[info] copy order from sectionKey: %s:%s\n", keyName(sectionKey), keyString(keyGetMeta(sectionKey, "ini/lastKey")));
 		keySetMeta(appendKey, "ini/section", keyString(keyGetMeta(sectionKey, "ini/section")));
 		lastIndex = atoi(keyString(keyGetMeta(sectionKey, "ini/lastKey")));
 		++lastIndex;
@@ -208,7 +207,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	}
 	else
 	{
-		fprintf(stderr, "[info] copy order from parentKey: %s:%s\n", keyName(handle->parentKey), keyString(keyGetMeta(handle->parentKey, "ini/lastKey")));
 		lastIndex = atoi(keyString(keyGetMeta(handle->parentKey, "ini/lastKey")));
 		++lastIndex;
 		snprintf(buf, sizeof(buf), "%u", lastIndex);
@@ -691,14 +689,19 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			if(keyIsBinary(cur))
 			{
-				char *sectionName = (keyName(cur)+strlen(keyName(parentKey)));
+				char *sectionName = (keyName(cur)+(strlen(keyName(parentKey))));
 				iniSectionToElektraKey(&cbHandle, sectionName);
 			}
 			else{
 				Key *sectionKey = keyDup(cur);
 				keySetBaseName(sectionKey, 0);
-				char *sectionName = (keyName(sectionKey)+strlen(keyName(parentKey)));
-				iniSectionToElektraKey(&cbHandle, sectionName);
+				Key *searchKey = ksLookup(returned, sectionKey, KDB_O_NONE);
+				char *sectionName = (keyName(sectionKey)+(strlen(keyName(parentKey))));
+				if(!(searchKey))
+				{
+					++sectionName;
+					iniSectionToElektraKey(&cbHandle, sectionName);
+				}
 				iniKeyToElektraKey(&cbHandle, sectionName, keyBaseName(cur), keyString(cur), 0);
 				keyDel(sectionKey);
 			}
