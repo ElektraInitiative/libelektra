@@ -39,10 +39,6 @@ All plugins implement the same interface:
 -  `kdbClose()` makes sure that plugins can finally free their
     own resources in `elektraPluginClose()`.
 
-For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
-For more background information of the [plugin framework, continue here](/doc/help/plugin-framework.md).
-Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
-
 
 ## KDB-Interface
 
@@ -51,6 +47,12 @@ Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/a
 - For information on a plugin use [kdb-info(1)](kdb-info.md).
 - For mount plugin(s) use [kdb-mount(1)](kdb-mount.md).
 
+
+## See also
+
+For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
+For more background information of the [plugin framework, continue here](/doc/help/plugin-framework.md).
+Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
 
 
 
