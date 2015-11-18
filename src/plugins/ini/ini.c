@@ -74,12 +74,25 @@ static Key *createUnescapedKey(Key *key, KeySet *ks, const char *name)
 {
 	char *localString = strdup(name);
 	char *newBaseName = strtok(localString, "/");
+	Key *searchKey = NULL;
+	short found = 0;
+	char *sectionName;
 	if(newBaseName != NULL)
 	{
 		keyAddBaseName(key, newBaseName);
-		if(!ksLookup(ks, key, KDB_O_NONE))
+		searchKey = ksLookup(ks, key, KDB_O_NONE);
+		if(!searchKey)
 		{
 			ksAppendKey(ks, keyDup(key));
+		}
+		else
+		{
+			found = 1;
+			sectionName = strdup(keyString(keyGetMeta(searchKey, "ini/section")));
+			key = keyDup(searchKey);
+			keySetMeta(key, "binary", 0);
+			keySetMeta(key, "ini/section", 0);
+			keySetMeta(key, "ini/lastKey", 0);
 		}
 	}
 	while(newBaseName != NULL)
@@ -88,11 +101,26 @@ static Key *createUnescapedKey(Key *key, KeySet *ks, const char *name)
 		if(newBaseName != NULL)
 		{
 			keyAddBaseName(key, newBaseName);
-			if(!ksLookup(ks, key, KDB_O_NONE))
+			searchKey = ksLookup(ks, key, KDB_O_NONE);
+			if(!searchKey)
 			{
 				ksAppendKey(ks, keyDup(key));
 			}
+			else
+			{
+				found = 1;
+				sectionName = strdup(keyString(keyGetMeta(searchKey, "ini/section")));
+				key = keyDup(searchKey);
+				keySetMeta(key, "binary", 0);
+				keySetMeta(key, "ini/section", 0);
+				keySetMeta(key, "ini/lastKey", 0);
+			}
 		}
+	}
+	if(found)
+	{
+		keySetMeta(key, "ini/section", sectionName);
+		free(sectionName);
 	}
 	free(localString);
 	return key;
@@ -105,30 +133,15 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	keySetString(appendKey, NULL);
 	keySetMeta(appendKey, "ini/lastSection", 0);
 	Key *sectionKey = NULL;
-
+	keySetMeta(appendKey, "ini/section", 0);
+	keySetMeta(appendKey, "ini/lastKey", 0);
 	if (section)
 	{
 		if (*section != '\0')
 		{
-			keySetBinary(appendKey, 0, 0);
-			keySetMeta(appendKey, "ini/section", 0);
 			appendKey = createUnescapedKey(appendKey, handle->result, section);
 		}
 		sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
-		if(sectionKey)
-		{
-			if(!(keyGetMeta(sectionKey, "ini/section")))
-			{
-				int lastSectionIndex = atoi(keyString(keyGetMeta(handle->parentKey, "ini/lastSection")));
-				++lastSectionIndex;
-				char buf[16];
-				snprintf(buf, sizeof(buf), "%d", lastSectionIndex);
-				keySetMeta(handle->parentKey, "ini/lastSection", buf);
-				keySetMeta(appendKey, "ini/section", buf);
-				keySetMeta(sectionKey, "ini/section", buf);
-				keySetMeta(sectionKey, "ini/lastSection", 0);
-			}
-		}
 	}
 
 	if(toMeta)
@@ -141,13 +154,15 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		keyDel(appendKey);
 		return 1;
 	}
+
+	keySetMeta(appendKey, "binary", 0);
 	sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
 	appendKey = createUnescapedKey(appendKey, handle->result, name);
-	keySetMeta(appendKey, "ini/section", keyString(keyGetMeta(sectionKey, "ini/section")));
 	char buf[16];
 	unsigned int lastIndex;
 	if(sectionKey)
 	{
+		keySetMeta(appendKey, "ini/section", keyString(keyGetMeta(sectionKey, "ini/section")));
 		lastIndex = atoi(keyString(keyGetMeta(sectionKey, "ini/lastKey")));
 		++lastIndex;
 		snprintf(buf, sizeof(buf), "%u", lastIndex);
@@ -191,20 +206,25 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 static int iniSectionToElektraKey (void *vhandle, const char *section)
 {
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
-	int lastSectionIndex = atoi(keyString(keyGetMeta(handle->parentKey, "ini/lastSection")));
-	++lastSectionIndex;
-	//TODO: use a constant for the size
-	char newSectionIndex[16];
-	snprintf(newSectionIndex, sizeof(newSectionIndex), "%d", lastSectionIndex);
 	Key *appendKey = keyDup (handle->parentKey);
 	keySetString(appendKey, NULL);
 	keySetBinary(appendKey, 0, 0);
-	keySetMeta(appendKey, "ini/lastKey", "0");
 	keySetMeta(appendKey, "ini/lastSection", 0);
 	keySetMeta(appendKey, "ini/section", 0);	
+	keySetMeta(appendKey, "ini/lastKey", 0);
 	appendKey = createUnescapedKey(appendKey, handle->result, section);
-	keySetMeta(appendKey, "ini/section", newSectionIndex);
-	keySetMeta(handle->parentKey, "ini/lastSection", newSectionIndex);
+	if(!(keyGetMeta(appendKey, "ini/section")))
+	{
+		int lastSectionIndex = atoi(keyString(keyGetMeta(handle->parentKey, "ini/lastSection")));
+		++lastSectionIndex;
+		//TODO: use a constant for the size
+		char newSectionIndex[16];
+		snprintf(newSectionIndex, sizeof(newSectionIndex), "%d", lastSectionIndex);
+		keySetMeta(appendKey, "ini/section", newSectionIndex);
+		keySetMeta(handle->parentKey, "ini/lastSection", newSectionIndex);
+	}
+	keySetMeta(appendKey, "ini/lastKey", "0");
+	keySetBinary(appendKey, 0, 0);
 	flushCollectedComment (handle, appendKey);
 	ksAppendKey(handle->result, appendKey);
 	return 1;
@@ -390,7 +410,7 @@ static short isSectionKey(Key *key)
 {
 	if (!key) return 0;
 
-	return keyGetMeta(key, "ini/section");
+	return keyGetMeta(key, "ini/section") && keyIsBinary(key);
 }
 
 /**
@@ -457,15 +477,14 @@ static void writeMeta(Key *key, FILE *fh)
 	}
 }
 
-static Key *nextKeyBySectionIndex(KeySet *returned, int *index)
+static Key *nextKeyBySectionIndex(KeySet *returned, int index)
 {
 	ksRewind(returned);
 	Key *cur;
 	while((cur = ksNext(returned)) != NULL)
 	{
-		if(atoi(keyString(keyGetMeta(cur, "ini/section"))) == *index)
+		if((atoi(keyString(keyGetMeta(cur, "ini/section"))) == index) && isSectionKey(cur))
 		{
-			++(*index);
 			return cur;
 		}
 	}
@@ -490,7 +509,30 @@ static Key *nextKeyByOrderNumber(KeySet *returned, Key *sectionKey, int *index)
 	}
 	return NULL;
 }
-void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *pluginConfig)
+static int printSection(FILE *fp, Key *parentKey, KeySet *ks, int sectionIndex)
+{
+	Key *sectionKey = nextKeyBySectionIndex(ks, sectionIndex);
+	if(sectionKey)
+	{
+		KeySet *cutKS = ksCut(ks, sectionKey);
+		printSection(fp, sectionKey, cutKS, sectionIndex);
+	}
+	Key *key = ksNext(ks);
+	char *iniName = getIniName(parentKey, key);
+	printf(fp, "[%s]\n", iniName);
+	free(iniName);
+	Key *cur;
+	int order = 1;
+	while((cur = nextKeyByOrderNumber(ks, key, &order)) != NULL)
+	{
+		iniName = getIniName(key, cur);
+		keyDel(ksLookup(ks, key, KDB_O_POP));
+		free(iniName);
+	}
+	keyDel(ksLookup(ks, key, KDB_O_POP));	
+
+}
+static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *pluginConfig)
 {
 	int order = 1;
 	int sectionIndex = 0;
@@ -499,7 +541,7 @@ void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *p
 	Key *sectionKey;
 	while(ksGetSize(workingKS) > 0)
 	{
-		sectionKey = nextKeyBySectionIndex(workingKS, &sectionIndex);
+		sectionKey = nextKeyBySectionIndex(workingKS, sectionIndex);
 		if(sectionKey == NULL)
 			break;
 		KeySet *cutKS = ksCut(workingKS, sectionKey);
@@ -517,7 +559,7 @@ void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *p
 		}
 		else
 		{
-			char *iniName = getIniName(parentKey, sectionKey);
+	/*		char *iniName = getIniName(parentKey, sectionKey);
 			fprintf(fp, "[%s]\n", iniName);
 			free(iniName);
 			Key *key;
@@ -528,9 +570,12 @@ void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *p
 				keyDel(ksLookup(cutKS, key, KDB_O_POP));
 				free(iniName);
 			}
+			*/
+			printSection(fp, sectionKey, cutKS, sectionIndex);
 		}
 		keyDel(ksLookup(cutKS, sectionKey, KDB_O_POP));
 		ksAppend(workingKS, cutKS);
+		++sectionIndex;
 	}
 }
 static void outputDebug(KeySet *ks)
