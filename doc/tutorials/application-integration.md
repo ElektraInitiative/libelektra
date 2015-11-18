@@ -3,7 +3,7 @@
 Applications should use Elektra to read (and store) configurations for a
 overall better integrated system.
 A light integration would be to write parsers for the configuration files
-of your application. This yields following advantages:
+of your application as Elektra plugin. This yields following advantages:
 
 - applications and administrators can easily change individual values
 - import/export of configuration
@@ -28,9 +28,44 @@ additional benefits arise:
 - Other applications can use your configuration as override or as
     fallback
 
-The process to make applications aware of other's configuration is
-called "to elektrify". This tutorial is both for new and existing
-applications.
+## Elektrify
+
+The process to make applications aware of other's configuration is called
+"to elektrify". This tutorial is both for new and existing applications.
+
+When a software starts to use Elektra, it is called to be elektrified.
+The places where configuration is parsed or generated must be located.
+Afterwards, Elektra's data structures must be used instead at these
+locations.  In Elektra 0.7, that was nearly everything the software
+developer could do.
+
+Now more optional possibilities are open.  First, the parser and generator
+code can be moved to a storage plugin without having to rewrite additional
+parts.  Doing this, the syntax of the configuration file stays exactly
+the same as it was before.  The application immediately profits from
+Elektra's infrastructure solving basic issues like update and conflict
+detection and resolving of the file name.
+
+Moreover, a huge variety of plugins can be utilised to extend the
+functionality of the configuration system and the programmer can write
+supplementary plugins.  They can do syntactic checks, write out events
+in their log files and notify users if configuration has changed.  So we
+get a bunch of plugins that are reusable, and we gain a lot because
+every other program can also access the configuration of this software.
+
+For new software the situation is similar. Additionally, there is the
+option to reuse mature and well-tested plugins to achieve the optimal
+result for configuration. New applications simply do not have the burden
+to stay compatible with the configuration system they had to before.
+But they can also use self-written plugins for adding needed behaviour
+or cross-cutting concerns.
+
+To sum up, if a developer wants to **elektrify** software, he or she can
+do that without any need for changes to the outside world regarding the
+format and semantics of the configuration.  But in the interconnected
+world it is only a matter of time until other software also wants to
+access the configuration, and with elektrified software it is possible
+for every application to do so.
 
 
 ## Get Started
