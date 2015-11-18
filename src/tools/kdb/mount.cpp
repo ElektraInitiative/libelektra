@@ -26,6 +26,22 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
+class KDBMountException : public KDBException
+{
+	std::string msg;
+public:
+	KDBMountException(std::string const & e) :
+		KDBException (Key())
+	{
+		msg = e;
+	}
+
+	virtual const char* what() const noexcept
+	{
+		return msg.c_str();
+	}
+};
+
 MountCommand::MountCommand()
 {}
 
@@ -308,7 +324,15 @@ int MountCommand::execute(Cmdline const& cl)
 	getMountpoint(cl);
 	buildBackend(cl);
 	askForConfirmation(cl);
-	doIt();
+	try {
+		doIt();
+	}
+	catch (KDBException const & e)
+	{
+		throw KDBMountException(std::string(e.what())+"\n\n"
+				"IMPORTANT: Make sure you can write to system namespace\n"
+				"           Usually you need to be root for that!");
+	}
 
 	return 0;
 }
