@@ -95,9 +95,9 @@ You can read the documentation for the kdb tool, either
 
 And in terms of quality, we want:
 
-1. Robustness (no undefined behaviour of applications),
-2. Extensibility (gain control over configuration access) and
-3. Simplicity (make configuration tasks simple)
+1. Simplicity (make configuration tasks simple),
+2. Robustness (no undefined behaviour of applications), and
+3. Extensibility (gain control over configuration access)
 
 [Read more about the goals of Elektra](doc/GOALS.md)
 
