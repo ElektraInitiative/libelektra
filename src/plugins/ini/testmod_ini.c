@@ -71,7 +71,7 @@ static void test_plainIniWrite(char *fileName)
 					KEY_VALUE, "nosectionvalue",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1",
-					KEY_BINARY, KEY_META, "ini/section", "",
+					KEY_BINARY, 
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1/key1",
 					KEY_VALUE, "value1",
@@ -80,7 +80,7 @@ static void test_plainIniWrite(char *fileName)
 					KEY_VALUE, "value2",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2",
-					KEY_BINARY, KEY_META, "ini/section", "",
+					KEY_BINARY,
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2/key3",
 					KEY_VALUE, "value3",
@@ -115,7 +115,7 @@ static void test_plainIniEmptyWrite(char *fileName)
 					KEY_VALUE, "nosectionvalue",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1",
-					KEY_BINARY, KEY_META, "ini/section", "",
+					KEY_BINARY,
 
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1/key1",
@@ -125,7 +125,7 @@ static void test_plainIniEmptyWrite(char *fileName)
 					KEY_VALUE, "value2",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2",
-					KEY_BINARY, KEY_META, "ini/section", "",
+					KEY_BINARY,
 
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2/key3",
@@ -208,7 +208,7 @@ static void test_commentIniWrite(char *fileName)
 					KEY_COMMENT, "nosection comment1\nnosection comment2",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1",
-					KEY_BINARY, KEY_META, "ini/section", "",
+					KEY_BINARY, 
 
 					KEY_COMMENT, "section comment1\nsection comment2",
 					KEY_END),
@@ -278,12 +278,12 @@ static void test_multilineIniWrite(char *fileName)
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY, 
  KEY_END),
 			keyNew ("user/tests/ini-multiline-write/multilinesection/key1",
 					KEY_VALUE, "value1\nwith continuation\nlines",
 					KEY_END),
-			keyNew ("user/tests/ini-multiline-write/singlelinesection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-multiline-write/singlelinesection", KEY_BINARY, 
  KEY_END),
 			keyNew ("user/tests/ini-multiline-write/singlelinesection/key2",
 					KEY_VALUE, "",
@@ -314,7 +314,7 @@ static void test_multilineIniInvalidConfigWrite()
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY, 
  KEY_END),
 			keyNew ("user/tests/ini-multiline-write/multilinesection/key1",
 					KEY_VALUE, "value1\nwith continuation\nlines",
@@ -395,9 +395,9 @@ static void test_sectionWrite(char *fileName)
 
 	KeySet *ks = ksNew (30,
 			keyNew ("user/tests/ini-section-write/akey/looking/like/sections", KEY_VALUE, "value", KEY_END),
-			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY, 
  KEY_END),
-			keyNew ("user/tests/ini-section-write/section1", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-section-write/section1", KEY_BINARY, 
  KEY_END),
 			keyNew ("user/tests/ini-section-write/section1/key1",
 					KEY_VALUE, "value1",
@@ -405,7 +405,7 @@ static void test_sectionWrite(char *fileName)
 			keyNew ("user/tests/ini-section-write/section1/key/with/subkey",
 					KEY_VALUE, "value2",
 					KEY_END),
-			keyNew("user/tests/ini-section-write/section2/with/subkey", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew("user/tests/ini-section-write/section2/with/subkey", KEY_BINARY, 
  KEY_END),
 			keyNew("user/tests/ini-section-write/section2/with/subkey/key2",
 					KEY_VALUE, "value2",
@@ -429,7 +429,7 @@ static void test_sectionWrite(char *fileName)
 static void test_autoSectionWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-section-write", KEY_VALUE,
-			"/tmp/autosectiontest.ini", KEY_END);
+			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(30,
 			keyNew ("system/autosections", KEY_VALUE, "1", KEY_END),
 			KS_END);
@@ -437,7 +437,7 @@ static void test_autoSectionWrite(char *fileName)
 
 	// this time the sections directly below the parent key will be generated automatically
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-section-write/akey/looking/like/sections", KEY_VALUE, "value",   KEY_END),
+			keyNew ("user/tests/ini-section-write/akey/looking/like/sections", KEY_VALUE, "value", KEY_META, "ini/noautosection", "", KEY_END),
 			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY,  KEY_END),
 			keyNew ("user/tests/ini-section-write/section1/key1",
 					KEY_VALUE, "value1",
@@ -445,7 +445,7 @@ static void test_autoSectionWrite(char *fileName)
 			keyNew ("user/tests/ini-section-write/section1/key/with/subkey",
 					KEY_VALUE, "value2",
 					KEY_END),
-			keyNew("user/tests/ini-section-write/section2/with/subkey/key2",
+			keyNew("user/tests/ini-section-write/section2\\/with\\/subkey/key2", 
 					KEY_VALUE, "value2",
 					KEY_END),
 			KS_END);
@@ -497,7 +497,7 @@ static void test_plainIniPreserveOrder(char *fileName)
 				KEY_VALUE, "nosectionvalue",
 				KEY_END),
 		keyNew ("user/tests/ini-write/section1", KEY_META, "order", "1", 
-				KEY_BINARY, KEY_META, "ini/section", "",
+				KEY_BINARY, 
 
 				KEY_END),
 		keyNew ("user/tests/ini-write/section1/key1", KEY_META, "order", "3", 
@@ -507,7 +507,7 @@ static void test_plainIniPreserveOrder(char *fileName)
 				KEY_VALUE, "value2",
 				KEY_END),
 		keyNew ("user/tests/ini-write/section2", KEY_META, "order", "4", 
-				KEY_BINARY, KEY_META, "ini/section", "",
+				KEY_BINARY, 
 
 				KEY_END),
 		keyNew ("user/tests/ini-write/section2/key3", KEY_META, "order", "6", 
@@ -578,7 +578,7 @@ int main(int argc, char** argv)
 	test_multilineIniInvalidConfigWrite();
 	test_sectionRead("ini/sectionini");
 	test_sectionWrite("ini/sectionini");
-//	test_autoSectionWrite("ini/sectionini");
+	test_autoSectionWrite("ini/sectionini");
 	test_plainIniPreserveOrder("ini/plaininireverse");
 	test_emptySectionBug("ini/emptySectionBugTest");
 

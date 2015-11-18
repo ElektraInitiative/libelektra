@@ -141,6 +141,7 @@ The ini plugin supports turning keys into metakeys (similar to the ni plugin) by
 ## PRESERVE ORDER ##
 
 If the `preserveorder` config key is set, the ini plugin preserves the original order of the file.
+Only use this option for editing existing key values.
 
 ## RESTRICTIONS ##
 
