@@ -151,6 +151,12 @@ int main(int argc, char**argv)
 			<< std::endl
 			<< ce.what()
 			<< std::endl;
+		if (command == "mount")
+		{
+			std::cerr << std::endl;
+			std::cerr << "IMPORTANT: Make sure you can write to system namespace" << std::endl;
+			std::cerr << "           Usually you need to be root for that!." << std::endl;
+		}
 		return 5;
 	}
 	catch (std::exception const& ce)
