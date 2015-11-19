@@ -107,4 +107,8 @@ Spaces in the names are replaced by \040 in the fstab.
 
 Mount the plugin:
 
-$ kdb mount /etc/fstab system/filesystems fstab
+	kdb mount /etc/fstab system/filesystems fstab struct type path
+
+## Note
+
+The status of this plugin is experimental.
