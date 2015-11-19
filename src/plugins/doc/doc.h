@@ -77,11 +77,8 @@
  *
  * @snippet doc.c plugin errors include
  *
- * @see http://www.libelektra.org/ftp/elektra/thesis.pdf
- *   for an detailed explanation and description of other types
- *   of plugins.
- *   Do not hesitate to ask at the mailinglist if anything
- *   is unclear.
+ * Do not hesitate to open an issue if anything
+ * is unclear.
  *
  * @addtogroup plugin
  * @{
