@@ -12,7 +12,6 @@ Build-Depends: debhelper (>= 8),
  libaugeas-dev (>= 1.0.0),
  libyajl-dev,
  python2.7-dev,
- swig2.0,
  liblua5.2-dev,
  libsystemd-journal-dev
 Standards-Version: 3.9.4
