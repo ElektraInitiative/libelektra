@@ -767,7 +767,7 @@ static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 	{
 		ELEKTRA_ADD_WARNINGF(99, parentKey,
 			"Could not update time stamp of \"%s\", because %s",
-			pk->filename, strerrno(errno));
+			pk->filename, strerror(errno));
 	}
 #else
 	#warning futimens/futimes not defined
