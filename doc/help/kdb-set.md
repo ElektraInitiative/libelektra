@@ -26,7 +26,15 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
   Explain what is happening.
 - `-N`, `--namespace ns`:
   Specify the namespace to use when writing cascading keys
-  Default: value of /sw/kdb/current/namespace or user.
+  Default: value of `/sw/kdb/current/namespace` or user.
+
+## KDB
+
+- `/sw/kdb/current/namespace`:
+  Specifies which default namespace should be used when setting a cascading name.
+  Note, that as root you can set `user/sw/kdb/current/namespace` to `system` to
+  get the expected default.
+  (by default the namespace is user)
 
 ## EXAMPLES
 

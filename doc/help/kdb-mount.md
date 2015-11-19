@@ -32,18 +32,6 @@ This command writes into the `/etc` directory and as such it requires root permi
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
 
-## CONFIGURATION
-
-The default resolver will be added automatically.
-Which resolver will be used can be changed by:
-`/sw/kdb/current/resolver`
-
-Some plugins are added automatically (by default sync).
-Which plugins that are can be changed by the space separated list in:
-`/sw/kdb/current/plugins`
-
-
-
 ## OPTIONS
 
 - `-H`, `--help`:
@@ -56,6 +44,7 @@ Which plugins that are can be changed by the space separated list in:
   Instead of passing all mounting information by parameters ask the user interactively.
 - `-R`, `--resolver <name>`:
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
+  See also `/sw/kdb/current/resolver` [below](#KDB).
 - `-0`, `--null`:
   Use binary 0 termination.
 - `-1`, `--first`:
@@ -66,6 +55,17 @@ Which plugins that are can be changed by the space separated list in:
   Suppress the third column.
 - `-c`, `--plugins-config`:
   Add a plugin configuration for all plugins.
+
+
+
+## KDB
+
+- `/sw/kdb/current/resolver`:
+  The default resolver that will be added automatically.
+
+- `/sw/kdb/current/plugins`:
+  It contains a space-separated list of plugins
+  which are added automatically (by default sync).
 
 
 ## EXAMPLES
