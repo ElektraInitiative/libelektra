@@ -8,7 +8,7 @@
 
 ## Introduction ##
 
-This plugin allowes Elektra to read and write CSV files.
+This plugin allows you to read and write CSV files within Elektra.
 
 ## Configuration ##
 
@@ -38,4 +38,3 @@ First line should determine the headers:
 ## Limitations ##
 
 - Does not work on file streams (e.g. `kdb import` without file)
-- Fails without error on `kdb mount test.csv /csv csvstorage "delimiter=;,columns=2,columns/names=,columns/names/#0=col0Name,columns/names/#1=col1Name"`
