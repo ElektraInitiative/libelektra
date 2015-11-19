@@ -74,20 +74,16 @@ int elektraSyncSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 	int fd = open(configFile, O_RDWR);
 	if (fd == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_SET_ERRORF(89, parentKey,
 			"Could not open config file %s because %s",
-			configFile, buffer);
+			configFile, strerror(errno));
 		return -1;
 	}
 	if (fsync(fd) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_SET_ERRORF(89, parentKey,
 			"Could not fsync config file %s because %s",
-			configFile, buffer);
+			configFile, strerror(errno));
 		close(fd);
 		return -1;
 	}
