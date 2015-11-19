@@ -61,7 +61,7 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 ## KDB
 
 - `/sw/kdb/current/resolver`:
-  The default resolver that will be added automatically.
+  The resolver that will be added automatically, if `-R` is not given.
 
 - `/sw/kdb/current/plugins`:
   It contains a space-separated list of plugins

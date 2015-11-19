@@ -79,7 +79,7 @@ function applies exactly this configuration as specified by the key set
 to the key database.  Contrary to the previous versions, the popped keys
 of the key set will be permanently removed.
 
-The new circumstance yields \intro{idempotent}\cite{idempotent:00}
+The new circumstance yields **idempotent**
 properties for `kdbSet()`.  The same `KeySet` can be applied multiple
 times, but after the first time, the key database will not be changed
 anymore. (Note that `kdbSet()`) actually detects that
