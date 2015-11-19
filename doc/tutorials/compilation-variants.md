@@ -45,11 +45,11 @@ that, you can use:
 - use helper libraries using add_plugin_helper to share code
   between compilation variants
 - Get a unique name for every variant using the macro
-  ```ELEKTRA_PLUGIN_FUNCTION(myplugin, open)``` where myplugin is
+  `ELEKTRA_PLUGIN_FUNCTION(myplugin, open)` where myplugin is
   the name of the plugin and the second argument is how the function
   should be called.
 - Including a readme for every variant (with #ifdef for different text)
-  using the macro ```#include ELEKTRA_README(myplugin)```
+  using the macro `#include ELEKTRA_README(myplugin)`
 
 
 As a summary, you can have many plugins build out of the same source.
@@ -61,8 +61,8 @@ the variants name as macro you can use
 	#endif
 
 within the code and can have two plugins: one (called myplugin_varianta)
-compiled included the ```#ifdef``` the other (base variant called
+compiled included the `#ifdef` the other (base variant called
 myplugin) without.
 
-Currently compilation variants is used in [the resolver
-plugin](/src/plugins/resolver/resolver.c).
+Currently compilation variants is used in
+[the resolver plugin](http://libelektra.org/tree/master/src/plugins/resolver/resolver.c).
