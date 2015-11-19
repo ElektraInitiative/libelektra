@@ -91,7 +91,7 @@ with `ks`, `key` or `kdb`.
  * Do not use `static`, but anonymous namespaces.
  * Write everything within namespaces and do not prefix names.
 
-**Example:** [src/bindings/cpp/include/kdb.hpp](../src/bindings/cpp/include/kdb.hpp)
+**Example:** [src/bindings/cpp/include/kdb.hpp](http://libelektra.org/tree/master/src/bindings/cpp/include/kdb.hpp)
 
 
 ### Doxygen Guidelines ###
