@@ -3,24 +3,28 @@ kdb-getmeta(1) -- Get the value of a meta key stored in the key database
 
 ## SYNOPSIS
 
-`kdb getmeta <path> <meta-name>`  
+`kdb getmeta <key-name> <meta-name>`  
 
-Where `path` is the full path to the key and `meta-name` is the name of the meta key the user would like to access.  
+Where `key-name` is the full path to the key and
+`meta-name` is the name of the meta key the user would like to access.
 
 ## DESCRIPTION
 
-This command is used to print the value of a meta key.  
-A meta key is information stored in a key which describes that key.  
+This command is used to print the value of a meta key.
+A meta key is information stored in a key which describes that key.
+
+The handling of cascading `key-name` does not differ to `kdb get`.
+Make sure to use the namespace `spec`, if you want meta-data from there.
 
 ## RETURN VALUES
 
 This command will return the following values as an exit status:  
 * 0:
-  No errors.  
+  No errors.
 * 1:
-  Key not found. (Invalid `path`)  
+  Key not found. (Invalid `path`)
 * 2:
-  Meta key not found. (Invalid `meta-name`).  
+  Meta key not found. (Invalid `meta-name`).
 
 
 ## OPTIONS
@@ -33,9 +37,13 @@ This command will return the following values as an exit status:
 
 ## EXAMPLES
 
-To get the value of a meta key called `info` stored in the key `user/example/key`:  
-	`kdb getmeta user/example/key info`  
+To get the value of a meta key called `description` stored in the key `spec/example/key`:
+	`kdb getmeta spec/example/key description`
+
+To get the value of meta key called `override/#0` stored in the key `spec/example/dir/key`:
+	`kdb getmeta spec/example/dir/key "override/#0"`
 
 ## SEE ALSO
 
-- [elektra-meta-data(7)](elektra-meta-data.md)
+- For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
+- For general information about meta data see [elektra-meta-data(7)](elektra-meta-data.md)

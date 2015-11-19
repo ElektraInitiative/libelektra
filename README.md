@@ -74,8 +74,8 @@ For information about elektrified environment variables, see
 You can read the documentation for the kdb tool, either
 
 - [on github](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/kdb.md)
-- [in the API docu](http://doc.libelektra.org/api/latest/html/)
-- by using `kdb --help`
+- [in the API docu](http://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
+- by using `kdb --help` or `kdb help <command>`
 - by using `man kdb`
 
 
