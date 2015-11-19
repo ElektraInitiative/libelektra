@@ -540,9 +540,12 @@ static void test_emptySectionBug(char *fileName)
 		keyNew ("user/tests/ini-write/MyApp/mykey",  
 				KEY_VALUE, "new_value",
 				KEY_END),
-		keyNew ("user/tests/ini-write/binarytest", KEY_BINARY,
+		keyNew ("user/tests/ini-write/binarytest",
+				KEY_BINARY,
 				KEY_END),
-        keyNew ("user/tests/ini-write/debienna/test", KEY_VALUE, "value"), 
+		keyNew ("user/tests/ini-write/debienna/test",
+				KEY_VALUE, "value",
+				KEY_END), 
 		KS_END);
 
 	PLUGIN_OPEN("ini");
