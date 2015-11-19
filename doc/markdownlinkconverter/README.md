@@ -31,3 +31,4 @@ happens in 2 passes, which is needed because there can be files with no title.
 * redirect links to code files right
 * optimize pdf output (also UTF-8 encoding)
 * valid link checker
+* if title contains --, this should be @brief
