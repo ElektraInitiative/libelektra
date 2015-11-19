@@ -36,7 +36,6 @@ typedef struct {
 	short autoSections;		/* defines whether sections for keys 2 levels or more below the parentKey are created */
 	short keyToMeta;
 	short preserveOrder;
-	short nestedSections;
 } IniPluginConfig;
 
 static void flushCollectedComment (CallbackHandle *handle, Key *key)
@@ -297,8 +296,6 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	Key *autoSectionKey = ksLookupByName(config, "/autosections", KDB_O_NONE);
 	Key *toMetaKey = ksLookupByName(config, "/meta", KDB_O_NONE);
 	Key *preserveKey = ksLookupByName(config, "/preserveorder", KDB_O_NONE);
-	Key *nestedSectionsKey = ksLookupByName(config, "/nestedsections", KDB_O_NONE);
-	pluginConfig->nestedSections = nestedSectionsKey != 0;
 	pluginConfig->preserveOrder = preserveKey != 0;	
 	pluginConfig->supportMultiline = multilineKey != 0;
 	pluginConfig->autoSections = autoSectionKey != 0;
@@ -392,7 +389,8 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksClear(returned);
 		if(pluginConfig->keyToMeta)
 			stripInternalMeta(cbHandle.result);
-	//	stripInternalSections(cbHandle.result);
+		else
+			stripInternalSections(cbHandle.result);
 		ksAppend(returned, cbHandle.result);
 		ret = 1;
 	}
@@ -486,26 +484,6 @@ static char *getIniName(Key *section, Key *key)
 	return buffer;
 }
 
-static Key *generateSectionKey(Key *key, Key *parentKey)
-{
-	Key *sectionKey = keyDup(key);
-	while (!keyIsDirectBelow(parentKey, sectionKey) && keyIsBelow(parentKey, sectionKey))
-	{
-		keySetBaseName(sectionKey, 0);
-	}
-
-	keySetBinary(sectionKey, 0, 0);
-
-	unsigned int lastSectionIndex = atoi(keyString(keyGetMeta(parentKey, "ini/section")));
-	++lastSectionIndex;
-	char buf[16];
-	snprintf(buf, sizeof(buf), "%u", lastSectionIndex);
-	keySetMeta(parentKey, "ini/section", buf);
-	keySetMeta(sectionKey, "ini/section", buf);
-
-	return sectionKey;
-}
-
 /**
  * Loops through all metakeys belonging to the (section)key.
  * If the metakey doesn't match any of the reserved keywords (order, ini/empty, binary):
@@ -563,13 +541,14 @@ static short isEmptyKey(Key *key)
 		return 1;
 	return 0;
 }
-static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *pluginConfig)
+static int printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginConfig *pluginConfig)
 {
 	int order = 1;
 	int sectionIndex = 1; // 0 is the parent key, ignore it
 	int endSectionIndex = atoi(keyString(keyGetMeta(parentKey, "ini/lastSection")));
 	KeySet *workingKS = ksDup(returned);
 	Key *sectionKey;
+	int ret = 1;
 	while(ksGetSize(workingKS) > 0)
 	{
 		sectionKey = nextKeyBySectionIndex(workingKS, sectionIndex);
@@ -596,6 +575,13 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 					{
 						writeMultilineKey(key, iniName, fp);
 					}
+					else
+					{
+						ELEKTRA_SET_ERROR(97, parentKey,
+							"Encountered a multiline value but multiline support is not enabled. "
+								"Have a look at kdb info ini for more details");
+						ret = -1;
+					}			
 				}
 				keyDel(ksLookup(cutKS, key, KDB_O_POP));
 				free(iniName);
@@ -627,6 +613,13 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 						{
 							writeMultilineKey(key, iniName, fp);
 						}
+						else
+						{
+							ELEKTRA_SET_ERROR(97, parentKey,
+								"Encountered a multiline value but multiline support is not enabled. "
+									"Have a look at kdb info ini for more details");
+							ret = -1;
+						}
 					}
 					keyDel(ksLookup(cutKS, key, KDB_O_POP));
 					free(iniName);
@@ -646,6 +639,7 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 	}
 	ksDel(workingKS);
 	ksDel(returned);
+	return ret;
 }
 static void outputDebug(KeySet *ks)
 {
@@ -684,8 +678,8 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	cbHandle.collectedComment = 0;
 	cbHandle.toMeta = 0;
 	ksAppendKey (cbHandle.result, keyDup(parentKey));
-	ksRewind(cbHandle.result);
-	outputDebug(cbHandle.result);
+//	ksRewind(cbHandle.result);
+//	outputDebug(cbHandle.result);
 
 	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
 	if(pluginConfig->keyToMeta)
@@ -750,13 +744,13 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				keyCopyAllMeta(searchKey, cur);
 				keyDel(sectionKey);
 			}
+			keyDel(cur);
 		}
 	}
+//	ksRewind(returned);
+//	outputDebug(returned);	
 	ksRewind(returned);
-	outputDebug(returned);	
-	ksRewind(returned);
-	printKeyTree(fh, parentKey, ksDup(returned), pluginConfig);
-	
+	ret = printKeyTree(fh, parentKey, ksDup(returned), pluginConfig);
 	fclose (fh);
 	errno = errnosave;
 	return ret; /* success */

@@ -1,0 +1,9 @@
+[akey/looking/like]
+sections = value
+[emptysection]
+[section1]
+key1 = value1
+[section1/key/with]
+subkey = value2
+[section2/with/subkey]
+key2 = value2

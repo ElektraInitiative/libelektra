@@ -313,7 +313,7 @@ static void test_multilineIniInvalidConfigWrite()
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY,
  KEY_END),
 			keyNew ("user/tests/ini-multiline-write/multilinesection/key1",
 					KEY_VALUE, "value1\nwith continuation\nlines",
@@ -348,7 +348,7 @@ static void test_sectionRead(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbGet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
 
-	Key *key = ksLookupByName (ks, "user/tests/ini-section-read/akey/looking/like/sections", KDB_O_NONE);
+	Key *key = ksLookupByName (ks, "user/tests/ini-section-read/GLOBALROOT/akey/looking/like/sections", KDB_O_NONE);
 	exit_if_fail(key, "section like key not found not found");
 	succeed_if (!strcmp ("value", keyString(key)), "section like key contained invalid data");
 
@@ -388,15 +388,15 @@ static void test_sectionRead(char *fileName)
 static void test_sectionWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-section-write", KEY_VALUE,
-			elektraFilename(), KEY_END);
+			"/tmp/sectionWrite.out", KEY_END);
 	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
 			keyNew ("user/tests/ini-section-write/akey/looking/like/sections", KEY_VALUE, "value", KEY_END),
-			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY, 
  KEY_END),
-			keyNew ("user/tests/ini-section-write/section1", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-section-write/section1", KEY_BINARY, 
  KEY_END),
 			keyNew ("user/tests/ini-section-write/section1/key1",
 					KEY_VALUE, "value1",
@@ -404,7 +404,7 @@ static void test_sectionWrite(char *fileName)
 			keyNew ("user/tests/ini-section-write/section1/key/with/subkey",
 					KEY_VALUE, "value2",
 					KEY_END),
-			keyNew("user/tests/ini-section-write/section2/with/subkey", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew("user/tests/ini-section-write/section2/with/subkey", KEY_BINARY, 
  KEY_END),
 			keyNew("user/tests/ini-section-write/section2/with/subkey/key2",
 					KEY_VALUE, "value2",
@@ -425,43 +425,6 @@ static void test_sectionWrite(char *fileName)
 	PLUGIN_CLOSE ();
 }
 
-static void test_autoSectionWrite(char *fileName)
-{
-	Key *parentKey = keyNew ("user/tests/ini-section-write", KEY_VALUE,
-			"/tmp/autosectiontest.ini", KEY_END);
-	KeySet *conf = ksNew(30,
-			keyNew ("system/autosections", KEY_VALUE, "1", KEY_END),
-			KS_END);
-	PLUGIN_OPEN("ini");
-
-	// this time the sections directly below the parent key will be generated automatically
-	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-section-write/akey/looking/like/sections", KEY_VALUE, "value",   KEY_END),
-			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY,  KEY_END),
-			keyNew ("user/tests/ini-section-write/section1/key1",
-					KEY_VALUE, "value1",
-					KEY_END),
-			keyNew ("user/tests/ini-section-write/section1/key/with/subkey",
-					KEY_VALUE, "value2",
-					KEY_END),
-			keyNew("user/tests/ini-section-write/section2/with/subkey/key2",
-					KEY_VALUE, "value2",
-					KEY_END),
-			KS_END);
-
-	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
-			"call to kdbSet was not successful");
-	succeed_if(output_error (parentKey), "error in kdbSet");
-	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
-
-	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
-			"files do not match as expected");
-
-	ksDel (ks);
-	keyDel (parentKey);
-
-	PLUGIN_CLOSE ();
-}
 static void test_iniToMeta(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
@@ -473,7 +436,6 @@ static void test_iniToMeta(char *fileName)
 
 	KeySet *readKS = ksNew(0, KS_END);
 	succeed_if(plugin->kdbGet(plugin, readKS, parentKey) >= 0, "kdbGet failed");
-	output_keyset(readKS);
 	const Key *meta;
 	Key *searchKey = keyNew ("user/tests/ini-write/section1", KEY_END);
 	Key *key = ksLookup(readKS, searchKey, KDB_O_NONE);
@@ -532,9 +494,7 @@ int main(int argc, char** argv)
 	test_multilineIniWrite("ini/multilineini");
 	test_multilineIniInvalidConfigWrite();
 	test_sectionRead("ini/sectionini");
-//	test_sectionWrite("ini/sectionini");
-//	test_autoSectionWrite("ini/sectionini");
-//	test_plainIniPreserveOrder("ini/plaininireverse");
+	test_sectionWrite("ini/sectionWriteResult");
 	test_emptySectionBug("ini/emptySectionBugTest");
 
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest,
