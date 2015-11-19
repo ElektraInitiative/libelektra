@@ -222,7 +222,7 @@ Basically the implementation of `elektraLineSet` can be described with the follo
 	}
 	close the file
 
-The fullblown code can be found at [line plugin](src/plugins/line/line.c)
+The full-blown code can be found at [line plugin](http://libelektra.org/tree/master/src/plugins/line/line.c)
 
 As you can see, all `elektraLineSet` does is open a file, take each Key from the KeySet (remember they are named `#1`, `#2` ... `#_22`) in order,
 and write each key as it's own line in the file. Since we don't care about the name of the Key in this case (other than for order), we just write
