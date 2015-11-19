@@ -4,8 +4,8 @@
 - author: Markus Raab
 - pubDate: Thu, 19 Nov 2015 17:48:14 +0100
 
-Again we managed to release with many new features and
-plugins(lua, list, crypto, csvstorage, conditionals, mathcheck, filecheck, logchange)
+Again we managed to release with many new features and plugins (lua, enum,
+list, crypto, csvstorage, conditionals, mathcheck, filecheck, logchange)
 many fixes, and especially with a polished documentation.
 
 ## Documentation Initiative
@@ -42,8 +42,37 @@ A big thanks to Kurt Micheli!
 
 - getenv debugging docu was improved
 - typo fix: Specify, thanks to Pino Toscano
-- [/doc/decision/
-- [Design decisions](http://libelektra.org/blob/master/doc/decisions) capabilities and Publish Subscribe (thanks to Daniel Bugl)
+- [Design decisions](http://libelektra.org/blob/master/doc/decisions)
+  Definition of Bool, capabilities and
+  Publish Subscribe (thanks to Daniel Bugl)
+- Improve iconv docu
+- usage examples for many plugins
+- improve README for line plugin (thanks to Ian Donnelly)
+- add docu about dependencies for some plugins (thanks to Ian Donnelly)
+- create many new links within the documentation
+
+
+## Simplicity
+
+We shifted our [goals](http://git.libelektra.org/blob/master/doc/GOALS.md) a bit:
+We want to prefer simplicity to flexibility.
+Not because we do no like flexibility, but because we think we achieved enough of it.
+Currently (and in future) you can use Elektra:
+
+- as primitive key/value storage
+- with specification
+- with code generation
+- ...
+
+But we cut flexibility regarding:
+
+- namespaces are only useful for configuration (not for arbitrary key/value)
+- mounting and contracts functionality
+- error code meanings are fixed, if a resolver detects a conflict, our defined
+  error must be used
+- of course ABI, API
+
+
 
 # Qt-gui 0.0.9
 
@@ -53,28 +82,36 @@ with important of fixes and improvements:
 - Allow QML to destroy C++ owned model
 - Fixes for Qt 5.5
 - Handling of merge-conflicts improved
+- Avoid rewriting on merge-conflicts
 - Dialog at startup
 - Reduce memory footprint
 - add man page
 
 A bit thanks to Raffael Pancheri!
 
+
+
 ## Compatibility
 
-As always, the API and API is fully forward-compatible, i.e. programs compiled against an
-older 0.8 versions of Elektra will continue to work.
+As always, the API and API is fully forward-compatible, i.e. programs
+compiled against an older 0.8 versions of Elektra will continue to work.
 
 The behaviour of some plugins, however, changed:
 
 - the INI plugin, the section handling was improved.
 - in the NI plugin, the symbol Ni_GetVersion vanished
-- in the resolver plugin files of other namespaces which are not mounted are not resolved
-  anymore
+- in the resolver plugin files of other namespaces which are not
+  mounted are not resolved anymore
+
+### Build System
 
 ENABLE_CXX11 does not exist anymore, it is always on.
 We do not care about 199711L compilers anymore, which
 makes development easier, without losing any actually
 used platform.
+
+Some programs that are only used in-source are not installed
+anymore. (by Pino Toscano)
 
 Python and Lua plugins are enabled now in `-DPLUGINS=ALL`.
 
@@ -83,8 +120,9 @@ Python3 plugin was renamed to python.
 ## Lua Plugin
 
 Manuel Mausz add a lightweight alternative to the python plugin:
-[the lua plugin](http://libelektra.org/blob/master/src/plugins/lua/). In a similar way, someone
-can write scripts, which are executed on every access to the
+[the lua plugin](http://libelektra.org/blob/master/src/plugins/lua/).
+In a similar way, someone can write scripts, which are executed on every
+access to the
 [key database](http://libelektra.org/blob/master/doc/help/elektra-glossary).
 
 To mount a lua based filter, you can use:
@@ -94,6 +132,41 @@ To mount a lua based filter, you can use:
 Even though it works well, it is classified as technical preview.
 
 Thanks to Manuel Mausz for this plugin!
+
+
+## Cryptography Plugin
+
+In this technical preview, Peter Nirschl
+[demonstrates how a plugin](http://libelektra.org/blob/master/src/plugins/crypto/)
+can encrypt Elektra's values. In testcases it is already able to do so,
+but for the end user an easy way for key derivation is missing.
+
+A big thanks to Peter Nirschl!
+
+
+## Conditionals
+
+Brings `if` inside Elektra. It lets you check if some keys have
+the values they should have.
+
+	kdb mount conditionals.dump /tmount/conditionals conditionals dump
+	kdb set user/tmount/conditionals/fkey 3.0
+	kdb set user/tmount/conditionals/hkey hello
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
+
+
+## INI Plugin
+
+The INI plugin got a near rewrite. Now it handles many situations better,
+has many more options and features, including:
+
+- preserving the order
+- using keys as meta-data
+- many new testcases
+- fix escaping
+
+Thanks to Thomas Waser for this work!
 
 
 ## List Plugin
@@ -110,17 +183,6 @@ the loading of some plugins all together.
 Thanks to Thomas Waser for this plugin!
 
 
-## INI Plugin
-
-The INI plugin got a near rewrite. Now it handles many situations better,
-has many more options and features, including:
-
-- preserving the order
-- using keys as meta-data
-- many new testcases
-
-Thanks to Thomas Waser for this work!
-
 
 ## Csvstorage Plugin
 
@@ -132,20 +194,21 @@ To mount `test.csv` simply use:
 
 There are many options, e.g. changing the delimiter, use header
 for the key names or predefine how the columns should be named.
-For details [see the documentation](/src/plugins/csvstorage).
+For details [see the documentation](http://libelektra.org/blob/master/src/plugins/csvstorage).
 
 Thanks to Thomas Waser!
 
+## Filecheck plugin
 
-## Cryptography Plugin
+The also new plugin lineendings is already superseded by the filecheck plugin.
 
-In this technical preview, Peter Nirschl
-[demonstrates how a plugin](http://libelektra.org/blob/master/src/plugins/crypto/)
-can encrypt Elektra's values. In testcases it is already able to do so, but for the end
-user an easy way for key derivation is missing.
+Thanks to Thomas Waser!
 
-A big thanks to Peter Nirschl!
+## Enum plugin
 
+The Enum plugin checks string values of Keys by comparing it against a list of valid values.
+
+Thanks to Thomas Waser!
 
 ## Electrify Machinekit.io
 
@@ -153,7 +216,8 @@ We are proud that [Machinekit](http://www.machinekit.io/) starts using
 Elektra.
 
 Alexander Rössler is digging into all details, and already enhanced
-the DBUS Plugin for their needs.
+the DBUS Plugin for their needs. DBus now can emit a message for every
+changed key.
 
 A big thanks to Alexander Rössler!
 
@@ -169,20 +233,34 @@ A big thanks to Alexander Rössler!
 - add needSync also in C++ binding
 - handle removed current working directories (fallback to /)
 - avoid segfault on missing version keys (when doing `kdb rm system/elektra/version`)
-- fix glob plugin + kdb mount with [config/needs usage](/doc/help/elektra-contracts.md)
+- fix glob plugin + kdb mount with
+  [config/needs usage](http://libelektra.org/blob/master/doc/help/elektra-contracts.md)
+- Mac OS X fix different handling of strerror_r (thanks to Daniel Bugl)
+- do not change parentKey in early-error scenarios
+- do not try to interpret some binary keys as function keys
 
 
 ## Other Gems
 
-- getenv example: do not link to elektra/elektratools, thanks to Pino Toscano
+- getenv example: do not link to elektra/elektratools,
+  thanks to Pino Toscano
 - fixes in other examples
 - avoid useless UTF-8 chars and fix typos, thanks to Kurt Micheli
-- pdf now also allows UTF-8 characters if added to elektraSpecialCharacters.sty,
-  thanks to Kurt Micheli
+- pdf now also allows UTF-8 characters if added to
+  elektraSpecialCharacters.sty, thanks to Kurt Micheli
 - libgetenv: lookup also used for layers
 - handle wrong arguments of metals better, thanks to Ian Donnelly
 - Improvement of error messages in the augeas plugin
-- logchange: small demonstration plugin to show how to log added, removed and changed keys
+- `kdb set` avoids fetching unnecessary namespaces
+- verbose unmount
+- logchange: small demonstration plugin to show how to log added,
+  removed and changed keys
+- setmeta will use spec as default
+- libtools: avoid useless getName, add verbosity flag for findBackend
+- Improve iconv error messages
+- That mount needs permissions to /etc should now really be obvious
+  with new error message
+- many fixes in the template for new plugins
 
 
 ## Get It!
