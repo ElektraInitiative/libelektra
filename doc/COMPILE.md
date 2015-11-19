@@ -96,6 +96,8 @@ same fashion for BINDINGS and TOOLS.
 
 #### PLUGINS ####
 
+Read about available plugins [here](/src/plugins/).
+
 Because the core of elektra is minimal, plugins are needed to
 actually read and write to configuration files (storage plugins),
 commit the changes (resolver plugin, also takes care about how
