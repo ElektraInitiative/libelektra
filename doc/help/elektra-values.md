@@ -8,6 +8,9 @@ are possible.
 ## ABSENT KEYS
 
 Sometimes a key does not exist at all.
+When using ksLookup() you will get a null pointer.
+In the C++ Binding the null pointer is wrapped in a key.
+Thus this is also sometimes called **NULL KEYS**.
 
 
 ## NULL VALUES
