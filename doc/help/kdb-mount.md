@@ -90,5 +90,6 @@ To recode and rename a configuration file using Elektra:
 
 ## SEE ALSO
 
+- [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
 - [elektra-plugins(7)](elektra-plugins.md).
