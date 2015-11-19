@@ -1643,6 +1643,8 @@ inline int Key::del ()
 
 } // end of namespace kdb
 
+
+#ifdef ELEKTRA_WITH_HASH
 namespace std
 {
 	/**
@@ -1657,6 +1659,7 @@ namespace std
 		}
 	};
 } // end of namespace std
+#endif // ELEKTRA_WITH_HASH
 
 #endif
 
