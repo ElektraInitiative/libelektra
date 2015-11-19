@@ -31,7 +31,6 @@ CMAKE_FLAGS = \
 	-DENABLE_KDB_TESTING=OFF \
 	-DBUILD_PDF=OFF \
 	-DENABLE_CXX11=ON \
-	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DBINDINGS="cpp;swig_lua;swig_python2" \
 	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
 	-DCMAKE_C_FLAGS="$(CFLAGS)" \
