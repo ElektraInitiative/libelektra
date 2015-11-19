@@ -16,7 +16,6 @@
 #include <string.h>
 #include <kdberrors.h>
 #include <inih.h>
-#include "kdb.h"
 #include "ini.h"
 
 #define DEFAULT_INI_ROOT "GLOBALROOT"
@@ -54,7 +53,7 @@ static void flushCollectedComment (CallbackHandle *handle, Key *key)
 // Might consider moving this to the public API as it might be used by more plugins
 size_t elektraUnescapeKeyName(const char *source, char *dest);
 
-
+static void outputDebug(KeySet *);
 
 static short isSectionKey(Key *key)
 {
@@ -184,6 +183,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 			sectionKey = appendKey;
 		keySetMeta(sectionKey, name, value);
 		ksAppendKey(handle->result, sectionKey);
+		ksRewind(handle->result);
 		keyDel(appendKey);
 		return 1;
 	}
@@ -385,16 +385,14 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	cbHandle.toMeta = pluginConfig->keyToMeta;
 	int ret = ini_parse_file(fh, &iniConfig, &cbHandle);
-
 	fclose (fh);
 	errno = errnosave;
-
 	if (ret == 0)
 	{
 		ksClear(returned);
 		if(pluginConfig->keyToMeta)
 			stripInternalMeta(cbHandle.result);
-		stripInternalSections(cbHandle.result);
+	//	stripInternalSections(cbHandle.result);
 		ksAppend(returned, cbHandle.result);
 		ret = 1;
 	}
@@ -583,13 +581,22 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 		{
 			Key *key;
 			cutKS =  ksCut(workingKS, sectionKey);
+			writeComments(sectionKey, fp);
 			while((key = nextKeyByOrderNumber(cutKS, sectionKey, &order)) != NULL)
 			{
 				char *iniName = getIniName(sectionKey, key);
+				writeComments(key, fp);
 				if(isEmptyKey(key))
 					fprintf(fp, "%s\n", iniName);
-				else
+				else if(strstr(keyString(key), "\n") == 0)
 					fprintf(fp, "%s = %s\n", iniName, keyString(key));
+				else
+				{
+					if(pluginConfig->supportMultiline)
+					{
+						writeMultilineKey(key, iniName, fp);
+					}
+				}
 				keyDel(ksLookup(cutKS, key, KDB_O_POP));
 				free(iniName);
 			}
@@ -602,16 +609,25 @@ static void printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCo
 			{
 				int order = 1;
 				char *iniName = getIniName(parentKey, internalSectionKey);
+				writeComments(internalSectionKey, fp);
 				fprintf(fp, "[%s]\n", iniName);
 				free(iniName);
 				Key *key;
 				while((key = nextKeyByOrderNumber(cutKS, internalSectionKey, &order)) != NULL)
 				{
+					writeComments(key, fp);
 					iniName = getIniName(internalSectionKey, key);
 					if(isEmptyKey(key))
 						fprintf(fp, "%s\n", iniName);
-					else
+					else if(strstr(keyString(key), "\n") == 0)
 						fprintf(fp, "%s = %s\n", iniName, keyString(key));
+					else
+					{
+						if(pluginConfig->supportMultiline)
+						{
+							writeMultilineKey(key, iniName, fp);
+						}
+					}
 					keyDel(ksLookup(cutKS, key, KDB_O_POP));
 					free(iniName);
 				}
@@ -698,6 +714,8 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 					keySetMeta(searchKey, "ini/section", buf);
 					keySetMeta(parentKey, "ini/lastSection", buf);
 				}
+				Key *searchKey = ksLookup(returned, savedKey, KDB_O_NONE);
+				keyCopyAllMeta(searchKey, cur);
 				keyDel(savedKey);
 			}
 			else
@@ -728,6 +746,8 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				{
 					iniKeyToElektraKey(&cbHandle, sectionName, keyBaseName(cur), keyString(cur), 0);
 				}
+				searchKey = ksLookup(returned, cur, KDB_O_NONE);
+				keyCopyAllMeta(searchKey, cur);
 				keyDel(sectionKey);
 			}
 		}

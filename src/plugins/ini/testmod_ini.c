@@ -61,13 +61,13 @@ static void test_plainIniRead(char *fileName)
 
 static void test_plainIniWrite(char *fileName)
 {
-	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
-			elektraFilename(), KEY_END);
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_META, "ini/lastKey", "0", KEY_META, "ini/section", "0", KEY_META, "ini/lastSection", "0",
+			KEY_VALUE, "/tmp/plaininiwrite.out", KEY_END);
 	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-write/nosectionkey",
+			keyNew ("user/tests/ini-write/GLOBALROOT/nosectionkey",
 					KEY_VALUE, "nosectionvalue",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1",
@@ -106,16 +106,16 @@ static void test_plainIniWrite(char *fileName)
 static void test_plainIniEmptyWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
-			elektraFilename(), KEY_END);
+			"/tmp/plaininiemptywrite.out", KEY_END);
 	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-write/nosectionkey",
+			keyNew ("user/tests/ini-write/GLOBALROOT/nosectionkey",
 					KEY_VALUE, "nosectionvalue",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1",
-					KEY_BINARY, KEY_META, "ini/section", "",
+					KEY_BINARY, 
 
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1/key1",
@@ -125,7 +125,7 @@ static void test_plainIniEmptyWrite(char *fileName)
 					KEY_VALUE, "value2",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2",
-					KEY_BINARY, KEY_META, "ini/section", "",
+					KEY_BINARY, 
 
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2/key3",
@@ -171,7 +171,7 @@ static void test_commentIniRead(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbGet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
 
-	Key *key = ksLookupByName (ks, "user/tests/ini-read/nosectionkey", KDB_O_NONE);
+	Key *key = ksLookupByName (ks, "user/tests/ini-read/GLOBALROOT/nosectionkey", KDB_O_NONE);
 	exit_if_fail(key, "nosectionkey not found");
 	const Key *noSectionComment = keyGetMeta(key, "comment");
 	exit_if_fail(noSectionComment, "nosectionkey contained no comment");
@@ -198,18 +198,17 @@ static void test_commentIniRead(char *fileName)
 static void test_commentIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
-			elektraFilename(), KEY_END);
+			"/tmp/commentIniWrite.out", KEY_END);
 	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-write/nosectionkey",
+			keyNew ("user/tests/ini-write/GLOBALROOT/nosectionkey",
 					KEY_VALUE, "nosectionvalue",
 					KEY_COMMENT, "nosection comment1\nnosection comment2",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1",
-					KEY_BINARY, KEY_META, "ini/section", "",
-
+					KEY_BINARY,
 					KEY_COMMENT, "section comment1\nsection comment2",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1/key1",
@@ -271,19 +270,19 @@ static void test_multilineIniRead(char *fileName)
 static void test_multilineIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
-			elektraFilename(), KEY_END);
+			"/tmp/multilineIniWrite.out", KEY_END);
 	KeySet *conf = ksNew(30,
 			keyNew ("system/multiline", KEY_VALUE, "1", KEY_END),
 			KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-multiline-write/multilinesection", KEY_BINARY,
  KEY_END),
 			keyNew ("user/tests/ini-multiline-write/multilinesection/key1",
 					KEY_VALUE, "value1\nwith continuation\nlines",
 					KEY_END),
-			keyNew ("user/tests/ini-multiline-write/singlelinesection", KEY_BINARY, KEY_META, "ini/section", "",
+			keyNew ("user/tests/ini-multiline-write/singlelinesection", KEY_BINARY,
  KEY_END),
 			keyNew ("user/tests/ini-multiline-write/singlelinesection/key2",
 					KEY_VALUE, "",
@@ -474,6 +473,7 @@ static void test_iniToMeta(char *fileName)
 
 	KeySet *readKS = ksNew(0, KS_END);
 	succeed_if(plugin->kdbGet(plugin, readKS, parentKey) >= 0, "kdbGet failed");
+	output_keyset(readKS);
 	const Key *meta;
 	Key *searchKey = keyNew ("user/tests/ini-write/section1", KEY_END);
 	Key *key = ksLookup(readKS, searchKey, KDB_O_NONE);
