@@ -230,3 +230,7 @@ should be retrieved. In this specification you can define, that
 configuration data from other applications or shared places should
 be considered or even preferred. Doing so, we can achieve configuration
 integration.
+
+## SEE ALSO
+
+- [for advanced techniques e.g. transformations](http://www.libelektra.org/ftp/papers/kps2015sharing.pdf)
