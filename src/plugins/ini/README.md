@@ -141,6 +141,7 @@ The ini plugin supports turning keys into [metakeys](/doc/help/elektra-meta-data
 ## PRESERVE ORDER ##
 
 If the `preserveorder` config key is set, the ini plugin preserves the original order of the file.
+Only use this option for editing existing key values.
 
 ## RESTRICTIONS ##
 
