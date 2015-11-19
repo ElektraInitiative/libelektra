@@ -1,12 +1,25 @@
+/**
+* \file
+*
+* \brief Source for dbus plugin
+*
+* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+*
+*/
+
 #include "dbus.h"
 
-int elektraDbusSendMessage (DBusBusType type)
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
+int elektraDbusSendMessage (DBusBusType type, const char *keyName, const char *signalName)
 {
 	DBusConnection *connection;
 	DBusError error;
 	DBusMessage *message;
-	const char *dest = 0;
-	const char *name = "org.libelektra";
+	const char *dest = NULL;  // to all receivers
+	const char *interface = "org.libelektra";
 	const char *path = "/org/libelektra/configuration";
 
 	dbus_error_init (&error);
@@ -22,7 +35,7 @@ int elektraDbusSendMessage (DBusBusType type)
 
 	dbus_connection_set_exit_on_disconnect (connection, FALSE);
 
-	message = dbus_message_new_signal (path, name, "changed");
+	message = dbus_message_new_signal (path, interface, signalName);
 
 	if (message == NULL)
 	{
@@ -34,6 +47,13 @@ int elektraDbusSendMessage (DBusBusType type)
 	if (dest && !dbus_message_set_destination (message, dest))
 	{
 		fprintf (stderr, "Not enough memory\n");
+		dbus_error_free (&error);
+		return -1;
+	}
+
+	if (!dbus_message_append_args(message, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID))
+	{
+		fprintf(stderr, "Couldn't add message argument");
 		dbus_error_free (&error);
 		return -1;
 	}

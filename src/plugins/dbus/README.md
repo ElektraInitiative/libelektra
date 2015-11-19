@@ -3,8 +3,8 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = notification
-- infos/placements = postcommit
-- infos/description = Prints timestamps when a method is called.
+- infos/placements = postgetstorage postcommit
+- infos/description = Sends DBus signals when a method is called
 
 ## Introduction ##
 
@@ -49,6 +49,11 @@ The namespaces are mapped to the buses the following way:
 - system: system-wide bus
 - user: session bus
 
+Following signal names are used to notify about changes in the elektra KeySet:
+- KeyAdded: a key has been added
+- KeyChanged: a key has been changed
+- KeyDeleted: a key has been deleted
+
 ## Usage ##
 
 Mount the plugin additionally to a storage plugin, e.g.
@@ -58,6 +63,35 @@ Mount the plugin additionally to a storage plugin, e.g.
 then we can receive the notification events using:
 
 	dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+
+### Python
+In Python the DBus notifications can be used as follows
+
+```python
+import dbus
+import gobject
+gobject.threads_init()  # important: initialize threads if gobject main loop is used
+from dbus.mainloop.glib import DBusGMainLoop
+
+class DBusTest():
+    def __init__(self):
+        DBusGMainLoop(set_as_default=True)
+        bus = dbus.SystemBus()  # may use session bus for user db
+        bus.add_signal_receiver(self.elektra_dbus_key_changed_cb,
+            signal_name="KeyChanged",
+            dbus_interface="org.libelektra",
+            path="/org/libelektra/configuration")
+
+    def elektra_dbus_key_changed_cb(self, key):
+        print('key changed %s' % key)
+
+test = DBusTest()
+loop = gobject.MainLoop()
+try:
+    loop.run()
+except KeyboardInterrupt:
+    loop.quit()
+```
 
 ## Background
 
