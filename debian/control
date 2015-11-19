@@ -228,7 +228,6 @@ Description: dbus plugin for a framework to get and set configuration
 Package: libelektra-python4
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
- swig3.0,
  ${shlibs:Depends},
  ${misc:Depends}
 Description: Python2 bindings for Elektra
@@ -247,7 +246,6 @@ Description: Python2 bindings for Elektra
 Package: libelektra-lua4
 Architecture: any
 Depends: libelektra-core4 (>= ${source:Version}),
- swig3.0,
  ${shlibs:Depends},
  ${misc:Depends}
 Description: Python2 bindings for Elektra
