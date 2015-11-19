@@ -6,13 +6,13 @@
 
 Again we managed to release with many new features and plugins (lua, enum,
 list, crypto, csvstorage, conditionals, mathcheck, filecheck, logchange)
-many fixes, and especially with a polished documentation.
+many fixes, and especially with a vastly improved polished documentation.
 
 ## Documentation Initiative
 
-The documentation Initiative is a huge success and now the documentation
-of Elektra is in a state where someone, never heard of Elektra, still
-can use it only by man pages.
+The Documentation Initiative is a huge success and now the documentation
+of Elektra is in a state where someone (preferable a linux guru),
+never heard of Elektra, still can use Elektra only by reading man pages.
 
 There are now many ways to show a man page:
 
@@ -23,18 +23,22 @@ There are now many ways to show a man page:
 
 ### Help system
 
-Nearly all README.md are now also converted to man pages and also to Doxygen.
+Ian Donnelly wrote man pages for all the tools delivered with Elektra.
+Additionally, nearly all README.md are now also converted to man pages
+and also to Doxygen.
 
 ### Doxygen Filter
 
 Kurt Micheli did an amazing work with a new doxygen filter.
-The filter allows all Elektra Markdown pages to be also included
+The filter allows all Elektra markdown pages to be also included
 in the doxygen documentation. Thus all technical concepts are now
 explained in Markdown pages, this filter is essential.
 
 But even more, the filter also includes all man pages written
 for the tools, giving a nice html view for them. (In addition to
 the markdown rendering on github).
+
+Enjoy the [result](http://doc.libelektra.org/api/0.8.14/html/).
 
 A big thanks to Kurt Micheli!
 
@@ -54,20 +58,21 @@ A big thanks to Kurt Micheli!
 
 ## Simplicity
 
-We shifted our [goals](http://git.libelektra.org/blob/master/doc/GOALS.md) a bit:
-We want to prefer simplicity to flexibility.
-Not because we do no like flexibility, but because we think we achieved enough of it.
+We shifted our [goals](http://git.libelektra.org/blob/master/doc/GOALS.md)
+a bit: We want to prefer simplicity to flexibility.  Not because we
+do no like flexibility, but because we think we achieved enough of it.
 Currently (and in future) you can use Elektra:
 
-- as primitive key/value storage
-- with specification
+- obviously as primitive key/value storage
+- with specifications and dozens of plugins driven by it
 - with code generation
 - ...
 
 But we cut flexibility regarding:
 
 - namespaces are only useful for configuration (not for arbitrary key/value)
-- mounting and contracts functionality
+- the semantics of [metadata](http://git.libelektra.org/blob/master/doc/METADATA.ini)
+- mounting functionality
 - error code meanings are fixed, if a resolver detects a conflict, our defined
   error must be used
 - of course ABI, API
@@ -79,10 +84,10 @@ But we cut flexibility regarding:
 Raffael Pancheri again updated his qt-gui to version 0.0.9 (beta)
 with important of fixes and improvements:
 
-- Allow QML to destroy C++ owned model
 - Fixes for Qt 5.5
 - Handling of merge-conflicts improved
 - Avoid rewriting on merge-conflicts
+- Allow QML to destroy C++ owned model
 - Dialog at startup
 - Reduce memory footprint
 - add man page
@@ -144,18 +149,6 @@ but for the end user an easy way for key derivation is missing.
 A big thanks to Peter Nirschl!
 
 
-## Conditionals
-
-Brings `if` inside Elektra. It lets you check if some keys have
-the values they should have.
-
-	kdb mount conditionals.dump /tmount/conditionals conditionals dump
-	kdb set user/tmount/conditionals/fkey 3.0
-	kdb set user/tmount/conditionals/hkey hello
-	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
-	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
-
-
 ## INI Plugin
 
 The INI plugin got a near rewrite. Now it handles many situations better,
@@ -169,10 +162,28 @@ has many more options and features, including:
 Thanks to Thomas Waser for this work!
 
 
+## Mathcheck plugin
+
+This plugin allows you to check and even calculate keys from
+other keys using an polish prefix notation.
+It supports the typical operations `+ - / *` and
+`<, <=, ==, !=, =>, >, :=`. To mount, check and
+calculate values, one would use:
+
+    kdb mount mathcheck.dump /example/mathcheck dump mathcheck
+    kdb setmeta user/example/mathcheck/k check/math "== + a b"
+    kdb setmeta user/example/mathcheck/k check/math ":= + a b"
+
+For details [see the documentation](http://libelektra.org/blob/master/src/plugins/mathcheck/).
+
+Thanks to Thomas Waser for this important plugin!
+
+
 ## List Plugin
 
 Currently, Elektra has some limitations on how many plugins can be
-added to certain [placements](http://libelektra.org/blob/master/doc/help/elektra-plugins-ordering.md).
+added to certain
+[placement](http://libelektra.org/blob/master/doc/help/elektra-plugins-ordering.md).
 Because of the rapidly growing number of plugins, some combinations
 are not possible anymore.
 
@@ -183,6 +194,20 @@ the loading of some plugins all together.
 Thanks to Thomas Waser for this plugin!
 
 
+## Conditionals
+
+Brings `if` inside Elektra. It lets you check if some keys have
+the values they should have.
+
+	kdb mount conditionals.dump /tmount/conditionals conditionals dump
+	kdb set user/tmount/conditionals/fkey 3.0
+	kdb set user/tmount/conditionals/hkey hello
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
+
+For details [see the documentation](http://libelektra.org/blob/master/src/plugins/conditionals/).
+
+Again, thanks to Thomas Waser for this plugin!
 
 ## Csvstorage Plugin
 
@@ -192,23 +217,29 @@ You can now mount csv-files. To mount `test.csv` simply use:
 
 There are many options, e.g. changing the delimiter, use header
 for the key names or predefine how the columns should be named.
-For details [see the documentation](http://libelektra.org/blob/master/src/plugins/csvstorage).
+For details [see the documentation](http://libelektra.org/blob/master/src/plugins/csvstorage/).
 
 Thanks to Thomas Waser!
 
 ## Filecheck plugin
 
-The also new plugin lineendings is already superseded by the filecheck plugin.
+This plugin lets you validate lineendings, encodings, null, bom and
+unprintable characters.
+
+The also new plugin lineendings is already superseded by the filecheck
+plugin.
 
 Thanks to Thomas Waser!
 
 ## Enum plugin
 
-The Enum plugin checks string values of Keys by comparing it against a list of valid values.
+The Enum plugin checks string values of Keys by comparing it against a
+list of valid values.
 
 Thanks to Thomas Waser!
 
-## Electrify Machinekit.io
+
+## Elektrify Machinekit.io
 
 We are proud that [Machinekit](http://www.machinekit.io/) starts using
 Elektra.
@@ -220,11 +251,6 @@ changed key.
 A big thanks to Alexander Rössler!
 
 
-
-## KDB Tools:
-
-- fix kdb check return code (open fail)
-
 ## Bugfixes
 
 - libgetenv did not reinitalized its mutexes on forks
@@ -233,8 +259,8 @@ A big thanks to Alexander Rössler!
 - avoid segfault on missing version keys (when doing `kdb rm system/elektra/version`)
 - fix glob plugin + kdb mount with
   [config/needs usage](http://libelektra.org/blob/master/doc/help/elektra-contracts.md)
-- Mac OS X fix different handling of strerror_r (thanks to Daniel Bugl)
-- do not change parentKey in early-error scenarios
+- fix different handling of strerror_r in Mac OS X (thanks to Daniel Bugl)
+- do not change the users parentKey in early-error scenarios
 - do not try to interpret some binary keys as function keys
 
 
@@ -244,6 +270,7 @@ A big thanks to Alexander Rössler!
   thanks to Pino Toscano
 - fixes in other examples
 - avoid useless UTF-8 chars and fix typos, thanks to Kurt Micheli
+- fix kdb check return code (open fail)
 - pdf now also allows UTF-8 characters if added to
   elektraSpecialCharacters.sty, thanks to Kurt Micheli
 - libgetenv: lookup also used for layers
@@ -268,7 +295,10 @@ You can download the release from
 and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.14.tar.gz)
 
 - name: elektra-0.8.14.tar.gz
-- TODO: hash sums missing
+- size: 2252008
+- md5sum: a87cd3845e590bf413959dfd555e3704
+- sha1: 2360603c347ae3f3a28e827eb9260ff0b9881e46
+- sha256: af681a38c9c2921b8d249f98ab851c3d51371735471d8a1f833a224c4446fe2e
 
 
 
@@ -292,6 +322,10 @@ or by mail elektra@markus-raab.org.
 [Permalink to this NEWS entry](http://doc.libelektra.org/news/519cbfac-6db5-4594-8a38-dec4c84b134f.html)
 
 For more information, see [http://libelektra.org](http://libelektra.org)
+
+Btw. the whole release happened with 
+[elektrify-getenv](http://libelektra.org/blob/master/src/libgetenv/README.md)
+enabled.
 
 Best regards,
 Markus
