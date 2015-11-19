@@ -37,7 +37,7 @@ static void test_plainIniRead(char *fileName)
 	succeed_if(output_error (parentKey), "error in kdbGet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
 
-	Key *key = ksLookupByName (ks, "user/tests/ini-read/nosectionkey", KDB_O_NONE);
+	Key *key = ksLookupByName (ks, "user/tests/ini-read/GLOBALROOT/nosectionkey", KDB_O_NONE);
 	exit_if_fail(key, "nosectionkey not found");
 	succeed_if (!strcmp ("nosectionvalue", keyString(key)), "nosectionkey contained invalid data");
 
@@ -522,15 +522,15 @@ int main(int argc, char** argv)
 	init (argc, argv);
 
 	test_plainIniRead ("ini/plainini");
-//	test_plainIniWrite ("ini/plainini");
+	test_plainIniWrite ("ini/plainini");
 	test_iniToMeta ("ini/plainini");
 	test_plainIniRead ("ini/emptyval");
-//	test_plainIniEmptyWrite ("ini/emptyval");
+	test_plainIniEmptyWrite ("ini/emptyval");
 	test_commentIniRead ("ini/commentini");
-//	test_commentIniWrite ("ini/commentini");
+	test_commentIniWrite ("ini/commentini");
 	test_multilineIniRead ("ini/multilineini");
-//	test_multilineIniWrite("ini/multilineini");
-//	test_multilineIniInvalidConfigWrite();
+	test_multilineIniWrite("ini/multilineini");
+	test_multilineIniInvalidConfigWrite();
 	test_sectionRead("ini/sectionini");
 //	test_sectionWrite("ini/sectionini");
 //	test_autoSectionWrite("ini/sectionini");

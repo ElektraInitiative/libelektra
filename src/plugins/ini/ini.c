@@ -16,6 +16,7 @@
 #include <string.h>
 #include <kdberrors.h>
 #include <inih.h>
+#include "kdb.h"
 #include "ini.h"
 
 #define DEFAULT_INI_ROOT "GLOBALROOT"
@@ -85,9 +86,9 @@ static Key *createUnescapedKey(Key *key, KeySet *ks, const char *name)
 	char *localString = strdup(name);
 	Key *searchKey = NULL;
 	short found = 0;
-	char *sectionName;
 	char *parentName = keyName(key);
 	char *newBaseName = strtok(localString, "/");
+	char *sectionName;
 	if(newBaseName != NULL)
 	{
 		keyAddBaseName(key, newBaseName);
@@ -207,13 +208,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	}
 	else
 	{
-		lastIndex = atoi(keyString(keyGetMeta(handle->parentKey, "ini/lastKey")));
-		++lastIndex;
-		snprintf(buf, sizeof(buf), "%u", lastIndex);
-		keySetMeta(handle->parentKey, "ini/lastKey", buf);
-		keySetMeta(appendKey, "order", buf);
-		keySetMeta(appendKey, "ini/lastKey", NULL);
-		keySetMeta(appendKey, "order/parent", keyName(sectionKey));
+		/// that shouldn't happen anyway
 	}
 	keySetMeta(appendKey, "binary", 0);
 	if(value == NULL)
@@ -234,7 +229,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		elektraKeyAppendLine(existingKey, value);
 	}
 
-
 	return 1;
 }
 
@@ -245,8 +239,8 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	keySetString(appendKey, NULL);
 	keySetBinary(appendKey, 0, 0);
 	keySetMeta(appendKey, "ini/lastSection", 0);
-	keySetMeta(appendKey, "ini/section", 0);	
 	keySetMeta(appendKey, "ini/lastKey", 0);
+	keySetMeta(appendKey, "ini/section", 0);
 	appendKey = createUnescapedKey(appendKey, handle->result, section);
 	if(!(keyGetMeta(appendKey, "ini/section")))
 	{
@@ -668,14 +662,14 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 
-
 	CallbackHandle cbHandle;
 	cbHandle.parentKey = parentKey;
 	cbHandle.result = returned;
 	cbHandle.collectedComment = 0;
 	cbHandle.toMeta = 0;
 	ksAppendKey (cbHandle.result, keyDup(parentKey));
-
+	ksRewind(cbHandle.result);
+	outputDebug(cbHandle.result);
 
 	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
 	if(pluginConfig->keyToMeta)
@@ -683,26 +677,57 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	ksRewind (returned);
 	Key *cur;
+	int lastSectionIndex = atoi(keyString(keyGetMeta(parentKey, "ini/lastSection")));
+	char buf[16];
 	while((cur = ksNext(returned)) != NULL)
 	{
 		if(keyNeedSync(cur) && strcmp(keyName(parentKey), keyName(cur)))
 		{
+			ksLookup(returned, cur, KDB_O_POP);
 			if(keyIsBinary(cur))
 			{
 				char *sectionName = (keyName(cur)+(strlen(keyName(parentKey))));
+				++sectionName;
+				Key *savedKey = keyDup(cur);
 				iniSectionToElektraKey(&cbHandle, sectionName);
+				if(keyIsDirectBelow(parentKey, savedKey))
+				{
+					Key *searchKey = ksLookup(returned, savedKey, KDB_O_NONE);
+					++lastSectionIndex;
+					snprintf(buf, sizeof(buf), "%u", lastSectionIndex);
+					keySetMeta(searchKey, "ini/section", buf);
+					keySetMeta(parentKey, "ini/lastSection", buf);
+				}
+				keyDel(savedKey);
 			}
-			else{
+			else
+			{
 				Key *sectionKey = keyDup(cur);
-				keySetBaseName(sectionKey, 0);
+				if(strcmp(keyName(parentKey), keyName(sectionKey)))
+					keySetBaseName(sectionKey, 0);
 				Key *searchKey = ksLookup(returned, sectionKey, KDB_O_NONE);
 				char *sectionName = (keyName(sectionKey)+(strlen(keyName(parentKey))));
 				if(!(searchKey))
 				{
 					++sectionName;
 					iniSectionToElektraKey(&cbHandle, sectionName);
+					if(keyIsDirectBelow(parentKey, sectionKey))
+					{
+						Key *searchKey = ksLookup(returned, sectionKey, KDB_O_NONE);
+						++lastSectionIndex;
+						snprintf(buf, sizeof(buf), "%u", lastSectionIndex);
+						keySetMeta(searchKey, "ini/section", buf);
+						keySetMeta(parentKey, "ini/lastSection", buf);
+					}
 				}
-				iniKeyToElektraKey(&cbHandle, sectionName, keyBaseName(cur), keyString(cur), 0);
+				if(!strcmp(keyName(sectionKey), keyName(parentKey)))
+				{
+					iniKeyToElektraKey(&cbHandle, DEFAULT_INI_ROOT, keyBaseName(cur), keyString(cur), 0);
+				}
+				else
+				{
+					iniKeyToElektraKey(&cbHandle, sectionName, keyBaseName(cur), keyString(cur), 0);
+				}
 				keyDel(sectionKey);
 			}
 		}
