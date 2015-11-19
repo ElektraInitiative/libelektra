@@ -221,8 +221,7 @@ Cmdline::Cmdline (int argc,
 		std::string dirname = "/sw/kdb/current/";
 		KDB kdb;
 		KeySet conf;
-		kdb.get(conf, std::string("user")+dirname);
-		kdb.get(conf, std::string("system")+dirname);
+		kdb.get(conf, dirname);
 
 		Key k;
 
