@@ -665,10 +665,9 @@ void TreeViewModel::synchronize()
 #endif
 
 		m_base = ours;
-		createNewNodes(ours);
-
-		// #348
-		// populateModel(ours);
+		// createNewNodes(ours);
+		// workaround for #348
+		populateModel(ours);
 	}
 	catch (KDBException const&)
 	{
@@ -687,10 +686,9 @@ void TreeViewModel::synchronize()
 #endif
 
 			m_base = result;
-			createNewNodes(result);
-
-			// #348
-			// populateModel(result);
+			// createNewNodes(result);
+			// workaround for #348
+			populateModel(result);
 		}
 		catch (KDBException const& e)
 		{
