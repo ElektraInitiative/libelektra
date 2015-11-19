@@ -442,7 +442,7 @@ namespace
 		for (KeySet::iterator i = ks.begin(); i != ks.end(); ++i)
 		{
 			Key k(i->dup());
-			ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
+			if (k.getNamespace() == "user") ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
 		}
 	}
 }
