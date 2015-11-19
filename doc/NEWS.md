@@ -123,7 +123,7 @@ Manuel Mausz add a lightweight alternative to the python plugin:
 [the lua plugin](http://libelektra.org/blob/master/src/plugins/lua/).
 In a similar way, someone can write scripts, which are executed on every
 access to the
-[key database](http://libelektra.org/blob/master/doc/help/elektra-glossary).
+[key database](http://libelektra.org/blob/master/doc/help/elektra-glossary.md).
 
 To mount a lua based filter, you can use:
 
@@ -172,7 +172,7 @@ Thanks to Thomas Waser for this work!
 ## List Plugin
 
 Currently, Elektra has some limitations on how many plugins can be
-added to certain [placements](http://libelektra.org/blob/master/doc/help/elektra-plugins-ordering).
+added to certain [placements](http://libelektra.org/blob/master/doc/help/elektra-plugins-ordering.md).
 Because of the rapidly growing number of plugins, some combinations
 are not possible anymore.
 
@@ -186,9 +186,7 @@ Thanks to Thomas Waser for this plugin!
 
 ## Csvstorage Plugin
 
-You can now mount [csv-files](http://libelektra.org/blob/master/src/plugins/csvstorage)!
-
-To mount `test.csv` simply use:
+You can now mount csv-files. To mount `test.csv` simply use:
 
     kdb mount test.csv /csv csvstorage
 
