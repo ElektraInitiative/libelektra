@@ -20,17 +20,17 @@ with the same name are merged together under the section key.
 
 If you want to add a ini file to the global key database, simply use mount:
 
-    kdb mount file.ini /test ini
+    kdb mount file.ini /example ini
 
 Then you can modify the contents of the ini file using set:
 
-    kdb set user/test/key value
-    kdb set user/test/section
-    kdb set user/test/section/key value
+    kdb set user/example/key value
+    kdb set user/example/section
+    kdb set user/example/section/key value
 
 Find out which file you modified:
 
-    kdb file user/test
+    kdb file user/example
 
 
 ## SECTIONS ##
