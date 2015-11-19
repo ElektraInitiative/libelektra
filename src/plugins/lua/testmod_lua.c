@@ -26,8 +26,8 @@ static void test_variable_passing()
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if(ksGetSize(ks) == 1, "keyset size is still 0");
 	succeed_if(ksGetSize(ks) == 1 && !strcmp(keyName(ksHead(ks)), "user/from_lua"), "key in keyset has wrong name");
-	succeed_if(output_warnings(errorKey), "warnings in kdbOpen");
-	succeed_if(output_error(errorKey),    "errors in kdbOpen");
+	succeed_if(output_warnings(parentKey), "warnings in kdbOpen");
+	succeed_if(output_error(parentKey),    "errors in kdbOpen");
 
 	ksDel(ks);
 	keyDel(parentKey);
@@ -90,8 +90,8 @@ static void test_fail()
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) == -1,   "call to kdbGet didn't fail");
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == -1,   "call to kdbSet didn't fail");
 	succeed_if(plugin->kdbError(plugin, ks, parentKey) == -1, "call to kdbError didn't fail");
-	succeed_if(output_warnings(errorKey), "warnings in kdbOpen");
-	succeed_if(output_error(errorKey),    "errors in kdbOpen");
+	succeed_if(output_warnings(parentKey), "warnings in kdbOpen");
+	succeed_if(output_error(parentKey),    "errors in kdbOpen");
 
 	ksDel(ks);
 	keyDel(parentKey);
