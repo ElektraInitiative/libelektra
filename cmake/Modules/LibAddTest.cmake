@@ -10,7 +10,7 @@
 
 macro (add_gtest source)
 	cmake_parse_arguments (ARG
-		"NO_MAIN;NO_TOOLS" # optional keywords
+		"MEMLEAK;NO_MAIN;NO_TOOLS" # optional keywords
 		"" # one value keywords
 		"" # multi value keywords
 		${ARGN}
@@ -46,4 +46,9 @@ macro (add_gtest source)
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
 	endif(BUILD_TESTING)
+
+	if (ARG_MEMLEAK)
+		set_property(TEST ${source} PROPERTY
+			LABELS memleak)
+	endif (ARG_MEMLEAK)
 endmacro (add_gtest)

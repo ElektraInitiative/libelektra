@@ -47,3 +47,4 @@ The kdb export command takes one special option:
 	kdb export system/backup > backup.ecf
 
 This command would export all keys stored under system/backup, along with relevant Keys in system/elektra, into a file called backup.ecf.
+[Other example](export-dump.md)

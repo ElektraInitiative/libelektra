@@ -19,7 +19,7 @@ int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle,   ckdb::KeySet *ks, ckdb::
 int PYTHON_PLUGIN_FUNCTION(Set)(ckdb::Plugin *handle,   ckdb::KeySet *ks, ckdb::Key *parentKey);
 int PYTHON_PLUGIN_FUNCTION(Error)(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
 
-ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(python);
+ckdb::Plugin *PYTHON_PLUGIN_EXPORT(PYTHON_PLUGIN_NAME);
 }
 
 #endif

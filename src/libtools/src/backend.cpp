@@ -291,7 +291,9 @@ void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
  */
 void Backend::addPlugin (std::string pluginName, KeySet pluginConf)
 {
-	tryPlugin (pluginName, pluginConf);
+	KeySet fullPluginConfig = pluginConf;
+	fullPluginConfig.append(config); // add previous configs
+	tryPlugin (pluginName, fullPluginConfig);
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());

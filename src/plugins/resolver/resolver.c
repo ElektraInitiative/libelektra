@@ -161,10 +161,8 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED,
 		}
 		else
 		{
-			char buffer[ERROR_SIZE];
-
 			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed file lock with message: %s",
-				strerror_r(errno, buffer, ERROR_SIZE));
+				strerror(errno));
 		}
 		return -1;
 	}
@@ -197,9 +195,8 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 
 	if (ret == -1)
 	{
-		char buffer[ERROR_SIZE];
 		ELEKTRA_ADD_WARNINGF(32, parentKey, "fcntl SETLK unlocking failed with message: %s", 
-			strerror_r(errno, buffer, ERROR_SIZE));
+			strerror(errno));
 	}
 
 	return ret;
@@ -227,9 +224,8 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 		}
 		else
 		{
-			char buffer[ERROR_SIZE];
 			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed mutex lock with message: %s",
-				strerror_r(errno, buffer, ERROR_SIZE));
+				strerror(errno));
 		}
 		return -1;
 	}
@@ -251,9 +247,8 @@ static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
 	if (ret != 0)
 	{
-		char buffer[ERROR_SIZE];
 		ELEKTRA_ADD_WARNINGF(32, parentKey, "mutex unlock failed with message: %s",
-			strerror_r(errno, buffer, ERROR_SIZE));
+			strerror(errno));
 		return -1;
 	}
 	return 0;
@@ -274,14 +269,13 @@ static void elektraCloseFile(int fd, Key *parentKey)
 {
 	if (close (fd) == -1)
 	{
-		char buffer[ERROR_SIZE];
 		ELEKTRA_ADD_WARNINGF(33, parentKey, "close failed with message: %s",
-			strerror_r(errno, buffer, ERROR_SIZE));
+			strerror(errno));
 	}
 }
 
 /**
- * @brief Add error text received from strerror_r
+ * @brief Add error text received from strerror
  *
  * @param errorText should have at least ERROR_SIZE bytes in reserve
  */
@@ -290,16 +284,87 @@ static void elektraAddErrnoText(char *errorText)
 	char buffer[ERROR_SIZE];
 	if (errno == E2BIG)
 	{
-		strcat (errorText, "could not find a / in the pathname");
+		strcpy (buffer, "could not find a / in the pathname");
 	}
 	else if (errno == EBADMSG)
 	{
-		strcat (errorText, "went up to root for creating directory");
+		strcpy (buffer, "went up to root for creating directory");
 	}
 	else
 	{
-		strcat(errorText, strerror_r(errno, buffer, ERROR_SIZE-2));
+		strcpy(buffer, strerror(errno));
 	}
+	strncat(errorText, buffer, ERROR_SIZE-2-strlen(errorText));
+}
+
+static int needsMapping(Key * testKey, Key * errorKey)
+{
+	elektraNamespace ns = keyGetNamespace(errorKey);
+
+	if (ns == KEY_NS_NONE) return 1; // for unit tests
+	if (ns == KEY_NS_EMPTY) return 1; // for default backend
+	if (ns == KEY_NS_CASCADING) return 1; // init all namespaces for cascading
+
+	return ns == keyGetNamespace(testKey); // otherwise only init if same ns
+}
+
+static int mapFilesForNamespaces(resolverHandles * p, Key * errorKey)
+{
+	Key *testKey = keyNew("", KEY_END);
+	// switch is only present to forget no namespace and to get
+	// a warning whenever a new namespace is present.
+	// In fact its linear code executed:
+	switch (KEY_NS_SPEC)
+	{
+	case KEY_NS_SPEC:
+	keySetName(testKey, "spec");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
+		return -1;
+	}
+
+	case KEY_NS_DIR:
+	keySetName(testKey, "dir");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->dir, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve dir key");
+		return -1;
+	}
+
+	case KEY_NS_USER:
+	keySetName(testKey, "user");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->user, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
+		return -1;
+	}
+
+	case KEY_NS_SYSTEM:
+	keySetName(testKey, "system");
+	if (needsMapping(testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
+	{
+		resolverClose(p);
+		keyDel (testKey);
+		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
+		return -1;
+	}
+
+	case KEY_NS_PROC:
+	case KEY_NS_EMPTY:
+	case KEY_NS_NONE:
+	case KEY_NS_META:
+	case KEY_NS_CASCADING:
+		break;
+	}
+	keyDel (testKey);
+	return 0;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
@@ -329,46 +394,11 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	p->spec.filemode = 0644;
 	p->spec.dirmode = 0755;
 
-	Key *testKey = keyNew("", KEY_END);
-	keySetName(testKey, "spec");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->spec, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve spec key");
-		return -1;
-	}
-	keySetName(testKey, "dir");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->dir, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERROR(35, errorKey, "Could not resolve dir key");
-		return -1;
-	}
-
-	keySetName(testKey, "user");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->user, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
-		return -1;
-	}
-
-	keySetName(testKey, "system");
-	if (ELEKTRA_PLUGIN_FUNCTION(resolver, filename)(testKey, &p->system, errorKey) == -1)
-	{
-		resolverClose(p);
-		keyDel (testKey);
-		ELEKTRA_SET_ERRORF(35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
-		return -1;
-	}
-	keyDel (testKey);
+	int ret = mapFilesForNamespaces(p, errorKey);
 
 	elektraPluginSetData(handle, p);
 
-	return 0; /* success */
+	return ret; /* success */
 }
 
 int ELEKTRA_PLUGIN_FUNCTION(resolver, close)
@@ -640,9 +670,7 @@ static int elektraRemoveConfigurationFile(resolverHandle *pk, Key *parentKey)
 {
 	if (unlink(pk->filename) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_SET_ERROR(28, parentKey, buffer);
+		ELEKTRA_SET_ERROR(28, parentKey, strerror(errno));
 	}
 
 	return 0;
@@ -726,11 +754,9 @@ static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 
 	if (futimens(pk->fd, times) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(99, parentKey,
 			"Could not update time stamp of \"%s\", because %s",
-			pk->filename, buffer);
+			pk->filename, strerror(errno));
 	}
 #elif defined(HAVE_FUTIMES)
 	const struct timeval times[2] = {
@@ -739,11 +765,9 @@ static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 
 	if (futimes(pk->fd, times) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(99, parentKey,
 			"Could not update time stamp of \"%s\", because %s",
-			pk->filename, buffer);
+			pk->filename, strerror(errno));
 	}
 #else
 	#warning futimens/futimes not defined
@@ -767,18 +791,14 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 
 	if (rename (pk->tempfile, pk->filename) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_SET_ERROR (31, parentKey, buffer);
+		ELEKTRA_SET_ERROR (31, parentKey, strerror(errno));
 		ret = -1;
 	}
 
 	struct stat buf;
 	if (stat (pk->filename, &buf) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
+		ELEKTRA_ADD_WARNING (29, parentKey, strerror(errno));
 	} else {
 		/* Update my timestamp */
 		pk->mtime.tv_sec = statSeconds(buf);
@@ -800,11 +820,9 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 	// checking dirp not needed, fsync will have EBADF
 	if (fsync(dirfd(dirp)) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(88, parentKey,
 			"Could not sync directory \"%s\", because %s",
-			pk->dirname, buffer);
+			pk->dirname, strerror(errno));
 	}
 	closedir(dirp);
 

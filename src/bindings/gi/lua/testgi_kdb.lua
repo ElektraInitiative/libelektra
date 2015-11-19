@@ -28,8 +28,10 @@ do
 	local ks = kdb.KeySet(100)
 	db:get(ks, "system/elektra")
 
-	local key = ks:lookup("system/elektra/version/constants/KDB_VERSION")
-	assert(key.value == kdb.VERSION)
+	if os.getenv("CHECK_VERSION") == nil then
+		local key = ks:lookup("system/elektra/version/constants/KDB_VERSION")
+		assert(key.value == kdb.VERSION)
+	end
 end
 
 -- set

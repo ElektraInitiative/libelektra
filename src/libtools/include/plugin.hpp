@@ -183,11 +183,7 @@ public:
 	std::string refname();
 };
 
-#if __cplusplus > 199711L
 typedef std::unique_ptr<Plugin> PluginPtr;
-#else
-typedef std::auto_ptr<Plugin> PluginPtr;
-#endif
 
 }
 

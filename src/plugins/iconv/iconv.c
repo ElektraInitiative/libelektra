@@ -198,7 +198,8 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
 			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
+				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s, encoding settings are from %s to %s",
+						keyString(cur), convertedData, getFrom(handle), getTo(handle));
 				free(convertedData);
 				return -1;
 			}
@@ -215,7 +216,8 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
 			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
+				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s, encoding settings are from %s to %s",
+						keyString(meta), convertedData, getFrom(handle), getTo(handle));
 				free(convertedData);
 				return -1;
 			}
@@ -247,7 +249,9 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
 			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
+				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s,"
+						" encoding settings are from %s to %s (but swapped for write)",
+						keyString(cur), convertedData, getFrom(handle), getTo(handle));
 				free(convertedData);
 				return -1;
 			}
@@ -264,7 +268,9 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
 			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERROR (46, parentKey, convertedData);
+				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s,"
+						" encodings settings are from %s to %s (but swapped for write)",
+						keyString(meta), convertedData, getFrom(handle), getTo(handle));
 				free(convertedData);
 				return -1;
 			}

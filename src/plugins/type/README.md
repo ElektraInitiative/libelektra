@@ -30,16 +30,16 @@ expresses that. If any of those types match, the whole type is valid. For
 example, the type `string empty` equals the type `any`. This facility
 builds a union of the sets of instances existing types specify.
 
-`enum` works with a list of choices. Any of these choices conﬁrms to
-the type, others do not. For example, the type FSType accepts all ﬁle
+`enum` works with a list of choices. Any of these choices confirms to
+the type, others do not. For example, the type FSType accepts all file
 system names, for example, ext2, jfs or vfat.
 
 The `CORBA` type system goes far beyond these basic types. In IDL, it is
-also allowed to deﬁne classes, interfaces and generic containers. These
-user-deﬁned types are however not useful on a single Key.
+also allowed to define classes, interfaces and generic containers. These
+user-defined types are however not useful on a single Key.
 
 To sum up, many basic types like int or char are convenient and
-CORBA ensures that they can be converted to the speciﬁc type of the
+CORBA ensures that they can be converted to the specific type of the
 programming language.
 
 ## Restrictions ##
@@ -47,5 +47,5 @@ programming language.
 The `CORBA` type system also has its limits. The types `string` and
 `enum`, however, can be unsatisfactory. While string is too general
 and makes no limit on how the sequence of characters is structured,
-the enumeration is too ﬁnite. For example, it is not possible to say
-that a string is not allowed to have a speciﬁc symbol in it.
+the enumeration is too finite. For example, it is not possible to say
+that a string is not allowed to have a specific symbol in it.

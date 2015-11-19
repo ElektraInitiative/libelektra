@@ -1,4 +1,5 @@
 #include <kdb.h>
+#include <kdb.hpp>
 #include <external.hpp>
 #include "kdbconfig.h"
 
@@ -115,6 +116,32 @@ void tryExternalCommand(char** argv)
 
 		argv[0] = savedArg;
 	}
+
+	throw UnknownCommand();
+}
+
+void runManPage(std::string command)
+{
+	command = "kdb-"+command;
+	const char * man = "/usr/bin/man";
+	using namespace kdb;
+	std::string dirname = "/sw/kdb/current/";
+	KDB kdb;
+	KeySet conf;
+	kdb.get(conf, dirname);
+
+	Key k = conf.lookup(dirname+"man");
+	if (k) man = k.get<std::string>().c_str();
+	char * const argv [3] = {const_cast<char*>(man),
+		const_cast<char*>(command.c_str()),
+		0};
+
+
+#ifdef _WIN32
+	execve(man, argv, 0);
+#else
+	execve(man, argv, environ);
+#endif
 
 	throw UnknownCommand();
 }

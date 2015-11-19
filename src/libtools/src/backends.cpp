@@ -1,18 +1,13 @@
 #include <backends.hpp>
 
 #include <algorithm>
+#include <iostream>
 
 namespace kdb
 {
 
 namespace tools
 {
-
-#if __cplusplus > 199711L
-using std::move;
-#else
-#define move(x) x
-#endif
 
 /**
  * @brief give info about current mounted backends
@@ -50,7 +45,7 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
 			ret.push_back(bi);
 		}
 	}
-	return move(ret);
+	return std::move(ret);
 }
 
 /**
@@ -67,7 +62,7 @@ Backends::BackendInfoVector Backends::getBackendInfo(KeySet mountConf)
  * @return the found backend or an empty BackendInfo if nothing found
  *         (with empty strings)
  */
-BackendInfo Backends::findBackend(std::string const & mountPath, KeySet mountConf)
+BackendInfo Backends::findBackend(std::string const & mountPath, KeySet mountConf, bool verbose)
 {
 	BackendInfo ret;
 	if (mountPath.empty()) return ret;
@@ -79,6 +74,7 @@ BackendInfo Backends::findBackend(std::string const & mountPath, KeySet mountCon
 	// search for proper mountname:
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
+		if (verbose) std::cout << "compare: " << it->mountpoint << " with " << kmp.getBaseName() << std::endl;
 		if (it->mountpoint == kmp.getBaseName())
 		{
 			return *it;
@@ -97,11 +93,12 @@ BackendInfo Backends::findBackend(std::string const & mountPath, KeySet mountCon
 	if (koldMountpoint.getName() == "user") oldMountpoint = "/"; // fix root
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
+		if (verbose) std::cout << "fallback compare: " << it->mountpoint << " with " << oldMountpoint << std::endl;
 		if (it->mountpoint == oldMountpoint)
 		{
 			return *it;
 		}
-	};
+	}
 	return ret;
 }
 

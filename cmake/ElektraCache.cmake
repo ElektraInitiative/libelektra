@@ -48,6 +48,8 @@ set (PLUGINS_LIST_COMPILE
 set (PLUGINS_LIST_NODEP
 	ccode
 	fstab
+	csvstorage
+	lineendings
 	hexcode
 	hidden
 	ni
@@ -60,6 +62,8 @@ set (PLUGINS_LIST_NODEP
 	noresolver
 	wresolver
 	ini
+	list
+	logchange
 	)
 
 #
@@ -71,6 +75,9 @@ set (PLUGINS_LIST_POSIX
 	iconv
 	network
 	path
+	enum
+	mathcheck
+	conditionals
 	keytometa
 	rename
 	syslog
@@ -80,6 +87,7 @@ set (PLUGINS_LIST_POSIX
 	line
 	validation
 	regexstore
+	filecheck
 	)
 
 #
@@ -120,12 +128,11 @@ set (PLUGINS_LIST_DEP
 	augeas
 	journald
 	jni
-	)
-
-set (PLUGINS_PREVIEW
 	python
 	python2
-    )
+	lua
+	crypto
+	)
 
 #
 # force all plugins
@@ -190,9 +197,16 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 	set (BINDINGS_LIST_SWIG
 		swig_lua
 		swig_python2
-		swig_python3
+		swig_python
 		)
 	set (BINDINGS_FORCE FORCE)
+endif ()
+# rename swig_python3 to swig_python - TODO remove sometime in the future
+list (FIND BINDINGS "swig_python3" FINDEX)
+if (FINDEX GREATER -1)
+	message (STATUS "swig_python3 has been renamed to swig_python")
+	list (REMOVE_ITEM BINDINGS swig_python3)
+	list (APPEND BINDINGS swig_python)
 endif ()
 
 list (FIND BINDINGS "GI" FINDEX)
@@ -200,7 +214,7 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 	set (BINDINGS_LIST_GI
 		glib
 		gi_lua
-		gi_python3
+		gi_python
 		)
 	set (BINDINGS_FORCE FORCE)
 endif ()
@@ -328,9 +342,6 @@ endif()
 #
 # Compile options
 #
-
-
-option (ENABLE_CXX11 "WARNING: Option will be removed with 0.8.13. See libelektra.org/issues/262. Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc." ON)
 
 set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 

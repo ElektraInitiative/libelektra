@@ -2,15 +2,28 @@
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
 - infos/needs =
-- infos/ordering = check
+- infos/ordering = check keytometa
+- infos/stacking = no
 - infos/provides = 
 - infos/placements = presetstorage postgetstorage
 - infos/description = copies metadata to keys with the help of globbing
 
 ## INTRODUCTION ##
 
-This plugin adds metadata to keys identified by globbing expressions. The plugin copies the metadata of the 
-corresponding globbing keys in its configuration. Globbing can be applied in get and set direction.
+The glob plugin provides coping metadata given by the plugin's configuration
+to keys identified using *glob expressions*.
+Globbing resembles regular expressions.
+They do not have the same expressive power, but are easier to use.
+The semantics are more suitable to match path names:
+
+-  `*` matches with any key name of just one hierarchy. This means it
+complies with any character except slash or null.
+-  `?` satisfies single characters with the same exclusions.
+-  Additionally, there are ranges and character classes. They can also be inverted.
+
+So this plugin adds metadata to keys identified by globbing expressions.
+The plugin copies the metadata of the corresponding globbing keys in its configuration.
+Globbing can be applied in get and set direction or both.
 
 
 
@@ -23,13 +36,64 @@ globbing key are copied.
 
 ### GLOBBING DIRECTION ###
 
-Globbing keys located directly below the configuration (e.g config/#1) are applied in both directions
-(get and set). Keys below "get" (e.g. config/get/#1) are applied only in the get direction and keys below set
-(e.g. config/set/#1) are applied only in the set direction. 
+Globbing keys located directly below the configuration (e.g `config/glob/#1`) are applied in both directions
+(get and set). Keys below "get" (e.g. `config/glob/get/#1`) are applied only in the get direction and keys below set
+(e.g. `config/glob/set/#1`) are applied only in the set direction. 
+
+So the glob plugin iterates over a list of glob expressions for every key.
+Metadata is applied only for the first expression that matches.
+So later expressions can be used as default values.
 
 ### GLOBBING FLAGS ###
 
 Globbing keys may contain a subkey named "flags". This optional key contains the flags to be passed to the
 globbing function (currently fnmatch). If the key does not exist or if the value of the key cannot be
 converted into a number, FNM_PATHNAME is used as a default (see fnmatch(3) for more details). 
- 
+
+
+## Contracts ##
+
+Glob statements are very useful together with contracts.
+Storage plugins can request the glob plugin to fill up metadata before
+they receive the keys in `elektraPluginSet()`.
+In `config/needs`, the plugin declares which keys should obtain which
+metadata.
+If the glob expression starts
+with a slash, the contract checker will automatically prepend the mount point.
+
+For example, the hosts plugin contract contains:
+
+	keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
+		KEY_VALUE, "/*",
+		KEY_META, "check/ipaddr", "", /* Preferred way to check */
+			/* Can be checked additionally */
+		KEY_META, "check/validation", "^[0-9.:]+$",
+		KEY_META, "check/validation/message",
+			"Character present not suitable for ip address",
+		KEY_END),
+	keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
+		KEY_VALUE, "/*/*",
+			/* Strict character validation */
+		KEY_META, "check/validation", "^[0-9a-zA-Z.:]+$",
+		KEY_META, "check/validation/message",
+			"Character present not suitable for host address",
+		KEY_END),
+
+We see that the `hosts` plugin adds two glob statements with the clause
+`config/needs`.
+The first one matches with hostnames, the second with aliases.
+
+The glob plugin only fills the metadata in `kdbSet()`.
+This makes a difference compared with
+adding the metadata already in `kdbGet()`.
+Using the glob plugin, the user will not
+see the metadata, but later plugins in `kdbSet()` will.
+
+To sum up,
+the glob plugin replenishes the keys with metadata.
+The plugin applies metadata in a flexible way.
+This metadata can be used for later checks.
+Limited configuration storage plugins, like the `hosts`
+plugin, use this feature.
+They need it because they are not able to store metadata themselves.
+It is obviously not possible to apply values to non-existing keys.

@@ -28,35 +28,7 @@
 
 ## Quality Goals ##
 
-1.) Robustness
-
-Configuration Systems today suffer badly from:
-
-- weak input validation
-- faulty transformations from strings to other types
-- no error messages
-- undefined behaviour
-
-We want to tackle this problem.
-
-
-2.) Extensibility
-
-There are so many variants of
-
-- storage formats
-- frontend integrations
-- bindings
-
-Nearly every aspect of Elektra must be extremely extensible.
-On the other side semantics must be very clear and well defined
-so that this extensible system works reproducible and predictable.
-
-Only key/value pairs are the common factor and a way to get and set
-them, everything else is an extension.
-
-
-3.) Simplicity
+1.) Simplicity
 
 An overly complex system cannot be managed nor understood.
 Extensibility brings some complex issues,
@@ -75,6 +47,34 @@ Special care for simplicity is taken for the users:
 - Application`s Maintainers to correctly setup+upgrade KDB
 - Administrators that want to change the maintainers setup
   according to their needs
+
+
+2.) Robustness
+
+Configuration Systems today suffer badly from:
+
+- weak input validation
+- faulty transformations from strings to other types
+- no error messages
+- undefined behaviour
+
+We want to tackle this problem.
+
+
+3.) Extensibility
+
+There are so many variants of
+
+- storage formats
+- frontend integrations
+- bindings
+
+Nearly every aspect of Elektra must be extremely extensible.
+On the other side semantics must be very clear and well defined
+so that this extensible system works reproducible and predictable.
+
+Only key/value pairs are the common factor and a way to get and set
+them, everything else is an extension.
 
 
 4.) Performance

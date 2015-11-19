@@ -8,9 +8,8 @@ if (PYTHON2LIBS_VERSION_STRING MATCHES "^3\\.[0-9]+")
 elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 	include (LibAddMacros)
 
-	execute_process (
+	add_custom_command (OUTPUT runtime.h
 		COMMAND ${SWIG_EXECUTABLE} -c++ -python -external-runtime runtime.h
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)
 
 	add_plugin(python2
@@ -27,6 +26,12 @@ elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 			PYTHON_PLUGIN_NAME=python2
 			PYTHON_PLUGIN_SYMBOL_NAME=Python2
 	)
+
+	# generate readme from pythons readme.
+	set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
+	set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../python")
+	generate_readme (python2)
+	set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_SAFE})
 
 	# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 	set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
@@ -50,7 +55,7 @@ elseif (PYTHON2LIBS_FOUND AND SWIG_FOUND)
 				PYTHON_PLUGIN_NAME=\"python2\"
 		)
 
-		install(DIRECTORY python2 DESTINATION ${TARGET_TEST_DATA_FOLDER})
+		install (DIRECTORY ../python/python/ DESTINATION "${TARGET_TEST_DATA_FOLDER}/python2")
 	else ()
 		message (WARNING "swig_python2 bindings are required for testing, test deactivated")
 	endif ()

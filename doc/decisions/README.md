@@ -11,6 +11,7 @@ section here.
 
 - [Holes](holes.md)
 - [Unit Testing](unit_testing.md)
+- [Capabilities](capabilities.md)
 
 ## Decided
 
@@ -21,9 +22,12 @@ section here.
 - [CMake spec](cmake_spec.md)
 - [Empty Files](empty_files.md)
 - [Internal Cache](internal_cache.md)
+- [Definition of Bool](bool.md)
+- [Publish Subscribe](pubsub.md)
 
 ## Drafts
 
 - [Specification](specification.md)
 - [Script Testing](script_testing.md)
 - [Null Pointer Checks](null_pointer_checks.md)
+- [Pub/Sub Communication](pubsub.md)

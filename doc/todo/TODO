@@ -16,6 +16,12 @@ generator for:
 	human readable text
 
 
+== VARIANTS ==
+
+for python plugin
+ - fix symbol generator
+ - avoid full/static for symbol clashes
+
 == OpenICC ==
 
 
@@ -52,34 +58,6 @@ script testing:
 
 use error value as exit (does it start with 0?)
 printError usw. Nicht von makro abhängig machen?
-
-
-== CONTRACTS ==
-
-if given use information inside file rather then parent key
-if storage plugin cannot represent this information, make it as information only
-give (hardcoded) defaults in contract
-Warn on ignored settings -> But better to always check contract!! 
-let those values be changed on mount/import/export
-
-
-make plugins (backends) recursive
-
-Plugins should state which metadata they can handle and which they can interpret or generate
-
-
-
-== BINDINGS ==
-
-c++:
-	Keyset operator==
-
-bindings: using swig
-	python
-	scheme
-	java
-
-
 
 
 == NOTIFICATION ==

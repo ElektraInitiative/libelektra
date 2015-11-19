@@ -1,6 +1,6 @@
 #include <tests.hpp>
 
-void test_kdbGetSet()
+TEST(kdb, get_set)
 {
 	cout << "testing kdbSet() and kdbGet()" << endl;
 
@@ -25,6 +25,7 @@ void test_kdbGetSet()
 		kdb.get (ks, "user/tests/key3");
 		exit_if_fail(ks.lookup("user/tests/key3/3"), "could not find previously written key");
 		succeed_if(ks.lookup("user/tests/key3/3").get<std::string>() == "value", "could not get value");
+		succeed_if(!ks.lookup("user/tests/key3/3").needSync(), "should not need sync");
 	}
 
 	// now remove keys (cleanup)
@@ -44,16 +45,4 @@ void test_kdbGetSet()
 		succeed_if(!ks.lookup("user/tests/key3/3"), "key was not removed");
 	}
 
-}
-
-int main()
-{
-	cout << "KDB CLASS TESTS" << endl;
-	cout << "==================" << endl << endl;
-
-	test_kdbGetSet();
-
-	cout << endl;
-	cout << "test_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
-	return nbError;
 }

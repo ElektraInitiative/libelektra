@@ -1,5 +1,4 @@
 #include "treeviewmodel.hpp"
-#include "guibasickeyset.hpp"
 #include <threewaymerge.hpp>
 #include <automergeconfiguration.hpp>
 #include <mergeconflictstrategy.hpp>
@@ -21,7 +20,16 @@ using namespace kdb::tools::merging;
 
 TreeViewModel::TreeViewModel(QObject* parentModel) :
 	m_root("/", KEY_END),
-	m_kdb(m_root)
+	m_kdb(0),
+	m_base()
+{
+	Q_UNUSED(parentModel);
+}
+
+TreeViewModel::TreeViewModel(KDB * kdb, QObject* parentModel) :
+	m_root("/", KEY_END),
+	m_kdb(kdb),
+	m_base()
 {
 	Q_UNUSED(parentModel);
 }
@@ -33,6 +41,7 @@ TreeViewModel::TreeViewModel(const TreeViewModel& other)
 	m_model = other.m_model;
 	m_root = other.m_root;
 	m_kdb = other.m_kdb;
+	m_base = other.m_base;
 }
 
 int TreeViewModel::rowCount(const QModelIndex& parentIndex) const
@@ -333,6 +342,8 @@ QVariant TreeViewModel::find(const QString& term)
 		searchResults->model().append(ConfigNodePtr(new ConfigNode("NotfoundNode", tr("There were no results matching your query."), 0, this)));
 	}
 
+	QQmlEngine::setObjectOwnership(searchResults, QQmlApplicationEngine::CppOwnership);
+
 	return QVariant::fromValue(searchResults);
 }
 
@@ -450,23 +461,13 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 void TreeViewModel::populateModel()
 {
-	try
-	{
-		kdb::KeySet config;
-		m_kdb.get(config, m_root);
-		populateModel(config);
-	}
-	catch(kdb::KDBException const& e)
-	{
-		emit showMessage(QObject::tr("Error"), QObject::tr("Populating model failed, could not read from configuration."), e.what());
-		throw;
-	}
+	kdb::KeySet config;
+	m_kdb->get(config, m_root);
+	populateModel(config);
 }
 
 void TreeViewModel::populateModel(KeySet const & keySet)
 {
-	GUIBasicKeySet::setBasic(keySet);
-
 	m_model.clear();
 
 	using namespace ckdb; // for namespaces
@@ -503,6 +504,7 @@ void TreeViewModel::populateModel(KeySet const & keySet)
 		if (toAdd) m_model << toAdd;
 	}
 
+	m_base = keySet;
 	createNewNodes(keySet);
 }
 
@@ -516,9 +518,9 @@ void TreeViewModel::createNewNodes(KeySet keySet)
 		QStringList keys = getSplittedKeyname(k);
 		QString root = keys.takeFirst();
 
-		for(int i = 0; i < m_model.count(); i++)
+		for (int i = 0; i < m_model.count(); i++)
 		{
-			if(root == m_model.at(i)->getName())
+			if (root == m_model.at(i)->getName())
 				sink(m_model.at(i), keys, k);
 		}
 	}
@@ -561,17 +563,19 @@ std::string printKey(Key const & k)
 	}
 	return ret;
 }
-#endif
 
-void printKeys(KeySet const & theirs ELEKTRA_UNUSED, KeySet const & base ELEKTRA_UNUSED, KeySet const & ours ELEKTRA_UNUSED)
+void printKeys(KeySet const & theirs, KeySet const & base, KeySet const & ours)
 {
-#if DEBUG && VERBOSE
 	theirs.rewind();
 	base.rewind();
 	for (Key o : ours)
 	{
+		std::string prefix("user/guitest");
 		Key t = theirs.next();
 		Key b = base.next();
+		if (!  ((o && !o.getName().compare(0, prefix.size(), prefix)) &&
+			(t && !t.getName().compare(0, prefix.size(), prefix)) &&
+			(b && !b.getName().compare(0, prefix.size(), prefix)))) continue;
 		std::cout << printKey(o);;
 		std::cout << "\t";
 		!b.isValid() ? std::cout << "none" : std::cout << printKey(b);
@@ -579,8 +583,8 @@ void printKeys(KeySet const & theirs ELEKTRA_UNUSED, KeySet const & base ELEKTRA
 		!t.isValid() ? std::cout << "none" : std::cout << printKey(t);
 		std::cout << std::endl;
 	}
-#endif
 }
+#endif
 
 QStringList getConflicts(KeySet const & conflictSet)
 {
@@ -600,35 +604,34 @@ QStringList getConflicts(KeySet const & conflictSet)
 	return conflicts;
 }
 
-KeySet handleConflict(KeySet & ours)
+KeySet handleConflict(KeySet const & theirs, KeySet const & m_base, KeySet const & ours)
 {
 	Key root("/", KEY_END);
-	KeySet base = GUIBasicKeySet::basic();
+	KeySet base = m_base;
 
 	ThreeWayMerge merger;
 
 	AutoMergeConfiguration configuration;
 	configuration.configureMerger(merger);
 
-	// get theirs config
-	KDB kdb;
-	KeySet theirs;
-	kdb.get(theirs, root);
-
+#if DEBUG && VERBOSE
+	std::cout << "guitest: handleConflict: before merge" << std::endl;
 	printKeys(theirs, base, ours);
+#endif
 
 	MergeResult result = merger.mergeKeySet(MergeTask(BaseMergeKeys(base, root),
 							  OurMergeKeys(ours, root),
 							  TheirMergeKeys (theirs, root),
 							  root));
 
+#if DEBUG && VERBOSE
+	std::cout << "guitest: handleConflict: after merge" << std::endl;
+	printKeys(theirs, base, result.getMergedKeys());
+#endif
+
 	if (!result.hasConflicts ())
 	{
 		KeySet resultKeys = result.getMergedKeys();
-
-		// 3-way merging allowed use to succeed anyway
-		// store the base for next time:
-		GUIBasicKeySet::setBasic(resultKeys);
 		return resultKeys;
 	}
 	else
@@ -646,37 +649,46 @@ void TreeViewModel::synchronize()
 
 	try
 	{
-		// write our config
-		m_kdb.set(ours, m_root);
-		// update our config (if no conflict)
-		m_kdb.get(ours, m_root);
+#if DEBUG && VERBOSE
+		std::cout << "guitest: start" << std::endl;
+		printKeys(ours, ours, ours);
+#endif
 
-		GUIBasicKeySet::setBasic(ours);
-		createNewNodes(ours);
+		// write our config
+		m_kdb->set(ours, m_root);
+		// update our config (if no conflict)
+		m_kdb->get(ours, m_root);
+
+#if DEBUG && VERBOSE
+		std::cout << "guitest: after get" << std::endl;
+		printKeys(ours, ours, ours);
+#endif
+
+		m_base = ours;
+		// createNewNodes(ours);
+		// workaround for #348
+		populateModel(ours);
 	}
 	catch (KDBException const&)
 	{
 		try
 		{
-			KeySet renew;
+			KeySet theirs = ours.dup();
+			m_kdb->get(theirs, m_root);
 
-			KeySet result = handleConflict(ours);
+			KeySet result = handleConflict(theirs, m_base, ours);
 
-			// bring our database also to situation where it can be reset
-			m_kdb.get(renew, m_root);
+			m_kdb->set(result, m_root);
 
-			/* TODO: should be added to fix race condition, currently not possible
-			   because some plugins prevent kdb.get() from returning 0
-			if (m_kdb.get(renew, m_root) == 0)
-			{
-			} else {
-				emit showMessage(tr("Error"), tr("Database changed during merging."), "");
-			}
-			*/
+#if DEBUG && VERBOSE
+			std::cout << "guitest: exception: now after set" << std::endl;
+			printKeys(theirs, result, ours);
+#endif
 
-			// TODO: will rewrite everything because of current limitation in merger
-			m_kdb.set(result, m_root);
-			createNewNodes(result);
+			m_base = result;
+			// createNewNodes(result);
+			// workaround for #348
+			populateModel(result);
 		}
 		catch (KDBException const& e)
 		{
@@ -786,6 +798,11 @@ QStringList TreeViewModel::getSplittedKeyname(const Key &key)
 	}
 
 	return names;
+}
+
+void TreeViewModel::discardModel()
+{
+	delete this;
 }
 
 MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrategy)

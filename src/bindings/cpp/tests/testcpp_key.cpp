@@ -4,27 +4,26 @@
 #include <string>
 #include <stdexcept>
 
-void test_null()
+TEST(key, null)
 {
-	cout << "testing null" << endl;
-
 	Key key0(static_cast<ckdb::Key*>(0));
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull(), "key should evaluate to false");
+	succeed_if (key0.needSync(), "key should need sync");
 
 	key0 = static_cast<ckdb::Key*>(0);
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull(), "key should evaluate to false");
+	succeed_if (key0.needSync(), "key should need sync");
 
 	key0.release();
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull(), "key should evaluate to false");
+	succeed_if (key0.needSync(), "key should need sync");
 }
 
-void test_keynew()
+TEST(key, keynew)
 {
-	cout << "testing keynew" << endl;
-
 	char array[] = "here is some data stored";
 
 	Key key0;
@@ -218,10 +217,8 @@ void test_keynew()
 	succeed_if (keyB.getValue() == 0, "Binary should be a nullpointer");
 }
 
-void test_constructor()
+TEST(key, constructor)
 {
-	cout << "testing constructor" << endl;
-
 	ckdb::Key *ck = ckdb::keyNew(0);
 	Key k = ck; // constructor with (ckdb::Key)
 
@@ -235,10 +232,8 @@ void test_constructor()
 	succeed_if (k.get<int> () == 30, "could not get same int");
 }
 
-void test_setkey()
+TEST(key, set)
 {
-	cout << "testing setkey" << endl;
-
 	ckdb::Key *ck;
 	Key k;
 
@@ -255,9 +250,8 @@ void test_setkey()
 	succeed_if (k.get<int> () == 30, "could not get same int");
 }
 
-void test_cast()
+TEST(key, cast)
 {
-	cout << "testing cast" << endl;
 	ckdb::Key *ck;
 	Key *k;
 
@@ -277,7 +271,7 @@ void test_cast()
 	ckdb::keyDel (ck);
 }
 
-void test_value ()
+TEST(key, value)
 {
 	cout << "testing value" << endl;
 	Key test;
@@ -320,9 +314,8 @@ void test_value ()
 	succeed_if (test.getMeta<std::string>("comment") == "mycomment", "could not get same comment");
 }
 
-void test_exceptions ()
+TEST(key, exceptions)
 {
-	cout << "testing exceptions" << endl;
 	Key test;
 
 	try {
@@ -343,10 +336,8 @@ void test_exceptions ()
 	}
 }
 
-void test_name()
+TEST(key, name)
 {
-	cout << "testing name" << endl;
-
 	Key test;
 	succeed_if (test.getName() == "", "Name should be empty");
 
@@ -413,10 +404,8 @@ void f(Key)
 	Key h ("user/infunction", KEY_END);
 }
 
-void test_ref()
+TEST(key, ref)
 {
-	cout << "testing ref" << endl;
-
 	Key zgr1 ("user/zgr1", KEY_END);
 	{
 		Key zgr2 ("user/zgr2", KEY_END);
@@ -455,10 +444,8 @@ void test_ref()
 	succeed_if (ref3.getName() == "user/test", "ref key wrong name");
 }
 
-void test_dup()
+TEST(key, dup)
 {
-	cout << "testing dup" << endl;
-
 	Key test;
 	test.setName("user:markus/test");
 
@@ -470,14 +457,12 @@ void test_dup()
 	Key dup1 = test.dup(); // directly call of dup()
 	succeed_if (dup1.getName() == "user/test", "dup key wrong name");
 
-	succeed_if(*test != *dup0, "should be other key")
-	succeed_if(*test != *dup1, "should be other key")
+	succeed_if(*test != *dup0, "should be other key");
+	succeed_if(*test != *dup1, "should be other key");
 }
 
-void test_valid()
+TEST(key, valid)
 {
-	cout << "Test if keys are valid or not" << endl;
-
 	Key i1;
 	succeed_if (!i1.isValid(), "key should not be valid");
 	succeed_if (i1, "even though it is invalid, it is still not a null key");
@@ -532,10 +517,8 @@ void test_valid()
 	}
 }
 
-void test_clear()
+TEST(key, clear)
 {
-	cout << "Test clearing of keys" << endl;
-
 	Key k1("user", KEY_END);
 	Key k2 = k1;
 	Key k3 = k1;
@@ -571,10 +554,8 @@ void test_clear()
 	succeed_if(!k3.getMeta<const Key>("test_meta"), "metadata not set correctly");
 }
 
-void test_cconv()
+TEST(key, conversation)
 {
-	cout << "Test conversion to C Key" << endl;
-
 	Key k1("user", KEY_END);
 	ckdb::Key * ck1 = k1.getKey();
 	succeed_if(!strcmp(ckdb::keyName(ck1), "user"), "c key does not have correct name");
@@ -585,10 +566,8 @@ void test_cconv()
 	ckdb::keyDel (ck1);
 }
 
-void test_namespace()
+TEST(key, keynamespace)
 {
-	cout << "Test namespace" << endl;
-
 	succeed_if(Key("user", KEY_END).getNamespace() == "user", "namespace wrong");
 	succeed_if(Key("user/a", KEY_END).getNamespace() == "user", "namespace wrong");
 	std::cout << Key("user/a", KEY_END).getNamespace() << std::endl;
@@ -608,30 +587,4 @@ void test_namespace()
 
 	succeed_if(Key("/", KEY_END).getNamespace() == "/", "namespace wrong");
 	succeed_if(Key("/abc", KEY_END).getNamespace() == "/", "namespace wrong");
-}
-
-int main()
-{
-	cout << "KEY CLASS TESTS" << endl;
-	cout << "===============" << endl << endl;
-
-	test_null();
-	test_constructor();
-	test_setkey();
-	test_cast();
-
-	test_keynew();
-	test_name();
-	test_value();
-	test_exceptions();
-	test_dup();
-	test_ref();
-	test_valid();
-	test_clear();
-	test_cconv();
-	test_namespace();
-
-	cout << endl;
-	cout << "testcpp_key RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
-	return nbError;
 }

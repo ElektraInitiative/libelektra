@@ -48,6 +48,24 @@ The build-in resolving works like (with ~ and `pwd` resolved from system):
 - for system with relative path: KDB_DB_SYSTEM + path
 
 
+## Example
+
+For an absolute path /example.ini, you might get following values:
+
+- for spec: /example.ini
+- for dir: `pwd`/example.ini
+- for user: ~/example.ini
+- for system: /example.ini
+
+
+For an relative path example.ini, you might get following values:
+
+- for spec: /usr/share/elektra/specification/example.ini
+- for dir: `pwd`/.dir/example.ini
+- for user: ~/.config/example.ini
+- for system: /etc/kdb/example.ini
+
+
 ## Variants ##
 
 Many variants exist that additionally influence the lookup

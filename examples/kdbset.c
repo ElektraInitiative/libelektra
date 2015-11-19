@@ -19,12 +19,12 @@ int showElektraErrorDialog (Key *parentKey, Key* problemKey)
 	return a;
 }
 
-KeySet *doElektraMerge(KeySet *ours, KeySet *myConfig, KeySet *base)
+KeySet *doElektraMerge(KeySet *ours, KeySet *theirs, KeySet *base)
 {
 	printf ("see libelektra-tools for merging"
 			" sizes are: %d %d %d\n",
 			(int) ksGetSize(ours),
-			(int) ksGetSize(myConfig),
+			(int) ksGetSize(theirs),
 			(int) ksGetSize(base));
 	return ksNew(0, KS_END);
 }
@@ -43,6 +43,7 @@ KeySet *base = ksDup(myConfig); // save a copy of original keyset
 // change the keys within myConfig
 
 KeySet *ours = ksDup(myConfig); // save a copy of our keyset
+KeySet *theirs; // needed for 3-way merging
 int ret=kdbSet(handle, myConfig, parentKey);
 while (ret == -1) // as long as we have an error
 {
@@ -59,9 +60,10 @@ while (ret == -1) // as long as we have an error
 		myConfig = ours;
 		break;
 	case INPUT_DO_MERGE:
-		kdbGet(handle, myConfig, parentKey); // refresh key database
-		KeySet * res=doElektraMerge(ours, myConfig, base);
-		ksDel(myConfig);
+		theirs = ksDup(ours);
+		kdbGet(handle, theirs, parentKey); // refresh key database
+		KeySet * res=doElektraMerge(ours, theirs, base);
+		ksDel(theirs);
 		myConfig = res;
 		break;
 	case INPUT_USE_THEIRS:

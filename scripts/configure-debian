@@ -4,7 +4,6 @@
 
 cd $BUILD
 cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
-	-DENABLE_CXX11=ON \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL" \

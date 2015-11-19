@@ -62,6 +62,8 @@ if (PYTHON2INTERP_FOUND)
 		#	)
 	endfunction(gen_util)
 
+	generate_manpage (kdb-gen FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+
 	#add_subdirectory(util)
 
 	# for future cmakification

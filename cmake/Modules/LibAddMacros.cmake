@@ -141,45 +141,6 @@ macro (add_plugintest testname)
 	endif ()
 endmacro (add_plugintest)
 
-# Add a test for cpp plugins
-macro (add_cpp_plugintest testname)
-	if (BUILD_TESTING)
-		cmake_parse_arguments (ARG
-			"MEMLEAK" # optional keywords
-			""        # one value keywords
-			""        # multi value keywords
-			${ARGN}
-		)
-		set (source "testmod_${testname}")
-		include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
-		include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
-		set (SOURCES ${HDR_FILES} ${source}.cpp ${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests/tests.cpp)
-		add_executable (${source} ${SOURCES})
-
-		if (BUILD_FULL)
-			target_link_libraries (${source} elektra-full)
-		else (BUILD_FULL)
-			target_link_libraries (${source} elektra-static)
-		endif (BUILD_FULL)
-
-		if (INSTALL_TESTING)
-			install (TARGETS ${source}
-				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-		endif (INSTALL_TESTING)
-
-		set_target_properties (${source} PROPERTIES
-				COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-		add_test (${source}
-				"${CMAKE_BINARY_DIR}/bin/${source}"
-				"${CMAKE_CURRENT_BINARY_DIR}/"
-				)
-		if (ARG_MEMLEAK)
-			set_property(TEST testmod_${testname} PROPERTY
-				LABELS memleak)
-		endif (ARG_MEMLEAK)
-	endif()
-endmacro (add_cpp_plugintest testname)
-
 macro(find_swig)
 	if (NOT SWIG_FOUND)
 		find_package(SWIG 3)
@@ -190,7 +151,31 @@ macro(find_swig)
 	endif (NOT SWIG_FOUND)
 endmacro(find_swig)
 
-
+#
+# find an util to pass to add_custom_command later
+#
+# Parameters:
+#
+# 1. util        [in] : the utility fo search for. Must be added using
+#                       add_executable first.
+# 2. EXE_SYM_LOC [out]: a name for a variable where the program to be executed
+#                       is written to.
+#                       Note: you must pass this value to COMMAND of add_custom_command
+# 3. EXE_SYM_ARG [out]: a name for a variable where the argument to be executed
+#                       is written to.
+#                       Note: you must pass this value to ARGS in add_custom_command
+#
+# Example Usage:
+# add_executable (exportsymbols ...)
+# include(LibAddMacros)
+# find_util(exportsymbols EXE_SYM_LOC EXE_SYM_ARG)
+#
+# add_custom_command (
+#		DEPENDS exportsymbols
+#		COMMAND ${EXE_SYM_LOC}
+#		ARGS ${EXE_SYM_ARG} ... other arguments
+#		)
+#
 function(find_util util output_loc output_arg)
 	if (CMAKE_CROSSCOMPILING)
 		if (WIN32)
@@ -533,6 +518,49 @@ macro(removal ELEMENTS TO_REMOVE_ELEMENTS)
 endmacro()
 
 
+function (generate_manpage NAME)
+if (RONN_LOC) # disable function when RONN_LOC is not set
+
+	cmake_parse_arguments (ARG
+		"" # optional keywords
+		"SECTION;FILENAME" # one value keywords
+		"" # multi value keywords
+		${ARGN}
+	)
+
+	if (ARG_SECTION)
+		set(SECTION ${ARG_SECTION})
+	else ()
+		set(SECTION 1)
+	endif ()
+
+	if (ARG_FILENAME)
+		set(MDFILE ${ARG_FILENAME})
+	else ()
+		set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
+	endif ()
+
+	set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.${SECTION})
+
+	add_custom_command(
+		OUTPUT ${OUTFILE}
+		DEPENDS ${MDFILE}
+		COMMAND ${RONN_LOC}
+		ARGS -r --pipe ${MDFILE} > ${OUTFILE}
+		)
+	add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
+	add_dependencies(man man-${NAME})
+
+	if (INSTALL_DOCUMENTATION)
+		install(
+			FILES ${OUTFILE}
+			DESTINATION share/man/man${SECTION}
+			)
+	endif ()
+endif (RONN_LOC)
+endfunction ()
+
+
 #
 # Parameter: the pluginname
 #
@@ -563,6 +591,7 @@ function (generate_readme p)
 	STRING(REGEX REPLACE "\"- +infos/placements *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/stacking *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/stacking\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/needs *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/needs\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\"" "keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	# allow macros:

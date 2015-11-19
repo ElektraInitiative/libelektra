@@ -31,6 +31,10 @@ Assuming the escape character is % the input would be encoded to:
 
 	value%3Dabc%20xyz
 
+The disadvantage is that the length of the resulting string increases.
+In the worst case
+the hexcode plugin makes the value three times larger.
+
 ## Usage ##
 
 Add `ccode` to `infos/needs` for any plugin that you want to be filtered

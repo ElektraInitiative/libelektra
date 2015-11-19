@@ -1,28 +1,77 @@
+elektra-plugins(7) -- plugins overview
+======================================
+
 Plugins can be mounted into the KDB and can access or manipulate the
-KeySet.
+KeySet on every access.
+
+Multiple plugins can be mounted into the [key data base](elektra-glossary.md).
+On every access to the key data base they are executed and thus can change
+the functionality.
+
+
 
 # Introduction #
 
 Elektra already has a wide range of different plugins.
 The plugin folders should contain a README.md with further information.
+(Or follow links below.)
 The plugins are:
 
 ![Overview Plugins](/doc/images/overview_plugins.png)
 
+For background information see [elektra-plugins-framework(7)](elektra-plugins-framework.md).
+
+
+## C-Interface ##
+
+All plugins implement the same interface:
+
+-  `kdbOpen()` calls `elektraPluginOpen()` of every plugin
+    to let them do their initialisation.
+-  `kdbGet()` requests `elektraPluginGet()` of every plugin in the queried
+    backends to return a key set.
+-  `kdbSet()` usually calls `elektraPluginSet()` of every plugin
+    in the queried backends to store the configuration.
+-  `kdbSet()` also calls `elektraPluginError()`
+    for every plugin when an error happens.
+    Because of `elektraPluginError()`, plugins are guaranteed to have
+    their chance for necessary cleanups.
+-  `kdbClose()` makes sure that plugins can finally free their
+    own resources in `elektraPluginClose()`.
+
+
+## KDB-Interface
+
+- To list all plugins use [kdb-list(1)](kdb-list.md).
+- To check a plugin use [kdb-check(1)](kdb-check.md).
+- For information on a plugin use [kdb-info(1)](kdb-info.md).
+- For mount plugin(s) use [kdb-mount(1)](kdb-mount.md).
+
+
+## See also
+
+For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
+For more background information of the [plugin framework, continue here](/doc/help/plugin-framework.md).
+Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
+
+
+
+
+# Plugins #
 
 ## Resolver ##
 
 Before configuration is actually written, the file name needs to be
 determined (will be automatically added by kdb mount):
 
-- [resolver](resolver) uses POSIX APIs to handle conflicts gracefully
-- [wresolver](wresolver) minimalistic resolver for non-POSIX systems
-- [noresolver](noresolver) does not resolve, but can act as one
+- [resolver](resolver/) uses POSIX APIs to handle conflicts gracefully
+- [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
+- [noresolver](noresolver/) does not resolve, but can act as one
 
 and afterwards the configuration file must be synced with
 harddisc (recommended to add at every kdb mount):
 
-- [sync](sync) uses POSIX APIs to sync configuration file with harddisc
+- [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
 
 ## Storage ##
 
@@ -31,117 +80,134 @@ files.
 
 Read and write everything a KeySet might contain:
 
-- [dump](dump) makes a dump of a KeySet in an Elektra-specific format
+- [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
 
 Read (and write) standard config files of /etc:
 
-- [augeas](augeas) parses and generates many different configuration
+- [augeas](augeas/) parses and generates many different configuration
   files using the augeas library
-- [hosts](hosts) read/write hosts files
-- [line](line) reads any file line by line
+- [hosts](hosts/) read/write hosts files
+- [line](line/) reads any file line by line
 
 Using semi-structured data for config files:
 
-- [tcl](tcl)-like config files (including meta data).
-- [ni](ni) parses INI files based on
+- [tcl](tcl/)-like config files (including meta data).
+- [ni](ni/) parses INI files based on
     [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).
-- [ini](ini) parses INI files based on
+- [ini](ini/) parses INI files based on
     [inih](http://code.google.com/p/inih/).
-- [xmltool](xmltool) uses XML.
-- [yajl](yajl#introduction) uses JSON.
+- [xmltool](xmltool/) uses XML.
+- [yajl](yajl/) uses JSON.
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
 
-- [fstab](fstab) reads fstab files.
-- [regexstore](regexstore)
-- [simpleini](simpleini) is ini without sections
-
+- [fstab](fstab/) reads fstab files.
+- [regexstore](regexstore/)
+- [simpleini](simpleini/) is ini without sections
+- [csvstorage](csvstorage/) for csv files
 
 ## System Information ##
 
 Information compiled in Elektra:
-- [version](version) is a special-buildin plugin directly within the
+- [version](version/) is a build-in plugin directly within the
   core so that it cannot give wrong version information
-- [constants](constants) various constants, including version
+- [constants](constants/) various constants, including version
   information
 
 Providing information found on the system not available in persistent
 files:
 
-- [uname](uname) information from the uname syscall.
+- [uname](uname/) information from the uname syscall.
 
 
 ## Filter ##
 
-Rewrite unwanted characters with different techniques
+*Filter plugins* process keys and their values in both
+directions.
+In one direction they undo what they do in the other direction.
+Most filter plugins available now encode and decode values.
+Storage plugins that use characters to separate key names, values or
+metadata will not work without them.
 
-- [ccode](ccode) using the technique from arrays in the programming
+### Encoding ###
+
+Rewrite unwanted characters with different techniques:
+
+- [ccode](ccode/) using the technique from arrays in the programming
   language C
-- [hexcode](hexcode) using hex codes
+- [hexcode](hexcode/) using hex codes
 
 Transformations:
 
-- [keytometa](keytometa) transforms keys to metadata
-- [rename](rename) renames keys according to different rules
+- [keytometa](keytometa/) transforms keys to metadata
+- [rename](rename/) renames keys according to different rules
 
 Doing other stuff:
 
-- [iconv](iconv) make sure the configuration will have correct
-  charachter encoding
-- [hidden](hidden) 
-- [null](null) takes care of null values and other binary specialities
+- [crypto](crypto/) encrypts / decrypts confidential values
+- [iconv](iconv/) make sure the configuration will have correct
+  character encoding
+- [hidden](hidden/) hides keys whose names start with a `.`.
+- [null](null/) takes care of null values and other binary specialities
 
 
 ## Notification and Logging ##
 
 Log/Send out all changes to configuration to:
 
-- [dbus](dbus)
-- [journald](journald)
-- [syslog](syslog)
+- [dbus](dbus/)
+- [journald](journald/)
+- [syslog](syslog/)
+- [logchange](logchange/) prints the change of every key on the console
 
 
 ## Debug ##
 
 Trace everything that happens within KDB:
 
-- [timeofday](timeofday) print timestamps
-- [tracer](tracer)
-- [counter](counter) count and print how often plugin is used
+- [timeofday](timeofday/) print timestamps
+- [tracer](tracer/)
+- [counter](counter/) count and print how often plugin is used
 
 
 ## Checker ##
 
 Copies meta data to keys:
 
-- [glob](glob) using globbing techniques
-- [struct](struct) using a defined structure (may also reject
+- [glob](glob/) using globbing techniques
+- [struct](struct/) using a defined structure (may also reject
   configuration not conforming to that structure)
 
 Plugins that check if values are valid based on meta data (typically
 copied by another plugin just before):
 
-- [validation](validation) by using regex
-- [network](network) by using network APIs
-- [path](path) by checking files on filesystem
-- [type](type) using runtime type checking (CORBA types)
-
+- [validation](validation/) by using regex
+- [network](network/) by using network APIs
+- [path](path/) by checking files on filesystem
+- [type](type/) using runtime type checking (CORBA types/)
+- [enum](enum/) compares the keyvalue against a list of valid values
+- [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operants
+- [conditionals](conditionals/) by using if-then-else like statements
 
 ## Interpreter ##
 
 These plugins start an interpreter and allow you to use a bindings.
 
-- [jni](jni) java plugins started by jni, works with jna plugins
-- [python](python) Python 3 plugins (technical preview)
-- [python2](python2) Python 2 plugins (technical preview, deprecated)
+- [jni](jni/) java plugins started by jni, works with jna plugins
+- [python](python/) Python 3 plugins (technical preview/)
+- [python2](python2/) Python 2 plugins (technical preview, deprecated/)
+- [lua](lua/) Lua plugins (technical preview/)
 
 
 ## Others ##
 
-- [doc](doc) contains the documentation of the plugin interface
-- [error](error) yields errors as described in metadata
-- [template](template) to be copied for new plugins
+- [doc](doc/) contains the documentation of the plugin interface
+- [error](error/) yields errors as described in metadata (handy for test purposes)
+- [template](template/) to be copied for new plugins
+- [lineendings](lineendings/) tests file for consistent line endings
+- [list](list/) loads other plugins
+- [filecheck](filecheck/) does sanity checks on a file
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:

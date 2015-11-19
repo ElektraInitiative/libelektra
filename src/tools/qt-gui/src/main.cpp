@@ -4,6 +4,7 @@
 #include <QTranslator>
 #include <QtQml>
 #include <QMetaType>
+#include <QMessageBox>
 #include <QtTest/qtestcase.h>
 #include <kdb.hpp>
 
@@ -37,7 +38,8 @@ int main(int argc, char* argv[])
 	UndoManager manager;
 	GUIBackend	backend;
 	GUISettings settings;
-	TreeViewModel treeModel;
+	kdb::KDB kdb;
+	TreeViewModel treeModel(&kdb);
 
 	engine.setObjectOwnership(&treeModel, QQmlApplicationEngine::CppOwnership);
 
@@ -46,7 +48,19 @@ int main(int argc, char* argv[])
 	ctxt->setContextProperty("guiBackend", &backend);
 	ctxt->setContextProperty("guiSettings", &settings);
 
-	treeModel.populateModel();
+	try
+	{
+		treeModel.populateModel();
+	}
+	catch (std::exception const & e)
+	{
+		QMessageBox msgBox;
+		msgBox.setText("Could not start qt-gui. Failed while reading the whole configuration.");
+		msgBox.setInformativeText(e.what());
+		msgBox.setIcon(QMessageBox::Critical);
+		msgBox.exec();
+		return 1;
+	}
 
 	engine.load(QUrl(QStringLiteral("qrc:/qml/main.qml")));
 

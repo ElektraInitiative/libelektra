@@ -4,5 +4,3 @@ add_plugin(struct
 		struct.hpp struct.cpp
 		checker.cpp
 	)
-
-add_cpp_plugintest(struct)

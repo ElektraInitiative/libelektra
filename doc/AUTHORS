@@ -78,3 +78,10 @@ previous Debian Packaging
 
 Daniel Bugl <me@omnidan.net>
 documentation, new README.md, zeromq, web ui
+
+
+Kurt Micheli <e1026558@student.tuwien.ac.at>
+Optimizing ksLookup with order preserving minimal perfect hash map, markdown link converter for doxygen
+
+Alexander Rössler <mail@roessler.systems>
+improvements to the dbus plugin

@@ -99,12 +99,6 @@ static void elektraAddConstants(KeySet *ks, Key *parentKey)
 
 
 	key = keyDup (parentKey);
-	keyAddName(key, "cmake/ENABLE_CXX11");
-	keySetString(key, "@ENABLE_CXX11@");
-	ksAppendKey(ks, key);
-
-
-	key = keyDup (parentKey);
 	keyAddName(key, "cmake/GTEST_ROOT");
 	keySetString(key, "@GTEST_ROOT@");
 	ksAppendKey(ks, key);

@@ -167,8 +167,20 @@ Lazy+Bind Mounting
 	makes kdbOpen cheaper (with many plugins)
 	plugins can have global information bind mounted into their conf
 	(e.g. /etc/passwd into resolver)
-	kdbDup to copy current state
+	kdbDup to copy current state (avoid multiple bootstrapping)
 	leaves architecture as is -> possibility for any frontend and caching strategy + plays nicely with recursive plugins
+
+
+Concurrent Plugin Processing:
+	The plugins must be processed in the correct sequence because
+	they change keys and have side effects.
+	The processing of backends is however
+	completely independent up to, and after, the commit step.
+	Each of these two parts can be implemented concurrently.
+	If any backend fails before commit, special care must be taken so
+	that no backend commits its changes.
+	The concurrent processing of the plugins
+	is possible for both |kdbGet()| and |kdbSet()|.
 
 GlobalPlugins:
 	for notification start/end
@@ -223,6 +235,54 @@ libelektra-metadata:
 	description
 
 
+== Multiple Files per Backend ==
+
+The disadvantage of the current situation is that new files are not
+tracked automatically (explicit mounting needed).
+
+Storage plugins would need `KeySet` operations like difference to deduce which files to
+remove or create.
+The previously trivial test if an update is needed or a conflict occurred
+may become slow depending on the number
+of files involved.
+
+For example, KDE has many configuration files in the path
+`~/.kde/share/config`.
+In a KDE installation with many programs it
+can be up to one thousand individual files.
+
+
+== User Mount Point Configuration ==
+
+The mount point configuration resides only below
+system/elektra/mountpoints. We decided against
+providing \keyname{user/elektra/mountpoints} because of security concerns.
+This issue, however, is solved because of the specification.
+Now its possible to specify which namespaces should be used.
+
+Still it must be assured that the user only mounts backends where he or she is
+allowed to do so.
+The administrator may still want to enforce some user
+configuration. But this would be pointless if the user could circumvent
+it.
+
+Another open item is how, and if, user's own plugins can be used.
+Plugins provided by the user open a door for code injection. These
+problems have to be discussed and clarified before any attempts in this
+direction are made.
+
+
+== Distributing Configuration ==
+
+Elektra currently does not provide any distribution or decentralised
+features because it does not have any plugins communicating with a
+configuration daemon.
+These features are supposed to be on a higher level and not in backend
+code. Instead, software like Cfengine and Puppet can use Elektra to change local
+configuration.
+
+Still, for some setups fetching configuration from other places or even
+have a distributed key database is useful.
 
 
 == Internals ==
