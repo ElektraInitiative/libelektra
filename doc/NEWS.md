@@ -1,3 +1,249 @@
+# 0.8.14 Release
+
+- guid: 519cbfac-6db5-4594-8a38-dec4c84b134f
+- author: Markus Raab
+- pubDate: Thu, 19 Nov 2015 17:48:14 +0100
+
+Again we managed to release with many new features and
+plugins(lua, list, crypto, csvstorage, conditionals, mathcheck, filecheck, logchange)
+many fixes, and especially with a polished documentation.
+
+## Documentation Initiative
+
+The documentation Initiative is a huge success and now the documentation
+of Elektra is in a state where someone, never heard of Elektra, still
+can use it only by man pages.
+
+There are now many ways to show a man page:
+
+- [on github](http://libelektra.org/blob/master/doc/help/kdb.md)
+- [in the API docu](http://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
+- by using `kdb --help` or `kdb help <command>`
+- by using `man kdb`
+
+### Help system
+
+Nearly all README.md are now also converted to man pages and also to Doxygen.
+
+### Doxygen Filter
+
+Kurt Micheli did an amazing work with a new doxygen filter.
+The filter allows all Elektra Markdown pages to be also included
+in the doxygen documentation. Thus all technical concepts are now
+explained in Markdown pages, this filter is essential.
+
+But even more, the filter also includes all man pages written
+for the tools, giving a nice html view for them. (In addition to
+the markdown rendering on github).
+
+A big thanks to Kurt Micheli!
+
+### Further Docu fixes
+
+- getenv debugging docu was improved
+- typo fix: Specify, thanks to Pino Toscano
+- [/doc/decision/
+- [Design decisions](http://libelektra.org/blob/master/doc/decisions) capabilities and Publish Subscribe (thanks to Daniel Bugl)
+
+# Qt-gui 0.0.9
+
+Raffael Pancheri again updated his qt-gui to version 0.0.9 (beta)
+with important of fixes and improvements:
+
+- Allow QML to destroy C++ owned model
+- Fixes for Qt 5.5
+- Handling of merge-conflicts improved
+- Dialog at startup
+- Reduce memory footprint
+- add man page
+
+A bit thanks to Raffael Pancheri!
+
+## Compatibility
+
+As always, the API and API is fully forward-compatible, i.e. programs compiled against an
+older 0.8 versions of Elektra will continue to work.
+
+The behaviour of some plugins, however, changed:
+
+- the INI plugin, the section handling was improved.
+- in the NI plugin, the symbol Ni_GetVersion vanished
+- in the resolver plugin files of other namespaces which are not mounted are not resolved
+  anymore
+
+ENABLE_CXX11 does not exist anymore, it is always on.
+We do not care about 199711L compilers anymore, which
+makes development easier, without losing any actually
+used platform.
+
+Python and Lua plugins are enabled now in `-DPLUGINS=ALL`.
+
+Python3 plugin was renamed to python.
+
+## Lua Plugin
+
+Manuel Mausz add a lightweight alternative to the python plugin:
+[the lua plugin](http://libelektra.org/blob/master/src/plugins/lua/). In a similar way, someone
+can write scripts, which are executed on every access to the
+[key database](http://libelektra.org/blob/master/doc/help/elektra-glossary).
+
+To mount a lua based filter, you can use:
+
+    kdb mount file.ini /lua ini lua script=/path/to/lua/lua_filter.lua
+
+Even though it works well, it is classified as technical preview.
+
+Thanks to Manuel Mausz for this plugin!
+
+
+## List Plugin
+
+Currently, Elektra has some limitations on how many plugins can be
+added to certain [placements](http://libelektra.org/blob/master/doc/help/elektra-plugins-ordering).
+Because of the rapidly growing number of plugins, some combinations
+are not possible anymore.
+
+This plugin tackles the issue, by delegating the work to an arbitrary
+number of subplugins. As a bonus, it works lazily and thus might avoid
+the loading of some plugins all together.
+
+Thanks to Thomas Waser for this plugin!
+
+
+## INI Plugin
+
+The INI plugin got a near rewrite. Now it handles many situations better,
+has many more options and features, including:
+
+- preserving the order
+- using keys as meta-data
+- many new testcases
+
+Thanks to Thomas Waser for this work!
+
+
+## Csvstorage Plugin
+
+You can now mount [csv-files](http://libelektra.org/blob/master/src/plugins/csvstorage)!
+
+To mount `test.csv` simply use:
+
+    kdb mount test.csv /csv csvstorage
+
+There are many options, e.g. changing the delimiter, use header
+for the key names or predefine how the columns should be named.
+For details [see the documentation](/src/plugins/csvstorage).
+
+Thanks to Thomas Waser!
+
+
+## Cryptography Plugin
+
+In this technical preview, Peter Nirschl
+[demonstrates how a plugin](http://libelektra.org/blob/master/src/plugins/crypto/)
+can encrypt Elektra's values. In testcases it is already able to do so, but for the end
+user an easy way for key derivation is missing.
+
+A big thanks to Peter Nirschl!
+
+
+## Electrify Machinekit.io
+
+We are proud that [Machinekit](http://www.machinekit.io/) starts using
+Elektra.
+
+Alexander Rössler is digging into all details, and already enhanced
+the DBUS Plugin for their needs.
+
+A big thanks to Alexander Rössler!
+
+
+
+## KDB Tools:
+
+- fix kdb check return code (open fail)
+
+## Bugfixes
+
+- libgetenv did not reinitalized its mutexes on forks
+- add needSync also in C++ binding
+- handle removed current working directories (fallback to /)
+- avoid segfault on missing version keys (when doing `kdb rm system/elektra/version`)
+- fix glob plugin + kdb mount with [config/needs usage](/doc/help/elektra-contracts.md)
+
+
+## Other Gems
+
+- getenv example: do not link to elektra/elektratools, thanks to Pino Toscano
+- fixes in other examples
+- avoid useless UTF-8 chars and fix typos, thanks to Kurt Micheli
+- pdf now also allows UTF-8 characters if added to elektraSpecialCharacters.sty,
+  thanks to Kurt Micheli
+- libgetenv: lookup also used for layers
+- handle wrong arguments of metals better, thanks to Ian Donnelly
+- Improvement of error messages in the augeas plugin
+- logchange: small demonstration plugin to show how to log added, removed and changed keys
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.14.tar.gz)
+and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.14.tar.gz)
+
+- name: elektra-0.8.14.tar.gz
+- TODO: hash sums missing
+
+
+
+This release tarball now is also available
+[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.14.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.14/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+the issue tracker [on github](http://git.libelektra.org/issues)
+or by mail elektra@markus-raab.org.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/519cbfac-6db5-4594-8a38-dec4c84b134f.html)
+
+For more information, see [http://libelektra.org](http://libelektra.org)
+
+Best regards,
+Markus
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 0.8.13 Release
 
 - guid: 3c00a5f1-c017-4555-92b5-a2cf6e0803e3
