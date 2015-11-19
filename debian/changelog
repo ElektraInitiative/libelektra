@@ -1,3 +1,9 @@
+elektra (0.8.14-1) UNRELEASED; urgency=medium
+
+  * New upstream version.
+
+ -- Markus Raab <debian@markus-raab.org>  Thu, 19 Nov 2015 20:34:32 +0100
+
 elektra (0.8.13-1) unstable; urgency=medium
 
   * added 3 plugins in debian/libelektra-core4.install (not yet merged/released)
