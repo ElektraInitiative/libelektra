@@ -248,7 +248,7 @@ static void test_multilineIniRead(char *fileName)
 			"call to kdbGet was not successful");
 	succeed_if(output_error (parentKey), "error in kdbGet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
-
+	output_keyset(ks);
 	Key *key = ksLookupByName (ks, "user/tests/ini-multiline-read/multilinesection/key1", KDB_O_NONE);
 	exit_if_fail(key, "key1 not found");
 	succeed_if (!strcmp ("value1\nwith continuation\nlines", keyString(key)), "key1 contained invalid data");

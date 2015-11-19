@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <kdberrors.h>
+#include <kdbproposal.h>
 #include <inih.h>
 #include "ini.h"
 
@@ -28,14 +29,15 @@ typedef struct {
 	Key *parentKey;	/* the parent key of the result KeySet */
 	KeySet *result;			/* the result KeySet */
 	char *collectedComment;	/* buffer for collecting comments until a non comment key is reached */
-	short toMeta;	
+	short toMeta;
+	short array;	
 } CallbackHandle;
 
 typedef struct {
 	short supportMultiline;	/* defines whether multiline keys are supported */
 	short autoSections;		/* defines whether sections for keys 2 levels or more below the parentKey are created */
 	short keyToMeta;
-	short preserveOrder;
+	short array;
 } IniPluginConfig;
 
 static void flushCollectedComment (CallbackHandle *handle, Key *key)
@@ -192,6 +194,61 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	keySetMeta(appendKey, "ini/section", 0);
 	sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
 	appendKey = createUnescapedKey(appendKey, handle->result, name);
+	if(strcmp(keyString(appendKey), "") || keyGetMeta(appendKey, "ini/array"))
+	{
+		if(handle->array)
+		{
+			if(keyGetMeta(appendKey, "ini/array"))
+			{
+				// appendKey already is an array
+				const char *lastIndex = keyString(keyGetMeta(appendKey, "ini/array"));
+				keySetString(appendKey, "");
+				Key *newElem = keyDup(appendKey);
+				keyAddBaseName(newElem, lastIndex);
+				keySetMeta(newElem, "order/parent", 0);
+				keySetMeta(newElem, "ini/array", 0);
+				keySetMeta(newElem, "order", 0);
+				if(elektraArrayIncName(newElem) == 1)
+				{
+					return -1;
+				}
+				keySetString(newElem, value);
+				ksAppendKey(handle->result, newElem);
+				keySetMeta(appendKey, "ini/array", keyBaseName(newElem));
+				keySetMeta(appendKey, "order/parent", keyName(sectionKey));
+				ksAppendKey(handle->result, keyDup(appendKey));
+			}
+			else
+			{
+				// we have to initialize the array
+				char *origVal = strdup(keyString(appendKey));
+				keySetString(appendKey, "");
+				keySetMeta(appendKey, "ini/array", "#1");
+				keySetMeta(appendKey, "order/parent", keyName(sectionKey));
+				ksAppendKey(handle->result, keyDup(appendKey));
+				keySetMeta(appendKey, "ini/array", 0);
+				keySetMeta(appendKey, "order/parent", 0);
+				keyAddName(appendKey, "#");
+				keySetMeta(appendKey, "order", 0);
+				if(elektraArrayIncName(appendKey) == -1)
+				{
+					free(origVal);
+					return -1;
+				}
+				keySetString(appendKey, origVal);
+				ksAppendKey(handle->result, keyDup(appendKey));
+				free(origVal);
+				if(elektraArrayIncName(appendKey) == -1)
+				{
+					return -1;
+				}
+				keySetMeta(appendKey, "order/parent", 0);
+				keySetString(appendKey, value);
+				ksAppendKey(handle->result, keyDup(appendKey));
+			}
+		return 1;
+		}
+	}
 	char buf[16];
 	unsigned int lastIndex;
 	if(sectionKey)
@@ -295,11 +352,11 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	Key *multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
 	Key *autoSectionKey = ksLookupByName(config, "/autosections", KDB_O_NONE);
 	Key *toMetaKey = ksLookupByName(config, "/meta", KDB_O_NONE);
-	Key *preserveKey = ksLookupByName(config, "/preserveorder", KDB_O_NONE);
-	pluginConfig->preserveOrder = preserveKey != 0;	
+	Key *arrayKey = ksLookupByName(config, "/array", KDB_O_NONE);
 	pluginConfig->supportMultiline = multilineKey != 0;
 	pluginConfig->autoSections = autoSectionKey != 0;
 	pluginConfig->keyToMeta = toMetaKey != 0;
+	pluginConfig->array = arrayKey != 0;
 	elektraPluginSetData(handle, pluginConfig);
 
 	return 0;
@@ -381,6 +438,8 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	iniConfig.supportMultiline = pluginConfig->supportMultiline;
 
 	cbHandle.toMeta = pluginConfig->keyToMeta;
+	cbHandle.array = pluginConfig->array;
+
 	int ret = ini_parse_file(fh, &iniConfig, &cbHandle);
 	fclose (fh);
 	errno = errnosave;
@@ -566,9 +625,23 @@ static int printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCon
 				char *iniName = getIniName(sectionKey, key);
 				writeComments(key, fp);
 				if(isEmptyKey(key))
+				{
 					fprintf(fp, "%s\n", iniName);
+				}
+				else if(keyGetMeta(key, "ini/array"))
+				{
+					KeySet *toWriteKS = elektraArrayGet(key, cutKS);
+					Key *toWrite;
+					while((toWrite = ksNext(toWriteKS)) != NULL)
+					{
+						fprintf(fp, "%s = %s\n", iniName, keyString(toWrite));
+					}
+					ksDel(toWriteKS);
+				}
 				else if(strstr(keyString(key), "\n") == 0)
+				{
 					fprintf(fp, "%s = %s\n", iniName, keyString(key));
+				}
 				else
 				{
 					if(pluginConfig->supportMultiline)
@@ -595,6 +668,7 @@ static int printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCon
 			{
 				int order = 1;
 				char *iniName = getIniName(parentKey, internalSectionKey);
+				//ksRewind(cutKS);
 				writeComments(internalSectionKey, fp);
 				fprintf(fp, "[%s]\n", iniName);
 				free(iniName);
@@ -604,9 +678,25 @@ static int printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCon
 					writeComments(key, fp);
 					iniName = getIniName(internalSectionKey, key);
 					if(isEmptyKey(key))
+					{
 						fprintf(fp, "%s\n", iniName);
+					}
+					else if(keyGetMeta(key, "ini/array"))
+					{
+						ksRewind(cutKS);
+						KeySet *toWriteKS = elektraArrayGet(key, cutKS);
+						Key *toWrite;
+						ksRewind(toWriteKS);
+						while((toWrite = ksNext(toWriteKS)) != NULL)
+						{
+							fprintf(fp, "%s = %s\n", iniName, keyString(toWrite));
+						}
+						ksDel(toWriteKS);
+					}
 					else if(strstr(keyString(key), "\n") == 0)
+					{
 						fprintf(fp, "%s = %s\n", iniName, keyString(key));
+					}
 					else
 					{
 						if(pluginConfig->supportMultiline)
@@ -636,6 +726,7 @@ static int printKeyTree(FILE *fp, Key *parentKey, KeySet *returned, IniPluginCon
 		ksAppend(workingKS, cutKS);
 		ksDel(cutKS);
 		++sectionIndex;
+		ksRewind(returned);
 	}
 	ksDel(workingKS);
 	ksDel(returned);
@@ -747,8 +838,8 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			keyDel(cur);
 		}
 	}
-//	ksRewind(returned);
-//	outputDebug(returned);	
+	ksRewind(returned);
+	outputDebug(returned);	
 	ksRewind(returned);
 	ret = printKeyTree(fh, parentKey, ksDup(returned), pluginConfig);
 	fclose (fh);
