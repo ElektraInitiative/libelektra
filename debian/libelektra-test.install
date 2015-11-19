@@ -11,7 +11,6 @@ usr/share/libelektra-test/test-data/hosts/*
 usr/share/libelektra-test/test-data/line/*
 usr/share/libelektra-test/test-data/xmltool/*
 usr/share/libelektra-test/test-data/python2/*
-usr/share/libelektra-test/test_data/lua/*
 usr/share/libelektra-test/test-data/csvstorage/*
 usr/share/libelektra-test/test-data/filecheck/*
 usr/share/libelektra-test/test-data/lineendings/*
