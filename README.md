@@ -71,6 +71,16 @@ For information about elektrified environment variables, see
 
 ### Documentation ###
 
+
+To get an idea of Elektra, you can take a look at the
+[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp)
+
+The full documentation, including
+[tutorials](/doc/tutorials/),
+[glossary](/doc/help/elektra-glossary.md), and
+[concepts and man pages](/doc/help/elektra-introduction.md)
+is available in the github repository.
+
 You can read the documentation for the kdb tool, either
 
 - [on github](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/kdb.md)
@@ -134,24 +144,6 @@ And in terms of quality, we want:
  - [02 Sep 2014 0.8.8](http://doc.libelektra.org/news/eca69e19-5ddb-438c-ac06-57c20b1a9160.html) adds 3-way merging
 
 Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/feed.rss).
-
-
-## Further Information ##
-
-To get an introduction, it is best to take a look at the
-[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp),
-read our
-[tutorials](doc/tutorials),
-see the
-[poster](http://www.libelektra.org/ftp/elektra/poster.pdf)
-and read the
-[abridgment](http://www.libelektra.org/ftp/elektra/abridgement.pdf).
-
-The currently best information about Elektra is
-[this thesis](http://www.libelektra.org/ftp/elektra/thesis.pdf).
-
-The API documentation can be found
-[here](http://doc.libelektra.org/api/current/html).
 
 
 ## Sources ##
@@ -235,7 +227,8 @@ To start development, just clone the repo and start hacking!
   as if they were a webpage.
 - You should read the [coding document](doc/CODING.md) before you issue a
   pull request.
-- Make yourself familiar with the [KeySet](http://doc.libelektra.org/api/latest/html/group__keyset.html),
+- Make yourself familiar with the [KeySet](/doc/help/elektra-data-structures.md)
+  (also in the [API docu](http://doc.libelektra.org/api/latest/html/group__keyset.html))
   the central data structure in Elektra.
 - You should read the [design document](doc/DESIGN.md) before you make
   design relevant decisions.
