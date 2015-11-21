@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief test suite for the crypto plugin
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief test suite for the crypto plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"

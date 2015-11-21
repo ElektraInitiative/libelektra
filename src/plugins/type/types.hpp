@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief Implementation of data types
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Implementation of data types
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef ELEKTRA_TYPES_HPP
 #define ELEKTRA_TYPES_HPP

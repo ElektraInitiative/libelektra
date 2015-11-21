@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief cryptographic interface using the gcrypt library
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief cryptographic interface using the gcrypt library
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #include "crypto.h"
 #include "gcrypt_operations.h"

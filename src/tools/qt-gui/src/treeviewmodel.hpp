@@ -311,11 +311,11 @@ signals:										//Use "Error", "Warning" and "Information" as title to display
 
 public slots:
 /**
-* @brief showConfigNodeMessage
-* @param title
-* @param text
-* @param detailedText
-*/
+ * @brief showConfigNodeMessage
+ * @param title
+ * @param text
+ * @param detailedText
+ */
 void	showConfigNodeMessage(QString title, QString text, QString detailedText);
 
 };

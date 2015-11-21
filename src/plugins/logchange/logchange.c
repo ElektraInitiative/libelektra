@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief Source for logchange plugin
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Source for logchange plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 
 #ifndef HAVE_KDBCONFIG

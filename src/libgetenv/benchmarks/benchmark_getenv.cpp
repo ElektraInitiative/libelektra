@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief benchmark for getenv
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief benchmark for getenv
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #include <keyset.hpp>
 #include <kdbtimer.hpp>

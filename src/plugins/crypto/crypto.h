@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief filter plugin providing cryptographic operations
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief filter plugin providing cryptographic operations
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef ELEKTRA_PLUGIN_CRYPTO_H
 #define ELEKTRA_PLUGIN_CRYPTO_H

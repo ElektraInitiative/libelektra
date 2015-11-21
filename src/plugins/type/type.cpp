@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief Implementation of entry points
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Implementation of entry points
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 
 #include "type.hpp"

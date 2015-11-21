@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief cryptographic interface using the gcrypt library
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief cryptographic interface using the gcrypt library
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef ELEKTRA_PLUGIN_GCRYPT_OPERATIONS_H
 #define ELEKTRA_PLUGIN_GCRYPT_OPERATIONS_H
