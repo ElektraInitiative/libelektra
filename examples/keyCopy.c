@@ -33,7 +33,7 @@ void g (Key *k)
 void j (Key *k)
 {
 	size_t size = keyGetValueSize (k);
-	char *value = elektraMalloc (size);
+	char *value = malloc (size);
 	int bstring = keyIsString (k);
 
 	// receive key c
@@ -41,7 +41,7 @@ void j (Key *k)
 	keyCopy (k, c);
 	if (bstring) keySetString (k, value);
 	else keySetBinary (k, value, size);
-	elektraFree (value);
+	free (value);
 	// the caller will see the changed key k
 	// with the name and metadata from c (except
 	// metadata "binary", which stayed the same)
