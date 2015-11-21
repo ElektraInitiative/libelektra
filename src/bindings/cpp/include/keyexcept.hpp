@@ -17,7 +17,7 @@ namespace kdb
 class Exception : public std::exception
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char* what() const throw()
 	{
 		return "Exception thrown by Elektra";
 	}
@@ -26,7 +26,7 @@ public:
 class KeyException : public Exception
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char* what() const throw()
 	{
 		return  "Exception thrown by a Key, typically "
 			"because you called a method on a null key. "
@@ -37,7 +37,7 @@ public:
 class KeyTypeMismatch: public KeyException
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char* what() const throw()
 	{
 		return  "Binary/String key mismatch, use proper "
 			"getString()/getBinary() or use getValue() to get both.";
@@ -47,7 +47,7 @@ public:
 class KeyTypeConversion : public KeyException
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char* what() const throw()
 	{
 		return  "Could not convert data to requested type. "
 			"Use get(Meta)<std::string> respectively get(Meta)<const Key> for more generic access "
@@ -59,7 +59,7 @@ public:
 class KeyInvalidName : public KeyException
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char* what() const throw()
 	{
 		return "Invalid Keyname: keyname needs to start with /, spec/, proc/, dir/, user/ or system/ "
 			"or maybe you tried to change a key that is already in a KeySet.";

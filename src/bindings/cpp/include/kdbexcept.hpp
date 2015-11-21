@@ -36,7 +36,7 @@ public:
 	virtual ~KDBException() throw()
 	{}
 
-	virtual const char* what() const throw() override
+	virtual const char* what() const throw()
 	{
 		if (!m_key)
 		{
