@@ -19,27 +19,34 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <kdbhelper.h>
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)
 #define TOUPPER 1
 // TODO defined privately in keyhelpers.c, API break possible..
-char *keyNameGetOneLevel(const char *name, size_t *size);
+char *keyNameGetOneLevel (const char * name, size_t * size);
 
-static void doConversion(char *newName, int levels, int toCase)
+static void doConversion (char * newName, int levels, int toCase)
 {
 	int (*conversion)(int);
+	
 	if(toCase == TOUPPER)
+	{
 		conversion = toupper;
+	}
 	else
+	{
 		conversion = tolower;
-	char *returnName = malloc(strlen(newName)+1);
-	memset(returnName, 0, strlen(newName)+1);
+	}
+	char *returnName = elektraCalloc(strlen(newName)+1);
 	if(levels == 0)
 	{
 		unsigned int i = 0;
 		for(;i < strlen(newName); ++i)
+		{
 			returnName[i] = conversion(newName[i]);
+		}
 	}
 	else
 	{
@@ -64,7 +71,7 @@ static void doConversion(char *newName, int levels, int toCase)
 	free(returnName);
 }
 
-Key *elektraKeyCreateNewName(const Key *key, const Key *parentKey, const char *cutPath, const char *replaceWith, const char *toUpperPath, const char *toLowerPath)
+Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const char * cutPath, const char * replaceWith, const char * toUpperPath, const char * toLowerPath)
 {
 	size_t addToLen = 0;
 	if(replaceWith != NULL)
@@ -72,8 +79,7 @@ Key *elektraKeyCreateNewName(const Key *key, const Key *parentKey, const char *c
 
 	size_t maxNewLength = strlen(keyName(key)) + addToLen;
 
-	char *newName = malloc(maxNewLength+1);
-	memset(newName, 0, maxNewLength+1);
+	char *newName = elektraCalloc(maxNewLength+1);
 	short replace = 0;
 
 	const char *afterParentString = keyName(key)+(strlen(keyName(parentKey))+1);
@@ -135,7 +141,7 @@ Key *elektraKeyCreateNewName(const Key *key, const Key *parentKey, const char *c
 	return 0;
 }
 
-static void keyAddUnescapedBasePath(Key *key, const char *path)
+static void keyAddUnescapedBasePath (Key * key, const char * path)
 {
 	size_t size=0;
 	char *p=keyNameGetOneLevel(path+size,&size);
@@ -150,7 +156,7 @@ static void keyAddUnescapedBasePath(Key *key, const char *path)
 	}
 }
 
-static Key *renameGet(Key *key, Key *parentKey, Key *cutConfig, Key *replaceWithConfig, Key *toUpperConfig, Key *toLowerConfig)
+static Key * renameGet(Key * key, Key * parentKey, Key * cutConfig, Key * replaceWithConfig, Key * toUpperConfig, Key * toLowerConfig)
 {
 	char *cutPath = 0;
 	char *replaceWith = 0;
@@ -178,10 +184,10 @@ static Key *renameGet(Key *key, Key *parentKey, Key *cutConfig, Key *replaceWith
 	else if(toLowerConfig)
 		toLowerPath = (char *)keyString(toLowerConfig);
 
-	return elektraKeyCreateNewName(key, parentKey, cutPath, replaceWith, toUpperPath, toLowerPath);
+	return elektraKeyCreateNewName (key, parentKey, cutPath, replaceWith, toUpperPath, toLowerPath);
 }
 
-static Key *restoreKeyName(Key *key, const Key *parentKey, const Key *configKey)
+static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * configKey)
 {
 	const Key *origNameKey = keyGetMeta (key, ELEKTRA_ORIGINAL_NAME_META);
 	if (origNameKey)
@@ -216,15 +222,15 @@ static Key *restoreKeyName(Key *key, const Key *parentKey, const Key *configKey)
 	return 0;
 }
 
-int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	/* configuration only */
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/rename"))
 	{
 		KeySet *info =
-#include "contract.h"
+			#include "contract.h"
 
-			ksAppend (returned, info);
+		ksAppend (returned, info);
 		ksDel (info);
 		return 1;
 	}
@@ -282,7 +288,7 @@ int elektraRenameGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraRenameSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 
 	KeySet *iterateKs = ksDup(returned);
@@ -316,11 +322,11 @@ int elektraRenameSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(rename)
+Plugin * ELEKTRA_PLUGIN_EXPORT (rename)
 {
 	return elektraPluginExport("rename",
-			ELEKTRA_PLUGIN_GET,	&elektraRenameGet,
-			ELEKTRA_PLUGIN_SET,	&elektraRenameSet,
-			ELEKTRA_PLUGIN_END);
+		ELEKTRA_PLUGIN_GET,	&elektraRenameGet,
+		ELEKTRA_PLUGIN_SET,	&elektraRenameSet,
+		ELEKTRA_PLUGIN_END);
 }
 

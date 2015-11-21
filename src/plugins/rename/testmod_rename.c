@@ -4,7 +4,7 @@
  * \brief A plugin that makes use of libaugeas to read and write configuration files
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
- org9*
+ *
  */
 
 #ifdef HAVE_KDBCONFIG_H
