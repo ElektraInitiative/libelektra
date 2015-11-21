@@ -103,11 +103,7 @@ void tryExternalCommand(char** argv)
 		savedArg = argv[0];
 		argv[0] = const_cast<char*>(command.c_str());
 
-#ifdef _WIN32
-		execve(command.c_str(), argv, 0);
-#else
-		execve(command.c_str(), argv, environ);
-#endif
+		elektraExecve(command.c_str(), argv);
 
 		std::cerr << "Could not execute external command "
 			<< command
@@ -119,6 +115,16 @@ void tryExternalCommand(char** argv)
 
 	throw UnknownCommand();
 }
+
+void elektraExecve(const char *filename, char *const argv[])
+{
+#ifdef _WIN32
+		execve(command.c_str(), argv, 0);
+#else
+		execve(command.c_str(), argv, environ);
+#endif
+}
+
 
 void runManPage(std::string command)
 {
@@ -136,12 +142,7 @@ void runManPage(std::string command)
 		const_cast<char*>(command.c_str()),
 		0};
 
-
-#ifdef _WIN32
-	execve(man, argv, 0);
-#else
-	execve(man, argv, environ);
-#endif
+	elektraExecve(man, argv);
 
 	throw UnknownCommand();
 }
