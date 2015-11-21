@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief A plugin that converts keys to metakeys and vice versa
+ * @brief A plugin that converts keys to metakeys and vice versa
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

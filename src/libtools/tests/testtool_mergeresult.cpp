@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the Mergeresult class
+ * @brief Tests for the Mergeresult class
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

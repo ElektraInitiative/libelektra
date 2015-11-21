@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the MetaMergeStrategy
+ * @brief Tests for the MetaMergeStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

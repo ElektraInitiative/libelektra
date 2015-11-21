@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Implementation of Struct checker
+* @brief Implementation of Struct checker
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

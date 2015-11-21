@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief A strategy for taking the value of
+ * @brief A strategy for taking the value of
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

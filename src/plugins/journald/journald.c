@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief A plugin which logs write operations and errors via the native journald interface
+ * @brief A plugin which logs write operations and errors via the native journald interface
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

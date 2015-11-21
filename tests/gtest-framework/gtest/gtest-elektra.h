@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Common Elektra extensions for GTest
+ * @brief Common Elektra extensions for GTest
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

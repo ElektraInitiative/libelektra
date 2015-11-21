@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the NewKeyStrategy
+ * @brief Tests for the NewKeyStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

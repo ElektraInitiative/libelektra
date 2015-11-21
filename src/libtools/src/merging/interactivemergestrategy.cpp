@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of InteractiveMergeStrategy
+ * @brief Implementation of InteractiveMergeStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

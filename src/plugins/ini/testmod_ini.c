@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the ini plugin
+ * @brief Tests for the ini plugin
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

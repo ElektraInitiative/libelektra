@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Allows one to load plugins
+ * @brief Allows one to load plugins
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

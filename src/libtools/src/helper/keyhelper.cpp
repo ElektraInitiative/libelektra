@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Key helper functions
+ * @brief Key helper functions
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

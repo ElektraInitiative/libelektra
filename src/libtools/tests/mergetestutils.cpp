@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implements a helper class for merge related tests
+ * @brief Implements a helper class for merge related tests
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for KDB
+ * @brief Tests for KDB
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

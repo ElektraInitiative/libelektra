@@ -18,7 +18,7 @@ enum class $support.typeof(info)
 @end for
 };
 
-/** \brief Convert enum to string
+/** @brief Convert enum to string
  *
  * \return string that holds value of enum
  * \param e the enum that should be converted
@@ -34,7 +34,7 @@ inline void Key::set($support.enumname(info) e)
 	}
 }
 
-/** \brief Convert enum from string
+/** @brief Convert enum from string
  *
  * \return enum from string s or default value
  * \param s the string that should be converted
@@ -58,7 +58,7 @@ inline $support.enumname(info) Key::get() const
 
 @@staticmethod
 @def generatebool(support)
-/** \brief Convert bool to string
+/** @brief Convert bool to string
  *
  * \return string that holds value of bool
  * \param e the bool that should be converted
@@ -76,7 +76,7 @@ inline void Key::set(bool e)
 	}
 }
 
-/** \brief Convert bool from string
+/** @brief Convert bool from string
  *
  * \return bool from string s or default value
  * \param s the string that should be converted
@@ -267,7 +267,7 @@ namespace $support.nsnpretty($n)
 {
 @end for
 
-/** \brief class of $hierarchy.name
+/** @brief class of $hierarchy.name
  *
  * Full Name (with contextual placeholders):
  * $hierarchy.info.get('name')
@@ -309,7 +309,7 @@ public:
 
 
 
-	/** \brief Constructor for $hierarchy.prettyclassname(support)
+	/** @brief Constructor for $hierarchy.prettyclassname(support)
 	 * \param ks keyset to work with
 	 */
 	${hierarchy.prettyclassname(support)}(kdb::KeySet & ks, typename Policies::ContextPolicy & context)

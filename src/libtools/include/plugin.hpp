@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Header file of plugin
+ * @brief Header file of plugin
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

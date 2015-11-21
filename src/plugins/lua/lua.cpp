@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Plugin which acts as proxy and calls other plugins written in lua
+ * @brief Plugin which acts as proxy and calls other plugins written in lua
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

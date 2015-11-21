@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Interface for a MergeConflictStrategy
+ * @brief Interface for a MergeConflictStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the getenv library (context part)
+ * @brief Tests for the getenv library (context part)
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

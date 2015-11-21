@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Allows one to list all available backends
+ * @brief Allows one to list all available backends
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

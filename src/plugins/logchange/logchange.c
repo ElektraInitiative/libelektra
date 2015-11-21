@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Source for logchange plugin
+* @brief Source for logchange plugin
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

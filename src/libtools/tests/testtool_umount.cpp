@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the umount
+ * @brief Tests for the umount
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

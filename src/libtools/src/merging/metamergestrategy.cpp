@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of MetaMergeStrategy
+ * @brief Implementation of MetaMergeStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

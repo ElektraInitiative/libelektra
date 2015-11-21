@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Source for dbus plugin
+* @brief Source for dbus plugin
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

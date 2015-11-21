@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of ThreeWayMerge
+ * @brief Implementation of ThreeWayMerge
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

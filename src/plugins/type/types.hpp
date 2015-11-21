@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Implementation of data types
+* @brief Implementation of data types
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

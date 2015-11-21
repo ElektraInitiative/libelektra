@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of MergeResult
+ * @brief Implementation of MergeResult
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

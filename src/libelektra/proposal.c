@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of proposed API enhancements.
+ * @brief Implementation of proposed API enhancements.
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

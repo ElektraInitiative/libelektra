@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for lineendings plugin
+ * @brief Tests for lineendings plugin
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

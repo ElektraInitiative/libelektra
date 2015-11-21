@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Header file for entry points
+* @brief Header file for entry points
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

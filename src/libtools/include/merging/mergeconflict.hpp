@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Models a merge conflict
+ * @brief Models a merge conflict
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

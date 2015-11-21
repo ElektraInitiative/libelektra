@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of module loading
+ * @brief Implementation of module loading
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

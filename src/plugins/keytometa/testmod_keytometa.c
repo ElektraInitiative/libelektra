@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief A plugin that makes use of libaugeas to read and write configuration files
+ * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

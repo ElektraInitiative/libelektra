@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the comparison helper
+ * @brief Tests for the comparison helper
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief A configuration for a simple automerge and guaranteed conflict resolution by one side
+ * @brief A configuration for a simple automerge and guaranteed conflict resolution by one side
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

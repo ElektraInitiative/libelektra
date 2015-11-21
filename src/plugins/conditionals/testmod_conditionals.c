@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Tests for conditionals plugin
+* @brief Tests for conditionals plugin
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

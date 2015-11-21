@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Applies a MergeConflictStrategy on the meta keys
+ * @brief Applies a MergeConflictStrategy on the meta keys
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

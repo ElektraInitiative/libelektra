@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implements a way to build and deal with a backend
+ * @brief Implements a way to build and deal with a backend
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

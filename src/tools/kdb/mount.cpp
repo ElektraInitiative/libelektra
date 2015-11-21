@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief source file of mount command
+ * @brief source file of mount command
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

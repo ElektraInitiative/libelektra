@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of get/set and error plugins
+ * @brief Implementation of get/set and error plugins
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

@@ -24,7 +24,7 @@ class Parameters
 {
 public:
 
-	/** \brief Constructor
+	/** @brief Constructor
 	 * \param ks the keyset to work with.
 	 */
 	Parameters(kdb::KeySet & ks) : ks(ks)
@@ -40,7 +40,7 @@ private:
 };
 
 @for $key, $info in $parameters.items()
-/** \brief Get parameter $key
+/** @brief Get parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -57,7 +57,7 @@ inline $support.typeof(info) Parameters::$support.getfuncname($key)() const
 	return value;
 }
 
-/** \brief Set parameter $key
+/** @brief Set parameter $key
  *
  * $util.doxygen(support, key, info)
  *

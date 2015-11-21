@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the ThreeWayMerge
+ * @brief Tests for the ThreeWayMerge
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

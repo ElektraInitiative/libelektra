@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Tests for enum plugin
+* @brief Tests for enum plugin
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the AutoMergeStrategy
+ * @brief Tests for the AutoMergeStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

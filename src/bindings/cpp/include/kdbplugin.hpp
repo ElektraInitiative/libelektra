@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Helpers for creating plugins
+* @brief Helpers for creating plugins
 *
 * Make sure to include kdberrors.h before including this file if you want
 * warnings/errors to be added.

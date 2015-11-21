@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief A plugin for reading and writing ini files
+ * @brief A plugin for reading and writing ini files
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

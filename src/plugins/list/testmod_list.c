@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Tests for list plugin
+* @brief Tests for list plugin
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

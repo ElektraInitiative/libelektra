@@ -1,7 +1,7 @@
 /**
 * \file
 *
-* \brief Implementation of data type checker
+* @brief Implementation of data type checker
 *
 * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *

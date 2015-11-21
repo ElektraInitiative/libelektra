@@ -32,7 +32,7 @@ $support.typeof(i)
 @end for
 };
 
-/** \brief Convert enum to string
+/** @brief Convert enum to string
  *
  * \return string that holds value of enum
  * \param e the enum that should be converted
@@ -48,7 +48,7 @@ static inline const char *${support.enumname(i)}_to_string($support.typeof(i) e)
 	return "";
 }
 
-/** \brief Convert enum from string
+/** @brief Convert enum from string
  *
  * \return enum from string s or default value
  * \param s the string that should be converted
@@ -67,7 +67,7 @@ static inline $support.typeof(i) ${support.enumname(i)}_from_string(const char *
 @end for
 
 /**
- * \brief Convert bool to string
+ * @brief Convert bool to string
  * \param b bool to convert (0 is false)
  */
 static inline const char *bool_to_string(int b)
@@ -80,7 +80,7 @@ static inline const char *bool_to_string(int b)
 }
 
 /**
- * \brief Convert string to bool
+ * @brief Convert string to bool
  * \param s string to convert (true, 1 or on is true)
  */
 static inline int bool_from_string(const char *s)
@@ -97,7 +97,7 @@ static inline int bool_from_string(const char *s)
 }
 
 @for $key, $info in $parameters.iteritems()
-/** \brief Get parameter $key
+/** @brief Get parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -204,7 +204,7 @@ char *endptr;
 	return ret;
 }
 
-/** \brief Set parameter $key
+/** @brief Set parameter $key
  *
  * $util.doxygen(support, key, info)
  *

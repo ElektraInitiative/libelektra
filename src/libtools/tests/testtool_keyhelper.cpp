@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the key helper
+ * @brief Tests for the key helper
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

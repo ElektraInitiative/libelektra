@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief A configuration for a simple automerge
+ * @brief A configuration for a simple automerge
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

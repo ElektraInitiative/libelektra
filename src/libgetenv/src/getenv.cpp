@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Source for the getenv library
+ * @brief Source for the getenv library
  *
  * \note there are two necessary bootstrap phases:
  *

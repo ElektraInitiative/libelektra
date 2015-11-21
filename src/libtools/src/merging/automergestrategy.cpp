@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of AutoMergeStrategy
+ * @brief Implementation of AutoMergeStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

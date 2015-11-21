@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Header for the getenv library
+ * @brief Header for the getenv library
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

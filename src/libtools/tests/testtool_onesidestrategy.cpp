@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Tests for the OneSideStrategy
+ * @brief Tests for the OneSideStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

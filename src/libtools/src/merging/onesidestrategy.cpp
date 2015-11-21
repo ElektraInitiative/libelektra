@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Implementation of OneSideStrategy
+ * @brief Implementation of OneSideStrategy
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
