@@ -573,7 +573,7 @@ Ni_PUBLIC int Ni_WriteStream(Ni_node restrict n, FILE * restrict stream,
          break;
 
       success = 1;
-   } while(0);
+   } while (0);
 
    return success;
 }
@@ -635,7 +635,7 @@ Ni_PUBLIC int Ni_ReadStream(Ni_node restrict n, FILE * restrict stream,
          break;
 
       //do this until eof
-      while((result = GetNextIdentifier(&fb, key, &key_len, &key_level)) != 0)
+      while ((result = GetNextIdentifier(&fb, key, &key_len, &key_level)) != 0)
       {
          if (result < 0)
             break;
@@ -652,7 +652,7 @@ Ni_PUBLIC int Ni_ReadStream(Ni_node restrict n, FILE * restrict stream,
          {
             //if key_level is more deeply nested than we are currently, by more
             //than 1 level
-            while(key_level - cur_level > 1)
+            while (key_level - cur_level > 1)
             {
                //get or add nameless children, as necessary
                if (!(n = Ni_GetChild(n, "", 0, 1, NULL)))
@@ -661,7 +661,7 @@ Ni_PUBLIC int Ni_ReadStream(Ni_node restrict n, FILE * restrict stream,
             }
             //if key_level is less deeply nested than we are currently, by more
             //than 1
-            while(key_level - cur_level < 1)
+            while (key_level - cur_level < 1)
             {
                if (!(n = Ni_GetParent(n)))
                   break;
@@ -707,7 +707,7 @@ Ni_PUBLIC int Ni_ReadStream(Ni_node restrict n, FILE * restrict stream,
          break;
 
       success = 1;
-   } while(0);
+   } while (0);
 
    FreeFileBuf(&fb);
    Ds_FreeStr(&value);
@@ -753,7 +753,7 @@ static Ni_node AddNode(Ni_node restrict n, Ni_node restrict parent,
       child = GetItem(e); //get the inserted item
 
       success = 1;
-   } while(0);
+   } while (0);
 
    if (!success)
    {
@@ -798,7 +798,7 @@ static void RecursiveFree(Ni_node restrict n)
 
    assert(n != NULL);
 
-   while((e = Ds_NextHashEntry(&n->children, e)) != NULL)
+   while ((e = Ds_NextHashEntry(&n->children, e)) != NULL)
       RecursiveFree(GetItem(e)); //free it
 
    FreeNode(n);
@@ -812,7 +812,7 @@ static void RecursiveSetModified(Ni_node restrict n, int modified)
 
    assert(n != NULL);
 
-   while((e = Ds_NextHashEntry(&n->children, e)) != NULL)
+   while ((e = Ds_NextHashEntry(&n->children, e)) != NULL)
       RecursiveSetModified(GetItem(e), modified); //set that shit
 
    n->modified = modified;
@@ -838,7 +838,7 @@ static int RecursiveWrite(Ni_node restrict n, FILE * restrict stream,
    {
       //loop through all children
       child = NULL;
-      while((child = Ni_GetNextChild(n, child)) != NULL)
+      while ((child = Ni_GetNextChild(n, child)) != NULL)
       {
          //get its name
          name = Ni_GetName(child, &name_len);
@@ -859,7 +859,7 @@ static int RecursiveWrite(Ni_node restrict n, FILE * restrict stream,
 
       //go through all children again
       child = NULL;
-      while((child = Ni_GetNextChild(n, child)) != NULL)
+      while ((child = Ni_GetNextChild(n, child)) != NULL)
       {
          //if this child has children
          if (Ni_GetNumChildren(child) > 0)
@@ -881,7 +881,7 @@ static int RecursiveWrite(Ni_node restrict n, FILE * restrict stream,
          break;
 
       success = 1;
-   } while(0);
+   } while (0);
 
    return success;
 }

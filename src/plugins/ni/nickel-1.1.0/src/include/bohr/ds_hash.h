@@ -114,7 +114,7 @@ Ds_HASH_INLINE void Ds_FreeHashTable(Ds_hash_table * restrict table)
       Ds_hash_entry * head;
 
       head = table->buf[i];
-      while(head)
+      while (head)
       {
          Ds_hash_entry * t;
 
@@ -144,7 +144,7 @@ Ds_HASH_INLINE Ds_hash_entry * Ds_NextHashEntry(
       bucket = prev->bucket + 1;
    }
 
-   while(!n && bucket < table->cap)
+   while (!n && bucket < table->cap)
       n = table->buf[bucket++];
 
    return n;
@@ -192,7 +192,7 @@ Ds_HASH_INLINE int Ds_RemoveHashEntry(Ds_hash_table * restrict table,
    }
    else if (t)
    {
-      while(t->next)
+      while (t->next)
       {
          if (entry == t->next)
          {
@@ -228,7 +228,7 @@ Ds_HASH_INLINE Ds_hash_entry * Ds_SearchHashTable(
    Ds_hash_entry * t;
 
    t = table->buf[hash & (table->cap - 1)];
-   while(t && hash != t->hash && (!compare || compare(key, size,
+   while (t && hash != t->hash && (!compare || compare(key, size,
                                                       &t->item, t->size)))
    {
       t = t->next;
@@ -258,14 +258,14 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
          Ds_hash_entry * e, * t;
 
          e = table->buf[i];
-         while(e && (bucket = e->hash & (size - 1)) != i)
+         while (e && (bucket = e->hash & (size - 1)) != i)
          {
             t = e->next;
             e->next = table->buf[e->bucket = bucket];
             table->buf[bucket] = e;
             table->buf[i] = e = t;
          }
-         while(e && (t = e->next) != NULL)
+         while (e && (t = e->next) != NULL)
          {
             if ((bucket = t->hash & (size - 1)) != i)
             {
@@ -291,7 +291,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
             size_t bucket;
 
             bucket = i & (size - 1);
-            while(t->next)
+            while (t->next)
             {
                t->bucket = bucket;
                t = t->next;

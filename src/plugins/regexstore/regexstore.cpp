@@ -253,7 +253,7 @@ int elektraRegexstoreGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 			ksAppendKey(returned, toAppend);
 		} while (toAppend);
 	}
-	while(ksNext(conf) &&
+	while (ksNext(conf) &&
 		keyIsBelow(confParent, ksCurrent(conf)));
 
 	return 1; /* success */

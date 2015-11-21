@@ -713,7 +713,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 #endif
 
 
-	while(1)
+	while (1)
 	{
 #if DEBUG && VERBOSE
 		++c;
@@ -1558,7 +1558,7 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 		ret=ksLookup(ks, k, KDB_O_NODEFAULT);
 		if (ret) break;
 		++i;
-	} while(m);
+	} while (m);
 
 	if (k)
 	{
@@ -1639,7 +1639,7 @@ static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer
 
 		elektraWriteArrayNumber(&buffer[prefixSize], i);
 		m = keyGetMeta(specKey, buffer);
-	} while(m);
+	} while (m);
 
 	// restore old cascading name
 	specKey->key = name;

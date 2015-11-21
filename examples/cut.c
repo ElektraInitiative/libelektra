@@ -13,7 +13,7 @@
 void outputKeySet(KeySet *returned)
 {
 	ksRewind(returned);
-	while(ksNext(returned))
+	while (ksNext(returned))
 	{
 		printf("%s\n", keyName(ksCurrent(returned)));
 	}

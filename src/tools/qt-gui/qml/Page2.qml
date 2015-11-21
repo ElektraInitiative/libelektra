@@ -300,7 +300,7 @@ Item {
 
 	function clearConfig() {
 
-		while(config.length > 0) {
+		while (config.length > 0) {
 			config.pop();
 		}
 	}

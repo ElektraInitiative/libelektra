@@ -55,7 +55,7 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 	unsigned long line = 1;
 	fc = sc = 0;
 	fread(&fc, 1, 1, fp);
-	while(!feof(fp))
+	while (!feof(fp))
 	{
 		fread(&sc, 1, 1, fp);
 		switch(fc)

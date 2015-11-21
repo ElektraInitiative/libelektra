@@ -406,7 +406,7 @@ static void test_keyPlugin()
 	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong"); \
 	elektraUnescapeKeyName(buffer, buffer2); \
 	succeed_if_same_string(a, buffer2); \
-	} while(0)
+	} while (0)
 
 
 static void test_keyNameEscape()
@@ -1300,7 +1300,7 @@ static void test_keyAddName()
 	succeed_if (keyAddName(k, toadd)==sizeof(result), "could not add name"); \
 	succeed_if_same_string(keyName(k), result); \
 	keyDel(k); \
-	} while(0)
+	} while (0)
 
 	TEST_ADD_NAME("spec", "something", "spec/something");
 	TEST_ADD_NAME("proc", "something", "proc/something");
@@ -1357,7 +1357,7 @@ static void test_keyAddName()
 	succeed_if (keyAddName(k, toadd)==0, "adding irrelevant wrong return"); \
 	succeed_if_same_string(keyName(k), result); \
 	keyDel(k); \
-	} while(0)
+	} while (0)
 
 	TEST_ADD_NAME("/", 0, "/");
 	TEST_ADD_NAME("/", "", "/");

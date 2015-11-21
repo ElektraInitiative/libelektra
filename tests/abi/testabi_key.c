@@ -2355,7 +2355,7 @@ static void test_keyEscape()
 	succeed_if_same_string(keyBaseName(k), A); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
 	succeed_if_same_string(buffer, A); \
-	} while(0)
+	} while (0)
 
 #include <data_escape.c>
 
@@ -2386,7 +2386,7 @@ static void test_keyEscape()
 	succeed_if_same_string(keyBaseName(k), ""); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
 	succeed_if_same_string(buffer, ""); \
-	} while(0)
+	} while (0)
 
 	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)
 	{
@@ -2409,7 +2409,7 @@ static void test_keyEscape()
 	succeed_if_same_string(keyBaseName(k), A); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName (for keyAddBaseName) returned an error"); \
 	succeed_if_same_string(buffer, A); \
-	} while(0)
+	} while (0)
 
 	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)
 	{
@@ -2454,7 +2454,7 @@ static void test_keyAdd()
 	succeed_if_same_string(keyBaseName(k), S); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
 	succeed_if_same_string(buffer, S); \
-	} while(0)
+	} while (0)
 	char buffer [500];
 
 	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)

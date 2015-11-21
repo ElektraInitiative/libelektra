@@ -47,7 +47,7 @@ void * writer (void * pV_data ELEKTRA_UNUSED)
 		ksRewind(ks);
 		/*
 		Key * c; 
-		while((c = ksNext(ks)))
+		while ((c = ksNext(ks)))
 		{
 			printf ("Got key: %s - %s\n",
 				keyName(c), keyString(c));

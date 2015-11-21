@@ -244,7 +244,7 @@ static long checkFile(Key * parentKey, const char * filename, checkStruct * chec
 	int retVal = 0;
 	if (checkConf->checkLineEnding)
 		validateLineEnding(NULL, NULL, 1);
-	while(!feof(fp))
+	while (!feof(fp))
 	{
 		memset(line, 0, sizeof(line));
 		size_t bytesRead = fread(line, 1, sizeof(line), fp);

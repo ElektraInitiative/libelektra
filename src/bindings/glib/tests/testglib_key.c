@@ -242,7 +242,7 @@ static void test_meta_data()
 
 	guint metacnt = 0;
 	gelektra_key_rewindmeta(g_key);
-	while((meta = gelektra_key_nextmeta(g_key)) != NULL)
+	while ((meta = gelektra_key_nextmeta(g_key)) != NULL)
 	{
 		GElektraKey *curmeta = gelektra_key_currentmeta(g_key);
 		succeed_if(meta->key == curmeta->key,

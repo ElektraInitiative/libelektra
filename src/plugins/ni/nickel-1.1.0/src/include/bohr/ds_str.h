@@ -102,7 +102,7 @@ Ds_STR_INLINE int Ds_StrCat(Ds_str * restrict dest,
    new_size = dest->len + source_len + 1;
 #else
    new_size = (dest->size ? dest->size : 1);
-   while(new_size < dest->len + source_len + 1)
+   while (new_size < dest->len + source_len + 1)
 #  if (Ds_STR_BEHAVIOR == 4)
       new_size <<= 2; //the same as *= 4
 #  else
@@ -148,7 +148,7 @@ Ds_STR_INLINE int Ds_StrCatVPrint(Ds_str * restrict dest,
       new_size = dest->len + len + 1;
 #else
       new_size = (dest->size ? dest->size : 1);
-      while(new_size < dest->len + len + 1)
+      while (new_size < dest->len + len + 1)
 #  if (Ds_STR_BEHAVIOR == 4)
          new_size <<= 2; //the same as *= 4
 #  else

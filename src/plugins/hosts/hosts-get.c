@@ -235,7 +235,7 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	size_t order = 1;
 	char *tokenPointer = 0;
 	char *fret = 0;
-	while(1)
+	while (1)
 	{
 		fret = fgets (readBuffer, HOSTS_KDB_BUFFER_SIZE, fp);
 

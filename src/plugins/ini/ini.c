@@ -75,7 +75,7 @@ static Key *createUnescapedKey(Key *key, const char *name)
 	char *newBaseName = strtok(localString, "/");
 	if (newBaseName != NULL)
 		keyAddBaseName(key, newBaseName);
-	while(newBaseName != NULL)
+	while (newBaseName != NULL)
 	{
 		newBaseName = strtok(NULL, "/");
 		if (newBaseName != NULL)
@@ -386,7 +386,7 @@ static Key *generateSectionKey(Key *key, Key *parentKey)
 static void writeMeta(Key *key, FILE *fh)
 {
 	keyRewindMeta(key);
-	while(keyNextMeta(key) != NULL)
+	while (keyNextMeta(key) != NULL)
 	{
 		const Key *meta = keyCurrentMeta(key);
 		if (strcmp(keyName(meta), "ini/empty") && strcmp(keyName(meta), "binary") && strcmp(keyName(meta), "order") && strcmp(keyName(meta), "ini/noautosection"))
@@ -403,7 +403,7 @@ static Key *ksNextByNumber(KeySet *returned, long *index)
 {
 	Key *retKey;
 	ksRewind(returned);
-	while((retKey = ksNext(returned)) != NULL)
+	while ((retKey = ksNext(returned)) != NULL)
 	{
 		if (atol(keyString(keyGetMeta(retKey, "order"))) == *index)
 		{

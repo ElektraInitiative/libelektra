@@ -181,7 +181,7 @@ int elektraRenameSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	ksRewind(iterateKs);
 	Key *key;
-	while((key = ksNext(iterateKs)) != 0)
+	while ((key = ksNext(iterateKs)) != 0)
 	{
 		Key *renamedKey = restoreKeyName(key, parentKey, cutConfig);
 

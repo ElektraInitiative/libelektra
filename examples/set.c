@@ -20,7 +20,7 @@
 void print_warnings(Key * err)
 {
 	const Key *meta = 0; keyRewindMeta(err);
-	while((meta = keyNextMeta(err)) != 0)
+	while ((meta = keyNextMeta(err)) != 0)
 	{
 		printf("%s:\t%s\n",
 				keyName(meta), 

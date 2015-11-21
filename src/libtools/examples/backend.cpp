@@ -26,7 +26,7 @@ int main()
 	b.serialize(mountConfig);
 
 	mountConfig.rewind();
-	while(mountConfig.next())
+	while (mountConfig.next())
 	{
 		std::cout << mountConfig.current().getName()
 			  << " = " << mountConfig.current().getString()

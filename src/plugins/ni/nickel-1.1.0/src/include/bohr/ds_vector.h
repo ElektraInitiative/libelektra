@@ -127,7 +127,7 @@ Ds_VECTOR_INLINE int Ds_InsertVectorItems(
    new_cap = v->num + num;
 #else
    new_cap = (v->cap ? v->cap : 1);
-   while(new_cap < v->num + num)
+   while (new_cap < v->num + num)
 #  if (Ds_VECTOR_BEHAVIOR == 4)
       new_cap <<= 2; //the same as *= 4
 #  else

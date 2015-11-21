@@ -99,7 +99,7 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 	size_t namesize;
 	size_t valuesize;
 
-	while(std::getline (is, line))
+	while (std::getline (is, line))
 	{
 		std::stringstream ss (line);
 		ss >> command;

@@ -272,7 +272,7 @@ static void elektraYajlParseSuppressEmpty(KeySet *returned, Key* parentKey)
 		{
 			ksRewind(returned);
 			Key *cur;
-			while((cur=ksNext(returned))!=0)
+			while ((cur=ksNext(returned))!=0)
 			{
 				printf ("key %s has value %s\n",
 					keyName(cur),

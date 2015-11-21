@@ -102,7 +102,7 @@ int elektraArrayIncName(Key *key)
 	}
 
 	++baseName; // jump over #
-	while(*baseName == '_') // jump over all _
+	while (*baseName == '_') // jump over all _
 	{
 		++baseName;
 	}

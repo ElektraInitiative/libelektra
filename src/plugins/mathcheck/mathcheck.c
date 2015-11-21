@@ -65,7 +65,7 @@ static PNElem nextVal(const PNElem *stackPtr)
 	PNElem *ptr = (PNElem*)stackPtr;
 	PNElem result;
 	result.op = ERROR;
-	while(ptr->op != END)
+	while (ptr->op != END)
 	{
 		if (ptr->op == VAL)
 		{
@@ -84,7 +84,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 	PNElem result;
 	if (stackPtr < stack)
 		result.op = ERROR;
-	while(stackPtr >= stack)
+	while (stackPtr >= stack)
 	{	
 		if (stackPtr->op == VAL && stackPtr != stack)
 		{
@@ -162,7 +162,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	int start;
 	int len;
 	char *searchKey = NULL;
-	while(1)
+	while (1)
 	{
 		nomatch = regexec(&regex, ptr, 1, &match, 0);
 		if (nomatch)
@@ -289,7 +289,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 	Key *cur;
 	const Key *meta;
 	PNElem result;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
 		meta = keyGetMeta(cur, "check/math");
 		if (!meta)

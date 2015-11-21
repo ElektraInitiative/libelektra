@@ -42,7 +42,7 @@ void outputGTest(kdb::KeySet tocheck, std::string name)
 {
 	std::cout << name << ".rewind();" << std::endl;
 	tocheck.rewind();
-	while(tocheck.next())
+	while (tocheck.next())
 	{
 		std::cout << name << ".next();" << std::endl;
 		std::cout << "EXPECT_EQ(" << name

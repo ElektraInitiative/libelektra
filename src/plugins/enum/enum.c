@@ -65,7 +65,7 @@ static int validateKey(Key *key)
 	int nomatch;
 	int start;
 	int end;
-	while(1)
+	while (1)
 	{
 		nomatch = regexec(&regex, ptr, submatches, match, 0);
 		if (nomatch)
@@ -94,7 +94,7 @@ int elektraEnumSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 {
 	/* set all keys */
 	Key *cur;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
 		if (!validateKey(cur))
 		{

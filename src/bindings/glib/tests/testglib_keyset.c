@@ -112,7 +112,7 @@ static void test_iterating()
 
 	guint cnt = 0;
 	gelektra_keyset_rewind(ks);
-	while((tmpkey = gelektra_keyset_next(ks)) != NULL)
+	while ((tmpkey = gelektra_keyset_next(ks)) != NULL)
 	{
 		GElektraKey *curkey = gelektra_keyset_current(ks);
 		succeed_if(gelektra_key_cmp(tmpkey, curkey) == 0,

@@ -132,7 +132,7 @@ Key *current=0;
 kdbGetByName(handle,ks,"system/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
 
 ksRewind(ks);
-while(current=ksNext(ks)) {
+while (current=ksNext(ks)) {
 	size_t size=0;
 	
 	if (keyIsBin(current)) {

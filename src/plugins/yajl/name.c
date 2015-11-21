@@ -66,7 +66,7 @@ ssize_t elektraKeyCountEqualLevel(const Key *cmp1, const Key *cmp2)
 	size_t size2 = 0;
 	ssize_t counter = 0;
 
-	while(  *(pcmp1=keyNameGetOneLevel(pcmp1+size1,&size1)) &&
+	while (*(pcmp1=keyNameGetOneLevel(pcmp1+size1,&size1)) &&
 		*(pcmp2=keyNameGetOneLevel(pcmp2+size2,&size2)) &&
 		size1 == size2 &&
 		!strncmp(pcmp1, pcmp2, size1))

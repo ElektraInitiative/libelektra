@@ -12,7 +12,7 @@
 
 int owncmp(const char*str1, const char*str2)
 {
-	while(*str1 && (*str1==*str2))
+	while (*str1 && (*str1==*str2))
 	{
 		str1++;
 		str2++;
@@ -25,7 +25,7 @@ int owncmp(const char*str1, const char*str2)
 
 int slacmp(const char*str1, const char*str2)
 {
-	while(*str1 && (*str1==*str2))
+	while (*str1 && (*str1==*str2))
 	{
 		str1++;
 		str2++;
@@ -45,7 +45,7 @@ int slacmp(const char*str1, const char*str2)
 int natcmp(const char*str1, const char*str2)
 {
 	int count_num = -1;
-	while(*str1 && (*str1==*str2))
+	while (*str1 && (*str1==*str2))
 	{
 		str1++;
 		str2++;

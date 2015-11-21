@@ -26,7 +26,7 @@ int main()
 
 	/*
 	ksRewind(myConfig);
-	while((key = ksNext(myConfig)))
+	while ((key = ksNext(myConfig)))
 	{
 		printf ("%s\n", keyName(key));
 	}

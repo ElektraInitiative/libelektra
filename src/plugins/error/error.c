@@ -24,7 +24,7 @@ int elektraErrorOpen(Plugin *handle ELEKTRA_UNUSED, Key *parentKey)
 	FILE *f = fopen("error_plugin_debug.log", "a");
 	fprintf (f, "HUHU %s\n", keyName(parentKey));
 	ksRewind(conf);
-	while(ksNext(conf)) fprintf(f, "%s\n", keyName(ksCurrent(conf)));
+	while (ksNext(conf)) fprintf(f, "%s\n", keyName(ksCurrent(conf)));
 	fclose(f);
 	*/
 

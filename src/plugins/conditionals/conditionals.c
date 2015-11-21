@@ -238,13 +238,13 @@ static int parseSingleCondition(const char *condition, KeySet *ks, Key *parentKe
 	unsigned long startPos = 0;
 	unsigned long endPos = 0;
 	char *ptr = (char *)condition;
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		++ptr;
 		++startPos;
 	}
 	ptr = opStr-1;
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		--ptr;
 		++endPos;
@@ -257,13 +257,13 @@ static int parseSingleCondition(const char *condition, KeySet *ks, Key *parentKe
 	startPos = 0;
 	endPos = 0;
 	ptr = opStr+opLen;
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		++ptr;
 		++startPos;
 	}
 	ptr = (char *)condition+(elektraStrLen(condition)-2);
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		--ptr;
 		++endPos;
@@ -408,7 +408,7 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 	const Key *meta;
 	int result;
 	int ret = 0;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
 		meta = keyGetMeta(cur, "check/condition");
 		if (!meta)
@@ -437,7 +437,7 @@ int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 	const Key *meta;
 	int result;
 	int ret = 0;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
 		meta = keyGetMeta(cur, "check/condition");
 		if (!meta)

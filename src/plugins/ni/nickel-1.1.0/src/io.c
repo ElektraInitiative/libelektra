@@ -129,7 +129,7 @@ Ni_PRIVATE int GetNextIdentifier(file_buf * restrict fb,
 #  define invalid() (len = 0, graph_len = 0)
 
    int state = ST_START; //holds current state for FSM, duh
-   while(state != ST_DONE) //do this until we're done
+   while (state != ST_DONE) //do this until we're done
    {
       //Get char into c; if it's eof, dip out.
       if ((c = BufGetC(fb)) == EOF)
@@ -322,7 +322,7 @@ Ni_PRIVATE int GetValue(file_buf * restrict fb, Ds_str * restrict value_out)
    && !Ds_ResizeStr(value_out, value_out->size << 1)) /* grow if necessary */ \
    { state = ST_DONE; rc = 0; break; }         /* quit everything if error */ \
    value_out->str[value_out->len++] = (c);           /* else set next char */ \
-} while(0)
+} while (0)
 
    //Space-conserving macro--sets the state to the start value and sets
    //graph_len to be the current length, so we don't go overboard getting rid
@@ -336,7 +336,7 @@ Ni_PRIVATE int GetValue(file_buf * restrict fb, Ds_str * restrict value_out)
 
    value_out->len = 0; //set length to 0
 
-   while(state != ST_DONE) //until we decide to stop
+   while (state != ST_DONE) //until we decide to stop
    {
       //Get next char; dip out (successfully) if EOF.
       if ((c = BufGetC(fb)) == EOF)
@@ -477,7 +477,7 @@ Ni_PRIVATE int PutSection(FILE * restrict f,
          break;
 
       success = 1;
-   } while(0);
+   } while (0);
 
    return success;
 }
@@ -518,7 +518,7 @@ Ni_PRIVATE int PutEntry(FILE * restrict f,
          break;
 
       success = 1;
-   } while(0);
+   } while (0);
 
    return success;
 }
@@ -608,7 +608,7 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
          size_t n    = 0;       //how many chars we've gone past initial space
          int comment = 0;       //whether we found a comment
 
-         while(1)
+         while (1)
          {
             if (c == T_CMT)      //if we found a comment
                comment = 1;
@@ -665,7 +665,7 @@ static int PutString(FILE * restrict f, const char * restrict str, int str_len,
    if (quote && fputc(T_OQ, f) == EOF)
       success = 0;
 
-   while(success && str_len > 0)
+   while (success && str_len > 0)
    {
       c = *str;
       advance = 1;

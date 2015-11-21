@@ -32,7 +32,7 @@ std::vector<std::string> listAllAvailablePlugins()
 	std::string allPlugins = ELEKTRA_PLUGINS;
 	std::istringstream ss(allPlugins);
 	std::string plugin;
-	while(getline(ss, plugin, ';'))
+	while (getline(ss, plugin, ';'))
 	{
 		ret.push_back(plugin);
 	}
