@@ -13,6 +13,8 @@
 # include "kdbconfig.h"
 #endif
 
+#include <kdbhelper.h>
+
 int elektraGlobMatch(Key *key, const Key *match, int globFlags)
 {
 	if (!fnmatch (keyString(match), keyName(key),

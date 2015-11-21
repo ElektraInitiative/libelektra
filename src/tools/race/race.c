@@ -8,6 +8,7 @@
 
 #include <kdb.h>
 #include <kdbconfig.h>
+#include <kdbhelper.h>
 
 #include <fcntl.h>
 #include <stdio.h>

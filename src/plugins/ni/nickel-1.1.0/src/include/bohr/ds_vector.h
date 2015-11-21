@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <kdbhelper.h>
+
 
 //Controls inlining of this library's functions.
 #ifndef Ds_VECTOR_INLINE
@@ -93,7 +95,7 @@ Ds_VECTOR_INLINE int Ds_InitVector(Ds_vector * restrict v, size_t cap)
 
    if (cap > 0)
    {
-      if (!(v->buf = (Ds_VECTOR_TYPE *)malloc(cap * sizeof(Ds_VECTOR_TYPE))))
+      if (!(v->buf = (Ds_VECTOR_TYPE *)elektraMalloc(cap * sizeof(Ds_VECTOR_TYPE))))
          return 0;
 
       v->cap = cap;

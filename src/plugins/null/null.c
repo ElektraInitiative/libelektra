@@ -12,6 +12,8 @@
 # include "kdbconfig.h"
 #endif
 
+#include <kdbhelper.h>
+
 #include <string.h>
 #include <stdlib.h>
 

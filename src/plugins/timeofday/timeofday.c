@@ -6,9 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
-#endif
+#include <kdbhelper.h>
 
 #include "timeofday.h"
 

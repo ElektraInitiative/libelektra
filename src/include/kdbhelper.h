@@ -12,7 +12,12 @@
 #ifndef KDB_HELPER
 #define KDB_HELPER
 
+#ifndef HAVE_KDBCONFIG
+# include "kdbconfig.h"
+#endif
+
 #include <stdarg.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 namespace ckdb {
