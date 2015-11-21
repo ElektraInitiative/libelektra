@@ -55,7 +55,7 @@ void tryExternalCommand(char** argv)
 	}
 	pathes.push_back(buildinExecPath);
 
-	for(auto & pathe : pathes)
+	for (auto & pathe : pathes)
 	{
 		std::string command;
 		char* savedArg = nullptr;

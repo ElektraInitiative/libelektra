@@ -9,7 +9,7 @@ KeyWindow {
 
 	function populateMetaArea() {
 		if (selectedNode.metaValue){
-			for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
+			for (var i = 0; i < selectedNode.metaValue.rowCount(); i++){
 				qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
 			}
 		}
@@ -26,7 +26,7 @@ KeyWindow {
 			index = selectedNode.index
 
 		//collect metadata in a map
-		for(var i = 0; i < qmlMetaKeyModel.count; i++){
+		for (var i = 0; i < qmlMetaKeyModel.count; i++){
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 		}
 

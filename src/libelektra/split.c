@@ -106,7 +106,7 @@ void elektraSplitRemove(Split *split, size_t where)
 	ksDel(split->keysets[where]);
 	keyDel(split->parents[where]);
 	--split->size; // reduce size
-	for(size_t i=where; i<split->size; ++i)
+	for (size_t i=where; i<split->size; ++i)
 	{
 		split->keysets[i] = split->keysets[i+1];
 		split->handles[i] = split->handles[i+1];

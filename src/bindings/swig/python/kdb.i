@@ -247,7 +247,7 @@
     (void) PyDict_Check(memo);
     ssize_t size = $self->size();
     kdb::KeySet *ks = new kdb::KeySet(size, KS_END);
-    for(cursor_t cursor = 0; cursor < size; ++cursor)
+    for (cursor_t cursor = 0; cursor < size; ++cursor)
       ks->append($self->at(cursor)->dup());
     return ks;
   }

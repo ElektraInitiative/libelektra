@@ -767,7 +767,7 @@ void TreeViewModel::refreshArrayNumbers()
 
 		if (arrayElements.count() > 1){
 
-			for(int i = 1; i < arrayElements.count(); i++){
+			for (int i = 1; i < arrayElements.count(); i++){
 				Key k = arrayElements.at(i - 1)->getKey().dup();
 				ckdb::elektraArrayIncName(k.getKey());
 				arrayElements.at(i)->setName(QString::fromStdString(k.getBaseName()));

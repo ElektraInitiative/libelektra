@@ -639,9 +639,9 @@ error:
 static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 {
 	int any_error = 0;
-	for(size_t i=0; i<split->size;i++)
+	for (size_t i=0; i<split->size;i++)
 	{
-		for(size_t p=0; p<COMMIT_PLUGIN; ++p)
+		for (size_t p=0; p<COMMIT_PLUGIN; ++p)
 		{
 			int ret = 0; // last return value
 
@@ -711,9 +711,9 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
  */
 static void elektraSetCommit(Split *split, Key *parentKey)
 {
-	for(size_t p=COMMIT_PLUGIN; p<NR_OF_PLUGINS; ++p)
+	for (size_t p=COMMIT_PLUGIN; p<NR_OF_PLUGINS; ++p)
 	{
-		for(size_t i=0; i<split->size;i++)
+		for (size_t i=0; i<split->size;i++)
 		{
 			int ret = 0;
 			Backend *backend = split->handles[i];
@@ -761,9 +761,9 @@ static void elektraSetCommit(Split *split, Key *parentKey)
  */
 static void elektraSetRollback(Split *split, Key *parentKey)
 {
-	for(size_t p=0; p<NR_OF_PLUGINS; ++p)
+	for (size_t p=0; p<NR_OF_PLUGINS; ++p)
 	{
-		for(size_t i=0; i<split->size; i++)
+		for (size_t i=0; i<split->size; i++)
 		{
 			int ret = 0;
 			Backend *backend = split->handles[i];

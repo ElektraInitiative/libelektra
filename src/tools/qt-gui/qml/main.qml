@@ -371,7 +371,7 @@ ApplicationWindow {
 		enabled: undoManager.canUndo
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
-			for(var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
+			for (var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
 				undoAction.trigger()
 
 			treeView.treeModel.refresh()
@@ -433,7 +433,7 @@ ApplicationWindow {
 		enabled: undoManager.canRedo
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
-			for(var i = undoManager.index(); i < undoManager.count(); i++)
+			for (var i = undoManager.index(); i < undoManager.count(); i++)
 				redoAction.trigger()
 
 			treeView.treeModel.refresh()

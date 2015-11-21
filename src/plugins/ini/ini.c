@@ -353,7 +353,7 @@ static char *getIniName(Key *section, Key *key)
 		return strdup(keyBaseName(key));
 	char *buffer = elektraMalloc(strlen(keyName(key)) - strlen(keyName(section)));
 	char *dest = buffer;
-	for(char *ptr = (char *)keyName(key)+strlen(keyName(section))+1; *ptr; ++ptr)
+	for (char *ptr = (char *)keyName(key)+strlen(keyName(section))+1; *ptr; ++ptr)
 	{
 		if (*ptr != '\\')
 		{

@@ -449,7 +449,7 @@ Ni_PRIVATE int PutSection(FILE * restrict f,
       if (fputc(T_EOL, f) == EOF) //put an initial eol
          break;
 
-      for(i = 0; i < level-1; ++i) //put initial spaces
+      for (i = 0; i < level-1; ++i) //put initial spaces
       {
          if (fputc(' ', f) == EOF)
             break;
@@ -457,7 +457,7 @@ Ni_PRIVATE int PutSection(FILE * restrict f,
       if (i < level-1)
          break;
 
-      for(i = 0; i < level; ++i)
+      for (i = 0; i < level; ++i)
       {
          if (fputc(T_OB, f) == EOF) //put as many ['s as level indicates
             break;
@@ -468,7 +468,7 @@ Ni_PRIVATE int PutSection(FILE * restrict f,
       if (!PutString(f, name, name_len, 0, 1)) //put section name
          break;
 
-      for(i = 0; i < level; ++i)
+      for (i = 0; i < level; ++i)
       {
          if (fputc(T_CB, f) == EOF) //put as many ]'s as level indicates
             break;
@@ -495,7 +495,7 @@ Ni_PRIVATE int PutEntry(FILE * restrict f,
 
    do
    {
-      for(i = 0; i < level-1; ++i) //initial spaces
+      for (i = 0; i < level-1; ++i) //initial spaces
       {
          if (fputc(' ', f) == EOF)
             break;
@@ -822,7 +822,7 @@ static int PutUtf8Char(FILE * restrict f,
       int char_len = (str[0] < 0xe0 ? 2 :
                      (str[0] < 0xf0 ? 3 : 4));
 
-      for(int i = 0; i < char_len; ++i)
+      for (int i = 0; i < char_len; ++i)
       {
          if (fputc(str[i], f) == EOF)
             return 0;

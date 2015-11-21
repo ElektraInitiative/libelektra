@@ -14,7 +14,7 @@ KeyWindow {
 		var metaData = {};
 
 		//collect metadata
-		for(var i = 0; i < qmlMetaKeyModel.count; i++)
+		for (var i = 0; i < qmlMetaKeyModel.count; i++)
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
 		container.clearData()

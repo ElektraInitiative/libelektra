@@ -109,7 +109,7 @@ Ds_HASH_INLINE int Ds_InitHashTable(Ds_hash_table * restrict table, size_t size)
  */
 Ds_HASH_INLINE void Ds_FreeHashTable(Ds_hash_table * restrict table)
 {
-   for(size_t i = 0; i < table->cap; ++i)
+   for (size_t i = 0; i < table->cap; ++i)
    {
       Ds_hash_entry * head;
 
@@ -252,7 +252,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
       memset(table->buf + old_size, 0,
              (size - old_size) * sizeof(Ds_hash_entry *));
 
-      for(size_t i = 0; i < old_size; ++i)
+      for (size_t i = 0; i < old_size; ++i)
       {
          size_t bucket;
          Ds_hash_entry * e, * t;
@@ -282,7 +282,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
    {
       size_t old_num;
 
-      for(size_t i = size; i < table->cap; ++i)
+      for (size_t i = size; i < table->cap; ++i)
       {
          Ds_hash_entry * t;
 

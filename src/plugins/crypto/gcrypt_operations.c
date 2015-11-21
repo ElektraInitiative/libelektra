@@ -162,7 +162,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	memcpy(output, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 
 	// encrypt content block by block (i = start of the current block)
-	for(i = 0; i < header.contentLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	for (i = 0; i < header.contentLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
 	{
 		// load content partition into the content buffer
 		long contentLen = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
@@ -239,7 +239,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	// decrypt content block by block
 	// (i = start of the current block and the 1st block has already been consumed)
-	for(i = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE; i < valueLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
+	for (i = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE; i < valueLen; i += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
 	{
 		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);

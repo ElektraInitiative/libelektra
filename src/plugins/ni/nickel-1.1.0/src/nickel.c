@@ -644,7 +644,7 @@ Ni_PUBLIC int Ni_ReadStream(Ni_node restrict n, FILE * restrict stream,
          {
             //FIXME: this breaks valid UTF-8 and is locale-dependent...
 
-            for(i = 0; i < key_len; ++i)
+            for (i = 0; i < key_len; ++i)
                key[i] = tolower(key[i]);
          }
 

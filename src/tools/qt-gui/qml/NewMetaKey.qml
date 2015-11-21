@@ -59,7 +59,7 @@ Item {
 				qmlMetaKeyModel.remove(index)// remove the visual item
 
 				if (isArray){
-					for(var i = 0; i < qmlMetaKeyModel.count; i++){
+					for (var i = 0; i < qmlMetaKeyModel.count; i++){
 						qmlMetaKeyModel.set(i, {"metaName": "#" + i})
 					}
 

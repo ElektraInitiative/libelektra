@@ -204,7 +204,7 @@ BEGIN_TEST(parse_spaces_quotes)
    TEST_COND(children == 24);
 
    int i;
-   for(i = 0; i < 24; ++i)
+   for (i = 0; i < 24; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);
@@ -357,7 +357,7 @@ BEGIN_TEST(parse_oddities)
    TEST_COND(children == 10);
 
    int i;
-   for(i = 0; i < 10; ++i)
+   for (i = 0; i < 10; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);
@@ -551,7 +551,7 @@ BEGIN_TEST(parse_output)
    assert(node != NULL);
 
    int i;
-   for(i = 0; i < NUM_parse_output_NODES; ++i)
+   for (i = 0; i < NUM_parse_output_NODES; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 1, NULL);
       assert(child != NULL);
@@ -579,7 +579,7 @@ BEGIN_TEST(parse_output)
    int children = Ni_GetNumChildren(node);
    TEST_COND(children == NUM_parse_output_NODES);
 
-   for(i = 0; i < NUM_parse_output_NODES; ++i)
+   for (i = 0; i < NUM_parse_output_NODES; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);
@@ -617,7 +617,7 @@ BEGIN_TEST(big_oct)
    TEST_COND(children == 9);
 
    int i;
-   for(i = 0; i < 9; ++i)
+   for (i = 0; i < 9; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);

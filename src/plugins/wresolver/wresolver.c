@@ -105,7 +105,7 @@ static void resolverInit (resolverHandle *p, const char *path)
 static void escapePath(char *home)
 {
 	int len = strlen(home), i;
-	for(i=0; i < len; ++i)
+	for (i=0; i < len; ++i)
 	{
 		if (home[i] == '\\')
 		{

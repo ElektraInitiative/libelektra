@@ -283,7 +283,7 @@ Item {
 
 	function alreadyInList(plugin) {
 
-		for(var i = 0; i < includedPluginsModel.count; i++){
+		for (var i = 0; i < includedPluginsModel.count; i++){
 			if (includedPluginsModel.get(i).pluginName === plugin)
 				return true
 		}
@@ -291,7 +291,7 @@ Item {
 	}
 
 	function alreadyInConfig(key) {
-		for(var i = 0; i < config.length; i++){
+		for (var i = 0; i < config.length; i++){
 			if (config[i].toString() === key)
 				return true
 			return false
@@ -357,7 +357,7 @@ Item {
 			var metaData = {};
 
 			//collect metadata
-			for(var i = 0; i < qmlMetaKeyModel.count; i++)
+			for (var i = 0; i < qmlMetaKeyModel.count; i++)
 				metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
 			dataContainer.clearData()

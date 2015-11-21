@@ -869,7 +869,7 @@ static void test_keyNameSlashes()
 
 	Key * copy = keyNew (0);
 
-	for(i = 0 ; tstKeyName[i].testName != NULL ; i++)
+	for (i = 0 ; tstKeyName[i].testName != NULL ; i++)
 	{
 		key = keyNew(tstKeyName[i].keyName, KEY_END);
 

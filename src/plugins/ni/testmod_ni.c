@@ -393,7 +393,7 @@ BEGIN_TEST(parse_output)
    assert(node != NULL);
 
    size_t i;
-   for(i = 0; i < NUM_parse_output_NODES; ++i)
+   for (i = 0; i < NUM_parse_output_NODES; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 1, NULL);
       assert(child != NULL);
@@ -421,7 +421,7 @@ BEGIN_TEST(parse_output)
    int children = Ni_GetNumChildren(node);
    TEST_COND(children == NUM_parse_output_NODES);
 
-   for(i = 0; i < NUM_parse_output_NODES; ++i)
+   for (i = 0; i < NUM_parse_output_NODES; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);

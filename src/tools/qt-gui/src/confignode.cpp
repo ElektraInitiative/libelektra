@@ -165,7 +165,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 	if (m_metaData)
 	{
 		//delete old metadata in key
-		for(auto & elem : m_metaData->model())
+		for (auto & elem : m_metaData->model())
 		{
 			elem->deleteMeta(elem->getName());
 		}
@@ -176,14 +176,14 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 		m_metaData = new TreeViewModel;
 
 	//create new metadata nodes in model
-	for(int i = 0; i < metaData.size(); i++)
+	for (int i = 0; i < metaData.size(); i++)
 	{
 		m_metaData->insertMetaRow(i, m_key, m_name);
 	}
 
 	int counter = 0;
 	//set new metadata
-	for(QVariantMap::const_iterator iter = metaData.begin(); iter != metaData.end(); iter++)
+	for (QVariantMap::const_iterator iter = metaData.begin(); iter != metaData.end(); iter++)
 	{
 		QVariantList tmp;
 		tmp << iter.key() << iter.value();
@@ -218,7 +218,7 @@ int ConfigNode::getChildIndexByName(const QString &name)
 {
 	if (m_children)
 	{
-		for(int i = 0; i < m_children->rowCount(); i++)
+		for (int i = 0; i < m_children->rowCount(); i++)
 		{
 			if (m_children->model().at(i)->getName() == name)
 				return i;

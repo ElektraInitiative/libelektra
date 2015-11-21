@@ -33,7 +33,7 @@ static inline char * LEString (Lineending index)
 static inline Lineending strToLE (const char * str)
 {
 	uint8_t counter = 0;
-	for(; counter < NUM_TYPES; ++counter)
+	for (; counter < NUM_TYPES; ++counter)
 	{
 		if (!strcmp(LEString(counter), str))
 			return counter;
@@ -69,7 +69,7 @@ int elektraFilecheckClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTR
 static int checkNull(const uint8_t * line, ssize_t bytes)
 {
 	int i;
-	for(i = 0; i < bytes; ++i)
+	for (i = 0; i < bytes; ++i)
 	{
 		if (line[i] == 0)
 		{
@@ -83,10 +83,10 @@ static int checkBom(const uint8_t * line)
 {
 	uint8_t i, j;
 	uint8_t found = 0;
-	for(i = 0; i < BOM_COUNT; ++i)
+	for (i = 0; i < BOM_COUNT; ++i)
 	{
 		found = 1;
-		for(j = 0; j < BOM_SIZE_MAX && BOMS[i][j] != INTERNAL_BOM_DELIMITER; ++j)
+		for (j = 0; j < BOM_SIZE_MAX && BOMS[i][j] != INTERNAL_BOM_DELIMITER; ++j)
 		{
 			if (line[j] != BOMS[i][j])
 			{
@@ -124,7 +124,7 @@ static int validateLineEnding(const uint8_t * line, Lineending * valid, int rese
 	}
 	uint8_t sc = 0;
 	const ssize_t lineLength = (elektraStrLen((char *)line) - 1);
-	for(; i < lineLength; ++i)
+	for (; i < lineLength; ++i)
 	{
 		found = NA;
 		sc = line[i];
@@ -200,7 +200,7 @@ static int validateEncoding(const uint8_t * line, iconv_t conv, size_t bytesRead
 static int checkUnprintable(const uint8_t *line)
 {
 	unsigned int i;
-	for(i = 0; i < elektraStrLen((char *)line); ++i)
+	for (i = 0; i < elektraStrLen((char *)line); ++i)
 	{
 		if (line[i] < 0x20 || line[i] > 0x7E || line[i] != '\n' || line[i] != '\r')
 			return i;

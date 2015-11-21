@@ -344,7 +344,7 @@ public:
 	{
 		// now activate/deactive layers
 		Events e;
-		for(auto const & l: m_gc.fetchGlobalActivation(this))
+		for (auto const & l: m_gc.fetchGlobalActivation(this))
 		{
 			if (l.second.activate)
 			{
@@ -393,7 +393,7 @@ public:
 	 */
 	void notify(KeySet & ks) override
 	{
-		for(auto const & k: ks)
+		for (auto const & k: ks)
 		{
 			auto const& f = m_keys.find(k.getName());
 			if (f == m_keys.end()) continue; // key already had context change

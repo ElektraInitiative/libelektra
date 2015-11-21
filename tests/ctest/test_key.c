@@ -1185,7 +1185,7 @@ static void test_elektraKeySetName()
 	succeed_if_same_string(keyName(dup), "user/test");
 	keyDel(dup);
 
-	for(int i=0; i<8; ++i)
+	for (int i=0; i<8; ++i)
 	{
 		int flags = 0;
 		if (i&1) flags|=KEY_CASCADING_NAME;

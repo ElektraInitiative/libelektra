@@ -57,7 +57,7 @@ void NewKeyCommand::redo()
 
 QStringList NewKeyCommand::cutListAtIndex(QStringList &list, int index)
 {
-	for(int i = 0; i < index; i++)
+	for (int i = 0; i < index; i++)
 		list.removeFirst();
 
 	return list;

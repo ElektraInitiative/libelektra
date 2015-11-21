@@ -33,7 +33,7 @@ static inline char *LEString(Lineending index)
 static Lineending strToLE(const char *str)
 {
 	uint8_t counter = 0;
-	for(; counter < NUM_TYPES; ++counter)
+	for (; counter < NUM_TYPES; ++counter)
 	{
 		if (!strcmp(LEString(counter), str))
 			return counter;
