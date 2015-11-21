@@ -18,8 +18,6 @@ api:
 	version rules ELEKTRA_ABI_13 ...
 	include rules to allow elektra/kdb.h
 
-DEFAULT_STORAGE/RESOLVER
-
 to one cmake variable:
 	verbose/debug -> logging
 	pdf/on/off -> docu
