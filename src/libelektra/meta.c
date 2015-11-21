@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief Methods for meta data manipulation.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.h>
 #include <kdbconfig.h>
 #include <kdbprivate.h>

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 ksNew( 28 ,
 	keyNew ("user/tests/hosts/gateway"
 		, KEY_VALUE, "192.168.0.1"

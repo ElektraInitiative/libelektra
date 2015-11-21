@@ -1,17 +1,35 @@
- /***************************************************************************
-                          key.c  -  Methods for Key manipulation
-                             -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2003 by Avi Alkalay
-    email                : avi@unix.sh
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Methods for Key manipulation.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
+#endif
+
+#if DEBUG && defined(HAVE_STDIO_H)
+#include <stdio.h>
+#endif
+
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+#include "kdb.h"
+#include "kdbprivate.h"
+
 
 
 /**
@@ -57,29 +75,6 @@
  */
 
 
-
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "kdb.h"
-#include "kdbprivate.h"
 
 /*
  * @internal

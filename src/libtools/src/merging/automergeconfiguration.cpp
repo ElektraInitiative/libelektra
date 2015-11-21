@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <merging/automergeconfiguration.hpp>
 #include <merging/metamergestrategy.hpp>
 #include <merging/automergestrategy.hpp>

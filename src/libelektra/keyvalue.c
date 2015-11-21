@@ -1,17 +1,35 @@
- /***************************************************************************
-                      keyvalue.c  -  Methods for Key manipulation
-                             -------------------
-    begin                : Fri Sep 26 2008
-    copyright            : (C) 2008 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Methods for Key value manipulation.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+
+
+#ifdef HAVE_KDBCONFIG_H
+#include "kdbconfig.h"
+#endif
+
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+#if DEBUG && defined(HAVE_STDIO_H)
+#include <stdio.h>
+#endif
+
+#include "kdbprivate.h"
+
 
 
 
@@ -42,31 +60,6 @@
  *
  *
  */
-
-
-
-
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
-#include "kdbprivate.h"
 
 
 

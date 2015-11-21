@@ -1,8 +1,9 @@
-/*
- * onesidevaluestrategy.hpp
+/**
+ * @file
  *
- *  Created on: 12 Aug 2014
- *      Author: felixl
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #ifndef ONESIDEVALUESTRATEGY_HPP_

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KDBVALUE_HPP
 #define ELEKTRA_KDBVALUE_HPP
 

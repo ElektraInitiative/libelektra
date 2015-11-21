@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif

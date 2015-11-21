@@ -1,8 +1,9 @@
-/*
- * kdbmerge.hpp
+/**
+ * @file
  *
- *  Created on: 24 Jan 2015
- *      Author: felixl
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #ifndef KDBMERGE_HPP_

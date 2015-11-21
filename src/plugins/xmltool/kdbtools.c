@@ -1,26 +1,10 @@
-/***************************************************************************
-            kdbtools.c  -  Elektra High Level Methods
-                             -------------------
-    begin                : Sat Jan 22 2005
-    copyright            : (C) 2005 by Avi Alkalay
-    email                : avi@unix.sh
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
-
-
-/* Subversion stuff
-
-$Id$
-
-*/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <string.h>
 #include <errno.h>

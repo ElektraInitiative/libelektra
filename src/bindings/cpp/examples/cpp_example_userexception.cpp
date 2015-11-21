@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * This example explains how to define user defined exception.
+ * @brief This example explains how to define user defined exception.
  *
  * That means that the user can implement their own exceptions,
  * e.g. potentially derived from their own base class with its
@@ -20,7 +20,11 @@
  * Never use non-binary compatible user exceptions if you do not
  * use them everywhere where you include any of elektras header
  * files!
+ *
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
+
 #include <stdexcept>
 
 class UserException : public std::exception

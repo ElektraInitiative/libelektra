@@ -1,30 +1,9 @@
- /***************************************************************************
-                      keytest.c  -  Methods for Key manipulation
-                             -------------------
-    begin                : Fri Sep 26 2008
-    copyright            : (C) 2008 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
 /**
- * @defgroup keytest Methods for Making Tests
- * @ingroup key
- * @brief Methods to do various tests on Keys
+ * @file
  *
- * To use them:
- * @code
-#include <kdb.h>
- * @endcode
+ * @brief Methods for making tests
  *
- *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 
@@ -52,6 +31,20 @@
 #include "kdb.h"
 #include "kdbprivate.h"
 #include "kdbinternal.h"
+
+
+/**
+ * @defgroup keytest Methods for Making Tests
+ * @ingroup key
+ * @brief Methods to do various tests on Keys
+ *
+ * To use them:
+ * @code
+#include <kdb.h>
+ * @endcode
+ *
+ *
+ */
 
 /** \internal
  *

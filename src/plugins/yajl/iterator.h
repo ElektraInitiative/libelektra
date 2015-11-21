@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_PLUGIN_YAJL_ITERATOR_H
 #define ELEKTRA_PLUGIN_YAJL_ITERATOR_H
 

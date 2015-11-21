@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief Methods to do various operations on Key meta data.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
  /***************************************************************************
                       keymeta.c  -  Methods for Key manipulation
                              -------------------
@@ -17,7 +25,7 @@
 /**
  * @defgroup keymeta Meta Info Manipulation Methods
  * @ingroup key
- * @brief Methods to do various operations on Key metainfo
+ * @brief Methods to do various operations on Key meta data.
  *
  * To use them:
  * @code

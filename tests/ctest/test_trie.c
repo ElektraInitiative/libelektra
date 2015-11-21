@@ -1,17 +1,10 @@
-/*************************************************************************** 
- *           test_trie.c  - Test suite for trie data structure
- *                  -------------------
- *  begin                : Thu Oct 24 2007
- *  copyright            : (C) 2007 by Patrick Sabin
- *  email                : patricksabin@gmx.at
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <tests_internal.h>
 

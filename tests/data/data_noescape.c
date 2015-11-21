@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 TEST_NOESCAPE_PART("a", "a");
 TEST_NOESCAPE_PART("$", "$");
 TEST_NOESCAPE_PART("€", "€");

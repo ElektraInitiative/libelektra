@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief Array methods.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #define __STDC_FORMAT_MACROS
 
 #include <kdbprivate.h>

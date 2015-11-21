@@ -1,20 +1,12 @@
-/***************************************************************************
- *    kdbproposal.h  -  Proposed declarations
+/**
+ * @file
  *
- * Do not use them if avoidable, they are likely not API/ABI stable.
+ * @brief Proposed declarations.
  *
- *                         -------------------
- *  begin                : Sun 08 Dec, 2013
- *  copyright            : (C) 2013 by Markus Raab
- *  email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+ * These functions are likely not API/ABI stable.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef KDBPROPOSAL_H
 #define KDBPROPOSAL_H

@@ -1,18 +1,10 @@
- /***************************************************************************
-                      keyname.c  -  Methods for Key manipulation
-                             -------------------
-    begin                : Fri Sep 26 2008
-    copyright            : (C) 2008 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief Methods for Key name manipulation.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 /** @class doxygenNamespaces
  *

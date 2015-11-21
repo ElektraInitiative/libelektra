@@ -1,34 +1,10 @@
-/***************************************************************************
-                      internal.c  -  Helper functions for elektra
-                             -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2003 by Avi Alkalay
-    email                : avi@unix.sh
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
 /**
- * @brief Internal Methods for Elektra
+ * @file
  *
- * To use them:
- * @code
- * #include <kdbinternal.h>
- * @endcode
+ * @brief Internal methods for Elektra.
  *
- * There are some areas where libraries have to reimplement
- * some basic functions to archive support for non-standard
- * systems, for testing purposes or to provide a little more
- * convenience.
- *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
-
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
@@ -63,6 +39,21 @@
 #endif
 
 #include "kdbinternal.h"
+
+/**
+ * @brief Internal Methods for Elektra
+ *
+ * To use them:
+ * @code
+ * #include <kdbinternal.h>
+ * @endcode
+ *
+ * There are some areas where libraries have to reimplement
+ * some basic functions to archive support for non-standard
+ * systems, for testing purposes or to provide a little more
+ * convenience.
+ *
+ */
 
 /**
  * Copies the key array2 into where array1 points.

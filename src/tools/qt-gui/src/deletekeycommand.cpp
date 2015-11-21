@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "deletekeycommand.hpp"
 
 DeleteKeyCommand::DeleteKeyCommand(const QString& type, TreeViewModel* model, int index, QUndoCommand* parent)

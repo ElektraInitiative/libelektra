@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 keyNew ("system/elektra/modules/crypto", KEY_VALUE, "crypto plugin waits for your orders", KEY_END),
 keyNew ("system/elektra/modules/crypto/exports", KEY_END),
 keyNew ("system/elektra/modules/crypto/exports/get", KEY_FUNC, elektraCryptoGet, KEY_END),

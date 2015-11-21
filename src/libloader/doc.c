@@ -1,4 +1,12 @@
 /**
+ * @file
+ *
+ * @brief Loading Modules for Elektra documentation.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
+/**
  * @brief Loading Modules for Elektra.
  *
  * Unfortunately there is no portable way to load modules, plugins or libraries.

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief Export symbols tool.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <stdio.h>
 #include <string.h>
 

@@ -1,17 +1,10 @@
-/***************************************************************************
-            trie.c  -  low level functions for backend mounting.
-                             -------------------
-    begin                : Sat Nov 3
-    copyright            : (C) 2007 by Patrick Sabin
-    email                : patricksabin@gmx.at
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Interna of trie functionality.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"

@@ -1,17 +1,10 @@
-/***************************************************************************
-                          keyhelpers.c  -  Methods for Key manipulation
-                             -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2003 by Avi Alkalay
-    email                : avi@unix.sh
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Helpers for key manipulation.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"

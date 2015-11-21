@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 ksNew(102,
 	keyNew ("user", KEY_DIR,0),
 	keyNew ("user/test", KEY_DIR,0),

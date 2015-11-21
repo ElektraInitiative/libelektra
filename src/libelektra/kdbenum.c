@@ -1,6 +1,13 @@
-/*This is a dummy file do document the enums which have
- * no name in the header file. They are duplicated here
- * to document them. */
+/**
+ * @file
+ *
+ * @brief dummy file do document the enums which have no name in the header file.
+ *
+ * They are duplicated here to document them.
+ *
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 /**
  * Allows keyNew() to determine which information comes next.

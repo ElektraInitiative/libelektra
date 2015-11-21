@@ -1,18 +1,10 @@
-/***************************************************************************
-            split.c  -  Functions for splitting keysets for kdbSet
-                             -------------------
-    begin                : Fri 21 Mar 2008
-    copyright            : (C) 2008 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief Interna of splitting functionality.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"

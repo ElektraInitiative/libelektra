@@ -1,17 +1,10 @@
-/***************************************************************************
-            dump.c  -  Skeleton of backends to access the Key Database
-                             -------------------
-    begin                : Mon May  3 15:22:44 CEST 2010
-    copyright            : by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "dump.hpp"
 #include <errno.h>

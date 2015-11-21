@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <tests_internal.h>
 
 ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from);

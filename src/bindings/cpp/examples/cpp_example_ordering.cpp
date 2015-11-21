@@ -1,14 +1,16 @@
-/*
- * This example demonstrates, how easy it is to put keys in different
- * datastructures.
+/**
+ * @file
  *
- * They might even have complete other properties than KeySet, e.g. in
+ * @brief example how easy it is to put keys in different datastructures
+ *
+ * - * They might even have complete other properties than KeySet, e.g. in
  * this case:
  * - duplicates are allowed
  * - after sorting order is given by meta data "order"
  *
  * It is easy to create any other data structure, with any properties
- * you like.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #include <keyset.hpp>

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef NEWKEYCOMMAND_HPP
 #define NEWKEYCOMMAND_HPP
 

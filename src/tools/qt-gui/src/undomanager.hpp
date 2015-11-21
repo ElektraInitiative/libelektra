@@ -1,3 +1,10 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef UNDOMANAGER_HPP
 #define UNDOMANAGER_HPP

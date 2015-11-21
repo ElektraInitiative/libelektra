@@ -1,5 +1,9 @@
-/*
- * \copydoc python.cpp
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_PLUGIN_PYTHON_H

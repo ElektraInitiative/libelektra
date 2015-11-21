@@ -1,18 +1,10 @@
-/***************************************************************************
-                          keyset.c  -  Methods for KeySet manipulation
-                             -------------------
-    begin                : Sun Oct 02 2005
-    copyright            : (C) 2005 by Avi Alkalay
-    email                : avi@unix.sh
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief Methods for key sets.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
