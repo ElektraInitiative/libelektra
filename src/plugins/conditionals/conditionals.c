@@ -166,7 +166,7 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	}
 	long ret;
 	ret = compareStrings(keyString(key), compareTo);
-	switch(cmpOp)
+	switch (cmpOp)
 	{
 		case EQU:
 			if (!ret)

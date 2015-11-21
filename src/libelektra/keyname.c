@@ -513,7 +513,7 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
 	elektraRemoveKeyName(key);
 	if (!(options & KEY_META_NAME)) keySetOwner (key, NULL);
 
-	switch(keyGetNameNamespace(newName))
+	switch (keyGetNameNamespace(newName))
 	{
 	case KEY_NS_NONE: ELEKTRA_ASSERT(0);
 	case KEY_NS_EMPTY:

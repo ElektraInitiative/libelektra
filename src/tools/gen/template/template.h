@@ -47,7 +47,7 @@ $support.typeof(i)
  */
 static inline const char *${support.enumname(i)}_to_string($support.typeof(i) e)
 {
-	switch(e)
+	switch (e)
 	{
 @for e in $support.enumval(i)
 	case $e: return "$e";

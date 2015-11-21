@@ -120,7 +120,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	header.contentLen = keyGetValueSize(k);
 	header.flags = ELEKTRA_CRYPTO_FLAG_NONE;
 
-	switch(keyIsString(k))
+	switch (keyIsString(k))
 	{
 	case 1: // string
 		header.flags = ELEKTRA_CRYPTO_FLAG_STRING;

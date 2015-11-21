@@ -135,7 +135,7 @@ Ni_PRIVATE int GetNextIdentifier(file_buf * restrict fb,
       if ((c = BufGetC(fb)) == EOF)
          break;
 
-      switch(state)
+      switch (state)
       {
          //What state are we in?  See defines above for description of states.
 
@@ -342,7 +342,7 @@ Ni_PRIVATE int GetValue(file_buf * restrict fb, Ds_str * restrict value_out)
       if ((c = BufGetC(fb)) == EOF)
          break;
 
-      switch(state)
+      switch (state)
       {
          //What state are we in?  See defines above for what these mean.
 
@@ -541,7 +541,7 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
    int esc       = -1; //value of escape sequence
    int line_cont =  0; //whether the line-continue escape is what we just parsed
 
-   switch(c = BufGetC(fb))
+   switch (c = BufGetC(fb))
    {
 
    //Normal escapes--put them in esc.
@@ -736,7 +736,7 @@ static int PutUtf8Char(FILE * restrict f,
 
          //see if we can make a pretty, non-hex escape
          int c = 0;
-         switch(str[0])
+         switch (str[0])
          {
          case '\a': c = 'a'; break;
          case '\b': c = 'b'; break;

@@ -209,7 +209,7 @@ uint32_t        initval)         /* the previous hash, or an arbitrary value */
   }
 
   /*------------------------------------------- handle the last 3 uint32_t's */
-  switch(length)                     /* all the case statements fall through */
+  switch (length)                     /* all the case statements fall through */
   {
   case 3 : c+=k[2];
   case 2 : b+=k[1];
@@ -258,7 +258,7 @@ uint32_t       * restrict pb)     /* IN: more seed OUT: secondary hash value */
   }
 
   /*------------------------------------------- handle the last 3 uint32_t's */
-  switch(length)                     /* all the case statements fall through */
+  switch (length)                     /* all the case statements fall through */
   {
   case 3 : c+=k[2];
   case 2 : b+=k[1];
@@ -339,7 +339,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
      */
 #ifndef VALGRIND
 
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
@@ -359,7 +359,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
 #else /* make valgrind happy */
 
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=((uint32_t)k8[10])<<16;  /* fall through */
@@ -395,7 +395,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
 
     /*----------------------------- handle the last (probably partial) block */
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[4]+(((uint32_t)k[5])<<16);
              b+=k[2]+(((uint32_t)k[3])<<16);
@@ -449,7 +449,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
     }
 
     /*-------------------------------- last block: affect all 32 bits of (c) */
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=((uint32_t)k[11])<<24;
     case 11: c+=((uint32_t)k[10])<<16;
@@ -529,7 +529,7 @@ void hashlittle2(
      */
 #ifndef VALGRIND
 
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
@@ -549,7 +549,7 @@ void hashlittle2(
 #else /* make valgrind happy */
 
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=((uint32_t)k8[10])<<16;  /* fall through */
@@ -585,7 +585,7 @@ void hashlittle2(
 
     /*----------------------------- handle the last (probably partial) block */
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[4]+(((uint32_t)k[5])<<16);
              b+=k[2]+(((uint32_t)k[3])<<16);
@@ -639,7 +639,7 @@ void hashlittle2(
     }
 
     /*-------------------------------- last block: affect all 32 bits of (c) */
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=((uint32_t)k[11])<<24;
     case 11: c+=((uint32_t)k[10])<<16;
@@ -710,7 +710,7 @@ uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
      */
 #ifndef VALGRIND
 
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=k[2]&0xffffff00; b+=k[1]; a+=k[0]; break;
@@ -730,7 +730,7 @@ uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
 #else  /* make valgrind happy */
 
     k8 = (const uint8_t *)k;
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=((uint32_t)k8[10])<<8;  /* fall through */
@@ -773,7 +773,7 @@ uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
     }
 
     /*-------------------------------- last block: affect all 32 bits of (c) */
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=k[11];
     case 11: c+=((uint32_t)k[10])<<8;

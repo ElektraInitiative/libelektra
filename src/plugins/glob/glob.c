@@ -58,7 +58,7 @@ static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection dire
 
 	userGlobConfig = keyNew ("user/glob", KEY_END);
 	systemGlobConfig = keyNew ("system/glob", KEY_END);
-	switch(direction)
+	switch (direction)
 	{
 	case GET:
 		userDirGlobConfig = keyNew ("user/glob/get", KEY_END);

@@ -128,7 +128,7 @@ static int validateLineEnding(const uint8_t * line, Lineending * valid, int rese
 	{
 		found = NA;
 		sc = line[i];
-		switch(fc)
+		switch (fc)
 		{
 			case LF_BYTE:
 				if (sc == CR_BYTE)

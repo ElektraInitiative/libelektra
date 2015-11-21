@@ -99,7 +99,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 		PNElem e2 = nextVal(stackPtr);
 		if (e1.op == VAL && e2.op == VAL)
 		{
-			switch(stackPtr->op)
+			switch (stackPtr->op)
 			{
 				case ADD:
 					stackPtr->value = e1.value + e2.value; 
@@ -173,7 +173,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		start = match.rm_so + (ptr - prefixString);
 		if (len == 1 && !isalpha(prefixString[start]))
 		{
-			switch(prefixString[start])
+			switch (prefixString[start])
 			{
 
 				case '+':

@@ -34,7 +34,7 @@ enum class $support.typeof(info)
 template <>
 inline void Key::set($support.enumname(info) e)
 {
-	switch(e)
+	switch (e)
 	{
 @for $enum in $support.enumval(info)
 	case $support.typeof(info)::$enum: setString("$enum"); break;

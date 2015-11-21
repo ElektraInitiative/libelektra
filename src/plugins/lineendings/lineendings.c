@@ -58,7 +58,7 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 	while (!feof(fp))
 	{
 		fread(&sc, 1, 1, fp);
-		switch(fc)
+		switch (fc)
 		{
 			case LF_BYTE:
 				if (sc == CR_BYTE)
@@ -148,7 +148,7 @@ int elektraLineendingsSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *
 	Lineending validLineEnding = strToLE(keyString(valid));
 	int ret;
 	ret = checkLineEndings(keyString(parentKey), validLineEnding, parentKey);
-	switch(ret)
+	switch (ret)
 	{
 		case (-1):
 			ELEKTRA_SET_ERRORF(113, parentKey, "Couldn't open file %s\n", keyString(parentKey));

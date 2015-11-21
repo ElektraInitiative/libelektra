@@ -571,7 +571,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	}
 
 	// Check if a update is needed at all
-	switch(elektraGetCheckUpdateNeeded(split, parentKey))
+	switch (elektraGetCheckUpdateNeeded(split, parentKey))
 	{
 	case 0: // We don't need an update so let's do nothing
 		keySetName (parentKey, keyName(initialParent));
