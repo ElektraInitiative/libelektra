@@ -54,7 +54,7 @@ BasicWindow {
 						MouseArea {
 							anchors.fill: parent
 							onClicked: {
-								if(modelData !== "empty")
+								if (modelData !== "empty")
 									mountedBackendsView.currentIndex = index
 							}
 						}
@@ -69,11 +69,11 @@ BasicWindow {
 			action: Action {
 				text: qsTr("&Unmount")
 				onTriggered: {
-					if(mountedBackendsView.model.toString() !== "empty"){
+					if (mountedBackendsView.model.toString() !== "empty"){
 						treeView.treeModel.unMountBackend(mountedBackendsView.currentItem.text)
 						mountedBackendsView.model = treeView.treeModel.mountedBackends()
 
-						if(mountedBackendsView.model.toString() === "empty")
+						if (mountedBackendsView.model.toString() === "empty")
 							mountedBackendsView.currentIndex = -1
 					}
 

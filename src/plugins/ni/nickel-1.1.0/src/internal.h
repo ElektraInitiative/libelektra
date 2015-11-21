@@ -34,7 +34,7 @@
 #endif
 
 //Nix non-critical C99 keywords in compilers that don't support them.
-#if((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
+#if ((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
  && !defined(restrict))
 #  define restrict
 #endif

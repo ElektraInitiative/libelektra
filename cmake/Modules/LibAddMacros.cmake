@@ -495,7 +495,7 @@ macro(remember_for_removal ELEMENTS TO_REMOVE_ELEMENTS)
 	set (MY_ELEMENTS ${${ELEMENTS}})
 	set (MY_REMOVE_ELEMENTS "")
 	foreach(B ${MY_ELEMENTS})
-		if(B MATCHES "^-.*")
+		if (B MATCHES "^-.*")
 			## remove pseudo "-element"
 			list(REMOVE_ITEM MY_ELEMENTS ${B})
 			string(LENGTH ${B} B_LENGTH)

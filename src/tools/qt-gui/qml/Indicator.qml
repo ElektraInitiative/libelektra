@@ -5,7 +5,7 @@ Canvas {
 	property color paintcolor
 
 	onPaint: {
-		if(available){
+		if (available){
 			var ctx = getContext("2d")
 
 			ctx.lineWidth = 1

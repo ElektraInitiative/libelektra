@@ -76,9 +76,9 @@ int init (int argc, char**argv)
 		tmpvar = "/tmp";
 	}
 	// check tempvar for trailing slash / 
-	if(strlen(tmpvar) > 2)
+	if (strlen(tmpvar) > 2)
 	{
-		if(tmpvar[strlen(tmpvar) - 1] == '/') 
+		if (tmpvar[strlen(tmpvar) - 1] == '/') 
 		{
 			tmpvar[strlen(tmpvar) - 1] = '\0';
 		}

@@ -26,7 +26,7 @@ ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key,
 	else if (m_key && m_key.isBinary())
 		m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
 
-	if(m_key)
+	if (m_key)
 	{
 		m_metaData = new TreeViewModel;
 		populateMetaModel();
@@ -48,7 +48,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_isExpanded(other.m_isExpanded)
 	, m_isDirty(false)
 {
-	if(other.m_children)
+	if (other.m_children)
 	{
 		foreach(ConfigNodePtr node, other.m_children->model())
 		{
@@ -56,7 +56,7 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 		}
 	}
 
-	if(other.m_metaData)
+	if (other.m_metaData)
 	{
 		m_metaData = new TreeViewModel;
 		foreach(ConfigNodePtr node, other.m_metaData->model())
@@ -86,7 +86,7 @@ ConfigNode::~ConfigNode()
 
 int ConfigNode::getChildCount() const
 {
-	if(m_children)
+	if (m_children)
 		return m_children->rowCount();
 	return 0;
 }
@@ -110,18 +110,18 @@ void ConfigNode::setName(const QString& name)
 {
 	int index = m_path.lastIndexOf("/");
 
-	if(index != -1)
+	if (index != -1)
 	{
 		m_path.replace(index, m_path.length() - index, "/" + name);
 	}
 
-	if(!m_key)
+	if (!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
 	else
 		m_key = m_key.dup();
 
 	try{
-		if(m_key.getBaseName().compare(name.toStdString()) != 0)
+		if (m_key.getBaseName().compare(name.toStdString()) != 0)
 			m_key.setBaseName(name.toStdString());
 	}
 	catch(KeyInvalidName const& ex){
@@ -134,12 +134,12 @@ void ConfigNode::setName(const QString& name)
 
 void ConfigNode::setValue(const QVariant& value)
 {
-	if(!m_key)
+	if (!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
 	else
 		m_key = m_key.dup();
 
-	if(m_key.getString().compare(value.toString().toStdString()) != 0)
+	if (m_key.getString().compare(value.toString().toStdString()) != 0)
 	{
 		m_key.setString(value.toString().toStdString());
 		m_value = value;
@@ -149,7 +149,7 @@ void ConfigNode::setValue(const QVariant& value)
 
 void ConfigNode::setMeta(const QString &name, const QVariant &value)
 {
-	if(!m_key)
+	if (!m_key)
 		m_key = Key(m_path.toStdString(), KEY_END);
 	else
 		m_key = m_key.dup();
@@ -162,7 +162,7 @@ void ConfigNode::setMeta(const QString &name, const QVariant &value)
 
 void ConfigNode::setMeta(const QVariantMap &metaData)
 {
-	if(m_metaData)
+	if (m_metaData)
 	{
 		//delete old metadata in key
 		for(int i = 0; i < m_metaData->model().size(); i++)
@@ -194,7 +194,7 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 
 void ConfigNode::deleteMeta(const QString &name)
 {
-	if(m_key)
+	if (m_key)
 		m_key.delMeta(name.toStdString());
 }
 
@@ -202,7 +202,7 @@ void ConfigNode::accept(Visitor &visitor)
 {
 	visitor.visit(*this);
 
-	if(m_children)
+	if (m_children)
 	{
 		foreach (ConfigNodePtr node, m_children->model())
 			node->accept(visitor);
@@ -216,11 +216,11 @@ Key ConfigNode::getKey() const
 
 int ConfigNode::getChildIndexByName(const QString &name)
 {
-	if(m_children)
+	if (m_children)
 	{
 		for(int i = 0; i < m_children->rowCount(); i++)
 		{
-			if(m_children->model().at(i)->getName() == name)
+			if (m_children->model().at(i)->getName() == name)
 				return i;
 		}
 	}
@@ -284,7 +284,7 @@ void ConfigNode::setKey(Key key)
 
 void ConfigNode::setKeyName(const QString &name)
 {
-	if(m_key)
+	if (m_key)
 	{
 		try
 		{
@@ -305,7 +305,7 @@ void ConfigNode::appendChild(ConfigNodePtr node)
 
 bool ConfigNode::hasChild(const QString& name) const
 {
-	if(m_children)
+	if (m_children)
 	{
 		foreach (ConfigNodePtr node, m_children->model())
 		{
@@ -333,7 +333,7 @@ TreeViewModel* ConfigNode::getMetaKeys() const
 
 ConfigNodePtr ConfigNode::getChildByName(QString& name) const
 {
-	if(m_children)
+	if (m_children)
 	{
 		foreach (ConfigNodePtr node, m_children->model())
 		{
@@ -351,7 +351,7 @@ ConfigNodePtr ConfigNode::getChildByName(QString& name) const
 
 ConfigNodePtr ConfigNode::getChildByIndex(int index) const
 {
-	if(m_children)
+	if (m_children)
 	{
 		if (index >= 0 && index < m_children->model().length())
 			return m_children->model().at(index);
@@ -365,7 +365,7 @@ void ConfigNode::setPath(const QString &path)
 	m_path = path;
 	setKeyName(path);
 
-	if(m_children)
+	if (m_children)
 	{
 		foreach(ConfigNodePtr node, m_children->model()){
 			node->setPath(m_path + "/" + node->getName());
@@ -377,7 +377,7 @@ bool ConfigNode::childrenHaveNoChildren() const
 {
 	int childcount = 0;
 
-	if(m_children)
+	if (m_children)
 	{
 		foreach (ConfigNodePtr node, m_children->model())
 		{

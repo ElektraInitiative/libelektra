@@ -35,7 +35,7 @@ int main()
 	key = ksLookupByName(myConfig,"/test/myapp/key", 0);
 
 	// check if key is not 0 and work with it...
-	if(key)
+	if (key)
 	{
 		printf("%s\n", keyString(key));
 	}

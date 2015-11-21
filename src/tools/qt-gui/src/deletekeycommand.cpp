@@ -17,7 +17,7 @@ DeleteKeyCommand::DeleteKeyCommand(const QString& type, TreeViewModel* model, in
 {
 	setText(type);
 
-	if(!m_node->getPath().contains('/'))
+	if (!m_node->getPath().contains('/'))
 	{
 		m_isRoot = true;
 		m_root = ConfigNodePtr(new ConfigNode(m_node->getPath(), m_node->getPath(), 0, m_model));
@@ -26,7 +26,7 @@ DeleteKeyCommand::DeleteKeyCommand(const QString& type, TreeViewModel* model, in
 
 void DeleteKeyCommand::undo()
 {
-	if(m_isRoot)
+	if (m_isRoot)
 		m_model->removeRow(m_index);
 	m_model->insertRow(m_index, m_node);
 	m_model->refreshArrayNumbers();
@@ -36,7 +36,7 @@ void DeleteKeyCommand::undo()
 void DeleteKeyCommand::redo()
 {
 	m_model->removeRow(m_index);
-	if(m_isRoot)
+	if (m_isRoot)
 		m_model->insertRow(m_index, m_root, false);
 	m_model->refreshArrayNumbers();
 }

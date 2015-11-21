@@ -33,15 +33,15 @@ unset(_Python_NAMES)
 
 set(_PYTHON2_VERSIONS 2.7)
 
-if(Python2Interp_FIND_VERSION)
-    if(Python2Interp_FIND_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+.*)?$")
+if (Python2Interp_FIND_VERSION)
+    if (Python2Interp_FIND_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+.*)?$")
         string(REGEX REPLACE "^([0-9]+\\.[0-9]+).*" "\\1" _PYTHON2_FIND_MAJ_MIN "${Python2Interp_FIND_VERSION}")
         string(REGEX REPLACE "^([0-9]+).*" "\\1" _PYTHON2_FIND_MAJ "${_PYTHON2_FIND_MAJ_MIN}")
         list(APPEND _Python_NAMES python${_PYTHON2_FIND_MAJ_MIN} python${_PYTHON2_FIND_MAJ})
         unset(_PYTHON2_FIND_OTHER_VERSIONS)
-        if(NOT Python2Interp_FIND_VERSION_EXACT)
+        if (NOT Python2Interp_FIND_VERSION_EXACT)
             foreach(_PYTHON2_V ${_PYTHON2${_PYTHON2_FIND_MAJ}_VERSIONS})
-                if(NOT _PYTHON2_V VERSION_LESS _PYTHON2_FIND_MAJ_MIN)
+                if (NOT _PYTHON2_V VERSION_LESS _PYTHON2_FIND_MAJ_MIN)
                     list(APPEND _PYTHON2_FIND_OTHER_VERSIONS ${_PYTHON2_V})
                 endif()
              endforeach()
@@ -72,10 +72,10 @@ unset(_PYTHON2_FIND_OTHER_VERSIONS)
 unset(_PYTHON2_VERSIONS)
 
 # Search for newest python version if python executable isn't found
-if(NOT PYTHON2_EXECUTABLE)
+if (NOT PYTHON2_EXECUTABLE)
     foreach(_CURRENT_VERSION ${_Python2_VERSIONS})
       set(_Python_NAMES python${_CURRENT_VERSION})
-      if(WIN32)
+      if (WIN32)
         list(APPEND _Python_NAMES python)
       endif()
       find_program(PYTHON2_EXECUTABLE
@@ -86,18 +86,18 @@ if(NOT PYTHON2_EXECUTABLE)
 endif()
 
 # determine python version string
-if(PYTHON2_EXECUTABLE)
+if (PYTHON2_EXECUTABLE)
     execute_process(COMMAND "${PYTHON2_EXECUTABLE}" -c
                             "import sys; sys.stdout.write(';'.join([str(x) for x in sys.version_info[:3]]))"
                     OUTPUT_VARIABLE _VERSION
                     RESULT_VARIABLE _PYTHON2_VERSION_RESULT
                     ERROR_QUIET)
-    if(NOT _PYTHON2_VERSION_RESULT)
+    if (NOT _PYTHON2_VERSION_RESULT)
         string(REPLACE ";" "." PYTHON2_VERSION_STRING "${_VERSION}")
         list(GET _VERSION 0 PYTHON2_VERSION_MAJOR)
         list(GET _VERSION 1 PYTHON2_VERSION_MINOR)
         list(GET _VERSION 2 PYTHON2_VERSION_PATCH)
-        if(PYTHON2_VERSION_PATCH EQUAL 0)
+        if (PYTHON2_VERSION_PATCH EQUAL 0)
             # it's called "Python 2.7", not "2.7.0"
             string(REGEX REPLACE "\\.0$" "" PYTHON2_VERSION_STRING "${PYTHON2_VERSION_STRING}")
         endif()
@@ -107,11 +107,11 @@ if(PYTHON2_EXECUTABLE)
                         OUTPUT_VARIABLE _VERSION
                         RESULT_VARIABLE _PYTHON2_VERSION_RESULT
                         ERROR_QUIET)
-        if(NOT _PYTHON2_VERSION_RESULT)
+        if (NOT _PYTHON2_VERSION_RESULT)
             string(REGEX REPLACE " .*" "" PYTHON2_VERSION_STRING "${_VERSION}")
             string(REGEX REPLACE "^([0-9]+)\\.[0-9]+.*" "\\1" PYTHON2_VERSION_MAJOR "${PYTHON2_VERSION_STRING}")
             string(REGEX REPLACE "^[0-9]+\\.([0-9])+.*" "\\1" PYTHON2_VERSION_MINOR "${PYTHON2_VERSION_STRING}")
-            if(PYTHON2_VERSION_STRING MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+.*")
+            if (PYTHON2_VERSION_STRING MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+.*")
                 string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" PYTHON2_VERSION_PATCH "${PYTHON2_VERSION_STRING}")
             else()
                 set(PYTHON2_VERSION_PATCH "0")

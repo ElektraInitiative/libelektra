@@ -65,7 +65,7 @@ static inline $support.typeof(i) ${support.enumname(i)}_from_string(const char *
 {
 	$support.typeof(i) ret $support.valof(i)
 @for e in $support.enumval(i)
-	if(!strcmp(s, "$e"))
+	if (!strcmp(s, "$e"))
 		ret = $e;
 @end for
 	return ret;
@@ -80,7 +80,7 @@ static inline $support.typeof(i) ${support.enumname(i)}_from_string(const char *
  */
 static inline const char *bool_to_string(int b)
 {
-	if(b==0)
+	if (b==0)
 	{
 		return "false";
 	}
@@ -93,7 +93,7 @@ static inline const char *bool_to_string(int b)
  */
 static inline int bool_from_string(const char *s)
 {
-	if(
+	if (
 	   !strcmp(s, "${support.trueval()[0]}")
 @for b in $support.trueval()[1:]
 	   || !strcmp(s, "$b")
@@ -129,7 +129,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 	}
 @end for
 	// now the key itself
-	if(!found)
+	if (!found)
 	{
 
 		elektraKeySetName(searchKey, "$key", KEY_CASCADING_NAME);
@@ -176,7 +176,7 @@ char *endptr;
 @end def
 	$support.typeof(info) ret $support.valof(info)
 
-	if(found)
+	if (found)
 	{
 	@if $info['type'] == 'short'
 		$strtonumber(support, info, "strtol")
@@ -264,7 +264,7 @@ static inline void $support.setfuncname($key)(KeySet *ks, $support.typeof(info) 
 @else if $support.isenum(info)
 	const char *s = ${support.enumname(info)}_to_string(n);
 @end if
-	if(!found)
+	if (!found)
 	{
 		ksAppendKey(ks, keyNew("$support.userkey(key)",
 				KEY_VALUE, s,

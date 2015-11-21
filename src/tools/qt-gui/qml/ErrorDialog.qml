@@ -30,11 +30,11 @@ BasicWindow {
 			Image {
 				id: icon
 				source: {
-					if(title === "Error")
+					if (title === "Error")
 						"icons/dialog-error.png"
-					else if(title === "Information")
+					else if (title === "Information")
 						"icons/dialog-information.png"
-					else if(title === "Warning")
+					else if (title === "Warning")
 						"icons/dialog-warning.png"
 					else
 						"icons/dialog-error.png"

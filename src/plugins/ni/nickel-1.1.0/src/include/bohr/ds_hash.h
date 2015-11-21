@@ -34,7 +34,7 @@
 #endif
 
 //Nix non-critical C99 keywords in compilers that don't support them.
-#if((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
+#if ((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
  && !defined(restrict))
 #  define restrict
 #  define _Ds_HASH_DEFINED_RESTRICT
@@ -98,7 +98,7 @@ typedef int (* Ds_hash_compare_fn)(const void * key, size_t key_size,
  */
 Ds_HASH_INLINE int Ds_InitHashTable(Ds_hash_table * restrict table, size_t size)
 {
-   if(!Ds_InitVector_Dsh((Ds_vector_Dsh *)table, size))
+   if (!Ds_InitVector_Dsh((Ds_vector_Dsh *)table, size))
       return 0;
 
    memset(table->buf, 0, size * sizeof(Ds_hash_entry *));
@@ -138,7 +138,7 @@ Ds_HASH_INLINE Ds_hash_entry * Ds_NextHashEntry(
    Ds_hash_entry * n = NULL;
    size_t bucket = 0;
 
-   if(prev)
+   if (prev)
    {
       n = prev->next;
       bucket = prev->bucket + 1;
@@ -161,7 +161,7 @@ Ds_HASH_INLINE Ds_hash_entry * Ds_InsertHashItem(
 {
    Ds_hash_entry * n;
 
-   if((n = (Ds_hash_entry *)malloc(sizeof(Ds_hash_entry) + size)) != NULL)
+   if ((n = (Ds_hash_entry *)malloc(sizeof(Ds_hash_entry) + size)) != NULL)
    {
       n->hash   = hash;
       n->bucket = hash & (table->cap - 1);
@@ -185,16 +185,16 @@ Ds_HASH_INLINE int Ds_RemoveHashEntry(Ds_hash_table * restrict table,
    int found = 0;
    Ds_hash_entry * t;
 
-   if(entry == (t = table->buf[entry->bucket]))
+   if (entry == (t = table->buf[entry->bucket]))
    {
       table->buf[entry->bucket] = entry->next;
       found = 1;
    }
-   else if(t)
+   else if (t)
    {
       while(t->next)
       {
-         if(entry == t->next)
+         if (entry == t->next)
          {
             t->next = entry->next;
             found = 1;
@@ -203,7 +203,7 @@ Ds_HASH_INLINE int Ds_RemoveHashEntry(Ds_hash_table * restrict table,
       }
    }
 
-   if(found)
+   if (found)
    {
       elektraFree (entry);
       table->num--;
@@ -242,12 +242,12 @@ Ds_HASH_INLINE Ds_hash_entry * Ds_SearchHashTable(
 Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
                                       size_t size)
 {
-   if(size > table->cap)
+   if (size > table->cap)
    {
       size_t old_size;
 
       old_size = table->cap;
-      if(!Ds_ResizeVector_Dsh((Ds_vector_Dsh *)table, size))
+      if (!Ds_ResizeVector_Dsh((Ds_vector_Dsh *)table, size))
          return 0;
       memset(table->buf + old_size, 0,
              (size - old_size) * sizeof(Ds_hash_entry *));
@@ -267,7 +267,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
          }
          while(e && (t = e->next) != NULL)
          {
-            if((bucket = t->hash & (size - 1)) != i)
+            if ((bucket = t->hash & (size - 1)) != i)
             {
                e->next = t->next;
                t->next = table->buf[t->bucket = bucket];
@@ -278,7 +278,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
          }
       }
    }
-   else if(size < table->cap)
+   else if (size < table->cap)
    {
       size_t old_num;
 
@@ -286,7 +286,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
       {
          Ds_hash_entry * t;
 
-         if((t = table->buf[i]) != NULL)
+         if ((t = table->buf[i]) != NULL)
          {
             size_t bucket;
 
@@ -302,7 +302,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable(Ds_hash_table * restrict table,
       }
 
       old_num = table->num;
-      if(!Ds_ResizeVector_Dsh((Ds_vector_Dsh *)table, size))
+      if (!Ds_ResizeVector_Dsh((Ds_vector_Dsh *)table, size))
          return 0;
       table->num = old_num;
    }

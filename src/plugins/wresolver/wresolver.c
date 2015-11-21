@@ -107,7 +107,7 @@ static void escapePath(char *home)
 	int len = strlen(home), i;
 	for(i=0; i < len; ++i)
 	{
-		if(home[i] == '\\')
+		if (home[i] == '\\')
 		{
 			home[i] = '/';
 		}
@@ -184,7 +184,7 @@ static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 
 # if defined(_WIN32)
 	CHAR home[MAX_PATH];
-	if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
 					0, home)))
 	{
 		escapePath(home);
@@ -196,7 +196,7 @@ static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 	}
 # else
 	char * home = (char*) getenv("HOME");
-	if(!home)
+	if (!home)
 	{
 		home = "";
 		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home, using /");

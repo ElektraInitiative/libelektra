@@ -12,7 +12,7 @@ MessageDialog {
 		Qt.quit()
 	}
 	onDiscard: {
-		if(undoManager.undoText === "import"){
+		if (undoManager.undoText === "import"){
 			undoManager.undo()
 		}
 

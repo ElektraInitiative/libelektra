@@ -38,7 +38,7 @@ void DataContainer::setOldMetadata(TreeViewModel *metadata)
 	//convert TreeViewModel to QVariantMap
 	QVariantMap oldMDMap;
 
-	if(metadata)
+	if (metadata)
 	{
 		foreach (ConfigNodePtr node, metadata->model())
 		{

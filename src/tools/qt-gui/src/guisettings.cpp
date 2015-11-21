@@ -62,13 +62,13 @@ GUISettings::GUISettings(QObject *parentGUISettings)
 
 	//check if stored colors exist, if so, load them
 
-	if(lookupColor(m_highlightColorString).isValid())
+	if (lookupColor(m_highlightColorString).isValid())
 		m_highlightColor = lookupColor(m_highlightColorString);
-	if(lookupColor(m_frameColorString).isValid())
+	if (lookupColor(m_frameColorString).isValid())
 		m_frameColor = lookupColor(m_frameColorString);
-	if(lookupColor(m_nodeWKeyColorString).isValid())
+	if (lookupColor(m_nodeWKeyColorString).isValid())
 		m_nodeWithKeyColor = lookupColor(m_nodeWKeyColorString);
-	if(lookupColor(m_nodeWOKeyColorString).isValid())
+	if (lookupColor(m_nodeWOKeyColorString).isValid())
 		m_nodeWithoutKeyColor = lookupColor(m_nodeWOKeyColorString);
 }
 
@@ -94,7 +94,7 @@ QColor GUISettings::nodeWithoutKeyColor() const
 
 void GUISettings::setHighlightColor(const QColor &color)
 {
-	if(color != m_highlightColor)
+	if (color != m_highlightColor)
 	{
 		m_highlightColor = color;
 		append(m_highlightColorString, color);
@@ -105,7 +105,7 @@ void GUISettings::setHighlightColor(const QColor &color)
 
 void GUISettings::setFrameColor(const QColor &color)
 {
-	if(color != m_frameColor)
+	if (color != m_frameColor)
 	{
 		m_frameColor = color;
 		append(m_frameColorString, color);
@@ -116,7 +116,7 @@ void GUISettings::setFrameColor(const QColor &color)
 
 void GUISettings::setNodeWithKeyColor(const QColor &color)
 {
-	if(color != m_nodeWithKeyColor)
+	if (color != m_nodeWithKeyColor)
 	{
 		m_nodeWithKeyColor = color;
 		append(m_nodeWKeyColorString, color);
@@ -127,7 +127,7 @@ void GUISettings::setNodeWithKeyColor(const QColor &color)
 
 void GUISettings::setNodeWithoutKeyColor(const QColor &color)
 {
-	if(color != m_nodeWithoutKeyColor)
+	if (color != m_nodeWithoutKeyColor)
 	{
 		m_nodeWithoutKeyColor = color;
 		append(m_nodeWOKeyColorString, color);
@@ -146,7 +146,7 @@ QColor GUISettings::lookupColor(const QString &keyName) const
 	QColor	color;
 	Key		key = m_config.lookup(m_base + keyName.toStdString());
 
-	if(!key)
+	if (!key)
 		return color;
 
 	try

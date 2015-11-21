@@ -23,7 +23,7 @@ Key* ksNextDir(KeySet *ks)
 
 	while ((cur = ksNext(ks)) != 0)
 	{
-		if(!keyIsBelow(startKey, cur))
+		if (!keyIsBelow(startKey, cur))
 			return cur;
 	}
 

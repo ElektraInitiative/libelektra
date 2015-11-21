@@ -249,7 +249,7 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			//end
 			for (int i = 0;strcmp (ignoreTargetEnd[i], "") != 0;++i)
 			{
-				if(len < strlen (ignoreTargetEnd[i]))
+				if (len < strlen (ignoreTargetEnd[i]))
 					continue;
 
 				int j = len - strlen (ignoreTargetEnd[i]);
@@ -283,7 +283,7 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			state = linkStart;
 			continue;
 		}
-		else if(linkNolink (state, newstate))
+		else if (linkNolink (state, newstate))
 		{
 			// print all other content
 			fprintf (output, "%c", c);
@@ -338,7 +338,7 @@ int main (int argc, char *argv[])
 	if (fgetpos (output, &startTempFile))
 		exitError (input, output, "fgetpos");
 
-	if(!convertTitle (input, output, filenameInElektra))
+	if (!convertTitle (input, output, filenameInElektra))
 	{
 		/* No title found in file, therefore generate one and
 		 * print it out.

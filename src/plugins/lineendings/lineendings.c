@@ -26,7 +26,7 @@ typedef enum {NA, CR, LF, CRLF, LFCR, NUM_TYPES}Lineending;
 static inline char *LEString(Lineending index)
 {
 	static char *strings[] = {"NA", "CR", "LF", "CRLF", "LFCR"};	
-	if(index > NUM_TYPES)
+	if (index > NUM_TYPES)
 		return NULL;
 	return strings[index];
 }
@@ -35,7 +35,7 @@ static Lineending strToLE(const char *str)
 	uint8_t counter = 0;
 	for(; counter < NUM_TYPES; ++counter)
 	{
-		if(!strcmp(LEString(counter), str))
+		if (!strcmp(LEString(counter), str))
 			return counter;
 	}
 	return NA;
@@ -44,7 +44,7 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 {
 	FILE *fp;
 	fp = fopen(fileName, "rb");
-	if(fp == NULL)
+	if (fp == NULL)
 	{
 		return -1;
 	}
@@ -61,30 +61,30 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 		switch(fc)
 		{
 			case LF_BYTE:
-				if(sc == CR_BYTE)
+				if (sc == CR_BYTE)
 					found = LFCR;
-				else if(sc == LF_BYTE)
+				else if (sc == LF_BYTE)
 					found = LF;
-				else if(sc)
+				else if (sc)
 					found = LF;
 				break;
 			case CR_BYTE:
-				if(sc == LF_BYTE)
+				if (sc == LF_BYTE)
 					found = CRLF;
-				else if(sc == CR_BYTE)
+				else if (sc == CR_BYTE)
 					found = CR;
-				else if(sc)
+				else if (sc)
 					found = CR;
 				break;
 		}
-		if(found == CRLF || found == LFCR)
+		if (found == CRLF || found == LFCR)
 		{
 			fread(&sc, 1, 1, fp);
 		}
-		if(lineEnding == NA && found != NA)
+		if (lineEnding == NA && found != NA)
 		{
 			lineEnding = found;
-			if(validLineEnding != NA && lineEnding != validLineEnding)
+			if (validLineEnding != NA && lineEnding != validLineEnding)
 			{
 				fclose(fp);
 				ELEKTRA_SET_ERRORF(114, parentKey, "Invalid line ending at line %lu", line);
@@ -93,7 +93,7 @@ static int checkLineEndings(const char *fileName, Lineending validLineEnding, Ke
 			++line;	
 			found = NA;
 		}
-		else if(lineEnding != found && found != NA)
+		else if (lineEnding != found && found != NA)
 		{
 			fclose(fp);
 			ELEKTRA_SET_ERRORF(115, parentKey, "inconsistent line endings at line %lu", line);
@@ -133,7 +133,7 @@ int elektraLineendingsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTR
 	Lineending validLineEnding = strToLE(keyString(valid));
 	int ret;
 	ret = checkLineEndings(keyString(parentKey), validLineEnding, parentKey);
-	if(ret == (-3))
+	if (ret == (-3))
 	{
 		return -1;
 	}

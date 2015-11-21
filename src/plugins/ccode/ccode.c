@@ -21,7 +21,7 @@
   */
 static inline int elektraHexcodeConvFromHex(char c)
 {
-	if    (c == '0') return 0;
+	if (c == '0') return 0;
 	else if (c=='1') return 1;
 	else if (c=='2') return 2;
 	else if (c=='3') return 3;

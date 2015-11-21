@@ -73,12 +73,12 @@ static Key *createUnescapedKey(Key *key, const char *name)
 {
 	char *localString = strdup(name);
 	char *newBaseName = strtok(localString, "/");
-	if(newBaseName != NULL)
+	if (newBaseName != NULL)
 		keyAddBaseName(key, newBaseName);
 	while(newBaseName != NULL)
 	{
 		newBaseName = strtok(NULL, "/");
-		if(newBaseName != NULL)
+		if (newBaseName != NULL)
 		{
 			keyAddBaseName(key, newBaseName);
 		}
@@ -98,9 +98,9 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 			appendKey = createUnescapedKey(appendKey, section);
 		}
 		Key *sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
-		if(sectionKey)
+		if (sectionKey)
 		{
-			if(!(keyGetMeta(sectionKey, "order")))
+			if (!(keyGetMeta(sectionKey, "order")))
 			{
 				char buf[16];
 				snprintf(buf, sizeof(buf), "%ld", lastIndex);
@@ -110,10 +110,10 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		}
 	}
 
-	if(toMeta)
+	if (toMeta)
 	{
 		Key *sectionKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
-		if(!sectionKey)
+		if (!sectionKey)
 			sectionKey = appendKey;
 		keySetMeta(sectionKey, name, value);
 		ksAppendKey(handle->result, sectionKey);
@@ -126,7 +126,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	snprintf(buf, sizeof(buf), "%ld", lastIndex);
 	++lastIndex;
 	keySetMeta(appendKey, "order", buf);
-	if(value == NULL)
+	if (value == NULL)
 		keySetMeta(appendKey, "ini/empty", "");
 	keySetMeta(appendKey, "ini/noautosection", "");
 	if (!lineContinuation)
@@ -349,13 +349,13 @@ static short isSectionKey(Key *key)
  */
 static char *getIniName(Key *section, Key *key)
 {
-	if(!strcmp(keyName(section), keyName(key)))
+	if (!strcmp(keyName(section), keyName(key)))
 		return strdup(keyBaseName(key));
 	char *buffer = elektraMalloc(strlen(keyName(key)) - strlen(keyName(section)));
 	char *dest = buffer;
 	for(char *ptr = (char *)keyName(key)+strlen(keyName(section))+1; *ptr; ++ptr)
 	{
-		if(*ptr != '\\')
+		if (*ptr != '\\')
 		{
 			*dest = *ptr;
 			++dest;
@@ -389,7 +389,7 @@ static void writeMeta(Key *key, FILE *fh)
 	while(keyNextMeta(key) != NULL)
 	{
 		const Key *meta = keyCurrentMeta(key);
-		if(strcmp(keyName(meta), "ini/empty") && strcmp(keyName(meta), "binary") && strcmp(keyName(meta), "order") && strcmp(keyName(meta), "ini/noautosection"))
+		if (strcmp(keyName(meta), "ini/empty") && strcmp(keyName(meta), "binary") && strcmp(keyName(meta), "order") && strcmp(keyName(meta), "ini/noautosection"))
 		{
 			fprintf(fh, "%s = %s\n", keyName(meta), keyString(meta));
 		}
@@ -405,7 +405,7 @@ static Key *ksNextByNumber(KeySet *returned, long *index)
 	ksRewind(returned);
 	while((retKey = ksNext(returned)) != NULL)
 	{
-		if(atol(keyString(keyGetMeta(retKey, "order"))) == *index)
+		if (atol(keyString(keyGetMeta(retKey, "order"))) == *index)
 		{
 			++(*index);
 			return retKey;
@@ -441,7 +441,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *sectionKey = NULL;
 	long index = 0;
 	Key *(*traversalFunction)(KeySet *, long *);
-	if(pluginConfig->preserverOrder)
+	if (pluginConfig->preserverOrder)
 		traversalFunction = ksNextByNumber;
 	else
 		traversalFunction = ksNextCallback;
@@ -465,7 +465,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 		if (!strcmp (keyName(current), keyName(parentKey))) continue;
-		if(isSectionKey(current))
+		if (isSectionKey(current))
 		{
 			keyDel(sectionKey);
 			sectionKey = keyDup(current);
@@ -476,7 +476,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		/* find the section the current key belongs to */
 		char *iniName;
-		if(sectionKey && keyIsBelow(sectionKey, current))
+		if (sectionKey && keyIsBelow(sectionKey, current))
 			iniName = getIniName(sectionKey, current);
 		else
 			iniName = getIniName(parentKey, current);
@@ -484,7 +484,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		if (isSectionKey(current))
 		{
 			fprintf (fh, "[%s]\n", iniName);
-			if(toMeta)
+			if (toMeta)
 			{
 				writeMeta(current, fh);
 			}
@@ -492,7 +492,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		else
 		{
 			/* if the key value is only single line, write a singleline INI key */
-			if(keyGetMeta(current, "ini/empty"))
+			if (keyGetMeta(current, "ini/empty"))
 			{
 				fprintf(fh, "%s\n", iniName);
 
@@ -520,7 +520,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		elektraFree(iniName);
 		if (ret < 0) break;
 	}
-	if(sectionKey)
+	if (sectionKey)
 		keyDel(sectionKey);
 
 	fclose (fh);

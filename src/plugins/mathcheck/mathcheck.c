@@ -67,7 +67,7 @@ static PNElem nextVal(const PNElem *stackPtr)
 	result.op = ERROR;
 	while(ptr->op != END)
 	{
-		if(ptr->op == VAL)
+		if (ptr->op == VAL)
 		{
 			ptr->op = EMPTY;
 			result.op = VAL;
@@ -82,22 +82,22 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 {
 	--stackPtr;
 	PNElem result;
-	if(stackPtr < stack)
+	if (stackPtr < stack)
 		result.op = ERROR;
 	while(stackPtr >= stack)
 	{	
-		if(stackPtr->op == VAL && stackPtr != stack)
+		if (stackPtr->op == VAL && stackPtr != stack)
 		{
 			--stackPtr;
 			continue;
 		}
-		else if(stackPtr->op == VAL && stackPtr == stack)
+		else if (stackPtr->op == VAL && stackPtr == stack)
 		{
 			break;
 		}
 		PNElem e1 = nextVal(stackPtr);
 		PNElem e2 = nextVal(stackPtr);
-		if(e1.op == VAL && e2.op == VAL)
+		if (e1.op == VAL && e2.op == VAL)
 		{
 			switch(stackPtr->op)
 			{
@@ -110,7 +110,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 					stackPtr->op = VAL;
 					break;
 				case DIV:
-					if(e2.value < EPSILON)
+					if (e2.value < EPSILON)
 					{
 						result.op = ERROR;
 						return result;
@@ -131,7 +131,7 @@ static PNElem doPrefixCalculation(PNElem *stack, PNElem *stackPtr)
 			return result;
 		}
 	}
-	if(stackPtr->op != VAL)
+	if (stackPtr->op != VAL)
 		result.op = ERROR;
 	else
 		result.op = RES;
@@ -152,7 +152,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	Operation resultOp = ERROR;
 	result.op = ERROR;
 	int ret;
-	if((ret = regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE)))
+	if ((ret = regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE)))
 	{
 		ksDel(ks);
 		return result;
@@ -165,13 +165,13 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	while(1)
 	{
 		nomatch = regexec(&regex, ptr, 1, &match, 0);
-		if(nomatch)
+		if (nomatch)
 		{
 			break;
 		}
 		len = match.rm_eo - match.rm_so;
 		start = match.rm_so + (ptr - prefixString);
-		if(len == 1 && !isalpha(prefixString[start]))
+		if (len == 1 && !isalpha(prefixString[start]))
 		{
 			switch(prefixString[start])
 			{
@@ -196,17 +196,17 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 					resultOp = SET;
 					break;
 				case '=':
-					if(resultOp == LT)
+					if (resultOp == LT)
 						resultOp = LE;
-					else if(resultOp == GT)
+					else if (resultOp == GT)
 						resultOp = GE;
-					else if(resultOp == ERROR)
+					else if (resultOp == ERROR)
 						resultOp = EQU;
-					else if(resultOp == EQU)
+					else if (resultOp == EQU)
 						resultOp = EQU;
-					else if(resultOp == NOT)
+					else if (resultOp == NOT)
 						resultOp = NOT;
-					else if(resultOp == SET)
+					else if (resultOp == SET)
 						resultOp = SET;
 					break;
 				case '<':
@@ -221,7 +221,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 				default:
 					ELEKTRA_SET_ERRORF(122, parentKey, "%c isn't a valid operation", prefixString[start]);
 					regfree (&regex);
-					if(searchKey)
+					if (searchKey)
 						elektraFree (searchKey);
 					elektraFree (stack);
 					ksDel(ks);
@@ -234,7 +234,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 			char *subString = elektraMalloc(len+1);
 			strncpy(subString, prefixString+start, len);
 			subString[len] = '\0';
-			if(subString[0] == '\'' && subString[len-1] == '\'')
+			if (subString[0] == '\'' && subString[len-1] == '\'')
 			{
 				subString[len-1] = '\0';
 				char *subPtr = (subString+1);
@@ -249,7 +249,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 				strcat(searchKey, "/");
 				strcat(searchKey, subString);
 				key = ksLookupByName(ks, searchKey, 0);
-				if(!key)
+				if (!key)
 				{
 					ELEKTRA_SET_ERRORF(124, parentKey, "Operant key %s doesn't exist", searchKey);
 					regfree (&regex);
@@ -276,7 +276,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	ksDel(ks);
 	stackPtr->op = END;
 	result = doPrefixCalculation(stack, stackPtr);	
-	if(result.op != ERROR)
+	if (result.op != ERROR)
 		result.op = resultOp;
 	else
 		ELEKTRA_SET_ERRORF(122, parentKey, "%s\n", prefixString);
@@ -292,66 +292,66 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 	while((cur = ksNext(returned)) != NULL)
 	{
 		meta = keyGetMeta(cur, "check/math");
-		if(!meta)
+		if (!meta)
 			continue;
 		result = parsePrefixString(keyString(meta), ksDup(returned), parentKey);
 		char val1[MAX_CHARS_DOUBLE];
 		char val2[MAX_CHARS_DOUBLE];
 		strncpy(val1, keyString(cur), sizeof(val1));
 		elektraFtoA(val2, sizeof(val2), result.value);
-		if(result.op == ERROR)
+		if (result.op == ERROR)
 		{
 			return 1;
 		}
-		else if(result.op == EQU)
+		else if (result.op == EQU)
 		{
-			if(fabs(elektraEFtoF(keyString(cur)) - result.value) > EPSILON)
+			if (fabs(elektraEFtoF(keyString(cur)) - result.value) > EPSILON)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%s != %s", val1, val2);
 				return -1;
 			}
 		}
-		else if(result.op == NOT)
+		else if (result.op == NOT)
 		{
-			if(fabs(elektraEFtoF(keyString(cur)) - result.value) < EPSILON)
+			if (fabs(elektraEFtoF(keyString(cur)) - result.value) < EPSILON)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%s == %s but requirement was !=", val1, val2);
 				return -1;
 			}
 		}
-		else if(result.op == LT)
+		else if (result.op == LT)
 		{
-			if(elektraEFtoF(keyString(cur)) >= result.value)
+			if (elektraEFtoF(keyString(cur)) >= result.value)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%s not < %s", val1, val2);
 				return -1;
 			}
 		}
-		else if(result.op == GT)
+		else if (result.op == GT)
 		{
-			if(elektraEFtoF(keyString(cur)) <= result.value)
+			if (elektraEFtoF(keyString(cur)) <= result.value)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%s not > %s", val1, val2);
 				return -1;
 			}
 		}
-		else if(result.op == LE)
+		else if (result.op == LE)
 		{
-			if(elektraEFtoF(keyString(cur)) > result.value)
+			if (elektraEFtoF(keyString(cur)) > result.value)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%s not <=  %s", val1, val2);
 				return -1;
 			}
 		}
-		else if(result.op == GE)
+		else if (result.op == GE)
 		{
-			if(elektraEFtoF(keyString(cur)) < result.value)
+			if (elektraEFtoF(keyString(cur)) < result.value)
 			{
 				ELEKTRA_SET_ERRORF(123, parentKey, "%s not >= %s", val1, val2);
 				return -1;
 			}
 		}
-		else if(result.op == SET)
+		else if (result.op == SET)
 		{
 			keySetString(cur, val2);
 		}

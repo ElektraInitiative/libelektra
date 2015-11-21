@@ -27,7 +27,7 @@
 #endif
 
 //Nix non-critical C99 keywords in compilers that don't support them.
-#if((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
+#if ((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
  && !defined(restrict))
 #  define restrict
 #  define _Ds_STR_DEFINED_RESTRICT
@@ -63,9 +63,9 @@ Ds_STR_INLINE int Ds_InitStr(Ds_str * restrict s, int size)
 {
    *s = (Ds_str)Ds_STR_INIT;
 
-   if(size > 0)
+   if (size > 0)
    {
-      if(!(s->str = (char *)malloc(size * sizeof(char))))
+      if (!(s->str = (char *)malloc(size * sizeof(char))))
          return 0;
 
       s->str[0] = '\0';
@@ -79,7 +79,7 @@ Ds_STR_INLINE int Ds_InitStr(Ds_str * restrict s, int size)
  */
 Ds_STR_INLINE void Ds_FreeStr(Ds_str * restrict s)
 {
-   if(s->str)
+   if (s->str)
       elektraFree (s->str);
    *s = (Ds_str)Ds_STR_INIT;
 }
@@ -95,24 +95,24 @@ Ds_STR_INLINE int Ds_StrCat(Ds_str * restrict dest,
 {
    int new_size;
 
-   if(source_len < 0)
+   if (source_len < 0)
       source_len = (int)strlen(source);
 
-#if(Ds_STR_BEHAVIOR == 1)
+#if (Ds_STR_BEHAVIOR == 1)
    new_size = dest->len + source_len + 1;
 #else
    new_size = (dest->size ? dest->size : 1);
    while(new_size < dest->len + source_len + 1)
-#  if(Ds_STR_BEHAVIOR == 4)
+#  if (Ds_STR_BEHAVIOR == 4)
       new_size <<= 2; //the same as *= 4
 #  else
       new_size <<= 1; //the same as *= 2
 #  endif
 #endif
-   if(new_size > dest->size)
+   if (new_size > dest->size)
    {
       char * new_str;
-      if(!(new_str = (char *)realloc(dest->str, new_size * sizeof(char))))
+      if (!(new_str = (char *)realloc(dest->str, new_size * sizeof(char))))
          return -1;
       dest->str  = new_str;
       dest->size = new_size;
@@ -141,24 +141,24 @@ Ds_STR_INLINE int Ds_StrCatVPrint(Ds_str * restrict dest,
    len = vsnprintf(dest->str + dest->len, dest->size - dest->len, format, args_copy);
    va_end(args_copy);
 
-   if(len >= dest->size - dest->len)
+   if (len >= dest->size - dest->len)
    {
       int new_size;
-#if(Ds_STR_BEHAVIOR == 1)
+#if (Ds_STR_BEHAVIOR == 1)
       new_size = dest->len + len + 1;
 #else
       new_size = (dest->size ? dest->size : 1);
       while(new_size < dest->len + len + 1)
-#  if(Ds_STR_BEHAVIOR == 4)
+#  if (Ds_STR_BEHAVIOR == 4)
          new_size <<= 2; //the same as *= 4
 #  else
          new_size <<= 1; //the same as *= 2
 #  endif
 #endif
-      if(new_size > dest->size)
+      if (new_size > dest->size)
       {
          char * new_str;
-         if(!(new_str = (char *)realloc(dest->str, new_size * sizeof(char))))
+         if (!(new_str = (char *)realloc(dest->str, new_size * sizeof(char))))
             return -1;
          dest->str  = new_str;
          dest->size = new_size;
@@ -167,7 +167,7 @@ Ds_STR_INLINE int Ds_StrCatVPrint(Ds_str * restrict dest,
       len = vsnprintf(dest->str + dest->len, dest->size - dest->len, format, args);
    }
 
-   if(len >= dest->size - dest->len)
+   if (len >= dest->size - dest->len)
       len = -1;
    else
       dest->len += len;
@@ -198,17 +198,17 @@ Ds_STR_INLINE int Ds_StrCatPrint(Ds_str * restrict dest,
  */
 Ds_STR_INLINE int Ds_ResizeStr(Ds_str * restrict s, int size)
 {
-   if(size > 0)
+   if (size > 0)
    {
       char * new_str;
 
-      if(!(new_str = (char *)realloc(s->str, size * sizeof(char))))
+      if (!(new_str = (char *)realloc(s->str, size * sizeof(char))))
          return 0;
 
       s->str  = new_str;
       s->size = size;
 
-      if(s->len > size-1)
+      if (s->len > size-1)
          s->str[s->len = size-1] = '\0';
    }
 

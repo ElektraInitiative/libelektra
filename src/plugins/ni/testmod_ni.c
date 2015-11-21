@@ -33,14 +33,14 @@
                         {                     \
                            int test_fail = 0;
 
-#define TEST_COND(cond)    if(!(cond) && (test_fail = 1))              \
+#define TEST_COND(cond)    if (!(cond) && (test_fail = 1))              \
                               printf("%s: %s: '%s' FAILED (%s:%d)\n",  \
                                      argv0, __func__, #cond, __FILE__, \
                                      __LINE__)
 
 #define END_TEST()         printf("%s: %s: %s\n", argv0, __func__, \
                                   (test_fail ? "FAIL" : "pass"));  \
-                           if(test_fail)                           \
+                           if (test_fail)                           \
                               any_fail = 1;                        \
                         }
 #define TEST(x) x()

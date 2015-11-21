@@ -267,7 +267,7 @@
 
 //Controls importing in Windows.
 #ifndef Ni_PUBLIC
-#  if(defined(_WIN32))
+#  if (defined(_WIN32))
 #     define Ni_PUBLIC __declspec(dllimport)
 #  else
 #     define Ni_PUBLIC
@@ -275,7 +275,7 @@
 #endif
 
 //Nix non-critical C99 keywords in compilers that don't support them.
-#if((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
+#if ((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
  && !defined(restrict))
 #  define restrict
 #  define _Ni_DEFINED_RESTRICT

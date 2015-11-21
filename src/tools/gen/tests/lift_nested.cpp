@@ -35,7 +35,7 @@ int main()
 	par.test().lift().setWrite(false);
 
 	// write back to user/test/lift, see comments in lift.c
-	if(write)
+	if (write)
 	{
 		kdb.set(ks, "user/test/lift");
 	}

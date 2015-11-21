@@ -45,7 +45,7 @@
 using namespace std;
 using namespace ckdb;
 
-#define LOG if(elektraLog) (*elektraLog)
+#define LOG if (elektraLog) (*elektraLog)
 
 #define ELEKTRA_GETENV_USE_LOCKS 1
 

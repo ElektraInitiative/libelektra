@@ -154,7 +154,7 @@ inline void $support.nsname($key)${support.classname($key)}::$support.setfuncnam
 {
 	kdb::Key found = ks.lookup("$key", 0);
 
-	if(!found)
+	if (!found)
 	{
 		kdb::Key k("$support.userkey(key)", KEY_END);
 		k.set<$support.typeof(info)>(n);

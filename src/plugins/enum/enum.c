@@ -48,12 +48,12 @@ int elektraEnumGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 static int validateKey(Key *key)
 {
 	const Key *meta = keyGetMeta(key, "check/enum");
-	if(!meta)
+	if (!meta)
 		return 1;
 	const char *validValues = keyString(meta);
 	const char *regexString = "'([^']*)'\\s*(,|$)";
 	regex_t regex;
-	if(regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE))
+	if (regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE))
 	{
 		ELEKTRA_SET_ERROR(120, key, "regcomp failed"); 
 		return -1;
@@ -68,7 +68,7 @@ static int validateKey(Key *key)
 	while(1)
 	{
 		nomatch = regexec(&regex, ptr, submatches, match, 0);
-		if(nomatch)
+		if (nomatch)
 			break;
 		
 		start = match[1].rm_so + (ptr - validValues);
@@ -76,7 +76,7 @@ static int validateKey(Key *key)
 		elektraRealloc((void **)&value, (end - start)+1);
 		strncpy(value, validValues+start, end-start);
 		value[(end-start)] = '\0';
-		if(strcmp(keyString(key), value) == 0)
+		if (strcmp(keyString(key), value) == 0)
 		{
 			regfree(&regex);
 			elektraFree(value);
@@ -84,7 +84,7 @@ static int validateKey(Key *key)
 		}
 		ptr += match[0].rm_eo;
 	}
-	if(value)
+	if (value)
 		elektraFree(value);
 	regfree(&regex);
 	return 0;
@@ -96,7 +96,7 @@ int elektraEnumSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 	Key *cur;
 	while((cur = ksNext(returned)) != NULL)
 	{
-		if(!validateKey(cur))
+		if (!validateKey(cur))
 		{
 			ELEKTRA_SET_ERROR(121, parentKey, "Validation failed");
 			return -1;

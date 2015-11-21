@@ -32,8 +32,8 @@
  */
 int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 {
-	if(!filename) return -1;
-	if(filename[0] == '0') return -1;
+	if (!filename) return -1;
+	if (filename[0] == '0') return -1;
 
 	size_t size = strlen(filename);
 	char *buffer = elektraMalloc(size + sizeof ("system/"));
@@ -42,15 +42,15 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 
 	/* Because of the outbreak bugs these tests are not enough */
 	Key *check = keyNew(buffer, KEY_END);
-	if(!strcmp(keyName(check), "")) goto error;
-	if(!strcmp(keyName(check), "system")) goto error;
+	if (!strcmp(keyName(check), "")) goto error;
+	if (!strcmp(keyName(check), "system")) goto error;
 	keyDel(check);
 	elektraFree (buffer);
 
 	/* Be strict, don't allow any .., even if it would be ok sometimes */
-	if(strstr (filename, "..") != 0) return -1;
+	if (strstr (filename, "..") != 0) return -1;
 
-	if(filename[0] == '/') return 0;
+	if (filename[0] == '/') return 0;
 
 	return 1;
 

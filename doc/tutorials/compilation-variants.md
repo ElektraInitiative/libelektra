@@ -31,7 +31,7 @@ In the CMakeLists.txt of your plugin, you need a loop over all PLUGINS
 and create a plugin per compilation variant:
 
 	foreach (plugin ${PLUGINS})
-		if(${plugin} MATCHES "myplugin_.*")
+		if (${plugin} MATCHES "myplugin_.*")
 			# somehow process the variant names and include
 			# or change sources and compile definitions
 			# based on that.

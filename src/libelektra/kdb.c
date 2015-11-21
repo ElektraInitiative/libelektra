@@ -173,7 +173,7 @@ KDB * kdbOpen(Key *errorKey)
 	Key *initialParent = keyDup (errorKey);
 
 	handle->modules = ksNew(0, KS_END);
-	if(elektraModulesInit(handle->modules, errorKey) == -1)
+	if (elektraModulesInit(handle->modules, errorKey) == -1)
 	{
 		ksDel(handle->modules);
 		elektraFree(handle);
@@ -189,7 +189,7 @@ KDB * kdbOpen(Key *errorKey)
 
 	handle->defaultBackend=elektraBackendOpenDefault(handle->modules,
 			errorKey);
-	if(!handle->defaultBackend)
+	if (!handle->defaultBackend)
 	{
 		ksDel(handle->modules);
 		elektraFree(handle);
@@ -556,14 +556,14 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	Split *split = elektraSplitNew();
 
-	if(!handle || !ks)
+	if (!handle || !ks)
 	{
 		ELEKTRA_SET_ERROR(37, parentKey,
 				"handle or ks null pointer");
 		goto error;
 	}
 
-	if(elektraSplitBuildup (split, handle, parentKey) == -1)
+	if (elektraSplitBuildup (split, handle, parentKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(38, parentKey,
 				"error in elektraSplitBuildup");
@@ -585,7 +585,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	}
 
 	// Appoint keys (some in the bypass)
-	if(elektraSplitAppoint (split, handle, ks) == -1)
+	if (elektraSplitAppoint (split, handle, ks) == -1)
 	{
 		ELEKTRA_SET_ERROR (38, parentKey, "error in elektraSplitAppoint");
 		goto error;
@@ -593,7 +593,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	/* Now do the real updating,
 	  but not for bypassed keys in split->size-1 */
-	if(elektraGetDoUpdate(split, parentKey) == -1)
+	if (elektraGetDoUpdate(split, parentKey) == -1)
 	{
 		goto error;
 	}
@@ -647,9 +647,9 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 
 			Backend *backend = split->handles[i];
 			ksRewind (split->keysets[i]);
-			if(backend->setplugins[p])
+			if (backend->setplugins[p])
 			{
-				if(p != 0)
+				if (p != 0)
 				{
 					keySetString (parentKey,
 						keyString(split->parents[i]));
@@ -668,7 +668,7 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 						keyName(parentKey), ksGetSize(split->keysets[i]), p, i, ret);
 #endif
 
-				if(p == 0)
+				if (p == 0)
 				{
 					if (ret == 0)
 					{
@@ -718,7 +718,7 @@ static void elektraSetCommit(Split *split, Key *parentKey)
 			int ret = 0;
 			Backend *backend = split->handles[i];
 
-			if(backend->setplugins[p])
+			if (backend->setplugins[p])
 			{
 				if (p!=COMMIT_PLUGIN)
 				{
@@ -769,7 +769,7 @@ static void elektraSetRollback(Split *split, Key *parentKey)
 			Backend *backend = split->handles[i];
 
 			ksRewind (split->keysets[i]);
-			if(backend->errorplugins[p])
+			if (backend->errorplugins[p])
 			{
 				keySetName (parentKey, keyName(split->parents[i]));
 				ret = backend->errorplugins[p]->kdbError (
@@ -778,7 +778,7 @@ static void elektraSetRollback(Split *split, Key *parentKey)
 						parentKey);
 			}
 
-			if(ret == -1)
+			if (ret == -1)
 			{
 				ELEKTRA_ADD_WARNING(81, parentKey,
 						keyName(backend->mountpoint));
@@ -874,7 +874,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 				"invalid key name passed to kdbSet");
 	}
 
-	if(!handle || !ks)
+	if (!handle || !ks)
 	{
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		return -1;
@@ -890,7 +890,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	Split *split = elektraSplitNew();
 	Key *errorKey = 0;
 
-	if(elektraSplitBuildup(split, handle, parentKey) == -1)
+	if (elektraSplitBuildup(split, handle, parentKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(38, parentKey, "error in elektraSplitBuildup");
 		goto error;
@@ -898,7 +898,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	// 1.) Search for syncbits
 	int syncstate = elektraSplitDivide(split, handle, ks);
-	if(syncstate == -1)
+	if (syncstate == -1)
 	{
 		ELEKTRA_SET_ERROR(8, parentKey, keyName(ksCurrent(ks)));
 		goto error;
@@ -912,11 +912,11 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	{
 		/* No update is needed */
 		keySetName (parentKey, keyName(initialParent));
-		if(syncstate == -1)
+		if (syncstate == -1)
 		{
 			ELEKTRA_SET_ERROR(107, parentKey, "Assert failed: invalid namespace");
 		}
-		else if(syncstate < -1)
+		else if (syncstate < -1)
 		{
 			ELEKTRA_SET_ERROR(107, parentKey,
 					 keyName(split->parents[-syncstate-2]));
@@ -955,7 +955,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 error:
 	elektraSetRollback(split, parentKey);
 
-	if(errorKey)
+	if (errorKey)
 	{
 		Key *found = ksLookup(ks, errorKey, 0);
 		if (!found)

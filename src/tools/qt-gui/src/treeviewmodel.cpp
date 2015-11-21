@@ -141,14 +141,14 @@ bool TreeViewModel::setData(const QModelIndex& idx, const QVariant& modelData, i
 	{
 
 	case NameRole:
-		if(node->getName() != modelData.toString()){
+		if (node->getName() != modelData.toString()){
 			node->setName(modelData.toString());
 			node->setIsDirty(true);
 		}
 		break;
 
 	case ValueRole:
-		if(node->getValue() != modelData){
+		if (node->getValue() != modelData){
 			node->setValue(modelData);
 		}
 		break;
@@ -210,7 +210,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	printError(es, errorKey);
 	errors  = QString::fromStdString(es.str());
 
-	if(!errors.isEmpty())
+	if (!errors.isEmpty())
 	{
 		emit showMessage(tr("Error"), tr("Failed to import configuration from %1 to %2.").arg(file, QString::fromStdString(root.getName())), errors);
 		return;
@@ -222,7 +222,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	{
 		MergeConflictStrategy* strategy = getMergeStrategy(s.toString());
 
-		if(strategy)
+		if (strategy)
 			merger.addConflictStrategy(strategy);
 	}
 
@@ -241,7 +241,7 @@ void TreeViewModel::importConfiguration(const QString& name, const QString& form
 	{
 		createNewNodes(result.getMergedKeys());
 
-		if(importedKeys.size() > 0)
+		if (importedKeys.size() > 0)
 			emit showMessage(tr("Information"), tr("Successfully imported %1 keys.").arg(importedKeys.size()), "");
 	}
 	else
@@ -272,7 +272,7 @@ void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QSt
 	Key		root = parentModel->model().at(idx)->getKey();
 
 	//Node is only a filler
-	if(!root)
+	if (!root)
 		root = Key(parentModel->model().at(idx)->getPath().toStdString(), KEY_END);
 
 	KeySet part(ks.cut(root));
@@ -298,11 +298,11 @@ void TreeViewModel::exportConfiguration(TreeViewModel* parentModel, int idx, QSt
 	printError(es, errorKey);
 	errors  = QString::fromStdString(es.str());
 
-	if(errors.isEmpty() && !warnings.isEmpty())
+	if (errors.isEmpty() && !warnings.isEmpty())
 		emit showMessage(tr("Information"), tr("Successfully exported configuration below %1 to %2, warnings were issued.").arg(QString::fromStdString(root.getName()), file), "");
-	else if(!errors.isEmpty() && warnings.isEmpty())
+	else if (!errors.isEmpty() && warnings.isEmpty())
 		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), errors);
-	else if(!errors.isEmpty() && !warnings.isEmpty())
+	else if (!errors.isEmpty() && !warnings.isEmpty())
 		emit showMessage(tr("Error"), tr("Failed to export configuration below %1 to %2.").arg(QString::fromStdString(root.getName()), file), warnings + "\n" + errors);
 }
 
@@ -407,7 +407,7 @@ bool TreeViewModel::insertRow(int row, const QModelIndex& parentIndex)
 void TreeViewModel::insertRow(int row, ConfigNodePtr node, bool addParent)
 {
 	beginInsertRows(QModelIndex(), row, row);
-	if(addParent)
+	if (addParent)
 		node->setParentModel(this);
 	m_model.insert(row, node);
 	endInsertRows();
@@ -451,7 +451,7 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 	}
 	else
 	{
-		if(node->hasChild(name))
+		if (node->hasChild(name))
 			node->getChildren()->removeRow(node->getChildIndexByName(name));
 
 		ConfigNodePtr newNode;
@@ -737,12 +737,12 @@ QString TreeViewModel::getCurrentArrayNo() const
 	ConfigNodePtr max(NULL);
 
 	foreach(ConfigNodePtr node, m_model){
-		if(node->getName().startsWith("#")){
+		if (node->getName().startsWith("#")){
 			max = node;
 		}
 	}
 
-	if(max){
+	if (max){
 		Key k = max->getKey();
 		ckdb::elektraArrayIncName(k.getKey());
 		return QString::fromStdString(k.getBaseName());
@@ -756,16 +756,16 @@ void TreeViewModel::refreshArrayNumbers()
 	QList<ConfigNodePtr> arrayElements;
 
 	foreach(ConfigNodePtr node, m_model){
-		if(node->getName().startsWith("#")){
+		if (node->getName().startsWith("#")){
 			arrayElements.append(node);
 		}
 	}
 
-	if(!arrayElements.isEmpty()){
+	if (!arrayElements.isEmpty()){
 
 		arrayElements.at(0)->setName("#0");
 
-		if(arrayElements.count() > 1){
+		if (arrayElements.count() > 1){
 
 			for(int i = 1; i < arrayElements.count(); i++){
 				Key k = arrayElements.at(i - 1)->getKey().dup();
@@ -815,15 +815,15 @@ void TreeViewModel::discardModel()
 
 MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrategy)
 {
-	if(mergeStrategy == "Preserve")
+	if (mergeStrategy == "Preserve")
 		return new AutoMergeStrategy();
-	else if(mergeStrategy == "Ours")
+	else if (mergeStrategy == "Ours")
 		return new OneSideStrategy(OURS);
-	else if(mergeStrategy == "Theirs")
+	else if (mergeStrategy == "Theirs")
 		return new OneSideStrategy(THEIRS);
-	else if(mergeStrategy == "Base")
+	else if (mergeStrategy == "Base")
 		return new OneSideStrategy(BASE);
-	else if(mergeStrategy == "None")
+	else if (mergeStrategy == "None")
 		return NULL;
 
 	return NULL;

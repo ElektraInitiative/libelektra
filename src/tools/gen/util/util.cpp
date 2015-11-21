@@ -52,7 +52,7 @@ inline $support.enumname(info) Key::get() const
 {
 	$support.typeof(info) ret $support.valof(info)
 @for $enum in $support.enumval(info)
-	if(getString() == "$enum")
+	if (getString() == "$enum")
 		ret = $support.typeof(info)::$enum;
 @end for
 	return ret;
@@ -74,7 +74,7 @@ inline $support.enumname(info) Key::get() const
 template <>
 inline void Key::set(bool e)
 {
-	if(e)
+	if (e)
 	{
 		setString("true");
 	}
@@ -93,10 +93,10 @@ template <>
 inline bool Key::get() const
 {
 	bool ret = false;
-	if(getString() == "${support.trueval()[0]}")
+	if (getString() == "${support.trueval()[0]}")
 		ret = true;
 @for $b in $support.trueval()[1:]
-	else if(getString() == "$b")
+	else if (getString() == "$b")
 		ret = true;
 @end for
 	return ret;
@@ -200,7 +200,7 @@ kdb::Key search ("$key",
 		KEY_END);
 	kdb::Key found = ks.lookup(search, 0);
 @end if
-	if(found)
+	if (found)
 	{
 		return found.get<$support.typeof(info)>();
 	}

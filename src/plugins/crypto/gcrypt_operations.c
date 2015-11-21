@@ -16,7 +16,7 @@
 
 void elektraCryptoGcryHandleDestroy(elektraCryptoHandle *handle)
 {
-	if(handle != NULL)
+	if (handle != NULL)
 	{
 		gcry_cipher_close(*handle);
 		elektraFree(handle);
@@ -47,14 +47,14 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 
 	// retrieve keys from configuration
 	Key *key = ksLookupByName(config, keyPath, 0);
-	if(key == NULL)
+	if (key == NULL)
 	{
 		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", keyPath);
 		return -1;
 	}
 
 	Key *iv = ksLookupByName(config, ivPath, 0);
-	if(iv == NULL)
+	if (iv == NULL)
 	{
 		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ivPath);
 		return -1;
@@ -65,23 +65,23 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 
 	// create the handle
 	(*handle) = elektraMalloc(sizeof(elektraCryptoHandle));
-	if(*handle == NULL)
+	if (*handle == NULL)
 	{
 		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
 		return -1;
 	}
 
-	if((gcry_err = gcry_cipher_open(*handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0)) != 0)
+	if ((gcry_err = gcry_cipher_open(*handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0)) != 0)
 	{
 		goto error;
 	}
 
-	if((gcry_err = gcry_cipher_setkey(**handle, keyBuffer, keyLength)) != 0)
+	if ((gcry_err = gcry_cipher_setkey(**handle, keyBuffer, keyLength)) != 0)
 	{
 		goto error;
 	}
 
-	if((gcry_err = gcry_cipher_setiv(**handle, ivBuffer, ivLength)) != 0)
+	if ((gcry_err = gcry_cipher_setiv(**handle, ivBuffer, ivLength)) != 0)
 	{
 		goto error;
 	}
@@ -110,7 +110,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	// check if key has been marked for encryption
 	const Key *metaEncrypt = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if(metaEncrypt == NULL || strlen(keyValue(metaEncrypt)) == 0)
+	if (metaEncrypt == NULL || strlen(keyValue(metaEncrypt)) == 0)
 	{
 		// nothing to do
 		return 1;
@@ -134,7 +134,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	// prepare buffer for cipher text output
 	// NOTE the header goes into the first block
-	if(header.contentLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE == 0)
+	if (header.contentLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE == 0)
 	{
 		outputLen = (header.contentLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 1;
 	}
@@ -144,7 +144,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	}
 	outputLen *= ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	output = elektraMalloc(outputLen);
-	if(output == NULL)
+	if (output == NULL)
 	{
 		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
 		return (-1);
@@ -153,7 +153,7 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	// encrypt the header (1st block)
 	memcpy(contentBuffer, &header, sizeof(struct ElektraCryptoHeader));
 	gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
-	if(gcry_err != 0)
+	if (gcry_err != 0)
 	{
 		ELEKTRA_SET_ERRORF(127, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
 		elektraFree(output);
@@ -166,14 +166,14 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	{
 		// load content partition into the content buffer
 		long contentLen = ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-		if((i + 1) * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE > header.contentLen)
+		if ((i + 1) * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE > header.contentLen)
 		{
 			contentLen = header.contentLen - (i * ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		}
 		memcpy(contentBuffer, (value + i), contentLen);
 
 		gcry_err = gcry_cipher_encrypt(*handle, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
-		if(gcry_err != 0)
+		if (gcry_err != 0)
 		{
 			ELEKTRA_SET_ERRORF(127, errorKey, "Encryption failed because: %s", gcry_strerror(gcry_err));
 			elektraFree(output);
@@ -205,14 +205,14 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	// check if key has been encrypted in the first place
 	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
-	if(metaEncrypted == NULL || strlen(keyValue(metaEncrypted)) == 0)
+	if (metaEncrypted == NULL || strlen(keyValue(metaEncrypted)) == 0)
 	{
 		// nothing to do
 		return 1;
 	}
 
 	// plausibility check
-	if(valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
+	if (valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
 		ELEKTRA_SET_ERROR(128, errorKey, "value length is not a multiple of the block size");
 		return (-1);
@@ -220,7 +220,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	// prepare buffer for plain text output
 	output = elektraMalloc(valueLen);
-	if(output == NULL)
+	if (output == NULL)
 	{
 		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
 		return (-1);
@@ -229,7 +229,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	// decrypt the header (1st block)
 	memcpy(cipherBuffer, value, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 	gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
-	if(gcry_err != 0)
+	if (gcry_err != 0)
 	{
 		ELEKTRA_SET_ERRORF(128, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
 		elektraFree(output);
@@ -243,7 +243,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	{
 		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		gcry_err = gcry_cipher_decrypt(*handle, contentBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, cipherBuffer, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
-		if(gcry_err != 0)
+		if (gcry_err != 0)
 		{
 			ELEKTRA_SET_ERRORF(128, errorKey, "Decryption failed because: %s", gcry_strerror(gcry_err));
 			elektraFree(output);
@@ -253,7 +253,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 		written += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	}
 
-	if(written < header.contentLen)
+	if (written < header.contentLen)
 	{
 		ELEKTRA_SET_ERROR(128, errorKey, "Content was shorter than described in the header");
 		elektraFree(output);
@@ -261,11 +261,11 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	}
 
 	// write back the cipher text to the key
-	if((header.flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING)
+	if ((header.flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING)
 	{
 		keySetString(k, (const char*)output);
 	}
-	else if((header.flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || header.contentLen == 0)
+	else if ((header.flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || header.contentLen == 0)
 	{
 		keySetBinary(k, NULL, 0);
 	}

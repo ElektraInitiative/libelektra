@@ -120,7 +120,7 @@ BasicWindow {
 	}
 	cancelButton.action.text: qsTr("&Close")
 	cancelButton.action.onTriggered: {
-		if(colorEdited)
+		if (colorEdited)
 			guiSettings.setKDB()
 		close()
 		colorEdited = false

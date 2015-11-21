@@ -29,13 +29,13 @@ Item {
 	}
 
 	Keys.onPressed: {
-		if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
-			if(buttonRow.nextButton.action.enabled){
+		if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+			if (buttonRow.nextButton.action.enabled){
 				buttonRow.nextButton.action.trigger()
 				event.accepted = true
 			}
 		}
-		else if(event.key === Qt.Key_Escape)
+		else if (event.key === Qt.Key_Escape)
 			buttonRow.cancelButton.action.trigger()
 	}
 
@@ -78,16 +78,16 @@ Item {
 				tooltip: qsTr("Add Plugin")
 
 				onClicked: {
-					if(!alreadyInList(pluginDropdown.currentText)){
+					if (!alreadyInList(pluginDropdown.currentText)){
 						guiBackend.addPlugin(pluginDropdown.currentText)
 
-						if(!error){
+						if (!error){
 							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
 							buttonRow.nextButton.action.enabled = guiBackend.validated()
 
-							if(pluginDropdown.currentText.indexOf("[storage]") > -1)
+							if (pluginDropdown.currentText.indexOf("[storage]") > -1)
 								includeStorage = false
-							else if(pluginDropdown.currentText.indexOf("[resolver]") > -1)
+							else if (pluginDropdown.currentText.indexOf("[resolver]") > -1)
 								includeResolver = false
 
 							clearConfig()
@@ -178,19 +178,19 @@ Item {
 				}
 
 				function mousePressed(mouse, model, itemLoader) {
-					if(mouse.button === Qt.LeftButton){
+					if (mouse.button === Qt.LeftButton){
 						currentNode = model
 						currentItem = itemLoader
 						forceActiveFocus()
 					}
-					else if(mouse.button === Qt.RightButton){
+					else if (mouse.button === Qt.RightButton){
 						p2cmNew.action.enabled = contextMenuEnabled
 						page2ContextMenu.popup()
 					}
 				}
 
 				function getOpacity(model) {
-					if(model.childCount > 0)
+					if (model.childCount > 0)
 						return 1
 					return 0
 				}
@@ -226,7 +226,7 @@ Item {
 			tooltip: qsTr("Edit Plugin Configuration")
 
 			onClicked: {
-				if(page2.state === ""){
+				if (page2.state === ""){
 					pluginConfigTreeView.treeModel.refresh()
 					page2.state = "SHOW_CONFIG_VIEWER"
 				}
@@ -246,7 +246,7 @@ Item {
 			includeResolver = true
 			includedPluginsModel.clear()
 
-			if(undoManager.index() > stackIndex)
+			if (undoManager.index() > stackIndex)
 				undoManager.setIndex(stackIndex)
 		}
 		cancelButton.action.onTriggered: {
@@ -284,7 +284,7 @@ Item {
 	function alreadyInList(plugin) {
 
 		for(var i = 0; i < includedPluginsModel.count; i++){
-			if(includedPluginsModel.get(i).pluginName === plugin)
+			if (includedPluginsModel.get(i).pluginName === plugin)
 				return true
 		}
 		return false
@@ -292,7 +292,7 @@ Item {
 
 	function alreadyInConfig(key) {
 		for(var i = 0; i < config.length; i++){
-			if(config[i].toString() === key)
+			if (config[i].toString() === key)
 				return true
 			return false
 		}
@@ -368,7 +368,7 @@ Item {
 			//create UndoCommand
 			undoManager.createNewKeyCommand(pluginConfigTreeView.currentNode.parentModel, pluginConfigTreeView.currentNode.index, dataContainer, false)
 
-			if(nameTextField.text.lastIndexOf("/") > 0)
+			if (nameTextField.text.lastIndexOf("/") > 0)
 				pluginConfigTreeView.currentNode.parentModel.refresh()
 
 			visible = false

@@ -198,7 +198,7 @@ static void test_enc_and_dec_with_binary()
 	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
 	read = keyGetBinary(k, content, sizeof(content));
 	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
-	if(read == sizeof(original))
+	if (read == sizeof(original))
 	{
 		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
 	}

@@ -22,7 +22,7 @@ NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *dat
 	QStringList newNameSplit = parentModel->getSplittedKeyname(newKey);
 	kdb::Key parentKey = m_parentNode->getKey();
 
-	if(!parentKey)
+	if (!parentKey)
 		parentKey = kdb::Key(m_parentNode->getPath().toStdString(), KEY_END);
 
 	QStringList parentNameSplit = parentModel->getSplittedKeyname(parentKey);
@@ -30,7 +30,7 @@ NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *dat
 	//check if the new key is directly below the parent
 	QSet<QString> diff = newNameSplit.toSet().subtract(parentNameSplit.toSet());
 
-	if(diff.count() > 1 || isBelow)
+	if (diff.count() > 1 || isBelow)
 		setText("newBranch");
 	else
 		setText("newKey");

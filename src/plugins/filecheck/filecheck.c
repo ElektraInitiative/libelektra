@@ -25,7 +25,7 @@
 static inline char * LEString (Lineending index)
 {
 	static char *strings[] = {"NA", "CR", "LF", "CRLF", "LFCR"};	
-	if(index > NUM_TYPES)
+	if (index > NUM_TYPES)
 		return NULL;
 	return strings[index];
 }
@@ -35,7 +35,7 @@ static inline Lineending strToLE (const char * str)
 	uint8_t counter = 0;
 	for(; counter < NUM_TYPES; ++counter)
 	{
-		if(!strcmp(LEString(counter), str))
+		if (!strcmp(LEString(counter), str))
 			return counter;
 	}
 	return NA;
@@ -61,7 +61,7 @@ int elektraFilecheckClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTR
 {
 	// free all plugin resources and shut it down
 	checkStruct *checkConf = (checkStruct *)elektraPluginGetData(handle);
-	if(checkConf)
+	if (checkConf)
 		elektraFree(checkConf);
 	return 1; // success
 }
@@ -71,7 +71,7 @@ static int checkNull(const uint8_t * line, ssize_t bytes)
 	int i;
 	for(i = 0; i < bytes; ++i)
 	{
-		if(line[i] == 0)
+		if (line[i] == 0)
 		{
 			return i;
 		}
@@ -88,15 +88,15 @@ static int checkBom(const uint8_t * line)
 		found = 1;
 		for(j = 0; j < BOM_SIZE_MAX && BOMS[i][j] != INTERNAL_BOM_DELIMITER; ++j)
 		{
-			if(line[j] != BOMS[i][j])
+			if (line[j] != BOMS[i][j])
 			{
 				found = 0;
 			}
 		}
-		if(found)
+		if (found)
 			break;
 	}
-	if(found)
+	if (found)
 		return -1;
 	else 
 		return 0;
@@ -105,7 +105,7 @@ static int checkBom(const uint8_t * line)
 static int validateLineEnding(const uint8_t * line, Lineending * valid, int reset)
 {
 	static uint8_t lastByte = 0;
-	if(reset)
+	if (reset)
 	{
 		lastByte = 0;
 		return 0;
@@ -113,7 +113,7 @@ static int validateLineEnding(const uint8_t * line, Lineending * valid, int rese
 	Lineending found = NA;
 	uint8_t fc;
 	uint16_t i = 0;	
-	if(lastByte != 0)
+	if (lastByte != 0)
 	{
 		fc = lastByte;
 	}
@@ -131,17 +131,17 @@ static int validateLineEnding(const uint8_t * line, Lineending * valid, int rese
 		switch(fc)
 		{
 			case LF_BYTE:
-				if(sc == CR_BYTE)
+				if (sc == CR_BYTE)
 					found = LFCR;
-				else if(sc == LF_BYTE)
+				else if (sc == LF_BYTE)
 					found = LF;
 				else
 					found = LF;
 				break;
 			case CR_BYTE:
-				if(sc == LF_BYTE)
+				if (sc == LF_BYTE)
 					found = CRLF;
-				else if(sc == CR_BYTE)
+				else if (sc == CR_BYTE)
 					found = CR;
 				else
 					found = CR;
@@ -149,15 +149,15 @@ static int validateLineEnding(const uint8_t * line, Lineending * valid, int rese
 		}
 		fc = sc;
 		lastByte = sc;
-		if((found == CRLF || found == LFCR) && (i < (lineLength - 2)))
+		if ((found == CRLF || found == LFCR) && (i < (lineLength - 2)))
 		{
 			fc = line[i+1];
 			lastByte = fc;
 			++i;
 		}
-		if(*valid != NA)
+		if (*valid != NA)
 		{
-			if(found != NA && found != *valid)
+			if (found != NA && found != *valid)
 			{
 				return i;
 			}
@@ -169,13 +169,13 @@ static int validateLineEnding(const uint8_t * line, Lineending * valid, int rese
 	}
 	
 	//because we work an pairs of 2 bytes we need handle the last byte explicitely 
-	if(found == NA)
+	if (found == NA)
 	{
-		if(fc == CR_BYTE && *valid != CR)
+		if (fc == CR_BYTE && *valid != CR)
 		{
 			return i;
 		}
-		if(fc == LF_BYTE && *valid != LF)
+		if (fc == LF_BYTE && *valid != LF)
 		{
 			return i;
 		}
@@ -191,7 +191,7 @@ static int validateEncoding(const uint8_t * line, iconv_t conv, size_t bytesRead
 	size_t inBytes = bytesRead;
 	size_t outSize = sizeof(outBuffer);
 	int ret = iconv(conv, &ptr, &inBytes, &outPtr, &outSize);
-	if(ret == -1 && errno == EILSEQ)
+	if (ret == -1 && errno == EILSEQ)
 	{
 		return ((uint8_t *)ptr - line);
 	}
@@ -202,7 +202,7 @@ static int checkUnprintable(const uint8_t *line)
 	unsigned int i;
 	for(i = 0; i < elektraStrLen((char *)line); ++i)
 	{
-		if(line[i] < 0x20 || line[i] > 0x7E || line[i] != '\n' || line[i] != '\r')
+		if (line[i] < 0x20 || line[i] > 0x7E || line[i] != '\n' || line[i] != '\r')
 			return i;
 	}
 	return 0;
@@ -210,15 +210,15 @@ static int checkUnprintable(const uint8_t *line)
 static long checkFile(Key * parentKey, const char * filename, checkStruct * checkConf)
 {
 	FILE *fp = fopen(filename, "rb");
-	if(fp == NULL)
+	if (fp == NULL)
 	{
 		ELEKTRA_SET_ERRORF(138, parentKey, "Couldn't open file %s", filename);
 		return -1;
 	}
 	iconv_t conv = NULL;
-	if(checkConf->checkEncoding)
+	if (checkConf->checkEncoding)
 	{
-		if(checkConf->encoding != NULL)
+		if (checkConf->encoding != NULL)
 		{
 			conv = iconv_open(checkConf->encoding, checkConf->encoding);
 		}
@@ -226,7 +226,7 @@ static long checkFile(Key * parentKey, const char * filename, checkStruct * chec
 		{
 			conv = iconv_open("UTF-8", "UTF-8");
 		}
-		if(conv == (iconv_t)(-1))
+		if (conv == (iconv_t)(-1))
 		{
 			ELEKTRA_SET_ERRORF(138, parentKey, "Couldn't initialize iconv with encoding %s\n", checkConf->encoding);
 			fclose(fp);
@@ -242,46 +242,46 @@ static long checkFile(Key * parentKey, const char * filename, checkStruct * chec
 	uint8_t firstLine = 1;
 	unsigned long counter = 0;
 	int retVal = 0;
-	if(checkConf->checkLineEnding)
+	if (checkConf->checkLineEnding)
 		validateLineEnding(NULL, NULL, 1);
 	while(!feof(fp))
 	{
 		memset(line, 0, sizeof(line));
 		size_t bytesRead = fread(line, 1, sizeof(line), fp);
-		if(checkConf->checkLineEnding)
+		if (checkConf->checkLineEnding)
 		{
 			le_ret = validateLineEnding(line, &(checkConf->validLE), 0);
-			if(le_ret)
+			if (le_ret)
 			{
 				ELEKTRA_SET_ERRORF(137, parentKey, "invalid lineending at position %lu", bytesRead+le_ret);
 				retVal = -1;
 				break;
 			}
 		}
-		if(checkConf->rejectNullByte)
+		if (checkConf->rejectNullByte)
 		{
 			null_ret = checkNull(line, bytesRead);
-			if(null_ret)
+			if (null_ret)
 			{
 				ELEKTRA_SET_ERRORF(137, parentKey, "found null-byte at position %lu", bytesRead+null_ret);
 				retVal = -1;
 				break;
 			}		
 		}
-		if(checkConf->checkEncoding)
+		if (checkConf->checkEncoding)
 		{
 			iconv_ret = validateEncoding(line, conv, bytesRead);
-			if(iconv_ret)
+			if (iconv_ret)
 			{
 				ELEKTRA_SET_ERRORF(137, parentKey, "invalid encoding at position %lu", bytesRead+iconv_ret);
 				retVal = -1;
 				break;
 			}
 		}
-		if(firstLine && checkConf->rejectBom)
+		if (firstLine && checkConf->rejectBom)
 		{
 			bom_ret = checkBom(line);
-			if(bom_ret)
+			if (bom_ret)
 			{
 				ELEKTRA_SET_ERROR(137, parentKey, "found BOM");
 				retVal = -1;
@@ -289,10 +289,10 @@ static long checkFile(Key * parentKey, const char * filename, checkStruct * chec
 			}
 			firstLine = 0;
 		}
-		if(checkConf->rejectUnprintable)
+		if (checkConf->rejectUnprintable)
 		{
 			unprintable_ret = checkUnprintable(line);
-			if(unprintable_ret)
+			if (unprintable_ret)
 			{
 				ELEKTRA_SET_ERRORF(137, parentKey, "unprintable character at position %lu", bytesRead+unprintable_ret);
 				retVal = -1;
@@ -302,7 +302,7 @@ static long checkFile(Key * parentKey, const char * filename, checkStruct * chec
 		}
 		counter += bytesRead;
 	}
-	if(checkConf->checkEncoding)
+	if (checkConf->checkEncoding)
 	{
 		iconv_close(conv);
 	}
@@ -339,7 +339,7 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	checkStruct *checkConf = elektraPluginGetData(handle);
 	const char *filename = keyString(parentKey);
 	int ret = checkFile(parentKey, filename, checkConf);
-	if(ret != 0)
+	if (ret != 0)
 		return -1;
 	return 1; // success
 }
@@ -350,7 +350,7 @@ int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	checkStruct *checkConf = elektraPluginGetData(handle);
 	const char *filename = keyString(parentKey);
 	int ret = checkFile(parentKey, filename, checkConf);
-	if(ret != 0)
+	if (ret != 0)
 		return -1;
 	return 1; // success
 }

@@ -46,7 +46,7 @@ function createHelp(helpText, defaultMargins, x, y, parent) {
 }
 
 function destroy() {
-	if(tooltip){
+	if (tooltip){
 		tooltip.destroy()
 		tooltip = null
 	}

@@ -18,7 +18,7 @@ ApplicationWindow {
 	title: "Elektra Editor"
 
 	onClosing: {
-		if(!undoManager.isClean()){
+		if (!undoManager.isClean()){
 			close.accepted = false
 			exitDialog.open()
 		}
@@ -116,7 +116,7 @@ ApplicationWindow {
 		id: newKeyWindow
 
 		onVisibleChanged: {
-			if(visible === true){
+			if (visible === true){
 
 				nameTextField.forceActiveFocus()
 			}
@@ -127,8 +127,8 @@ ApplicationWindow {
 		id: editKeyWindow
 
 		onVisibleChanged: {
-			if(visible === true){
-				if(nameTextField.text.charAt(0) === '#'){
+			if (visible === true){
+				if (nameTextField.text.charAt(0) === '#'){
 					editKeyWindow.title = qsTr("Edit Array Entry")
 					nameTextField.textColor = disabledPalette.text
 					nameTextField.readOnly = true
@@ -144,7 +144,7 @@ ApplicationWindow {
 		title: qsTr("Create new Array Entry")
 
 		onVisibleChanged: {
-			if(visible === true){
+			if (visible === true){
 				nameTextField.readOnly = true
 				nameTextField.textColor = disabledPalette.text
 				nameTextField.text = selectedNode.children.getCurrentArrayNo()
@@ -202,19 +202,19 @@ ApplicationWindow {
 		modality: Qt.ApplicationModal
 
 		onAccepted: {
-			if(type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
+			if (type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
-			else if(type === "frame" && guiSettings.frameColor !== colorDialog.color) {
+			else if (type === "frame" && guiSettings.frameColor !== colorDialog.color) {
 				guiSettings.frameColor =  colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
-			else if(type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
+			else if (type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithKeyColor = colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
-			else if(type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
+			else if (type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithoutKeyColor = colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
@@ -237,7 +237,7 @@ ApplicationWindow {
 		enabled: treeView.currentItem !== null
 		onTriggered: {
 
-			if(source.src === "keyBelow"){
+			if (source.src === "keyBelow"){
 				newKeyWindow.selectedNode = keyAreaSelectedItem
 				newKeyWindow.isBelow = true
 			}
@@ -257,7 +257,7 @@ ApplicationWindow {
 		enabled: treeView.currentItem !== null
 		onTriggered: {
 
-			if(source.src === "arrBelow"){
+			if (source.src === "arrBelow"){
 				newArrayWindow.selectedNode = keyAreaSelectedItem
 				newArrayWindow.isBelow = true
 			}
@@ -277,11 +277,11 @@ ApplicationWindow {
 		shortcut: StandardKey.Delete
 		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
 		onTriggered: {
-			if(searchResultsSelectedItem !== null)
+			if (searchResultsSelectedItem !== null)
 				MFunctions.deleteSearchResult()
-			else if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+			else if (treeView.currentNode !== null && keyAreaSelectedItem === null)
 				MFunctions.deleteBranch(treeView)
-			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
+			else if (treeView.currentNode !== null && keyAreaSelectedItem !== null)
 				MFunctions.deleteKey()
 		}
 	}
@@ -318,43 +318,43 @@ ApplicationWindow {
 		shortcut: StandardKey.Undo
 		enabled: undoManager.canUndo
 		onTriggered: {
-			if(undoManager.undoText === "deleteBranch"){
+			if (undoManager.undoText === "deleteBranch"){
 				undoManager.undo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.undoText === "deleteKey"){
+			else if (undoManager.undoText === "deleteKey"){
 				undoManager.undo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
+			else if (undoManager.undoText === "deleteSearchResultsKey" || undoManager.undoText === "deleteSearchResultsBranch"){
 				undoManager.undo()
 				undoManager.undo()
 			}
-			else if(undoManager.undoText === "copyBranch"){
+			else if (undoManager.undoText === "copyBranch"){
 				undoManager.undo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.undoText === "cutBranch"){
+			else if (undoManager.undoText === "cutBranch"){
 				undoManager.undo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.undoText === "import"){
+			else if (undoManager.undoText === "import"){
 				undoManager.undo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.undoText === "newBranch"){
+			else if (undoManager.undoText === "newBranch"){
 				undoManager.undo()
 				treeView.treeModel.refresh()
 				keyAreaView.selection.clear()
 			}
-			else if(undoManager.undoText === "newKey"){
+			else if (undoManager.undoText === "newKey"){
 				undoManager.undo()
 				keyAreaView.selection.clear()
 				keyAreaView.currentRow = -1
 			}
 			else{
 				undoManager.undo()
-				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
+				if (searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
 
@@ -387,37 +387,37 @@ ApplicationWindow {
 		shortcut: StandardKey.Redo
 		enabled: undoManager.canRedo
 		onTriggered: {
-			if(undoManager.redoText === "deleteBranch"){
+			if (undoManager.redoText === "deleteBranch"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.redoText === "deleteKey"){
+			else if (undoManager.redoText === "deleteKey"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
+			else if (undoManager.redoText === "deleteSearchResultsKey" || undoManager.redoText === "deleteSearchResultsBranch"){
 				undoManager.redo()
 				undoManager.redo()
 			}
-			else if(undoManager.redoText === "copyBranch"){
+			else if (undoManager.redoText === "copyBranch"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.redoText === "cutBranch"){
+			else if (undoManager.redoText === "cutBranch"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.redoText === "import"){
+			else if (undoManager.redoText === "import"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
 			}
-			else if(undoManager.redoText === "newBranch"){
+			else if (undoManager.redoText === "newBranch"){
 				undoManager.redo()
 				treeView.treeModel.refresh()
 			}
 			else{
 				undoManager.redo()
-				if(searchResultsListView.model !== null && searchResultsListView.model !== undefined)
+				if (searchResultsListView.model !== null && searchResultsListView.model !== undefined)
 					searchResultsListView.model.refresh()
 			}
 			treeView.updateIndicator()
@@ -488,7 +488,7 @@ ApplicationWindow {
 		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null)
 
 		onTriggered: {
-			if(editKeyWindow.accessFromSearchResults){
+			if (editKeyWindow.accessFromSearchResults){
 				editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
 			}
 			editKeyWindow.populateMetaArea()
@@ -506,9 +506,9 @@ ApplicationWindow {
 		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
 		onTriggered: {
-			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+			if (treeView.currentNode !== null && keyAreaSelectedItem === null)
 				MFunctions.cutBranch()
-			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
+			else if (treeView.currentNode !== null && keyAreaSelectedItem !== null)
 				MFunctions.cutKey()
 		}
 	}
@@ -523,9 +523,9 @@ ApplicationWindow {
 		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
 
 		onTriggered: {
-			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
+			if (treeView.currentNode !== null && keyAreaSelectedItem === null)
 				MFunctions.copyBranch()
-			else if(treeView.currentNode !== null && keyAreaSelectedItem !== null)
+			else if (treeView.currentNode !== null && keyAreaSelectedItem !== null)
 				MFunctions.copyKey()
 		}
 	}
@@ -571,7 +571,7 @@ ApplicationWindow {
 		text: qsTr("Quit")
 		iconSource: "icons/application-exit.png"
 		onTriggered: {
-			if(!undoManager.isClean())
+			if (!undoManager.isClean())
 				exitDialog.open()
 			else
 				Qt.quit()
@@ -675,14 +675,14 @@ ApplicationWindow {
 					model: getModel()
 
 					function getModel() {
-						if(treeView.currentNode === null)
+						if (treeView.currentNode === null)
 							return null
-						else if(treeView.currentNode.childrenHaveNoChildren)
+						else if (treeView.currentNode.childrenHaveNoChildren)
 							return treeView.currentNode.children
 					}
 
 					onCurrentRowChanged: {
-						if(currentRow === -1)
+						if (currentRow === -1)
 							keyAreaSelectedItem = null
 						else
 							model !== null ? keyAreaSelectedItem = model.get(currentRow) : keyAreaSelectedItem = null
@@ -722,10 +722,10 @@ ApplicationWindow {
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-									if(mouse.button === Qt.RightButton){
+									if (mouse.button === Qt.RightButton){
 										keyAreaContextMenu.popup()
 									}
-									else if(mouse.button === Qt.LeftButton){
+									else if (mouse.button === Qt.LeftButton){
 										keyAreaView.currentRow = styleData.row
 										MFunctions.updateKeyAreaSelection()
 									}
@@ -740,7 +740,7 @@ ApplicationWindow {
 						}
 					}
 					Keys.onPressed: {
-						if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
+						if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
 							MFunctions.updateKeyAreaSelection()
 							editAction.trigger()
 						}
@@ -854,15 +854,15 @@ ApplicationWindow {
 						model: null
 
 						Keys.onPressed: {
-							if(event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
+							if (event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
 								currentIndex--
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.rowCount() - 1){
+							else if (event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.rowCount() - 1){
 								currentIndex++
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
+							else if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
 								editKeyWindow.selectedNode = searchResultsSelectedItem
 								editKeyWindow.accessFromSearchResults = true
 								editAction.trigger()
@@ -883,13 +883,13 @@ ApplicationWindow {
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
-										if(mouse.button === Qt.LeftButton){
+									if (searchResultsListView.model.get(0).name !== "NotfoundNode"){
+										if (mouse.button === Qt.LeftButton){
 											searchResultsListView.currentIndex = index
 											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 											forceActiveFocus()
 										}
-										else if(mouse.button === Qt.RightButton) {
+										else if (mouse.button === Qt.RightButton) {
 											searchResultsListView.currentIndex = index
 											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 											forceActiveFocus()
@@ -899,7 +899,7 @@ ApplicationWindow {
 									}
 								}
 								onDoubleClicked: {
-									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
+									if (searchResultsListView.model.get(0).name !== "NotfoundNode"){
 										searchResultsListView.currentIndex = index
 										forceActiveFocus()
 										editKeyWindow.accessFromSearchResults = true

@@ -25,10 +25,10 @@ KeyWindow {
 		//create UndoCommand
 		undoManager.createNewKeyCommand(selectedNode.parentModel, selectedNode.index, container, isBelow)
 
-		if(!error){
+		if (!error){
 			visible = false
 
-			if(undoManager.undoText === "newBranch"){
+			if (undoManager.undoText === "newBranch"){
 				keyAreaView.selection.clear()
 //				treeView.treeModel.refresh()
 //				keyAreaSelectedItem = null

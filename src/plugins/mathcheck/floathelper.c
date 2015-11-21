@@ -16,7 +16,7 @@
 
 char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 {
-	if(buffer == NULL)
+	if (buffer == NULL)
 	{
 		bufSize = MAX_CHARS_DOUBLE;
 		buffer = elektraMalloc(bufSize);
@@ -27,14 +27,14 @@ char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 	locale = localeconv();
 	char sysSep = (locale->decimal_point)[0];
 
-	if(sysSep == ELEKTRA_DEFAULT_DECIMAL_POINT)
+	if (sysSep == ELEKTRA_DEFAULT_DECIMAL_POINT)
 	{
 		return buffer;
 	}
 	else
 	{
 		char *sepPtr = strchr(buffer, sysSep);
-		if(sepPtr == NULL)
+		if (sepPtr == NULL)
 		{
 			return buffer;
 		}
@@ -51,7 +51,7 @@ double elektraEFtoF(const char *string)
 	char *buffer = elektraMalloc(elektraStrLen(string));
 	strcpy(buffer, string);
 	char *sepPtr = strchr(buffer, ELEKTRA_DEFAULT_DECIMAL_POINT);
-	if(sepPtr == NULL)
+	if (sepPtr == NULL)
 	{
 		elektraFree (buffer);
 		return atof(string);

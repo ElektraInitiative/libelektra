@@ -110,7 +110,7 @@
 
 %typemap(in) (const void *newBinary, size_t dataSize) {
   Py_ssize_t len;
-  if(PyBytes_AsStringAndSize($input, reinterpret_cast<char **>(&$1), &len) == -1)
+  if (PyBytes_AsStringAndSize($input, reinterpret_cast<char **>(&$1), &len) == -1)
     return NULL;
   $2 = len;
 }

@@ -399,7 +399,7 @@ char *elektraVFormat(const char *format, va_list arg_list)
 
 	va_end(arg_list_adj);
 
-	if(ret == -1)
+	if (ret == -1)
 	{
 		elektraFree(buffer);
 		return 0;

@@ -104,8 +104,8 @@ ToolBar {
 			implicitWidth: keyAreaWidth - searchLogo.implicitWidth - defaultMargins
 			focus: true
 			onAccepted: {
-				if(text !== ""){
-					if(searchResultsListView.model !== null) {
+				if (text !== ""){
+					if (searchResultsListView.model !== null) {
 						searchResultsListView.model.discardModel()
 						searchResultsListView.model = null
 					}

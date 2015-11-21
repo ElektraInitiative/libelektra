@@ -41,7 +41,7 @@ int main()
 	env.test.lift.write = false;
 
 	// write back to user/test/lift, see comments in lift.c
-	if(write)
+	if (write)
 	{
 		kdb.set(ks, "user/test/lift");
 	}

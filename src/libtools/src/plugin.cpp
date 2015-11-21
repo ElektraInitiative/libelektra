@@ -242,23 +242,23 @@ void Plugin::check(vector<string> & warnings)
 		ret = checkDups.insert(symbols["error"]);
 		if (!ret.second) throw SymbolDuplicate("error");
 	}
-	if(symbols.find("open") != symbols.end())
+	if (symbols.find("open") != symbols.end())
 	{
 		if (!plugin->kdbOpen) throw SymbolMismatch ("open");
 	}
-	if(symbols.find("close") != symbols.end())
+	if (symbols.find("close") != symbols.end())
 	{
 		if (!plugin->kdbClose) throw SymbolMismatch ("close");
 	}
-	if(symbols.find("get") != symbols.end())
+	if (symbols.find("get") != symbols.end())
 	{
 		if (!plugin->kdbGet) throw SymbolMismatch ("get");
 	}
-	if(symbols.find("set") != symbols.end())
+	if (symbols.find("set") != symbols.end())
 	{
 		if (!plugin->kdbSet) throw SymbolMismatch ("set");
 	}
-	if(symbols.find("error") != symbols.end())
+	if (symbols.find("error") != symbols.end())
 	{
 		if (!plugin->kdbError) throw SymbolMismatch ("error");
 	}

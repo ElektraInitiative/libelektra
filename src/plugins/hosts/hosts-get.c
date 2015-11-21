@@ -171,7 +171,7 @@ static char *parseAlias(KeySet *append, const Key *hostParent, char *tokenPointe
 	elektraFree(fieldBuffer);
 
 	/* only add the alias if it does not exist already */
-	if(ksLookup(append, alias, KDB_O_NONE))
+	if (ksLookup(append, alias, KDB_O_NONE))
 	{
 		keyDel (alias);
 	}

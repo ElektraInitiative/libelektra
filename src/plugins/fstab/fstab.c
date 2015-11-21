@@ -199,7 +199,7 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 	fstab=setmntent(keyString(parentKey), "w");
 
-	if(fstab == 0)
+	if (fstab == 0)
 	{
 		ELEKTRA_SET_ERROR_SET(parentKey);
 		errno = errnosave;

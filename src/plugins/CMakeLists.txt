@@ -1,7 +1,7 @@
 include(LibAddPlugin)
 
 foreach (plugin ${PLUGINS})
-	if(${plugin} MATCHES ".*_.*")
+	if (${plugin} MATCHES ".*_.*")
 		message(STATUS "Include Plugin's build variant ${plugin}")
 	else()
 		message(STATUS "Include Plugin ${plugin}")

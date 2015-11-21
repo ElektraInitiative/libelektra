@@ -77,7 +77,7 @@ inline void Parameters::$support.setfuncname($key)($support.typeof(info) n)
 {
 	kdb::Key found = ks.lookup("$key", 0);
 
-	if(!found)
+	if (!found)
 	{
 		kdb::Key k("$support.userkey(key)", KEY_END);
 		k.set<$support.typeof(info)>(n);
