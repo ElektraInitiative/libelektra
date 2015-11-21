@@ -199,7 +199,7 @@ parentSize=keyGetParentNameSize(key);
 parentName=elektraMalloc(parentSize);
 keyGetParentName(key,parentName,parentSize);
 // work with parentName
-free (parentName);
+elektraFree (parentName);
  * @endcode
  * @see keyGetParentNameSize()
  * @param key the key object to work with

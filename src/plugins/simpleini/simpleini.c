@@ -92,8 +92,8 @@ int elektraSimpleiniGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 		keySetString(read, value);
 
 		ksAppendKey (returned, read);
-		free (key);
-		free (value);
+		elektraFree (key);
+		elektraFree (value);
 	}
 
 	if (feof(fp) == 0)

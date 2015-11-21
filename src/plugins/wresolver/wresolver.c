@@ -89,7 +89,7 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 
 static void resolverClose (resolverHandle *p)
 {
-	free (p->filename); p->filename = 0;
+	elektraFree (p->filename); p->filename = 0;
 }
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -307,7 +307,7 @@ int elektraWresolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 			break;
 		}
 
-		free (ps);
+		elektraFree (ps);
 		elektraPluginSetData(handle, 0);
 	}
 

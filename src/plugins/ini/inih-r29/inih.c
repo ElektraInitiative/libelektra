@@ -162,7 +162,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
     }
 
 #if !INI_USE_STACK
-    free(line);
+    elektraFree (line);
 #endif
 
     return error;

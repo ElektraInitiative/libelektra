@@ -182,7 +182,7 @@ void test_utf8_conversation()
 	/* succeed_if (kdbbUTF8Engine (plugin, UTF8_FROM, &str, &len) != -1, "could use utf8engine"); */
 	/*succeed_if (errno == EILSEQ, "errno not set correctly");*/
 
-	free (str);
+	elektraFree (str);
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose(modules, 0);

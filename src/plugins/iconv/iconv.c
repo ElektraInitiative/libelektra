@@ -117,7 +117,7 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	if (iconv(converter,
 			&readCursor,inputOutputByteSize,
 			&writeCursor,&bufferSize) == (size_t)(-1)) {
-		free(converted);
+		elektraFree (converted);
 		iconv_close(converter);
 		return -1;
 	}
@@ -131,9 +131,9 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	/* copy all that matters for returning */
 	memcpy(*string,converted,*inputOutputByteSize);
 	/* release memory used by passed string */
-	free(readCursor);
+	elektraFree (readCursor);
 	/* release buffer memory */
-	free(converted);
+	elektraFree (converted);
 	/* release the conversor engine */
 	iconv_close(converter);
 	return 0;
@@ -181,11 +181,11 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			{
 				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s, encoding settings are from %s to %s",
 						keyString(cur), convertedData, getFrom(handle), getTo(handle));
-				free(convertedData);
+				elektraFree (convertedData);
 				return -1;
 			}
 			keySetString(cur, convertedData);
-			free(convertedData);
+			elektraFree (convertedData);
 		}
 		meta = keyGetMeta(cur, "comment");
 		if (meta)
@@ -199,11 +199,11 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 			{
 				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s, encoding settings are from %s to %s",
 						keyString(meta), convertedData, getFrom(handle), getTo(handle));
-				free(convertedData);
+				elektraFree (convertedData);
 				return -1;
 			}
 			keySetMeta(cur, "comment", convertedData);
-			free(convertedData);
+			elektraFree (convertedData);
 		}
 	}
 
@@ -233,11 +233,11 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s,"
 						" encoding settings are from %s to %s (but swapped for write)",
 						keyString(cur), convertedData, getFrom(handle), getTo(handle));
-				free(convertedData);
+				elektraFree (convertedData);
 				return -1;
 			}
 			keySetString(cur, convertedData);
-			free(convertedData);
+			elektraFree (convertedData);
 		}
 		meta = keyGetMeta(cur, "comment");
 		if (meta)
@@ -252,11 +252,11 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s,"
 						" encodings settings are from %s to %s (but swapped for write)",
 						keyString(meta), convertedData, getFrom(handle), getTo(handle));
-				free(convertedData);
+				elektraFree (convertedData);
 				return -1;
 			}
 			keySetMeta(cur, "comment", convertedData);
-			free(convertedData);
+			elektraFree (convertedData);
 		}
 	}
 

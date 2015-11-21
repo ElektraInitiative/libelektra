@@ -183,7 +183,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 						unencodedSize=kdbbDecode((char *)buffer,unencoded);
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
-						free(unencoded);
+						elektraFree (unencoded);
 						*/
 					} else keySetRaw(newKey,buffer,elektraStrLen((char *)buffer));
 				}
@@ -215,7 +215,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 
 						keySetComment(newKey,tmpComment);
 
-						free(tmpComment); tmpComment=0;
+						elektraFree (tmpComment); tmpComment=0;
 					}
 				} else keySetComment(newKey,(char *)buffer);
 				xmlFree(buffer);

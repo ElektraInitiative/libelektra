@@ -95,9 +95,9 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 
 static void resolverCloseOne (resolverHandle *p)
 {
-	free (p->filename); p->filename = 0;
-	free (p->dirname); p->dirname= 0;
-	free (p->tempfile); p->tempfile = 0;
+	elektraFree (p->filename); p->filename = 0;
+	elektraFree (p->dirname); p->dirname= 0;
+	elektraFree (p->tempfile); p->tempfile = 0;
 }
 
 static void resolverClose (resolverHandles *p)
@@ -106,7 +106,7 @@ static void resolverClose (resolverHandles *p)
 	resolverCloseOne(&p->dir);
 	resolverCloseOne(&p->user);
 	resolverCloseOne(&p->system);
-	free (p);
+	elektraFree (p);
 }
 
 /**
@@ -490,7 +490,7 @@ static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_SET_ERROR(26, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 		return -1;
 	}
 	return 0;
@@ -573,7 +573,7 @@ error:
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_SET_ERROR(74, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 		return -1;
 	}
 }
@@ -614,7 +614,7 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_ADD_WARNING(29, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 
 		ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
 		return -1;

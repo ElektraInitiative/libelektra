@@ -285,8 +285,8 @@ int elektraHexcodeClose(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CHexData *hd = elektraPluginGetData (handle);
 
-	free (hd->buf);
-	free (hd);
+	elektraFree (hd->buf);
+	elektraFree (hd);
 
 	return 0;
 }

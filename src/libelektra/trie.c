@@ -90,14 +90,14 @@ int elektraTrieClose (Trie *trie, Key *errorKey)
 			elektraTrieClose(trie->children[i], errorKey);
 			if (trie->value[i])
 				elektraBackendClose(trie->value[i], errorKey);
-			free(trie->text[i]);
+			elektraFree (trie->text[i]);
 		}
 	}
 	if (trie->empty_value)
 	{
 		elektraBackendClose(trie->empty_value, errorKey);
 	}
-	free(trie);
+	elektraFree (trie);
 	return 0;
 }
 Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value)
@@ -204,7 +204,7 @@ static Trie *delete_trie(Trie *trie, char *name, CloseMapper closemapper)
 		if (tr==NULL) {
 			/* child trie has been deleted */
 			trie->children[idx]=NULL;
-			free(trie->text[idx]);
+			elektraFree (trie->text[idx]);
 			closemapper(trie->value[idx]);
 			trie->text[idx]=NULL;
 		}

@@ -270,7 +270,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	jint res = JNI_CreateJavaVM(&data->jvm,
 			(void**)&data->env,
 			(void**)&vmArgs);
-	free(classpath);
+	elektraFree (classpath);
 	if (res < 0)
 	{
 		ELEKTRA_SET_ERROR(102, errorKey,
@@ -386,7 +386,7 @@ int elektraJniClose(Plugin *handle, Key *errorKey)
 	int ret = call1Arg(data, errorKey, "close");
 
 	(*data->jvm)->DestroyJavaVM(data->jvm);
-	free(data);
+	elektraFree (data);
 
 	return ret;
 }

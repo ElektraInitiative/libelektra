@@ -80,7 +80,7 @@ Ds_STR_INLINE int Ds_InitStr(Ds_str * restrict s, int size)
 Ds_STR_INLINE void Ds_FreeStr(Ds_str * restrict s)
 {
    if(s->str)
-      free(s->str);
+      elektraFree (s->str);
    *s = (Ds_str)Ds_STR_INIT;
 }
 

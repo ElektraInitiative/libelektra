@@ -63,7 +63,7 @@ static void test_ksToArray()
 	succeed_if (elektraKsToMemArray(empty, keyArray) == 0, "wrong result on empty keyset");
 	ksDel(empty);
 
-	free (keyArray);
+	elektraFree (keyArray);
 	ksDel (ks);
 }
 

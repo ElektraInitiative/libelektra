@@ -357,7 +357,7 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 	FILE * fileHandle = fopen(keyString(parentKey), "r");
 	if (!fileHandle)
 	{
-		yajl_free(hand);
+		yajl_free (hand);
 		ELEKTRA_SET_ERROR_GET(parentKey);
 		errno = errnosave;
 		return -1;
@@ -375,7 +375,7 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 				ELEKTRA_SET_ERROR(76, parentKey,
 						keyString(parentKey));
 				fclose (fileHandle);
-				yajl_free(hand);
+				yajl_free (hand);
 				return -1;
 			}
 			done = 1;
@@ -406,14 +406,14 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 					fileData, rd);
 			ELEKTRA_SET_ERROR(77, parentKey, (char*)str);
 			yajl_free_error(hand, str);
-			yajl_free(hand);
+			yajl_free (hand);
 			fclose (fileHandle);
 
 			return -1;
 		}
 	}
 
-	yajl_free(hand);
+	yajl_free (hand);
 	fclose(fileHandle);
 	elektraYajlParseSuppressEmpty(returned, parentKey);
 

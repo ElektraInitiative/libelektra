@@ -294,7 +294,7 @@ static void test_order(char *fileName)
 		}
 	}
 
-	free (usedOrders);
+	elektraFree (usedOrders);
 	ksDel (ks);
 	keyDel(parentKey);
 

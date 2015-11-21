@@ -74,7 +74,7 @@ void test_resolve()
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
-	free (path);
+	elektraFree (path);
 }
 
 void test_name()

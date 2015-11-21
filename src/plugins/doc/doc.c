@@ -61,7 +61,7 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 //! [doc close]
 int elektraDocClose(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 {
-	free (elektraPluginGetData(handle));
+	elektraFree (elektraPluginGetData(handle));
 
 	return 0; /* success */
 }
@@ -124,8 +124,8 @@ int elektraDocGet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 		keySetString(read, value);
 
 		ksAppendKey (returned, read);
-		free (key);
-		free (value);
+		elektraFree (key);
+		elektraFree (value);
 	}
 
 	if (feof(fp) == 0)

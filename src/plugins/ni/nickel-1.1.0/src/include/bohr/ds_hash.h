@@ -120,7 +120,7 @@ Ds_HASH_INLINE void Ds_FreeHashTable(Ds_hash_table * restrict table)
 
          t = head;
          head = head->next;
-         free(t);
+         elektraFree (t);
       }
    }
 
@@ -205,7 +205,7 @@ Ds_HASH_INLINE int Ds_RemoveHashEntry(Ds_hash_table * restrict table,
 
    if(found)
    {
-      free(entry);
+      elektraFree (entry);
       table->num--;
    }
 

@@ -41,7 +41,7 @@ void j (Key *k)
 	keyCopy (k, c);
 	if (bstring) keySetString (k, value);
 	else keySetBinary (k, value, size);
-	free (value);
+	elektraFree (value);
 	// the caller will see the changed key k
 	// with the name and metadata from c (except
 	// metadata "binary", which stayed the same)

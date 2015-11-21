@@ -45,7 +45,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 	if(!strcmp(keyName(check), "")) goto error;
 	if(!strcmp(keyName(check), "system")) goto error;
 	keyDel(check);
-	free(buffer);
+	elektraFree (buffer);
 
 	/* Be strict, don't allow any .., even if it would be ok sometimes */
 	if(strstr (filename, "..") != 0) return -1;
@@ -56,7 +56,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 
 error:
 	keyDel (check);
-	free (buffer);
+	elektraFree (buffer);
 	return -1;
 }
 
@@ -93,7 +93,7 @@ static void elektraResolveFinishByFilename(resolverHandle *p)
 	char * dup = strdup(p->filename);
 	//dirname might change the buffer, so better work on a copy
 	strcpy (p->dirname, dirname(dup));
-	free(dup);
+	elektraFree (dup);
 
 	p->tempfile = elektraMalloc (filenameSize + POSTFIX_SIZE);
 	elektraGenTempFilename(p->tempfile, p->filename);
@@ -256,7 +256,7 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 	s = getpwuid_r(geteuid(), &pwd, buf, bufsize, &result);
 	if (result == NULL)
 	{
-		free(buf);
+		elektraFree (buf);
 		if (s != 0)
 		{
 			ELEKTRA_ADD_WARNING(90, warningsKey, strerror(s));
@@ -272,7 +272,7 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 	*/
 
 	elektraResolveUsingHome(p, pwd.pw_dir, true);
-	free(buf);
+	elektraFree (buf);
 
 	return 1;
 }
@@ -414,7 +414,7 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 	strcat (p->filename, p->path);
 
 	// p->dirname might be wrong (too short), recalculate it:
-	free(p->dirname);
+	elektraFree (p->dirname);
 	elektraResolveFinishByFilename(p);
 }
 
@@ -443,7 +443,7 @@ static char *elektraGetCwd(Key *warningsKey)
 			if (errno != ERANGE)
 			{
 				// give up, we cannot handle the problem
-				free(cwd);
+				elektraFree (cwd);
 				ELEKTRA_ADD_WARNINGF(83, warningsKey, "getcwd failed with errno %d, defaulting to /", errno);
 				return 0;
 			}
@@ -495,7 +495,7 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 	if (!strcmp(dn, "/"))
 	{
 		// nothing found, so we use most specific
-		free(p->filename);
+		elektraFree (p->filename);
 		p->filename = p->path[0] == '/' ? elektraFormat("%s%s", cwd, p->path) : elektraFormat("%s/" KDB_DB_DIR "/%s", cwd, p->path);
 	}
 

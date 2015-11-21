@@ -10,6 +10,8 @@
 
 #include "kdbconfig.h"
 
+#include <kdbhelper.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,7 +42,7 @@ static inline int elektraHexcodeConvFromHex(char c)
 
 int elektraCcodeOpen(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
-	CCodeData *d = calloc (1, sizeof(CCodeData));
+	CCodeData *d = elektraCalloc (sizeof(CCodeData));
 
 	/* Store for later use...*/
 	elektraPluginSetData (handle, d);
@@ -118,8 +120,8 @@ int elektraCcodeClose(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CCodeData *d = elektraPluginGetData (handle);
 
-	free (d->buf);
-	free (d);
+	elektraFree (d->buf);
+	elektraFree (d);
 
 	return 0;
 }

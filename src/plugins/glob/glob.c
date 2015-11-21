@@ -90,7 +90,7 @@ static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection dire
 				strcpy (newstring, keyName (parentKey));
 				strcat (newstring, keyString (k));
 				keySetString (ins, newstring);
-				free (newstring);
+				elektraFree (newstring);
 			}
 			ksAppendKey (glob, ins);
 		}

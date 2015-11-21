@@ -157,8 +157,8 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 
 			if (elektraProcessPlugin(cur, &pluginNumber, &pluginName, &referenceName, errorKey) == -1)
 			{
-				free (pluginName);
-				free (referenceName);
+				elektraFree (pluginName);
+				elektraFree (referenceName);
 				ksDel (config);
 				return -1;
 			}
@@ -186,8 +186,8 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 				{
 					ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
 					/* Loading plugin did not work */
-					free (pluginName);
-					free (referenceName);
+					elektraFree (pluginName);
+					elektraFree (referenceName);
 					ksDel (config);
 					return -1;
 				}
@@ -209,15 +209,15 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
 					Note that this check is necessary, because loading the plugin could
 					fail for example at errorplugins and at a later point, for example
 					at setplugins it is tried to refer to that.*/
-					free (referenceName);
+					elektraFree (referenceName);
 					ksDel (config);
 					return -1;
 				}
 				plugins[pluginNumber] = *(Plugin**)keyValue(lookup);
 				++plugins[pluginNumber]->refcounter;
 			}
-			free (pluginName);
-			free (referenceName);
+			elektraFree (pluginName);
+			elektraFree (referenceName);
 		} else {
 			ELEKTRA_ADD_WARNING(21, errorKey, keyString(cur));
 		}
@@ -321,7 +321,7 @@ int elektraPluginClose(Plugin *handle, Key *errorKey)
 	}
 
 	ksDel(handle->config);
-	free(handle);
+	elektraFree (handle);
 
 	return rc;
 }

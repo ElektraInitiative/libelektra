@@ -106,7 +106,7 @@ Ni_PUBLIC Ni_node Ni_New(void)
    {
       if(!InitNode(n, NULL))
       {
-         free(n);
+         elektraFree (n);
          n = NULL;
       }
    }
@@ -126,7 +126,7 @@ Ni_PUBLIC void Ni_Free(Ni_node restrict n)
 
       //if it was root, it was created with malloc, so free it
       if(n == n->root)
-         free(n);
+         elektraFree (n);
       else
       {
          //otherwise, we just remove it from its parent's hash table

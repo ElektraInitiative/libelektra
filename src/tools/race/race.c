@@ -155,7 +155,7 @@ int main (int argc, char **argv)
 			if (!pwriter) return 13;
 			for (i=0; i< num_threads; i++) if (pthread_create (&pwriter[i], NULL, writer, (void *) 0) != 0) return 14;
 			for (i=0; i< num_threads; i++) pthread_join (pwriter[i],NULL);
-			free(pwriter);
+			elektraFree (pwriter);
 			return 0;
 		}
 	}

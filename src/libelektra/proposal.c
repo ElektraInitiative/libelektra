@@ -142,7 +142,7 @@ int elektraArrayIncName(Key *key)
  * Key **keyArray = calloc (ksGetSize(ks), sizeof (Key *));
  * elektraKsToMemArray (ks, keyArray);
  * ... work with the array ...
- * free (keyArray);
+ * elektraFree (keyArray);
  * @endcode
  *
  * @param ks the keyset object to work with

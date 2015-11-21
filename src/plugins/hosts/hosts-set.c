@@ -174,6 +174,6 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 	fclose (fp);
 	errno = errnosave;
-	free (keyArray);
+	elektraFree (keyArray);
 	return 1;
 }

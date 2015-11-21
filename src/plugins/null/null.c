@@ -82,7 +82,7 @@ int elektraNullSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 			strcpy (n, "@");
 			strcat (n, keyValue(k));
 			keySetString (k, n);
-			free (n);
+			elektraFree (n);
 		}
 	}
 

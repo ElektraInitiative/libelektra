@@ -61,7 +61,7 @@ void test_encode()
 	elektraCcodeEncode (test, d);
 	succeed_if (!memcmp(keyValue(test), encoded_string, sizeof(encoded_string)-1), "string not correctly encoded");
 
-	free (d);
+	elektraFree (d);
 	keyDel (test);
 }
 
@@ -80,7 +80,7 @@ void test_decode()
 	elektraCcodeDecode (test, d);
 	succeed_if (!memcmp(keyValue(test), decoded_string, sizeof(decoded_string)-1), "string not correctly encoded");
 
-	free(d);
+	elektraFree (d);
 	keyDel (test);
 }
 
@@ -99,7 +99,7 @@ void check_reversibility(const char* msg)
 	elektraCcodeDecode (encode, d);
 	compare_key(encode, decode);
 
-	free (d);
+	elektraFree (d);
 	keyDel (decode);
 	keyDel (encode);
 }
@@ -138,7 +138,7 @@ void test_decodeescape()
 	elektraCcodeDecode (test, d);
 	succeed_if (!memcmp(keyValue(test), "\\", 2), "string not correctly encoded");
 
-	free(d);
+	elektraFree (d);
 	keyDel (test);
 }
 
@@ -174,7 +174,7 @@ void test_config()
 
 	ksDel (returned);
 	ksDel (p->config);
-	free (p);
+	elektraFree (p);
 }
 
 void test_otherescape()
@@ -212,7 +212,7 @@ void test_otherescape()
 
 	ksDel (returned);
 	ksDel (p->config);
-	free (p);
+	elektraFree (p);
 }
 
 

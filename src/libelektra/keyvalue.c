@@ -519,7 +519,7 @@ ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
 	if (!dataSize || !newBinary)
 	{
 		if (key->data.v) {
-			free(key->data.v);
+			elektraFree (key->data.v);
 			key->data.v=0;
 		}
 		key->dataSize = 0;

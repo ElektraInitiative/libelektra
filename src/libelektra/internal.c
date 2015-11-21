@@ -171,7 +171,7 @@ if (elektraRealloc ((void **) & buffer, new_length) < 0) {
 #if DEBUG
 	fprintf (stderr, "Reallocation error\n");
 #endif
-	free (buffer);
+	elektraFree (buffer);
 	buffer = 0;
 	// return with error
 }

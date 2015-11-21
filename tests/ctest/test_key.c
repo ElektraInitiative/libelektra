@@ -261,7 +261,7 @@ static void test_keyHelpers()
 	parentName=elektraMalloc(parentSize);
 	keyGetParentName(key,parentName,parentSize);
 	succeed_if_same_string (parentName, "system/parent");
-	free (parentName);
+	elektraFree (parentName);
 	keyDel (key);
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
@@ -678,7 +678,7 @@ static void test_owner()
 	getBack = elektraMalloc (keyGetValueSize(key));
 	keyGetBinary(key, getBack, keyGetValueSize(key));
 	succeed_if(memcmp(getBack, array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
-	free (getBack);
+	elektraFree (getBack);
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew("user:y", KEY_END);

@@ -503,7 +503,7 @@ ssize_t keySetMeta(Key *key, const char* metaName,
 			return -1;
 		}
 
-		if (toSet->data.v) free (toSet->data.v);
+		if (toSet->data.v) elektraFree (toSet->data.v);
 		toSet->data.c = metaStringDup;
 		toSet->dataSize = metaStringSize;
 	} else {

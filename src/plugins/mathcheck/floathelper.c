@@ -53,7 +53,7 @@ double elektraEFtoF(const char *string)
 	char *sepPtr = strchr(buffer, ELEKTRA_DEFAULT_DECIMAL_POINT);
 	if(sepPtr == NULL)
 	{
-		free(buffer);
+		elektraFree (buffer);
 		return atof(string);
 	}
 	else
@@ -63,7 +63,7 @@ double elektraEFtoF(const char *string)
 		char sysSep = (locale->decimal_point)[0];
 		*sepPtr = sysSep;
 		double retval = atof(buffer);
-		free(buffer);
+		elektraFree (buffer);
 		return retval;
 	}
 }

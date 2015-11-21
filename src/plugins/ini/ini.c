@@ -41,7 +41,7 @@ static void flushCollectedComment (CallbackHandle *handle, Key *key)
 	if (handle->collectedComment)
 	{
 		keySetMeta (key, "comment", handle->collectedComment);
-		free (handle->collectedComment);
+		elektraFree (handle->collectedComment);
 		handle->collectedComment = 0;
 	}
 }
@@ -65,7 +65,7 @@ static int elektraKeyAppendLine (Key *target, const char *line)
 	strncat (buffer, line, strlen (line));
 
 	keySetString(target, buffer);
-	free (buffer);
+	elektraFree (buffer);
 	return keyGetValueSize(target);
 }
 
@@ -83,7 +83,7 @@ static Key *createUnescapedKey(Key *key, const char *name)
 			keyAddBaseName(key, newBaseName);
 		}
 	}
-	free(localString);
+	elektraFree (localString);
 	return key;
 }
 static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value, unsigned short toMeta, unsigned short lineContinuation)
@@ -310,7 +310,7 @@ void writeComments(Key* current, FILE* fh)
 			currentComment = strtok_r (0, "\n", &savePtr);
 		}
 
-		free (comments);
+		elektraFree (comments);
 	}
 }
 
@@ -330,7 +330,7 @@ void writeMultilineKey(Key *key, const char *iniName, FILE *fh)
 		fprintf (fh, "\t%s\n", result);
 	}
 
-	free (value);
+	elektraFree (value);
 }
 
 static short isSectionKey(Key *key)

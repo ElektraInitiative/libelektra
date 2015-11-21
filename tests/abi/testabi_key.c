@@ -207,7 +207,7 @@ static void test_keyNewSystem()
 	getBack = elektraMalloc (keyGetValueSize(key));
 	keyGetBinary(key, getBack, keyGetValueSize(key));
 	succeed_if(memcmp(getBack, array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
-	free (getBack);
+	elektraFree (getBack);
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew("system", KEY_END);
@@ -709,21 +709,21 @@ static void test_keyNameSlashes()
 	getBack = elektraMalloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
 	succeed_if_same_string (getBack, "user/noname");
-	free (getBack);
+	elektraFree (getBack);
 
 	keySetName (key, "user/noname");
 	succeed_if(keyGetNameSize(key) == 12, "size not correct after keySetName");
 	getBack = elektraMalloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
 	succeed_if_same_string (getBack, "user/noname");
-	free (getBack);
+	elektraFree (getBack);
 
 	keySetName (key, "no");
 	succeed_if(keyGetNameSize(key) == 1, "size not correct after keySetName");
 	getBack = elektraMalloc (1);
 	succeed_if(keyGetName(key, getBack, 1), "could not get name");
 	succeed_if_same_string (getBack, "");
-	free (getBack);
+	elektraFree (getBack);
 	keyDel (key);
 
 	key = keyNew("user/noname", KEY_END);
@@ -903,7 +903,7 @@ static void test_keyNameSlashes()
 		buf = elektraMalloc(size*sizeof(char));
 		keyGetBaseName(key, buf, size);
 		succeed_if_same_string(buf, tstKeyName[i].expectedBaseName);
-		free(buf);
+		elektraFree (buf);
 
 		/* keyGetNameSize */
 		size = keyGetNameSize(key);
@@ -914,7 +914,7 @@ static void test_keyNameSlashes()
 		buf = elektraMalloc(size*sizeof(char));
 		keyGetName(key, buf, size);
 		succeed_if_same_string (buf, tstKeyName[i].expectedKeyName);
-		free(buf);
+		elektraFree (buf);
 
 		keyDel(key);
 		keyDel(dup);

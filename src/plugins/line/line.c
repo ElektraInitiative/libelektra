@@ -55,7 +55,7 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 		read = keyDup(ksTail(returned));
 		if (elektraArrayIncName(read) == -1)
 		{
-			free (value);
+			elektraFree (value);
 			keyDel (read);
 			return -1;
 		}
@@ -63,7 +63,7 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 
 		ksAppendKey (returned, read);
 	}
-	free(value);
+	elektraFree (value);
 
 	return 1;
 }

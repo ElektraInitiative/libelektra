@@ -368,7 +368,7 @@ int ksCopy (KeySet *dest, const KeySet *source)
  *
  * Cleans all internal dynamic attributes, decrement all reference pointers
  * to all keys and then keyDel() all contained Keys,
- * and free()s the release the KeySet object memory (that was previously
+ * and elektraFree ()s the release the KeySet object memory (that was previously
  * allocated by ksNew()).
  *
  * @param ks the keyset object to work with
@@ -2132,7 +2132,7 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 	elektraKeySetName(&key, name, KEY_META_NAME|KEY_CASCADING_NAME);
 
 	found = ksLookup(ks, &key, options);
-	free (key.key);
+	elektraFree (key.key);
 	ksDel(key.meta); // sometimes owner is set
 	return found;
 }

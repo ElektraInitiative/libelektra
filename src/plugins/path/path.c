@@ -78,7 +78,7 @@ int elektraPathSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 			strcat (errmsg, " with path: ");
 			strcat (errmsg, keyValue(cur));
 			ELEKTRA_ADD_WARNING (57, parentKey, errmsg);
-			free (errmsg);
+			elektraFree (errmsg);
 			errno = errnosave;
 		}
 		else if (!strcmp(keyString(meta), "device"))

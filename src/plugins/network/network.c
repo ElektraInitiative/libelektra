@@ -90,7 +90,7 @@ int elektraNetworkSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pare
 			strcat (errmsg, " message: ");
 			strcat (errmsg, gaimsg);
 			ELEKTRA_SET_ERROR (51, parentKey, errmsg);
-			free (errmsg);
+			elektraFree (errmsg);
 			return -1;
 		}
 	}

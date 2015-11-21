@@ -12,6 +12,8 @@
 
 #include <kdbconfig.h>
 
+#include <kdbhelper.h>
+
 #include <tests_plugin.h>
 
 static void testread(const char *file)

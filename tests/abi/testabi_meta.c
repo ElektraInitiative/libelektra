@@ -125,7 +125,7 @@ static void test_size()
 				keyGetValueSize (keyGetMeta(key, "hello"))) == keyGetValueSize (keyGetMeta(key, "hello")),
 			"could not get meta");
 	succeed_if_same_string (buffer, "between");
-	free (buffer);
+	elektraFree (buffer);
 
 
 	keySetMeta(key, "hello", 0);
@@ -143,7 +143,7 @@ static void test_size()
 				keyGetValueSize (keyGetMeta(key, "hello"))) == keyGetValueSize (keyGetMeta(key, "hello")),
 			"could not get meta");
 	succeed_if_same_string (buffer, "goodbye");
-	free (buffer);
+	elektraFree (buffer);
 
 	keySetMeta(key, "empty", "");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "empty")), "");
@@ -154,7 +154,7 @@ static void test_size()
 				keyGetValueSize (keyGetMeta(key, "empty"))) == keyGetValueSize (keyGetMeta(key, "empty")),
 			"could not get meta");
 	succeed_if_same_string (buffer, "");
-	free (buffer);
+	elektraFree (buffer);
 
 	keySetMeta(key, "", "empty");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "empty");
@@ -165,7 +165,7 @@ static void test_size()
 				keyGetValueSize (keyGetMeta(key, ""))) == keyGetValueSize (keyGetMeta(key, "")),
 			"could not get meta");
 	succeed_if_same_string (buffer, "empty");
-	free (buffer);
+	elektraFree (buffer);
 
 	keySetMeta(key, "", "");
 	succeed_if_same_string (keyValue(keyGetMeta(key, "")), "");
@@ -176,7 +176,7 @@ static void test_size()
 				keyGetValueSize (keyGetMeta(key, ""))) == keyGetValueSize (keyGetMeta(key, "")),
 			"could not get meta");
 	succeed_if_same_string (buffer, "");
-	free (buffer);
+	elektraFree (buffer);
 
 	keySetMeta(key, "", 0);
 	succeed_if (keyValue(keyGetMeta(key, "")) == 0, "could not remove empty meta data");
@@ -222,7 +222,7 @@ static void j (Key *k)
 	keyCopy (k, g_c);
 	if (bstring) keySetString (k, value);
 	else keySetBinary (k, value, size);
-	free (value);
+	elektraFree (value);
 	// the caller will see the changed key k
 	// with the metadata from g_c
 }

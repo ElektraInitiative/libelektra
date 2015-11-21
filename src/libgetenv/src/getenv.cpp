@@ -21,6 +21,8 @@
 
 #include <kdbcontext.hpp>
 
+#include <kdbhelper.h>
+
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -206,9 +208,9 @@ void addLayer(string kv)
 
 void giveName(string name)
 {
-	char * n = strdup(name.c_str());
+	char * n = elektraStrDup(name.c_str());
 	std::string basename = ::basename(n);
-	free(n);
+	elektraFree (n);
 	LOG << "give name " << name << ", basename: " << basename << std::endl;
 	ksAppendKey(elektraConfig, keyNew("proc/env/layer/name", KEY_VALUE, name.c_str(), KEY_END));
 	ksAppendKey(elektraConfig, keyNew("proc/env/layer/basename", KEY_VALUE, basename.c_str(), KEY_END));

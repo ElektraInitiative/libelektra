@@ -220,10 +220,10 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 					break;
 				default:
 					ELEKTRA_SET_ERRORF(122, parentKey, "%c isn't a valid operation", prefixString[start]);
-					regfree(&regex);
+					regfree (&regex);
 					if(searchKey)
-						free(searchKey);
-					free(stack);
+						elektraFree (searchKey);
+					elektraFree (stack);
 					ksDel(ks);
 					return result;	
 					break;
@@ -239,7 +239,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 				subString[len-1] = '\0';
 				char *subPtr = (subString+1);
 				stackPtr->value = elektraEFtoF(subPtr);
-				free(subString);
+				elektraFree (subString);
 			}
 			else
 			{
@@ -252,15 +252,15 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 				if(!key)
 				{
 					ELEKTRA_SET_ERRORF(124, parentKey, "Operant key %s doesn't exist", searchKey);
-					regfree(&regex);
-					free(searchKey);
+					regfree (&regex);
+					elektraFree (searchKey);
 					ksDel(ks);
-					free(stack);
-					free(subString);
+					elektraFree (stack);
+					elektraFree (subString);
 					return result;
 				}
 				stackPtr->value = elektraEFtoF(keyString(key));
-				free(subString);
+				elektraFree (subString);
 			}
 			stackPtr->op = VAL;
 			++stackPtr;
@@ -271,8 +271,8 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		stackPtr += offset;
 		ptr += match.rm_eo;
 	}
-	regfree(&regex);
-	free(searchKey);
+	regfree (&regex);
+	elektraFree (searchKey);
 	ksDel(ks);
 	stackPtr->op = END;
 	result = doPrefixCalculation(stack, stackPtr);	
@@ -280,7 +280,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		result.op = resultOp;
 	else
 		ELEKTRA_SET_ERRORF(122, parentKey, "%s\n", prefixString);
-	free(stack);
+	elektraFree (stack);
 	return result;
 }
 

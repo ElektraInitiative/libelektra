@@ -462,21 +462,21 @@ static void clean_temp_home (void)
 	if (tmpfilename)
 	{
 		elektraUnlink (tmpfilename);
-		free (tmpfilename);
+		elektraFree (tmpfilename);
 		tmpfilename = NULL;
 	}
 
 	if (tempHomeConf)
 	{
 		rmdir (tempHomeConf);
-		free (tempHomeConf);
+		elektraFree (tempHomeConf);
 		tempHomeConf = NULL;
 	}
 
 	if (tempHome)
 	{
 		rmdir (tempHome);
-		free (tempHome);
+		elektraFree (tempHome);
 		tempHome = NULL;
 		tempHomeLen = 0;
 	}

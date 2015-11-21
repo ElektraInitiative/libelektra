@@ -80,7 +80,7 @@ int elektraTimeofdayClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	   clean?
            Fixed by using fti */
 	TimeofdayInfo *fti = elektraPluginGetData(handle);
-	free(fti);
+	elektraFree (fti);
 
 	return 0; /* success */
 }
