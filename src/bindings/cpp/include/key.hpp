@@ -477,7 +477,7 @@ inline Key::const_reverse_iterator Key::crend() const noexcept
  * @see isValid(), isNull()
  */
 inline Key::Key () :
-	key(ckdb::keyNew (0))
+	key(ckdb::keyNew (nullptr))
 {
 	operator++();
 }
@@ -735,7 +735,7 @@ ckdb::Key* Key::release ()
 	if (key)
 	{
 		operator --();
-		key = 0;
+		key = nullptr;
 	}
 	return ret;
 }
@@ -970,7 +970,7 @@ inline Key::operator bool() const
  */
 inline bool Key::isNull() const
 {
-	return key == 0;
+	return key == nullptr;
 }
 
 /**
@@ -1439,7 +1439,7 @@ inline void Key::setMeta(const std::string &metaName, T x)
  */
 inline void Key::delMeta(const std::string &metaName)
 {
-	ckdb::keySetMeta(key, metaName.c_str(), 0);
+	ckdb::keySetMeta(key, metaName.c_str(), nullptr);
 }
 
 /**

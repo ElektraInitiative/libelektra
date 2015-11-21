@@ -21,27 +21,27 @@ public:
 	RemoveCommand();
 	~RemoveCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
 		return "r";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "<name>";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Remove key(s) from key database.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return "";
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

@@ -60,13 +60,13 @@ public:
 	 * @brief The default constructor.
 	 * @param parentModel An optional parent.
 	 */
-	explicit TreeViewModel(QObject* parentModel =  0);
+	explicit TreeViewModel(QObject* parentModel =  nullptr);
 
 	/**
 	 * @brief Constructor for root node.
 	 * @param parentModel An optional parent.
 	 */
-	explicit TreeViewModel(kdb::KDB * kdb, QObject* parentModel =  0);
+	explicit TreeViewModel(kdb::KDB * kdb, QObject* parentModel =  nullptr);
 
 	/**
 	 * @brief The mandatory copy constructor.
@@ -88,17 +88,17 @@ public:
 	/**
 	 * @copydoc QAbstractListModel::rowCount()
 	 */
-	Q_INVOKABLE int             rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
+	Q_INVOKABLE int             rowCount(const QModelIndex& parentIndex = QModelIndex()) const override;
 
 	/**
 	 * @copydoc QAbstractListModel::data()
 	 */
-	QVariant                    data(const QModelIndex& idx, int role = Qt::DisplayRole) const;
+	QVariant                    data(const QModelIndex& idx, int role = Qt::DisplayRole) const override;
 
 	/**
 	 * @copydoc QAbstractListModel::setData()
 	 */
-	bool                        setData(const QModelIndex& idx, const QVariant& modelData, int role = Qt::EditRole);
+	bool                        setData(const QModelIndex& idx, const QVariant& modelData, int role = Qt::EditRole) override;
 
 	/**
 	 * \copydoc QAbstractListModel::insertRow()
@@ -113,7 +113,7 @@ public:
 	/**
 	 * @copydoc QAbstractListModel::flags()
 	 */
-	Qt::ItemFlags               flags(const QModelIndex& idx) const;
+	Qt::ItemFlags               flags(const QModelIndex& idx) const override;
 
 	/**
 	 * @brief Populates this TreeViewModel with a keyset. The root keys (system, user and spec) will be recreated.
@@ -298,7 +298,7 @@ private:
 	kdb::tools::merging::MergeConflictStrategy*	getMergeStrategy(const QString &mergeStrategy);
 
 protected:
-	QHash<int, QByteArray>						roleNames() const;
+	QHash<int, QByteArray>						roleNames() const override;
 
 signals:										//Use "Error", "Warning" and "Information" as title to display the according icon
 	/**

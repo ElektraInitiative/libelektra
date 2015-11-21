@@ -28,17 +28,17 @@ public:
 	 * @param target The ConfigNode that is the new parent node of the copied ConfigNode.
 	 * @param parent
 	 */
-	explicit CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand* parent = 0);
+	explicit CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand* parent = nullptr);
 
 	/**
 	 * @brief undo
 	 */
-	virtual void undo();
+	virtual void undo() override;
 
 	/**
 	 * @brief redo
 	 */
-	virtual void redo();
+	virtual void redo() override;
 
 private:
 	ConfigNodePtr m_source;

@@ -87,7 +87,7 @@ TEST(SameMountpoint, wrongMountpoints)
 	KeySet ks;
 
 	Backend b1;
-	ASSERT_THROW(b1.setMountpoint(Key(static_cast<ckdb::Key*>(0)), ks), kdb::tools::MountpointAlreadyInUseException);
+	ASSERT_THROW(b1.setMountpoint(Key(static_cast<ckdb::Key*>(nullptr)), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ(b1.getMountpoint(), "");
 	ASSERT_THROW(b1.setMountpoint(Key("", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ(b1.getMountpoint(), "");

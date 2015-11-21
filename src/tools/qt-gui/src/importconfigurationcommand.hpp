@@ -30,10 +30,10 @@ public:
 	 * @param data The data needed to undo/redo this command.
 	 * @param parent An optional parent command.
 	 */
-	explicit ImportConfigurationCommand(TreeViewModel* model, int index, DataContainer *data, QUndoCommand* parent = 0);
+	explicit ImportConfigurationCommand(TreeViewModel* model, int index, DataContainer *data, QUndoCommand* parent = nullptr);
 
-	virtual void undo();
-	virtual void redo();
+	virtual void undo() override;
+	virtual void redo() override;
 
 private:
 	TreeViewModel*	m_model;

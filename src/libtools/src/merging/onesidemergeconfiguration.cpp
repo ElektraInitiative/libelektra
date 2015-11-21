@@ -21,7 +21,7 @@ namespace merging
 void OneSideMergeConfiguration::configureMerger(ThreeWayMerge& merger)
 {
 	AutoMergeConfiguration::configureMerger(merger);
-	OneSideStrategy *oneSideStrategy = new OneSideStrategy(winningSide);
+	auto oneSideStrategy = new OneSideStrategy(winningSide);
 	allocatedStrategies.push_back(oneSideStrategy);
 	merger.addConflictStrategy(oneSideStrategy);
 }

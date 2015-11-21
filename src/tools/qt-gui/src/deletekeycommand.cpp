@@ -20,7 +20,7 @@ DeleteKeyCommand::DeleteKeyCommand(const QString& type, TreeViewModel* model, in
 	if (!m_node->getPath().contains('/'))
 	{
 		m_isRoot = true;
-		m_root = ConfigNodePtr(new ConfigNode(m_node->getPath(), m_node->getPath(), 0, m_model));
+		m_root = ConfigNodePtr(new ConfigNode(m_node->getPath(), m_node->getPath(), nullptr, m_model));
 	}
 }
 

@@ -27,10 +27,10 @@ public:
 	 * @param index The index of the ConfigNode that is deleted.
 	 * @param parent An optional parent command.
 	 */
-	explicit DeleteKeyCommand(const QString& type, TreeViewModel* model, int index, QUndoCommand* parent = 0);
+	explicit DeleteKeyCommand(const QString& type, TreeViewModel* model, int index, QUndoCommand* parent = nullptr);
 
-	virtual void undo();
-	virtual void redo();
+	virtual void undo() override;
+	virtual void redo() override;
 
 private:
 	TreeViewModel*  m_model;

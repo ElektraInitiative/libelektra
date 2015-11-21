@@ -21,11 +21,11 @@ namespace merging
 
 void OverwriteMergeConfiguration::configureMerger(ThreeWayMerge& merger)
 {
-	MetaMergeStrategy *metaMergeStrategy = new MetaMergeStrategy(merger);
+	auto metaMergeStrategy = new MetaMergeStrategy(merger);
 	allocatedStrategies.push_back(metaMergeStrategy);
 	merger.addConflictStrategy(metaMergeStrategy);
 
-	OneSideStrategy *oneSideStrategy = new OneSideStrategy(winningSide);
+	auto oneSideStrategy = new OneSideStrategy(winningSide);
 	allocatedStrategies.push_back(oneSideStrategy);
 	merger.addConflictStrategy(oneSideStrategy);
 }

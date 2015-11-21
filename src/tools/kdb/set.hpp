@@ -20,22 +20,22 @@ public:
 	SetCommand();
 	~SetCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
 		return "vN";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "<name> [<value>]";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Set the value of an individual key.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return
 			"If no value is given, it will be set to a null-value\n"
@@ -43,7 +43,7 @@ public:
 			;
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

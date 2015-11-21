@@ -178,9 +178,9 @@ bool Plugins::validateProvided() const
 std::vector<std::string> Plugins::getNeededMissing() const
 {
 	std::vector<std::string> ret;
-	for (size_t i=0; i< needed.size(); ++i)
+	for (auto & elem : needed)
 	{
-		std::string need = needed[i];
+		std::string need = elem;
 		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), need) == alreadyProvided.end())
 		{
 			ret.push_back(need);
@@ -192,9 +192,9 @@ std::vector<std::string> Plugins::getNeededMissing() const
 std::vector<std::string> Plugins::getRecommendedMissing() const
 {
 	std::vector<std::string> ret;
-	for (size_t i=0; i< recommended.size(); ++i)
+	for (auto & elem : recommended)
 	{
-		std::string recommend = recommended[i];
+		std::string recommend = elem;
 		if (std::find(alreadyProvided.begin(), alreadyProvided.end(), recommend) == alreadyProvided.end())
 		{
 			ret.push_back(recommend);
@@ -457,7 +457,7 @@ void ErrorPlugins::serialise (Key &baseKey, KeySet &ret)
 
 	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
-		if (plugins[i] == 0) continue;
+		if (plugins[i] == nullptr) continue;
 		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
@@ -476,7 +476,7 @@ void GetPlugins::serialise (Key &baseKey, KeySet &ret)
 
 	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
-		if (plugins[i] == 0) continue;
+		if (plugins[i] == nullptr) continue;
 		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
@@ -496,7 +496,7 @@ void SetPlugins::serialise (Key &baseKey, KeySet &ret)
 
 	for (int i=0; i< NR_OF_PLUGINS; ++i)
 	{
-		if (plugins[i] == 0) continue;
+		if (plugins[i] == nullptr) continue;
 		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;

@@ -31,7 +31,7 @@ namespace merging
 class AutoMergeStrategy : public MergeConflictStrategy
 {
 public:
-	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result);
+	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result) override;
 };
 
 }

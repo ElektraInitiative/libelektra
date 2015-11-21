@@ -74,11 +74,11 @@ protected:
 	{
 	}
 
-	virtual void SetUp()
+	virtual void SetUp() override
 	{
 	}
 
-	virtual void TearDown()
+	virtual void TearDown() override
 	{
 	}
 

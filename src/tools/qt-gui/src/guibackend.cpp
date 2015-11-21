@@ -22,7 +22,7 @@ using namespace kdb::tools;
 
 GUIBackend::GUIBackend(QObject *parentBackend) :
 	QObject(parentBackend),
-	m_backend(NULL)
+	m_backend(nullptr)
 {
 	m_pluginConfigModel = new TreeViewModel;
 	resetModel();

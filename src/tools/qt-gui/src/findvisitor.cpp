@@ -9,9 +9,9 @@
 #include "findvisitor.hpp"
 #include "treeviewmodel.hpp"
 
-FindVisitor::FindVisitor(TreeViewModel *searchResults, const QString &term) :
+FindVisitor::FindVisitor(TreeViewModel *searchResults, QString term) :
 	m_searchResults(searchResults),
-	m_term(term)
+	m_term(std::move(term))
 
 {
 }

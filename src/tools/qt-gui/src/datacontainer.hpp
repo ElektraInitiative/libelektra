@@ -25,7 +25,7 @@ public:
 	 * @brief The default constructor.
 	 * @param parentContainer An optional parent object.
 	 */
-	explicit DataContainer(QObject *parentContainer = 0) : QObject(parentContainer) {}
+	explicit DataContainer(QObject *parentContainer = nullptr) : QObject(parentContainer) {}
 
 	/**
 	 * @brief The mandatory copy construcor-

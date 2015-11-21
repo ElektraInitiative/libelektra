@@ -90,7 +90,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 			parentKey,
 			"String %s of %s did not start with #<number><space>",
 			configString.c_str(), keyName(configKey));
-		return 0;
+		return nullptr;
 	}
 
 	int ret = regcomp(&regex, configString.c_str()+3, REG_EXTENDED);
@@ -104,7 +104,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 			"Could not compile regex %s, because: %s",
 			configString.c_str()+3, buffer);
 		regfree (&regex);
-		return 0;
+		return nullptr;
 	}
 
 
@@ -112,7 +112,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 
 	if (ret == REG_NOMATCH)
 	{
-		return 0;
+		return nullptr;
 	}
 
 	if (ret != 0)
@@ -124,7 +124,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 			"Regex exec returned error (not in manual for linux), because: %s",
 			buffer);
 		regfree (&regex);
-		return 0;
+		return nullptr;
 	}
 
 	std::string keyname;
@@ -242,7 +242,7 @@ int elektraRegexstoreGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 	ksNext(conf); // skip root
 	do {
 		int offset = 0;
-		Key *toAppend = 0;
+		Key *toAppend = nullptr;
 		do
 		{
 			toAppend = elektraRegexstoreProcess(

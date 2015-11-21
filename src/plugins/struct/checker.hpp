@@ -49,9 +49,9 @@ public:
 		: config(config_)
 	{}
 
-	void buildup (Factory &f, std::string const& templateParameter);
+	void buildup (Factory &f, std::string const& templateParameter) override;
 
-	void check(kdb::KeySet &ks)
+	void check(kdb::KeySet &ks) override
 	{
 		config.rewind();
 
@@ -84,9 +84,9 @@ class ListChecker : public Checker
 	CheckerPtr structure;
 
 public:
-	void buildup (Factory &f, std::string const& templateParameter);
+	void buildup (Factory &f, std::string const& templateParameter) override;
 
-	void check (kdb::KeySet &ks)
+	void check (kdb::KeySet &ks) override
 	{
 		kdb::Key k;
 		kdb::KeySet ks2 (ks.dup());

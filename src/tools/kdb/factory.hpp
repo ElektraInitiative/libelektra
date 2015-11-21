@@ -54,7 +54,7 @@ public:
 template <class T>
 class Cnstancer: public Instancer
 {
-	virtual T* get()
+	virtual T* get() override
 	{
 		return new T();
 	}
@@ -97,13 +97,9 @@ public:
 
 	~Factory()
 	{
-		for (
-			std::map<std::string,Instancer*>::iterator it =
-			m_factory.begin();
-			it != m_factory.end();
-			it++)
+		for (auto & elem : m_factory)
 		{
-			delete it->second;
+			delete elem.second;
 		}
 	}
 
@@ -111,15 +107,11 @@ public:
 	std::vector<std::string> getCommands()
 	{
 		std::vector<std::string> ret;
-		for (
-			std::map<std::string,Instancer*>::iterator it =
-			m_factory.begin();
-			it != m_factory.end();
-			it++)
+		for (auto & elem : m_factory)
 		{
-			std::string text = it->first;
+			std::string text = elem.first;
 			text+= "\t";
-			Command * cmd = it->second->get();
+			Command * cmd = elem.second->get();
 			text+= cmd->getShortHelpText();
 			delete cmd;
 			ret.push_back(text);

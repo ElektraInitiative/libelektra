@@ -28,7 +28,7 @@ using namespace kdb::tools::merging;
 
 TreeViewModel::TreeViewModel(QObject* parentModel) :
 	m_root("/", KEY_END),
-	m_kdb(0),
+	m_kdb(nullptr),
 	m_base()
 {
 	Q_UNUSED(parentModel);
@@ -341,13 +341,13 @@ QVariantMap TreeViewModel::get(const int& idx) const
 
 QVariant TreeViewModel::find(const QString& term)
 {
-	TreeViewModel* searchResults = new TreeViewModel;
+	auto  searchResults = new TreeViewModel;
 	FindVisitor fVisit(searchResults, term);
 	accept(fVisit);
 
 	if (searchResults->rowCount() == 0)
 	{
-		searchResults->model().append(ConfigNodePtr(new ConfigNode("NotfoundNode", tr("There were no results matching your query."), 0, this)));
+		searchResults->model().append(ConfigNodePtr(new ConfigNode("NotfoundNode", tr("There were no results matching your query."), nullptr, this)));
 	}
 
 	QQmlEngine::setObjectOwnership(searchResults, QQmlApplicationEngine::CppOwnership);
@@ -459,7 +459,7 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 		if (isLeaf)
 			newNode = ConfigNodePtr(new ConfigNode(name, (node->getPath() + "/" + name), key, node->getChildren()));
 		else
-			newNode = ConfigNodePtr(new ConfigNode(name, (node->getPath() + "/" + name), NULL, node->getChildren()));
+			newNode = ConfigNodePtr(new ConfigNode(name, (node->getPath() + "/" + name), nullptr, node->getChildren()));
 
 		node->appendChild(newNode);
 
@@ -486,19 +486,19 @@ void TreeViewModel::populateModel(KeySet const & keySet)
 		switch (ns)
 		{
 		case KEY_NS_SPEC:
-			toAdd = ConfigNodePtr(new ConfigNode("spec", "spec", 0, this));
+			toAdd = ConfigNodePtr(new ConfigNode("spec", "spec", nullptr, this));
 			break;
 		case KEY_NS_PROC:
 			// TODO: add generic commandline parsing
 			break;
 		case KEY_NS_DIR:
-			toAdd = ConfigNodePtr(new ConfigNode("dir", "dir", 0, this));
+			toAdd = ConfigNodePtr(new ConfigNode("dir", "dir", nullptr, this));
 			break;
 		case KEY_NS_USER:
-			toAdd = ConfigNodePtr(new ConfigNode("user", "user", 0, this));
+			toAdd = ConfigNodePtr(new ConfigNode("user", "user", nullptr, this));
 			break;
 		case KEY_NS_SYSTEM:
-			toAdd = ConfigNodePtr(new ConfigNode("system", "system", 0, this));
+			toAdd = ConfigNodePtr(new ConfigNode("system", "system", nullptr, this));
 			break;
 		case KEY_NS_EMPTY:
 			break;
@@ -734,7 +734,7 @@ void TreeViewModel::refresh()
 
 QString TreeViewModel::getCurrentArrayNo() const
 {
-	ConfigNodePtr max(NULL);
+	ConfigNodePtr max(nullptr);
 
 	foreach(ConfigNodePtr node, m_model){
 		if (node->getName().startsWith("#")){
@@ -800,9 +800,9 @@ QStringList TreeViewModel::getSplittedKeyname(const Key &key)
 {
 	QStringList names;
 
-	for (Key::iterator i = key.begin(); i != key.end(); ++i)
+	for (auto && elem : key)
 	{
-		names.append(QString::fromStdString(*i));
+		names.append(QString::fromStdString(elem));
 	}
 
 	return names;
@@ -824,9 +824,9 @@ MergeConflictStrategy *TreeViewModel::getMergeStrategy(const QString &mergeStrat
 	else if (mergeStrategy == "Base")
 		return new OneSideStrategy(BASE);
 	else if (mergeStrategy == "None")
-		return NULL;
+		return nullptr;
 
-	return NULL;
+	return nullptr;
 }
 
 void TreeViewModel::showConfigNodeMessage(QString title, QString text, QString detailedText)

@@ -27,7 +27,7 @@ public:
 	 * @brief GUIBackend The default constructor.
 	 * @param parentBackend An optional parent backend.
 	 */
-	explicit GUIBackend(QObject *parentBackend = 0);
+	explicit GUIBackend(QObject *parentBackend = nullptr);
 
 	/**
 	 * @brief GUIBackend The mandatory copy constructor.

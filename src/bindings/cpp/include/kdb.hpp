@@ -130,7 +130,7 @@ inline void KDB::open (Key &errorKey)
 inline void KDB::close (Key & errorKey) throw()
 {
 	ckdb::kdbClose(handle, errorKey.getKey());
-	handle = 0;
+	handle = nullptr;
 }
 
 /**

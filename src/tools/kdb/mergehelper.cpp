@@ -43,18 +43,18 @@ MergeHelper::MergeHelper()
 MergeHelper::~MergeHelper()
 {
 	vector<MergeConfiguration *> configurations = getAllConfigurations();
-	for (vector<MergeConfiguration *>::iterator it = configurations.begin(); it != configurations.end (); ++it)
+	for (auto & configuration : configurations)
 	{
-		delete (*it);
+		delete (configuration);
 	}
 }
 
 vector<MergeConfiguration *> MergeHelper::getAllConfigurations()
 {
 	vector<MergeConfiguration *> result;
-	for (map<string, MergeConfiguration *>::iterator it = configurationMap.begin (); it != configurationMap.end (); ++it)
+	for (auto & elem : configurationMap)
 	{
-		result.push_back ((*it).second);
+		result.push_back ((elem).second);
 	}
 
 	return result;
@@ -63,9 +63,9 @@ vector<MergeConfiguration *> MergeHelper::getAllConfigurations()
 string MergeHelper::getConfigurationList()
 {
 	ostringstream oss;
-	for (map<string, MergeConfiguration *>::iterator it = configurationMap.begin (); it != configurationMap.end (); ++it)
+	for (auto & elem : configurationMap)
 	{
-		oss << (*it).first << ",";
+		oss << (elem).first << ",";
 	}
 
 	return oss.str ();

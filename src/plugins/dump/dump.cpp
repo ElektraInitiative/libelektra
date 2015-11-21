@@ -28,7 +28,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 	ckdb::KeySet *metacopies = ckdb::ksNew(0, KS_END);
 
 	ksRewind(ks);
-	while ((cur = ksNext(ks)) != 0)
+	while ((cur = ksNext(ks)) != nullptr)
 	{
 		size_t namesize = ckdb::keyGetNameSize(cur);
 		size_t valuesize = ckdb::keyGetValueSize(cur);
@@ -40,7 +40,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 		const ckdb::Key *meta;
 		ckdb::keyRewindMeta(cur);
-		while ((meta = ckdb::keyNextMeta(cur)) != 0)
+		while ((meta = ckdb::keyNextMeta(cur)) != nullptr)
 		{
 			std::stringstream ss;
 			ss << "user/" << meta; // use the address of pointer as name
@@ -89,7 +89,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 {
-	ckdb::Key *cur = 0;
+	ckdb::Key *cur = nullptr;
 
 	std::vector<char> namebuffer(4048);
 	std::vector<char> valuebuffer(4048);
@@ -122,7 +122,7 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 		}
 		else if (command == "keyNew")
 		{
-			cur = ckdb::keyNew(0);
+			cur = ckdb::keyNew(nullptr);
 
 			ss >> namesize;
 			ss >> valuesize;
@@ -171,7 +171,7 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 		else if (command == "keyEnd")
 		{
 			ckdb::ksAppendKey(ks, cur);
-			cur = 0;
+			cur = nullptr;
 		}
 		else if (command == "ksEnd")
 		{

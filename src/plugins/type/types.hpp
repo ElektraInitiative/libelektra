@@ -37,7 +37,7 @@ public:
 class AnyType : public Type
 {
 public:
-	bool check(Key)
+	bool check(Key) override
 	{
 		return true;
 	}
@@ -46,7 +46,7 @@ public:
 class EmptyType : public Type
 {
 public:
-	bool check(Key k)
+	bool check(Key k) override
 	{
 		return k.getString().empty();
 	}
@@ -55,7 +55,7 @@ public:
 class StringType : public Type
 {
 public:
-	bool check(Key k)
+	bool check(Key k) override
 	{
 		return !k.getString().empty();
 	}
@@ -65,7 +65,7 @@ template <typename T>
 class TType : public Type
 {
 public:
-	bool check(Key k)
+	bool check(Key k) override
 	{
 		istringstream i (k.getString());
 		i.imbue (locale("C"));
@@ -88,7 +88,7 @@ template <typename T>
 class RType : public Type
 {
 public:
-	bool check(Key k)
+	bool check(Key k) override
 	{
 		istringstream i (k.getString());
 		i.imbue (locale("C"));
@@ -116,7 +116,7 @@ template <typename T>
 class MType : public Type
 {
 public:
-	bool check(Key k)
+	bool check(Key k) override
 	{
 		istringstream i (k.getString());
 		i.imbue (locale("C"));
@@ -173,7 +173,7 @@ public:
 		choices.insert("adfs"); choices.insert("affs"); choices.insert("autofs"); choices.insert("cifs"); choices.insert("coda"); choices.insert("coherent"); choices.insert("cramfs"); choices.insert("debugfs"); choices.insert("devpts"); choices.insert("efs");  choices.insert("ext"); choices.insert("ext2"); choices.insert("ext3"); choices.insert("ext4"); choices.insert("hfs");  choices.insert("hfsplus");  choices.insert("hpfs"); choices.insert("iso9660"); choices.insert("jfs"); choices.insert("minix"); choices.insert("msdos"); choices.insert("ncpfs"); choices.insert("nfs"); choices.insert("nfs4"); choices.insert("ntfs"); choices.insert("proc"); choices.insert("qnx4"); choices.insert("ramfs"); choices.insert("reiserfs"); choices.insert("romfs"); choices.insert("smbfs"); choices.insert("sysv"); choices.insert("tmpfs"); choices.insert("udf"); choices.insert("ufs"); choices.insert("umsdos"); choices.insert("usbfs"); choices.insert("vfat"); choices.insert("xenix"); choices.insert("xfs"); choices.insert("xiafs");
 	}
 
-	bool check(Key k)
+	bool check(Key k) override
 	{
 		std::string label = k.getString();
 		size_t oldpos = 0;

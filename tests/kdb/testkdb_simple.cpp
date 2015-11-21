@@ -24,12 +24,12 @@ protected:
 	Simple() : namespaces()
 	{}
 
-	virtual void SetUp()
+	virtual void SetUp() override
 	{
 		mp.reset(new testing::Mountpoint(testRoot, configFile));
 	}
 
-	virtual void TearDown()
+	virtual void TearDown() override
 	{
 		mp.reset();
 	}

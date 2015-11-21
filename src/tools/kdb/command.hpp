@@ -22,7 +22,7 @@ class Cmdline;
 class CommandException : public std::exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "A situation had a appeared where the command had to abort";
 	}
@@ -31,7 +31,7 @@ public:
 class CommandAbortException : public CommandException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "Command aborted";
 	}

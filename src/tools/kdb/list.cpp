@@ -25,9 +25,9 @@ int ListCommand::execute(Cmdline const& cl)
 
 	if (cl.verbose) cout << "number of all plugins: " << plugins.size() << endl;
 
-	for (size_t i=0; i<plugins.size(); ++i)
+	for (auto & plugin : plugins)
 	{
-		std::cout << plugins[i];
+		std::cout << plugin;
 		if (cl.null)
 		{
 			cout << '\0';

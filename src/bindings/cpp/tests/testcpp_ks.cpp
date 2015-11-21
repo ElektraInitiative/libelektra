@@ -139,7 +139,7 @@ TEST(ks, iterate)
 	succeed_if (!ks3.next(), "no more key");
 	succeed_if (!ks3.next(), "no more key");
 
-	Key null = static_cast<ckdb::Key*>(0);
+	Key null = static_cast<ckdb::Key*>(nullptr);
 	succeed_if (!null, "null key");
 
 	ks3.rewind();
@@ -725,7 +725,7 @@ TEST(ks, release)
 
 	ks = ckdb::ksNew (5, ckdb::keyNew("user/abc", KEY_END), KS_END);
 	rcall (ks);
-	succeed_if (ckdb::ksLookupByName(ks, "user/xxx", 0) != 0, "could not find key");
+	succeed_if (ckdb::ksLookupByName(ks, "user/xxx", 0) != nullptr, "could not find key");
 	ckdb::ksDel (ks);
 }
 

@@ -37,7 +37,7 @@ public:
 	 * @param key
 	 * @param parentModel
 	 */
-	explicit ConfigNode(const QString& name, const QString& path, const kdb::Key& key, TreeViewModel* parentModel);
+	explicit ConfigNode(QString  name, QString  path, const kdb::Key& key, TreeViewModel* parentModel);
 	/// Needed by Qt. This copy constructor is supposed to create a DEEP COPY.
 	ConfigNode(const ConfigNode& other);
 	/// Needed by Qt/QSharedPtr

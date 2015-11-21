@@ -30,7 +30,7 @@ public:
 	 * @brief GUISettings The default constructor
 	 * @param parentGUISettings
 	 */
-	explicit GUISettings(QObject *parentGUISettings = 0);
+	explicit GUISettings(QObject *parentGUISettings = nullptr);
 
 	/**
 	 * @brief GUISettings The copy contructor. Mandatory.

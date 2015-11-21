@@ -73,10 +73,10 @@ namespace
 class KeyValueLayer : public kdb::Layer
 {
 public:
-	KeyValueLayer(std::string const & key, std::string const & value_) :
-		m_key(key), m_value(value_) {}
-	std::string id() const { return m_key; }
-	std::string operator()() const { return m_value; }
+	KeyValueLayer(std::string  key, std::string  value_) :
+		m_key(std::move(key)), m_value(std::move(value_)) {}
+	std::string id() const override { return m_key; }
+	std::string operator()() const override { return m_value; }
 private:
 	std::string m_key;
 	std::string m_value;
@@ -254,12 +254,12 @@ void parseArgs(int* argc, char** argv)
 			// ignore but consume all others
 
 			// we consumed a parameter
-			argv[i] = 0;
+			argv[i] = nullptr;
 		}
 	}
 	char **oldEnd = &argv[length];
-	char **newEnd = remove_if<char**>(argv, oldEnd, [](char *c) {return c==0;});
-	*newEnd = 0;
+	char **newEnd = remove_if<char**>(argv, oldEnd, [](char *c) {return c==nullptr;});
+	*newEnd = nullptr;
 	const size_t toSubtract = oldEnd-newEnd;
 	*argc -= toSubtract;
 }
@@ -287,7 +287,7 @@ void parseEnvironment()
 {
 	const string prefix = "ELEKTRA_";
 	char** env;
-	for (env = environ; *env != 0; env++)
+	for (env = environ; *env != nullptr; env++)
 	{
 		std::string argument = *env;
 		if (argument.substr(0, prefix.size()) == prefix)
@@ -329,7 +329,7 @@ void elektraSingleCleanup()
 
 void applyOptions()
 {
-	Key *k = 0;
+	Key *k = nullptr;
 
 	elektraLog.reset();
 	if ((k = ksLookupByName(elektraConfig, "/env/option/debug", 0)) && !keyIsBinary(k))
@@ -360,7 +360,7 @@ void applyOptions()
 #else
 # warning Your system does not provide clearenv, this might be a security problem
 #endif
-		environ = NULL;
+		environ = nullptr;
 	}
 
 	elektraReloadTimeout = std::chrono::milliseconds::zero();
@@ -423,7 +423,7 @@ extern "C" void elektraClose()
 		kdbClose(elektraRepo, elektraParentKey);
 		ksDel(elektraConfig);
 		keyDel(elektraParentKey);
-		elektraRepo = 0;
+		elektraRepo = nullptr;
 	}
 	elektraUnlockMutex();
 }
@@ -502,13 +502,13 @@ char *elektraGetEnvKey(std::string const& fullName, bool & finish)
 	{
 		LOG << " found " << fullName << ": " << keyString(key) << endl;
 		finish = true;
-		if (keyIsBinary(key)) return 0;
+		if (keyIsBinary(key)) return nullptr;
 		return const_cast<char*>(keyString(key));
 	}
 
 	finish = false;
 	LOG << " tried " << fullName << "," ;
-	return 0;
+	return nullptr;
 }
 
 
@@ -557,7 +557,7 @@ char *elektraGetEnv(const char * cname, gfcn origGetenv)
 
 	std::string name = cname;
 	bool finish = false;
-	char * ret = 0;
+	char * ret = nullptr;
 	ret = elektraGetEnvKey("/env/override/"+name, finish);
 	if (finish) return ret;
 
@@ -572,7 +572,7 @@ char *elektraGetEnv(const char * cname, gfcn origGetenv)
 	if (finish) return ret;
 
 	LOG << " nothing found" << endl;
-	return 0;
+	return nullptr;
 }
 
 /*
@@ -598,13 +598,13 @@ extern "C" void* elektraMalloc (size_t size)
 char *elektraBootstrapGetEnv(const char *name)
 {
 	int len = strlen(name);
-	if (environ == NULL || len == 0)
+	if (environ == nullptr || len == 0)
 	{
-		return 0;
+		return nullptr;
 	}
 
 	char** env;
-	for (env = environ; *env != 0; env++)
+	for (env = environ; *env != nullptr; env++)
 	{
 		if (!strncmp(*env, name, len))
 		{
@@ -615,12 +615,12 @@ char *elektraBootstrapGetEnv(const char *name)
 		}
 	}
 
-	return 0;
+	return nullptr;
 }
 
 char *elektraBootstrapSecureGetEnv(const char *name)
 {
-	return (geteuid() != getuid() || getegid() != getgid()) ? NULL : elektraBootstrapGetEnv(name);
+	return (geteuid() != getuid() || getegid() != getgid()) ? nullptr : elektraBootstrapGetEnv(name);
 }
 
 extern "C" char *getenv(const char *name) // throw ()

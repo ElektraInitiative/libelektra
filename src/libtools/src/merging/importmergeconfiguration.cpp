@@ -22,15 +22,15 @@ namespace merging
 
 void ImportMergeConfiguration::configureMerger(ThreeWayMerge& merger)
 {
-	MetaMergeStrategy *metaMergeStrategy = new MetaMergeStrategy(merger);
+	auto metaMergeStrategy = new MetaMergeStrategy(merger);
 	allocatedStrategies.push_back(metaMergeStrategy);
 	merger.addConflictStrategy(metaMergeStrategy);
 
-	NewKeyStrategy *newKeyStrategy = new NewKeyStrategy();
+	auto newKeyStrategy = new NewKeyStrategy();
 	allocatedStrategies.push_back(newKeyStrategy);
 	merger.addConflictStrategy(newKeyStrategy);
 
-	OneSideValueStrategy *oneSideValueStrategy = new OneSideValueStrategy(THEIRS);
+	auto oneSideValueStrategy = new OneSideValueStrategy(THEIRS);
 	allocatedStrategies.push_back(oneSideValueStrategy);
 	merger.addConflictStrategy(oneSideValueStrategy);
 }

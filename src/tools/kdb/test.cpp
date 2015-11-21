@@ -70,13 +70,13 @@ void TestCommand::doStringTest()
 	for (int i=1; i<256; ++i) teststrings.back() += " very very long, but only text ... ";
 
 
-	for (size_t i = 0; i< teststrings.size(); ++i)
+	for (auto & teststring : teststrings)
 	{
 		{
 			KDB kdb;
 			Key t = root.dup();
 			t.addBaseName ("string");
-			t.setString (teststrings[i]);
+			t.setString (teststring);
 
 			KeySet basic;
 			basic.append(t);
@@ -106,12 +106,12 @@ void TestCommand::doStringTest()
 			}
 
 			nrTest ++;
-			if (res.getString() != teststrings[i])
+			if (res.getString() != teststring)
 			{
 				nrError ++;
 				cerr << "String test failed (value is not equal)" << endl;
 				cerr << "We got: \"" << res.getString() << "\"" << endl;
-				cerr << "We wanted: \"" <<  teststrings[i] << "\"" << endl;
+				cerr << "We wanted: \"" <<  teststring << "\"" << endl;
 			}
 		}
 	}
@@ -133,13 +133,13 @@ void TestCommand::doUmlautsTest()
 	}
 
 
-	for (size_t i = 0; i< teststrings.size(); ++i)
+	for (auto & teststring : teststrings)
 	{
 		{
 			KDB kdb;
 			Key t = root.dup();
 			t.addBaseName ("string");
-			t.setString (teststrings[i]);
+			t.setString (teststring);
 
 			KeySet basic;
 			basic.append(t);
@@ -169,12 +169,12 @@ void TestCommand::doUmlautsTest()
 			}
 
 			nrTest ++;
-			if (res.getString() != teststrings[i])
+			if (res.getString() != teststring)
 			{
 				nrError ++;
 				cerr << "String test failed (value is not equal)" << endl;
 				cerr << "We got: \"" << res.getString() << "\"" << endl;
-				cerr << "We wanted: \"" <<  teststrings[i] << "\"" << endl;
+				cerr << "We wanted: \"" <<  teststring << "\"" << endl;
 			}
 		}
 	}
@@ -209,13 +209,13 @@ void TestCommand::doBinaryTest()
 	}
 
 
-	for (size_t i = 0; i< teststrings.size(); ++i)
+	for (auto & teststring : teststrings)
 	{
 		{
 			KDB kdb;
 			Key t = root.dup();
 			t.addBaseName ("binary");
-			t.setBinary(teststrings[i].c_str(), teststrings[i].length());
+			t.setBinary(teststring.c_str(), teststring.length());
 
 			KeySet basic;
 			basic.append(t);
@@ -244,21 +244,21 @@ void TestCommand::doBinaryTest()
 			}
 
 			nrTest ++;
-			if (res.getBinarySize() > 0 && static_cast<size_t>(res.getBinarySize()) != teststrings[i].length())
+			if (res.getBinarySize() > 0 && static_cast<size_t>(res.getBinarySize()) != teststring.length())
 			{
 				nrError ++;
 				cerr << "Binary test failed (length is not equal)" << endl;
 				cerr << "We got: \"" << res.getBinary() << "\"" << endl;
-				cerr << "We wanted: \"" << teststrings[i] << "\"" << endl;
+				cerr << "We wanted: \"" << teststring << "\"" << endl;
 			}
 
 			nrTest ++;
-			if (res.getBinary() != teststrings[i])
+			if (res.getBinary() != teststring)
 			{
 				nrError ++;
 				cerr << "Binary test failed (value is not equal)" << endl;
 				cerr << "We got: \"" << res.getBinary() << "\"" << endl;
-				cerr << "We wanted: \"" << teststrings[i] << "\"" << endl;
+				cerr << "We wanted: \"" << teststring << "\"" << endl;
 			}
 		}
 	}
@@ -287,12 +287,12 @@ void TestCommand::doNamingTest()
 	}
 
 
-	for (size_t i = 0; i< teststrings.size(); ++i)
+	for (auto & teststring : teststrings)
 	{
 		{
 			KDB kdb;
 			Key t = root.dup();
-			t.addBaseName (teststrings[i]);
+			t.addBaseName (teststring);
 
 			KeySet basic;
 			basic.append(t);
@@ -321,7 +321,7 @@ void TestCommand::doNamingTest()
 
 			nrTest ++;
 			Key cmp = root.dup();
-			cmp.addBaseName(teststrings[i]);
+			cmp.addBaseName(teststring);
 			if (res != cmp)
 			{
 				nrError ++;
@@ -374,14 +374,14 @@ void TestCommand::doMetaTest()
 	}
 
 
-	for (size_t j = 0; j< testnames.size(); ++j)
-	for (size_t i = 0; i< teststrings.size(); ++i)
+	for (auto & testname : testnames)
+	for (auto & teststring : teststrings)
 	{
 		{
 			KDB kdb;
 			Key t = root.dup();
-			t.addBaseName (testnames[j]);
-			t.setMeta<string> ("key", teststrings[i]);
+			t.addBaseName (testname);
+			t.setMeta<string> ("key", teststring);
 
 			KeySet basic;
 			basic.append(t);
@@ -398,7 +398,7 @@ void TestCommand::doMetaTest()
 			kdb.get (test, root);
 
 			Key t = root.dup();
-			t.addBaseName (testnames[j]);
+			t.addBaseName (testname);
 			Key res = test.lookup(t);
 
 			nrTest ++;
@@ -412,12 +412,12 @@ void TestCommand::doMetaTest()
 			std::string meta = res.getMeta<std::string>("key");
 
 			nrTest ++;
-			if (meta != teststrings[i])
+			if (meta != teststring)
 			{
 				nrError ++;
 				cerr << "Meta test failed (name is not equal)" << endl;
 				cerr << "We got: \"" << meta << "\"" << endl;
-				cerr << "We wanted: \"" <<  teststrings[i] << "\"" << endl;
+				cerr << "We wanted: \"" <<  teststring << "\"" << endl;
 			}
 		}
 	}

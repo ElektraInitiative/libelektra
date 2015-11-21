@@ -36,7 +36,7 @@ struct LayerAction
 {
 	LayerAction(bool activate_, std::shared_ptr<Layer> layer_) :
 		activate(activate_),
-		layer(layer_)
+		layer(std::move(layer_))
 	{ }
 	bool activate; // false if deactivate
 	std::shared_ptr<Layer> layer;
@@ -340,7 +340,7 @@ public:
 		return layer;
 	}
 
-	void syncLayers()
+	void syncLayers() override
 	{
 		// now activate/deactive layers
 		Events e;
@@ -368,7 +368,7 @@ public:
 	 *
 	 * @param c the command to execute
 	 */
-	void execute(Command & c)
+	void execute(Command & c) override
 	{
 		m_gc.execute(c);
 		if (c.oldKey != c.newKey)
@@ -391,7 +391,7 @@ public:
 	 *
 	 * @param ks
 	 */
-	void notify(KeySet & ks)
+	void notify(KeySet & ks) override
 	{
 		for(auto const & k: ks)
 		{

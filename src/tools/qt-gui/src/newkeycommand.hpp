@@ -29,10 +29,10 @@ public:
 	 * @param isBelow Is set when a ConfigNode should be below another ConfigNode. Will trigger an update of the treeview.
 	 * @param parent An optional parent.
 	 */
-	explicit NewKeyCommand(TreeViewModel* model, int index, DataContainer* data, bool isBelow, QUndoCommand* parent = 0);
+	explicit NewKeyCommand(TreeViewModel* model, int index, DataContainer* data, bool isBelow, QUndoCommand* parent = nullptr);
 
-	virtual void undo();
-	virtual void redo();
+	virtual void undo() override;
+	virtual void redo() override;
 
 private:
 	ConfigNodePtr	m_parentNode;

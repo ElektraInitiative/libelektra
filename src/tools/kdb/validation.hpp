@@ -21,22 +21,22 @@ public:
 	ValidationCommand();
 	~ValidationCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
 		return "";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "<key-name> <value> <regular expression> [<message>]";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Set a value together with a validation regex.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return
 			"This is a convenience function to set validation meta data for a key.\n"
@@ -50,7 +50,7 @@ public:
 			;
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

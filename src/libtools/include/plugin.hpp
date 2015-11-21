@@ -57,7 +57,7 @@ private:
 	void uninit();
 
 public:
-	Plugin(std::string const& pluginName, kdb::KeySet &modules, kdb::KeySet const& pluginConfig);
+	Plugin(std::string  pluginName, kdb::KeySet &modules, kdb::KeySet const& pluginConfig);
 
 	Plugin(Plugin const& other);
 	Plugin& operator = (Plugin const& other);

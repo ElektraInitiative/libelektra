@@ -80,7 +80,7 @@ private:
 			return -1;
 		}
 
-		return get(handle) != 0 ? 1 : -1;
+		return get(handle) != nullptr ? 1 : -1;
 	}
 };
 

@@ -25,7 +25,7 @@ namespace merging
 class AutoMergeConfiguration : public MergeConfiguration
 {
 public:
-	virtual void configureMerger(ThreeWayMerge& merger);
+	virtual void configureMerger(ThreeWayMerge& merger) override;
 };
 
 }

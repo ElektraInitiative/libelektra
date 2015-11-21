@@ -33,13 +33,9 @@ void displayHelp(std::string app, std::vector<std::string> commands)
 		<< "a specific command.\n"
 		<< std::endl;
 	std::cout << "Known commands are:" << std::endl;
-	for (
-		std::vector<std::string>::iterator it =
-		commands.begin();
-		it != commands.end();
-		it++)
+	for (auto & command : commands)
 	{
-		std::cout << *it  << std::endl;
+		std::cout << command  << std::endl;
 	}
 	std::cout << "help         View the man page of a tool" << std::endl;
 	std::cout << "list-tools   List all external tools" << std::endl;

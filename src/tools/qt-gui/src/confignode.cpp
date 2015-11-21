@@ -11,12 +11,12 @@
 
 using namespace kdb;
 
-ConfigNode::ConfigNode(const QString& name, const QString& path, const Key &key, TreeViewModel *parentModel)
-	: m_name(name)
-	, m_path(path)
+ConfigNode::ConfigNode(QString  name, QString  path, const Key &key, TreeViewModel *parentModel)
+	: m_name(std::move(name))
+	, m_path(std::move(path))
 	, m_key(key)
 	, m_children(new TreeViewModel)
-	, m_metaData(NULL)
+	, m_metaData(nullptr)
 	, m_parentModel(parentModel)
 	, m_isExpanded(false)
 	, m_isDirty(false)
@@ -43,8 +43,8 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 	, m_value(other.m_value)
 	, m_key(other.m_key.dup())
 	, m_children(new TreeViewModel)
-	, m_metaData(NULL)
-	, m_parentModel(NULL)
+	, m_metaData(nullptr)
+	, m_parentModel(nullptr)
 	, m_isExpanded(other.m_isExpanded)
 	, m_isDirty(false)
 {
@@ -69,9 +69,9 @@ ConfigNode::ConfigNode(const ConfigNode& other)
 }
 
 ConfigNode::ConfigNode()
-	: m_children(NULL)
-	, m_metaData(NULL)
-	, m_parentModel(NULL)
+	: m_children(nullptr)
+	, m_metaData(nullptr)
+	, m_parentModel(nullptr)
 	, m_isExpanded(false)
 	, m_isDirty(false)
 {
@@ -165,9 +165,9 @@ void ConfigNode::setMeta(const QVariantMap &metaData)
 	if (m_metaData)
 	{
 		//delete old metadata in key
-		for(int i = 0; i < m_metaData->model().size(); i++)
+		for(auto & elem : m_metaData->model())
 		{
-			m_metaData->model().at(i)->deleteMeta(m_metaData->model().at(i)->getName());
+			elem->deleteMeta(elem->getName());
 		}
 		//delete old metadata in model
 		m_metaData->clearMetaModel();

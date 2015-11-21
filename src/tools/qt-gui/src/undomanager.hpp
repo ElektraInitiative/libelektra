@@ -42,7 +42,7 @@ public:
 	 * @brief The default constructor.
 	 * @param parentManager
 	 */
-	explicit    UndoManager(QObject* parentManager = 0);
+	explicit    UndoManager(QObject* parentManager = nullptr);
 
 	/**
 	 * @brief The mandatory copy constructor.

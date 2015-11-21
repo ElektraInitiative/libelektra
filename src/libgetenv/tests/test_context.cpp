@@ -19,7 +19,7 @@ using namespace ckdb;
 TEST(Context, Exist)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			k = keyNew("user/env/override/does-exist",
 				KEY_VALUE, "hello", KEY_END));
@@ -31,7 +31,7 @@ TEST(Context, Exist)
 TEST(Context, ExistWithContext)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			k = keyNew("user/env/override/does-exist",
 				KEY_VALUE, "hello", KEY_END));
@@ -47,7 +47,7 @@ TEST(Context, ExistWithContext)
 TEST(Context, ExistWithContextCascading)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			k = keyNew("user/env/override/does-exist-too",
 				KEY_VALUE, "hello", KEY_END));
@@ -66,7 +66,7 @@ void addLayers();
 TEST(Context, ExistWithContextOverrideCascading)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("user/env/layer/layer",
 				KEY_VALUE, "layer", KEY_END));
@@ -90,7 +90,7 @@ TEST(Context, ExistWithContextOverrideCascading)
 TEST(Context, ExistWithContextOverrideCascadingSystem)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("user/env/layer/layer",
 				KEY_VALUE, "layer", KEY_END));
@@ -118,7 +118,7 @@ TEST(Context, ExistWithContextOverrideCascadingSystem)
 TEST(Context, ExistWithContextOverrideCascadingDir)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("dir/env/layer/layer",
 				KEY_VALUE, "layer", KEY_END));
@@ -145,7 +145,7 @@ TEST(Context, ExistWithContextOverrideCascadingDir)
 TEST(Context, ExistWithContextOverrideCascadingProc)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("proc/env/layer/layer",
 				KEY_VALUE, "layer", KEY_END));
@@ -172,7 +172,7 @@ TEST(Context, ExistWithContextOverrideCascadingProc)
 TEST(Context, ExistWithContextOverrideCascadingWithSlash)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("proc/env/layer/layer/name",
 				KEY_VALUE, "layer/value", KEY_END));
@@ -216,7 +216,7 @@ TEST(Context, NameExplicit)
 TEST(Context, ExistWithContextOverrideCascadingOverrideUser)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("user/env/layer/hostname",
 				KEY_VALUE, "wrongname",
@@ -248,7 +248,7 @@ TEST(Context, ExistWithContextOverrideCascadingOverrideUser)
 TEST(Context, ExistWithContextOverrideCascadingOverrideSystem)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("system/env/layer/hostname",
 				KEY_VALUE, "wrongname",
@@ -280,7 +280,7 @@ TEST(Context, ExistWithContextOverrideCascadingOverrideSystem)
 TEST(Context, ExistWithContextOverrideCascadingOverride)
 {
 	Key *k;
-	elektraOpen(0,0);
+	elektraOpen(nullptr,nullptr);
 	ksAppendKey(elektraConfig,
 			keyNew("spec/env/layer/hostname",
 				KEY_META,  "override/#0", "system/syscall/uname/hostname",

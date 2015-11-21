@@ -18,7 +18,7 @@
 
 class TestValueSubject : public kdb::ValueSubject
 {
-	virtual void notifyInThread()
+	virtual void notifyInThread() override
 	{}
 };
 
@@ -73,8 +73,8 @@ class CountryGPSLayer : public kdb::Layer
 {
 public:
 	CountryGPSLayer() : m_country("austria") {}
-	std::string id() const { return "country"; }
-	std::string operator()() const { return m_country; }
+	std::string id() const override { return "country"; }
+	std::string operator()() const override { return m_country; }
 private:
 	std::string m_country;
 };
@@ -83,8 +83,8 @@ class ThreadLayer : public kdb::Layer
 {
 public:
 	ThreadLayer() {}
-	std::string id() const { return "thread"; }
-	std::string operator()() const {
+	std::string id() const override { return "thread"; }
+	std::string operator()() const override {
 		std::ostringstream os;
 		std::thread::id tid = std::this_thread::get_id();
 		if (tid != g_main_id) { os << tid; }
@@ -99,8 +99,8 @@ class CountingLayer : public kdb::Layer
 {
 public:
 	CountingLayer() : m_id() {}
-	std::string id() const { return "counting"; }
-	std::string operator()() const {
+	std::string id() const override { return "counting"; }
+	std::string operator()() const override {
 		std::ostringstream os;
 		os << m_id++;
 		return os.str();
@@ -135,10 +135,10 @@ public:
 class KeyValueLayer : public kdb::Layer
 {
 public:
-	KeyValueLayer(std::string const & key, std::string const & value_) :
-		m_key(key), m_value(value_) {}
-	std::string id() const { return m_key; }
-	std::string operator()() const { return m_value; }
+	KeyValueLayer(std::string  key, std::string  value_) :
+		m_key(std::move(key)), m_value(std::move(value_)) {}
+	std::string id() const override { return m_key; }
+	std::string operator()() const override { return m_value; }
 private:
 	std::string m_key;
 	std::string m_value;
@@ -149,8 +149,8 @@ class ProfileLayer : public kdb::Layer
 public:
 	ProfileLayer(kdb::String const & profile) :
 		m_profile(profile) {}
-	std::string id() const { return "profile"; }
-	std::string operator()() const { return m_profile; }
+	std::string id() const override { return "profile"; }
+	std::string operator()() const override { return m_profile; }
 private:
 	kdb::String const & m_profile;
 };
@@ -617,7 +617,7 @@ struct MockObserver : kdb::ValueObserver
 	MockObserver() : counter()
 	{}
 
-	virtual void updateContext() const
+	virtual void updateContext() const override
 	{
 		++ counter;
 	}

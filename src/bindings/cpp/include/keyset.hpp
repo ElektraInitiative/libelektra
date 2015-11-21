@@ -539,7 +539,7 @@ inline void KeySet::copy (const KeySet &other)
  */
 inline void KeySet::clear ()
 {
-	ckdb::ksCopy(ks,0);
+	ckdb::ksCopy(ks,nullptr);
 }
 
 /**

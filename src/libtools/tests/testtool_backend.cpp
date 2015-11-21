@@ -20,13 +20,13 @@
 std::string makeLiteralString(std::string str)
 {
 	std::string ret;
-	for (size_t i=0; i<str.length(); ++i)
+	for (auto & elem : str)
 	{
-		if (str[i] == '\\')
+		if (elem == '\\')
 		{
 			ret += "\\\\";
 		} else {
-			ret += str[i];
+			ret += elem;
 		}
 	}
 	return ret;

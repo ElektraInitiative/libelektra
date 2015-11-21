@@ -32,8 +32,8 @@ namespace kdb
 namespace tools
 {
 
-Plugin::Plugin(std::string const& nameOfNewPlugin, KeySet &modules, KeySet const& pluginConfig) :
-	pluginName(nameOfNewPlugin),
+Plugin::Plugin(std::string  nameOfNewPlugin, KeySet &modules, KeySet const& pluginConfig) :
+	pluginName(std::move(nameOfNewPlugin)),
 	firstRef (true)
 {
 	Key errorKey;

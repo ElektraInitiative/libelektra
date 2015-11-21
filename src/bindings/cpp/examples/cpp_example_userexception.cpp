@@ -30,7 +30,7 @@
 class UserException : public std::exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception";
 	}
@@ -42,7 +42,7 @@ namespace kdb
 class Exception : public UserException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Exception thrown by Elektra";
 	}
@@ -51,7 +51,7 @@ public:
 class KeyException : public Exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Exception thrown by a Key";
 	}
@@ -60,7 +60,7 @@ public:
 class KeyTypeMismatch: public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Binary or String key mismatch";
 	}
@@ -69,7 +69,7 @@ public:
 class KeyInvalidName : public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Invalid Keyname";
 	}
@@ -78,7 +78,7 @@ public:
 class KeyTypeConversion : public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Exception thrown by get/set";
 	}
@@ -102,7 +102,7 @@ public:
 	virtual ~KDBException() throw()
 	{}
 
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: KDB";
 	}

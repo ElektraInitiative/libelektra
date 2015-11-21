@@ -33,7 +33,7 @@ public:
 	{
 	}
 
-	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result);
+	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result) override;
 };
 
 }

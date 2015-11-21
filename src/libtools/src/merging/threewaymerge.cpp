@@ -176,9 +176,9 @@ MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
 	conflicts.rewind();
 	while ((current = conflicts.next ()))
 	{
-		for (vector<MergeConflictStrategy *>::iterator it = strategies.begin (); it != strategies.end (); ++it)
+		for (auto & elem : strategies)
 		{
-			(*it)->resolveConflict (task, current, result);
+			(elem)->resolveConflict (task, current, result);
 
 			if (!result.isConflict(current))
 				break;

@@ -36,9 +36,9 @@ protected:
 public:
 	virtual ~MergeConfiguration()
 	{
-		for (vector<MergeConflictStrategy*>::iterator it = allocatedStrategies.begin(); it != allocatedStrategies.end (); ++it)
+		for (auto & elem : allocatedStrategies)
 		{
-			delete (*it);
+			delete (elem);
 		}
 	};
 	virtual void configureMerger(ThreeWayMerge& merger) = 0;

@@ -12,7 +12,7 @@
 NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *data, bool isBelow, QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_parentNode(model->model().at(index))
-	, m_newNode(NULL)
+	, m_newNode(nullptr)
 	, m_value(data->newValue())
 	, m_metaData(data->newMetadata())
 {

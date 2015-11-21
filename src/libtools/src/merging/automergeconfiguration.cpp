@@ -21,11 +21,11 @@ namespace merging
 
 void AutoMergeConfiguration::configureMerger(ThreeWayMerge& merger)
 {
-	MetaMergeStrategy *metaMergeStrategy = new MetaMergeStrategy(merger);
+	auto metaMergeStrategy = new MetaMergeStrategy(merger);
 	allocatedStrategies.push_back(metaMergeStrategy);
 	merger.addConflictStrategy(metaMergeStrategy);
 
-	AutoMergeStrategy *autoMergeStrategy = new AutoMergeStrategy();
+	auto autoMergeStrategy = new AutoMergeStrategy();
 	allocatedStrategies.push_back(autoMergeStrategy);
 	merger.addConflictStrategy(autoMergeStrategy);
 }

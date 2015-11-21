@@ -30,7 +30,7 @@ static std::string cwd()
 	std::vector<char> current_dir;
 	current_dir.resize(KDB_MAX_PATH_LENGTH);
 	errno = 0;
-	while (getcwd(&current_dir[0], current_dir.size()) == NULL
+	while (getcwd(&current_dir[0], current_dir.size()) == nullptr
 			&& errno == ERANGE)
 	{
 		current_dir.resize(current_dir.size()*2);
@@ -55,12 +55,12 @@ void tryExternalCommand(char** argv)
 	}
 	pathes.push_back(buildinExecPath);
 
-	for(size_t p = 0; p<pathes.size(); ++p)
+	for(auto & pathe : pathes)
 	{
 		std::string command;
-		char* savedArg = 0;
+		char* savedArg = nullptr;
 
-		if (pathes[p][0] != '/')
+		if (pathe[0] != '/')
 		{
 			// no absolute path, so work with current path
 			const std::string currentPath = cwd();
@@ -69,7 +69,7 @@ void tryExternalCommand(char** argv)
 			{
 				std::cerr << "Could not determine "
 					<< "current path for "
-					<< pathes[p]
+					<< pathe
 					<< " with command name: "
 					<< argv[0]
 					<< " because: "
@@ -81,7 +81,7 @@ void tryExternalCommand(char** argv)
 			command += "/";
 		}
 
-		command += pathes[p];
+		command += pathe;
 		command += "/";
 		command += argv[0];
 
@@ -150,7 +150,7 @@ void runManPage(std::string command)
 	if (k) man = k.get<std::string>().c_str();
 	char * const argv [3] = {const_cast<char*>(man),
 		const_cast<char*>(command.c_str()),
-		0};
+		nullptr};
 
 	elektraExecve(man, argv);
 

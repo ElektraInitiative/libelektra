@@ -184,9 +184,9 @@ void Backend::setBackendConfig (KeySet const & ks)
 
 Backend::~Backend()
 {
-	for (size_t i = 0; i < plugins.size(); ++i)
+	for (auto & elem : plugins)
 	{
-		delete plugins[i];
+		delete elem;
 	}
 }
 
@@ -197,13 +197,13 @@ Backend::~Backend()
 void Backend::useConfigFile(std::string file)
 {
 	typedef int (*checkFilePtr) (const char*);
-	checkFilePtr checkFileFunction = 0;
+	checkFilePtr checkFileFunction = nullptr;
 
-	for (size_t i = 0; i < plugins.size(); ++i)
+	for (auto & elem : plugins)
 	{
 		try {
 			checkFileFunction =
-				reinterpret_cast<checkFilePtr>(plugins[i]->getSymbol("checkfile"));
+				reinterpret_cast<checkFilePtr>(elem->getSymbol("checkfile"));
 			break;
 		}
 		catch(MissingSymbol ms)
@@ -227,8 +227,8 @@ void Backend::useConfigFile(std::string file)
 void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
 {
 	int nr;
-	char *cPluginName = 0;
-	char *cReferenceName = 0;
+	char *cPluginName = nullptr;
+	char *cReferenceName = nullptr;
 	Key errorKey;
 	string realPluginName;
 
@@ -265,9 +265,9 @@ void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
 	setplugins.tryPlugin   (*plugin.get());
 
 
-	for (size_t i=0; i<plugins.size(); ++i)
+	for (auto & elem : plugins)
 	{
-		if (plugin->name() == plugins[i]->name())
+		if (plugin->name() == elem->name())
 			throw PluginAlreadyInserted();
 	}
 
