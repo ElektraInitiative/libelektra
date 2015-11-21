@@ -17,7 +17,7 @@ in the required format. If keys are renamed, their original name is stored in th
 
 ### OPERATION ###
 
-The cut operation can be used to strip parts of a keys name. The cut operation is able to cut anything starting after the path
+The cut operation can be used to strip parts of a keys name. The cut operation is able to cut anything below the path
 of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the 
 parent key `user/config`. If the KeySet contained a key with the name `user/config/with/long/path/key1`, the cut operation
 would be able to strip the following key name parts:
@@ -54,9 +54,28 @@ after the parent key path.
 If an invalid configuration is given or the cut operation would cause a parent key duplicate, the affected keys are simply skipped and not renamed. 
 
 
+## REPLACE ##
+
+Using the `/replacewith` global key or `rename/to`  MetaKey the rename plugin will replace the part removed by `cut` with the supplied String
+
+## TO UPPER / LOWER ##
+
+Using the `/toupper` or `/tolower` global configuration key, or the `rename/toupper` or `rename/tolower` MetaTag the rename plugin will 
+convert the keynames to uppercase or lowercase.
+The supplied values tell the plugin how many levels starting from the right will be converted. `toupper` and `tolower` can be combined.
+When no value or "0" is supplied with the keys the whole name below the parentkey will be converted.
+
+### EXAMPLE ###
+```
+/toupper = 1
+/tolower = 3
+user/config/MIXED/CASE/conversion
+```
+would result in
+`user/config/mixed/case/CONVERSION`
+
 ## PLANNED OPERATIONS ##
 
 
 Additional rename operations are planned for future versions of the rename plugin:
 * trim: remove spaces in the name (that are not part of parentKey!)
-* case: upper/lowercase the name (that are not part of parentKey!)
