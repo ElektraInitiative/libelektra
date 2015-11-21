@@ -204,7 +204,7 @@ static void test_keyNewSystem()
 	succeed_if(keyIsBinary (key), "Could not set type to binary");
 	succeed_if(keyGetValueSize(key) == sizeof(array), "Value size not correct");
 	succeed_if(memcmp ((char *) keyValue(key), array, sizeof(array)) == 0, "could not get correct binary value");
-	getBack = malloc (keyGetValueSize(key));
+	getBack = elektraMalloc (keyGetValueSize(key));
 	keyGetBinary(key, getBack, keyGetValueSize(key));
 	succeed_if(memcmp(getBack, array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
 	free (getBack);
@@ -706,21 +706,21 @@ static void test_keyNameSlashes()
 
 	key = keyNew("user/noname", KEY_END);
 	succeed_if(keyGetNameSize(key) == 12, "size not correct after keyNew");
-	getBack = malloc (12);
+	getBack = elektraMalloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
 	succeed_if_same_string (getBack, "user/noname");
 	free (getBack);
 
 	keySetName (key, "user/noname");
 	succeed_if(keyGetNameSize(key) == 12, "size not correct after keySetName");
-	getBack = malloc (12);
+	getBack = elektraMalloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
 	succeed_if_same_string (getBack, "user/noname");
 	free (getBack);
 
 	keySetName (key, "no");
 	succeed_if(keyGetNameSize(key) == 1, "size not correct after keySetName");
-	getBack = malloc (1);
+	getBack = elektraMalloc (1);
 	succeed_if(keyGetName(key, getBack, 1), "could not get name");
 	succeed_if_same_string (getBack, "");
 	free (getBack);
@@ -900,7 +900,7 @@ static void test_keyNameSlashes()
 
 		/* keyGetBaseName */
 		size = keyGetBaseNameSize(key)+1;
-		buf = malloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetBaseName(key, buf, size);
 		succeed_if_same_string(buf, tstKeyName[i].expectedBaseName);
 		free(buf);
@@ -911,7 +911,7 @@ static void test_keyNameSlashes()
 		
 		/* keyGetName */
 		size = keyGetNameSize(key);
-		buf = malloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetName(key, buf, size);
 		succeed_if_same_string (buf, tstKeyName[i].expectedKeyName);
 		free(buf);

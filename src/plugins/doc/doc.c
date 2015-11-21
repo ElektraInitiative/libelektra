@@ -40,7 +40,7 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key * kg = ksLookupByName(config, "/global", 0);
 
-	data=malloc(sizeof(GlobalData));
+	data=elektraMalloc(sizeof(GlobalData));
 	data->global = 0;
 	if (kg) data->global = atoi(keyString(kg));
 	elektraPluginSetData(handle,data);

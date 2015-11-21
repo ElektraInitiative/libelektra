@@ -117,7 +117,7 @@ const char *keyOwner(const Key *key)
  *
  * @code
 char * buffer;
-buffer = malloc (keyGetOwnerSize (key));
+buffer = elektraMalloc (keyGetOwnerSize (key));
 // use buffer and keyGetOwnerSize (key) for maxSize
  * @endcode
  *
@@ -304,7 +304,7 @@ const char *keyComment(const Key *key)
  *
  * @code
 char *buffer;
-buffer = malloc (keyGetCommentSize (key));
+buffer = elektraMalloc (keyGetCommentSize (key));
 // use this buffer to store the comment
 // pass keyGetCommentSize (key) for maxSize
  * @endcode

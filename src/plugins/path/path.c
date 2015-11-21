@@ -68,7 +68,7 @@ int elektraPathSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		int errnosave = errno;
 		if (stat(keyString(cur), &buf) == -1)
 		{
-			char *errmsg = malloc (ERRORMSG_LENGTH + 1 +
+			char *errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 +
 					+ keyGetNameSize(cur)
 					+ keyGetValueSize(cur)
 					+ sizeof ("name:  value:  message: "));

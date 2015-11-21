@@ -79,7 +79,7 @@ int elektraNetworkSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pare
 		if (s != 0)
 		{
 			const char *gaimsg = gai_strerror(s);
-			char *errmsg = malloc (strlen (gaimsg)
+			char *errmsg = elektraMalloc (strlen (gaimsg)
 					+ keyGetNameSize(cur)
 					+ keyGetValueSize(cur)
 					+ sizeof ("name:  value:  message: "));

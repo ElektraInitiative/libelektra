@@ -204,7 +204,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 
 int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
-	Data *data = malloc(sizeof(Data));
+	Data *data = elektraMalloc(sizeof(Data));
 	data->module = 0;
 	data->printException = 0;
 	elektraPluginSetData(handle, data);
@@ -231,7 +231,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 	char classpatharg[] = "-Djava.class.path=";
-	char *classpath = malloc(sizeof(classpatharg)
+	char *classpath = elektraMalloc(sizeof(classpatharg)
 				+keyGetValueSize(k));
 	strcpy(classpath, classpatharg);
 	strcat(classpath, keyString(k));
@@ -254,7 +254,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	/* TODO: check if JVM is already started:
 	jsize nVMs;
 	JNI_GetCreatedJavaVMs(NULL, 0, &nVMs); // get array length
-	JavaVM** buffer = malloc(nVMs, sizeof(JavaVM*));
+	JavaVM** buffer = elektraMalloc(nVMs, sizeof(JavaVM*));
 	JNI_GetCreatedJavaVMs(buffer, nVMs, &nVMs); // get data
 	*/
 

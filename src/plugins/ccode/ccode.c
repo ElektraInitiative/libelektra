@@ -191,7 +191,7 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	CCodeData *d = elektraPluginGetData (handle);
 	if (!d->buf)
 	{
-		d->buf = malloc (1000);
+		d->buf = elektraMalloc (1000);
 		d->bufalloc = 1000;
 	}
 
@@ -262,7 +262,7 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNU
 	CCodeData *d = elektraPluginGetData (handle);
 	if (!d->buf)
 	{
-		d->buf = malloc (1000);
+		d->buf = elektraMalloc (1000);
 		d->bufalloc = 1000;
 	}
 

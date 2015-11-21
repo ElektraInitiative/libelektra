@@ -57,7 +57,7 @@ static int elektraKeyAppendLine (Key *target, const char *line)
 	if (!line) return 0;
 
 
-	char *buffer = malloc (keyGetValueSize(target) + strlen (line) + 1);
+	char *buffer = elektraMalloc (keyGetValueSize(target) + strlen (line) + 1);
 	if (!buffer) return 0;
 
 	keyGetString(target, buffer, keyGetValueSize(target));
@@ -171,7 +171,7 @@ static int iniCommentToMeta (void *vhandle, const char *comment)
 
 	if (!handle->collectedComment)
 	{
-		handle->collectedComment = malloc (commentSize);
+		handle->collectedComment = elektraMalloc (commentSize);
 
 		if (!handle->collectedComment) return 0;
 
@@ -300,7 +300,7 @@ void writeComments(Key* current, FILE* fh)
 	if (commentMeta)
 	{
 		size_t commentSize = keyGetValueSize (commentMeta);
-		char* comments = malloc (commentSize);
+		char* comments = elektraMalloc (commentSize);
 		keyGetString (commentMeta, comments, commentSize);
 		char* savePtr = 0;
 		char* currentComment = strtok_r (comments, "\n", &savePtr);
@@ -319,7 +319,7 @@ void writeMultilineKey(Key *key, const char *iniName, FILE *fh)
 	size_t valueSize = keyGetValueSize(key);
 	char *saveptr = 0;
 	char *result = 0;
-	char *value = malloc (valueSize);
+	char *value = elektraMalloc (valueSize);
 	keyGetString(key, value, valueSize);
 	result = strtok_r (value, "\n", &saveptr);
 
@@ -351,7 +351,7 @@ static char *getIniName(Key *section, Key *key)
 {
 	if(!strcmp(keyName(section), keyName(key)))
 		return strdup(keyBaseName(key));
-	char *buffer = malloc(strlen(keyName(key)) - strlen(keyName(section)));
+	char *buffer = elektraMalloc(strlen(keyName(key)) - strlen(keyName(section)));
 	char *dest = buffer;
 	for(char *ptr = (char *)keyName(key)+strlen(keyName(section))+1; *ptr; ++ptr)
 	{

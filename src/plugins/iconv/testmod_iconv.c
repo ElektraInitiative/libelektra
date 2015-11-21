@@ -165,7 +165,7 @@ void test_utf8_conversation()
 
 
 	Plugin *plugin = elektraPluginOpen("iconv", modules, conf, 0);
-	char * str = malloc (KDB_MAX_PATH_LENGTH);
+	char * str = elektraMalloc (KDB_MAX_PATH_LENGTH);
 	size_t len;
 
 	printf ("Test utf8 conversation\n");

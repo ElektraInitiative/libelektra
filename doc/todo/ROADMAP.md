@@ -6,11 +6,6 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.14
-
-md_src_plugins_keytometa_README.3elektra
-malloc -> elektraMalloc
-
 # 0.8.15
 
 Also see [githubs issues](http://git.libelektra.org/issues)
@@ -21,6 +16,7 @@ for other activities of the current release.
 api:
 	add keyGetNamespace
 	version rules ELEKTRA_ABI_13 ...
+	include rules to allow elektra/kdb.h
 
 DEFAULT_STORAGE/RESOLVER
 
@@ -36,6 +32,7 @@ split elektra:
 	libelektra-proposal
 	libelektra links everything together
 
+md_src_plugins_keytometa_README.3elektra
 
 ## docu
 

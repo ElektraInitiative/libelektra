@@ -331,11 +331,11 @@ ssize_t keyGetUnescapedNameSize(const Key *key)
  * maxSize is limited to SSIZE_MAX. When this value
  * is exceeded -1 will be returned. The reason for that
  * is that any value higher is just a negative return
- * value passed by accident. Of course malloc is not
+ * value passed by accident. Of course elektraMalloc is not
  * as failure tolerant and will try to allocate.
  *
  * @code
-char *getBack = malloc (keyGetNameSize(key));
+char *getBack = elektraMalloc (keyGetNameSize(key));
 keyGetName(key, getBack, keyGetNameSize(key));
  * @endcode
  *

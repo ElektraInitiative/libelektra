@@ -85,9 +85,9 @@ int init (int argc, char**argv)
 	}
 
 	tempHomeLen = strlen (tmpvar) + 1 + 13 + 6 + 1;
-	tempHome = malloc (tempHomeLen);
-	tempHomeConf = malloc (tempHomeLen+strlen (KDB_DB_USER)+2);
-	succeed_if (tempHome != 0, "malloc failed");
+	tempHome = elektraMalloc (tempHomeLen);
+	tempHomeConf = elektraMalloc (tempHomeLen+strlen (KDB_DB_USER)+2);
+	succeed_if (tempHome != 0, "elektraMalloc failed");
 	snprintf (tempHome, tempHomeLen, "%s/elektra-test.XXXXXX", tmpvar);
 	snprintf (tempHomeConf, tempHomeLen, "%s/elektra-test.XXXXXX/" KDB_DB_USER, tmpvar);
 	succeed_if (mkdtemp (tempHome) != 0, "mkdtemp failed");
@@ -96,8 +96,8 @@ int init (int argc, char**argv)
 	atexit (clean_temp_home);
 
 	int tmpfilenameLen = tempHomeLen + 1 + 12 + 6 + 1;
-	tmpfilename = malloc (tmpfilenameLen);
-	succeed_if (tmpfilenameLen != 0, "malloc failed");
+	tmpfilename = elektraMalloc (tmpfilenameLen);
+	succeed_if (tmpfilenameLen != 0, "elektraMalloc failed");
 	snprintf (tmpfilename, tmpfilenameLen, "%s/elektra-tmp.XXXXXX", tempHome);
 	fd = mkstemp (tmpfilename);
 	succeed_if (fd != -1, "mkstemp failed");

@@ -177,7 +177,7 @@ if (elektraRealloc ((void **) & buffer, new_length) < 0) {
 }
  *@endcode
  *
- * @param buffer is a pointer to a malloc
+ * @param buffer is a pointer to a elektraMalloc
  * @param size is the new size for the memory
  * @retval -1 on failure
  * @retval 0 on success
@@ -214,7 +214,7 @@ if ((buffer = elektraMalloc (length)) == 0) {
  *
  * @param size the requested size
  *
- * This function is compatible to ANSI-C malloc
+ * This function is compatible to ANSI-C elektraMalloc
  * @see elektraFree
  * @see elektraCalloc
  */
@@ -232,7 +232,7 @@ void* elektraMalloc (size_t size)
  */
 void* elektraCalloc (size_t size)
 {
-	return calloc(1, size);
+	return calloc (1, size);
 }
 
 /**Free memory of elektra or its backends.

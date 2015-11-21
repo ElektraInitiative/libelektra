@@ -179,7 +179,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 						size_t unencodedSize;
 						
 						unencodedSize=elektraStrLen((char *)buffer)/2;
-						unencoded=malloc(unencodedSize);
+						unencoded=elektraMalloc(unencodedSize);
 						unencodedSize=kdbbDecode((char *)buffer,unencoded);
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
@@ -204,7 +204,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 				if ((commentSize=keyGetCommentSize(newKey)) > 1) {
 					/*Multiple line comment*/
 					char *tmpComment=0;
-					tmpComment=malloc(commentSize+
+					tmpComment=elektraMalloc(commentSize+
 						xmlStrlen(buffer)*sizeof(xmlChar)+1);
 
 					if (tmpComment) {

@@ -33,7 +33,7 @@ void g (Key *k)
 void j (Key *k)
 {
 	size_t size = keyGetValueSize (k);
-	char *value = malloc (size);
+	char *value = elektraMalloc (size);
 	int bstring = keyIsString (k);
 
 	// receive key c

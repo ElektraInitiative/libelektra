@@ -111,7 +111,7 @@ int elektraHexcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	CHexData *hd = elektraPluginGetData (handle);
 	if (!hd->buf)
 	{
-		hd->buf = malloc (1000);
+		hd->buf = elektraMalloc (1000);
 		hd->bufalloc = 1000;
 	}
 
@@ -209,7 +209,7 @@ int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_U
 	CHexData *hd = elektraPluginGetData (handle);
 	if (!hd->buf)
 	{
-		hd->buf = malloc (1000);
+		hd->buf = elektraMalloc (1000);
 		hd->bufalloc = 1000;
 	}
 

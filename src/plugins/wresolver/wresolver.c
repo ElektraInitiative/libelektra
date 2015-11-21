@@ -131,14 +131,14 @@ static void elektraResolveSpec(resolverHandle *p, Key *errorKey)
 		/* Use absolute path */
 		size_t filenameSize = strlen(system)
 			+ strlen(p->path) + 1;
-		p->filename = malloc (filenameSize);
+		p->filename = elektraMalloc (filenameSize);
 		strcpy (p->filename, system);
 		strcat (p->filename, p->path);
 		return;
 	}
 	size_t filenameSize = sizeof(KDB_DB_SPEC)
 		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
+	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, system);
 	strcat (p->filename, KDB_DB_SPEC);
 	strcat (p->filename, "/");
@@ -148,7 +148,7 @@ static void elektraResolveSpec(resolverHandle *p, Key *errorKey)
 
 static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 {
-	p->filename = malloc(PATH_MAX);
+	p->filename = elektraMalloc(PATH_MAX);
 
 # if defined(_WIN32)
 	CHAR dir[MAX_PATH];
@@ -180,7 +180,7 @@ static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 
 static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 {
-	p->filename = malloc(PATH_MAX);
+	p->filename = elektraMalloc(PATH_MAX);
 
 # if defined(_WIN32)
 	CHAR home[MAX_PATH];
@@ -224,14 +224,14 @@ static void elektraResolveSystem(resolverHandle *p, Key *errorKey)
 		/* Use absolute path */
 		size_t filenameSize = strlen(system)
 			+ strlen(p->path) + 1;
-		p->filename = malloc (filenameSize);
+		p->filename = elektraMalloc (filenameSize);
 		strcpy (p->filename, system);
 		strcat (p->filename, p->path);
 		return;
 	}
 	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
 		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
+	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, system);
 	strcat (p->filename, KDB_DB_SYSTEM);
 	strcat (p->filename, "/");
@@ -250,7 +250,7 @@ int elektraWresolverOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverHandles *p = elektraMalloc(sizeof(resolverHandles));
 
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.

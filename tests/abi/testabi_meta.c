@@ -214,7 +214,7 @@ Key * g_c;
 static void j (Key *k)
 {
 	size_t size = keyGetValueSize (k);
-	char *value = malloc (size);
+	char *value = elektraMalloc (size);
 	int bstring = keyIsString (k);
 
 	// receive key g_c

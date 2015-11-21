@@ -579,9 +579,9 @@ char *elektraGetEnv(const char * cname, gfcn origGetenv)
 int *foo = 0;
 extern "C" void* elektraMalloc (size_t size)
 {
-	// LOG << "malloc " << size << endl;
+	// LOG << "elektraMalloc " << size << endl;
 	if (foo) printf("%d\n", *foo);
-	return malloc (size);
+	return malloc(size);
 }
 */
 

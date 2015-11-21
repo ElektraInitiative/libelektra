@@ -145,7 +145,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 	regex_t regex;
 	Key *key;
 
-	PNElem *stack = malloc(MIN_VALID_STACK*sizeof(PNElem));
+	PNElem *stack = elektraMalloc(MIN_VALID_STACK*sizeof(PNElem));
 
 	PNElem *stackPtr = stack;
 	PNElem result;
@@ -231,7 +231,7 @@ static PNElem parsePrefixString(const char *prefixString, KeySet *ks, Key *paren
 		}
 		else
 		{
-			char *subString = malloc(len+1);
+			char *subString = elektraMalloc(len+1);
 			strncpy(subString, prefixString+start, len);
 			subString[len] = '\0';
 			if(subString[0] == '\'' && subString[len-1] == '\'')

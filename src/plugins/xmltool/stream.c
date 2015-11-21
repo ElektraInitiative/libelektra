@@ -252,7 +252,7 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					written+=fprintf(stream,"]]>");
 				} else {
 					/* TODO Binary values 
-					char *encoded=malloc(3*key->dataSize);
+					char *encoded=elektraMalloc(3*key->dataSize);
 					size_t encodedSize;
 
 					written+=fprintf(stream,"\n");
@@ -447,7 +447,7 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 	n = keyGetNameSize (k);
 	if (n>1)
 	{
-		nam = (char*) malloc (n);
+		nam = (char*) elektraMalloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (k, nam, n);
 
@@ -459,13 +459,13 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 	s = keyGetValueSize (k);
 	if (options & KEY_VALUE && s>1)
 	{
-		str = (char*) malloc (s);
+		str = (char*) elektraMalloc (s);
 		if (str == NULL) return -1;
 		if (keyIsBinary(k))
 		{
 			/*
 			char * bin;
-			bin = (char*) malloc (s*3+1);
+			bin = (char*) elektraMalloc (s*3+1);
 			keyGetBinary(k, str, s);
 			kdbbEncode (str, s, bin);
 			free (bin);
@@ -483,7 +483,7 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 	c = keyGetCommentSize (k);
 	if (options & KEY_COMMENT && c>1)
 	{
-		com = (char*) malloc (c);
+		com = (char*) elektraMalloc (c);
 		if (com == NULL) return -1;
 		keyGetComment (k, com, c);
 
@@ -608,7 +608,7 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 	n = keyGetNameSize (key);
 	if (n>1)
 	{
-		nam = (char*) malloc (n);
+		nam = (char*) elektraMalloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (key, nam, n);
 		fprintf(stream,"\tkeyNew (\"%s\"", nam);
@@ -618,7 +618,7 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 	s = keyGetValueSize (key);
 	if (s>1)
 	{
-		str = (char*) malloc (s);
+		str = (char*) elektraMalloc (s);
 		if (str == NULL) return -1;
 		if (keyIsBinary(key)) keyGetBinary(key, str, s);
 		else keyGetString (key, str, s);
@@ -629,7 +629,7 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 	c = keyGetCommentSize (key);
 	if (c>1)
 	{
-		com = (char*) malloc (c);
+		com = (char*) elektraMalloc (c);
 		if (com == NULL) return -1;
 		keyGetComment (key, com, c);
 		fprintf(stream,", KEY_COMMENT, \"%s\"", com);

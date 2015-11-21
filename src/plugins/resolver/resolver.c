@@ -362,7 +362,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		return -1;
 	}
 
-	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverHandles *p = elektraMalloc(sizeof(resolverHandles));
 	resolverInit (&p->spec, path);
 	resolverInit (&p->dir, path);
 	resolverInit (&p->user, path);
@@ -481,7 +481,7 @@ static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
 
 	if (pk->fd == -1)
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pk->filename) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Opening configuration file \"");
 		strcat (errorText, pk->filename);
@@ -564,7 +564,7 @@ static int elektraMkdirParents(resolverHandle *pk, const char *pathname, Key *pa
 
 error:
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pathname) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Could not create directory \"");
 		strcat (errorText, pathname);
@@ -604,7 +604,7 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 
 	if (fstat(pk->fd, &buf) == -1)
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pk->filename) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Could not fstat to check for conflict \"");
 		strcat (errorText, pk->filename);

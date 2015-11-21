@@ -244,7 +244,7 @@ static void test_order(char *fileName)
 	Key *key;
 	size_t currentIndex = 0;
 	size_t numKeys = ksGetSize (ks);
-	long *usedOrders = malloc (numKeys * sizeof(long));
+	long *usedOrders = elektraMalloc (numKeys * sizeof(long));
 
 	exit_if_fail(usedOrders, "unable to allocate memory for order array");
 

@@ -196,7 +196,7 @@ char *parentName;
 size_t parentSize;
 
 parentSize=keyGetParentNameSize(key);
-parentName=malloc(parentSize);
+parentName=elektraMalloc(parentSize);
 keyGetParentName(key,parentName,parentSize);
 // work with parentName
 free (parentName);

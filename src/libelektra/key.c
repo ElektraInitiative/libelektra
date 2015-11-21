@@ -84,7 +84,7 @@
  */
 static Key *elektraKeyMalloc()
 {
-	Key *key = (Key *)malloc(sizeof(Key));
+	Key *key = (Key *)elektraMalloc(sizeof(Key));
 	if (!key) return 0;
 	keyInit(key);
 
@@ -182,7 +182,7 @@ static Key *elektraKeyMalloc()
  * 	initialized, but really empty, object 
  * @see keyDel()
  * @return a pointer to a new allocated and initialized Key object.
- * @retval NULL on malloc error or if an invalid @p name was passed (see keySetName()).
+ * @retval NULL on allocation error or if an invalid @p name was passed (see keySetName()).
  * @ingroup key
  *
  */

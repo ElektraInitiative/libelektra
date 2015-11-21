@@ -81,7 +81,7 @@ int main()
 {
 	long long nrIterations = 100000000;
 	const char str1[] = "some string to be compared with/some\\/more with a long common part, and only a bit different";
-	char* str2 = malloc(sizeof(str1));
+	char* str2 = elektraMalloc(sizeof(str1));
 	strcat(str2, str1);
 	str2[sizeof(str1)-5] = 'X';
 

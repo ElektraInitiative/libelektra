@@ -26,8 +26,8 @@ KeySet *set_pluginconf()
 void test_resolve()
 {
 	int pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
-	char *path = malloc (pathLen);
-	exit_if_fail (path != 0, "malloc failed");
+	char *path = elektraMalloc (pathLen);
+	exit_if_fail (path != 0, "elektraMalloc failed");
 	snprintf (path, pathLen, "%s/%s/elektra.ecf", tempHome, KDB_DB_USER);
 
 	printf ("Resolve Filename\n");

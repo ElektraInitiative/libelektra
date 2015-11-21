@@ -91,7 +91,7 @@ int elektraKeyAppendMetaLine (Key *target, const char *metaName, const char *lin
 	}
 
 	const Key *existingMeta = keyGetMeta(target, metaName);
-	char *buffer = malloc (keyGetValueSize(existingMeta) + strlen (line) + 1);
+	char *buffer = elektraMalloc (keyGetValueSize(existingMeta) + strlen (line) + 1);
 	if (!buffer) return 0;
 
 	keyGetString(existingMeta, buffer, keyGetValueSize(existingMeta));
@@ -304,7 +304,7 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 					free (value);
 					const Key *valueKey = keyGetMeta(target, keyString(metaName));
 					size_t valueSize = keyGetValueSize(valueKey);
-					value = malloc (valueSize);
+					value = elektraMalloc (valueSize);
 					keyGetString(valueKey, value, valueSize);
 					keySetMeta(target, keyString(metaName), 0);
 					result = strtok_r (value, "\n", &saveptr);

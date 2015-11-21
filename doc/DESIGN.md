@@ -30,8 +30,8 @@ You must use the memory management facilities mentioned in the next chapter.
 Elektra manages memory itself. No free must be required, which
 was not allocated by the programmer himself. This avoids that
 free is forgotten, makes the API more beginner-friendly. In
-addition to all that malloc and free must have the same libc
-version. malloc in a library linked against another libc, but
+addition to all that elektraMalloc and free must have the same libc
+version. elektraMalloc in a library linked against another libc, but
 freed by the application could lead to hard to find bugs.
 
 Some calls have a opposite call to get the structure freed again:  
@@ -50,8 +50,8 @@ program.
 	KeySet *ksNew(int alloc, ...);
 	int ksDel(KeySet *ks);
 
-These 2 pairs just malloc what is necessary and free it again.
-There are more mallocs then just the KDB, Key and KeySet
+These 2 pairs just elektraMalloc what is necessary and free it again.
+There are more elektraMallocs then just the KDB, Key and KeySet
 structures, but they are invisible and they happen implicit
 within any of these 3 classes.
 
@@ -66,7 +66,7 @@ the comment.
 	ssize_t keyGetCommentSize(const Key *key);
 to see how long the comment is for above function and how much
 buffer to allocate for function below. This value can be directly
-passed to malloc.
+passed to elektraMalloc.
 
 	ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
 will write the comment in a buffer maintained by you which is allocated
@@ -127,7 +127,7 @@ to distinguish between no data and '\0'.
 
 	ssize_t keyGetValueSize(const Key *key);
 does not specify whether it is a binary or string, it will just return
-the size which can be passed to malloc to hold the entire value.
+the size which can be passed to elektraMalloc to hold the entire value.
 
 	ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize);
 Get the string into a buffer maintained by you.

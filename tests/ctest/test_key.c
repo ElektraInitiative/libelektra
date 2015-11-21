@@ -258,7 +258,7 @@ static void test_keyHelpers()
 	}
 
 	parentSize=keyGetParentNameSize(key);
-	parentName=malloc(parentSize);
+	parentName=elektraMalloc(parentSize);
 	keyGetParentName(key,parentName,parentSize);
 	succeed_if_same_string (parentName, "system/parent");
 	free (parentName);
@@ -675,7 +675,7 @@ static void test_owner()
 	succeed_if(keyIsBinary (key), "Could not set type to binary");
 	succeed_if(keyGetValueSize(key) == sizeof(array), "Value size not correct");
 	succeed_if(memcmp ((char *) keyValue(key), array, sizeof(array)) == 0, "could not get correct binary value");
-	getBack = malloc (keyGetValueSize(key));
+	getBack = elektraMalloc (keyGetValueSize(key));
 	keyGetBinary(key, getBack, keyGetValueSize(key));
 	succeed_if(memcmp(getBack, array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
 	free (getBack);

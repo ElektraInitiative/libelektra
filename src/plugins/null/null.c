@@ -78,7 +78,7 @@ int elektraNullSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		}
 		else if (!strncmp (keyValue(k), "@", 1))
 		{
-			char *n = malloc (keyGetValueSize(k)+1);
+			char *n = elektraMalloc (keyGetValueSize(k)+1);
 			strcpy (n, "@");
 			strcat (n, keyValue(k));
 			keySetString (k, n);

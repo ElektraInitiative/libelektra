@@ -107,7 +107,7 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 
 	/* work with worst case, when all chars are wide */
 	bufferSize=*inputOutputByteSize * 4;
-	converted=malloc(bufferSize);
+	converted=elektraMalloc(bufferSize);
 	if (!converted) return -1;
 
 	readCursor=*string;
@@ -127,7 +127,7 @@ int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOu
 	/* store the current kdbbDecoded string for future free */
 	readCursor=*string;
 	/* allocate an optimal size area to store the converted string */
-	*string=malloc(*inputOutputByteSize);
+	*string=elektraMalloc(*inputOutputByteSize);
 	/* copy all that matters for returning */
 	memcpy(*string,converted,*inputOutputByteSize);
 	/* release memory used by passed string */
@@ -174,7 +174,7 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			/* String or similar type of value */
 			size_t convertedDataSize=keyGetValueSize(cur);
-			char *convertedData=malloc(convertedDataSize);
+			char *convertedData=elektraMalloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
 			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
@@ -192,7 +192,7 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			/* String or similar type of value */
 			size_t convertedDataSize=keyGetValueSize(meta);
-			char *convertedData=malloc(convertedDataSize);
+			char *convertedData=elektraMalloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
 			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
@@ -225,7 +225,7 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			/* String or similar type of value */
 			size_t convertedDataSize=keyGetValueSize(cur);
-			char *convertedData=malloc(convertedDataSize);
+			char *convertedData=elektraMalloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
 			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
@@ -244,7 +244,7 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			/* String or similar type of value */
 			size_t convertedDataSize=keyGetValueSize(meta);
-			char *convertedData=malloc(convertedDataSize);
+			char *convertedData=elektraMalloc(convertedDataSize);
 
 			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
 			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))

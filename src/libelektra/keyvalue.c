@@ -230,12 +230,12 @@ const char *keyString(const Key *key)
  * A binary key has no '\\0' termination. String types have it, so to there
  * length will be added 1 to have enough space to store it.
  *
- * This method can be used with malloc() before keyGetString() or keyGetBinary()
+ * This method can be used with elektraMalloc() before keyGetString() or keyGetBinary()
  * is called.
  *
  * @code
 char *buffer;
-buffer = malloc (keyGetValueSize (key));
+buffer = elektraMalloc (keyGetValueSize (key));
 // use this buffer to store the value (binary or string)
 // pass keyGetValueSize (key) for maxSize
  * @endcode

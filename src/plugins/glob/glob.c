@@ -86,7 +86,7 @@ static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection dire
 			/* Now look if we want cascading for the key */
 			if (keyString (k)[0] == '/')
 			{
-				char* newstring = malloc (valsize + parentsize);
+				char* newstring = elektraMalloc (valsize + parentsize);
 				strcpy (newstring, keyName (parentKey));
 				strcat (newstring, keyString (k));
 				keySetString (ins, newstring);

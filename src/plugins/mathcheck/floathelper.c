@@ -48,7 +48,7 @@ char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 
 double elektraEFtoF(const char *string)
 {
-	char *buffer = malloc(elektraStrLen(string));
+	char *buffer = elektraMalloc(elektraStrLen(string));
 	strcpy(buffer, string);
 	char *sepPtr = strchr(buffer, ELEKTRA_DEFAULT_DECIMAL_POINT);
 	if(sepPtr == NULL)
