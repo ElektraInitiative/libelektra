@@ -3,7 +3,7 @@
  *
  * @brief Interactive merge strategy asking for user input at each step
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 

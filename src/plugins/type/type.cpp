@@ -3,7 +3,7 @@
 *
 * @brief Implementation of entry points
 *
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 *
 */
 

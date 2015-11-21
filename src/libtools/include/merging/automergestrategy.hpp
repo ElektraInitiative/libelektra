@@ -3,7 +3,7 @@
  *
  * @brief A strategy for taking the value of
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 #ifndef AUTOMERGESTRATEGY_HPP_

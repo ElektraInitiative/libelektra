@@ -3,7 +3,7 @@
  *
  * @brief A strategy which always takes the value from one side
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 

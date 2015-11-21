@@ -3,7 +3,7 @@
  *
  * @brief Contains the set direction of the hosts plugin
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 

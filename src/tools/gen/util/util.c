@@ -14,7 +14,7 @@ https://pythonhosted.org/Cheetah/recipes/staticmethod.html
 @def header(filename)
 /** @file
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  * \warning this is a generated file, do not modify it
  * \warning this is a prototype and not production code

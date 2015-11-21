@@ -3,7 +3,7 @@
  *
  * @brief Utility functions for comment meta keys
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
