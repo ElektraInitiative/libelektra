@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Implements a way to build and deal with a backend
  *

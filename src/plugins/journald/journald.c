@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief A plugin which logs write operations and errors via the native journald interface
  *

@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Implementation of get/set and error plugins
  *

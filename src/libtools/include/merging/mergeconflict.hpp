@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Models a merge conflict
  *

@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Key helper functions
  *

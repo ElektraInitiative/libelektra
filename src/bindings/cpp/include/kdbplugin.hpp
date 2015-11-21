@@ -1,5 +1,5 @@
 /**
-* \file
+* @file
 *
 * @brief Helpers for creating plugins
 *

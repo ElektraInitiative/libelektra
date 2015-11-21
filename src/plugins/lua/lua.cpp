@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Plugin which acts as proxy and calls other plugins written in lua
  *

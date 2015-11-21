@@ -1,5 +1,5 @@
 /**
-* \file
+* @file
 *
 * @brief Only a destructor
 *

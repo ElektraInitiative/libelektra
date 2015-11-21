@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Applies a MergeConflictStrategy on the meta keys
  *

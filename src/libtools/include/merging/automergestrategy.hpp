@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief A strategy for taking the value of
  *

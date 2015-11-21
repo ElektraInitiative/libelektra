@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Class modelling the result of a three way merge
  *

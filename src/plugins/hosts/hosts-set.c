@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Contains the set direction of the hosts plugin
  *

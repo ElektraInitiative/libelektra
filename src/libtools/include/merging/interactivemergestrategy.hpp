@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Interactive merge strategy asking for user input at each step
  *

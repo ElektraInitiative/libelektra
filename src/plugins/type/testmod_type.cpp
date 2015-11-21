@@ -1,5 +1,5 @@
 /**
-* \file
+* @file
 *
 * @brief Tests for data type checker
 *

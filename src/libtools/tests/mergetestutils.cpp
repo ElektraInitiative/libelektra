@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Implements a helper class for merge related tests
  *

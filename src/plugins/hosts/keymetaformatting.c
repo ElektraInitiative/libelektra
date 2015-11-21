@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Utility functions for comment meta keys
  *

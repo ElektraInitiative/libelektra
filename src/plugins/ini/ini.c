@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief A plugin for reading and writing ini files
  *

@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Implementation of all exceptions elektratools library might throw
  *

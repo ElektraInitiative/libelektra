@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Common Elektra extensions for GTest
  *

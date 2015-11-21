@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Allows one to list all available backends
  *

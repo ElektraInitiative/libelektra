@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief A plugin that reads configuration files and saves keys on a line by line basis *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)

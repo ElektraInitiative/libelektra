@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief A configuration for a simple automerge and guaranteed conflict resolution by one side
  *

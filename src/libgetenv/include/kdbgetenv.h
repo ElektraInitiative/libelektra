@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Header for the getenv library
  *

@@ -12,7 +12,7 @@ https://pythonhosted.org/Cheetah/recipes/staticmethod.html
 
 @@staticmethod
 @def header(filename)
-/** \file
+/** @file
  *
  * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *

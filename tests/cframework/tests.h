@@ -1,4 +1,4 @@
-/**\file
+/**@file
   * Some common functions in use for testing framework.
   * @see tests_internal.h
   */

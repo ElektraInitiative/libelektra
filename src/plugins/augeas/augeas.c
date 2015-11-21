@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief A plugin that makes use of libaugeas to read and write configuration files
  *

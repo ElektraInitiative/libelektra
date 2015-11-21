@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Base class for defining preconfigured merge configurations
  *

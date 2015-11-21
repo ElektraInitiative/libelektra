@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief A strategy which always takes the value from one side
  *

@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief source file of mount command
  *

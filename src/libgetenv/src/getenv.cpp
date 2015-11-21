@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * @brief Source for the getenv library
  *

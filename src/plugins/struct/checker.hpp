@@ -1,5 +1,5 @@
 /**
-* \file
+* @file
 *
 * @brief Headerfile of Struct checker
 *
