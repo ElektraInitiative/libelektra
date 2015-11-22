@@ -233,5 +233,6 @@ To start development, just clone the repo and start hacking!
   the central data structure in Elektra.
 - You should read the [design document](doc/DESIGN.md) before you make
   design relevant decisions.
+- In the source code, you should look into [libs](src/libs/) and [plugins](/src/plugins/).
 - You can always peek into the [TODOs](doc/todo), if you don't know
   what to do.
