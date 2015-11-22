@@ -7,12 +7,7 @@
  */
 
 #include "treeviewmodel.hpp"
-#include <threewaymerge.hpp>
-#include <automergeconfiguration.hpp>
-#include <mergeconflictstrategy.hpp>
-#include <automergestrategy.hpp>
-#include <onesidestrategy.hpp>
-#include <onesidevaluestrategy.hpp>
+
 #include <toolexcept.hpp>
 #include <backends.hpp>
 #include <modules.hpp>
@@ -20,6 +15,13 @@
 #include <plugins.hpp>
 #include <kdbproposal.h> // for namespaces
 #include <kdbconfig.h> // for DEBUG and VERBOSE
+
+#include <merging/threewaymerge.hpp>
+#include <merging/automergeconfiguration.hpp>
+#include <merging/mergeconflictstrategy.hpp>
+#include <merging/automergestrategy.hpp>
+#include <merging/onesidestrategy.hpp>
+#include <merging/onesidevaluestrategy.hpp>
 
 using namespace std;
 using namespace kdb;
