@@ -16,6 +16,8 @@
 # include "kdbconfig.h"
 #endif
 
+#include <kdbtypes.h>
+
 #include <stdarg.h>
 #include <stddef.h>
 
@@ -40,6 +42,7 @@ int elektraMemCaseCmp (const char *s1, const char *s2, size_t size);
 
 /* Len */
 size_t elektraStrLen(const char *s);
+int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
 
 
 #ifdef __cplusplus

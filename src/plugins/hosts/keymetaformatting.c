@@ -9,6 +9,7 @@
 
 #include "keymetaformatting.h"
 
+#include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbproposal.h>
 #include <string.h>

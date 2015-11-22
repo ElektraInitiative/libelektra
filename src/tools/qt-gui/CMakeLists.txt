@@ -15,9 +15,6 @@ else()
 include_directories (
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
-	../../libtools/include
-	../../libtools/include/merging
-	../../libtools/include/helper
 	)
 
 include_directories (

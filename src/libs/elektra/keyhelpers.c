@@ -10,9 +10,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
-#endif
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
@@ -25,6 +23,7 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
 
 #include "kdb.h"
 #include "kdbtypes.h"
@@ -296,6 +295,35 @@ int keyInit(Key *key)
 	return 0;
 }
 
+static int elektraSetMetaInt (Key * key, const char * meta, int value)
+{
+	char * str = 0;
+	if ((str = elektraFormat ("%d", value)) == 0)
+	{
+		return -1;
+	}
+
+	keySetMeta (key, meta, str);
+	elektraFree (str);
+	return 0;
+}
+
+// duplicate of keySetMode in meta/meta.c
+static int elektraSetMode(Key *key, mode_t mode)
+{
+	char str[MAX_LEN_INT];
+	if (!key) return -1;
+
+	if (snprintf (str, MAX_LEN_INT-1, "%o", mode) < 0)
+	{
+		return -1;
+	}
+
+	keySetMeta(key, "mode", str);
+
+	return 0;
+}
+
 /**
  * @internal
  *
@@ -315,6 +343,8 @@ void keyVInit(Key *key, const char *name, va_list va)
 	void (*func) (void) = 0;
 	int flags = 0;
 	char *owner = 0;
+	int mode = 0;
+	int hasMode = 0;
 
 	if (!key) return;
 
@@ -376,30 +406,29 @@ void keyVInit(Key *key, const char *name, va_list va)
 					owner = va_arg(va, char *);
 					break;
 				case KEY_COMMENT:
-					keySetComment(key, va_arg(va, char *));
+					keySetMeta(key, "comment", va_arg(va, char *));
 					break;
-#ifndef WIN32
 				case KEY_UID:
-					keySetUID(key, va_arg(va, uid_t));
+					elektraSetMetaInt(key, "uid", va_arg(va, int));
 					break;
 				case KEY_GID:
-					keySetGID(key, va_arg(va, gid_t));
+					elektraSetMetaInt(key, "gid", va_arg(va, int));
 					break;
 				case KEY_DIR:
-					keySetDir(key);
+					mode |= KDB_DIR_MODE;
 					break;
 				case KEY_MODE:
-					/* Theoretically this should be mode_t, but prefer using
-					   int to avoid troubles when sizeof(mode_t)!=sizeof(int)
-					 */
-					keySetMode(key, va_arg(va, int));
+					hasMode = 1;
+					mode |= va_arg(va, int);
 					break;
-#endif
-				/* deprecated flags, not working anymore */
 				case KEY_ATIME:
+					elektraSetMetaInt(key, "atime", va_arg(va, time_t));
+					break;
 				case KEY_MTIME:
+					elektraSetMetaInt(key, "mtime", va_arg(va, time_t));
+					break;
 				case KEY_CTIME:
-					va_arg(va, time_t);
+					elektraSetMetaInt(key, "ctime", va_arg(va, time_t));
 					break;
 
 				default:
@@ -415,6 +444,9 @@ void keyVInit(Key *key, const char *name, va_list va)
 		option_t name_options = flags &
 			(KEY_CASCADING_NAME | KEY_META_NAME | KEY_EMPTY_NAME);
 		elektraKeySetName(key, name, name_options);
+
+		if (!hasMode && mode == KDB_DIR_MODE) elektraSetMode (key, KDB_FILE_MODE | KDB_DIR_MODE);
+		else if (mode != 0) elektraSetMode (key, mode);
 
 		if (owner) keySetOwner(key, owner);
 	}

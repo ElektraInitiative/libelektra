@@ -231,7 +231,7 @@ macro (add_headers HDR_FILES)
 			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 			DEPENDS exporterrors
 			COMMAND ${EXE_ERR_LOC}
-			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/liberror/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
+			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 			)
 	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
@@ -249,12 +249,12 @@ macro (add_cppheaders HDR_FILES)
 endmacro (add_cppheaders)
 
 macro (add_toolheaders HDR_FILES)
-	include_directories ("${PROJECT_BINARY_DIR}/src/libtools/include")
+	include_directories ("${PROJECT_BINARY_DIR}/src/libs/tools/include")
 	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
-	include_directories ("${PROJECT_SOURCE_DIR}/src/libtools/include")
-	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libtools/include/*)
+	include_directories ("${PROJECT_SOURCE_DIR}/src/libs/tools/include")
+	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_toolheaders)
 

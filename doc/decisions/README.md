@@ -12,6 +12,7 @@ section here.
 - [Holes](holes.md)
 - [Unit Testing](unit_testing.md)
 - [Capabilities](capabilities.md)
+- [Library Split](library_split.md)
 
 ## Decided
 

@@ -26,6 +26,8 @@
 #include <string.h>
 #endif
 
+#include <stdio.h>
+
 #include <kdbtypes.h>
 
 #include "kdbinternal.h"
@@ -1519,6 +1521,38 @@ static void elektraCopyCallbackMeta(Key *dest, Key *source)
 			keyCopyMeta(dest, source, metaname);
 		}
 	}
+}
+
+/**
+ * @internal
+ * @brief Writes a elektra array name
+ *
+ * @param newName the buffer to write to (size must be
+ *       #ELEKTRA_MAX_ARRAY_SIZE or more)
+ * @param newIndex the index of the array to write
+ *
+ * @retval 0 on success
+ * @retval -1 on error
+ */
+int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex)
+{
+	// now we fill out newName
+	size_t index = 0; // index of newName
+	newName[index++] = '#';
+	kdb_long_long_t i = newIndex/10;
+
+	while (i>0)
+	{
+		newName[index++] = '_'; // index n-1 of decimals
+		i/=10;
+	}
+	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE,
+				ELEKTRA_LONG_LONG_F, newIndex)  < 0)
+	{
+		return -1;
+	}
+
+	return 0;
 }
 
 /**

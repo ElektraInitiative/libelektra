@@ -12,6 +12,7 @@
 
 #include "line.h"
 
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbproposal.h>
 

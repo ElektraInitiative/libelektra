@@ -770,6 +770,7 @@ INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
                          @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
                          @PROJECT_SOURCE_DIR@/src/libloader/doc.c \
                          @PROJECT_SOURCE_DIR@/src/libgetenv/README.md \
+                         @PROJECT_SOURCE_DIR@/src/libs/README.md \
                          @PROJECT_SOURCE_DIR@/doc \
                          @PROJECT_SOURCE_DIR@/src/plugins \
                          @PROJECT_SOURCE_DIR@/README.md

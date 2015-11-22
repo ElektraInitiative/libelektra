@@ -16,9 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
+#include <kdbease.h>
 #include "csvstorage.h"
 
 #define INTSTR_MAX 15

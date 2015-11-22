@@ -10,8 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
-
+#include <kdbease.h>
 #include <kdbhelper.h>
 
 #include <tests_plugin.h>

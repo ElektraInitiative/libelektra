@@ -16,8 +16,9 @@
 #include <kdb.hpp>
 #include <keyio.hpp>
 #include <backend.hpp>
-#include <mergeconfiguration.hpp>
-#include <automergeconfiguration.hpp>
+
+#include <merging/mergeconfiguration.hpp>
+#include <merging/automergeconfiguration.hpp>
 
 #include "confignode.hpp"
 #include "printvisitor.hpp"

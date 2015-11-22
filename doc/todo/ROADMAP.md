@@ -14,21 +14,12 @@ for other activities of the current release.
 ## start with
 
 api:
-	add keyGetNamespace
 	version rules ELEKTRA_ABI_13 ...
 	include rules to allow elektra/kdb.h
 
 to one cmake variable:
 	verbose/debug -> logging
 	pdf/on/off -> docu
-
-split elektra:
-	Libelektra-core (only key+keyset)
-	libelektra-kdb
-	libelektra-meta
-	libelektra-ease
-	libelektra-proposal
-	libelektra links everything together
 
 md_src_plugins_keytometa_README.3elektra
 

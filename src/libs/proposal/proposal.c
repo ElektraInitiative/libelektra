@@ -74,64 +74,6 @@ ssize_t keySetStringF(Key *key, const char *format, ...)
 
 
 /**
- * @brief Increment the name of the key by one
- *
- * Alphabetical order will remain
- *
- * e.g. user/abc/\#9 will be changed to
- *      user/abc/\#_10
- *
- * For the start:
- *      user/abc/\#
- * will be changed to
- *      user/abc/\#0
- *
- * @param key which base name will be incremented
- *
- * @retval -1 on error (e.g. too large array, not validated array)
- * @retval 0 on success
- */
-int elektraArrayIncName(Key *key)
-{
-	const char * baseName = keyBaseName(key);
-
-	int arrayElement = elektraArrayValidateName(key);
-	if (arrayElement == -1)
-	{
-		return -1;
-	}
-
-	++baseName; // jump over #
-	while (*baseName == '_') // jump over all _
-	{
-		++baseName;
-	}
-
-	kdb_long_long_t oldIndex  = 0;
-	if (!arrayElement)
-	{
-		// we have a start element
-		oldIndex = -1;
-	}
-	else
-	{
-		if (elektraReadArrayNumber(baseName, &oldIndex) == -1)
-		{
-			return -1;
-		}
-	}
-
-	kdb_long_long_t newIndex = oldIndex+1; // we increment by one
-
-	char newName[ELEKTRA_MAX_ARRAY_SIZE];
-
-	elektraWriteArrayNumber(newName, newIndex);
-	keySetBaseName(key, newName);
-
-	return 0;
-}
-
-/**
  * Builds an array of pointers to the keys in the supplied keyset.
  * The keys are not copied, calling keyDel may remove them from
  * the keyset.
@@ -173,52 +115,6 @@ int elektraKsToMemArray(KeySet *ks, Key **buffer)
 	return idx;
 }
 
-
-/**
- * @brief return only those keys from the given
- * keyset that pass the supplied filter function
- * with the supplied argument
- *
- * @param result the keyset that should contain the filtered keys
- * @param input the keyset whose keys should be filtered
- * @param filter a function pointer to a function that will be used to
- * filter the keyset. A key will be taken if the function returns a value
- * greater than 0.
- * @param argument an argument that will be passed to the filter function
- * each time it is called
- * @return the number of filtered keys if the filter function always
- * returned a positive value, -1 otherwise
- * @retval NULL on NULL pointer
- */
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument)
-{
-	if (!result) return -1;
-
-	if (!input) return -1;
-
-	if (!filter) return -1;
-
-	int rc = 0;
-	int ret = 0;
-	Key *current;
-
-	cursor_t cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
-	{
-		rc = filter (current, argument);
-		if (rc <= -1) return -1;
-		else if (rc > 0)
-		{
-			++ ret;
-			ksAppendKey(result, keyDup (current));
-		}
-	}
-	ksSetCursor(input, cursor);
-	return ret;
-}
-
-
 /**
  * @brief Takes the first key and cuts off this common part
  * for all other keys, instead name will be prepended
@@ -254,35 +150,6 @@ KeySet* elektraRenameKeys(KeySet *config, const char* name)
 
 	return newConfig;
 }
-
-/**
- * For currently valid namespaces see #elektraNamespace.
- *
- * @since 0.8.10
- * Added method to kdbproposal.h
- *
- * To handle every possible cases (including namespaces) a key can have:
- * @snippet namespace.c namespace
- *
- * To loop over all valid namespaces use:
- * @snippet namespace.c loop
- *
- * @note This method might be enhanced. You do not have any guarantee
- * that, when for a specific name #KEY_NS_META
- * is returned today, that it still will be returned after the next
- * recompilation. So make sure that your compiler gives you a warning
- * for unhandled switches (gcc: -Wswitch or -Wswitch-enum if you
- * want to handle default) and look out for those warnings.
- *
- * @param key the key object to work with
- * @return the namespace of a key.
- */
-elektraNamespace keyGetNamespace(const Key *key)
-{
-	if (!key) return KEY_NS_NONE;
-	return keyGetNameNamespace(key->key);
-}
-
 
 /**
  * @brief Permanently locks a part of the key
@@ -343,97 +210,6 @@ int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
 	return ret;
 }
 
-/**
- * @internal
- *
- * Returns true (1) for all keys that are part of the array
- * identified by the supplied array parent. Only the array
- * eleements themself, but no subkeys of them will be filtered
- *
- * @pre The supplied argument has to be of type (const Key *)
- * and is the parent of the array to be extracted. For example
- * if the keys of the array comment/# are to be extracted, a key
- * with the name "comment" has to be supplied
- *
- * @param key the key to be checked against the array
- * @param argument the array parent
- * @return 1 if the key is part of the array identified by the
- * array parent, 0 otherwise
- *
- */
-static int arrayFilter(const Key *key, void *argument)
-{
-	const Key *arrayParent = (const Key *) argument;
-
-	return keyIsDirectBelow(arrayParent, key) && elektraArrayValidateName(key);
-}
-
-
-/**
- * Return all the array keys below the given arrayparent
- * The arrayparent itself is not returned.
- * For example, if user/config/# is an array,
- * user/config is the array parent.
- * Only the direct array keys will be returned. This means
- * that for example user/config/#1/key will not be included,
- * but only user/config/#1.
- *
- * A new keyset will be allocated for the resulting keys.
- * This means that the caller must ksDel the resulting keyset.
- *
- * @param arrayParent the parent of the array to be returned
- * @param keys the keyset containing the array keys.
- *
- * @return a keyset containing the arraykeys (if any)
- * @retval NULL on NULL pointers
- */
-KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
-{
-	if (!arrayParent) return 0;
-
-	if (!keys) return 0;
-
-	KeySet *arrayKeys = ksNew(ksGetSize(keys), KS_END);
-	elektraKsFilter(arrayKeys, keys, &arrayFilter, (void *)arrayParent);
-	return arrayKeys;
-}
-
-/**
- *
- * Return the next key in the given array.
- * The function will automatically allocate memory
- * for a new key and name it accordingly.
- *
- * @pre The supplied keyset must contain only valid array keys.
- *
- * The caller has to keyDel the resulting key.
- *
- * @param arraykeys the array where the new key will belong to
- *
- * @return the new array key on success
- * @retval NULL if the passed array is empty
- * @retval NULL on NULL pointers or if an error occurs
- */
-Key *elektraArrayGetNextKey(KeySet *arrayKeys)
-{
-	if (!arrayKeys) return 0;
-
-	Key *last = ksPop(arrayKeys);
-
-	if (!last) return 0;
-
-	ksAppendKey(arrayKeys, last);
-	Key *newKey = keyDup(last);
-	int ret = elektraArrayIncName(newKey);
-
-	if (ret == -1)
-	{
-		keyDel(newKey);
-		return 0;
-	}
-
-	return newKey;
-}
 
 /**
  * @brief Return meta data as keyset
