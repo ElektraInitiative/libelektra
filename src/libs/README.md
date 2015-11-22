@@ -12,7 +12,8 @@ Since [0.8.15](/doc/decisions/library_split.md) libelektra is split in following
     libelektra.so
 
 Libelektra is now only a stub for legacy applications. It basically only links all previous libraries
-together. It should not be used for new applications or plugins.
+together. It should not be used for new applications or plugins, unless you actually want to link
+against everything.
 
 ### Libfull
 
@@ -73,3 +74,11 @@ of the contents in [METADATA.ini](/doc/METADATA.ini).
 
 Contains the fundamental data-structures every participant of Elektra needs
 to link against.
+
+## Libtools
+
+Is a high-level C++ shared-code for tools. It includes:
+
+- plugin interface
+- backend interface
+- 3-way merge
