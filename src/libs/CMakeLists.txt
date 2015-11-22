@@ -1,3 +1,5 @@
+include (LibAddLib)
+
 add_subdirectory (loader)
 
 add_subdirectory (tools)
