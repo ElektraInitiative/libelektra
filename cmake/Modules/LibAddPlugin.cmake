@@ -14,7 +14,7 @@ include(LibAddMacros)
 #  do not add dependencies to Elektra, use LINK_ELEKTRA for that
 #
 # LINK_ELEKTRA:
-#  allows you to selectively link against Elektra, libraries, e.g. elektra-plugin
+#  allows you to selectively link against different Elektra libraries, the default is elektra-plugin
 #
 # COMPILE_DEFINITIONS:
 #  Set additional macros for per-variant compilation.
@@ -82,7 +82,7 @@ function(add_plugin PLUGIN_SHORT_NAME)
 		if (ARG_LINK_ELEKTRA)
 			target_link_libraries (${PLUGIN_NAME} ${ARG_LINK_ELEKTRA})
 		else()
-			target_link_libraries (${PLUGIN_NAME} elektra)
+			target_link_libraries (${PLUGIN_NAME} elektra-plugin)
 		endif ()
 		target_link_libraries (${PLUGIN_NAME}
 			${ARG_LINK_LIBRARIES})
