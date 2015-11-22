@@ -152,35 +152,6 @@ KeySet* elektraRenameKeys(KeySet *config, const char* name)
 }
 
 /**
- * For currently valid namespaces see #elektraNamespace.
- *
- * @since 0.8.10
- * Added method to kdbproposal.h
- *
- * To handle every possible cases (including namespaces) a key can have:
- * @snippet namespace.c namespace
- *
- * To loop over all valid namespaces use:
- * @snippet namespace.c loop
- *
- * @note This method might be enhanced. You do not have any guarantee
- * that, when for a specific name #KEY_NS_META
- * is returned today, that it still will be returned after the next
- * recompilation. So make sure that your compiler gives you a warning
- * for unhandled switches (gcc: -Wswitch or -Wswitch-enum if you
- * want to handle default) and look out for those warnings.
- *
- * @param key the key object to work with
- * @return the namespace of a key.
- */
-elektraNamespace keyGetNamespace(const Key *key)
-{
-	if (!key) return KEY_NS_NONE;
-	return keyGetNameNamespace(key->key);
-}
-
-
-/**
  * @brief Permanently locks a part of the key
  *
  * This can be:

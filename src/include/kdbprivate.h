@@ -497,9 +497,6 @@ int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey);
 Key* elektraMountGetMountpoint(KDB *handle, const Key *where);
 Backend* elektraMountGetBackend(KDB *handle, const Key *key);
 
-/*Private helper for keys*/
-elektraNamespace keyGetNameNamespace(const char *name);
-
 int keyInit(Key *key);
 void keyVInit(Key *key, const char *keyname, va_list ap);
 

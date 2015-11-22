@@ -14,7 +14,6 @@ for other activities of the current release.
 ## start with
 
 api:
-	add keyGetNamespace
 	version rules ELEKTRA_ABI_13 ...
 	include rules to allow elektra/kdb.h
 

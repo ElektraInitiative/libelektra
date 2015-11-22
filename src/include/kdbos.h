@@ -164,6 +164,8 @@ typedef ssize_t cursor_t;
 /*Integer types*/
 typedef int option_t;
 
+typedef int elektraNamespace;
+
 /**@brief Separator for key names.
  *
  * This character will be used to separate key names

@@ -461,6 +461,23 @@ static int elektraOnlySlashes(const char *name)
 }
 
 
+/**
+ * @internal
+ */
+static int keyGetNameNamespace(const char *name)
+{
+	if (!name) return KEY_NS_EMPTY;
+	if (!strcmp(name, "")) return KEY_NS_EMPTY;
+	if (name[0] == '/') return KEY_NS_CASCADING;
+	else if (keyNameIsSpec(name)) return KEY_NS_SPEC;
+	else if (keyNameIsProc(name)) return KEY_NS_PROC;
+	else if (keyNameIsDir(name)) return KEY_NS_DIR;
+	else if (keyNameIsUser(name)) return KEY_NS_USER;
+	else if (keyNameIsSystem(name)) return KEY_NS_SYSTEM;
+	return KEY_NS_META;
+}
+
+
 
 /**
  * Set a new name to a key.
@@ -648,23 +665,6 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 	} else strcpy(cursor,key->key);
 
 	return length;
-}
-
-
-/**
- * @internal
- */
-elektraNamespace keyGetNameNamespace(const char *name)
-{
-	if (!name) return KEY_NS_EMPTY;
-	if (!strcmp(name, "")) return KEY_NS_EMPTY;
-	if (name[0] == '/') return KEY_NS_CASCADING;
-	else if (keyNameIsSpec(name)) return KEY_NS_SPEC;
-	else if (keyNameIsProc(name)) return KEY_NS_PROC;
-	else if (keyNameIsDir(name)) return KEY_NS_DIR;
-	else if (keyNameIsUser(name)) return KEY_NS_USER;
-	else if (keyNameIsSystem(name)) return KEY_NS_SYSTEM;
-	return KEY_NS_META;
 }
 
 
@@ -1104,6 +1104,35 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 
 	return key->keySize;
 }
+
+/**
+ * For currently valid namespaces see #elektraNamespace.
+ *
+ * @since 0.8.10
+ * Added method to kdbproposal.h
+ *
+ * To handle every possible cases (including namespaces) a key can have:
+ * @snippet namespace.c namespace
+ *
+ * To loop over all valid namespaces use:
+ * @snippet namespace.c loop
+ *
+ * @note This method might be enhanced. You do not have any guarantee
+ * that, when for a specific name #KEY_NS_META
+ * is returned today, that it still will be returned after the next
+ * recompilation. So make sure that your compiler gives you a warning
+ * for unhandled switches (gcc: -Wswitch or -Wswitch-enum if you
+ * want to handle default) and look out for those warnings.
+ *
+ * @param key the key object to work with
+ * @return the namespace of a key.
+ */
+elektraNamespace keyGetNamespace(const Key *key)
+{
+	if (!key) return KEY_NS_NONE;
+	return keyGetNameNamespace(key->key);
+}
+
 
 
 /**
