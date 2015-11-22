@@ -554,7 +554,7 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in name");
 
 	keySetOwner (key1, "myowner");
-	succeed_if(keyCompare(key1,key2) == KEY_OWNER, "the keys should differ in owner");
+	succeed_if(keyCompare(key1,key2) == (KEY_OWNER|KEY_META), "the keys should differ in owner");
 	keySetOwner (key2, "myowner");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in owner");
 
@@ -564,22 +564,22 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in value");
 
 	keySetComment (key1, "mycomment");
-	succeed_if(keyCompare(key1,key2) == KEY_COMMENT, "the keys should differ in comment");
+	succeed_if(keyCompare(key1,key2) == (KEY_COMMENT|KEY_META), "the keys should differ in comment");
 	keySetComment (key2, "mycomment");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in comment");
 
 	keySetUID (key1, 50);
-	succeed_if(keyCompare(key1,key2) == KEY_UID, "the keys should differ in uid");
+	succeed_if(keyCompare(key1,key2) == (KEY_META), "the keys should differ in uid");
 	keySetUID (key2, 50);
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in uid");
 
 	keySetGID (key1, 50);
-	succeed_if(keyCompare(key1,key2) == KEY_GID, "the keys should differ in gid");
+	succeed_if(keyCompare(key1,key2) == (KEY_META), "the keys should differ in gid");
 	keySetGID (key2, 50);
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in gid");
 
 	keySetMode (key1, 0222);
-	succeed_if(keyCompare(key1,key2) == KEY_MODE, "the keys should differ in mode");
+	succeed_if(keyCompare(key1,key2) == (KEY_META), "the keys should differ in mode");
 	keySetMode (key2, 0222);
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in mode");
 
@@ -912,15 +912,15 @@ static void test_keyDir (void)
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
+	succeed_if (keyGetMode(key) == 0744, "key is not 0644, but was set");
 	keyDel (key);
 
 	key = keyNew ("user/s", KEY_DIR, KEY_MODE, 0444, KEY_END);
-	succeed_if (keyGetMode(key) == 0444, "0444 set by keyNew");
+	succeed_if (keyGetMode(key) == 0544, "0444 set by keyNew");
 	keyDel (key);
-	
+
 	key = keyNew ("user/s", KEY_MODE, 0444, KEY_DIR, KEY_END);
-	// succeed_if (keyGetMode(key) == 0555, "0555 set by keyNew");
+	succeed_if (keyGetMode(key) == 0544, "0555 set by keyNew");
 	keyDel (key);
 }
 

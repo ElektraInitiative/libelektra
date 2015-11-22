@@ -14,6 +14,11 @@ int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k,
 KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
 Key *elektraArrayGetNextKey(KeySet *arrayKeys);
 
+typedef int keyswitch_t;
+
+keyswitch_t keyCompare(const Key *key1, const Key *key2);
+keyswitch_t keyCompareMeta(const Key *key1, const Key *key2);
+
 #ifdef __cplusplus
 }
 }

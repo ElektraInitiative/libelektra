@@ -539,9 +539,7 @@ int keyIsString(const Key *key)
  * @link keyswitch_t::KEY_VALUE KEY_VALUE @endlink,
  * @link keyswitch_t::KEY_OWNER KEY_OWNER @endlink,
  * @link keyswitch_t::KEY_COMMENT KEY_COMMENT @endlink,
- * @link keyswitch_t::KEY_UID KEY_UID @endlink,
- * @link keyswitch_t::KEY_GID KEY_GID @endlink,
- * @link keyswitch_t::KEY_MODE KEY_MODE @endlink and
+ * @link keyswitch_t::KEY_META KEY_META @endlink (will be set in addition to owner and comment),
  *
  * @par A very simple example would be
  * @code
@@ -620,13 +618,13 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	if (!key1 && !key2) return 0;
 	if (!key1 || !key2) return KEY_NULL;
 
-	keyswitch_t ret=0;
+	keyswitch_t ret = 0;
 	ssize_t nsize1 = keyGetNameSize(key1);
 	ssize_t nsize2 = keyGetNameSize(key2);
 	const char *name1 = keyName(key1);
 	const char *name2 = keyName(key2);
-	const char *comment1 = keyComment(key1);
-	const char *comment2 = keyComment(key2);
+	const Key *comment1 = keyGetMeta(key1, "comment");
+	const Key *comment2 = keyGetMeta(key2, "comment");
 	const char *owner1 = keyOwner(key1);
 	const char *owner2 = keyOwner(key2);
 	const void *value1 = keyValue(key1);
@@ -634,29 +632,56 @@ keyswitch_t keyCompare(const Key *key1, const Key *key2)
 	ssize_t size1 = keyGetValueSize(key1);
 	ssize_t size2 = keyGetValueSize(key2);
 
-	// TODO: metadata not compared?
+	// TODO: might be (binary) by chance
+	if (strcmp(keyString(comment1), keyString(comment2)))
+						 ret|=KEY_COMMENT;
 
-#ifndef WIN32
-	if (keyGetUID(key1) != keyGetUID(key2))  ret|=KEY_UID;
-	if (keyGetGID(key1) != keyGetGID(key2))  ret|=KEY_GID;
-	if (keyGetMode(key1)!= keyGetMode(key2)) ret|=KEY_MODE;
-#endif
+	if (strcmp(owner1, owner2))              ret|=KEY_OWNER;
+
+	if (keyCompareMeta(key1, key2))          ret|=KEY_META;
 
 	if (nsize1 != nsize2)                    ret|=KEY_NAME;
 	else if (!name1 || !name2)               ret|=KEY_NAME;
 	else if (strcmp(name1, name2))           ret|=KEY_NAME;
 
-	if (!comment1 || !comment2)              ret|=KEY_COMMENT;
-	else if (strcmp(comment1, comment2))     ret|=KEY_COMMENT;
-
-	if (!owner1 || !owner2)                  ret|=KEY_OWNER;
-	if (strcmp(owner1, owner2))              ret|=KEY_OWNER;
 
 	if (size1 != size2)                      ret|=KEY_VALUE;
 	else if (!value1 || !value2)             ret|=KEY_VALUE;
 	else if (memcmp(value1, value2, size1))  ret|=KEY_VALUE;
 
+	// TODO: rewind meta data to previous position
 	return ret;
 }
 
+/**
+ * @brief Compares metadata of two keys
+ *
+ * @retval KEY_META if there is a difference
+ * @retval 0 if meta data is identical
+ */
+int keyCompareMeta (const Key * k1, const Key * k2)
+{
+	const Key * meta1;
+	const Key * meta2;
+
+	Key * key1 = (Key *)k1;
+	Key * key2 = (Key *)k2;
+
+	keyRewindMeta (key1);
+	keyRewindMeta (key2);
+	while ((meta1 = keyNextMeta (key1))!=0)
+	{
+		meta2 = keyNextMeta (key2);
+		if (!meta2)
+		{
+			return KEY_META;
+		}
+
+		if (strcmp(keyName(meta1), keyName(meta2))) return KEY_META;
+		if (strcmp(keyString(meta1), keyString(meta2))) return KEY_META;
+	}
+
+	// TODO: rewind meta data to previous position
+	return 0;
+}
 

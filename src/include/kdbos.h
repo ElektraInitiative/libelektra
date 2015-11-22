@@ -162,7 +162,6 @@
 typedef ssize_t cursor_t;
 
 /*Integer types*/
-typedef int keyswitch_t;
 typedef int option_t;
 
 /**@brief Separator for key names.

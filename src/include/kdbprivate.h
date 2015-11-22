@@ -554,8 +554,6 @@ int keyNameIsDir(const char *keyname);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
 
-keyswitch_t keyCompare(const Key *key1, const Key *key2);
-
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))
 /** Set a bit. @see clear_bit() */

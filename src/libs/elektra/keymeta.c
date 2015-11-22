@@ -138,7 +138,7 @@ const Key *meta;
 keyRewindMeta (key);
 while ((meta = keyNextMeta (key))!=0)
 {
-	printf ("name: %s, value: %s", keyName(meta), (const char*)keyValue(meta));
+	printf ("name: %s, value: %s", keyName(meta), keyString(meta));
 }
  * @endcode
  *
