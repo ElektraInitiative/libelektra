@@ -57,7 +57,6 @@ set (targets_built)
 SET(__symbols_file ${CMAKE_CURRENT_SOURCE_DIR}/libelektra-symbols.map)
 
 if (BUILD_SHARED)
-	# TODO: move plugin.c
 	file (GLOB KDB_FILES backend.c  kdb.c   mount.c  split.c  trie.c  plugin.c)
 	set (CORE_FILES ${SOURCES})
 	list (REMOVE_ITEM CORE_FILES ${KDB_FILES})
@@ -81,6 +80,7 @@ if (BUILD_SHARED)
 
 
 
+	#add_library (elektra INTERFACE) # no SOVERSION?
 	add_library (elektra SHARED)
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
 	target_link_libraries (elektra elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
