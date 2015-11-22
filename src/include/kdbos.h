@@ -66,6 +66,21 @@
 #define ELEKTRA_NOINLINE
 #endif
 
+
+/** The buffer size needed for an array name
+ *
+ * The size of the buffer so that the buffer can contain:
+ * - a # in the beginning
+ * - up to 9 underscores are needed as prefix
+ * - a 32bit number has a maximum of 10 digits
+ * - one byte for null termination
+ *
+ * E.g. \#_________4000000000\\0
+ */
+#define ELEKTRA_MAX_ARRAY_SIZE (21)
+
+
+
 #ifndef WIN32
 
 /***************************************************

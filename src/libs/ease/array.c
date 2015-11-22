@@ -8,17 +8,17 @@
 
 #define __STDC_FORMAT_MACROS
 
-#include <kdbprivate.h>
+#include <kdb.h>
+#include <kdbease.h>
+#include <kdbtypes.h>
+#include <kdbhelper.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
 #include <errno.h>
 #include <string.h>
-
-#ifdef HAVE_CTYPE_H
 #include <ctype.h>
-#endif
 
 /**
  * @internal

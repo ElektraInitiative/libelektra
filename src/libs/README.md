@@ -33,6 +33,7 @@ Should only used on embedded systems (where whole application stack is done by y
 ### Libkdb
 
     libelektra-kdb.so
+    <kdb.h> (kdb*)
 
 Contains kdb* symbols and applications should link against it.
 
@@ -67,6 +68,8 @@ of the contents in [METADATA.ini](/doc/METADATA.ini).
 ### Libcore
 
     libelektra-core.so
+    <kdbhelper.h>
+    <kdb.h> (key* and ks*)
 
 Contains the fundamental data-structures every participant of Elektra needs
 to link against.

@@ -115,52 +115,6 @@ int elektraKsToMemArray(KeySet *ks, Key **buffer)
 	return idx;
 }
 
-
-/**
- * @brief return only those keys from the given
- * keyset that pass the supplied filter function
- * with the supplied argument
- *
- * @param result the keyset that should contain the filtered keys
- * @param input the keyset whose keys should be filtered
- * @param filter a function pointer to a function that will be used to
- * filter the keyset. A key will be taken if the function returns a value
- * greater than 0.
- * @param argument an argument that will be passed to the filter function
- * each time it is called
- * @return the number of filtered keys if the filter function always
- * returned a positive value, -1 otherwise
- * @retval NULL on NULL pointer
- */
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument)
-{
-	if (!result) return -1;
-
-	if (!input) return -1;
-
-	if (!filter) return -1;
-
-	int rc = 0;
-	int ret = 0;
-	Key *current;
-
-	cursor_t cursor = ksGetCursor (input);
-	ksRewind (input);
-	while ((current = ksNext (input)) != 0)
-	{
-		rc = filter (current, argument);
-		if (rc <= -1) return -1;
-		else if (rc > 0)
-		{
-			++ ret;
-			ksAppendKey(result, keyDup (current));
-		}
-	}
-	ksSetCursor(input, cursor);
-	return ret;
-}
-
-
 /**
  * @brief Takes the first key and cuts off this common part
  * for all other keys, instead name will be prepended
