@@ -14,6 +14,7 @@
 #include <plugin.hpp>
 #include <plugins.hpp>
 #include <kdbproposal.h> // for namespaces
+#include <kdbease.h>
 #include <kdbconfig.h> // for DEBUG and VERBOSE
 
 #include <merging/threewaymerge.hpp>

@@ -23,10 +23,7 @@ extern "C" {
 // extension.
 ssize_t keySetStringF(Key *key, const char *format, ...);
 
-// could also be in an array extension library.
-int elektraArrayIncName(Key *key);
 int elektraKsToMemArray(KeySet *ks, Key **buffer);
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument);
 KeySet* elektraRenameKeys(KeySet *config, const char* name);
 
 /**
@@ -88,9 +85,6 @@ int keyLock(Key *key,
 // this might become the new keySetName
 ssize_t elektraKeySetName(Key *key, const char *newName,
 	option_t options);
-
-KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys);
-Key *elektraArrayGetNextKey(KeySet *arrayKeys);
 
 KeySet *elektraKeyGetMetaKeySet(const Key *key);
 

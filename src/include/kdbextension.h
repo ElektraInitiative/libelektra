@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Extension functionality.
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
@@ -10,6 +10,7 @@
 #define KDBEXTENSION_H
 
 #include <kdbmeta.h>
+#include <kdbease.h>
 #include <kdbproposal.h>
 
 #endif

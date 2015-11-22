@@ -58,21 +58,21 @@ SET(__symbols_file ${CMAKE_CURRENT_SOURCE_DIR}/libelektra-symbols.map)
 
 if (BUILD_SHARED)
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
-	add_library (elektra SHARED ${SOURCES} ${elektra-shared_SRCS})
+	add_library (elektra-core SHARED ${SOURCES} ${elektra-shared_SRCS})
 
 	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
-	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
+	target_link_libraries (elektra-core ${elektra-shared_LIBRARIES})
 
 	get_property (elektra-shared_INCLUDES GLOBAL PROPERTY elektra-shared_INCLUDES)
 	include_directories (${elektra-shared_INCLUDES})
 
-	set_target_properties (elektra PROPERTIES
+	set_target_properties (elektra-core PROPERTIES
 		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
 		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION}
 		CLEAN_DIRECT_OUTPUT 1
 	)
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
-		set_target_properties (elektra PROPERTIES
+		set_target_properties (elektra-core PROPERTIES
 			LINK_FLAGS "-Wl,--version-script=${__symbols_file}"
 		)
 	endif ()
@@ -82,11 +82,16 @@ if (BUILD_SHARED)
 	#search only in the prefix the user decided to install elektra
 	#(e.g. /usr/local/)
 	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
-	set_target_properties (elektra PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
+	set_target_properties (elektra-core PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
-	install (TARGETS elektra DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+	install (TARGETS elektra-core DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 
-	list (APPEND targets_built elektra)
+	list (APPEND targets_built elektra-core)
+
+	add_library (elektra SHARED)
+	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
+	target_link_libraries (elektra elektra-core ${elektra-extension_LIBRARIES})
+	set_target_properties (elektra PROPERTIES LINKER_LANGUAGE C)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL OR BUILD_STATIC)
