@@ -80,6 +80,7 @@ if (BUILD_SHARED)
 
 
 
+	message(STATUS "ignore the following ADD_LIBRARY warning")
 	#add_library (elektra INTERFACE) # no SOVERSION?
 	add_library (elektra SHARED)
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
