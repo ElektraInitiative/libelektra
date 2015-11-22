@@ -235,7 +235,7 @@ We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, prin
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
 even if a critical error occurres, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
 A listing of existing errors together with a short description and a categorization can be found at
-[error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/liberror/specification).
+[error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
 The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
 caused the error. The kdb tools will interprete this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.

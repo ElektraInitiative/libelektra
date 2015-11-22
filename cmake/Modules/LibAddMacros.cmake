@@ -231,7 +231,7 @@ macro (add_headers HDR_FILES)
 			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 			DEPENDS exporterrors
 			COMMAND ${EXE_ERR_LOC}
-			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/liberror/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
+			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 			)
 	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)

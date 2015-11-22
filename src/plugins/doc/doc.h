@@ -105,7 +105,7 @@
  *
  * @ingroup plugin
  *
- * @param number the error number from src/liberror/specification
+ * @param number the error number from src/error/specification
  * @param key to write the error to
  * @param text additional text for the user
  */
@@ -121,7 +121,7 @@
  *
  * @ingroup plugin
  *
- * @param number the error number from src/liberror/specification
+ * @param number the error number from src/error/specification
  * @param key to write the error to
  * @param formatstring a format string as in printf
  * @param ... further arguments as in printf
@@ -138,7 +138,7 @@
  *
  * @ingroup plugin
  *
- * @param number the warning number from src/liberror/specification
+ * @param number the warning number from src/error/specification
  * @param key to write the error to
  * @param formatstring a format string as in printf
  * @param ... further arguments as in printf
@@ -155,7 +155,7 @@
  *
  * @ingroup plugin
  *
- * @param number the warning number from src/liberror/specification
+ * @param number the warning number from src/error/specification
  * @param key to write the error to
  * @param text additional text for the user
  */

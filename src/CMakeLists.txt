@@ -1,7 +1,7 @@
 
 add_subdirectory (include)
 
-add_subdirectory (liberror)
+add_subdirectory (error)
 
 add_subdirectory (plugins)
 
