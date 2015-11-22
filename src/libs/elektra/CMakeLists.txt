@@ -33,8 +33,6 @@ add_custom_command (
 # Include the shared header files of the elektra project
 include(LibAddMacros)
 add_headers(HDR_FILES)
-# not always needed.. only with cppplugins
-add_cppheaders(HDR_FILES)
 
 #include the current binary directory to get exported_symbols.h
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
