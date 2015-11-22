@@ -22,14 +22,6 @@ to one cmake variable:
 	verbose/debug -> logging
 	pdf/on/off -> docu
 
-split elektra:
-	Libelektra-core (only key+keyset)
-	libelektra-kdb
-	libelektra-meta
-	libelektra-ease
-	libelektra-proposal
-	libelektra links everything together
-
 md_src_plugins_keytometa_README.3elektra
 
 ## docu
