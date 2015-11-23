@@ -55,8 +55,7 @@ enum elektraLookupOptions
 };
 
 // locks a key, is this needed externally?
-int keyLock(Key *key,
-	/*option_t*/ enum elektraLockOptions lock);
+int keyLock(Key *key, option_t what);
 
 // this might become the new keySetName
 ssize_t elektraKeySetName(Key *key, const char *newName,

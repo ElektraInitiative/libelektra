@@ -151,40 +151,9 @@ KeySet * ksRenameKeys(KeySet * config, const Key * name)
  * @retval 0 if everything was locked before
  * @retval -1 if it could not be locked (nullpointer)
  */
-int keyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
+int keyLock(Key *key, option_t what)
 {
-	int ret = 0;
-
-	if (!key) return -1;
-
-	if (test_bit(what, KEY_LOCK_NAME))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_NAME))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_NAME);
-			set_bit(ret, KEY_LOCK_NAME);
-		}
-	}
-
-	if (test_bit(what, KEY_LOCK_VALUE))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_VALUE))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_VALUE);
-			set_bit(ret, KEY_LOCK_VALUE);
-		}
-	}
-
-	if (test_bit(what, KEY_LOCK_META))
-	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_META))
-		{
-			set_bit(key->flags, KEY_FLAG_RO_META);
-			set_bit(ret, KEY_LOCK_META);
-		}
-	}
-
-	return ret;
+	return elektraKeyLock(key, what);
 }
 
 

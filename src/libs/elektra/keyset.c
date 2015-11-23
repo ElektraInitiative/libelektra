@@ -810,7 +810,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		return -1;
 	}
 
-	keyLock(toAppend, KEY_LOCK_NAME);
+	elektraKeyLock(toAppend, KEY_LOCK_NAME);
 
 	result = ksSearchInternal(ks, toAppend);
 

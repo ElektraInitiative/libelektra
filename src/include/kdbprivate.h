@@ -511,6 +511,8 @@ size_t ksGetAlloc(const KeySet *ks);
 KeySet* ksDeepDup(const KeySet *source);
 Key *elektraKsPrev(KeySet *ks);
 
+int elektraKeyLock(Key *key, enum elektraLockOptions what);
+
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 
 /*Used for internal memcpy/memmove*/
