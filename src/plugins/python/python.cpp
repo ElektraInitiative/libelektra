@@ -313,7 +313,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	elektraPluginSetData(handle, data);
 
 	/* call python function */
-	return Python_CallFunction_Helper1(data, "open", errorKey);
+	return Python_CallFunction_Helper2(data, "open", config, errorKey);
 
 error_print:
 	if (data->printError)

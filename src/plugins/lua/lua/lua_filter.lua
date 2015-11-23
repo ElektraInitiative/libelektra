@@ -1,6 +1,6 @@
 local x = 1
 
-function elektraOpen(errorKey)
+function elektraOpen(config, errorKey)
 	print("[LUA-FILTER] open -->")
 	x = x + 1
 	return 0
