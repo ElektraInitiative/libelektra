@@ -101,6 +101,12 @@ function(add_plugin PLUGIN_SHORT_NAME)
 			${ARG_INCLUDE_DIRECTORIES}
 			${CMAKE_CURRENT_BINARY_DIR} #for readme
 			)
+		if (${LD_ACCEPTS_VERSION_SCRIPT})
+			set_property(TARGET ${PLUGIN_NAME}
+				APPEND PROPERTY LINK_FLAGS
+				"-Wl,--version-script=${PROJECT_SOURCE_DIR}/src/plugins/plugin-symbols.map"
+				)
+		endif ()
 	endif()
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS"
