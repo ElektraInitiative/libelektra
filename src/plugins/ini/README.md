@@ -150,5 +150,7 @@ Currently the plugin has the following shortcomings:
 - formatting newlines are not restored on write
 - regardless of which comment was used originally, it is always written
   back as ';'
+- Using square brackets (`[` and `]`) in sections is not possible
+- Using `=` in key names is not possible
 
 The plugin is still work in progress.
