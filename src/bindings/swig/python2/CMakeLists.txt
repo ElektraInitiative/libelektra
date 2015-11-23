@@ -33,7 +33,7 @@ else()
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
 	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-extranative")
 	swig_add_module (swig-python2 python kdb.i)
-	swig_link_libraries (swig-python2 elektra ${PYTHON2_LIBRARIES})
+	swig_link_libraries (swig-python2 elektra-core elektra-kdb ${PYTHON2_LIBRARIES})
 	set_target_properties (_swig-python2 PROPERTIES OUTPUT_NAME _kdb)
 
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")

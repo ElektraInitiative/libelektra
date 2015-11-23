@@ -20,7 +20,7 @@ else()
 
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
 	swig_add_module (swig-lua lua kdb.i)
-	swig_link_libraries (swig-lua elektra ${LUA_LIBRARIES})
+	swig_link_libraries (swig-lua elektra-core elektra-kdb ${LUA_LIBRARIES})
 	set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)
 	set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME} PROPERTIES PREFIX "")
 
