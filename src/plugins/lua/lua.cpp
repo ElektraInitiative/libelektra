@@ -169,7 +169,7 @@ int elektraLuaOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	elektraPluginSetData(handle, data);
 
 	/* call lua function */
-	return Lua_CallFunction_Helper1(data->L, "elektraOpen", errorKey);
+	return Lua_CallFunction_Helper2(data->L, "elektraOpen", config, errorKey);
 
 error_print:
 	if (!lua_isnil(data->L, -1))
