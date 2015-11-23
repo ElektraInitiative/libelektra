@@ -108,7 +108,7 @@ if (BUILD_SHARED)
 	#search only in the prefix the user decided to install elektra
 	#(e.g. /usr/local/)
 	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
-	set_target_properties (elektra-kdb PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
+	set_target_properties (elektra-kdb elektra PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
 	install (TARGETS elektra-core elektra-kdb elektra DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
 
