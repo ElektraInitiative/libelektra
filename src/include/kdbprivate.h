@@ -509,6 +509,7 @@ int ksClose(KeySet *ks);
 int ksResize(KeySet *ks, size_t size);
 size_t ksGetAlloc(const KeySet *ks);
 KeySet* ksDeepDup(const KeySet *source);
+Key *elektraKsPrev(KeySet *ks);
 
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 

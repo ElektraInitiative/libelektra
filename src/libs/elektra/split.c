@@ -475,6 +475,21 @@ int elektraSplitAppoint (Split *split, KDB *handle, KeySet *ks)
 	return 1;
 }
 
+/**
+ * @copydoc ksPrev
+ */
+Key *elektraKsPrev(KeySet *ks)
+{
+	if (ks->size == 0) return 0;
+	if (ks->current <= 0)
+	{
+		ksRewind (ks);
+		return 0;
+	}
+	ks->current--;
+	return ks->cursor = ks->array[ks->current];
+}
+
 static void elektraDropCurrentKey(KeySet *ks,
 		Key *warningKey,
 		const Backend *curHandle,
@@ -504,7 +519,7 @@ static void elektraDropCurrentKey(KeySet *ks,
 	cursor_t c = ksGetCursor(ks);
 	keyDel (ksPopAtCursor(ks, c));
 	ksSetCursor(ks, c);
-	ksPrev(ks); // next ksNext() will point correctly again
+	elektraKsPrev(ks); // next ksNext() will point correctly again
 }
 
 

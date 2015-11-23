@@ -221,14 +221,7 @@ KeySet *elektraKeyGetMetaKeySet(const Key *key)
  */
 Key *ksPrev(KeySet *ks)
 {
-	if (ks->size == 0) return 0;
-	if (ks->current <= 0)
-	{
-		ksRewind (ks);
-		return 0;
-	}
-	ks->current--;
-	return ks->cursor = ks->array[ks->current];
+	return elektraKsPrev(ks);
 }
 
 /**
