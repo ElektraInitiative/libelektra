@@ -1,7 +1,6 @@
 usr/lib/libelektra.so*
 usr/lib/libelektra-core.so*
 usr/lib/libelektra-ease.so*
-usr/lib/libelektra-full.so*
 usr/lib/libelektra-kdb.so*
 usr/lib/libelektra-meta.so*
 usr/lib/libelektra-plugin.so*
