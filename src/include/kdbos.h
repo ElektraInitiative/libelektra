@@ -79,6 +79,18 @@
  */
 #define ELEKTRA_MAX_ARRAY_SIZE (21)
 
+/**Default Mode.
+ * This mode will be used for new files*/
+#define KDB_FILE_MODE 0600
+
+/**Default directory mode.
+ * This mode will be used for new directories.
+ * Will be ORed together with KDB_FILE_MODE
+ * to get the permissions of an directory.*/
+#define KDB_DIR_MODE 0100
+
+
+
 
 
 #ifndef WIN32
@@ -110,17 +122,6 @@
 #else
 #define KDB_MAX_PATH_LENGTH 4096
 #endif
-
-/**Default Mode.
- * This mode will be used for new files*/
-#define KDB_FILE_MODE 0600
-
-/**Default directory mode.
- * This mode will be used for new directories.
- * Will be ORed together with KDB_FILE_MODE
- * to get the permissions of an directory.*/
-#define KDB_DIR_MODE 0100
-
 
 
 #else /* WIN32 */
