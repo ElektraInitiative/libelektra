@@ -138,21 +138,37 @@ void elektraExecve(const char *filename, char *const argv[])
 
 void runManPage(std::string command)
 {
-	command = "kdb-"+command;
+	if (command.empty())
+	{
+		command = "kdb";
+	}
+	else
+	{
+		command = "kdb-"+command;
+	}
 	const char * man = "/usr/bin/man";
 	using namespace kdb;
 	std::string dirname = "/sw/kdb/current/";
-	KDB kdb;
-	KeySet conf;
-	kdb.get(conf, dirname);
-
-	Key k = conf.lookup(dirname+"man");
+	Key k = nullptr;
+	try {
+		KDB kdb;
+		KeySet conf;
+		kdb.get(conf, dirname);
+		k = conf.lookup(dirname+"man");
+	}
+	catch (kdb::KDBException const& ce)
+	{
+		std::cerr << "There is a severe problem with your installation!\n"
+			<< "kdbOpen() failed with the info:"
+			<< std::endl
+			<< ce.what()
+			<< std::endl;
+	}
 	if (k) man = k.get<std::string>().c_str();
 	char * const argv [3] = {const_cast<char*>(man),
 		const_cast<char*>(command.c_str()),
 		nullptr};
 
 	elektraExecve(man, argv);
-
-	throw UnknownCommand();
+	std::cout << "Was not able to execute man-page viewer: \"" << man << '"' << std::endl;
 }

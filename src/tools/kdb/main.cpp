@@ -23,7 +23,7 @@
 using namespace kdb;
 using namespace std;
 
-void displayHelp(std::string app, std::vector<std::string> commands)
+int displayHelp(std::string app, Factory const & f)
 {
 	std::cout << "Usage: " << app << " <command> [args]\n"
 		<< std::endl;
@@ -33,12 +33,27 @@ void displayHelp(std::string app, std::vector<std::string> commands)
 		<< "a specific command.\n"
 		<< std::endl;
 	std::cout << "Known commands are:" << std::endl;
+	std::vector<std::string> commands;
+	try {
+		commands = f.getCommands();
+	}
+	catch (kdb::KDBException const& ce)
+	{
+		std::cerr << "There is a severe problem with your installation!\n"
+			<< "kdbOpen() failed with the info:"
+			<< std::endl
+			<< ce.what()
+			<< std::endl;
+		std::cout << "Listing of internal commands failed" << std::endl;
+		return 8;
+	}
 	for (auto & command : commands)
 	{
 		std::cout << command  << std::endl;
 	}
 	std::cout << "help         View the man page of a tool" << std::endl;
 	std::cout << "list-tools   List all external tools" << std::endl;
+	return 0;
 }
 
 void displayVersion()
@@ -71,22 +86,24 @@ int main(int argc, char**argv)
 {
 	Factory f;
 
-	if (argc < 2 )
+	if (argc < 2)
 	{
-		displayHelp(argv[0], f.getCommands());
-		return 0;
+		return displayHelp(argv[0], f);
 	}
 
 	string command = argv[1];
-
 	if (command == "help" || command == "-H" || command == "--help")
 	{
 		if (argc == 3)
 		{
 			runManPage(argv[2]);
 		}
-		displayHelp(argv[0], f.getCommands());
-		return 0;
+		else
+		{
+			runManPage(std::string());
+		}
+
+		return displayHelp(argv[0], f);
 	}
 
 	if (command == "-V" || command == "--version")
@@ -150,7 +167,7 @@ int main(int argc, char**argv)
 			<< command
 			<< " is not known"
 			<< std::endl;
-		displayHelp(argv[0], f.getCommands());
+		displayHelp(argv[0], f);
 		return 4;
 	}
 	catch (kdb::KDBException const& ce)
@@ -175,7 +192,7 @@ int main(int argc, char**argv)
 	catch (...)
 	{
 		std::cerr << "Unknown error" << std::endl;
-		displayHelp(argv[0], f.getCommands());
+		displayHelp(argv[0], f);
 		return 7;
 	}
 }

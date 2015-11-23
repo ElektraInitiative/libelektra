@@ -104,7 +104,7 @@ public:
 	}
 
 	/**Returns a list of available commands */
-	std::vector<std::string> getCommands()
+	std::vector<std::string> getCommands() const
 	{
 		std::vector<std::string> ret;
 		for (auto & elem : m_factory)
