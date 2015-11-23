@@ -24,7 +24,8 @@ extern "C" {
 ssize_t keySetStringF(Key *key, const char *format, ...);
 
 int elektraKsToMemArray(KeySet *ks, Key **buffer);
-KeySet* elektraRenameKeys(KeySet *config, const char* name);
+
+KeySet * ksRenameKeys(KeySet * config, const Key * name);
 
 /**
  * @brief Lock options
