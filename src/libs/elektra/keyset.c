@@ -1880,7 +1880,7 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key const *key, option_t opti
 		cursor = found-ks->array;
 		if (options & KDB_O_POP)
 		{
-			return ksPopAtCursor(ks, cursor);
+			return elektraKsPopAtCursor(ks, cursor);
 		} else {
 			ksSetCursor(ks, cursor);
 			return (*found);

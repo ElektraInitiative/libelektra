@@ -19,6 +19,8 @@
 #include <string.h>
 #endif
 
+#include <kdbproposal.h>
+
 #include <tests_plugin.h>
 
 static void test_hostLensRead(char *fileName)

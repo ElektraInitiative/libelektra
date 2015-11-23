@@ -517,7 +517,7 @@ static void elektraDropCurrentKey(KeySet *ks,
 	ELEKTRA_ADD_WARNING(79, warningKey, warningMsg);
 	elektraFree(warningMsg);
 	cursor_t c = ksGetCursor(ks);
-	keyDel (ksPopAtCursor(ks, c));
+	keyDel (elektraKsPopAtCursor(ks, c));
 	ksSetCursor(ks, c);
 	elektraKsPrev(ks); // next ksNext() will point correctly again
 }
