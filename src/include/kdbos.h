@@ -91,8 +91,6 @@
 
 
 
-
-
 #ifndef WIN32
 
 /***************************************************
@@ -164,6 +162,8 @@ typedef ssize_t cursor_t;
 
 /*Integer types*/
 typedef int option_t;
+
+typedef int keyswitch_t;
 
 typedef int elektraNamespace;
 
