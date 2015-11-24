@@ -22,7 +22,7 @@ else()
 
 	add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
 
-	tool_link_elektra (${GELEKTRA_LIBRARY})
+	target_link_libraries (${GELEKTRA_LIBRARY} elektra-core elektra-kdb)
 	target_link_libraries (${GELEKTRA_LIBRARY} ${GOBJECT_LIBRARIES})
 
 	install (
