@@ -80,7 +80,8 @@ static void compareKeySets(KeySet* ks, KeySet* expected)
 	}
 }
 
-static void test_simpleCutOnGet () {
+static void test_simpleCutOnGet () 
+{
 	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet *conf = ksNew (20,
 			keyNew ("system/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
@@ -94,8 +95,8 @@ static void test_simpleCutOnGet () {
 	succeed_if(output_error (parentKey), "error in kdbGet");
 	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
 
+	
 	checkSimpleTestKeys (ks);
-
 	ksDel(ks);
 
 	/*
@@ -233,12 +234,12 @@ static void test_metaConfigTakesPrecedence()
 static void test_keyCutNamePart()
 {
 	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
-	Key *result = elektraKeyCutNamePart(parentKey, parentKey, "wont/cut/this");
+	Key *result = elektraKeyCreateNewName(parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL);
 	succeed_if (!result, "parentKey was modified although it should have been ignored");
 
 	/* cutting works correctly without trailing slash */
 	Key *testKey = keyNew ("user/tests/rename/will/cut/this/key1", KEY_END);
-	result = elektraKeyCutNamePart(testKey, parentKey, "will/cut/this");
+	result = elektraKeyCreateNewName(testKey, parentKey, "will/cut/this", NULL, NULL, NULL);
 	succeed_if (result, "key1 was not cut")
 	succeed_if (!strcmp(keyName(result), "user/tests/rename/key1"), "cutting key1 did not yield the expected result");
 	keyDel(testKey);
@@ -246,7 +247,7 @@ static void test_keyCutNamePart()
 
 	/* cutting works correctly with trailing slash */
 	testKey = keyNew ("user/tests/rename/will/cut/this/key1", KEY_END);
-	result = elektraKeyCutNamePart(testKey, parentKey, "will/cut/this/");
+	result = elektraKeyCreateNewName(testKey, parentKey, "will/cut/this/", NULL, NULL, NULL);
 	succeed_if (result, "key1 was not cut")
 	succeed_if (!strcmp(keyName(result), "user/tests/rename/key1"), "cutting key1 did not yield the expected result");
 	keyDel(testKey);
@@ -254,7 +255,7 @@ static void test_keyCutNamePart()
 
 	/* disallow leading slashes */
 	testKey = keyNew ("user/tests/rename/wont/cut/this/key1", KEY_END);
-	result = elektraKeyCutNamePart(testKey, parentKey, "/wont/cut/this");
+	result = elektraKeyCreateNewName(testKey, parentKey, "/wont/cut/this", NULL, NULL, NULL);
 	succeed_if (!result, "key was cut although it the cutpath contained a leading slash");
 	keyDel(testKey);
 	keyDel(parentKey);
@@ -322,6 +323,105 @@ static void test_addNewBaseToParentKey()
 
 }
 
+static void test_replaceString()
+{
+	Key *parentKey = keyNew("user/tests/rename", KEY_END);
+	KeySet *conf = ksNew(20, 
+			keyNew("system/cut", KEY_VALUE, "will/be/stripped", KEY_END),
+			keyNew("system/replacewith", KEY_VALUE, "stripped/it/is", KEY_END),
+			KS_END);
+	
+	KeySet *ks = createSimpleTestKeys();
+	ksAppendKey(ks, parentKey);
+
+	PLUGIN_OPEN("rename");
+
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	Key *key = ksLookupByName(ks, "user/tests/rename/stripped/it/is/key1", KDB_O_NONE);
+	succeed_if(key, "key1 was not correctly rename");
+	key = ksLookupByName(ks, "user/tests/rename/stripped/it/is/key2", KDB_O_NONE);
+	succeed_if(key, "key2 was not correctly rename");
+	key = ksLookupByName(ks, "user/tests/rename/will/not/be/stripped/key4", KDB_O_NONE);
+	succeed_if(key, "key4 was not correctly rename");
+	
+	keyDel(parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE();
+
+}
+
+static void test_toUpper()
+{
+	Key *parentKey = keyNew("user/tests/rename", KEY_END);
+	KeySet *conf = ksNew(20,
+			keyNew("system/toupper", KEY_VALUE, "0", KEY_END),
+			KS_END);
+	KeySet *ks = createSimpleTestKeys();
+	ksAppendKey(ks, parentKey);
+	PLUGIN_OPEN("rename");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	Key *key = ksLookupByName(ks, "user/tests/rename/WILL/BE/STRIPPED/KEY1", KDB_O_NONE);
+	succeed_if(key, "key1 was not correctly rename");
+	key = ksLookupByName(ks, "user/tests/rename/WILL/BE/STRIPPED/KEY2", KDB_O_NONE);
+	succeed_if(key, "key2 was not correctly rename");
+	key = ksLookupByName(ks, "user/tests/rename/WILL/NOT/BE/STRIPPED/KEY4", KDB_O_NONE);
+	succeed_if(key, "key4 was not correctly rename");
+	
+	keyDel(parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE();
+}
+
+static void test_toLower()
+{
+	Key *parentKey = keyNew("user/tests/rename", KEY_END);
+	KeySet *conf = ksNew(20,
+			keyNew("system/tolower", KEY_VALUE, "0", KEY_END),
+			KS_END);
+	KeySet *ks = ksNew(20,
+			keyNew("user/tests/rename/AM/I/LOWERCASE", KEY_VALUE, "val1", KEY_END),
+			keyNew("user/tests/rename/I/HOPE/IM/LOWERCASE/TOO", KEY_VALUE, "val2", KEY_END),
+			KS_END);
+	ksAppendKey(ks, parentKey);
+	PLUGIN_OPEN("rename");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	Key *key = ksLookupByName(ks, "user/tests/rename/am/i/lowercase", KDB_O_NONE);
+	succeed_if(key, "key1 was not correctly rename");
+	key = ksLookupByName(ks, "user/tests/rename/i/hope/im/lowercase/too", KDB_O_NONE);
+	succeed_if(key, "key2 was not correctly rename");
+	
+	keyDel(parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE();
+}
+
+static void test_mixCase()
+{
+	Key *parentKey = keyNew("user/tests/rename", KEY_END);
+	KeySet *conf = ksNew(20,
+			keyNew("system/tolower", KEY_VALUE, "1", KEY_END),
+			keyNew("system/toupper", KEY_VALUE, "4", KEY_END),
+			KS_END);
+	KeySet *ks = ksNew(20,
+			keyNew("user/tests/rename/am/i/LOWERCASE", KEY_VALUE, "val1", KEY_END),
+			keyNew("user/tests/rename/hopefullystilllower/upper/upper/upper/LOWERCASE", KEY_VALUE, "val2", KEY_END),
+			KS_END);
+	ksAppendKey(ks, parentKey);
+	PLUGIN_OPEN("rename");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 1,
+			"call to kdbGet was not successful");
+	Key *key = ksLookupByName(ks, "user/tests/rename/AM/I/lowercase", KDB_O_NONE);
+	succeed_if(key, "key1 was not correctly rename");
+	key = ksLookupByName(ks, "user/tests/rename/hopefullystilllower/UPPER/UPPER/UPPER/lowercase", KDB_O_NONE);
+	succeed_if(key, "key2 was not correctly rename");
+	
+	keyDel(parentKey);
+	ksDel(ks);
+	PLUGIN_CLOSE();
+}
 
 int main(int argc, char** argv)
 {
@@ -339,6 +439,10 @@ int main(int argc, char** argv)
 	test_addNewBaseToParentKey();
 
 	test_keyCutNamePart();
+	test_toUpper();
+	test_toLower();
+	test_mixCase();
+	test_replaceString();
 
 	printf ("\ntest_rename RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
