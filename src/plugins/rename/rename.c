@@ -81,11 +81,16 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 
 	char *newName = elektraCalloc(maxNewLength+1);
 	short replace = 0;
+	
+	char *parentKeyName = elektraMalloc(keyGetFullNameSize(parentKey));
+	keyGetFullName(parentKey, parentKeyName, keyGetFullNameSize(parentKey));
+	char *curKeyName = elektraMalloc(keyGetFullNameSize(key));
+	keyGetFullName(key, curKeyName, keyGetFullNameSize(key));
 
-	const char *afterParentString = keyName(key)+(strlen(keyName(parentKey))+1);
+	const char *afterParentString = curKeyName+(strlen(parentKeyName));
 	char *ptr;
 
-	if(cutPath && ((ptr = strstr(afterParentString, cutPath)) != NULL))
+	if(cutPath && (cutPath[0] != '/') && ((ptr = strstr(afterParentString, cutPath)) != NULL))
 	{
 		strncpy(newName, afterParentString, (ptr - afterParentString));
 		if(replaceWith)
@@ -101,6 +106,7 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	}
 	int toLower = toLowerPath ? atoi(toLowerPath) : 0;
 	int toUpper = toUpperPath ? atoi(toUpperPath) : 0;
+
 	if(strlen(newName) > 0)
 	{
 		if(toUpperPath && toLowerPath)
@@ -128,16 +134,17 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 			replace = 1;
 		}
 	}	
-
+	elektraFree(parentKeyName);
+	elektraFree(curKeyName);
 	if(replace)
 	{	
 		Key *result = keyDup(key);
 		keySetName(result, keyName(parentKey));
 		keyAddName(result, newName);
-		free(newName);
+		elektraFree(newName);
 		return result;
 	}
-	free(newName);
+	elektraFree(newName);
 	return 0;
 }
 

@@ -65,14 +65,19 @@ convert the keynames to uppercase or lowercase.
 The supplied values tell the plugin how many levels starting from the right will be converted. `toupper` and `tolower` can be combined.
 When no value or "0" is supplied with the keys the whole name below the parentkey will be converted.
 
+The toupper/tolower conversions are applied after cut/replace
 ### EXAMPLE ###
+
 ```
-/toupper = 1
-/tolower = 3
-user/config/MIXED/CASE/conversion
+kdb mount caseconversion.ini /rename ini rename toupper=1,tolower=3
+
+kdb set /rename/MIXED/CASE/conversion 1
+
+kdb ls /rename
+user/rename
+user/rename/mixed/case/CONVERSION
+
 ```
-would result in
-`user/config/mixed/case/CONVERSION`
 
 ## PLANNED OPERATIONS ##
 

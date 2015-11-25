@@ -80,7 +80,8 @@ static void compareKeySets(KeySet* ks, KeySet* expected)
 	}
 }
 
-static void test_simpleCutOnGet () {
+static void test_simpleCutOnGet () 
+{
 	Key *parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet *conf = ksNew (20,
 			keyNew ("system/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
