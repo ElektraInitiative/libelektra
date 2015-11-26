@@ -17,7 +17,7 @@ extern "C" {
 
 #include <stdio.h>
 
-typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short, unsigned short lineContinuation);
+typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short lineContinuation);
 typedef int (*SectionHandler)(void *, const char *);
 typedef int (*CommentHandler)(void *, const char *);
 
