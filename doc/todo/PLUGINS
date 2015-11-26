@@ -33,6 +33,14 @@ noresolver: make it always return 0?
 
 log all warnings that happened
 
+alert plugin: log/e-mail when specific (important) parameters are changed
+
+forensic logging: add in-depth context information when a parameter was changed
+	environment, pid, gid, uid
+	timezone + in ms
+	IP
+	state of application
+
 
 # File based plugins #
 
@@ -216,11 +224,6 @@ or also some other scripts, e.g. git commit
 compression:
 	zlib
 	snappy
-
-Forensic Logging:
-	environment, pid, gid, uid
-	timezone + in ms
-	IP
 
 filter: key
 	metadata löschen
