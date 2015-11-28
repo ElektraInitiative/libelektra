@@ -47,6 +47,8 @@ qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 include_directories(${DISCOUNT_INCLUDES})
 target_link_libraries(qt-gui ${DISCOUNT_LIBRARIES})
 
+target_link_libraries(qt-gui elektra-ease)
+
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}
 	${Qt5Test_LIBRARIES})
