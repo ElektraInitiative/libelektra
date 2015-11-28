@@ -82,9 +82,14 @@ if (BUILD_SHARED)
 
 	message(STATUS "ignore the following ADD_LIBRARY warning")
 	#add_library (elektra INTERFACE) # no SOVERSION?
-	add_library (elektra SHARED)
+	add_library (elektra SHARED  ${KDB_FILES} ${CORE_FILES}  ${elektra-shared_SRCS})
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
-	target_link_libraries (elektra elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
+	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
+	#target_link_libraries (elektra ${elektra-extension_LIBRARIES})
+	#target_link_libraries (elektra elektra-core elektra-kdb)
+	set_target_properties (${elektra-all_LIBRARIES} PROPERTIES
+		LINK_FLAGS "--copy-dt-needed-entries"
+	)
 	set_target_properties (elektra PROPERTIES LINKER_LANGUAGE C)
 
 

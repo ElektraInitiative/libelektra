@@ -114,8 +114,7 @@ if (HAS_CFLAG_MAYBE_UNINITIALIZED)
 	set (COMMON_FLAGS "${COMMON_FLAGS} -Wmaybe-uninitialized")
 endif (HAS_CFLAG_MAYBE_UNINITIALIZED)
 
-#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
-
+#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
 
 if (ENABLE_COVERAGE)
 	set (COMMON_FLAGS "${COMMON_FLAGS} -fprofile-arcs -ftest-coverage")
