@@ -55,6 +55,7 @@ Cmdline::Cmdline (int argc,
 	plugins("sync"),
 	pluginsConfig(""),
 	ns("user"),
+	editor(),
 
 	executable(),
 	commandName()
@@ -181,6 +182,14 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-E --without-elektra     Omit the `system/elektra` directory.\n";
 	}
+	optionPos = acceptedOptions.find('e');
+	if (optionPos!=string::npos)
+	{
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"editor", required_argument, 0, 'e'};
+		long_options.push_back(o);
+		helpText += "-e --editor              Which external editor to use.\n";
+	}
 	if (acceptedOptions.find('0')!=string::npos)
 	{
 		option o = {"null", no_argument, nullptr, '0'};
@@ -244,6 +253,9 @@ Cmdline::Cmdline (int argc,
 
 		k = conf.lookup(dirname+"namespace");
 		if (k) ns = k.get<string>();
+
+		k = conf.lookup(dirname+"editor");
+		if (k) editor = k.get<string>();
 	}
 
 	option o = {nullptr, 0, nullptr, 0};
@@ -261,6 +273,7 @@ Cmdline::Cmdline (int argc,
 		/*XXX: Step 5: and now process the option.*/
 		case 'a': all = true; break;
 		case 'd': debug = true; break;
+		case 'e': editor = optarg; break;
 		case 'f': force = true; break;
 		case 'h': humanReadable = true; break;
 		case 'l': load= true; break;

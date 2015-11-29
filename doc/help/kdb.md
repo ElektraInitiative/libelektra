@@ -11,7 +11,7 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-## Overview
+## OVERVIEW
 
 The man pages can also be viewed online at:
 http://doc.libelektra.org/api/current/html/pages.html
@@ -31,6 +31,26 @@ Run `kdb list` for a list of plugins.
 
 The man pages are also displayed when invoking a kdb-tool with `--help`.
 
+## RETURN VALUES
+
+
+- 0:
+  successful.
+- 1:
+  Invalid options passed.
+- 2:
+  Invalid arguments passed.
+- 3:
+  Command terminated unsuccessfully.
+- 4:
+  Unknown command.
+- 5:
+  KDB Error, could not read/write from/to KDB.
+- 7-8:
+  Unkown errors, wrong exceptions thrown.
+- 9-10:
+  Reserved error codes.
+
 ## OPTIONS
 
 Commonly used options for all programs:
@@ -39,3 +59,8 @@ Commonly used options for all programs:
    Show the man page.
 - `-V`, `--version`:
    Print version info.
+
+## SEE ALSO
+
+- [elektra-introduction(7)](elektra-introduction.md)
+- [kdb-introduction(1)](kdb-introduction.md)

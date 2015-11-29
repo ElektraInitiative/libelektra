@@ -5,11 +5,13 @@ kdb-import(1) -- Import an existing configuration into the key database
 
 `kdb import <destination> [<format>]`
 
-Where `destination` is the destination where the user want's the keys to be imported into and `format` is the format the current keys or configuration is stored in.  
-If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key. By default, that key is set to the `dump` format.  
-The `format` attribute relies on Elektra's plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.   
+Where `destination` is the destination where the user wants the keys to be imported into.
+`format` is the format of the keys that are imported.
 
 ## DESCRIPTION
+
+If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key. By default, that key is set to the `dump` format.
+The `format` attribute relies on Elektra's plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.   
 
 This command allows a user to import an existing configuration into the key database.  
 The configuration that the user wants to import is read from `stdin`.  

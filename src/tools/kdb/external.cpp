@@ -23,6 +23,9 @@
 #include <string.h>
 #include <errno.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
 
 static std::string cwd()
@@ -128,10 +131,10 @@ extern char **environ;
 
 void elektraExecve(const char *filename, char *const argv[])
 {
-#ifndef _WIN32
-		execve(filename, argv, environ);
+#ifdef _WIN32
+	execve(filename, argv, 0);
 #else
-		execve(filename, argv, 0);
+	execve(filename, argv, environ);
 #endif
 }
 
@@ -171,4 +174,31 @@ void runManPage(std::string command)
 
 	elektraExecve(man, argv);
 	std::cout << "Was not able to execute man-page viewer: \"" << man << '"' << std::endl;
+}
+
+bool runEditor(std::string editor, std::string file)
+{
+	char * const argv [3] = {const_cast<char*>(editor.c_str()),
+		const_cast<char*>(file.c_str()),
+		0};
+
+	pid_t childpid = fork ();
+	if (!childpid)
+	{
+		elektraExecve (editor.c_str(), argv);
+		exit (23);
+	}
+	else
+	{
+		int status;
+		waitpid (childpid, &status, 0);
+		if (WIFEXITED(status))
+		{
+			if (WEXITSTATUS(status) != 23)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
