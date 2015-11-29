@@ -484,6 +484,42 @@ static void test_emptySectionBug(char *fileName)
 	keyDel(parentKey);
 	PLUGIN_CLOSE ();
 }
+
+static void test_sectionMerge(char *inFile, char *cmpFile)
+{
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
+			srcdir_file(inFile), KEY_END);
+	KeySet *conf = ksNew(0,
+	   	   KS_END);
+	KeySet *ks = ksNew(30, KS_END);
+	PLUGIN_OPEN("ini");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
+	keySetString(parentKey, elektraFilename());
+	succeed_if(plugin->kdbSet(plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if(compare_line_files(srcdir_file(cmpFile), keyString(parentKey)), "files do not match as expected");
+	ksDel(ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE();
+}
+
+static void test_array(char *fileName)
+{
+	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
+			srcdir_file(fileName), KEY_END);
+	KeySet *conf = ksNew(10, keyNew( "system/array", KEY_VALUE, "1", KEY_END),	   	   KS_END);
+	KeySet *ks = ksNew(30, KS_END);
+	PLUGIN_OPEN("ini");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
+	Key *lookupKey;
+	lookupKey = ksLookupByName(ks, "user/tests/ini-read/sec/a/#0", KDB_O_NONE);
+	succeed_if(!strcmp(keyString(lookupKey), "1"), "key sec/a/#0 has the wrong value");
+	lookupKey = ksLookupByName(ks, "user/tests/ini-read/sec/a/#3", KDB_O_NONE);
+	succeed_if(!strcmp(keyString(lookupKey), "4"), "key sec/a/#3 has the wrong value");
+	ksDel(ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE();
+
+}
 int main(int argc, char** argv)
 {
 	printf ("INI       TESTS\n");
@@ -504,7 +540,8 @@ int main(int argc, char** argv)
 	test_sectionRead("ini/sectionini");
 	test_sectionWrite("ini/sectionini");
 	test_emptySectionBug("ini/emptySectionBugTest");
-
+	test_sectionMerge("ini/sectionmerge.input", "ini/sectionmerge.output");
+	test_array("ini/array.ini");
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
 
