@@ -70,5 +70,6 @@
         <file>qml/icons/color.png</file>
         <file>qml/MergeStrategyComboBox.qml</file>
         <file>qml/icons/dialog-information.png</file>
+        <file>qml/GUIActions.qml</file>
     </qresource>
 </RCC>

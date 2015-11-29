@@ -21,10 +21,7 @@ ConfigNode::ConfigNode(QString  name, QString  path, const Key &key, TreeViewMod
 	, m_isExpanded(false)
 	, m_isDirty(false)
 {
-	if (m_key && m_key.isString())
-		m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
-	else if (m_key && m_key.isBinary())
-		m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
+	setValue();
 
 	if (m_key)
 	{
@@ -252,6 +249,13 @@ void ConfigNode::setIsDirty(bool dirty)
 	m_isDirty = dirty;
 }
 
+void ConfigNode::updateNode(Key key)
+{
+	m_key = key;
+	setValue();
+	populateMetaModel();
+}
+
 void ConfigNode::setIsExpanded(bool value)
 {
 	m_isExpanded = value;
@@ -262,7 +266,7 @@ void ConfigNode::populateMetaModel()
 	if (m_key)
 	{
 		m_key.rewindMeta();
-		m_metaData->model().clear();
+		m_metaData->clearMetaModel();
 
 		while (m_key.nextMeta())
 		{
@@ -272,9 +276,17 @@ void ConfigNode::populateMetaModel()
 			node->setKey(m_key);
 			node->setMeta(QString::fromStdString(m_key.currentMeta().getName()), QVariant::fromValue(QString::fromStdString(m_key.currentMeta().getString())));
 
-			m_metaData->model().append(node);
+			m_metaData->insertRow(m_metaData->rowCount(), node, false);
 		}
 	}
+}
+
+void ConfigNode::setValue()
+{
+	if (m_key && m_key.isString())
+		m_value = QVariant::fromValue(QString::fromStdString(m_key.getString()));
+	else if (m_key && m_key.isBinary())
+		m_value = QVariant::fromValue(QString::fromStdString(m_key.getBinary()));
 }
 
 void ConfigNode::setKey(Key key)

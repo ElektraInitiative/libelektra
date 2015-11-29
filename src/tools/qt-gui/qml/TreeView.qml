@@ -114,7 +114,7 @@ ScrollView {
 							}
 							onDoubleClicked:{
 								mousePressed(mouse, model, itemLoader)
-								editAction.trigger()
+                                guiActions.editAction.trigger()
 							}
 							onEntered: {
 								timer.start()

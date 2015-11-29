@@ -10,43 +10,43 @@ MenuBar {
 
 		MenuItem {
 			id:dbImport
-			action: importAction
+			action: guiActions.importAction
 		}
 		MenuItem {
 			id:dbExport
-			action: exportAction
+			action: guiActions.exportAction
 		}
 
 		MenuSeparator{}
 
 		MenuItem {
 			id:dbCreateBackend
-			action: mountBackendAction
+			action: guiActions.mountBackendAction
 		}
 		MenuItem {
 			id:dbUnmountBackend
-			action: unmountBackendAction
+			action: guiActions.unmountBackendAction
 		}
 
 		MenuSeparator{}
 
 		MenuItem {
 			id: dbSynchronize
-			action: synchronizeAction
+			action: guiActions.synchronizeAction
 		}
 
 		MenuSeparator{}
 
 		MenuItem {
 			id: dbPluginInfo
-			action: pluginInfoAction
+			action: guiActions.pluginInfoAction
 		}
 
 		MenuSeparator{}
 
 		MenuItem {
 			id:dbExit
-			action: quitAction
+			action: guiActions.quitAction
 		}
 	}
 
@@ -56,11 +56,11 @@ MenuBar {
 
 		MenuItem {
 			id:edUndo
-			action: undoAction
+			action: guiActions.undoAction
 		}
 		MenuItem {
 			id:edRedo
-			action: redoAction
+			action: guiActions.redoAction
 		}
 
 		MenuSeparator{}
@@ -71,36 +71,36 @@ MenuBar {
 
 			MenuItem {
 				id:edNewKey
-				action: newKeyAction
+				action: guiActions.newKeyAction
 			}
 			MenuItem {
 				id:edNewArray
-				action: newArrayAction
+				action: guiActions.newArrayAction
 			}
 		}
 
 		MenuItem {
 			id:edEdit
-			action: editAction
+			action: guiActions.editAction
 		}
 
 		MenuSeparator{}
 
 		MenuItem {
 			id:edCut
-			action: cutAction
+			action: guiActions.cutAction
 		}
 		MenuItem {
 			id:edCopy
-			action: copyAction
+			action: guiActions.copyAction
 		}
 		MenuItem {
 			id:edPaste
-			action: pasteAction
+			action: guiActions.pasteAction
 		}
 		MenuItem {
 			id:edDelete
-			action: deleteAction
+			action: guiActions.deleteAction
 		}
 	}
 
@@ -109,7 +109,7 @@ MenuBar {
 		title: qsTr("Settings")
 
 		MenuItem {
-			action: chooseColorAction
+			action: guiActions.chooseColorAction
 		}
 	}
 
@@ -117,11 +117,11 @@ MenuBar {
 		id: help
 		title: qsTr("&Help")
 		MenuItem {
-			action: whatsThisAction
+			action: guiActions.whatsThisAction
 		}
 		MenuSeparator{}
 		MenuItem {
-			action: aboutAction
+			action: guiActions.aboutAction
 		}
 	}
 }
