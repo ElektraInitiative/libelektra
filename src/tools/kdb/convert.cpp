@@ -42,6 +42,9 @@ int ConvertCommand::execute(Cmdline const& cl)
 
 	Modules modules;
 	PluginPtr import_plugin = modules.load(import_format);
+
+	// TODO: reuse import/export
+	// to namespace dir
 	PluginPtr export_plugin = modules.load(export_format);
 
 	Key errorKey;

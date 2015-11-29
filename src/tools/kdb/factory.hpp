@@ -35,6 +35,7 @@
 #include <sget.hpp>
 #include <merge.hpp>
 #include <list.hpp>
+#include <editor.hpp>
 
 class Instancer
 {
@@ -85,6 +86,7 @@ public:
 		m_factory.insert(std::make_pair("sget", new Cnstancer<ShellGetCommand>()));
 		m_factory.insert(std::make_pair("merge", new Cnstancer<MergeCommand>));
 		m_factory.insert(std::make_pair("list", new Cnstancer<ListCommand>()));
+		m_factory.insert(std::make_pair("editor", new Cnstancer<EditorCommand>()));
 	}
 
 	~Factory()

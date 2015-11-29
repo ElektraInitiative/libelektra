@@ -15,6 +15,9 @@
 #include <string.h>
 #include <errno.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 extern char **environ;
 
 const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
@@ -119,9 +122,9 @@ void tryExternalCommand(char** argv)
 void elektraExecve(const char *filename, char *const argv[])
 {
 #ifdef _WIN32
-		execve(command.c_str(), argv, 0);
+		execve(filename, argv, 0);
 #else
-		execve(command.c_str(), argv, environ);
+		execve(filename, argv, environ);
 #endif
 }
 
@@ -145,4 +148,35 @@ void runManPage(std::string command)
 	elektraExecve(man, argv);
 
 	throw UnknownCommand();
+}
+
+void runEditor(std::string file)
+{
+	const char * editor = "/usr/bin/sensible-editor";
+	using namespace kdb;
+	std::string dirname = "/sw/kdb/current/";
+	KDB kdb;
+	KeySet conf;
+	kdb.get(conf, dirname);
+
+	Key k = conf.lookup(dirname+"editor");
+	if (k) editor = k.get<std::string>().c_str();
+	char * const argv [3] = {const_cast<char*>(editor),
+		const_cast<char*>(file.c_str()),
+		0};
+
+	pid_t childpid = fork ();
+	if (!childpid)
+	{
+		elektraExecve (editor, argv);
+
+		throw UnknownCommand();
+	}
+	else
+	{
+		int status;
+		std::cout << "wait for child" << std::endl;
+		waitpid (childpid, &status, 0);
+		std::cout << "child exit" << std::endl;
+	}
 }
