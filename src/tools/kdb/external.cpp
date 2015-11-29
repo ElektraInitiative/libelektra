@@ -150,33 +150,29 @@ void runManPage(std::string command)
 	throw UnknownCommand();
 }
 
-void runEditor(std::string file)
+bool runEditor(std::string editor, std::string file)
 {
-	const char * editor = "/usr/bin/sensible-editor";
-	using namespace kdb;
-	std::string dirname = "/sw/kdb/current/";
-	KDB kdb;
-	KeySet conf;
-	kdb.get(conf, dirname);
-
-	Key k = conf.lookup(dirname+"editor");
-	if (k) editor = k.get<std::string>().c_str();
-	char * const argv [3] = {const_cast<char*>(editor),
+	char * const argv [3] = {const_cast<char*>(editor.c_str()),
 		const_cast<char*>(file.c_str()),
 		0};
 
 	pid_t childpid = fork ();
 	if (!childpid)
 	{
-		elektraExecve (editor, argv);
-
-		throw UnknownCommand();
+		elektraExecve (editor.c_str(), argv);
+		exit (23);
 	}
 	else
 	{
 		int status;
-		std::cout << "wait for child" << std::endl;
 		waitpid (childpid, &status, 0);
-		std::cout << "child exit" << std::endl;
+		if (WIFEXITED(status))
+		{
+			if (WEXITSTATUS(status) != 23)
+			{
+				return true;
+			}
+		}
 	}
+	return false;
 }

@@ -48,6 +48,31 @@ void EditorCommand::tmpFile()
 	free (fn);
 }
 
+bool runAllEditors(std::string filename)
+{
+	using namespace kdb;
+	std::string dirname = "/sw/kdb/current/";
+	KDB kdb;
+	KeySet conf;
+	kdb.get(conf, dirname);
+
+	Key k = conf.lookup(dirname+"editor");
+	if (k)
+	{
+		std::string editor = k.get<std::string>().c_str();
+		if (runEditor(editor, filename))
+		{
+			return true;
+		} else {
+			std::cerr << "Could not run editor " << editor << std::endl;
+		}
+	}
+	if (runEditor ("/usr/bin/sensible-editor", filename)) return true;
+	if (runEditor ("/usr/bin/editor", filename)) return true;
+	if (runEditor ("/usr/bin/vi", filename)) return true;
+	return false;
+}
+
 int EditorCommand::execute(Cmdline const& cl)
 {
 	int argc = cl.arguments.size ();
@@ -75,15 +100,32 @@ int EditorCommand::execute(Cmdline const& cl)
 	Key errorKey(root);
 	errorKey.setString(filename);
 
-	plugin->set(oursToEdit, errorKey);
+	if (plugin->set(oursToEdit, errorKey) == -1)
+	{
+		printWarnings(cerr, errorKey);
+		printError(cerr, errorKey);
+		return 11;
+	}
 
 	printWarnings(cerr, errorKey);
-	printError(cerr, errorKey);
 
 
 	// start editor
 	if (cl.verbose) std::cout << "running editor with " << filename << std::endl;
-	runEditor(filename);
+	if (!cl.editor.empty())
+	{
+		if (!runEditor (cl.editor, filename))
+		{
+			std::cerr << "Could not run editor " << cl.editor << std::endl;
+			return 12;
+		}
+	} else {
+		if (!runAllEditors(filename))
+		{
+			std::cerr << "Could not run any editor, please change /sw/kdb/current/editor" << std::endl;
+			return 12;
+		}
+	}
 
 	// import from the file
 	KeySet importedKeys;
@@ -103,7 +145,7 @@ int EditorCommand::execute(Cmdline const& cl)
 
 	helper.reportResult (cl, result, cout, cerr);
 
-	int ret = -1;
+	int ret = 13;
 	if (!result.hasConflicts ())
 	{
 		if (cl.verbose)
@@ -116,9 +158,9 @@ int EditorCommand::execute(Cmdline const& cl)
 		if (cl.verbose) std::cout << "about to write result keys " << resultKeys << std::endl;
 		ours.append(resultKeys);
 		kdb.set (ours, root);
-		ret = 0;
 		if (cl.verbose) std::cout << "successful, cleaning up " << filename << std::endl;
 		unlink(filename.c_str());
+		ret = 0;
 	}
 	else
 	{

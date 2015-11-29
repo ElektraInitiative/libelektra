@@ -10,6 +10,6 @@ struct UnknownCommand : std::exception
 void elektraExecve(const char *filename, char *const argv[]);
 void tryExternalCommand(char** argv);
 void runManPage(std::string command);
-void runEditor(std::string file);
+bool runEditor(std::string editor, std::string file);
 
 #endif
