@@ -197,16 +197,26 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		section = INTERNAL_ROOT_SECTION;
 	}
 	appendKey = createUnescapedKey(appendKey, section);
+	short mergeSections = 0;
+	Key *existingKey = NULL;
+	if((existingKey = ksLookup(handle->result, appendKey, KDB_O_NONE)))
+	{
+		if(keyGetMeta(existingKey, "ini/duplicate"))
+		{
+			mergeSections = 1;
+		}
+	}
 	setSectionNumber(handle->parentKey, appendKey, handle->result);
-	keySetMeta(appendKey, "ini/section", 0);
 	appendKey = createUnescapedKey(appendKey, name);
-	Key *existingKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
+	existingKey = ksLookup(handle->result, appendKey, KDB_O_NONE);
 	if(existingKey)
 	{
 		if(strcmp(keyString(appendKey), "") || keyGetMeta(existingKey, "ini/array"))
 		{
 			if(handle->array)
 			{
+
+				keySetMeta(appendKey, "ini/section", 0);
 				if(keyGetMeta(existingKey, "ini/array"))
 				{
 					const char *lastIndex = keyString(keyGetMeta(existingKey, "ini/array"));
@@ -265,7 +275,6 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	}
 
 	setSectionNumber(handle->parentKey, appendKey, handle->result);
-	setOrderNumber(handle->parentKey, appendKey);
 	if(value == NULL)
 		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
@@ -274,6 +283,15 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		keySetString (appendKey, value);
 		keySetMeta(appendKey, "ini/key", "");
 		ksAppendKey (handle->result, appendKey);
+		if(mergeSections)
+		{
+			keySetMeta(appendKey, "order", 0);
+			insertNewKeyIntoExistendOrder(appendKey, handle->result);
+		}
+		else
+		{
+			setOrderNumber(handle->parentKey, appendKey);
+		}
 	}
 	else
 	{
@@ -313,6 +331,13 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	Key *appendKey = keyDup (handle->parentKey);
 	keySetMeta(appendKey, "ini/lastSection", 0);
 	createUnescapedKey(appendKey, section);
+	Key *existingKey = NULL;
+	if((existingKey = ksLookup(handle->result, appendKey, KDB_O_NONE)))
+	{
+		keyDel(appendKey);
+		keySetMeta(existingKey, "ini/duplicate", "");
+		return 1;
+	}
 	setSectionNumber(handle->parentKey, appendKey, handle->result);
 	setOrderNumber(handle->parentKey, appendKey);
 	keySetBinary(appendKey, 0, 0);	
@@ -500,7 +525,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 
 	ksDel(cbHandle.result);
-	ksRewind(returned);
+
 	return ret; /* success */
 }
 
@@ -898,7 +923,6 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	ksDel(newKS);
 	stripInternalData(parentKey, returned);
 	ret = iniWriteKeySet(fh, parentKey, returned, pluginConfig);
-
 	fclose (fh);
 
 	errno = errnosave;
