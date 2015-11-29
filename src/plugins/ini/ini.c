@@ -586,7 +586,13 @@ static char *getIniName(Key *section, Key *key)
 		return strdup(keyBaseName(key));
 	char *buffer = elektraMalloc(strlen(keyName(key)) - strlen(keyName(section)));
 	char *dest = buffer;
-	for (char *ptr = (char *)keyName(key)+strlen(keyName(section))+1; *ptr; ++ptr)
+	char *ptr = (char *)keyName(key)+strlen(keyName(section))+1;
+	char *strPos = strstr(keyName(key), INTERNAL_ROOT_SECTION);
+	if(strPos == ((char *)keyName(key)+strlen(keyName(section))+1))
+	{
+		ptr += (strlen(INTERNAL_ROOT_SECTION)+1);
+	}
+	for (; *ptr; ++ptr)
 	{
 		if (*ptr != '\\')
 		{
@@ -865,11 +871,20 @@ static void stripInternalData(Key *parentKey, KeySet *ks)
 				strcat(newName, token);
 			}
 			keySetName(newKey, newName);
-			if(strcmp(keyName(parentKey), keyName(newKey)))
+			if(strcmp(keyName(parentKey), keyName(newKey)) && (!ksLookup(ks, newKey, KDB_O_NONE)))
+			{
 				ksAppendKey(ks, newKey);
-			else
+				keyDel(ksLookup(ks, cur, KDB_O_POP));
+			}
+			else if(!strcmp(keyName(parentKey), keyName(newKey)))
+			{
 				keyDel(newKey);
-			keyDel(ksLookup(ks, cur, KDB_O_POP));
+				keyDel(ksLookup(ks, cur, KDB_O_POP));
+			}
+			else if(ksLookup(ks, newKey, KDB_O_NONE))
+			{
+				keyDel(newKey);
+			}
 			elektraFree(oldName);
 			elektraFree(newName);
 		}
