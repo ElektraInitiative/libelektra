@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
@@ -44,13 +52,13 @@ namespace ${support.nsnpretty($n)}
 {
 @end for
 
-/** \brief class */
+/** @brief class */
 class ${hierarchy.prettyclassname($support)}
 {
 public:
 
 
-	/** \brief Constructor for * ${hierarchy.prettyclassname($support)}
+	/** @brief Constructor for * ${hierarchy.prettyclassname($support)}
 	 * \param ks keyset to work with
 	 */
 	${hierarchy.prettyclassname($support)}(kdb::KeySet & ks) : ks(ks)
@@ -117,7 +125,7 @@ $cpp_util.generateForwardDecl($support, $hierarchy)
 $outputClasses(support, hierarchy)
 
 @for $key, $info in $parameters.iteritems()
-/** \brief Get parameter $key
+/** @brief Get parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -134,7 +142,7 @@ inline $support.typeof(info) $support.nsname($key)${support.classname($key)}::$s
 	return value;
 }
 
-/** \brief Set parameter $key
+/** @brief Set parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -146,7 +154,7 @@ inline void $support.nsname($key)${support.classname($key)}::$support.setfuncnam
 {
 	kdb::Key found = ks.lookup("$key", 0);
 
-	if(!found)
+	if (!found)
 	{
 		kdb::Key k("$support.userkey(key)", KEY_END);
 		k.set<$support.typeof(info)>(n);

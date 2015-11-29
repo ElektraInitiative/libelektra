@@ -1,10 +1,10 @@
-/***************************************************************************
-          version.c  -  A plugin which returns version information
-                             -------------------
- *  begin                : Wed 23 Jul, 2010
- *  copyright            : (C) 2010 by Markus Raab
- *  email                : elektra@markus-raab.org
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief A plugin which returns version information.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 @DISCLAMER@
 

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef KEYSETVISITOR_HPP
 #define KEYSETVISITOR_HPP
 
@@ -17,8 +25,8 @@ public:
 	 */
 	explicit KeySetVisitor();
 
-	void visit(ConfigNode& node);
-	void visit(TreeViewModel* model);
+	void visit(ConfigNode& node) override;
+	void visit(TreeViewModel* model) override;
 
 	/**
 	 * @brief getKeySet Returns the kdb::KeySet with all current valid keys

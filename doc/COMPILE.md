@@ -96,13 +96,27 @@ same fashion for BINDINGS and TOOLS.
 
 #### PLUGINS ####
 
+Read about available plugins [here](/src/plugins/).
+
 Because the core of elektra is minimal, plugins are needed to
 actually read and write to configuration files (storage plugins),
 commit the changes (resolver plugin, also takes care about how
 the configuration files are named) and also do many other
 tasks related to configuration.
 
-To add all plugins, you can use  
+The default is also the minimal set of plugins you should add:
+- dump is the default storage.
+  If you remove it, make sure you add another one and set
+  `KDB_DEFAULT_STORAGE` to it.
+- resolver is the default resolver.
+  If you remove it, make sure you add another one and set
+  `KDB_DEFAULT_RESOLVER` to it.
+- sync is very useful to not lose any data.
+  If you do not want to include it, make sure to set
+  `/sw/kdb/current/plugins` to a value not containing sync.
+  See [kdb-mount(1)](/doc/help/kdb-mount.md).
+
+To add all plugins, you can use:
 
 	-DPLUGINS=ALL
 
@@ -207,14 +221,21 @@ To specify specific tools you can use, e.g.:
 #### BINDINGS ####
 
 Bindings are used in the same way as PLUGINS and TOOLS.
+For example you can use:
+
+	-DBINDINGS=ALL
+
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
+To add all swig bindings (and also cpp), you can use:
+
+	-DBINDINGS=SWIG;cpp
 
 The SWIG executable my be specified with:
 
 	-DSWIG_EXECUTABLE=...
 
-If this option is not used, cmake will find the first occurence of
+If this option is not used, cmake will find the first occurrence of
 ``swig`` in your environment's path.
 
 #### CMAKE_BUILD_TYPE  ####

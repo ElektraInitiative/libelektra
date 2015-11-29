@@ -20,17 +20,17 @@ with the same name are merged together under the section key.
 
 If you want to add a ini file to the global key database, simply use mount:
 
-    kdb mount file.ini /test ini
+    kdb mount file.ini /example ini
 
 Then you can modify the contents of the ini file using set:
 
-    kdb set user/test/key value
-    kdb set user/test/section
-    kdb set user/test/section/key value
+    kdb set user/example/key value
+    kdb set user/example/section
+    kdb set user/example/section/key value
 
 Find out which file you modified:
 
-    kdb file user/test
+    kdb file user/example
 
 
 ## SECTIONS ##
@@ -134,7 +134,14 @@ key exists, the plugin treats lines starting with whitespaces as continuations o
 Keep in mind, that writing multiline values is also only supported if the multiline support is turned on.
 Otherwise the plugin will refuse to write key values with newlines.
 
+## METAKEY SUPPORT ##
 
+The ini plugin supports turning keys into [metakeys](/doc/help/elektra-meta-data.md) by adding the config key `meta`.
+
+## PRESERVE ORDER ##
+
+If the `preserveorder` config key is set, the ini plugin preserves the original order of the file.
+Only use this option for editing existing key values.
 
 ## RESTRICTIONS ##
 
@@ -143,5 +150,7 @@ Currently the plugin has the following shortcomings:
 - formatting newlines are not restored on write
 - regardless of which comment was used originally, it is always written
   back as ';'
+- Using square brackets (`[` and `]`) in sections is not possible
+- Using `=` in key names is not possible
 
 The plugin is still work in progress.

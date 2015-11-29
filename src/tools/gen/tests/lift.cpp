@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "lift.hpp"
 
 #include <iostream>
@@ -26,7 +34,7 @@ int main(int argc, char**argv)
 	par.setTestLiftWrite(false);
 
 	// write back to user/test/lift, see comments in lift.c
-	if(write)
+	if (write)
 	{
 		kdb.set(ks, "user/test/lift");
 	}

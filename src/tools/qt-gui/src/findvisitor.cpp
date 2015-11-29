@@ -1,9 +1,17 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "findvisitor.hpp"
 #include "treeviewmodel.hpp"
 
-FindVisitor::FindVisitor(TreeViewModel *searchResults, const QString &term) :
+FindVisitor::FindVisitor(TreeViewModel *searchResults, QString term) :
 	m_searchResults(searchResults),
-	m_term(term)
+	m_term(std::move(term))
 
 {
 }
@@ -17,11 +25,11 @@ void FindVisitor::visit(ConfigNode &node)
 		termFound = true;
 	}
 
-	if(node.getMetaKeys() && !termFound)
+	if (node.getMetaKeys() && !termFound)
 	{
 		foreach (ConfigNodePtr metaNode, node.getMetaKeys()->model())
 		{
-			if(metaNode->getName().contains(m_term) || metaNode->getValue().toString().contains(m_term))
+			if (metaNode->getName().contains(m_term) || metaNode->getValue().toString().contains(m_term))
 			{
 				termFound = true;
 				break;
@@ -31,7 +39,7 @@ void FindVisitor::visit(ConfigNode &node)
 
 	}
 
-	if(termFound)
+	if (termFound)
 		//let the other model delete this node
 		m_searchResults->insertRow(m_searchResults->rowCount(), ConfigNodePtr(&node, &ConfigNode::dontDelete), false);
 }

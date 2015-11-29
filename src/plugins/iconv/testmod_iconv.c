@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -15,7 +23,7 @@
 #include <langinfo.h>
 
 #include <tests_internal.h>
-#include <tests_plugin.h>
+
 #define NR_KEYS 1
 
 void test_latin1_to_utf8()
@@ -157,7 +165,7 @@ void test_utf8_conversation()
 
 
 	Plugin *plugin = elektraPluginOpen("iconv", modules, conf, 0);
-	char * str = malloc (KDB_MAX_PATH_LENGTH);
+	char * str = elektraMalloc (KDB_MAX_PATH_LENGTH);
 	size_t len;
 
 	printf ("Test utf8 conversation\n");
@@ -174,28 +182,14 @@ void test_utf8_conversation()
 	/* succeed_if (kdbbUTF8Engine (plugin, UTF8_FROM, &str, &len) != -1, "could use utf8engine"); */
 	/*succeed_if (errno == EILSEQ, "errno not set correctly");*/
 
-	free (str);
+	elektraFree (str);
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
 }
 
-static void test_checkfile_invalid()
-{
-	Key *parentKey = keyNew ("user/tests/iconv", KEY_VALUE, srcdir_file("iconv/invalid_file"), KEY_END);
-	KeySet *conf = ksNew (2,
-			keyNew ("user/from", KEY_VALUE, "UTF-8", KEY_END),
-			keyNew ("user/checkfile", KEY_VALUE, "1", KEY_END),
-			KS_END);
-	KeySet *ks = ksNew(0, KS_END);
-	PLUGIN_OPEN("iconv");
-	succeed_if(plugin->kdbGet(plugin, ks, parentKey) != 1, "error, should have failed");
-	ksDel(ks);
-	keyDel(parentKey);
-	PLUGIN_CLOSE();	
 
-}
 
 int main(int argc, char** argv)
 {
@@ -208,7 +202,7 @@ int main(int argc, char** argv)
 	test_utf8_to_latin1();
 	test_utf8_needed();
 	test_utf8_conversation();
-	test_checkfile_invalid();
+
 	printf("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

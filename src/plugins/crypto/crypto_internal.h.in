@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief internal header for crypto.h
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief internal header for crypto.h
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef ELEKTRA_PLUGIN_CRYPTO_H_INTERNAL
 #define ELEKTRA_PLUGIN_CRYPTO_H_INTERNAL

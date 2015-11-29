@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <tests_internal.h>
 
 #ifdef HAVE_TIME_H
@@ -250,10 +258,10 @@ static void test_keyHelpers()
 	}
 
 	parentSize=keyGetParentNameSize(key);
-	parentName=malloc(parentSize);
+	parentName=elektraMalloc(parentSize);
 	keyGetParentName(key,parentName,parentSize);
 	succeed_if_same_string (parentName, "system/parent");
-	free (parentName);
+	elektraFree (parentName);
 	keyDel (key);
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");
@@ -398,7 +406,7 @@ static void test_keyPlugin()
 	succeed_if (!memcmp(buffer, s, sizeof(s)-1), "unescaped name wrong"); \
 	elektraUnescapeKeyName(buffer, buffer2); \
 	succeed_if_same_string(a, buffer2); \
-	} while(0)
+	} while (0)
 
 
 static void test_keyNameEscape()
@@ -546,7 +554,7 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in name");
 
 	keySetOwner (key1, "myowner");
-	succeed_if(keyCompare(key1,key2) == KEY_OWNER, "the keys should differ in owner");
+	succeed_if(keyCompare(key1,key2) == (KEY_OWNER|KEY_META), "the keys should differ in owner");
 	keySetOwner (key2, "myowner");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in owner");
 
@@ -556,22 +564,22 @@ static void test_keyCompare()
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in value");
 
 	keySetComment (key1, "mycomment");
-	succeed_if(keyCompare(key1,key2) == KEY_COMMENT, "the keys should differ in comment");
+	succeed_if(keyCompare(key1,key2) == (KEY_COMMENT|KEY_META), "the keys should differ in comment");
 	keySetComment (key2, "mycomment");
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in comment");
 
 	keySetUID (key1, 50);
-	succeed_if(keyCompare(key1,key2) == KEY_UID, "the keys should differ in uid");
+	succeed_if(keyCompare(key1,key2) == (KEY_META), "the keys should differ in uid");
 	keySetUID (key2, 50);
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in uid");
 
 	keySetGID (key1, 50);
-	succeed_if(keyCompare(key1,key2) == KEY_GID, "the keys should differ in gid");
+	succeed_if(keyCompare(key1,key2) == (KEY_META), "the keys should differ in gid");
 	keySetGID (key2, 50);
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in gid");
 
 	keySetMode (key1, 0222);
-	succeed_if(keyCompare(key1,key2) == KEY_MODE, "the keys should differ in mode");
+	succeed_if(keyCompare(key1,key2) == (KEY_META), "the keys should differ in mode");
 	keySetMode (key2, 0222);
 	succeed_if(keyCompare(key1,key2) == 0, "the keys should not differ in mode");
 
@@ -667,10 +675,10 @@ static void test_owner()
 	succeed_if(keyIsBinary (key), "Could not set type to binary");
 	succeed_if(keyGetValueSize(key) == sizeof(array), "Value size not correct");
 	succeed_if(memcmp ((char *) keyValue(key), array, sizeof(array)) == 0, "could not get correct binary value");
-	getBack = malloc (keyGetValueSize(key));
+	getBack = elektraMalloc (keyGetValueSize(key));
 	keyGetBinary(key, getBack, keyGetValueSize(key));
 	succeed_if(memcmp(getBack, array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
-	free (getBack);
+	elektraFree (getBack);
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew("user:y", KEY_END);
@@ -904,15 +912,15 @@ static void test_keyDir (void)
 	succeed_if (keyGetMode(key) == 0644, "key is not 0644, but was set");
 
 	succeed_if (keySetDir (key) == 0, "could not set directory key");
-	// succeed_if (keyGetMode(key) == 0755, "key is not 0644, but was set");
+	succeed_if (keyGetMode(key) == 0744, "key is not 0644, but was set");
 	keyDel (key);
 
 	key = keyNew ("user/s", KEY_DIR, KEY_MODE, 0444, KEY_END);
-	succeed_if (keyGetMode(key) == 0444, "0444 set by keyNew");
+	succeed_if (keyGetMode(key) == 0544, "0444 set by keyNew");
 	keyDel (key);
-	
+
 	key = keyNew ("user/s", KEY_MODE, 0444, KEY_DIR, KEY_END);
-	// succeed_if (keyGetMode(key) == 0555, "0555 set by keyNew");
+	succeed_if (keyGetMode(key) == 0544, "0555 set by keyNew");
 	keyDel (key);
 }
 
@@ -1177,7 +1185,7 @@ static void test_elektraKeySetName()
 	succeed_if_same_string(keyName(dup), "user/test");
 	keyDel(dup);
 
-	for(int i=0; i<8; ++i)
+	for (int i=0; i<8; ++i)
 	{
 		int flags = 0;
 		if (i&1) flags|=KEY_CASCADING_NAME;
@@ -1292,7 +1300,7 @@ static void test_keyAddName()
 	succeed_if (keyAddName(k, toadd)==sizeof(result), "could not add name"); \
 	succeed_if_same_string(keyName(k), result); \
 	keyDel(k); \
-	} while(0)
+	} while (0)
 
 	TEST_ADD_NAME("spec", "something", "spec/something");
 	TEST_ADD_NAME("proc", "something", "proc/something");
@@ -1349,7 +1357,7 @@ static void test_keyAddName()
 	succeed_if (keyAddName(k, toadd)==0, "adding irrelevant wrong return"); \
 	succeed_if_same_string(keyName(k), result); \
 	keyDel(k); \
-	} while(0)
+	} while (0)
 
 	TEST_ADD_NAME("/", 0, "/");
 	TEST_ADD_NAME("/", "", "/");

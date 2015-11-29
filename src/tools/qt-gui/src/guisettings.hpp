@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef GUISETTINGS_HPP
 #define GUISETTINGS_HPP
 
@@ -22,7 +30,7 @@ public:
 	 * @brief GUISettings The default constructor
 	 * @param parentGUISettings
 	 */
-	explicit GUISettings(QObject *parentGUISettings = 0);
+	explicit GUISettings(QObject *parentGUISettings = nullptr);
 
 	/**
 	 * @brief GUISettings The copy contructor. Mandatory.

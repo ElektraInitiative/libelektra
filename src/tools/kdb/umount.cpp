@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <umount.hpp>
 
 #include <kdb.hpp>
@@ -21,6 +29,8 @@ int UmountCommand::execute(Cmdline const& cl)
 	Key parentKey (Backends::mountpointsPath, KEY_END);
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey);
+
+	if (cl.verbose) Backends::findBackend(cl.arguments[0], conf, true);
 
 	if (Backends::umount(cl.arguments[0], conf) == 0)
 	{

@@ -31,22 +31,22 @@ static int isNumber(const char *s)
 	char *endPtr = NULL;
 	int ret;
 	ret = strtol(s, &endPtr, 10);
-	if(*endPtr != 0)
+	if (*endPtr != 0)
 	{
 		return 0;
 	}
-	else if(ret == 0 && errno == EINVAL)
+	else if (ret == 0 && errno == EINVAL)
 	{
 		return 0;
 	}
-	else if(*endPtr == '.')
+	else if (*endPtr == '.')
 	{
 		ret = strtof(s, &endPtr);
-		if(*endPtr != 0)
+		if (*endPtr != 0)
 		{
 			return 0;
 		}
-		else if(ret == 0 && errno == EINVAL)
+		else if (ret == 0 && errno == EINVAL)
 		{
 			return 0;
 		}
@@ -66,24 +66,24 @@ static int compareStrings(const char *s1, const char *s2)
 	int ret2;
 	float result;
 	int retval = -1;
-	if(s1 == NULL)
+	if (s1 == NULL)
 	{
 		retval = -1;
 	}
-	else if(s2 == NULL)
+	else if (s2 == NULL)
 	{
 		retval = 1;
 	}
-	else if((ret = isNumber(s1)) && (ret2 = isNumber(s2)))
+	else if ((ret = isNumber(s1)) && (ret2 = isNumber(s2)))
 	{
-		if(ret == 2 || ret2 == 2)
+		if (ret == 2 || ret2 == 2)
 		{
 			result = (fabs(atof(s1)-atof(s2)));
-			if(result < EPSILON)
+			if (result < EPSILON)
 				retval = 0;
-			else if(result > 0)
+			else if (result > 0)
 				retval = 1;
-			else if(result < 0)
+			else if (result < 0)
 				retval = -1;
 		}
 		else
@@ -106,15 +106,15 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	Key *key;
 	int len;
 	long result = 0;
-	if(rightSide[0] == '\'')
+	if (rightSide[0] == '\'')
 	{
 		char *endPos = strchr(rightSide+1, '\'');
-		if(!endPos)
+		if (!endPos)
 		{
 			result = -1;
 			goto Cleanup;
 		}
-		if(elektraRealloc((void **)&compareTo, endPos-rightSide) < 0)
+		if (elektraRealloc((void **)&compareTo, endPos-rightSide) < 0)
 		{
 			ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 			result = -1;
@@ -123,10 +123,10 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 		memset(compareTo, 0, endPos-rightSide);
 		strncat(compareTo, rightSide+1, endPos-rightSide-1);
 	}
-	else if(rightSide && elektraStrLen(rightSide) > 1)
+	else if (rightSide && elektraStrLen(rightSide) > 1)
 	{
 		len = keyGetNameSize(parentKey)+elektraStrLen(rightSide);
-		if(elektraRealloc((void **)&lookupName, len) < 0)
+		if (elektraRealloc((void **)&lookupName, len) < 0)
 		{
 			ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 			result = -1;
@@ -134,13 +134,13 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 		}
 		snprintf(lookupName, len, "%s/%s", keyName(parentKey), rightSide);
 		key = ksLookupByName(ks, lookupName, 0);
-		if(!key)
+		if (!key)
 		{
 			ELEKTRA_SET_ERRORF(133, parentKey, "Key %s doesn't exist", lookupName);
 			result = -1;
 			goto Cleanup;
 		}
-		if(elektraRealloc((void **)&compareTo, keyGetValueSize(key)) < 0)
+		if (elektraRealloc((void **)&compareTo, keyGetValueSize(key)) < 0)
 		{
 			ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 			result = -1;
@@ -150,7 +150,7 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	}
 
 	len = keyGetNameSize(parentKey)+elektraStrLen(leftSide);
-	if(elektraRealloc((void **)&lookupName, len) < 0)
+	if (elektraRealloc((void **)&lookupName, len) < 0)
 	{
 		ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 		result = -1;
@@ -158,7 +158,7 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	}
 	snprintf(lookupName, len, "%s/%s", keyName(parentKey), leftSide);
 	key = ksLookupByName(ks, lookupName, 0);
-	if(!key)
+	if (!key)
 	{
 		ELEKTRA_SET_ERRORF(133, parentKey, "Key %s doesn't exist", lookupName);
 		result = -1;
@@ -166,30 +166,30 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	}
 	long ret;
 	ret = compareStrings(keyString(key), compareTo);
-	switch(cmpOp)
+	switch (cmpOp)
 	{
 		case EQU:
-			if(!ret)
+			if (!ret)
 				result = 1;
 			break;
 		case NOT:
-			if(ret)
+			if (ret)
 				result = 1;
 			break;
 		case LT:
-			if(ret < 0)
+			if (ret < 0)
 				result = 1;
 			break;
 		case LE:
-			if(ret <= 0)
+			if (ret <= 0)
 				result = 1;
 			break;
 		case GT:
-			if(ret > 0)
+			if (ret > 0)
 				result = 1;
 			break;
 		case GE:
-			if(ret >= 0)
+			if (ret >= 0)
 				result = 1;
 			break;
 		case SET:
@@ -202,9 +202,9 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	}
 //freeing allocated heap
 Cleanup:
-	if(lookupName)
+	if (lookupName)
 		elektraFree(lookupName);
-	if(compareTo)
+	if (compareTo)
 		elektraFree(compareTo);
 	return result;
 }
@@ -214,37 +214,37 @@ static int parseSingleCondition(const char *condition, KeySet *ks, Key *parentKe
 {
 	Comparator cmpOp;
 	char *opStr;
-	if((opStr = strstr(condition, "==")))
+	if ((opStr = strstr(condition, "==")))
 		cmpOp = EQU;
-	else if((opStr = strstr(condition, "!=")))
+	else if ((opStr = strstr(condition, "!=")))
 		cmpOp = NOT;
-	else if((opStr = strstr(condition, "<=")))
+	else if ((opStr = strstr(condition, "<=")))
 		cmpOp = LE;
-	else if((opStr = strstr(condition, "<")))
+	else if ((opStr = strstr(condition, "<")))
 		cmpOp = LT;
-	else if((opStr = strstr(condition, ">=")))
+	else if ((opStr = strstr(condition, ">=")))
 		cmpOp = GE;
-	else if((opStr = strstr(condition, ">")))
+	else if ((opStr = strstr(condition, ">")))
 		cmpOp = GT;
-	else if((opStr = strstr(condition, ":=")))
+	else if ((opStr = strstr(condition, ":=")))
 		cmpOp = SET;
 	else
 		return -1;
 	int opLen;
-	if(cmpOp == LT || cmpOp == GT)
+	if (cmpOp == LT || cmpOp == GT)
 		opLen = 1;
 	else
 		opLen = 2;
 	unsigned long startPos = 0;
 	unsigned long endPos = 0;
 	char *ptr = (char *)condition;
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		++ptr;
 		++startPos;
 	}
 	ptr = opStr-1;
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		--ptr;
 		++endPos;
@@ -257,13 +257,13 @@ static int parseSingleCondition(const char *condition, KeySet *ks, Key *parentKe
 	startPos = 0;
 	endPos = 0;
 	ptr = opStr+opLen;
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		++ptr;
 		++startPos;
 	}
 	ptr = (char *)condition+(elektraStrLen(condition)-2);
-	while(isspace(*ptr))
+	while (isspace(*ptr))
 	{
 		--ptr;
 		++endPos;
@@ -285,7 +285,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 	const char *regexString = "(\\(([^\\)]*)\\))\\s*(\\?)\\s*(\\(([^\\)]*)\\))\\s*(:\\s*(\\(([^\\)]*)\\))){0,1}";
 	regex_t regex;
 	int ret;
-	if((ret = regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE)))
+	if ((ret = regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE)))
 	{
 		ELEKTRA_SET_ERROR(87, parentKey, "Couldn't compile regex: most likely out of memory"); //the regex compilers so the only possible error would be out of memory
 		ksDel(ks);
@@ -295,14 +295,14 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 	regmatch_t m[subMatches];
 	char *ptr = (char *)conditionString;
 	int nomatch = regexec(&regex, ptr, subMatches, m, 0);
-	if(nomatch)
+	if (nomatch)
 	{
 		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
 		regfree(&regex);
 		ksDel(ks);
 		return -1;
 	}
-	if(m[2].rm_so == -1 || m[5].rm_so == -1)
+	if (m[2].rm_so == -1 || m[5].rm_so == -1)
 	{
 		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
 		regfree(&regex);
@@ -327,7 +327,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 	thenexpr[endPos-startPos] = '\0';
 
 
-	if(m[8].rm_so != -1)
+	if (m[8].rm_so != -1)
 	{
 		startPos = m[8].rm_so + (ptr - conditionString);
 		endPos = m[8].rm_eo + (ptr - conditionString);
@@ -336,21 +336,47 @@ static int parseConditionString(const Key *meta, Key *parentKey, KeySet *ks)
 		elseexpr[endPos-startPos] = '\0';
 	}
 	ret = parseSingleCondition(condition, ks, parentKey);
-	if(ret == 1)
-		ret = parseSingleCondition(thenexpr, ks, parentKey);
-	else if(ret == 0)
+	if (ret == 1)
 	{
-		if(elseexpr)
+		ret = parseSingleCondition(thenexpr, ks, parentKey);
+		if (ret == 0)
+		{
+				ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, thenexpr);
+		}
+		else if (ret == (-1))
+		{
+			ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", thenexpr);
+		}
+	}
+	else if (ret == 0)
+	{
+		if (elseexpr)
+		{
 			ret = parseSingleCondition(elseexpr, ks, parentKey);
-		else 
+			if (ret == 0)
+			{
+				ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, elseexpr);
+			}
+			else if (ret == (-1))
+			{
+				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", elseexpr);
+			}
+		}
+		else
+		{
+			ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed) ", conditionString, condition);
 		    ret = 1;
-
+		}
+	}
+	else if (ret == (-1))
+	{
+		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", condition);
 	}
 
 
 	elektraFree(condition);
 	elektraFree(thenexpr);
-	if(elseexpr)
+	if (elseexpr)
 		elektraFree(elseexpr);
 	regfree(&regex);
 	ksDel(ks);
@@ -382,22 +408,21 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 	const Key *meta;
 	int result;
 	int ret = 0;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
 		meta = keyGetMeta(cur, "check/condition");
-		if(!meta)
+		if (!meta)
 			continue;
 		result = parseConditionString(meta, parentKey, ksDup(returned));
-		if(result == -1)
+		if (result == -1)
 		{
 			ret |= -1;
 		}
-		else if(result == 0)
+		else if (result == 0)
 		{
-			ELEKTRA_SET_ERRORF(135, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
-		else if(result == 1)
+		else if (result == 1)
 		{
 			ret |= 1;
 		}
@@ -412,22 +437,21 @@ int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 	const Key *meta;
 	int result;
 	int ret = 0;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
 		meta = keyGetMeta(cur, "check/condition");
-		if(!meta)
+		if (!meta)
 			continue;
 		result = parseConditionString(meta, parentKey, ksDup(returned));
-		if(result == -1)
+		if (result == -1)
 		{
 			ret |= -1;
 		}
-		else if(result == 0)
+		else if (result == 0)
 		{
-			ELEKTRA_SET_ERRORF(135, parentKey, "Validation failed for key %s: Value: %s", keyName(cur), keyString(cur));
 			ret |= -1;
 		}
-		else if(result == 1)
+		else if (result == 1)
 		{
 			ret |= 1;
 		}

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KDBTHREAD_HPP
 #define ELEKTRA_KDBTHREAD_HPP
 
@@ -28,7 +36,7 @@ struct LayerAction
 {
 	LayerAction(bool activate_, std::shared_ptr<Layer> layer_) :
 		activate(activate_),
-		layer(layer_)
+		layer(std::move(layer_))
 	{ }
 	bool activate; // false if deactivate
 	std::shared_ptr<Layer> layer;
@@ -332,11 +340,11 @@ public:
 		return layer;
 	}
 
-	void syncLayers()
+	void syncLayers() override
 	{
 		// now activate/deactive layers
 		Events e;
-		for(auto const & l: m_gc.fetchGlobalActivation(this))
+		for (auto const & l: m_gc.fetchGlobalActivation(this))
 		{
 			if (l.second.activate)
 			{
@@ -360,7 +368,7 @@ public:
 	 *
 	 * @param c the command to execute
 	 */
-	void execute(Command & c)
+	void execute(Command & c) override
 	{
 		m_gc.execute(c);
 		if (c.oldKey != c.newKey)
@@ -383,9 +391,9 @@ public:
 	 *
 	 * @param ks
 	 */
-	void notify(KeySet & ks)
+	void notify(KeySet & ks) override
 	{
-		for(auto const & k: ks)
+		for (auto const & k: ks)
 		{
 			auto const& f = m_keys.find(k.getName());
 			if (f == m_keys.end()) continue; // key already had context change

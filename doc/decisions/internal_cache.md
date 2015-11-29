@@ -30,3 +30,17 @@ duplications exactly of the parts as requested.
 ## Related decisions
 
 ## Notes
+
+internal caches lead to duplication of memory consumption
+(could be avoided by reference counting)
+
+in some cases caches cannot be avoided?
+ -> filesys, databases?
+
+cache discussion:
++ not more keys than needed
++ kdbGet avoids IO even if done somewhere else
++ KDB handles could be more locally
+- not possible to access cache with current architecture, KDB high level API
+- implementation overhead
+- where should the caches be

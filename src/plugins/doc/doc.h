@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef DOC_H
 #define DOC_H
 
@@ -77,11 +85,8 @@
  *
  * @snippet doc.c plugin errors include
  *
- * @see http://www.libelektra.org/ftp/elektra/thesis.pdf
- *   for an detailed explanation and description of other types
- *   of plugins.
- *   Do not hesitate to ask at the mailinglist if anything
- *   is unclear.
+ * Do not hesitate to open an issue if anything
+ * is unclear.
  *
  * @addtogroup plugin
  * @{
@@ -100,7 +105,7 @@
  *
  * @ingroup plugin
  *
- * @param number the error number from src/liberror/specification
+ * @param number the error number from src/error/specification
  * @param key to write the error to
  * @param text additional text for the user
  */
@@ -116,7 +121,7 @@
  *
  * @ingroup plugin
  *
- * @param number the error number from src/liberror/specification
+ * @param number the error number from src/error/specification
  * @param key to write the error to
  * @param formatstring a format string as in printf
  * @param ... further arguments as in printf
@@ -133,7 +138,7 @@
  *
  * @ingroup plugin
  *
- * @param number the warning number from src/liberror/specification
+ * @param number the warning number from src/error/specification
  * @param key to write the error to
  * @param formatstring a format string as in printf
  * @param ... further arguments as in printf
@@ -150,7 +155,7 @@
  *
  * @ingroup plugin
  *
- * @param number the warning number from src/liberror/specification
+ * @param number the warning number from src/error/specification
  * @param key to write the error to
  * @param text additional text for the user
  */

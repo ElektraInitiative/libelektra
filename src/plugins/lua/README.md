@@ -10,7 +10,7 @@ The plugin uses Lua to do magic things.
 
 ## USAGE
 
-    kdb mount file.ini /lua lua script=/path/to/lua/some_lua_script.lua
+    kdb mount file.ini /lua ini lua script=/path/to/lua/lua_filter.lua
 
 ## Plugin Config ##
 

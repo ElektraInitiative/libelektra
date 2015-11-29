@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 %module kdb
 
 %include "stl.i"
@@ -102,7 +110,7 @@
 
 %typemap(in) (const void *newBinary, size_t dataSize) {
   Py_ssize_t len;
-  if(PyBytes_AsStringAndSize($input, reinterpret_cast<char **>(&$1), &len) == -1)
+  if (PyBytes_AsStringAndSize($input, reinterpret_cast<char **>(&$1), &len) == -1)
     return NULL;
   $2 = len;
 }
@@ -239,7 +247,7 @@
     (void) PyDict_Check(memo);
     ssize_t size = $self->size();
     kdb::KeySet *ks = new kdb::KeySet(size, KS_END);
-    for(cursor_t cursor = 0; cursor < size; ++cursor)
+    for (cursor_t cursor = 0; cursor < size; ++cursor)
       ks->append($self->at(cursor)->dup());
     return ks;
   }

@@ -1,7 +1,7 @@
 find_package(Augeas)
 find_package (LibXml2)
 
-if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
+if (LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 
 	try_compile (HAS_LIBAUGEAS16
 		"${CMAKE_BINARY_DIR}"

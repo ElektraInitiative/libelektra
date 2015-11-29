@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef CONVERT_HPP
 #define CONVERT_HPP
 
@@ -12,22 +20,22 @@ public:
 	ConvertCommand();
 	~ConvertCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
 		return "v";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "[<import-format>] [<export-format>] [<import-file>] [export-file]";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Convert configuration.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return
 			"The convert command allows you to convert\n"
@@ -44,7 +52,7 @@ public:
 			;
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

@@ -1,17 +1,10 @@
-/*************************************************************************** 
- *  test_backendhelpers.c  - Test suite for helper functions of resolver
- *                  -------------------
- *  begin                : Fri 21 Mar 2008
- *  copyright            : (C) 2008 by Markus Raab
- *  email                : elektra@markus-raab.org
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <tests_internal.h>
 
@@ -33,8 +26,8 @@ KeySet *set_pluginconf()
 void test_resolve()
 {
 	int pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
-	char *path = malloc (pathLen);
-	exit_if_fail (path != 0, "malloc failed");
+	char *path = elektraMalloc (pathLen);
+	exit_if_fail (path != 0, "elektraMalloc failed");
 	snprintf (path, pathLen, "%s/%s/elektra.ecf", tempHome, KDB_DB_USER);
 
 	printf ("Resolve Filename\n");
@@ -81,7 +74,7 @@ void test_resolve()
 	elektraPluginClose(plugin, 0);
 	elektraModulesClose(modules, 0);
 	ksDel (modules);
-	free (path);
+	elektraFree (path);
 }
 
 void test_name()

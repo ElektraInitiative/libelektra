@@ -63,6 +63,7 @@ set (PLUGINS_LIST_NODEP
 	wresolver
 	ini
 	list
+	logchange
 	)
 
 #
@@ -86,6 +87,7 @@ set (PLUGINS_LIST_POSIX
 	line
 	validation
 	regexstore
+	filecheck
 	)
 
 #
@@ -340,9 +342,6 @@ endif()
 #
 # Compile options
 #
-
-
-option (ENABLE_CXX11 "WARNING: Option will be removed with 0.8.13. See libelektra.org/issues/262. Include code using C++11 standard, needs gcc 4.7 or comparable clang/icc." ON)
 
 set (GTEST_ROOT "" CACHE PATH "use external gtest instead of internal")
 

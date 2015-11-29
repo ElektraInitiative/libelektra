@@ -1,4 +1,12 @@
-#include <kdbproposal.h>
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
+#include <kdbease.h>
 
 #include "tests.h"
 

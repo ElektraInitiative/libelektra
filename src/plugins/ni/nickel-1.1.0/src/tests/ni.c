@@ -16,14 +16,14 @@
                         {                     \
                            int test_fail = 0;
 
-#define TEST_COND(cond)    if(!(cond) && (test_fail = 1))              \
+#define TEST_COND(cond)    if (!(cond) && (test_fail = 1))              \
                               printf("%s: %s: '%s' FAILED (%s:%d)\n",  \
                                      argv0, __func__, #cond, __FILE__, \
                                      __LINE__)
 
 #define END_TEST()         printf("%s: %s: %s\n", argv0, __func__, \
                                   (test_fail ? "FAIL" : "pass"));  \
-                           if(test_fail)                           \
+                           if (test_fail)                           \
                               any_fail = 1;                        \
                         }
 #define TEST(x) x()
@@ -204,7 +204,7 @@ BEGIN_TEST(parse_spaces_quotes)
    TEST_COND(children == 24);
 
    int i;
-   for(i = 0; i < 24; ++i)
+   for (i = 0; i < 24; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);
@@ -357,7 +357,7 @@ BEGIN_TEST(parse_oddities)
    TEST_COND(children == 10);
 
    int i;
-   for(i = 0; i < 10; ++i)
+   for (i = 0; i < 10; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);
@@ -551,7 +551,7 @@ BEGIN_TEST(parse_output)
    assert(node != NULL);
 
    int i;
-   for(i = 0; i < NUM_parse_output_NODES; ++i)
+   for (i = 0; i < NUM_parse_output_NODES; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 1, NULL);
       assert(child != NULL);
@@ -579,7 +579,7 @@ BEGIN_TEST(parse_output)
    int children = Ni_GetNumChildren(node);
    TEST_COND(children == NUM_parse_output_NODES);
 
-   for(i = 0; i < NUM_parse_output_NODES; ++i)
+   for (i = 0; i < NUM_parse_output_NODES; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);
@@ -617,7 +617,7 @@ BEGIN_TEST(big_oct)
    TEST_COND(children == 9);
 
    int i;
-   for(i = 0; i < 9; ++i)
+   for (i = 0; i < 9; ++i)
    {
       Ni_node child = Ni_GetChild(node, names[i], -1, 0, NULL);
       TEST_COND(child != NULL);

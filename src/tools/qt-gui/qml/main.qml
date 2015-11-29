@@ -18,7 +18,7 @@ ApplicationWindow {
 	title: "Elektra Editor"
 
 	onClosing: {
-		if(!undoManager.isClean()){
+		if (!undoManager.isClean()){
 			close.accepted = false
 			exitDialog.open()
 		}
@@ -116,7 +116,7 @@ ApplicationWindow {
 		id: newKeyWindow
 
 		onVisibleChanged: {
-			if(visible === true){
+			if (visible === true){
 
 				nameTextField.forceActiveFocus()
 			}
@@ -127,8 +127,8 @@ ApplicationWindow {
 		id: editKeyWindow
 
 		onVisibleChanged: {
-			if(visible === true){
-				if(nameTextField.text.charAt(0) === '#'){
+			if (visible === true){
+				if (nameTextField.text.charAt(0) === '#'){
 					editKeyWindow.title = qsTr("Edit Array Entry")
 					nameTextField.textColor = disabledPalette.text
 					nameTextField.readOnly = true
@@ -144,7 +144,7 @@ ApplicationWindow {
 		title: qsTr("Create new Array Entry")
 
 		onVisibleChanged: {
-			if(visible === true){
+			if (visible === true){
 				nameTextField.readOnly = true
 				nameTextField.textColor = disabledPalette.text
 				nameTextField.text = selectedNode.children.getCurrentArrayNo()
@@ -202,19 +202,19 @@ ApplicationWindow {
 		modality: Qt.ApplicationModal
 
 		onAccepted: {
-			if(type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
+			if (type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
-			else if(type === "frame" && guiSettings.frameColor !== colorDialog.color) {
+			else if (type === "frame" && guiSettings.frameColor !== colorDialog.color) {
 				guiSettings.frameColor =  colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
-			else if(type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
+			else if (type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithKeyColor = colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
-			else if(type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
+			else if (type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithoutKeyColor = colorDialog.color
 				chooseColorWindow.colorEdited = true
 			}
@@ -321,14 +321,14 @@ ApplicationWindow {
 					model: getModel()
 
 					function getModel() {
-						if(treeView.currentNode === null)
+						if (treeView.currentNode === null)
 							return null
-						else if(treeView.currentNode.childrenHaveNoChildren)
+						else if (treeView.currentNode.childrenHaveNoChildren)
 							return treeView.currentNode.children
 					}
 
 					onCurrentRowChanged: {
-						if(currentRow === -1)
+						if (currentRow === -1)
 							keyAreaSelectedItem = null
 						else
 							model !== null ? keyAreaSelectedItem = model.get(currentRow) : keyAreaSelectedItem = null
@@ -370,10 +370,10 @@ ApplicationWindow {
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-									if(mouse.button === Qt.RightButton){
+									if (mouse.button === Qt.RightButton){
 										keyAreaContextMenu.popup()
 									}
-									else if(mouse.button === Qt.LeftButton){
+									else if (mouse.button === Qt.LeftButton){
 										keyAreaView.currentRow = styleData.row
 										MFunctions.updateKeyAreaSelection()
 									}
@@ -388,7 +388,7 @@ ApplicationWindow {
 						}
 					}
 					Keys.onPressed: {
-						if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
+						if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
 							MFunctions.updateKeyAreaSelection()
                             guiActions.editAction.trigger()
 						}
@@ -502,15 +502,15 @@ ApplicationWindow {
 						model: null
 
 						Keys.onPressed: {
-							if(event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
+							if (event.key === Qt.Key_Up && searchResultsListView.currentIndex > 0){
 								currentIndex--
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if(event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.rowCount() - 1){
+							else if (event.key === Qt.Key_Down && searchResultsListView.currentIndex < model.rowCount() - 1){
 								currentIndex++
 								searchResultsSelectedItem = model.get(currentIndex)
 							}
-							else if((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
+							else if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
 								editKeyWindow.selectedNode = searchResultsSelectedItem
 								editKeyWindow.accessFromSearchResults = true
                                 guiActions.editAction.trigger()
@@ -531,13 +531,13 @@ ApplicationWindow {
 								acceptedButtons: Qt.LeftButton | Qt.RightButton
 
 								onClicked: {
-									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
-										if(mouse.button === Qt.LeftButton){
+									if (searchResultsListView.model.get(0).name !== "NotfoundNode"){
+										if (mouse.button === Qt.LeftButton){
 											searchResultsListView.currentIndex = index
 											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 											forceActiveFocus()
 										}
-										else if(mouse.button === Qt.RightButton) {
+										else if (mouse.button === Qt.RightButton) {
 											searchResultsListView.currentIndex = index
 											searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 											forceActiveFocus()
@@ -547,7 +547,7 @@ ApplicationWindow {
 									}
 								}
 								onDoubleClicked: {
-									if(searchResultsListView.model.get(0).name !== "NotfoundNode"){
+									if (searchResultsListView.model.get(0).name !== "NotfoundNode"){
 										searchResultsListView.currentIndex = index
 										forceActiveFocus()
 										editKeyWindow.accessFromSearchResults = true

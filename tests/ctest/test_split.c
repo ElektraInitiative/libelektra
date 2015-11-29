@@ -1,17 +1,10 @@
-/*************************************************************************** 
- *           test_split.c  - Test suite for split keyset data structure
- *                  -------------------
- *  begin                : Fri 21 Mar 2008
- *  copyright            : (C) 2008 by Markus Raab
- *  email                : elektra@markus-raab.org
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <tests_internal.h>
 

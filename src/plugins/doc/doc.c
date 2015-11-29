@@ -1,17 +1,10 @@
-/***************************************************************************
-            doc.c  - Documentation on how to write plugins
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "doc.h"
 
@@ -47,7 +40,7 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key * kg = ksLookupByName(config, "/global", 0);
 
-	data=malloc(sizeof(GlobalData));
+	data=elektraMalloc(sizeof(GlobalData));
 	data->global = 0;
 	if (kg) data->global = atoi(keyString(kg));
 	elektraPluginSetData(handle,data);
@@ -68,7 +61,7 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 //! [doc close]
 int elektraDocClose(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
 {
-	free (elektraPluginGetData(handle));
+	elektraFree (elektraPluginGetData(handle));
 
 	return 0; /* success */
 }
@@ -131,8 +124,8 @@ int elektraDocGet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *parentKe
 		keySetString(read, value);
 
 		ksAppendKey (returned, read);
-		free (key);
-		free (value);
+		elektraFree (key);
+		elektraFree (value);
 	}
 
 	if (feof(fp) == 0)

@@ -1,8 +1,8 @@
 /**
- * \file
+ * @file
  *
- * \brief A plugin that reads configuration files and saves keys on a line by line basis *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @brief A plugin that reads configuration files and saves keys on a line by line basis *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -12,6 +12,7 @@
 
 #include "line.h"
 
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbproposal.h>
 
@@ -55,7 +56,7 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 		read = keyDup(ksTail(returned));
 		if (elektraArrayIncName(read) == -1)
 		{
-			free (value);
+			elektraFree (value);
 			keyDel (read);
 			return -1;
 		}
@@ -63,7 +64,7 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 
 		ksAppendKey (returned, read);
 	}
-	free(value);
+	elektraFree (value);
 
 	return 1;
 }

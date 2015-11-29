@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * This example explains how to define user defined exception.
+ * @brief This example explains how to define user defined exception.
  *
  * That means that the user can implement their own exceptions,
  * e.g. potentially derived from their own base class with its
@@ -20,13 +20,17 @@
  * Never use non-binary compatible user exceptions if you do not
  * use them everywhere where you include any of elektras header
  * files!
+ *
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
+
 #include <stdexcept>
 
 class UserException : public std::exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception";
 	}
@@ -38,7 +42,7 @@ namespace kdb
 class Exception : public UserException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Exception thrown by Elektra";
 	}
@@ -47,7 +51,7 @@ public:
 class KeyException : public Exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Exception thrown by a Key";
 	}
@@ -56,7 +60,7 @@ public:
 class KeyTypeMismatch: public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Binary or String key mismatch";
 	}
@@ -65,7 +69,7 @@ public:
 class KeyInvalidName : public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Invalid Keyname";
 	}
@@ -74,7 +78,7 @@ public:
 class KeyTypeConversion : public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: Exception thrown by get/set";
 	}
@@ -98,7 +102,7 @@ public:
 	virtual ~KDBException() throw()
 	{}
 
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "User Exception: KDB";
 	}

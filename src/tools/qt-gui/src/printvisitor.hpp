@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef PRINTVISITOR_HPP
 #define PRINTVISITOR_HPP
 
@@ -13,13 +21,13 @@ public:
 	 * @brief visit
 	 * @param node
 	 */
-	void visit(ConfigNode& node);
+	void visit(ConfigNode& node) override;
 
 	/**
 	 * @brief visit
 	 * @param model
 	 */
-	void visit(TreeViewModel* model);
+	void visit(TreeViewModel* model) override;
 };
 
 #endif // PRINTVISITOR_HPP

@@ -1,6 +1,6 @@
 local x = 1
 
-function elektraOpen(errorKey)
+function elektraOpen(config, errorKey)
 	print("[LUA-2] open -->")
 	x = x + 1
 	return 0

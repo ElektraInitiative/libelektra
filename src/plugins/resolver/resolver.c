@@ -1,28 +1,10 @@
-/***************************************************************************
-          resolver.c  -  Skeleton of a plugin to be copied
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid plugin.                             *
- *   Simple fill the empty Resolver functions with your code and you are   *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "resolver.h"
 
@@ -113,9 +95,9 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 
 static void resolverCloseOne (resolverHandle *p)
 {
-	free (p->filename); p->filename = 0;
-	free (p->dirname); p->dirname= 0;
-	free (p->tempfile); p->tempfile = 0;
+	elektraFree (p->filename); p->filename = 0;
+	elektraFree (p->dirname); p->dirname= 0;
+	elektraFree (p->tempfile); p->tempfile = 0;
 }
 
 static void resolverClose (resolverHandles *p)
@@ -124,7 +106,7 @@ static void resolverClose (resolverHandles *p)
 	resolverCloseOne(&p->dir);
 	resolverCloseOne(&p->user);
 	resolverCloseOne(&p->system);
-	free (p);
+	elektraFree (p);
 }
 
 /**
@@ -161,10 +143,8 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED,
 		}
 		else
 		{
-			char buffer[ERROR_SIZE];
-
 			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed file lock with message: %s",
-				strerror_r(errno, buffer, ERROR_SIZE));
+				strerror(errno));
 		}
 		return -1;
 	}
@@ -197,9 +177,8 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 
 	if (ret == -1)
 	{
-		char buffer[ERROR_SIZE];
 		ELEKTRA_ADD_WARNINGF(32, parentKey, "fcntl SETLK unlocking failed with message: %s", 
-			strerror_r(errno, buffer, ERROR_SIZE));
+			strerror(errno));
 	}
 
 	return ret;
@@ -227,9 +206,8 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 		}
 		else
 		{
-			char buffer[ERROR_SIZE];
 			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed mutex lock with message: %s",
-				strerror_r(errno, buffer, ERROR_SIZE));
+				strerror(errno));
 		}
 		return -1;
 	}
@@ -251,9 +229,8 @@ static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
 	if (ret != 0)
 	{
-		char buffer[ERROR_SIZE];
 		ELEKTRA_ADD_WARNINGF(32, parentKey, "mutex unlock failed with message: %s",
-			strerror_r(errno, buffer, ERROR_SIZE));
+			strerror(errno));
 		return -1;
 	}
 	return 0;
@@ -274,14 +251,13 @@ static void elektraCloseFile(int fd, Key *parentKey)
 {
 	if (close (fd) == -1)
 	{
-		char buffer[ERROR_SIZE];
 		ELEKTRA_ADD_WARNINGF(33, parentKey, "close failed with message: %s",
-			strerror_r(errno, buffer, ERROR_SIZE));
+			strerror(errno));
 	}
 }
 
 /**
- * @brief Add error text received from strerror_r
+ * @brief Add error text received from strerror
  *
  * @param errorText should have at least ERROR_SIZE bytes in reserve
  */
@@ -290,16 +266,17 @@ static void elektraAddErrnoText(char *errorText)
 	char buffer[ERROR_SIZE];
 	if (errno == E2BIG)
 	{
-		strcat (errorText, "could not find a / in the pathname");
+		strcpy (buffer, "could not find a / in the pathname");
 	}
 	else if (errno == EBADMSG)
 	{
-		strcat (errorText, "went up to root for creating directory");
+		strcpy (buffer, "went up to root for creating directory");
 	}
 	else
 	{
-		strcat(errorText, strerror_r(errno, buffer, ERROR_SIZE-2));
+		strcpy(buffer, strerror(errno));
 	}
+	strncat(errorText, buffer, ERROR_SIZE-2-strlen(errorText));
 }
 
 static int needsMapping(Key * testKey, Key * errorKey)
@@ -385,7 +362,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		return -1;
 	}
 
-	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverHandles *p = elektraMalloc(sizeof(resolverHandles));
 	resolverInit (&p->spec, path);
 	resolverInit (&p->dir, path);
 	resolverInit (&p->user, path);
@@ -504,7 +481,7 @@ static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
 
 	if (pk->fd == -1)
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pk->filename) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Opening configuration file \"");
 		strcat (errorText, pk->filename);
@@ -513,7 +490,7 @@ static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_SET_ERROR(26, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 		return -1;
 	}
 	return 0;
@@ -587,7 +564,7 @@ static int elektraMkdirParents(resolverHandle *pk, const char *pathname, Key *pa
 
 error:
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pathname) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Could not create directory \"");
 		strcat (errorText, pathname);
@@ -596,7 +573,7 @@ error:
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_SET_ERROR(74, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 		return -1;
 	}
 }
@@ -627,7 +604,7 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 
 	if (fstat(pk->fd, &buf) == -1)
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pk->filename) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Could not fstat to check for conflict \"");
 		strcat (errorText, pk->filename);
@@ -637,7 +614,7 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_ADD_WARNING(29, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 
 		ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
 		return -1;
@@ -675,9 +652,7 @@ static int elektraRemoveConfigurationFile(resolverHandle *pk, Key *parentKey)
 {
 	if (unlink(pk->filename) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_SET_ERROR(28, parentKey, buffer);
+		ELEKTRA_SET_ERROR(28, parentKey, strerror(errno));
 	}
 
 	return 0;
@@ -761,11 +736,9 @@ static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 
 	if (futimens(pk->fd, times) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(99, parentKey,
 			"Could not update time stamp of \"%s\", because %s",
-			pk->filename, buffer);
+			pk->filename, strerror(errno));
 	}
 #elif defined(HAVE_FUTIMES)
 	const struct timeval times[2] = {
@@ -774,11 +747,9 @@ static void elektraUpdateFileTime(resolverHandle *pk, Key *parentKey)
 
 	if (futimes(pk->fd, times) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(99, parentKey,
 			"Could not update time stamp of \"%s\", because %s",
-			pk->filename, buffer);
+			pk->filename, strerror(errno));
 	}
 #else
 	#warning futimens/futimes not defined
@@ -802,18 +773,14 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 
 	if (rename (pk->tempfile, pk->filename) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_SET_ERROR (31, parentKey, buffer);
+		ELEKTRA_SET_ERROR (31, parentKey, strerror(errno));
 		ret = -1;
 	}
 
 	struct stat buf;
 	if (stat (pk->filename, &buf) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
-		ELEKTRA_ADD_WARNING (29, parentKey, buffer);
+		ELEKTRA_ADD_WARNING (29, parentKey, strerror(errno));
 	} else {
 		/* Update my timestamp */
 		pk->mtime.tv_sec = statSeconds(buf);
@@ -835,11 +802,9 @@ static int elektraSetCommit(resolverHandle *pk, Key *parentKey)
 	// checking dirp not needed, fsync will have EBADF
 	if (fsync(dirfd(dirp)) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_ADD_WARNINGF(88, parentKey,
 			"Could not sync directory \"%s\", because %s",
-			pk->dirname, buffer);
+			pk->dirname, strerror(errno));
 	}
 	closedir(dirp);
 

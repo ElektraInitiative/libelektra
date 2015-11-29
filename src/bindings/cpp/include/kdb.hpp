@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KDB_HPP
 #define ELEKTRA_KDB_HPP
 
@@ -122,7 +130,7 @@ inline void KDB::open (Key &errorKey)
 inline void KDB::close (Key & errorKey) throw()
 {
 	ckdb::kdbClose(handle, errorKey.getKey());
-	handle = 0;
+	handle = nullptr;
 }
 
 /**

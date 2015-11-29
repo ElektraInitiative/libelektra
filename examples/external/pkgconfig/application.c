@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.h>
 
 #include <stdio.h>
@@ -18,7 +26,7 @@ int main()
 
 	/*
 	ksRewind(myConfig);
-	while((key = ksNext(myConfig)))
+	while ((key = ksNext(myConfig)))
 	{
 		printf ("%s\n", keyName(key));
 	}
@@ -27,7 +35,7 @@ int main()
 	key = ksLookupByName(myConfig,"/test/myapp/key", 0);
 
 	// check if key is not 0 and work with it...
-	if(key)
+	if (key)
 	{
 		printf("%s\n", keyString(key));
 	}

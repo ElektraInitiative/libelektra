@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -11,14 +19,6 @@
 #else
 #define FOLDER_DELIMITER '/'
 #endif
-
-/* Slashes or backslashes to the build root.
- * Depends on the place of the executable, example:
- * /foo/bar/build/bin/executable
- * E:\\foo\bar\build\bin\executable
- * In both cases the there are 2 slashes or backslashes
- */
-const int folderDelimiterToBuildRoot = 2;
 
 /* The CMAKE_CACHE_FILENAME will be parsed to get the value of CMAKE_CACHE_VARNAME
  * which should be the absolute path the the source directory.
@@ -38,7 +38,7 @@ const char * const ignoreTargetStart [] = { "#", "@" , "http" , ""};
 // helpers
 static void printTarget(FILE * output, char * target, char * filenameInElektra);
 static void printConvertedPath (FILE * output, char * path);
-static char * getPathInElektraRoot (char * executablename, char * filename);
+static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilename);
 static void exitError (FILE * f1, FILE * f2, const char * mes);
 
 /* These structs represent the transitions from the state machines.
@@ -249,7 +249,7 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			//end
 			for (int i = 0;strcmp (ignoreTargetEnd[i], "") != 0;++i)
 			{
-				if(len < strlen (ignoreTargetEnd[i]))
+				if (len < strlen (ignoreTargetEnd[i]))
 					continue;
 
 				int j = len - strlen (ignoreTargetEnd[i]);
@@ -283,7 +283,7 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			state = linkStart;
 			continue;
 		}
-		else if(linkNolink (state, newstate))
+		else if (linkNolink (state, newstate))
 		{
 			// print all other content
 			fprintf (output, "%c", c);
@@ -294,27 +294,32 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 
 int main (int argc, char *argv[])
 {
-	if (argc < 2)
+	if (argc < 2 || argc > 3)
 	{
-		fprintf (stderr, "Argument Error: expected format <filter> <input-file>\n");
+		fprintf (stderr, "Argument Error: expected format <filter> [<cmake-cache-file>] <input-file>\n");
 		return EXIT_FAILURE;
 	}
 
-	char executablename[strlen (argv[0]) + 1];
-	char filename[strlen (argv[1]) + 1];
+	char inputFilename [strlen (argv[argc - 1]) + 1];
+	strcpy (inputFilename, argv[argc - 1]);
+	char * filenameInElektra = NULL;
+	if (argc == 3)
+	{
+		char cmakeCacheFilename [strlen (argv[1]) + 1];
+		strcpy (cmakeCacheFilename, argv[1]);
+		filenameInElektra = getPathInElektraRoot (inputFilename, cmakeCacheFilename);
+	} else {
+		filenameInElektra = getPathInElektraRoot (inputFilename, NULL);
+	}
 
-	strcpy (executablename, argv[0]);
-	strcpy (filename, argv[1]);
-
-	char * filenameInElektra = getPathInElektraRoot (executablename, filename);
 	if (!filenameInElektra)
 		return EXIT_FAILURE;
 
 	//1st pass
-	FILE * input = fopen (filename, "r");
+	FILE * input = fopen (inputFilename, "r");
 	if (!input)
 	{
-		fprintf (stderr ,"fopen Error: file %s not found\n", filename);
+		fprintf (stderr ,"fopen Error: file %s not found\n", inputFilename);
 		return EXIT_FAILURE;
 	}
 	FILE * output = fopen (TEMP_FILENAME, "w+");
@@ -333,7 +338,7 @@ int main (int argc, char *argv[])
 	if (fgetpos (output, &startTempFile))
 		exitError (input, output, "fgetpos");
 
-	if(!convertTitle (input, output, filenameInElektra))
+	if (!convertTitle (input, output, filenameInElektra))
 	{
 		/* No title found in file, therefore generate one and
 		 * print it out.
@@ -345,7 +350,7 @@ int main (int argc, char *argv[])
 		fclose (output);
 		output = stdout;
 		//Generate Title
-		char * title = strrchr (filename, FOLDER_DELIMITER);
+		char * title = strrchr (inputFilename, FOLDER_DELIMITER);
 		if (title == NULL)
 			exitError (input, NULL, "parsed file path invalid");
 
@@ -444,30 +449,17 @@ static void printConvertedPath (FILE * output, char * path)
  * file, by parsing the CMAKE_CACHE_FILENAME file and getting the CMAKE_CACHE_VARNAME,
  * which contains the source path.
  */
-static char * getPathInElektraRoot (char * executablename, char * filename)
+static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilename)
 {
-	//compose path of CMAKE_CACHE_FILENAME
-	char * endOfExecutablename = executablename + strlen (executablename);
-	int countDelimToBuildRoot = 0;
-	while (folderDelimiterToBuildRoot > countDelimToBuildRoot)
+	FILE * input = NULL;
+	if (!cmakeCacheFilename)
 	{
-		if (*endOfExecutablename == FOLDER_DELIMITER)
-		{
-			++countDelimToBuildRoot;
-		}
-		--endOfExecutablename;
+		cmakeCacheFilename = CMAKE_CACHE_FILENAME;
 	}
-	endOfExecutablename += 2; // the executablename should end with FOLDER_DELIMITER
-	*endOfExecutablename = '\0';
-	int len = strlen (executablename) + strlen(CMAKE_CACHE_FILENAME) + 1;
-	char pathToCmakecacheFilename [len];
-	strcpy (pathToCmakecacheFilename, executablename);
-	strcat (pathToCmakecacheFilename, CMAKE_CACHE_FILENAME);
-	//parse file to get the value of CMAKE_CACHE_VARNAME
-	FILE * input = fopen (pathToCmakecacheFilename, "r");
+	input = fopen (cmakeCacheFilename, "r");
 	if (!input)
 	{
-		fprintf (stderr, "fopen Error: file %s not found\n", pathToCmakecacheFilename);
+		fprintf (stderr, "fopen Error: CmakeCacheFile %s not found\n", cmakeCacheFilename);
 		return NULL;
 	}
 	char line [CmakecacheFileReadBuffer];
@@ -491,7 +483,7 @@ static char * getPathInElektraRoot (char * executablename, char * filename)
 	char * CmakecacheVarValue = line;
 	while (*CmakecacheVarValue && *CmakecacheVarValue != FOLDER_DELIMITER) ++CmakecacheVarValue;
 	//calculate filename in elektra root
-	char * out = filename + strlen (CmakecacheVarValue);
+	char * out = inputFilename + strlen (CmakecacheVarValue);
 	return out;
 }
 

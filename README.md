@@ -17,7 +17,9 @@ applications' configurations, leveraging easy application integration.
 
 ## Contact ##
 
-Do not hesitate to ask any question on [github issue tracker](https://github.com/ElektraInitiative/libelektra/issues), [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+Do not hesitate to ask any question on
+[github issue tracker](https://github.com/ElektraInitiative/libelektra/issues),
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 or directly to one of the [authors](doc/AUTHORS).
 
 
@@ -47,16 +49,10 @@ Elektra.
 
 ### Usage ###
 
-Now that we have Elektra installed, we can start using the `kdb` command and
-the `qt-gui`.
+Now that we have Elektra installed, we can start using the [kdb command](/doc/help/kdb.md) and
+the [qt-gui](/src/tools/qt-gui/).
 
-The easiest way to use Elektra is running the `qt-gui`:
-
-```bash
-kdb qt-gui
-```
-
-Or you can use the `kdb` command to configure your applications:
+You can use the `kdb` command to configure your applications:
 
 ```bash
 kdb set user/env/override/HTTP_PROXY "http://my.proxy:8080"
@@ -66,11 +62,32 @@ This will set the `HTTP_PROXY` environment variable to `http://my.proxy:8080`.
 Configuration can be retrieved with `kdb get`:
 
 ```bash
-kdb get user/env/override/HTTP_PROXY
+kdb get /env/override/HTTP_PROXY
 ```
 
-For more information about elektrified environment variables, see
+For information about elektrified environment variables, see
 [src/libgetenv/README.md](src/libgetenv/README.md)
+
+
+### Documentation ###
+
+
+To get an idea of Elektra, you can take a look at the
+[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp).
+
+The full documentation, including
+[tutorials](http://libelektra.org/blob/master/doc/tutorials/),
+[glossary](/doc/help/elektra-glossary.md), and
+[concepts and man pages](/doc/help/elektra-introduction.md)
+is available in the github repository.
+
+You can read the documentation for the kdb tool, either
+
+- [on github](http://libelektra.org/blob/master/doc/help/kdb.md)
+- [in the API docu](http://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
+- by using `kdb --help` or `kdb help <command>`
+- by using `man kdb`
+
 
 
 ## Goals ##
@@ -88,9 +105,9 @@ For more information about elektrified environment variables, see
 
 And in terms of quality, we want:
 
-1. Robustness (no undefined behaviour of applications),
-2. Extensibility (gain control over configuration access) and
-3. Simplicity (make configuration tasks simple)
+1. Simplicity (make configuration tasks simple),
+2. Robustness (no undefined behaviour of applications), and
+3. Extensibility (gain control over configuration access)
 
 [Read more about the goals of Elektra](doc/GOALS.md)
 
@@ -119,6 +136,7 @@ And in terms of quality, we want:
 
 ## News ##
 
+ - [19 Nov 2015 0.8.14](http://doc.libelektra.org/news/519cbfac-6db5-4594-8a38-dec4c84b134f.html) adds docu and plugins
  - [17 Sep 2015 0.8.13](http://doc.libelektra.org/news/3c00a5f1-c017-4555-92b5-a2cf6e0803e3.html) adds elektrify-getenv
  - [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a.html) adds dir namespace
  - [03 Apr 2015 0.8.11](http://doc.libelektra.org/news/7d4647d4-4131-411e-9c2a-2aca39446e18.html) adds spec namespace
@@ -127,24 +145,6 @@ And in terms of quality, we want:
  - [02 Sep 2014 0.8.8](http://doc.libelektra.org/news/eca69e19-5ddb-438c-ac06-57c20b1a9160.html) adds 3-way merging
 
 Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/feed.rss).
-
-
-## Further Information ##
-
-To get an introduction, it is best to take a look at the
-[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp),
-read our
-[tutorials](doc/tutorials),
-see the
-[poster](http://www.libelektra.org/ftp/elektra/poster.pdf)
-and read the
-[abridgment](http://www.libelektra.org/ftp/elektra/abridgement.pdf).
-
-The currently best information about Elektra is
-[this thesis](http://www.libelektra.org/ftp/elektra/thesis.pdf).
-
-The API documentation can be found
-[here](http://doc.libelektra.org/api/current/html).
 
 
 ## Sources ##
@@ -197,6 +197,7 @@ You can also use the [`./configure`](configure) command to generate a `cmake`
 command with special options.
 
 For more information, especially how to set CMake Cache, see [here](doc/COMPILE.md).
+Make sure to read how to add plugins, tools and bindings.
 
 
 ## Build Server ##
@@ -227,9 +228,11 @@ To start development, just clone the repo and start hacking!
   as if they were a webpage.
 - You should read the [coding document](doc/CODING.md) before you issue a
   pull request.
-- Make yourself familiar with the [KeySet](http://doc.libelektra.org/api/latest/html/group__keyset.html),
+- Make yourself familiar with the [KeySet](/doc/help/elektra-data-structures.md)
+  (also in the [API docu](http://doc.libelektra.org/api/latest/html/group__keyset.html))
   the central data structure in Elektra.
 - You should read the [design document](doc/DESIGN.md) before you make
   design relevant decisions.
+- In the source code, you should look into [libs](src/libs/) and [plugins](/src/plugins/).
 - You can always peek into the [TODOs](doc/todo), if you don't know
   what to do.

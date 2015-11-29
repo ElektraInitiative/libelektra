@@ -18,6 +18,7 @@ macro (do_doc target folder file install)
 		COMMAND ${DOXYGEN_EXECUTABLE}
 		ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 
 	#get_filename_component (name ${target} NAME_WE)
@@ -70,12 +71,15 @@ if (DOXYGEN_FOUND)
 
 	do_doc(html ${OUTPUT_DIRECTORY}/html/ index.html
 		${TARGET_DOCUMENTATION_HTML_FOLDER})
-	do_doc(man ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra
+	do_doc(man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra
 		"${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
 
 	if (WITH_LATEX)
 		do_doc(latex ${OUTPUT_DIRECTORY}/latex/ refman.tex
 			${TARGET_DOCUMENTATION_LATEX_FOLDER})
+
+		file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
+				DESTINATION "${OUTPUT_DIRECTORY}/latex/")
 
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
@@ -94,3 +98,4 @@ else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)
 
+add_subdirectory(help)

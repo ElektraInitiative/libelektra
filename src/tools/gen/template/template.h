@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
@@ -32,14 +40,14 @@ $support.typeof(i)
 @end for
 };
 
-/** \brief Convert enum to string
+/** @brief Convert enum to string
  *
  * \return string that holds value of enum
  * \param e the enum that should be converted
  */
 static inline const char *${support.enumname(i)}_to_string($support.typeof(i) e)
 {
-	switch(e)
+	switch (e)
 	{
 @for e in $support.enumval(i)
 	case $e: return "$e";
@@ -48,7 +56,7 @@ static inline const char *${support.enumname(i)}_to_string($support.typeof(i) e)
 	return "";
 }
 
-/** \brief Convert enum from string
+/** @brief Convert enum from string
  *
  * \return enum from string s or default value
  * \param s the string that should be converted
@@ -57,7 +65,7 @@ static inline $support.typeof(i) ${support.enumname(i)}_from_string(const char *
 {
 	$support.typeof(i) ret $support.valof(i)
 @for e in $support.enumval(i)
-	if(!strcmp(s, "$e"))
+	if (!strcmp(s, "$e"))
 		ret = $e;
 @end for
 	return ret;
@@ -67,12 +75,12 @@ static inline $support.typeof(i) ${support.enumname(i)}_from_string(const char *
 @end for
 
 /**
- * \brief Convert bool to string
+ * @brief Convert bool to string
  * \param b bool to convert (0 is false)
  */
 static inline const char *bool_to_string(int b)
 {
-	if(b==0)
+	if (b==0)
 	{
 		return "false";
 	}
@@ -80,12 +88,12 @@ static inline const char *bool_to_string(int b)
 }
 
 /**
- * \brief Convert string to bool
+ * @brief Convert string to bool
  * \param s string to convert (true, 1 or on is true)
  */
 static inline int bool_from_string(const char *s)
 {
-	if(
+	if (
 	   !strcmp(s, "${support.trueval()[0]}")
 @for b in $support.trueval()[1:]
 	   || !strcmp(s, "$b")
@@ -97,7 +105,7 @@ static inline int bool_from_string(const char *s)
 }
 
 @for $key, $info in $parameters.iteritems()
-/** \brief Get parameter $key
+/** @brief Get parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -121,7 +129,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 	}
 @end for
 	// now the key itself
-	if(!found)
+	if (!found)
 	{
 
 		elektraKeySetName(searchKey, "$key", KEY_CASCADING_NAME);
@@ -168,7 +176,7 @@ char *endptr;
 @end def
 	$support.typeof(info) ret $support.valof(info)
 
-	if(found)
+	if (found)
 	{
 	@if $info['type'] == 'short'
 		$strtonumber(support, info, "strtol")
@@ -204,7 +212,7 @@ char *endptr;
 	return ret;
 }
 
-/** \brief Set parameter $key
+/** @brief Set parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -256,7 +264,7 @@ static inline void $support.setfuncname($key)(KeySet *ks, $support.typeof(info) 
 @else if $support.isenum(info)
 	const char *s = ${support.enumname(info)}_to_string(n);
 @end if
-	if(!found)
+	if (!found)
 	{
 		ksAppendKey(ks, keyNew("$support.userkey(key)",
 				KEY_VALUE, s,

@@ -1,0 +1,818 @@
+number:0
+description:a test for a exception specification
+:new lines to the same entry can be started with a colon
+:the number is sequential and has no special meaning
+:
+:there are no comments possible in this file
+ingroup:test
+:a unique identifier for a doxygen module
+module:test
+:the libloader's or plugin's module name
+class:Ok
+:a class name which can be used by bindings
+:they might add Pre- or Postfixes though
+ignore:true
+:a generator should always ignore this first entry
+:or others which have ignore:true.
+:It is for errors which are not relevant anymore
+:an empty line will start the next error specification
+
+number:1
+ingroup:modules
+description:could not load module, dlopen failed
+module:dl
+severity:warning
+class:FailedLoadModuleError
+extends:ModuleError
+
+number:2
+ingroup:modules
+description:could not get pointer to factory, dlsym failed
+module:dl
+severity:warning
+class:FailedResolveSymbolError
+extends:ModuleError
+
+number:3
+ingroup:modules
+description:could not find root key
+severity:warning
+module:dl
+
+number:4
+ingroup:modules
+description:could not close a module, dlclose failed
+severity:warning
+module:dl
+
+number:5
+description:failed to open default backend
+ingroup:kdb
+severity:fatal
+class:NoDefaultBackendError
+extends:KDBOpenError
+
+number:6
+description:Could not call function exported by ELEKTRA_PLUGIN_EXPORT
+ingroup:kdb
+severity:warning
+
+number:7
+description:failed to open trie, continue with default backend
+severity:warning
+ingroup:kdb
+
+number:8
+description:no default backend found, but should be (reason contains keyname)
+severity:fatal
+ingroup:kdb
+
+number:9
+description:Insufficient permissions to open configuration file for writing. You might want to retry as root.
+severity:normal
+ingroup:kdb
+see:75 109 110
+
+number:10
+description:general parse error
+severity:normal
+ingroup:kdb
+
+number:11
+description:open of plugin returned unsuccessfully (reason contains plugin, see other warnings for details)
+severity:warning
+ingroup:kdb
+
+number:12
+description:kdbClose() failed
+severity:warning
+ingroup:kdb
+
+number:13
+description:Processing Get Plugins failed
+severity:warning
+ingroup:kdb
+
+number:14
+description:given mountpoint not valid
+severity:warning
+ingroup:kdb
+
+number:15
+description:Processing Set Plugins failed
+severity:warning
+ingroup:kdb
+
+number:16
+description:Unrecognised Config Tree
+severity:warning
+ingroup:kdb
+
+number:17
+description:Could not get configuration for Trie
+severity:warning
+ingroup:kdb
+
+number:18
+description:Names of Plugins must start with a #
+severity:warning
+ingroup:kdb
+
+number:19
+description:Names of Plugins must start have the position number as second char
+severity:warning
+ingroup:kdb
+
+number:20
+description:Tried to set more plugins then definied in NR_OF_PLUGINS
+severity:warning
+ingroup:kdb
+
+number:21
+description:Unknown additional entries in plugin
+severity:warning
+ingroup:kdb
+
+number:22
+unused:yes
+description:system/elektra/mountpoints is appended if missing
+severity:warning
+ingroup:trie
+
+number:23
+description:Could not find any modules
+severity:warning
+ingroup:trie
+
+number:24
+description:Ignored invalid backend
+severity:warning
+ingroup:trie
+
+number:25
+description:Backend has no mountpoint
+severity:warning
+ingroup:trie
+
+number:26
+description:could not open lock file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:27
+description:locking yield an error
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:28
+description:could not remove file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:29
+description:could not stat file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:30
+description:A conflict occurred: another process modified the key database.
+severity:error
+ingroup:plugin
+module:resolver
+
+number:31
+description:could not rename file
+severity:error
+ingroup:plugin
+module:resolver
+
+number:32
+description:could not unlock file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:33
+description:could not close file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:34
+description:no file given in configuration, not possible to resolve filename
+severity:error
+ingroup:plugin
+module:resolver
+
+number:35
+description:could not resolve filename, not possible to resolve filename
+severity:error
+ingroup:plugin
+module:resolver
+
+number:36
+description:could not unlink file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:37
+description:null pointer passed
+severity:error
+ingroup:kdb
+
+number:38
+description:could not buildup split
+severity:error
+ingroup:kdb
+
+number:39
+description:not a valid name supplied for a plugin
+severity:warning
+ingroup:modules
+module:dl
+
+number:40
+description:Failed to open default backend (see warnings for more information)
+severity:fatal
+ingroup:kdb
+
+number:41
+description:Could not compile regex
+severity:fatal
+ingroup:plugin
+module:validator
+
+number:42
+description:Key Value failed to validate
+severity:fatal
+ingroup:plugin
+module:validator
+
+number:43
+description:Failed to open default backend (creation of trie stopped)
+severity:warning
+ingroup:kdb
+
+number:44
+description:Unknown error code to trigger
+severity:error
+ingroup:plugin
+module:error
+
+number:45
+description:Unknown warning code to trigger
+severity:warning
+ingroup:plugin
+module:error
+
+number:46
+description:conversation error
+severity:error
+ingroup:plugin
+module:iconv
+
+number:47
+description:Could not close modules
+severity:warning
+ingroup:kdb
+
+number:48
+description:Assertion Failure
+severity:warning
+ingroup:kdb
+
+number:49
+description:Unknown command detected in dumpfile
+severity:error
+ingroup:plugin
+module:dump
+
+number:50
+description:wrong version detected in dumpfile
+severity:error
+ingroup:plugin
+module:dump
+
+number:51
+description:Value of key is not a valid IP Address
+severity:error
+ingroup:plugin
+module:network
+
+number:52
+description:Could not type check value of key
+severity:error
+ingroup:plugin
+module:type
+
+number:53
+description:Could not check the structure of the keyset
+severity:error
+ingroup:plugin
+module:struct
+
+number:54
+description:Device not found
+severity:warning
+ingroup:plugin
+module:path
+
+number:55
+description:Directory not found
+severity:warning
+ingroup:plugin
+module:path
+
+number:56
+description:Given path is not absolute
+severity:error
+ingroup:plugin
+module:path
+
+number:57
+description:could not stat file
+severity:warning
+ingroup:plugin
+module:path
+
+number:58
+unused:yes
+description:could not build up structure checker
+severity:warning
+ingroup:plugin
+module:struct
+
+number:59
+description:Key name is not valid
+severity:error
+ingroup:plugin
+module:simpleini
+
+number:60
+description:Invalid Line encountered
+severity:error
+ingroup:plugin
+module:simpleini
+
+number:61
+description:Parse error
+severity:error
+ingroup:plugin
+module:tcl
+
+number:62
+description:Tried to get a key from a missing backend
+severity:error
+ingroup:plugin
+module:missing
+
+number:63
+description:Tried to set a key in a missing backend
+severity:error
+ingroup:plugin
+module:missing
+
+number:64
+description:could not load plugin in process plugin
+severity:warning
+ingroup:modules
+module:kdb
+
+number:65
+description:could not reference back to plugin in process plugin
+severity:warning
+ingroup:modules
+module:kdb
+
+number:66
+description:could not open kwallet
+severity:warning
+ingroup:plugin
+module:kwallet
+
+number:67
+description:could not read from kwallet
+severity:error
+ingroup:plugin
+module:kwallet
+
+number:68
+description:not implemented
+severity:error
+ingroup:plugin
+
+number:69
+description:could not create C++ plugin
+severity:warning
+ingroup:plugin
+module:type
+
+number:70
+ingroup:modules
+description:could not load module, static load failed
+module:static
+severity:warning
+class:FailedLoadModuleError
+extends:ModuleError
+
+number:71
+ingroup:modules
+description:could not get pointer to factory, static sym failed
+module:dl
+severity:warning
+class:FailedResolveSymbolError
+extends:ModuleError
+
+number:72
+description:could not stat configuration directory
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:73
+description:configuration directory is not a directory
+severity:error
+ingroup:plugin
+module:resolver
+
+number:74
+description:could not create configuration directory
+severity:error
+ingroup:plugin
+module:resolver
+
+number:75
+description:Could not open file for writing.
+severity:error
+ingroup:plugin
+module:storage
+see:9 109 110
+
+number:76
+description:Error while reading file
+severity:error
+ingroup:plugin
+module:storage
+
+number:77
+description:Yajl parser error
+severity:error
+ingroup:plugin
+module:yajl
+
+number:78
+description:Unknown or unsupported type found during streaming, key as string, type lost
+severity:warning
+ingroup:plugin
+module:yajl
+
+number:79
+description:Postcondition of backend was violated
+severity:warning
+ingroup:kdb
+
+number:80
+description:Error during commit (this means backend is broken, reason states where it is mounted)
+severity:warning
+ingroup:kdb
+
+number:81
+description:Error during rollback (this means backend is broken, reason states where it is mounted)
+severity:warning
+ingroup:kdb
+
+number:82
+description:Error key not found in keyset even though it was found before
+severity:warning
+ingroup:kdb
+
+number:83
+description:resolver was not able to resolve a filename
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:84
+description:Read only plugin, kdbSet not supported
+severity:error
+ingroup:kdb
+
+number:85
+description:an Augeas error occurred
+severity:error
+ingroup:plugin
+module:storage
+
+number:86
+description:no Augeas lens was configured
+severity:error
+ingroup:plugin
+module:storage
+
+number:87
+description:memory allocation error
+severity:error
+ingroup:plugin
+
+number:88
+description:could not sync directory
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:89
+description:could not sync config file
+severity:error
+ingroup:plugin
+module:sync
+
+number:90
+description:could not retrieve from passwd using getpwuid_r
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:91
+description:Failed to reopen default backend (see warnings for more information)
+severity:warning
+ingroup:kdb
+
+number:92
+description:Mounting modules did not work
+severity:warning
+ingroup:kdb
+
+number:93
+description:Initial loading of trie did not work
+severity:warning
+ingroup:kdb
+
+number:94
+description:Could not initialize the modules
+severity:fatal
+ingroup:kdb
+
+number:95
+description:Could not find plugin configuration
+severity:fatal
+module:regexstore
+
+number:96
+description:Regex failure
+severity:warning
+module:regexstore
+
+number:97
+description:writing multiline values is not enabled
+severity:error
+ingroup:plugin
+module:storage
+
+number:98
+description:invalid ini syntax
+severity:error
+ingroup:plugin
+module:storage
+
+number:99
+description:could not update time of file
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:100
+description:environment variable is not absolute and cannot be used
+severity:warning
+ingroup:plugin
+module:resolver
+
+number:101
+description:java exception caught
+severity:warning
+ingroup:plugin
+module:jni
+
+number:102
+description:jni/java error
+severity:error
+ingroup:plugin
+module:jni
+
+number:103
+description:jni/java warning
+severity:warning
+ingroup:plugin
+module:jni
+
+number:104
+description:Meta key passed as parentKey
+severity:error
+ingroup:kdb
+
+number:105
+description:Invalid (empty) key passed as parentKey. This is only accepted for compatibility reasons. You should use the cascading key / instead.
+severity:warning
+ingroup:kdb
+
+number:106
+description:Wrong size detected in dumpfile
+severity:error
+ingroup:plugin
+module:dump
+
+number:107
+description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
+severity:error
+ingroup:kdb
+
+number:108
+description:Wrong keys in postprocessing
+severity:warning
+ingroup:kdb
+
+number:109
+description:Insufficient permissions to open configuration file for reading. You might want to retry as root or change access using chmod.
+severity:error
+ingroup:plugin
+module:storage
+see:9 75 110
+
+number:110
+description:Could not open configuration file for reading.
+severity:normal
+ingroup:plugin
+module:storage
+see:9 75 109
+
+number:111
+description:python error
+severity:error
+ingroup:plugin
+module:python
+
+number:112
+description:python warning
+severity:warning
+ingroup:plugin
+module:python
+
+number:113
+description:couldnt open file
+severity:error
+ingroup:plugin
+module:lineendings
+
+number:114
+description:invalid line ending
+severity:error
+ingroup:plugin
+module:lineendings
+
+number:115
+description:inconsistent line endings
+severity:error
+ingroup:plugin
+module:lineendings 
+
+number:116
+description: couldn't open file
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:117
+description:invalid number of columns
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:118
+description:problem during parsing of csvfile (see reason)
+severity:warning
+ingroup:plugin
+module:csvstorage
+
+number:119
+description:out of memory
+severity:error
+ingroup:plugin
+module:csvstorage
+
+number:120
+description: Couldn't compile regex
+severity: error
+ingroup:plugin
+module:enum
+
+number:121
+description:Validation failed
+severity:error
+ingroup:plugin
+module:enum
+
+number:122
+description:not a valid Polish prefix notation syntax
+severity:error
+ingroup:plugin
+module:mathcheck
+
+number:123
+description:invalid value
+severity:error
+ingroup:plugin
+module:mathcheck
+
+number:124
+description:key doesn't exist
+severity:error
+ingroup:plugin
+module:mathcheck
+
+number:125
+description:Failed to initialize the crypto library.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:126
+description:The crypto library reported an internal error.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:127
+description:Encryption failed due to an error reported by the crypto library.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:128
+description:Decryption failed due to an error reported by the crypto library.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:129
+description:Decryption failed due to an error reported by the crypto library.
+severity:warning
+ingroup:plugin
+module:crypto
+
+number:130
+description:The configuration is invalid or incomplete.
+severity:error
+ingroup:plugin
+module:crypto
+
+number:131
+description:lua error
+severity:error
+ingroup:plugin
+module:lua
+
+number:132
+description:lua warning
+severity:warning
+ingroup:plugin
+module:lua
+
+number:133
+description:Key doesn't exist
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:134
+description:Syntax error
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:135
+description:Validation failed
+severity:error
+ingroup:plugin
+module:conditionals
+
+number:136
+description:Missing lineending
+severity:warning
+ingroup:plugin
+module:csvstorage
+
+number:137
+description:filecheck validation failed
+severity:error
+ingroup:plugin
+module:filecheck
+
+number:138
+description:failed to initialize filecheck data
+severity:error
+ingroup:plugin
+module:filecheck

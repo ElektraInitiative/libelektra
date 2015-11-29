@@ -1,4 +1,4 @@
-function elektraOpen(errorKey)
+function elektraOpen(config, errorKey)
 	return 0
 end
 

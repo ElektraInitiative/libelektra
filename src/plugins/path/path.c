@@ -1,27 +1,10 @@
-/***************************************************************************
-                     path.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "path.h"
 
@@ -85,7 +68,7 @@ int elektraPathSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		int errnosave = errno;
 		if (stat(keyString(cur), &buf) == -1)
 		{
-			char *errmsg = malloc (ERRORMSG_LENGTH + 1 +
+			char *errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 +
 					+ keyGetNameSize(cur)
 					+ keyGetValueSize(cur)
 					+ sizeof ("name:  value:  message: "));
@@ -95,7 +78,7 @@ int elektraPathSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 			strcat (errmsg, " with path: ");
 			strcat (errmsg, keyValue(cur));
 			ELEKTRA_ADD_WARNING (57, parentKey, errmsg);
-			free (errmsg);
+			elektraFree (errmsg);
 			errno = errnosave;
 		}
 		else if (!strcmp(keyString(meta), "device"))

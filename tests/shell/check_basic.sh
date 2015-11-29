@@ -12,15 +12,6 @@ THEIRS_ROOT=$USER_ROOT/mergetest/theirs
 BASE_ROOT=$USER_ROOT/mergetest/base
 MERGED_ROOT=$USER_ROOT/mergetest/merged
 
-echo "Testing help"
-
-$KDB -H >/dev/null
-exit_if_fail "could not get help"
-
-$KDB --help >/dev/null
-exit_if_fail "could not get help"
-
-
 echo "Testing version"
 
 if [ "x$CHECK_VERSION" != "xNO" ]

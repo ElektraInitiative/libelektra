@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 ksNew(35,
 	keyNew("spec/a", KEY_END),
 	keyNew("spec/a/b", KEY_END),

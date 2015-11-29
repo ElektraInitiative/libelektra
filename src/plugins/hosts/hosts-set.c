@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Contains the set direction of the hosts plugin
+ * @brief Contains the set direction of the hosts plugin
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -174,6 +174,6 @@ int elektraHostsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 	fclose (fp);
 	errno = errnosave;
-	free (keyArray);
+	elektraFree (keyArray);
 	return 1;
 }

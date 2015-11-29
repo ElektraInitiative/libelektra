@@ -11,6 +11,8 @@ section here.
 
 - [Holes](holes.md)
 - [Unit Testing](unit_testing.md)
+- [Capabilities](capabilities.md)
+- [Library Split](library_split.md)
 
 ## Decided
 
@@ -22,6 +24,7 @@ section here.
 - [Empty Files](empty_files.md)
 - [Internal Cache](internal_cache.md)
 - [Definition of Bool](bool.md)
+- [Publish Subscribe](pubsub.md)
 
 ## Drafts
 

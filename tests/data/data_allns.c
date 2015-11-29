@@ -1,4 +1,11 @@
-/*All valid and invalid namespaces, with meta and cascading*/
+/**
+ * @file
+ *
+ * @brief All valid and invalid namespaces, with meta and cascading.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 ksNew(714,
 	keyNew ("meta/", KEY_META_NAME, KEY_DIR,KEY_END),
 	keyNew ("meta/test", KEY_META_NAME, KEY_DIR,KEY_END),

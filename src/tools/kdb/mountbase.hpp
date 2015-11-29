@@ -1,3 +1,10 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef MOUNTBASE_HPP_
 #define MOUNTBASE_HPP_

@@ -1,31 +1,16 @@
-/***************************************************************************
-                     ccode.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "ccode.h"
 
 #include "kdbconfig.h"
+
+#include <kdbhelper.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +21,7 @@
   */
 static inline int elektraHexcodeConvFromHex(char c)
 {
-	if    (c == '0') return 0;
+	if (c == '0') return 0;
 	else if (c=='1') return 1;
 	else if (c=='2') return 2;
 	else if (c=='3') return 3;
@@ -57,7 +42,7 @@ static inline int elektraHexcodeConvFromHex(char c)
 
 int elektraCcodeOpen(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
-	CCodeData *d = calloc (1, sizeof(CCodeData));
+	CCodeData *d = elektraCalloc (sizeof(CCodeData));
 
 	/* Store for later use...*/
 	elektraPluginSetData (handle, d);
@@ -135,8 +120,8 @@ int elektraCcodeClose(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CCodeData *d = elektraPluginGetData (handle);
 
-	free (d->buf);
-	free (d);
+	elektraFree (d->buf);
+	elektraFree (d);
 
 	return 0;
 }
@@ -208,7 +193,7 @@ int elektraCcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	CCodeData *d = elektraPluginGetData (handle);
 	if (!d->buf)
 	{
-		d->buf = malloc (1000);
+		d->buf = elektraMalloc (1000);
 		d->bufalloc = 1000;
 	}
 
@@ -279,7 +264,7 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNU
 	CCodeData *d = elektraPluginGetData (handle);
 	if (!d->buf)
 	{
-		d->buf = malloc (1000);
+		d->buf = elektraMalloc (1000);
 		d->bufalloc = 1000;
 	}
 

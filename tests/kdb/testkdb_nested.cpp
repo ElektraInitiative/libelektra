@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Tests for KDB
+ * @brief Tests for KDB
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -29,13 +29,13 @@ protected:
 	Nested() : namespaces()
 	{}
 
-	virtual void SetUp()
+	virtual void SetUp() override
 	{
 		mpRoot.reset(new testing::Mountpoint(testRoot, configFileRoot));
 		mpBelow.reset(new testing::Mountpoint(testBelow, configFileBelow));
 	}
 
-	virtual void TearDown()
+	virtual void TearDown() override
 	{
 		mpBelow.reset();
 		mpRoot.reset();

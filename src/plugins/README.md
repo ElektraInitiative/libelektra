@@ -1,14 +1,63 @@
+elektra-plugins(7) -- plugins overview
+======================================
+
 Plugins can be mounted into the KDB and can access or manipulate the
-KeySet.
+KeySet on every access.
+
+Multiple plugins can be mounted into the [key data base](elektra-glossary.md).
+On every access to the key data base they are executed and thus can change
+the functionality.
+
+
 
 # Introduction #
 
 Elektra already has a wide range of different plugins.
 The plugin folders should contain a README.md with further information.
+(Or follow links below.)
 The plugins are:
 
 ![Overview Plugins](/doc/images/overview_plugins.png)
 
+For background information see [elektra-plugins-framework(7)](elektra-plugins-framework.md).
+
+
+## C-Interface ##
+
+All plugins implement the same interface:
+
+-  `kdbOpen()` calls `elektraPluginOpen()` of every plugin
+    to let them do their initialisation.
+-  `kdbGet()` requests `elektraPluginGet()` of every plugin in the queried
+    backends to return a key set.
+-  `kdbSet()` usually calls `elektraPluginSet()` of every plugin
+    in the queried backends to store the configuration.
+-  `kdbSet()` also calls `elektraPluginError()`
+    for every plugin when an error happens.
+    Because of `elektraPluginError()`, plugins are guaranteed to have
+    their chance for necessary cleanups.
+-  `kdbClose()` makes sure that plugins can finally free their
+    own resources in `elektraPluginClose()`.
+
+
+## KDB-Interface
+
+- To list all plugins use [kdb-list(1)](kdb-list.md).
+- To check a plugin use [kdb-check(1)](kdb-check.md).
+- For information on a plugin use [kdb-info(1)](kdb-info.md).
+- For mount plugin(s) use [kdb-mount(1)](kdb-mount.md).
+
+
+## See also
+
+For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
+For more background information of the [plugin framework, continue here](/doc/help/plugin-framework.md).
+Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
+
+
+
+
+# Plugins #
 
 ## Resolver ##
 
@@ -61,7 +110,7 @@ productive use:
 ## System Information ##
 
 Information compiled in Elektra:
-- [version](version/) is a special-buildin plugin directly within the
+- [version](version/) is a build-in plugin directly within the
   core so that it cannot give wrong version information
 - [constants](constants/) various constants, including version
   information
@@ -73,6 +122,15 @@ files:
 
 
 ## Filter ##
+
+*Filter plugins* process keys and their values in both
+directions.
+In one direction they undo what they do in the other direction.
+Most filter plugins available now encode and decode values.
+Storage plugins that use characters to separate key names, values or
+metadata will not work without them.
+
+### Encoding ###
 
 Rewrite unwanted characters with different techniques:
 
@@ -90,7 +148,7 @@ Doing other stuff:
 - [crypto](crypto/) encrypts / decrypts confidential values
 - [iconv](iconv/) make sure the configuration will have correct
   character encoding
-- [hidden](hidden/)
+- [hidden](hidden/) hides keys whose names start with a `.`.
 - [null](null/) takes care of null values and other binary specialities
 
 
@@ -101,6 +159,7 @@ Log/Send out all changes to configuration to:
 - [dbus](dbus/)
 - [journald](journald/)
 - [syslog](syslog/)
+- [logchange](logchange/) prints the change of every key on the console
 
 
 ## Debug ##
@@ -144,10 +203,11 @@ These plugins start an interpreter and allow you to use a bindings.
 ## Others ##
 
 - [doc](doc/) contains the documentation of the plugin interface
-- [error](error/) yields errors as described in metadata
+- [error](error/) yields errors as described in metadata (handy for test purposes)
 - [template](template/) to be copied for new plugins
 - [lineendings](lineendings/) tests file for consistent line endings
 - [list](list/) loads other plugins
+- [filecheck](filecheck/) does sanity checks on a file
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:

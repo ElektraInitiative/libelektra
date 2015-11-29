@@ -1,6 +1,6 @@
 find_package(SystemdJournal)
 
-if(LIBSYSTEMD_JOURNAL_FOUND)
+if (LIBSYSTEMD_JOURNAL_FOUND)
 
 	include (LibAddMacros)
 

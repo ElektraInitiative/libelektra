@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Contains the get direction of the hosts plugin
+ * @brief Contains the get direction of the hosts plugin
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -171,7 +171,7 @@ static char *parseAlias(KeySet *append, const Key *hostParent, char *tokenPointe
 	elektraFree(fieldBuffer);
 
 	/* only add the alias if it does not exist already */
-	if(ksLookup(append, alias, KDB_O_NONE))
+	if (ksLookup(append, alias, KDB_O_NONE))
 	{
 		keyDel (alias);
 	}
@@ -235,7 +235,7 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 	size_t order = 1;
 	char *tokenPointer = 0;
 	char *fret = 0;
-	while(1)
+	while (1)
 	{
 		fret = fgets (readBuffer, HOSTS_KDB_BUFFER_SIZE, fp);
 

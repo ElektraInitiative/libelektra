@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef CHECK_HPP
 #define CHECK_HPP
 
@@ -11,22 +19,22 @@ public:
 	CheckCommand();
 	~CheckCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
 		return "vcf";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "[<name>]";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Do some basic checks on a plugin.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return  "If no arguments are given checks on key database\n"
 			"are done instead. Use -f to also do a write test\n"
@@ -58,7 +66,7 @@ public:
 			"\n";
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

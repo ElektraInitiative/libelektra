@@ -7,9 +7,9 @@
 #
 # GTEST_ROOT will only be honored in the very first invocation
 
-if(NOT GOOGLETEST_ROOT)
-	if(NOT (GTEST_ROOT STREQUAL ""))
-		if(EXISTS ${GTEST_ROOT}/CMakeLists.txt)
+if (NOT GOOGLETEST_ROOT)
+	if (NOT (GTEST_ROOT STREQUAL ""))
+		if (EXISTS ${GTEST_ROOT}/CMakeLists.txt)
 			set(GOOGLETEST_ROOT
 				"${GTEST_ROOT}"
 				CACHE INTERNAL
@@ -26,7 +26,7 @@ if(NOT GOOGLETEST_ROOT)
 	endif()
 endif()
 
-add_subdirectory(${GOOGLETEST_ROOT} ${CMAKE_CURRENT_BINARY_DIR}/gtest)
+add_subdirectory(${GOOGLETEST_ROOT} ${CMAKE_BINARY_DIR}/gtest)
 
 set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-w" )
 set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-w" )

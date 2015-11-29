@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef GET_HPP
 #define GET_HPP
 
@@ -14,22 +22,22 @@ public:
 	GetCommand();
 	~GetCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
 		return "anv";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "<name>";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Get the value of an individual key.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return  "When the key starts with / a cascading lookup will be done.\n"
 			"Use -v to see the keyname in that case\n"
@@ -45,7 +53,7 @@ public:
 			"";
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

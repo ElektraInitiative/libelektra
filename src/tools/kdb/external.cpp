@@ -1,4 +1,13 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.h>
+#include <kdb.hpp>
 #include <external.hpp>
 #include "kdbconfig.h"
 
@@ -14,8 +23,6 @@
 #include <string.h>
 #include <errno.h>
 
-extern char **environ;
-
 const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
 
 static std::string cwd()
@@ -23,7 +30,7 @@ static std::string cwd()
 	std::vector<char> current_dir;
 	current_dir.resize(KDB_MAX_PATH_LENGTH);
 	errno = 0;
-	while (getcwd(&current_dir[0], current_dir.size()) == NULL
+	while (getcwd(&current_dir[0], current_dir.size()) == nullptr
 			&& errno == ERANGE)
 	{
 		current_dir.resize(current_dir.size()*2);
@@ -48,12 +55,12 @@ void tryExternalCommand(char** argv)
 	}
 	pathes.push_back(buildinExecPath);
 
-	for(size_t p = 0; p<pathes.size(); ++p)
+	for (auto & pathe : pathes)
 	{
 		std::string command;
-		char* savedArg = 0;
+		char* savedArg = nullptr;
 
-		if (pathes[p][0] != '/')
+		if (pathe[0] != '/')
 		{
 			// no absolute path, so work with current path
 			const std::string currentPath = cwd();
@@ -62,7 +69,7 @@ void tryExternalCommand(char** argv)
 			{
 				std::cerr << "Could not determine "
 					<< "current path for "
-					<< pathes[p]
+					<< pathe
 					<< " with command name: "
 					<< argv[0]
 					<< " because: "
@@ -74,7 +81,7 @@ void tryExternalCommand(char** argv)
 			command += "/";
 		}
 
-		command += pathes[p];
+		command += pathe;
 		command += "/";
 		command += argv[0];
 
@@ -102,11 +109,7 @@ void tryExternalCommand(char** argv)
 		savedArg = argv[0];
 		argv[0] = const_cast<char*>(command.c_str());
 
-#ifdef _WIN32
-		execve(command.c_str(), argv, 0);
-#else
-		execve(command.c_str(), argv, environ);
-#endif
+		elektraExecve(command.c_str(), argv);
 
 		std::cerr << "Could not execute external command "
 			<< command
@@ -117,4 +120,55 @@ void tryExternalCommand(char** argv)
 	}
 
 	throw UnknownCommand();
+}
+
+#ifndef _WIN32
+extern char **environ;
+#endif
+
+void elektraExecve(const char *filename, char *const argv[])
+{
+#ifndef _WIN32
+		execve(filename, argv, environ);
+#else
+		execve(filename, argv, 0);
+#endif
+}
+
+
+void runManPage(std::string command)
+{
+	if (command.empty())
+	{
+		command = "kdb";
+	}
+	else
+	{
+		command = "kdb-"+command;
+	}
+	const char * man = "/usr/bin/man";
+	using namespace kdb;
+	std::string dirname = "/sw/kdb/current/";
+	Key k = nullptr;
+	try {
+		KDB kdb;
+		KeySet conf;
+		kdb.get(conf, dirname);
+		k = conf.lookup(dirname+"man");
+	}
+	catch (kdb::KDBException const& ce)
+	{
+		std::cerr << "There is a severe problem with your installation!\n"
+			<< "kdbOpen() failed with the info:"
+			<< std::endl
+			<< ce.what()
+			<< std::endl;
+	}
+	if (k) man = k.get<std::string>().c_str();
+	char * const argv [3] = {const_cast<char*>(man),
+		const_cast<char*>(command.c_str()),
+		nullptr};
+
+	elektraExecve(man, argv);
+	std::cout << "Was not able to execute man-page viewer: \"" << man << '"' << std::endl;
 }

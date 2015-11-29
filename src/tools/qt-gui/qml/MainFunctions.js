@@ -38,23 +38,23 @@ function copyBranch() {
 //paste key that is stored in the clipboard to the new parent key
 function paste() {
 
-	if(undoManager.clipboardType === "copyKey"){
+	if (undoManager.clipboardType === "copyKey"){
 
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		keyAreaView.keyAreaCopyIndex = -1
 		keyAreaView.currentNodePath = ""
 	}
-	else if(undoManager.clipboardType === "copyBranch"){
+	else if (undoManager.clipboardType === "copyBranch"){
 
 		undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		refreshModel(treeView.treeModel)
 	}
-	else if(undoManager.clipboardType === "cutKey"){
+	else if (undoManager.clipboardType === "cutKey"){
 
 		keyAreaView.keyAreaCopyIndex = -1
 		keyAreaView.currentNodePath = ""
 
-		if(!isPasted){
+		if (!isPasted){
 			undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 			isPasted = true
 		}
@@ -62,9 +62,9 @@ function paste() {
 			undoManager.createCopyKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 		}
 	}
-	else if(undoManager.clipboardType === "cutBranch"){
+	else if (undoManager.clipboardType === "cutBranch"){
 
-		if(!isPasted){
+		if (!isPasted){
 			undoManager.createCutKeyCommand(treeView.currentNode.parentModel, treeView.currentNode.index)
 			isPasted = true
 		}
@@ -83,7 +83,7 @@ function deleteKey() {
 
 	undoManager.createDeleteKeyCommand("deleteKey", keyAreaSelectedItem.parentModel, keyAreaSelectedItem.index)
 
-	if(keyAreaView.rowCount > 0 && cr > 0){
+	if (keyAreaView.rowCount > 0 && cr > 0){
 		keyAreaView.currentRow = Math.min(cr-1, keyAreaView.rowCount - 1)
 		updateKeyAreaSelection()
 	}
@@ -108,16 +108,16 @@ function deleteSearchResult(){
 
 	var ci = searchResultsListView.currentIndex
 
-	if(searchResultsSelectedItem !== null){
+	if (searchResultsSelectedItem !== null){
 
-		if(searchResultsSelectedItem.childCount > 0)
+		if (searchResultsSelectedItem.childCount > 0)
 			undoManager.createDeleteKeyCommand("deleteSearchResultsBranch", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
 		else
 			undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsSelectedItem.parentModel, searchResultsSelectedItem.parentModel.getIndexByName(searchResultsSelectedItem.name))
 
 		undoManager.createDeleteKeyCommand("deleteSearchResultsKey", searchResultsListView.model, searchResultsSelectedItem.index)
 
-		if(searchResultsListView.model.rowCount() > 0){
+		if (searchResultsListView.model.rowCount() > 0){
 			searchResultsListView.currentIndex = Math.min(ci--, searchResultsListView.model.rowCount() - 1)
 			searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 		}

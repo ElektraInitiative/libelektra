@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "cutkeycommand.hpp"
 
 CutKeyCommand::CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand* parent)

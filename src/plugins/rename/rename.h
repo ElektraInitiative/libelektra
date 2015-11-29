@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief A plugin that makes use of libaugeas to read and write configuration files
+ * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -17,10 +17,10 @@
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 
-int elektraRenameGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraRenameSet(Plugin *handle, KeySet *ks, Key *parentKey);
-Key *elektraKeyCutNamePart(const Key *key, const Key *parentKey, const char *cutPath);
+int elektraRenameGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraRenameSet (Plugin * handle, KeySet * ks, Key * parentKey);
+Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const char * cutPath, const char * replaceWith, const char * toUpper, const char * toLower);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(rename);
+Plugin * ELEKTRA_PLUGIN_EXPORT (rename);
 
 #endif

@@ -11,7 +11,7 @@ MouseArea {
 	hoverEnabled: helpMode
 
 	onPressed: {
-		if(helpMode){
+		if (helpMode){
 			helpMode = false
 			TooltipCreator.destroy()
 		}
@@ -20,7 +20,7 @@ MouseArea {
 	}
 
 	onHoveredChanged: {
-		if(helpMode && containsMouse)
+		if (helpMode && containsMouse)
 			TooltipCreator.createHelp(helpText, defaultMargins, helpParent.mapToItem(null, 2*defaultMargins, 0).x, helpParent.mapToItem(null, 0, 2*defaultMargins).y, mainWindow)
 	}
 

@@ -1,10 +1,18 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <benchmarks.h>
 
 #include <ctype.h>
 
 int owncmp(const char*str1, const char*str2)
 {
-	while(*str1 && (*str1==*str2))
+	while (*str1 && (*str1==*str2))
 	{
 		str1++;
 		str2++;
@@ -17,7 +25,7 @@ int owncmp(const char*str1, const char*str2)
 
 int slacmp(const char*str1, const char*str2)
 {
-	while(*str1 && (*str1==*str2))
+	while (*str1 && (*str1==*str2))
 	{
 		str1++;
 		str2++;
@@ -37,7 +45,7 @@ int slacmp(const char*str1, const char*str2)
 int natcmp(const char*str1, const char*str2)
 {
 	int count_num = -1;
-	while(*str1 && (*str1==*str2))
+	while (*str1 && (*str1==*str2))
 	{
 		str1++;
 		str2++;
@@ -73,7 +81,7 @@ int main()
 {
 	long long nrIterations = 100000000;
 	const char str1[] = "some string to be compared with/some\\/more with a long common part, and only a bit different";
-	char* str2 = malloc(sizeof(str1));
+	char* str2 = elektraMalloc(sizeof(str1));
 	strcat(str2, str1);
 	str2[sizeof(str1)-5] = 'X';
 

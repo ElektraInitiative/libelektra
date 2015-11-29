@@ -54,7 +54,7 @@ ScrollView {
 			anchors.verticalCenter: label.verticalCenter
 			opacity: rowLoaderModel === null ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
 			onUpdateIndicator: {
-				if(rowLoaderModel !== null) {
+				if (rowLoaderModel !== null) {
 					paintcolor = label.color
 					opacity = rowLoaderModel === null || rowLoaderModel === undefined ? 0 : (rowLoaderModel.childCount > 0 && getOpacity(rowLoaderModel) === 0 ? 1 : 0)
 				}
@@ -129,7 +129,7 @@ ScrollView {
 									repeat: false
 
 									onTriggered: {
-										if(rowfillMouseArea.containsMouse && !isNull)
+										if (rowfillMouseArea.containsMouse && !isNull)
 											TooltipCreator.create(name, value, metaValue, defaultMargins, mapToItem(null, Math.min(filler.width + defaultMargins, view.width), 0).x, mapToItem(null, 0, 0).y, toolTipParent).show()
 									}
 								}
@@ -196,7 +196,7 @@ ScrollView {
 	}
 
 	function expand(model, itemLoader) {
-		if(model.childCount > 0 && !model.childrenHaveNoChildren){
+		if (model.childCount > 0 && !model.childrenHaveNoChildren){
 			itemLoader.expanded = !itemLoader.expanded
 			model.isExpanded = itemLoader.expanded
 			keyAreaView.selection.clear()
@@ -209,20 +209,20 @@ ScrollView {
 			keyAreaSelectedItem = null
 			editKeyWindow.selectedNode = currentNode
 			forceActiveFocus()
-		if(mouse.button === Qt.RightButton){
+		if (mouse.button === Qt.RightButton){
 			treeContextMenu.popup()
 		}
 		view.updateIndicator()
 	}
 
 	function getOpacity(model) {
-		if(model.childCount > 0 && !model.childrenHaveNoChildren)
+		if (model.childCount > 0 && !model.childrenHaveNoChildren)
 			return 1
 		return 0
 	}
 
 	function getExpanded(model) {
-		if(model.isExpanded && model.childrenHaveNoChildren)
+		if (model.isExpanded && model.childrenHaveNoChildren)
 			return false
 		return model.isExpanded
 	}

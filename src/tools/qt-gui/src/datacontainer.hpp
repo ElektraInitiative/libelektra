@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef DATACONTAINER_HPP
 #define DATACONTAINER_HPP
 
@@ -17,7 +25,7 @@ public:
 	 * @brief The default constructor.
 	 * @param parentContainer An optional parent object.
 	 */
-	explicit DataContainer(QObject *parentContainer = 0) : QObject(parentContainer) {}
+	explicit DataContainer(QObject *parentContainer = nullptr) : QObject(parentContainer) {}
 
 	/**
 	 * @brief The mandatory copy construcor-

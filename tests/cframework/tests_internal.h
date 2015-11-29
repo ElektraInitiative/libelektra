@@ -1,22 +1,14 @@
-/** @file
-  *
-  * Some common functions operating on internals.
-  *
-  * @copyright This program is free software; you can redistribute it and/or modify
-  *            it under the terms of the BSD License (revised).
-  *
-  * If you include this file you have full access to elektra's internals
-  * and your test might not be ABI compatible with the next release.
-  *
-  * @see tests.h
-  */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Some common functions operating on internals.
+ *
+ * If you include this file you have full access to elektra's internals
+ * and your test might not be ABI compatible with the next release.
+ *
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef TESTS_INTERNAL_H
 #define TESTS_INTERNAL_H

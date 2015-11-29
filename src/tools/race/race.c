@@ -1,5 +1,14 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.h>
 #include <kdbconfig.h>
+#include <kdbhelper.h>
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -39,7 +48,7 @@ void * writer (void * pV_data ELEKTRA_UNUSED)
 		ksRewind(ks);
 		/*
 		Key * c; 
-		while((c = ksNext(ks)))
+		while ((c = ksNext(ks)))
 		{
 			printf ("Got key: %s - %s\n",
 				keyName(c), keyString(c));
@@ -143,11 +152,11 @@ int main (int argc, char **argv)
 		else if (pid == 0)
 		{
 			// child
-			pthread_t *pwriter = malloc(num_threads*sizeof(pthread_t));
+			pthread_t *pwriter = elektraMalloc(num_threads*sizeof(pthread_t));
 			if (!pwriter) return 13;
 			for (i=0; i< num_threads; i++) if (pthread_create (&pwriter[i], NULL, writer, (void *) 0) != 0) return 14;
 			for (i=0; i< num_threads; i++) pthread_join (pwriter[i],NULL);
-			free(pwriter);
+			elektraFree (pwriter);
 			return 0;
 		}
 	}

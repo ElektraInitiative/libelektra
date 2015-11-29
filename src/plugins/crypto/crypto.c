@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief filter plugin providing cryptographic operations
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief filter plugin providing cryptographic operations
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
@@ -43,7 +43,7 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if(elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
+	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
 	{
 		goto error;
 	}
@@ -51,7 +51,7 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
-		if(elektraCryptoDecrypt(cryptoHandle, k, parentKey) != 1)
+		if (elektraCryptoDecrypt(cryptoHandle, k, parentKey) != 1)
 		{
 			goto error;
 		}
@@ -81,7 +81,7 @@ int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if(elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
+	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
 	{
 		goto error;
 	}
@@ -89,7 +89,7 @@ int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
-		if(elektraCryptoEncrypt(cryptoHandle, k, parentKey) != 1)
+		if (elektraCryptoEncrypt(cryptoHandle, k, parentKey) != 1)
 		{
 			goto error;
 		}
@@ -157,7 +157,7 @@ void elektraCryptoTeardown()
  */
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
 {
-	if(elektraCryptoInit(errorKey) != 1)
+	if (elektraCryptoInit(errorKey) != 1)
 	{
 		return (-1);
 	}

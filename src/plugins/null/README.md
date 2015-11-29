@@ -11,6 +11,13 @@
 This plugin is a filter plugin which allows Elektra to better deal with
 null values and empty strings.
 
+Elektra supports null values for binary keys.
+They differ from an empty string substantially in how they are handled.
+Some plugins that work on values are not aware of null values.
+They would crash when they try
+to access a value that is believed to be a string.
+
+
 ## Special Values ##
 
 The plugin transcodes all null values to `@NULL`, all empty strings to

@@ -15,24 +15,21 @@ include(CheckCXXCompilerFlag)
 #
 if (C_STD)
 	message (STATUS "use C_STD as given by user: ${C_STD}")
-else()
+else ()
 	set (C_STD "-std=gnu99")
-endif()
+endif ()
 
-if (ENABLE_CXX11)
+if (CXX_STD)
+	message (STATUS "use CXX_STD as given by user: ${CXX_STD}")
+else ()
 	set (CXX_STD "-std=c++11")
-	check_cxx_compiler_flag(${CXX_STD} HAS_CXX_STD)
-	if (NOT HAS_CXX_STD)
-		message(WARNING "Your compiler does not know the flag ${CXX_STD}. If your compiler is new, it might already be default. If the compilation does not work, please report to libelektra.org/issues/262.")
-	endif (NOT HAS_CXX_STD)
-else()
-	if (CXX_STD)
-		message (STATUS "use CXX_STD as given by user: ${CXX_STD}")
-	else()
-		set (CXX_STD "-std=c++98")
-	endif()
-endif()
+endif ()
 
+check_cxx_compiler_flag(${CXX_STD} HAS_CXX_STD)
+if (NOT HAS_CXX_STD)
+	message(WARNING "Your compiler does not know the flag: ${CXX_STD}")
+	set (CXX_STD "")
+endif (NOT HAS_CXX_STD)
 
 #
 # check if -Wl,--version-script linker option is supported
@@ -74,7 +71,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 		#not supported by icc/clang:
 		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
 
-		# needed by gcc4.7 when compiled with ENABLE_CXX11
+		# needed by gcc4.7 for C++11 chrono
 		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -D_GLIBCXX_USE_NANOSLEEP")
 
 		message (STATUS "GCC detected")
@@ -117,8 +114,7 @@ if (HAS_CFLAG_MAYBE_UNINITIALIZED)
 	set (COMMON_FLAGS "${COMMON_FLAGS} -Wmaybe-uninitialized")
 endif (HAS_CFLAG_MAYBE_UNINITIALIZED)
 
-#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--unresolved-symbols=ignore-in-shared-libs")
-
+#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
 
 if (ENABLE_COVERAGE)
 	set (COMMON_FLAGS "${COMMON_FLAGS} -fprofile-arcs -ftest-coverage")
