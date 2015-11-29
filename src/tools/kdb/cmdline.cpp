@@ -47,7 +47,7 @@ Cmdline::Cmdline (int argc,
 	plugins("sync"),
 	pluginsConfig(""),
 	ns("user"),
-	editor("sensible-editor"),
+	editor(),
 
 	executable(),
 	commandName()
@@ -174,9 +174,11 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-E --without-elektra     Omit the `system/elektra` directory.\n";
 	}
-	if (acceptedOptions.find('e')!=string::npos)
+	optionPos = acceptedOptions.find('e');
+	if (optionPos!=string::npos)
 	{
-		option o = {"editor", no_argument, 0, 'e'};
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"editor", required_argument, 0, 'e'};
 		long_options.push_back(o);
 		helpText += "-e --editor              Which external editor to use.\n";
 	}
