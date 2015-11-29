@@ -25,6 +25,20 @@ The user should specify the format that the current configuration or keys are in
   Defaults to `/usr/bin/sensible-editor`, `/usr/bin/editor` or `/usr/bin/vi` if the key does not exist.
 
 
+## RETURN VALUES
+
+- 0:
+  successful.
+- 1-10:
+  standard exit codes, see [kdb(1)](kdb.md)
+- 11:
+  could not export configuration.
+- 12:
+  could not start editor.
+- 13:
+  could not import configuration.
+
+
 ## OPTIONS
 
 - `-H`, `--help`:
@@ -35,14 +49,14 @@ The user should specify the format that the current configuration or keys are in
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.
-- `-e`, `--editor`:
+- `-e`, `--editor <editor>`:
   Which editor to use.
 
 
 ## EXAMPLES
 
 To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you would use:
-	`kdb editor -e vim user/ini`
+	`kdb editor -e /usr/bin/vim user/ini`
 
 ## SEE ALSO
 
