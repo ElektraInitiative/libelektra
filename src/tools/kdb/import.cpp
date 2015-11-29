@@ -39,8 +39,6 @@ int ImportCommand::execute(Cmdline const& cl)
 	KeySet base = originalKeys.cut (root);
 	printWarnings (cerr, root);
 
-	KeySet importedKeys;
-
 	string format = cl.format;
 	if (argc > 1) format = cl.arguments[1];
 
@@ -53,6 +51,7 @@ int ImportCommand::execute(Cmdline const& cl)
 	Key errorKey (root);
 	errorKey.setString (file);
 
+	KeySet importedKeys;
 	plugin->get(importedKeys, errorKey);
 	importedKeys = importedKeys.cut(root);
 
@@ -69,6 +68,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	helper.reportResult (cl, result, cout, cerr);
 
+	int ret = -1;
 	if (!result.hasConflicts ())
 	{
 		if (cl.verbose)
@@ -80,12 +80,10 @@ int ImportCommand::execute(Cmdline const& cl)
 		KeySet resultKeys = result.getMergedKeys();
 		originalKeys.append(resultKeys);
 		kdb.set (originalKeys, root);
-		return 0;
+		ret = 0;
 	}
-	else
-	{
-		return -1;
-	}
+
+	return ret;
 }
 
 ImportCommand::~ImportCommand()
