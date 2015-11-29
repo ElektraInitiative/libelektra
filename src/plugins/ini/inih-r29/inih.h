@@ -74,7 +74,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user);
 
 /* Maximum line length for any line in INI file. */
 #ifndef INI_MAX_LINE
-#define INI_MAX_LINE 200
+#define INI_MAX_LINE 65535
 #endif
 
 #ifdef __cplusplus

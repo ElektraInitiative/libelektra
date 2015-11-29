@@ -17,8 +17,8 @@ http://code.google.com/p/inih/
 #include <stdlib.h>
 #endif
 
-#define MAX_SECTION 50
-#define MAX_NAME 50
+#define MAX_SECTION 512
+#define MAX_NAME 512
 
 /* Strip whitespace chars off end of given string, in place. Return s. */
 static char* rstrip(char* s)
@@ -95,6 +95,11 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
             start += 3;
         }
 #endif
+        if(*start == '\n')
+        {
+            if(!config->commentHandler(user, " ") && !error)
+                error = lineno;
+        }
         start = lskip(rstrip(start));
 
         if (*start == ';' || *start == '#') {

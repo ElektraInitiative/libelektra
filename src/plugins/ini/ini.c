@@ -540,14 +540,32 @@ void writeComments(Key* current, FILE* fh)
 		size_t commentSize = keyGetValueSize (commentMeta);
 		char* comments = elektraMalloc (commentSize);
 		keyGetString (commentMeta, comments, commentSize);
-		char* savePtr = 0;
-		char* currentComment = strtok_r (comments, "\n", &savePtr);
-		while (currentComment)
+		char *ptr = comments;
+		while(*ptr)
 		{
-			fprintf (fh, ";%s\n", currentComment);
-			currentComment = strtok_r (0, "\n", &savePtr);
+			if((*ptr) == '\n')
+			{
+				fprintf(fh, "\n");
+				++ptr;
+			}
+			else if(*ptr != ' ')
+			{
+				fprintf(fh, ";");
+				while(*ptr && ((*ptr) != '\n'))
+				{
+					fprintf(fh, "%c", *ptr);
+					++ptr;
+				}
+			}
+			else
+			{
+				++ptr;
+			}
 		}
-
+		if(!(*ptr))
+		{
+			fprintf(fh, "\n");
+		}
 		elektraFree (comments);
 	}
 }
@@ -697,6 +715,8 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS)
 		keyAddName(sectionKey, "..");
 		const char *sectionName = keyName(sectionKey)+strlen(keyName(parentKey))+1;
 		appendKey = createUnescapedKey(appendKey, sectionName);
+		if((!strcmp(keyBaseName(appendKey), INTERNAL_ROOT_SECTION)) && (!ksLookup(newKS, appendKey, KDB_O_NONE)))
+			keySetMeta(appendKey, "order", "000000000");
 		setSectionNumber(parentKey, appendKey, newKS);
 		if(atoi(keyString(keyGetMeta(appendKey, "ini/section"))) > atoi(oldSectionNumber))
 		{
