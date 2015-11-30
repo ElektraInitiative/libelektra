@@ -1,3 +1,6 @@
+Elektra 0.8.14 now in Debian unstable with man pages, thanks to Pino Toscano!
+
+
 # 0.8.14 Release
 
 - guid: 519cbfac-6db5-4594-8a38-dec4c84b134f
