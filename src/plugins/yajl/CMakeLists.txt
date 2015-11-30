@@ -16,6 +16,7 @@ if (YAJL_FOUND)
 			${YAJL_INCLUDE_DIR}
 			${CMAKE_CURRENT_BINARY_DIR}
 		LINK_LIBRARIES
+			elektra-ease
 			${YAJL_LIBRARIES}
 		)
 

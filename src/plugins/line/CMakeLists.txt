@@ -10,6 +10,8 @@ if (COMPAT_GETLINE)
 		SOURCES
 			line.h
 			line.c
+		LINK_LIBRARIES
+			elektra-ease
 		)
 
 	install(DIRECTORY line DESTINATION ${TARGET_TEST_DATA_FOLDER})
