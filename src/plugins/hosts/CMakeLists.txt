@@ -7,6 +7,8 @@ add_plugin(hosts
 		hosts-set.c
 		keymetaformatting.h
 		keymetaformatting.c
+	LINK_LIBRARIES
+		elektra-ease
 	)
 
 install(DIRECTORY hosts DESTINATION ${TARGET_TEST_DATA_FOLDER})
