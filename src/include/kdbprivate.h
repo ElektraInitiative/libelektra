@@ -183,7 +183,7 @@ struct _Key
 
 	/**
 	 * Size of the value, in bytes, including ending NULL.
-	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
+	 * @see keyGetValueSize()
 	 */
 	size_t         dataSize;
 
