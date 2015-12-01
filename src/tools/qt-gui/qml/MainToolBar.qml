@@ -12,14 +12,14 @@ ToolBar {
 		ToolButton {
 			id:tbNew
 			iconSource: "icons/document-new.png"
-			enabled: newKeyAction.enabled
+			enabled: guiActions.newKeyAction.enabled
 			tooltip: qsTr("New ...")
 			menu: Menu {
 				MenuItem {
-					action: newKeyAction
+					action: guiActions.newKeyAction
 				}
 				MenuItem {
-					action: newArrayAction
+					action: guiActions.newArrayAction
 				}
 			}
 			HelpArea {
@@ -28,28 +28,28 @@ ToolBar {
 		}
 		ToolButton {
 			id:tbDelete
-			action: deleteAction
+			action: guiActions.deleteAction
 			HelpArea {
 				helpText: qsTr("This button will delete the current key and associated values.\nIt will also delete the associated data from any configuration\nfiles mounted to this location upon synchronization.")
 			}
 		}
 		ToolButton {
 			id:tbImport
-			action: importAction
+			action: guiActions.importAction
 			HelpArea {
 				helpText: qsTr("This button allows you to import keys from a file. You can import\nmany types of files using Elektra plugins with this tool.")
 			}
 		}
 		ToolButton {
 			id:tbExport
-			action: exportAction
+			action: guiActions.exportAction
 			HelpArea {
 				helpText: qsTr("This button allows you to export keys to a file. You can export\nmany types of files using Elektra plugins with this tool. The ecf\nfiletype is recommended if you want to preserve all aspects of\nthe current keys.")
 			}
 		}
 		ToolButton {
 			id:tbUndo
-			action: undoAction
+			action: guiActions.undoAction
 			HelpArea {
 				helpText: qsTr("This button will undo the last action.")
 			}
@@ -58,16 +58,16 @@ ToolBar {
 			id: tbUndoAll
 
 			implicitWidth: defaultMargins
-			enabled: undoAction.enabled
+			enabled: guiActions.undoAction.enabled
 			menu: Menu {
 				MenuItem {
-					action: undoAllAction
+					action: guiActions.undoAllAction
 				}
 			}
 		}
 		ToolButton {
 			id:tbRedo
-			action: redoAction
+			action: guiActions.redoAction
 			HelpArea {
 				  helpText: qsTr("This button will redo the last action.")
 			}
@@ -76,16 +76,16 @@ ToolBar {
 			id: tbRedoAll
 
 			implicitWidth: defaultMargins
-			enabled: redoAction.enabled
+			enabled: guiActions.redoAction.enabled
 			menu: Menu {
 				MenuItem {
-					action: redoAllAction
+					action: guiActions.redoAllAction
 				}
 			}
 		}
 		ToolButton {
 			id:tbSynchronize
-			action: synchronizeAction
+			action: guiActions.synchronizeAction
 			HelpArea {
 				helpText: qsTr("This button will synchronize any changes you\nhave made with the Key Database. As such, if\nany changes were made to mounted config-\nuration files then those files will be updated\ntoo.")
 			}

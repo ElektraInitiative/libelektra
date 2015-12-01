@@ -75,7 +75,7 @@ QVariant TreeViewModel::data(const QModelIndex& idx, int role) const
 		return QVariant();
 	}
 
-	ConfigNodePtr node = m_model.at(idx.row());
+	ConfigNode* node = m_model.at(idx.row()).data();
 
 	switch (role)
 	{
@@ -105,7 +105,7 @@ QVariant TreeViewModel::data(const QModelIndex& idx, int role) const
 		return QVariant::fromValue(node->getMetaKeys());
 
 	case NodeRole:
-		return QVariant::fromValue(node.data());
+		return QVariant::fromValue(node);
 
 	case ParentModelRole:
 		return QVariant::fromValue(node->getParentModel());
@@ -450,6 +450,11 @@ void TreeViewModel::sink(ConfigNodePtr node, QStringList keys, const Key& key)
 
 	if (node->hasChild(name) && !node->getChildByName(name)->isDirty())
 	{
+		if(node->getChildByName(name)->getKey())
+		{
+			node->getChildByName(name)->updateNode(key);
+		}
+
 		sink(node->getChildByName(name), keys, key);
 	}
 	else
@@ -676,9 +681,8 @@ void TreeViewModel::synchronize()
 #endif
 
 		m_base = ours;
-		// createNewNodes(ours);
-		// workaround for #348
-		populateModel(ours);
+		 m_base = ours;
+		 createNewNodes(ours);
 	}
 	catch (KDBException const&)
 	{
@@ -697,9 +701,8 @@ void TreeViewModel::synchronize()
 #endif
 
 			m_base = result;
-			// createNewNodes(result);
-			// workaround for #348
-			populateModel(result);
+			 m_base = result;
+			 createNewNodes(result);
 		}
 		catch (KDBException const& e)
 		{
