@@ -40,7 +40,7 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-    property string version: "0.0.10 (beta)"
+	property string version: "0.0.10 (beta)"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8
@@ -382,7 +382,7 @@ ApplicationWindow {
 								onDoubleClicked: {
 									keyAreaView.currentRow = styleData.row
 									MFunctions.updateKeyAreaSelection()
-                                    guiActions.editAction.trigger()
+									guiActions.editAction.trigger()
 								}
 							}
 						}
@@ -390,7 +390,7 @@ ApplicationWindow {
 					Keys.onPressed: {
 						if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && keyAreaSelectedItem !== null){
 							MFunctions.updateKeyAreaSelection()
-                            guiActions.editAction.trigger()
+							guiActions.editAction.trigger()
 						}
 					}
 				}
@@ -513,7 +513,7 @@ ApplicationWindow {
 							else if ((event.key === Qt.Key_Enter || event.key === Qt.Key_Return) && searchResultsSelectedItem !== null){
 								editKeyWindow.selectedNode = searchResultsSelectedItem
 								editKeyWindow.accessFromSearchResults = true
-                                guiActions.editAction.trigger()
+								guiActions.editAction.trigger()
 							}
 						}
 
@@ -552,7 +552,7 @@ ApplicationWindow {
 										forceActiveFocus()
 										editKeyWindow.accessFromSearchResults = true
 										editKeyWindow.selectedNode = searchResultsListView.model.get(searchResultsListView.currentIndex)
-                                        guiActions.editAction.trigger()
+								guiActions.editAction.trigger()
 									}
 								}
 							}
