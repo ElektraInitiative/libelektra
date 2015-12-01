@@ -24,7 +24,7 @@
  * which should be the absolute path the the source directory.
  * Each line of CMAKE_CACHE_FILENAME must fit in the CmakecacheFileReadBuffer.
  */
-const int CmakecacheFileReadBuffer = 1024;
+#define CMAKE_CACHE_FILE_READ_BUFFER 1024
 #define CMAKE_CACHE_FILENAME "CMakeCache.txt"
 #define CMAKE_CACHE_VARNAME "Elektra_SOURCE_DIR"
 #define TEMP_FILENAME "temp"
@@ -462,10 +462,10 @@ static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilen
 		fprintf (stderr, "fopen Error: CmakeCacheFile %s not found\n", cmakeCacheFilename);
 		return NULL;
 	}
-	char line [CmakecacheFileReadBuffer];
+	char line [CMAKE_CACHE_FILE_READ_BUFFER + 1];
 	int lenCmakecacheVar = strlen (CMAKE_CACHE_VARNAME);
 	bool foundCmakecacheVar = false;
-	while (fgets (line, CmakecacheFileReadBuffer, input))
+	while (fgets (line, CMAKE_CACHE_FILE_READ_BUFFER, input))
 	{
 		if (strncmp (CMAKE_CACHE_VARNAME, line, lenCmakecacheVar) == 0)
 		{
