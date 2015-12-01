@@ -33,6 +33,7 @@ EditorCommand::~EditorCommand()
 
 void EditorCommand::tmpFile()
 {
+#ifndef _WIN32
 	const char * tmpvar = getenv ("TMPDIR");
 	if (!tmpvar)
 	{
@@ -46,6 +47,7 @@ void EditorCommand::tmpFile()
 	filename = std::string(fn);
 	close(fd);
 	free (fn);
+#endif
 }
 
 bool runAllEditors(std::string filename)
@@ -81,6 +83,9 @@ int EditorCommand::execute(Cmdline const& cl)
 		throw invalid_argument ("wrong number of arguments, 1 needed");
 	}
 
+#ifndef _WIN32
+	throw invalid_argument ("kdb-editor not available for windows");
+#endif
 	Key root (cl.arguments[0], KEY_END);
 
 	KeySet ours;

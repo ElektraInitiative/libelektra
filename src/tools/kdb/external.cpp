@@ -23,8 +23,10 @@
 #include <string.h>
 #include <errno.h>
 
+#ifndef _WIN32
 #include <sys/types.h>
 #include <sys/wait.h>
+#endif
 
 const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
 
@@ -176,6 +178,7 @@ void runManPage(std::string command)
 	std::cout << "Was not able to execute man-page viewer: \"" << man << '"' << std::endl;
 }
 
+#ifndef _WIN32
 bool runEditor(std::string editor, std::string file)
 {
 	char * const argv [3] = {const_cast<char*>(editor.c_str()),
@@ -202,3 +205,10 @@ bool runEditor(std::string editor, std::string file)
 	}
 	return false;
 }
+#else
+bool runEditor(std::string, std::string)
+{
+	// TODO: impl
+	return false;
+}
+#endif
