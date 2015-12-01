@@ -19,6 +19,8 @@
 #include <kdberrors.h>
 #include "enum.h"
 
+#define VALIDATE_KEY_SUBMATCHES 3 //first submatch is the string we want, second submatch , or EOL
+
 int elektraEnumGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/enum"))
@@ -59,18 +61,17 @@ static int validateKey(Key *key)
 		return -1;
 	}
 	const char *ptr = validValues;
-	const short submatches = 3; //first submatch is the string we want, second submatch , or EOL
-	regmatch_t match[submatches];
+	regmatch_t match[VALIDATE_KEY_SUBMATCHES];
 	char *value = NULL;
 	int nomatch;
 	int start;
 	int end;
 	while (1)
 	{
-		nomatch = regexec(&regex, ptr, submatches, match, 0);
+		nomatch = regexec(&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
 		if (nomatch)
 			break;
-		
+
 		start = match[1].rm_so + (ptr - validValues);
 		end = match[1].rm_eo + (ptr - validValues);
 		elektraRealloc((void **)&value, (end - start)+1);
