@@ -9,6 +9,8 @@ add_plugin(hosts
 		keymetaformatting.c
 	LINK_LIBRARIES
 		elektra-ease
+		elektra-proposal
+		elektra-meta
 	)
 
 install(DIRECTORY hosts DESTINATION ${TARGET_TEST_DATA_FOLDER})
