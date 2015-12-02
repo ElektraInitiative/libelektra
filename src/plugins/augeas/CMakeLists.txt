@@ -24,6 +24,7 @@ if (LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 				${LIBXML2_INCLUDE_DIR}
 			LINK_LIBRARIES
 				elektra-meta
+				elektra-proposal
 				${LIBAUGEAS_LIBRARIES}
 				${LIBXML2_LIBRARIES}
 			)

@@ -6,6 +6,7 @@ add_plugin(keytometa
 		keytometa.c
 	LINK_LIBRARIES
 		elektra-proposal
+		elektra-meta
 	)
 
 add_plugintest(keytometa)
