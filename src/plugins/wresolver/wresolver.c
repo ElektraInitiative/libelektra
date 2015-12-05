@@ -148,7 +148,7 @@ static void elektraResolveSpec(resolverHandle *p, Key *errorKey)
 
 static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 {
-	p->filename = elektraMalloc(PATH_MAX);
+	p->filename = elektraMalloc(KDB_MAX_PATH_LENGTH);
 
 # if defined(_WIN32)
 	CHAR dir[MAX_PATH];
@@ -163,8 +163,8 @@ static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 	}
 	escapePath(dir);
 #else
-	char dir[PATH_MAX];
-	if (getcwd(dir, PATH_MAX) == 0)
+	char dir[KDB_MAX_PATH_LENGTH];
+	if (getcwd(dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
 		ELEKTRA_ADD_WARNINGF(90, warningsKey, "getcwd failed: %s", strerror(errno));
 	}
@@ -172,15 +172,15 @@ static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 
 	strcpy (p->filename, dir);
 	strcat (p->filename, "/");
-	strncat (p->filename, p->path, PATH_MAX-strlen(dir)-3);
-	p->filename[PATH_MAX-1] = 0;
+	strncat (p->filename, p->path, KDB_MAX_PATH_LENGTH-strlen(dir)-3);
+	p->filename[KDB_MAX_PATH_LENGTH-1] = 0;
 
 	return;
 }
 
 static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 {
-	p->filename = elektraMalloc(PATH_MAX);
+	p->filename = elektraMalloc(KDB_MAX_PATH_LENGTH);
 
 # if defined(_WIN32)
 	CHAR home[MAX_PATH];
@@ -205,7 +205,7 @@ static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 
 	strcpy (p->filename, home);
 	strcat (p->filename, "/");
-	strncat (p->filename, p->path, PATH_MAX);
+	strncat (p->filename, p->path, KDB_MAX_PATH_LENGTH);
 }
 
 static void elektraResolveSystem(resolverHandle *p, Key *errorKey)
