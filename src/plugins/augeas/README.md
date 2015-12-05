@@ -21,7 +21,7 @@ can be found at http://augeas.net/
 
 ## INSTALLATION ##
 
-If you have installed Augeas manually, it may be neccessary to update the ld configuration. This is especially
+If you have installed Augeas manually, it may be necessary to update the ld configuration. This is especially
 true if an older version of Augeas is installed also. Such a situation may lead to an error similar to this:
 
 /usr/lib/libaugeas.so.0: version `AUGEAS_0.16.0' not found (required by kdb)

@@ -43,7 +43,7 @@ with #ifdefs).
 
 Following points are allowed:
 When you add a new function you break ABI and API backward-
-compatibilty, but not forward, so you are allowed to do so.
+compatibility, but not forward, so you are allowed to do so.
 
 In the signature you are only allowed to add const to
 any parameter. You are *not* allowed to use subtypes to

@@ -207,7 +207,7 @@ Lets start with the most important parameters, the KeySet and the `parentKey`. T
 the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet at serves several purposes.
 First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the parentKey. We will discuss
 error handling in more detail later. The Plugin handle can be used to persist state information in a threadsafe way with `elektraPluginSetData`.
-As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to supress compiler warnings.
+As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to suppress compiler warnings.
 
 Basically the implementation of `elektraLineSet` can be described with the following pseudocode:
 
