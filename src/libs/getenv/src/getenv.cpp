@@ -32,6 +32,10 @@
 #include <unistd.h> // euid
 #include <sys/types.h> // euid
 
+#include <elf.h>
+#include <sys/auxv.h>
+#include <link.h>
+
 #include <string>
 #include <chrono>
 #include <sstream>
@@ -96,7 +100,11 @@ public:
 	}
 } elektraEnvContext;
 
+#ifdef __powerpc__
+typedef int (*fcn)(int argc, char ** argv, char ** ev, ElfW (auxv_t) *auxvec, void (*rtld_fini) (void), void *stinfo, char ** stack_on_entry);
+#else
 typedef int (*fcn)(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end));
+#endif
 typedef char *(* gfcn)(const char *);
 
 union Start{void*d; fcn f;} start; // symbol for libc pre-main
@@ -430,7 +438,11 @@ extern "C" void elektraClose()
 
 extern "C" int __real_main(int argc, char** argv, char** env);
 
+#ifdef __powerpc__
+extern "C" int __libc_start_main(int argc, char ** argv, char ** ev, ElfW (auxv_t) * auxvec, void (*rtld_fini) (void), void *stinfo, char ** stack_on_entry)
+#else
 extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc, char ** argv, void (*init) (void), void (*fini) (void), void (*rtld_fini) (void), void (* stack_end))
+#endif
 {
 	elektraLockMutex(); // dlsym mutex
 	LOG << "wrapping main" << endl;
@@ -438,7 +450,11 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 	{ // double wrapping situation, do not reopen, just forward to next __libc_start_main
 		start.d = dlsym(RTLD_NEXT, "__libc_start_main");
 		elektraUnlockMutex(); // dlsym mutex end
+#ifdef __powerpc__
+		int ret = (*start.f)(argc, argv, ev, auxvec, rtld_fini, stinfo, stack_on_entry);
+#else
 		int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
+#endif
 		return ret;
 	}
 
@@ -449,7 +465,11 @@ extern "C" int __libc_start_main(int *(main) (int, char * *, char * *), int argc
 
 	elektraOpen(&argc, argv);
 	elektraUnlockMutex(); // dlsym mutex end
+#ifdef __powerpc__
+	int ret = (*start.f)(argc, argv, ev, auxvec, rtld_fini, stinfo, stack_on_entry);
+#else
 	int ret = (*start.f)(main, argc, argv, init, fini, rtld_fini, stack_end);
+#endif
 	elektraClose();
 	return ret;
 }
