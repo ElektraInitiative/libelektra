@@ -822,14 +822,14 @@ Note that there are still [some bugs](http://git.libelektra.org/issues).
 - CMake: Fix gtest to be build if `BUILD_TESTING` activated, but not `ENABLE_TESTING`
 - CMake: Allow compilation without BUILD_STATIC
 - Explain compilation options more, thanks to Kai-Uwe Behrmann for asking the question
-- CMake: always build examples, allow to only build documentation
+- CMake: always build examples, allow one to only build documentation
 - add common header file for C++ plugins (used by plugins struct and type)
 - fix compilation of race tool under oS-11.4 thanks to Kai-Uwe Behrmann
 - CMake: find python3 correctly
 - CMake: fix BUILD_SHARED_LIBS
 - Doxygen: remove `HTML_TIMESTAMP` to make build reproduceable
 - Doxygen: rewrite of main page+add info about all five namespaces
-- CMake: allow to use qt-gui with qt built with -reduce-relocations
+- CMake: allow one to use qt-gui with qt built with -reduce-relocations
 - fix kdb ls, get to list warnings during open
 - during kdbOpen() use Configfile: to state phase
 - add -f option to kdb check+improve docu
@@ -1753,7 +1753,7 @@ is the new proposed API method ksLookupBySpec (and ksLookup implementing
 cascading search). It introduces a `logical view` of
 configuration that in difference to the `physical view` of
 configuration does not have namespaces, but everything is below the root
-"/". Additionally, contextual values now allow to be compile-time
+"/". Additionally, contextual values now allow one to be compile-time
 configured using C++-Policies. These are small puzzle pieces that will
 fit into a greater picture at a later time.
 
@@ -1822,7 +1822,7 @@ how comments can be improved.
 - support non-system installation (e.g. in home directory)
 - rewrote test cases to use succeed_if_same to avoid crashes on
   null pointers
-- allow to use python 2.6 for kdb gen
+- allow one to use python 2.6 for kdb gen
 - improve exception messages
 - use memcasecmp (fix lookup ignoring case)
 - fix memory leaks (ini)
@@ -2004,11 +2004,11 @@ it says on that line 94 in test_ks.c:
 see above for more information:
 - keyAddName         ..  add key name without escaping, like keySetName
 - keyUnescapedName   ..  get access to null-separated unescaped name
-- keyLock            ..  to allow to secure keys against modifications
+- keyLock            ..  to allow one to secure keys against modifications
 
 some new ideas:
 - keySetStringF      ..  printf format-style changing of the key string
-- elektraKeySetName  ..  to allow to set meta + cascading keys
+- elektraKeySetName  ..  to allow one to set meta + cascading keys
 
 elektraArrayIncName() now works correctly with empty arrays embedded in
 other arrays (yajl+line plugin)

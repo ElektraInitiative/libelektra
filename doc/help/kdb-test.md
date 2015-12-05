@@ -12,7 +12,7 @@ If no `test-name` is provided, all the tests will be run.
 ## DESCRIPTION
 
 This command is used to run part or all of the key database test suite.  
-These tests allow to user to verify that a backend is capable of storing and retrieving all kinds of configuration keys and values.  
+These tests allow one to user to verify that a backend is capable of storing and retrieving all kinds of configuration keys and values.  
 
 The following tests are available: basic string umlauts binary naming meta  
 

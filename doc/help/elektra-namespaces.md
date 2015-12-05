@@ -107,7 +107,7 @@ e.g. by seteuid() or by environment variables like HOME, USER
 The system configuration is the same for every chroot.
 
 The configuration is typically located below KDB_DB_SYSTEM.
-Other absolut pathes, e.g. below /opt or /usr/local/etc are possible
+Other absolute pathes, e.g. below /opt or /usr/local/etc are possible
 too.
 
 
