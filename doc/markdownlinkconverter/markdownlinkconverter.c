@@ -136,7 +136,7 @@ struct transitionTitle genTitleTransitionTable() {
 }
 
 // Maps a given char to a int, used for the transition table
-static int resolveChar (char c)
+static int resolveChar (int c)
 {
 	if (c != '\n' && isblank (c)) return 3;
 	switch (c)
@@ -161,7 +161,7 @@ static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra
 {
 	int state = titleStart;
 	int newstate;
-	char c;
+	int c;
 	bool titleFound = false;
 	struct transitionTitle transitions = genTitleTransitionTable ();
 	while ((c = fgetc (input)) != EOF)
@@ -189,7 +189,7 @@ static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra
  */
 static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 {
-	char c;
+	int c;
 	fpos_t pos;
 	int state = linkStart;
 	int newstate;
