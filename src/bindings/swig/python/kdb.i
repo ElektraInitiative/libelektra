@@ -120,11 +120,17 @@
   $result = PyBytes_FromStringAndSize((const char*)$1, (size > 0) ? size : 0);
 }
 
+%typemap(check) (char const *name, uint64_t flags) {
+  if ($2 > std::numeric_limits<int>::max()) {
+    SWIG_exception(SWIG_ValueError, "Too big value for flags in Key()");
+  }
+}
+
 // add some other useful methods
 %extend kdb::Key {
   Key(const char *name, uint64_t flags = 0) {
     return new kdb::Key(name,
-      KEY_FLAGS, flags,
+      KEY_FLAGS, static_cast<int>(flags),
       KEY_END);
   }
 

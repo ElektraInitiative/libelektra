@@ -23,6 +23,8 @@
   #include "keyset.hpp"
   #include "kdb.hpp"
   using namespace kdb;
+
+  #include <limits>
 %}
 
 %apply long { ssize_t }
