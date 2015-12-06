@@ -229,7 +229,9 @@
   }
 
   const char *__tostring() {
-    return self->getName().c_str();
+    ckdb::Key *rawKey = self->getKey();
+    if (!rawKey) throw kdb::KeyException();
+    return ckdb::keyName(rawKey);
   }
 
   myswig::LuaSTLIterator_T<kdb::Key::iterator> *name_iterator() {
