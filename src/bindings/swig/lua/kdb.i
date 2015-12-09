@@ -218,7 +218,7 @@
 %LuaSTLIterator(kdb::Key::reverse_iterator, name_iterator_iter);
 
 %extend kdb::Key {
-  Key(const char *name, uint64_t flags = 0) {
+  Key(const char *name, int flags = 0) {
     return new kdb::Key(name,
       KEY_FLAGS, flags,
       KEY_END);
