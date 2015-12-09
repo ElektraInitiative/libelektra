@@ -228,8 +228,8 @@
     return !bool(*self);
   }
 
-  const char *__tostring() {
-    return self->getName().c_str();
+  std::string __tostring() {
+    return self->getName();
   }
 
   myswig::LuaSTLIterator_T<kdb::Key::iterator> *name_iterator() {
