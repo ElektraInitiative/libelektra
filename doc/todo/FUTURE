@@ -114,6 +114,9 @@ maybe kdbConstruct and kdbDestruct needed too?
 
 allow non-file/resolver based backends
 
+read function symbols from contract (and not duplicated)
+	have elektraPluginContract separated from elektraPluginGet?
+
 
 
 == Error handling ==
