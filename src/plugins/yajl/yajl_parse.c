@@ -354,7 +354,6 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 	int errnosave = errno;
 	unsigned char fileData[65536];
 	int done = 0;
-	int test_status = 0;
 	FILE * fileHandle = fopen(keyString(parentKey), "r");
 	if (!fileHandle)
 	{
@@ -396,7 +395,7 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 		{
 			stat = yajl_parse(hand, fileData, rd);
 		}
-		test_status = (stat != yajl_status_ok);
+		int test_status = (stat != yajl_status_ok);
 #if YAJL_MAJOR == 1
 		test_status = test_status && (stat != yajl_status_insufficient_data);
 #endif
