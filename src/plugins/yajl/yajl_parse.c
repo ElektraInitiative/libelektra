@@ -395,12 +395,11 @@ int elektraYajlGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned,
 		{
 			stat = yajl_parse(hand, fileData, rd);
 		}
-
-		if (stat != yajl_status_ok
+		int test_status = (stat != yajl_status_ok);
 #if YAJL_MAJOR == 1
-			&& stat != yajl_status_insufficient_data
+		test_status = test_status && (stat != yajl_status_insufficient_data);
 #endif
-			)
+		if (test_status)
 		{
 			unsigned char * str = yajl_get_error(hand, 1,
 					fileData, rd);

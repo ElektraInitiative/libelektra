@@ -32,9 +32,11 @@
 #include <unistd.h> // euid
 #include <sys/types.h> // euid
 
+#ifdef __powerpc__
 #include <elf.h>
 #include <sys/auxv.h>
 #include <link.h>
+#endif
 
 #include <string>
 #include <chrono>

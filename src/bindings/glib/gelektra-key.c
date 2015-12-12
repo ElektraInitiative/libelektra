@@ -192,7 +192,7 @@ static void gelektra_key_gi_init_va(GElektraKey *key, const gchar *name, ...)
  * \note This is for GObject Introspection.
  * \note Do NOT use! Use gelektra_key_new instead
  */
-void gelektra_key_gi_init(GElektraKey *key, const gchar *name, guint64 flags,
+void gelektra_key_gi_init(GElektraKey *key, const gchar *name, int flags,
 	const gchar *value, const void *data, gsize data_size)
 {
 	gelektra_key_gi_init_va(key, name,
