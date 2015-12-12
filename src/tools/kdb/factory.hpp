@@ -44,6 +44,7 @@
 #include <merge.hpp>
 #include <list.hpp>
 #include <editor.hpp>
+#include <external.hpp>
 
 class Instancer
 {
@@ -132,7 +133,7 @@ public:
 		else
 		{
 			m_factory.erase(which);
-			return CommandPtr();
+			return CommandPtr(new ExternalCommand());
 		}
 
 	}

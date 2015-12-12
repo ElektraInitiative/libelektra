@@ -82,7 +82,7 @@ void displayVersion()
 	}
 }
 
-int main(int argc, char**argv)
+int main(int argc, char ** argv)
 {
 	Factory f;
 
@@ -94,7 +94,7 @@ int main(int argc, char**argv)
 	string command = argv[1];
 	if (command == "help" || command == "-H" || command == "--help")
 	{
-		if (argc == 3)
+		if (argc >= 3)
 		{
 			runManPage(argv[2]);
 		}
@@ -114,23 +114,26 @@ int main(int argc, char**argv)
 
 	try {
 		CommandPtr cmd = f.get(command);
-		if (!cmd.get())
-		{
-			tryExternalCommand(argv+1);
-			// does not return, but may throw
-		}
 		Cmdline cl (argc, argv, cmd.get());
-
-		if (cl.version)
-		{
-			displayVersion();
-			return 0;
-		}
 
 		if (cl.help)
 		{
 			runManPage(command);
 			// does not return, but may throw
+		}
+
+		// version and invalidOpt might be implemented
+		// differently for external command
+		if (dynamic_cast<ExternalCommand*>(cmd.get()))
+		{
+			tryExternalCommand(argv+1);
+			// does not return, but may throw
+		}
+
+		if (cl.version)
+		{
+			displayVersion();
+			return 0;
 		}
 
 		if (cl.invalidOpt)

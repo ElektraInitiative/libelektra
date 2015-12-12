@@ -20,6 +20,7 @@
 #include <getopt.h>
 
 #include <command.hpp>
+#include <external.hpp>
 
 
 using namespace std;
@@ -263,6 +264,15 @@ Cmdline::Cmdline (int argc,
 
 	executable = argv[0];
 	commandName = argv[1];
+
+	if (dynamic_cast<ExternalCommand*>(command))
+	{
+		// do not print to stderr for external commands,
+		// we do not know which options they have and
+		// otherwise maybe wrong "invalid/unrecognized option"
+		// are reported to stderr.
+		opterr = 0;
+	}
 
 	while ((opt = getopt_long (argc, argv,
 					acceptedOptions.c_str(),
