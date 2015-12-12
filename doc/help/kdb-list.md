@@ -1,5 +1,5 @@
-kdb-list(1) -- List keys in the key database
-============================================
+kdb-list(1) -- List plugins available to Elektra
+================================================
 
 ## SYNOPSIS
 
