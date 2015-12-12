@@ -15,11 +15,14 @@
 
 #include <crypto_internal.h>
 
+// methods for kdb
+int elektraCryptoOpen(Plugin *handle, Key *errorKey);
+int elektraCryptoClose(Plugin *handle, Key *errorKey);
 int elektraCryptoGet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoSet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey);
 
-
+// provider-independent crypto functions
 int elektraCryptoInit(Key *errorKey);
 void elektraCryptoTeardown();
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey);

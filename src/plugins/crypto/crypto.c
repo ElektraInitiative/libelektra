@@ -12,6 +12,49 @@
 #endif
 #include "crypto.h"
 #include "gcrypt_operations.h"
+#include <pthread.h>
+
+static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
+static unsigned int ref_cnt = 0;
+
+/**
+ * @brief initialize the crypto provider for the first instance of the plugin.
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int elektraCryptoOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey)
+{
+	pthread_mutex_lock(&mutex_ref_cnt);
+	if (ref_cnt == 0)
+	{
+		if (elektraCryptoInit(errorKey) != 1)
+		{
+			pthread_mutex_unlock(&mutex_ref_cnt);
+			return (-1);
+		}
+	}
+	ref_cnt++;
+	pthread_mutex_unlock(&mutex_ref_cnt);
+	return 1;
+}
+
+/**
+ * @brief finalizes the crypto provider for the last instance of the plugin.
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int elektraCryptoClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+{
+	pthread_mutex_lock(&mutex_ref_cnt);
+	if (--ref_cnt == 0)
+	{
+		elektraCryptoTeardown();
+	}
+	pthread_mutex_unlock(&mutex_ref_cnt);
+	return 1;
+}
 
 /**
  * @brief establish the Elektra plugin contract and decrypt values, if possible.
@@ -157,11 +200,6 @@ void elektraCryptoTeardown()
  */
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
 {
-	if (elektraCryptoInit(errorKey) != 1)
-	{
-		return (-1);
-	}
-
 	return elektraCryptoGcryHandleCreate(handle, config, errorKey);
 }
 
@@ -195,10 +233,14 @@ int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	return elektraCryptoGcryDecrypt(handle, k, errorKey);
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(crypto){
-return elektraPluginExport("crypto",
-		ELEKTRA_PLUGIN_GET, &elektraCryptoGet,
-		ELEKTRA_PLUGIN_SET, &elektraCryptoSet,
-		ELEKTRA_PLUGIN_END);
+Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
+{
+	return elektraPluginExport("crypto",
+			ELEKTRA_PLUGIN_OPEN,  &elektraCryptoOpen,
+			ELEKTRA_PLUGIN_CLOSE, &elektraCryptoClose,
+			ELEKTRA_PLUGIN_GET,   &elektraCryptoGet,
+			ELEKTRA_PLUGIN_SET,   &elektraCryptoSet,
+			ELEKTRA_PLUGIN_ERROR, &elektraCryptoError,
+			ELEKTRA_PLUGIN_END);
 }
 
