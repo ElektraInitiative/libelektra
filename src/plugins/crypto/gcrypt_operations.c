@@ -25,6 +25,18 @@ void elektraCryptoGcryHandleDestroy(elektraCryptoHandle *handle)
 
 int elektraCryptoGcryInit(Key *errorKey)
 {
+	// check if gcrypt has already been initialized (possibly by the application)
+	if (gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
+	{
+		return 1;
+	}
+
+	// initialize the gcrypt threading subsystem
+	// NOTE: this is a dummy call in newer versions of gcrypt, but old versions require it
+	GCRY_THREAD_OPTION_PTHREAD_IMPL;
+	gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread);
+
+	// initialize the rest of the gcrypt library
 	if (!gcry_check_version(GCRYPT_VERSION))
 	{
 		ELEKTRA_SET_ERRORF(125, errorKey, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
