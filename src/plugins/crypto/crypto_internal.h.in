@@ -10,7 +10,8 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_H_INTERNAL
 #define ELEKTRA_PLUGIN_CRYPTO_H_INTERNAL
 
-#cmakedefine LIBGCRYPT_FOUND
+#cmakedefine ELEKTRA_CRYPTO_API_GCRYPT
+#cmakedefine ELEKTRA_CRYPTO_API_OPENSSL
 
 enum ElektraCryptoHeaderFlags
 {
@@ -28,10 +29,16 @@ struct ElektraCryptoHeader
 #define ELEKTRA_CRYPTO_META_ENCRYPT ("crypto/encrypt")
 #define ELEKTRA_CRYPTO_META_ENCRYPTED ("crypto/encrypted")
 
-#ifdef LIBGCRYPT_FOUND
+// gcrypt specific declarations
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 
 #include <gcrypt.h>
 typedef gcry_cipher_hd_t elektraCryptoHandle;
+
+#endif
+
+// libcrypto (OpenSSL) specific declarations
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
 
 #endif
 

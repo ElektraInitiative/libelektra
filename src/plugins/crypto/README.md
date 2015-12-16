@@ -18,9 +18,29 @@ It also needs to be decrypted whenever an admissible access (read) is being perf
 The users of Elektra should not be bothered too much with the internals of the cryptographic operations.
 Also the cryptographic keys must never be exposed to the outside of the crypto module.
 
+The crypto plugin supports different libraries as provider for the cryptographic operations.
+At the moment the following crypto APIs are supported:
+
+- OpenSSL (libcrypto)
+- libgcrypt
+
 ## Dependencies ##
 
+When compiled with support for libgcrypt:
+
 - `libgcrypt20-dev` or `libgcrypt-devel`
+
+When compiled with support for OpenSSL:
+
+- `libssl-dev` or `openssl-devel`
+
+## How to compile ##
+
+Set the CMake variable `CRYPTO_API` to either `openssl` or `gcrypt`. Note that if the variable is not being provided, `gcrypt` will be used as default.
+
+A CMake call might look like this:
+
+	cmake -DCRYPTO_API=openssl /opt/src/libelektra/
 
 ## Restrictions ##
 
