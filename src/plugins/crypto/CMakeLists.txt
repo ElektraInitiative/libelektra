@@ -56,7 +56,6 @@ if (ELEKTRA_CRYPTO_API_GCRYPT)
 		LINK_LIBRARIES
 			${LIBGCRYPT_LIBRARIES}
 		)
-	message ("crypto setup seems to be good with gcrypt")
 endif (ELEKTRA_CRYPTO_API_GCRYPT)
 
 if (ELEKTRA_CRYPTO_API_OPENSSL)
@@ -71,7 +70,6 @@ if (ELEKTRA_CRYPTO_API_OPENSSL)
 		LINK_LIBRARIES
 			${OPENSSL_LIBRARIES}
 		)
-	message ("crypto setup seems to be good with OpenSSL")
 endif (ELEKTRA_CRYPTO_API_OPENSSL)
 
 add_plugintest (crypto)
