@@ -14,12 +14,12 @@
 
 int elektraCryptoOpenSSLInit(Key *errorKey)
 {
-
+	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
 }
 
 int elektraCryptoOpenSSLHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
 {
-
+	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
 }
 
 void elektraCryptoOpenSSLHandleDestroy(elektraCryptoHandle *handle)
@@ -29,10 +29,10 @@ void elektraCryptoOpenSSLHandleDestroy(elektraCryptoHandle *handle)
 
 int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
-
+	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
 }
 
 int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
-
+	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
 }

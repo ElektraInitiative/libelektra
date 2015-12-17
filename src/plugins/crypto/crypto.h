@@ -15,6 +15,9 @@
 
 #include <crypto_internal.h>
 
+#define ELEKTRA_CRYPTO_FUNCTION_ERROR (-1)
+#define ELEKTRA_CRYPTO_FUNCTION_SUCCESS (1)
+
 // methods for kdb
 int elektraCryptoOpen(Plugin *handle, Key *errorKey);
 int elektraCryptoClose(Plugin *handle, Key *errorKey);

@@ -18,7 +18,8 @@ if (CRYPTO_API STREQUAL "gcrypt")
 endif (CRYPTO_API STREQUAL "gcrypt")
 
 if (CRYPTO_API STREQUAL "openssl")
-	find_package (OpenSSL)
+	include (FindPkgConfig)
+	pkg_search_module (OPENSSL openssl)
 	if (NOT OPENSSL_FOUND)
 		remove_plugin (crypto "OpenSSL development files not found")
 		return ()
@@ -41,8 +42,8 @@ install (FILES
 	DESTINATION include/${TARGET_INCLUDE_FOLDER}
 )
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-include(LibAddPlugin)
+include_directories ("${CMAKE_CURRENT_BINARY_DIR}")
+include (LibAddPlugin)
 
 if (ELEKTRA_CRYPTO_API_GCRYPT)
 	add_plugin (crypto
