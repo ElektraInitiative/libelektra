@@ -301,6 +301,7 @@ endmacro (remove_tool)
 # copied from http://www.cmake.org/Wiki/CMakeMacroListOperations
 MACRO(list_filter)
   cmake_parse_arguments(LIST_FILTER "" "OUTPUT_VARIABLE" "" ${ARGV})
+  set(LIST_FILTER_DEFAULT_ARGS ${LIST_FILTER_UNPARSED_ARGUMENTS})
   # Check arguments.
   LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
   IF(${LIST_FILTER_default_length} EQUAL 0)
