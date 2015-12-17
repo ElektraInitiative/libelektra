@@ -1,4 +1,5 @@
-Elektra 0.8.14 now in Debian unstable with man pages, thanks to Pino Toscano!
+Elektra 0.8.14 now in Debian with qt-gui, man pages, thanks to Pino Toscano!
+https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html
 
 
 # 0.8.14 Release

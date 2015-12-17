@@ -138,6 +138,7 @@ specification checker+application
 	stacking: apply links for whole hierarchy
 	+ vendor overrides (apply additional data to specification)
 	(beware of featuritis, only if adapts nicely in rest)
+	conflict plugin
 
 tooling:
 	mounting with specification
