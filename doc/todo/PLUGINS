@@ -35,6 +35,8 @@ log all warnings that happened
 
 alert plugin: log/e-mail when specific (important) parameters are changed
 
+global plugin that logs all resolved cascading keys received by the application
+
 forensic logging: add in-depth context information when a parameter was changed
 	environment, pid, gid, uid
 	timezone + in ms
@@ -327,6 +329,11 @@ static inline function
 with licence, author in contract
 Everything also in constants/build_info
 add dependencies in contract?
+
+## Double passing of function pointers ##
+
+Currently function pointers for get/set/.. are passed twice
+(in contract and per plugin factory), should be reduced to one place.
 
 ## Contract on Plugin configuration ##
 
