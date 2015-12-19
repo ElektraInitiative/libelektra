@@ -75,17 +75,25 @@ bool runAllEditors(std::string filename)
 	return false;
 }
 
+class EditorNotAvailable: public std::exception
+{
+	virtual const char* what() const throw() override
+	{
+		return "kdb-editor not available for windows (non-POSIX systems)";
+	}
+};
+
 int EditorCommand::execute(Cmdline const& cl)
 {
+#ifdef _WIN32
+	throw EditorNotAvailable();
+#endif
+
 	int argc = cl.arguments.size ();
 	if (argc < 1)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
 	}
-
-#ifndef _WIN32
-	throw invalid_argument ("kdb-editor not available for windows");
-#endif
 	Key root (cl.arguments[0], KEY_END);
 
 	KeySet ours;
