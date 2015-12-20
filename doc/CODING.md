@@ -128,8 +128,8 @@ Files should start with:
 
 Note:
 
-- `@file` has *no* parameters.
-- `@brief` should contain a short statement about the content of the file and is needed
+- `@` `file` has *no* parameters.
+- `@` `brief` should contain a short statement about the content of the file and is needed
   so that your file gets listed at http://doc.libelektra.org/api/latest/html/files.html
 
 The duplication of the filename, author and date is not needed, because

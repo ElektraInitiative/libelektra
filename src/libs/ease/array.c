@@ -235,7 +235,7 @@ KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
  *
  * The caller has to keyDel the resulting key.
  *
- * @param arraykeys the array where the new key will belong to
+ * @param arrayKeys the array where the new key will belong to
  *
  * @return the new array key on success
  * @retval NULL if the passed array is empty

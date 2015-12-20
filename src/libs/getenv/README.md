@@ -25,7 +25,7 @@ Its main purpose is to:
 - still preserve the advantages (inheriting of environment to subprocesses)
 - Availability in at, cron and similar scripts.
 
-It is implemented using a LD_PRELOAD technique, see [USAGE](USAGE) below for
+It is implemented using a LD_PRELOAD technique, see [USAGE](#USAGE) below for
 global activation.
 
 
@@ -39,7 +39,7 @@ started application (no relogin necessary).
 To do so, getenv(3) will lookup multiple sources next to searching in the environment
 (environ). As running example will use `getenv("HOME") -> /path/to/home`:
 
-1. Given commandline parameters will always be preferred (see [OPTIONS](OPTIONS) below).
+1. Given commandline parameters will always be preferred (see [OPTIONS](#OPTIONS) below).
    
    E.g. `kdb elektrify-getenv <app> --elektra:HOME=/path/to/home`
 2. Then `/env/override/<key>` will be looked up, where <key> is the parameter to `getenv`.
@@ -113,7 +113,7 @@ Values can contain / to form hierarchies, e.g. `--elektra%name%=app/profile`
 
 ### Options for Applications
  * `--elektra:key=value`, `/env/override/<key>` or `/env/fallback/<key>`:
-   set a key/value to be preferred, i.e. the first to considered as explained in [LOOKUP](LOOKUP).
+   set a key/value to be preferred, i.e. the first to considered as explained in [LOOKUP](#LOOKUP).
 
 Keys can contain / to form hierarchies, e.g. `--elektra:my/HOME=/path/to/home`.
 

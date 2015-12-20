@@ -38,7 +38,7 @@ are described.
 
 Unlike the other namespaces, the specification namespace does not
 contain values of the keys, but instead meta data as described in
-[METADATA.ini].
+[METADATA.ini](/doc/METADATA.ini).
 
 When a key is looked up, keys from the spec-namespace are the first to
 be searched. When a spec-key is found, the rest of the lookup will be

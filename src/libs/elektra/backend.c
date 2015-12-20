@@ -134,6 +134,8 @@ system/elektra/mountpoints/<name>
  *        It is used to build up this backend.
  * @param modules used to load new modules or get references
  *        to existing one
+ * @param errorKey the key where an error and warnings are added
+ *
  * @return a pointer to a freshly allocated backend
  *         this could be the requested backend or a so called
  *         "missing backend".

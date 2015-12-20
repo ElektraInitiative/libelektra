@@ -18,17 +18,16 @@ frees all previously allocated data structures.
 
 ### kdbOpen
 
-`kdbOpen()` retrieves the \empha{mount point configuration} with
-`kdbGet()` using the \empha{default backend}.  During this process,
+`kdbOpen()` retrieves the *mount point configuration* with
+`kdbGet()` using the *default backend*.  During this process,
 the function sets up the data structures which are needed for later
 invocations of `kdbGet()` or `kdbSet()`.  All backends are opened and
 mounted in the appropriate parts of the key hierarchy.  The resulting
 backends are added both to the `Split` and the `Trie` object.  `kdbOpen()`
-finally returns a `KDB` object that contains all this information as
-shown in Figure~\ref{fig:architecture}.
+finally returns a `KDB` object that contains all this information.
 
 The reading of the mount point configuration and the consequential self
-configuring of the system is called \intro{bootstrapping}.  Elektra builds
+configuring of the system is called *bootstrapping*.  Elektra builds
 itself up from the simple variant with a default backend only to the
 sophisticated configuration system presented in this thesis.
 
@@ -70,11 +69,11 @@ that information to remove the files.  To make this approach work for
 and sorted in reverse.  With this trick, recursive removing worked
 well.  But this approach had major defects in the usage of `KeySet`.
 Because marking a key to be removed changed the sort order of the key
-set \method{ksLookupByName()} did not find this key anymore.
+set `ksLookupByName()` did not find this key anymore.
 
 So in the present version removing keys is consistent again.
 A `KeySet` describes the current configuration.  The user can reduce
-the `KeySet` object by \empha[pop]{popping} keys out.  The `kdbSet()`
+the `KeySet` object by *popping* keys out.  The `kdbSet()`
 function applies exactly this configuration as specified by the key set
 to the key database.  Contrary to the previous versions, the popped keys
 of the key set will be permanently removed.
@@ -107,7 +106,7 @@ It is critical for application startup time to retrieve the
 configuration as fast as possible.  Hence, the design goal of the
 `kdbGet()` algorithm is to be efficient while still enabling plugins
 to have relaxed postconditions.  To achieve this, the sequence of
-\intro[syscall]{syscalls} must be optimal.  On the other hand, it is
+*syscalls* must be optimal.  On the other hand, it is
 not tolerable to waste time or memory inside Elektra's core, especially
 during an initial request or when no update is available.
 
@@ -122,7 +121,7 @@ settings, `returned` will typically contain the configuration of the
 previous `kdbGet()` request.  The `parentKey` holds the information
 below which key the configuration should be retrieved.	The `handle`
 contains the data structures needed for the algorithm, like the `Split`
-and the `Trie` objects, as shown in Figure~\ref{fig:architecture}.
+and the `Trie` objects.
 
 `kdbGet()` does a rather easy job, because `kdbSet()` already guarantees
 that only well formatted, non-corrupted and well-typed configuration is
@@ -145,24 +144,37 @@ we get the desired behaviour: The nearest mounted backend to the key
 is responsible.
 
 For example, a generator plugin in the backend A always emits
-following keys\footnote{(A) and (B) indicate from which backend the
-key comes from.}: \begin{lstlisting}[language=] user/sw/generator/akey
-(A) user/sw/generator/dir (A) user/sw/generator/dir/outside1 (A)
-user/sw/generator/dir/outside2 (A) \end{lstlisting} It will still
+following keys. (A) and (B) indicate from which backend the
+key comes from.
+
+	user/sw/generator/akey (A)
+	user/sw/generator/dir (A)
+	user/sw/generator/dir/outside1 (A)
+	user/sw/generator/dir/outside2 (A)
+
+It will still
 return these keys even if the plugin is not responsible for some
 of them anymore. This can happen if another backend B is mounted
-to \keyname{user/sw/generator/dir}.  In the example it yields the
-following keys: \begin{lstlisting}[language=] user/sw/generator/dir
-(B) user/sw/generator/dir/new (B) user/sw/generator/dir/outside1
-(B) user/sw/generator/outside (B) \end{lstlisting} In this
-situation `kdbGet()` is responsible to pop all three keys at,
-and below, \keyname{user/sw/generator/dir} of backend A and the key
-\keyname{user/sw/generator/outside} of backend B.  The user will get the
-resulting key set: \begin{lstlisting}[language=] user/sw/generator/akey
-(A) user/sw/generator/dir (B) user/sw/generator/dir/new (B)
-user/sw/generator/dir/outside1 (B) \end{lstlisting} Note that the
-key exactly at the mount point comes from the backend mounted at
-\keyname{user/sw/generator/dir}.
+to `user/sw/generator/dir`.  In the example it yields the
+following keys:
+
+	user/sw/generator/dir (B)
+	user/sw/generator/dir/new (B)
+	user/sw/generator/dir/outside1 (B)
+	user/sw/generator/outside (B)
+
+In this situation `kdbGet()` is responsible to pop all three keys at,
+and below, `user/sw/generator/dir` of backend A and the key
+`user/sw/generator/outside` of backend B.  The user will get the
+resulting key set:
+
+	user/sw/generator/akey (A)
+	user/sw/generator/dir (B)
+	user/sw/generator/dir/new (B)
+	user/sw/generator/dir/outside1 (B)
+
+Note that the key exactly at the mount point comes from the backend mounted
+at user/sw/generator/dir.
 
 
 
@@ -172,8 +184,8 @@ key exactly at the mount point comes from the backend mounted at
 tree.  In this object, `kdbOpen()` will append a list of all backends
 available.  A specific `kdbGet()` request usually includes only a part
 of the configuration.  For example, the user is only interested in
-keys below \keyname{user/sw/apps/userapp}.  All backends that cannot
-contribute to configuration below \keyname{user/sw/apps/userapp} will be
+keys below `user/sw/apps/userapp`.  All backends that cannot
+contribute to configuration below `user/sw/apps/userapp` will be
 omitted for that request.  To achieve this, parts of the `Split` object
 are filtered out.  After this step we know the list of backends involved.
 The `Split` object allocates a key set for each of these backends.
@@ -184,12 +196,12 @@ and returns zero.
 
 Now we know which backends do not need an update.  For these backends, the
 previous configuration from `returned` is appointed from to the key sets
-of the `Split` object.	The algorithm will not set the \empha{syncbits}
+of the `Split` object.	The algorithm will not set the *syncbits*
 of the `Split` object for these backends because the storage of the
 backends already contains up-to-date configuration.
 
-The other backends will be requested to \emph{retrieve} their
-configuration.	The initial empty `KeySet` from the `Split` object and
+The other backends will be requested to *retrieve* their
+configuration. The initial empty `KeySet` from the `Split` object and
 the relevant file name in the key value of `parentKey` are passed to each
 remaining plugin.  The plugins extend, validate and process the key set.
 When an error has occurred, the algorithm can stop immediately because the
@@ -197,10 +209,10 @@ user's `KeySet` `returned` is not changed at this point.  When this part
 finishes, the `Split` object contains the whole requested configuration
 separated in various key sets.
 
-Subsequently the freshly received keys need some \emph{post-processing}:
+Subsequently the freshly received keys need some *post-processing*:
 
-- Newly allocated keys in Elektra always have the \empha{sync
-flag} set.  Because the plugins allocate and modify keys with the same
+- Newly allocated keys in Elektra always have the *sync flag* set.
+Because the plugins allocate and modify keys with the same
 functions as the user, the returned keys will also have their sync flag
 set.  But from the user's point of view the configuration is unmodified.
 So some code needs to remove this sync flag.  To relax the post conditions
@@ -213,8 +225,8 @@ only as designated by the `Trie`.  In this process, all duplicated and
 overlapping keys will be popped in favour of the responsible backend as
 described below in responsibility.
 
-The last step is to \emph{merge} all these key sets together.  This step
-changes the configuration visible to the user.	After some cleanup the
+The last step is to *merge* all these key sets together.  This step
+changes the configuration visible to the user. After some cleanup the
 algorithm finally finishes.
 
 
@@ -223,16 +235,16 @@ algorithm finally finishes.
 
 The user can call `kdbGet()` often even if the configuration or parts
 of it are already up to date.  This can happen when applications reread
-configuration in some events.  Examples are signals\footnote{SIGHUP is
+configuration in some events.  Examples are signals (SIGHUP is
 the signal used for that on UNIX systems. It is sent when the program's
 controlling terminal is closed. Daemons do not have a terminal so
-the signal is reused for reloading configuration.}, notifications,
+the signal is reused for reloading configuration.), notifications,
 user requests and in the worst case periodical attempts to reread
 configuration.
 
 The given goal is to keep the sequence of needed syscalls low.	If no
-update is needed, it is sufficient to request the timestamp\footnote{On
-POSIX systems using \lstinline{stat()}.} of every file. No other syscall
+update is needed, it is sufficient to request the timestamp
+(On POSIX systems using `stat()`) of every file. No other syscall
 is needed.  Elektra's core alone cannot check that because getting
 a timestamp is not defined within the standard C99.  So instead the
 resolver plugin handles this problem.  The resolver plugin returns 0 if
@@ -248,12 +260,12 @@ work is done.
 ### Initial kdbGet Problem
 
 Because Elektra provides self-contained configuration, `kdbOpen()`
-has to retrieve settings in the \empha{bootstrapping} process below
-\keyname{system/elektra} as explained in \secref{bootstrapping}.
+has to retrieve settings in the *bootstrapping* process below
+`system/elektra` as explained in `bootstrapping`.
 Because of the new way to keep track of removed keys, the internally
-executed `kdbGet()` creates a problem.	Without countermeasures even
+executed `kdbGet()` creates a problem. Without countermeasures even
 the first `kdbGet()` of a user requesting the configuration below
-\keyname{system/elektra} fails because the resolver finds out that the
+`system/elektra` fails because the resolver finds out that the
 configuration is already up to date.  The configuration delivered by the
 user is empty at this point.  As a result, the empty configuration will
 be appointed and returned to the user.
@@ -268,34 +280,27 @@ and `kdbGet()` works as expected.
 Not the performance, but robust and reliable behaviour is the most
 important issue for `kdbSet()`.  The design was chosen so that some
 additional in-memory comparisons are preferred to a suboptimal sequence
-of \empha[syscall]{syscalls}.  The algorithm makes sure that keys
+of `syscalls`.  The algorithm makes sure that keys
 are written out only if it is necessary because applications can call
-`kdbSet()` with an unchanged `KeySet`.	For the code to decide this,
+`kdbSet()` with an unchanged `KeySet`. For the code to decide this,
 performance is important.
 
 
 ### Properties
 
-`kdbSet()` \empha[guarantee]{guarantees} the following properties:
+`kdbSet()` guarantees the following properties:
 
-\begin{enumerate}
-
-\item Modifications to permanent storage are only made when the
+- Modifications to permanent storage are only made when the
 configuration was changed.
-
-\item When errors occur, every plugin gets a chance to rollback its
-changes as described in \secref{exception safety}.
-
-\item If every plugin does this correctly, the whole `KeySet` is
+- When errors occur, every plugin gets a chance to rollback its
+changes as described in **exception safety**.
+- If every plugin does this correctly, the whole `KeySet` is
 propagated to permanent storage.  Otherwise nothing is changed in the
 key database.  Plugins developed during the thesis meet this requirement.
 
-\end{enumerate}
+The synopsis of the function is:
 
-The synopsis of the function is: \begin{lstlisting} int kdbSet(KDB
-*handle, KeySet *returned,
-	Key * parentKey);
-\end{lstlisting}
+	int kdbSet(KDB *handle, KeySet *returned, Key * parentKey);
 
 The user passes the configuration using the `KeySet` `returned`.  The key
 set will not be changed by `kdbSet()`.	The `parentKey` provides a way
@@ -305,20 +310,14 @@ only modify the key databases below \keyname{user/sw/apps/myapp} even
 if the `KeySet` `returned` also contains more configuration.  Note that
 all backends with no keys in `returned` but that are below `parentKey`
 will completely wipe out their key database.  The `KDB` handle contains
-the necessary data structures as shown in Figure~\ref{fig:architecture}.
+the necessary data structures.
 
-\newpage
 
 ### Search for Changes
 
-\begin{wrapfigure}{r}{0.5\textwidth} \vspace{-40pt} \begin{center}
-\includegraphics[trim = 0 65 0 0, clip=true, width=6cm]{resolver_set}
-\end{center} \vspace{-20pt} \caption{\lstinline{kdbSet()} Algorithm}
-\label{fig:resolver_set} \vspace{-10pt} \end{wrapfigure}
-
-As a first step, `kdbSet()` \emph{divides} the configuration passed in
+As a first step, `kdbSet()` *divides* the configuration passed in
 by the user to the key sets in the `Split` object.  `kdbSet()` searches
-for every key if the \empha{sync flag} is checked.  Then `kdbSet()`
+for every key if the *sync flag* is checked.  Then `kdbSet()`
 decides if a key was removed from a backend by comparing the actual
 size of the key set with the size stored from the last `kdbGet()` call.
 We see that it is necessary to call `kdbGet()` first before invocations of
@@ -338,20 +337,18 @@ filtering out all backends in the `Split` object that do not have changes.
 At this point, the `Split` object has a list of backends with their
 respective key sets.
 
-\label{deep duplicate}
-
 Plugins in `kdbSet()` can change values.  Other than in `kdbGet()`,
 the user is not interested in these changes.  Instead, the values are
 transformed to be suitable for the storage.  To make sure that the
 changed values are not passed to the user, the algorithm continues with
-a \empha{deep duplication} of all key sets in the `Split` object.
+a *deep duplication* of all key sets in the `Split` object.
 
 ### Resolver
 
 All plugins of each included backend are executed one by one up to the
 resolver plugin.  If this succeeds, the resolver plugin is responsible
-for committing these changes.  After the successful commit, \empha[error
-code]{error codes} of plugins are ignored.  Only logging and notification
+for committing these changes.  After the successful commit, *error
+codes* of plugins are ignored.  Only logging and notification
 plugins are affected.
 
 
@@ -382,11 +379,11 @@ will not be recognised.  For this approach, however, the name of every
 temporary file must be unique because concurrent `kdbSet()` invocations
 each try to create one.  The temporary file must also be unlinked in
 case of a rollback.  The opened temporary file can be passed to the
-storage plugins using a file name in the directory \keyname{/dev/fd}.
+storage plugins using a file name in the directory */dev/fd*.
 This approach may be more practical than the currently implemented way
-because it does not need the additional lock file\footnote{Nevertheless,
+because it does not need the additional lock file (Nevertheless,
 the other way was chosen to test if the algorithm is exception safe as
-described in \secref{exception safety}.}.
+described in *exception safety*).
 
 
 ### Errors
@@ -402,36 +399,27 @@ is up to the application to decide which configuration to use.	In this
 situation it is the best to ask the user, by showing him the description
 and reason of the error, how to continue:
 
-\begin{enumerate}
-
-\label{conflicts}
-
-\item Save the configuration again.  The changes of the other program
+1. Save the configuration again.  The changes of the other program
 will be lost in this case.
-
-\item The key database can also be left unchanged as the other program
+2. The key database can also be left unchanged as the other program
 wrote it. After using `kdbGet()` the application is already up to date
 with the new configuration.  All configuration changes the user made
 before will be lost.
-
-\item The application can try to merge the key sets to get the best
+3. The application can try to merge the key sets to get the best
 result.  If no key is changed on both sides the result is clear, otherwise
 the application has to decide if the own or the other configuration should
 be favoured.  The result of the merged key sets has to be written out with
 `kdbSet()`.
-
-Merging the key sets can be done with `ksAppend()`.  The source
+4. Merging the key sets can be done with `ksAppend()`.  The source
 parameter is the preferred configuration.  Note that the downside of
 the third option is that a merged configuration can be an not validating
 configuration.
-
-\end{enumerate}
 
 Sometimes a concrete key causes the problem that the whole key set cannot
 be stored.  That can happen on validation or because of type errors.
 Such errors are usually caused by a mistake made by the user.  So the
 user is responsible for changing the settings to make it valid again.
-In such situations, the \empha{internal cursor} of the `KeySet` `returned`
+In such situations, the *internal cursor* of the `KeySet` `returned`
 will point to the problematic key.
 
 A completely different approach is to export the configuration when
@@ -439,4 +427,4 @@ A completely different approach is to export the configuration when
 merge this configuration with more powerful tools.  Finally, the user
 can import the configuration into the global key database.  The export
 and import mechanism is called ''streaming'' and will be explained in
-\secref{streaming}.
+*streaming*.

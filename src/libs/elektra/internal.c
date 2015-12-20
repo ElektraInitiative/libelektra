@@ -227,7 +227,7 @@ void* elektraMalloc (size_t size)
  *
  * Memory will be set to 0.
  *
- * @param the requested size
+ * @param size the requested size
  * @see elektraMalloc
  */
 void* elektraCalloc (size_t size)
@@ -722,7 +722,7 @@ int elektraEscapeKeyNamePartBegin(const char *source, char *dest)
  * @note May need twice the storage than the source string.
  *       Do not use the source string as destination string.
  *
- * @param sp the source pointer where escaping should start
+ * @param source the source pointer where escaping should start
  * @param dest the destination to write to (twice the size as sp
  *
  * @return pointer to destination

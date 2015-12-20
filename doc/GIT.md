@@ -91,4 +91,4 @@ or if the bindings job should be started:
 	jenkins build bindings please
 
 If you want any configuration changes, please contact
-Markus Raab <elektra@markus-raab.org>
+`Markus Raab <elektra@markus-raab.org>`.

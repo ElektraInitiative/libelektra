@@ -4,7 +4,7 @@ elektra-plugins(7) -- plugins overview
 Plugins can be mounted into the KDB and can access or manipulate the
 KeySet on every access.
 
-Multiple plugins can be mounted into the [key data base](elektra-glossary.md).
+Multiple plugins can be mounted into the [key data base](/doc/help/elektra-glossary.md).
 On every access to the key data base they are executed and thus can change
 the functionality.
 
@@ -19,7 +19,7 @@ The plugins are:
 
 ![Overview Plugins](/doc/images/overview_plugins.png)
 
-For background information see [elektra-plugins-framework(7)](elektra-plugins-framework.md).
+For background information see [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md).
 
 
 ## C-Interface ##
@@ -42,10 +42,10 @@ All plugins implement the same interface:
 
 ## KDB-Interface
 
-- To list all plugins use [kdb-list(1)](kdb-list.md).
-- To check a plugin use [kdb-check(1)](kdb-check.md).
-- For information on a plugin use [kdb-info(1)](kdb-info.md).
-- For mount plugin(s) use [kdb-mount(1)](kdb-mount.md).
+- To list all plugins use [kdb-list(1)](/doc/help/kdb-list.md).
+- To check a plugin use [kdb-check(1)](/doc/help/kdb-check.md).
+- For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
+- For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
 
 ## See also
