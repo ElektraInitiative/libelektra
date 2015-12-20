@@ -18,6 +18,7 @@
 #include <kdbproposal.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
+#include <kdbos.h>
 #include <inih.h>
 #include "ini.h"
 
@@ -145,11 +146,24 @@ static void setSectionNumber(Key *parentKey, Key *key, KeySet *ks)
 
 static void setOrderNumber(Key *parentKey, Key *key)
 {
-	int order = atol(keyString(keyGetMeta(parentKey, "order")));
-	++order;
-	char buffer[10];
-	snprintf(buffer, sizeof(buffer), "%09d", order);
-	keySetMeta(key, "order", buffer);
+	kdb_long_long_t order = 0;
+    const Key *orderKey = keyGetMeta(parentKey, "order");
+    if(orderKey != NULL)
+    {
+        char *ptr = keyString(orderKey);
+        ++ptr; //skip #
+        while(*ptr == '_')
+        {
+            ++ptr;
+        }
+        elektraReadArrayNumber(ptr, &order);
+        
+    }
+    ++order;
+	char buffer[ELEKTRA_MAX_ARRAY_SIZE];
+//	snprintf(buffer, sizeof(buffer), "%09d", order);
+    elektraWriteArrayNumber(buffer, order);
+    keySetMeta(key, "order", buffer);
 	keySetMeta(parentKey, "order", buffer);
 }
 
@@ -164,21 +178,29 @@ static void insertNewKeyIntoExistendOrder(Key *key, KeySet *ks)
 	{
 		if(!strcmp(keyName(curKey), keyName(key)))
 		{
-			const char *oldOrder = "000000001";
+			const char *oldOrder = "#1";
 			if(keyGetMeta(prevKey, "order"))
 				oldOrder = keyString(keyGetMeta(prevKey, "order"));
-			char *lastIndexPtr = NULL;
-			char *newOrder = elektraMalloc(elektraStrLen(oldOrder)+10); //int == 10 digits max
+            char *lastIndexPtr = NULL;
+			char *newOrder = elektraMalloc(elektraStrLen(oldOrder)+ELEKTRA_MAX_ARRAY_SIZE);
 			if((lastIndexPtr = strrchr(oldOrder, '/')))
 			{
-				int subIndex = atoi(lastIndexPtr+1);
+				kdb_long_long_t subIndex = 0;
+                char *ptr = lastIndexPtr;
+                ++ptr; //skip /
+                ++ptr; //skip #
+                while(*ptr == '_')
+                    ++ptr;
+                elektraReadArrayNumber(ptr, &subIndex);
 				++subIndex;
 				int len = (lastIndexPtr+1) - oldOrder;
-				sprintf(newOrder, "%.*s%09d", len, oldOrder, subIndex);
+                char buffer[ELEKTRA_MAX_ARRAY_SIZE];
+                elektraWriteArrayNumber(buffer, subIndex);
+				sprintf(newOrder, "%.*s%s", len, oldOrder, buffer);
 			}
 			else
 			{
-				sprintf(newOrder, "%s/000000001", oldOrder);
+				sprintf(newOrder, "%s/#1", oldOrder);
 			}
 			keySetMeta(key, "order", newOrder);
 			elektraFree(newOrder);
@@ -500,7 +522,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	stripInternalData(cbHandle.parentKey, cbHandle.result);
 	fclose (fh);
 	errno = errnosave;
-
+    ksRewind(cbHandle.result);
 	if (ret == 0)
 	{
 		ksClear(returned);
@@ -642,21 +664,30 @@ static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
 		if(strcmp(keyString(keyGetMeta(looking, "order")), lastOrderNumber) > 0)
 			lastOrderNumber = keyString(keyGetMeta(looking, "order"));
 	}
-	//TODO: increase the number instead of appending it
-	char buffer[20];
+	
+    char *newOrder = elektraMalloc(elektraStrLen(lastOrderNumber)+ELEKTRA_MAX_ARRAY_SIZE);
 	char *lastIndexPtr = NULL;
 	if((lastIndexPtr = strrchr(lastOrderNumber, '/')))
 	{
-		int subIndex = atoi(lastIndexPtr+1);
+    	kdb_long_long_t subIndex = 0;
+        char *ptr = lastIndexPtr;
+        ++ptr; //skip /
+        ++ptr; //skip #
+        while(*ptr == '_')
+            ++ptr;
+        elektraReadArrayNumber(ptr, &subIndex);
 		++subIndex;
 		int len = (lastIndexPtr+1) - lastOrderNumber;
-		sprintf(buffer, "%.*s%09d", len, lastOrderNumber, subIndex);
-	}
+        char buffer[ELEKTRA_MAX_ARRAY_SIZE];
+        elektraWriteArrayNumber(buffer, subIndex);
+		sprintf(newOrder, "%.*s%s", len, lastOrderNumber, buffer);
+    }
 	else
 	{
-		sprintf(buffer, "%s/000000001", lastOrderNumber);
+		sprintf(newOrder, "%s/#1", lastOrderNumber);
 	}
-	keySetMeta(appendKey, "order", buffer);
+	keySetMeta(appendKey, "order", newOrder);
+    elektraFree(newOrder);
 	ksDel(cutKS);
 	ksDel(searchKS);
 }
@@ -696,7 +727,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS)
 		createUnescapedKey(appendKey, sectionName);
 		if(!ksLookup(newKS, cur, KDB_O_NONE))
 		{
-			keySetMeta(appendKey, "order", "000000001");
+			keySetMeta(appendKey, "order", "#1");
 		}
 		setSectionNumber(parentKey, appendKey, newKS);
 		createUnescapedKey(appendKey, name);
@@ -716,7 +747,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS)
 		const char *sectionName = keyName(sectionKey)+strlen(keyName(parentKey))+1;
 		appendKey = createUnescapedKey(appendKey, sectionName);
 		if((!strcmp(keyBaseName(appendKey), INTERNAL_ROOT_SECTION)) && (!ksLookup(newKS, appendKey, KDB_O_NONE)))
-			keySetMeta(appendKey, "order", "000000000");
+			keySetMeta(appendKey, "order", "#0");
 		setSectionNumber(parentKey, appendKey, newKS);
 		if(atoi(keyString(keyGetMeta(appendKey, "ini/section"))) > atoi(oldSectionNumber))
 		{
@@ -929,7 +960,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	ksRewind(returned);
 	Key *cur;
 	KeySet *newKS = ksNew(0, KS_END);
-	keySetMeta(parentKey, "order", "0");
+	keySetMeta(parentKey, "order", "#0");
 	while((cur = ksNext(returned)) != NULL)
 	{
 		if(keyGetMeta(cur, "order"))
@@ -957,7 +988,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	setParents(returned, parentKey);
 	ksDel(newKS);
 	stripInternalData(parentKey, returned);
-	ret = iniWriteKeySet(fh, parentKey, returned, pluginConfig);
+    ret = iniWriteKeySet(fh, parentKey, returned, pluginConfig);
 	fclose (fh);
 
 	errno = errnosave;
