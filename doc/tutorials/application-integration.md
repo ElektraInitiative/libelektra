@@ -70,7 +70,7 @@ for every application to do so.
 
 ## Get Started
 
-As first step in a C-applicaiton you need to create an in-memory `Key`. Such a `Key` is
+As first step in a C-application you need to create an in-memory `Key`. Such a `Key` is
 Elektra's atomic unit and consists of:
 
 - a unique name
