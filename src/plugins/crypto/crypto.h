@@ -26,6 +26,9 @@ int elektraCryptoSet(Plugin *handle, KeySet *ks, Key *parentKey);
 int elektraCryptoError(Plugin *handle, KeySet *ks, Key *parentKey);
 
 // provider-independent crypto functions
+Key *elektraCryptoReadParamKey(KeySet *config, Key *errorKey);
+Key *elektraCryptoReadParamIv(KeySet *config, Key *errorKey);
+
 int elektraCryptoInit(Key *errorKey);
 void elektraCryptoTeardown();
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey);
