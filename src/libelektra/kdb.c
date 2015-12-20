@@ -235,7 +235,7 @@ KDB * kdbOpen(Key *errorKey)
 		errno = errnosave;
 		return handle;
 	}
-	if(elektraMountGlobals(handle, ksDup(keys), handle->modules, errorKey) == -1)
+	if(elektraMountGlobals(handle, ksDup(keys), handle->modules, errorKey) == -1) //elektraMountGlobals also sets a warning containig the name of the plugin that failed to load
 	{
 #if DEBUG && VERBOSE
 		printf("Mounting global plugins failed\n");
@@ -578,8 +578,9 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 		goto error;
 	}
 	if(handle->globalPlugins[PREGETSTORAGE])
+	{
 		handle->globalPlugins[PREGETSTORAGE]->kdbGet(handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
-
+	}
 	if(elektraSplitBuildup (split, handle, parentKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(38, parentKey,
@@ -696,6 +697,7 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey, Plugi
 				{
 					if(hook)
 					{
+						// the only place global presetstorage hooks can be executed
 						ksRewind(split->keysets[i]);
 						hook->kdbSet(hook, split->keysets[i], parentKey);
 					}

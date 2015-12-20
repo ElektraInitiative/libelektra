@@ -219,7 +219,7 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 	KeySet *referencePlugins = ksNew(0, KS_END);
 	while((cur = ksNext(global)) != NULL)
 	{
-		if(keyRel(root, cur) != 1)
+		if(keyRel(root, cur) != 1)  // the cutpoints for the plugin configs are always directly below the "root", ignore everything else
 			continue;
 		const char *placement = keyBaseName(cur);
 		const char *pluginName = keyString(cur);
@@ -247,10 +247,12 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 				keyDel(searchKey);
 				if(refKey)
 				{
+					//plugin already loaded, just reference it
 					plugin = *(Plugin**)keyValue(refKey);
 				}
 				else
 				{
+					//putting together the plugins configuration KeySet. 
 					Key *sysConfigCutKey = keyDup(cur);
 					keyAddBaseName(sysConfigCutKey, "system");
 					Key *usrConfigCutKey = keyDup(cur);
@@ -268,12 +270,16 @@ int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 					ksAppend(config, renamedUsrConfig);
 					ksDel(renamedSysConfig);
 					ksDel(renamedUsrConfig);
+					
+					//loading the new plugin
 					plugin = elektraPluginOpen(pluginName, modules, ksDup(config), errorKey);
 					if(!plugin)
 					{
 						ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
 						return -1;
 					}
+
+					//saving the plugin reference to avoid having to load the plugin multiple times
 					refKey = keyNew("/", KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &plugin, KEY_END);
 					keyAddBaseName(refKey, keyString(cur));
 					ksAppendKey(referencePlugins, refKey);
