@@ -40,8 +40,8 @@ typedef gcry_cipher_hd_t elektraCryptoHandle;
 // libcrypto (OpenSSL) specific declarations
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
 
-// TODO use an appropriate type for libcrypto
-typedef unsigned int elektraCryptoHandle;
+#include <openssl/evp.h>
+typedef EVP_CIPHER_CTX elektraCryptoHandle;
 
 #endif
 

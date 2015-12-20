@@ -17,7 +17,9 @@
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
 #include "openssl_operations.h"
 #endif
+#include <kdberrors.h>
 #include <pthread.h>
+#include <string.h>
 
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
@@ -185,7 +187,9 @@ int elektraCryptoInit(Key *errorKey)
  */
 void elektraCryptoTeardown()
 {
-	// nothing to do for libgcrypt, but maybe other libraries need clean-up
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	elektraCryptoOpenSSLTeardown();
+#endif
 }
 
 /**
