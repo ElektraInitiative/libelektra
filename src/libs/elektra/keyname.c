@@ -138,25 +138,6 @@
  *   denotes a placeholder.
  *
  *
- * @par Usage of Key Names
- * When using Elektra to store your application's configuration and state,
- * please keep in mind the following rules:
- * - Avoid to have your applications root right under @p system or @p user.
- *   (rationale: it would make the hierarchy too flat.)
- * - Avoid the usage of characters other then a-z, 0-9 and _.
- *   (rationale: it would allow too many similar, confusing names.)
- *   (exceptions: if the user or a technology, decide about parts of
- *   the key name, this restriction does not apply, e.g. if the wlan
- *   essid is used as part of the key name)
- * - It is suggested to make your application look for default keys under
- *   @p /sw/myapp/#/%/ where \# is a major version number, e.g. \#3 for
- *   the 4th version and % is a profile (% for default profile). This way, from
- *   a sysadmin perspective, it will be possible to copy the
- *   @p system/sw/myapp/#3/%/ tree to something like
- *   @p system/sw/myapp/#3/old/ and keep system clean and organized.
- *   Additionally, it is possible to start the old version of the app,
- *   using @p /sw/myapp/#2.
- *
  * @{
  */
 

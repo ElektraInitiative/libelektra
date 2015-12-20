@@ -94,7 +94,8 @@ we always can create one:
      so e.g. `kde` is enough.
  - `myapp` is the name of the most specific component that has its own
      configuration
- - `#0` is the version number of the configuration
+ - `#0` is the major version number of the configuration (to be incremented
+   if you need to introduce incompatible changes).
  - `current` is the profile to be used. This is needed by administrators
      if they want to start up multiple applications with different
      configurations.
@@ -105,7 +106,8 @@ we always can create one:
 - `KEY_END` is needed because C needs a proper termination of variable
     length arguments.
 
-[See API doc of Key for more information.](http://doc.libelektra.org/api/current/html/group__key.html)
+- [Read more about key-functions in API doc.](http://doc.libelektra.org/api/current/html/group__key.html)
+- [Read more about key names here.](/doc/help/elektra-key-names.md)
 
 
 Now we have the `Key` we will use to pass as argument.
