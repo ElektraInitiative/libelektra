@@ -763,16 +763,14 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
+INPUT                  = @PROJECT_SOURCE_DIR@/src/libs \
+                         @PROJECT_SOURCE_DIR@/src/libs/loader/doc.c \
+                         @PROJECT_SOURCE_DIR@/src/libs/getenv/README.md \
                          @PROJECT_SOURCE_DIR@/src/include \
-                         @PROJECT_SOURCE_DIR@/src/libtools \
                          @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
-                         @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
-                         @PROJECT_SOURCE_DIR@/src/libloader/doc.c \
-                         @PROJECT_SOURCE_DIR@/src/libgetenv/README.md \
-                         @PROJECT_SOURCE_DIR@/src/libs/README.md \
-                         @PROJECT_SOURCE_DIR@/doc \
                          @PROJECT_SOURCE_DIR@/src/plugins \
+                         @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
+                         @PROJECT_SOURCE_DIR@/doc \
                          @PROJECT_SOURCE_DIR@/README.md
 
 # This tag can be used to specify the character encoding of the source files
