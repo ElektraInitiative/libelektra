@@ -172,3 +172,9 @@ Then you can start reading about Backends that are composed out of
 To get started with writing plugins, first read our plugin tutorial in doc/tutorials!
 
 Read more about [mounting](/doc/help/elektra-mounting.md)
+
+## SEE ALSO
+
+- More information about [elektra-backends(7)](elektra-backends.md)
+- More information about [elektra-plugins(7)](elektra-plugins.md)
+- See [elektra-glossary(7)](elektra-glossary.md)
