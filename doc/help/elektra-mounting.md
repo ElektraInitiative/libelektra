@@ -35,6 +35,11 @@ Mounting works for file systems only if the file system below is
 accessible and a directory exists at the mount point.  Elektra does not
 enforce such restrictions.
 
+Note, that you cannot mount the same configuration file multiple times.
+You can, however, use the specification to link between configuration
+items which gives an impression of an *bind mount*, i.e. having the
+same configuration values on multiple places..
+
 ## SEE ALSO
 
 - See [elektra-glossary(7)](elektra-glossary.md)
