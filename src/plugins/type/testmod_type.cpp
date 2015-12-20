@@ -1,11 +1,11 @@
 /**
-* \file
-*
-* \brief Tests for data type checker
-*
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Tests for data type checker
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #include <tests.hpp>
 
@@ -16,7 +16,7 @@
 
 using namespace elektra;
 
-void test_version()
+TEST(type, version)
 {
 	try {
 		KeySet config;
@@ -51,7 +51,7 @@ void test_version()
 	}
 }
 
-void test_short()
+TEST(type, short)
 {
 	KeySet config;
 	TypeChecker tc(config);
@@ -96,7 +96,7 @@ void test_short()
 	succeed_if (tc.check(k), "should succeed (empty value)");
 }
 
-void test_unsigned_short()
+TEST(type, unsignedShort)
 {
 	KeySet config;
 	TypeChecker tc(config);
@@ -139,7 +139,7 @@ void test_unsigned_short()
 	succeed_if (tc.check(k), "should succeed (empty value)");
 }
 
-void test_float()
+TEST(type, float)
 {
 	KeySet config;
 	TypeChecker tc(config);
@@ -161,7 +161,7 @@ void test_float()
 	}
 	catch (std::runtime_error const & e)
 	{
-		warn_if_fail(0, "Could not set locale, the locales in your system are broken");
+		std::cerr << "Could not set locale, the locales in your system are broken" << std::endl;
 	}
 	k.setString("1,5");
 	succeed_if (!tc.check(k), "should fail even if global locale was changed");
@@ -183,7 +183,7 @@ void test_float()
 	succeed_if (tc.check(k), "should check successfully");
 }
 
-void test_bool()
+TEST(type, bool)
 {
 	KeySet config;
 	TypeChecker tc(config);
@@ -203,7 +203,7 @@ void test_bool()
 	succeed_if (!tc.check(k), "should fail");
 }
 
-void test_none()
+TEST(type, none)
 {
 	KeySet config;
 	TypeChecker tc(config);
@@ -222,7 +222,7 @@ void test_none()
 	succeed_if (tc.check(k), "should check successfully");
 }
 
-void test_enforce()
+TEST(type, enforce)
 {
 	KeySet config;
 	// enforce key just needs to be present
@@ -243,7 +243,7 @@ void test_enforce()
 	succeed_if (!tc.check(k), "should check successfully");
 }
 
-void test_min()
+TEST(type, min)
 {
 	KeySet config;
 	TypeChecker tc(config);
@@ -359,7 +359,7 @@ void test_max()
 	succeed_if (tc.check(k), "should succeed (empty value)");
 }
 
-void test_minmax()
+TEST(type, minmax)
 {
 	KeySet config;
 	TypeChecker tc(config);
@@ -450,25 +450,4 @@ void test_minmax()
 	succeed_if (!tc.check(k), "should fail");
 	k.setString("");
 	succeed_if (tc.check(k), "should succeed (empty value)");
-}
-
-int main()
-{
-	cout << "  TYPE  TESTS" << endl;
-	cout << "===============" << endl << endl;
-
-	test_version();
-	test_short();
-	test_unsigned_short();
-	test_float();
-	test_bool();
-	test_none();
-	test_enforce();
-	test_min();
-	test_max();
-	test_minmax();
-
-	cout << endl;
-	cout << "testmod_type RESULTS: " << nbTest << " test(s) done. " << nbError << " error(s)." << endl;
-	return nbError;
 }

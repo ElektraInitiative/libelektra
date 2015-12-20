@@ -23,11 +23,11 @@ Item {
 			placeholderText : qsTr("Meta Key Name ...")
 			text: metaName
 			Keys.onPressed: {
-				if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+				if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 					okClicked()
 					event.accepted = true
 				}
-				else if(event.key === Qt.Key_Escape){
+				else if (event.key === Qt.Key_Escape){
 					cancelClicked()
 					event.accepted = true
 				}
@@ -38,11 +38,11 @@ Item {
 			Layout.fillWidth: true
 			text: metaValue
 			Keys.onPressed: {
-				if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+				if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 					okClicked()
 					event.accepted = true
 				}
-				else if(event.key === Qt.Key_Escape){
+				else if (event.key === Qt.Key_Escape){
 					cancelClicked()
 					event.accepted = true
 				}
@@ -58,8 +58,8 @@ Item {
 			onClicked: {
 				qmlMetaKeyModel.remove(index)// remove the visual item
 
-				if(isArray){
-					for(var i = 0; i < qmlMetaKeyModel.count; i++){
+				if (isArray){
+					for (var i = 0; i < qmlMetaKeyModel.count; i++){
 						qmlMetaKeyModel.set(i, {"metaName": "#" + i})
 					}
 

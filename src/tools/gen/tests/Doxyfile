@@ -159,7 +159,7 @@ JAVADOC_AUTOBRIEF      = NO
 # interpret the first line (until the first dot) of a Qt-style
 # comment as the brief description. If set to NO, the comments
 # will behave just like regular Qt-style comments (thus requiring
-# an explicit \brief command for a brief description.)
+# an explicit @brief command for a brief description.)
 
 QT_AUTOBRIEF           = NO
 

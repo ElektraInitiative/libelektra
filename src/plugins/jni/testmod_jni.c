@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief tests for jni module
+ * @brief tests for jni module
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 

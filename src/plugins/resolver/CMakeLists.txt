@@ -23,7 +23,7 @@ add_plugin(resolver
 add_plugintest(resolver)
 
 foreach (plugin ${PLUGINS})
-	if(${plugin} MATCHES "^resolver_.*")
+	if (${plugin} MATCHES "^resolver_.*")
 		string(REGEX REPLACE "resolver_" "" variant ${plugin})
 		string(REGEX REPLACE "_" ";" variantlist ${variant})
 

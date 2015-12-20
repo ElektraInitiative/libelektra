@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief Source for enum plugin
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Source for enum plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 
 #ifndef HAVE_KDBCONFIG
@@ -18,6 +18,8 @@
 #include <regex.h>
 #include <kdberrors.h>
 #include "enum.h"
+
+#define VALIDATE_KEY_SUBMATCHES 3 //first submatch is the string we want, second submatch , or EOL
 
 int elektraEnumGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
@@ -48,35 +50,34 @@ int elektraEnumGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 static int validateKey(Key *key)
 {
 	const Key *meta = keyGetMeta(key, "check/enum");
-	if(!meta)
+	if (!meta)
 		return 1;
 	const char *validValues = keyString(meta);
 	const char *regexString = "'([^']*)'\\s*(,|$)";
 	regex_t regex;
-	if(regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE))
+	if (regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE))
 	{
 		ELEKTRA_SET_ERROR(120, key, "regcomp failed"); 
 		return -1;
 	}
 	const char *ptr = validValues;
-	const short submatches = 3; //first submatch is the string we want, second submatch , or EOL
-	regmatch_t match[submatches];
+	regmatch_t match[VALIDATE_KEY_SUBMATCHES];
 	char *value = NULL;
 	int nomatch;
 	int start;
 	int end;
-	while(1)
+	while (1)
 	{
-		nomatch = regexec(&regex, ptr, submatches, match, 0);
-		if(nomatch)
+		nomatch = regexec(&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
+		if (nomatch)
 			break;
-		
+
 		start = match[1].rm_so + (ptr - validValues);
 		end = match[1].rm_eo + (ptr - validValues);
 		elektraRealloc((void **)&value, (end - start)+1);
 		strncpy(value, validValues+start, end-start);
 		value[(end-start)] = '\0';
-		if(strcmp(keyString(key), value) == 0)
+		if (strcmp(keyString(key), value) == 0)
 		{
 			regfree(&regex);
 			elektraFree(value);
@@ -84,7 +85,7 @@ static int validateKey(Key *key)
 		}
 		ptr += match[0].rm_eo;
 	}
-	if(value)
+	if (value)
 		elektraFree(value);
 	regfree(&regex);
 	return 0;
@@ -94,9 +95,9 @@ int elektraEnumSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 {
 	/* set all keys */
 	Key *cur;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
-		if(!validateKey(cur))
+		if (!validateKey(cur))
 		{
 			ELEKTRA_SET_ERROR(121, parentKey, "Validation failed");
 			return -1;

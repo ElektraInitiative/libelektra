@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KEYSET_HPP
 #define ELEKTRA_KEYSET_HPP
 
@@ -100,12 +108,11 @@ public:
 	const_reverse_iterator rbegin() const;
 	reverse_iterator rend();
 	const_reverse_iterator rend() const;
-#if __cplusplus > 199711L
+
 	const_iterator cbegin() const noexcept;
 	const_iterator cend() const noexcept;
 	const_reverse_iterator crbegin() const noexcept;
 	const_reverse_iterator crend() const noexcept;
-#endif
 #endif //ELEKTRA_WITHOUT_ITERATOR
 
 private:
@@ -186,15 +193,9 @@ inline bool operator<=(const KeySetIterator& lhs, const KeySetIterator& rhs)
 inline bool operator>=(const KeySetIterator& lhs, const KeySetIterator& rhs)
 { return lhs.base() >= rhs.base(); }
 
-#if __cplusplus > 199711L
 // DR 685.
 inline auto operator-(const KeySetIterator& lhs, const KeySetIterator& rhs)
 	-> decltype(lhs.base() - rhs.base())
-#else
-inline KeySetIterator::difference_type
-operator-(const KeySetIterator& lhs,
-	const KeySetIterator& rhs)
-#endif
 { return lhs.base() - rhs.base(); }
 
 inline KeySetIterator
@@ -272,15 +273,9 @@ inline bool operator<=(const KeySetReverseIterator& lhs, const KeySetReverseIter
 inline bool operator>=(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
 { return lhs.base() >= rhs.base(); }
 
-#if __cplusplus > 199711L
 // DR 685.
 inline auto operator-(const KeySetReverseIterator& lhs, const KeySetReverseIterator& rhs)
 	-> decltype(lhs.base() - rhs.base())
-#else
-inline KeySetReverseIterator::difference_type
-operator-(const KeySetReverseIterator& lhs,
-	const KeySetReverseIterator& rhs)
-#endif
 { return lhs.base() - rhs.base(); }
 
 inline KeySetReverseIterator
@@ -329,7 +324,6 @@ inline KeySet::const_reverse_iterator KeySet::rend() const
 	return KeySet::const_reverse_iterator(*this, -1);
 }
 
-#if __cplusplus > 199711L
 inline KeySet::const_iterator KeySet::cbegin() const noexcept
 {
 	return KeySet::const_iterator(*this, 0);
@@ -349,7 +343,6 @@ inline KeySet::const_reverse_iterator KeySet::crend() const noexcept
 {
 	return KeySet::const_reverse_iterator(*this, -1);
 }
-#endif
 #endif //ELEKTRA_WITHOUT_ITERATOR
 
 
@@ -546,7 +539,7 @@ inline void KeySet::copy (const KeySet &other)
  */
 inline void KeySet::clear ()
 {
-	ckdb::ksCopy(ks,0);
+	ckdb::ksCopy(ks,nullptr);
 }
 
 /**

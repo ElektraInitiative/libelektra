@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "yajl_gen.h"
 
 #include <errno.h>
@@ -282,7 +290,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	if (elektraGenEmpty(g, returned, parentKey))
 	{
 		int ret = elektraGenWriteFile(g, parentKey);
-		yajl_gen_free(g);
+		yajl_gen_free (g);
 		return ret;
 	}
 
@@ -292,7 +300,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	{
 		// empty config should be handled by resolver
 		// (e.g. remove file)
-		yajl_gen_free(g);
+		yajl_gen_free (g);
 		return 0;
 	}
 
@@ -324,7 +332,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	elektraGenCloseFinally(g, cur, parentKey);
 
 	int ret = elektraGenWriteFile(g, parentKey);
-	yajl_gen_free(g);
+	yajl_gen_free (g);
 
 	return ret;
 }

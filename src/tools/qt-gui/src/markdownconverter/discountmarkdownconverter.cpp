@@ -60,7 +60,7 @@ DiscountMarkdownConverter::DiscountMarkdownConverter()
 
 MarkdownDocument *DiscountMarkdownConverter::createDocument(const QString &text, ConverterOptions options)
 {
-	MMIOT *doc = 0;
+	MMIOT *doc = nullptr;
 
 	if (text.length() > 0) {
 		QString markdownText(text);

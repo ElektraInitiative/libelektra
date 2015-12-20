@@ -207,7 +207,7 @@ Lets start with the most important parameters, the KeySet and the `parentKey`. T
 the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet at serves several purposes.
 First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the parentKey. We will discuss
 error handling in more detail later. The Plugin handle can be used to persist state information in a threadsafe way with `elektraPluginSetData`.
-As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to supress compiler warnings.
+As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to suppress compiler warnings.
 
 Basically the implementation of `elektraLineSet` can be described with the following pseudocode:
 
@@ -222,7 +222,7 @@ Basically the implementation of `elektraLineSet` can be described with the follo
 	}
 	close the file
 
-The fullblown code can be found at [line plugin](src/plugins/line/line.c)
+The full-blown code can be found at [line plugin](http://libelektra.org/tree/master/src/plugins/line/line.c)
 
 As you can see, all `elektraLineSet` does is open a file, take each Key from the KeySet (remember they are named `#1`, `#2` ... `#_22`) in order,
 and write each key as it's own line in the file. Since we don't care about the name of the Key in this case (other than for order), we just write
@@ -235,7 +235,7 @@ We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, prin
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
 even if a critical error occurres, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
 A listing of existing errors together with a short description and a categorization can be found at
-[error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/liberror/specification).
+[error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
 The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
 caused the error. The kdb tools will interprete this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
@@ -259,3 +259,5 @@ the plug-in exists and which methods it implements. The code from the line plugi
 		ELEKTRA_PLUGIN_END);
 	}
 
+
+For further information see [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).

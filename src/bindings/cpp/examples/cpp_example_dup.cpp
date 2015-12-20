@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <keyset.hpp>
 
 //! [ksDeepCopy]
@@ -5,7 +13,7 @@ kdb::KeySet ksDeepCopy(kdb::KeySet orig)
 {
 	kdb::KeySet deepCopy;
 	orig.rewind();
-	while(orig.next())
+	while (orig.next())
 	{
 		deepCopy.append(orig.current().dup());
 	}

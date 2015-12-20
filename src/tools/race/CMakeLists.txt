@@ -1,6 +1,6 @@
 find_package(Threads)
 
-if(APPLE)
+if (APPLE)
 	remove_tool(race "race tool does not compile under MAC OS X")
 else()
 	add_headers (HDR_FILES)

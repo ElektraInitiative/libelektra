@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -16,7 +24,7 @@
  * which should be the absolute path the the source directory.
  * Each line of CMAKE_CACHE_FILENAME must fit in the CmakecacheFileReadBuffer.
  */
-const int CmakecacheFileReadBuffer = 1024;
+#define CMAKE_CACHE_FILE_READ_BUFFER 1024
 #define CMAKE_CACHE_FILENAME "CMakeCache.txt"
 #define CMAKE_CACHE_VARNAME "Elektra_SOURCE_DIR"
 #define TEMP_FILENAME "temp"
@@ -128,7 +136,7 @@ struct transitionTitle genTitleTransitionTable() {
 }
 
 // Maps a given char to a int, used for the transition table
-static int resolveChar (char c)
+static int resolveChar (int c)
 {
 	if (c != '\n' && isblank (c)) return 3;
 	switch (c)
@@ -153,7 +161,7 @@ static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra
 {
 	int state = titleStart;
 	int newstate;
-	char c;
+	int c;
 	bool titleFound = false;
 	struct transitionTitle transitions = genTitleTransitionTable ();
 	while ((c = fgetc (input)) != EOF)
@@ -181,7 +189,7 @@ static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra
  */
 static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 {
-	char c;
+	int c;
 	fpos_t pos;
 	int state = linkStart;
 	int newstate;
@@ -241,7 +249,7 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			//end
 			for (int i = 0;strcmp (ignoreTargetEnd[i], "") != 0;++i)
 			{
-				if(len < strlen (ignoreTargetEnd[i]))
+				if (len < strlen (ignoreTargetEnd[i]))
 					continue;
 
 				int j = len - strlen (ignoreTargetEnd[i]);
@@ -275,7 +283,7 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 			state = linkStart;
 			continue;
 		}
-		else if(linkNolink (state, newstate))
+		else if (linkNolink (state, newstate))
 		{
 			// print all other content
 			fprintf (output, "%c", c);
@@ -330,7 +338,7 @@ int main (int argc, char *argv[])
 	if (fgetpos (output, &startTempFile))
 		exitError (input, output, "fgetpos");
 
-	if(!convertTitle (input, output, filenameInElektra))
+	if (!convertTitle (input, output, filenameInElektra))
 	{
 		/* No title found in file, therefore generate one and
 		 * print it out.
@@ -454,10 +462,10 @@ static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilen
 		fprintf (stderr, "fopen Error: CmakeCacheFile %s not found\n", cmakeCacheFilename);
 		return NULL;
 	}
-	char line [CmakecacheFileReadBuffer];
+	char line [CMAKE_CACHE_FILE_READ_BUFFER + 1];
 	int lenCmakecacheVar = strlen (CMAKE_CACHE_VARNAME);
 	bool foundCmakecacheVar = false;
-	while (fgets (line, CmakecacheFileReadBuffer, input))
+	while (fgets (line, CMAKE_CACHE_FILE_READ_BUFFER, input))
 	{
 		if (strncmp (CMAKE_CACHE_VARNAME, line, lenCmakecacheVar) == 0)
 		{

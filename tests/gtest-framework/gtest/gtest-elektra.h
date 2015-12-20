@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Common Elektra extensions for GTest
+ * @brief Common Elektra extensions for GTest
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -160,11 +160,7 @@ std::string makeLiteralString(std::string str)
 	return ret;
 }
 
-#if __cplusplus > 199711L
 typedef std::unique_ptr<testing::Mountpoint> MountpointPtr;
-#else
-typedef std::auto_ptr<testing::Mountpoint> MountpointPtr;
-#endif
 
 
 void outputGTest(kdb::KeySet tocheck, std::string name)
@@ -174,7 +170,7 @@ void outputGTest(kdb::KeySet tocheck, std::string name)
 		<< std::endl;
 	std::cout << name << ".rewind();" << std::endl;
 	tocheck.rewind();
-	while(tocheck.next())
+	while (tocheck.next())
 	{
 		std::cout << name << ".next();" << std::endl;
 		std::cout << "EXPECT_EQ(" << name

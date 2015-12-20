@@ -71,7 +71,7 @@ if (DOXYGEN_FOUND)
 
 	do_doc(html ${OUTPUT_DIRECTORY}/html/ index.html
 		${TARGET_DOCUMENTATION_HTML_FOLDER})
-	do_doc(man ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra
+	do_doc(man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra
 		"${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
 
 	if (WITH_LATEX)
@@ -98,3 +98,4 @@ else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)
 
+add_subdirectory(help)

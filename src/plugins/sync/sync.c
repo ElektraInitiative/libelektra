@@ -1,27 +1,10 @@
-/***************************************************************************
-                     sync.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -74,20 +57,16 @@ int elektraSyncSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 	int fd = open(configFile, O_RDWR);
 	if (fd == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_SET_ERRORF(89, parentKey,
 			"Could not open config file %s because %s",
-			configFile, buffer);
+			configFile, strerror(errno));
 		return -1;
 	}
 	if (fsync(fd) == -1)
 	{
-		char buffer[ERROR_SIZE];
-		strerror_r(errno, buffer, ERROR_SIZE);
 		ELEKTRA_SET_ERRORF(89, parentKey,
 			"Could not fsync config file %s because %s",
-			configFile, buffer);
+			configFile, strerror(errno));
 		close(fd);
 		return -1;
 	}

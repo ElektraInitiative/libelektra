@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "visit_context.hpp"
 #include <kdb.hpp>
 
@@ -102,7 +110,7 @@ int main()
 	c.activate<MainApplicationLayer>();
 	c.activate<ProfileLayer>(par.profile);
 
-	for(int i=0; i<3; ++i) ::visit(par.visit.person);
+	for (int i=0; i<3; ++i) ::visit(par.visit.person);
 
 	return 0;
 }

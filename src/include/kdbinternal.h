@@ -1,4 +1,10 @@
-/*Includes for the core of elektra.*/
+/**
+ * @file
+ *
+ * @brief Includes most internal header files.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef KDBINTERNAL_H
 #define KDBINTERNAL_H

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <export.hpp>
 
 #include <kdb.hpp>
@@ -16,11 +24,11 @@ ExportCommand::ExportCommand()
 
 int ExportCommand::execute(Cmdline const& cl)
 {
-    size_t argc = cl.arguments.size();
+	size_t argc = cl.arguments.size();
 	if (argc != 1 && argc != 2 && argc != 3)
 	{
 		throw invalid_argument("need 1 to 3 arguments");
-    }
+	}
 
 	Key root (cl.arguments[0], KEY_END);
 	if (!root.isValid())

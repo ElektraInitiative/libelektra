@@ -96,13 +96,27 @@ same fashion for BINDINGS and TOOLS.
 
 #### PLUGINS ####
 
+Read about available plugins [here](/src/plugins/).
+
 Because the core of elektra is minimal, plugins are needed to
 actually read and write to configuration files (storage plugins),
 commit the changes (resolver plugin, also takes care about how
 the configuration files are named) and also do many other
 tasks related to configuration.
 
-To add all plugins, you can use  
+The default is also the minimal set of plugins you should add:
+- dump is the default storage.
+  If you remove it, make sure you add another one and set
+  `KDB_DEFAULT_STORAGE` to it.
+- resolver is the default resolver.
+  If you remove it, make sure you add another one and set
+  `KDB_DEFAULT_RESOLVER` to it.
+- sync is very useful to not lose any data.
+  If you do not want to include it, make sure to set
+  `/sw/kdb/current/plugins` to a value not containing sync.
+  See [kdb-mount(1)](/doc/help/kdb-mount.md).
+
+To add all plugins, you can use:
 
 	-DPLUGINS=ALL
 

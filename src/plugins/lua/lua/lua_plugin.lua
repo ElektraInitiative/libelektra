@@ -1,6 +1,6 @@
 require("kdb")
 
-function elektraOpen(errorKey)
+function elektraOpen(config, errorKey)
 	print("[LUA-1] open -->")
 	return 0
 end

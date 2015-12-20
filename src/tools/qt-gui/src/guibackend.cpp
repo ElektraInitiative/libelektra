@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "guibackend.hpp"
 
 #include <markdowndocument.h>
@@ -14,7 +22,7 @@ using namespace kdb::tools;
 
 GUIBackend::GUIBackend(QObject *parentBackend) :
 	QObject(parentBackend),
-	m_backend(NULL)
+	m_backend(nullptr)
 {
 	m_pluginConfigModel = new TreeViewModel;
 	resetModel();
@@ -148,7 +156,7 @@ QString GUIBackend::mountPoints() const
 	{
 		QString backend = QString::fromStdString(info.name);
 
-		if(backend.startsWith("/"))
+		if (backend.startsWith("/"))
 		{
 			mPoints.append("dir" + backend);
 			mPoints.append("user" + backend);
@@ -217,7 +225,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 		ptr->loadInfo();
 		type = QString::fromStdString(ptr->lookupInfo("provides"));
 
-		if(!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver"))){
+		if (!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver"))){
 			availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(type));
 		}
 	}

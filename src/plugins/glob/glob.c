@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief A plugin that converts keys to metakeys and vice versa
+ * @brief A plugin that converts keys to metakeys and vice versa
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -12,6 +12,8 @@
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
 #endif
+
+#include <kdbhelper.h>
 
 int elektraGlobMatch(Key *key, const Key *match, int globFlags)
 {
@@ -56,7 +58,7 @@ static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection dire
 
 	userGlobConfig = keyNew ("user/glob", KEY_END);
 	systemGlobConfig = keyNew ("system/glob", KEY_END);
-	switch(direction)
+	switch (direction)
 	{
 	case GET:
 		userDirGlobConfig = keyNew ("user/glob/get", KEY_END);
@@ -86,11 +88,11 @@ static KeySet* getGlobKeys(Key* parentKey, KeySet* keys, enum GlobDirection dire
 			/* Now look if we want cascading for the key */
 			if (keyString (k)[0] == '/')
 			{
-				char* newstring = malloc (valsize + parentsize);
+				char* newstring = elektraMalloc (valsize + parentsize);
 				strcpy (newstring, keyName (parentKey));
 				strcat (newstring, keyString (k));
 				keySetString (ins, newstring);
-				free (newstring);
+				elektraFree (newstring);
 			}
 			ksAppendKey (glob, ins);
 		}

@@ -5,7 +5,7 @@ try_compile(HAS_UNAME
 
 include(LibAddMacros)
 
-if(HAS_UNAME)
+if (HAS_UNAME)
 
 	add_plugin(uname
 		SOURCES

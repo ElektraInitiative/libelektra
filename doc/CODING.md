@@ -91,7 +91,7 @@ with `ks`, `key` or `kdb`.
  * Do not use `static`, but anonymous namespaces.
  * Write everything within namespaces and do not prefix names.
 
-**Example:** [src/bindings/cpp/include/kdb.hpp](../src/bindings/cpp/include/kdb.hpp)
+**Example:** [src/bindings/cpp/include/kdb.hpp](http://libelektra.org/tree/master/src/bindings/cpp/include/kdb.hpp)
 
 
 ### Doxygen Guidelines ###
@@ -105,28 +105,32 @@ Links between markdown files will be converted with the
 **Markdown pages are used in the pdf, therefore watch your characters and
 provide a proper encoding!**
 
-Do not duplicate information available in git in doxygen.
-Use `\copydoc`, `\copybrief` and `\copydetails` intensively.
+ * use `@` to start doxygen tags 
+ * Do not duplicate information available in git in doxygen.
+ * Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file header).
 
+### File Headers ###
 
 Files should start with:
 
 \verbatim
 
 	/**
-	* @file
-	*
-	* @brief <short statement about the content of the file>
-	*
-	* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-	*
-	*/
+	 * @file
+	 *
+	 * @brief <short statement about the content of the file>
+	 *
+	 * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+	 */
+	
 
 \endverbatim
 
 Note:
-- file has *no* parameters.
-- brief should contain a short statement about the content of the file.
+
+- `@file` has *no* parameters.
+- `@brief` should contain a short statement about the content of the file and is needed
+  so that your file gets listed at http://doc.libelektra.org/api/latest/html/files.html
 
 The duplication of the filename, author and date is not needed, because
-this information is tracked using git.
+this information is tracked using git and doc/AUTHORS already.

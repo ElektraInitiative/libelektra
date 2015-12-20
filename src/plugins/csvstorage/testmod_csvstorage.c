@@ -1,24 +1,24 @@
 /**
- * \file
+ * @file
  *
- * \brief Tests for csvstorage plugin
+ * @brief Tests for csvstorage plugin
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
+#include <kdbease.h>
+#include <kdbhelper.h>
 
 #include <tests_plugin.h>
 
 static void testread(const char *file)
 {
-	printf("testing on %s:%s\n", srcdir_file(file), file);
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
-	KeySet *conf = ksNew (20,
+	KeySet *conf = ksNew (20,keyNew("system/delimiter", KEY_VALUE, ";", KEY_END), 
 			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
 	PLUGIN_OPEN("csvstorage");
 	KeySet *ks = ksNew(0, KS_END);
@@ -38,9 +38,8 @@ static void testread(const char *file)
 }
 static void testreadfixcolcount(const char *file)
 {
-	printf("testing on %s:%s\n", srcdir_file(file), file);
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
-	KeySet *conf = ksNew (20,
+	KeySet *conf = ksNew (20,keyNew("system/delimiter", KEY_VALUE, ";", KEY_END), 
 			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), 
 			keyNew ("system/columns", KEY_VALUE, "4", KEY_END),
 			KS_END);
@@ -57,13 +56,11 @@ static void testreadwriteinvalid(const char *file)
 {
 
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
-	KeySet *conf = 0;
-	printf("%s\n", srcdir_file(file));
+	KeySet *conf = ksNew(10, keyNew("system/delimiter", KEY_VALUE, ";", KEY_END),KS_END) ;
 	KeySet *ks = ksNew(0, KS_END);
 	PLUGIN_OPEN("csvstorage");
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >0,  "call to kdbGet was not successful");
 	succeed_if(!output_warnings(parentKey), "no warnings in kdbGet");
-	output_keyset(ks);	
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == (-1), "error: wrote invalid data");
 	ksDel(ks);
 	keyDel(parentKey);
@@ -75,7 +72,7 @@ static void testwriteinvalidheader(const char *file)
 {
 
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
-	KeySet *conf = ksNew (20,
+	KeySet *conf = ksNew (20,keyNew("system/delimiter", KEY_VALUE, ";", KEY_END), 
 			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
 
 	KeySet *ks = ksNew(0, KS_END);
@@ -91,11 +88,10 @@ static void testwriteinvalidheader(const char *file)
 static void testwritevalidemptycol(const char *file)
 {
 
-	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
-	KeySet *conf = ksNew (20,
+	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, elektraFilename(), KEY_END);
+	KeySet *conf = ksNew (20,keyNew("system/delimiter", KEY_VALUE, ";", KEY_END), 
 			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
 
-	printf("%s\n", srcdir_file(file));
 	KeySet *ks = ksNew(0, KS_END);
 	PLUGIN_OPEN("csvstorage");
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >0,  "call to kdbGet was not successful");
@@ -106,9 +102,8 @@ static void testwritevalidemptycol(const char *file)
 }
 static void testSetColnames(const char *file)
 {
-	printf("testing on %s:%s\n", srcdir_file(file), file);
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file(file), KEY_END);
-	KeySet *conf = ksNew (20,
+	KeySet *conf = ksNew (20,keyNew("system/delimiter", KEY_VALUE, ";", KEY_END), 
 			keyNew ("system/header", KEY_VALUE, "colname", KEY_END), 
 			keyNew ("system/columns", KEY_VALUE, "2", KEY_END),
 			keyNew ("system/columns/names", KEY_VALUE, "", KEY_END),
@@ -118,7 +113,6 @@ static void testSetColnames(const char *file)
 	PLUGIN_OPEN("csvstorage");
 	KeySet *ks = ksNew(0, KS_END);
 	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	output_keyset(ks);
 	Key *key;
 	key = ksLookupByName(ks, "user/tests/csvstorage/#1/col0Name", 0);
 	exit_if_fail(key, "key not found");

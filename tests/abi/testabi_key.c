@@ -1,9 +1,10 @@
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <tests.h>
 
@@ -203,10 +204,10 @@ static void test_keyNewSystem()
 	succeed_if(keyIsBinary (key), "Could not set type to binary");
 	succeed_if(keyGetValueSize(key) == sizeof(array), "Value size not correct");
 	succeed_if(memcmp ((char *) keyValue(key), array, sizeof(array)) == 0, "could not get correct binary value");
-	getBack = malloc (keyGetValueSize(key));
+	getBack = elektraMalloc (keyGetValueSize(key));
 	keyGetBinary(key, getBack, keyGetValueSize(key));
 	succeed_if(memcmp(getBack, array, sizeof(array)) == 0, "could not get correct value with keyGetBinary");
-	free (getBack);
+	elektraFree (getBack);
 	succeed_if(keyDel(key) == 0, "keyDel: Unable to delete key with name + owner");
 
 	key = keyNew("system", KEY_END);
@@ -705,24 +706,24 @@ static void test_keyNameSlashes()
 
 	key = keyNew("user/noname", KEY_END);
 	succeed_if(keyGetNameSize(key) == 12, "size not correct after keyNew");
-	getBack = malloc (12);
+	getBack = elektraMalloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
 	succeed_if_same_string (getBack, "user/noname");
-	free (getBack);
+	elektraFree (getBack);
 
 	keySetName (key, "user/noname");
 	succeed_if(keyGetNameSize(key) == 12, "size not correct after keySetName");
-	getBack = malloc (12);
+	getBack = elektraMalloc (12);
 	succeed_if(keyGetName(key, getBack, 12), "could not get name");
 	succeed_if_same_string (getBack, "user/noname");
-	free (getBack);
+	elektraFree (getBack);
 
 	keySetName (key, "no");
 	succeed_if(keyGetNameSize(key) == 1, "size not correct after keySetName");
-	getBack = malloc (1);
+	getBack = elektraMalloc (1);
 	succeed_if(keyGetName(key, getBack, 1), "could not get name");
 	succeed_if_same_string (getBack, "");
-	free (getBack);
+	elektraFree (getBack);
 	keyDel (key);
 
 	key = keyNew("user/noname", KEY_END);
@@ -868,7 +869,7 @@ static void test_keyNameSlashes()
 
 	Key * copy = keyNew (0);
 
-	for(i = 0 ; tstKeyName[i].testName != NULL ; i++)
+	for (i = 0 ; tstKeyName[i].testName != NULL ; i++)
 	{
 		key = keyNew(tstKeyName[i].keyName, KEY_END);
 
@@ -899,10 +900,10 @@ static void test_keyNameSlashes()
 
 		/* keyGetBaseName */
 		size = keyGetBaseNameSize(key)+1;
-		buf = malloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetBaseName(key, buf, size);
 		succeed_if_same_string(buf, tstKeyName[i].expectedBaseName);
-		free(buf);
+		elektraFree (buf);
 
 		/* keyGetNameSize */
 		size = keyGetNameSize(key);
@@ -910,10 +911,10 @@ static void test_keyNameSlashes()
 		
 		/* keyGetName */
 		size = keyGetNameSize(key);
-		buf = malloc(size*sizeof(char));
+		buf = elektraMalloc(size*sizeof(char));
 		keyGetName(key, buf, size);
 		succeed_if_same_string (buf, tstKeyName[i].expectedKeyName);
-		free(buf);
+		elektraFree (buf);
 
 		keyDel(key);
 		keyDel(dup);
@@ -2354,7 +2355,7 @@ static void test_keyEscape()
 	succeed_if_same_string(keyBaseName(k), A); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
 	succeed_if_same_string(buffer, A); \
-	} while(0)
+	} while (0)
 
 #include <data_escape.c>
 
@@ -2385,7 +2386,7 @@ static void test_keyEscape()
 	succeed_if_same_string(keyBaseName(k), ""); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
 	succeed_if_same_string(buffer, ""); \
-	} while(0)
+	} while (0)
 
 	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)
 	{
@@ -2408,7 +2409,7 @@ static void test_keyEscape()
 	succeed_if_same_string(keyBaseName(k), A); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName (for keyAddBaseName) returned an error"); \
 	succeed_if_same_string(buffer, A); \
-	} while(0)
+	} while (0)
 
 	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)
 	{
@@ -2453,7 +2454,7 @@ static void test_keyAdd()
 	succeed_if_same_string(keyBaseName(k), S); \
 	succeed_if(keyGetBaseName(k, buffer, 499)!=-1, "keyGetBaseName returned an error"); \
 	succeed_if_same_string(buffer, S); \
-	} while(0)
+	} while (0)
 	char buffer [500];
 
 	for (int i=0; i<NUMBER_OF_NAMESPACES; ++i)

@@ -86,6 +86,39 @@ additional key will also lead to an error.
 The metadata may be evaluated by subsequent checks. In the situation of
 fstab a typechecker and a path checker are both useful.
 
+The purpose of such structure checks is that only a valid
+configuration can be stored and that neither applications nor storage
+plugins are surprised by configuration they do not understand.
+
+The fstab plugin trusts the fact that no invalid configuration is
+passed.
+It does not check it again.
+Missing configuration would lead to partially set data structures.
+The internally used API `setmntent` crashes in that case.
+This leads us to the \empha{purpose of contracts}:
+We want a guarantee that specific conditions are already met
+because we know that the code of the plugin cannot handle it.
+
+Let us look at a different scenario with the same configuration.
+Instead of using the fstab plugin, we will use a general purpose
+storage plugin. For example, the dump plugin.
+Note that the metadata will be stored permanently in this situation.
+No plugin exports a `config/needs` clauses for the struct plugin
+in this situation.
+But the user can add the struct plugin and the plugin
+configuration, as shown in the code above,
+to the backend manually.
+Applications still can be sure that only a specific
+configuration will be stored and passed to them.
+The unwritten contract is between the application and the backend.
+No contract checker, however, would detect the missing configuration.
+
+## Limitation ##
+
 This approach for defining the structure works recursively. Every
 element can have a value with a new structure check.
+ Additionally, multiple template parameters
+can support
+even more generic data structures.
+This is, however, not yet implemented.
 

@@ -1,7 +1,7 @@
 find_package(Augeas)
 find_package (LibXml2)
 
-if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
+if (LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 
 	try_compile (HAS_LIBAUGEAS16
 		"${CMAKE_BINARY_DIR}"
@@ -23,6 +23,8 @@ if(LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 				${LIBAUGEAS_INCLUDE_DIR}
 				${LIBXML2_INCLUDE_DIR}
 			LINK_LIBRARIES
+				elektra-meta
+				elektra-proposal
 				${LIBAUGEAS_LIBRARIES}
 				${LIBXML2_LIBRARIES}
 			)

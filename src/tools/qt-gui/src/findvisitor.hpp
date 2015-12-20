@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef FINDVISITOR_HPP
 #define FINDVISITOR_HPP
 
@@ -17,10 +25,10 @@ public:
 	 * is completed.
 	 * @param term The search term to look for.
 	 */
-	explicit FindVisitor(TreeViewModel* searchResults, const QString& term);
+	explicit FindVisitor(TreeViewModel* searchResults, QString  term);
 
-	void visit(ConfigNode& node);
-	void visit(TreeViewModel* model);
+	void visit(ConfigNode& node) override;
+	void visit(TreeViewModel* model) override;
 
 private:
 	TreeViewModel*	m_searchResults;

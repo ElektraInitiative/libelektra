@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <string>
 #include <numeric>
 #include <iostream>
@@ -14,18 +22,18 @@ class Timer
 public:
 	TIMER_NOINLINE void start()
 	{
-		gettimeofday (&begin, 0);
+		gettimeofday (&begin, nullptr);
 	}
 	TIMER_NOINLINE void stop()
 	{
-		gettimeofday (&end, 0);
+		gettimeofday (&end, nullptr);
 		// force calculation in long long:
 		timer_t result = end.tv_sec - begin.tv_sec;
 		result *= usec_factor;
 		result += end.tv_usec - begin.tv_usec;
 		results.push_back(result);
 	}
-	Timer(std::string const & name);
+	Timer(std::string  name);
 	~Timer(); // print csv table at end
 	struct timeval begin;
 	struct timeval end;
@@ -36,11 +44,11 @@ public:
 	static const timer_t usec_factor = 1000000LL;
 };
 
-inline Timer::Timer(std::string const & name_) :
+inline Timer::Timer(std::string  name_) :
 		begin(),
 		end(),
 		results(),
-		name(name_)
+		name(std::move(name_))
 {
 }
 

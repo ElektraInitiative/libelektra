@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <cmdline.hpp>
 
 #include <kdb.hpp>
@@ -12,6 +20,7 @@
 #include <getopt.h>
 
 #include <command.hpp>
+#include <external.hpp>
 
 
 using namespace std;
@@ -47,6 +56,7 @@ Cmdline::Cmdline (int argc,
 	plugins("sync"),
 	pluginsConfig(""),
 	ns("user"),
+	editor(),
 
 	executable(),
 	commandName()
@@ -76,62 +86,62 @@ Cmdline::Cmdline (int argc,
 	/*XXX: Step 3: give it a long name.*/
 	if (acceptedOptions.find('a')!=string::npos)
 	{
-		option o = {"all", no_argument, 0, 'a'};
+		option o = {"all", no_argument, nullptr, 'a'};
 		long_options.push_back(o);
 		helpText += "-a --all                 Consider all of the keys.\n";
 	}
 	if (acceptedOptions.find('d')!=string::npos)
 	{
-		option o = {"debug", no_argument, 0, 'd'};
+		option o = {"debug", no_argument, nullptr, 'd'};
 		long_options.push_back(o);
 		helpText += "-d --debug               Give debug information or ask debug questions (in interactive mode).\n";
 	}
 	if (acceptedOptions.find('f')!=string::npos)
 	{
-		option o = {"force", no_argument, 0, 'f'};
+		option o = {"force", no_argument, nullptr, 'f'};
 		long_options.push_back(o);
 		helpText += "-f --force               Force the action to be done.\n";
 	}
 	if (acceptedOptions.find('l')!=string::npos)
 	{
-		option o = {"load", no_argument, 0, 'f'};
+		option o = {"load", no_argument, nullptr, 'f'};
 		long_options.push_back(o);
 		helpText += "-l --load                Load plugin even if system/elektra is available\n";
 	}
 	if (acceptedOptions.find('h')!=string::npos)
 	{
-		option o = {"human-readable", no_argument, 0, 'h'};
+		option o = {"human-readable", no_argument, nullptr, 'h'};
 		long_options.push_back(o);
 		helpText += "-h --human-readable      Print numbers in an human readable way\n";
 	}
 	if (acceptedOptions.find('H')!=string::npos)
 	{
-		option o = {"help", no_argument, 0, 'H'};
+		option o = {"help", no_argument, nullptr, 'H'};
 		long_options.push_back(o);
-		helpText += "-H --help                Print help text.\n";
+		helpText += "-H --help                Show the man page.\n";
 	}
 	if (acceptedOptions.find('i')!=string::npos)
 	{
-		option o = {"interactive", no_argument, 0, 'i'};
+		option o = {"interactive", no_argument, nullptr, 'i'};
 		long_options.push_back(o);
 		helpText += "-i --interactive         Instead of passing all information by parameters\n";
 		helpText += "                         ask the user interactively.\n";
 	}
 	if (acceptedOptions.find('n')!=string::npos)
 	{
-		option o = {"no-newline", no_argument, 0, 'n'};
+		option o = {"no-newline", no_argument, nullptr, 'n'};
 		long_options.push_back(o);
 		helpText += "-n --no-newline          Suppress the newline at the end of the output.\n";
 	}
 	if (acceptedOptions.find('t')!=string::npos)
 	{
-		option o = {"test", no_argument, 0, 't'};
+		option o = {"test", no_argument, nullptr, 't'};
 		long_options.push_back(o);
 		helpText += "-t --test                Test.\n";
 	}
 	if (acceptedOptions.find('r')!=string::npos)
 	{
-		option o = {"recursive", no_argument, 0, 'r'};
+		option o = {"recursive", no_argument, nullptr, 'r'};
 		long_options.push_back(o);
 		helpText += "-r --recursive           Work in a recursive mode.\n";
 	}
@@ -139,7 +149,7 @@ Cmdline::Cmdline (int argc,
 	if (optionPos!=string::npos)
 	{
 		acceptedOptions.insert(optionPos+1, ":");
-		option o = {"resolver", required_argument, 0, 'R'};
+		option o = {"resolver", required_argument, nullptr, 'R'};
 		long_options.push_back (o);
 		helpText +=
 				"-R --resolver <name>     Specify the resolver plugin to use\n"
@@ -150,67 +160,58 @@ Cmdline::Cmdline (int argc,
 	if (optionPos!=string::npos)
 	{
 		acceptedOptions.insert(optionPos+1, ":");
-		option o = {"strategy", required_argument, 0, 's'};
+		option o = {"strategy", required_argument, nullptr, 's'};
 		long_options.push_back(o);
 		helpText +=
-			"-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n"  
-                        "                         More precisely, strategies are used to handle deviations from the\n"
-                        "                         base version of a key.\n"
-                        "                         When and which strategies are used and what they do depends\n"
-			"                         mostly on the used base KeySet.\n\n"  
-			"                         Note: For a two-way merge, the `ours` version of the keys is used\n"
-                        "                         in place of `base`\n\n"
-			"                         Currently the following strategies exist\n"
-			"                           preserve      .. automerge only those keys where just one\n"
-			"                                            side deviates from base (default)\n"
-			"                           ours          .. like preserve, but in case of conflict use our version\n"
-			"                           theirs        .. like preserve, but in case of conflict use their version\n"
-			"                           cut           .. primarily used for import. removes existing keys below\n"
-			"                                            the import point and always takes the imported version\n"
-			"                           import        .. primarily used for import. preserves existing keys if\n"
-			"                                            they do not exist in the imported keyset. in all other\n"
-			"                                            cases the imported keys have precedence\n"
-			"";
+			"-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
-		option o = {"verbose", no_argument, 0, 'v'};
+		option o = {"verbose", no_argument, nullptr, 'v'};
 		long_options.push_back(o);
 		helpText += "-v --verbose             Explain what is happening.\n";
 	}
 	if (acceptedOptions.find('V')!=string::npos)
 	{
-		option o = {"version", no_argument, 0, 'V'};
+		option o = {"version", no_argument, nullptr, 'V'};
 		long_options.push_back(o);
 		helpText += "-V --version             Print version info.\n";
 	}
 	if (acceptedOptions.find('E')!=string::npos)
 	{
-		option o = {"without-elektra", no_argument, 0, 'E'};
+		option o = {"without-elektra", no_argument, nullptr, 'E'};
 		long_options.push_back(o);
 		helpText += "-E --without-elektra     Omit the `system/elektra` directory.\n";
 	}
+	optionPos = acceptedOptions.find('e');
+	if (optionPos!=string::npos)
+	{
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"editor", required_argument, 0, 'e'};
+		long_options.push_back(o);
+		helpText += "-e --editor              Which external editor to use.\n";
+	}
 	if (acceptedOptions.find('0')!=string::npos)
 	{
-		option o = {"null", no_argument, 0, '0'};
+		option o = {"null", no_argument, nullptr, '0'};
 		long_options.push_back(o);
 		helpText += "-0 --null                Use binary 0 termination.\n";
 	}
 	if (acceptedOptions.find('1')!=string::npos)
 	{
-		option o = {"first", no_argument, 0, '1'};
+		option o = {"first", no_argument, nullptr, '1'};
 		long_options.push_back(o);
 		helpText += "-1 --first               Suppress the first column.\n";
 	}
 	if (acceptedOptions.find('2')!=string::npos)
 	{
-		option o = {"second", no_argument, 0, '2'};
+		option o = {"second", no_argument, nullptr, '2'};
 		long_options.push_back(o);
 		helpText += "-2 --second              Suppress the second column.\n";
 	}
 	if (acceptedOptions.find('3')!=string::npos)
 	{
-		option o = {"third", no_argument, 0, '3'};
+		option o = {"third", no_argument, nullptr, '3'};
 		long_options.push_back(o);
 		helpText += "-3 --third               Suppress the third column.\n";
 	}
@@ -218,7 +219,7 @@ Cmdline::Cmdline (int argc,
 	if (acceptedOptions.find('N')!=string::npos)
 	{
 		acceptedOptions.insert(optionPos+1, ":");
-		option o = {"namespace", required_argument, 0, 'N'};
+		option o = {"namespace", required_argument, nullptr, 'N'};
 		long_options.push_back(o);
 		helpText += "-N --namespace ns        Specify the namespace to use when writing cascading keys\n"
 			    "                         Default: value of /sw/kdb/current/namespace or user.\n";
@@ -227,7 +228,7 @@ Cmdline::Cmdline (int argc,
 	if (optionPos!=string::npos)
 	{
 		acceptedOptions.insert(optionPos+1, ":");
-		option o = {"plugins-config", no_argument, 0, 'c'};
+		option o = {"plugins-config", no_argument, nullptr, 'c'};
 		long_options.push_back(o);
 		helpText += "-c --plugins-config      Add a plugin configuration.\n";
 	}
@@ -238,8 +239,7 @@ Cmdline::Cmdline (int argc,
 		std::string dirname = "/sw/kdb/current/";
 		KDB kdb;
 		KeySet conf;
-		kdb.get(conf, std::string("user")+dirname);
-		kdb.get(conf, std::string("system")+dirname);
+		kdb.get(conf, dirname);
 
 		Key k;
 
@@ -254,13 +254,25 @@ Cmdline::Cmdline (int argc,
 
 		k = conf.lookup(dirname+"namespace");
 		if (k) ns = k.get<string>();
+
+		k = conf.lookup(dirname+"editor");
+		if (k) editor = k.get<string>();
 	}
 
-	option o = {0, 0, 0, 0};
+	option o = {nullptr, 0, nullptr, 0};
 	long_options.push_back(o);
 
 	executable = argv[0];
 	commandName = argv[1];
+
+	if (dynamic_cast<ExternalCommand*>(command))
+	{
+		// do not print to stderr for external commands,
+		// we do not know which options they have and
+		// otherwise maybe wrong "invalid/unrecognized option"
+		// are reported to stderr.
+		opterr = 0;
+	}
 
 	while ((opt = getopt_long (argc, argv,
 					acceptedOptions.c_str(),
@@ -271,6 +283,7 @@ Cmdline::Cmdline (int argc,
 		/*XXX: Step 5: and now process the option.*/
 		case 'a': all = true; break;
 		case 'd': debug = true; break;
+		case 'e': editor = optarg; break;
 		case 'f': force = true; break;
 		case 'h': humanReadable = true; break;
 		case 'l': load= true; break;

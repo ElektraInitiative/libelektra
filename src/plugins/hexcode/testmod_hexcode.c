@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -40,7 +48,7 @@ void test_encode()
 	elektraHexcodeEncode (test, hd);
 	succeed_if (!memcmp(keyValue(test), encoded_string, sizeof(encoded_string)-1), "string not correctly encoded");
 
-	free (hd);
+	elektraFree (hd);
 	keyDel (test);
 }
 
@@ -61,7 +69,7 @@ void test_decode()
 	elektraHexcodeDecode (test, hd);
 	succeed_if (!strcmp(keyString(test), decoded_string), "string not correctly encoded");
 
-	free (hd);
+	elektraFree (hd);
 	keyDel (test);
 }
 
@@ -90,7 +98,7 @@ void check_reversibility(const char* msg)
 	elektraHexcodeDecode (encode, hd);
 	compare_key(encode, decode);
 
-	free (hd);
+	elektraFree (hd);
 	keyDel (decode);
 	keyDel (encode);
 }
@@ -141,7 +149,7 @@ void test_config()
 
 	ksDel (returned);
 	ksDel (p->config);
-	free (p);
+	elektraFree (p);
 }
 
 

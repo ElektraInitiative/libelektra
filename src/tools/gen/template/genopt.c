@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
@@ -168,7 +176,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 				}
 		@end if
 		@if $support.isenum(info):
-				if(!(
+				if (!(
 				   !strcmp(optarg, "${support.enumval(info)[0]}")
 			@for $enum in $support.enumval(info)[1:]
 				   || !strcmp(optarg, "$enum")
@@ -180,7 +188,7 @@ int ksGetOpt(int argc, char **argv, KeySet *ks)
 				}
 		@end if
 				found = ksLookupByName(ks, "$support.userkey(key)", 0);
-				if(!found)
+				if (!found)
 				{
 					ksAppendKey(ks, keyNew("$support.userkey(key)",
 							KEY_VALUE, $optarg(info),

@@ -13,7 +13,7 @@ file (READ "@MANIFEST@" files)
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
 	message(STATUS "Uninstalling $ENV{DESTDIR}${file}")
-	if(IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
+	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
 		exec_program(
 			"@CMAKE_COMMAND@" ARGS "-E remove \"$ENV{DESTDIR}${file}\""
 			OUTPUT_VARIABLE rm_out

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "lift_nested.hpp"
 
 #include <iostream>
@@ -27,7 +35,7 @@ int main()
 	par.test().lift().setWrite(false);
 
 	// write back to user/test/lift, see comments in lift.c
-	if(write)
+	if (write)
 	{
 		kdb.set(ks, "user/test/lift");
 	}

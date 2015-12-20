@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef CUTKEYCOMMAND_H
 #define CUTKEYCOMMAND_H
 
@@ -21,17 +29,17 @@ public:
 	 * @param sourceIndex The index of the cut ConfigNode, needed to remove the cut ConfigNode.
 	 * @param parent
 	 */
-	explicit CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand* parent = 0);
+	explicit CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand* parent = nullptr);
 
 	/**
 	 * @copydoc QUndoCommand::undo()
 	 */
-	virtual void undo();
+	virtual void undo() override;
 
 	/**
 	 * @copydoc QUndoCommand::redo()
 	 */
-	virtual void redo();
+	virtual void redo() override;
 
 private:
 	TreeViewModel*  m_sourceParentModel;

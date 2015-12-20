@@ -1,14 +1,16 @@
-/*
- * This example demonstrates, how easy it is to put keys in different
- * datastructures.
+/**
+ * @file
  *
- * They might even have complete other properties than KeySet, e.g. in
+ * @brief example how easy it is to put keys in different datastructures
+ *
+ * - * They might even have complete other properties than KeySet, e.g. in
  * this case:
  * - duplicates are allowed
  * - after sorting order is given by meta data "order"
  *
  * It is easy to create any other data structure, with any properties
- * you like.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #include <keyset.hpp>
@@ -41,18 +43,18 @@ int main()
 
 	KeySet ks(20, KS_END);
 	std::cout << "Our Vector with special ordering:" << std::endl;
-	for (std::vector<Key>::iterator i = vc.begin(); i != vc.end(); ++i)
+	for (auto k : vc)
 	{
-		Key k(*i);
+		
 		std::cout << k.getName() << std::endl;
 		ks.append(k);
 	}
 	// now we have a keyset (of course again with KeySet ordering and
 	// duplicates removed.
 	std::cout << "\nNow KeySet:" << std::endl;
-	for (KeySet::iterator i = ks.begin(); i != ks.end(); ++i)
+	for (auto && ks_i : ks)
 	{
-		Key k(*i);
+		Key k(ks_i);
 		std::cout << k.getName() << std::endl;
 	}
 }

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <metaset.hpp>
 
 #include <iostream>
@@ -21,10 +29,20 @@ int MetaSetCommand::execute (Cmdline const& cl)
 	string keyname = cl.arguments[0];
 	string metaname = cl.arguments[1];
 
-	KeySet conf;
 	Key parentKey(keyname, KEY_END);
+	if (keyname[0] == '/')
+	{
+		// fix name for lookup
+		keyname = "spec" + keyname;
+		std::cout << "Using keyname " << keyname << std::endl;
+
+		// fix k for kdb.set later
+		parentKey.setName(keyname);
+	}
+
+	KeySet conf;
 	kdb.get(conf, parentKey);
-	Key k = conf.lookup(keyname);
+	Key k = conf.lookup(parentKey);
 
 	if (!k)
 	{

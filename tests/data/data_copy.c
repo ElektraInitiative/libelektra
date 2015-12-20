@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 copy[0][0]=ksNew(16,    keyNew("user/0", KEY_END), keyNew("user/a", KEY_END), keyNew("user/a/a", KEY_END), keyNew("user/a/a/a", KEY_END), keyNew("user/a/a/b", KEY_END), keyNew("user/a/b", KEY_END), keyNew("user/a/b/a", KEY_END), keyNew("user/a/b/b", KEY_END), keyNew("user/a/c", KEY_END), keyNew("user/a/d", KEY_END), keyNew("user/a/x/a", KEY_END), keyNew("user/a/x/b", KEY_END), keyNew("user/a/x/c", KEY_END), keyNew("user/a/x/c/a", KEY_END), keyNew("user/a/x/c/b", KEY_END), keyNew("user/x", KEY_END), KS_END);
 copy[0][1]=ksNew(15,    keyNew("user/a", KEY_END), keyNew("user/a/a", KEY_END), keyNew("user/a/a/a", KEY_END), keyNew("user/a/a/b", KEY_END), keyNew("user/a/b", KEY_END), keyNew("user/a/b/a", KEY_END), keyNew("user/a/b/b", KEY_END), keyNew("user/a/c", KEY_END), keyNew("user/a/d", KEY_END), keyNew("user/a/x/a", KEY_END), keyNew("user/a/x/b", KEY_END), keyNew("user/a/x/c", KEY_END), keyNew("user/a/x/c/a", KEY_END), keyNew("user/a/x/c/b", KEY_END), keyNew("user/x", KEY_END), KS_END);
 copy[0][2]=ksNew(14,    keyNew("user/a/a", KEY_END), keyNew("user/a/a/a", KEY_END), keyNew("user/a/a/b", KEY_END), keyNew("user/a/b", KEY_END), keyNew("user/a/b/a", KEY_END), keyNew("user/a/b/b", KEY_END), keyNew("user/a/c", KEY_END), keyNew("user/a/d", KEY_END), keyNew("user/a/x/a", KEY_END), keyNew("user/a/x/b", KEY_END), keyNew("user/a/x/c", KEY_END), keyNew("user/a/x/c/a", KEY_END), keyNew("user/a/x/c/b", KEY_END), keyNew("user/x", KEY_END), KS_END);

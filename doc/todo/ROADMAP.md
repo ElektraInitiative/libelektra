@@ -6,7 +6,7 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-# 0.8.14
+# 0.8.15
 
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
@@ -14,28 +14,16 @@ for other activities of the current release.
 ## start with
 
 api:
-	add keyGetNamespace
 	version rules ELEKTRA_ABI_13 ...
-
-c++11 -> by default
-
-cleanups/code reviews
-
-DEFAULT_STORAGE/RESOLVER
+	include rules to allow elektra/kdb.h
 
 to one cmake variable:
 	verbose/debug -> logging
 	pdf/on/off -> docu
 
-malloc -> elektraMalloc
-
-introduce libease and start to move functionality there
-
+md_src_plugins_keytometa_README.3elektra
 
 ## docu
-
-man pages:
-	create good man pages for main tools
 
 more docu in METADATA.ini
 
@@ -44,12 +32,6 @@ checking for broken links
 API docu improvements+pdf export
 
 generate graphic for overview of plugins
-
-
-## bugs
-
-start writing/updating FAQ
-
 
 # further
 
@@ -113,8 +95,6 @@ better errnostore solution?
 	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
 	(even strerrno_r seems to deadlock from time to time because of translations?)
 
-C representation (ksNew(..keyNew(...))) is the *most* common representation, still no plugin exists for it
-
 roresolver: check if something is modified
 	for version, constants, uname
 	and/or remove value comparision in those plugins
@@ -126,6 +106,7 @@ provide information in spec/elektra/metadata
 
 fix comments:
 	all plugins should use new comment-approach
+	(also iconv)
 
 fix types: (also in 0.8.14)
 	type checker should check like defined in schema
@@ -149,26 +130,7 @@ plugins should use relative pathes so that import/export/remount works
 generic simpleini (customizable printf/scanf format strings)
 
 
-## Announce goal
-
-We shifted our [goals](http://git.libelektra.org/blob/master/doc/GOALS.md) a bit:
-We want to prefer simplicity to flexibility!
-	use it also for normal plugins (pre, postfilter)
-but every way is optional, if you want you can use it, otherwise you can leave it out:
-- as primitive key/value storage
-- with specification
-- with code generation
-- ...
-
-but no flexibility regarding:
-- namespaces are only useful for configuration (not for arbitrary key/value)
-- mounting and contracts functionality
-- error code meanings are fixed, if a resolver detects a conflict, error #30 must be used
-- of course ABI, API
-
-
-
-# 0.8.15
+# 0.8.16
 
 specification checker+application
 	replaces struct+glob
@@ -176,6 +138,7 @@ specification checker+application
 	stacking: apply links for whole hierarchy
 	+ vendor overrides (apply additional data to specification)
 	(beware of featuritis, only if adapts nicely in rest)
+	conflict plugin
 
 tooling:
 	mounting with specification

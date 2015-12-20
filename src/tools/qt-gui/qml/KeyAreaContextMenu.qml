@@ -11,13 +11,13 @@ Menu {
 		MenuItem {
 			id:kcmNewKey
 
-			action: newKeyAction
+			action: guiActions.newKeyAction
 			text: qsTr("Create Key here ...")
 		}
 		MenuItem {
 			id:kcmNewArray
 
-			action: newArrayAction
+			action: guiActions.newArrayAction
 			text: qsTr("Create Array Entry here ...")
 		}
 		MenuItem {
@@ -25,7 +25,7 @@ Menu {
 
 			property string src: "keyBelow"
 
-			action: newKeyAction
+			action: guiActions.newKeyAction
 			text: qsTr("Create Key below ...")
 		}
 		MenuItem {
@@ -33,29 +33,29 @@ Menu {
 
 			property string src: "arrBelow"
 
-			action: newArrayAction
+			action: guiActions.newArrayAction
 			text: qsTr("Create Array Entry below ...")
 		}
 	}
 	MenuItem {
 		id: kcmEdit
-		action: editAction
+		action: guiActions.editAction
 	}
 	MenuItem {
 		id: kcmCut
-		action: cutAction
+		action: guiActions.cutAction
 	}
 	MenuItem {
 		id: kcmCopy
-		action: copyAction
+		action: guiActions.copyAction
 	}
 	MenuItem {
 		id: kcmPaste
-		action: pasteAction
+		action: guiActions.pasteAction
 	}
 	MenuItem {
 		id: kcmDelete
-		action: deleteAction
+		action: guiActions.deleteAction
 	}
 }
 

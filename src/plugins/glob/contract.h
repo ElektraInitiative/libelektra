@@ -1,8 +1,9 @@
-/*
- * contract.h
+/**
+ * @file
  *
- *  Created on: 26 Jul 2014
- *      Author: felixl
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #ifndef CONTRACT_H_
@@ -30,8 +31,6 @@ ksNew (30,
 			KEY_FUNC, elektraGlobMatch,
 			KEY_END),
 #include "readme_glob.c"
-		keyNew ("system/elektra/modules/glob/infos/ordering",
-			KEY_VALUE, "check", KEY_END),
 		keyNew ("system/elektra/modules/glob/infos/version",
 			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END);

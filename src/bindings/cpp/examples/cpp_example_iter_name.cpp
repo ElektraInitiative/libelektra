@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <keyset.hpp>
 
 #include <iostream>
@@ -15,9 +23,9 @@ int main()
 	std::cout << "rend: " << *k.rend() << std::endl;
 
 	std::cout << "forward iterator: ";
-	for (Key::iterator i = k.begin(); i != k.end(); ++i)
+	for (auto && elem : k)
 	{
-		std::cout << *i << " ";
+		std::cout << elem << " ";
 	}
 	std::cout << std::endl;
 

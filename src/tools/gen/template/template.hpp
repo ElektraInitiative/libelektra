@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #compiler-settings
 directiveStartToken = @
 cheetahVarStartToken = $
@@ -24,7 +32,7 @@ class Parameters
 {
 public:
 
-	/** \brief Constructor
+	/** @brief Constructor
 	 * \param ks the keyset to work with.
 	 */
 	Parameters(kdb::KeySet & ks) : ks(ks)
@@ -40,7 +48,7 @@ private:
 };
 
 @for $key, $info in $parameters.items()
-/** \brief Get parameter $key
+/** @brief Get parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -57,7 +65,7 @@ inline $support.typeof(info) Parameters::$support.getfuncname($key)() const
 	return value;
 }
 
-/** \brief Set parameter $key
+/** @brief Set parameter $key
  *
  * $util.doxygen(support, key, info)
  *
@@ -69,7 +77,7 @@ inline void Parameters::$support.setfuncname($key)($support.typeof(info) n)
 {
 	kdb::Key found = ks.lookup("$key", 0);
 
-	if(!found)
+	if (!found)
 	{
 		kdb::Key k("$support.userkey(key)", KEY_END);
 		k.set<$support.typeof(info)>(n);

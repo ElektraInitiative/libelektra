@@ -3,14 +3,12 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = conv
-- infos/placements = pregetstorage postgetstorage presetstorage
+- infos/placements = postgetstorage presetstorage
 - infos/description = Converts values of keys between charsets
 
 ## Introduction ##
 
-This plugin is a filter plugin that converts between different character encodings, 
-or, if the `checkfile` configuration key is set to anything except "0", validates 
-the fileencoding before reading the file.
+This plugin is a filter plugin that converts between different character encodings.
 
 ## Purpose ##
 
@@ -31,13 +29,22 @@ the user can change the from and to encoding.  The default values of the
 plugin configuration are: `from` encoding will be determined at run time.
 `to` encoding is `UTF-8`.
 
+Parameters:
+- `to` is per default UTF-8, to have unicode configuration files
+- `from` is per default the users locale
+
 Note that for writing the configuration `from` and `to` is swapped. A
 key database that requires a specific encoding can make use of it. To
 sum up, every user can select a different encoding, but the key databases
 are still properly encoded for anyone.
 
-If a user wants to validate a files encoding before reading the file,
-the `checkfile` key has to be set. When set to `0` the feature is turned
-off, every other value turns it on. file validation returns an error if
-a byte sequence thats not legal in `from` is detected and the file will
-not be read.
+
+## Example ##
+
+For example ~/.config/iconv.ini should be latin1, but all users
+have UTF-8 settings:
+
+	kdb mount iconv.ini /example/iconv ini iconv from=UTF-8,to=ISO-8859-1
+	file ~/.config/iconv.ini             # iconv.ini: ISO-8859 text
+	kdb get user/example/iconv/a     # converts ISO-8859 to UTF-8
+	kdb set user/example/iconv/a öäß # converts UTF-8 to ISO-8859

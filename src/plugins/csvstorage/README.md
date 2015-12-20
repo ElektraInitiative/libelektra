@@ -8,13 +8,13 @@
 
 ## Introduction ##
 
-This plugin allowes Elektra to read and write CSV files.
+This plugin allows you to read and write CSV files within Elektra.
 
 ## Configuration ##
 
 `delimiter`
 Tells the plugin what delimiter is used in the file.
-The default delimiter is `;` and will be used if `delimiter` is not set.
+The default delimiter is `,` and will be used if `delimiter` is not set.
 
 `header`
 Tells the plugin to use the first line as a header if it's set to "colname". The columns will get the corresponding names.
@@ -38,4 +38,3 @@ First line should determine the headers:
 ## Limitations ##
 
 - Does not work on file streams (e.g. `kdb import` without file)
-- Fails without error on `kdb mount test.csv /csv csvstorage "delimiter=;,columns=2,columns/names=,columns/names/#0=col0Name,columns/names/#1=col1Name"`

@@ -1,26 +1,10 @@
-/***************************************************************************
-            kdbtools.c  -  Elektra High Level Methods
-                             -------------------
-    begin                : Sat Jan 22 2005
-    copyright            : (C) 2005 by Avi Alkalay
-    email                : avi@unix.sh
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
-
-
-/* Subversion stuff
-
-$Id$
-
-*/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <string.h>
 #include <errno.h>
@@ -195,11 +179,11 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 						size_t unencodedSize;
 						
 						unencodedSize=elektraStrLen((char *)buffer)/2;
-						unencoded=malloc(unencodedSize);
+						unencoded=elektraMalloc(unencodedSize);
 						unencodedSize=kdbbDecode((char *)buffer,unencoded);
 						if (!unencodedSize) return -1;
 							keySetRaw(newKey,unencoded,unencodedSize);
-						free(unencoded);
+						elektraFree (unencoded);
 						*/
 					} else keySetRaw(newKey,buffer,elektraStrLen((char *)buffer));
 				}
@@ -220,7 +204,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 				if ((commentSize=keyGetCommentSize(newKey)) > 1) {
 					/*Multiple line comment*/
 					char *tmpComment=0;
-					tmpComment=malloc(commentSize+
+					tmpComment=elektraMalloc(commentSize+
 						xmlStrlen(buffer)*sizeof(xmlChar)+1);
 
 					if (tmpComment) {
@@ -231,7 +215,7 @@ static int consumeKeyNode(KeySet *ks, const char *context, xmlTextReaderPtr read
 
 						keySetComment(newKey,tmpComment);
 
-						free(tmpComment); tmpComment=0;
+						elektraFree (tmpComment); tmpComment=0;
 					}
 				} else keySetComment(newKey,(char *)buffer);
 				xmlFree(buffer);

@@ -16,10 +16,10 @@ WizardTemplate {
 	buttonRow.nextButton.action.onTriggered: {
 		guiBackend.addPath(textField.text)
 
-		if(!error){
+		if (!error){
 			guiBackend.serialise(externTreeModel)
 
-			if(!error){
+			if (!error){
 				wizardLoader.close()
 				loader.source = "Page1.qml"
 				externTreeModel.refresh()

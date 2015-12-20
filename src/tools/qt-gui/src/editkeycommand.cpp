@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "editkeycommand.hpp"
 
 EditKeyCommand::EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent)

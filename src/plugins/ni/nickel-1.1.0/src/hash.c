@@ -185,7 +185,7 @@ and these came close:
  hashlittle() has to dance around fitting the key bytes into registers.
 --------------------------------------------------------------------
 */
-#if(0) //not used here
+#if (0) //not used here
 static
 uint32_t hashword(
 const uint32_t * restrict k,         /* the key, an array of uint32_t values */
@@ -209,7 +209,7 @@ uint32_t        initval)         /* the previous hash, or an arbitrary value */
   }
 
   /*------------------------------------------- handle the last 3 uint32_t's */
-  switch(length)                     /* all the case statements fall through */
+  switch (length)                     /* all the case statements fall through */
   {
   case 3 : c+=k[2];
   case 2 : b+=k[1];
@@ -232,7 +232,7 @@ both be initialized with seeds.  If you pass in (*pb)==0, the output
 (*pc) will be the same as the return value from hashword().
 --------------------------------------------------------------------
 */
-#if(0) //not used here
+#if (0) //not used here
 static
 void hashword2 (
 const uint32_t * restrict k,         /* the key, an array of uint32_t values */
@@ -258,7 +258,7 @@ uint32_t       * restrict pb)     /* IN: more seed OUT: secondary hash value */
   }
 
   /*------------------------------------------- handle the last 3 uint32_t's */
-  switch(length)                     /* all the case statements fall through */
+  switch (length)                     /* all the case statements fall through */
   {
   case 3 : c+=k[2];
   case 2 : b+=k[1];
@@ -299,7 +299,7 @@ Use for hash table lookup, or anything where one collision in 2^^32 is
 acceptable.  Do NOT use for cryptographic purposes.
 -------------------------------------------------------------------------------
 */
-#if(!HASH_BIG_ENDIAN) //only if not big-endian
+#if (!HASH_BIG_ENDIAN) //only if not big-endian
 static
 uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
 {
@@ -339,7 +339,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
      */
 #ifndef VALGRIND
 
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
@@ -359,7 +359,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
 #else /* make valgrind happy */
 
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=((uint32_t)k8[10])<<16;  /* fall through */
@@ -395,7 +395,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
 
     /*----------------------------- handle the last (probably partial) block */
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[4]+(((uint32_t)k[5])<<16);
              b+=k[2]+(((uint32_t)k[3])<<16);
@@ -449,7 +449,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
     }
 
     /*-------------------------------- last block: affect all 32 bits of (c) */
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=((uint32_t)k[11])<<24;
     case 11: c+=((uint32_t)k[10])<<16;
@@ -484,7 +484,7 @@ uint32_t hashlittle(const void * restrict key, size_t length, uint32_t initval)
  * the key.  *pc is better mixed than *pb, so use *pc first.  If you want
  * a 64-bit value do something like "*pc + (((uint64_t)*pb)<<32)".
  */
-#if(0) //not used here
+#if (0) //not used here
 static
 void hashlittle2(
   const void * restrict key,                              /* the key to hash */
@@ -529,7 +529,7 @@ void hashlittle2(
      */
 #ifndef VALGRIND
 
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=k[2]&0xffffff; b+=k[1]; a+=k[0]; break;
@@ -549,7 +549,7 @@ void hashlittle2(
 #else /* make valgrind happy */
 
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=((uint32_t)k8[10])<<16;  /* fall through */
@@ -585,7 +585,7 @@ void hashlittle2(
 
     /*----------------------------- handle the last (probably partial) block */
     k8 = (const uint8_t *)k;
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[4]+(((uint32_t)k[5])<<16);
              b+=k[2]+(((uint32_t)k[3])<<16);
@@ -639,7 +639,7 @@ void hashlittle2(
     }
 
     /*-------------------------------- last block: affect all 32 bits of (c) */
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=((uint32_t)k[11])<<24;
     case 11: c+=((uint32_t)k[10])<<16;
@@ -670,7 +670,7 @@ void hashlittle2(
  * from hashlittle() on all machines.  hashbig() takes advantage of
  * big-endian byte ordering.
  */
-#if(HASH_BIG_ENDIAN) //only if big-endian
+#if (HASH_BIG_ENDIAN) //only if big-endian
 static
 uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
 {
@@ -710,7 +710,7 @@ uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
      */
 #ifndef VALGRIND
 
-    switch(length)
+    switch (length)
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=k[2]&0xffffff00; b+=k[1]; a+=k[0]; break;
@@ -730,7 +730,7 @@ uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
 #else  /* make valgrind happy */
 
     k8 = (const uint8_t *)k;
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=k[2]; b+=k[1]; a+=k[0]; break;
     case 11: c+=((uint32_t)k8[10])<<8;  /* fall through */
@@ -773,7 +773,7 @@ uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
     }
 
     /*-------------------------------- last block: affect all 32 bits of (c) */
-    switch(length)                   /* all the case statements fall through */
+    switch (length)                   /* all the case statements fall through */
     {
     case 12: c+=k[11];
     case 11: c+=((uint32_t)k[10])<<8;
@@ -801,7 +801,7 @@ uint32_t hashbig( const void * restrict key, size_t length, uint32_t initval)
 Ni_PRIVATE uint32_t Hash(const void * restrict key, size_t length,
                          uint32_t initval)
 {
-#if(HASH_BIG_ENDIAN)
+#if (HASH_BIG_ENDIAN)
    return hashbig(key, length, initval);
 #else
    return hashlittle(key, length, initval);

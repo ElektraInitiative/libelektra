@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief test suite for the crypto plugin
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief test suite for the crypto plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
@@ -96,7 +96,7 @@ static void getIncompleteConfiguration(KeySet **ks)
 
 static void test_init()
 {
-	Key *errorKey = keyNew(KEY_END);
+	Key *errorKey = keyNew ("", KEY_END);
 	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
 	keyDel(errorKey);
 	elektraCryptoTeardown();
@@ -105,7 +105,7 @@ static void test_init()
 static void test_handle_init()
 {
 	KeySet *config;
-	Key *errorKey = keyNew(KEY_END);
+	Key *errorKey = keyNew ("", KEY_END);
 	elektraCryptoHandle *handle;
 
 	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
@@ -138,7 +138,7 @@ static void test_enc_and_dec_with_string()
 {
 	elektraCryptoHandle *handle;
 	KeySet *config;
-	Key *errorKey = keyNew(KEY_END);
+	Key *errorKey = keyNew ("", KEY_END);
 	const char original[] = "Short";
 	char content[64] = "";
 
@@ -173,7 +173,7 @@ static void test_enc_and_dec_with_binary()
 {
 	elektraCryptoHandle *handle;
 	KeySet *config;
-	Key *errorKey = keyNew(KEY_END);
+	Key *errorKey = keyNew ("", KEY_END);
 	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
 	unsigned char content[64];
 	unsigned long read = 0;
@@ -198,7 +198,7 @@ static void test_enc_and_dec_with_binary()
 	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
 	read = keyGetBinary(k, content, sizeof(content));
 	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
-	if(read == sizeof(original))
+	if (read == sizeof(original))
 	{
 		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
 	}
@@ -213,7 +213,7 @@ static void test_enc_and_dec_with_null()
 {
 	elektraCryptoHandle *handle;
 	KeySet *config;
-	Key *errorKey = keyNew(KEY_END);
+	Key *errorKey = keyNew ("", KEY_END);
 
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-null", KEY_END);
 	keySetBinary(k, 0, 0);

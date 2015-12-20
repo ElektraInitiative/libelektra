@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <set.hpp>
 
 #include <kdb.hpp>
@@ -65,7 +73,7 @@ int SetCommand::execute(Cmdline const& cl)
 			key.setString(value);
 		} else {
 			cout << " with null value" << endl;
-			key.setBinary(0, 0);
+			key.setBinary(nullptr, 0);
 		}
 		if (!key.isValid())
 		{
@@ -80,7 +88,7 @@ int SetCommand::execute(Cmdline const& cl)
 			key.setString(value);
 		} else {
 			cout << "Set null value" << endl;
-			key.setBinary(0, 0);
+			key.setBinary(nullptr, 0);
 		}
 	}
 	kdb.set(conf, k);

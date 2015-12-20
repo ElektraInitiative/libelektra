@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef CMDLINE_HPP
 #define CMDLINE_HPP
 
@@ -65,6 +73,7 @@ public:
 	std::string plugins;
 	std::string pluginsConfig;
 	std::string ns;
+	std::string editor;
 
 	kdb::KeySet getPluginsConfig(std::string basepath="user/") const;
 

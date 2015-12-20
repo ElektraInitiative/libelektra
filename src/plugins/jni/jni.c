@@ -1,27 +1,10 @@
-/***************************************************************************
-                     jni.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -221,7 +204,7 @@ static int call2Arg(Data *data, KeySet *ks, Key *errorKey, const char *method)
 
 int elektraJniOpen(Plugin *handle, Key *errorKey)
 {
-	Data *data = malloc(sizeof(Data));
+	Data *data = elektraMalloc(sizeof(Data));
 	data->module = 0;
 	data->printException = 0;
 	elektraPluginSetData(handle, data);
@@ -248,7 +231,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 	char classpatharg[] = "-Djava.class.path=";
-	char *classpath = malloc(sizeof(classpatharg)
+	char *classpath = elektraMalloc(sizeof(classpatharg)
 				+keyGetValueSize(k));
 	strcpy(classpath, classpatharg);
 	strcat(classpath, keyString(k));
@@ -271,7 +254,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	/* TODO: check if JVM is already started:
 	jsize nVMs;
 	JNI_GetCreatedJavaVMs(NULL, 0, &nVMs); // get array length
-	JavaVM** buffer = malloc(nVMs, sizeof(JavaVM*));
+	JavaVM** buffer = elektraMalloc(nVMs, sizeof(JavaVM*));
 	JNI_GetCreatedJavaVMs(buffer, nVMs, &nVMs); // get data
 	*/
 
@@ -287,7 +270,7 @@ int elektraJniOpen(Plugin *handle, Key *errorKey)
 	jint res = JNI_CreateJavaVM(&data->jvm,
 			(void**)&data->env,
 			(void**)&vmArgs);
-	free(classpath);
+	elektraFree (classpath);
 	if (res < 0)
 	{
 		ELEKTRA_SET_ERROR(102, errorKey,
@@ -403,7 +386,7 @@ int elektraJniClose(Plugin *handle, Key *errorKey)
 	int ret = call1Arg(data, errorKey, "close");
 
 	(*data->jvm)->DestroyJavaVM(data->jvm);
-	free(data);
+	elektraFree (data);
 
 	return ret;
 }

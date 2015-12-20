@@ -1,20 +1,9 @@
-/***************************************************************************
-             kdbtypes.h  -  Elektra's type system for C and C++11
-                             -------------------
-    begin                : Sat, 01 Mar 2014 17:49:01 +0100
-    copyright            : (C) 2014 by Markus raab
-    email                : elektra@markus-raab.org
-
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/* This header file defines portable Types used in Elektra for C and
+/**
+ * @file
+ *
+ * @brief Elektra's data types for C and C++11.
+ *
+ * This header file defines portable Types used in Elektra for C and
  * C++11.
  *
  * They are not used within the API, but only for generated front ends
@@ -25,8 +14,10 @@
  * See "OMG Language Mapping" if you want to map the types to another
  * programming language.
  *
- * This files defines mappings to C89, C++03 and C++11
- * */
+ * This files defines mappings to C89, C++03 and C++11.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef KDBTYPES_H
 #define KDBTYPES_H
@@ -34,29 +25,6 @@
 #include "kdbconfig.h"
 
 #ifdef __cplusplus
-#if __cplusplus <= 199711L
-// for C++97 or older
-
-#include <stdint.h>
-#include <inttypes.h>
-
-namespace kdb
-{
-	typedef int16_t short_t; // default: 0
-	typedef int32_t long_t; // default: 0
-	typedef int64_t long_long_t; // default: 0
-	typedef uint16_t unsigned_short_t; // default: 0
-	typedef uint32_t unsigned_long_t; // default: 0
-	typedef uint64_t unsigned_long_long_t; // default: 0
-	typedef float float_t; // default: 0.0
-	typedef double double_t; // default: 0.0
-	typedef long double long_double_t; // default: 0.0
-	typedef unsigned char char_t; // default: 0
-	typedef bool boolean_t; // default: false
-	typedef uint8_t octet_t; // default: 0
-	// using wchar_t; // default: 0 wchar_t not supported!
-}
-#else
 // for C++11 or later
 
 namespace kdb
@@ -75,7 +43,6 @@ namespace kdb
 	using boolean_t = bool; // default: false
 	using octet_t = uint8_t; // default: 0
 }
-#endif
 #endif // for c++
 
 

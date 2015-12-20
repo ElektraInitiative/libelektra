@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "dbus.h"
 
 #ifdef HAVE_KDBCONFIG_H
@@ -30,8 +38,8 @@ int main (int argc, char**argv)
 {
 	if (argc == 2)
 	{
-		if (!strcmp(argv[1], "send_session")) elektraDbusSendMessage (DBUS_BUS_SESSION);
-		if (!strcmp(argv[1], "send_system")) elektraDbusSendMessage (DBUS_BUS_SYSTEM);
+		if (!strcmp(argv[1], "send_session")) elektraDbusSendMessage (DBUS_BUS_SESSION, "test1", "KeyChanged");
+		if (!strcmp(argv[1], "send_system")) elektraDbusSendMessage (DBUS_BUS_SYSTEM, "test2", "KeyChanged");
 		if (!strcmp(argv[1], "receive_session")) elektraDbusReceiveMessage (DBUS_BUS_SESSION, callback);
 		if (!strcmp(argv[1], "receive_system")) elektraDbusReceiveMessage (DBUS_BUS_SYSTEM, callback);
 	}

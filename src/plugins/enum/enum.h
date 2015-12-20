@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief Header for enum plugin
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Header for enum plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef ELEKTRA_PLUGIN_ENUM_H
 #define ELEKTRA_PLUGIN_ENUM_H

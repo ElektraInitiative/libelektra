@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.h>
 
 #include <stdio.h>
@@ -5,7 +13,7 @@
 void outputKeySet(KeySet *returned)
 {
 	ksRewind(returned);
-	while(ksNext(returned))
+	while (ksNext(returned))
 	{
 		printf("%s\n", keyName(ksCurrent(returned)));
 	}

@@ -8,8 +8,8 @@ KeyWindow {
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
 	function populateMetaArea() {
-		if(selectedNode.metaValue){
-			for(var i = 0; i < selectedNode.metaValue.rowCount(); i++){
+		if (selectedNode.metaValue){
+			for (var i = 0; i < selectedNode.metaValue.rowCount(); i++){
 				qmlMetaKeyModel.append({"metaName" : selectedNode.metaValue.get(i).name, "metaValue" : selectedNode.metaValue.get(i).value})
 			}
 		}
@@ -20,18 +20,18 @@ KeyWindow {
 		var metaData = {}
 		var index
 
-		if(accessFromSearchResults)
+		if (accessFromSearchResults)
 			index = selectedNode.parentModel.getIndexByName(selectedNode.name)
 		else
 			index = selectedNode.index
 
 		//collect metadata in a map
-		for(var i = 0; i < qmlMetaKeyModel.count; i++){
+		for (var i = 0; i < qmlMetaKeyModel.count; i++){
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 		}
 
 		//create undo command
-		if(isEdited){
+		if (isEdited){
 			container.clearData()
 
 			container.setOldName(keyName.toString())
@@ -45,11 +45,11 @@ KeyWindow {
 			undoManager.createEditKeyCommand(selectedNode.parentModel, index, container)
 		}
 
-		if(!error){
+		if (!error){
 			qmlMetaKeyModel.clear()
 			selectedNode = null
 
-			if(accessFromSearchResults){
+			if (accessFromSearchResults){
 				searchResultsListView.model.refresh()
 				searchResultsSelectedItem = searchResultsListView.model.get(searchResultsListView.currentIndex)
 			}
@@ -61,7 +61,7 @@ KeyWindow {
 
 			qmlMetaKeyModel.clear()
 
-//			if(keyAreaView.model !== null && !accessFromSearchResults){
+//			if (keyAreaView.model !== null && !accessFromSearchResults){
 //				keyAreaSelectedItem = keyAreaView.model.get(keyAreaView.currentRow)
 //			}
 		}

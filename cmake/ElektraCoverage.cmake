@@ -5,7 +5,7 @@
 
 find_program(COVERAGE_LCOV lcov)
 find_program(COVERAGE_AWK awk)
-if(EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
+if (EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
 	#make all invocations of lcov and genhtml quiet
 	set(COMMON_FLAGS "-q")
 
@@ -49,7 +49,7 @@ if(EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
 		)
 
 	find_program(COVERAGE_GENHTML genhtml)
-	if(EXISTS ${COVERAGE_GENHTML})
+	if (EXISTS ${COVERAGE_GENHTML})
 		add_custom_target(coverage-genhtml
 			COMMAND ${COVERAGE_GENHTML} ${COMMON_FLAGS}
 				${COVERAGE_DIR}/coverage-filtered.info

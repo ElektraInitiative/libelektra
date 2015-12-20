@@ -1,11 +1,11 @@
 /**
-* \file
-*
-* \brief Headerfile of Struct checker
-*
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Headerfile of Struct checker
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 
 #ifndef FACTORY_HPP
@@ -31,7 +31,7 @@ public:
 template <class T>
 class Cnstancer: public Instancer
 {
-	virtual T* get()
+	virtual T* get() override
 	{
 		return new T();
 	}
@@ -39,14 +39,14 @@ class Cnstancer: public Instancer
 
 class StructInstancer: public Instancer
 {
-	KeySet config;
+	kdb::KeySet config;
 
 public:
-	StructInstancer (KeySet config_) :
+	StructInstancer (kdb::KeySet config_) :
 		config(config_)
 	{}
 
-	virtual StructChecker* get()
+	virtual StructChecker* get() override
 	{
 		return new StructChecker(config);
 	}
@@ -56,33 +56,29 @@ class Factory
 {
 	std::map<std::string, Instancer*> m_factory;
 public:
-	Factory(KeySet config) :
+	Factory(kdb::KeySet config) :
 		m_factory()
 	{
 		config.rewind();
-		Key root = config.next(); // struct key
+		kdb::Key root = config.next();
 
 		m_factory.insert(std::make_pair("list", new Cnstancer<ListChecker>()));
 
-		Key k;
+		kdb::Key k;
 		while ((k = config.next()))
 		{
 			if (!k.isDirectBelow(root)) throw "Factory: key for configuration is not direct below";
 
-			KeySet cks(config.cut(k));
+			kdb::KeySet cks(config.cut(k));
 			m_factory.insert(std::make_pair(k.getBaseName(), new StructInstancer(cks)));
 		}
 	}
 
 	~Factory()
 	{
-		for (
-			std::map<std::string,Instancer*>::iterator it = 
-			m_factory.begin();
-			it != m_factory.end();
-			it++)
+		for (auto & elem : m_factory)
 		{
-			delete it->second;
+			delete elem.second;
 		}
 	}
 
@@ -98,7 +94,7 @@ public:
 };
 
 
-static inline void doCheck(Checker *c, KeySet ks)
+static inline void doCheck(Checker *c, kdb::KeySet ks)
 {
 	try {
 		c->check(ks);
@@ -114,9 +110,9 @@ static inline void doCheck(Checker *c, KeySet ks)
 }
 
 
-static inline Checker* buildChecker(KeySet config)
+static inline Checker* buildChecker(kdb::KeySet config)
 {
-	Key k = config.lookup ("/struct");
+	kdb::Key k = config.lookup ("/struct");
 	if (!k) throw "No Key describing the struct found";
 
 	Factory f (config.cut(k));

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <keyset.hpp>
 
 #include <map>
@@ -80,7 +88,7 @@ public:
 	typedef std::map<std::string, KeyNode> KeyNodeMap;
 	typedef KeyNodeMap::iterator KeyNodeIterator;
 
-	KeyNode(unsigned long depth, Key k = static_cast<ckdb::Key*>(0)):
+	KeyNode(unsigned long depth, Key k = static_cast<ckdb::Key*>(nullptr)):
 		m_self(k),
 		m_subnodes(),
 		m_depth(depth)
@@ -104,14 +112,12 @@ public:
 
 		if (m_self.isDirectBelow(k) || depth == name_depth(k))
 		{
-			for (KeyNodeIterator it = m_subnodes.begin();
-					it != m_subnodes.end();
-					++it)
+			for (auto & elem : m_subnodes)
 			{
-				if (it->first == k.getBaseName())
+				if (elem.first == k.getBaseName())
 				{
 					// found node, update it
-					it->second.m_self = k;
+					elem.second.m_self = k;
 					return;
 				}
 			}
@@ -120,14 +126,12 @@ public:
 			return;
 		}
 
-		for (KeyNodeIterator it = m_subnodes.begin();
-				it != m_subnodes.end();
-				++it)
+		for (auto & elem : m_subnodes)
 		{
-			if (k.isBelow(it->second.m_self))
+			if (k.isBelow(elem.second.m_self))
 			{
 				// found subnode, call recursively
-				it->second.add(k, depth);
+				elem.second.add(k, depth);
 				return;
 			}
 		}
@@ -137,7 +141,7 @@ public:
 		std::pair<KeyNodeIterator, bool> p = m_subnodes.insert(
 			std::make_pair(name, KeyNode(depth)));
 			// structure keys get a null key
-		KeyNodeIterator it = p.first;
+		auto it = p.first;
 		it->second.add(k, depth);
 	}
 
@@ -148,12 +152,10 @@ public:
 	 */
 	void accept(Visitor & visitor)
 	{
-		for (KeyNodeIterator it = m_subnodes.begin();
-				it != m_subnodes.end();
-				++it)
+		for (auto & elem : m_subnodes)
 		{
-			visitor.visit(it->first, it->second.m_depth,  it->second.m_self);
-			it->second.accept(visitor);
+			visitor.visit(elem.first, elem.second.m_depth,  elem.second.m_self);
+			elem.second.accept(visitor);
 		}
 	}
 
@@ -192,10 +194,9 @@ public:
 	 */
 	void add(KeySet const & ks)
 	{
-		for (KeySet::iterator it = ks.begin();
-				it != ks.end(); ++it)
+		for (auto && k : ks)
 		{
-			add(*it);
+			add(k);
 		}
 	}
 
@@ -262,7 +263,7 @@ private:
 class PrintVisitor : public kdb::Visitor
 {
 public:
-	void visit(std::string name, unsigned long depth, kdb::Key k)
+	void visit(std::string name, unsigned long depth, kdb::Key k) override
 	{
 		for (unsigned long i = 0; i<depth; ++i)
 		{

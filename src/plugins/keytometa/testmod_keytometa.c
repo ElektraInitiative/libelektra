@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief A plugin that makes use of libaugeas to read and write configuration files
+ * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -34,9 +34,9 @@ static Key *createMergingKey (int i) {
 	asprintf (&value, "meta line %d", i);
 	asprintf (&order, "%i", i);
 	Key *key = keyNew (name, KEY_VALUE, value, KEY_META,  "order", order, KEY_END);
-	free (name);
-	free (value);
-	free (order);
+	elektraFree (name);
+	elektraFree (value);
+	elektraFree (order);
 	return key;
 }
 

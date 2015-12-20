@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KEY_HPP
 #define ELEKTRA_KEY_HPP
 
@@ -132,12 +140,11 @@ public:
 	const_reverse_iterator rbegin() const;
 	reverse_iterator rend();
 	const_reverse_iterator rend() const;
-#if __cplusplus > 199711L
+
 	const_iterator cbegin() const noexcept;
 	const_iterator cend() const noexcept;
 	const_reverse_iterator crbegin() const noexcept;
 	const_reverse_iterator crend() const noexcept;
-#endif
 #endif //ELEKTRA_WITHOUT_ITERATOR
 
 
@@ -439,7 +446,6 @@ inline Key::const_reverse_iterator Key::rend() const
 	return Key::const_reverse_iterator(*this, false);
 }
 
-#if __cplusplus > 199711L
 inline Key::const_iterator Key::cbegin() const noexcept
 {
 	return Key::const_iterator(*this, true);
@@ -459,7 +465,6 @@ inline Key::const_reverse_iterator Key::crend() const noexcept
 {
 	return Key::const_reverse_iterator(*this, false);
 }
-#endif
 #endif //ELEKTRA_WITHOUT_ITERATOR
 
 
@@ -472,7 +477,7 @@ inline Key::const_reverse_iterator Key::crend() const noexcept
  * @see isValid(), isNull()
  */
 inline Key::Key () :
-	key(ckdb::keyNew (0))
+	key(ckdb::keyNew (nullptr))
 {
 	operator++();
 }
@@ -730,7 +735,7 @@ ckdb::Key* Key::release ()
 	if (key)
 	{
 		operator --();
-		key = 0;
+		key = nullptr;
 	}
 	return ret;
 }
@@ -965,7 +970,7 @@ inline Key::operator bool() const
  */
 inline bool Key::isNull() const
 {
-	return key == 0;
+	return key == nullptr;
 }
 
 /**
@@ -1016,7 +1021,6 @@ inline T Key::get() const
 }
 
 /*
-#if __cplusplus > 199711L
 // TODO: are locale dependent
 //   + throw wrong exception (easy to fix though)
 template <>
@@ -1066,7 +1070,6 @@ inline long double Key::get<long double>() const
 {
 	return stold(getString());
 }
-#endif
 */
 
 
@@ -1098,7 +1101,6 @@ inline void Key::set(T x)
 }
 
 /*
-#if __cplusplus > 199711L
 // TODO: are locale dependent
 template <>
 inline void Key::set(int val)
@@ -1153,7 +1155,6 @@ inline void Key::set(long double val)
 {
 	setString(std::to_string(val));
 }
-#endif
 */
 
 
@@ -1211,9 +1212,7 @@ inline ssize_t Key::getStringSize() const
 inline Key::func_t Key::getFunc() const
 {
 	union {Key::func_t f; void* v;} conversation;
-#if __cplusplus > 199711L
 	static_assert(sizeof(conversation) == sizeof(func_t), "union does not have size of function pointer");
-#endif
 
 	if (ckdb::keyGetBinary(getKey(),
 			&conversation.v,
@@ -1227,9 +1226,7 @@ inline Key::func_t Key::getFunc() const
 inline void Key::setCallback(callback_t fct)
 {
 	union {callback_t f; void* v;} conversation;
-#if __cplusplus > 199711L
 	static_assert(sizeof(conversation) == sizeof(callback_t), "union does not have size of function pointer");
-#endif
 
 	conversation.f = fct;
 	ckdb::keySetBinary(getKey(), &conversation.v, sizeof(conversation));
@@ -1442,7 +1439,7 @@ inline void Key::setMeta(const std::string &metaName, T x)
  */
 inline void Key::delMeta(const std::string &metaName)
 {
-	ckdb::keySetMeta(key, metaName.c_str(), 0);
+	ckdb::keySetMeta(key, metaName.c_str(), nullptr);
 }
 
 /**
@@ -1654,7 +1651,8 @@ inline int Key::del ()
 
 } // end of namespace kdb
 
-#if __cplusplus > 199711L
+
+#ifdef ELEKTRA_WITH_HASH
 namespace std
 {
 	/**
@@ -1669,7 +1667,7 @@ namespace std
 		}
 	};
 } // end of namespace std
-#endif
+#endif // ELEKTRA_WITH_HASH
 
 #endif
 

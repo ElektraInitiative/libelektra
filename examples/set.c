@@ -1,10 +1,17 @@
-/* gcc -Wall -g elektra_set.c -o elektra-set `pkg-config --cflags --libs elektra` */
-/* Thanks to
- * Kai-Uwe Behrmann" <ku.b@gmx.de>
- * for that example
+/**
+ * @file
+ *
+ * @brief example for set
+ *
+ * gcc -Wall -g elektra_set.c -o elektra-set `pkg-config --cflags --libs elektra`
+ * Thanks to Kai-Uwe Behrmann <ku.b@gmx.de> for that example
  *
  * to clean up after executing this example you have to use:
- *  kdb rm user/sw/MyApp/Tests/TestKey1
+ *
+ *     kdb rm user/sw/MyApp/Tests/TestKey1
+ *
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -13,7 +20,7 @@
 void print_warnings(Key * err)
 {
 	const Key *meta = 0; keyRewindMeta(err);
-	while((meta = keyNextMeta(err)) != 0)
+	while ((meta = keyNextMeta(err)) != 0)
 	{
 		printf("%s:\t%s\n",
 				keyName(meta), 

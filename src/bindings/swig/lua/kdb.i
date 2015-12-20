@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 %module kdb
 
 %include "../common.i"
@@ -210,7 +218,7 @@
 %LuaSTLIterator(kdb::Key::reverse_iterator, name_iterator_iter);
 
 %extend kdb::Key {
-  Key(const char *name, uint64_t flags = 0) {
+  Key(const char *name, int flags = 0) {
     return new kdb::Key(name,
       KEY_FLAGS, flags,
       KEY_END);
@@ -220,8 +228,8 @@
     return !bool(*self);
   }
 
-  const char *__tostring() {
-    return self->getName().c_str();
+  std::string __tostring() {
+    return self->getName();
   }
 
   myswig::LuaSTLIterator_T<kdb::Key::iterator> *name_iterator() {

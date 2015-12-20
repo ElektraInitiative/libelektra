@@ -38,7 +38,7 @@ Rectangle {
 				text: name + " : " + value
 				clip: true
 				Component.onCompleted: {
-					if(paintedWidth > maxWidth)
+					if (paintedWidth > maxWidth)
 						maxWidth = paintedWidth
 				}
 			}
@@ -69,7 +69,7 @@ Rectangle {
 				text: name + " : " + value
 
 				Component.onCompleted: {
-					if(paintedWidth > maxWidth)
+					if (paintedWidth > maxWidth)
 						maxWidth = paintedWidth
 
 					metaHeight += height

@@ -1,7 +1,7 @@
 include(LibAddPlugin)
 
 foreach (plugin ${PLUGINS})
-	if(${plugin} MATCHES ".*_.*")
+	if (${plugin} MATCHES ".*_.*")
 		message(STATUS "Include Plugin's build variant ${plugin}")
 	else()
 		message(STATUS "Include Plugin ${plugin}")
@@ -16,6 +16,8 @@ endforeach(plugin)
 # work with the chosen set of plugins.
 if (NOT PLUGINS)
 	message (SEND_ERROR "No plugins defined, please set PLUGINS with ccmake")
+else ()
+	generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
 endif (NOT PLUGINS)
 
 #TODO:

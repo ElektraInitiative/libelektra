@@ -1,4 +1,5 @@
-# Code Generation
+kdb-gen(1) -- code generation
+=============================
 
 This tutorial serves as a guide for how you can use the code generator and
 contextual values. For more background read
@@ -56,7 +57,7 @@ E.g. if an application is started with another profile:
 	firefox -P anonymous
 
 we want different configuration values,
-e.g. the value of the key ```/username``` should certainly
+e.g. the value of the key `/username` should certainly
 not give hints of the user. In Elektra such problems are solved by
 introduction of an additional level in the hierarchy.
 So instead of:
@@ -95,10 +96,10 @@ Now we have everything ready to actually switch profiles:
 
 	par.activate<ProfileLayer>("anonymous");
 
-The library function ```activate```
+The library function `activate`
 makes sure that all contextual values that contain the placeholder
 %profile% will use "anonymous" instead of the placeholder afterwards.
-If no placeholder exists ```%``` will be used.
+If no placeholder exists `%` will be used.
 
 
 ## Commandline Arguments
@@ -113,7 +114,7 @@ item in the specification:
 	opt/long=profile
 
 The specification entries "opt" and "opt/long" will generate, next to
-the contextual value ```firefox.profile``` additional code parsing can be 
+the contextual value `firefox.profile` additional code parsing can be 
 done via the commandline:
 
 	kdb gen specification.ini template_genopt.c -o genopt.c
