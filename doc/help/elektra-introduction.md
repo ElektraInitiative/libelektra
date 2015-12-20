@@ -2,12 +2,10 @@ elektra-introduction(7) -- an introduction to Elektra
 ==================================================
 
 
-**Elektra** is a library implementing access to a global key
-database.
-The Global key database provides global access to all key databases
-of all applications in a system that wants to access a key database.
-To elektrify an application means to change the application so that it uses
-Elektra afterwards.
+**Elektra** is a library implementing access to a global key database.
+The **global key database** provides access to all configuration
+files found on a system.  To elektrify an application means to change
+the application so that it uses Elektra afterwards.
 
 Information on Elektra can be found on the
 [website](http://www.libelektra.org).
@@ -52,14 +50,11 @@ access configuration.
 
 ## Why is it important?
 
-The configuration files that represent key databases can have binary or
-humanly-readable formats.
-From the latter, an unmanageable number is established.
-Developers of programs tend to
-document the format of the configuration file extensively.
-The configuration file may give
-a special flavour to a specific program and
-users frequently need it.
+The configuration files that represent key databases can have binary
+or humanly-readable formats.  From the latter, an unmanageable number
+is established.  Developers of programs tend to document the format of
+the configuration file extensively.  The configuration file may give a
+special flavour to a specific program and users frequently need it.
 
 Sometimes limitations in the configuration file even lead to rewrites
 of software.  For example, inetd has a non-modular flat configuration
