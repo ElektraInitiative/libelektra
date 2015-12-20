@@ -12,8 +12,8 @@
 
 #include <kdb.h>
 
-#define ELEKTRA_CRYPTO_GCRY_KEYSIZE (32)
-#define ELEKTRA_CRYPTO_GCRY_BLOCKSIZE (16)
+#define ELEKTRA_CRYPTO_SSL_KEYSIZE (32)
+#define ELEKTRA_CRYPTO_SSL_BLOCKSIZE (16)
 
 int elektraCryptoOpenSSLInit(Key *errorKey);
 void elektraCryptoOpenSSLTeardown(void);

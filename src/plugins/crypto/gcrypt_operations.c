@@ -60,7 +60,7 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 	Key *iv = elektraCryptoReadParamIv(config, errorKey);
 	if (key == NULL || iv == NULL)
 	{
-		return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+		return (-1);
 	}
 
 	keyLength = keyGetBinary(key, keyBuffer, sizeof(keyBuffer));
@@ -70,8 +70,10 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 	(*handle) = elektraMalloc(sizeof(elektraCryptoHandle));
 	if (*handle == NULL)
 	{
+		memset(keyBuffer, 0, sizeof(keyBuffer));
+		memset(ivBuffer, 0, sizeof(ivBuffer));
 		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
-		return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+		return (-1);
 	}
 
 	if ((gcry_err = gcry_cipher_open(*handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0)) != 0)
@@ -91,7 +93,7 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 
 	memset(keyBuffer, 0, sizeof(keyBuffer));
 	memset(ivBuffer, 0, sizeof(ivBuffer));
-	return ELEKTRA_CRYPTO_FUNCTION_SUCCESS;
+	return 1;
 
 error:
 	memset(keyBuffer, 0, sizeof(keyBuffer));
@@ -100,7 +102,7 @@ error:
 	gcry_cipher_close(**handle);
 	elektraFree(*handle);
 	(*handle) = NULL;
-	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+	return (-1);
 }
 
 int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)

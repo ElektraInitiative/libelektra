@@ -43,7 +43,7 @@ int elektraCryptoOpen(Plugin *handle ELEKTRA_UNUSED, Key *errorKey)
 	}
 	ref_cnt++;
 	pthread_mutex_unlock(&mutex_ref_cnt);
-	return ELEKTRA_CRYPTO_FUNCTION_SUCCESS;
+	return 1;
 }
 
 /**
@@ -60,7 +60,7 @@ int elektraCryptoClose(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUS
 		elektraCryptoTeardown();
 	}
 	pthread_mutex_unlock(&mutex_ref_cnt);
-	return ELEKTRA_CRYPTO_FUNCTION_SUCCESS;
+	return 1;
 }
 
 /**
@@ -85,7 +85,7 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 			KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);
-		return ELEKTRA_CRYPTO_FUNCTION_SUCCESS;
+		return 1;
 	}
 
 	// the actual decryption
@@ -93,7 +93,7 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != ELEKTRA_CRYPTO_FUNCTION_SUCCESS)
+	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
 	{
 		goto error;
 	}
@@ -101,7 +101,7 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
-		if (elektraCryptoDecrypt(cryptoHandle, k, parentKey) != ELEKTRA_CRYPTO_FUNCTION_SUCCESS)
+		if (elektraCryptoDecrypt(cryptoHandle, k, parentKey) != 1)
 		{
 			goto error;
 		}
@@ -131,7 +131,7 @@ int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != ELEKTRA_CRYPTO_FUNCTION_SUCCESS)
+	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
 	{
 		goto error;
 	}
@@ -139,17 +139,17 @@ int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
-		if (elektraCryptoEncrypt(cryptoHandle, k, parentKey) != ELEKTRA_CRYPTO_FUNCTION_SUCCESS)
+		if (elektraCryptoEncrypt(cryptoHandle, k, parentKey) != 1)
 		{
 			goto error;
 		}
 	}
 	elektraCryptoHandleDestroy(cryptoHandle);
-	return ELEKTRA_CRYPTO_FUNCTION_SUCCESS;
+	return 1;
 
 error:
 	elektraCryptoHandleDestroy(cryptoHandle);
-	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+	return (-1);
 }
 
 /**
@@ -159,7 +159,7 @@ error:
  */
 int elektraCryptoError(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
-	return ELEKTRA_CRYPTO_FUNCTION_SUCCESS;
+	return 1;
 }
 
 /**
@@ -177,7 +177,7 @@ int elektraCryptoInit(Key *errorKey)
 	return elektraCryptoOpenSSLInit(errorKey);
 #endif
 
-	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+	return (-1);
 }
 
 /**
@@ -225,7 +225,7 @@ int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key 
 	return elektraCryptoOpenSSLHandleCreate(handle, config, errorKey);
 #endif
 
-	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+	return (-1);
 }
 
 /**
@@ -259,7 +259,7 @@ int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	return elektraCryptoOpenSSLEncrypt(handle, k, errorKey);
 #endif
 
-	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+	return (-1);
 }
 
 /**
@@ -277,7 +277,7 @@ int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	return elektraCryptoOpenSSLDecrypt(handle, k, errorKey);
 #endif
 
-	return ELEKTRA_CRYPTO_FUNCTION_ERROR;
+	return (-1);
 }
 
 /**

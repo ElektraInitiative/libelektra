@@ -41,7 +41,11 @@ typedef gcry_cipher_hd_t elektraCryptoHandle;
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
 
 #include <openssl/evp.h>
-typedef EVP_CIPHER_CTX elektraCryptoHandle;
+typedef struct
+{
+	EVP_CIPHER_CTX encrypt;
+	EVP_CIPHER_CTX decrypt;
+} elektraCryptoHandle;
 
 #endif
 
