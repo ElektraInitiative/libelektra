@@ -95,7 +95,7 @@ passed.
 It does not check it again.
 Missing configuration would lead to partially set data structures.
 The internally used API `setmntent` crashes in that case.
-This leads us to the \empha{purpose of contracts}:
+This leads us to the **purpose of contracts**:
 We want a guarantee that specific conditions are already met
 because we know that the code of the plugin cannot handle it.
 
