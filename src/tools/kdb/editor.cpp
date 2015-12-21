@@ -53,12 +53,16 @@ void EditorCommand::tmpFile()
 bool runAllEditors(std::string filename)
 {
 	using namespace kdb;
-	std::string dirname = "/sw/kdb/current/";
+	std::string dirname = "/sw/elektra/kdb/#0/";
+	std::string legacyDirname = "/sw/kdb/current/";
 	KDB kdb;
 	KeySet conf;
 	kdb.get(conf, dirname);
+	kdb.get(conf, legacyDirname);
 
-	Key k = conf.lookup(dirname+"editor");
+	Key k = conf.lookup(dirname+"current/editor");
+	if (!k) k = conf.lookup(dirname+"%/editor");
+	if (!k) k = conf.lookup(legacyDirname+"editor");
 	if (k)
 	{
 		std::string editor = k.get<std::string>().c_str();
