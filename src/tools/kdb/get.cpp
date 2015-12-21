@@ -19,7 +19,7 @@
 using namespace std;
 using namespace kdb;
 
-GetCommand::GetCommand() : kdb(root)
+GetCommand::GetCommand()
 {}
 
 namespace
@@ -115,17 +115,64 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, ckdb::K
 	return found;
 }
 
+// TODO keynames feature:
+// kdb set user/sw/elektra/kdb/#0/current/namedkeys 
+// kdb set user/sw/elektra/kdb/#0/current/namedkeys/kdb user/sw/elektra/kdb/#0/current
+// bin/kdb get +kdb/format      # will actually get user/sw/elektra/kdb/#0/current/format
+kdb::Key createKey(Cmdline const& cl, int pos)
+{
+	std::string name = cl.arguments[pos];
+	// std::cerr << "Using " << name << std::endl;
+	// for (auto const & n : cl.namedKeys) std::cout << "nks: " << n.second << std::endl;
+	if (name.empty())
+	{
+		throw invalid_argument("<empty string> is not an valid keyname");
+	}
+
+	if (name[0] == '+')
+	{
+		size_t found = name.find('/');
+		std::string namedKey;
+		std::string restKey;
+		if (found != std::string::npos)
+		{
+			namedKey = name.substr(1, found-1);
+			restKey = name.substr(found, name.length()-found);
+		}
+		else
+		{
+			namedKey = name.substr(1, name.length()-1);
+		}
+		auto realKeyIt = cl.namedKeys.find(namedKey);
+		std::string realKey;
+		if (realKeyIt == cl.namedKeys.end())
+		{
+			throw invalid_argument("cannot find namedkey " + namedKey);
+		}
+		realKey = realKeyIt->second;
+		name = realKey+"/"+restKey;
+		// std::cout << "using named key " << namedKey << " which is: " << realKey << "-" << restKey << std::endl;
+	}
+
+	kdb::Key root(name, KEY_END);
+
+	if (!root.isValid())
+	{
+		throw invalid_argument(name + " is not an valid keyname");
+	}
+
+	return root;
+}
+
 
 int GetCommand::execute (Cmdline const& cl)
 {
 	if (cl.arguments.size() != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
-	root.setName(cl.arguments[0]);
-	if (!root.isValid())
-	{
-		throw invalid_argument(cl.arguments[0] + " is not an valid keyname");
-	}
+
+	kdb::Key root = createKey(cl, 0);
+	kdb::KDB kdb;
 
 	std::string n;
 	if (cl.all)

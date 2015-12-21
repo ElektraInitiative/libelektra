@@ -57,6 +57,7 @@ Cmdline::Cmdline (int argc,
 	pluginsConfig(""),
 	ns("user"),
 	editor(),
+	namedKeys(),
 
 	executable(),
 	commandName()
@@ -247,7 +248,8 @@ Cmdline::Cmdline (int argc,
 			// prefer later dirnames (will override)
 			case 0: dirname = "/sw/kdb/current/"; break; // legacy
 			case 1: dirname = "/sw/elektra/kdb/#0/%/"; break; // no profile
-			case 2: dirname = "/sw/elektra/kdb/#0/current/"; break; // current profile
+			case 2: dirname = "/sw/elektra/kdb/#0/current/";
+				break; // current profile
 			}
 
 			kdb.get(conf, dirname);
@@ -266,6 +268,9 @@ Cmdline::Cmdline (int argc,
 
 			k = conf.lookup(dirname+"editor");
 			if (k) editor = k.get<string>();
+
+			map nks = conf.get<map>(dirname+"namedkeys");
+			namedKeys.insert(nks.begin(), nks.end());
 		}
 
 	}

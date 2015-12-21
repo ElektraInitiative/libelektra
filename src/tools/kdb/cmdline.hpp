@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 class Command;
 
@@ -74,6 +75,9 @@ public:
 	std::string pluginsConfig;
 	std::string ns;
 	std::string editor;
+
+	typedef std::map<std::string, std::string> map;
+	map namedKeys;
 
 	kdb::KeySet getPluginsConfig(std::string basepath="user/") const;
 
