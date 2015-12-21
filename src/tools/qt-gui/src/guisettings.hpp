@@ -121,32 +121,42 @@ signals:
 	void		nodeWithoutKeyColorChanged();
 
 private:
-	kdb::KeySet m_config;
-	std::string m_base;
+	void getKDB();
+
+	kdb::KeySet	m_config;
 
 	QColor		m_highlightColor;
 	QColor		m_frameColor;
 	QColor		m_nodeWithKeyColor;
 	QColor		m_nodeWithoutKeyColor;
 
-	QString		m_highlightColorString;
-	QString		m_frameColorString;
-	QString		m_nodeWKeyColorString;
-	QString		m_nodeWOKeyColorString;
+	std::string	m_profile;
+
+	std::string	m_base;
+	std::string	m_highlightColorString;
+	std::string	m_frameColorString;
+	std::string	m_nodeWKeyColorString;
+	std::string	m_nodeWOKeyColorString;
+
+	std::string	m_legacyBase;
+	std::string	m_legacyHighlightColorString;
+	std::string	m_legacyFrameColorString;
+	std::string	m_legacyNodeWKeyColorString;
+	std::string	m_legacyNodeWOKeyColorString;
 
 	/**
 	 * @brief append Updates a color. On the next @link setKDB() action this color will be permanent.
 	 * @param keyName The type of the color (e.g. "highlight_color")
 	 * @param color The color.
 	 */
-	void		append(const QString &keyName, const QColor &color);
+	void		append(const std::string & keyName, const QColor & color);
 
 	/**
 	 * @brief lookupColor Retrieves the current color for an item.
 	 * @param keyName The type of the color (e.g. "highlight_color")
-	 * @return
+	 * @param color the color to set
 	 */
-	QColor		lookupColor(const QString &keyName) const;
+	void		lookupColor(const std::string & keyName, QColor & color) const;
 };
 
 Q_DECLARE_METATYPE(GUISettings)
