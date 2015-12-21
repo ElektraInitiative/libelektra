@@ -236,27 +236,38 @@ Cmdline::Cmdline (int argc,
 	{
 		using namespace kdb;
 		/*XXX: Step 4: use default from KDB, if available.*/
-		std::string dirname = "/sw/kdb/current/";
 		KDB kdb;
 		KeySet conf;
-		kdb.get(conf, dirname);
 
-		Key k;
+		for (int i=0; i<=2; ++i)
+		{
+			std::string dirname;
+			switch (i)
+			{
+			// prefer later dirnames (will override)
+			case 0: dirname = "/sw/kdb/current/"; break; // legacy
+			case 1: dirname = "/sw/elektra/kdb/#0/%/"; break; // no profile
+			case 2: dirname = "/sw/elektra/kdb/#0/current/"; break; // current profile
+			}
 
-		k = conf.lookup(dirname+"resolver");
-		if (k) resolver = k.get<string>();
+			kdb.get(conf, dirname);
 
-		k = conf.lookup(dirname+"format");
-		if (k) format = k.get<string>();
+			Key k = conf.lookup(dirname+"resolver");
+			if (k) resolver = k.get<string>();
 
-		k = conf.lookup(dirname+"plugins");
-		if (k) plugins = k.get<string>();
+			k = conf.lookup(dirname+"format");
+			if (k) format = k.get<string>();
 
-		k = conf.lookup(dirname+"namespace");
-		if (k) ns = k.get<string>();
+			k = conf.lookup(dirname+"plugins");
+			if (k) plugins = k.get<string>();
 
-		k = conf.lookup(dirname+"editor");
-		if (k) editor = k.get<string>();
+			k = conf.lookup(dirname+"namespace");
+			if (k) ns = k.get<string>();
+
+			k = conf.lookup(dirname+"editor");
+			if (k) editor = k.get<string>();
+		}
+
 	}
 
 	option o = {nullptr, 0, nullptr, 0};
