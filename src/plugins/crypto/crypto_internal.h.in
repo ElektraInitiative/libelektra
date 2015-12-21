@@ -26,6 +26,8 @@ struct ElektraCryptoHeader
 	unsigned long contentLen;
 };
 
+#define ELEKTRA_CRYPTO_HEADER_INIT { .flags = ELEKTRA_CRYPTO_FLAG_NONE, .contentLen = 0 }
+
 #define ELEKTRA_CRYPTO_META_ENCRYPT ("crypto/encrypt")
 #define ELEKTRA_CRYPTO_META_ENCRYPTED ("crypto/encrypted")
 

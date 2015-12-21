@@ -204,7 +204,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	const unsigned char *value = (unsigned char*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
 
-	struct ElektraCryptoHeader header;
+	struct ElektraCryptoHeader header = ELEKTRA_CRYPTO_HEADER_INIT;
 	unsigned char *output;
 	unsigned char cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	unsigned char contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];

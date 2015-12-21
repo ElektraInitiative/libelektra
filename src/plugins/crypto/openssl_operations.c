@@ -21,7 +21,7 @@ static pthread_mutex_t *lockCs;
 static int cryptoNumLocks;
 static unsigned char cryptoSetup = 0;
 
-void internalLockingCallback(int mode, int type, const char *file ELEKTRA_UNUSED, int line ELEKTRA_UNUSED)
+static void internalLockingCallback(int mode, int type, const char *file ELEKTRA_UNUSED, int line ELEKTRA_UNUSED)
 {
     if (mode & CRYPTO_LOCK)
     {
@@ -33,7 +33,7 @@ void internalLockingCallback(int mode, int type, const char *file ELEKTRA_UNUSED
     }
 }
 
-void internalThreadId(CRYPTO_THREADID *tid)
+static void internalThreadId(CRYPTO_THREADID *tid)
 {
     CRYPTO_THREADID_set_numeric(tid, (unsigned long)pthread_self());
 }
@@ -257,7 +257,7 @@ int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	const unsigned char *value = (unsigned char*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
 
-	struct ElektraCryptoHeader header;
+	struct ElektraCryptoHeader header = ELEKTRA_CRYPTO_HEADER_INIT;
 	unsigned char cipherBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
 	// NOTE to prevent memory overflows in libcrypto the buffer holding the decrypted content
 	//      is one block bigger than the inupt buffer.
