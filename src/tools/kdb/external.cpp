@@ -153,13 +153,25 @@ void runManPage(std::string command)
 	}
 	const char * man = "/usr/bin/man";
 	using namespace kdb;
-	std::string dirname = "/sw/kdb/current/";
 	Key k = nullptr;
 	try {
 		KDB kdb;
 		KeySet conf;
-		kdb.get(conf, dirname);
-		k = conf.lookup(dirname+"man");
+		std::string dirname;
+		for (int i=0; i<=2; ++i)
+		{
+			switch (i)
+			{
+			case 0: dirname = "/sw/elektra/kdb/#0/current/"; break;
+			case 1: dirname = "/sw/elektra/kdb/#0/%/"; break;
+			case 2: dirname = "/sw/kdb/current/"; break; // legacy
+			}
+			kdb.get(conf, dirname);
+			if (!k)
+			{
+				k = conf.lookup(dirname+"man");
+			}
+		}
 	}
 	catch (kdb::KDBException const& ce)
 	{
@@ -169,7 +181,10 @@ void runManPage(std::string command)
 			<< ce.what()
 			<< std::endl;
 	}
-	if (k) man = k.get<std::string>().c_str();
+	if (k)
+	{
+		man = k.get<std::string>().c_str();
+	}
 	char * const argv [3] = {const_cast<char*>(man),
 		const_cast<char*>(command.c_str()),
 		nullptr};
