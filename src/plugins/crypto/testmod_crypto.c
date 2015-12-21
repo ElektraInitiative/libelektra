@@ -147,11 +147,16 @@ static void test_enc_and_dec_with_string()
 
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-string", KEY_END);
 	keySetString(k, original);
+	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
-	// 1. encryption
+	// 1a. encryption
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
+
+	// 1b. verify metadata
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	succeed_if ( metaEncrypted && strlen(keyValue(metaEncrypted)) > 0, "meta-key not set (data does not seem to be encrypted)" );
 
 	// 2. decryption
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
@@ -180,14 +185,19 @@ static void test_enc_and_dec_with_binary()
 
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-bin", KEY_END);
 	keySetBinary(k, original, sizeof(original));
+	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
 	getWorkingConfiguration(&config);
 	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
 
-	// 1. encrypt
+	// 1a. encrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
+
+	// 1b. verify metadata
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	succeed_if ( metaEncrypted && strlen(keyValue(metaEncrypted)) > 0, "meta-key not set (data does not seem to be encrypted)" );
 
 	// 2. decrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
@@ -218,14 +228,19 @@ static void test_enc_and_dec_with_null()
 	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-null", KEY_END);
 	keySetBinary(k, 0, 0);
 	succeed_if( keyGetValueSize(k) == 0, "key is not NULL");
+	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
 	getWorkingConfiguration(&config);
 	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
 
-	// 1. encrypt
+	// 1a. encrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
+
+	// 1b. verify metadata
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	succeed_if ( metaEncrypted && strlen(keyValue(metaEncrypted)) > 0, "meta-key not set (data does not seem to be encrypted)" );
 
 	// 2. decrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
@@ -234,6 +249,86 @@ static void test_enc_and_dec_with_null()
 
 	// 3. check result
 	succeed_if( keyGetValueSize(k) == 0, "key is not NULL");
+
+	keyDel(k);
+	keyDel(errorKey);
+	ksDel(config);
+	elektraCryptoTeardown();
+}
+
+static void test_metakey_handling_encrypt()
+{
+	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
+	unsigned char content[64];
+	unsigned long read = 0;
+
+	elektraCryptoHandle *handle;
+	KeySet *config;
+	Key *errorKey = keyNew ("", KEY_END);
+
+	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-metakey", KEY_END);
+	keySetBinary(k, original, sizeof(original));
+
+	getWorkingConfiguration(&config);
+	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
+
+	// 1. encrypt (should not change since metadata not set)
+	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
+	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
+	elektraCryptoHandleDestroy(handle);
+
+	// 1b. verify metadata
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	succeed_if ( !metaEncrypted || strlen(keyValue(metaEncrypted)) == 0, "meta-key set (data does seem to be encrypted)" );
+
+	// 2. verify data has not been changed
+	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
+	read = keyGetBinary(k, content, sizeof(content));
+	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
+	if (read == sizeof(original))
+	{
+		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
+	}
+
+	keyDel(k);
+	keyDel(errorKey);
+	ksDel(config);
+	elektraCryptoTeardown();
+}
+
+static void test_metakey_handling_decrypt()
+{
+	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
+	unsigned char content[64];
+	unsigned long read = 0;
+
+	elektraCryptoHandle *handle;
+	KeySet *config;
+	Key *errorKey = keyNew ("", KEY_END);
+
+	Key *k = keyNew("user/plugins/crypto/gcrypt/test-dec-metakey", KEY_END);
+	keySetBinary(k, original, sizeof(original));
+
+	getWorkingConfiguration(&config);
+	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
+
+	// 1. decrypt (should not change since metadata not set)
+	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
+	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
+	elektraCryptoHandleDestroy(handle);
+
+	// 1b. verify metadata
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	succeed_if ( !metaEncrypted || strlen(keyValue(metaEncrypted)) == 0, "meta-key set (data does seem to be encrypted)" );
+
+	// 2. verify data has not been changed
+	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
+	read = keyGetBinary(k, content, sizeof(content));
+	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
+	if (read == sizeof(original))
+	{
+		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
+	}
 
 	keyDel(k);
 	keyDel(errorKey);
@@ -253,6 +348,8 @@ int main(int argc, char** argv)
 	test_enc_and_dec_with_string();
 	test_enc_and_dec_with_binary();
 	test_enc_and_dec_with_null();
+	test_metakey_handling_encrypt();
+	test_metakey_handling_decrypt();
 
 	printf("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;
