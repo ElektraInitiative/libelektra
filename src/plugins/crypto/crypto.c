@@ -11,8 +11,15 @@
 #include "kdbconfig.h"
 #endif
 #include "crypto.h"
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 #include "gcrypt_operations.h"
+#endif
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+#include "openssl_operations.h"
+#endif
+#include <kdberrors.h>
 #include <pthread.h>
+#include <string.h>
 
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
@@ -142,7 +149,7 @@ int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 
 error:
 	elektraCryptoHandleDestroy(cryptoHandle);
-	return -1;
+	return (-1);
 }
 
 /**
@@ -162,7 +169,15 @@ int elektraCryptoError(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED,
  */
 int elektraCryptoInit(Key *errorKey)
 {
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 	return elektraCryptoGcryInit(errorKey);
+#endif
+
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	return elektraCryptoOpenSSLInit(errorKey);
+#endif
+
+	return (-1);
 }
 
 /**
@@ -172,7 +187,9 @@ int elektraCryptoInit(Key *errorKey)
  */
 void elektraCryptoTeardown()
 {
-	// nothing to do for libgcrypt, but maybe other libraries need clean-up
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	elektraCryptoOpenSSLTeardown();
+#endif
 }
 
 /**
@@ -200,7 +217,15 @@ void elektraCryptoTeardown()
  */
 int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
 {
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 	return elektraCryptoGcryHandleCreate(handle, config, errorKey);
+#endif
+
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	return elektraCryptoOpenSSLHandleCreate(handle, config, errorKey);
+#endif
+
+	return (-1);
 }
 
 /**
@@ -210,7 +235,13 @@ int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key 
  */
 void elektraCryptoHandleDestroy(elektraCryptoHandle *handle)
 {
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 	elektraCryptoGcryHandleDestroy(handle);
+#endif
+
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	elektraCryptoOpenSSLHandleDestroy(handle);
+#endif
 }
 
 /**
@@ -220,7 +251,15 @@ void elektraCryptoHandleDestroy(elektraCryptoHandle *handle)
  */
 int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 	return elektraCryptoGcryEncrypt(handle, k, errorKey);
+#endif
+
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	return elektraCryptoOpenSSLEncrypt(handle, k, errorKey);
+#endif
+
+	return (-1);
 }
 
 /**
@@ -230,7 +269,47 @@ int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
  */
 int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 	return elektraCryptoGcryDecrypt(handle, k, errorKey);
+#endif
+
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	return elektraCryptoOpenSSLDecrypt(handle, k, errorKey);
+#endif
+
+	return (-1);
+}
+
+/**
+ * @brief read the cryptographic key from the given keyset.
+ * @retval NULL on error
+ * @retval address of the (Elektra) key in the given keyset holding the cryptographic key to be used.
+ */
+Key *elektraCryptoReadParamKey(KeySet *config, Key *errorKey)
+{
+	const char *keyPath = "/elektra/modules/crypto/key-derivation/key";
+	Key *key = ksLookupByName(config, keyPath, 0);
+	if (key == NULL)
+	{
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", keyPath);
+	}
+	return key;
+}
+
+/**
+ * @brief read the cryptographic initialization vector (IV) from the given keyset.
+ * @retval NULL on error
+ * @retval address of the (Elektra) key in the given keyset holding the IV to be used.
+ */
+Key *elektraCryptoReadParamIv(KeySet *config, Key *errorKey)
+{
+	const char *ivPath = "/elektra/modules/crypto/key-derivation/iv";
+	Key *iv = ksLookupByName(config, ivPath, 0);
+	if (iv == NULL)
+	{
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ivPath);
+	}
+	return iv;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
@@ -243,4 +322,3 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
 			ELEKTRA_PLUGIN_ERROR, &elektraCryptoError,
 			ELEKTRA_PLUGIN_END);
 }
-

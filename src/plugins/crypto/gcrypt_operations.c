@@ -25,6 +25,18 @@ void elektraCryptoGcryHandleDestroy(elektraCryptoHandle *handle)
 
 int elektraCryptoGcryInit(Key *errorKey)
 {
+	// check if gcrypt has already been initialized (possibly by the application)
+	if (gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
+	{
+		return 1;
+	}
+
+	// initialize the gcrypt threading subsystem
+	// NOTE: this is a dummy call in newer versions of gcrypt, but old versions require it
+	GCRY_THREAD_OPTION_PTHREAD_IMPL;
+	gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread);
+
+	// initialize the rest of the gcrypt library
 	if (!gcry_check_version(GCRYPT_VERSION))
 	{
 		ELEKTRA_SET_ERRORF(125, errorKey, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
@@ -40,24 +52,15 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 	gcry_error_t gcry_err;
 	unsigned char keyBuffer[64], ivBuffer[64];
 	size_t keyLength, ivLength;
-	const char *keyPath = "/elektra/modules/crypto/key-derivation/key";
-	const char *ivPath = "/elektra/modules/crypto/key-derivation/iv";
 
 	(*handle) = NULL;
 
 	// retrieve keys from configuration
-	Key *key = ksLookupByName(config, keyPath, 0);
-	if (key == NULL)
+	Key *key = elektraCryptoReadParamKey(config, errorKey);
+	Key *iv = elektraCryptoReadParamIv(config, errorKey);
+	if (key == NULL || iv == NULL)
 	{
-		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", keyPath);
-		return -1;
-	}
-
-	Key *iv = ksLookupByName(config, ivPath, 0);
-	if (iv == NULL)
-	{
-		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ivPath);
-		return -1;
+		return (-1);
 	}
 
 	keyLength = keyGetBinary(key, keyBuffer, sizeof(keyBuffer));
@@ -67,8 +70,10 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 	(*handle) = elektraMalloc(sizeof(elektraCryptoHandle));
 	if (*handle == NULL)
 	{
+		memset(keyBuffer, 0, sizeof(keyBuffer));
+		memset(ivBuffer, 0, sizeof(ivBuffer));
 		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
-		return -1;
+		return (-1);
 	}
 
 	if ((gcry_err = gcry_cipher_open(*handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0)) != 0)
@@ -86,14 +91,18 @@ int elektraCryptoGcryHandleCreate(elektraCryptoHandle **handle, KeySet *config, 
 		goto error;
 	}
 
+	memset(keyBuffer, 0, sizeof(keyBuffer));
+	memset(ivBuffer, 0, sizeof(ivBuffer));
 	return 1;
 
 error:
+	memset(keyBuffer, 0, sizeof(keyBuffer));
+	memset(ivBuffer, 0, sizeof(ivBuffer));
 	ELEKTRA_SET_ERRORF(130, errorKey, "Failed to create handle because: %s", gcry_strerror(gcry_err));
 	gcry_cipher_close(**handle);
 	elektraFree(*handle);
 	(*handle) = NULL;
-	return -1;
+	return (-1);
 }
 
 int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
