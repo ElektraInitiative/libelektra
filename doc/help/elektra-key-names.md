@@ -82,11 +82,15 @@ the key names of software-applications should always start with:
 - Avoid to have your applications root right under @p system or @p user.
   (rationale: it would make the hierarchy too flat.)
   See **Application Base Name** above.
-- Avoid the usage of characters other then `/`, A-Z, a-z and 0-9.
+- Avoid the usage of characters other then `/`, a-z and 0-9.
   (rationale: it would allow too many similar, confusing names.)
   (exceptions: if the user or a technology, decide about parts of
   the key name, this restriction does not apply, e.g. if the wlan
   essid is used as part of the key name)
+- The only way to separate names is using `/` (no A-Z, no _, no whitespaces)
+  (rationale: there are many different opinions about this topic
+  and having a choice which separator to choose will certainly lead
+  to inconsistencies)
 - It is suggested to make your application look for default keys under
   `/sw/org/myapp/#/%/` where `#` is a major version number, e.g. `#3` for
   the 4th version and `%` is a profile (`%` for default profile). This way, from
