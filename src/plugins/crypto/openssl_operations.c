@@ -96,6 +96,18 @@ int elektraCryptoOpenSSLHandleCreate(elektraCryptoHandle **handle, KeySet *confi
 		return (-1);
 	}
 
+	if (keyGetValueSize(key) != ELEKTRA_CRYPTO_SSL_KEYSIZE)
+	{
+		ELEKTRA_SET_ERROR(130, errorKey, "Failed to create handle! Invalid key length.");
+		return (-1);
+	}
+
+	if (keyGetValueSize(iv) != ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
+	{
+		ELEKTRA_SET_ERROR(130, errorKey, "Failed to create handle! Invalid IV length.");
+		return (-1);
+	}
+
 	keyGetBinary(key, keyBuffer, sizeof(keyBuffer));
 	keyGetBinary(iv, ivBuffer, sizeof(ivBuffer));
 
@@ -232,19 +244,114 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 		keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "X");
 	}
 	BIO_free_all(encrypted);
-
 	return 1;
 
 error:
 	ELEKTRA_SET_ERRORF(127, errorKey, "Encryption error! libcrypto error code was: %lu", ERR_get_error());
-	if (encrypted)
-	{
-		BIO_free_all(encrypted);
-	}
+	BIO_free_all(encrypted);
 	return (-1);
 }
 
 int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
+	const unsigned char *value = (unsigned char*)keyValue(k);
+	const size_t valueLen = keyGetValueSize(k);
+
+	struct ElektraCryptoHeader header;
+	unsigned char cipherBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
+	// NOTE to prevent memory overflows in libcrypto the buffer holding the decrypted content
+	//      is one block bigger than the inupt buffer.
+	unsigned char contentBuffer[2*ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
+	int written = 0;
+	unsigned char *plaintext;
+	size_t plaintextLen;
+
+	// check if key has been encrypted in the first place
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	if (metaEncrypted == NULL || strlen(keyValue(metaEncrypted)) == 0)
+	{
+		// nothing to do
+		return 1;
+	}
+
+	// plausibility check
+	if (valueLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
+	{
+		ELEKTRA_SET_ERROR(128, errorKey, "value length is not a multiple of the block size");
+		return (-1);
+	}
+
+	// prepare sink for plain text output
+	BIO *decrypted = BIO_new(BIO_s_mem());
+	if (!decrypted)
+	{
+		ELEKTRA_SET_ERROR(87, errorKey, "Memory allocation failed");
+		return (-1);
+	}
+
+	// decrypt the whole BLOB and store the plain text into the memory sink
+	for(unsigned int i = 0; i < valueLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
+	{
+		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
+		EVP_DecryptUpdate(&(handle->decrypt), contentBuffer, &written, cipherBuffer, ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
+		if (written > 0)
+		{
+			BIO_write(decrypted, contentBuffer, written);
+		}
+
+		if (ERR_peek_error())
+		{
+			goto error;
+		}
+	}
+
+	EVP_DecryptFinal(&(handle->decrypt), contentBuffer, &written);
+	if (written > 0)
+	{
+		BIO_write(decrypted, contentBuffer, written);
+	}
+
+	if (ERR_peek_error())
+	{
+		goto error;
+	}
+
+	plaintextLen = BIO_get_mem_data(decrypted, &plaintext);
+	if (plaintextLen < sizeof(struct ElektraCryptoHeader))
+	{
+		ELEKTRA_SET_ERROR(128, errorKey, "Decryption error! header data is incomplete.");
+		goto error;
+	}
+
+	// restore the header
+	memcpy(&header, plaintext, sizeof(struct ElektraCryptoHeader));
+	if ((plaintextLen - sizeof(struct ElektraCryptoHeader)) != header.contentLen)
+	{
+		ELEKTRA_SET_ERROR(128, errorKey, "Decryption error! corrupted data.");
+		goto error;
+	}
+	plaintext += sizeof(struct ElektraCryptoHeader);
+
+	// write back the cipher text to the key
+	if ((header.flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING)
+	{
+		keySetString(k, (const char*)plaintext);
+	}
+	else if ((header.flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || header.contentLen == 0)
+	{
+		keySetBinary(k, NULL, 0);
+	}
+	else
+	{
+		keySetBinary(k, plaintext, header.contentLen);
+	}
+	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "");
+
+	BIO_free_all(decrypted);
 	return 1;
+
+error:
+	ELEKTRA_SET_ERRORF(128, errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error());
+	BIO_free_all(decrypted);
+	return (-1);
 }
