@@ -91,27 +91,8 @@
  * out of the list of keys.
  *
  * You can easily create and iterate keys:
- * @code
-#include <kdb.h>
-
-// create a new keyset with 3 keys
-// with a hint that about 20 keys will be inside
-KeySet *myConfig = ksNew(20,
-	keyNew ("user/name1", 0),
-	keyNew ("user/name2", 0),
-	keyNew ("user/name3", 0),
-	KS_END);
-// append a key in the keyset
-ksAppendKey(myConfig, keyNew("user/name4", 0));
-
-Key *current;
-ksRewind(myConfig);
-while ((current=ksNext(myConfig))!=0)
-{
-	printf("Key name is %s.\n", keyName (current));
-}
-ksDel (myConfig); // delete keyset and all keys appended
- * @endcode
+ *
+ * @snippet ksNewExample.c Full Example
  *
  * @{
  */
@@ -129,54 +110,39 @@ ksDel (myConfig); // delete keyset and all keys appended
  * So, terminate with ksNew(0, KS_END) or ksNew(20, ..., KS_END)
  *
  * For most uses
- * @code
-KeySet *keys = ksNew(0, KS_END);
-// work with it
-ksDel (keys);
- * @endcode
- * goes ok, the alloc size will be 16, defined in kdbprivate.h.
+ *
+ * @snippet ksNew.c Simple
+ *
+ * will be fine, the alloc size will be 16, defined in kdbprivate.h.
  * The alloc size will be doubled whenever size reaches alloc size,
- * so it also performs out large keysets.
+ * so it also performs well with large keysets.
  *
  * But if you have any clue how large your keyset may be you should
  * read the next statements.
  *
  * If you want a keyset with length 15 (because you know of your
  * application that you normally need about 12 up to 15 keys), use:
- * @code
-KeySet * keys = ksNew (15,
-	keyNew ("user/sw/app/fixedConfiguration/key01", KEY_SWITCH_VALUE, "value01", 0),
-	keyNew ("user/sw/app/fixedConfiguration/key02", KEY_SWITCH_VALUE, "value02", 0),
-	keyNew ("user/sw/app/fixedConfiguration/key03", KEY_SWITCH_VALUE, "value03", 0),
-	// ...
-	keyNew ("user/sw/app/fixedConfiguration/key15", KEY_SWITCH_VALUE, "value15", 0),
-	KS_END);
-// work with it
-ksDel (keys);
- * @endcode
+ *
+ * @snippet ksNew.c Length 15
  *
  * If you start having 3 keys, and your application needs approximately
  * 200-500 keys, you can use:
- * @code
-KeySet * config = ksNew (500,
-	keyNew ("user/sw/app/fixedConfiguration/key1", KEY_SWITCH_VALUE, "value1", 0),
-	keyNew ("user/sw/app/fixedConfiguration/key2", KEY_SWITCH_VALUE, "value2", 0),
-	keyNew ("user/sw/app/fixedConfiguration/key3", KEY_SWITCH_VALUE, "value3", 0),
-	KS_END); // don't forget the KS_END at the end!
-// work with it
-ksDel (config);
- * @endcode
+ *
+ * @snippet ksNew.c Hint 500
+ *
  * Alloc size is 500, the size of the keyset will be 3 after ksNew.
  * This means the keyset will reallocate when appending more than
  * 497 keys.
  *
  * The main benefit of taking a list of variant length parameters is to be able
  * to have one C-Statement for any possible KeySet.
+ * If you prefer, you can always create an empty KeySet and use ksAppendKey().
  *
  * @post the keyset is rewinded properly
  *
  * @see ksDel() to free the keyset afterwards
  * @see ksDup() to duplicate an existing keyset
+ * @see ksAppendKey() to append individual keys
  * @param alloc gives a hint for the size how many Keys may be stored initially
  * @return a ready to use KeySet object
  * @retval 0 on memory error

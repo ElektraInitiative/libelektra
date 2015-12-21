@@ -66,7 +66,7 @@
  * the key. If you append the key to a keyset the reference counter
  * will be incremented by one (see keyIncRef()) and the key can't be
  * be deleted by a keyDel().
- * 
+ *
  * @par
  * As you can imagine this refcounting allows you to put the Key in your
  * own datastructures.
