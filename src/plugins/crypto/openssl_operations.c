@@ -267,8 +267,7 @@ int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	size_t plaintextLen;
 
 	// help valgrind
-	header.flags = ELEKTRA_CRYPTO_FLAG_NONE;
-	header.contentLen = 0;
+	memset(&header, 0, sizeof(struct ElektraCryptoHeader));
 
 	// check if key has been encrypted in the first place
 	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);

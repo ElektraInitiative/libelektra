@@ -213,8 +213,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	gcry_error_t gcry_err;
 
 	// help valgrind
-	header.flags = ELEKTRA_CRYPTO_FLAG_NONE;
-	header.contentLen = 0;
+	memset(&header, 0, sizeof(struct ElektraCryptoHeader));
 
 	// check if key has been encrypted in the first place
 	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
