@@ -35,9 +35,9 @@ namespace kdb
 template <>
 struct KeySetTypeWrapper<int>
 {
-	int operator() (KeySet const & ks, std::string const & name) const
+	int operator() (KeySet const & ks, std::string const & name, option_t const options) const
 	{
-		Key k = ks.lookup (name, 0);
+		Key k = ks.lookup (name, options);
 		if (!k) return -5;
 		if (k.getStringSize() <= 1) return -3;
 		return k.get<int> () + 5;
@@ -69,11 +69,11 @@ ostream & operator << (ostream & os, Point const & p)
 template <>
 struct KeySetTypeWrapper<Point>
 {
-	Point operator() (KeySet const & ks, std::string const & name) const
+	Point operator() (KeySet const & ks, std::string const & name, option_t const options) const
 	{
-		Key x = ks.lookup (name + "/x", 0);
+		Key x = ks.lookup (name + "/x", options);
 		if (!x) throw KeyNotFoundException(name  + "/x not found");
-		Key y = ks.lookup (name + "/y", 0);
+		Key y = ks.lookup (name + "/y", options);
 		if (!y) throw KeyNotFoundException(name  + "/y not found");
 
 		return Point(x.get<int>(), y.get<int>());

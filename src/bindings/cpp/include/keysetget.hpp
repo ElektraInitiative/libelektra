@@ -19,7 +19,7 @@ namespace kdb
 template <typename T>
 struct KeySetTypeWrapper <std::map<std::string, T>>
 {
-	std::map<std::string, T> operator() (KeySet const & ks, std::string const & name) const
+	std::map<std::string, T> operator() (KeySet const & ks, std::string const & name, option_t const options) const
 	{
 		std::map<std::string, T> ret;
 		for (int i = 0; i<5; ++i)
@@ -37,7 +37,7 @@ struct KeySetTypeWrapper <std::map<std::string, T>>
 			case 2: n = "user"+name; break;
 			case 3: n = "system"+name; break;
 			}
-			Key b = ks.lookup (n, 0);
+			Key b = ks.lookup (n, options);
 			if (!b) continue;
 			Key k;
 			while (k = ks.next())

@@ -87,15 +87,14 @@ public:
 	cursor_t getCursor() const;
 
 	Key pop();
+	Key at (cursor_t pos) const;
 
 	KeySet cut (Key k);
 
 	Key lookup (const Key &k, const option_t options = KDB_O_NONE) const;
 	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
-	Key at (cursor_t pos) const;
-
 	template <typename T>
-	T get(std::string const & name) const;
+	T get(std::string const & name, const option_t options = KDB_O_NONE) const;
 
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef KeySetIterator iterator;
@@ -646,6 +645,20 @@ inline Key KeySet::pop()
 }
 
 /**
+ * @brief Lookup a key by index
+ *
+ * @param pos cursor position
+ *
+ * @return the found key
+ */
+inline Key KeySet::at (cursor_t pos) const
+{
+	if (pos < 0)
+		pos += size();
+	return Key(ckdb::ksAtCursor(ks, pos));
+}
+
+/**
  * @copydoc ksCut()
  */
 inline KeySet KeySet::cut (Key k)
@@ -681,29 +694,15 @@ inline Key KeySet::lookup (std::string const & name, option_t const options) con
 	return Key(k);
 }
 
-/**
- * @brief Lookup a key by index
- *
- * @param pos cursor position
- *
- * @return the found key
- */
-inline Key KeySet::at (cursor_t pos) const
-{
-	if (pos < 0)
-		pos += size();
-	return Key(ckdb::ksAtCursor(ks, pos));
-}
-
 template <typename T>
 struct KeySetTypeWrapper;
 
 template <typename T>
 struct KeySetTypeWrapper
 {
-	T operator() (KeySet const & ks, std::string const & name) const
+	T operator() (KeySet const & ks, std::string const & name, option_t const options) const
 	{
-		Key k = ks.lookup (name, 0);
+		Key k = ks.lookup (name, options);
 		if (!k) throw kdb::KeyNotFoundException("key " + name + " was not found");
 		return k.get<T> ();
 	}
@@ -713,6 +712,7 @@ struct KeySetTypeWrapper
  * @brief Generic lookup+get for keysets
  *
  * @param name the key name to get
+ * @param options the options to be passed to lookup()
  *
  * @throw KeyNotFoundException if no key found
  *
@@ -728,10 +728,10 @@ struct KeySetTypeWrapper
  * @return the requested type
  */
 template <typename T>
-inline T KeySet::get(std::string const & name) const
+inline T KeySet::get(std::string const & name, option_t const options) const
 {
 	KeySetTypeWrapper<T> typeWrapper;
-	return typeWrapper (*this, name);
+	return typeWrapper (*this, name, options);
 }
 
 
