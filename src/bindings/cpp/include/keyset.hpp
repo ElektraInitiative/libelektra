@@ -696,10 +696,10 @@ inline Key KeySet::at (cursor_t pos) const
 }
 
 template <typename T>
-struct ElektraTypeWrapper;
+struct KeySetTypeWrapper;
 
 template <typename T>
-struct ElektraTypeWrapper
+struct KeySetTypeWrapper
 {
 	T operator() (KeySet const & ks, std::string const & name) const
 	{
@@ -717,7 +717,7 @@ struct ElektraTypeWrapper
  * @throw KeyNotFoundException if no key found
  *
  * @note To specialize more complex types (which are generic themselves) you
- * can also specialize ElektraTypeWrapper<T>.
+ * can also specialize KeySetTypeWrapper<T>.
  *
  * Use
  * @code
@@ -730,7 +730,7 @@ struct ElektraTypeWrapper
 template <typename T>
 inline T KeySet::get(std::string const & name) const
 {
-	ElektraTypeWrapper<T> typeWrapper;
+	KeySetTypeWrapper<T> typeWrapper;
 	return typeWrapper (*this, name);
 }
 

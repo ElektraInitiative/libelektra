@@ -17,7 +17,7 @@ namespace kdb
 {
 
 template <typename T>
-struct ElektraTypeWrapper <std::map<std::string, T>>
+struct KeySetTypeWrapper <std::map<std::string, T>>
 {
 	std::map<std::string, T> operator() (KeySet const & ks, std::string const & name) const
 	{

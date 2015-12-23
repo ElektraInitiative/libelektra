@@ -33,7 +33,7 @@ namespace kdb
 {
 
 template <>
-struct ElektraTypeWrapper<int>
+struct KeySetTypeWrapper<int>
 {
 	int operator() (KeySet const & ks, std::string const & name) const
 	{
@@ -67,7 +67,7 @@ ostream & operator << (ostream & os, Point const & p)
 }
 
 template <>
-struct ElektraTypeWrapper<Point>
+struct KeySetTypeWrapper<Point>
 {
 	Point operator() (KeySet const & ks, std::string const & name) const
 	{
