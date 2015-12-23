@@ -271,13 +271,7 @@ int CRYPTO_PLUGIN_FUNCTION(error)(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEK
 	return 1;
 }
 
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-Plugin *ELEKTRA_PLUGIN_EXPORT(crypto_gcrypt)
-#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-Plugin *ELEKTRA_PLUGIN_EXPORT(crypto_openssl)
-#else
 Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
-#endif
 {
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
 			ELEKTRA_PLUGIN_OPEN,  &CRYPTO_PLUGIN_FUNCTION(open),

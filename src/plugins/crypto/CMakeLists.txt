@@ -47,6 +47,7 @@ foreach (plugin ${PLUGINS})
 				${OPENSSL_LIBRARIES}
 			COMPILE_DEFINITIONS
 				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
+				ELEKTRA_VARIANT=openssl
 				ELEKTRA_CRYPTO_API_OPENSSL
 		)
 
@@ -73,6 +74,7 @@ foreach (plugin ${PLUGINS})
 				${LIBGCRYPT_LIBRARIES}
 			COMPILE_DEFINITIONS
 				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
+				ELEKTRA_VARIANT=gcrypt
 				ELEKTRA_CRYPTO_API_GCRYPT
 		)
 
