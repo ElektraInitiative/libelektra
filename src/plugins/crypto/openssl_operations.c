@@ -22,6 +22,38 @@ static pthread_mutex_t *lockCs;
 static int cryptoNumLocks;
 static unsigned char cryptoSetup = 0;
 
+/**
+ * @brief read the cryptographic key from the given keyset.
+ * @retval NULL on error
+ * @retval address of the (Elektra) key in the given keyset holding the cryptographic key to be used.
+ */
+static Key *elektraCryptoReadParamKey(KeySet *config, Key *errorKey)
+{
+	const char *keyPath = "/elektra/modules/crypto/key-derivation/key";
+	Key *key = ksLookupByName(config, keyPath, 0);
+	if (key == NULL)
+	{
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", keyPath);
+	}
+	return key;
+}
+
+/**
+ * @brief read the cryptographic initialization vector (IV) from the given keyset.
+ * @retval NULL on error
+ * @retval address of the (Elektra) key in the given keyset holding the IV to be used.
+ */
+static Key *elektraCryptoReadParamIv(KeySet *config, Key *errorKey)
+{
+	const char *ivPath = "/elektra/modules/crypto/key-derivation/iv";
+	Key *iv = ksLookupByName(config, ivPath, 0);
+	if (iv == NULL)
+	{
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ivPath);
+	}
+	return iv;
+}
+
 static void internalLockingCallback(int mode, int type, const char *file ELEKTRA_UNUSED, int line ELEKTRA_UNUSED)
 {
     if (mode & CRYPTO_LOCK)
@@ -151,7 +183,7 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	// NOTE to prevent memory overflows in libcrypto the buffer holding the encrypted content
 	//      is one block bigger than the inupt buffer.
 	kdb_octet_t cipherBuffer[2*ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
-	kdb_octet_t contentBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
+	kdb_octet_t contentBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE] = { 0 };
 	kdb_octet_t *output;
 	int written = 0;
 	size_t outputLen;
@@ -169,6 +201,7 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	// prepare the crypto header data
 	const kdb_unsigned_long_t contentLen = keyGetValueSize(k);
 	kdb_octet_t flags;
+	const size_t headerLen = sizeof(flags) + sizeof(contentLen);
 
 	switch (keyIsString(k))
 	{
@@ -191,13 +224,9 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	}
 
 	// encrypt the header data
-	EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, &flags, sizeof(flags));
-	if (written > 0)
-	{
-		BIO_write(encrypted, cipherBuffer, written);
-	}
-
-	EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, &contentLen, sizeof(contentLen));
+	memcpy(contentBuffer, &flags, sizeof(flags));
+	memcpy(contentBuffer+sizeof(flags), &contentLen, sizeof(contentLen));
+	EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, contentBuffer, headerLen);
 	if (written > 0)
 	{
 		BIO_write(encrypted, cipherBuffer, written);
