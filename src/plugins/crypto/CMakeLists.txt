@@ -3,7 +3,9 @@ include (LibAddPlugin)
 set (ELEKTRA_CRYPTO_API_GCRYPT FALSE)
 set (ELEKTRA_CRYPTO_API_OPENSSL FALSE)
 
+#
 # base plugin (that does actually nothing on its own)
+#
 add_plugin (crypto
 	SOURCES
 		crypto.h
@@ -18,6 +20,9 @@ add_plugin (crypto
 
 #add_plugintest (crypto)
 
+#
+# Compile Variants
+#
 foreach (plugin ${PLUGINS})
 
 	# Compile Variant: OpenSSL
