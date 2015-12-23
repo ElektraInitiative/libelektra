@@ -9,7 +9,6 @@
 #ifndef ELEKTRA_KEYSET_HPP
 #define ELEKTRA_KEYSET_HPP
 
-#include <map>
 #include <string>
 
 #include <key.hpp>
@@ -697,53 +696,37 @@ inline Key KeySet::at (cursor_t pos) const
 }
 
 template <typename T>
+struct ElektraTypeWrapper;
+
+template <typename T>
 struct ElektraTypeWrapper
 {
 	T operator() (KeySet const & ks, std::string const & name) const
 	{
 		Key k = ks.lookup (name, 0);
-		if (!k) throw KeyTypeConversion();
+		if (!k) throw kdb::KeyNotFoundException("key " + name + " was not found");
 		return k.get<T> ();
 	}
 };
 
-template <typename T>
-struct ElektraTypeWrapper <std::map<std::string, T>>
-{
-	std::map<std::string, T> operator() (KeySet const & ks, std::string const & name) const
-	{
-		std::map<std::string, T> ret;
-		for (int i = 0; i<5; ++i)
-		{
-			std::string n;
-			if (name[0] != '/')
-			{
-				n = name;
-				i = 10; // break next time
-			}
-			else switch (i)
-			{
-			case 0: n = "proc"+name; break;
-			case 1: n = "dir"+name; break;
-			case 2: n = "user"+name; break;
-			case 3: n = "system"+name; break;
-			}
-			Key b = ks.lookup (n, 0);
-			if (!b) continue;
-			Key k;
-			while (k = ks.next())
-			{
-				if (!k.isBelow(b)) break; // other keys are not relevant anymore
-				if (k.isDirectBelow(b))
-				{
-					ret.insert(std::make_pair<std::string, T>(k.getBaseName (), k.get<T> ()));
-				}
-			}
-		}
-		return ret;
-	}
-};
-
+/**
+ * @brief Generic lookup+get for keysets
+ *
+ * @param name the key name to get
+ *
+ * @throw KeyNotFoundException if no key found
+ *
+ * @note To specialize more complex types (which are generic themselves) you
+ * can also specialize ElektraTypeWrapper<T>.
+ *
+ * Use
+ * @code
+#include <keysetget.hpp>
+ * @endcode
+ * to include specializations for std types.
+ *
+ * @return the requested type
+ */
 template <typename T>
 inline T KeySet::get(std::string const & name) const
 {

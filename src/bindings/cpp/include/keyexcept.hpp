@@ -34,6 +34,21 @@ public:
 	}
 };
 
+class KeyNotFoundException : public Exception
+{
+public:
+	KeyNotFoundException (std::string message) :
+		m_str (message)
+	{}
+
+	virtual const char* what() const throw()
+	{
+		return  m_str.c_str();
+	}
+private:
+	std::string m_str;
+};
+
 class KeyTypeMismatch: public KeyException
 {
 public:

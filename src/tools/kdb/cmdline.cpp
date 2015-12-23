@@ -10,6 +10,7 @@
 
 #include <kdb.hpp>
 #include <keysetio.hpp>
+#include <keysetget.hpp>
 #include <kdbconfig.h>
 
 #include <iostream>
