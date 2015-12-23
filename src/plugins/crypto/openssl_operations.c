@@ -10,6 +10,7 @@
 #include "crypto.h"
 #include "openssl_operations.h"
 #include <kdberrors.h>
+#include <kdbtypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
@@ -147,16 +148,15 @@ void elektraCryptoOpenSSLHandleDestroy(elektraCryptoHandle *handle)
 
 int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
-	struct ElektraCryptoHeader header;
 	// NOTE to prevent memory overflows in libcrypto the buffer holding the encrypted content
 	//      is one block bigger than the inupt buffer.
-	unsigned char cipherBuffer[2*ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
-	unsigned char contentBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
-	unsigned char *output;
+	kdb_octet_t cipherBuffer[2*ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
+	kdb_octet_t contentBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
+	kdb_octet_t *output;
 	int written = 0;
 	size_t outputLen;
 	BIO *encrypted;
-	const unsigned char *value = (unsigned char*)keyValue(k);
+	const kdb_octet_t *value = (kdb_octet_t*)keyValue(k);
 
 	// check if key has been marked for encryption
 	const Key *metaEncrypt = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT);
@@ -166,19 +166,20 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 		return 1;
 	}
 
-	// prepare the crypto header
-	header.contentLen = keyGetValueSize(k);
-	header.flags = ELEKTRA_CRYPTO_FLAG_NONE;
+	// prepare the crypto header data
+	const kdb_unsigned_long_t contentLen = keyGetValueSize(k);
+	kdb_octet_t flags;
 
 	switch (keyIsString(k))
 	{
 	case 1: // string
-		header.flags = ELEKTRA_CRYPTO_FLAG_STRING;
-		break;
-	case 0: // binary
+		flags = ELEKTRA_CRYPTO_FLAG_STRING;
 		break;
 	case -1: // NULL pointer
-		header.flags = ELEKTRA_CRYPTO_FLAG_NULL;
+		flags = ELEKTRA_CRYPTO_FLAG_NULL;
+		break;
+	default: // binary
+		flags = ELEKTRA_CRYPTO_FLAG_NONE;
 		break;
 	}
 
@@ -189,9 +190,14 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 		return (-1);
 	}
 
-	// encrypt the header
-	memcpy(contentBuffer, &header, sizeof(struct ElektraCryptoHeader));
-	EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, contentBuffer, sizeof(struct ElektraCryptoHeader));
+	// encrypt the header data
+	EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, &flags, sizeof(flags));
+	if (written > 0)
+	{
+		BIO_write(encrypted, cipherBuffer, written);
+	}
+
+	EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, &contentLen, sizeof(contentLen));
 	if (written > 0)
 	{
 		BIO_write(encrypted, cipherBuffer, written);
@@ -203,17 +209,17 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	}
 
 	// encrypt content block by block (i = start of the current block)
-	for (unsigned int i = 0; i < header.contentLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
+	for (kdb_unsigned_long_t i = 0; i < contentLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
 	{
 		// load content partition into the content buffer
-		long contentLen = ELEKTRA_CRYPTO_SSL_BLOCKSIZE;
-		if ((i + 1) * ELEKTRA_CRYPTO_SSL_BLOCKSIZE > header.contentLen)
+		kdb_unsigned_long_t partitionLen = ELEKTRA_CRYPTO_SSL_BLOCKSIZE;
+		if ((i + 1) * ELEKTRA_CRYPTO_SSL_BLOCKSIZE > contentLen)
 		{
-			contentLen = header.contentLen - (i * ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
+			partitionLen = contentLen - (i * ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
 		}
-		memcpy(contentBuffer, (value + i), contentLen);
+		memcpy(contentBuffer, (value + i), partitionLen);
 
-		EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, contentBuffer, contentLen);
+		EVP_EncryptUpdate(&(handle->encrypt), cipherBuffer, &written, contentBuffer, partitionLen);
 		if (written > 0)
 		{
 			BIO_write(encrypted, cipherBuffer, written);
@@ -254,20 +260,21 @@ error:
 
 int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 {
-	const unsigned char *value = (unsigned char*)keyValue(k);
+	const kdb_octet_t *value = (kdb_octet_t*)keyValue(k);
 	const size_t valueLen = keyGetValueSize(k);
 
-	struct ElektraCryptoHeader header = ELEKTRA_CRYPTO_HEADER_INIT;
-	unsigned char cipherBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
+	kdb_octet_t cipherBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
 	// NOTE to prevent memory overflows in libcrypto the buffer holding the decrypted content
 	//      is one block bigger than the inupt buffer.
-	unsigned char contentBuffer[2*ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
+	kdb_octet_t contentBuffer[2*ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
 	int written = 0;
-	unsigned char *plaintext;
+	kdb_octet_t *plaintext;
 	size_t plaintextLen;
 
-	// help valgrind
-	memset(&header, 0, sizeof(struct ElektraCryptoHeader));
+	// initialize crypto header data
+	kdb_unsigned_long_t contentLen = 0;
+	kdb_octet_t flags = ELEKTRA_CRYPTO_FLAG_NONE;
+	const size_t headerLen = sizeof(flags) + sizeof(contentLen);
 
 	// check if key has been encrypted in the first place
 	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
@@ -293,7 +300,7 @@ int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	}
 
 	// decrypt the whole BLOB and store the plain text into the memory sink
-	for(unsigned int i = 0; i < valueLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
+	for(kdb_unsigned_long_t i = 0; i < valueLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
 	{
 		memcpy(cipherBuffer, (value + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
 		EVP_DecryptUpdate(&(handle->decrypt), contentBuffer, &written, cipherBuffer, ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
@@ -320,33 +327,36 @@ int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	}
 
 	plaintextLen = BIO_get_mem_data(decrypted, &plaintext);
-	if (plaintextLen < sizeof(struct ElektraCryptoHeader))
+	if (plaintextLen < headerLen)
 	{
 		ELEKTRA_SET_ERROR(128, errorKey, "Decryption error! header data is incomplete.");
 		goto error;
 	}
 
 	// restore the header
-	memcpy(&header, plaintext, sizeof(struct ElektraCryptoHeader));
-	if ((plaintextLen - sizeof(struct ElektraCryptoHeader)) != header.contentLen)
+	memcpy(&flags, plaintext, sizeof(flags));
+	plaintext += sizeof(flags);
+	memcpy(&contentLen, plaintext, sizeof(contentLen));
+	plaintext += sizeof(contentLen);
+
+	if ((plaintextLen - headerLen) != contentLen)
 	{
 		ELEKTRA_SET_ERROR(128, errorKey, "Decryption error! corrupted data.");
 		goto error;
 	}
-	plaintext += sizeof(struct ElektraCryptoHeader);
 
 	// write back the cipher text to the key
-	if ((header.flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING)
+	if ((flags & ELEKTRA_CRYPTO_FLAG_STRING) == ELEKTRA_CRYPTO_FLAG_STRING)
 	{
 		keySetString(k, (const char*)plaintext);
 	}
-	else if ((header.flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || header.contentLen == 0)
+	else if ((flags & ELEKTRA_CRYPTO_FLAG_NULL) == ELEKTRA_CRYPTO_FLAG_NULL || contentLen == 0)
 	{
 		keySetBinary(k, NULL, 0);
 	}
 	else
 	{
-		keySetBinary(k, plaintext, header.contentLen);
+		keySetBinary(k, plaintext, contentLen);
 	}
 	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "");
 
