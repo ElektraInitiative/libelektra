@@ -29,6 +29,8 @@ The advantage of compilation variants are:
   with different cmake flags required)
 - Different compilation variants can have different dependencies
 
+## How to use it
+
 To use compilation variants, add your plugin in the CMake Cache
 Variable PLUGINS multiple times. There has to be the base variant,
 called in the same name as the directory.
@@ -48,6 +50,7 @@ and create a plugin per compilation variant:
 			add_plugin(${plugin}
 			SOURCES      <your sources here..>
 			COMPILE_DEFINITIONS   <definitions here..>
+				ELEKTRA_VARIANT=${plugin without prefix}
 		LINK_LIBRARIES <libraries for variantb>
 
 or simply list all plugins one after the other:
@@ -58,7 +61,7 @@ or simply list all plugins one after the other:
 		# based on that.
 		add_plugin(myplugin_varianta
 		SOURCES      <your sources for varianta here..>
-		COMPILE_DEFINITIONS   VARIANTA
+		COMPILE_DEFINITIONS   VARIANTA ELEKTRA_VARIANT=varianta
 		LINK_LIBRARIES <libraries for varianta>
 		)
 	if (${plugin} MATCHES "myplugin_variantb")
@@ -67,8 +70,13 @@ or simply list all plugins one after the other:
 		# based on that.
 		add_plugin(myplugin_variantb
 		SOURCES      <your sources for variantb here..>
-		COMPILE_DEFINITIONS   VARIANTB
+		COMPILE_DEFINITIONS   VARIANTB  ELEKTRA_VARIANT=variantb
 		LINK_LIBRARIES <libraries for variantb>
+
+Note that every plugin (except the base plugin, if available) needs to have
+`ELEKTRA_VARIANT` differently set in `COMPILE_DEFINITIONS`, otherwise you will
+get a linker error that `libelektra_<pluginname>_LTX_elektraPluginSymbol` has
+multiple definitions.
 
 Now every public function of the plugin conflicts with itself. To avoid
 that, you can use:
