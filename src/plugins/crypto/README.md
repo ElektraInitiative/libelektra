@@ -26,27 +26,33 @@ At the moment the following crypto APIs are supported:
 
 ## Dependencies ##
 
-When compiled with support for libgcrypt:
-
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 - `libgcrypt20-dev` or `libgcrypt-devel`
-
-When compiled with support for OpenSSL:
-
+#endif
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
 - `libssl-dev` or `openssl-devel`
+#endif
 
 ## How to compile ##
 
-Set the CMake variable `CRYPTO_API` to either `openssl` or `gcrypt`. Note that if the variable is not being provided, `gcrypt` will be used as default.
+The following compile variants are available:
 
-A CMake call might look like this:
+1. crypto_gcrypt
+2. crypto_openssl
 
-	cmake -DCRYPTO_API=openssl /opt/src/libelektra/
+Add the variants, that you want (you can add one of them or all), to the `PLUGINS` variable in `CMakeCache.txt` and re-run `cmake`.
+
+To add all variants the variable contains at least:
+
+	PLUGINS=crypto;crypto_gcrypt;crypto_openssl
 
 ## Restrictions ##
 
 The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
 
 The key derivation is still WIP.
+
+The status of this plugin is experimental. Use it at your own risk!
 
 ### Planned Features ###
 
