@@ -195,9 +195,9 @@ copied by another plugin just before):
 These plugins start an interpreter and allow you to use a bindings.
 
 - [jni](jni/) java plugins started by jni, works with jna plugins
-- [python](python/) Python 3 plugins (technical preview/)
-- [python2](python2/) Python 2 plugins (technical preview, deprecated/)
-- [lua](lua/) Lua plugins (technical preview/)
+- [python](python/) Python 3 plugins (technical preview)
+- [python2](python2/) Python 2 plugins (technical preview, deprecated)
+- [lua](lua/) Lua plugins (technical preview)
 
 
 ## Others ##
@@ -208,6 +208,8 @@ These plugins start an interpreter and allow you to use a bindings.
 - [lineendings](lineendings/) tests file for consistent line endings
 - [list](list/) loads other plugins
 - [filecheck](filecheck/) does sanity checks on a file
+
+## New Plugins ##
 
 To add a new plugin you can copy the template plugin. Please make sure
 to add your plugin:
