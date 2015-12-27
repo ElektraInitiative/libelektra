@@ -822,3 +822,14 @@ description:failed to mount global plugins
 severity:warning
 ingroup:kdb
 
+number:140
+description:duplicated section entry in INI file
+severity:error
+ingroup:plugin
+module:ini
+
+number:140
+description:duplicated key entry in INI file
+severity:error
+ingroup:plugin
+module:ini

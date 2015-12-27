@@ -312,7 +312,7 @@ static void test_multilineIniInvalidConfigWrite()
 {
 	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
-	KeySet *conf = ksNew(0,
+	KeySet *conf = ksNew(30, keyNew("system/multiline", KEY_VALUE, "0", KEY_END),
 	   	   KS_END);
 	PLUGIN_OPEN("ini");
 
@@ -489,7 +489,7 @@ static void test_sectionMerge(char *inFile, char *cmpFile)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(inFile), KEY_END);
-	KeySet *conf = ksNew(0,
+	KeySet *conf = ksNew(10, keyNew("system/mergeSections", KEY_VALUE, "1", KEY_END),
 	   	   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
