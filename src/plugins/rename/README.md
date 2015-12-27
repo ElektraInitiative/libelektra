@@ -60,7 +60,7 @@ Using the `/replacewith` global key or `rename/to`  MetaKey the rename plugin wi
 
 ## TO UPPER / LOWER ##
 
-Using the `/toupper` or `/tolower` global configuration key, or the `rename/toupper` or `rename/tolower` MetaTag the rename plugin will 
+Using the `/toupper` or `/tolower` global configuration key, or the `rename/toupper` or `rename/tolower` MetaTag the rename plugin will
 convert the keynames to uppercase or lowercase.
 The supplied values tell the plugin how many levels starting from the right will be converted. `toupper` and `tolower` can be combined.
 When no value or "0" is supplied with the keys the whole name below the parentkey will be converted.
