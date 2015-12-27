@@ -1,13 +1,11 @@
 # Relative
 
-Key names should be relative to parent Key name
-
 ## Issue
 
 There is a different behaviour of various plugins whether their name is
 absolute or relative, including:
 1.) mounting the same file somewhere else does not work
-2.) importing somewhere else (than from where it was exported) does not work
+2.) importing somewhere else (other than from where it was exported) does not work
     (See [here](https://github.com/ElektraInitiative/libelektra/issues/51))
 
 ## Constraints
@@ -33,12 +31,18 @@ Key names shall be relative to parent Key name
 ## Argument
 
 Provides a better import/export/remount and also a more uniform
-experience between different plugins
+experience between different plugins.
 
 ## Implications
 
 Plugins must be adapted to be relative as tracked
 [here](https://github.com/ElektraInitiative/libelektra/issues/51).
+
+plugins should use relative pathes so that import/export/remount works
+
+- dump
+- xmltool (also supports relative)
+- tcl
 
 ## Related decisions
 
