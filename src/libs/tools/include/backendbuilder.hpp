@@ -36,28 +36,31 @@ public:
 	{
 		PluginSpec(
 			std::string pluginName,
-			KeySet pluginConf = KeySet()) :
+			KeySet pluginConfig = KeySet()) :
 			name(pluginName),
-			conf(pluginConf)
+			config(pluginConfig)
 		{}
 
 		bool operator == (PluginSpec const & other)
 		{
 			return name == other.name &&
-				std::equal(conf.begin(), conf.end(), other.conf.begin());
+				std::equal(config.begin(), config.end(),
+						other.config.begin());
 		}
 
 		std::string name;
-		KeySet conf;
+		KeySet config;
 	};
 
 private:
+	/// Defines order in which plugins should be added
 	std::vector <PluginSpec> toAdd;
 
 public:
 	BackendBuilder();
 	~BackendBuilder();
 
+	void sort();
 	void parseArguments (std::string const & cmdline);
 	void addPlugin (PluginSpec plugin);
 	void remPlugin (PluginSpec plugin);

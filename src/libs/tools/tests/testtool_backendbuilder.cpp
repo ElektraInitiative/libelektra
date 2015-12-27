@@ -37,3 +37,22 @@ TEST(BackendBuilder, basicAddRem)
 	EXPECT_TRUE(bb.validated());
 }
 
+
+TEST(BackendBuilder, basicSort)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	BackendBuilder bb;
+	bb.addPlugin(BackendBuilder::PluginSpec("resolver"));
+	EXPECT_FALSE(bb.validated());
+
+	bb.addPlugin(BackendBuilder::PluginSpec("keytometa"));
+	EXPECT_FALSE(bb.validated());
+
+	bb.addPlugin(BackendBuilder::PluginSpec("glob"));
+	EXPECT_FALSE(bb.validated());
+
+	bb.addPlugin(BackendBuilder::PluginSpec("augeas"));
+	EXPECT_TRUE(bb.validated()) << "Reordering not successful?";
+}
+

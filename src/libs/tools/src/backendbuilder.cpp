@@ -68,9 +68,47 @@ void BackendBuilder::parseArguments (std::string const & cmdline)
 	}
 }
 
+/**
+ * @brief Makes sure that ordering constraints are fulfilled.
+ *
+ * A stable sorting algorithm is used so that unaffected plugins
+ * do not get mixed around.
+ */
+void BackendBuilder::sort()
+{
+	Modules modules;
+	std::stable_sort(std::begin(toAdd), std::end(toAdd),
+		[&modules] (PluginSpec const & lhs, PluginSpec const & rhs)
+		{
+			PluginPtr lhsPlugin = modules.load (lhs.name, lhs.config);
+			PluginPtr rhsPlugin = modules.load (rhs.name, lhs.config);
+
+			rhsPlugin->loadInfo();
+			lhsPlugin->loadInfo();
+
+			std::stringstream ss (lhsPlugin->lookupInfo("ordering"));
+			std::string order;
+			while (ss >> order)
+			{
+				if (order == rhsPlugin->name())
+				{
+					return true;
+				}
+
+				if (order == rhsPlugin->lookupInfo("provides"))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+	    );
+}
+
 void BackendBuilder::addPlugin (PluginSpec plugin)
 {
 	toAdd.push_back(plugin);
+	sort();
 }
 
 void BackendBuilder::remPlugin (PluginSpec plugin)
@@ -107,7 +145,7 @@ Backend BackendBuilder::create() const
 	Backend b;
 	for (auto const & a: toAdd)
 	{
-		b.addPlugin(a.name, a.conf);
+		b.addPlugin(a.name, a.config);
 	}
 	return b;
 }
