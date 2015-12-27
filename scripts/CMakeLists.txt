@@ -41,11 +41,6 @@ configure_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/list-tools")
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/list-tools" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/mount-spec.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/mount-spec")
-install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/mount-spec" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
 ADD_CUSTOM_TARGET(source-package
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"
 		COMMENT "Make a elektra source package by using git"
