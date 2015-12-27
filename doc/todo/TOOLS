@@ -8,14 +8,12 @@
 
 == LIBTOOLS ==
 
-mount spec
-
 let backends to import/export
 
 use it for import/export/convert
 
 convert
-	using dir namespace in /tmp?
+	using proc namespace
 	or get/set with root keys?
 
 kdb-shell:
@@ -47,9 +45,10 @@ allow --no-env --no-arg --no-default arguments?
 
 == KDB ==
 
-kdb-editor
-	edit file in any of Elektra's format in an editor
-	export to temporary file, open with editor and reimport
+kdb tool should work with arrays (add_entry, remove_entry)
+
+cascading export, e.g. for nickel?
+	+ remember what was exported
 
 allow key array increments with kdb tool
 
@@ -82,6 +81,9 @@ kdb tool:
 
 == GEN ==
 
+install kdb gen properly
+	search by default in installed pathes
+
 using python kdb for gen
 
 code generator always yields LONG_MIN, LONG_MAX on any type!
@@ -108,9 +110,10 @@ validation of schema + line info
 
 add Args... flags to onLayerActivation
 
-helgrind: thread safety of layers?
-is stack correct in with() when activate/deactivate across threads?
-
+genopt.hpp + include enforcement in template_dynamic?
+	use spec namespace
+	generic command-line parsing
+	%% context evaluation?
 
 
 
@@ -123,6 +126,8 @@ commandline arguments:
 	for self configuring
 	for proc namespace
 
+dbus-listener + notify single events, maybe zeromq
+	auto-completion for metadata
 
 
 
