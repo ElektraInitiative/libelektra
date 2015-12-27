@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Implements a way to build and deal with a backend
+ * @brief Implements a way to deal with a backend
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -27,8 +27,10 @@ namespace tools
 {
 
 /**
- * @brief A representation of the backend (= set of plugins) that can be
- * mounted.
+ * @brief A low-level representation of the backend (= set of plugins) that can be mounted.
+ *
+ * To build a backend, you should prefer BackendBuilder, which automatically fixes
+ * ordering and allows us to remove plugins.
  */
 class Backend
 {

@@ -38,15 +38,21 @@ namespace tools
 {
 
 
-/** Creates a new backend with a given name and mountpoint.
- * Parameters are needed for serialisation only, so you can
- * keep them empty if you do not want to serialise.
+/** Creates a new empty backend.
  *
  * */
 Backend::Backend()
 {
 }
 
+
+Backend::~Backend()
+{
+	for (auto & elem : plugins)
+	{
+		delete elem;
+	}
+}
 
 /**
  * @brief Sets the mountpoint for the backend
@@ -180,14 +186,6 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 void Backend::setBackendConfig (KeySet const & ks)
 {
 	config.append(ks);
-}
-
-Backend::~Backend()
-{
-	for (auto & elem : plugins)
-	{
-		delete elem;
-	}
 }
 
 
