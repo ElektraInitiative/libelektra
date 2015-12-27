@@ -228,6 +228,14 @@ KDB * kdbOpen(Key *errorKey)
 		errno = errnosave;
 		return handle;
 	}
+	if(elektraMountGlobals(handle, ksDup(keys), handle->modules, errorKey) == -1) //elektraMountGlobals also sets a warning containig the name of the plugin that failed to load
+	{
+#if DEBUG && VERBOSE
+		printf("Mounting global plugins failed\n");
+#endif
+		ELEKTRA_ADD_WARNING(139, errorKey, "Mounting global plugins failed");
+	}
+
 	keySetName(errorKey, keyName(initialParent));
 	keySetString(errorKey, "kdbOpen(): backendClose");
 
@@ -562,7 +570,10 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 				"handle or ks null pointer");
 		goto error;
 	}
-
+	if (handle->globalPlugins[PREGETSTORAGE])
+	{
+		handle->globalPlugins[PREGETSTORAGE]->kdbGet(handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
+	}
 	if (elektraSplitBuildup (split, handle, parentKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(38, parentKey,
@@ -608,6 +619,10 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	/* We are finished, now just merge everything to returned */
 	ksClear (ks);
 	elektraSplitMerge (split, ks);
+	ksRewind(ks);
+	if(handle->globalPlugins[POSTGETSTORAGE])
+		handle->globalPlugins[POSTGETSTORAGE]->kdbGet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+	ksRewind(ks);
 
 	keySetName (parentKey, keyName(initialParent));
 	elektraSplitUpdateFileName(split, handle, parentKey);
@@ -617,6 +632,9 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	return 1;
 
 error:
+	if(handle->globalPlugins[POSTGETSTORAGE])
+		handle->globalPlugins[POSTGETSTORAGE]->kdbGet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+
 	keySetName (parentKey, keyName(initialParent));
 	elektraSplitUpdateFileName(split, handle, parentKey);
 	keyDel (initialParent);
@@ -636,7 +654,7 @@ error:
  * @retval -1 on error
  * @retval 0 on success
  */
-static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
+static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey, Plugin *hook)
 {
 	int any_error = 0;
 	for (size_t i=0; i<split->size;i++)
@@ -670,6 +688,12 @@ static int elektraSetPrepare(Split *split, Key *parentKey, Key **errorKey)
 
 				if (p == 0)
 				{
+					if(hook)
+					{
+						// the only place global presetstorage hooks can be executed
+						ksRewind(split->keysets[i]);
+						hook->kdbSet(hook, split->keysets[i], parentKey);
+					}
 					if (ret == 0)
 					{
 						// resolver says that sync is
@@ -930,10 +954,12 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitPrepare(split);
 
-	if (elektraSetPrepare(split, parentKey, &errorKey) == -1)
+	if (elektraSetPrepare(split, parentKey, &errorKey, handle->globalPlugins[PRESETSTORAGE]) == -1)
 	{
 		goto error;
 	}
+	if(handle->globalPlugins[PRECOMMIT])
+		handle->globalPlugins[PRECOMMIT]->kdbSet(handle->globalPlugins[PRECOMMIT], ks, parentKey);
 
 	elektraSetCommit(split, parentKey);
 
@@ -944,6 +970,8 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		// remove all flags from all keys
 		clear_bit(ks->array[i]->flags, KEY_FLAG_SYNC);
 	}
+	if(handle->globalPlugins[POSTCOMMIT])
+		handle->globalPlugins[POSTCOMMIT]->kdbSet(handle->globalPlugins[POSTCOMMIT], ks, parentKey);
 
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);
@@ -953,6 +981,8 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	return 1;
 
 error:
+	if(handle->globalPlugins[PREROLLBACK])
+		handle->globalPlugins[PREROLLBACK]->kdbError(handle->globalPlugins[PREROLLBACK], ks, parentKey);
 	elektraSetRollback(split, parentKey);
 
 	if (errorKey)
@@ -964,6 +994,8 @@ error:
 					keyName(errorKey));
 		}
 	}
+	if(handle->globalPlugins[POSTROLLBACK])
+		handle->globalPlugins[POSTROLLBACK]->kdbError(handle->globalPlugins[POSTROLLBACK], ks, parentKey);
 
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);

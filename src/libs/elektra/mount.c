@@ -196,7 +196,99 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 
 	return 0;
 }
+int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
+{
+	Key *root = ksLookupByName(keys, "system/elektra/globalplugins", 0);
+	if(!root)
+	{
+#if DEBUG && VERBOSE
+		printf("no global configuration exists\n");
+#endif
+		ksDel(keys);
+		return 0;
+	}
+	KeySet *global = ksCut(keys, root);
+	Key *cur;
+	KeySet *referencePlugins = ksNew(0, KS_END);
+	while((cur = ksNext(global)) != NULL)
+	{
+		if(keyRel(root, cur) != 1)  // the cutpoints for the plugin configs are always directly below the "root", ignore everything else
+			continue;
+		const char *placement = keyBaseName(cur);
+		const char *pluginName = keyString(cur);
+		const char *globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback", "postrollback", 
+			"pregetstorage", "postgetstorage", "presetstorage", 
+			"precommit", "postcommit"};
 
+
+		if(!strcmp(pluginName, ""))
+		{
+			continue;  //strict consistency: skip empty parent keys
+		}
+		for(GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
+		{
+			if(!strcmp(placement, globalPlacements[i]))
+			{
+#if DEBUG && VERBOSE
+				printf("mounting global plugin %s to %s\n", pluginName, placement);
+#endif	
+				Plugin *plugin;
+				Key *refKey;
+				Key *searchKey = keyNew("/", KEY_END);
+				keyAddBaseName(searchKey, keyString(cur));
+				refKey=ksLookup(referencePlugins, searchKey, 0);
+				keyDel(searchKey);
+				if(refKey)
+				{
+					//plugin already loaded, just reference it
+					plugin = *(Plugin**)keyValue(refKey);
+				}
+				else
+				{
+					//putting together the plugins configuration KeySet. 
+					Key *sysConfigCutKey = keyDup(cur);
+					keyAddBaseName(sysConfigCutKey, "system");
+					Key *usrConfigCutKey = keyDup(cur);
+					keyAddBaseName(usrConfigCutKey, "user");
+					KeySet *sysConfigKS = ksCut(global, sysConfigCutKey);
+					KeySet *usrConfigKS = ksCut(global, usrConfigCutKey);
+					KeySet *renamedSysConfig = elektraRenameKeys(sysConfigKS, "system");
+					KeySet *renamedUsrConfig = elektraRenameKeys(usrConfigKS, "user");
+					ksDel(sysConfigKS);
+					ksDel(usrConfigKS);
+					keyDel(usrConfigCutKey);
+					keyDel(sysConfigCutKey);
+					KeySet *config = ksNew(0, KS_END);
+					ksAppend(config, renamedSysConfig);
+					ksAppend(config, renamedUsrConfig);
+					ksDel(renamedSysConfig);
+					ksDel(renamedUsrConfig);
+					
+					//loading the new plugin
+					plugin = elektraPluginOpen(pluginName, modules, ksDup(config), errorKey);
+					if(!plugin)
+					{
+						ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
+						return -1;
+					}
+
+					//saving the plugin reference to avoid having to load the plugin multiple times
+					refKey = keyNew("/", KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &plugin, KEY_END);
+					keyAddBaseName(refKey, keyString(cur));
+					ksAppendKey(referencePlugins, refKey);
+					keyDel(refKey);
+					ksDel(config);
+				}
+				kdb->globalPlugins[i] = plugin;
+			}
+		}
+			
+	}
+	ksDel(global);
+	ksDel(keys);
+	ksDel(referencePlugins);
+	return 0;
+}
 
 /** Mount all module configurations.
  *

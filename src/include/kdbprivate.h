@@ -257,6 +257,16 @@ struct _KeySet
 
 
 /**
+ * Helper for identifying global plugin positions
+ */
+
+typedef enum {
+	PREROLLBACK = 0, POSTROLLBACK, PREGETSTORAGE, 
+	POSTGETSTORAGE, PRESETSTORAGE, PRECOMMIT, 
+	POSTCOMMIT, NR_GLOBAL_PLUGINS
+}GlobalpluginPositions;
+
+/**
  * The access point to the key database.
  *
  * The structure which holds all information about loaded backends.
@@ -273,6 +283,7 @@ typedef struct _KDB KDB;
  * @see kdbOpen() and kdbClose() for external use
  * @ingroup backend
  */
+
 struct _KDB {
 	Trie *trie;		/*!< The pointer to the trie holding backends.*/
 
@@ -283,8 +294,9 @@ struct _KDB {
 	KeySet *modules;	/*!< A list of all modules loaded at the moment.*/
 
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
-};
 
+	Plugin *globalPlugins[NR_GLOBAL_PLUGINS];
+};
 
 
 /**
@@ -491,7 +503,7 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey);
 int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey);
 int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
 int elektraMountVersion (KDB *kdb, Key *errorKey);
-
+int elektraMountGlobals (KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey);
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey);
 
 Key* elektraMountGetMountpoint(KDB *handle, const Key *where);

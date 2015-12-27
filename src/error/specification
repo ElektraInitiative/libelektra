@@ -816,3 +816,9 @@ description:failed to initialize filecheck data
 severity:error
 ingroup:plugin
 module:filecheck
+
+number:139
+description:failed to mount global plugins
+severity:warning
+ingroup:kdb
+
