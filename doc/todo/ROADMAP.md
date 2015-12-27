@@ -15,6 +15,11 @@ for other activities of the current release.
 
 more docu in METADATA.ini
 
+make elektra-hierarchy reality:
+	generate errors for spec/elektra/error
+	install and mount-script for ini files in spec/elektra/metadata spec/elektra/modules
+
+
 docu provide option in contract
 
 docu specification mount
