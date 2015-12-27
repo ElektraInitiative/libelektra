@@ -35,6 +35,18 @@ rebase:
 
 == unsorted ==
 
+better errnostore solution?
+	reset errno in user functions and avoid code in every plugin
+	always provide last errno in ADD_WARNING+SET_ERROR
+	use safe implementation see
+	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
+	(even strerrno_r seems to deadlock from time to time because of translations?)
+
+roresolver: check if something is modified
+	for version, constants, uname
+	and/or remove value comparision in those plugins
+	kdbGet should return 0 if nothing modified, too
+
 jenkins:
 	build packages for dfc
 

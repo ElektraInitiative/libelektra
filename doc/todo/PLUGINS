@@ -4,6 +4,15 @@ Prefer using great frameworks to do that in short time with high quality.
 
 
 
+## Rework plugins
+
+fix comments:
+	all plugins should use new comment-approach
+	(also iconv)
+
+fix absolute plugins (should be relative, at least by default)
+	see #51
+
 
 
 ## Links
@@ -105,6 +114,8 @@ path plugin:
 # Storage plugins #
 
 ## Generic ##
+
+generic simpleini (customizable printf/scanf format strings)
 
 Build a generic storage plugin to replace dump:
 - preserving order
