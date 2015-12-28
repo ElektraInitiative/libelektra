@@ -13,7 +13,7 @@
 
 #include <kdb.hpp>
 
-#include <memory>
+#include <pluginspec.hpp>
 
 class Backend;
 
@@ -22,30 +22,6 @@ namespace kdb
 
 namespace tools
 {
-
-struct PluginSpec
-{
-	// TODO allow to mock
-
-	PluginSpec(
-		std::string pluginName,
-		KeySet pluginConfig = KeySet()) :
-		name(pluginName),
-		config(pluginConfig)
-	{}
-
-	std::string name;
-	KeySet config;
-};
-
-bool operator == (PluginSpec const & self, PluginSpec const & other)
-{
-	return self.name == other.name &&
-		std::equal(self.config.begin(), self.config.end(),
-				other.config.begin());
-}
-
-typedef std::vector <PluginSpec> PluginSpecVector;
 
 /**
  * @brief Highlevel interface to build a backend.
