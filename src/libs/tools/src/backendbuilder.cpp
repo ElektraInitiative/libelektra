@@ -71,38 +71,54 @@ void BackendBuilder::parseArguments (std::string const & cmdline)
 /**
  * @brief Makes sure that ordering constraints are fulfilled.
  *
- * A stable sorting algorithm is used so that unaffected plugins
- * do not get mixed around.
+ * @pre a sorted list except of the last element to be inserted
+ * @post the last element will be moved to a place where it does not produce an order violation
+ *
+ * @note its still possible that an order violation is present in the case
+ *       of order violation in the other direction (no cycle detection).
  */
 void BackendBuilder::sort()
 {
 	Modules modules;
-	std::stable_sort(std::begin(toAdd), std::end(toAdd),
-		[&modules] (PluginSpec const & lhs, PluginSpec const & rhs)
+	auto hasOrderingConflict = [&modules] (PluginSpec const & otherSpec, PluginSpec const & insertedSpec)
+	{
+		// TODO: do not hardcode loader here, allow to mock it
+		PluginPtr other = modules.load (otherSpec.name, otherSpec.config);
+		PluginPtr inserted = modules.load (insertedSpec.name, insertedSpec.config);
+
+		other->loadInfo();
+		inserted->loadInfo();
+
+		std::stringstream ss (inserted->lookupInfo("ordering"));
+		std::string order;
+		while (ss >> order)
 		{
-			PluginPtr lhsPlugin = modules.load (lhs.name, lhs.config);
-			PluginPtr rhsPlugin = modules.load (rhs.name, lhs.config);
-
-			rhsPlugin->loadInfo();
-			lhsPlugin->loadInfo();
-
-			std::stringstream ss (lhsPlugin->lookupInfo("ordering"));
-			std::string order;
-			while (ss >> order)
+			if (order == other->name())
 			{
-				if (order == rhsPlugin->name())
-				{
-					return true;
-				}
-
-				if (order == rhsPlugin->lookupInfo("provides"))
-				{
-					return true;
-				}
+				return true;
 			}
-			return false;
+
+			if (order == other->lookupInfo("provides"))
+			{
+				return true;
+			}
 		}
-	    );
+		return false;
+	};
+
+	// compare with all but the last
+	for (auto i = toAdd.begin(); std::next(i) != toAdd.end(); ++i)
+	{
+		if (hasOrderingConflict(*i, toAdd.back()))
+		{
+			// bring last *before* the plugin where ordering constraint
+			// would be violated
+			PluginSpecVector n(toAdd.begin(), i);
+			n.push_back(toAdd.back());
+			n.insert(n.end(), i, std::prev(toAdd.end()));
+			toAdd = n;
+		}
+	}
 }
 
 void BackendBuilder::addPlugin (PluginSpec plugin)
