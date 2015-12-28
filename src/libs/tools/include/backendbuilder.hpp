@@ -34,6 +34,8 @@ class BackendBuilder
 public:
 	struct PluginSpec
 	{
+		// TODO allow to mock
+
 		PluginSpec(
 			std::string pluginName,
 			KeySet pluginConfig = KeySet()) :
@@ -53,14 +55,17 @@ public:
 	};
 
 private:
+	typedef std::vector <PluginSpec> PluginSpecVector;
+
 	/// Defines order in which plugins should be added
-	std::vector <PluginSpec> toAdd;
+	PluginSpecVector toAdd;
+
+	void sort();
 
 public:
 	BackendBuilder();
 	~BackendBuilder();
 
-	void sort();
 	void parseArguments (std::string const & cmdline);
 	void addPlugin (PluginSpec plugin);
 	void remPlugin (PluginSpec plugin);
