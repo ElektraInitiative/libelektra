@@ -51,6 +51,10 @@
 /** Declares an API as deprecated. */
 #define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
 
+/** Where plugins are installed */
+#define BUILTIN_PLUGIN_FOLDER    "@BUILTIN_PLUGIN_FOLDER@"
+
+/** Where tools (and other executables like scripts) are installed */
 #define BUILTIN_EXEC_FOLDER      "@BUILTIN_EXEC_FOLDER@"
 
 #define BUILTIN_DATA_FOLDER      "@BUILTIN_DATA_FOLDER@"
