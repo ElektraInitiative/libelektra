@@ -84,7 +84,12 @@
 #cmakedefine HAVE_CLEARENV
 #endif
 
-/* cmakedefine if your system has the <ctype.h> header file. */
+/* define if your system has the `glob' function. */
+#ifndef HAVE_GLOB
+#cmakedefine HAVE_GLOB
+#endif
+
+/* define if your system has the <ctype.h> header file. */
 #ifndef HAVE_CTYPE_H
 #cmakedefine HAVE_CTYPE_H
 #endif
