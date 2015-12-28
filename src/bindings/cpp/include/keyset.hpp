@@ -734,6 +734,18 @@ inline T KeySet::get(std::string const & name, option_t const options) const
 	return typeWrapper (*this, name, options);
 }
 
+inline bool operator==(const KeySet& lhs, const KeySet& rhs)
+{
+	return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+
+inline bool operator!=(const KeySet& lhs, const KeySet& rhs)
+{
+	return !std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+
 
 } // end of namespace kdb
 
