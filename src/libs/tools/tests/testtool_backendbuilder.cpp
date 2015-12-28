@@ -19,22 +19,72 @@
 #include <gtest/gtest.h>
 
 
+TEST(BackendBuilder, parsePluginArguments)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	EXPECT_EQ (KeySet(5, *Key("user/a", KEY_VALUE, "5", KEY_END), KS_END),
+		   BackendBuilder::parsePluginArguments("a=5"));
+	EXPECT_EQ (KeySet(5, *Key("user", KEY_END), KS_END),
+		   BackendBuilder::parsePluginArguments("="));
+	EXPECT_EQ (KeySet (5,
+			*Key("user/a", KEY_VALUE, "5", KEY_END),
+			*Key("user/ax", KEY_VALUE, "a", KEY_END),
+			*Key("user/ax/bx", KEY_VALUE, "8", KEY_END),
+			KS_END),
+		  BackendBuilder::parsePluginArguments ("a=5,ax=a,ax/bx=8"));
+	EXPECT_EQ (KeySet (5,
+			*Key("user", KEY_VALUE, "5", KEY_END),
+			*Key("user/ax", KEY_END, KEY_END),
+			*Key("user/ax/bx", KEY_VALUE, "8", KEY_END),
+			KS_END),
+		  BackendBuilder::parsePluginArguments ("=5,ax=,ax/bx=8"));
+}
+
+bool cmpPsv(kdb::tools::PluginSpecVector psv1, kdb::tools::PluginSpecVector psv2)
+{
+	EXPECT_EQ(psv1.size(), psv2.size());
+	if (psv1.size() != psv2.size()) return false;
+	for (size_t i=0; i<psv1.size(); ++i)
+	{
+		EXPECT_EQ (psv1[i], psv2[i]);
+		if (!(psv1[i] == psv2[i])) return false;
+	}
+	return true;
+}
+
+TEST(BackendBuilder, parseArguments)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	PluginSpecVector psv1;
+	psv1.push_back (PluginSpec ("a", KeySet(5, *Key("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("b"));
+	psv1.push_back (PluginSpec ("c"));
+	PluginSpecVector psv2 = BackendBuilder::parseArguments ("a a=5 b c");
+	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	psv2 = BackendBuilder::parseArguments ("  a  a=5  b c   ");
+	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	psv2 = BackendBuilder::parseArguments ("  a 	 a=5	  b c ,  ");
+	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	EXPECT_THROW(BackendBuilder::parseArguments ("a=5 a b c"), ParseException);
+}
 
 TEST(BackendBuilder, basicAddRem)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	BackendBuilder bb;
-	bb.addPlugin(BackendBuilder::PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("resolver"));
 	EXPECT_FALSE(bb.validated());
 
-	bb.addPlugin(BackendBuilder::PluginSpec("dump"));
+	bb.addPlugin(PluginSpec("dump"));
 	EXPECT_TRUE(bb.validated());
 
-	bb.remPlugin(BackendBuilder::PluginSpec("dump"));
+	bb.remPlugin(PluginSpec("dump"));
 	EXPECT_FALSE(bb.validated());
 
-	bb.addPlugin(BackendBuilder::PluginSpec("dump"));
+	bb.addPlugin(PluginSpec("dump"));
 	EXPECT_TRUE(bb.validated());
 }
 
@@ -43,16 +93,16 @@ TEST(BackendBuilder, basicSort)
 	using namespace kdb;
 	using namespace kdb::tools;
 	BackendBuilder bb;
-	bb.addPlugin(BackendBuilder::PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("resolver"));
 	EXPECT_FALSE(bb.validated());
 
-	bb.addPlugin(BackendBuilder::PluginSpec("keytometa"));
+	bb.addPlugin(PluginSpec("keytometa"));
 	EXPECT_FALSE(bb.validated());
 
-	bb.addPlugin(BackendBuilder::PluginSpec("glob"));
+	bb.addPlugin(PluginSpec("glob"));
 	EXPECT_FALSE(bb.validated());
 
-	bb.addPlugin(BackendBuilder::PluginSpec("augeas"));
+	bb.addPlugin(PluginSpec("augeas"));
 	EXPECT_TRUE(bb.validated()) << "Reordering not successful?";
 }
 
@@ -68,10 +118,10 @@ TEST(BackendBuilder, allSort)
 		// for (auto const & p : permutation) std::cout << p << " ";
 		// std::cout << std::endl;
 		BackendBuilder bb;
-		bb.addPlugin(BackendBuilder::PluginSpec(permutation[0]));
-		bb.addPlugin(BackendBuilder::PluginSpec(permutation[1]));
-		bb.addPlugin(BackendBuilder::PluginSpec(permutation[2]));
-		bb.addPlugin(BackendBuilder::PluginSpec(permutation[3]));
+		bb.addPlugin(PluginSpec(permutation[0]));
+		bb.addPlugin(PluginSpec(permutation[1]));
+		bb.addPlugin(PluginSpec(permutation[2]));
+		bb.addPlugin(PluginSpec(permutation[3]));
 		EXPECT_TRUE(bb.validated()) << "Reordering not successful?";
 	} while (std::next_permutation(permutation.begin(), permutation.end()));
 }

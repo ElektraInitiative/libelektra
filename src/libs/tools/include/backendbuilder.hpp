@@ -23,6 +23,30 @@ namespace kdb
 namespace tools
 {
 
+struct PluginSpec
+{
+	// TODO allow to mock
+
+	PluginSpec(
+		std::string pluginName,
+		KeySet pluginConfig = KeySet()) :
+		name(pluginName),
+		config(pluginConfig)
+	{}
+
+	std::string name;
+	KeySet config;
+};
+
+bool operator == (PluginSpec const & self, PluginSpec const & other)
+{
+	return self.name == other.name &&
+		std::equal(self.config.begin(), self.config.end(),
+				other.config.begin());
+}
+
+typedef std::vector <PluginSpec> PluginSpecVector;
+
 /**
  * @brief Highlevel interface to build a backend.
  *
@@ -31,32 +55,7 @@ namespace tools
  */
 class BackendBuilder
 {
-public:
-	struct PluginSpec
-	{
-		// TODO allow to mock
-
-		PluginSpec(
-			std::string pluginName,
-			KeySet pluginConfig = KeySet()) :
-			name(pluginName),
-			config(pluginConfig)
-		{}
-
-		bool operator == (PluginSpec const & other)
-		{
-			return name == other.name &&
-				std::equal(config.begin(), config.end(),
-						other.config.begin());
-		}
-
-		std::string name;
-		KeySet config;
-	};
-
 private:
-	typedef std::vector <PluginSpec> PluginSpecVector;
-
 	/// Defines order in which plugins should be added
 	PluginSpecVector toAdd;
 
@@ -66,7 +65,10 @@ public:
 	BackendBuilder();
 	~BackendBuilder();
 
-	void parseArguments (std::string const & cmdline);
+	static KeySet parsePluginArguments (std::string const & pluginArguments);
+	static PluginSpecVector parseArguments (std::string const & cmdline);
+
+	void addPlugins (PluginSpecVector plugin);
 	void addPlugin (PluginSpec plugin);
 	void remPlugin (PluginSpec plugin);
 	void status (std::ostream & os) const;

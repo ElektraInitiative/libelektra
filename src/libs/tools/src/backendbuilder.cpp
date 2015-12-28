@@ -21,8 +21,6 @@
 
 #include <algorithm>
 
-
-
 #include <kdb.hpp>
 #include <cassert>
 
@@ -47,11 +45,17 @@ BackendBuilder::~BackendBuilder()
 {
 }
 
-void BackendBuilder::parseArguments (std::string const & cmdline)
+/**
+ * @brief Parse a string containing information to create a KeySet
+ *
+ * @param pluginArguments comma (,) to separate key=value, contains no whitespaces
+ *
+ * @return newly created keyset with the information found in the string
+ */
+KeySet BackendBuilder::parsePluginArguments (std::string const & pluginArguments)
 {
-	// TODO: also parse plugins, not only conf
-	KeySet pluginConfig;
-	istringstream sstream(cmdline);
+	KeySet ks;
+	istringstream sstream(pluginArguments);
 
 	std::string keyName;
 	std::string value;
@@ -64,8 +68,38 @@ void BackendBuilder::parseArguments (std::string const & cmdline)
 		// in the config string, consider the value empty
 		if (!std::getline (sstream, value, ',')) value = "";
 
-		pluginConfig.append(Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
+		ks.append (Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
 	}
+	return ks;
+}
+
+/**
+ * @brief Parse a complete commandline
+ *
+ * @param cmdline contains space separated plugins with optional plugin configurations
+ *
+ * @return a parsed PluginSpecVector
+ */
+PluginSpecVector BackendBuilder::parseArguments (std::string const & cmdline)
+{
+	// split cmdline
+	PluginSpecVector arguments;
+	std::string argument;
+	istringstream sstream(cmdline);
+	while (std::getline (sstream, argument, ' '))
+	{
+		if (argument.empty()) continue;
+		if (std::all_of(argument.begin(), argument.end(),
+			[](char c) {return std::isspace(c) || c==',';})) continue;
+		if (argument.find ('=') == string::npos)
+		{
+			arguments.push_back(PluginSpec(argument));
+		} else {
+			if (arguments.empty()) throw ParseException("config for plugin ("+argument+") without previous plugin name");
+			arguments.back().config = parsePluginArguments(argument);
+		}
+	}
+	return arguments;
 }
 
 /**
@@ -118,6 +152,14 @@ void BackendBuilder::sort()
 			n.insert(n.end(), i, std::prev(toAdd.end()));
 			toAdd = n;
 		}
+	}
+}
+
+void BackendBuilder::addPlugins (PluginSpecVector plugins)
+{
+	for (auto const & plugin : plugins)
+	{
+		addPlugin (plugin);
 	}
 }
 
