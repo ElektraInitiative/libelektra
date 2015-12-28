@@ -367,6 +367,7 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
     keySetMeta(appendKey, "ini/lastSection", 0);
     createUnescapedKey(appendKey, section);
     Key *existingKey = NULL;
+	fprintf(stderr, "section: %s\n", section);
     if ((existingKey = ksLookup(handle->result, appendKey, KDB_O_NONE)))
     {
         keyDel(appendKey);
