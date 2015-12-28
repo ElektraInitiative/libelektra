@@ -83,7 +83,7 @@
 /* disable verbose output messages */
 #define VERBOSE @VERBOSE@
 
-/* cmakedefine if your system has the `clearenv' function. */
+/* define if your system has the `clearenv' function. */
 #ifndef HAVE_CLEARENV
 #cmakedefine HAVE_CLEARENV
 #endif
@@ -98,52 +98,52 @@
 #cmakedefine HAVE_CTYPE_H
 #endif
 
-/* cmakedefine if your system has the <errno.h> header file. */
+/* define if your system has the <errno.h> header file. */
 #ifndef HAVE_ERRNO_H
 #cmakedefine HAVE_ERRNO_H
 #endif
 
-/* cmakedefine if your system has the <locale.h> header file. */
+/* define if your system has the <locale.h> header file. */
 #ifndef HAVE_LOCALE_H
 #cmakedefine HAVE_LOCALE_H
 #endif
 
-/* cmakedefine if your system has the `setenv' function. */
+/* define if your system has the `setenv' function. */
 #ifndef HAVE_SETENV
 #cmakedefine HAVE_SETENV
 #endif
 
-/* cmakedefine if your system has the `futimens' function. */
+/* define if your system has the `futimens' function. */
 #ifndef HAVE_FUTIMENS
 #cmakedefine HAVE_FUTIMENS
 #endif
 
-/* cmakedefine if your system has the `futimes' function. */
+/* define if your system has the `futimes' function. */
 #ifndef HAVE_FUTIMES
 #cmakedefine HAVE_FUTIMES
 #endif
 
-/* cmakedefine if your system has the <stdio.h> header file. */
+/* define if your system has the <stdio.h> header file. */
 #ifndef HAVE_STDIO_H
 #cmakedefine HAVE_STDIO_H
 #endif
 
-/* cmakedefine if your system has the <stdlib.h> header file. */
+/* define if your system has the <stdlib.h> header file. */
 #ifndef HAVE_STDLIB_H
 #cmakedefine HAVE_STDLIB_H
 #endif
 
-/* cmakedefine if your system has the <string.h> header file. */
+/* define if your system has the <string.h> header file. */
 #ifndef HAVE_STRING_H
 #cmakedefine HAVE_STRING_H
 #endif
 
-/* cmakedefine if your system has the <time.h> header file. */
+/* define if your system has the <time.h> header file. */
 #ifndef HAVE_TIME_H
 #cmakedefine HAVE_TIME_H
 #endif
 
-/* cmakedefine if your system has the <unistd.h> header file. */
+/* define if your system has the <unistd.h> header file. */
 #ifndef HAVE_UNISTD_H
 #cmakedefine HAVE_UNISTD_H
 #endif
