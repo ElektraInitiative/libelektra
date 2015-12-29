@@ -278,6 +278,12 @@ public:
 		const char *c = current;
 		if (c >= end) return end;
 
+		if (c == begin && *c == 0)
+		{
+			// special handling of cascading key names
+			return ++c;
+		}
+
 		do { ++c; } while (c < end && *c != 0);
 		if (c != end) ++c; // skip past null character
 
@@ -292,6 +298,11 @@ public:
 		--c; // go from start of string to null
 		do { --c; } while (c > begin && *c != 0);
 		if (c != begin && c+1 != current) ++c; // jump back to not-null
+		else if (c == begin && *c == 0)
+		{
+			// special handling of cascading key names
+			return ++c;
+		}
 
 		return c;
 	}
