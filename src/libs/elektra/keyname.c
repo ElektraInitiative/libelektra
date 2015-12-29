@@ -256,6 +256,10 @@ ssize_t keyGetNameSize(const Key *key)
 /**
  * @brief Returns a keyname which is null separated and does not use backslash for escaping
  *
+ * Slashes are replaced with null bytes.
+ * So cascading keys start with a null byte.
+ * Otherwise escaped characters, e.g. non-hierarchy slash, will be unescaped.
+ *
  * This name is essential if you want to iterate over parts of the key
  * name, want to compare keynames and want to check relations of keys in
  * the hierarchy.
