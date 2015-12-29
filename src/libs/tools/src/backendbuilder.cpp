@@ -198,6 +198,11 @@ void BackendBuilder::addPlugins (PluginSpecVector plugins)
 
 void BackendBuilder::addPlugin (PluginSpec plugin)
 {
+	try {
+		PluginSpec newPlugin = pluginDatabase->lookupProvides(plugin.name);
+		plugin.name = newPlugin.name;
+	} catch (...) {
+	}
 	toAdd.push_back(plugin);
 	sort();
 }
