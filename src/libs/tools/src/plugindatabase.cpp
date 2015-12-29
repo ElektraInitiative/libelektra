@@ -94,13 +94,13 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 	{
 		if (plugin == which)
 		{
-			return plugin;
+			return PluginSpec(plugin);
 		}
 
 		// TODO: improve search strategy
 		if (lookupInfo (PluginSpec(plugin), "provides") == which)
 		{
-			return plugin;
+			return PluginSpec(plugin);
 		}
 	}
 

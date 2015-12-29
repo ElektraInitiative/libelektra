@@ -24,7 +24,7 @@ namespace tools
 
 struct PluginSpec
 {
-	PluginSpec(
+	explicit PluginSpec(
 		std::string pluginName,
 		KeySet pluginConfig = KeySet()) :
 		name(pluginName),
