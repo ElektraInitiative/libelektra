@@ -158,31 +158,34 @@ void BackendBuilder::resolveNeeds()
 {
 	std::vector<std::string> needs;
 
-	// collect everything that is needed
-	for (auto const & ps : toAdd)
-	{
-		std::stringstream ss (pluginDatabase->lookupInfo(ps, "needs"));
-		std::string need;
-		while (ss >> need)
+	do {
+		// collect everything that is needed
+		for (auto const & ps : toAdd)
 		{
-			needs.push_back(need);
+			std::stringstream ss (pluginDatabase->lookupInfo(ps, "needs"));
+			std::string need;
+			while (ss >> need)
+			{
+				needs.push_back(need);
+			}
 		}
-	}
 
-	// remove what is already provided
-	for (auto const & ps : toAdd)
-	{
-		std::string toRemove = ps.name;
-		needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
-		toRemove = pluginDatabase->lookupInfo(ps, "provides");
-		needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
-	}
+		// remove what is already provided
+		for (auto const & ps : toAdd)
+		{
+			std::string toRemove = ps.name;
+			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+			toRemove = pluginDatabase->lookupInfo(ps, "provides");
+			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+		}
 
-	// leftover in needs is what is still needed
-	for (auto const & need : needs)
-	{
-		addPlugin(PluginSpec(need));
-	}
+		// leftover in needs is what is still needed
+		for (auto const & need : needs)
+		{
+			addPlugin(PluginSpec(need));
+			break; // only add one, it might resolve more than one need
+		}
+	} while (!needs.empty());
 }
 
 void BackendBuilder::addPlugins (PluginSpecVector plugins)
@@ -207,8 +210,8 @@ void BackendBuilder::remPlugin (PluginSpec plugin)
 void BackendBuilder::status (std::ostream & os) const
 {
 	try {
-		Backend b = create();
-		return b.status(os);
+		Backend b = create ();
+		return b.status (os);
 	}
 	catch (std::exception const & pce)
 	{

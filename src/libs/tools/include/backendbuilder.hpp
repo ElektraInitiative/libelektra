@@ -46,6 +46,16 @@ public:
 	BackendBuilder();
 	explicit BackendBuilder(PluginDatabasePtr const & pluginDatabase);
 
+	PluginSpec const & operator[] (size_t pos) const
+	{
+		return toAdd[pos];
+	}
+
+	size_t size() const
+	{
+		return toAdd.size();
+	}
+
 	PluginDatabasePtr getPluginDatabase() const
 	{
 		return pluginDatabase;

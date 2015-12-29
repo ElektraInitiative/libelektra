@@ -212,3 +212,22 @@ TEST(BackendBuilder, resolveNeeds)
 	EXPECT_TRUE(bb.validated()) << "Did not add null automatically";
 }
 
+
+TEST(BackendBuilder, resolveDoubleNeeds)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["needs"] = "c v";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	BackendBuilder bb(mpd);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	EXPECT_EQ(bb.size(), 2);
+	bb.resolveNeeds();
+	ASSERT_EQ(bb.size(), 3);
+	EXPECT_EQ(bb[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb[1], PluginSpec("a"));
+	EXPECT_EQ(bb[2], PluginSpec("c"));
+}
+
