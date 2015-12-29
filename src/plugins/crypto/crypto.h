@@ -21,7 +21,6 @@ enum ElektraCryptoHeaderFlags
 };
 
 #define ELEKTRA_CRYPTO_META_ENCRYPT ("crypto/encrypt")
-#define ELEKTRA_CRYPTO_META_ENCRYPTED ("crypto/encrypted")
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 

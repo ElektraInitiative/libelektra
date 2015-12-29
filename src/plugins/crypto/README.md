@@ -48,11 +48,11 @@ To add all variants the variable contains at least:
 
 ## Restrictions ##
 
+The status of this plugin is experimental.
+
 The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
 
 The key derivation is still WIP.
-
-The status of this plugin is experimental. Use it at your own risk!
 
 ### Planned Features ###
 

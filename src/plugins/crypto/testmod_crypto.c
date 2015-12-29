@@ -149,14 +149,10 @@ static void test_enc_and_dec_with_string()
 	keySetString(k, original);
 	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
-	// 1a. encryption
+	// 1. encryption
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
-
-	// 1b. verify metadata
-	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
-	succeed_if ( metaEncrypted && strlen(keyValue(metaEncrypted)) > 0, "meta-key not set (data does not seem to be encrypted)" );
 
 	// 2. decryption
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
@@ -190,14 +186,10 @@ static void test_enc_and_dec_with_binary()
 	getWorkingConfiguration(&config);
 	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
 
-	// 1a. encrypt
+	// 1. encrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
-
-	// 1b. verify metadata
-	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
-	succeed_if ( metaEncrypted && strlen(keyValue(metaEncrypted)) > 0, "meta-key not set (data does not seem to be encrypted)" );
 
 	// 2. decrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
@@ -233,14 +225,10 @@ static void test_enc_and_dec_with_null()
 	getWorkingConfiguration(&config);
 	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
 
-	// 1a. encrypt
+	// 1. encrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
 	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
-
-	// 1b. verify metadata
-	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
-	succeed_if ( metaEncrypted && strlen(keyValue(metaEncrypted)) > 0, "meta-key not set (data does not seem to be encrypted)" );
 
 	// 2. decrypt
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
@@ -277,10 +265,6 @@ static void test_metakey_handling_encrypt()
 	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
 	elektraCryptoHandleDestroy(handle);
 
-	// 1b. verify metadata
-	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
-	succeed_if ( !metaEncrypted || strlen(keyValue(metaEncrypted)) == 0, "meta-key set (data does seem to be encrypted)" );
-
 	// 2. verify data has not been changed
 	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
 	read = keyGetBinary(k, content, sizeof(content));
@@ -316,10 +300,6 @@ static void test_metakey_handling_decrypt()
 	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
 	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
 	elektraCryptoHandleDestroy(handle);
-
-	// 1b. verify metadata
-	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
-	succeed_if ( !metaEncrypted || strlen(keyValue(metaEncrypted)) == 0, "meta-key set (data does seem to be encrypted)" );
 
 	// 2. verify data has not been changed
 	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");

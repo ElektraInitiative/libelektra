@@ -225,7 +225,6 @@ int elektraCryptoGcryEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 
 	// write back the cipher text to the key
 	keySetBinary(k, output, outputLen);
-	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "X");
 	elektraFree(output);
 
 	return 1;
@@ -247,7 +246,7 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	kdb_octet_t flags = ELEKTRA_CRYPTO_FLAG_NONE;
 
 	// check if key has been encrypted in the first place
-	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT);
 	if (metaEncrypted == NULL || strlen(keyValue(metaEncrypted)) == 0)
 	{
 		// nothing to do
@@ -319,7 +318,6 @@ int elektraCryptoGcryDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
 	{
 		keySetBinary(k, output, contentLen);
 	}
-	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "");
 
 	elektraFree(output);
 	return 1;

@@ -276,7 +276,6 @@ int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	if (outputLen > 0)
 	{
 		keySetBinary(k, output, outputLen);
-		keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "X");
 	}
 	BIO_free_all(encrypted);
 	return 1;
@@ -306,7 +305,7 @@ int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	const size_t headerLen = sizeof(flags) + sizeof(contentLen);
 
 	// check if key has been encrypted in the first place
-	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED);
+	const Key *metaEncrypted = keyGetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT);
 	if (metaEncrypted == NULL || strlen(keyValue(metaEncrypted)) == 0)
 	{
 		// nothing to do
@@ -387,7 +386,6 @@ int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
 	{
 		keySetBinary(k, plaintext, contentLen);
 	}
-	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPTED, "");
 
 	BIO_free_all(decrypted);
 	return 1;
