@@ -187,3 +187,28 @@ TEST(BackendBuilder, allSort)
 	} while (std::next_permutation(permutation.begin(), permutation.end()));
 }
 
+
+TEST(BackendBuilder, resolveNeeds)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	try {
+		Backend b;
+		b.addPlugin("resolver");
+		b.addPlugin("line");
+		b.addPlugin("null");
+	}
+	catch (std::exception const & e)
+	{
+		std::cout << "Plugin missing, abort test case: " << e.what() << std::endl;
+		return;
+	}
+	BackendBuilder bb;
+	bb.addPlugin(PluginSpec("resolver"));
+	EXPECT_FALSE(bb.validated()) << "resolver+null should be missing";
+	bb.addPlugin(PluginSpec("line"));
+	EXPECT_FALSE(bb.validated()) << "null should be missing";
+	bb.resolveNeeds();
+	EXPECT_TRUE(bb.validated()) << "Did not add null automatically";
+}
+

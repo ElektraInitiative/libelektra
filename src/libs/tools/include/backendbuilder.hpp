@@ -41,7 +41,6 @@ private:
 	PluginDatabasePtr pluginDatabase;
 
 	void sort();
-	void resolveNeeds();
 
 public:
 	BackendBuilder();
@@ -62,6 +61,7 @@ public:
 	void remPlugin (PluginSpec plugin);
 	void status (std::ostream & os) const;
 	bool validated () const;
+	void resolveNeeds();
 	Backend create() const;
 };
 
