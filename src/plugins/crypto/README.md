@@ -40,11 +40,17 @@ The following compile variants are available:
 1. crypto_gcrypt
 2. crypto_openssl
 
-Add the variants, that you want (you can add one of them or all), to the `PLUGINS` variable in `CMakeCache.txt` and re-run `cmake`.
+Add "crypto" and the variants, that you want (you can add one of them or all), to the `PLUGINS` variable in `CMakeCache.txt` and re-run `cmake`.
 
-To add all variants the variable contains at least:
+In order to add all compile variants you can add "CRYPTO" to the `PLUGINS` variable.
 
-	PLUGINS=crypto;crypto_gcrypt;crypto_openssl
+An example `CMakeCache.txt` may contain the following variable:
+
+    PLUGINS=crypto;crypto_gcrypt;crypto_openssl
+
+or it may look like:
+
+    PLUGINS=CRYPTO
 
 ## Restrictions ##
 

@@ -151,6 +151,17 @@ endif ()
 
 set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
 
+#
+# compile variants for the crypto plugin
+#
+list (FIND PLUGINS "CRYPTO" FINDEX)
+if (PLUGINS MATCHES "ALL" OR FINDEX GREATER -1)
+    set (PLUGINS_LIST_CRYPTO
+            crypto
+            crypto_gcrypt
+            crypto_openssl
+    )
+endif ()
 
 #
 # now actually set the plugins cache variable
@@ -160,6 +171,7 @@ set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP fo
 set (PLUGINS
 	${PLUGINS_LIST_DEFAULT}
 	${PLUGINS_LIST}
+	${PLUGINS_LIST_CRYPTO}
 	CACHE STRING ${PLUGINS_DOC}
 	${PLUGINS_FORCE}
 	)
