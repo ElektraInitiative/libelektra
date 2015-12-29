@@ -15,13 +15,16 @@
 
 #include <pluginspec.hpp>
 
-class Backend;
+#include <memory>
 
 namespace kdb
 {
 
 namespace tools
 {
+
+class Backend;
+class PluginDatabase;
 
 /**
  * @brief Highlevel interface to build a backend.
@@ -34,11 +37,21 @@ class BackendBuilder
 private:
 	/// Defines order in which plugins should be added
 	PluginSpecVector toAdd;
+	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	PluginDatabasePtr pluginDatabase;
 
 	void sort();
+	void resolveNeeds();
 
 public:
 	BackendBuilder();
+	explicit BackendBuilder(PluginDatabasePtr const & pluginDatabase);
+
+	PluginDatabasePtr getPluginDatabase() const
+	{
+		return pluginDatabase;
+	}
+
 	~BackendBuilder();
 
 	static KeySet parsePluginArguments (std::string const & pluginArguments);

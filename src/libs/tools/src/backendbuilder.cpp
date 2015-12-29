@@ -12,6 +12,7 @@
 #include <backend.hpp>
 #include <backends.hpp>
 #include <backendbuilder.hpp>
+#include <plugindatabase.hpp>
 
 
 #include <kdbmodule.h>
@@ -36,10 +37,16 @@ namespace tools
 {
 
 
-BackendBuilder::BackendBuilder()
+BackendBuilder::BackendBuilder() :
+	pluginDatabase(make_shared<ModulesPluginDatabase>())
 {
 }
 
+
+BackendBuilder::BackendBuilder(PluginDatabasePtr const & plugins) :
+	pluginDatabase(plugins)
+{
+}
 
 BackendBuilder::~BackendBuilder()
 {
@@ -113,26 +120,18 @@ PluginSpecVector BackendBuilder::parseArguments (std::string const & cmdline)
  */
 void BackendBuilder::sort()
 {
-	Modules modules;
-	auto hasOrderingConflict = [&modules] (PluginSpec const & otherSpec, PluginSpec const & insertedSpec)
+	auto hasOrderingConflict = [this] (PluginSpec const & other, PluginSpec const & inserted)
 	{
-		// TODO: do not hardcode loader here, allow to mock it
-		PluginPtr other = modules.load (otherSpec.name, otherSpec.config);
-		PluginPtr inserted = modules.load (insertedSpec.name, insertedSpec.config);
-
-		other->loadInfo();
-		inserted->loadInfo();
-
-		std::stringstream ss (inserted->lookupInfo("ordering"));
+		std::stringstream ss (pluginDatabase->lookupInfo(inserted, "ordering"));
 		std::string order;
 		while (ss >> order)
 		{
-			if (order == other->name())
+			if (order == other.name)
 			{
 				return true;
 			}
 
-			if (order == other->lookupInfo("provides"))
+			if (order == pluginDatabase->lookupInfo(other, "provides"))
 			{
 				return true;
 			}
@@ -152,6 +151,37 @@ void BackendBuilder::sort()
 			n.insert(n.end(), i, std::prev(toAdd.end()));
 			toAdd = n;
 		}
+	}
+}
+
+void BackendBuilder::resolveNeeds()
+{
+	std::vector<std::string> needs;
+
+	// collect everything that is needed
+	for (auto const & ps : toAdd)
+	{
+		std::stringstream ss (pluginDatabase->lookupInfo(ps, "needs"));
+		std::string need;
+		while (ss >> need)
+		{
+			needs.push_back(need);
+		}
+	}
+
+	// remove what is already provided
+	for (auto const & ps : toAdd)
+	{
+		std::string toRemove = ps.name;
+		needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+		toRemove = pluginDatabase->lookupInfo(ps, "provides");
+		needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+	}
+
+	// leftover in needs is what is still needed
+	for (auto const & need : needs)
+	{
+		addPlugin(PluginSpec(need));
 	}
 }
 

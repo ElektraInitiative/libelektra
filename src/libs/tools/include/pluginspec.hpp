@@ -11,6 +11,9 @@
 #ifndef TOOLS_PLUGIN_SPEC_HPP
 #define TOOLS_PLUGIN_SPEC_HPP
 
+#include <vector>
+#include <string>
+
 #include <kdb.hpp>
 
 namespace kdb
@@ -32,7 +35,7 @@ struct PluginSpec
 	KeySet config;
 };
 
-bool operator == (PluginSpec const & self, PluginSpec const & other)
+inline bool operator == (PluginSpec const & self, PluginSpec const & other)
 {
 	return self.name == other.name &&
 		std::equal(self.config.begin(), self.config.end(),
@@ -44,5 +47,17 @@ typedef std::vector <PluginSpec> PluginSpecVector;
 }
 
 }
+
+namespace std
+{
+	// produces hash collisions if only config differs
+	template <> struct hash<kdb::tools::PluginSpec>
+	{
+		size_t operator()(kdb::tools::PluginSpec const & s) const
+		{
+			return std::hash<std::string>()(s.name);
+		}
+	};
+} // end of namespace std
 
 #endif

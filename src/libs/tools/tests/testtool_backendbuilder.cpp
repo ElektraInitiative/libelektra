@@ -11,12 +11,39 @@
 #include <backend.hpp>
 #include <backends.hpp>
 #include <backendbuilder.hpp>
+#include <plugindatabase.hpp>
 
+#include <string>
 #include <iostream>
 #include <algorithm>
-#include <string>
+#include <unordered_map>
+
 #include <kdb.hpp>
 #include <gtest/gtest.h>
+
+class MockPluginDatabase : public kdb::tools::PluginDatabase
+{
+public:
+	mutable std::unordered_map <kdb::tools::PluginSpec, std::unordered_map<std::string,std::string>> data;
+	std::string lookupInfo(kdb::tools::PluginSpec const & spec, std::string const & which) const
+	{
+		return data[spec][which];
+	}
+};
+
+TEST(BackendBuilder, withDatabase)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["ordering"] = "d";
+	mpd->data[PluginSpec("b")]["ordering"] = "d";
+	mpd->data[PluginSpec("c")]["ordering"];
+	BackendBuilder bb(mpd);
+	bb.addPlugin(PluginSpec("a"));
+	bb.addPlugin(PluginSpec("b"));
+	bb.addPlugin(PluginSpec("c"));
+}
 
 
 TEST(BackendBuilder, parsePluginArguments)
