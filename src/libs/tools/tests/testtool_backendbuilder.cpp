@@ -25,9 +25,28 @@ class MockPluginDatabase : public kdb::tools::PluginDatabase
 {
 public:
 	mutable std::unordered_map <kdb::tools::PluginSpec, std::unordered_map<std::string,std::string>> data;
+
 	std::string lookupInfo(kdb::tools::PluginSpec const & spec, std::string const & which) const
 	{
 		return data[spec][which];
+	}
+
+	kdb::tools::PluginSpec lookupProvides (std::string const & which) const
+	{
+		for (auto const & plugin : data)
+		{
+			if (plugin.first.name == which)
+			{
+				return plugin.first;
+			}
+
+			if (lookupInfo (plugin.first, "provides") == which)
+			{
+				return plugin.first;
+			}
+		}
+
+		throw kdb::tools::NoPlugin("No plugin " + which + " could be found");
 	}
 };
 
@@ -219,6 +238,24 @@ TEST(BackendBuilder, resolveDoubleNeeds)
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "c v";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	BackendBuilder bb(mpd);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	EXPECT_EQ(bb.size(), 2);
+	bb.resolveNeeds();
+	ASSERT_EQ(bb.size(), 3);
+	EXPECT_EQ(bb[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb[1], PluginSpec("a"));
+	EXPECT_EQ(bb[2], PluginSpec("c"));
+}
+
+TEST(BackendBuilder, resolveDoubleNeedsVirtual)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["needs"] = "v c";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
 	BackendBuilder bb(mpd);
 	bb.addPlugin(PluginSpec("resolver"));

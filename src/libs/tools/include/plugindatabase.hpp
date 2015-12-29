@@ -31,7 +31,26 @@ std::vector<std::string> listAllAvailablePlugins();
 class PluginDatabase
 {
 public:
+	/**
+	 * @brief lookup contract clauses
+	 *
+	 * @param whichplugin about which plugin?
+	 * @param which about which clause in the contract?
+	 *
+	 * @return the clause of the contract
+	 */
 	virtual std::string lookupInfo (PluginSpec const & whichplugin, std::string const & which) const = 0;
+
+	/**
+	 * @brief lookup which plugin is a provider
+	 *
+	 * @param which is the provider name to find
+	 *
+	 * @throw NoPlugin if no plugin that provides the functionality could be found
+	 *
+	 * @return a plugin specification which provides it
+	 */
+	virtual PluginSpec lookupProvides (std::string const & which) const = 0;
 };
 
 typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
@@ -44,6 +63,7 @@ public:
 	ModulesPluginDatabase ();
 	~ModulesPluginDatabase ();
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
+	PluginSpec lookupProvides (std::string const & which) const;
 };
 
 }

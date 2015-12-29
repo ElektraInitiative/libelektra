@@ -184,9 +184,13 @@ struct ConflictViolation: public PluginCheckException
 
 struct NoPlugin : public PluginCheckException
 {
-	NoPlugin(Key key) :
+	explicit NoPlugin (Key key) :
 		m_key(key),
 		m_str()
+	{}
+
+	explicit NoPlugin (std::string const & message) :
+		m_str(message)
 	{}
 
 	virtual ~NoPlugin() throw()

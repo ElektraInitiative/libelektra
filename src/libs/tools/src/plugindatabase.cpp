@@ -86,6 +86,27 @@ std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::str
 	return plugin->lookupInfo(which);
 }
 
+PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
+{
+	std::vector<std::string> allPlugins = listAllAvailablePlugins();
+
+	for (auto const & plugin : allPlugins)
+	{
+		if (plugin == which)
+		{
+			return plugin;
+		}
+
+		// TODO: improve search strategy
+		if (lookupInfo (PluginSpec(plugin), "provides") == which)
+		{
+			return plugin;
+		}
+	}
+
+	throw NoPlugin("No plugin " + which + " could be found");
+}
+
 }
 
 }

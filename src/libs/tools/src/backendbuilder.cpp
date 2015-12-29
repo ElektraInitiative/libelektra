@@ -182,7 +182,7 @@ void BackendBuilder::resolveNeeds()
 		// leftover in needs is what is still needed
 		for (auto const & need : needs)
 		{
-			addPlugin(PluginSpec(need));
+			addPlugin(pluginDatabase->lookupProvides(need));
 			break; // only add one, it might resolve more than one need
 		}
 	} while (!needs.empty());
