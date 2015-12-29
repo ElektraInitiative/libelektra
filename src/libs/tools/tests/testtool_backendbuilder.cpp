@@ -101,6 +101,16 @@ TEST(BackendBuilder, basicAddRem)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
+	try {
+		Backend b;
+		b.addPlugin("resolver");
+		b.addPlugin("dump");
+	}
+	catch (std::exception const & e)
+	{
+		std::cout << "Plugin missing, abort test case: " << e.what() << std::endl;
+		return;
+	}
 	BackendBuilder bb;
 	bb.addPlugin(PluginSpec("resolver"));
 	EXPECT_FALSE(bb.validated());
@@ -119,6 +129,18 @@ TEST(BackendBuilder, basicSort)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
+	try {
+		Backend b;
+		b.addPlugin("resolver");
+		b.addPlugin("keytometa");
+		b.addPlugin("glob");
+		b.addPlugin("augeas");
+	}
+	catch (std::exception const & e)
+	{
+		std::cout << "Plugin missing, abort test case: " << e.what() << std::endl;
+		return;
+	}
 	BackendBuilder bb;
 	bb.addPlugin(PluginSpec("resolver"));
 	EXPECT_FALSE(bb.validated());
@@ -138,6 +160,18 @@ TEST(BackendBuilder, allSort)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
+	try {
+		Backend b;
+		b.addPlugin("resolver");
+		b.addPlugin("keytometa");
+		b.addPlugin("glob");
+		b.addPlugin("augeas");
+	}
+	catch (std::exception const & e)
+	{
+		std::cout << "Plugin missing, abort test case: " << e.what() << std::endl;
+		return;
+	}
 
 	std::vector <std::string> permutation = {"augeas", "glob", "keytometa", "resolver"};
 
