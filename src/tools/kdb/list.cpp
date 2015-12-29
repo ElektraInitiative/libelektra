@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include <cmdline.hpp>
-#include <plugins.hpp>
+#include <plugindatabase.hpp>
 
 using namespace kdb;
 using namespace std;

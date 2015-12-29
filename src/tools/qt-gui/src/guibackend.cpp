@@ -11,6 +11,7 @@
 #include <markdowndocument.h>
 #include <discountmarkdownconverter.h>
 #include <backends.hpp>
+#include <plugindatabase.hpp>
 #include <vector>
 #include <string>
 #include <QDebug>

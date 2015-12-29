@@ -23,6 +23,8 @@ namespace kdb
 namespace tools
 {
 
+std::vector<std::string> listAllAvailablePlugins();
+
 /**
  * @brief Loads all plugins and allows us to query them.
  */
