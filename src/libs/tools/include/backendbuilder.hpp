@@ -24,6 +24,7 @@ namespace tools
 {
 
 class Backend;
+class BackendInterface;
 class PluginDatabase;
 
 /**
