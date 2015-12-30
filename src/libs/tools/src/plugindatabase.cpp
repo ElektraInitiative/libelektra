@@ -83,7 +83,7 @@ ModulesPluginDatabase::~ModulesPluginDatabase ()
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
 	PluginPtr plugin = impl->modules.load (spec.name, spec.config);
-	return plugin->lookupInfo(which);
+	return plugin->lookupInfo (which);
 }
 
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
@@ -98,10 +98,14 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 		}
 
 		// TODO: improve search strategy
-		if (lookupInfo (PluginSpec(plugin), "provides") == which)
-		{
-			return PluginSpec(plugin);
-		}
+		try {
+			if (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+				KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+				"provides") == which)
+			{
+				return PluginSpec(plugin);
+			}
+		} catch (...) { } // assume not loaded
 	}
 
 	throw NoPlugin("No plugin " + which + " could be found");

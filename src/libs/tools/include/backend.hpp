@@ -30,6 +30,7 @@ namespace tools
 
 class BackendInterface
 {
+public:
 	virtual void addPlugin (std::string name, KeySet pluginConf = KeySet()) = 0;
 	virtual void status (std::ostream & os) const = 0;
 	virtual bool validated () const = 0;

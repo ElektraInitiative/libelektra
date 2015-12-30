@@ -73,6 +73,7 @@ public:
 	bool validated () const;
 	void resolveNeeds();
 	Backend create() const;
+	void create(BackendInterface & b) const;
 };
 
 }

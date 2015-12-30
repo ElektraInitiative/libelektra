@@ -246,6 +246,14 @@ Backend BackendBuilder::create() const
 	return b;
 }
 
+void BackendBuilder::create(BackendInterface & b) const
+{
+	for (auto const & a: toAdd)
+	{
+		b.addPlugin(a.name, a.config);
+	}
+}
+
 }
 
 }

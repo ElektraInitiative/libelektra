@@ -57,6 +57,9 @@ private:
 	void uninit();
 
 public:
+	/**
+	 * @brief Do not construct a plugin yourself, use Modules.load
+	 */
 	Plugin(std::string  pluginName, kdb::KeySet &modules, kdb::KeySet const& pluginConfig);
 
 	Plugin(Plugin const& other);
@@ -72,11 +75,13 @@ public:
 
 	/**
 	 * Gets the configuration for the plugin.
+	 * (will be done in Modules.load)
 	 */
 	void loadInfo();
 
 	/**
 	 * Creates symbol and info table.
+	 * (will be done in Modules.load)
 	 */
 	void parse();
 
