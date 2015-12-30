@@ -90,6 +90,13 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 {
 	std::vector<std::string> allPlugins = listAllAvailablePlugins();
 
+	// check if plugin with this name exists
+	auto it = std::find(allPlugins.begin(), allPlugins.end(), which);
+	if (it != allPlugins.end())
+	{
+		return PluginSpec(which);
+	}
+
 	for (auto const & plugin : allPlugins)
 	{
 		if (plugin == which)
