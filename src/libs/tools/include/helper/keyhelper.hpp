@@ -63,6 +63,20 @@ Key rebaseKey(const Key& key, const Key& oldParent, const Key& newParent);
 std::string rebasePath(const Key& key, const Key& oldParent,
 		const Key& newParent);
 
+/**
+ * @brief Removes the namespace
+ *
+ * @param key will be made to a cascading key
+ */
+void removeNamespace(Key & key);
+
+/**
+ * @brief Find common name between two keys
+ *
+ * @return the longest common name found
+ */
+Key commonKeyName(Key key1, Key key2);
+
 }
 }
 }

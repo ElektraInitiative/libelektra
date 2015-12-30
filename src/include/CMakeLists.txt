@@ -6,6 +6,7 @@ check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
 check_symbol_exists(futimens     "sys/stat.h"       HAVE_FUTIMENS)
 check_symbol_exists(futimes      "sys/time.h"       HAVE_FUTIMES)
+check_symbol_exists(glob         "glob.h"           HAVE_GLOB)
 
 check_include_file(ctype.h      HAVE_CTYPE_H)
 check_include_file(errno.h      HAVE_ERRNO_H)
@@ -26,6 +27,8 @@ set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
 set (BUILTIN_DATA_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TEST_DATA_FOLDER}")
+set (BUILTIN_PLUGIN_FOLDER
+	"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 

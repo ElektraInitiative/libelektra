@@ -222,7 +222,11 @@ TEST_F(Simple, GetNothingEmpty)
 	KDB kdb;
 	KeySet ks;
 	Key k;
-	ASSERT_EQ(kdb.get(ks, k), 1);
+	try {
+		ASSERT_EQ(kdb.get(ks, k), 1);
+	} catch (std::exception const & e) {
+		std::cout << "Could not get everything from keydatabase: " << e.what() << std::endl;
+	}
 	ASSERT_EQ(k.getMeta<int>("warnings/#00/number"), 105) << "did not get warning for empty key";
 	// got everything, so make no assumption of size
 }

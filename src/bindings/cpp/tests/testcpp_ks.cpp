@@ -16,7 +16,7 @@ KeySet fun(size_t alloc, ...)
 	va_list vl;
 
 	va_start (vl, alloc);
-	KeySet ks (va, alloc, vl);
+	KeySet ks (VaAlloc(alloc), vl);
 	va_end (vl);
 	return ks;
 }
@@ -834,7 +834,7 @@ KeySet fill_vaargs(size_t size, ...)
 {
 	va_list ap;
 	va_start(ap, size);
-	KeySet ks(va, size, ap);
+	KeySet ks(VaAlloc(size), ap);
 	va_end(ap);
 	return ks;
 }

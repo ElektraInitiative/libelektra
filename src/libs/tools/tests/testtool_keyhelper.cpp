@@ -95,3 +95,35 @@ TEST(RebaseKey, CreatesCopy)
 	target.setString("newvalue");
 	EXPECT_EQ ("testvalue", result.getString());
 }
+
+TEST(RemoveNamespace, Basics)
+{
+	Key key("user/test/configold/subdir/k1", KEY_VALUE, "testvalue", KEY_END);
+	removeNamespace(key);
+	EXPECT_EQ (key, Key("/test/configold/subdir/k1", KEY_END));
+}
+
+TEST(CommonKeyName, Key1)
+{
+	EXPECT_EQ (commonKeyName (Key("system/test/script/error/x", KEY_END),
+				  Key("system/test/script/x", KEY_END)),
+		   Key("system/test/script", KEY_END));
+	EXPECT_EQ (commonKeyName (Key("system/test/script//x", KEY_END),
+				  Key("system/test/script/other//x", KEY_END)),
+		   Key("system/test/script", KEY_END));
+	EXPECT_EQ (commonKeyName (Key("user/test/script//x", KEY_END),
+				  Key("system/test/script/other//x", KEY_END)),
+		   Key("/test/script", KEY_END));
+	EXPECT_EQ (commonKeyName (Key("/test/script//x", KEY_END),
+				  Key("system/test/script/other//x", KEY_END)),
+		   Key("/test/script", KEY_END));
+	EXPECT_EQ (commonKeyName (Key("/test/script//x", KEY_END),
+				  Key("/test/script/other//x", KEY_END)),
+		   Key("/test/script", KEY_END));
+	EXPECT_EQ (commonKeyName (Key("system/test/script//x", KEY_END),
+				  Key("user/test/script/other//x", KEY_END)),
+		   Key("/test/script", KEY_END));
+	EXPECT_EQ (commonKeyName (Key("user/test/script//x", KEY_END),
+				  Key("user/test/script/other//x", KEY_END)),
+		   Key("user/test/script", KEY_END));
+}

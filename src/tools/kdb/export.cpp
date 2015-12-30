@@ -54,7 +54,7 @@ int ExportCommand::execute(Cmdline const& cl)
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
-	PluginPtr plugin = modules.load(format);
+	PluginPtr plugin = modules.load(format, cl.getPluginsConfig());
 
 	Key errorKey(root);
 	errorKey.setString(file);

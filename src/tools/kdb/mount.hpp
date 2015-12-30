@@ -18,6 +18,7 @@ namespace kdb
 namespace tools
 {
 	class Backend;
+	class BackendBuilder;
 }
 }
 
@@ -26,7 +27,7 @@ class MountCommand : public MountBaseCommand
 	void outputMtab(Cmdline const& cl);
 	void processArguments(Cmdline const& cl);
 	void buildBackend(Cmdline const& cl);
-	void appendPlugins(Cmdline const& cl, kdb::tools::Backend & backend);
+	void appendPlugins(Cmdline const& cl, kdb::tools::BackendBuilder & backend);
 	bool readPluginConfig(Cmdline const& cl, size_t current_plugin, kdb::KeySet & config);
 
 public:

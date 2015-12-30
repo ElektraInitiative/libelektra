@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Implements a way to build and deal with a backend
+ * @brief Implements a way to deal with a backend
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -15,8 +15,10 @@
 #include <modules.hpp>
 #include <toolexcept.hpp>
 
-#include <ostream>
 #include <string>
+#include <ostream>
+#include <deque>
+#include <unordered_map>
 
 #include <kdb.hpp>
 
@@ -26,11 +28,22 @@ namespace kdb
 namespace tools
 {
 
+class BackendInterface
+{
+public:
+	virtual void addPlugin (std::string name, KeySet pluginConf = KeySet()) = 0;
+	virtual void status (std::ostream & os) const = 0;
+	virtual bool validated () const = 0;
+	virtual ~BackendInterface() = 0;
+};
+
 /**
- * @brief A representation of the backend (= set of plugins) that can be
- * mounted.
+ * @brief A low-level representation of the backend (= set of plugins) that can be mounted.
+ *
+ * To build a backend, you should prefer BackendBuilder, which automatically fixes
+ * ordering and allows us to remove plugins.
  */
-class Backend
+class Backend : public BackendInterface
 {
 private:
 	GetPlugins getplugins;
@@ -73,6 +86,24 @@ inline std::string Backend::getConfigFile() const
 }
 
 std::ostream & operator<<(std::ostream & os, Backend const & b);
+
+class ImportExportBackend : public BackendInterface
+{
+	Modules modules;
+
+	/**
+	 * @brief A list of plugins for each ordering
+	 */
+	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
+
+public:
+	ImportExportBackend();
+	void addPlugin (std::string name, KeySet pluginConf = KeySet());
+	void status (std::ostream & os) const;
+	bool validated () const;
+	void importFromFile (KeySet & ks, Key const & parentKey) const;
+	void exportToFile (KeySet const & ks, Key const & parentKey) const;
+};
 
 }
 

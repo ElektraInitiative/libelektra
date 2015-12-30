@@ -37,16 +37,24 @@ namespace kdb
 namespace tools
 {
 
+BackendInterface::~BackendInterface()
+{}
 
-/** Creates a new backend with a given name and mountpoint.
- * Parameters are needed for serialisation only, so you can
- * keep them empty if you do not want to serialise.
+/** Creates a new empty backend.
  *
  * */
 Backend::Backend()
 {
 }
 
+
+Backend::~Backend()
+{
+	for (auto & elem : plugins)
+	{
+		delete elem;
+	}
+}
 
 /**
  * @brief Sets the mountpoint for the backend
@@ -180,14 +188,6 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 void Backend::setBackendConfig (KeySet const & ks)
 {
 	config.append(ks);
-}
-
-Backend::~Backend()
-{
-	for (auto & elem : plugins)
-	{
-		delete elem;
-	}
 }
 
 
@@ -434,6 +434,81 @@ void Backend::serialize (kdb::KeySet &ret)
 			KEY_VALUE, configFile.c_str(),
 			KEY_COMMENT, "The path for this backend. Note that plugins can override that with more specific configuration.",
 			KEY_END));
+}
+
+void ImportExportBackend::addPlugin (std::string name, KeySet pluginConfig)
+{
+	PluginPtr plugin = modules.load(name, pluginConfig);
+	std::shared_ptr<Plugin> sharedPlugin = std::move(plugin);
+
+	std::stringstream ss (plugin->lookupInfo("placements"));
+	std::string placement;
+	while (ss << placement)
+	{
+		if (plugin->lookupInfo ("stacking") == "" && placement=="postgetstorage")
+		{
+			// reverse postgetstorage, except stacking is set
+			plugins[placement].push_front(sharedPlugin);
+		}
+		else
+		{
+			plugins[placement].push_back(sharedPlugin);
+		}
+	}
+
+}
+
+void ImportExportBackend::status (std::ostream & os) const
+{
+	if (plugins.empty()) os << "no plugin added" << std::endl;
+	else if (plugins.find("setstorage") == plugins.end()) os << "no storage plugin added" << std::endl;
+	else os << "everything ok" << std::endl;
+}
+
+bool ImportExportBackend::validated () const
+{
+	return true;
+}
+
+void ImportExportBackend::importFromFile (KeySet & ks, Key const & parentKey) const
+{
+	Key key = parentKey;
+	std::vector<std::string> placements;
+	placements.push_back("getresolver");
+	placements.push_back("pregetstorage");
+	placements.push_back("getstorage");
+	placements.push_back("postgetstorage");
+	for (auto const & placement : placements)
+	{
+		auto currentPlugins = plugins.find(placement);
+		if (currentPlugins == plugins.end()) continue;
+		for (auto const & plugin : currentPlugins->second)
+		{
+			plugin->get(ks, key);
+		}
+	}
+}
+
+void ImportExportBackend::exportToFile (KeySet const & cks, Key const & parentKey) const
+{
+	KeySet ks = cks;
+	Key key = parentKey;
+	std::vector<std::string> placements;
+	placements.push_back("setresolver");
+	placements.push_back("presetstorage");
+	placements.push_back("setstorage");
+	placements.push_back("precommit");
+	placements.push_back("commit");
+	placements.push_back("postcommit");
+	for (auto const & placement : placements)
+	{
+		auto currentPlugins = plugins.find(placement);
+		if (currentPlugins == plugins.end()) continue;
+		for (auto const & plugin : currentPlugins->second)
+		{
+			plugin->set(ks, key);
+		}
+	}
 }
 
 

@@ -47,6 +47,23 @@ struct ToolException : public std::runtime_error
 	{};
 };
 
+struct ParseException : public ToolException
+{
+	ParseException(std::string str) :
+		m_str(std::move(str))
+	{}
+
+	virtual ~ParseException() throw()
+	{}
+
+	virtual const char* what() const throw() override
+	{
+		return m_str.c_str();
+	}
+
+	std::string m_str;
+};
+
 struct PluginCheckException : public ToolException
 {
 	virtual const char* what() const throw() override
@@ -167,9 +184,13 @@ struct ConflictViolation: public PluginCheckException
 
 struct NoPlugin : public PluginCheckException
 {
-	NoPlugin(Key key) :
+	explicit NoPlugin (Key key) :
 		m_key(key),
 		m_str()
+	{}
+
+	explicit NoPlugin (std::string const & message) :
+		m_str(message)
 	{}
 
 	virtual ~NoPlugin() throw()

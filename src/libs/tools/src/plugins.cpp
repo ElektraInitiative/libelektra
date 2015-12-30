@@ -26,20 +26,6 @@ namespace kdb
 namespace tools
 {
 
-std::vector<std::string> listAllAvailablePlugins()
-{
-	std::vector<std::string> ret;
-	std::string allPlugins = ELEKTRA_PLUGINS;
-	std::istringstream ss(allPlugins);
-	std::string plugin;
-	while (getline(ss, plugin, ';'))
-	{
-		ret.push_back(plugin);
-	}
-	return ret;
-}
-
-
 Plugins::Plugins () :
 	plugins (NR_OF_PLUGINS),
 	nrStoragePlugins (0),
@@ -127,7 +113,7 @@ void Plugins::addPlugin (Plugin &plugin, std::string which)
  * @param which placementInfo it is
  *
  * @retval true if it should be added
- * @retval false no placement (will not be added)
+ * @retval false no placements (will not be added)
  */
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
@@ -144,7 +130,11 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 
 		std::ostringstream os;
 		os << "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
+			"The plugin "
+			<< plugin.name()
+			<< " can't be positioned to position "
+			<< which
+			<< " anymore.\n"
 			"Try to reduce the number of plugins!\n"
 			"\n"
 			"Failed because of stack overflow: cant place to "
@@ -158,7 +148,11 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 	{
 		std::ostringstream os;
 		os << "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
+			"The plugin "
+			<< plugin.name()
+			<< " can't be positioned to position "
+			<< which
+			<< " anymore.\n"
 			"Try to reduce the number of plugins!\n"
 			"\n"
 			"Failed because " << which << " with "

@@ -2555,6 +2555,15 @@ static void test_keyUnescapedName()
 	Key *k = keyNew("user/something", KEY_END);
 	succeed_if (!memcmp(keyUnescapedName(k), "user\0something", sizeof("user/something")), "unescaped name wrong");
 
+	keySetName(k, "/something/else");
+	succeed_if (!memcmp(keyUnescapedName(k), "\0something\0else", sizeof("/something/else")), "unescaped cascading name wrong");
+
+	keySetName(k, "/\\/other/more");
+	succeed_if (!memcmp(keyUnescapedName(k), "\0/other\0more", sizeof("\0/other\0more")), "unescaped cascading name wrong");
+
+	keySetName(k, "/\\/other/\\/more");
+	succeed_if (!memcmp(keyUnescapedName(k), "\0/other\0/more", sizeof("\0/other\0/more")), "unescaped cascading name wrong");
+
 	keySetName(k, "system/something/else");
 	succeed_if (!memcmp(keyUnescapedName(k), "system\0something\0else", sizeof("system/something/else")), "unescaped name wrong");
 

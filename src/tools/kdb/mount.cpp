@@ -12,6 +12,7 @@
 #include <backend.hpp>
 #include <backends.hpp>
 #include <cmdline.hpp>
+#include <backendbuilder.hpp>
 
 #include <iostream>
 #include <iterator>
@@ -114,13 +115,15 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	backend.setBackendConfig(cl.getPluginsConfig("system/"));
 
+	PluginSpec resolver (cl.resolver);
 	if (cl.debug)
 	{
-		cout << "Trying to load the resolver plugin " << cl.resolver << endl;
+		cout << "Trying to load the resolver plugin " << resolver.name << endl;
 	}
 
-	backend.addPlugin (cl.resolver);
-
+	BackendBuilder bb;
+	bb.addPlugin (resolver);
+	backend.addPlugin (resolver.name);
 
 	if (cl.interactive)
 	{
@@ -147,7 +150,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		{
 			cout << "Trying to add default plugin " << plugin << endl;
 		}
-		backend.addPlugin (plugin);
+		bb.addPlugin (PluginSpec(plugin));
 	}
 
 
@@ -156,9 +159,12 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		cout << "Now enter a sequence of plugins you want in the backend" << endl;
 	}
 
-	appendPlugins(cl, backend);
+	appendPlugins(cl, bb);
 
-	backend.serialize(mountConf);
+	// resolver already added, do not readd it
+	bb.remPlugin (resolver);
+	bb.create (backend);
+	backend.serialize (mountConf);
 }
 
 bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token, KeySet & pluginConfig)
@@ -212,7 +218,7 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token, Key
 	return true;
 }
 
-void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
+void MountCommand::appendPlugins(Cmdline const& cl, BackendBuilder & backend)
 {
 	std::string pname;
 	size_t current_plugin = 2;
@@ -244,7 +250,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 	while (pname != "." || !backend.validated())
 	{
 		try {
-			backend.addPlugin (pname, pluginConfig);
+			backend.addPlugin (PluginSpec(pname, pluginConfig));
 			pluginConfig.clear();
 		}
 		catch (PluginCheckException const& e)
@@ -294,7 +300,7 @@ void MountCommand::appendPlugins(Cmdline const& cl, Backend & backend)
 
 		if (pname == "." && !backend.validated())
 		{
-			std::cerr << backend << std::endl;
+			std::cerr << backend.create() << std::endl;
 			throw CommandAbortException();
 		}
 	}

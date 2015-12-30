@@ -29,12 +29,13 @@ class KeySetReverseIterator;
  *
  * when ... is same type as va_list
  */
-struct Va
+struct VaAlloc
 {
-	Va(){}
+	explicit VaAlloc(size_t size) :
+		alloc (size)
+	{}
+	size_t alloc;
 };
-
-const Va va = Va();
 
 /**
  * @brief A keyset holds together a set of keys.
@@ -54,8 +55,8 @@ public:
 	inline KeySet(ckdb::KeySet *k);
 	inline KeySet(const KeySet &other);
 
-	inline explicit KeySet(size_t alloc, ...);
-	inline explicit KeySet(Va va, size_t alloc, va_list ap);
+	inline explicit KeySet(size_t alloc, ...) ELEKTRA_SENTINEL;
+	inline explicit KeySet(VaAlloc alloc, va_list ap);
 
 	inline ~KeySet ();
 
@@ -406,9 +407,9 @@ inline KeySet::KeySet (const KeySet &other)
  *
  * @copydoc ksVNew
  */
-inline KeySet::KeySet (Va, size_t alloc, va_list av)
+inline KeySet::KeySet (VaAlloc alloc, va_list av)
 {
-	ks = ckdb::ksVNew (alloc, av);
+	ks = ckdb::ksVNew (alloc.alloc, av);
 }
 
 /**
@@ -733,6 +734,18 @@ inline T KeySet::get(std::string const & name, option_t const options) const
 	KeySetTypeWrapper<T> typeWrapper;
 	return typeWrapper (*this, name, options);
 }
+
+inline bool operator==(const KeySet& lhs, const KeySet& rhs)
+{
+	return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+
+inline bool operator!=(const KeySet& lhs, const KeySet& rhs)
+{
+	return !std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
 
 
 } // end of namespace kdb

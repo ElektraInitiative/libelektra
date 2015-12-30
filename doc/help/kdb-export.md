@@ -27,6 +27,8 @@ The `format` attribute relies on Elektra's plugin system to export the keys in t
   Print version info.
 - `-E`, `--without-elektra`:
   Omit the `system/elektra` directory.
+- `-c`, `--plugins-config`:
+  Add a configuration to the format plugin.
 
 ## EXAMPLES
 

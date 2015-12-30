@@ -13,6 +13,8 @@
 #include <cmdline.hpp>
 #include <keysetio.hpp>
 
+#include <helper/keyhelper.hpp>
+
 #include <iostream>
 
 using namespace std;
@@ -20,16 +22,6 @@ using namespace kdb;
 
 MvCommand::MvCommand()
 {}
-
-Key baseName(Key key1, Key key2)
-{
-	if (key1.isBelowOrSame(key2)) return key2;
-	if (key2.isBelowOrSame(key1)) return key1;
-
-	if (key1.getNamespace() == key2.getNamespace()) return Key(key1.getNamespace(), KEY_END);
-
-	return Key("/", KEY_END);
-}
 
 int MvCommand::execute (Cmdline const& cl)
 {
@@ -52,7 +44,7 @@ int MvCommand::execute (Cmdline const& cl)
 	}
 	string newDirName = cl.arguments[1];
 
-	Key root = baseName(sourceKey, destKey);
+	Key root = tools::helper::commonKeyName(sourceKey, destKey);
 	if (cl.verbose) std::cout << "using common basename: " << root.getName() << std::endl;
 	kdb.get(conf, root);
 	KeySet tmpConf = conf;

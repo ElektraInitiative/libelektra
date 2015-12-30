@@ -13,6 +13,11 @@ set (__symbols_file ${CMAKE_CURRENT_SOURCE_DIR}/libelektratools-symbols.map)
 if (BUILD_SHARED)
 	add_library (elektratools SHARED ${SOURCES})
 
+	set_property(TARGET elektratools
+		APPEND PROPERTY COMPILE_DEFINITIONS
+		"ELEKTRA_SHARED"
+		)
+
 	target_link_libraries (elektratools elektra elektra-plugin)
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
