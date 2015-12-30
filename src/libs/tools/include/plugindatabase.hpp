@@ -62,6 +62,7 @@ class ModulesPluginDatabase : public PluginDatabase
 public:
 	ModulesPluginDatabase ();
 	~ModulesPluginDatabase ();
+
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & which) const;
 };

@@ -24,6 +24,12 @@ namespace kdb
 namespace tools
 {
 
+/**
+ * In the shared case, it will search for shared libraries, and if not found
+ * any, it will fallback to internal list (plugins that were compiled).
+ *
+ * @return a list of all available plugins
+ */
 std::vector<std::string> listAllAvailablePlugins()
 {
 	std::vector<std::string> ret;
