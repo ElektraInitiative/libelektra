@@ -151,8 +151,8 @@ TEST(BackendBuilder, basicSort)
 	try {
 		Backend b;
 		b.addPlugin("resolver");
-		b.addPlugin("keytometa");
 		b.addPlugin("glob");
+		b.addPlugin("keytometa");
 		b.addPlugin("augeas");
 	}
 	catch (std::exception const & e)
@@ -182,8 +182,8 @@ TEST(BackendBuilder, allSort)
 	try {
 		Backend b;
 		b.addPlugin("resolver");
-		b.addPlugin("keytometa");
 		b.addPlugin("glob");
+		b.addPlugin("keytometa");
 		b.addPlugin("augeas");
 	}
 	catch (std::exception const & e)
