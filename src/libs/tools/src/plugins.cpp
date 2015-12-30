@@ -113,7 +113,7 @@ void Plugins::addPlugin (Plugin &plugin, std::string which)
  * @param which placementInfo it is
  *
  * @retval true if it should be added
- * @retval false no placement (will not be added)
+ * @retval false no placements (will not be added)
  */
 bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 {
