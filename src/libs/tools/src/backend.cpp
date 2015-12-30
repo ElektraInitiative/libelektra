@@ -37,6 +37,8 @@ namespace kdb
 namespace tools
 {
 
+BackendInterface::~BackendInterface()
+{}
 
 /** Creates a new empty backend.
  *
