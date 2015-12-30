@@ -130,7 +130,11 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 
 		std::ostringstream os;
 		os << "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
+			"The plugin "
+			<< plugin.name()
+			<< " can't be positioned to position "
+			<< which
+			<< " anymore.\n"
 			"Try to reduce the number of plugins!\n"
 			"\n"
 			"Failed because of stack overflow: cant place to "
@@ -144,7 +148,11 @@ bool Plugins::checkPlacement (Plugin &plugin, std::string which)
 	{
 		std::ostringstream os;
 		os << "Too many plugins!\n"
-			"The plugin can't be positioned anymore.\n"
+			"The plugin "
+			<< plugin.name()
+			<< " can't be positioned to position "
+			<< which
+			<< " anymore.\n"
 			"Try to reduce the number of plugins!\n"
 			"\n"
 			"Failed because " << which << " with "
