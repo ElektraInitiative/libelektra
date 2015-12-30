@@ -46,6 +46,8 @@ Currently the following strategies exist for importing configurations:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.
+- `-c`, `--plugins-config`:
+  Add a configuration to the format plugin.
 
 
 ## EXAMPLES
