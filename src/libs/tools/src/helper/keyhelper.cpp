@@ -68,6 +68,10 @@ void removeNamespace (Key & key)
 
 Key commonKeyName (Key key1, Key key2)
 {
+	// do not let removed namespaces escape
+	key1 = key1.dup();
+	key2 = key2.dup();
+
 	if (key1.isBelowOrSame(key2)) return key2;
 	if (key2.isBelowOrSame(key1)) return key1;
 
