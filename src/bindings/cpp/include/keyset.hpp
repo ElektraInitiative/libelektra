@@ -54,7 +54,7 @@ public:
 	inline KeySet(ckdb::KeySet *k);
 	inline KeySet(const KeySet &other);
 
-	inline explicit KeySet(size_t alloc, ...);
+	inline explicit KeySet(size_t alloc, ...) ELEKTRA_SENTINEL;
 	inline explicit KeySet(Va va, size_t alloc, va_list ap);
 
 	inline ~KeySet ();
