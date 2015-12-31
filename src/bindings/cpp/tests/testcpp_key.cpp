@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include <stdexcept>
 
 TEST(key, null)
@@ -596,3 +597,21 @@ TEST(key, keynamespace)
 	succeed_if(Key("/", KEY_END).getNamespace() == "/", "namespace wrong");
 	succeed_if(Key("/abc", KEY_END).getNamespace() == "/", "namespace wrong");
 }
+
+struct C
+{
+	Key ks;
+};
+
+TEST(key, move)
+{
+
+	std::unique_ptr<Key>u1(new Key ("user/key3/1", KEY_END));
+	std::unique_ptr<Key>u2(std::move(u1));
+	std::unique_ptr<Key>u3 = std::move(u1);
+
+	std::unique_ptr<C>c1(new C);
+	std::unique_ptr<C>c2(std::move(c1));
+	std::unique_ptr<C>c3 = std::move(c1);
+}
+

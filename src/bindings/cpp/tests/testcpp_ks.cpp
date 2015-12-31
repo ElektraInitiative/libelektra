@@ -8,6 +8,8 @@
 
 #include <tests.hpp>
 
+#include <memory>
+
 #include <vector>
 #include <algorithm>
 
@@ -837,6 +839,28 @@ KeySet fill_vaargs(size_t size, ...)
 	KeySet ks(VaAlloc(size), ap);
 	va_end(ap);
 	return ks;
+}
+
+struct C
+{
+	KeySet ks;
+};
+
+TEST(ks, move)
+{
+
+	std::unique_ptr<KeySet>u1(new KeySet (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END));
+	std::unique_ptr<KeySet>u2(std::move(u1));
+	std::unique_ptr<KeySet>u3 = std::move(u1);
+
+	std::unique_ptr<C>c1(new C);
+	std::unique_ptr<C>c2(std::move(c1));
+	std::unique_ptr<C>c3 = std::move(c1);
+	c3->ks = *u3;
 }
 
 TEST(ks, vaargs)
