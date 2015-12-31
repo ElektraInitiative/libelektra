@@ -21,8 +21,6 @@
 
 #include <algorithm>
 
-
-
 #include <kdb.hpp>
 #include <cassert>
 
@@ -43,17 +41,39 @@ BackendInterface::~BackendInterface()
 /** Creates a new empty backend.
  *
  * */
-Backend::Backend()
+Backend::Backend() :
+	plugins()
 {
 }
 
 
 Backend::~Backend()
 {
-	for (auto & elem : plugins)
-	{
-		delete elem;
-	}
+}
+
+Backend::Backend(Backend && other) :
+	getplugins(other.getplugins),
+	setplugins(other.setplugins),
+	errorplugins(other.errorplugins),
+	mp(other.mp),
+	configFile(other.configFile),
+	modules(other.modules),
+	config(other.config),
+	plugins(std::move(other.plugins))
+{
+}
+
+Backend & Backend::operator = (Backend && other)
+{
+	getplugins = other.getplugins;
+	setplugins = other.setplugins;
+	errorplugins = other.errorplugins;
+	mp = other.mp;
+	configFile = other.configFile;
+	modules = other.modules;
+	config = other.config;
+	plugins = std::move(other.plugins);
+	return *this;
 }
 
 /**
@@ -258,8 +278,6 @@ void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
 	PluginPtr plugin = modules.load(realPluginName, pluginConfig);
 
 
-	// because PluginPtr might be auto_ptr we cannot make that more
-	// pretty:
 	errorplugins.tryPlugin (*plugin.get());
 	getplugins.tryPlugin   (*plugin.get());
 	setplugins.tryPlugin   (*plugin.get());
@@ -272,7 +290,7 @@ void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
 	}
 
 
-	plugins.push_back(plugin.release());
+	plugins.push_back(std::move(plugin));
 }
 
 

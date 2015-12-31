@@ -11,11 +11,16 @@
 #ifndef TOOLS_BACKEND_BUILDER_HPP
 #define TOOLS_BACKEND_BUILDER_HPP
 
-#include <kdb.hpp>
-
-#include <pluginspec.hpp>
 
 #include <memory>
+#include <vector>
+
+#include <kdb.hpp>
+
+#include <plugin.hpp>
+#include <backend.hpp>
+#include <pluginspec.hpp>
+#include <plugindatabase.hpp>
 
 namespace kdb
 {

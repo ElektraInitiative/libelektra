@@ -64,6 +64,10 @@ public:
 
 	Plugin(Plugin const& other);
 	Plugin& operator = (Plugin const& other);
+
+	Plugin(Plugin && other) = delete;
+	Plugin& operator = (Plugin && other) = delete;
+
 	~Plugin();
 
 	/**

@@ -241,7 +241,7 @@ Backend BackendBuilder::create() const
 	Backend b;
 	for (auto const & a: toAdd)
 	{
-		b.addPlugin(a.name, a.config);
+		b.addPlugin (a.name, a.config);
 	}
 	return b;
 }
@@ -250,7 +250,7 @@ void BackendBuilder::create(BackendInterface & b) const
 {
 	for (auto const & a: toAdd)
 	{
-		b.addPlugin(a.name, a.config);
+		b.addPlugin (a.name, a.config);
 	}
 }
 

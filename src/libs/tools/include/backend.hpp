@@ -11,10 +11,13 @@
 #ifndef TOOLS_BACKEND_HPP
 #define TOOLS_BACKEND_HPP
 
+#include <plugin.hpp>
 #include <plugins.hpp>
 #include <modules.hpp>
 #include <toolexcept.hpp>
 
+#include <vector>
+#include <memory>
 #include <string>
 #include <ostream>
 #include <deque>
@@ -56,12 +59,18 @@ private:
 	Modules modules;
 	kdb::KeySet config; // the global config, plugins might add something to it
 
-	std::vector <Plugin*> plugins;
+	std::vector <PluginPtr> plugins;
 	void tryPlugin (std::string name, KeySet pluginConf);
 
 public:
 	Backend();
 	~Backend();
+
+	Backend(Backend const & other) = delete;
+	Backend & operator = (Backend const & other) = delete;
+
+	Backend(Backend && other);
+	Backend & operator = (Backend && other);
 
 	void setMountpoint (Key mountpoint, KeySet mountConf);
 	void setBackendConfig (KeySet const & ks);
