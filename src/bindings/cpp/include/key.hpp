@@ -1673,8 +1673,8 @@ namespace std
 	{
 		size_t operator()(kdb::Key const & k) const
 		{
-			// use pointer value as hash value
-			return std::hash<ckdb::Key *>()(k.getKey());
+			// use key name as hash value
+			return std::hash<std::string>()(k.getName());
 		}
 	};
 } // end of namespace std
