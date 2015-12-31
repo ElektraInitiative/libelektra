@@ -164,6 +164,7 @@ int elektraGlobGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 		KeySet *config =
 				#include "contract.h"
 		ksAppend (returned, config);
+		ksDel (config);
 		return 1;
 	}
 
