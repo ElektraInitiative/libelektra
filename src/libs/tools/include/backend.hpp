@@ -49,6 +49,8 @@ public:
 class Backend : public BackendInterface
 {
 private:
+	std::vector <PluginPtr> plugins;
+
 	GetPlugins getplugins;
 	SetPlugins setplugins;
 	ErrorPlugins errorplugins;
@@ -59,7 +61,7 @@ private:
 	Modules modules;
 	kdb::KeySet config; // the global config, plugins might add something to it
 
-	std::vector <PluginPtr> plugins;
+private:
 	void tryPlugin (std::string name, KeySet pluginConf);
 
 public:

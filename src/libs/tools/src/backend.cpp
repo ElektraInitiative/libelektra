@@ -52,19 +52,20 @@ Backend::~Backend()
 }
 
 Backend::Backend(Backend && other) :
+	plugins(std::move(other.plugins)),
 	getplugins(other.getplugins),
 	setplugins(other.setplugins),
 	errorplugins(other.errorplugins),
 	mp(other.mp),
 	configFile(other.configFile),
 	modules(other.modules),
-	config(other.config),
-	plugins(std::move(other.plugins))
+	config(other.config)
 {
 }
 
 Backend & Backend::operator = (Backend && other)
 {
+	plugins = std::move(other.plugins);
 	getplugins = other.getplugins;
 	setplugins = other.setplugins;
 	errorplugins = other.errorplugins;
@@ -72,7 +73,6 @@ Backend & Backend::operator = (Backend && other)
 	configFile = other.configFile;
 	modules = other.modules;
 	config = other.config;
-	plugins = std::move(other.plugins);
 	return *this;
 }
 

@@ -84,6 +84,14 @@ Plugin::~Plugin()
 	uninit();
 }
 
+void Plugin::uninit()
+{
+	/* ref counting will avoid closing */
+
+	Key errorKey;
+	ckdb::elektraPluginClose(plugin, errorKey.getKey());
+}
+
 void Plugin::loadInfo()
 {
 	Key infoKey ("system/elektra/modules", KEY_END);
@@ -91,13 +99,11 @@ void Plugin::loadInfo()
 
 	if (pluginName != plugin->name)
 	{
-		uninit();
 		throw PluginWrongName();
 	}
 
 	if (!plugin->kdbGet)
 	{
-		uninit();
 		throw MissingSymbol("kdbGet");
 	}
 	plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
@@ -262,14 +268,6 @@ void Plugin::check(vector<string> & warnings)
 	{
 		if (!plugin->kdbError) throw SymbolMismatch ("error");
 	}
-}
-
-void Plugin::uninit()
-{
-	/* ref counting will avoid closing */
-
-	Key errorKey;
-	ckdb::elektraPluginClose(plugin, errorKey.getKey());
 }
 
 ckdb::Plugin *Plugin::operator->()
