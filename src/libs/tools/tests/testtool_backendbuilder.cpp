@@ -244,12 +244,12 @@ TEST(BackendBuilder, resolveDoubleNeeds)
 	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
 	bb.addPlugin(PluginSpec("a"));
-	EXPECT_EQ(bb.size(), 2);
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
 	bb.resolveNeeds();
-	ASSERT_EQ(bb.size(), 3);
-	EXPECT_EQ(bb[0], PluginSpec("resolver"));
-	EXPECT_EQ(bb[1], PluginSpec("a"));
-	EXPECT_EQ(bb[2], PluginSpec("c"));
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c"));
 }
 
 TEST(BackendBuilder, resolveDoubleNeedsVirtual)
@@ -263,11 +263,11 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	BackendBuilder bb(bbi);
 	bb.addPlugin(PluginSpec("resolver"));
 	bb.addPlugin(PluginSpec("a"));
-	EXPECT_EQ(bb.size(), 2);
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
 	bb.resolveNeeds();
-	ASSERT_EQ(bb.size(), 3);
-	EXPECT_EQ(bb[0], PluginSpec("resolver"));
-	EXPECT_EQ(bb[1], PluginSpec("a"));
-	EXPECT_EQ(bb[2], PluginSpec("c"));
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c"));
 }
 

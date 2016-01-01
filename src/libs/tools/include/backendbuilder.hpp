@@ -71,7 +71,7 @@ public:
  */
 class BackendBuilder : public BackendInterface
 {
-protected: // TODO: make private
+private:
 	/// Defines order in which plugins should be added
 	PluginSpecVector toAdd;
 
@@ -87,18 +87,6 @@ public:
 	BackendBuilder();
 	explicit BackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
 
-	// TODO: remove
-	PluginSpec const & operator[] (size_t pos) const
-	{
-		return toAdd[pos];
-	}
-
-	// TODO: remove
-	size_t size() const
-	{
-		return toAdd.size();
-	}
-
 	typedef PluginSpecVector::const_iterator const_iterator;
 
 	const_iterator begin() const { return toAdd.begin(); }
@@ -106,9 +94,14 @@ public:
 	const_iterator cbegin() const { return toAdd.begin(); }
 	const_iterator cend() const { return toAdd.end(); }
 
-	PluginDatabasePtr getPluginDatabase() const
+	PluginDatabasePtr const & getPluginDatabase() const
 	{
 		return pluginDatabase;
+	}
+
+	BackendFactory const & getBackendFactory() const
+	{
+		return backendFactory;
 	}
 
 	~BackendBuilder();

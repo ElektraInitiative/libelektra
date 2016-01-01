@@ -258,7 +258,7 @@ void BackendBuilder::fillPlugins(BackendInterface & b) const
 void MountBackendBuilder::status (std::ostream & os) const
 {
 	try {
-		MountBackendInterfacePtr b = backendFactory.create();
+		MountBackendInterfacePtr b = getBackendFactory().create();
 		fillPlugins(*b);
 		return b->status (os);
 	}
@@ -271,7 +271,7 @@ void MountBackendBuilder::status (std::ostream & os) const
 bool MountBackendBuilder::validated () const
 {
 	try {
-		MountBackendInterfacePtr b = backendFactory.create();
+		MountBackendInterfacePtr b = getBackendFactory().create();
 		fillPlugins(*b);
 		return b->validated();
 	}
@@ -286,7 +286,7 @@ void MountBackendBuilder::setMountpoint (Key mountpoint_, KeySet mountConf_)
 	mountpoint = mountpoint_;
 	mountConf = mountConf_;
 
-	MountBackendInterfacePtr mbi = backendFactory.create();
+	MountBackendInterfacePtr mbi = getBackendFactory().create();
 	mbi->setMountpoint (mountpoint, mountConf);
 }
 
@@ -304,11 +304,11 @@ void MountBackendBuilder::useConfigFile (std::string file)
 {
 	configfile = file;
 
-	MountBackendInterfacePtr b = backendFactory.create();
+	MountBackendInterfacePtr b = getBackendFactory().create();
 	bool checkPossible = false;
 	for (auto const & p : *this)
 	{
-		if ("resolver" == pluginDatabase->lookupInfo(p, "provides"))
+		if ("resolver" == getPluginDatabase()->lookupInfo(p, "provides"))
 		{
 			checkPossible = true;
 		}
@@ -326,7 +326,7 @@ std::string MountBackendBuilder::getConfigFile() const
 
 void MountBackendBuilder::serialize (kdb::KeySet &ret)
 {
-	MountBackendInterfacePtr mbi = backendFactory.create();
+	MountBackendInterfacePtr mbi = getBackendFactory().create();
 	fillPlugins (*mbi);
 	mbi->setMountpoint (mountpoint, mountConf);
 	mbi->setBackendConfig (backendConf);
