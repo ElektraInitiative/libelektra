@@ -37,18 +37,51 @@ namespace tools
 {
 
 
-BackendBuilder::BackendBuilder() :
-	pluginDatabase(make_shared<ModulesPluginDatabase>())
+BackendBuilderInit::BackendBuilderInit() :
+	pluginDatabase(make_shared<ModulesPluginDatabase>()),
+	backendFactory("backend")
 {
 }
 
 
-BackendBuilder::BackendBuilder(PluginDatabasePtr const & plugins) :
-	pluginDatabase(plugins)
+BackendBuilderInit::BackendBuilderInit(PluginDatabasePtr const & plugins) :
+	pluginDatabase(plugins),
+	backendFactory("backend")
 {
 }
+
+BackendBuilderInit::BackendBuilderInit(BackendFactory const & bf) :
+	pluginDatabase(make_shared<ModulesPluginDatabase>()),
+	backendFactory(bf)
+{
+}
+
+BackendBuilderInit::BackendBuilderInit(PluginDatabasePtr const & plugins, BackendFactory const & bf) :
+	pluginDatabase(plugins),
+	backendFactory(bf)
+{
+}
+
+BackendBuilderInit::BackendBuilderInit(BackendFactory const & bf, PluginDatabasePtr const & plugins) :
+	pluginDatabase(plugins),
+	backendFactory(bf)
+{
+}
+
+
+BackendBuilder::BackendBuilder(BackendBuilderInit const & bbi) :
+	pluginDatabase(bbi.getPluginDatabase()),
+	backendFactory(bbi.getBackendFactory())
+{
+}
+
 
 BackendBuilder::~BackendBuilder()
+{
+}
+
+MountBackendBuilder::MountBackendBuilder(BackendBuilderInit const & bbi) :
+	BackendBuilder (bbi)
 {
 }
 
@@ -59,7 +92,7 @@ BackendBuilder::~BackendBuilder()
  *
  * @return newly created keyset with the information found in the string
  */
-KeySet BackendBuilder::parsePluginArguments (std::string const & pluginArguments)
+KeySet MountBackendBuilder::parsePluginArguments (std::string const & pluginArguments)
 {
 	KeySet ks;
 	istringstream sstream(pluginArguments);
@@ -87,7 +120,7 @@ KeySet BackendBuilder::parsePluginArguments (std::string const & pluginArguments
  *
  * @return a parsed PluginSpecVector
  */
-PluginSpecVector BackendBuilder::parseArguments (std::string const & cmdline)
+PluginSpecVector MountBackendBuilder::parseArguments (std::string const & cmdline)
 {
 	// split cmdline
 	PluginSpecVector arguments;
@@ -188,7 +221,7 @@ void BackendBuilder::resolveNeeds()
 	} while (!needs.empty());
 }
 
-void BackendBuilder::addPlugins (PluginSpecVector plugins)
+void BackendBuilder::addPlugins (PluginSpecVector const & plugins)
 {
 	for (auto const & plugin : plugins)
 	{
@@ -196,27 +229,38 @@ void BackendBuilder::addPlugins (PluginSpecVector plugins)
 	}
 }
 
-void BackendBuilder::addPlugin (PluginSpec plugin)
+void BackendBuilder::addPlugin (PluginSpec const & plugin)
 {
+	PluginSpec newPlugin(plugin);
 	try {
-		PluginSpec newPlugin = pluginDatabase->lookupProvides(plugin.name);
-		plugin.name = newPlugin.name;
+		PluginSpec lookupPlugin = pluginDatabase->lookupProvides(plugin.name);
+		newPlugin.name = lookupPlugin.name;
 	} catch (...) {
 	}
-	toAdd.push_back(plugin);
+	toAdd.push_back(newPlugin);
 	sort();
 }
 
-void BackendBuilder::remPlugin (PluginSpec plugin)
+void BackendBuilder::remPlugin (PluginSpec const & plugin)
 {
 	toAdd.erase(std::remove(toAdd.begin(), toAdd.end(), plugin));
 }
 
-void BackendBuilder::status (std::ostream & os) const
+void BackendBuilder::fillPlugins(BackendInterface & b) const
+{
+	for (auto const & a: toAdd)
+	{
+		b.addPlugin (a);
+	}
+}
+
+
+void MountBackendBuilder::status (std::ostream & os) const
 {
 	try {
-		Backend b = create ();
-		return b.status (os);
+		MountBackendInterfacePtr b = backendFactory.create();
+		fillPlugins(*b);
+		return b->status (os);
 	}
 	catch (std::exception const & pce)
 	{
@@ -224,11 +268,12 @@ void BackendBuilder::status (std::ostream & os) const
 	}
 }
 
-bool BackendBuilder::validated () const
+bool MountBackendBuilder::validated () const
 {
 	try {
-		Backend b = create();
-		return b.validated();
+		MountBackendInterfacePtr b = backendFactory.create();
+		fillPlugins(*b);
+		return b->validated();
 	}
 	catch (...)
 	{
@@ -236,22 +281,57 @@ bool BackendBuilder::validated () const
 	}
 }
 
-Backend BackendBuilder::create() const
+void MountBackendBuilder::setMountpoint (Key mountpoint_, KeySet mountConf_)
 {
-	Backend b;
-	for (auto const & a: toAdd)
-	{
-		b.addPlugin (a.name, a.config);
-	}
-	return b;
+	mountpoint = mountpoint_;
+	mountConf = mountConf_;
+
+	MountBackendInterfacePtr mbi = backendFactory.create();
+	mbi->setMountpoint (mountpoint, mountConf);
 }
 
-void BackendBuilder::create(BackendInterface & b) const
+std::string MountBackendBuilder::getMountpoint() const
 {
-	for (auto const & a: toAdd)
+	return mountpoint.getName();
+}
+
+void MountBackendBuilder::setBackendConfig (KeySet const & ks)
+{
+	backendConf = ks;
+}
+
+void MountBackendBuilder::useConfigFile (std::string file)
+{
+	configfile = file;
+
+	MountBackendInterfacePtr b = backendFactory.create();
+	bool checkPossible = false;
+	for (auto const & p : *this)
 	{
-		b.addPlugin (a.name, a.config);
+		if ("resolver" == pluginDatabase->lookupInfo(p, "provides"))
+		{
+			checkPossible = true;
+		}
 	}
+
+	if (!checkPossible) return;
+	fillPlugins (*b);
+	b->useConfigFile (configfile);
+}
+
+std::string MountBackendBuilder::getConfigFile() const
+{
+	return configfile;
+}
+
+void MountBackendBuilder::serialize (kdb::KeySet &ret)
+{
+	MountBackendInterfacePtr mbi = backendFactory.create();
+	fillPlugins (*mbi);
+	mbi->setMountpoint (mountpoint, mountConf);
+	mbi->setBackendConfig (backendConf);
+	mbi->useConfigFile (configfile);
+	mbi->serialize(ret);
 }
 
 }

@@ -47,7 +47,7 @@ public:
 	}
 };
 
-TEST(BackendBuilder, withDatabase)
+TEST(SpecReader, withDatabase)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -61,7 +61,7 @@ TEST(BackendBuilder, withDatabase)
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 				*Key ("user/mp/below", KEY_META, "needs", "something", KEY_END),
 				KS_END));
-	BackendInfo bi = sr.backends [Key ("user/mp", KEY_END)];
+	SpecBackendBuilder bi = sr.backends [Key ("user/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 }
 

@@ -120,10 +120,10 @@ public:
 
 		Backend b;
 		b.setMountpoint(Key(mountpoint, KEY_END), KeySet(0, KS_END));
-		b.addPlugin(KDB_DEFAULT_RESOLVER);
+		b.addPlugin(PluginSpec(KDB_DEFAULT_RESOLVER));
 		b.useConfigFile(configFile);
-		b.addPlugin("dump");
-		b.addPlugin("error");
+		b.addPlugin(PluginSpec("dump"));
+		b.addPlugin(PluginSpec("error"));
 		KeySet ks;
 		KDB kdb;
 		Key parentKey("system/elektra/mountpoints", KEY_END);

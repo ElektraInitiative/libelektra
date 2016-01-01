@@ -1,5 +1,7 @@
 #include <specreader.hpp>
 
+#include <backendbuilder.hpp>
+
 
 namespace kdb
 {
@@ -7,6 +9,10 @@ namespace kdb
 namespace tools
 {
 
+SpecBackendBuilder::SpecBackendBuilder(BackendBuilderInit const & bbi) :
+	BackendBuilder (bbi),
+	nodes(0)
+{}
 
 SpecReader::SpecReader() :
 	pluginDatabase(new ModulesPluginDatabase)
@@ -31,7 +37,7 @@ void SpecReader::readSpecification (KeySet const & ks)
 		{
 			mp = k.dup();
 			mp.setString(m.getMeta<std::string>("mountpoint"));
-			backends[mp] = BackendInfo();
+			backends[mp] = SpecBackendBuilder(bbi);
 			backends[mp].nodes ++;
 		}
 

@@ -58,33 +58,34 @@ TEST(BackendBuilder, withDatabase)
 	mpd->data[PluginSpec("a")]["ordering"] = "d";
 	mpd->data[PluginSpec("b")]["ordering"] = "d";
 	mpd->data[PluginSpec("c")]["ordering"];
-	BackendBuilder bb(mpd);
+	BackendBuilderInit bbi(mpd);
+	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("a"));
 	bb.addPlugin(PluginSpec("b"));
 	bb.addPlugin(PluginSpec("c"));
 }
 
 
-TEST(BackendBuilder, parsePluginArguments)
+TEST(MountBackendBuilder, parsePluginArguments)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	EXPECT_EQ (KeySet(5, *Key("user/a", KEY_VALUE, "5", KEY_END), KS_END),
-		   BackendBuilder::parsePluginArguments("a=5"));
+		   MountBackendBuilder::parsePluginArguments("a=5"));
 	EXPECT_EQ (KeySet(5, *Key("user", KEY_END), KS_END),
-		   BackendBuilder::parsePluginArguments("="));
+		   MountBackendBuilder::parsePluginArguments("="));
 	EXPECT_EQ (KeySet (5,
 			*Key("user/a", KEY_VALUE, "5", KEY_END),
 			*Key("user/ax", KEY_VALUE, "a", KEY_END),
 			*Key("user/ax/bx", KEY_VALUE, "8", KEY_END),
 			KS_END),
-		  BackendBuilder::parsePluginArguments ("a=5,ax=a,ax/bx=8"));
+		  MountBackendBuilder::parsePluginArguments ("a=5,ax=a,ax/bx=8"));
 	EXPECT_EQ (KeySet (5,
 			*Key("user", KEY_VALUE, "5", KEY_END),
 			*Key("user/ax", KEY_END, KEY_END),
 			*Key("user/ax/bx", KEY_VALUE, "8", KEY_END),
 			KS_END),
-		  BackendBuilder::parsePluginArguments ("=5,ax=,ax/bx=8"));
+		  MountBackendBuilder::parsePluginArguments ("=5,ax=,ax/bx=8"));
 }
 
 bool cmpPsv(kdb::tools::PluginSpecVector psv1, kdb::tools::PluginSpecVector psv2)
@@ -99,7 +100,7 @@ bool cmpPsv(kdb::tools::PluginSpecVector psv1, kdb::tools::PluginSpecVector psv2
 	return true;
 }
 
-TEST(BackendBuilder, parseArguments)
+TEST(MountBackendBuilder, parseArguments)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -107,30 +108,30 @@ TEST(BackendBuilder, parseArguments)
 	psv1.push_back (PluginSpec ("a", KeySet(5, *Key("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
 	psv1.push_back (PluginSpec ("b"));
 	psv1.push_back (PluginSpec ("c"));
-	PluginSpecVector psv2 = BackendBuilder::parseArguments ("a a=5 b c");
+	PluginSpecVector psv2 = MountBackendBuilder::parseArguments ("a a=5 b c");
 	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	psv2 = BackendBuilder::parseArguments ("  a  a=5  b c   ");
+	psv2 = MountBackendBuilder::parseArguments ("  a  a=5  b c   ");
 	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	psv2 = BackendBuilder::parseArguments ("  a 	 a=5	  b c ,  ");
+	psv2 = MountBackendBuilder::parseArguments ("  a 	 a=5	  b c ,  ");
 	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	EXPECT_THROW(BackendBuilder::parseArguments ("a=5 a b c"), ParseException);
+	EXPECT_THROW(MountBackendBuilder::parseArguments ("a=5 a b c"), ParseException);
 }
 
-TEST(BackendBuilder, basicAddRem)
+TEST(MountBackendBuilder, basicAddRem)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	try {
 		Backend b;
-		b.addPlugin("resolver");
-		b.addPlugin("dump");
+		b.addPlugin(PluginSpec("resolver"));
+		b.addPlugin(PluginSpec("dump"));
 	}
 	catch (std::exception const & e)
 	{
 		std::cout << "Plugin missing, abort test case: " << e.what() << std::endl;
 		return;
 	}
-	BackendBuilder bb;
+	MountBackendBuilder bb;
 	bb.addPlugin(PluginSpec("resolver"));
 	EXPECT_FALSE(bb.validated());
 
@@ -144,23 +145,23 @@ TEST(BackendBuilder, basicAddRem)
 	EXPECT_TRUE(bb.validated());
 }
 
-TEST(BackendBuilder, basicSort)
+TEST(MountBackendBuilder, basicSort)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	try {
 		Backend b;
-		b.addPlugin("resolver");
-		b.addPlugin("glob");
-		b.addPlugin("keytometa");
-		b.addPlugin("augeas");
+		b.addPlugin(PluginSpec("resolver"));
+		b.addPlugin(PluginSpec("glob"));
+		b.addPlugin(PluginSpec("keytometa"));
+		b.addPlugin(PluginSpec("augeas"));
 	}
 	catch (std::exception const & e)
 	{
 		std::cout << "Plugin missing, abort test case: " << e.what() << std::endl;
 		return;
 	}
-	BackendBuilder bb;
+	MountBackendBuilder bb;
 	bb.addPlugin(PluginSpec("resolver"));
 	EXPECT_FALSE(bb.validated());
 
@@ -175,16 +176,16 @@ TEST(BackendBuilder, basicSort)
 }
 
 
-TEST(BackendBuilder, allSort)
+TEST(MountBackendBuilder, allSort)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	try {
 		Backend b;
-		b.addPlugin("resolver");
-		b.addPlugin("glob");
-		b.addPlugin("keytometa");
-		b.addPlugin("augeas");
+		b.addPlugin(PluginSpec("resolver"));
+		b.addPlugin(PluginSpec("glob"));
+		b.addPlugin(PluginSpec("keytometa"));
+		b.addPlugin(PluginSpec("augeas"));
 	}
 	catch (std::exception const & e)
 	{
@@ -197,7 +198,7 @@ TEST(BackendBuilder, allSort)
 	do {
 		// for (auto const & p : permutation) std::cout << p << " ";
 		// std::cout << std::endl;
-		BackendBuilder bb;
+		MountBackendBuilder bb;
 		bb.addPlugin(PluginSpec(permutation[0]));
 		bb.addPlugin(PluginSpec(permutation[1]));
 		bb.addPlugin(PluginSpec(permutation[2]));
@@ -207,22 +208,22 @@ TEST(BackendBuilder, allSort)
 }
 
 
-TEST(BackendBuilder, resolveNeeds)
+TEST(MountBackendBuilder, resolveNeeds)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	try {
 		Backend b;
-		b.addPlugin("resolver");
-		b.addPlugin("line");
-		b.addPlugin("null");
+		b.addPlugin(PluginSpec("resolver"));
+		b.addPlugin(PluginSpec("line"));
+		b.addPlugin(PluginSpec("null"));
 	}
 	catch (std::exception const & e)
 	{
 		std::cout << "Plugin missing, abort test case: " << e.what() << std::endl;
 		return;
 	}
-	BackendBuilder bb;
+	MountBackendBuilder bb;
 	bb.addPlugin(PluginSpec("resolver"));
 	EXPECT_FALSE(bb.validated()) << "resolver+null should be missing";
 	bb.addPlugin(PluginSpec("line"));
@@ -239,7 +240,8 @@ TEST(BackendBuilder, resolveDoubleNeeds)
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "c v";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
-	BackendBuilder bb(mpd);
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
 	bb.addPlugin(PluginSpec("a"));
 	EXPECT_EQ(bb.size(), 2);
@@ -257,7 +259,8 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "v c";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
-	BackendBuilder bb(mpd);
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb(bbi);
 	bb.addPlugin(PluginSpec("resolver"));
 	bb.addPlugin(PluginSpec("a"));
 	EXPECT_EQ(bb.size(), 2);

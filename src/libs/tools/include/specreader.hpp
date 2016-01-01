@@ -28,10 +28,10 @@ namespace tools
 
 class PluginDatabase;
 
-// needed?
-struct BackendInfo
+class SpecBackendBuilder : public BackendBuilder
 {
-	BackendBuilder bb;
+public:
+	explicit SpecBackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
 	int nodes;
 };
 
@@ -44,9 +44,10 @@ public: // TODO: make private, TESTING?
 	/**
 	 * @brief Contains all backends of all found mountpoints
 	 */
-	std::unordered_map<Key, BackendInfo> backends;
+	std::unordered_map<Key, SpecBackendBuilder> backends;
 
 private:
+	BackendBuilderInit bbi;
 	/**
 	 * @brief Used for crating new BackendBuilder
 	 */

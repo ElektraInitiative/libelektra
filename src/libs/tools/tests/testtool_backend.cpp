@@ -74,8 +74,8 @@ TEST(Backend, SimpleBackend)
 	Backend b;
 	b.setMountpoint(Key("/", KEY_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
 	EXPECT_EQ(b.getMountpoint(), "/");
-	b.addPlugin("resolver");
-	b.addPlugin("dump");
+	b.addPlugin (PluginSpec ("resolver"));
+	b.addPlugin (PluginSpec ("dump"));
 	b.useConfigFile("abc");
 	EXPECT_TRUE(b.validated());
 
@@ -132,8 +132,8 @@ TEST(Backend, CrazyName)
 	using namespace kdb::tools;
 	Backend b;
 	b.setMountpoint(Key("/crazy///.//name/../a..__.b/._.///._c__d", KEY_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
-	b.addPlugin("resolver");
-	b.addPlugin("dump");
+	b.addPlugin (PluginSpec ("resolver"));
+	b.addPlugin (PluginSpec ("dump"));
 	EXPECT_TRUE(b.validated());
 
 	KeySet mountConfig;
@@ -199,12 +199,12 @@ TEST(Backend, SimpleBackendWithConf)
 		*Key("user/res_conf", KEY_VALUE, "do resolving", KEY_END),
 		*Key("user/other_res_conf", KEY_VALUE, "do resolving too", KEY_END),
 		KS_END);
-	b.addPlugin("resolver", resConf);
+	b.addPlugin (PluginSpec ("resolver", resConf));
 	KeySet dumpConf(5,
 		*Key("user/file_format", KEY_VALUE, "1", KEY_END),
 		*Key("user/other_dump_conf", KEY_VALUE, "some dump config", KEY_END),
 		KS_END);
-	b.addPlugin("dump", dumpConf);
+	b.addPlugin (PluginSpec ("dump", dumpConf));
 	b.useConfigFile("abc");
 	EXPECT_TRUE(b.validated());
 
@@ -297,13 +297,13 @@ TEST(Backend, SimpleBackendWithNeededConf)
 		*Key("user/res_conf", KEY_VALUE, "do resolving", KEY_END),
 		*Key("user/other_res_conf", KEY_VALUE, "do resolving too", KEY_END),
 		KS_END);
-	b.addPlugin("resolver", resConf);
+	b.addPlugin (PluginSpec ("resolver", resConf));
 	KeySet dumpConf(5,
 		*Key("user/file_format", KEY_VALUE, "1", KEY_END),
 		*Key("user/other_dump_conf", KEY_VALUE, "some dump config", KEY_END),
 		KS_END);
 	try {
-		b.addPlugin("fstab", dumpConf);
+		b.addPlugin (PluginSpec ("fstab", dumpConf));
 	}
 	catch (...)
 	{

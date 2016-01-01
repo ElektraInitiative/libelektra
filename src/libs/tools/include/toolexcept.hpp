@@ -124,6 +124,23 @@ struct MountpointAlreadyInUseException : public BackendCheckException
 	std::string m_str;
 };
 
+struct NoSuchBackend : public BackendCheckException
+{
+	explicit NoSuchBackend (std::string const & message) :
+		m_str(message)
+	{}
+
+	virtual ~NoSuchBackend() throw()
+	{}
+
+	virtual const char* what() const throw() override
+	{
+		return m_str.c_str();
+	}
+private:
+	std::string m_str;
+};
+
 struct PluginAlreadyInserted: public PluginCheckException
 {
 	virtual const char* what() const throw() override

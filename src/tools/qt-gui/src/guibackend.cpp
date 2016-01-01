@@ -82,7 +82,8 @@ void GUIBackend::addPlugin(QString name)
 
 	try
 	{
-		m_backend->addPlugin(name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
+		PluginSpec spec (name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
+		m_backend->addPlugin(spec);
 	}
 	catch(PluginCheckException const &ex)
 	{
