@@ -20,6 +20,7 @@
 #include <kdbprivate.h>
 #include <helper/keyhelper.hpp>
 
+#include <set>
 #include <algorithm>
 
 #include <kdb.hpp>
@@ -221,21 +222,54 @@ void BackendBuilder::resolveNeeds()
 	} while (!needs.empty());
 }
 
-void BackendBuilder::addPlugins (PluginSpecVector const & plugins)
+/**
+ * @brief Add or update a plugin.
+ *
+ * Will automatically
+ *
+ * @param plugin
+ */
+void BackendBuilder::addPlugin (PluginSpec const & newPlugin)
 {
-	for (auto const & plugin : plugins)
+	std::set<std::string> provides;
 	{
-		addPlugin (plugin);
+		std::string providesString = pluginDatabase->lookupInfo(newPlugin, "provides");
+		std::istringstream ss (providesString);
+		std::string provide;
+		while (ss >> provide)
+		{
+			provides.insert(provide);
+		}
 	}
-}
 
-void BackendBuilder::addPlugin (PluginSpec const & plugin)
-{
-	PluginSpec newPlugin(plugin);
-	try {
-		PluginSpec lookupPlugin = pluginDatabase->lookupProvides(plugin.name);
-		newPlugin.name = lookupPlugin.name;
-	} catch (...) {
+	for (auto & p : toAdd)
+	{
+		if (p.name == newPlugin.name)
+		{
+			// newPlugin is already inserted:
+			p.config.append(newPlugin.config);
+			return;
+		}
+
+		if (provides.find(p.name) != provides.end())
+		{
+			// a plugin that provides newPlugin already is already inserted:
+			p.name = newPlugin.name;
+			p.config.append(newPlugin.config);
+			return;
+		}
+
+		std::istringstream ss (pluginDatabase->lookupInfo(p, "provides"));
+		std::string provide;
+		while (ss >> provide)
+		{
+			if (newPlugin.name == provide)
+			{
+				// merge already existing concrete plugin with newly added provider
+				p.config.append(newPlugin.config);
+				return;
+			}
+		}
 	}
 	toAdd.push_back(newPlugin);
 	sort();
@@ -248,9 +282,9 @@ void BackendBuilder::remPlugin (PluginSpec const & plugin)
 
 void BackendBuilder::fillPlugins(BackendInterface & b) const
 {
-	for (auto const & a: toAdd)
+	for (auto const & plugin: toAdd)
 	{
-		b.addPlugin (a);
+		b.addPlugin (plugin);
 	}
 }
 

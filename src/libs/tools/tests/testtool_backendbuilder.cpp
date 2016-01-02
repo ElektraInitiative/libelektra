@@ -50,6 +50,7 @@ public:
 	}
 };
 
+/* With strict comparison rules of pluginSpec
 TEST(BackendBuilder, pluginSpec)
 {
 	using namespace kdb;
@@ -70,6 +71,7 @@ TEST(BackendBuilder, pluginSpec)
 	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
 	EXPECT_EQ(data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))], "with keyset");
 }
+*/
 
 TEST(BackendBuilder, withDatabase)
 {
@@ -281,7 +283,7 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	mpd->data[PluginSpec("a")]["needs"] = "v c";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
 	BackendBuilderInit bbi (mpd);
-	BackendBuilder bb(bbi);
+	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
 	bb.addPlugin(PluginSpec("a"));
 	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
@@ -292,3 +294,47 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c"));
 }
 
+TEST(BackendBuilder, readdWithConf)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["needs"] = "v c";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  *Key("user/vef", KEY_END),
+			  KS_END)));
+}
+
+
+TEST(BackendBuilder, readdWithConfVirtual)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["needs"] = "v c";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
+	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  *Key("user/vef", KEY_END),
+			  KS_END)));
+}

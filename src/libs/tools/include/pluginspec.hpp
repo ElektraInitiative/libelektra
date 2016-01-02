@@ -37,8 +37,7 @@ struct PluginSpec
 
 inline bool operator == (PluginSpec const & self, PluginSpec const & other)
 {
-	return self.name == other.name &&
-	       self.config == other.config;
+	return self.name == other.name;
 }
 
 inline bool operator != (PluginSpec const & self, PluginSpec const & other)

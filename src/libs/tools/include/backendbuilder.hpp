@@ -105,7 +105,6 @@ public:
 	}
 
 	~BackendBuilder();
-	void addPlugins (PluginSpecVector const & plugin);
 	void addPlugin (PluginSpec const & plugin);
 	void remPlugin (PluginSpec const & plugin);
 	void resolveNeeds();
