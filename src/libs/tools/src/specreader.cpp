@@ -2,6 +2,8 @@
 
 #include <backendbuilder.hpp>
 
+#include <unordered_set>
+
 
 namespace kdb
 {
@@ -22,6 +24,11 @@ SpecReader::SpecReader(BackendBuilderInit const & abbi) :
 SpecReader::~SpecReader()
 {}
 
+bool startsWith(std::string const & str, std::string const & start)
+{
+	return std::equal(start.begin(), start.end(), str.begin());
+}
+
 SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 {
 	KeySet ks (cks);
@@ -34,6 +41,8 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 	bb.nodes ++; // count mp
 
 	KeySet backendConfig;
+
+	std::unordered_set<PluginSpec> pluginSpecs;
 
 	ks.rewind(); // we need old fashioned loop, because it can handle ks.cut during iteration
 	for (Key k = ks.next(); k; k = ks.next())
@@ -52,15 +61,66 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 		while ((m = k.nextMeta()))
 		{
 			std::string const & cn = "config/needs";
-			if (m.getName().find(cn) == 0)
+			std::string const & cp = "config/plugin";
+			if (startsWith(m.getName(), cn))
 			{
 				Key bKey = m.dup();
 				bKey.setName ("user"+bKey.getName().substr(cn.length()));
 				backendConfig.append(bKey);
 			}
+			else if (startsWith(m.getName(), cp))
+			{
+				Key bKey = m.dup();
+				bKey.setName ("user"+bKey.getName().substr (cp.length()));
+				std::string pluginName = m.getName().substr (cp.length());
+				PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
+				auto && it = pluginSpecs.insert(toInsert);
+				if (!it.second)
+				{
+					auto hint = it.first;
+					pluginSpecs.erase(it.first);
+					toInsert.config.append(it.first->config);
+					pluginSpecs.insert(++hint, toInsert);
+				}
+			}
+			else if (m.getName() == "infos/needs")
+			{
+				std::istringstream is(m.getString());
+				std::string n;
+				while (is >> n)
+				{
+					pluginSpecs.emplace(n);
+					// ignore if already present
+				}
+			}
+			else if (m.getName() == "infos/recommends")
+			{
+				// TODO: give user a chance to ignore recommends
+				pluginSpecs.emplace(m.getString());
+			}
+			else if (startsWith(m.getName(), "infos"))
+			{
+			}
+			else if (startsWith(m.getName(), "exports"))
+			{
+			}
+			else if (startsWith(m.getName(), "constants"))
+			{
+			}
+			else if (startsWith(m.getName(), "config"))
+			{
+			}
+			else
+			{
+				// TODO: other metadata: query the pluginDatabase
+			}
 		}
 	}
 	bb.setBackendConfig (backendConfig);
+	for (auto const & ps : pluginSpecs)
+	{
+		bb.addPlugin(ps);
+	}
 	return bb;
 }
 
