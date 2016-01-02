@@ -21,37 +21,6 @@
 #include <kdb.hpp>
 #include <gtest/gtest.h>
 
-class MockPluginDatabase : public kdb::tools::PluginDatabase
-{
-public:
-	mutable std::unordered_map <kdb::tools::PluginSpec, std::unordered_map<std::string,std::string>> data;
-
-	std::string lookupInfo(kdb::tools::PluginSpec const & spec, std::string const & which) const
-	{
-		std::string ret = data[spec][which];
-		std::cout << "do lookup: " << spec.name << " . " << which << " is: " << ret << std::endl;
-		return ret;
-	}
-
-	kdb::tools::PluginSpec lookupProvides (std::string const & which) const
-	{
-		for (auto const & plugin : data)
-		{
-			if (plugin.first.name == which)
-			{
-				return plugin.first;
-			}
-
-			if (lookupInfo (plugin.first, "provides") == which)
-			{
-				return plugin.first;
-			}
-		}
-
-		throw kdb::tools::NoPlugin("No plugin " + which + " could be found");
-	}
-};
-
 /* With strict comparison rules of pluginSpec
 TEST(BackendBuilder, pluginSpec)
 {

@@ -92,6 +92,12 @@ std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::str
 	return plugin->lookupInfo (which);
 }
 
+PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) const
+{
+	// TODO: implement
+	return PluginSpec(which);
+}
+
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
 	std::vector<std::string> allPlugins = listAllAvailablePlugins();
@@ -122,6 +128,43 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 	}
 
 	throw NoPlugin("No plugin " + which + " could be found");
+}
+
+
+std::string MockPluginDatabase::lookupInfo(PluginSpec const & spec, std::string const & which) const
+{
+	return data[spec][which];
+}
+
+PluginSpec MockPluginDatabase::lookupMetadata (std::string const & which) const
+{
+	for (auto const & plugin : data)
+	{
+		if (lookupInfo (plugin.first, "metadata") == which)
+		{
+			return plugin.first;
+		}
+	}
+
+	throw NoPlugin("No plugin that implements metadata " + which + " could be found");
+}
+
+PluginSpec MockPluginDatabase::lookupProvides (std::string const & which) const
+{
+	for (auto const & plugin : data)
+	{
+		if (plugin.first.name == which)
+		{
+			return plugin.first;
+		}
+
+		if (lookupInfo (plugin.first, "provides") == which)
+		{
+			return plugin.first;
+		}
+	}
+
+	throw NoPlugin("No plugin that implements provider " + which + " could be found");
 }
 
 }
