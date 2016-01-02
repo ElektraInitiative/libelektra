@@ -28,7 +28,9 @@ public:
 
 	std::string lookupInfo(kdb::tools::PluginSpec const & spec, std::string const & which) const
 	{
-		return data[spec][which];
+		std::string ret = data[spec][which];
+		std::cout << "do lookup: " << spec.name << " . " << which << " is: " << ret << std::endl;
+		return ret;
 	}
 
 	kdb::tools::PluginSpec lookupProvides (std::string const & which) const

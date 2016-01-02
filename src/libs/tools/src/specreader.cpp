@@ -42,8 +42,6 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 
 	KeySet backendConfig;
 
-	std::unordered_set<PluginSpec> pluginSpecs;
-
 	ks.rewind(); // we need old fashioned loop, because it can handle ks.cut during iteration
 	for (Key k = ks.next(); k; k = ks.next())
 	{
@@ -74,29 +72,21 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 				bKey.setName ("user"+bKey.getName().substr (cp.length()));
 				std::string pluginName = m.getName().substr (cp.length());
 				PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
-				auto && it = pluginSpecs.insert(toInsert);
-				if (!it.second)
-				{
-					auto hint = it.first;
-					pluginSpecs.erase(it.first);
-					toInsert.config.append(it.first->config);
-					pluginSpecs.insert(++hint, toInsert);
-				}
+				bb.addPlugin(toInsert);
 			}
 			else if (m.getName() == "infos/needs")
 			{
 				std::istringstream is(m.getString());
-				std::string n;
-				while (is >> n)
+				std::string toInsert;
+				while (is >> toInsert)
 				{
-					pluginSpecs.emplace(n);
-					// ignore if already present
+					bb.addPlugin(PluginSpec(toInsert));
 				}
 			}
 			else if (m.getName() == "infos/recommends")
 			{
 				// TODO: give user a chance to ignore recommends
-				pluginSpecs.emplace(m.getString());
+				bb.addPlugin(PluginSpec(m.getString()));
 			}
 			else if (startsWith(m.getName(), "infos"))
 			{
@@ -117,10 +107,6 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 		}
 	}
 	bb.setBackendConfig (backendConfig);
-	for (auto const & ps : pluginSpecs)
-	{
-		bb.addPlugin(ps);
-	}
 	return bb;
 }
 
