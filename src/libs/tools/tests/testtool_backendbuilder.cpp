@@ -50,6 +50,27 @@ public:
 	}
 };
 
+TEST(BackendBuilder, pluginSpec)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	EXPECT_EQ(PluginSpec("c"), PluginSpec("c"));
+	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c"));
+	EXPECT_NE(PluginSpec("c"), PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/def", KEY_END), KS_END)));
+	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/aa", KEY_END), KS_END)));
+	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)));
+	std::hash<PluginSpec> hashFun;
+	EXPECT_EQ(hashFun (PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))),
+		  hashFun (PluginSpec("c", KeySet(2, *Key("user/x", KEY_END), KS_END))));
+	std::unordered_map <kdb::tools::PluginSpec, std::string> data;
+	data[PluginSpec("c")] = "no keyset";
+	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
+	data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))] = "with keyset";
+	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
+	EXPECT_EQ(data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))], "with keyset");
+}
+
 TEST(BackendBuilder, withDatabase)
 {
 	using namespace kdb;
