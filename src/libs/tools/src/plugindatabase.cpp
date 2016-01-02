@@ -134,7 +134,13 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 
 std::string MockPluginDatabase::lookupInfo(PluginSpec const & spec, std::string const & which) const
 {
-	return data[spec][which];
+	auto it = data.find(spec);
+	if (it != data.end())
+	{
+		return it->second[which];
+	}
+
+	return "";
 }
 
 PluginSpec MockPluginDatabase::lookupMetadata (std::string const & which) const

@@ -88,13 +88,12 @@ TEST(SpecReader, withNeeds)
 			KeySet(5, *Key ("user/something", "here", KEY_END), KS_END));
 	EXPECT_FALSE (bi.validated());
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("resolver"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("storage"));
+	EXPECT_EQ (bi.begin()[0], PluginSpec("storage"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("resolver"));
 	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("a"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("b"));
-	EXPECT_TRUE (bi.validated());
+	EXPECT_EQ (bi.begin()[0], PluginSpec("b"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("a"));
 }
 
 TEST(SpecReader, withNeedsResolved)
@@ -128,6 +127,5 @@ TEST(SpecReader, withNeedsResolved)
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
 	EXPECT_EQ (bi.begin()[0], PluginSpec("a"));
 	EXPECT_EQ (bi.begin()[1], PluginSpec("b"));
-	EXPECT_TRUE (bi.validated());
 }
 
