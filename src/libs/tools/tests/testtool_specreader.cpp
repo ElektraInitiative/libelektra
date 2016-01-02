@@ -55,11 +55,33 @@ TEST(SpecReader, withDatabase)
 	mpd->data [PluginSpec("a")] ["ordering"] = "d";
 	mpd->data [PluginSpec("b")] ["ordering"] = "d";
 	mpd->data [PluginSpec("c")] ["ordering"];
-	SpecReader sr(mpd);
+	BackendBuilderInit mpi (mpd);
+	SpecReader sr(mpi);
 	sr.readSpecification(KeySet(5,
 				*Key ("user", KEY_END),
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
-				*Key ("user/mp/below", KEY_META, "needs", "something", KEY_END),
+				*Key ("user/mp/below", KEY_META, "config/needs/something", "here", KEY_END),
+				KS_END));
+	SpecBackendBuilder bi = sr.backends [Key ("user/mp", KEY_END)];
+	EXPECT_EQ (bi.nodes, 2);
+}
+
+
+TEST(SpecReader, withDatabaseRecursive)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data [PluginSpec("a")] ["ordering"] = "d";
+	mpd->data [PluginSpec("b")] ["ordering"] = "d";
+	mpd->data [PluginSpec("c")] ["ordering"];
+	BackendBuilderInit mpi (mpd);
+	SpecReader sr(mpi);
+	sr.readSpecification(KeySet(5,
+				*Key ("user", KEY_END),
+				*Key ("user/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
+				*Key ("user/mp/below", KEY_META, "config/needs/something", "else", KEY_END),
+				*Key ("user/mp/below/recursive", KEY_META, "mountpoint", "otherfile.ini", KEY_END),
 				KS_END));
 	SpecBackendBuilder bi = sr.backends [Key ("user/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);

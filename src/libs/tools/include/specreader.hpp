@@ -28,7 +28,7 @@ namespace tools
 
 class PluginDatabase;
 
-class SpecBackendBuilder : public BackendBuilder
+class SpecBackendBuilder : public MountBackendBuilder
 {
 public:
 	explicit SpecBackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
@@ -53,9 +53,13 @@ private:
 	 */
 	PluginDatabasePtr pluginDatabase;
 
+	KeySet mountConf;
+
+	SpecBackendBuilder readMountpointSpecification (KeySet const & ks);
+
 public:
 	SpecReader();
-	explicit SpecReader(PluginDatabasePtr const & pluginDatabase);
+	explicit SpecReader(BackendBuilderInit const & bbi = BackendBuilderInit());
 
 	PluginDatabasePtr getPluginDatabase() const
 	{

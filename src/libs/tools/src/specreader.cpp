@@ -10,42 +10,73 @@ namespace tools
 {
 
 SpecBackendBuilder::SpecBackendBuilder(BackendBuilderInit const & bbi) :
-	BackendBuilder (bbi),
+	MountBackendBuilder (bbi),
 	nodes(0)
 {}
 
-SpecReader::SpecReader() :
-	pluginDatabase(new ModulesPluginDatabase)
-{
-}
 
-SpecReader::SpecReader(PluginDatabasePtr const & pd) :
-	pluginDatabase(pd)
+SpecReader::SpecReader(BackendBuilderInit const & abbi) :
+	bbi(abbi)
 {}
 
 SpecReader::~SpecReader()
 {}
 
-void SpecReader::readSpecification (KeySet const & ks)
+SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 {
-	Key mp;
-	for (auto const & k : ks)
+	KeySet ks (cks);
+	SpecBackendBuilder bb (bbi);
+	Key mp = ks.head().dup();
+	bb.setMountpoint (mp, mountConf);
+	bb.useConfigFile (mp.getMeta<std::string>("mountpoint"));
+
+	ks.lookup(mp, KDB_O_POP);
+	bb.nodes ++; // count mp
+
+	KeySet backendConfig;
+
+	ks.rewind(); // we need old fashioned loop, because it can handle ks.cut during iteration
+	for (Key k = ks.next(); k; k = ks.next())
 	{
 		// search for mountpoint
 		Key m = k.getMeta<const Key>("mountpoint");
 		if (m)
 		{
-			mp = k.dup();
-			mp.setString(m.getMeta<std::string>("mountpoint"));
-			backends[mp] = SpecBackendBuilder(bbi);
-			backends[mp].nodes ++;
+			backends[k] = readMountpointSpecification(ks.cut(k));
+			continue;
 		}
 
-		// TODO: handle recursive mountpoint with cutting
+		bb.nodes ++;
 
-		if (k.isBelow(mp))
+		k.rewindMeta();
+		while ((m = k.nextMeta()))
 		{
-			backends[mp].nodes ++;
+			std::string const & cn = "config/needs";
+			if (m.getName().find(cn) == 0)
+			{
+				Key bKey = m.dup();
+				bKey.setName ("user"+bKey.getName().substr(cn.length()));
+				backendConfig.append(bKey);
+			}
+		}
+	}
+	bb.setBackendConfig (backendConfig);
+	return bb;
+}
+
+void SpecReader::readSpecification (KeySet const & cks)
+{
+	KeySet ks (cks);
+	Key mp;
+
+	ks.rewind(); // we need old fashioned loop, because it can handle ks.cut during iteration
+	for (Key k = ks.next(); k; k = ks.next())
+	{
+		// search for mountpoint
+		Key m = k.getMeta<const Key>("mountpoint");
+		if (m)
+		{
+			backends[k] = readMountpointSpecification(ks.cut(k));
 		}
 	}
 }
