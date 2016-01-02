@@ -47,6 +47,12 @@ inline bool operator != (PluginSpec const & self, PluginSpec const & other)
 
 typedef std::vector <PluginSpec> PluginSpecVector;
 
+inline std::ostream & operator << (std::ostream & os, PluginSpec const & spec)
+{
+	os << spec.name << " " << spec.config.size();
+	return os;
+}
+
 }
 
 }

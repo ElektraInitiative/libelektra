@@ -68,8 +68,8 @@ TEST(SpecReader, withNeeds)
 	using namespace kdb;
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
-	mpd->data [PluginSpec("a")] ["provides"] = "storage";
-	mpd->data [PluginSpec("b")] ["provides"] = "resolver";
+	mpd->data [PluginSpec("a")] ["provides"] = "resolver";
+	mpd->data [PluginSpec("b")] ["provides"] = "storage";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
 	sr.readSpecification(KeySet(5,
@@ -91,10 +91,10 @@ TEST(SpecReader, withNeeds)
 	EXPECT_EQ (bi.begin()[0], PluginSpec("resolver"));
 	EXPECT_EQ (bi.begin()[1], PluginSpec("storage"));
 	bi.resolveNeeds();
-	EXPECT_TRUE (bi.validated());
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
 	EXPECT_EQ (bi.begin()[0], PluginSpec("a"));
 	EXPECT_EQ (bi.begin()[1], PluginSpec("b"));
+	EXPECT_TRUE (bi.validated());
 }
 
 TEST(SpecReader, withNeedsResolved)
@@ -125,9 +125,9 @@ TEST(SpecReader, withNeedsResolved)
 			*Key ("user/something", "here", KEY_END),
 			*Key ("user/else", "too", KEY_END),
 			KS_END));
-	EXPECT_FALSE (bi.validated());
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
 	EXPECT_EQ (bi.begin()[0], PluginSpec("a"));
 	EXPECT_EQ (bi.begin()[1], PluginSpec("b"));
+	EXPECT_TRUE (bi.validated());
 }
 

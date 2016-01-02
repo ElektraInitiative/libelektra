@@ -52,18 +52,9 @@ private:
 	 */
 	BackendBuilderInit bbi;
 
-	KeySet mountConf;
-
-	SpecBackendBuilder readMountpointSpecification (KeySet const & ks);
-
 public:
 	SpecReader();
 	explicit SpecReader(BackendBuilderInit const & bbi = BackendBuilderInit());
-
-	PluginDatabasePtr getPluginDatabase() const
-	{
-		return bbi.getPluginDatabase();
-	}
 
 	~SpecReader();
 

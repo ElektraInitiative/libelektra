@@ -29,18 +29,127 @@ bool startsWith(std::string const & str, std::string const & start)
 	return std::equal(start.begin(), start.end(), str.begin());
 }
 
-SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
+class SpecMountpointReader
 {
-	KeySet ks (cks);
-	SpecBackendBuilder bb (bbi);
-	Key mp = ks.head().dup();
+private:
+	KeySet ks;
+	Key mp;
+	KeySet backendConfig;
+	KeySet mountConf;
+	typedef std::unordered_map<Key, SpecBackendBuilder> Backends;
+	Backends & backends;
+	BackendBuilderInit const & bbi;
+	SpecBackendBuilder bb;
+
+public:
+	SpecMountpointReader (Backends & b, BackendBuilderInit const & bbi_) :
+		backends(b),
+		bbi (bbi_),
+		bb (bbi)
+	{
+	}
+
+	void addPlugins (std::string const & plugins);
+	void addPluginsByMetadata (std::string const & plugins);
+	void processKey (Key const & ck);
+	SpecBackendBuilder readMountpointSpecification (KeySet const & cks);
+};
+
+/**
+ * @brief Small helper to add a string with space separated plugin names
+ *
+ * @param plugins a space separated list of plugins
+ */
+void SpecMountpointReader::addPlugins (std::string const & plugins)
+{
+	std::istringstream is (plugins);
+	std::string toInsert;
+	while (is >> toInsert)
+	{
+		bb.addPlugin (PluginSpec(toInsert));
+	}
+}
+
+void SpecMountpointReader::addPluginsByMetadata (std::string const & plugins)
+{
+	// TODO: should be disfavoured compared to manually listed plugins
+	// (especially recommendations should win)
+	// order of commands should not matter
+	std::istringstream is (plugins);
+	std::string metadata;
+	while (is >> metadata)
+	{
+		PluginSpec plugin (bb.getPluginDatabase()->lookupMetadata (metadata));
+		bb.addPlugin (plugin);
+	}
+}
+
+namespace
+{
+bool isToBeIgnored (std::string const & name)
+{
+	return  startsWith (name, "infos") ||
+		startsWith (name, "exports") ||
+		startsWith (name, "constants") ||
+		startsWith (name, "exports") ||
+		name == "mountpoint" ||
+		startsWith (name, "config");
+}
+}
+
+void SpecMountpointReader::processKey (Key const & ck)
+{
+	Key k (ck);
+	k.rewindMeta();
+	Key m;
+	while ((m = k.nextMeta()))
+	{
+		std::string const & cn = "config/needs";
+		std::string const & cp = "config/plugin";
+		if (startsWith (m.getName(), cn))
+		{
+			Key bKey = m.dup();
+			bKey.setName ("user"+bKey.getName().substr(cn.length()));
+			backendConfig.append (bKey);
+		}
+		else if (startsWith(m.getName(), cp))
+		{
+			Key bKey = m.dup();
+			bKey.setName ("user"+bKey.getName().substr (cp.length()));
+			std::string pluginName = m.getName().substr (cp.length());
+			PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
+			bb.addPlugin (toInsert);
+		}
+		else if (m.getName() == "info/needs")
+		{
+			addPlugins(m.getString());
+		}
+		else if (m.getName() == "info/recommends")
+		{
+			// TODO: give user a chance to ignore recommends
+			addPlugins(m.getString());
+		}
+		else if (isToBeIgnored (m.getName()))
+		{}
+		else
+		{
+			addPluginsByMetadata(m.getString());
+		}
+	}
+}
+
+SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet const & cks)
+{
+	ks = cks;
+	mp = ks.head().dup();
+
 	bb.setMountpoint (mp, mountConf);
 	bb.useConfigFile (mp.getMeta<std::string>("mountpoint"));
 
-	ks.lookup(mp, KDB_O_POP);
+	processKey (mp);
 	bb.nodes ++; // count mp
 
-	KeySet backendConfig;
+	ks.lookup (mp, KDB_O_POP);
 
 	ks.rewind(); // we need old fashioned loop, because it can handle ks.cut during iteration
 	for (Key k = ks.next(); k; k = ks.next())
@@ -49,72 +158,13 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 		Key m = k.getMeta<const Key>("mountpoint");
 		if (m)
 		{
-			backends[k] = readMountpointSpecification(ks.cut(k));
+			SpecMountpointReader smr (backends, bbi);
+			backends[k] = smr.readMountpointSpecification(ks.cut(k));
 			continue;
 		}
 
+		processKey (k);
 		bb.nodes ++;
-
-		k.rewindMeta();
-		while ((m = k.nextMeta()))
-		{
-			std::string const & cn = "config/needs";
-			std::string const & cp = "config/plugin";
-			if (startsWith (m.getName(), cn))
-			{
-				Key bKey = m.dup();
-				bKey.setName ("user"+bKey.getName().substr(cn.length()));
-				backendConfig.append (bKey);
-			}
-			else if (startsWith(m.getName(), cp))
-			{
-				Key bKey = m.dup();
-				bKey.setName ("user"+bKey.getName().substr (cp.length()));
-				std::string pluginName = m.getName().substr (cp.length());
-				PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
-				bb.addPlugin (toInsert);
-			}
-			else if (m.getName() == "info/needs")
-			{
-				std::istringstream is (m.getString());
-				std::string toInsert;
-				while (is >> toInsert)
-				{
-					bb.addPlugin (PluginSpec(toInsert));
-				}
-			}
-			else if (m.getName() == "info/recommends")
-			{
-				// TODO: give user a chance to ignore recommends
-				std::istringstream is (m.getString());
-				std::string toInsert;
-				while (is >> toInsert)
-				{
-					bb.addPlugin(PluginSpec(toInsert));
-				}
-			}
-			else if (startsWith (m.getName(), "infos") ||
-				 startsWith (m.getName(), "exports") ||
-				 startsWith (m.getName(), "constants") ||
-				 startsWith (m.getName(), "exports") ||
-				 startsWith (m.getName(), "config"))
-			{
-				// ignore any other infos from contract
-			}
-			else
-			{
-				// TODO: should be disfavoured compared to manually listed plugins
-				// (especially recommendations should win)
-				// order of commands should not matter
-				std::istringstream is (m.getString());
-				std::string metadata;
-				while (is >> metadata)
-				{
-					PluginSpec plugin (getPluginDatabase()->lookupMetadata (metadata));
-					bb.addPlugin (plugin);
-				}
-			}
-		}
 	}
 	bb.setBackendConfig (backendConfig);
 	return bb;
@@ -132,7 +182,8 @@ void SpecReader::readSpecification (KeySet const & cks)
 		Key m = k.getMeta<const Key>("mountpoint");
 		if (m)
 		{
-			backends[k] = readMountpointSpecification(ks.cut(k));
+			SpecMountpointReader smr (backends, bbi);
+			backends[k] = smr.readMountpointSpecification(ks.cut(k));
 		}
 	}
 }
