@@ -47,11 +47,10 @@ public: // TODO: make private, TESTING?
 	std::unordered_map<Key, SpecBackendBuilder> backends;
 
 private:
-	BackendBuilderInit bbi;
 	/**
 	 * @brief Used for crating new BackendBuilder
 	 */
-	PluginDatabasePtr pluginDatabase;
+	BackendBuilderInit bbi;
 
 	KeySet mountConf;
 
@@ -63,7 +62,7 @@ public:
 
 	PluginDatabasePtr getPluginDatabase() const
 	{
-		return pluginDatabase;
+		return bbi.getPluginDatabase();
 	}
 
 	~SpecReader();

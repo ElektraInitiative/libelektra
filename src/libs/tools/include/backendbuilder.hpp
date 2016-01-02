@@ -132,6 +132,10 @@ public:
 	std::string getMountpoint() const;
 
 	void setBackendConfig (KeySet const & ks);
+	KeySet getBackendConfig()
+	{
+		return backendConf;
+	}
 
 	void useConfigFile (std::string file);
 	std::string getConfigFile() const;
