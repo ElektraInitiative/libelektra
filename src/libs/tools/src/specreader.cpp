@@ -60,11 +60,11 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 		{
 			std::string const & cn = "config/needs";
 			std::string const & cp = "config/plugin";
-			if (startsWith(m.getName(), cn))
+			if (startsWith (m.getName(), cn))
 			{
 				Key bKey = m.dup();
 				bKey.setName ("user"+bKey.getName().substr(cn.length()));
-				backendConfig.append(bKey);
+				backendConfig.append (bKey);
 			}
 			else if (startsWith(m.getName(), cp))
 			{
@@ -72,37 +72,47 @@ SpecBackendBuilder SpecReader::readMountpointSpecification (KeySet const & cks)
 				bKey.setName ("user"+bKey.getName().substr (cp.length()));
 				std::string pluginName = m.getName().substr (cp.length());
 				PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
-				bb.addPlugin(toInsert);
+				bb.addPlugin (toInsert);
 			}
-			else if (m.getName() == "infos/needs")
+			else if (m.getName() == "info/needs")
 			{
-				std::istringstream is(m.getString());
+				std::istringstream is (m.getString());
+				std::string toInsert;
+				while (is >> toInsert)
+				{
+					bb.addPlugin (PluginSpec(toInsert));
+				}
+			}
+			else if (m.getName() == "info/recommends")
+			{
+				// TODO: give user a chance to ignore recommends
+				std::istringstream is (m.getString());
 				std::string toInsert;
 				while (is >> toInsert)
 				{
 					bb.addPlugin(PluginSpec(toInsert));
 				}
 			}
-			else if (m.getName() == "infos/recommends")
+			else if (startsWith (m.getName(), "infos") ||
+				 startsWith (m.getName(), "exports") ||
+				 startsWith (m.getName(), "constants") ||
+				 startsWith (m.getName(), "exports") ||
+				 startsWith (m.getName(), "config"))
 			{
-				// TODO: give user a chance to ignore recommends
-				bb.addPlugin(PluginSpec(m.getString()));
-			}
-			else if (startsWith(m.getName(), "infos"))
-			{
-			}
-			else if (startsWith(m.getName(), "exports"))
-			{
-			}
-			else if (startsWith(m.getName(), "constants"))
-			{
-			}
-			else if (startsWith(m.getName(), "config"))
-			{
+				// ignore any other infos from contract
 			}
 			else
 			{
-				// TODO: other metadata: query the pluginDatabase
+				// TODO: should be disfavoured compared to manually listed plugins
+				// (especially recommendations should win)
+				// order of commands should not matter
+				std::istringstream is (m.getString());
+				std::string metadata;
+				while (is >> metadata)
+				{
+					PluginSpec plugin (getPluginDatabase()->lookupMetadata (metadata));
+					bb.addPlugin (plugin);
+				}
 			}
 		}
 	}

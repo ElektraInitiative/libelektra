@@ -117,6 +117,7 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 		}
 
 		// TODO: improve search strategy
+		// TODO: make sure (non)-equal plugins (i.e. with same/different contract) are handled correctly
 		try {
 			if (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 				KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
