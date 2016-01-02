@@ -737,13 +737,13 @@ inline T KeySet::get(std::string const & name, option_t const options) const
 
 inline bool operator==(const KeySet& lhs, const KeySet& rhs)
 {
-	return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+	return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 
 inline bool operator!=(const KeySet& lhs, const KeySet& rhs)
 {
-	return !std::equal(lhs.begin(), lhs.end(), rhs.begin());
+	return !(lhs == rhs);
 }
 
 

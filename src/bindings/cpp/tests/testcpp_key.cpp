@@ -598,6 +598,60 @@ TEST(key, keynamespace)
 	succeed_if(Key("/abc", KEY_END).getNamespace() == "/", "namespace wrong");
 }
 
+TEST(key, comparision)
+{
+	Key ke1, ke2;
+
+	succeed_if (ke1 == ke2, "two empty keys are not the same?");
+	succeed_if (!(ke1 != ke2), "two empty keys are not the same?");
+
+	Key k1("user/a", KEY_END), k2("user/b", KEY_END);
+
+	succeed_if (ke1 < k1, "compare empty key with user/a");
+	succeed_if (ke1 <= k1, "compare empty key with user/a");
+	succeed_if (!(ke1 > k1), "compare empty key with user/a");
+	succeed_if (!(ke1 >= k1), "compare empty key with user/a");
+
+	succeed_if (ke1 < k2, "compare empty key with user/b");
+	succeed_if (ke1 <= k2, "compare empty key with user/b");
+	succeed_if (!(ke1 > k2), "compare empty key with user/b");
+	succeed_if (!(ke1 >= k2), "compare empty key with user/b");
+
+	succeed_if (k1 < k2, "compare key user/a with user/b");
+	succeed_if (k1 <= k2, "compare key user/a with user/b");
+	succeed_if (!(k1 > k2), "compare key user/a with user/b");
+	succeed_if (!(k1 >= k2), "compare key user/a with user/b");
+	succeed_if (k1 != k2, "compare key user/a with user/b");
+	succeed_if (!(k1 == k2), "compare key user/a with user/b");
+
+	Key ko1("user/a", KEY_OWNER, "markus", KEY_END), ko2("user/b", KEY_OWNER, "max", KEY_END);
+
+	succeed_if (ko1 > k1, "compare key with user/a");
+	succeed_if (ko1 >= k1, "compare key with user/a");
+	succeed_if (!(ko1 < k1), "compare key with user/a");
+	succeed_if (!(ko1 <= k1), "compare key with user/a");
+
+	succeed_if (ko2 > k2, "compare key with user/b");
+	succeed_if (ko2 >= k2, "compare key with user/b");
+	succeed_if (!(ko2 < k2), "compare key with user/b");
+	succeed_if (!(ko2 <= k2), "compare key with user/b");
+
+	Key ko ("user/a", KEY_OWNER, "max", KEY_END);
+
+	succeed_if (ko1 < ko, "compare key with user/b");
+	succeed_if (ko1 <= ko, "compare key with user/b");
+	succeed_if (!(ko1 > ko), "compare key with user/b");
+	succeed_if (!(ko1 >= ko), "compare key with user/b");
+
+	succeed_if (ko1 < ko2, "compare key user/a with     user/a owner max");
+	succeed_if (ko1 <= ko2, "compare key user/a with    user/a owner max");
+	succeed_if (!(ko1 > ko2), "compare key user/a with  user/a owner max");
+	succeed_if (!(ko1 >= ko2), "compare key user/a with user/a owner max");
+	succeed_if (ko1 != ko2, "compare key user/a with    user/a owner max");
+	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max");
+}
+
+
 struct C
 {
 	Key ks;
