@@ -191,6 +191,7 @@ void BackendBuilder::sort()
 void BackendBuilder::resolveNeeds()
 {
 	// check if everything in toAdd is an actual plugin (and not virtual)
+	// TODO: Does this modify the order?
 	for (auto & ps : toAdd)
 	{
 		try

@@ -21,8 +21,7 @@
 #include <kdb.hpp>
 #include <gtest/gtest.h>
 
-/* With strict comparison rules of pluginSpec
-TEST(BackendBuilder, pluginSpec)
+TEST(BackendBuilder, DISABLED_pluginSpec)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -42,7 +41,6 @@ TEST(BackendBuilder, pluginSpec)
 	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
 	EXPECT_EQ(data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))], "with keyset");
 }
-*/
 
 TEST(BackendBuilder, withDatabase)
 {
