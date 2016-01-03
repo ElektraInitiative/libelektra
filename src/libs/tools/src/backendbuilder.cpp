@@ -240,8 +240,14 @@ void BackendBuilder::resolveNeeds()
 /**
  * @brief Add or update a plugin.
  *
- * Will automatically
+ * Will automatically detect if plugin is virtual or real.
+ * If it is virtual (provider), it will be remembered as "needs" to be resolved with resolveNeeds()
+ * If it is an actual plugin, and was added already, the configuration will merge
+ * as long as the contract of the new plugin is identical as the old one.
+ * Otherwise it will be added.
+ * 
  *
+ * @see resolveNeeds()
  * @param plugin
  */
 void BackendBuilder::addPlugin (PluginSpec const & newPlugin)

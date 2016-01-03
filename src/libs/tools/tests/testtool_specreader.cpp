@@ -324,3 +324,42 @@ TEST(SpecReader, withMetadataPreferenceNumerical)
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 1) << "there should be plugins added";
 	EXPECT_EQ (bi.begin()[0], PluginSpec("bestcheck"));
 }
+
+TEST(SpecReader, DISABLED_pluginConfiguration)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data [PluginSpec("a")] ["status"] = "popular";
+	mpd->data [PluginSpec("b")] ["status"] = "popular";
+	mpd->data [PluginSpec("python#rename")] ["provides"] = "rename";
+	mpd->data [PluginSpec("python#rename")] ["status"] = "memleak";
+	BackendBuilderInit mpi (mpd);
+	SpecReader sr(mpi);
+	sr.readSpecification(KeySet(5,
+				*Key ("user", KEY_END),
+				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
+					KEY_META, "config/plugin/python/something", "",
+					KEY_META, "config/plugin/python/else/something", "",
+					KEY_META, "config/plugin/b/something", "",
+					KEY_END),
+				*Key ("user/mp/below",
+					KEY_META, "config/plugin/python#transform/option", "fastload",
+					KEY_META, "config/plugin/python#transform/script", "transform.py",
+					KEY_META, "transform/python", "below = other+5",
+					KEY_END),
+				*Key ("user/mp/other",
+					KEY_META, "info/needs", "python#rename", // I want to prefer python#rename, even if there is a better one
+					KEY_META, "config/plugin/python#rename/otherthing", "norename", // register a new plugin with new contract
+					KEY_META, "config/plugin/python#rename/script", "rename.py",
+					KEY_META, "rename/toupper", "",
+					// kdb mount python#transform option=fastload,script=transform.py python#rename otherthing=norename,script=rename.py
+					KEY_END),
+				KS_END));
+	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
+	EXPECT_EQ (bi.nodes, 2);
+	EXPECT_EQ (bi.getMountpoint(), "user/mp");
+	EXPECT_EQ (bi.getConfigFile(), "file.ini");
+	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 1) << "there should be plugins added";
+	EXPECT_EQ (bi.begin()[0], PluginSpec("bestcheck"));
+}
