@@ -30,10 +30,15 @@ public:
 
 class CommandAbortException : public CommandException
 {
+	const char * msg;
 public:
+	CommandAbortException () : msg(0)
+	{}
+	CommandAbortException (const char * msg_) : msg(msg_)
+	{}
 	virtual const char* what() const throw() override
 	{
-		return "Command aborted";
+		return msg?msg:"Command aborted";
 	}
 };
 

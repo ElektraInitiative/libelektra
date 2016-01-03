@@ -102,7 +102,7 @@ void MountCommand::processArguments(Cmdline const& cl)
 
 void MountCommand::buildBackend(Cmdline const& cl)
 {
-	Backend backend;
+	MountBackendBuilder backend;
 
 	Key mpk(mp, KEY_CASCADING_NAME, KEY_END);
 
@@ -121,9 +121,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		cout << "Trying to load the resolver plugin " << resolver.name << endl;
 	}
 
-	BackendBuilder bb;
-	bb.addPlugin (resolver);
-	backend.addPlugin (resolver.name);
+	backend.addPlugin (PluginSpec(resolver));
 
 	if (cl.interactive)
 	{
@@ -150,7 +148,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		{
 			cout << "Trying to add default plugin " << plugin << endl;
 		}
-		bb.addPlugin (PluginSpec(plugin));
+		backend.addPlugin (PluginSpec(plugin));
 	}
 
 
@@ -159,11 +157,9 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		cout << "Now enter a sequence of plugins you want in the backend" << endl;
 	}
 
-	appendPlugins(cl, bb);
+	appendPlugins(cl, backend);
 
 	// resolver already added, do not readd it
-	bb.remPlugin (resolver);
-	bb.create (backend);
 	backend.serialize (mountConf);
 }
 
@@ -218,7 +214,7 @@ bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token, Key
 	return true;
 }
 
-void MountCommand::appendPlugins(Cmdline const& cl, BackendBuilder & backend)
+void MountCommand::appendPlugins(Cmdline const& cl, MountBackendInterface & backend)
 {
 	std::string pname;
 	size_t current_plugin = 2;
@@ -300,8 +296,9 @@ void MountCommand::appendPlugins(Cmdline const& cl, BackendBuilder & backend)
 
 		if (pname == "." && !backend.validated())
 		{
-			std::cerr << backend.create() << std::endl;
-			throw CommandAbortException();
+			std::ostringstream os;
+			backend.status(os);
+			throw CommandAbortException(os.str().c_str());
 		}
 	}
 

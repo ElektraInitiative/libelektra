@@ -12,6 +12,7 @@
 #define TOOLS_PLUGIN_DATABASE_HPP
 
 #include <memory>
+#include <unordered_map>
 
 #include <kdb.hpp>
 
@@ -23,14 +24,23 @@ namespace kdb
 namespace tools
 {
 
-std::vector<std::string> listAllAvailablePlugins();
-
 /**
  * @brief Loads all plugins and allows us to query them.
  */
 class PluginDatabase
 {
 public:
+	/**
+	 * @brief list all plugins
+	 *
+	 * If Elektra is compiled with plugins, it will search for shared libraries.
+	 * In any case, if no shared libraries were found
+	 * it will fallback to an internal list (plugins that were compiled together with Elektra).
+	 *
+	 * @return a list of all available plugins
+	 */
+	virtual std::vector<std::string> listAllPlugins() const = 0;
+
 	/**
 	 * @brief lookup contract clauses
 	 *
@@ -42,13 +52,22 @@ public:
 	virtual std::string lookupInfo (PluginSpec const & whichplugin, std::string const & which) const = 0;
 
 	/**
+	 * @brief lookup which plugin handles meta data
+	 *
+	 * @param which the meta data of interest
+	 *
+	 * @return the best suited plugin specification which provides it
+	 */
+	virtual PluginSpec lookupMetadata (std::string const & which) const = 0;
+
+	/**
 	 * @brief lookup which plugin is a provider
 	 *
 	 * @param which is the provider name to find
 	 *
 	 * @throw NoPlugin if no plugin that provides the functionality could be found
 	 *
-	 * @return a plugin specification which provides it
+	 * @return the best suited plugin specification which provides it
 	 */
 	virtual PluginSpec lookupProvides (std::string const & which) const = 0;
 };
@@ -63,8 +82,20 @@ public:
 	ModulesPluginDatabase ();
 	~ModulesPluginDatabase ();
 
+	std::vector<std::string> listAllPlugins() const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
+	PluginSpec lookupMetadata (std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & which) const;
+};
+
+class MockPluginDatabase : public ModulesPluginDatabase
+{
+public:
+	/// only data from here will be returned
+	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>> data;
+
+	std::vector<std::string> listAllPlugins() const;
+	std::string lookupInfo(PluginSpec const & spec, std::string const & which) const;
 };
 
 }

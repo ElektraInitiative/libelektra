@@ -37,12 +37,21 @@ struct PluginSpec
 
 inline bool operator == (PluginSpec const & self, PluginSpec const & other)
 {
-	return self.name == other.name &&
-		std::equal(self.config.begin(), self.config.end(),
-				other.config.begin());
+	return self.name == other.name;
+}
+
+inline bool operator != (PluginSpec const & self, PluginSpec const & other)
+{
+	return !(self == other);
 }
 
 typedef std::vector <PluginSpec> PluginSpecVector;
+
+inline std::ostream & operator << (std::ostream & os, PluginSpec const & spec)
+{
+	os << spec.name << " " << spec.config.size();
+	return os;
+}
 
 }
 

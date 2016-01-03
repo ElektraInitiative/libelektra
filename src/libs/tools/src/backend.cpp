@@ -38,6 +38,9 @@ namespace tools
 BackendInterface::~BackendInterface()
 {}
 
+MountBackendInterface::~MountBackendInterface()
+{}
+
 /** Creates a new empty backend.
  *
  * */
@@ -307,11 +310,11 @@ void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
  *
  * For validation @see validated().
  */
-void Backend::addPlugin (std::string pluginName, KeySet pluginConf)
+void Backend::addPlugin (PluginSpec const & plugin)
 {
-	KeySet fullPluginConfig = pluginConf;
+	KeySet fullPluginConfig = plugin.config;
 	fullPluginConfig.append(config); // add previous configs
-	tryPlugin (pluginName, fullPluginConfig);
+	tryPlugin (plugin.name, fullPluginConfig);
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());
@@ -454,9 +457,9 @@ void Backend::serialize (kdb::KeySet &ret)
 			KEY_END));
 }
 
-void ImportExportBackend::addPlugin (std::string name, KeySet pluginConfig)
+void ImportExportBackend::addPlugin (PluginSpec const & spec)
 {
-	PluginPtr plugin = modules.load(name, pluginConfig);
+	PluginPtr plugin = modules.load(spec.name, spec.config);
 	std::shared_ptr<Plugin> sharedPlugin = std::move(plugin);
 
 	std::stringstream ss (plugin->lookupInfo("placements"));

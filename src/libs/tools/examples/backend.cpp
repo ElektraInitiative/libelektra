@@ -17,8 +17,8 @@ int main()
 	using namespace kdb::tools;
 	Backend b;
 	b.setMountpoint(Key("/", KEY_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
-	b.addPlugin("resolver");
-	b.addPlugin("dump");
+	b.addPlugin(PluginSpec("resolver"));
+	b.addPlugin(PluginSpec("dump"));
 	b.useConfigFile("file.ecf");
 	b.validated();
 

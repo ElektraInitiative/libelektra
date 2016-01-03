@@ -24,13 +24,22 @@ namespace kdb
 namespace tools
 {
 
-/**
- * In the shared case, it will search for shared libraries, and if not found
- * any, it will fallback to internal list (plugins that were compiled).
- *
- * @return a list of all available plugins
- */
-std::vector<std::string> listAllAvailablePlugins()
+class ModulesPluginDatabase::Impl
+{
+public:
+	Impl () {}
+	~Impl () {}
+	Modules modules;
+};
+
+ModulesPluginDatabase::ModulesPluginDatabase () :
+	impl(new ModulesPluginDatabase::Impl())
+{}
+
+ModulesPluginDatabase::~ModulesPluginDatabase ()
+{}
+
+std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 {
 	std::vector<std::string> ret;
 #ifdef ELEKTRA_SHARED
@@ -71,32 +80,98 @@ std::vector<std::string> listAllAvailablePlugins()
 }
 
 
-class ModulesPluginDatabase::Impl
-{
-public:
-	Impl () {}
-	~Impl () {}
-	Modules modules;
-};
-
-ModulesPluginDatabase::ModulesPluginDatabase () :
-	impl(new ModulesPluginDatabase::Impl())
-{}
-
-ModulesPluginDatabase::~ModulesPluginDatabase ()
-{}
-
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
 	PluginPtr plugin = impl->modules.load (spec.name, spec.config);
 	return plugin->lookupInfo (which);
 }
 
+namespace
+{
+
+// TODO: directly use data from CONTRACT.ini
+const std::map <std::string, int> statusMap=
+{
+	{"popular", 4000},
+	{"productive", 2000},
+	{"specific", 1000},
+	{"unittest", 500},
+	{"tested", 250},
+	{"preview", -50},
+	{"memleak", -250},
+	{"experimental", -500},
+	{"unfinished", -1000},
+	{"concept", -2000},
+	{"discouraged", -4000}
+
+};
+
+int calculateStatus (std::string statusString)
+{
+	int ret = 0;
+	std::istringstream ss (statusString);
+	std::string status;
+	while (ss >> status)
+	{
+		auto it = statusMap.find(status);
+		if (it != statusMap.end())
+		{
+			ret += it->second;
+		}
+		else
+		{
+			ret += stoi(status);
+		}
+	}
+	return ret;
+}
+
+}
+
+PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) const
+{
+	std::vector<std::string> allPlugins = listAllPlugins();
+	std::map<int, PluginSpec> foundPlugins;
+
+	// collect possible plugins
+	for (auto const & plugin : allPlugins)
+	{
+		try {
+			// TODO remove /module hack
+			std::istringstream ss (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+				KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+				"metadata"));
+			std::string metadata;
+			while (ss >> metadata)
+			{
+				if (metadata == which)
+				{
+					int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+						"status"));
+					foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
+					break;
+				}
+			}
+		} catch (...) { } // assume not loaded
+	}
+
+	if (foundPlugins.empty())
+	{
+		throw NoPlugin ("Could not find plugin with metadata " + which);
+	}
+
+	// the largest element of the map contains the best-suited plugin:
+	return foundPlugins.rbegin()->second;
+}
+
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
-	std::vector<std::string> allPlugins = listAllAvailablePlugins();
+	std::vector<std::string> allPlugins = listAllPlugins();
+	std::map<int, PluginSpec> foundPlugins;
 
 	// check if plugin with this name exists
+	// TODO: needed even if virtual are handled separately?
 	auto it = std::find(allPlugins.begin(), allPlugins.end(), which);
 	if (it != allPlugins.end())
 	{
@@ -110,21 +185,52 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 			return PluginSpec(plugin);
 		}
 
-		// TODO: improve search strategy
+		// TODO: make sure (non)-equal plugins (i.e. with same/different contract) are handled correctly
 		try {
 			if (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 				KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
 				"provides") == which)
 			{
-				return PluginSpec(plugin);
+				int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+					KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+					"status"));
+				foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
 			}
 		} catch (...) { } // assume not loaded
 	}
 
-	throw NoPlugin("No plugin " + which + " could be found");
+	if (foundPlugins.empty())
+	{
+		throw NoPlugin("No plugin that provides " + which + " could be found");
+	}
+
+	// the largest element of the map contains the best-suited plugin:
+	return foundPlugins.rbegin()->second;
+}
+
+
+
+std::vector<std::string> MockPluginDatabase::listAllPlugins() const
+{
+	std::vector<std::string> plugins;
+	for (auto const & plugin : data)
+	{
+		plugins.push_back(plugin.first.name);
+	}
+	return plugins;
+}
+
+std::string MockPluginDatabase::lookupInfo(PluginSpec const & spec, std::string const & which) const
+{
+	auto it = data.find(spec);
+	if (it != data.end())
+	{
+		return it->second[which];
+	}
+
+	return "";
 }
 
 }
 
 }
-

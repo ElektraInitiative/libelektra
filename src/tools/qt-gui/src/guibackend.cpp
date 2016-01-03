@@ -82,7 +82,8 @@ void GUIBackend::addPlugin(QString name)
 
 	try
 	{
-		m_backend->addPlugin(name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
+		PluginSpec spec (name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
+		m_backend->addPlugin(spec);
 	}
 	catch(PluginCheckException const &ex)
 	{
@@ -211,7 +212,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 	PluginPtr ptr;
 	QString type;
 
-	vector<string> pluginVector = listAllAvailablePlugins();
+	vector<string> pluginVector = ModulesPluginDatabase().listAllPlugins();
 
 	foreach(string s, pluginVector){
 		try

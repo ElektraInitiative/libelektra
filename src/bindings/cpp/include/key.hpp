@@ -1663,7 +1663,6 @@ inline int Key::del ()
 } // end of namespace kdb
 
 
-#ifdef ELEKTRA_WITH_HASH
 namespace std
 {
 	/**
@@ -1673,12 +1672,11 @@ namespace std
 	{
 		size_t operator()(kdb::Key const & k) const
 		{
-			// use pointer value as hash value
-			return std::hash<ckdb::Key *>()(k.getKey());
+			// use key name as hash value
+			return std::hash<std::string>()(k.getName());
 		}
 	};
 } // end of namespace std
-#endif // ELEKTRA_WITH_HASH
 
 #endif
 
