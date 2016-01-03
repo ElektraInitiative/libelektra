@@ -289,53 +289,30 @@ macro (remove_tool name reason)
 	set (TOOLS ${TMP} CACHE STRING ${TOOLS_DOC} FORCE)
 endmacro (remove_tool)
 
-# LIST_FILTER(<list> <regexp_var> [<regexp_var> ...]
-#              [OUTPUT_VARIABLE <variable>])
-# Removes items from <list> which match any of the specified
-# regular expressions. An optional argument OUTPUT_VARIABLE
+# LIST_FILTER(<list> <regexp_var>
+# Removes items from <list> which match the specified
+# regular expression. An optional argument OUTPUT_VARIABLE
 # specifies a variable in which to store the matched items instead of
 # updating <list>
 # As regular expressions can not be given to macros (see bug #5389), we pass
 # variable names whose content is the regular expressions.
 #
-# copied from http://www.cmake.org/Wiki/CMakeMacroListOperations
-MACRO(list_filter)
-  cmake_parse_arguments(LIST_FILTER "" "OUTPUT_VARIABLE" "" ${ARGV})
-  set(LIST_FILTER_DEFAULT_ARGS ${LIST_FILTER_UNPARSED_ARGUMENTS})
-  # Check arguments.
-  LIST(LENGTH LIST_FILTER_DEFAULT_ARGS LIST_FILTER_default_length)
-  IF(${LIST_FILTER_default_length} EQUAL 0)
-    MESSAGE(FATAL_ERROR "LIST_FILTER: missing list variable.")
-  ENDIF(${LIST_FILTER_default_length} EQUAL 0)
-  IF(${LIST_FILTER_default_length} EQUAL 1)
-    MESSAGE(FATAL_ERROR "LIST_FILTER: missing regular expression variable.")
-  ENDIF(${LIST_FILTER_default_length} EQUAL 1)
-  # Reset output variable
-  IF(NOT LIST_FILTER_OUTPUT_VARIABLE)
-    SET(LIST_FILTER_OUTPUT_VARIABLE "LIST_FILTER_internal_output")
-  ENDIF(NOT LIST_FILTER_OUTPUT_VARIABLE)
-  SET(${LIST_FILTER_OUTPUT_VARIABLE})
-  # Extract input list from arguments
-  LIST(GET LIST_FILTER_DEFAULT_ARGS 0 LIST_FILTER_input_list)
-  LIST(REMOVE_AT LIST_FILTER_DEFAULT_ARGS 0)
-  FOREACH(LIST_FILTER_item ${${LIST_FILTER_input_list}})
-    set(add_item "1")
-    FOREACH(LIST_FILTER_regexp_var ${LIST_FILTER_DEFAULT_ARGS})
-      FOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
-        IF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
-          set(add_item "0")
-        ENDIF(${LIST_FILTER_item} MATCHES ${LIST_FILTER_regexp})
-      ENDFOREACH(LIST_FILTER_regexp ${${LIST_FILTER_regexp_var}})
-    ENDFOREACH(LIST_FILTER_regexp_var)
-    if (add_item)
-      LIST(APPEND ${LIST_FILTER_OUTPUT_VARIABLE} ${LIST_FILTER_item})
-    endif()
-  ENDFOREACH(LIST_FILTER_item)
-  # If OUTPUT_VARIABLE is not specified, overwrite the input list.
-  IF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
-    SET(${LIST_FILTER_input_list} ${${LIST_FILTER_OUTPUT_VARIABLE}})
-  ENDIF(${LIST_FILTER_OUTPUT_VARIABLE} STREQUAL "LIST_FILTER_internal_output")
-ENDMACRO(list_filter)
+# For example:
+#set (XXX "gi_a;gi_b;swig_a;gi_c;swig_d;x;y")
+#set (YYY "swig_.*")
+#list_filter(XXX YYY)
+#message (STATUS "XXX is ${XXX}") will be gi_a;gi_b;gi_c;x;y
+#
+function(list_filter result regex)
+	set(newlist)
+	foreach(r ${${result}})
+		if(r MATCHES ${${regex}})
+		else()
+			list(APPEND newlist ${r})
+		endif()
+	endforeach()
+	set(${result} ${newlist} PARENT_SCOPE)
+endfunction()
 
 #find string in list with regex
 function(list_find input_list regexp_var output)
