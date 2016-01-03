@@ -88,16 +88,14 @@ public:
 	PluginSpec lookupProvides (std::string const & which) const;
 };
 
-class MockPluginDatabase : public PluginDatabase
+class MockPluginDatabase : public ModulesPluginDatabase
 {
 public:
-	/// Data here will be returned
+	/// only data from here will be returned
 	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>> data;
 
 	std::vector<std::string> listAllPlugins() const;
 	std::string lookupInfo(PluginSpec const & spec, std::string const & which) const;
-	PluginSpec lookupMetadata (std::string const & which) const;
-	PluginSpec lookupProvides (std::string const & which) const;
 };
 
 }

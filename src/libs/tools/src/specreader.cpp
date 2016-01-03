@@ -88,12 +88,34 @@ namespace
 {
 bool isToBeIgnored (std::string const & name)
 {
+	// TODO: read from METADATA.ini
 	return  startsWith (name, "infos") ||
 		startsWith (name, "exports") ||
 		startsWith (name, "constants") ||
 		startsWith (name, "exports") ||
+
+		startsWith (name, "fallback") ||
+		startsWith (name, "override") ||
+		startsWith (name, "namespace") ||
+		name == "default" ||
+		name == "context" ||
+
+		startsWith (name, "callback") ||
+
+		startsWith (name, "binary") ||
+
+		startsWith (name, "opt") ||
+		startsWith (name, "env") ||
+
+		startsWith (name, "comment") ||
+		startsWith (name, "description") ||
+		startsWith (name, "see") ||
+		startsWith (name, "rationale") ||
+		startsWith (name, "description") ||
+
 		name == "mountpoint" ||
-		startsWith (name, "config");
+		startsWith (name, "config"
+		);
 }
 }
 
@@ -133,7 +155,7 @@ void SpecMountpointReader::processKey (Key const & ck)
 		{}
 		else
 		{
-			addPluginsByMetadata(m.getString());
+			addPluginsByMetadata(m.getName());
 		}
 	}
 }
