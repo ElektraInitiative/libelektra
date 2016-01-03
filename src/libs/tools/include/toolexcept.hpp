@@ -253,60 +253,61 @@ struct ReferenceNotFound: public PluginCheckException
 
 struct MissingNeeded : public PluginCheckException
 {
-	std::string need;
-	MissingNeeded (std::string  need_) :
-		need(std::move(need_))
-	{}
+	std::string msg;
+	MissingNeeded (std::string need)
+	{
+		msg = std::string(std::string("The plugin ") + need + " is needed by this plugin but it is not provided.");
+	}
 	~MissingNeeded () throw()
 	{}
 	virtual const char* what() const throw() override
 	{
-		return std::string(std::string("The plugin ") + need + " is needed by this plugin but it is not provided.").c_str();
+		return msg.c_str();
 	}
 };
 
 struct MissingSymbol: public PluginCheckException
 {
-	std::string symbol;
-	MissingSymbol (std::string  symbol_) :
-		symbol(std::move(symbol_))
-	{}
+	std::string msg;
+	MissingSymbol (std::string symbol)
+	{
+		msg = std::string(std::string("The necessary symbol \"") + symbol + "\" is missing in that plugin!");
+	}
 	~MissingSymbol () throw()
 	{}
 	virtual const char* what() const throw() override
 	{
-		// TODO: not safe return value
-		return std::string(std::string("The necessary symbol \"") + symbol + "\" is missing in that plugin!").c_str();
+		return msg.c_str();
 	}
 };
 
 struct SymbolMismatch: public PluginCheckException
 {
-	std::string symbol;
-	SymbolMismatch (std::string  symbol_) :
-		symbol(std::move(symbol_))
-	{}
+	std::string msg;
+	SymbolMismatch (std::string symbol)
+	{
+		msg = std::string(std::string("The symbol \"") + symbol + "\" does not match with other exported information!");
+	}
 	~SymbolMismatch () throw()
 	{}
 	virtual const char* what() const throw() override
 	{
-		// TODO: not safe return value
-		return std::string(std::string("The symbol \"") + symbol + "\" does not match with other exported information!").c_str();
+		return msg.c_str();
 	}
 };
 
 struct SymbolDuplicate: public PluginCheckException
 {
-	std::string symbol;
-	SymbolDuplicate(std::string  symbol_) :
-		symbol(std::move(symbol_))
-	{}
+	std::string msg;
+	SymbolDuplicate(std::string symbol)
+	{
+		msg = std::string(std::string("The symbol \"") + symbol + "\" has the same value as another symbol!");
+	}
 	~SymbolDuplicate () throw()
 	{}
 	virtual const char* what() const throw() override
 	{
-		// TODO: not safe return value
-		return std::string(std::string("The symbol \"") + symbol + "\" has the same value as another symbol!").c_str();
+		return msg.c_str();
 	}
 };
 
