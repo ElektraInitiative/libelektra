@@ -60,12 +60,13 @@ public:
 class KeyNotFoundException : public Exception
 {
 public:
+	KeyNotFoundException(std::string const & )
+	{}
 	virtual const char* what() const throw()
 	{
 		return "User Exception: Key not found";
 	}
 private:
-	std::string m_str;
 };
 
 class KeyTypeMismatch: public KeyException
