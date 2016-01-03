@@ -12,18 +12,21 @@ macro (add_gtest source)
 	cmake_parse_arguments (ARG
 		"MEMLEAK;NO_MAIN;NO_TOOLS" # optional keywords
 		"" # one value keywords
-		"" # multi value keywords
+		"LINK_LIBRARIES;SOURCES" # multi value keywords
 		${ARGN}
 	)
 
 	if (BUILD_TESTING)
-	set (SOURCES ${HDR_FILES} ${source}.cpp)
+	set (SOURCES ${HDR_FILES} ${source}.cpp ${ARG_SOURCES})
 	add_executable (${source} ${SOURCES})
 
 	if (NOT ARG_NO_TOOLS)
 		# invert logic?
 		target_link_elektratools(${source})
 	endif (NOT ARG_NO_TOOLS)
+
+	target_link_libraries (${source}
+		${ARG_LINK_LIBRARIES})
 
 	target_link_libraries(${source} gtest)
 	if (NOT ARG_NO_MAIN)

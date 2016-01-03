@@ -93,7 +93,7 @@ int ksFilter (KeySet *result, KeySet *input, int (*filter) (Key *k))
 Key *global_a;
 
 int add_string (Key *check) { return keySetString (check, "string"); }
-int add_comment (Key *check) { return keySetComment (check, "comment"); }
+int add_comment (Key *check) { return keySetMeta (check, "comment", "comment"); }
 int has_a (Key *check) { return keyName(check)[5]=='a'; }
 int below_a (Key *check) { return keyIsBelow(global_a, check); }
 int direct_below_a (Key *check) { return keyIsDirectBelow(global_a, check); }

@@ -83,7 +83,7 @@ int main(void)
 	while ((cur=ksNext(ks)) != 0)
 	{	/* Iterates over inactive keys and prints their name */
 		if (keyIsInactive(cur)==0) continue;
-		printf ("%s %s\n", keyName(cur), keyComment(cur));
+		printf ("%s %s\n", keyName(cur), keyString(keyGetMeta(cur, "comment")));
 	}
 
 	return 0;
