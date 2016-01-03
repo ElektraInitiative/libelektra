@@ -24,14 +24,23 @@ namespace kdb
 namespace tools
 {
 
-std::vector<std::string> listAllAvailablePlugins();
-
 /**
  * @brief Loads all plugins and allows us to query them.
  */
 class PluginDatabase
 {
 public:
+	/**
+	 * @brief list all plugins
+	 *
+	 * If Elektra is compiled with plugins, it will search for shared libraries.
+	 * In any case, if no shared libraries were found
+	 * it will fallback to an internal list (plugins that were compiled together with Elektra).
+	 *
+	 * @return a list of all available plugins
+	 */
+	virtual std::vector<std::string> listAllPlugins() const = 0;
+
 	/**
 	 * @brief lookup contract clauses
 	 *
@@ -73,6 +82,7 @@ public:
 	ModulesPluginDatabase ();
 	~ModulesPluginDatabase ();
 
+	std::vector<std::string> listAllPlugins() const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & which) const;
@@ -84,6 +94,7 @@ public:
 	/// Data here will be returned
 	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>> data;
 
+	std::vector<std::string> listAllPlugins() const;
 	std::string lookupInfo(PluginSpec const & spec, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & which) const;

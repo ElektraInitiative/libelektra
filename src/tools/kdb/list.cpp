@@ -21,7 +21,8 @@ ListCommand::ListCommand()
 
 int ListCommand::execute(Cmdline const& cl)
 {
-	std::vector<std::string> plugins = kdb::tools::listAllAvailablePlugins();
+	using namespace kdb::tools;
+	std::vector<std::string> plugins = ModulesPluginDatabase().listAllPlugins();
 
 	if (cl.verbose) cout << "number of all plugins: " << plugins.size() << endl;
 

@@ -212,7 +212,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 	PluginPtr ptr;
 	QString type;
 
-	vector<string> pluginVector = listAllAvailablePlugins();
+	vector<string> pluginVector = ModulesPluginDatabase().listAllPlugins();
 
 	foreach(string s, pluginVector){
 		try

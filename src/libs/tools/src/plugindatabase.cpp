@@ -24,13 +24,22 @@ namespace kdb
 namespace tools
 {
 
-/**
- * In the shared case, it will search for shared libraries, and if not found
- * any, it will fallback to internal list (plugins that were compiled).
- *
- * @return a list of all available plugins
- */
-std::vector<std::string> listAllAvailablePlugins()
+class ModulesPluginDatabase::Impl
+{
+public:
+	Impl () {}
+	~Impl () {}
+	Modules modules;
+};
+
+ModulesPluginDatabase::ModulesPluginDatabase () :
+	impl(new ModulesPluginDatabase::Impl())
+{}
+
+ModulesPluginDatabase::~ModulesPluginDatabase ()
+{}
+
+std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 {
 	std::vector<std::string> ret;
 #ifdef ELEKTRA_SHARED
@@ -71,21 +80,6 @@ std::vector<std::string> listAllAvailablePlugins()
 }
 
 
-class ModulesPluginDatabase::Impl
-{
-public:
-	Impl () {}
-	~Impl () {}
-	Modules modules;
-};
-
-ModulesPluginDatabase::ModulesPluginDatabase () :
-	impl(new ModulesPluginDatabase::Impl())
-{}
-
-ModulesPluginDatabase::~ModulesPluginDatabase ()
-{}
-
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
 	PluginPtr plugin = impl->modules.load (spec.name, spec.config);
@@ -100,7 +94,7 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
-	std::vector<std::string> allPlugins = listAllAvailablePlugins();
+	std::vector<std::string> allPlugins = listAllPlugins();
 
 	// check if plugin with this name exists
 	auto it = std::find(allPlugins.begin(), allPlugins.end(), which);
@@ -131,6 +125,17 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 	throw NoPlugin("No plugin " + which + " could be found");
 }
 
+
+
+std::vector<std::string> MockPluginDatabase::listAllPlugins() const
+{
+	std::vector<std::string> plugins;
+	for (auto const & plugin : data)
+	{
+		plugins.push_back(plugin.first.name);
+	}
+	return plugins;
+}
 
 std::string MockPluginDatabase::lookupInfo(PluginSpec const & spec, std::string const & which) const
 {
