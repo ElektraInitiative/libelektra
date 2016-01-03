@@ -12,6 +12,5 @@ include (LibAddTest)
 include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
 add_gtest (testmod_type
 		MEMLEAK
-		TARGET_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT}
 		SOURCES types.cpp
 		)
