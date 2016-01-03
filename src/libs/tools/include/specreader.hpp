@@ -40,11 +40,13 @@ public:
  */
 class SpecReader
 {
-public: // TODO: make private, TESTING?
+public:
+	typedef std::unordered_map<Key, SpecBackendBuilder> Backends;
+private:
 	/**
 	 * @brief Contains all backends of all found mountpoints
 	 */
-	std::unordered_map<Key, SpecBackendBuilder> backends;
+	Backends backends;
 
 private:
 	/**
@@ -57,6 +59,11 @@ public:
 	explicit SpecReader(BackendBuilderInit const & bbi = BackendBuilderInit());
 
 	~SpecReader();
+
+	Backends getBackends()
+	{
+		return backends;
+	}
 
 	/**
 	 * @brief Reads in a specification.

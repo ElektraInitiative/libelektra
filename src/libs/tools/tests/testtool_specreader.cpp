@@ -33,7 +33,7 @@ TEST(SpecReader, withDatabase)
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 				*Key ("user/mp/below", KEY_META, "config/needs/something", "here", KEY_END),
 				KS_END));
-	SpecBackendBuilder bi = sr.backends [Key ("user/mp", KEY_END)];
+	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "user/mp");
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
@@ -59,7 +59,7 @@ TEST(SpecReader, withDatabaseRecursive)
 				*Key ("user/mp/below", KEY_META, "config/needs/something", "else", KEY_END),
 				*Key ("user/mp/below/recursive", KEY_META, "mountpoint", "otherfile.ini", KEY_END),
 				KS_END));
-	SpecBackendBuilder bi = sr.backends [Key ("user/mp", KEY_END)];
+	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 }
 
@@ -80,7 +80,7 @@ TEST(SpecReader, withNeeds)
 					KEY_META, "info/needs", "resolver storage",
 					KEY_END),
 				KS_END));
-	SpecBackendBuilder bi = sr.backends [Key ("user/mp", KEY_END)];
+	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "user/mp");
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
@@ -116,7 +116,7 @@ TEST(SpecReader, withNeedsResolved)
 					KEY_META, "info/needs", "a b",
 					KEY_END),
 				KS_END));
-	SpecBackendBuilder bi = sr.backends [Key ("user/mp", KEY_END)];
+	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "user/mp");
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
