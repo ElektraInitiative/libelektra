@@ -93,6 +93,11 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
                            (unsigned char)start[1] == 0xBB &&
                            (unsigned char)start[2] == 0xBF) {
             start += 3;
+            config->bomHandler(user, 1);
+        }
+        else
+        {
+            config->bomHandler(user, 0);
         }
 #endif
         if(*start == '\n')

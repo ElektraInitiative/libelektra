@@ -20,12 +20,14 @@ extern "C" {
 typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short lineContinuation);
 typedef int (*SectionHandler)(void *, const char *);
 typedef int (*CommentHandler)(void *, const char *);
+typedef void (*BomHandler)(void *, short);
 
 struct IniConfig
 {
 	KeyHandler keyHandler;
 	SectionHandler sectionHandler;
 	CommentHandler commentHandler;
+    BomHandler bomHandler;
 	unsigned short supportMultiline;
 	unsigned short keyToMeta;
 };

@@ -32,20 +32,23 @@ int elektraIniClose(Plugin *handle, Key *parentKey);
 typedef enum{NONE, BINARY, ALWAYS}SectionHandling;
 
 typedef struct {
-    Key *parentKey;	/* the parent key of the result KeySet */
-    KeySet *result;			/* the result KeySet */
-    char *collectedComment;	/* buffer for collecting comments until a non comment key is reached */
-    short array;
-    short mergeSections;
-} CallbackHandle;
-
-typedef struct {
     short supportMultiline;	/* defines whether multiline keys are supported */
     short preserverOrder;
     SectionHandling sectionHandling;
     short array;
     short mergeSections;
+    short BOM;
 } IniPluginConfig;
+
+typedef struct {
+    Key *parentKey;	/* the parent key of the result KeySet */
+    KeySet *result;			/* the result KeySet */
+    char *collectedComment;	/* buffer for collecting comments until a non comment key is reached */
+    short array;
+    short mergeSections;
+    IniPluginConfig *pluginConfig;
+} CallbackHandle;
+
 
 static void flushCollectedComment (CallbackHandle *handle, Key *key)
 {
@@ -215,6 +218,19 @@ static void insertNewKeyIntoExistendOrder(Key *key, KeySet *ks)
         prevKey = curKey;
     }
 }
+static void iniBomHandler(void *vhandle, short BOM)
+{
+    CallbackHandle *handle = (CallbackHandle *)vhandle;
+    IniPluginConfig *pluginConfig = (IniPluginConfig *)handle->pluginConfig;
+    if(BOM)
+    {
+        pluginConfig->BOM = 1;
+    }
+    else
+    {
+        pluginConfig->BOM = 0;
+    }
+}
 
 static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value, unsigned short lineContinuation)
 {
@@ -367,7 +383,6 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
     keySetMeta(appendKey, "ini/lastSection", 0);
     createUnescapedKey(appendKey, section);
     Key *existingKey = NULL;
-	fprintf(stderr, "section: %s\n", section);
     if ((existingKey = ksLookup(handle->result, appendKey, KDB_O_NONE)))
     {
         keyDel(appendKey);
@@ -422,6 +437,7 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
     KeySet *config = elektraPluginGetConfig (handle);
     IniPluginConfig *pluginConfig = (IniPluginConfig *)elektraMalloc (sizeof (IniPluginConfig));
+    pluginConfig->BOM = 0;
     Key *multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
     Key *sectionHandlingKey = ksLookupByName(config, "/section", KDB_O_NONE);
     Key *arrayKey = ksLookupByName(config, "/array", KDB_O_NONE);
@@ -560,17 +576,20 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
     cbHandle.parentKey = parentKey;
     cbHandle.result = append;
     cbHandle.collectedComment = 0;
+    
     ksAppendKey (cbHandle.result, keyDup(parentKey));
 
     struct IniConfig iniConfig;
     iniConfig.keyHandler=iniKeyToElektraKey;
     iniConfig.sectionHandler = iniSectionToElektraKey;
     iniConfig.commentHandler = iniCommentToMeta;
+    iniConfig.bomHandler = iniBomHandler;
     IniPluginConfig *pluginConfig = elektraPluginGetData(handle);
     iniConfig.supportMultiline = pluginConfig->supportMultiline;
-
+    pluginConfig->BOM = 0;
     cbHandle.array = pluginConfig->array;
     cbHandle.mergeSections = pluginConfig->mergeSections;
+    cbHandle.pluginConfig = pluginConfig;
     int ret = ini_parse_file(fh, &iniConfig, &cbHandle);
     setParents(cbHandle.result, cbHandle.parentKey);
     stripInternalData(cbHandle.parentKey, cbHandle.result);
@@ -1063,6 +1082,10 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
     setParents(returned, parentKey);
     ksDel(newKS);
     stripInternalData(parentKey, returned);
+    if(pluginConfig->BOM == 1)
+    {
+        fprintf(fh, "\xEF\xBB\xBF");
+    }
     ret = iniWriteKeySet(fh, parentKey, returned, pluginConfig);
     fclose (fh);
 
