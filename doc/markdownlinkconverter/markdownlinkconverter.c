@@ -14,7 +14,7 @@
 
 #define UNUSED __attribute__ ((unused))
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #define FOLDER_DELIMITER '\\'
 #else
 #define FOLDER_DELIMITER '/'

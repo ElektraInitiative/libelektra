@@ -38,7 +38,7 @@
 #if defined(__APPLE__)
 # define statSeconds(status) status.st_mtime
 # define statNanoSeconds(status) status.st_mtimespec.tv_nsec
-#elif defined(WIN32)
+#elif defined(_WIN32)
 # define statSeconds(status) status.st_mtime
 # define statNanoSeconds(status) 0
 #else
