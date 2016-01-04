@@ -48,10 +48,10 @@ macro (add_gtest source)
 			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
-	endif(BUILD_TESTING)
 
 	if (ARG_MEMLEAK)
 		set_property(TEST ${source} PROPERTY
 			LABELS memleak)
 	endif (ARG_MEMLEAK)
+	endif(BUILD_TESTING)
 endmacro (add_gtest)
