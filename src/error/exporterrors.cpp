@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 
+#ifndef _WIN32
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -18,6 +19,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#endif
 
 using namespace std;
 
@@ -274,8 +276,10 @@ int main(int argc, char** argv) try
 	if (argc == 3)
 	{
 		std::string tmpfile = argv[2];
+#ifndef _WIN32
 		tmpfile += ".tmp";
 		tmpfile += to_string(getpid());
+#endif
 		{
 			ofstream fout(tmpfile);
 			if (!fout.is_open())
@@ -286,6 +290,7 @@ int main(int argc, char** argv) try
 			fout << result;
 		}
 
+#ifndef _WIN32
 		int fd = open(tmpfile.c_str(), O_RDWR);
 		if (fd == -1)
 		{
@@ -305,6 +310,7 @@ int main(int argc, char** argv) try
 			cerr << "Could not rename file " << tmpfile << " to " << argv[2] << endl;
 			return 4;
 		}
+#endif
 	} else {
 		cout << result;
 	}
