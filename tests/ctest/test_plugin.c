@@ -122,7 +122,8 @@ static void test_simple()
 	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Plugin *plugin = elektraPluginOpen("default", modules, set_pluginconf(), 0);
+	Plugin *plugin = elektraPluginOpen(KDB_DEFAULT_STORAGE, modules, set_pluginconf(), 0);
+	exit_if_fail (plugin, "KDB_DEFAULT_STORAGE: " KDB_DEFAULT_STORAGE " plugin could not be loaded");
 
 	KeySet *test_config = set_pluginconf();
 	KeySet *config = elektraPluginGetConfig (plugin);
