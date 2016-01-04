@@ -11,6 +11,13 @@
 #include <fstream>
 #include <iostream>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+
 using namespace std;
 
 ostream& operator << (ostream& os, parse_t& p)
@@ -268,10 +275,24 @@ int main(int argc, char** argv) try
 		ofstream fout(argv[2]);
 		if (!fout.is_open())
 		{
-			cerr << "Could not open output file" << endl;
+			cerr << "Could not open output file " << argv[2] << endl;
 			return 1;
 		}
 		fout << result;
+
+		int fd = open(argv[2], O_RDWR);
+		if (fd == -1)
+		{
+			cerr << "Could not reopen file " << argv[2] << endl;
+			return 2;
+		}
+		if (fsync(fd) == -1)
+		{
+			cerr << "Could not fsync config file " << argv[2] << " because ", strerror(errno);
+			close(fd);
+			return 3;
+		}
+		close(fd);
 	} else {
 		cout << result;
 	}
