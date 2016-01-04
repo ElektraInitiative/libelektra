@@ -57,7 +57,13 @@ needed for logging, notif plugins
 
 global mountpoints with unserialize
 
+--profile
+
+bookmark (+) feature
+
 ## meta data ##
+
+install METADATA.ini and CONTRACT.ini
 
 provide information in:
 	spec/elektra/metadata (METADATA.ini)
