@@ -17,6 +17,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdio.h>
 
 using namespace std;
 
@@ -272,15 +273,20 @@ int main(int argc, char** argv) try
 
 	if (argc == 3)
 	{
-		ofstream fout(argv[2]);
-		if (!fout.is_open())
+		std::string tmpfile = argv[2];
+		tmpfile += ".tmp";
+		tmpfile += to_string(getpid());
 		{
-			cerr << "Could not open output file " << argv[2] << endl;
-			return 1;
+			ofstream fout(tmpfile);
+			if (!fout.is_open())
+			{
+				cerr << "Could not open output file " << argv[2] << endl;
+				return 1;
+			}
+			fout << result;
 		}
-		fout << result;
 
-		int fd = open(argv[2], O_RDWR);
+		int fd = open(tmpfile.c_str(), O_RDWR);
 		if (fd == -1)
 		{
 			cerr << "Could not reopen file " << argv[2] << endl;
@@ -293,6 +299,12 @@ int main(int argc, char** argv) try
 			return 3;
 		}
 		close(fd);
+
+		if (rename (tmpfile.c_str(), argv[2]) == -1)
+		{
+			cerr << "Could not rename file " << tmpfile << " to " << argv[2] << endl;
+			return 4;
+		}
 	} else {
 		cout << result;
 	}
