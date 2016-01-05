@@ -134,17 +134,19 @@ PluginSpecVector MountBackendBuilder::parseArguments (std::string const & cmdlin
 			[](char c) {return std::isspace(c) || c==',';})) continue;
 		if (argument.find ('=') == string::npos)
 		{
+			PluginSpec ps (argument);
 			if (argument.find ('#') == string::npos)
 			{
 				size_t nr = std::count_if(arguments.begin(), arguments.end(),
-						[&argument](PluginSpec const & spec) {return spec.name == argument;});
-				arguments.push_back(PluginSpec(argument, to_string(nr)));
+						[&argument](PluginSpec const & spec) {return spec.getName() == argument;});
+				ps.setRefNumber(nr);
+				arguments.push_back(ps);
 			} else {
-				arguments.push_back(PluginSpec(argument));
+				arguments.push_back(ps);
 			}
 		} else {
 			if (arguments.empty()) throw ParseException ("config for plugin ("+argument+") without previous plugin name");
-			arguments.back().config = parsePluginArguments (argument);
+			arguments.back().appendConfig(parsePluginArguments (argument));
 		}
 	}
 
@@ -152,16 +154,16 @@ PluginSpecVector MountBackendBuilder::parseArguments (std::string const & cmdlin
 	for (auto & a: arguments)
 	{
 		size_t nr = std::count_if(arguments.begin(), arguments.end(),
-				[&a](PluginSpec const & spec) {return spec.name == a.name;});
-		if (nr == 1 && a.refname == "0")
+				[&a](PluginSpec const & spec) {return spec.getName() == a.getName();});
+		if (nr == 1 && a.getRefName() == "0")
 		{
-			a.refname = a.name;
+			a.setRefName (a.getName());
 		}
 
 		size_t identical = std::count(arguments.begin(), arguments.end(), a);
 		if (identical > 1)
 		{
-			throw ParseException ("identical plugin found: " + a.name + "#" + a.refname);
+			throw ParseException ("identical plugin found: " + a.getFullName());
 		}
 	}
 	return arguments;
@@ -184,7 +186,7 @@ void BackendBuilder::sort()
 		std::string order;
 		while (ss >> order)
 		{
-			if (order == other.name)
+			if (order == other.getName())
 			{
 				return true;
 			}
@@ -220,9 +222,9 @@ void BackendBuilder::resolveNeeds()
 	{
 		try
 		{
-			PluginSpec toReplace = pluginDatabase->lookupProvides(ps.name);
-			ps.name = toReplace.name;
-			ps.config.append (toReplace.config);
+			PluginSpec toReplace = pluginDatabase->lookupProvides(ps.getName());
+			ps.setName (toReplace.getName());
+			ps.appendConfig (toReplace.getConfig());
 		}
 		catch (...)
 		{
@@ -246,7 +248,7 @@ void BackendBuilder::resolveNeeds()
 		// remove what is already provided
 		for (auto const & ps : toAdd)
 		{
-			std::string toRemove = ps.name;
+			std::string toRemove = ps.getName();
 			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
 			toRemove = pluginDatabase->lookupInfo(ps, "provides");
 			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
@@ -290,19 +292,18 @@ void BackendBuilder::addPlugin (PluginSpec const & newPlugin)
 
 	for (auto & p : toAdd)
 	{
-		if (p.name == newPlugin.name)
+		if (p == newPlugin)
 		{
 			// newPlugin is already inserted:
-			p.config.append(newPlugin.config);
+			p.appendConfig (newPlugin.getConfig());
 			return;
 		}
 
-		if (provides.find(p.name) != provides.end())
+		if (provides.find(p.getName()) != provides.end())
 		{
 			// a plugin that provides newPlugin already is already inserted:
-			p.name = newPlugin.name;
-			p.refname = newPlugin.refname;
-			p.config.append(newPlugin.config);
+			p.setFullName (newPlugin.getFullName());
+			p.appendConfig (newPlugin.getConfig());
 			return;
 		}
 
@@ -310,10 +311,10 @@ void BackendBuilder::addPlugin (PluginSpec const & newPlugin)
 		std::string provide;
 		while (ss >> provide)
 		{
-			if (newPlugin.name == provide)
+			if (newPlugin.getName() == provide)
 			{
 				// merge already existing concrete plugin with newly added provider
-				p.config.append(newPlugin.config);
+				p.appendConfig (newPlugin.getConfig());
 				return;
 			}
 		}

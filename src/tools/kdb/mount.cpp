@@ -118,7 +118,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	PluginSpec resolver (cl.resolver);
 	if (cl.debug)
 	{
-		cout << "Trying to load the resolver plugin " << resolver.name << endl;
+		cout << "Trying to load the resolver plugin " << resolver.getName() << endl;
 	}
 
 	backend.addPlugin (PluginSpec(resolver));

@@ -21,40 +21,6 @@
 #include <kdb.hpp>
 #include <gtest/gtest.h>
 
-
-TEST(BackendBuilder, pluginSpecConstruct)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	EXPECT_EQ(PluginSpec("c").name, "c");
-	EXPECT_EQ(PluginSpec("c", "b").name, "c");
-	EXPECT_EQ(PluginSpec("c", "b").refname, "b");
-	EXPECT_EQ(PluginSpec("c#b").name, "c");
-	EXPECT_EQ(PluginSpec("c#b").refname, "b");
-}
-
-
-TEST(BackendBuilder, DISABLED_pluginSpec)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	EXPECT_EQ(PluginSpec("c"), PluginSpec("c"));
-	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c"));
-	EXPECT_NE(PluginSpec("c"), PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
-	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/def", KEY_END), KS_END)));
-	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/aa", KEY_END), KS_END)));
-	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)));
-	std::hash<PluginSpec> hashFun;
-	EXPECT_EQ(hashFun (PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))),
-		  hashFun (PluginSpec("c", KeySet(2, *Key("user/x", KEY_END), KS_END))));
-	std::unordered_map <kdb::tools::PluginSpec, std::string> data;
-	data[PluginSpec("c")] = "no keyset";
-	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
-	data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))] = "with keyset";
-	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
-	EXPECT_EQ(data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))], "with keyset");
-}
-
 TEST(BackendBuilder, withDatabase)
 {
 	using namespace kdb;
@@ -129,12 +95,12 @@ TEST(MountBackendBuilder, parseArgumentsDoubleOccur)
 	using namespace kdb;
 	using namespace kdb::tools;
 	PluginSpecVector psv1;
-	psv1.push_back (PluginSpec ("a", "0", KeySet(5,
+	psv1.push_back (PluginSpec ("a", 0, KeySet(5,
 				*Key("user/a", KEY_VALUE, "5", KEY_END),
 				KS_END)));
 	psv1.push_back (PluginSpec ("b"));
 	psv1.push_back (PluginSpec ("c"));
-	psv1.push_back (PluginSpec ("a", "1", KeySet(5,
+	psv1.push_back (PluginSpec ("a", 1, KeySet(5,
 				*Key("user/b", KEY_VALUE, "c", KEY_END),
 				KS_END)));
 	PluginSpecVector psv2 = MountBackendBuilder::parseArguments ("a a=5 b c a b=c");
@@ -144,7 +110,9 @@ TEST(MountBackendBuilder, parseArgumentsDoubleOccur)
 	psv2 = MountBackendBuilder::parseArguments ("  a 	 a=5 b=c	  b c , a b=c  ");
 	EXPECT_TRUE(cmpPsv (psv1, psv2));
 	EXPECT_THROW(MountBackendBuilder::parseArguments ("a=5 a b c a b=c"), ParseException);
-	EXPECT_THROW(MountBackendBuilder::parseArguments ("a a=5 b c a#0 b=c"), ParseException);
+	EXPECT_THROW(MountBackendBuilder::parseArguments ("a a=5 b c a#0 b=c"), BadPluginName);
+	EXPECT_THROW(MountBackendBuilder::parseArguments ("a a=5 b c # b=c"), BadPluginName);
+	EXPECT_THROW(MountBackendBuilder::parseArguments ("a a=5 b c #a b=c"), BadPluginName);
 }
 
 

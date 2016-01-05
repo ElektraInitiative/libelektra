@@ -82,7 +82,7 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
-	PluginPtr plugin = impl->modules.load (spec.name, spec.config);
+	PluginPtr plugin = impl->modules.load (spec.getName(), spec.getConfig());
 	return plugin->lookupInfo (which);
 }
 
@@ -215,7 +215,7 @@ std::vector<std::string> MockPluginDatabase::listAllPlugins() const
 	std::vector<std::string> plugins;
 	for (auto const & plugin : data)
 	{
-		plugins.push_back(plugin.first.name);
+		plugins.push_back(plugin.first.getName());
 	}
 	return plugins;
 }

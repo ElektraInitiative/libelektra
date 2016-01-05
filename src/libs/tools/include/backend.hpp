@@ -85,7 +85,7 @@ private:
 
 
 private:
-	void tryPlugin (std::string name, KeySet pluginConf);
+	void tryPlugin (PluginSpec const & spec);
 
 public:
 	Backend();
