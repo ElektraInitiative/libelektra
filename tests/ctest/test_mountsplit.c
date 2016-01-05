@@ -221,9 +221,9 @@ static void test_us()
 	succeed_if_same_string (keyString(mp), "system");
 
 	keyDel (key);
-	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	kdb_del (kdb);
+	elektraModulesClose (modules, 0);
 }
 
 
