@@ -70,8 +70,6 @@ typedef std::unique_ptr<MountBackendInterface> MountBackendInterfacePtr;
 class Backend : public MountBackendInterface
 {
 private:
-	std::vector <PluginPtr> plugins;
-
 	GetPlugins getplugins;
 	SetPlugins setplugins;
 	ErrorPlugins errorplugins;
@@ -81,6 +79,10 @@ private:
 
 	Modules modules;
 	kdb::KeySet config; // the global config, plugins might add something to it
+
+	// make sure plugins get closed before modules
+	std::vector <PluginPtr> plugins;
+
 
 private:
 	void tryPlugin (std::string name, KeySet pluginConf);
