@@ -7,19 +7,13 @@
  *
  */
 
-#ifdef HAVE_KDBCONFIG_H
-#include "kdbconfig.h"
-#endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
 #include <stdio.h>
 #include <kdb.h>
 #include <tests_plugin.h>
+#include <tests_internal.h>
+#include <kdbinternal.h>
 #include "crypto.h"
 
 /*
@@ -44,15 +38,15 @@ static const unsigned char iv[] =
 /**
  * @brief create new KeySet and add a working configuration to it.
  */
-static void getWorkingConfiguration(KeySet **ks)
+static KeySet *getWorkingConfiguration()
 {
-	Key *configKey = keyNew("proc/elektra/modules/crypto/key-derivation/key", KEY_END);
+	Key *configKey = keyNew("user/crypto/key-derivation/key", KEY_END);
 	keySetBinary(configKey, key, sizeof(key));
 
-	Key *configIv = keyNew("proc/elektra/modules/crypto/key-derivation/iv", KEY_END);
+	Key *configIv = keyNew("user/crypto/key-derivation/iv", KEY_END);
 	keySetBinary(configIv, iv, sizeof(iv));
 
-	(*ks) = ksNew(2,
+	return ksNew(2,
 		configKey,
 		configIv,
 		KS_END);
@@ -63,17 +57,17 @@ static void getWorkingConfiguration(KeySet **ks)
  *
  * The key in ks has an invalid size.
  */
-static void getInvalidConfiguration(KeySet **ks)
+static KeySet *getInvalidConfiguration()
 {
 	const unsigned char wrongKey[] = { 0x01, 0x02, 0x03 };
 
-	Key *configKey = keyNew("proc/elektra/modules/crypto/key-derivation/key", KEY_END);
+	Key *configKey = keyNew("user/crypto/key-derivation/key", KEY_END);
 	keySetBinary(configKey, wrongKey, sizeof(wrongKey));
 
-	Key *configIv = keyNew("proc/elektra/modules/crypto/key-derivation/iv", KEY_END);
+	Key *configIv = keyNew("user/crypto/key-derivation/iv", KEY_END);
 	keySetBinary(configIv, iv, sizeof(iv));
 
-	(*ks) = ksNew(2,
+	return ksNew(2,
 		configKey,
 		configIv,
 		KS_END);
@@ -84,236 +78,121 @@ static void getInvalidConfiguration(KeySet **ks)
  *
  * The required key "/elektra/modules/crypto/key-derivation/iv" is missing.
  */
-static void getIncompleteConfiguration(KeySet **ks)
+static KeySet *getIncompleteConfiguration()
 {
 	Key *configKey = keyNew("proc/elektra/modules/crypto/key-derivation/key", KEY_END);
 	keySetBinary(configKey, key, sizeof(key));
 
-	(*ks) = ksNew(1,
+	return ksNew(1,
 		configKey,
 		KS_END);
 }
 
+static void test_init_internal(Plugin *plugin, Key *parentKey)
+{
+	KeySet *config = elektraPluginGetConfig (plugin);
+	succeed_if (config != 0, "there should be a config");
+
+	succeed_if (plugin->kdbOpen != 0, "no open pointer");
+	succeed_if (plugin->kdbClose != 0, "no close pointer");
+	succeed_if (plugin->kdbGet != 0, "no get pointer");
+	succeed_if (plugin->kdbSet != 0, "no set pointer");
+	succeed_if (plugin->kdbError!= 0, "no error pointer");
+
+	// try re-opening the plugin
+	succeed_if (plugin->kdbClose(plugin, parentKey) == 1, "kdb close failed");
+	succeed_if (plugin->kdbOpen(plugin, parentKey) == 1, "re-opening the plugin failed");
+	succeed_if (plugin->kdbClose(plugin, parentKey) == 1, "kdb close failed");
+
+	elektraPluginClose(plugin, 0);
+}
+
 static void test_init()
 {
-	Key *errorKey = keyNew ("", KEY_END);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-	keyDel(errorKey);
-	elektraCryptoTeardown();
-}
+	Plugin *plugin = NULL;
+	Key *parentKey = keyNew("system", KEY_END);
+	KeySet *modules = ksNew(0, KS_END);
+	elektraModulesInit (modules, 0);
 
-static void test_handle_init()
-{
-	KeySet *config;
-	Key *errorKey = keyNew ("", KEY_END);
-	elektraCryptoHandle *handle;
-
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	// working config
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant key failed" );
-	elektraCryptoHandleDestroy(handle);
-	ksDel(config);
-
-	// invalid key in config
-	getInvalidConfiguration(&config);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == -1, "handle initialization with non-compliant key succeeded" );
-	elektraCryptoHandleDestroy(handle);
-	ksDel(config);
-
-	// missing IV in config
-	getIncompleteConfiguration(&config);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == -1, "handle initialization with incomplete configuration succeeded" );
-	elektraCryptoHandleDestroy(handle);
-	ksDel(config);
-
-	elektraCryptoTeardown();
-	keyDel(errorKey);
-}
-
-static void test_enc_and_dec_with_string()
-{
-	elektraCryptoHandle *handle;
-	KeySet *config;
-	Key *errorKey = keyNew ("", KEY_END);
-	const char original[] = "Short";
-	char content[64] = "";
-
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-string", KEY_END);
-	keySetString(k, original);
-	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
-
-	// 1. encryption
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 2. decryption
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 3. check result
-	succeed_if( keyIsString(k) == 1, "key is of non-string type");
-	succeed_if( keyGetString(k, content, sizeof(content)) > 0, "could not retrieve the value of the key" );
-	succeed_if( strcmp(original, content) == 0, "decrypted value differs from original");
-
-	keyDel(k);
-	keyDel(errorKey);
-	ksDel(config);
-	elektraCryptoTeardown();
-}
-
-static void test_enc_and_dec_with_binary()
-{
-	elektraCryptoHandle *handle;
-	KeySet *config;
-	Key *errorKey = keyNew ("", KEY_END);
-	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
-	unsigned char content[64];
-	unsigned long read = 0;
-
-	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-bin", KEY_END);
-	keySetBinary(k, original, sizeof(original));
-	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
-
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	// 1. encrypt
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 2. decrypt
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 3. check result
-	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
-	read = keyGetBinary(k, content, sizeof(content));
-	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
-	if (read == sizeof(original))
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, getWorkingConfiguration(), 0);
+	if (plugin)
 	{
-		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
+		test_init_internal (plugin, parentKey);
+		succeed_if (!strcmp(plugin->name, "crypto_gcrypt"), "got wrong name");
 	}
 
-	keyDel(k);
-	keyDel(errorKey);
-	ksDel(config);
-	elektraCryptoTeardown();
-}
-
-static void test_enc_and_dec_with_null()
-{
-	elektraCryptoHandle *handle;
-	KeySet *config;
-	Key *errorKey = keyNew ("", KEY_END);
-
-	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-dec-null", KEY_END);
-	keySetBinary(k, 0, 0);
-	succeed_if( keyGetValueSize(k) == 0, "key is not NULL");
-	keySetMeta(k, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
-
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	// 1. encrypt
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 2. decrypt
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 3. check result
-	succeed_if( keyGetValueSize(k) == 0, "key is not NULL");
-
-	keyDel(k);
-	keyDel(errorKey);
-	ksDel(config);
-	elektraCryptoTeardown();
-}
-
-static void test_metakey_handling_encrypt()
-{
-	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
-	unsigned char content[64];
-	unsigned long read = 0;
-
-	elektraCryptoHandle *handle;
-	KeySet *config;
-	Key *errorKey = keyNew ("", KEY_END);
-
-	Key *k = keyNew("user/plugins/crypto/gcrypt/test-enc-metakey", KEY_END);
-	keySetBinary(k, original, sizeof(original));
-
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	// 1. encrypt (should not change since metadata not set)
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoEncrypt(handle, k, errorKey) == 1, "encryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 2. verify data has not been changed
-	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
-	read = keyGetBinary(k, content, sizeof(content));
-	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
-	if (read == sizeof(original))
+	plugin = elektraPluginOpen ("crypto_openssl", modules, getWorkingConfiguration(), 0);
+	if (plugin)
 	{
-		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
+		test_init_internal (plugin, parentKey);
+		succeed_if (!strcmp(plugin->name, "crypto_openssl"), "got wrong name");
 	}
 
-	keyDel(k);
-	keyDel(errorKey);
-	ksDel(config);
-	elektraCryptoTeardown();
+	plugin = elektraPluginOpen ("crypto", modules, getWorkingConfiguration(), 0);
+	exit_if_fail (plugin, "could not load crypto_openssl plugin");
+	test_init_internal (plugin, parentKey);
+	succeed_if (!strcmp(plugin->name, "crypto"), "got wrong name");
+
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
+	keyDel (parentKey);
 }
 
-static void test_metakey_handling_decrypt()
+static void test_config_errors()
 {
-	const unsigned char original[] = { 0x00, 0x01, 0x02, 0x03 };
-	unsigned char content[64];
-	unsigned long read = 0;
+	Plugin *plugin = NULL;
+	Key *parentKey = keyNew("system", KEY_END);
+	KeySet *modules = ksNew(0, KS_END);
+	elektraModulesInit (modules, 0);
 
-	elektraCryptoHandle *handle;
-	KeySet *config;
-	Key *errorKey = keyNew ("", KEY_END);
-
-	Key *k = keyNew("user/plugins/crypto/gcrypt/test-dec-metakey", KEY_END);
-	keySetBinary(k, original, sizeof(original));
-
-	getWorkingConfiguration(&config);
-	succeed_if( elektraCryptoInit(errorKey) == 1, "crypto initialization failed" );
-
-	// 1. decrypt (should not change since metadata not set)
-	succeed_if( elektraCryptoHandleCreate(&handle, config, errorKey) == 1, "handle initialization with compliant config failed" );
-	succeed_if( elektraCryptoDecrypt(handle, k, errorKey) == 1, "decryption failed" );
-	elektraCryptoHandleDestroy(handle);
-
-	// 2. verify data has not been changed
-	succeed_if( keyIsBinary(k) == 1, "key is of non-binary type");
-	read = keyGetBinary(k, content, sizeof(content));
-	succeed_if( read == sizeof(original), "decrypted value is of different length than original" );
-	if (read == sizeof(original))
+	// gcrypt tests
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, getWorkingConfiguration(), 0);
+	if (plugin)
 	{
-		succeed_if( memcmp(original, content, read) == 0, "decrypted value differs from original");
+		succeed_if (plugin->kdbGet(plugin, 0, parentKey) == 1, "kdb get failed with valid config");
+		elektraPluginClose(plugin, 0);
 	}
 
-	keyDel(k);
-	keyDel(errorKey);
-	ksDel(config);
-	elektraCryptoTeardown();
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, getInvalidConfiguration(), 0);
+	if (plugin)
+	{
+		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with invalid config");
+		elektraPluginClose(plugin, 0);
+	}
+
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, getIncompleteConfiguration(), 0);
+	if (plugin)
+	{
+		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with incomplete config");
+		elektraPluginClose(plugin, 0);
+	}
+
+	// OpenSSL tests
+	plugin = elektraPluginOpen ("crypto_openssl", modules, getWorkingConfiguration(), 0);
+	if (plugin)
+	{
+		succeed_if (plugin->kdbGet(plugin, 0, parentKey) == 1, "kdb get failed with valid config");
+		elektraPluginClose(plugin, 0);
+	}
+
+	plugin = elektraPluginOpen ("crypto_openssl", modules, getInvalidConfiguration(), 0);
+	if (plugin)
+	{
+		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with invalid config");
+		elektraPluginClose(plugin, 0);
+	}
+
+	plugin = elektraPluginOpen ("crypto_openssl", modules, getIncompleteConfiguration(), 0);
+	if (plugin)
+	{
+		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with incomplete config");
+		elektraPluginClose(plugin, 0);
+	}
+
+
+	elektraModulesClose(modules, 0);
+	ksDel (modules);
+	keyDel (parentKey);
 }
 
 int main(int argc, char** argv)
@@ -324,12 +203,7 @@ int main(int argc, char** argv)
 	init(argc, argv);
 
 	test_init();
-	test_handle_init();
-	test_enc_and_dec_with_string();
-	test_enc_and_dec_with_binary();
-	test_enc_and_dec_with_null();
-	test_metakey_handling_encrypt();
-	test_metakey_handling_decrypt();
+	test_config_errors();
 
 	printf("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;

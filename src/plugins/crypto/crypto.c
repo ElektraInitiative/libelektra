@@ -181,10 +181,11 @@ int CRYPTO_PLUGIN_FUNCTION(close)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey E
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
+int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
 	Key *k;
 	elektraCryptoHandle *cryptoHandle;
+	const KeySet *pluginConfig = elektraPluginGetConfig(handle);
 
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -202,7 +203,7 @@ int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
+	if (elektraCryptoHandleCreate(&cryptoHandle, pluginConfig, parentKey) != 1)
 	{
 		goto error;
 	}
@@ -232,15 +233,16 @@ error:
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
+int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
 	Key *k;
 	elektraCryptoHandle *cryptoHandle;
+	const KeySet *pluginConfig = elektraPluginGetConfig(handle);
 
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if (elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
+	if (elektraCryptoHandleCreate(&cryptoHandle, pluginConfig, parentKey) != 1)
 	{
 		goto error;
 	}

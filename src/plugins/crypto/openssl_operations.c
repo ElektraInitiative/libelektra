@@ -29,11 +29,10 @@ static unsigned char cryptoSetup = 0;
  */
 static Key *elektraCryptoReadParamKey(KeySet *config, Key *errorKey)
 {
-	const char *keyPath = "/elektra/modules/crypto/key-derivation/key";
-	Key *key = ksLookupByName(config, keyPath, 0);
+	Key *key = ksLookupByName(config, ELEKTRA_CRYPTO_PARAM_KEY_PATH, 0);
 	if (key == NULL)
 	{
-		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", keyPath);
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ELEKTRA_CRYPTO_PARAM_KEY_PATH);
 	}
 	return key;
 }
@@ -45,11 +44,10 @@ static Key *elektraCryptoReadParamKey(KeySet *config, Key *errorKey)
  */
 static Key *elektraCryptoReadParamIv(KeySet *config, Key *errorKey)
 {
-	const char *ivPath = "/elektra/modules/crypto/key-derivation/iv";
-	Key *iv = ksLookupByName(config, ivPath, 0);
+	Key *iv = ksLookupByName(config, ELEKTRA_CRYPTO_PARAM_IV_PATH, 0);
 	if (iv == NULL)
 	{
-		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ivPath);
+		ELEKTRA_SET_ERRORF(130, errorKey, "missing %s in configuration", ELEKTRA_CRYPTO_PARAM_IV_PATH);
 	}
 	return iv;
 }

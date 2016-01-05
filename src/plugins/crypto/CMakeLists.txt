@@ -15,7 +15,7 @@ add_plugin (crypto
 		ELEKTRA_PLUGIN_NAME=\"crypto\"
 )
 
-#add_plugintest (crypto)
+add_plugintest (crypto)
 
 #
 # Compile Variants

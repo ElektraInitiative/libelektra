@@ -20,6 +20,8 @@ enum ElektraCryptoHeaderFlags
 	ELEKTRA_CRYPTO_FLAG_NULL = 2
 };
 
+#define ELEKTRA_CRYPTO_PARAM_KEY_PATH ("/crypto/key-derivation/key")
+#define ELEKTRA_CRYPTO_PARAM_IV_PATH ("/crypto/key-derivation/iv")
 #define ELEKTRA_CRYPTO_META_ENCRYPT ("crypto/encrypt")
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
