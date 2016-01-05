@@ -82,7 +82,22 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
-	PluginPtr plugin = impl->modules.load (spec.getName(), spec.getConfig());
+	PluginPtr plugin;
+	try {
+		plugin = impl->modules.load (spec.getName(), spec.getConfig());
+	}
+	catch (...)
+	{
+		if (which == "exists")
+		{
+			return "no";
+		}
+		throw;
+	}
+	if (which == "exists")
+	{
+		if (plugin) return "real";
+	}
 	return plugin->lookupInfo (which);
 }
 
@@ -225,7 +240,16 @@ std::string MockPluginDatabase::lookupInfo(PluginSpec const & spec, std::string 
 	auto it = data.find(spec);
 	if (it != data.end())
 	{
+		if (which == "exists")
+		{
+			return "real";
+		}
 		return it->second[which];
+	}
+
+	if (which == "exists")
+	{
+		return "no";
 	}
 
 	return "";

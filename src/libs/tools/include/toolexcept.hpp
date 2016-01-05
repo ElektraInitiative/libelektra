@@ -146,7 +146,7 @@ struct PluginAlreadyInserted: public PluginCheckException
 	virtual const char* what() const throw() override
 	{
 		return  "It is not allowed to insert the same plugin again!\n"
-			"Try to add other plugins instead.";
+			"Try to add other plugins or other refnames (plugin#refname) instead.";
 	}
 };
 

@@ -42,7 +42,11 @@ public:
 	virtual std::vector<std::string> listAllPlugins() const = 0;
 
 	/**
-	 * @brief lookup contract clauses
+	 * @brief lookup contract clauses or dynamic information
+	 *
+	 * Dynamic information is one of:
+	 *
+	 * - "exists" ... returns "real" or "no"
 	 *
 	 * @param whichplugin about which plugin?
 	 * @param which about which clause in the contract?

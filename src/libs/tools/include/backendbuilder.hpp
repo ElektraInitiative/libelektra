@@ -87,6 +87,9 @@ public:
 	BackendBuilder();
 	explicit BackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
 
+	static KeySet parsePluginArguments (std::string const & pluginArguments);
+	static PluginSpecVector parseArguments (std::string const & cmdline);
+
 	typedef PluginSpecVector::const_iterator const_iterator;
 
 	const_iterator begin() const { return toAdd.begin(); }
@@ -125,8 +128,6 @@ public:
 	}
 
 	explicit MountBackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
-	static KeySet parsePluginArguments (std::string const & pluginArguments);
-	static PluginSpecVector parseArguments (std::string const & cmdline);
 
 	void setMountpoint (Key mountpoint, KeySet mountConf);
 	std::string getMountpoint() const;

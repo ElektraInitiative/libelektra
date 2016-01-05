@@ -93,7 +93,7 @@ MountBackendBuilder::MountBackendBuilder(BackendBuilderInit const & bbi) :
  *
  * @return newly created keyset with the information found in the string
  */
-KeySet MountBackendBuilder::parsePluginArguments (std::string const & pluginArguments)
+KeySet BackendBuilder::parsePluginArguments (std::string const & pluginArguments)
 {
 	KeySet ks;
 	istringstream sstream(pluginArguments);
@@ -121,7 +121,7 @@ KeySet MountBackendBuilder::parsePluginArguments (std::string const & pluginArgu
  *
  * @return a parsed PluginSpecVector
  */
-PluginSpecVector MountBackendBuilder::parseArguments (std::string const & cmdline)
+PluginSpecVector BackendBuilder::parseArguments (std::string const & cmdline)
 {
 	// split cmdline
 	PluginSpecVector arguments;
