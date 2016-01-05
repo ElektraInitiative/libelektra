@@ -240,6 +240,7 @@ TEST(BackendBuilder, resolveDoubleNeeds)
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "c v";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
@@ -259,6 +260,9 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "v c";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
+	EXPECT_EQ (mpd->lookupInfo(PluginSpec("c"), "provides"), "v");
+	EXPECT_EQ (mpd->lookupInfo(PluginSpec("c", "v"), "provides"), "v");
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
@@ -268,50 +272,88 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
 	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
-	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c", "v")) << "remember it was virtual";
 }
 
-TEST(BackendBuilder, readdWithConf)
+TEST(BackendBuilder, doubleAddWithConf)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "v c";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
 	bb.addPlugin(PluginSpec("a"));
 	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
 	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  *Key("user/vef", KEY_END),
+			  KS_END)));
+	EXPECT_EQ(bb.cbegin()[3], PluginSpec("c", "v",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  *Key("user/vef", KEY_END),
+			  KS_END))) << "remember it was virtual";
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+}
+
+
+TEST(BackendBuilder, doubleAddWithConfVirtual)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["needs"] = "v c";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("noresolver")]["provides"] = "resolver";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
+	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("noresolver", "resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c", "v",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  *Key("user/vef", KEY_END),
+			  KS_END)));
+	EXPECT_EQ(bb.cbegin()[3], PluginSpec("c",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  *Key("user/vef", KEY_END),
+			  KS_END)));
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+}
+
+TEST(BackendBuilder, directPluginLoading)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["plugins"] = "x a=b";
+	mpd->data[PluginSpec("a")]["needs"] = "resolver";
+	mpd->data[PluginSpec("x")]["provides"] = "x";
+	mpd->data[PluginSpec("noresolver")]["provides"] = "resolver";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("a"));
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("a"));
+	bb.resolveNeeds();
 	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
-	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
-	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
-	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("x",
 		KeySet(2, *Key("user/abc", KEY_END),
 			  *Key("user/vef", KEY_END),
 			  KS_END)));
-}
-
-
-TEST(BackendBuilder, readdWithConfVirtual)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
-	mpd->data[PluginSpec("a")]["needs"] = "v c";
-	mpd->data[PluginSpec("c")]["provides"] = "v";
-	BackendBuilderInit bbi (mpd);
-	BackendBuilder bb (bbi);
-	bb.addPlugin(PluginSpec("resolver"));
-	bb.addPlugin(PluginSpec("a"));
-	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
-	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
-	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
-	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
-	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
-	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
-		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
-			  KS_END)));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("noresolver", "resolver"));
 }

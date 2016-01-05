@@ -41,6 +41,10 @@ public:
 	 */
 	virtual std::vector<std::string> listAllPlugins() const = 0;
 
+	// TODO: add additional functions:
+	// virtual void registerPlugin(PluginSpec) = 0;
+	// virtual std::vector<PluginSpec> listAllPlugins() const = 0;
+
 	/**
 	 * @brief lookup contract clauses or dynamic information
 	 *
@@ -65,15 +69,18 @@ public:
 	virtual PluginSpec lookupMetadata (std::string const & which) const = 0;
 
 	/**
-	 * @brief lookup which plugin is a provider
+	 * @brief lookup which plugin is a provider for that plugin
 	 *
-	 * @param which is the provider name to find
+	 * @note will return a PluginSpec with getName() == provides if the string provides
+	 *       actually is a plugin name.
+	 *
+	 * @param provides is the provider to find
 	 *
 	 * @throw NoPlugin if no plugin that provides the functionality could be found
 	 *
-	 * @return the best suited plugin specification which provides it
+	 * @return the plugin itself or the best suited plugin specification which provides it
 	 */
-	virtual PluginSpec lookupProvides (std::string const & which) const = 0;
+	virtual PluginSpec lookupProvides (std::string const & provides) const = 0;
 };
 
 typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
@@ -89,14 +96,14 @@ public:
 	std::vector<std::string> listAllPlugins() const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
-	PluginSpec lookupProvides (std::string const & which) const;
+	PluginSpec lookupProvides (std::string const & provides) const;
 };
 
 class MockPluginDatabase : public ModulesPluginDatabase
 {
 public:
 	/// only data from here will be returned
-	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>> data;
+	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>, PluginSpecHash, PluginSpecName> data;
 
 	std::vector<std::string> listAllPlugins() const;
 	std::string lookupInfo(PluginSpec const & spec, std::string const & which) const;

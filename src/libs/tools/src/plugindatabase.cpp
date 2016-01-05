@@ -182,41 +182,40 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
-	std::vector<std::string> allPlugins = listAllPlugins();
-	std::map<int, PluginSpec> foundPlugins;
-
-	// check if plugin with this name exists
-	// TODO: needed even if virtual are handled separately?
-	auto it = std::find(allPlugins.begin(), allPlugins.end(), which);
-	if (it != allPlugins.end())
+	// check if plugin itself exists:
+	if (lookupInfo(PluginSpec(which), "exists") == "real")
 	{
 		return PluginSpec(which);
 	}
 
+	std::vector<std::string> allPlugins = listAllPlugins();
+	std::map<int, PluginSpec> foundPlugins;
 	for (auto const & plugin : allPlugins)
 	{
-		if (plugin == which)
-		{
-			return PluginSpec(plugin);
-		}
-
 		// TODO: make sure (non)-equal plugins (i.e. with same/different contract) are handled correctly
 		try {
-			if (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+			// TODO: support for generic plugins with config
+			std::istringstream ss (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 				KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
-				"provides") == which)
+				"provides"));
+			std::string provide;
+			while (ss >> provide)
 			{
-				int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
-					KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
-					"status"));
-				foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
+				if (provide == which)
+				{
+					int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+						"status"));
+					foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
+				}
 			}
 		} catch (...) { } // assume not loaded
 	}
 
 	if (foundPlugins.empty())
 	{
-		throw NoPlugin("No plugin that provides " + which + " could be found");
+		throw NoPlugin("No plugin that provides " 
+				+ which + " could be found");
 	}
 
 	// the largest element of the map contains the best-suited plugin:

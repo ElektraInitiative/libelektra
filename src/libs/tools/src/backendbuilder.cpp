@@ -210,30 +210,32 @@ void BackendBuilder::sort()
 			n.push_back(toAdd.back());
 			n.insert(n.end(), i, std::prev(toAdd.end()));
 			toAdd = n;
+			return;
 		}
 	}
 }
 
+/**
+ * @brief resolve all needs that were not resolved by adding plugins.
+ *
+ * @see addPlugin()
+ */
 void BackendBuilder::resolveNeeds()
 {
-	// check if everything in toAdd is an actual plugin (and not virtual)
-	// TODO: Does this modify the order?
-	for (auto & ps : toAdd)
+	// load dependency-plugins immediately
+	for (auto const & ps : toAdd)
 	{
-		try
+		auto plugins = parseArguments(pluginDatabase->lookupInfo(ps, "plugins"));
+		for (auto const & plugin : plugins)
 		{
-			PluginSpec toReplace = pluginDatabase->lookupProvides(ps.getName());
-			ps.setName (toReplace.getName());
-			ps.appendConfig (toReplace.getConfig());
-		}
-		catch (...)
-		{
+			addPlugin (plugin);
 		}
 	}
 
 	std::vector<std::string> needs;
-
 	do {
+		needs.clear();
+
 		// collect everything that is needed
 		for (auto const & ps : toAdd)
 		{
@@ -245,20 +247,27 @@ void BackendBuilder::resolveNeeds()
 			}
 		}
 
-		// remove what is already provided
 		for (auto const & ps : toAdd)
 		{
-			std::string toRemove = ps.getName();
-			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
-			toRemove = pluginDatabase->lookupInfo(ps, "provides");
-			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+			// remove the needed plugins that are already inserted
+			needs.erase(std::remove(needs.begin(), needs.end(), ps.getName()), needs.end());
+
+			// remove what is already provided
+			std::string provides = pluginDatabase->lookupInfo(ps, "provides");
+			std::istringstream ss (provides);
+			std::string toRemove;
+			while (ss >> toRemove)
+			{
+				needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+			}
 		}
 
 		// leftover in needs is what is still needed
-		for (auto const & need : needs)
+		// will add one of them:
+		if (!needs.empty())
 		{
-			addPlugin(pluginDatabase->lookupProvides(need));
-			break; // only add one, it might resolve more than one need
+			addPlugin (PluginSpec(needs[0]));
+			needs.erase(needs.begin());
 		}
 	} while (!needs.empty());
 }
@@ -266,59 +275,34 @@ void BackendBuilder::resolveNeeds()
 /**
  * @brief Add a plugin.
  *
- * Will automatically extend plugin spec with unique name if not given.
- * Will automatically resolve virtual plugins.
- * If it is virtual (provider), it will be remembered as "needs" to be resolved with resolveNeeds()
- * If it is an actual plugin, and was added already, the configuration will merge
- * as long as the contract of the new plugin is identical as the old one.
- * Otherwise it will be added.
- * 
+ * @pre Needs to be a unique new name (use refname if you want to add the same module multiple times)
+ *
+ * Will automatically resolve virtual plugins to actual plugins.
  *
  * @see resolveNeeds()
  * @param plugin
  */
-void BackendBuilder::addPlugin (PluginSpec const & newPlugin)
+void BackendBuilder::addPlugin (PluginSpec const & plugin)
 {
-	std::set<std::string> provides;
-	{
-		std::string providesString = pluginDatabase->lookupInfo(newPlugin, "provides");
-		std::istringstream ss (providesString);
-		std::string provide;
-		while (ss >> provide)
-		{
-			provides.insert(provide);
-		}
-	}
-
 	for (auto & p : toAdd)
 	{
-		if (p == newPlugin)
+		if (p == plugin)
 		{
-			// newPlugin is already inserted:
-			p.appendConfig (newPlugin.getConfig());
-			return;
-		}
-
-		if (provides.find(p.getName()) != provides.end())
-		{
-			// a plugin that provides newPlugin already is already inserted:
-			p.setFullName (newPlugin.getFullName());
-			p.appendConfig (newPlugin.getConfig());
-			return;
-		}
-
-		std::istringstream ss (pluginDatabase->lookupInfo(p, "provides"));
-		std::string provide;
-		while (ss >> provide)
-		{
-			if (newPlugin.getName() == provide)
-			{
-				// merge already existing concrete plugin with newly added provider
-				p.appendConfig (newPlugin.getConfig());
-				return;
-			}
+			throw PluginAlreadyInserted();
 		}
 	}
+
+	PluginSpec newPlugin = plugin;
+
+	// if the plugin is actually a provider use it (otherwise we will get our name back):
+	PluginSpec provides = pluginDatabase->lookupProvides (plugin.getName());
+	if (provides.getName() != newPlugin.getName())
+	{
+		// keep our config and refname
+		newPlugin.setName (provides.getName());
+		newPlugin.appendConfig (provides.getConfig());
+	}
+
 	toAdd.push_back(newPlugin);
 	sort();
 }

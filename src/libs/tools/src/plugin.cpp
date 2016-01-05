@@ -390,7 +390,7 @@ std::string Plugin::refname()
 		firstRef = false;
 		return std::string("#") + spec.getName() + "#" + spec.getRefName() + "#";
 	} else {
-		return std::string("#") + spec.getName();
+		return std::string("#") + spec.getRefName();
 	}
 }
 

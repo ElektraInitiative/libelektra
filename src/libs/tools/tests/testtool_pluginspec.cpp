@@ -108,13 +108,13 @@ TEST(PluginSpec, hash)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
-	std::hash<PluginSpec> hashFun;
+	PluginSpecHash hashFun;
 	EXPECT_EQ(hashFun (PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))),
 		  hashFun (PluginSpec("c", KeySet(2, *Key("user/x", KEY_END), KS_END))));
 	EXPECT_EQ(hashFun (PluginSpec("c", "b", KeySet(2, *Key("user/a", KEY_END), KS_END))),
 		  hashFun (PluginSpec("c", "b", KeySet(2, *Key("user/x", KEY_END), KS_END))));
+	EXPECT_EQ(hashFun (PluginSpec("c", "b", KeySet(2, *Key("user/a", KEY_END), KS_END))),
+		  hashFun (PluginSpec("c", "d", KeySet(2, *Key("user/x", KEY_END), KS_END))));
 	EXPECT_NE(hashFun (PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))),
 		  hashFun (PluginSpec("d", KeySet(2, *Key("user/x", KEY_END), KS_END))));
-	EXPECT_NE(hashFun (PluginSpec("c", "b", KeySet(2, *Key("user/a", KEY_END), KS_END))),
-		  hashFun (PluginSpec("c", "d", KeySet(2, *Key("user/x", KEY_END), KS_END))));
 }

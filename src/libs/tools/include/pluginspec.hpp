@@ -64,6 +64,25 @@ private:
 	KeySet config;
 };
 
+struct PluginSpecName
+{
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getName() == s2.getName();
+	}
+};
+
+/**
+ * @brief Only to be used with PluginSpecName!
+ */
+struct PluginSpecHash
+{
+	size_t operator()(kdb::tools::PluginSpec const & s) const
+	{
+		return std::hash<std::string>()(s.getName());
+	}
+};
+
 bool operator == (PluginSpec const & self, PluginSpec const & other);
 bool operator != (PluginSpec const & self, PluginSpec const & other);
 
@@ -74,17 +93,5 @@ std::ostream & operator << (std::ostream & os, PluginSpec const & spec);
 }
 
 }
-
-namespace std
-{
-// produces hash collisions if only config differs
-template <> struct hash<kdb::tools::PluginSpec>
-{
-	size_t operator()(kdb::tools::PluginSpec const & s) const
-	{
-		return std::hash<std::string>()(s.getFullName());
-	}
-};
-} // end of namespace std
 
 #endif

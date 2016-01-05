@@ -159,7 +159,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	appendPlugins(cl, backend);
 
-	// resolver already added, do not readd it
+	backend.resolveNeeds();
 	backend.serialize (mountConf);
 }
 
