@@ -103,8 +103,6 @@ static void test_init_internal(Plugin *plugin, Key *parentKey)
 	succeed_if (plugin->kdbClose(plugin, parentKey) == 1, "kdb close failed");
 	succeed_if (plugin->kdbOpen(plugin, parentKey) == 1, "re-opening the plugin failed");
 	succeed_if (plugin->kdbClose(plugin, parentKey) == 1, "kdb close failed");
-
-	elektraPluginClose(plugin, 0);
 }
 
 static void test_init()
@@ -117,21 +115,24 @@ static void test_init()
 	plugin = elektraPluginOpen ("crypto_gcrypt", modules, getWorkingConfiguration(), 0);
 	if (plugin)
 	{
-		test_init_internal (plugin, parentKey);
 		succeed_if (!strcmp(plugin->name, "crypto_gcrypt"), "got wrong name");
+		test_init_internal (plugin, parentKey);
+		elektraPluginClose(plugin, 0);
 	}
 
 	plugin = elektraPluginOpen ("crypto_openssl", modules, getWorkingConfiguration(), 0);
 	if (plugin)
 	{
-		test_init_internal (plugin, parentKey);
 		succeed_if (!strcmp(plugin->name, "crypto_openssl"), "got wrong name");
+		test_init_internal (plugin, parentKey);
+		elektraPluginClose(plugin, 0);
 	}
 
 	plugin = elektraPluginOpen ("crypto", modules, getWorkingConfiguration(), 0);
 	exit_if_fail (plugin, "could not load crypto_openssl plugin");
-	test_init_internal (plugin, parentKey);
 	succeed_if (!strcmp(plugin->name, "crypto"), "got wrong name");
+	test_init_internal (plugin, parentKey);
+	elektraPluginClose(plugin, 0);
 
 	elektraModulesClose(modules, 0);
 	ksDel (modules);

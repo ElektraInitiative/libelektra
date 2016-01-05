@@ -185,7 +185,7 @@ int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
 	Key *k;
 	elektraCryptoHandle *cryptoHandle;
-	const KeySet *pluginConfig = elektraPluginGetConfig(handle);
+	KeySet *pluginConfig = elektraPluginGetConfig(handle);
 
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -237,7 +237,7 @@ int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
 	Key *k;
 	elektraCryptoHandle *cryptoHandle;
-	const KeySet *pluginConfig = elektraPluginGetConfig(handle);
+	KeySet *pluginConfig = elektraPluginGetConfig(handle);
 
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
