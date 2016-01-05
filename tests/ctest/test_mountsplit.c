@@ -221,9 +221,9 @@ static void test_us()
 	succeed_if_same_string (keyString(mp), "system");
 
 	keyDel (key);
-	ksDel (modules);
 	kdb_del (kdb);
 	elektraModulesClose (modules, 0);
+	ksDel (modules);
 }
 
 
@@ -654,8 +654,8 @@ static void test_defaultonly()
 
 int main(int argc, char** argv)
 {
-	printf("TRIE       TESTS\n");
-	printf("==================\n\n");
+	printf("MOUNTSPLIT    TESTS\n");
+	printf("===================\n\n");
 
 	init (argc, argv);
 
@@ -669,7 +669,7 @@ int main(int argc, char** argv)
 	test_modules();
 	test_defaultonly();
 
-	printf("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf("\ntest_mountsplit RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
