@@ -21,6 +21,19 @@
 #include <kdb.hpp>
 #include <gtest/gtest.h>
 
+
+TEST(BackendBuilder, pluginSpecConstruct)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	EXPECT_EQ(PluginSpec("c").name, "c");
+	EXPECT_EQ(PluginSpec("c", "b").name, "c");
+	EXPECT_EQ(PluginSpec("c", "b").refname, "b");
+	EXPECT_EQ(PluginSpec("c#b").name, "c");
+	EXPECT_EQ(PluginSpec("c#b").refname, "b");
+}
+
+
 TEST(BackendBuilder, DISABLED_pluginSpec)
 {
 	using namespace kdb;
@@ -80,6 +93,7 @@ TEST(MountBackendBuilder, parsePluginArguments)
 		  MountBackendBuilder::parsePluginArguments ("=5,ax=,ax/bx=8"));
 }
 
+
 bool cmpPsv(kdb::tools::PluginSpecVector psv1, kdb::tools::PluginSpecVector psv2)
 {
 	EXPECT_EQ(psv1.size(), psv2.size());
@@ -107,7 +121,33 @@ TEST(MountBackendBuilder, parseArguments)
 	psv2 = MountBackendBuilder::parseArguments ("  a 	 a=5	  b c ,  ");
 	EXPECT_TRUE(cmpPsv (psv1, psv2));
 	EXPECT_THROW(MountBackendBuilder::parseArguments ("a=5 a b c"), ParseException);
+	EXPECT_THROW(MountBackendBuilder::parseArguments ("a#a b c a#a"), ParseException);
 }
+
+TEST(MountBackendBuilder, parseArgumentsDoubleOccur)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	PluginSpecVector psv1;
+	psv1.push_back (PluginSpec ("a", "0", KeySet(5,
+				*Key("user/a", KEY_VALUE, "5", KEY_END),
+				KS_END)));
+	psv1.push_back (PluginSpec ("b"));
+	psv1.push_back (PluginSpec ("c"));
+	psv1.push_back (PluginSpec ("a", "1", KeySet(5,
+				*Key("user/b", KEY_VALUE, "c", KEY_END),
+				KS_END)));
+	PluginSpecVector psv2 = MountBackendBuilder::parseArguments ("a a=5 b c a b=c");
+	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	psv2 = MountBackendBuilder::parseArguments ("  a  a=5  b c a b=c   ");
+	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	psv2 = MountBackendBuilder::parseArguments ("  a 	 a=5 b=c	  b c , a b=c  ");
+	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	EXPECT_THROW(MountBackendBuilder::parseArguments ("a=5 a b c a b=c"), ParseException);
+	EXPECT_THROW(MountBackendBuilder::parseArguments ("a a=5 b c a#0 b=c"), ParseException);
+}
+
+
 
 TEST(MountBackendBuilder, basicAddRem)
 {

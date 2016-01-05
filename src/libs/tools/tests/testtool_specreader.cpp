@@ -63,7 +63,7 @@ TEST(SpecReader, withDatabaseRecursive)
 	EXPECT_EQ (bi.nodes, 2);
 }
 
-TEST(SpecReader, withNeeds)
+TEST(SpecReader, DISABLED_withNeeds)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -129,7 +129,7 @@ TEST(SpecReader, withNeedsResolved)
 	EXPECT_EQ (bi.begin()[1], PluginSpec("a"));
 }
 
-TEST(SpecReader, withNeedsResolvedPreferences)
+TEST(SpecReader, DISABLED_withNeedsResolvedPreferences)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -164,7 +164,7 @@ TEST(SpecReader, withNeedsResolvedPreferences)
 	EXPECT_EQ (bi.begin()[1], PluginSpec("c"));
 }
 
-TEST(SpecReader, withNeedsResolvedNumerical)
+TEST(SpecReader, DISABLED_withNeedsResolvedNumerical)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -201,7 +201,7 @@ TEST(SpecReader, withNeedsResolvedNumerical)
 
 
 
-TEST(SpecReader, withNeedsResolvedPreferencesIgnored)
+TEST(SpecReader, DISABLED_withNeedsResolvedPreferencesIgnored)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -334,6 +334,7 @@ TEST(SpecReader, DISABLED_pluginConfiguration)
 	mpd->data [PluginSpec("b")] ["status"] = "popular";
 	mpd->data [PluginSpec("python#rename")] ["provides"] = "rename";
 	mpd->data [PluginSpec("python#rename")] ["status"] = "memleak";
+	mpd->data [PluginSpec("ccode")] ["type"] = "virtual";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
 	sr.readSpecification(KeySet(5,
@@ -344,9 +345,15 @@ TEST(SpecReader, DISABLED_pluginConfiguration)
 					KEY_META, "config/plugin/b/something", "",
 					KEY_END),
 				*Key ("user/mp/below",
-					KEY_META, "config/plugin/python#transform/option", "fastload",
-					KEY_META, "config/plugin/python#transform/script", "transform.py",
+					KEY_META, "config/metadata/python#transform", "transform/python transform/pythonfast",
+					KEY_META, "config/metadata/python#transform/script", "transform.py",
 					KEY_META, "transform/python", "below = other+5",
+					KEY_END),
+				*Key ("user/mp/encode",
+					KEY_META, "config/metadata/#0ccode", "recode othercode",
+					KEY_META, "config/metadata/#1hexcode#dash", "recode othercode",
+					KEY_META, "config/metadata/#1hexcode#dash/escape", "-",
+					KEY_META, "recode", "first c then hex",
 					KEY_END),
 				*Key ("user/mp/other",
 					KEY_META, "info/needs", "python#rename", // I want to prefer python#rename, even if there is a better one

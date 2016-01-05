@@ -28,16 +28,34 @@ struct PluginSpec
 		std::string pluginName,
 		KeySet pluginConfig = KeySet()) :
 		name(pluginName),
+		refname(pluginName),
+		config(pluginConfig)
+	{
+		auto it = pluginName.find ('#');
+		if (it != std::string::npos)
+		{
+			refname = pluginName.substr(it+1);
+			name = pluginName.substr(0,it);
+		}
+	}
+
+	explicit PluginSpec(
+		std::string pluginName,
+		std::string refName,
+		KeySet pluginConfig = KeySet()) :
+		name(pluginName),
+		refname(refName),
 		config(pluginConfig)
 	{}
 
 	std::string name;
+	std::string refname;
 	KeySet config;
 };
 
 inline bool operator == (PluginSpec const & self, PluginSpec const & other)
 {
-	return self.name == other.name;
+	return self.name == other.name && self.refname == other.refname;
 }
 
 inline bool operator != (PluginSpec const & self, PluginSpec const & other)
@@ -49,7 +67,7 @@ typedef std::vector <PluginSpec> PluginSpecVector;
 
 inline std::ostream & operator << (std::ostream & os, PluginSpec const & spec)
 {
-	os << spec.name << " " << spec.config.size();
+	os << "name: " << spec.name << " refname: " << spec.refname << " configsize: " << spec.config.size();
 	return os;
 }
 

@@ -134,10 +134,34 @@ PluginSpecVector MountBackendBuilder::parseArguments (std::string const & cmdlin
 			[](char c) {return std::isspace(c) || c==',';})) continue;
 		if (argument.find ('=') == string::npos)
 		{
-			arguments.push_back(PluginSpec(argument));
+			if (argument.find ('#') == string::npos)
+			{
+				size_t nr = std::count_if(arguments.begin(), arguments.end(),
+						[&argument](PluginSpec const & spec) {return spec.name == argument;});
+				arguments.push_back(PluginSpec(argument, to_string(nr)));
+			} else {
+				arguments.push_back(PluginSpec(argument));
+			}
 		} else {
-			if (arguments.empty()) throw ParseException("config for plugin ("+argument+") without previous plugin name");
-			arguments.back().config = parsePluginArguments(argument);
+			if (arguments.empty()) throw ParseException ("config for plugin ("+argument+") without previous plugin name");
+			arguments.back().config = parsePluginArguments (argument);
+		}
+	}
+
+	// fix refnames of single occurrences for backwards compatibility
+	for (auto & a: arguments)
+	{
+		size_t nr = std::count_if(arguments.begin(), arguments.end(),
+				[&a](PluginSpec const & spec) {return spec.name == a.name;});
+		if (nr == 1 && a.refname == "0")
+		{
+			a.refname = a.name;
+		}
+
+		size_t identical = std::count(arguments.begin(), arguments.end(), a);
+		if (identical > 1)
+		{
+			throw ParseException ("identical plugin found: " + a.name + "#" + a.refname);
 		}
 	}
 	return arguments;
@@ -238,9 +262,10 @@ void BackendBuilder::resolveNeeds()
 }
 
 /**
- * @brief Add or update a plugin.
+ * @brief Add a plugin.
  *
- * Will automatically detect if plugin is virtual or real.
+ * Will automatically extend plugin spec with unique name if not given.
+ * Will automatically resolve virtual plugins.
  * If it is virtual (provider), it will be remembered as "needs" to be resolved with resolveNeeds()
  * If it is an actual plugin, and was added already, the configuration will merge
  * as long as the contract of the new plugin is identical as the old one.
@@ -276,6 +301,7 @@ void BackendBuilder::addPlugin (PluginSpec const & newPlugin)
 		{
 			// a plugin that provides newPlugin already is already inserted:
 			p.name = newPlugin.name;
+			p.refname = newPlugin.refname;
 			p.config.append(newPlugin.config);
 			return;
 		}
