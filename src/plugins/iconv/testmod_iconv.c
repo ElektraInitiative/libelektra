@@ -18,7 +18,7 @@
 #include <string.h>
 #endif
 
-#include "iconv.h"
+#include <conv.h>
 
 #include <langinfo.h>
 

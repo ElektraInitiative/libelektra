@@ -2,7 +2,7 @@ include (LibAddMacros)
 
 add_plugin(iconv
 	SOURCES
-		iconv.h
+		conv.h
 		iconv.c
 	)
 

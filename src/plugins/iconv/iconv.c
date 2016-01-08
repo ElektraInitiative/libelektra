@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include "iconv.h"
+#include <conv.h>
 
 static inline const char* getFrom(Plugin *handle)
 {
