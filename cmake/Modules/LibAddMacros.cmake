@@ -166,12 +166,12 @@ endmacro(find_swig)
 #                       Note: you must pass this value to ARGS in add_custom_command
 #
 # Example Usage:
-# add_executable (exportsymbols ...)
+# add_executable (elektra-export-symbols ...)
 # include(LibAddMacros)
-# find_util(exportsymbols EXE_SYM_LOC EXE_SYM_ARG)
+# find_util(elektra-export-symbols EXE_SYM_LOC EXE_SYM_ARG)
 #
 # add_custom_command (
-#		DEPENDS exportsymbols
+#		DEPENDS elektra-export-symbols
 #		COMMAND ${EXE_SYM_LOC}
 #		ARGS ${EXE_SYM_ARG} ... other arguments
 #		)

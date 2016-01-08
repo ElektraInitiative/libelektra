@@ -1,7 +1,7 @@
 # For static inclusion of libraries we need a list
 # of symbols to make the static runtime linker work.
 #
-# For that there is the program exportsymbols which
+# For that there is the program elektra-export-symbols which
 # generates the sourcefiles exported_symbols.h
 # and exported_symbols.c containing an array of
 # all symbols.
@@ -10,21 +10,21 @@
 # argument.
 #
 # Symbols of libelektratools will be treaded specially.
-add_executable (exportsymbols exportsymbols.c)
+add_executable (elektra-export-symbols exportsymbols.c)
 
 include(LibAddMacros)
-find_util(exportsymbols EXE_SYM_LOC EXE_SYM_ARG)
+find_util(elektra-export-symbols EXE_SYM_LOC EXE_SYM_ARG)
 
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
-		DEPENDS exportsymbols
+		DEPENDS elektra-export-symbols
 		COMMAND ${EXE_SYM_LOC}
 		ARGS ${EXE_SYM_ARG} ${PLUGINS}
 		)
 
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
-		DEPENDS exportsymbols
+		DEPENDS elektra-export-symbols
 		COMMAND ${EXE_SYM_LOC}
 		ARGS ${EXE_SYM_ARG} ${PLUGINS}
 		)
