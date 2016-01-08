@@ -17,7 +17,7 @@ if (LIBAUGEAS_FOUND AND LIBXML2_FOUND)
 		
 		add_plugin(augeas
 			SOURCES
-				augeas.h
+				aug.h
 				augeas.c
 			INCLUDE_DIRECTORIES
 				${LIBAUGEAS_INCLUDE_DIR}

@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <augeas.h>
+#include <aug.h>
 #include <stddef.h>
 
 int main()

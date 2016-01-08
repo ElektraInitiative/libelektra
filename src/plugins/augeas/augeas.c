@@ -14,7 +14,7 @@
 /* used for asprintf */
 #define _GNU_SOURCE
 
-#include "augeas.h"
+#include <aug.h>
 
 #define ELEKTRA_SET_GENERAL_ERROR(id, parentKey, message) \
 	do { \
