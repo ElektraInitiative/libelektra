@@ -179,22 +179,22 @@ endmacro(find_swig)
 function(find_util util output_loc output_arg)
 	if (CMAKE_CROSSCOMPILING)
 		if (WIN32)
-			find_program(EXE_LOC wine)
-			if (EXE_LOC)
+			find_program(${util}_EXE_LOC wine)
+			if (${util}_EXE_LOC)
 				set (ARG_LOC "${CMAKE_BINARY_DIR}/bin/${util}.exe")
 			else()
-				find_program (EXE_LOC
+				find_program (${util}_EXE_LOC
 					HINTS
 						${CMAKE_BINARY_DIR}
 					${util}.exe)
 			endif ()
 		else()
-			find_program (EXE_LOC ${util})
+			find_program (${util}_EXE_LOC ${util})
 		endif ()
 	else (CMAKE_CROSSCOMPILING)
-		get_target_property (EXE_LOC ${util} LOCATION)
+		get_target_property (${util}_EXE_LOC ${util} LOCATION)
 	endif (CMAKE_CROSSCOMPILING)
-	set (${output_loc} ${EXE_LOC} PARENT_SCOPE)
+	set (${output_loc} ${${util}_EXE_LOC} PARENT_SCOPE)
 	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)
 endfunction(find_util util output)
 
