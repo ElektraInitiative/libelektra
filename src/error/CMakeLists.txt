@@ -1,5 +1,7 @@
 add_executable(elektra-export-errors exporterrors.cpp parser.hpp parser.cpp)
 
+install (TARGETS elektra-export-errors DESTINATION bin)
+
 set_source_files_properties(elektra-export-errors OBJECT_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/specification)
 
 add_executable(exporttranslations exporttranslations.cpp parser.hpp parser.cpp)
