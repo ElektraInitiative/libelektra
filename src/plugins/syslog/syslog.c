@@ -10,7 +10,7 @@
 # include "kdbconfig.h"
 #endif
 
-#include "syslog.h"
+#include <log.h>
 
 int elektraSyslogOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
