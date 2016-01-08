@@ -225,11 +225,11 @@ macro (add_headers HDR_FILES)
 	file (GLOB SRC_HDR_FILES ${SOURCE_INCLUDE_DIR}/*.h)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 
-	find_util(exporterrors EXE_ERR_LOC EXE_ERR_ARG)
+	find_util(elektra-export-errors EXE_ERR_LOC EXE_ERR_ARG)
 
 	add_custom_command (
 			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
-			DEPENDS exporterrors
+			DEPENDS elektra-export-errors
 			COMMAND ${EXE_ERR_LOC}
 			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 			)
