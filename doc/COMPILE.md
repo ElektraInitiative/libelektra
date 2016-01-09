@@ -148,7 +148,8 @@ and
 
 	-DKDB_DEFAULT_STORAGE=dump
 
-Alternatively, you can pass the list of plugins you want, e.g.:
+!!! Note, that you cannot use NODEP or DEFAULT and add other plugins to it.
+Instead, you can pass the list of plugins you want, e.g.:
 
 	-DPLUGINS="resolver;sync;dump"
 
@@ -158,10 +159,7 @@ bootstrapping phase, because then only the compiled in configuration
 applies. To compile-time-configure a plugin, you just pass a underscore
 (_) and flags after the name of the plugin.
 
-Note that the base-plugin itself need to be part of PLUGINS, so that the
-variants will work.
-
-The resolver even distinguish between 3 different kind of flags:
+The resolver distinguish between 3 different kind of flags:
 
 	-DPLUGINS="resolver_baseflags_userflags_systemflags"
 
@@ -170,7 +168,6 @@ Following baseflags are available:
 - 'c' for debugging conflicts
 - 'l' for enabling file locking
 - 'm' for enabling mutex locking
-
 
 The user flags are (the order matters!):
 
@@ -189,10 +186,18 @@ The system flags are (the order matters!):
   allows users to fake system configuration.
 - 'b' use the built-in default CMAKE variable KDB_DB_SYSTEM
 
-
 E.g. one may use:
 
 	-DPLUGINS="resolver;resolver_lm_uhpb_b"
+
+!!! Note, that the base-plugin itself need to be part of PLUGINS, so that the
+variants will work, e.g., to add resolver_l_h_b you need to specify
+
+	-DPLUGINS="resolver;resolver_l_h_b"
+
+even if you actually do not want to have resolver.
+
+
 
 #### TOOLS ####
 
