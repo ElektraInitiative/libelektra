@@ -58,7 +58,7 @@ static KeySet *newWorkingConfiguration()
 /**
  * @brief create new KeySet and add an invalid configuration to it.
  *
- * The key in the returned KeySet has an invalid size.
+ * The cryptographic key in the returned KeySet has an invalid size.
  */
 static KeySet *newInvalidConfiguration()
 {
@@ -79,16 +79,11 @@ static KeySet *newInvalidConfiguration()
 /**
  * @brief create new KeySet and add an incomplete configuration to it.
  *
- * The required key "/crypto/key-derivation/iv" is missing.
+ * The required key "/crypto/key-derivation/key" is missing.
  */
 static KeySet *newIncompleteConfiguration()
 {
-	Key *configKey = keyNew("user/crypto/key-derivation/key", KEY_END);
-	keySetBinary(configKey, key, sizeof(key));
-
-	return ksNew(1,
-		configKey,
-		KS_END);
+	return ksNew(0, KS_END);
 }
 
 /**
@@ -176,61 +171,42 @@ static void test_init()
 	keyDel (parentKey);
 }
 
-static void test_config_errors()
+static void test_config_errors_internal(const char *pluginName, KeySet *pluginConfig, int expectedResult, const char *message)
 {
 	Plugin *plugin = NULL;
 	Key *parentKey = keyNew("system", KEY_END);
+	KeySet *data = newTestdataKeySet ();
 	KeySet *modules = ksNew(0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	// gcrypt tests
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration(), 0);
+	plugin = elektraPluginOpen (pluginName, modules, pluginConfig, 0);
 	if (plugin)
 	{
-		succeed_if (plugin->kdbGet(plugin, 0, parentKey) == 1, "kdb get failed with valid config");
+		succeed_if (plugin->kdbSet(plugin, data, parentKey) == expectedResult, message);
 		elektraPluginClose(plugin, 0);
 	}
-
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newInvalidConfiguration(), 0);
-	if (plugin)
+	else
 	{
-		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with invalid config");
-		elektraPluginClose(plugin, 0);
+		ksDel (pluginConfig);
 	}
-
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newIncompleteConfiguration(), 0);
-	if (plugin)
-	{
-		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with incomplete config");
-		elektraPluginClose(plugin, 0);
-	}
-
-	// OpenSSL tests
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration(), 0);
-	if (plugin)
-	{
-		succeed_if (plugin->kdbGet(plugin, 0, parentKey) == 1, "kdb get failed with valid config");
-		elektraPluginClose(plugin, 0);
-	}
-
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newInvalidConfiguration(), 0);
-	if (plugin)
-	{
-		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with invalid config");
-		elektraPluginClose(plugin, 0);
-	}
-
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newIncompleteConfiguration(), 0);
-	if (plugin)
-	{
-		succeed_if (plugin->kdbGet(plugin, 0, parentKey) != 1, "kdb get succeeded with incomplete config");
-		elektraPluginClose(plugin, 0);
-	}
-
 
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
+	ksDel (data);
 	keyDel (parentKey);
+}
+
+static void test_config_errors()
+{
+	// gcrypt tests
+	test_config_errors_internal ("crypto_gcrypt", newWorkingConfiguration(), 1, "kdbSet failed with valid config");
+	test_config_errors_internal ("crypto_gcrypt", newInvalidConfiguration(), -1, "kdbSet succeeded with invalid config");
+	test_config_errors_internal ("crypto_gcrypt", newIncompleteConfiguration(), -1, "kdbSet succeeded with incomplete config");
+
+	// OpenSSL tests
+	test_config_errors_internal ("crypto_openssl", newWorkingConfiguration(), 1, "kdbSet failed with valid config");
+	test_config_errors_internal ("crypto_openssl", newInvalidConfiguration(), -1, "kdbSet succeeded with invalid config");
+	test_config_errors_internal ("crypto_openssl", newIncompleteConfiguration(), -1, "kdbSet succeeded with incomplete config");
 }
 
 static void test_crypto_operations_internal(Plugin *plugin, Key *parentKey)

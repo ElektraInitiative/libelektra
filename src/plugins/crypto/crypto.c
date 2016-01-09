@@ -54,64 +54,59 @@ static void elektraCryptoTeardown()
 }
 
 /**
- * @brief allocate a new crypto handle
- *
- * A pointer to a new crypto handle will be stored at handle. In order to obtain
- * the key and the initialization vector (IV) for the handle, the KeySet config
- * is being used.
- *
- * The function may look for the following keys in config:
- *
- * - /elektra/modules/crypto/key-derivation/key
- * - /elektra/modules/crypto/key-derivation/iv
- *
- * The caller of this function must provide this keys in config!
- *
- * The caller of this function is also responsible for calling elektraCryptoHandleDestroy()
- * on the handle to avoid memory leaks.
- *
- * @param handle the memory location where the address of the new crypto handle will be stored
- * @param config the KeySet holding the key and IV parameters for key derivation
- * @param errorKey the key holding error messages that might occur during the creation
- * @returns 1 on success
- * @returns -1 on failure
- */
-static int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
-{
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-	return elektraCryptoGcryHandleCreate(handle, config, errorKey);
-#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	return elektraCryptoOpenSSLHandleCreate(handle, config, errorKey);
-#else
-	return 1;
-#endif
-}
-
-/**
- * @brief clean up and destroy a crypto handle
- *
- * This function overwrites confidential data (e.g. keys) and releases the handle.
- */
-static void elektraCryptoHandleDestroy(elektraCryptoHandle *handle)
-{
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-	elektraCryptoGcryHandleDestroy(handle);
-#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	elektraCryptoOpenSSLHandleDestroy(handle);
-#endif
-}
-
-/**
  * @brief encrypt the content of the Key k
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
+static int elektraCryptoEncrypt(Plugin *handle, KeySet *data, Key *errorKey)
 {
+	elektraCryptoHandle *cryptoHandle;
+	Key *k;
+	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-	return elektraCryptoGcryEncrypt(handle, k, errorKey);
+
+	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+	{
+		return -1;
+	}
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey)  != 1)
+		{
+			elektraCryptoGcryHandleDestroy (cryptoHandle);
+			return -1;
+		}
+	}
+
+	elektraCryptoGcryHandleDestroy (cryptoHandle);
+	return 1;
+
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	return elektraCryptoOpenSSLEncrypt(handle, k, errorKey);
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		if (elektraCryptoOpenSSLEncrypt (cryptoHandle, k, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+	}
+	return 1;
+
+openssl_error:
+	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+	return -1;
+
 #else
 	return 1;
 #endif
@@ -122,12 +117,55 @@ static int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorK
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
+static int elektraCryptoDecrypt(Plugin *handle, KeySet *data, Key *errorKey)
 {
+	elektraCryptoHandle *cryptoHandle;
+	Key *k;
+	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-	return elektraCryptoGcryDecrypt(handle, k, errorKey);
+
+	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+	{
+		return -1;
+	}
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoGcryDecrypt (cryptoHandle, k, errorKey)  != 1)
+		{
+			elektraCryptoGcryHandleDestroy (cryptoHandle);
+			return -1;
+		}
+	}
+
+	elektraCryptoGcryHandleDestroy (cryptoHandle);
+	return 1;
+
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	return elektraCryptoOpenSSLDecrypt(handle, k, errorKey);
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		if (elektraCryptoOpenSSLDecrypt (cryptoHandle, k, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+	}
+	return 1;
+
+openssl_error:
+	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+	return -1;
+
 #else
 	return 1;
 #endif
@@ -183,10 +221,6 @@ int CRYPTO_PLUGIN_FUNCTION(close)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey E
  */
 int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
-	Key *k;
-	elektraCryptoHandle *cryptoHandle;
-	KeySet *pluginConfig = elektraPluginGetConfig(handle);
-
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
@@ -203,25 +237,7 @@ int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if (elektraCryptoHandleCreate(&cryptoHandle, pluginConfig, parentKey) != 1)
-	{
-		goto error;
-	}
-
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-	{
-		if (elektraCryptoDecrypt(cryptoHandle, k, parentKey) != 1)
-		{
-			goto error;
-		}
-	}
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return 1;
-
-error:
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return -1;
+	return elektraCryptoDecrypt(handle, ks, parentKey);
 }
 
 /**
@@ -235,32 +251,10 @@ error:
  */
 int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
-	Key *k;
-	elektraCryptoHandle *cryptoHandle;
-	KeySet *pluginConfig = elektraPluginGetConfig(handle);
-
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if (elektraCryptoHandleCreate(&cryptoHandle, pluginConfig, parentKey) != 1)
-	{
-		goto error;
-	}
-
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-	{
-		if (elektraCryptoEncrypt(cryptoHandle, k, parentKey) != 1)
-		{
-			goto error;
-		}
-	}
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return 1;
-
-error:
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return (-1);
+	return elektraCryptoEncrypt(handle, ks, parentKey);
 }
 
 /**
