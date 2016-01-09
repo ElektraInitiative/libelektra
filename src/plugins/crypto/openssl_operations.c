@@ -160,6 +160,8 @@ int elektraCryptoOpenSSLHandleCreate(elektraCryptoHandle **handle, KeySet *confi
 	if (ERR_peek_error())
 	{
 		ELEKTRA_SET_ERRORF(130, errorKey, "Failed to create handle! libcrypto error code was: %lu", ERR_get_error());
+		elektraFree (*handle);
+		*handle = NULL;
 		return (-1);
 	}
 

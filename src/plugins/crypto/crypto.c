@@ -60,8 +60,8 @@ static void elektraCryptoTeardown()
  */
 static int elektraCryptoEncrypt(Plugin *handle, KeySet *data, Key *errorKey)
 {
-	elektraCryptoHandle *cryptoHandle;
 	Key *k;
+	elektraCryptoHandle *cryptoHandle = NULL;
 	KeySet *pluginConfig = elektraPluginGetConfig(handle);
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
@@ -100,6 +100,7 @@ static int elektraCryptoEncrypt(Plugin *handle, KeySet *data, Key *errorKey)
 		}
 
 		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+		cryptoHandle = NULL;
 	}
 	return 1;
 
@@ -119,8 +120,8 @@ openssl_error:
  */
 static int elektraCryptoDecrypt(Plugin *handle, KeySet *data, Key *errorKey)
 {
-	elektraCryptoHandle *cryptoHandle;
 	Key *k;
+	elektraCryptoHandle *cryptoHandle = NULL;
 	KeySet *pluginConfig = elektraPluginGetConfig(handle);
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
@@ -159,6 +160,7 @@ static int elektraCryptoDecrypt(Plugin *handle, KeySet *data, Key *errorKey)
 		}
 
 		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+		cryptoHandle = NULL;
 	}
 	return 1;
 
