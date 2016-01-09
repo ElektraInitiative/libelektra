@@ -185,10 +185,6 @@ static void test_config_errors_internal(const char *pluginName, KeySet *pluginCo
 		succeed_if (plugin->kdbSet(plugin, data, parentKey) == expectedResult, message);
 		elektraPluginClose(plugin, 0);
 	}
-	else
-	{
-		ksDel (pluginConfig);
-	}
 
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
