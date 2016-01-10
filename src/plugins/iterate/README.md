@@ -3,18 +3,14 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
-- infos/placements =
+- infos/placements = presetstorage postgetstorage
 - infos/description =
 
 ## Usage ##
 
-Copy this iterate if you want to start a new
-plugin written in C.
+Suppose you have a plugin bar that exports the function foo(Key *k).
+Then you can mount:
 
-You can use scripts/copy-iterate
-to automatically rename everything to your
-plugin name:
+    kdb mount file.dump /example/iterate dump iterate when=bar foo Key
 
-	cd src/plugins
-	../../scripts/copy-iterate yourplugin
-
+Which will execute `foo(k)` for every key that has the meta-data `when`.

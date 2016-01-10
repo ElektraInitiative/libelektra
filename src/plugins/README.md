@@ -208,6 +208,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [lineendings](lineendings/) tests file for consistent line endings
 - [list](list/) loads other plugins
 - [filecheck](filecheck/) does sanity checks on a file
+- [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 
 ## New Plugins ##
 
