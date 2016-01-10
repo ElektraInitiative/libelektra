@@ -46,10 +46,12 @@
 # define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
 
-#if defined(__APPLE__) && defined(__MACH__)
+#ifdef ELEKTRA_LOCK_MUTEX
+#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 #else
 static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#endif
 #endif
 
 static void resolverInit (resolverHandle *p, const char *path)
