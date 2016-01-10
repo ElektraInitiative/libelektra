@@ -18,7 +18,7 @@ add_plugin(resolver
 		ELEKTRA_PLUGIN_NAME=\"resolver\"
 		ELEKTRA_LOCK_FILE
 		ELEKTRA_LOCK_MUTEX
-)
+	)
 
 add_plugintest(resolver)
 
