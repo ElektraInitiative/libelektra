@@ -26,6 +26,22 @@ int elektraIterateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	return 1; // success
 }
 
+static int doIterate (KeySet * returned)
+{
+	int ret = 0;
+	Key *k;
+	while ((k = ksNext(returned)))
+	{
+		const Key * m = keyGetMeta (k, "iterate");
+		if (m)
+		{
+			ret = 1;
+		}
+	}
+
+	return ret;
+}
+
 int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/iterate"))
@@ -53,16 +69,13 @@ int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 		return 1; // success
 	}
-	// get all keys
 
-	return 1; // success
+	return doIterate (returned);
 }
 
-int elektraIterateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraIterateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	// get all keys
-
-	return 1; // success
+	return doIterate (returned);
 }
 
 int elektraIterateError (Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
