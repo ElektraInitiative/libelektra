@@ -74,26 +74,26 @@ execute()
     STDERR=$(<./stderr)
     if [ ! -z "$STDERRCMP" ];
     then
-        echo "$STDERR" | grep -Eq "$STDERRCMP"
+        echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
         [ "$?" -ne "0" ] && echo "STDERR doesn't match $STDERRCMP"
     fi
     STDOUT=$(<./stdout)
     if [ ! -z "$STDOUTCMP" ];
     then
-        echo "$STDOUT" | grep -Eq "$STDOUTCMP"
+        echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
         [ "$?" -ne "0" ] && echo "STDOUT doesn't match $STDOUTCMP"
     fi
     WARNINGS=$(echo "$STDERR" | grep -Po "(?<=Warning number: )([[:digit:]]*)" | tr '\n' ',')
     if [ ! -z "$WARNINGSCMP" ];
     then
-        echo "$WARNINGS" | grep -Eq "($WARNINGSCMP)"
+        echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
         [ "$?" -ne "0" ] && echo "WARNINGS doesn't match $WARNINGSCMP"
     fi
 
     ERRORS=$(echo "$STDERR" | grep -Po "(?<=Error \(\#)([[:digit:]]*)" | tr '\n' ',')
     if [ ! -z "$ERRORSCMP" ];
     then
-        echo "$ERRORS" | grep -Eq "($ERRORSCMP)"
+        echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
         [ "$?" -ne "0" ] && echo "ERRORS doesn't match $ERRORSCMP"
     fi
     echo -e "CMD: $command\0" >> ./protocol
