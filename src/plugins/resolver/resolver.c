@@ -47,10 +47,15 @@
 #endif
 
 #ifdef ELEKTRA_LOCK_MUTEX
-#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+#if defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP)
+static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#elif defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER)
 static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 #else
-static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+static pthread_mutex_t elektra_resolver_mutex;
+static pthread_mutex_t elektra_resolver_init_mutex = PTHREAD_MUTEX_INITIALIZER;
+static unsigned char elektra_resolver_mutex_initialized = 0;
+#define ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION
 #endif
 #endif
 
@@ -370,6 +375,37 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
 
+#if defined(ELEKTRA_LOCK_MUTEX) && defined(ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION)
+	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
+	// so we use another mutex for the initialization of the recursive mutex,
+	// since this section must be thread safe.
+	pthread_mutex_lock(&elektra_resolver_init_mutex);
+	if (!elektra_resolver_mutex_initialized)
+	{
+		pthread_mutexattr_t mutex_attr;
+
+		if (pthread_mutexattr_init (&mutex_attr))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock (&elektra_resolver_init_mutex);
+			return -1;
+		}
+		if (pthread_mutexattr_settype (&mutex_attr, PTHREAD_MUTEX_RECURSIVE))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock (&elektra_resolver_init_mutex);
+			return -1;
+		}
+		if (pthread_mutex_init (&elektra_resolver_mutex, &mutex_attr))
+		{
+			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			pthread_mutex_unlock (&elektra_resolver_init_mutex);
+			return -1;
+		}
+		elektra_resolver_mutex_initialized = 1;
+	}
+	pthread_mutex_unlock (&elektra_resolver_init_mutex);
+#endif
 
 	// system and spec files need to be world-readable, otherwise they are
 	// useless
