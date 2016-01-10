@@ -375,30 +375,31 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
 
-#if defined(ELEKTRA_LOCK_MUTEX) && defined(ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION)
+#if defined(ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION)
 	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
 	// so we use another mutex for the initialization of the recursive mutex,
 	// since this section must be thread safe.
-	pthread_mutex_lock(&elektraResolverInitMutex);
+	pthread_mutex_lock (&elektraResolverInitMutex);
 	if (!elektraResolverMutexInitialized)
 	{
 		pthread_mutexattr_t mutexAttr;
+		int mutexError;
 
-		if (pthread_mutexattr_init (&mutexAttr))
+		if ((mutexError = pthread_mutexattr_init (&mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d", mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
-		if (pthread_mutexattr_settype (&mutexAttr, PTHREAD_MUTEX_RECURSIVE))
+		if ((mutexError = pthread_mutexattr_settype (&mutexAttr, PTHREAD_MUTEX_RECURSIVE)) != 0)
 		{
-			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutexattr_settype returned %d", mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
-		if (pthread_mutex_init (&elektraResolverMutex, &mutexAttr))
+		if ((mutexError = pthread_mutex_init (&elektraResolverMutex, &mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_ERROR(35, errorKey, "Could not initialize recursive mutex");
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d", mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
