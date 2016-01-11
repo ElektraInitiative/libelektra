@@ -11,6 +11,21 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
+## fixes
+
+full code review tools
+key hash warning
+add all plugins mem-leak test
+
+debian package from upstream 3h
+
+fix type plugins 1d
+fix other plugins (e.g. glob) 1d
+
+remove "resolver" resolver
+BUILD_LEGACY for non-split elektra?
+
+
 ## docu
 
 more docu in METADATA.ini
@@ -35,10 +50,11 @@ default storage, encode,...
 
 value transformations
 
-## list plugin
+## lazy mountpoints
 
-use it for mounting
-	so that everything is lazy+arbitrary number of plugins
+
+using list plugin
+so that everything is lazy+arbitrary number of plugins
 
 
 ## global plugins
