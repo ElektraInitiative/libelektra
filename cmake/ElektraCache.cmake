@@ -65,6 +65,7 @@ set (PLUGINS_LIST_NODEP
 	list
 	logchange
 	iterate
+	spec
 	)
 
 #
