@@ -47,10 +47,15 @@
 #endif
 
 #ifdef ELEKTRA_LOCK_MUTEX
-#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#if defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP)
+static pthread_mutex_t elektraResolverMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#elif defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER)
+static pthread_mutex_t elektraResolverMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 #else
-static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+static pthread_mutex_t elektraResolverMutex;
+static pthread_mutex_t elektraResolverInitMutex = PTHREAD_MUTEX_INITIALIZER;
+static unsigned char elektraResolverMutexInitialized = 0;
+#define ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION
 #endif
 #endif
 
@@ -198,7 +203,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_trylock(&elektraResolverMutex);
 	if (ret != 0)
 	{
 		if (errno == EBUSY // for trylock
@@ -228,7 +233,7 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_unlock(&elektraResolverMutex);
 	if (ret != 0)
 	{
 		ELEKTRA_ADD_WARNINGF(32, parentKey, "mutex unlock failed with message: %s",
@@ -370,6 +375,38 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
 
+#if defined(ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION)
+	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
+	// so we use another mutex for the initialization of the recursive mutex,
+	// since this section must be thread safe.
+	pthread_mutex_lock (&elektraResolverInitMutex);
+	if (!elektraResolverMutexInitialized)
+	{
+		pthread_mutexattr_t mutexAttr;
+		int mutexError;
+
+		if ((mutexError = pthread_mutexattr_init (&mutexAttr)) != 0)
+		{
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d", mutexError);
+			pthread_mutex_unlock (&elektraResolverInitMutex);
+			return -1;
+		}
+		if ((mutexError = pthread_mutexattr_settype (&mutexAttr, PTHREAD_MUTEX_RECURSIVE)) != 0)
+		{
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutexattr_settype returned %d", mutexError);
+			pthread_mutex_unlock (&elektraResolverInitMutex);
+			return -1;
+		}
+		if ((mutexError = pthread_mutex_init (&elektraResolverMutex, &mutexAttr)) != 0)
+		{
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d", mutexError);
+			pthread_mutex_unlock (&elektraResolverInitMutex);
+			return -1;
+		}
+		elektraResolverMutexInitialized = 1;
+	}
+	pthread_mutex_unlock (&elektraResolverInitMutex);
+#endif
 
 	// system and spec files need to be world-readable, otherwise they are
 	// useless
