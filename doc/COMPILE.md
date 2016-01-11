@@ -166,7 +166,7 @@ The resolver distinguish between 3 different kind of flags:
 Following baseflags are available:
 
 - 'c' for debugging conflicts
-- 'l' for enabling file locking
+- 'f' for enabling file locking
 - 'm' for enabling mutex locking
 
 The user flags are (the order matters!):
@@ -196,6 +196,8 @@ variants will work, e.g., to add resolver_l_h_b you need to specify
 	-DPLUGINS="resolver;resolver_l_h_b"
 
 even if you actually do not want to have resolver.
+You can add resolver with any combination of the flags, even if they are
+not available in ALL.
 
 
 

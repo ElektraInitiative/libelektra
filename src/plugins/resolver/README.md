@@ -79,6 +79,9 @@ recommended to use environment variables.
 Note that the file permissions apply, so it might be possible for
 non-root to modify keys in system.
 
+See [COMPILE.md](/doc/COMPILE.md) for a documentation of possible
+variants.
+
 
 ### XDG Compatibility ###
 
