@@ -1,0 +1,34 @@
+Storage: dump
+Mountpoint: system/testmount/list
+File: /tmp/listtest.dump
+MountArgs: 
+DiffType: File
+
+
+< set system/elektra/globalplugins
+< set system/elektra/globalplugins/postcommit list
+< set system/elektra/globalplugins/postcommit/user
+< set system/elektra/globalplugins/postcommit/user/placements
+< set system/elektra/globalplugins/postcommit/user/placements/set "presetstorage precommit postcommit"
+< set system/elektra/globalplugins/postcommit/user/placements/get "pregetstorage postgetstorage"
+< set system/elektra/globalplugins/postcommit/user/placements/error "prerollback postrollback"
+< set system/elektra/globalplugins/postcommit/user/plugins
+< set system/elektra/globalplugins/postcommit/user/plugins/#0 tracer 
+< set system/elektra/globalplugins/postcommit/user/plugins/#0/placements
+< set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set "presetstorage precommit postcommit"
+< set system/elektra/globalplugins/postcommit/user/plugins/#1 timeofday 
+< set system/elektra/globalplugins/postcommit/user/plugins/#1/placements
+< set system/elektra/globalplugins/postcommit/user/plugins/#1/placements/set "presetstorage precommit postcommit"
+
+
+< set system/elektra/globalplugins/postrollback list
+< set system/elektra/globalplugins/precommit list
+< set system/elektra/globalplugins/pregetstorage list
+< set system/elektra/globalplugins/postgetstorage list 
+< set system/elektra/globalplugins/presetstorage list
+< set system/elektra/globalplugins/prerollback list
+
+STDOUT: (tracer.*){3}
+STDERR: (set.*di.*pos.*){3}
+RET: 0
+< set system/globaltestkey
