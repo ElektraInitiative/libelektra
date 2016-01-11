@@ -11,7 +11,7 @@ find_package(Doxygen)
 #
 macro (do_doc target folder file install)
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
-	file(MAKE_DIRECTORY(${folder}))
+	file(MAKE_DIRECTORY ${folder})
 
 	add_custom_command (
 		OUTPUT ${folder}/${file}
