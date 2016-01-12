@@ -1,7 +1,7 @@
-find_package(Lua52)
+find_package(Lua 5.2)
 find_swig()
 
-if (LUA52_FOUND AND SWIG_FOUND)
+if (LUA_FOUND AND SWIG_FOUND)
 	include (LibAddMacros)
 
 	add_custom_command (OUTPUT runtime.h
@@ -40,8 +40,8 @@ if (LUA52_FOUND AND SWIG_FOUND)
 	else ()
 		message (WARNING "swig_lua bindings are required for testing, test deactivated")
 	endif ()
-elseif (NOT LUA52_FOUND)
-	remove_plugin (lua "lua52 libs not found")
+elseif (NOT LUA_FOUND)
+	remove_plugin (lua "Lua libs >= 5.2 not found")
 else ()
 	remove_plugin (lua "swig not found")
 endif ()
