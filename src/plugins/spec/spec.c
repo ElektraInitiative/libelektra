@@ -16,6 +16,10 @@
 #include <kdbease.h>
 #include <kdbprivate.h>
 
+#include "metafunctions.h"
+
+typedef enum{ERROR, WARNING, LOG}OnConflict;
+
 static char *keyNameToMatchingString(const Key *key)
 {
     fprintf(stdout, "keyname: %s\n", keyName(key));
@@ -79,7 +83,7 @@ static int hasArray(Key *key)
         return 1;
 }
 
-static void setArrayConflicts(Key *parent, long validCount, int hasInvalidKeys, Key *specKey)
+static void validateArrayRange(Key *parent, long validCount, Key *specKey)
 {
     const Key *arrayRange = keyGetMeta(specKey, "array");
     if(arrayRange != NULL)
@@ -102,8 +106,6 @@ static void setArrayConflicts(Key *parent, long validCount, int hasInvalidKeys, 
             fprintf(stderr, "%ld within range %ld - %ld\n", validCount, min, max);
         }
     }
-    if(hasInvalidKeys)
-        keySetMeta(parent, "conflict/hasInvalidMembers", "");
 }
 
 static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey)
@@ -118,7 +120,6 @@ static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey)
     KeySet *subKeys = ksCut(ksCopy, arrayParent);
     Key *cur;
     long validCount = 0;
-    short hasInvalidMembers = 0;
     while((cur = ksNext(subKeys)) != NULL)
     {
         if(!keyIsDirectBelow(arrayParent, cur))
@@ -139,15 +140,15 @@ static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey)
                 { 
                     fprintf(stderr, "%s: marked as invalid\n", keyName(cur));
                     keySetMeta(toMark, "conflict/invalid", "");
+                    elektraMetaArrayAdd(arrayParent, "conflict/hasInvalidMembers", keyName(toMark));
                 }
                 ksDel(invalidCutKS);
-                hasInvalidMembers = 1;
             }
         }
     }
     ksDel(subKeys);
     ksDel(ksCopy);
-    setArrayConflicts(arrayParent, validCount, hasInvalidMembers, specKey); 
+    validateArrayRange(arrayParent, validCount, specKey); 
 }
 static void validateWildcardSubs(KeySet *ks, Key *key, Key *specKey)
 {
@@ -184,8 +185,9 @@ static void validateWildcardSubs(KeySet *ks, Key *key, Key *specKey)
     ksDel(ksCopy);
 }
 
-static void copyMeta(Key *key, Key *specKey)
+static int copyMeta(Key *key, Key *specKey)
 {
+    int ret = 1;
     keyRewindMeta(specKey);
     while(keyNextMeta(specKey) != NULL)
     {
@@ -193,9 +195,18 @@ static void copyMeta(Key *key, Key *specKey)
         const char *name = keyName(meta);
         if(!(!strcmp(name, "array") || !strcmp(name, "required") || !strcmp(name, "specInternal/valid") || !strncmp(name, "conflict/", 9)))
         {
-            if(keyGetMeta(key, name) != NULL)
+            const Key *oldMeta;
+            if((oldMeta = keyGetMeta(key, name)) != NULL)
             {
                 fprintf(stderr, "metakey %s already present in %s\n", name, keyName(key));
+                int conflictStringSize=elektraStrLen(name)+elektraStrLen("conflict/");
+                char *conflictName = elektraMalloc(conflictStringSize);
+                snprintf(conflictName, conflictStringSize, "conflict/%s", name);
+                keySetMeta(key, conflictName, keyString(oldMeta));
+                keyCopyMeta(key, specKey, name);
+                elektraFree(conflictName);
+                elektraMetaArrayAdd(key, "conflict", name);
+                ret = -1;
             }
             else
             {
@@ -205,9 +216,10 @@ static void copyMeta(Key *key, Key *specKey)
         }
     }
     keySetMeta(key, "specInternal/valid", 0);
+    return ret;
 }
 
-static void doGlobbing(KeySet *returned)
+static int doGlobbing(KeySet *returned, OnConflict onConflict)
 {
     Key *specCutKey = keyNew("spec", KEY_END);
     KeySet *specKS = ksCut(returned, specCutKey);
@@ -215,6 +227,7 @@ static void doGlobbing(KeySet *returned)
     Key *specKey;
     ksRewind(specKS);
     Key *cur;
+    int ret = 1;
     while((specKey = ksNext(specKS)) != NULL)
     {
         char *pattern = keyNameToMatchingString(specKey);
@@ -275,6 +288,7 @@ static void doGlobbing(KeySet *returned)
     }
     ksAppend(returned, specKS);
     ksDel(specKS);
+    return ret;
 }
 
 int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -298,14 +312,55 @@ int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
         return 1; // success
     }
-    doGlobbing(returned);
-    return 1; // success
+    KeySet *config = elektraPluginGetConfig(handle);
+    Key *onConflictConf = ksLookupByName(config, "conflict/get", KDB_O_NONE);
+    OnConflict onConflict = LOG;
+    if(onConflictConf)
+    {
+        const char *onConflictString = keyName(onConflictConf);
+        if(!strcmp(onConflictString, "ERROR"))
+        {
+            onConflict = ERROR;
+        }
+        else if(!strcmp(onConflictString, "WARNING"))
+        {
+            onConflict = WARNING;
+        }
+        else if(!strcmp(onConflictString, "LOG"))
+        {
+            onConflict = LOG;
+        }
+    }
+
+    int ret = doGlobbing(returned, onConflict);
+    return ret; // success
 }
 
 int elektraSpecSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-    doGlobbing(returned);
-    return 1; // success
+
+    KeySet *config = elektraPluginGetConfig(handle);
+    Key *onConflictConf = ksLookupByName(config, "conflict/get", KDB_O_NONE);
+    OnConflict onConflict = LOG;
+    if(onConflictConf)
+    {
+        const char *onConflictString = keyName(onConflictConf);
+        if(!strcmp(onConflictString, "ERROR"))
+        {
+            onConflict = ERROR;
+        }
+        else if(!strcmp(onConflictString, "WARNING"))
+        {
+            onConflict = WARNING;
+        }
+        else if(!strcmp(onConflictString, "LOG"))
+        {
+            onConflict = LOG;
+        }
+    }
+
+    int ret = doGlobbing(returned, onConflict);
+    return ret; // success
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
