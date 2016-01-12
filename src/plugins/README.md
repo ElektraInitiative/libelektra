@@ -178,7 +178,7 @@ Copies meta data to keys:
 - [glob](glob/) using globbing techniques
 - [struct](struct/) using a defined structure (may also reject
   configuration not conforming to that structure)
-
+- [spec](spec/) copies metadata from spec namespace
 Plugins that check if values are valid based on meta data (typically
 copied by another plugin just before):
 
