@@ -18,11 +18,43 @@ It also needs to be decrypted whenever an admissible access (read) is being perf
 The users of Elektra should not be bothered too much with the internals of the cryptographic operations.
 Also the cryptographic keys must never be exposed to the outside of the crypto module.
 
+The crypto plugin supports different libraries as provider for the cryptographic operations.
+At the moment the following crypto APIs are supported:
+
+- OpenSSL (libcrypto)
+- libgcrypt
+
 ## Dependencies ##
 
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 - `libgcrypt20-dev` or `libgcrypt-devel`
+#endif
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+- `libssl-dev` or `openssl-devel`
+#endif
+
+## How to compile ##
+
+The following compile variants are available:
+
+1. crypto_gcrypt
+2. crypto_openssl
+
+Add "crypto" and the variants, that you want (you can add one of them or all), to the `PLUGINS` variable in `CMakeCache.txt` and re-run `cmake`.
+
+In order to add all compile variants you can add "CRYPTO" to the `PLUGINS` variable.
+
+An example `CMakeCache.txt` may contain the following variable:
+
+    PLUGINS=crypto;crypto_gcrypt;crypto_openssl
+
+or it may look like:
+
+    PLUGINS=CRYPTO
 
 ## Restrictions ##
+
+The status of this plugin is experimental.
 
 The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
 
