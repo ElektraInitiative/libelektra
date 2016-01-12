@@ -193,7 +193,15 @@ static void copyMeta(Key *key, Key *specKey)
         const char *name = keyName(meta);
         if(!(!strcmp(name, "array") || !strcmp(name, "required") || !strcmp(name, "specInternal/valid") || !strncmp(name, "conflict/", 9)))
         {
-            keyCopyMeta(key, specKey, name);
+            if(keyGetMeta(key, name) != NULL)
+            {
+                fprintf(stderr, "metakey %s already present in %s\n", name, keyName(key));
+            }
+            else
+            {
+                fprintf(stderr, "copying metakey %s to %s\n", name, keyName(key));
+                keyCopyMeta(key, specKey, name);
+            }
         }
     }
     keySetMeta(key, "specInternal/valid", 0);
