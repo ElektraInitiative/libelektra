@@ -173,6 +173,34 @@ static void setOrderNumber(Key *parentKey, Key *key)
 	keySetMeta(key, "order", buffer);
 	keySetMeta(parentKey, "order", buffer);
 }
+static void setSubOrderNumber(Key *key, const char *oldOrder)
+{
+	char *lastIndexPtr = NULL;
+	char *newOrder = elektraMalloc(elektraStrLen(oldOrder)+ELEKTRA_MAX_ARRAY_SIZE);
+	if ((lastIndexPtr = strrchr(oldOrder, '/')))
+	{
+		kdb_long_long_t subIndex = 0;
+		char *ptr = lastIndexPtr;
+		++ptr; //skip /
+		++ptr; //skip #
+		while (*ptr == '_')
+		{
+			++ptr;
+		}
+		elektraReadArrayNumber(ptr, &subIndex);
+		++subIndex;
+		int len = (lastIndexPtr+1) - oldOrder;
+		char buffer[ELEKTRA_MAX_ARRAY_SIZE];
+		elektraWriteArrayNumber(buffer, subIndex);
+		sprintf(newOrder, "%.*s%s", len, oldOrder, buffer);
+	}
+	else
+	{
+		sprintf(newOrder, "%s/#1", oldOrder);
+	}
+	keySetMeta(key, "order", newOrder);
+	elektraFree(newOrder);
+}
 
 static void insertNewKeyIntoExistendOrder(Key *key, KeySet *ks)
 {
@@ -190,31 +218,7 @@ static void insertNewKeyIntoExistendOrder(Key *key, KeySet *ks)
 			{
 				oldOrder = keyString(keyGetMeta(prevKey, "order"));
 			}
-			char *lastIndexPtr = NULL;
-			char *newOrder = elektraMalloc(elektraStrLen(oldOrder)+ELEKTRA_MAX_ARRAY_SIZE);
-			if ((lastIndexPtr = strrchr(oldOrder, '/')))
-			{
-				kdb_long_long_t subIndex = 0;
-				char *ptr = lastIndexPtr;
-				++ptr; //skip /
-				++ptr; //skip #
-				while (*ptr == '_')
-				{
-					++ptr;
-				}
-				elektraReadArrayNumber(ptr, &subIndex);
-				++subIndex;
-				int len = (lastIndexPtr+1) - oldOrder;
-				char buffer[ELEKTRA_MAX_ARRAY_SIZE];
-				elektraWriteArrayNumber(buffer, subIndex);
-				sprintf(newOrder, "%.*s%s", len, oldOrder, buffer);
-			}
-			else
-			{
-				sprintf(newOrder, "%s/#1", oldOrder);
-			}
-			keySetMeta(key, "order", newOrder);
-			elektraFree(newOrder);
+			setSubOrderNumber(key, oldOrder);
 		}	
 		prevKey = curKey;
 	}
@@ -744,29 +748,8 @@ static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
 		}
 	}
 
-	char *newOrder = elektraMalloc(elektraStrLen(lastOrderNumber)+ELEKTRA_MAX_ARRAY_SIZE);
-	char *lastIndexPtr = NULL;
-	if ((lastIndexPtr = strrchr(lastOrderNumber, '/')))
-	{
-		kdb_long_long_t subIndex = 0;
-		char *ptr = lastIndexPtr;
-		++ptr; //skip /
-		++ptr; //skip #
-		while (*ptr == '_')
-			++ptr;
-		elektraReadArrayNumber(ptr, &subIndex);
-		++subIndex;
-		int len = (lastIndexPtr+1) - lastOrderNumber;
-		char buffer[ELEKTRA_MAX_ARRAY_SIZE];
-		elektraWriteArrayNumber(buffer, subIndex);
-		sprintf(newOrder, "%.*s%s", len, lastOrderNumber, buffer);
-	}
-	else
-	{
-		sprintf(newOrder, "%s/#1", lastOrderNumber);
-	}
-	keySetMeta(appendKey, "order", newOrder);
-	elektraFree(newOrder);
+	setSubOrderNumber(appendKey, lastOrderNumber);
+
 	ksDel(cutKS);
 	ksDel(searchKS);
 }
@@ -798,29 +781,8 @@ static void insertNewSectionIntoExistendOrder(Key *appendKey, KeySet *newKS)
 			lastOrderNumber = keyString(keyGetMeta(looking, "order"));
 	}
 
-	char *newOrder = elektraMalloc(elektraStrLen(lastOrderNumber)+ELEKTRA_MAX_ARRAY_SIZE);
-	char *lastIndexPtr = NULL;
-	if ((lastIndexPtr = strrchr(lastOrderNumber, '/')))
-	{
-		kdb_long_long_t subIndex = 0;
-		char *ptr = lastIndexPtr;
-		++ptr; //skip /
-		++ptr; //skip #
-		while (*ptr == '_')
-			++ptr;
-		elektraReadArrayNumber(ptr, &subIndex);
-		++subIndex;
-		int len = (lastIndexPtr+1) - lastOrderNumber;
-		char buffer[ELEKTRA_MAX_ARRAY_SIZE];
-		elektraWriteArrayNumber(buffer, subIndex);
-		sprintf(newOrder, "%.*s%s", len, lastOrderNumber, buffer);
-	}
-	else
-	{
-		sprintf(newOrder, "%s/#1", lastOrderNumber);
-	}
-	keySetMeta(appendKey, "order", newOrder);
-	elektraFree(newOrder);
+	setSubOrderNumber(appendKey, lastOrderNumber);
+
 	ksDel(cutKS);
 	ksDel(searchKS);
 }
@@ -889,6 +851,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 				keySetBinary(appendKey, 0, 0);
 				ksAppendKey(newKS, appendKey);
 				insertNewSectionIntoExistendOrder(appendKey, newKS);
+				appendKey = keyDup(appendKey);
 			}
 			else
 			{
@@ -897,9 +860,9 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 					keySetBinary(appendKey, 0, 0);
 					ksAppendKey(newKS, appendKey);
 					insertSectionIntoExistingOrder(appendKey, newKS);
+					appendKey = keyDup(appendKey);
 				}
 			}
-			appendKey = keyDup(appendKey);
 			keySetMeta(appendKey, "order", 0);
 			keySetMeta(appendKey, "ini/section", 0);
 			keySetMeta(appendKey, "binary", 0);
