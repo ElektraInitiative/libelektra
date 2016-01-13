@@ -19,14 +19,12 @@ extern "C" char **environ;
 
 
 const long long nr_keys = 1000LL;
-long long iterations = 100000LL; // markusbyte
+long long iterations = 100000LL;
 
 // not needed in benchmarks:
 long long iterations1 = iterations / 100;
 
 const int benchmarkIterations = 11; // is a good number to not need mean values for median
-
-const std::string filename = "check.txt";
 
 kdb::KeySet toWrite;
 
@@ -46,7 +44,7 @@ __attribute__((noinline)) void benchmark_backend()
 {
 	using namespace kdb;
 	using namespace kdb::tools;
-	static Timer t("backend"+std::to_string(PLUGINS));
+	static Timer t(std::to_string(PLUGINS) + " mountpoint(s)");
 
 	Key mp ("system/iterate/" + std::to_string(PLUGINS), KEY_END);
 	std::string cf = "/tmp/file"+std::to_string(PLUGINS)+".ecf";
@@ -131,7 +129,6 @@ void computer_info()
 	std::cout << "sizeof(long) " << sizeof(long) << std::endl;
 	std::cout << "sizeof(long long) " << sizeof(long long) << std::endl;
 	std::cout << "iterations " << iterations << std::endl;
-	std::cout << "filename " << filename << std::endl;
 	std::cout << std::endl;
 }
 
@@ -163,6 +160,6 @@ int main(int argc, char**argv)
 		benchmark_backend<8>();
 		benchmark_backend<9>();
 	}
-	std::cout << "value,benchmark" << std::endl;
+	std::cerr << "value,benchmark" << std::endl;
 }
 
