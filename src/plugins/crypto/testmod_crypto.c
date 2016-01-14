@@ -91,32 +91,32 @@ static KeySet *newIncompleteConfiguration()
  */
 static KeySet *newTestdataKeySet()
 {
-	Key *keyUnchanged1 = keyNew("user/crypto/test/nochange", KEY_END);
-	Key *keyUnchanged2 = keyNew("user/crypto/test/nochange2", KEY_END);
-	Key *keyNull = keyNew("user/crypto/test/mynull", KEY_END);
-	Key *keyString = keyNew("user/crypto/test/mystring", KEY_END);
-	Key *keyBin = keyNew("user/crypto/test/mybin", KEY_END);
+	Key *kUnchanged1 = keyNew("user/crypto/test/nochange", KEY_END);
+	Key *kUnchanged2 = keyNew("user/crypto/test/nochange2", KEY_END);
+	Key *kNull = keyNew("user/crypto/test/mynull", KEY_END);
+	Key *kString = keyNew("user/crypto/test/mystring", KEY_END);
+	Key *kBin = keyNew("user/crypto/test/mybin", KEY_END);
 
-	keySetString(keyUnchanged1, strVal);
+	keySetString(kUnchanged1, strVal);
 
-	keySetString(keyUnchanged2, strVal);
-	keySetMeta(keyUnchanged2, ELEKTRA_CRYPTO_META_ENCRYPT, "");
+	keySetString(kUnchanged2, strVal);
+	keySetMeta(kUnchanged2, ELEKTRA_CRYPTO_META_ENCRYPT, "");
 
-	keySetBinary(keyNull, 0, 0);
-	keySetMeta(keyNull, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetBinary(kNull, 0, 0);
+	keySetMeta(kNull, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
-	keySetString(keyString, strVal);
-	keySetMeta(keyString, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetString(kString, strVal);
+	keySetMeta(kString, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
-	keySetBinary(keyBin, binVal, sizeof(binVal));
-	keySetMeta(keyBin, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetBinary(kBin, binVal, sizeof(binVal));
+	keySetMeta(kBin, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
 	return ksNew(5,
-		keyUnchanged1,
-		keyUnchanged2,
-		keyNull,
-		keyString,
-		keyBin,
+		kUnchanged1,
+		kUnchanged2,
+		kNull,
+		kString,
+		kBin,
 		KS_END);
 }
 
