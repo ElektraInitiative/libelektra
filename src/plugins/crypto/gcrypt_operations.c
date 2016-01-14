@@ -13,6 +13,12 @@
 #include <kdbtypes.h>
 #include <stdlib.h>
 #include <gcrypt.h>
+#include <pthread.h>
+#include <asm-generic/errno-base.h>
+
+// initialize the gcrypt threading subsystem
+// NOTE: old versions of libgcrypt require the functions defined in this macro!
+GCRY_THREAD_OPTION_PTHREAD_IMPL;
 
 /**
  * @brief read the cryptographic key from the given keyset.
@@ -63,7 +69,6 @@ int elektraCryptoGcryInit(Key *errorKey)
 
 	// initialize the gcrypt threading subsystem
 	// NOTE: this is a dummy call in newer versions of gcrypt, but old versions require it
-	GCRY_THREAD_OPTION_PTHREAD_IMPL;
 	gcry_control(GCRYCTL_SET_THREAD_CBS, &gcry_threads_pthread);
 
 	// initialize the rest of the gcrypt library
