@@ -30,7 +30,7 @@ static unsigned int ref_cnt = 0;
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoInit(Key *errorKey)
+static int elektraCryptoInit(Key *errorKey ELEKTRA_UNUSED)
 {
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 	return elektraCryptoGcryInit(errorKey);
@@ -58,11 +58,13 @@ static void elektraCryptoTeardown()
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoEncrypt(Plugin *handle, KeySet *data, Key *errorKey)
+static int elektraCryptoEncrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
 	Key *k;
 	elektraCryptoHandle *cryptoHandle = NULL;
 	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+#endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
@@ -118,11 +120,13 @@ openssl_error:
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoDecrypt(Plugin *handle, KeySet *data, Key *errorKey)
+static int elektraCryptoDecrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
 {
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
 	Key *k;
 	elektraCryptoHandle *cryptoHandle = NULL;
 	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+#endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
