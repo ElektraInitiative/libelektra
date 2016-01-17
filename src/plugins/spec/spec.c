@@ -18,11 +18,20 @@
 
 #include "metafunctions.h"
 
-typedef enum{ERROR, WARNING, LOG}OnConflict;
+typedef enum{ERROR, WARNING, LOG, IGNORE}OnConflict;
+
+typedef struct
+{
+    OnConflict member;
+    OnConflict invalid;
+    OnConflict count;
+    OnConflict conflict;
+    OnConflict range; 
+    int firstError;
+}ConflictHandling;
 
 static char *keyNameToMatchingString(const Key *key)
 {
-    fprintf(stdout, "keyname: %s\n", keyName(key));
     uint8_t arrayCount = 0;
     char *name = strchr(keyName(key), '/');
     for(char *ptr = name; *ptr != '\0'; ++ptr)
@@ -47,7 +56,6 @@ static char *keyNameToMatchingString(const Key *key)
         }
     }
     *dst = '\0';
-    fprintf(stdout, "keyToPattern: %s\n", pattern);
     return pattern;
 }
 
@@ -56,7 +64,30 @@ static int matchPatternToKey(const char *pattern, const Key *key)
     return !fnmatch(pattern, (strchr(keyName(key), '/')+1), FNM_NOESCAPE|FNM_PATHNAME);
 }
 
-static int isValidArrayKey(Key *key)
+static void conflictAction(Key *key, OnConflict conflict, const char *msg, ConflictHandling *ch)
+{
+    if(conflict == ERROR && !ch->firstError)
+        return;
+    switch(conflict)
+    {
+        case ERROR:
+            ch->firstError = 0;
+            fprintf(stderr, "\t ERROR: %s:%s\n", keyName(key), msg);
+            break;
+        case WARNING:
+            fprintf(stderr, "\t WARNING: %s:%s\n", keyName(key), msg);
+            break;
+        case LOG:
+            fprintf(stderr, "\t LOG: %s:%s\n", keyName(key), msg);
+            break;
+        case IGNORE:
+            fprintf(stderr, "\t IGNORE: %s\n", keyName(key));
+        default:
+            break;
+    }
+}
+
+static int isValidArrayKey(Key *key, ConflictHandling *ch)
 {
     Key *copy = keyDup(key);
     do
@@ -65,7 +96,7 @@ static int isValidArrayKey(Key *key)
         {
             if(elektraArrayValidateName(copy) == -1)
             {
-                fprintf(stderr, "%s not a valid array name\n", keyName(copy));
+                conflictAction(key, ch->invalid, "not a valid array name", ch);
                 keyDel(copy);
                 return 0;
             }
@@ -83,7 +114,8 @@ static int hasArray(Key *key)
         return 1;
 }
 
-static void validateArrayRange(Key *parent, long validCount, Key *specKey)
+
+static void validateArrayRange(Key *parent, long validCount, Key *specKey, ConflictHandling *ch)
 {
     const Key *arrayRange = keyGetMeta(specKey, "array");
     if(arrayRange != NULL)
@@ -98,17 +130,13 @@ static void validateArrayRange(Key *parent, long validCount, Key *specKey)
         long max = atoi(maxString);
         if(validCount < min || validCount > max)
         {
-            fprintf(stderr, "%ld not within range %ld - %ld\n", validCount, min, max);
-            keySetMeta(parent, "conflict/range", ""); 
+            conflictAction(parent, ch->range, "out of range", ch);
         }
-        else
-        {
-            fprintf(stderr, "%ld within range %ld - %ld\n", validCount, min, max);
-        }
+        elektraFree(rangeString);
     }
 }
 
-static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey)
+static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey, ConflictHandling *ch)
 {
     Key *tmpArrayParent = keyDup(arrayKey);
     keySetBaseName(tmpArrayParent, 0);
@@ -129,18 +157,17 @@ static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey)
             if(elektraArrayValidateName(cur) == 1)
             { 
                 ++validCount;
-                keySetMeta(cur, "specInternal/valid", "");
-                fprintf(stderr, "%s: marked as valid\n", keyName(cur));
+                keySetMeta(cur, "spec/internal/valid", "");
             }
             else
             {
+                
+                conflictAction(arrayParent, ch->member, "has invalid members", ch);
                 KeySet *invalidCutKS = ksCut(subKeys, cur);
                 Key *toMark;
                 while((toMark = ksNext(invalidCutKS)) != NULL)
                 { 
-                    fprintf(stderr, "%s: marked as invalid\n", keyName(cur));
-                    keySetMeta(toMark, "conflict/invalid", "");
-                    elektraMetaArrayAdd(arrayParent, "conflict/hasInvalidMembers", keyName(toMark));
+                    conflictAction(toMark, ch->member, "invalid member", ch);
                 }
                 ksDel(invalidCutKS);
             }
@@ -148,9 +175,9 @@ static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey)
     }
     ksDel(subKeys);
     ksDel(ksCopy);
-    validateArrayRange(arrayParent, validCount, specKey); 
+    validateArrayRange(arrayParent, validCount, specKey, ch); 
 }
-static void validateWildcardSubs(KeySet *ks, Key *key, Key *specKey)
+static int validateWildcardSubs(KeySet *ks, Key *key, Key *specKey, ConflictHandling *ch)
 {
     const Key *requiredMeta = keyGetMeta(specKey, "required");
     if(!requiredMeta)
@@ -173,19 +200,13 @@ static void validateWildcardSubs(KeySet *ks, Key *key, Key *specKey)
     long required = atol(keyString(requiredMeta));
     if(required != subCount)
     {
-        fprintf(stderr, "%ld != %ld\n", subCount, required);
-        keySetMeta(parent, "conflict/invalidSubCount", "");
+        conflictAction(parent, ch->count, "invalid number of subkeys", ch);
     }
-    else
-    {
-        fprintf(stderr, "%ld != %ld\n", subCount, required);
-    }
-
     ksDel(subKeys);
     ksDel(ksCopy);
 }
 
-static int copyMeta(Key *key, Key *specKey)
+static int copyMeta(Key *key, Key *specKey, ConflictHandling *ch)
 {
     int ret = 1;
     keyRewindMeta(specKey);
@@ -193,12 +214,11 @@ static int copyMeta(Key *key, Key *specKey)
     {
         const Key *meta = keyCurrentMeta(specKey);
         const char *name = keyName(meta);
-        if(!(!strcmp(name, "array") || !strcmp(name, "required") || !strcmp(name, "specInternal/valid") || !strncmp(name, "conflict/", 9)))
+        if(!(!strcmp(name, "array") || !strcmp(name, "required") || !strcmp(name, "spec/internal/valid") || !strncmp(name, "conflict/", 9)))
         {
             const Key *oldMeta;
-            if((oldMeta = keyGetMeta(key, name)) != NULL)
+            if(((oldMeta = keyGetMeta(key, name)) != NULL) && (ch->conflict != IGNORE))
             {
-                fprintf(stderr, "metakey %s already present in %s\n", name, keyName(key));
                 int conflictStringSize=elektraStrLen(name)+elektraStrLen("conflict/");
                 char *conflictName = elektraMalloc(conflictStringSize);
                 snprintf(conflictName, conflictStringSize, "conflict/%s", name);
@@ -206,20 +226,20 @@ static int copyMeta(Key *key, Key *specKey)
                 keyCopyMeta(key, specKey, name);
                 elektraFree(conflictName);
                 elektraMetaArrayAdd(key, "conflict", name);
+                conflictAction(key, ch->conflict, "conflicting meta names", ch);
                 ret = -1;
             }
             else
             {
-                fprintf(stderr, "copying metakey %s to %s\n", name, keyName(key));
                 keyCopyMeta(key, specKey, name);
             }
         }
     }
-    keySetMeta(key, "specInternal/valid", 0);
+    keySetMeta(key, "spec/internal/valid", 0);
     return ret;
 }
 
-static int doGlobbing(KeySet *returned, OnConflict onConflict)
+static int doGlobbing(KeySet *returned, ConflictHandling *ch)
 {
     Key *specCutKey = keyNew("spec", KEY_END);
     KeySet *specKS = ksCut(returned, specCutKey);
@@ -238,46 +258,41 @@ static int doGlobbing(KeySet *returned, OnConflict onConflict)
             if(matchPatternToKey(pattern, cur))
             {
 
-                fprintf(stderr, "%s matched %s\n", keyName(cur), pattern);
                 if(keyGetMeta(cur, "conflict/invalid"))
                 {
-                    fprintf(stderr, "%s marked as invalid. Pattern: %s\n", keyName(cur), pattern);
+                    conflictAction(cur, ch->invalid, "marked as invalid", ch);
                     continue;
                 }
-                else if(keyGetMeta(cur, "specInternal/valid"))
+                else if(keyGetMeta(cur, "spec/internal/valid"))
                 {
-                    fprintf(stderr, "%s marked as valid. Pattern :%s\n\n", keyName(cur), pattern);
-                    copyMeta(cur, specKey);
+                    copyMeta(cur, specKey, ch);
                 }
                 else if(elektraArrayValidateName(cur) == 1)
                 {
-                    fprintf(stderr, "%s is valid array key. Pattern: %s\n", keyName(cur), pattern);
-                    validateArray(returned, cur, specKey); 
-                    copyMeta(cur, specKey);
+                    validateArray(returned, cur, specKey, ch); 
+                    copyMeta(cur, specKey, ch);
                 }
                 else if(!(strcmp(keyBaseName(specKey), "_")))
                 {
-                    fprintf(stderr, "%s is a wildcard match. Pattern: %s\n", keyName(cur), pattern);
-                    validateWildcardSubs(returned, cur, specKey);
-                    copyMeta(cur, specKey);
+                    validateWildcardSubs(returned, cur, specKey, ch);
+                    copyMeta(cur, specKey, ch);
                 }
                 else
                 {
                     if(hasArray(cur))
                     {
-                        if(isValidArrayKey(cur))
+                        if(isValidArrayKey(cur, ch))
                         {
-                            fprintf(stderr, "%s: contains valid array keys\n", keyName(cur));
-                            copyMeta(cur, specKey);
+                            copyMeta(cur, specKey, ch);
                         }
                         else
                         {
-                            fprintf(stderr, "%s: contains invalid array keys\n", keyName(cur));
+                            conflictAction(cur, ch->invalid, "contains invalid array keys", ch);
                         }
                     }
                     else
                     {
-                        copyMeta(cur, specKey);
+                        copyMeta(cur, specKey, ch);
                     }
                 }
             }
@@ -291,6 +306,55 @@ static int doGlobbing(KeySet *returned, OnConflict onConflict)
     return ret;
 }
 
+static OnConflict getConfOption(Key *key)
+{
+    const char *string = keyString(key);
+    if(!strcmp(string, "ERROR"))
+    {
+        return ERROR;
+    }
+    else if(!strcmp(string, "WARNING"))
+    {
+        return WARNING;
+    }
+    else if(!strcmp(string, "LOG"))
+    {
+        return LOG;
+    }
+    else
+    {
+        return IGNORE;
+    }
+}
+static void parseConfig(KeySet *config, ConflictHandling *ch)
+{
+    Key *onConflictConf = NULL;
+    while((onConflictConf = ksNext(config)) != NULL)
+    {
+       const char *baseName = keyBaseName(onConflictConf);
+       if(!strcmp(baseName, "member"))
+       {
+          ch->member = getConfOption(onConflictConf);
+       }
+       else if(!strcmp(baseName, "invalid"))
+       {
+          ch->invalid = getConfOption(onConflictConf);
+       } 
+       else if(!strcmp(baseName, "count"))
+       {
+          ch->count = getConfOption(onConflictConf);
+       } 
+       else if(!strcmp(baseName, "conflict"))
+       {
+          ch->conflict = getConfOption(onConflictConf);
+       } 
+       else if(!strcmp(baseName, "range"))
+       {
+          ch->range = getConfOption(onConflictConf);
+       } 
+    }
+
+}
 int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
     if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/spec"))
@@ -313,11 +377,12 @@ int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
         return 1; // success
     }
     KeySet *config = elektraPluginGetConfig(handle);
-    Key *onConflictConf = ksLookupByName(config, "conflict/get", KDB_O_NONE);
-    OnConflict onConflict = LOG;
+    Key *onConflictConf = ksLookupByName(config, "/conflict/get", KDB_O_NONE);
+    OnConflict onConflict = IGNORE;
+    ConflictHandling *ch = elektraMalloc(sizeof(ConflictHandling));
     if(onConflictConf)
     {
-        const char *onConflictString = keyName(onConflictConf);
+        const char *onConflictString = keyString(onConflictConf);
         if(!strcmp(onConflictString, "ERROR"))
         {
             onConflict = ERROR;
@@ -330,9 +395,23 @@ int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
         {
             onConflict = LOG;
         }
+        else if(!strcmp(onConflictString, "IGNORE"))
+        {
+            onConflict = IGNORE;
+        }
     }
+    ch->member = onConflict;
+    ch->invalid = onConflict;
+    ch->count = onConflict;
+    ch->conflict = onConflict;
+    ch->range = onConflict;
+    ch->firstError = 1;
 
-    int ret = doGlobbing(returned, onConflict);
+    KeySet *conflictCut = ksCut(config, onConflictConf);
+    parseConfig(conflictCut, ch);
+    ksAppend(config, conflictCut);
+    int ret = doGlobbing(returned, ch);
+    elektraFree(ch);
     return ret; // success
 }
 
@@ -340,8 +419,9 @@ int elektraSpecSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 {
 
     KeySet *config = elektraPluginGetConfig(handle);
-    Key *onConflictConf = ksLookupByName(config, "conflict/get", KDB_O_NONE);
-    OnConflict onConflict = LOG;
+    Key *onConflictConf = ksLookupByName(config, "/conflict/set", KDB_O_NONE);
+    OnConflict onConflict = IGNORE;
+    ConflictHandling *ch = elektraMalloc(sizeof(ConflictHandling));
     if(onConflictConf)
     {
         const char *onConflictString = keyName(onConflictConf);
@@ -358,8 +438,19 @@ int elektraSpecSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
             onConflict = LOG;
         }
     }
+    ch->member = onConflict;
+    ch->invalid = onConflict;
+    ch->count = onConflict;
+    ch->conflict = onConflict;
+    ch->range = onConflict;
+    ch->firstError = 1;
 
-    int ret = doGlobbing(returned, onConflict);
+    KeySet *conflictCut = ksCut(config, onConflictConf);
+    parseConfig(conflictCut, ch);
+    ksAppend(config, conflictCut);
+
+    int ret = doGlobbing(returned, ch);
+    elektraFree(ch);
     return ret; // success
 }
 

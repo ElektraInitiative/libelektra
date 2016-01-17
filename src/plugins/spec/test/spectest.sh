@@ -11,6 +11,13 @@ kdb set system/elektra/globalplugins/postcommit/user/plugins/#0 spec
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set "presetstorage"
 kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get "postgetstorage"
+kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/conflict/get "ERROR"
+kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/conflict/get/range "LOG"
+kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/conflict/set "ERROR"
+kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/conflict/set/range "LOG"
+kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/conflict/set/conflict "IGNORE"
+
+
 
 kdb set system/elektra/globalplugins/postrollback list
 kdb set system/elektra/globalplugins/precommit list

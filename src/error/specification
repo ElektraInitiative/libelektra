@@ -833,3 +833,15 @@ description:duplicated key entry in INI file
 severity:error
 ingroup:plugin
 module:ini
+
+number:142
+description:globbing error
+severity:error
+ingroup:plugin
+module:spec
+
+number:143
+description:globbing warning
+severity:warning
+ingroup:plugin
+module:spec
