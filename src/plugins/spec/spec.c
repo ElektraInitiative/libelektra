@@ -14,13 +14,16 @@
 #include <fnmatch.h>
 #include <kdbhelper.h>
 #include <kdbease.h>
+#include <kdberrors.h>
 #include <kdbprivate.h>
 
 #include "metafunctions.h"
 
+#define MAX_CHARS_IN_LONG 26
+
 typedef enum{GET, SET}Direction;
 
-typedef enum{ERROR, WARNING, LOG, IGNORE}OnConflict;
+typedef enum{ERROR, WARNING, INFO, IGNORE}OnConflict;
 
 typedef enum{ARRAYMEMBER, INVALID, SUBCOUNT, CONFLICT, OUTOFRANGE, NAC}Conflict;
 
@@ -104,9 +107,9 @@ static OnConflict getConfOption(Key *key)
     {
         return WARNING;
     }
-    else if(!strcmp(string, "LOG"))
+    else if(!strcmp(string, "INFO"))
     {
-        return LOG;
+        return INFO;
     }
     else
     {
@@ -130,7 +133,9 @@ static void validateArrayRange(Key *parent, long validCount, Key *specKey)
         long max = atoi(maxString);
         if(validCount < min || validCount > max)
         {
-            keySetMeta(parent, "conflict/range", ""); 
+            char buffer[MAX_CHARS_IN_LONG+1];
+            snprintf(buffer, sizeof(buffer), "%ld", validCount);
+            keySetMeta(parent, "conflict/range", buffer); 
         }
         elektraFree(rangeString);
     }
@@ -165,7 +170,8 @@ static void validateArray(KeySet *ks, Key *arrayKey, Key *specKey)
                 Key *toMark;
                 while((toMark = ksNext(invalidCutKS)) != NULL)
                 { 
-                    keySetMeta(toMark, "conflict/invalid", "");
+                    if(strcmp(keyName(cur), keyName(toMark)))
+                        keySetMeta(toMark, "conflict/invalid", "");
                     elektraMetaArrayAdd(arrayParent, "conflict/hasInvalidMembers", keyName(toMark));
                 }
                 ksDel(invalidCutKS);
@@ -197,9 +203,11 @@ static void validateWildcardSubs(KeySet *ks, Key *key, Key *specKey)
             ++subCount;
     }
     long required = atol(keyString(requiredMeta));
+    char buffer[MAX_CHARS_IN_LONG+1];
     if(required != subCount)
     {
-        keySetMeta(parent, "conflict/invalidSubCount", "");
+        snprintf(buffer, sizeof(buffer), "%ld", subCount);
+        keySetMeta(parent, "conflict/invalidSubCount", buffer);
     }
 
     ksDel(subKeys);
@@ -275,124 +283,180 @@ static Conflict getConflict(Key *conflictMeta)
         return NAC;
 }
 
-static int handleInvalidConflict(Key *parentKey, Key *key, Key *conflictMeta, OnConflict onConflict)
+static int handleInvalidConflict(Key *parentKey, Key *key, OnConflict onConflict)
 {
+    int ret = 0;
     switch(onConflict)
     {
         case ERROR:
-            fprintf(stderr, "ERROR: INVALID: %s\n", keyName(key));
+            ELEKTRA_SET_ERRORF(140, parentKey, "Invalid key %s\n", keyName(key));
+            ret = -1;
             break;
         case WARNING:
-            fprintf(stderr, "WARNING: INVALID: %s\n", keyName(key));
+            ELEKTRA_ADD_WARNINGF(141, parentKey, "Invalid key %s\n", keyName(key));
             break;
-        case LOG:
-            fprintf(stderr, "LOG: INVALID: %s\n", keyName(key));                   
+        case INFO:
+            {
+                const char *infoString = "Invalid key ";
+                const size_t len = elektraStrLen(infoString)+elektraStrLen(keyName(key))-1;
+                char *buffer = elektraMalloc(len);
+                snprintf(buffer, len, "Invalid key %s\n", keyName(key));
+                elektraMetaArrayAdd(key, "logs/spec/info", buffer);
+                elektraFree(buffer);
+            }
             break;
         case IGNORE:
 
             break;
     }
+    return ret;
 }
 
 static int handleArrayConflict(Key *parentKey, Key *key, Key *conflictMeta, OnConflict onConflict)
 {
+    int ret = 0;
+    const char *problemKeys = elektraMetaArrayToString(key, keyName(conflictMeta), ", ");
     switch(onConflict)
     {
         case ERROR:
-            fprintf(stderr, "ERROR: ARRAYMEMBER: %s\n", keyName(key));
+            ELEKTRA_SET_ERRORF(140, parentKey, "%s has invalid array key members: %s\n", keyName(key), problemKeys);
+            ret = -1;
             break;
         case WARNING:
-            fprintf(stderr, "WARNING: ARRAYMEMBER: %s\n", keyName(key));
+            ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has invalid array members: %s\n", keyName(key), problemKeys);
             break;
-        case LOG:
-            fprintf(stderr, "LOG: ARRAYMEMBER: %s\n", keyName(key));                   
+        case INFO:
+            {
+                const char *infoString = "invalid array members: ";
+                const size_t len = elektraStrLen(infoString)+elektraStrLen(problemKeys)-1;
+                char *buffer = elektraMalloc(len);
+                snprintf(buffer, len, "invalid array members: %s\n", problemKeys);
+                elektraMetaArrayAdd(key, "logs/spec/info", buffer);
+                elektraFree(buffer);
+            }
             break;
         case IGNORE:
 
             break;
     }
+    if(problemKeys)
+        elektraFree((void *)problemKeys);
+    return ret;
 }
 
-static int handleSubCountConflict(Key *parentKey, Key *key, Key *conflictMeta, OnConflict onConflict)
+static int handleSubCountConflict(Key *parentKey, Key *key, Key *specKey, Key *conflictMeta, OnConflict onConflict)
 {
+    int ret = 0;
     switch(onConflict)
     {
         case ERROR:
-            fprintf(stderr, "ERROR: SUBCOUNT: %s\n", keyName(key));
+            ELEKTRA_SET_ERRORF(140, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "required")));
+            ret = -1;
             break;
         case WARNING:
-            fprintf(stderr, "WARNING: SUBCOUNT: %s\n", keyName(key));
+            ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "required")));
             break;
-        case LOG:
-            fprintf(stderr, "LOG: SUBCOUNT: %s\n", keyName(key));                   
+        case INFO:
+            {
+                const char *infoString = "invalid number of subkeys: %s. Expected %s";
+                const size_t len = elektraStrLen(infoString)+MAX_CHARS_IN_LONG*2;
+                char *buffer = elektraMalloc(len);
+                snprintf(buffer, len, infoString, keyString(conflictMeta), keyString(keyGetMeta(specKey, "required")));
+                elektraMetaArrayAdd(key, "logs/spec/info", buffer);
+                elektraFree(buffer);
+            }
             break;
         case IGNORE:
 
             break;
     }
+    return ret;
 }
 
 static int handleConflictConflict(Key *parentKey, Key *key, Key *conflictMeta, OnConflict onConflict)
 {
+    int ret = 0;
+    const char *problemKeys = elektraMetaArrayToString(key, keyName(conflictMeta), ", ");
     switch(onConflict)
     {
         case ERROR:
-            fprintf(stderr, "ERROR: CONFLICT: %s\n", keyName(key));
+            ELEKTRA_SET_ERRORF(140, parentKey, "%s has conflicting metakeys: %s\n", keyName(key), problemKeys);
+            ret = -1;
             break;
         case WARNING:
-            fprintf(stderr, "WARNING: CONFLICT: %s\n", keyName(key));
+            ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has conflicting metakeys: %s\n", keyName(key), problemKeys);
             break;
-        case LOG:
-            fprintf(stderr, "LOG: CONFLICT: %s\n", keyName(key));                   
+        case INFO:
+            {
+                const char *infoString = "has conflicting metakeys:";
+                const size_t len = elektraStrLen(infoString)+elektraStrLen(problemKeys)+elektraStrLen(keyName(key));
+                char *buffer = elektraMalloc(len);
+                snprintf(buffer, len, "%s infoString %s", keyName(key), problemKeys);
+                elektraMetaArrayAdd(key, "logs/spec/info", buffer);
+                elektraFree(buffer);
+            }
             break;
         case IGNORE:
 
             break;
     }
+    if(problemKeys)
+        elektraFree((void *)problemKeys);
+    return ret;
 }
 
-static int handleOutOfRangeConflict(Key *parentKey, Key *key, Key *conflictMeta, OnConflict onConflict)
+static int handleOutOfRangeConflict(Key *parentKey, Key *key, Key *specKey, Key *conflictMeta, OnConflict onConflict)
 {
+    int ret = 0;
     switch(onConflict)
     {
         case ERROR:
-            fprintf(stderr, "ERROR: OUTOFRANGE: %s\n", keyName(key));
+            ELEKTRA_SET_ERRORF(140, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "array")));
+            ret = -1;
             break;
         case WARNING:
-            fprintf(stderr, "WARNING: OUTOFRANGE: %s\n", keyName(key));
+            ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "array")));
             break;
-        case LOG:
-            fprintf(stderr, "LOG: OUTOFRANGE: %s\n", keyName(key));                   
+        case INFO:
+            {
+                const char *infoString = "%s has invalid number of member: %s. Expected: %s";
+                const size_t len = elektraStrLen(infoString)+elektraStrLen(keyName(key))+MAX_CHARS_IN_LONG+keyGetValueSize(keyGetMeta(specKey, "array"))-2;
+                char *buffer = elektraMalloc(len);
+                snprintf(buffer, len, infoString, keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "array")));
+                elektraMetaArrayAdd(key, "logs/spec/info", buffer);
+                elektraFree(buffer);
+            }
             break;
         case IGNORE:
 
             break;
     }
+    return ret;
 }
 
-static int handleError(Key *parentKey, Key *key, Key *conflictMeta, Conflict conflict, ConflictHandling *ch)
+static int handleError(Key *parentKey, Key *key, Key *specKey, Key *conflictMeta, Conflict conflict, ConflictHandling *ch)
 {
     int ret = 0;
     switch(conflict)
     {
         case INVALID:
-            ret = handleInvalidConflict(parentKey, key, conflictMeta, ch->invalid);
+            ret = handleInvalidConflict(parentKey, key, ch->invalid);
             break;
         case ARRAYMEMBER:
             ret = handleArrayConflict(parentKey, key, conflictMeta, ch->member);
             break;
         case SUBCOUNT:
-            ret = handleSubCountConflict(parentKey, key, conflictMeta, ch->count);
+            ret = handleSubCountConflict(parentKey, key, specKey, conflictMeta, ch->count);
             break;
         case CONFLICT:
             ret = handleConflictConflict(parentKey, key, conflictMeta, ch->conflict);
             break;
         case OUTOFRANGE:
-            ret = handleOutOfRangeConflict(parentKey, key, conflictMeta, ch->range);
+            ret = handleOutOfRangeConflict(parentKey, key, specKey, conflictMeta, ch->range);
             break;
         default:
             break;
-   }
+    }
     return ret;
 }
 
@@ -412,27 +476,28 @@ static int handleErrors(Key *parentKey, KeySet *ks, Key *key, Key *specKey, Conf
     Key *meta;
     while(keyNextMeta(parent) != NULL)
     {
-        meta = keyCurrentMeta(parent);
+        meta = (Key *)keyCurrentMeta(parent);
         conflict = getConflict(meta);
         if(conflict != NAC)
         {
-            fprintf(stderr, "PARENT: ");
-            ret |= handleError(parentKey, parent, meta, conflict, localCh); 
+            ret |= handleError(parentKey, parent, specKey, meta, conflict, localCh); 
             keySetMeta(parent, keyName(meta), 0);
         }
+        if(!strncmp(keyName(meta), "conflict/#", 10) || !strncmp(keyName(meta), "conflict/hasInvalidMembers/#", 28))
+            keySetMeta(parent, keyName(meta), 0);
     }
-    keyDel(parent);
     keyRewindMeta(key);
     while(keyNextMeta(key) != NULL)
     {
-        meta = keyCurrentMeta(key);
+        meta = (Key *)keyCurrentMeta(key);
         conflict = getConflict(meta);
         if(conflict != NAC)
         {
-            ret |= handleError(parentKey, key, meta, conflict, localCh); 
+            ret |= handleError(parentKey, key, specKey, meta, conflict, localCh); 
             keySetMeta(key, keyName(meta), 0);
         }
-       
+        if(!strncmp(keyName(meta), "conflict/#", 10) || !strncmp(keyName(meta), "conflict/hasInvalidMembers/#", 28))
+            keySetMeta(key, keyName(meta), 0);
     }
     elektraFree(localCh);
     ksSetCursor(ks, cursor);
@@ -468,11 +533,8 @@ static void copyMeta(Key *key, Key *specKey)
     keySetMeta(key, "specInternal/valid", 0);
 }
 
-static int doGlobbing(Key *parentKey, KeySet *returned, ConflictHandling *ch, Direction dir)
+static int doGlobbing(Key *parentKey, KeySet *returned, KeySet *specKS, ConflictHandling *ch, Direction dir)
 {
-    Key *specCutKey = keyNew("spec", KEY_END);
-    KeySet *specKS = ksCut(returned, specCutKey);
-    keyDel(specCutKey);
     Key *specKey;
     ksRewind(specKS);
     Key *cur;
@@ -532,7 +594,6 @@ static int doGlobbing(Key *parentKey, KeySet *returned, ConflictHandling *ch, Di
         elektraFree(pattern);
     }
     ksAppend(returned, specKS);
-    ksDel(specKS);
     return ret;
 }
 
@@ -601,9 +662,9 @@ int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
         {
             onConflict = WARNING;
         }
-        else if(!strcmp(onConflictString, "LOG"))
+        else if(!strcmp(onConflictString, "INFO"))
         {
-            onConflict = LOG;
+            onConflict = INFO;
         }
         else if(!strcmp(onConflictString, "IGNORE"))
         {
@@ -620,14 +681,24 @@ int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
     parseConfig(conflictCut, ch);
     ksAppend(config, conflictCut);
     ksDel(conflictCut);
-    int ret = doGlobbing(parentKey, returned, ch, GET);
+    Key *specKey = keyNew("spec", KEY_END);
+    KeySet *specKS = ksCut(returned, specKey);
+    keyDel(specKey);
+    KeySet *ks = ksCut(returned, parentKey);
+    ksRewind(ks);
+    ksRewind(specKS);
+    int ret = doGlobbing(parentKey, ks, specKS, ch, GET);
+    ksAppend(returned, ks);
+    ksAppend(returned, specKS);
+    ksDel(ks);
+    ksDel(specKS);
     elektraFree(ch);
+    ksRewind(returned);
     return ret; // success
 }
 
 int elektraSpecSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-
     KeySet *config = elektraPluginGetConfig(handle);
     Key *onConflictConf = ksLookupByName(config, "/conflict/set", KDB_O_NONE);
     OnConflict onConflict = IGNORE;
@@ -643,9 +714,9 @@ int elektraSpecSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
         {
             onConflict = WARNING;
         }
-        else if(!strcmp(onConflictString, "LOG"))
+        else if(!strcmp(onConflictString, "INFO"))
         {
-            onConflict = LOG;
+            onConflict = INFO;
         }
     }
     ch->member = onConflict;
@@ -658,8 +729,19 @@ int elektraSpecSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
     parseConfig(conflictCut, ch);
     ksAppend(config, conflictCut);
     ksDel(conflictCut);
-    int ret = doGlobbing(parentKey, returned, ch, SET);
+    Key *specKey = keyNew("spec", KEY_END);
+    KeySet *specKS = ksCut(returned, specKey);
+    keyDel(specKey);
+    KeySet *ks = ksCut(returned, parentKey);
+    ksRewind(ks);
+    ksRewind(specKS);
+    int ret = doGlobbing(parentKey, ks, specKS, ch, SET);
+    ksAppend(returned, specKS);
+    ksAppend(returned, ks);
+    ksDel(ks);
+    ksDel(specKS);
     elektraFree(ch);
+    ksRewind(returned);
     return ret; // success
 }
 
