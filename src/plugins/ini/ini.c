@@ -497,6 +497,8 @@ int elektraIniClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 }
 
 #if DEBUG && VERBOSE
+static void outputDebug() __attribute__ ((unused));
+
 static void outputDebug(KeySet *ks)
 {
 	Key *cur;
@@ -737,14 +739,14 @@ static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
 		if (curSectionNumber == sectionNumber)
 			break;
 	}
-	Key *meta = keyGetMeta(looking, "order");
+	Key *meta = (Key *)keyGetMeta(looking, "order");
     if(meta)
-        lastOrderNumber = keyString(meta);
+        lastOrderNumber = (char *)keyString(meta);
 	KeySet *cutKS = ksCut(searchKS, looking);
 	ksRewind(cutKS);
 	while ((looking = ksNext(cutKS)) != NULL)
 	{
-        meta = keyGetMeta(looking, "order");
+        meta = (Key *)keyGetMeta(looking, "order");
 		if(!meta)
             continue;
         if (!strcmp(keyName(looking), keyName(appendKey)))
@@ -787,18 +789,18 @@ static void insertNewSectionIntoExistendOrder(Key *parentKey, Key *appendKey, Ke
         return;
     }
 	char *lastOrderNumber = NULL;
-    Key *meta = keyGetMeta(looking, "order");
+    Key *meta = (Key *)keyGetMeta(looking, "order");
     if(meta)
-        lastOrderNumber = keyString(meta);
+        lastOrderNumber = (char *)keyString(meta);
 	KeySet *cutKS = ksCut(searchKS, looking);
 	ksRewind(cutKS);
 	while ((looking = ksNext(cutKS)) != NULL)
 	{
-        meta = keyGetMeta(looking, "order");
+        meta = (Key *)keyGetMeta(looking, "order");
 		if(!meta)
             continue;
         if (!lastOrderNumber || strcmp(keyString(meta), lastOrderNumber) > 0)
-			lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
+			lastOrderNumber = (char *)keyString(meta);
 	}
     if(!lastOrderNumber)
         setOrderNumber(parentKey, appendKey);

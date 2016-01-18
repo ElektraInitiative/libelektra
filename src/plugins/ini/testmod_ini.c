@@ -430,28 +430,6 @@ static void test_sectionWrite(char *fileName)
 	PLUGIN_CLOSE ();
 }
 
-static void test_iniToMeta(char *fileName)
-{
-	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
-			srcdir_file(fileName), KEY_END);
-	KeySet *conf = ksNew(0, 
-		   KS_END);
-	PLUGIN_OPEN("ini");
-
-	KeySet *readKS = ksNew(0, KS_END);
-	succeed_if(plugin->kdbGet(plugin, readKS, parentKey) >= 0, "kdbGet failed");
-	const Key *meta;
-	Key *searchKey = keyNew ("user/tests/ini-write/section1", KEY_END);
-	Key *key = ksLookup(readKS, searchKey, KDB_O_NONE);
-	meta = keyGetMeta(key, "key1");
-	succeed_if(meta != NULL, "converting key to metakey failed");
-	succeed_if(strcmp(keyString(meta), "value1") == 0, "wrong value in metakey");
-	ksDel(readKS);
-	keyDel (parentKey);
-	keyDel (searchKey);
-	PLUGIN_CLOSE ();
-}
-
 static void test_emptySectionBug(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
