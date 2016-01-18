@@ -189,7 +189,7 @@ static void test_assignThen()
 {
 	Key *parentKey = keyNew("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet *ks = ksNew(5,
-	keyNew("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition", "(totest=='Hello') ? ('World')", KEY_END),
+	keyNew("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition", "(totest=='Hello') ? ('World')", KEY_END),
 		KS_END);
 	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("conditionals");
@@ -206,7 +206,7 @@ static void test_assignElse()
 {
 	Key *parentKey = keyNew("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet *ks = ksNew(5,
-	keyNew("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition", "(totest=='Hell') ? ('World') : ('Fail')", KEY_END),
+	keyNew("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition", "(totest=='Hell') ? ('World') : ('Fail')", KEY_END),
 		KS_END);
 	KeySet *conf = ksNew(0, KS_END);
 	PLUGIN_OPEN("conditionals");

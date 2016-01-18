@@ -26,6 +26,8 @@
 
 typedef enum{EQU, NOT, LT, LE, GT, GE, SET}Comparator;
 
+typedef enum{CONDITION, ASSIGN}Operation;
+
 static int isNumber(const char *s)
 {
 	char *endPtr = NULL;
@@ -287,12 +289,12 @@ static char *isAssign(char *expr)
 		++firstPtr;
 	while(isspace(*lastPtr))
 		--lastPtr;
-	if(*firstPtr != '\'' || *lastPtr != '\'')
+	if (*firstPtr != '\'' || *lastPtr != '\'')
 		return NULL;
-	if(firstPtr == lastPtr)
+	if (firstPtr == lastPtr)
 		return NULL;
 	char *nextMark = strchr(firstPtr+1, '\'');
-	if(nextMark != lastPtr)
+	if (nextMark != lastPtr)
 		return NULL;
 	*lastPtr = '\0';
 	*firstPtr = '\0';
@@ -300,7 +302,7 @@ static char *isAssign(char *expr)
 	return firstPtr;
 
 }
-static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySet *ks)
+static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySet *ks, Operation op)
 {
 	const char *conditionString = keyString(meta);
 	const char *regexString = "(\\(([^\\)]*)\\))\\s*(\\?)\\s*(\\(([^\\)]*)\\))\\s*(:\\s*(\\(([^\\)]*)\\))){0,1}";
@@ -359,42 +361,66 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 	ret = parseSingleCondition(condition, ks, parentKey);
 	if (ret == 1)
 	{
-		const char *assign = isAssign(thenexpr);
-		if(assign != NULL)
+		if (op == ASSIGN)
 		{
-			keySetString(key, assign);
-			ret = 1;
-			goto CleanUp;
+			const char *assign = isAssign(thenexpr);
+			if (assign != NULL)
+			{
+				keySetString(key, assign);
+				ret = 1;
+				goto CleanUp;
+			}
+			else
+			{
+				ret = -1;
+				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", thenexpr);
+				goto CleanUp;
+			}
 		}
-		ret = parseSingleCondition(thenexpr, ks, parentKey);
-		if (ret == 0)
+		else
 		{
-			ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, thenexpr);
-		}
-		else if (ret == (-1))
-		{
-			ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", thenexpr);
+			ret = parseSingleCondition(thenexpr, ks, parentKey);
+			if (ret == 0)
+			{
+				ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, thenexpr);
+			}
+			else if (ret == (-1))
+			{
+				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", thenexpr);
+			}
 		}
 	}
 	else if (ret == 0)
 	{
 		if (elseexpr)
 		{
-			const char *assign = isAssign(elseexpr);
-			if(assign != NULL)
+			if ( op == ASSIGN)
 			{
-				keySetString(key, assign);
-				ret = 1;
-				goto CleanUp;
+				const char *assign = isAssign(elseexpr);
+				if (assign != NULL)
+				{
+					keySetString(key, assign);
+					ret = 1;
+					goto CleanUp;
+				}
+				else
+				{
+					ret = -1;
+					ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", elseexpr);
+					goto CleanUp;
+				}
 			}
-			ret = parseSingleCondition(elseexpr, ks, parentKey);
-			if (ret == 0)
+			else
 			{
-				ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, elseexpr);
-			}
-			else if (ret == (-1))
-			{
-				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", elseexpr);
+				ret = parseSingleCondition(elseexpr, ks, parentKey);
+				if (ret == 0)
+				{
+					ELEKTRA_SET_ERRORF(135, parentKey, "Validation of %s failed. (%s failed)", conditionString, elseexpr);
+				}
+				else if (ret == (-1))
+				{
+					ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", elseexpr);
+				}
 			}
 		}
 		else
@@ -440,26 +466,35 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 		return 1; /* success */
 	}
 	Key *cur;
-	const Key *meta;
-	int result;
 	int ret = 0;
 	while ((cur = ksNext(returned)) != NULL)
 	{
-		meta = keyGetMeta(cur, "check/condition");
-		if (!meta)
-			continue;
-		result = parseConditionString(meta, parentKey, cur, ksDup(returned));
-		if (result == -1)
+		Key *conditionMeta =(Key *) keyGetMeta(cur, "check/condition");
+		Key *assignMeta = (Key *)keyGetMeta(cur, "assign/condition");
+		int result;
+		if (conditionMeta)
 		{
-			ret |= -1;
+			result = parseConditionString(conditionMeta, parentKey, cur, ksDup(returned), CONDITION);
+			if (result == -1)
+			{
+				ret |= -1;
+			}
+			else if (result == 0)
+			{
+				ret |= -1;
+			}
+			else if (result == 1)
+			{
+				ret |= 1;
+			}
 		}
-		else if (result == 0)
+		if (assignMeta)
 		{
-			ret |= -1;
-		}
-		else if (result == 1)
-		{
-			ret |= 1;
+			result = parseConditionString(assignMeta, parentKey, cur, ksDup(returned), ASSIGN);
+			if(result == -1)
+				ret |= -1;
+			else
+				ret |= 1;
 		}
 	}	
 
@@ -469,27 +504,36 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	Key *cur;
-	const Key *meta;
-	int result;
 	int ret = 0;
 	while ((cur = ksNext(returned)) != NULL)
 	{
-		meta = keyGetMeta(cur, "check/condition");
-		if (!meta)
-			continue;
-		result = parseConditionString(meta, parentKey, cur, ksDup(returned));
-		if (result == -1)
+		Key *conditionMeta = (Key *)keyGetMeta(cur, "check/condition");
+		Key *assignMeta = (Key *)keyGetMeta(cur, "assign/condition");
+		int result;
+		if (conditionMeta)
 		{
-			ret |= -1;
+			result = parseConditionString(conditionMeta, parentKey, cur, ksDup(returned), CONDITION);
+			if (result == -1)
+			{
+				ret |= -1;
+			}
+			else if (result == 0)
+			{
+				ret |= -1;
+			}
+			else if (result == 1)
+			{
+				ret |= 1;
+			}
 		}
-		else if (result == 0)
+		if (assignMeta)
 		{
-			ret |= -1;
-		}
-		else if (result == 1)
-		{
-			ret |= 1;
-		}
+			result = parseConditionString(assignMeta, parentKey, cur, ksDup(returned), ASSIGN);
+			if(result == -1)
+				ret |= -1;
+			else
+				ret |= 1;
+		}	
 	}	
 
 	return ret; 
