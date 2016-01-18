@@ -24,6 +24,12 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
+### Assign Syntax###
+
+`(IF-condition) ? ('ThenValue') : ('ElseValue')`
+
+Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value.
+
 
 ## Example ##
 
