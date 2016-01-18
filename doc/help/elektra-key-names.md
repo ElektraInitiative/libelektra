@@ -82,7 +82,7 @@ the key names of software-applications should always start with:
 - Avoid to have your applications root right under @p system or @p user.
   (rationale: it would make the hierarchy too flat.)
   See **Application Base Name** above.
-- Avoid the usage of characters other then `/`, a-z and 0-9.
+- Avoid the usage of characters other than `/`, a-z and 0-9.
   (rationale: it would allow too many similar, confusing names.)
   (exceptions: if the user or a technology, decide about parts of
   the key name, this restriction does not apply, e.g. if the wlan

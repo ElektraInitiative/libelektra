@@ -65,7 +65,7 @@
  * with 0, that means a subsequent call of keyDel() will delete
  * the key. If you append the key to a keyset the reference counter
  * will be incremented by one (see keyIncRef()) and the key can't be
- * be deleted by a keyDel().
+ * deleted by a keyDel().
  *
  * @par
  * As you can imagine this refcounting allows you to put the Key in your
@@ -106,8 +106,8 @@ static Key *elektraKeyMalloc()
  * easier to keyDup() the key.
  *
  * You can call it in many different ways depending on the attribute tags you
- * pass as parameters. Tags are represented as the #keyswitch_t values,
- * and tell keyNew() which Key attribute comes next.
+ * pass as parameters. Tags are represented as #keyswitch_t values, and
+ * tell keyNew() which Key attribute comes next.
  *
  * We can also give an empty key name and a KEY_END tag with the same
  * effect as before:
