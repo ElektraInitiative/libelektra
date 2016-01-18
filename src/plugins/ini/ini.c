@@ -331,7 +331,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	}
 
 	setSectionNumber(handle->parentKey, appendKey, handle->result);
-	if (value == NULL)
+    if (value == NULL)
 		keySetMeta(appendKey, "ini/empty", "");
 	if (!lineContinuation)
 	{
@@ -799,7 +799,6 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 	keySetMeta(appendKey, "binary", 0);
 
 	char *oldSectionNumber = strdup(keyString(keyGetMeta(parentKey, "ini/lastSection")));
-
 	if (keyIsBinary(cur))
 	{
 		// create new section here
@@ -1076,7 +1075,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
-	ksRewind(returned);
+    ksRewind(returned);
 	Key *cur;
 	KeySet *newKS = ksNew(0, KS_END);
 	keySetMeta(parentKey, "order", "#0");
@@ -1086,7 +1085,11 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		{
 			if (strcmp(keyString(keyGetMeta(parentKey, "order")),keyString(keyGetMeta(cur, "order"))) < 0)
 				keySetMeta(parentKey, "order", keyString(keyGetMeta(cur, "order")));
-			ksAppendKey(newKS, cur);
+			if(keyGetValueSize(cur) > 1)
+                keySetMeta(cur, "ini/key", "");
+            else if(keyGetMeta(cur, "ini/empty"))
+                keySetMeta(cur, "ini/key", "");
+            ksAppendKey(newKS, cur);
 			keyDel(ksLookup(returned, cur, KDB_O_POP));
 		}
 
