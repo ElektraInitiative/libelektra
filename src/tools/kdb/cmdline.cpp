@@ -23,6 +23,10 @@
 #include <command.hpp>
 #include <external.hpp>
 
+#include <unistd.h>
+#include <sys/types.h>
+
+
 
 using namespace std;
 
@@ -56,7 +60,7 @@ Cmdline::Cmdline (int argc,
 	format("dump"),
 	plugins("sync"),
 	pluginsConfig(""),
-	ns("user"),
+	ns(""),
 	editor(),
 	namedKeys(),
 
@@ -322,6 +326,18 @@ Cmdline::Cmdline (int argc,
 		case 'c': pluginsConfig = optarg; break;
 
 		default: invalidOpt = true; break;
+		}
+	}
+
+	if (ns.empty())
+	{
+		if (getuid() == 0 || geteuid() == 0)
+		{
+			ns = "system";
+		}
+		else
+		{
+			ns = "user";
 		}
 	}
 
