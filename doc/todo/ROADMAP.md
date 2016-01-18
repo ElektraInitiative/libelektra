@@ -25,7 +25,6 @@ fix other plugins (e.g. glob) 1d
 remove "resolver" resolver
 BUILD_LEGACY for non-split elektra?
 
-
 ## docu
 
 more docu in METADATA.ini
@@ -39,6 +38,24 @@ docu provide option in contract
 
 docu specification mount
 
+
+## INI
+
+as default backend (meta?)
+ordering
+comments
+
+## cmake
+
+installation
+make name(s) of variant and in which folder it is independent
+
+autoadd plugins to PLUGINS? (avoid duplication in ElektraCache)
+
+
+## cleanup
+
+core, kdb.. remove useless symbols
 
 ## mount specification
 
