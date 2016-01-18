@@ -58,10 +58,12 @@ another key named `key2` with the value `value2\nwith continuation\nlines`.
 
 By default this feature is enabled.
 
-## Array ##
 
-`array`
-repeating keys are treated as an array
+## ARRAY ##
+
+The ini plugin handles repeating keys by turning them into an elektra array when the `array` config is set.
+
+For example a ini file looking like:
 ```
 [sec]
 a = 1
@@ -80,17 +82,51 @@ will be interpreted as
 
 ```
 
-## Section ##
+## SECTION ##
 
-3 different sectioning modes are supported
+The ini plugin supports 3 different sectioning modes:
 
-`NONE`
+* `NONE`
 sections wont be printed as `[Section]` but as part of the key name `section/key`
-`NULL`
+* `NULL`
 only binary keys will be printed as `[Section]`
-`ALWAYS`
+* `ALWAYS`
 sections will be created automatically. This is the default setting.
 
-## Merge sections ##
-if the key `mergeSections` is set, duplicated sections will be merged into one.
+## MERGE SECTIONS ##
 
+The ini plugin supports merging duplicated section entries when the `mergesections` config is set.
+The keys will be appended to the first occurrence of the section key. 
+
+
+## ORDERING ##
+
+The ini plugin preserves the order.
+Inserted subsections get appended to the corresponding parent section and new sections by name.
+
+Example:
+
+```
+% cat test.ini
+
+[Section1]
+key1 = val1
+[Section3]
+key3 = val3
+
+
+% kdb set system/test/Section1/Subsection1/subkey1 subval1
+% kdb set system/test/Section2/key2 val2
+% cat test.ini
+
+[Section1]
+key1 = val1
+[Section1/Subsection1]
+subkey1 = subval1
+[Section2]
+key2 = val2
+[Section3]
+key3 = val3
+
+
+```

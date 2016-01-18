@@ -15,8 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <kdberrors.h>
-#include <kdbproposal.h>
-#include <kdbprivate.h>
+#include <kdbproposal.h> //elektraKsToMemArray
+#include <kdbprivate.h> //elektraReadArrayNumber
 #include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbos.h>
@@ -158,7 +158,7 @@ static void setOrderNumber(Key *parentKey, Key *key)
 	const Key *orderKey = keyGetMeta(parentKey, "order");
 	if (orderKey != NULL)
 	{
-		char *ptr = keyString(orderKey);
+		char *ptr = (char *)keyString(orderKey);
 		++ptr; //skip #
 		while (*ptr == '_')
 		{
@@ -325,7 +325,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		}
 		else if(!lineContinuation)
 		{
-			ELEKTRA_SET_ERRORF(140, handle->parentKey, "Key: %s\n", name);
+			ELEKTRA_SET_ERRORF(141, handle->parentKey, "Key: %s\n", name);
 			return -1;
 		}
 	}
@@ -393,7 +393,7 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 		keyDel(appendKey);
 		if(!handle->mergeSections)
 		{
-			ELEKTRA_SET_ERRORF(139, handle->parentKey, "Section name: %s\n", section);
+			ELEKTRA_SET_ERRORF(140, handle->parentKey, "Section name: %s\n", section);
 			return 0;
 		}
 		keySetMeta(existingKey, "ini/duplicate", "");
@@ -446,7 +446,7 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	Key *multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
 	Key *sectionHandlingKey = ksLookupByName(config, "/section", KDB_O_NONE);
 	Key *arrayKey = ksLookupByName(config, "/array", KDB_O_NONE);
-	Key *mergeSectionsKey = ksLookupByName(config, "/mergeSections", KDB_O_NONE);
+	Key *mergeSectionsKey = ksLookupByName(config, "/mergesections", KDB_O_NONE);
 	pluginConfig->mergeSections = mergeSectionsKey != 0;
 	pluginConfig->array = arrayKey != 0;
 	if(!multilineKey)
@@ -735,16 +735,16 @@ static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
 		if (curSectionNumber == sectionNumber)
 			break;
 	}
-	lastOrderNumber = keyString(keyGetMeta(looking, "order"));
+	lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
 	KeySet *cutKS = ksCut(searchKS, looking);
 	ksRewind(cutKS);
 	while ((looking = ksNext(cutKS)) != NULL)
 	{
 		if (!strcmp(keyName(looking), keyName(appendKey)))
-			break;
+			continue;
 		if (strcmp(keyString(keyGetMeta(looking, "order")), lastOrderNumber) > 0)
 		{
-			lastOrderNumber = keyString(keyGetMeta(looking, "order"));
+			lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
 		}
 	}
 
@@ -771,14 +771,14 @@ static void insertNewSectionIntoExistendOrder(Key *appendKey, KeySet *newKS)
 			break;
 	}
 
-	char *lastOrderNumber = keyString(keyGetMeta(looking, "order"));
+	char *lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
 
 	KeySet *cutKS = ksCut(searchKS, looking);
 	ksRewind(cutKS);
 	while ((looking = ksNext(cutKS)) != NULL)
 	{
 		if (strcmp(keyString(keyGetMeta(looking, "order")), lastOrderNumber) > 0)
-			lastOrderNumber = keyString(keyGetMeta(looking, "order"));
+			lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
 	}
 
 	setSubOrderNumber(appendKey, lastOrderNumber);
@@ -1088,7 +1088,6 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 	}
-	//ksAppendKey(newKS, parentKey);
 	ksRewind(returned);
 	while ((cur = ksNext(returned)) != NULL)
 	{

@@ -201,7 +201,7 @@ static void test_commentIniWrite(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			"/tmp/commentIniWrite.out", KEY_END);
 	KeySet *conf = ksNew(0,
-	   	   KS_END);
+		   KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
@@ -313,7 +313,7 @@ static void test_multilineIniInvalidConfigWrite()
 	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(30, keyNew("system/multiline", KEY_VALUE, "0", KEY_END),
-	   	   KS_END);
+		   KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
@@ -394,7 +394,7 @@ static void test_sectionWrite(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-section-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(0,
-	   	   KS_END);
+		   KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
@@ -435,7 +435,7 @@ static void test_iniToMeta(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
 	KeySet *conf = ksNew(0, 
-	   	   KS_END);
+		   KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *readKS = ksNew(0, KS_END);
@@ -457,7 +457,7 @@ static void test_emptySectionBug(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(0,
-	   	   KS_END);
+		   KS_END);
 	KeySet *ks = ksNew (30,
 		keyNew ("user/tests/ini-write/MyApp/mykey",  
 				KEY_VALUE, "new_value",
@@ -489,8 +489,8 @@ static void test_sectionMerge(char *inFile, char *cmpFile)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(inFile), KEY_END);
-	KeySet *conf = ksNew(10, keyNew("system/mergeSections", KEY_VALUE, "1", KEY_END),
-	   	   KS_END);
+	KeySet *conf = ksNew(10, keyNew("system/mergesections", KEY_VALUE, "1", KEY_END),
+		   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
@@ -506,7 +506,7 @@ static void test_array(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-read", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
-	KeySet *conf = ksNew(10, keyNew( "system/array", KEY_VALUE, "1", KEY_END),	   	   KS_END);
+	KeySet *conf = ksNew(10, keyNew( "system/array", KEY_VALUE, "1", KEY_END),		   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
@@ -525,7 +525,7 @@ static void test_preserveEmptyLines(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
 	KeySet *conf = ksNew(0,
-	   	   KS_END);
+		   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
@@ -536,16 +536,40 @@ static void test_preserveEmptyLines(char *fileName)
 	keyDel(parentKey);
 	PLUGIN_CLOSE();
 }
+
+static void test_insertOrder(char *source, char *compare)
+{
+	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
+			srcdir_file(source), KEY_END);
+	KeySet *conf = ksNew(0, KS_END);
+	KeySet *ks = ksNew(30, KS_END);
+	KeySet *appendKS = ksNew(10, 
+			keyNew("user/tests/ini-write/1", KEY_BINARY, KEY_END),
+			keyNew("user/tests/ini-write/1/testkey1_0", KEY_VALUE, "testval1_0", KEY_END),
+			keyNew("user/tests/ini-write/1/testkey1_1", KEY_VALUE, "testval1_1", KEY_END),
+			KS_END);
+
+	PLUGIN_OPEN("ini");
+	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
+	keySetString(parentKey, elektraFilename());
+	ksAppend(ks, appendKS);
+	succeed_if(plugin->kdbSet(plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if(compare_line_files(srcdir_file(compare), keyString(parentKey)), "files do not match as expected");
+	ksDel(appendKS);
+	ksDel(ks);
+	keyDel(parentKey);
+	PLUGIN_CLOSE();
+
+}
 int main(int argc, char** argv)
 {
-	printf ("INI       TESTS\n");
+	printf ("INI	   TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
 
 	test_plainIniRead ("ini/plainini");
 	test_plainIniWrite ("ini/plainini");
-//	test_iniToMeta ("ini/plainini");
 	test_plainIniRead ("ini/emptyval");
 	test_plainIniEmptyWrite ("ini/emptyval");
 	test_commentIniRead ("ini/commentini");
@@ -559,7 +583,7 @@ int main(int argc, char** argv)
 	test_sectionMerge("ini/sectionmerge.input", "ini/sectionmerge.output");
 	test_array("ini/array.ini");
 	test_preserveEmptyLines("ini/emptyLines");
-	
+	test_insertOrder("ini/insertTest.input.ini", "ini/insertTest.output.ini");	
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest,
 			nbError);
 

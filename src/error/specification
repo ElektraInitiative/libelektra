@@ -828,7 +828,7 @@ severity:error
 ingroup:plugin
 module:ini
 
-number:140
+number:141
 description:duplicated key entry in INI file
 severity:error
 ingroup:plugin
