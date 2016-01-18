@@ -23,8 +23,10 @@
 #include <command.hpp>
 #include <external.hpp>
 
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/types.h>
+#endif
 
 
 
@@ -331,6 +333,7 @@ Cmdline::Cmdline (int argc,
 
 	if (ns.empty())
 	{
+#ifndef _WIN32
 		if (getuid() == 0 || geteuid() == 0)
 		{
 			ns = "system";
@@ -339,6 +342,9 @@ Cmdline::Cmdline (int argc,
 		{
 			ns = "user";
 		}
+#else
+		ns = "user";
+#endif
 	}
 
 	optind++; // skip the command name
