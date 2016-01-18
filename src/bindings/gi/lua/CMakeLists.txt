@@ -28,16 +28,16 @@ endmacro (do_gi_lua_test)
 
 install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 
-# we're searching for the lua interpreter however FindLua52 only searches
+# we're searching for the lua interpreter however FindLua only searches
 # for the library. But that's better than nothing.
-find_package (Lua52)
-if (LUA52_FOUND)
+find_package (Lua 5.2)
+if (LUA_FOUND)
 	message(STATUS "Include Binding gi_lua")
 
 	file (GLOB TESTS testgi_*.lua)
 	foreach (file ${TESTS})
 		do_gi_lua_test (${file})
 	endforeach (file ${TESTS})
-else (LUA52_FOUND)
+else ()
 	remove_binding (gi_lua "No Lua interpreter found needed for GObject Introspection Lua installation")
-endif (LUA52_FOUND)
+endif ()
