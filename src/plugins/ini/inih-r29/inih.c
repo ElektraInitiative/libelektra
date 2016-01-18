@@ -17,8 +17,8 @@ http://code.google.com/p/inih/
 #include <stdlib.h>
 #endif
 
-#define MAX_SECTION 50
-#define MAX_NAME 50
+#define MAX_SECTION 512
+#define MAX_NAME 512
 
 /* Strip whitespace chars off end of given string, in place. Return s. */
 static char* rstrip(char* s)
@@ -76,7 +76,6 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
     char* value;
     int lineno = 0;
     int error = 0;
-    unsigned short toMeta = config->keyToMeta;
 #if !INI_USE_STACK
     line = (char*)malloc(INI_MAX_LINE);
     if (!line) {
@@ -94,8 +93,18 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
                            (unsigned char)start[1] == 0xBB &&
                            (unsigned char)start[2] == 0xBF) {
             start += 3;
+            config->bomHandler(user, 1);
+        }
+        else
+        {
+            config->bomHandler(user, 0);
         }
 #endif
+        if(*start == '\n')
+        {
+            if(!config->commentHandler(user, " ") && !error)
+                error = lineno;
+        }
         start = lskip(rstrip(start));
 
         if (*start == ';' || *start == '#') {
@@ -108,7 +117,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
         else if (config->supportMultiline && *prev_name && *start && start > line) {
             /* Non-black line with leading whitespace, treat as continuation
                of previous name's value (as per Python ConfigParser). */
-            if (!config->keyHandler(user, section, prev_name, start, toMeta, 1) && !error)
+            if (!config->keyHandler(user, section, prev_name, start, 1) && !error)
                 error = lineno;
         }
         else if (*start == '[') {
@@ -143,14 +152,14 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 
                 /* Valid name[=:]value pair found, call handler */
                 strncpy0(prev_name, name, sizeof(prev_name));
-                if (!config->keyHandler(user, section, name, value, toMeta, 0) && !error)
+                if (!config->keyHandler(user, section, name, value, 0) && !error)
                     error = lineno;
             }
             else if (!error) {
 				end = find_char_or_comment(start, '\0');
 				name = rstrip(start);
 				strncpy0(prev_name, name, sizeof(prev_name));
-				if (!config->keyHandler(user, section, name, NULL, toMeta, 0) && ! error)
+				if (!config->keyHandler(user, section, name, NULL, 0) && ! error)
 					error = lineno;
             }
         }

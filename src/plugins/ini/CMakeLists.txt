@@ -11,6 +11,9 @@ add_plugin(ini
 		${INIH_FILES}
 	INCLUDE_DIRECTORIES
 		${INIH_INCLUDE}
+	LINK_LIBRARIES
+		elektra-ease
+		elektra-proposal
 	)
 
 install(DIRECTORY ini DESTINATION ${TARGET_TEST_DATA_FOLDER})

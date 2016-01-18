@@ -17,15 +17,17 @@ extern "C" {
 
 #include <stdio.h>
 
-typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short, unsigned short lineContinuation);
+typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short lineContinuation);
 typedef int (*SectionHandler)(void *, const char *);
 typedef int (*CommentHandler)(void *, const char *);
+typedef void (*BomHandler)(void *, short);
 
 struct IniConfig
 {
 	KeyHandler keyHandler;
 	SectionHandler sectionHandler;
 	CommentHandler commentHandler;
+    BomHandler bomHandler;
 	unsigned short supportMultiline;
 	unsigned short keyToMeta;
 };
@@ -74,7 +76,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user);
 
 /* Maximum line length for any line in INI file. */
 #ifndef INI_MAX_LINE
-#define INI_MAX_LINE 200
+#define INI_MAX_LINE 65535
 #endif
 
 #ifdef __cplusplus

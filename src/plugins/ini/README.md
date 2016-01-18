@@ -1,10 +1,10 @@
 - infos = Information about ini plugin is in keys below
-- infos/author = Felix Berlakovich <elektra@berlakovich.net>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org> Felix Berlakovich <elektra@berlakovich.net> 
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
-- infos/description = ini file backend
+- infos/description = 
 
 ## INTRODUCTION ##
 
@@ -32,76 +32,6 @@ Find out which file you modified:
 
     kdb file user/example
 
-
-## SECTIONS ##
-
-When converting a KeySet to an INI file it is important to differentiate between
-regular keys and section keys. The ini plugin treats all keys with a binary NULL
-value as section key. Note that binary NULL is not the same as an empty value (i.e. "").
-
-For example consider the following ini file:
-
-				[section1]
-				key1 =
-				key2 = value2
-			
-This would result in a KeySet containing three keys. The section key `section1` would be
-a binary key with value NULL (i.e. 0). `section1/key1` would be a regular key with value "".
-`section1/key2` would be a regular key with value "value2". In the other direction this requires
-section keys to be manually created with a binary NULL value.  
-
-For example consider the following KeySet:
-
-				section1 = ""
-				section1/subkey = "value1"
-				
-Although section1 might look like a section, it would result in the following ini file:
-
-				section1 =
-				section1\/subkey = value1
-
-### AUTOSECTIONS ###
-
-Creating the section keys manually can be cumbersome. This is especially true because
-KeySets resulting in INI files usually do not contain keys with a depth greater than
-1 relative to the parent key. For that reason a good guess can be made what should be
-sections and what not. This is done by activanting the autosections option. 
-
-The autosections feature can be enabled by creating a key named `autosections` 
-in the configuration of the plugin. Note that only the existence of the key is relevant, not its value.
-
-As soon as this key exists, the plugin will automatically create section keys for keys
-with a depth greater than 1 relative to the parent key.	
-
-For example consider the following ini file:
-
-				[section1]
-				key1 =
-				key2 = value2
-				[section2]
-				key3 = value3
-				
-Without the autosections option the following KeySet is required to create this ini file:
-
-				parent/section1 = NULL
-				parent/section1/key1 = ""
-				parent/section1/key2 = "value2"
-				parent/section2 = NULL
-				parent/section2/key3 = "value3"
-
-The section keys have to be inserted manually. With the autosections option the KeySet can
-be reduced to the following:
-
-				parent/section1/key1 = ""
-				parent/section1/key2 = "value2"
-				parent/section2/key3 = "value3"
-
-All three keys have a depth greater than 1 relative to the parent key `parent`. Therefore
-the key name part directly below the parent key is considered to be the section name.
-For example, for the keys `parent/section1/key1` and `parent/section1/key2` `section1` is considered
-to be the section and is automatically created in the INI file.
-
-
 ## COMMENTS ##
 
 The ini plugin supports the use of comments. Comment lines start with
@@ -118,39 +48,85 @@ have to start with whitespace characters.
 
 For example consider the following ini file:
 
-				key1 = value1
-				key2 = value2
-					with continuation
-					lines
+                key1 = value1
+                key2 = value2
+                    with continuation
+                    lines
 
 This would result in a KeySet containing two keys. One key named `key1` with the value `value1` and 
 another key named `key2` with the value `value2\nwith continuation\nlines`.
 
-By default the support for multiline values is disabled because formatting 
-(whitespaces before keynames) may be accidentially mixed with value continuations. 
-The multiline support can be enabled by creating a key named `multiline` in the configuration 
-of the plugin. Note that only the existence of the key is relevant, not its value. As soon as this
-key exists, the plugin treats lines starting with whitespaces as continuations of the previous key value.
-Keep in mind, that writing multiline values is also only supported if the multiline support is turned on.
-Otherwise the plugin will refuse to write key values with newlines.
+By default this feature is enabled.
 
-## METAKEY SUPPORT ##
 
-The ini plugin supports turning keys into [metakeys](/doc/help/elektra-meta-data.md) by adding the config key `meta`.
+## ARRAY ##
 
-## PRESERVE ORDER ##
+The ini plugin handles repeating keys by turning them into an elektra array when the `array` config is set.
 
-If the `preserveorder` config key is set, the ini plugin preserves the original order of the file.
-Only use this option for editing existing key values.
+For example a ini file looking like:
+```
+[sec]
+a = 1
+a = 2
+a = 3
+a = 4
+```
+will be interpreted as
+```
+/sec
+/sec/a
+/sec/a/#0
+/sec/a/#1
+/sec/a/#2
+/sec/a/#3
 
-## RESTRICTIONS ##
+```
 
-Currently the plugin has the following shortcomings:
+## SECTION ##
 
-- formatting newlines are not restored on write
-- regardless of which comment was used originally, it is always written
-  back as ';'
-- Using square brackets (`[` and `]`) in sections is not possible
-- Using `=` in key names is not possible
+The ini plugin supports 3 different sectioning modes:
 
-The plugin is still work in progress.
+* `NONE`
+sections wont be printed as `[Section]` but as part of the key name `section/key`
+* `NULL`
+only binary keys will be printed as `[Section]`
+* `ALWAYS`
+sections will be created automatically. This is the default setting.
+
+## MERGE SECTIONS ##
+
+The ini plugin supports merging duplicated section entries when the `mergesections` config is set.
+The keys will be appended to the first occurrence of the section key. 
+
+
+## ORDERING ##
+
+The ini plugin preserves the order.
+Inserted subsections get appended to the corresponding parent section and new sections by name.
+
+Example:
+
+```
+% cat test.ini
+
+[Section1]
+key1 = val1
+[Section3]
+key3 = val3
+
+
+% kdb set system/test/Section1/Subsection1/subkey1 subval1
+% kdb set system/test/Section2/key2 val2
+% cat test.ini
+
+[Section1]
+key1 = val1
+[Section1/Subsection1]
+subkey1 = subval1
+[Section2]
+key2 = val2
+[Section3]
+key3 = val3
+
+
+```

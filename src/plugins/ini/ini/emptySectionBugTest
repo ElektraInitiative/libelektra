@@ -1,3 +1,5 @@
-MyApp/mykey = new_value
+[MyApp]
+mykey = new_value
 [binarytest]
-debienna/test = value
+[debienna]
+test = value
