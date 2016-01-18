@@ -105,7 +105,7 @@ Links between markdown files will be converted with the
 **Markdown pages are used in the pdf, therefore watch your characters and
 provide a proper encoding!**
 
- * use `@` to start doxygen tags 
+ * use `@` to start doxygen tags
  * Do not duplicate information available in git in doxygen.
  * Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file header).
 

@@ -179,7 +179,7 @@ static Key *elektraKeyMalloc()
  *
  *
  * @param name a valid name to the key, or NULL to get a simple
- * 	initialized, but really empty, object 
+ * 	initialized, but really empty, object
  * @see keyDel()
  * @return a pointer to a new allocated and initialized Key object.
  * @retval NULL on allocation error or if an invalid @p name was passed (see keySetName()).
@@ -210,7 +210,7 @@ Key *keyNew(const char *name, ...)
  * @copydoc keyNew
  *
  * @pre caller must use va_start and va_end on va
- * @param va the variadic argument list 
+ * @param va the variadic argument list
  */
 Key *keyVNew (const char *name, va_list va)
 {
