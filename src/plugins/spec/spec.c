@@ -300,11 +300,11 @@ static int handleInvalidConflict(Key *parentKey, Key *key, OnConflict onConflict
 	switch(onConflict)
 	{
 		case ERROR:
-			ELEKTRA_SET_ERRORF(140, parentKey, "Invalid key %s\n", keyName(key));
+			ELEKTRA_SET_ERRORF(142, parentKey, "Invalid key %s\n", keyName(key));
 			ret = -1;
 			break;
 		case WARNING:
-			ELEKTRA_ADD_WARNINGF(141, parentKey, "Invalid key %s\n", keyName(key));
+			ELEKTRA_ADD_WARNINGF(143, parentKey, "Invalid key %s\n", keyName(key));
 			break;
 		case INFO:
 			{
@@ -330,11 +330,11 @@ static int handleArrayConflict(Key *parentKey, Key *key, Key *conflictMeta, OnCo
 	switch(onConflict)
 	{
 		case ERROR:
-			ELEKTRA_SET_ERRORF(140, parentKey, "%s has invalid array key members: %s\n", keyName(key), problemKeys);
+			ELEKTRA_SET_ERRORF(142, parentKey, "%s has invalid array key members: %s\n", keyName(key), problemKeys);
 			ret = -1;
 			break;
 		case WARNING:
-			ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has invalid array members: %s\n", keyName(key), problemKeys);
+			ELEKTRA_ADD_WARNINGF(143, parentKey, "%s has invalid array members: %s\n", keyName(key), problemKeys);
 			break;
 		case INFO:
 			{
@@ -361,11 +361,11 @@ static int handleSubCountConflict(Key *parentKey, Key *key, Key *specKey, Key *c
 	switch(onConflict)
 	{
 		case ERROR:
-			ELEKTRA_SET_ERRORF(140, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "required")));
+			ELEKTRA_SET_ERRORF(142, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "required")));
 			ret = -1;
 			break;
 		case WARNING:
-			ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "required")));
+			ELEKTRA_ADD_WARNINGF(143, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "required")));
 			break;
 		case INFO:
 			{
@@ -391,11 +391,11 @@ static int handleConflictConflict(Key *parentKey, Key *key, Key *conflictMeta, O
 	switch(onConflict)
 	{
 		case ERROR:
-			ELEKTRA_SET_ERRORF(140, parentKey, "%s has conflicting metakeys: %s\n", keyName(key), problemKeys);
+			ELEKTRA_SET_ERRORF(142, parentKey, "%s has conflicting metakeys: %s\n", keyName(key), problemKeys);
 			ret = -1;
 			break;
 		case WARNING:
-			ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has conflicting metakeys: %s\n", keyName(key), problemKeys);
+			ELEKTRA_ADD_WARNINGF(143, parentKey, "%s has conflicting metakeys: %s\n", keyName(key), problemKeys);
 			break;
 		case INFO:
 			{
@@ -422,11 +422,11 @@ static int handleOutOfRangeConflict(Key *parentKey, Key *key, Key *specKey, Key 
 	switch(onConflict)
 	{
 		case ERROR:
-			ELEKTRA_SET_ERRORF(140, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "array")));
+			ELEKTRA_SET_ERRORF(142, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "array")));
 			ret = -1;
 			break;
 		case WARNING:
-			ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "array")));
+			ELEKTRA_ADD_WARNINGF(143, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName(key), keyString(conflictMeta), keyString(keyGetMeta(specKey, "array")));
 			break;
 		case INFO:
 			{
@@ -452,11 +452,11 @@ static int handleMissingConflict(Key *parentKey, Key *key, Key *conflictMeta, On
 	switch(onConflict)
 	{
 		case ERROR:
-			ELEKTRA_SET_ERRORF(140, parentKey, "%s has missing subkeys: %s\n", keyName(key), problemKeys);
+			ELEKTRA_SET_ERRORF(142, parentKey, "%s has missing subkeys: %s\n", keyName(key), problemKeys);
 			ret = -1;
 			break;
 		case WARNING:
-			ELEKTRA_ADD_WARNINGF(141, parentKey, "%s has missing subkeys: %s\n", keyName(key), problemKeys);
+			ELEKTRA_ADD_WARNINGF(143, parentKey, "%s has missing subkeys: %s\n", keyName(key), problemKeys);
 			break;
 		case INFO:
 			{
