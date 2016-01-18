@@ -165,7 +165,6 @@ static void setOrderNumber(Key *parentKey, Key *key)
 			++ptr;
 		}
 		elektraReadArrayNumber(ptr, &order);
-
 	}
 	++order;
 	char buffer[ELEKTRA_MAX_ARRAY_SIZE];
@@ -738,16 +737,21 @@ static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
 		if (curSectionNumber == sectionNumber)
 			break;
 	}
-	lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
+	Key *meta = keyGetMeta(looking, "order");
+    if(meta)
+        lastOrderNumber = keyString(meta);
 	KeySet *cutKS = ksCut(searchKS, looking);
 	ksRewind(cutKS);
 	while ((looking = ksNext(cutKS)) != NULL)
 	{
-		if (!strcmp(keyName(looking), keyName(appendKey)))
+        meta = keyGetMeta(looking, "order");
+		if(!meta)
+            continue;
+        if (!strcmp(keyName(looking), keyName(appendKey)))
 			continue;
-		if (strcmp(keyString(keyGetMeta(looking, "order")), lastOrderNumber) > 0)
+		if (!lastOrderNumber || strcmp(keyString(meta), lastOrderNumber) > 0)
 		{
-			lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
+            lastOrderNumber = (char *)keyString(meta);
 		}
 	}
 
@@ -757,7 +761,7 @@ static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
 	ksDel(searchKS);
 }
 
-static void insertNewSectionIntoExistendOrder(Key *appendKey, KeySet *newKS)
+static void insertNewSectionIntoExistendOrder(Key *parentKey, Key *appendKey, KeySet *newKS)
 {
 	KeySet *searchKS = ksDup(newKS);
 	ksRewind(searchKS);
@@ -767,24 +771,39 @@ static void insertNewSectionIntoExistendOrder(Key *appendKey, KeySet *newKS)
 		if (!strcmp(keyName(looking), keyName(appendKey)))
 			break;
 	}
-
+    int found = 0;
 	while ((looking = ksPrev(searchKS)) != NULL)
 	{
 		if(keyIsBinary(looking))
-			break;
+        {
+            found = 1;
+            break;
+        }
 	}
-
-	char *lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
-
+    if(!found)
+    {
+        setOrderNumber(parentKey, appendKey);
+        ksDel(searchKS);
+        return;
+    }
+	char *lastOrderNumber = NULL;
+    Key *meta = keyGetMeta(looking, "order");
+    if(meta)
+        lastOrderNumber = keyString(meta);
 	KeySet *cutKS = ksCut(searchKS, looking);
 	ksRewind(cutKS);
 	while ((looking = ksNext(cutKS)) != NULL)
 	{
-		if (strcmp(keyString(keyGetMeta(looking, "order")), lastOrderNumber) > 0)
+        meta = keyGetMeta(looking, "order");
+		if(!meta)
+            continue;
+        if (!lastOrderNumber || strcmp(keyString(meta), lastOrderNumber) > 0)
 			lastOrderNumber = (char *)keyString(keyGetMeta(looking, "order"));
 	}
-
-	setSubOrderNumber(appendKey, lastOrderNumber);
+    if(!lastOrderNumber)
+        setOrderNumber(parentKey, appendKey);
+    else
+	    setSubOrderNumber(appendKey, lastOrderNumber);
 
 	ksDel(cutKS);
 	ksDel(searchKS);
@@ -809,7 +828,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 		ksAppendKey(newKS, appendKey);
 		if (atoi(oldSectionNumber) < atoi(keyString(keyGetMeta(appendKey, "ini/section"))))
 		{
-			insertNewSectionIntoExistendOrder(appendKey, newKS);
+			insertNewSectionIntoExistendOrder(parentKey, appendKey, newKS);
 		}
 		else
 		{
@@ -852,7 +871,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 			{
 				keySetBinary(appendKey, 0, 0);
 				ksAppendKey(newKS, appendKey);
-				insertNewSectionIntoExistendOrder(appendKey, newKS);
+				insertNewSectionIntoExistendOrder(parentKey, appendKey, newKS);
 				appendKey = keyDup(appendKey);
 			}
 			else
