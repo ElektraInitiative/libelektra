@@ -34,10 +34,10 @@ addition to all that elektraMalloc and free must have the same libc
 version. elektraMalloc in a library linked against another libc, but
 freed by the application could lead to hard to find bugs.
 
-Some calls have a opposite call to get the structure freed again:  
+Some calls have a opposite call to get the structure freed again:
 
     KDB * kdbOpen();
-will need the function:  
+will need the function:
 
 	int kdbClose(KDB *handle);
 to get rid of the resources again. It maybe also shut down
@@ -80,10 +80,10 @@ as alternative to keySet* functions and to ksAppendKey(). With that you
 can generate any key or keyset in a single c-statement. This can be
 done programmatically by keyGenerate or ksGenerate in libelektratools.
 
-To just get a key, use  
+To just get a key, use
 
-	Key *k = keyNew (0);  
-and to just get a keyset, use  
+	Key *k = keyNew (0);
+and to just get a keyset, use
 
 	KeySet *k = ksNew(0, KS_END);
 
@@ -168,16 +168,16 @@ exceeds that limit -1 (see above Return Value) or NULL pointer
 must be returned.
 
 
-There are some functions which return an internal string:  
+There are some functions which return an internal string:
 
-	const char *keyName(const Key *key);  
-	const char *keyBaseName(const Key *key);  
-	const char *keyOwner(const Key *key);  
-	const char *keyComment(const Key *key);  
+	const char *keyName(const Key *key);
+	const char *keyBaseName(const Key *key);
+	const char *keyOwner(const Key *key);
+	const char *keyComment(const Key *key);
 
-and in the case that (`keyIsBinary(key)==1`) also:  
+and in the case that (`keyIsBinary(key)==1`) also:
 
-	const void *keyValue(const Key *key);  
+	const void *keyValue(const Key *key);
 
 A Null pointer will lead in all that cases that you get back
 a Null pointer.
@@ -216,11 +216,11 @@ with KDB_O, errors KDB_ERR, namespaces KEY_NS and key types with
 KEY_TYPE.
 
 The data structures start with a capital letter for every part of
-the word:  
+the word:
 
-	KDB ... Key Data Base Handle  
-	KeySet ... Key Set  
-	Key ... Key  
+	KDB ... Key Data Base Handle
+	KeySet ... Key Set
+	Key ... Key
 
 keyGetUID() and keyGetGID() have upper case letters because ID is commonly
 written in upper case letters.
@@ -240,14 +240,14 @@ or KeySet is not modified, const is used. For return values no const is
 used, its more disturbing then have any positive effect. The only
 exceptions are:
 
-In special:  
+In special:
 
-	const char *keyName(const Key *key);  
-	const char *keyBaseName(const Key *key);  
-	const char *keyComment(const Key *key);  
-	const void *keyValue(const Key *key);  
-	const char *keyString(const Key *key);  
-	const Key  *keyGetMeta(const Key *key, const char* metaName)  
+	const char *keyName(const Key *key);
+	const char *keyBaseName(const Key *key);
+	const char *keyComment(const Key *key);
+	const void *keyValue(const Key *key);
+	const char *keyString(const Key *key);
+	const Key  *keyGetMeta(const Key *key, const char* metaName)
 
 These functions are really thought to get something and not to change anything!
 Elektra will lose the knowledge if these keys are synchronized or not. So
