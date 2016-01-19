@@ -149,7 +149,14 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
                 if (*end == ';')
                     *end = '\0';
                 rstrip(value);
-
+				if(*value == '"')
+				{
+					while(*end != '"')
+						--end;
+					if(end > value)
+						*end = '\0';
+					*(value++) = '\0';
+				}
                 /* Valid name[=:]value pair found, call handler */
                 strncpy0(prev_name, name, sizeof(prev_name));
                 if (!config->keyHandler(user, section, name, value, 0) && !error)

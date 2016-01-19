@@ -21,6 +21,7 @@
 #include <kdbhelper.h>
 #include <kdbos.h>
 #include <inih.h>
+#include <ctype.h>
 #include "ini.h"
 
 int elektraIniOpen(Plugin *handle, Key *parentKey);
@@ -979,7 +980,11 @@ static void iniWriteMeta(FILE *fh, Key *parentKey, Key *key)
 				elektraFree(iniName);
 				first = 0;
 			}
-			fprintf(fh, " %s = %s\n", name, keyString(meta));
+			const char *string = keyString(meta);
+			if(isspace(*string) || isspace((string+strlen(string)-1)))
+				fprintf(fh, "%s = \"%s\"\n", name, string);
+			else
+				fprintf(fh, "%s = %s\n", name, string);
 		}
 	}
 }
@@ -1005,7 +1010,11 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 			if(keyGetValueSize(cur) <= 1)
 				continue;
 			char *name = getIniName(parentKey, cur);
-			fprintf(fh, "%s = %s\n", name, keyString(cur));
+			const char *string = keyString(cur);
+			if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+				fprintf(fh, "%s = \"%s\"\n", name, string);
+			else
+				fprintf(fh, "%s = %s\n", name, string);
 			elektraFree(name);
 		}
 	}
@@ -1026,12 +1035,16 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 		}
 		else if (config->sectionHandling == NONE)
 		{
-			char *iniName = getIniName(parentKey, cur);
+			char *name = getIniName(parentKey, cur);
 			if (isIniKey(cur))
 			{
-				fprintf(fh, "%s = %s\n", iniName, keyString(cur));
+				const char *string = keyString(cur);
+				if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+					fprintf(fh, "%s = \"%s\"\n", name, string);
+				else
+					fprintf(fh, "%s = %s\n", name, string);
 			}
-			free(iniName);
+			free(name);
 		}
 		else
 		{
@@ -1051,36 +1064,44 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 					for (int j = i; j <= i+lastArrayIndex; ++j)
 					{
 						cur = keyArray[j];
-						fprintf(fh, " %s = %s\n", name, keyString(cur));
+						const char *string = keyString(cur);
+						if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+							fprintf(fh, "%s = \"%s\"\n", name, string);
+						else
+							fprintf(fh, "%s = %s\n", name, string);
 					}
 					free(name);
 					i += lastArrayIndex;
 				}
 				else
 				{
-					char *iniName;
+					char *name;
 					if (keyIsBelow(sectionKey, cur))
 					{
-						iniName = getIniName(sectionKey, cur);
+						name = getIniName(sectionKey, cur);
 					}
 					else
 					{
-						iniName = getIniName(parentKey, cur);
+						name = getIniName(parentKey, cur);
 					}
 
 					if (keyGetMeta(cur, "ini/empty"))
 					{
-						fprintf(fh, " %s\n", iniName);
+						fprintf(fh, "%s\n", name);
 					}
 					else if (strstr(keyString(cur), "\n") == 0)
 					{
-						fprintf(fh, " %s = %s\n", iniName, keyString(cur));
+						const char *string = keyString(cur);
+						if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+							fprintf(fh, "%s = \"%s\"\n", name, string);
+						else
+							fprintf(fh, "%s = %s\n", name, string);
 					}
 					else
 					{
 						if (config->supportMultiline)
 						{
-							writeMultilineKey(cur, iniName, fh);
+							writeMultilineKey(cur, name, fh);
 						}
 						else
 						{
@@ -1090,7 +1111,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 							ret = -1;
 						}
 					}
-					free(iniName);
+					free(name);
 				}
 			}
 		}
