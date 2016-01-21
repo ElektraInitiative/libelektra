@@ -120,6 +120,14 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
             if (!config->keyHandler(user, section, prev_name, start, 1) && !error)
                 error = lineno;
         }
+		else if(*start == '=')
+		{
+			end = find_char_or_comment(start+1, '\0');
+			value = lskip(start+1);
+			rstrip(value);
+            if (!config->keyHandler(user, NULL, NULL, value, 0) && !error)
+                    error = lineno;
+		}
         else if (*start == '[') {
             /* A "[section]" line */
             end = find_char_or_comment(start + 1, ']');
