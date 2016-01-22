@@ -18,7 +18,7 @@ applications' configurations, leveraging easy application integration.
 ## Contact ##
 
 Do not hesitate to ask any question on
-[github issue tracker](https://github.com/ElektraInitiative/libelektra/issues),
+[GitHub issue tracker](https://github.com/ElektraInitiative/libelektra/issues),
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 or directly to one of the [authors](doc/AUTHORS).
 
@@ -79,11 +79,11 @@ The full documentation, including
 [tutorials](http://libelektra.org/blob/master/doc/tutorials/),
 [glossary](/doc/help/elektra-glossary.md), and
 [concepts and man pages](/doc/help/elektra-introduction.md)
-is available in the github repository.
+is available in the GitHub repository.
 
 You can read the documentation for the kdb tool, either
 
-- [on github](http://libelektra.org/blob/master/doc/help/kdb.md)
+- [on GitHub](http://libelektra.org/blob/master/doc/help/kdb.md)
 - [in the API docu](http://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
 - by using `kdb --help` or `kdb help <command>`
 - by using `man kdb`
@@ -172,7 +172,7 @@ If there are no packages available for your distribution, see the
 
 ### Download ###
 
-Elektra's uses a [git repository at github](https://github.com/ElektraInitiative/libelektra).
+Elektra's uses a [git repository at GitHub](https://github.com/ElektraInitiative/libelektra).
 
 You can clone the latest version of Elektra by running:
 
