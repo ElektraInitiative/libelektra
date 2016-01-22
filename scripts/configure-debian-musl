@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. "$(dirname "$0")/configure-common"
+
+cd $BUILD
+CC=musl-gcc CXX=g++ cmake \
+	-DINSTALL_BUILD_TOOLS=ON \
+	-DBUILD_TESTING=OFF -DBUILD_FULL=OFF -DBUILD_STATIC=OFF \
+	-DPLUGINS="ALL;-yajl;-journald;-crypto;-dbus;-xmltool" \
+	-KDB_DEFAULT_STORAGE=ini \
+	-DTARGET_PLUGIN_FOLDER="" \
+	$*
