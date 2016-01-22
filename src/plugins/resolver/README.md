@@ -4,6 +4,7 @@
 - infos/provides = resolver
 - infos/placements = rollback getresolver setresolver commit
 - infos/needs =
+- infos/status = productive specific unittest tested
 - infos/description =
 ## Scope ##
 
