@@ -420,6 +420,8 @@ set (COVERAGE_PREFIX
 
 option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
 
+option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
+
 
 #
 # Developer builds (debug or verbose build)

@@ -12,7 +12,9 @@
 # Symbols of libelektratools will be treaded specially.
 add_executable (elektra-export-symbols exportsymbols.c)
 
-install (TARGETS elektra-export-symbols DESTINATION bin)
+if (INSTALL_BUILD_TOOLS)
+	install (TARGETS elektra-export-symbols DESTINATION bin)
+endif (INSTALL_BUILD_TOOLS)
 
 include(LibAddMacros)
 find_util(elektra-export-symbols EXE_SYM_LOC EXE_SYM_ARG)
