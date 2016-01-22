@@ -11,6 +11,10 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
+nodocu flag in status
+
+RPATH only where needed (+ where should elektraModulesLoad be?)
+
 ## fixes
 
 full code review tools
@@ -23,6 +27,9 @@ fix type plugins 1d
 fix other plugins (e.g. glob) 1d
 
 remove "resolver" resolver
+symlink resolver/storage?
+export/import/editor should use KDB_DEFAULT_STORAGE as default
+
 BUILD_LEGACY for non-split elektra?
 
 ## docu
@@ -37,6 +44,10 @@ make elektra-hierarchy reality:
 docu provide option in contract
 
 docu specification mount
+
+minimal generic description of commandline-options in kdb
+	long specific description in man pages
+
 
 
 ## INI
