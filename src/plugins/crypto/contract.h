@@ -15,3 +15,4 @@ keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/set", KEY_FUNC, 
 keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/error", KEY_FUNC, CRYPTO_PLUGIN_FUNCTION(error), KEY_END),
 #include ELEKTRA_README(crypto)
 keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/status", KEY_VALUE, "experimental", KEY_END),
