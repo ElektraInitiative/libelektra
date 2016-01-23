@@ -5,6 +5,7 @@
 - infos/provides = filefilter
 - infos/placements = postgetstorage presetstorage
 - infos/description = Cryptographic operations
+- infos/status = experimental
 
 ## Introduction ##
 
