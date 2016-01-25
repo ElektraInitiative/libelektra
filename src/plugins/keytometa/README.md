@@ -9,41 +9,41 @@
 
 ## INTRODUCTION ##
 
-This plugin converts keys into metakeys of other keys. 
-The keys to be converted are tagged with special metadata. 
+This plugin converts keys into metakeys of other keys.
+The keys to be converted are tagged with special metadata.
 Converting keys into metakeys basically raises two questions:
 - which keys are to be converted
 - which key to append the resulting metakeys to
 
-The keys to be converted are identified by metakeys below "convert" (e.g. "convert/append"). 
-The keys receiving the resulting meta data are identified by append strategies. 
+The keys to be converted are identified by metakeys below "convert" (e.g. "convert/append").
+The keys receiving the resulting meta data are identified by append strategies.
 The plugin currently supports the following metakeys for controlling the conversion:
 
 - convert/metaname: specifies the name of the resulting metakey. For example tagging the key user/config/key1 with "convert/metaname = comment" means that the key will be converted to a metakey with the name "comment".
 - convert/append: specifies the append strategy (see below)
-- convert/append/samelevel: specifies that the key should only be written to the metadata of a key with the same hiearchy level (see below). 
+- convert/append/samelevel: specifies that the key should only be written to the metadata of a key with the same hiearchy level (see below).
 
-The keys converted to metadata are restored as soon as the keyset is written back. 
-However, the plugin is stateful. This means that a keyset must be read and keys must be 
-converted by the plugin in order to undo this conversion in the set direction. 
-Modifications to the metadata which resulted from converted keys are propagated back 
+The keys converted to metadata are restored as soon as the keyset is written back.
+However, the plugin is stateful. This means that a keyset must be read and keys must be
+converted by the plugin in order to undo this conversion in the set direction.
+Modifications to the metadata which resulted from converted keys are propagated back
 to the corresponding key (see merging for more details).
 
-The keys are ordered by the "order" metadata. If two keys are equal according to the order metadata, 
+The keys are ordered by the "order" metadata. If two keys are equal according to the order metadata,
 they are ordered by name instead.
 
 
- 
+
 ## APPEND STRATEGIES ##
 
-The append strategy specifies which key will receive the resulting metadata. 
+The append strategy specifies which key will receive the resulting metadata.
 Currently the plugin supports the following strategies:
 
 ### PARENT STRATEGY ###
 
-The metadata is added to the first existing parent of the converted key. 
-This does not neccessarily have to be the parent of the keyset. If no such key is found, 
-the first key in a sorted keyset will receive the metadata (this is usually the parent key of the keyset). 
+The metadata is added to the first existing parent of the converted key.
+This does not neccessarily have to be the parent of the keyset. If no such key is found,
+the first key in a sorted keyset will receive the metadata (this is usually the parent key of the keyset).
 For example consider the following keyset:
 
 				user/config/key1
@@ -52,13 +52,13 @@ For example consider the following keyset:
 				user/config/key2/deeper/child2
 				user/config/child3
 
-If child1, child2 and child3 were tagged with "convert/append = parent", key1 would receive 
-the metadata from child1 and child3. Key2 would receive the metadata from child2. 
+If child1, child2 and child3 were tagged with "convert/append = parent", key1 would receive
+the metadata from child1 and child3. Key2 would receive the metadata from child2.
 
 ### NEXT STRATEGY ###
 
-The metadata is added to the key following the converted key in a sorted keyset. 
-If no such key is found (for example because the key to be converted is the last one), 
+The metadata is added to the key following the converted key in a sorted keyset.
+If no such key is found (for example because the key to be converted is the last one),
 the strategy is reverted to parent. For example consider the following keyset:
 
 				user/config/deeper/key1
@@ -66,13 +66,13 @@ the strategy is reverted to parent. For example consider the following keyset:
 				user/config/key3
 				user/config/key4
 
-If key1 and key3 were tagged with "convert/append = next", key2 would receive the metadata 
+If key1 and key3 were tagged with "convert/append = next", key2 would receive the metadata
 resulting from key1 and key4 would receive the metadata resulting from key3.
 
 ### PREVIOUS STRATEGY ###
 
-The metadata is added to the key preceding the converted key in a sorted keyset. 
-If no such key is found (for example because the key to be converted is the first one), 
+The metadata is added to the key preceding the converted key in a sorted keyset.
+If no such key is found (for example because the key to be converted is the first one),
 the strategy is reverted to parent. For example consider the following keyset:
 
 				user/config/key1
@@ -80,19 +80,19 @@ the strategy is reverted to parent. For example consider the following keyset:
 				user/config/key3
 				user/config/key4
 
-If key2 and key4 were tagged with "convert/append = previous", key1 would receive the metadata 
+If key2 and key4 were tagged with "convert/append = previous", key1 would receive the metadata
 resulting from key2 and key3 would receive the metadata resulting from key4.
 
 
 
 ## MERGING ##
 
-The metadata resulting from a converted key is never appended to another key which is going to 
-be converted. This prevents that the data of converted keys is invisible after the conversion. 
-Instead the metadata resulting from different converted keys with the same append strategy is 
-merged together (separated by a newline). Keys with different append strategies are skipped, 
-until either a key with the same strategy is found (which is simply merged as decribed above) 
-or the target key is found. The keys are always processed in the order of an ordered keyset. 
+The metadata resulting from a converted key is never appended to another key which is going to
+be converted. This prevents that the data of converted keys is invisible after the conversion.
+Instead the metadata resulting from different converted keys with the same append strategy is
+merged together (separated by a newline). Keys with different append strategies are skipped,
+until either a key with the same strategy is found (which is simply merged as decribed above)
+or the target key is found. The keys are always processed in the order of an ordered keyset.
 For example consider the following keyset:
 
 				user/conifg/key0
@@ -120,8 +120,8 @@ The option "convert/append/samelevel" can be used to force that the metadata is 
 				user/config/key5
 				user/config/key6
 
-If child1, child2 and key4 were each tagged with "convert/append = next" and child2 and key4 were tagged with "convert/append/samelevel", key2 would receive the metadata resulting from child1. 
-key0 would receive the metadata resulting from child2 (strategy reverted to parent, as the samelevel request cannot be fulfilled) 
+If child1, child2 and key4 were each tagged with "convert/append = next" and child2 and key4 were tagged with "convert/append/samelevel", key2 would receive the metadata resulting from child1.
+key0 would receive the metadata resulting from child2 (strategy reverted to parent, as the samelevel request cannot be fulfilled)
 key5 would receive the metadata resulting from key4
 
 .
@@ -134,13 +134,13 @@ by adding the following to the Augeas plugin contract.
 
 				keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1",
 					KEY_VALUE, "*#comment*",
-					KEY_META, "convert/metaname", "comment", 
+					KEY_META, "convert/metaname", "comment",
 					KEY_META, "convert/append", "next",
 					KEY_END),
 				keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1/flags",
 					KEY_VALUE, "0", /* disable the path matching mode */
 					KEY_END)
-					
-Tagging the keys to be converted to comment meta keys happens via the glob plugin. The meta data set on the key `glob/get/#1` is copied to each key that matches the 
+
+Tagging the keys to be converted to comment meta keys happens via the glob plugin. The meta data set on the key `glob/get/#1` is copied to each key that matches the
 pattern "*#comment*", i.e. each comment key generated by the Augeas plugin. "convert/metaname" = "comment" because we want the comment keys to be converted to the
 comment metadata. "next" is chosen as append strategy because usually comments occur before the key they describe.

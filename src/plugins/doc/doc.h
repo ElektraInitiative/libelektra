@@ -13,7 +13,7 @@
 
 /**
  * @defgroup plugin Plugins
- * 
+ *
  * @brief Elektra plugin framework
  *
  * @since version 0.4.9, Elektra can dynamically load different key storage

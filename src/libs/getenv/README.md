@@ -40,18 +40,18 @@ To do so, getenv(3) will lookup multiple sources next to searching in the enviro
 (environ). As running example will use `getenv("HOME") -> /path/to/home`:
 
 1. Given commandline parameters will always be preferred (see [OPTIONS](#OPTIONS) below).
-   
+
    E.g. `kdb elektrify-getenv <app> --elektra:HOME=/path/to/home`
 2. Then `/env/override/<key>` will be looked up, where <key> is the parameter to `getenv`.
    If found, the key will be returned, if it is a null keys, `getenv` will return `NULL`.
-   
+
    E.g. `kdb set user/env/override/HOME /path/to/home`
 3. Then environment will be requested.
-   
+
    E.g. `HOME=/path/to/home kdb elektrify-getenv <application>`
 3. Then `/env/fallback/<key>` will be looked up.
    If found, the key will be returned, if it is a null keys, `getenv` will return `NULL`.
-   
+
    E.g. `kdb set user/env/fallback/HOME /path/to/home`
 
 
@@ -93,11 +93,11 @@ Internal Options are available in three different variants:
    which might be passed through exec(3) calls, but are removed by clearenv(3) calls.
 1. as Elektra KDB entry: `/env/option/<option>`,
    which are the way to achieve an option to be enabled for every application.
-   
+
    E.g. `kdb set user/env/option/clearenv ""` to clear the environment for all
    applications started by that user (note that at least `PATH` should to be set
    using `kdb set user/env/fallback/PATH "/bin:/usr/bin"` then).
-   
+
    Note, that null keys are equal to non-set options.
    E.g. `kdb set system/env/option/debug "/tmp/elektra.log"` and
    `kdb set user/env/option/debug` will activate logging for the system, except

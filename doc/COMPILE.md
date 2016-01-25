@@ -69,11 +69,11 @@ Additional gcc 4.6 armhf is tested regularly.
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 
 
-To change the compiler, use  
+To change the compiler, use
 
 	CMAKE_C_COMPILER and CMAKE_CXX_COMPILER.
 
-for example to use gcc-4.3  
+for example to use gcc-4.3
 
 	cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
 
@@ -130,11 +130,11 @@ E.g. if you want all plugins except the jni plugin you would use:
 	-DPLUGINS="ALL;-jni"
 
 To add all plugins not having additional dependencies
-(they need only POSIX), you can use  
+(they need only POSIX), you can use
 
 	-DPLUGINS=NODEP
 
-To manually set the default (same as not setting PLUGINS), you can use  
+To manually set the default (same as not setting PLUGINS), you can use
 
 	-DPLUGINS=DEFAULT
 
@@ -327,11 +327,11 @@ Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later)
 installed. cmake configure will help you with that, it will make sure you don't forget something
 essential.
 
-For Most Linux system all you have to do is open up a console and 
+For Most Linux system all you have to do is open up a console and
 
-        mkdir build 
-        cd build 
-        cmake .. -G 'CodeBlocks - Unix Makefiles' 
+        mkdir build
+        cd build
+        cmake .. -G 'CodeBlocks - Unix Makefiles'
         make package
 
 
@@ -344,7 +344,7 @@ Note 2:
 	For Unix if you have nCurses install you can run ccmake to set important option after
 	running cmake like to enable debug symbol.
 
-Note 3: 
-	for Gentoo is recommend to emerge sys-apps/lsb-release to name the package 
+Note 3:
+	for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
 	right even thou not required.
 

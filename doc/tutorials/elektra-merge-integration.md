@@ -10,7 +10,7 @@ using Elektra.
 ## The New Option ##
 
 The addition of the `--three-way-merge-command` option was a part of my Google
-Summer of Code Project. This option takes the form:  
+Summer of Code Project. This option takes the form:
 	--three-way-merge-command command  <New File> <Destination>
 
 Where `command` is the command you would like to use for the merge. `New File` and

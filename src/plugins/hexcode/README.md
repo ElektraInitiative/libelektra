@@ -28,7 +28,7 @@ hexcode plugin makes the value three times larger.
 Consider the following _value_ of an key:
 
 	value=abc xyz
-	
+
 Assuming the escape character is % the input would be encoded to:
 
 	value%3Dabc%20xyz
