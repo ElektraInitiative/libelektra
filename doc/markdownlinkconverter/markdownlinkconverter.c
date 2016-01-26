@@ -412,7 +412,7 @@ static void printTarget (FILE * output, char * target, char * inputFilename,
 				lastFolderDelimiter = strrchr (pathToLink, FOLDER_DELIMITER);
 				if (lastFolderDelimiter == NULL)
 				{
-					fprintf (stderr, "INVALID LINK %s:%i    \"%s\"\n", inputFilename, lineCount, backupTarget);
+					fprintf (stderr, "%s|%i col 0| warning: invalid link '%s'\n", inputFilename, lineCount, backupTarget);
 					return;
 				}
 			}
@@ -431,7 +431,7 @@ static void printTarget (FILE * output, char * target, char * inputFilename,
 	FILE * test = fopen (pathToLink, "r");
 	if (!test)
 	{
-		fprintf (stderr, "INVALID LINK %s:%i    \"%s\"\n", inputFilename, lineCount, backupTarget);
+		fprintf (stderr, "%s|%i col 0| warning: invalid link '%s'\n", inputFilename, lineCount, backupTarget);
 	} else
 	{
 		fclose (test);
