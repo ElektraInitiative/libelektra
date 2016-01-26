@@ -64,6 +64,7 @@ struct transitionTitle { int t[10][4]; };
  */
 
 const int linkStart = 0;
+int lineCount = 0;
 static inline int linkPossible (int old, int new)
 {
 	return (old == 0 || old == 5) && new == 2;
@@ -193,6 +194,7 @@ static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra
  */
 static void convertLinks (FILE * input, FILE * output, char * inputFilename, int indexofElektraRoot)
 {
+	lineCount = 0;
 	int c;
 	fpos_t pos;
 	int state = linkStart;
@@ -208,6 +210,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	while ((c = fgetc (input)) != EOF)
 	{
 		newstate = transitions.t[resolveChar (c)][state];
+		if (c == '\n') ++lineCount;
 		if (linkPossible (state, newstate))
 		{
 			// first [, possible link
@@ -383,6 +386,7 @@ int main (int argc, char *argv[])
 
 static void printTarget(FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown)
 {
+	char * backupTarget = target;
 	char pathToLink [strlen (inputFilename) + strlen (target) + 10 + 1];
 	// pathToLink cannot be longer than both stings + "README.md" + terminating \0
 	strcpy (pathToLink, inputFilename);
@@ -407,7 +411,7 @@ static void printTarget(FILE * output, char * target, char * inputFilename, int 
 				lastFolderDelimiter = strrchr (pathToLink, FOLDER_DELIMITER);
 				if (lastFolderDelimiter == NULL)
 				{
-					fprintf (output, "INVALID LINK");
+					fprintf (stderr, "INVALID LINK %s:%i    \"%s\"\n", inputFilename, lineCount, backupTarget);
 					return;
 				}
 			}
@@ -421,6 +425,15 @@ static void printTarget(FILE * output, char * target, char * inputFilename, int 
 	if (target[strlen (target) - 1] == '/')
 	{
 		strcpy (&pathToLink[strlen (pathToLink)], "README.md");
+	}
+	//validate link
+	FILE * test = fopen (pathToLink, "r");
+	if (!test)
+	{
+		fprintf (stderr, "INVALID LINK %s:%i    \"%s\"\n", inputFilename, lineCount, backupTarget);
+	} else
+	{
+		fclose (test);
 	}
 	if (isMarkdown)
 	{
