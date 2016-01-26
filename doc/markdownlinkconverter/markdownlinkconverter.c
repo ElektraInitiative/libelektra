@@ -30,15 +30,19 @@
 #define TEMP_FILENAME "temp"
 
 // Link Blacklist: do not convert links with the following starting and ending
-const char * const ignoreTargetEnd [] = { ".h", ".c" , ".cpp" , ".hpp" , ""};
 // ignore http, @ref and #anchor
 const char * const ignoreTargetStart [] = { "#", "@" , "http" , ""};
+
+// Links with this endings will be transformed to links to the source.
+// If not Blacklisted.
+const char * const linksToSrc [] = { ".h", ".c" , ".cpp", ".hpp", ".cmake", ".ini", ""};
+
 // both need to be terminated with an empty string
 
 // helpers
-static void printTarget(FILE * output, char * target, char * filenameInElektra);
+static void printTarget(FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown);
 static void printConvertedPath (FILE * output, char * path);
-static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilename);
+static int getIndexofElektraRoot (char * cmakeCacheFilename);
 static void exitError (FILE * f1, FILE * f2, const char * mes);
 
 /* These structs represent the transitions from the state machines.
@@ -187,7 +191,7 @@ static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra
 /* This procedure reads from the input and writes to the output, while
  * processing the file it converts all not Blacklisted links.
  */
-static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
+static void convertLinks (FILE * input, FILE * output, char * inputFilename, int indexofElektraRoot)
 {
 	int c;
 	fpos_t pos;
@@ -236,6 +240,7 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 
 			//check target
 			bool targetOK = true;
+			bool isMarkdown = true;
 			//start
 			for (int i = 0;strcmp (ignoreTargetStart[i], "") != 0;++i)
 			{
@@ -247,23 +252,23 @@ static void convertLinks (FILE * input, FILE * output, char * filenameInElektra)
 				}
 			}
 			//end
-			for (int i = 0;strcmp (ignoreTargetEnd[i], "") != 0;++i)
+			for (int i = 0;strcmp (linksToSrc[i], "") != 0;++i)
 			{
-				if (len < strlen (ignoreTargetEnd[i]))
+				if (len < strlen (linksToSrc[i]))
 					continue;
 
-				int j = len - strlen (ignoreTargetEnd[i]);
-				if (strncmp (ignoreTargetEnd[i], &target[j],
-					strlen (ignoreTargetEnd[i])) == 0)
+				int j = len - strlen (linksToSrc[i]);
+				if (strncmp (linksToSrc[i], &target[j],
+					strlen (linksToSrc[i])) == 0)
 				{
-					targetOK = false;
+					isMarkdown = false;
 					break;
 				}
 			}
 			//print target
 			if (targetOK)
 			{
-				printTarget (output,target, filenameInElektra);
+				printTarget (output, target, inputFilename, indexofElektraRoot, isMarkdown);
 			}
 			else fprintf (output, "%s", target);
 			fprintf (output, "%c", fgetc (input)); // print ")"
@@ -302,17 +307,17 @@ int main (int argc, char *argv[])
 
 	char inputFilename [strlen (argv[argc - 1]) + 1];
 	strcpy (inputFilename, argv[argc - 1]);
-	char * filenameInElektra = NULL;
+	int indexofElektraRoot = -1;
 	if (argc == 3)
 	{
 		char cmakeCacheFilename [strlen (argv[1]) + 1];
 		strcpy (cmakeCacheFilename, argv[1]);
-		filenameInElektra = getPathInElektraRoot (inputFilename, cmakeCacheFilename);
+		indexofElektraRoot = getIndexofElektraRoot (cmakeCacheFilename);
 	} else {
-		filenameInElektra = getPathInElektraRoot (inputFilename, NULL);
+		indexofElektraRoot = getIndexofElektraRoot (NULL);
 	}
 
-	if (!filenameInElektra)
+	if (0 > indexofElektraRoot)
 		return EXIT_FAILURE;
 
 	//1st pass
@@ -338,7 +343,7 @@ int main (int argc, char *argv[])
 	if (fgetpos (output, &startTempFile))
 		exitError (input, output, "fgetpos");
 
-	if (!convertTitle (input, output, filenameInElektra))
+	if (!convertTitle (input, output, &inputFilename[indexofElektraRoot]))
 	{
 		/* No title found in file, therefore generate one and
 		 * print it out.
@@ -356,10 +361,10 @@ int main (int argc, char *argv[])
 
 		// print Title + Header
 		fprintf (output, "# %s # {#", &title[1]);
-		printConvertedPath (output, filenameInElektra);
+		printConvertedPath (output, &inputFilename[indexofElektraRoot]);
 		fprintf (output, "}\n");
 		//2nd pass (see README.md)
-		convertLinks (input, output, filenameInElektra);
+		convertLinks (input, output, inputFilename, indexofElektraRoot);
 		fclose (input);
 	} else {
 		fclose (input);
@@ -368,7 +373,7 @@ int main (int argc, char *argv[])
 			exitError (output, NULL, "fsetpos");
 
 		//2nd pass (see README.md)
-		convertLinks (output, stdout, filenameInElektra);
+		convertLinks (output, stdout, inputFilename, indexofElektraRoot);
 		fclose (output);
 	}
 	remove (TEMP_FILENAME);
@@ -376,17 +381,14 @@ int main (int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-static void printTarget(FILE * output, char * target, char * filenameInElektra)
+static void printTarget(FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown)
 {
-	fprintf (output, "@ref ");
+	char pathToLink [strlen (inputFilename) + strlen (target) + 10 + 1];
+	// pathToLink cannot be longer than both stings + "README.md" + terminating \0
+	strcpy (pathToLink, inputFilename);
 	// distinguish between relative and absolute targets
 	if (target[0] != '/')
 	{
-		//copy filenameInElektra and extend it with FOLDER_DELIMITER at start.
-		char copyFilenameData[strlen (filenameInElektra) + 2];
-		strcpy (&copyFilenameData[1], filenameInElektra);
-		copyFilenameData[0] = FOLDER_DELIMITER;
-		char * copyFilename = copyFilenameData;
 		// determine how many times "../" is used in the target
 		int folderBack = 0;
 		while (!strncmp ("../", target, 3))
@@ -394,34 +396,41 @@ static void printTarget(FILE * output, char * target, char * filenameInElektra)
 			++folderBack;
 			target = target + 3;
 		}
-		// go folderBack times upwards in filenameInElektra
-		char * lastFolderDelimiter = strrchr (&copyFilenameData[1], FOLDER_DELIMITER);
+		// reduce pathToLink folderBack times
+		char * lastFolderDelimiter = strrchr (pathToLink, FOLDER_DELIMITER);
 		if (lastFolderDelimiter != NULL)
 		{
-			*lastFolderDelimiter = '\0';
-			// not in root so target needs to be extended with path
 			while (folderBack>0)
 			{
+				*lastFolderDelimiter = '\0';
 				--folderBack;
-				lastFolderDelimiter = strrchr (copyFilename, FOLDER_DELIMITER);
+				lastFolderDelimiter = strrchr (pathToLink, FOLDER_DELIMITER);
 				if (lastFolderDelimiter == NULL)
 				{
 					fprintf (output, "INVALID LINK");
 					return;
 				}
-				*lastFolderDelimiter = '\0';
-			}
-			// if copyFilename was not reduced print it
-			if (copyFilename[0] != '\0')
-			{
-				printConvertedPath (output, &copyFilename[1]);
-				fprintf (output, "_");
 			}
 		}
+		strcpy (++lastFolderDelimiter, target);
 	} else {
 		++target; // remove starting /
+		strcpy (&pathToLink[indexofElektraRoot], target);
 	}
-	printConvertedPath (output, target);
+	// if target ends with /, link it to README.md
+	if (target[strlen (target) - 1] == '/')
+	{
+		strcpy (&pathToLink[strlen (pathToLink)], "README.md");
+	}
+	if (isMarkdown)
+	{
+		fprintf (output, "@ref ");
+		printConvertedPath (output, &pathToLink[indexofElektraRoot]);
+	}
+	else
+	{
+		fprintf (output, "%s", pathToLink);
+	}
 }
 
 /* This helper converts and prints a given path, all slashes or backslashes
@@ -442,14 +451,13 @@ static void printConvertedPath (FILE * output, char * path)
 		}
 		++workPath;
 	}
-	if (*(--workPath) == '/') fprintf (output, "README_md");
 }
 
-/* Detect the absolute path (in the elektra root folder) of the parsed
- * file, by parsing the CMAKE_CACHE_FILENAME file and getting the CMAKE_CACHE_VARNAME,
- * which contains the source path.
+/* Detect the index of the absolute path (in the elektra root folder) of
+ * the parsed file, by parsing the CMAKE_CACHE_FILENAME file and getting
+ * the length of the CMAKE_CACHE_VARNAME value, which contains the source path.
  */
-static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilename)
+static int getIndexofElektraRoot (char * cmakeCacheFilename)
 {
 	FILE * input = NULL;
 	if (!cmakeCacheFilename)
@@ -460,7 +468,7 @@ static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilen
 	if (!input)
 	{
 		fprintf (stderr, "fopen Error: CmakeCacheFile %s not found\n", cmakeCacheFilename);
-		return NULL;
+		return -1;
 	}
 	char line [CMAKE_CACHE_FILE_READ_BUFFER + 1];
 	int lenCmakecacheVar = strlen (CMAKE_CACHE_VARNAME);
@@ -478,13 +486,12 @@ static char * getPathInElektraRoot (char * inputFilename, char * cmakeCacheFilen
 	{
 		fprintf (stderr, "%s parse Error: Variable %s not found\n",
 							CMAKE_CACHE_FILENAME, CMAKE_CACHE_VARNAME);
-		return NULL;
+		return -1;
 	}
 	char * CmakecacheVarValue = line;
-	while (*CmakecacheVarValue && *CmakecacheVarValue != FOLDER_DELIMITER) ++CmakecacheVarValue;
-	//calculate filename in elektra root
-	char * out = inputFilename + strlen (CmakecacheVarValue);
-	return out;
+	while (*CmakecacheVarValue && *CmakecacheVarValue != '=') ++CmakecacheVarValue;
+	++CmakecacheVarValue;
+	return strlen (CmakecacheVarValue);
 }
 
 static void exitError (FILE * f1, FILE * f2, const char * mes)
