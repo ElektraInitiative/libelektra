@@ -40,7 +40,8 @@ const char * const linksToSrc [] = { ".h", ".c" , ".cpp", ".hpp", ".cmake", ".in
 // both need to be terminated with an empty string
 
 // helpers
-static void printTarget(FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown);
+static void printTarget (FILE * output, char * target, char * inputFilename,
+						int indexofElektraRoot, bool isMarkdown, int lineCount);
 static void printConvertedPath (FILE * output, char * path);
 static int getIndexofElektraRoot (char * cmakeCacheFilename);
 static void exitError (FILE * f1, FILE * f2, const char * mes);
@@ -64,7 +65,6 @@ struct transitionTitle { int t[10][4]; };
  */
 
 const int linkStart = 0;
-int lineCount = 0;
 static inline int linkPossible (int old, int new)
 {
 	return (old == 0 || old == 5) && new == 2;
@@ -194,7 +194,7 @@ static bool convertTitle (FILE * input, FILE *  output, char * filenameInElektra
  */
 static void convertLinks (FILE * input, FILE * output, char * inputFilename, int indexofElektraRoot)
 {
-	lineCount = 0;
+	int lineCount = 0;
 	int c;
 	fpos_t pos;
 	int state = linkStart;
@@ -271,7 +271,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 			//print target
 			if (targetOK)
 			{
-				printTarget (output, target, inputFilename, indexofElektraRoot, isMarkdown);
+				printTarget (output, target, inputFilename, indexofElektraRoot, isMarkdown, lineCount);
 			}
 			else fprintf (output, "%s", target);
 			fprintf (output, "%c", fgetc (input)); // print ")"
@@ -384,7 +384,8 @@ int main (int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-static void printTarget(FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown)
+static void printTarget (FILE * output, char * target, char * inputFilename,
+						int indexofElektraRoot, bool isMarkdown, int lineCount)
 {
 	char * backupTarget = target;
 	char pathToLink [strlen (inputFilename) + strlen (target) + 10 + 1];
