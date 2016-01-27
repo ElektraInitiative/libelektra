@@ -28,6 +28,7 @@
 #define CMAKE_CACHE_FILENAME "CMakeCache.txt"
 #define CMAKE_CACHE_VARNAME "Elektra_SOURCE_DIR"
 #define TEMP_FILENAME "temp"
+#define INVALIDLINK_MESS "%s|%i col 0| warning: invalid link '%s'\n"
 
 // Link Blacklist: do not convert links with the following starting and ending
 // ignore http, @ref and #anchor
@@ -412,7 +413,7 @@ static void printTarget (FILE * output, char * target, char * inputFilename,
 				lastFolderDelimiter = strrchr (pathToLink, FOLDER_DELIMITER);
 				if (lastFolderDelimiter == NULL)
 				{
-					fprintf (stderr, "%s|%i col 0| warning: invalid link '%s'\n", inputFilename, lineCount, backupTarget);
+					fprintf (stderr, INVALIDLINK_MESS, inputFilename, lineCount, backupTarget);
 					return;
 				}
 			}
@@ -431,7 +432,7 @@ static void printTarget (FILE * output, char * target, char * inputFilename,
 	FILE * test = fopen (pathToLink, "r");
 	if (!test)
 	{
-		fprintf (stderr, "%s|%i col 0| warning: invalid link '%s'\n", inputFilename, lineCount, backupTarget);
+		fprintf (stderr, INVALIDLINK_MESS, inputFilename, lineCount, backupTarget);
 	} else
 	{
 		fclose (test);
