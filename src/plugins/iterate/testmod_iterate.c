@@ -27,9 +27,21 @@ static void test_basics ()
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == 1,
 			"call to kdbOpen was not successful");
 
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 0,
+			"call to kdbGet was not successful");
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 0,
+			"call to kdbSet was not successful");
+
+	ksAppendKey (ks, keyNew("user/tests/iterate/key",
+				KEY_META, "iterate", "has",
+				KEY_END));
+
+	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1,
 			"call to kdbGet was not successful");
 
+	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1,
 			"call to kdbSet was not successful");
 
