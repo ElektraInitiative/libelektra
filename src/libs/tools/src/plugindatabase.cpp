@@ -214,8 +214,7 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 
 	if (foundPlugins.empty())
 	{
-		throw NoPlugin("No plugin that provides " 
-				+ which + " could be found");
+		throw NoPlugin("No plugin that provides " + which + " could be found");
 	}
 
 	// the largest element of the map contains the best-suited plugin:

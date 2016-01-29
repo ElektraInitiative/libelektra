@@ -106,6 +106,18 @@ std::string PluginSpec::getRefName() const
 }
 
 /**
+ * @brief Checks if reference name contains only numbers
+ *
+ * @retval true if only numbers
+ * @retval true if a refname was given
+ */
+bool PluginSpec::isRefNumber() const
+{
+	auto it = refname.find_first_not_of("0123456789");
+	return it == std::string::npos;
+}
+
+/**
  * @return the module name
  */
 std::string PluginSpec::getName() const

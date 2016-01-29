@@ -30,6 +30,7 @@ TEST(PluginSpec, construct)
 
 	EXPECT_EQ(PluginSpec("python2").getName(), "python2");
 	EXPECT_EQ(PluginSpec("python2").getFullName(), "python2#python2");
+	EXPECT_FALSE(PluginSpec("python2").isRefNumber());
 
 	EXPECT_EQ(PluginSpec("c", "b").getName(), "c");
 	EXPECT_EQ(PluginSpec("c", "b").getRefName(), "b");
@@ -38,16 +39,19 @@ TEST(PluginSpec, construct)
 	PluginSpec s1 ("c#b");
 	EXPECT_EQ(s1.getName(), "c");
 	EXPECT_EQ(s1.getRefName(), "b");
+	EXPECT_FALSE(s1.isRefNumber());
 	EXPECT_EQ(s1.getFullName(), "c#b");
 
 	s1.setRefNumber(20);
 	EXPECT_EQ(s1.getName(), "c");
 	EXPECT_EQ(s1.getRefName(), "20");
+	EXPECT_TRUE(s1.isRefNumber());
 	EXPECT_EQ(s1.getFullName(), "c#20");
 
 	s1.setFullName("c#b");
 	EXPECT_EQ(s1.getName(), "c");
 	EXPECT_EQ(s1.getRefName(), "b");
+	EXPECT_FALSE(s1.isRefNumber());
 	EXPECT_EQ(s1.getFullName(), "c#b");
 
 	EXPECT_THROW(s1.setRefName("20"), BadPluginName);

@@ -44,6 +44,7 @@ public:
 
 	std::string getFullName() const;
 	std::string getRefName() const;
+	bool isRefNumber() const;
 	std::string getName() const;
 
 	KeySet getConfig() const;
@@ -71,6 +72,15 @@ struct PluginSpecName
 		return s1.getName() == s2.getName();
 	}
 };
+
+struct PluginSpecRefName
+{
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getRefName() == s2.getRefName();
+	}
+};
+
 
 /**
  * @brief Only to be used with PluginSpecName!
