@@ -109,6 +109,12 @@ TEST(MountBackendBuilder, parseArgumentsIdentical)
 	EXPECT_THROW(parseArguments ("a#same b c d#same"), ParseException);
 	EXPECT_THROW(parseArguments ("a#same b c d e#same"), ParseException);
 	EXPECT_THROW(parseArguments ("a#same b c d e#same f g h"), ParseException);
+	EXPECT_THROW(parseArguments ("augeas#same1 logging#same2 code#same3 escape=% code#same1 escape=- "), ParseException);
+	EXPECT_THROW(parseArguments ("augeas#same1 logging#same2 code#same3 escape=% code#same3 escape=- "), ParseException);
+	EXPECT_THROW(parseArguments ("augeas#same1 logging#same2 code#same3 escape=% code#same3 escape=- "), ParseException);
+	EXPECT_THROW(parseArguments ("augeas#same logging#same2 code#same3 escape=% code#same escape=- "), ParseException);
+	EXPECT_THROW(parseArguments ("augeas#same1 logging#same code#same3 escape=% code#same escape=- "), ParseException);
+	EXPECT_THROW(parseArguments ("augeas#same1 logging#same2 code#same escape=% code#same escape=- "), ParseException);
 }
 
 TEST(MountBackendBuilder, parseArgumentsNearlyIdentical)
@@ -252,4 +258,47 @@ TEST(MountBackendBuilder, parseArgumentsSameProvider)
 	psv3.push_back (PluginSpec ("ccode", "a5"));
 	EXPECT_TRUE (cmpPsv (psv3, psv4));
 }
+
+
+TEST(MountBackendBuilder, parseArgumentsSameProviderAgain)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	PluginSpecVector psv1;
+	psv1.push_back (PluginSpec ("augeas", "same1"));
+	psv1.push_back (PluginSpec ("logging", "same2"));
+	psv1.push_back (PluginSpec ("code", "same3", KeySet(5,
+				*Key("user/escape", KEY_VALUE, "%", KEY_END),
+				KS_END)));
+	psv1.push_back (PluginSpec ("code", "same4", KeySet(5,
+				*Key("user/escape", KEY_VALUE, "-", KEY_END),
+				KS_END)));
+	PluginSpecVector psv2 = parseArguments ("augeas#same1 logging#same2 code#same3 escape=% code#same4 escape=- ");
+	EXPECT_TRUE (cmpPsv (psv1, psv2));
+
+
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("ccode")]["provides"] = "code";
+	mpd->data[PluginSpec("syslog")]["provides"] = "logging";
+	mpd->data[PluginSpec("augeas")][""];
+	mpd->data[PluginSpec("hexcode")][""];
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	for (auto const & p : psv2)
+	{
+		bb.addPlugin(p);
+	}
+	PluginSpecVector psv3;
+	PluginSpecVector psv4 (bb.begin(), bb.end());
+	psv3.push_back (PluginSpec ("augeas", "same1"));
+	psv3.push_back (PluginSpec ("syslog", "same2"));
+	psv3.push_back (PluginSpec ("ccode", "same3", KeySet(5,
+				*Key("user/escape", KEY_VALUE, "%", KEY_END),
+				KS_END)));
+	psv3.push_back (PluginSpec ("ccode", "same4", KeySet(5,
+				*Key("user/escape", KEY_VALUE, "-", KEY_END),
+				KS_END)));
+	EXPECT_TRUE (cmpPsv (psv3, psv4));
+}
+
 
