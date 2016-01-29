@@ -68,6 +68,24 @@ autoadd plugins to PLUGINS? (avoid duplication in ElektraCache)
 
 core, kdb.. remove useless symbols
 
+## INI
+
+as default backend (meta?)
+ordering
+comments
+
+## cmake
+
+installation
+make name(s) of variant and in which folder it is independent
+
+autoadd plugins to PLUGINS? (avoid duplication in ElektraCache)
+
+
+## cleanup
+
+core, kdb.. remove useless symbols
+
 ## mount specification
 
 improve support for "provide"
@@ -104,6 +122,9 @@ global mountpoints with unserialize
 --profile
 
 bookmark (+) feature
+
+Behaviour of kdb set:
+root and sudo should get system/ path per default
 
 ## meta data ##
 
