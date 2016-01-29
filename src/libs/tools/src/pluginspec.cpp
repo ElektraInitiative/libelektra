@@ -229,15 +229,17 @@ void PluginSpec::validate (std::string const & n) const
 
 
 /**
- * @brief Compare two pluginspec if name and refname is equal
+ * @brief Compare two pluginspec if their value is equal
+ * @note the content of getConfig() will be only compared with keynames, not content!
  */
 bool operator == (PluginSpec const & self, PluginSpec const & other)
 {
-	return self.getName() == other.getName() && self.getRefName() == other.getRefName();
+	return self.getName() == other.getName() && self.getRefName() == other.getRefName() && self.getConfig() == other.getConfig();
 }
 
 /**
- * @brief Compare two pluginspec if name and refname is not equal
+ * @brief Compare two pluginspec if their value is not equal
+ * @note the content of getConfig() will be only compared with keynames, not content!
  */
 bool operator != (PluginSpec const & self, PluginSpec const & other)
 {

@@ -7,6 +7,7 @@
  *
  */
 
+#define ELEKTRA_PLUGINSPEC_WITH_COMPARE
 
 #include <backendparser.hpp>
 
@@ -39,20 +40,41 @@ TEST(MountBackendBuilder, parsePluginArguments)
 			*Key("user/ax/bx", KEY_VALUE, "8", KEY_END),
 			KS_END),
 		  parsePluginArguments ("=5,ax=,ax/bx=8"));
+	EXPECT_EQ (KeySet (5,
+			*Key("user", KEY_VALUE, "5", KEY_END),
+			*Key("user/ ax", KEY_END, KEY_END),
+			*Key("user/ ax/ bx", KEY_VALUE, "8", KEY_END),
+			KS_END),
+		  parsePluginArguments ("=5, ax=, ax/ bx=8"));
+	EXPECT_EQ (KeySet (5,
+			*Key("user", KEY_VALUE, "5", KEY_END),
+			*Key("user/	ax", KEY_END, KEY_END),
+			*Key("user/	ax/	bx", KEY_VALUE, "8", KEY_END),
+			KS_END),
+		  parsePluginArguments ("=5,	ax=,	ax/	bx=8"));
+	EXPECT_EQ (KeySet (5,
+			*Key("user", KEY_VALUE, "5", KEY_END),
+			*Key("user/ax", KEY_END, KEY_END),
+			*Key("user/ax\\/bx", KEY_VALUE, "8", KEY_END),
+			KS_END),
+		  parsePluginArguments ("=5,ax=,ax\\/bx=8"));
+	EXPECT_EQ (KeySet (5,
+			*Key("user", KEY_END),
+			*Key("user/ax", KEY_END, KEY_END),
+			*Key("user/ax\\/bx", KEY_VALUE, "8", KEY_END),
+			KS_END),
+		  parsePluginArguments ("=,ax=,ax\\/bx=8"));
 }
 
 
-bool cmpPsv(kdb::tools::PluginSpecVector psv1, kdb::tools::PluginSpecVector psv2)
-{
-	EXPECT_EQ(psv1.size(), psv2.size());
-	if (psv1.size() != psv2.size()) return false;
-	for (size_t i=0; i<psv1.size(); ++i)
-	{
-		EXPECT_EQ (psv1[i], psv2[i]);
-		if (!(psv1[i] == psv2[i])) return false;
-	}
-	return true;
-}
+#define CMP_PSV(psv1, psv2) do { \
+	EXPECT_EQ(psv1.size(), psv2.size()); \
+	if (psv1.size() != psv2.size()) break; \
+	for (size_t i=0; i<psv1.size(); ++i) { \
+		EXPECT_EQ (psv1[i], psv2[i]) << "element " << i << " differs"; \
+		if (!(psv1[i] == psv2[i])) break; \
+	} \
+} while (false)
 
 TEST(MountBackendBuilder, parseArguments)
 {
@@ -63,11 +85,11 @@ TEST(MountBackendBuilder, parseArguments)
 	psv1.push_back (PluginSpec ("b"));
 	psv1.push_back (PluginSpec ("c"));
 	PluginSpecVector psv2 = parseArguments ("a a=5 b c");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a  a=5  b c   ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a 	 a=5	  b c ,  ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	EXPECT_THROW(parseArguments ("a=5 a b c"), ParseException);
 	EXPECT_THROW(parseArguments ("a#a b c a#a"), ParseException);
 }
@@ -86,12 +108,16 @@ TEST(MountBackendBuilder, parseVectorArguments)
 					*Key("user/a", KEY_VALUE, "5", KEY_END),
 					*Key("user/b", KEY_VALUE, "3", KEY_END),
 					KS_END)));
-	PluginSpecVector psv2 = parseArguments ({"a", "a=5 b=3", "b",  "c", "a=5, b=3"});
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	psv2 = parseArguments ("  a  a=5  b c   ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	psv2 = parseArguments ("  a 	 a=5	  b c ,  ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	PluginSpecVector psv2 = parseArguments ({"a", "a=5,b=3", "b",  "c", "a=5,b=3"});
+	CMP_PSV (psv1, psv2);
+	psv2 = parseArguments ({"a", "a=5,b=3", "b",  "c", "a=5,b=3"});
+	CMP_PSV (psv1, psv2);
+	psv2 = parseArguments ("  a 	 b=3,a=5	  b c ,  a=5,b=3 ");
+	CMP_PSV (psv1, psv2);
+	psv2 = parseArguments ("  a  a=5,b=3  b c  a=5, b=3 ");
+	CMP_PSV (psv1, psv2);
+	psv2 = parseArguments ("  a 	 b=3,a=5	  b ,  c  ,  a=5,b=3 ");
+	CMP_PSV (psv1, psv2);
 	EXPECT_THROW(parseArguments ("a=5 a b c"), ParseException);
 	EXPECT_THROW(parseArguments ("a#a b c a#a"), ParseException);
 }
@@ -125,7 +151,7 @@ TEST(MountBackendBuilder, parseArgumentsNearlyIdentical)
 	psv1.push_back (PluginSpec ("a", "a"));
 	psv1.push_back (PluginSpec ("a", 0));
 	PluginSpecVector psv2 = parseArguments ("a#a a");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 }
 
 TEST(MountBackendBuilder, parseArgumentsDoubleOccur)
@@ -142,11 +168,11 @@ TEST(MountBackendBuilder, parseArgumentsDoubleOccur)
 				*Key("user/b", KEY_VALUE, "c", KEY_END),
 				KS_END)));
 	PluginSpecVector psv2 = parseArguments ("a a=5 b c a b=c");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a  a=5  b c a b=c   ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a 	 a=5	  b c , a b=c  ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	EXPECT_THROW(parseArguments ("a=5 a b c a b=c"), ParseException);
 	EXPECT_THROW(parseArguments ("a a=5 b c a#0 b=c"), BadPluginName);
 	EXPECT_THROW(parseArguments ("a a=5 b c # b=c"), BadPluginName);
@@ -167,11 +193,11 @@ TEST(MountBackendBuilder, parseArgumentsRef)
 				*Key("user/b", KEY_VALUE, "c", KEY_END),
 				KS_END)));
 	PluginSpecVector psv2 = parseArguments ("a#mya a=5 b#myb c#myc a#othera b=c");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a#mya  a=5  b#myb c#myc a#othera b=c   ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a#mya 	 a=5 	  b#myb c#myc , a#othera b=c  ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 }
 
 
@@ -184,12 +210,14 @@ TEST(MountBackendBuilder, parseArgumentsProvider)
 				*Key("user/a", KEY_VALUE, "5", KEY_END),
 				KS_END)));
 	psv1.push_back (PluginSpec ("logging", "logg"));
-	psv1.push_back (PluginSpec ("code", "nee"));
+	psv1.push_back (PluginSpec ("code", "nee", KeySet(5,
+				*Key("user/escape", KEY_VALUE, "-", KEY_END),
+				KS_END))),
 	psv1.push_back (PluginSpec ("hexcode", "hexcode", KeySet(5,
-				*Key("user/b", KEY_VALUE, "c", KEY_END),
+				*Key("user/escape", KEY_VALUE, "%", KEY_END),
 				KS_END)));
-	PluginSpecVector psv2 = parseArguments ("augeas#aaa logging#logg code#nee escape=% hexcode escape=-");
-	EXPECT_TRUE (cmpPsv (psv1, psv2));
+	PluginSpecVector psv2 = parseArguments ("augeas#aaa a=5 logging#logg code#nee escape=% hexcode escape=-");
+	CMP_PSV (psv1, psv2);
 
 
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
@@ -208,12 +236,14 @@ TEST(MountBackendBuilder, parseArgumentsProvider)
 				*Key("user/a", KEY_VALUE, "5", KEY_END),
 				KS_END)));
 	psv3.push_back (PluginSpec ("syslog", "logg"));
-	psv3.push_back (PluginSpec ("ccode", "nee"));
+	psv3.push_back (PluginSpec ("ccode", "nee", KeySet(5,
+				*Key("user/escape", KEY_VALUE, "-", KEY_END),
+				KS_END)));
 	psv3.push_back (PluginSpec ("hexcode", "hexcode", KeySet(5,
-				*Key("user/b", KEY_VALUE, "c", KEY_END),
+				*Key("user/escape", KEY_VALUE, "%", KEY_END),
 				KS_END)));
 	PluginSpecVector psv4 (bb.begin(), bb.end());
-	EXPECT_TRUE (cmpPsv (psv3, psv4));
+	CMP_PSV (psv3, psv4);
 }
 
 TEST(MountBackendBuilder, parseArgumentsSameProvider)
@@ -231,7 +261,7 @@ TEST(MountBackendBuilder, parseArgumentsSameProvider)
 				KS_END)));
 	psv1.push_back (PluginSpec ("code", "a5"));
 	PluginSpecVector psv2 = parseArguments ("augeas#a1 logging#a2 code#a3 escape=% code#a4 escape=- code#a5");
-	EXPECT_TRUE (cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 
 
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
@@ -256,7 +286,7 @@ TEST(MountBackendBuilder, parseArgumentsSameProvider)
 				*Key("user/escape", KEY_VALUE, "-", KEY_END),
 				KS_END)));
 	psv3.push_back (PluginSpec ("ccode", "a5"));
-	EXPECT_TRUE (cmpPsv (psv3, psv4));
+	CMP_PSV (psv3, psv4);
 }
 
 
@@ -274,7 +304,7 @@ TEST(MountBackendBuilder, parseArgumentsSameProviderAgain)
 				*Key("user/escape", KEY_VALUE, "-", KEY_END),
 				KS_END)));
 	PluginSpecVector psv2 = parseArguments ("augeas#same1 logging#same2 code#same3 escape=% code#same4 escape=- ");
-	EXPECT_TRUE (cmpPsv (psv1, psv2));
+	CMP_PSV (psv1, psv2);
 
 
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
@@ -298,7 +328,7 @@ TEST(MountBackendBuilder, parseArgumentsSameProviderAgain)
 	psv3.push_back (PluginSpec ("ccode", "same4", KeySet(5,
 				*Key("user/escape", KEY_VALUE, "-", KEY_END),
 				KS_END)));
-	EXPECT_TRUE (cmpPsv (psv3, psv4));
+	CMP_PSV (psv3, psv4);
 }
 
 

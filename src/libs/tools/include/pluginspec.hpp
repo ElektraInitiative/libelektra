@@ -81,6 +81,14 @@ struct PluginSpecRefName
 	}
 };
 
+struct PluginSpecFullName
+{
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getFullName() == s2.getFullName();
+	}
+};
+
 
 /**
  * @brief Only to be used with PluginSpecName!
@@ -93,8 +101,10 @@ struct PluginSpecHash
 	}
 };
 
+#ifdef ELEKTRA_PLUGINSPEC_WITH_COMPARE
 bool operator == (PluginSpec const & self, PluginSpec const & other);
 bool operator != (PluginSpec const & self, PluginSpec const & other);
+#endif
 
 typedef std::vector <PluginSpec> PluginSpecVector;
 

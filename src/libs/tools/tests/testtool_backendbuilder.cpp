@@ -7,6 +7,8 @@
  *
  */
 
+#define ELEKTRA_PLUGINSPEC_WITH_COMPARE
+
 #include <backendbuilder.hpp>
 
 #include <backend.hpp>
@@ -214,11 +216,9 @@ TEST(BackendBuilder, doubleAddWithConf)
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
 	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
 		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
 			  KS_END)));
 	EXPECT_EQ(bb.cbegin()[3], PluginSpec("c", "v",
-		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
+		KeySet(2, *Key("user/vef", KEY_END),
 			  KS_END))) << "remember it was virtual";
 	bb.resolveNeeds();
 	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
@@ -243,12 +243,10 @@ TEST(BackendBuilder, doubleAddWithConfVirtual)
 	EXPECT_EQ(bb.cbegin()[0], PluginSpec("noresolver", "resolver"));
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
 	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c", "v",
-		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
+		KeySet(2, *Key("user/vef", KEY_END),
 			  KS_END)));
 	EXPECT_EQ(bb.cbegin()[3], PluginSpec("c",
 		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
 			  KS_END)));
 	bb.resolveNeeds();
 	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
@@ -272,8 +270,7 @@ TEST(BackendBuilder, directPluginLoading)
 	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
 	EXPECT_EQ(bb.cbegin()[0], PluginSpec("a"));
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("x",
-		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
+		KeySet(2, *Key("user/a", KEY_VALUE, "b", KEY_END),
 			  KS_END)));
 	EXPECT_EQ(bb.cbegin()[2], PluginSpec("noresolver", "resolver"));
 }

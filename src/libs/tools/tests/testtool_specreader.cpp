@@ -7,6 +7,7 @@
  *
  */
 
+#define ELEKTRA_PLUGINSPEC_WITH_COMPARE
 
 #include <specreader.hpp>
 

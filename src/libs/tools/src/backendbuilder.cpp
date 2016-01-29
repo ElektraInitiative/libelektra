@@ -11,6 +11,7 @@
 
 #include <backend.hpp>
 #include <backends.hpp>
+#include <pluginspec.hpp>
 #include <backendparser.hpp>
 #include <backendbuilder.hpp>
 #include <plugindatabase.hpp>
@@ -23,6 +24,7 @@
 
 #include <set>
 #include <algorithm>
+#include <functional>
 
 #include <kdb.hpp>
 #include <cassert>
@@ -204,7 +206,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 {
 	for (auto & p : toAdd)
 	{
-		if (p == plugin)
+		if (p.getFullName() == plugin.getFullName())
 		{
 			throw PluginAlreadyInserted();
 		}
@@ -227,7 +229,9 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 
 void BackendBuilder::remPlugin (PluginSpec const & plugin)
 {
-	toAdd.erase(std::remove(toAdd.begin(), toAdd.end(), plugin));
+	using namespace std::placeholders;
+	PluginSpecFullName cmp;
+	toAdd.erase(std::remove_if(toAdd.begin(), toAdd.end(), std::bind(cmp, plugin, _1) ));
 }
 
 void BackendBuilder::fillPlugins(BackendInterface & b) const

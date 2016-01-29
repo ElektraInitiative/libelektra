@@ -7,6 +7,8 @@
  *
  */
 
+#define ELEKTRA_PLUGINSPEC_WITH_COMPARE
+
 
 #include <pluginspec.hpp>
 
@@ -60,6 +62,23 @@ TEST(PluginSpec, construct)
 	EXPECT_THROW(s1.setName("0"), BadPluginName);
 }
 
+
+TEST(PluginSpec, appendConfig)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	PluginSpec s1 ("c#b");
+	EXPECT_EQ(s1, PluginSpec("c#b"));
+	s1.appendConfig(KeySet(5, *Key("user/a", KEY_END), KS_END));
+	EXPECT_EQ(s1, PluginSpec("c#b",KeySet(5, *Key("user/a", KEY_END), KS_END)));
+	s1.appendConfig(KeySet(5, *Key("user/b", KEY_END), KS_END));
+	EXPECT_EQ(s1, PluginSpec("c#b",KeySet(5, *Key("user/a", KEY_END), *Key("user/b", KEY_END), KS_END)));
+	EXPECT_EQ(s1.getConfig().lookup("user/b").getString(), "");
+	s1.appendConfig(KeySet(5, *Key("user/b", KEY_VALUE, "abc", KEY_END), KS_END));
+	EXPECT_EQ(s1, PluginSpec("c#b",KeySet(5, *Key("user/a", KEY_END), *Key("user/b", KEY_END), KS_END)));
+	EXPECT_EQ(s1.getConfig().lookup("user/b").getString(), "abc");
+}
+
 TEST(PluginSpec, wrongNames)
 {
 	using namespace kdb;
@@ -92,12 +111,17 @@ TEST(PluginSpec, compare)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
+
+	// by default we compare by value
 	EXPECT_EQ(PluginSpec("c"), PluginSpec("c"));
-	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c"));
-	EXPECT_EQ(PluginSpec("c"), PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
-	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/def", KEY_END), KS_END)));
-	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/aa", KEY_END), KS_END)));
-	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)));
+	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	EXPECT_EQ(PluginSpec("c", "abc", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", "abc", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	EXPECT_EQ(PluginSpec("c", 5, KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", 5, KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+
+	EXPECT_NE(PluginSpec("c"), PluginSpec("d"));
+	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/abe", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	EXPECT_NE(PluginSpec("c", "ab", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", "abc", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	EXPECT_NE(PluginSpec("c", 6, KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", 5, KeySet(2, *Key("user/abc", KEY_END), KS_END)));
 
 	EXPECT_NE(PluginSpec("c", "b"), PluginSpec("c"));
 	EXPECT_NE(PluginSpec("c", "b", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c"));
@@ -105,6 +129,20 @@ TEST(PluginSpec, compare)
 	EXPECT_NE(PluginSpec("c", "b", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/def", KEY_END), KS_END)));
 	EXPECT_NE(PluginSpec("c", "b", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/aa", KEY_END), KS_END)));
 	EXPECT_NE(PluginSpec("c", "b", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)));
+
+	// compare by full name (config does not matter)
+	EXPECT_PRED2(PluginSpecFullName(),PluginSpec("c"), PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecFullName(),PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/def", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecFullName(),PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/aa", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecFullName(),PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)));
+
+	// compare by ref name (name+config does not matter)
+	EXPECT_PRED2(PluginSpecRefName(),PluginSpec("d", "e"), PluginSpec("c", "e", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecRefName(),PluginSpec("e", "e", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", "e", KeySet(2, *Key("user/def", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecRefName(),PluginSpec("e", "e", KeySet(2, *Key("user/c", KEY_END), KS_END)),   PluginSpec("c", "e", KeySet(2, *Key("user/aa", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecRefName(),PluginSpec("c", "e", KeySet(2, *Key("user/c", KEY_END), KS_END)),   PluginSpec("c", "e", KeySet(2, *Key("user/a", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecRefName(),PluginSpec("c", "abc", KeySet(2, *Key("user/c", KEY_END), KS_END)), PluginSpec("c", "abc", KeySet(2, *Key("user/a", KEY_END), KS_END)));
+	EXPECT_PRED2(PluginSpecRefName(),PluginSpec("c", 5, KeySet(2, *Key("user/c", KEY_END), KS_END)), PluginSpec("c", 5, KeySet(2, *Key("user/a", KEY_END), KS_END)));
 }
 
 
