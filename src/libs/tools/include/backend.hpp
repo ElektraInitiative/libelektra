@@ -16,6 +16,7 @@
 #include <modules.hpp>
 #include <pluginspec.hpp>
 #include <toolexcept.hpp>
+#include <backendparser.hpp>
 
 #include <vector>
 #include <memory>
@@ -37,6 +38,16 @@ class BackendInterface
 public:
 	virtual void addPlugin (PluginSpec const & spec) = 0;
 	virtual ~BackendInterface() = 0;
+
+	template <typename Iterator>
+	void appendPluginsByArguments (Iterator first, Iterator last)
+	{
+		auto const & plugins = parseArguments (first, last);
+		for (auto const & plugin : plugins)
+		{
+			addPlugin (plugin);
+		}
+	}
 };
 
 typedef std::unique_ptr<BackendInterface> BackendInterfacePtr;

@@ -28,10 +28,6 @@ namespace kdb
 namespace tools
 {
 
-class Backend;
-class BackendInterface;
-class PluginDatabase;
-
 /**
  * @brief Used as argument of constructor of *BackendBuilder
  *
@@ -87,8 +83,9 @@ public:
 	BackendBuilder();
 	explicit BackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
 
-	static KeySet parsePluginArguments (std::string const & pluginArguments);
-	static PluginSpecVector parseArguments (std::string const & cmdline);
+	// iterate over arguments to add plugins
+	template <typename Iterator>
+	void addPlugins (Iterator begin, Iterator end);
 
 	typedef PluginSpecVector::const_iterator const_iterator;
 
@@ -108,6 +105,7 @@ public:
 	}
 
 	~BackendBuilder();
+
 	void addPlugin (PluginSpec const & plugin);
 	void remPlugin (PluginSpec const & plugin);
 	void resolveNeeds();

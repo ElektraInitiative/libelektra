@@ -11,6 +11,7 @@
 
 #include <backend.hpp>
 #include <backends.hpp>
+#include <backendparser.hpp>
 #include <backendbuilder.hpp>
 #include <plugindatabase.hpp>
 
@@ -87,89 +88,6 @@ MountBackendBuilder::MountBackendBuilder(BackendBuilderInit const & bbi) :
 }
 
 /**
- * @brief Parse a string containing information to create a KeySet
- *
- * @param pluginArguments comma (,) to separate key=value, contains no whitespaces
- *
- * @return newly created keyset with the information found in the string
- */
-KeySet BackendBuilder::parsePluginArguments (std::string const & pluginArguments)
-{
-	KeySet ks;
-	istringstream sstream(pluginArguments);
-
-	std::string keyName;
-	std::string value;
-
-	// read until the next '=', this will be the keyname
-	while (std::getline (sstream, keyName, '='))
-	{
-		// read until a ',' or the end of line
-		// if nothing is read because the '=' is the last character
-		// in the config string, consider the value empty
-		if (!std::getline (sstream, value, ',')) value = "";
-
-		ks.append (Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
-	}
-	return ks;
-}
-
-/**
- * @brief Parse a complete commandline
- *
- * @param cmdline contains space separated plugins with optional plugin configurations
- *
- * @return a parsed PluginSpecVector
- */
-PluginSpecVector BackendBuilder::parseArguments (std::string const & cmdline)
-{
-	// split cmdline
-	PluginSpecVector arguments;
-	std::string argument;
-	istringstream sstream(cmdline);
-	while (std::getline (sstream, argument, ' '))
-	{
-		if (argument.empty()) continue;
-		if (std::all_of(argument.begin(), argument.end(),
-			[](char c) {return std::isspace(c) || c==',';})) continue;
-		if (argument.find ('=') == string::npos)
-		{
-			PluginSpec ps (argument);
-			if (argument.find ('#') == string::npos)
-			{
-				size_t nr = std::count_if(arguments.begin(), arguments.end(),
-						[&argument](PluginSpec const & spec) {return spec.getName() == argument;});
-				ps.setRefNumber(nr);
-				arguments.push_back(ps);
-			} else {
-				arguments.push_back(ps);
-			}
-		} else {
-			if (arguments.empty()) throw ParseException ("config for plugin ("+argument+") without previous plugin name");
-			arguments.back().appendConfig(parsePluginArguments (argument));
-		}
-	}
-
-	// fix refnames of single occurrences for backwards compatibility
-	for (auto & a: arguments)
-	{
-		size_t nr = std::count_if(arguments.begin(), arguments.end(),
-				[&a](PluginSpec const & spec) {return spec.getName() == a.getName();});
-		if (nr == 1 && a.getRefName() == "0")
-		{
-			a.setRefName (a.getName());
-		}
-
-		size_t identical = std::count(arguments.begin(), arguments.end(), a);
-		if (identical > 1)
-		{
-			throw ParseException ("identical plugin found: " + a.getFullName());
-		}
-	}
-	return arguments;
-}
-
-/**
  * @brief Makes sure that ordering constraints are fulfilled.
  *
  * @pre a sorted list except of the last element to be inserted
@@ -225,7 +143,7 @@ void BackendBuilder::resolveNeeds()
 	// load dependency-plugins immediately
 	for (auto const & ps : toAdd)
 	{
-		auto plugins = parseArguments(pluginDatabase->lookupInfo(ps, "plugins"));
+		auto plugins = parseArguments (pluginDatabase->lookupInfo(ps, "plugins"));
 		for (auto const & plugin : plugins)
 		{
 			addPlugin (plugin);
