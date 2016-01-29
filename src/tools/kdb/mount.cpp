@@ -155,93 +155,58 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	if (cl.interactive)
 	{
 		cout << "Now enter a sequence of plugins you want in the backend" << endl;
+		appendPlugins(backend);
+	}
+	else
+	{
+		const int alreadyRead = 2;
+		if (cl.arguments.size() <= alreadyRead)
+		{
+			backend.addPlugin(PluginSpec(KDB_DEFAULT_STORAGE));
+		}
+		else
+		{
+			// TODO: virtual inheritance
+			// backend.appendPluginsByArguments(cl.arguments.begin()+alreadyRead, cl.arguments.end());
+			// dynamic_cast<MountBackendInterface&>(backend).appendPluginsByArguments(cl.arguments.begin()+alreadyRead, cl.arguments.end());
+			backend.MountBackendInterface::appendPluginsByArguments(cl.arguments.begin()+alreadyRead, cl.arguments.end());
+		}
 	}
 
-	appendPlugins(cl, backend);
-
+	// Call it a day
 	backend.resolveNeeds();
 	backend.serialize (mountConf);
 }
 
-bool MountCommand::readPluginConfig(Cmdline const& cl, size_t current_token, KeySet & pluginConfig)
+void MountCommand::readPluginConfig (KeySet & pluginConfig)
 {
 	string keyName;
 	string value;
 
-	if (cl.interactive)
+	cout << "Enter the plugin configuration" << endl;
+	cout << "Use '.' as Key name to finish" << endl;
+
+	while (true)
 	{
-		cout << "Enter the plugin configuration" << endl;
-		cout << "Use '.' as Key name to finish" << endl;
+		cout << "Enter the Key name: ";
+		cin >> keyName;
 
-		while (true)
-		{
-			cout << "Enter the Key name: ";
-			cin >> keyName;
+		if (keyName == ".") break;
 
-			if (keyName == ".") break;
+		cout << "Enter the Key value: ";
+		cin >> value;
 
-			cout << "Enter the Key value: ";
-			cin >> value;
-
-			pluginConfig.append(Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
-		}
+		pluginConfig.append(Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
 	}
-	else
-	{
-		// check if there is a further token (which might be the config of the current plugin)
-		if (current_token + 1 >= cl.arguments.size ()) return false;
-
-		string configString = cl.arguments[current_token + 1];
-
-		// check if the next argument is a config (otherwise it is treated as plugin name)
-		// only a token with a '=' is treated as config
-		if (configString.find ('=') == string::npos) return false;
-
-		istringstream sstream(configString);
-
-		// read until the next '=', this will be the keyname
-		while (std::getline (sstream, keyName, '='))
-		{
-			// read until a ',' or the end of line
-			// if nothing is read because the '=' is the last character
-			// in the config string, consider the value empty
-			if (!std::getline (sstream, value, ',')) value = "";
-
-			pluginConfig.append(Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
-		}
-	}
-
-	return true;
 }
 
-void MountCommand::appendPlugins(Cmdline const& cl, MountBackendInterface & backend)
+void MountCommand::appendPlugins (MountBackendInterface & backend)
 {
 	std::string pname;
-	size_t current_plugin = 2;
 	KeySet pluginConfig;
-	if (cl.interactive)
-	{
-		cout << "First Plugin: ";
-		cin >> pname;
-		readPluginConfig (cl, current_plugin, pluginConfig);
-	}
-	else
-	{
-		if (current_plugin >=  cl.arguments.size())
-		{
-			pname = "dump";
-		}
-		else
-		{
-			pname = cl.arguments[current_plugin];
-			if (readPluginConfig (cl, current_plugin, pluginConfig))
-			{
-				current_plugin ++;
-			}
-		}
-		current_plugin ++;
-	}
-
+	cout << "First Plugin: ";
+	cin >> pname;
+	readPluginConfig (pluginConfig);
 
 	while (pname != "." || !backend.validated())
 	{
@@ -251,47 +216,19 @@ void MountCommand::appendPlugins(Cmdline const& cl, MountBackendInterface & back
 		}
 		catch (PluginCheckException const& e)
 		{
-			if (!cl.interactive)
-			{
-				// do not allow errors in non-interactive mode
-				throw;
-			} else {
-				cerr << "Could not add that plugin" << endl;
-				cerr << e.what() << endl;
-			}
+			cerr << "Could not add that plugin" << endl;
+			cerr << e.what() << endl;
 		}
-		if (cl.interactive)
-		{
-			if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
-			else cout << "Enter . to finish entering plugins" << endl;
-		}
+		if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
+		else cout << "Enter . to finish entering plugins" << endl;
 
-		if (cl.interactive)
-		{
-			cout << endl;
-			cout << "Next Plugin: ";
-			cin >> pname;
+		cout << endl;
+		cout << "Next Plugin: ";
+		cin >> pname;
 
-			if (pname != ".")
-			{
-				readPluginConfig (cl, current_plugin, pluginConfig);
-			}
-		}
-		else
+		if (pname != ".")
 		{
-			if (current_plugin >=  cl.arguments.size())
-			{
-				pname = ".";
-			}
-			else
-			{
-				pname = cl.arguments[current_plugin];
-				if (readPluginConfig (cl, current_plugin, pluginConfig))
-				{
-					current_plugin ++;
-				}
-			}
-			current_plugin ++;
+			readPluginConfig (pluginConfig);
 		}
 
 		if (pname == "." && !backend.validated())
