@@ -80,6 +80,9 @@ private:
 
 private:
 	void sort();
+	void collectNeeds(std::vector<std::string> & needs) const;
+	void removeProvided(std::vector<std::string> & needs) const;
+	void removeMetadata(std::set<std::string> & needsMetadata) const;
 
 public:
 	BackendBuilder();
@@ -112,6 +115,7 @@ public:
 	void remPlugin (PluginSpec const & plugin);
 
 	void needMetadata (std::string metadata);
+	void needPlugin (PluginSpec plugin);
 	void resolveNeeds();
 
 	void fillPlugins(BackendInterface & b) const;

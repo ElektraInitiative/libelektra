@@ -147,6 +147,57 @@ void BackendBuilder::needMetadata (std::string addMetadata)
 }
 
 /**
+ * @brief Collect what is needed
+ *
+ * @param [out] needs are added here
+ */
+void BackendBuilder::collectNeeds(std::vector<std::string> & needs) const
+{
+	for (auto const & ps : toAdd)
+	{
+		std::stringstream ss (pluginDatabase->lookupInfo(ps, "needs"));
+		std::string need;
+		while (ss >> need)
+		{
+			needs.push_back(need);
+		}
+	}
+}
+
+void BackendBuilder::removeProvided(std::vector<std::string> & needs) const
+{
+	for (auto const & ps : toAdd)
+	{
+		// remove the needed plugins that are already inserted
+		needs.erase(std::remove(needs.begin(), needs.end(), ps.getName()), needs.end());
+
+		// remove what is already provided
+		std::string provides = pluginDatabase->lookupInfo(ps, "provides");
+		std::istringstream ss (provides);
+		std::string toRemove;
+		while (ss >> toRemove)
+		{
+			needs.erase (std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+		}
+	}
+}
+
+void BackendBuilder::removeMetadata(std::set<std::string> & needsMetadata) const
+{
+	for (auto const & ps : toAdd)
+	{
+		// remove metadata that already is provided
+		std::string md = pluginDatabase->lookupInfo(ps, "metadata");
+		std::istringstream ss (md);
+		std::string toRemove;
+		while (ss >> toRemove)
+		{
+			needsMetadata.erase (toRemove);
+		}
+	}
+}
+
+/**
  * @brief resolve all needs that were not resolved by adding plugins.
  *
  * @see addPlugin()
@@ -171,47 +222,12 @@ void BackendBuilder::resolveNeeds()
 		needsMetadata.clear();
 
 		needsMetadata.insert (metadata.begin(), metadata.end());
+		collectNeeds (needs);
+		removeProvided (needs);
+		removeMetadata (needsMetadata);
 
-		// collect everything that is needed
-		for (auto const & ps : toAdd)
-		{
-			std::stringstream ss (pluginDatabase->lookupInfo(ps, "needs"));
-			std::string need;
-			while (ss >> need)
-			{
-				needs.push_back(need);
-			}
-		}
-
-		for (auto const & ps : toAdd)
-		{
-			// remove the needed plugins that are already inserted
-			needs.erase(std::remove(needs.begin(), needs.end(), ps.getName()), needs.end());
-
-			// remove what is already provided
-			std::string provides = pluginDatabase->lookupInfo(ps, "provides");
-			std::istringstream ss (provides);
-			std::string toRemove;
-			while (ss >> toRemove)
-			{
-				needs.erase (std::remove(needs.begin(), needs.end(), toRemove), needs.end());
-			}
-		}
-
-		for (auto const & ps : toAdd)
-		{
-			// remove metadata that already is provided
-			std::string md = pluginDatabase->lookupInfo(ps, "metadata");
-			std::istringstream ss (md);
-			std::string toRemove;
-			while (ss >> toRemove)
-			{
-				needsMetadata.erase (toRemove);
-			}
-		}
-
-		// leftover in needs is what is still needed
-		// will add one of them:
+		// leftover in needs(Metadata) is what is still needed
+		// lets add first one:
 		if (!needs.empty())
 		{
 			addPlugin (PluginSpec(needs[0]));
