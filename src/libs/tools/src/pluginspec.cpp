@@ -212,18 +212,18 @@ void PluginSpec::appendConfig(KeySet c)
  */
 void PluginSpec::validate (std::string const & n) const
 {
-	if (n.empty()) throw BadPluginName();
+	if (n.empty()) throw BadPluginName("<empty>");
 	auto begin = n.find_first_of("abcdefghijklmnopqrstuvwxyz");
 	if (begin != 0)
 	{
 		// must start a-z
-		throw BadPluginName();
+		throw BadPluginName(n);
 	}
 
 	auto it = n.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789_");
 	if (it != std::string::npos)
 	{
-		throw BadPluginName();
+		throw BadPluginName(n);
 	}
 }
 

@@ -242,7 +242,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	{
 		if (p.getFullName() == plugin.getFullName())
 		{
-			throw PluginAlreadyInserted();
+			throw PluginAlreadyInserted(plugin.getFullName());
 		}
 	}
 
