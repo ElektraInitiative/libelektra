@@ -261,9 +261,10 @@ TEST(SpecReader, withMetadata)
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "user/mp");
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
+	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be plugins added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("rename"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("mathcheck"));
+	EXPECT_EQ (bi.begin()[0], PluginSpec("mathcheck"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("rename"));
 }
 
 
@@ -292,6 +293,7 @@ TEST(SpecReader, withMetadataPreference)
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "user/mp");
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
+	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 1) << "there should be plugins added";
 	EXPECT_EQ (bi.begin()[0], PluginSpec("bestcheck"));
 }
@@ -322,6 +324,7 @@ TEST(SpecReader, withMetadataPreferenceNumerical)
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "user/mp");
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
+	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 1) << "there should be plugins added";
 	EXPECT_EQ (bi.begin()[0], PluginSpec("bestcheck"));
 }

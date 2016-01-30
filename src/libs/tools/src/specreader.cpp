@@ -50,7 +50,6 @@ public:
 	}
 
 	void addPlugins (std::string const & plugins);
-	void addPluginsByMetadata (std::string const & plugins);
 	void processKey (Key const & ck);
 	SpecBackendBuilder readMountpointSpecification (KeySet const & cks);
 };
@@ -67,20 +66,6 @@ void SpecMountpointReader::addPlugins (std::string const & plugins)
 	while (is >> toInsert)
 	{
 		bb.addPlugin (PluginSpec(toInsert));
-	}
-}
-
-void SpecMountpointReader::addPluginsByMetadata (std::string const & plugins)
-{
-	// TODO: should be disfavoured compared to manually listed plugins
-	// (especially recommendations should win)
-	// order of commands should not matter
-	std::istringstream is (plugins);
-	std::string metadata;
-	while (is >> metadata)
-	{
-		PluginSpec plugin (bb.getPluginDatabase()->lookupMetadata (metadata));
-		bb.addPlugin (plugin);
 	}
 }
 
@@ -155,7 +140,7 @@ void SpecMountpointReader::processKey (Key const & ck)
 		{}
 		else
 		{
-			addPluginsByMetadata(m.getName());
+			bb.needMetadata(m.getName());
 		}
 	}
 }
