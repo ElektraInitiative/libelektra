@@ -12,6 +12,7 @@
 #define TOOLS_BACKEND_BUILDER_HPP
 
 
+#include <set>
 #include <memory>
 #include <vector>
 
@@ -70,6 +71,7 @@ class BackendBuilder : public BackendInterface
 private:
 	/// Defines order in which plugins should be added
 	PluginSpecVector toAdd;
+	std::set<std::string> metadata;
 
 	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
 	PluginDatabasePtr pluginDatabase;
@@ -108,6 +110,8 @@ public:
 
 	void addPlugin (PluginSpec const & plugin);
 	void remPlugin (PluginSpec const & plugin);
+
+	void needMetadata (std::string metadata);
 	void resolveNeeds();
 
 	void fillPlugins(BackendInterface & b) const;

@@ -274,3 +274,55 @@ TEST(BackendBuilder, directPluginLoading)
 			  KS_END)));
 	EXPECT_EQ(bb.cbegin()[2], PluginSpec("noresolver", "resolver"));
 }
+
+TEST(BackendBuilder, metadata)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("r")]["metadata"] = "rename/toupper";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needMetadata ("rename/toupper");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("r"));
+}
+
+TEST(BackendBuilder, metadataTwo)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("r1")]["metadata"] = "rename/toupper";
+	mpd->data[PluginSpec("r1")]["status"] = "unittest";
+	mpd->data[PluginSpec("r2")]["metadata"] = "rename/toupper rename/tolower";
+	mpd->data[PluginSpec("r2")]["status"] = "memleak";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needMetadata ("rename/toupper rename/tolower");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("r2"));
+}
+
+TEST(BackendBuilder, metadataTwoRev)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("r1")]["metadata"] = "rename/tolower"; // relevant
+	mpd->data[PluginSpec("r1")]["status"] = "unittest";
+	mpd->data[PluginSpec("r2")]["metadata"] = "rename/toupper rename/tolower";
+	mpd->data[PluginSpec("r2")]["status"] = "memleak";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needMetadata ("rename/tolower rename/toupper"); // order not relevant
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("r1"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("r2"));
+}

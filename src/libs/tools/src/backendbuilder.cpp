@@ -135,6 +135,17 @@ void BackendBuilder::sort()
 	}
 }
 
+void BackendBuilder::needMetadata (std::string addMetadata)
+{
+	std::istringstream is (addMetadata);
+	std::string md;
+	while (is >> md)
+	{
+		metadata.insert(md);
+		// ignore if it does not work! (i.e. metadata already present)
+	}
+}
+
 /**
  * @brief resolve all needs that were not resolved by adding plugins.
  *
@@ -153,8 +164,13 @@ void BackendBuilder::resolveNeeds()
 	}
 
 	std::vector<std::string> needs;
+	std::set<std::string> needsMetadata;
+
 	do {
 		needs.clear();
+		needsMetadata.clear();
+
+		needsMetadata.insert (metadata.begin(), metadata.end());
 
 		// collect everything that is needed
 		for (auto const & ps : toAdd)
@@ -178,7 +194,19 @@ void BackendBuilder::resolveNeeds()
 			std::string toRemove;
 			while (ss >> toRemove)
 			{
-				needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+				needs.erase (std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+			}
+		}
+
+		for (auto const & ps : toAdd)
+		{
+			// remove metadata that already is provided
+			std::string md = pluginDatabase->lookupInfo(ps, "metadata");
+			std::istringstream ss (md);
+			std::string toRemove;
+			while (ss >> toRemove)
+			{
+				needsMetadata.erase (toRemove);
 			}
 		}
 
@@ -189,7 +217,13 @@ void BackendBuilder::resolveNeeds()
 			addPlugin (PluginSpec(needs[0]));
 			needs.erase(needs.begin());
 		}
-	} while (!needs.empty());
+		else if (!needsMetadata.empty())
+		{
+			std::string first = (*needsMetadata.begin());
+			addPlugin (pluginDatabase->lookupMetadata (first));
+			needsMetadata.erase(first);
+		}
+	} while (!needs.empty() || !needsMetadata.empty());
 }
 
 /**
