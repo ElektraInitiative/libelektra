@@ -155,7 +155,7 @@ struct BadPluginName : public PluginCheckException
 	virtual const char* what() const throw() override
 	{
 		return  "You entered a bad name for a plugin!\n"
-			"A valid name of a plugin is eithern\n"
+			"A valid name of a plugin is either\n"
 			"modulename or modulename#label\n"
 			"where both modulename and label must start with a-z\n"
 			"and then a-z, 0-9 and underscore (_) only";

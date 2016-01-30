@@ -28,6 +28,9 @@ namespace tools
 
 class PluginDatabase;
 
+/**
+ * @brief Build individual backend while reading specification
+ */
 class SpecBackendBuilder : public MountBackendBuilder
 {
 public:

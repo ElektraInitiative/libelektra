@@ -235,7 +235,7 @@ public:
 	void unlock() {}
 };
 
-/**
+/*
  * This technique with the PolicySelector and Discriminator is taken
  * from the book  "C++ Templates - The Complete Guide"
  * by David Vandevoorde and Nicolai M. Josuttis, Addison-Wesley, 2002
@@ -244,6 +244,8 @@ public:
  * The technique allows users of the class Value to use any number
  * and order of policies as desired.
  */
+
+
 template <typename Base, int D>
 class Discriminator : public Base
 {

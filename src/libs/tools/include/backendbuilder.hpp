@@ -113,6 +113,9 @@ public:
 	void fillPlugins(BackendInterface & b) const;
 };
 
+/**
+ * @brief High-level functionality to build a mountpoint
+ */
 class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 {
 	Key mountpoint;

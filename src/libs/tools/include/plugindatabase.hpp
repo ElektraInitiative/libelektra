@@ -85,6 +85,9 @@ public:
 
 typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
 
+/**
+ * @brief A plugin database that works with installed modules
+ */
 class ModulesPluginDatabase : public PluginDatabase
 {
 	class Impl;
@@ -99,6 +102,9 @@ public:
 	PluginSpec lookupProvides (std::string const & provides) const;
 };
 
+/**
+ * @brief A plugin database that works with added fake data
+ */
 class MockPluginDatabase : public ModulesPluginDatabase
 {
 public:

@@ -33,6 +33,9 @@ namespace kdb
 namespace tools
 {
 
+/**
+ * @brief Minimal interface to add plugins
+ */
 class BackendInterface
 {
 public:
@@ -52,6 +55,9 @@ public:
 
 typedef std::unique_ptr<BackendInterface> BackendInterfacePtr;
 
+/**
+ * @brief Minimal interface to work with mountpoints
+ */
 class MountBackendInterface : public BackendInterface
 {
 public:
@@ -120,6 +126,9 @@ public:
 	std::string getConfigFile() const;
 };
 
+/**
+ * @brief Factory for MountBackendInterface
+ */
 class BackendFactory
 {
 	std::string which;
@@ -128,6 +137,9 @@ public:
 		which(whichBackend)
 	{}
 
+	/**
+	 * @brief Create classes that implement MountBackendInterface
+	 */
 	MountBackendInterfacePtr create() const
 	{
 		if (which == "backend")
@@ -150,6 +162,9 @@ inline std::string Backend::getConfigFile() const
 
 std::ostream & operator<<(std::ostream & os, Backend const & b);
 
+/**
+ * @brief Backend for import/export functionality
+ */
 class ImportExportBackend : public BackendInterface
 {
 	Modules modules;
