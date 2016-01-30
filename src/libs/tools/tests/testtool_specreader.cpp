@@ -333,9 +333,14 @@ TEST(SpecReader, DISABLED_pluginConfiguration)
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data [PluginSpec("a")] ["status"] = "popular";
 	mpd->data [PluginSpec("b")] ["status"] = "popular";
+	mpd->data [PluginSpec("python#transform")] ["provides"] = "transform";
+	mpd->data [PluginSpec("python#transform")] ["metadata"] = "transform/python";
 	mpd->data [PluginSpec("python#rename")] ["provides"] = "rename";
+	mpd->data [PluginSpec("python#rename")] ["metadata"] = "rename/toupper rename/tolower";
 	mpd->data [PluginSpec("python#rename")] ["status"] = "memleak";
 	mpd->data [PluginSpec("ccode")] ["type"] = "virtual";
+	mpd->data [PluginSpec("hexcode")] ["type"] = "virtual";
+	mpd->data [PluginSpec("hexcode")] ["metadata"] = "recode";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
 	sr.readSpecification(KeySet(5,
