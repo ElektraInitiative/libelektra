@@ -80,15 +80,8 @@ int CheckCommand::execute(Cmdline const& cl)
 	vector<string> warnings;
 	try {
 		KeySet ks = cl.getPluginsConfig();
-		PluginPtr plugin;
-		if (ks.size() == 0)
-		{
-			plugin = modules.load(name);
-		}
-		else
-		{
-			plugin = modules.load(name, ks);
-		}
+		ks.append(Key("system/module", KEY_END));
+		PluginPtr plugin = modules.load(name, ks);
 		plugin->check(warnings);
 
 	}
