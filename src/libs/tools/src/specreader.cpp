@@ -128,11 +128,11 @@ void SpecMountpointReader::processKey (Key const & ck)
 			PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
 			bb.addPlugin (toInsert);
 		}
-		else if (m.getName() == "info/needs")
+		else if (m.getName() == "infos/needs")
 		{
 			bb.needPlugin (m.getString());
 		}
-		else if (m.getName() == "info/recommends")
+		else if (m.getName() == "infos/recommends")
 		{
 			bb.recommendPlugin (m.getString());
 		}

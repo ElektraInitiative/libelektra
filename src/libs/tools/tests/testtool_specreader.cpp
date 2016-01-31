@@ -64,7 +64,7 @@ TEST(SpecReader, withDatabaseRecursive)
 	EXPECT_EQ (bi.nodes, 2);
 }
 
-TEST(SpecReader, DISABLED_withNeeds)
+TEST(SpecReader, withNeeds)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -78,7 +78,7 @@ TEST(SpecReader, DISABLED_withNeeds)
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini", KEY_END),
 				*Key ("user/mp/below",
 					KEY_META, "config/needs/something", "here",
-					KEY_META, "info/needs", "resolver storage",
+					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
 				KS_END));
 	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
@@ -88,13 +88,11 @@ TEST(SpecReader, DISABLED_withNeeds)
 	EXPECT_EQ (bi.getBackendConfig(),
 			KeySet(5, *Key ("user/something", "here", KEY_END), KS_END));
 	EXPECT_FALSE (bi.validated());
-	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("resolver"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("storage"));
+	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 0);
 	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("a"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("b"));
+	EXPECT_EQ (bi.begin()[0], PluginSpec("a", "resolver"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("b", "storage"));
 }
 
 TEST(SpecReader, DISABLED_withNeedsResolved) // TODO: Missing needs functionality
@@ -110,11 +108,11 @@ TEST(SpecReader, DISABLED_withNeedsResolved) // TODO: Missing needs functionalit
 				*Key ("user", KEY_END),
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
 					KEY_META, "config/needs/something", "here",
-					KEY_META, "info/needs", "resolver storage",
+					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
 				*Key ("user/mp/below",
 					KEY_META, "config/needs/else", "too",
-					KEY_META, "info/needs", "a b",
+					KEY_META, "infos/needs", "a b",
 					KEY_END),
 				KS_END));
 	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
@@ -150,7 +148,7 @@ TEST(SpecReader, DISABLED_withNeedsResolvedPreferences)
 	sr.readSpecification(KeySet(5,
 				*Key ("user", KEY_END),
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
-					KEY_META, "info/needs", "resolver storage",
+					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
 				*Key ("user/mp/below",
 					KEY_END),
@@ -185,7 +183,7 @@ TEST(SpecReader, DISABLED_withNeedsResolvedNumerical)
 	sr.readSpecification(KeySet(5,
 				*Key ("user", KEY_END),
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
-					KEY_META, "info/needs", "resolver storage",
+					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
 				*Key ("user/mp/below",
 					KEY_END),
@@ -222,10 +220,10 @@ TEST(SpecReader, DISABLED_withNeedsResolvedPreferencesIgnored)
 	sr.readSpecification(KeySet(5,
 				*Key ("user", KEY_END),
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
-					KEY_META, "info/needs", "resolver storage",
+					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
 				*Key ("user/mp/below",
-					KEY_META, "info/needs", "a",
+					KEY_META, "infos/needs", "a",
 					KEY_END),
 				KS_END));
 	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
@@ -365,7 +363,7 @@ TEST(SpecReader, DISABLED_pluginConfiguration)
 					KEY_META, "recode", "first c then hex",
 					KEY_END),
 				*Key ("user/mp/other",
-					KEY_META, "info/needs", "python#rename", // I want to prefer python#rename, even if there is a better one
+					KEY_META, "infos/needs", "python#rename", // I want to prefer python#rename, even if there is a better one
 					KEY_META, "config/plugin/python#rename/otherthing", "norename", // register a new plugin with new contract
 					KEY_META, "config/plugin/python#rename/script", "rename.py",
 					KEY_META, "rename/toupper", "",
