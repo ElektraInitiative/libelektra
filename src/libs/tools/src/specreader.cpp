@@ -24,11 +24,6 @@ SpecReader::SpecReader(BackendBuilderInit const & abbi) :
 SpecReader::~SpecReader()
 {}
 
-bool startsWith(std::string const & str, std::string const & start)
-{
-	return std::equal(start.begin(), start.end(), str.begin());
-}
-
 class SpecMountpointReader
 {
 private:
@@ -49,28 +44,17 @@ public:
 	{
 	}
 
-	void addPlugins (std::string const & plugins);
 	void processKey (Key const & ck);
 	SpecBackendBuilder readMountpointSpecification (KeySet const & cks);
 };
 
-/**
- * @brief Small helper to add a string with space separated plugin names
- *
- * @param plugins a space separated list of plugins
- */
-void SpecMountpointReader::addPlugins (std::string const & plugins)
-{
-	std::istringstream is (plugins);
-	std::string toInsert;
-	while (is >> toInsert)
-	{
-		bb.addPlugin (PluginSpec(toInsert));
-	}
-}
-
 namespace
 {
+bool startsWith(std::string const & str, std::string const & start)
+{
+	return std::equal(start.begin(), start.end(), str.begin());
+}
+
 bool isToBeIgnored (std::string const & name)
 {
 	// TODO: read from METADATA.ini
