@@ -366,53 +366,52 @@ TEST(SpecReader, withMetadataPreferenceNumerical)
 	EXPECT_EQ (bi.begin()[0], PluginSpec("bestcheck"));
 }
 
-TEST(SpecReader, DISABLED_pluginConfiguration)
+TEST(SpecReader, pluginConfiguration)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
-	mpd->data [PluginSpec("a")] ["status"] = "popular";
-	mpd->data [PluginSpec("b")] ["status"] = "popular";
 	mpd->data [PluginSpec("python#transform")] ["provides"] = "transform";
 	mpd->data [PluginSpec("python#transform")] ["metadata"] = "transform/python";
-	mpd->data [PluginSpec("python#rename")] ["provides"] = "rename";
-	mpd->data [PluginSpec("python#rename")] ["metadata"] = "rename/toupper rename/tolower";
-	mpd->data [PluginSpec("python#rename")] ["status"] = "memleak";
-	mpd->data [PluginSpec("ccode")] ["type"] = "virtual";
-	mpd->data [PluginSpec("hexcode")] ["type"] = "virtual";
-	mpd->data [PluginSpec("hexcode")] ["metadata"] = "recode";
+	mpd->data [PluginSpec("python#transform")] ["status"] = "memleak";
+	// twice python does not work because of limitation in MockPluginDatabase (does not use ref)
+	mpd->data [PluginSpec("lua#rename")] ["provides"] = "rename";
+	mpd->data [PluginSpec("lua#rename")] ["metadata"] = "rename/toupper rename/tolower";
+	mpd->data [PluginSpec("lua#rename")] ["status"] = "memleak";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
 	sr.readSpecification(KeySet(5,
 				*Key ("user", KEY_END),
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
-					KEY_META, "config/plugin/python/something", "",
-					KEY_META, "config/plugin/python/else/something", "",
-					KEY_META, "config/plugin/b/something", "",
 					KEY_END),
-				*Key ("user/mp/below",
-					KEY_META, "config/metadata/python#transform", "transform/python transform/pythonfast",
-					KEY_META, "config/metadata/python#transform/script", "transform.py",
+				*Key ("user/mp/transform",
+					KEY_META, "infos/plugins", "python#transform script=transform.py",
 					KEY_META, "transform/python", "below = other+5",
 					KEY_END),
-				*Key ("user/mp/encode",
-					KEY_META, "config/metadata/#0ccode", "recode othercode",
-					KEY_META, "config/metadata/#1hexcode#dash", "recode othercode",
-					KEY_META, "config/metadata/#1hexcode#dash/escape", "-",
-					KEY_META, "recode", "first c then hex",
-					KEY_END),
-				*Key ("user/mp/other",
-					KEY_META, "infos/needs", "python#rename", // I want to prefer python#rename, even if there is a better one
-					KEY_META, "config/plugin/python#rename/otherthing", "norename", // register a new plugin with new contract
-					KEY_META, "config/plugin/python#rename/script", "rename.py",
-					KEY_META, "rename/toupper", "",
-					// kdb mount python#transform option=fastload,script=transform.py python#rename otherthing=norename,script=rename.py
+				*Key ("user/mp/rename",
+					KEY_META, "infos/plugins", "lua#rename norename=,script=rename.lua",
+					KEY_META, "rename/toupper", "1",
 					KEY_END),
 				KS_END));
 	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
-	EXPECT_EQ (bi.nodes, 2);
+	EXPECT_EQ (bi.nodes, 3);
 	EXPECT_EQ (bi.getMountpoint(), "user/mp");
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
-	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 1) << "there should be plugins added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("bestcheck"));
+	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be plugins added";
+	EXPECT_EQ (bi.begin()[0], PluginSpec("lua#rename", KeySet(2,
+					*Key("user/script", KEY_VALUE, "rename.lua", KEY_END),
+					*Key("user/norename", KEY_END),
+					KS_END)));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("python#transform", KeySet(1,
+					*Key("user/script", KEY_VALUE, "transform.py", KEY_END),
+					KS_END)));
+	bi.resolveNeeds();
+	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be plugins added";
+	EXPECT_EQ (bi.begin()[0], PluginSpec("lua#rename", KeySet(2,
+					*Key("user/script", KEY_VALUE, "rename.lua", KEY_END),
+					*Key("user/norename", KEY_END),
+					KS_END)));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("python#transform", KeySet(1,
+					*Key("user/script", KEY_VALUE, "transform.py", KEY_END),
+					KS_END)));
 }

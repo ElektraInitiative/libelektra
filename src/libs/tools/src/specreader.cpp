@@ -112,21 +112,11 @@ void SpecMountpointReader::processKey (Key const & ck)
 	while ((m = k.nextMeta()))
 	{
 		std::string const & cn = "config/needs";
-		std::string const & cp = "config/plugin";
 		if (startsWith (m.getName(), cn))
 		{
 			Key bKey = m.dup();
 			bKey.setName ("user"+bKey.getName().substr(cn.length()));
 			backendConfig.append (bKey);
-		}
-		else if (startsWith(m.getName(), cp))
-		{
-			// TODO: parse plugin
-			Key bKey = m.dup();
-			bKey.setName ("user"+bKey.getName().substr (cp.length()));
-			std::string pluginName = m.getName().substr (cp.length());
-			PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
-			bb.addPlugin (toInsert);
 		}
 		else if (m.getName() == "infos/plugins")
 		{
