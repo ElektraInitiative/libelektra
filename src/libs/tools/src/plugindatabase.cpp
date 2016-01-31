@@ -80,27 +80,6 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 }
 
 
-std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
-{
-	PluginPtr plugin;
-	try {
-		plugin = impl->modules.load (spec.getName(), spec.getConfig());
-	}
-	catch (...)
-	{
-		if (which == "exists")
-		{
-			return "no";
-		}
-		throw;
-	}
-	if (which == "exists")
-	{
-		if (plugin) return "real";
-	}
-	return plugin->lookupInfo (which);
-}
-
 namespace
 {
 
@@ -141,6 +120,62 @@ int calculateStatus (std::string statusString)
 	return ret;
 }
 
+bool hasProvides (PluginDatabase const & pd, std::string which)
+{
+	std::vector<std::string> allPlugins = pd.listAllPlugins();
+	std::map<int, PluginSpec> foundPlugins;
+
+	for (auto const & plugin : allPlugins)
+	{
+		std::istringstream ss (pd.lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+			KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+			"provides"));
+		std::string provide;
+		while (ss >> provide)
+		{
+			if (provide == which)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+}
+
+PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) const
+{
+	PluginPtr plugin;
+	try {
+		plugin = impl->modules.load (spec.getName(), spec.getConfig());
+		return real;
+	}
+	catch (...)
+	{
+		if (hasProvides (*this, spec.getName()))
+		{
+			return provides;
+		}
+		else
+		{
+			return missing;
+		}
+	}
+}
+
+std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
+{
+	PluginPtr plugin;
+	try {
+		plugin = impl->modules.load (spec.getName(), spec.getConfig());
+	}
+	catch (...)
+	{
+		throw;
+	}
+
+	return plugin->lookupInfo (which);
 }
 
 PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) const
@@ -161,10 +196,10 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 			{
 				if (metadata == which)
 				{
-					int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+					int s = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
 						"status"));
-					foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
+					foundPlugins.insert(std::make_pair(s, PluginSpec(plugin)));
 					break;
 				}
 			}
@@ -183,7 +218,7 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
 	// check if plugin itself exists:
-	if (lookupInfo(PluginSpec(which), "exists") == "real")
+	if (status(PluginSpec(which)) == real)
 	{
 		return PluginSpec(which);
 	}
@@ -203,10 +238,10 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 			{
 				if (provide == which)
 				{
-					int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+					int s = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
 						"status"));
-					foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
+					foundPlugins.insert(std::make_pair(s, PluginSpec(plugin)));
 				}
 			}
 		} catch (...) { } // assume not loaded
@@ -233,21 +268,29 @@ std::vector<std::string> MockPluginDatabase::listAllPlugins() const
 	return plugins;
 }
 
+PluginDatabase::Status MockPluginDatabase::status (PluginSpec const & spec) const
+{
+	auto it = data.find(spec);
+	if (it != data.end())
+	{
+		return real;
+	}
+
+	if (hasProvides(*this, spec.getName()))
+	{
+		return provides;
+	}
+
+	return missing;
+}
+
+
 std::string MockPluginDatabase::lookupInfo(PluginSpec const & spec, std::string const & which) const
 {
 	auto it = data.find(spec);
 	if (it != data.end())
 	{
-		if (which == "exists")
-		{
-			return "real";
-		}
 		return it->second[which];
-	}
-
-	if (which == "exists")
-	{
-		return "no";
 	}
 
 	return "";

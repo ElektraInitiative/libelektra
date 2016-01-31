@@ -442,7 +442,7 @@ TEST(BackendBuilder, manualRecommendsProvides)
 	BackendBuilder bb (bbi);
 	bb.recommendPlugin("x");
 	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
-	bb.resolveNeeds();
+	bb.resolveNeeds(true);
 	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
 	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n", "x"));
 }
@@ -489,3 +489,22 @@ TEST(BackendBuilder, manualMultipleRecommendsSingleLine)
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
 }
 
+TEST(BackendBuilder, resolveDoubleRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["recommends"] = "c v";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c"));
+}

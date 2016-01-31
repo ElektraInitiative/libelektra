@@ -45,12 +45,20 @@ public:
 	// virtual void registerPlugin(PluginSpec) = 0;
 	// virtual std::vector<PluginSpec> listAllPlugins() const = 0;
 
+	enum Status
+	{
+		/// does not directly, but can be loaded via provides
+		provides,
+		/// exists and working as given
+		real,
+		/// does not exist or cannot be loaded
+		missing
+	};
+
+	virtual Status status (PluginSpec const & whichplugin) const = 0;
+
 	/**
 	 * @brief lookup contract clauses or dynamic information
-	 *
-	 * Dynamic information is one of:
-	 *
-	 * - "exists" ... returns "real" or "no"
 	 *
 	 * @param whichplugin about which plugin?
 	 * @param which about which clause in the contract?
@@ -97,6 +105,7 @@ public:
 	~ModulesPluginDatabase ();
 
 	std::vector<std::string> listAllPlugins() const;
+	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & provides) const;
@@ -112,6 +121,7 @@ public:
 	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>, PluginSpecHash, PluginSpecName> data;
 
 	std::vector<std::string> listAllPlugins() const;
+	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
 	std::string lookupInfo(PluginSpec const & spec, std::string const & which) const;
 };
 

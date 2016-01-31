@@ -89,6 +89,7 @@ private:
 private:
 	void sort();
 	void collectNeeds(std::vector<std::string> & needs) const;
+	void collectRecommends(std::vector<std::string> & recommends) const;
 	void removeProvided(std::vector<std::string> & needs) const;
 	void removeMetadata(std::set<std::string> & needsMetadata) const;
 

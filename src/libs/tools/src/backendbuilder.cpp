@@ -164,6 +164,24 @@ void BackendBuilder::collectNeeds(std::vector<std::string> & needs) const
 	}
 }
 
+/**
+ * @brief Collect what is recommended
+ *
+ * @param [out] needs are added here
+ */
+void BackendBuilder::collectRecommends(std::vector<std::string> & recommends) const
+{
+	for (auto const & ps : toAdd)
+	{
+		std::stringstream ss (pluginDatabase->lookupInfo(ps, "recommends"));
+		std::string r;
+		while (ss >> r)
+		{
+			recommends.push_back(r);
+		}
+	}
+}
+
 void BackendBuilder::removeProvided(std::vector<std::string> & needs) const
 {
 	for (auto const & ps : toAdd)
@@ -198,6 +216,17 @@ void BackendBuilder::removeMetadata(std::set<std::string> & needsMetadata) const
 	}
 }
 
+namespace
+{
+void removeMissing (std::vector<std::string> & recommendedPlugins, std::vector<std::string> const & missingPlugins)
+{
+	for (auto const & mp : missingPlugins)
+	{
+		recommendedPlugins.erase (std::remove (recommendedPlugins.begin(), recommendedPlugins.end(), mp));
+	}
+}
+}
+
 /**
  * @brief resolve all needs that were not resolved by adding plugins.
  *
@@ -217,45 +246,44 @@ void BackendBuilder::resolveNeeds(bool addRecommends)
 		}
 	}
 
-	std::vector<std::string> needs;
-	std::set<std::string> needsMetadata;
+	std::vector <std::string> missingRecommends;
 
 	do {
-		needs.clear();
-		needsMetadata.clear();
+		collectNeeds (neededPlugins);
+		collectRecommends (recommendedPlugins);
 
-		needsMetadata.insert (metadata.begin(), metadata.end());
-
-		collectNeeds (needs);
-		removeProvided (needs);
 		removeProvided (neededPlugins);
 		removeProvided (recommendedPlugins);
-		removeMetadata (needsMetadata);
+		removeMissing (recommendedPlugins, missingRecommends);
+		removeMetadata (metadata);
 
 		// leftover in needs(Metadata) is what is still needed
 		// lets add first one:
-		if (!needs.empty())
-		{
-			addPlugin (PluginSpec(needs[0]));
-			needs.erase(needs.begin());
-		}
-		else if (!needsMetadata.empty())
-		{
-			std::string first = (*needsMetadata.begin());
-			addPlugin (pluginDatabase->lookupMetadata (first));
-			needsMetadata.erase(first);
-		}
-		else if (!neededPlugins.empty())
+		if (!neededPlugins.empty())
 		{
 			addPlugin (PluginSpec(neededPlugins[0]));
 			neededPlugins.erase(neededPlugins.begin());
 		}
+		else if (!metadata.empty())
+		{
+			std::string first = (*metadata.begin());
+			addPlugin (pluginDatabase->lookupMetadata (first));
+			metadata.erase(first);
+		}
 		else if (!recommendedPlugins.empty() && addRecommends)
 		{
-			addPlugin (PluginSpec(recommendedPlugins[0]));
+			PluginSpec rp (recommendedPlugins[0]);
+			if (pluginDatabase->status(rp) != PluginDatabase::missing)
+			{
+				addPlugin (rp);
+			}
+			else
+			{
+				missingRecommends.push_back(recommendedPlugins[0]);
+			}
 			recommendedPlugins.erase(recommendedPlugins.begin());
 		}
-	} while (!needs.empty() || !needsMetadata.empty() || !neededPlugins.empty() || (!recommendedPlugins.empty() && addRecommends));
+	} while (!neededPlugins.empty() || !metadata.empty() || (!recommendedPlugins.empty() && addRecommends));
 }
 
 void BackendBuilder::needPlugin (std::string name)
