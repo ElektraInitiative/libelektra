@@ -130,14 +130,11 @@ void SpecMountpointReader::processKey (Key const & ck)
 		}
 		else if (m.getName() == "info/needs")
 		{
-			addPlugins(m.getString());
-			// bb.needPlugin(m.getString());
+			bb.needPlugin (m.getString());
 		}
 		else if (m.getName() == "info/recommends")
 		{
-			addPlugins(m.getString());
-			// TODO: give user a chance to ignore recommends:
-			// bb.recommendPlugin(m.getString());
+			bb.recommendPlugin (m.getString());
 		}
 		else if (isToBeIgnored (m.getName()))
 		{}

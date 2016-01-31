@@ -63,6 +63,11 @@ public:
 
 	~SpecReader();
 
+	/**
+	 * @return backends without resolved needs
+	 *
+	 * @see resolveNeeds()
+	 */
 	Backends getBackends()
 	{
 		return backends;

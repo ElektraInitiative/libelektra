@@ -260,12 +260,22 @@ void BackendBuilder::resolveNeeds(bool addRecommends)
 
 void BackendBuilder::needPlugin (std::string name)
 {
-	neededPlugins.push_back(name);
+	std::stringstream ss(name);
+	std::string n;
+	while (ss >> n)
+	{
+		neededPlugins.push_back(n);
+	}
 }
 
 void BackendBuilder::recommendPlugin (std::string name)
 {
-	recommendedPlugins.push_back(name);
+	std::stringstream ss(name);
+	std::string n;
+	while (ss >> n)
+	{
+		recommendedPlugins.push_back(n);
+	}
 }
 
 /**

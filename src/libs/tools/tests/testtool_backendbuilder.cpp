@@ -383,6 +383,23 @@ TEST(BackendBuilder, manualMultipleNeeds)
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
 }
 
+TEST(BackendBuilder, manualMultipleNeedsSingleLine)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("n n x x y y z z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+
 
 TEST(BackendBuilder, manualRecommends)
 {
@@ -448,6 +465,23 @@ TEST(BackendBuilder, manualMultipleRecommends)
 	bb.recommendPlugin("y");
 	bb.recommendPlugin("z");
 	bb.recommendPlugin("z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+
+TEST(BackendBuilder, manualMultipleRecommendsSingleLine)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n n x x y y z z");
 	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
 	bb.resolveNeeds();
 	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
