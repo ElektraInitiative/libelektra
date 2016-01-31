@@ -166,10 +166,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		}
 		else
 		{
-			// TODO: virtual inheritance
-			// backend.appendPluginsByArguments(cl.arguments.begin()+alreadyRead, cl.arguments.end());
-			// dynamic_cast<MountBackendInterface&>(backend).appendPluginsByArguments(cl.arguments.begin()+alreadyRead, cl.arguments.end());
-			backend.MountBackendInterface::appendPluginsByArguments(cl.arguments.begin()+alreadyRead, cl.arguments.end());
+			backend.addPlugins (parseArguments (cl.arguments.begin()+alreadyRead, cl.arguments.end()));
 		}
 	}
 

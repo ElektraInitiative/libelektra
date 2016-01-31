@@ -97,10 +97,6 @@ public:
 	BackendBuilder();
 	explicit BackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
 
-	// iterate over arguments to add plugins
-	template <typename Iterator>
-	void addPlugins (Iterator begin, Iterator end);
-
 	typedef PluginSpecVector::const_iterator const_iterator;
 
 	const_iterator begin() const { return toAdd.begin(); }
@@ -119,6 +115,14 @@ public:
 	}
 
 	~BackendBuilder();
+
+	void addPlugins (PluginSpecVector const & plugins)
+	{
+		for (auto const & plugin : plugins)
+		{
+			addPlugin (plugin);
+		}
+	}
 
 	void addPlugin (PluginSpec const & plugin);
 	void remPlugin (PluginSpec const & plugin);

@@ -95,7 +95,7 @@ TEST(SpecReader, withNeeds)
 	EXPECT_EQ (bi.begin()[1], PluginSpec("b", "storage"));
 }
 
-TEST(SpecReader, DISABLED_withNeedsResolved) // TODO: Missing needs functionality
+TEST(SpecReader, withNeedsResolved)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -123,12 +123,13 @@ TEST(SpecReader, DISABLED_withNeedsResolved) // TODO: Missing needs functionalit
 			*Key ("user/something", "here", KEY_END),
 			*Key ("user/else", "too", KEY_END),
 			KS_END));
-	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 4) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("b"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("a"));
+	bi.resolveNeeds();
+	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
+	EXPECT_EQ (bi.begin()[0], PluginSpec("b", "resolver"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("a", "storage"));
 }
 
-TEST(SpecReader, DISABLED_withNeedsResolvedPreferences)
+TEST(SpecReader, withNeedsResolvedPreferences)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -159,8 +160,46 @@ TEST(SpecReader, DISABLED_withNeedsResolvedPreferences)
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
 	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("r"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("c"));
+	EXPECT_EQ (bi.begin()[0], PluginSpec("r", "resolver"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("c", "storage"));
+}
+
+TEST(SpecReader, withNeedsResolvedPreferencesPlugins)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data [PluginSpec("a")] ["provides"] = "storage";
+	mpd->data [PluginSpec("a")] ["status"] = "productive";
+
+	mpd->data [PluginSpec("b")] ["provides"] = "storage";
+	mpd->data [PluginSpec("b")] ["status"] = "productive memleak";
+
+	mpd->data [PluginSpec("c")] ["provides"] = "storage";
+	mpd->data [PluginSpec("c")] ["status"] = "productive tested";
+
+	mpd->data [PluginSpec("r")] ["provides"] = "resolver";
+	BackendBuilderInit mpi (mpd);
+	SpecReader sr(mpi);
+	sr.readSpecification(KeySet(5,
+				*Key ("user", KEY_END),
+				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
+					KEY_META, "infos/plugins", "b",
+					KEY_META, "infos/needs", "resolver storage",
+					KEY_END),
+				*Key ("user/mp/below",
+					KEY_END),
+				KS_END));
+	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
+	EXPECT_EQ (bi.nodes, 2);
+	EXPECT_EQ (bi.getMountpoint(), "user/mp");
+	EXPECT_EQ (bi.getConfigFile(), "file.ini");
+	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 1) << "there should be nothing added";
+	EXPECT_EQ (bi.begin()[0], PluginSpec("b", "b"));
+	bi.resolveNeeds();
+	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
+	EXPECT_EQ (bi.begin()[0], PluginSpec("b", "b"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("r", "resolver"));
 }
 
 TEST(SpecReader, DISABLED_withNeedsResolvedNumerical)
