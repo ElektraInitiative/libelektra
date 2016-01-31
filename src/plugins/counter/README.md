@@ -11,6 +11,8 @@
 Counts and prints usage statistics.
 Only useful for debugging the plugin framework.
 
-## Usage ##
+## Module Loading ##
 
+Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 
+    kdb check -c "logmodule=" counter

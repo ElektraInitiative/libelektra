@@ -10,6 +10,8 @@
 
 #include "timeofday.h"
 
+#include <string.h>
+
 static inline void timeofday(char *t, struct timeval *start, struct timeval *now)
 {
 	struct timeval tv;
@@ -60,7 +62,18 @@ int elektraTimeofdayOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	gettimeofday(&ti->start, 0);
 	ti->last = ti->start;
 
-	// fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
+	KeySet *config  = elektraPluginGetConfig(handle);
+	if (ksLookupByName(config, "/module", 0))
+	{
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			char t[24];
+			fprintf(stderr, "open (module)\t%s\n", elektraTimeofdayHelper (t, ti));
+		}
+	} else {
+		char t[24];
+		fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
+	}
 
 	return 0; /* success */
 }
@@ -70,7 +83,19 @@ int elektraTimeofdayClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	// char t[24];
 	// TimeofdayInfo *ti = elektraPluginGetData(handle);
 
-	// fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
+	KeySet *config  = elektraPluginGetConfig(handle);
+	TimeofdayInfo *ti = elektraPluginGetData(handle);
+	if (ksLookupByName(config, "/module", 0))
+	{
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			char t[24];
+			fprintf(stderr, "close (module)\t%s\n", elektraTimeofdayHelper (t, ti));
+		}
+	} else {
+		char t[24];
+		fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
+	}
 
 	/* How weird is that??
 	   ti gets modified after elektraTimeofdayHelper even though
@@ -98,10 +123,7 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		position = "postgetstorage";
 	}
 
-	fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
-
-	Key *root = keyNew("system/elektra/modules/timeofday", KEY_END);
-	if (keyRel (root, parentKey) >= 0)
+	if (!strcmp(keyName(parentKey), "system/elektra/modules/timeofday"))
 	{
 		KeySet *pluginConfig = ksNew (30,
 			keyNew ("system/elektra/modules/timeofday",
@@ -124,10 +146,16 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 
-		fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
+		KeySet *config  = elektraPluginGetConfig(handle);
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
+		}
+
+		return 1;
 	}
 
-	keyDel (root);
+	fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
 }

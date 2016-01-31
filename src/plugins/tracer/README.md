@@ -43,3 +43,9 @@ Now the 3 placements in set are called.
     hello
 
 Now the 2 placements in get are called.
+
+## Module Loading ##
+
+Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
+
+    kdb check -c "logmodule=" tracer

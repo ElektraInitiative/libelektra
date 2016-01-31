@@ -26,9 +26,12 @@ int elektraCounterOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	KeySet *config  = elektraPluginGetConfig(handle);
 	if (ksLookupByName(config, "/module", 0))
 	{
-		printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n",
-			(void*) handle,
-			elektraCountOpen);
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n",
+				(void*) handle,
+				elektraCountOpen);
+		}
 	} else {
 		printf ("%p elektraCounterOpen           called " COUNTER_FMT " times\n",
 			(void*) handle,
@@ -46,9 +49,12 @@ int elektraCounterClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	KeySet *config  = elektraPluginGetConfig(handle);
 	if (ksLookupByName(config, "/module", 0))
 	{
-		printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n",
-			(void*) handle,
-			elektraCountClose);
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n",
+				(void*) handle,
+				elektraCountClose);
+		}
 	} else {
 		printf ("%p elektraCounterClose          called " COUNTER_FMT " times\n",
 			(void*) handle,
