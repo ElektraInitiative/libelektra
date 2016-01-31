@@ -118,6 +118,7 @@ class MockPluginDatabase : public ModulesPluginDatabase
 {
 public:
 	/// only data from here will be returned
+	/// @note that it is ordered by name, i.e., different ref-names cannot be distinguished
 	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>, PluginSpecHash, PluginSpecName> data;
 
 	std::vector<std::string> listAllPlugins() const;
