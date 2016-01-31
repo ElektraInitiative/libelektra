@@ -84,6 +84,9 @@ public:
 	void checkConflicts (Plugin &plugin);
 };
 
+/**
+ * @brief Plugins to get configuration
+ */
 class GetPlugins : private Plugins
 {
 public:
@@ -100,6 +103,10 @@ public:
 	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
+
+/**
+ * @brief Plugins to set configuration
+ */
 class SetPlugins : private Plugins
 {
 public:
@@ -110,6 +117,9 @@ public:
 	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
 };
 
+/**
+ * @brief Plugins to handle errors during configuration access
+ */
 class ErrorPlugins : private Plugins
 {
 public:

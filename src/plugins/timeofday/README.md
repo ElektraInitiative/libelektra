@@ -11,7 +11,6 @@
 This plugin is a logging plugin which prints a timestamp during
 all placements of backend.
 
-
 ## Usage ##
 
 If you want to measure how long your storage plugin needs to do the read
@@ -39,3 +38,8 @@ and in the set path:
 The first digit column shows the complete time passed, the second column
 shows the time from invocation to invocation.
 
+## Module Loading ##
+
+Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
+
+    kdb check -c "logmodule=" timeofday

@@ -28,6 +28,9 @@ namespace tools
 
 class PluginDatabase;
 
+/**
+ * @brief Build individual backend while reading specification
+ */
 class SpecBackendBuilder : public MountBackendBuilder
 {
 public:
@@ -60,6 +63,11 @@ public:
 
 	~SpecReader();
 
+	/**
+	 * @return backends without resolved needs
+	 *
+	 * @see resolveNeeds()
+	 */
 	Backends getBackends()
 	{
 		return backends;

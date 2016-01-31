@@ -1,0 +1,8 @@
+#To be used in .zshrc
+
+alias kdb='nocorrect noglob kdb'
+alias bin/kdb='nocorrect noglob bin/kdb'
+alias kdb-full='nocorrect noglob kdb-full'
+alias bin/kdb-full='nocorrect noglob bin/kdb-full'
+alias kdb-static='nocorrect noglob kdb-static'
+alias bin/kdb-static='nocorrect noglob bin/kdb-static'

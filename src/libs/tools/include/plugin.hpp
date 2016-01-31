@@ -11,6 +11,7 @@
 #define TOOLS_PLUGIN_HPP
 
 #include <kdb.hpp>
+#include <pluginspec.hpp>
 #include <toolexcept.hpp>
 
 #include <map>
@@ -48,7 +49,7 @@ private:
 
 private:
 	ckdb::Plugin *plugin;
-	std::string pluginName;
+	PluginSpec spec;
 	kdb::KeySet info;
 
 	std::map<std::string, func_t> symbols;
@@ -60,7 +61,7 @@ public:
 	/**
 	 * @brief Do not construct a plugin yourself, use Modules.load
 	 */
-	Plugin(std::string  pluginName, kdb::KeySet &modules, kdb::KeySet const& pluginConfig);
+	Plugin(PluginSpec const & spec, kdb::KeySet &modules);
 
 	Plugin(Plugin const& other);
 	Plugin& operator = (Plugin const& other);
@@ -182,12 +183,28 @@ public:
 	int error (kdb::KeySet & ks, kdb::Key & parentKey);
 
 	/**
-	 * @return the name of the plugin 
+	 * @return the name of the plugin (module)
 	 */
 	std::string name();
 
 	/**
+	 * @return the fullname of the plugin
+	 */
+	std::string getFullName();
+
+private:
+	friend class ErrorPlugins;
+	friend class GetPlugins;
+	friend class SetPlugins;
+	/**
 	 * @return the name how it would be referred to in mountpoint
+	 *
+	 * # name # label # (when called the first time)
+	 * or
+	 * # ref
+	 *
+	 * @note Its not the same as getRefName(), and is only suitable for serialization!
+	 * @warning Its stateful in a really weird way!
 	 */
 	std::string refname();
 };

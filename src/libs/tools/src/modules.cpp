@@ -45,7 +45,12 @@ PluginPtr Modules::load(std::string const& pluginName)
 
 PluginPtr Modules::load(std::string const& pluginName, KeySet const & config)
 {
-	PluginPtr plugin (new Plugin (pluginName, modules, config));
+	return load (PluginSpec (pluginName, config));
+}
+
+PluginPtr Modules::load(PluginSpec const & spec)
+{
+	PluginPtr plugin (new Plugin (spec, modules));
 	plugin->loadInfo();
 	plugin->parse();
 

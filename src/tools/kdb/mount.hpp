@@ -23,11 +23,11 @@ namespace tools
 
 class MountCommand : public MountBaseCommand
 {
-	void outputMtab(Cmdline const& cl);
-	void processArguments(Cmdline const& cl);
-	void buildBackend(Cmdline const& cl);
-	void appendPlugins(Cmdline const& cl, kdb::tools::MountBackendInterface & backend);
-	bool readPluginConfig(Cmdline const& cl, size_t current_plugin, kdb::KeySet & config);
+	void outputMtab (Cmdline const& cl);
+	void processArguments (Cmdline const& cl);
+	void buildBackend (Cmdline const& cl);
+	void appendPlugins (kdb::tools::MountBackendInterface & backend);
+	void readPluginConfig (kdb::KeySet & config);
 
 public:
 	MountCommand();

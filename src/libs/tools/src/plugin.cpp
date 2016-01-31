@@ -32,12 +32,12 @@ namespace kdb
 namespace tools
 {
 
-Plugin::Plugin(std::string  nameOfNewPlugin, KeySet &modules, KeySet const& pluginConfig) :
-	pluginName(std::move(nameOfNewPlugin)),
+Plugin::Plugin(PluginSpec const & spec_, KeySet &modules) :
+	spec(spec_),
 	firstRef (true)
 {
 	Key errorKey;
-	plugin = ckdb::elektraPluginOpen(pluginName.c_str(), modules.getKeySet(), pluginConfig.dup(), *errorKey);
+	plugin = ckdb::elektraPluginOpen(spec.getName().c_str(), modules.getKeySet(), spec.getConfig().dup(), *errorKey);
 
 	if (!plugin)
 	{
@@ -52,7 +52,7 @@ kdb::KeySet Plugin::getConfig()
 
 Plugin::Plugin(Plugin const& other) :
 	plugin(other.plugin),
-	pluginName(other.pluginName),
+	spec(other.spec),
 	info(other.info),
 	symbols(other.symbols),
 	infos(other.infos),
@@ -68,7 +68,7 @@ Plugin& Plugin::operator = (Plugin const& other)
 	uninit();
 
 	plugin = other.plugin;
-	pluginName = other.pluginName;
+	spec = other.spec;
 	info = other.info;
 	symbols = other.symbols;
 	infos = other.infos;
@@ -95,9 +95,9 @@ void Plugin::uninit()
 void Plugin::loadInfo()
 {
 	Key infoKey ("system/elektra/modules", KEY_END);
-	infoKey.addBaseName(pluginName);
+	infoKey.addBaseName(spec.getName());
 
-	if (pluginName != plugin->name)
+	if (spec.getName() != plugin->name)
 	{
 		throw PluginWrongName();
 	}
@@ -111,7 +111,7 @@ void Plugin::loadInfo()
 
 void Plugin::parse ()
 {
-	Key root (std::string("system/elektra/modules/") + pluginName, KEY_END);
+	Key root (std::string("system/elektra/modules/") + spec.getName(), KEY_END);
 
 	Key k = info.lookup (root);
 	if (!k)
@@ -119,7 +119,7 @@ void Plugin::parse ()
 		throw PluginNoContract();
 	}
 
-	root.setName(std::string("system/elektra/modules/") + pluginName + "/exports");
+	root.setName(std::string("system/elektra/modules/") + spec.getName() + "/exports");
 
 	k = info.lookup (root);
 
@@ -131,7 +131,7 @@ void Plugin::parse ()
 		}
 	}
 
-	root.setName(std::string("system/elektra/modules/") + pluginName + "/infos");
+	root.setName(std::string("system/elektra/modules/") + spec.getName() + "/infos");
 	k = info.lookup (root);
 
 	if (k)
@@ -278,7 +278,7 @@ ckdb::Plugin *Plugin::operator->()
 std::string Plugin::lookupInfo(std::string item, std::string section)
 {
 	Key k ("system/elektra/modules", KEY_END);
-	k.addBaseName(pluginName);
+	k.addBaseName(spec.getName());
 	k.addBaseName(section);
 	k.addBaseName(item);
 	Key ret = info.lookup(k);
@@ -305,7 +305,7 @@ bool Plugin::findInfo(std::string compare, std::string item, std::string section
 kdb::KeySet Plugin::getNeededConfig()
 {
 	Key neededConfigKey ("system/elektra/modules", KEY_END);
-	neededConfigKey.addName(pluginName);
+	neededConfigKey.addName(spec.getName());
 	neededConfigKey.addName("config/needs");
 
 	KeySet d (info.dup());
@@ -373,9 +373,14 @@ int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)
 }
 
 
-std::string Plugin::name()
+std::string Plugin::name() // TODO: rename + use internally
 {
-	return pluginName;
+	return spec.getName();
+}
+
+std::string Plugin::getFullName()
+{
+	return spec.getFullName();
 }
 
 std::string Plugin::refname()
@@ -383,9 +388,9 @@ std::string Plugin::refname()
 	if (firstRef)
 	{
 		firstRef = false;
-		return std::string("#") + pluginName + "#" + pluginName + "#";
+		return std::string("#") + spec.getName() + "#" + spec.getRefName() + "#";
 	} else {
-		return std::string("#") + pluginName;
+		return std::string("#") + spec.getRefName();
 	}
 }
 

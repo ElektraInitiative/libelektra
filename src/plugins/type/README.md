@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = check
 - infos/placements = presetstorage
-- infos/description = Copies meta data to keys using typebing
+- infos/description =
 
 ## Introduction ##
 

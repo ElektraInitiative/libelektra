@@ -64,6 +64,7 @@ set (PLUGINS_LIST_NODEP
 	ini
 	list
 	logchange
+	iterate
 	)
 
 #

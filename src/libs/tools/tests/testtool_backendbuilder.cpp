@@ -7,10 +7,12 @@
  *
  */
 
+#define ELEKTRA_PLUGINSPEC_WITH_COMPARE
+
+#include <backendbuilder.hpp>
 
 #include <backend.hpp>
 #include <backends.hpp>
-#include <backendbuilder.hpp>
 #include <plugindatabase.hpp>
 
 #include <string>
@@ -20,27 +22,6 @@
 
 #include <kdb.hpp>
 #include <gtest/gtest.h>
-
-TEST(BackendBuilder, DISABLED_pluginSpec)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	EXPECT_EQ(PluginSpec("c"), PluginSpec("c"));
-	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c"));
-	EXPECT_NE(PluginSpec("c"), PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
-	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/def", KEY_END), KS_END)));
-	EXPECT_NE(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/aa", KEY_END), KS_END)));
-	EXPECT_EQ(PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)), PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END)));
-	std::hash<PluginSpec> hashFun;
-	EXPECT_EQ(hashFun (PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))),
-		  hashFun (PluginSpec("c", KeySet(2, *Key("user/x", KEY_END), KS_END))));
-	std::unordered_map <kdb::tools::PluginSpec, std::string> data;
-	data[PluginSpec("c")] = "no keyset";
-	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
-	data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))] = "with keyset";
-	EXPECT_EQ(data[PluginSpec("c")], "no keyset");
-	EXPECT_EQ(data[PluginSpec("c", KeySet(2, *Key("user/a", KEY_END), KS_END))], "with keyset");
-}
 
 TEST(BackendBuilder, withDatabase)
 {
@@ -57,57 +38,6 @@ TEST(BackendBuilder, withDatabase)
 	bb.addPlugin(PluginSpec("c"));
 }
 
-
-TEST(MountBackendBuilder, parsePluginArguments)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	EXPECT_EQ (KeySet(5, *Key("user/a", KEY_VALUE, "5", KEY_END), KS_END),
-		   MountBackendBuilder::parsePluginArguments("a=5"));
-	EXPECT_EQ (KeySet(5, *Key("user", KEY_END), KS_END),
-		   MountBackendBuilder::parsePluginArguments("="));
-	EXPECT_EQ (KeySet (5,
-			*Key("user/a", KEY_VALUE, "5", KEY_END),
-			*Key("user/ax", KEY_VALUE, "a", KEY_END),
-			*Key("user/ax/bx", KEY_VALUE, "8", KEY_END),
-			KS_END),
-		  MountBackendBuilder::parsePluginArguments ("a=5,ax=a,ax/bx=8"));
-	EXPECT_EQ (KeySet (5,
-			*Key("user", KEY_VALUE, "5", KEY_END),
-			*Key("user/ax", KEY_END, KEY_END),
-			*Key("user/ax/bx", KEY_VALUE, "8", KEY_END),
-			KS_END),
-		  MountBackendBuilder::parsePluginArguments ("=5,ax=,ax/bx=8"));
-}
-
-bool cmpPsv(kdb::tools::PluginSpecVector psv1, kdb::tools::PluginSpecVector psv2)
-{
-	EXPECT_EQ(psv1.size(), psv2.size());
-	if (psv1.size() != psv2.size()) return false;
-	for (size_t i=0; i<psv1.size(); ++i)
-	{
-		EXPECT_EQ (psv1[i], psv2[i]);
-		if (!(psv1[i] == psv2[i])) return false;
-	}
-	return true;
-}
-
-TEST(MountBackendBuilder, parseArguments)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	PluginSpecVector psv1;
-	psv1.push_back (PluginSpec ("a", KeySet(5, *Key("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
-	psv1.push_back (PluginSpec ("b"));
-	psv1.push_back (PluginSpec ("c"));
-	PluginSpecVector psv2 = MountBackendBuilder::parseArguments ("a a=5 b c");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	psv2 = MountBackendBuilder::parseArguments ("  a  a=5  b c   ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	psv2 = MountBackendBuilder::parseArguments ("  a 	 a=5	  b c ,  ");
-	EXPECT_TRUE(cmpPsv (psv1, psv2));
-	EXPECT_THROW(MountBackendBuilder::parseArguments ("a=5 a b c"), ParseException);
-}
 
 TEST(MountBackendBuilder, basicAddRem)
 {
@@ -232,6 +162,7 @@ TEST(BackendBuilder, resolveDoubleNeeds)
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "c v";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
@@ -251,6 +182,321 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data[PluginSpec("a")]["needs"] = "v c";
 	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
+	EXPECT_EQ (mpd->lookupInfo(PluginSpec("c"), "provides"), "v");
+	EXPECT_EQ (mpd->lookupInfo(PluginSpec("c", "v"), "provides"), "v");
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c", "v")) << "remember it was virtual";
+}
+
+TEST(BackendBuilder, doubleAddWithConf)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["needs"] = "v c";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  KS_END)));
+	EXPECT_EQ(bb.cbegin()[3], PluginSpec("c", "v",
+		KeySet(2, *Key("user/vef", KEY_END),
+			  KS_END))) << "remember it was virtual";
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+}
+
+
+TEST(BackendBuilder, doubleAddWithConfVirtual)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["needs"] = "v c";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("noresolver")]["provides"] = "resolver";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("resolver"));
+	bb.addPlugin(PluginSpec("a"));
+	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
+	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("noresolver", "resolver"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c", "v",
+		KeySet(2, *Key("user/vef", KEY_END),
+			  KS_END)));
+	EXPECT_EQ(bb.cbegin()[3], PluginSpec("c",
+		KeySet(2, *Key("user/abc", KEY_END),
+			  KS_END)));
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 4);
+}
+
+TEST(BackendBuilder, directPluginLoading)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["plugins"] = "x a=b";
+	mpd->data[PluginSpec("a")]["needs"] = "resolver";
+	mpd->data[PluginSpec("x")]["provides"] = "x";
+	mpd->data[PluginSpec("noresolver")]["provides"] = "resolver";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin(PluginSpec("a"));
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("a"));
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("a"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("x",
+		KeySet(2, *Key("user/a", KEY_VALUE, "b", KEY_END),
+			  KS_END)));
+	EXPECT_EQ(bb.cbegin()[2], PluginSpec("noresolver", "resolver"));
+}
+
+TEST(BackendBuilder, metadata)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("r")]["metadata"] = "rename/toupper";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needMetadata ("rename/toupper");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("r"));
+}
+
+TEST(BackendBuilder, metadataTwo)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("r1")]["metadata"] = "rename/toupper";
+	mpd->data[PluginSpec("r1")]["status"] = "unittest";
+	mpd->data[PluginSpec("r2")]["metadata"] = "rename/toupper rename/tolower";
+	mpd->data[PluginSpec("r2")]["status"] = "memleak";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needMetadata ("rename/toupper rename/tolower");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("r2"));
+}
+
+TEST(BackendBuilder, metadataTwoRev)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("r1")]["metadata"] = "rename/tolower"; // relevant
+	mpd->data[PluginSpec("r1")]["status"] = "unittest";
+	mpd->data[PluginSpec("r2")]["metadata"] = "rename/toupper rename/tolower";
+	mpd->data[PluginSpec("r2")]["status"] = "memleak";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needMetadata ("rename/tolower rename/toupper"); // order not relevant
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("r1"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("r2"));
+}
+
+TEST(BackendBuilder, manualNeeds)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("n");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+}
+
+
+TEST(BackendBuilder, manualNeedsProvides)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("x");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n", "x"));
+}
+
+
+TEST(BackendBuilder, manualMultipleNeeds)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("n");
+	bb.needPlugin("n");
+	bb.needPlugin("x");
+	bb.needPlugin("x");
+	bb.needPlugin("y");
+	bb.needPlugin("y");
+	bb.needPlugin("z");
+	bb.needPlugin("z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+
+TEST(BackendBuilder, manualMultipleNeedsSingleLine)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("n n x x y y z z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+
+
+TEST(BackendBuilder, manualRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+}
+
+
+TEST(BackendBuilder, manualNoRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds(false);
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+}
+
+
+TEST(BackendBuilder, manualRecommendsProvides)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("x");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds(true);
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n", "x"));
+}
+
+
+TEST(BackendBuilder, manualMultipleRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n");
+	bb.recommendPlugin("n");
+	bb.recommendPlugin("x");
+	bb.recommendPlugin("x");
+	bb.recommendPlugin("y");
+	bb.recommendPlugin("y");
+	bb.recommendPlugin("z");
+	bb.recommendPlugin("z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+
+TEST(BackendBuilder, manualMultipleRecommendsSingleLine)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n n x x y y z z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+
+TEST(BackendBuilder, resolveDoubleRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("a")]["recommends"] = "c v";
+	mpd->data[PluginSpec("c")]["provides"] = "v";
+	mpd->data[PluginSpec("resolver")]["provides"] = "resolver";
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	bb.addPlugin(PluginSpec("resolver"));
@@ -261,49 +507,4 @@ TEST(BackendBuilder, resolveDoubleNeedsVirtual)
 	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
 	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c"));
-}
-
-TEST(BackendBuilder, readdWithConf)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
-	mpd->data[PluginSpec("a")]["needs"] = "v c";
-	mpd->data[PluginSpec("c")]["provides"] = "v";
-	BackendBuilderInit bbi (mpd);
-	BackendBuilder bb (bbi);
-	bb.addPlugin(PluginSpec("resolver"));
-	bb.addPlugin(PluginSpec("a"));
-	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
-	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
-	EXPECT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
-	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
-	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
-	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
-		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
-			  KS_END)));
-}
-
-
-TEST(BackendBuilder, readdWithConfVirtual)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
-	mpd->data[PluginSpec("a")]["needs"] = "v c";
-	mpd->data[PluginSpec("c")]["provides"] = "v";
-	BackendBuilderInit bbi (mpd);
-	BackendBuilder bb (bbi);
-	bb.addPlugin(PluginSpec("resolver"));
-	bb.addPlugin(PluginSpec("a"));
-	bb.addPlugin(PluginSpec("v", KeySet(2, *Key("user/vef", KEY_END), KS_END)));
-	bb.addPlugin(PluginSpec("c", KeySet(2, *Key("user/abc", KEY_END), KS_END)));
-	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 3);
-	EXPECT_EQ(bb.cbegin()[0], PluginSpec("resolver"));
-	EXPECT_EQ(bb.cbegin()[1], PluginSpec("a"));
-	EXPECT_EQ(bb.cbegin()[2], PluginSpec("c",
-		KeySet(2, *Key("user/abc", KEY_END),
-			  *Key("user/vef", KEY_END),
-			  KS_END)));
 }

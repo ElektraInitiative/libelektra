@@ -22,51 +22,96 @@ namespace kdb
 namespace tools
 {
 
-struct PluginSpec
+/**
+ * @brief Specifies a plugin by its name and configuration
+ *
+ * @invariant name is valid (nonempty, starts with a-z, then a-z_0-9)
+ * @invariant refname is valid (same as above or a size_t number)
+ */
+class PluginSpec
 {
-	explicit PluginSpec(
-		std::string pluginName,
-		KeySet pluginConfig = KeySet()) :
-		name(pluginName),
-		config(pluginConfig)
-	{}
+public:
+	explicit PluginSpec (std::string pluginName,
+		KeySet pluginConfig = KeySet());
 
+	explicit PluginSpec (std::string pluginName,
+		std::string refName,
+		KeySet pluginConfig = KeySet());
+
+	explicit PluginSpec (std::string pluginName,
+		size_t refNumber,
+		KeySet pluginConfig = KeySet());
+
+	std::string getFullName() const;
+	std::string getRefName() const;
+	bool isRefNumber() const;
+	std::string getName() const;
+
+	KeySet getConfig() const;
+
+
+	void setFullName (std::string const & name);
+	void setRefName (std::string const & name);
+	void setRefNumber (size_t number);
+	void setName (std::string const & name);
+
+	void appendConfig (KeySet config);
+
+	void validate (std::string const & str) const;
+
+private:
 	std::string name;
+	std::string refname;
 	KeySet config;
 };
 
-inline bool operator == (PluginSpec const & self, PluginSpec const & other)
+struct PluginSpecName
 {
-	return self.name == other.name;
-}
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getName() == s2.getName();
+	}
+};
 
-inline bool operator != (PluginSpec const & self, PluginSpec const & other)
+struct PluginSpecRefName
 {
-	return !(self == other);
-}
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getRefName() == s2.getRefName();
+	}
+};
+
+struct PluginSpecFullName
+{
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getFullName() == s2.getFullName();
+	}
+};
+
+
+/**
+ * @brief Only to be used with PluginSpecName!
+ */
+struct PluginSpecHash
+{
+	size_t operator()(kdb::tools::PluginSpec const & s) const
+	{
+		return std::hash<std::string>()(s.getName());
+	}
+};
+
+#ifdef ELEKTRA_PLUGINSPEC_WITH_COMPARE
+bool operator == (PluginSpec const & self, PluginSpec const & other);
+bool operator != (PluginSpec const & self, PluginSpec const & other);
+#endif
 
 typedef std::vector <PluginSpec> PluginSpecVector;
 
-inline std::ostream & operator << (std::ostream & os, PluginSpec const & spec)
-{
-	os << spec.name << " " << spec.config.size();
-	return os;
-}
+std::ostream & operator << (std::ostream & os, PluginSpec const & spec);
 
 }
 
 }
-
-namespace std
-{
-	// produces hash collisions if only config differs
-	template <> struct hash<kdb::tools::PluginSpec>
-	{
-		size_t operator()(kdb::tools::PluginSpec const & s) const
-		{
-			return std::hash<std::string>()(s.name);
-		}
-	};
-} // end of namespace std
 
 #endif

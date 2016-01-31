@@ -118,9 +118,9 @@ then
 	check_set_rm system/test/script/sys/hosts/ipv6/localhost ::1
 	check_set_rm user/test/script/sys/hosts/ipv6/localhost ::1
 
-	check_set_mv_rm user/test/script/sys/hosts/ipv4/localhost system/test/script/sys/hosts/ipv4/localhost myvalue
+	check_set_mv_rm user/test/script/sys/hosts/ipv4/localhost system/test/script/sys/hosts/ipv4/localhost 127.0.0.1
 
-	check_set_mv_rm user/test/script/sys/hosts/ipv4/localhost system/test/script/sys/next/key myvalue
+	check_set_mv_rm user/test/script/sys/hosts/ipv4/localhost system/test/script/sys/next/key 127.0.0.1
 fi
 
 if is_plugin_available simpleini
@@ -130,7 +130,7 @@ then
 
 	check_set_rm system/test/script/apps/next/x y
 	check_set_rm user/test/script/apps/next/x y
-	check_set_mv_rm user/test/script/apps/next/x/x/y system/test/script/sys/hosts/ipv4/localhost myvalue
+	check_set_mv_rm user/test/script/apps/next/x/x/y system/test/script/sys/hosts/ipv4/localhost 127.0.0.1
 
 	check_set_rm system/test/script/apps/next/x/a/b y
 	check_set_rm user/test/script/apps/next/x/x/y y

@@ -12,6 +12,7 @@
 #define TOOLS_BACKEND_BUILDER_HPP
 
 
+#include <set>
 #include <memory>
 #include <vector>
 
@@ -27,10 +28,6 @@ namespace kdb
 
 namespace tools
 {
-
-class Backend;
-class BackendInterface;
-class PluginDatabase;
 
 /**
  * @brief Used as argument of constructor of *BackendBuilder
@@ -75,6 +72,15 @@ private:
 	/// Defines order in which plugins should be added
 	PluginSpecVector toAdd;
 
+	/// Metadata to be added
+	std::set<std::string> metadata;
+
+	/// Needed plugins (not yet added)
+	std::vector<std::string> neededPlugins;
+
+	/// Recommended plugins (not yet added)
+	std::vector<std::string> recommendedPlugins;
+
 	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
 	PluginDatabasePtr pluginDatabase;
 
@@ -82,6 +88,10 @@ private:
 
 private:
 	void sort();
+	void collectNeeds(std::vector<std::string> & needs) const;
+	void collectRecommends(std::vector<std::string> & recommends) const;
+	void removeProvided(std::vector<std::string> & needs) const;
+	void removeMetadata(std::set<std::string> & needsMetadata) const;
 
 public:
 	BackendBuilder();
@@ -105,13 +115,31 @@ public:
 	}
 
 	~BackendBuilder();
+
+	void addPlugins (PluginSpecVector const & plugins)
+	{
+		for (auto const & plugin : plugins)
+		{
+			addPlugin (plugin);
+		}
+	}
+
 	void addPlugin (PluginSpec const & plugin);
 	void remPlugin (PluginSpec const & plugin);
-	void resolveNeeds();
+
+	void needMetadata (std::string metadata);
+	void needPlugin (std::string provider);
+	void resolveNeeds(bool addRecommends = true);
+
+	void recommendPlugin (std::string provider);
+	void resolveRecommends();
 
 	void fillPlugins(BackendInterface & b) const;
 };
 
+/**
+ * @brief High-level functionality to build a mountpoint
+ */
 class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 {
 	Key mountpoint;
@@ -125,8 +153,6 @@ public:
 	}
 
 	explicit MountBackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
-	static KeySet parsePluginArguments (std::string const & pluginArguments);
-	static PluginSpecVector parseArguments (std::string const & cmdline);
 
 	void setMountpoint (Key mountpoint, KeySet mountConf);
 	std::string getMountpoint() const;

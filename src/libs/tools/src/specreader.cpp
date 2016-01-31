@@ -24,11 +24,6 @@ SpecReader::SpecReader(BackendBuilderInit const & abbi) :
 SpecReader::~SpecReader()
 {}
 
-bool startsWith(std::string const & str, std::string const & start)
-{
-	return std::equal(start.begin(), start.end(), str.begin());
-}
-
 class SpecMountpointReader
 {
 private:
@@ -49,43 +44,17 @@ public:
 	{
 	}
 
-	void addPlugins (std::string const & plugins);
-	void addPluginsByMetadata (std::string const & plugins);
 	void processKey (Key const & ck);
 	SpecBackendBuilder readMountpointSpecification (KeySet const & cks);
 };
 
-/**
- * @brief Small helper to add a string with space separated plugin names
- *
- * @param plugins a space separated list of plugins
- */
-void SpecMountpointReader::addPlugins (std::string const & plugins)
-{
-	std::istringstream is (plugins);
-	std::string toInsert;
-	while (is >> toInsert)
-	{
-		bb.addPlugin (PluginSpec(toInsert));
-	}
-}
-
-void SpecMountpointReader::addPluginsByMetadata (std::string const & plugins)
-{
-	// TODO: should be disfavoured compared to manually listed plugins
-	// (especially recommendations should win)
-	// order of commands should not matter
-	std::istringstream is (plugins);
-	std::string metadata;
-	while (is >> metadata)
-	{
-		PluginSpec plugin (bb.getPluginDatabase()->lookupMetadata (metadata));
-		bb.addPlugin (plugin);
-	}
-}
-
 namespace
 {
+bool startsWith(std::string const & str, std::string const & start)
+{
+	return std::equal(start.begin(), start.end(), str.begin());
+}
+
 bool isToBeIgnored (std::string const & name)
 {
 	// TODO: read from METADATA.ini
@@ -127,35 +96,29 @@ void SpecMountpointReader::processKey (Key const & ck)
 	while ((m = k.nextMeta()))
 	{
 		std::string const & cn = "config/needs";
-		std::string const & cp = "config/plugin";
 		if (startsWith (m.getName(), cn))
 		{
 			Key bKey = m.dup();
 			bKey.setName ("user"+bKey.getName().substr(cn.length()));
 			backendConfig.append (bKey);
 		}
-		else if (startsWith(m.getName(), cp))
+		else if (m.getName() == "infos/plugins")
 		{
-			Key bKey = m.dup();
-			bKey.setName ("user"+bKey.getName().substr (cp.length()));
-			std::string pluginName = m.getName().substr (cp.length());
-			PluginSpec toInsert (pluginName, KeySet(1, *bKey, KS_END));
-			bb.addPlugin (toInsert);
+			bb.addPlugins (parseArguments(m.getString()));
 		}
-		else if (m.getName() == "info/needs")
+		else if (m.getName() == "infos/needs")
 		{
-			addPlugins(m.getString());
+			bb.needPlugin (m.getString());
 		}
-		else if (m.getName() == "info/recommends")
+		else if (m.getName() == "infos/recommends")
 		{
-			// TODO: give user a chance to ignore recommends
-			addPlugins(m.getString());
+			bb.recommendPlugin (m.getString());
 		}
 		else if (isToBeIgnored (m.getName()))
 		{}
 		else
 		{
-			addPluginsByMetadata(m.getName());
+			bb.needMetadata(m.getName());
 		}
 	}
 }

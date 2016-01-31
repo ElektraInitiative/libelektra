@@ -25,7 +25,7 @@ Special values are returned upon exit to represent the outcome of a check.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-c`, `--plugins-config`:
-  Add a plugin configuration.
+  Add a plugin configuration to `/module`, which will always be present.
 
 
 ## RETURN VALUES

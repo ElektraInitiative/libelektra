@@ -80,12 +80,6 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 }
 
 
-std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
-{
-	PluginPtr plugin = impl->modules.load (spec.name, spec.config);
-	return plugin->lookupInfo (which);
-}
-
 namespace
 {
 
@@ -126,6 +120,62 @@ int calculateStatus (std::string statusString)
 	return ret;
 }
 
+bool hasProvides (PluginDatabase const & pd, std::string which)
+{
+	std::vector<std::string> allPlugins = pd.listAllPlugins();
+	std::map<int, PluginSpec> foundPlugins;
+
+	for (auto const & plugin : allPlugins)
+	{
+		std::istringstream ss (pd.lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+			KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+			"provides"));
+		std::string provide;
+		while (ss >> provide)
+		{
+			if (provide == which)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+}
+
+PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) const
+{
+	PluginPtr plugin;
+	try {
+		plugin = impl->modules.load (spec.getName(), spec.getConfig());
+		return real;
+	}
+	catch (...)
+	{
+		if (hasProvides (*this, spec.getName()))
+		{
+			return provides;
+		}
+		else
+		{
+			return missing;
+		}
+	}
+}
+
+std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
+{
+	PluginPtr plugin;
+	try {
+		plugin = impl->modules.load (spec.getName(), spec.getConfig());
+	}
+	catch (...)
+	{
+		throw;
+	}
+
+	return plugin->lookupInfo (which);
 }
 
 PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) const
@@ -146,10 +196,10 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 			{
 				if (metadata == which)
 				{
-					int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+					int s = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
 						"status"));
-					foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
+					foundPlugins.insert(std::make_pair(s, PluginSpec(plugin)));
 					break;
 				}
 			}
@@ -167,34 +217,32 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
-	std::vector<std::string> allPlugins = listAllPlugins();
-	std::map<int, PluginSpec> foundPlugins;
-
-	// check if plugin with this name exists
-	// TODO: needed even if virtual are handled separately?
-	auto it = std::find(allPlugins.begin(), allPlugins.end(), which);
-	if (it != allPlugins.end())
+	// check if plugin itself exists:
+	if (status(PluginSpec(which)) == real)
 	{
 		return PluginSpec(which);
 	}
 
+	std::vector<std::string> allPlugins = listAllPlugins();
+	std::map<int, PluginSpec> foundPlugins;
 	for (auto const & plugin : allPlugins)
 	{
-		if (plugin == which)
-		{
-			return PluginSpec(plugin);
-		}
-
 		// TODO: make sure (non)-equal plugins (i.e. with same/different contract) are handled correctly
 		try {
-			if (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+			// TODO: support for generic plugins with config
+			std::istringstream ss (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 				KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
-				"provides") == which)
+				"provides"));
+			std::string provide;
+			while (ss >> provide)
 			{
-				int status = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
-					KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
-					"status"));
-				foundPlugins.insert(std::make_pair(status, PluginSpec(plugin)));
+				if (provide == which)
+				{
+					int s = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
+						"status"));
+					foundPlugins.insert(std::make_pair(s, PluginSpec(plugin)));
+				}
 			}
 		} catch (...) { } // assume not loaded
 	}
@@ -215,10 +263,27 @@ std::vector<std::string> MockPluginDatabase::listAllPlugins() const
 	std::vector<std::string> plugins;
 	for (auto const & plugin : data)
 	{
-		plugins.push_back(plugin.first.name);
+		plugins.push_back(plugin.first.getName());
 	}
 	return plugins;
 }
+
+PluginDatabase::Status MockPluginDatabase::status (PluginSpec const & spec) const
+{
+	auto it = data.find(spec);
+	if (it != data.end())
+	{
+		return real;
+	}
+
+	if (hasProvides(*this, spec.getName()))
+	{
+		return provides;
+	}
+
+	return missing;
+}
+
 
 std::string MockPluginDatabase::lookupInfo(PluginSpec const & spec, std::string const & which) const
 {

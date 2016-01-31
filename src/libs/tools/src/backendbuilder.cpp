@@ -11,6 +11,8 @@
 
 #include <backend.hpp>
 #include <backends.hpp>
+#include <pluginspec.hpp>
+#include <backendparser.hpp>
 #include <backendbuilder.hpp>
 #include <plugindatabase.hpp>
 
@@ -22,6 +24,7 @@
 
 #include <set>
 #include <algorithm>
+#include <functional>
 
 #include <kdb.hpp>
 #include <cassert>
@@ -87,63 +90,6 @@ MountBackendBuilder::MountBackendBuilder(BackendBuilderInit const & bbi) :
 }
 
 /**
- * @brief Parse a string containing information to create a KeySet
- *
- * @param pluginArguments comma (,) to separate key=value, contains no whitespaces
- *
- * @return newly created keyset with the information found in the string
- */
-KeySet MountBackendBuilder::parsePluginArguments (std::string const & pluginArguments)
-{
-	KeySet ks;
-	istringstream sstream(pluginArguments);
-
-	std::string keyName;
-	std::string value;
-
-	// read until the next '=', this will be the keyname
-	while (std::getline (sstream, keyName, '='))
-	{
-		// read until a ',' or the end of line
-		// if nothing is read because the '=' is the last character
-		// in the config string, consider the value empty
-		if (!std::getline (sstream, value, ',')) value = "";
-
-		ks.append (Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
-	}
-	return ks;
-}
-
-/**
- * @brief Parse a complete commandline
- *
- * @param cmdline contains space separated plugins with optional plugin configurations
- *
- * @return a parsed PluginSpecVector
- */
-PluginSpecVector MountBackendBuilder::parseArguments (std::string const & cmdline)
-{
-	// split cmdline
-	PluginSpecVector arguments;
-	std::string argument;
-	istringstream sstream(cmdline);
-	while (std::getline (sstream, argument, ' '))
-	{
-		if (argument.empty()) continue;
-		if (std::all_of(argument.begin(), argument.end(),
-			[](char c) {return std::isspace(c) || c==',';})) continue;
-		if (argument.find ('=') == string::npos)
-		{
-			arguments.push_back(PluginSpec(argument));
-		} else {
-			if (arguments.empty()) throw ParseException("config for plugin ("+argument+") without previous plugin name");
-			arguments.back().config = parsePluginArguments(argument);
-		}
-	}
-	return arguments;
-}
-
-/**
  * @brief Makes sure that ordering constraints are fulfilled.
  *
  * @pre a sorted list except of the last element to be inserted
@@ -160,7 +106,7 @@ void BackendBuilder::sort()
 		std::string order;
 		while (ss >> order)
 		{
-			if (order == other.name)
+			if (order == other.getName())
 			{
 				return true;
 			}
@@ -184,121 +130,222 @@ void BackendBuilder::sort()
 			n.push_back(toAdd.back());
 			n.insert(n.end(), i, std::prev(toAdd.end()));
 			toAdd = n;
+			return;
 		}
 	}
 }
 
-void BackendBuilder::resolveNeeds()
+void BackendBuilder::needMetadata (std::string addMetadata)
 {
-	// check if everything in toAdd is an actual plugin (and not virtual)
-	// TODO: Does this modify the order?
-	for (auto & ps : toAdd)
+	std::istringstream is (addMetadata);
+	std::string md;
+	while (is >> md)
 	{
-		try
-		{
-			PluginSpec toReplace = pluginDatabase->lookupProvides(ps.name);
-			ps.name = toReplace.name;
-			ps.config.append (toReplace.config);
-		}
-		catch (...)
-		{
-		}
+		metadata.insert(md);
+		// ignore if it does not work! (i.e. metadata already present)
 	}
-
-	std::vector<std::string> needs;
-
-	do {
-		// collect everything that is needed
-		for (auto const & ps : toAdd)
-		{
-			std::stringstream ss (pluginDatabase->lookupInfo(ps, "needs"));
-			std::string need;
-			while (ss >> need)
-			{
-				needs.push_back(need);
-			}
-		}
-
-		// remove what is already provided
-		for (auto const & ps : toAdd)
-		{
-			std::string toRemove = ps.name;
-			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
-			toRemove = pluginDatabase->lookupInfo(ps, "provides");
-			needs.erase(std::remove(needs.begin(), needs.end(), toRemove), needs.end());
-		}
-
-		// leftover in needs is what is still needed
-		for (auto const & need : needs)
-		{
-			addPlugin(pluginDatabase->lookupProvides(need));
-			break; // only add one, it might resolve more than one need
-		}
-	} while (!needs.empty());
 }
 
 /**
- * @brief Add or update a plugin.
+ * @brief Collect what is needed
  *
- * Will automatically detect if plugin is virtual or real.
- * If it is virtual (provider), it will be remembered as "needs" to be resolved with resolveNeeds()
- * If it is an actual plugin, and was added already, the configuration will merge
- * as long as the contract of the new plugin is identical as the old one.
- * Otherwise it will be added.
- * 
+ * @param [out] needs are added here
+ */
+void BackendBuilder::collectNeeds(std::vector<std::string> & needs) const
+{
+	for (auto const & ps : toAdd)
+	{
+		std::stringstream ss (pluginDatabase->lookupInfo(ps, "needs"));
+		std::string need;
+		while (ss >> need)
+		{
+			needs.push_back(need);
+		}
+	}
+}
+
+/**
+ * @brief Collect what is recommended
+ *
+ * @param [out] needs are added here
+ */
+void BackendBuilder::collectRecommends(std::vector<std::string> & recommends) const
+{
+	for (auto const & ps : toAdd)
+	{
+		std::stringstream ss (pluginDatabase->lookupInfo(ps, "recommends"));
+		std::string r;
+		while (ss >> r)
+		{
+			recommends.push_back(r);
+		}
+	}
+}
+
+void BackendBuilder::removeProvided(std::vector<std::string> & needs) const
+{
+	for (auto const & ps : toAdd)
+	{
+		// remove the needed plugins that are already inserted
+		needs.erase(std::remove(needs.begin(), needs.end(), ps.getName()), needs.end());
+
+		// remove what is already provided
+		std::string provides = pluginDatabase->lookupInfo(ps, "provides");
+		std::istringstream ss (provides);
+		std::string toRemove;
+		while (ss >> toRemove)
+		{
+			needs.erase (std::remove(needs.begin(), needs.end(), toRemove), needs.end());
+		}
+	}
+}
+
+
+void BackendBuilder::removeMetadata(std::set<std::string> & needsMetadata) const
+{
+	for (auto const & ps : toAdd)
+	{
+		// remove metadata that already is provided
+		std::string md = pluginDatabase->lookupInfo(ps, "metadata");
+		std::istringstream ss (md);
+		std::string toRemove;
+		while (ss >> toRemove)
+		{
+			needsMetadata.erase (toRemove);
+		}
+	}
+}
+
+namespace
+{
+void removeMissing (std::vector<std::string> & recommendedPlugins, std::vector<std::string> const & missingPlugins)
+{
+	for (auto const & mp : missingPlugins)
+	{
+		recommendedPlugins.erase (std::remove (recommendedPlugins.begin(), recommendedPlugins.end(), mp));
+	}
+}
+}
+
+/**
+ * @brief resolve all needs that were not resolved by adding plugins.
+ *
+ * @warning Must only be used once after all plugins/recommends are added.
+ *
+ * @see addPlugin()
+ */
+void BackendBuilder::resolveNeeds(bool addRecommends)
+{
+	// load dependency-plugins immediately
+	for (auto const & ps : toAdd)
+	{
+		auto plugins = parseArguments (pluginDatabase->lookupInfo(ps, "plugins"));
+		for (auto const & plugin : plugins)
+		{
+			addPlugin (plugin);
+		}
+	}
+
+	std::vector <std::string> missingRecommends;
+
+	do {
+		collectNeeds (neededPlugins);
+		collectRecommends (recommendedPlugins);
+
+		removeProvided (neededPlugins);
+		removeProvided (recommendedPlugins);
+		removeMissing (recommendedPlugins, missingRecommends);
+		removeMetadata (metadata);
+
+		// leftover in needs(Metadata) is what is still needed
+		// lets add first one:
+		if (!neededPlugins.empty())
+		{
+			addPlugin (PluginSpec(neededPlugins[0]));
+			neededPlugins.erase(neededPlugins.begin());
+		}
+		else if (!metadata.empty())
+		{
+			std::string first = (*metadata.begin());
+			addPlugin (pluginDatabase->lookupMetadata (first));
+			metadata.erase(first);
+		}
+		else if (!recommendedPlugins.empty() && addRecommends)
+		{
+			PluginSpec rp (recommendedPlugins[0]);
+			if (pluginDatabase->status(rp) != PluginDatabase::missing)
+			{
+				addPlugin (rp);
+			}
+			else
+			{
+				missingRecommends.push_back(recommendedPlugins[0]);
+			}
+			recommendedPlugins.erase(recommendedPlugins.begin());
+		}
+	} while (!neededPlugins.empty() || !metadata.empty() || (!recommendedPlugins.empty() && addRecommends));
+}
+
+void BackendBuilder::needPlugin (std::string name)
+{
+	std::stringstream ss(name);
+	std::string n;
+	while (ss >> n)
+	{
+		neededPlugins.push_back(n);
+	}
+}
+
+void BackendBuilder::recommendPlugin (std::string name)
+{
+	std::stringstream ss(name);
+	std::string n;
+	while (ss >> n)
+	{
+		recommendedPlugins.push_back(n);
+	}
+}
+
+/**
+ * @brief Add a plugin.
+ *
+ * @pre Needs to be a unique new name (use refname if you want to add the same module multiple times)
+ *
+ * Will automatically resolve virtual plugins to actual plugins.
  *
  * @see resolveNeeds()
  * @param plugin
  */
-void BackendBuilder::addPlugin (PluginSpec const & newPlugin)
+void BackendBuilder::addPlugin (PluginSpec const & plugin)
 {
-	std::set<std::string> provides;
-	{
-		std::string providesString = pluginDatabase->lookupInfo(newPlugin, "provides");
-		std::istringstream ss (providesString);
-		std::string provide;
-		while (ss >> provide)
-		{
-			provides.insert(provide);
-		}
-	}
-
 	for (auto & p : toAdd)
 	{
-		if (p.name == newPlugin.name)
+		if (p.getFullName() == plugin.getFullName())
 		{
-			// newPlugin is already inserted:
-			p.config.append(newPlugin.config);
-			return;
-		}
-
-		if (provides.find(p.name) != provides.end())
-		{
-			// a plugin that provides newPlugin already is already inserted:
-			p.name = newPlugin.name;
-			p.config.append(newPlugin.config);
-			return;
-		}
-
-		std::istringstream ss (pluginDatabase->lookupInfo(p, "provides"));
-		std::string provide;
-		while (ss >> provide)
-		{
-			if (newPlugin.name == provide)
-			{
-				// merge already existing concrete plugin with newly added provider
-				p.config.append(newPlugin.config);
-				return;
-			}
+			throw PluginAlreadyInserted(plugin.getFullName());
 		}
 	}
+
+	PluginSpec newPlugin = plugin;
+
+	// if the plugin is actually a provider use it (otherwise we will get our name back):
+	PluginSpec provides = pluginDatabase->lookupProvides (plugin.getName());
+	if (provides.getName() != newPlugin.getName())
+	{
+		// keep our config and refname
+		newPlugin.setName (provides.getName());
+		newPlugin.appendConfig (provides.getConfig());
+	}
+
 	toAdd.push_back(newPlugin);
 	sort();
 }
 
 void BackendBuilder::remPlugin (PluginSpec const & plugin)
 {
-	toAdd.erase(std::remove(toAdd.begin(), toAdd.end(), plugin));
+	using namespace std::placeholders;
+	PluginSpecFullName cmp;
+	toAdd.erase(std::remove_if(toAdd.begin(), toAdd.end(), std::bind(cmp, plugin, _1) ));
 }
 
 void BackendBuilder::fillPlugins(BackendInterface & b) const

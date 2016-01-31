@@ -1,0 +1,24 @@
+/**
+ * @file
+ *
+ * @brief Header for iterate plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+#ifndef ELEKTRA_PLUGIN_ITERATE_H
+#define ELEKTRA_PLUGIN_ITERATE_H
+
+#include <kdbplugin.h>
+
+
+int elektraIterateOpen (Plugin *handle, Key *errorKey);
+int elektraIterateClose (Plugin *handle, Key *errorKey);
+int elektraIterateGet (Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraIterateSet (Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraIterateError (Plugin *handle, KeySet *ks, Key *parentKey);
+
+Plugin *ELEKTRA_PLUGIN_EXPORT (iterate);
+
+#endif

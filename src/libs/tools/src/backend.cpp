@@ -247,39 +247,9 @@ void Backend::useConfigFile(std::string file)
 }
 
 
-void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
+void Backend::tryPlugin (PluginSpec const & spec)
 {
-	int nr;
-	char *cPluginName = nullptr;
-	char *cReferenceName = nullptr;
-	Key errorKey;
-	string realPluginName;
-
-
-	Key k(std::string("system/elektra/key/#0") + pluginName, KEY_END);
-
-
-	if (ckdb::elektraProcessPlugin (*k, &nr, &cPluginName, &cReferenceName, *errorKey) == -1)
-	{
-		ckdb::elektraFree(cPluginName);
-		ckdb::elektraFree(cReferenceName);
-		throw BadPluginName();
-	}
-
-
-	if (cPluginName)
-	{
-		realPluginName = cPluginName;
-		ckdb::elektraFree(cPluginName);
-	}
-
-
-	if (realPluginName.find('#') != string::npos) throw BadPluginName();
-
-
-
-	PluginPtr plugin = modules.load(realPluginName, pluginConfig);
-
+	PluginPtr plugin = modules.load(spec);
 
 	errorplugins.tryPlugin (*plugin.get());
 	getplugins.tryPlugin   (*plugin.get());
@@ -288,8 +258,8 @@ void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
 
 	for (auto & elem : plugins)
 	{
-		if (plugin->name() == elem->name())
-			throw PluginAlreadyInserted();
+		if (plugin->getFullName() == elem->getFullName())
+			throw PluginAlreadyInserted(plugin->getFullName());
 	}
 
 
@@ -312,9 +282,9 @@ void Backend::tryPlugin (std::string pluginName, KeySet pluginConfig)
  */
 void Backend::addPlugin (PluginSpec const & plugin)
 {
-	KeySet fullPluginConfig = plugin.config;
-	fullPluginConfig.append(config); // add previous configs
-	tryPlugin (plugin.name, fullPluginConfig);
+	KeySet fullPluginConfig = plugin.getConfig();
+	fullPluginConfig.append(plugin.getConfig()); // add previous configs
+	tryPlugin (plugin);
 	errorplugins.addPlugin (*plugins.back());
 	getplugins.addPlugin (*plugins.back());
 	setplugins.addPlugin (*plugins.back());
@@ -459,7 +429,7 @@ void Backend::serialize (kdb::KeySet &ret)
 
 void ImportExportBackend::addPlugin (PluginSpec const & spec)
 {
-	PluginPtr plugin = modules.load(spec.name, spec.config);
+	PluginPtr plugin = modules.load(spec);
 	std::shared_ptr<Plugin> sharedPlugin = std::move(plugin);
 
 	std::stringstream ss (plugin->lookupInfo("placements"));
