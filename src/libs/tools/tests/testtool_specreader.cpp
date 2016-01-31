@@ -202,7 +202,7 @@ TEST(SpecReader, withNeedsResolvedPreferencesPlugins)
 	EXPECT_EQ (bi.begin()[1], PluginSpec("r", "resolver"));
 }
 
-TEST(SpecReader, DISABLED_withNeedsResolvedNumerical)
+TEST(SpecReader, withNeedsResolvedNumerical)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -233,13 +233,13 @@ TEST(SpecReader, DISABLED_withNeedsResolvedNumerical)
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
 	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("r"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("b"));
+	EXPECT_EQ (bi.begin()[0], PluginSpec("r", "resolver"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("b", "storage"));
 }
 
 
 
-TEST(SpecReader, DISABLED_withNeedsResolvedPreferencesIgnored)
+TEST(SpecReader, withNeedsResolvedPreferencesIgnored)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -259,10 +259,10 @@ TEST(SpecReader, DISABLED_withNeedsResolvedPreferencesIgnored)
 	sr.readSpecification(KeySet(5,
 				*Key ("user", KEY_END),
 				*Key ("user/mp", KEY_META, "mountpoint", "file.ini",
-					KEY_META, "infos/needs", "resolver storage",
+					KEY_META, "infos/needs", "a", // warning: order matters here..
 					KEY_END),
 				*Key ("user/mp/below",
-					KEY_META, "infos/needs", "a",
+					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
 				KS_END));
 	SpecBackendBuilder bi = sr.getBackends() [Key ("user/mp", KEY_END)];
@@ -271,8 +271,8 @@ TEST(SpecReader, DISABLED_withNeedsResolvedPreferencesIgnored)
 	EXPECT_EQ (bi.getConfigFile(), "file.ini");
 	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
-	EXPECT_EQ (bi.begin()[0], PluginSpec("r"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("a"));
+	EXPECT_EQ (bi.begin()[0], PluginSpec("a"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("r", "resolver"));
 }
 
 TEST(SpecReader, withMetadata)
