@@ -182,6 +182,7 @@ void BackendBuilder::removeProvided(std::vector<std::string> & needs) const
 	}
 }
 
+
 void BackendBuilder::removeMetadata(std::set<std::string> & needsMetadata) const
 {
 	for (auto const & ps : toAdd)
@@ -200,9 +201,11 @@ void BackendBuilder::removeMetadata(std::set<std::string> & needsMetadata) const
 /**
  * @brief resolve all needs that were not resolved by adding plugins.
  *
+ * @warning Must only be used once after all plugins/recommends are added.
+ *
  * @see addPlugin()
  */
-void BackendBuilder::resolveNeeds()
+void BackendBuilder::resolveNeeds(bool addRecommends)
 {
 	// load dependency-plugins immediately
 	for (auto const & ps : toAdd)
@@ -222,8 +225,11 @@ void BackendBuilder::resolveNeeds()
 		needsMetadata.clear();
 
 		needsMetadata.insert (metadata.begin(), metadata.end());
+
 		collectNeeds (needs);
 		removeProvided (needs);
+		removeProvided (neededPlugins);
+		removeProvided (recommendedPlugins);
 		removeMetadata (needsMetadata);
 
 		// leftover in needs(Metadata) is what is still needed
@@ -239,7 +245,27 @@ void BackendBuilder::resolveNeeds()
 			addPlugin (pluginDatabase->lookupMetadata (first));
 			needsMetadata.erase(first);
 		}
-	} while (!needs.empty() || !needsMetadata.empty());
+		else if (!neededPlugins.empty())
+		{
+			addPlugin (PluginSpec(neededPlugins[0]));
+			neededPlugins.erase(neededPlugins.begin());
+		}
+		else if (!recommendedPlugins.empty() && addRecommends)
+		{
+			addPlugin (PluginSpec(recommendedPlugins[0]));
+			recommendedPlugins.erase(recommendedPlugins.begin());
+		}
+	} while (!needs.empty() || !needsMetadata.empty() || !neededPlugins.empty() || (!recommendedPlugins.empty() && addRecommends));
+}
+
+void BackendBuilder::needPlugin (std::string name)
+{
+	neededPlugins.push_back(name);
+}
+
+void BackendBuilder::recommendPlugin (std::string name)
+{
+	recommendedPlugins.push_back(name);
 }
 
 /**

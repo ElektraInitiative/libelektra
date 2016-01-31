@@ -326,3 +326,132 @@ TEST(BackendBuilder, metadataTwoRev)
 	EXPECT_EQ(bb.cbegin()[0], PluginSpec("r1"));
 	EXPECT_EQ(bb.cbegin()[1], PluginSpec("r2"));
 }
+
+TEST(BackendBuilder, manualNeeds)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("n");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+}
+
+
+TEST(BackendBuilder, manualNeedsProvides)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("x");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n", "x"));
+}
+
+
+TEST(BackendBuilder, manualMultipleNeeds)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.needPlugin("n");
+	bb.needPlugin("n");
+	bb.needPlugin("x");
+	bb.needPlugin("x");
+	bb.needPlugin("y");
+	bb.needPlugin("y");
+	bb.needPlugin("z");
+	bb.needPlugin("z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+
+
+TEST(BackendBuilder, manualRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+}
+
+
+TEST(BackendBuilder, manualNoRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds(false);
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+}
+
+
+TEST(BackendBuilder, manualRecommendsProvides)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("x");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 1);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n", "x"));
+}
+
+
+TEST(BackendBuilder, manualMultipleRecommends)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
+	mpd->data[PluginSpec("n")]["provides"] = "x";
+	mpd->data[PluginSpec("y")]["provides"] = "z";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.recommendPlugin("n");
+	bb.recommendPlugin("n");
+	bb.recommendPlugin("x");
+	bb.recommendPlugin("x");
+	bb.recommendPlugin("y");
+	bb.recommendPlugin("y");
+	bb.recommendPlugin("z");
+	bb.recommendPlugin("z");
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 0);
+	bb.resolveNeeds();
+	ASSERT_EQ(std::distance(bb.cbegin(), bb.cend()), 2);
+	EXPECT_EQ(bb.cbegin()[0], PluginSpec("n"));
+	EXPECT_EQ(bb.cbegin()[1], PluginSpec("y"));
+}
+

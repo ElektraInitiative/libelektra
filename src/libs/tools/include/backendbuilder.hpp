@@ -71,7 +71,15 @@ class BackendBuilder : public BackendInterface
 private:
 	/// Defines order in which plugins should be added
 	PluginSpecVector toAdd;
+
+	/// Metadata to be added
 	std::set<std::string> metadata;
+
+	/// Needed plugins (not yet added)
+	std::vector<std::string> neededPlugins;
+
+	/// Recommended plugins (not yet added)
+	std::vector<std::string> recommendedPlugins;
 
 	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
 	PluginDatabasePtr pluginDatabase;
@@ -115,8 +123,11 @@ public:
 	void remPlugin (PluginSpec const & plugin);
 
 	void needMetadata (std::string metadata);
-	void needPlugin (PluginSpec plugin);
-	void resolveNeeds();
+	void needPlugin (std::string provider);
+	void resolveNeeds(bool addRecommends = true);
+
+	void recommendPlugin (std::string provider);
+	void resolveRecommends();
 
 	void fillPlugins(BackendInterface & b) const;
 };
