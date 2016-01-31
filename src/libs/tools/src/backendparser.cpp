@@ -30,7 +30,7 @@ namespace tools
  *
  * @return newly created keyset with the information found in the string
  */
-KeySet parsePluginArguments (std::string const & pluginArguments)
+KeySet parsePluginArguments (std::string const & pluginArguments, std::string const & basepath)
 {
 	KeySet ks;
 	std::istringstream sstream(pluginArguments);
@@ -46,7 +46,7 @@ KeySet parsePluginArguments (std::string const & pluginArguments)
 		// in the config string, consider the value empty
 		if (!std::getline (sstream, value, ',')) value = "";
 
-		ks.append (Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
+		ks.append (Key(basepath+"/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
 	}
 	return ks;
 }

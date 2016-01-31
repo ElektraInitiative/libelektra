@@ -28,7 +28,7 @@ namespace kdb
 namespace tools
 {
 
-kdb::KeySet parsePluginArguments (std::string const & pluginArguments);
+kdb::KeySet parsePluginArguments (std::string const & pluginArguments, std::string const & basename = "user");
 PluginSpecVector parseArguments (std::string const & cmdline);
 PluginSpecVector parseArguments (std::initializer_list<std::string> cmdline);
 

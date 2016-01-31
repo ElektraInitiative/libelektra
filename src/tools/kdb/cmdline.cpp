@@ -9,9 +9,10 @@
 #include <cmdline.hpp>
 
 #include <kdb.hpp>
+#include <kdbconfig.h>
 #include <keysetio.hpp>
 #include <keysetget.hpp>
-#include <kdbconfig.h>
+#include <backendparser.hpp>
 
 #include <iostream>
 #include <vector>
@@ -334,26 +335,7 @@ Cmdline::Cmdline (int argc,
 
 kdb::KeySet Cmdline::getPluginsConfig(string basepath) const
 {
-	using namespace kdb;
-
-	string keyName;
-	string value;
-	KeySet ret;
-	istringstream sstream(pluginsConfig);
-
-	// read until the next '=', this will be the keyname
-	while (std::getline (sstream, keyName, '='))
-	{
-		// read until a ',' or the end of line
-		// if nothing is read because the '=' is the last character
-		// in the config string, consider the value empty
-		if (!std::getline (sstream, value, ',')) value = "";
-
-		Key configKey = Key (basepath + keyName, KEY_END);
-		configKey.setString (value);
-		ret.append (configKey);
-	}
-	return ret;
+	return kdb::tools::parsePluginArguments(pluginsConfig, basepath);
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)
