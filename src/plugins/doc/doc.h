@@ -207,6 +207,8 @@
  *
  * If your plugin has no useful way to startup without config, the
  * module loader would not be able to load the module.
+ * We need, however, to still load the plugin to get the contract.
+ *
  * To solve that problem the module loader adds the configuration key
  * /module. Even if your plugin is basically not able to startup
  * successfully, it should still provide a fallback when /module
@@ -214,6 +216,10 @@
  * called successfully later on.
  *
  * @snippet doc.c doc module
+ *
+ * Note that for plugins where the contract will be altered based
+ * on configuration this specific configuration should be considered.
+ * In fact the idea of /module is to get the correct contract.
  *
  *
  * @retval -1 on error, your plugin will be removed then and the missing
