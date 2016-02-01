@@ -9,6 +9,7 @@
 
 #include <backendbuilder.hpp>
 #include <kdbtimer.hpp>
+#include <kdbconfig.h>
 
 #include <unistd.h>
 
@@ -136,7 +137,9 @@ int main(int argc, char**argv)
 {
 	computer_info();
 
+#ifdef HAVE_CLEARENV
 	clearenv();
+#endif
 
 	if (argc==2)
 	{
