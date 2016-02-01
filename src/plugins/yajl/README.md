@@ -61,7 +61,7 @@ comments filter and directory value filter are highly recommended.
 
 
 This plugin was specifically designed and tested for the
-```OpenICC_device_config_DB``` although it is of course not limited
+`OpenICC_device_config_DB` although it is of course not limited
 to it.
 
 Mount the plugin:
