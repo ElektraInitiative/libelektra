@@ -46,6 +46,8 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Note that the resolver will only added as dependency, but not directly added.
 - `-c`, `--plugins-config`:
   Add a plugin configuration for all plugins.
+- `-W`, `--with-recommends`:
+  Also add recommended plugins and warn if they are not available.
 
 
 

@@ -129,7 +129,7 @@ public:
 
 	void needMetadata (std::string metadata);
 	void needPlugin (std::string provider);
-	void resolveNeeds(bool addRecommends = true);
+	std::vector<std::string> resolveNeeds(bool addRecommends = true);
 
 	void recommendPlugin (std::string provider);
 	void resolveRecommends();

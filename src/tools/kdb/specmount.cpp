@@ -74,7 +74,7 @@ void SpecMountCommand::buildBackend (Cmdline const& cl)
 		}
 
 		// Call it a day
-		backend.resolveNeeds();
+		outputMissingRecommends(backend.resolveNeeds(cl.withRecommends));
 		backend.serialize (mountConf);
 	}
 }

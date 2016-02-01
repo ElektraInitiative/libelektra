@@ -232,9 +232,12 @@ void removeMissing (std::vector<std::string> & recommendedPlugins, std::vector<s
  *
  * @warning Must only be used once after all plugins/recommends are added.
  *
+ * @return the missing recommended plugins
+ * @retval empty if addRecommends was false
+ *
  * @see addPlugin()
  */
-void BackendBuilder::resolveNeeds(bool addRecommends)
+std::vector <std::string> BackendBuilder::resolveNeeds(bool addRecommends)
 {
 	// load dependency-plugins immediately
 	for (auto const & ps : toAdd)
@@ -284,6 +287,8 @@ void BackendBuilder::resolveNeeds(bool addRecommends)
 			recommendedPlugins.erase(recommendedPlugins.begin());
 		}
 	} while (!neededPlugins.empty() || !metadata.empty() || (!recommendedPlugins.empty() && addRecommends));
+
+	return missingRecommends;
 }
 
 void BackendBuilder::needPlugin (std::string name)

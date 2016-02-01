@@ -55,6 +55,8 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Suppress the third column.
 - `-c`, `--plugins-config`:
   Add a plugin configuration for all plugins.
+- `-W`, `--with-recommends`:
+  Also add recommended plugins and warn if they are not available.
 
 
 

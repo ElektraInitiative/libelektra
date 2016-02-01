@@ -40,6 +40,19 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 	}
 }
 
+void MountBaseCommand::outputMissingRecommends(std::vector<std::string> missingRecommends)
+{
+	if (!missingRecommends.empty())
+	{
+		std::cout << "Missing recommended plugins: ";
+		for (auto const & p : missingRecommends)
+		{
+			std::cout << p << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
 
 /**
  * @brief set mp (interactive or by commandline)

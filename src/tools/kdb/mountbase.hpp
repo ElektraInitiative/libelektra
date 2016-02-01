@@ -12,6 +12,8 @@
 #include <command.hpp>
 #include <kdb.hpp>
 
+#include <vector>
+
 namespace kdb
 {
 namespace tools
@@ -29,6 +31,7 @@ protected:
 	void readMountConf(Cmdline const& cl);
 	void getMountpoint(Cmdline const& cl);
 	void askForConfirmation(Cmdline const& cl);
+	void outputMissingRecommends(std::vector<std::string> missingRecommends);
 	void doIt();
 
 	kdb::KDB kdb;
