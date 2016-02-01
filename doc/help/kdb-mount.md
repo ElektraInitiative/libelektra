@@ -10,7 +10,7 @@ kdb-mount(1) - Mount a file to the key database
 - `mountpoint` is where in the key database the new backend should be mounted. (For a cascading mount pount, `mountpoint` should start with `/`)  
 - `plugin` should be an Elektra plugin.
   A list of such plugins with configuration can be given.
-- Plugins may be followed by a `,` separated list of keys and their corresponding values which will be written below the backend configuration.  
+- Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
 
 ## DESCRIPTION
@@ -19,10 +19,10 @@ This command allows a user to mount a new *backend*.
 
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md).
 
-Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a parition into the current filesystem by creating a *backend*.  
-This functionality is key to Elektra as it allows users to build a global key database comprised of many different conifguration files.  
-A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa.  
-Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments.  
+Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a partition into the current filesystem by creating a *backend*.
+This functionality is key to Elektra as it allows users to build a global key database comprised of many different configuration files.
+A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa.
+Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments.
 
 
 
@@ -55,6 +55,8 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Suppress the third column.
 - `-c`, `--plugins-config`:
   Add a plugin configuration for all plugins.
+- `-W`, `--with-recommends`:
+  Also add recommended plugins and warn if they are not available.
 
 
 
@@ -66,31 +68,33 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 - `/sw/kdb/current/plugins`:
   It contains a space-separated list of plugins
   which are added automatically (by default sync).
+  The plugin-configuration syntax is as described above.
 
 
 ## EXAMPLES
 
-To list the currently mounted backends:  
-	`kdb mount`  
+To list the currently mounted backends:
+	`kdb mount`
 
-To mount a system configuration file using the ini format:  
-	`kdb mount /etc/configuration.ini system/example ini`  
+To mount a system configuration file using the ini format:
+	`kdb mount /etc/configuration.ini system/example ini`
 
-Print a null-terminated output of paths and backend names:  
-	`kdb mount -02 | xargs -0n 2 echo`  
+Print a null-terminated output of paths and backend names:
+	`kdb mount -02 | xargs -0n 2 echo`
 
-To mount the /etc/file system file with two plugins with a respective configuration option each:  
-	`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`  
+To mount the /etc/file system file with two plugins with a respective configuration option each:
+	`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
 
-To mount the /etc/file system file with two plugins and setting both to be verbose:  
+To mount the /etc/file system file with two plugins and setting both to be verbose:
 	`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
 
-To recode and rename a configuration file using Elektra:  
-	`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`  
+To recode and rename a configuration file using Elektra:
+	`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`
 
 ## SEE ALSO
 
 - [elektra-glossary(7)](elektra-glossary.md).
+- [kdb-spec-mount(7)](kdb-spec-mount.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
 - [elektra-plugins(7)](elektra-plugins.md).

@@ -19,10 +19,13 @@
 #include <kdbprivate.h>
 #include <helper/keyhelper.hpp>
 
+#include <kdbease.h> // for ckdb::elektraArrayIncName
+
 #include <algorithm>
 
 #include <kdb.hpp>
 #include <cassert>
+
 
 
 using namespace std;
@@ -39,6 +42,9 @@ BackendInterface::~BackendInterface()
 {}
 
 MountBackendInterface::~MountBackendInterface()
+{}
+
+SerializeInterface::~SerializeInterface()
 {}
 
 /** Creates a new empty backend.
@@ -427,16 +433,20 @@ void Backend::serialize (kdb::KeySet &ret)
 			KEY_END));
 }
 
-void ImportExportBackend::addPlugin (PluginSpec const & spec)
+void PluginAdder::addPlugin (PluginSpec const & spec)
 {
 	PluginPtr plugin = modules.load(spec);
+	if (!plugin)
+	{
+		throw NoPlugin (spec.getName());
+	}
 	std::shared_ptr<Plugin> sharedPlugin = std::move(plugin);
 
-	std::stringstream ss (plugin->lookupInfo("placements"));
+	std::istringstream ss (sharedPlugin->lookupInfo("placements"));
 	std::string placement;
-	while (ss << placement)
+	while (ss >> placement)
 	{
-		if (plugin->lookupInfo ("stacking") == "" && placement=="postgetstorage")
+		if (sharedPlugin->lookupInfo ("stacking") == "" && placement=="postgetstorage")
 		{
 			// reverse postgetstorage, except stacking is set
 			plugins[placement].push_front(sharedPlugin);
@@ -449,16 +459,125 @@ void ImportExportBackend::addPlugin (PluginSpec const & spec)
 
 }
 
+namespace
+{
+void append (std::string placement, std::string & where, std::string checkPlacement)
+{
+	if (placement == checkPlacement)
+	{
+		if (where.empty())
+		{
+			where = placement;
+		}
+		else
+		{
+			where += " ";
+			where += placement;
+		}
+	}
+}
+}
+
+struct Placements
+{
+	std::string get;
+	std::string set;
+	std::string error;
+
+	void addPlacement(std::string placement)
+	{
+		append(placement, error,"prerollback");
+		append(placement, error,"rollback");
+		append(placement, error,"postrollback");
+
+		append(placement, get,"getresolver");
+		append(placement, get,"pregetstorage");
+		append(placement, get,"getstorage");
+		append(placement, get,"postgetstorage");
+
+		append(placement, set,"setresolver");
+		append(placement, set,"presetstorage");
+		append(placement, set,"setstorage");
+		append(placement, set,"precommit");
+		append(placement, set,"commit");
+		append(placement, set,"postcommit");
+	}
+};
+
+namespace
+{
+Key g(Key placements, std::string name, std::string value)
+{
+	Key x (placements.dup());
+	x.addBaseName (name);
+	x.setString (value);
+	return x;
+}
+
+void serializeConf(kdb::KeySet &ret, Key config, KeySet const & pluginConfig)
+{
+	if (pluginConfig.size() != 0)
+	{
+		ret.append(config);
+		for (auto const & key : pluginConfig)
+		{
+			Key k (key.dup());
+			helper::removeNamespace (k);
+			ret.append(Key(config.getName()+k.getName(), KEY_VALUE, key.getString().c_str() , KEY_END));
+		}
+	}
+}
+}
+
+void GlobalPlugins::serialize (kdb::KeySet &ret)
+{
+	// transform to suitable data structure
+	std::map <std::shared_ptr<Plugin>, Placements> pp;
+	for (auto const & placements: plugins)
+	{
+		for (auto const & plugin : placements.second)
+		{
+			pp[plugin].addPlacement(placements.first);
+		}
+	}
+
+	ret.append(Key("system/elektra/globalplugins", KEY_VALUE, "", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END));
+	Key i ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_END);
+	for (auto const & plugin : pp)
+	{
+		i.setString(plugin.first->name());
+		ret.append(i.dup());
+		Key placements (i.dup());
+		placements.addBaseName("placements");
+		ret.append(placements);
+
+		ret.append (g (placements, "get", plugin.second.get));
+		ret.append (g (placements, "set", plugin.second.set));
+		ret.append (g (placements, "error", plugin.second.error));
+
+		serializeConf (ret, Key(i.getName()+"/config", KEY_VALUE, "" , KEY_END), plugin.first->getConfig());
+		ckdb::elektraArrayIncName(*i);
+	}
+	ret.append(Key("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END));
+}
+
 void ImportExportBackend::status (std::ostream & os) const
 {
 	if (plugins.empty()) os << "no plugin added" << std::endl;
 	else if (plugins.find("setstorage") == plugins.end()) os << "no storage plugin added" << std::endl;
 	else os << "everything ok" << std::endl;
-}
-
-bool ImportExportBackend::validated () const
-{
-	return true;
 }
 
 void ImportExportBackend::importFromFile (KeySet & ks, Key const & parentKey) const

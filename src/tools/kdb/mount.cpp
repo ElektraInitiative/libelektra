@@ -27,22 +27,6 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-class KDBMountException : public KDBException
-{
-	std::string msg;
-public:
-	KDBMountException(std::string const & e) :
-		KDBException (Key())
-	{
-		msg = e;
-	}
-
-	virtual const char* what() const noexcept override
-	{
-		return msg.c_str();
-	}
-};
-
 MountCommand::MountCommand()
 {}
 
@@ -140,17 +124,12 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	backend.useConfigFile(path);
 
-	istringstream sstream(cl.plugins);
-	std::string plugin;
-	while (std::getline (sstream, plugin, ' '))
+	if (cl.debug)
 	{
-		if (cl.debug)
-		{
-			cout << "Trying to add default plugin " << plugin << endl;
-		}
-		backend.addPlugin (PluginSpec(plugin));
+		cout << "Trying to add default plugins " << cl.plugins << endl;
 	}
 
+	backend.addPlugins (parseArguments (cl.plugins));
 
 	if (cl.interactive)
 	{
@@ -171,7 +150,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	}
 
 	// Call it a day
-	backend.resolveNeeds();
+	outputMissingRecommends(backend.resolveNeeds(cl.withRecommends));
 	backend.serialize (mountConf);
 }
 
@@ -261,15 +240,7 @@ int MountCommand::execute(Cmdline const& cl)
 	getMountpoint(cl);
 	buildBackend(cl);
 	askForConfirmation(cl);
-	try {
-		doIt();
-	}
-	catch (KDBException const & e)
-	{
-		throw KDBMountException(std::string(e.what())+"\n\n"
-				"IMPORTANT: Make sure you can write to system namespace\n"
-				"           Usually you need to be root for that!");
-	}
+	doIt();
 
 	return 0;
 }

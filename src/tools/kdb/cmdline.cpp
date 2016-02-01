@@ -59,6 +59,7 @@ Cmdline::Cmdline (int argc,
 	first(true),
 	second(true),
 	third(true),
+	withRecommends(false),
 	all(),
 	format("dump"),
 	plugins("sync"),
@@ -200,6 +201,12 @@ Cmdline::Cmdline (int argc,
 		long_options.push_back(o);
 		helpText += "-e --editor              Which external editor to use.\n";
 	}
+	if (acceptedOptions.find('W')!=string::npos)
+	{
+		option o = {"with-recommends", no_argument, nullptr, 'W'};
+		long_options.push_back(o);
+		helpText += "-W --with-recommends     Add recommended plugins.\n";
+	}
 	if (acceptedOptions.find('0')!=string::npos)
 	{
 		option o = {"null", no_argument, nullptr, '0'};
@@ -277,6 +284,9 @@ Cmdline::Cmdline (int argc,
 			k = conf.lookup(dirname+"editor");
 			if (k) editor = k.get<string>();
 
+			k = conf.lookup(dirname+"recommends");
+			if (k) withRecommends = k.get<bool>();
+
 			map nks = conf.get<map>(dirname+"namedkeys");
 			namedKeys.insert(nks.begin(), nks.end());
 		}
@@ -320,7 +330,8 @@ Cmdline::Cmdline (int argc,
 		case 's': strategy = optarg; break;
 		case 'v': verbose = true; break;
 		case 'V': version = true; break;
-		case 'E': withoutElektra= true; break;
+		case 'E': withoutElektra = true; break;
+		case 'W': withRecommends = true; break;
 		case '0': null= true; break;
 		case '1': first= false; break;
 		case '2': second= false; break;

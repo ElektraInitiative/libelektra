@@ -94,7 +94,6 @@ private:
 	void removeMetadata(std::set<std::string> & needsMetadata) const;
 
 public:
-	BackendBuilder();
 	explicit BackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
 
 	typedef PluginSpecVector::const_iterator const_iterator;
@@ -129,12 +128,20 @@ public:
 
 	void needMetadata (std::string metadata);
 	void needPlugin (std::string provider);
-	void resolveNeeds(bool addRecommends = true);
+	std::vector<std::string> resolveNeeds(bool addRecommends = true);
 
 	void recommendPlugin (std::string provider);
 	void resolveRecommends();
 
 	void fillPlugins(BackendInterface & b) const;
+};
+
+class GlobalPluginsBuilder : public BackendBuilder
+{
+public:
+	explicit GlobalPluginsBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
+	static const char * globalPluginsPath;
+	void serialize (kdb::KeySet &ret);
 };
 
 /**

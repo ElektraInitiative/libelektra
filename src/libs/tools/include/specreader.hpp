@@ -58,7 +58,6 @@ private:
 	BackendBuilderInit bbi;
 
 public:
-	SpecReader();
 	explicit SpecReader(BackendBuilderInit const & bbi = BackendBuilderInit());
 
 	~SpecReader();

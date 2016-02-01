@@ -30,13 +30,26 @@ using namespace kdb::tools;
  */
 void MountBaseCommand::readMountConf(Cmdline const& cl)
 {
-	Key parentKey(Backends::mountpointsPath, KEY_END);
+	Key parentKey(mountpointsPath, KEY_END);
 
 	kdb.get(mountConf, parentKey);
 
 	if (!cl.null && cl.first && cl.second && cl.third)
 	{
 		printWarnings (cerr, parentKey);
+	}
+}
+
+void MountBaseCommand::outputMissingRecommends(std::vector<std::string> missingRecommends)
+{
+	if (!missingRecommends.empty())
+	{
+		std::cout << "Missing recommended plugins: ";
+		for (auto const & p : missingRecommends)
+		{
+			std::cout << p << " ";
+		}
+		std::cout << std::endl;
 	}
 }
 
@@ -116,14 +129,38 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 	}
 }
 
+class KDBMountException : public KDBException
+{
+	std::string msg;
+public:
+	KDBMountException(std::string const & e) :
+		KDBException (Key())
+	{
+		msg = e;
+	}
+
+	virtual const char* what() const noexcept override
+	{
+		return msg.c_str();
+	}
+};
+
 /**
  * @brief Really write out config
  */
 void MountBaseCommand::doIt()
 {
-	Key parentKey(Backends::mountpointsPath, KEY_END);
+	Key parentKey(mountpointsPath, KEY_END);
 
-	kdb.set(mountConf, parentKey);
+	try {
+		kdb.set(mountConf, parentKey);
+	}
+	catch (KDBException const & e)
+	{
+		throw KDBMountException(std::string(e.what())+"\n\n"
+				"IMPORTANT: Make sure you can write to system namespace\n"
+				"           Usually you need to be root for that!");
+	}
 
 	printWarnings(cerr, parentKey);
 }

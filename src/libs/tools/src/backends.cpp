@@ -153,7 +153,7 @@ std::string Backends::getBasePath(std::string mp)
 /**
  * @brief Below this path is the mountConf
  */
-const char *Backends::mountpointsPath = "system/elektra/mountpoints";
+const char * Backends::mountpointsPath = "system/elektra/mountpoints";
 
 }
 
