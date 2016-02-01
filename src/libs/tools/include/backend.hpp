@@ -46,9 +46,19 @@ public:
 typedef std::unique_ptr<BackendInterface> BackendInterfacePtr;
 
 /**
- * @brief Minimal interface to work with mountpoints
+ * @brief Interface to serialize a backend
  */
-class MountBackendInterface : public BackendInterface
+class SerializeInterface
+{
+public:
+	virtual void serialize (kdb::KeySet &ret) = 0;
+	virtual ~SerializeInterface() = 0;
+};
+
+/**
+ * @brief Interface to work with mountpoints (backends) for factory
+ */
+class MountBackendInterface : public BackendInterface , public SerializeInterface
 {
 public:
 	virtual void status (std::ostream & os) const = 0;
@@ -62,7 +72,6 @@ public:
 	virtual void useConfigFile (std::string file) = 0;
 	virtual std::string getConfigFile() const = 0;
 
-	virtual void serialize (kdb::KeySet &ret) = 0;
 	virtual ~MountBackendInterface() = 0;
 };
 
@@ -153,9 +162,33 @@ inline std::string Backend::getConfigFile() const
 std::ostream & operator<<(std::ostream & os, Backend const & b);
 
 /**
- * @brief Backend for import/export functionality
+ * @brief Adds plugins in a generic map
  */
-class ImportExportBackend : public BackendInterface
+class PluginAdder : public BackendInterface
+{
+private:
+	Modules modules;
+
+	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
+public:
+	void addPlugin (PluginSpec const & spec);
+};
+
+/**
+ * @brief Low level representation of global plugins
+ */
+class GlobalPlugins : public PluginAdder,  public SerializeInterface
+{
+public:
+	void serialize (kdb::KeySet &ret);
+};
+
+/**
+ * @brief Backend for import/export functionality
+ *
+ * (only partly implemented)
+ */
+class ImportExportBackend : public PluginAdder
 {
 	Modules modules;
 
@@ -166,9 +199,7 @@ class ImportExportBackend : public BackendInterface
 
 public:
 	ImportExportBackend();
-	void addPlugin (PluginSpec const & spec);
 	void status (std::ostream & os) const;
-	bool validated () const;
 	void importFromFile (KeySet & ks, Key const & parentKey) const;
 	void exportToFile (KeySet const & ks, Key const & parentKey) const;
 };

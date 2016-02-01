@@ -361,6 +361,13 @@ void BackendBuilder::fillPlugins(BackendInterface & b) const
 	}
 }
 
+void GlobalPluginsBuilder::serialize (kdb::KeySet &ret)
+{
+	GlobalPlugins gp;
+	fillPlugins (gp);
+	return gp.serialize (ret);
+}
+
 
 void MountBackendBuilder::status (std::ostream & os) const
 {

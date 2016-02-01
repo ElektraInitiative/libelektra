@@ -41,6 +41,9 @@ BackendInterface::~BackendInterface()
 MountBackendInterface::~MountBackendInterface()
 {}
 
+SerializeInterface::~SerializeInterface()
+{}
+
 /** Creates a new empty backend.
  *
  * */
@@ -427,7 +430,7 @@ void Backend::serialize (kdb::KeySet &ret)
 			KEY_END));
 }
 
-void ImportExportBackend::addPlugin (PluginSpec const & spec)
+void PluginAdder::addPlugin (PluginSpec const & spec)
 {
 	PluginPtr plugin = modules.load(spec);
 	std::shared_ptr<Plugin> sharedPlugin = std::move(plugin);
@@ -449,16 +452,37 @@ void ImportExportBackend::addPlugin (PluginSpec const & spec)
 
 }
 
+void GlobalPlugins::serialize (kdb::KeySet &ret)
+{
+	ret.append(Key("system/elektra/globalplugins", KEY_VALUE, "", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/placements", KEY_VALUE, "", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/placements/set", KEY_VALUE, "presetstorage precommit postcommit", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/plugins", KEY_VALUE, "", KEY_END));
+	//for (auto const & plugin : plugins)
+	{
+		Key k("system/elektra/globalplugins/postcommit/plugins/#0", KEY_VALUE, "counter", KEY_END);
+		ret.append(k);
+		ret.append(Key("system/elektra/globalplugins/postcommit/plugins/#0/placements", KEY_VALUE, "", KEY_END));
+		ret.append(Key("system/elektra/globalplugins/postcommit/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END));
+		ret.append(Key("system/elektra/globalplugins/postcommit/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END));
+	}
+	ret.append(Key("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END));
+}
+
 void ImportExportBackend::status (std::ostream & os) const
 {
 	if (plugins.empty()) os << "no plugin added" << std::endl;
 	else if (plugins.find("setstorage") == plugins.end()) os << "no storage plugin added" << std::endl;
 	else os << "everything ok" << std::endl;
-}
-
-bool ImportExportBackend::validated () const
-{
-	return true;
 }
 
 void ImportExportBackend::importFromFile (KeySet & ks, Key const & parentKey) const

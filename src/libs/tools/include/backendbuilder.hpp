@@ -137,6 +137,12 @@ public:
 	void fillPlugins(BackendInterface & b) const;
 };
 
+class GlobalPluginsBuilder : public BackendBuilder
+{
+public:
+	void serialize (kdb::KeySet &ret);
+};
+
 /**
  * @brief High-level functionality to build a mountpoint
  */
