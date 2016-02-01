@@ -457,18 +457,18 @@ void GlobalPlugins::serialize (kdb::KeySet &ret)
 	ret.append(Key("system/elektra/globalplugins", KEY_VALUE, "", KEY_END));
 	ret.append(Key("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END));
 	ret.append(Key("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END));
-	ret.append(Key("system/elektra/globalplugins/postcommit/placements", KEY_VALUE, "", KEY_END));
-	ret.append(Key("system/elektra/globalplugins/postcommit/placements/set", KEY_VALUE, "presetstorage precommit postcommit", KEY_END));
-	ret.append(Key("system/elektra/globalplugins/postcommit/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END));
-	ret.append(Key("system/elektra/globalplugins/postcommit/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END));
-	ret.append(Key("system/elektra/globalplugins/postcommit/plugins", KEY_VALUE, "", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END));
+	ret.append(Key("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END));
 	//for (auto const & plugin : plugins)
 	{
-		Key k("system/elektra/globalplugins/postcommit/plugins/#0", KEY_VALUE, "counter", KEY_END);
+		Key k("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "counter", KEY_END);
 		ret.append(k);
-		ret.append(Key("system/elektra/globalplugins/postcommit/plugins/#0/placements", KEY_VALUE, "", KEY_END));
-		ret.append(Key("system/elektra/globalplugins/postcommit/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END));
-		ret.append(Key("system/elektra/globalplugins/postcommit/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END));
+		ret.append(Key("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "", KEY_END));
+		ret.append(Key("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END));
+		ret.append(Key("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END));
 	}
 	ret.append(Key("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
 	ret.append(Key("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END));

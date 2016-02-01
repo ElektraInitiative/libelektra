@@ -46,6 +46,7 @@
 #include <list.hpp>
 #include <editor.hpp>
 #include <specmount.hpp>
+#include <globalmount.hpp>
 
 class Instancer
 {
@@ -99,6 +100,8 @@ public:
 		m_factory.insert(std::make_pair("editor", new Cnstancer<EditorCommand>()));
 		m_factory.insert(std::make_pair("spec-mount", new Cnstancer<SpecMountCommand>()));
 		m_factory.insert(std::make_pair("smount", new Cnstancer<SpecMountCommand>()));
+		m_factory.insert(std::make_pair("global-mount", new Cnstancer<GlobalMountCommand>()));
+		m_factory.insert(std::make_pair("gmount", new Cnstancer<GlobalMountCommand>()));
 	}
 
 	~Factory()

@@ -361,12 +361,22 @@ void BackendBuilder::fillPlugins(BackendInterface & b) const
 	}
 }
 
+GlobalPluginsBuilder::GlobalPluginsBuilder(BackendBuilderInit const & bbi) :
+	BackendBuilder (bbi)
+{
+}
+
 void GlobalPluginsBuilder::serialize (kdb::KeySet &ret)
 {
 	GlobalPlugins gp;
 	fillPlugins (gp);
 	return gp.serialize (ret);
 }
+
+/**
+ * @brief Below this path is the configuration for global plugins
+ */
+const char * GlobalPluginsBuilder::globalPluginsPath = "system/elektra/globalplugins";
 
 
 void MountBackendBuilder::status (std::ostream & os) const

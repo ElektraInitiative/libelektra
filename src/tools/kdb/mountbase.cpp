@@ -30,7 +30,7 @@ using namespace kdb::tools;
  */
 void MountBaseCommand::readMountConf(Cmdline const& cl)
 {
-	Key parentKey(Backends::mountpointsPath, KEY_END);
+	Key parentKey(mountpointsPath, KEY_END);
 
 	kdb.get(mountConf, parentKey);
 
@@ -150,7 +150,7 @@ public:
  */
 void MountBaseCommand::doIt()
 {
-	Key parentKey(Backends::mountpointsPath, KEY_END);
+	Key parentKey(mountpointsPath, KEY_END);
 
 	try {
 		kdb.set(mountConf, parentKey);

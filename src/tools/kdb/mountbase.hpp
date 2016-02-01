@@ -12,17 +12,9 @@
 #include <command.hpp>
 #include <kdb.hpp>
 
+#include <backends.hpp>
+
 #include <vector>
-
-namespace kdb
-{
-namespace tools
-{
-
-class Backend;
-
-}
-}
 
 class MountBaseCommand : public Command
 {
@@ -34,6 +26,7 @@ protected:
 	void outputMissingRecommends(std::vector<std::string> missingRecommends);
 	void doIt();
 
+	std::string mountpointsPath = kdb::tools::Backends::mountpointsPath;
 	kdb::KDB kdb;
 	kdb::KeySet mountConf;
 	std::string path;
