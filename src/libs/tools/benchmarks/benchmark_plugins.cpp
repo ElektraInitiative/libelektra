@@ -105,18 +105,16 @@ __attribute__((noinline)) void benchmark_backend()
 	std::cout << t;
 }
 
-#include <unistd.h>
-#ifdef _WIN32
-# include <winsock2.h>
-#endif
 
 void computer_info()
 {
+	std::cout << std::endl;
+	std::cout << std::endl;
+#ifndef _WIN32
 	char hostname[1024];
 	gethostname(hostname, 1023);
-	std::cout << std::endl;
-	std::cout << std::endl;
 	std::cout << "hostname " << hostname << std::endl;
+#endif
 #ifdef __GNUC__
 	std::cout << "gcc: " << __GNUC__  << std::endl;
 #endif
