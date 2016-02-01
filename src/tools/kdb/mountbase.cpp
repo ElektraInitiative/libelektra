@@ -116,6 +116,22 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 	}
 }
 
+class KDBMountException : public KDBException
+{
+	std::string msg;
+public:
+	KDBMountException(std::string const & e) :
+		KDBException (Key())
+	{
+		msg = e;
+	}
+
+	virtual const char* what() const noexcept override
+	{
+		return msg.c_str();
+	}
+};
+
 /**
  * @brief Really write out config
  */
@@ -123,7 +139,15 @@ void MountBaseCommand::doIt()
 {
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
-	kdb.set(mountConf, parentKey);
+	try {
+		kdb.set(mountConf, parentKey);
+	}
+	catch (KDBException const & e)
+	{
+		throw KDBMountException(std::string(e.what())+"\n\n"
+				"IMPORTANT: Make sure you can write to system namespace\n"
+				"           Usually you need to be root for that!");
+	}
 
 	printWarnings(cerr, parentKey);
 }
