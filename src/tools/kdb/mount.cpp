@@ -140,17 +140,12 @@ void MountCommand::buildBackend(Cmdline const& cl)
 
 	backend.useConfigFile(path);
 
-	istringstream sstream(cl.plugins);
-	std::string plugin;
-	while (std::getline (sstream, plugin, ' '))
+	if (cl.debug)
 	{
-		if (cl.debug)
-		{
-			cout << "Trying to add default plugin " << plugin << endl;
-		}
-		backend.addPlugin (PluginSpec(plugin));
+		cout << "Trying to add default plugins " << cl.plugins << endl;
 	}
 
+	backend.addPlugins (parseArguments (cl.plugins));
 
 	if (cl.interactive)
 	{

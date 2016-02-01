@@ -66,6 +66,7 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 - `/sw/kdb/current/plugins`:
   It contains a space-separated list of plugins
   which are added automatically (by default sync).
+  The plugin-configuration syntax is as described above.
 
 
 ## EXAMPLES
