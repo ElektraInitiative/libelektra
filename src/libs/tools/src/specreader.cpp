@@ -129,7 +129,6 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 	mp = ks.head().dup();
 
 	bb.setMountpoint (mp, mountConf);
-	bb.useConfigFile (mp.getMeta<std::string>("mountpoint"));
 
 	processKey (mp);
 	bb.nodes ++; // count mp
@@ -151,7 +150,9 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 		processKey (k);
 		bb.nodes ++;
 	}
+
 	bb.setBackendConfig (backendConfig);
+	bb.useConfigFile (mp.getMeta<std::string>("mountpoint"));
 	return bb;
 }
 

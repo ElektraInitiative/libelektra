@@ -16,7 +16,9 @@ namespace kdb
 {
 namespace tools
 {
-	class Backend;
+
+class Backend;
+
 }
 }
 

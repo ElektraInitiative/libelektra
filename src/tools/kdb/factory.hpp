@@ -16,6 +16,7 @@
 #include <stdexcept>
 
 #include <command.hpp>
+#include <external.hpp>
 
 //TODO: to add a new command, 1.) include your header here
 #include <get.hpp>
@@ -44,7 +45,7 @@
 #include <merge.hpp>
 #include <list.hpp>
 #include <editor.hpp>
-#include <external.hpp>
+#include <specmount.hpp>
 
 class Instancer
 {
@@ -96,6 +97,8 @@ public:
 		m_factory.insert(std::make_pair("merge", new Cnstancer<MergeCommand>));
 		m_factory.insert(std::make_pair("list", new Cnstancer<ListCommand>()));
 		m_factory.insert(std::make_pair("editor", new Cnstancer<EditorCommand>()));
+		m_factory.insert(std::make_pair("spec-mount", new Cnstancer<SpecMountCommand>()));
+		m_factory.insert(std::make_pair("smount", new Cnstancer<SpecMountCommand>()));
 	}
 
 	~Factory()
