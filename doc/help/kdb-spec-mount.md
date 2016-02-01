@@ -14,7 +14,7 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 ## DESCRIPTION
 
 This command allows a user to mount a new *backend* described by an already mounted specification.
-To mount a specification use [kdb-mount(7)](kdb-mount.md).
+To mount a specification file first use [kdb-mount(7)](kdb-mount.md).
 
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md) and.
 
@@ -64,23 +64,11 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 
 ## EXAMPLES
 
-To list the currently mounted backends:  
-	`kdb mount`  
+To mount /example as described in `spec/example`:
+	`kdb spec-mount /example`
 
-To mount a system configuration file using the ini format:  
-	`kdb mount /etc/configuration.ini system/example ini`  
-
-Print a null-terminated output of paths and backend names:  
-	`kdb mount -02 | xargs -0n 2 echo`  
-
-To mount the /etc/file system file with two plugins with a respective configuration option each:  
-	`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`  
-
-To mount the /etc/file system file with two plugins and setting both to be verbose:  
-	`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
-
-To recode and rename a configuration file using Elektra:  
-	`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`  
+Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:
+	`kdb spec-mount /example ini some=value`
 
 ## SEE ALSO
 
