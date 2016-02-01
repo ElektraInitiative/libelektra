@@ -166,7 +166,7 @@ std::ostream & operator<<(std::ostream & os, Backend const & b);
  */
 class PluginAdder : public BackendInterface
 {
-private:
+protected:
 	Modules modules;
 
 	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
