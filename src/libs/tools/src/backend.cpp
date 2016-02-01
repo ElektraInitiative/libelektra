@@ -19,7 +19,7 @@
 #include <kdbprivate.h>
 #include <helper/keyhelper.hpp>
 
-#include <kdbease.h>
+#include <kdbease.h> // for ckdb::elektraArrayIncName
 
 #include <algorithm>
 
@@ -514,6 +514,19 @@ Key g(Key placements, std::string name, std::string value)
 	return x;
 }
 
+void serializeConf(kdb::KeySet &ret, Key config, KeySet const & pluginConfig)
+{
+	if (pluginConfig.size() != 0)
+	{
+		ret.append(config);
+		for (auto const & key : pluginConfig)
+		{
+			Key k (key.dup());
+			helper::removeNamespace (k);
+			ret.append(Key(config.getName()+k.getName(), KEY_VALUE, key.getString().c_str() , KEY_END));
+		}
+	}
+}
 }
 
 void GlobalPlugins::serialize (kdb::KeySet &ret)
@@ -545,22 +558,11 @@ void GlobalPlugins::serialize (kdb::KeySet &ret)
 		placements.addBaseName("placements");
 		ret.append(placements);
 
-		ret.append(g(placements, "get", plugin.second.get));
-		ret.append(g(placements, "set", plugin.second.set));
-		ret.append(g(placements, "error", plugin.second.error));
+		ret.append (g (placements, "get", plugin.second.get));
+		ret.append (g (placements, "set", plugin.second.set));
+		ret.append (g (placements, "error", plugin.second.error));
 
-		KeySet pluginConfig = plugin.first->getConfig();
-		Key config (i.getName()+"/config", KEY_VALUE, "" , KEY_END);
-		if (pluginConfig.size() != 0)
-		{
-			ret.append(config);
-			for (auto const & key : pluginConfig)
-			{
-				Key k (key.dup());
-				helper::removeNamespace (k);
-				ret.append(Key(config.getName()+k.getName(), KEY_VALUE, key.getString().c_str() , KEY_END));
-			}
-		}
+		serializeConf (ret, Key(i.getName()+"/config", KEY_VALUE, "" , KEY_END), plugin.first->getConfig());
 		ckdb::elektraArrayIncName(*i);
 	}
 	ret.append(Key("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
