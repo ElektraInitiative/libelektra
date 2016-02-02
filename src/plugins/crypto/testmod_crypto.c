@@ -43,10 +43,10 @@ static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
  */
 static KeySet *newWorkingConfiguration()
 {
-	Key *configKey = keyNew("user/crypto/key-derivation/key", KEY_END);
+	Key *configKey = keyNew("user/crypto/key", KEY_END);
 	keySetBinary(configKey, key, sizeof(key));
 
-	Key *configIv = keyNew("user/crypto/key-derivation/iv", KEY_END);
+	Key *configIv = keyNew("user/crypto/iv", KEY_END);
 	keySetBinary(configIv, iv, sizeof(iv));
 
 	return ksNew(2,
@@ -64,10 +64,10 @@ static KeySet *newInvalidConfiguration()
 {
 	const unsigned char wrongKey[] = { 0x01, 0x02, 0x03 };
 
-	Key *configKey = keyNew("user/crypto/key-derivation/key", KEY_END);
+	Key *configKey = keyNew("user/crypto/key", KEY_END);
 	keySetBinary(configKey, wrongKey, sizeof(wrongKey));
 
-	Key *configIv = keyNew("user/crypto/key-derivation/iv", KEY_END);
+	Key *configIv = keyNew("user/crypto/iv", KEY_END);
 	keySetBinary(configIv, iv, sizeof(iv));
 
 	return ksNew(2,
