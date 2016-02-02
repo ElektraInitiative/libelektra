@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <backend.hpp>
+#include <backendbuilder.hpp>
 #include <backends.hpp>
 
 #include <iostream>
@@ -15,7 +15,7 @@ int main()
 {
 	using namespace kdb;
 	using namespace kdb::tools;
-	Backend b;
+	MountBackendBuilder b;
 	b.setMountpoint(Key("/", KEY_CASCADING_NAME, KEY_END), KeySet(0, KS_END));
 	b.addPlugin(PluginSpec("resolver"));
 	b.addPlugin(PluginSpec("dump"));
