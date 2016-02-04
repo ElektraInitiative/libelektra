@@ -47,7 +47,7 @@
  *
  * This key directory tells you where each backend is mounted
  * to which mountpoint. */
-#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
+#define KDB_SYSTEM_ELEKTRA      "system/elektra"
 
 #if DEBUG
 # include <stdio.h>

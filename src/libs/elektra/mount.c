@@ -55,7 +55,7 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 	Key *cur;
 
 	ksRewind(config);
-	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, KDB_O_CREATE);
+	root=ksLookupByName(config, "system/elektra/mountpoints", KDB_O_CREATE);
 
 	int ret = 0;
 	while ((cur = ksNext(config)) != 0)
@@ -155,7 +155,7 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 		 * through default backend.
 		 * First check if it is still reachable.
 		 */
-		key = keyNew ("system/elektra", KEY_END);
+		key = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
 		backend = elektraMountGetBackend(kdb, key);
 		keyDel (key);
 		if (backend != kdb->defaultBackend)
@@ -196,9 +196,10 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 
 	return 0;
 }
-int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
+
+int elektraMountGlobals (KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 {
-	Key *root = ksLookupByName(keys, "system/elektra/globalplugins", 0);
+	Key *root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
 	if(!root)
 	{
 #if DEBUG && VERBOSE

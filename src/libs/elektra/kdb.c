@@ -205,17 +205,17 @@ KDB * kdbOpen(Key *errorKey)
 
 	handle->split = elektraSplitNew();
 	elektraSplitAppend (handle->split, handle->defaultBackend,
-			keyNew (KDB_KEY_MOUNTPOINTS, KEY_END), 2);
+			keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
 
 	keys=ksNew(0, KS_END);
 
-	keySetName(errorKey, KDB_KEY_MOUNTPOINTS);
+	keySetName(errorKey, KDB_SYSTEM_ELEKTRA);
 	keySetString(errorKey, "kdbOpen(): get");
 
 	if (kdbGet(handle, keys, errorKey) == -1)
 	{
 		ELEKTRA_ADD_WARNING(17, errorKey,
-				"kdbGet() of " KDB_KEY_MOUNTPOINTS
+				"kdbGet() of " KDB_SYSTEM_ELEKTRA
 				" failed");
 		elektraBackendClose(handle->defaultBackend, errorKey);
 		elektraSplitDel(handle->split);
@@ -228,8 +228,10 @@ KDB * kdbOpen(Key *errorKey)
 		errno = errnosave;
 		return handle;
 	}
-	if(elektraMountGlobals(handle, ksDup(keys), handle->modules, errorKey) == -1) //elektraMountGlobals also sets a warning containig the name of the plugin that failed to load
+
+	if (elektraMountGlobals (handle, ksDup(keys), handle->modules, errorKey) == -1)
 	{
+		//elektraMountGlobals also sets a warning containing the name of the plugin that failed to load
 #if DEBUG && VERBOSE
 		printf("Mounting global plugins failed\n");
 #endif
