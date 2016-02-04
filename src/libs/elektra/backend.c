@@ -280,6 +280,22 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 		return 0;
 	}
 
+#if DEBUG && VERBOSE
+	KeySet *tracerConfig = ksNew(5,
+		// does not matter because it is mounted differently in system/elektra/modules:
+		// keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
+		KS_END);
+	Plugin *tracer = elektraPluginOpen("tracer",
+		modules, tracerConfig, errorKey);
+	if (tracer)
+	{
+		backend->getplugins[RESOLVER_PLUGIN+1] = tracer;
+		backend->setplugins[RESOLVER_PLUGIN+1] = tracer;
+		backend->errorplugins[RESOLVER_PLUGIN+1] = tracer;
+		tracer->refcounter = 3;
+	}
+#endif
+
 	backend->getplugins[RESOLVER_PLUGIN] = resolver;
 	backend->setplugins[RESOLVER_PLUGIN] = resolver;
 	backend->setplugins[COMMIT_PLUGIN] = resolver;
