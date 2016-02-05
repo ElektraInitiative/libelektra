@@ -369,7 +369,7 @@ int elektraAugeasClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	if (augeasHandle)
 	{
 		aug_close (augeasHandle);
-		augeasHandle = 0;
+		elektraPluginSetData (handle, 0);
 	}
 
 	return 0;
@@ -529,12 +529,13 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(augeas){
-return elektraPluginExport ("augeas",
-		ELEKTRA_PLUGIN_GET, &elektraAugeasGet,
-		ELEKTRA_PLUGIN_SET, &elektraAugeasSet,
-		ELEKTRA_PLUGIN_OPEN, &elektraAugeasOpen,
-		ELEKTRA_PLUGIN_CLOSE, &elektraAugeasClose,
-		ELEKTRA_PLUGIN_END);
+Plugin * ELEKTRA_PLUGIN_EXPORT(augeas)
+{
+	return elektraPluginExport ("augeas",
+			ELEKTRA_PLUGIN_GET, &elektraAugeasGet,
+			ELEKTRA_PLUGIN_SET, &elektraAugeasSet,
+			ELEKTRA_PLUGIN_OPEN, &elektraAugeasOpen,
+			ELEKTRA_PLUGIN_CLOSE, &elektraAugeasClose,
+			ELEKTRA_PLUGIN_END);
 }
 
