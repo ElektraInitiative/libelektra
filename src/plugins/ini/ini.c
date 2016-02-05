@@ -19,11 +19,13 @@
 #include <kdbprivate.h> //elektraReadArrayNumber
 #include <kdbease.h>
 #include <kdbhelper.h>
-#include <kdbhelper.h>
 #include <kdbos.h>
 #include <inih.h>
 #include <ctype.h>
 #include "ini.h"
+
+
+char *keyNameGetOneLevel(const char *, size_t *);
 
 int elektraIniOpen(Plugin *handle, Key *parentKey);
 int elektraIniClose(Plugin *handle, Key *parentKey);
@@ -574,9 +576,14 @@ static void outputDebug(KeySet *ks)
 
 static const char *findParent(Key *parentKey, Key *searchkey, KeySet *ks)
 {
+	size_t offset = 0;
+	if(keyName(parentKey)[0] == '/' && keyName(searchkey)[0] != '/')
+	{
+		offset = strchr(keyName(searchkey)+1, '/')-keyName(searchkey);
+	}
 	Key *key = keyDup(searchkey);
 	Key *lookedUp;
-	while (strcmp(keyName(key), keyName(parentKey)))
+	while (strcmp(keyName(key)+offset, keyName(parentKey)))
 	{
 		if (!strcmp(keyName(key), keyName(searchkey)))
 		{
@@ -772,8 +779,13 @@ static char *getIniName(Key *section, Key *key)
 {
 	if (!strcmp(keyName(section), keyName(key)))
 		return strdup(keyBaseName(key));
+	if(keyName(section)[0] == '/')
+	{
+		if(!strcmp(keyName(section), strchr(keyName(key)+1, '/')))
+			return strdup(keyBaseName(key));
+	}
 	int slashCount = 0;
-	char *slashCounter = keyName(key);
+	char *slashCounter = (char *)keyName(key);
 	while(*slashCounter++)
 	{
 		if(*slashCounter == '/')
@@ -781,13 +793,22 @@ static char *getIniName(Key *section, Key *key)
 		++slashCounter;
 	}
 	char *buffer = elektraCalloc(strlen(keyName(key)) - strlen(keyName(section))+slashCount+1);
-	char *dest = buffer;
-	char *ptr = (char *)keyName(key)+strlen(keyName(section))+1;
-	char *strPos = strstr(keyName(key), INTERNAL_ROOT_SECTION);
-	if (strPos == ((char *)keyName(key)+strlen(keyName(section))+1))
+	char *ptr = NULL;
+    if(keyName(section)[0] == '/' && keyName(key)[0] != '/')
 	{
-		ptr += (strlen(INTERNAL_ROOT_SECTION)+1);
+		size_t offset = strchr(keyName(key)+1, '/')-keyName(key);	
+		ptr = (char *)keyName(key)+strlen(keyName(section))+offset+1;
 	}
+	else
+	{
+		ptr	= (char *)keyName(key)+strlen(keyName(section))+1;
+	}
+
+//	char *strPos = strstr(keyName(key), INTERNAL_ROOT_SECTION);
+//	if (strPos == ((char *)keyName(key)+strlen(keyName(section))+1))
+//	{
+//		ptr += (strlen(INTERNAL_ROOT_SECTION)+1);
+//	}
 	size_t size = 0;
 	char *tmp = strdup(ptr);
 	char *p = keyNameGetOneLevel(tmp+size, &size);
@@ -905,7 +926,15 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 	if (keyIsBinary(cur))
 	{
 		// create new section here
-		const char *sectionName = keyName(cur)+strlen(keyName(parentKey))+1;
+		char *sectionName = NULL;
+		if(keyName(parentKey)[0] == '/' && keyName(cur)[0] != '/')
+		{
+			sectionName = (char *)keyName(cur)+strlen(strchr(keyName(parentKey)+1, '/'))+1;
+		}
+		else
+		{
+			sectionName = (char *)keyName(cur)+strlen(keyName(parentKey))+1;
+		}
 		createUnescapedKey(appendKey, sectionName);
 		setSectionNumber(parentKey, appendKey, newKS);
 		keySetBinary(appendKey, 0, 0);
@@ -922,7 +951,15 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 	else if (keyIsDirectBelow(parentKey, cur))
 	{
 		// create global key here
-		const char *name = keyName(cur)+strlen(keyName(parentKey))+1;
+		char *name = NULL;
+		if(keyName(parentKey)[0] == '/' && keyName(cur)[0] != '/')
+		{
+			name = (char *)keyName(cur)+strlen(strchr(keyName(parentKey)+1, '/'))+1;
+		}
+		else
+		{
+			name = (char *)keyName(cur)+strlen(keyName(parentKey))+1;
+		}
 		const char *sectionName = INTERNAL_ROOT_SECTION;
 		createUnescapedKey(appendKey, sectionName);
 		if (!ksLookup(newKS, cur, KDB_O_NONE))
@@ -944,7 +981,15 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 	{
 		Key *sectionKey = keyDup(cur);
 		keyAddName(sectionKey, "..");
-		const char *sectionName = keyName(sectionKey)+strlen(keyName(parentKey))+1;
+		char *sectionName = NULL;
+		if(keyName(parentKey)[0] == '/' && keyName(cur)[0] != '/')
+		{
+			sectionName = (char *)keyName(sectionKey)+strlen(strchr(keyName(parentKey)+1, '/'))+1;
+		}
+		else
+		{
+			sectionName = (char *)keyName(sectionKey)+strlen(keyName(parentKey))+1;
+		}
 		appendKey = createUnescapedKey(appendKey, sectionName);
 		if ((!strcmp(keyBaseName(appendKey), INTERNAL_ROOT_SECTION)) && (!ksLookup(newKS, appendKey, KDB_O_NONE)))
 			keySetMeta(appendKey, "order", "#0");
@@ -1057,7 +1102,7 @@ static int iniCmpOrder(const void *a, const void *b)
 
 static int containsSpecialCharacter(const char *str)
 {
-	char *ptr = str;
+	char *ptr = (char *)str;
 	if(isspace(*ptr) || (isspace(*(ptr+strlen(str)-1))))
 		return 1;
 	while(*ptr)
@@ -1115,6 +1160,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 	Key *cur = NULL;
 	Key *sectionKey = parentKey;
 	int ret = 1;
+
 	if(config->toMeta)
 	{
 		for(ssize_t i = 0; i < arraySize; ++i)
@@ -1146,6 +1192,11 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 		if (!strcmp(keyName(parentKey), keyName(cur)))
 		{
 			continue;
+		}
+		if(keyName(parentKey)[0] == '/')
+		{
+			if(!strcmp(keyName(parentKey), strchr(keyName(cur)+1, '/')))
+				continue;
 		}
 		if (isSectionKey(cur))
 		{
@@ -1243,7 +1294,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 	elektraFree(keyArray);
 	return ret;
 }
-static void stripInternalData(Key *parentKey, KeySet *ks)
+static void stripInternalData(Key *parentKey ELEKTRA_UNUSED, KeySet *ks)
 {
 	ksRewind(ks);
 	Key *cur;
@@ -1286,6 +1337,7 @@ static void stripInternalData(Key *parentKey, KeySet *ks)
 int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
+
 	int errnosave = errno;
 	int ret = 1;
 	FILE *fh = fopen(keyString(parentKey), "w");
@@ -1299,6 +1351,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
 	ksRewind(returned);
 	Key *root = keyDup(ksLookup(returned, parentKey, KDB_O_NONE));
+
 	Key *cur;
 	KeySet *newKS = ksNew(0, KS_END);
 	keySetMeta(parentKey, "order", "#0");
@@ -1329,12 +1382,12 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		insertIntoKS(parentKey, cur, newKS, pluginConfig);
 		keyDel(ksLookup(returned, cur, KDB_O_POP));
 	}
+	
 	ksClear(returned);
 	ksAppend(returned, newKS);
 	setParents(returned, parentKey);
 
 	ksDel(newKS);
-
 	stripInternalData(parentKey, returned);
 	if(pluginConfig->BOM == 1)
 	{
