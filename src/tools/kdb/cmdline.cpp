@@ -249,7 +249,7 @@ Cmdline::Cmdline (int argc,
 		helpText += "-c --plugins-config      Add a plugin configuration.\n";
 	}
 
-	{
+	try {
 		using namespace kdb;
 		/*XXX: Step 4: use default from KDB, if available.*/
 		KDB kdb;
@@ -290,7 +290,12 @@ Cmdline::Cmdline (int argc,
 			map nks = conf.get<map>(dirname+"namedkeys");
 			namedKeys.insert(nks.begin(), nks.end());
 		}
-
+	}
+	catch (kdb::KDBException const& ce)
+	{
+		std::cerr << "Could not fetch kdb's configuration: "
+			  << ce.what()
+			  << std::endl;
 	}
 
 	option o = {nullptr, 0, nullptr, 0};
