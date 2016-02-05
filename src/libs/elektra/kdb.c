@@ -234,14 +234,15 @@ defaultBackendFailed:
 		keySetName(errorKey, KDB_SYSTEM_ELEKTRA);
 		keySetString(errorKey, "kdbOpen(): get fallback");
 		fallbackret = kdbGet (handle, keys, errorKey);
-		KeySet * cutKeys = ksCut (keys, errorKey);
-		ksDel (keys);
-		keys = cutKeys;
+		keySetName(errorKey, "system/elektra/mountpoints");
 
-		if (fallbackret == 1 && ksGetSize (keys) != 0)
+		KeySet * cutKeys = ksCut (keys, errorKey);
+		if (fallbackret == 1 && ksGetSize (cutKeys) != 0)
 		{
 			inFallback = 1; // if we have mountpoint keys within KDB_DB_FILE, we take them!
 		}
+		ksAppend (keys, cutKeys);
+		ksDel (cutKeys);
 	}
 
 	if (ret == -1 && fallbackret == -1)
