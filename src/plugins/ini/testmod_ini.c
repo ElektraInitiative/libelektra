@@ -467,17 +467,19 @@ static void test_sectionMerge(char *inFile, char *cmpFile)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(inFile), KEY_END);
-    Key *writeParentKey = keyNew("user/tests/ini-write", KEY_VALUE, elektraFilename(), KEY_END);
+	Key *writeParentKey = keyNew("user/tests/ini-write", KEY_VALUE, elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(10, keyNew("system/mergesections", KEY_VALUE, "1", KEY_END),
 		   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
-    keyDel(ksLookup(ks, parentKey, KDB_O_POP));
+	keyDel(ksLookup(ks, parentKey, KDB_O_POP));
+	keyDel(parentKey);
 	succeed_if(plugin->kdbSet(plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if(compare_line_files(srcdir_file(cmpFile), keyString(writeParentKey)), "files do not match as expected");
-	ksDel(ks);
+	keyDel(ksLookup(ks, writeParentKey, KDB_O_POP));
 	keyDel(writeParentKey);
+	ksDel(ks);
 	PLUGIN_CLOSE();
 }
 
@@ -504,16 +506,18 @@ static void test_preserveEmptyLines(char *fileName)
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
 	Key *writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename(), KEY_END);
-    KeySet *conf = ksNew(0,
+	KeySet *conf = ksNew(0,
 		   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
-    keyDel(ksLookup(ks, parentKey, KDB_O_POP));
+	keyDel(ksLookup(ks, parentKey, KDB_O_POP));
+	keyDel(parentKey);
 	succeed_if(plugin->kdbSet(plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if(compare_line_files(srcdir_file(fileName), keyString(writeParentKey)), "files do not match as expected");
-	ksDel(ks);
+	keyDel(ksLookup(ks, writeParentKey, KDB_O_POP));
 	keyDel(writeParentKey);
+	ksDel(ks);
 	PLUGIN_CLOSE();
 }
 
@@ -522,7 +526,7 @@ static void test_insertOrder(char *source, char *compare)
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(source), KEY_END);
 	Key *writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename(), KEY_END);
-    KeySet *conf = ksNew(0, KS_END);
+	KeySet *conf = ksNew(0, KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	KeySet *appendKS = ksNew(10, 
 			keyNew("user/tests/ini-write/1", KEY_BINARY, KEY_END),
@@ -532,13 +536,15 @@ static void test_insertOrder(char *source, char *compare)
 
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
-    keyDel(ksLookup(ks, parentKey, KDB_O_POP));
-    ksAppend(ks, appendKS);
+	keyDel(ksLookup(ks, parentKey, KDB_O_POP));
+	keyDel(parentKey);
+	ksAppend(ks, appendKS);
 	succeed_if(plugin->kdbSet(plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if(compare_line_files(srcdir_file(compare), keyString(writeParentKey)), "files do not match as expected");
+	keyDel(ksLookup(ks, writeParentKey, KDB_O_POP));
+	keyDel(writeParentKey);
 	ksDel(appendKS);
 	ksDel(ks);
-	keyDel(writeParentKey);
 	PLUGIN_CLOSE();
 
 }
