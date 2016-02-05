@@ -102,7 +102,6 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	Backends::BackendInfoVector info = Backends::getBackendInfo(mountConf);
 	std::string namesAsString;
 	std::vector <std::string> alreadyUsedMountpoints;
-	alreadyUsedMountpoints.push_back("system/elektra");
 	for (Backends::BackendInfoVector::const_iterator it=info.begin();
 			it!=info.end(); ++it)
 	{
@@ -203,6 +202,17 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 				namesAsString
 				);
 		}
+	}
+
+	// TODO STEP 4: check if mounted below system/elektra
+	Key elektraCheck (mountpoint.dup());
+	helper::removeNamespace (elektraCheck);
+	if (elektraCheck.isBelowOrSame (Key("/elektra")))
+	{
+		throw MountpointAlreadyInUseException(
+			std::string("Mountpoint ") +
+			smp +
+			" is below the reserved names /elektra because it would cause inconsistencies in this or future versions");
 	}
 
 	// everything worked, swap it

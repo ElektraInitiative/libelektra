@@ -55,7 +55,7 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 	Key *cur;
 
 	ksRewind(config);
-	root=ksLookupByName(config, KDB_KEY_MOUNTPOINTS, KDB_O_CREATE);
+	root=ksLookupByName(config, "system/elektra/mountpoints", KDB_O_CREATE);
 
 	int ret = 0;
 	while ((cur = ksNext(config)) != 0)
@@ -108,15 +108,27 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
  * @retval 0 on success
  * @ingroup mount
  */
-int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
+int elektraMountDefault (KDB *kdb, KeySet *modules, int inFallback, Key *errorKey)
 {
-	/* Reopen the default Backend for fresh user experience (update issue) */
-	kdb->defaultBackend = elektraBackendOpenDefault(modules, errorKey);
+	// open the defaultBackend the first time
+	kdb->defaultBackend = elektraBackendOpenDefault(modules, KDB_DB_FILE, errorKey);
 
 	if (!kdb->defaultBackend)
 	{
-		ELEKTRA_ADD_WARNING(43, errorKey, "could not reopen default backend");
+		ELEKTRA_ADD_WARNING(43, errorKey, "could not (re)open default backend");
 		return -1;
+	}
+
+	if (!inFallback)
+	{
+		/* Reopen the init Backend for fresh user experience (update issue) */
+		kdb->initBackend = elektraBackendOpenDefault(modules, KDB_DB_INIT, errorKey);
+
+		if (!kdb->initBackend)
+		{
+			ELEKTRA_ADD_WARNING(43, errorKey, "could not (re)open init backend");
+			return -1;
+		}
 	}
 
 	Key *key = 0;
@@ -146,7 +158,7 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 			/* It does not matter that dir is not reachable anymore */
 			keyDel (key);
 		} else {
-			/* User is reachable, so append that to split */
+			/* Dir is reachable, so append that to split */
 			elektraSplitAppend(kdb->split, backend, key, 2);
 		}
 		break;
@@ -155,22 +167,45 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 		 * through default backend.
 		 * First check if it is still reachable.
 		 */
-		key = keyNew ("system/elektra", KEY_END);
-		backend = elektraMountGetBackend(kdb, key);
-		keyDel (key);
-		if (backend != kdb->defaultBackend)
+		if (inFallback)
 		{
-			/* It is not reachable, mount it */
-			elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
+			key = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
+			backend = elektraMountGetBackend(kdb, key);
+			keyDel (key);
+			if (backend != kdb->defaultBackend)
+			{
+				/* It is not reachable, mount it */
+				elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
+				/*elektraMountBackend will set refcounter*/
+				++ kdb->defaultBackend->refcounter;
+				kdb->split->syncbits[kdb->split->size-1] = 2;
+			} else {
+				/* Lets add the reachable default backend to split.
+				   Note that it is not possible that system/elektra has the default
+				   backend, but system has not. */
+				elektraSplitAppend(kdb->split, backend,
+						keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+			}
+		}
+		else
+		{
+			/* We want system/elektra still reachable
+			 * through bootstrap backend. */
+			elektraMountBackend (kdb, kdb->initBackend, errorKey);
 			/*elektraMountBackend will set refcounter*/
-			++ kdb->defaultBackend->refcounter;
+			++ kdb->initBackend->refcounter;
 			kdb->split->syncbits[kdb->split->size-1] = 2;
-		} else {
-			/* Lets add the reachable default backend to split.
-			 Note that it is not possible that system/elektra has the default
-			 backend, but system has not. */
-			elektraSplitAppend(kdb->split, backend,
-					keyNew("system", KEY_VALUE, "default", KEY_END), 2);
+
+			key = keyNew ("system", KEY_VALUE, "default", KEY_END);
+			backend = elektraMountGetBackend(kdb, key);
+			if (backend != kdb->defaultBackend)
+			{
+				/* It does not matter that system is not reachable anymore */
+				keyDel (key);
+			} else {
+				/* System is reachable, so append that to split */
+				elektraSplitAppend(kdb->split, backend, key, 2);
+			}
 		}
 		break;
 	case KEY_NS_USER:
@@ -196,9 +231,10 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 
 	return 0;
 }
-int elektraMountGlobals(KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
+
+int elektraMountGlobals (KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 {
-	Key *root = ksLookupByName(keys, "system/elektra/globalplugins", 0);
+	Key *root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
 	if(!root)
 	{
 #if DEBUG && VERBOSE
@@ -343,7 +379,7 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
  * @pre user must pass correctly allocated backend
  * @post sets reference counter of backend
  *
- * @warning in case of default backends, the reference counter needs to
+ * @warning in case of init and default backends, the reference counter needs to
  * be modified *after* calling elektraMountBackend.
  *
  * @param kdb the handle to work with

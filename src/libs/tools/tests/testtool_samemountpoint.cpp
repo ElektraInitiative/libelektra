@@ -52,6 +52,15 @@ TEST(SameMountpoint, strangeMountpoints)
 	b1.setMountpoint(Key("user/..", KEY_END), ks);
 	EXPECT_EQ(b1.getMountpoint(), "user");
 
+	b1.setMountpoint(Key("user/elektras", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "user/elektras");
+
+	b1.setMountpoint(Key("user/elektra/..", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "user");
+
+	b1.setMountpoint(Key("user/elektra\\/", KEY_END), ks);
+	EXPECT_EQ(b1.getMountpoint(), "user/elektra\\/");
+
 	b1.setMountpoint(Key("user//../..", KEY_END), ks);
 	EXPECT_EQ(b1.getMountpoint(), "user");
 
@@ -103,6 +112,46 @@ TEST(SameMountpoint, wrongMountpoints)
 	EXPECT_EQ(b1.getMountpoint(), "");
 }
 
+TEST(SameMountpoint, wrongElektraMountpoints)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	KeySet ks;
+
+	Backend b1;
+	ASSERT_THROW(b1.setMountpoint(Key("system/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("system/elektra/mountpoints", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("system/elektra/globalplugins", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("system/elektra/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("system/elektra/something/deep/below", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("user/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("user/elektra/mountpoints", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("user/elektra/globalplugins", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("user/elektra/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("user/elektra/something/deep/below", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("/elektra/mountpoints", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("/elektra/globalplugins", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("/elektra/something", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+	ASSERT_THROW(b1.setMountpoint(Key("/elektra/something/deep/below", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ(b1.getMountpoint(), "");
+}
+
+
 TEST(SameMountpoint, notSame)
 {
 	using namespace kdb;
@@ -125,40 +174,40 @@ TEST(SameMountpoint, notSame)
 	b2.serialize(ks);
 }
 
-void checkSame(std::string name1, std::string name2)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	KeySet ks;
-
-	Backend b1;
-	EXPECT_EQ(b1.getMountpoint(), "");
-	b1.setMountpoint(Key(name1.c_str(), KEY_END), ks);
-	EXPECT_EQ(b1.getMountpoint(), name1);
-	b1.serialize(ks);
-
-	Backend b2;
-	EXPECT_EQ(b2.getMountpoint(), "");
-	ASSERT_THROW(b2.setMountpoint(Key(name2.c_str(), KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
-	EXPECT_EQ(b2.getMountpoint(), "");
+#define checkSame(name1, name2) \
+{ \
+	using namespace kdb; \
+	using namespace kdb::tools; \
+	KeySet ks; \
+ \
+	Backend b1; \
+	EXPECT_EQ(b1.getMountpoint(), ""); \
+	b1.setMountpoint(Key(name1, KEY_END), ks); \
+	EXPECT_EQ(b1.getMountpoint(), name1); \
+	b1.serialize(ks); \
+ \
+	Backend b2; \
+	EXPECT_EQ(b2.getMountpoint(), ""); \
+	ASSERT_THROW(b2.setMountpoint(Key(name2, KEY_END), ks), kdb::tools::MountpointAlreadyInUseException); \
+	EXPECT_EQ(b2.getMountpoint(), ""); \
 }
 
-void checkAllow(std::string name1, std::string name2)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	KeySet ks;
-
-	Backend b1;
-	EXPECT_EQ(b1.getMountpoint(), "");
-	b1.setMountpoint(Key(name1.c_str(), KEY_END), ks);
-	EXPECT_EQ(b1.getMountpoint(), name1);
-	b1.serialize(ks);
-
-	Backend b2;
-	EXPECT_EQ(b2.getMountpoint(), "");
-	ASSERT_NO_THROW(b2.setMountpoint(Key(name2.c_str(), KEY_END), ks));
-	EXPECT_EQ(b2.getMountpoint(), name2);
+#define checkAllow(name1, name2) \
+{ \
+	using namespace kdb; \
+	using namespace kdb::tools; \
+	KeySet ks; \
+ \
+	Backend b1; \
+	EXPECT_EQ(b1.getMountpoint(), ""); \
+	b1.setMountpoint(Key(name1, KEY_END), ks); \
+	EXPECT_EQ(b1.getMountpoint(), name1); \
+	b1.serialize(ks); \
+ \
+	Backend b2; \
+	EXPECT_EQ(b2.getMountpoint(), ""); \
+	ASSERT_NO_THROW(b2.setMountpoint(Key(name2, KEY_END), ks)); \
+	EXPECT_EQ(b2.getMountpoint(), name2); \
 }
 
 
@@ -175,9 +224,6 @@ TEST(SameMountpoint, cascadingSameHelloSpec) { checkAllow("spec/hello", "/hello"
 TEST(SameMountpoint, cascadingSameHelloDir) { checkSame("dir/hello", "/hello"); }
 TEST(SameMountpoint, cascadingSameHelloUser) { checkSame("user/hello", "/hello"); }
 TEST(SameMountpoint, cascadingSameHelloSystem) { checkSame("system/hello", "/hello"); }
-
-TEST(SameMountpoint, exactlySameElektraSystem) { checkSame("system/hello", "system/elektra"); }
-TEST(SameMountpoint, cascadingSameElektra) { checkSame("system/hello", "/elektra"); }
 
 TEST(SameMountpoint, exactlySameSpec) { checkSame("spec/an/more/involved/deeper/mountpoint", "spec/an/more/involved/deeper/mountpoint"); }
 TEST(SameMountpoint, exactlySameDir) { checkSame("dir/an/more/involved/deeper/mountpoint", "dir/an/more/involved/deeper/mountpoint"); }

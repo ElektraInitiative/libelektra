@@ -131,7 +131,27 @@ Build a generic storage plugin to replace dump:
   doc/standards/OpenICC_device_config_DB.json
   http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
 
+== Elektra types ==
+
+customized type checkers
+	which can be integrated within Frontend generator
+	(for checking default values and preloading)
+	maybe even checking of values within frontend
+
+
+== Schema ==
+
+convert elektra schema to xsd, yaml or similar
+base schema (user/system)
+plugins like fstab, hosts should provide their schema
+schema for config of plugins + generation of code for them
+
+define vectors, maps, class hierarchy
+upgrade by global schema files similar to ldconfig
+
 http://json-schema.org
+
+
 
 ## PRETTY ##
 

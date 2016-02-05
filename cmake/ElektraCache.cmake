@@ -332,15 +332,19 @@ set (KDB_DB_DIR ".dir" CACHE PATH
 		)
 
 set (KDB_DB_FILE "default.ecf" CACHE PATH
-		"This configuration file will be used initially (for bootstrapping)."
+		"This configuration file will be used as default if no root mountpoint available."
+		)
+
+set (KDB_DB_INIT "elektra.ecf" CACHE PATH
+		"This configuration file will be used for bootstrapping."
 		)
 
 set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
-	"This storage plugin will be used initially (for bootstrapping).")
+	"This storage plugin will be used initially (as default and for bootstrapping).")
 
 
 set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
-	"This resolver plugin will be used initially (for bootstrapping).")
+	"This resolver plugin will be used initially (as default and for bootstrapping).")
 
 list (FIND PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)

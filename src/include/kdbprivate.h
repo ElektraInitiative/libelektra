@@ -47,7 +47,7 @@
  *
  * This key directory tells you where each backend is mounted
  * to which mountpoint. */
-#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
+#define KDB_SYSTEM_ELEKTRA      "system/elektra"
 
 #if DEBUG
 # include <stdio.h>
@@ -295,6 +295,8 @@ struct _KDB {
 
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
 
+	Backend *initBackend;	/*!< The init backend for bootstrapping.*/
+
 	Plugin *globalPlugins[NR_GLOBAL_PLUGINS];
 };
 
@@ -474,7 +476,7 @@ int elektraSplitUpdateSize (Split *split);
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenMissing(Key *mountpoint);
-Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
+Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *errorKey);
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenVersion(Key *errorKey);
 int elektraBackendClose(Backend *backend, Key *errorKey);
@@ -500,7 +502,7 @@ Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
 
 /*Mounting handling */
 int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey);
-int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey);
+int elektraMountDefault (KDB *kdb, KeySet *modules, int inFallback, Key *errorKey);
 int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
 int elektraMountVersion (KDB *kdb, Key *errorKey);
 int elektraMountGlobals (KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey);

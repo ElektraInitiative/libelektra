@@ -37,6 +37,8 @@
 
 #define KDB_DB_FILE              "@KDB_DB_FILE@"
 
+#define KDB_DB_INIT              "@KDB_DB_INIT@"
+
 #define KDB_DEFAULT_STORAGE      "@KDB_DEFAULT_STORAGE@"
 
 #define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"

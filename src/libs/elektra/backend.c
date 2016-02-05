@@ -261,12 +261,12 @@ Backend* elektraBackendOpenMissing(Key *mp)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
+Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *errorKey)
 {
 	Backend *backend = elektraBackendAllocate();
 
 	KeySet *resolverConfig = ksNew(5,
-		keyNew("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+		keyNew("system/path", KEY_VALUE, file, KEY_END),
 		KS_END);
 
 	elektraKeySetName(errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
@@ -279,6 +279,22 @@ Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
+
+#if DEBUG && VERBOSE
+	KeySet *tracerConfig = ksNew(5,
+		// does not matter because it is mounted differently in system/elektra/modules:
+		// keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
+		KS_END);
+	Plugin *tracer = elektraPluginOpen("tracer",
+		modules, tracerConfig, errorKey);
+	if (tracer)
+	{
+		backend->getplugins[RESOLVER_PLUGIN+1] = tracer;
+		backend->setplugins[RESOLVER_PLUGIN+1] = tracer;
+		backend->errorplugins[RESOLVER_PLUGIN+1] = tracer;
+		tracer->refcounter = 3;
+	}
+#endif
 
 	backend->getplugins[RESOLVER_PLUGIN] = resolver;
 	backend->setplugins[RESOLVER_PLUGIN] = resolver;
