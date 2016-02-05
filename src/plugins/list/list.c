@@ -292,8 +292,6 @@ error:
 	{
 		elektraPluginClose(slave, parentKey);
 	}
-	if (realPluginConfig)
-		ksDel(realPluginConfig);
 	elektraModulesClose(modules, NULL);
 	return -1;
 }
