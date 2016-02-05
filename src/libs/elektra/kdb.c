@@ -266,17 +266,8 @@ KDB * kdbOpen(Key *errorKey)
 		errno = errnosave;
 		return 0;
 	case 0:
-		ELEKTRA_ADD_WARNING(17, errorKey, "kdbGet() failed");
-		elektraBackendClose(handle->defaultBackend, errorKey);
-		elektraSplitDel(handle->split);
-		handle->defaultBackend = 0;
-		handle->trie = 0;
-
-		keySetName(errorKey, keyName(initialParent));
-		keySetString(errorKey, keyString(initialParent));
-		keyDel(initialParent);
-		errno = errnosave;
-		return handle;
+		ELEKTRA_ADD_WARNING(17, errorKey, "Initial kdbGet() failed");
+		break;
 	case 2:
 		inFallback = 1;
 		break;
