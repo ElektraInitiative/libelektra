@@ -98,8 +98,8 @@ The following parameters are required:
 
 The following keys are required for metadata based encryption:
 
-	/elektra/modules/crypto/key-derivation/key
-	/elektra/modules/crypto/key-derivation/iv
+	/elektra/modules/crypto/key
+	/elektra/modules/crypto/iv
 
 You can use the following meta-key to mark a key for encryption:
 
