@@ -1,0 +1,32 @@
+#!/bin/sh
+
+[ -z "$KDB" ] && KDB="kdb"
+
+FILE=`mktemp`
+
+#debug:
+#$KDB file system/elektra/mountpoints
+
+$KDB export system/elektra/mountpoints dump > $FILE
+
+if [ $? -ne 0 ]
+then
+	echo "Could not export to $FILE"
+fi
+
+# now disable fallback:
+$KDB rm -r system/elektra/mountpoints
+
+# now import old mountpoints:
+cat $FILE | $KDB import system/elektra/mountpoints dump
+
+#debug:
+#$KDB file system/elektra/mountpoints
+
+if [ $? -eq 0 ]
+then
+	rm $FILE
+else
+	echo "Upgrade failed, could not import $FILE"
+fi
+
