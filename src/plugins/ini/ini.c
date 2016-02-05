@@ -42,6 +42,7 @@ typedef struct {
 	short mergeSections;
 	short BOM;
 	short toMeta;
+	char *continuationString;
 } IniPluginConfig;
 
 typedef struct {
@@ -477,6 +478,15 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	Key *arrayKey = ksLookupByName(config, "/array", KDB_O_NONE);
 	Key *mergeSectionsKey = ksLookupByName(config, "/mergesections", KDB_O_NONE);
 	Key *toMetaKey = ksLookupByName(config, "/meta", KDB_O_NONE);
+	Key *contStringKey = ksLookupByName(config, "/linecont", KDB_O_NONE);
+	if(!contStringKey)
+	{
+		pluginConfig->continuationString = strdup("\\");
+	}
+	else
+	{
+		pluginConfig->continuationString = strdup(keyString(contStringKey));
+	}
 	pluginConfig->toMeta = toMetaKey != 0;
 	pluginConfig->mergeSections = mergeSectionsKey != 0;
 	pluginConfig->array = arrayKey != 0;
@@ -523,6 +533,7 @@ int elektraIniOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 int elektraIniClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 {
 	IniPluginConfig *pluginConfig = (IniPluginConfig *)elektraPluginGetData(handle);
+	elektraFree(pluginConfig->continuationString);
 	elektraFree(pluginConfig);
 	elektraPluginSetData(handle, 0);
 	return 0;
@@ -537,7 +548,7 @@ static void outputDebug(KeySet *ks)
 	ksRewind(ks);
 	while ((cur = ksNext(ks)) != NULL)
 	{
-		fprintf(stderr, "%s:(%.20s)\t", keyName(cur), keyString(cur));
+		fprintf(stderr, "%s:(%.20s:_%.5x_)\t", keyName(cur), keyString(cur), *keyString(cur));
 		fprintf(stderr, " sync: %d", keyNeedSync(cur));
 		keyRewindMeta(cur);
 		const Key *meta;
@@ -626,6 +637,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	iniConfig.commentHandler = iniCommentToMeta;
 	iniConfig.bomHandler = iniBomHandler;
 	IniPluginConfig *pluginConfig = elektraPluginGetData(handle);
+	iniConfig.continuationString = pluginConfig->continuationString; 
 	iniConfig.supportMultiline = pluginConfig->supportMultiline;
 	pluginConfig->BOM = 0;
 	cbHandle.array = pluginConfig->array;
@@ -705,8 +717,9 @@ void writeComments(Key* current, FILE* fh)
 		elektraFree (comments);
 	}
 }
+static int containsSpecialCharacter(const char *);
 
-void writeMultilineKey(Key *key, const char *iniName, FILE *fh)
+void writeMultilineKey(Key *key, const char *iniName, FILE *fh, IniPluginConfig *config)
 {
 	size_t valueSize = keyGetValueSize(key);
 	char *saveptr = 0;
@@ -714,12 +727,22 @@ void writeMultilineKey(Key *key, const char *iniName, FILE *fh)
 	char *value = elektraMalloc (valueSize);
 	keyGetString(key, value, valueSize);
 	result = strtok_r (value, "\n", &saveptr);
-
-	fprintf (fh, "%s = %s\n", iniName, result);
-
+	
+	if(result == NULL)
+		fprintf(fh, "%s = \"\n%s\"", iniName, config->continuationString);
+	else
+	{
+		if(containsSpecialCharacter(result))
+			fprintf (fh, "%s = \"%s\"\n", iniName, result);
+		else
+			fprintf (fh, "%s = %s\n", iniName, result);
+		}
 	while ( (result = strtok_r (0, "\n", &saveptr)) != 0)
 	{
-		fprintf (fh, "\t%s\n", result);
+		if(containsSpecialCharacter(result))
+			fprintf (fh, "%s\"%s\"\n", config->continuationString, result);
+		else
+			fprintf (fh, "%s%s\n", config->continuationString, result);
 	}
 
 	elektraFree (value);
@@ -1021,6 +1044,22 @@ static int iniCmpOrder(const void *a, const void *b)
 	return strcmp(keyString(kam), keyString(kbm));
 }
 
+static int containsSpecialCharacter(const char *str)
+{
+	char *ptr = str;
+	if(isspace(*ptr) || (isspace(*(ptr+strlen(str)-1))))
+		return 1;
+	while(*ptr)
+	{
+		if(*ptr == '"')
+		{
+			return 1;
+		}
+		++ptr;
+	}
+	return 0;
+}
+
 static void iniWriteMeta(FILE *fh, Key *parentKey, Key *key)
 {
 	uint8_t first = 1;
@@ -1039,7 +1078,7 @@ static void iniWriteMeta(FILE *fh, Key *parentKey, Key *key)
 				first = 0;
 			}
 			const char *string = keyString(meta);
-			if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+			if(strlen(string) && (containsSpecialCharacter(string)))
 				fprintf(fh, "%s = \"%s\"\n", name, string);
 			else
 				fprintf(fh, "%s = %s\n", name, string);
@@ -1069,7 +1108,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 				continue;
 			char *name = getIniName(parentKey, cur);
 			const char *string = keyString(cur);
-			if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+			if(strlen(string) && (containsSpecialCharacter(string)))
 				fprintf(fh, "%s = \"%s\"\n", name, string);
 			else
 				fprintf(fh, "%s = %s\n", name, string);
@@ -1099,7 +1138,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 			if (isIniKey(cur))
 			{
 				const char *string = keyString(cur);
-				if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+				if(strlen(string) && (containsSpecialCharacter(string)))
 					fprintf(fh, "%s = \"%s\"\n", name, string);
 				else
 					fprintf(fh, "%s = %s\n", name, string);
@@ -1119,14 +1158,13 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 				if (keyGetMeta(cur, "ini/array") && config->array)
 				{
 					int lastArrayIndex = atoi(keyString(keyGetMeta(cur, "ini/array"))+1);
-					//char *name = strdup(keyBaseName(cur));
 					char *name = getIniName(sectionKey, cur);
 					++i;
 					for (int j = i; j <= i+lastArrayIndex; ++j)
 					{
 						cur = keyArray[j];
 						const char *string = keyString(cur);
-						if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+						if(strlen(string) && (containsSpecialCharacter(string)))
 							fprintf(fh, "%s = \"%s\"\n", name, string);
 						else
 							fprintf(fh, "%s = %s\n", name, string);
@@ -1153,7 +1191,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 					else if (strstr(keyString(cur), "\n") == 0)
 					{
 						const char *string = keyString(cur);
-						if(strlen(string) && (isspace(*string) || isspace(*(string+strlen(string)-1))))
+						if(strlen(string) && (containsSpecialCharacter(string)))
 							fprintf(fh, "%s = \"%s\"\n", name, string);
 						else
 							fprintf(fh, "%s = %s\n", name, string);
@@ -1162,7 +1200,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 					{
 						if (config->supportMultiline)
 						{
-							writeMultilineKey(cur, name, fh);
+							writeMultilineKey(cur, name, fh, config);
 						}
 						else
 						{
@@ -1256,7 +1294,6 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 	}
-
 	ksRewind(returned);
 	while ((cur = ksNext(returned)) != NULL)
 	{

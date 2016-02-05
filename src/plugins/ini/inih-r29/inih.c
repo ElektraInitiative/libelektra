@@ -76,6 +76,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
     char* value;
     int lineno = 0;
     int error = 0;
+    int linecontinuation = 0;
 #if !INI_USE_STACK
     line = (char*)malloc(INI_MAX_LINE);
     if (!line) {
@@ -113,10 +114,18 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
         		error = lineno;
             /* Per Python ConfigParser, allow '#' comments at start of line */
         }
-
-        else if (config->supportMultiline && *prev_name && *start && start > line) {
-            /* Non-black line with leading whitespace, treat as continuation
+        else if(config->supportMultiline && *prev_name && *start && !strncmp(line, config->continuationString, strlen(config->continuationString)))
+        {
+               /* Non-black line with leading whitespace, treat as continuation
                of previous name's value (as per Python ConfigParser). */
+            start = line+strlen(config->continuationString);
+            if(*start == '"')
+                ++start;
+            end =  line+(strlen(line)-1);
+            while((*end != '"') && (!isprint(*end)))
+    			--end;
+	    	if((end > line) && (*end == '"'))
+		   		*end = '\0';
             if (!config->keyHandler(user, section, prev_name, start, 1) && !error)
                 error = lineno;
         }
@@ -157,13 +166,13 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
                 if (*end == ';')
                     *end = '\0';
                 rstrip(value);
-				if(*value == '"')
+                if(*value == '"')
 				{
-					while(*end != '"')
-						--end;
-					if(end > value)
-						*end = '\0';
-					*(value++) = '\0';
+    				while((*end != '"') && (!isprint(*end)))
+	    				--end;
+		    		if((end > value) && (*end == '"'))
+			    		*end = '\0';
+                    *(value++) = '\0';
 				}
                 /* Valid name[=:]value pair found, call handler */
                 strncpy0(prev_name, name, sizeof(prev_name));

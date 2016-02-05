@@ -242,6 +242,7 @@ static void test_multilineIniRead(char *fileName)
 
 	KeySet *conf = ksNew(30,
 			keyNew ("system/multiline", KEY_VALUE, "1", KEY_END),
+			keyNew ("system/linecont", KEY_VALUE, "\t", KEY_END),
 			KS_END);
 	PLUGIN_OPEN ("ini");
 
@@ -276,6 +277,7 @@ static void test_multilineIniWrite(char *fileName)
 			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(30,
 			keyNew ("system/multiline", KEY_VALUE, "1", KEY_END),
+			keyNew ("system/linecont", KEY_VALUE, "\t", KEY_END),
 			KS_END);
 	PLUGIN_OPEN("ini");
 
@@ -313,6 +315,7 @@ static void test_multilineIniInvalidConfigWrite()
 	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(30, keyNew("system/multiline", KEY_VALUE, "0", KEY_END),
+			keyNew ("system/linecont", KEY_VALUE, "\t", KEY_END),
 		   KS_END);
 	PLUGIN_OPEN("ini");
 
