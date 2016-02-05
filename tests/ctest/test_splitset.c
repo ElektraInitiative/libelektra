@@ -89,7 +89,7 @@ static void test_needsync()
 	printf ("Test needs sync\n");
 
 	KDB *handle = kdb_open();
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not mount default backends");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not mount default backends");
 
 	KeySet *ks = ksNew (5,
 			keyNew("user/abc", KEY_END),
@@ -162,7 +162,7 @@ static void test_mount()
 	KDB *handle = kdb_open();
 
 	succeed_if (elektraMountOpen (handle, set_us(), handle->modules, 0) == 0, "could not open mountpoints");
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *ks = ksNew (
 		5,
@@ -264,7 +264,7 @@ static void test_easyparent()
 	printf ("Test parent separation of user and system (default Backend)\n");
 
 	KDB *handle = kdb_open();
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 	KeySet *ks = ksNew (
 		8,
 		keyNew ("user/valid", KEY_END),
@@ -331,7 +331,7 @@ static void test_optimize()
 	KDB *handle = kdb_open();
 
 	succeed_if (elektraMountOpen (handle, set_us(), handle->modules, 0) == 0, "could not open mountpoints");
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *ks = ksNew ( 5,
 		keyNew ("system/valid/key1", KEY_END),
@@ -443,7 +443,7 @@ static void test_three()
 	KDB *handle = kdb_open();
 
 	succeed_if (elektraMountOpen (handle, set_three(), handle->modules, 0) == 0, "could not open mountpoints");
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *ks = ksNew (
 		18,
@@ -546,7 +546,7 @@ static void test_userremove()
 	Key *parent = 0;
 	KDB *handle = kdb_open();
 
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 	/* So we had 2 keys before in the keyset */
 
 	KeySet *ks = ksNew ( 3,
@@ -681,7 +681,7 @@ static void test_systemremove()
 	Key *parent = 0;
 	KDB *handle = kdb_open();
 
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *ks = ksNew ( 3,
 		keyNew ("system/valid/key", KEY_END),
@@ -817,7 +817,7 @@ static void test_emptyremove()
 	KDB *handle = kdb_open();
 
 	Key *parent = 0;
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *ks = ksNew ( 3, KS_END);
 
@@ -896,7 +896,7 @@ static void test_realworld()
 	KDB *handle = kdb_open();
 
 	succeed_if (elektraMountOpen (handle, set_realworld(), handle->modules, 0) == 0, "could not open mountpoints");
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *split0 = ksNew ( 9,
 		keyNew ("system/elektra/mountpoints", KEY_END),
@@ -1179,7 +1179,7 @@ static void test_emptysplit()
 	printf ("Test empty split\n");
 
 	KDB *handle = kdb_open();
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *ks = ksNew(0, KS_END);
 	Split *split = elektraSplitNew();
@@ -1239,7 +1239,7 @@ static void test_nothingsync()
 {
 	printf ("Test buildup with nothing to sync\n");
 	KDB *handle = kdb_open();
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	KeySet *ks = ksNew(0, KS_END);
 
@@ -1271,7 +1271,7 @@ static void test_state()
 {
 	printf ("Test state conflicts\n");
 	KDB *handle = kdb_open();
-	succeed_if (elektraMountDefault (handle, handle->modules, 0) == 0, "could not open default backend");
+	succeed_if (elektraMountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	Key *k;
 	KeySet *ks = ksNew(2, k=keyNew("user/abc", KEY_END), KS_END);

@@ -502,7 +502,7 @@ Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
 
 /*Mounting handling */
 int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey);
-int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey);
+int elektraMountDefault (KDB *kdb, KeySet *modules, int inFallback, Key *errorKey);
 int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
 int elektraMountVersion (KDB *kdb, Key *errorKey);
 int elektraMountGlobals (KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey);

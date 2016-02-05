@@ -267,8 +267,10 @@ KDB * kdbOpen(Key *errorKey)
 				"Initial loading of trie did not work");
 	}
 
+	int inFallback = 1;
+
 	keySetString(errorKey, "kdbOpen(): mountDefault");
-	if (elektraMountDefault(handle, handle->modules, errorKey) == -1)
+	if (elektraMountDefault(handle, handle->modules, inFallback, errorKey) == -1)
 	{
 		ELEKTRA_SET_ERROR(40, errorKey,
 				"could not reopen and mount default backend");
