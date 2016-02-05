@@ -122,6 +122,27 @@
  */
 
 
+
+/**
+ * @internal
+ * Helper which iterates over MetaKeys from key
+ * and removes all MetaKeys starting with
+ * searchfor.
+ */
+void elektraRemoveMetaData(Key * key, const char * searchfor)
+{
+	const Key * iter_key;
+	keyRewindMeta (key);
+	while ((iter_key = keyNextMeta (key))!=0)
+	{
+		/*startsWith*/
+		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
+		{
+			keySetMeta (key, keyName (iter_key), 0);
+		}
+	}
+}
+
 /**
  * @brief Bootstrap, first phase with fallback
  * @internal
@@ -162,7 +183,10 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 		// then create new setup:
 		handle->defaultBackend = elektraBackendOpenDefault(handle->modules, KDB_DB_FILE, errorKey);
 		if (!handle->defaultBackend)
+		{
+			elektraRemoveMetaData(errorKey, "error"); // fix errors from kdbGet()
 			return -1;
+		}
 		handle->split = elektraSplitNew();
 		elektraSplitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
 
@@ -185,6 +209,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 		funret = 0;
 	}
 
+	elektraRemoveMetaData(errorKey, "error"); // fix errors from kdbGet()
 	return funret;
 }
 
@@ -266,7 +291,7 @@ KDB * kdbOpen(Key *errorKey)
 		errno = errnosave;
 		return 0;
 	case 0:
-		ELEKTRA_ADD_WARNING(17, errorKey, "Initial kdbGet() failed");
+		ELEKTRA_ADD_WARNING(17, errorKey, "Initial kdbGet() failed, you should either fix " KDB_DB_INIT " or the fallback " KDB_DB_FILE);
 		break;
 	case 2:
 		inFallback = 1;
