@@ -139,7 +139,9 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 		}
         else if (*start == '[') {
             /* A "[section]" line */
-            end = find_char_or_comment(start + 1, ']');
+            end = line+(strlen(line)-1);
+            while(*end != ']')
+                --end;
             if (*end == ']') {
                 *end = '\0';
                 strncpy0(section, start + 1, sizeof(section));

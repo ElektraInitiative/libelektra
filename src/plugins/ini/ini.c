@@ -336,8 +336,19 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	{
 		if(!existingKey)
 			existingKey = appendKey;
-		keySetMeta(existingKey, name, value);
-		ksAppendKey(handle->result, existingKey);
+		if(lineContinuation)
+		{
+			const Key *meta = keyGetMeta(existingKey, name);
+		   	Key *newMeta = keyDup(meta);
+			elektraKeyAppendLine(newMeta, value);
+			keySetMeta(existingKey, name, keyString(newMeta));
+			keyDel(newMeta);
+		}
+		else
+		{
+			keySetMeta(existingKey, name, value);
+			ksAppendKey(handle->result, existingKey);
+		}
 		keyDel(appendKey);
 		return 1;
 	}
@@ -1060,7 +1071,7 @@ static int containsSpecialCharacter(const char *str)
 	return 0;
 }
 
-static void iniWriteMeta(FILE *fh, Key *parentKey, Key *key)
+static void iniWriteMeta(FILE *fh, Key *parentKey, Key *key, IniPluginConfig *config)
 {
 	uint8_t first = 1;
 	keyRewindMeta(key);
@@ -1078,10 +1089,17 @@ static void iniWriteMeta(FILE *fh, Key *parentKey, Key *key)
 				first = 0;
 			}
 			const char *string = keyString(meta);
-			if(strlen(string) && (containsSpecialCharacter(string)))
-				fprintf(fh, "%s = \"%s\"\n", name, string);
+			if(strstr(string, "\n") == 0)
+			{
+				if(strlen(string) && (containsSpecialCharacter(string)))
+					fprintf(fh, "%s = \"%s\"\n", name, string);
+				else
+					fprintf(fh, "%s = %s\n", name, string);
+			}
 			else
-				fprintf(fh, "%s = %s\n", name, string);
+			{
+				writeMultilineKey(meta, name, fh, config);
+			}
 		}
 	}
 }
@@ -1108,10 +1126,17 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 				continue;
 			char *name = getIniName(parentKey, cur);
 			const char *string = keyString(cur);
-			if(strlen(string) && (containsSpecialCharacter(string)))
-				fprintf(fh, "%s = \"%s\"\n", name, string);
+			if(strstr(string, "\n") == 0)
+			{
+				if(strlen(string) && (containsSpecialCharacter(string)))
+					fprintf(fh, "%s = \"%s\"\n", name, string);
+				else
+					fprintf(fh, "%s = %s\n", name, string);
+			}
 			else
-				fprintf(fh, "%s = %s\n", name, string);
+			{
+				writeMultilineKey(cur, name, fh, config);
+			}
 			elektraFree(name);
 		}
 	}
@@ -1129,7 +1154,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 		writeComments(cur, fh);
 		if(config->toMeta)
 		{
-			iniWriteMeta(fh, parentKey, cur);
+			iniWriteMeta(fh, parentKey, cur, config);
 			continue;
 		}
 		else if (config->sectionHandling == NONE)
