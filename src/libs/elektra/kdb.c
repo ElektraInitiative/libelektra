@@ -413,6 +413,13 @@ int kdbClose(KDB *handle, Key *errorKey)
 	elektraBackendClose (handle->defaultBackend, errorKey);
 	handle->defaultBackend = 0;
 
+	// not set in fallback mode, so lets check:
+	if (handle->initBackend)
+	{
+		elektraBackendClose (handle->initBackend, errorKey);
+		handle->initBackend = 0;
+	}
+
 	if (handle->modules)
 	{
 		elektraModulesClose (handle->modules, errorKey);
