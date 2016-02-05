@@ -838,7 +838,7 @@ static void test_init()
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
 	// output_trie (kdb->trie);
-	output_split (kdb->split);
+	// output_split (kdb->split);
 
 	Key *searchKey = keyNew("", KEY_END);
 	Key *dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
