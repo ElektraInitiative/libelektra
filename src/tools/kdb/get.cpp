@@ -172,7 +172,7 @@ int GetCommand::execute (Cmdline const& cl)
 	KeySet conf;
 
 	kdb::Key root = createKey(cl, 0);
-	kdb::KDB kdb;
+	kdb::KDB kdb (root);
 
 	std::string n;
 	if (cl.all)
