@@ -123,6 +123,73 @@
 
 
 /**
+ * @brief Bootstrap, first phase with fallback
+ * @internal
+ *
+ * @param handle already allocated, but without defaultBackend
+ * @param [out] keys for bootstrapping
+ * @param errorKey key to add errors too
+ *
+ * @retval -1 failure: cannot initialize defaultBackend
+ * @retval 0 warning: could not get initial config
+ * @retval 1 success
+ * @retval 2 success in fallback mode
+ */
+int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
+{
+	handle->defaultBackend=elektraBackendOpenDefault(handle->modules, KDB_DB_INIT, errorKey);
+	if (!handle->defaultBackend)
+		return -1;
+
+	handle->split = elektraSplitNew();
+	elektraSplitAppend (handle->split, handle->defaultBackend,
+		keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
+
+	keySetName(errorKey, KDB_SYSTEM_ELEKTRA);
+	keySetString(errorKey, "kdbOpen(): get");
+
+	int funret = 1;
+	int ret = kdbGet(handle, keys, errorKey);
+	int fallbackret = 0;
+	if (ret == 0 || ret == -1)
+	{
+		// could not get KDB_DB_INIT, try KDB_DB_FILE
+		// first cleanup:
+		ksClear (keys);
+		elektraBackendClose (handle->defaultBackend, errorKey);
+		elektraSplitDel (handle->split);
+
+		// then create new setup:
+		handle->defaultBackend = elektraBackendOpenDefault(handle->modules, KDB_DB_FILE, errorKey);
+		if (!handle->defaultBackend)
+			return -1;
+		handle->split = elektraSplitNew();
+		elektraSplitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
+
+		keySetName(errorKey, KDB_SYSTEM_ELEKTRA);
+		keySetString(errorKey, "kdbOpen(): get fallback");
+		fallbackret = kdbGet (handle, keys, errorKey);
+		keySetName(errorKey, "system/elektra/mountpoints");
+
+		KeySet * cutKeys = ksCut (keys, errorKey);
+		if (fallbackret == 1 && ksGetSize (cutKeys) != 0)
+		{
+			funret = 2;
+		}
+		ksAppend (keys, cutKeys);
+		ksDel (cutKeys);
+	}
+
+	if (ret == -1 && fallbackret == -1)
+	{
+		funret = 0;
+	}
+
+	return funret;
+}
+
+
+/**
  * @brief Opens the session with the Key database.
  *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
@@ -160,16 +227,13 @@
  */
 KDB * kdbOpen(Key *errorKey)
 {
-	KDB *handle;
-	KeySet *keys;
-
 	if (!errorKey)
 	{
 		return 0;
 	}
 
 	int errnosave = errno;
-	handle = elektraCalloc(sizeof(struct _KDB));
+	KDB *handle = elektraCalloc(sizeof(struct _KDB));
 	Key *initialParent = keyDup (errorKey);
 
 	handle->modules = ksNew(0, KS_END);
@@ -187,68 +251,22 @@ KDB * kdbOpen(Key *errorKey)
 		return 0;
 	}
 
-	handle->defaultBackend=elektraBackendOpenDefault(handle->modules, KDB_DB_INIT, errorKey);
-
-	if (!handle->defaultBackend)
+	KeySet *keys = ksNew(0, KS_END);
+	int inFallback = 0;
+	switch (elektraOpenBootstrap(handle, keys, errorKey))
 	{
-defaultBackendFailed:
+	case -1:
 		ksDel(handle->modules);
 		elektraFree(handle);
-		ELEKTRA_SET_ERROR(40, errorKey,
-				"could not open default backend");
+		ELEKTRA_SET_ERROR(40, errorKey, "could not open default backend");
 
 		keySetName(errorKey, keyName(initialParent));
 		keySetString(errorKey, keyString(initialParent));
 		keyDel (initialParent);
 		errno = errnosave;
 		return 0;
-	}
-
-	handle->split = elektraSplitNew();
-	elektraSplitAppend (handle->split, handle->defaultBackend,
-		keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
-
-	keys=ksNew(0, KS_END);
-
-	keySetName(errorKey, KDB_SYSTEM_ELEKTRA);
-	keySetString(errorKey, "kdbOpen(): get");
-
-	int ret = kdbGet(handle, keys, errorKey);
-	int fallbackret = 0;
-	int inFallback = 0;
-	if (ret == 0 || ret == -1)
-	{
-		// could not get KDB_DB_INIT, try KDB_DB_FILE
-		// first cleanup:
-		ksClear (keys);
-		elektraBackendClose (handle->defaultBackend, errorKey);
-		elektraSplitDel (handle->split);
-
-		// then create new setup:
-		handle->defaultBackend = elektraBackendOpenDefault(handle->modules, KDB_DB_FILE, errorKey);
-		if (!handle->defaultBackend)
-			goto defaultBackendFailed;
-		handle->split = elektraSplitNew();
-		elektraSplitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
-
-		keySetName(errorKey, KDB_SYSTEM_ELEKTRA);
-		keySetString(errorKey, "kdbOpen(): get fallback");
-		fallbackret = kdbGet (handle, keys, errorKey);
-		keySetName(errorKey, "system/elektra/mountpoints");
-
-		KeySet * cutKeys = ksCut (keys, errorKey);
-		if (fallbackret == 1 && ksGetSize (cutKeys) != 0)
-		{
-			inFallback = 1; // if we have mountpoint keys within KDB_DB_FILE, we take them!
-		}
-		ksAppend (keys, cutKeys);
-		ksDel (cutKeys);
-	}
-
-	if (ret == -1 && fallbackret == -1)
-	{
-		ELEKTRA_ADD_WARNING(17, errorKey,
-				"kdbGet() failed");
+	case 0:
+		ELEKTRA_ADD_WARNING(17, errorKey, "kdbGet() failed");
 		elektraBackendClose(handle->defaultBackend, errorKey);
 		elektraSplitDel(handle->split);
 		handle->defaultBackend = 0;
@@ -259,6 +277,9 @@ defaultBackendFailed:
 		keyDel(initialParent);
 		errno = errnosave;
 		return handle;
+	case 2:
+		inFallback = 1;
+		break;
 	}
 
 	keySetString(errorKey, "kdbOpen(): mountGlobals");
