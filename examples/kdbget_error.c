@@ -13,7 +13,7 @@
 
 void printError(Key * key);
 void printWarnings(Key * key);
-void removeMetaData(Key * key, char * searchfor);
+void removeMetaData(Key * key, const char * searchfor);
 
 int main()
 {
@@ -114,17 +114,17 @@ void printWarnings(Key * key)
  * and removes all MetaKeys starting with
  * searchfor.
  */
-void removeMetaData(Key * key, char * searchfor)
+void removeMetaData(Key * key, const char * searchfor)
 {
 	const Key * iter_key;
 	keyRewindMeta (key);
 	while ((iter_key = keyNextMeta (key))!=0)
 	{
 		/*startsWith*/
-		if (strncmp(searchfor, keyName(iter_key), strlen(searchfor)) == 0)
+		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
 		{
-			if (keySetMeta(key,keyName (iter_key),0) != 0)
-				printf ("Error while deleting warnings\n");
+			if (keySetMeta (key,keyName (iter_key),0) != 0)
+				printf ("Error while deleting %s\n", searchfor);
 		}
 	}
 }
