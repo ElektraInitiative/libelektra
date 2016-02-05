@@ -11,7 +11,7 @@ check_version
 VALUE=value
 
 #override for specific testing
-#PLUGINS="ini"
+PLUGINS="ini"
 
 for PLUGIN in $PLUGINS
 do

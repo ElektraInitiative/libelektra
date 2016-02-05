@@ -757,15 +757,6 @@ static char *getIniName(Key *section, Key *key)
     {
         ptr += (strlen(INTERNAL_ROOT_SECTION)+1);
     }
-    /*	for (; *ptr; ++ptr)
-        {
-        if (*ptr != '\\')
-        {
-     *dest = *ptr;
-     ++dest;
-     }
-     }
-     *dest = 0;*/
     size_t size = 0;
     char *tmp = strdup(ptr);
     char *p = keyNameGetOneLevel(tmp+size, &size);
@@ -1224,7 +1215,8 @@ static void stripInternalData(Key *parentKey, KeySet *ks)
         }
         else
         {
-            ksAppendKey(newKS, cur);
+            if(!keyGetMeta(ksLookup(newKS, cur, KDB_O_NONE), "ini/key"))
+                ksAppendKey(newKS, cur);
         }
     }
     ksClear(ks);
@@ -1268,6 +1260,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
         }
 
     }
+
     ksRewind(returned);
     while ((cur = ksNext(returned)) != NULL)
     {
@@ -1278,7 +1271,6 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
         insertIntoKS(parentKey, cur, newKS, pluginConfig);
         keyDel(ksLookup(returned, cur, KDB_O_POP));
     }
-
     ksClear(returned);
     ksAppend(returned, newKS);
     setParents(returned, parentKey);

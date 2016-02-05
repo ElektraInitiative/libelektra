@@ -30,13 +30,6 @@ do
 		continue;
 	fi
 
-	if [ $PLUGIN = "ini" ]
-	then
-		#TODO: broken
-		continue
-	fi
-
-
 	echo -------- $PLUGIN -----------
 
 	echo "Import with existing root"

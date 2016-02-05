@@ -29,12 +29,6 @@ do
 		continue;
 	fi
 
-	if [ $PLUGIN = "ini" ]
-	then
-		#TODO: broken?
-		continue
-	fi
-
 	echo -------- $PLUGIN -----------
 
 	$KDB set $ROOT "root" >/dev/null
