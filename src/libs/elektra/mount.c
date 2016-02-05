@@ -112,6 +112,7 @@ int elektraMountDefault (KDB *kdb, KeySet *modules, int inFallback, Key *errorKe
 {
 	// open the defaultBackend the first time
 	kdb->defaultBackend = elektraBackendOpenDefault(modules, KDB_DB_FILE, errorKey);
+	kdb->initBackend = 0;
 
 	if (!kdb->defaultBackend)
 	{

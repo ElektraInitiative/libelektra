@@ -29,6 +29,10 @@ Backend *b_new(const char *name, const char *value)
 static void kdb_del(KDB *kdb)
 {
 	elektraBackendClose (kdb->defaultBackend, 0);
+	if (kdb->initBackend)
+	{
+		elektraBackendClose (kdb->initBackend, 0);
+	}
 	elektraTrieClose(kdb->trie, 0);
 	elektraSplitDel (kdb->split);
 
