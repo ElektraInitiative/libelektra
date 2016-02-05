@@ -316,6 +316,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	if(!section && !name)
 	{
 		keySetString(handle->parentKey, value);
+		ksAppendKey(handle->result, keyDup(handle->parentKey));
 		return 1;
 	}
 	Key *appendKey = keyDup (handle->parentKey);
@@ -341,7 +342,7 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		if(lineContinuation)
 		{
 			const Key *meta = keyGetMeta(existingKey, name);
-		   	Key *newMeta = keyDup(meta);
+			Key *newMeta = keyDup(meta);
 			elektraKeyAppendLine(newMeta, value);
 			keySetMeta(existingKey, name, keyString(newMeta));
 			keyDel(newMeta);
@@ -672,7 +673,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	{
 		ksClear(returned);
 		ksAppend(returned, cbHandle.result);
-		ksAppendKey(returned, keyDup(parentKey));
+		//ksAppendKey(returned, keyDup(parentKey));
 		ret = 1;
 	}
 	else
@@ -745,16 +746,23 @@ void writeMultilineKey(Key *key, const char *iniName, FILE *fh, IniPluginConfig 
 	char *value = elektraMalloc (valueSize);
 	keyGetString(key, value, valueSize);
 	result = strtok_r (value, "\n", &saveptr);
-	
+	if(containsSpecialCharacter(iniName))
+	{
+		fprintf(fh, "\"%s\" = ", iniName);
+	}
+	else
+	{
+		fprintf(fh, "%s = ", iniName);
+	}
 	if(result == NULL)
-		fprintf(fh, "%s = \"\n%s\"", iniName, config->continuationString);
+		fprintf(fh, "\"\n%s\"", config->continuationString);
 	else
 	{
 		if(containsSpecialCharacter(result))
-			fprintf (fh, "%s = \"%s\"\n", iniName, result);
+			fprintf (fh, "\"%s\"\n", result);
 		else
-			fprintf (fh, "%s = %s\n", iniName, result);
-		}
+			fprintf (fh, "%s\n",result);
+	}
 	while ( (result = strtok_r (0, "\n", &saveptr)) != 0)
 	{
 		if(containsSpecialCharacter(result))
@@ -794,7 +802,7 @@ static char *getIniName(Key *section, Key *key)
 	}
 	char *buffer = elektraCalloc(strlen(keyName(key)) - strlen(keyName(section))+slashCount+1);
 	char *ptr = NULL;
-    if(keyName(section)[0] == '/' && keyName(key)[0] != '/')
+	if(keyName(section)[0] == '/' && keyName(key)[0] != '/')
 	{
 		size_t offset = strchr(keyName(key)+1, '/')-keyName(key);	
 		ptr = (char *)keyName(key)+strlen(keyName(section))+offset+1;
@@ -804,11 +812,11 @@ static char *getIniName(Key *section, Key *key)
 		ptr	= (char *)keyName(key)+strlen(keyName(section))+1;
 	}
 
-//	char *strPos = strstr(keyName(key), INTERNAL_ROOT_SECTION);
-//	if (strPos == ((char *)keyName(key)+strlen(keyName(section))+1))
-//	{
-//		ptr += (strlen(INTERNAL_ROOT_SECTION)+1);
-//	}
+	//	char *strPos = strstr(keyName(key), INTERNAL_ROOT_SECTION);
+	//	if (strPos == ((char *)keyName(key)+strlen(keyName(section))+1))
+	//	{
+	//		ptr += (strlen(INTERNAL_ROOT_SECTION)+1);
+	//	}
 	size_t size = 0;
 	char *tmp = strdup(ptr);
 	char *p = keyNameGetOneLevel(tmp+size, &size);
@@ -1038,7 +1046,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 				keySetMeta(arrayParent, "ini/array", keyBaseName(cur));
 				keySetMeta(arrayParent, "ini/key", "");
 				keySetMeta(arrayParent, "binary", 0);
-				
+
 				if(oldVal && strlen(oldVal))
 				{
 					Key *arrayInitKey = keyDup(arrayParent);
@@ -1105,9 +1113,13 @@ static int containsSpecialCharacter(const char *str)
 	char *ptr = (char *)str;
 	if(isspace(*ptr) || (isspace(*(ptr+strlen(str)-1))))
 		return 1;
+	if(*ptr == '#' || *ptr == ';')
+		return 1;
+	if(*ptr == '[')
+	    return 1;
 	while(*ptr)
 	{
-		if(*ptr == '"')
+		if(*ptr == '"' || *ptr == '=')
 		{
 			return 1;
 		}
@@ -1214,10 +1226,14 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 			if (isIniKey(cur))
 			{
 				const char *string = keyString(cur);
-				if(strlen(string) && (containsSpecialCharacter(string)))
-					fprintf(fh, "%s = \"%s\"\n", name, string);
+				if(containsSpecialCharacter(name))
+					fprintf(fh, "\"%s\" = ", name);
 				else
-					fprintf(fh, "%s = %s\n", name, string);
+					fprintf(fh, "%s = ", name);
+				if(strlen(string) && (containsSpecialCharacter(string)))
+					fprintf(fh, "\"%s\"\n", string);
+				else
+					fprintf(fh, "%s\n", string);
 			}
 			free(name);
 		}
@@ -1240,10 +1256,14 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 					{
 						cur = keyArray[j];
 						const char *string = keyString(cur);
-						if(strlen(string) && (containsSpecialCharacter(string)))
-							fprintf(fh, "%s = \"%s\"\n", name, string);
+						if(containsSpecialCharacter(name))
+							fprintf(fh, "\"%s\" = ", name);
 						else
-							fprintf(fh, "%s = %s\n", name, string);
+							fprintf(fh, "%s = ", name);
+						if(strlen(string) && (containsSpecialCharacter(string)))
+							fprintf(fh, "\"%s\"\n", string);
+						else
+							fprintf(fh, "%s\n", string);
 					}
 					free(name);
 					i += lastArrayIndex;
@@ -1262,15 +1282,23 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 
 					if (keyGetMeta(cur, "ini/empty"))
 					{
-						fprintf(fh, "%s\n", name);
+						if(containsSpecialCharacter(name))
+							fprintf(fh, "\"%s\"\n", name);
+						else
+							fprintf(fh, "%s\n",name);
 					}
 					else if (strstr(keyString(cur), "\n") == 0)
 					{
 						const char *string = keyString(cur);
-						if(strlen(string) && (containsSpecialCharacter(string)))
-							fprintf(fh, "%s = \"%s\"\n", name, string);
+						if(containsSpecialCharacter(name))
+							fprintf(fh, "\"%s\" = ", name);
 						else
-							fprintf(fh, "%s = %s\n", name, string);
+							fprintf(fh, "%s = ", name);
+						if(strlen(string) && (containsSpecialCharacter(string)))
+							fprintf(fh, "\"%s\"\n", string);
+						else
+							fprintf(fh, "%s\n", string);
+
 					}
 					else
 					{
@@ -1320,7 +1348,8 @@ static void stripInternalData(Key *parentKey ELEKTRA_UNUSED, KeySet *ks)
 				strcat(newName, token);
 			}
 			keySetName(newKey, newName);
-			ksAppendKey(newKS, newKey);
+			if(strcmp(keyName(parentKey), keyName(newKey)))
+				ksAppendKey(newKS, newKey);
 			elektraFree(oldName);
 			elektraFree(newName);
 		}
@@ -1382,7 +1411,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		insertIntoKS(parentKey, cur, newKS, pluginConfig);
 		keyDel(ksLookup(returned, cur, KDB_O_POP));
 	}
-	
+
 	ksClear(returned);
 	ksAppend(returned, newKS);
 	setParents(returned, parentKey);

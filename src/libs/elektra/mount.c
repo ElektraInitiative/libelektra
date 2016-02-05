@@ -63,7 +63,6 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet *cut = ksCut(config, cur);
-			fprintf(stderr, "elektraMountOpen: root: %s:(%s)\t err: %s:(%s)\n", keyName(root), keyString(root), keyName(errorKey), keyString(errorKey));
 			Backend *backend = elektraBackendOpen(cut, modules, errorKey);
 
 			if (!backend)
@@ -81,7 +80,6 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
 				continue;
 			}
 
-			fprintf(stderr, "before elektraMountBackend: err: %s:(%s)\n",keyName(errorKey), keyString(errorKey));
 			if (elektraMountBackend(kdb, backend, errorKey) == -1)
 			{
 				ELEKTRA_ADD_WARNING(24, errorKey, "mounting of backend failed");

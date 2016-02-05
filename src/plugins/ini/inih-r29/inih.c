@@ -163,6 +163,11 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
             if (*end == '=' || *end == ':') {
                 *end = '\0';
                 name = rstrip(start);
+                if(*name == '"' && *(end-2) == '"')
+                {
+                    *(end-2) = '\0';
+                    ++name;
+                }
                 value = lskip(end + 1);
                 end = find_char_or_comment(value, '\0');
                 if (*end == ';')

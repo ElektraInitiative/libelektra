@@ -35,7 +35,6 @@
 #endif
 
 #include <kdbinternal.h>
-#include <stdio.h>
 
 /**
  * @brief Allocate a backend
@@ -77,7 +76,6 @@ int elektraBackendSetMountpoint(Backend *backend, KeySet *elektraConfig, Key *er
 	Key * root = ksCurrent(elektraConfig);
 	Key * searchMountpoint = keyDup(root);
 	keyAddBaseName(searchMountpoint, "mountpoint");
-	fprintf(stderr, "elektraBackendSetMountpoint: root: %s:(%s)\t searchMP: %s:(%s)\n", keyName(root), keyString(root), keyName(searchMountpoint), keyString(searchMountpoint));
 	Key * foundMountpoint = ksLookup(elektraConfig, searchMountpoint, 0);
 	keyDel (searchMountpoint);
 	ksLookup(elektraConfig, root, 0); // reset ksCurrent()
@@ -155,8 +153,7 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 	ksRewind(elektraConfig);
 
 	Key * root = ksNext (elektraConfig);
-	fprintf(stderr, "elektraBackendOpen elektraConfig Keyset:\n");
-	fprintf(stderr, "root: %s:(%s)\n", keyName(root), keyString(root));
+
 	Backend *backend = elektraBackendAllocate();
 	if (elektraBackendSetMountpoint(backend, elektraConfig, errorKey) == -1)
 	{	// warning already set
@@ -299,7 +296,6 @@ Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *erro
 	}
 #endif
 
-	fprintf(stderr, "elektraBackendOpenDefault errorKey: %s:(%s)\n", keyName(errorKey), keyString(errorKey));
 	backend->getplugins[RESOLVER_PLUGIN] = resolver;
 	backend->setplugins[RESOLVER_PLUGIN] = resolver;
 	backend->setplugins[COMMIT_PLUGIN] = resolver;
@@ -318,14 +314,13 @@ Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *erro
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
-	fprintf(stderr, "elektraBackendOpenDefault after elektraPluginOpen: errorKey: %s:(%s)\n", keyName(errorKey), keyString(errorKey));
+
 	backend->getplugins[STORAGE_PLUGIN] = storage;
 	backend->setplugins[STORAGE_PLUGIN] = storage;
 	storage->refcounter = 2;
 
 	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	backend->mountpoint = mp;
-	fprintf(stderr, "backend->mountpoint: %s:(%s)\n", keyName(backend->mountpoint), keyString(backend->mountpoint));
 	keyIncRef(backend->mountpoint);
 
 	return backend;
