@@ -145,7 +145,7 @@ static void test_default()
 
 	elektraPluginClose(plugin, 0);
 
-	Backend *backend = elektraBackendOpenDefault(modules, 0);
+	Backend *backend = elektraBackendOpenDefault(modules, KDB_DB_FILE, 0);
 
 	Key *mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");

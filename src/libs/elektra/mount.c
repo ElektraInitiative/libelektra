@@ -110,8 +110,8 @@ int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey)
  */
 int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey)
 {
-	/* Reopen the default Backend for fresh user experience (update issue) */
-	kdb->defaultBackend = elektraBackendOpenDefault(modules, errorKey);
+	// open the defaultBackend the first time
+	kdb->defaultBackend = elektraBackendOpenDefault(modules, KDB_DB_FILE, errorKey);
 
 	if (!kdb->defaultBackend)
 	{
@@ -344,7 +344,7 @@ int elektraMountVersion (KDB *kdb, Key *errorKey)
  * @pre user must pass correctly allocated backend
  * @post sets reference counter of backend
  *
- * @warning in case of default backends, the reference counter needs to
+ * @warning in case of init and default backends, the reference counter needs to
  * be modified *after* calling elektraMountBackend.
  *
  * @param kdb the handle to work with

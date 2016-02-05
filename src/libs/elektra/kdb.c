@@ -187,8 +187,8 @@ KDB * kdbOpen(Key *errorKey)
 		return 0;
 	}
 
-	handle->defaultBackend=elektraBackendOpenDefault(handle->modules,
-			errorKey);
+	handle->defaultBackend=elektraBackendOpenDefault(handle->modules, KDB_DB_FILE, errorKey);
+
 	if (!handle->defaultBackend)
 	{
 		ksDel(handle->modules);

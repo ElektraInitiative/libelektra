@@ -295,6 +295,8 @@ struct _KDB {
 
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
 
+	Backend *initBackend;	/*!< The init backend for bootstrapping.*/
+
 	Plugin *globalPlugins[NR_GLOBAL_PLUGINS];
 };
 
@@ -474,7 +476,7 @@ int elektraSplitUpdateSize (Split *split);
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenMissing(Key *mountpoint);
-Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
+Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *errorKey);
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenVersion(Key *errorKey);
 int elektraBackendClose(Backend *backend, Key *errorKey);

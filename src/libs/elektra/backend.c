@@ -261,12 +261,12 @@ Backend* elektraBackendOpenMissing(Key *mp)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey)
+Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *errorKey)
 {
 	Backend *backend = elektraBackendAllocate();
 
 	KeySet *resolverConfig = ksNew(5,
-		keyNew("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+		keyNew("system/path", KEY_VALUE, file, KEY_END),
 		KS_END);
 
 	elektraKeySetName(errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
