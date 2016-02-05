@@ -1,0 +1,20 @@
+/**
+ * @file
+ *
+ * @brief Header for dpkg plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
+
+#ifndef ELEKTRA_PLUGIN_DPKG_H
+#define ELEKTRA_PLUGIN_DPKG_H
+
+#include <kdbplugin.h>
+
+
+int elektraDpkgGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDpkgSet (Plugin * handle, KeySet * ks, Key * parentKey);
+Plugin * ELEKTRA_PLUGIN_EXPORT (dpkg);
+
+#endif

@@ -209,7 +209,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [list](list/) loads other plugins
 - [filecheck](filecheck/) does sanity checks on a file
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
-
+- [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
 ## New Plugins ##
 
 To add a new plugin you can copy the template plugin. Please make sure
