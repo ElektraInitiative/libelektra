@@ -610,18 +610,6 @@ KeySet *cascading_config(void)
 		KS_END);
 }
 
-static void keySetCascading(Key *key, const char* name)
-{
-	size_t size = elektraStrLen(name) + 1;
-	if (size < 2) return;
-
-	elektraFree (key->key);
-	key->key = elektraMalloc (size);
-	key->keySize = size;
-	key->key[0] = '/';
-	strcpy (key->key+1, name);
-}
-
 static void test_cascading()
 {
 	printf ("Test simple mount with cascading\n");
@@ -647,8 +635,7 @@ static void test_cascading()
 	succeed_if (!backend, "there should be no backend");
 
 
-	Key *mp = keyNew("", KEY_VALUE, "simple", KEY_END);
-	keySetCascading (mp, "tests/simple");
+	Key *mp = keyNew("/tests/simple", KEY_VALUE, "simple", KEY_END);
 
 	keySetName(searchKey, "user/tests/simple");
 	backend = elektraTrieLookup(kdb->trie, searchKey);
@@ -723,8 +710,7 @@ static void test_root()
 	exit_if_fail (kdb->trie, "trie was not build up successfully");
 
 	Key *searchKey = keyNew("", KEY_END);
-	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetCascading (rmp, "");
+	Key *rmp = keyNew("/", KEY_VALUE, "root", KEY_END);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
@@ -782,8 +768,7 @@ static void test_default()
 	// output_trie (kdb->trie);
 
 	Key *searchKey = keyNew("", KEY_END);
-	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetCascading (rmp, "");
+	Key *rmp = keyNew("/", KEY_VALUE, "root", KEY_END);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
@@ -923,8 +908,7 @@ static void test_rootInit()
 	// output_trie (kdb->trie);
 
 	Key *searchKey = keyNew("", KEY_END);
-	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetCascading (rmp, "");
+	Key *rmp = keyNew("/", KEY_VALUE, "root", KEY_END);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
@@ -1009,8 +993,7 @@ static void test_modules()
 	// output_trie (kdb->trie);
 
 	Key *searchKey = keyNew("", KEY_END);
-	Key *rmp = keyNew("", KEY_VALUE, "root", KEY_END);
-	keySetCascading (rmp, "");
+	Key *rmp = keyNew("/", KEY_VALUE, "root", KEY_END);
 	Backend *b2 = 0;
 
 	keySetName (searchKey, "user");
