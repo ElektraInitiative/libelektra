@@ -34,22 +34,11 @@ then
 	exit 1
 fi
 
-
-# now import old mountpoints:
-cat $mountpoints | $KDB import system/elektra/mountpoints dump
+ret=0
 
 #debug:
 #$KDB file system/elektra
 
-ret=0
-
-if [ $? -eq 0 ]
-then
-	rm $mountpoints
-else
-	echo "Upgrade failed, could not import mountpoints: $mountpoints"
-	ret=1
-fi
 
 cat $globalplugins | $KDB import system/elektra/globalplugins dump
 
@@ -58,6 +47,17 @@ then
 	rm $globalplugins
 else
 	echo "Warning: could not import globalplugins: $globalplugins"
+fi
+
+# now import old mountpoints:
+cat $mountpoints | $KDB import system/elektra/mountpoints dump
+
+if [ $? -eq 0 ]
+then
+	rm $mountpoints
+else
+	echo "Upgrade failed, could not import mountpoints: $mountpoints"
+	ret=1
 fi
 
 exit $ret
