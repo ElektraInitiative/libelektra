@@ -207,7 +207,7 @@ void Backend::setMountpoint(Key mountpoint, KeySet mountConf)
 	// TODO STEP 4: check if mounted below system/elektra
 	Key elektraCheck (mountpoint.dup());
 	helper::removeNamespace (elektraCheck);
-	if (elektraCheck.isBelowOrSame (Key("/elektra")))
+	if (elektraCheck.isBelowOrSame (Key("/elektra", KEY_END)))
 	{
 		throw MountpointAlreadyInUseException(
 			std::string("Mountpoint ") +
