@@ -135,14 +135,22 @@ static void flushConvertedKeys(Key *target, KeySet *converted, KeySet *orig)
 		appendTarget = target;
 		const char *metaName = keyString (keyGetMeta(current, CONVERT_METANAME));
 
+		Key *currentDup = keyDup(current);
+		Key *targetDup = keyDup(appendTarget);
+		keySetBaseName(currentDup, 0);
+		keySetBaseName(targetDup, 0);
+
 		/* the convert key request to be converted to a key
 		 * on the same level, but the target is below or above
 		 */
 		if (keyGetMeta (current, CONVERT_APPEND_SAMELEVEL) &&
-				keyRel (current, appendTarget) != 0)
+				keyCmp(currentDup, targetDup))
 		{
 			appendTarget = 0;
 		}
+
+		keyDel(currentDup);
+		keyDel(targetDup);
 
 		/* no target key was found of the target
 		 * was discarded for some reason. Revert to the parent

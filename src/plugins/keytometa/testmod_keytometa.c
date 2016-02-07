@@ -213,6 +213,35 @@ static KeySet* createDifferentMetaNameTestKeys()
 			KS_END);
 }
 
+static KeySet* createSameLevelTestKeys()
+{
+	return ksNew (20,
+			keyNew ("user/levelkey1",
+					KEY_META, "order", "10",
+					KEY_END),
+			keyNew ("user/levelkey1/convertkey1",
+					KEY_VALUE, "convertkey1value",
+					KEY_META, "order","20",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "next",
+					KEY_META, "convert/append/samelevel", "",
+					KEY_END),
+			keyNew ("user/levelkey1/childkey1",
+					KEY_META, "order", "30",
+					KEY_END),
+			keyNew ("user/levelkey1/convertkey2",
+					KEY_VALUE, "convertkey2value",
+					KEY_META, "order", "40",
+					KEY_META, "convert/metaname", "testmeta",
+					KEY_META, "convert/append", "next",
+					KEY_META, "convert/append/samelevel", "",
+					KEY_END),
+			keyNew ("user/levelkey2",
+					KEY_META, "order", "50",
+					KEY_END),
+			KS_END);
+}
+
 void test_parentAppendMode()
 {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
@@ -443,6 +472,36 @@ void test_differentMetaNames () {
 	PLUGIN_CLOSE ();
 }
 
+void test_appendSameLevel () {
+	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
+	KeySet *conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("keytometa");
+
+	KeySet *ks = createSameLevelTestKeys();
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if(output_error (parentKey), "error in kdbGet");
+	succeed_if(output_warnings (parentKey), "warnings in kdbGet");
+
+	/* convertkey1 should be converted to childkey1 as childkey1 is on the same level as requested */
+	Key *childKey = ksLookupByName(ks, "user/levelkey1/childkey1", 0);
+	succeed_if (childKey, "childkey1 was removed");
+
+	const Key *metaKey1 = keyGetMeta(childKey, "testmeta");
+	succeed_if (metaKey1, "childkey1 contained no meta testmeta");
+	const char *expected1 = "convertkey1value";
+	succeed_if (!strcmp (keyString(metaKey1), expected1), "metakey testmeta of childkey1 contained incorrect data");
+
+	/* convertkey2 should be converted to levelkey as the next key in order is not on the same level */
+	Key *levelkey1 = ksLookupByName(ks, "user/levelkey1", 0);
+	succeed_if (levelkey1, "levelkey1 was removed");
+
+	const Key *metaKey2 = keyGetMeta(levelkey1, "testmeta");
+	succeed_if (metaKey2, "levelkey1 contained no meta testmeta");
+	const char *expected2 = "convertkey2value";
+	succeed_if (!strcmp (keyString(metaKey2), expected2), "metakey testmeta of levelkey1 contained incorrect data");
+
+}
+
 void test_restoreOnSet () {
 	Key *parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet *conf = ksNew(0, KS_END);
@@ -503,6 +562,7 @@ int main(int argc, char** argv)
 	test_metaMerging();
 	test_metaSkipMerge();
 	test_differentMetaNames();
+	test_appendSameLevel();
 	test_restoreOnSet();
 
 	printf ("\ntest_keytometa RESULTS: %d test(s) done. %d error(s).\n", nbTest,
