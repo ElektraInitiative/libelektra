@@ -106,7 +106,7 @@ public:
 	Q_INVOKABLE TreeViewModel*	pluginConfigModel() const;
 
 private:
-	QSharedPointer<kdb::tools::Backend>	m_backend;
+	QSharedPointer<kdb::tools::MountBackendInterface>	m_backend;
 	kdb::KeySet							m_mountConf;
 	kdb::KDB							m_kdb;
 	QString								m_name;

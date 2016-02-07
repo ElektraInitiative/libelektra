@@ -10,6 +10,7 @@
 
 #include <markdowndocument.h>
 #include <discountmarkdownconverter.h>
+#include <backendbuilder.hpp>
 #include <backends.hpp>
 #include <plugindatabase.hpp>
 #include <vector>
@@ -31,7 +32,7 @@ GUIBackend::GUIBackend(QObject *parentBackend) :
 
 void GUIBackend::createBackend(const QString &mountpoint)
 {
-	m_backend = QSharedPointer<Backend>(new Backend());
+	m_backend = QSharedPointer<MountBackendInterface>(new MountBackendBuilder());
 
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
