@@ -85,7 +85,7 @@ static void testwriteinvalidheader(const char *file)
 	PLUGIN_CLOSE();
 }
 
-static void testwritevalidemptycol(const char *file)
+static void testwritevalidemptycol(const char *file ELEKTRA_UNUSED)
 {
 
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, elektraFilename(), KEY_END);

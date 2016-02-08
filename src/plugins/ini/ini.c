@@ -497,6 +497,7 @@ int elektraIniClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
+#if DEBUG && VERBOSE
 static void outputDebug(KeySet *ks)
 {
 	Key *cur;
@@ -514,6 +515,8 @@ static void outputDebug(KeySet *ks)
 		fprintf(stderr, "\n");
 	}
 }
+#endif
+
 static const char *findParent(Key *parentKey, Key *searchkey, KeySet *ks)
 {
 	Key *key = keyDup(searchkey);
