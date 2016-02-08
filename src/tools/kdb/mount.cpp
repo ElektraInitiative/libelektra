@@ -129,6 +129,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		cout << "Trying to add default plugins " << cl.plugins << endl;
 	}
 
+	backend.recommendPlugin ("sync");
 	backend.addPlugins (parseArguments (cl.plugins));
 
 	if (cl.interactive)
