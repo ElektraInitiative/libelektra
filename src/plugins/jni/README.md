@@ -1,9 +1,10 @@
 - infos = Information about the jni plugin is in keys below
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides =
+- infos/needs =
 - infos/placements =
+- infos/status = maintained configurable experimental -500
 - infos/description =
 
 # Generic Java plugin #
@@ -108,6 +109,8 @@ Also explained
 
 ## Issues ##
 
+(Argumentation for -500 in status)
+
 - In Debian Wheezy you cannot use openjdk:
   you get a linker error because of some missing private SUN symbols.
   Maybe just the cmake mechanism to find java is broken.
@@ -115,5 +118,3 @@ Also explained
 - when this plugin is enabled, valgrind detects memory problems even if
   the plugin is not mounted.
 
-
-# Specific Java Plugin #

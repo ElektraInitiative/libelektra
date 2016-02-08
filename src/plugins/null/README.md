@@ -1,9 +1,10 @@
 - infos = Information about null plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs = 
-- infos/provides = 
+- infos/provides = code
+- infos/needs =
 - infos/placements = postgetstorage presetstorage
+- infos/status = maintained nodep libc
 - infos/description = Transforms null and empty values to text and back
 
 ## Introduction ##

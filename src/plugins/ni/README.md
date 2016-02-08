@@ -1,9 +1,10 @@
 - infos = Information about ni plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
+- infos/needs =
 - infos/placements = getstorage setstorage
+- infos/status = maintained libc
 - infos/description = Reads and writes the nickel ini format
 
 ## Introduction ##

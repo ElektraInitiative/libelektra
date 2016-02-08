@@ -577,6 +577,8 @@ function (generate_readme p)
 	STRING(REGEX REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\"" "keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	# allow macros:
 	STRING(REGEX REPLACE "\" *#ifdef ([^\\]*)\\\\n\"" "#ifdef \\1" contents "${contents}")
+	STRING(REGEX REPLACE "\" *#ifndef ([^\\]*)\\\\n\"" "#ifndef \\1" contents "${contents}")
+	STRING(REGEX REPLACE "\" *#else\\\\n\"" "#else" contents "${contents}")
 	STRING(REGEX REPLACE "\" *#endif\\\\n\"" "#endif" contents "${contents}")
 	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/readme_${p}.c "${contents}\n")
 endfunction()

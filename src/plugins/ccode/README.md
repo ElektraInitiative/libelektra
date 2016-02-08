@@ -1,9 +1,11 @@
 - infos = Information about ccode plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = code
+- infos/needs =
+- infos/recommends =
 - infos/placements = postgetstorage presetstorage
+- infos/status = maintained unittest nodep libc configurable
 - infos/description = Decoding/Encoding engine which escapes unwanted characters.
 
 ## Introduction ##

@@ -1,9 +1,11 @@
 - infos = Information about validation plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = check
+- infos/needs =
 - infos/placements = presetstorage
+- infos/status = maintained nodep libc
+- infos/metadata = check/validation check/validation/message
 - infos/description = Validates key values using regular expressions
 
 ## Introduction ##

@@ -1,9 +1,12 @@
 - infos = Information about dump plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs = 
 - infos/provides = storage
+- infos/needs = 
+- infos/recommends = 
 - infos/placements = getstorage setstorage
+- infos/status = productive maintained conformant unittest tested nodep -1000
+- infos/metadata =
 - infos/description = Dumps into a format tailored for complete KeySet semantics
 
 ## Introduction ##
@@ -62,6 +65,13 @@ omitted):
 	keyEnd		
 	ksEnd		
 
+
+## Limitations ##
+
+(status -1000)
+
+- It is quite slow
+- Files cannot easily edited by hand
 
 ## Examples ##
 

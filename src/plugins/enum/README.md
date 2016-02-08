@@ -1,9 +1,12 @@
 - infos = Information about the enum plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = check
+- infos/needs =
+- infos/recommends = 
 - infos/placements = presetstorage
+- infos/status = productive maintained tested nodep libc nodoc
+- infos/metadata = check/enum
 - infos/description =
 
 ## Introduction ##

@@ -1,10 +1,11 @@
 - infos = Information about HOSTS plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
-- infos/placements = getstorage setstorage
+- infos/needs =
 - infos/recommends = glob network
+- infos/placements = getstorage setstorage
+- infos/status = maintained unittest nodep libc
 - infos/description = This plugin reads and writes /etc/hosts files.
 
 
@@ -39,12 +40,17 @@ The value is an ascending number. Ordering of aliases is NOT preserved.
 ##Examples##
 
 Mount the plugin:
->$ kdb mount /etc/hosts system/hosts hosts
+
+    $ kdb mount /etc/hosts system/hosts hosts
 
 Print out all known hosts and their aliases:
->$ kdb ls system/hosts
+
+    $ kdb ls system/hosts
 
 Get IP address of host "localhost":
->$ kdb get system/hosts/localhost
+
+    $ kdb get system/hosts/localhost
+
 Fetch comment belonging to host "localhost":
->$ kdb getmeta system/hosts/localhost comment
+
+    $ kdb getmeta system/hosts/localhost comment

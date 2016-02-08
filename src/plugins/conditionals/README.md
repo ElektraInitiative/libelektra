@@ -1,9 +1,12 @@
 - infos = Information about the conditionals plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides =
+- infos/needs =
+- infos/recommends =
 - infos/placements = presetstorage
+- infos/status = maintained unittest nodep libc preview
+- infos/metadata = check/condition
 - infos/description =
 
 ## Introduction ##

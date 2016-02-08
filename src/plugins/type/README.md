@@ -1,9 +1,11 @@
 - infos = Information about type plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = check
+- infos/needs =
 - infos/placements = presetstorage
+- infos/status = maintained unittest unfinished old
+- infos/metadata = check/type
 - infos/description =
 
 ## Introduction ##

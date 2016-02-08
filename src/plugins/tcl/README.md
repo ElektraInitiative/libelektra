@@ -1,9 +1,10 @@
 - infos = Information about the tcl plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs = code
 - infos/provides = storage
+- infos/needs = code
 - infos/placements = setstorage getstorage
+- infos/status = unfinished nodoc concept
 - infos/description = Serialize tcl lists
 
 ## Introduction ##

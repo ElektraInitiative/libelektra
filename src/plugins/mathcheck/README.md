@@ -1,9 +1,11 @@
 - infos = Information about the mathcheck plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = check
+- infos/needs =
 - infos/placements = presetstorage
+- infos/status = maintained unittest
+- infos/metadata = check/math
 - infos/description =
 
 ## Introduction ##

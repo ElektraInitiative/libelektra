@@ -1,9 +1,10 @@
 - infos = Information about the timeofday plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
+- infos/provides = tracing
 - infos/needs =
-- infos/provides = logging
 - infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
+- infos/status = maintained tested
 - infos/description = Prints timestamps during execution of backend
 
 ## Introduction ##

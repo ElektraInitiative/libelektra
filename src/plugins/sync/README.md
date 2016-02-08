@@ -1,9 +1,10 @@
 - infos = Information about the sync plugin is in keys below
 - infos/author = Markus Raab <markus@libelektra.org>
 - infos/licence = BSD
+- infos/provides = sync
 - infos/needs =
-- infos/provides =
 - infos/placements = precommit
+- infos/status = recommended productive maintained tested nodep libc final
 - infos/description = Makes sure that config file is written to disc
 
 ## Introduction ##

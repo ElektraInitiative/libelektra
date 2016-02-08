@@ -1,10 +1,11 @@
 - infos = Information about augeas plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
+- infos/needs =
 - infos/recommends = glob keytometa
 - infos/placements = getstorage setstorage
+- infos/status = maintained unittest libc configurable
 - infos/description = reading and writing configurations via libaugeas
 
 ## INTRODUCTION ##
@@ -12,19 +13,19 @@
 This is a plugin for reading and writing configuration files with help from Augeas.
 The plugin should be able to read all configuration files for which an Augeas lens exists.
 However, not all stock lenses of Augeas have been tested yet.
-A detailed description of the lens language and a tutorial on how to write new lenses"
+A detailed description of the lens language and a tutorial on how to write new lenses
 can be found at http://augeas.net/
 
 ## DEPENDENCIES ##
 
-- `libaugeas-dev` #note: You need version 0.16 or higher which is not in debian wheezy
+- `libaugeas-dev`: You need version 0.16 or higher
 
 ## INSTALLATION ##
 
 If you have installed Augeas manually, it may be necessary to update the ld configuration. This is especially
 true if an older version of Augeas is installed also. Such a situation may lead to an error similar to this:
 
-/usr/lib/libaugeas.so.0: version `AUGEAS_0.16.0' not found (required by kdb)
+/usr/lib/libaugeas.so.0: version `AUGEAS_0.16.0` not found (required by kdb)
 
 This is because ld tries to link /usr/lib/libaugeas.so.0 which is an older version of Augeas. Simply add
 the path to the newer library to your ld search paths (consult your system documentation on how to do this)
@@ -95,7 +96,7 @@ consider the following kdb shell script:
 	kdbSet system/hosts
 
 This fails with an error similar to this
-	
+
 	Description: an Augeas error occurred
 	Ingroup: plugin
 	Module: storage

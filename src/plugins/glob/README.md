@@ -1,11 +1,13 @@
 - infos = Information about glob plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
+- infos/provides =
 - infos/needs =
+- infos/recommends =
 - infos/ordering = check keytometa
 - infos/stacking = no
-- infos/provides = 
 - infos/placements = presetstorage postgetstorage
+- infos/status = nodep libc configurable difficult
 - infos/description = copies metadata to keys with the help of globbing
 
 ## INTRODUCTION ##

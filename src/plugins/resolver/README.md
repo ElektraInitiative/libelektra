@@ -2,9 +2,9 @@
 - infos/author = Markus Raab <elektra@markus-raab.org>
 - infos/licence = BSD
 - infos/provides = resolver
-- infos/placements = rollback getresolver setresolver commit
 - infos/needs =
-- infos/status = productive specific unittest tested
+- infos/placements = rollback getresolver setresolver commit
+- infos/status = productive maintained specific unittest tested libc configurable
 - infos/description =
 ## Scope ##
 

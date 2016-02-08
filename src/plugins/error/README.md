@@ -1,9 +1,12 @@
 - infos = Information about error plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = error
+- infos/needs =
+- infos/recommends = 
 - infos/placements = presetstorage
+- infos/status = productive maintained conformant shelltest unittest tested nodep libc discouraged
+- infos/metadata = trigger/warnings trigger/error
 - infos/description = Provokes errors for testing the plugin framework
 
 ## Introduction ##

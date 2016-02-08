@@ -1,9 +1,10 @@
 - infos = Information about the lua plugin is in keys below
 - infos/author = Manuel Mausz <manuel-elektra@mausz.at>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides =
+- infos/needs =
 - infos/placements =
+- infos/status = maintained unittest nodoc
 - infos/description = magic things require magic plugins
 
 The plugin uses Lua to do magic things.

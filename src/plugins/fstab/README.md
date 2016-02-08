@@ -1,10 +1,11 @@
 - infos = Information about FSTAB plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
-- infos/placements = getstorage setstorage
+- infos/needs =
 - infos/recommends = struct type path
+- infos/placements = getstorage setstorage
+- infos/status = unittest experimental old
 - infos/description = Parses files in a syntax like /etc/fstab file
 
 ## Introduction ##
@@ -108,7 +109,3 @@ Spaces in the names are replaced by \040 in the fstab.
 Mount the plugin:
 
 	kdb mount /etc/fstab system/filesystems fstab struct type path
-
-## Note
-
-The status of this plugin is experimental.

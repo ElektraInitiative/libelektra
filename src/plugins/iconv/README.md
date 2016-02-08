@@ -1,9 +1,10 @@
 - infos = Information about iconv plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = conv
+- infos/needs =
 - infos/placements = postgetstorage presetstorage
+- infos/status = maintained unittest libc configurable
 - infos/description = Converts values of keys between charsets
 
 ## Introduction ##

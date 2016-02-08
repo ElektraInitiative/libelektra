@@ -1,9 +1,10 @@
 - infos = Information about hidden plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
+- infos/provides =
 - infos/needs =
-- infos/provides = 
 - infos/placements = postgetstorage presetstorage
+- infos/status = nodep libc final nodoc
 - infos/description = Hides keys which start with a .
 
 ## Introduction ##

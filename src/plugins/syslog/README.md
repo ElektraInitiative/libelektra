@@ -1,9 +1,10 @@
 - infos = Information about the syslog plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = logging
+- infos/needs =
 - infos/placements = postcommit postrollback
+- infos/status = maintained tested nodoc
 - infos/description = Logs set and error calls to syslog.
 
 ## Introduction ##
