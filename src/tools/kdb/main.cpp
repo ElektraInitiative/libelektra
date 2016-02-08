@@ -100,7 +100,7 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			runManPage(std::string());
+			runManPage();
 		}
 
 		return displayHelp(argv[0], f);
@@ -118,7 +118,7 @@ int main(int argc, char ** argv)
 
 		if (cl.help)
 		{
-			runManPage(command);
+			runManPage(command, cl.profile);
 			// does not return, but may throw
 		}
 

@@ -47,7 +47,7 @@ class ExternalCommand : public Command
 
 void elektraExecve(const char *filename, char *const argv[]);
 void tryExternalCommand(char** argv);
-void runManPage(std::string command);
+void runManPage(std::string command = "", std::string profile = "current");
 bool runEditor(std::string editor, std::string file);
 
 #endif

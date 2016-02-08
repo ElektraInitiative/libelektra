@@ -141,7 +141,7 @@ void elektraExecve(const char *filename, char *const argv[])
 }
 
 
-void runManPage(std::string command)
+void runManPage(std::string command, std::string profile)
 {
 	if (command.empty())
 	{
@@ -162,9 +162,9 @@ void runManPage(std::string command)
 		{
 			switch (i)
 			{
-			case 0: dirname = "/sw/elektra/kdb/#0/current/"; break;
+			case 0: dirname = "/sw/elektra/kdb/#0/"+profile+"/"; break;
 			case 1: dirname = "/sw/elektra/kdb/#0/%/"; break;
-			case 2: dirname = "/sw/kdb/current/"; break; // legacy
+			case 2: dirname = "/sw/kdb/"+profile+"/"; break; // legacy
 			}
 			kdb.get(conf, dirname);
 			if (!k)
