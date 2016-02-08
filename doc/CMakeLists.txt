@@ -6,7 +6,7 @@ find_package(Doxygen)
 #
 #target  is man, html or latex
 #folder  is the folder where it will be built
-#file    is the file name to set a depencency to
+#file    is the file name to set a dependency to
 #install is where it should be installed
 #
 macro (do_doc target folder file install)

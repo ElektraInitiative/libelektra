@@ -31,7 +31,7 @@ it is much easier to read.
 
 ## C ##
 
-In the language C, following escape characters are present.
+In the C language, the following escape characters are present.
 
 - `b`: backspace, hex: 08
 - `t`: horizontal tab, hex: 09

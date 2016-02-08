@@ -21,7 +21,7 @@ The plugin is feature rich and customizable (+1000 in status)
 
 ## USAGE ##
 
-If you want to add a ini file to the global key database, simply use mount:
+If you want to add an ini file to the global key database, simply use mount:
 
     kdb mount file.ini /example ini
 

@@ -12,7 +12,7 @@
 This plugin converts keys into metakeys of other keys.
 The keys to be converted are tagged with special metadata.
 Converting keys into metakeys basically raises two questions:
-- which keys are to be converted
+- which keys should be converted
 - which key to append the resulting metakeys to
 
 The keys to be converted are identified by metakeys below "convert" (e.g. "convert/append").

@@ -18,7 +18,7 @@ Globbing resembles regular expressions.
 They do not have the same expressive power, but are easier to use.
 The semantics are more suitable to match path names:
 
--  `*` matches with any key name of just one hierarchy. This means it
+-  `*` matches any key name of just one hierarchy. This means it
 complies with any character except slash or null.
 -  `?` satisfies single characters with the same exclusions.
 -  Additionally, there are ranges and character classes. They can also be inverted.

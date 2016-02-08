@@ -18,7 +18,7 @@ every getenv(3) and secure_getenv(3) library call.
 
 Its main purpose is to:
 
-- have standard ways to modify the environment
+- have a standard ways to modify the environment
 - make relogin (or even restart!) of applications unnecessary
 - allow a hierarchical structure for environment
 - allow settings to only apply for individual applications or only in special context
@@ -49,7 +49,7 @@ To do so, getenv(3) will lookup multiple sources next to searching in the enviro
 3. Then environment will be requested.
 
    E.g. `HOME=/path/to/home kdb elektrify-getenv <application>`
-3. Then `/env/fallback/<key>` will be looked up.
+4. Then `/env/fallback/<key>` will be looked up.
    If found, the key will be returned, if it is a null keys, `getenv` will return `NULL`.
 
    E.g. `kdb set user/env/fallback/HOME /path/to/home`
@@ -89,9 +89,9 @@ Internal Options are available in three different variants:
 
 1. as commandline parameter: `--elektra-<option>`,
    which are *not* passed through exec(3) calls.
-1. as environment variable: `ELEKTRA_<OPTION>`.
+2. as environment variable: `ELEKTRA_<OPTION>`.
    which might be passed through exec(3) calls, but are removed by clearenv(3) calls.
-1. as Elektra KDB entry: `/env/option/<option>`,
+3. as Elektra KDB entry: `/env/option/<option>`,
    which are the way to achieve an option to be enabled for every application.
 
    E.g. `kdb set user/env/option/clearenv ""` to clear the environment for all
@@ -105,7 +105,7 @@ Internal Options are available in three different variants:
 
 ### Contextual Options
  * `--elektra%<name>%=<value>` or `/env/layer/<name>`:
-   Add the contextual information (=layer) `%<name>%` with it's value `<value>`.
+   Add the contextual information (=layer) `%<name>%` with its value `<value>`.
    Note that `%name%` is predefined with `argv[0]` and `%basename%` with
    `basename(argv[0])`.
 
@@ -154,7 +154,7 @@ In the startup-phase (before main is even entered), `getenv(3)` will
 not consider `/env/override/` or `/env/fallback`.
 
 Elektra internally tries to avoid using the environment.
-Some resolvers, however, use it to be conform to some specifications, e.g. XDG.
+Some resolvers, however, use it to conform to some specifications, e.g. XDG.
 Depending on the setup you use, these parameters might be used.
 For more information see:
 
@@ -168,7 +168,7 @@ If you use the standard resolvers, the bug won't have any effect.
 Also note that `--elektra-debug` or `ELEKTRA_DEBUG` does *not* log `getenv(3)` used by plugins
 during the startup-phase.
 
-Commandline Arguments are always to the outmost command, e.g. `nice ls --elektra:COLUMNS=20`
+Command line arguments apply always to the outmost command, e.g. `nice ls --elektra:COLUMNS=20`
 won't have any effect because only for `nice` `COLUMNS` will be set.
 
 

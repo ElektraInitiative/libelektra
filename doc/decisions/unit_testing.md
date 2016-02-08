@@ -4,7 +4,7 @@
 
 The previous unit testing framework started as hack to have a bit more
 than simple asserts. It is not easy to use (needs explicit enumeration
-of all testcases) and lacks of really important features (e.g. output of
+of all testcases) and lacks really important features (e.g. output of
 the assertion that failed).
 
 

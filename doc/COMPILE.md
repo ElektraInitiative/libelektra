@@ -23,7 +23,7 @@ plugin.
 
 ## PREPARATION ##
 
-Elektra is using cmake.
+Elektra uses cmake.
 Tested are cmake version 2.8.9 and version 3.0.2.
 
 To configure Elektra graphically (with curses) run (.. belongs to command):
@@ -33,7 +33,7 @@ To configure Elektra graphically (with curses) run (.. belongs to command):
 and press 'c':
 
 
-All options described here, can also be used with cmake rather then
+All options described here, can also be used with cmake rather than
 ccmake (.. belongs to the command!):
 
 	mkdir build && cd build && cmake -D<OPTION1>=<VAR1> -D<OPTION2>=<VAR2> ..
@@ -270,7 +270,7 @@ Edit that cache entry to change that behaviour.
 Also called system prefix within the documentation.
 
 If you want to create a package afterwards it is ok to use
-pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
+paths that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 
 #### LIB_SUFFIX ####
 Lets you install libraries into architecture specific folder.

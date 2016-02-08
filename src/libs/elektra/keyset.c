@@ -2073,7 +2073,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/key", 0)) == NULL)
 	errorHandler ("Could not Lookup Key");
  * @endcode
  *
- * This is the way multi user Programs should get there configuration and
+ * This is the way multi user programs should get their configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
  *

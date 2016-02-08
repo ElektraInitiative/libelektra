@@ -36,7 +36,7 @@ will replace `ours` with the result providing the package with an automatically 
 configuration which will also be updated in KDB itself.
 
 Additionally, we added two other scripts, `elektra-mount` and `elektra-umount` which act
-as simple wrappers for `kdb mount` and `kdb umount`. That work identically but are more
+as simple wrappers for `kdb mount` and `kdb umount`. They work identically but are more
 script friendly.
 
 ## The Full Command ##
@@ -45,7 +45,7 @@ The full command to use `elektra-merge` to perform a three-way merge on a file m
 by ucf is:
 	ucf --three-way --threeway-merge-command elektra-merge <New File> <Destination>
 
-Thats it! As described above, `elektra-merge` is smart enough to run the whole merge off
+That's it! As described above, `elektra-merge` is smart enough to run the whole merge off
 of the information from that command and utilizes the new `kdb remount` command to
 do so.
 
