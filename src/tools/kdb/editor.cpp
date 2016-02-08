@@ -53,29 +53,10 @@ void EditorCommand::tmpFile()
 bool runAllEditors(std::string filename)
 {
 	using namespace kdb;
-	std::string dirname = "/sw/elektra/kdb/#0/";
-	std::string legacyDirname = "/sw/kdb/current/";
-	KDB kdb;
-	KeySet conf;
-	kdb.get(conf, dirname);
-	kdb.get(conf, legacyDirname);
-
-	Key k = conf.lookup(dirname+"current/editor");
-	if (!k) k = conf.lookup(dirname+"%/editor");
-	if (!k) k = conf.lookup(legacyDirname+"editor");
-	if (k)
-	{
-		std::string editor = k.get<std::string>().c_str();
-		if (runEditor(editor, filename))
-		{
-			return true;
-		} else {
-			std::cerr << "Could not run editor " << editor << std::endl;
-		}
-	}
 	if (runEditor ("/usr/bin/sensible-editor", filename)) return true;
 	if (runEditor ("/usr/bin/editor", filename)) return true;
 	if (runEditor ("/usr/bin/vi", filename)) return true;
+	if (runEditor ("/bin/vi", filename)) return true;
 	return false;
 }
 
