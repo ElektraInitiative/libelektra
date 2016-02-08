@@ -11,6 +11,7 @@ To build pdf documentation you need pdflatex with
 
 	texlive-fonts-recommended
 	texlive-latex-recommended
+	texlive-latex-extra
 
 For the debian package, please refer to debian/control (in the debian
 branch).
