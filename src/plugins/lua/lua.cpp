@@ -30,6 +30,10 @@ extern "C" {
 using namespace ckdb;
 #include <kdberrors.h>
 
+#ifndef LUA_OK
+#define LUA_OK 0
+#endif
+
 static void Lua_fromSWIG(lua_State *L, ckdb::Key *key)
 {
 	swig_type_info *ti = SWIG_TypeQuery(L, "kdb::Key *");
