@@ -159,6 +159,7 @@ void Plugin::check(vector<string> & warnings)
 	if (infos.find("status") == infos.end()) warnings.push_back ("no status information found");
 	else
 	{
+		// check if status is correct
 		std::string statusString = infos["status"];
 		std::istringstream ss (statusString);
 		std::string status;
@@ -179,7 +180,6 @@ void Plugin::check(vector<string> & warnings)
 				}
 			}
 		}
-		// check if status is correct
 	}
 
 	if (infos.find("description") == infos.end()) warnings.push_back ("no description of the plugin found");

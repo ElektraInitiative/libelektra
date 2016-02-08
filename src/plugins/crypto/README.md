@@ -57,8 +57,6 @@ or it may look like:
 
 ## Restrictions ##
 
-The status of this plugin is experimental.
-
 The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
 
 The key derivation is still WIP.
