@@ -234,7 +234,7 @@ TEST(SpecReader, withNeedsResolvedNumerical)
 	bi.resolveNeeds();
 	ASSERT_EQ (std::distance(bi.begin(), bi.end()), 2) << "there should be a resolver and storage added";
 	EXPECT_EQ (bi.begin()[0], PluginSpec("r", "resolver"));
-	EXPECT_EQ (bi.begin()[1], PluginSpec("b", "storage"));
+	EXPECT_EQ (bi.begin()[1], PluginSpec("c", "storage"));
 }
 
 
@@ -313,9 +313,9 @@ TEST(SpecReader, withMetadataPreference)
 	mpd->data [PluginSpec("mathcheck")] ["metadata"] = "check/math";
 	mpd->data [PluginSpec("mathcheck")] ["status"] = "concept unfinished";
 	mpd->data [PluginSpec("fastcheck")] ["metadata"] = "check/math";
-	mpd->data [PluginSpec("fastcheck")] ["status"] = "popular preview";
+	mpd->data [PluginSpec("fastcheck")] ["status"] = "recommended preview";
 	mpd->data [PluginSpec("bestcheck")] ["metadata"] = "check/math";
-	mpd->data [PluginSpec("bestcheck")] ["status"] = "popular";
+	mpd->data [PluginSpec("bestcheck")] ["status"] = "recommended";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
 	sr.readSpecification(KeySet(5,
@@ -340,6 +340,11 @@ TEST(SpecReader, withMetadataPreferenceNumerical)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
+	EXPECT_EQ (PluginDatabase::calculateStatus("WRONG -5"), -5);
+	EXPECT_EQ (PluginDatabase::calculateStatus("-5 WRONG"), -5);
+	EXPECT_EQ (PluginDatabase::calculateStatus("5 WRONG"), 5);
+	EXPECT_EQ (PluginDatabase::calculateStatus("WRONG 5"), 5);
+
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase>();
 	mpd->data [PluginSpec("mathcheck")] ["metadata"] = "check/math";
 	mpd->data [PluginSpec("mathcheck")] ["status"] = "popular -5";

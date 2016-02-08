@@ -83,43 +83,6 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 namespace
 {
 
-// TODO: directly use data from CONTRACT.ini
-const std::map <std::string, int> statusMap=
-{
-	{"popular", 4000},
-	{"productive", 2000},
-	{"specific", 1000},
-	{"unittest", 500},
-	{"tested", 250},
-	{"preview", -50},
-	{"memleak", -250},
-	{"experimental", -500},
-	{"unfinished", -1000},
-	{"concept", -2000},
-	{"discouraged", -4000}
-
-};
-
-int calculateStatus (std::string statusString)
-{
-	int ret = 0;
-	std::istringstream ss (statusString);
-	std::string status;
-	while (ss >> status)
-	{
-		auto it = statusMap.find(status);
-		if (it != statusMap.end())
-		{
-			ret += it->second;
-		}
-		else
-		{
-			ret += stoi(status);
-		}
-	}
-	return ret;
-}
-
 bool hasProvides (PluginDatabase const & pd, std::string which)
 {
 	std::vector<std::string> allPlugins = pd.listAllPlugins();
@@ -142,6 +105,69 @@ bool hasProvides (PluginDatabase const & pd, std::string which)
 	return false;
 }
 
+}
+
+
+// TODO: directly use data from CONTRACT.ini
+const std::map <std::string, int> PluginDatabase::statusMap =
+{
+   {"recommended",  32000},
+   {"productive",    8000},
+   {"maintained",    4000},
+   {"reviewed",      4000},
+   {"conformant",    2000},
+   {"compatible",    2000},
+   {"coverage",      2000},
+   {"specific",      1000},
+                           
+   {"unittest",      1000},
+   {"shelltest",     1000},
+   {"tested",         500},
+   {"nodep",          250},
+   {"libc",           250},
+   {"configurable",    50},
+   {"final",           50},
+   {"preview",        -50},
+   {"memleak",       -250},
+   {"experimental",  -500},
+   {"difficult",     -500},
+   {"unfinished",   -1000},
+   {"old",          -1000},
+   {"nodoc",        -1000},
+   {"concept",      -2000},
+   {"orphan",       -4000},
+   {"obsolete",     -4000},
+   {"discouraged", -32000},
+
+};
+
+
+
+
+
+
+
+int PluginDatabase::calculateStatus (std::string statusString)
+{
+	int ret = 0;
+	std::istringstream ss (statusString);
+	std::string status;
+	while (ss >> status)
+	{
+		auto it = statusMap.find(status);
+		if (it != statusMap.end())
+		{
+			ret += it->second;
+		}
+		else
+		{
+			try {
+				ret += stoi(status);
+			} catch (std::invalid_argument)
+			{}
+		}
+	}
+	return ret;
 }
 
 PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) const
@@ -196,7 +222,7 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 			{
 				if (metadata == which)
 				{
-					int s = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+					int s = calculateStatus (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
 						"status"));
 					foundPlugins.insert(std::make_pair(s, PluginSpec(plugin)));
@@ -238,7 +264,7 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 			{
 				if (provide == which)
 				{
-					int s = calculateStatus(lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
+					int s = calculateStatus (lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
 						KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
 						"status"));
 					foundPlugins.insert(std::make_pair(s, PluginSpec(plugin)));
