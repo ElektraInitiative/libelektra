@@ -296,6 +296,22 @@ struct MissingSymbol: public PluginCheckException
 	}
 };
 
+struct WrongStatus: public PluginCheckException
+{
+	std::string msg;
+	WrongStatus (std::string status)
+	{
+		msg = std::string(std::string("The status \"") + status + "\" is neither a valid enum value nor an integer!");
+	}
+	~WrongStatus() throw()
+	{}
+	virtual const char* what() const throw() override
+	{
+		return msg.c_str();
+	}
+};
+
+
 struct SymbolMismatch: public PluginCheckException
 {
 	std::string msg;

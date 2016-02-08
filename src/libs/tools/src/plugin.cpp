@@ -14,6 +14,7 @@
 #include <kdbplugin.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h> // currently needed for plugin handling
+#include <plugindatabase.hpp>
 #include <helper/keyhelper.hpp>
 
 #include <set>
@@ -154,6 +155,32 @@ void Plugin::check(vector<string> & warnings)
 	if (infos.find("licence") == infos.end()) warnings.push_back ("no licence information found");
 	else if (infos["licence"] != "BSD") warnings.push_back
 		("the licence is not BSD, it might change the overall licence of your elektra installation");
+
+	if (infos.find("status") == infos.end()) warnings.push_back ("no status information found");
+	else
+	{
+		std::string statusString = infos["status"];
+		std::istringstream ss (statusString);
+		std::string status;
+		while (ss >> status)
+		{
+			auto it = PluginDatabase::statusMap.find(status);
+			if (it == PluginDatabase::statusMap.end())
+			{
+				char* endptr;
+				const char * str = status.c_str();
+				errno = 0;
+				long val = strtol(str, &endptr, 10);
+				if (((errno == ERANGE && (val > INT_MAX || val < INT_MIN))
+					|| (errno != 0 && val == 0))
+					|| endptr == str)
+				{
+					throw WrongStatus(status);
+				}
+			}
+		}
+		// check if status is correct
+	}
 
 	if (infos.find("description") == infos.end()) warnings.push_back ("no description of the plugin found");
 
