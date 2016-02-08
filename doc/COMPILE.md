@@ -148,6 +148,9 @@ and
 
 	-DKDB_DEFAULT_STORAGE=dump
 
+The default resolver+storage will write to `KDB_DB_FILE` and `KDB_DB_INIT`
+([for bootstrapping](/doc/help/elektra-bootstrapping.md)).
+
 !!! Note, that you cannot use NODEP or DEFAULT and add other plugins to it.
 Instead, you can pass the list of plugins you want, e.g.:
 
