@@ -98,7 +98,7 @@ int EditorCommand::execute(Cmdline const& cl)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
 	}
-	Key root (cl.arguments[0], KEY_END);
+	Key root = cl.createKey(0);
 
 	KeySet ours;
 	KDB kdb;

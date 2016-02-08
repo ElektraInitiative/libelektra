@@ -30,11 +30,7 @@ int ExportCommand::execute(Cmdline const& cl)
 		throw invalid_argument("need 1 to 3 arguments");
 	}
 
-	Key root (cl.arguments[0], KEY_END);
-	if (!root.isValid())
-	{
-		throw invalid_argument ("root key is not a valid key name");
-	}
+	Key root = cl.createKey(0);
 
 	kdb.get(ks, root);
 	printWarnings(cerr, root);

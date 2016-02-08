@@ -66,7 +66,7 @@ Cmdline::Cmdline (int argc,
 	pluginsConfig(""),
 	ns(""),
 	editor(),
-	namedKeys(),
+	bookmarks(),
 
 	executable(),
 	commandName()
@@ -287,8 +287,8 @@ Cmdline::Cmdline (int argc,
 			k = conf.lookup(dirname+"recommends");
 			if (k) withRecommends = k.get<bool>();
 
-			map nks = conf.get<map>(dirname+"namedkeys");
-			namedKeys.insert(nks.begin(), nks.end());
+			map nks = conf.get<map>(dirname+"bookmarks");
+			bookmarks.insert(nks.begin(), nks.end());
 		}
 	}
 	catch (kdb::KDBException const& ce)
@@ -374,6 +374,63 @@ Cmdline::Cmdline (int argc,
 kdb::KeySet Cmdline::getPluginsConfig(string basepath) const
 {
 	return kdb::tools::parsePluginArguments(pluginsConfig, basepath);
+}
+
+/**
+ * @brief create a key from argument number pos
+ *
+ * @param pos the position in cl.arguments that tells us the name of the key to create
+ *
+ * @throw invalid_argument if the argument is not a valid keyname
+ *
+ * @return a newly created key from the name found in cl.arguments[pos]
+ */
+kdb::Key Cmdline::createKey(int pos) const
+{
+	std::string name = arguments[pos];
+	// std::cerr << "Using " << name << std::endl;
+	// for (auto const & n : bookmarks) std::cout << "nks: " << n.second << std::endl;
+	if (name.empty())
+	{
+		throw invalid_argument("<empty string> is not an valid keyname");
+	}
+
+	if (name[0] == '+')
+	{
+		size_t found = name.find('/');
+		std::string bookmark;
+		std::string restKey;
+		if (found != std::string::npos)
+		{
+			bookmark = name.substr(1, found-1);
+			restKey = name.substr(found, name.length()-found);
+		}
+		else
+		{
+			bookmark = name.substr(1, name.length()-1);
+		}
+		auto realKeyIt = bookmarks.find(bookmark);
+		std::string realKey;
+		if (realKeyIt == bookmarks.end())
+		{
+			throw invalid_argument("cannot find bookmark " + bookmark);
+		}
+		realKey = realKeyIt->second;
+		name = realKey+"/"+restKey;
+		if (verbose)
+		{
+			std::cout << "using bookmark " << bookmark << " which is: " << realKey << "-" << restKey << std::endl;
+		}
+	}
+
+	kdb::Key root(name, KEY_END);
+
+	if (!root.isValid())
+	{
+		throw invalid_argument(name + " is not an valid keyname");
+	}
+
+	return root;
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)

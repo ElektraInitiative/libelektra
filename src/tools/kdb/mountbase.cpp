@@ -91,7 +91,7 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 	}
 	else
 	{
-		mp = cl.arguments[1];
+		mp = cl.createKey(1).getName();
 	}
 }
 

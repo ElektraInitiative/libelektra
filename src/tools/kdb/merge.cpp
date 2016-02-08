@@ -41,29 +41,10 @@ int MergeCommand::execute(Cmdline const& cl)
 		throw invalid_argument ("wrong number of arguments, 4 needed");
 	}
 
-	Key oursRoot (cl.arguments[0], KEY_END);
-	if (!oursRoot.isValid ())
-	{
-		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
-	}
-
-	Key theirsRoot (cl.arguments[1], KEY_END);
-	if (!theirsRoot.isValid ())
-	{
-		throw invalid_argument (cl.arguments[1] + " is not a valid keyname");
-	}
-
-	Key baseRoot (cl.arguments[2], KEY_END);
-	if (!baseRoot.isValid ())
-	{
-		throw invalid_argument (cl.arguments[2] + " is not a valid keyname");
-	}
-
-	Key resultRoot (cl.arguments[3], KEY_END);
-	if (!baseRoot.isValid ())
-	{
-		throw invalid_argument (cl.arguments[3] + " is not a valid keyname");
-	}
+	Key oursRoot = cl.createKey(0);
+	Key theirsRoot = cl.createKey(1);
+	Key baseRoot  = cl.createKey(2);
+	Key resultRoot = cl.createKey(3);
 
 	KeySet ours;
 	KeySet theirs;

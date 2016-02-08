@@ -27,6 +27,7 @@ class Command;
 
 namespace kdb
 {
+	class Key;
 	class KeySet;
 }
 
@@ -78,7 +79,9 @@ public:
 	std::string editor;
 
 	typedef std::map<std::string, std::string> map;
-	map namedKeys;
+	map bookmarks;
+
+	kdb::Key createKey(int pos) const;
 
 	kdb::KeySet getPluginsConfig(std::string basepath="user/") const;
 

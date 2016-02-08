@@ -31,18 +31,10 @@ int MvCommand::execute (Cmdline const& cl)
 	}
 
 	KeySet conf;
-	Key sourceKey(cl.arguments[0], KEY_END);
-	if (!sourceKey.isValid())
-	{
-		throw invalid_argument("Source given is not a valid keyname");
-	}
+	Key sourceKey = cl.createKey(0);
 
-	Key destKey(cl.arguments[1], KEY_END);
-	if (!destKey.isValid())
-	{
-		throw invalid_argument("Destination given is not a valid keyname");
-	}
-	string newDirName = cl.arguments[1];
+	Key destKey = cl.createKey(1);
+	string newDirName = destKey.getName();
 
 	Key root = tools::helper::commonKeyName(sourceKey, destKey);
 	if (cl.verbose) std::cout << "using common basename: " << root.getName() << std::endl;

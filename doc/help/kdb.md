@@ -31,6 +31,48 @@ Run `kdb list` for a list of plugins.
 
 The man pages are also displayed when invoking a kdb-tool with `--help`.
 
+## CONFIGURATION
+
+The KDB utility reads its own configuration from three sources:
+
+1. /sw/kdb/current/ (for legacy configuration)
+2. /sw/elektra/kdb/#0/%/ (for empty profile)
+3. /sw/elektra/kdb/#0/current/ (for current profile)
+
+The last source where a configuration value is found, wins.
+
+
+## BOOKMARKS
+
+Elektra recommends [to use rather long pathes](/doc/tutorials/application-integration.md)
+because it ensures flexibility in the future (e.g. to use profiles and have a compatible
+path for new major versions of configuration).
+
+Long pathes are, however, cumbersome to enter in the CLI.
+Thus one can define bookmarks. Bookmarks are key-names that start with `+`.
+They are only recognized by the `kdb` tool or tools that explicit have
+support for it. You application should not depend on the presence of a
+bookmark.
+
+Bookmarks are stored below:
+
+	/sw/elektra/kdb/#0/current/bookmarks
+
+For every key found there, a new bookmark will be introduced.
+
+Bookmarks can be used to start key-names by using `+` (plus) as first character.
+The string until the first `/` will be considered as bookmark.
+
+For example, if you set the bookmark kdb:
+
+	kdb set user/sw/elektra/kdb/#0/current/bookmarks
+	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+
+You are able to use:
+
+	kdb ls +kdb/bookmarks
+	kdb get +kdb/format
+
 ## RETURN VALUES
 
 

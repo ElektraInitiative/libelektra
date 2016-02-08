@@ -27,10 +27,10 @@ int ValidationCommand::execute(Cmdline const& cl)
 	{
 		throw invalid_argument("need 3 or 4 arguments");
 	}
-	string keyname = cl.arguments[0];
 
 	KeySet conf;
-	Key parentKey(keyname, KEY_END);
+	Key parentKey = cl.createKey(0);
+	string keyname = parentKey.getName();
 	kdb.get(conf, parentKey);
 	Key k = conf.lookup(keyname);
 

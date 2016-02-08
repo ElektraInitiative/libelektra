@@ -492,11 +492,9 @@ int TestCommand::execute(Cmdline const& cl)
 		}
 	}
 
-	root.setName(cl.arguments[0]);
-	if (root.getNameSize() <= 1)
-	{
-		throw invalid_argument ("Not a valid root name");
-	}
+	printWarnings(cerr, root);
+
+	root = cl.createKey(0);
 
 	KDB kdb;
 	KeySet original;
@@ -510,6 +508,8 @@ int TestCommand::execute(Cmdline const& cl)
 	cout << "Test suite is now finished." << endl;
 	cout << "Now restoring the original keyset." << endl;
 	kdb.set(original, root);
+
+	printWarnings(cerr, root);
 
 	return nrError;
 }

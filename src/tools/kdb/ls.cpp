@@ -27,12 +27,9 @@ int LsCommand::execute(Cmdline const& cl)
 		throw invalid_argument("1 argument required");
 	}
 
-	root.setName(cl.arguments[0]);
-	if (!root.isValid())
-	{
-		throw invalid_argument(cl.arguments[0] +
-				" is not a valid keyname");
-	}
+	printWarnings(cerr, root);
+
+	root = cl.createKey(0);
 
 	kdb.get(ks, root);
 

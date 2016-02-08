@@ -32,7 +32,7 @@ void SpecMountCommand::setMountpoint (Cmdline const& cl)
 		throw invalid_argument("you need to provide one argument: spec-mountpoint");
 	}
 
-	mp = cl.arguments[0];
+	mp = cl.createKey(0).getName();
 	Key mpk(mp, KEY_CASCADING_NAME, KEY_END);
 
 	if (!mpk.isValid())

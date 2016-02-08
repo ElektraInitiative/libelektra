@@ -26,11 +26,7 @@ int MetaLsCommand::execute (Cmdline const& cl)
 		throw invalid_argument("1 argument required");
 	}
 
-	Key root (cl.arguments[0], KEY_END);
-	if (!root.isValid())
-	{
-		throw invalid_argument(cl.arguments[0] + " is not a valid keyname");
-	}
+	Key root = cl.createKey(0);
 
 	kdb.get(ks, root);
 

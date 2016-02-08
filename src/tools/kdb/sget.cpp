@@ -29,11 +29,7 @@ int ShellGetCommand::execute (Cmdline const& cl)
 	{
 		kdb::KDB kdb;
 		KeySet conf;
-		Key x(cl.arguments[0], KEY_END);
-		if (!x.isValid())
-		{
-			throw invalid_argument(cl.arguments[0] + " is not an valid keyname");
-		}
+		Key x = cl.createKey(0);
 
 		kdb.get(conf, x);
 		Key k = conf.lookup(x);

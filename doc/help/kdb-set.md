@@ -32,9 +32,9 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
 
 - `/sw/kdb/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
-  Note, that as root you can set `user/sw/kdb/current/namespace` to `system` to
-  get the expected default.
-  (by default the namespace is user)
+  By default the namespace is user, except `kdb` is used as root, then `system`
+  is the default.
+
 
 ## EXAMPLES
 
@@ -47,6 +47,13 @@ To create a new key with a null value:
 To set a key to an empty value:
 	`kdb set user/example/key ""`
 
+To create bookmarks:
+
+	kdb set user/sw/elektra/kdb/#0/current/bookmarks
+	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+
+
 ## SEE ALSO
 
+- [kdb(1)](kdb.md) for how to configure the kdb utility and use the bookmarks.
 - For difference between empty and null values, see [elektra-values(7)](elektra-values.md)
