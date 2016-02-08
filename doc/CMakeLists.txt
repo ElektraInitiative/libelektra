@@ -86,7 +86,7 @@ if (DOXYGEN_FOUND)
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
 			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
-			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex markdownlinkconverter
+			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex markdownlinkconverter latex
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/
 		)
 
