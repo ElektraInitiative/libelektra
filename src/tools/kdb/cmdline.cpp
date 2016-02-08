@@ -67,6 +67,7 @@ Cmdline::Cmdline (int argc,
 	ns(""),
 	editor(),
 	bookmarks(),
+	profile("current"),
 
 	executable(),
 	commandName()
@@ -74,7 +75,6 @@ Cmdline::Cmdline (int argc,
 	extern int optind;
 	extern char *optarg;
 
-	int index = 0;
 	int opt;
 
 	size_t optionPos;
@@ -87,7 +87,7 @@ Cmdline::Cmdline (int argc,
 	helpText += "\n";
 
 	string allOptions = command->getShortOptions();
-	allOptions += "HV";
+	allOptions += "HVp";
 
 	std::set<string::value_type> unique_sorted_chars (allOptions.begin(), allOptions.end());
 	string acceptedOptions (unique_sorted_chars.begin(), unique_sorted_chars.end());
@@ -165,6 +165,15 @@ Cmdline::Cmdline (int argc,
 				"-R --resolver <name>     Specify the resolver plugin to use\n"
 				"                         if no resolver is given, the default resolver is used.\n"
 				"";
+	}
+	optionPos = acceptedOptions.find('p');
+	if (optionPos!=string::npos)
+	{
+		acceptedOptions.insert(optionPos+1, ":");
+		option o = {"profile", required_argument, nullptr, 'p'};
+		long_options.push_back(o);
+		helpText +=
+			"-p --profile <name>              Use a different profile for kdb configuration";
 	}
 	optionPos = acceptedOptions.find('s');
 	if (optionPos!=string::npos)
@@ -249,6 +258,28 @@ Cmdline::Cmdline (int argc,
 		helpText += "-c --plugins-config      Add a plugin configuration.\n";
 	}
 
+	int index = 0;
+	option o = {nullptr, 0, nullptr, 0};
+	long_options.push_back(o);
+
+	executable = argv[0];
+	commandName = argv[1];
+
+	opterr = 0;
+
+	while ((opt = getopt_long (argc, argv,
+					acceptedOptions.c_str(),
+					&long_options[0], &index)) != EOF)
+	{
+		switch (opt)
+		{
+		case 'p': profile = optarg; break;
+		default:  // ignore everything else for now
+			  break;
+		}
+	}
+
+
 	try {
 		using namespace kdb;
 		/*XXX: Step 4: use default from KDB, if available.*/
@@ -261,9 +292,9 @@ Cmdline::Cmdline (int argc,
 			switch (i)
 			{
 			// prefer later dirnames (will override)
-			case 0: dirname = "/sw/kdb/current/"; break; // legacy
+			case 0: dirname = "/sw/kdb/"+profile+"/"; break; // legacy
 			case 1: dirname = "/sw/elektra/kdb/#0/%/"; break; // no profile
-			case 2: dirname = "/sw/elektra/kdb/#0/current/";
+			case 2: dirname = "/sw/elektra/kdb/#0/"+profile+"/";
 				break; // current profile
 			}
 
@@ -298,19 +329,17 @@ Cmdline::Cmdline (int argc,
 			  << std::endl;
 	}
 
-	option o = {nullptr, 0, nullptr, 0};
-	long_options.push_back(o);
+	// reinit
+	index = 0;
+	optind = 1;
 
-	executable = argv[0];
-	commandName = argv[1];
-
-	if (dynamic_cast<ExternalCommand*>(command))
+	if (!dynamic_cast<ExternalCommand*>(command))
 	{
 		// do not print to stderr for external commands,
 		// we do not know which options they have and
 		// otherwise maybe wrong "invalid/unrecognized option"
 		// are reported to stderr.
-		opterr = 0;
+		opterr = 1;
 	}
 
 	while ((opt = getopt_long (argc, argv,

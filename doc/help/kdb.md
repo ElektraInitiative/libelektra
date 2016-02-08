@@ -35,11 +35,16 @@ The man pages are also displayed when invoking a kdb-tool with `--help`.
 
 The KDB utility reads its own configuration from three sources:
 
-1. /sw/kdb/current/ (for legacy configuration)
+1. /sw/kdb/**profile**/ (for legacy configuration)
 2. /sw/elektra/kdb/#0/%/ (for empty profile)
-3. /sw/elektra/kdb/#0/current/ (for current profile)
+3. /sw/elektra/kdb/#0/**profile**/ (for current profile)
 
 The last source where a configuration value is found, wins.
+
+## PROFILES
+
+Profiles allow users to change many/all configuration options of a tool
+at once.
 
 
 ## BOOKMARKS
@@ -101,6 +106,8 @@ Commonly used options for all programs:
    Show the man page.
 - `-V`, `--version`:
    Print version info.
+- `-p <profile>`, `--profile <profile>`:
+   Use a different profile instead of current.
 
 ## SEE ALSO
 

@@ -80,6 +80,7 @@ public:
 
 	typedef std::map<std::string, std::string> map;
 	map bookmarks;
+	std::string profile;
 
 	kdb::Key createKey(int pos) const;
 

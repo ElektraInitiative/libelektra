@@ -138,7 +138,6 @@ int main(int argc, char ** argv)
 
 		if (cl.invalidOpt)
 		{
-			cerr << "Invalid options passed\n" << endl;
 			cerr << cl << endl;
 			return 1;
 		}
