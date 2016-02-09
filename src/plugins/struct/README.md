@@ -6,7 +6,7 @@
 - infos/ordering = check
 - infos/placements = presetstorage
 - infos/status = unfinished concept
-- infos/description = Copies meta data to keys using structbing
+- infos/description = Copies meta data to keys using struct
 
 ## Introduction ##
 

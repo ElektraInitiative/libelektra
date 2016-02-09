@@ -5,7 +5,11 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
+- infos/status = experimental unfinished memleak
+#else
 - infos/status = experimental unfinished
+#endif
 - infos/metadata = crypto/encrypt
 - infos/description = Cryptographic operations
 
