@@ -33,12 +33,6 @@ void SpecMountCommand::setMountpoint (Cmdline const& cl)
 	}
 
 	mp = cl.createKey(0).getName();
-	Key mpk(mp, KEY_CASCADING_NAME, KEY_END);
-
-	if (!mpk.isValid())
-	{
-		throw invalid_argument(mp + " is not a valid mountpoint");
-	}
 
 	if (mp.at(0) != '/')
 	{
@@ -60,7 +54,12 @@ void SpecMountCommand::buildBackend (Cmdline const& cl)
 	for (auto & p : backends)
 	{
 		auto backend = p.second;
-		// TODO use p.first; // relative mountpoint
+		if (cl.verbose)
+		{
+			std::cout << "Got mountpoint from " << p.first.getName() << " with " << backend.nodes
+				  << " nodes, configfile: " << backend.getConfigFile()
+				  << " and mountpoint: " << backend.getMountpoint() << std::endl;
+		}
 
 		backend.needPlugin (cl.resolver);
 		backend.needPlugin ("storage");
