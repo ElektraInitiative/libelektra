@@ -35,6 +35,7 @@ void GlobalMountCommand::buildBackend (Cmdline const& cl)
 
 	// Call it a day
 	outputMissingRecommends(backend.resolveNeeds(cl.withRecommends));
+	mountConf.cut (Key("system/elektra/globalplugins", KEY_END));
 	backend.serialize (mountConf);
 }
 
