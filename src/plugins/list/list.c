@@ -252,7 +252,8 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 			keyDel(userCutPoint);
 			keyDel(sysConfCutPoint);
 			keyDel(toRemove);
-			slave = elektraPluginOpen(name, modules, realPluginConfig, parentKey);
+			slave = elektraPluginOpen(name, modules, ksDup(realPluginConfig), parentKey);
+			ksDel(realPluginConfig);
 			if (!slave)
 			    goto error;
 			Key *slaveKey = keyNew(name, KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
