@@ -317,7 +317,8 @@ void addLayers()
 	while ((c = ksNext(elektraConfig)))
 	{
 		std::string fullName = keyName(c);
-		if (fullName.substr(fullName.find('/'), prefix.size()) == prefix)
+		size_t pos = fullName.find('/');
+		if (pos != string::npos && fullName.substr(pos, prefix.size()) == prefix)
 		{
 			std::string cascadingName = fullName.substr(fullName.find('/'));
 			Key * found = ksLookupByName(lookupConfig, cascadingName.c_str(), 0);
