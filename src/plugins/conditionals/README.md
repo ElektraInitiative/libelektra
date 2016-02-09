@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = presetstorage
 - infos/status = maintained unittest nodep libc preview
-- infos/metadata = check/condition
+- infos/metadata = check/condition assign/condition
 - infos/description =
 
 ## Introduction ##
@@ -24,6 +24,12 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
+### Assign Syntax ###
+
+`(IF-condition) ? ('ThenValue') : ('ElseValue')`
+
+Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign` is used.
+
 
 ## Example ##
 
@@ -39,3 +45,13 @@ Another full example:
     kdb set user/tmount/conditionals/hkey hello
     kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
     kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
+
+Assignment example:
+
+	kdb mount conditionals.dump /tmount/conditionals conditionals dump
+	kdb set user/tmount/conditionals/hkey Hello
+	kdb setmeta user/tmount/conditionals/hkey assign "(hkey == 'Hello') ? ('World')"
+	
+	kdb get user/tmount/conditionals/hkey 
+	>World 	
+
