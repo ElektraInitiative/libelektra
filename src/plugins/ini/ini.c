@@ -1349,7 +1349,8 @@ static void stripInternalData(Key *parentKey ELEKTRA_UNUSED, KeySet *ks)
 			}
 			keySetName(newKey, newName);
 			if(strcmp(keyName(parentKey), keyName(newKey)))
-				ksAppendKey(newKS, newKey);
+				ksAppendKey(newKS, keyDup(newKey));
+			keyDel(newKey);
 			elektraFree(oldName);
 			elektraFree(newName);
 		}

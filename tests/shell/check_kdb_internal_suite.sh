@@ -26,7 +26,7 @@ do
 		;;
     "ini")
         MOUNT_PLUGIN="$PLUGIN"
-        TESTS="basic string"
+        TESTS="basic string umlauts"
         ;;
 	"line")
 		TESTS="basic"
