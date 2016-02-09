@@ -4,11 +4,21 @@
 #include <fnmatch.h>
 #include <kdbhelper.h>
 #include <kdbease.h>
-#include <kdbprivate.h>
 
 #include "metafunctions.h"
 
-void elektraMetaArrayAdd(Key *key, const char *metaName, const char *value)
+
+/*
+ * creates an metadata array or appends another element to an existing metadata array
+ * e.g.
+ * Key *key = keyNew("user/test", KEY_END);
+ * elektraMetaArrayAdd(key, "array", "test0");
+ * key now has "test/#0" with value "test0" as metadata
+ * elektraMetaArrayAdd(key, "array", "test1");
+ * appends "test/#1" with value "test1" to key
+ */
+
+void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 {
 	const Key *meta = keyGetMeta(key, metaName);
 	Key *arrayKey;
@@ -30,7 +40,12 @@ void elektraMetaArrayAdd(Key *key, const char *metaName, const char *value)
 	keyDel(arrayKey);
 }
 
-char * elektraMetaArrayToString(Key *key, const char *metaName, const char *delim)
+/*
+ * returns the metakey array as a string separated by delim
+ * the return value must be freed
+ */
+
+char * elektraMetaArrayToString (Key * key, const char * metaName, const char * delim)
 {
 		char *result = NULL;
 		Key *lookupElem = keyDup(keyGetMeta(key, metaName));
