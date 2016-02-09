@@ -93,6 +93,10 @@ if (DOXYGEN_FOUND)
 		add_custom_target (pdf ALL
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf
 		)
+
+		# fix for issue #470
+		add_custom_target (.NOTPARALLEL pdf)
+
 	endif (WITH_LATEX)
 else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
