@@ -11,9 +11,11 @@
 
 ## Introduction ##
 
-This plugin uses if-then-else like conditions stored in the metakey `check/condition` to validate data.
+This plugin uses if-then-else like conditions.
 
-## Syntax ##
+## Check Syntax ##
+
+Stored in the metakey `check/condition` to validate data is:
 
 `(IF-condition) ? (THEN-condition) : (ELSE-condition)` where the ELSE-condition is optional
 
@@ -24,11 +26,13 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
+
 ### Assign Syntax ###
 
 `(IF-condition) ? ('ThenValue') : ('ElseValue')`
 
-Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign` is used.
+Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign/condition` is used.
+
 
 
 ## Example ##
@@ -40,11 +44,11 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 
 Another full example:
 
-    kdb mount conditionals.dump /tmount/conditionals conditionals dump
-    kdb set user/tmount/conditionals/fkey 3.0
-    kdb set user/tmount/conditionals/hkey hello
-    kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
-    kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
+	kdb mount conditionals.dump /tmount/conditionals conditionals dump
+	kdb set user/tmount/conditionals/fkey 3.0
+	kdb set user/tmount/conditionals/hkey hello
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
 
 Assignment example:
 
