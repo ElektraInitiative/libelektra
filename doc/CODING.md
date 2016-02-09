@@ -57,7 +57,7 @@ See [DESIGN](DESIGN.md) document too, they complement each other.
 
  * Functions should not exceed 100 lines.
  * Files should not exceed 1000 lines.
- * A line should not be longer than 80 characters.
+ * A line should not be longer than 140 characters.
 
 Split up when those limits are reached.
 Rationale: Readability with split windows.
@@ -65,13 +65,13 @@ Rationale: Readability with split windows.
 - Indentation
 
  * Use tabs for indentation.
- * One tab equals 8 spaces
+ * One tab equals 8 spaces.
 
 - Blocks
 
  * Use blocks even for single line statements.
- * Curly braces go on a line on their own on the previous indentation level
- * Avoid multiple variable declarations at one place
+ * Curly braces go on a line on their own on the previous indentation level.
+ * Avoid multiple variable declarations at one place.
  * Declare Variables as late as possible, preferable within blocks.
 
 - Naming
