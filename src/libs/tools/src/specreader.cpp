@@ -2,6 +2,8 @@
 
 #include <backendbuilder.hpp>
 
+#include <helper/keyhelper.hpp>
+
 #include <unordered_set>
 
 
@@ -128,7 +130,10 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 	ks = cks;
 	mp = ks.head().dup();
 
-	bb.setMountpoint (mp, mountConf);
+	Key rmp (mp.dup());
+	helper::removeNamespace (rmp);
+
+	bb.setMountpoint (rmp, mountConf);
 
 	processKey (mp);
 	bb.nodes ++; // count mp
