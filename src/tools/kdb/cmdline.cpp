@@ -134,8 +134,7 @@ Cmdline::Cmdline (int argc,
 	{
 		option o = {"interactive", no_argument, nullptr, 'i'};
 		long_options.push_back(o);
-		helpText += "-i --interactive         Instead of passing all information by parameters\n";
-		helpText += "                         ask the user interactively.\n";
+		helpText += "-i --interactive         Ask the user interactively.\n";
 	}
 	if (acceptedOptions.find('n')!=string::npos)
 	{
@@ -161,10 +160,7 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"resolver", required_argument, nullptr, 'R'};
 		long_options.push_back (o);
-		helpText +=
-				"-R --resolver <name>     Specify the resolver plugin to use\n"
-				"                         if no resolver is given, the default resolver is used.\n"
-				"";
+		helpText += "-R --resolver <name>     Specify the resolver plugin to use\n";
 	}
 	optionPos = acceptedOptions.find('p');
 	if (optionPos!=string::npos)
@@ -172,8 +168,7 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"profile", required_argument, nullptr, 'p'};
 		long_options.push_back(o);
-		helpText +=
-			"-p --profile <name>              Use a different profile for kdb configuration";
+		helpText += "-p --profile <name>      Use a different profile for kdb configuration\n";
 	}
 	optionPos = acceptedOptions.find('s');
 	if (optionPos!=string::npos)
@@ -181,8 +176,7 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"strategy", required_argument, nullptr, 's'};
 		long_options.push_back(o);
-		helpText +=
-			"-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n";
+		helpText += "-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
@@ -360,6 +354,7 @@ Cmdline::Cmdline (int argc,
 		case 'n': noNewline = true; break;
 		case 't': test = true; break;
 		case 'r': recursive = true; break;
+		case 'p': break; // already handled above
 		case 'R': resolver = optarg; break;
 		case 's': strategy = optarg; break;
 		case 'v': verbose = true; break;
