@@ -1665,7 +1665,6 @@ inline int Key::del ()
 
 namespace std
 {
-	template< class Key > struct hash;
 	/**
 	 * @brief Support for putting Key in a hash
 	 */
