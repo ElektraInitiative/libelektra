@@ -94,9 +94,7 @@ if (DOXYGEN_FOUND)
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf
 		)
 
-		add_dependencies (pdf latex)
-
-		# fix for issue #470
+		# needed because some .tex files are written after refman.tex (#470):
 		add_custom_target (.NOTPARALLEL pdf)
 
 	endif (WITH_LATEX)
