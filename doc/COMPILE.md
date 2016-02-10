@@ -5,7 +5,7 @@
 For the base system you only need cmake and build-essential (make, gcc,
 some unix tools).
 
-To build documentation you need doxygen and graphviz.
+To build documentation you need doxygen, graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files).
 
 To build pdf documentation you need pdflatex with
 
