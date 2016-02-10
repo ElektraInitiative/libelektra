@@ -136,6 +136,9 @@ public:
 	void fillPlugins(BackendInterface & b) const;
 };
 
+/**
+ * @brief Build global plugins
+ */
 class GlobalPluginsBuilder : public BackendBuilder
 {
 public:
@@ -146,6 +149,8 @@ public:
 
 /**
  * @brief High-level functionality to build a mountpoint
+ *
+ * will enforce resolver and storage to be present
  */
 class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 {
