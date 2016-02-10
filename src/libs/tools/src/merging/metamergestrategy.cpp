@@ -85,7 +85,7 @@ void MetaMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 			// without this strategy restoring the value the value would be lost
 			// this happens only for CONFLICT_META <--> CONFLICT_META conflicts
 			// add a test for this behaviour
-			conflictKey.setString(ourKey.getString());
+			copyKeyValue(ourKey, conflictKey);
 			result.resolveConflict (conflictKey);
 			result.addMergeKey (conflictKey);
 		}

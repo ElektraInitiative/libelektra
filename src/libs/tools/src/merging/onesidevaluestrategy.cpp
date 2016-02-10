@@ -56,7 +56,7 @@ void OneSideValueStrategy::resolveConflict(const MergeTask& task, Key& conflictK
 
 		if (winningKey)
 		{
-			conflictKey.setString (winningKey.getString ());
+			copyKeyValue(winningKey, conflictKey);
 			result.resolveConflict (conflictKey);
 			result.addMergeKey (conflictKey);
 		}

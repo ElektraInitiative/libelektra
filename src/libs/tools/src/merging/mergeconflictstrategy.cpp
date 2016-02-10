@@ -35,6 +35,21 @@ ConflictOperation MergeConflictStrategy::getTheirConflictOperation(const Key& co
 	return theirOperation;
 }
 
+void MergeConflictStrategy::copyKeyValue(const Key& source, Key& destination)
+{
+	if (source && destination)
+	{
+		if (source.isString ())
+		{
+			destination.setString (source.getString ());
+		}
+		else
+		{
+			destination.setBinary (source.getBinary ().c_str (), source.getBinarySize ());
+		}
+	}
+}
+
 }
 }
 }
