@@ -31,10 +31,12 @@
 #define CMAKE_CACHE_VARNAME "Elektra_SOURCE_DIR"
 #define TEMP_FILENAME "temp"
 #define INVALIDLINK_MESS "%s|%i col 0| warning: invalid link '%s'\n"
+#define HTTPLINK_FORMAT "%s|%i col 0| %s\n"
+#define HTTPLINK_FILENAME "httpLinks.txt"
 
 // Link Blacklist: do not convert links with the following starting and ending
-// ignore http, @ref and #anchor
-const char * const ignoreTargetStart[] = { "#", "@", "http", "" };
+// ignore http, ftp, @ref and #anchor
+const char * const ignoreTargetStart[] = { "#", "@", "http", "ftp", "" };
 
 // Links with this endings will be transformed to links to the source.
 // If not Blacklisted.
@@ -213,6 +215,11 @@ static bool convertTitle (FILE * input, FILE * output, char * filenameInElektra)
  */
 static void convertLinks (FILE * input, FILE * output, char * inputFilename, int indexofElektraRoot)
 {
+	FILE * httplinks = fopen (HTTPLINK_FILENAME, "a");
+	if (!httplinks)
+	{
+		fprintf (stderr, "WARNING http link file %s cound not be opened\n", HTTPLINK_FILENAME);
+	}
 	int lineCount = 0;
 	int c;
 	fpos_t pos;
@@ -269,6 +276,8 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 				if (strncmp (ignoreTargetStart[i], target, strlen (ignoreTargetStart[i])) == 0)
 				{
 					targetOK = false;
+					if ((!strcmp (ignoreTargetStart[i], "ftp") || !strcmp (ignoreTargetStart[i], "http")) && httplinks)
+						fprintf (httplinks, HTTPLINK_FORMAT, &inputFilename[indexofElektraRoot], lineCount, target);
 					break;
 				}
 			}
@@ -314,6 +323,10 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 			fprintf (output, "%c", c);
 		}
 		state = newstate;
+	}
+	if (httplinks)
+	{
+		fclose (httplinks);
 	}
 }
 
