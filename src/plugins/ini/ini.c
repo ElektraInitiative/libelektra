@@ -424,7 +424,7 @@ static int iniCommentToMeta (void *vhandle, const char *comment)
 	}
 	else
 	{
-		size_t newCommentSize = strlen (handle->collectedComment) + commentSize + 1;
+		size_t newCommentSize = strlen (handle->collectedComment) + commentSize + 2;
 		handle->collectedComment = realloc (handle->collectedComment, newCommentSize);
 
 		if (!handle->collectedComment) return 0;
