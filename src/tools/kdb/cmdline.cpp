@@ -63,6 +63,7 @@ Cmdline::Cmdline (int argc,
 	all(),
 	format("dump"),
 	plugins("sync"),
+	globalPlugins("spec"),
 	pluginsConfig(""),
 	ns(""),
 	editor(),
@@ -302,6 +303,9 @@ Cmdline::Cmdline (int argc,
 
 			k = conf.lookup(dirname+"plugins");
 			if (k) plugins = k.get<string>();
+
+			k = conf.lookup(dirname+"plugins/global");
+			if (k) globalPlugins = k.get<string>();
 
 			k = conf.lookup(dirname+"namespace");
 			if (k) ns = k.get<string>();

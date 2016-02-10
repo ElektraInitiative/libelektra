@@ -74,6 +74,7 @@ public:
 	bool all; /*!< Consider all keys for lookup */
 	std::string format;
 	std::string plugins;
+	std::string globalPlugins;
 	std::string pluginsConfig;
 	std::string ns;
 	std::string editor;

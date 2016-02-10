@@ -29,13 +29,12 @@ void GlobalMountCommand::buildBackend (Cmdline const& cl)
 {
 	GlobalPluginsBuilder backend;
 
-	// TODO: impl globalPlugins conf param
-	// backend.addPlugins (parseArguments (cl.globalPlugins));
+	backend.addPlugins (parseArguments (cl.globalPlugins));
 	backend.addPlugins (parseArguments (cl.arguments.begin(), cl.arguments.end()));
 
 	// Call it a day
 	outputMissingRecommends(backend.resolveNeeds(cl.withRecommends));
-	mountConf.cut (Key("system/elektra/globalplugins", KEY_END));
+	mountConf.cut (Key(GlobalPluginsBuilder::globalPluginsPath, KEY_END));
 	backend.serialize (mountConf);
 }
 
