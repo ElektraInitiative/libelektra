@@ -199,7 +199,7 @@ static void test_commentIniRead(char *fileName)
 static void test_commentIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
-			"/tmp/commentIniWrite.out", KEY_END);
+			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(0,
 		   KS_END);
 	PLUGIN_OPEN("ini");

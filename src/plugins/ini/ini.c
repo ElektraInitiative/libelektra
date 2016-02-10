@@ -101,7 +101,16 @@ static void keyAddUnescapedBasePath (Key * key, const char * path)
 		char *buffer = elektraMalloc(size+1);
 		strncpy(buffer, p, size);
 		buffer[size] = 0;
-		keyAddName(key, buffer);
+		int ret = keyAddName(key, buffer);
+		if(ret == -1)
+		{
+			char *tmp = elektraMalloc(keyGetFullNameSize(key) + strlen(buffer));
+			keyGetFullName(key, tmp, keyGetFullNameSize(key));
+			strcat(tmp, "/");
+			strcat(tmp, buffer);
+			keySetName(key, tmp);
+			elektraFree(tmp);
+		}
 		elektraFree(buffer);
 		p=keyNameGetOneLevel(p+size,&size);
 	}
@@ -313,7 +322,7 @@ static int iniKeyToElektraArray(CallbackHandle *handle, Key *existingKey, Key *a
 static int iniKeyToElektraKey (void *vhandle, const char *section, const char *name, const char *value, unsigned short lineContinuation)
 {
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
-	if(!section && !name)
+	if((!section || *section == '\0') && (!name || *name == '\0'))
 	{
 		keySetString(handle->parentKey, value);
 		ksAppendKey(handle->result, keyDup(handle->parentKey));
@@ -369,7 +378,8 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 		}
 		else if(!lineContinuation)
 		{
-			ELEKTRA_SET_ERRORF(141, handle->parentKey, "Key: %s\n", name);
+			keyDel(appendKey);
+			ELEKTRA_SET_ERRORF(141, handle->parentKey, "Key: %s\n", keyName(existingKey));
 			return -1;
 		}
 	}
@@ -620,7 +630,6 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 {
 	/* get all keys */
 	int errnosave = errno;
-
 	keySetMeta(parentKey, "ini/section", "0");
 	keySetMeta(parentKey, "ini/lastSection", "0");
 
@@ -1119,7 +1128,7 @@ static int containsSpecialCharacter(const char *str)
 	    return 1;
 	while(*ptr)
 	{
-		if(*ptr == '"' || *ptr == '=')
+		if(*ptr == '"' || *ptr == '=' || *ptr == ':')
 		{
 			return 1;
 		}
@@ -1148,10 +1157,14 @@ static void iniWriteMeta(FILE *fh, Key *parentKey, Key *key, IniPluginConfig *co
 			const char *string = keyString(meta);
 			if(strstr(string, "\n") == 0)
 			{
-				if(strlen(string) && (containsSpecialCharacter(string)))
-					fprintf(fh, "%s = \"%s\"\n", name, string);
+				if(containsSpecialCharacter(name))
+					fprintf(fh, "\"%s\" = ", name);
 				else
-					fprintf(fh, "%s = %s\n", name, string);
+					fprintf(fh, "%s = ", name);
+				if(strlen(string) && (containsSpecialCharacter(string)))
+					fprintf(fh, "\"%s\"\n", string);
+				else if(strlen(string))
+					fprintf(fh, "%s\n", string);
 			}
 			else
 			{
@@ -1186,10 +1199,14 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 			const char *string = keyString(cur);
 			if(strstr(string, "\n") == 0)
 			{
-				if(strlen(string) && (containsSpecialCharacter(string)))
-					fprintf(fh, "%s = \"%s\"\n", name, string);
+				if(containsSpecialCharacter(name))
+					fprintf(fh, "\"%s\" = ", name);
 				else
-					fprintf(fh, "%s = %s\n", name, string);
+					fprintf(fh, "%s = ", name);
+				if(strlen(string) && (containsSpecialCharacter(string)))
+					fprintf(fh, "\"%s\"\n", string);
+				else if(strlen(string))
+					fprintf(fh, "%s\n", string);
 			}
 			else
 			{
@@ -1347,6 +1364,7 @@ static void stripInternalData(Key *parentKey ELEKTRA_UNUSED, KeySet *ks)
 				strcat(newName, "/");
 				strcat(newName, token);
 			}
+			strcat(newName, "/");
 			keySetName(newKey, newName);
 			if(strcmp(keyName(parentKey), keyName(newKey)))
 				ksAppendKey(newKS, keyDup(newKey));
@@ -1381,7 +1399,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
 	ksRewind(returned);
 	Key *root = keyDup(ksLookup(returned, parentKey, KDB_O_NONE));
-
+	
 	Key *cur;
 	KeySet *newKS = ksNew(0, KS_END);
 	keySetMeta(parentKey, "order", "#0");
@@ -1392,16 +1410,28 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			if (strcmp(keyString(keyGetMeta(parentKey, "order")),keyString(keyGetMeta(cur, "order"))) < 0)												 
 				keySetMeta(parentKey, "order", keyString(keyGetMeta(cur, "order")));
 			if(keyGetValueSize(cur) > 1)
+			{
 				keySetMeta(cur, "ini/key", "");
+			}
 			else if(keyGetMeta(cur, "ini/empty"))
 				keySetMeta(cur, "ini/key", "");
 			else if(!keyIsBinary(cur))
+			{
 				keySetMeta(cur, "ini/key", "");
+			}
+			Key *parentMeta = keyGetMeta(cur, "parent");
+			if(parentMeta)
+			{
+				Key *sectionKey = ksLookupByName(newKS, keyString(parentMeta), KDB_O_NONE);
+				keySetBinary(sectionKey, 0, 0);
+				ksAppendKey(newKS, sectionKey);
+			}
 			ksAppendKey(newKS, cur);
 			keyDel(ksLookup(returned, cur, KDB_O_POP));
 		}
 
 	}
+
 	ksRewind(returned);
 	while ((cur = ksNext(returned)) != NULL)
 	{
@@ -1419,6 +1449,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	ksDel(newKS);
 	stripInternalData(parentKey, returned);
+
 	if(pluginConfig->BOM == 1)
 	{
 		fprintf(fh, "\xEF\xBB\xBF");
