@@ -51,7 +51,7 @@ All plugins implement the same interface:
 ## See also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
-For more background information of the [plugin framework, continue here](/doc/help/plugin-framework.md).
+For more background information of the [plugins framework, continue here](/doc/help/elektra-plugins-framework.md).
 Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
 
 
@@ -110,7 +110,7 @@ productive use:
 ## System Information ##
 
 Information compiled in Elektra:
-- [version](version/) is a build-in plugin directly within the
+- version is a built-in plugin directly within the
   core so that it cannot give wrong version information
 - [constants](constants/) various constants, including version
   information

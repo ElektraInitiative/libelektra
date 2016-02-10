@@ -55,7 +55,7 @@ the adding of warning information is possible:
   setting error information is prohibited.  Warning information is, however,
   very useful to tell the user the circumstance that some actions during
   cleanup failed.
-  
+
 - Also in `kdbOpen()`, only adding warning information is allowed.
   If `kdbOpen()` is not able to open a plugin, the affected backend will be
   dropped out.  The user is certainly interested why that happened.  But it
@@ -63,7 +63,7 @@ the adding of warning information is possible:
   not even access the faulty part of the key hierarchy.  An exception
   to this rule is if `kdbOpen()` fails to open the default backend.
   This situation will induce an faulty state.
-  
+
 - In `kdbSet()`, the cleaning up of resources involves calling
   plugins.  But during this process Elektra is in a faulty state, so only
   adding of warning information is allowed.  This ensures that the original

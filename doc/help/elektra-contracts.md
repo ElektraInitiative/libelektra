@@ -60,4 +60,4 @@ preconditions and weak postconditions for the plugins.
 
 ## SEE ALSO
 
-- [elektra-ordering(7)](elektra-ordering.md)
+- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

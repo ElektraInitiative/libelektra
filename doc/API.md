@@ -175,6 +175,6 @@ Read more about [mounting](/doc/help/elektra-mounting.md)
 
 ## SEE ALSO
 
-- See [elektra-glossary(7)](elektra-glossary.md)
-- More information about [elektra-backends(7)](elektra-backends.md)
-- More information about [elektra-plugins(7)](elektra-plugins.md)
+- See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
+- More information about [elektra-backends(7)](/doc/help/elektra-backends.md)
+- More information about [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md)

@@ -37,5 +37,5 @@ between metadata is supported.
 
 ## SEE ALSO
 
-- [see namespaces tutorial](doc/tutorials/namespaces.md)
+- [see namespaces tutorial](/doc/tutorials/namespaces.md)
 - [elektra-namespaces(7)](elektra-namespaces.md)

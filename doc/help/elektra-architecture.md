@@ -54,7 +54,7 @@ issues that matter and show how Elektra has solved them.
 A design goal is to detect errors early.  As easy as it sounds, as
 difficult it is to actually achieve this goal.  Elektra tries to avoid
 the problem by checking data being inserted into `Key` and `KeySet`.
-Elektra catches many errors like invalid key names soon. 
+Elektra catches many errors like invalid key names soon.
 Elektra allows plugins to check
 the configuration before it is written into the key database so that
 problematic values are never stored.

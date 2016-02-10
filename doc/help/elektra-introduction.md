@@ -63,7 +63,7 @@ In order to extend its functionality, the program had to be rewritten
 with a new approach to configuration: xinetd emerged. Both of these
 projects are now almost defined by their configuration files giving them
 identity and separating them from each other.  Elektra has introduced
-[backend](backends) to support the storage of key databases in different
+[backend](elektra-backends.md) to support the storage of key databases in different
 formats.
 
 

@@ -102,7 +102,7 @@ next line.
  * Use `static` methods if they should not be externally visible.
  * C-Files have extension `.c`, Header files `.h`.
 
-**Example:** [src/libelektra/kdb.c](../src/libelektra/kdb.c)
+**Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
 
 ### C++ Guidelines ###
@@ -145,7 +145,7 @@ Files should start with:
 	 *
 	 * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 	 */
-	
+
 
 \endverbatim
 

@@ -43,7 +43,7 @@ Then use:
 	cpack
 
 which should create a package for distributions where a Generator is
-implemented. See [this cmake file](cmake/ElektraPackaging.cmake) for available Generators
+implemented. See [this cmake file](/cmake/ElektraPackaging.cmake) for available Generators
 and send a merge request for your system.
 
 ## TROUBLESHOOTING ##

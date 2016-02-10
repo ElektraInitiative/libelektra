@@ -42,7 +42,7 @@ and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
 The skeleton plugin is called "template" and a new plugin can be created by calling the
-[copy-template script](scripts/copy-template) .
+[copy-template script](/scripts/copy-template) .
 For example for my plugin I called `../../scripts/copy-template line` from within the plugins directory. Afterwards two
 important things are left to be done:
 

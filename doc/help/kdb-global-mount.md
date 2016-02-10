@@ -60,4 +60,4 @@ For every change of KDB, write to syslog and notify by dbus:
 - [elektra-glossary(7)](elektra-glossary.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins(7)](elektra-plugins.md).
+- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

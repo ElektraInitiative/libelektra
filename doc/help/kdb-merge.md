@@ -75,4 +75,4 @@ To complete a three-way merge and overwrite all current keys in the `resultpath`
 
 ## SEE ALSO
 
-- [elektra-merge-strategies(7)](elektra-merge-strategies)
+- [elektra-merge-strategy(7)](elektra-merge-strategy.md)

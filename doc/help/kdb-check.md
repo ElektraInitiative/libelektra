@@ -39,7 +39,7 @@ Each bit represents a specific outcome as described below:
  * 0:
    No errors (no output)  
 
- * Bit 1: 
+ * Bit 1:
    Warning on opening the key database.  
 
  * Bit 2:
@@ -108,6 +108,6 @@ To check the `line` plugin:
 
 ## SEE ALSO
 
-- For an introductions into plugins, read [elektra-plugins(7)](elektra-plugins.md).
+- For an introductions into plugins, read [elektra-plugins-framemwork(7)](elektra-plugins-framework.md).
 - To list all plugins use [kdb-list(1)](kdb-list.md).
 - For information on a plugin use [kdb-info(1)](kdb-info.md).
