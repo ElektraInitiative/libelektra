@@ -547,6 +547,19 @@ void GlobalPlugins::serialize (kdb::KeySet &ret)
 	{
 		for (auto const & plugin : placements.second)
 		{
+			std::istringstream ss (plugin->lookupInfo("status"));
+			std::string status;
+			bool isglobal = false;
+			while (ss >> status)
+			{
+				if (status == "global") isglobal = true;
+			}
+
+			if (!isglobal)
+			{
+				throw NoGlobalPlugin(plugin->name());
+			}
+
 			pp[plugin].addPlacement(placements.first);
 		}
 	}

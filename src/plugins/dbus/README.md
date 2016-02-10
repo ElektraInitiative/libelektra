@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage postcommit
-- infos/status = maintained unittest libc
+- infos/status = maintained unittest libc global
 - infos/description = Sends DBus signals when a method is called
 
 ## Introduction ##

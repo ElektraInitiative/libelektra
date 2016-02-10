@@ -327,6 +327,22 @@ struct SymbolMismatch: public PluginCheckException
 	}
 };
 
+struct NoGlobalPlugin: public PluginCheckException
+{
+	std::string msg;
+	NoGlobalPlugin (std::string plugin)
+	{
+		msg = std::string(std::string("The plugin \"") + plugin + "\" is not suitable to be mounted as global plugin!");
+	}
+	~NoGlobalPlugin() throw()
+	{}
+	virtual const char* what() const throw() override
+	{
+		return msg.c_str();
+	}
+};
+
+
 struct SymbolDuplicate: public PluginCheckException
 {
 	std::string msg;
