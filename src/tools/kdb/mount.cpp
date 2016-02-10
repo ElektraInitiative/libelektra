@@ -129,6 +129,7 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		cout << "Trying to add default plugins " << cl.plugins << endl;
 	}
 
+	backend.needPlugin("storage");
 	backend.recommendPlugin ("sync");
 	backend.addPlugins (parseArguments (cl.plugins));
 
@@ -139,15 +140,8 @@ void MountCommand::buildBackend(Cmdline const& cl)
 	}
 	else
 	{
-		const int alreadyRead = 2;
-		if (cl.arguments.size() <= alreadyRead)
-		{
-			backend.addPlugin(PluginSpec(KDB_DEFAULT_STORAGE));
-		}
-		else
-		{
-			backend.addPlugins (parseArguments (cl.arguments.begin()+alreadyRead, cl.arguments.end()));
-		}
+		const size_t nonPlugins = 2;
+		backend.addPlugins (parseArguments (cl.arguments.begin()+nonPlugins, cl.arguments.end()));
 	}
 
 	// Call it a day
