@@ -55,6 +55,8 @@ foreach (plugin ${PLUGINS})
 						ELEKTRA_VARIANT=openssl
 						ELEKTRA_CRYPTO_API_OPENSSL
 				)
+			else ()
+				remove_plugin ( ${plugin} "OpenSSL development files not found")
 			endif (HAS_OPENSSL_4SURE)
 		endif (NOT OPENSSL_FOUND)
 
@@ -92,6 +94,8 @@ foreach (plugin ${PLUGINS})
 						ELEKTRA_VARIANT=gcrypt
 						ELEKTRA_CRYPTO_API_GCRYPT
 				)
+			else ()
+				remove_plugin ( ${plugin} "libgcrypt development files not found")
 			endif (HAS_GCRYPT_4SURE)
 		endif (NOT LIBGCRYPT_FOUND)
 
