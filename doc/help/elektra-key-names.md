@@ -101,8 +101,8 @@ the key names of software-applications should always start with:
 
 ## SEE ALSO
 
-- [see application integration tutorial](doc/tutorials/application-integration.md)
-- [see namespaces tutorial](doc/tutorials/namespaces.md)
+- [see application integration tutorial](/doc/tutorials/application-integration.md)
+- [see namespaces tutorial](/doc/tutorials/namespaces.md)
 
 - [elektra-namespaces(7)](elektra-namespaces.md)
 - [elektra-cascading(7)](elektra-cascading.md)

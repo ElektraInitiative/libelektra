@@ -47,5 +47,5 @@ To backup a keyset stored in `user/keyset` in the `ini` format to a file called 
 
 ## SEE ALSO
 
-- For an introductions into plugins, read [elektra-plugins(7)](elektra-plugins.md).
+- For an introductions into plugins, read [elektra-plugins-framework(7)](elektra-plugins-framework.md).
 - Only storage plugins can be used for formatting.

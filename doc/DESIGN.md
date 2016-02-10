@@ -215,7 +215,7 @@ Elektra does not set `errno`. If a function you call sets `errno`, make
 sure to set it back to the old value again.
 
 Additional information about error handling is available
-[here](doc/help/elektra-error-handling.md).
+[here](/doc/help/elektra-error-handling.md).
 
 ## Naming ##
 

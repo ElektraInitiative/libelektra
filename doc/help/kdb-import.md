@@ -66,4 +66,4 @@ To restore a backup (stored as `sw.ecf`) of a user's configuration below `system
 
 ## SEE ALSO
 
-- [elektra-merge-strategies(7)](elektra-merge-strategies)
+- [elektra-merge-strategy(7)](elektra-merge-strategy.md)

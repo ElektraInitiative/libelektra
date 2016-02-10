@@ -85,9 +85,9 @@ Instead, we try to reuse sets in the following ways:
   resemble the mathematical ideal closely. This operation would be
   expensive. Every `Key` needs to be duplicated and
   inserted into a new `KeySet`.
-  
+
   Such a **deep duplication** was only needed in `kdbSet()`.
-  
+
 - The resulting
   `KeySet` is created during the operation, but only a flat copy is
   made. This means that the keys in it are actually not duplicated, but only
@@ -96,25 +96,25 @@ Instead, we try to reuse sets in the following ways:
   Compared with a deep copy it can achieve good performance.
   But all changes to the values of keys in the resulting `KeySet`
   affect the original `KeySet`, too.
-  
+
   `ksDup(const KeySet *source)` produces a new `KeySet` that way. The
   `source` is not changed as shown by the `const` modifier.
-  
+
 - The result of the operation is applied to the
   `KeySet` passed as argument directly.
   This is actually quite common, but for this situation
   other names of the operations are more suitable.
-  
+
   For example, a union
   which changes the `KeySet` is called `ksAppend()`.
-  
+
 - A new `KeySet` is created, but the `KeySet` passed as
   parameter is reduced by the keys needed for the new `KeySet`. This
   is useful in situations where many operations have to be applied in
   a sequence reducing the given `KeySet` until no
   more keys are left.
   None of the reference pointers changes in this situation.
-  
+
   `ksCut(KeySet *ks, const Key *cutpoint)` works that way.
   All keys below the `cutpoint` are moved from `ks` to the returned key
   set.

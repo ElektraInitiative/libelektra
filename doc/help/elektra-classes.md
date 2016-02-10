@@ -32,7 +32,7 @@ order of the `Key` objects.
 Some configuration storage systems need
 this property, because they
 cannot remember a specific order.
-On the other hand, any particular order can easily be introduced 
+On the other hand, any particular order can easily be introduced
 (See [order](/doc/METADATA.ini)).
 
 On the one side
@@ -99,4 +99,3 @@ For details and background
 [read more about elektra data structures](elektra-data-structures.md).
 For further information see
 [the API documentation](http://doc.libelektra.org/api/current/html/).
-

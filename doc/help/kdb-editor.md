@@ -60,4 +60,4 @@ To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you wou
 
 ## SEE ALSO
 
-- [elektra-merge-strategies(7)](elektra-merge-strategies)
+- [elektra-merge-strategies(7)](elektra-merge-strategies.md)
