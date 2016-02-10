@@ -111,6 +111,7 @@ bool hasProvides (PluginDatabase const & pd, std::string which)
 // TODO: directly use data from CONTRACT.ini
 const std::map <std::string, int> PluginDatabase::statusMap =
 {
+   {"default",      64000},
    {"recommended",  32000},
    {"productive",    8000},
    {"maintained",    4000},
@@ -127,6 +128,7 @@ const std::map <std::string, int> PluginDatabase::statusMap =
    {"libc",           250},
    {"configurable",    50},
    {"final",           50},
+   {"global",           1},
    {"preview",        -50},
    {"memleak",       -250},
    {"experimental",  -500},
