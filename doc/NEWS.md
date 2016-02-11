@@ -1,5 +1,53 @@
+# 0.8.15 Release
+
+## Crypto
+
+The crypto plugin is a facility for securing sensitive Keys by symmetric
+encryption of the value. It acts as a filter plugin and it will only
+operate on Keys, which have the meta-key „crypto/encrypt“ set.
+
+The key derivation is still work-in-progress, so the plugin does not
+work with kdb yet. A planned method for key derivation is to utilize
+the gpg-agent.
+
+For now the plugin requires the following Keys within the plugin
+configuration in order to work properly:
+
+1. /crypto/key - the cryptographic key (binary 256 bit long)
+2. /crypto/iv  - the initialization vector (binary 128 bit long)
+
+Please note that this method of key input is for testing purposes only
+and should never be used in a productive environment!
+
+## Library Split
+
+
+### Benchmark
+
+The real time of benchmark/large:
+
+revision c2e31930c2b91308ec357607e2b7dd02d4d6dd0e
+-DBUILD_FULL=OFF -DBUILD_PDF=OFF -DBUILD_SHARED=OFF -DBUILD_STATIC=ON ..
+kdb-full: Median :0.90 kdb-static: Median :0.9200 kdb: Median :0.9000
+
+revision 1e79bca3a6e294429f99582b8f9a0a380ac81f03
+-DBUILD_FULL=ON -DBUILD_PDF=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=ON ..
+kdb-full: Median :0.9000 kdb-static: Median :0.9000 kdb: Median :0.9100
+
+So it seems that the split does not influence the time of running
+elektrified processes.
+
+
+## Packaging
+
 Elektra 0.8.14 now in Debian with qt-gui, man pages, thanks to Pino Toscano!
 https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html
+
+
+
+
+
+
 
 
 # 0.8.14 Release
