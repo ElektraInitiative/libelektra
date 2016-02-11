@@ -40,7 +40,7 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
 
 ## KDB
 
-- `/sw/kdb/current/global/plugins`:
+- `/sw/kdb/current/plugins/global`:
   It contains a space-separated list of plugins
   which are added automatically (by default `spec`).
   The plugin-configuration syntax is as described above in the [synopsis](#SYNOPSIS).
