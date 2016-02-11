@@ -82,7 +82,7 @@ bool isToBeIgnored (std::string const & name)
 		startsWith (name, "description") ||
 		startsWith (name, "see") ||
 		startsWith (name, "rationale") ||
-		startsWith (name, "description") ||
+		startsWith (name, "example") ||
 
 		name == "mountpoint" ||
 		startsWith (name, "config"
