@@ -1,5 +1,8 @@
 include (LibAddPlugin)
 
+# set OPENSSL_MANUAL_CONFIG if you want to configure the OpenSSL development files manually
+# set LIBGCRYPT_MANUAL_CONFIG if you want to configure the libgcrypt development files manually
+
 #
 # base plugin (that does actually nothing on its own)
 #
@@ -25,11 +28,14 @@ foreach (plugin ${PLUGINS})
 	# Compile Variant: OpenSSL
 	if (${plugin} MATCHES "crypto_openssl")
 
-		include (FindPkgConfig)
-		pkg_search_module (OPENSSL openssl)
-		if (NOT OPENSSL_FOUND)
+		if (NOT OPENSSL_MANUAL_CONFIG)
+			include (FindPkgConfig)
+			pkg_search_module (OPENSSL openssl)
+		endif ()
+
+		if ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_CONFIG))
 			remove_plugin ( ${plugin} "OpenSSL development files not found")
-		else  (NOT OPENSSL_FOUND)
+		else  ()
 
 			try_compile (HAS_OPENSSL_4SURE
 				"${CMAKE_BINARY_DIR}"
@@ -56,19 +62,22 @@ foreach (plugin ${PLUGINS})
 						ELEKTRA_CRYPTO_API_OPENSSL
 				)
 			else ()
-				remove_plugin ( ${plugin} "OpenSSL development files not found")
+				remove_plugin ( ${plugin} "OpenSSL compilation test failed")
 			endif (HAS_OPENSSL_4SURE)
-		endif (NOT OPENSSL_FOUND)
+		endif ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_CONFIG))
 
 	endif (${plugin} MATCHES "crypto_openssl")
 
 	# Compile Variant: libgcrypt
 	if (${plugin} MATCHES "crypto_gcrypt")
 
-		find_package (LibGcrypt)
-		if (NOT LIBGCRYPT_FOUND)
+		if (NOT LIBGCRYPT_MANUAL_CONFIG)
+			find_package (LibGcrypt)
+		endif ()
+
+		if ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_CONFIG))
 			remove_plugin ( ${plugin} "libgcrypt development files not found")
-		else (NOT LIBGCRYPT_FOUND)
+		else ()
 
 			try_compile (HAS_GCRYPT_4SURE
 				"${CMAKE_BINARY_DIR}"
@@ -95,9 +104,9 @@ foreach (plugin ${PLUGINS})
 						ELEKTRA_CRYPTO_API_GCRYPT
 				)
 			else ()
-				remove_plugin ( ${plugin} "libgcrypt development files not found")
+				remove_plugin ( ${plugin} "libgcrypt compilation test failed")
 			endif (HAS_GCRYPT_4SURE)
-		endif (NOT LIBGCRYPT_FOUND)
+		endif ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_CONFIG))
 
 	endif (${plugin} MATCHES "crypto_gcrypt")
 
