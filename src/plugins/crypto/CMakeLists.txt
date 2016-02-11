@@ -1,7 +1,12 @@
 include (LibAddPlugin)
 
-# set OPENSSL_MANUAL_CONFIG if you want to configure the OpenSSL development files manually
-# set LIBGCRYPT_MANUAL_CONFIG if you want to configure the libgcrypt development files manually
+# in order to set up OpenSSL development files, please provide:
+# - OPENSSL_INCLUDE_DIR
+# - OPENSSL_LIBRARIES
+#
+# in order to set up libgcrypt development files, please provide:
+# - LIBGCRYPT_INCLUDE_DIR
+# - LIBGCRYPT_LIBRARIES
 
 #
 # base plugin (that does actually nothing on its own)
@@ -19,6 +24,23 @@ add_plugin (crypto
 )
 
 add_plugintest (crypto)
+
+#
+# check if library detection is required
+#
+if (DEFINED OPENSSL_INCLUDE_DIR AND DEFINED OPENSSL_LIBRARIES)
+	set (OPENSSL_MANUAL_CONFIG on)
+	set (OPENSSL_FOUND on)
+else ()
+	set (OPENSSL_MANUAL_CONFIG off)
+endif ()
+
+if (DEFINED LIBGCRYPT_INCLUDE_DIR AND DEFINED LIBGCRYPT_LIBRARIES)
+	set (LIBGCRYPT_MANUAL_CONFIG on)
+	set (LIBGCRYPT_FOUND on)
+else ()
+	set (LIBGCRYPT_MANUAL_CONFIG off)
+endif ()
 
 #
 # Compile Variants
@@ -63,6 +85,7 @@ foreach (plugin ${PLUGINS})
 				)
 			else ()
 				remove_plugin ( ${plugin} "OpenSSL compilation test failed")
+				set (OPENSSL_FOUND off)
 			endif (HAS_OPENSSL_4SURE)
 		endif ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_CONFIG))
 
@@ -105,9 +128,13 @@ foreach (plugin ${PLUGINS})
 				)
 			else ()
 				remove_plugin ( ${plugin} "libgcrypt compilation test failed")
+				set (LIBGCRYPT_FOUND off)
 			endif (HAS_GCRYPT_4SURE)
 		endif ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_CONFIG))
 
 	endif (${plugin} MATCHES "crypto_gcrypt")
 
 endforeach (plugin)
+
+unset (OPENSSL_MANUAL_CONFIG)
+unset (LIBGCRYPT_MANUAL_CONFIG)
