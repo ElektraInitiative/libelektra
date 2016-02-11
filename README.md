@@ -1,12 +1,12 @@
 # libelektra #
 
-_Elektra serves as universal and secure framework to store configuration
+_Elektra serves as a universal and secure framework to access configuration
 parameters in a global, hierarchical key database._
 
 <img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="50" />
 
 Elektra provides a mature, consistent and easily comprehensible API.
-Its modularity effectively eliminates code duplication across applications
+Its modularity effectively avoids code duplication across applications
 and tools regarding configuration tasks. Elektra abstracts from
 cross-platform-related issues and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
