@@ -11,7 +11,7 @@ add_plugin(ini
 		${INIH_FILES}
 	INCLUDE_DIRECTORIES
 		${INIH_INCLUDE}
-	LINK_LIBRARIES
+	LINK_ELEKTRA
 		elektra-ease
 		elektra-proposal
 	)

@@ -4,10 +4,10 @@ add_plugin (spec
 	SOURCES
 		spec.h
 		spec.c
-        metafunctions.c
-        metafunctions.h
-    LINK_LIBRARIES
-        elektra-ease
-    )
+		metafunctions.c
+		metafunctions.h
+	LINK_ELEKTRA
+		elektra-ease
+	   )
 
 add_plugintest (spec)

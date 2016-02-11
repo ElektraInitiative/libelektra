@@ -4,7 +4,7 @@ add_plugin(csvstorage
 	SOURCES
 		csvstorage.h
 		csvstorage.c
-	LINK_LIBRARIES
+	LINK_ELEKTRA
 		elektra-ease
 	)
 
