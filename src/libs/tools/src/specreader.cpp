@@ -75,9 +75,12 @@ bool isToBeIgnored (std::string const & name)
 
 		startsWith (name, "binary") ||
 
+		// code generator
+		startsWith (name, "type") ||
 		startsWith (name, "opt") ||
 		startsWith (name, "env") ||
 
+		// docu
 		startsWith (name, "comment") ||
 		startsWith (name, "description") ||
 		startsWith (name, "see") ||
