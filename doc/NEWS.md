@@ -1038,7 +1038,7 @@ background to Elektra,
 [read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md).
 
 For a full list of proposed and implemented meta-data,
-[read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/NAMESPACES.md).
+[read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md).
 
 
 ## Simplification in the merging framework
@@ -1052,7 +1052,7 @@ that arrange required strategies for the most common merging scenarios. Especial
 they make sure that meta merging is handled correctly.
 
 Have a look at the changes in the example
-[src/libtools/examples/merging.cpp](https://github.com/ElektraInitiative/libelektra/blob/master/src/libtools/examples/merging.cpp)
+[/src/libs/tools/examples/merging.cpp](https://github.com/ElektraInitiative/libelektra/blob/master/src/libs/tools/examples/merging.cpp)
 for an glimpse of the simplifications.
 
 A big thanks to Felix Berlakovich!
@@ -1783,7 +1783,7 @@ The build server now additionally has following build jobs:
   run_all afterwards)
 - [Test bindings:](http://build.libelektra.org:8080/job/elektra-test-bindings/)
   Compiles and tests ALL bindings.
-- [Mingw:](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw/)
+- [Mingw:](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw-w64/)
   Compiles Elektra using mingw.
 
 Many more examples were written and are used within doxygen. Most
