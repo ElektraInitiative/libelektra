@@ -327,7 +327,7 @@ or by mail elektra@markus-raab.org.
 
 For more information, see [http://libelektra.org](http://libelektra.org)
 
-Btw. the whole release happened with 
+Btw. the whole release happened with
 [elektrify-getenv](http://libelektra.org/blob/master/src/libgetenv/README.md)
 enabled.
 
@@ -513,7 +513,7 @@ the last minute fixes!
 The GUI was improved and the most annoying bugs are fixed:
 
 - only reload and write config files if something has changed
-- use merging in a way that only a conflict free merge will be written, thanks to Felix Berlakovich 
+- use merging in a way that only a conflict free merge will be written, thanks to Felix Berlakovich
 - made sure keys can only be renamed if the new name/value/metadata is different from the existing ones
 - fixed 1) and 2) of #233
 - fixed #235
@@ -968,7 +968,7 @@ we simply fetch and lookup the configuration by following code:
 
     Key *parentKey = keyNew("/sw/app/#0", KEY_CASCADING_NAME, KEY_END);
     kdbGet(kdb, ks, parentKey);
-    
+
     ksLookupByName(ks, "/sw/app/#0/promise", 0);
 
 We see in that example that only Elektra pathes are hardcoded in
@@ -1563,7 +1563,7 @@ To access the inline-comment, use:
 
 For other meta information, see:
 
-    kdb lsmeta system/hosts/ipv4/localhost 
+    kdb lsmeta system/hosts/ipv4/localhost
 
 Additionally, a small API for specific meta-data operations emerges.
 These operations will be moved to a separate library and will not stay
@@ -1606,7 +1606,7 @@ We developed already
 Raffael Pancheri released the version 0.0.2 of the Qt-Gui:
 
 * added Backend Wizard for mounting
-* user can hover over TreeView items and quickly see keyname, keyvalue 
+* user can hover over TreeView items and quickly see keyname, keyvalue
   and metakeys
 * it is now easily possible to create and edit arrays
 * added header to MetaArea for better clarity
