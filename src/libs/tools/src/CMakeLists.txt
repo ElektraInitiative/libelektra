@@ -18,7 +18,7 @@ if (BUILD_SHARED)
 		"ELEKTRA_SHARED"
 		)
 
-	target_link_libraries (elektratools elektra-plugin elektra-ease)
+	target_link_libraries (elektratools elektra-core elektra-plugin elektra-ease)
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektratools PROPERTIES
