@@ -26,19 +26,20 @@ TEST(BackendBuilder, loadAllPlugins)
 	using namespace kdb;
 	using namespace kdb::tools;
 	ModulesPluginDatabase mpd;
-	Modules m;
+	// Modules m;
 	for (auto const & p : mpd.listAllPlugins())
 	{
 		// std::cout << p << std::endl;
-		// if (p == "python") continue;
-		// if (p == "python2") continue;
-		// if (p == "struct") continue;
+		if (p == "python") continue;
+		if (p == "python2") continue;
+		if (p == "struct") continue;
+
 		if (p == "jni") continue;
 		if (p == "crypto_gcrypt") continue;
 		try {
-			m.load(p);
-			// Backend b;
-			// b.addPlugin(PluginSpec(p));
+			// m.load(p);
+			Backend b;
+			b.addPlugin(PluginSpec(p));
 		}
 		catch (std::exception const & e)
 		{
