@@ -4,7 +4,7 @@
 - infos/provides = logging
 - infos/needs =
 - infos/placements = postcommit postrollback
-- infos/status = maintained tested nodoc
+- infos/status = maintained tested nodoc global
 - infos/description = Logs set and error calls to syslog.
 
 ## Introduction ##

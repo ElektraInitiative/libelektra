@@ -4,7 +4,7 @@
 - infos/provides = logging
 - infos/needs =
 - infos/placements = postcommit postrollback
-- infos/status = maintained libc
+- infos/status = maintained libc global
 - infos/description = logging of committed and rolled back keys via systemd-journal
 
 The plugin logs successful and failed write attempts via the systemd journal daemon (systemd-journal). 

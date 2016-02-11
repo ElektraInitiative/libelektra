@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = presetstorage pregetstorage postgetstorage precommit postcommit prerollback postrollback
-- infos/status = maintained unittest nodep libc
+- infos/status = maintained unittest nodep libc global
 - infos/description =
 
 ## Introduction ##

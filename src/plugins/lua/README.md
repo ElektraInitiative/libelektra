@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements =
-- infos/status = maintained unittest nodoc
+- infos/status = maintained unittest nodoc global
 - infos/description = magic things require magic plugins
 
 The plugin uses Lua to do magic things.
