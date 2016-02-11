@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = presetstorage
 - infos/status = maintained unittest unfinished old
-- infos/metadata = check/type
+- infos/metadata = check/type check/type/min check/type/max
 - infos/description =
 
 ## Introduction ##
