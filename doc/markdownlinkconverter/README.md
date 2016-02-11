@@ -35,3 +35,4 @@ which the link refers to.
 
 * optimize pdf output (also UTF-8 encoding)
 * if title contains --, this should be @brief
+* add http link print

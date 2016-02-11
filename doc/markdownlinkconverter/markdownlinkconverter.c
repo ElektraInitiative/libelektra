@@ -16,8 +16,10 @@
 
 #if defined(_WIN32)
 #define FOLDER_DELIMITER '\\'
+#define PLUGIN_PATH "src\\plugins\\"
 #else
 #define FOLDER_DELIMITER '/'
+#define PLUGIN_PATH "src/plugins/"
 #endif
 
 /* The CMAKE_CACHE_FILENAME will be parsed to get the value of CMAKE_CACHE_VARNAME
@@ -346,6 +348,24 @@ int main (int argc, char *argv[])
 		exitError (input, output, "fgetpos");
 	if (fgetpos (output, &startTempFile))
 		exitError (input, output, "fgetpos");
+
+	//detect plugins and give appropriate title
+	if (!strncmp (PLUGIN_PATH, &inputFilename[indexofElektraRoot],
+					strlen (PLUGIN_PATH)))
+	{
+		char * title =  &inputFilename[indexofElektraRoot] + strlen (PLUGIN_PATH);
+		// ignore src/plugins/README.md
+		if (strcmp (title,"README.md"))
+		{
+			printf (" # Plugin: ");
+			while ((*title) != FOLDER_DELIMITER )
+			{
+				printf ("%c",*title);
+				++title;
+			}
+			printf (" #\n");
+		}
+	}
 
 	if (!convertTitle (input, output, &inputFilename[indexofElektraRoot]))
 	{
