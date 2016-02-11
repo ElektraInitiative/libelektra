@@ -18,7 +18,7 @@ if (NOT elektra_imported_targets)
 endif()
 
 set (Elektra_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@")
-set (Elektra_LIBRARIES elektra)
+set (Elektra_LIBRARIES elektra-core elektra-kdb)
 
 find_path (Elektra_TEMPLATES_DIR
 	NAMES template.h
