@@ -656,7 +656,6 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		return -1;
 	}
 	KeySet *append = ksNew (0, KS_END);
-	fprintf(stderr, "INI-GET ParentKey: %s\n", keyName(parentKey));
 	CallbackHandle cbHandle;
 	cbHandle.parentKey = parentKey;
 	cbHandle.result = append;
@@ -913,26 +912,25 @@ static void insertNewSectionIntoExistendOrder(Key *parentKey, Key *appendKey, Ke
 		ksDel(searchKS);
 		return;
 	}
-	char *lastOrderNumber = NULL;
+	char *lastOrderNumber = "#1";
 	Key *meta = (Key *)keyGetMeta(looking, "order");
 	if(meta)
 		lastOrderNumber = (char *)keyString(meta);
-	KeySet *cutKS = ksCut(searchKS, looking);
-	ksRewind(cutKS);
-	while ((looking = ksNext(cutKS)) != NULL)
+	unsigned long sectionNumber = atol(keyString(keyGetMeta(looking, "ini/section")));
+	ksRewind(searchKS);
+	while (( looking = ksNext(searchKS)) != NULL)
 	{
-		meta = (Key *)keyGetMeta(looking, "order");
-		if(!meta)
-			continue;
-		if (!lastOrderNumber || strcmp(keyString(meta), lastOrderNumber) > 0)
-			lastOrderNumber = (char *)keyString(meta);
+		if(atol(keyString(keyGetMeta(looking, "ini/section"))) == sectionNumber)
+		{
+			if(strcmp(keyString(keyGetMeta(looking, "order")), lastOrderNumber) > 0)
+				lastOrderNumber = keyString(keyGetMeta(looking, "order"));
+		}
 	}
 	if(!lastOrderNumber)
 		setOrderNumber(parentKey, appendKey);
 	else
 		setSubOrderNumber(appendKey, lastOrderNumber);
 
-	ksDel(cutKS);
 	ksDel(searchKS);
 }
 
@@ -1191,7 +1189,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 	Key *cur = NULL;
 	Key *sectionKey = parentKey;
 	int ret = 1;
-
+	
 	if(config->toMeta)
 	{
 		for(ssize_t i = 0; i < arraySize; ++i)
@@ -1226,7 +1224,6 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 		cur = keyArray[i];
 		if (!strcmp(keyName(parentKey), keyName(cur)))
 		{
-			fprintf(fh, "[%s]\n", keyName(parentKey));
 			continue;
 		}
 		if(keyName(parentKey)[0] == '/')
@@ -1411,9 +1408,6 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	
 	Key *root = keyDup(ksLookup(returned, parentKey, KDB_O_NONE));
 	Key *head = keyDup(ksHead(returned));
-	fprintf(stderr, "INI-SET ParentKey: %s:(%s)\n", keyName(parentKey), keyString(parentKey));
-	fprintf(stderr, "INI-SET Root: %s:(%s)\n", keyName(root), keyString(root));	
-	fprintf(stderr, "INI-SET Head: %s:(%s)\n", keyName(head), keyString(head));	
 	IniPluginConfig* pluginConfig = elektraPluginGetData(handle);
 	outputDebug(returned);	
 	ksRewind(returned);
@@ -1431,11 +1425,11 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 			if(parentMeta)
 			{
 				Key *sectionKey = ksLookupByName(newKS, keyString(parentMeta), KDB_O_NONE);
-			//	if(!keyGetMeta(sectionKey, "ini/key") && !keyGetMeta(sectionKey, "ini/empty"))
-			//	{
+				if(!keyGetMeta(sectionKey, "ini/key") && !keyGetMeta(sectionKey, "ini/empty"))
+				{
 					keySetBinary(sectionKey, 0, 0);
 					ksAppendKey(newKS, sectionKey);
-			//	}
+				}
 			}
 			if(keyGetValueSize(cur) > 1)
 			{
@@ -1455,11 +1449,14 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 		}
 
 	}
+
 	fprintf(stderr, "=====================\n");
 	outputDebug(newKS);
 	fprintf(stderr, "============\n");
 	outputDebug(returned);
+
 	ksRewind(returned);
+
 	while ((cur = ksNext(returned)) != NULL)
 	{
 		if (!strcmp(keyName(cur), keyName(parentKey)))
