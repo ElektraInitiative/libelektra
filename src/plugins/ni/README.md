@@ -50,7 +50,7 @@ Exporting a KeySet to the nickle format:
 
 For in-detail explanation of the syntax
 (nested keys are not supported by the plugin, however)
-[see nickel-1.1.0/include/bohr/ni.h](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
+[see /src/plugins/ni/nickel-1.1.0/include/bohr/ni.h](/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
 
 
 ## Limitations ##

@@ -375,7 +375,7 @@ or by mail elektra@markus-raab.org.
 
 For more information, see [http://libelektra.org](http://libelektra.org)
 
-Btw. the whole release happened with 
+Btw. the whole release happened with
 [elektrify-getenv](http://libelektra.org/blob/master/src/libgetenv/README.md)
 enabled.
 
@@ -561,7 +561,7 @@ the last minute fixes!
 The GUI was improved and the most annoying bugs are fixed:
 
 - only reload and write config files if something has changed
-- use merging in a way that only a conflict free merge will be written, thanks to Felix Berlakovich 
+- use merging in a way that only a conflict free merge will be written, thanks to Felix Berlakovich
 - made sure keys can only be renamed if the new name/value/metadata is different from the existing ones
 - fixed 1) and 2) of #233
 - fixed #235
@@ -1016,7 +1016,7 @@ we simply fetch and lookup the configuration by following code:
 
     Key *parentKey = keyNew("/sw/app/#0", KEY_CASCADING_NAME, KEY_END);
     kdbGet(kdb, ks, parentKey);
-    
+
     ksLookupByName(ks, "/sw/app/#0/promise", 0);
 
 We see in that example that only Elektra pathes are hardcoded in
@@ -1086,7 +1086,7 @@ background to Elektra,
 [read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md).
 
 For a full list of proposed and implemented meta-data,
-[read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/NAMESPACES.md).
+[read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md).
 
 
 ## Simplification in the merging framework
@@ -1100,7 +1100,7 @@ that arrange required strategies for the most common merging scenarios. Especial
 they make sure that meta merging is handled correctly.
 
 Have a look at the changes in the example
-[src/libtools/examples/merging.cpp](https://github.com/ElektraInitiative/libelektra/blob/master/src/libtools/examples/merging.cpp)
+[/src/libs/tools/examples/merging.cpp](https://github.com/ElektraInitiative/libelektra/blob/master/src/libs/tools/examples/merging.cpp)
 for an glimpse of the simplifications.
 
 A big thanks to Felix Berlakovich!
@@ -1611,7 +1611,7 @@ To access the inline-comment, use:
 
 For other meta information, see:
 
-    kdb lsmeta system/hosts/ipv4/localhost 
+    kdb lsmeta system/hosts/ipv4/localhost
 
 Additionally, a small API for specific meta-data operations emerges.
 These operations will be moved to a separate library and will not stay
@@ -1654,7 +1654,7 @@ We developed already
 Raffael Pancheri released the version 0.0.2 of the Qt-Gui:
 
 * added Backend Wizard for mounting
-* user can hover over TreeView items and quickly see keyname, keyvalue 
+* user can hover over TreeView items and quickly see keyname, keyvalue
   and metakeys
 * it is now easily possible to create and edit arrays
 * added header to MetaArea for better clarity
@@ -1831,7 +1831,7 @@ The build server now additionally has following build jobs:
   run_all afterwards)
 - [Test bindings:](http://build.libelektra.org:8080/job/elektra-test-bindings/)
   Compiles and tests ALL bindings.
-- [Mingw:](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw/)
+- [Mingw:](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw-w64/)
   Compiles Elektra using mingw.
 
 Many more examples were written and are used within doxygen. Most
