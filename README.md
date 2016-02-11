@@ -84,7 +84,7 @@ kdb get /env/override/HTTP_PROXY
 ```
 
 For information about elektrified environment variables, see
-[/src/libgetenv/README.md](/src/libgetenv/README.md)
+[/src/libgetenv/README.md](/src/libs/getenv/README.md)
 
 
 ### Documentation ###
