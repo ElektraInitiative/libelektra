@@ -43,7 +43,7 @@ TEST_F(AutoMergeStrategyTest, DeleteEqualsMerges)
 
 	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	cout << merged << endl;
+	// cout << merged << endl;
 	EXPECT_EQ(3, merged.size ());
 
 	/* key with index 1 should be deleted */
@@ -99,6 +99,24 @@ TEST_F(AutoMergeStrategyTest, EqualsModifyRespectsBinaryData)
 
 	EXPECT_TRUE(conflictKey.isBinary());
 }
+
+TEST_F(AutoMergeStrategyTest, EqualsModifyRespectsNullData)
+{
+	Key l = task.theirs.lookup ("user/parentt/config/key1");
+	l.setBinary (nullptr, 0);
+	EXPECT_TRUE(l.isBinary());
+	EXPECT_EQ(l.getValue(), nullptr);
+
+	Key conflictKey = mergeKeys.lookup (mk1);
+	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_MODIFY);
+	conflictKey = result.getConflictSet ().at (0);
+
+	strategy.resolveConflict (task, conflictKey, result);
+
+	EXPECT_TRUE(conflictKey.isBinary());
+	EXPECT_EQ(conflictKey.getValue(), nullptr);
+}
+
 
 TEST_F(AutoMergeStrategyTest, ModifyEqualsMerges)
 {

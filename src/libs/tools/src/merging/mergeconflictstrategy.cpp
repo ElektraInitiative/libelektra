@@ -45,7 +45,12 @@ void MergeConflictStrategy::copyKeyValue(const Key& source, Key& destination)
 		}
 		else
 		{
-			destination.setBinary (source.getBinary ().c_str (), source.getBinarySize ());
+			if (source.getValue () == nullptr)
+			{
+				destination.setBinary (nullptr, 0);
+			} else {
+				destination.setBinary (source.getBinary ().c_str (), source.getBinarySize ());
+			}
 		}
 	}
 }
