@@ -1,12 +1,16 @@
 include (LibAddPlugin)
 
-# in order to set up OpenSSL development files, please provide:
+#
+# NOTE
+#
+# in order to set up OpenSSL development files manually, please provide:
 # - OPENSSL_INCLUDE_DIR
 # - OPENSSL_LIBRARIES
 #
-# in order to set up libgcrypt development files, please provide:
+# in order to set up libgcrypt development files manually, please provide:
 # - LIBGCRYPT_INCLUDE_DIR
 # - LIBGCRYPT_LIBRARIES
+#
 
 #
 # base plugin (that does actually nothing on its own)
@@ -26,20 +30,21 @@ add_plugin (crypto
 add_plugintest (crypto)
 
 #
+# HACK for non-Linux systems
 # check if library detection is required
 #
 if (DEFINED OPENSSL_INCLUDE_DIR AND DEFINED OPENSSL_LIBRARIES)
-	set (OPENSSL_MANUAL_CONFIG on)
+	set (OPENSSL_MANUAL_OSX_HACK on)
 	set (OPENSSL_FOUND on)
 else ()
-	set (OPENSSL_MANUAL_CONFIG off)
+	set (OPENSSL_MANUAL_OSX_HACK off)
 endif ()
 
 if (DEFINED LIBGCRYPT_INCLUDE_DIR AND DEFINED LIBGCRYPT_LIBRARIES)
-	set (LIBGCRYPT_MANUAL_CONFIG on)
+	set (LIBGCRYPT_MANUAL_OSX_HACK on)
 	set (LIBGCRYPT_FOUND on)
 else ()
-	set (LIBGCRYPT_MANUAL_CONFIG off)
+	set (LIBGCRYPT_MANUAL_OSX_HACK off)
 endif ()
 
 #
@@ -50,12 +55,12 @@ foreach (plugin ${PLUGINS})
 	# Compile Variant: OpenSSL
 	if (${plugin} MATCHES "crypto_openssl")
 
-		if (NOT OPENSSL_MANUAL_CONFIG)
+		if (NOT OPENSSL_MANUAL_OSX_HACK)
 			include (FindPkgConfig)
 			pkg_search_module (OPENSSL openssl)
 		endif ()
 
-		if ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_CONFIG))
+		if ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_OSX_HACK))
 			remove_plugin ( ${plugin} "OpenSSL development files not found")
 		else  ()
 
@@ -87,18 +92,18 @@ foreach (plugin ${PLUGINS})
 				remove_plugin ( ${plugin} "OpenSSL compilation test failed")
 				set (OPENSSL_FOUND off)
 			endif (HAS_OPENSSL_4SURE)
-		endif ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_CONFIG))
+		endif ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_OSX_HACK))
 
 	endif (${plugin} MATCHES "crypto_openssl")
 
 	# Compile Variant: libgcrypt
 	if (${plugin} MATCHES "crypto_gcrypt")
 
-		if (NOT LIBGCRYPT_MANUAL_CONFIG)
+		if (NOT LIBGCRYPT_MANUAL_OSX_HACK)
 			find_package (LibGcrypt)
 		endif ()
 
-		if ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_CONFIG))
+		if ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_OSX_HACK))
 			remove_plugin ( ${plugin} "libgcrypt development files not found")
 		else ()
 
@@ -130,11 +135,11 @@ foreach (plugin ${PLUGINS})
 				remove_plugin ( ${plugin} "libgcrypt compilation test failed")
 				set (LIBGCRYPT_FOUND off)
 			endif (HAS_GCRYPT_4SURE)
-		endif ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_CONFIG))
+		endif ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_OSX_HACK))
 
 	endif (${plugin} MATCHES "crypto_gcrypt")
 
 endforeach (plugin)
 
-unset (OPENSSL_MANUAL_CONFIG)
-unset (LIBGCRYPT_MANUAL_CONFIG)
+unset (OPENSSL_MANUAL_OSX_HACK)
+unset (LIBGCRYPT_MANUAL_OSX_HACK)
