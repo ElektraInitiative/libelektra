@@ -41,7 +41,15 @@ void MergeResult::addConflict(Key& key, ConflictOperation ourOperation,
 		key.delMeta(currentMeta.getName());
 	}
 
-	key.setString("");
+	if (key.isString())
+	{
+		key.setString("");
+	}
+	else
+	{
+		key.setBinary(nullptr, 0);
+	}
+
 	removeMergeKey (key);
 	key.setMeta ("conflict/operation/our",
 			MergeConflictOperation::getFromTag (ourOperation));

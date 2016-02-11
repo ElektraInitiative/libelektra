@@ -38,7 +38,7 @@ void AutoMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 		if (theirOperation == CONFLICT_MODIFY || theirOperation == CONFLICT_ADD)
 		{
 			Key source = task.theirs.lookup(theirLookup);
-			conflictKey.setString(source.getString());
+			copyKeyValue(source, conflictKey);
 			result.resolveConflict(conflictKey);
 			result.addMergeKey(conflictKey);
 		}
@@ -53,7 +53,7 @@ void AutoMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 		if (theirOperation == CONFLICT_SAME)
 		{
 			Key source = task.ours.lookup(ourLookup);
-			conflictKey.setString(source.getString());
+			copyKeyValue(source, conflictKey);
 			result.resolveConflict(conflictKey);
 			result.addMergeKey(conflictKey);
 		}

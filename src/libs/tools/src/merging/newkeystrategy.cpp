@@ -40,7 +40,7 @@ void NewKeyStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, Me
 		if (theirOperation == CONFLICT_ADD)
 		{
 			Key source = task.theirs.lookup(theirLookup);
-			conflictKey.setString(source.getString());
+			copyKeyValue(source, conflictKey);
 			result.resolveConflict(conflictKey);
 			result.addMergeKey(conflictKey);
 		}
@@ -49,7 +49,7 @@ void NewKeyStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, Me
 		if (theirOperation == CONFLICT_SAME)
 		{
 			Key source = task.ours.lookup(ourLookup);
-			conflictKey.setString(source.getString());
+			copyKeyValue(source, conflictKey);
 			result.resolveConflict(conflictKey);
 			result.addMergeKey(conflictKey);
 		}

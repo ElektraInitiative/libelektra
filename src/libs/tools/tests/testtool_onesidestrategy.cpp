@@ -51,6 +51,21 @@ TEST_F(OneSideStrategyTest, BaseWinsCorrectly)
 	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueb", KEY_END), merged.lookup (mk1));
 }
 
+TEST_F(OneSideStrategyTest, BaseWinnerRespectsBinaryData)
+{
+	base.lookup ("user/parentb/config/key1").setBinary("valueb", 6);
+	ours.lookup ("user/parento/config/key1").setString ("valueo");
+	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
+	Key conflictKey = mk1;
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
+	conflictKey = result.getConflictSet ().at (0);
+
+	OneSideStrategy strategy (BASE);
+	strategy.resolveConflict (task, conflictKey, result);
+
+	EXPECT_TRUE(conflictKey.isBinary());
+}
+
 TEST_F(OneSideStrategyTest, OursWinsCorrectly)
 {
 	base.lookup ("user/parentb/config/key1").setString ("valueb");
@@ -71,6 +86,21 @@ TEST_F(OneSideStrategyTest, OursWinsCorrectly)
 	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueo", KEY_END), merged.lookup (mk1));
 }
 
+TEST_F(OneSideStrategyTest, OursWinnerRespectsBinaryData)
+{
+	base.lookup ("user/parentb/config/key1").setString("valueb");
+	ours.lookup ("user/parento/config/key1").setBinary ("valueo", 6);
+	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
+	Key conflictKey = mk1;
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
+	conflictKey = result.getConflictSet ().at (0);
+
+	OneSideStrategy strategy (OURS);
+	strategy.resolveConflict (task, conflictKey, result);
+
+	EXPECT_TRUE(conflictKey.isBinary());
+}
+
 TEST_F(OneSideStrategyTest, TheirsWinsCorrectly)
 {
 	base.lookup ("user/parentb/config/key1").setString ("valueb");
@@ -89,5 +119,20 @@ TEST_F(OneSideStrategyTest, TheirsWinsCorrectly)
 	EXPECT_EQ(4, merged.size ());
 
 	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valuet", KEY_END), merged.lookup (mk1));
+}
+
+TEST_F(OneSideStrategyTest, TheirsWinnerRespectsBinaryData)
+{
+	base.lookup ("user/parentb/config/key1").setString("valueb");
+	ours.lookup ("user/parento/config/key1").setString ("valueo");
+	theirs.lookup ("user/parentt/config/key1").setBinary ("valuet", 6);
+	Key conflictKey = mk1;
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
+	conflictKey = result.getConflictSet ().at (0);
+
+	OneSideStrategy strategy (THEIRS);
+	strategy.resolveConflict (task, conflictKey, result);
+
+	EXPECT_TRUE(conflictKey.isBinary());
 }
 

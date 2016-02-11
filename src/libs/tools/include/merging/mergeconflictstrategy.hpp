@@ -34,6 +34,7 @@ public:
 protected:
 	virtual ConflictOperation getOurConflictOperation(const Key& conflictKey);
 	virtual ConflictOperation getTheirConflictOperation(const Key& conflictKey);
+	virtual void copyKeyValue(const Key& source, Key& destination);
 };
 
 typedef std::unique_ptr<MergeConflictStrategy> MergeConflictStrategyPtr;
