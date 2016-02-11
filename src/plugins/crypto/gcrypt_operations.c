@@ -14,7 +14,8 @@
 #include <stdlib.h>
 #include <gcrypt.h>
 #include <pthread.h>
-#include <asm-generic/errno-base.h>
+#include <errno.h>
+
 
 // initialize the gcrypt threading subsystem
 // NOTE: old versions of libgcrypt require the functions defined in this macro!
