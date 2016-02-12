@@ -2,6 +2,7 @@ file (GLOB TESTS test_*.c)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_test (${name})
+	target_link_elektra(${name} elektra-kdb)
 endforeach (file ${TESTS})
 
 target_link_elektra(test_array elektra-ease)

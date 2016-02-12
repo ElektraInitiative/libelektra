@@ -8,7 +8,7 @@ macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.c)
 	add_executable (${source} ${SOURCES})
 
-	target_link_elektra(${source})
+	target_link_elektra(${source} elektra-kdb)
 
 	set_target_properties (${source} PROPERTIES
 			COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
@@ -19,3 +19,12 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	do_example (${name})
 endforeach (file ${TESTS})
+
+target_link_elektra(cascading elektra-kdb)
+target_link_elektra(cut elektra-kdb)
+target_link_elektra(kdbget elektra-kdb)
+target_link_elektra(kdbget_error elektra-kdb)
+target_link_elektra(kdbintro elektra-kdb)
+target_link_elektra(kdbopen elektra-kdb)
+target_link_elektra(kdbset elektra-kdb)
+target_link_elektra(set elektra-kdb)
