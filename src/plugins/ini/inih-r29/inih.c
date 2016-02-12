@@ -277,7 +277,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 				{
 					*end = '\0';
 				}
-				if(name != prev_name)
+				if(name != prev_name && end > line)
 				{
 					rstrip(end-1);
 				}

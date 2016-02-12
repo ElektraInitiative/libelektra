@@ -6,8 +6,6 @@ echo
 
 check_version
 
-set -x
-
 #override for specific testing
 #PLUGINS="ini"
 
@@ -24,10 +22,10 @@ do
 		MOUNT_PLUGIN="$PLUGIN ccode null"
 		TESTS="basic"
 		;;
-    "ini")
-        MOUNT_PLUGIN="$PLUGIN"
-        TESTS="basic string umlauts"
-        ;;
+	"ini")
+		MOUNT_PLUGIN="$PLUGIN"
+		TESTS="basic string umlauts naming"
+		;;
 	"line")
 		TESTS="basic"
 		;;

@@ -15,6 +15,7 @@ cleanup()
 	rm -f $FILE
 }
 
+
 [ -e /dev/stdout ]
 exit_if_fail "For export/import /dev must be mounted"
 
@@ -30,6 +31,11 @@ do
 	fi
 
 	echo -------- $PLUGIN -----------
+
+	if [ "x$PLUGIN" = "xini" ]
+	then
+		$KDB mount test.ini $ROOT $PLUGIN 
+	fi
 
 	$KDB set $ROOT "root" >/dev/null
 	exit_if_fail "could not set root"
@@ -76,6 +82,14 @@ do
 
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove root"
+
+	if [ "x$PLUGIN" = "xini" ]
+	then
+		rm `$KDB file $ROOT`
+		$KDB umount $ROOT
+	fi
+
+
 done
 
 end_script
