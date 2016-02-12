@@ -405,7 +405,9 @@ static int handleSubCountConflict(Key *parentKey, Key *key, Key *specKey, Key *c
 
 static int handleConflictConflict(Key *parentKey, Key *key, Key *conflictMeta, OnConflict onConflict)
 {
-	fprintf(stderr, "handling conflictConflict %s:%s\n", keyName(key), keyName(conflictMeta));
+#if DEBUG && VERBOSE
+	fprintf(stderr, "handling conflict %s:%s\n", keyName(key), keyName(conflictMeta));
+#endif
 	int ret = 0;
 	const char *problemKeys = elektraMetaArrayToString(key, keyName(conflictMeta), ", ");
 	switch(onConflict)
