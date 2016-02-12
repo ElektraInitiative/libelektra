@@ -279,14 +279,15 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 	/* init reference counting */
 	handle->refcounter = 1;
 	handle->config = config;
+	config = 0; // for err_clup case
 
 	/* let the plugin initialize itself */
 	if (handle->kdbOpen)
 	{
-		if ((handle->kdbOpen(handle, errorKey)) == -1)
+		if ((handle->kdbOpen (handle, errorKey)) == -1)
 		{
-			elektraFree (handle);
 			ELEKTRA_ADD_WARNING(11, errorKey, name);
+			elektraPluginClose (handle, errorKey);
 			goto err_clup;
 		}
 	}
