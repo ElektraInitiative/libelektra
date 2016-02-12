@@ -13,7 +13,7 @@
 
 /**
  * @defgroup plugin Plugins
- * 
+ *
  * @brief Elektra plugin framework
  *
  * @since version 0.4.9, Elektra can dynamically load different key storage
@@ -59,7 +59,7 @@
  *   \n
  *   Other persistent storage then a file is not handled within
  *   this document because it involves many other issues.
- *   For files the resolver plugin already takes care for
+ *   For files the resolver plugin already takes care of
  *   transactions and rollback.
  *   So the storage plugin is the source and dump as known
  *   from pipes and filters.
@@ -130,7 +130,7 @@
 #undef ELEKTRA_SET_ERRORF
 
 /**
- * @brief Adds an warning in the keys metadata.
+ * @brief Adds a warning in the keys metadata.
  *
  * Include kdberrors.h to make it work:
  *
@@ -147,7 +147,7 @@
 #undef ELEKTRA_ADD_WARNINGF
 
 /**
- * @brief Adds an warning in the keys metadata.
+ * @brief Adds a warning in the keys metadata.
  *
  * Include kdberrors.h to make it work:
  *
@@ -283,7 +283,7 @@ int elektraDocClose(Plugin *handle, Key *warningsKey);
  * Retrieve information from a permanent storage to construct
  * a keyset.
  *
- * @section intro .
+ * @section intro Introduction
  *
  * The elektraDocGet() function handle everything related
  * to receiving keys.

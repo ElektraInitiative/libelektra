@@ -6,14 +6,14 @@ library implemented in C. The plugin-based framework fulfills many
 configuration-related tasks to avoid any unnecessary code duplication
 across applications while it still allows the core to stay without any
 external dependency. Elektra abstracts from cross-platform-related issues
-with an consistent API, and allows applications to be aware of other
+with a consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-See the Readme for more information [Readme](/README.md).
+See the [Readme](/README.md) for more information.
 See the [glossary](/doc/help/elektra-glossary.md) for the used
 terminology.
 
-## API docu ##
+## API Docu ##
 
 This document occupies with the API implementation, documentation,
 internals and plugins.
@@ -104,7 +104,7 @@ The cascading tree is the logical tree to be used in applications.
 The other trees are the physical ones that stem from configuration sources.
 When using cascading key the best key will be searched at runtime,
 which appears like a tree on its own.
-See @ref cascading in the documentation of ksLookupByName() how the selection
+See @ref cascading in the documentation of ksLookupByName() on how the selection
 of keys works.
 
 - The `spec` tree\n
@@ -148,7 +148,7 @@ please keep in mind the following rules:
 - You are not allowed to create keys right under the root.
 They are reserved for more generic purposes.
 - The keys for your application, called say *myapp*, should be created under
-`@p /sw/org/myapp/#0/current`
+`/sw/org/myapp/#0/current`
 	+ sw is for software
 	+ org is the organisation. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
 	+ `#0` is the major version of the configuration

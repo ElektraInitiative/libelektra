@@ -28,7 +28,7 @@ true if an older version of Augeas is installed also. Such a situation may lead 
 /usr/lib/libaugeas.so.0: version `AUGEAS_0.16.0` not found (required by kdb)
 
 This is because ld tries to link /usr/lib/libaugeas.so.0 which is an older version of Augeas. Simply add
-the path to the newer library to your ld search paths (consult your system documentation on how to do this)
+the path to the newer library to your ld search paths (consult your system documentation on how to do this).
 
 
 ## MOUNTING AND CONFIGURATION ##
@@ -47,7 +47,7 @@ The lens module name is equal to the filename without extension in pascal notati
 For example, the lens `/usr/share/augeas/lenses/dist/hosts.aug` contains the module Hosts.
 
 Note that, without configuring the plugin to use a lens, the plugin
-would bail out an error on the first usage:
+will print an error message on the first usage:
 
 	kdb ls system/hosts
 	The command ls terminated unsuccessfully with the info: Error (#85) occurred!
@@ -57,7 +57,7 @@ would bail out an error on the first usage:
 	At: /path/augeas.c:166
 	Reason: Lens not found
 
-because the plugin would not know which lens to use to read and write the configuration.
+This happens because the plugin does not know which lens it should use to read and write the configuration.
 For that reason, the lens configuration option was supplied together with the mount command.
 
 

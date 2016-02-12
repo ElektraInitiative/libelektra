@@ -18,7 +18,7 @@ featured backend. No other plugins are needed.
 ## Format ##
 
 The file format consists of a simple command language with
-arguments. When an argument is binary or string data the length needs to
+arguments. When an argument is binary or string data the length needs to be
 passed first. Because the size is known in advance, any binary dump is
 accepted. Terminating characters present no problem. The commands are
 assembled similar to the ones present in Elektra’s API.
@@ -29,7 +29,7 @@ Elektra’s dump format at all. A wrong version number most likely
 indicates that the version of the plugin is too old to recognise all
 commands in the file. The basic idea of the dump plugin is to write
 out the way that the KeySet needs to be constructed. The dump plugin
-interprets such a file. The file also looks similar to Ccode that
+interprets such a file. The file also looks similar to C code that
 would create the KeySet. Keys can contain any binary values and arbitrary
 metadata and are still stored and parsed correctly. The dump plugin can
 even reconstruct pointers to metadata to save memory. When a pointer

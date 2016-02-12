@@ -431,7 +431,7 @@ static int keyCompareByName(const void *p1, const void *p2)
  * @param p1
  * @param p2
  *
- * @return 
+ * @return
  */
 static int keyCompareByNameCase(const void *p1, const void *p2)
 {
@@ -639,7 +639,7 @@ ssize_t ksGetSize(const KeySet *ks)
 
 
 
-/******************************************* 
+/*******************************************
  *           Filling up KeySets            *
  *******************************************/
 
@@ -666,7 +666,7 @@ if (result >= 0)
  * @param ks the keyset to work with
  * @param toAppend the key to check
  * @return position where the key is (>=0) if the key was found
- * @return -insertpos -1 (< 0) if the key was not found 
+ * @return -insertpos -1 (< 0) if the key was not found
  *    so to get the insertpos simple do: -insertpos -1
  */
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
@@ -846,7 +846,7 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * @param ks the KeySet that will receive the keys
  * @param toAppend the KeySet that provides the keys that will be transferred
  * @see ksAppendKey()
- * 
+ *
  */
 ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 {
@@ -1459,7 +1459,7 @@ int ksSetCursor(KeySet *ks, cursor_t cursor)
 
 
 
-/******************************************* 
+/*******************************************
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
@@ -1531,7 +1531,7 @@ int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex)
  * @param specKey contains metadata as specified in buffer+#<number>
  * @param buffer the buffer used for incrementing numbers
  *
- * @return 
+ * @return
  */
 static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
 {
@@ -2073,7 +2073,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/key", 0)) == NULL)
 	errorHandler ("Could not Lookup Key");
  * @endcode
  *
- * This is the way multi user Programs should get there configuration and
+ * This is the way multi user programs should get their configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
  *
@@ -2098,7 +2098,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  *
  * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
  * are considered. A much more efficient binary search will be used then.
- * 
+ *
  * @param ks where to look for
  * @param name key name you are looking for
  * @param options some @p KDB_O_* option bits:
@@ -2192,7 +2192,7 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
 
 		/*fprintf (stderr, "Compare %s with %s\n", keyValue(current), value);*/
 
-		if ((options & KDB_O_NOCASE) && 
+		if ((options & KDB_O_NOCASE) &&
 			!elektraStrCaseCmp(keyValue(current),value)) break;
 		else if (!strcmp(keyValue(current),value)) break;
 	}
@@ -2214,7 +2214,7 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
  *
  * If found, @p ks internal cursor will be positioned in the matched key.
  * That means it is also accessible by ksCurrent(). A pointer to the Key
- * is returned. If not found, @p ks internal cursor won't move, and a 
+ * is returned. If not found, @p ks internal cursor won't move, and a
  * NULL pointer is returned.
  *
  * This method skips string keys.
@@ -2257,7 +2257,7 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
 			else continue;
 		}
 
-		if (current->data.v && 
+		if (current->data.v &&
 			!memcmp(current->data.v,value,size)) break;
 	}
 

@@ -52,7 +52,7 @@
 	 * @ingroup plugin
 	 *
 	 * @param plugin the name of the plugin
-	 * @param which which function it is (open, close, get, set, error)
+	 * @param function which function it is (open, close, get, set, error)
 	 */
 	#define ELEKTRA_PLUGIN_FUNCTION(module, function) libelektra_##module##_LTX_elektraPlugin##function
 #endif

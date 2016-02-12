@@ -54,12 +54,12 @@ the backend enclosing the plugin is not mounted at all.
 
 ### Removing Keys
 
-In Elektra version $0.6$, removing keys was an explicit request.  Only a
+In Elektra version 0.6, removing keys was an explicit request.  Only a
 single `Key` object could be removed from the database.  For configuration
 files this method is inapplicable.  For `filesys`, however, it was easy
 to implement.
 
-In Elektra version $0.7$, the behaviour changed.  Removing keys was
+In Elektra version 0.7, the behaviour changed.  Removing keys was
 integrated into `kdbSet()`.  The user tagged keys that should be removed.
 After the next `kdbSet()`, these keys were removed from the key database.
 On the one hand, backends writing configuration files simply ignored
@@ -138,7 +138,7 @@ to determine if they are responsible for a key or not.	Consequently, it
 can happen that more than one backend delivers a key with the same name.
 
 `kdbGet()` ensures that a key is uniquely identified by its name.
-Elektra's core will pop keys that are outside of the backend's
+Elektra's core will [pop](elektra-glossary.md) keys that are outside of the backend's
 responsibility.  Hence, these keys will not be passed to the user and
 we get the desired behaviour: The nearest mounted backend to the key
 is responsible.
@@ -174,7 +174,7 @@ resulting key set:
 	user/sw/generator/dir/outside1 (B)
 
 Note that the key exactly at the mount point comes from the backend mounted
-at user/sw/generator/dir.
+at `user/sw/generator/dir`.
 
 
 
@@ -221,9 +221,7 @@ of the plugins, `kdbGet()` removes it.
 needs to store the number of received keys of each backend.
 - Additionally, for every key it is checked if it belongs to this
 backend.  This makes sure that every key comes from a single source
-only as designated by the `Trie`.  In this process, all duplicated and
-overlapping keys will be popped in favour of the responsible backend as
-described below in responsibility.
+only as designated by the `Trie`.  In this process, Elektra pops all duplicated and overlapping keys in favour of the responsible backend.
 
 The last step is to *merge* all these key sets together.  This step
 changes the configuration visible to the user. After some cleanup the
@@ -275,9 +273,9 @@ the internal configuration was fetched.  Reloading resets the timestamps
 and `kdbGet()` works as expected.
 
 
-## kdbSet}
+## kdbSet
 
-Not the performance, but robust and reliable behaviour is the most
+Not performance, but robust and reliable behaviour is the most
 important issue for `kdbSet()`.  The design was chosen so that some
 additional in-memory comparisons are preferred to a suboptimal sequence
 of `syscalls`.  The algorithm makes sure that keys
@@ -412,8 +410,7 @@ be favoured.  The result of the merged key sets has to be written out with
 `kdbSet()`.
 4. Merging the key sets can be done with `ksAppend()`.  The source
 parameter is the preferred configuration.  Note that the downside of
-the third option is that a merged configuration can be an not validating
-configuration.
+the third option is that the merged configuration might not be valid.
 
 Sometimes a concrete key causes the problem that the whole key set cannot
 be stored.  That can happen on validation or because of type errors.
@@ -426,5 +423,5 @@ A completely different approach is to export the configuration when
 `kdbSet()` returned an error code.  The user can then edit, change or
 merge this configuration with more powerful tools.  Finally, the user
 can import the configuration into the global key database.  The export
-and import mechanism is called ''streaming'' and will be explained in
+and import mechanism is called “streaming” and will be explained in
 *streaming*.

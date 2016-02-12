@@ -28,7 +28,7 @@ hexcode plugin makes the value three times larger.
 Consider the following _value_ of an key:
 
 	value=abc xyz
-	
+
 Assuming the escape character is % the input would be encoded to:
 
 	value%3Dabc%20xyz
@@ -39,8 +39,8 @@ the hexcode plugin makes the value three times larger.
 
 ## Usage ##
 
-Add `ccode` to `infos/needs` for any plugin that you want to be filtered
-by ccode.
+Add `hexcode` to `infos/needs` for any plugin that you want to be filtered
+by hexcode.
 
 Then, additionally define all characters you need to be escaped below
 `config/needs/chars` in your contract, e.g:

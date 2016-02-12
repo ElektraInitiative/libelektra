@@ -26,7 +26,7 @@ the metadata interface.
 It is believed to be much faster on
 lookup, but considerably slower on sorted enumeration.
 
-A **AVL tree** also serve as a competitor.
+An **AVL tree** also serves as a competitor.
 AVL trees are expected to be
 faster for inserting keys at any place, but may be slower for appending
 because of the needed reorganisations.
@@ -63,7 +63,7 @@ resources after use.
 Using the C++ binding deallocation is done automatically.
 
 
-## Meta data
+## Meta Data
 
 Read [here](elektra-meta-data.md).
 
@@ -97,7 +97,7 @@ Instead, we try to reuse sets in the following ways:
   But all changes to the values of keys in the resulting `KeySet`
   affect the original `KeySet`, too.
 
-  `ksDup(const KeySet *source)` produces a new `KeySet` that way. The
+  `ksDup(const KeySet *source)` produces a new `KeySet`. That way the
   `source` is not changed as shown by the `const` modifier.
 
 - The result of the operation is applied to the
@@ -259,7 +259,7 @@ With the same amount of checks,
 using an external cursor is not much faster than
 the `ksNext()`.
 External cursor with checks is in a benchmark
-about 10\% faster.
+about 10% faster.
 
 But an external cursor directly accessing the array can be much
 faster. Using an unchecked external cursor can be about 50%
@@ -308,7 +308,7 @@ the user needs to understand them as well.
 
 ### Trie
 
-*Trie* or prefix tree is an ordered tree
+A *Trie* or prefix tree is an ordered tree
 data structure.
 In Elektra,
 it provides the information
