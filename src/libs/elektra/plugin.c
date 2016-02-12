@@ -238,7 +238,7 @@ int elektraProcessPlugins(Plugin **plugins, KeySet *modules, KeySet *referencePl
  */
 Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key *errorKey)
 {
-	Plugin* handle;
+	Plugin* handle = 0;
 	const char* n;
 
 	elektraPluginFactory pluginFactory=0;
@@ -285,6 +285,7 @@ Plugin* elektraPluginOpen(const char *name, KeySet *modules, KeySet *config, Key
 	{
 		if ((handle->kdbOpen(handle, errorKey)) == -1)
 		{
+			elektraFree (handle);
 			ELEKTRA_ADD_WARNING(11, errorKey, name);
 			goto err_clup;
 		}
