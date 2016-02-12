@@ -97,6 +97,10 @@ make name(s) of variant and in which folder it is independent
 
 autoadd plugins to PLUGINS? (avoid duplication in ElektraCache)
 
+build all tests also with shared
+
+remove ENABLE_TESTING or BUILD_TESTING
+
 
 ## lazy mountpoints
 
