@@ -79,7 +79,7 @@ For a custom libgcrypt location set:
 
 Both variants of the plugin compile under Mac OS X "El Capitan" (Version 10.11.3 (15D21)).
 
-For the `crypto_gcrypt` variant download and install either [MacPorts](http://brew.sh/) or [Homebrew](https://www.macports.org/).
+For the `crypto_gcrypt` variant download and install either [MacPorts](https://www.macports.org/) or [Homebrew](http://brew.sh/).
 Use one of those tools to download and install `libgcrypt`. If you choose MacPorts, you can set the CMake variables like this:
 
 - *LIBGCRYPT_INCLUDE_DIR* to `/opt/local/include/`
