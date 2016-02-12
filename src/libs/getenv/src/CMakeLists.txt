@@ -10,6 +10,6 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 add_library (elektragetenv SHARED ${SOURCES})
 
 target_link_libraries (elektragetenv ${CMAKE_DL_LIBS})
-target_link_elektra (elektragetenv elektra-kdb)
+target_link_libraries (elektragetenv elektra-kdb) # must be shared!
 
 install (TARGETS elektragetenv DESTINATION lib${LIB_SUFFIX})
