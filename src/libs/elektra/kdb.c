@@ -1048,13 +1048,14 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitUpdateSize(split);
 
+	if(handle->globalPlugins[POSTCOMMIT])
+		handle->globalPlugins[POSTCOMMIT]->kdbSet(handle->globalPlugins[POSTCOMMIT], ks, parentKey);
+
 	for (size_t i=0; i<ks->size; ++i)
 	{
 		// remove all flags from all keys
 		clear_bit(ks->array[i]->flags, KEY_FLAG_SYNC);
 	}
-	if(handle->globalPlugins[POSTCOMMIT])
-		handle->globalPlugins[POSTCOMMIT]->kdbSet(handle->globalPlugins[POSTCOMMIT], ks, parentKey);
 
 	keySetName(parentKey, keyName(initialParent));
 	keyDel(initialParent);
