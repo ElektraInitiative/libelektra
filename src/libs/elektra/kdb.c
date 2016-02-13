@@ -420,6 +420,11 @@ int kdbClose(KDB *handle, Key *errorKey)
 		handle->initBackend = 0;
 	}
 
+	for (int i = 0; i < NR_GLOBAL_PLUGINS; ++i)
+	{
+		elektraPluginClose(handle->globalPlugins[i], errorKey);
+	}
+
 	if (handle->modules)
 	{
 		elektraModulesClose (handle->modules, errorKey);

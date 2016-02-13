@@ -279,6 +279,7 @@ int elektraMountGlobals (KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey)
 				{
 					//plugin already loaded, just reference it
 					plugin = *(Plugin**)keyValue(refKey);
+					plugin->refcounter += 1;
 				}
 				else
 				{
