@@ -20,4 +20,5 @@ usr/lib/elektra/tool_exec/mount-kde
 usr/lib/elektra/tool_exec/mount-openicc
 usr/lib/elektra/tool_exec/umount-all
 usr/lib/elektra/tool_exec/list-tools
+usr/lib/elektra/tool_exec/upgrade-bootstrap
 usr/share/man/man1/*
