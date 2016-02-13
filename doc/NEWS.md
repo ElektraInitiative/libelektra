@@ -3,17 +3,27 @@
 To be released soon!
 
 This seems to be the largest release up to now, with many user-visible
-improvements.
+improvements. Some highlights:
+
+- mounting is vastly improved, from "dpkg" to "apt-get"-like functionality
+- it is now not only possible to specify how the configuration should look like,
+  but also automatically enforce it
+- the library `libelektra.so` was split for better evolution
+- Elektra is fully compatible, with interesting improvements in bootstrapping
+- INI, rename and crypto plugins were improved
+- the kdb tool now supports bookmarks and profiles
+- `kdb editor` supports editing of KDB config in an editor with any syntax.
+- New packages for Debian, Arch Linux and OpenWRT
 
 
 ## Global Mount
 
 Sometimes you simply want some functionality for the whole key database.
-For example if you want to enable logging or notification of configuration
-changes, in previous versions, you had to change every mountpoint
-individually.  Even more problematic, every mountpoint created it its
+For example, you want to enable logging or notification of configuration
+changes. In previous versions, you had to change every mountpoint
+individually.  Even more problematic, every mountpoint created its
 individual logs and notifications, without any way for someone to know
-if an application is now finished reconfiguring.
+if an application has issued its last log/notification.
 
 These problems are now solved by global plugins. The same plugins are
 reused for this purpose. Also the mounting works nearly in the same way,
@@ -21,26 +31,26 @@ you only have to omit the configuration file and the mountpoint:
 
 	kdb global-mount syslog journald dbus
 
-Voila, from now on every configuration change gets logged to syslog
+Voilà, from now on every configuration change gets logged to syslog
 and journald. Additionally, every application gets notified via dbus.
 
 If you want it more verbose for debugging, you can easily do so by:
 
-	kdb global-mount logchange tracer counter
+	kdb global-mount logchange counter
 
 Which gives you detailed information to standard output which keys
-were changed/edited/deleted, a trace of when the `tracer` plugin
-and counts of how often the `counter` plugin are invoked.
-
-It was already possible in earlier versions of Elektra to specify the
-configuration of your program. Until now, this specification could be
-mainly used to to generate code as described
-[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
+were changed/edited/deleted. Additionally, Elektra counts how often
+the `counter` plugin is invoked.
 
 The underlying work for the global plugins, i.e. hooks in the core libraries
 and the `list` plugin that allows us to use many plugins without bloating
 the core was done by Thomas Waser.
 
+
+It was already possible in earlier versions of Elektra to specify the
+configuration of your program. Until now, this specification could be
+mainly used to to generate code as described
+[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
 This release adds two more interesting options:
 1.) the spec plugin, and
 2.) the spec mount.
@@ -64,7 +74,6 @@ validation plugins already present.
 Lets start by saying a key is a long and must have at least the value 10:
 
 	kdb setmeta spec/example/longkey check/type long
-	kdb setmeta spec/example/longkey check/type/min 10
 
 Then we can create a key in a different namespace and see if the `spec` plugin
 applies the meta-data correctly:
@@ -72,19 +81,52 @@ applies the meta-data correctly:
 	kdb set /example/longkey 25
 	kdb lsmeta /example/longkey
 
+Should now at least print `check/type`.
+By itself, this is useful for documentation of keys.
+For example, the application developer says:
+
+	kdb setmeta spec/example/longkey description "Do not change this key"
+	kdb setmeta spec/example/longkey example 30
+
+The user can retrieve this documentation by:
+
+	kdb getmeta /example/longkey description
+
+But we want `check/type` to be not only a documentation, but also enforced.
 
 
 ## Spec Mount
 
 Using `kdb setmeta` extensively and always looking out that all plugins are mounted
-correctly is error-prone. So instead, one can directly write a specification file
-as simple configuration file and mount it.
+correctly is error-prone. So instead, one can directly mount the plugins as specified.
+For the example above one simply needs:
 
-Based on the present meta-data, the correct plugins will be loaded.
+	kdb setmeta spec/example mountpoint example.ecf
+	kdb spec-mount /example
 
-	cp battery.ini $(dirname $(kdb file spec))
-	kdb mount battery.ini spec/example/battery ni
-	kdb spec-mount /example/battery
+Now, when we try to modify `/example/longkey` it will be validated:
+
+	kdb set /example/longkey a
+	> Error (#52) [...] long [not] matched [...] a
+
+Based on the present meta-data, the correct plugins (in this case `type` because
+of the metadata `check/type`) will be loaded.
+
+We can also create a whole specification file, first mount the specification
+and then the mountpoint according the specification, e.g when we have
+`battery.ini` in the folder `$(dirname $(kdb file spec))` with following content:
+
+	[]
+	mountpoint = battery.ini
+	infos/plugins = ini
+
+	[level]
+	check/enum = 'critical', 'low', 'high', 'full'
+
+Then we can use:
+
+	kdb mount battery.ini spec/example/battery ni # mount the file itself
+	kdb spec-mount /example/battery      # make sure all plugins are present (enum)
 	kdb lsmeta /example/battery/level    # we see it has a check/enum
 	kdb getmeta /example/battery/level check/enum    # now we know allowed values
 	kdb set /example/battery/level low   # success, low is ok!
@@ -99,8 +141,6 @@ The main idea of the spec-mount is: search a plugin for every specification
 ## General Mount Improvements
 
 Up to now, `kdb mount` failed when plugin dependencies were not satisfied.
-So bascially, we now upgraded `kdb mount` from "dpkg" to "apt-get"-like
-functionality.
 
 The plugins given in the command-line used to be real plugins. Now also so
 called providers are accepted.
