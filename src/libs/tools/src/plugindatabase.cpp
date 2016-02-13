@@ -176,7 +176,10 @@ PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) c
 {
 	PluginPtr plugin;
 	try {
-		plugin = impl->modules.load (spec.getName(), spec.getConfig());
+		KeySet conf = spec.getConfig();
+		conf.append(Key("system/module",
+				KEY_VALUE, "this plugin was loaded for the status", KEY_END));
+		plugin = impl->modules.load (spec.getName(), conf);
 		return real;
 	}
 	catch (...)
