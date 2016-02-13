@@ -140,7 +140,13 @@ The main idea of the spec-mount is: search a plugin for every specification
 
 ## General Mount Improvements
 
-Up to now, `kdb mount` failed when plugin dependencies were not satisfied.
+In earlier versions `kdb mount` failed when plugin dependencies were not satisfied.
+Now dependencies will automatically be fulfilled, e.g.
+
+	kdb mount /etc/modules system/modules line
+
+In earlier versions you would have get an error because of the missing `null`
+plugin. Now it simply adds the needed plugins.
 
 The plugins given in the command-line used to be real plugins. Now also so
 called providers are accepted.
@@ -150,14 +156,19 @@ candidate. To get the information we added a `infos/status` clause in the
 contract. In this clause the plugin developer adds many details how well
 the plugin is tested, reviewed, documented, maintained and so on. Based on
 this information, the best suited plugin will be chosen.
+For example, you now can use:
+
+	kdb mount /etc/security/limits.conf system/limits augeas lens=Limits.ln logging
+
+And the best suitable logger will automatically be chosen.
 
 The configuration variable `/sw/kdb/current/plugins` now allows us to pass
 plugin configuration with the same syntax as the plugin specification passed
 on the commandline. A subtle difference is that thus the shell-splitting
-of arguments is missing, its not possible to include whitespace in the
-configuration.
+of arguments is missing, it is not possible to include whitespaces in the
+plugin configuration that way.
 
-Now it is possible to include the same plugin multiple time and also give
+Now it is also possible to include the same plugin multiple times and also give
 them individual names. This feature is essential for script-based plugins,
 e.g. you now might add:
 
@@ -166,7 +177,9 @@ e.g. you now might add:
 		lua#storage script=storage.lua
 
 Furthermore, `kdb mount` now supports recommendations, which can be enabled
-with `--with-recommends`.
+with `--with-recommends`. E.g. supplied to the mount command using augeas
+above, comments will automatically transformed to meta-data to avoid cluttering
+of the real configuration.
 
 
 
@@ -177,19 +190,19 @@ with `--with-recommends`.
 Up to now, Elektra consisted only of a single shared library, `libelektra.so`.
 Not all symbols in it were relevant to end users, for example, some were only
 needed by plugins. Others were only proposed and not yet part of the stable
-API. And finally, the other symbols were too much, e.g. the plugins do not
-need the `kdb` interface.
+API. And finally, other symbols were not needed in some situations, e.g.
+the plugins do not need the `kdb` interface.
 
-Thus, we did a library split, so that only coherent parts are in the same
+Thus, we did a split `libelektra.so`, so that only coherent parts are in the same
 library:
 
-- `libelektra-core.so` only contains the `KeySet` datastructure and module loading.
-  Every binary related to Elektra should link against it.
+- `libelektra-core.so` only contains the `KeySet` data structure and module loading.
+  Every binary using Elektra should link against it.
 - `libelektra-kdb.so` contains the missing `KDB` symbols. Together with the `core`
   they contain everything declared in `kdb.h`.
-  We plan to have multiple variants of `libelektra-kdb.so` that use different
-  kinds of concurrency.
-- `libelektra-ease.so` adds functionality missing in `core` to make the life of
+  Michael Zehender  plans to have multiple variants of `libelektra-kdb.so` that use
+  different kinds of concurrency.
+- `libelektra-ease.so` adds functionality missing in `core` to make the life for
   C programmers easier.
 - `libelektra-proposal.so` adds functionality proposed for `core`. It directly
   uses internal structures of `core`, thus they always need to have exactly
@@ -240,29 +253,32 @@ The internal function `keyCompare` now also detects any meta-data
 change.
 
 libtools was nearly rewritten. Even though it is mostly API compatible
-(even though you should not use the low-level `Backend` anymore but instead
+(you should not use the low-level `Backend` anymore but instead
 use the `BackendBuilder`), it is certainly not ABI compatible.
 If you have an undefined symbol: `_ZN3kdb5tools7Backend9addPluginESsNS_6KeySetE`
-you need to recompile your application. Even the merging part has
+you need to recompile your tool. Even the merging part has
 ABI incompatibility (different size of `_ZTVN3kdb5tools7merging14NewKeyStrategyE`).
 Unfortunately, we still cannot guarantee compatibility in `libtools`,
-further changes are planned.
-
-The symbol `elektraKeyCutNamePart` is no longer part of `libelektra.so`.
+further changes are planned (e.g. implementing mounting of lazy plugins).
 
 The python(2) and lua interfaces changed, an additional argument (the plugin
 configuration) is passed to `open`.
 
-The INI plugin was rewritten, many options changed.
+The INI plugin was rewritten, so many options changed in incompatible ways.
 
 Thanks to Manuel Mausz plugins do no longer export any method other than
 `elektraPluginSymbol`. It now will fail if you directly linked against
 plugins and did not correctly use their public interface. Please
 use the module loading and access functions via the contract.
 
-The CMake and Pkgconfig Files now only link against `elektra-core` and `elektra-kdb`.
-If you used some symbols not present in `kdb.h`, your application might
-not work anymore.
+The CMake and Pkgconfig Files now only link against `elektra-core` and
+`elektra-kdb`.  If you used some symbols not present in `kdb.h`, your
+application might not work anymore.
+
+`libelektra.so` is still present for compatibility reasons.  It should
+not be used for new applications.  Some unimportant parts, however,
+moved to the "sugar" libraries.  E.g. the symbol `elektraKeyCutNamePart`
+is no longer part of `libelektra.so`.
 
 
 ### Bootstrapping
@@ -289,25 +305,31 @@ which basically exports `system/elektra/mountpoints`, then does `kdb rm
 mountpoint and thus the compatibility mode does not apply anymore. As
 last step it will import again what it exported before.
 
+[Details are here](https://github.com/ElektraInitiative/libelektra/blob/master/doc/decisions/bootstrap.md)
+
 
 
 
 ## Plugins
 
-We already highlighted the new `spec` plugin, but also other plugins were improved at many places.
-Small other changes are:
+We already highlighted the new `spec` plugin, but also other plugins
+were improved at many places.  Small other changes are:
 
 - Conditionals now also support `assign/condition` syntax, thanks to Thomas Waser
 - Lua and Python are not tagged experimental anymore.
   They now correctly add their configuration to the open-call.
+- The plugin `yajl` (the json parser and generator) now also accepts the
+  type `string` and yields better warnings on wrong types.
+- Improved error message in the `type` plugin.
 
-Larger changes were done in the plugins:
+Larger changes were done in the following plugins:
 
 ### INI
 
 The INI plugin was rewritten and a huge effort was taken so that it fully-roundtrips
 and additionally preserves all comments and ordering.
 Currently, it is brand new. It is planned that it will replace `dump` in the future.
+Read [here about the details](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/ini).
 
 A huge thanks to Thomas Waser.
 
@@ -345,22 +367,22 @@ different platforms where dependencies need to be handled differently.
 A technical preview of a new tool was added: `kdb editor` allows you
 to edit any part of Elektra's configuration with any editor and any
 syntax. It uses 3-way merging and other stable technology, but it
-currently does not provides a way to abort editing. So you should
-only use it with care.
+currently does not provides a way to abort editing. So you only should
+use it with care.
 
-The tool `kdb list` now searches in the rpath for libraries and
-thus will also find plugins not present at compile time (using `glob`).
-Additionally, it sorts the plugins by `infos/status` score, which can also
-be printed with `-v`. The last plugins printed are the highest ones
-ranked.
+The tool `kdb list` now searches in the rpath for libraries and thus
+will also find plugins not present at compile time (using `glob`).
+Additionally, it sorts the plugins by `infos/status` score, which can
+also be printed with `-v`. The last plugins printed are the ones ranked
+highest.
 
 When running as root, `kdb` will now use the `system` namespace when
 writing configuration to cascading key names.
 
 Long pathes are cumbersome to enter in the CLI.
-Thus one can define bookmarks. Bookmarks are key-names that start with `+`.
+Thus one now can define bookmarks. Bookmarks are key-names that start with `+`.
 They are only recognized by the `kdb` tool or tools that explicit have
-support for it. You application should not depend on the presence of a
+support for it. Application should not depend on the presence of a
 bookmark. For example, if you set the bookmark kdb:
 
 	kdb set user/sw/elektra/kdb/#0/current/bookmarks
@@ -372,10 +394,10 @@ You are able to use:
 	kdb set +kdb/format ini
 
 
-The kdb tool got much more robust when the initial configuration is broken
+The kdb tool got much more robust when the initial configuration is broken,
 no man page viewer present or Elektra was installed wrongly.
 
-- `--help` usage is unified and improved
+The `--help` usage is unified and improved.
 
 The new keyname naming conventions are now used for
 configuration of the `kdb`-tool itself: `/sw/elektra/kdb/#0/%/`
@@ -420,17 +442,21 @@ The documentation was improved vastly.
 Most thanks to Kurt Micheli who did a lot of editing and fixed many places throughout the documentation
 Also thanks to Michael Zehender who added two paragraphs in the main README.md.
 
-Keynames of applications should be called `/sw/org/app/#0/current`, where `current` is the default
-profile (non given). `org` and `app` is supposed to not contain `/` and be completely lowercase.
+Keynames of applications should be called `/sw/org/app/#0/current`,
+where `current` is the default profile (non given). `org` and
+`app` is supposed to not contain `/` and be completely lowercase.
 Keynames are documented [here](/doc/help/elektra-key-names.md).
-[See also here.](/doc/tutorials/application-integration.md)
-The main reason to have to long paths is the provided flexibility in the future (e.g. to use profiles and have a compatible
-path for new major versions of configuration). By using bookmarks, users should not be confronted by it too often.
+[See also here.](/doc/tutorials/application-integration.md) The main
+reason to have to long paths is the provided flexibility in the future
+(e.g. to use profiles and have a compatible path for new major versions
+of configuration). By using bookmarks, users should not be confronted
+by it too often.
 
 - many man pages were improved
 - many typos were fixed, thanks to Pino Toscano!
 - Fix documentation for kdb list, thanks to Christian Berrer
-- Compilation variants are explained better, thanks to Peter Nirschl for pointing out what was missing
+- Compilation variants are explained better,
+  thanks to Peter Nirschl for pointing out what was missing
 - document ronn as dependency, thanks to Michael Zehender
 - fix broken links, thanks to Daniel Bugl
 
@@ -456,8 +482,8 @@ Raffael Pancheri again updated qt-gui with many nice improvements:
 
 ## Packaging and Build System
 
-Elektra 0.8.14 now in Debian with qt-gui, man pages, thanks to Pino Toscano!
-https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html
+Elektra 0.8.14 now in Debian with qt-gui, man pages, thanks to Pino Toscano
+[read more here](https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html)
 
 Thanks to Gustavo Alvarez for updating and splitting the packages on Arch Linux!
 
@@ -467,7 +493,6 @@ against musl libc, with one minor limitation: RPATH works differently
 on musl so you need to install all plugins directly in /usr/lib/ or
 set LD_LIBRARY_PATH.  [Harald Geyer](https://github.com/haraldg/packages)
 http://friends.ccbib.org/harald/supporting/
-
 
 - export errors/symbols are now called `elektra-export-symbols` and `elektra-export-symbols`
   and can be installed using `INSTALL_BUILD_TOOLS` (by default off).
@@ -482,8 +507,6 @@ http://friends.ccbib.org/harald/supporting/
 
 ## Fixes and Improvements
 
-The plugin `yajl` (the json parser and generator) now also accepts the
-type `string` and yields better warnings on wrong types.
 - Daniel Bugl tested the INI plugin
 - getenv: fix wrapping on powerpc, thanks to Pino Toscano
 - markdownlinkconverter: fix char/int mismatch, thanks to Pino Toscano
@@ -493,6 +516,7 @@ type `string` and yields better warnings on wrong types.
 - cmake list_filter was broken because of different behaviour in cmake_parse_arguments,
   thanks to Christian Berrer for reporting
 - g++5.3 is now supported
+- 3 way merge now properly deals with binary data, thanks to Felix Berlakovich
 - gtest does not link against pthread if not needed
 - testcases that are built with BUILD_SHARED also successfully work
 - fix Mac OS issues, thanks to Peter Nirschl, René Schwaiger and Mihael Pranjic
