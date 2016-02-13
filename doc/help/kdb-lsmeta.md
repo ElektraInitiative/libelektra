@@ -18,12 +18,14 @@ If no meta keys are associated with the given key, nothing will be printed.
   Print version info.
 - `-0`, `--null`:
   Use binary 0 termination.
+- `-v`, `--verbose`:
+  Show which key will be used.
 
 
 ## EXAMPLE
 
-To see which meta keys are associated with a key:  
-	`kdb lsmeta user/example/key`  
+To see which meta keys are associated with a key:
+	`kdb lsmeta /example/key`
 
 ## SEE ALSO
 

@@ -21,7 +21,7 @@ MetaLsCommand::MetaLsCommand()
 
 int MetaLsCommand::execute (Cmdline const& cl)
 {
-
+	int ret = 0;
 	if (cl.arguments.size() != 1){
 		throw invalid_argument("1 argument required");
 	}
@@ -31,8 +31,14 @@ int MetaLsCommand::execute (Cmdline const& cl)
 	kdb.get(ks, root);
 
 	Key k = ks.lookup(root);
+
 	if (k)
 	{
+		if (cl.verbose)
+		{
+			std::cout << "Got key " << k.getName() << std::endl;
+		}
+
 		k.rewindMeta();
 		while (const Key meta = k.nextMeta())
 		{
@@ -47,10 +53,15 @@ int MetaLsCommand::execute (Cmdline const& cl)
 			}
 		}
 	}
+	else
+	{
+		std::cerr << "Did not find key" << std::endl;
+		ret = 1;
+	}
 
 	printWarnings(cerr, root);
 
-	return 0;
+	return ret;
 }
 
 MetaLsCommand::~MetaLsCommand()
