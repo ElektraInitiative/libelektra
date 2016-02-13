@@ -195,12 +195,14 @@ extern "C"
 int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
-	if (ksLookupByName(config, "/module", 0) != nullptr)
-		return 0; // by convention: success if /module exists
 
 	Key *script = ksLookupByName(config, "/script", 0);
 	if (script == nullptr || !strlen(keyString(script)))
 	{
+		if (ksLookupByName(config, "/module", 0) != nullptr)
+		{
+			return 0; // by convention: success if /module exists
+		}
 		ELEKTRA_SET_ERROR(111, errorKey, "No python script set");
 		return -1;
 	}
