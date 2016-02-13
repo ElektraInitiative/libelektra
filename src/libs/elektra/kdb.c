@@ -708,6 +708,8 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	ksClear (ks);
 	elektraSplitMerge (split, ks);
 	ksRewind(ks);
+
+	keySetName (parentKey, keyName(initialParent));
 	if(handle->globalPlugins[POSTGETSTORAGE])
 	{
 		handle->globalPlugins[POSTGETSTORAGE]->kdbGet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
@@ -723,6 +725,7 @@ int kdbGet(KDB *handle, KeySet *ks, Key *parentKey)
 	return 1;
 
 error:
+	keySetName (parentKey, keyName(initialParent));
 	if(handle->globalPlugins[POSTGETSTORAGE])
 	{
 		handle->globalPlugins[POSTGETSTORAGE]->kdbGet(handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
@@ -1052,6 +1055,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 		goto error;
 	}
 
+	keySetName (parentKey, keyName(initialParent));
 	if(handle->globalPlugins[PRECOMMIT])
 	{
 		handle->globalPlugins[PRECOMMIT]->kdbSet(handle->globalPlugins[PRECOMMIT], ks, parentKey);
@@ -1061,6 +1065,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 
 	elektraSplitUpdateSize(split);
 
+	keySetName (parentKey, keyName(initialParent));
 	if(handle->globalPlugins[POSTCOMMIT])
 	{
 		handle->globalPlugins[POSTCOMMIT]->kdbSet(handle->globalPlugins[POSTCOMMIT], ks, parentKey);
@@ -1080,6 +1085,7 @@ int kdbSet(KDB *handle, KeySet *ks, Key *parentKey)
 	return 1;
 
 error:
+	keySetName (parentKey, keyName(initialParent));
 	if(handle->globalPlugins[PREROLLBACK])
 	{
 		handle->globalPlugins[PREROLLBACK]->kdbError(handle->globalPlugins[PREROLLBACK], ks, parentKey);
@@ -1097,6 +1103,7 @@ error:
 		}
 	}
 
+	keySetName (parentKey, keyName(initialParent));
 	if(handle->globalPlugins[POSTROLLBACK])
 	{
 		handle->globalPlugins[POSTROLLBACK]->kdbError(handle->globalPlugins[POSTROLLBACK], ks, parentKey);
