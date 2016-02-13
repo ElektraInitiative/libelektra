@@ -12,8 +12,7 @@ Since [0.8.15](/doc/decisions/library_split.md) libelektra is split in following
     libelektra.so
 
 Libelektra is now only a stub for legacy applications. It basically only links all previous libraries
-together. It should not be used for new applications or plugins, unless you actually want to link
-against everything.
+together. It should *not* be used for new applications or plugins.
 
 ### Libfull
 

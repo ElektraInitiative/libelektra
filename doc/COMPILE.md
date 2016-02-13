@@ -304,6 +304,9 @@ It is recommended that you browse through all of the options.
 Afterwards press c again (maybe multiple times until all variables are
 resolved) and then g to generate.  Finally press e to exit.
 
+#### INSTALL_BUILD_TOOLS ####
+Specifies that the build tools, i.e. `elektra-export-symbols` and `elektra-export-symbols`
+are installed (by default off). Is needed for cross-compilation.
 
 
 ## BUILDING ##

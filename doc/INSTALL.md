@@ -25,7 +25,7 @@ To install Elektra use:
 	sudo make install
 
 To uninstall Elektra use (will not be very clean,
-e.g. it will not remove directories and *.pyc files):
+e.g. it will not remove directories and `*.pyc` files):
 
 	sudo make uninstall
 
