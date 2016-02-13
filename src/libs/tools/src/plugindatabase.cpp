@@ -214,6 +214,7 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 	std::vector<std::string> allPlugins = listAllPlugins();
 	std::map<int, PluginSpec> foundPlugins;
 
+	std::string errors;
 	// collect possible plugins
 	for (auto const & plugin : allPlugins)
 	{
@@ -234,12 +235,13 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 					break;
 				}
 			}
-		} catch (...) { } // assume not loaded
+		} catch (std::exception const & e) { errors += e.what(); errors += ","; } // assume not loaded
 	}
 
 	if (foundPlugins.empty())
 	{
-		throw NoPlugin ("Could not find plugin with metadata " + which);
+		if (!errors.empty()) throw NoPlugin("No plugin that provides " + which + " could be found, got errors: " + errors);
+		else throw NoPlugin("No plugin that provides " + which + " could be found");
 	}
 
 	// the largest element of the map contains the best-suited plugin:
@@ -254,6 +256,7 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 		return PluginSpec(which);
 	}
 
+	std::string errors;
 	std::vector<std::string> allPlugins = listAllPlugins();
 	std::map<int, PluginSpec> foundPlugins;
 	for (auto const & plugin : allPlugins)
@@ -275,12 +278,13 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 					foundPlugins.insert(std::make_pair(s, PluginSpec(plugin)));
 				}
 			}
-		} catch (...) { } // assume not loaded
+		} catch (std::exception const & e) { errors += e.what(); errors += ","; } // assume not loaded
 	}
 
 	if (foundPlugins.empty())
 	{
-		throw NoPlugin("No plugin that provides " + which + " could be found");
+		if (!errors.empty()) throw NoPlugin("No plugin that provides " + which + " could be found, got errors: " + errors);
+		else throw NoPlugin("No plugin that provides " + which + " could be found");
 	}
 
 	// the largest element of the map contains the best-suited plugin:
