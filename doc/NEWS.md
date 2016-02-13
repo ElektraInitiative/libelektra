@@ -1,5 +1,56 @@
 # 0.8.15 Release
 
+To be released soon!
+
+
+## Global Mount
+
+Sometimes you simply want some functionality for the whole key database.
+For example if you want to enable logging or notification of configuration
+changes, in previous versions, you had to change every mountpoint
+individually.  Even more problematic, every mountpoint created it its
+individual logs and notifications, without any way for someone to know
+if an application is now finished reconfiguring.
+
+These problems are now solved by global plugins. The same plugins are
+reused for this purpose. Also the mounting works nearly in the same way,
+you only have to omit the configuration file and the mountpoint:
+
+	kdb global-mount syslog journald dbus
+
+Voila, from now on every configuration change gets logged to syslog
+and journald. Additionally, every application gets notified via dbus.
+
+If you want it more verbose for debugging, you can easily do so by:
+
+	kdb global-mount logchange tracer counter
+
+
+
+## Spec Mount
+
+It was already possible in earlier versions of Elektra to specify the
+configuration of your program.
+
+
+
+## Library Split
+
+### Benchmark
+
+The real time of benchmark/large:
+
+revision c2e31930c2b91308ec357607e2b7dd02d4d6dd0e
+-DBUILD_FULL=OFF -DBUILD_PDF=OFF -DBUILD_SHARED=OFF -DBUILD_STATIC=ON ..
+kdb-full: Median :0.90 kdb-static: Median :0.9200 kdb: Median :0.9000
+
+revision 1e79bca3a6e294429f99582b8f9a0a380ac81f03
+-DBUILD_FULL=ON -DBUILD_PDF=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=ON ..
+kdb-full: Median :0.9000 kdb-static: Median :0.9000 kdb: Median :0.9100
+
+So it seems that the split does not influence the time of running
+elektrified processes.
+
 ## Crypto
 
 The crypto plugin is a facility for securing sensitive Keys by symmetric
@@ -19,29 +70,15 @@ configuration in order to work properly:
 Please note that this method of key input is for testing purposes only
 and should never be used in a productive environment!
 
-## Library Split
-
-
-### Benchmark
-
-The real time of benchmark/large:
-
-revision c2e31930c2b91308ec357607e2b7dd02d4d6dd0e
--DBUILD_FULL=OFF -DBUILD_PDF=OFF -DBUILD_SHARED=OFF -DBUILD_STATIC=ON ..
-kdb-full: Median :0.90 kdb-static: Median :0.9200 kdb: Median :0.9000
-
-revision 1e79bca3a6e294429f99582b8f9a0a380ac81f03
--DBUILD_FULL=ON -DBUILD_PDF=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=ON ..
-kdb-full: Median :0.9000 kdb-static: Median :0.9000 kdb: Median :0.9100
-
-So it seems that the split does not influence the time of running
-elektrified processes.
 
 
 ## Packaging
 
 Elektra 0.8.14 now in Debian with qt-gui, man pages, thanks to Pino Toscano!
 https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html
+
+
+
 
 
 
