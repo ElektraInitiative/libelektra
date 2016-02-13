@@ -601,7 +601,7 @@ static void copyMeta(Key *key, Key *specKey)
 			}
 		}
 	}
-	keySetMeta(key, "specInternal/valid", 0);
+	keySetMeta(key, "spec/internal/valid", 0);
 }
 
 static int hasRequired(Key *key, Key *specKey, KeySet *ks)
