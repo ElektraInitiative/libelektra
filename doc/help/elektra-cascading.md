@@ -8,7 +8,7 @@ and if this attempt fails, the system configuration is used as fallback.
 The idea is that the application installs a configuration storage
 with default settings that can only be changed by the administrator.
 But every user has the possibility to override parts of this *system
-configuration* regarding the user's needs in the *user configuration.
+configuration* regarding the user's needs in the *user configuration*.
 To sum up, besides system configuration, users have their own key
 databases that can override the settings according to their preferences.
 
