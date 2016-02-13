@@ -69,7 +69,9 @@ int elektraTypeSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pare
 
 	if (!TC::get(handle)->check(reinterpret_cast<kdb::KeySet&>(returned)))
 	{
-		std::string msg = "None of supplied types matched for ";
+		std::string msg = "None of supplied types (";
+		msg += keyString(keyGetMeta(ksCurrent(returned), "check/type"));
+		msg += ") matched for ";
 		const char *name = keyName (ksCurrent(returned));
 		if (name) msg += name;
 		msg += " with string: ";
