@@ -25,12 +25,65 @@ If you want it more verbose for debugging, you can easily do so by:
 
 	kdb global-mount logchange tracer counter
 
+Which gives you detailed information to standard output which keys
+were changed/edited/deleted, a trace of when the `tracer` plugin
+and counts of how often the `counter` plugin are invoked.
+
+It was already possible in earlier versions of Elektra to specify the
+configuration of your program. Until now, this specification could be
+mainly used to to generate code as described
+[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
+
+This release adds two more interesting options:
+1.) the spec plugin, and
+2.) the spec mount.
+
+
+
+## Spec Plugin
+
+The most important global plugin that is now newly introduced with
+this release (thanks to Thomas Waser) is the `spec` plugin.
+By default it will be added for every global-mount. So for a new installation
+make sure you executed at least once:
+
+	kdb global-mount
+
+The spec plugin is a global plugin that copies metadata from the `spec`-namespace
+to other namespaces. That means, it reads the specification, and makes sure
+that the configuration conforms to it. The actual validation is done by the many
+validation plugins already present.
+
+Lets start by saying a key is a long and must have at least the value 10:
+
+	kdb setmeta spec/example/longkey check/type long
+	kdb setmeta spec/example/longkey check/type/min 10
+
+Then we can create a key in a different namespace and see if the `spec` plugin
+applies the meta-data correctly:
+
+	kdb set /example/longkey 25
+	kdb lsmeta /example/longkey
+
 
 
 ## Spec Mount
 
-It was already possible in earlier versions of Elektra to specify the
-configuration of your program.
+Using `kdb setmeta` extensively and always looking out that all plugins are mounted
+correctly is error-prone. So instead, one can directly write a specification file
+as simple configuration file and mount it.
+
+Based on the present meta-data, the correct plugins will be loaded.
+
+	cp battery.ini $(dirname $(kdb file spec))
+	kdb mount battery.ini spec/example/battery ni
+	kdb spec-mount /example/battery
+	kdb lsmeta /example/battery/level    # we see it has a check/enum
+	kdb getmeta /example/battery/level check/enum    # now we know allowed values
+	kdb set /example/battery/level low   # success, low is ok!
+	kdb set /example/battery/level wrong # fails, not one of the allowed values!
+
+
 
 
 
