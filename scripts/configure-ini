@@ -1,0 +1,10 @@
+#!/bin/sh
+
+. "$(dirname "$0")/configure-common"
+
+cd $BUILD
+cmake	-DPLUGINS="resolver;ini;dump;sync;error" \
+	-DKDB_DB_FILE="default.ini" \
+	-DKDB_DB_INIT="elektra.ini" \
+	-DKDB_DEFAULT_STORAGE="ini" \
+	$*
