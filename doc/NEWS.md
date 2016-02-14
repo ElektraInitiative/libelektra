@@ -242,7 +242,7 @@ elektrified processes.
 
 ## Compatibility
 
-As always, the API and API is fully forward-compatible, i.e. programs
+As always, the ABI and API is fully forward-compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work (ABI)
 and you will be able to recompile every program without errors (API).
 
@@ -382,10 +382,10 @@ highest.
 When running as root, `kdb` will now use the `system` namespace when
 writing configuration to cascading key names.
 
-Long pathes are cumbersome to enter in the CLI.
-Thus one now can define bookmarks. Bookmarks are key-names that start with `+`.
-They are only recognized by the `kdb` tool or tools that explicit have
-support for it. Application should not depend on the presence of a
+Long paths are cumbersome to enter in the CLI.
+Thus one can define bookmarks now. Bookmarks are key-names that start with `+`.
+They are only recognized by the `kdb` tool or tools that explicitly have
+support for it. Applications should not depend on the presence of a
 bookmark. For example, if you set the bookmark kdb:
 
 	kdb set user/sw/elektra/kdb/#0/current/bookmarks
@@ -398,7 +398,7 @@ You are able to use:
 
 
 The kdb tool got much more robust when the initial configuration is broken,
-no man page viewer present or Elektra was installed wrongly.
+no man page viewer is present or Elektra was installed wrongly.
 
 The `--help` usage is unified and improved.
 
@@ -427,7 +427,7 @@ Furthermore we unified and fixed the source:
 
 ## C++11 migration
 
-Thus we now only use C++11, we applied `clang-modernize` which simplified many loops and replaced many `0` to
+Since we now only use C++11, we applied `clang-modernize` which simplified many loops and replaced many `0` to
 `nullptr`. Additionally, we added `override` and `default` at many places.
 
 We removed all places where we had `ifdefs` to use `auto_ptr` if no modern smart pointer is available.
