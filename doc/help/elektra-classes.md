@@ -20,7 +20,7 @@ The central data structure in Elektra is a
 It aggregates `Key` objects
 in order to describe configuration in an easy
 but complete way.
-As the name “set” already implies every `Key` in a
+As the name "set" already implies every `Key` in a
 `KeySet` has a unique name.
 A user can iterate over the `Key` objects of a `KeySet`.
 `KeySet` sorts the keys by their names.
