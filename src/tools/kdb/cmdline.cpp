@@ -247,7 +247,7 @@ Cmdline::Cmdline (int argc,
 	if (optionPos!=string::npos)
 	{
 		acceptedOptions.insert(optionPos+1, ":");
-		option o = {"plugins-config", no_argument, nullptr, 'c'};
+		option o = {"plugins-config", required_argument, nullptr, 'c'};
 		long_options.push_back(o);
 		helpText += "-c --plugins-config      Add a plugin configuration.\n";
 	}
