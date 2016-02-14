@@ -159,7 +159,8 @@ the plugin is tested, reviewed, documented, maintained and so on. Based on
 this information, the best suited plugin will be chosen.
 For example, you now can use:
 
-	kdb mount /etc/security/limits.conf system/limits augeas lens=Limits.ln logging
+	kdb mount /etc/security/limits.conf system/limits augeas \
+		lens=Limits.lns logging
 
 And the best suitable logger will automatically be chosen.
 
