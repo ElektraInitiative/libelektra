@@ -60,4 +60,5 @@ preconditions and weak postconditions for the plugins.
 
 ## SEE ALSO
 
+- [CONTRACT.ini](/doc/CONTRACT.ini)
 - [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

@@ -87,7 +87,7 @@ The modifications are not only
 faster, they also allow large atomic
 configuration upgrades, robust merging of settings and handling of
 complicated inter-relationships between keys without problematic
-interstages.
+intermediate steps.
 Elektrified applications, however, should be aware of conflicts.
 It can happen that the key database is
 changed while working with a `KeySet`.

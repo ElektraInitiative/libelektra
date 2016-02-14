@@ -20,9 +20,9 @@ requests only a part of the configuration.  No benefits arise if every
 application requests all keys anyway.
 
 Let us assume that many keys reside in `user/sw` and an
-application only needs the keys in `user/sw/app`.  To save memory
+application only needs the keys in `user/sw/org/app`.  To save memory
 and get better startup times for the application, a new backend can be
-mounted at `user/sw/app`. On the other hand, every mounted backend
+mounted at `user/sw/org/app`. On the other hand, every mounted backend
 causes a small run time overhead in the overall configuration system.
 
 The solution in Elektra is flexible, because the user decides the
