@@ -291,7 +291,6 @@ user/tests/script/key"
 		
 	if [ "x$PLUGIN" = "xini" ]
 	then
-		rm `$KDB file $ROOT`
 		$KDB umount $ROOT
 	fi
 

@@ -32,10 +32,9 @@ do
 	"simpleini")
 		MOUNT_PLUGIN="simpleini ccode null"
 		;;
-    "ini")
-        MOUNT_PLUGIN="ini array="
-        INI_ARRAY="yes"
-        ;;
+	"ini")
+		MOUNT_PLUGIN="ini array="
+		;;
 	*)
 		MOUNT_PLUGIN="$PLUGIN"
 		;;
@@ -138,14 +137,14 @@ do
 			$KDB set "$KEY" "$VALUE" 1>/dev/null
 			succeed_if "could not set key $ROOT/hello/a/array/#0"
 
-			if [ "$i" -eq 0 ] && [ "x$INI_ARRAY" = "xyes" ] 
-            then
-                [ "x`$KDB get $ROOT/hello/a/array`" = "x$VALUE" ]
-                succeed_if "$KEY is not $VALUE"
-            else
-                [ "x`$KDB get $KEY`" = "x$VALUE" ]
-			    succeed_if "$KEY is not $VALUE"
-            fi
+			if [ "$i" -eq 0 ] && [ "x$PLUGIN" = "xini" ] 
+			then
+				[ "x`$KDB get $ROOT/hello/a/array`" = "x$VALUE" ]
+				succeed_if "$KEY is not $VALUE"
+			else
+				[ "x`$KDB get $KEY`" = "x$VALUE" ]
+				succeed_if "$KEY is not $VALUE"
+			fi
 		done
 
 		$KDB rm -r "$ROOT"

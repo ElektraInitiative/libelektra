@@ -244,7 +244,9 @@ static void insertNewKeyIntoExistendOrder(Key *key, KeySet *ks)
 			oldOrder=keyString(keyGetMeta(cutKey, "order"));
 		}
 		else
+		{
 			oldOrder = "#1";
+		}
 
 		while ((curKey = ksNext(cutKS)) != NULL)
 		{
@@ -363,10 +365,10 @@ static int iniKeyToElektraKey (void *vhandle, const char *section, const char *n
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
 	if ((!section || *section == '\0') && (!name || *name == '\0'))
 	{
-		keySetString(handle->parentKey, value);
-		keySetMeta(handle->parentKey, "ini/key", "");
-		ksAppendKey(handle->result, keyDup(handle->parentKey));
-		keySetMeta(handle->parentKey, "ini/key", "");
+		Key *rootKey = keyDup(handle->parentKey);	
+		keySetString(rootKey, value);
+		keySetMeta(rootKey, "ini/key", "");
+		ksAppendKey(handle->result, rootKey);
 		return 1;
 	}
 	Key *appendKey = keyDup (handle->parentKey);
@@ -858,7 +860,11 @@ static char *getIniName(Key *section, Key *key)
 	}
 	char *buffer = elektraCalloc(strlen(keyName(key)) - strlen(keyName(section))+slashCount+1);
 	char *ptr = NULL;
-	if (keyName(section)[0] == '/' && keyName(key)[0] != '/')
+	if(!strcmp(keyName(section), "/"))
+	{
+		ptr = (char *)keyName(key)+2;
+	}
+	else if (keyName(section)[0] == '/' && keyName(key)[0] != '/')
 	{
 		size_t offset = strchr(keyName(key)+1, '/')-keyName(key);	
 		ptr = (char *)keyName(key)+strlen(keyName(section))+offset+1;

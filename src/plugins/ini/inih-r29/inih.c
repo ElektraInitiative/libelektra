@@ -8,6 +8,7 @@ http://code.google.com/p/inih/
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <regex.h>
 #include <string.h>
@@ -98,7 +99,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 	char* value;
 	int lineno = 0;
 	int error = 0;
-	int linecontinuation = 0;
+	
 	line = (char*)malloc(INI_MAX_LINE);
 
 	if (!line) {
@@ -310,7 +311,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 					if(*end == '"' && end != start)
 					{
 						*end = '\0';
-						if(!config->keyHandler(user, section, name, NULL, 0) && !error)
+						if(!config->keyHandler(user, section, start, NULL, 0) && !error)
 							error = lineno;
 					}
 					else
@@ -384,7 +385,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 			}
 			else
 			{
-				char *ptr = start+1;
+				ptr = start+1;
 				while(*ptr)
 				{
 					if(*ptr == '=' || *ptr == ':')
@@ -397,6 +398,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 				end = strstr(ptr+1, " = ");
 				if(!end)
 					end = strstr(ptr+1, " : ");
+				name = NULL;
 				if(end)
 				{
 					//keyname == ":", "=", " : " or " = " 
@@ -462,7 +464,7 @@ int ini_parse_file(FILE* file,const struct IniConfig* config, void* user)
 #endif
 	}
 
-	elektraFree (line);
+	free (line);
 	return error;
 }
 
