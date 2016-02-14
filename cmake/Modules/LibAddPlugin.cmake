@@ -80,7 +80,7 @@ function(add_plugin PLUGIN_SHORT_NAME)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES}
 			${PLUGIN_SHARED_SOURCES})
 		if (ARG_LINK_ELEKTRA)
-			target_link_libraries (${PLUGIN_NAME} ${ARG_LINK_ELEKTRA})
+			target_link_libraries (${PLUGIN_NAME} elektra-plugin ${ARG_LINK_ELEKTRA})
 		else()
 			target_link_libraries (${PLUGIN_NAME} elektra-plugin)
 		endif ()
