@@ -52,8 +52,9 @@ configuration of your program. Until now, this specification could be
 mainly used to to generate code as described
 [here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
 This release adds two more interesting options:
-1.) the spec plugin, and
-2.) the spec mount.
+
+1. the spec plugin, and
+2. the spec mount.
 
 
 
@@ -145,7 +146,7 @@ Now dependencies will automatically be fulfilled, e.g.
 
 	kdb mount /etc/modules system/modules line
 
-In earlier versions you would have get an error because of the missing `null`
+In earlier versions you would have got an error because of the missing `null`
 plugin. Now it simply adds the needed plugins.
 
 The plugins given in the command-line used to be real plugins. Now also so
@@ -446,8 +447,8 @@ Keynames of applications should be called `/sw/org/app/#0/current`,
 where `current` is the default profile (non given). `org` and
 `app` is supposed to not contain `/` and be completely lowercase.
 Keynames are documented [here](/doc/help/elektra-key-names.md).
-[See also here.](/doc/tutorials/application-integration.md) The main
-reason to have to long paths is the provided flexibility in the future
+[See also here](/doc/tutorials/application-integration.md). The main
+reason for long paths is the provided flexibility in the future
 (e.g. to use profiles and have a compatible path for new major versions
 of configuration). By using bookmarks, users should not be confronted
 by it too often.
@@ -476,7 +477,7 @@ Raffael Pancheri again updated qt-gui with many nice improvements:
 - fix crash when closing the GUI
 - move Actions in separate file to make main.qml less clustered
 - plugins do not output messages at startup
-- `BackendBuilder` is now used, which automatically take cares of the correct ordering of plugins
+- `BackendBuilder` is now used, which automatically takes cares of the correct ordering of plugins
 - Qt 5.4 compatibility is still ensured
 - C++11 is now used in Qt-Gui, too
 
@@ -501,7 +502,7 @@ http://friends.ccbib.org/harald/supporting/
   if the header files were found in wrong order. Thanks to Harald Geyer for reporting.
 - fixed compilation when built on more than 20 cores with >= -j15,
   thanks to Gustavo Alvarez for reporting and Manuel Mausz for analyzing
-- lua 5.1 now works too (except of iterators), thanks to Harald Geyer for reporting.
+- lua 5.1 now works too (except for iterators), thanks to Harald Geyer for reporting.
 - pdf builds do not fail due to half written files, reported by René Schwaiger
   fixed by Kurt Micheli
 
