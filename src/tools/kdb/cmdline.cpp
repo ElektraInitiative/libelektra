@@ -177,7 +177,7 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"strategy", required_argument, nullptr, 's'};
 		long_options.push_back(o);
-		helpText += "-s --strategy <name>     Specify which strategy should be used to resolve conflicts.\n";
+		helpText += "-s --strategy <name>     Specify the strategy to resolve conflicts.\n";
 	}
 	if (acceptedOptions.find('v')!=string::npos)
 	{
@@ -195,7 +195,7 @@ Cmdline::Cmdline (int argc,
 	{
 		option o = {"without-elektra", no_argument, nullptr, 'E'};
 		long_options.push_back(o);
-		helpText += "-E --without-elektra     Omit the `system/elektra` directory.\n";
+		helpText += "-E --without-elektra     Omit the `/elektra` directory.\n";
 	}
 	optionPos = acceptedOptions.find('e');
 	if (optionPos!=string::npos)
@@ -241,8 +241,7 @@ Cmdline::Cmdline (int argc,
 		acceptedOptions.insert(optionPos+1, ":");
 		option o = {"namespace", required_argument, nullptr, 'N'};
 		long_options.push_back(o);
-		helpText += "-N --namespace ns        Specify the namespace to use when writing cascading keys\n"
-			    "                         Default: value of /sw/kdb/current/namespace or user.\n";
+		helpText += "-N --namespace ns        Specify the namespace to use for cascading keys.\n";
 	}
 	optionPos = acceptedOptions.find('c');
 	if (optionPos!=string::npos)
