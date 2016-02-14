@@ -40,11 +40,13 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-R`, `--resolver <name>`:
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
+- `-R`, `--resolver`=<name>:
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
-  See also `/sw/kdb/current/resolver` [below](#KDB).
+  See also [below in KDB](#KDB).
   Note that the resolver will only added as dependency, but not directly added.
-- `-c`, `--plugins-config`:
+- `-c`, `--plugins-config`=<config>:
   Add a plugin configuration for all plugins.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
@@ -53,13 +55,14 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 
 ## KDB
 
-- `/sw/kdb/current/resolver`:
+- `/sw/elektra/kdb/#0/current/resolver`:
   The resolver that will be added automatically, if `-R` is not given.
 
-- `/sw/kdb/current/plugins`:
-  It contains a space-separated list of plugins
+- `/sw/elektra/kdb/#0/current/plugins`:
+  It contains a space-separated list of plugins and their configs
   which are added automatically (by default sync).
-  The plugin-configuration syntax is as described above.
+  The plugin-configuration syntax is as described above in the
+  [synopsis](#SYNOPSIS).
 
 
 ## EXAMPLES

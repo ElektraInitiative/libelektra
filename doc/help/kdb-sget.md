@@ -15,6 +15,16 @@ The kdb-get(1) command should not be used in scripts because it may return an er
 The `sget` command guarantees that a value will be printed (unless the user passes faulty arugments).  
 This command will either print the value of the key it retrives or a default value that the user specifies.  
 
+## OPTIONS
+
+- `-H`, `--help`:
+  Show the man page.
+- `-V`, `--version`:
+  Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
+
+
 ## EXAMPLES
 
 To get the value of a key from a script or return the value `0`:

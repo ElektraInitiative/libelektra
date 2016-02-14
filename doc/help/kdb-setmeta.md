@@ -24,6 +24,8 @@ that is the place where you usually want to set meta data.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
 

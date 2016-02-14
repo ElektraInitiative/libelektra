@@ -20,6 +20,8 @@ You can move keys to another directory within the database or even below another
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-r`, `--recursive`:
   Work in a recursive mode.
 - `-v`, `--verbose`:

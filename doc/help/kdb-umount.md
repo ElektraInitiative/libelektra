@@ -15,6 +15,8 @@ Unmount backend from key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Show which mountpoints were considered.
 

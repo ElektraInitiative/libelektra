@@ -9,7 +9,6 @@ kdb-export(1) -- Export keys from the key database
 
 This command allows a user to export keys from the key database.  
 Keys are exported to `stdout` in whichever format is specified.  
-The default format is `dump` but can be changed by editing the value of the `sw/kdb/current/format` key.  
 This command can also be used to view full key(s) including their values.  
 
 ## USAGE
@@ -25,10 +24,17 @@ The `format` attribute relies on Elektra's plugin system to export the keys in t
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-E`, `--without-elektra`:
   Omit the `system/elektra` directory.
-- `-c`, `--plugins-config`:
+- `-c`, `--plugins-config`=<pluginconfig>:
   Add a configuration to the format plugin.
+
+## KDB
+
+- `/sw/elektra/kdb/#0/current/format`
+  Change default format (if none is given at commandline) and built-in default is not your preferred format.
 
 ## EXAMPLES
 
@@ -43,6 +49,9 @@ To view a keyset stored in `user/keyset` in the XML format:
 
 To backup a keyset stored in `user/keyset` in the `ini` format to a file called `keyset.ini`:
 	`kdb export user/keyset ini > keyset.ini`  
+
+Change default format to `simpleini`:
+	`kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
 
 ## SEE ALSO

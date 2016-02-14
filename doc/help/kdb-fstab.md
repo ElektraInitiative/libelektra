@@ -23,6 +23,8 @@ This command will create the new entry with a name of `ZZZNewFstabName` which sh
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
 

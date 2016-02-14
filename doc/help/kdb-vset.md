@@ -23,6 +23,8 @@ Note: In order for this command to work, the `validation` plugin must be mounted
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 
 
 ## EXAMPLES

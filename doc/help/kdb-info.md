@@ -31,6 +31,8 @@ This command returns the following exit statuses:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-l`, `--load`:
   Load plugin even if system/elektra is available.
 - `-c`, `--plugins-config`:

@@ -27,6 +27,8 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
 

@@ -31,8 +31,8 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-c`, `--plugins-config`: TODO: not yet implemented
-  Add a plugin configuration for all plugins.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 

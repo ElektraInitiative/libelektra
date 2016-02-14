@@ -22,6 +22,8 @@ The following tests are available: basic string umlauts binary naming meta
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 
 ## EXAMPLES
 

@@ -33,7 +33,10 @@ This command will return the following values as an exit status:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-n`, `--no-newline`:          Suppress the newline at the end of the output.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
+- `-n`, `--no-newline`:
+  Suppress the newline at the end of the output.
 
 ## EXAMPLES
 

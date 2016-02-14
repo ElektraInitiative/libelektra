@@ -22,15 +22,17 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
-- `-N`, `--namespace ns`:
-  Specify the namespace to use when writing cascading keys
-  Default: value of `/sw/kdb/current/namespace` or user.
+- `-N`, `--namespace`=<ns>:
+  Specify the namespace to use when writing cascading keys.
+  See [below in KDB](#KDB).
 
 ## KDB
 
-- `/sw/kdb/current/namespace`:
+- `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
   By default the namespace is user, except `kdb` is used as root, then `system`
   is the default.

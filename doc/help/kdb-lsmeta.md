@@ -16,6 +16,8 @@ If no meta keys are associated with the given key, nothing will be printed.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-0`, `--null`:
   Use binary 0 termination.
 - `-v`, `--verbose`:

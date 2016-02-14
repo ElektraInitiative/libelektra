@@ -37,6 +37,8 @@ The kdb shell offers a number of commands to interact with the key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 
 ## EXAMPLES
 

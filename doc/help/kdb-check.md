@@ -20,12 +20,14 @@ Special values are returned upon exit to represent the outcome of a check.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-f`, `--force`:
    The user can also use this tool to perform write tests. Please note that this can result in configuration files being changed!
 - `-v`, `--verbose`:
   Explain what is happening.
-- `-c`, `--plugins-config`:
-  Add a plugin configuration to `/module`, which will always be present.
+- `-c`, `--plugins-config`=<pluginconfig>:
+  Add a plugin configuration in addition to `/module`.
 
 
 ## RETURN VALUES

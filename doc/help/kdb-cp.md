@@ -22,6 +22,8 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-r`, `--recursive`:
   Recursively copy keys.
 - `-v`, `--verbose`:
