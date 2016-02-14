@@ -85,6 +85,35 @@ static void keyMetaToNi(Ni_node add, Key *cur)
 	}
 }
 
+/**
+ * @brief get relative position of key based on parentKey
+ *
+ * To be moved to libease
+ *
+ * @param cur the key below parentKey we want to get the relative basename of
+ * @param parentKey the key that defines the root/base
+ *
+ * @return a pointer to the name of the key cur
+ */
+const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey)
+{
+	const size_t parentSize = keyGetNameSize(parentKey);
+
+	if (!strcmp(keyName (parentKey), "/"))
+	{
+		return keyName(cur)+2;
+	}
+	else if (keyName (parentKey)[0] == '/' && keyName (cur)[0] != '/')
+	{
+		size_t offset = strchr(keyName(cur)+1, '/')-keyName(cur);
+		return keyName(cur)+strlen(keyName(parentKey))+offset+1;
+	}
+	else
+	{
+		return keyName(cur)+parentSize;
+	}
+}
+
 int elektraNiSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
 {
 	/* set all keys */
@@ -102,12 +131,11 @@ int elektraNiSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey
 		ksNext(returned); // do not process parent in loop again
 	}
 
-	const size_t parentSize = keyGetNameSize(parentKey);
 	while ((cur = ksNext(returned)) != 0)
 	{
-		const size_t curSize = keyGetNameSize(cur);
-		Ni_node add = Ni_GetChild(root, keyName(cur)+parentSize, curSize-parentSize-1, 1, 0);
-		keyMetaToNi(add, cur);
+		const char * name = elektraKeyGetRelativeName(cur, parentKey);
+		Ni_node add = Ni_GetChild(root, name, strlen(name), 1, 0);
+		keyMetaToNi (add, cur);
 	}
 
 	int errnosave = errno;
