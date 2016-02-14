@@ -242,7 +242,7 @@ elektrified processes.
 ## Compatibility
 
 As always, the API and API is fully forward-compatible, i.e. programs
-compiled against an older 0.8 versions of Elektra will continue to work (ABI)
+compiled against an older 0.8 version of Elektra will continue to work (ABI)
 and you will be able to recompile every program without errors (API).
 
 We added `keyGetNamespace` which allows us to handle all namespaces
