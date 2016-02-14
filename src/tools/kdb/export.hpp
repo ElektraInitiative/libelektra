@@ -41,14 +41,6 @@ public:
 		return
 			"The export utility allows you to export\n"
 			"all or parts of the configuration to stdout.\n"
-			"\n"
-			"The default format can be changed by\n"
-			" /sw/kdb/current/format\n"
-			"\n"
-			"Example:\n"
-			"kdb export system/sw > sw.ecf\n"
-			"To make a backup of your whole configuration\n"
-			"below system/sw"
 			;
 	}
 

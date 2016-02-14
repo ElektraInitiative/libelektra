@@ -40,14 +40,6 @@ public:
 		return
 			"The import utility allows you to import\n"
 			"all or parts of the configuration from stdin.\n"
-			"\n"
-			"The default format can be changed by\n"
-			" /sw/kdb/current/format\n"
-			"\n"
-			"Example:\n"
-			"cat sw.ecf | kdb import system/sw\n"
-			"To restore a backup of your whole configuration\n"
-			"below system/sw\n"
 			;
 	}
 
