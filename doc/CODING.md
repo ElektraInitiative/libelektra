@@ -3,7 +3,7 @@
 This document provides an introduction in how the source code of
 libelektra is organized and how and where to add functionality.
 
-Make sure to read [DESIGN](DESIGN.md) together with this document.
+Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
 
 ## Folder structure ##
 
@@ -49,7 +49,7 @@ TODO marker to make the places visible.
 If you see inconsistency do not hesitate to talk about it with the
 intent to add a new rule here.
 
-See [DESIGN](DESIGN.md) document too, they complement each other.
+See [DESIGN](/doc/DESIGN.md) document too, they complement each other.
 
 ### Coding Style ###
 
@@ -124,7 +124,7 @@ We also support the import of Markdown pages. Doxygen 1.8.8 or later
 is required for this feature (Anyways you can find the
 [API Doc](http://doc.libelektra.org/api/latest/html/) online).
 Links between Markdown files will be converted with the
-[Markdown Link Converter](markdownlinkconverter/README.md).
+[Markdown Link Converter](/doc/markdownlinkconverter/README.md).
 **Markdown pages are used in the pdf, therefore watch which characters you use and
 provide a proper encoding!**
 
