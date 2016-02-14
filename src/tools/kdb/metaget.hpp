@@ -40,10 +40,6 @@ public:
 	{
 		return
 			"Meta key are information about keys.\n"
-			"\n"
-			"Return values:\n"
-			"1 .. key not found\n"
-			"2 .. metakey not found\n"
 			;
 	}
 

@@ -34,6 +34,7 @@ Additionally, a user can use the command `kdb ls <same key>` to see if an overri
 - `-v`, `--verbose`:
   Explain what is happening.
   Gives a complete trace of all tried keys.
+  Very useful to debug fallback and overrides.
 
 
 ## EXAMPLES

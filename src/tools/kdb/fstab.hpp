@@ -49,7 +49,7 @@ public:
 			"because it expects the fstab plugin to rewrite\n"
 			"the name to a proper one.\n"
 			"\n"
-			"So the command will only work with the fstab plugin mounted"
+			"So the command will only work with the fstab plugin mounted\n"
 			;
 	}
 

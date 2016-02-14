@@ -40,17 +40,7 @@ public:
 	{
 		return
 			"Meta key are information about keys.\n"
-			"\n"
-			"Typically there should be a more specific get/set\n"
-			"interface because it is error-prone to directly\n"
-			"edit metadata.\n"
-			"\n"
-			"When a key does not exist, it will automatically created\n"
-			"with an initial empty value\n"
-			"\n"
-			"There is some special handling for the metadata\n"
-			"atime, mtime and ctime. They will be converted to\n"
-			"time_t.\n";
+			;
 	}
 
 	virtual int execute (Cmdline const& cmdline) override;
