@@ -60,12 +60,14 @@ static char *keyNameToMatchingString(const Key *key)
 {
 	uint8_t arrayCount = 0;
 	char *name = strchr(keyName(key), '/');
-	for(char *ptr = name; *ptr != '\0'; ++ptr)
+	if (!name)
+		return strdup(keyName(key));
+	for (char *ptr = name; *ptr != '\0'; ++ptr)
 		if (*ptr == '#')
 			++arrayCount;
 	char *pattern = elektraMalloc(elektraStrLen(name)+arrayCount);
 	char *dst = pattern;
-	for(char *src = (name+1); *src != '\0'; ++src)
+	for (char *src = (name+1); *src != '\0'; ++src)
 	{
 		if (*src == '_' && *(src-1) == '/' && (*(src+1) == '/' || *(src+1) == '\0'))
 		{
