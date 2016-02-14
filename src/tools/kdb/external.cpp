@@ -167,7 +167,7 @@ void runManPage(std::string command, std::string profile)
 			case 2: dirname = "/sw/kdb/"+profile+"/"; break; // legacy
 			}
 			kdb.get(conf, dirname);
-			if (!k)
+			if (!k) // first one wins, because we do not reassign
 			{
 				k = conf.lookup(dirname+"man");
 			}

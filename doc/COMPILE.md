@@ -114,7 +114,8 @@ The default is also the minimal set of plugins you should add:
   `KDB_DEFAULT_RESOLVER` to it.
 - sync is very useful to not lose any data.
   If you do not want to include it, make sure to set
-  `/sw/kdb/current/plugins` to a value not containing sync.
+  `/sw/elektra/kdb/#0/current/plugins` to a value not containing sync
+  (e.g. an empty value).
   See [kdb-mount(1)](/doc/help/kdb-mount.md).
 
 To add all plugins, you can use:

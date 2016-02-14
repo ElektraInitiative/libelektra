@@ -120,7 +120,7 @@ int EditorCommand::execute(Cmdline const& cl)
 	} else {
 		if (!runAllEditors(filename))
 		{
-			std::cerr << "Could not run any editor, please change /sw/kdb/current/editor" << std::endl;
+			std::cerr << "Could not run any editor, please change /sw/elektra/kdb/#0/current/editor" << std::endl;
 			return 12;
 		}
 	}

@@ -17,10 +17,10 @@ The user should specify the format that the current configuration or keys are in
 
 ## KDB
 
-- `/sw/kdb/current/format`:
+- `/sw/elektra/kdb/#0/current/format`:
   The default format if none given. Defaults to `dump` if the key does not exist.
 
-- `/sw/kdb/current/editor`:
+- `/sw/elektra/kdb/#0/current/editor`:
   The default editor, if no `-e` option is given.
   Defaults to `/usr/bin/sensible-editor`, `/usr/bin/editor` or `/usr/bin/vi` if the key does not exist.
 
@@ -59,6 +59,9 @@ The user should specify the format that the current configuration or keys are in
 
 To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you would use:
 	`kdb editor -e /usr/bin/vim user/ini`
+
+Or set a new editor as default using:
+	`kdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano`
 
 ## SEE ALSO
 
