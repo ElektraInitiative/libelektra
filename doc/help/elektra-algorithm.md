@@ -423,5 +423,5 @@ A completely different approach is to export the configuration when
 `kdbSet()` returned an error code.  The user can then edit, change or
 merge this configuration with more powerful tools.  Finally, the user
 can import the configuration into the global key database.  The export
-and import mechanism is called “streaming” and will be explained in
+and import mechanism is called "streaming" and will be explained in
 *streaming*.
