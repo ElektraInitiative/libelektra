@@ -127,13 +127,15 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize+1);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 			ckdb::keySetName(cur, &namebuffer[0]);
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize+1);
 			is.read(&valuebuffer[0], valuesize);
+			valuebuffer[valuesize] = 0;
+
 			ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
 			std::getline (is, line);
 		}
@@ -142,12 +144,13 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize+1);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize+1);
 			is.read(&valuebuffer[0], valuesize);
+			valuebuffer[valuesize] = 0;
 
 			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
 			std::getline (is, line);
@@ -157,12 +160,13 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize+1);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize+1);
 			is.read(&valuebuffer[0], valuesize);
+			valuebuffer[valuesize] = 0;
 
 			ckdb::Key * search = ckdb::ksLookupByName(ks, &namebuffer[0], 0);
 			ckdb::keyCopyMeta(cur, search, &valuebuffer[0]);
