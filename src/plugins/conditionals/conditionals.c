@@ -101,7 +101,7 @@ static int compareStrings(const char *s1, const char *s2)
 	return retval;
 }
 
-static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rightSide, KeySet *ks, Key *parentKey)
+static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rightSide, const char *condition, KeySet *ks, Key *parentKey)
 {
 	char *lookupName = NULL;
 	char *compareTo = NULL;
@@ -138,8 +138,8 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 		key = ksLookupByName(ks, lookupName, 0);
 		if (!key)
 		{
-			ELEKTRA_SET_ERRORF(133, parentKey, "Key %s doesn't exist", lookupName);
-			result = -1;
+			ELEKTRA_SET_ERRORF(133, parentKey, "Key %s not found but is required for the evaluation of %s", lookupName, condition);
+			result = -2;
 			goto Cleanup;
 		}
 		if (elektraRealloc((void **)&compareTo, keyGetValueSize(key)) < 0)
@@ -162,8 +162,8 @@ static int evalCondition(const char *leftSide, Comparator cmpOp, const char *rig
 	key = ksLookupByName(ks, lookupName, 0);
 	if (!key)
 	{
-		ELEKTRA_SET_ERRORF(133, parentKey, "Key %s doesn't exist", lookupName);
-		result = -1;
+		ELEKTRA_SET_ERRORF(133, parentKey, "Key %s not found but is required for the evaluation of %s", lookupName, condition);
+		result = -2;
 		goto Cleanup;
 	}
 	long ret;
@@ -276,7 +276,7 @@ static int parseSingleCondition(const char *condition, KeySet *ks, Key *parentKe
 	strncpy(rightSide, opStr+opLen+startPos, len-1);
 	rightSide[len-1] = '\0';
 	int ret;
-	ret = evalCondition(leftSide, cmpOp, rightSide, ks, parentKey);
+	ret = evalCondition(leftSide, cmpOp, rightSide, condition, ks, parentKey);
 	elektraFree(rightSide);
 	elektraFree(leftSide);
 	return ret;
@@ -310,7 +310,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 	int ret;
 	if ((ret = regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE)))
 	{
-		ELEKTRA_SET_ERROR(87, parentKey, "Couldn't compile regex: most likely out of memory"); //the regex compilers so the only possible error would be out of memory
+		ELEKTRA_SET_ERROR(87, parentKey, "Couldn't compile regex: most likely out of memory"); //the regex compiles so the only possible error would be out of memory
 		ksDel(ks);
 		return -1;
 	}
@@ -320,14 +320,14 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 	int nomatch = regexec(&regex, ptr, subMatches, m, 0);
 	if (nomatch)
 	{
-		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
+		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", conditionString);
 		regfree(&regex);
 		ksDel(ks);
 		return -1;
 	}
 	if (m[2].rm_so == -1 || m[5].rm_so == -1)
 	{
-		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", conditionString);
+		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", conditionString);
 		regfree(&regex);
 		ksDel(ks);
 		return -1;
@@ -373,7 +373,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 			else
 			{
 				ret = -1;
-				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", thenexpr);
+				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", thenexpr);
 				goto CleanUp;
 			}
 		}
@@ -386,7 +386,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 			}
 			else if (ret == (-1))
 			{
-				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", thenexpr);
+				ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", thenexpr);
 			}
 		}
 	}
@@ -406,7 +406,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 				else
 				{
 					ret = -1;
-					ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", elseexpr);
+					ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", elseexpr);
 					goto CleanUp;
 				}
 			}
@@ -419,7 +419,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 				}
 				else if (ret == (-1))
 				{
-					ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", elseexpr);
+					ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", elseexpr);
 				}
 			}
 		}
@@ -431,7 +431,7 @@ static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySe
 	}
 	else if (ret == (-1))
 	{
-		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". See README\n", condition);
+		ELEKTRA_SET_ERRORF(134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", condition);
 	}
 
 CleanUp:
@@ -487,14 +487,22 @@ int elektraConditionalsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 			{
 				ret |= 1;
 			}
+			else if (result == -2)
+			{
+				ret |= -1;
+			}
 		}
 		if (assignMeta)
 		{
 			result = parseConditionString(assignMeta, parentKey, cur, ksDup(returned), ASSIGN);
-			if(result == -1)
+			if (result == -1)
+			{
 				ret |= -1;
+			}
 			else
+			{
 				ret |= 1;
+			}
 		}
 	}	
 
@@ -525,14 +533,22 @@ int elektraConditionalsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 			{
 				ret |= 1;
 			}
+			else if (result == -2)
+			{
+				ret |= -1;
+			}
 		}
 		if (assignMeta)
 		{
 			result = parseConditionString(assignMeta, parentKey, cur, ksDup(returned), ASSIGN);
-			if(result == -1)
+			if (result == -1)
+			{
 				ret |= -1;
+			}
 			else
+			{
 				ret |= 1;
+			}
 		}	
 	}	
 
