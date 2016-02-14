@@ -226,7 +226,7 @@ also adapting all the bindings for it.
 ### Benchmark
 
 To show that the split does not make Elektra slower, Mihael Pranjić made a
-small benchmark. The real time of benchmark/large and
+small benchmark. The real time of [benchmarks/large](/benchmarks/large.c) and
 revision 634ad924109d3cf5d9f83c33aacfdd341b8de17a
 
 1. kdb-static: Median :0.8800
@@ -235,6 +235,8 @@ revision 634ad924109d3cf5d9f83c33aacfdd341b8de17a
 
 So it seems that the split does not influence the time of running
 elektrified processes.
+
+*Times were measured with time(1) and the median is calculated for 21 runs of [benchmarks/large](/benchmarks/large.c). This was done using [scripts/benchmark_libsplit.sh](/scripts/benchmark_libsplit.sh)*
 
 
 ## Compatibility
