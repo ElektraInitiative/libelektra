@@ -226,15 +226,12 @@ also adapting all the bindings for it.
 ### Benchmark
 
 To show that the split does not make Elektra slower, Mihael Pranjić made a
-small benchmark. The real time of benchmark/large:
+small benchmark. The real time of benchmark/large and
+revision 634ad924109d3cf5d9f83c33aacfdd341b8de17a
 
-revision c2e31930c2b91308ec357607e2b7dd02d4d6dd0e
--DBUILD_FULL=OFF -DBUILD_PDF=OFF -DBUILD_SHARED=OFF -DBUILD_STATIC=ON ..
-kdb-full: Median :0.90 kdb-static: Median :0.9200 kdb: Median :0.9000
-
-revision 1e79bca3a6e294429f99582b8f9a0a380ac81f03
--DBUILD_FULL=ON -DBUILD_PDF=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=ON ..
-kdb-full: Median :0.9000 kdb-static: Median :0.9000 kdb: Median :0.9100
+1. kdb-static: Median :0.8800
+2. kdb-full: Median :0.8700
+3. kdb: Median :0.8700
 
 So it seems that the split does not influence the time of running
 elektrified processes.
