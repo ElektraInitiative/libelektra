@@ -59,8 +59,8 @@ Elektra allows plugins to check
 the configuration before it is written into the key database so that
 problematic values are never stored.
 
-“Hard to use it wrong” tends to be a more important design objective
-than “Easy to use it right”.  Searching for a stupid bug costs
+"Hard to use it wrong" tends to be a more important design objective
+than "Easy to use it right".  Searching for a stupid bug costs
 more time than falling into some standard traps which are explained
 in documentation.  In Elektra, the data structures are robust and some
 efforts were taken to make misuse unlikely.
@@ -69,7 +69,7 @@ Another fundamental principle is that the API must hide implementation
 details and should not be optimised towards speed.  In Elektra, the
 actual process of making configuration permanent is completely hidden.
 
-“Off-by-one confusion” is a topic of its own.  The best is to stick to
+"Off-by-one confusion" is a topic of its own.  The best is to stick to
 the conventions the programming language gives. For returning sizes of
 strings, it must be clear whether a terminating `'\0'` is included or not.
 All such decisions must be consistent.  In Elektra the terminating null
@@ -88,7 +88,7 @@ is restrictive in what it returns (strong postconditions), but as liberal
 as possible for what comes in (preconditions are avoided where possible).
 In Elektra even null pointers are accepted for any argument.
 
-“Free everything you allocate” is a difficult topic in some cases.
+"Free everything you allocate" is a difficult topic in some cases.
 If Elektra cannot free space or other resources after every call, it
 provides a `close()` function.  Everything will be freed. The
 tool **Valgrind** with **Memcheck** helps us locate problems. The
@@ -97,8 +97,8 @@ responsible for deleting all created `Key` and `KeySet` objects
 and closing the `KDB` handle.
 
 As a final statement, we note that the UNIX philosophy should always
-be considered: “Do only one thing, but do it in the best way. Write it
-that way that programs work together well.”
+be considered: "Do only one thing, but do it in the best way. Write it
+that way that programs work together well."
 
 
 
@@ -149,8 +149,8 @@ it depends on built-in plugins.
 
 Elektra distinguishes internally between modules and plugins. Several
 plugins can be created out of a single module.  During the creation
-process of the plugin, dynamic information – like the configuration or
-the data handle – is added.
+process of the plugin, dynamic information - like the configuration or
+the data handle - is added.
 
 ### API
 
@@ -232,7 +232,7 @@ and inserted into the plugin configuration for all plugins in the
 It is the place where configuration can be provided for every plugin
 of a backend.  The contract checker deduces this configuration to
 satisfy the contract for a plugin.  Fstab, for example, claims in
-a contract that it needs “struct”.  But the struct plugin needs a
+a contract that it needs "struct".  But the struct plugin needs a
 configuration to work properly.  Fstab will provide this configuration.
 The **contract checker** writes out the configuration looking like
 the one in this example.
