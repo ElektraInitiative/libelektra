@@ -148,11 +148,19 @@ static void validateArrayRange(Key *parent, long validCount, Key *specKey)
 		char *rangeString = elektraMalloc(keyGetValueSize(arrayRange));
 		keyGetString(arrayRange, rangeString, keyGetValueSize(arrayRange));
 		char *delimPtr = strchr(rangeString, '-');
-		char *maxString = delimPtr+1;
-		*delimPtr = '\0';
-		char *minString = rangeString;
-		long min = atoi(minString);
-		long max = atoi(maxString);
+		long min = 0;
+		long max = 0;
+		if (delimPtr)
+		{
+			char *maxString = delimPtr+1;
+			*delimPtr = '\0';
+			char *minString = rangeString;
+			min = atoi(minString);
+			max = atoi(maxString);
+		}else
+		{
+			min = max = atoi(rangeString);
+		}
 		if (validCount < min || validCount > max)
 		{
 			char buffer[MAX_CHARS_IN_LONG+1];
@@ -734,7 +742,7 @@ static void parseConfig(KeySet *config, ConflictHandling *ch)
 	}
 }
 
-int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/spec"))
 	{
@@ -806,7 +814,7 @@ int elektraSpecGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return ret; // success
 }
 
-int elektraSpecSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key *onConflictConf = ksLookupByName(config, "/conflict/set", KDB_O_NONE);
