@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-find_package(iconv)
+find_package(Iconv)
 
 if (ICONV_FOUND)
 	add_plugin(iconv
