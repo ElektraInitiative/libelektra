@@ -173,7 +173,8 @@ static void setSectionNumber(Key *parentKey, Key *key, KeySet *ks)
 			break;
 		}
 		keySetName(lastKey, keyName(lookupKey));
-		keyAddName(lookupKey, "..");
+		if (keyAddName(lookupKey, "..") <= 0)
+			break;
 	}
 	keyDel(lookupKey);
 	keyDel(lastKey);
@@ -655,7 +656,9 @@ static const char *findParent(Key *parentKey, Key *searchkey, KeySet *ks)
 			if (isSectionKey(lookedUp))
 				break;
 		}
-		keyAddName(key, "..");
+		
+		if (keyAddName(key, "..") <= 0)
+			break;
 	}
 	lookedUp = ksLookup(ks, key, KDB_O_NONE);
 	if (!lookedUp)
@@ -852,17 +855,20 @@ static char *getIniName(Key *section, Key *key)
 	}
 	int slashCount = 0;
 	char *slashCounter = (char *)keyName(key);
-	while (*slashCounter++)
+	while (*slashCounter)
 	{
 		if (*slashCounter == '/')
 			++slashCount;
 		++slashCounter;
 	}
-	char *buffer = elektraCalloc(strlen(keyName(key)) - strlen(keyName(section))+slashCount+1);
+	int len = 0;
+	if (strcmp(keyName(section), "/"))
+		len = strlen(keyName(section));
+	char *buffer = elektraCalloc((strlen(keyName(key)) - len)+slashCount+1);
 	char *ptr = NULL;
 	if(!strcmp(keyName(section), "/"))
 	{
-		ptr = (char *)keyName(key)+2;
+		ptr = (char *)keyName(key);
 	}
 	else if (keyName(section)[0] == '/' && keyName(key)[0] != '/')
 	{
@@ -893,7 +899,7 @@ static char *getIniName(Key *section, Key *key)
 	return buffer;
 }
 
-static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
+static void insertSectionIntoExistingOrder(Key *parentKey, Key *appendKey, KeySet *newKS)
 {
 	char *lastOrderNumber = NULL;
 	int sectionNumber = atoi(keyString(keyGetMeta(appendKey, "ini/section")));
@@ -924,7 +930,10 @@ static void insertSectionIntoExistingOrder(Key *appendKey, KeySet *newKS)
 		}
 	}
 
-	setSubOrderNumber(appendKey, lastOrderNumber);
+	if(lastOrderNumber)
+		setSubOrderNumber(appendKey, lastOrderNumber);
+	else
+		setOrderNumber(parentKey, appendKey);
 
 	ksDel(cutKS);
 	ksDel(searchKS);
@@ -992,15 +1001,20 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 	{
 		// create new section here
 		char *sectionName = NULL;
-		if (keyName(parentKey)[0] == '/' && keyName(cur)[0] != '/')
+		if (!strcmp(keyName(parentKey), "/"))
+		{
+			keySetName(appendKey, keyName(cur));
+		}
+		else if (keyName(parentKey)[0] == '/' && keyName(cur)[0] != '/')
 		{
 			sectionName = (char *)keyName(cur)+strlen(strchr(keyName(parentKey)+1, '/'))+1;
+			createUnescapedKey(appendKey, sectionName);
 		}
 		else
 		{
 			sectionName = (char *)keyName(cur)+strlen(keyName(parentKey))+1;
+			createUnescapedKey(appendKey, sectionName);
 		}
-		createUnescapedKey(appendKey, sectionName);
 		setSectionNumber(parentKey, appendKey, newKS);
 		keySetBinary(appendKey, 0, 0);
 		ksAppendKey(newKS, appendKey);
@@ -1010,7 +1024,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 		}
 		else
 		{
-			insertSectionIntoExistingOrder(appendKey, newKS);
+			insertSectionIntoExistingOrder(parentKey, appendKey, newKS);
 		}
 	}
 	else if (keyIsDirectBelow(parentKey, cur))
@@ -1047,15 +1061,20 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 		Key *sectionKey = keyDup(cur);
 		keyAddName(sectionKey, "..");
 		char *sectionName = NULL;
-		if (keyName(parentKey)[0] == '/' && keyName(cur)[0] != '/')
+		if (!strcmp(keyName(parentKey), "/"))
+		{
+			keySetName(appendKey, keyName(sectionKey));
+		}
+		else if (keyName(parentKey)[0] == '/' && keyName(cur)[0] != '/')
 		{
 			sectionName = (char *)keyName(sectionKey)+strlen(strchr(keyName(parentKey)+1, '/'))+1;
+			appendKey = createUnescapedKey(appendKey, sectionName);
 		}
 		else
 		{
 			sectionName = (char *)keyName(sectionKey)+strlen(keyName(parentKey))+1;
+			appendKey = createUnescapedKey(appendKey, sectionName);
 		}
-		appendKey = createUnescapedKey(appendKey, sectionName);
 		if (pluginConfig->sectionHandling == ALWAYS)
 		{
 			setSectionNumber(parentKey, appendKey, newKS);
@@ -1072,7 +1091,7 @@ void insertIntoKS(Key *parentKey, Key *cur, KeySet *newKS, IniPluginConfig *plug
 				{
 					keySetBinary(appendKey, 0, 0);
 					ksAppendKey(newKS, appendKey);
-					insertSectionIntoExistingOrder(appendKey, newKS);
+					insertSectionIntoExistingOrder(parentKey, appendKey, newKS);
 					appendKey = keyDup(appendKey);
 				}
 			}
@@ -1342,6 +1361,14 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 								char *name = getIniName(parentKey, sectionKey);
 								fprintf(fh, "[%s]\n", name);
 								elektraFree(name);
+							}
+							else if (!strcmp(keyName(parentKey), "/") && !strcmp(keyString(keyGetMeta(cur, "parent")), "/"))
+							{
+								fprintf(fh, "[]\n");
+							}
+							else if (!strcmp(keyName(parentKey), "/"))
+							{
+								fprintf(fh, "[%s]\n", keyString(keyGetMeta(cur, "parent")));
 							}
 						}
 						else
