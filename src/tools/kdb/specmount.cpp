@@ -46,6 +46,7 @@ void SpecMountCommand::buildBackend (Cmdline const& cl)
 
 	kdb::KeySet specToRead;
 	kdb.get(specToRead, "spec"+mp);
+	specToRead = specToRead.cut(Key("spec"+mp, KEY_END));
 
 	sr.readSpecification(specToRead);
 
@@ -61,6 +62,7 @@ void SpecMountCommand::buildBackend (Cmdline const& cl)
 				  << " and mountpoint: " << backend.getMountpoint() << std::endl;
 		}
 
+		backend.setBackendConfig(cl.getPluginsConfig("system/"));
 		backend.needPlugin (cl.resolver);
 		backend.needPlugin ("storage");
 
