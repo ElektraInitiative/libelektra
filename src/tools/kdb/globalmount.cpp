@@ -29,6 +29,8 @@ void GlobalMountCommand::buildBackend (Cmdline const& cl)
 {
 	GlobalPluginsBuilder backend;
 
+	// TODO: not yet implemented:
+	// backend.setBackendConfig(cl.getPluginsConfig("system/"));
 	backend.addPlugins (parseArguments (cl.globalPlugins));
 	backend.addPlugins (parseArguments (cl.arguments.begin(), cl.arguments.end()));
 
