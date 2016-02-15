@@ -2,19 +2,18 @@
 
 To be released soon!
 
-This seems to be the largest release up to now, with many user-visible
+This is one of the largest release up to now. It includes many user-visible
 improvements. Some highlights:
 
-- mounting is vastly improved, from "dpkg" to "apt-get"-like functionality
-- it is now not only possible to specify how the configuration should look like,
-  but also automatically enforce it
-- the library `libelektra.so` was split for better evolution
-- Elektra is fully compatible, with interesting improvements in bootstrapping
-- INI, rename and crypto plugins were improved
-- the kdb tool now supports bookmarks and profiles
-- `kdb editor` supports editing of KDB config in an editor with any syntax.
-- New packages for Debian, Arch Linux and OpenWRT
-
+- Mounting is vastly improved: Elektra now loads required plugins automatically if you invoke `kdb mount`.
+- In previous releases  you could specify the structure of the configuration. Now you can also automatically enforce this property.
+- We split the shared library `libelektra` into smaller parts. This allows user to link only against the parts of the library they need.
+- As always, the ABI and API is fully forward-compatible.
+- The release contains various improvements in the [bootstrapping process](https://github.com/ElektraInitiative/libelektra/blob/master/doc/decisions/bootstrap.md).
+- We improved the `INI`, `rename` and `crypto` plugins.
+- The tool `kdb` now supports bookmarks and profiles.
+- The new tool `kdb editor` allows you to edit KDB configuration in your favorite text editor.
+- We also released [new packages](https://github.com/ElektraInitiative/libelektra#packages) for Debian, Arch Linux and OpenWRT.
 
 ## Global Mount
 
