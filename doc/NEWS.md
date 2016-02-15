@@ -203,17 +203,20 @@ the plugins do not need the `kdb` interface.
 Thus, we split `libelektra.so`, so that only coherent parts are in the same
 library:
 
-- `libelektra-core.so` only contains the `KeySet` data structure and module loading.
-  Every binary using Elektra should link against it.
+- `libelektra-core.so` only contains the `KeySet` data structure and
+  module loading.  Every binary using Elektra should link against it.
 - `libelektra-kdb.so` contains the missing `KDB` symbols. Together with the `core`
   they contain everything declared in `kdb.h`.
   Michael Zehender  plans to have multiple variants of `libelektra-kdb.so` that use
   different kinds of concurrency.
+  Headerfile: `<kdb.h>`
 - `libelektra-ease.so` adds functionality missing in `core` to make the life for
   C programmers easier.
+  New headerfile: `kdbease.h`
 - `libelektra-proposal.so` adds functionality proposed for `core`. It directly
   uses internal structures of `core`, thus they always need to have exactly
   the same version.
+  Headerfile: `kdbproposal.h`
 
 
 The source code is now better organized by the introduction of a `libs` folder.
