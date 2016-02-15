@@ -138,7 +138,7 @@ to determine if they are responsible for a key or not.	Consequently, it
 can happen that more than one backend delivers a key with the same name.
 
 `kdbGet()` ensures that a key is uniquely identified by its name.
-Elektra's core will [pop](/doc/helpelektra-glossary.md) keys that are
+Elektra's core will [pop](/doc/help/elektra-glossary.md) keys that are
 outside of the backend's responsibility.  Hence, these keys will not be
 passed to the user and we get the desired behaviour: The nearest mounted
 backend to the key is responsible.
