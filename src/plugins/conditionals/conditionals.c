@@ -305,7 +305,7 @@ static char *isAssign(char *expr)
 static int parseConditionString(const Key *meta, Key *parentKey, Key *key, KeySet *ks, Operation op)
 {
 	const char *conditionString = keyString(meta);
-	const char *regexString = "(\\(([^\\)]*)\\))\\s*(\\?)\\s*(\\(([^\\)]*)\\))\\s*(:\\s*(\\(([^\\)]*)\\))){0,1}";
+	const char *regexString = "(\\(([^\\)]*)\\))[[:space:]]*(\\?)[[:space:]]*(\\(([^\\)]*)\\))[[:space:]]*(:[[:space:]]*(\\(([^\\)]*)\\))){0,1}";
 	regex_t regex;
 	int ret;
 	if ((ret = regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE)))
