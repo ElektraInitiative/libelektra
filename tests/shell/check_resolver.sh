@@ -4,6 +4,13 @@ echo
 echo ELEKTRA CHECK RESOLVER
 echo
 
+#set tmp path (mainly for OS X compatibility)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	TMPPATH="/private/tmp"
+else
+	TMPPATH="/tmp"
+fi
+
 #checks if resolver can be mounted and also partly checks if it resolves
 #correctly (more tests welcome).
 

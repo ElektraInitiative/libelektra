@@ -60,12 +60,6 @@ then
 	KDB=${KDB_GETENV};
 fi
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-	TMPPATH="/private/tmp"
-else
-	TMPPATH="/tmp"
-fi
-
 #
 # ASSERTIONS
 #
