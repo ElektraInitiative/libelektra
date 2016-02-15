@@ -45,14 +45,12 @@ To set a Key to the value `Hello World!`:
   `kdb set user/example/key "Hello World!"`
 
 To create a new key with a null value:
-```
-kdb set user/example/key
+```kdb set user/example/key
 ```
 
 To set a key to an empty value:
 
-```
-kdb set user/example/key ""
+```kdb set user/example/key ""
 ```
 
 To create bookmarks:
