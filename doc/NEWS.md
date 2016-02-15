@@ -221,7 +221,7 @@ The explanation of every library can be found in
 [/src/libs/](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs).
 
 The rationale of the library split is documented
-[here](/doc/decisions/library_split.md).
+[here](https://github.com/ElektraInitiative/libelektra/blob/master/doc/decisions/library_split.md).
 Shortly put, it was needed for further evolution and allowing us to grow and
 enhance without getting a fat core.
 
@@ -510,6 +510,7 @@ Report any bugs in
 - fixed compilation when built on more than 20 cores with >= -j15,
   thanks to Gustavo Alvarez for reporting and Manuel Mausz for analyzing
 - lua 5.1 now works too (except for iterators), thanks to Harald Geyer for reporting.
+  thanks to Manuel Mausz for adding a new FindLua.cmake
 - pdf builds do not fail due to half written files, reported by René Schwaiger
   fixed by Kurt Micheli
 
@@ -517,23 +518,27 @@ Read about [other packages here](https://github.com/ElektraInitiative/libelektra
 
 ## Fixes and Improvements
 
-- Daniel Bugl tested the INI plugin
+- 3 way merge now properly deals with binary data, thanks to Felix Berlakovich
 - getenv: fix wrapping on powerpc, thanks to Pino Toscano
 - markdownlinkconverter: fix char/int mismatch, thanks to Pino Toscano
 - wresolver: use KDB_MAX_PATH_LENGTH instead of PATH_MAX, thanks to Pino Toscano
 - Cleaning up #ifdefs that break statements, thanks to Romero Malaquias
-- lua: fix Key:tostring(), thanks to Manuel Mausz
+- Daniel Bugl tested the INI plugin
 - cmake list_filter was broken because of different behaviour in cmake_parse_arguments,
   thanks to Christian Berrer for reporting
 - g++5.3 is now supported
-- 3 way merge now properly deals with binary data, thanks to Felix Berlakovich
 - gtest does not link against pthread if not needed
 - testcases that are built with BUILD_SHARED also successfully work
 - fix Mac OS issues, thanks to Peter Nirschl, René Schwaiger and Mihael Pranjic
 - fix resolver-baseflag docu, thanks to Harald Geyer for reporting
 - do not create wrong directories called `(` and `)` in source,
   thanks to René Schwaiger
+- fix cmake for systems where iconv is not part of libc, thanks to Michael Zehender
+  and Peter Kümmel (for FindIconv.cmake)
 - fix segfault in libgetenv if root keys are present
+- lua: fix Key:tostring(), thanks to Manuel Mausz
+- add list of [supported bindings](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings),
+  thanks to Manuel Mausz
 
 
 
