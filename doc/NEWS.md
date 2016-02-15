@@ -5,15 +5,21 @@ To be released soon!
 This is one of the largest release up to now. It includes many user-visible
 improvements. Some highlights:
 
-- Mounting is vastly improved: Elektra now loads required plugins automatically if you invoke `kdb mount`.
-- In previous releases  you could specify the structure of the configuration. Now you can also automatically enforce this property.
-- We split the shared library `libelektra` into smaller parts. This allows user to link only against the parts of the library they need.
+- Mounting is vastly improved:
+  think about Debian's "dpkg" to "apt"-like functionality
+- In previous releases you could already specify the structure
+  of the configuration. Now you can also automatically enforce
+  this property.
+- We split the shared library `libelektra` into smaller parts.
+  Now users can link against the parts of the library they need.
 - As always, the ABI and API is fully forward-compatible.
-- The release contains various improvements in the [bootstrapping process](https://github.com/ElektraInitiative/libelektra/blob/master/doc/decisions/bootstrap.md).
-- We improved the `INI`, `rename` and `crypto` plugins.
+- The release contains improvements in the
+  [bootstrapping process](https://github.com/ElektraInitiative/libelektra/blob/master/doc/decisions/bootstrap.md).
+- We improved the `ini`, `rename` and `crypto` plugins.
 - The tool `kdb` now supports bookmarks and profiles.
-- The new tool `kdb editor` allows you to edit KDB configuration in your favorite text editor.
-- We also released [new packages](https://github.com/ElektraInitiative/libelektra#packages) for Debian, Arch Linux and OpenWRT.
+- The new tool `kdb editor` allows you to edit KDB configuration in your
+  favorite text editor.
+- We are glad of the new packages for Debian, Arch Linux and OpenWRT.
 
 ## Global Mount
 
@@ -488,12 +494,13 @@ Elektra 0.8.14 now in Debian with qt-gui, man pages, thanks to Pino Toscano
 
 Thanks to Gustavo Alvarez for updating and splitting the packages on Arch Linux!
 
-Thanks to Harald Geyer, Elektra is now packaged for OpenWRT.  We fixed a
-number of cross-compilation issues and now officially support building
-against musl libc, with one minor limitation: RPATH works differently
-on musl so you need to install all plugins directly in /usr/lib/ or
-set LD_LIBRARY_PATH.  [Harald Geyer](https://github.com/haraldg/packages)
-http://friends.ccbib.org/harald/supporting/
+Thanks to [Harald Geyer](http://friends.ccbib.org/harald/supporting/),
+Elektra is now packaged for OpenWRT.  We fixed a number of
+cross-compilation issues and now officially support building against musl
+libc, with one minor limitation: RPATH works differently on musl so you
+need to install all plugins directly in /usr/lib/ or set LD_LIBRARY_PATH.
+Report any bugs in
+[Harald's OpenWRT packaging issue tracker](https://github.com/haraldg/packages).
 
 - export errors/symbols are now called `elektra-export-symbols` and `elektra-export-symbols`
   and can be installed using `INSTALL_BUILD_TOOLS` (by default off).
@@ -505,6 +512,8 @@ http://friends.ccbib.org/harald/supporting/
 - lua 5.1 now works too (except for iterators), thanks to Harald Geyer for reporting.
 - pdf builds do not fail due to half written files, reported by René Schwaiger
   fixed by Kurt Micheli
+
+Read about [other packages here](https://github.com/ElektraInitiative/libelektra#packages).
 
 ## Fixes and Improvements
 
