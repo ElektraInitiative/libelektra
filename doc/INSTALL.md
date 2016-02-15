@@ -50,6 +50,10 @@ and send a merge request for your system.
 
 If you encounter the problem that the library can not be found (output like this)
 
+	kdb: error while loading shared libraries: libelektra-core.so.4: cannot open shared object file: No such file or directory
+
+or:
+
 	kdb: error while loading shared libraries: libelektratools.so: cannot open shared object file: No such file or directory
 
 You need to place a configuration file at `/etc/ld.so.conf.d/` (e.g. `/etc/ld.so.conf.d/elektra.conf`).
