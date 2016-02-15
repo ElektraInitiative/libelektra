@@ -670,7 +670,7 @@ Already used are: %1</source>
     <name>Page3</name>
     <message>
         <location filename="../Page3.qml" line="6"/>
-        <source>Please enter a path to a file in the filesystem. This file is used by all plugins of this backend. File names might be absolute or relative and have a different location for user and system pathes. The actual path will be located dynamically by the resolver plugin.
+        <source>Please enter a path to a file in the filesystem. This file is used by all plugins of this backend. File names might be absolute or relative and have a different location for user and system paths. The actual path will be located dynamically by the resolver plugin.
 
 Note that you cannot undo creating the backend. If you want to remove a backend use the unmount option.</source>
         <translation>Bitte geben sie einen Pfad zu einer Datei auf ihrem System an. Diese Datei wird von allen Plugins als Backend benutzt. Die Dateinamen können absolut oder relativ sein und können für User und System Pfade verschieden sein. Der tatsächliche Pfad wird dynamisch vom Resolver Plugin aufgelöst.\n\nBeachten sie, dass sie das Erstellen von Backends nicht rückgängig machen können. Benutzen sie die Aushänge Funktion, wenn sie Backends entfernen möchten.</translation>

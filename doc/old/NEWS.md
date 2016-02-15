@@ -807,7 +807,7 @@ you can use:
 The "kdb get" and "kdb getmeta" tool now support -n and --no-newline to
 suppress the newline at the end of the output.
 
-The cmake installation pathes got a overhaul and are now documented
+The cmake installation paths got a overhaul and are now documented
 more properly in COMPILE.  Noteworthy is that plugins and include files
 can also be installed directly in the system library or include path.
 Additionally the build system now handles multiarch systems by supporting

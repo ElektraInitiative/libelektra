@@ -57,7 +57,7 @@ public:
  * Hardcoded with resolver+dump
  *
  * useful to quickly mount something in tests
- * and determine the config file pathes (+unlink provided)
+ * and determine the config file paths (+unlink provided)
  */
 class Mountpoint
 {

@@ -1385,8 +1385,8 @@ possible to link against an older version of Elektra (if compiled against 0.8.12
 
 In plugins some small changes may effect compatibility:
 - in rename the handling of parent key is different (see #206)
-- resolving of spec absolute and relative pathes are no more handled identical.
-  Instead absolute pathes will be searched absolutely, while relatives are below KDB_DB_SPEC (as before).
+- resolving of spec absolute and relative paths are no more handled identical.
+  Instead absolute paths will be searched absolutely, while relatives are below KDB_DB_SPEC (as before).
   This behaviour is consistent to the behaviour of the other namespaces.
 
 These two points are also the only unit tests that fail when Elektra 0.8.12 is used with 0.8.11 unit tests.
@@ -1462,9 +1462,9 @@ Markus
 
 From the beginning of the Elektra Initiative, Elektra aimed at avoiding
 hard-coded information in the application and to make the application's
-configuration more transparent. While avoiding any pathes to files was
+configuration more transparent. While avoiding any paths to files was
 reality from the first released Elektra version, now also hard-coding
-default values, fallback mechanisms and even Elektra's pathes to keys
+default values, fallback mechanisms and even Elektra's paths to keys
 can be avoided.
 
 How does that work?
@@ -1474,7 +1474,7 @@ application's configuration. It is located below its own namespace
 `spec` (next to user and system).
 
 Once the base path is known, the user can find out all Elektra
-pathes used by an application, using:
+paths used by an application, using:
 
     kdb ls spec/basepath
 
@@ -1508,7 +1508,7 @@ we simply fetch and lookup the configuration by following code:
 
     ksLookupByName(ks, "/sw/app/#0/promise", 0);
 
-We see in that example that only Elektra pathes are hardcoded in
+We see in that example that only Elektra paths are hardcoded in
 the application.  But those can be found out easily, completely without
 looking in the source code. The technique is simple: append a
 logger plugin and the KDB base path is printed to:
@@ -1874,7 +1874,7 @@ compliant. Following changes were necessary:
 - The default path to store user configuration is now ~/.config
 - A new resolver variant x (for user and system) is introduced
  - implements handling of XDG environment variables
- - ignores empty dirs and absolute pathes in envvar
+ - ignores empty dirs and absolute paths in envvar
 - add new shell based test suite for (xdg)-resolver
 
 For example, we could use resolver_fm_xhp_x:
@@ -1901,7 +1901,7 @@ The letters after _ describe the variant of the resolver:
  - h .. then check HOME environment
  - p .. then fall back to passwd
 - for system configuration (after next _)
- - x .. check all pathes in XDG_CONFIG_DIRS and falls back to /etc/xdg
+ - x .. check all paths in XDG_CONFIG_DIRS and falls back to /etc/xdg
 
 A lot of such resolver variants are added when -DPLUGINS=ALL is used.
 Of course you can create new variants with different behaviour by adding
