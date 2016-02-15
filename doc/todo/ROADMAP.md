@@ -50,10 +50,6 @@ as default backend (meta?)
 ordering
 comments
 
-## cleanup
-
-core, kdb.. remove useless symbols
-
 ## Lua plugin
 
 value transformations
@@ -90,6 +86,17 @@ symlink resolver/storage?
 ## cleanup
 
 core, kdb.. remove useless symbols
+
+## decisions
+
+metastorage:
+	keytometa?
+	different plugins?
+spec:
+	black/whitelist
+	removal of meta data
+	fix hooks for validation
+	abort on errors?
 
 ## cmake
 
