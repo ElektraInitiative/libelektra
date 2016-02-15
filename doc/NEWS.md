@@ -2,8 +2,8 @@
 
 To be released soon!
 
-This is one of the largest release up to now. It includes many user-visible
-improvements. Some highlights:
+This is one of the largest release up to now. It includes many
+user-visible improvements. Some highlights:
 
 - Mounting is vastly improved:
   think about Debian's "dpkg" to "apt"-like functionality
@@ -17,8 +17,8 @@ improvements. Some highlights:
   [bootstrapping process](https://github.com/ElektraInitiative/libelektra/blob/master/doc/decisions/bootstrap.md).
 - We improved the `ini`, `rename` and `crypto` plugins.
 - The tool `kdb` now supports bookmarks and profiles.
-- The new tool `kdb editor` allows you to edit KDB configuration in your
-  favorite text editor.
+- The new tool `kdb editor` allows you to edit KDB configuration in
+  your favorite text editor.
 - We are glad of the new packages for Debian, Arch Linux and OpenWRT.
 
 ## Global Mount
@@ -47,9 +47,9 @@ Which gives you detailed information to standard output which keys
 were changed/edited/deleted. Additionally, Elektra counts how often
 the `counter` plugin is invoked.
 
-The underlying work for the global plugins, i.e. hooks in the core libraries
-and the `list` plugin that allows us to use many plugins without bloating
-the core was done by Thomas Waser.
+The underlying work for the global plugins, i.e. hooks in the core
+libraries and the `list` plugin that allows us to use many plugins
+without bloating the core was done by Thomas Waser.
 
 
 It was already possible in earlier versions of Elektra to specify the
@@ -65,24 +65,25 @@ This release adds two more interesting options:
 
 ## Spec Plugin
 
-The most important global plugin that is now newly introduced with
-this release (thanks to Thomas Waser) is the `spec` plugin.
-By default it will be added for every global-mount. So for a new installation
-make sure you executed at least once:
+The most important global plugin that is now newly introduced with this
+release (thanks to Thomas Waser) is the `spec` plugin.  By default it
+will be added for every global-mount. So for a new installation make
+sure you executed at least once:
 
 	kdb global-mount
 
-The spec plugin is a global plugin that copies metadata from the `spec`-namespace
-to other namespaces. That means, it reads the specification, and makes sure
-that the configuration conforms to it. The actual validation is done by the many
-validation plugins already present.
+The spec plugin is a global plugin that copies metadata from the
+`spec`-namespace to other namespaces. That means, it reads the
+specification, and makes sure that the configuration conforms to it. The
+actual validation is done by the many validation plugins already present.
 
-Lets start by saying a key is a long and must have at least the value 10:
+Lets start by saying a key is a long and must have at least the
+value 10:
 
 	kdb setmeta spec/example/longkey check/type long
 
-Then we can create a key in a different namespace and see if the `spec` plugin
-applies the meta-data correctly:
+Then we can create a key in a different namespace and see if the `spec`
+plugin applies the meta-data correctly:
 
 	kdb set /example/longkey 25
 	kdb lsmeta /example/longkey
@@ -91,21 +92,22 @@ Should now at least print `check/type`.
 By itself, this is useful for documentation of keys.
 For example, the application developer says:
 
-	kdb setmeta spec/example/longkey description "Do not change this key"
+	kdb setmeta spec/example/longkey description "Do not change"
 	kdb setmeta spec/example/longkey example 30
 
 The user can retrieve this documentation by:
 
 	kdb getmeta /example/longkey description
 
-But we want `check/type` to be not only a documentation, but also enforced.
+But we want `check/type` to be not only a documentation, but also
+enforced.
 
 
 ## Spec Mount
 
-Using `kdb setmeta` extensively and always looking out that all plugins are mounted
-correctly is error-prone. So instead, one can directly mount the plugins as specified.
-For the example above one simply needs:
+Using `kdb setmeta` extensively and always looking out that all plugins
+are mounted correctly is error-prone. So instead, one can directly mount
+the plugins as specified.  For the example above one simply needs:
 
 	kdb setmeta spec/example mountpoint example.ecf
 	kdb spec-mount /example
@@ -115,12 +117,13 @@ Now, when we try to modify `/example/longkey` it will be validated:
 	kdb set /example/longkey a
 	> Error (#52) [...] long [not] matched [...] a
 
-Based on the present meta-data, the correct plugins (in this case `type` because
-of the metadata `check/type`) will be loaded.
+Based on the present meta-data, the correct plugins (in this case `type`
+because of the metadata `check/type`) will be loaded.
 
-We can also create a whole specification file, first mount the specification
-and then the mountpoint according the specification, e.g when we have
-`battery.ini` in the folder `$(dirname $(kdb file spec))` with following content:
+We can also create a whole specification file, first mount the
+specification and then the mountpoint according the specification, e.g
+when we have `battery.ini` in the folder `$(dirname $(kdb file spec))`
+with following content:
 
 	[]
 	mountpoint = battery.ini
@@ -131,37 +134,46 @@ and then the mountpoint according the specification, e.g when we have
 
 Then we can use:
 
-	kdb mount battery.ini spec/example/battery ni # mount the file itself
-	kdb spec-mount /example/battery      # make sure all plugins are present (enum)
-	kdb lsmeta /example/battery/level    # we see it has a check/enum
-	kdb getmeta /example/battery/level check/enum    # now we know allowed values
-	kdb set /example/battery/level low   # success, low is ok!
-	kdb set /example/battery/level wrong # fails, not one of the allowed values!
+	# mount the file itself:
+	kdb mount battery.ini spec/example/battery ni
+	# make sure all plugins are present (e.g. enum for check/enum):
+	kdb spec-mount /example/battery
 
-The main idea of the spec-mount is: search a plugin for every specification
-(meta-data) found in the spec-namespace.
+Now lets verify if it worked:
+
+	kdb lsmeta /example/battery/level
+	# we see it has a check/enum
+	kdb getmeta /example/battery/level check/enum
+	# now we know allowed values
+	kdb set /example/battery/level low
+	# success, low is ok!
+	kdb set /example/battery/level wrong
+	# fails, not one of the allowed values!
+
+The main idea of the spec-mount is: search a plugin for every
+specification (meta-data) found in the spec-namespace.
 
 
 
 
 ## General Mount Improvements
 
-In earlier versions `kdb mount` failed when plugin dependencies were not satisfied.
-Now dependencies will automatically be fulfilled, e.g.
+In earlier versions `kdb mount` failed when plugin dependencies were
+not satisfied.  Now dependencies will automatically be fulfilled, e.g.
 
 	kdb mount /etc/modules system/modules line
 
-In earlier versions you would have got an error because of the missing `null`
-plugin. Now it simply adds the needed plugins.
+In earlier versions you would have got an error because of the missing
+`null` plugin. Now it simply adds the needed plugins.
 
-The plugins given in the command-line used to be real plugins. Now also so
-called providers are accepted.
+The plugins given in the command-line used to be real plugins. Now also
+so called providers are accepted.
 
-To make providers useful we need to actually know which plugin is the best
-candidate. To get the information we added a `infos/status` clause in the
-contract. In this clause the plugin developer adds many details how well
-the plugin is tested, reviewed, documented, maintained and so on. Based on
-this information, the best suited plugin will be chosen.
+To make providers useful we need to actually know which plugin is the
+best candidate. To get the information we added a `infos/status` clause
+in the contract. In this clause the plugin developer adds many details
+how well the plugin is tested, reviewed, documented, maintained and so
+on. Based on this information, the best suited plugin will be chosen.
 For example, you now can use:
 
 	kdb mount /etc/security/limits.conf system/limits augeas \
@@ -169,24 +181,24 @@ For example, you now can use:
 
 And the best suitable logger will automatically be chosen.
 
-The configuration variable `/sw/kdb/current/plugins` now allows us to pass
-plugin configuration with the same syntax as the plugin specification passed
-on the commandline. A subtle difference is that thus the shell-splitting
-of arguments is missing, it is not possible to include whitespaces in the
-plugin configuration that way.
+The configuration variable `/sw/kdb/current/plugins` now allows
+us to pass plugin configuration with the same syntax as the plugin
+specification passed on the commandline. A subtle difference is that
+thus the shell-splitting of arguments is missing, it is not possible to
+include whitespaces in the plugin configuration that way.
 
-Now it is also possible to include the same plugin multiple times and also give
-them individual names. This feature is essential for script-based plugins,
-e.g. you now might add:
+Now it is also possible to include the same plugin multiple times and
+also give them individual names. This feature is essential for
+script-based plugins, e.g. you now might add:
 
 	kdb mount file.x /example/mountpoint \
 		lua#resolver script=resolver.lua \
 		lua#storage script=storage.lua
 
-Furthermore, `kdb mount` now supports recommendations, which can be enabled
-with `--with-recommends`. E.g. supplied to the mount command using augeas
-above, comments will automatically transformed to meta-data to avoid cluttering
-of the real configuration.
+Furthermore, `kdb mount` now supports recommendations, which can be
+enabled with `--with-recommends`. E.g. supplied to the mount command
+using augeas above, comments will automatically transformed to meta-data
+to avoid cluttering of the real configuration.
 
 
 
@@ -194,48 +206,48 @@ of the real configuration.
 
 ## Library Split
 
-Up to now, Elektra consisted only of a single shared library, `libelektra.so`.
-Not all symbols in it were relevant to end users, for example, some were only
-needed by plugins. Others were only proposed and not yet part of the stable
-API. And finally, other symbols were not needed in some situations, e.g.
-the plugins do not need the `kdb` interface.
+Up to now, Elektra consisted only of a single shared library,
+`libelektra.so`.  Not all symbols in it were relevant to end users, for
+example, some were only needed by plugins. Others were only proposed and
+not yet part of the stable API. And finally, other symbols were not needed
+in some situations, e.g.  the plugins do not need the `kdb` interface.
 
-Thus, we split `libelektra.so`, so that only coherent parts are in the same
-library:
+Thus, we split `libelektra.so`, so that only coherent parts are in the
+same library:
 
 - `libelektra-core.so` only contains the `KeySet` data structure and
   module loading.  Every binary using Elektra should link against it.
-- `libelektra-kdb.so` contains the missing `KDB` symbols. Together with the `core`
-  they contain everything declared in `kdb.h`.
-  Michael Zehender  plans to have multiple variants of `libelektra-kdb.so` that use
-  different kinds of concurrency.
+- `libelektra-kdb.so` contains the missing `KDB` symbols. Together with
+  the `core` they contain everything declared in `kdb.h`.
+  Michael Zehender  plans to have multiple variants of `libelektra-kdb.so`
+  that use different kinds of concurrency.
   Headerfile: `<kdb.h>`
-- `libelektra-ease.so` adds functionality missing in `core` to make the life for
-  C programmers easier.
+- `libelektra-ease.so` adds functionality missing in `core` to make the
+  life for C programmers easier.
   New headerfile: `kdbease.h`
-- `libelektra-proposal.so` adds functionality proposed for `core`. It directly
-  uses internal structures of `core`, thus they always need to have exactly
-  the same version.
+- `libelektra-proposal.so` adds functionality proposed for `core`. It
+  directly uses internal structures of `core`, thus they always need to
+  have exactly the same version.
   Headerfile: `kdbproposal.h`
 
 
-The source code is now better organized by the introduction of a `libs` folder.
-The explanation of every library can be found in
+The source code is now better organized by the introduction of a `libs`
+folder.  The explanation of every library can be found in
 [/src/libs/](https://github.com/ElektraInitiative/libelektra/tree/master/src/libs).
 
 The rationale of the library split is documented
 [here](https://github.com/ElektraInitiative/libelektra/blob/master/doc/decisions/library_split.md).
-Shortly put, it was needed for further evolution and allowing us to grow and
-enhance without getting a fat core.
+Shortly put, it was needed for further evolution and allowing us to grow
+and enhance without getting a fat core.
 
-Thanks to Manuel Mausz for fixing many bugs related to the library split and
-also adapting all the bindings for it.
+Thanks to Manuel Mausz for fixing many bugs related to the library split
+and also adapting all the bindings for it.
 
 ### Benchmark
 
-To show that the split does not make Elektra slower, Mihael Pranjić made a
-small benchmark. The real time of [benchmarks/large](/benchmarks/large.c) and
-revision 634ad924109d3cf5d9f83c33aacfdd341b8de17a
+To show that the split does not make Elektra slower, Mihael Pranjić made
+a small benchmark. The real time of [benchmarks/large](/benchmarks/large.c)
+and revision 634ad924109d3cf5d9f83c33aacfdd341b8de17a
 
 1. kdb-static: Median :0.8800
 2. kdb-full: Median :0.8700
@@ -244,14 +256,17 @@ revision 634ad924109d3cf5d9f83c33aacfdd341b8de17a
 So it seems that the split does not influence the time of running
 elektrified processes.
 
-*Times were measured with time(1) and the median is calculated for 21 runs of [benchmarks/large](/benchmarks/large.c). This was done using [scripts/benchmark_libsplit.sh](/scripts/benchmark_libsplit.sh)*
+*Times were measured with time(1) and the median is calculated for 21
+runs of [benchmarks/large](/benchmarks/large.c). This was done using
+[scripts/benchmark_libsplit.sh](/scripts/benchmark_libsplit.sh)*
 
 
 ## Compatibility
 
 As always, the ABI and API is fully forward-compatible, i.e. programs
-compiled against an older 0.8 version of Elektra will continue to work (ABI)
-and you will be able to recompile every program without errors (API).
+compiled against an older 0.8 version of Elektra will continue to work
+(ABI) and you will be able to recompile every program without errors
+(API).
 
 We added `keyGetNamespace` which allows us to handle all namespaces
 in a switch and to iterate all namespaces. This is essential, when
@@ -263,16 +278,16 @@ The internal function `keyCompare` now also detects any meta-data
 change.
 
 libtools was nearly rewritten. Even though it is mostly API compatible
-(you should not use the low-level `Backend` anymore but instead
-use the `BackendBuilder`), it is certainly not ABI compatible.
-If you have an undefined symbol: `_ZN3kdb5tools7Backend9addPluginESsNS_6KeySetE`
-you need to recompile your tool. Even the merging part has
-ABI incompatibility (different size of `_ZTVN3kdb5tools7merging14NewKeyStrategyE`).
+(you should not use the low-level `Backend` anymore but instead use the
+`BackendBuilder`), it is certainly not ABI compatible.  If you have an
+undefined symbol: `_ZN3kdb5tools7Backend9addPluginESsNS_6KeySetE` you need
+to recompile your tool. Even the merging part has ABI incompatibility
+(different size of `_ZTVN3kdb5tools7merging14NewKeyStrategyE`).
 Unfortunately, we still cannot guarantee compatibility in `libtools`,
 further changes are planned (e.g. implementing mounting of lazy plugins).
 
-The python(2) and lua interfaces changed, an additional argument (the plugin
-configuration) is passed to `open`.
+The python(2) and lua interfaces changed, an additional argument (the
+plugin configuration) is passed to `open`.
 
 The INI plugin was rewritten, so many options changed in incompatible ways.
 
@@ -293,9 +308,10 @@ is no longer part of `libelektra.so`.
 
 ### Bootstrapping
 
-When you use `kdbOpen` in Elektra as first step it reads mountpoint configuration
-from `/elektra`.  This step is the only hardcoded one, and all other
-places of the KDB's tree can be customized as desired via mounting.
+When you use `kdbOpen` in Elektra as first step it reads mountpoint
+configuration from `/elektra`.  This step is the only hardcoded one,
+and all other places of the KDB's tree can be customized as desired
+via mounting.
 
 The bootstrapping now changed, so that `/elektra` is not part of the
 default configuration `default.ecf` (or as configured with `KDB_DB_FILE`),
@@ -325,7 +341,8 @@ last step it will import again what it exported before.
 We already highlighted the new `spec` plugin, but also other plugins
 were improved at many places.  Small other changes are:
 
-- Conditionals now also support `assign/condition` syntax, thanks to Thomas Waser
+- Conditionals now also support `assign/condition` syntax,
+  thanks to Thomas Waser
 - Lua and Python are not tagged experimental anymore.
   They now correctly add their configuration to the open-call.
 - The plugin `yajl` (the json parser and generator) now also accepts the
@@ -336,9 +353,10 @@ Larger changes were done in the following plugins:
 
 ### INI
 
-The INI plugin was rewritten and a huge effort was taken so that it fully-roundtrips
-and additionally preserves all comments and ordering.
-Currently, it is brand new. It is planned that it will replace `dump` in the future.
+The INI plugin was rewritten and a huge effort was taken so that it
+fully-roundtrips and additionally preserves all comments and ordering.
+Currently, it is brand new. It is planned that it will replace `dump`
+in the future.
 Read [here about the details](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/ini).
 
 A huge thanks to Thomas Waser.
@@ -389,11 +407,11 @@ highest.
 When running as root, `kdb` will now use the `system` namespace when
 writing configuration to cascading key names.
 
-Long paths are cumbersome to enter in the CLI.
-Thus one can define bookmarks now. Bookmarks are key-names that start with `+`.
-They are only recognized by the `kdb` tool or tools that explicitly have
-support for it. Applications should not depend on the presence of a
-bookmark. For example, if you set the bookmark kdb:
+Long paths are cumbersome to enter in the CLI.  Thus one can define
+bookmarks now. Bookmarks are key-names that start with `+`.  They are
+only recognized by the `kdb` tool or tools that explicitly have support
+for it. Applications should not depend on the presence of a bookmark. For
+example, if you set the bookmark kdb:
 
 	kdb set user/sw/elektra/kdb/#0/current/bookmarks
 	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
@@ -434,23 +452,27 @@ Furthermore we unified and fixed the source:
 
 ## C++11 migration
 
-Since we now only use C++11, we applied `clang-modernize` which simplified many loops and replaced many `0` to
-`nullptr`. Additionally, we added `override` and `default` at many places.
+Since we now only use C++11, we applied `clang-modernize` which simplified
+many loops and replaced many `0` to `nullptr`. Additionally, we added
+`override` and `default` at many places.
 
-We removed all places where we had `ifdefs` to use `auto_ptr` if no modern smart pointer is available.
+We removed all places where we had `ifdefs` to use `auto_ptr` if no
+modern smart pointer is available.
 
-Because of these changes there is no easy way to compile Elektra without C++11 support, except by
-avoiding the C++ parts all together.
+Because of these changes there is no easy way to compile Elektra without
+C++11 support, except by avoiding the C++ parts all together.
 
-The C++ `KeySet` now also supports a `get` to retrieve whole containers at once.
-By specializing `KeySetTypeWrapper` you can support your own containers.
-Currently only `map<string, T>` is supported (T is any type supported by `Key::get`).
+The C++ `KeySet` now also supports a `get` to retrieve whole containers
+at once.  By specializing `KeySetTypeWrapper` you can support your own
+containers.  Currently only `map<string, T>` is supported (T is any type
+supported by `Key::get`).
 
 ## Documentation
 
-The documentation was improved vastly.
-Most thanks to Kurt Micheli who did a lot of editing and fixed many places throughout the documentation
-Also thanks to Michael Zehender who added two paragraphs in the main README.md.
+The documentation was improved vastly.  Most thanks to Kurt Micheli who
+did a lot of editing and fixed many places throughout the documentation
+Also thanks to Michael Zehender who added two paragraphs in the main
+README.md.
 
 Keynames of applications should be called `/sw/org/app/#0/current`,
 where `current` is the default profile (non given). `org` and
@@ -492,10 +514,12 @@ Raffael Pancheri again updated qt-gui with many nice improvements:
 
 ## Packaging and Build System
 
-Elektra 0.8.14 now in Debian with qt-gui, man pages, thanks to Pino Toscano
+Elektra 0.8.14 now in Debian with qt-gui, man pages,
+thanks to Pino Toscano
 [read more here](https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html)
 
-Thanks to Gustavo Alvarez for updating and splitting the packages on Arch Linux!
+Thanks to Gustavo Alvarez for updating and splitting the packages on
+Arch Linux!
 
 Thanks to [Harald Geyer](http://friends.ccbib.org/harald/supporting/),
 Elektra is now packaged for OpenWRT.  We fixed a number of
@@ -505,39 +529,45 @@ need to install all plugins directly in /usr/lib/ or set LD_LIBRARY_PATH.
 Report any bugs in
 [Harald's OpenWRT packaging issue tracker](https://github.com/haraldg/packages).
 
-- export errors/symbols are now called `elektra-export-symbols` and `elektra-export-symbols`
-  and can be installed using `INSTALL_BUILD_TOOLS` (by default off).
-  This is needed for cross-compilation. Thanks to Harald Geyer for reporting.
+- export errors/symbols are now called `elektra-export-symbols` and
+  `elektra-export-symbols` and can be installed using `INSTALL_BUILD_TOOLS`
+  (by default off).  This is needed for cross-compilation.
+  Thanks to Harald Geyer for reporting.
 - some header files are renamed because they endlessly included themselves
-  if the header files were found in wrong order. Thanks to Harald Geyer for reporting.
+  if the header files were found in wrong order.
+  Thanks to Harald Geyer for reporting.
 - fixed compilation when built on more than 20 cores with >= -j15,
   thanks to Gustavo Alvarez for reporting and Manuel Mausz for analyzing
-- lua 5.1 now works too (except for iterators), thanks to Harald Geyer for reporting.
+- lua 5.1 now works too (except for iterators),
+  thanks to Harald Geyer for reporting.
   thanks to Manuel Mausz for adding a new FindLua.cmake
-- pdf builds do not fail due to half written files, reported by René Schwaiger
-  fixed by Kurt Micheli
+- pdf builds do not fail due to half written files,
+  reported by René Schwaiger and fixed by Kurt Micheli
 
 Read about [other packages here](https://github.com/ElektraInitiative/libelektra#packages).
 
 ## Fixes and Improvements
 
-- 3 way merge now properly deals with binary data, thanks to Felix Berlakovich
+- 3 way merge now properly deals with binary data,
+  thanks to Felix Berlakovich
 - getenv: fix wrapping on powerpc, thanks to Pino Toscano
 - markdownlinkconverter: fix char/int mismatch, thanks to Pino Toscano
-- wresolver: use KDB_MAX_PATH_LENGTH instead of PATH_MAX, thanks to Pino Toscano
+- wresolver: use KDB_MAX_PATH_LENGTH instead of PATH_MAX,
+  thanks to Pino Toscano
 - Cleaning up #ifdefs that break statements, thanks to Romero Malaquias
 - Daniel Bugl tested the INI plugin
-- cmake list_filter was broken because of different behaviour in cmake_parse_arguments,
-  thanks to Christian Berrer for reporting
+- cmake list_filter was broken because of different behaviour in
+  cmake_parse_arguments, thanks to Christian Berrer for reporting
 - g++5.3 is now supported
 - gtest does not link against pthread if not needed
 - testcases that are built with BUILD_SHARED also successfully work
-- fix Mac OS issues, thanks to Peter Nirschl, René Schwaiger and Mihael Pranjic
+- fix Mac OS issues,
+  thanks to Peter Nirschl, René Schwaiger and Mihael Pranjic
 - fix resolver-baseflag docu, thanks to Harald Geyer for reporting
 - do not create wrong directories called `(` and `)` in source,
   thanks to René Schwaiger
-- fix cmake for systems where iconv is not part of libc, thanks to Michael Zehender
-  and Peter Kümmel (for FindIconv.cmake)
+- fix cmake for systems where iconv is not part of libc,
+  thanks to Michael Zehender and Peter Kümmel (for FindIconv.cmake)
 - fix segfault in libgetenv if root keys are present
 - lua: fix Key:tostring(), thanks to Manuel Mausz
 - add list of [supported bindings](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings),
