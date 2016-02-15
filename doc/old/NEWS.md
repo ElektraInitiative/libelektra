@@ -171,7 +171,7 @@ Many distributions already have Elektra packages
  - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
 
 In some distributions Elektra packages are available, but are not
-up-to-date. Pino Toscano is working on get them (actually 
+up-to-date. Pino Toscano is working on get them (actually
 Debian, but others are derived from it) up-to-date.
  - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
  - [Debian](https://packages.debian.org/de/wheezy/libelektra3)

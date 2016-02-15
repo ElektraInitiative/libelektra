@@ -469,7 +469,7 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 
 	char *dn = elektraStrDup(cwd);
 	char *dnOrig = dn;
-	
+
 	while (true)
 	{
 		// now put together the filename
