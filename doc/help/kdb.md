@@ -29,11 +29,21 @@ Documentation of plugins is available using the
 [kdb-info(1)](kdb-info.md) tool.
 Run `kdb list` for a list of plugins.
 
-The man pages are also displayed when invoking a kdb-tool with `--help`.
+## COMMON OPTIONS
 
-## CONFIGURATION
+Every core-tool has following options:
 
-The KDB utility reads its own configuration from three sources:
+- `-H`, `--help`:
+  Show the man page.
+- `-V`, `--version`:
+  Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile, see below.
+
+## KDB
+
+The `kdb` utility reads its own configuration from three sources
+within the KDB (key database):
 
 1. /sw/kdb/**profile**/ (for legacy configuration)
 2. /sw/elektra/kdb/#0/%/ (for empty profile)
@@ -44,8 +54,15 @@ The last source where a configuration value is found, wins.
 ## PROFILES
 
 Profiles allow users to change many/all configuration options of a tool
-at once.
+at once. It influences from where the KDB entries are read.
+For example if you use:
+	`kdb export -p admin system`
 
+It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
+
+If you want different configuration per user or directories, you should prefer
+to use the `user` and `dir` namespaces. Then the correct configuration will
+be chosen automatically and you do not have to specify the correct `-p`.
 
 ## BOOKMARKS
 
