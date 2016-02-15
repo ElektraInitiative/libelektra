@@ -8,11 +8,11 @@ add_plugin(list
 		elektra-kdb
 )
 
-list(FIND PLUGINS "rename" _rename)
-list(FIND PLUGINS "keytometa" _keytometa)
+list(FIND PLUGINS "rename" RENAME_INDEX)
+list(FIND PLUGINS "keytometa" KEYTOMETA_INDEX)
 
-if(_rename AND _keytometa GREATER -1)
+if(BUILD_TESTING AND RENAME_INDEX AND KEYTOMETA_INDEX GREATER -1)
 	add_plugintest(list)
 else()
-	message (STATUS "Disabling Plugin-Test of list, depends on: rename, keytometa")
+	message (WARNING "rename and keytometa plugins are required for testing, test deactivated")
 endif()
