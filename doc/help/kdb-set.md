@@ -55,8 +55,8 @@ To set a key to an empty value:
 
 To create bookmarks:
 
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+    kdb set user/sw/elektra/kdb/#0/current/bookmarks
+    kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
 
 
 ## SEE ALSO
