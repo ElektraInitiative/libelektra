@@ -484,7 +484,7 @@ static int keyGetNameNamespace(const char *name)
  * A private copy of the key name will be stored, and the @p newName
  * parameter can be freed after this call.
  *
- * .., . and / will be handled as in filesystem pathes. A valid name will be build
+ * .., . and / will be handled as in filesystem paths. A valid name will be build
  * out of the (valid) name what you pass, e.g. user///sw/../sw//././MyApp -> user/sw/MyApp
  *
  * On invalid names, NULL or "" the name will be "" afterwards.

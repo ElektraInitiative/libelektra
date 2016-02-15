@@ -49,11 +49,11 @@ at once.
 
 ## BOOKMARKS
 
-Elektra recommends [to use rather long pathes](/doc/tutorials/application-integration.md)
+Elektra recommends [to use rather long paths](/doc/tutorials/application-integration.md)
 because it ensures flexibility in the future (e.g. to use profiles and have a compatible
 path for new major versions of configuration).
 
-Long pathes are, however, cumbersome to enter in the CLI.
+Long paths are, however, cumbersome to enter in the CLI.
 Thus one can define bookmarks. Bookmarks are key-names that start with `+`.
 They are only recognized by the `kdb` tool or tools that explicit have
 support for it. Your applications should not depend on the presence of a

@@ -95,7 +95,7 @@ if configured with the variant:
 
 Additionally KDB_DB_USER needs to be left unchanged as `.config`.
 
-XDG_CONFIG_DIRS will be used to resolve system pathes the following
+XDG_CONFIG_DIRS will be used to resolve system paths the following
 way:
 
 - if unset or empty /etc/xdg will be used instead

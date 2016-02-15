@@ -392,7 +392,7 @@ static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED
 }
 
 /**
- * @brief Recalculates all pathes given p->dirname
+ * @brief Recalculates all paths given p->dirname
  *
  * p->filename = p->dirname+p->path
  * p->dirname = dirname(p->filename)
@@ -469,7 +469,7 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 
 	char *dn = elektraStrDup(cwd);
 	char *dnOrig = dn;
-	
+
 	while (true)
 	{
 		// now put together the filename

@@ -309,7 +309,7 @@ set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
 
 
 #
-# Runtime pathes for KDB
+# Runtime paths for KDB
 #
 
 set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH

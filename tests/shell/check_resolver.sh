@@ -19,7 +19,7 @@ else
 fi
 
 #enable with care: might remove more (empty) directories than it created
-#root access required, writes into various pathes (they are listed,
+#root access required, writes into various paths (they are listed,
 #even if WRITE_TO_SYSTEM is deactivated)
 #WRITE_TO_SYSTEM=YES
 WRITE_TO_SYSTEM=NO

@@ -92,7 +92,7 @@ e.g. by using chdir or by setting the environment variable PWD
 On multi-user operating systems obviously every user wants her/his own
 configuration. The user configuration is located in the users home
 directory typically below the folder KDB_DB_USER.
-Other pathes below the home directory are possible too (absolute path
+Other paths below the home directory are possible too (absolute path
 for resolver).
 
 Note that Elektra only supports a user directory per KDB
@@ -107,7 +107,7 @@ e.g. by seteuid() or by environment variables like HOME, USER
 The system configuration is the same for every chroot.
 
 The configuration is typically located below KDB_DB_SYSTEM.
-Other absolute pathes, e.g. below /opt or /usr/local/etc are possible
+Other absolute paths, e.g. below /opt or /usr/local/etc are possible
 too.
 
 
