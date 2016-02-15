@@ -195,7 +195,7 @@ needed by plugins. Others were only proposed and not yet part of the stable
 API. And finally, other symbols were not needed in some situations, e.g.
 the plugins do not need the `kdb` interface.
 
-Thus, we did a split `libelektra.so`, so that only coherent parts are in the same
+Thus, we split `libelektra.so`, so that only coherent parts are in the same
 library:
 
 - `libelektra-core.so` only contains the `KeySet` data structure and module loading.
