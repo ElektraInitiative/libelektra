@@ -364,6 +364,12 @@ The INI plugin was rewritten and a huge effort was taken so that it
 fully-roundtrips and additionally preserves all comments and ordering.
 Currently, it is brand new. It is planned that it will replace `dump`
 in the future.
+
+Currently is has some minor problems when used as KDB_DEFAULT_STORAGE.
+You can avoid most problems by mounting a different file into root:
+
+	kdb mount root.ini /
+
 Read [here about the details](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/ini).
 
 A huge thanks to Thomas Waser.
