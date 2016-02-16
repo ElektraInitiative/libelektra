@@ -27,8 +27,8 @@ The best plugins will be the last in the list.
 
 ## EXAMPLES
 
-To list all available plugins:
-	`kdb list`
+To get a sorted list all available plugins with their status:
+	`kdb list -v`
 
 ## SEE ALSO
 

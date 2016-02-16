@@ -43,8 +43,7 @@ The kdb shell offers a number of commands to interact with the key database.
 ## EXAMPLES
 
 To execute commands from a textfile, you can use:
-
-	cat commands.txt | kdb shell
+	`cat commands.txt | kdb shell`
 
 ## SEE ALSO
 

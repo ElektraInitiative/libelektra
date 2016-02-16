@@ -20,6 +20,10 @@ gives a regular expression to check against. If it is present,
 `check/validation/message` may contain an optional humanly readable
 message that will be passed with the error information.
 
+To validate against the whole string, you have to start the regular
+expression with `^` and end it with `$`. Otherwise expressions that
+match the empty string, always return true.
+
 ## Implementation ##
 
 The implementation consists of a loop checking for every key if it has
