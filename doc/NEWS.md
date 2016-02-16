@@ -39,6 +39,8 @@ user-visible improvements. Some highlights:
 
 The same text as follows is also available
 [here as html](http://doc.libelektra.org/news/1ab4a560-c286-46d2-a058-1a8e7e208fe8.html)
+and
+[here on github](https://github.com/ElektraInitiative/libelektra/blob/master/doc/NEWS.md)
 
 
 ## Global Mount
@@ -266,7 +268,8 @@ and also adapting all the bindings for it.
 ### Benchmark
 
 To show that the split does not make Elektra slower, Mihael Pranjić made
-a small benchmark. The real time of [benchmarks/large](/benchmarks/large.c)
+a small benchmark. The real time of
+[benchmarks/large](https://github.com/ElektraInitiative/libelektra/blob/master/benchmarks/large.c)
 and revision 634ad924109d3cf5d9f83c33aacfdd341b8de17a
 
 1. kdb-static: Median :0.8800
@@ -277,8 +280,8 @@ So it seems that the split does not influence the time of running
 elektrified processes.
 
 *Times were measured with time(1) and the median is calculated for 21
-runs of [benchmarks/large](/benchmarks/large.c). This was done using
-[scripts/benchmark_libsplit.sh](/scripts/benchmark_libsplit.sh)*
+runs of benchmarks/large. This was done using
+[scripts/benchmark_libsplit.sh](https://github.com/ElektraInitiative/libelektra/blob/master/scripts/benchmark_libsplit.sh)*
 
 
 ## Compatibility
