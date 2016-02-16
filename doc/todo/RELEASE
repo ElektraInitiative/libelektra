@@ -25,6 +25,7 @@ Increment version numbers in
 
 - Change VERSION variable in build-server
 
+export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
 export DVERSION=$VERSION-1
  dch --newversion $DVERSION "New upstream version."
  git-add debian/changelog
