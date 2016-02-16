@@ -49,6 +49,8 @@ are now available (in the meta data of respective `spec`-keys):
     the `fallback`-keys will be searched
 - `default`: this value will be used if nothing else was found
 
+E.g.
+
 ```
 [promise]
 default=20
