@@ -49,12 +49,6 @@ are now available (in the meta data of respective `spec`-keys):
     the `fallback`-keys will be searched
 - `default`: this value will be used if nothing else was found
 
-They can be used like this:  
-	`kdb set /overrides/test "example override"`  
-  `sudo kdb setmeta spec/test override/#0 /overrides/test`
-
-### Example configuration
-
 ```
 [promise]
 default=20
