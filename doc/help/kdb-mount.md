@@ -78,22 +78,22 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 ## EXAMPLES
 
 To list the currently mounted backends:  
-	`kdb mount`
+`kdb mount`
 
 To mount a system configuration file using the ini format:  
-	`kdb mount /etc/configuration.ini system/example ini`
+`kdb mount /etc/configuration.ini system/example ini`
 
 Print a null-terminated output of paths and backend names:  
-	`kdb mount -02 | xargs -0n 2 echo`
+`kdb mount -02 | xargs -0n 2 echo`
 
 To mount the /etc/file system file with two plugins with a respective configuration option each:  
-	`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
+`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
 
 To mount the /etc/file system file with two plugins and setting both to be verbose:  
-	`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
+`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
 
 To recode and rename a configuration file using Elektra:  
-	`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`
+`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`
 
 ## SEE ALSO
 

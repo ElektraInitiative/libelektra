@@ -58,10 +58,10 @@ The user should specify the format that the current configuration or keys are in
 ## EXAMPLES
 
 To change the configuration in KDB below `user/ini` with `/usr/bin/vim`, you would use:  
-	`kdb editor -e /usr/bin/vim user/ini`
+`kdb editor -e /usr/bin/vim user/ini`
 
 Or set a new editor as default using:  
-	`kdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano`
+`kdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano`
 
 ## SEE ALSO
 

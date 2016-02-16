@@ -36,12 +36,12 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
 ## EXAMPLES
 
 To convert an Elektra dump file to xml:  
-	`cat sw.ecf | kdb convert dump xmltool > sw.xml`  
+`cat sw.ecf | kdb convert dump xmltool > sw.xml`  
 
 Another way to convert an Elektra dump file to xml:  
-	`kdb convert dump xmltool /home/user/dump_file.ecf /home/user/xml_file.xml`  
+`kdb convert dump xmltool /home/user/dump_file.ecf /home/user/xml_file.xml`  
 
 To print an xml file using the `line` format:  
-	`cat ../tests/xml_file.xml | kdb convert xmltool line`  
+`cat ../tests/xml_file.xml | kdb convert xmltool line`  
 Note that this command won't save the output, it will just display it to `stdout`.
 

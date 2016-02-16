@@ -41,10 +41,10 @@ This command will return the following values as an exit status:
 ## EXAMPLES
 
 To get the value of a meta key called `description` stored in the key `spec/example/key`:  
-	`kdb getmeta spec/example/key description`
+`kdb getmeta spec/example/key description`
 
 To get the value of meta key called `override/#0` stored in the key `spec/example/dir/key`:  
-	`kdb getmeta spec/example/dir/key "override/#0"`
+`kdb getmeta spec/example/dir/key "override/#0"`
 
 ## SEE ALSO
 

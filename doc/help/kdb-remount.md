@@ -30,5 +30,5 @@ This command allows a user to use an existing backend (such as one from a previo
 ## EXAMPLES
 
 To mount a new file using an existing backend that is mounted to `system/example`:  
-	`kdb remount /etc/configuration2.ini system/example2 system/example`  
+`kdb remount /etc/configuration2.ini system/example2 system/example`  
 

@@ -41,11 +41,11 @@ This command returns the following exit statuses:
 ## EXAMPLES
 
 To print all the information about the `dump` plugin:  
-	`kdb info dump`  
+`kdb info dump`  
 
 To print out the license of the `resolver` plugin directly by forcing it to load:  
-	`kdb info -l resolver licence`  
+`kdb info -l resolver licence`  
 
 To print out the author of the `line` plugin:  
-	`kdb info line author`  
+`kdb info line author`  
 

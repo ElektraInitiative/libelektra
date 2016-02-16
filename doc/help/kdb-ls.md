@@ -27,7 +27,7 @@ This command will list the name of all keys below a given path.
 ## EXAMPLES
 
 To list all keys below `user/example`:  
-	`kdb ls user/example`  
+`kdb ls user/example`  
 
 
 ## SEE ALSO

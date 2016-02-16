@@ -94,19 +94,19 @@ If the user wants to have the value printed, they must do so manually (by runnin
 ## EXAMPLES
 
 To check the Key Database:  
-	`kdb check`  
+`kdb check`  
 
 To check the Key Database and then print the result:  
-	`kdb check`  
+`kdb check`  
 followed by:  
-	`echo $?`  
+`echo $?`  
 
 To check the Key Database including write checks:  
-	`kdb check -f`  
+`kdb check -f`  
 Note that this type of check may change configuration files.  
 
 To check the `line` plugin:  
-	`kdb check line`  
+`kdb check line`  
 
 ## SEE ALSO
 

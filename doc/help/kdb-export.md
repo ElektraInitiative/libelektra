@@ -39,19 +39,19 @@ The `format` attribute relies on Elektra's plugin system to export the keys in t
 ## EXAMPLES
 
 To view your full key database in Elektra's native `dump` format:  
-	`kdb export /`  
+`kdb export /`  
 
 To backup your full key database in Elektra's native `dump` format to a file called `full-backup.ecf`:  
-	`kdb export / > full-backup.ecf`  
+`kdb export / > full-backup.ecf`  
 
 To view a keyset stored in `user/keyset` in the XML format:  
-	`kdb export user/keyset xmltool`  
+`kdb export user/keyset xmltool`  
 
 To backup a keyset stored in `user/keyset` in the `ini` format to a file called `keyset.ini`:  
-	`kdb export user/keyset ini > keyset.ini`  
+`kdb export user/keyset ini > keyset.ini`  
 
 Change default format to `simpleini`:  
-	`kdb set /sw/elektra/kdb/#0/current/format simpleini`
+`kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
 
 ## SEE ALSO

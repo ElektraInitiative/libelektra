@@ -32,7 +32,7 @@ This command will create the new entry with a name of `ZZZNewFstabName` which sh
 ## EXAMPLES
 
 To create an fstab entry to mount `dev/sdb1` to `/media/external` stored in the key `system/fstab/sdb1`:  
-	`kdb fstab system/fstab/sdb1 /dev/sdb1 /media/external ext4 errors=remount-ro`
+`kdb fstab system/fstab/sdb1 /dev/sdb1 /media/external ext4 errors=remount-ro`
 
 
 ## SEE ALSO

@@ -30,9 +30,9 @@ You can move keys to another directory within the database or even below another
 ## EXAMPLES
 
 To move a multiple keys:  
-	`kdb mv -r user/example1 user/example2`  
+`kdb mv -r user/example1 user/example2`  
 
 To move a single key:  
-	`kdb mv user/example/key1 user/example/key2`  
+`kdb mv user/example/key1 user/example/key2`  
 
 

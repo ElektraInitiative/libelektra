@@ -33,15 +33,15 @@ that is the place where you usually want to set meta data.
 ## EXAMPLES
 
 To set a meta key called `description` associated with the key `user/example/key` to the value `Hello World!`:  
-	`kdb setmeta spec/example/key description "Hello World!"`  
+`kdb setmeta spec/example/key description "Hello World!"`  
 
 To create a new key `spec/example/newkey` with a null value (if it did not exist before)
 and a meta key `namespace/#0` associated with it to the value `system`:  
-	`kdb setmeta /example/newkey "namespace/#0" system`
+`kdb setmeta /example/newkey "namespace/#0" system`
 
 To create an override link for a `/test` key:  
-	`kdb set /overrides/test "example override"`  
-	`sudo kdb setmeta spec/test override/#0 /overrides/test`
+`kdb set /overrides/test "example override"`  
+`sudo kdb setmeta spec/test override/#0 /overrides/test`
 
 ## SEE ALSO
 

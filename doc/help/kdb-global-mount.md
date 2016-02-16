@@ -49,10 +49,10 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
 ## EXAMPLES
 
 Trace every interaction with the key database (very noisy!):  
-	`kdb global-mount tracer`
+`kdb global-mount tracer`
 
 For every change of KDB, write to syslog and notify by dbus:  
-	`kdb global-mount syslog dbus`
+`kdb global-mount syslog dbus`
 
 
 ## SEE ALSO
