@@ -128,6 +128,25 @@ static Key *createUnescapedKey(Key *key, const char *name)
 	free(dupName);
 	return key;
 }
+
+static void setParentSectionMeta(Key *parentKey, Key *key)
+{
+	if (keyGetMeta(parentKey, "ini/lastSection"))
+	{
+		long previousSection = atol(keyString(keyGetMeta(parentKey, "ini/lastSection")));
+		++previousSection;
+		char buffer[21]; //20 digits (long) + \0
+		snprintf(buffer, sizeof (buffer), "%ld", previousSection);
+		keySetMeta(parentKey, "ini/lastSection", buffer);
+		keySetMeta(key, "ini/section", buffer);
+	}
+	else
+	{
+		keySetMeta(parentKey, "ini/lastSection", "1");
+		keySetMeta(key, "ini/section", "1");
+	}
+}
+
 static void setSectionNumber(Key *parentKey, Key *key, KeySet *ks)
 {
 	
@@ -149,21 +168,7 @@ static void setSectionNumber(Key *parentKey, Key *key, KeySet *ks)
 	{
 		if (!strcmp(keyName(lookupKey), keyName(parentKey)))
 		{
-			if (keyGetMeta(parentKey, "ini/lastSection"))
-			{
-				long previousSection = atol(keyString(keyGetMeta(parentKey, "ini/lastSection")));
-				++previousSection;
-				char buffer[21]; //20 digits (long) + \0
-				snprintf(buffer, sizeof (buffer), "%ld", previousSection);
-				keySetMeta(parentKey, "ini/lastSection", buffer);
-				keySetMeta(key, "ini/section", buffer);
-			}
-			else
-			{
-				keySetMeta(parentKey, "ini/lastSection", "1");
-				keySetMeta(parentKey, "ini/section", "0");
-				keySetMeta(key, "ini/section", "1");
-			}
+			setParentSectionMeta(parentKey, key);
 			keySetMeta(lastKey, "ini/section", keyString(keyGetMeta(key, "ini/section")));
 			ksAppendKey(ks, keyDup(lastKey));
 			break;
@@ -176,21 +181,7 @@ static void setSectionNumber(Key *parentKey, Key *key, KeySet *ks)
 		keySetName(lastKey, keyName(lookupKey));
 		if (keyAddName(lookupKey, "..") <= 0)
 		{
-			if (keyGetMeta(parentKey, "ini/lastSection"))
-			{
-				long previousSection = atol(keyString(keyGetMeta(parentKey, "ini/lastSection")));
-				++previousSection;
-				char buffer[21]; //20 digits (long) + \0
-				snprintf(buffer, sizeof (buffer), "%ld", previousSection);
-				keySetMeta(parentKey, "ini/lastSection", buffer);
-				keySetMeta(key, "ini/section", buffer);
-			}
-			else
-			{
-				keySetMeta(parentKey, "ini/lastSection", "1");
-				keySetMeta(parentKey, "ini/section", "0");
-				keySetMeta(key, "ini/section", "1");
-			}
+			setParentSectionMeta(parentKey, key);
 			keySetMeta(lastKey, "ini/section", keyString(keyGetMeta(key, "ini/section")));
 			ksAppendKey(ks, keyDup(lastKey));
 			break;
@@ -200,6 +191,7 @@ static void setSectionNumber(Key *parentKey, Key *key, KeySet *ks)
 	keyDel(lookupKey);
 	keyDel(lastKey);
 }
+
 
 static void setOrderNumber(Key *parentKey, Key *key)
 {
@@ -250,74 +242,47 @@ static void setSubOrderNumber(Key *key, const char *oldOrder)
 	elektraFree(newOrder);
 }
 
+
+static void findOrderNumber(Key *parentKey, Key *key, Key *cutKey, KeySet *ks)
+{
+	KeySet *cutKS = ksCut(ks, cutKey);
+	const char *oldOrder = NULL;
+	if (keyGetMeta(cutKey, "order"))
+	{
+		oldOrder=keyString(keyGetMeta(cutKey, "order"));
+	}
+	else
+	{
+		oldOrder = keyString(keyGetMeta(parentKey, "ini/rootindex"));
+	}
+	
+	Key *curKey;
+	while ((curKey = ksNext(cutKS)) != NULL)
+	{
+		if (keyIsBelow(cutKey, curKey) && !strcmp(keyString(keyGetMeta(curKey, "parent")), keyName(cutKey)) && !keyIsBinary(curKey))
+		{
+			if (keyGetMeta(curKey, "order"))
+			{
+				if (strcmp(keyString(keyGetMeta(curKey, "order")), oldOrder) > 0)
+					oldOrder = keyString(keyGetMeta(curKey, "order"));
+			}
+		}
+	}
+	setSubOrderNumber(key, oldOrder);
+	ksAppend(ks, cutKS);
+	ksDel(cutKS);
+}	
+
 static void insertNewKeyIntoExistendOrder(Key *parentKey, Key *key, KeySet *ks)
 {
 	if (keyGetMeta(ksLookup(ks, key, KDB_O_NONE), "order"))
 		return;
+	
 	ksRewind(ks);	
-	Key *curKey;
 	const Key *parentMeta = keyGetMeta(key, "parent");
-	if (parentMeta && ksLookupByName(ks, keyString(parentMeta), KDB_O_NONE))
+	if (!parentMeta)
 	{
-		Key *cutKey = ksLookupByName(ks, keyString(parentMeta), KDB_O_NONE);
-		KeySet *cutKS = ksCut(ks, cutKey);
-		const char *oldOrder = NULL;
-		if (keyGetMeta(cutKey, "order"))
-		{
-			oldOrder=keyString(keyGetMeta(cutKey, "order"));
-		}
-		else
-		{
-			oldOrder = keyString(keyGetMeta(parentKey, "ini/rootindex"));
-		}
-		
-		while ((curKey = ksNext(cutKS)) != NULL)
-		{
-			if (keyIsBelow(cutKey, curKey) && !strcmp(keyString(keyGetMeta(curKey, "parent")), keyName(cutKey)) && !keyIsBinary(curKey))
-			{
-				if (keyGetMeta(curKey, "order"))
-				{
-					if (strcmp(keyString(keyGetMeta(curKey, "order")), oldOrder) > 0)
-						oldOrder = keyString(keyGetMeta(curKey, "order"));
-				}
-			}
-		}
-		setSubOrderNumber(key, oldOrder);
-		ksAppend(ks, cutKS);
-		ksDel(cutKS);
-	}
-	else if (parentMeta)
-	{
-		Key *cutKey = keyNew(keyString(parentMeta), KEY_END);
-		KeySet *cutKS = ksCut(ks, cutKey);
-		const char *oldOrder = NULL;
-		if (keyGetMeta(cutKey, "order"))
-		{
-			oldOrder=keyString(keyGetMeta(cutKey, "order"));
-		}
-		else
-		{
-			oldOrder = keyString(keyGetMeta(parentKey, "ini/rootindex"));
-		}
-		
-		while ((curKey = ksNext(cutKS)) != NULL)
-		{
-			if (keyIsBelow(cutKey, curKey) && !strcmp(keyString(keyGetMeta(curKey, "parent")), keyName(cutKey)) && !keyIsBinary(curKey))
-			{
-				if (keyGetMeta(curKey, "order"))
-				{
-					if (strcmp(keyString(keyGetMeta(curKey, "order")), oldOrder) > 0)
-						oldOrder = keyString(keyGetMeta(curKey, "order"));
-				}
-			}
-		}
-		setSubOrderNumber(key, oldOrder);
-		ksAppend(ks, cutKS);
-		ksDel(cutKS);
-		keyDel(cutKey);
-	}
-	else
-	{
+		Key *curKey;
 		Key *prevKey = NULL;
 		while ((curKey = ksNext(ks)) != NULL)
 		{
@@ -333,7 +298,24 @@ static void insertNewKeyIntoExistendOrder(Key *parentKey, Key *key, KeySet *ks)
 			prevKey = curKey;
 		}
 	}
+	else
+	{
+		if (ksLookupByName(ks, keyString(parentMeta), KDB_O_NONE))
+		{
+			Key *cutKey = ksLookupByName(ks, keyString(parentMeta), KDB_O_NONE);
+			findOrderNumber(parentKey, key, cutKey, ks); 
+		}
+		else
+		{
+			Key *cutKey = keyNew(keyString(parentMeta), KEY_END);
+			findOrderNumber(parentKey, key, cutKey, ks);
+			keyDel(cutKey);
+		}
+	}
 }
+
+
+
 static void iniBomHandler(void *vhandle, short BOM)
 {
 	CallbackHandle *handle = (CallbackHandle *)vhandle;
@@ -544,13 +526,8 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	Key *existingKey = NULL;
 	if ((existingKey = ksLookup(handle->result, appendKey, KDB_O_NONE)))
 	{
-		keyDel(appendKey);
-		if (!handle->mergeSections)
-		{
-			ELEKTRA_SET_ERRORF(140, handle->parentKey, "Section name: %s\n", section);
-			return 0;
-		}
-		keySetMeta(existingKey, "ini/duplicate", "");
+		if (handle->mergeSections)
+			keySetMeta(existingKey, "ini/duplicate", "");
 		return 1;
 	}
 	setSectionNumber(handle->parentKey, appendKey, handle->result);
@@ -1516,7 +1493,7 @@ static int iniWriteKeySet(FILE *fh, Key *parentKey, KeySet *returned, IniPluginC
 							sectionKey = oldSectionKey;
 						}
 					}
-				}
+				} 	
 				if (keyGetMeta(cur, "ini/array") && config->array)
 				{
 					int lastArrayIndex = atoi(keyString(keyGetMeta(cur, "ini/array"))+1);
@@ -1735,8 +1712,9 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	keyDel(root);
 	keyDel(head);
-	
+
 	ret = iniWriteKeySet(fh, parentKey, returned, pluginConfig);
+	
 	fclose (fh);
 	errno = errnosave;
 	
