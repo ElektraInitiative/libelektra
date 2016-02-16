@@ -194,7 +194,7 @@ are now available (in the meta data of respective `spec`-keys):
 
 They can be used like this:  
 	`kdb set /overrides/test "example override"`  
-  `sudo kdb setmeta spec/test override/#0 /overrides/test`
+	`sudo kdb setmeta spec/test override/#0 /overrides/test`
 
 This technique provides complete transparency how a program will fetch a configuration
 value. In practice that means that:

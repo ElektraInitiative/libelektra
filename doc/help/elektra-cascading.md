@@ -34,7 +34,7 @@ are available (in the meta data of respective `spec`-keys):
 
 They can be used like this:  
 	`kdb set /overrides/test "example override"`  
-  `sudo kdb setmeta spec/test override/#0 /overrides/test`
+	`sudo kdb setmeta spec/test override/#0 /overrides/test`
 
 ## CASCADING
 
