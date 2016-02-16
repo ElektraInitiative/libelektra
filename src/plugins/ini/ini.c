@@ -764,7 +764,7 @@ int elektraIniGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (orderKey)
 	{
 		size_t orderSize = keyGetValueSize(orderKey);
-		char *orderBuffer = elektraCalloc(orderSize);
+		char *orderBuffer = elektraCalloc(orderSize > ELEKTRA_MAX_ARRAY_SIZE ? orderSize : ELEKTRA_MAX_ARRAY_SIZE);
 		keyGetString(orderKey, orderBuffer, orderSize);
 		char *ptr = orderBuffer;
 		++ptr;
