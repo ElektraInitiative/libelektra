@@ -4,7 +4,8 @@
 - author: Markus Raab
 - pubDate: Tue, 16 Feb 2016 17:47:00 +0100
 
-In case you do not yet now here an abstract of Elektra:
+In case you do not yet know about it, here is an abstract about Elektra:
+
 Elektra serves as a universal and secure framework to access configuration
 parameters in a global, hierarchical key database.
 Elektra provides a mature, consistent and easily comprehensible API.
@@ -14,7 +15,6 @@ cross-platform-related issues and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
 See [http://libelektra.org](http://libelektra.org)
-
 
 ## Overview
 
@@ -36,6 +36,10 @@ user-visible improvements. Some highlights:
 - The new tool `kdb editor` allows you to edit KDB configuration in
   your favorite text editor.
 - We are glad of the new packages for Debian, Arch Linux and OpenWRT.
+
+The same text as follows is also available
+[here as html](http://doc.libelektra.org/news/1ab4a560-c286-46d2-a058-1a8e7e208fe8.html)
+
 
 ## Global Mount
 
