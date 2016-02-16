@@ -163,8 +163,8 @@ git clone git@github.com:oyranos-cms/oyranos.git
 cd oyranos
 mkdir build
 cd build
-cmake ..
-make -j5
+cmake .. # might fail, simply comment out missing libs
+make -j5 # not needed
 make test2 # or make test-2 for the most of the tests
 src/tests/test2 Elektra
 

@@ -1,6 +1,22 @@
 # 0.8.15 Release
 
-To be released soon!
+- guid: 1ab4a560-c286-46d2-a058-1a8e7e208fe8
+- author: Markus Raab
+- pubDate: Tue, 16 Feb 2016 17:47:00 +0100
+
+In case you do not yet now here an abstract of Elektra:
+Elektra serves as a universal and secure framework to access configuration
+parameters in a global, hierarchical key database.
+Elektra provides a mature, consistent and easily comprehensible API.
+Its modularity effectively avoids code duplication across applications
+and tools regarding configuration tasks. Elektra abstracts from
+cross-platform-related issues and allows applications to be aware of other
+applications' configurations, leveraging easy application integration.
+
+See [http://libelektra.org](http://libelektra.org)
+
+
+## Overview
 
 This is one of the largest release up to now. It includes many
 user-visible improvements. Some highlights:
@@ -480,6 +496,9 @@ at once.  By specializing `KeySetTypeWrapper` you can support your own
 containers.  Currently only `map<string, T>` is supported (T is any type
 supported by `Key::get`).
 
+If you haven't removed it from your flags already, there is no use
+anymore to set `ENABLE_CXX11`.
+
 ## Documentation
 
 The documentation was improved vastly.  Most thanks to Kurt Micheli who
@@ -587,6 +606,48 @@ Read about [other packages here](https://github.com/ElektraInitiative/libelektra
 - lua: fix Key:tostring(), thanks to Manuel Mausz
 - add list of [supported bindings](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings),
   thanks to Manuel Mausz
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.15.tar.gz)
+and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.15.tar.gz)
+
+- name: elektra-0.8.15.tar.gz
+- size: 2338297
+- md5sum: 33ec1e5982fb7fbd8893bf7b579b80f0
+- sha1: 6b1fdd5aa5aaad6ba377b4bb5ef437e0c85319ff
+- sha256: 6a406986cecb8d4a44485ced118ee803bc039b0824b72298e123b4dd47eb0b22
+- sha512: 86a408dd546b33e3b437f92f415de7aee6a235189f9eab0762b3f44ab4c453ee369a53de10a9f5b0df1b446460b12c57c6b8b77c282648ec2a49f2328d9af13d
+
+
+
+This release tarball now is also available
+[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.15.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.15/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+the issue tracker [on github](http://git.libelektra.org/issues)
+or by mail elektra@markus-raab.org.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/1ab4a560-c286-46d2-a058-1a8e7e208fe8.html)
+
+For more information, see [http://libelektra.org](http://libelektra.org)
+
+Best regards,
+Markus
+
+
 
 
 
