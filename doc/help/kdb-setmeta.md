@@ -37,6 +37,9 @@ To create a new key `spec/example/newkey` with a null value (if it did not exist
 and a meta key `namespace/#0` associated with it to the value `system`:
 	`kdb setmeta /example/newkey "namespace/#0" system`
 
+To create an override link for a `/test` key:  
+	`kdb set /overrides/test "example override"`  
+  `sudo kdb setmeta spec/test override/#0 /overrides/test`
 
 ## SEE ALSO
 
