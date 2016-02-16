@@ -528,6 +528,7 @@ static int iniSectionToElektraKey (void *vhandle, const char *section)
 	{
 		if (handle->mergeSections)
 			keySetMeta(existingKey, "ini/duplicate", "");
+		keyDel(appendKey);
 		return 1;
 	}
 	setSectionNumber(handle->parentKey, appendKey, handle->result);
