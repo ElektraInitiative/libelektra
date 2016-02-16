@@ -1,3 +1,5 @@
+find_package(Threads)
+
 add_plugin (type
 	CPP
 	SOURCES
@@ -8,4 +10,7 @@ add_plugin (type
 
 include (LibAddTest)
 include_directories ("${CMAKE_SOURCE_DIR}/src/bindings/cpp/tests")
-add_gtest (testmod_type MEMLEAK)
+add_gtest (testmod_type
+		MEMLEAK
+		SOURCES types.cpp
+		)

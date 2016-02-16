@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KEY_HPP
 #define ELEKTRA_KEY_HPP
 
@@ -270,6 +278,12 @@ public:
 		const char *c = current;
 		if (c >= end) return end;
 
+		if (c == begin && *c == 0)
+		{
+			// special handling of cascading key names
+			return ++c;
+		}
+
 		do { ++c; } while (c < end && *c != 0);
 		if (c != end) ++c; // skip past null character
 
@@ -284,6 +298,11 @@ public:
 		--c; // go from start of string to null
 		do { --c; } while (c > begin && *c != 0);
 		if (c != begin && c+1 != current) ++c; // jump back to not-null
+		else if (c == begin && *c == 0)
+		{
+			// special handling of cascading key names
+			return ++c;
+		}
 
 		return c;
 	}
@@ -469,7 +488,7 @@ inline Key::const_reverse_iterator Key::crend() const noexcept
  * @see isValid(), isNull()
  */
 inline Key::Key () :
-	key(ckdb::keyNew (0))
+	key(ckdb::keyNew (nullptr))
 {
 	operator++();
 }
@@ -727,7 +746,7 @@ ckdb::Key* Key::release ()
 	if (key)
 	{
 		operator --();
-		key = 0;
+		key = nullptr;
 	}
 	return ret;
 }
@@ -962,7 +981,7 @@ inline Key::operator bool() const
  */
 inline bool Key::isNull() const
 {
-	return key == 0;
+	return key == nullptr;
 }
 
 /**
@@ -1431,7 +1450,7 @@ inline void Key::setMeta(const std::string &metaName, T x)
  */
 inline void Key::delMeta(const std::string &metaName)
 {
-	ckdb::keySetMeta(key, metaName.c_str(), 0);
+	ckdb::keySetMeta(key, metaName.c_str(), nullptr);
 }
 
 /**
@@ -1644,7 +1663,6 @@ inline int Key::del ()
 } // end of namespace kdb
 
 
-#ifdef ELEKTRA_WITH_HASH
 namespace std
 {
 	/**
@@ -1654,12 +1672,11 @@ namespace std
 	{
 		size_t operator()(kdb::Key const & k) const
 		{
-			// use pointer value as hash value
-			return std::hash<ckdb::Key *>()(k.getKey());
+			// use key name as hash value
+			return std::hash<std::string>()(k.getName());
 		}
 	};
 } // end of namespace std
-#endif // ELEKTRA_WITH_HASH
 
 #endif
 

@@ -16,9 +16,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
+#include <kdbease.h>
 #include "csvstorage.h"
 
 #define INTSTR_MAX 15
@@ -26,23 +27,23 @@ static char *parseLine(char *origLine, char delim, unsigned long offset, Key *pa
 {
 	char *line = (origLine + offset);
 
-	if(*line == '\0')
+	if (*line == '\0')
 		return NULL;
 
 	char *ptr = strchr(line, delim);
 
-	if(ptr == NULL)
+	if (ptr == NULL)
 	{
 		ssize_t len = elektraStrLen(line);
-		if(line[len-2] == '\n')
+		if (line[len-2] == '\n')
 		{
 			line[len-2] = '\0';
 		}
-		else if(line[len-1] == '\0')
+		else if (line[len-1] == '\0')
 		{
 			ELEKTRA_ADD_WARNINGF(136, parentKey, "Unexpected end of line(%lu) , expected \\n, got \\0 \n %s\n", lineNr, origLine);
 		}
-		else if(line[len-2] == '\r')
+		else if (line[len-2] == '\r')
 		{
 			ELEKTRA_ADD_WARNINGF(136, parentKey, "Unexpected end of line(%lu) , expected \\n, found \\r \n %s\n", lineNr, origLine);
 			line[len-2] = '\0';
@@ -62,14 +63,14 @@ static unsigned long getLineLength(FILE *fp)
 {
 	int startPos = ftell(fp);
 	char c;
-	while((c = fgetc(fp)) && (!feof(fp)))
+	while ((c = fgetc(fp)) && (!feof(fp)))
 	{
-		if(c == '\n')
+		if (c == '\n')
 			break;
 	}
 	int  endPos = ftell(fp);
 	fseek(fp, startPos, SEEK_SET);
-	if((endPos - startPos) == 0)
+	if ((endPos - startPos) == 0)
 		return 0;
 	else
 		return (endPos - startPos)+1;
@@ -79,9 +80,9 @@ static unsigned long getColumnCount(char *lineBuffer, char delim)
 {
 	char *ptr = lineBuffer;
 	unsigned long counter = 0;
-	while(*ptr != '\0')
+	while (*ptr != '\0')
 	{
-		if(*ptr == delim)
+		if (*ptr == delim)
 		{
 			++counter;
 		}
@@ -102,9 +103,9 @@ static Key *getKeyByOrderNr(KeySet *ks, unsigned long n)
 	Key *cur;
 	char buf[INTSTR_MAX];
 	ksRewind(ks);
-	while((cur = ksNext(ks)) != NULL)
+	while ((cur = ksNext(ks)) != NULL)
 	{
-		if(!strcmp(keyString(keyGetMeta(cur, "csv/order")), itostr(buf, n, sizeof(buf)-1)))
+		if (!strcmp(keyString(keyGetMeta(cur, "csv/order")), itostr(buf, n, sizeof(buf)-1)))
 			return cur; 
 	}
 	return NULL;
@@ -116,7 +117,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	fileName = keyString(parentKey);
 	FILE *fp = NULL;
 	fp = fopen(fileName, "rb");
-	if(!fp)
+	if (!fp)
 	{
 		ELEKTRA_SET_ERRORF(116, parentKey, "couldn't open file %s\n", fileName);
 		return -1;
@@ -124,7 +125,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 
 	unsigned long length = 0;
 	length = getLineLength(fp);
-	if(length == 0)
+	if (length == 0)
 	{
 		ELEKTRA_ADD_WARNING(118, parentKey, "Empty file");
 		fclose(fp);
@@ -133,12 +134,12 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 
 	char *lineBuffer;
 	lineBuffer = elektraMalloc((length * sizeof(char))+1);
-	if(!lineBuffer)
+	if (!lineBuffer)
 	{
 		ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
 		return -1;
 	}
-	if(!fgets(lineBuffer, length, fp))
+	if (!fgets(lineBuffer, length, fp))
 	{
 		ELEKTRA_SET_ERROR(116, parentKey, "Cant read from file");
 		return -1;
@@ -146,9 +147,9 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 
 	unsigned long columns = 0;
 	columns = getColumnCount(lineBuffer, delim);
-	if(fixColumnCount)
+	if (fixColumnCount)
 	{
-		if(columns != fixColumnCount)
+		if (columns != fixColumnCount)
 		{
 			ELEKTRA_SET_ERROR(117, parentKey, "illegal number of columns in Header line");
 			elektraFree(lineBuffer);
@@ -165,15 +166,15 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 	KeySet *header = ksNew(0, KS_END);
 	Key *key;
 
-	if(useHeader == 1)
+	if (useHeader == 1)
 	{
 		colCounter = 0;
 		offset = 0;
-		while((col = parseLine(lineBuffer, delim, offset, parentKey, lineCounter)) != NULL)
+		while ((col = parseLine(lineBuffer, delim, offset, parentKey, lineCounter)) != NULL)
 		{
 			offset += elektraStrLen(col);
 			key = keyDup(parentKey);
-			if(colNames && (colNames+colCounter))
+			if (colNames && (colNames+colCounter))
 			{
 				keyAddBaseName(key, colNames[colCounter]);
 			}
@@ -193,9 +194,9 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		//if no headerline exists name the columns 0..N where N is the number of columns
 		key = keyDup(parentKey);
 		keyAddName(key, "#");
-		while(colCounter < columns)
+		while (colCounter < columns)
 		{
-			if(elektraArrayIncName(key) == -1)
+			if (elektraArrayIncName(key) == -1)
 			{
 				elektraFree(lineBuffer);
 				keyDel(key);
@@ -204,7 +205,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 				return -1;
 			}
 			keySetMeta(key, "csv/order", itostr(buf, colCounter, sizeof(buf)-1));
-			if(colNames && (colNames+colCounter))
+			if (colNames && (colNames+colCounter))
 				keySetString(key, colNames[colCounter]);
 			else
 				keySetString(key, keyBaseName(key));
@@ -212,19 +213,19 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			++colCounter;
 		}
 		keyDel(key);
-		if(useHeader == 0)
+		if (useHeader == 0)
 			fseek(fp, 0, SEEK_SET);
 	}
 	Key *dirKey;
 	Key *cur;
 	dirKey = keyDup(parentKey);
 	keyAddName(dirKey, "#");
-	while(!feof(fp))
+	while (!feof(fp))
 	{
 		length = getLineLength(fp);
-		if(length == 0)
+		if (length == 0)
 			break;
-		if(elektraRealloc((void **)&lineBuffer, (length * sizeof(char))+1) < 0)
+		if (elektraRealloc((void **)&lineBuffer, (length * sizeof(char))+1) < 0)
 		{
 			fclose(fp);
 			elektraFree(lineBuffer);
@@ -234,7 +235,7 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 			return -1;
 		}
 		fgets(lineBuffer, length, fp);
-		if(elektraArrayIncName(dirKey) == -1)
+		if (elektraArrayIncName(dirKey) == -1)
 		{
 			elektraFree(lineBuffer);
 			keyDel(dirKey);
@@ -246,12 +247,12 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		offset = 0;
 		colCounter = 0;
 		char *lastIndex = "#0";
-		while((col = parseLine(lineBuffer, delim, offset, parentKey, lineCounter)) != NULL)
+		while ((col = parseLine(lineBuffer, delim, offset, parentKey, lineCounter)) != NULL)
 		{
 			cur = getKeyByOrderNr(header, colCounter);
 			offset += elektraStrLen(col);
 			key = keyDup(dirKey);
-			if(useHeader != 1)
+			if (useHeader != 1)
 				keyAddBaseName(key, keyString(cur));
 			else
 				keyAddBaseName(key, keyBaseName(cur));
@@ -264,9 +265,9 @@ static int csvRead(KeySet *returned, Key *parentKey, char delim, short useHeader
 		}
 		keySetString(dirKey, lastIndex);
 		ksAppendKey(returned, keyDup(dirKey));
-		if(colCounter != columns)
+		if (colCounter != columns)
 		{
-			if(fixColumnCount)
+			if (fixColumnCount)
 			{
 				ELEKTRA_SET_ERRORF(117, parentKey, "illegal number of columns in line %lu", lineCounter);
 				elektraFree(lineBuffer);
@@ -314,7 +315,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key *delimKey = ksLookupByName(config, "/delimiter", 0);
 	char delim = ',';
-	if(delimKey)
+	if (delimKey)
 	{
 		const char *delimString = keyString(delimKey);
 		delim = delimString[0];
@@ -322,18 +323,18 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	Key *readHeaderKey = ksLookupByName(config, "/header", 0);
 	short useHeader = 0;
-	if(readHeaderKey)
+	if (readHeaderKey)
 	{
 		const char *printHeaderString = keyString(readHeaderKey);
-		if(!strcmp(printHeaderString, "colname"))
+		if (!strcmp(printHeaderString, "colname"))
 		{
 			useHeader = 1;
 		}
-		else if(!(strcmp(printHeaderString, "skip")))
+		else if (!(strcmp(printHeaderString, "skip")))
 		{
 			useHeader = -1;
 		}
-		else if(!(strcmp(printHeaderString, "record")))
+		else if (!(strcmp(printHeaderString, "record")))
 		{
 			useHeader = 0;
 		}
@@ -344,30 +345,30 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	unsigned long fixColumnCount = 0;
 	Key *fixColumnCountKey = ksLookupByName(config, "/columns", 0);
-	if(fixColumnCountKey)
+	if (fixColumnCountKey)
 	{
-		if(keyString(fixColumnCountKey))
+		if (keyString(fixColumnCountKey))
 		{
 			fixColumnCount = atol(keyString(fixColumnCountKey));
 		}
 	}
 	Key *setNamesKey = ksLookupByName(config, "/columns/names", 0);
 	char *colNames = NULL;
-	if(setNamesKey)
+	if (setNamesKey)
 	{
-		if(fixColumnCountKey)
+		if (fixColumnCountKey)
 		{
 			KeySet *namesKS = ksCut(config, setNamesKey);
 			unsigned long nrNames = (unsigned long)ksGetSize(namesKS)-1;
-			if(nrNames == fixColumnCount)
+			if (nrNames == fixColumnCount)
 			{
 				colNames = (char *)elektraMalloc(nrNames*sizeof(char *));
 				Key *cur;
 				char **ptr = (char **)colNames;
-				while((cur = ksNext(namesKS)) != NULL)
+				while ((cur = ksNext(namesKS)) != NULL)
 				{
-					if(!strcmp(keyName(cur), keyName(setNamesKey))) continue;
-					if(!strcmp(keyString(cur), ""))
+					if (!strcmp(keyName(cur), keyName(setNamesKey))) continue;
+					if (!strcmp(keyString(cur), ""))
 						*ptr = NULL;
 					else
 						*ptr = (char *)keyString(cur);
@@ -380,7 +381,7 @@ int elektraCsvstorageGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	int nr_keys;
 	nr_keys = csvRead(returned, parentKey, delim, useHeader, fixColumnCount, (const char **)colNames);
-	if(colNames)
+	if (colNames)
 		elektraFree(colNames);
 	if (nr_keys == -1) return -1;
 	return 1;
@@ -390,7 +391,7 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short useHeade
 {
 	FILE *fp;
 	fp = fopen(keyString(parentKey), "w");
-	if(!fp)
+	if (!fp)
 	{
 		ELEKTRA_SET_ERROR_SET(parentKey);
 		return -1;
@@ -404,35 +405,35 @@ static int csvWrite(KeySet *returned, Key *parentKey, char delim, short useHeade
 	Key *cur;
 	KeySet *toWriteKS;
 	Key *toWrite;
-	while((cur = ksNext(returned)) != NULL)
+	while ((cur = ksNext(returned)) != NULL)
 	{
-		if(keyRel(parentKey, cur) != 1)
+		if (keyRel(parentKey, cur) != 1)
 			continue;
-		if(useHeader)
+		if (useHeader)
 		{
 			useHeader = 0;
 			continue;
 		}
 		toWriteKS = ksCut(returned, cur);
 		colCounter = 0;
-		while(1)
+		while (1)
 		{
 			toWrite = getKeyByOrderNr(toWriteKS, colCounter);
-			if(!toWrite)
+			if (!toWrite)
 				break;
-			if(colCounter)
+			if (colCounter)
 				fprintf(fp, "%c", delim);
 			++colCounter;
 			fprintf(fp, "%s", keyString(toWrite));
 		}
 		ksDel(toWriteKS);
 		fprintf(fp, "\n");
-		if(columns == 0)
+		if (columns == 0)
 		{
 			columns = colCounter;
 		}
 
-		if(colCounter != columns)
+		if (colCounter != columns)
 		{    
 			ELEKTRA_SET_ERRORF(117, parentKey, "illegal number of columns in line %lu\n", lineCounter);
 			fclose(fp);
@@ -449,7 +450,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	KeySet *config = elektraPluginGetConfig(handle);
 	Key *delimKey = ksLookupByName(config, "/delimiter", 0);
 	char outputDelim;
-	if(delimKey)
+	if (delimKey)
 	{
 		const char *delimString = keyString(delimKey);
 		outputDelim = delimString[0];
@@ -460,8 +461,8 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	}
 	Key *useHeaderKey = ksLookupByName(config, "/header", 0);
 	short useHeader = 0;
-	if(!strcmp(keyString(useHeaderKey), "skip")) useHeader = -1;
-	if(csvWrite(returned, parentKey, outputDelim, useHeader) == -1)
+	if (!strcmp(keyString(useHeaderKey), "skip")) useHeader = -1;
+	if (csvWrite(returned, parentKey, outputDelim, useHeader) == -1)
 	{
 		return -1;
 	} else {

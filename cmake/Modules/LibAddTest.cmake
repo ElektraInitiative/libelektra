@@ -10,28 +10,32 @@
 
 macro (add_gtest source)
 	cmake_parse_arguments (ARG
-		"MEMLEAK;NO_MAIN;NO_TOOLS" # optional keywords
+		"MEMLEAK;KDBTESTS;NO_MAIN;LINK_TOOLS" # optional keywords
 		"" # one value keywords
-		"" # multi value keywords
+		"LINK_LIBRARIES;SOURCES" # multi value keywords
 		${ARGN}
 	)
 
 	if (BUILD_TESTING)
-	set (SOURCES ${HDR_FILES} ${source}.cpp)
+	set (SOURCES ${HDR_FILES} ${source}.cpp ${ARG_SOURCES})
 	add_executable (${source} ${SOURCES})
 
-	if (NOT ARG_NO_TOOLS)
-		# invert logic?
+	if (ARG_LINK_TOOLS)
 		target_link_elektratools(${source})
-	endif (NOT ARG_NO_TOOLS)
+	else (ARG_LINK_TOOLS)
+		target_link_elektra(${source})
+	endif (ARG_LINK_TOOLS)
+
+	target_link_libraries (${source}
+		${ARG_LINK_LIBRARIES})
 
 	target_link_libraries(${source} gtest)
 	if (NOT ARG_NO_MAIN)
-		target_link_libraries(${source} gtest_main)
+		target_link_libraries (${source} gtest_main)
 	endif (NOT ARG_NO_MAIN)
 
-	include_directories(SYSTEM ${GOOGLETEST_ROOT}/include)
-	include_directories(${CMAKE_SOURCE_DIR}/tests/gtest-framework)
+	include_directories (SYSTEM ${GOOGLETEST_ROOT}/include)
+	include_directories (${CMAKE_SOURCE_DIR}/tests/gtest-framework)
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source}
@@ -45,10 +49,14 @@ macro (add_gtest source)
 			"${CMAKE_BINARY_DIR}/bin/${source}"
 			"${CMAKE_CURRENT_BINARY_DIR}/"
 			)
-	endif(BUILD_TESTING)
 
 	if (ARG_MEMLEAK)
 		set_property(TEST ${source} PROPERTY
 			LABELS memleak)
 	endif (ARG_MEMLEAK)
+	if (ARG_KDBTESTS)
+		set_property(TEST ${name} PROPERTY
+			LABELS kdbtests)
+	endif (ARG_KDBTESTS)
+	endif(BUILD_TESTING)
 endmacro (add_gtest)

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "importconfigurationcommand.hpp"
 
 using namespace kdb;
@@ -7,7 +15,7 @@ ImportConfigurationCommand::ImportConfigurationCommand(TreeViewModel* model, int
 	, m_model(model)
 	, m_index(index)
 	, m_before(new ConfigNode(*model->model().at(index)))
-	, m_after(NULL)
+	, m_after(nullptr)
 	, m_name(data->importName())
 	, m_format(data->format())
 	, m_file(data->file())

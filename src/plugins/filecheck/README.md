@@ -1,9 +1,12 @@
 - infos = Information about the filecheck plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides =
+- infos/needs =
+- infos/recommends =
 - infos/placements = pregetstorage precommit
+- infos/status = maintained tested nodep libc configurable
+- infos/metadata =
 - infos/description =
 
 ## Introduction ##

@@ -1,17 +1,220 @@
 /**
-* @file
-*
-* @brief filter plugin providing cryptographic operations
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief filter plugin providing cryptographic operations
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
 #endif
 #include "crypto.h"
+#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 #include "gcrypt_operations.h"
+#endif
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+#include "openssl_operations.h"
+#endif
+#include <kdberrors.h>
+#include <pthread.h>
+#include <string.h>
+
+static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
+static unsigned int ref_cnt = 0;
+
+
+/**
+ * @brief initialize the crypto backend
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+static int elektraCryptoInit(Key *errorKey ELEKTRA_UNUSED)
+{
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
+	return elektraCryptoGcryInit(errorKey);
+#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
+	return elektraCryptoOpenSSLInit(errorKey);
+#else
+	return 1;
+#endif
+}
+
+/**
+ * @brief clean up the crypto backend
+ *
+ * Some libraries may need extra code for cleaning up the environment.
+ */
+static void elektraCryptoTeardown()
+{
+#ifdef ELEKTRA_CRYPTO_API_OPENSSL
+	elektraCryptoOpenSSLTeardown();
+#endif
+}
+
+/**
+ * @brief encrypt the content of the Key k
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+static int elektraCryptoEncrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+{
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
+	Key *k;
+	elektraCryptoHandle *cryptoHandle = NULL;
+	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+#endif
+
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
+
+	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+	{
+		return -1;
+	}
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey)  != 1)
+		{
+			elektraCryptoGcryHandleDestroy (cryptoHandle);
+			return -1;
+		}
+	}
+
+	elektraCryptoGcryHandleDestroy (cryptoHandle);
+	return 1;
+
+#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		if (elektraCryptoOpenSSLEncrypt (cryptoHandle, k, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+		cryptoHandle = NULL;
+	}
+	return 1;
+
+openssl_error:
+	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+	return -1;
+
+#else
+	return 1;
+#endif
+}
+
+/**
+ * @brief decrypt the content of the Key k
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+static int elektraCryptoDecrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+{
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
+	Key *k;
+	elektraCryptoHandle *cryptoHandle = NULL;
+	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+#endif
+
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
+
+	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+	{
+		return -1;
+	}
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoGcryDecrypt (cryptoHandle, k, errorKey)  != 1)
+		{
+			elektraCryptoGcryHandleDestroy (cryptoHandle);
+			return -1;
+		}
+	}
+
+	elektraCryptoGcryHandleDestroy (cryptoHandle);
+	return 1;
+
+#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		if (elektraCryptoOpenSSLDecrypt (cryptoHandle, k, errorKey) != 1)
+		{
+			goto openssl_error;
+		}
+
+		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+		cryptoHandle = NULL;
+	}
+	return 1;
+
+openssl_error:
+	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+	return -1;
+
+#else
+	return 1;
+#endif
+}
+
+/**
+ * @brief initialize the crypto provider for the first instance of the plugin.
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int CRYPTO_PLUGIN_FUNCTION(open)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey)
+{
+	pthread_mutex_lock(&mutex_ref_cnt);
+	if (ref_cnt == 0)
+	{
+		if (elektraCryptoInit(errorKey) != 1)
+		{
+			pthread_mutex_unlock(&mutex_ref_cnt);
+			return (-1);
+		}
+	}
+	ref_cnt++;
+	pthread_mutex_unlock(&mutex_ref_cnt);
+	return 1;
+}
+
+/**
+ * @brief finalizes the crypto provider for the last instance of the plugin.
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int CRYPTO_PLUGIN_FUNCTION(close)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+{
+	pthread_mutex_lock(&mutex_ref_cnt);
+	if (--ref_cnt == 0)
+	{
+		elektraCryptoTeardown();
+	}
+	pthread_mutex_unlock(&mutex_ref_cnt);
+	return 1;
+}
 
 /**
  * @brief establish the Elektra plugin contract and decrypt values, if possible.
@@ -22,13 +225,10 @@
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
+int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
-	Key *k;
-	elektraCryptoHandle *cryptoHandle;
-
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/crypto"))
+	if (!strcmp (keyName(parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet *moduleConfig = ksNew (30,
 #include "contract.h"
@@ -43,25 +243,7 @@ int elektraCryptoGet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if(elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
-	{
-		goto error;
-	}
-
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-	{
-		if(elektraCryptoDecrypt(cryptoHandle, k, parentKey) != 1)
-		{
-			goto error;
-		}
-	}
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return 1;
-
-error:
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return -1;
+	return elektraCryptoDecrypt(handle, ks, parentKey);
 }
 
 /**
@@ -73,33 +255,12 @@ error:
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
+int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle, KeySet *ks, Key *parentKey)
 {
-	Key *k;
-	elektraCryptoHandle *cryptoHandle;
-
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	if(elektraCryptoHandleCreate(&cryptoHandle, ks, parentKey) != 1)
-	{
-		goto error;
-	}
-
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
-	{
-		if(elektraCryptoEncrypt(cryptoHandle, k, parentKey) != 1)
-		{
-			goto error;
-		}
-	}
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return 1;
-
-error:
-	elektraCryptoHandleDestroy(cryptoHandle);
-	return -1;
+	return elektraCryptoEncrypt(handle, ks, parentKey);
 }
 
 /**
@@ -107,98 +268,18 @@ error:
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoError(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int CRYPTO_PLUGIN_FUNCTION(error)(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
 {
 	return 1;
 }
 
-/**
- * @brief initialize the crypto backend
- * @retval 1 on success
- * @retval -1 on failure
- */
-int elektraCryptoInit(Key *errorKey)
+Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
 {
-	return elektraCryptoGcryInit(errorKey);
+	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
+			ELEKTRA_PLUGIN_OPEN,  &CRYPTO_PLUGIN_FUNCTION(open),
+			ELEKTRA_PLUGIN_CLOSE, &CRYPTO_PLUGIN_FUNCTION(close),
+			ELEKTRA_PLUGIN_GET,   &CRYPTO_PLUGIN_FUNCTION(get),
+			ELEKTRA_PLUGIN_SET,   &CRYPTO_PLUGIN_FUNCTION(set),
+			ELEKTRA_PLUGIN_ERROR, &CRYPTO_PLUGIN_FUNCTION(error),
+			ELEKTRA_PLUGIN_END);
 }
-
-/**
- * @brief clean up the crypto backend
- *
- * Some libraries may need extra code for cleaning up the environment.
- */
-void elektraCryptoTeardown()
-{
-	// nothing to do for libgcrypt, but maybe other libraries need clean-up
-}
-
-/**
- * @brief allocate a new crypto handle
- *
- * A pointer to a new crypto handle will be stored at handle. In order to obtain
- * the key and the initialization vector (IV) for the handle, the KeySet config
- * is being used.
- *
- * The function may look for the following keys in config:
- *
- * - /elektra/modules/crypto/key-derivation/key
- * - /elektra/modules/crypto/key-derivation/iv
- *
- * The caller of this function must provide this keys in config!
- *
- * The caller of this function is also responsible for calling elektraCryptoHandleDestroy()
- * on the handle to avoid memory leaks.
- *
- * @param handle the memory location where the address of the new crypto handle will be stored
- * @param config the KeySet holding the key and IV parameters for key derivation
- * @param errorKey the key holding error messages that might occur during the creation
- * @returns 1 on success
- * @returns -1 on failure
- */
-int elektraCryptoHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey)
-{
-	if(elektraCryptoInit(errorKey) != 1)
-	{
-		return (-1);
-	}
-
-	return elektraCryptoGcryHandleCreate(handle, config, errorKey);
-}
-
-/**
- * @brief clean up and destroy a crypto handle
- *
- * This function overwrites confidential data (e.g. keys) and releases the handle.
- */
-void elektraCryptoHandleDestroy(elektraCryptoHandle *handle)
-{
-	elektraCryptoGcryHandleDestroy(handle);
-}
-
-/**
- * @brief encrypt the content of the Key k
- * @retval 1 on success
- * @retval -1 on failure
- */
-int elektraCryptoEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
-{
-	return elektraCryptoGcryEncrypt(handle, k, errorKey);
-}
-
-/**
- * @brief decrypt the content of the Key k
- * @retval 1 on success
- * @retval -1 on failure
- */
-int elektraCryptoDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey)
-{
-	return elektraCryptoGcryDecrypt(handle, k, errorKey);
-}
-
-Plugin *ELEKTRA_PLUGIN_EXPORT(crypto){
-return elektraPluginExport("crypto",
-		ELEKTRA_PLUGIN_GET, &elektraCryptoGet,
-		ELEKTRA_PLUGIN_SET, &elektraCryptoSet,
-		ELEKTRA_PLUGIN_END);
-}
-

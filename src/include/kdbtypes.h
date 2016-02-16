@@ -1,20 +1,9 @@
-/***************************************************************************
-             kdbtypes.h  -  Elektra's type system for C and C++11
-                             -------------------
-    begin                : Sat, 01 Mar 2014 17:49:01 +0100
-    copyright            : (C) 2014 by Markus raab
-    email                : elektra@markus-raab.org
-
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/* This header file defines portable Types used in Elektra for C and
+/**
+ * @file
+ *
+ * @brief Elektra's data types for C and C++11.
+ *
+ * This header file defines portable Types used in Elektra for C and
  * C++11.
  *
  * They are not used within the API, but only for generated front ends
@@ -25,8 +14,10 @@
  * See "OMG Language Mapping" if you want to map the types to another
  * programming language.
  *
- * This files defines mappings to C89, C++03 and C++11
- * */
+ * This files defines mappings to C89, C++03 and C++11.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef KDBTYPES_H
 #define KDBTYPES_H

@@ -54,13 +54,13 @@ issues that matter and show how Elektra has solved them.
 A design goal is to detect errors early.  As easy as it sounds, as
 difficult it is to actually achieve this goal.  Elektra tries to avoid
 the problem by checking data being inserted into `Key` and `KeySet`.
-Elektra catches many errors like invalid key names soon. 
+Elektra catches many errors like invalid key names soon.
 Elektra allows plugins to check
 the configuration before it is written into the key database so that
 problematic values are never stored.
 
-''Hard to use it wrong'' tends to be a more important design objective
-than ''Easy to use it right''.  Searching for a stupid bug costs
+"Hard to use it wrong" tends to be a more important design objective
+than "Easy to use it right".  Searching for a stupid bug costs
 more time than falling into some standard traps which are explained
 in documentation.  In Elektra, the data structures are robust and some
 efforts were taken to make misuse unlikely.
@@ -69,7 +69,7 @@ Another fundamental principle is that the API must hide implementation
 details and should not be optimised towards speed.  In Elektra, the
 actual process of making configuration permanent is completely hidden.
 
-''Off-by-one confusion'' is a topic of its own.  The best is to stick to
+"Off-by-one confusion" is a topic of its own.  The best is to stick to
 the conventions the programming language gives. For returning sizes of
 strings, it must be clear whether a terminating `'\0'` is included or not.
 All such decisions must be consistent.  In Elektra the terminating null
@@ -82,13 +82,13 @@ In Elektra, internal names start with `elektra` opposed to the external
 names starting with `key`, `ks` or `kdb`.
 
 Elektra always passes user context pointers, but never passes or receives
-a full data structure by value.  It is impossible to be ABI\footnote{We
-will read more about ABI in \secref{ABI}.} compatible otherwise.  Elektra
+a full data structure by value.  It is impossible to be
+ABI compatible otherwise.  Elektra
 is restrictive in what it returns (strong postconditions), but as liberal
 as possible for what comes in (preconditions are avoided where possible).
 In Elektra even null pointers are accepted for any argument.
 
-''Free everything you allocate'' is a difficult topic in some cases.
+"Free everything you allocate" is a difficult topic in some cases.
 If Elektra cannot free space or other resources after every call, it
 provides a `close()` function.  Everything will be freed. The
 tool **Valgrind** with **Memcheck** helps us locate problems. The
@@ -97,8 +97,8 @@ responsible for deleting all created `Key` and `KeySet` objects
 and closing the `KDB` handle.
 
 As a final statement, we note that the UNIX philosophy should always
-be considered: ''Do only one thing, but do it in the best way. Write it
-that way that programs work together well.''
+be considered: "Do only one thing, but do it in the best way. Write it
+that way that programs work together well."
 
 
 
@@ -131,7 +131,7 @@ fact that modules must be loaded dynamically if they are not available
 statically.
 
 Plugins are usually realised with modules.  Modules and libraries are
-technically the same in most systems. (One exception is Mac OS X.)
+technically the same in most systems. (One exception is OS X.)
 After the module is loaded, the special function plugin factory
 is searched for.  This function returns a new plugin.  With the plugin
 factory the actual plugins are created.
@@ -145,16 +145,16 @@ Non-POSIX operating systems may not support this kind of static loading.
 Therefore, Elektra provides a C99 conforming solution for that problem: a
 data structure stores the pointers to the plugin factory of every plugin.
 The build system generates the source file of this data structure because
-it depends on built-in plugins as shown in Figure~\ref{fig:architecture}.
+it depends on built-in plugins.
 
 Elektra distinguishes internally between modules and plugins. Several
 plugins can be created out of a single module.  During the creation
-process of the plugin, dynamic information -- like the configuration or
-the data handle -- is added.
+process of the plugin, dynamic information - like the configuration or
+the data handle - is added.
 
 ### API
 
-The API of \intro[libloader@\lstinline{libloader}]{libloader} consists
+The API of **libloader** consists
 of the following functions:
 
 Interface of Module System:
@@ -162,11 +162,11 @@ Interface of Module System:
 	elektraModulesInit (KeySet *modules, Key *error); elektraPluginFactory
 	elektraModulesLoad (KeySet *modules,
 			const char *name, Key *error);
-	int elektraModulesClose (KeySet *modules, Key *error); \end{lstlisting}
+	int elektraModulesClose (KeySet *modules, Key *error);
 
 `elektraModulesInit()` initialises the module
 cache and calls necessary operating system facilities if
-needed. \method{elektraModulesLoad()} does the main work by either
+needed. `elektraModulesLoad()` does the main work by either
 returning a pointer to the plugin factory from cache or loading it from
 the operating system. The plugin factory creates plugins that do not have
 references to the module anymore. `elektraModulesClose()` cleans
@@ -209,16 +209,16 @@ Example for a mount point configuration:
 	system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config
 	system/elektra/mountpoints/fstab/setplugins/#3#path#path#/config/path/allow=proc tmpfs none
 	system/elektra/mountpoints/fstab/setplugins/#5#fstab
-	system/elektra/mountpoints/fstab/setplugins/#7#resolver \end{lstlisting}
+	system/elektra/mountpoints/fstab/setplugins/#7#resolver
 
 Let us look at the subkeys below the key
 `system/elektra/mountpoints/fstab`:
 
 - **config**:
-Everything below \keyname{config} is the system's
+Everything below `config` is the system's
 configuration of the backend. Every plugin within the backend will find
-this configuration directly below \keyname{system/} in its \intro{plugin
-configuration}.  For example,
+this configuration directly below `system` in its
+**plugin configuration**.  For example,
 
 	system/elektra/mountpoints/fstab/config/struct/FStab/mpoint
 
@@ -232,9 +232,9 @@ and inserted into the plugin configuration for all plugins in the
 It is the place where configuration can be provided for every plugin
 of a backend.  The contract checker deduces this configuration to
 satisfy the contract for a plugin.  Fstab, for example, claims in
-a contract that it needs ''struct''.  But the struct plugin needs a
+a contract that it needs "struct".  But the struct plugin needs a
 configuration to work properly.  Fstab will provide this configuration.
-The \empha{contract checker} writes out the configuration looking like
+The **contract checker** writes out the configuration looking like
 the one in this example.
 
 - **config/path**:
@@ -246,8 +246,8 @@ for system configuration.
 - **mountpoint**:
 is a key that represents the mount point. Its value is
 the location where the backend is mounted.  If a mount point has an entry
-for both the user and the system hierarchy, it is called \intro{cascading
-mount point}.  A cascading mount point differs from two separate mount
+for both the user and the system hierarchy, it is called
+**cascading mount point**.  A cascading mount point differs from two separate mount
 points because internally only one backend is created.	In the example,
 the mount point `/fstab` means that the backend handles both
 `user/fstab` and `system/fstab`.  If the mount point
@@ -257,8 +257,8 @@ including both `user` and `system`.
 
 - **errorplugins**:
 presents a list of all plugins to be executed in
-the error case of `kdbSet()` which will be explained in \secref{error
-situation}.
+the error case of `kdbSet()` which will be explained in
+**error situation**.
 
 - **getplugins**:
 is a list of all plugins used when reading the
@@ -293,17 +293,21 @@ preserves state between the executions.
 Other plugins additionally have to handle error or success situations.
 One example of exceptional intensive use is the resolver plugin. It is
 executed twice in `kdbSet()`.  In `kdbGet()` it is also used as shown
-in Listing~\ref{lst:mount point configuration}.
+above.
 
-\lstinline[language=]{#n<name>} introduces a new plugin from the module
-`name` which cannot be referenced later.  The cypher `n` appoints the
-actual placement of the plugin.  \lstinline[language=]{#n#<name>#<label>#}
-also introduces a new plugin from the module `name` and gives it the
-name `label`.  The last \lstinline[language=]{#} shows that a new name
-is being introduced.  \lstinline[language=]{#n#<ref>} references back to
-a label which was introduced before. This configuration does not create
-a new plugin.  `kdb mount` already implements the generation of these
-names as described above.
+* `#n<name>`:
+  introduces a new plugin from the module
+  `name` which cannot be referenced later.  The cypher `n` appoints the
+  actual placement of the plugin.
+* `#n#<name>#<label>#`:
+  also introduces a new plugin from the module `name` and gives it the
+  name `label`.  The last `#` shows that a new name is being introduced.
+* `#n#<ref>`:
+  references back to
+  a label which was introduced before. This configuration does not create
+  a new plugin.
+
+`kdb mount` already implements the generation of these names as described above.
 
 
 ### Changing Mount Point Configuration
@@ -319,7 +323,7 @@ systems, the manual restart may also be appropriate.
 In this situation, applications can receive warning or error information
 if the configuration files are moved or removed.  The most adverse
 situation occurs if the sequence of locking multiple files produces a
-\empha{dead lock}.  Under normal circumstances, the sequence of locking
+*dead lock*.  Under normal circumstances, the sequence of locking
 the files is deterministic, so either all locks can be requested or
 another program will be served first. But several programs with different
 mount point configurations running at the same time can cause a disaster.

@@ -20,12 +20,14 @@ Special values are returned upon exit to represent the outcome of a check.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-f`, `--force`:
    The user can also use this tool to perform write tests. Please note that this can result in configuration files being changed!
 - `-v`, `--verbose`:
   Explain what is happening.
-- `-c`, `--plugins-config`:
-  Add a plugin configuration.
+- `-c`, `--plugins-config`=<pluginconfig>:
+  Add a plugin configuration in addition to `/module`.
 
 
 ## RETURN VALUES
@@ -39,7 +41,7 @@ Each bit represents a specific outcome as described below:
  * 0:
    No errors (no output)  
 
- * Bit 1: 
+ * Bit 1:
    Warning on opening the key database.  
 
  * Bit 2:
@@ -92,22 +94,22 @@ If the user wants to have the value printed, they must do so manually (by runnin
 ## EXAMPLES
 
 To check the Key Database:  
-	`kdb check`  
+`kdb check`  
 
 To check the Key Database and then print the result:  
-	`kdb check`  
+`kdb check`  
 followed by:  
-	`echo $?`  
+`echo $?`  
 
 To check the Key Database including write checks:  
-	`kdb check -f`  
+`kdb check -f`  
 Note that this type of check may change configuration files.  
 
 To check the `line` plugin:  
-	`kdb check line`  
+`kdb check line`  
 
 ## SEE ALSO
 
-- For an introductions into plugins, read [elektra-plugins(7)](elektra-plugins.md).
+- For an introductions into plugins, read [elektra-plugins-framemwork(7)](elektra-plugins-framework.md).
 - To list all plugins use [kdb-list(1)](kdb-list.md).
 - For information on a plugin use [kdb-info(1)](kdb-info.md).

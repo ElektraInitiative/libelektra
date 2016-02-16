@@ -5,6 +5,8 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 	)
 
+add_definitions(-DGTEST_HAS_PTHREAD=0)
+
 ########################################################################
 #
 # Defines the gtest & gtest_main libraries.  User tests should link

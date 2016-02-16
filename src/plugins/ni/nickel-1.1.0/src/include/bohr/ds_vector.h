@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <kdbhelper.h>
+
 
 //Controls inlining of this library's functions.
 #ifndef Ds_VECTOR_INLINE
@@ -26,7 +28,7 @@
 #endif
 
 //Nix non-critical C99 keywords in compilers that don't support them.
-#if((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
+#if ((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
  && !defined(restrict))
 #  define restrict
 #  define _Ds_VECTOR_DEFINED_RESTRICT
@@ -91,9 +93,9 @@ Ds_VECTOR_INLINE int Ds_InitVector(Ds_vector * restrict v, size_t cap)
 {
    *v = (Ds_vector)Ds_VECTOR_INIT;
 
-   if(cap > 0)
+   if (cap > 0)
    {
-      if(!(v->buf = (Ds_VECTOR_TYPE *)malloc(cap * sizeof(Ds_VECTOR_TYPE))))
+      if (!(v->buf = (Ds_VECTOR_TYPE *)elektraMalloc(cap * sizeof(Ds_VECTOR_TYPE))))
          return 0;
 
       v->cap = cap;
@@ -106,8 +108,8 @@ Ds_VECTOR_INLINE int Ds_InitVector(Ds_vector * restrict v, size_t cap)
  */
 Ds_VECTOR_INLINE void Ds_FreeVector(Ds_vector * restrict v)
 {
-   if(v->buf)
-      free(v->buf);
+   if (v->buf)
+      elektraFree (v->buf);
    *v = (Ds_vector)Ds_VECTOR_INIT;
 }
 
@@ -123,21 +125,21 @@ Ds_VECTOR_INLINE int Ds_InsertVectorItems(
 {
    size_t new_cap;
 
-#if(Ds_VECTOR_BEHAVIOR == 1)
+#if (Ds_VECTOR_BEHAVIOR == 1)
    new_cap = v->num + num;
 #else
    new_cap = (v->cap ? v->cap : 1);
-   while(new_cap < v->num + num)
-#  if(Ds_VECTOR_BEHAVIOR == 4)
+   while (new_cap < v->num + num)
+#  if (Ds_VECTOR_BEHAVIOR == 4)
       new_cap <<= 2; //the same as *= 4
 #  else
       new_cap <<= 1; //the same as *= 2
 #  endif
 #endif
-   if(new_cap > v->cap)
+   if (new_cap > v->cap)
    {
       Ds_VECTOR_TYPE * new_buf;
-      if(!(new_buf = (Ds_VECTOR_TYPE *)realloc(v->buf,
+      if (!(new_buf = (Ds_VECTOR_TYPE *)realloc(v->buf,
                                             new_cap * sizeof(Ds_VECTOR_TYPE))))
       {
          return 0;
@@ -146,9 +148,9 @@ Ds_VECTOR_INLINE int Ds_InsertVectorItems(
       v->cap = new_cap;
    }
 
-   if(pos > v->num)
+   if (pos > v->num)
       pos = v->num;
-   else if(pos < v->num)
+   else if (pos < v->num)
    {
       memmove(v->buf + pos + num, v->buf + pos,
               (v->num - pos) * sizeof(Ds_VECTOR_TYPE));
@@ -166,15 +168,15 @@ Ds_VECTOR_INLINE void Ds_RemoveVectorItems(Ds_vector * restrict v,
                                            Ds_VECTOR_TYPE * restrict items,
                                            size_t num, size_t pos)
 {
-   if(num > v->num)
+   if (num > v->num)
       num = v->num;
-   if(pos > v->num - num)
+   if (pos > v->num - num)
       pos = v->num - num;
 
-   if(items)
+   if (items)
       memcpy(items, v->buf + pos, num * sizeof(Ds_VECTOR_TYPE));
 
-   if(v->num - num - pos > 0)
+   if (v->num - num - pos > 0)
    {
       memmove(v->buf + pos, v->buf + num + pos,
               (v->num - num - pos) * sizeof(Ds_VECTOR_TYPE));
@@ -186,11 +188,11 @@ Ds_VECTOR_INLINE void Ds_RemoveVectorItems(Ds_vector * restrict v,
  */
 Ds_VECTOR_INLINE int Ds_ResizeVector(Ds_vector * restrict v, size_t cap)
 {
-   if(cap > 0)
+   if (cap > 0)
    {
       Ds_VECTOR_TYPE * new_buf;
 
-      if(!(new_buf = (Ds_VECTOR_TYPE *)realloc(v->buf,
+      if (!(new_buf = (Ds_VECTOR_TYPE *)realloc(v->buf,
                                                cap * sizeof(Ds_VECTOR_TYPE))))
       {
          return 0;
@@ -199,7 +201,7 @@ Ds_VECTOR_INLINE int Ds_ResizeVector(Ds_vector * restrict v, size_t cap)
       v->buf = new_buf;
       v->cap = cap;
 
-      if(v->num > cap)
+      if (v->num > cap)
          v->num = cap;
    }
 

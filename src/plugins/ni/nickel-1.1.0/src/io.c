@@ -118,131 +118,131 @@ Ni_PRIVATE int GetNextIdentifier(file_buf * restrict fb,
 
    //Macro to conserve space in code below--updates graph_len if the input
    //character isn't whitespace.
-#  define chkgr(c) if(!isspace(c)) graph_len = len+1
+#  define chkgr(c) if (!isspace(c)) graph_len = len+1
 
    //Another space-saver--checks size of existing data and puts c into out,
    //incrementing len if it'll fit.
-#  define put(c) if(len < Ni_KEY_SIZE-1) idfr_out[len++] = (c)
+#  define put(c) if (len < Ni_KEY_SIZE-1) idfr_out[len++] = (c)
 
    //Another space-saver--resets len and graph_len to 0, i.e. erases what we
    //already had in the output.
 #  define invalid() (len = 0, graph_len = 0)
 
    int state = ST_START; //holds current state for FSM, duh
-   while(state != ST_DONE) //do this until we're done
+   while (state != ST_DONE) //do this until we're done
    {
       //Get char into c; if it's eof, dip out.
-      if((c = BufGetC(fb)) == EOF)
+      if ((c = BufGetC(fb)) == EOF)
          break;
 
-      switch(state)
+      switch (state)
       {
          //What state are we in?  See defines above for description of states.
 
       //Start state ignores whitespace, looking for [, an identifier, or an
       //invalid character.
       case ST_START:
-         if(c == T_OB)        { state = ST_IN_BRACKET;    //if [, go to "in bracket" state
+         if (c == T_OB)        { state = ST_IN_BRACKET;    //if [, go to "in bracket" state
                                 level = 1;              }
-         else if(c == T_CMT)  { state = ST_COMMENT;     } //if ;, do comment then come back here
-         else if(c == T_OQ)   { state = ST_IN_Q_KEY_ID; } //if ", go to quoted key id
-         else if(c == T_EQ)   { state = ST_DONE;          //if =, empty key, we'll allow it
+         else if (c == T_CMT)  { state = ST_COMMENT;     } //if ;, do comment then come back here
+         else if (c == T_OQ)   { state = ST_IN_Q_KEY_ID; } //if ", go to quoted key id
+         else if (c == T_EQ)   { state = ST_DONE;          //if =, empty key, we'll allow it
                                 rc = 2;                 }
-         else if(c == T_ESC)  { state = ST_IN_KEY_ID;     //if \, let key id handle it
+         else if (c == T_ESC)  { state = ST_IN_KEY_ID;     //if \, let key id handle it
                                 BufSeekBack(fb, 1);     }
-         else if(!isspace(c)) { state = ST_IN_KEY_ID;     //otherwise, if not a space, assume it's an identifier
+         else if (!isspace(c)) { state = ST_IN_KEY_ID;     //otherwise, if not a space, assume it's an identifier
                                 chkgr(c); put(c);       }
          break;
 
       //Comment ignores till eol, goes back to start.
       case ST_COMMENT:
-         if(c == T_EOL) state = ST_START; //if we hit eol, go back to start
+         if (c == T_EOL) state = ST_START; //if we hit eol, go back to start
          break;
 
       //Skip ignores till eol, then finishes.
       case ST_SKIP:
-         if(c == T_EOL) state = ST_DONE; //if we hit eol, we're done
+         if (c == T_EOL) state = ST_DONE; //if we hit eol, we're done
          break;
 
       //We found a [, look for an identifier.
       case ST_IN_BRACKET:
-         if(c == T_EOL)       { state = ST_START;       } //if eol, false alarm, go back to start
-         else if(c == T_CMT)  { state = ST_COMMENT;     } //if ;, do comment
-         else if(c == T_OB)   { ++level;                } //if another [, just up the bracket level
-         else if(c == T_CB)   { state = ST_SKIP;          //if ], it's an empty section name--we'll allow it
+         if (c == T_EOL)       { state = ST_START;       } //if eol, false alarm, go back to start
+         else if (c == T_CMT)  { state = ST_COMMENT;     } //if ;, do comment
+         else if (c == T_OB)   { ++level;                } //if another [, just up the bracket level
+         else if (c == T_CB)   { state = ST_SKIP;          //if ], it's an empty section name--we'll allow it
                                 rc = 1;                 }
-         else if(c == T_OQ)   { state = ST_IN_Q_SEC_ID; } //if ", do quoted section name
-         else if(c == T_ESC)  { state = ST_IN_SEC_ID;     //if \, let section id handle it
+         else if (c == T_OQ)   { state = ST_IN_Q_SEC_ID; } //if ", do quoted section name
+         else if (c == T_ESC)  { state = ST_IN_SEC_ID;     //if \, let section id handle it
                                 BufSeekBack(fb, 1);     }
-         else if(!isspace(c)) { state = ST_IN_SEC_ID;     //otherwise, if it's not space, assume it's an identifier
+         else if (!isspace(c)) { state = ST_IN_SEC_ID;     //otherwise, if it's not space, assume it's an identifier
                                 chkgr(c); put(c);       }
          break;
 
       //In an identifier after a [, that is, a section name.
       case ST_IN_SEC_ID:
-         if(c == T_EOL)      { state = ST_START;     //if eol, invalidate what we had saved and start over
+         if (c == T_EOL)      { state = ST_START;     //if eol, invalidate what we had saved and start over
                                invalid();          }
-         else if(c == T_CMT) { state = ST_COMMENT;   //if ;, it's invalid so start over
+         else if (c == T_CMT) { state = ST_COMMENT;   //if ;, it's invalid so start over
                                invalid();          }
-         else if(c == T_CB)  { state = ST_SKIP;      //if ], it was valid, so set rc and ignore till eol
+         else if (c == T_CB)  { state = ST_SKIP;      //if ], it was valid, so set rc and ignore till eol
                                rc = 1;             }
          else                { chkgr(c);             //otherwise, if it's an escape sequence
-                               if(c == T_ESC)
+                               if (c == T_ESC)
                                 DoEscape(fb, &c, 0); //translate it
                                put(c);             } //and either way save it
          break;
 
       //In an identifier in quotes in a [, a quoted section name.
       case ST_IN_Q_SEC_ID:
-         if(c == T_CQ) { state = ST_AFTER_Q_SEC; } //if we found close quote, go to after quote logic
-         else          { if(c == T_ESC)            //otherwise, if it's an escape sequence
+         if (c == T_CQ) { state = ST_AFTER_Q_SEC; } //if we found close quote, go to after quote logic
+         else          { if (c == T_ESC)            //otherwise, if it's an escape sequence
                             DoEscape(fb, &c, 0);   //translate it
                          put(c);                 } //and either way put it in output
          break;
 
       //After ["something", looking for ].
       case ST_AFTER_Q_SEC:
-         if(c == T_EOL)       { state = ST_START;            //if eol, it was bullshit, start over
+         if (c == T_EOL)       { state = ST_START;            //if eol, it was bullshit, start over
                                 invalid();                 }
-         else if(c == T_OQ)   { state = ST_IN_Q_SEC_ID;    } //if we found another open quote, keep going
-         else if(c == T_CB)   { state = ST_SKIP;             //if ], skip remainder of line (no trim spaces) and return ok
+         else if (c == T_OQ)   { state = ST_IN_Q_SEC_ID;    } //if we found another open quote, keep going
+         else if (c == T_CB)   { state = ST_SKIP;             //if ], skip remainder of line (no trim spaces) and return ok
                                 rc = 1;
                                 graph_len = Ni_KEY_SIZE-1; }
-         else if(!isspace(c)) { state = ST_COMMENT;          //if any other char, skip rest of line, start over
+         else if (!isspace(c)) { state = ST_COMMENT;          //if any other char, skip rest of line, start over
                                 invalid();                 }
          break;
 
       //In an identifier as first thing on line, that is, a key name.
       case ST_IN_KEY_ID:
-         if(c == T_EOL)      { state = ST_START;     //if eol, invalidate and start over
+         if (c == T_EOL)      { state = ST_START;     //if eol, invalidate and start over
                                invalid();          }
-         else if(c == T_CMT) { state = ST_COMMENT;   //if ;, invalidate and start over
+         else if (c == T_CMT) { state = ST_COMMENT;   //if ;, invalidate and start over
                                invalid();          }
-         else if(c == T_EQ)  { state = ST_DONE;      //if =, stop here and set rc to indicate value comes next
+         else if (c == T_EQ)  { state = ST_DONE;      //if =, stop here and set rc to indicate value comes next
                                rc = 2;             }
          else                { chkgr(c);             //otherwise, if it's an escape sequence
-                               if(c == T_ESC)
+                               if (c == T_ESC)
                                 DoEscape(fb, &c, 0); //translate that
                                put(c);             } //either way, save it
          break;
 
       //In quotes at the beginning of the line, potentially a quoted key name.
       case ST_IN_Q_KEY_ID:
-         if(c == T_CQ) { state = ST_AFTER_Q_KEY; } //if close quote, go to after quote logic
-         else          { if(c == T_ESC)            //otherwise, if escape sequence
+         if (c == T_CQ) { state = ST_AFTER_Q_KEY; } //if close quote, go to after quote logic
+         else          { if (c == T_ESC)            //otherwise, if escape sequence
                             DoEscape(fb, &c, 0);   //translate it
                          put(c);                 } //either way, put it into output
          break;
 
       //After "something", looking for =.
       case ST_AFTER_Q_KEY:
-         if(c == T_EOL)       { state = ST_START;            //if eol, invalidate and start over
+         if (c == T_EOL)       { state = ST_START;            //if eol, invalidate and start over
                                 invalid();                 }
-         else if(c == T_OQ)   { state = ST_IN_Q_KEY_ID;    } //if another open quote, keep going
-         else if(c == T_EQ)   { state = ST_DONE;             //if =, we're GOOD and done (and don't strip spaces)
+         else if (c == T_OQ)   { state = ST_IN_Q_KEY_ID;    } //if another open quote, keep going
+         else if (c == T_EQ)   { state = ST_DONE;             //if =, we're GOOD and done (and don't strip spaces)
                                 rc = 2;
                                 graph_len = Ni_KEY_SIZE-1; }
-         else if(!isspace(c)) { state = ST_COMMENT;          //if any other char, invalidate and start over
+         else if (!isspace(c)) { state = ST_COMMENT;          //if any other char, invalidate and start over
                                 invalid();                 }
          break;
 
@@ -255,14 +255,14 @@ Ni_PRIVATE int GetNextIdentifier(file_buf * restrict fb,
    }
 
    //Trim the length down if it was longer than the last graphical character.
-   if(graph_len < len)
+   if (graph_len < len)
       len = graph_len;
 
    idfr_out[len] = '\0'; //null-terminate the output
 
-   if(level_out)
+   if (level_out)
       *level_out = level; //set level_out if it wasn't NULL
-   if(len_out)
+   if (len_out)
       *len_out = len; //set len_out if it wasn't NULL
 
    //Flush the buffer, since we'll never need anything in it again.
@@ -312,17 +312,17 @@ Ni_PRIVATE int GetValue(file_buf * restrict fb, Ds_str * restrict value_out)
 
    //Macro to conserve space in code below--updates graph_len if the input
    //character isn't whitespace.
-#  define chkgr(c) if(!isspace(c)) graph_len = value_out->len+1
+#  define chkgr(c) if (!isspace(c)) graph_len = value_out->len+1
 
    //Macro to conserve space below--puts a char into value_out, dips out if
    //error.
 #  define put(c) do                                                           \
 {                                                                             \
-   if(value_out->len + 1 > value_out->size              /* check for space */ \
+   if (value_out->len + 1 > value_out->size              /* check for space */ \
    && !Ds_ResizeStr(value_out, value_out->size << 1)) /* grow if necessary */ \
    { state = ST_DONE; rc = 0; break; }         /* quit everything if error */ \
    value_out->str[value_out->len++] = (c);           /* else set next char */ \
-} while(0)
+} while (0)
 
    //Space-conserving macro--sets the state to the start value and sets
    //graph_len to be the current length, so we don't go overboard getting rid
@@ -331,65 +331,65 @@ Ni_PRIVATE int GetValue(file_buf * restrict fb, Ds_str * restrict value_out)
 
    //Yet another--moves strlen back to the size of up to the last non-space
    //character.
-#  define strip() if(graph_len < value_out->len) value_out->len = graph_len
+#  define strip() if (graph_len < value_out->len) value_out->len = graph_len
 
 
    value_out->len = 0; //set length to 0
 
-   while(state != ST_DONE) //until we decide to stop
+   while (state != ST_DONE) //until we decide to stop
    {
       //Get next char; dip out (successfully) if EOF.
-      if((c = BufGetC(fb)) == EOF)
+      if ((c = BufGetC(fb)) == EOF)
          break;
 
-      switch(state)
+      switch (state)
       {
          //What state are we in?  See defines above for what these mean.
 
       //At the start of a value, or beginning of continued line.
       case ST_START:
-         if(c == T_EOL)       { state = ST_DONE;    } //if eol or eof, it's valid even if we have nothing
-         else if(c == T_CMT)  { state = ST_IGNORE;  } //if ;, ignore the whole thing
-         else if(c == T_OQ)   { state = ST_IN_Q;    } //if ", go to quoted value
-         else if(c == T_ESC)  { state = ST_IN_U;      //if \, do unquoted value, put \ back so no duplicated code
+         if (c == T_EOL)       { state = ST_DONE;    } //if eol or eof, it's valid even if we have nothing
+         else if (c == T_CMT)  { state = ST_IGNORE;  } //if ;, ignore the whole thing
+         else if (c == T_OQ)   { state = ST_IN_Q;    } //if ", go to quoted value
+         else if (c == T_ESC)  { state = ST_IN_U;      //if \, do unquoted value, put \ back so no duplicated code
                                 BufSeekBack(fb, 1); }
-         else if(!isspace(c)) { state = ST_IN_U;      //other non-ws chars, save and go to unquoted value
+         else if (!isspace(c)) { state = ST_IN_U;      //other non-ws chars, save and go to unquoted value
                                 chkgr(c); put(c);   }
          break;
 
       //Ignoring till end of line--rc should have been set to valid before
       //going to this state if it is indeed valid.
       case ST_IGNORE:
-         if(c == T_EOL) { state = ST_DONE; } //if eol/eof, we done an' shit
+         if (c == T_EOL) { state = ST_DONE; } //if eol/eof, we done an' shit
          break;
 
       //In quoted value.
       case ST_IN_Q:
-         if(c == T_CQ) { state = ST_AFTER_Q; } //if end ", do after quotes deals
-         else          { if(c == T_ESC)        //otherwise, look for escape start
+         if (c == T_CQ) { state = ST_AFTER_Q; } //if end ", do after quotes deals
+         else          { if (c == T_ESC)        //otherwise, look for escape start
                           DoEscape(fb, &c, 0); //if escape sequence, get the escaped value instead
                          put(c);             } //output the maybe-escaped char
          break;
 
       //After end quote, looking for \ or more ""s.
       case ST_AFTER_Q:
-         if(c == T_EOL)     { state = ST_DONE;       } //if eof/eol, we're done
-         else if(c == T_OQ) { state = ST_IN_Q;       } //if another ", keep parsing
-         else               { if(c == T_ESC            //if \, look for eol
+         if (c == T_EOL)     { state = ST_DONE;       } //if eof/eol, we're done
+         else if (c == T_OQ) { state = ST_IN_Q;       } //if another ", keep parsing
+         else               { if (c == T_ESC            //if \, look for eol
                               && DoEscape(fb, NULL, 1))
                               { cont();            }
-                              else if(!isspace(c))
+                              else if (!isspace(c))
                               { state = ST_IGNORE; } }
          break;
 
       //In unquoted value.
       case ST_IN_U:
-         if(c == T_EOL)      { state = ST_DONE;           //if eof or eol, strip trailing space, we done
+         if (c == T_EOL)      { state = ST_DONE;           //if eof or eol, strip trailing space, we done
                                strip();                 }
-         else if(c == T_CMT) { state = ST_IGNORE;         //if ;, ignore till eol and we done
+         else if (c == T_CMT) { state = ST_IGNORE;         //if ;, ignore till eol and we done
                                strip();                 }
-         else                { if(c == T_ESC)             //otherwise, if escaping
-                               { if(DoEscape(fb, &c, 1))  //if it's the line continue
+         else                { if (c == T_ESC)             //otherwise, if escaping
+                               { if (DoEscape(fb, &c, 1))  //if it's the line continue
                                  { strip(); cont(); }     //strip and continue
                                  else
                                  { chkgr(T_ESC);    } }   //if not line continue, it was graphical
@@ -406,14 +406,14 @@ Ni_PRIVATE int GetValue(file_buf * restrict fb, Ds_str * restrict value_out)
       }
    }
 
-   if(rc)
+   if (rc)
    {
       //Null-terminate if no error.
 
       put('\0'); //this might set rc to 0
 
       //put always adds to strlen, but we don't want that NULL in there
-      if(rc)
+      if (rc)
          value_out->len--;
    }
 
@@ -446,38 +446,38 @@ Ni_PRIVATE int PutSection(FILE * restrict f,
 
    do
    {
-      if(fputc(T_EOL, f) == EOF) //put an initial eol
+      if (fputc(T_EOL, f) == EOF) //put an initial eol
          break;
 
-      for(i = 0; i < level-1; ++i) //put initial spaces
+      for (i = 0; i < level-1; ++i) //put initial spaces
       {
-         if(fputc(' ', f) == EOF)
+         if (fputc(' ', f) == EOF)
             break;
       }
-      if(i < level-1)
+      if (i < level-1)
          break;
 
-      for(i = 0; i < level; ++i)
+      for (i = 0; i < level; ++i)
       {
-         if(fputc(T_OB, f) == EOF) //put as many ['s as level indicates
+         if (fputc(T_OB, f) == EOF) //put as many ['s as level indicates
             break;
       }
-      if(i < level)
+      if (i < level)
          break;
 
-      if(!PutString(f, name, name_len, 0, 1)) //put section name
+      if (!PutString(f, name, name_len, 0, 1)) //put section name
          break;
 
-      for(i = 0; i < level; ++i)
+      for (i = 0; i < level; ++i)
       {
-         if(fputc(T_CB, f) == EOF) //put as many ]'s as level indicates
+         if (fputc(T_CB, f) == EOF) //put as many ]'s as level indicates
             break;
       }
-      if(i < level || fputc(T_EOL, f) == EOF) //put eol
+      if (i < level || fputc(T_EOL, f) == EOF) //put eol
          break;
 
       success = 1;
-   } while(0);
+   } while (0);
 
    return success;
 }
@@ -495,30 +495,30 @@ Ni_PRIVATE int PutEntry(FILE * restrict f,
 
    do
    {
-      for(i = 0; i < level-1; ++i) //initial spaces
+      for (i = 0; i < level-1; ++i) //initial spaces
       {
-         if(fputc(' ', f) == EOF)
+         if (fputc(' ', f) == EOF)
             break;
       }
-      if(i < level-1)
+      if (i < level-1)
          break;
 
-      if(!PutString(f, key, key_len, 1, 0)) //key
+      if (!PutString(f, key, key_len, 1, 0)) //key
          break;
 
-      if(fputc(' ', f) == EOF  //space
+      if (fputc(' ', f) == EOF  //space
       || fputc(T_EQ, f) == EOF //=
       || fputc(' ', f) == EOF) //space
          break;
 
-      if(!PutString(f, value, value_len, 0, 0)) //value
+      if (!PutString(f, value, value_len, 0, 0)) //value
          break;
 
-      if(fputc(T_EOL, f) == EOF) //eol
+      if (fputc(T_EOL, f) == EOF) //eol
          break;
 
       success = 1;
-   } while(0);
+   } while (0);
 
    return success;
 }
@@ -541,7 +541,7 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
    int esc       = -1; //value of escape sequence
    int line_cont =  0; //whether the line-continue escape is what we just parsed
 
-   switch(c = BufGetC(fb))
+   switch (c = BufGetC(fb))
    {
 
    //Normal escapes--put them in esc.
@@ -555,7 +555,7 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
 
    //These are the same after translation.
    case '\'': case '?': case T_ESC: case T_OQ:
-#if(T_OQ != T_CQ)
+#if (T_OQ != T_CQ)
    case T_CQ:
 #endif
    case T_CMT: case T_OB: case T_CB: case T_EQ:
@@ -564,14 +564,14 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
    //Hex escape.  Look for hex chars.
    case T_X:
       c = BufGetC(fb);          //get next char
-      if(!isxdigit(c))          //if it's NOT hex
+      if (!isxdigit(c))          //if it's NOT hex
       {
          BufSeekBack(fb, 1);    //put it back
          break;
       }
       esc = ascii2hex(c);       //otherwise, save hex digit value
       c = BufGetC(fb);          //and get next char
-      if(!isxdigit(c))          //if it's not a hex char
+      if (!isxdigit(c))          //if it's not a hex char
       {
          BufSeekBack(fb, 1);    //just go back one so it'll come out next
          break;
@@ -582,11 +582,11 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
 
    //Might be an octal escape or a line-continue escape.
    default:
-      if(isoctal(c))            //if we've got an octal char
+      if (isoctal(c))            //if we've got an octal char
       {
          esc = ascii2oct(c);    //get its int value
          c = BufGetC(fb);       //look at next character
-         if(!isoctal(c))        //if not octal
+         if (!isoctal(c))        //if not octal
          {
             BufSeekBack(fb, 1); //put it back, dip out
             break;
@@ -594,7 +594,7 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
          esc <<= 3;             //if it is octal, shift previous value over 3
          esc += ascii2oct(c);   //and add it
          c = BufGetC(fb);       //look at third character
-         if(!isoctal(c))        //and do the exact same thing
+         if (!isoctal(c))        //and do the exact same thing
          {
             BufSeekBack(fb, 1);
             break;
@@ -603,24 +603,24 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
          esc += ascii2oct(c);
          esc &= 0xff;
       }                         //or, if we should parse for line-contine escape
-      else if(eol_valid && (c == EOF || isspace(c)))
+      else if (eol_valid && (c == EOF || isspace(c)))
       {
          size_t n    = 0;       //how many chars we've gone past initial space
          int comment = 0;       //whether we found a comment
 
-         while(1)
+         while (1)
          {
-            if(c == T_CMT)      //if we found a comment
+            if (c == T_CMT)      //if we found a comment
                comment = 1;
 
                                 //if we're done or char is invalid
-            if(c == T_EOL || c == EOF || (!comment && !isspace(c)))
+            if (c == T_EOL || c == EOF || (!comment && !isspace(c)))
                break;
 
             c = BufGetC(fb);    //get next char
             ++n;                //we've gone one farther
          }
-         if(c != T_EOL)         //if we stopped because of a non-space character or eof
+         if (c != T_EOL)         //if we stopped because of a non-space character or eof
          {
             BufSeekBack(fb, n); //invalid, so go back however many chars we just went forward
             break;              //dip out
@@ -632,12 +632,12 @@ static int DoEscape(file_buf * restrict fb, int * restrict out, int eol_valid)
    }
 
    //If we didn't get a valid sequence, we gotta put back the backslash.
-   if(esc < 0)
+   if (esc < 0)
    {
       esc = T_ESC;              //set it
       BufSeekBack(fb, 1);       //and go back so we haven't gotten any other chars after backslash
    }
-   if(out)                      //and set *out if we can
+   if (out)                      //and set *out if we can
       *out = esc;
 
    return line_cont;            //return whether it was a line continuation escape
@@ -655,32 +655,32 @@ static int PutString(FILE * restrict f, const char * restrict str, int str_len,
    int advance;     //how many bytes to advance
    int c;
 
-   if(str_len > 0)
+   if (str_len > 0)
    {
       c = *(str + str_len - 1);   //set c to last character in string
-      if(*str == ' ' || c == ' ') //if initial or trailing spaces (\t etc. are
+      if (*str == ' ' || c == ' ') //if initial or trailing spaces (\t etc. are
          quote = 1;               //always escaped, so we just care about ' ')
    }
 
-   if(quote && fputc(T_OQ, f) == EOF)
+   if (quote && fputc(T_OQ, f) == EOF)
       success = 0;
 
-   while(success && str_len > 0)
+   while (success && str_len > 0)
    {
       c = *str;
       advance = 1;
 
-      if(quote)
+      if (quote)
       {
          //In quotes, we just need to escape \ and "
-         if(c == T_ESC || c == T_CQ)
+         if (c == T_ESC || c == T_CQ)
          {
-            if(fputc(T_ESC, f) == EOF || fputc(c, f) == EOF)
+            if (fputc(T_ESC, f) == EOF || fputc(c, f) == EOF)
                success = 0;
          }
          else
          {
-            if(!(advance = PutUtf8Char(f, (const unsigned char *)str, str_len)))
+            if (!(advance = PutUtf8Char(f, (const unsigned char *)str, str_len)))
                success = 0;
          }
       }
@@ -694,16 +694,16 @@ static int PutString(FILE * restrict f, const char * restrict str, int str_len,
          //in values: always:   \ ;
          //           if first: "
 
-         if(c == T_ESC || c == T_CMT || (first && c == T_OQ)
+         if (c == T_ESC || c == T_CMT || (first && c == T_OQ)
          || (is_key     && (c == T_EQ || (first && c == T_OB)))
          || (is_section && (c == T_CB || (first && c == T_OB))))
          {
-            if(fputc(T_ESC, f) == EOF || fputc(c, f) == EOF)
+            if (fputc(T_ESC, f) == EOF || fputc(c, f) == EOF)
                success = 0;
          }
          else
          {
-            if(!(advance = PutUtf8Char(f, (const unsigned char *)str, str_len)))
+            if (!(advance = PutUtf8Char(f, (const unsigned char *)str, str_len)))
                success = 0;
          }
       }
@@ -713,7 +713,7 @@ static int PutString(FILE * restrict f, const char * restrict str, int str_len,
       first = 0;
    }
 
-   if(success && quote && fputc(T_CQ, f) == EOF)
+   if (success && quote && fputc(T_CQ, f) == EOF)
       success = 0;
 
    return success;
@@ -726,17 +726,17 @@ static int PutUtf8Char(FILE * restrict f,
                        const unsigned char * restrict str, int str_len)
 {
    //check for ASCII range
-   if(str[0] < 0x80)
+   if (str[0] < 0x80)
    {
       //escape what's polite
-      if(str[0] < 0x20 || str[0] == 0x7f)
+      if (str[0] < 0x20 || str[0] == 0x7f)
       {
-         if(fputc(T_ESC, f) == EOF)
+         if (fputc(T_ESC, f) == EOF)
             return 0;
 
          //see if we can make a pretty, non-hex escape
          int c = 0;
-         switch(str[0])
+         switch (str[0])
          {
          case '\a': c = 'a'; break;
          case '\b': c = 'b'; break;
@@ -747,9 +747,9 @@ static int PutUtf8Char(FILE * restrict f,
          case '\v': c = 'v'; break;
          }
 
-         if(c)
+         if (c)
          {
-            if(fputc(c, f) == EOF)
+            if (fputc(c, f) == EOF)
                return 0;
          }
          else
@@ -760,7 +760,7 @@ static int PutUtf8Char(FILE * restrict f,
             hex2ascii1(str[0], hd1);
             hex2ascii2(str[0], hd2);
 
-            if(fputc(T_X, f) == EOF
+            if (fputc(T_X, f) == EOF
             || fputc(hd1, f) == EOF
             || fputc(hd2, f) == EOF)
                return 0;
@@ -768,7 +768,7 @@ static int PutUtf8Char(FILE * restrict f,
       }
       else //doesn't warrant escaping
       {
-         if(fputc(str[0], f) == EOF)
+         if (fputc(str[0], f) == EOF)
             return 0;
       }
 
@@ -781,7 +781,7 @@ static int PutUtf8Char(FILE * restrict f,
    //also described by RFC 3629 <http://www.ietf.org/rfc/rfc3629.txt>,
    //in particular the ABNF grammar in section 4.  This handles excluding
    //overlong sequences, the surrogates, and just plain bytes out of range.
-   if((   str[0] >= 0xc2 && str[0] <= 0xdf
+   if ((   str[0] >= 0xc2 && str[0] <= 0xdf
        && str_len >= 2
        && str[1] >= 0x80 && str[1] <= 0xbf)
    || (   str[0] == 0xe0
@@ -822,9 +822,9 @@ static int PutUtf8Char(FILE * restrict f,
       int char_len = (str[0] < 0xe0 ? 2 :
                      (str[0] < 0xf0 ? 3 : 4));
 
-      for(int i = 0; i < char_len; ++i)
+      for (int i = 0; i < char_len; ++i)
       {
-         if(fputc(str[i], f) == EOF)
+         if (fputc(str[i], f) == EOF)
             return 0;
       }
 
@@ -838,7 +838,7 @@ static int PutUtf8Char(FILE * restrict f,
    hex2ascii1(str[0], hd1);
    hex2ascii2(str[0], hd2);
 
-   if(fputc(T_ESC, f) == EOF
+   if (fputc(T_ESC, f) == EOF
    || fputc(T_X, f) == EOF
    || fputc(hd1, f) == EOF
    || fputc(hd2, f) == EOF)

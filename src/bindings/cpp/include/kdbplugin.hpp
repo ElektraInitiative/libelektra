@@ -1,24 +1,24 @@
 /**
-* \file
-*
-* \brief Helpers for creating plugins
-*
-* Make sure to include kdberrors.h before including this file if you want
-* warnings/errors to be added.
-*
-* Proper usage:
-* @code
+ * @file
+ *
+ * @brief Helpers for creating plugins
+ *
+ * Make sure to include kdberrors.h before including this file if you want
+ * warnings/errors to be added.
+ *
+ * Proper usage:
+ * @code
 using namespace ckdb;
 #include <kdberrors.h>
 #include <kdbplugin.hpp>
 
 typedef Delegator<elektra::YourPluginClass> YPC;
 // then e.g. YPC::open(handle, errorKey);
-* @endcode
-*
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @endcode
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef KDBPLUGIN_HPP
 #define KDBPLUGIN_HPP
@@ -80,7 +80,7 @@ private:
 			return -1;
 		}
 
-		return get(handle) != 0 ? 1 : -1;
+		return get(handle) != nullptr ? 1 : -1;
 	}
 };
 

@@ -1,11 +1,10 @@
-/***************************************************************************
-      kdb.h  -  Exported methods of the Library
-                             -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2003 by Avi Alkalay
-    copyright            : (C) 2008 by Markus Raab
-    email                : avi@unix.sh, elektra@markus-raab.org
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Exported methods of the Library
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 @DISCLAMER@
 
@@ -66,6 +65,21 @@ enum {
 	KDB_O_NOCASE=1<<12,
 	KDB_O_WITHOWNER=1<<13,
 	KDB_O_NOALL=1<<14
+};
+
+enum
+{
+	KEY_NS_NONE=0,
+	KEY_NS_EMPTY=1,
+	KEY_NS_META=2,
+	KEY_NS_CASCADING=3,
+	KEY_NS_FIRST=4,
+	KEY_NS_SPEC=4,
+	KEY_NS_PROC=5,
+	KEY_NS_DIR=6,
+	KEY_NS_USER=7,
+	KEY_NS_SYSTEM=8,
+	KEY_NS_LAST=8
 };
 
 
@@ -164,6 +178,8 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
 
 ssize_t keySetBaseName(Key *key,const char *baseName);
 ssize_t keyAddBaseName(Key *key,const char *baseName);
+
+elektraNamespace keyGetNamespace(Key const* key);
 
 /* Value Manipulation Methods */
 const void *keyValue(const Key *key);

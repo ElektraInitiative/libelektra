@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef GUIBACKEND_HPP
 #define GUIBACKEND_HPP
 
@@ -19,7 +27,7 @@ public:
 	 * @brief GUIBackend The default constructor.
 	 * @param parentBackend An optional parent backend.
 	 */
-	explicit GUIBackend(QObject *parentBackend = 0);
+	explicit GUIBackend(QObject *parentBackend = nullptr);
 
 	/**
 	 * @brief GUIBackend The mandatory copy constructor.
@@ -98,7 +106,7 @@ public:
 	Q_INVOKABLE TreeViewModel*	pluginConfigModel() const;
 
 private:
-	QSharedPointer<kdb::tools::Backend>	m_backend;
+	QSharedPointer<kdb::tools::MountBackendInterface>	m_backend;
 	kdb::KeySet							m_mountConf;
 	kdb::KDB							m_kdb;
 	QString								m_name;

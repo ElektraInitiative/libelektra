@@ -1,14 +1,15 @@
 /**
- * \file
+ * @file
  *
- * \brief Utility functions for comment meta keys
+ * @brief Utility functions for comment meta keys
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
 #include "keymetaformatting.h"
 
+#include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbproposal.h>
 #include <string.h>

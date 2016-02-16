@@ -14,7 +14,7 @@ KeyWindow {
 		var metaData = {};
 
 		//collect metadata
-		for(var i = 0; i < qmlMetaKeyModel.count; i++)
+		for (var i = 0; i < qmlMetaKeyModel.count; i++)
 			metaData[qmlMetaKeyModel.get(i).metaName] = qmlMetaKeyModel.get(i).metaValue
 
 		container.clearData()
@@ -25,10 +25,10 @@ KeyWindow {
 		//create UndoCommand
 		undoManager.createNewKeyCommand(selectedNode.parentModel, selectedNode.index, container, isBelow)
 
-		if(!error){
+		if (!error){
 			visible = false
 
-			if(undoManager.undoText === "newBranch"){
+			if (undoManager.undoText === "newBranch"){
 				keyAreaView.selection.clear()
 //				treeView.treeModel.refresh()
 //				keyAreaSelectedItem = null

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef FACTORY_HPP
 #define FACTORY_HPP
 
@@ -8,6 +16,7 @@
 #include <stdexcept>
 
 #include <command.hpp>
+#include <external.hpp>
 
 //TODO: to add a new command, 1.) include your header here
 #include <get.hpp>
@@ -35,6 +44,9 @@
 #include <sget.hpp>
 #include <merge.hpp>
 #include <list.hpp>
+#include <editor.hpp>
+#include <specmount.hpp>
+#include <globalmount.hpp>
 
 class Instancer
 {
@@ -46,7 +58,7 @@ public:
 template <class T>
 class Cnstancer: public Instancer
 {
-	virtual T* get()
+	virtual T* get() override
 	{
 		return new T();
 	}
@@ -85,33 +97,30 @@ public:
 		m_factory.insert(std::make_pair("sget", new Cnstancer<ShellGetCommand>()));
 		m_factory.insert(std::make_pair("merge", new Cnstancer<MergeCommand>));
 		m_factory.insert(std::make_pair("list", new Cnstancer<ListCommand>()));
+		m_factory.insert(std::make_pair("editor", new Cnstancer<EditorCommand>()));
+		m_factory.insert(std::make_pair("spec-mount", new Cnstancer<SpecMountCommand>()));
+		m_factory.insert(std::make_pair("smount", new Cnstancer<SpecMountCommand>()));
+		m_factory.insert(std::make_pair("global-mount", new Cnstancer<GlobalMountCommand>()));
+		m_factory.insert(std::make_pair("gmount", new Cnstancer<GlobalMountCommand>()));
 	}
 
 	~Factory()
 	{
-		for (
-			std::map<std::string,Instancer*>::iterator it =
-			m_factory.begin();
-			it != m_factory.end();
-			it++)
+		for (auto & elem : m_factory)
 		{
-			delete it->second;
+			delete elem.second;
 		}
 	}
 
 	/**Returns a list of available commands */
-	std::vector<std::string> getCommands()
+	std::vector<std::string> getCommands() const
 	{
 		std::vector<std::string> ret;
-		for (
-			std::map<std::string,Instancer*>::iterator it =
-			m_factory.begin();
-			it != m_factory.end();
-			it++)
+		for (auto & elem : m_factory)
 		{
-			std::string text = it->first;
+			std::string text = elem.first;
 			text+= "\t";
-			Command * cmd = it->second->get();
+			Command * cmd = elem.second->get();
 			text+= cmd->getShortHelpText();
 			delete cmd;
 			ret.push_back(text);
@@ -130,7 +139,7 @@ public:
 		else
 		{
 			m_factory.erase(which);
-			return CommandPtr();
+			return CommandPtr(new ExternalCommand());
 		}
 
 	}

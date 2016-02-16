@@ -1,11 +1,10 @@
-/**Some common functions in use for testing framework*/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Some common functions in use for testing framework
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef KDB_TESTS_HPP
 #define KDB_TESTS_HPP

@@ -1,17 +1,10 @@
-/***************************************************************************
-            dump.c  -  Skeleton of backends to access the Key Database
-                             -------------------
-    begin                : Mon May  3 15:22:44 CEST 2010
-    copyright            : by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "dump.hpp"
 #include <errno.h>
@@ -35,7 +28,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 	ckdb::KeySet *metacopies = ckdb::ksNew(0, KS_END);
 
 	ksRewind(ks);
-	while ((cur = ksNext(ks)) != 0)
+	while ((cur = ksNext(ks)) != nullptr)
 	{
 		size_t namesize = ckdb::keyGetNameSize(cur);
 		size_t valuesize = ckdb::keyGetValueSize(cur);
@@ -47,7 +40,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 		const ckdb::Key *meta;
 		ckdb::keyRewindMeta(cur);
-		while ((meta = ckdb::keyNextMeta(cur)) != 0)
+		while ((meta = ckdb::keyNextMeta(cur)) != nullptr)
 		{
 			std::stringstream ss;
 			ss << "user/" << meta; // use the address of pointer as name
@@ -96,7 +89,7 @@ int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks)
 
 int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 {
-	ckdb::Key *cur = 0;
+	ckdb::Key *cur = nullptr;
 
 	std::vector<char> namebuffer(4048);
 	std::vector<char> valuebuffer(4048);
@@ -106,7 +99,7 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 	size_t namesize;
 	size_t valuesize;
 
-	while(std::getline (is, line))
+	while (std::getline (is, line))
 	{
 		std::stringstream ss (line);
 		ss >> command;
@@ -129,18 +122,20 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 		}
 		else if (command == "keyNew")
 		{
-			cur = ckdb::keyNew(0);
+			cur = ckdb::keyNew(nullptr);
 
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize+1);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 			ckdb::keySetName(cur, &namebuffer[0]);
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize+1);
 			is.read(&valuebuffer[0], valuesize);
+			valuebuffer[valuesize] = 0;
+
 			ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
 			std::getline (is, line);
 		}
@@ -149,12 +144,13 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize+1);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize+1);
 			is.read(&valuebuffer[0], valuesize);
+			valuebuffer[valuesize] = 0;
 
 			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
 			std::getline (is, line);
@@ -164,12 +160,13 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size()) namebuffer.resize(namesize);
+			if (namesize > namebuffer.size()) namebuffer.resize(namesize+1);
 			is.read(&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize);
+			if (valuesize > valuebuffer.size()) valuebuffer.resize(valuesize+1);
 			is.read(&valuebuffer[0], valuesize);
+			valuebuffer[valuesize] = 0;
 
 			ckdb::Key * search = ckdb::ksLookupByName(ks, &namebuffer[0], 0);
 			ckdb::keyCopyMeta(cur, search, &valuebuffer[0]);
@@ -178,7 +175,7 @@ int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks)
 		else if (command == "keyEnd")
 		{
 			ckdb::ksAppendKey(ks, cur);
-			cur = 0;
+			cur = nullptr;
 		}
 		else if (command == "ksEnd")
 		{

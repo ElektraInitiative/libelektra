@@ -3,7 +3,7 @@ class ElektraPlugin(object):
 		self.x = 1
 		pass
 
-	def open(self, errorKey):
+	def open(self, config, errorKey):
 		print("[CLASS-PYTHON-2] open -->")
 		self.x = self.x + 1
 		return 1

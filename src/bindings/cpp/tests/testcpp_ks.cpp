@@ -1,4 +1,14 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <tests.hpp>
+
+#include <memory>
 
 #include <vector>
 #include <algorithm>
@@ -8,7 +18,7 @@ KeySet fun(size_t alloc, ...)
 	va_list vl;
 
 	va_start (vl, alloc);
-	KeySet ks (va, alloc, vl);
+	KeySet ks (VaAlloc(alloc), vl);
 	va_end (vl);
 	return ks;
 }
@@ -131,7 +141,7 @@ TEST(ks, iterate)
 	succeed_if (!ks3.next(), "no more key");
 	succeed_if (!ks3.next(), "no more key");
 
-	Key null = static_cast<ckdb::Key*>(0);
+	Key null = static_cast<ckdb::Key*>(nullptr);
 	succeed_if (!null, "null key");
 
 	ks3.rewind();
@@ -276,8 +286,6 @@ TEST(ks, lookup)
 
 TEST(ks, append)
 {
-	cout << "testing keyset append" << endl;
-
 	KeySet ks1;
 
 	KeySet ks2 (5,
@@ -326,8 +334,6 @@ TEST(ks, append)
 
 TEST(ks, permutations)
 {
-	cout << "testing keyset append with all permutations" << endl;
-
 	vector <Key> solution;
 	solution.push_back(Key("user/s/1", KEY_END));
 	solution.push_back(Key("user/s/2", KEY_END));
@@ -507,55 +513,73 @@ TEST(ks, permutateOwner)
 
 TEST(ks, comparision)
 {
-	Key ke1, ke2;
+	KeySet ks0 (5, KS_END);
+	KeySet ks00 (5, KS_END);
+	KeySet ks1 (5, *Key("user/a", KEY_END), *Key("user/b", KEY_END), KS_END);
+	KeySet ks11 (5, *Key("user/a", KEY_END), *Key("user/b", KEY_END), KS_END);
+	KeySet ks2 (5, *Key("user/a", KEY_END), *Key("user/bb", KEY_END), KS_END);
+	KeySet ks3 (5, *Key("user/aa", KEY_END), *Key("user/b", KEY_END), KS_END);
+	KeySet ks4 (5, *Key("user/aa", KEY_END), *Key("user/bb", KEY_END), KS_END);
 
-	succeed_if (ke1 == ke2, "two empty keys are not the same?");
-	succeed_if (!(ke1 != ke2), "two empty keys are not the same?");
+	EXPECT_EQ (ks0, ks0);
+	EXPECT_EQ (ks0, ks00);
+	EXPECT_EQ (ks00, ks0);
+	EXPECT_EQ (ks00, ks00);
 
-	Key k1("user/a", KEY_END), k2("user/b", KEY_END);
+	EXPECT_EQ (ks1, ks1);
+	EXPECT_EQ (ks1, ks11);
+	EXPECT_EQ (ks11, ks1);
+	EXPECT_EQ (ks11, ks11);
 
-	succeed_if (ke1 < k1, "compare empty key with user/a");
-	succeed_if (ke1 <= k1, "compare empty key with user/a");
-	succeed_if (!(ke1 > k1), "compare empty key with user/a");
-	succeed_if (!(ke1 >= k1), "compare empty key with user/a");
+	EXPECT_EQ (ks1, ks1);
+	EXPECT_NE (ks1, ks0);
+	EXPECT_NE (ks1, ks2);
+	EXPECT_NE (ks1, ks3);
+	EXPECT_NE (ks1, ks4);
 
-	succeed_if (ke1 < k2, "compare empty key with user/b");
-	succeed_if (ke1 <= k2, "compare empty key with user/b");
-	succeed_if (!(ke1 > k2), "compare empty key with user/b");
-	succeed_if (!(ke1 >= k2), "compare empty key with user/b");
+	EXPECT_EQ (ks2, ks2);
+	EXPECT_NE (ks2, ks0);
+	EXPECT_NE (ks2, ks1);
+	EXPECT_NE (ks2, ks3);
+	EXPECT_NE (ks2, ks4);
 
-	succeed_if (k1 < k2, "compare key user/a with user/b");
-	succeed_if (k1 <= k2, "compare key user/a with user/b");
-	succeed_if (!(k1 > k2), "compare key user/a with user/b");
-	succeed_if (!(k1 >= k2), "compare key user/a with user/b");
-	succeed_if (k1 != k2, "compare key user/a with user/b");
-	succeed_if (!(k1 == k2), "compare key user/a with user/b");
+	EXPECT_EQ (ks3, ks3);
+	EXPECT_NE (ks3, ks0);
+	EXPECT_NE (ks3, ks1);
+	EXPECT_NE (ks3, ks2);
+	EXPECT_NE (ks3, ks4);
 
-	Key ko1("user/a", KEY_OWNER, "markus", KEY_END), ko2("user/b", KEY_OWNER, "max", KEY_END);
+	EXPECT_EQ (ks4, ks4);
+	EXPECT_NE (ks4, ks0);
+	EXPECT_NE (ks4, ks1);
+	EXPECT_NE (ks4, ks2);
+	EXPECT_NE (ks4, ks3);
 
-	succeed_if (ko1 > k1, "compare key with user/a");
-	succeed_if (ko1 >= k1, "compare key with user/a");
-	succeed_if (!(ko1 < k1), "compare key with user/a");
-	succeed_if (!(ko1 <= k1), "compare key with user/a");
 
-	succeed_if (ko2 > k2, "compare key with user/b");
-	succeed_if (ko2 >= k2, "compare key with user/b");
-	succeed_if (!(ko2 < k2), "compare key with user/b");
-	succeed_if (!(ko2 <= k2), "compare key with user/b");
 
-	Key ko ("user/a", KEY_OWNER, "max", KEY_END);
+	EXPECT_EQ (ks1, ks1);
+	EXPECT_NE (ks0, ks1);
+	EXPECT_NE (ks2, ks1);
+	EXPECT_NE (ks3, ks1);
+	EXPECT_NE (ks4, ks1);
 
-	succeed_if (ko1 < ko, "compare key with user/b");
-	succeed_if (ko1 <= ko, "compare key with user/b");
-	succeed_if (!(ko1 > ko), "compare key with user/b");
-	succeed_if (!(ko1 >= ko), "compare key with user/b");
+	EXPECT_EQ (ks2, ks2);
+	EXPECT_NE (ks0, ks2);
+	EXPECT_NE (ks1, ks2);
+	EXPECT_NE (ks3, ks2);
+	EXPECT_NE (ks4, ks2);
 
-	succeed_if (ko1 < ko2, "compare key user/a with     user/a owner max");
-	succeed_if (ko1 <= ko2, "compare key user/a with    user/a owner max");
-	succeed_if (!(ko1 > ko2), "compare key user/a with  user/a owner max");
-	succeed_if (!(ko1 >= ko2), "compare key user/a with user/a owner max");
-	succeed_if (ko1 != ko2, "compare key user/a with    user/a owner max");
-	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max");
+	EXPECT_EQ (ks3, ks3);
+	EXPECT_NE (ks0, ks3);
+	EXPECT_NE (ks1, ks3);
+	EXPECT_NE (ks2, ks3);
+	EXPECT_NE (ks4, ks3);
+
+	EXPECT_EQ (ks4, ks4);
+	EXPECT_NE (ks0, ks4);
+	EXPECT_NE (ks1, ks4);
+	EXPECT_NE (ks2, ks4);
+	EXPECT_NE (ks3, ks4);
 }
 
 void call (KeySet ks3)
@@ -717,14 +741,12 @@ TEST(ks, release)
 
 	ks = ckdb::ksNew (5, ckdb::keyNew("user/abc", KEY_END), KS_END);
 	rcall (ks);
-	succeed_if (ckdb::ksLookupByName(ks, "user/xxx", 0) != 0, "could not find key");
+	succeed_if (ckdb::ksLookupByName(ks, "user/xxx", 0) != nullptr, "could not find key");
 	ckdb::ksDel (ks);
 }
 
 TEST(ks, lookupPop)
 {
-	cout << "testing lookup pop" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -797,8 +819,6 @@ TEST(ks, lookupPop)
 
 TEST(ks, duplicate)
 {
-	cout << "testing ksdup" << endl;
-
 	KeySet ks3 (5,
 		*Key ("user/key3/1", KEY_END),
 		*Key ("user/key3/2", KEY_END),
@@ -826,15 +846,35 @@ KeySet fill_vaargs(size_t size, ...)
 {
 	va_list ap;
 	va_start(ap, size);
-	KeySet ks(va, size, ap);
+	KeySet ks(VaAlloc(size), ap);
 	va_end(ap);
 	return ks;
 }
 
+struct C
+{
+	KeySet ks;
+};
+
+TEST(ks, move)
+{
+
+	std::unique_ptr<KeySet>u1(new KeySet (5,
+		*Key ("user/key3/1", KEY_END),
+		*Key ("user/key3/2", KEY_END),
+		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		KS_END));
+	std::unique_ptr<KeySet>u2(std::move(u1));
+	std::unique_ptr<KeySet>u3 = std::move(u1);
+
+	std::unique_ptr<C>c1(new C);
+	std::unique_ptr<C>c2(std::move(c1));
+	std::unique_ptr<C>c3 = std::move(c1);
+	c3->ks = *u3;
+}
+
 TEST(ks, vaargs)
 {
-	cout << "testing vaargs" << endl;
-
 	KeySet ks = fill_vaargs(20,
 			*Key("user/a", KEY_END),
 			*Key("user/b", KEY_END),

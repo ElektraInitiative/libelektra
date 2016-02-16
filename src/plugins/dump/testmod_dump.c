@@ -1,17 +1,10 @@
-/*************************************************************************** 
- *           test_mount.c  - Test suite for testing backend mounting
- *                  -------------------
- *  begin                : Thu Nov 6 2007
- *  copyright            : (C) 2007 by Patrick Sabin
- *  email                : patricksabin@gmx.at
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"

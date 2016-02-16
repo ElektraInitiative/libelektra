@@ -2,8 +2,9 @@
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
+- infos/provides = tracing
 - infos/placements = postgetstorage postcommit
+- infos/status = maintained nodoc global
 - infos/description =
 
 ## Purpose ##

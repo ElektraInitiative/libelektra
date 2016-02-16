@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief A plugin that makes use of libaugeas to read and write configuration files
+ * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -18,6 +18,8 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+
+#include <kdbproposal.h>
 
 #include <tests_plugin.h>
 
@@ -244,7 +246,7 @@ static void test_order(char *fileName)
 	Key *key;
 	size_t currentIndex = 0;
 	size_t numKeys = ksGetSize (ks);
-	long *usedOrders = malloc (numKeys * sizeof(long));
+	long *usedOrders = elektraMalloc (numKeys * sizeof(long));
 
 	exit_if_fail(usedOrders, "unable to allocate memory for order array");
 
@@ -294,7 +296,7 @@ static void test_order(char *fileName)
 		}
 	}
 
-	free (usedOrders);
+	elektraFree (usedOrders);
 	ksDel (ks);
 	keyDel(parentKey);
 

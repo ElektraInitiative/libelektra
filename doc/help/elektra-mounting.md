@@ -1,6 +1,18 @@
 elektra-mounting(7) -- mounting
 ===============================
 
+**Mounting** is the process of integrating a backend that reads and writes
+a specific configuration file into the global key database.
+Mounting allows you to use different configuration files but also
+allows you to change the behaviour of writing/reading keys
+to/from the global key database. For example, you need to mount if you want to:
+
+- change the syntax of a configuration file,
+- log every change of a configuration file,
+- validate a configuration file on every access,
+- change the representation (e.g. the date-format or booleans), and
+- everything else [plugins](/src/plugins/README.md) can do.
+
 **Mounting** allegorises a common technique for file systems.
 File systems on different partitions or devices can be added to the
 currently accessible file system.  Mounting is typically used to access
@@ -23,9 +35,16 @@ Mounting works for file systems only if the file system below is
 accessible and a directory exists at the mount point.  Elektra does not
 enforce such restrictions.
 
+Note, that you cannot mount the same configuration file multiple times.
+You can, however, use the specification to link between configuration
+items which gives an impression of an *bind mount*, i.e. having the
+same configuration values on multiple places..
+
 ## SEE ALSO
 
+- See [elektra-glossary(7)](elektra-glossary.md)
 - More information about [elektra-backends(7)](elektra-backends.md)
-- More information about [elektra-plugins(7)](elektra-plugins.md)
+- More information about [elektra-plugins-framework(7)](elektra-plugins-framework.md)
 - The tool for mounting plugins is [kdb-mount(1)](kdb-mount.md)
 - The plugins are ordered as described in [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)
+- [Back to main page](/README.md) if you started from there

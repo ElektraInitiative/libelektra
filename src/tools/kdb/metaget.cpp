@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <metaget.hpp>
 
 #include <kdb.hpp>
@@ -18,15 +26,14 @@ int MetaGetCommand::execute (Cmdline const& cl)
 	{
 		throw invalid_argument ("Need 2 arguments");
 	}
-	string keyname = cl.arguments[0];
+	Key parentKey = cl.createKey(0);
 	string metaname = cl.arguments[1];
 
 	KeySet conf;
-	Key parentKey(keyname, KEY_END);
 	kdb.get(conf, parentKey);
 	printWarnings(cerr,parentKey);
 
-	Key k = conf.lookup(keyname);
+	Key k = conf.lookup(parentKey);
 
 	if (!k)
 	{

@@ -1,11 +1,12 @@
 - infos = Information about struct plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = apply
+- infos/needs =
 - infos/ordering = check
 - infos/placements = presetstorage
-- infos/description = Copies meta data to keys using structbing
+- infos/status = unfinished concept
+- infos/description = Copies meta data to keys using struct
 
 ## Introduction ##
 
@@ -95,7 +96,7 @@ passed.
 It does not check it again.
 Missing configuration would lead to partially set data structures.
 The internally used API `setmntent` crashes in that case.
-This leads us to the \empha{purpose of contracts}:
+This leads us to the **purpose of contracts**:
 We want a guarantee that specific conditions are already met
 because we know that the code of the plugin cannot handle it.
 

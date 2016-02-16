@@ -23,13 +23,15 @@ This command will create the new entry with a name of `ZZZNewFstabName` which sh
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
 
 
 ## EXAMPLES
 
-To create an fstab entry to mount `dev/sdb1` to `/media/external` stored in the key `system/fstab/sdb1`:
+To create an fstab entry to mount `dev/sdb1` to `/media/external` stored in the key `system/fstab/sdb1`:  
 `kdb fstab system/fstab/sdb1 /dev/sdb1 /media/external ext4 errors=remount-ro`
 
 

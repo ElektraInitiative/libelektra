@@ -19,6 +19,8 @@ This command allows a user to use an existing backend (such as one from a previo
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-d`, `--debug`:
   Give debug information or ask debug questions (in interactive mode).
 - `-i`, `--interactive`:
@@ -28,5 +30,5 @@ This command allows a user to use an existing backend (such as one from a previo
 ## EXAMPLES
 
 To mount a new file using an existing backend that is mounted to `system/example`:  
-	`kdb remount /etc/configuration2.ini system/example2 system/example`  
+`kdb remount /etc/configuration2.ini system/example2 system/example`  
 

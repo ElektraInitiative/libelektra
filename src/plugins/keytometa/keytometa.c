@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief A plugin that converts keys to metakeys and vice versa
+ * @brief A plugin that converts keys to metakeys and vice versa
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -91,7 +91,7 @@ int elektraKeyAppendMetaLine (Key *target, const char *metaName, const char *lin
 	}
 
 	const Key *existingMeta = keyGetMeta(target, metaName);
-	char *buffer = malloc (keyGetValueSize(existingMeta) + strlen (line) + 1);
+	char *buffer = elektraMalloc (keyGetValueSize(existingMeta) + strlen (line) + 1);
 	if (!buffer) return 0;
 
 	keyGetString(existingMeta, buffer, keyGetValueSize(existingMeta));
@@ -99,7 +99,7 @@ int elektraKeyAppendMetaLine (Key *target, const char *metaName, const char *lin
 	strncat (buffer, line, strlen (line));
 
 	keySetMeta(target, metaName, buffer);
-	free (buffer);
+	elektraFree (buffer);
 	return keyGetValueSize(keyGetMeta(target, metaName));
 }
 
@@ -135,14 +135,22 @@ static void flushConvertedKeys(Key *target, KeySet *converted, KeySet *orig)
 		appendTarget = target;
 		const char *metaName = keyString (keyGetMeta(current, CONVERT_METANAME));
 
+		Key *currentDup = keyDup(current);
+		Key *targetDup = keyDup(appendTarget);
+		keySetBaseName(currentDup, 0);
+		keySetBaseName(targetDup, 0);
+
 		/* the convert key request to be converted to a key
 		 * on the same level, but the target is below or above
 		 */
 		if (keyGetMeta (current, CONVERT_APPEND_SAMELEVEL) &&
-				keyRel (current, appendTarget) != 0)
+				keyCmp(currentDup, targetDup))
 		{
 			appendTarget = 0;
 		}
+
+		keyDel(currentDup);
+		keyDel(targetDup);
 
 		/* no target key was found of the target
 		 * was discarded for some reason. Revert to the parent
@@ -244,7 +252,7 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	int ret = elektraKsToMemArray(returned, keyArray);
 
 	if (ret < 0) {
-		free (keyArray);
+		elektraFree (keyArray);
 		ELEKTRA_SET_ERROR(87, parentKey, strerror(errno));
 		errno = errnosave;
 		return 0;
@@ -255,7 +263,7 @@ int elektraKeyToMetaGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 
 	KeySet *convertedKeys = convertKeys(keyArray, numKeys, returned);
 
-	free (keyArray);
+	elektraFree (keyArray);
 
 	/* cleanup what might have been left from a previous call */
 	KeySet *old = elektraPluginGetData(handle);
@@ -301,10 +309,10 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 				if (target != previous)
 				{
 					/* handle the first meta line this means initializing strtok and related buffers */
-					free (value);
+					elektraFree (value);
 					const Key *valueKey = keyGetMeta(target, keyString(metaName));
 					size_t valueSize = keyGetValueSize(valueKey);
-					value = malloc (valueSize);
+					value = elektraMalloc (valueSize);
 					keyGetString(valueKey, value, valueSize);
 					keySetMeta(target, keyString(metaName), 0);
 					result = strtok_r (value, "\n", &saveptr);
@@ -325,7 +333,7 @@ int elektraKeyToMetaSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 		ksAppendKey(returned, current);
 	}
 
-	free (value);
+	elektraFree (value);
 
 	ksDel (converted);
 	elektraPluginSetData(handle, 0);

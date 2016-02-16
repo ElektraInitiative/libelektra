@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <tests_internal.h>
 
 static void test_ksPopAtCursor()
@@ -55,7 +63,7 @@ static void test_ksToArray()
 	succeed_if (elektraKsToMemArray(empty, keyArray) == 0, "wrong result on empty keyset");
 	ksDel(empty);
 
-	free (keyArray);
+	elektraFree (keyArray);
 	ksDel (ks);
 }
 

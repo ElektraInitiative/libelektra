@@ -1,8 +1,9 @@
-/*
- * contract.h
+/**
+ * @file
  *
- *  Created on: 26 Jul 2014
- *      Author: felixl
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #ifndef CONTRACT_H_

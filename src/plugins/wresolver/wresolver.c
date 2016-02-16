@@ -1,26 +1,10 @@
-/***************************************************************************
-                     wresolver.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -105,7 +89,7 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 
 static void resolverClose (resolverHandle *p)
 {
-	free (p->filename); p->filename = 0;
+	elektraFree (p->filename); p->filename = 0;
 }
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -121,9 +105,9 @@ static void resolverInit (resolverHandle *p, const char *path)
 static void escapePath(char *home)
 {
 	int len = strlen(home), i;
-	for(i=0; i < len; ++i)
+	for (i=0; i < len; ++i)
 	{
-		if(home[i] == '\\')
+		if (home[i] == '\\')
 		{
 			home[i] = '/';
 		}
@@ -147,14 +131,14 @@ static void elektraResolveSpec(resolverHandle *p, Key *errorKey)
 		/* Use absolute path */
 		size_t filenameSize = strlen(system)
 			+ strlen(p->path) + 1;
-		p->filename = malloc (filenameSize);
+		p->filename = elektraMalloc (filenameSize);
 		strcpy (p->filename, system);
 		strcat (p->filename, p->path);
 		return;
 	}
 	size_t filenameSize = sizeof(KDB_DB_SPEC)
 		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
+	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, system);
 	strcat (p->filename, KDB_DB_SPEC);
 	strcat (p->filename, "/");
@@ -164,7 +148,7 @@ static void elektraResolveSpec(resolverHandle *p, Key *errorKey)
 
 static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 {
-	p->filename = malloc(PATH_MAX);
+	p->filename = elektraMalloc(KDB_MAX_PATH_LENGTH);
 
 # if defined(_WIN32)
 	CHAR dir[MAX_PATH];
@@ -179,8 +163,8 @@ static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 	}
 	escapePath(dir);
 #else
-	char dir[PATH_MAX];
-	if (getcwd(dir, PATH_MAX) == 0)
+	char dir[KDB_MAX_PATH_LENGTH];
+	if (getcwd(dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
 		ELEKTRA_ADD_WARNINGF(90, warningsKey, "getcwd failed: %s", strerror(errno));
 	}
@@ -188,19 +172,19 @@ static void elektraResolveDir(resolverHandle *p, Key *warningsKey)
 
 	strcpy (p->filename, dir);
 	strcat (p->filename, "/");
-	strncat (p->filename, p->path, PATH_MAX-strlen(dir)-3);
-	p->filename[PATH_MAX-1] = 0;
+	strncat (p->filename, p->path, KDB_MAX_PATH_LENGTH-strlen(dir)-3);
+	p->filename[KDB_MAX_PATH_LENGTH-1] = 0;
 
 	return;
 }
 
 static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 {
-	p->filename = malloc(PATH_MAX);
+	p->filename = elektraMalloc(KDB_MAX_PATH_LENGTH);
 
 # if defined(_WIN32)
 	CHAR home[MAX_PATH];
-	if(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_PROFILE, NULL,
 					0, home)))
 	{
 		escapePath(home);
@@ -212,7 +196,7 @@ static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 	}
 # else
 	char * home = (char*) getenv("HOME");
-	if(!home)
+	if (!home)
 	{
 		home = "";
 		ELEKTRA_ADD_WARNING(90, warningsKey, "could not get home, using /");
@@ -221,7 +205,7 @@ static void elektraResolveUser(resolverHandle *p, Key *warningsKey)
 
 	strcpy (p->filename, home);
 	strcat (p->filename, "/");
-	strncat (p->filename, p->path, PATH_MAX);
+	strncat (p->filename, p->path, KDB_MAX_PATH_LENGTH);
 }
 
 static void elektraResolveSystem(resolverHandle *p, Key *errorKey)
@@ -240,14 +224,14 @@ static void elektraResolveSystem(resolverHandle *p, Key *errorKey)
 		/* Use absolute path */
 		size_t filenameSize = strlen(system)
 			+ strlen(p->path) + 1;
-		p->filename = malloc (filenameSize);
+		p->filename = elektraMalloc (filenameSize);
 		strcpy (p->filename, system);
 		strcat (p->filename, p->path);
 		return;
 	}
 	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
 		+ strlen(system) + strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
+	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, system);
 	strcat (p->filename, KDB_DB_SYSTEM);
 	strcat (p->filename, "/");
@@ -266,7 +250,7 @@ int elektraWresolverOpen(Plugin *handle, Key *errorKey)
 		return -1;
 	}
 
-	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverHandles *p = elektraMalloc(sizeof(resolverHandles));
 
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
@@ -323,7 +307,7 @@ int elektraWresolverClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 			break;
 		}
 
-		free (ps);
+		elektraFree (ps);
 		elektraPluginSetData(handle, 0);
 	}
 

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <rm.hpp>
 
 #include <kdb.hpp>
@@ -16,11 +24,8 @@ int RemoveCommand::execute(Cmdline const& cl)
 	if (cl.arguments.size() != 1) throw invalid_argument("1 argument required");
 
 	KeySet conf;
-	Key x(cl.arguments[0], KEY_END);
-	if (!x)
-	{
-		throw invalid_argument(cl.arguments[0] + " is not a valid keyname");
-	}
+	Key x = cl.createKey(0);
+
 	kdb.get(conf, x);
 
 	if (!cl.recursive)

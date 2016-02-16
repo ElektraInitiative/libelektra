@@ -64,6 +64,8 @@ set (PLUGINS_LIST_NODEP
 	ini
 	list
 	logchange
+	iterate
+	spec
 	)
 
 #
@@ -108,6 +110,7 @@ endif ()
 #
 set (PLUGINS_LIST_RESOLVER
 	resolver_fm_b_b
+	resolver_fm_pb_b
 	resolver_fm_hb_b
 	resolver_fm_hp_b
 	resolver_fm_ub_x
@@ -151,6 +154,17 @@ endif ()
 
 set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
 
+#
+# compile variants for the crypto plugin
+#
+list (FIND PLUGINS "CRYPTO" FINDEX)
+if (PLUGINS MATCHES "ALL" OR FINDEX GREATER -1)
+    set (PLUGINS_LIST_CRYPTO
+            crypto
+            crypto_gcrypt
+            crypto_openssl
+    )
+endif ()
 
 #
 # now actually set the plugins cache variable
@@ -160,6 +174,7 @@ set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP fo
 set (PLUGINS
 	${PLUGINS_LIST_DEFAULT}
 	${PLUGINS_LIST}
+	${PLUGINS_LIST_CRYPTO}
 	CACHE STRING ${PLUGINS_DOC}
 	${PLUGINS_FORCE}
 	)
@@ -294,7 +309,7 @@ set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
 
 
 #
-# Runtime pathes for KDB
+# Runtime paths for KDB
 #
 
 set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
@@ -305,28 +320,32 @@ set (KDB_DB_HOME "/home" CACHE PATH
 		"The compiled-in fallback path to users home directories."
 		)
 
-set (KDB_DB_USER ".config" CACHE PATH
+set (KDB_DB_USER ".config" CACHE STRING
 		"This path will be appended after the resolved home directory. It completes the path to the user key database."
 		)
 
-set (KDB_DB_SPEC "share/elektra/specification" CACHE PATH
+set (KDB_DB_SPEC "share/elektra/specification" CACHE STRING
 		"This path will be appended after the prefix. It completes the path to the specification key database."
 		)
 
-set (KDB_DB_DIR ".dir" CACHE PATH
+set (KDB_DB_DIR ".dir" CACHE STRING
 		"The configuration directory for config files in dir namespace."
 		)
 
-set (KDB_DB_FILE "default.ecf" CACHE PATH
-		"This configuration file will be used initially (for bootstrapping)."
+set (KDB_DB_FILE "default.ecf" CACHE STRING
+		"This configuration file will be used as default if no root mountpoint available."
+		)
+
+set (KDB_DB_INIT "elektra.ecf" CACHE STRING
+		"This configuration file will be used for bootstrapping."
 		)
 
 set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
-	"This storage plugin will be used initially (for bootstrapping).")
+	"This storage plugin will be used initially (as default and for bootstrapping).")
 
 
 set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
-	"This resolver plugin will be used initially (for bootstrapping).")
+	"This resolver plugin will be used initially (as default and for bootstrapping).")
 
 list (FIND PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)
@@ -406,6 +425,8 @@ set (COVERAGE_PREFIX
     )
 
 option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
+
+option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
 
 #
@@ -494,12 +515,12 @@ set (TARGET_TEMPLATE_FOLDER
     )
 
 set (TARGET_LUA_CMOD_FOLDER "lib${LIB_SUFFIX}/lua/5.2"
-	CACHE PATH
+	CACHE STRING
 	"Directory to install Lua binary modules, should be in LUA_CPATH"
    )
 
 set (TARGET_LUA_LMOD_FOLDER "share/lua/5.2"
-	CACHE PATH
+	CACHE STRING
 	"Directory to install Lua source modules, should be in LUA_PATH)"
     )
 

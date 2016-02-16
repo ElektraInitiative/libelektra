@@ -1,17 +1,26 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <tests.hpp>
 
 #include <vector>
 #include <string>
+#include <memory>
 #include <stdexcept>
 
 TEST(key, null)
 {
-	Key key0(static_cast<ckdb::Key*>(0));
+	Key key0(static_cast<ckdb::Key*>(nullptr));
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull(), "key should evaluate to false");
 	succeed_if (key0.needSync(), "key should need sync");
 
-	key0 = static_cast<ckdb::Key*>(0);
+	key0 = static_cast<ckdb::Key*>(nullptr);
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull(), "key should evaluate to false");
 	succeed_if (key0.needSync(), "key should need sync");
@@ -206,20 +215,20 @@ TEST(key, keynew)
 	succeed_if (keyA.getBaseName() == "name", "keyA wrong base name");
 
 	Key keyB("", KEY_END);
-	keyB.setBinary(0, 0);
+	keyB.setBinary(nullptr, 0);
 	succeed_if (keyB.isBinary(), "should be binary");
 	succeed_if (keyB.getBinary() == "", "Binary should be a nullpointer");
-	succeed_if (keyB.getValue() == 0, "Binary should be a nullpointer");
+	succeed_if (keyB.getValue() == nullptr, "Binary should be a nullpointer");
 
-	keyB.setBinary(0, 1);
+	keyB.setBinary(nullptr, 1);
 	succeed_if (keyB.isBinary(), "should be binary");
 	succeed_if (keyB.getBinary() == "", "Binary should be a nullpointer");
-	succeed_if (keyB.getValue() == 0, "Binary should be a nullpointer");
+	succeed_if (keyB.getValue() == nullptr, "Binary should be a nullpointer");
 }
 
 TEST(key, constructor)
 {
-	ckdb::Key *ck = ckdb::keyNew(0);
+	ckdb::Key *ck = ckdb::keyNew(nullptr);
 	Key k = ck; // constructor with (ckdb::Key)
 
 	/*
@@ -237,7 +246,7 @@ TEST(key, set)
 	ckdb::Key *ck;
 	Key k;
 
-	ck = ckdb::keyNew(0);
+	ck = ckdb::keyNew(nullptr);
 	k = ck; // operator= alias for setKey()
 
 	/*
@@ -255,7 +264,7 @@ TEST(key, cast)
 	ckdb::Key *ck;
 	Key *k;
 
-	ck = ckdb::keyNew(0);
+	ck = ckdb::keyNew(nullptr);
 	k = reinterpret_cast<Key*>(&ck); // not copied on purpose
 
 	/*
@@ -484,10 +493,10 @@ TEST(key, valid)
 	invalid_names.push_back (".");
 	invalid_names.push_back ("..");
 
-	for (size_t i = 0; i<invalid_names.size(); ++i)
+	for (auto & invalid_name : invalid_names)
 	{
-		Key i3 (invalid_names[i], KEY_END);
-		succeed_if (!i3.isValid(), "key " + invalid_names[i] + " should not be valid");
+		Key i3 (invalid_name, KEY_END);
+		succeed_if (!i3.isValid(), "key " + invalid_name + " should not be valid");
 		succeed_if (i3, "even though it is invalid, it is still not a null key");
 	}
 
@@ -509,9 +518,9 @@ TEST(key, valid)
 	valid_names.push_back ("system/abc/..");
 	valid_names.push_back ("system/abc/../more");
 
-	for (size_t i = 0; i<valid_names.size(); ++i)
+	for (auto & valid_name : valid_names)
 	{
-		Key v3 (valid_names[i], KEY_END);
+		Key v3 (valid_name, KEY_END);
 		succeed_if (v3.isValid(), "key should be valid");
 		succeed_if (v3, "should not be a null key");
 	}
@@ -588,3 +597,75 @@ TEST(key, keynamespace)
 	succeed_if(Key("/", KEY_END).getNamespace() == "/", "namespace wrong");
 	succeed_if(Key("/abc", KEY_END).getNamespace() == "/", "namespace wrong");
 }
+
+TEST(key, comparision)
+{
+	Key ke1, ke2;
+
+	succeed_if (ke1 == ke2, "two empty keys are not the same?");
+	succeed_if (!(ke1 != ke2), "two empty keys are not the same?");
+
+	Key k1("user/a", KEY_END), k2("user/b", KEY_END);
+
+	succeed_if (ke1 < k1, "compare empty key with user/a");
+	succeed_if (ke1 <= k1, "compare empty key with user/a");
+	succeed_if (!(ke1 > k1), "compare empty key with user/a");
+	succeed_if (!(ke1 >= k1), "compare empty key with user/a");
+
+	succeed_if (ke1 < k2, "compare empty key with user/b");
+	succeed_if (ke1 <= k2, "compare empty key with user/b");
+	succeed_if (!(ke1 > k2), "compare empty key with user/b");
+	succeed_if (!(ke1 >= k2), "compare empty key with user/b");
+
+	succeed_if (k1 < k2, "compare key user/a with user/b");
+	succeed_if (k1 <= k2, "compare key user/a with user/b");
+	succeed_if (!(k1 > k2), "compare key user/a with user/b");
+	succeed_if (!(k1 >= k2), "compare key user/a with user/b");
+	succeed_if (k1 != k2, "compare key user/a with user/b");
+	succeed_if (!(k1 == k2), "compare key user/a with user/b");
+
+	Key ko1("user/a", KEY_OWNER, "markus", KEY_END), ko2("user/b", KEY_OWNER, "max", KEY_END);
+
+	succeed_if (ko1 > k1, "compare key with user/a");
+	succeed_if (ko1 >= k1, "compare key with user/a");
+	succeed_if (!(ko1 < k1), "compare key with user/a");
+	succeed_if (!(ko1 <= k1), "compare key with user/a");
+
+	succeed_if (ko2 > k2, "compare key with user/b");
+	succeed_if (ko2 >= k2, "compare key with user/b");
+	succeed_if (!(ko2 < k2), "compare key with user/b");
+	succeed_if (!(ko2 <= k2), "compare key with user/b");
+
+	Key ko ("user/a", KEY_OWNER, "max", KEY_END);
+
+	succeed_if (ko1 < ko, "compare key with user/b");
+	succeed_if (ko1 <= ko, "compare key with user/b");
+	succeed_if (!(ko1 > ko), "compare key with user/b");
+	succeed_if (!(ko1 >= ko), "compare key with user/b");
+
+	succeed_if (ko1 < ko2, "compare key user/a with     user/a owner max");
+	succeed_if (ko1 <= ko2, "compare key user/a with    user/a owner max");
+	succeed_if (!(ko1 > ko2), "compare key user/a with  user/a owner max");
+	succeed_if (!(ko1 >= ko2), "compare key user/a with user/a owner max");
+	succeed_if (ko1 != ko2, "compare key user/a with    user/a owner max");
+	succeed_if (!(ko1 == ko2), "compare key user/a with user/a owner max");
+}
+
+
+struct C
+{
+	Key ks;
+};
+
+TEST(key, move)
+{
+
+	std::unique_ptr<Key>u1(new Key ("user/key3/1", KEY_END));
+	std::unique_ptr<Key>u2(std::move(u1));
+	std::unique_ptr<Key>u3 = std::move(u1);
+
+	std::unique_ptr<C>c1(new C);
+	std::unique_ptr<C>c2(std::move(c1));
+	std::unique_ptr<C>c3 = std::move(c1);
+}
+

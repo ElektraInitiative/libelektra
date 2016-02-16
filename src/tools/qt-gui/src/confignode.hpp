@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef CONFIGNODE_H
 #define CONFIGNODE_H
 
@@ -29,7 +37,7 @@ public:
 	 * @param key
 	 * @param parentModel
 	 */
-	explicit ConfigNode(const QString& name, const QString& path, const kdb::Key& key, TreeViewModel* parentModel);
+	explicit ConfigNode(QString  name, QString  path, const kdb::Key& key, TreeViewModel* parentModel);
 	/// Needed by Qt. This copy constructor is supposed to create a DEEP COPY.
 	ConfigNode(const ConfigNode& other);
 	/// Needed by Qt/QSharedPtr
@@ -228,6 +236,7 @@ public:
 
 	bool									isDirty() const;
 	void									setIsDirty(bool dirty);
+	void									updateNode(kdb::Key key);
 
 private:
 	QString         m_name;
@@ -246,6 +255,7 @@ private:
 	 * @brief Populates the TreeViewModel which holds the metakeys of this ConfigNode.
 	 */
 	void populateMetaModel();
+	void setValue();
 
 signals:
 	/**

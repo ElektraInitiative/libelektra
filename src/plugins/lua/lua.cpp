@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Plugin which acts as proxy and calls other plugins written in lua
+ * @brief Plugin which acts as proxy and calls other plugins written in lua
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -29,6 +29,10 @@ extern "C" {
 
 using namespace ckdb;
 #include <kdberrors.h>
+
+#ifndef LUA_OK
+#define LUA_OK 0
+#endif
 
 static void Lua_fromSWIG(lua_State *L, ckdb::Key *key)
 {
@@ -134,12 +138,14 @@ static void *Lua_alloc(void *ud ELEKTRA_UNUSED, void *ptr,
 int elektraLuaOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
-	if (ksLookupByName(config, "/module", 0) != NULL)
-		return 0; // by convention: success if /module exists
 
 	Key *script = ksLookupByName(config, "/script", 0);
 	if (script == NULL || !strlen(keyString(script)))
 	{
+		if (ksLookupByName(config, "/module", 0) != NULL)
+		{
+			return 0; // by convention: success if /module exists
+		}
 		ELEKTRA_SET_ERROR(131, errorKey, "No lua script set");
 		return -1;
 	}
@@ -169,7 +175,7 @@ int elektraLuaOpen(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	elektraPluginSetData(handle, data);
 
 	/* call lua function */
-	return Lua_CallFunction_Helper1(data->L, "elektraOpen", errorKey);
+	return Lua_CallFunction_Helper2(data->L, "elektraOpen", config, errorKey);
 
 error_print:
 	if (!lua_isnil(data->L, -1))

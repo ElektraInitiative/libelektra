@@ -1,17 +1,10 @@
-/*************************************************************************** 
- *           test_splitset.c  - Test suite for split keyset data structure
- *                  -------------------
- *  begin                : Tue Jun 29 2010
- *  copyright            : (C) 2010 by Markus Raab
- *  email                : elektra@markus-raab.org
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <tests_internal.h>
 
@@ -149,7 +142,7 @@ static void test_get()
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
 
-	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
+	succeed_if (elektraMountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (output_error(parentKey), "error found");
 	succeed_if (output_warnings(parentKey), "warning(s) found");
@@ -244,7 +237,7 @@ static void test_limit()
 	Split *split = elektraSplitNew();
 	Key *parentKey = keyNew("user", KEY_VALUE, "default", KEY_END);
 
-	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
+	succeed_if (elektraMountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 	succeed_if (output_error(parentKey), "error found");
 	succeed_if (output_warnings(parentKey), "warning(s) found");
@@ -382,7 +375,7 @@ static void test_sizes()
 			KS_END);
 
 
-	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
+	succeed_if (elektraMountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
 	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
 	succeed_if (handle->defaultBackend->usersize == -1, "usersize not initialized correct");
@@ -474,7 +467,7 @@ static void test_triesizes()
 	Backend *rootBackend = 0;
 
 	elektraMountOpen(handle, simple_config(), modules, 0);
-	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
+	succeed_if (elektraMountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
 	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
 	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
@@ -574,7 +567,7 @@ static void test_merge()
 	Backend *rootBackend = 0;
 
 	elektraMountOpen(handle, simple_config(), modules, 0);
-	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
+	succeed_if (elektraMountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 	succeed_if (handle->defaultBackend->specsize == -1, "specsize not initialized correct");
 	succeed_if (handle->defaultBackend->dirsize == -1, "dirsize not initialized correct");
 	succeed_if (handle->defaultBackend->usersize == -1, "usersize  not initialized correct");
@@ -670,7 +663,7 @@ static void test_realworld()
 	elektraModulesInit(modules, 0);
 
 	elektraMountOpen(handle, set_realworld(), modules, 0);
-	succeed_if (elektraMountDefault (handle, modules, 0) == 0, "could not mount default backends");
+	succeed_if (elektraMountDefault (handle, modules, 1, 0) == 0, "could not mount default backends");
 
 	KeySet *ks = ksNew ( 18,
 		keyNew ("system/elektra/mountpoints", KEY_END),

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.h>
 #include <stdio.h>
 #include <string.h>
@@ -5,7 +13,7 @@
 
 void printError(Key * key);
 void printWarnings(Key * key);
-void removeMetaData(Key * key, char * searchfor);
+void removeMetaData(Key * key, const char * searchfor);
 
 int main()
 {
@@ -13,13 +21,13 @@ int main()
 	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
 	KDB * handle = kdbOpen (key);
 
-	if(!handle)
+	if (!handle)
 		printError(key);
 
 
 	printWarnings(key);
 
-	if( kdbGet(handle, myConfig, key) < 0)
+	if ( kdbGet(handle, myConfig, key) < 0)
 		printError(key);
 
 
@@ -29,7 +37,7 @@ int main()
 
 	//lookup
 	Key * result = ksLookupByName (myConfig,"/sw/MyApp/Tests/TestKey1", 0);
-	if(!result)
+	if (!result)
 		printf("Key not found in KeySet\n");
 	else
 	{
@@ -74,10 +82,10 @@ void printError(Key * key)
  */
 void printWarnings(Key * key)
 {
-	if(!keyGetMeta (key,"warnings")) return;
+	if (!keyGetMeta (key,"warnings")) return;
 	char * end;
 	int warn_count = strtol (keyString (keyGetMeta (key,"warnings")),&end,10);
-	if(*end)
+	if (*end)
 	{
 		printf ("strtol error\n");
 		return;
@@ -87,7 +95,7 @@ void printWarnings(Key * key)
 	char buffer [sizeof("warnings/#00/description")];
 
 	do{
-		if(warn_iter < 10)
+		if (warn_iter < 10)
 			sprintf(&buffer[0],"warnings/#0%i/description",warn_iter);
 		else
 			sprintf(&buffer[0],"warnings/#%i/description",warn_iter);
@@ -106,17 +114,17 @@ void printWarnings(Key * key)
  * and removes all MetaKeys starting with
  * searchfor.
  */
-void removeMetaData(Key * key, char * searchfor)
+void removeMetaData(Key * key, const char * searchfor)
 {
 	const Key * iter_key;
 	keyRewindMeta (key);
 	while ((iter_key = keyNextMeta (key))!=0)
 	{
 		/*startsWith*/
-		if (strncmp(searchfor, keyName(iter_key), strlen(searchfor)) == 0)
+		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
 		{
-			if (keySetMeta(key,keyName (iter_key),0) != 0)
-				printf ("Error while deleting warnings\n");
+			if (keySetMeta (key,keyName (iter_key),0) != 0)
+				printf ("Error while deleting %s\n", searchfor);
 		}
 	}
 }

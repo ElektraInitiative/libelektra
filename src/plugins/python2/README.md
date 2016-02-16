@@ -1,5 +1,5 @@
-Plugin readme is in [python](../python)
+Plugin readme is in [python](../python/)
 
 ## Deprecation
 
-It is recommended to use [python](../python/README.md).
+It is recommended to use [python](../python/).

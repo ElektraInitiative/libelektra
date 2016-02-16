@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -10,7 +18,7 @@
 #include <string.h>
 #endif
 
-#include "iconv.h"
+#include "conv.h"
 
 #include <langinfo.h>
 
@@ -157,7 +165,7 @@ void test_utf8_conversation()
 
 
 	Plugin *plugin = elektraPluginOpen("iconv", modules, conf, 0);
-	char * str = malloc (KDB_MAX_PATH_LENGTH);
+	char * str = elektraMalloc (KDB_MAX_PATH_LENGTH);
 	size_t len;
 
 	printf ("Test utf8 conversation\n");
@@ -174,7 +182,7 @@ void test_utf8_conversation()
 	/* succeed_if (kdbbUTF8Engine (plugin, UTF8_FROM, &str, &len) != -1, "could use utf8engine"); */
 	/*succeed_if (errno == EILSEQ, "errno not set correctly");*/
 
-	free (str);
+	elektraFree (str);
 
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose(modules, 0);

@@ -33,15 +33,18 @@ This command will return the following values as an exit status:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-n`, `--no-newline`:          Suppress the newline at the end of the output.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
+- `-n`, `--no-newline`:
+  Suppress the newline at the end of the output.
 
 ## EXAMPLES
 
-To get the value of a meta key called `description` stored in the key `spec/example/key`:
-	`kdb getmeta spec/example/key description`
+To get the value of a meta key called `description` stored in the key `spec/example/key`:  
+`kdb getmeta spec/example/key description`
 
-To get the value of meta key called `override/#0` stored in the key `spec/example/dir/key`:
-	`kdb getmeta spec/example/dir/key "override/#0"`
+To get the value of meta key called `override/#0` stored in the key `spec/example/dir/key`:  
+`kdb getmeta spec/example/dir/key "override/#0"`
 
 ## SEE ALSO
 

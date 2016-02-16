@@ -50,11 +50,11 @@ BasicWindow {
 				text: keyName
 				clip: true
 				Keys.onPressed: {
-					if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+					if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 						okClicked()
 						event.accepted = true
 					}
-					else if(event.key === Qt.Key_Escape){
+					else if (event.key === Qt.Key_Escape){
 						cancelClicked()
 						event.accepted = true
 					}
@@ -70,11 +70,11 @@ BasicWindow {
 				text: keyValue
 				clip: true
 				Keys.onPressed: {
-					if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
+					if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return){
 						okClicked()
 						event.accepted = true
 					}
-					else if(event.key === Qt.Key_Escape){
+					else if (event.key === Qt.Key_Escape){
 						cancelClicked()
 						event.accepted = true
 					}
@@ -116,13 +116,13 @@ BasicWindow {
 					metaValueField.placeholderText: valuePlaceHolder
 
 					metaNameField.onTextChanged:  {
-						if(metaName !== metaNameField.text){
+						if (metaName !== metaNameField.text){
 							qmlMetaKeyModel.set(index, {"metaName": metaNameField.text})
 							isEdited = true
 						}
 					}
 					metaValueField.onTextChanged: {
-						if(metaValue !== metaValueField.text){
+						if (metaValue !== metaValueField.text){
 							qmlMetaKeyModel.set(index, {"metaValue": metaValueField.text})
 							isEdited = true
 						}
@@ -147,7 +147,7 @@ BasicWindow {
 
 	function okClicked(){
 		//check if user has edited keyname or keyvalue
-		if(keyName !== nameTextField.text || keyValue !== valueTextField.text)
+		if (keyName !== nameTextField.text || keyValue !== valueTextField.text)
 			isEdited = true
 
 		editAccepted()

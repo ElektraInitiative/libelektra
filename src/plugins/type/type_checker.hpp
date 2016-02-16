@@ -1,11 +1,11 @@
 /**
-* \file
-*
-* \brief Implementation of data type checker
-*
-* \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Implementation of data type checker
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #ifndef ELEKTRA_TYPE_CHECKER_HPP
 #define ELEKTRA_TYPE_CHECKER_HPP

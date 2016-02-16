@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <export.hpp>
 
 #include <kdb.hpp>
@@ -16,17 +24,13 @@ ExportCommand::ExportCommand()
 
 int ExportCommand::execute(Cmdline const& cl)
 {
-    size_t argc = cl.arguments.size();
+	size_t argc = cl.arguments.size();
 	if (argc != 1 && argc != 2 && argc != 3)
 	{
 		throw invalid_argument("need 1 to 3 arguments");
-    }
-
-	Key root (cl.arguments[0], KEY_END);
-	if (!root.isValid())
-	{
-		throw invalid_argument ("root key is not a valid key name");
 	}
+
+	Key root = cl.createKey(0);
 
 	kdb.get(ks, root);
 	printWarnings(cerr, root);
@@ -46,7 +50,7 @@ int ExportCommand::execute(Cmdline const& cl)
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
-	PluginPtr plugin = modules.load(format);
+	PluginPtr plugin = modules.load(format, cl.getPluginsConfig());
 
 	Key errorKey(root);
 	errorKey.setString(file);

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <keyset.hpp>
 
 #include <iostream>
@@ -12,9 +20,9 @@ int main()
 		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		KS_END);
 
-	for (KeySet::iterator i = ks3.begin(); i != ks3.end(); ++i)
+	for (auto && elem : ks3)
 	{
-		Key k(*i);
+		Key k(elem);
 		std::cout << k.getName() << std::endl;
 	}
 
@@ -23,9 +31,9 @@ int main()
 		std::cout << k.getName() << std::endl;
 	}
 
-	for (auto i = ks3.begin(); i != ks3.end(); ++i)
+	for (auto && elem : ks3)
 	{
-		Key k(*i);
+		Key k(elem);
 		std::cout << k.getName() << std::endl;
 	}
 

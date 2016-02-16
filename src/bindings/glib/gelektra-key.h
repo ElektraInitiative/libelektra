@@ -71,7 +71,7 @@ GElektraKey *gelektra_key_make(Key *key);
 GElektraKey *gelektra_key_gi_make(GElektraKey *key);
 
 /* initialization */
-void gelektra_key_gi_init(GElektraKey *key, const gchar *name, guint64 flags,
+void gelektra_key_gi_init(GElektraKey *key, const gchar *name, int flags,
 	const gchar *value, const void *data, gsize data_size);
 
 /* reference handling */

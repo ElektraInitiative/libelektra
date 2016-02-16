@@ -1,16 +1,16 @@
 - infos = Information about the timeofday plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
+- infos/provides = tracing
 - infos/needs =
-- infos/provides = logging
 - infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
+- infos/status = maintained tested
 - infos/description = Prints timestamps during execution of backend
 
 ## Introduction ##
 
 This plugin is a logging plugin which prints a timestamp during
 all placements of backend.
-
 
 ## Usage ##
 
@@ -39,3 +39,8 @@ and in the set path:
 The first digit column shows the complete time passed, the second column
 shows the time from invocation to invocation.
 
+## Module Loading ##
+
+Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
+
+    kdb check -c "logmodule=" timeofday

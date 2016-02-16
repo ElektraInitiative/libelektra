@@ -2,14 +2,26 @@ Ideas for new PLUGINS in elektra.
 Prefer using great frameworks to do that in short time with high quality.
 
 
-## Python plugins
-
-resolver/storage hybrid
 
 
-## Lua plugin
+## Rework plugins
 
-value transformations
+fix comments:
+	all plugins should use new comment-approach
+	(also iconv)
+
+fix absolute plugins (should be relative, at least by default)
+	see #51
+
+
+
+## Links
+
+link fetcher plugin: kdbGet() of all parts where links point to
+
+checking for broken links:
+	run through the chain of override and fallback and see
+	if there is any cycle
 
 
 
@@ -28,10 +40,26 @@ Environment expansion
 
 noresolver: make it always return 0?
 
+single file plugins for /proc:
+	one file <-> one key/value
+
 
 ## logging
 
+undo  plugin
+write log files on every kdbSet() that allow to undo what happened in this commit
+
 log all warnings that happened
+
+alert plugin: log/e-mail when specific (important) parameters are changed
+
+global plugin that logs all resolved cascading keys received by the application
+
+forensic logging: add in-depth context information when a parameter was changed
+	environment, pid, gid, uid
+	timezone + in ms
+	IP
+	state of application
 
 
 # File based plugins #
@@ -87,6 +115,8 @@ path plugin:
 
 ## Generic ##
 
+generic simpleini (customizable printf/scanf format strings)
+
 Build a generic storage plugin to replace dump:
 - preserving order
 - preserving comments
@@ -101,7 +131,27 @@ Build a generic storage plugin to replace dump:
   doc/standards/OpenICC_device_config_DB.json
   http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
 
+== Elektra types ==
+
+customized type checkers
+	which can be integrated within Frontend generator
+	(for checking default values and preloading)
+	maybe even checking of values within frontend
+
+
+== Schema ==
+
+convert elektra schema to xsd, yaml or similar
+base schema (user/system)
+plugins like fstab, hosts should provide their schema
+schema for config of plugins + generation of code for them
+
+define vectors, maps, class hierarchy
+upgrade by global schema files similar to ldconfig
+
 http://json-schema.org
+
+
 
 ## PRETTY ##
 
@@ -207,6 +257,8 @@ Shell bindings: exec program and send dump format to it and receive one
 can use #!kdb shell
 or also some other scripts, e.g. git commit
 
+awk bindings ($1=keyname $2=keyvalue $3=metakeyname $4=metakeyvalue .....)
+
 
 
 
@@ -216,11 +268,6 @@ or also some other scripts, e.g. git commit
 compression:
 	zlib
 	snappy
-
-Forensic Logging:
-	environment, pid, gid, uid
-	timezone + in ms
-	IP
 
 filter: key
 	metadata löschen
@@ -316,6 +363,10 @@ resolver:
 
 # Improve the plugin system itself #
 
+allow resolver/storage hybrids
+
+
+
 ## VERSION IN CONTRACT ##
 
 Configure file for plugin.h
@@ -324,6 +375,13 @@ static inline function
 with licence, author in contract
 Everything also in constants/build_info
 add dependencies in contract?
+
+(makes dependency handling much more complex if, e.g. dump >= 0.5 is allowed)
+
+## Double passing of function pointers ##
+
+Currently function pointers for get/set/.. are passed twice
+(in contract and per plugin factory), should be reduced to one place.
 
 ## Contract on Plugin configuration ##
 
@@ -419,6 +477,9 @@ backend during a `kdbSet()` transaction is settled.
 A global plugin can notify that a sequence of events is finished.
 Only then is it the time for other programs to update their
 configuration.
+
+notify plugin that remembers which app got which config
+(and thus we know who has outdated config)
 
 ## Journalling
 

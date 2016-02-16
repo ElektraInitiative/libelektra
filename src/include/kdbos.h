@@ -1,22 +1,7 @@
-/***************************************************************************
-             kdbos.h  -  operating system specific workarounds
-                             -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2003 by Avi Alkalay
-    email                : avi@unix.sh
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/* This header purpose is that afterwards following types are defined:
- * .. means don't care, just enough for your system
- * For more information on that types read POSIX documentation.
+/**
+ * @file
  *
+ * @brief Operating system specific workarounds
  *
  * Integer Types must be at least 32bit:
  *
@@ -52,9 +37,10 @@
  * this is ISO C and should happen by including <stdarg.h>.
  *
  * Go ahead and write a #ifdef block for your operating system
- * when the POSIX defaults are not ok.
+ * when the POSIX defaults are not ok
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
-
 
 #ifndef KDBOS_H
 #ifndef KDB_H
@@ -80,7 +66,32 @@
 #define ELEKTRA_NOINLINE
 #endif
 
-#ifndef WIN32
+
+/** The buffer size needed for an array name
+ *
+ * The size of the buffer so that the buffer can contain:
+ * - a # in the beginning
+ * - up to 9 underscores are needed as prefix
+ * - a 32bit number has a maximum of 10 digits
+ * - one byte for null termination
+ *
+ * E.g. \#_________4000000000\\0
+ */
+#define ELEKTRA_MAX_ARRAY_SIZE (21)
+
+/**Default Mode.
+ * This mode will be used for new files*/
+#define KDB_FILE_MODE 0600
+
+/**Default directory mode.
+ * This mode will be used for new directories.
+ * Will be ORed together with KDB_FILE_MODE
+ * to get the permissions of an directory.*/
+#define KDB_DIR_MODE 0100
+
+
+
+#ifndef _WIN32
 
 /***************************************************
  *               Posix Compatible
@@ -110,19 +121,8 @@
 #define KDB_MAX_PATH_LENGTH 4096
 #endif
 
-/**Default Mode.
- * This mode will be used for new files*/
-#define KDB_FILE_MODE 0600
 
-/**Default directory mode.
- * This mode will be used for new directories.
- * Will be ORed together with KDB_FILE_MODE
- * to get the permissions of an directory.*/
-#define KDB_DIR_MODE 0100
-
-
-
-#else /* WIN32 */
+#else /* _WIN32 */
 
 /***************************************************
  *                 Windows (using mingw)
@@ -145,7 +145,7 @@
 
 
 
-#endif /* WIN32 */
+#endif /* _WIN32 */
 
 /***************************************************
  *               For ANSI C systems
@@ -161,8 +161,11 @@
 typedef ssize_t cursor_t;
 
 /*Integer types*/
-typedef int keyswitch_t;
 typedef int option_t;
+
+typedef int keyswitch_t;
+
+typedef int elektraNamespace;
 
 /**@brief Separator for key names.
  *

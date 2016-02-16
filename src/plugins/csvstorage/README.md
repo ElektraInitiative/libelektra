@@ -1,9 +1,11 @@
 - infos = Information about the csvstorage plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
+- infos/needs =
+- infos/recommends =
 - infos/placements = getstorage setstorage
+- infos/status = productive maintained unittest nodep libc configurable
 - infos/description = parses csv files
 
 ## Introduction ##
@@ -22,7 +24,7 @@ Skip the first line if it's set to "skip" or treat the first line as a record if
 If `header` is not set, or set to "record", the columns get named #0,#1,... (array key naming)
 
 `columns`
-If this key is set the plugin will yield an error for every file that doesn't have exactly the amount of columns ans specified in `columns`.
+If this key is set the plugin will yield an error for every file that doesn't have exactly the amount of columns as specified in `columns`.
 
 `columns/names`
 Sets the column names. Only usable in combination with the `columns` key. The number of subkeys must match the number of columns.

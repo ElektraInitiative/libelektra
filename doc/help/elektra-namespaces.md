@@ -38,7 +38,7 @@ are described.
 
 Unlike the other namespaces, the specification namespace does not
 contain values of the keys, but instead meta data as described in
-[METADATA.ini].
+[METADATA.ini](/doc/METADATA.ini).
 
 When a key is looked up, keys from the spec-namespace are the first to
 be searched. When a spec-key is found, the rest of the lookup will be
@@ -92,7 +92,7 @@ e.g. by using chdir or by setting the environment variable PWD
 On multi-user operating systems obviously every user wants her/his own
 configuration. The user configuration is located in the users home
 directory typically below the folder KDB_DB_USER.
-Other pathes below the home directory are possible too (absolute path
+Other paths below the home directory are possible too (absolute path
 for resolver).
 
 Note that Elektra only supports a user directory per KDB
@@ -107,7 +107,7 @@ e.g. by seteuid() or by environment variables like HOME, USER
 The system configuration is the same for every chroot.
 
 The configuration is typically located below KDB_DB_SYSTEM.
-Other absolut pathes, e.g. below /opt or /usr/local/etc are possible
+Other absolute paths, e.g. below /opt or /usr/local/etc are possible
 too.
 
 

@@ -1,0 +1,63 @@
+#!/bin/sh
+
+[ -z "$KDB" ] && KDB="kdb"
+
+mountpoints=`mktemp`
+globalplugins=`mktemp`
+
+#debug:
+#$KDB file system/elektra
+
+$KDB export system/elektra/mountpoints dump > $mountpoints
+
+if [ $? -ne 0 ]
+then
+	echo "Could not export to $mountpoints"
+	exit 1
+fi
+
+$KDB export system/elektra/globalplugins dump > $globalplugins
+
+if [ $? -ne 0 ]
+then
+	echo "Could not export to $globalplugins (already have exported $mountpoints)"
+	exit 1
+fi
+
+
+# now disable fallback (remove everything but version and modules)
+$KDB rm -r system/elektra/mountpoints
+
+if [ $? -ne 0 ]
+then
+	echo "Upgrade failed, could not remove system/elektra/mountpoints (already have exported  $globalplugins $mountpoints)"
+	exit 1
+fi
+
+ret=0
+
+#debug:
+#$KDB file system/elektra
+
+
+cat $globalplugins | $KDB import system/elektra/globalplugins dump
+
+if [ $? -eq 0 ]
+then
+	rm $globalplugins
+else
+	echo "Warning: could not import globalplugins: $globalplugins"
+fi
+
+# now import old mountpoints:
+cat $mountpoints | $KDB import system/elektra/mountpoints dump
+
+if [ $? -eq 0 ]
+then
+	rm $mountpoints
+else
+	echo "Upgrade failed, could not import mountpoints: $mountpoints"
+	ret=1
+fi
+
+exit $ret

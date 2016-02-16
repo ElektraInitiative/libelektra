@@ -9,5 +9,5 @@ templatedir=${prefix}/@TARGET_TEMPLATE_FOLDER@
 Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
 Version: @KDB_VERSION@
-Libs: -L${libdir} -l@PACKAGE_NAME@
+Libs: -L${libdir} -lelektra-core -lelektra-kdb
 Cflags: -I${includedir}

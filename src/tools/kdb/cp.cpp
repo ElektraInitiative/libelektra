@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <cp.hpp>
 
 #include <kdb.hpp>
@@ -21,18 +29,18 @@ int CpCommand::execute (Cmdline const& cl)
 	}
 
 	KeySet conf;
-	Key sourceKey(cl.arguments[0], KEY_END);
+	Key sourceKey = cl.createKey(0);
 	if (!sourceKey.isValid())
 	{
 		throw invalid_argument("Source given is not a valid keyname");
 	}
 
-	Key destKey(cl.arguments[1], KEY_END);
+	Key destKey = cl.createKey(1);
 	if (!destKey.isValid())
 	{
 		throw invalid_argument("Destination given is not a valid keyname");
 	}
-	string newDirName = cl.arguments[1];
+	string newDirName = destKey.getName();
 
 	kdb.get(conf, sourceKey);
 	kdb.get(conf, destKey);

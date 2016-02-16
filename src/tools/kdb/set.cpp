@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <set.hpp>
 
 #include <kdb.hpp>
@@ -20,8 +28,6 @@ int SetCommand::execute(Cmdline const& cl)
 		throw invalid_argument("1 or 2 arguments needed");
 	}
 
-	std::string name = cl.arguments[0];
-
 	bool nullValue;
 	std::string value;
 
@@ -36,7 +42,8 @@ int SetCommand::execute(Cmdline const& cl)
 	}
 
 	KeySet conf;
-	Key k(name, KEY_END);
+	Key k = cl.createKey(0);
+	std::string name = k.getName();
 
 	// do not resume on any get errors
 	// otherwise the user might break
@@ -65,7 +72,7 @@ int SetCommand::execute(Cmdline const& cl)
 			key.setString(value);
 		} else {
 			cout << " with null value" << endl;
-			key.setBinary(0, 0);
+			key.setBinary(nullptr, 0);
 		}
 		if (!key.isValid())
 		{
@@ -80,7 +87,7 @@ int SetCommand::execute(Cmdline const& cl)
 			key.setString(value);
 		} else {
 			cout << "Set null value" << endl;
-			key.setBinary(0, 0);
+			key.setBinary(nullptr, 0);
 		}
 	}
 	kdb.set(conf, k);

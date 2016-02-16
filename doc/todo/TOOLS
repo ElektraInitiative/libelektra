@@ -1,4 +1,33 @@
-== TOOLS ==
+= TOOLS =
+
+
+
+
+
+
+
+== LIBTOOLS ==
+
+let backends to import/export
+
+use it for import/export/convert
+
+convert
+	using proc namespace
+	or get/set with root keys?
+
+kdb-shell:
+	use import/export
+	automatic tests for functionality
+	Examples in --help
+
+add list-plugin functionality
+
+add global mountpoints functionality
+
+more testing
+
+
 
 
 == MOUNT ==
@@ -14,13 +43,12 @@ allow --no-env --no-arg --no-default arguments?
 
 
 
-= KDB =
+== KDB ==
 
-reversemap from file to Elektra path (#74)
-	depends on: avoid multiple mounts of the same file (#70)
+kdb tool should work with arrays (add_entry, remove_entry)
 
-kdb tools meta description files
-	list all tools (with --help)
+cascading export, e.g. for nickel?
+	+ remember what was exported
 
 allow key array increments with kdb tool
 
@@ -28,11 +56,6 @@ list existing plugins
 	dynamically detect them when installed
 
 allow change of symlink (resolver, storage)
-
-kdb-shell:
-	use import/export
-	automatic tests for functionality
-	Examples in --help
 
 kdb-export:
 	in a way that it can be used as shell script to immediately
@@ -47,26 +70,19 @@ kdb tool:
 
 env-get env-set `kdb env-get`
 
-kdb-file/resolver (give file given key name)
-
-kdb-edit edit file in any of Elektra's format
-	export to temporary file, open with editor and reimport
-
 export should be able to export only configuration that was changed
-	(suppress default config)
+	suppress default config by some metadata
 
 install config (mount+preload system config) by using meta struct
-
-kdb-shell:
-	import/export
-	automatic tests for functionality
-	Examples in --help
 
 kdb tool:
 	request -f for rm, mv in system/elektra
 
 
 == GEN ==
+
+install kdb gen properly
+	search by default in installed pathes
 
 using python kdb for gen
 
@@ -94,9 +110,10 @@ validation of schema + line info
 
 add Args... flags to onLayerActivation
 
-helgrind: thread safety of layers?
-is stack correct in with() when activate/deactivate across threads?
-
+genopt.hpp + include enforcement in template_dynamic?
+	use spec namespace
+	generic command-line parsing
+	%% context evaluation?
 
 
 
@@ -109,6 +126,8 @@ commandline arguments:
 	for self configuring
 	for proc namespace
 
+dbus-listener + notify single events, maybe zeromq
+	auto-completion for metadata
 
 
 

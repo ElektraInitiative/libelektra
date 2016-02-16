@@ -1,11 +1,10 @@
-/***************************************************************************
-      kdbconfig.h  -  Build system configuration
-
-                           -------------------
-    begin                : Apr 22 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Build system configuration
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 @DISCLAMER@
 
@@ -38,6 +37,8 @@
 
 #define KDB_DB_FILE              "@KDB_DB_FILE@"
 
+#define KDB_DB_INIT              "@KDB_DB_INIT@"
+
 #define KDB_DEFAULT_STORAGE      "@KDB_DEFAULT_STORAGE@"
 
 #define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"
@@ -52,6 +53,10 @@
 /** Declares an API as deprecated. */
 #define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
 
+/** Where plugins are installed */
+#define BUILTIN_PLUGIN_FOLDER    "@BUILTIN_PLUGIN_FOLDER@"
+
+/** Where tools (and other executables like scripts) are installed */
 #define BUILTIN_EXEC_FOLDER      "@BUILTIN_EXEC_FOLDER@"
 
 #define BUILTIN_DATA_FOLDER      "@BUILTIN_DATA_FOLDER@"
@@ -80,62 +85,67 @@
 /* disable verbose output messages */
 #define VERBOSE @VERBOSE@
 
-/* cmakedefine if your system has the `clearenv' function. */
+/* define if your system has the `clearenv' function. */
 #ifndef HAVE_CLEARENV
 #cmakedefine HAVE_CLEARENV
 #endif
 
-/* cmakedefine if your system has the <ctype.h> header file. */
+/* define if your system has the `glob' function. */
+#ifndef HAVE_GLOB
+#cmakedefine HAVE_GLOB
+#endif
+
+/* define if your system has the <ctype.h> header file. */
 #ifndef HAVE_CTYPE_H
 #cmakedefine HAVE_CTYPE_H
 #endif
 
-/* cmakedefine if your system has the <errno.h> header file. */
+/* define if your system has the <errno.h> header file. */
 #ifndef HAVE_ERRNO_H
 #cmakedefine HAVE_ERRNO_H
 #endif
 
-/* cmakedefine if your system has the <locale.h> header file. */
+/* define if your system has the <locale.h> header file. */
 #ifndef HAVE_LOCALE_H
 #cmakedefine HAVE_LOCALE_H
 #endif
 
-/* cmakedefine if your system has the `setenv' function. */
+/* define if your system has the `setenv' function. */
 #ifndef HAVE_SETENV
 #cmakedefine HAVE_SETENV
 #endif
 
-/* cmakedefine if your system has the `futimens' function. */
+/* define if your system has the `futimens' function. */
 #ifndef HAVE_FUTIMENS
 #cmakedefine HAVE_FUTIMENS
 #endif
 
-/* cmakedefine if your system has the `futimes' function. */
+/* define if your system has the `futimes' function. */
 #ifndef HAVE_FUTIMES
 #cmakedefine HAVE_FUTIMES
 #endif
 
-/* cmakedefine if your system has the <stdio.h> header file. */
+/* define if your system has the <stdio.h> header file. */
 #ifndef HAVE_STDIO_H
 #cmakedefine HAVE_STDIO_H
 #endif
 
-/* cmakedefine if your system has the <stdlib.h> header file. */
+/* define if your system has the <stdlib.h> header file. */
 #ifndef HAVE_STDLIB_H
 #cmakedefine HAVE_STDLIB_H
 #endif
 
-/* cmakedefine if your system has the <string.h> header file. */
+/* define if your system has the <string.h> header file. */
 #ifndef HAVE_STRING_H
 #cmakedefine HAVE_STRING_H
 #endif
 
-/* cmakedefine if your system has the <time.h> header file. */
+/* define if your system has the <time.h> header file. */
 #ifndef HAVE_TIME_H
 #cmakedefine HAVE_TIME_H
 #endif
 
-/* cmakedefine if your system has the <unistd.h> header file. */
+/* define if your system has the <unistd.h> header file. */
 #ifndef HAVE_UNISTD_H
 #cmakedefine HAVE_UNISTD_H
 #endif

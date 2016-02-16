@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @OUTPUT_DIRECTORY@
+OUTPUT_DIRECTORY       = "@OUTPUT_DIRECTORY@"
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -162,7 +162,7 @@ FULL_PATH_NAMES        = NO
 # will be relative from the directory where doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@
+STRIP_FROM_PATH        = "@PROJECT_SOURCE_DIR@"
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -192,7 +192,7 @@ JAVADOC_AUTOBRIEF      = YES
 # If the QT_AUTOBRIEF tag is set to YES then doxygen will interpret the first
 # line (until the first dot) of a Qt-style comment as the brief description. If
 # set to NO, the Qt-style will behave just like regular Qt-style comments (thus
-# requiring an explicit \brief command for a brief description.)
+# requiring an explicit @brief command for a brief description.)
 # The default value is: NO.
 
 QT_AUTOBRIEF           = NO
@@ -719,7 +719,7 @@ WARNINGS               = YES
 # will automatically be disabled.
 # The default value is: YES.
 
-WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_UNDOCUMENTED   = NO
 
 # If the WARN_IF_DOC_ERROR tag is set to YES, doxygen will generate warnings for
 # potential errors in the documentation, such as not documenting some parameters
@@ -735,7 +735,7 @@ WARN_IF_DOC_ERROR      = YES
 # documentation, but not about the absence of documentation.
 # The default value is: NO.
 
-WARN_NO_PARAMDOC       = YES
+WARN_NO_PARAMDOC       = NO
 
 # The WARN_FORMAT tag determines the format of the warning messages that doxygen
 # can produce. The string should contain the $file, $line, and $text tags, which
@@ -751,7 +751,7 @@ WARN_FORMAT            = "$file:$line: $text"
 # messages should be written. If left blank the output is written to standard
 # error (stderr).
 
-WARN_LOGFILE           =
+WARN_LOGFILE           = "@OUTPUT_DIRECTORY@/doxygen.log"
 
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
@@ -763,16 +763,15 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = @PROJECT_SOURCE_DIR@/src/libelektra \
-                         @PROJECT_SOURCE_DIR@/src/include \
-                         @PROJECT_SOURCE_DIR@/src/libtools \
-                         @PROJECT_SOURCE_DIR@/src/bindings/cpp/include \
-                         @PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h \
-                         @PROJECT_SOURCE_DIR@/src/libloader/doc.c \
-                         @PROJECT_SOURCE_DIR@/src/libgetenv/README.md \
-                         @PROJECT_SOURCE_DIR@/doc \
-                         @PROJECT_SOURCE_DIR@/src/plugins \
-                         @PROJECT_SOURCE_DIR@/README.md
+INPUT                  = "@PROJECT_SOURCE_DIR@/src/libs" \
+                         "@PROJECT_SOURCE_DIR@/src/libs/loader/doc.c" \
+                         "@PROJECT_SOURCE_DIR@/src/libs/getenv/README.md" \
+                         "@PROJECT_SOURCE_DIR@/src/include" \
+                         "@PROJECT_SOURCE_DIR@/src/bindings/cpp/include" \
+                         "@PROJECT_SOURCE_DIR@/src/plugins" \
+                         "@PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h" \
+                         "@PROJECT_SOURCE_DIR@/doc" \
+                         "@PROJECT_SOURCE_DIR@/README.md"
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -921,7 +920,7 @@ INPUT_FILTER           =
 # filters are used. If the FILTER_PATTERNS tag is empty or if none of the
 # patterns match the file name, INPUT_FILTER is applied.
 
-FILTER_PATTERNS        = *.md=@MARKDOWN_LINK_CONVERTER@
+FILTER_PATTERNS        = *.md="@MARKDOWN_LINK_CONVERTER@"
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using
 # INPUT_FILTER ) will also be used to filter the input files that are used for
@@ -2161,7 +2160,7 @@ DOT_NUM_THREADS        = 0
 # The default value is: Helvetica.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_FONTNAME           = FreeSans
+DOT_FONTNAME           = Helvetica
 
 # The DOT_FONTSIZE tag can be used to set the size (in points) of the font of
 # dot graphs.

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "yajl_gen.h"
 
 #include <errno.h>
@@ -155,7 +163,8 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 	{
 		yajl_gen_null(g);
 	}
-	else if (!type && keyGetValueSize(cur) >= 1) // default is string
+	else if ((!type && keyGetValueSize(cur) >= 1) || // default is string
+			(!strcmp(keyString(type), "string")))
 	{
 		yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
 	}
@@ -180,7 +189,7 @@ static void elektraGenValue(yajl_gen g, Key *parentKey, const Key *cur)
 		yajl_gen_number(g, keyString(cur), keyGetValueSize(cur)-1);
 	}
 	else { // unknown or unsupported type, render it as string but add warning
-		ELEKTRA_ADD_WARNING(78, parentKey, keyString(type));
+		ELEKTRA_ADD_WARNINGF(78, parentKey, "the key %s has unknown type: %s", keyName(cur), keyString(type));
 		yajl_gen_string(g, (const unsigned char *)keyString(cur), keyGetValueSize(cur)-1);
 	}
 }
@@ -282,7 +291,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	if (elektraGenEmpty(g, returned, parentKey))
 	{
 		int ret = elektraGenWriteFile(g, parentKey);
-		yajl_gen_free(g);
+		yajl_gen_free (g);
 		return ret;
 	}
 
@@ -292,7 +301,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	{
 		// empty config should be handled by resolver
 		// (e.g. remove file)
-		yajl_gen_free(g);
+		yajl_gen_free (g);
 		return 0;
 	}
 
@@ -324,7 +333,7 @@ int elektraYajlSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	elektraGenCloseFinally(g, cur, parentKey);
 
 	int ret = elektraGenWriteFile(g, parentKey);
-	yajl_gen_free(g);
+	yajl_gen_free (g);
 
 	return ret;
 }

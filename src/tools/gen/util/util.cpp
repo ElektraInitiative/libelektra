@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #from support.cpp import *
 #compiler-settings
 directiveStartToken = @
@@ -18,7 +26,7 @@ enum class $support.typeof(info)
 @end for
 };
 
-/** \brief Convert enum to string
+/** @brief Convert enum to string
  *
  * \return string that holds value of enum
  * \param e the enum that should be converted
@@ -26,7 +34,7 @@ enum class $support.typeof(info)
 template <>
 inline void Key::set($support.enumname(info) e)
 {
-	switch(e)
+	switch (e)
 	{
 @for $enum in $support.enumval(info)
 	case $support.typeof(info)::$enum: setString("$enum"); break;
@@ -34,7 +42,7 @@ inline void Key::set($support.enumname(info) e)
 	}
 }
 
-/** \brief Convert enum from string
+/** @brief Convert enum from string
  *
  * \return enum from string s or default value
  * \param s the string that should be converted
@@ -44,7 +52,7 @@ inline $support.enumname(info) Key::get() const
 {
 	$support.typeof(info) ret $support.valof(info)
 @for $enum in $support.enumval(info)
-	if(getString() == "$enum")
+	if (getString() == "$enum")
 		ret = $support.typeof(info)::$enum;
 @end for
 	return ret;
@@ -58,7 +66,7 @@ inline $support.enumname(info) Key::get() const
 
 @@staticmethod
 @def generatebool(support)
-/** \brief Convert bool to string
+/** @brief Convert bool to string
  *
  * \return string that holds value of bool
  * \param e the bool that should be converted
@@ -66,7 +74,7 @@ inline $support.enumname(info) Key::get() const
 template <>
 inline void Key::set(bool e)
 {
-	if(e)
+	if (e)
 	{
 		setString("true");
 	}
@@ -76,7 +84,7 @@ inline void Key::set(bool e)
 	}
 }
 
-/** \brief Convert bool from string
+/** @brief Convert bool from string
  *
  * \return bool from string s or default value
  * \param s the string that should be converted
@@ -85,10 +93,10 @@ template <>
 inline bool Key::get() const
 {
 	bool ret = false;
-	if(getString() == "${support.trueval()[0]}")
+	if (getString() == "${support.trueval()[0]}")
 		ret = true;
 @for $b in $support.trueval()[1:]
-	else if(getString() == "$b")
+	else if (getString() == "$b")
 		ret = true;
 @end for
 	return ret;
@@ -192,7 +200,7 @@ kdb::Key search ("$key",
 		KEY_END);
 	kdb::Key found = ks.lookup(search, 0);
 @end if
-	if(found)
+	if (found)
 	{
 		return found.get<$support.typeof(info)>();
 	}
@@ -267,7 +275,7 @@ namespace $support.nsnpretty($n)
 {
 @end for
 
-/** \brief class of $hierarchy.name
+/** @brief class of $hierarchy.name
  *
  * Full Name (with contextual placeholders):
  * $hierarchy.info.get('name')
@@ -309,7 +317,7 @@ public:
 
 
 
-	/** \brief Constructor for $hierarchy.prettyclassname(support)
+	/** @brief Constructor for $hierarchy.prettyclassname(support)
 	 * \param ks keyset to work with
 	 */
 	${hierarchy.prettyclassname(support)}(kdb::KeySet & ks, typename Policies::ContextPolicy & context)

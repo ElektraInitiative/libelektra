@@ -1,27 +1,10 @@
-/***************************************************************************
-                     counter.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -43,9 +26,12 @@ int elektraCounterOpen(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	KeySet *config  = elektraPluginGetConfig(handle);
 	if (ksLookupByName(config, "/module", 0))
 	{
-		printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n",
-			(void*) handle,
-			elektraCountOpen);
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			printf ("%p elektraCounterOpen  (module) called " COUNTER_FMT " times\n",
+				(void*) handle,
+				elektraCountOpen);
+		}
 	} else {
 		printf ("%p elektraCounterOpen           called " COUNTER_FMT " times\n",
 			(void*) handle,
@@ -63,9 +49,12 @@ int elektraCounterClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 	KeySet *config  = elektraPluginGetConfig(handle);
 	if (ksLookupByName(config, "/module", 0))
 	{
-		printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n",
-			(void*) handle,
-			elektraCountClose);
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			printf ("%p elektraCounterClose (module) called " COUNTER_FMT " times\n",
+				(void*) handle,
+				elektraCountClose);
+		}
 	} else {
 		printf ("%p elektraCounterClose          called " COUNTER_FMT " times\n",
 			(void*) handle,

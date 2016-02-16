@@ -1,5 +1,5 @@
 class ElektraPlugin(object):
-	def open(self, errorKey):
+	def open(self, config, errorKey):
 		return 0
 
 	def get(self, returned, parentKey):

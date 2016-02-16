@@ -1,8 +1,18 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "guibackend.hpp"
 
 #include <markdowndocument.h>
 #include <discountmarkdownconverter.h>
+#include <backendbuilder.hpp>
 #include <backends.hpp>
+#include <plugindatabase.hpp>
 #include <vector>
 #include <string>
 #include <QDebug>
@@ -14,7 +24,7 @@ using namespace kdb::tools;
 
 GUIBackend::GUIBackend(QObject *parentBackend) :
 	QObject(parentBackend),
-	m_backend(NULL)
+	m_backend(nullptr)
 {
 	m_pluginConfigModel = new TreeViewModel;
 	resetModel();
@@ -22,7 +32,7 @@ GUIBackend::GUIBackend(QObject *parentBackend) :
 
 void GUIBackend::createBackend(const QString &mountpoint)
 {
-	m_backend = QSharedPointer<Backend>(new Backend());
+	m_backend = QSharedPointer<MountBackendInterface>(new MountBackendBuilder());
 
 	Key parentKey(Backends::mountpointsPath, KEY_END);
 
@@ -73,7 +83,8 @@ void GUIBackend::addPlugin(QString name)
 
 	try
 	{
-		m_backend->addPlugin(name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
+		PluginSpec spec (name.toStdString(), m_pluginConfigModel->collectCurrentKeySet().dup());
+		m_backend->addPlugin(spec);
 	}
 	catch(PluginCheckException const &ex)
 	{
@@ -148,7 +159,7 @@ QString GUIBackend::mountPoints() const
 	{
 		QString backend = QString::fromStdString(info.name);
 
-		if(backend.startsWith("/"))
+		if (backend.startsWith("/"))
 		{
 			mPoints.append("dir" + backend);
 			mPoints.append("user" + backend);
@@ -202,7 +213,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 	PluginPtr ptr;
 	QString type;
 
-	vector<string> pluginVector = listAllAvailablePlugins();
+	vector<string> pluginVector = ModulesPluginDatabase().listAllPlugins();
 
 	foreach(string s, pluginVector){
 		try
@@ -217,7 +228,7 @@ QStringList GUIBackend::availablePlugins(bool includeStorage, bool includeResolv
 		ptr->loadInfo();
 		type = QString::fromStdString(ptr->lookupInfo("provides"));
 
-		if(!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver"))){
+		if (!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver"))){
 			availPlugins.append(QString::fromStdString(s) + QString::fromStdString(" [%1]").arg(type));
 		}
 	}

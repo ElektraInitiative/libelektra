@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "gelektra-key.h"
 #include <glib-object.h>
 #include <tests.h>
@@ -234,7 +242,7 @@ static void test_meta_data()
 
 	guint metacnt = 0;
 	gelektra_key_rewindmeta(g_key);
-	while((meta = gelektra_key_nextmeta(g_key)) != NULL)
+	while ((meta = gelektra_key_nextmeta(g_key)) != NULL)
 	{
 		GElektraKey *curmeta = gelektra_key_currentmeta(g_key);
 		succeed_if(meta->key == curmeta->key,
@@ -244,7 +252,7 @@ static void test_meta_data()
 		++metacnt;
 		g_object_unref(meta);
 	}
-	succeed_if(metacnt == 6, "some meta data is missing");
+	succeed_if(metacnt == 9, "incorrect number of meta data");
 
 	gelektra_key_setmeta(g_key, "by", "gelektra");
 	meta = gelektra_key_getmeta(g_key, "by");

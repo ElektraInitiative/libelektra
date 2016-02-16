@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.h>
 #include <stdio.h>
 
@@ -77,7 +85,7 @@ keyDel(k);
 
 //! [With Meta]
 Key *k=keyNew("user/tmp/ex3",
-	KEY_META, "comment", "a comment",  // with a commet
+	KEY_META, "comment", "a comment",  // with a comment
 	KEY_META, "owner", "root",         // and an owner
 	KEY_META, "special", "yes",        // and any other meta data
 	KEY_END);                  // end of args

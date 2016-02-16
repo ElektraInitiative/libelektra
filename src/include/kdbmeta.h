@@ -1,25 +1,12 @@
-/***************************************************************************
-        kdbextension.h  -  Optional Methods which sit on top of elektra
-                             -------------------
-    begin                : Mon Dec 29 2003
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
+/**
+ * @file
  *
- * It is debatable if these functions belong to a general purpose key
- * database. However there are here to make working with Elektra more
- * easy or just as backwards compatability.
+ * @brief metadata functions
  *
- * They might be removed in a later version.
+ * These functions might be removed in a later version.
  *
- * They are not part of the documentation.
- *                                                                         *
- ***************************************************************************/
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef KDBMETA_H
 #define KDBMETA_H

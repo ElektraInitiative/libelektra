@@ -1,18 +1,10 @@
-/***************************************************************************
-      kdbprivate.h  -  Private declarations
-
-                           -------------------
- *  begin                : Wed 19 May, 2010
- *  copyright            : (C) 2010 by Markus Raab
- *  email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief Private declarations.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef KDBPRIVATE_H
 #define KDBPRIVATE_H
@@ -55,7 +47,7 @@
  *
  * This key directory tells you where each backend is mounted
  * to which mountpoint. */
-#define KDB_KEY_MOUNTPOINTS      "system/elektra/mountpoints"
+#define KDB_SYSTEM_ELEKTRA      "system/elektra"
 
 #if DEBUG
 # include <stdio.h>
@@ -191,7 +183,7 @@ struct _Key
 
 	/**
 	 * Size of the value, in bytes, including ending NULL.
-	 * @see keyGetCommentSize(), keySetComment(), keyGetComment()
+	 * @see keyGetValueSize()
 	 */
 	size_t         dataSize;
 
@@ -265,6 +257,16 @@ struct _KeySet
 
 
 /**
+ * Helper for identifying global plugin positions
+ */
+
+typedef enum {
+	PREROLLBACK = 0, POSTROLLBACK, PREGETSTORAGE, 
+	POSTGETSTORAGE, PRESETSTORAGE, PRECOMMIT, 
+	POSTCOMMIT, NR_GLOBAL_PLUGINS
+}GlobalpluginPositions;
+
+/**
  * The access point to the key database.
  *
  * The structure which holds all information about loaded backends.
@@ -281,6 +283,7 @@ typedef struct _KDB KDB;
  * @see kdbOpen() and kdbClose() for external use
  * @ingroup backend
  */
+
 struct _KDB {
 	Trie *trie;		/*!< The pointer to the trie holding backends.*/
 
@@ -291,8 +294,11 @@ struct _KDB {
 	KeySet *modules;	/*!< A list of all modules loaded at the moment.*/
 
 	Backend *defaultBackend;/*!< The default backend as fallback when nothing else is found.*/
-};
 
+	Backend *initBackend;	/*!< The init backend for bootstrapping.*/
+
+	Plugin *globalPlugins[NR_GLOBAL_PLUGINS];
+};
 
 
 /**
@@ -470,7 +476,7 @@ int elektraSplitUpdateSize (Split *split);
 /*Backend handling*/
 Backend* elektraBackendOpen(KeySet *elektra_config, KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenMissing(Key *mountpoint);
-Backend* elektraBackendOpenDefault(KeySet *modules, Key *errorKey);
+Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *errorKey);
 Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey);
 Backend* elektraBackendOpenVersion(Key *errorKey);
 int elektraBackendClose(Backend *backend, Key *errorKey);
@@ -496,17 +502,14 @@ Trie* elektraTrieInsert(Trie *trie, const char *name, Backend *value);
 
 /*Mounting handling */
 int elektraMountOpen(KDB *kdb, KeySet *config, KeySet *modules, Key *errorKey);
-int elektraMountDefault (KDB *kdb, KeySet *modules, Key *errorKey);
+int elektraMountDefault (KDB *kdb, KeySet *modules, int inFallback, Key *errorKey);
 int elektraMountModules (KDB *kdb, KeySet *modules, Key *errorKey);
 int elektraMountVersion (KDB *kdb, Key *errorKey);
-
+int elektraMountGlobals (KDB *kdb, KeySet *keys, KeySet *modules, Key *errorKey);
 int elektraMountBackend (KDB *kdb, Backend *backend, Key *errorKey);
 
 Key* elektraMountGetMountpoint(KDB *handle, const Key *where);
 Backend* elektraMountGetBackend(KDB *handle, const Key *key);
-
-/*Private helper for keys*/
-elektraNamespace keyGetNameNamespace(const char *name);
 
 int keyInit(Key *key);
 void keyVInit(Key *key, const char *keyname, va_list ap);
@@ -520,6 +523,11 @@ int ksClose(KeySet *ks);
 int ksResize(KeySet *ks, size_t size);
 size_t ksGetAlloc(const KeySet *ks);
 KeySet* ksDeepDup(const KeySet *source);
+
+Key *elektraKsPrev(KeySet *ks);
+Key *elektraKsPopAtCursor(KeySet *ks, cursor_t pos);
+
+int elektraKeyLock(Key *key, enum elektraLockOptions what);
 
 ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend);
 
@@ -539,22 +547,11 @@ char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest);
 
 int elektraValidateKeyName(const char *name, size_t size);
 
-/** The buffer size needed for an array name
- *
- * The size of the buffer so that the buffer can contain:
- * - a # in the beginning
- * - up to 9 underscores are needed as prefix
- * - a 32bit number has a maximum of 10 digits
- * - one byte for null termination
- *
- * E.g. \#_________4000000000\\0
- */
-#define ELEKTRA_MAX_ARRAY_SIZE (21)
-
 /*Internally used for array handling*/
 int elektraArrayValidateName(const Key *key);
 int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex);
-int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
+
+KeySet* elektraRenameKeys(KeySet *config, const char* name);
 
 /* Name Manipulation Methods */
 ssize_t keyGetParentName(const Key *key, char *returned, size_t maxSize);
@@ -574,8 +571,6 @@ int keyNameIsProc(const char *keyname);
 int keyNameIsDir(const char *keyname);
 int keyNameIsSystem(const char *keyname);
 int keyNameIsUser(const char *keyname);
-
-keyswitch_t keyCompare(const Key *key1, const Key *key2);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var,bit)            ((var) &   (bit))

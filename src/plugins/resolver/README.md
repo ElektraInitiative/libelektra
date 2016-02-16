@@ -2,8 +2,9 @@
 - infos/author = Markus Raab <elektra@markus-raab.org>
 - infos/licence = BSD
 - infos/provides = resolver
-- infos/placements = rollback getresolver setresolver commit
 - infos/needs =
+- infos/placements = rollback getresolver setresolver commit
+- infos/status = productive maintained specific unittest tested libc configurable
 - infos/description =
 ## Scope ##
 
@@ -79,6 +80,9 @@ recommended to use environment variables.
 Note that the file permissions apply, so it might be possible for
 non-root to modify keys in system.
 
+See [COMPILE.md](/doc/COMPILE.md) for a documentation of possible
+variants.
+
 
 ### XDG Compatibility ###
 
@@ -91,7 +95,7 @@ if configured with the variant:
 
 Additionally KDB_DB_USER needs to be left unchanged as `.config`.
 
-XDG_CONFIG_DIRS will be used to resolve system pathes the following
+XDG_CONFIG_DIRS will be used to resolve system paths the following
 way:
 
 - if unset or empty /etc/xdg will be used instead

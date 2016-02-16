@@ -1,22 +1,28 @@
 ## Elektra Initiative Overview ##
 
-Elektra provides a universal and secure framework to store configuration
-parameters in a global, hierarchical key database.  The core is a small
-library implemented in C. The plugin-based framework fulfills many
-configuration-related tasks to avoid any unnecessary code duplication
-across applications while it still allows the core to stay without any
-external dependency. Elektra abstracts from cross-platform-related issues
-with an consistent API, and allows applications to be aware of other
-applications' configurations, leveraging easy application integration.
+Elektra serves as a universal and secure framework to access configuration
+parameters in a global, hierarchical key database and provides a mature,
+consistent and easily comprehensible API.  Its modularity effectively
+avoids code duplication across applications and tools regarding
+configuration tasks. Elektra abstracts from cross-platform-related issues
+and allows applications to be aware of other applications' configurations,
+leveraging easy application integration.
 
-See the Readme for more information [Readme](/README.md).
+See the [readme](/README.md) for more introduction.
 See the [glossary](/doc/help/elektra-glossary.md) for the used
 terminology.
 
-## API docu ##
+## API Docu ##
 
-This document occupies with the API implementation, documentation,
-internals and plugins.
+This document main goal is to describe the API.
+It covers:
+
+- external C-API (See Modules above), which are the essential core parts
+- C++-API (See Data Structures above) from a direct binding to high-level
+  functionality, such as mounting functionality
+- plugins API
+- all other documentation of Elektra (See Related Pages)
+
 On the one hand it gives an overview and an introduction for
 developers using Elektra, on the
 other hand it gives an informal descriptions what methods must and may provide
@@ -104,7 +110,7 @@ The cascading tree is the logical tree to be used in applications.
 The other trees are the physical ones that stem from configuration sources.
 When using cascading key the best key will be searched at runtime,
 which appears like a tree on its own.
-See @ref cascading in the documentation of ksLookupByName() how the selection
+See @ref cascading in the documentation of ksLookupByName() on how the selection
 of keys works.
 
 - The `spec` tree\n
@@ -128,7 +134,7 @@ Is the only read-only tree. The configuration does not stem from the
 Allows us to have a per-directory overwrite of configuration files, e.g.
 for project specific settings.
 
-- The `user` tree \n
+- The `user` tree\n
 Used to store user-specific configurations, like the personal settings
 of a user to certain programs. The user subtree will always be favoured
 if present (except for security concerns the user subtree may not be considered).
@@ -148,7 +154,7 @@ please keep in mind the following rules:
 - You are not allowed to create keys right under the root.
 They are reserved for more generic purposes.
 - The keys for your application, called say *myapp*, should be created under
-`@p /sw/org/myapp/#0/current`
+`/sw/org/myapp/#0/current`
 	+ sw is for software
 	+ org is the organisation. For uniqueness a full reverse url encoded with '/' instead of '.' is useful.
 	+ `#0` is the major version of the configuration
@@ -172,3 +178,9 @@ Then you can start reading about Backends that are composed out of
 To get started with writing plugins, first read our plugin tutorial in doc/tutorials!
 
 Read more about [mounting](/doc/help/elektra-mounting.md)
+
+## SEE ALSO
+
+- See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
+- More information about [elektra-backends(7)](/doc/help/elektra-backends.md)
+- More information about [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md)

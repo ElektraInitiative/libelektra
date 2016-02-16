@@ -49,7 +49,7 @@ typedef struct{
 int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 {
 	Placements *placements = (Placements *)elektraPluginGetData(handle);
-	if(!placements)
+	if (!placements)
 	{
 		placements = (Placements *)elektraMalloc(sizeof(Placements));
 		memset(placements, 0, sizeof(Placements));
@@ -72,29 +72,29 @@ int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 	KeySet *config = ksDup(elektraPluginGetConfig(handle));
 	ksRewind(config);
 	Key *key = ksLookupByName(config, "/placements/set", 0);
-	if(key)
+	if (key)
 	{
 		const char *setString = keyString(key);
 		const char *setStrings[] = {"presetstorage", "precommit", "postcommit"};
 		SetPlacements setPlacement = preSetStorage;
-		while(setPlacement != setEnd)
-		{	
-			if(strstr(setString, setStrings[setPlacement]))
+		while (setPlacement != setEnd)
+		{
+			if (strstr(setString, setStrings[setPlacement]))
 			{
 				placements->setPlacements[setPlacement] = 1;
 			}
 			++setPlacement;
 		}
-	}	
+	}
 	key = ksLookupByName(config, "/placements/get", 0);
-	if(key)
+	if (key)
 	{
 		const char *getString = keyString(key);
 		const char *getStrings[] = {"pregetstorage", "postgetstorage"};
 		GetPlacements getPlacement = preGetStorage;
-		while(getPlacement != getEnd)
+		while (getPlacement != getEnd)
 		{	
-			if(strstr(getString, getStrings[getPlacement]))
+			if (strstr(getString, getStrings[getPlacement]))
 			{
 				placements->getPlacements[getPlacement] = 1;
 			}
@@ -102,14 +102,14 @@ int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 		}
 	}
 	key = ksLookupByName(config, "/placements/error", 0);
-	if(key)
+	if (key)
 	{
 		const char *errString = keyString(key);
 		const char *errStrings[] = {"prerollback", "postrollback"};
 		ErrPlacements errPlacement = preRollback;
-		while(errPlacement != errEnd)
+		while (errPlacement != errEnd)
 		{	
-			if(strstr(errString, errStrings[errPlacement]))
+			if (strstr(errString, errStrings[errPlacement]))
 			{
 				placements->errPlacements[errPlacement] = 1;
 			}
@@ -120,39 +120,42 @@ int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 	Key *cur; 
 	KeySet *cutKS = ksCut(config, key);
 	ksRewind(cutKS);
-	while((cur = ksNext(cutKS)) != NULL)
+	while ((cur = ksNext(cutKS)) != NULL)
 	{
-		if(keyRel(key, cur) != 1)
+		if (keyRel(key, cur) != 1)
+		{
 			continue;
+		}
+
 		Key *sub;
 		Key *lookup = keyDup(cur);
 		keyAddBaseName(lookup, "placements");
 		keyAddBaseName(lookup, "set");
 		sub = ksLookup(cutKS, lookup, 0);
-		if(sub)
+		if (sub)
 		{
 			const char *setString = keyString(sub);
 			const char *setStrings[] = {"presetstorage", "precommit", "postcommit"};
 			SetPlacements setPlacement = preSetStorage;
-			while(setPlacement != setEnd)
-			{	
-				if(strstr(setString, setStrings[setPlacement]))
+			while (setPlacement != setEnd)
+			{
+				if (strstr(setString, setStrings[setPlacement]))
 				{
 					ksAppendKey(placements->setKS[setPlacement], keyDup(cur));
 				}
 				++setPlacement;
 			}
-		}	
+		}
 		keySetBaseName(lookup, "get");
 		sub = ksLookup(cutKS, lookup, 0);
-		if(sub)
+		if (sub)
 		{
 			const char *getString = keyString(sub);
 			const char *getStrings[] = {"pregetstorage", "postgetstorage"};
 			GetPlacements getPlacement = preGetStorage;
-			while(getPlacement != getEnd)
-			{	
-				if(strstr(getString, getStrings[getPlacement]))
+			while (getPlacement != getEnd)
+			{
+				if (strstr(getString, getStrings[getPlacement]))
 				{
 					ksAppendKey(placements->getKS[getPlacement], keyDup(cur));
 				}
@@ -160,16 +163,15 @@ int elektraListOpen(Plugin *handle , Key *errorKey ELEKTRA_UNUSED)
 			}
 		}
 		keySetBaseName(lookup, "error");
-		sub = ksLookup(cutKS, lookup, 0);	
-		if(sub)
+		sub = ksLookup(cutKS, lookup, 0);
+		if (sub)
 		{
-
 			const char *errString = keyString(sub);
 			const char *errStrings[] = {"prerollback", "postrollback"};
 			ErrPlacements errPlacement = preRollback;
-			while(errPlacement != errEnd)
+			while (errPlacement != errEnd)
 			{	
-				if(strstr(errString, errStrings[errPlacement]))
+				if (strstr(errString, errStrings[errPlacement]))
 				{
 					ksAppendKey(placements->errKS[errPlacement], keyDup(cur));
 				}
@@ -196,7 +198,7 @@ int elektraListClose(Plugin *handle , Key *errorKey)
 	ksDel(placements->errKS[1]);
 	Key *cur;
 	ksRewind(placements->plugins);
-	while((cur = ksNext(placements->plugins)) != NULL)
+	while ((cur = ksNext(placements->plugins)) != NULL)
 	{
 		Plugin *slave;
 		slave = *(Plugin**)keyValue(cur);
@@ -218,14 +220,14 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 
 	//for every plugin in our list: load it, run the expected function (set/get/error) and close it again
 	KeySet *realPluginConfig = NULL;
-	while((current = traversalFunction(pluginKS)) != NULL)
+	while ((current = traversalFunction(pluginKS)) != NULL)
 	{
 		const char *name = keyString(current);
 		Key *searchKey = keyNew("/", KEY_END);
 		keyAddBaseName(searchKey, name);
 		Key *lookup = ksLookup(plugins, searchKey, 0);
 		keyDel(searchKey);
-		if(lookup)
+		if (lookup)
 		{
 			slave = *(Plugin**)keyValue(lookup);
 		}
@@ -252,33 +254,36 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 			keyDel(userCutPoint);
 			keyDel(sysConfCutPoint);
 			keyDel(toRemove);
-			slave = elektraPluginOpen(name, modules, realPluginConfig, parentKey);
-			if(!slave)
-			    goto error;
+			slave = elektraPluginOpen(name, modules, ksDup(realPluginConfig), parentKey);
+			ksDel(realPluginConfig);
+			if (!slave)
+			{
+				goto error;
+			}
 			Key *slaveKey = keyNew(name, KEY_BINARY, KEY_SIZE, sizeof(Plugin *), KEY_VALUE, &slave, KEY_END);
 			keySetName(slaveKey, "/");
 			keyAddBaseName(slaveKey, name);
 			ksAppendKey(plugins, keyDup(slaveKey));
-			keyDel(slaveKey);			
+			keyDel(slaveKey);
+		}
 
-		}
-		if(op == GET)
+		if (op == GET)
 		{
-			if((slave->kdbGet(slave, returned, parentKey)) == -1)
+			if ((slave->kdbGet(slave, returned, parentKey)) == -1)
 			{
 				goto error;
 			}
 		}
-		else if(op == SET)
+		else if (op == SET)
 		{
-			if((slave->kdbSet(slave, returned, parentKey)) == -1)
+			if ((slave->kdbSet(slave, returned, parentKey)) == -1)
 			{
 				goto error;
 			}
 		}
-		else if(op == ERR)
+		else if (op == ERR)
 		{
-			if((slave->kdbError(slave, returned, parentKey)) == -1)
+			if ((slave->kdbError(slave, returned, parentKey)) == -1)
 			{
 				goto error;
 			}
@@ -286,17 +291,17 @@ static int runPlugins(KeySet *pluginKS, KeySet *modules, KeySet *plugins, KeySet
 	}
 	ksDel(configOrig);
 	return 1;
+
 error:
 	ksDel(configOrig);
-	if(slave)
+	if (slave)
 	{
 		elektraPluginClose(slave, parentKey);
 	}
-	if(realPluginConfig)
-		ksDel(realPluginConfig);
 	elektraModulesClose(modules, NULL);
 	return -1;
 }
+
 int elektraListGet(Plugin *handle , KeySet *returned , Key *parentKey )
 {
 	if (!strcmp(keyName(parentKey), "system/elektra/modules/list"))
@@ -322,8 +327,9 @@ int elektraListGet(Plugin *handle , KeySet *returned , Key *parentKey )
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		return 1; 
+		return 1;
 	}
+
 	Placements *placements = elektraPluginGetData(handle);
 	KeySet *config = elektraPluginGetConfig(handle);
 	GetPlacements currentPlacement = placements->getCurrent;
@@ -331,10 +337,12 @@ int elektraListGet(Plugin *handle , KeySet *returned , Key *parentKey )
 	ksRewind(pluginKS);
 	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, GET, ksNext);
 	placements->getCurrent = ((++currentPlacement)%getEnd);
-	while(!placements->getCurrent)
+	while (!placements->getCurrent)
+	{
 		placements->getCurrent = ((++currentPlacement)%getEnd);
+	}
 	ksDel(pluginKS);
-	return ret; /* success */
+	return ret;
 }
 
 int elektraListSet(Plugin *handle , KeySet *returned , Key *parentKey )
@@ -346,11 +354,13 @@ int elektraListSet(Plugin *handle , KeySet *returned , Key *parentKey )
 	ksRewind(pluginKS);
 	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, SET, ksPop);
 	placements->setCurrent = ((++currentPlacement)%setEnd);
-	while(!placements->setCurrent)
+	while (!placements->setCurrent)
+	{
 		placements->setCurrent = ((++currentPlacement)%setEnd);
+	}
 	ksDel(pluginKS);
 
-	return ret; /* success */
+	return ret;
 }
 
 int elektraListError(Plugin *handle , KeySet *returned , Key *parentKey )
@@ -362,10 +372,12 @@ int elektraListError(Plugin *handle , KeySet *returned , Key *parentKey )
 	ksRewind(pluginKS);
 	int ret = runPlugins(pluginKS, placements->modules, placements->plugins, ksDup(config), returned, parentKey, ERR, ksPop);
 	placements->errCurrent = ((++currentPlacement)%errEnd);
-	while(!placements->errCurrent)
+	while (!placements->errCurrent)
+	{
 		placements->errCurrent = ((++currentPlacement)%errEnd);
+	}
 	ksDel(pluginKS);
-	return ret; /* success */
+	return ret;
 }
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(list)

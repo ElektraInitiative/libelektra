@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef DOC_H
 #define DOC_H
 
@@ -5,7 +13,7 @@
 
 /**
  * @defgroup plugin Plugins
- * 
+ *
  * @brief Elektra plugin framework
  *
  * @since version 0.4.9, Elektra can dynamically load different key storage
@@ -51,7 +59,7 @@
  *   \n
  *   Other persistent storage then a file is not handled within
  *   this document because it involves many other issues.
- *   For files the resolver plugin already takes care for
+ *   For files the resolver plugin already takes care of
  *   transactions and rollback.
  *   So the storage plugin is the source and dump as known
  *   from pipes and filters.
@@ -97,7 +105,7 @@
  *
  * @ingroup plugin
  *
- * @param number the error number from src/liberror/specification
+ * @param number the error number from src/error/specification
  * @param key to write the error to
  * @param text additional text for the user
  */
@@ -113,7 +121,7 @@
  *
  * @ingroup plugin
  *
- * @param number the error number from src/liberror/specification
+ * @param number the error number from src/error/specification
  * @param key to write the error to
  * @param formatstring a format string as in printf
  * @param ... further arguments as in printf
@@ -122,7 +130,7 @@
 #undef ELEKTRA_SET_ERRORF
 
 /**
- * @brief Adds an warning in the keys metadata.
+ * @brief Adds a warning in the keys metadata.
  *
  * Include kdberrors.h to make it work:
  *
@@ -130,7 +138,7 @@
  *
  * @ingroup plugin
  *
- * @param number the warning number from src/liberror/specification
+ * @param number the warning number from src/error/specification
  * @param key to write the error to
  * @param formatstring a format string as in printf
  * @param ... further arguments as in printf
@@ -139,7 +147,7 @@
 #undef ELEKTRA_ADD_WARNINGF
 
 /**
- * @brief Adds an warning in the keys metadata.
+ * @brief Adds a warning in the keys metadata.
  *
  * Include kdberrors.h to make it work:
  *
@@ -147,7 +155,7 @@
  *
  * @ingroup plugin
  *
- * @param number the warning number from src/liberror/specification
+ * @param number the warning number from src/error/specification
  * @param key to write the error to
  * @param text additional text for the user
  */
@@ -199,6 +207,8 @@
  *
  * If your plugin has no useful way to startup without config, the
  * module loader would not be able to load the module.
+ * We need, however, to still load the plugin to get the contract.
+ *
  * To solve that problem the module loader adds the configuration key
  * /module. Even if your plugin is basically not able to startup
  * successfully, it should still provide a fallback when /module
@@ -206,6 +216,10 @@
  * called successfully later on.
  *
  * @snippet doc.c doc module
+ *
+ * Note that for plugins where the contract will be altered based
+ * on configuration this specific configuration should be considered.
+ * In fact the idea of /module is to get the correct contract.
  *
  *
  * @retval -1 on error, your plugin will be removed then and the missing
@@ -269,7 +283,7 @@ int elektraDocClose(Plugin *handle, Key *warningsKey);
  * Retrieve information from a permanent storage to construct
  * a keyset.
  *
- * @section intro .
+ * @section intro Introduction
  *
  * The elektraDocGet() function handle everything related
  * to receiving keys.

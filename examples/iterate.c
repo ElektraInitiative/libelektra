@@ -1,7 +1,10 @@
-/* iterate.c
+/**
+ * @file
  *
- * This program shows some possibilites how to iterate
- * over a KeySet in an elegant way. */
+ * @brief some possibilites how to iterate ver a KeySet in an elegant way.
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <kdb.h>
 #include <kdbextension.h>
@@ -20,7 +23,7 @@ Key* ksNextDir(KeySet *ks)
 
 	while ((cur = ksNext(ks)) != 0)
 	{
-		if(!keyIsBelow(startKey, cur))
+		if (!keyIsBelow(startKey, cur))
 			return cur;
 	}
 
@@ -80,7 +83,7 @@ int main(void)
 	while ((cur=ksNext(ks)) != 0)
 	{	/* Iterates over inactive keys and prints their name */
 		if (keyIsInactive(cur)==0) continue;
-		printf ("%s %s\n", keyName(cur), keyComment(cur));
+		printf ("%s %s\n", keyName(cur), keyString(keyGetMeta(cur, "comment")));
 	}
 
 	return 0;

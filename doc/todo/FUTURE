@@ -70,6 +70,15 @@ Remove/Refactor/Rename obsolete/not needed methods:
 
 
 
+== Compatibility ==
+
+1.* does not need to be compatible with 0.* version.
+
+- remove mountpoint name concept
+ - system/elektra/mountpoints/system\/info\/uname/mountpoint key not needed (system/info/uname already in name present!)
+- remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
+
+
 == Conventions ==
 
 conventions should be used everywhere
@@ -79,33 +88,7 @@ warnings should have array conventions #0, #10...
 
 == Libraries ==
 
-move meta data stuff to own library
-
-move data structure to libelektra_keyset
-move kdb to libelektra_kdb
-move plugin functions to libelektra_plugin
-
-
-so we would have:
-
- --------        --------
- | app  |        |plugin|
- --------        --------
-    |               |
- -------------   ----------------
- |elektra_kdb|   |elektra_plugin|
- -------------   ----------------
-          |        |
-          ----------
-              |
-          ----------------   ------------------------
-          |elektra_keyset|---|elektra_meta, tools,..|
-          ----------------   ------------------------
-
-+ no circular deps
-+ linking against minimal interfaces (applications do not need plugin
-  interface)
-
+- remove libelektra.so (only have new splitted libraries)
 
 
 === Plugin API Changes ===
@@ -114,32 +97,17 @@ maybe kdbConstruct and kdbDestruct needed too?
 
 allow non-file/resolver based backends
 
+read function symbols from contract (and not duplicated)
+	have elektraPluginContract separated from elektraPluginGet?
+
+enhance API to: (next to get/set/error)
+	- contract? allows us to fetch contract without get hacks
+	- commit/rollback (so that plugin=backend)
 
 
 == Error handling ==
 
 translation of exceptions to different languages
-(or by GUI only?) -> exporttranslations already exists
-
-
-
-== Elektra types ==
-
-customized type checkers
-	which can be integrated within Frontend generator
-	(for checking default values and preloading)
-	maybe even checking of values within frontend
-
-
-== Schema ==
-
-convert elektra schema to xsd, yaml or similar
-base schema (user/system)
-plugins like fstab, hosts should provide their schema
-schema for config of plugins + generation of code for them
-
-define vectors, maps, class hierarchy
-upgrade by global schema files similar to ldconfig
 
 
 == Vision ==
@@ -170,7 +138,6 @@ Lazy+Bind Mounting
 	kdbDup to copy current state (avoid multiple bootstrapping)
 	leaves architecture as is -> possibility for any frontend and caching strategy + plays nicely with recursive plugins
 
-
 Concurrent Plugin Processing:
 	The plugins must be processed in the correct sequence because
 	they change keys and have side effects.
@@ -181,12 +148,6 @@ Concurrent Plugin Processing:
 	that no backend commits its changes.
 	The concurrent processing of the plugins
 	is possible for both |kdbGet()| and |kdbSet()|.
-
-GlobalPlugins:
-	for notification start/end
-	for typechecker, constraintchecker that needs global view
-	for journaling
-	for git-commit
 
 non-file based storage plugins (backends):
 	nvram

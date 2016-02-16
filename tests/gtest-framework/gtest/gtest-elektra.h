@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Common Elektra extensions for GTest
+ * @brief Common Elektra extensions for GTest
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -57,7 +57,7 @@ public:
  * Hardcoded with resolver+dump
  *
  * useful to quickly mount something in tests
- * and determine the config file pathes (+unlink provided)
+ * and determine the config file paths (+unlink provided)
  */
 class Mountpoint
 {
@@ -120,10 +120,10 @@ public:
 
 		Backend b;
 		b.setMountpoint(Key(mountpoint, KEY_END), KeySet(0, KS_END));
-		b.addPlugin(KDB_DEFAULT_RESOLVER);
+		b.addPlugin(PluginSpec(KDB_DEFAULT_RESOLVER));
 		b.useConfigFile(configFile);
-		b.addPlugin("dump");
-		b.addPlugin("error");
+		b.addPlugin(PluginSpec("dump"));
+		b.addPlugin(PluginSpec("error"));
 		KeySet ks;
 		KDB kdb;
 		Key parentKey("system/elektra/mountpoints", KEY_END);
@@ -170,7 +170,7 @@ void outputGTest(kdb::KeySet tocheck, std::string name)
 		<< std::endl;
 	std::cout << name << ".rewind();" << std::endl;
 	tocheck.rewind();
-	while(tocheck.next())
+	while (tocheck.next())
 	{
 		std::cout << name << ".next();" << std::endl;
 		std::cout << "EXPECT_EQ(" << name

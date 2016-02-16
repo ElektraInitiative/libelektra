@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef FSTAB_HPP
 #define FSTAB_HPP
 
@@ -13,22 +21,22 @@ public:
 	FstabCommand();
 	~FstabCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
 		return "v";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "<key-name> <device> <mpoint> <type> <options>";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Create a new fstab entry.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return
 			"Because of the format of fstab entries\n"
@@ -41,11 +49,11 @@ public:
 			"because it expects the fstab plugin to rewrite\n"
 			"the name to a proper one.\n"
 			"\n"
-			"So the command will only work with the fstab plugin mounted"
+			"So the command will only work with the fstab plugin mounted\n"
 			;
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

@@ -19,17 +19,20 @@ happens in 2 passes, which is needed because there can be files with no title.
 
 * Links starting with `@ref`, `#` for anchors and `http` for extern links
   wont be touched.
-* Links to source code files wont be touched ether.
+* All other links to markdown or arbitrary source files will be converted.
 * To refer to a folder use `/` at the end of a link. This feature was introduced
   to be compatible with github, where you can show the content of a folder in
   combination with the README.md of the containing folder. Links ending with
   `/` will be changed to `/README.md`.
-* To refer to source files, start the link with http://libelektra.org/tree/master/
 * Anchors wont work in imported markdown pages.
+
+## Link Validation
+
+The link validation works with a simple try to `fopen` the file,
+which the link refers to.
 
 ## Further improvements (which will be introduced in a later version):
 
-* redirect links to code files right
 * optimize pdf output (also UTF-8 encoding)
-* valid link checker
 * if title contains --, this should be @brief
+* add http link print

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "datacontainer.hpp"
 
 QString DataContainer::oldName() const
@@ -30,7 +38,7 @@ void DataContainer::setOldMetadata(TreeViewModel *metadata)
 	//convert TreeViewModel to QVariantMap
 	QVariantMap oldMDMap;
 
-	if(metadata)
+	if (metadata)
 	{
 		foreach (ConfigNodePtr node, metadata->model())
 		{

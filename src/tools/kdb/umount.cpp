@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <umount.hpp>
 
 #include <kdb.hpp>
@@ -22,11 +30,13 @@ int UmountCommand::execute(Cmdline const& cl)
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey);
 
-	if (cl.verbose) Backends::findBackend(cl.arguments[0], conf, true);
+	std::string name = cl.createKey(0).getName();
 
-	if (Backends::umount(cl.arguments[0], conf) == 0)
+	if (cl.verbose) Backends::findBackend(name, conf, true);
+
+	if (Backends::umount(name, conf) == 0)
 	{
-		cerr << "Mountpoint " << cl.arguments[0] << " does not exist" << endl;
+		cerr << "Mountpoint " << name << " does not exist" << endl;
 		return 1;
 	}
 

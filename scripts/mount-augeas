@@ -7,6 +7,9 @@ fi
 $KDB mount /etc/fstab system/fstab augeas lens=Fstab.lns
 $KDB mount /etc/hosts system/hosts augeas lens=Hosts.lns
 $KDB mount /etc/passwd system/passwd augeas lens=Passwd.lns
-$KDB mount /etc/vsftpd.conf system/sw/vsftpd augeas lens=Vsftpd.lns
-$KDB mount /etc/ssh/sshd_config system/sw/sshd augeas lens=Sshd.lns
 $KDB mount /etc/security/limits.conf system/limits augeas lens=Limits.lns
+
+$KDB mount /etc/ssh/sshd_config system/sw/sshd augeas lens=Sshd.lns
+$KDB mount /etc/vsftpd.conf system/sw/vsftpd augeas lens=Vsftpd.lns
+$KDB mount /etc/ntpd.conf system/sw/ntpd augeas lens=Ntpd.lns
+$KDB mount /etc/ntp.conf system/sw/ntp augeas lens=Ntp.lns

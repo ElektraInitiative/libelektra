@@ -6,12 +6,12 @@ find_package(Doxygen)
 #
 #target  is man, html or latex
 #folder  is the folder where it will be built
-#file    is the file name to set a depencency to
+#file    is the file name to set a dependency to
 #install is where it should be installed
 #
 macro (do_doc target folder file install)
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
-	file(MAKE_DIRECTORY(${folder}))
+	file(MAKE_DIRECTORY ${folder})
 
 	add_custom_command (
 		OUTPUT ${folder}/${file}
@@ -93,6 +93,10 @@ if (DOXYGEN_FOUND)
 		add_custom_target (pdf ALL
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf
 		)
+
+		# needed because some .tex files are written after refman.tex (#470):
+		add_custom_target (.NOTPARALLEL pdf)
+
 	endif (WITH_LATEX)
 else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")

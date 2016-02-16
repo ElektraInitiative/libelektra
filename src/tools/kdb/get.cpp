@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <get.hpp>
 
 #include <kdb.hpp>
@@ -11,7 +19,7 @@
 using namespace std;
 using namespace kdb;
 
-GetCommand::GetCommand() : kdb(root)
+GetCommand::GetCommand()
 {}
 
 namespace
@@ -20,26 +28,26 @@ namespace
 void printOptions(option_t options)
 {
 	// :'<,'>s/\(.*\)/^Iif(options \& \1) std::cout << "\1 "; 
-	if(options & KDB_O_DEL) std::cout << "KDB_O_DEL ";
-	if(options & KDB_O_POP) std::cout << "KDB_O_POP ";
-	if(options & KDB_O_NODIR) std::cout << "KDB_O_NODIR ";
-	if(options & KDB_O_DIRONLY) std::cout << "KDB_O_DIRONLY ";
-	if(options & KDB_O_NOREMOVE) std::cout << "KDB_O_NOREMOVE ";
-	if(options & KDB_O_REMOVEONLY) std::cout << "KDB_O_REMOVEONLY ";
-	if(options & KDB_O_INACTIVE) std::cout << "KDB_O_INACTIVE ";
-	if(options & KDB_O_SYNC) std::cout << "KDB_O_SYNC ";
-	if(options & KDB_O_SORT) std::cout << "KDB_O_SORT ";
-	if(options & KDB_O_NORECURSIVE) std::cout << "KDB_O_NORECURSIVE ";
-	if(options & KDB_O_NOCASE) std::cout << "KDB_O_NOCASE ";
-	if(options & KDB_O_WITHOWNER) std::cout << "KDB_O_WITHOWNER ";
-	if(options & KDB_O_NOALL) std::cout << "KDB_O_NOALL ";
+	if (options & KDB_O_DEL) std::cout << "KDB_O_DEL ";
+	if (options & KDB_O_POP) std::cout << "KDB_O_POP ";
+	if (options & KDB_O_NODIR) std::cout << "KDB_O_NODIR ";
+	if (options & KDB_O_DIRONLY) std::cout << "KDB_O_DIRONLY ";
+	if (options & KDB_O_NOREMOVE) std::cout << "KDB_O_NOREMOVE ";
+	if (options & KDB_O_REMOVEONLY) std::cout << "KDB_O_REMOVEONLY ";
+	if (options & KDB_O_INACTIVE) std::cout << "KDB_O_INACTIVE ";
+	if (options & KDB_O_SYNC) std::cout << "KDB_O_SYNC ";
+	if (options & KDB_O_SORT) std::cout << "KDB_O_SORT ";
+	if (options & KDB_O_NORECURSIVE) std::cout << "KDB_O_NORECURSIVE ";
+	if (options & KDB_O_NOCASE) std::cout << "KDB_O_NOCASE ";
+	if (options & KDB_O_WITHOWNER) std::cout << "KDB_O_WITHOWNER ";
+	if (options & KDB_O_NOALL) std::cout << "KDB_O_NOALL ";
 
-	if(options & ckdb::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
-	if(options & ckdb::KDB_O_CREATE) std::cout << "KDB_O_CREATE ";
-	if(options & ckdb::KDB_O_NOCASCADING) std::cout << "KDB_O_NOCASCADING ";
-	if(options & ckdb::KDB_O_NOSPEC) std::cout << "KDB_O_NOSPEC ";
-	if(options & ckdb::KDB_O_NODEFAULT) std::cout << "KDB_O_NODEFAULT ";
-	if(options & ckdb::KDB_O_CALLBACK) std::cout << "KDB_O_CALLBACK";
+	if (options & ckdb::KDB_O_SPEC) std::cout << "KDB_O_SPEC ";
+	if (options & ckdb::KDB_O_CREATE) std::cout << "KDB_O_CREATE ";
+	if (options & ckdb::KDB_O_NOCASCADING) std::cout << "KDB_O_NOCASCADING ";
+	if (options & ckdb::KDB_O_NOSPEC) std::cout << "KDB_O_NOSPEC ";
+	if (options & ckdb::KDB_O_NODEFAULT) std::cout << "KDB_O_NODEFAULT ";
+	if (options & ckdb::KDB_O_CALLBACK) std::cout << "KDB_O_CALLBACK";
 }
 
 
@@ -108,16 +116,15 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet *ks, ckdb::Key *key, ckdb::K
 }
 
 
+
 int GetCommand::execute (Cmdline const& cl)
 {
 	if (cl.arguments.size() != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
-	root.setName(cl.arguments[0]);
-	if (!root.isValid())
-	{
-		throw invalid_argument(cl.arguments[0] + " is not an valid keyname");
-	}
+
+	kdb::Key root = cl.createKey(0);
+	kdb::KDB kdb (root);
 
 	std::string n;
 	if (cl.all)

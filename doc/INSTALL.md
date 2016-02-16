@@ -25,7 +25,7 @@ To install Elektra use:
 	sudo make install
 
 To uninstall Elektra use (will not be very clean,
-e.g. it will not remove directories and *.pyc files):
+e.g. it will not remove directories and `*.pyc` files):
 
 	sudo make uninstall
 
@@ -43,12 +43,16 @@ Then use:
 	cpack
 
 which should create a package for distributions where a Generator is
-implemented. See [this cmake file](cmake/ElektraPackaging.cmake) for available Generators
+implemented. See [this cmake file](/cmake/ElektraPackaging.cmake) for available Generators
 and send a merge request for your system.
 
 ## TROUBLESHOOTING ##
 
 If you encounter the problem that the library can not be found (output like this)
+
+	kdb: error while loading shared libraries: libelektra-core.so.4: cannot open shared object file: No such file or directory
+
+or:
 
 	kdb: error while loading shared libraries: libelektratools.so: cannot open shared object file: No such file or directory
 

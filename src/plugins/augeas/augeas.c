@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief A plugin that makes use of libaugeas to read and write configuration files
+ * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -14,7 +14,7 @@
 /* used for asprintf */
 #define _GNU_SOURCE
 
-#include "augeas.h"
+#include "aug.h"
 
 #define ELEKTRA_SET_GENERAL_ERROR(id, parentKey, message) \
 	do { \
@@ -49,7 +49,7 @@ void keySetOrderMeta(Key *key, int order)
 	char *buffer;
 	asprintf (&buffer, "%d", order);
 	keySetMeta (key, "order", buffer);
-	free (buffer);
+	elektraFree (buffer);
 }
 
 static int keyCmpOrderWrapper(const void *a, const void *b)
@@ -90,7 +90,7 @@ static const char *getAugeasError(augeas* augeasHandle)
 
 			const char *format = "%s\n\tposition: %s:%s\n\tmessage: %s\n\tlens: %s";
 			size_t messageSize = strlen(lens) + strlen(line) + strlen(character) + strlen(message) + strlen(format);
-			char *buffer = malloc (messageSize);
+			char *buffer = elektraMalloc (messageSize);
 			sprintf(buffer, format, augeasError, line, character, message);
 			reason = buffer;
 		}
@@ -113,7 +113,7 @@ static Key *createKeyFromPath(Key *parentKey, const char *treePath)
 
 	size_t baseSize = keyGetNameSize(key);
 	size_t keyNameSize = strlen (baseName) + baseSize + 1;
-	char *newName = malloc (keyNameSize);
+	char *newName = elektraMalloc (keyNameSize);
 
 	if (!newName) return 0;
 
@@ -123,7 +123,7 @@ static Key *createKeyFromPath(Key *parentKey, const char *treePath)
 	strcat (newName, baseName);
 
 	keySetName(key, newName);
-	free (newName);
+	elektraFree (newName);
 
 	return key;
 }
@@ -160,7 +160,7 @@ static int removeOrphan(augeas *handle, const char *treePath, void *data)
 		char **matches;
 		asprintf (&nodeMatch, "%s/*", treePath);
 		int numChildNodes = aug_match (handle, nodeMatch, &matches);
-		free (nodeMatch);
+		elektraFree (nodeMatch);
 
 		/* if the node is a leaf node we can safely delete it */
 		if (numChildNodes == 0)
@@ -179,9 +179,9 @@ static int removeOrphan(augeas *handle, const char *treePath, void *data)
 					pruneTree = 0;
 				}
 				keyDel (childKey);
-				free (matches[i]);
+				elektraFree (matches[i]);
 			}
-			free (matches);
+			elektraFree (matches);
 
 			if (pruneTree)
 			{
@@ -204,7 +204,7 @@ static int foreachAugeasNode(augeas *handle, const char *treePath,
 	/* must be non NULL for aug_match to return matches */
 	char **matches = (char **) 1;
 	int numMatches = aug_match (handle, matchPath, &matches);
-	free (matchPath);
+	elektraFree (matchPath);
 
 	if (numMatches < 0) return numMatches;
 
@@ -222,15 +222,15 @@ static int foreachAugeasNode(augeas *handle, const char *treePath,
 
 		if (result < 0) break;
 
-		free (curPath);
+		elektraFree (curPath);
 	}
 
 	for (; i < numMatches; i++)
 	{
-		free (matches[i]);
+		elektraFree (matches[i]);
 	}
 
-	free (matches);
+	elektraFree (matches);
 
 	return result;
 }
@@ -247,7 +247,7 @@ static char *loadFile(FILE *fh)
 
 	if (fileSize > 0)
 	{
-		content = malloc (fileSize * sizeof(char) + 1);
+		content = elektraMalloc (fileSize * sizeof(char) + 1);
 		if (content == 0) return 0;
 		int readBytes = fread (content, sizeof(char), fileSize, fh);
 
@@ -258,7 +258,7 @@ static char *loadFile(FILE *fh)
 	}
 	else if (fileSize == 0)
 	{
-		content = malloc (1);
+		content = elektraMalloc (1);
 		if (content == 0) return 0;
 		*content = (char) 0;
 	}
@@ -304,7 +304,7 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 
 	if (ret < 0)
 	{
-		free (keyArray);
+		elektraFree (keyArray);
 		return -1;
 	}
 
@@ -318,13 +318,13 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 		asprintf (&nodeName, AUGEAS_TREE_ROOT "%s",
 				(keyName (key) + prefixSize));
 		aug_set (augeasHandle, nodeName, keyString (key));
-		free (nodeName);
+		elektraFree (nodeName);
 	}
 
-	free (keyArray);
+	elektraFree (keyArray);
 
 	/* remove keys not present in the KeySet */
-	struct OrphanSearch *data = malloc (sizeof(struct OrphanSearch));
+	struct OrphanSearch *data = elektraMalloc (sizeof(struct OrphanSearch));
 
 	if (!data) return -1;
 
@@ -333,7 +333,7 @@ static int saveTree(augeas* augeasHandle, KeySet* ks, const char* lensPath,
 
 	foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &removeOrphan, data);
 
-	free (data);
+	elektraFree (data);
 
 	/* build the tree */
 	ret = aug_text_retrieve (augeasHandle, lensPath, AUGEAS_CONTENT_ROOT,
@@ -354,7 +354,7 @@ int elektraAugeasOpen(Plugin *handle, Key *parentKey)
 		asprintf (&errormessage, "Unable to initialize augeas: %s",
 				aug_error_message (augeasHandle));
 		ELEKTRA_SET_ERROR(85, parentKey, errormessage);
-		free (errormessage);
+		elektraFree (errormessage);
 		return -1;
 	}
 
@@ -369,7 +369,7 @@ int elektraAugeasClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	if (augeasHandle)
 	{
 		aug_close (augeasHandle);
-		augeasHandle = 0;
+		elektraPluginSetData (handle, 0);
 	}
 
 	return 0;
@@ -417,7 +417,7 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 	/* convert the string into an augeas tree */
 	ret = loadTree (augeasHandle, lensPath, content);
-	free (content);
+	elektraFree (content);
 
 	if (ret < 0)
 	{
@@ -432,7 +432,7 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	Key *key = keyDup (parentKey);
 	ksAppendKey (append, key);
 
-	struct KeyConversion *conversionData = malloc (
+	struct KeyConversion *conversionData = elektraMalloc (
 			sizeof(struct KeyConversion));
 
 	if (!conversionData)
@@ -448,7 +448,7 @@ int elektraAugeasGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &convertToKey,
 			conversionData);
 
-	free (conversionData);
+	elektraFree (conversionData);
 
 	if (ret < 0)
 	{
@@ -501,7 +501,7 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 		/* convert the string into an augeas tree */
 		ret = loadTree (augeasHandle, lensPath, content);
-		free (content);
+		elektraFree (content);
 
 		if (ret < 0)
 		{
@@ -515,7 +515,7 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	if (ret < 0)
 	{
 		fclose (fh);
-		/* TODO: this is not always an Augeas error (could be an malloc error) */
+		/* TODO: this is not always an Augeas error (could be an elektraMalloc error) */
 		ELEKTRA_SET_AUGEAS_ERROR(augeasHandle, parentKey);
 	}
 
@@ -529,12 +529,13 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1;
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(augeas){
-return elektraPluginExport ("augeas",
-		ELEKTRA_PLUGIN_GET, &elektraAugeasGet,
-		ELEKTRA_PLUGIN_SET, &elektraAugeasSet,
-		ELEKTRA_PLUGIN_OPEN, &elektraAugeasOpen,
-		ELEKTRA_PLUGIN_CLOSE, &elektraAugeasClose,
-		ELEKTRA_PLUGIN_END);
+Plugin * ELEKTRA_PLUGIN_EXPORT(augeas)
+{
+	return elektraPluginExport ("augeas",
+			ELEKTRA_PLUGIN_GET, &elektraAugeasGet,
+			ELEKTRA_PLUGIN_SET, &elektraAugeasSet,
+			ELEKTRA_PLUGIN_OPEN, &elektraAugeasOpen,
+			ELEKTRA_PLUGIN_CLOSE, &elektraAugeasClose,
+			ELEKTRA_PLUGIN_END);
 }
 

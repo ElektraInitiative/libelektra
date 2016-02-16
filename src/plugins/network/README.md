@@ -1,9 +1,10 @@
 - infos = Information about network plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = check
+- infos/needs =
 - infos/placements = presetstorage
+- infos/status = maintained libc
 - infos/description = Checks keys if they contain a valid ip address
 
 ## Introduction ##

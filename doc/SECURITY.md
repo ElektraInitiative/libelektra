@@ -8,10 +8,10 @@ a daemon or some kind of distributed configuration.
 
 ## Files and Environment Variables ##
 
-system/ pathes are never effected by environment variables.
+system/ paths are never effected by environment variables.
 They always use the build-in KDB_DB_SYSTEM path.
 
-user/ pathes, on the other hand, are resolved by:
+user/ paths, on the other hand, are resolved by:
  1.) metadata "owner", only to be modified by the program
  2.) the environment variable USER
      So in crontab scripts you should have
@@ -25,7 +25,7 @@ user/ pathes, on the other hand, are resolved by:
      in that script.
 This owner is appended to KDB_DB_HOME.
 
-All files below those pathes might be modified by elektra programs.
+All files below those paths might be modified by elektra programs.
 By making KDB_DB_SYSTEM world-writeable, the users might overwrite
 the configuration of others.
 

@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <fstab.hpp>
 
 #include <kdb.hpp>
@@ -21,24 +29,19 @@ int FstabCommand::execute(Cmdline const& cl)
 		throw invalid_argument("number of arguments not correct, need 5, 6 or 7");
 	}
 
-	string keyname = cl.arguments[0];
-
 	KeySet conf;
-	Key parentKey(keyname, KEY_END);
+	Key parentKey = cl.createKey(0);
 	kdb.get(conf, parentKey);
 	printWarnings(cerr, parentKey);
-	Key k = conf.lookup(keyname);
+	Key k = conf.lookup(parentKey);
 
 	if (!k)
 	{
-		k = Key(keyname, KEY_END);
+		k = cl.createKey(0);
 		conf.append (k);
 	}
 
-	if (!k.isValid())
-	{
-		throw invalid_argument("keyname is not valid");
-	}
+	std::string keyname = k.getName();
 
 	string dumpfreq = "0";
 	if (argc >= 6)

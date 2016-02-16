@@ -44,26 +44,26 @@ Ni_PRIVATE int BufGetC(file_buf * restrict b)
 {
    int c;
 
-   if(b->pos >= b->buffer.num && !feof(b->stream))
+   if (b->pos >= b->buffer.num && !feof(b->stream))
    {
       //We need more data and can pull it.
 
-      if(b->buffer.num + 2 <= b->buffer.cap
+      if (b->buffer.num + 2 <= b->buffer.cap
       || Ds_ResizeVector_uc(&b->buffer, b->buffer.cap << 1))
       {
          //We now have space, possibly as a result of just expanding.
 
          //Get a char; if it's not eof, set next char in buffer to it.
-         if((c = fgetc(b->stream)) != EOF)
+         if ((c = fgetc(b->stream)) != EOF)
          {
-            if((b->buffer.buf[b->buffer.num++] = c) == '\r')
+            if ((b->buffer.buf[b->buffer.num++] = c) == '\r')
             {
                //Translate \r or \r\n to just \n.
 
                b->buffer.buf[b->buffer.num - 1] = '\n';
 
                //Get the next one and ignore it if it's \n.
-               if((c = fgetc(b->stream)) != '\n' && c != EOF)
+               if ((c = fgetc(b->stream)) != '\n' && c != EOF)
                   b->buffer.buf[b->buffer.num++] = c;
             }
          }

@@ -7,9 +7,9 @@
 #
 # GTEST_ROOT will only be honored in the very first invocation
 
-if(NOT GOOGLETEST_ROOT)
-	if(NOT (GTEST_ROOT STREQUAL ""))
-		if(EXISTS ${GTEST_ROOT}/CMakeLists.txt)
+if (NOT GOOGLETEST_ROOT)
+	if (NOT (GTEST_ROOT STREQUAL ""))
+		if (EXISTS ${GTEST_ROOT}/CMakeLists.txt)
 			set(GOOGLETEST_ROOT
 				"${GTEST_ROOT}"
 				CACHE INTERNAL

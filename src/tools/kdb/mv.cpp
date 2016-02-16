@@ -1,9 +1,19 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <mv.hpp>
 
 #include <kdb.hpp>
 #include <rename.hpp>
 #include <cmdline.hpp>
 #include <keysetio.hpp>
+
+#include <helper/keyhelper.hpp>
 
 #include <iostream>
 
@@ -13,16 +23,6 @@ using namespace kdb;
 MvCommand::MvCommand()
 {}
 
-Key baseName(Key key1, Key key2)
-{
-	if (key1.isBelowOrSame(key2)) return key2;
-	if (key2.isBelowOrSame(key1)) return key1;
-
-	if (key1.getNamespace() == key2.getNamespace()) return Key(key1.getNamespace(), KEY_END);
-
-	return Key("/", KEY_END);
-}
-
 int MvCommand::execute (Cmdline const& cl)
 {
 	if (cl.arguments.size() != 2)
@@ -31,20 +31,12 @@ int MvCommand::execute (Cmdline const& cl)
 	}
 
 	KeySet conf;
-	Key sourceKey(cl.arguments[0], KEY_END);
-	if (!sourceKey.isValid())
-	{
-		throw invalid_argument("Source given is not a valid keyname");
-	}
+	Key sourceKey = cl.createKey(0);
 
-	Key destKey(cl.arguments[1], KEY_END);
-	if (!destKey.isValid())
-	{
-		throw invalid_argument("Destination given is not a valid keyname");
-	}
-	string newDirName = cl.arguments[1];
+	Key destKey = cl.createKey(1);
+	string newDirName = destKey.getName();
 
-	Key root = baseName(sourceKey, destKey);
+	Key root = tools::helper::commonKeyName(sourceKey, destKey);
 	if (cl.verbose) std::cout << "using common basename: " << root.getName() << std::endl;
 	kdb.get(conf, root);
 	KeySet tmpConf = conf;

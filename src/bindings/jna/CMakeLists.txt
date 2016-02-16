@@ -42,7 +42,7 @@ if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
 		install_jar(libelektra share/java)
 
 	else(jna)
-		remove_binding(jna "jna jar file not found, searched in standard pathes and /usr/share/java")
+		remove_binding(jna "jna jar file not found, searched in standard paths and /usr/share/java")
 	endif(jna)
 
 else()

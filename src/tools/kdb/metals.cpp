@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <metals.hpp>
 
 #include <iostream>
@@ -13,22 +21,24 @@ MetaLsCommand::MetaLsCommand()
 
 int MetaLsCommand::execute (Cmdline const& cl)
 {
-
-	if(cl.arguments.size() != 1){
+	int ret = 0;
+	if (cl.arguments.size() != 1){
 		throw invalid_argument("1 argument required");
 	}
 
-	Key root (cl.arguments[0], KEY_END);
-	if (!root.isValid())
-	{
-		throw invalid_argument(cl.arguments[0] + " is not a valid keyname");
-	}
+	Key root = cl.createKey(0);
 
 	kdb.get(ks, root);
 
 	Key k = ks.lookup(root);
+
 	if (k)
 	{
+		if (cl.verbose)
+		{
+			std::cout << "Got key " << k.getName() << std::endl;
+		}
+
 		k.rewindMeta();
 		while (const Key meta = k.nextMeta())
 		{
@@ -43,10 +53,15 @@ int MetaLsCommand::execute (Cmdline const& cl)
 			}
 		}
 	}
+	else
+	{
+		std::cerr << "Did not find key" << std::endl;
+		ret = 1;
+	}
 
 	printWarnings(cerr, root);
 
-	return 0;
+	return ret;
 }
 
 MetaLsCommand::~MetaLsCommand()

@@ -1,16 +1,17 @@
 /**
- * \file
+ * @file
  *
- * \brief Tests for csvstorage plugin
+ * @brief Tests for csvstorage plugin
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdbconfig.h>
+#include <kdbease.h>
+#include <kdbhelper.h>
 
 #include <tests_plugin.h>
 
@@ -84,7 +85,7 @@ static void testwriteinvalidheader(const char *file)
 	PLUGIN_CLOSE();
 }
 
-static void testwritevalidemptycol(const char *file)
+static void testwritevalidemptycol(const char *file ELEKTRA_UNUSED)
 {
 
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, elektraFilename(), KEY_END);

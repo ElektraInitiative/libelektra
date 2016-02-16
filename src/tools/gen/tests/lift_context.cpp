@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "lift_context_dynamic.hpp"
 #include <kdb.hpp>
 
@@ -33,7 +41,7 @@ int main()
 	env.test.lift.write = false;
 
 	// write back to user/test/lift, see comments in lift.c
-	if(write)
+	if (write)
 	{
 		kdb.set(ks, "user/test/lift");
 	}

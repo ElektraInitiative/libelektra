@@ -16,6 +16,7 @@ cleanup()
 	rm -f $FILE
 }
 
+
 [ -e /dev/stdin ]
 exit_if_fail "For export/import /dev must be mounted"
 
@@ -30,22 +31,20 @@ do
 		continue;
 	fi
 
-	if [ $PLUGIN = "ini" ]
-	then
-		#TODO: broken
-		continue
-	fi
-
-
 	echo -------- $PLUGIN -----------
 
 	echo "Import with existing root"
+
+	if [ "x$PLUGIN" = "xini" ]
+	then
+		$KDB mount test.ini $ROOT $PLUGIN 
+	fi
 
 	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		$KDB set $ROOT "root" >/dev/null
 	else
-		$KDB set $ROOT "" > /dev/null    
+		$KDB set $ROOT "" > /dev/null
 	fi
 
 	exit_if_fail "could not set root"
@@ -59,7 +58,7 @@ do
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct one_value"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -86,7 +85,7 @@ do
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct one_value empty root"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -115,7 +114,7 @@ do
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct one_value empty root"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -149,7 +148,7 @@ do
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -166,9 +165,8 @@ do
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove root"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
-        #TODO: ini currently cannot represent the parentKey	    
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
 		test "`$KDB get $SIDE`" = val
@@ -191,7 +189,7 @@ do
 user/tests/script/key"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -221,7 +219,7 @@ user/tests/script/key"
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -262,7 +260,7 @@ user/tests/script/key"
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -276,7 +274,7 @@ user/tests/script/key"
 	diff $DATADIR/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	if [ "x$PLUGIN" != "xyajl" -a "x$PLUGIN" != "xini" ]
+	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		#TODO: yajl currently cannot hold values within
 		#directories, do not hardcode that
@@ -291,6 +289,11 @@ user/tests/script/key"
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove $ROOT"
 		
+	if [ "x$PLUGIN" = "xini" ]
+	then
+		$KDB umount $ROOT
+	fi
+
 done
 
 end_script

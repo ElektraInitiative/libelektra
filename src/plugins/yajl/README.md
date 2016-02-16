@@ -1,10 +1,11 @@
 - infos = Information about YAIL plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
-- infos/placements = getstorage setstorage
+- infos/needs =
 - infos/recommends = rebase directoryvalue comment type
+- infos/placements = getstorage setstorage
+- infos/status = maintained coverage unittest
 - infos/description = JSON using YAIL
 
 ## Introduction ##
@@ -28,6 +29,26 @@ Has only limited support for metadata.
 ## Dependencies ##
 
 - `libyajl-dev` (version 1 and 2 should work)
+
+## Types ##
+
+My metadata `type` the used types can be chosen:
+
+- `string`:
+  The JSON string type.
+- `boolean`:
+  The JSON boolean type (true or false)
+- `double`:
+  For JSON numbers.
+
+If no metadata `type` is given, the type is either:
+
+- `null` on binary null-key
+- `string` otherwise
+
+Any other type/value will still be treated as string, but
+the warning `#78` will be added because of the potential
+data loss.
 
 ## Special values ##
 
@@ -61,7 +82,7 @@ comments filter and directory value filter are highly recommended.
 
 
 This plugin was specifically designed and tested for the
-```OpenICC_device_config_DB``` although it is of course not limited
+`OpenICC_device_config_DB` although it is of course not limited
 to it.
 
 Mount the plugin:

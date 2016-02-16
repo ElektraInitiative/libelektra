@@ -1,27 +1,10 @@
-/***************************************************************************
-                     regexstore.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
@@ -107,7 +90,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 			parentKey,
 			"String %s of %s did not start with #<number><space>",
 			configString.c_str(), keyName(configKey));
-		return 0;
+		return nullptr;
 	}
 
 	int ret = regcomp(&regex, configString.c_str()+3, REG_EXTENDED);
@@ -121,7 +104,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 			"Could not compile regex %s, because: %s",
 			configString.c_str()+3, buffer);
 		regfree (&regex);
-		return 0;
+		return nullptr;
 	}
 
 
@@ -129,7 +112,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 
 	if (ret == REG_NOMATCH)
 	{
-		return 0;
+		return nullptr;
 	}
 
 	if (ret != 0)
@@ -141,7 +124,7 @@ Key *elektraRegexstoreProcess(Key *configKey,
 			"Regex exec returned error (not in manual for linux), because: %s",
 			buffer);
 		regfree (&regex);
-		return 0;
+		return nullptr;
 	}
 
 	std::string keyname;
@@ -259,7 +242,7 @@ int elektraRegexstoreGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 	ksNext(conf); // skip root
 	do {
 		int offset = 0;
-		Key *toAppend = 0;
+		Key *toAppend = nullptr;
 		do
 		{
 			toAppend = elektraRegexstoreProcess(
@@ -270,7 +253,7 @@ int elektraRegexstoreGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 			ksAppendKey(returned, toAppend);
 		} while (toAppend);
 	}
-	while(ksNext(conf) &&
+	while (ksNext(conf) &&
 		keyIsBelow(confParent, ksCurrent(conf)));
 
 	return 1; /* success */

@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief Plugin which acts as proxy and calls other plugins written in python
+ * @brief Plugin which acts as proxy and calls other plugins written in python
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -34,7 +34,7 @@ using namespace ckdb;
 static PyObject *Python_fromSWIG(ckdb::Key *key)
 {
 	swig_type_info *ti = SWIG_TypeQuery("kdb::Key *");
-	if (key == NULL || ti == NULL)
+	if (key == nullptr || ti == nullptr)
 		return Py_None;
 	return SWIG_NewPointerObj(new kdb::Key(key), ti, 0);
 }
@@ -42,7 +42,7 @@ static PyObject *Python_fromSWIG(ckdb::Key *key)
 static PyObject *Python_fromSWIG(ckdb::KeySet *keyset)
 {
 	swig_type_info *ti = SWIG_TypeQuery("kdb::KeySet *");
-	if (keyset == NULL || ti == NULL)
+	if (keyset == nullptr || ti == nullptr)
 		return Py_None;
 	return SWIG_NewPointerObj(new kdb::KeySet(keyset), ti, 0);
 }
@@ -77,7 +77,7 @@ typedef struct
 
 static int Python_AppendToSysPath(const char *path)
 {
-	if (path == NULL)
+	if (path == nullptr)
 		return 0;
 
 	PyObject *sysPath = PySys_GetObject((char *)"path");
@@ -90,7 +90,7 @@ static int Python_AppendToSysPath(const char *path)
 static PyObject *Python_CallFunction(PyObject *object, PyObject *args)
 {
 	if (!PyCallable_Check(object))
-		return NULL;
+		return nullptr;
 
 	PyObject *res = PyObject_CallObject(object, args ? args : PyTuple_New (0));
 	Py_XINCREF(res);
@@ -178,7 +178,7 @@ static void Python_Shutdown(moduleData *data)
 
 			/* clean up references */
 			Py_XDECREF(data->instance);
-			data->instance = NULL;
+			data->instance = nullptr;
 
 			/* destroy sub interpreter */
 			Py_EndInterpreter(data->tstate);
@@ -195,21 +195,23 @@ extern "C"
 int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	KeySet *config = elektraPluginGetConfig(handle);
-	if (ksLookupByName(config, "/module", 0) != NULL)
-		return 0; // by convention: success if /module exists
 
 	Key *script = ksLookupByName(config, "/script", 0);
-	if (script == NULL || !strlen(keyString(script)))
+	if (script == nullptr || !strlen(keyString(script)))
 	{
+		if (ksLookupByName(config, "/module", 0) != nullptr)
+		{
+			return 0; // by convention: success if /module exists
+		}
 		ELEKTRA_SET_ERROR(111, errorKey, "No python script set");
 		return -1;
 	}
 
 	/* create module data */
-	moduleData *data = new moduleData;
-	data->tstate     = NULL;
-	data->instance   = NULL;
-	data->printError = (ksLookupByName(config, "/print", 0) != NULL);
+	auto data = new moduleData;
+	data->tstate     = nullptr;
+	data->instance   = nullptr;
+	data->printError = (ksLookupByName(config, "/print", 0) != nullptr);
 	/* shutdown flag is integer by design. This way users can set the
 	 * expected behaviour without worring about default values
 	 */
@@ -237,11 +239,11 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		PyEval_InitThreads();
 
 		/* acquire GIL */
-		Python_LockSwap pylock(NULL);
+		Python_LockSwap pylock(nullptr);
 
 		/* create a new sub-interpreter */
 		data->tstate = Py_NewInterpreter();
-		if (data->tstate == NULL)
+		if (data->tstate == nullptr)
 		{
 			ELEKTRA_SET_ERROR(111, errorKey, "Unable to create sub intepreter");
 			goto error;
@@ -250,7 +252,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 
 		/* import kdb */
 		PyObject *kdbModule = PyImport_ImportModule("kdb");
-		if (kdbModule == NULL)
+		if (kdbModule == nullptr)
 		{
 			ELEKTRA_SET_ERROR(111, errorKey, "Unable to import kdb module");
 			goto error_print;
@@ -276,7 +278,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 			bname[bname_len - 3] = '\0';
 
 		PyObject *pModule = PyImport_ImportModule(bname);
-		if (pModule == NULL)
+		if (pModule == nullptr)
 		{
 			ELEKTRA_SET_ERRORF(111, errorKey,"Unable to import python script %s",
 					keyString(script));
@@ -288,7 +290,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		/* get class */
 		PyObject *klass = PyObject_GetAttrString(pModule, "ElektraPlugin");
 		Py_DECREF(pModule);
-		if (klass == NULL)
+		if (klass == nullptr)
 		{
 			ELEKTRA_SET_ERROR(111, errorKey,
 					"Module doesn't provide a ElektraPlugin class");
@@ -300,7 +302,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 		PyObject *inst = PyEval_CallObject(klass, inst_args);
 		Py_DECREF(klass);
 		Py_DECREF(inst_args);
-		if (inst == NULL)
+		if (inst == nullptr)
 		{
 			ELEKTRA_SET_ERROR(111, errorKey,
 					"Unable to create instance of ElektraPlugin");
@@ -313,7 +315,7 @@ int PYTHON_PLUGIN_FUNCTION(Open)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 	elektraPluginSetData(handle, data);
 
 	/* call python function */
-	return Python_CallFunction_Helper1(data, "open", errorKey);
+	return Python_CallFunction_Helper2(data, "open", config, errorKey);
 
 error_print:
 	if (data->printError)
@@ -328,7 +330,7 @@ error:
 int PYTHON_PLUGIN_FUNCTION(Close)(ckdb::Plugin *handle, ckdb::Key *errorKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data == NULL)
+	if (data == nullptr)
 		return 0;
 
 	int ret = Python_CallFunction_Helper1(data, "close", errorKey);
@@ -373,7 +375,7 @@ int PYTHON_PLUGIN_FUNCTION(Get)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	}
 
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL)
+	if (data != nullptr)
 		return Python_CallFunction_Helper2(data, "get", returned,
 				parentKey);
 	return 0;
@@ -383,7 +385,7 @@ int PYTHON_PLUGIN_FUNCTION(Set)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL)
+	if (data != nullptr)
 		return Python_CallFunction_Helper2(data, "set", returned,
 				parentKey);
 	return 0;
@@ -393,7 +395,7 @@ int PYTHON_PLUGIN_FUNCTION(Error)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 	ckdb::Key *parentKey)
 {
 	moduleData *data = static_cast<moduleData *>(elektraPluginGetData(handle));
-	if (data != NULL)
+	if (data != nullptr)
 		return Python_CallFunction_Helper2(data, "error", returned,
 				parentKey);
 	return 0;

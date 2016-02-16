@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef EDITKEYCOMMAND_HPP
 #define EDITKEYCOMMAND_HPP
 
@@ -20,10 +28,10 @@ public:
 	 * @param data The data needed to undo/redo the edit.
 	 * @param parent An optional parent command.
 	 */
-	explicit        EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent = 0);
+	explicit        EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent = nullptr);
 
-	virtual void    undo();
-	virtual void    redo();
+	virtual void    undo() override;
+	virtual void    redo() override;
 
 private:
 

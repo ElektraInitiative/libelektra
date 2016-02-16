@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KDBCONTEXT_HPP
 #define ELEKTRA_KDBCONTEXT_HPP
 
@@ -442,7 +450,7 @@ private:
 
 		// now roll everything back before all those with()
 		// and without()
-		while(!with_stack.empty())
+		while (!with_stack.empty())
 		{
 			auto s = with_stack.back();
 			with_stack.pop_back();

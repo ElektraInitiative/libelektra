@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef CMDLINE_HPP
 #define CMDLINE_HPP
 
@@ -13,11 +21,13 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 class Command;
 
 namespace kdb
 {
+	class Key;
 	class KeySet;
 }
 
@@ -60,11 +70,20 @@ public:
 	bool first;
 	bool second;
 	bool third;
+	bool withRecommends;
 	bool all; /*!< Consider all keys for lookup */
 	std::string format;
 	std::string plugins;
+	std::string globalPlugins;
 	std::string pluginsConfig;
 	std::string ns;
+	std::string editor;
+
+	typedef std::map<std::string, std::string> map;
+	map bookmarks;
+	std::string profile;
+
+	kdb::Key createKey(int pos) const;
 
 	kdb::KeySet getPluginsConfig(std::string basepath="user/") const;
 

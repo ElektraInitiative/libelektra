@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <metaset.hpp>
 
 #include <iostream>
@@ -18,10 +26,10 @@ int MetaSetCommand::execute (Cmdline const& cl)
 	{
 		throw invalid_argument ("Need 3 arguments");
 	}
-	string keyname = cl.arguments[0];
 	string metaname = cl.arguments[1];
 
-	Key parentKey(keyname, KEY_END);
+	Key parentKey = cl.createKey(0);
+	string keyname = parentKey.getName();
 	if (keyname[0] == '/')
 	{
 		// fix name for lookup

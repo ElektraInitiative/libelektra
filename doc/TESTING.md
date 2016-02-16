@@ -80,7 +80,7 @@ ABI relevant.
 ABI tests can be done on theses tests, too. But by nature from time to
 time these tests will fail.
 
-They are located [here](/tests/cunit).
+They are located [here](/tests/ctest).
 
 
 ### Module Tests ###
@@ -121,4 +121,3 @@ Bindings, other than C++ typically have their own way of testing.
  copy some import files to testcase_dir and run:
 
  /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
-

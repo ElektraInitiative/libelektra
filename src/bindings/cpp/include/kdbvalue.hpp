@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KDBVALUE_HPP
 #define ELEKTRA_KDBVALUE_HPP
 
@@ -227,7 +235,7 @@ public:
 	void unlock() {}
 };
 
-/**
+/*
  * This technique with the PolicySelector and Discriminator is taken
  * from the book  "C++ Templates - The Complete Guide"
  * by David Vandevoorde and Nicolai M. Josuttis, Addison-Wesley, 2002
@@ -236,6 +244,8 @@ public:
  * The technique allows users of the class Value to use any number
  * and order of policies as desired.
  */
+
+
 template <typename Base, int D>
 class Discriminator : public Base
 {
@@ -398,7 +408,7 @@ public:
 		Command::Func fun = [this] () -> Command::Pair
 		{
 			std::string oldName = m_key.getName();
-			m_key = static_cast<ckdb::Key*>(0);
+			m_key = static_cast<ckdb::Key*>(nullptr);
 			// after destructor we do not need to care about
 			// invariant anymore. But we need to care about
 			// thread safe m_key.
@@ -632,13 +642,13 @@ private:
 	/**
 	 * @brief Update to new value because of assignment
 	 */
-	void notifyInThread()
+	void notifyInThread() override
 	{
 		unsafeSyncCache(); // always called from save context
 	}
 
 
-	virtual void updateContext() const
+	virtual void updateContext() const override
 	{
 		std::string evaluatedName = m_context.evaluate(m_spec.getName());
 #if DEBUG && VERBOSE

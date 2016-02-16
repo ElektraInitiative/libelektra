@@ -1,9 +1,10 @@
 - infos = Information about the jni plugin is in keys below
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides =
+- infos/needs =
 - infos/placements =
+- infos/status = maintained configurable experimental -500 memleak
 - infos/description =
 
 # Generic Java plugin #
@@ -17,12 +18,12 @@ binding for your java-plugin may use something different, e.g. JNA.
 The requirements for the java bindings are:
 
 - needs to have the classes elektra/Key and elektra/KeySet with
- - an constructor that takes a C-Pointer as long (J)
- - an method "release" that gives up ownership (set internal pointer to NULL)
+ - a constructor that takes a C-Pointer as long (J)
+ - a method "release" that gives up ownership (set internal pointer to NULL)
 
-The java plugin itself needs to have following methods:
+The java plugin itself needs to have the following methods:
 
-- constructor without arguments (e.g. default constructor)
+- constructor without arguments (i.e. default constructor)
 - open with argument elektra/KeySet (the plugin's conf) and elektra/Key
 - close with argument elektra/Key
 - get with arguments elektra/KeySet and elektra/Key
@@ -108,6 +109,8 @@ Also explained
 
 ## Issues ##
 
+(Argumentation for -500 in status)
+
 - In Debian Wheezy you cannot use openjdk:
   you get a linker error because of some missing private SUN symbols.
   Maybe just the cmake mechanism to find java is broken.
@@ -115,5 +118,3 @@ Also explained
 - when this plugin is enabled, valgrind detects memory problems even if
   the plugin is not mounted.
 
-
-# Specific Java Plugin #

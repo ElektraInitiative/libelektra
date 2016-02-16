@@ -1,10 +1,18 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <kdb.hpp>
 #include "newkeycommand.hpp"
 
 NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *data, bool isBelow, QUndoCommand* parent)
 	: QUndoCommand(parent)
 	, m_parentNode(model->model().at(index))
-	, m_newNode(NULL)
+	, m_newNode(nullptr)
 	, m_value(data->newValue())
 	, m_metaData(data->newMetadata())
 {
@@ -14,7 +22,7 @@ NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *dat
 	QStringList newNameSplit = parentModel->getSplittedKeyname(newKey);
 	kdb::Key parentKey = m_parentNode->getKey();
 
-	if(!parentKey)
+	if (!parentKey)
 		parentKey = kdb::Key(m_parentNode->getPath().toStdString(), KEY_END);
 
 	QStringList parentNameSplit = parentModel->getSplittedKeyname(parentKey);
@@ -22,7 +30,7 @@ NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *dat
 	//check if the new key is directly below the parent
 	QSet<QString> diff = newNameSplit.toSet().subtract(parentNameSplit.toSet());
 
-	if(diff.count() > 1 || isBelow)
+	if (diff.count() > 1 || isBelow)
 		setText("newBranch");
 	else
 		setText("newKey");
@@ -49,7 +57,7 @@ void NewKeyCommand::redo()
 
 QStringList NewKeyCommand::cutListAtIndex(QStringList &list, int index)
 {
-	for(int i = 0; i < index; i++)
+	for (int i = 0; i < index; i++)
 		list.removeFirst();
 
 	return list;

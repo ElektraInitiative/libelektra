@@ -1,28 +1,10 @@
-/***************************************************************************
-          resolver.c  -  Skeleton of a plugin to be copied
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid plugin.                             *
- *   Simple fill the empty Resolver functions with your code and you are   *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "resolver.h"
 
@@ -56,7 +38,7 @@
 #if defined(__APPLE__)
 # define statSeconds(status) status.st_mtime
 # define statNanoSeconds(status) status.st_mtimespec.tv_nsec
-#elif defined(WIN32)
+#elif defined(_WIN32)
 # define statSeconds(status) status.st_mtime
 # define statNanoSeconds(status) 0
 #else
@@ -64,10 +46,17 @@
 # define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
 
-#if defined(__APPLE__) && defined(__MACH__)
-static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+#ifdef ELEKTRA_LOCK_MUTEX
+#if defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP)
+static pthread_mutex_t elektraResolverMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+#elif defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER)
+static pthread_mutex_t elektraResolverMutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
 #else
-static pthread_mutex_t elektra_resolver_mutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+static pthread_mutex_t elektraResolverMutex;
+static pthread_mutex_t elektraResolverInitMutex = PTHREAD_MUTEX_INITIALIZER;
+static unsigned char elektraResolverMutexInitialized = 0;
+#define ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION
+#endif
 #endif
 
 static void resolverInit (resolverHandle *p, const char *path)
@@ -113,9 +102,9 @@ static resolverHandle * elektraGetResolverHandle(Plugin *handle, Key *parentKey)
 
 static void resolverCloseOne (resolverHandle *p)
 {
-	free (p->filename); p->filename = 0;
-	free (p->dirname); p->dirname= 0;
-	free (p->tempfile); p->tempfile = 0;
+	elektraFree (p->filename); p->filename = 0;
+	elektraFree (p->dirname); p->dirname= 0;
+	elektraFree (p->tempfile); p->tempfile = 0;
 }
 
 static void resolverClose (resolverHandles *p)
@@ -124,7 +113,7 @@ static void resolverClose (resolverHandles *p)
 	resolverCloseOne(&p->dir);
 	resolverCloseOne(&p->user);
 	resolverCloseOne(&p->system);
-	free (p);
+	elektraFree (p);
 }
 
 /**
@@ -214,7 +203,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED,
 static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_trylock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_trylock(&elektraResolverMutex);
 	if (ret != 0)
 	{
 		if (errno == EBUSY // for trylock
@@ -244,7 +233,7 @@ static int elektraLockMutex(Key *parentKey ELEKTRA_UNUSED)
 static int elektraUnlockMutex(Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef ELEKTRA_LOCK_MUTEX
-	int ret = pthread_mutex_unlock(&elektra_resolver_mutex);
+	int ret = pthread_mutex_unlock(&elektraResolverMutex);
 	if (ret != 0)
 	{
 		ELEKTRA_ADD_WARNINGF(32, parentKey, "mutex unlock failed with message: %s",
@@ -380,12 +369,44 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, open)
 		return -1;
 	}
 
-	resolverHandles *p = malloc(sizeof(resolverHandles));
+	resolverHandles *p = elektraMalloc(sizeof(resolverHandles));
 	resolverInit (&p->spec, path);
 	resolverInit (&p->dir, path);
 	resolverInit (&p->user, path);
 	resolverInit (&p->system, path);
 
+#if defined(ELEKTRA_RESOLVER_RECURSIVE_MUTEX_INITIALIZATION)
+	// PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP is available in glibc only
+	// so we use another mutex for the initialization of the recursive mutex,
+	// since this section must be thread safe.
+	pthread_mutex_lock (&elektraResolverInitMutex);
+	if (!elektraResolverMutexInitialized)
+	{
+		pthread_mutexattr_t mutexAttr;
+		int mutexError;
+
+		if ((mutexError = pthread_mutexattr_init (&mutexAttr)) != 0)
+		{
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d", mutexError);
+			pthread_mutex_unlock (&elektraResolverInitMutex);
+			return -1;
+		}
+		if ((mutexError = pthread_mutexattr_settype (&mutexAttr, PTHREAD_MUTEX_RECURSIVE)) != 0)
+		{
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutexattr_settype returned %d", mutexError);
+			pthread_mutex_unlock (&elektraResolverInitMutex);
+			return -1;
+		}
+		if ((mutexError = pthread_mutex_init (&elektraResolverMutex, &mutexAttr)) != 0)
+		{
+			ELEKTRA_SET_ERRORF(35, errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d", mutexError);
+			pthread_mutex_unlock (&elektraResolverInitMutex);
+			return -1;
+		}
+		elektraResolverMutexInitialized = 1;
+	}
+	pthread_mutex_unlock (&elektraResolverInitMutex);
+#endif
 
 	// system and spec files need to be world-readable, otherwise they are
 	// useless
@@ -499,7 +520,7 @@ static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
 
 	if (pk->fd == -1)
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pk->filename) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Opening configuration file \"");
 		strcat (errorText, pk->filename);
@@ -508,7 +529,7 @@ static int elektraOpenFile(resolverHandle *pk, Key *parentKey)
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_SET_ERROR(26, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 		return -1;
 	}
 	return 0;
@@ -582,7 +603,7 @@ static int elektraMkdirParents(resolverHandle *pk, const char *pathname, Key *pa
 
 error:
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pathname) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Could not create directory \"");
 		strcat (errorText, pathname);
@@ -591,7 +612,7 @@ error:
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_SET_ERROR(74, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 		return -1;
 	}
 }
@@ -622,7 +643,7 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 
 	if (fstat(pk->fd, &buf) == -1)
 	{
-		char *errorText = malloc(
+		char *errorText = elektraMalloc(
 				strlen(pk->filename) + ERROR_SIZE*2 + 60);
 		strcpy (errorText, "Could not fstat to check for conflict \"");
 		strcat (errorText, pk->filename);
@@ -632,7 +653,7 @@ static int elektraCheckConflict(resolverHandle *pk, Key *parentKey)
 		strcat (errorText, "\" ");
 		elektraAddIdentity(errorText);
 		ELEKTRA_ADD_WARNING(29, parentKey, errorText);
-		free (errorText);
+		elektraFree (errorText);
 
 		ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
 		return -1;

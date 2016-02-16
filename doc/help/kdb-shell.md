@@ -37,12 +37,13 @@ The kdb shell offers a number of commands to interact with the key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 
 ## EXAMPLES
 
-To execute commands from a textfile, you can use:
-
-	cat commands.txt | kdb shell
+To execute commands from a textfile, you can use:  
+`cat commands.txt | kdb shell`
 
 ## SEE ALSO
 

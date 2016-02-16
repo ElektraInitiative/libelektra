@@ -15,7 +15,24 @@ Following shell expansions are used in this document:
 - make sure no TODO is in this file (resolve them first!)
 
 
-= Cleanup =
+
+= Tasks before Release =
+
+== Increment Version Number ==
+
+Increment version numbers in
+- CMakeLists.txt
+
+- Change VERSION variable in build-server
+
+export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
+export DVERSION=$VERSION-1
+ dch --newversion $DVERSION "New upstream version."
+ git-add debian/changelog
+ git-commit -m "Debian Package $DVERSION (UNRELEASED)"
+
+
+== Cleanup ==
 
 For the first few steps you have to work on branch master:
  git-checkout master
@@ -31,6 +48,7 @@ Clean up the mess left over:
 
 Make an empty builddirectory:
  mkdir ~build
+
 
 
 == Check ==
@@ -49,6 +67,9 @@ Rebuild cleanly, run all tests and also check for memleaks:
 Check if there are really >=91 or >=68 tests
 
 Check if [doc/todo/API] is fulfilled
+
+
+
 
 
 = Preperation =
@@ -87,10 +108,6 @@ export DVERSION=$VERSION-1
 Build deb:
  cd ~e && git-checkout debian
  git-merge --no-ff master -m "Merge for debian release $DVERSION"
-
- dch --newversion $DVERSION "New upstream version."
- git-add debian/changelog
- git-commit -m "Debian Package $DVERSION (UNRELEASED)"
 
 UNRELEASED -> unstable
 
@@ -198,5 +215,10 @@ Finish NEWS.md for new release (hashsum, add links where to download release, ch
 Add entry for release at main page
  editor README.md
 
-Finally check links and send out mail to list
+Check spelling, links and line length
+
+Add text also to
+ libelektra.org/releases
+
+Finally send out mail to list
 (Personal notice: see also NOTIFY)

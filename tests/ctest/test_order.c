@@ -1,17 +1,10 @@
-/***************************************************************************
- *          test_order.c  -  KeySet struct test suite
- *                  -------------------
- *  begin                : Thu Dez 12 2006
- *  copyright            : (C) 2006 by Markus Raab
- *  email                : elektra@markus-raab.org
- ****************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include <tests_internal.h>
 

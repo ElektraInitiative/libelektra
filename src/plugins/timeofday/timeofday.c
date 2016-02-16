@@ -1,35 +1,16 @@
-/***************************************************************************
-          timeofday.c  -  Skeleton of a plugin to be copied
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide libelektra.so a valid plugin.                             *
- *   Simple fill the empty _timeofday functions with your code and you are   *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
-
-#ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
-#endif
+#include <kdbhelper.h>
 
 #include "timeofday.h"
+
+#include <string.h>
 
 static inline void timeofday(char *t, struct timeval *start, struct timeval *now)
 {
@@ -81,7 +62,18 @@ int elektraTimeofdayOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	gettimeofday(&ti->start, 0);
 	ti->last = ti->start;
 
-	// fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
+	KeySet *config  = elektraPluginGetConfig(handle);
+	if (ksLookupByName(config, "/module", 0))
+	{
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			char t[24];
+			fprintf(stderr, "open (module)\t%s\n", elektraTimeofdayHelper (t, ti));
+		}
+	} else {
+		char t[24];
+		fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
+	}
 
 	return 0; /* success */
 }
@@ -91,7 +83,19 @@ int elektraTimeofdayClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	// char t[24];
 	// TimeofdayInfo *ti = elektraPluginGetData(handle);
 
-	// fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
+	KeySet *config  = elektraPluginGetConfig(handle);
+	TimeofdayInfo *ti = elektraPluginGetData(handle);
+	if (ksLookupByName(config, "/module", 0))
+	{
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			char t[24];
+			fprintf(stderr, "close (module)\t%s\n", elektraTimeofdayHelper (t, ti));
+		}
+	} else {
+		char t[24];
+		fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
+	}
 
 	/* How weird is that??
 	   ti gets modified after elektraTimeofdayHelper even though
@@ -99,7 +103,7 @@ int elektraTimeofdayClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 	   clean?
            Fixed by using fti */
 	TimeofdayInfo *fti = elektraPluginGetData(handle);
-	free(fti);
+	elektraFree (fti);
 
 	return 0; /* success */
 }
@@ -119,10 +123,7 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		position = "postgetstorage";
 	}
 
-	fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
-
-	Key *root = keyNew("system/elektra/modules/timeofday", KEY_END);
-	if (keyRel (root, parentKey) >= 0)
+	if (!strcmp(keyName(parentKey), "system/elektra/modules/timeofday"))
 	{
 		KeySet *pluginConfig = ksNew (30,
 			keyNew ("system/elektra/modules/timeofday",
@@ -145,10 +146,16 @@ int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 
-		fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
+		KeySet *config  = elektraPluginGetConfig(handle);
+		if (ksLookupByName(config, "/logmodule", 0))
+		{
+			fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
+		}
+
+		return 1;
 	}
 
-	keyDel (root);
+	fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
 }

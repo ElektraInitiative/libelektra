@@ -17,6 +17,10 @@ Alternative:
 This document describes what is missing in the documentation
 
 
+
+
+
+
 == ISSUES ==
 
 tutorials missing
@@ -53,6 +57,8 @@ add projects using elektra
 == OVERVIEW ==
 
 draw a big picture
+
+generate graphic for overview of plugins
 
 dissertation with full API docu and tutorials
 + with homepage in mind

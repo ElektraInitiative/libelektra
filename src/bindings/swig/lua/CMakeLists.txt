@@ -1,10 +1,10 @@
 include (${SWIG_USE_FILE})
 include(LibAddMacros)
 
-find_package (Lua52)
+find_package (Lua 5.1)
 
-if (NOT LUA52_FOUND)
-	remove_binding(swig_lua "lua52 not found")
+if (NOT LUA_FOUND)
+	remove_binding(swig_lua "Lua libs >= 5.2 not found")
 else()
 	message(STATUS "Include Binding swig_lua")
 
@@ -20,7 +20,7 @@ else()
 
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
 	swig_add_module (swig-lua lua kdb.i)
-	swig_link_libraries (swig-lua elektra ${LUA_LIBRARIES})
+	swig_link_libraries (swig-lua elektra-core elektra-kdb ${LUA_LIBRARIES})
 	set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)
 	set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME} PROPERTIES PREFIX "")
 

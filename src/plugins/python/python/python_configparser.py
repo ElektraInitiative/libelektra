@@ -5,7 +5,7 @@ class ElektraPlugin(object):
 	def __init__(self):
 		pass
 
-	def open(self, errorKey):
+	def open(self, config, errorKey):
 		print("[CLASS-PYTHON-C] open")
 		return 0
 

@@ -5,7 +5,7 @@ You should first read [elektra-plugins(7)](/src/plugins/) to get
 an idea about plugins.
 
 This document describes how [elektra-plugins(7)](/src/plugins/) are
-ordered with an [elektra-backend(7)](elektra-backend.md).
+ordered with [elektra-backends(7)](elektra-backends.md).
 
 Multiple plugins open up many ways in which they can be arranged.
 A simple way is to have one array with pointers to plugins.  To store a
@@ -47,18 +47,18 @@ Another use case is logging after a failure has happened.
 ## Placements
 
 The ordering of plugins inside these three arrays is controlled by
-[elektra-contracts(7)](elektra-contracts).
+[elektra-contracts(7)](elektra-contracts.md).
 Each of the three arrays has ten slots.  These slots have
 names to be referred to in the contract.
 
 Here you see a table that contains all names:
 
 	0     prerollback       getresolver         setresolver  
-	1     prerollback       pregetstorage      presetstorage 
-	2     prerollback       pregetstorage      presetstorage 
-	3     prerollback       pregetstorage      presetstorage 
-	4     prerollback       pregetstorage      presetstorage 
-	5      rollback            getstorage         setstorage 
+	1     prerollback       pregetstorage      presetstorage
+	2     prerollback       pregetstorage      presetstorage
+	3     prerollback       pregetstorage      presetstorage
+	4     prerollback       pregetstorage      presetstorage
+	5      rollback            getstorage         setstorage
 	6    postrollback      postgetstorage      precommit     
 	7    postrollback      postgetstorage         commit     
 	8    postrollback      postgetstorage     postcommit     
@@ -67,4 +67,3 @@ Here you see a table that contains all names:
 how the placement is influenced using infos/placement, infos/ordering
 and infos/stacking as described in
 [CONTRACT.ini](/doc/CONTRACT.ini).
-

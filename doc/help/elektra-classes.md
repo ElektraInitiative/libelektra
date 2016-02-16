@@ -20,7 +20,7 @@ The central data structure in Elektra is a
 It aggregates `Key` objects
 in order to describe configuration in an easy
 but complete way.
-As the name ''set'' already implies every `Key` in a
+As the name "set" already implies every `Key` in a
 `KeySet` has a unique name.
 A user can iterate over the `Key` objects of a `KeySet`.
 `KeySet` sorts the keys by their names.
@@ -32,7 +32,7 @@ order of the `Key` objects.
 Some configuration storage systems need
 this property, because they
 cannot remember a specific order.
-On the other hand, any particular order can easily be introduced 
+On the other hand, any particular order can easily be introduced
 (See [order](/doc/METADATA.ini)).
 
 On the one side
@@ -87,7 +87,7 @@ The modifications are not only
 faster, they also allow large atomic
 configuration upgrades, robust merging of settings and handling of
 complicated inter-relationships between keys without problematic
-interstages.
+intermediate steps.
 Elektrified applications, however, should be aware of conflicts.
 It can happen that the key database is
 changed while working with a `KeySet`.
@@ -99,4 +99,3 @@ For details and background
 [read more about elektra data structures](elektra-data-structures.md).
 For further information see
 [the API documentation](http://doc.libelektra.org/api/current/html/).
-

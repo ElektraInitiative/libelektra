@@ -1,33 +1,18 @@
-/***************************************************************************
-                     hexcode.c  -  Skeleton of a plugin
-                             -------------------
-    begin                : Fri May 21 2010
-    copyright            : (C) 2010 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This is the skeleton of the methods you'll have to implement in order *
- *   to provide a valid plugin.                                            *
- *   Simple fill the empty functions with your code and you are            *
- *   ready to go.                                                          *
- *                                                                         *
- ***************************************************************************/
-
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "hexcode.h"
 
 #ifndef HAVE_KDBCONFIG
 # include "kdbconfig.h"
 #endif
+
+#include <kdbhelper.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -38,7 +23,7 @@
   */
 static inline int elektraHexcodeConvFromHex(char c)
 {
-	if    (c == '0') return 0;
+	if (c == '0') return 0;
 	else if (c=='1') return 1;
 	else if (c=='2') return 2;
 	else if (c=='3') return 3;
@@ -128,7 +113,7 @@ int elektraHexcodeGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	CHexData *hd = elektraPluginGetData (handle);
 	if (!hd->buf)
 	{
-		hd->buf = malloc (1000);
+		hd->buf = elektraMalloc (1000);
 		hd->bufalloc = 1000;
 	}
 
@@ -226,7 +211,7 @@ int elektraHexcodeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_U
 	CHexData *hd = elektraPluginGetData (handle);
 	if (!hd->buf)
 	{
-		hd->buf = malloc (1000);
+		hd->buf = elektraMalloc (1000);
 		hd->bufalloc = 1000;
 	}
 
@@ -302,8 +287,8 @@ int elektraHexcodeClose(Plugin *handle, Key *key ELEKTRA_UNUSED)
 {
 	CHexData *hd = elektraPluginGetData (handle);
 
-	free (hd->buf);
-	free (hd);
+	elektraFree (hd->buf);
+	elektraFree (hd);
 
 	return 0;
 }

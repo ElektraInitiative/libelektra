@@ -10,6 +10,8 @@ if (HAS_MNTENT)
 		SOURCES
 			fstab.c
 			fstab.h
+		LINK_LIBRARIES
+			elektra-meta
 		)
 
 	install(DIRECTORY fstab DESTINATION ${TARGET_TEST_DATA_FOLDER})

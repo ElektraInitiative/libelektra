@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 %include "attribute.i"
 %include "std_string.i"
 %include "stdint.i"
@@ -120,8 +128,8 @@
  */
 %apply ssize_t { cursor_t }
 
-%ignore kdb::Va;
-%ignore kdb::KeySet::KeySet(Va va, size_t alloc, va_list ap);
+%ignore kdb::VaAlloc;
+%ignore kdb::KeySet::KeySet(VaAlloc va, va_list ap);
 %ignore kdb::KeySet::KeySet(size_t alloc, ...);
 %ignore kdb::KeySet::operator=;
 

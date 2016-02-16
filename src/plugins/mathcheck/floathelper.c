@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
@@ -8,7 +16,7 @@
 
 char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 {
-	if(buffer == NULL)
+	if (buffer == NULL)
 	{
 		bufSize = MAX_CHARS_DOUBLE;
 		buffer = elektraMalloc(bufSize);
@@ -19,14 +27,14 @@ char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 	locale = localeconv();
 	char sysSep = (locale->decimal_point)[0];
 
-	if(sysSep == ELEKTRA_DEFAULT_DECIMAL_POINT)
+	if (sysSep == ELEKTRA_DEFAULT_DECIMAL_POINT)
 	{
 		return buffer;
 	}
 	else
 	{
 		char *sepPtr = strchr(buffer, sysSep);
-		if(sepPtr == NULL)
+		if (sepPtr == NULL)
 		{
 			return buffer;
 		}
@@ -40,12 +48,12 @@ char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 
 double elektraEFtoF(const char *string)
 {
-	char *buffer = malloc(elektraStrLen(string));
+	char *buffer = elektraMalloc(elektraStrLen(string));
 	strcpy(buffer, string);
 	char *sepPtr = strchr(buffer, ELEKTRA_DEFAULT_DECIMAL_POINT);
-	if(sepPtr == NULL)
+	if (sepPtr == NULL)
 	{
-		free(buffer);
+		elektraFree (buffer);
 		return atof(string);
 	}
 	else
@@ -55,7 +63,7 @@ double elektraEFtoF(const char *string)
 		char sysSep = (locale->decimal_point)[0];
 		*sepPtr = sysSep;
 		double retval = atof(buffer);
-		free(buffer);
+		elektraFree (buffer);
 		return retval;
 	}
 }

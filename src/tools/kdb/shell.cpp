@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <shell.hpp>
 
 #include <kdb.hpp>
@@ -13,7 +21,7 @@ ShellCommand::ShellCommand() :
 	supportedCommands(
 			"kdbGet <name> .. get conf into current keyset\n"
 			"kdbSet <name> .. set conf from current keyset\n"
-			"keySetName <name> .. set name of current key\n"
+			"keySetName <name> .. set name of current key (without bookmarks!)\n"
 			"keySetMeta <name> <string> .. set meta of current key\n"
 			"keySetString <string> .. set string of current key\n"
 			"ksAppendKey .. append current key to current keyset\n"

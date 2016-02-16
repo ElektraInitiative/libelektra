@@ -1,9 +1,11 @@
 - infos = Information about ccode plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = code
+- infos/needs =
+- infos/recommends =
 - infos/placements = postgetstorage presetstorage
+- infos/status = maintained unittest nodep libc configurable
 - infos/description = Decoding/Encoding engine which escapes unwanted characters.
 
 ## Introduction ##
@@ -29,7 +31,7 @@ it is much easier to read.
 
 ## C ##
 
-In the language C, following escape characters are present.
+In the C language, the following escape characters are present.
 
 - `b`: backspace, hex: 08
 - `t`: horizontal tab, hex: 09

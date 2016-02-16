@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <tests.hpp>
 
 #include <vector>
@@ -35,7 +43,7 @@ TEST(meta, basic)
 	succeed_if (!strcmp(static_cast<const char*>(ckdb::keyValue(cmeta)), "str"), "could not set other meta");
 
 	const ckdb::Key *nmeta = test.getMeta<const ckdb::Key*>("not available");
-	succeed_if (nmeta == 0, "not available meta data did not give a null pointer");
+	succeed_if (nmeta == nullptr, "not available meta data did not give a null pointer");
 
 	const Key meta = test.getMeta<const Key>("mystr");
 	succeed_if (meta, "null key");
@@ -48,7 +56,7 @@ TEST(meta, basic)
 	succeed_if (!strcmp(str, "str"), "could not get meta as c-string");
 
 	const char * nstr = test.getMeta<const char*>("not available");
-	succeed_if (nstr == 0, "did not get null pointer on not available meta data");
+	succeed_if (nstr == nullptr, "did not get null pointer on not available meta data");
 
 	succeed_if (test.getMeta<int>("not available") == 0, "not default constructed");
 	succeed_if (test.getMeta<std::string>("not available") == "", "not default constructed");
@@ -77,7 +85,7 @@ TEST(meta, iter)
 
 	succeed_if (meta, "key is a not null key");
 
-	Key end = static_cast<ckdb::Key*>(0); // key = 0
+	Key end = static_cast<ckdb::Key*>(nullptr); // key = 0
 	succeed_if (!end, "key is a null key");
 
 	int count = 0;

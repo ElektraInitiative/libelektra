@@ -1,11 +1,11 @@
 /**
-* @file
-*
-* @brief Tests for filecheck plugin
-*
-* @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-*
-*/
+ * @file
+ *
+ * @brief Tests for filecheck plugin
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ *
+ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +18,7 @@ static void testBom(const char *filename, int reject, int expected)
 {
 	Key *parentKey = keyNew("user/tests/filecheck", KEY_VALUE, srcdir_file(filename), KEY_END);
 	KeySet *conf;
-	if(!reject)
+	if (!reject)
 	{
 		conf = NULL;
 	}
@@ -40,7 +40,7 @@ static void testNull(const char *filename, int reject, int expected)
 {
 	Key *parentKey = keyNew("user/tests/filecheck", KEY_VALUE, srcdir_file(filename), KEY_END);
 	KeySet *conf;
-	if(!reject)
+	if (!reject)
 	{
 		conf = NULL;
 	}
@@ -62,7 +62,7 @@ static void testLEConsistency(const char *filename, int reject, int expected)
 {
 	Key *parentKey = keyNew("user/tests/filecheck", KEY_VALUE, srcdir_file(filename), KEY_END);
 	KeySet *conf;
-	if(!reject)
+	if (!reject)
 	{
 		conf = NULL;
 	}
@@ -84,7 +84,7 @@ static void testLEcrlf(const char *filename, int reject, int expected)
 {
 	Key *parentKey = keyNew("user/tests/filecheck", KEY_VALUE, srcdir_file(filename), KEY_END);
 	KeySet *conf;
-	if(!reject)
+	if (!reject)
 	{
 		conf = NULL;
 	}
@@ -108,7 +108,7 @@ static void testEncoding(const char *filename, int reject, int expected)
 {
 	Key *parentKey = keyNew("user/tests/filecheck", KEY_VALUE, srcdir_file(filename), KEY_END);
 	KeySet *conf;
-	if(!reject)
+	if (!reject)
 	{
 		conf = NULL;
 	}

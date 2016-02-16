@@ -30,7 +30,8 @@ elektra-glossary(7) -- glossary of Elektra
 ## Technical Concepts
 
 - [Backends](elektra-backends.md):
-  A collection of **plugins** to be mounted.
+  A collection of **plugins** to be **mounted**.
+  A **backend** typically is responsible to read and write a configuration file.
 
 - [Bootstrapping](elektra-bootstrapping.md):
   To read the mounting configuration and mount during `kdbOpen()`.
@@ -42,7 +43,7 @@ elektra-glossary(7) -- glossary of Elektra
   Contracts state the purpose, functionality and requirements of **plugins**.
 
 - [Mounting](elektra-mounting.md):
-  To persistently and permanently include a backend in the **global key database**.
+  To persistently and permanently include a **backend** in the **global key database**.
 
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.
@@ -60,11 +61,11 @@ elektra-glossary(7) -- glossary of Elektra
   The absence of keys or values.
 
 - **pop**:
-  used in ksPop() and @ref KDB_O_POP means to remove
+  used in `ksPop()` and @ref KDB_O_POP means to remove
   a key from a keyset.
 
 - **delete**:
-  or abbr. del, used in keyDel(), ksDel() and @ref KDB_O_DEL means to free a key or keyset. The memory
+  or abbr. del, used in `keyDel()`, `ksDel()` and @ref KDB_O_DEL means to free a key or keyset. The memory
   can be used for something else afterwards.
 
 - **remove**:

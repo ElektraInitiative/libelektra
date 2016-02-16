@@ -18,8 +18,8 @@ Cow keys for mmap storage
 profiler:
 	search for slow parts
 
-malloc trace:
-	reduce mallocs
+elektraMalloc trace:
+	reduce elektraMallocs
 
 keySet:
 	make statistics how many keys typical applications need
@@ -43,7 +43,7 @@ Key unchanged always checked correctly?
 
 check if anything was really changed making key dirty
 
-optimize a key to use a single malloc
+optimize a key to use a single elektraMalloc
 	(under typical circumstances)
 	have all memory of a Key in a single allocation block
 	or use internally memory management which can be in mmap?
@@ -67,7 +67,7 @@ iconv:
 
 getString in C++
 
-optimization: single malloc per key, name unchangeable?
+optimization: single elektraMalloc per key, name unchangeable?
 	Mmap custom storage, cow, realloc only when too large
 	Limit: only do when necessary!!
 

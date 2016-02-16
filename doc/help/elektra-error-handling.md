@@ -55,7 +55,7 @@ the adding of warning information is possible:
   setting error information is prohibited.  Warning information is, however,
   very useful to tell the user the circumstance that some actions during
   cleanup failed.
-  
+
 - Also in `kdbOpen()`, only adding warning information is allowed.
   If `kdbOpen()` is not able to open a plugin, the affected backend will be
   dropped out.  The user is certainly interested why that happened.  But it
@@ -63,7 +63,7 @@ the adding of warning information is possible:
   not even access the faulty part of the key hierarchy.  An exception
   to this rule is if `kdbOpen()` fails to open the default backend.
   This situation will induce an faulty state.
-  
+
 - In `kdbSet()`, the cleaning up of resources involves calling
   plugins.  But during this process Elektra is in a faulty state, so only
   adding of warning information is allowed.  This ensures that the original
@@ -82,7 +82,7 @@ useful when more than one fact needs to be reported.
 
 Reporting errors is a critical task.  Users expect different aspects:
 
-- The \emph{user of the application} does not want to see any
+- The **user of the application** does not want to see any
   error message at all.  If it is inevitable, he or she wants little,
   but very concrete information, about what he or she needs to do.
   The message should be short and concise.  Some error information
@@ -93,21 +93,20 @@ Reporting errors is a critical task.  Users expect different aspects:
   the user may have additional knowledge about the other program which
   has caused the problem.  The user is more likely to decide correctly
   by which strategy the configuration shall be restored.
-- The \emph{user of the library} wants more detailed information.
+- The **user of the library** wants more detailed information.
   Categories of how severe the error is can help to decide how to proceed.
   Even more important is the information if it makes sense to try the
   same action again.  If, for example, an unreliable network connection
   or file system is used, the same action can work in a second try.
-- A \emph{developer of the
-  library}\footnote{Library refers to both Elektra's core and plugins.}
+- A **developer of the library** (Library refers to both Elektra's core and plugins.)
   wants full information about anything needed to be able to reproduce
   and locate potential bugs. Ideally the error information should
   even mention the file and line where the error occurred. This can
   help developers to decide if there is a bug inside Elektra or if the
   problem lies somewhere else.
 - Vast information is needed to support
-  correct error handling in \empha[programming language]{other programming
-  languages}.  In languages supporting exceptions, class name, inheritance
+  correct error handling in *other programming languages*.
+  In languages supporting exceptions, class name, inheritance
   or interface information may be necessary.  Language specific extensions
   are, however, not limited to exceptions.  Other ways of handling
   errors are continuations or `longjmp` in C.  A plugin is free to add,

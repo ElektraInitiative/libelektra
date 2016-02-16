@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
@@ -14,7 +22,7 @@ class Cmdline;
 class CommandException : public std::exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char* what() const throw() override
 	{
 		return "A situation had a appeared where the command had to abort";
 	}
@@ -22,10 +30,15 @@ public:
 
 class CommandAbortException : public CommandException
 {
+	const char * msg;
 public:
-	virtual const char* what() const throw()
+	CommandAbortException () : msg(0)
+	{}
+	CommandAbortException (const char * msg_) : msg(msg_)
+	{}
+	virtual const char* what() const throw() override
 	{
-		return "Command aborted";
+		return msg?msg:"Command aborted";
 	}
 };
 

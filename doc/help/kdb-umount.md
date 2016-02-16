@@ -15,6 +15,8 @@ Unmount backend from key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Show which mountpoints were considered.
 
@@ -22,4 +24,4 @@ Unmount backend from key database.
 
 - [kdb-mount(7)](kdb-mount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins(7)](elektra-plugins.md).
+- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

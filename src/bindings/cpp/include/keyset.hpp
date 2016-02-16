@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KEYSET_HPP
 #define ELEKTRA_KEYSET_HPP
 
@@ -21,12 +29,13 @@ class KeySetReverseIterator;
  *
  * when ... is same type as va_list
  */
-struct Va
+struct VaAlloc
 {
-	Va(){}
+	explicit VaAlloc(size_t size) :
+		alloc (size)
+	{}
+	size_t alloc;
 };
-
-const Va va = Va();
 
 /**
  * @brief A keyset holds together a set of keys.
@@ -46,8 +55,8 @@ public:
 	inline KeySet(ckdb::KeySet *k);
 	inline KeySet(const KeySet &other);
 
-	inline explicit KeySet(size_t alloc, ...);
-	inline explicit KeySet(Va va, size_t alloc, va_list ap);
+	inline explicit KeySet(size_t alloc, ...) ELEKTRA_SENTINEL;
+	inline explicit KeySet(VaAlloc alloc, va_list ap);
 
 	inline ~KeySet ();
 
@@ -79,12 +88,14 @@ public:
 	cursor_t getCursor() const;
 
 	Key pop();
+	Key at (cursor_t pos) const;
 
 	KeySet cut (Key k);
 
 	Key lookup (const Key &k, const option_t options = KDB_O_NONE) const;
 	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
-	Key at (cursor_t pos) const;
+	template <typename T>
+	T get(std::string const & name, const option_t options = KDB_O_NONE) const;
 
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef KeySetIterator iterator;
@@ -396,9 +407,9 @@ inline KeySet::KeySet (const KeySet &other)
  *
  * @copydoc ksVNew
  */
-inline KeySet::KeySet (Va, size_t alloc, va_list av)
+inline KeySet::KeySet (VaAlloc alloc, va_list av)
 {
-	ks = ckdb::ksVNew (alloc, av);
+	ks = ckdb::ksVNew (alloc.alloc, av);
 }
 
 /**
@@ -531,7 +542,7 @@ inline void KeySet::copy (const KeySet &other)
  */
 inline void KeySet::clear ()
 {
-	ckdb::ksCopy(ks,0);
+	ckdb::ksCopy(ks,nullptr);
 }
 
 /**
@@ -635,6 +646,20 @@ inline Key KeySet::pop()
 }
 
 /**
+ * @brief Lookup a key by index
+ *
+ * @param pos cursor position
+ *
+ * @return the found key
+ */
+inline Key KeySet::at (cursor_t pos) const
+{
+	if (pos < 0)
+		pos += size();
+	return Key(ckdb::ksAtCursor(ks, pos));
+}
+
+/**
  * @copydoc ksCut()
  */
 inline KeySet KeySet::cut (Key k)
@@ -670,19 +695,58 @@ inline Key KeySet::lookup (std::string const & name, option_t const options) con
 	return Key(k);
 }
 
-/**
- * @brief Lookup a key by index
- *
- * @param pos cursor position
- *
- * @return the found key
- */
-inline Key KeySet::at (cursor_t pos) const
+template <typename T>
+struct KeySetTypeWrapper;
+
+template <typename T>
+struct KeySetTypeWrapper
 {
-	if (pos < 0)
-		pos += size();
-	return Key(ckdb::ksAtCursor(ks, pos));
+	T operator() (KeySet const & ks, std::string const & name, option_t const options) const
+	{
+		Key k = ks.lookup (name, options);
+		if (!k) throw kdb::KeyNotFoundException("key " + name + " was not found");
+		return k.get<T> ();
+	}
+};
+
+/**
+ * @brief Generic lookup+get for keysets
+ *
+ * @param name the key name to get
+ * @param options the options to be passed to lookup()
+ *
+ * @throw KeyNotFoundException if no key found
+ *
+ * @note To specialize more complex types (which are generic themselves) you
+ * can also specialize KeySetTypeWrapper<T>.
+ *
+ * Use
+ * @code
+#include <keysetget.hpp>
+ * @endcode
+ * to include specializations for std types.
+ *
+ * @return the requested type
+ */
+template <typename T>
+inline T KeySet::get(std::string const & name, option_t const options) const
+{
+	KeySetTypeWrapper<T> typeWrapper;
+	return typeWrapper (*this, name, options);
 }
+
+inline bool operator==(const KeySet& lhs, const KeySet& rhs)
+{
+	return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+
+inline bool operator!=(const KeySet& lhs, const KeySet& rhs)
+{
+	return !(lhs == rhs);
+}
+
+
 
 } // end of namespace kdb
 

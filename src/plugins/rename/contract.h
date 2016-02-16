@@ -1,8 +1,9 @@
-/*
- * contract.h
+/**
+ * @file
  *
- *  Created on: 25 Jul 2014
- *      Author: felixl
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 #ifndef CONTRACT_RENAME_H_

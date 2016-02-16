@@ -1,9 +1,10 @@
 - infos = Information about the tracer plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
+- infos/provides = tracing
 - infos/needs =
-- infos/provides = logging
 - infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
+- infos/status = maintained tested global
 - infos/description = Traces the execution path of a backend
 
 ## Introduction ##
@@ -43,3 +44,9 @@ Now the 3 placements in set are called.
     hello
 
 Now the 2 placements in get are called.
+
+## Module Loading ##
+
+Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
+
+    kdb check -c "logmodule=" tracer

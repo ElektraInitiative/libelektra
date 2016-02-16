@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include "resolver.h"
 
 #include <pwd.h>
@@ -24,31 +32,31 @@
  */
 int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
 {
-	if(!filename) return -1;
-	if(filename[0] == '0') return -1;
+	if (!filename) return -1;
+	if (filename[0] == '0') return -1;
 
 	size_t size = strlen(filename);
-	char *buffer = malloc(size + sizeof ("system/"));
+	char *buffer = elektraMalloc(size + sizeof ("system/"));
 	strcpy(buffer, "system/");
 	strcat(buffer, filename);
 
 	/* Because of the outbreak bugs these tests are not enough */
 	Key *check = keyNew(buffer, KEY_END);
-	if(!strcmp(keyName(check), "")) goto error;
-	if(!strcmp(keyName(check), "system")) goto error;
+	if (!strcmp(keyName(check), "")) goto error;
+	if (!strcmp(keyName(check), "system")) goto error;
 	keyDel(check);
-	free(buffer);
+	elektraFree (buffer);
 
 	/* Be strict, don't allow any .., even if it would be ok sometimes */
-	if(strstr (filename, "..") != 0) return -1;
+	if (strstr (filename, "..") != 0) return -1;
 
-	if(filename[0] == '/') return 0;
+	if (filename[0] == '/') return 0;
 
 	return 1;
 
 error:
 	keyDel (check);
-	free (buffer);
+	elektraFree (buffer);
 	return -1;
 }
 
@@ -81,13 +89,13 @@ static void elektraGenTempFilename(char *where, const char *filename)
 static void elektraResolveFinishByFilename(resolverHandle *p)
 {
 	size_t filenameSize = strlen(p->filename);
-	p->dirname = malloc (filenameSize);
+	p->dirname = elektraMalloc (filenameSize);
 	char * dup = strdup(p->filename);
 	//dirname might change the buffer, so better work on a copy
 	strcpy (p->dirname, dirname(dup));
-	free(dup);
+	elektraFree (dup);
 
-	p->tempfile = malloc (filenameSize + POSTFIX_SIZE);
+	p->tempfile = elektraMalloc (filenameSize + POSTFIX_SIZE);
 	elektraGenTempFilename(p->tempfile, p->filename);
 }
 
@@ -96,7 +104,7 @@ static int elektraResolveSystemBuildin(resolverHandle *p)
 {
 	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
 		+ strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
+	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, KDB_DB_SYSTEM);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
@@ -187,7 +195,7 @@ static int elektraResolveSystem(char variant, resolverHandle *p, Key *warningsKe
 	{
 		/* Use absolute path */
 		size_t filenameSize = strlen(p->path) + 1;
-		p->filename = malloc (filenameSize);
+		p->filename = elektraMalloc (filenameSize);
 		strcpy (p->filename, p->path);
 
 		elektraResolveFinishByFilename(p);
@@ -216,7 +224,7 @@ static void elektraResolveUsingHome(resolverHandle *p,
 
 	dirnameSize = keyGetNameSize(canonify) +
 			sizeof("/" KDB_DB_USER);
-	p->dirname = malloc(dirnameSize);
+	p->dirname = elektraMalloc(dirnameSize);
 	strcpy (p->dirname, keyName(canonify)
 			+4); // cut user, but leave slash
 	if (addPostfix && p->path[0] != '/')
@@ -240,7 +248,7 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 		bufsize = 16384;        /* Should be more than enough */
 	}
 
-	buf = malloc(bufsize);
+	buf = elektraMalloc(bufsize);
 	if (buf == NULL) {
 		return 0;
 	}
@@ -248,7 +256,7 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 	s = getpwuid_r(geteuid(), &pwd, buf, bufsize, &result);
 	if (result == NULL)
 	{
-		free(buf);
+		elektraFree (buf);
 		if (s != 0)
 		{
 			ELEKTRA_ADD_WARNING(90, warningsKey, strerror(s));
@@ -264,7 +272,7 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 	*/
 
 	elektraResolveUsingHome(p, pwd.pw_dir, true);
-	free(buf);
+	elektraFree (buf);
 
 	return 1;
 }
@@ -334,7 +342,7 @@ static int elektraResolveEnvUser(resolverHandle *p)
 			+ keyGetNameSize(canonify)
 			+ sizeof("/" KDB_DB_USER);
 
-	p->dirname= malloc (dirnameSize);
+	p->dirname= elektraMalloc (dirnameSize);
 	strcpy (p->dirname, KDB_DB_HOME "/");
 	strcat (p->dirname, keyName(canonify)
 			+5); // cut user/
@@ -353,7 +361,7 @@ static int elektraResolveBuildin(resolverHandle *p)
 	size_t dirnameSize = sizeof(KDB_DB_HOME "/")
 		+ sizeof("/" KDB_DB_USER);
 
-	p->dirname= malloc (dirnameSize);
+	p->dirname= elektraMalloc (dirnameSize);
 	strcpy (p->dirname, KDB_DB_HOME);
 	if (p->path[0] != '/')
 	{
@@ -367,7 +375,7 @@ static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED
 {
 	size_t filenameSize = sizeof(KDB_DB_SPEC)
 		+ strlen(p->path) + sizeof("/") + 1;
-	p->filename = malloc (filenameSize);
+	p->filename = elektraMalloc (filenameSize);
 	if (p->path[0] == '/')
 	{
 		strcpy (p->filename, p->path);
@@ -384,7 +392,7 @@ static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED
 }
 
 /**
- * @brief Recalculates all pathes given p->dirname
+ * @brief Recalculates all paths given p->dirname
  *
  * p->filename = p->dirname+p->path
  * p->dirname = dirname(p->filename)
@@ -397,7 +405,7 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 			+ strlen(p->path) +
 			+ sizeof("/");
 
-	p->filename = malloc (filenameSize);
+	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, p->dirname);
 	if (p->path[0] != '/')
 	{
@@ -406,7 +414,7 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 	strcat (p->filename, p->path);
 
 	// p->dirname might be wrong (too short), recalculate it:
-	free(p->dirname);
+	elektraFree (p->dirname);
 	elektraResolveFinishByFilename(p);
 }
 
@@ -435,7 +443,7 @@ static char *elektraGetCwd(Key *warningsKey)
 			if (errno != ERANGE)
 			{
 				// give up, we cannot handle the problem
-				free(cwd);
+				elektraFree (cwd);
 				ELEKTRA_ADD_WARNINGF(83, warningsKey, "getcwd failed with errno %d, defaulting to /", errno);
 				return 0;
 			}
@@ -461,7 +469,7 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 
 	char *dn = elektraStrDup(cwd);
 	char *dnOrig = dn;
-	
+
 	while (true)
 	{
 		// now put together the filename
@@ -487,7 +495,7 @@ static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
 	if (!strcmp(dn, "/"))
 	{
 		// nothing found, so we use most specific
-		free(p->filename);
+		elektraFree (p->filename);
 		p->filename = p->path[0] == '/' ? elektraFormat("%s%s", cwd, p->path) : elektraFormat("%s/" KDB_DB_DIR "/%s", cwd, p->path);
 	}
 

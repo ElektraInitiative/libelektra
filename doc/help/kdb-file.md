@@ -20,26 +20,24 @@ This command makes use of Elektra's `resolver` plugin which the uer can learn mo
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
-- `-N`, `--namespace ns`:
+- `-N`, `--namespace`=<ns>:
   Specify the namespace to use when writing cascading keys.
-  Default: value of `/sw/kdb/current/namespace` or user.
 
 ## KDB
 
-- `/sw/kdb/current/namespace`:
+- `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
-  Note, that as root you can set `user/sw/kdb/current/namespace` to `system` to
-  get the expected default.
-  (by default the namespace is user)
-
+  By default it is `user`, except if you are root, then it is `system`.
 
 
 ## EXAMPLES
 
 To find which file a key is stored in:  
-	`kdb file user/example/key`  
+`kdb file user/example/key`  
 
 ## SEE ALSO
 

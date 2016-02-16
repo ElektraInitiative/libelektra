@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_KEY_EXCEPT_HPP
 #define ELEKTRA_KEY_EXCEPT_HPP
 
@@ -24,6 +32,21 @@ public:
 			"because you called a method on a null key. "
 			"Make sure to check this with !key first";
 	}
+};
+
+class KeyNotFoundException : public Exception
+{
+public:
+	KeyNotFoundException (std::string message) :
+		m_str (message)
+	{}
+
+	virtual const char* what() const throw()
+	{
+		return  m_str.c_str();
+	}
+private:
+	std::string m_str;
 };
 
 class KeyTypeMismatch: public KeyException

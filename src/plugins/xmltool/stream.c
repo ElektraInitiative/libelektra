@@ -1,17 +1,10 @@
-/***************************************************************************
-                 stream.c  -  Streaming Methods
-                             -------------------
-    begin                : Sat Nov 23 2007
-    copyright            : (C) 2007 by Markus Raab
-    email                : elektra@markus-raab.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the BSD License (revised).                      *
- *                                                                         *
- ***************************************************************************/
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
 #include "xmltool.h"
 
@@ -259,14 +252,14 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					written+=fprintf(stream,"]]>");
 				} else {
 					/* TODO Binary values 
-					char *encoded=malloc(3*key->dataSize);
+					char *encoded=elektraMalloc(3*key->dataSize);
 					size_t encodedSize;
 
 					written+=fprintf(stream,"\n");
 					encodedSize=kdbbEncode(key->data.c,key->dataSize,encoded);
 					fflush(stream);
 					written+=fwrite(encoded,sizeof(char),encodedSize,stream);
-					free(encoded);
+					elektraFree (encoded);
 					written+=fprintf(stream,"\n");
 					*/
 				}
@@ -454,28 +447,28 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 	n = keyGetNameSize (k);
 	if (n>1)
 	{
-		nam = (char*) malloc (n);
+		nam = (char*) elektraMalloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (k, nam, n);
 
 		fprintf(stream,"Name[%d]: %s : ", (int)n, nam);
 
-		free (nam);
+		elektraFree (nam);
 	}
 
 	s = keyGetValueSize (k);
 	if (options & KEY_VALUE && s>1)
 	{
-		str = (char*) malloc (s);
+		str = (char*) elektraMalloc (s);
 		if (str == NULL) return -1;
 		if (keyIsBinary(k))
 		{
 			/*
 			char * bin;
-			bin = (char*) malloc (s*3+1);
+			bin = (char*) elektraMalloc (s*3+1);
 			keyGetBinary(k, str, s);
 			kdbbEncode (str, s, bin);
-			free (bin);
+			elektraFree (bin);
 			*/
 			keyGetBinary (k, str, s);
 			fprintf(stream,"Binary[%d]: %s : ", (int)s, str);
@@ -484,19 +477,19 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 			fprintf(stream,"String[%d]: %s : ", (int)s, str);
 		}
 
-		free (str);
+		elektraFree (str);
 	}
 
 	c = keyGetCommentSize (k);
 	if (options & KEY_COMMENT && c>1)
 	{
-		com = (char*) malloc (c);
+		com = (char*) elektraMalloc (c);
 		if (com == NULL) return -1;
 		keyGetComment (k, com, c);
 
 		fprintf(stream,"Comment[%d]: %s : ", (int)c, com);
 
-		free (com);
+		elektraFree (com);
 	}
 
 
@@ -615,32 +608,32 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 	n = keyGetNameSize (key);
 	if (n>1)
 	{
-		nam = (char*) malloc (n);
+		nam = (char*) elektraMalloc (n);
 		if (nam == NULL) return -1;
 		keyGetName (key, nam, n);
 		fprintf(stream,"\tkeyNew (\"%s\"", nam);
-		free (nam);
+		elektraFree (nam);
 	}
 
 	s = keyGetValueSize (key);
 	if (s>1)
 	{
-		str = (char*) malloc (s);
+		str = (char*) elektraMalloc (s);
 		if (str == NULL) return -1;
 		if (keyIsBinary(key)) keyGetBinary(key, str, s);
 		else keyGetString (key, str, s);
 		fprintf(stream,", KEY_VALUE, \"%s\"", str);
-		free (str);
+		elektraFree (str);
 	}
 
 	c = keyGetCommentSize (key);
 	if (c>1)
 	{
-		com = (char*) malloc (c);
+		com = (char*) elektraMalloc (c);
 		if (com == NULL) return -1;
 		keyGetComment (key, com, c);
 		fprintf(stream,", KEY_COMMENT, \"%s\"", com);
-		free (com);
+		elektraFree (com);
 	}
 
 	if (! (keyGetMode(key) == 0664 || (keyGetMode(key) == 0775)))

@@ -1,5 +1,5 @@
 #
-# Filter absolute pathes from coverage data
+# Filter absolute paths from coverage data
 #
 # Copied from
 # http://stackoverflow.com/questions/3163364/excluding-certain-functions-from-gcov-lcov-coverage-results

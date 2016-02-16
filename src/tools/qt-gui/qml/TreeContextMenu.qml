@@ -10,18 +10,18 @@ Menu {
 		MenuItem {
 			id:tcmNewKey
 
-			action: newKeyAction
+			action: guiActions.newKeyAction
 		}
 		MenuItem {
 			id:tcmNewArray
 
-			action: newArrayAction
+			action: guiActions.newArrayAction
 		}
 	}
 	MenuItem {
 		id: tcmEdit
 
-		action: editAction
+		action: guiActions.editAction
 	}
 
 	MenuSeparator{}
@@ -29,12 +29,12 @@ Menu {
 	MenuItem{
 		id: tcmImport
 
-		action: importAction
+		action: guiActions.importAction
 	}
 	MenuItem{
 		id: tcmExport
 
-		action: exportAction
+		action: guiActions.exportAction
 	}
 
 	MenuSeparator{}
@@ -42,22 +42,22 @@ Menu {
 	MenuItem {
 		id: tcmCut
 
-		action: cutAction
+		action: guiActions.cutAction
 	}
 	MenuItem {
 		id: tcmCopy
 
-		action: copyAction
+		action: guiActions.copyAction
 	}
 	MenuItem {
 		id: tcmPaste
 
-		action: pasteAction
+		action: guiActions.pasteAction
 	}
 	MenuItem {
 		id:tcmDelete
 
-		action: deleteAction
+		action: guiActions.deleteAction
 	}
 }
 

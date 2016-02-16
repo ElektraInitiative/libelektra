@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
+
 #include <convert.hpp>
 
 #include <kdb.hpp>
@@ -22,10 +30,10 @@ int ConvertCommand::execute(Cmdline const& cl)
 		throw invalid_argument("need 0 to 4 arguments");
 	}
 
-	string import_format = "dump";
+	string import_format = cl.format;
 	if (argc > 0) import_format = cl.arguments[0];
 
-	string export_format = "dump";
+	string export_format = cl.format;
 	if (argc > 1) export_format = cl.arguments[1];
 
 	string import_file = "/dev/stdin";
@@ -42,6 +50,9 @@ int ConvertCommand::execute(Cmdline const& cl)
 
 	Modules modules;
 	PluginPtr import_plugin = modules.load(import_format);
+
+	// TODO: reuse import/export
+	// to namespace dir
 	PluginPtr export_plugin = modules.load(export_format);
 
 	Key errorKey;

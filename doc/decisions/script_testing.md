@@ -10,7 +10,7 @@
 * robotframework
  - additional (fat) dependency
  - integration with cmake?
- - does not allow to capture stdout, stderr + return code
+ - does not allow one to capture stdout, stderr + return code
 
 * expect
  + interactive testing (e.g. for kdb mount)

@@ -1,9 +1,9 @@
 /**
- * \file
+ * @file
  *
- * \brief header file of mount command
+ * @brief header file of mount command
  *
- * \copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
@@ -17,38 +17,38 @@ namespace kdb
 {
 namespace tools
 {
-	class Backend;
+	class MountBackendInterface;
 }
 }
 
 class MountCommand : public MountBaseCommand
 {
-	void outputMtab(Cmdline const& cl);
-	void processArguments(Cmdline const& cl);
-	void buildBackend(Cmdline const& cl);
-	void appendPlugins(Cmdline const& cl, kdb::tools::Backend & backend);
-	bool readPluginConfig(Cmdline const& cl, size_t current_plugin, kdb::KeySet & config);
+	void outputMtab (Cmdline const& cl);
+	void processArguments (Cmdline const& cl);
+	void buildBackend (Cmdline const& cl);
+	void appendPlugins (kdb::tools::MountBackendInterface & backend);
+	void readPluginConfig (kdb::KeySet & config);
 
 public:
 	MountCommand();
 	~MountCommand();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions() override
 	{
-		return "idR0123c";
+		return "idR0123cW";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis() override
 	{
 		return "[path mountpoint] [plugin [config] [..]]";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText() override
 	{
 		return "Mount a new backend.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText() override
 	{
 		return
 			"path .. a filename (absolute for system, relative for cascading or user)\n"
@@ -63,13 +63,6 @@ public:
 			"Then the options -0123 take effect (otherwise these options can be used to suppress warnings).\n"
 			"1,2 and 3 will suppress the output of the respective column\n"
 			"\n"
-			"The default resolver will be added automatically.\n"
-			"Which resolver will be used can be changed by:\n"
-			" /sw/kdb/current/resolver\n"
-			"\n"
-			"Some plugins are added automatically (by default sync).\n"
-			"Which plugins that are can be changed by the space separated list in:\n"
-			" /sw/kdb/current/plugins\n"
 			"\n"
 			"Examples:\n"
 			"\n"
@@ -84,7 +77,7 @@ public:
 			;
 	}
 
-	virtual int execute (Cmdline const& cmdline);
+	virtual int execute (Cmdline const& cmdline) override;
 };
 
 #endif

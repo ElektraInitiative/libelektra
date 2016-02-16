@@ -11,7 +11,10 @@ include(LibAddMacros)
 #
 # LINK_LIBRARIES:
 #  add here only add libraries found by cmake
-#  do not add dependencies to Elektra
+#  do not add dependencies to Elektra, use LINK_ELEKTRA for that
+#
+# LINK_ELEKTRA:
+#  allows you to selectively link against different Elektra libraries, the default is elektra-plugin
 #
 # COMPILE_DEFINITIONS:
 #  Set additional macros for per-variant compilation.
@@ -22,7 +25,7 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP" # optional keywords
 		"" # one value keywords
-		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES" # multi value keywords
+		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
 		${ARGN}
 	)
 
@@ -76,7 +79,11 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES}
 			${PLUGIN_SHARED_SOURCES})
-		target_link_libraries (${PLUGIN_NAME} elektra)
+		if (ARG_LINK_ELEKTRA)
+			target_link_libraries (${PLUGIN_NAME} elektra-plugin ${ARG_LINK_ELEKTRA})
+		else()
+			target_link_libraries (${PLUGIN_NAME} elektra-plugin)
+		endif ()
 		target_link_libraries (${PLUGIN_NAME}
 			${ARG_LINK_LIBRARIES})
 		install (TARGETS ${PLUGIN_NAME} DESTINATION
@@ -94,6 +101,12 @@ function(add_plugin PLUGIN_SHORT_NAME)
 			${ARG_INCLUDE_DIRECTORIES}
 			${CMAKE_CURRENT_BINARY_DIR} #for readme
 			)
+		if (${LD_ACCEPTS_VERSION_SCRIPT})
+			set_property(TARGET ${PLUGIN_NAME}
+				APPEND PROPERTY LINK_FLAGS
+				"-Wl,--version-script=${PROJECT_SOURCE_DIR}/src/plugins/plugin-symbols.map"
+				)
+		endif ()
 	endif()
 
 	set_property (GLOBAL APPEND PROPERTY "elektra-full_SRCS"
