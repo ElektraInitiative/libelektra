@@ -30,6 +30,7 @@ struct IniConfig
     BomHandler bomHandler;
 	unsigned short supportMultiline;
 	unsigned short keyToMeta;
+    char *continuationString;
 };
 
 /* Parse given INI-style file. May have [section]s, name=value pairs

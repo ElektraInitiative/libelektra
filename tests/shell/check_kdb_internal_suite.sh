@@ -7,7 +7,7 @@ echo
 check_version
 
 #override for specific testing
-#PLUGINS=ni
+#PLUGINS="ini"
 
 for PLUGIN in $PLUGINS
 do
@@ -23,8 +23,8 @@ do
 		TESTS="basic"
 		;;
 	"ini")
-		#test broken?
-		continue
+		MOUNT_PLUGIN="$PLUGIN"
+		TESTS="basic string umlauts naming"
 		;;
 	"line")
 		TESTS="basic"

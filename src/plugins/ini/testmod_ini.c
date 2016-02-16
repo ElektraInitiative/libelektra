@@ -199,7 +199,7 @@ static void test_commentIniRead(char *fileName)
 static void test_commentIniWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
-			"/tmp/commentIniWrite.out", KEY_END);
+			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(0,
 		   KS_END);
 	PLUGIN_OPEN("ini");
@@ -242,6 +242,7 @@ static void test_multilineIniRead(char *fileName)
 
 	KeySet *conf = ksNew(30,
 			keyNew ("system/multiline", KEY_VALUE, "1", KEY_END),
+			keyNew ("system/linecont", KEY_VALUE, "\t", KEY_END),
 			KS_END);
 	PLUGIN_OPEN ("ini");
 
@@ -276,6 +277,7 @@ static void test_multilineIniWrite(char *fileName)
 			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(30,
 			keyNew ("system/multiline", KEY_VALUE, "1", KEY_END),
+			keyNew ("system/linecont", KEY_VALUE, "\t", KEY_END),
 			KS_END);
 	PLUGIN_OPEN("ini");
 
@@ -313,6 +315,7 @@ static void test_multilineIniInvalidConfigWrite()
 	Key *parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(30, keyNew("system/multiline", KEY_VALUE, "0", KEY_END),
+			keyNew ("system/linecont", KEY_VALUE, "\t", KEY_END),
 		   KS_END);
 	PLUGIN_OPEN("ini");
 
@@ -393,12 +396,12 @@ static void test_sectionWrite(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-section-write", KEY_VALUE,
 			elektraFilename(), KEY_END);
-	KeySet *conf = ksNew(0,
+	KeySet *conf = ksNew(10, keyNew("system/section", KEY_VALUE, "NULL", KEY_END),
 		   KS_END);
 	PLUGIN_OPEN("ini");
 
 	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-section-write/akey\\/looking\\/like\\/sections", KEY_VALUE, "value", KEY_END),
+			keyNew ("user/tests/ini-section-write/akey/looking/like/sections", KEY_VALUE, "value", KEY_END),
 			keyNew ("user/tests/ini-section-write/emptysection", KEY_BINARY, 
  KEY_END),
 			keyNew ("user/tests/ini-section-write/section1", KEY_BINARY, 
@@ -406,7 +409,7 @@ static void test_sectionWrite(char *fileName)
 			keyNew ("user/tests/ini-section-write/section1/key1",
 					KEY_VALUE, "value1",
 					KEY_END),
-			keyNew ("user/tests/ini-section-write/section1/key\\/with\\/subkey",
+			keyNew ("user/tests/ini-section-write/section1/key/with/subkey",
 					KEY_VALUE, "value2",
 					KEY_END),
 			keyNew("user/tests/ini-section-write/section2/with/subkey", KEY_BINARY, 
@@ -427,28 +430,6 @@ static void test_sectionWrite(char *fileName)
 	ksDel (ks);
 	keyDel (parentKey);
 
-	PLUGIN_CLOSE ();
-}
-
-static void test_iniToMeta(char *fileName)
-{
-	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
-			srcdir_file(fileName), KEY_END);
-	KeySet *conf = ksNew(0, 
-		   KS_END);
-	PLUGIN_OPEN("ini");
-
-	KeySet *readKS = ksNew(0, KS_END);
-	succeed_if(plugin->kdbGet(plugin, readKS, parentKey) >= 0, "kdbGet failed");
-	const Key *meta;
-	Key *searchKey = keyNew ("user/tests/ini-write/section1", KEY_END);
-	Key *key = ksLookup(readKS, searchKey, KDB_O_NONE);
-	meta = keyGetMeta(key, "key1");
-	succeed_if(meta != NULL, "converting key to metakey failed");
-	succeed_if(strcmp(keyString(meta), "value1") == 0, "wrong value in metakey");
-	ksDel(readKS);
-	keyDel (parentKey);
-	keyDel (searchKey);
 	PLUGIN_CLOSE ();
 }
 
@@ -489,16 +470,19 @@ static void test_sectionMerge(char *inFile, char *cmpFile)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(inFile), KEY_END);
+	Key *writeParentKey = keyNew("user/tests/ini-write", KEY_VALUE, elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(10, keyNew("system/mergesections", KEY_VALUE, "1", KEY_END),
 		   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
-	keySetString(parentKey, elektraFilename());
-	succeed_if(plugin->kdbSet(plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
-	succeed_if(compare_line_files(srcdir_file(cmpFile), keyString(parentKey)), "files do not match as expected");
-	ksDel(ks);
+	keyDel(ksLookup(ks, parentKey, KDB_O_POP));
 	keyDel(parentKey);
+	succeed_if(plugin->kdbSet(plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if(compare_line_files(srcdir_file(cmpFile), keyString(writeParentKey)), "files do not match as expected");
+	keyDel(ksLookup(ks, writeParentKey, KDB_O_POP));
+	keyDel(writeParentKey);
+	ksDel(ks);
 	PLUGIN_CLOSE();
 }
 
@@ -524,16 +508,19 @@ static void test_preserveEmptyLines(char *fileName)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(fileName), KEY_END);
+	Key *writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(0,
 		   KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
-	keySetString(parentKey, elektraFilename());
-	succeed_if(plugin->kdbSet(plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
-	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)), "files do not match as expected");
-	ksDel(ks);
+	keyDel(ksLookup(ks, parentKey, KDB_O_POP));
 	keyDel(parentKey);
+	succeed_if(plugin->kdbSet(plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if(compare_line_files(srcdir_file(fileName), keyString(writeParentKey)), "files do not match as expected");
+	keyDel(ksLookup(ks, writeParentKey, KDB_O_POP));
+	keyDel(writeParentKey);
+	ksDel(ks);
 	PLUGIN_CLOSE();
 }
 
@@ -541,6 +528,7 @@ static void test_insertOrder(char *source, char *compare)
 {
 	Key *parentKey = keyNew ("user/tests/ini-write", KEY_VALUE,
 			srcdir_file(source), KEY_END);
+	Key *writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename(), KEY_END);
 	KeySet *conf = ksNew(0, KS_END);
 	KeySet *ks = ksNew(30, KS_END);
 	KeySet *appendKS = ksNew(10, 
@@ -551,13 +539,15 @@ static void test_insertOrder(char *source, char *compare)
 
 	PLUGIN_OPEN("ini");
 	succeed_if(plugin->kdbGet(plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
-	keySetString(parentKey, elektraFilename());
+	keyDel(ksLookup(ks, parentKey, KDB_O_POP));
+	keyDel(parentKey);
 	ksAppend(ks, appendKS);
-	succeed_if(plugin->kdbSet(plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
-	succeed_if(compare_line_files(srcdir_file(compare), keyString(parentKey)), "files do not match as expected");
+	succeed_if(plugin->kdbSet(plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if(compare_line_files(srcdir_file(compare), keyString(writeParentKey)), "files do not match as expected");
+	keyDel(ksLookup(ks, writeParentKey, KDB_O_POP));
+	keyDel(writeParentKey);
 	ksDel(appendKS);
 	ksDel(ks);
-	keyDel(parentKey);
 	PLUGIN_CLOSE();
 
 }
