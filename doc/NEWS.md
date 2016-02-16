@@ -291,6 +291,13 @@ plugin configuration) is passed to `open`.
 
 The INI plugin was rewritten, so many options changed in incompatible ways.
 
+The default format plugin (e.g. for import/export) is no longer hardcoded
+to be `dump`.  Instead KDB_DEFAULT_STORAGE will be used.
+To get KDB_DEFAULT_STORAGE you can use the constants plugin:
+
+	kdb mount-info
+	kdb get system/info/constants/cmake/KDB_DEFAULT_STORAGE
+
 Thanks to Manuel Mausz plugins do no longer export any method other than
 `elektraPluginSymbol`. It now will fail if you directly linked against
 plugins and did not correctly use their public interface. Please

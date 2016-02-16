@@ -101,6 +101,8 @@ static void elektraAddConstants(KeySet *ks, Key *parentKey)
 	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DB_DIR", "@KDB_DB_DIR@");
 	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DB_FILE", "@KDB_DB_FILE@");
 	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DB_INIT", "@KDB_DB_INIT@");
+	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DEFAULT_RESOLVER", "@KDB_DEFAULT_RESOLVER@");
+	elektraAddKeyValue(ks, parentKey, "cmake/KDB_DEFAULT_STORAGE", "@KDB_DEFAULT_STORAGE@");
 
 	key = keyDup (parentKey);
 	keyAddName(key, "cmake/KDB_DB_USER");
