@@ -561,6 +561,8 @@ Read about [other packages here](https://github.com/ElektraInitiative/libelektra
 - g++5.3 is now supported
 - gtest does not link against pthread if not needed
 - testcases that are built with BUILD_SHARED also successfully work
+- kdb list works when libs are in same path as plugins,
+  thanks to Harald Geyer for reporting
 - fix Mac OS issues,
   thanks to Peter Nirschl, René Schwaiger and Mihael Pranjic
 - fix resolver-baseflag docu, thanks to Harald Geyer for reporting

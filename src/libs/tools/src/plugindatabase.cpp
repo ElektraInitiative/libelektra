@@ -11,6 +11,8 @@
 
 #include <modules.hpp>
 
+#include <set>
+
 #include <algorithm>
 #include <kdbconfig.h>
 
@@ -44,6 +46,17 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 	std::vector<std::string> ret;
 #ifdef ELEKTRA_SHARED
 #ifdef HAVE_GLOB
+	std::set<std::string> toIgnore = 
+	{
+		"proposal",
+		"core",
+		"ease",
+		"meta",
+		"plugin",
+		"full",
+		"kdb",
+		"static",
+	};
 	glob_t pglob;
 	if (glob(BUILTIN_PLUGIN_FOLDER "/libelektra-*", GLOB_NOSORT, NULL, &pglob) == 0)
 	{
@@ -52,9 +65,12 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins() const
 			std::string fn (pglob.gl_pathv[i]);
 			size_t start = fn.find_last_of('-');
 			if (start == std::string::npos) continue; // ignore wrong file
-			size_t end = fn.find_last_of('.');
+			std::string name = fn.substr(start+1);
+			size_t end = fn.find_first_of('.');
+			name = name.substr(0, end-start-1);
 			if (end == std::string::npos) continue; // ignore wrong file
-			ret.push_back(fn.substr(start+1, end-start-1));
+			if (toIgnore.find(name) != toIgnore.end()) continue; // ignore
+			ret.push_back(name);
 		}
 	}
 #endif
