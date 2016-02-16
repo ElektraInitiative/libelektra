@@ -76,24 +76,21 @@ They are only recognized by the `kdb` tool or tools that explicit have
 support for it. Your applications should not depend on the presence of a
 bookmark.
 
-Bookmarks are stored below:
-
-	/sw/elektra/kdb/#0/current/bookmarks
+Bookmarks are stored below:  
+	`/sw/elektra/kdb/#0/current/bookmarks`
 
 For every key found there, a new bookmark will be introduced.
 
 Bookmarks can be used to start key-names by using `+` (plus) as first character.
 The string until the first `/` will be considered as bookmark.
 
-For example, if you set the bookmark kdb:
-
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+For example, if you set the bookmark kdb:  
+	`kdb set user/sw/elektra/kdb/#0/current/bookmarks`  
+	`kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`  
 
 You are able to use:
-
-	kdb ls +kdb/bookmarks
-	kdb get +kdb/format
+	`kdb ls +kdb/bookmarks`  
+	`kdb get +kdb/format`
 
 ## RETURN VALUES
 

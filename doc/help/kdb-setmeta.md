@@ -36,7 +36,7 @@ To set a meta key called `description` associated with the key `user/example/key
 	`kdb setmeta spec/example/key description "Hello World!"`  
 
 To create a new key `spec/example/newkey` with a null value (if it did not exist before)
-and a meta key `namespace/#0` associated with it to the value `system`:
+and a meta key `namespace/#0` associated with it to the value `system`:  
 	`kdb setmeta /example/newkey "namespace/#0" system`
 
 

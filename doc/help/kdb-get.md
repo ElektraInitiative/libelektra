@@ -45,14 +45,14 @@ To get the value of a key:
 To get the value of a key using a cascading lookup:  
 	`kdb get /example/key`  
 
-To get the value of a key without adding a newline to the end of it:
-	`kdb get -n /example/key`
+To get the value of a key without adding a newline to the end of it:  
+	`kdb get -n /example/key`  
 
-To explain why a specific key was used (for cascading keys):
-	`kdb get -v /example/key`
+To explain why a specific key was used (for cascading keys):  
+	`kdb get -v /example/key`  
 
-To use bookmarks:
-	`kdb get +kdb/format`
+To use bookmarks:  
+	`kdb get +kdb/format`  
 
 This command will actually get `user/sw/elektra/kdb/#0/current/format` if the bookmarks commands from
 [kdb-set(1)](kdb-set.md) man pages are executed before.

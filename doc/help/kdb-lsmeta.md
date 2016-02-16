@@ -26,7 +26,7 @@ If no meta keys are associated with the given key, nothing will be printed.
 
 ## EXAMPLE
 
-To see which meta keys are associated with a key:
+To see which meta keys are associated with a key:  
 	`kdb lsmeta /example/key`
 
 ## SEE ALSO

@@ -38,13 +38,13 @@ arguments and will have its own documentation.
 Also a completely new feature `mount` arose.
 
 Only a few commands are enough for daily use.
-We can retrieve a key by:
+We can retrieve a key by:  
 	`kdb get user/keyname`
 
-We store a key permanently with a value given by:
+We store a key permanently with a value given by:  
 	`kdb set user/keyname value`
 
-We list all available keys arranged below a key by:
+We list all available keys arranged below a key by:  
 	`kdb ls user/keyname`
 
 Many other tools

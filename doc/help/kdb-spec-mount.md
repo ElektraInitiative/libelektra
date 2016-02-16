@@ -67,10 +67,10 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 
 ## EXAMPLES
 
-To mount /example as described in `spec/example`:
+To mount /example as described in `spec/example`:  
 	`kdb spec-mount /example`
 
-Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:
+Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:  
 	`kdb spec-mount /example ini some=value`
 
 ## SEE ALSO
