@@ -1,22 +1,28 @@
 ## Elektra Initiative Overview ##
 
-Elektra provides a universal and secure framework to store configuration
-parameters in a global, hierarchical key database.  The core is a small
-library implemented in C. The plugin-based framework fulfills many
-configuration-related tasks to avoid any unnecessary code duplication
-across applications while it still allows the core to stay without any
-external dependency. Elektra abstracts from cross-platform-related issues
-with a consistent API, and allows applications to be aware of other
-applications' configurations, leveraging easy application integration.
+Elektra serves as a universal and secure framework to access configuration
+parameters in a global, hierarchical key database and provides a mature,
+consistent and easily comprehensible API.  Its modularity effectively
+avoids code duplication across applications and tools regarding
+configuration tasks. Elektra abstracts from cross-platform-related issues
+and allows applications to be aware of other applications' configurations,
+leveraging easy application integration.
 
-See the [Readme](/README.md) for more information.
+See the [readme](/README.md) for more introduction.
 See the [glossary](/doc/help/elektra-glossary.md) for the used
 terminology.
 
 ## API Docu ##
 
-This document occupies with the API implementation, documentation,
-internals and plugins.
+This document main goal is to describe the API.
+It covers:
+
+- external C-API (See Modules above), which are the essential core parts
+- C++-API (See Data Structures above) from a direct binding to high-level
+  functionality, such as mounting functionality
+- plugins API
+- all other documentation of Elektra (See Related Pages)
+
 On the one hand it gives an overview and an introduction for
 developers using Elektra, on the
 other hand it gives an informal descriptions what methods must and may provide
@@ -128,7 +134,7 @@ Is the only read-only tree. The configuration does not stem from the
 Allows us to have a per-directory overwrite of configuration files, e.g.
 for project specific settings.
 
-- The `user` tree \n
+- The `user` tree\n
 Used to store user-specific configurations, like the personal settings
 of a user to certain programs. The user subtree will always be favoured
 if present (except for security concerns the user subtree may not be considered).
