@@ -17,8 +17,8 @@
 
 #include <keyexcept.hpp>
 
-#include <string>
 #include <sstream>
+#include <string>
 
 #include <kdbio.hpp>
 
@@ -28,21 +28,17 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) :
-		m_key(key),
-		m_str()
-	{}
+	KDBException (Key key) : m_key (key), m_str () {}
 
-	virtual ~KDBException() throw()
-	{}
+	virtual ~KDBException () throw () {}
 
-	virtual const char* what() const throw()
+	virtual const char * what () const throw ()
 	{
 		if (!m_key)
 		{
 			return "Generic KDBException";
 		}
-		else if (m_str.empty())
+		else if (m_str.empty ())
 		{
 			// note that the code will be re-evaluated
 			// if it prints nothing, but an expensive
@@ -53,17 +49,17 @@ public:
 			// used either from namespace kdb or global
 			// namespace.
 			std::stringstream ss;
-			printWarnings(ss, m_key);
-			printError(ss, m_key);
-			m_str = ss.str();
+			printWarnings (ss, m_key);
+			printError (ss, m_key);
+			m_str = ss.str ();
 		}
-		return m_str.c_str();
+		return m_str.c_str ();
 	}
+
 private:
 	Key m_key;
 	mutable std::string m_str;
 };
-
 }
 
 #endif

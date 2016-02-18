@@ -11,9 +11,9 @@
 
 #include <string>
 
+#include <kdbexcept.hpp>
 #include <key.hpp>
 #include <keyset.hpp>
-#include <kdbexcept.hpp>
 
 #include <kdb.h>
 
@@ -42,10 +42,10 @@ class KDB
 public:
 	KDB ();
 	KDB (Key & errorKey);
-	~KDB () throw();
+	~KDB () throw ();
 
-	void open(Key & errorKey);
-	void close(Key & errorKey) throw();
+	void open (Key & errorKey);
+	void close (Key & errorKey) throw ();
 
 	inline int get (KeySet & returned, std::string const & keyname);
 	inline int get (KeySet & returned, Key & parentKey);
@@ -53,7 +53,7 @@ public:
 	inline int set (KeySet & returned, Key & parentKey);
 
 private:
-	ckdb::KDB* handle; ///< holds an kdb handle
+	ckdb::KDB * handle; ///< holds an kdb handle
 };
 
 /**
@@ -66,7 +66,7 @@ private:
 inline KDB::KDB ()
 {
 	Key errorKey;
-	open(errorKey);
+	open (errorKey);
 }
 
 /**
@@ -79,20 +79,18 @@ inline KDB::KDB ()
  *
  * @copydoc kdbOpen
  */
-inline KDB::KDB (Key &errorKey)
-{
-	open(errorKey);
-}
+inline KDB::KDB (Key & errorKey) { open (errorKey); }
 
 /**
  * The destructor closes the database.
  *
  * @copydoc kdbClose
  */
-inline KDB::~KDB () throw()
+inline KDB::~KDB () throw ()
 {
 	Key errorKey;
-	try {
+	try
+	{
 		close (errorKey);
 	}
 	catch (...)
@@ -109,12 +107,12 @@ inline KDB::~KDB () throw()
  *
  * @copydoc kdbOpen
  */
-inline void KDB::open (Key &errorKey)
+inline void KDB::open (Key & errorKey)
 {
-	handle = ckdb::kdbOpen(errorKey.getKey());
+	handle = ckdb::kdbOpen (errorKey.getKey ());
 	if (!handle)
 	{
-		throw kdb::KDBException(errorKey);
+		throw kdb::KDBException (errorKey);
 	}
 }
 
@@ -127,9 +125,9 @@ inline void KDB::open (Key &errorKey)
  *
  * @copydoc kdbClose
  */
-inline void KDB::close (Key & errorKey) throw()
+inline void KDB::close (Key & errorKey) throw ()
 {
-	ckdb::kdbClose(handle, errorKey.getKey());
+	ckdb::kdbClose (handle, errorKey.getKey ());
 	handle = nullptr;
 }
 
@@ -160,8 +158,8 @@ inline void KDB::close (Key & errorKey) throw()
  */
 inline int KDB::get (KeySet & returned, std::string const & keyname)
 {
-	Key parentKey (keyname.c_str(), KEY_CASCADING_NAME, KEY_END);
-	return get(returned, parentKey);
+	Key parentKey (keyname.c_str (), KEY_CASCADING_NAME, KEY_END);
+	return get (returned, parentKey);
 }
 
 /**
@@ -178,10 +176,10 @@ inline int KDB::get (KeySet & returned, std::string const & keyname)
  */
 inline int KDB::get (KeySet & returned, Key & parentKey)
 {
-	int ret = ckdb::kdbGet (handle, returned.getKeySet(), parentKey.getKey());
+	int ret = ckdb::kdbGet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)
 	{
-		throw KDBException(parentKey);
+		throw KDBException (parentKey);
 	}
 	return ret;
 }
@@ -202,7 +200,7 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
  */
 inline int KDB::set (KeySet & returned, std::string const & keyname)
 {
-	Key parentKey (keyname.c_str(), KEY_CASCADING_NAME, KEY_END);
+	Key parentKey (keyname.c_str (), KEY_CASCADING_NAME, KEY_END);
 	return set (returned, parentKey);
 }
 
@@ -222,10 +220,10 @@ inline int KDB::set (KeySet & returned, std::string const & keyname)
  */
 inline int KDB::set (KeySet & returned, Key & parentKey)
 {
-	int ret = ckdb::kdbSet(handle, returned.getKeySet(), parentKey.getKey());
+	int ret = ckdb::kdbSet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)
 	{
-		throw KDBException(parentKey);
+		throw KDBException (parentKey);
 	}
 	return ret;
 }
@@ -233,4 +231,3 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 } // end of namespace kdb
 
 #endif
-

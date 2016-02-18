@@ -6,35 +6,32 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <string>
-#include <numeric>
-#include <iostream>
-#include <iomanip>
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <string>
 #include <sys/time.h>
 
 #ifdef __GNUC__
-#define TIMER_NOINLINE __attribute__((noinline))
+#define TIMER_NOINLINE __attribute__ ((noinline))
 #endif
 
 class Timer
 {
 public:
-	TIMER_NOINLINE void start()
-	{
-		gettimeofday (&begin, nullptr);
-	}
-	TIMER_NOINLINE void stop()
+	TIMER_NOINLINE void start () { gettimeofday (&begin, nullptr); }
+	TIMER_NOINLINE void stop ()
 	{
 		gettimeofday (&end, nullptr);
 		// force calculation in long long:
 		timer_t result = end.tv_sec - begin.tv_sec;
 		result *= usec_factor;
 		result += end.tv_usec - begin.tv_usec;
-		results.push_back(result);
+		results.push_back (result);
 	}
-	Timer(std::string  name);
-	~Timer(); // print csv table at end
+	Timer (std::string name);
+	~Timer (); // print csv table at end
 	struct timeval begin;
 	struct timeval end;
 	typedef long long timer_t;
