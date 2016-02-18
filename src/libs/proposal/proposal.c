@@ -45,15 +45,15 @@
  *
  * @return the size of the string as set (with including 0)
  */
-ssize_t keySetStringF(Key *key, const char *format, ...)
+ssize_t keySetStringF (Key * key, const char * format, ...)
 {
 	va_list arg_list;
 
 	keySetMeta (key, "binary", 0);
 
-	va_start(arg_list, format);
-	char *p = elektraVFormat(format, arg_list);
-	va_end(arg_list);
+	va_start (arg_list, format);
+	char * p = elektraVFormat (format, arg_list);
+	va_end (arg_list);
 
 	if (!p)
 	{
@@ -62,12 +62,12 @@ ssize_t keySetStringF(Key *key, const char *format, ...)
 
 	if (key->data.c)
 	{
-		elektraFree(key->data.c);
+		elektraFree (key->data.c);
 	}
 
 	key->data.c = p;
-	key->dataSize = elektraStrLen(key->data.c);
-	set_bit(key->flags, KEY_FLAG_SYNC);
+	key->dataSize = elektraStrLen (key->data.c);
+	set_bit (key->flags, KEY_FLAG_SYNC);
 
 	return key->dataSize;
 }
@@ -92,19 +92,21 @@ ssize_t keySetStringF(Key *key, const char *format, ...)
  * @return the number of elements in the array if successful
  * @return a negative number on null pointers or if an error occurred
  */
-int elektraKsToMemArray(KeySet *ks, Key **buffer)
+int elektraKsToMemArray (KeySet * ks, Key ** buffer)
 {
-	if (!ks) return -1;
-	if (!buffer) return -1;
+	if (!ks)
+		return -1;
+	if (!buffer)
+		return -1;
 
 	/* clear the received buffer */
-	memset (buffer, 0, ksGetSize (ks) * sizeof(Key *));
+	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
 
 	cursor_t cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	size_t idx = 0;
 
-	Key *key;
+	Key * key;
 	while ((key = ksNext (ks)) != 0)
 	{
 		buffer[idx] = key;
@@ -123,10 +125,7 @@ int elektraKsToMemArray(KeySet *ks, Key **buffer)
  *
  * The first key is removed in the resulting keyset.
  */
-KeySet * ksRenameKeys(KeySet * config, const Key * name)
-{
-	return elektraRenameKeys(config, keyName(name));
-}
+KeySet * ksRenameKeys (KeySet * config, const Key * name) { return elektraRenameKeys (config, keyName (name)); }
 
 /**
  * @brief Permanently locks a part of the key
@@ -151,10 +150,7 @@ KeySet * ksRenameKeys(KeySet * config, const Key * name)
  * @retval 0 if everything was locked before
  * @retval -1 if it could not be locked (nullpointer)
  */
-int keyLock(Key *key, option_t what)
-{
-	return elektraKeyLock(key, what);
-}
+int keyLock (Key * key, option_t what) { return elektraKeyLock (key, what); }
 
 
 /**
@@ -164,12 +160,14 @@ int keyLock(Key *key, option_t what)
  *
  * @return a duplication of the keyset representing the meta data
  */
-KeySet *elektraKeyGetMetaKeySet(const Key *key)
+KeySet * elektraKeyGetMetaKeySet (const Key * key)
 {
-	if (!key) return 0;
-	if (!key->meta) return 0;
+	if (!key)
+		return 0;
+	if (!key->meta)
+		return 0;
 
-	return ksDup(key->meta);
+	return ksDup (key->meta);
 }
 
 
@@ -188,10 +186,7 @@ KeySet *elektraKeyGetMetaKeySet(const Key *key)
  * @see ksRewind(), ksCurrent()
  *
  */
-Key *ksPrev(KeySet *ks)
-{
-	return elektraKsPrev(ks);
-}
+Key * ksPrev (KeySet * ks) { return elektraKsPrev (ks); }
 
 /**
  * @brief Pop key at given cursor position
@@ -214,12 +209,8 @@ Key *ksPrev(KeySet *ks)
  * @return the popped key
  * @retval 0 if ks is 0
  */
-Key *ksPopAtCursor(KeySet *ks, cursor_t pos)
-{
-	return elektraKsPopAtCursor(ks, pos);
-}
+Key * ksPopAtCursor (KeySet * ks, cursor_t pos) { return elektraKsPopAtCursor (ks, pos); }
 
 /**
  * @}
  */
-

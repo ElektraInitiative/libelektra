@@ -8,8 +8,8 @@
 
 #include <kdb.h>
 #include <kdbconfig.h>
-#include <kdbprivate.h>
 #include <kdbmeta.h>
+#include <kdbprivate.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -53,12 +53,9 @@
  */
 
 
-
 /********************************************* 
  *    General comment manipulation methods   *
  *********************************************/
-
-
 
 
 /**
@@ -90,12 +87,13 @@ keyDel(key);
  * @retval 0 on NULL pointer
  * @see keyGetCommentSize() for size and keyGetComment() as alternative
  */
-const char *keyComment(const Key *key)
+const char * keyComment (const Key * key)
 {
-	const char *comment;
+	const char * comment;
 
-	if (!key) return 0;
-	comment = keyValue(keyGetMeta(key, "comment"));
+	if (!key)
+		return 0;
+	comment = keyValue (keyGetMeta (key, "comment"));
 
 	if (!comment)
 	{
@@ -105,8 +103,6 @@ const char *keyComment(const Key *key)
 
 	return comment;
 }
-
-
 
 
 /**
@@ -134,12 +130,13 @@ buffer = elektraMalloc (keyGetCommentSize (key));
  * @retval -1 on NULL pointer
  * @see keyGetComment(), keySetComment()
  */
-ssize_t keyGetCommentSize(const Key *key)
+ssize_t keyGetCommentSize (const Key * key)
 {
 	ssize_t size;
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	size = keyGetValueSize(keyGetMeta(key, "comment"));
+	size = keyGetValueSize (keyGetMeta (key, "comment"));
 
 	if (!size || size == -1)
 	{
@@ -149,7 +146,6 @@ ssize_t keyGetCommentSize(const Key *key)
 
 	return size;
 }
-
 
 
 /**
@@ -177,36 +173,38 @@ ssize_t keyGetCommentSize(const Key *key)
  * @retval -1 if maxSize is 0, not enough to store the comment or when larger then SSIZE_MAX
  * @see keyGetCommentSize(), keySetComment()
  */
-ssize_t keyGetComment(const Key *key, char *returnedComment, size_t maxSize)
+ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
 {
-	const char *comment;
+	const char * comment;
 	size_t commentSize;
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (!maxSize) return -1;
-	if (!returnedComment) return -1;
-	if (maxSize > SSIZE_MAX) return -1;
+	if (!maxSize)
+		return -1;
+	if (!returnedComment)
+		return -1;
+	if (maxSize > SSIZE_MAX)
+		return -1;
 
-	comment = keyValue(keyGetMeta(key, "comment"));
-	commentSize = keyGetValueSize(keyGetMeta(key, "comment"));
+	comment = keyValue (keyGetMeta (key, "comment"));
+	commentSize = keyGetValueSize (keyGetMeta (key, "comment"));
 
 	if (!comment)
 	{
 		/*errno=KDB_ERR_NODESC;*/
-		returnedComment[0]=0;
+		returnedComment[0] = 0;
 		return 1;
 	}
 
-	strncpy(returnedComment,comment,maxSize);
-	if (maxSize < commentSize) {
+	strncpy (returnedComment, comment, maxSize);
+	if (maxSize < commentSize)
+	{
 		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 	return commentSize;
 }
-
-
-
 
 
 /**
@@ -222,10 +220,11 @@ ssize_t keyGetComment(const Key *key, char *returnedComment, size_t maxSize)
  * @retval -1 on NULL pointer or memory problems
  * @see keyGetComment()
  */
-ssize_t keySetComment(Key *key, const char *newComment)
+ssize_t keySetComment (Key * key, const char * newComment)
 {
-	if (!key) return -1;
-	if (!newComment || *newComment==0)
+	if (!key)
+		return -1;
+	if (!newComment || *newComment == 0)
 	{
 		keySetMeta (key, "comment", 0);
 		return 1;
@@ -236,14 +235,11 @@ ssize_t keySetComment(Key *key, const char *newComment)
 }
 
 
-
 #ifndef _WIN32
 
 /*********************************************
  *       UID, GID access methods             *
  *********************************************/
-
-
 
 
 /**
@@ -266,31 +262,37 @@ ssize_t keySetComment(Key *key, const char *newComment)
  * @retval (uid_t)-1 on NULL key
  * @see keyGetGID(), keySetUID(), keyGetOwner()
  */
-uid_t keyGetUID(const Key *key)
+uid_t keyGetUID (const Key * key)
 {
-	const char *uid;
+	const char * uid;
 	long int val;
-	char *endptr;
+	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (uid_t)-1;
+	if (!key)
+		return (uid_t)-1;
 
-	uid = keyValue(keyGetMeta(key, "uid"));
-	if (!uid) return (uid_t)-1;
-	if (*uid == '\0') return (uid_t)-1;
+	uid = keyValue (keyGetMeta (key, "uid"));
+	if (!uid)
+		return (uid_t)-1;
+	if (*uid == '\0')
+		return (uid_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
-	val = strtol(uid, &endptr, 10);
+	val = strtol (uid, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno) goto cleanup;
+	if (errno)
+		goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == uid) goto cleanup;
+	if (endptr == uid)
+		goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0') goto cleanup;
+	if (*endptr != '\0')
+		goto cleanup;
 
 	return val;
 cleanup:
@@ -298,7 +300,6 @@ cleanup:
 	errno = errorval;
 	return (uid_t)-1;
 }
-
 
 
 /**
@@ -314,21 +315,21 @@ cleanup:
  * @retval -1 on NULL key or conversion error
  * @see keySetGID(), keyGetUID(), keyGetOwner()
  */
-int keySetUID(Key *key, uid_t uid)
+int keySetUID (Key * key, uid_t uid)
 {
 	char str[MAX_LEN_INT];
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (snprintf (str, MAX_LEN_INT-1, "%d", uid) < 0)
+	if (snprintf (str, MAX_LEN_INT - 1, "%d", uid) < 0)
 	{
 		return -1;
 	}
 
-	keySetMeta(key, "uid", str);
+	keySetMeta (key, "uid", str);
 
 	return 0;
 }
-
 
 
 /**
@@ -353,31 +354,37 @@ int keySetUID(Key *key, uid_t uid)
  * @retval (gid_t)-1 on NULL key or currently unknown ID
  * @see keySetGID(), keyGetUID()
  */
-gid_t keyGetGID(const Key *key)
+gid_t keyGetGID (const Key * key)
 {
-	const char *gid;
+	const char * gid;
 	long int val;
-	char *endptr;
+	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (gid_t)-1;
+	if (!key)
+		return (gid_t)-1;
 
-	gid = keyValue(keyGetMeta(key, "gid"));
-	if (!gid) return (gid_t)-1;
-	if (*gid == '\0') return (gid_t)-1;
+	gid = keyValue (keyGetMeta (key, "gid"));
+	if (!gid)
+		return (gid_t)-1;
+	if (*gid == '\0')
+		return (gid_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
-	val = strtol(gid, &endptr, 10);
+	val = strtol (gid, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno) goto cleanup;
+	if (errno)
+		goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == gid) goto cleanup;
+	if (endptr == gid)
+		goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0') goto cleanup;
+	if (*endptr != '\0')
+		goto cleanup;
 
 	return val;
 cleanup:
@@ -385,7 +392,6 @@ cleanup:
 	errno = errorval;
 	return (gid_t)-1;
 }
-
 
 
 /**
@@ -401,22 +407,21 @@ cleanup:
  * @retval -1 on NULL key
  * @see keyGetGID(), keySetUID()
  */
-int keySetGID(Key *key, gid_t gid)
+int keySetGID (Key * key, gid_t gid)
 {
 	char str[MAX_LEN_INT];
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (snprintf (str, MAX_LEN_INT-1, "%d", gid) < 0)
+	if (snprintf (str, MAX_LEN_INT - 1, "%d", gid) < 0)
 	{
 		return -1;
 	}
 
-	keySetMeta(key, "gid", str);
+	keySetMeta (key, "gid", str);
 
 	return 0;
 }
-
-
 
 
 /**
@@ -453,18 +458,18 @@ int keySetGID(Key *key, gid_t gid)
  * @retval -1 on NULL pointer
  * @see keySetMode()
  */
-int keySetDir(Key *key)
+int keySetDir (Key * key)
 {
 	mode_t mode;
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	mode = keyGetMode(key);
+	mode = keyGetMode (key);
 	mode |= KDB_DIR_MODE;
-	keySetMode(key, mode);
+	keySetMode (key, mode);
 
 	return 0;
 }
-
 
 
 /**
@@ -485,31 +490,37 @@ int keySetDir(Key *key)
  * @retval (mode_t)-1 on NULL pointer
  * @see keySetMode()
  */
-mode_t keyGetMode(const Key *key)
+mode_t keyGetMode (const Key * key)
 {
-	const char *mode;
+	const char * mode;
 	long int val;
-	char *endptr;
+	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (mode_t)-1;
+	if (!key)
+		return (mode_t)-1;
 
-	mode = keyValue(keyGetMeta(key, "mode"));
-	if (!mode) return KDB_FILE_MODE;
-	if (*mode == '\0') return KDB_FILE_MODE;
+	mode = keyValue (keyGetMeta (key, "mode"));
+	if (!mode)
+		return KDB_FILE_MODE;
+	if (*mode == '\0')
+		return KDB_FILE_MODE;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
-	val = strtol(mode, &endptr, 8);
+	val = strtol (mode, &endptr, 8);
 
 	/*Check for errors*/
-	if (errno) goto cleanup;
+	if (errno)
+		goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == mode) goto cleanup;
+	if (endptr == mode)
+		goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0') goto cleanup;
+	if (*endptr != '\0')
+		goto cleanup;
 
 	return val;
 cleanup:
@@ -517,7 +528,6 @@ cleanup:
 	errno = errorval;
 	return KDB_FILE_MODE;
 }
-
 
 
 /**
@@ -587,17 +597,18 @@ cleanup:
  * @retval -1 on NULL key
  * @see keyGetMode()
  */
-int keySetMode(Key *key, mode_t mode)
+int keySetMode (Key * key, mode_t mode)
 {
 	char str[MAX_LEN_INT];
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (snprintf (str, MAX_LEN_INT-1, "%o", mode) < 0)
+	if (snprintf (str, MAX_LEN_INT - 1, "%o", mode) < 0)
 	{
 		return -1;
 	}
 
-	keySetMeta(key, "mode", str);
+	keySetMeta (key, "mode", str);
 
 	return 0;
 }
@@ -631,31 +642,37 @@ int keySetMode(Key *key, mode_t mode)
  * @see keySetATime()
  * @see kdbGet()
  */
-time_t keyGetATime(const Key *key)
+time_t keyGetATime (const Key * key)
 {
-	const char *atime;
+	const char * atime;
 	long int val;
-	char *endptr;
+	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (time_t)-1;
+	if (!key)
+		return (time_t)-1;
 
-	atime = keyValue(keyGetMeta(key, "atime"));
-	if (!atime) return 0;
-	if (*atime == '\0') return (time_t)-1;
+	atime = keyValue (keyGetMeta (key, "atime"));
+	if (!atime)
+		return 0;
+	if (*atime == '\0')
+		return (time_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
-	val = strtol(atime, &endptr, 10);
+	val = strtol (atime, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno) goto cleanup;
+	if (errno)
+		goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == atime) goto cleanup;
+	if (endptr == atime)
+		goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0') goto cleanup;
+	if (*endptr != '\0')
+		goto cleanup;
 
 	return val;
 cleanup:
@@ -681,17 +698,18 @@ cleanup:
  * @retval -1 on NULL pointer
  * @see keyGetATime()
  */
-int keySetATime(Key *key, time_t atime)
+int keySetATime (Key * key, time_t atime)
 {
 	char str[MAX_LEN_INT];
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (snprintf (str, MAX_LEN_INT-1, "%lu", atime) < 0)
+	if (snprintf (str, MAX_LEN_INT - 1, "%lu", atime) < 0)
 	{
 		return -1;
 	}
 
-	keySetMeta(key, "atime", str);
+	keySetMeta (key, "atime", str);
 
 	return 0;
 }
@@ -724,31 +742,37 @@ int keySetATime(Key *key, time_t atime)
  * @return the last modification time
  * @retval (time_t)-1 on NULL pointer
  */
-time_t keyGetMTime(const Key *key)
+time_t keyGetMTime (const Key * key)
 {
-	const char *mtime;
+	const char * mtime;
 	long int val;
-	char *endptr;
+	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (time_t)-1;
+	if (!key)
+		return (time_t)-1;
 
-	mtime = keyValue(keyGetMeta(key, "mtime"));
-	if (!mtime) return 0;
-	if (*mtime == '\0') return (time_t)-1;
+	mtime = keyValue (keyGetMeta (key, "mtime"));
+	if (!mtime)
+		return 0;
+	if (*mtime == '\0')
+		return (time_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
-	val = strtol(mtime, &endptr, 10);
+	val = strtol (mtime, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno) goto cleanup;
+	if (errno)
+		goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == mtime) goto cleanup;
+	if (endptr == mtime)
+		goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0') goto cleanup;
+	if (*endptr != '\0')
+		goto cleanup;
 
 	return val;
 cleanup:
@@ -767,17 +791,18 @@ cleanup:
  * @retval 0 on success
  * @see keyGetMTime()
  */
-int keySetMTime(Key *key, time_t mtime)
+int keySetMTime (Key * key, time_t mtime)
 {
 	char str[MAX_LEN_INT];
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (snprintf (str, MAX_LEN_INT-1, "%lu", mtime) < 0)
+	if (snprintf (str, MAX_LEN_INT - 1, "%lu", mtime) < 0)
 	{
 		return -1;
 	}
 
-	keySetMeta(key, "mtime", str);
+	keySetMeta (key, "mtime", str);
 
 	return 0;
 }
@@ -808,31 +833,37 @@ int keySetMTime(Key *key, time_t mtime)
  * @retval (time_t)-1 on NULL pointer
  * @return the metadata change time
  */
-time_t keyGetCTime(const Key *key)
+time_t keyGetCTime (const Key * key)
 {
-	const char *ctime;
+	const char * ctime;
 	long int val;
-	char *endptr;
+	char * endptr;
 	int errorval = errno;
 
-	if (!key) return (time_t)-1;
+	if (!key)
+		return (time_t)-1;
 
-	ctime = keyValue(keyGetMeta(key, "ctime"));
-	if (!ctime) return 0;
-	if (*ctime == '\0') return (time_t)-1;
+	ctime = keyValue (keyGetMeta (key, "ctime"));
+	if (!ctime)
+		return 0;
+	if (*ctime == '\0')
+		return (time_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
-	val = strtol(ctime, &endptr, 10);
+	val = strtol (ctime, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno) goto cleanup;
+	if (errno)
+		goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == ctime) goto cleanup;
+	if (endptr == ctime)
+		goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0') goto cleanup;
+	if (*endptr != '\0')
+		goto cleanup;
 
 	return val;
 cleanup:
@@ -853,17 +884,18 @@ cleanup:
  * @retval -1 on NULL pointer
  * @see keyGetCTime()
  */
-int keySetCTime(Key *key, time_t ctime)
+int keySetCTime (Key * key, time_t ctime)
 {
 	char str[MAX_LEN_INT];
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (snprintf (str, MAX_LEN_INT-1, "%lu", ctime) < 0)
+	if (snprintf (str, MAX_LEN_INT - 1, "%lu", ctime) < 0)
 	{
 		return -1;
 	}
 
-	keySetMeta(key, "ctime", str);
+	keySetMeta (key, "ctime", str);
 
 	return 0;
 }
@@ -886,31 +918,40 @@ int keySetCTime(Key *key, time_t ctime)
  * @param ka key to compare with
  * @param kb other key to compare with
  */
-int elektraKeyCmpOrder(const Key *ka, const Key *kb)
+int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 {
 
-	if (!ka && !kb) return 0;
+	if (!ka && !kb)
+		return 0;
 
-	if (ka && !kb) return 1;
+	if (ka && !kb)
+		return 1;
 
-	if (!ka && kb) return -1;
+	if (!ka && kb)
+		return -1;
 
 	int aorder = -1;
 	int border = -1;
 
-	const Key *kam = keyGetMeta (ka, "order");
-	const Key *kbm = keyGetMeta (kb, "order");
+	const Key * kam = keyGetMeta (ka, "order");
+	const Key * kbm = keyGetMeta (kb, "order");
 
-	if (kam) aorder = atoi (keyString (kam));
-	if (kbm) border = atoi (keyString (kbm));
+	if (kam)
+		aorder = atoi (keyString (kam));
+	if (kbm)
+		border = atoi (keyString (kbm));
 
-	if (aorder > 0 && border > 0) return aorder - border;
+	if (aorder > 0 && border > 0)
+		return aorder - border;
 
-	if (aorder < 0 && border < 0) return 0;
+	if (aorder < 0 && border < 0)
+		return 0;
 
-	if (aorder < 0 && border >= 0) return -1;
+	if (aorder < 0 && border >= 0)
+		return -1;
 
-	if (aorder >= 0 && border < 0) return 1;
+	if (aorder >= 0 && border < 0)
+		return 1;
 
 	/* cannot happen anyway */
 	return 0;
@@ -920,4 +961,3 @@ int elektraKeyCmpOrder(const Key *ka, const Key *kb)
 /**
  * @}
  */
-

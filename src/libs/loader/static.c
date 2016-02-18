@@ -13,26 +13,28 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <exported_symbols.h>
 #include <kdberrors.h>
 #include <kdbmodule.h>
-#include <exported_symbols.h>
 
 
-int elektraModulesInit (KeySet *modules, Key *error ELEKTRA_UNUSED)
+int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
 {
 	ksAppendKey (modules, keyNew ("system/elektra/modules", KEY_END));
 
 	return 0;
 }
 
-static kdblib_symbol* elektraStaticLoad(const char *module)
+static kdblib_symbol * elektraStaticLoad (const char * module)
 {
-	kdblib_symbol	*current;
+	kdblib_symbol * current;
 	current = kdb_exported_syms;
-	while ( current->name != NULL ) {
+	while (current->name != NULL)
+	{
 		/* Skip symbols, we're searching for
 		 * the module name */
-		if ( current->function == NULL && strcmp(current->name, module) == 0 ) {
+		if (current->function == NULL && strcmp (current->name, module) == 0)
+		{
 			/* Go to the first symbol for this file */
 			current++;
 			return current;
@@ -44,48 +46,49 @@ static kdblib_symbol* elektraStaticLoad(const char *module)
 	return NULL;
 }
 
-static kdblib_symbol* elektraStaticSym(kdblib_symbol* handle, const char *symbol)
+static kdblib_symbol * elektraStaticSym (kdblib_symbol * handle, const char * symbol)
 {
-	kdblib_symbol	*current;
+	kdblib_symbol * current;
 
 	current = handle;
 	/* For each symbol about this module */
-	while ( current->function != NULL ) {
-		if ( strcmp(current->name, symbol) == 0 )
+	while (current->function != NULL)
+	{
+		if (strcmp (current->name, symbol) == 0)
 			return current;
 
 		current++;
 	}
-	
+
 	return NULL;
 }
 
-elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *error)
+elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * error)
 {
-	Key *moduleKey = keyNew ("system/elektra/modules", KEY_END);
+	Key * moduleKey = keyNew ("system/elektra/modules", KEY_END);
 	keyAddBaseName (moduleKey, name);
-	Key *lookup = ksLookup(modules, moduleKey, 0);
+	Key * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
-		kdblib_symbol *module = (kdblib_symbol*) keyValue(lookup);
+		kdblib_symbol * module = (kdblib_symbol *)keyValue (lookup);
 		keyDel (moduleKey);
 		return (elektraPluginFactory)module->function;
 	}
 
-	kdblib_symbol* handle = elektraStaticLoad(name);
+	kdblib_symbol * handle = elektraStaticLoad (name);
 
 	if (handle == NULL)
 	{
-		ELEKTRA_ADD_WARNINGF(70, error, "Did not find module: %s", name);
+		ELEKTRA_ADD_WARNINGF (70, error, "Did not find module: %s", name);
 		keyDel (moduleKey);
 		return 0;
 	}
 
-	kdblib_symbol* module = elektraStaticSym(handle, "elektraPluginSymbol");
+	kdblib_symbol * module = elektraStaticSym (handle, "elektraPluginSymbol");
 
 	if (module == NULL)
 	{
-		ELEKTRA_ADD_WARNING(71, error, "no such symbol elektraPluginSymbol");
+		ELEKTRA_ADD_WARNING (71, error, "no such symbol elektraPluginSymbol");
 		return 0;
 	}
 
@@ -95,8 +98,8 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
 	return (elektraPluginFactory)module->function;
 }
 
-int elektraModulesClose (KeySet *modules, Key *error ELEKTRA_UNUSED)
+int elektraModulesClose (KeySet * modules, Key * error ELEKTRA_UNUSED)
 {
-	ksClear(modules);
+	ksClear (modules);
 	return 0;
 }

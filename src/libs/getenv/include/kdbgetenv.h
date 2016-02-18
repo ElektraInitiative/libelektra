@@ -17,26 +17,27 @@
 #define KDB_GETENV_VERSION "0"
 
 #ifdef __cplusplus
-namespace ckdb {
+namespace ckdb
+{
 extern "C" {
 #endif
 
 /**
  * @brief The KDB repository to be used to fetch configuration
  */
-extern KDB *elektraRepo;
+extern KDB * elektraRepo;
 
 /**
  * @brief The config of the application. Contains whole /env configuration.
  */
-extern KeySet *elektraConfig;
+extern KeySet * elektraConfig;
 
 /**
  * @brief The parentKey used to access elektraRepo.
  *
  * Contains all warnings and errors that happened during repo access
  */
-extern Key *elektraParentKey;
+extern Key * elektraParentKey;
 
 /**
  * @brief Lock the internally used mutex to access elektraRepo, elektraConfig or elektraParentKey
@@ -45,14 +46,14 @@ extern Key *elektraParentKey;
  *
  * @see elektraRepo, elektraConfig or elektraParentKey
  */
-void elektraLockMutex();
+void elektraLockMutex ();
 
 /**
  * @brief Unlock the internally used mutex
  *
  * @see elektraLockMutex()
  */
-void elektraUnlockMutex();
+void elektraUnlockMutex ();
 
 /**
  * @brief Initializes Global Elektra Repo+Config
@@ -65,7 +66,7 @@ void elektraUnlockMutex();
  *
  * @see elektraClose
  */
-void elektraOpen(int* argc, char** argv);
+void elektraOpen (int * argc, char ** argv);
 
 /**
  * @brief Closes and frees Repo+Config
@@ -74,7 +75,7 @@ void elektraOpen(int* argc, char** argv);
  *
  * @see elektraOpen
  */
-void elektraClose();
+void elektraClose ();
 
 
 #ifdef __cplusplus

@@ -540,11 +540,11 @@ keyDel (key);
  * @return the mountpoint associated with the key
  * @ingroup mount
  */
-Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
+Key * elektraMountGetMountpoint (KDB * handle, const Key * where)
 {
-	Backend *backend_handle;
+	Backend * backend_handle;
 
-	backend_handle=elektraMountGetBackend(handle,where);
+	backend_handle = elektraMountGetBackend (handle, where);
 	if (!backend_handle)
 	{
 		return 0;
@@ -552,7 +552,6 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
 
 	return backend_handle->mountpoint;
 }
-
 
 
 /**
@@ -571,11 +570,13 @@ Key* elektraMountGetMountpoint(KDB *handle, const Key *where)
  * @return the backend handle associated with the key
  * @ingroup mount
  */
-Backend* elektraMountGetBackend(KDB *handle, const Key *key)
+Backend * elektraMountGetBackend (KDB * handle, const Key * key)
 {
-	if (!key || !strcmp(keyName(key), "")) return handle->defaultBackend;
+	if (!key || !strcmp (keyName (key), ""))
+		return handle->defaultBackend;
 
-	Backend *ret = elektraTrieLookup(handle->trie, key);
-	if (!ret) return handle->defaultBackend;
+	Backend * ret = elektraTrieLookup (handle->trie, key);
+	if (!ret)
+		return handle->defaultBackend;
 	return ret;
 }

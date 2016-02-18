@@ -11,19 +11,19 @@
 #ifndef TOOLS_BACKEND_HPP
 #define TOOLS_BACKEND_HPP
 
+#include <backendparser.hpp>
+#include <modules.hpp>
 #include <plugin.hpp>
 #include <plugins.hpp>
-#include <modules.hpp>
 #include <pluginspec.hpp>
 #include <toolexcept.hpp>
-#include <backendparser.hpp>
 
-#include <vector>
-#include <memory>
-#include <string>
-#include <ostream>
 #include <deque>
+#include <memory>
+#include <ostream>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <kdb.hpp>
 
@@ -40,7 +40,7 @@ class BackendInterface
 {
 public:
 	virtual void addPlugin (PluginSpec const & spec) = 0;
-	virtual ~BackendInterface() = 0;
+	virtual ~BackendInterface () = 0;
 };
 
 typedef std::unique_ptr<BackendInterface> BackendInterfacePtr;
@@ -51,28 +51,28 @@ typedef std::unique_ptr<BackendInterface> BackendInterfacePtr;
 class SerializeInterface
 {
 public:
-	virtual void serialize (kdb::KeySet &ret) = 0;
-	virtual ~SerializeInterface() = 0;
+	virtual void serialize (kdb::KeySet & ret) = 0;
+	virtual ~SerializeInterface () = 0;
 };
 
 /**
  * @brief Interface to work with mountpoints (backends) for factory
  */
-class MountBackendInterface : public BackendInterface , public SerializeInterface
+class MountBackendInterface : public BackendInterface, public SerializeInterface
 {
 public:
 	virtual void status (std::ostream & os) const = 0;
 	virtual bool validated () const = 0;
 
 	virtual void setMountpoint (Key mountpoint, KeySet mountConf) = 0;
-	virtual std::string getMountpoint() const = 0;
+	virtual std::string getMountpoint () const = 0;
 
 	virtual void setBackendConfig (KeySet const & ks) = 0;
 
 	virtual void useConfigFile (std::string file) = 0;
-	virtual std::string getConfigFile() const = 0;
+	virtual std::string getConfigFile () const = 0;
 
-	virtual ~MountBackendInterface() = 0;
+	virtual ~MountBackendInterface () = 0;
 };
 
 typedef std::unique_ptr<MountBackendInterface> MountBackendInterfacePtr;
@@ -90,28 +90,28 @@ private:
 	SetPlugins setplugins;
 	ErrorPlugins errorplugins;
 
-	std::string mp; // empty or valid canonified mountpoint
+	std::string mp;		// empty or valid canonified mountpoint
 	std::string configFile; // empty or valid configuration file
 
 	Modules modules;
 	kdb::KeySet config; // the global config, plugins might add something to it
 
 	// make sure plugins get closed before modules
-	std::vector <PluginPtr> plugins;
+	std::vector<PluginPtr> plugins;
 
 
 private:
 	void tryPlugin (PluginSpec const & spec);
 
 public:
-	Backend();
-	~Backend();
+	Backend ();
+	~Backend ();
 
-	Backend(Backend const & other) = delete;
-	Backend & operator = (Backend const & other) = delete;
+	Backend (Backend const & other) = delete;
+	Backend & operator= (Backend const & other) = delete;
 
-	Backend(Backend && other);
-	Backend & operator = (Backend && other);
+	Backend (Backend && other);
+	Backend & operator= (Backend && other);
 
 	void setMountpoint (Key mountpoint, KeySet mountConf);
 	void setBackendConfig (KeySet const & ks);
@@ -119,10 +119,10 @@ public:
 	void useConfigFile (std::string file);
 	void status (std::ostream & os) const;
 	bool validated () const;
-	void serialize (kdb::KeySet &ret);
+	void serialize (kdb::KeySet & ret);
 
-	std::string getMountpoint() const;
-	std::string getConfigFile() const;
+	std::string getMountpoint () const;
+	std::string getConfigFile () const;
 };
 
 /**

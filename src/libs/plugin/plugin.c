@@ -50,50 +50,52 @@
  * 	libelektra.so
  * @ingroup plugin
  */
-Plugin *elektraPluginExport(const char *pluginName, ...)
+Plugin * elektraPluginExport (const char * pluginName, ...)
 {
 	va_list va;
-	Plugin *returned;
-	plugin_t method=0;
+	Plugin * returned;
+	plugin_t method = 0;
 
-	if (pluginName == 0) return 0;
+	if (pluginName == 0)
+		return 0;
 
-	returned=elektraCalloc(sizeof(struct _Plugin));
+	returned = elektraCalloc (sizeof (struct _Plugin));
 
 	/* Start processing parameters */
-	va_start(va,pluginName);
+	va_start (va, pluginName);
 	returned->name = pluginName;
 
-	while ((method=va_arg(va,plugin_t))) {
-		switch (method) {
-			case ELEKTRA_PLUGIN_OPEN:
-				returned->kdbOpen=va_arg(va,kdbOpenPtr);
-				break;
-			case ELEKTRA_PLUGIN_CLOSE:
-				returned->kdbClose=va_arg(va,kdbClosePtr);
-				break;
-			case ELEKTRA_PLUGIN_GET:
-				returned->kdbGet=va_arg(va,kdbGetPtr);
-				break;
-			case ELEKTRA_PLUGIN_SET:
-				returned->kdbSet=va_arg(va,kdbSetPtr);
-				break;
-			case ELEKTRA_PLUGIN_ERROR:
-				returned->kdbError=va_arg(va,kdbErrorPtr);
-				break;
-			default:
+	while ((method = va_arg (va, plugin_t)))
+	{
+		switch (method)
+		{
+		case ELEKTRA_PLUGIN_OPEN:
+			returned->kdbOpen = va_arg (va, kdbOpenPtr);
+			break;
+		case ELEKTRA_PLUGIN_CLOSE:
+			returned->kdbClose = va_arg (va, kdbClosePtr);
+			break;
+		case ELEKTRA_PLUGIN_GET:
+			returned->kdbGet = va_arg (va, kdbGetPtr);
+			break;
+		case ELEKTRA_PLUGIN_SET:
+			returned->kdbSet = va_arg (va, kdbSetPtr);
+			break;
+		case ELEKTRA_PLUGIN_ERROR:
+			returned->kdbError = va_arg (va, kdbErrorPtr);
+			break;
+		default:
 #if DEBUG
-				printf ("plugin passed something unexpected\n");
+			printf ("plugin passed something unexpected\n");
 #endif
-				// fallthrough, will end here
-			case ELEKTRA_PLUGIN_END:
-				va_end(va);
-				return returned;
+		// fallthrough, will end here
+		case ELEKTRA_PLUGIN_END:
+			va_end (va);
+			return returned;
 		}
 	}
 	return returned;
 }
-
 
 
 /**
@@ -108,10 +110,7 @@ Plugin *elektraPluginExport(const char *pluginName, ...)
  * @ingroup plugin
  * @return keyset to the configuration for that plugin
  */
-KeySet *elektraPluginGetConfig(Plugin *handle)
-{
-	return handle->config;
-}
+KeySet * elektraPluginGetConfig (Plugin * handle) { return handle->config; }
 
 /**
  * @brief Store a pointer to any plugin related data.
@@ -120,10 +119,7 @@ KeySet *elektraPluginGetConfig(Plugin *handle)
  * @param data the pointer to the data
  * @ingroup plugin
  */
-void elektraPluginSetData(Plugin *plugin, void *data)
-{
-	plugin->data = data;
-}
+void elektraPluginSetData (Plugin * plugin, void * data) { plugin->data = data; }
 
 /**
  * @brief Get a pointer to any plugin related data stored before.
@@ -132,7 +128,4 @@ void elektraPluginSetData(Plugin *plugin, void *data)
  * @return a pointer to the data
  * @ingroup plugin
  */
-void* elektraPluginGetData(Plugin *plugin)
-{
-	return plugin->data;
-}
+void * elektraPluginGetData (Plugin * plugin) { return plugin->data; }
