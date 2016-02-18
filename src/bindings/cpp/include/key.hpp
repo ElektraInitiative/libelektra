@@ -9,11 +9,11 @@
 #ifndef ELEKTRA_KEY_HPP
 #define ELEKTRA_KEY_HPP
 
-#include <string>
-#include <locale>
-#include <cstring>
 #include <cstdarg>
+#include <cstring>
+#include <locale>
 #include <sstream>
+#include <string>
 
 #include <keyexcept.hpp>
 
@@ -70,7 +70,7 @@ public:
 
 	inline Key ();
 	inline Key (ckdb::Key * k);
-	inline Key (Key &k);
+	inline Key (Key & k);
 	inline Key (Key const & k);
 
 	inline explicit Key (const char * keyName, ...);
@@ -80,51 +80,51 @@ public:
 
 	// reference handling
 
-	inline void operator ++(int) const;
-	inline void operator ++() const;
+	inline void operator++ (int)const;
+	inline void operator++ () const;
 
-	inline void operator --(int) const;
-	inline void operator --() const;
+	inline void operator-- (int)const;
+	inline void operator-- () const;
 
-	inline ssize_t getReferenceCounter() const;
+	inline ssize_t getReferenceCounter () const;
 
 
 	// basic methods
 
 
-	inline Key& operator= (ckdb::Key *k);
-	inline Key& operator= (const Key &k);
+	inline Key & operator= (ckdb::Key * k);
+	inline Key & operator= (const Key & k);
 
-	inline void copy (const Key &other);
+	inline void copy (const Key & other);
 	inline void clear ();
-	inline ckdb::Key* operator->() const;
+	inline ckdb::Key * operator-> () const;
 
-	inline Key* operator->();
+	inline Key * operator-> ();
 
-	inline ckdb::Key* getKey () const;
-	inline ckdb::Key* operator* () const;
+	inline ckdb::Key * getKey () const;
+	inline ckdb::Key * operator* () const;
 
-	inline ckdb::Key* release ();
-	inline ckdb::Key* dup () const;
+	inline ckdb::Key * release ();
+	inline ckdb::Key * dup () const;
 	inline ~Key ();
 
 
 	// name operations
 
 
-	inline std::string getName() const;
-	inline ssize_t getNameSize() const;
+	inline std::string getName () const;
+	inline ssize_t getNameSize () const;
 
-	inline std::string getBaseName() const;
-	inline ssize_t getBaseNameSize() const;
+	inline std::string getBaseName () const;
+	inline ssize_t getBaseNameSize () const;
 
-	inline void setName (const std::string &newName);
-	inline void addName (const std::string &addedName);
-	inline void setBaseName (const std::string &baseName);
-	inline void addBaseName (const std::string &baseName);
+	inline void setName (const std::string & newName);
+	inline void addName (const std::string & addedName);
+	inline void setBaseName (const std::string & baseName);
+	inline void addBaseName (const std::string & baseName);
 
-	inline ssize_t getFullNameSize() const;
-	inline std::string getFullName() const;
+	inline ssize_t getFullNameSize () const;
+	inline std::string getFullName () const;
 
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef NameIterator iterator;
@@ -132,77 +132,77 @@ public:
 	typedef NameReverseIterator reverse_iterator;
 	typedef NameReverseIterator const_reverse_iterator;
 
-	iterator begin();
-	const_iterator begin() const;
-	iterator end();
-	const_iterator end() const;
-	reverse_iterator rbegin();
-	const_reverse_iterator rbegin() const;
-	reverse_iterator rend();
-	const_reverse_iterator rend() const;
+	iterator begin ();
+	const_iterator begin () const;
+	iterator end ();
+	const_iterator end () const;
+	reverse_iterator rbegin ();
+	const_reverse_iterator rbegin () const;
+	reverse_iterator rend ();
+	const_reverse_iterator rend () const;
 
-	const_iterator cbegin() const noexcept;
-	const_iterator cend() const noexcept;
-	const_reverse_iterator crbegin() const noexcept;
-	const_reverse_iterator crend() const noexcept;
-#endif //ELEKTRA_WITHOUT_ITERATOR
+	const_iterator cbegin () const noexcept;
+	const_iterator cend () const noexcept;
+	const_reverse_iterator crbegin () const noexcept;
+	const_reverse_iterator crend () const noexcept;
+#endif // ELEKTRA_WITHOUT_ITERATOR
 
 
 	// operators
 
 
-	inline bool operator ==(const Key &k) const;
-	inline bool operator !=(const Key &k) const;
-	inline bool operator < (const Key& other) const;
-	inline bool operator <= (const Key& other) const;
-	inline bool operator > (const Key& other) const;
-	inline bool operator >= (const Key& other) const;
+	inline bool operator== (const Key & k) const;
+	inline bool operator!= (const Key & k) const;
+	inline bool operator< (const Key & other) const;
+	inline bool operator<= (const Key & other) const;
+	inline bool operator> (const Key & other) const;
+	inline bool operator>= (const Key & other) const;
 
-	inline bool isNull() const;
-	inline operator bool() const;
-	inline bool needSync() const;
+	inline bool isNull () const;
+	inline operator bool () const;
+	inline bool needSync () const;
 
 
 	// value operations
 
 
 	template <class T>
-	inline T get() const;
+	inline T get () const;
 
 	template <class T>
-	inline void set(T x);
+	inline void set (T x);
 
-	inline std::string getString() const;
-	inline void setString(std::string newString);
-	inline ssize_t getStringSize() const;
+	inline std::string getString () const;
+	inline void setString (std::string newString);
+	inline ssize_t getStringSize () const;
 
-	typedef void (*func_t)();
-	inline func_t getFunc() const;
+	typedef void (*func_t) ();
+	inline func_t getFunc () const;
 
-	typedef ckdb::Key * (*callback_t) (ckdb::KeySet *ks, ckdb::Key *key, ckdb::Key *found, option_t options);
-	inline void setCallback(callback_t fct);
+	typedef ckdb::Key * (*callback_t) (ckdb::KeySet * ks, ckdb::Key * key, ckdb::Key * found, option_t options);
+	inline void setCallback (callback_t fct);
 
-	inline const void *getValue() const;
-	inline std::string getBinary() const;
-	inline ssize_t getBinarySize() const;
-	inline ssize_t setBinary(const void *newBinary, size_t dataSize);
+	inline const void * getValue () const;
+	inline std::string getBinary () const;
+	inline ssize_t getBinarySize () const;
+	inline ssize_t setBinary (const void * newBinary, size_t dataSize);
 
 
 	// meta data
 	//
 	//
-	inline bool hasMeta(const std::string &metaName) const;
+	inline bool hasMeta (const std::string & metaName) const;
 
 	template <class T>
-	inline T getMeta(const std::string &metaName) const;
+	inline T getMeta (const std::string & metaName) const;
 
 	template <class T>
-	inline void setMeta(const std::string &metaName, T x);
+	inline void setMeta (const std::string & metaName, T x);
 
-	inline void delMeta(const std::string &metaName);
+	inline void delMeta (const std::string & metaName);
 
-	inline void copyMeta(const Key &other, const std::string &metaName);
-	inline void copyAllMeta(const Key &other);
+	inline void copyMeta (const Key & other, const std::string & metaName);
+	inline void copyAllMeta (const Key & other);
 
 	inline void rewindMeta () const;
 	inline const Key nextMeta ();
@@ -212,19 +212,19 @@ public:
 	// Methods for Making tests
 
 
-	inline bool isValid() const;
-	inline std::string getNamespace() const;
-	inline bool isSystem() const;
-	inline bool isUser() const;
+	inline bool isValid () const;
+	inline std::string getNamespace () const;
+	inline bool isSystem () const;
+	inline bool isUser () const;
 
-	inline bool isString() const;
-	inline bool isBinary() const;
+	inline bool isString () const;
+	inline bool isBinary () const;
 
-	inline bool isInactive() const;
+	inline bool isInactive () const;
 
-	inline bool isBelow(const Key &k) const;
-	inline bool isBelowOrSame(const Key &k) const;
-	inline bool isDirectBelow(const Key &k) const;
+	inline bool isBelow (const Key & k) const;
+	inline bool isBelowOrSame (const Key & k) const;
+	inline bool isDirectBelow (const Key & k) const;
 
 private:
 	inline int del ();
@@ -253,30 +253,28 @@ public:
 	typedef int difference_type; // STL typedef is required by SWIG
 	typedef std::bidirectional_iterator_tag iterator_category;
 
-	NameIterator(Key const & k, bool last) :
-		begin(static_cast<const char*>(keyUnescapedName(*k))),
-		end(begin+keyGetUnescapedNameSize(*k)),
-		current(last?end:begin)
-	{}
-
-	NameIterator(const char* begin_, const char* end_, const char* current_) :
-		begin(begin_),
-		end(end_),
-		current(current_)
-	{}
-
-	std::string get() const
+	NameIterator (Key const & k, bool last)
+	: begin (static_cast<const char *> (keyUnescapedName (*k))), end (begin + keyGetUnescapedNameSize (*k)),
+	  current (last ? end : begin)
 	{
-		if (current == end || current == begin-1) return "";
-		return std::string(current);
 	}
 
-	const char *pos() const { return current; }
+	NameIterator (const char * begin_, const char * end_, const char * current_) : begin (begin_), end (end_), current (current_) {}
 
-	const char *findNext() const
+	std::string get () const
 	{
-		const char *c = current;
-		if (c >= end) return end;
+		if (current == end || current == begin - 1)
+			return "";
+		return std::string (current);
+	}
+
+	const char * pos () const { return current; }
+
+	const char * findNext () const
+	{
+		const char * c = current;
+		if (c >= end)
+			return end;
 
 		if (c == begin && *c == 0)
 		{
@@ -284,20 +282,29 @@ public:
 			return ++c;
 		}
 
-		do { ++c; } while (c < end && *c != 0);
-		if (c != end) ++c; // skip past null character
+		do
+		{
+			++c;
+		} while (c < end && *c != 0);
+		if (c != end)
+			++c; // skip past null character
 
 		return c;
 	}
 
-	const char *findPrevious() const
+	const char * findPrevious () const
 	{
-		const char *c = current;
-		if (c <= begin) return begin;
+		const char * c = current;
+		if (c <= begin)
+			return begin;
 
 		--c; // go from start of string to null
-		do { --c; } while (c > begin && *c != 0);
-		if (c != begin && c+1 != current) ++c; // jump back to not-null
+		do
+		{
+			--c;
+		} while (c > begin && *c != 0);
+		if (c != begin && c + 1 != current)
+			++c; // jump back to not-null
 		else if (c == begin && *c == 0)
 		{
 			// special handling of cascading key names
@@ -308,37 +315,43 @@ public:
 	}
 
 	// Forward iterator requirements
-	reference operator*() const { return get(); }
-	NameIterator& operator++() { current = findNext(); return *this; }
-	NameIterator operator++(int)
+	reference operator* () const { return get (); }
+	NameIterator & operator++ ()
 	{
-		NameIterator ret(begin, end, current);
-		current = findNext();
+		current = findNext ();
+		return *this;
+	}
+	NameIterator operator++ (int)
+	{
+		NameIterator ret (begin, end, current);
+		current = findNext ();
 		return ret;
 	}
 
 	// Bidirectional iterator requirements
-	NameIterator& operator--() { current = findPrevious(); return *this; }
-	NameIterator operator--(int)
+	NameIterator & operator-- ()
 	{
-		NameIterator ret(begin, end, current);
-		current = findPrevious();
+		current = findPrevious ();
+		return *this;
+	}
+	NameIterator operator-- (int)
+	{
+		NameIterator ret (begin, end, current);
+		current = findPrevious ();
 		return ret;
 	}
 
 protected:
-	const char *begin;
-	const char *end;
-	const char* current;
+	const char * begin;
+	const char * end;
+	const char * current;
 };
 
 
 // Forward iterator requirements
-inline bool operator==(const NameIterator& lhs, const NameIterator& rhs)
-{ return lhs.pos() == rhs.pos(); }
+inline bool operator== (const NameIterator & lhs, const NameIterator & rhs) { return lhs.pos () == rhs.pos (); }
 
-inline bool operator!=(const NameIterator& lhs, const NameIterator& rhs)
-{ return lhs.pos() != rhs.pos()  ; }
+inline bool operator!= (const NameIterator & lhs, const NameIterator & rhs) { return lhs.pos () != rhs.pos (); }
 
 // some code duplication because std::reverse_iterator
 // needs a difference_type
@@ -355,128 +368,98 @@ public:
 	typedef int difference_type; // STL typedef is required by SWIG
 	typedef std::bidirectional_iterator_tag iterator_category;
 
-	NameReverseIterator(Key const & k, bool last) :
-		NameIterator(k, last)
+	NameReverseIterator (Key const & k, bool last) : NameIterator (k, last)
 	{
-		if (!last) current = begin-1;
-		else current = findPrevious();
+		if (!last)
+			current = begin - 1;
+		else
+			current = findPrevious ();
 	}
 
-	NameReverseIterator(const char* begin_, const char* end_, const char* current_) :
-		NameIterator(begin_, end_, current_)
-	{}
+	NameReverseIterator (const char * begin_, const char * end_, const char * current_) : NameIterator (begin_, end_, current_) {}
 
-	const char *findPrevious() const
+	const char * findPrevious () const
 	{
-		if (current <= begin) return begin-1;
-		return NameIterator::findPrevious();
+		if (current <= begin)
+			return begin - 1;
+		return NameIterator::findPrevious ();
 	}
 
-	const char *findNext() const
+	const char * findNext () const
 	{
-		if (current == begin-1) return begin;
-		return NameIterator::findNext();
+		if (current == begin - 1)
+			return begin;
+		return NameIterator::findNext ();
 	}
 
-	std::string get() const
+	std::string get () const
 	{
-		if (current == begin-1) return "";
-		return NameIterator::get();
+		if (current == begin - 1)
+			return "";
+		return NameIterator::get ();
 	}
 
-	const char *pos() const { return NameIterator::pos(); }
+	const char * pos () const { return NameIterator::pos (); }
 
 	// Forward iterator requirements
-	reference operator*() const { return get(); }
-	NameReverseIterator& operator++() { current = findPrevious(); return *this; }
-	NameReverseIterator operator++(int)
+	reference operator* () const { return get (); }
+	NameReverseIterator & operator++ ()
 	{
-		NameReverseIterator ret(begin, end, current);
-		current = findPrevious();
+		current = findPrevious ();
+		return *this;
+	}
+	NameReverseIterator operator++ (int)
+	{
+		NameReverseIterator ret (begin, end, current);
+		current = findPrevious ();
 		return ret;
 	}
 
 	// Bidirectional iterator requirements
-	NameReverseIterator& operator--() { current = findNext(); return *this; }
-	NameReverseIterator operator--(int)
+	NameReverseIterator & operator-- ()
 	{
-		NameReverseIterator ret(begin, end, current);
-		current = findNext();
+		current = findNext ();
+		return *this;
+	}
+	NameReverseIterator operator-- (int)
+	{
+		NameReverseIterator ret (begin, end, current);
+		current = findNext ();
 		return ret;
 	}
 };
 
 
-
 // Forward iterator requirements
-inline bool operator==(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
-{ return lhs.pos() == rhs.pos(); }
+inline bool operator== (const NameReverseIterator & lhs, const NameReverseIterator & rhs) { return lhs.pos () == rhs.pos (); }
 
-inline bool operator!=(const NameReverseIterator& lhs, const NameReverseIterator& rhs)
-{ return lhs.pos() != rhs.pos(); }
+inline bool operator!= (const NameReverseIterator & lhs, const NameReverseIterator & rhs) { return lhs.pos () != rhs.pos (); }
 
 
+inline Key::iterator Key::begin () { return Key::iterator (*this, false); }
 
-inline Key::iterator Key::begin()
-{
-	return Key::iterator(*this, false);
-}
+inline Key::const_iterator Key::begin () const { return Key::const_iterator (*this, false); }
 
-inline Key::const_iterator Key::begin() const
-{
-	return Key::const_iterator(*this, false);
-}
+inline Key::iterator Key::end () { return Key::iterator (*this, true); }
 
-inline Key::iterator Key::end()
-{
-	return Key::iterator(*this, true);
-}
+inline Key::const_iterator Key::end () const { return Key::const_iterator (*this, true); }
 
-inline Key::const_iterator Key::end() const
-{
-	return Key::const_iterator(*this, true);
-}
+inline Key::reverse_iterator Key::rbegin () { return Key::reverse_iterator (*this, true); }
 
-inline Key::reverse_iterator Key::rbegin()
-{
-	return Key::reverse_iterator(*this, true);
-}
+inline Key::const_reverse_iterator Key::rbegin () const { return Key::const_reverse_iterator (*this, true); }
 
-inline Key::const_reverse_iterator Key::rbegin() const
-{
-	return Key::const_reverse_iterator(*this, true);
-}
+inline Key::reverse_iterator Key::rend () { return Key::reverse_iterator (*this, false); }
 
-inline Key::reverse_iterator Key::rend()
-{
-	return Key::reverse_iterator(*this, false);
-}
+inline Key::const_reverse_iterator Key::rend () const { return Key::const_reverse_iterator (*this, false); }
 
-inline Key::const_reverse_iterator Key::rend() const
-{
-	return Key::const_reverse_iterator(*this, false);
-}
+inline Key::const_iterator Key::cbegin () const noexcept { return Key::const_iterator (*this, true); }
 
-inline Key::const_iterator Key::cbegin() const noexcept
-{
-	return Key::const_iterator(*this, true);
-}
+inline Key::const_iterator Key::cend () const noexcept { return Key::const_iterator (*this, false); }
 
-inline Key::const_iterator Key::cend() const noexcept
-{
-	return Key::const_iterator(*this, false);
-}
+inline Key::const_reverse_iterator Key::crbegin () const noexcept { return Key::const_reverse_iterator (*this, true); }
 
-inline Key::const_reverse_iterator Key::crbegin() const noexcept
-{
-	return Key::const_reverse_iterator(*this, true);
-}
-
-inline Key::const_reverse_iterator Key::crend() const noexcept
-{
-	return Key::const_reverse_iterator(*this, false);
-}
-#endif //ELEKTRA_WITHOUT_ITERATOR
+inline Key::const_reverse_iterator Key::crend () const noexcept { return Key::const_reverse_iterator (*this, false); }
+#endif // ELEKTRA_WITHOUT_ITERATOR
 
 
 /**
@@ -487,11 +470,7 @@ inline Key::const_reverse_iterator Key::crend() const noexcept
  *
  * @see isValid(), isNull()
  */
-inline Key::Key () :
-	key(ckdb::keyNew (nullptr))
-{
-	operator++();
-}
+inline Key::Key () : key (ckdb::keyNew (nullptr)) { operator++ (); }
 
 /**
  * Constructs a key out of a C key.
@@ -503,11 +482,7 @@ inline Key::Key () :
  *
  * @see isValid(), isNull()
  */
-inline Key::Key (ckdb::Key * k) :
-	key(k)
-{
-	operator++();
-}
+inline Key::Key (ckdb::Key * k) : key (k) { operator++ (); }
 
 /**
  * Takes a reference of another key.
@@ -517,11 +492,7 @@ inline Key::Key (ckdb::Key * k) :
  *
  * @param k the key to work with
  */
-inline Key::Key (Key &k) :
-	key(k.key)
-{
-	operator++();
-}
+inline Key::Key (Key & k) : key (k.key) { operator++ (); }
 
 /**
  * Takes a reference of another key.
@@ -531,11 +502,7 @@ inline Key::Key (Key &k) :
  *
  * @param k the key to work with
  */
-inline Key::Key (Key const & k) :
-	key(k.key)
-{
-	operator++();
-}
+inline Key::Key (Key const & k) : key (k.key) { operator++ (); }
 
 /**
  * @copydoc keyNew
@@ -548,13 +515,14 @@ inline Key::Key (const char * keyName, ...)
 {
 	va_list ap;
 
-	va_start(ap, keyName);
+	va_start (ap, keyName);
 	key = ckdb::keyVNew (keyName, ap);
-	va_end(ap);
+	va_end (ap);
 
-	if (!key) throw std::bad_alloc();
+	if (!key)
+		throw std::bad_alloc ();
 
-	operator++();
+	operator++ ();
 }
 
 /**
@@ -572,13 +540,14 @@ inline Key::Key (const std::string keyName, ...)
 {
 	va_list ap;
 
-	va_start(ap, keyName);
-	key = ckdb::keyVNew (keyName.c_str(), ap);
-	va_end(ap);
+	va_start (ap, keyName);
+	key = ckdb::keyVNew (keyName.c_str (), ap);
+	va_end (ap);
 
-	if (!key) throw std::bad_alloc();
+	if (!key)
+		throw std::bad_alloc ();
 
-	operator++();
+	operator++ ();
 }
 
 /**
@@ -593,63 +562,49 @@ inline Key::Key (const char * keyName, va_list ap)
 {
 	key = ckdb::keyVNew (keyName, ap);
 
-	if (!key) throw std::bad_alloc();
+	if (!key)
+		throw std::bad_alloc ();
 
-	operator++();
+	operator++ ();
 }
 
 /**
  * @copydoc keyIncRef
  */
-void Key::operator ++(int) const
-{
-	operator++();
-}
+void Key::operator++ (int)const { operator++ (); }
 
 /**
  * @copydoc keyIncRef
  */
-void Key::operator ++() const
-{
-	ckdb::keyIncRef(key);
-}
+void Key::operator++ () const { ckdb::keyIncRef (key); }
 
 /**
  * @copydoc keyDecRef
  */
-void Key::operator --(int) const
-{
-	operator--();
-}
+void Key::operator-- (int)const { operator-- (); }
 
 /**
  * @copydoc keyDecRef
  */
-void Key::operator --() const
-{
-	ckdb::keyDecRef(key);
-}
+void Key::operator-- () const { ckdb::keyDecRef (key); }
 
 /**
  * @copydoc keyGetRef
  */
-inline ssize_t Key::getReferenceCounter() const
-{
-	return ckdb::keyGetRef(key);
-}
+inline ssize_t Key::getReferenceCounter () const { return ckdb::keyGetRef (key); }
 
 /**
  * Assign a C key.
  *
  * Will call del() on the old key.
  */
-inline Key& Key::operator= (ckdb::Key *k)
+inline Key & Key::operator= (ckdb::Key * k)
 {
 	if (key != k)
 	{
-		del();
+		del ();
 		key = k;
-		operator++();
+		operator++ ();
 	}
 	return *this;
 }
@@ -659,13 +614,13 @@ inline Key& Key::operator= (ckdb::Key *k)
  *
  * Will call del() on the old key.
  */
-inline Key& Key::operator= (const Key &k)
+inline Key & Key::operator= (const Key & k)
 {
 	if (this != &k)
 	{
-		del();
+		del ();
 		key = k.key;
-		operator++();
+		operator++ ();
 	}
 	return *this;
 }
@@ -673,10 +628,7 @@ inline Key& Key::operator= (const Key &k)
 /**
  * @copydoc keyCopy
  */
-inline void Key::copy (const Key &other)
-{
-	ckdb::keyCopy(key,other.key);
-}
+inline void Key::copy (const Key & other) { ckdb::keyCopy (key, other.key); }
 
 /**
  * Clears/Invalidates a key.
@@ -692,10 +644,7 @@ inline void Key::copy (const Key &other)
  *
  * @copydoc keyClear
  */
-inline void Key::clear ()
-{
-	ckdb::keyClear(key);
-}
+inline void Key::clear () { ckdb::keyClear (key); }
 
 /**
  * Passes out the raw key pointer.
@@ -705,10 +654,7 @@ inline void Key::clear ()
  *
  * \note that the ownership remains in the object
  */
-ckdb::Key * Key::getKey () const
-{
-	return key;
-}
+ckdb::Key * Key::getKey () const { return key; }
 
 /**
  * Is a abbreviation for getKey.
@@ -717,10 +663,7 @@ ckdb::Key * Key::getKey () const
  *
  * @see getKey()
  */
-ckdb::Key * Key::operator* () const
-{
-	return key;
-}
+ckdb::Key * Key::operator* () const { return key; }
 
 /**
  * @returns a pointer to this object
@@ -728,10 +671,7 @@ ckdb::Key * Key::operator* () const
  * Needed for KeySet iterators.
  * @see KeySetIterator
  */
-Key* Key::operator-> ()
-{
-	return this;
-}
+Key * Key::operator-> () { return this; }
 
 /**
  * Passes out the raw key pointer and resets internal key handle.
@@ -740,12 +680,12 @@ Key* Key::operator-> ()
  *
  * @retval 0 if no key is held (null pointer), no action is done then.
  */
-ckdb::Key* Key::release ()
+ckdb::Key * Key::release ()
 {
-	ckdb::Key* ret = key;
+	ckdb::Key * ret = key;
 	if (key)
 	{
-		operator --();
+		operator-- ();
 		key = nullptr;
 	}
 	return ret;
@@ -754,10 +694,7 @@ ckdb::Key* Key::release ()
 /**
  * @copydoc keyDup
  */
-ckdb::Key* Key::dup () const
-{
-	return ckdb::keyDup(getKey());
-}
+ckdb::Key * Key::dup () const { return ckdb::keyDup (getKey ()); }
 
 /**
  * Destructs the key.
@@ -770,7 +707,7 @@ inline Key::~Key ()
 {
 	if (key)
 	{
-		del();
+		del ();
 	}
 }
 
@@ -782,55 +719,47 @@ inline Key::~Key ()
  * @note unlike in the C version, it is safe to change the returned
  * string.
  */
-inline std::string Key::getName() const
+inline std::string Key::getName () const
 {
-	if (!key) throw KeyException();
-	return std::string (ckdb::keyName(key));
+	if (!key)
+		throw KeyException ();
+	return std::string (ckdb::keyName (key));
 }
 
 /**
  * @copydoc keyGetNameSize
  */
-inline ssize_t Key::getNameSize() const
-{
-	return ckdb::keyGetNameSize (getKey());
-}
+inline ssize_t Key::getNameSize () const { return ckdb::keyGetNameSize (getKey ()); }
 
 
 /**
  * @copydoc keyGetBaseNameSize
  */
-inline ssize_t Key::getBaseNameSize() const
-{
-	return ckdb::keyGetBaseNameSize(getKey());
-}
+inline ssize_t Key::getBaseNameSize () const { return ckdb::keyGetBaseNameSize (getKey ()); }
 
 /**
  * @copydoc keyBaseName
  */
-inline std::string Key::getBaseName() const
-{
-	return std::string (ckdb::keyBaseName(key));
-}
+inline std::string Key::getBaseName () const { return std::string (ckdb::keyBaseName (key)); }
 
 /**
  * @copydoc keySetName
  *
  * @throw KeyInvalidName if the name is not valid
  * */
-inline void Key::setName (const std::string &newName)
+inline void Key::setName (const std::string & newName)
 {
-	if (ckdb::keySetName (getKey(), newName.c_str()) == -1)
+	if (ckdb::keySetName (getKey (), newName.c_str ()) == -1)
 	{
-		throw KeyInvalidName();
+		throw KeyInvalidName ();
 	}
 }
 
-inline void Key::addName (const std::string &addedName)
+inline void Key::addName (const std::string & addedName)
 {
-	if (ckdb::keyAddName (getKey(), addedName.c_str()) == -1)
+	if (ckdb::keyAddName (getKey (), addedName.c_str ()) == -1)
 	{
-		throw KeyInvalidName();
+		throw KeyInvalidName ();
 	}
 }
 
@@ -842,9 +771,9 @@ inline void Key::addName (const std::string &addedName)
  */
 inline void Key::setBaseName (const std::string & baseName)
 {
-	if (ckdb::keySetBaseName (getKey(), baseName.c_str()) == -1)
+	if (ckdb::keySetBaseName (getKey (), baseName.c_str ()) == -1)
 	{
-		throw KeyInvalidName();
+		throw KeyInvalidName ();
 	}
 }
 
@@ -854,33 +783,30 @@ inline void Key::setBaseName (const std::string & baseName)
  *
  * @throw KeyInvalidName if the name is not valid
  */
-inline void Key::addBaseName (const std::string &baseName)
+inline void Key::addBaseName (const std::string & baseName)
 {
-	if (ckdb::keyAddBaseName (getKey(), baseName.c_str()) == -1)
+	if (ckdb::keyAddBaseName (getKey (), baseName.c_str ()) == -1)
 	{
-		throw KeyInvalidName();
+		throw KeyInvalidName ();
 	}
 }
 
 /**
  * @copydoc keyGetFullNameSize
  */
-inline ssize_t Key::getFullNameSize() const
-{
-	return ckdb::keyGetFullNameSize (getKey());
-}
+inline ssize_t Key::getFullNameSize () const { return ckdb::keyGetFullNameSize (getKey ()); }
 
 /**
  * @copydoc keyGetFullName
  *
  * @throw KeyException if key is null
  */
-inline std::string Key::getFullName() const
+inline std::string Key::getFullName () const
 {
-	ssize_t csize = getFullNameSize();
+	ssize_t csize = getFullNameSize ();
 	if (csize == -1)
 	{
-		throw KeyException();
+		throw KeyException ();
 	}
 
 	if (csize == 0)
@@ -888,8 +814,8 @@ inline std::string Key::getFullName() const
 		return "";
 	}
 
-	std::string str (csize-1, '\0');
-	ckdb::keyGetFullName (getKey(), &str[0], csize);
+	std::string str (csize - 1, '\0');
+	ckdb::keyGetFullName (getKey (), &str[0], csize);
 	return str;
 }
 
@@ -898,60 +824,42 @@ inline std::string Key::getFullName() const
  *
  * @retval true == 0
  */
-inline bool Key::operator ==(const Key &k) const
-{
-	return ckdb::keyCmp(key, k.key) == 0;
-}
+inline bool Key::operator== (const Key & k) const { return ckdb::keyCmp (key, k.key) == 0; }
 
 /**
  * @copydoc keyCmp
  *
  * @retval true != 0
  */
-inline bool Key::operator !=(const Key &k) const
-{
-	return ckdb::keyCmp(key, k.key) != 0;
-}
+inline bool Key::operator!= (const Key & k) const { return ckdb::keyCmp (key, k.key) != 0; }
 
 /**
  * @copydoc keyCmp
  *
  * @retval true < 0
  */
-inline bool Key::operator < (const Key& other) const
-{
-	return ckdb::keyCmp(key, other.key) < 0;
-}
+inline bool Key::operator< (const Key & other) const { return ckdb::keyCmp (key, other.key) < 0; }
 
 /**
  * @copydoc keyCmp
  *
  * @retval true <= 0
  */
-inline bool Key::operator <= (const Key& other) const
-{
-	return ckdb::keyCmp(key, other.key) <= 0;
-}
+inline bool Key::operator<= (const Key & other) const { return ckdb::keyCmp (key, other.key) <= 0; }
 
 /**
  * @copydoc keyCmp
  *
  * @retval true > 0
  */
-inline bool Key::operator > (const Key& other) const
-{
-	return ckdb::keyCmp(key, other.key) > 0;
-}
+inline bool Key::operator> (const Key & other) const { return ckdb::keyCmp (key, other.key) > 0; }
 
 /**
  * @copydoc keyCmp
  *
  * @retval true >= 0
  */
-inline bool Key::operator >= (const Key& other) const
-{
-	return ckdb::keyCmp(key, other.key) >= 0;
-}
+inline bool Key::operator>= (const Key & other) const { return ckdb::keyCmp (key, other.key) >= 0; }
 
 
 /**
@@ -968,10 +876,7 @@ inline bool Key::operator >= (const Key& other) const
  * @return false on null keys
  * @return true otherwise
  */
-inline Key::operator bool() const
-{
-	return !isNull();
-}
+inline Key::operator bool () const { return !isNull (); }
 
 /**
  * @brief Checks if C++ wrapper has an underlying key
@@ -979,18 +884,12 @@ inline Key::operator bool() const
  * @see operator bool(), isValid()
  * @return true if no underlying key exists
  */
-inline bool Key::isNull() const
-{
-	return key == nullptr;
-}
+inline bool Key::isNull () const { return key == nullptr; }
 
 /**
  * @copydoc keyNeedSync
  */
-inline bool Key::needSync() const
-{
-	return ckdb::keyNeedSync(key);
-}
+inline bool Key::needSync () const { return ckdb::keyNeedSync (key); }
 
 /**
  * Get a key value.
@@ -1016,17 +915,17 @@ inline QColor Key::get() const
  * This method tries to serialise the string to the given type.
  */
 template <class T>
-inline T Key::get() const
+inline T Key::get () const
 {
 	std::string str;
-	str = getString();
-	std::istringstream ist(str);
-	ist.imbue(std::locale("C"));
+	str = getString ();
+	std::istringstream ist (str);
+	ist.imbue (std::locale ("C"));
 	T x;
-	ist >> x;	// convert string to type
-	if (ist.fail())
+	ist >> x; // convert string to type
+	if (ist.fail ())
 	{
-		throw KeyTypeConversion();
+		throw KeyTypeConversion ();
 	}
 	return x;
 }
@@ -1085,9 +984,9 @@ inline long double Key::get<long double>() const
 
 
 template <>
-inline std::string Key::get() const
+inline std::string Key::get () const
 {
-	return getString();
+	return getString ();
 }
 
 /**
@@ -1098,17 +997,17 @@ inline std::string Key::get() const
  * This method tries to deserialise the string to the given type.
  */
 template <class T>
-inline void Key::set(T x)
+inline void Key::set (T x)
 {
 	std::string str;
 	std::ostringstream ost;
-	ost.imbue(std::locale("C"));
-	ost << x;	// convert type to string
-	if (ost.fail())
+	ost.imbue (std::locale ("C"));
+	ost << x; // convert type to string
+	if (ost.fail ())
 	{
-		throw KeyTypeConversion();
+		throw KeyTypeConversion ();
 	}
-	setString (ost.str());
+	setString (ost.str ());
 }
 
 /*
@@ -1183,12 +1082,12 @@ inline void Key::set(long double val)
  *
  * @see isString(), getBinary()
  */
-inline std::string Key::getString() const
+inline std::string Key::getString () const
 {
-	ssize_t csize = getStringSize();
+	ssize_t csize = getStringSize ();
 	if (csize == -1)
 	{
-		throw KeyException();
+		throw KeyException ();
 	}
 
 	if (csize == 0)
@@ -1196,10 +1095,10 @@ inline std::string Key::getString() const
 		return "";
 	}
 
-	std::string str (csize-1, '\0');
-	if (ckdb::keyGetString (getKey(), &str[0], csize) == -1)
+	std::string str (csize - 1, '\0');
+	if (ckdb::keyGetString (getKey (), &str[0], csize) == -1)
 	{
-		throw KeyTypeMismatch();
+		throw KeyTypeMismatch ();
 	}
 	return str;
 }
@@ -1207,10 +1106,7 @@ inline std::string Key::getString() const
 /**
  * @copydoc keyGetValueSize()
  */
-inline ssize_t Key::getStringSize() const
-{
-	return ckdb::keyGetValueSize(key);
-}
+inline ssize_t Key::getStringSize () const { return ckdb::keyGetValueSize (key); }
 
 /**
  * Elektra can store function pointers as binary.
@@ -1220,38 +1116,39 @@ inline ssize_t Key::getStringSize() const
  *
  * @return a function pointer stored with setBinary()
  */
-inline Key::func_t Key::getFunc() const
+inline Key::func_t Key::getFunc () const
 {
-	union {Key::func_t f; void* v;} conversation;
-	static_assert(sizeof(conversation) == sizeof(func_t), "union does not have size of function pointer");
+	union {
+		Key::func_t f;
+		void * v;
+	} conversation;
+	static_assert (sizeof (conversation) == sizeof (func_t), "union does not have size of function pointer");
 
-	if (ckdb::keyGetBinary(getKey(),
-			&conversation.v,
-			sizeof(conversation)) != sizeof(conversation))
-				throw KeyTypeMismatch();
+	if (ckdb::keyGetBinary (getKey (), &conversation.v, sizeof (conversation)) != sizeof (conversation))
+		throw KeyTypeMismatch ();
 
 	return conversation.f;
 }
 
 
-inline void Key::setCallback(callback_t fct)
+inline void Key::setCallback (callback_t fct)
 {
-	union {callback_t f; void* v;} conversation;
-	static_assert(sizeof(conversation) == sizeof(callback_t), "union does not have size of function pointer");
+	union {
+		callback_t f;
+		void * v;
+	} conversation;
+	static_assert (sizeof (conversation) == sizeof (callback_t), "union does not have size of function pointer");
 
 	conversation.f = fct;
-	ckdb::keySetBinary(getKey(), &conversation.v, sizeof(conversation));
-	ckdb::keySetMeta(getKey(), "callback", "");
+	ckdb::keySetBinary (getKey (), &conversation.v, sizeof (conversation));
+	ckdb::keySetMeta (getKey (), "callback", "");
 }
 
 
 /**
  * @copydoc keySetString
  */
-inline void Key::setString(std::string newString)
-{
-	ckdb::keySetString (getKey(), newString.c_str());
-}
+inline void Key::setString (std::string newString) { ckdb::keySetString (getKey (), newString.c_str ()); }
 
 /**
  * @copydoc keyValue
@@ -1259,10 +1156,7 @@ inline void Key::setString(std::string newString)
  * @return the value of the key
  * @see getBinary()
  */
-inline const void * Key::getValue() const
-{
-	return ckdb::keyValue(getKey());
-}
+inline const void * Key::getValue () const { return ckdb::keyValue (getKey ()); }
 
 /**
  * @returns the binary Value of the key.
@@ -1279,12 +1173,12 @@ inline const void * Key::getValue() const
  *
  * @see isBinary(), getString(), getValue()
  **/
-inline std::string Key::getBinary() const
+inline std::string Key::getBinary () const
 {
-	ssize_t csize = getBinarySize();
+	ssize_t csize = getBinarySize ();
 	if (csize == -1)
 	{
-		throw KeyException();
+		throw KeyException ();
 	}
 
 	if (csize == 0)
@@ -1293,9 +1187,9 @@ inline std::string Key::getBinary() const
 	}
 
 	std::string str (csize, '\0');
-	if (ckdb::keyGetBinary (getKey(), &str[0], csize) == -1)
+	if (ckdb::keyGetBinary (getKey (), &str[0], csize) == -1)
 	{
-		throw KeyTypeMismatch();
+		throw KeyTypeMismatch ();
 	}
 	return str;
 }
@@ -1303,18 +1197,12 @@ inline std::string Key::getBinary() const
 /**
  * @copydoc keyGetValueSize()
  */
-inline ssize_t Key::getBinarySize() const
-{
-	return ckdb::keyGetValueSize(key);
-}
+inline ssize_t Key::getBinarySize () const { return ckdb::keyGetValueSize (key); }
 
 /**
  * @copydoc keySetBinary
  */
-inline ssize_t Key::setBinary(const void *newBinary, size_t dataSize)
-{
-	return ckdb::keySetBinary (getKey(), newBinary, dataSize);
-}
+inline ssize_t Key::setBinary (const void * newBinary, size_t dataSize) { return ckdb::keySetBinary (getKey (), newBinary, dataSize); }
 
 
 /**
@@ -1353,14 +1241,14 @@ inline yourtype Key::getMeta(const std::string &name) const
  * @see delMeta(), setMeta(), copyMeta(), copyAllMeta()
  */
 template <class T>
-inline T Key::getMeta(const std::string &metaName) const
+inline T Key::getMeta (const std::string & metaName) const
 {
-	Key k(const_cast<ckdb::Key*>(ckdb::keyGetMeta(key, metaName.c_str())));
+	Key k (const_cast<ckdb::Key *> (ckdb::keyGetMeta (key, metaName.c_str ())));
 	if (!k)
 	{
-		return T();
+		return T ();
 	}
-	return k.get<T>();
+	return k.get<T> ();
 }
 
 
@@ -1370,52 +1258,41 @@ inline T Key::getMeta(const std::string &metaName) const
  *
  *@see getMeta()
  */
-inline bool Key::hasMeta(const std::string &metaName) const
+inline bool Key::hasMeta (const std::string & metaName) const
 {
-	Key k(const_cast<ckdb::Key*>(ckdb::keyGetMeta(key, metaName.c_str())));
+	Key k (const_cast<ckdb::Key *> (ckdb::keyGetMeta (key, metaName.c_str ())));
 	return k;
 }
 
-template<>
-inline const ckdb::Key* Key::getMeta(const std::string &name) const
+template <>
+inline const ckdb::Key * Key::getMeta (const std::string & name) const
 {
-	return
-		ckdb::keyGetMeta(key, name.c_str());
+	return ckdb::keyGetMeta (key, name.c_str ());
 }
 
-template<>
-inline const Key Key::getMeta(const std::string &name) const
+template <>
+inline const Key Key::getMeta (const std::string & name) const
 {
-	const ckdb::Key *k = ckdb::keyGetMeta(key, name.c_str());
-	return Key(const_cast<ckdb::Key*>(k));
+	const ckdb::Key * k = ckdb::keyGetMeta (key, name.c_str ());
+	return Key (const_cast<ckdb::Key *> (k));
 }
 
-template<>
-inline const char* Key::getMeta(const std::string &name) const
+template <>
+inline const char * Key::getMeta (const std::string & name) const
 {
-	return
-		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name.c_str())
-				)
-			);
+	return static_cast<const char *> (ckdb::keyValue (ckdb::keyGetMeta (key, name.c_str ())));
 }
 
-template<>
-inline std::string Key::getMeta(const std::string &name) const
+template <>
+inline std::string Key::getMeta (const std::string & name) const
 {
-	const char *v =
-		static_cast<const char*>(
-			ckdb::keyValue(
-				ckdb::keyGetMeta(key, name.c_str())
-				)
-			);
+	const char * v = static_cast<const char *> (ckdb::keyValue (ckdb::keyGetMeta (key, name.c_str ())));
 	if (!v)
 	{
-		return std::string();
+		return std::string ();
 	}
 	std::string str;
-	str = std::string(v);
+	str = std::string (v);
 	return str;
 }
 
@@ -1436,11 +1313,11 @@ inline std::string Key::getMeta(const std::string &name) const
  * @see delMeta(), getMeta(), copyMeta(), copyAllMeta()
  */
 template <class T>
-inline void Key::setMeta(const std::string &metaName, T x)
+inline void Key::setMeta (const std::string & metaName, T x)
 {
 	Key k;
-	k.set<T>(x);
-	ckdb::keySetMeta(key, metaName.c_str(), k.getString().c_str());
+	k.set<T> (x);
+	ckdb::keySetMeta (key, metaName.c_str (), k.getString ().c_str ());
 }
 
 /**
@@ -1448,50 +1325,38 @@ inline void Key::setMeta(const std::string &metaName, T x)
  *
  * @see setMeta(), getMeta(), copyMeta(), copyAllMeta()
  */
-inline void Key::delMeta(const std::string &metaName)
-{
-	ckdb::keySetMeta(key, metaName.c_str(), nullptr);
-}
+inline void Key::delMeta (const std::string & metaName) { ckdb::keySetMeta (key, metaName.c_str (), nullptr); }
 
 /**
  * @copydoc keyCopyMeta
  *
  * @see getMeta(), setMeta(), copyAllMeta()
  */
-inline void Key::copyMeta(const Key &other, const std::string &metaName)
-{
-	ckdb::keyCopyMeta(key, other.key, metaName.c_str());
-}
+inline void Key::copyMeta (const Key & other, const std::string & metaName) { ckdb::keyCopyMeta (key, other.key, metaName.c_str ()); }
 
 /**
  * @copydoc keyCopyAllMeta
  *
  * @see getMeta(), setMeta(), copyMeta()
  */
-inline void Key::copyAllMeta(const Key &other)
-{
-	ckdb::keyCopyAllMeta(key, other.key);
-}
+inline void Key::copyAllMeta (const Key & other) { ckdb::keyCopyAllMeta (key, other.key); }
 
 /**
  * @copydoc keyRewindMeta
  *
  * @see nextMeta(), currentMeta()
  */
-inline void Key::rewindMeta() const
-{
-	ckdb::keyRewindMeta(key);
-}
+inline void Key::rewindMeta () const { ckdb::keyRewindMeta (key); }
 
 /**
  * @copydoc keyNextMeta
  *
  * @see rewindMeta(), currentMeta()
  */
-inline const Key Key::nextMeta()
+inline const Key Key::nextMeta ()
 {
-	const ckdb::Key *k = ckdb::keyNextMeta(key);
-	return Key(const_cast<ckdb::Key*>(k));
+	const ckdb::Key * k = ckdb::keyNextMeta (key);
+	return Key (const_cast<ckdb::Key *> (k));
 }
 
 
@@ -1510,15 +1375,9 @@ inline const Key Key::nextMeta()
  *
  * @see rewindMeta(), nextMeta()
  */
-inline const Key Key::currentMeta() const
+inline const Key Key::currentMeta () const
 {
-	return Key(
-		const_cast<ckdb::Key*>(
-			ckdb::keyCurrentMeta(const_cast<const ckdb::Key*>(
-				key)
-				)
-			)
-		);
+	return Key (const_cast<ckdb::Key *> (ckdb::keyCurrentMeta (const_cast<const ckdb::Key *> (key))));
 }
 
 
@@ -1532,10 +1391,7 @@ inline const Key Key::currentMeta() const
  *
  * @see getName(), isUser(), isSystem(), getNamespace()
  */
-inline bool Key::isValid() const
-{
-	return ckdb::keyGetNameSize(getKey()) > 1;
-}
+inline bool Key::isValid () const { return ckdb::keyGetNameSize (getKey ()) > 1; }
 
 /**
  * @return namespace as string
@@ -1544,12 +1400,14 @@ inline bool Key::isValid() const
  *
  * @see getName(), isUser(), isSystem()
  */
-inline std::string Key::getNamespace() const
+inline std::string Key::getNamespace () const
 {
-	std::string name = getName();
-	size_t slash = name.find('/');
-	if (slash == 0) return "/";
-	if (slash != std::string::npos) return name.substr(0, slash);
+	std::string name = getName ();
+	size_t slash = name.find ('/');
+	if (slash == 0)
+		return "/";
+	if (slash != std::string::npos)
+		return name.substr (0, slash);
 	return name;
 }
 
@@ -1560,10 +1418,7 @@ inline std::string Key::getNamespace() const
  * @retval true if it is a system key
  * @retval false otherwise
  */
-inline bool Key::isSystem() const
-{
-	return !strncmp(ckdb::keyName(key), "system", 6);
-}
+inline bool Key::isSystem () const { return !strncmp (ckdb::keyName (key), "system", 6); }
 
 /**
  * Name starts with "user".
@@ -1571,34 +1426,22 @@ inline bool Key::isSystem() const
  * @retval true if it is a user key
  * @retval false otherwise
  */
-inline bool Key::isUser() const
-{
-	return !strncmp(ckdb::keyName(key), "user", 4);
-}
+inline bool Key::isUser () const { return !strncmp (ckdb::keyName (key), "user", 4); }
 
 /**
  * @copydoc keyIsString
  */
-inline bool Key::isString() const
-{
-	return ckdb::keyIsString(key);
-}
+inline bool Key::isString () const { return ckdb::keyIsString (key); }
 
 /**
  * @copydoc keyIsBinary
  */
-inline bool Key::isBinary() const
-{
-	return ckdb::keyIsBinary(key);
-}
+inline bool Key::isBinary () const { return ckdb::keyIsBinary (key); }
 
 /**
  * @copydoc keyIsInactive
  */
-inline bool Key::isInactive () const
-{
-	return ckdb::keyIsInactive (key);
-}
+inline bool Key::isInactive () const { return ckdb::keyIsInactive (key); }
 
 /**
  * @param k the other key
@@ -1606,10 +1449,11 @@ inline bool Key::isInactive () const
  *
  * @copydoc keyIsBelow
  */
-inline bool Key::isBelow(const Key & k) const
+inline bool Key::isBelow (const Key & k) const
 {
-	int ret = ckdb::keyIsBelow(k.getKey(), key);
-	if (ret == -1) return false;
+	int ret = ckdb::keyIsBelow (k.getKey (), key);
+	if (ret == -1)
+		return false;
 	return ret;
 }
 
@@ -1619,10 +1463,11 @@ inline bool Key::isBelow(const Key & k) const
  *
  * @copydoc keyIsBelowOrSame
  */
-inline bool Key::isBelowOrSame(const Key & k) const
+inline bool Key::isBelowOrSame (const Key & k) const
 {
-	int ret = ckdb::keyIsBelowOrSame(k.getKey(), key);
-	if (ret == -1) return false;
+	int ret = ckdb::keyIsBelowOrSame (k.getKey (), key);
+	if (ret == -1)
+		return false;
 	return ret;
 }
 
@@ -1632,10 +1477,11 @@ inline bool Key::isBelowOrSame(const Key & k) const
  *
  * @copydoc keyIsDirectBelow
  */
-inline bool Key::isDirectBelow(const Key & k) const
+inline bool Key::isDirectBelow (const Key & k) const
 {
-	int ret = ckdb::keyIsDirectBelow(k.getKey(), key);
-	if (ret == -1) return false;
+	int ret = ckdb::keyIsDirectBelow (k.getKey (), key);
+	if (ret == -1)
+		return false;
 	return ret;
 }
 
@@ -1653,8 +1499,8 @@ inline int Key::del ()
 {
 	if (key)
 	{
-		operator --();
-		return ckdb::keyDel(key);
+		operator-- ();
+		return ckdb::keyDel (key);
 	}
 	return -1;
 }
@@ -1665,18 +1511,18 @@ inline int Key::del ()
 
 namespace std
 {
-	/**
+/**
 	 * @brief Support for putting Key in a hash
 	 */
-	template <> struct hash<kdb::Key>
+template <>
+struct hash<kdb::Key>
+{
+	size_t operator() (kdb::Key const & k) const
 	{
-		size_t operator()(kdb::Key const & k) const
-		{
-			// use key name as hash value
-			return std::hash<std::string>()(k.getName());
-		}
-	};
+		// use key name as hash value
+		return std::hash<std::string> () (k.getName ());
+	}
+};
 } // end of namespace std
 
 #endif
-

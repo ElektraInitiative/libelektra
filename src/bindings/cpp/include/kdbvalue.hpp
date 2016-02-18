@@ -11,18 +11,18 @@
 
 #include <kdbconfig.h>
 
-#include <set>
-#include <map>
-#include <string>
-#include <vector>
-#include <memory>
+#include <algorithm>
 #include <cassert>
 #include <fstream>
-#include <iostream>
-#include <stdexcept>
-#include <algorithm>
 #include <functional>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <set>
+#include <stdexcept>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <kdbproposal.h>
 #include <keyset.hpp>
@@ -39,19 +39,20 @@ namespace kdb
  * @brief This type is being used as bottom type that always fails.
  */
 class none_t
-{};
+{
+};
 
 template <>
-inline void Key::set(none_t)
-{}
+inline void Key::set (none_t)
+{
+}
 
 template <>
-inline none_t Key::get() const
+inline none_t Key::get () const
 {
 	none_t ret;
 	return ret;
 }
-
 
 
 /**
@@ -60,8 +61,8 @@ inline none_t Key::get() const
 class Layer
 {
 public:
-	virtual std::string id() const = 0;
-	virtual std::string operator()() const = 0;
+	virtual std::string id () const = 0;
+	virtual std::string operator() () const = 0;
 };
 
 /**
@@ -73,8 +74,8 @@ public:
 class ValueObserver
 {
 public:
-	virtual ~ValueObserver() = 0;
-	virtual void updateContext() const = 0;
+	virtual ~ValueObserver () = 0;
+	virtual void updateContext () const = 0;
 
 	typedef std::reference_wrapper<ValueObserver> reference;
 };
@@ -84,20 +85,15 @@ public:
  *
  * @return Comparision result
  */
-bool operator <(ValueObserver const & lhs, ValueObserver const & rhs)
-{
-	return &lhs < &rhs;
-}
+bool operator< (ValueObserver const & lhs, ValueObserver const & rhs) { return &lhs < &rhs; }
 
-inline ValueObserver::~ValueObserver()
-{}
-
+inline ValueObserver::~ValueObserver () {}
 
 
 class ValueSubject
 {
 public:
-	virtual void notifyInThread() = 0;
+	virtual void notifyInThread () = 0;
 };
 
 /**
@@ -117,23 +113,17 @@ public:
 	/**
 	 * @brief Typedef for function that returs oldKey, newKey pair
 	 */
-	typedef std::function<Pair()> Func;
-	Command(
-		ValueSubject const & v_,
-		Func & execute_,
-		bool hasChanged_ = false) :
-		v(const_cast<ValueSubject &>(v_)),
-		execute(execute_),
-		hasChanged(hasChanged_),
-		oldKey(),
-		newKey()
-	{}
+	typedef std::function<Pair ()> Func;
+	Command (ValueSubject const & v_, Func & execute_, bool hasChanged_ = false)
+	: v (const_cast<ValueSubject &> (v_)), execute (execute_), hasChanged (hasChanged_), oldKey (), newKey ()
+	{
+	}
 
-	Pair operator()() {return execute();}
+	Pair operator() () { return execute (); }
 
-	ValueSubject & v; // this pointer
-	Func & execute; // to be executed within lock
-	bool hasChanged; // if the value (m_cache) has changed and value propagation is needed
+	ValueSubject & v;   // this pointer
+	Func & execute;     // to be executed within lock
+	bool hasChanged;    // if the value (m_cache) has changed and value propagation is needed
 	std::string oldKey; // old name before assignment
 	std::string newKey; // new name after assignment
 };
@@ -148,18 +138,14 @@ public:
 	 *
 	 * NoContext will never update anything
 	 */
-	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  ValueObserver & ValueObserver)
-	{}
+	void attachByName (ELEKTRA_UNUSED std::string const & key_name, ELEKTRA_UNUSED ValueObserver & ValueObserver) {}
 
 	/**
 	 * @brief The evaluated equals the non-evaluated name!
 	 *
 	 * @return NoContext always returns the same string
 	 */
-	std::string evaluate(std::string const & key_name) const
-	{
-		return key_name;
-	}
+	std::string evaluate (std::string const & key_name) const { return key_name; }
 
 	/**
 	 * @brief (Re)attaches a ValueSubject to a thread or simply
@@ -170,10 +156,7 @@ public:
 	 *
 	 * @param c the command to apply
 	 */
-	void execute(Command & c)
-	{
-		c();
-	}
+	void execute (Command & c) { c (); }
 };
 
 /**
@@ -182,10 +165,7 @@ public:
 class DefaultGetPolicy
 {
 public:
-	static Key get(KeySet &ks, Key const& spec)
-	{
-		return ks.lookup(spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE);
-	}
+	static Key get (KeySet & ks, Key const & spec) { return ks.lookup (spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE); }
 };
 
 /**
@@ -194,17 +174,14 @@ public:
 class DefaultSetPolicy
 {
 public:
-	static Key set(KeySet &ks, Key const& spec)
-	{
-		return setWithNamespace(ks, spec, "user");
-	}
+	static Key set (KeySet & ks, Key const & spec) { return setWithNamespace (ks, spec, "user"); }
 
-	static Key setWithNamespace(KeySet &ks, Key const& spec, std::string const & ns)
+	static Key setWithNamespace (KeySet & ks, Key const & spec, std::string const & ns)
 	{
-		std::string const & name = spec.getName();
+		std::string const & name = spec.getName ();
 
-		kdb::Key k(ns+"/"+name, KEY_END);
-		ks.append(k);
+		kdb::Key k (ns + "/" + name, KEY_END);
+		ks.append (k);
 
 		return k;
 	}
@@ -231,8 +208,8 @@ public:
 class NoLockPolicy
 {
 public:
-	void lock() {}
-	void unlock() {}
+	void lock () {}
+	void unlock () {}
 };
 
 /*
@@ -251,19 +228,13 @@ class Discriminator : public Base
 {
 };
 
-template < typename Setter1,
-	   typename Setter2,
-	   typename Setter3,
-	   typename Setter4,
-	   typename Setter5,
-	   typename Setter6
-	 >
-class PolicySelector : public Discriminator<Setter1,1>,
-		       public Discriminator<Setter2,2>,
-		       public Discriminator<Setter3,3>,
-		       public Discriminator<Setter4,4>,
-		       public Discriminator<Setter5,5>,
-		       public Discriminator<Setter6,6>
+template <typename Setter1, typename Setter2, typename Setter3, typename Setter4, typename Setter5, typename Setter6>
+class PolicySelector : public Discriminator<Setter1, 1>,
+		       public Discriminator<Setter2, 2>,
+		       public Discriminator<Setter3, 3>,
+		       public Discriminator<Setter4, 4>,
+		       public Discriminator<Setter5, 5>,
+		       public Discriminator<Setter6, 6>
 {
 };
 
@@ -340,7 +311,6 @@ public:
 };
 
 
-
 /// Needed by the user to set one of the policies
 ///
 /// @tparam Policy
@@ -354,181 +324,144 @@ public:
 
 // standard types
 
-template<typename T,
-	typename PolicySetter1 = DefaultPolicyArgs,
-	typename PolicySetter2 = DefaultPolicyArgs,
-	typename PolicySetter3 = DefaultPolicyArgs,
-	typename PolicySetter4 = DefaultPolicyArgs,
-	typename PolicySetter5 = DefaultPolicyArgs,
-	typename PolicySetter6 = DefaultPolicyArgs
-	>
-class Value :
-	public ValueObserver,
-	public ValueSubject
+template <typename T, typename PolicySetter1 = DefaultPolicyArgs, typename PolicySetter2 = DefaultPolicyArgs,
+	  typename PolicySetter3 = DefaultPolicyArgs, typename PolicySetter4 = DefaultPolicyArgs,
+	  typename PolicySetter5 = DefaultPolicyArgs, typename PolicySetter6 = DefaultPolicyArgs>
+class Value : public ValueObserver, public ValueSubject
 {
 public:
 	typedef T type;
 
-	typedef PolicySelector<
-		PolicySetter1,
-		PolicySetter2,
-		PolicySetter3,
-		PolicySetter4,
-		PolicySetter5,
-		PolicySetter6
-		>
-		Policies;
+	typedef PolicySelector<PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> Policies;
 
 	// not to be constructed yourself
-	Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
-		PolicySetter4, PolicySetter5, PolicySetter6>
-		(KeySet & ks, typename Policies::ContextPolicy & context_, kdb::Key spec) :
-		m_cache(),
-		m_hasChanged(false),
-		m_ks(ks),
-		m_context(context_),
-		m_spec(spec)
+	Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> (
+		KeySet & ks, typename Policies::ContextPolicy & context_, kdb::Key spec)
+	: m_cache (), m_hasChanged (false), m_ks (ks), m_context (context_), m_spec (spec)
 	{
-		assert(m_spec.getName()[0] == '/' && "spec keys are not yet supported");
-		m_context.attachByName(m_spec.getName(), *this);
-		Command::Func fun = [this] () -> Command::Pair
-		{
-			this->unsafeUpdateKeyUsingContext(m_context.evaluate(m_spec.getName()));
-			this->unsafeSyncCache(); // set m_cache
-			return std::make_pair("", m_key.getName());
+		assert (m_spec.getName ()[0] == '/' && "spec keys are not yet supported");
+		m_context.attachByName (m_spec.getName (), *this);
+		Command::Func fun = [this]() -> Command::Pair {
+			this->unsafeUpdateKeyUsingContext (m_context.evaluate (m_spec.getName ()));
+			this->unsafeSyncCache (); // set m_cache
+			return std::make_pair ("", m_key.getName ());
 		};
-		Command command(*this, fun);
-		m_context.execute(command);
+		Command command (*this, fun);
+		m_context.execute (command);
 	}
 
-	~Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
-		PolicySetter4, PolicySetter5, PolicySetter6>
-		()
+	~Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> ()
 	{
-		Command::Func fun = [this] () -> Command::Pair
-		{
-			std::string oldName = m_key.getName();
-			m_key = static_cast<ckdb::Key*>(nullptr);
+		Command::Func fun = [this]() -> Command::Pair {
+			std::string oldName = m_key.getName ();
+			m_key = static_cast<ckdb::Key *> (nullptr);
 			// after destructor we do not need to care about
 			// invariant anymore. But we need to care about
 			// thread safe m_key.
-			return std::make_pair(oldName, "");
+			return std::make_pair (oldName, "");
 		};
-		Command command(*this, fun);
-		m_context.execute(command);
+		Command command (*this, fun);
+		m_context.execute (command);
 	}
 
-	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3,
-		PolicySetter4, PolicySetter5, PolicySetter6> V;
+	typedef Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> V;
 
 	V const & operator= (type n)
 	{
-		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		static_assert (Policies::WritePolicy::allowed, "read only contextual value");
 		m_cache = n;
 		m_hasChanged = true;
-		syncKeySet();
+		syncKeySet ();
 
 		return *this;
 	}
 
-	type operator ++()
+	type operator++ ()
 	{
-		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		static_assert (Policies::WritePolicy::allowed, "read only contextual value");
 		type ret = ++m_cache;
 		m_hasChanged = true;
-		syncKeySet();
+		syncKeySet ();
 		return ret;
 	}
 
-	type operator ++(int)
+	type operator++ (int)
 	{
-		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		static_assert (Policies::WritePolicy::allowed, "read only contextual value");
 		type ret = m_cache++;
 		m_hasChanged = true;
-		syncKeySet();
+		syncKeySet ();
 		return ret;
 	}
 
-	type operator --()
+	type operator-- ()
 	{
-		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		static_assert (Policies::WritePolicy::allowed, "read only contextual value");
 		type ret = --m_cache;
 		m_hasChanged = true;
-		syncKeySet();
+		syncKeySet ();
 		return ret;
 	}
 
-	type operator --(int)
+	type operator-- (int)
 	{
-		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		static_assert (Policies::WritePolicy::allowed, "read only contextual value");
 		type ret = m_cache--;
 		m_hasChanged = true;
-		syncKeySet();
+		syncKeySet ();
 		return ret;
 	}
 
-	V & operator = (V const & rhs)
+	V & operator= (V const & rhs)
 	{
-		static_assert(Policies::WritePolicy::allowed, "read only contextual value");
+		static_assert (Policies::WritePolicy::allowed, "read only contextual value");
 		if (this != &rhs)
 		{
 			m_cache = rhs;
 			m_hasChanged = true;
-			syncKeySet();
+			syncKeySet ();
 		}
 		return *this;
 	}
 
-#define ELEKTRA_DEFINE_OPERATOR(op) \
-	V & operator op(type const & rhs) \
-	{ \
-		static_assert(Policies::WritePolicy::allowed, "read only contextual value"); \
-		m_cache op rhs; \
-		m_hasChanged = true; \
-		syncKeySet(); \
-		return *this; \
+#define ELEKTRA_DEFINE_OPERATOR(op)                                                                                                        \
+	V & operator op (type const & rhs)                                                                                                 \
+	{                                                                                                                                  \
+		static_assert (Policies::WritePolicy::allowed, "read only contextual value");                                              \
+		m_cache op rhs;                                                                                                            \
+		m_hasChanged = true;                                                                                                       \
+		syncKeySet ();                                                                                                             \
+		return *this;                                                                                                              \
 	}
 
-ELEKTRA_DEFINE_OPERATOR(-=)
-ELEKTRA_DEFINE_OPERATOR(+=)
-ELEKTRA_DEFINE_OPERATOR(*=)
-ELEKTRA_DEFINE_OPERATOR(/=)
-ELEKTRA_DEFINE_OPERATOR(%=)
-ELEKTRA_DEFINE_OPERATOR(^=)
-ELEKTRA_DEFINE_OPERATOR(&=)
-ELEKTRA_DEFINE_OPERATOR(|=)
+	ELEKTRA_DEFINE_OPERATOR (-=)
+	ELEKTRA_DEFINE_OPERATOR (+=)
+	ELEKTRA_DEFINE_OPERATOR (*=)
+	ELEKTRA_DEFINE_OPERATOR (/=)
+	ELEKTRA_DEFINE_OPERATOR (%=)
+	ELEKTRA_DEFINE_OPERATOR (^=)
+	ELEKTRA_DEFINE_OPERATOR (&=)
+	ELEKTRA_DEFINE_OPERATOR (|=)
 
 #undef ELEKTRA_DEFINE_OPERATOR
 
-	type operator-() const
-	{
-		return -m_cache;
-	}
+	type operator- () const { return -m_cache; }
 
-	type operator~() const
-	{
-		return ~m_cache;
-	}
+	type operator~ () const { return ~m_cache; }
 
-	type operator!() const
-	{
-		return !m_cache;
-	}
+	type operator! () const { return !m_cache; }
 
 	// type conversion
-	operator type() const
-	{
-		return m_cache;
-	}
+	operator type () const { return m_cache; }
 
 	/**
 	 * @return the context bound to the value
 	 */
-	typename Policies::ContextPolicy & context() const
+	typename Policies::ContextPolicy & context () const
 	{
 		/// We allow manipulation of context for const
 		/// objects
-		return const_cast<typename Policies::ContextPolicy&>(m_context);
+		return const_cast<typename Policies::ContextPolicy &> (m_context);
 	}
 
 	/**
@@ -536,142 +469,126 @@ ELEKTRA_DEFINE_OPERATOR(|=)
 	 *
 	 * @see context()
 	 */
-	typename Policies::ContextPolicy & c() const
-	{
-		return context();
-	}
+	typename Policies::ContextPolicy & c () const { return context (); }
 
 	/**
 	 * @return Specification Key
 	 */
-	Key const& getSpec() const
-	{
-		return m_spec;
-	}
+	Key const & getSpec () const { return m_spec; }
 
 	/**
 	 * @brief Returns the current name of contextual value
 	 *
 	 * @return name under contextual interpretation
 	 */
-	std::string getName() const
-	{
-		return m_key.getName();
-	}
+	std::string getName () const { return m_key.getName (); }
 
 	/**
 	 * @brief Sync key(set) to cache
 	 */
-	void syncCache() const
+	void syncCache () const
 	{
-		Command::Func fun = [this] () -> Command::Pair
-		{
-			std::string const & oldKey = m_key.getName();
-			this->unsafeSyncCache();
-			return std::make_pair(oldKey, m_key.getName());
+		Command::Func fun = [this]() -> Command::Pair {
+			std::string const & oldKey = m_key.getName ();
+			this->unsafeSyncCache ();
+			return std::make_pair (oldKey, m_key.getName ());
 		};
-		Command command(*this, fun);
-		m_context.execute(command);
+		Command command (*this, fun);
+		m_context.execute (command);
 	}
 
 	/**
 	 * @brief Sync cache to key(set)
 	 */
-	void syncKeySet() const
+	void syncKeySet () const
 	{
-		Command::Func fun = [this] () -> Command::Pair
-		{
-			std::string const & oldKey = m_key.getName();
-			this->unsafeSyncKeySet();
-			return std::make_pair(oldKey, m_key.getName());
+		Command::Func fun = [this]() -> Command::Pair {
+			std::string const & oldKey = m_key.getName ();
+			this->unsafeSyncKeySet ();
+			return std::make_pair (oldKey, m_key.getName ());
 		};
-		Command command(*this, fun, m_hasChanged);
-		m_context.execute(command);
+		Command command (*this, fun, m_hasChanged);
+		m_context.execute (command);
 	}
 
 private:
-	void unsafeUpdateKeyUsingContext(std::string const & evaluatedName) const
+	void unsafeUpdateKeyUsingContext (std::string const & evaluatedName) const
 	{
-		Key spec(m_spec.dup());
+		Key spec (m_spec.dup ());
 		// TODO: change to .setName() once
 		// KEY_CASCADING_NAME is fixed
-		ckdb::elektraKeySetName(*spec,
-				evaluatedName.c_str(),
-				KEY_CASCADING_NAME);
-		m_key = Policies::GetPolicy::get(m_ks, spec);
-		assert(m_key);
+		ckdb::elektraKeySetName (*spec, evaluatedName.c_str (), KEY_CASCADING_NAME);
+		m_key = Policies::GetPolicy::get (m_ks, spec);
+		assert (m_key);
 	}
 
 	/**
 	 * @brief Execute this method *only* in a Command execution
 	 */
-	void unsafeSyncCache() const
+	void unsafeSyncCache () const
 	{
 		assert (m_key);
-		m_cache = m_key.get<type>();
+		m_cache = m_key.get<type> ();
 
 #if DEBUG && VERBOSE
-		std::cout << "got name: " << m_key.getName() << " value: " << m_key.getString() << std::endl;
+		std::cout << "got name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
 #endif
 	}
 
 	/**
 	 * @brief Execute this method *only* in a Command execution
 	 */
-	void unsafeSyncKeySet() const
+	void unsafeSyncKeySet () const
 	{
-		if (m_hasChanged && m_key.getName().at(0) == '/')
+		if (m_hasChanged && m_key.getName ().at (0) == '/')
 		{
 			m_hasChanged = false;
-			Key spec(m_spec.dup());
+			Key spec (m_spec.dup ());
 			// TODO: change to .setName() once
 			// KEY_CASCADING_NAME is fixed
-			ckdb::elektraKeySetName(*spec,
-					m_key.getName().c_str(),
-					KEY_CASCADING_NAME);
-			m_key = Policies::SetPolicy::set(m_ks, spec);
+			ckdb::elektraKeySetName (*spec, m_key.getName ().c_str (), KEY_CASCADING_NAME);
+			m_key = Policies::SetPolicy::set (m_ks, spec);
 		}
 		assert (m_key);
-		m_key.set<type>(m_cache);
+		m_key.set<type> (m_cache);
 
 #if DEBUG && VERBOSE
-		std::cout << "set name: " << m_key.getName() << " value: " << m_key.getString() << std::endl;
+		std::cout << "set name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
 #endif
 	}
 
 	/**
 	 * @brief Update to new value because of assignment
 	 */
-	void notifyInThread() override
+	void notifyInThread () override
 	{
-		unsafeSyncCache(); // always called from save context
+		unsafeSyncCache (); // always called from save context
 	}
 
 
-	virtual void updateContext() const override
+	virtual void updateContext () const override
 	{
-		std::string evaluatedName = m_context.evaluate(m_spec.getName());
+		std::string evaluatedName = m_context.evaluate (m_spec.getName ());
 #if DEBUG && VERBOSE
-		std::cout << "update context " << evaluatedName << " from " << m_spec.getName() << std::endl;
+		std::cout << "update context " << evaluatedName << " from " << m_spec.getName () << std::endl;
 #endif
 
-		Command::Func fun = [this, &evaluatedName] () -> Command::Pair
-		{
-			std::string oldKey = m_key.getName();
+		Command::Func fun = [this, &evaluatedName]() -> Command::Pair {
+			std::string oldKey = m_key.getName ();
 			if (evaluatedName == oldKey)
 			{
 				// nothing changed, same name
-				return std::make_pair(evaluatedName, evaluatedName);
+				return std::make_pair (evaluatedName, evaluatedName);
 			}
 
-			this->unsafeSyncKeySet(); // flush out what currently is in cache
-			this->unsafeUpdateKeyUsingContext(evaluatedName);
-			this->unsafeSyncCache();  // read what we have under new context
+			this->unsafeSyncKeySet (); // flush out what currently is in cache
+			this->unsafeUpdateKeyUsingContext (evaluatedName);
+			this->unsafeSyncCache (); // read what we have under new context
 
-			return std::make_pair(oldKey, m_key.getName());
+			return std::make_pair (oldKey, m_key.getName ());
 		};
-		Command command(*this, fun);
-		m_context.execute(command);
+		Command command (*this, fun);
+		m_context.execute (command);
 	}
 
 private:
@@ -720,27 +637,14 @@ private:
 	mutable Key m_key;
 };
 
-template <typename T,
-	typename PolicySetter1,
-	typename PolicySetter2,
-	typename PolicySetter3,
-	typename PolicySetter4,
-	typename PolicySetter5,
-	typename PolicySetter6
-	>
-std::ostream & operator << (std::ostream & os, Value<T,
-		PolicySetter1,
-		PolicySetter2,
-		PolicySetter3,
-		PolicySetter4,
-		PolicySetter5,
-		PolicySetter6
-		> const & v)
+template <typename T, typename PolicySetter1, typename PolicySetter2, typename PolicySetter3, typename PolicySetter4,
+	  typename PolicySetter5, typename PolicySetter6>
+std::ostream & operator<< (std::ostream & os,
+			   Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> const & v)
 {
-	os << static_cast<T>(v);
+	os << static_cast<T> (v);
 	return os;
 }
-
 }
 
 #endif

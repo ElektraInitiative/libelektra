@@ -41,15 +41,9 @@ public:
 	static const timer_t usec_factor = 1000000LL;
 };
 
-inline Timer::Timer(std::string  name_) :
-		begin(),
-		end(),
-		results(),
-		name(std::move(name_))
-{
-}
+inline Timer::Timer (std::string name_) : begin (), end (), results (), name (std::move (name_)) {}
 
-inline Timer::~Timer()
+inline Timer::~Timer ()
 {
 	for (auto result : results)
 	{
@@ -127,4 +121,3 @@ inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 	// clang-format on
 	return os;
 }
-
