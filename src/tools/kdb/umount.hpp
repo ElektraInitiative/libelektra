@@ -18,30 +18,18 @@ class UmountCommand : public Command
 	kdb::KDB kdb;
 
 public:
-	UmountCommand();
-	~UmountCommand();
+	UmountCommand ();
+	~UmountCommand ();
 
-	virtual std::string getShortOptions() override
-	{
-		return "v";
-	}
+	virtual std::string getShortOptions () override { return "v"; }
 
-	virtual std::string getSynopsis() override
-	{
-		return "<name>";
-	}
+	virtual std::string getSynopsis () override { return "<name>"; }
 
-	virtual std::string getShortHelpText() override
-	{
-		return "Unmount backend from key database.";
-	}
+	virtual std::string getShortHelpText () override { return "Unmount backend from key database."; }
 
-	virtual std::string getLongHelpText() override
-	{
-		return "";
-	}
+	virtual std::string getLongHelpText () override { return ""; }
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

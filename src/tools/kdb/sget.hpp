@@ -17,25 +17,16 @@ class ShellGetCommand : public Command
 {
 
 public:
-	ShellGetCommand();
-	~ShellGetCommand();
+	ShellGetCommand ();
+	~ShellGetCommand ();
 
-	virtual std::string getShortOptions() override
-	{
-		return "";
-	}
+	virtual std::string getShortOptions () override { return ""; }
 
-	virtual std::string getSynopsis() override
-	{
-		return "<name> <default value>";
-	}
+	virtual std::string getSynopsis () override { return "<name> <default value>"; }
 
-	virtual std::string getShortHelpText() override
-	{
-		return "Get the value of an individual key within a shell script.";
-	}
+	virtual std::string getShortHelpText () override { return "Get the value of an individual key within a shell script."; }
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
 		return "The get command does not work properly within shell scripts\n"
 		       "because it may issue an error instead of printing a value.\n"
@@ -46,7 +37,7 @@ public:
 		       "parameter";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

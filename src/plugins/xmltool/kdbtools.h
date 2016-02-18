@@ -49,8 +49,8 @@ enum KDBStream
 	KDB_O_HEADER = 1 << 18,      /*!< Show also the header of the document. */
 	KDB_O_FULLNAME = 1 << 19,    /*!< Export @p user keys using full name.*/
 	KDB_O_HIER = 1 << 20	 /*!< Export to the new hierarchical XML
-						     representation using key basename.
-						     See ksToStream(). */
+							 representation using key basename.
+							 See ksToStream(). */
 };
 
 

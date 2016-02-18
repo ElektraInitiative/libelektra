@@ -44,99 +44,99 @@ extern "C" {
 class DiscountMarkdownDocument : public MarkdownDocument
 {
 public:
-	explicit DiscountMarkdownDocument(MMIOT *document_) : discountDocument(document_) {}
-	~DiscountMarkdownDocument() { mkd_cleanup(discountDocument); }
+	explicit DiscountMarkdownDocument (MMIOT * document_) : discountDocument (document_) {}
+	~DiscountMarkdownDocument () { mkd_cleanup (discountDocument); }
 
-	MMIOT *document() const { return discountDocument; }
+	MMIOT * document () const { return discountDocument; }
 
 private:
-	MMIOT *discountDocument;
+	MMIOT * discountDocument;
 };
 
 
-DiscountMarkdownConverter::DiscountMarkdownConverter()
-{
-}
+DiscountMarkdownConverter::DiscountMarkdownConverter () {}
 
-MarkdownDocument *DiscountMarkdownConverter::createDocument(const QString &text, ConverterOptions options)
+MarkdownDocument * DiscountMarkdownConverter::createDocument (const QString & text, ConverterOptions options)
 {
-	MMIOT *doc = nullptr;
+	MMIOT * doc = nullptr;
 
-	if (text.length() > 0) {
-		QString markdownText(text);
+	if (text.length () > 0)
+	{
+		QString markdownText (text);
 
 		// text has to always end with a line break,
 		// otherwise characters are missing in HTML
-		if (!markdownText.endsWith('\n')) {
-			markdownText.append('\n');
+		if (!markdownText.endsWith ('\n'))
+		{
+			markdownText.append ('\n');
 		}
 
-		unsigned long converterOptions = translateConverterOptions(options);
+		unsigned long converterOptions = translateConverterOptions (options);
 
-		QByteArray utf8Data = markdownText.toUtf8();
-		doc = mkd_string(utf8Data, utf8Data.length(), converterOptions);
+		QByteArray utf8Data = markdownText.toUtf8 ();
+		doc = mkd_string (utf8Data, utf8Data.length (), converterOptions);
 
-		mkd_compile(doc, converterOptions);
+		mkd_compile (doc, converterOptions);
 	}
 
-	return new DiscountMarkdownDocument(doc);
+	return new DiscountMarkdownDocument (doc);
 }
 
-QString DiscountMarkdownConverter::renderAsHtml(MarkdownDocument *document)
+QString DiscountMarkdownConverter::renderAsHtml (MarkdownDocument * document)
 {
 	QString html;
 
-	if (document) {
-		DiscountMarkdownDocument *doc = dynamic_cast<DiscountMarkdownDocument*>(document);
+	if (document)
+	{
+		DiscountMarkdownDocument * doc = dynamic_cast<DiscountMarkdownDocument *> (document);
 
-		if (doc && doc->document()) {
-			char *out;
-			mkd_document(doc->document(), &out);
+		if (doc && doc->document ())
+		{
+			char * out;
+			mkd_document (doc->document (), &out);
 
-			html = QString::fromUtf8(out);
+			html = QString::fromUtf8 (out);
 		}
 	}
 
 	return html;
 }
 
-QString DiscountMarkdownConverter::renderAsTableOfContents(MarkdownDocument *document)
+QString DiscountMarkdownConverter::renderAsTableOfContents (MarkdownDocument * document)
 {
 	QString toc;
 
-	if (document) {
-		DiscountMarkdownDocument *doc = dynamic_cast<DiscountMarkdownDocument*>(document);
+	if (document)
+	{
+		DiscountMarkdownDocument * doc = dynamic_cast<DiscountMarkdownDocument *> (document);
 
-		if (doc && doc->document()) {
+		if (doc && doc->document ())
+		{
 			// generate table of contents
-			char *out;
-			mkd_toc(doc->document(), &out);
+			char * out;
+			mkd_toc (doc->document (), &out);
 
-			toc = QString::fromUtf8(out);
+			toc = QString::fromUtf8 (out);
 		}
 	}
 
 	return toc;
 }
 
-Template *DiscountMarkdownConverter::templateRenderer() const
+Template * DiscountMarkdownConverter::templateRenderer () const
 {
 	static HtmlTemplate htmlTemplate;
 	return &htmlTemplate;
 }
 
-MarkdownConverter::ConverterOptions DiscountMarkdownConverter::supportedOptions() const
+MarkdownConverter::ConverterOptions DiscountMarkdownConverter::supportedOptions () const
 {
-	return MarkdownConverter::AutolinkOption |
-		   MarkdownConverter::NoStrikethroughOption |
-		   MarkdownConverter::NoAlphaListOption |
-		   MarkdownConverter::NoDefinitionListOption |
-		   MarkdownConverter::NoSmartypantsOption |
-		   MarkdownConverter::ExtraFootnoteOption |
-		   MarkdownConverter::NoSuperscriptOption;
+	return MarkdownConverter::AutolinkOption | MarkdownConverter::NoStrikethroughOption | MarkdownConverter::NoAlphaListOption |
+	       MarkdownConverter::NoDefinitionListOption | MarkdownConverter::NoSmartypantsOption | MarkdownConverter::ExtraFootnoteOption |
+	       MarkdownConverter::NoSuperscriptOption;
 }
 
-unsigned long DiscountMarkdownConverter::translateConverterOptions(ConverterOptions options) const
+unsigned long DiscountMarkdownConverter::translateConverterOptions (ConverterOptions options) const
 {
 	unsigned long converterOptions = MKD_TOC;
 
@@ -145,40 +145,46 @@ unsigned long DiscountMarkdownConverter::translateConverterOptions(ConverterOpti
 #endif
 
 	// autolink
-	if (options.testFlag(MarkdownConverter::AutolinkOption)) {
+	if (options.testFlag (MarkdownConverter::AutolinkOption))
+	{
 		converterOptions |= MKD_AUTOLINK;
 	}
 
 	// strikethrough
-	if (options.testFlag(MarkdownConverter::NoStrikethroughOption)) {
+	if (options.testFlag (MarkdownConverter::NoStrikethroughOption))
+	{
 		converterOptions |= MKD_NOSTRIKETHROUGH;
 	}
 
 	// alphabetic lists
-	if (options.testFlag(MarkdownConverter::NoAlphaListOption)) {
+	if (options.testFlag (MarkdownConverter::NoAlphaListOption))
+	{
 		converterOptions |= MKD_NOALPHALIST;
 	}
 
 	// definition lists
-	if (options.testFlag(MarkdownConverter::NoDefinitionListOption)) {
+	if (options.testFlag (MarkdownConverter::NoDefinitionListOption))
+	{
 		converterOptions |= MKD_NODLIST;
 	}
 
 	// SmartyPants
-	if (options.testFlag(MarkdownConverter::NoSmartypantsOption)) {
+	if (options.testFlag (MarkdownConverter::NoSmartypantsOption))
+	{
 		converterOptions |= MKD_NOPANTS;
 	}
 
 	// Footnotes
-	if (options.testFlag(MarkdownConverter::ExtraFootnoteOption)) {
+	if (options.testFlag (MarkdownConverter::ExtraFootnoteOption))
+	{
 		converterOptions |= MKD_EXTRA_FOOTNOTE;
 	}
 
 	// Superscript
-	if (options.testFlag(MarkdownConverter::NoSuperscriptOption)) {
+	if (options.testFlag (MarkdownConverter::NoSuperscriptOption))
+	{
 		converterOptions |= MKD_NOSUPERSCRIPT;
 	}
 
 	return converterOptions;
 }
-

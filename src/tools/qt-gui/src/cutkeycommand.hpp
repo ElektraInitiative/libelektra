@@ -9,8 +9,8 @@
 #ifndef CUTKEYCOMMAND_H
 #define CUTKEYCOMMAND_H
 
-#include <QUndoCommand>
 #include "treeviewmodel.hpp"
+#include <QUndoCommand>
 
 /**
  * @brief The CutKeyCommand class
@@ -29,25 +29,25 @@ public:
 	 * @param sourceIndex The index of the cut ConfigNode, needed to remove the cut ConfigNode.
 	 * @param parent
 	 */
-	explicit CutKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand* parent = nullptr);
+	explicit CutKeyCommand (QString type, ConfigNodePtr source, ConfigNodePtr target, int sourceIndex, QUndoCommand * parent = nullptr);
 
 	/**
 	 * @copydoc QUndoCommand::undo()
 	 */
-	virtual void undo() override;
+	virtual void undo () override;
 
 	/**
 	 * @copydoc QUndoCommand::redo()
 	 */
-	virtual void redo() override;
+	virtual void redo () override;
 
 private:
-	TreeViewModel*  m_sourceParentModel;
-	ConfigNodePtr   m_source;
-	ConfigNodePtr   m_target;
-	bool            m_isExpanded;
-	int             m_sourceIndex;
-	int             m_targetIndex;
+	TreeViewModel * m_sourceParentModel;
+	ConfigNodePtr m_source;
+	ConfigNodePtr m_target;
+	bool m_isExpanded;
+	int m_sourceIndex;
+	int m_targetIndex;
 };
 
 #endif // CUTKEYCOMMAND_H

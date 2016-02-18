@@ -19,43 +19,32 @@ class ShellCommand : public Command
 	std::string supportedCommands;
 
 public:
-	ShellCommand();
-	~ShellCommand();
+	ShellCommand ();
+	~ShellCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override { return ""; }
+
+	virtual std::string getSynopsis () override { return ""; }
+
+	virtual std::string getShortHelpText () override { return "Start a kdb shell."; }
+
+	virtual std::string getLongHelpText () override
 	{
-		return "";
+		return "Use an interactive mode to view or edit\n"
+		       "the key database.\n"
+		       "\n"
+		       "Supported commands are:\n" +
+		       supportedCommands +
+		       "\n"
+		       "Read the API docu\n"
+		       "to see what these commands are doing.\n"
+		       "\n"
+		       "An internal current key and keyset assist\n"
+		       "to build up data structures which can be\n"
+		       "applied to the key database.";
 	}
 
-	virtual std::string getSynopsis() override
-	{
-		return "";
-	}
-
-	virtual std::string getShortHelpText() override
-	{
-		return "Start a kdb shell.";
-	}
-
-	virtual std::string getLongHelpText() override
-	{
-		return
-			"Use an interactive mode to view or edit\n"
-			"the key database.\n"
-			"\n"
-			"Supported commands are:\n"
-			+ supportedCommands +
-			"\n"
-			"Read the API docu\n"
-			"to see what these commands are doing.\n"
-			"\n"
-			"An internal current key and keyset assist\n"
-			"to build up data structures which can be\n"
-			"applied to the key database."
-			;
-	}
-
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

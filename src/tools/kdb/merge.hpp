@@ -19,35 +19,23 @@ class MergeCommand : public Command
 	kdb::KDB kdb;
 
 public:
-	MergeCommand();
-	~MergeCommand();
+	MergeCommand ();
+	~MergeCommand ();
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override { return "iHsvf"; }
+
+	virtual std::string getSynopsis () override { return "[options] ourpath theirpath basepath resultpath"; }
+
+	virtual std::string getShortHelpText () override { return "Three-way merge of KeySets."; }
+
+	virtual std::string getLongHelpText () override
 	{
-		return "iHsvf";
+		return "Does a three-way merge between keysets.\n"
+		       "On success the resulting keyset will be saved to mergepath.\n"
+		       "On unresolved conflicts nothing will be changed.\n";
 	}
-
-	virtual std::string getSynopsis() override
-	{
-		return "[options] ourpath theirpath basepath resultpath";
-	}
-
-	virtual std::string getShortHelpText() override
-	{
-		return "Three-way merge of KeySets.";
-	}
-
-	virtual std::string getLongHelpText() override
-	{
-		return
-			"Does a three-way merge between keysets.\n"
-			"On success the resulting keyset will be saved to mergepath.\n"
-			"On unresolved conflicts nothing will be changed.\n"
-			;
-	}
-
 };
 
 #endif

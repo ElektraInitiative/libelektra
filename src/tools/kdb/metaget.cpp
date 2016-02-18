@@ -8,8 +8,8 @@
 
 #include <metaget.hpp>
 
-#include <kdb.hpp>
 #include <cmdline.hpp>
+#include <kdb.hpp>
 
 #include <iostream>
 #include <string>
@@ -17,23 +17,22 @@
 using namespace std;
 using namespace kdb;
 
-MetaGetCommand::MetaGetCommand()
-{}
+MetaGetCommand::MetaGetCommand () {}
 
-int MetaGetCommand::execute (Cmdline const& cl)
+int MetaGetCommand::execute (Cmdline const & cl)
 {
-	if (cl.arguments.size() != 2)
+	if (cl.arguments.size () != 2)
 	{
 		throw invalid_argument ("Need 2 arguments");
 	}
-	Key parentKey = cl.createKey(0);
+	Key parentKey = cl.createKey (0);
 	string metaname = cl.arguments[1];
 
 	KeySet conf;
-	kdb.get(conf, parentKey);
-	printWarnings(cerr,parentKey);
+	kdb.get (conf, parentKey);
+	printWarnings (cerr, parentKey);
 
-	Key k = conf.lookup(parentKey);
+	Key k = conf.lookup (parentKey);
 
 	if (!k)
 	{
@@ -41,14 +40,14 @@ int MetaGetCommand::execute (Cmdline const& cl)
 		return 1;
 	}
 
-	if (!k.getMeta<const Key>(metaname))
+	if (!k.getMeta<const Key> (metaname))
 	{
 		cerr << "Metakey not found" << endl;
 		return 2;
 	}
 
-	cout << k.getMeta<string>(metaname);
-	
+	cout << k.getMeta<string> (metaname);
+
 	if (!cl.noNewline)
 	{
 		cout << endl;
@@ -57,5 +56,4 @@ int MetaGetCommand::execute (Cmdline const& cl)
 	return 0;
 }
 
-MetaGetCommand::~MetaGetCommand()
-{}
+MetaGetCommand::~MetaGetCommand () {}

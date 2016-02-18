@@ -8,54 +8,57 @@
  */
 
 
-#include <mount.hpp>
 #include <backend.hpp>
+#include <backendbuilder.hpp>
 #include <backends.hpp>
 #include <cmdline.hpp>
-#include <backendbuilder.hpp>
+#include <mount.hpp>
 
+#include <fstream>
 #include <iostream>
 #include <iterator>
-#include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include <kdbprivate.h>
 #include <kdbmodule.h>
+#include <kdbprivate.h>
 
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-MountCommand::MountCommand()
-{}
+MountCommand::MountCommand () {}
 
 
 /**
  * @brief Output what currently is mounted
  */
-void MountCommand::outputMtab(Cmdline const& cl)
+void MountCommand::outputMtab (Cmdline const & cl)
 {
-	Backends::BackendInfoVector mtab = Backends::getBackendInfo(mountConf);
+	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
 	bool all = cl.first && cl.second && cl.third;
 	char delim = '\n';
-	if (cl.null) delim = '\0';
+	if (cl.null)
+		delim = '\0';
 
-	for (Backends::BackendInfoVector::const_iterator it=mtab.begin();
-			it!=mtab.end(); ++it)
+	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
 		if (cl.first)
 		{
 			std::cout << it->path;
-			if (all) std::cout << " on ";
-			else std::cout << delim << std::flush;
+			if (all)
+				std::cout << " on ";
+			else
+				std::cout << delim << std::flush;
 		}
 
 		if (cl.second)
 		{
 			std::cout << it->mountpoint;
-			if (all) std::cout << " with name ";
-			else std::cout << delim << std::flush;
+			if (all)
+				std::cout << " with name ";
+			else
+				std::cout << delim << std::flush;
 		}
 
 		// TODO: remove next version
@@ -67,11 +70,11 @@ void MountCommand::outputMtab(Cmdline const& cl)
 	}
 }
 
-void MountCommand::processArguments(Cmdline const& cl)
+void MountCommand::processArguments (Cmdline const & cl)
 {
-	if (!cl.interactive && cl.arguments.size() == 1)
+	if (!cl.interactive && cl.arguments.size () == 1)
 	{
-		throw invalid_argument("wrong number of arguments, 0 or more then 1 needed");
+		throw invalid_argument ("wrong number of arguments, 0 or more then 1 needed");
 	}
 
 	if (cl.interactive)
@@ -84,28 +87,28 @@ void MountCommand::processArguments(Cmdline const& cl)
 	}
 }
 
-void MountCommand::buildBackend(Cmdline const& cl)
+void MountCommand::buildBackend (Cmdline const & cl)
 {
 	MountBackendBuilder backend;
 
-	Key mpk(mp, KEY_CASCADING_NAME, KEY_END);
+	Key mpk (mp, KEY_CASCADING_NAME, KEY_END);
 
-	if (!mpk.isValid())
+	if (!mpk.isValid ())
 	{
-		throw invalid_argument(mp + " is not a valid mountpoint");
+		throw invalid_argument (mp + " is not a valid mountpoint");
 	}
 
-	backend.setMountpoint(mpk, mountConf);
+	backend.setMountpoint (mpk, mountConf);
 
-	backend.setBackendConfig(cl.getPluginsConfig("system/"));
+	backend.setBackendConfig (cl.getPluginsConfig ("system/"));
 
 	PluginSpec resolver (cl.resolver);
 	if (cl.debug)
 	{
-		cout << "Trying to load the resolver plugin " << resolver.getName() << endl;
+		cout << "Trying to load the resolver plugin " << resolver.getName () << endl;
 	}
 
-	backend.addPlugin (PluginSpec(resolver));
+	backend.addPlugin (PluginSpec (resolver));
 
 	if (cl.interactive)
 	{
@@ -122,30 +125,30 @@ void MountCommand::buildBackend(Cmdline const& cl)
 		path = cl.arguments[0];
 	}
 
-	backend.useConfigFile(path);
+	backend.useConfigFile (path);
 
 	if (cl.debug)
 	{
 		cout << "Trying to add default plugins " << cl.plugins << endl;
 	}
 
-	backend.needPlugin("storage");
+	backend.needPlugin ("storage");
 	backend.recommendPlugin ("sync");
 	backend.addPlugins (parseArguments (cl.plugins));
 
 	if (cl.interactive)
 	{
 		cout << "Now enter a sequence of plugins you want in the backend" << endl;
-		appendPlugins(backend);
+		appendPlugins (backend);
 	}
 	else
 	{
 		const size_t nonPlugins = 2;
-		backend.addPlugins (parseArguments (cl.arguments.begin()+nonPlugins, cl.arguments.end()));
+		backend.addPlugins (parseArguments (cl.arguments.begin () + nonPlugins, cl.arguments.end ()));
 	}
 
 	// Call it a day
-	outputMissingRecommends(backend.resolveNeeds(cl.withRecommends));
+	outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
 	backend.serialize (mountConf);
 }
 
@@ -162,12 +165,13 @@ void MountCommand::readPluginConfig (KeySet & pluginConfig)
 		cout << "Enter the Key name: ";
 		cin >> keyName;
 
-		if (keyName == ".") break;
+		if (keyName == ".")
+			break;
 
 		cout << "Enter the Key value: ";
 		cin >> value;
 
-		pluginConfig.append(Key("user/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
+		pluginConfig.append (Key ("user/" + keyName, KEY_VALUE, value.c_str (), KEY_END));
 	}
 }
 
@@ -179,19 +183,22 @@ void MountCommand::appendPlugins (MountBackendInterface & backend)
 	cin >> pname;
 	readPluginConfig (pluginConfig);
 
-	while (pname != "." || !backend.validated())
+	while (pname != "." || !backend.validated ())
 	{
-		try {
-			backend.addPlugin (PluginSpec(pname, pluginConfig));
-			pluginConfig.clear();
+		try
+		{
+			backend.addPlugin (PluginSpec (pname, pluginConfig));
+			pluginConfig.clear ();
 		}
-		catch (PluginCheckException const& e)
+		catch (PluginCheckException const & e)
 		{
 			cerr << "Could not add that plugin" << endl;
-			cerr << e.what() << endl;
+			cerr << e.what () << endl;
 		}
-		if (!backend.validated()) cout << "Not validated, try to add another plugin (. to abort)" << endl;
-		else cout << "Enter . to finish entering plugins" << endl;
+		if (!backend.validated ())
+			cout << "Not validated, try to add another plugin (. to abort)" << endl;
+		else
+			cout << "Enter . to finish entering plugins" << endl;
 
 		cout << endl;
 		cout << "Next Plugin: ";
@@ -202,14 +209,13 @@ void MountCommand::appendPlugins (MountBackendInterface & backend)
 			readPluginConfig (pluginConfig);
 		}
 
-		if (pname == "." && !backend.validated())
+		if (pname == "." && !backend.validated ())
 		{
 			std::ostringstream os;
-			backend.status(os);
-			throw CommandAbortException(os.str().c_str());
+			backend.status (os);
+			throw CommandAbortException (os.str ().c_str ());
 		}
 	}
-
 }
 
 
@@ -220,25 +226,24 @@ void MountCommand::appendPlugins (MountBackendInterface & backend)
  *
  * @retval 0 on success (otherwise exception)
  */
-int MountCommand::execute(Cmdline const& cl)
+int MountCommand::execute (Cmdline const & cl)
 {
-	readMountConf(cl);
+	readMountConf (cl);
 
-	if (!cl.interactive && cl.arguments.empty())
+	if (!cl.interactive && cl.arguments.empty ())
 	{
 		// no interactive mode, so lets output the mtab
-		outputMtab(cl);
+		outputMtab (cl);
 		return 0;
 	}
 
-	processArguments(cl);
-	getMountpoint(cl);
-	buildBackend(cl);
-	askForConfirmation(cl);
-	doIt();
+	processArguments (cl);
+	getMountpoint (cl);
+	buildBackend (cl);
+	askForConfirmation (cl);
+	doIt ();
 
 	return 0;
 }
 
-MountCommand::~MountCommand()
-{}
+MountCommand::~MountCommand () {}

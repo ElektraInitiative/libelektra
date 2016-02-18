@@ -35,7 +35,7 @@
 class MarkdownDocument
 {
 public:
-	virtual ~MarkdownDocument() {}
+	virtual ~MarkdownDocument () {}
 };
 
 #endif // MARKDOWNDOCUMENT_H

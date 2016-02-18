@@ -10,39 +10,39 @@
 
 #include <iostream>
 
-#include <kdb.hpp>
 #include <cmdline.hpp>
+#include <kdb.hpp>
 
 using namespace kdb;
 using namespace std;
 
-MetaLsCommand::MetaLsCommand()
-{}
+MetaLsCommand::MetaLsCommand () {}
 
-int MetaLsCommand::execute (Cmdline const& cl)
+int MetaLsCommand::execute (Cmdline const & cl)
 {
 	int ret = 0;
-	if (cl.arguments.size() != 1){
-		throw invalid_argument("1 argument required");
+	if (cl.arguments.size () != 1)
+	{
+		throw invalid_argument ("1 argument required");
 	}
 
-	Key root = cl.createKey(0);
+	Key root = cl.createKey (0);
 
-	kdb.get(ks, root);
+	kdb.get (ks, root);
 
-	Key k = ks.lookup(root);
+	Key k = ks.lookup (root);
 
 	if (k)
 	{
 		if (cl.verbose)
 		{
-			std::cout << "Got key " << k.getName() << std::endl;
+			std::cout << "Got key " << k.getName () << std::endl;
 		}
 
-		k.rewindMeta();
-		while (const Key meta = k.nextMeta())
+		k.rewindMeta ();
+		while (const Key meta = k.nextMeta ())
 		{
-			cout << meta.getName();
+			cout << meta.getName ();
 			if (cl.null)
 			{
 				cout << '\0' << std::flush;
@@ -59,10 +59,9 @@ int MetaLsCommand::execute (Cmdline const& cl)
 		ret = 1;
 	}
 
-	printWarnings(cerr, root);
+	printWarnings (cerr, root);
 
 	return ret;
 }
 
-MetaLsCommand::~MetaLsCommand()
-{}
+MetaLsCommand::~MetaLsCommand () {}

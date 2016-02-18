@@ -37,19 +37,18 @@
 class DiscountMarkdownConverter : public MarkdownConverter
 {
 public:
-	DiscountMarkdownConverter();
+	DiscountMarkdownConverter ();
 
-	virtual MarkdownDocument *createDocument(const QString &text, ConverterOptions options);
-	virtual QString renderAsHtml(MarkdownDocument *document);
-	virtual QString renderAsTableOfContents(MarkdownDocument *document);
+	virtual MarkdownDocument * createDocument (const QString & text, ConverterOptions options);
+	virtual QString renderAsHtml (MarkdownDocument * document);
+	virtual QString renderAsTableOfContents (MarkdownDocument * document);
 
-	virtual Template *templateRenderer() const;
+	virtual Template * templateRenderer () const;
 
-	virtual ConverterOptions supportedOptions() const;
+	virtual ConverterOptions supportedOptions () const;
 
 private:
-	unsigned long translateConverterOptions(ConverterOptions options) const;
+	unsigned long translateConverterOptions (ConverterOptions options) const;
 };
 
 #endif // DISCOUNTMARKDOWNCONVERTER_H
-

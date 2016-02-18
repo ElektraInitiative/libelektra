@@ -37,17 +37,16 @@
 class HtmlTemplate : public Template
 {
 public:
-	HtmlTemplate();
+	HtmlTemplate ();
 
-	virtual QString render(const QString &body, RenderOptions options) const;
-	virtual QString exportAsHtml(const QString &header, const QString &body, RenderOptions options) const;
+	virtual QString render (const QString & body, RenderOptions options) const;
+	virtual QString exportAsHtml (const QString & header, const QString & body, RenderOptions options) const;
 
 private:
-	QString renderAsHtml(const QString &header, const QString &body, RenderOptions options) const;
-	QString buildHtmlHeader(RenderOptions options) const;
+	QString renderAsHtml (const QString & header, const QString & body, RenderOptions options) const;
+	QString buildHtmlHeader (RenderOptions options) const;
 
 	QString htmlTemplate;
 };
 
 #endif // HTMLTEMPLATE_H
-

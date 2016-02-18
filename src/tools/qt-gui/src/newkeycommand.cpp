@@ -6,59 +6,56 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <kdb.hpp>
 #include "newkeycommand.hpp"
+#include <kdb.hpp>
 
-NewKeyCommand::NewKeyCommand(TreeViewModel *model, int index, DataContainer *data, bool isBelow, QUndoCommand* parent)
-	: QUndoCommand(parent)
-	, m_parentNode(model->model().at(index))
-	, m_newNode(nullptr)
-	, m_value(data->newValue())
-	, m_metaData(data->newMetadata())
+NewKeyCommand::NewKeyCommand (TreeViewModel * model, int index, DataContainer * data, bool isBelow, QUndoCommand * parent)
+: QUndoCommand (parent), m_parentNode (model->model ().at (index)), m_newNode (nullptr), m_value (data->newValue ()),
+  m_metaData (data->newMetadata ())
 {
-	TreeViewModel* parentModel = m_parentNode->getChildren();
-	kdb::Key newKey = parentModel->createNewKey(m_parentNode->getPath() + "/" + data->newName(), m_value, m_metaData);
+	TreeViewModel * parentModel = m_parentNode->getChildren ();
+	kdb::Key newKey = parentModel->createNewKey (m_parentNode->getPath () + "/" + data->newName (), m_value, m_metaData);
 
-	QStringList newNameSplit = parentModel->getSplittedKeyname(newKey);
-	kdb::Key parentKey = m_parentNode->getKey();
+	QStringList newNameSplit = parentModel->getSplittedKeyname (newKey);
+	kdb::Key parentKey = m_parentNode->getKey ();
 
 	if (!parentKey)
-		parentKey = kdb::Key(m_parentNode->getPath().toStdString(), KEY_END);
+		parentKey = kdb::Key (m_parentNode->getPath ().toStdString (), KEY_END);
 
-	QStringList parentNameSplit = parentModel->getSplittedKeyname(parentKey);
+	QStringList parentNameSplit = parentModel->getSplittedKeyname (parentKey);
 
-	//check if the new key is directly below the parent
-	QSet<QString> diff = newNameSplit.toSet().subtract(parentNameSplit.toSet());
+	// check if the new key is directly below the parent
+	QSet<QString> diff = newNameSplit.toSet ().subtract (parentNameSplit.toSet ());
 
-	if (diff.count() > 1 || isBelow)
-		setText("newBranch");
+	if (diff.count () > 1 || isBelow)
+		setText ("newBranch");
 	else
-		setText("newKey");
+		setText ("newKey");
 
-	m_name = cutListAtIndex(newNameSplit, parentNameSplit.count()).first();
+	m_name = cutListAtIndex (newNameSplit, parentNameSplit.count ()).first ();
 
-	parentModel->sink(m_parentNode, newNameSplit, newKey.dup());
+	parentModel->sink (m_parentNode, newNameSplit, newKey.dup ());
 
-	m_newNode = m_parentNode->getChildByName(m_name);
-	parentModel->removeRow(m_parentNode->getChildIndexByName(m_name));
+	m_newNode = m_parentNode->getChildByName (m_name);
+	parentModel->removeRow (m_parentNode->getChildIndexByName (m_name));
 }
 
-void NewKeyCommand::undo()
+void NewKeyCommand::undo ()
 {
-	//remove new node
-	m_parentNode->getChildren()->removeRow(m_parentNode->getChildIndexByName(m_name));
+	// remove new node
+	m_parentNode->getChildren ()->removeRow (m_parentNode->getChildIndexByName (m_name));
 }
 
-void NewKeyCommand::redo()
+void NewKeyCommand::redo ()
 {
-	//insert new node
-	m_parentNode->getChildren()->append(m_newNode);
+	// insert new node
+	m_parentNode->getChildren ()->append (m_newNode);
 }
 
-QStringList NewKeyCommand::cutListAtIndex(QStringList &list, int index)
+QStringList NewKeyCommand::cutListAtIndex (QStringList & list, int index)
 {
 	for (int i = 0; i < index; i++)
-		list.removeFirst();
+		list.removeFirst ();
 
 	return list;
 }

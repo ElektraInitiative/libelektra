@@ -17,41 +17,29 @@ namespace kdb
 {
 namespace tools
 {
-	class MountBackendInterface;
+class MountBackendInterface;
 }
 }
 
 class SpecMountCommand : public MountBaseCommand
 {
-	void outputMtab (Cmdline const& cl);
-	void setMountpoint (Cmdline const& cl);
-	void buildBackend (Cmdline const& cl);
+	void outputMtab (Cmdline const & cl);
+	void setMountpoint (Cmdline const & cl);
+	void buildBackend (Cmdline const & cl);
 
 public:
-	SpecMountCommand();
-	~SpecMountCommand();
+	SpecMountCommand ();
+	~SpecMountCommand ();
 
-	virtual std::string getShortOptions() override
-	{
-		return "idRcWv";
-	}
+	virtual std::string getShortOptions () override { return "idRcWv"; }
 
-	virtual std::string getSynopsis() override
-	{
-		return "[mountpoint] [plugin [config] [..]]";
-	}
+	virtual std::string getSynopsis () override { return "[mountpoint] [plugin [config] [..]]"; }
 
-	virtual std::string getShortHelpText() override
-	{
-		return "Mount a new backend by specification.";
-	}
+	virtual std::string getShortHelpText () override { return "Mount a new backend by specification."; }
 
-	virtual std::string getLongHelpText() override
-	{
-		return "" ;
-	}
+	virtual std::string getLongHelpText () override { return ""; }
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

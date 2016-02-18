@@ -8,10 +8,10 @@
 
 #include <info.hpp>
 
-#include <kdb.hpp>
-#include <plugin.hpp>
-#include <modules.hpp>
 #include <cmdline.hpp>
+#include <kdb.hpp>
+#include <modules.hpp>
+#include <plugin.hpp>
 
 #include <iostream>
 
@@ -21,34 +21,33 @@ using namespace kdb;
 using namespace kdb::tools;
 
 
-InfoCommand::InfoCommand()
-{}
+InfoCommand::InfoCommand () {}
 
-int InfoCommand::execute(Cmdline const& cl)
+int InfoCommand::execute (Cmdline const & cl)
 {
 	std::string subkey;
-	if (cl.arguments.size() == 1)
+	if (cl.arguments.size () == 1)
 	{
 	}
-	else if (cl.arguments.size() == 2)
+	else if (cl.arguments.size () == 2)
 	{
 		subkey = cl.arguments[1];
 	}
 	else
 	{
-		throw invalid_argument("Need at 1 or 2 argument(s)");
+		throw invalid_argument ("Need at 1 or 2 argument(s)");
 	}
 	std::string name = cl.arguments[0];
 
 	KeySet conf;
-	Key parentKey(std::string("system/elektra/modules/") + name, KEY_END);
+	Key parentKey (std::string ("system/elektra/modules/") + name, KEY_END);
 
 	if (!cl.load)
 	{
-		kdb.get(conf, parentKey);
+		kdb.get (conf, parentKey);
 	}
 
-	if (!conf.lookup(parentKey))
+	if (!conf.lookup (parentKey))
 	{
 		if (!cl.load)
 		{
@@ -57,28 +56,28 @@ int InfoCommand::execute(Cmdline const& cl)
 		}
 
 		Modules modules;
-		KeySet ks = cl.getPluginsConfig();
+		KeySet ks = cl.getPluginsConfig ();
 		PluginPtr plugin;
-		if (ks.size() == 0)
+		if (ks.size () == 0)
 		{
-			plugin = modules.load(name);
+			plugin = modules.load (name);
 		}
 		else
 		{
-			plugin = modules.load(name, ks);
+			plugin = modules.load (name, ks);
 		}
-		conf.append(plugin->getInfo());
+		conf.append (plugin->getInfo ());
 	}
 
-	Key root (std::string("system/elektra/modules/") + name + "/exports", KEY_END);
+	Key root (std::string ("system/elektra/modules/") + name + "/exports", KEY_END);
 
-	if (!subkey.empty())
+	if (!subkey.empty ())
 	{
-		root.setName(std::string("system/elektra/modules/") + name + "/infos/" + subkey);
+		root.setName (std::string ("system/elektra/modules/") + name + "/infos/" + subkey);
 		Key k = conf.lookup (root);
 		if (k)
 		{
-			cout << k.getString() << std::endl;
+			cout << k.getString () << std::endl;
 			return 0;
 		}
 		else
@@ -88,33 +87,35 @@ int InfoCommand::execute(Cmdline const& cl)
 		}
 	}
 
-	root.setName(std::string("system/elektra/modules/") + name + "/exports");
+	root.setName (std::string ("system/elektra/modules/") + name + "/exports");
 	Key k = conf.lookup (root);
 
 	if (k)
 	{
 		cout << "Exported symbols: ";
-		while ((k = conf.next()) && k.isBelow(root))
+		while ((k = conf.next ()) && k.isBelow (root))
 		{
-			cout << k.getBaseName() << " ";
+			cout << k.getBaseName () << " ";
 		}
 		cout << endl;
 	}
-	else cout << "no exported symbols found" << endl;
+	else
+		cout << "no exported symbols found" << endl;
 
-	root.setName(std::string("system/elektra/modules/") + name + "/infos");
+	root.setName (std::string ("system/elektra/modules/") + name + "/infos");
 	k = conf.lookup (root);
 
 	if (k)
 	{
-		while ((k = conf.next()) && k.isBelow(root))
+		while ((k = conf.next ()) && k.isBelow (root))
 		{
-			cout << k.getBaseName() << ": " << k.getString() << endl;
+			cout << k.getBaseName () << ": " << k.getString () << endl;
 		}
-	} else cout << "no information found" << endl;
+	}
+	else
+		cout << "no information found" << endl;
 
 	return 0;
 }
 
-InfoCommand::~InfoCommand()
-{}
+InfoCommand::~InfoCommand () {}

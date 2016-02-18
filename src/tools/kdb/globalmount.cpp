@@ -8,35 +8,34 @@
  */
 
 
-#include <globalmount.hpp>
 #include <cmdline.hpp>
+#include <globalmount.hpp>
 #include <specreader.hpp>
 
+#include <fstream>
 #include <iostream>
 #include <iterator>
-#include <fstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-GlobalMountCommand::GlobalMountCommand()
-{}
+GlobalMountCommand::GlobalMountCommand () {}
 
-void GlobalMountCommand::buildBackend (Cmdline const& cl)
+void GlobalMountCommand::buildBackend (Cmdline const & cl)
 {
 	GlobalPluginsBuilder backend;
 
 	// TODO: not yet implemented:
 	// backend.setBackendConfig(cl.getPluginsConfig("system/"));
 	backend.addPlugins (parseArguments (cl.globalPlugins));
-	backend.addPlugins (parseArguments (cl.arguments.begin(), cl.arguments.end()));
+	backend.addPlugins (parseArguments (cl.arguments.begin (), cl.arguments.end ()));
 
 	// Call it a day
-	outputMissingRecommends(backend.resolveNeeds(cl.withRecommends));
-	mountConf.cut (Key(GlobalPluginsBuilder::globalPluginsPath, KEY_END));
+	outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
+	mountConf.cut (Key (GlobalPluginsBuilder::globalPluginsPath, KEY_END));
 	backend.serialize (mountConf);
 }
 
@@ -47,16 +46,15 @@ void GlobalMountCommand::buildBackend (Cmdline const& cl)
  *
  * @retval 0 on success (otherwise exception)
  */
-int GlobalMountCommand::execute (Cmdline const& cl)
+int GlobalMountCommand::execute (Cmdline const & cl)
 {
 	mountpointsPath = GlobalPluginsBuilder::globalPluginsPath;
-	readMountConf(cl);
+	readMountConf (cl);
 
-	buildBackend(cl);
-	doIt();
+	buildBackend (cl);
+	doIt ();
 
 	return 0;
 }
 
-GlobalMountCommand::~GlobalMountCommand()
-{}
+GlobalMountCommand::~GlobalMountCommand () {}

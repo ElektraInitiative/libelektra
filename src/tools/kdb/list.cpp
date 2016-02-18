@@ -16,22 +16,25 @@
 using namespace kdb;
 using namespace std;
 
-ListCommand::ListCommand()
-{}
+ListCommand::ListCommand () {}
 
-int ListCommand::execute(Cmdline const& cl)
+int ListCommand::execute (Cmdline const & cl)
 {
 	using namespace kdb::tools;
 	ModulesPluginDatabase db;
 
-	std::vector<std::string> plugins = db.listAllPlugins();
+	std::vector<std::string> plugins = db.listAllPlugins ();
 
 	std::multimap<int, std::string> sortedPlugins;
 	for (const auto & plugin : plugins)
 	{
-		try {
-			int s = db.calculateStatus(db.lookupInfo (PluginSpec(plugin, KeySet(5, *Key("system/module",
-				KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)), "status"));
+		try
+		{
+			int s = db.calculateStatus (
+				db.lookupInfo (PluginSpec (plugin, KeySet (5, *Key ("system/module", KEY_VALUE,
+										    "this plugin was loaded without a config", KEY_END),
+									   KS_END)),
+					       "status"));
 			sortedPlugins.insert (std::make_pair (s, plugin));
 		}
 		catch (std::exception const & e)
@@ -44,7 +47,8 @@ int ListCommand::execute(Cmdline const& cl)
 		}
 	}
 
-	if (cl.verbose) cout << "number of all plugins: " << plugins.size() << endl;
+	if (cl.verbose)
+		cout << "number of all plugins: " << plugins.size () << endl;
 
 	for (auto & plugin : sortedPlugins)
 	{
@@ -67,5 +71,4 @@ int ListCommand::execute(Cmdline const& cl)
 	return 0;
 }
 
-ListCommand::~ListCommand()
-{}
+ListCommand::~ListCommand () {}
