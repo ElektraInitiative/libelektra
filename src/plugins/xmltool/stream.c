@@ -12,11 +12,11 @@
 #include "kdbconfig.h"
 #endif
 
-#include <unistd.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "kdbtools.h"
 #include <kdbinternal.h>
@@ -55,10 +55,6 @@
  *
  *
  */
-
-
-
-
 
 
 /*********************************************
@@ -102,13 +98,7 @@
  * @see ksToStream()
  * @return number of bytes written to output
  */
-ssize_t keyToStream(const Key *key, FILE* stream, option_t options)
-{
-	return keyToStreamBasename(key,stream,0,0,options);
-}
-
-
-
+ssize_t keyToStream (const Key * key, FILE * stream, option_t options) { return keyToStreamBasename (key, stream, 0, 0, options); }
 
 
 /**
@@ -159,32 +149,38 @@ ssize_t keyToStream(const Key *key, FILE* stream, option_t options)
  *
  * @return number of bytes written to output
  */
-ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
-		const size_t parentSize, option_t options) {
-	ssize_t written=0;
+ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, option_t options)
+{
+	ssize_t written = 0;
 	char buffer[KDB_MAX_PATH_LENGTH];
 
 	/* Write key name */
-	if (parent) {
+	if (parent)
+	{
 		/* some logic to see if we should print only the relative basename */
 		int found;
-		size_t skip=parentSize ? parentSize : elektraStrLen(parent)-1;
+		size_t skip = parentSize ? parentSize : elektraStrLen (parent) - 1;
 
-		found=memcmp(parent,key->key,skip);
-		if (found == 0) {
-			while (*(key->key+skip) == KDB_PATH_SEPARATOR) ++skip;
+		found = memcmp (parent, key->key, skip);
+		if (found == 0)
+		{
+			while (*(key->key + skip) == KDB_PATH_SEPARATOR)
+				++skip;
 
-			if (*(key->key+skip) != 0) /* we don't want a null basename */
-				written+=fprintf(stream,"<key basename=\"%s\"",
-					key->key+skip);
+			if (*(key->key + skip) != 0) /* we don't want a null basename */
+				written += fprintf (stream, "<key basename=\"%s\"", key->key + skip);
 		}
 	}
 
-	if (written == 0) { /* no "<key basename=..." was written so far */
-		if (options & KDB_O_FULLNAME) {
-			keyGetFullName(key,buffer,sizeof(buffer));
-			written+=fprintf(stream,"<key name=\"%s\"", buffer);
-		} else written+=fprintf(stream,"<key name=\"%s\"", key->key);
+	if (written == 0)
+	{ /* no "<key basename=..." was written so far */
+		if (options & KDB_O_FULLNAME)
+		{
+			keyGetFullName (key, buffer, sizeof (buffer));
+			written += fprintf (stream, "<key name=\"%s\"", buffer);
+		}
+		else
+			written += fprintf (stream, "<key name=\"%s\"", key->key);
 	}
 
 
@@ -201,57 +197,73 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 	}
 	*/
 
-	if (keyGetUID (key) != (uid_t)-1) written+=fprintf(stream," uid=\"%d\"", (int)keyGetUID (key));
-	if (keyGetGID (key) != (gid_t)-1) written+=fprintf(stream," gid=\"%d\"", (int)keyGetGID (key));
+	if (keyGetUID (key) != (uid_t)-1)
+		written += fprintf (stream, " uid=\"%d\"", (int)keyGetUID (key));
+	if (keyGetGID (key) != (gid_t)-1)
+		written += fprintf (stream, " gid=\"%d\"", (int)keyGetGID (key));
 
-	if (keyGetMode(key) != KDB_FILE_MODE)
+	if (keyGetMode (key) != KDB_FILE_MODE)
 	{
-		written+=fprintf(stream," mode=\"0%o\"",
-			keyGetMode(key));
+		written += fprintf (stream, " mode=\"0%o\"", keyGetMode (key));
 	}
 
 
-	if (!key->data.v && !keyComment(key)) { /* no data AND no comment */
-		written+=fprintf(stream,"/>");
+	if (!key->data.v && !keyComment (key))
+	{ /* no data AND no comment */
+		written += fprintf (stream, "/>");
 		if (!(options & KDB_O_CONDENSED))
-			written+=fprintf(stream,"\n\n");
-		
+			written += fprintf (stream, "\n\n");
+
 		return written; /* end of <key/> */
-	} else {
-		if (key->data.v) {
+	}
+	else
+	{
+		if (key->data.v)
+		{
 			if ((key->dataSize <= 16) && keyIsString (key) && /*TODO: is this for string?*/
-					!strchr(key->data.c,'\n')) {
+			    !strchr (key->data.c, '\n'))
+			{
 
 				/* we'll use a "value" attribute instead of a <value> node,
 				   for readability, so the cut size will be 16, which is
 				   the maximum size of an IPv4 address */
 
-				if (options & KDB_O_CONDENSED) written+=fprintf(stream," ");
-				else written+=fprintf(stream,"\n\t");
-				
-				written+=fprintf(stream,"value=\"%s\"",key->data.c);
-				
-				if (keyComment(key)) written+=fprintf(stream,">\n");
-				else {
-					written+=fprintf(stream,"/>");
+				if (options & KDB_O_CONDENSED)
+					written += fprintf (stream, " ");
+				else
+					written += fprintf (stream, "\n\t");
+
+				written += fprintf (stream, "value=\"%s\"", key->data.c);
+
+				if (keyComment (key))
+					written += fprintf (stream, ">\n");
+				else
+				{
+					written += fprintf (stream, "/>");
 					if (!(options & KDB_O_CONDENSED))
-						written+=fprintf(stream,"\n");
-				
+						written += fprintf (stream, "\n");
+
 					return written;
 				}
-			} else { /* value is bigger than 16 bytes: deserves own <value> */
-				written+=fprintf(stream,">");
-				if (!(options & KDB_O_CONDENSED)) written+=fprintf(stream,"\n\n     ");
-				
-				written+=fprintf(stream,"<value>");
-				if (keyIsString(key)) { /*TODO: is this for string?*/
-					written+=fprintf(stream,"<![CDATA[");
-					fflush(stream);
+			}
+			else
+			{ /* value is bigger than 16 bytes: deserves own <value> */
+				written += fprintf (stream, ">");
+				if (!(options & KDB_O_CONDENSED))
+					written += fprintf (stream, "\n\n     ");
+
+				written += fprintf (stream, "<value>");
+				if (keyIsString (key))
+				{ /*TODO: is this for string?*/
+					written += fprintf (stream, "<![CDATA[");
+					fflush (stream);
 					/* must chop ending \\0 */
-					written+=fwrite(key->data.v,sizeof(char),key->dataSize-1,stream);
-					written+=fprintf(stream,"]]>");
-				} else {
-					/* TODO Binary values 
+					written += fwrite (key->data.v, sizeof (char), key->dataSize - 1, stream);
+					written += fprintf (stream, "]]>");
+				}
+				else
+				{
+					/* TODO Binary values
 					char *encoded=elektraMalloc(3*key->dataSize);
 					size_t encodedSize;
 
@@ -264,38 +276,46 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
 					*/
 				}
 				/* fflush(stream); */
-				written+=fprintf(stream,"</value>");
+				written += fprintf (stream, "</value>");
 			}
-		} else { /* we have no data */
-			if (keyComment(key)) {
-				written+=fprintf(stream,">");
+		}
+		else
+		{ /* we have no data */
+			if (keyComment (key))
+			{
+				written += fprintf (stream, ">");
 				if (!(options & KDB_O_CONDENSED))
-					written+=fprintf(stream,"\n");
-			} else {
-				written+=fprintf(stream,"/>");
+					written += fprintf (stream, "\n");
+			}
+			else
+			{
+				written += fprintf (stream, "/>");
 				if (!(options & KDB_O_CONDENSED))
-					written+=fprintf(stream,"\n\n");
-			
+					written += fprintf (stream, "\n\n");
+
 				return written;
 			}
 		}
 	}
 
-	if (!(options & KDB_O_CONDENSED)) {
-		written+=fprintf(stream,"\n");
-		if (keyComment(key)) written+=fprintf(stream,"     ");
+	if (!(options & KDB_O_CONDENSED))
+	{
+		written += fprintf (stream, "\n");
+		if (keyComment (key))
+			written += fprintf (stream, "     ");
 	}
 
-	if (keyComment(key)) {
-		written+=fprintf(stream,"<comment><![CDATA[%s]]></comment>", keyComment(key));
+	if (keyComment (key))
+	{
+		written += fprintf (stream, "<comment><![CDATA[%s]]></comment>", keyComment (key));
 		if (!(options & KDB_O_CONDENSED))
-			written+=fprintf(stream,"\n");
+			written += fprintf (stream, "\n");
 	}
 
-	written+=fprintf(stream,"</key>");
+	written += fprintf (stream, "</key>");
 
 	if (!(options & KDB_O_CONDENSED))
-		written+=fprintf(stream,"\n\n");
+		written += fprintf (stream, "\n\n");
 
 	return written;
 }
@@ -362,56 +382,64 @@ ssize_t keyToStreamBasename(const Key *key, FILE *stream, const char *parent,
  * @param stream the file pointer where to send the stream
  * @param options see above text
  */
-ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options)
+ssize_t ksToStream (const KeySet * ks, FILE * stream, option_t options)
 {
-	size_t written=0;
-	Key *key=0;
-	char *codeset = "UTF-8";
-	KeySet *cks = ksDup (ks);
+	size_t written = 0;
+	Key * key = 0;
+	char * codeset = "UTF-8";
+	KeySet * cks = ksDup (ks);
 
 	ksRewind (cks);
 
-	if (options & KDB_O_HEADER) {
-		written+=fprintf(stream,"<?xml version=\"1.0\" encoding=\"%s\"?>",
-			codeset);
+	if (options & KDB_O_HEADER)
+	{
+		written += fprintf (stream, "<?xml version=\"1.0\" encoding=\"%s\"?>", codeset);
 		if (~options & KDB_O_CONDENSED)
-			written+=fprintf(stream,
-					"\n<!-- Generated by Elektra API. Total of %d keys. -->\n",(int)cks->size);
+			written += fprintf (stream, "\n<!-- Generated by Elektra API. Total of %d keys. -->\n", (int)cks->size);
 		if (~options & KDB_O_CONDENSED)
-			written+=fprintf(stream,"<keyset xmlns=\"http://www.libelektra.org\"\n"
-					"\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-					"\txsi:schemaLocation=\"http://www.libelektra.org elektra.xsd\"\n");
+			written += fprintf (stream,
+					    "<keyset xmlns=\"http://www.libelektra.org\"\n"
+					    "\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+					    "\txsi:schemaLocation=\"http://www.libelektra.org elektra.xsd\"\n");
 		else
-			written+=fprintf(stream,"<keyset xmlns=\"http://www.libelektra.org\""
-					" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-					" xsi:schemaLocation=\"http://www.libelektra.org elektra.xsd\"");
-	} else written+=fprintf(stream,"<keyset");
+			written += fprintf (stream,
+					    "<keyset xmlns=\"http://www.libelektra.org\""
+					    " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+					    " xsi:schemaLocation=\"http://www.libelektra.org elektra.xsd\"");
+	}
+	else
+		written += fprintf (stream, "<keyset");
 
-	if (options & KDB_O_HIER) {
+	if (options & KDB_O_HIER)
+	{
 		char commonParent[KDB_MAX_PATH_LENGTH];
 
-		ksGetCommonParentName(cks,commonParent,sizeof(commonParent));
-	
-		if (commonParent[0]) {
-			written+=fprintf(stream,"        parent=\"%s\">\n",
-				commonParent);
+		ksGetCommonParentName (cks, commonParent, sizeof (commonParent));
+
+		if (commonParent[0])
+		{
+			written += fprintf (stream, "        parent=\"%s\">\n", commonParent);
 			ksRewind (cks);
-			while ((key=ksNext (cks)) != 0)
-				written+=keyToStreamBasename(key,stream,commonParent,0,options);
-		} else {
-			written+=fprintf(stream,">\n");
-			ksRewind (cks);
-			while ((key=ksNext (cks)) != 0)
-				written+=keyToStream(key,stream,options);
+			while ((key = ksNext (cks)) != 0)
+				written += keyToStreamBasename (key, stream, commonParent, 0, options);
 		}
-	} else { /* No KDB_O_HIER*/
-		written+=fprintf(stream,">\n");
-		ksRewind (cks);
-		while ((key=ksNext (cks)) != 0)
-			written+=keyToStream(key,stream,options);
+		else
+		{
+			written += fprintf (stream, ">\n");
+			ksRewind (cks);
+			while ((key = ksNext (cks)) != 0)
+				written += keyToStream (key, stream, options);
+		}
 	}
-	
-	written+=fprintf(stream,"</keyset>\n");
+	else
+	{ /* No KDB_O_HIER*/
+		written += fprintf (stream, ">\n");
+		ksRewind (cks);
+		while ((key = ksNext (cks)) != 0)
+			written += keyToStream (key, stream, options);
+	}
+
+	written += fprintf (stream, "</keyset>\n");
 	ksDel (cks);
 	return written;
 }
@@ -431,7 +459,7 @@ ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options)
  * @retval -1 on allocation errors
  * @ingroup stream
  */
-int keyOutput (const Key * k, FILE *stream, option_t options)
+int keyOutput (const Key * k, FILE * stream, option_t options)
 {
 	time_t t;
 	size_t s;
@@ -445,23 +473,25 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 	char * nam;
 
 	n = keyGetNameSize (k);
-	if (n>1)
+	if (n > 1)
 	{
-		nam = (char*) elektraMalloc (n);
-		if (nam == NULL) return -1;
+		nam = (char *)elektraMalloc (n);
+		if (nam == NULL)
+			return -1;
 		keyGetName (k, nam, n);
 
-		fprintf(stream,"Name[%d]: %s : ", (int)n, nam);
+		fprintf (stream, "Name[%d]: %s : ", (int)n, nam);
 
 		elektraFree (nam);
 	}
 
 	s = keyGetValueSize (k);
-	if (options & KEY_VALUE && s>1)
+	if (options & KEY_VALUE && s > 1)
 	{
-		str = (char*) elektraMalloc (s);
-		if (str == NULL) return -1;
-		if (keyIsBinary(k))
+		str = (char *)elektraMalloc (s);
+		if (str == NULL)
+			return -1;
+		if (keyIsBinary (k))
 		{
 			/*
 			char * bin;
@@ -471,68 +501,80 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
 			elektraFree (bin);
 			*/
 			keyGetBinary (k, str, s);
-			fprintf(stream,"Binary[%d]: %s : ", (int)s, str);
-		} else {
+			fprintf (stream, "Binary[%d]: %s : ", (int)s, str);
+		}
+		else
+		{
 			keyGetString (k, str, s);
-			fprintf(stream,"String[%d]: %s : ", (int)s, str);
+			fprintf (stream, "String[%d]: %s : ", (int)s, str);
 		}
 
 		elektraFree (str);
 	}
 
 	c = keyGetCommentSize (k);
-	if (options & KEY_COMMENT && c>1)
+	if (options & KEY_COMMENT && c > 1)
 	{
-		com = (char*) elektraMalloc (c);
-		if (com == NULL) return -1;
+		com = (char *)elektraMalloc (c);
+		if (com == NULL)
+			return -1;
 		keyGetComment (k, com, c);
 
-		fprintf(stream,"Comment[%d]: %s : ", (int)c, com);
+		fprintf (stream, "Comment[%d]: %s : ", (int)c, com);
 
 		elektraFree (com);
 	}
 
 
-	if (options & KDB_O_SHOWMETA) fprintf(stream," : ");
-	if (options & KEY_UID) fprintf(stream,"UID: %d : ", (int)keyGetUID (k));
-	if (options & KEY_GID) fprintf(stream,"GID: %d : ", (int)keyGetGID (k));
-	if (options & KEY_MODE) fprintf(stream,"Mode: %o : ", (int)keyGetMode (k));
+	if (options & KDB_O_SHOWMETA)
+		fprintf (stream, " : ");
+	if (options & KEY_UID)
+		fprintf (stream, "UID: %d : ", (int)keyGetUID (k));
+	if (options & KEY_GID)
+		fprintf (stream, "GID: %d : ", (int)keyGetGID (k));
+	if (options & KEY_MODE)
+		fprintf (stream, "Mode: %o : ", (int)keyGetMode (k));
 
 	if (options & KEY_ATIME)
 	{
-		t=keyGetATime(k);
-		tmc = ctime (& t);
+		t = keyGetATime (k);
+		tmc = ctime (&t);
 		tmc[24] = '\0';
-		fprintf(stream,"ATime: %s : ", tmc);
+		fprintf (stream, "ATime: %s : ", tmc);
 	}
 
 	if (options & KEY_MTIME)
 	{
-		t=keyGetMTime(k);
-		tmc = ctime (& t);
+		t = keyGetMTime (k);
+		tmc = ctime (&t);
 		tmc[24] = '\0';
-		fprintf(stream,"MTime: %s : ", tmc);
+		fprintf (stream, "MTime: %s : ", tmc);
 	}
 
 	if (options & KEY_CTIME)
 	{
-		t=keyGetCTime(k);
-		tmc = ctime (& t);
+		t = keyGetCTime (k);
+		tmc = ctime (&t);
 		tmc[24] = '\0';
-		fprintf(stream,"CTime: %s : ", tmc);
+		fprintf (stream, "CTime: %s : ", tmc);
 	}
 
 	if (options & KDB_O_SHOWFLAGS)
 	{
-		if (!(options & KDB_O_SHOWMETA)) fprintf(stream, " ");
-		fprintf (stream,"Flags: ");
-		if (keyIsBinary(k)) fprintf(stream,"b");
-		if (keyIsString(k)) fprintf(stream,"s");
-		if (keyIsInactive(k)) fprintf(stream,"i");
-		if (keyNeedSync(k)) fprintf(stream,"s");
+		if (!(options & KDB_O_SHOWMETA))
+			fprintf (stream, " ");
+		fprintf (stream, "Flags: ");
+		if (keyIsBinary (k))
+			fprintf (stream, "b");
+		if (keyIsString (k))
+			fprintf (stream, "s");
+		if (keyIsInactive (k))
+			fprintf (stream, "i");
+		if (keyNeedSync (k))
+			fprintf (stream, "s");
 	}
 
-	fprintf(stream,"\n");
+	fprintf (stream, "\n");
 	return 1;
 }
 
@@ -560,22 +602,24 @@ int keyOutput (const Key * k, FILE *stream, option_t options)
  * @retval -1 on allocation errors
  * @ingroup stream
  */
-int ksOutput(const KeySet *ks, FILE *stream, option_t options)
+int ksOutput (const KeySet * ks, FILE * stream, option_t options)
 {
-	Key	*key;
-	KeySet *cks = ksDup (ks);
+	Key * key;
+	KeySet * cks = ksDup (ks);
 	size_t size = 0;
 
 	ksRewind (cks);
 
-	if (KDB_O_HEADER & options) {
-		fprintf(stream,"Output keyset of size %d\n", (int)ksGetSize(cks)); 
-	}
-	while ( (key = ksNext(cks)) != NULL)
+	if (KDB_O_HEADER & options)
 	{
-		if (options & KDB_O_SHOWINDICES) fprintf(stream, "[%d] ", (int)size);
-		keyOutput (key,stream,options);
-		size ++;
+		fprintf (stream, "Output keyset of size %d\n", (int)ksGetSize (cks));
+	}
+	while ((key = ksNext (cks)) != NULL)
+	{
+		if (options & KDB_O_SHOWINDICES)
+			fprintf (stream, "[%d] ", (int)size);
+		keyOutput (key, stream, options);
+		size++;
 	}
 
 	ksDel (cks);
@@ -594,7 +638,7 @@ int ksOutput(const KeySet *ks, FILE *stream, option_t options)
  * @retval 1 on success
  * @ingroup stream
  */
-int keyGenerate(const Key * key, FILE *stream, option_t options)
+int keyGenerate (const Key * key, FILE * stream, option_t options)
 {
 	size_t s;
 	char * str;
@@ -606,44 +650,50 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
 	char * nam;
 
 	n = keyGetNameSize (key);
-	if (n>1)
+	if (n > 1)
 	{
-		nam = (char*) elektraMalloc (n);
-		if (nam == NULL) return -1;
+		nam = (char *)elektraMalloc (n);
+		if (nam == NULL)
+			return -1;
 		keyGetName (key, nam, n);
-		fprintf(stream,"\tkeyNew (\"%s\"", nam);
+		fprintf (stream, "\tkeyNew (\"%s\"", nam);
 		elektraFree (nam);
 	}
 
 	s = keyGetValueSize (key);
-	if (s>1)
+	if (s > 1)
 	{
-		str = (char*) elektraMalloc (s);
-		if (str == NULL) return -1;
-		if (keyIsBinary(key)) keyGetBinary(key, str, s);
-		else keyGetString (key, str, s);
-		fprintf(stream,", KEY_VALUE, \"%s\"", str);
+		str = (char *)elektraMalloc (s);
+		if (str == NULL)
+			return -1;
+		if (keyIsBinary (key))
+			keyGetBinary (key, str, s);
+		else
+			keyGetString (key, str, s);
+		fprintf (stream, ", KEY_VALUE, \"%s\"", str);
 		elektraFree (str);
 	}
 
 	c = keyGetCommentSize (key);
-	if (c>1)
+	if (c > 1)
 	{
-		com = (char*) elektraMalloc (c);
-		if (com == NULL) return -1;
+		com = (char *)elektraMalloc (c);
+		if (com == NULL)
+			return -1;
 		keyGetComment (key, com, c);
-		fprintf(stream,", KEY_COMMENT, \"%s\"", com);
+		fprintf (stream, ", KEY_COMMENT, \"%s\"", com);
 		elektraFree (com);
 	}
 
-	if (! (keyGetMode(key) == 0664 || (keyGetMode(key) == 0775)))
+	if (!(keyGetMode (key) == 0664 || (keyGetMode (key) == 0775)))
 	{
-		fprintf(stream,", KEY_MODE, 0%3o", keyGetMode(key));
+		fprintf (stream, ", KEY_MODE, 0%3o", keyGetMode (key));
 	}
 
-	fprintf(stream,", KEY_END)");
+	fprintf (stream, ", KEY_END)");
 
-	if (options == 0) return 1; /* dummy to make icc happy */
+	if (options == 0)
+		return 1; /* dummy to make icc happy */
 	return 1;
 }
 
@@ -663,27 +713,28 @@ int keyGenerate(const Key * key, FILE *stream, option_t options)
  * @retval 1 on success
  * @ingroup stream
  */
-int ksGenerate (const KeySet *ks, FILE *stream, option_t options)
+int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 {
-	Key	*key;
-	size_t  s = 0;
-	KeySet *cks = ksDup (ks);
+	Key * key;
+	size_t s = 0;
+	KeySet * cks = ksDup (ks);
 
 	ksRewind (cks);
 
-	fprintf(stream,"ksNew( %d ,\n", (int)ksGetSize(cks));
-	while ((key=ksNext(cks)) != 0)
+	fprintf (stream, "ksNew( %d ,\n", (int)ksGetSize (cks));
+	while ((key = ksNext (cks)) != 0)
 	{
-		if (options & KDB_O_INACTIVE) if (key && keyIsInactive (key)) continue;
+		if (options & KDB_O_INACTIVE)
+			if (key && keyIsInactive (key))
+				continue;
 
 		s++;
 
-		keyGenerate(key, stream, options);
-		fprintf(stream,",\n");
+		keyGenerate (key, stream, options);
+		fprintf (stream, ",\n");
 	}
-	fprintf(stream,"\tKS_END);\n"); 
+	fprintf (stream, "\tKS_END);\n");
 
 	ksDel (cks);
 	return 1;
 }
-

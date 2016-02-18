@@ -9,88 +9,87 @@
 #include "internal.h"
 #include <bohr/ni.h>
 
+#include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <assert.h>
 
 
-//How big to make the internal buffer when it's created.
+// How big to make the internal buffer when it's created.
 #define INITIAL_BUF_SIZE 4096
 
 
 /* Initializes the file_buf.
  */
-Ni_PRIVATE int InitFileBuf(file_buf * restrict b, FILE * restrict f)
+Ni_PRIVATE int InitFileBuf (file_buf * restrict b, FILE * restrict f)
 {
-   *b = (file_buf)FILE_BUF_INIT;
-   b->stream = f;
-   return Ds_InitVector_uc(&b->buffer, INITIAL_BUF_SIZE);
+	*b = (file_buf)FILE_BUF_INIT;
+	b->stream = f;
+	return Ds_InitVector_uc (&b->buffer, INITIAL_BUF_SIZE);
 }
 
 /* Frees memory associated with the file_buf.
  */
-Ni_PRIVATE void FreeFileBuf(file_buf * restrict b)
+Ni_PRIVATE void FreeFileBuf (file_buf * restrict b)
 {
-   Ds_FreeVector_uc(&b->buffer);
-   *b = (file_buf)FILE_BUF_INIT;
+	Ds_FreeVector_uc (&b->buffer);
+	*b = (file_buf)FILE_BUF_INIT;
 }
 
 /* Basically like fgetc on our file_buf.  Translates newlines automatically for
  * us.  Returns EOF if error or the file is done.
  */
-Ni_PRIVATE int BufGetC(file_buf * restrict b)
+Ni_PRIVATE int BufGetC (file_buf * restrict b)
 {
-   int c;
+	int c;
 
-   if (b->pos >= b->buffer.num && !feof(b->stream))
-   {
-      //We need more data and can pull it.
+	if (b->pos >= b->buffer.num && !feof (b->stream))
+	{
+		// We need more data and can pull it.
 
-      if (b->buffer.num + 2 <= b->buffer.cap
-      || Ds_ResizeVector_uc(&b->buffer, b->buffer.cap << 1))
-      {
-         //We now have space, possibly as a result of just expanding.
+		if (b->buffer.num + 2 <= b->buffer.cap || Ds_ResizeVector_uc (&b->buffer, b->buffer.cap << 1))
+		{
+			// We now have space, possibly as a result of just expanding.
 
-         //Get a char; if it's not eof, set next char in buffer to it.
-         if ((c = fgetc(b->stream)) != EOF)
-         {
-            if ((b->buffer.buf[b->buffer.num++] = c) == '\r')
-            {
-               //Translate \r or \r\n to just \n.
+			// Get a char; if it's not eof, set next char in buffer to it.
+			if ((c = fgetc (b->stream)) != EOF)
+			{
+				if ((b->buffer.buf[b->buffer.num++] = c) == '\r')
+				{
+					// Translate \r or \r\n to just \n.
 
-               b->buffer.buf[b->buffer.num - 1] = '\n';
+					b->buffer.buf[b->buffer.num - 1] = '\n';
 
-               //Get the next one and ignore it if it's \n.
-               if ((c = fgetc(b->stream)) != '\n' && c != EOF)
-                  b->buffer.buf[b->buffer.num++] = c;
-            }
-         }
-      }
-   }
+					// Get the next one and ignore it if it's \n.
+					if ((c = fgetc (b->stream)) != '\n' && c != EOF)
+						b->buffer.buf[b->buffer.num++] = c;
+				}
+			}
+		}
+	}
 
-   //Return the current character and advance the position pointer.
-   c = (b->pos < b->buffer.num ? b->buffer.buf[b->pos] : EOF);
-   b->pos++;
-   return c;
+	// Return the current character and advance the position pointer.
+	c = (b->pos < b->buffer.num ? b->buffer.buf[b->pos] : EOF);
+	b->pos++;
+	return c;
 }
 
 /* Basically like fseek(b, -n_back, SEEK_CUR).  It undoes n_back BufGetC()
  * calls, regardless of whether BufGetC() returned EOF.
  */
-Ni_PRIVATE void BufSeekBack(file_buf * restrict b, size_t n_back)
+Ni_PRIVATE void BufSeekBack (file_buf * restrict b, size_t n_back)
 {
-   assert(b->pos >= n_back);
+	assert (b->pos >= n_back);
 
-   b->pos -= n_back;
+	b->pos -= n_back;
 }
 
 /* Flushes the internal buffer without affecting the stream position.  This
  * lets us keep the memory footprint down.
  */
-Ni_PRIVATE void BufFlush(file_buf * restrict b)
+Ni_PRIVATE void BufFlush (file_buf * restrict b)
 {
-   b->pos = 0;
-   b->buffer.num = 0;
+	b->pos = 0;
+	b->buffer.num = 0;
 }

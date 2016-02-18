@@ -12,12 +12,12 @@
 #include <kdbplugin.h>
 
 
-int elektraNullOpen(Plugin *handle, Key *errorKey);
-int elektraNullClose(Plugin *handle, Key *errorKey);
-int elektraNullGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraNullSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraNullError(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraNullOpen (Plugin * handle, Key * errorKey);
+int elektraNullClose (Plugin * handle, Key * errorKey);
+int elektraNullGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraNullSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraNullError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(null);
+Plugin * ELEKTRA_PLUGIN_EXPORT (null);
 
 #endif

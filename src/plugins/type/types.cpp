@@ -12,7 +12,5 @@
 namespace elektra
 {
 
-Type::~Type()
-{}
-
+Type::~Type () {}
 }

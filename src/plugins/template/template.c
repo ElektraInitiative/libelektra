@@ -30,24 +30,16 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/template"))
 	{
-		KeySet * contract = ksNew (30,
-		keyNew ("system/elektra/modules/template",
-			KEY_VALUE, "template plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/template/exports", KEY_END),
-		keyNew ("system/elektra/modules/template/exports/open",
-			KEY_FUNC, elektraTemplateOpen, KEY_END),
-		keyNew ("system/elektra/modules/template/exports/close",
-			KEY_FUNC, elektraTemplateClose, KEY_END),
-		keyNew ("system/elektra/modules/template/exports/get",
-			KEY_FUNC, elektraTemplateGet, KEY_END),
-		keyNew ("system/elektra/modules/template/exports/set",
-			KEY_FUNC, elektraTemplateSet, KEY_END),
-		keyNew ("system/elektra/modules/template/exports/error",
-			KEY_FUNC, elektraTemplateError, KEY_END),
+		KeySet * contract =
+			ksNew (30, keyNew ("system/elektra/modules/template", KEY_VALUE, "template plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/template/exports", KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/open", KEY_FUNC, elektraTemplateOpen, KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/close", KEY_FUNC, elektraTemplateClose, KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/get", KEY_FUNC, elektraTemplateGet, KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/set", KEY_FUNC, elektraTemplateSet, KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/error", KEY_FUNC, elektraTemplateError, KEY_END),
 #include ELEKTRA_README (template)
-		keyNew ("system/elektra/modules/template/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END);
+			       keyNew ("system/elektra/modules/template/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -65,7 +57,7 @@ int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	return 1; // success
 }
 
-int elektraTemplateError (Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
 

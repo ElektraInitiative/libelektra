@@ -13,21 +13,21 @@
  * @p regex regular expression.
  *
  * TODO: Does not work (no example, no testcase)
- * 
+ *
  * @deprecated Does not work
  * @param ks the KeySet to lookup into
  * @param where any of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  *        @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.
  * @param regexp a regcomp(3) pre-compiled regular expression
- * 
+ *
  * @return some of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  *         @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
  *         indicate @p where the @p regex matched.
- * 
+ *
  * @see ksLookupByName(), ksLookupByString(), keyCompare() for other types of
  * 	lookups.
  * @see kdbGetByName()
- * 
+ *
  * @par Example:
  * @code
 KeySet *ks = ksNew (5,
@@ -80,16 +80,16 @@ regfree(&regex);        // don't forget to free resources
 
  * @endcode
  */
-Key *ksLookupRE(KeySet *ks, const regex_t *regexp)
+Key * ksLookupRE (KeySet * ks, const regex_t * regexp)
 {
 	regmatch_t offsets;
-	Key *walker=0, *end=0;
+	Key *walker = 0, *end = 0;
 
-	walker = ksCurrent(ks);
+	walker = ksCurrent (ks);
 
-	while ((walker=ksNext(ks)) != end)
+	while ((walker = ksNext (ks)) != end)
 	{
-		if (!regexec(regexp, keyString(walker), 1, &offsets, 0))
+		if (!regexec (regexp, keyString (walker), 1, &offsets, 0))
 			return walker;
 	}
 

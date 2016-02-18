@@ -12,12 +12,12 @@
 #include <kdbplugin.h>
 
 
-int elektraWresolverOpen(Plugin *handle, Key *errorKey);
-int elektraWresolverClose(Plugin *handle, Key *errorKey);
-int elektraWresolverGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraWresolverSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraWresolverError(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraWresolverOpen (Plugin * handle, Key * errorKey);
+int elektraWresolverClose (Plugin * handle, Key * errorKey);
+int elektraWresolverGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraWresolverSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraWresolverError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(wresolver);
+Plugin * ELEKTRA_PLUGIN_EXPORT (wresolver);
 
 #endif

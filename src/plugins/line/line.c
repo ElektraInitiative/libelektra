@@ -17,50 +17,44 @@
 #include <kdbproposal.h>
 
 #include <errno.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stddef.h>
 #include <string.h>
 
-static inline KeySet *elektraLineContract()
+static inline KeySet * elektraLineContract ()
 {
-	return ksNew (30,
-		keyNew ("system/elektra/modules/line",
-			KEY_VALUE, "line plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/line/exports", KEY_END),
-		keyNew ("system/elektra/modules/line/exports/get",
-			KEY_FUNC, elektraLineGet, KEY_END),
-		keyNew ("system/elektra/modules/line/exports/set",
-			KEY_FUNC, elektraLineSet, KEY_END),
+	return ksNew (30, keyNew ("system/elektra/modules/line", KEY_VALUE, "line plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/line/exports", KEY_END),
+		      keyNew ("system/elektra/modules/line/exports/get", KEY_FUNC, elektraLineGet, KEY_END),
+		      keyNew ("system/elektra/modules/line/exports/set", KEY_FUNC, elektraLineSet, KEY_END),
 #include "readme_line.c"
-		keyNew ("system/elektra/modules/line/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-	KS_END);
+		      keyNew ("system/elektra/modules/line/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
-int elektraLineRead(FILE * fp, KeySet * returned)
+int elektraLineRead (FILE * fp, KeySet * returned)
 {
-	char *value = NULL;
+	char * value = NULL;
 	size_t len = 0;
 	ssize_t n = 0;
-	Key *read = NULL;
+	Key * read = NULL;
 
-	//Read in each line
-	while ((n = getline(&value, &len, fp)) != -1)
+	// Read in each line
+	while ((n = getline (&value, &len, fp)) != -1)
 	{
-		//Remove trailing newline
+		// Remove trailing newline
 		if (value[n - 1] == '\n')
 		{
 			value[n - 1] = '\0';
 		}
-		read = keyDup(ksTail(returned));
-		if (elektraArrayIncName(read) == -1)
+		read = keyDup (ksTail (returned));
+		if (elektraArrayIncName (read) == -1)
 		{
 			elektraFree (value);
 			keyDel (read);
 			return -1;
 		}
-		keySetString(read, value);
+		keySetString (read, value);
 
 		ksAppendKey (returned, read);
 	}
@@ -70,75 +64,74 @@ int elektraLineRead(FILE * fp, KeySet * returned)
 }
 
 
-int elektraLineGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	/* get all keys */
 
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/line"))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/line"))
 	{
-		KeySet *moduleConfig = elektraLineContract();
-		ksAppend(returned, moduleConfig);
-		ksDel(moduleConfig);
+		KeySet * moduleConfig = elektraLineContract ();
+		ksAppend (returned, moduleConfig);
+		ksDel (moduleConfig);
 		return 1;
 	}
 
 	int errnosave = errno;
-	FILE *fp = fopen (keyString(parentKey), "r");
+	FILE * fp = fopen (keyString (parentKey), "r");
 
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR_GET(parentKey);
+		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
 		return -1;
 	}
 
-	Key *b= keyNew(keyName(parentKey), KEY_END);
-	ksAppendKey (returned, keyDup(b)); // start with parentKey
-	keyAddName(b, "#"); // start point for our array
+	Key * b = keyNew (keyName (parentKey), KEY_END);
+	ksAppendKey (returned, keyDup (b)); // start with parentKey
+	keyAddName (b, "#");		    // start point for our array
 	ksAppendKey (returned, b);
 
-	int ret = elektraLineRead(fp, returned);
+	int ret = elektraLineRead (fp, returned);
 
 	// get rid of startpoint, if it was an empty file
-	keyDel(ksLookup(returned, b, KDB_O_POP));
+	keyDel (ksLookup (returned, b, KDB_O_POP));
 
 	if (ret == -1)
 	{
-		ELEKTRA_SET_ERROR(59, parentKey,
-				"could not increment array");
+		ELEKTRA_SET_ERROR (59, parentKey, "could not increment array");
 		ret = -1;
 	}
-	else if (feof(fp) == 0)
+	else if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_ERROR(60, parentKey, "not at the end of file");
+		ELEKTRA_SET_ERROR (60, parentKey, "not at the end of file");
 		ret = -1;
 	}
 
 	fclose (fp);
 
-	return ret ; /* success */
+	return ret; /* success */
 }
 
-int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	/* set all keys */
 
 	int errnosave = errno;
-	FILE *fp = fopen(keyString(parentKey), "w");
+	FILE * fp = fopen (keyString (parentKey), "w");
 
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR_SET(parentKey);
+		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errnosave;
 		return -1;
 	}
 
-	Key *cur;
+	Key * cur;
 	ksRewind (returned);
-	ksNext(returned); // ignore parentKey
-	while ((cur = ksNext(returned)) != 0)
+	ksNext (returned); // ignore parentKey
+	while ((cur = ksNext (returned)) != 0)
 	{
-		fprintf (fp, "%s\n", keyString(cur));
+		fprintf (fp, "%s\n", keyString (cur));
 	}
 
 	fclose (fp);
@@ -146,7 +139,7 @@ int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(line)
+Plugin * ELEKTRA_PLUGIN_EXPORT (line)
 {
 	// clang-format off
 	return elektraPluginExport("line",

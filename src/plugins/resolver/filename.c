@@ -8,16 +8,16 @@
 
 #include "resolver.h"
 
-#include <pwd.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <libgen.h>
-#include <stdio.h>
 #include <errno.h>
-#include <stdbool.h>
 #include <kdbproposal.h>
+#include <libgen.h>
+#include <pwd.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define POSTFIX_SIZE 50
 
@@ -30,27 +30,33 @@
  * @retval 0 on success (Absolute path)
  * @retval -1 on a non-valid file
  */
-int ELEKTRA_PLUGIN_FUNCTION(resolver,checkFile)(const char* filename)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename)
 {
-	if (!filename) return -1;
-	if (filename[0] == '0') return -1;
+	if (!filename)
+		return -1;
+	if (filename[0] == '0')
+		return -1;
 
-	size_t size = strlen(filename);
-	char *buffer = elektraMalloc(size + sizeof ("system/"));
-	strcpy(buffer, "system/");
-	strcat(buffer, filename);
+	size_t size = strlen (filename);
+	char * buffer = elektraMalloc (size + sizeof ("system/"));
+	strcpy (buffer, "system/");
+	strcat (buffer, filename);
 
 	/* Because of the outbreak bugs these tests are not enough */
-	Key *check = keyNew(buffer, KEY_END);
-	if (!strcmp(keyName(check), "")) goto error;
-	if (!strcmp(keyName(check), "system")) goto error;
-	keyDel(check);
+	Key * check = keyNew (buffer, KEY_END);
+	if (!strcmp (keyName (check), ""))
+		goto error;
+	if (!strcmp (keyName (check), "system"))
+		goto error;
+	keyDel (check);
 	elektraFree (buffer);
 
 	/* Be strict, don't allow any .., even if it would be ok sometimes */
-	if (strstr (filename, "..") != 0) return -1;
+	if (strstr (filename, "..") != 0)
+		return -1;
 
-	if (filename[0] == '/') return 0;
+	if (filename[0] == '/')
+		return 0;
 
 	return 1;
 
@@ -70,78 +76,71 @@ error:
  * @param where to write the string
  * @param filename the filename to prefix
  */
-static void elektraGenTempFilename(char *where, const char *filename)
+static void elektraGenTempFilename (char * where, const char * filename)
 {
 	struct timeval tv;
-	gettimeofday(&tv, 0);
+	gettimeofday (&tv, 0);
 	size_t len = sprintf (where, "%s", filename);
-	snprintf (where+len, POSTFIX_SIZE-1,
-			".%d:%ld.%ld.tmp",
-			getpid(),
-			tv.tv_sec,
-			tv.tv_usec);
+	snprintf (where + len, POSTFIX_SIZE - 1, ".%d:%ld.%ld.tmp", getpid (), tv.tv_sec, tv.tv_usec);
 }
 /**
  * @brief Given filename, calcualtes dirname+tempfile
  *
  * @param p resolverHandle with filename set
  */
-static void elektraResolveFinishByFilename(resolverHandle *p)
+static void elektraResolveFinishByFilename (resolverHandle * p)
 {
-	size_t filenameSize = strlen(p->filename);
+	size_t filenameSize = strlen (p->filename);
 	p->dirname = elektraMalloc (filenameSize);
-	char * dup = strdup(p->filename);
-	//dirname might change the buffer, so better work on a copy
-	strcpy (p->dirname, dirname(dup));
+	char * dup = strdup (p->filename);
+	// dirname might change the buffer, so better work on a copy
+	strcpy (p->dirname, dirname (dup));
 	elektraFree (dup);
 
 	p->tempfile = elektraMalloc (filenameSize + POSTFIX_SIZE);
-	elektraGenTempFilename(p->tempfile, p->filename);
+	elektraGenTempFilename (p->tempfile, p->filename);
 }
 
 
-static int elektraResolveSystemBuildin(resolverHandle *p)
+static int elektraResolveSystemBuildin (resolverHandle * p)
 {
-	size_t filenameSize = sizeof(KDB_DB_SYSTEM)
-		+ strlen(p->path) + sizeof("/") + 1;
+	size_t filenameSize = sizeof (KDB_DB_SYSTEM) + strlen (p->path) + sizeof ("/") + 1;
 	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, KDB_DB_SYSTEM);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
 
-	elektraResolveFinishByFilename(p);
+	elektraResolveFinishByFilename (p);
 	return 1;
 }
 
-static void elektraResolveSystemXDGHelper(resolverHandle *p, const char *result)
+static void elektraResolveSystemXDGHelper (resolverHandle * p, const char * result)
 {
-	size_t configDirSize = elektraStrLen(result);
-	size_t pathSize = elektraStrLen(p->path);
-	size_t filenameSize = configDirSize
-		+ pathSize + sizeof("/") + 1;
+	size_t configDirSize = elektraStrLen (result);
+	size_t pathSize = elektraStrLen (p->path);
+	size_t filenameSize = configDirSize + pathSize + sizeof ("/") + 1;
 
-	elektraRealloc ((void*)&p->filename, filenameSize);
+	elektraRealloc ((void *)&p->filename, filenameSize);
 	strcpy (p->filename, result);
 	strcat (p->filename, "/");
 	strcat (p->filename, p->path);
 }
 
-static int elektraResolveSystemXDG(resolverHandle *p,
-		Key *warningsKey)
+static int elektraResolveSystemXDG (resolverHandle * p, Key * warningsKey)
 {
-	const char * configDir = getenv("XDG_CONFIG_DIRS");
-	const char *defaultDir = "/etc/xdg";
+	const char * configDir = getenv ("XDG_CONFIG_DIRS");
+	const char * defaultDir = "/etc/xdg";
 
-	if (!configDir || !strcmp(configDir, ""))
+	if (!configDir || !strcmp (configDir, ""))
 	{
-		elektraResolveSystemXDGHelper(p, defaultDir);
-		elektraResolveFinishByFilename(p);
+		elektraResolveSystemXDGHelper (p, defaultDir);
+		elektraResolveFinishByFilename (p);
 		return 1;
 	}
 
-	char *saveptr = 0;
-	char *str = elektraStrDup(configDir);
-	char *result = strtok_r (str, ":", &saveptr);
+	char * saveptr = 0;
+	char * str = elektraStrDup (configDir);
+	char * result = strtok_r (str, ":", &saveptr);
 	struct stat buf;
 	int errnoSave = errno;
 	int success = 0;
@@ -149,12 +148,11 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 	{
 		if (result[0] != '/')
 		{
-			ELEKTRA_ADD_WARNINGF(100,
-				warningsKey,
-				"XDG_CONFIG_DIRS contains a path that is "
-				"not absolute (violates XDG specification) and thus "
-			 	"it was skipped: %s",
-				result);
+			ELEKTRA_ADD_WARNINGF (100, warningsKey,
+					      "XDG_CONFIG_DIRS contains a path that is "
+					      "not absolute (violates XDG specification) and thus "
+					      "it was skipped: %s",
+					      result);
 
 			result = strtok_r (0, ":", &saveptr);
 			continue;
@@ -162,9 +160,9 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 
 		success = 1; // at least once we got a valid path
 
-		elektraResolveSystemXDGHelper(p, result);
+		elektraResolveSystemXDGHelper (p, result);
 
-		if (stat(p->filename, &buf) == 0)
+		if (stat (p->filename, &buf) == 0)
 		{
 			// we found a file!
 			break;
@@ -172,15 +170,15 @@ static int elektraResolveSystemXDG(resolverHandle *p,
 
 		result = strtok_r (0, ":", &saveptr);
 	}
-	elektraFree(str);
+	elektraFree (str);
 	errno = errnoSave;
 
 	if (!success)
 	{
-		elektraResolveSystemXDGHelper(p, defaultDir);
+		elektraResolveSystemXDGHelper (p, defaultDir);
 	}
 
-	elektraResolveFinishByFilename(p);
+	elektraResolveFinishByFilename (p);
 	return 1;
 }
 
@@ -188,78 +186,75 @@ static int elektraResolveSystemXDG(resolverHandle *p,
  * @retval 0 if variant did not have a result
  * @retval 1 on success
  */
-static int elektraResolveSystem(char variant, resolverHandle *p, Key *warningsKey)
+static int elektraResolveSystem (char variant, resolverHandle * p, Key * warningsKey)
 {
 	// hardcoded path wins against variants for now
 	if (p->path[0] == '/')
 	{
 		/* Use absolute path */
-		size_t filenameSize = strlen(p->path) + 1;
+		size_t filenameSize = strlen (p->path) + 1;
 		p->filename = elektraMalloc (filenameSize);
 		strcpy (p->filename, p->path);
 
-		elektraResolveFinishByFilename(p);
+		elektraResolveFinishByFilename (p);
 		return 1;
 	}
 
 	switch (variant)
 	{
 	case 'x':
-		return elektraResolveSystemXDG(p, warningsKey);
+		return elektraResolveSystemXDG (p, warningsKey);
 	case 'b':
-		return elektraResolveSystemBuildin(p);
-	// TODO: also document in doc/COMPILE.md
+		return elektraResolveSystemBuildin (p);
+		// TODO: also document in doc/COMPILE.md
 	}
 	return -1;
 }
 
-static void elektraResolveUsingHome(resolverHandle *p,
-		const char *home,
-		bool addPostfix)
+static void elektraResolveUsingHome (resolverHandle * p, const char * home, bool addPostfix)
 {
 	size_t dirnameSize = 0;
-	Key *canonify = keyNew("user", KEY_END);
+	Key * canonify = keyNew ("user", KEY_END);
 
-	keyAddName(canonify, home);
+	keyAddName (canonify, home);
 
-	dirnameSize = keyGetNameSize(canonify) +
-			sizeof("/" KDB_DB_USER);
-	p->dirname = elektraMalloc(dirnameSize);
-	strcpy (p->dirname, keyName(canonify)
-			+4); // cut user, but leave slash
+	dirnameSize = keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
+	p->dirname = elektraMalloc (dirnameSize);
+	strcpy (p->dirname, keyName (canonify) + 4); // cut user, but leave slash
 	if (addPostfix && p->path[0] != '/')
 	{
 		strcat (p->dirname, "/" KDB_DB_USER);
 	}
-	keyDel(canonify);
+	keyDel (canonify);
 }
 
-static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
+static int elektraResolvePasswd (resolverHandle * p, Key * warningsKey)
 {
 	struct passwd pwd;
-	struct passwd *result;
-	char *buf;
+	struct passwd * result;
+	char * buf;
 	ssize_t bufsize;
 	int s;
 
-	bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
-	if (bufsize == -1)          /* Value was indeterminate */
+	bufsize = sysconf (_SC_GETPW_R_SIZE_MAX);
+	if (bufsize == -1) /* Value was indeterminate */
 	{
-		bufsize = 16384;        /* Should be more than enough */
+		bufsize = 16384; /* Should be more than enough */
 	}
 
-	buf = elektraMalloc(bufsize);
-	if (buf == NULL) {
+	buf = elektraMalloc (bufsize);
+	if (buf == NULL)
+	{
 		return 0;
 	}
 
-	s = getpwuid_r(geteuid(), &pwd, buf, bufsize, &result);
+	s = getpwuid_r (geteuid (), &pwd, buf, bufsize, &result);
 	if (result == NULL)
 	{
 		elektraFree (buf);
 		if (s != 0)
 		{
-			ELEKTRA_ADD_WARNING(90, warningsKey, strerror(s));
+			ELEKTRA_ADD_WARNING (90, warningsKey, strerror (s));
 		}
 		return 0;
 	}
@@ -271,110 +266,103 @@ static int elektraResolvePasswd(resolverHandle *p, Key *warningsKey)
 			pwd.pw_dir);
 	*/
 
-	elektraResolveUsingHome(p, pwd.pw_dir, true);
+	elektraResolveUsingHome (p, pwd.pw_dir, true);
 	elektraFree (buf);
 
 	return 1;
 }
 
-static int elektraResolveUserXDG(resolverHandle *p, Key *warningsKey)
+static int elektraResolveUserXDG (resolverHandle * p, Key * warningsKey)
 {
-	const char * home = getenv("XDG_CONFIG_HOME");
+	const char * home = getenv ("XDG_CONFIG_HOME");
 
-	if (!home || !strcmp(home, ""))
+	if (!home || !strcmp (home, ""))
 	{
 		return 0;
 	}
 
 	if (home[0] != '/')
 	{
-		ELEKTRA_ADD_WARNINGF(100,
-			warningsKey,
-			"XDG_CONFIG_HOME contains a path that is "
-			"not absolute (violates XDG specification) and thus "
-			"it was skipped: %s",
-			home);
+		ELEKTRA_ADD_WARNINGF (100, warningsKey,
+				      "XDG_CONFIG_HOME contains a path that is "
+				      "not absolute (violates XDG specification) and thus "
+				      "it was skipped: %s",
+				      home);
 		return 0;
 	}
 
-	elektraResolveUsingHome(p, home, false);
+	elektraResolveUsingHome (p, home, false);
 
 	return 1;
 }
 
-static int elektraResolveEnvHome(resolverHandle *p, Key *warningsKey)
+static int elektraResolveEnvHome (resolverHandle * p, Key * warningsKey)
 {
-	const char * home = getenv("HOME");
+	const char * home = getenv ("HOME");
 
-	if (!home || !strcmp(home, ""))
+	if (!home || !strcmp (home, ""))
 	{
 		return 0;
 	}
 
 	if (home[0] != '/')
 	{
-		ELEKTRA_ADD_WARNINGF(100,
-			warningsKey,
-			"HOME contains a path that is "
-			"not absolute and thus "
-			"it was skipped: %s",
-			home);
+		ELEKTRA_ADD_WARNINGF (100, warningsKey,
+				      "HOME contains a path that is "
+				      "not absolute and thus "
+				      "it was skipped: %s",
+				      home);
 		return 0;
 	}
 
-	elektraResolveUsingHome(p, home, true);
+	elektraResolveUsingHome (p, home, true);
 
 	return 1;
 }
 
-static int elektraResolveEnvUser(resolverHandle *p)
+static int elektraResolveEnvUser (resolverHandle * p)
 {
-	const char* owner = getenv("USER");
+	const char * owner = getenv ("USER");
 
-	if (!owner || !strcmp(owner, ""))
+	if (!owner || !strcmp (owner, ""))
 	{
 		return 0;
 	}
 
-	Key *canonify = keyNew("user", KEY_END);
-	keyAddName(canonify, owner);
-	size_t dirnameSize = sizeof(KDB_DB_HOME "/")
-			+ keyGetNameSize(canonify)
-			+ sizeof("/" KDB_DB_USER);
+	Key * canonify = keyNew ("user", KEY_END);
+	keyAddName (canonify, owner);
+	size_t dirnameSize = sizeof (KDB_DB_HOME "/") + keyGetNameSize (canonify) + sizeof ("/" KDB_DB_USER);
 
-	p->dirname= elektraMalloc (dirnameSize);
+	p->dirname = elektraMalloc (dirnameSize);
 	strcpy (p->dirname, KDB_DB_HOME "/");
-	strcat (p->dirname, keyName(canonify)
-			+5); // cut user/
+	strcat (p->dirname, keyName (canonify) + 5); // cut user/
 	if (p->path[0] != '/')
 	{
 		strcat (p->dirname, "/" KDB_DB_USER);
 	}
-	keyDel(canonify);
+	keyDel (canonify);
 
 	return 1;
 }
 
 
-static int elektraResolveBuildin(resolverHandle *p)
+static int elektraResolveBuildin (resolverHandle * p)
 {
-	size_t dirnameSize = sizeof(KDB_DB_HOME "/")
-		+ sizeof("/" KDB_DB_USER);
+	size_t dirnameSize = sizeof (KDB_DB_HOME "/") + sizeof ("/" KDB_DB_USER);
 
-	p->dirname= elektraMalloc (dirnameSize);
+	p->dirname = elektraMalloc (dirnameSize);
 	strcpy (p->dirname, KDB_DB_HOME);
 	if (p->path[0] != '/')
 	{
-		strcat (p->dirname,  "/" KDB_DB_USER);
+		strcat (p->dirname, "/" KDB_DB_USER);
 	}
 
 	return 1;
 }
 
-static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED)
+static int elektraResolveSpec (resolverHandle * p, Key * warningsKey ELEKTRA_UNUSED)
 {
-	size_t filenameSize = sizeof(KDB_DB_SPEC)
-		+ strlen(p->path) + sizeof("/") + 1;
+	size_t filenameSize = sizeof (KDB_DB_SPEC) + strlen (p->path) + sizeof ("/") + 1;
 	p->filename = elektraMalloc (filenameSize);
 	if (p->path[0] == '/')
 	{
@@ -387,7 +375,7 @@ static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED
 		strcat (p->filename, p->path);
 	}
 
-	elektraResolveFinishByFilename(p);
+	elektraResolveFinishByFilename (p);
 	return 1;
 }
 
@@ -399,11 +387,9 @@ static int elektraResolveSpec(resolverHandle *p, Key *warningsKey ELEKTRA_UNUSED
  *
  * @param p resolverHandle with dirname set
  */
-static void elektraResolveFinishByDirname(resolverHandle *p)
+static void elektraResolveFinishByDirname (resolverHandle * p)
 {
-	size_t filenameSize = strlen(p->dirname)
-			+ strlen(p->path) +
-			+ sizeof("/");
+	size_t filenameSize = strlen (p->dirname) + strlen (p->path) + +sizeof ("/");
 
 	p->filename = elektraMalloc (filenameSize);
 	strcpy (p->filename, p->dirname);
@@ -415,7 +401,7 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
 
 	// p->dirname might be wrong (too short), recalculate it:
 	elektraFree (p->dirname);
-	elektraResolveFinishByFilename(p);
+	elektraResolveFinishByFilename (p);
 }
 
 /**
@@ -423,20 +409,20 @@ static void elektraResolveFinishByDirname(resolverHandle *p)
  *
  * @param warningsKey where warnings are added
  */
-static char *elektraGetCwd(Key *warningsKey)
+static char * elektraGetCwd (Key * warningsKey)
 {
 	int size = 4096;
-	char *cwd = elektraMalloc(size);
+	char * cwd = elektraMalloc (size);
 	if (cwd == NULL)
 	{
-		ELEKTRA_ADD_WARNING(83, warningsKey, "could not alloc for getcwd, defaulting to /");
+		ELEKTRA_ADD_WARNING (83, warningsKey, "could not alloc for getcwd, defaulting to /");
 		return 0;
 	}
 
-	char *ret = NULL;
+	char * ret = NULL;
 	while (ret == NULL)
 	{
-		ret = getcwd(cwd, size);
+		ret = getcwd (cwd, size);
 
 		if (ret == NULL)
 		{
@@ -444,16 +430,16 @@ static char *elektraGetCwd(Key *warningsKey)
 			{
 				// give up, we cannot handle the problem
 				elektraFree (cwd);
-				ELEKTRA_ADD_WARNINGF(83, warningsKey, "getcwd failed with errno %d, defaulting to /", errno);
+				ELEKTRA_ADD_WARNINGF (83, warningsKey, "getcwd failed with errno %d, defaulting to /", errno);
 				return 0;
 			}
 
 			// try to double the space
 			size *= 2;
-			elektraRealloc((void**)&cwd, size);
+			elektraRealloc ((void **)&cwd, size);
 			if (cwd == NULL)
 			{
-				ELEKTRA_ADD_WARNINGF(83, warningsKey, "could not realloc for getcwd size %d, defaulting to /", size);
+				ELEKTRA_ADD_WARNINGF (83, warningsKey, "could not realloc for getcwd size %d, defaulting to /", size);
 				return 0;
 			}
 		}
@@ -462,126 +448,120 @@ static char *elektraGetCwd(Key *warningsKey)
 	return ret;
 }
 
-static int elektraResolveDir(resolverHandle *p, Key *warningsKey)
+static int elektraResolveDir (resolverHandle * p, Key * warningsKey)
 {
-	char * cwd = elektraGetCwd(warningsKey);
-	if (!cwd) cwd = elektraStrDup("/");
+	char * cwd = elektraGetCwd (warningsKey);
+	if (!cwd)
+		cwd = elektraStrDup ("/");
 
-	char *dn = elektraStrDup(cwd);
-	char *dnOrig = dn;
+	char * dn = elektraStrDup (cwd);
+	char * dnOrig = dn;
 
 	while (true)
 	{
 		// now put together the filename
-		p->filename = p->path[0] == '/' ? elektraFormat("%s%s", dn, p->path) : elektraFormat("%s/" KDB_DB_DIR "/%s", dn, p->path);
+		p->filename = p->path[0] == '/' ? elektraFormat ("%s%s", dn, p->path) : elektraFormat ("%s/" KDB_DB_DIR "/%s", dn, p->path);
 
 		struct stat buf;
-		if (stat(p->filename, &buf) == 0)
+		if (stat (p->filename, &buf) == 0)
 		{
 			// we found a file!
 			break;
 		}
 
-		if (!strcmp(dn, "/"))
+		if (!strcmp (dn, "/"))
 		{
 			// we reached the end, filename not useful anymore
 			break;
 		}
 
-		elektraFree(p->filename);
-		dn = dirname(dn);
+		elektraFree (p->filename);
+		dn = dirname (dn);
 	}
 
-	if (!strcmp(dn, "/"))
+	if (!strcmp (dn, "/"))
 	{
 		// nothing found, so we use most specific
 		elektraFree (p->filename);
-		p->filename = p->path[0] == '/' ? elektraFormat("%s%s", cwd, p->path) : elektraFormat("%s/" KDB_DB_DIR "/%s", cwd, p->path);
+		p->filename =
+			p->path[0] == '/' ? elektraFormat ("%s%s", cwd, p->path) : elektraFormat ("%s/" KDB_DB_DIR "/%s", cwd, p->path);
 	}
 
-	elektraFree(cwd);
-	elektraFree(dnOrig);
-	elektraResolveFinishByFilename(p);
+	elektraFree (cwd);
+	elektraFree (dnOrig);
+	elektraResolveFinishByFilename (p);
 	return 1;
 }
-
 
 
 /**
  * @retval 0 if variant did not have a result
  * @retval 1 on success
  */
-static int elektraResolveUser(char variant, resolverHandle *p, Key *warningsKey)
+static int elektraResolveUser (char variant, resolverHandle * p, Key * warningsKey)
 {
 	switch (variant)
 	{
 	case 'p':
-		return elektraResolvePasswd(p, warningsKey);
+		return elektraResolvePasswd (p, warningsKey);
 	case 'x':
-		return elektraResolveUserXDG(p, warningsKey);
+		return elektraResolveUserXDG (p, warningsKey);
 	case 'h':
-		return elektraResolveEnvHome(p, warningsKey);
+		return elektraResolveEnvHome (p, warningsKey);
 	case 'u':
-		return elektraResolveEnvUser(p);
+		return elektraResolveEnvUser (p);
 	case 'b':
-		return elektraResolveBuildin(p);
-	// TODO: also document in doc/COMPILE.md
+		return elektraResolveBuildin (p);
+		// TODO: also document in doc/COMPILE.md
 	}
 	return -1;
 }
 
-static int elektraResolveMapperUser(resolverHandle *p, Key *warningsKey)
+static int elektraResolveMapperUser (resolverHandle * p, Key * warningsKey)
 {
 	int finished = 0;
 	size_t i;
-	for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_USER); ++i)
+	for (i = 0; !finished && i < sizeof (ELEKTRA_VARIANT_USER); ++i)
 	{
-		finished = elektraResolveUser(ELEKTRA_VARIANT_USER[i],
-				p, warningsKey);
+		finished = elektraResolveUser (ELEKTRA_VARIANT_USER[i], p, warningsKey);
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_WARNINGF(83, warningsKey,
-			"user resolver failed at step %zu, the configuration is: %s",
-			i, ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_WARNINGF (83, warningsKey, "user resolver failed at step %zu, the configuration is: %s", i,
+				      ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
 	if (p->dirname == 0)
 	{
-		ELEKTRA_ADD_WARNINGF(83, warningsKey,
-			"no resolver set the user dirname, the configuration is: %s",
-			ELEKTRA_VARIANT_USER);
+		ELEKTRA_ADD_WARNINGF (83, warningsKey, "no resolver set the user dirname, the configuration is: %s", ELEKTRA_VARIANT_USER);
 		return -1;
 	}
 
-	elektraResolveFinishByDirname(p);
+	elektraResolveFinishByDirname (p);
 
 	return finished;
 }
 
-static int elektraResolveMapperSystem(resolverHandle *p, Key *warningsKey)
+static int elektraResolveMapperSystem (resolverHandle * p, Key * warningsKey)
 {
 	int finished = 0;
 	size_t i;
-	for (i=0; !finished && i<sizeof(ELEKTRA_VARIANT_SYSTEM); ++i)
+	for (i = 0; !finished && i < sizeof (ELEKTRA_VARIANT_SYSTEM); ++i)
 	{
-		finished = elektraResolveSystem(ELEKTRA_VARIANT_SYSTEM[i],
-				p, warningsKey);
+		finished = elektraResolveSystem (ELEKTRA_VARIANT_SYSTEM[i], p, warningsKey);
 	}
 	if (finished == -1)
 	{
-		ELEKTRA_ADD_WARNINGF(83, warningsKey,
-			"system resolver failed at step %zu, the configuration is: %s",
-			i, ELEKTRA_VARIANT_SYSTEM);
+		ELEKTRA_ADD_WARNINGF (83, warningsKey, "system resolver failed at step %zu, the configuration is: %s", i,
+				      ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 
 	if (p->dirname == 0)
 	{
-		ELEKTRA_ADD_WARNINGF(83, warningsKey,
-			"no resolver set the system dirname, the configuration is: %s",
-			ELEKTRA_VARIANT_SYSTEM);
+		ELEKTRA_ADD_WARNINGF (83, warningsKey, "no resolver set the system dirname, the configuration is: %s",
+				      ELEKTRA_VARIANT_SYSTEM);
 		return -1;
 	}
 
@@ -614,42 +594,41 @@ static int elektraResolveMapperSystem(resolverHandle *p, Key *warningsKey)
  *         be found
  * warnings will be reported to warningsKey
  */
-int ELEKTRA_PLUGIN_FUNCTION(resolver, filename)
-	(Key* forKey, resolverHandle *p, Key *warningsKey)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (Key * forKey, resolverHandle * p, Key * warningsKey)
 {
 	if (!p)
 	{
-		ELEKTRA_ADD_WARNING(83, warningsKey, "no p");
+		ELEKTRA_ADD_WARNING (83, warningsKey, "no p");
 		return -1;
 	}
 
-	switch (keyGetNamespace(forKey))
+	switch (keyGetNamespace (forKey))
 	{
 	case KEY_NS_SPEC:
-		return elektraResolveSpec(p, warningsKey);
+		return elektraResolveSpec (p, warningsKey);
 	case KEY_NS_DIR:
-		return elektraResolveDir(p, warningsKey);
+		return elektraResolveDir (p, warningsKey);
 	case KEY_NS_USER:
-		return elektraResolveMapperUser(p, warningsKey);
+		return elektraResolveMapperUser (p, warningsKey);
 	case KEY_NS_SYSTEM:
-		return elektraResolveMapperSystem(p, warningsKey);
+		return elektraResolveMapperSystem (p, warningsKey);
 	case KEY_NS_PROC:
-		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve proc");
+		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve proc");
 		return -1;
 	case KEY_NS_EMPTY:
-		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve empty");
+		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve empty");
 		return -1;
 	case KEY_NS_NONE:
-		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve none");
+		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve none");
 		return -1;
 	case KEY_NS_META:
-		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve meta");
+		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve meta");
 		return -1;
 	case KEY_NS_CASCADING:
-		ELEKTRA_ADD_WARNING(83, warningsKey, "tried to resolve cascading");
+		ELEKTRA_ADD_WARNING (83, warningsKey, "tried to resolve cascading");
 		return -1;
 	}
 
-	ELEKTRA_ADD_WARNING(83, warningsKey, "should not be reached");
+	ELEKTRA_ADD_WARNING (83, warningsKey, "should not be reached");
 	return -1;
 }

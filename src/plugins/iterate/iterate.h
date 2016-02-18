@@ -13,12 +13,12 @@
 #include <kdbplugin.h>
 
 
-int elektraIterateOpen (Plugin *handle, Key *errorKey);
-int elektraIterateClose (Plugin *handle, Key *errorKey);
-int elektraIterateGet (Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraIterateSet (Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraIterateError (Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraIterateOpen (Plugin * handle, Key * errorKey);
+int elektraIterateClose (Plugin * handle, Key * errorKey);
+int elektraIterateGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraIterateSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraIterateError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT (iterate);
+Plugin * ELEKTRA_PLUGIN_EXPORT (iterate);
 
 #endif

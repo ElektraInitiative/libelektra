@@ -8,16 +8,16 @@
 
 #include <sys/utsname.h>
 
-int main()
+int main ()
 {
 	struct utsname buf;
 
-	int ret = uname(&buf);
-	(void) buf.sysname;
-	(void) buf.nodename;
-	(void) buf.release;
-	(void) buf.version;
-	(void) buf.machine;
+	int ret = uname (&buf);
+	(void)buf.sysname;
+	(void)buf.nodename;
+	(void)buf.release;
+	(void)buf.version;
+	(void)buf.machine;
 
 	return 0;
 }

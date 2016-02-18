@@ -9,7 +9,7 @@
 
 
 #ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
+#include "kdbconfig.h"
 #endif
 
 #include <stdio.h>
@@ -17,24 +17,18 @@
 
 #include "logchange.h"
 
-int elektraLogchangeGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
+int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp(keyName(parentKey), "system/elektra/modules/logchange"))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/logchange"))
 	{
-		KeySet *contract = ksNew (30,
-		keyNew ("system/elektra/modules/logchange",
-			KEY_VALUE, "logchange plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/logchange/exports", KEY_END),
-		keyNew ("system/elektra/modules/logchange/exports/get",
-			KEY_FUNC, elektraLogchangeGet, KEY_END),
-		keyNew ("system/elektra/modules/logchange/exports/set",
-			KEY_FUNC, elektraLogchangeSet, KEY_END),
-		keyNew ("system/elektra/modules/logchange/exports/close",
-			KEY_FUNC, elektraLogchangeClose, KEY_END),
-#include ELEKTRA_README(logchange)
-		keyNew ("system/elektra/modules/logchange/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END);
+		KeySet * contract = ksNew (
+			30, keyNew ("system/elektra/modules/logchange", KEY_VALUE, "logchange plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/logchange/exports", KEY_END),
+			keyNew ("system/elektra/modules/logchange/exports/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
+			keyNew ("system/elektra/modules/logchange/exports/set", KEY_FUNC, elektraLogchangeSet, KEY_END),
+			keyNew ("system/elektra/modules/logchange/exports/close", KEY_FUNC, elektraLogchangeClose, KEY_END),
+#include ELEKTRA_README (logchange)
+			keyNew ("system/elektra/modules/logchange/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -42,43 +36,44 @@ int elektraLogchangeGet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	}
 
 	// remember all keys
-	KeySet * ks = (KeySet*) elektraPluginGetData (handle);
-	if (ks) ksDel( ks);
+	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
+	if (ks)
+		ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
 	return 1; /* success */
 }
 
-static void logKeys(KeySet * ks, const char * message)
+static void logKeys (KeySet * ks, const char * message)
 {
 	ksRewind (ks);
 	Key * k = 0;
-	while ((k = ksNext(ks)) != 0)
+	while ((k = ksNext (ks)) != 0)
 	{
-		printf ("%s: %s\n", message, keyName(k));
+		printf ("%s: %s\n", message, keyName (k));
 	}
 }
 
-int elektraLogchangeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
+int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * oldKeys = (KeySet*) elektraPluginGetData (handle);
+	KeySet * oldKeys = (KeySet *)elektraPluginGetData (handle);
 	// because elektraLogchangeGet will always be executed before elektraLogchangeSet
 	// we know that oldKeys must exist here!
 	ksRewind (oldKeys);
 	ksRewind (returned);
 
-	KeySet * addedKeys = ksDup(returned);
+	KeySet * addedKeys = ksDup (returned);
 	KeySet * changedKeys = ksNew (0, KS_END);
 	KeySet * removedKeys = ksNew (0, KS_END);
 
-	Key *k = 0;
-	while ((k = ksNext(oldKeys)) != 0)
+	Key * k = 0;
+	while ((k = ksNext (oldKeys)) != 0)
 	{
-		Key * p = ksLookup(addedKeys, k, KDB_O_POP);
+		Key * p = ksLookup (addedKeys, k, KDB_O_POP);
 		// Note: keyDel not needed, because at least two references exist
 		if (p)
 		{
-			if (keyNeedSync(p))
+			if (keyNeedSync (p))
 			{
 				ksAppendKey (changedKeys, p);
 			}
@@ -104,14 +99,15 @@ int elektraLogchangeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA
 	return 1; /* success */
 }
 
-int elektraLogchangeClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
+int elektraLogchangeClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	KeySet * ks = (KeySet*) elektraPluginGetData (handle);
-	if (ks) ksDel( ks);
+	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
+	if (ks)
+		ksDel (ks);
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(logchange)
+Plugin * ELEKTRA_PLUGIN_EXPORT (logchange)
 {
 	// clang-format off
 	return elektraPluginExport("logchange",

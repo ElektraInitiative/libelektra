@@ -12,197 +12,197 @@
 
 #include <string.h>
 
-static inline void timeofday(char *t, struct timeval *start, struct timeval *now)
+static inline void timeofday (char * t, struct timeval * start, struct timeval * now)
 {
 	struct timeval tv;
 
 	tv.tv_sec = now->tv_sec - start->tv_sec;
 	if ((tv.tv_usec = now->tv_usec - start->tv_usec) < 0)
 	{
-		tv.tv_sec --;
+		tv.tv_sec--;
 		tv.tv_usec += 1000000;
 	}
 
-	for (int i=9; i>=4; --i)
+	for (int i = 9; i >= 4; --i)
 	{
-		t[i] = tv.tv_usec %10 + '0';
+		t[i] = tv.tv_usec % 10 + '0';
 		tv.tv_usec /= 10;
 	}
-	for (int i=3; i>=0; --i)
+	for (int i = 3; i >= 0; --i)
 	{
-		t[i] = tv.tv_sec %10 + '0';
+		t[i] = tv.tv_sec % 10 + '0';
 		tv.tv_sec /= 10;
 	}
 	t[10] = 0;
 }
 
-const char * elektraTimeofdayHelper (char *t, TimeofdayInfo *ti)
+const char * elektraTimeofdayHelper (char * t, TimeofdayInfo * ti)
 {
 	struct timeval now;
-	gettimeofday(&now, 0);
+	gettimeofday (&now, 0);
 	timeofday (t, &ti->start, &now);
 	t[10] = '\t';
 	t[11] = 'd';
 	t[12] = 'i';
 	t[13] = '\t';
-	timeofday(&t[14], &ti->last, &now);
+	timeofday (&t[14], &ti->last, &now);
 	ti->last = now;
 
 	return t;
 }
 
-int elektraTimeofdayOpen(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
+int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	TimeofdayInfo *ti = calloc(1, sizeof (TimeofdayInfo));
+	TimeofdayInfo * ti = calloc (1, sizeof (TimeofdayInfo));
 	// char t[24];
 
-	elektraPluginSetData(handle, ti);
+	elektraPluginSetData (handle, ti);
 
 	// init time
-	gettimeofday(&ti->start, 0);
+	gettimeofday (&ti->start, 0);
 	ti->last = ti->start;
 
-	KeySet *config  = elektraPluginGetConfig(handle);
-	if (ksLookupByName(config, "/module", 0))
+	KeySet * config = elektraPluginGetConfig (handle);
+	if (ksLookupByName (config, "/module", 0))
 	{
-		if (ksLookupByName(config, "/logmodule", 0))
+		if (ksLookupByName (config, "/logmodule", 0))
 		{
 			char t[24];
-			fprintf(stderr, "open (module)\t%s\n", elektraTimeofdayHelper (t, ti));
+			fprintf (stderr, "open (module)\t%s\n", elektraTimeofdayHelper (t, ti));
 		}
-	} else {
+	}
+	else
+	{
 		char t[24];
-		fprintf(stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
+		fprintf (stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
 	}
 
 	return 0; /* success */
 }
 
-int elektraTimeofdayClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
+int elektraTimeofdayClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	// char t[24];
 	// TimeofdayInfo *ti = elektraPluginGetData(handle);
 
-	KeySet *config  = elektraPluginGetConfig(handle);
-	TimeofdayInfo *ti = elektraPluginGetData(handle);
-	if (ksLookupByName(config, "/module", 0))
+	KeySet * config = elektraPluginGetConfig (handle);
+	TimeofdayInfo * ti = elektraPluginGetData (handle);
+	if (ksLookupByName (config, "/module", 0))
 	{
-		if (ksLookupByName(config, "/logmodule", 0))
+		if (ksLookupByName (config, "/logmodule", 0))
 		{
 			char t[24];
-			fprintf(stderr, "close (module)\t%s\n", elektraTimeofdayHelper (t, ti));
+			fprintf (stderr, "close (module)\t%s\n", elektraTimeofdayHelper (t, ti));
 		}
-	} else {
+	}
+	else
+	{
 		char t[24];
-		fprintf(stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
+		fprintf (stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
 	}
 
 	/* How weird is that??
 	   ti gets modified after elektraTimeofdayHelper even though
 	   the pointer to it is not even passed and it is valgrind
 	   clean?
-           Fixed by using fti */
-	TimeofdayInfo *fti = elektraPluginGetData(handle);
+	   Fixed by using fti */
+	TimeofdayInfo * fti = elektraPluginGetData (handle);
 	elektraFree (fti);
 
 	return 0; /* success */
 }
 
-int elektraTimeofdayGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	char t[24];
-	TimeofdayInfo *ti = elektraPluginGetData(handle);
-	const char *position = "get";
+	TimeofdayInfo * ti = elektraPluginGetData (handle);
+	const char * position = "get";
 
 	ti->nrset = 0;
-	++ ti->nrget;
-	if (ti->nrget == 1) position = "pregetstorage";
+	++ti->nrget;
+	if (ti->nrget == 1)
+		position = "pregetstorage";
 	else if (ti->nrget == 2)
 	{
 		ti->nrget = 0;
 		position = "postgetstorage";
 	}
 
-	if (!strcmp(keyName(parentKey), "system/elektra/modules/timeofday"))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/timeofday"))
 	{
-		KeySet *pluginConfig = ksNew (30,
-			keyNew ("system/elektra/modules/timeofday",
-				KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
+		KeySet * pluginConfig = ksNew (
+			30, keyNew ("system/elektra/modules/timeofday", KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/timeofday/exports", KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/open",
-				KEY_FUNC, elektraTimeofdayOpen, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/close",
-				KEY_FUNC, elektraTimeofdayClose, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/get",
-				KEY_FUNC, elektraTimeofdayGet, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/set",
-				KEY_FUNC, elektraTimeofdaySet, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/error",
-				KEY_FUNC, elektraTimeofdayError, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/open", KEY_FUNC, elektraTimeofdayOpen, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/close", KEY_FUNC, elektraTimeofdayClose, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/get", KEY_FUNC, elektraTimeofdayGet, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/set", KEY_FUNC, elektraTimeofdaySet, KEY_END),
+			keyNew ("system/elektra/modules/timeofday/exports/error", KEY_FUNC, elektraTimeofdayError, KEY_END),
 #include "readme_timeofday.c"
-			keyNew ("system/elektra/modules/timeofday/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END);
+			keyNew ("system/elektra/modules/timeofday/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 
-		KeySet *config  = elektraPluginGetConfig(handle);
-		if (ksLookupByName(config, "/logmodule", 0))
+		KeySet * config = elektraPluginGetConfig (handle);
+		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
+			fprintf (stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), "postmodulesconf");
 		}
 
 		return 1;
 	}
 
-	fprintf(stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+	fprintf (stderr, "get\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
 }
 
-int elektraTimeofdaySet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraTimeofdaySet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	char t[24];
-	TimeofdayInfo *ti = elektraPluginGetData(handle);
-	const char *position = "set";
+	TimeofdayInfo * ti = elektraPluginGetData (handle);
+	const char * position = "set";
 
 	ti->nrget = 0;
-	++ ti->nrset;
-	if (ti->nrset == 1) position = "presetstorage";
-	else if (ti->nrset == 2) position = "precommit";
+	++ti->nrset;
+	if (ti->nrset == 1)
+		position = "presetstorage";
+	else if (ti->nrset == 2)
+		position = "precommit";
 	else if (ti->nrset == 3)
 	{
 		ti->nrset = 0;
 		position = "postcommit";
 	}
 
-	fprintf(stderr, "set\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+	fprintf (stderr, "set\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
 }
 
-int elektraTimeofdayError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraTimeofdayError (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	char t[24];
-	TimeofdayInfo *ti = elektraPluginGetData(handle);
-	const char *position = "error";
+	TimeofdayInfo * ti = elektraPluginGetData (handle);
+	const char * position = "error";
 
 	ti->nrset = 0;
 	ti->nrget = 0;
-	++ ti->nrerr;
-	if (ti->nrerr == 1) position = "prerollback";
+	++ti->nrerr;
+	if (ti->nrerr == 1)
+		position = "prerollback";
 	else if (ti->nrerr == 2)
 	{
 		ti->nrerr = 0;
 		position = "postrollback";
 	}
 
-	fprintf(stderr, "err\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
+	fprintf (stderr, "err\t%s\tpos\t%s\n", elektraTimeofdayHelper (t, ti), position);
 
 	return 1;
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday)
+Plugin * ELEKTRA_PLUGIN_EXPORT (timeofday)
 {
 	// clang-format off
 	return elektraPluginExport(BACKENDNAME,

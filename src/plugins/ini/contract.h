@@ -10,7 +10,7 @@
 #define CONTRACT_H_
 
 
-static inline KeySet *getPluginContract()
+static inline KeySet * getPluginContract ()
 {
 	// clang-format off
 	return ksNew (30,
