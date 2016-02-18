@@ -31,56 +31,57 @@ KeySet * doElektraMerge (KeySet * ours, KeySet * theirs, KeySet * base)
 
 int main ()
 {
-	//! [set]
-	KeySet * myConfig = ksNew (0, KS_END);
-	Key * parentKey = keyNew ("system/sw/MyApp", KEY_END);
-	KDB * handle = kdbOpen (parentKey);
+// clang-format off
+//! [set]
+KeySet * myConfig = ksNew (0, KS_END);
+Key * parentKey = keyNew ("system/sw/MyApp", KEY_END);
+KDB * handle = kdbOpen (parentKey);
 
-	kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
-	KeySet * base = ksDup (myConfig);     // save a copy of original keyset
+kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
+KeySet * base = ksDup (myConfig);     // save a copy of original keyset
 
-	// change the keys within myConfig
+// change the keys within myConfig
 
-	KeySet * ours = ksDup (myConfig); // save a copy of our keyset
-	KeySet * theirs;		  // needed for 3-way merging
-	int ret = kdbSet (handle, myConfig, parentKey);
-	while (ret == -1) // as long as we have an error
+KeySet * ours = ksDup (myConfig); // save a copy of our keyset
+KeySet * theirs;		  // needed for 3-way merging
+int ret = kdbSet (handle, myConfig, parentKey);
+while (ret == -1) // as long as we have an error
+{
+	// We got an error. Warn user.
+	Key * problemKey = ksCurrent (myConfig);
+	// parentKey has the errorInformation
+	// problemKey is the faulty key (may be null)
+	int userInput = showElektraErrorDialog (parentKey, problemKey);
+	switch (userInput)
 	{
-		// We got an error. Warn user.
-		Key * problemKey = ksCurrent (myConfig);
-		// parentKey has the errorInformation
-		// problemKey is the faulty key (may be null)
-		int userInput = showElektraErrorDialog (parentKey, problemKey);
-		switch (userInput)
-		{
-		case INPUT_USE_OURS:
-			kdbGet (handle, myConfig, parentKey); // refresh key database
-			ksDel (myConfig);
-			myConfig = ours;
-			break;
-		case INPUT_DO_MERGE:
-			theirs = ksDup (ours);
-			kdbGet (handle, theirs, parentKey); // refresh key database
-			KeySet * res = doElektraMerge (ours, theirs, base);
-			ksDel (theirs);
-			myConfig = res;
-			break;
-		case INPUT_USE_THEIRS:
-			// should always work, we just write what we got
-			// but to be sure always give the user another way
-			// to exit the loop
-			kdbGet (handle, myConfig, parentKey); // refresh key database
-			break;
-			// other cases ...
-		}
-		ret = kdbSet (handle, myConfig, parentKey);
+	case INPUT_USE_OURS:
+		kdbGet (handle, myConfig, parentKey); // refresh key database
+		ksDel (myConfig);
+		myConfig = ours;
+		break;
+	case INPUT_DO_MERGE:
+		theirs = ksDup (ours);
+		kdbGet (handle, theirs, parentKey); // refresh key database
+		KeySet * res = doElektraMerge (ours, theirs, base);
+		ksDel (theirs);
+		myConfig = res;
+		break;
+	case INPUT_USE_THEIRS:
+		// should always work, we just write what we got
+		// but to be sure always give the user another way
+		// to exit the loop
+		kdbGet (handle, myConfig, parentKey); // refresh key database
+		break;
+		// other cases ...
 	}
+	ret = kdbSet (handle, myConfig, parentKey);
+}
 
-	ksDel (ours);
-	ksDel (base);
-	ksDel (myConfig); // delete the in-memory configuration
+ksDel (ours);
+ksDel (base);
+ksDel (myConfig); // delete the in-memory configuration
 
-	kdbClose (handle, parentKey); // no more affairs with the key database.
-	keyDel (parentKey);
-	//! [set]
+kdbClose (handle, parentKey); // no more affairs with the key database.
+keyDel (parentKey);
+//! [set]
 }

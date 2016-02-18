@@ -36,41 +36,43 @@ void h (Key * k)
 	/* the caller will see the changed key k */
 }
 
+// clang-format off
+
 void simpleAppend ()
 {
-	//! [simple append]
-	KeySet * ks = ksNew (1, KS_END);
-	ksAppendKey (ks, keyNew ("user/my/new/key", KEY_END));
-	ksDel (ks);
-	// key deleted, too!
-	//! [simple append]
+//! [simple append]
+KeySet * ks = ksNew (1, KS_END);
+ksAppendKey (ks, keyNew ("user/my/new/key", KEY_END));
+ksDel (ks);
+// key deleted, too!
+//! [simple append]
 }
 
 
 void refAppend ()
 {
-	//! [ref append]
-	KeySet * ks = ksNew (1, KS_END);
-	Key * k = keyNew ("user/ref/key", KEY_END);
-	keyIncRef (k);
-	ksAppendKey (ks, k);
-	ksDel (ks);
-	// now we still can work with the key k!
-	keyDecRef (k);
-	keyDel (k);
-	//! [ref append]
+//! [ref append]
+KeySet * ks = ksNew (1, KS_END);
+Key * k = keyNew ("user/ref/key", KEY_END);
+keyIncRef (k);
+ksAppendKey (ks, k);
+ksDel (ks);
+// now we still can work with the key k!
+keyDecRef (k);
+keyDel (k);
+//! [ref append]
 }
 
 void dupAppend ()
 {
-	//! [dup append]
-	KeySet * ks = ksNew (1, KS_END);
-	Key * k = keyNew ("user/ref/key", KEY_END);
-	ksAppendKey (ks, keyDup (k));
-	ksDel (ks);
-	// now we still can work with the key k!
-	keyDel (k);
-	//! [dup append]
+//! [dup append]
+KeySet * ks = ksNew (1, KS_END);
+Key * k = keyNew ("user/ref/key", KEY_END);
+ksAppendKey (ks, keyDup (k));
+ksDel (ks);
+// now we still can work with the key k!
+keyDel (k);
+//! [dup append]
 }
 
 int main ()
