@@ -53,6 +53,7 @@ inline Timer::~Timer()
 {
 	for (auto result : results)
 	{
+		// clang-format off
 		std::cerr << name << ","
 			 << result / Timer::usec_factor
 			 << "."
@@ -60,12 +61,14 @@ inline Timer::~Timer()
 			 << std::setfill('0')
 			 << result % Timer::usec_factor
 			 << std::endl;
+		// clang-format on
 	}
 }
 
 
 inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 {
+	// clang-format off
 	Timer::timer_t r = t.results.back();
 	os.width(30);
 	os.fill(' ');
@@ -121,6 +124,7 @@ inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 		<< r % Timer::usec_factor
 		<< " sec"
 		<< std::endl;
+	// clang-format on
 	return os;
 }
 
