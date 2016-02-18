@@ -270,7 +270,9 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 }
 
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(fstab) {
+Plugin *ELEKTRA_PLUGIN_EXPORT(fstab)
+{
+	// clang-format off
 	return elektraPluginExport("fstab",
 		ELEKTRA_PLUGIN_GET,            &elektraFstabGet,
 		ELEKTRA_PLUGIN_SET,            &elektraFstabSet,

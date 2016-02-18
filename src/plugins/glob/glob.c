@@ -196,6 +196,7 @@ int elektraGlobSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(glob)
 {
+	// clang-format off
 	return elektraPluginExport("glob",
 		ELEKTRA_PLUGIN_OPEN,	&elektraGlobOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraGlobClose,

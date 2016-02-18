@@ -108,6 +108,7 @@ int elektraErrorSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(error)
 {
+	// clang-format off
 	return elektraPluginExport("error",
 		ELEKTRA_PLUGIN_OPEN,	&elektraErrorOpen,
 		ELEKTRA_PLUGIN_GET,	&elektraErrorGet,

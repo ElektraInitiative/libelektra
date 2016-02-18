@@ -100,6 +100,7 @@ int elektraNetworkSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pare
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(network)
 {
+	// clang-format off
 	return elektraPluginExport("network",
 		ELEKTRA_PLUGIN_GET,	&elektraNetworkGet,
 		ELEKTRA_PLUGIN_SET,	&elektraNetworkSet,

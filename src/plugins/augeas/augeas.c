@@ -531,6 +531,7 @@ int elektraAugeasSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 Plugin * ELEKTRA_PLUGIN_EXPORT(augeas)
 {
+	// clang-format off
 	return elektraPluginExport ("augeas",
 			ELEKTRA_PLUGIN_GET, &elektraAugeasGet,
 			ELEKTRA_PLUGIN_SET, &elektraAugeasSet,

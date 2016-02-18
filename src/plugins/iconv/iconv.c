@@ -265,6 +265,7 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(iconv)
 {
+	// clang-format off
 	return elektraPluginExport(BACKENDNAME,
 		ELEKTRA_PLUGIN_GET,	&elektraIconvGet,
 		ELEKTRA_PLUGIN_SET,	&elektraIconvSet,

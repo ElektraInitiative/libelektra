@@ -85,6 +85,7 @@ int elektraXmltoolSet(Plugin *handle ELEKTRA_UNUSED,
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(xmltool)
 {
+	// clang-format off
 	return elektraPluginExport("xmltool",
 		ELEKTRA_PLUGIN_GET,	&elektraXmltoolGet,
 		ELEKTRA_PLUGIN_SET,	&elektraXmltoolSet,

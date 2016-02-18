@@ -129,6 +129,7 @@ int elektraTracerError(Plugin *handle, KeySet *returned, Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(tracer)
 {
+	// clang-format off
 	return elektraPluginExport("tracer",
 		ELEKTRA_PLUGIN_OPEN,	&elektraTracerOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTracerClose,

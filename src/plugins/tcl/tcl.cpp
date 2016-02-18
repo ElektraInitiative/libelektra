@@ -119,6 +119,7 @@ int elektraTclSet(Plugin *, KeySet *returned, Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(tcl)
 {
+	// clang-format off
 	return elektraPluginExport("tcl",
 		ELEKTRA_PLUGIN_GET,	&elektraTclGet,
 		ELEKTRA_PLUGIN_SET,	&elektraTclSet,

@@ -204,6 +204,7 @@ int elektraTimeofdayError(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(timeofday)
 {
+	// clang-format off
 	return elektraPluginExport(BACKENDNAME,
 		ELEKTRA_PLUGIN_OPEN,	&elektraTimeofdayOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTimeofdayClose,

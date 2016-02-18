@@ -276,6 +276,7 @@ int elektraRegexstoreError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKT
 
 extern "C" Plugin *ELEKTRA_PLUGIN_EXPORT(regexstore)
 {
+	// clang-format off
 	return elektraPluginExport("regexstore",
 		ELEKTRA_PLUGIN_OPEN,	&elektraRegexstoreOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraRegexstoreClose,

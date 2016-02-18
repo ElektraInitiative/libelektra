@@ -74,6 +74,7 @@ int elektraTemplateError (Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTR
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (template)
 {
+	// clang-format off
 	return elektraPluginExport ("template",
 		ELEKTRA_PLUGIN_OPEN,	&elektraTemplateOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTemplateClose,

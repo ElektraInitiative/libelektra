@@ -1732,6 +1732,7 @@ int elektraIniSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(ini)
 {
+	// clang-format off
 	return elektraPluginExport("ini",
 			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
 			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,

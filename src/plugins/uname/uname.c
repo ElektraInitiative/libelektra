@@ -118,7 +118,9 @@ int elektraUnameSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUS
 	return 0;
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(uname) {
+Plugin *ELEKTRA_PLUGIN_EXPORT(uname)
+{
+	// clang-format off
 	return elektraPluginExport("uname",
 		ELEKTRA_PLUGIN_GET,            &elektraUnameGet,
 		ELEKTRA_PLUGIN_SET,            &elektraUnameSet,

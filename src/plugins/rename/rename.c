@@ -344,6 +344,7 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (rename)
 {
+	// clang-format off
 	return elektraPluginExport("rename",
 		ELEKTRA_PLUGIN_GET,	&elektraRenameGet,
 		ELEKTRA_PLUGIN_SET,	&elektraRenameSet,

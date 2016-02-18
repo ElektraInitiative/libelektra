@@ -133,6 +133,7 @@ int elektraSimpleiniSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(simpleini)
 {
+	// clang-format off
 	return elektraPluginExport("simpleini",
 		ELEKTRA_PLUGIN_GET,	&elektraSimpleiniGet,
 		ELEKTRA_PLUGIN_SET,	&elektraSimpleiniSet,

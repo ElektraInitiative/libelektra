@@ -99,6 +99,7 @@ int elektraSyslogError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *par
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(syslog)
 {
+	// clang-format off
 	return elektraPluginExport(BACKENDNAME,
 		ELEKTRA_PLUGIN_OPEN,	&elektraSyslogOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraSyslogClose,

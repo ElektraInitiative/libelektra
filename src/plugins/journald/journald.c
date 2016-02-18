@@ -74,6 +74,7 @@ int elektraJournaldError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(journald)
 {
+	// clang-format off
 	return elektraPluginExport ("journald",
 		ELEKTRA_PLUGIN_GET,	&elektraJournaldGet,
 		ELEKTRA_PLUGIN_SET,	&elektraJournaldSet,

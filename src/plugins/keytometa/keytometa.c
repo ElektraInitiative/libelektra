@@ -355,6 +355,7 @@ int elektraKeyToMetaClose(Plugin *handle, Key *errorKey ELEKTRA_UNUSED)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(keytometa)
 {
+	// clang-format off
 	return elektraPluginExport("keytometa",
 		ELEKTRA_PLUGIN_GET,	&elektraKeyToMetaGet,
 		ELEKTRA_PLUGIN_SET,	&elektraKeyToMetaSet,

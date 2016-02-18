@@ -86,6 +86,7 @@ int elektraTypeSet(ckdb::Plugin *handle, ckdb::KeySet *returned, ckdb::Key *pare
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(type)
 {
+	// clang-format off
 	return elektraPluginExport("type",
 		ELEKTRA_PLUGIN_OPEN,	&elektraTypeOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraTypeClose,

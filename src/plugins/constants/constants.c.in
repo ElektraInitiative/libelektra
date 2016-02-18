@@ -390,6 +390,7 @@ int elektraConstantsSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(constants)
 {
+	// clang-format off
 	return elektraPluginExport("constants",
 		ELEKTRA_PLUGIN_GET,	&elektraConstantsGet,
 		ELEKTRA_PLUGIN_SET,	&elektraConstantsSet,

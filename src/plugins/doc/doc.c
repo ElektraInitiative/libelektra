@@ -219,6 +219,7 @@ void elektraUsercodeUselessSymbol()
 //![export]
 Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
 {
+	// clang-format off
 	return elektraPluginExport(DOC_PLUGIN_NAME,
 		ELEKTRA_PLUGIN_OPEN,	&elektraDocOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraDocClose,

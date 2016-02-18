@@ -421,6 +421,7 @@ int elektraWresolverError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTR
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(wresolver)
 {
+	// clang-format off
 	return elektraPluginExport("wresolver",
 		ELEKTRA_PLUGIN_OPEN,	&elektraWresolverOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraWresolverClose,

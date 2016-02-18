@@ -318,6 +318,7 @@ int elektraHostsGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(hosts)
 {
+	// clang-format off
 	return elektraPluginExport("hosts",
 		ELEKTRA_PLUGIN_GET,	&elektraHostsGet,
 		ELEKTRA_PLUGIN_SET,	&elektraHostsSet,

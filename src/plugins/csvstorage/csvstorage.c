@@ -472,6 +472,7 @@ int elektraCsvstorageSet(Plugin *handle, KeySet *returned, Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(csvstorage)
 {
+	// clang-format off
 	return elektraPluginExport("csvstorage",
 			ELEKTRA_PLUGIN_GET,	&elektraCsvstorageGet,
 			ELEKTRA_PLUGIN_SET,	&elektraCsvstorageSet,

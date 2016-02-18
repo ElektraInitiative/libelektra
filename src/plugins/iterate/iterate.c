@@ -87,6 +87,7 @@ int elektraIterateError (Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (iterate)
 {
+	// clang-format off
 	return elektraPluginExport ("iterate",
 		ELEKTRA_PLUGIN_OPEN,	&elektraIterateOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraIterateClose,

@@ -866,6 +866,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
 {
+	// clang-format off
 	return elektraPluginExport ("spec",
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
 			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,

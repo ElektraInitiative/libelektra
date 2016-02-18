@@ -275,6 +275,7 @@ int CRYPTO_PLUGIN_FUNCTION(error)(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEK
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
 {
+	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
 			ELEKTRA_PLUGIN_OPEN,  &CRYPTO_PLUGIN_FUNCTION(open),
 			ELEKTRA_PLUGIN_CLOSE, &CRYPTO_PLUGIN_FUNCTION(close),

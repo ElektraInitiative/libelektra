@@ -102,6 +102,7 @@ int elektraPathSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(path)
 {
+	// clang-format off
 	return elektraPluginExport("path",
 		ELEKTRA_PLUGIN_GET,	&elektraPathGet,
 		ELEKTRA_PLUGIN_SET,	&elektraPathSet,

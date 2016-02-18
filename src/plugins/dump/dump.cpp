@@ -248,6 +248,7 @@ int elektraDumpSet(ckdb::Plugin *, ckdb::KeySet *returned, ckdb::Key *parentKey)
 
 ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(dump)
 {
+	// clang-format off
 	return elektraPluginExport("dump",
 		ELEKTRA_PLUGIN_GET,		&elektraDumpGet,
 		ELEKTRA_PLUGIN_SET,		&elektraDumpSet,

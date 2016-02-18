@@ -403,6 +403,7 @@ int PYTHON_PLUGIN_FUNCTION(Error)(ckdb::Plugin *handle, ckdb::KeySet *returned,
 
 ckdb::Plugin *PYTHON_PLUGIN_EXPORT(PYTHON_PLUGIN_NAME)
 {
+	// clang-format off
 	return elektraPluginExport(PYTHON_PLUGIN_NAME_STR,
 		ELEKTRA_PLUGIN_OPEN,  &PYTHON_PLUGIN_FUNCTION(Open),
 		ELEKTRA_PLUGIN_CLOSE, &PYTHON_PLUGIN_FUNCTION(Close),

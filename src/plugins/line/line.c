@@ -148,6 +148,7 @@ int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(line)
 {
+	// clang-format off
 	return elektraPluginExport("line",
 		ELEKTRA_PLUGIN_GET,	&elektraLineGet,
 		ELEKTRA_PLUGIN_SET,	&elektraLineSet,

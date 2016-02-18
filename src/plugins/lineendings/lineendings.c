@@ -170,6 +170,7 @@ int elektraLineendingsSet(Plugin *handle, KeySet *returned ELEKTRA_UNUSED, Key *
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(lineendings)
 {
+	// clang-format off
 	return elektraPluginExport("lineendings",
 			ELEKTRA_PLUGIN_GET,	&elektraLineendingsGet,
 			ELEKTRA_PLUGIN_SET,	&elektraLineendingsSet,

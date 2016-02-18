@@ -85,6 +85,7 @@ int elektraValidationSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *p
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(validation)
 {
+	// clang-format off
 	return elektraPluginExport("validation",
 		ELEKTRA_PLUGIN_GET,	&elektraValidationGet,
 		ELEKTRA_PLUGIN_SET,	&elektraValidationSet,

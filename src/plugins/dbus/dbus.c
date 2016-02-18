@@ -118,6 +118,7 @@ int elektraDbusClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(dbus)
 {
+	// clang-format off
 	return elektraPluginExport("dbus",
 		ELEKTRA_PLUGIN_GET,	&elektraDbusGet,
 		ELEKTRA_PLUGIN_SET,	&elektraDbusSet,

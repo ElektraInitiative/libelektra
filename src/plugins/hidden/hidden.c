@@ -84,6 +84,7 @@ int elektraHiddenSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UN
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(hidden)
 {
+	// clang-format off
 	return elektraPluginExport("hidden",
 		ELEKTRA_PLUGIN_OPEN,	&elektraHiddenOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraHiddenClose,

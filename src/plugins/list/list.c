@@ -382,6 +382,7 @@ int elektraListError(Plugin *handle , KeySet *returned , Key *parentKey )
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(list)
 {
+	// clang-format off
 	return elektraPluginExport("list",
 			ELEKTRA_PLUGIN_OPEN,	&elektraListOpen,
 			ELEKTRA_PLUGIN_CLOSE,	&elektraListClose,

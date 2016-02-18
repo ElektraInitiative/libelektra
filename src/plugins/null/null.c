@@ -93,6 +93,7 @@ int elektraNullSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentK
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(null)
 {
+	// clang-format off
 	return elektraPluginExport("null",
 		ELEKTRA_PLUGIN_GET,	&elektraNullGet,
 		ELEKTRA_PLUGIN_SET,	&elektraNullSet,

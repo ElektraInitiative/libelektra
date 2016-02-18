@@ -361,6 +361,7 @@ int elektraMathcheckSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *pa
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(mathcheck)
 {
+	// clang-format off
 	return elektraPluginExport("mathcheck",
 			ELEKTRA_PLUGIN_GET,	&elektraMathcheckGet,
 			ELEKTRA_PLUGIN_SET,	&elektraMathcheckSet,

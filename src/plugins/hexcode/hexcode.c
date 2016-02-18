@@ -295,6 +295,7 @@ int elektraHexcodeClose(Plugin *handle, Key *key ELEKTRA_UNUSED)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(hexcode)
 {
+	// clang-format off
 	return elektraPluginExport("hexcode",
 		ELEKTRA_PLUGIN_GET,	&elektraHexcodeGet,
 		ELEKTRA_PLUGIN_SET,	&elektraHexcodeSet,

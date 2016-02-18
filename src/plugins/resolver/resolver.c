@@ -955,6 +955,7 @@ int ELEKTRA_PLUGIN_FUNCTION(resolver, error)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(resolver)
 {
+	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
 		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
 		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),

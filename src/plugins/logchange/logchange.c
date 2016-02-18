@@ -113,6 +113,7 @@ int elektraLogchangeClose(Plugin *handle, Key *parentKey ELEKTRA_UNUSED)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(logchange)
 {
+	// clang-format off
 	return elektraPluginExport("logchange",
 		ELEKTRA_PLUGIN_GET,	&elektraLogchangeGet,
 		ELEKTRA_PLUGIN_SET,	&elektraLogchangeSet,

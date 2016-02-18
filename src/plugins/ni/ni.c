@@ -154,6 +154,7 @@ int elektraNiSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(ni)
 {
+	// clang-format off
 	return elektraPluginExport("ni",
 		ELEKTRA_PLUGIN_GET,	&elektraNiGet,
 		ELEKTRA_PLUGIN_SET,	&elektraNiSet,

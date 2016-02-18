@@ -439,6 +439,7 @@ int elektraJniError(Plugin *handle, KeySet *returned, Key *parentKey)
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(jni)
 {
+	// clang-format off
 	return elektraPluginExport("jni",
 		ELEKTRA_PLUGIN_OPEN,	&elektraJniOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraJniClose,

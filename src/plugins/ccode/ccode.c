@@ -287,6 +287,7 @@ int elektraCcodeSet(Plugin *handle, KeySet *returned, Key *parentKey ELEKTRA_UNU
 
 Plugin *ELEKTRA_PLUGIN_EXPORT(ccode)
 {
+	// clang-format off
 	return elektraPluginExport("ccode",
 		ELEKTRA_PLUGIN_OPEN,	&elektraCcodeOpen,
 		ELEKTRA_PLUGIN_CLOSE,	&elektraCcodeClose,

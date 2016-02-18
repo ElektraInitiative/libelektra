@@ -357,6 +357,7 @@ int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (filecheck)
 {
+	// clang-format off
 	return elektraPluginExport ("filecheck",
 			ELEKTRA_PLUGIN_OPEN,	&elektraFilecheckOpen,
 			ELEKTRA_PLUGIN_CLOSE,	&elektraFilecheckClose,
