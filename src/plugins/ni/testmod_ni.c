@@ -313,6 +313,7 @@ Ni_Free (node);
 END_TEST ()
 
 BEGIN_TEST (parse_output)
+// clang-format off
 char * names[] = {
 	"loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon\xc2"
 	"\xa9",
@@ -380,6 +381,7 @@ char * values[] = { "truncated",
 		    " as=df",
 		    "as\"df ",
 		    "\a\b\f\n\r\t\v" };
+// clang-format on
 #define NUM_parse_output_NODES (sizeof (names) / sizeof (names[0]))
 
 const char * stored_name0 =
