@@ -31,7 +31,7 @@ KeySet * doElektraMerge (KeySet * ours, KeySet * theirs, KeySet * base)
 
 int main ()
 {
-// clang-format off
+	// clang-format off
 //! [set]
 KeySet * myConfig = ksNew (0, KS_END);
 Key * parentKey = keyNew ("system/sw/MyApp", KEY_END);

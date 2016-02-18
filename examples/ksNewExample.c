@@ -11,7 +11,7 @@
 
 int main ()
 {
-// clang-format off
+	// clang-format off
 //! [Full Example]
 // create a new keyset with 3 keys
 // with a hint that about 20 keys will be inside

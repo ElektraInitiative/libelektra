@@ -12,7 +12,7 @@
 
 int main ()
 {
-// clang-format off
+	// clang-format off
 {
 //! [set base basic]
 Key * k = keyNew ("user/my/long/name", KEY_END);

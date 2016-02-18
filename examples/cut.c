@@ -21,7 +21,7 @@ void outputKeySet (KeySet * returned)
 
 int main ()
 {
-// clang-format off
+	// clang-format off
 //! [cut]
 Key * parentKey = keyNew ("system/mountpoint/interest", KEY_END);
 KDB * kdb = kdbOpen (parentKey);

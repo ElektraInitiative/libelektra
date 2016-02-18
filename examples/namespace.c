@@ -12,7 +12,7 @@
 
 void printNamespace (Key const * k)
 {
-// clang-format off
+	// clang-format off
 //! [namespace]
 switch (keyGetNamespace (k))
 {

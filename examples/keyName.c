@@ -13,7 +13,7 @@
 
 int main ()
 {
-// clang-format off
+	// clang-format off
 //! [add name]
 Key * k = keyNew ("user/x/r", KEY_END);
 keyAddName (k, "../y/a//././z");
