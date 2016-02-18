@@ -8,10 +8,10 @@
 
 #include <keyset.hpp>
 
-#include <map>
-#include <string>
 #include <cassert>
 #include <iostream>
+#include <map>
+#include <string>
 
 namespace kdb
 {
@@ -27,19 +27,19 @@ namespace kdb
  *
  * @return the searched string (without slashes)
  */
-std::string nth_level_of_name(Key k, unsigned long n)
+std::string nth_level_of_name (Key k, unsigned long n)
 {
 	size_t pos = 0;
 	size_t prev = 0;
-	std::string name = k.getName();
+	std::string name = k.getName ();
 
-	for (unsigned long i=0; i<n; ++i)
+	for (unsigned long i = 0; i < n; ++i)
 	{
-		pos = name.find("/", prev);
-		prev = pos+1;
+		pos = name.find ("/", prev);
+		prev = pos + 1;
 	}
 
-	return name.substr(prev, name.find("/", prev)-prev);
+	return name.substr (prev, name.find ("/", prev) - prev);
 }
 
 /**
@@ -49,16 +49,16 @@ std::string nth_level_of_name(Key k, unsigned long n)
  *
  * @return the hierarchy depth of a key
  */
-unsigned long name_depth(Key k)
+unsigned long name_depth (Key k)
 {
-	std::string name = k.getName();
-	size_t pos = name.find("/", 0);
+	std::string name = k.getName ();
+	size_t pos = name.find ("/", 0);
 	unsigned long depth = 0;
 
 	while (pos != std::string::npos)
 	{
-		pos = name.find("/", pos+1);
-		++ depth;
+		pos = name.find ("/", pos + 1);
+		++depth;
 	}
 
 	return depth;
@@ -70,7 +70,7 @@ unsigned long name_depth(Key k)
 class Visitor
 {
 public:
-	virtual void visit(std::string name, unsigned long depth, Key k) = 0;
+	virtual void visit (std::string name, unsigned long depth, Key k) = 0;
 };
 
 class KeyHierarchy;
@@ -88,11 +88,7 @@ public:
 	typedef std::map<std::string, KeyNode> KeyNodeMap;
 	typedef KeyNodeMap::iterator KeyNodeIterator;
 
-	KeyNode(unsigned long depth, Key k = static_cast<ckdb::Key*>(nullptr)):
-		m_self(k),
-		m_subnodes(),
-		m_depth(depth)
-	{}
+	KeyNode (unsigned long depth, Key k = static_cast<ckdb::Key *> (nullptr)) : m_self (k), m_subnodes (), m_depth (depth) {}
 
 	/**
 	 * @brief (Recursively) add or update a key to nodes

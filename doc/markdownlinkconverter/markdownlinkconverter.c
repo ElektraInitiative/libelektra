@@ -97,6 +97,7 @@ static inline int linkNolink (int old UNUSED, int new)
 struct transitionLink genLinkTransitionTable() {
     struct transitionLink out = {
         {//char\state    0  1  2  3  4  5  6(trap)
+		// clang-format off
 		/* ! */			{1, 1, 2, 6, 4, 0, 0},
 		/* [ */			{2, 0, 2, 6, 4, 2, 0},
 		/* ] */			{0, 0, 3, 6, 4, 0, 0},
@@ -106,6 +107,7 @@ struct transitionLink genLinkTransitionTable() {
 		/* ) */			{0, 0, 2, 6, 5, 0, 0},
 		/* # */			{0, 0, 2, 6, 4, 0, 0},
 		/* other*/		{0, 0, 2, 6, 4, 0, 0},
+		// clang-format on
         }
     };
     return out;
@@ -129,6 +131,7 @@ static inline int titleIsGoal (int old, int new)
 struct transitionTitle genTitleTransitionTable() {
     struct transitionTitle out = {
         {//char\state    0  1  2  3
+		// clang-format off
 		/* ! */			{1, 1, 1, 3},
 		/* [ */			{1, 1, 1, 3},
 		/* ] */			{1, 1, 1, 3},
@@ -138,6 +141,7 @@ struct transitionTitle genTitleTransitionTable() {
 		/* ) */			{1, 1, 1, 3},
 		/* # */			{3, 1, 3, 3},
 		/* other*/		{1, 1, 1, 3},
+		// clang-format on
         }
     };
     return out;

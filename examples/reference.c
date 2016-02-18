@@ -9,48 +9,48 @@
 #include <kdb.h>
 #include <stdio.h>
 
-void f(Key *k)
+void f (Key * k)
 {
-	printf ("\tf called with %s\n", keyName(k));
+	printf ("\tf called with %s\n", keyName (k));
 	keySetName (k, "user/delete");
 	keyDel (k);
 }
 
-void h(Key *k)
+void h (Key * k)
 {
-	printf ("\th called with %s\n", keyName(k));
+	printf ("\th called with %s\n", keyName (k));
 	keyIncRef (k);
 
-	f(k);
+	f (k);
 
 	keyDecRef (k);
 }
 
-int main(void)
+int main (void)
 {
-	Key *k = keyNew("user/key1", KEY_END);
-	printf ("key has ref %zu\n", keyGetRef(k));
+	Key * k = keyNew ("user/key1", KEY_END);
+	printf ("key has ref %zu\n", keyGetRef (k));
 
-	f(k);
+	f (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew("user/key2", KEY_END);
+	k = keyNew ("user/key2", KEY_END);
 	keyIncRef (k);
-	printf ("key has ref %zu\n", keyGetRef(k));
+	printf ("key has ref %zu\n", keyGetRef (k));
 
-	f(k);
-	printf ("key renamed to %s\n", keyName(k));
+	f (k);
+	printf ("key renamed to %s\n", keyName (k));
 
-	f(k);
+	f (k);
 
 	keyDecRef (k);
-	printf ("key has ref %zu\n", keyGetRef(k));
+	printf ("key has ref %zu\n", keyGetRef (k));
 	keyDel (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew("user/key3", KEY_END);
-	printf ("key has ref %zu\n", keyGetRef(k));
-	h(k);
+	k = keyNew ("user/key3", KEY_END);
+	printf ("key has ref %zu\n", keyGetRef (k));
+	h (k);
 	keyDel (k);
 	printf ("key is now deleted\n");
 
