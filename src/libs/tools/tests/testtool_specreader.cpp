@@ -104,6 +104,7 @@ TEST(SpecReader, withNeedsResolved)
 	mpd->data [PluginSpec("b")] ["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
+// clang-format off
 	sr.readSpecification(KeySet(5,
 				*Key ("spec", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
@@ -115,6 +116,7 @@ TEST(SpecReader, withNeedsResolved)
 					KEY_META, "infos/needs", "a b",
 					KEY_END),
 				KS_END));
+// clang-format on
 	SpecBackendBuilder bi = sr.getBackends() [Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "/mp");
@@ -146,6 +148,7 @@ TEST(SpecReader, withNeedsResolvedPreferences)
 	mpd->data [PluginSpec("r")] ["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
+// clang-format off
 	sr.readSpecification(KeySet(5,
 				*Key ("spec", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
@@ -154,6 +157,7 @@ TEST(SpecReader, withNeedsResolvedPreferences)
 				*Key ("spec/mp/below",
 					KEY_END),
 				KS_END));
+// clang-format on
 	SpecBackendBuilder bi = sr.getBackends() [Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "/mp");
@@ -181,6 +185,7 @@ TEST(SpecReader, withNeedsResolvedPreferencesPlugins)
 	mpd->data [PluginSpec("r")] ["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
+// clang-format off
 	sr.readSpecification(KeySet(5,
 				*Key ("spec", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
@@ -190,6 +195,7 @@ TEST(SpecReader, withNeedsResolvedPreferencesPlugins)
 				*Key ("spec/mp/below",
 					KEY_END),
 				KS_END));
+// clang-format on
 	SpecBackendBuilder bi = sr.getBackends() [Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "/mp");
@@ -256,6 +262,7 @@ TEST(SpecReader, withNeedsResolvedPreferencesIgnored)
 	mpd->data [PluginSpec("r")] ["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
+// clang-format off
 	sr.readSpecification(KeySet(5,
 				*Key ("spec", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
@@ -265,6 +272,7 @@ TEST(SpecReader, withNeedsResolvedPreferencesIgnored)
 					KEY_META, "infos/needs", "resolver storage",
 					KEY_END),
 				KS_END));
+// clang-format on
 	SpecBackendBuilder bi = sr.getBackends() [Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "/mp");
@@ -284,6 +292,7 @@ TEST(SpecReader, withMetadata)
 	mpd->data [PluginSpec("mathcheck")] ["metadata"] = "check/math";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
+// clang-format off
 	sr.readSpecification(KeySet(5,
 				*Key ("spec", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
@@ -294,6 +303,7 @@ TEST(SpecReader, withMetadata)
 					KEY_META, "check/math", "below >= 3",
 					KEY_END),
 				KS_END));
+// clang-format on
 	SpecBackendBuilder bi = sr.getBackends() [Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint(), "/mp");
@@ -385,6 +395,7 @@ TEST(SpecReader, pluginConfiguration)
 	mpd->data [PluginSpec("lua#rename")] ["status"] = "memleak";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr(mpi);
+// clang-format off
 	sr.readSpecification(KeySet(5,
 				*Key ("spec", KEY_END),
 				*Key ("spec/mp", KEY_META, "mountpoint", "file.ini",
@@ -398,6 +409,7 @@ TEST(SpecReader, pluginConfiguration)
 					KEY_META, "rename/toupper", "1",
 					KEY_END),
 				KS_END));
+// clang-format on
 	SpecBackendBuilder bi = sr.getBackends() [Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 3);
 	EXPECT_EQ (bi.getMountpoint(), "/mp");

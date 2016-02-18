@@ -40,6 +40,7 @@ static Key *createMergingKey (int i) {
 	return key;
 }
 
+// clang-format off
 static KeySet* createSimpleTestKeys()
 {
 	/* the keys to be converted are simply appended to the next
@@ -241,6 +242,7 @@ static KeySet* createSameLevelTestKeys()
 					KEY_END),
 			KS_END);
 }
+// clang-format on
 
 void test_parentAppendMode()
 {

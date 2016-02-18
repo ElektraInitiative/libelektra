@@ -37,6 +37,7 @@ static KeySet *createSimpleTestKeys()
 
 static KeySet *createSimpleMetaTestKeys()
 {
+// clang-format off
 	return ksNew (20,
 			keyNew("user/tests/rename/will/be/stripped/key1",
 					KEY_VALUE, "value1",
@@ -53,6 +54,7 @@ static KeySet *createSimpleMetaTestKeys()
 					KEY_VALUE, "value4",
 					KEY_END),
 			KS_END);
+// clang-format on
 }
 
 static void checkSimpleTestKeys(KeySet* ks)
@@ -268,6 +270,7 @@ static void test_rebaseOfNewKeys()
 			keyNew ("system/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
 	PLUGIN_OPEN("rename");
 
+// clang-format off
 	KeySet *ks = ksNew(20,
 			/* this key was seen by rename before and wont be changed */
 			keyNew("user/tests/rename/key1",
@@ -279,6 +282,7 @@ static void test_rebaseOfNewKeys()
 					KEY_VALUE, "value2",
 					KEY_END),
 			KS_END);
+// clang-format on
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
 			"call to kdbSet was not successful");

@@ -116,12 +116,14 @@ void test_zeroMatchFlags()
 void test_setGlobalMatch()
 {
 	Key *parentKey = keyNew ("user/tests/glob", KEY_END);
+// clang-format off
 	KeySet *conf = ksNew (20,
 			keyNew ("user/glob/#1", KEY_VALUE, "/*",
 					KEY_META, "testmetakey1", "testvalue1",
 					KEY_META, "testmetakey2", "testvalue2",
 					KEY_END),
 			KS_END);
+// clang-format on
 	PLUGIN_OPEN("glob");
 
 	KeySet* ks = createKeys ();
@@ -141,12 +143,14 @@ void test_setGlobalMatch()
 void test_getGlobalMatch()
 {
 	Key *parentKey = keyNew ("user/tests/glob", KEY_END);
+// clang-format off
 	KeySet *conf = ksNew (20,
 			keyNew ("user/glob/#1", KEY_VALUE, "/*",
 					KEY_META, "testmetakey1", "testvalue1",
 					KEY_META, "testmetakey2", "testvalue2",
 					KEY_END),
 			KS_END);
+// clang-format on
 	PLUGIN_OPEN("glob");
 
 	KeySet* ks = createKeys ();
@@ -166,6 +170,7 @@ void test_getGlobalMatch()
 void test_getDirectionMatch()
 {
 	Key *parentKey = keyNew ("user/tests/glob", KEY_END);
+// clang-format off
 	KeySet *conf = ksNew (20,
 			keyNew ("user/glob/get/#1", KEY_VALUE, "/*",
 					KEY_META, "testmetakey1", "testvalue1",
@@ -176,6 +181,7 @@ void test_getDirectionMatch()
 					KEY_META, "testmetakey2", "testvalue2",
 					KEY_END),
 			KS_END);
+// clang-format on
 	PLUGIN_OPEN("glob");
 
 	KeySet* ks = createKeys ();
@@ -195,6 +201,7 @@ void test_getDirectionMatch()
 void test_setDirectionMatch()
 {
 	Key *parentKey = keyNew ("user/tests/glob", KEY_END);
+// clang-format off
 	KeySet *conf = ksNew (20,
 			keyNew ("user/glob/set/#1", KEY_VALUE, "/*",
 					KEY_META, "testmetakey1", "testvalue1",
@@ -205,6 +212,7 @@ void test_setDirectionMatch()
 					KEY_META, "testmetakey2", "testvalue2",
 					KEY_END),
 			KS_END);
+// clang-format on
 	PLUGIN_OPEN("glob");
 
 	KeySet* ks = createKeys ();

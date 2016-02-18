@@ -341,12 +341,14 @@ static void test_copy()
 	Key *k;
 	Key *c;
 
+// clang-format off
 	k=keyNew ("user/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the meta data later",
 		KEY_META, "mode", "0775",
 		KEY_END);
+// clang-format on
 	c=keyNew ("user/metacopy", KEY_END);
 
 	succeed_if (keyGetMeta(k, "t") != 0, "could not get meta key");
@@ -366,6 +368,7 @@ static void test_copy()
 
 
 
+// clang-format off
 	k=keyNew ("user/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
@@ -377,6 +380,7 @@ static void test_copy()
 		KEY_META, "a", "wrong",
 		KEY_META, "old", "will stay",
 		KEY_END);
+// clang-format on
 
 	succeed_if (keyGetMeta(k, "t") != 0, "could not get meta key");
 	succeed_if (keyGetMeta(k, "a") != 0, "could not get meta key");
@@ -402,6 +406,7 @@ static void test_copy()
 static void test_new()
 {
 	Key *key;
+// clang-format off
 	key = keyNew ("user/test",
 		KEY_META, "hello", "hello_world",
 		KEY_META, "mode", "0644",
@@ -409,6 +414,7 @@ static void test_new()
 		KEY_META, "empty", "",
 		KEY_META, "", "empty",
 		KEY_END);
+// clang-format on
 
 	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "hello_world"),
 			"could not receive previously set meta information");
@@ -425,6 +431,7 @@ static void test_new()
 
 	keyDel (key);
 
+// clang-format off
 	key = keyNew ("user/test",
 		KEY_META, "hello", "goodbye",
 		KEY_META, "mode", "0775",
@@ -432,6 +439,7 @@ static void test_new()
 		KEY_META, "empty", "",
 		KEY_META, "", "",
 		KEY_END);
+// clang-format on
 
 	succeed_if (!strcmp(keyValue(keyGetMeta(key, "hello")), "goodbye"),
 			"could not receive previously set meta information");
@@ -516,12 +524,14 @@ static void test_copyall()
 	Key *k;
 	Key *c;
 
+// clang-format off
 	k=keyNew ("user/metakey",
 		KEY_META, "t", "test1",
 		KEY_META, "a", "another",
 		KEY_META, "cya", "see the meta data later",
 		KEY_META, "mode", "0775",
 		KEY_END);
+// clang-format on
 	c=keyNew ("user/metacopy", KEY_END);
 
 	succeed_if (keyGetMeta(k, "t") != 0, "could not get meta key");

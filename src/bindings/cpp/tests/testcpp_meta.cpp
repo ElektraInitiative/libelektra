@@ -75,11 +75,13 @@ TEST(meta, basic)
 
 TEST(meta, iter)
 {
+// clang-format on
 	Key k ("user/metakey",
 		KEY_META, "a", "meta",
 		KEY_META, "b", "my",
 		KEY_META, "c", "other",
 		KEY_END);
+// clang-format off
 
 	Key meta; //key = keyNew(0)
 

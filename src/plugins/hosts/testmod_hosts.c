@@ -146,6 +146,7 @@ void test_duplicateOrder(char *fileName)
 	KeySet *conf = 0;
 	PLUGIN_OPEN("hosts");
 
+// clang-format off
 	KeySet *ks = ksNew (20,
 			keyNew ("user/tests/hosts/ipv4/host1",
 					KEY_VALUE, "192.168.0.1",
@@ -160,6 +161,7 @@ void test_duplicateOrder(char *fileName)
 					KEY_META, "order", "20",
 					KEY_END),
 			KS_END);
+// clang-format on
 
 	ksAppendKey (ks, parentKey);
 
@@ -183,6 +185,7 @@ void test_writeHostsSimple(char *fileName)
 	KeySet *conf = 0;
 	PLUGIN_OPEN("hosts");
 
+// clang-format off
 	KeySet *ks = ksNew (20,
 			keyNew ("user/tests/hosts/ipv4/localhost",
 					KEY_VALUE, "127.0.0.1",
@@ -213,6 +216,7 @@ void test_writeHostsSimple(char *fileName)
 					KEY_META, "order", "40",
 					KEY_END),
 			KS_END);
+// clang-format on
 
 	ksAppendKey (ks, parentKey);
 
@@ -358,6 +362,7 @@ void test_writeHostsComments(char *fileName)
 	KeySet *conf = 0;
 	PLUGIN_OPEN("hosts");
 
+// clang-format off
 	KeySet *ks = ksNew (20,
 			keyNew ("user/tests/hosts/ipv4/localhost",
 					KEY_VALUE, "127.0.0.1",
@@ -388,6 +393,7 @@ void test_writeHostsComments(char *fileName)
 			keyNew ("user/tests/hosts/ipv4/testentry/alias2",
 					KEY_END),
 			KS_END);
+// clang-format on
 
 	keySetMeta(parentKey, "comment/#1", "");
 	keySetMeta(parentKey, "comment/#2", " comment without entry");

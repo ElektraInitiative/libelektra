@@ -19,6 +19,7 @@ G_BEGIN_DECLS
 typedef struct _GElektraKey      GElektraKey;
 typedef struct _GElektraKeyClass GElektraKeyClass;
 
+// clang-format off
 typedef enum {
 	GELEKTRA_KEY_FLAGS          = KEY_FLAGS,
 	GELEKTRA_KEY_END            = KEY_END,
@@ -41,6 +42,7 @@ typedef enum {
 	GELEKTRA_KEY_CASCADING_NAME = KEY_CASCADING_NAME,
 	GELEKTRA_KEY_META_NAME      = KEY_META_NAME
 } GElektraKeySwitch;
+// clang-format on
 
 struct _GElektraKey
 {

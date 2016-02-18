@@ -20,6 +20,7 @@
 
 #include <tests_internal.h>
 
+// clang-format off
 KeySet *getEmptyKeys()
 {
 	return ksNew(1,
@@ -457,6 +458,7 @@ KeySet *getSomeBelowKeys()
 			KS_END);
 }
 
+// clang-format on
 
 KeySet *modules;
 

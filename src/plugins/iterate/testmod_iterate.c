@@ -33,9 +33,11 @@ static void test_basics ()
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 0,
 			"call to kdbSet was not successful");
 
+// clang-format off
 	ksAppendKey (ks, keyNew("user/tests/iterate/key",
 				KEY_META, "iterate", "has",
 				KEY_END));
+// clang-format on
 
 	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1,

@@ -27,12 +27,14 @@ TEST(test_contextual_policy, staticGetPolicy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
+// clang-format off
 	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy>> cv
 		(ks, c, Key("/test",
 			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
+// clang-format on
 	EXPECT_EQ(cv, 23);
 	EXPECT_EQ(cv, cv);
 	cv = 40;
@@ -105,12 +107,14 @@ TEST(test_contextual_policy, ValueWrapper)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
+// clang-format off
 	ValueWrapper<int, WritePolicyIs<DefaultWritePolicy>> cv
 		(ks, c, Key("/test",
 			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
+// clang-format on
 	EXPECT_EQ(cv.value, 23);
 	EXPECT_EQ(cv.value, cv.value);
 	cv.value = 40;
@@ -138,12 +142,14 @@ TEST(test_contextual_policy, setPolicy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
+// clang-format off
 	ContextualValue<int, SetPolicyIs<MySetPolicy<int>>> cv
 		(ks, c, Key("/test",
 			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
+// clang-format on
 	EXPECT_EQ(cv, 88);
 	EXPECT_EQ(cv, 88);
 	EXPECT_TRUE(ks.lookup("/test")) << "did not find /test";
@@ -193,12 +199,14 @@ TEST(test_contextual_policy, dynamicGetPolicy)
 				KEY_VALUE, "12",
 				KEY_END));
 	Context c;
+// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/test",
 			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
 			KEY_META, "override/#0", "user/available",
 			KEY_END));
+// clang-format on
 
 	EXPECT_EQ(cv, 12);
 	EXPECT_EQ(cv, cv);
@@ -230,12 +238,14 @@ TEST(test_contextual_policy, root)
 				KEY_VALUE, "12",
 				KEY_END));
 	Context c;
+// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/",
 			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
 			KEY_META, "override/#0", "user/available",
 			KEY_END));
+// clang-format on
 
 	EXPECT_EQ(cv, 12);
 	EXPECT_EQ(cv, cv);

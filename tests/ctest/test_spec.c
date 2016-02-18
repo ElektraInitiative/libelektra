@@ -77,6 +77,7 @@ static void test_lookupChainLast()
 	Key *k2 = 0;
 	Key *k3 = 0;
 	Key *k4 = 0;
+// clang-format off
 	KeySet *ks= ksNew(20,
 		k1 = keyNew("spec/key",
 			KEY_VALUE, "spec value",
@@ -88,6 +89,7 @@ static void test_lookupChainLast()
 		k3 = keyNew("dir/key", KEY_VALUE, "wrong dir value", KEY_END),
 		k4 = keyNew("user/override", KEY_VALUE, "ok", KEY_END),
 		KS_END);
+// clang-format on
 
 	Key *found = ksLookupByName(ks, "/key", 0);
 	succeed_if(found == k4, "found wrong key");
@@ -113,6 +115,7 @@ static void test_lookupChainRealWorld()
 	Key *k2 = 0;
 	Key *k3 = 0;
 	Key *k4 = 0;
+// clang-format off
 	KeySet *ks= ksNew(20,
 		k1 = keyNew("spec/sw/P/current/editor",
 			KEY_META, "example", "vim",
@@ -124,6 +127,7 @@ static void test_lookupChainRealWorld()
 		k3 = keyNew("dir/sw/P/current/editor", KEY_VALUE, "wrong dir value", KEY_END),
 		k4 = keyNew("user/sw/P/current/editor", KEY_VALUE, "wrong user value", KEY_END),
 		KS_END);
+// clang-format on
 
 	Key *found = ksLookupByName(ks, "/sw/P/current/editor", 0);
 	succeed_if(found == k2, "found wrong key");
@@ -144,6 +148,7 @@ static void test_lookupNoOverride()
 {
 	printf ("Test lookup with override not found\n");
 
+// clang-format off
 	Key *specKey = keyNew("/test/lift/limit",
 			KEY_CASCADING_NAME,
 			KEY_META, "default", "1",
@@ -151,6 +156,7 @@ static void test_lookupNoOverride()
 			KEY_META, "override/#1", "/test/material_lift/limit",
 			KEY_META, "override/#2", "/test/heavy_material_lift/limit",
 			KEY_END);
+// clang-format on
 	Key *dup = keyDup(specKey);
 
 	Key *k1 = 0;
@@ -295,6 +301,7 @@ static void test_lookupLongChain()
 {
 	printf ("Test lookup long chain\n");
 
+// clang-format off
 	Key *specKey = keyNew("user/4",
 			KEY_META, "override/#0", "user/something",
 			KEY_META, "override/#1", "user/something",
@@ -314,6 +321,7 @@ static void test_lookupLongChain()
 			KEY_META, "override/#_14", "user/something",
 			KEY_META, "override/#_15", "user/something",
 			KEY_END);
+// clang-format on
 	Key *k1 = 0;
 	Key *k2 = 0;
 	Key *k3 = 0;

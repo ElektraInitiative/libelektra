@@ -56,6 +56,7 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 
 	if (!strcmp (keyName(parentKey), "system/elektra/modules/fstab"))
 	{
+// clang-format off
 		KeySet *moduleConfig = ksNew (50,
 			keyNew ("system/elektra/modules/fstab",
 				KEY_VALUE, "fstab plugin waits for your orders", KEY_END),
@@ -99,6 +100,7 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 				KEY_META, "check/type", "unsigned_short",
 				KEY_END),
 			KS_END);
+// clang-format on
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;

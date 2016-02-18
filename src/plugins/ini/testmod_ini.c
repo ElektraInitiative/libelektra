@@ -67,6 +67,7 @@ static void test_plainIniWrite(char *fileName)
 			KS_END);
 	PLUGIN_OPEN("ini");
 
+// clang-format off
 	KeySet *ks = ksNew (30,
 			keyNew ("user/tests/ini-write/nosectionkey",
 					KEY_VALUE, "nosectionvalue",
@@ -88,6 +89,7 @@ static void test_plainIniWrite(char *fileName)
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2/emptykey", KEY_END),
 			KS_END);
+// clang-format on
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
 			"call to kdbSet was not successful");
@@ -112,13 +114,13 @@ static void test_plainIniEmptyWrite(char *fileName)
 			KS_END);
 	PLUGIN_OPEN("ini");
 
+// clang-format off
 	KeySet *ks = ksNew (30,
 			keyNew ("user/tests/ini-write/nosectionkey",
 					KEY_VALUE, "nosectionvalue",
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1",
 					KEY_BINARY,
-
 					KEY_END),
 			keyNew ("user/tests/ini-write/section1/key1",
 					KEY_VALUE, "value1",
@@ -134,6 +136,7 @@ static void test_plainIniEmptyWrite(char *fileName)
 					KEY_END),
 			keyNew ("user/tests/ini-write/section2/emptykey", KEY_META, "ini/empty", "", KEY_END),
 			KS_END);
+// clang-format on
 
 	succeed_if(plugin->kdbSet (plugin, ks, parentKey) >= 1,
 			"call to kdbSet was not successful");

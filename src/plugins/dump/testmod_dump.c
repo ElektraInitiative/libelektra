@@ -23,6 +23,7 @@
 KeySet * get_dump()
 {
 	Key *k1, *k2;
+// clang-format off
 	KeySet *ks = ksNew(10,
 			k1 = keyNew("user/tests/dump",
 			       KEY_VALUE, "root key",
@@ -38,6 +39,7 @@ KeySet * get_dump()
 			       KEY_END),
 			KS_END
 		);
+// clang-format on
 	keyCopyMeta(k1, k2, "ab");
 
 	return ks;

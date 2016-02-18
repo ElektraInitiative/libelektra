@@ -20,6 +20,7 @@
 
 void test_addr()
 {
+// clang-format off
 	Key * k = keyNew ("user/anything",
 			KEY_VALUE, "192.168.0.1",
 			KEY_META, "check/ipaddr", "",
@@ -47,6 +48,7 @@ void test_addr()
 			KEY_END);
 	succeed_if (elektraNetworkAddrInfo(k) == EAI_NONAME, "could not check ipv4 addr");
 	keyDel (k);
+// clang-format on
 }
 
 

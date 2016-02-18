@@ -248,11 +248,13 @@ TEST(type, min)
 	KeySet config;
 	TypeChecker tc(config);
 
+// clang-format off
 	Key k ("user/anything",
 		KEY_VALUE, "0",
 		KEY_META, "check/type", "unsigned_short",
 		KEY_META, "check/type/min", "23",
 		KEY_END);
+// clang-format on
 	succeed_if (!tc.check(k), "should fail because below min");
 	k.setString("0");
 	succeed_if (!tc.check(k), "should fail because below min");
@@ -308,11 +310,13 @@ void test_max()
 	KeySet config;
 	TypeChecker tc(config);
 
+// clang-format off
 	Key k ("user/anything",
 		KEY_VALUE, "0",
 		KEY_META, "check/type", "unsigned_short",
 		KEY_META, "check/type/max", "123",
 		KEY_END);
+// clang-format on
 	succeed_if (tc.check(k), "should pass");
 	k.setString("0");
 	succeed_if (tc.check(k), "should pass");
@@ -364,12 +368,14 @@ TEST(type, minmax)
 	KeySet config;
 	TypeChecker tc(config);
 
+// clang-format off
 	Key k ("user/anything",
 		KEY_VALUE, "0",
 		KEY_META, "check/type", "unsigned_short",
 		KEY_META, "check/type/min", "23",
 		KEY_META, "check/type/max", "123",
 		KEY_END);
+// clang-format on
 	succeed_if (!tc.check(k), "should fail because below min");
 	k.setString("0");
 	succeed_if (!tc.check(k), "should fail because below min");

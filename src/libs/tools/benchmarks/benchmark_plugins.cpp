@@ -74,6 +74,7 @@ __attribute__((noinline)) void benchmark_backend()
 		kdb.get (ks, mp);
 		for (int i = 0; i< nr_keys; ++i)
 		{
+// clang-format off
 			ks.append (Key ("system/iterate/" + std::to_string (i%10) + "/" + std::to_string (i/10),
 					KEY_VALUE, "value",
 					KEY_META, "iterate", "value",
@@ -88,6 +89,7 @@ __attribute__((noinline)) void benchmark_backend()
 					KEY_META, "iterate8", "value",
 					KEY_META, "iterate9", "value",
 					KEY_END));
+// clang-format on
 		}
 		kdb.set (ks, mp);
 	}

@@ -82,6 +82,7 @@ static void test_hostLensWrite(char *fileName)
 			keyNew ("system/lens", KEY_VALUE, "Hosts.lns", KEY_END), KS_END);
 	PLUGIN_OPEN("augeas");
 
+// clang-format off
 	KeySet *ks = ksNew (30, keyNew ("user/tests/augeas-hosts/1", KEY_END),
 			keyNew ("user/tests/augeas-hosts/1/ipaddr", KEY_VALUE, "127.0.0.1",
 					KEY_META, "order", "10", KEY_END),
@@ -107,6 +108,7 @@ static void test_hostLensWrite(char *fileName)
 					"host2alias1", KEY_META, "order", "90", KEY_END),
 			keyNew ("user/tests/augeas-hosts/3/alias[2]", KEY_VALUE,
 					"host2alias2", KEY_META, "order", "100", KEY_END), KS_END);
+// clang-format on
 
 	ksAppendKey (ks, parentKey);
 
