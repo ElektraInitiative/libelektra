@@ -11,38 +11,44 @@
 
 #include <kdb.h>
 
-#define ELEKTRA_SET_ERROR_GET(parentKey) \
-	do { \
-		if (errno == EACCES) ELEKTRA_SET_ERROR(109, parentKey, strerror(errno)); \
-		else  ELEKTRA_SET_ERROR(110, parentKey, strerror(errno)); \
+#define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		if (errno == EACCES)                                                                                                       \
+			ELEKTRA_SET_ERROR (109, parentKey, strerror (errno));                                                              \
+		else                                                                                                                       \
+			ELEKTRA_SET_ERROR (110, parentKey, strerror (errno));                                                              \
 	} while (0)
 
-#define ELEKTRA_SET_ERROR_SET(parentKey) \
-	do { \
-		if (errno == EACCES) ELEKTRA_SET_ERROR(9, parentKey, strerror(errno)); \
-		else  ELEKTRA_SET_ERROR(75, parentKey, strerror(errno)); \
+#define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
+	do                                                                                                                                 \
+	{                                                                                                                                  \
+		if (errno == EACCES)                                                                                                       \
+			ELEKTRA_SET_ERROR (9, parentKey, strerror (errno));                                                                \
+		else                                                                                                                       \
+			ELEKTRA_SET_ERROR (75, parentKey, strerror (errno));                                                               \
 	} while (0)
 
-#define ELEKTRA_QUOTE(x)       #x
+#define ELEKTRA_QUOTE(x) #x
 
 #ifdef ELEKTRA_STATIC
-	#ifdef ELEKTRA_VARIANT
-		#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2(module, ELEKTRA_VARIANT)
-		#define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3(module, variant)
-		#define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol(void)
-	#else
-		#define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol(void)
-	#endif
+#ifdef ELEKTRA_VARIANT
+#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2 (module, ELEKTRA_VARIANT)
+#define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3 (module, variant)
+#define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol (void)
 #else
-        #define ELEKTRA_PLUGIN_EXPORT(module) elektraPluginSymbol(void)
+#define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol (void)
+#endif
+#else
+#define ELEKTRA_PLUGIN_EXPORT(module) elektraPluginSymbol (void)
 #endif
 
 #ifdef ELEKTRA_VARIANT
-	#define ELEKTRA_PLUGIN_FUNCTION(module, function) ELEKTRA_PLUGIN_FUNCTION2(module, ELEKTRA_VARIANT, function)
-	#define ELEKTRA_PLUGIN_FUNCTION2(module, variant, function) ELEKTRA_PLUGIN_FUNCTION3(module, variant, function)
-	#define ELEKTRA_PLUGIN_FUNCTION3(module, variant, function) libelektra_##module##_##variant##_LTX_elektraPlugin##function
+#define ELEKTRA_PLUGIN_FUNCTION(module, function) ELEKTRA_PLUGIN_FUNCTION2 (module, ELEKTRA_VARIANT, function)
+#define ELEKTRA_PLUGIN_FUNCTION2(module, variant, function) ELEKTRA_PLUGIN_FUNCTION3 (module, variant, function)
+#define ELEKTRA_PLUGIN_FUNCTION3(module, variant, function) libelektra_##module##_##variant##_LTX_elektraPlugin##function
 #else
-	/**
+/**
 	 * @brief Declare a plugin's function name suitable for
 	 * compilation variants (see doc/tutorials).
 	 *
@@ -54,15 +60,15 @@
 	 * @param plugin the name of the plugin
 	 * @param function which function it is (open, close, get, set, error)
 	 */
-	#define ELEKTRA_PLUGIN_FUNCTION(module, function) libelektra_##module##_LTX_elektraPlugin##function
+#define ELEKTRA_PLUGIN_FUNCTION(module, function) libelektra_##module##_LTX_elektraPlugin##function
 #endif
 
 #ifdef ELEKTRA_VARIANT
-	#define ELEKTRA_README(module) ELEKTRA_README2(module, ELEKTRA_VARIANT)
-	#define ELEKTRA_README2(module, variant) ELEKTRA_README3(module, variant)
-	#define ELEKTRA_README3(module, variant) ELEKTRA_QUOTE(readme_##module##_##variant.c)
+#define ELEKTRA_README(module) ELEKTRA_README2 (module, ELEKTRA_VARIANT)
+#define ELEKTRA_README2(module, variant) ELEKTRA_README3 (module, variant)
+#define ELEKTRA_README3(module, variant) ELEKTRA_QUOTE (readme_##module##_##variant.c)
 #else
-	/**
+/**
 	 * @brief The filename for inclusion of the readme for
 	 * compilation variants (see doc/tutorials).
 	 *
@@ -70,8 +76,8 @@
 	 *
 	 * @param plugin the name of the plugin
 	 */
-	#define ELEKTRA_README(module) ELEKTRA_README2(module)
-	#define ELEKTRA_README2(module) ELEKTRA_QUOTE(readme_##module.c)
+#define ELEKTRA_README(module) ELEKTRA_README2 (module)
+#define ELEKTRA_README2(module) ELEKTRA_QUOTE (readme_##module.c)
 #endif
 
 
@@ -92,19 +98,19 @@ typedef enum {
 } plugin_t;
 
 
-
 #ifdef __cplusplus
-namespace ckdb {
+namespace ckdb
+{
 extern "C" {
 #endif
 
-typedef struct _Plugin	Plugin;
+typedef struct _Plugin Plugin;
 
-Plugin *elektraPluginExport(const char *pluginName, ...);
+Plugin * elektraPluginExport (const char * pluginName, ...);
 
-KeySet *elektraPluginGetConfig(Plugin *handle);
-void elektraPluginSetData(Plugin *plugin, void *handle);
-void* elektraPluginGetData(Plugin *plugin);
+KeySet * elektraPluginGetConfig (Plugin * handle);
+void elektraPluginSetData (Plugin * plugin, void * handle);
+void * elektraPluginGetData (Plugin * plugin);
 
 
 #define PLUGINVERSION "1"

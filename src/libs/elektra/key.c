@@ -31,7 +31,6 @@
 #include "kdbprivate.h"
 
 
-
 /**
  * @defgroup key Key
  *
@@ -75,18 +74,18 @@
  */
 
 
-
 /*
  * @internal
  *
  * Allocates and initializes a key
  * @returns 0 if allocation did not work, the key otherwise
  */
-static Key *elektraKeyMalloc()
+static Key * elektraKeyMalloc ()
 {
-	Key *key = (Key *)elektraMalloc(sizeof(Key));
-	if (!key) return 0;
-	keyInit(key);
+	Key * key = (Key *)elektraMalloc (sizeof (Key));
+	if (!key)
+		return 0;
+	keyInit (key);
 
 	return key;
 }
@@ -186,18 +185,18 @@ static Key *elektraKeyMalloc()
  * @ingroup key
  *
  */
-Key *keyNew(const char *name, ...)
+Key * keyNew (const char * name, ...)
 {
 	Key * k;
 	va_list va;
 
 	if (!name)
 	{
-		k = elektraKeyMalloc();
+		k = elektraKeyMalloc ();
 	}
 	else
 	{
-		va_start(va,name);
+		va_start (va, name);
 		k = keyVNew (name, va);
 		va_end (va);
 	}
@@ -212,11 +211,12 @@ Key *keyNew(const char *name, ...)
  * @pre caller must use va_start and va_end on va
  * @param va the variadic argument list
  */
-Key *keyVNew (const char *name, va_list va)
+Key * keyVNew (const char * name, va_list va)
 {
-	Key *key=elektraKeyMalloc();
-	if (!key) return 0;
-	keyVInit(key, name, va);
+	Key * key = elektraKeyMalloc ();
+	if (!key)
+		return 0;
+	keyVInit (key, name, va);
 	return key;
 }
 
@@ -266,38 +266,36 @@ int g (const Key * source, KeySet * ks)
  * @see ksAppend(), keyDel(), keyNew()
  * @ingroup key
  */
-Key* keyDup(const Key *source)
+Key * keyDup (const Key * source)
 {
 	Key * dest = 0;
 
-	if (!source) return 0;
+	if (!source)
+		return 0;
 
-	dest = elektraKeyMalloc();
-	if (!dest) return 0;
+	dest = elektraKeyMalloc ();
+	if (!dest)
+		return 0;
 
 	/* Copy the struct data */
-	*dest=*source;
+	*dest = *source;
 
 	/* get rid of properties bound to old key */
 	dest->ksReference = 0;
-	dest->flags=KEY_FLAG_SYNC;
+	dest->flags = KEY_FLAG_SYNC;
 
 	/* prepare to set dynamic properties */
-	dest->key=
-	dest->data.v=
-	dest->meta=0;
+	dest->key = dest->data.v = dest->meta = 0;
 
 	/* copy dynamic properties */
-	if (keyCopy(dest, source) == -1)
+	if (keyCopy (dest, source) == -1)
 	{
-		keyDel(dest);
+		keyDel (dest);
 		return 0;
 	}
 
 	return dest;
 }
-
-
 
 
 /**
@@ -349,13 +347,13 @@ Key* keyDup(const Key *source)
  * @retval 1 when source was successfully copied
  * @see keyDup() to get a duplication of a key
  */
-int keyCopy (Key *dest, const Key *source)
+int keyCopy (Key * dest, const Key * source)
 {
-	if (!dest) return -1;
+	if (!dest)
+		return -1;
 
-	if (test_bit(dest->flags, KEY_FLAG_RO_NAME)
-	  || test_bit(dest->flags, KEY_FLAG_RO_VALUE)
-	  || test_bit(dest->flags, KEY_FLAG_RO_META))
+	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) || test_bit (dest->flags, KEY_FLAG_RO_VALUE) ||
+	    test_bit (dest->flags, KEY_FLAG_RO_META))
 	{
 		return -1;
 	}
@@ -367,37 +365,46 @@ int keyCopy (Key *dest, const Key *source)
 	}
 
 	// remember dynamic memory to be removed
-	char *destKey = dest->key;
-	void *destData = dest->data.c;
-	KeySet *destMeta = dest->meta;
+	char * destKey = dest->key;
+	void * destData = dest->data.c;
+	KeySet * destMeta = dest->meta;
 
 	// duplicate dynamic properties
 	if (source->key)
 	{
-		dest->key = elektraStrNDup(source->key, source->keySize + source->keyUSize);
-		if (!dest->key) goto memerror;
-	} else {
+		dest->key = elektraStrNDup (source->key, source->keySize + source->keyUSize);
+		if (!dest->key)
+			goto memerror;
+	}
+	else
+	{
 		dest->key = 0;
 	}
 
 	if (source->data.v)
 	{
-		dest->data.v = elektraStrNDup(source->data.v, source->dataSize);
-		if (!dest->data.v) goto memerror;
-	} else {
+		dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
+		if (!dest->data.v)
+			goto memerror;
+	}
+	else
+	{
 		dest->data.v = 0;
 	}
 
 	if (source->meta)
 	{
 		dest->meta = ksDup (source->meta);
-		if (!dest->meta) goto memerror;
-	} else {
+		if (!dest->meta)
+			goto memerror;
+	}
+	else
+	{
 		dest->meta = 0;
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
-	set_bit(dest->flags, KEY_FLAG_SYNC);
+	set_bit (dest->flags, KEY_FLAG_SYNC);
 
 	// copy sizes accordingly
 	dest->keySize = source->keySize;
@@ -405,25 +412,22 @@ int keyCopy (Key *dest, const Key *source)
 	dest->dataSize = source->dataSize;
 
 	// free old resources of destination
-	elektraFree(destKey);
-	elektraFree(destData);
-	ksDel(destMeta);
+	elektraFree (destKey);
+	elektraFree (destData);
+	ksDel (destMeta);
 
 	return 1;
 
 memerror:
-	elektraFree(dest->key);
-	elektraFree(dest->data.v);
-	ksDel(dest->meta);
+	elektraFree (dest->key);
+	elektraFree (dest->data.v);
+	ksDel (dest->meta);
 
 	dest->key = destKey;
 	dest->data.v = destData;
 	dest->meta = destMeta;
 	return -1;
 }
-
-
-
 
 
 /**
@@ -453,17 +457,19 @@ memerror:
  * @ingroup key
  *
  */
-int keyDel(Key *key) {
+int keyDel (Key * key)
+{
 	int rc;
 
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
 	if (key->ksReference > 0)
 	{
 		return key->ksReference;
 	}
 
-	rc=keyClear(key);
+	rc = keyClear (key);
 	elektraFree (key);
 
 	return rc;
@@ -498,7 +504,7 @@ int f (Key *k)
  * @param key the key object to work with
  * @ingroup key
  */
-int keyClear(Key *key)
+int keyClear (Key * key)
 {
 	if (!key)
 	{
@@ -508,9 +514,12 @@ int keyClear(Key *key)
 	size_t ref = 0;
 
 	ref = key->ksReference;
-	if (key->key) elektraFree(key->key);
-	if (key->data.v) elektraFree(key->data.v);
-	if (key->meta) ksDel(key->meta);
+	if (key->key)
+		elektraFree (key->key);
+	if (key->data.v)
+		elektraFree (key->data.v);
+	if (key->meta)
+		ksDel (key->meta);
 
 	keyInit (key);
 
@@ -520,7 +529,6 @@ int keyClear(Key *key)
 
 	return 0;
 }
-
 
 
 /**
@@ -546,14 +554,16 @@ int keyClear(Key *key)
  * @see keyGetRef() for longer explanation, keyDecRef(), keyDel()
  * @ingroup key
  */
-ssize_t keyIncRef(Key *key)
+ssize_t keyIncRef (Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (key->ksReference < SSIZE_MAX) return ++ key->ksReference;
-	else return SSIZE_MAX;
+	if (key->ksReference < SSIZE_MAX)
+		return ++key->ksReference;
+	else
+		return SSIZE_MAX;
 }
-
 
 
 /**
@@ -579,15 +589,16 @@ ssize_t keyIncRef(Key *key)
  * @see keyGetRef() for longer explanation, keyDel(), keyIncRef()
  * @ingroup key
  */
-ssize_t keyDecRef(Key *key)
+ssize_t keyDecRef (Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (key->ksReference>0) return -- key->ksReference;
-	else return 0;
+	if (key->ksReference > 0)
+		return --key->ksReference;
+	else
+		return 0;
 }
-
-
 
 
 /**
@@ -629,10 +640,10 @@ ssize_t keyDecRef(Key *key)
  * @see keyIncRef() and keyDecRef()
  * @ingroup key
  **/
-ssize_t keyGetRef(const Key *key)
+ssize_t keyGetRef (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
 	return key->ksReference;
 }
-

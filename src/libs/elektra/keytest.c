@@ -7,7 +7,6 @@
  */
 
 
-
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -29,8 +28,8 @@
 #endif
 
 #include "kdb.h"
-#include "kdbprivate.h"
 #include "kdbinternal.h"
+#include "kdbprivate.h"
 
 
 /**
@@ -56,18 +55,18 @@
  * @ingroup keytest
  *
  */
-int keyClearSync (Key *key)
+int keyClearSync (Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
 	keyflag_t semiflag = KEY_FLAG_SYNC;
 
-	semiflag=~semiflag;
+	semiflag = ~semiflag;
 	key->flags &= semiflag;
 
 	return key->flags;
 }
-
 
 
 /**
@@ -97,37 +96,47 @@ int keyClearSync (Key *key)
  * @retval -1 on NULL pointer
  * @ingroup keytest
  */
-int keyNeedSync(const Key *key)
+int keyNeedSync (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
 	return (key->flags & KEY_FLAG_SYNC) == KEY_FLAG_SYNC;
 }
 
 
-int keyIsSpec(const Key *key)
+int keyIsSpec (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (key->key) return keyNameIsSpec(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsSpec (key->key);
+	else
+		return 0;
 }
 
-int keyIsProc(const Key *key)
+int keyIsProc (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (key->key) return keyNameIsProc(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsProc (key->key);
+	else
+		return 0;
 }
 
 
-int keyIsDir(const Key *key)
+int keyIsDir (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (key->key) return keyNameIsDir(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsDir (key->key);
+	else
+		return 0;
 }
 
 
@@ -141,15 +150,16 @@ int keyIsDir(const Key *key)
  * @ingroup keytest
  *
  */
-int keyIsSystem(const Key *key)
+int keyIsSystem (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (key->key) return keyNameIsSystem(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsSystem (key->key);
+	else
+		return 0;
 }
-
-
 
 
 /**
@@ -162,12 +172,15 @@ int keyIsSystem(const Key *key)
  * @ingroup keytest
  *
  */
-int keyIsUser(const Key *key)
+int keyIsUser (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (key->key) return keyNameIsUser(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsUser (key->key);
+	else
+		return 0;
 }
 
 /**
@@ -204,24 +217,29 @@ check user
  * @ingroup keytest
  *
  */
-int keyIsBelow(const Key *key, const Key *check)
+int keyIsBelow (const Key * key, const Key * check)
 {
 	const char * keyname = 0;
 	const char * checkname = 0;
 	ssize_t keysize = 0;
 	ssize_t checksize = 0;
 
-	if (!key || !check) return -1;
+	if (!key || !check)
+		return -1;
 
-	keyname = keyName(key);
-	checkname = keyName(check);
-	keysize = keyGetNameSize(key);
-	checksize = keyGetNameSize(check);
+	keyname = keyName (key);
+	checkname = keyName (check);
+	keysize = keyGetNameSize (key);
+	checksize = keyGetNameSize (check);
 
-	if (keysize > checksize + 1) return 0;
-	if (strncmp (keyname, checkname, keysize - 1)) return 0;
-	if (!strcmp(checkname, "/")) return 0;
-	if (checkname[keysize - 1] != '/' && strcmp(keyname, "/")) return 0;
+	if (keysize > checksize + 1)
+		return 0;
+	if (strncmp (keyname, checkname, keysize - 1))
+		return 0;
+	if (!strcmp (checkname, "/"))
+		return 0;
+	if (checkname[keysize - 1] != '/' && strcmp (keyname, "/"))
+		return 0;
 	return 1;
 }
 
@@ -231,15 +249,18 @@ int keyIsBelow(const Key *key, const Key *check)
  * @param key the key object to work with
  * @see keyIsBelow()
  */
-int keyIsBelowOrSame (const Key *key, const Key *check)
+int keyIsBelowOrSame (const Key * key, const Key * check)
 {
-	if (!key || !check) return -1;
+	if (!key || !check)
+		return -1;
 
-	const char *name1 = keyName(key);
-	const char *name2 = keyName(check);
+	const char * name1 = keyName (key);
+	const char * name2 = keyName (check);
 
-	if (keyIsBelow (key, check)) return 1;
-	else if (!strcmp (name1, name2)) return 1;
+	if (keyIsBelow (key, check))
+		return 1;
+	else if (!strcmp (name1, name2))
+		return 1;
 	return 0;
 }
 
@@ -270,17 +291,20 @@ does not return true, because there is only a indirect relation
  * @ingroup keytest
  *
  */
-int keyIsDirectBelow(const Key *key, const Key *check)
+int keyIsDirectBelow (const Key * key, const Key * check)
 {
-	if (!key || !check) return -1;
+	if (!key || !check)
+		return -1;
 
-	if (!keyIsBelow(key, check)) return 0;
+	if (!keyIsBelow (key, check))
+		return 0;
 
 
-	const char * checkname = keyUnescapedName(check);
-	ssize_t keysize = keyGetUnescapedNameSize(key);
-	ssize_t checksize = keyGetUnescapedNameSize(check);
-	if (strchr(checkname + keysize, '\0') == checkname + checksize - 1) return 1;
+	const char * checkname = keyUnescapedName (check);
+	ssize_t keysize = keyGetUnescapedNameSize (key);
+	ssize_t checksize = keyGetUnescapedNameSize (check);
+	if (strchr (checkname + keysize, '\0') == checkname + checksize - 1)
+		return 1;
 
 	return 0;
 }
@@ -412,16 +436,23 @@ user/key/sibling/any/depth/deeper/grand-nephew
  * @param check the second key object to check the relation with
  * @ingroup keytest
  */
-int keyRel (const Key *key, const Key *check)
+int keyRel (const Key * key, const Key * check)
 {
-	if (!key || !check) return -1;
-	if (!key->key || !check->key) return -1;
+	if (!key || !check)
+		return -1;
+	if (!key->key || !check->key)
+		return -1;
 
-	if (!keyCmp(key,check)) return 0;
-	if (keyIsDirectBelow(key, check)) return 1;
-	if (keyIsBelow(key, check)) return 2;
-	if (keyIsUser(key) && keyIsUser(check)) return -3;
-	if (keyIsSystem(key) && keyIsSystem(check)) return -3;
+	if (!keyCmp (key, check))
+		return 0;
+	if (keyIsDirectBelow (key, check))
+		return 1;
+	if (keyIsBelow (key, check))
+		return 2;
+	if (keyIsUser (key) && keyIsUser (check))
+		return -3;
+	if (keyIsSystem (key) && keyIsSystem (check))
+		return -3;
 	// if (keyIsSibling(key, check)) return -4;
 	// if (keyIsNephew(key, check)) return -5;
 
@@ -450,17 +481,20 @@ int keyRel (const Key *key, const Key *check)
  * @ingroup keytest
  *
  */
-int keyIsInactive (const Key *key)
+int keyIsInactive (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	const char *p = keyName(key);
-	if (!p) return -1;
-	if (p[0] == '\0') return -1;
+	const char * p = keyName (key);
+	if (!p)
+		return -1;
+	if (p[0] == '\0')
+		return -1;
 
-	size_t size=0;
+	size_t size = 0;
 
-	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	while (*(p = keyNameGetOneLevel (p + size, &size)))
 	{
 		if (size > 0)
 		{
@@ -473,7 +507,6 @@ int keyIsInactive (const Key *key)
 
 	return 0;
 }
-
 
 
 /**
@@ -493,11 +526,12 @@ int keyIsInactive (const Key *key)
  * @param key the key to check
  * @ingroup keytest
  */
-int keyIsBinary(const Key *key)
+int keyIsBinary (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	return keyGetMeta(key, "binary") != 0;
+	return keyGetMeta (key, "binary") != 0;
 }
 
 
@@ -517,15 +551,13 @@ int keyIsBinary(const Key *key)
  * @param key the key to check
  * @ingroup keytest
  */
-int keyIsString(const Key *key)
+int keyIsString (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	return keyGetMeta(key, "binary") == 0;
+	return keyGetMeta (key, "binary") == 0;
 }
-
-
-
 
 
 /**
@@ -613,41 +645,51 @@ keyDel(base);
  * @see #keyswitch_t
  * @ingroup keytest
  */
-keyswitch_t keyCompare(const Key *key1, const Key *key2)
+keyswitch_t keyCompare (const Key * key1, const Key * key2)
 {
-	if (!key1 && !key2) return 0;
-	if (!key1 || !key2) return KEY_NULL;
+	if (!key1 && !key2)
+		return 0;
+	if (!key1 || !key2)
+		return KEY_NULL;
 
 	keyswitch_t ret = 0;
-	ssize_t nsize1 = keyGetNameSize(key1);
-	ssize_t nsize2 = keyGetNameSize(key2);
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-	const Key *comment1 = keyGetMeta(key1, "comment");
-	const Key *comment2 = keyGetMeta(key2, "comment");
-	const char *owner1 = keyOwner(key1);
-	const char *owner2 = keyOwner(key2);
-	const void *value1 = keyValue(key1);
-	const void *value2 = keyValue(key2);
-	ssize_t size1 = keyGetValueSize(key1);
-	ssize_t size2 = keyGetValueSize(key2);
+	ssize_t nsize1 = keyGetNameSize (key1);
+	ssize_t nsize2 = keyGetNameSize (key2);
+	const char * name1 = keyName (key1);
+	const char * name2 = keyName (key2);
+	const Key * comment1 = keyGetMeta (key1, "comment");
+	const Key * comment2 = keyGetMeta (key2, "comment");
+	const char * owner1 = keyOwner (key1);
+	const char * owner2 = keyOwner (key2);
+	const void * value1 = keyValue (key1);
+	const void * value2 = keyValue (key2);
+	ssize_t size1 = keyGetValueSize (key1);
+	ssize_t size2 = keyGetValueSize (key2);
 
 	// TODO: might be (binary) by chance
-	if (strcmp(keyString(comment1), keyString(comment2)))
-						 ret|=KEY_COMMENT;
+	if (strcmp (keyString (comment1), keyString (comment2)))
+		ret |= KEY_COMMENT;
 
-	if (strcmp(owner1, owner2))              ret|=KEY_OWNER;
+	if (strcmp (owner1, owner2))
+		ret |= KEY_OWNER;
 
-	if (keyCompareMeta(key1, key2))          ret|=KEY_META;
+	if (keyCompareMeta (key1, key2))
+		ret |= KEY_META;
 
-	if (nsize1 != nsize2)                    ret|=KEY_NAME;
-	else if (!name1 || !name2)               ret|=KEY_NAME;
-	else if (strcmp(name1, name2))           ret|=KEY_NAME;
+	if (nsize1 != nsize2)
+		ret |= KEY_NAME;
+	else if (!name1 || !name2)
+		ret |= KEY_NAME;
+	else if (strcmp (name1, name2))
+		ret |= KEY_NAME;
 
 
-	if (size1 != size2)                      ret|=KEY_VALUE;
-	else if (!value1 || !value2)             ret|=KEY_VALUE;
-	else if (memcmp(value1, value2, size1))  ret|=KEY_VALUE;
+	if (size1 != size2)
+		ret |= KEY_VALUE;
+	else if (!value1 || !value2)
+		ret |= KEY_VALUE;
+	else if (memcmp (value1, value2, size1))
+		ret |= KEY_VALUE;
 
 	// TODO: rewind meta data to previous position
 	return ret;
@@ -669,7 +711,7 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 
 	keyRewindMeta (key1);
 	keyRewindMeta (key2);
-	while ((meta1 = keyNextMeta (key1))!=0)
+	while ((meta1 = keyNextMeta (key1)) != 0)
 	{
 		meta2 = keyNextMeta (key2);
 		if (!meta2)
@@ -677,11 +719,12 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 			return KEY_META;
 		}
 
-		if (strcmp(keyName(meta1), keyName(meta2))) return KEY_META;
-		if (strcmp(keyString(meta1), keyString(meta2))) return KEY_META;
+		if (strcmp (keyName (meta1), keyName (meta2)))
+			return KEY_META;
+		if (strcmp (keyString (meta1), keyString (meta2)))
+			return KEY_META;
 	}
 
 	// TODO: rewind meta data to previous position
 	return 0;
 }
-

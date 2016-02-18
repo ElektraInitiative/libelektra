@@ -7,7 +7,6 @@
  */
 
 
-
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -29,8 +28,6 @@
 #endif
 
 #include "kdbprivate.h"
-
-
 
 
 /**
@@ -62,13 +59,9 @@
  */
 
 
-
 /******************************************* 
  *    General value manipulation methods   *
  *******************************************/
-
-
-
 
 
 /**
@@ -163,15 +156,18 @@ kdbClose (handle);
  * @see keyGetValueSize(), keyGetString(), keyGetBinary()
  * @ingroup keyvalue
  */
-const void *keyValue(const Key *key)
+const void * keyValue (const Key * key)
 {
-	if (!key) return 0;
+	if (!key)
+		return 0;
 
 	if (!key->data.v)
 	{
 		/*errno=KDB_ERR_NOKEY;*/
-		if (keyIsBinary(key)) return 0;
-		else return "";
+		if (keyIsBinary (key))
+			return 0;
+		else
+			return "";
 	}
 
 	return key->data.v;
@@ -195,25 +191,23 @@ const void *keyValue(const Key *key)
  * @ingroup keyvalue
  * @param key the key object to get the string from
  */
-const char *keyString(const Key *key)
+const char * keyString (const Key * key)
 {
-	if (!key) return "(null)";
+	if (!key)
+		return "(null)";
 
 	if (!key->data.c)
 	{
 		return "";
 	}
 
-	if (keyIsBinary(key))
+	if (keyIsBinary (key))
 	{
 		return "(binary)";
 	}
 
 	return key->data.c;
 }
-
-
-
 
 
 /**
@@ -248,21 +242,22 @@ buffer = elektraMalloc (keyGetValueSize (key));
  * @see keyGetString(), keyGetBinary(), keyValue()
  * @ingroup keyvalue
  */
-ssize_t keyGetValueSize(const Key *key)
+ssize_t keyGetValueSize (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
 	if (!key->data.v)
 	{
 		/*errno=KDB_ERR_NODATA;*/
-		if (keyIsBinary(key)) return 0;
-		else return 1;
+		if (keyIsBinary (key))
+			return 0;
+		else
+			return 1;
 	}
 
 	return key->dataSize;
 }
-
-
 
 
 /**
@@ -303,35 +298,40 @@ if (keyGetString(key,buffer,sizeof(buffer)) == -1)
  * @see keyGetBinary() for working with binary data
  * @ingroup keyvalue
  */
-ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize)
+ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
 {
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (!maxSize) return -1;
-	if (!returnedString) return -1;
-	if (maxSize > SSIZE_MAX) return -1;
+	if (!maxSize)
+		return -1;
+	if (!returnedString)
+		return -1;
+	if (maxSize > SSIZE_MAX)
+		return -1;
 
-	if (!keyIsString(key))
+	if (!keyIsString (key))
 	{
 		/*errno=KDB_ERR_TYPEMISMATCH;*/
 		return -1;
 	}
 
-	if (!key->data.v) {
-		returnedString[0]=0;
+	if (!key->data.v)
+	{
+		returnedString[0] = 0;
 		return 1;
 	}
 
-	if (key->dataSize > maxSize) {
+	if (key->dataSize > maxSize)
+	{
 		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 
 
-	strncpy(returnedString,key->data.c, maxSize);
+	strncpy (returnedString, key->data.c, maxSize);
 	return key->dataSize;
 }
-
 
 
 /**
@@ -358,20 +358,22 @@ ssize_t keyGetString(const Key *key, char *returnedString, size_t maxSize)
  * @see keyGetString(), keyValue(), keyString()
  * @ingroup keyvalue
  */
-ssize_t keySetString(Key *key, const char *newStringValue)
+ssize_t keySetString (Key * key, const char * newStringValue)
 {
-	ssize_t ret=0;
+	ssize_t ret = 0;
 
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
 	keySetMeta (key, "binary", 0);
 
-	if (!newStringValue || newStringValue[0] == '\0') ret=keySetRaw(key,0,0);
-	else ret=keySetRaw(key,newStringValue,elektraStrLen(newStringValue));
+	if (!newStringValue || newStringValue[0] == '\0')
+		ret = keySetRaw (key, 0, 0);
+	else
+		ret = keySetRaw (key, newStringValue, elektraStrLen (newStringValue));
 
 	return ret;
 }
-
 
 
 /**
@@ -414,15 +416,19 @@ if (keyGetBinary(key,buffer,sizeof(buffer)) == -1)
  * @see keyIsBinary() to see how to check for binary type
  * @ingroup keyvalue
  */
-ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
+ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 {
-	if (!key) return -1;
-	if (!returnedBinary) return -1;
-	if (!maxSize) return -1;
+	if (!key)
+		return -1;
+	if (!returnedBinary)
+		return -1;
+	if (!maxSize)
+		return -1;
 
-	if (maxSize > SSIZE_MAX) return -1;
+	if (maxSize > SSIZE_MAX)
+		return -1;
 
-	if (!keyIsBinary(key))
+	if (!keyIsBinary (key))
 	{
 		/*errno=KDB_ERR_TYPEMISMATCH;*/
 		return -1;
@@ -439,10 +445,9 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
 		return -1;
 	}
 
-	memcpy(returnedBinary,key->data.v,key->dataSize);
+	memcpy (returnedBinary, key->data.v, key->dataSize);
 	return key->dataSize;
 }
-
 
 
 /**
@@ -476,19 +481,23 @@ ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize)
  * @see keyGetString() and keySetString() as preferred alternative to binary
  * @ingroup keyvalue
  */
-ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
+ssize_t keySetBinary (Key * key, const void * newBinary, size_t dataSize)
 {
-	ssize_t ret=0;
+	ssize_t ret = 0;
 
-	if (!key) return -1;
+	if (!key)
+		return -1;
 
-	if (!dataSize && newBinary) return -1;
-	if (dataSize > SSIZE_MAX) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (!dataSize && newBinary)
+		return -1;
+	if (dataSize > SSIZE_MAX)
+		return -1;
+	if (key->flags & KEY_FLAG_RO_VALUE)
+		return -1;
 
 	keySetMeta (key, "binary", "");
 
-	ret = keySetRaw(key,newBinary,dataSize);
+	ret = keySetRaw (key, newBinary, dataSize);
 
 
 	return ret;
@@ -511,39 +520,46 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize)
  * @see keySetType(), keySetString(), keySetBinary()
  * @ingroup keyvalue
  */
-ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize)
+ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 {
-	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (!key)
+		return -1;
+	if (key->flags & KEY_FLAG_RO_VALUE)
+		return -1;
 
 	if (!dataSize || !newBinary)
 	{
-		if (key->data.v) {
+		if (key->data.v)
+		{
 			elektraFree (key->data.v);
-			key->data.v=0;
+			key->data.v = 0;
 		}
 		key->dataSize = 0;
-		set_bit(key->flags, KEY_FLAG_SYNC);
-		if (keyIsBinary(key)) return 0;
+		set_bit (key->flags, KEY_FLAG_SYNC);
+		if (keyIsBinary (key))
+			return 0;
 		return 1;
 	}
 
-	key->dataSize=dataSize;
+	key->dataSize = dataSize;
 	if (key->data.v)
 	{
-		char *p=0;
-		p=realloc(key->data.v,key->dataSize);
-		if (0==p) return -1;
-		key->data.v=p;
-	} else {
-		char *p=elektraMalloc(key->dataSize);
-		if (0==p) return -1;
-		key->data.v=p;
+		char * p = 0;
+		p = realloc (key->data.v, key->dataSize);
+		if (0 == p)
+			return -1;
+		key->data.v = p;
+	}
+	else
+	{
+		char * p = elektraMalloc (key->dataSize);
+		if (0 == p)
+			return -1;
+		key->data.v = p;
 	}
 
 
-	memcpy(key->data.v,newBinary,key->dataSize);
-	set_bit(key->flags, KEY_FLAG_SYNC);
+	memcpy (key->data.v, newBinary, key->dataSize);
+	set_bit (key->flags, KEY_FLAG_SYNC);
 	return keyGetValueSize (key);
 }
-
