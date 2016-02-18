@@ -7,9 +7,9 @@
  *
  */
 
+#include "mergetestutils.cpp"
 #include <gtest/gtest.h>
 #include <merging/onesidestrategy.hpp>
-#include "mergetestutils.cpp"
 
 using namespace std;
 using namespace kdb;
@@ -22,16 +22,15 @@ protected:
 	MergeTask task;
 	KeySet conflicts;
 
-	OneSideStrategyTest() : task (MergeTask (BaseMergeKeys (base, baseParent),
-				OurMergeKeys (ours, ourParent),
-				TheirMergeKeys (theirs, theirParent),
-				mergeParent))
+	OneSideStrategyTest ()
+	: task (MergeTask (BaseMergeKeys (base, baseParent), OurMergeKeys (ours, ourParent), TheirMergeKeys (theirs, theirParent),
+			   mergeParent))
 	{
-		result = MergeResult(conflicts, mergeKeys);
+		result = MergeResult (conflicts, mergeKeys);
 	}
 };
 
-TEST_F(OneSideStrategyTest, BaseWinsCorrectly)
+TEST_F (OneSideStrategyTest, BaseWinsCorrectly)
 {
 	base.lookup ("user/parentb/config/key1").setString ("valueb");
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
@@ -43,17 +42,17 @@ TEST_F(OneSideStrategyTest, BaseWinsCorrectly)
 	OneSideStrategy strategy (BASE);
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ (4, merged.size ());
 
 	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueb", KEY_END), merged.lookup (mk1));
 }
 
-TEST_F(OneSideStrategyTest, BaseWinnerRespectsBinaryData)
+TEST_F (OneSideStrategyTest, BaseWinnerRespectsBinaryData)
 {
-	base.lookup ("user/parentb/config/key1").setBinary("valueb", 6);
+	base.lookup ("user/parentb/config/key1").setBinary ("valueb", 6);
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
 	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
 	Key conflictKey = mk1;
@@ -63,10 +62,10 @@ TEST_F(OneSideStrategyTest, BaseWinnerRespectsBinaryData)
 	OneSideStrategy strategy (BASE);
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_TRUE(conflictKey.isBinary());
+	EXPECT_TRUE (conflictKey.isBinary ());
 }
 
-TEST_F(OneSideStrategyTest, OursWinsCorrectly)
+TEST_F (OneSideStrategyTest, OursWinsCorrectly)
 {
 	base.lookup ("user/parentb/config/key1").setString ("valueb");
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
@@ -78,17 +77,17 @@ TEST_F(OneSideStrategyTest, OursWinsCorrectly)
 	OneSideStrategy strategy (OURS);
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ (4, merged.size ());
 
 	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valueo", KEY_END), merged.lookup (mk1));
 }
 
-TEST_F(OneSideStrategyTest, OursWinnerRespectsBinaryData)
+TEST_F (OneSideStrategyTest, OursWinnerRespectsBinaryData)
 {
-	base.lookup ("user/parentb/config/key1").setString("valueb");
+	base.lookup ("user/parentb/config/key1").setString ("valueb");
 	ours.lookup ("user/parento/config/key1").setBinary ("valueo", 6);
 	theirs.lookup ("user/parentt/config/key1").setString ("valuet");
 	Key conflictKey = mk1;
@@ -98,10 +97,10 @@ TEST_F(OneSideStrategyTest, OursWinnerRespectsBinaryData)
 	OneSideStrategy strategy (OURS);
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_TRUE(conflictKey.isBinary());
+	EXPECT_TRUE (conflictKey.isBinary ());
 }
 
-TEST_F(OneSideStrategyTest, TheirsWinsCorrectly)
+TEST_F (OneSideStrategyTest, TheirsWinsCorrectly)
 {
 	base.lookup ("user/parentb/config/key1").setString ("valueb");
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
@@ -113,17 +112,17 @@ TEST_F(OneSideStrategyTest, TheirsWinsCorrectly)
 	OneSideStrategy strategy (THEIRS);
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ (4, merged.size ());
 
 	compareKeys (Key ("user/parentm/config/key1", KEY_VALUE, "valuet", KEY_END), merged.lookup (mk1));
 }
 
-TEST_F(OneSideStrategyTest, TheirsWinnerRespectsBinaryData)
+TEST_F (OneSideStrategyTest, TheirsWinnerRespectsBinaryData)
 {
-	base.lookup ("user/parentb/config/key1").setString("valueb");
+	base.lookup ("user/parentb/config/key1").setString ("valueb");
 	ours.lookup ("user/parento/config/key1").setString ("valueo");
 	theirs.lookup ("user/parentt/config/key1").setBinary ("valuet", 6);
 	Key conflictKey = mk1;
@@ -133,6 +132,5 @@ TEST_F(OneSideStrategyTest, TheirsWinnerRespectsBinaryData)
 	OneSideStrategy strategy (THEIRS);
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_TRUE(conflictKey.isBinary());
+	EXPECT_TRUE (conflictKey.isBinary ());
 }
-

@@ -13,9 +13,9 @@
 #include <kdbplugin.h>
 
 
-int elektraLineendingsGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraLineendingsSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraLineendingsGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraLineendingsSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(lineendings);
+Plugin * ELEKTRA_PLUGIN_EXPORT (lineendings);
 
 #endif

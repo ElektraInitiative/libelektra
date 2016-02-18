@@ -20,11 +20,11 @@ class MountBaseCommand : public Command
 {
 
 protected:
-	void readMountConf(Cmdline const& cl);
-	void getMountpoint(Cmdline const& cl);
-	void askForConfirmation(Cmdline const& cl);
-	void outputMissingRecommends(std::vector<std::string> missingRecommends);
-	void doIt();
+	void readMountConf (Cmdline const & cl);
+	void getMountpoint (Cmdline const & cl);
+	void askForConfirmation (Cmdline const & cl);
+	void outputMissingRecommends (std::vector<std::string> missingRecommends);
+	void doIt ();
 
 	std::string mountpointsPath = kdb::tools::Backends::mountpointsPath;
 	kdb::KDB kdb;
@@ -34,7 +34,6 @@ protected:
 
 public:
 };
-
 
 
 #endif /* MOUNTBASE_HPP_ */

@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-Key *c;
+Key * c;
 
 //! [Basic Usage]
-void h (Key *k)
+void h (Key * k)
 {
 	// receive key c
 	keyCopy (k, c);
@@ -22,7 +22,7 @@ void h (Key *k)
 //! [Basic Usage]
 
 //! [Clear]
-void g (Key *k)
+void g (Key * k)
 {
 	keyCopy (k, 0);
 	// k is now an empty and fresh key
@@ -30,17 +30,19 @@ void g (Key *k)
 //! [Clear]
 
 //! [Copy Without Value]
-void j (Key *k)
+void j (Key * k)
 {
 	size_t size = keyGetValueSize (k);
-	char *value = malloc (size);
+	char * value = malloc (size);
 	int bstring = keyIsString (k);
 
 	// receive key c
-	memcpy (value, keyValue(k), size);
+	memcpy (value, keyValue (k), size);
 	keyCopy (k, c);
-	if (bstring) keySetString (k, value);
-	else keySetBinary (k, value, size);
+	if (bstring)
+		keySetString (k, value);
+	else
+		keySetBinary (k, value, size);
 	free (value);
 	// the caller will see the changed key k
 	// with the name and metadata from c (except
@@ -49,31 +51,27 @@ void j (Key *k)
 //! [Copy Without Value]
 
 //! [Individual Copy]
-void i (Key *k)
+void i (Key * k)
 {
-	keySetName(k, keyName(c));
-	keySetString(k, keyString(c));
-	keyCopyAllMeta(k, c);
+	keySetName (k, keyName (c));
+	keySetString (k, keyString (c));
+	keyCopyAllMeta (k, c);
 	// k is not a copy of c even if everything was successfully,
 	// because it still contains meta data from k
 }
 //! [Individual Copy]
 
-int main()
+int main ()
 {
-	Key * k = keyNew("user/hello",
-		KEY_VALUE, "my content",
-		KEY_END);
+	Key * k = keyNew ("user/hello", KEY_VALUE, "my content", KEY_END);
 
-	c = keyNew("user/copy",
-		KEY_VALUE, "copies content",
-		KEY_END);
+	c = keyNew ("user/copy", KEY_VALUE, "copies content", KEY_END);
 
-	h(k);
-	g(k);
-	j(k);
-	i(k);
+	h (k);
+	g (k);
+	j (k);
+	i (k);
 
-	keyDel(k);
-	keyDel(c);
+	keyDel (k);
+	keyDel (c);
 }

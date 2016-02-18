@@ -93,9 +93,6 @@
  */
 
 
-
-
-
 /**
  * @brief Sets the error in the keys metadata.
  *
@@ -161,12 +158,6 @@
  */
 #define ELEKTRA_ADD_WARNING(number, key, text)
 #undef ELEKTRA_ADD_WARNING
-
-
-
-
-
-
 
 
 /**
@@ -238,9 +229,7 @@
  * @see elektraDocClose()
  * @ingroup plugin
  */
-int elektraDocOpen(Plugin *handle, Key *warningsKey);
-
-
+int elektraDocOpen (Plugin * handle, Key * warningsKey);
 
 
 /**
@@ -275,7 +264,7 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey);
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocClose(Plugin *handle, Key *warningsKey);
+int elektraDocClose (Plugin * handle, Key * warningsKey);
 
 /**
  * @brief Get data from storage to application.
@@ -398,7 +387,7 @@ int elektraDocClose(Plugin *handle, Key *warningsKey);
  *
  * @ingroup plugin
  */
-int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey);
+int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 /**
  * @brief Set data from application to storage.
@@ -459,8 +448,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey);
-
+int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 
 /**
@@ -488,7 +476,7 @@ int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocError(Plugin *handle, KeySet *returned, Key *parentKey);
+int elektraDocError (Plugin * handle, KeySet * returned, Key * parentKey);
 
 
 /**

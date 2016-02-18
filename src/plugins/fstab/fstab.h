@@ -14,21 +14,21 @@
 // if mntent is not available
 #include <mntent.h>
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <dirent.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include <errno.h>
 
-#include <kdbplugin.h>
-#include <kdbextension.h>
 #include <kdberrors.h>
+#include <kdbextension.h>
+#include <kdbplugin.h>
 
 
-int elektraFstabGet(Plugin *handle, KeySet *returned, Key *parentKey);
-int elektraFstabSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraFstabGet (Plugin * handle, KeySet * returned, Key * parentKey);
+int elektraFstabSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 #endif

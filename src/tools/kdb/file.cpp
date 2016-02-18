@@ -8,35 +8,36 @@
 
 #include <file.hpp>
 
-#include <kdb.hpp>
 #include <cmdline.hpp>
+#include <kdb.hpp>
 
 #include <iostream>
 
 using namespace std;
 using namespace kdb;
 
-FileCommand::FileCommand()
-{}
-
-int FileCommand::execute (Cmdline const& cl)
+FileCommand::FileCommand ()
 {
-	if (cl.arguments.size() != 1) throw invalid_argument ("Need one argument");
+}
+
+int FileCommand::execute (Cmdline const & cl)
+{
+	if (cl.arguments.size () != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
-	Key x = cl.createKey(0);
-	if (x.getName()[0] == '/')
+	Key x = cl.createKey (0);
+	if (x.getName ()[0] == '/')
 	{
-		x.setName (cl.ns + x.getName());
-		std::cerr << "Using name " << x.getName() << std::endl;
+		x.setName (cl.ns + x.getName ());
+		std::cerr << "Using name " << x.getName () << std::endl;
 	}
-	if (!x.isValid())
+	if (!x.isValid ())
 	{
-		throw invalid_argument(cl.arguments[0] + " is not an valid keyname");
+		throw invalid_argument (cl.arguments[0] + " is not an valid keyname");
 	}
 
-	kdb.get(conf, x);
-	cout << x.getString();
+	kdb.get (conf, x);
+	cout << x.getString ();
 
 	if (!cl.noNewline)
 	{
@@ -46,5 +47,6 @@ int FileCommand::execute (Cmdline const& cl)
 	return 0;
 }
 
-FileCommand::~FileCommand()
-{}
+FileCommand::~FileCommand ()
+{
+}

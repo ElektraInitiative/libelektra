@@ -11,8 +11,8 @@
 #ifndef TOOLS_PLUGIN_SPEC_HPP
 #define TOOLS_PLUGIN_SPEC_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <kdb.hpp>
 
@@ -31,23 +31,18 @@ namespace tools
 class PluginSpec
 {
 public:
-	explicit PluginSpec (std::string pluginName,
-		KeySet pluginConfig = KeySet());
+	explicit PluginSpec (std::string pluginName, KeySet pluginConfig = KeySet ());
 
-	explicit PluginSpec (std::string pluginName,
-		std::string refName,
-		KeySet pluginConfig = KeySet());
+	explicit PluginSpec (std::string pluginName, std::string refName, KeySet pluginConfig = KeySet ());
 
-	explicit PluginSpec (std::string pluginName,
-		size_t refNumber,
-		KeySet pluginConfig = KeySet());
+	explicit PluginSpec (std::string pluginName, size_t refNumber, KeySet pluginConfig = KeySet ());
 
-	std::string getFullName() const;
-	std::string getRefName() const;
-	bool isRefNumber() const;
-	std::string getName() const;
+	std::string getFullName () const;
+	std::string getRefName () const;
+	bool isRefNumber () const;
+	std::string getName () const;
 
-	KeySet getConfig() const;
+	KeySet getConfig () const;
 
 
 	void setFullName (std::string const & name);
@@ -69,7 +64,7 @@ struct PluginSpecName
 {
 	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
 	{
-		return s1.getName() == s2.getName();
+		return s1.getName () == s2.getName ();
 	}
 };
 
@@ -77,7 +72,7 @@ struct PluginSpecRefName
 {
 	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
 	{
-		return s1.getRefName() == s2.getRefName();
+		return s1.getRefName () == s2.getRefName ();
 	}
 };
 
@@ -85,7 +80,7 @@ struct PluginSpecFullName
 {
 	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
 	{
-		return s1.getFullName() == s2.getFullName();
+		return s1.getFullName () == s2.getFullName ();
 	}
 };
 
@@ -95,23 +90,21 @@ struct PluginSpecFullName
  */
 struct PluginSpecHash
 {
-	size_t operator()(kdb::tools::PluginSpec const & s) const
+	size_t operator() (kdb::tools::PluginSpec const & s) const
 	{
-		return std::hash<std::string>()(s.getName());
+		return std::hash<std::string> () (s.getName ());
 	}
 };
 
 #ifdef ELEKTRA_PLUGINSPEC_WITH_COMPARE
-bool operator == (PluginSpec const & self, PluginSpec const & other);
-bool operator != (PluginSpec const & self, PluginSpec const & other);
+bool operator== (PluginSpec const & self, PluginSpec const & other);
+bool operator!= (PluginSpec const & self, PluginSpec const & other);
 #endif
 
-typedef std::vector <PluginSpec> PluginSpecVector;
+typedef std::vector<PluginSpec> PluginSpecVector;
 
-std::ostream & operator << (std::ostream & os, PluginSpec const & spec);
-
+std::ostream & operator<< (std::ostream & os, PluginSpec const & spec);
 }
-
 }
 
 #endif

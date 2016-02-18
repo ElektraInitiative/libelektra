@@ -26,9 +26,9 @@ namespace kdb
  *
  * @return the stream
  */
-inline std::ostream & operator << (std::ostream & os, kdb::Key const & k)
+inline std::ostream & operator<< (std::ostream & os, kdb::Key const & k)
 {
-	os << k.getName();
+	os << k.getName ();
 
 	return os;
 }
@@ -44,20 +44,19 @@ inline std::ostream & operator << (std::ostream & os, kdb::Key const & k)
  *
  * @return the stream
  */
-inline std::istream & operator >> (std::istream & is, kdb::Key & k)
+inline std::istream & operator>> (std::istream & is, kdb::Key & k)
 {
 	std::string name;
 	char delim = '\0';
-	if (is.flags() & std::ios_base::skipws)
+	if (is.flags () & std::ios_base::skipws)
 	{
 		delim = '\n';
 	}
-	getline(is, name, delim);
-	k.setName(name);
+	getline (is, name, delim);
+	k.setName (name);
 
 	return is;
 }
-
 }
 
 #endif

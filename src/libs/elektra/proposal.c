@@ -15,7 +15,7 @@
 /**
  * @copydoc ksPrev
  */
-Key *elektraKsPrev(KeySet *ks)
+Key * elektraKsPrev (KeySet * ks)
 {
 	if (ks->size == 0) return 0;
 	if (ks->current <= 0)
@@ -35,29 +35,29 @@ Key *elektraKsPrev(KeySet *ks)
  *
  * The first key is removed in the resulting keyset.
  */
-KeySet* elektraRenameKeys(KeySet *config, const char* name)
+KeySet * elektraRenameKeys (KeySet * config, const char * name)
 {
-	Key *root;
-	Key *cur;
+	Key * root;
+	Key * cur;
 	ssize_t rootSize = 0;
 
-	ksRewind(config);
+	ksRewind (config);
 
 	root = ksNext (config);
-	rootSize = keyGetNameSize(root);
+	rootSize = keyGetNameSize (root);
 
 	keyDel (ksLookup (config, root, KDB_O_POP));
 
-	KeySet *newConfig = ksNew(ksGetSize(config), KS_END);
+	KeySet * newConfig = ksNew (ksGetSize (config), KS_END);
 	if (rootSize == -1) return newConfig;
 
-	while ((cur = ksPop(config)) != 0)
+	while ((cur = ksPop (config)) != 0)
 	{
-		Key *dupKey = keyDup(cur);
-		keySetName(dupKey, name);
-		keyAddName(dupKey, keyName(cur)+rootSize-1);
-		ksAppendKey(newConfig, dupKey);
-		keyDel(cur);
+		Key * dupKey = keyDup (cur);
+		keySetName (dupKey, name);
+		keyAddName (dupKey, keyName (cur) + rootSize - 1);
+		ksAppendKey (newConfig, dupKey);
+		keyDel (cur);
 	}
 
 	return newConfig;
@@ -67,36 +67,36 @@ KeySet* elektraRenameKeys(KeySet *config, const char* name)
 /**
  * @copydoc keyLock
  */
-int elektraKeyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
+int elektraKeyLock (Key * key, /*option_t*/ enum elektraLockOptions what)
 {
 	int ret = 0;
 
 	if (!key) return -1;
 
-	if (test_bit(what, KEY_LOCK_NAME))
+	if (test_bit (what, KEY_LOCK_NAME))
 	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_NAME))
+		if (!test_bit (key->flags, KEY_FLAG_RO_NAME))
 		{
-			set_bit(key->flags, KEY_FLAG_RO_NAME);
-			set_bit(ret, KEY_LOCK_NAME);
+			set_bit (key->flags, KEY_FLAG_RO_NAME);
+			set_bit (ret, KEY_LOCK_NAME);
 		}
 	}
 
-	if (test_bit(what, KEY_LOCK_VALUE))
+	if (test_bit (what, KEY_LOCK_VALUE))
 	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_VALUE))
+		if (!test_bit (key->flags, KEY_FLAG_RO_VALUE))
 		{
-			set_bit(key->flags, KEY_FLAG_RO_VALUE);
-			set_bit(ret, KEY_LOCK_VALUE);
+			set_bit (key->flags, KEY_FLAG_RO_VALUE);
+			set_bit (ret, KEY_LOCK_VALUE);
 		}
 	}
 
-	if (test_bit(what, KEY_LOCK_META))
+	if (test_bit (what, KEY_LOCK_META))
 	{
-		if (!test_bit(key->flags, KEY_FLAG_RO_META))
+		if (!test_bit (key->flags, KEY_FLAG_RO_META))
 		{
-			set_bit(key->flags, KEY_FLAG_RO_META);
-			set_bit(ret, KEY_LOCK_META);
+			set_bit (key->flags, KEY_FLAG_RO_META);
+			set_bit (ret, KEY_LOCK_META);
 		}
 	}
 
@@ -107,18 +107,18 @@ int elektraKeyLock(Key *key, /*option_t*/ enum elektraLockOptions what)
 /**
  * @copydoc ksPopAtCursor
  */
-Key *elektraKsPopAtCursor(KeySet *ks, cursor_t pos)
+Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos)
 {
 	if (!ks) return 0;
-	if (pos<0) return 0;
-	if (pos>SSIZE_MAX) return 0;
+	if (pos < 0) return 0;
+	if (pos > SSIZE_MAX) return 0;
 
 	size_t c = pos;
-	if (c>=ks->size) return 0;
+	if (c >= ks->size) return 0;
 
-	if (c != ks->size-1)
+	if (c != ks->size - 1)
 	{
-		Key ** found = ks->array+c;
+		Key ** found = ks->array + c;
 		Key * k = *found;
 		/* Move the array over the place where key was found
 		 *
@@ -131,10 +131,8 @@ Key *elektraKsPopAtCursor(KeySet *ks, cursor_t pos)
 		 * |--|--|--|--|--|
 		 *
 		 * */
-		memmove (found,
-			found+1,
-			(ks->size-c-1) * sizeof(Key *));
-		*(ks->array+ks->size-1) = k; // prepare last element to pop
+		memmove (found, found + 1, (ks->size - c - 1) * sizeof (Key *));
+		*(ks->array + ks->size - 1) = k; // prepare last element to pop
 	}
 	else
 	{
@@ -142,7 +140,7 @@ Key *elektraKsPopAtCursor(KeySet *ks, cursor_t pos)
 		// so do nothing..
 	}
 
-	ksRewind(ks);
+	ksRewind (ks);
 
-	return ksPop(ks);
+	return ksPop (ks);
 }

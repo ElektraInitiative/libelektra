@@ -12,9 +12,9 @@
 #include <kdbplugin.h>
 
 
-int elektraIniGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraIniSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraIniGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraIniSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(ini);
+Plugin * ELEKTRA_PLUGIN_EXPORT (ini);
 
 #endif

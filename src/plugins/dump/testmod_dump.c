@@ -20,9 +20,10 @@
 
 #include <tests.h>
 
-KeySet * get_dump()
+KeySet * get_dump ()
 {
 	Key *k1, *k2;
+	// clang-format off
 	KeySet *ks = ksNew(10,
 			k1 = keyNew("user/tests/dump",
 			       KEY_VALUE, "root key",
@@ -38,7 +39,8 @@ KeySet * get_dump()
 			       KEY_END),
 			KS_END
 		);
-	keyCopyMeta(k1, k2, "ab");
+	// clang-format on
+	keyCopyMeta (k1, k2, "ab");
 
 	return ks;
 }
@@ -103,10 +105,10 @@ void test_readdump(const char *file)
 
 #endif
 
-int main(int argc, char** argv)
+int main (int argc, char ** argv)
 {
-	printf("MOUNT       TESTS\n");
-	printf("==================\n\n");
+	printf ("MOUNT       TESTS\n");
+	printf ("==================\n\n");
 
 	init (argc, argv);
 
@@ -115,8 +117,7 @@ int main(int argc, char** argv)
 	test_readdump("dump_mount_test.edf");
 	*/
 
-	printf("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_mount RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
-

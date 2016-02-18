@@ -9,6 +9,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 /**
  * Allows keyNew() to determine which information comes next.
  *

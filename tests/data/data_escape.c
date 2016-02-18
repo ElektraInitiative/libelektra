@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 TEST_ESCAPE_PART("a", "a");
 TEST_ESCAPE_PART("$", "$");
 TEST_ESCAPE_PART("€", "€");

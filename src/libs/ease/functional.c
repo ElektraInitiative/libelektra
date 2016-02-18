@@ -10,10 +10,10 @@
 
 #include <kdb.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #ifdef HAVE_CTYPE_H
@@ -37,7 +37,7 @@
  * returned a positive value, -1 otherwise
  * @retval NULL on NULL pointer
  */
-int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k, void *argument), void *argument)
+int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key * k, void * argument), void * argument)
 {
 	if (!result) return -1;
 
@@ -47,21 +47,21 @@ int elektraKsFilter (KeySet *result, KeySet *input, int (*filter) (const Key *k,
 
 	int rc = 0;
 	int ret = 0;
-	Key *current;
+	Key * current;
 
 	cursor_t cursor = ksGetCursor (input);
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{
 		rc = filter (current, argument);
-		if (rc <= -1) return -1;
+		if (rc <= -1)
+			return -1;
 		else if (rc > 0)
 		{
-			++ ret;
-			ksAppendKey(result, keyDup (current));
+			++ret;
+			ksAppendKey (result, keyDup (current));
 		}
 	}
-	ksSetCursor(input, cursor);
+	ksSetCursor (input, cursor);
 	return ret;
 }
-

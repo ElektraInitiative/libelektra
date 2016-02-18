@@ -12,11 +12,11 @@
 #include <kdb.h>
 #include <kdbconfig.h>
 #include <kdberrors.h>
+#include <kdbextension.h>
 #include <kdbmodule.h>
+#include <kdbobsolete.h>
 #include <kdbplugin.h>
 #include <kdbprivate.h>
-#include <kdbextension.h>
 #include <kdbproposal.h>
-#include <kdbobsolete.h>
 
 #endif

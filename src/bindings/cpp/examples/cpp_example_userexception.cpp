@@ -30,7 +30,7 @@
 class UserException : public std::exception
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "User Exception";
 	}
@@ -42,7 +42,7 @@ namespace kdb
 class Exception : public UserException
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "User Exception: Exception thrown by Elektra";
 	}
@@ -51,7 +51,7 @@ public:
 class KeyException : public Exception
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "User Exception: Exception thrown by a Key";
 	}
@@ -60,19 +60,21 @@ public:
 class KeyNotFoundException : public Exception
 {
 public:
-	KeyNotFoundException(std::string const & )
-	{}
-	virtual const char* what() const throw()
+	KeyNotFoundException (std::string const &)
+	{
+	}
+	virtual const char * what () const throw ()
 	{
 		return "User Exception: Key not found";
 	}
+
 private:
 };
 
-class KeyTypeMismatch: public KeyException
+class KeyTypeMismatch : public KeyException
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "User Exception: Binary or String key mismatch";
 	}
@@ -81,7 +83,7 @@ public:
 class KeyInvalidName : public KeyException
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "User Exception: Invalid Keyname";
 	}
@@ -90,12 +92,11 @@ public:
 class KeyTypeConversion : public KeyException
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "User Exception: Exception thrown by get/set";
 	}
 };
-
 }
 
 #define USER_DEFINED_EXCEPTIONS
@@ -107,30 +108,31 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) :
-		m_key (key)
-	{}
+	KDBException (Key key) : m_key (key)
+	{
+	}
 
-	virtual ~KDBException() throw()
-	{}
+	virtual ~KDBException () throw ()
+	{
+	}
 
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "User Exception: KDB";
 	}
+
 private:
 	Key m_key;
 };
-
 }
 
 
 #include <kdb.hpp>
 
-int main()
+int main ()
 {
 	kdb::Key k ("abc", KEY_END);
 	kdb::KDB kdb;
 	kdb::KeySet ks;
-	kdb.get(ks, k);
+	kdb.get (ks, k);
 }

@@ -12,16 +12,16 @@
 
 using namespace kdb;
 
-int main()
+int main ()
 {
 	KeySet config;
 	KDB kdb;
-	kdb.get(config, "/sw/MyApp");
+	kdb.get (config, "/sw/MyApp");
 
-	Key k = config.lookup("/sw/MyApp/mykey");
+	Key k = config.lookup ("/sw/MyApp/mykey");
 	if (k)
 	{
-		std::cout << k << " is " << k.get<int>() << std::endl;
+		std::cout << k << " is " << k.get<int> () << std::endl;
 	}
 	else
 	{

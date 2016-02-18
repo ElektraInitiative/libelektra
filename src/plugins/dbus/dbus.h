@@ -17,13 +17,13 @@
 #include <string.h>
 
 
-int elektraDbusSendMessage (DBusBusType type, const char *keyName, const char *signalName);
+int elektraDbusSendMessage (DBusBusType type, const char * keyName, const char * signalName);
 int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filter_func);
 
-int elektraDbusClose(Plugin *handle, Key *errorKey);
-int elektraDbusGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraDbusSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraDbusClose (Plugin * handle, Key * errorKey);
+int elektraDbusGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDbusSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(dbus);
+Plugin * ELEKTRA_PLUGIN_EXPORT (dbus);
 
 #endif

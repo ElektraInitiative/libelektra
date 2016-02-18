@@ -20,62 +20,58 @@ namespace tools
 namespace merging
 {
 
-MergeResult::MergeResult()
+MergeResult::MergeResult ()
 {
 	resolvedKeys = 0;
 }
 
-MergeResult::MergeResult(KeySet& _conflictSet, KeySet& _mergedKeys)
+MergeResult::MergeResult (KeySet & _conflictSet, KeySet & _mergedKeys)
 {
 	resolvedKeys = 0;
 	conflictSet = _conflictSet;
 	mergedKeys = _mergedKeys;
 }
 
-void MergeResult::addConflict(Key& key, ConflictOperation ourOperation,
-		ConflictOperation theirOperation)
+void MergeResult::addConflict (Key & key, ConflictOperation ourOperation, ConflictOperation theirOperation)
 {
-	key.rewindMeta();
-	while (Key currentMeta = key.nextMeta())
+	key.rewindMeta ();
+	while (Key currentMeta = key.nextMeta ())
 	{
-		key.delMeta(currentMeta.getName());
+		key.delMeta (currentMeta.getName ());
 	}
 
-	if (key.isString())
+	if (key.isString ())
 	{
-		key.setString("");
+		key.setString ("");
 	}
 	else
 	{
-		key.setBinary(nullptr, 0);
+		key.setBinary (nullptr, 0);
 	}
 
 	removeMergeKey (key);
-	key.setMeta ("conflict/operation/our",
-			MergeConflictOperation::getFromTag (ourOperation));
-	key.setMeta ("conflict/operation/their",
-			MergeConflictOperation::getFromTag (theirOperation));
+	key.setMeta ("conflict/operation/our", MergeConflictOperation::getFromTag (ourOperation));
+	key.setMeta ("conflict/operation/their", MergeConflictOperation::getFromTag (theirOperation));
 	conflictSet.append (key);
 }
 
-void MergeResult::resolveConflict(Key& key)
+void MergeResult::resolveConflict (Key & key)
 {
-	key.rewindMeta();
+	key.rewindMeta ();
 	Key currentMeta;
-	while ((currentMeta = key.nextMeta()))
+	while ((currentMeta = key.nextMeta ()))
 	{
 		// TODO: this is just a workaround because keys with a prefix other than
 		// user/ or system/ cannot be created and therefore isBelow cannot be used
-		if (currentMeta.getName().find("conflict/") == 0)
+		if (currentMeta.getName ().find ("conflict/") == 0)
 		{
-			key.delMeta(currentMeta.getName());
+			key.delMeta (currentMeta.getName ());
 		}
 	}
 
-	conflictSet.lookup(key, KDB_O_POP);
+	conflictSet.lookup (key, KDB_O_POP);
 	resolvedKeys++;
 }
-
 }
 }
 }

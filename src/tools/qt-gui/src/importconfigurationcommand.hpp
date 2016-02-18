@@ -9,10 +9,10 @@
 #ifndef IMPORTCONFIGURATIONCOMMAND_H
 #define IMPORTCONFIGURATIONCOMMAND_H
 
+#include "datacontainer.hpp"
+#include "treeviewmodel.hpp"
 #include <QUndoCommand>
 #include <kdb.hpp>
-#include "treeviewmodel.hpp"
-#include "datacontainer.hpp"
 
 /**
  * @brief The ImportConfigurationCommand class
@@ -30,20 +30,20 @@ public:
 	 * @param data The data needed to undo/redo this command.
 	 * @param parent An optional parent command.
 	 */
-	explicit ImportConfigurationCommand(TreeViewModel* model, int index, DataContainer *data, QUndoCommand* parent = nullptr);
+	explicit ImportConfigurationCommand (TreeViewModel * model, int index, DataContainer * data, QUndoCommand * parent = nullptr);
 
-	virtual void undo() override;
-	virtual void redo() override;
+	virtual void undo () override;
+	virtual void redo () override;
 
 private:
-	TreeViewModel*	m_model;
-	int				m_index;
-	ConfigNodePtr	m_before;
-	ConfigNodePtr	m_after;
-	QString			m_name;
-	QString			m_format;
-	QString			m_file;
-	QVariantList	m_mergeStrategies;
+	TreeViewModel * m_model;
+	int m_index;
+	ConfigNodePtr m_before;
+	ConfigNodePtr m_after;
+	QString m_name;
+	QString m_format;
+	QString m_file;
+	QVariantList m_mergeStrategies;
 };
 
 #endif // IMPORTCONFIGURATIONCOMMAND_H

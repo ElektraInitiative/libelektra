@@ -11,27 +11,29 @@
 
 using namespace kdb;
 
-KeySetVisitor::KeySetVisitor() {}
-
-void KeySetVisitor::visit(ConfigNode& node)
+KeySetVisitor::KeySetVisitor ()
 {
-	Key key = node.getKey();
+}
 
-	if (key && key.isValid())
+void KeySetVisitor::visit (ConfigNode & node)
+{
+	Key key = node.getKey ();
+
+	if (key && key.isValid ())
 	{
-		m_set.append(key);
+		m_set.append (key);
 	}
 }
 
-void KeySetVisitor::visit(TreeViewModel* model)
+void KeySetVisitor::visit (TreeViewModel * model)
 {
-	foreach (ConfigNodePtr node, model->model())
+	foreach (ConfigNodePtr node, model->model ())
 	{
-		node->accept(*this);
+		node->accept (*this);
 	}
 }
 
-KeySet KeySetVisitor::getKeySet()
+KeySet KeySetVisitor::getKeySet ()
 {
-	return m_set.dup();
+	return m_set.dup ();
 }

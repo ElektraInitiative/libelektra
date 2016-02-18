@@ -9,7 +9,7 @@
 #ifndef CONTRACT_HOSTS_H_
 #define CONTRACT_HOSTS_H_
 
-// @formatter:off
+// clang-format off
 
 
 ksNew (30,
@@ -41,6 +41,6 @@ ksNew (30,
 			KEY_END),
 		KS_END);
 
-// @formatter:on
+// clang-format on
 
 #endif /* CONTRACT_HOSTS_H_ */

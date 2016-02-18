@@ -19,34 +19,32 @@ class LsCommand : public Command
 	kdb::KeySet ks;
 
 public:
-	LsCommand();
-	~LsCommand();
+	LsCommand ();
+	~LsCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "v0";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<name>";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "List the names of keys below a given name.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
-		return
-			"List all keys below given name.\n"
-			"To also retrieve the value use the\n"
-			"export command."
-			;
+		return "List all keys below given name.\n"
+		       "To also retrieve the value use the\n"
+		       "export command.";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

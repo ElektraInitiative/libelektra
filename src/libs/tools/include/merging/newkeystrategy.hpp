@@ -25,13 +25,12 @@ namespace merging
 class NewKeyStrategy : public MergeConflictStrategy
 {
 public:
-	NewKeyStrategy()
+	NewKeyStrategy ()
 	{
 	}
 
-	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result) override;
+	virtual void resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result) override;
 };
-
 }
 }
 }

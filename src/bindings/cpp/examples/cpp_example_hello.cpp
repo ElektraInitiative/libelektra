@@ -11,8 +11,8 @@
 
 #include <iostream>
 
-int main()
+int main ()
 {
-	kdb::Key k("user/hello_world", KEY_VALUE, "Hello World", KEY_END);
+	kdb::Key k ("user/hello_world", KEY_VALUE, "Hello World", KEY_END);
 	std::cout << k << std::endl;
 }

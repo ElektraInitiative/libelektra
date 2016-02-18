@@ -10,8 +10,8 @@
 #ifndef COMPARISON_HPP_
 #define COMPARISON_HPP_
 
-#include <string>
 #include <kdb.hpp>
+#include <string>
 
 namespace kdb
 {
@@ -31,7 +31,7 @@ namespace helper
  * @return true if both keys are not null and have an
  * equal string value, false otherwise
  */
-bool keyDataEqual(const Key&, const Key&);
+bool keyDataEqual (const Key &, const Key &);
 
 /**
  * Determines if two keys have equal metadata
@@ -42,8 +42,7 @@ bool keyDataEqual(const Key&, const Key&);
  * @param k2 the second key whose metadata should be compared
  * @return true if the keys have equal metadata, false otherwise
  */
-bool keyMetaEqual(Key&, Key&);
-
+bool keyMetaEqual (Key &, Key &);
 }
 }
 }

@@ -6,22 +6,22 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+#include "kdbconfig.h"
+#include <external.hpp>
 #include <kdb.h>
 #include <kdb.hpp>
-#include <external.hpp>
-#include "kdbconfig.h"
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <string.h>
 #include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -30,56 +30,50 @@
 
 const char * buildinExecPath = BUILTIN_EXEC_FOLDER;
 
-static std::string cwd()
+static std::string cwd ()
 {
 	std::vector<char> current_dir;
-	current_dir.resize(KDB_MAX_PATH_LENGTH);
+	current_dir.resize (KDB_MAX_PATH_LENGTH);
 	errno = 0;
-	while (getcwd(&current_dir[0], current_dir.size()) == nullptr
-			&& errno == ERANGE)
+	while (getcwd (&current_dir[0], current_dir.size ()) == nullptr && errno == ERANGE)
 	{
-		current_dir.resize(current_dir.size()*2);
+		current_dir.resize (current_dir.size () * 2);
 	}
 
 	if (errno != 0)
 	{
-		return std::string();
+		return std::string ();
 	}
 
-	return std::string(&current_dir[0]);
+	return std::string (&current_dir[0]);
 }
 
-void tryExternalCommand(char** argv)
+void tryExternalCommand (char ** argv)
 {
 	std::vector<std::string> pathes;
 
-	char *execPath = getenv("KDB_EXEC_PATH");
+	char * execPath = getenv ("KDB_EXEC_PATH");
 	if (execPath)
 	{
-		pathes.push_back(execPath);
+		pathes.push_back (execPath);
 	}
-	pathes.push_back(buildinExecPath);
+	pathes.push_back (buildinExecPath);
 
 	for (auto & pathe : pathes)
 	{
 		std::string command;
-		char* savedArg = nullptr;
+		char * savedArg = nullptr;
 
 		if (pathe[0] != '/')
 		{
 			// no absolute path, so work with current path
-			const std::string currentPath = cwd();
+			const std::string currentPath = cwd ();
 
-			if (currentPath.empty())
+			if (currentPath.empty ())
 			{
 				std::cerr << "Could not determine "
-					<< "current path for "
-					<< pathe
-					<< " with command name: "
-					<< argv[0]
-					<< " because: "
-					<< strerror(errno)
-					<< std::endl;
+					  << "current path for " << pathe << " with command name: " << argv[0]
+					  << " because: " << strerror (errno) << std::endl;
 				continue;
 			}
 			command += currentPath;
@@ -91,7 +85,7 @@ void tryExternalCommand(char** argv)
 		command += argv[0];
 
 		struct stat buf;
-		if (stat(command.c_str(), &buf) == -1)
+		if (stat (command.c_str (), &buf) == -1)
 		{
 			if (errno == ENOENT)
 			{
@@ -102,117 +96,112 @@ void tryExternalCommand(char** argv)
 			}
 			else
 			{
-				std::cerr << "The external command "
-					<< command
-					<< " could not be found, because: "
-					<< strerror(errno)
-					<< std::endl;
+				std::cerr << "The external command " << command << " could not be found, because: " << strerror (errno)
+					  << std::endl;
 				continue;
 			}
 		}
 
 		savedArg = argv[0];
-		argv[0] = const_cast<char*>(command.c_str());
+		argv[0] = const_cast<char *> (command.c_str ());
 
-		elektraExecve(command.c_str(), argv);
+		elektraExecve (command.c_str (), argv);
 
-		std::cerr << "Could not execute external command "
-			<< command
-			<< " because: " << strerror(errno)
-			<< std::endl;
+		std::cerr << "Could not execute external command " << command << " because: " << strerror (errno) << std::endl;
 
 		argv[0] = savedArg;
 	}
 
-	throw UnknownCommand();
+	throw UnknownCommand ();
 }
 
 #ifndef _WIN32
-extern char **environ;
+extern char ** environ;
 #endif
 
-void elektraExecve(const char *filename, char *const argv[])
+void elektraExecve (const char * filename, char * const argv[])
 {
 #ifdef _WIN32
-	execve(filename, argv, 0);
+	execve (filename, argv, 0);
 #else
-	execve(filename, argv, environ);
+	execve (filename, argv, environ);
 #endif
 }
 
 
-void runManPage(std::string command, std::string profile)
+void runManPage (std::string command, std::string profile)
 {
-	if (command.empty())
+	if (command.empty ())
 	{
 		command = "kdb";
 	}
 	else
 	{
-		command = "kdb-"+command;
+		command = "kdb-" + command;
 	}
 	const char * man = "/usr/bin/man";
 	using namespace kdb;
 	Key k = nullptr;
-	try {
+	try
+	{
 		KDB kdb;
 		KeySet conf;
 		std::string dirname;
-		for (int i=0; i<=2; ++i)
+		for (int i = 0; i <= 2; ++i)
 		{
 			switch (i)
 			{
-			case 0: dirname = "/sw/elektra/kdb/#0/"+profile+"/"; break;
-			case 1: dirname = "/sw/elektra/kdb/#0/%/"; break;
-			case 2: dirname = "/sw/kdb/"+profile+"/"; break; // legacy
+			case 0:
+				dirname = "/sw/elektra/kdb/#0/" + profile + "/";
+				break;
+			case 1:
+				dirname = "/sw/elektra/kdb/#0/%/";
+				break;
+			case 2:
+				dirname = "/sw/kdb/" + profile + "/";
+				break; // legacy
 			}
-			kdb.get(conf, dirname);
+			kdb.get (conf, dirname);
 			if (!k) // first one wins, because we do not reassign
 			{
-				k = conf.lookup(dirname+"man");
+				k = conf.lookup (dirname + "man");
 			}
 		}
 	}
-	catch (kdb::KDBException const& ce)
+	catch (kdb::KDBException const & ce)
 	{
 		std::cerr << "There is a severe problem with your installation!\n"
-			<< "kdbOpen() failed with the info:"
-			<< std::endl
-			<< ce.what()
-			<< std::endl;
+			  << "kdbOpen() failed with the info:" << std::endl
+			  << ce.what () << std::endl;
 	}
 	if (k)
 	{
-		man = k.get<std::string>().c_str();
+		man = k.get<std::string> ().c_str ();
 	}
-	char * const argv [3] = {const_cast<char*>(man),
-		const_cast<char*>(command.c_str()),
-		nullptr};
+	char * const argv[3] = { const_cast<char *> (man), const_cast<char *> (command.c_str ()), nullptr };
 
-	elektraExecve(man, argv);
+	elektraExecve (man, argv);
 	std::cout << "Was not able to execute man-page viewer: \"" << man << '"' << std::endl;
 }
 
 #ifndef _WIN32
-bool runEditor(std::string editor, std::string file)
+bool runEditor (std::string editor, std::string file)
 {
-	char * const argv [3] = {const_cast<char*>(editor.c_str()),
-		const_cast<char*>(file.c_str()),
-		0};
+	char * const argv[3] = { const_cast<char *> (editor.c_str ()), const_cast<char *> (file.c_str ()), 0 };
 
 	pid_t childpid = fork ();
 	if (!childpid)
 	{
-		elektraExecve (editor.c_str(), argv);
+		elektraExecve (editor.c_str (), argv);
 		exit (23);
 	}
 	else
 	{
 		int status;
 		waitpid (childpid, &status, 0);
-		if (WIFEXITED(status))
+		if (WIFEXITED (status))
 		{
-			if (WEXITSTATUS(status) != 23)
+			if (WEXITSTATUS (status) != 23)
 			{
 				return true;
 			}
@@ -221,7 +210,7 @@ bool runEditor(std::string editor, std::string file)
 	return false;
 }
 #else
-bool runEditor(std::string, std::string)
+bool runEditor (std::string, std::string)
 {
 	// TODO: impl
 	return false;

@@ -13,21 +13,21 @@
 #include <backends.hpp>
 #include <plugindatabase.hpp>
 
-#include <string>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <string>
 #include <unordered_map>
 
-#include <kdb.hpp>
 #include <gtest/gtest.h>
+#include <kdb.hpp>
 
-TEST(BackendBuilder, loadAllPlugins)
+TEST (BackendBuilder, loadAllPlugins)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	ModulesPluginDatabase mpd;
 	Modules m;
-	for (auto const & p : mpd.listAllPlugins())
+	for (auto const & p : mpd.listAllPlugins ())
 	{
 		// std::cout << p << std::endl;
 		// if (p == "python") continue;
@@ -36,16 +36,15 @@ TEST(BackendBuilder, loadAllPlugins)
 
 		if (p == "jni") continue;
 		if (p == "crypto_gcrypt") continue;
-		try {
-			m.load(p);
+		try
+		{
+			m.load (p);
 			Backend b;
-			b.addPlugin(PluginSpec(p));
+			b.addPlugin (PluginSpec (p));
 		}
 		catch (std::exception const & e)
 		{
-			EXPECT_TRUE(true) << p;
+			EXPECT_TRUE (true) << p;
 		}
 	}
 }
-
-

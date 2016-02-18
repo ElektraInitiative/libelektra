@@ -9,20 +9,20 @@
 
 #include "keymetaformatting.h"
 
+#include <ctype.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
 #include <kdbproposal.h>
 #include <string.h>
-#include <ctype.h>
 
-static void elektraAddCommentInfo(KeySet *comments, Key *commentBase, size_t spaces, const char *commentStart, const char *comment)
+static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t spaces, const char * commentStart, const char * comment)
 {
 	keySetString (commentBase, comment);
 
 	if (commentStart)
 	{
 		/* this comment contains actual comment data */
-		Key *commentStartKey = keyDup (commentBase);
+		Key * commentStartKey = keyDup (commentBase);
 		keyAddBaseName (commentStartKey, "start");
 		keySetString (commentStartKey, commentStart);
 		ksAppendKey (comments, commentStartKey);
@@ -35,9 +35,9 @@ static void elektraAddCommentInfo(KeySet *comments, Key *commentBase, size_t spa
 	 */
 	if (commentStart || spaces > 0)
 	{
-		Key *commentSpaceKey = keyDup (commentBase);
+		Key * commentSpaceKey = keyDup (commentBase);
 		keyAddBaseName (commentSpaceKey, "space");
-		keySetStringF(commentSpaceKey, "%d", spaces);
+		keySetStringF (commentSpaceKey, "%d", spaces);
 		ksAppendKey (comments, commentSpaceKey);
 	}
 }
@@ -58,9 +58,9 @@ static void elektraAddCommentInfo(KeySet *comments, Key *commentBase, size_t spa
  * @param commentStart the used comment start sequence
  * @param comment the comment data (i.e. the actual comment)
  */
-void elektraAddLineComment(KeySet *comments, size_t spaces, const char *commentStart, const char *comment)
+void elektraAddLineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment)
 {
-	Key *lineComment;
+	Key * lineComment;
 
 	/* initialize the comment key */
 	if (ksGetSize (comments) == 0)
@@ -74,15 +74,14 @@ void elektraAddLineComment(KeySet *comments, size_t spaces, const char *commentS
 	{
 		// TODO: doing all this every time is very unefficient. Arrayhandling
 		// definitely needs to be improved
-		Key *arrayBase = keyNew("comment", KEY_META_NAME, KEY_END);
-		KeySet *array = elektraArrayGet(arrayBase, comments);
+		Key * arrayBase = keyNew ("comment", KEY_META_NAME, KEY_END);
+		KeySet * array = elektraArrayGet (arrayBase, comments);
 		lineComment = elektraArrayGetNextKey (array);
-		keyDel(arrayBase);
-		ksDel(array);
+		keyDel (arrayBase);
+		ksDel (array);
 	}
 
-	elektraAddCommentInfo(comments, lineComment, spaces, commentStart, comment);
-
+	elektraAddCommentInfo (comments, lineComment, spaces, commentStart, comment);
 }
 
 /**
@@ -96,12 +95,12 @@ void elektraAddLineComment(KeySet *comments, size_t spaces, const char *commentS
  * @param commentStart the used comment start sequence
  * @param comment the comment data (i.e. the actual comment)
  */
-void elektraAddInlineComment(KeySet *comments, size_t spaces, const char *commentStart, const char *comment)
+void elektraAddInlineComment (KeySet * comments, size_t spaces, const char * commentStart, const char * comment)
 {
-	Key *inlineComment = keyNew ("comment/#", KEY_META_NAME, KEY_END);
+	Key * inlineComment = keyNew ("comment/#", KEY_META_NAME, KEY_END);
 	elektraArrayIncName (inlineComment);
 
-	elektraAddCommentInfo(comments, inlineComment, spaces, commentStart, comment);
+	elektraAddCommentInfo (comments, inlineComment, spaces, commentStart, comment);
 }
 
 /**
@@ -112,7 +111,7 @@ void elektraAddInlineComment(KeySet *comments, size_t spaces, const char *commen
  * @param line the string in which spaces are counted
  * @return the number of spaces before the first non blank character
  */
-size_t elektraCountStartSpaces(const char* line)
+size_t elektraCountStartSpaces (const char * line)
 {
 	/* count the number of whitespace characters before the comment */
 	size_t spaces = 0;

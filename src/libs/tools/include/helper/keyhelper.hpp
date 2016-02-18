@@ -10,8 +10,8 @@
 #ifndef KEYHELPER_HPP_
 #define KEYHELPER_HPP_
 
-#include <string>
 #include <kdb.hpp>
+#include <string>
 #include <toolexcept.hpp>
 
 namespace kdb
@@ -26,9 +26,7 @@ namespace helper
 class InvalidRebaseException : public ToolException
 {
 public:
-	InvalidRebaseException(std::string message) :
-			ToolException(message)
-	{};
+	InvalidRebaseException (std::string message) : ToolException (message){};
 };
 
 /**
@@ -41,7 +39,7 @@ public:
  * @return a rebased copy of the supplied key
  * @throws InvalidRebaseException if the key is not below the old parent
  */
-Key rebaseKey(const Key& key, const Key& oldParent, const Key& newParent);
+Key rebaseKey (const Key & key, const Key & oldParent, const Key & newParent);
 
 /**
  * Rebases the relative path of the passed key from the old parent
@@ -60,23 +58,21 @@ Key rebaseKey(const Key& key, const Key& oldParent, const Key& newParent);
  * @return the rebased path
  * @throws InvalidRebaseException if the key is not below the old parent
  */
-std::string rebasePath(const Key& key, const Key& oldParent,
-		const Key& newParent);
+std::string rebasePath (const Key & key, const Key & oldParent, const Key & newParent);
 
 /**
  * @brief Removes the namespace
  *
  * @param key will be made to a cascading key
  */
-void removeNamespace(Key & key);
+void removeNamespace (Key & key);
 
 /**
  * @brief Find common name between two keys
  *
  * @return the longest common name found
  */
-Key commonKeyName(Key key1, Key key2);
-
+Key commonKeyName (Key key1, Key key2);
 }
 }
 }

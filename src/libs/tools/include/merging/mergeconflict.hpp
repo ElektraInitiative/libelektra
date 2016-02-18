@@ -25,10 +25,7 @@ namespace merging
 class InvalidConflictOperation : public ToolException
 {
 public:
-	InvalidConflictOperation(std::string message) :
-			ToolException(message)
-	{
-	};
+	InvalidConflictOperation (std::string message) : ToolException (message){};
 };
 
 enum ConflictOperation
@@ -43,7 +40,7 @@ enum ConflictOperation
 class MergeConflictOperation
 {
 public:
-	static std::string getFromTag(enum ConflictOperation operation)
+	static std::string getFromTag (enum ConflictOperation operation)
 	{
 		switch (operation)
 		{
@@ -62,18 +59,16 @@ public:
 		return "unknown";
 	}
 
-	static ConflictOperation getFromName(std::string name)
+	static ConflictOperation getFromName (std::string name)
 	{
 		if (name == "CONFLICT_ADD") return CONFLICT_ADD;
 		if (name == "CONFLICT_DELETE") return CONFLICT_DELETE;
 		if (name == "CONFLICT_MODIFY") return CONFLICT_MODIFY;
 		if (name == "CONFLICT_META") return CONFLICT_META;
 		if (name == "CONFLICT_SAME") return CONFLICT_SAME;
-		throw InvalidConflictOperation (
-				"The conflict operation " + name + " is unknown");
+		throw InvalidConflictOperation ("The conflict operation " + name + " is unknown");
 	}
 };
-
 }
 }
 }

@@ -10,18 +10,18 @@
 #include <keysetio.hpp>
 
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include <merging/threewaymerge.hpp>
 #include <merging/onesidemergeconfiguration.hpp>
+#include <merging/threewaymerge.hpp>
 
 
 using namespace kdb;
 using namespace kdb::tools::merging;
 using namespace std;
 
-int main()
+int main ()
 {
 	KeySet ours;
 	KeySet theirs;
@@ -56,13 +56,13 @@ int main()
 		KDB lkdb;
 		lkdb.get (ours, oursRoot);
 		ours = ours.cut (oursRoot);
-		ours.lookup(oursRoot, KDB_O_POP);
+		ours.lookup (oursRoot, KDB_O_POP);
 		lkdb.get (theirs, theirsRoot);
 		theirs = theirs.cut (theirsRoot);
-		theirs.lookup(theirsRoot, KDB_O_POP);
+		theirs.lookup (theirsRoot, KDB_O_POP);
 		lkdb.get (base, baseRoot);
 		base = base.cut (baseRoot);
-		base.lookup(baseRoot, KDB_O_POP);
+		base.lookup (baseRoot, KDB_O_POP);
 	}
 
 
@@ -96,36 +96,35 @@ int main()
 	// AutoMergeConfiguration.
 
 	AutoMergeConfiguration configuration;
-	configuration.configureMerger(merger);
+	configuration.configureMerger (merger);
 
 	// Step 4: Perform the actual merge
 	MergeResult result = merger.mergeKeySet (
-			MergeTask (BaseMergeKeys (base, baseRoot), OurMergeKeys (ours, oursRoot),
-					TheirMergeKeys (theirs, theirsRoot), resultRoot));
+		MergeTask (BaseMergeKeys (base, baseRoot), OurMergeKeys (ours, oursRoot), TheirMergeKeys (theirs, theirsRoot), resultRoot));
 
 	// Step 5: work with the result. The merger will return an object containing information
 	// about the merge result.
 	if (!result.hasConflicts ())
 	{
 		// output some statistical information
-		cout << result.getMergedKeys().size() << " keys in the result" << endl;
-		cout << result.getNumberOfEqualKeys() << " keys were equal" << endl;
-		cout << result.getNumberOfResolvedKeys() << " keys were resolved" << endl;
+		cout << result.getMergedKeys ().size () << " keys in the result" << endl;
+		cout << result.getNumberOfEqualKeys () << " keys were equal" << endl;
+		cout << result.getNumberOfResolvedKeys () << " keys were resolved" << endl;
 
 		// write the result
-		resultKeys.append(result.getMergedKeys());
+		resultKeys.append (result.getMergedKeys ());
 		kdb.set (resultKeys, resultRoot);
 
 		return 0;
 	}
 	else
 	{
-		KeySet conflicts = result.getConflictSet();
+		KeySet conflicts = result.getConflictSet ();
 
-		cerr << conflicts.size() << " conflicts were detected that could not be resolved automatically:" << endl;
-		conflicts.rewind();
+		cerr << conflicts.size () << " conflicts were detected that could not be resolved automatically:" << endl;
+		conflicts.rewind ();
 		Key current;
-		while ((current = conflicts.next()))
+		while ((current = conflicts.next ()))
 		{
 			// For each unresolved conflict there is a conflict key in the merge result.
 			// This conflict key contains meta information about the reason of the conflict.
@@ -145,4 +144,3 @@ int main()
 		return -1;
 	}
 }
-

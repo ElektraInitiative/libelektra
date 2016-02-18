@@ -34,16 +34,16 @@ namespace kdb
  *
  * @return the stream
  */
-inline std::ostream & operator << (std::ostream & os, kdb::KeySet const & cks)
+inline std::ostream & operator<< (std::ostream & os, kdb::KeySet const & cks)
 {
-	kdb::KeySet & ks = const_cast<kdb::KeySet &>(cks);
-	cursor_t c = ks.getCursor();
-	ks.rewind();
+	kdb::KeySet & ks = const_cast<kdb::KeySet &> (cks);
+	cursor_t c = ks.getCursor ();
+	ks.rewind ();
 	kdb::Key k;
-	while ((k=ks.next()))
+	while ((k = ks.next ()))
 	{
 		os << k;
-		if (os.flags() & std::ios_base::skipws)
+		if (os.flags () & std::ios_base::skipws)
 		{
 			os << '\n';
 		}
@@ -51,13 +51,13 @@ inline std::ostream & operator << (std::ostream & os, kdb::KeySet const & cks)
 		{
 			os << '\0';
 		}
-		
-		if (os.flags() & std::ios_base::unitbuf)
+
+		if (os.flags () & std::ios_base::unitbuf)
 		{
 			os << std::flush;
 		}
 	}
-	ks.setCursor(c);
+	ks.setCursor (c);
 
 	return os;
 }
@@ -72,20 +72,19 @@ inline std::ostream & operator << (std::ostream & os, kdb::KeySet const & cks)
  *
  * @return the stream
  */
-inline std::istream & operator >> (std::istream & is, kdb::KeySet & ks)
+inline std::istream & operator>> (std::istream & is, kdb::KeySet & ks)
 {
-	cursor_t c = ks.getCursor();
-	while (!is.eof())
+	cursor_t c = ks.getCursor ();
+	while (!is.eof ())
 	{
 		kdb::Key k;
 		is >> k;
-		ks.append(k);
+		ks.append (k);
 	}
-	ks.setCursor(c); // jump back to previous cursor
+	ks.setCursor (c); // jump back to previous cursor
 
 	return is;
 }
-
 }
 
 #endif

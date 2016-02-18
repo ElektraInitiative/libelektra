@@ -18,20 +18,20 @@ typedef struct
 
 	char escape;
 
-	char *buf;
+	char * buf;
 	size_t bufalloc;
 } CHexData;
 
-ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
+ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 
-void elektraHexcodeEncode (Key *cur, CHexData *hd);
-void elektraHexcodeDecode (Key *cur, CHexData *hd);
+void elektraHexcodeEncode (Key * cur, CHexData * hd);
+void elektraHexcodeDecode (Key * cur, CHexData * hd);
 
-int elektraHexcodeGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraHexcodeSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraHexcodeOpen(Plugin *handle, Key *);
-int elektraHexcodeClose(Plugin *handle, Key *k);
+int elektraHexcodeGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraHexcodeSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraHexcodeOpen (Plugin * handle, Key *);
+int elektraHexcodeClose (Plugin * handle, Key * k);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(hexcode);
+Plugin * ELEKTRA_PLUGIN_EXPORT (hexcode);
 
 #endif

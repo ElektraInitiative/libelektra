@@ -16,38 +16,37 @@
 class CheckCommand : public Command
 {
 public:
-	CheckCommand();
-	~CheckCommand();
+	CheckCommand ();
+	~CheckCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "vcf";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "[<name>]";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Do some basic checks on a plugin.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
-		return  "If no arguments are given checks on key database\n"
-			"are done instead. Use -f to also do a write test\n"
-			"(might change configuration files!)\n"
-			"\n"
-			"If a plugin name is given, checks will only be done with given plugin.\n"
-			"Use -c to pass options to the plugin.\n"
-			"\n"
-			"Please report any output caused by official plugins to http://www.libelektra.org\n"
-			;
+		return "If no arguments are given checks on key database\n"
+		       "are done instead. Use -f to also do a write test\n"
+		       "(might change configuration files!)\n"
+		       "\n"
+		       "If a plugin name is given, checks will only be done with given plugin.\n"
+		       "Use -c to pass options to the plugin.\n"
+		       "\n"
+		       "Please report any output caused by official plugins to http://www.libelektra.org\n";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif
