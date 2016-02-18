@@ -6,10 +6,10 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
- 
+
 #include <openssl/evp.h>
 
-int main()
+int main ()
 {
 	EVP_CIPHER_CTX opensslSpecificType;
 

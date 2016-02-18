@@ -7,32 +7,23 @@
  *
  */
 
+#include "crypto.h"
+#include <kdb.h>
+#include <kdbinternal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <kdb.h>
-#include <tests_plugin.h>
 #include <tests_internal.h>
-#include <kdbinternal.h>
-#include "crypto.h"
+#include <tests_plugin.h>
 
 /*
  * The test vectors are taken from NIST SP 800-38A, section F.2.5 "CBC-AES256.Encrypt"
  * See <http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf> for further information.
  */
-static const unsigned char key[] =
-{
-	0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe,
-	0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
-	0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7,
-	0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4
-};
+static const unsigned char key[] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
+				     0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4 };
 
-static const unsigned char iv[] =
-{
-	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-	0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
-};
+static const unsigned char iv[] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 
 
 static const char strVal[] = "abcde";
@@ -41,18 +32,15 @@ static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
 /**
  * @brief create new KeySet and add a working configuration to it.
  */
-static KeySet *newWorkingConfiguration()
+static KeySet * newWorkingConfiguration ()
 {
-	Key *configKey = keyNew("user/crypto/key", KEY_END);
-	keySetBinary(configKey, key, sizeof(key));
+	Key * configKey = keyNew ("user/crypto/key", KEY_END);
+	keySetBinary (configKey, key, sizeof (key));
 
-	Key *configIv = keyNew("user/crypto/iv", KEY_END);
-	keySetBinary(configIv, iv, sizeof(iv));
+	Key * configIv = keyNew ("user/crypto/iv", KEY_END);
+	keySetBinary (configIv, iv, sizeof (iv));
 
-	return ksNew(2,
-		configKey,
-		configIv,
-		KS_END);
+	return ksNew (2, configKey, configIv, KS_END);
 }
 
 /**
@@ -60,20 +48,17 @@ static KeySet *newWorkingConfiguration()
  *
  * The cryptographic key in the returned KeySet has an invalid size.
  */
-static KeySet *newInvalidConfiguration()
+static KeySet * newInvalidConfiguration ()
 {
 	const unsigned char wrongKey[] = { 0x01, 0x02, 0x03 };
 
-	Key *configKey = keyNew("user/crypto/key", KEY_END);
-	keySetBinary(configKey, wrongKey, sizeof(wrongKey));
+	Key * configKey = keyNew ("user/crypto/key", KEY_END);
+	keySetBinary (configKey, wrongKey, sizeof (wrongKey));
 
-	Key *configIv = keyNew("user/crypto/iv", KEY_END);
-	keySetBinary(configIv, iv, sizeof(iv));
+	Key * configIv = keyNew ("user/crypto/iv", KEY_END);
+	keySetBinary (configIv, iv, sizeof (iv));
 
-	return ksNew(2,
-		configKey,
-		configIv,
-		KS_END);
+	return ksNew (2, configKey, configIv, KS_END);
 }
 
 /**
@@ -81,109 +66,100 @@ static KeySet *newInvalidConfiguration()
  *
  * The required key "/crypto/key-derivation/key" is missing.
  */
-static KeySet *newIncompleteConfiguration()
-{
-	return ksNew(0, KS_END);
-}
+static KeySet * newIncompleteConfiguration () { return ksNew (0, KS_END); }
 
 /**
  * @brief create a new KeySet holding sample data for encryption and decryption.
  */
-static KeySet *newTestdataKeySet()
+static KeySet * newTestdataKeySet ()
 {
-	Key *kUnchanged1 = keyNew("user/crypto/test/nochange", KEY_END);
-	Key *kUnchanged2 = keyNew("user/crypto/test/nochange2", KEY_END);
-	Key *kNull = keyNew("user/crypto/test/mynull", KEY_END);
-	Key *kString = keyNew("user/crypto/test/mystring", KEY_END);
-	Key *kBin = keyNew("user/crypto/test/mybin", KEY_END);
+	Key * kUnchanged1 = keyNew ("user/crypto/test/nochange", KEY_END);
+	Key * kUnchanged2 = keyNew ("user/crypto/test/nochange2", KEY_END);
+	Key * kNull = keyNew ("user/crypto/test/mynull", KEY_END);
+	Key * kString = keyNew ("user/crypto/test/mystring", KEY_END);
+	Key * kBin = keyNew ("user/crypto/test/mybin", KEY_END);
 
-	keySetString(kUnchanged1, strVal);
+	keySetString (kUnchanged1, strVal);
 
-	keySetString(kUnchanged2, strVal);
-	keySetMeta(kUnchanged2, ELEKTRA_CRYPTO_META_ENCRYPT, "");
+	keySetString (kUnchanged2, strVal);
+	keySetMeta (kUnchanged2, ELEKTRA_CRYPTO_META_ENCRYPT, "");
 
-	keySetBinary(kNull, 0, 0);
-	keySetMeta(kNull, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetBinary (kNull, 0, 0);
+	keySetMeta (kNull, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
-	keySetString(kString, strVal);
-	keySetMeta(kString, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetString (kString, strVal);
+	keySetMeta (kString, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
-	keySetBinary(kBin, binVal, sizeof(binVal));
-	keySetMeta(kBin, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetBinary (kBin, binVal, sizeof (binVal));
+	keySetMeta (kBin, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
 
-	return ksNew(5,
-		kUnchanged1,
-		kUnchanged2,
-		kNull,
-		kString,
-		kBin,
-		KS_END);
+	return ksNew (5, kUnchanged1, kUnchanged2, kNull, kString, kBin, KS_END);
 }
 
-static void test_init_internal(Plugin *plugin, Key *parentKey)
+static void test_init_internal (Plugin * plugin, Key * parentKey)
 {
-	KeySet *config = elektraPluginGetConfig (plugin);
+	KeySet * config = elektraPluginGetConfig (plugin);
 	succeed_if (config != 0, "there should be a config");
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no close pointer");
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
-	succeed_if (plugin->kdbError!= 0, "no error pointer");
+	succeed_if (plugin->kdbError != 0, "no error pointer");
 
 	// try re-opening the plugin
-	succeed_if (plugin->kdbClose(plugin, parentKey) == 1, "kdb close failed");
-	succeed_if (plugin->kdbOpen(plugin, parentKey) == 1, "re-opening the plugin failed");
-	succeed_if (plugin->kdbClose(plugin, parentKey) == 1, "kdb close failed");
+	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");
+	succeed_if (plugin->kdbOpen (plugin, parentKey) == 1, "re-opening the plugin failed");
+	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");
 }
 
-static void test_init()
+static void test_init ()
 {
-	Plugin *plugin = NULL;
-	Key *parentKey = keyNew("system", KEY_END);
-	KeySet *modules = ksNew(0, KS_END);
+	Plugin * plugin = NULL;
+	Key * parentKey = keyNew ("system", KEY_END);
+	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration(), 0);
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (), 0);
 	if (plugin)
 	{
-		succeed_if (!strcmp(plugin->name, "crypto_gcrypt"), "got wrong name");
+		succeed_if (!strcmp (plugin->name, "crypto_gcrypt"), "got wrong name");
 		test_init_internal (plugin, parentKey);
-		elektraPluginClose(plugin, 0);
+		elektraPluginClose (plugin, 0);
 	}
 
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration(), 0);
+	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (), 0);
 	if (plugin)
 	{
-		succeed_if (!strcmp(plugin->name, "crypto_openssl"), "got wrong name");
+		succeed_if (!strcmp (plugin->name, "crypto_openssl"), "got wrong name");
 		test_init_internal (plugin, parentKey);
-		elektraPluginClose(plugin, 0);
+		elektraPluginClose (plugin, 0);
 	}
 
-	plugin = elektraPluginOpen ("crypto", modules, newWorkingConfiguration(), 0);
+	plugin = elektraPluginOpen ("crypto", modules, newWorkingConfiguration (), 0);
 	exit_if_fail (plugin, "could not load crypto_openssl plugin");
-	succeed_if (!strcmp(plugin->name, "crypto"), "got wrong name");
+	succeed_if (!strcmp (plugin->name, "crypto"), "got wrong name");
 	test_init_internal (plugin, parentKey);
-	elektraPluginClose(plugin, 0);
+	elektraPluginClose (plugin, 0);
 
-	elektraModulesClose(modules, 0);
+	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	keyDel (parentKey);
 }
 
-static void test_config_errors_internal(const char *pluginName, KeySet *pluginConfig, int expectedResult, const char *message)
+static void test_config_errors_internal (const char * pluginName, KeySet * pluginConfig, int expectedResult, const char * message)
 {
-	Plugin *plugin = NULL;
-	Key *parentKey = keyNew("system", KEY_END);
-	KeySet *data = newTestdataKeySet ();
-	KeySet *modules = ksNew(0, KS_END);
+	Plugin * plugin = NULL;
+	Key * parentKey = keyNew ("system", KEY_END);
+	KeySet * data = newTestdataKeySet ();
+	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	plugin = elektraPluginOpen (pluginName, modules, pluginConfig, 0);
 	if (plugin)
 	{
-		succeed_if (plugin->kdbSet(plugin, data, parentKey) == expectedResult, message);
-		elektraPluginClose(plugin, 0);
+		succeed_if (plugin->kdbSet (plugin, data, parentKey) == expectedResult, message);
+		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
@@ -192,38 +168,38 @@ static void test_config_errors_internal(const char *pluginName, KeySet *pluginCo
 	keyDel (parentKey);
 }
 
-static void test_config_errors()
+static void test_config_errors ()
 {
 	// gcrypt tests
-	test_config_errors_internal ("crypto_gcrypt", newWorkingConfiguration(), 1, "kdbSet failed with valid config");
-	test_config_errors_internal ("crypto_gcrypt", newInvalidConfiguration(), -1, "kdbSet succeeded with invalid config");
-	test_config_errors_internal ("crypto_gcrypt", newIncompleteConfiguration(), -1, "kdbSet succeeded with incomplete config");
+	test_config_errors_internal ("crypto_gcrypt", newWorkingConfiguration (), 1, "kdbSet failed with valid config");
+	test_config_errors_internal ("crypto_gcrypt", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
+	test_config_errors_internal ("crypto_gcrypt", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
 
 	// OpenSSL tests
-	test_config_errors_internal ("crypto_openssl", newWorkingConfiguration(), 1, "kdbSet failed with valid config");
-	test_config_errors_internal ("crypto_openssl", newInvalidConfiguration(), -1, "kdbSet succeeded with invalid config");
-	test_config_errors_internal ("crypto_openssl", newIncompleteConfiguration(), -1, "kdbSet succeeded with incomplete config");
+	test_config_errors_internal ("crypto_openssl", newWorkingConfiguration (), 1, "kdbSet failed with valid config");
+	test_config_errors_internal ("crypto_openssl", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
+	test_config_errors_internal ("crypto_openssl", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
 }
 
-static void test_crypto_operations_internal(Plugin *plugin, Key *parentKey)
+static void test_crypto_operations_internal (Plugin * plugin, Key * parentKey)
 {
-	Key *k;
-	KeySet *original = newTestdataKeySet();
+	Key * k;
+	KeySet * original = newTestdataKeySet ();
 
 	// encrypt data by calling kdbSet
-	KeySet *data = newTestdataKeySet ();
+	KeySet * data = newTestdataKeySet ();
 	succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
 
 	// verify data changes
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		const char *name = keyName (k);
+		const char * name = keyName (k);
 
 		// verify that keys without the encrpytion meta-key value did not change
 		if (strstr (name, "nochange"))
 		{
-			succeed_if (strcmp(strVal, keyString (k)) == 0, "value of non-marked key changed");
+			succeed_if (strcmp (strVal, keyString (k)) == 0, "value of non-marked key changed");
 		}
 	}
 
@@ -237,15 +213,15 @@ static void test_crypto_operations_internal(Plugin *plugin, Key *parentKey)
 	ksDel (original);
 }
 
-static void test_crypto_operations()
+static void test_crypto_operations ()
 {
-	Plugin *plugin = NULL;
-	Key *parentKey = keyNew ("system", KEY_END);
-	KeySet *modules = ksNew (0, KS_END);
+	Plugin * plugin = NULL;
+	Key * parentKey = keyNew ("system", KEY_END);
+	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
 	// gcrypt tests
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration(), 0);
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (), 0);
 	if (plugin)
 	{
 		test_crypto_operations_internal (plugin, parentKey);
@@ -253,7 +229,7 @@ static void test_crypto_operations()
 	}
 
 	// OpenSSL tests
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration(), 0);
+	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (), 0);
 	if (plugin)
 	{
 		test_crypto_operations_internal (plugin, parentKey);
@@ -265,18 +241,17 @@ static void test_crypto_operations()
 	keyDel (parentKey);
 }
 
-int main(int argc, char** argv)
+int main (int argc, char ** argv)
 {
-	printf("CYPTO        TESTS\n");
-	printf("==================\n\n");
+	printf ("CYPTO        TESTS\n");
+	printf ("==================\n\n");
 
-	init(argc, argv);
+	init (argc, argv);
 
-	test_init();
-	test_config_errors();
-	test_crypto_operations();
+	test_init ();
+	test_config_errors ();
+	test_crypto_operations ();
 
-	printf("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;
 }
-

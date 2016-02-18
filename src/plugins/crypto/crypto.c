@@ -30,12 +30,12 @@ static unsigned int ref_cnt = 0;
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoInit(Key *errorKey ELEKTRA_UNUSED)
+static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
 {
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-	return elektraCryptoGcryInit(errorKey);
+	return elektraCryptoGcryInit (errorKey);
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	return elektraCryptoOpenSSLInit(errorKey);
+	return elektraCryptoOpenSSLInit (errorKey);
 #else
 	return 1;
 #endif
@@ -46,10 +46,10 @@ static int elektraCryptoInit(Key *errorKey ELEKTRA_UNUSED)
  *
  * Some libraries may need extra code for cleaning up the environment.
  */
-static void elektraCryptoTeardown()
+static void elektraCryptoTeardown ()
 {
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
-	elektraCryptoOpenSSLTeardown();
+	elektraCryptoOpenSSLTeardown ();
 #endif
 }
 
@@ -58,12 +58,12 @@ static void elektraCryptoTeardown()
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoEncrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	Key *k;
-	elektraCryptoHandle *cryptoHandle = NULL;
-	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+	Key * k;
+	elektraCryptoHandle * cryptoHandle = NULL;
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 #endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
@@ -76,7 +76,7 @@ static int elektraCryptoEncrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEK
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey)  != 1)
+		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
 			return -1;
@@ -120,12 +120,12 @@ openssl_error:
  * @retval 1 on success
  * @retval -1 on failure
  */
-static int elektraCryptoDecrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	Key *k;
-	elektraCryptoHandle *cryptoHandle = NULL;
-	KeySet *pluginConfig = elektraPluginGetConfig(handle);
+	Key * k;
+	elektraCryptoHandle * cryptoHandle = NULL;
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 #endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
@@ -138,7 +138,7 @@ static int elektraCryptoDecrypt(Plugin *handle ELEKTRA_UNUSED, KeySet *data ELEK
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (elektraCryptoGcryDecrypt (cryptoHandle, k, errorKey)  != 1)
+		if (elektraCryptoGcryDecrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
 			return -1;
@@ -183,19 +183,19 @@ openssl_error:
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION(open)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey)
+int CRYPTO_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey)
 {
-	pthread_mutex_lock(&mutex_ref_cnt);
+	pthread_mutex_lock (&mutex_ref_cnt);
 	if (ref_cnt == 0)
 	{
-		if (elektraCryptoInit(errorKey) != 1)
+		if (elektraCryptoInit (errorKey) != 1)
 		{
-			pthread_mutex_unlock(&mutex_ref_cnt);
+			pthread_mutex_unlock (&mutex_ref_cnt);
 			return (-1);
 		}
 	}
 	ref_cnt++;
-	pthread_mutex_unlock(&mutex_ref_cnt);
+	pthread_mutex_unlock (&mutex_ref_cnt);
 	return 1;
 }
 
@@ -205,14 +205,14 @@ int CRYPTO_PLUGIN_FUNCTION(open)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION(close)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey ELEKTRA_UNUSED)
+int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-	pthread_mutex_lock(&mutex_ref_cnt);
+	pthread_mutex_lock (&mutex_ref_cnt);
 	if (--ref_cnt == 0)
 	{
-		elektraCryptoTeardown();
+		elektraCryptoTeardown ();
 	}
-	pthread_mutex_unlock(&mutex_ref_cnt);
+	pthread_mutex_unlock (&mutex_ref_cnt);
 	return 1;
 }
 
@@ -225,14 +225,14 @@ int CRYPTO_PLUGIN_FUNCTION(close)(Plugin *handle ELEKTRA_UNUSED, Key *errorKey E
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
+int CRYPTO_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
-		KeySet *moduleConfig = ksNew (30,
+		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"
-			KS_END);
+					       KS_END);
 		ksAppend (ks, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -243,7 +243,7 @@ int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	return elektraCryptoDecrypt(handle, ks, parentKey);
+	return elektraCryptoDecrypt (handle, ks, parentKey);
 }
 
 /**
@@ -255,12 +255,12 @@ int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle, KeySet *ks, Key *parentKey)
+int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// for now we expect the crypto configuration to be stored in the KeySet ks
 	// we may add more options in the future
 
-	return elektraCryptoEncrypt(handle, ks, parentKey);
+	return elektraCryptoEncrypt (handle, ks, parentKey);
 }
 
 /**
@@ -268,12 +268,12 @@ int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle, KeySet *ks, Key *parentKey)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION(error)(Plugin *handle ELEKTRA_UNUSED, KeySet *ks ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int CRYPTO_PLUGIN_FUNCTION (error) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return 1;
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(crypto)
+Plugin * ELEKTRA_PLUGIN_EXPORT (crypto)
 {
 	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,

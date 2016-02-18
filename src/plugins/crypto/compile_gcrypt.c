@@ -6,10 +6,10 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
- 
+
 #include <gcrypt.h>
 
-int main()
+int main ()
 {
 	gcry_cipher_hd_t elektraCryptoHandle;
 	return 0;

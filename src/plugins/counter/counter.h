@@ -12,12 +12,12 @@
 #include <kdbplugin.h>
 
 
-int elektraCounterOpen(Plugin *handle, Key *errorKey);
-int elektraCounterClose(Plugin *handle, Key *errorKey);
-int elektraCounterGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraCounterSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraCounterError(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraCounterOpen (Plugin * handle, Key * errorKey);
+int elektraCounterClose (Plugin * handle, Key * errorKey);
+int elektraCounterGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCounterSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCounterError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(counter);
+Plugin * ELEKTRA_PLUGIN_EXPORT (counter);
 
 #endif

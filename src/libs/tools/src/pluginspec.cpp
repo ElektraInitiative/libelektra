@@ -31,11 +31,7 @@ namespace tools
  *
  * @see setFullName()
  */
-PluginSpec::PluginSpec (std::string pluginName,
-	KeySet pluginConfig) :
-	name(pluginName),
-	refname(pluginName),
-	config(pluginConfig)
+PluginSpec::PluginSpec (std::string pluginName, KeySet pluginConfig) : name (pluginName), refname (pluginName), config (pluginConfig)
 {
 	setFullName (pluginName);
 }
@@ -52,12 +48,8 @@ PluginSpec::PluginSpec (std::string pluginName,
  * @see setName()
  * @see setRefName()
  */
-PluginSpec::PluginSpec (std::string pluginName,
-	std::string refName,
-	KeySet pluginConfig) :
-	name(pluginName),
-	refname(refName),
-	config(pluginConfig)
+PluginSpec::PluginSpec (std::string pluginName, std::string refName, KeySet pluginConfig)
+: name (pluginName), refname (refName), config (pluginConfig)
 {
 	validate (pluginName);
 	validate (refname);
@@ -75,12 +67,8 @@ PluginSpec::PluginSpec (std::string pluginName,
  * @see setName()
  * @see setRefName()
  */
-PluginSpec::PluginSpec (std::string pluginName,
-	size_t refNumber,
-	KeySet pluginConfig) :
-	name(pluginName),
-	refname(),
-	config(pluginConfig)
+PluginSpec::PluginSpec (std::string pluginName, size_t refNumber, KeySet pluginConfig)
+: name (pluginName), refname (), config (pluginConfig)
 {
 	validate (pluginName);
 	setRefNumber (refNumber);
@@ -92,18 +80,12 @@ PluginSpec::PluginSpec (std::string pluginName,
  *
  * @return the module name, then #, and then the reference name
  */
-std::string PluginSpec::getFullName() const
-{
-	return name+"#"+refname;
-}
+std::string PluginSpec::getFullName () const { return name + "#" + refname; }
 
 /**
  * @return the reference name
  */
-std::string PluginSpec::getRefName() const
-{
-	return refname;
-}
+std::string PluginSpec::getRefName () const { return refname; }
 
 /**
  * @brief Checks if reference name contains only numbers
@@ -111,27 +93,21 @@ std::string PluginSpec::getRefName() const
  * @retval true if only numbers
  * @retval true if a refname was given
  */
-bool PluginSpec::isRefNumber() const
+bool PluginSpec::isRefNumber () const
 {
-	auto it = refname.find_first_not_of("0123456789");
+	auto it = refname.find_first_not_of ("0123456789");
 	return it == std::string::npos;
 }
 
 /**
  * @return the module name
  */
-std::string PluginSpec::getName() const
-{
-	return name;
-}
+std::string PluginSpec::getName () const { return name; }
 
 /**
  * @return the config
  */
-KeySet PluginSpec::getConfig() const
-{
-	return config;
-}
+KeySet PluginSpec::getConfig () const { return config; }
 
 /**
  * @brief Set the full name with # or only the name
@@ -140,19 +116,21 @@ KeySet PluginSpec::getConfig() const
  *
  * @param n the string to set
  */
-void PluginSpec::setFullName(std::string const & n)
+void PluginSpec::setFullName (std::string const & n)
 {
 	auto it = n.find ('#');
 	if (it != std::string::npos)
 	{
-		std::string nn = n.substr(0,it);
-		std::string rn = n.substr(it+1);
+		std::string nn = n.substr (0, it);
+		std::string rn = n.substr (it + 1);
 		validate (nn);
 		validate (rn);
 		name = nn;
 		refname = rn;
-	} else {
-		setName(n);
+	}
+	else
+	{
+		setName (n);
 	}
 }
 
@@ -166,7 +144,7 @@ void PluginSpec::setFullName(std::string const & n)
  *
  * @param n the string to set
  */
-void PluginSpec::setRefName(std::string const & n)
+void PluginSpec::setRefName (std::string const & n)
 {
 	validate (n);
 	refname = n;
@@ -177,10 +155,7 @@ void PluginSpec::setRefName(std::string const & n)
  *
  * @param refnumber the number to set
  */
-void PluginSpec::setRefNumber(size_t refnumber)
-{
-	refname = to_string(refnumber);
-}
+void PluginSpec::setRefNumber (size_t refnumber) { refname = to_string (refnumber); }
 
 /**
  * @brief Set the module name of the plugin
@@ -189,7 +164,7 @@ void PluginSpec::setRefNumber(size_t refnumber)
  *
  * @param n the string to set
  */
-void PluginSpec::setName(std::string const & n)
+void PluginSpec::setName (std::string const & n)
 {
 	validate (n);
 	name = n;
@@ -200,10 +175,7 @@ void PluginSpec::setName(std::string const & n)
  *
  * @param c config to append
  */
-void PluginSpec::appendConfig(KeySet c)
-{
-	config.append(c);
-}
+void PluginSpec::appendConfig (KeySet c) { config.append (c); }
 
 /**
  * @brief Check if str starts with a-z and then only has chars a-z, 0-9 or underscore (_)
@@ -212,18 +184,19 @@ void PluginSpec::appendConfig(KeySet c)
  */
 void PluginSpec::validate (std::string const & n) const
 {
-	if (n.empty()) throw BadPluginName("<empty>");
-	auto begin = n.find_first_of("abcdefghijklmnopqrstuvwxyz");
+	if (n.empty ())
+		throw BadPluginName ("<empty>");
+	auto begin = n.find_first_of ("abcdefghijklmnopqrstuvwxyz");
 	if (begin != 0)
 	{
 		// must start a-z
-		throw BadPluginName(n);
+		throw BadPluginName (n);
 	}
 
-	auto it = n.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789_");
+	auto it = n.find_first_not_of ("abcdefghijklmnopqrstuvwxyz0123456789_");
 	if (it != std::string::npos)
 	{
-		throw BadPluginName(n);
+		throw BadPluginName (n);
 	}
 }
 
@@ -232,30 +205,24 @@ void PluginSpec::validate (std::string const & n) const
  * @brief Compare two pluginspec if their value is equal
  * @note the content of getConfig() will be only compared with keynames, not content!
  */
-bool operator == (PluginSpec const & self, PluginSpec const & other)
+bool operator== (PluginSpec const & self, PluginSpec const & other)
 {
-	return self.getName() == other.getName() && self.getRefName() == other.getRefName() && self.getConfig() == other.getConfig();
+	return self.getName () == other.getName () && self.getRefName () == other.getRefName () && self.getConfig () == other.getConfig ();
 }
 
 /**
  * @brief Compare two pluginspec if their value is not equal
  * @note the content of getConfig() will be only compared with keynames, not content!
  */
-bool operator != (PluginSpec const & self, PluginSpec const & other)
-{
-	return !(self == other);
-}
+bool operator!= (PluginSpec const & self, PluginSpec const & other) { return !(self == other); }
 
 /**
  * @brief Output the name, refname and size of config
  */
-std::ostream & operator << (std::ostream & os, PluginSpec const & spec)
+std::ostream & operator<< (std::ostream & os, PluginSpec const & spec)
 {
-	os << "name: " << spec.getName() << " refname: " << spec.getRefName() << " configsize: " << spec.getConfig().size();
+	os << "name: " << spec.getName () << " refname: " << spec.getRefName () << " configsize: " << spec.getConfig ().size ();
 	return os;
 }
-
-
 }
-
 }

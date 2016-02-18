@@ -16,16 +16,19 @@
 #include <kdberrors.h>
 //! [plugin errors include]
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
+#include "kdbconfig.h"
 #endif
 
 
 //! [global data]
-typedef struct { int global; } GlobalData;
+typedef struct
+{
+	int global;
+} GlobalData;
 //! [global data]
 
 
@@ -34,124 +37,112 @@ typedef struct { int global; } GlobalData;
 
 
 //! [doc open]
-int elektraDocOpen(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
+int elektraDocOpen (Plugin * handle, Key * warningsKey ELEKTRA_UNUSED)
 {
-	GlobalData *data;
-	KeySet *config = elektraPluginGetConfig(handle);
-	Key * kg = ksLookupByName(config, "/global", 0);
+	GlobalData * data;
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * kg = ksLookupByName (config, "/global", 0);
 
-	data=elektraMalloc(sizeof(GlobalData));
+	data = elektraMalloc (sizeof (GlobalData));
 	data->global = 0;
-	if (kg) data->global = atoi(keyString(kg));
-	elektraPluginSetData(handle,data);
-//! [doc open]
+	if (kg)
+		data->global = atoi (keyString (kg));
+	elektraPluginSetData (handle, data);
+	//! [doc open]
 
-//! [doc module]
-	if (ksLookupByName(config, "/module", 0))
+	//! [doc module]
+	if (ksLookupByName (config, "/module", 0))
 	{
 		return 0;
 	}
 	// do some setup that will fail without configuration
-//! [doc module]
+	//! [doc module]
 
 	return 0; /* success */
 }
 
 
 //! [doc close]
-int elektraDocClose(Plugin *handle, Key *warningsKey ELEKTRA_UNUSED)
+int elektraDocClose (Plugin * handle, Key * warningsKey ELEKTRA_UNUSED)
 {
-	elektraFree (elektraPluginGetData(handle));
+	elektraFree (elektraPluginGetData (handle));
 
 	return 0; /* success */
 }
 //! [doc close]
 
-static int parseKey(FILE *fp ELEKTRA_UNUSED, char **key ELEKTRA_UNUSED, char **value ELEKTRA_UNUSED)
-{
-	return 0;
-}
+static int parseKey (FILE * fp ELEKTRA_UNUSED, char ** key ELEKTRA_UNUSED, char ** value ELEKTRA_UNUSED) { return 0; }
 
-static void doAction(Key *k ELEKTRA_UNUSED)
-{
-}
+static void doAction (Key * k ELEKTRA_UNUSED) {}
 
 //![get contract]
-int elektraDocGet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp(keyName(parentKey), "system/elektra/modules/doc"))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/doc"))
 	{
-		KeySet *contract = ksNew (30,
-		keyNew ("system/elektra/modules/doc",
-			KEY_VALUE, "doc plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/doc/exports", KEY_END),
-		keyNew ("system/elektra/modules/doc/exports/open",
-			KEY_FUNC, elektraDocOpen, KEY_END),
-		keyNew ("system/elektra/modules/doc/exports/close",
-			KEY_FUNC, elektraDocClose, KEY_END),
-		keyNew ("system/elektra/modules/doc/exports/get",
-			KEY_FUNC, elektraDocGet, KEY_END),
-		keyNew ("system/elektra/modules/doc/exports/set",
-			KEY_FUNC, elektraDocSet, KEY_END),
-		keyNew ("system/elektra/modules/doc/exports/error",
-			KEY_FUNC, elektraDocError, KEY_END),
-#include ELEKTRA_README(doc)
-		keyNew ("system/elektra/modules/doc/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END);
+		KeySet * contract =
+			ksNew (30, keyNew ("system/elektra/modules/doc", KEY_VALUE, "doc plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports", KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/open", KEY_FUNC, elektraDocOpen, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/close", KEY_FUNC, elektraDocClose, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/get", KEY_FUNC, elektraDocGet, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/set", KEY_FUNC, elektraDocSet, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/error", KEY_FUNC, elektraDocError, KEY_END),
+#include ELEKTRA_README (doc)
+			       keyNew ("system/elektra/modules/doc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
 		return 1; /* success */
 	}
-//![get contract]
+	//![get contract]
 
-//![get storage]
-	FILE *fp = fopen (keyString(parentKey), "r");
-	char *key;
-	char *value;
+	//![get storage]
+	FILE * fp = fopen (keyString (parentKey), "r");
+	char * key;
+	char * value;
 
-	while (parseKey(fp, &key, &value) >= 1)
+	while (parseKey (fp, &key, &value) >= 1)
 	{
-		Key *read = keyNew(0);
-		if (keySetName(read, key) == -1)
+		Key * read = keyNew (0);
+		if (keySetName (read, key) == -1)
 		{
 			fclose (fp);
 			keyDel (read);
-			ELEKTRA_SET_ERROR(59, parentKey, key);
+			ELEKTRA_SET_ERROR (59, parentKey, key);
 			return -1;
 		}
-		keySetString(read, value);
+		keySetString (read, value);
 
 		ksAppendKey (returned, read);
 		elektraFree (key);
 		elektraFree (value);
 	}
 
-	if (feof(fp) == 0)
+	if (feof (fp) == 0)
 	{
 		fclose (fp);
-		ELEKTRA_SET_ERROR(60, parentKey, "not at the end of file");
+		ELEKTRA_SET_ERROR (60, parentKey, "not at the end of file");
 		return -1;
 	}
 
 	fclose (fp);
-//![get storage]
+	//![get storage]
 
 
-//![get filter]
-	Key *k;
+	//![get filter]
+	Key * k;
 	ksRewind (returned);
 	while ((k = ksNext (returned)) != 0)
 	{
-		doAction(k);
+		doAction (k);
 	}
 
 	return 1; // success
 }
 //![get filter]
 
-int elektraDocSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
@@ -159,35 +150,27 @@ int elektraDocSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED
 	return nr_keys;
 }
 
-int elektraDocError(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
-{
-	return 0;
-}
+int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED) { return 0; }
 
-static Plugin *findPlugin(KDB *handle ELEKTRA_UNUSED)
-{
-	return 0;
-}
+static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED) { return 0; }
 
-static void saveToDisc (Key *k ELEKTRA_UNUSED)
-{
-}
+static void saveToDisc (Key * k ELEKTRA_UNUSED) {}
 
 //![set full]
-static void usercode (KDB *handle, KeySet *keyset, Key *key)
+static void usercode (KDB * handle, KeySet * keyset, Key * key)
 {
 	// some more user code
 	keySetString (key, "mycomment"); // the user changes the key
-	ksAppendKey(keyset, key); // append the key to the keyset
-	kdbSet (handle, keyset, 0); // and syncs it to disc
+	ksAppendKey (keyset, key);       // append the key to the keyset
+	kdbSet (handle, keyset, 0);      // and syncs it to disc
 }
 
 // so now kdbSet is called
-int elektraKdbSet(KDB *handle, KeySet *keyset, Key *parentKey)
+int elektraKdbSet (KDB * handle, KeySet * keyset, Key * parentKey)
 {
 	int ret = 0;
 	// find appropriate plugin and then call it:
-	Plugin *plugin = findPlugin(handle);
+	Plugin * plugin = findPlugin (handle);
 	ret = elektraDocSet (plugin, keyset, parentKey);
 	// the keyset with the key (and others for this plugin)
 	// will be passed to this function
@@ -196,10 +179,10 @@ int elektraKdbSet(KDB *handle, KeySet *keyset, Key *parentKey)
 
 // so now elektraPluginSet(), which is the function described here,
 // is called:
-int elektraPluginSet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *parentKey ELEKTRA_UNUSED)
+int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	// the task of elektraPluginSet is now to store the keys
-	Key *k;
+	Key * k;
 	ksRewind (returned);
 	while ((k = ksNext (returned)) != 0)
 	{
@@ -211,13 +194,10 @@ int elektraPluginSet(Plugin *plugin ELEKTRA_UNUSED, KeySet *returned, Key *paren
 //![set full]
 
 
-void elektraUsercodeUselessSymbol()
-{
-	usercode(0,0,0);
-}
+void elektraUsercodeUselessSymbol () { usercode (0, 0, 0); }
 
 //![export]
-Plugin *ELEKTRA_PLUGIN_EXPORT(doc)
+Plugin * ELEKTRA_PLUGIN_EXPORT (doc)
 {
 	// clang-format off
 	return elektraPluginExport(DOC_PLUGIN_NAME,

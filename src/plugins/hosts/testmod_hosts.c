@@ -21,84 +21,84 @@
 
 #include <tests_plugin.h>
 
-void test_readHostsSimple(char *fileName)
+void test_readHostsSimple (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file(fileName), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-	KeySet *ks=ksNew(0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key *key = ksLookupByName(ks, "user/tests/hosts/ipv4/localhost", 0);
+	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", 0);
 	exit_if_fail (key, "hostname localhost not found");
-	succeed_if (strcmp("127.0.0.1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName(ks, "user/tests/hosts/ipv4/gateway.markus-raab.org", 0);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv4/gateway.markus-raab.org", 0);
 	exit_if_fail (key, "hostname gateway.markus-raab.org not found");
-	succeed_if (strcmp("192.168.0.1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("192.168.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName(ks, "user/tests/hosts/ipv4/kirabyte.markus-raab.org/kira", 0);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv4/kirabyte.markus-raab.org/kira", 0);
 	exit_if_fail (key, "hostname alias kira not found");
-	succeed_if (strcmp("192.168.0.5", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("192.168.0.5", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName(ks, "user/tests/hosts/ipv6/wikipedia-sample", 0);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv6/wikipedia-sample", 0);
 	exit_if_fail (key, "hostname wikipedia-sample not found");
-	succeed_if (strcmp("fd9e:21a7:a92c:2323::1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName(ks, "user/tests/hosts/ipv6/wikipedia-sample/wikipedia-alias", 0);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv6/wikipedia-sample/wikipedia-alias", 0);
 	exit_if_fail (key, "hostname alias wikipedia-alias not found");
-	succeed_if (strcmp("fd9e:21a7:a92c:2323::1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("fd9e:21a7:a92c:2323::1", keyValue (key)) == 0, "address not correct");
 
 
 	ksDel (ks);
-	keyDel(parentKey);
+	keyDel (parentKey);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
-void test_readInvalidIpAddress(char *fileName)
+void test_readInvalidIpAddress (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file(fileName), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-	KeySet *ks=ksNew(0, KS_END);
-	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	KeySet * ks = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key *key = ksLookupByName(ks, "user/tests/hosts/ipv4/localhost", KDB_O_NONE);
+	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
-	succeed_if (strcmp("noipaddress", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("noipaddress", keyValue (key)) == 0, "address not correct");
 
 	ksDel (ks);
-	keyDel(parentKey);
+	keyDel (parentKey);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
-void test_mixedAddresses(char *fileName)
+void test_mixedAddresses (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file(fileName), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-	KeySet *ks=ksNew(0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key *key = ksLookupByName(ks, "user/tests/hosts/ipv4/ipv4host", KDB_O_NONE);
+	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/ipv4host", KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv4host not found");
-	succeed_if (strcmp("127.0.0.1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
 	key = ksLookupByName (ks, "user/tests/hosts/ipv4/ipv4host/ipv4alias1", KDB_O_NONE);
 	succeed_if (key, "ipv4alias1 not found");
 	key = ksLookupByName (ks, "user/tests/hosts/ipv4/ipv4host/ipv4alias2", KDB_O_NONE);
 	succeed_if (key, "ipv4alias2 not found");
 
-	key = ksLookupByName(ks, "user/tests/hosts/ipv6/ipv6host", KDB_O_NONE);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv6/ipv6host", KDB_O_NONE);
 	exit_if_fail (key, "hostname ipv6host not found");
-	succeed_if (strcmp("::1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("::1", keyValue (key)) == 0, "address not correct");
 
 	key = ksLookupByName (ks, "user/tests/hosts/ipv6/ipv6host/ipv6alias1", KDB_O_NONE);
 	succeed_if (key, "ipv6alias1 not found");
@@ -106,47 +106,47 @@ void test_mixedAddresses(char *fileName)
 	succeed_if (key, "ipv6alias2 not found");
 
 	ksDel (ks);
-	keyDel(parentKey);
+	keyDel (parentKey);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
-void test_duplicateEntries(char *fileName)
+void test_duplicateEntries (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file(fileName), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-	KeySet *ks=ksNew(0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
-	Key *key = ksLookupByName(ks, "user/tests/hosts/ipv4/localhost", KDB_O_NONE);
+	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", KDB_O_NONE);
 	exit_if_fail (key, "hostname localhost not found");
-	succeed_if (strcmp("127.0.0.1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("127.0.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName(ks, "user/tests/hosts/ipv4/host", KDB_O_NONE);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv4/host", KDB_O_NONE);
 	exit_if_fail (key, "hostname host not found");
-	succeed_if (strcmp("192.168.0.1", keyValue(key)) == 0, "address not correct");
+	succeed_if (strcmp ("192.168.0.1", keyValue (key)) == 0, "address not correct");
 
-	key = ksLookupByName(ks, "user/tests/hosts/ipv4/host/alias1", KDB_O_NONE);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv4/host/alias1", KDB_O_NONE);
 	succeed_if (key, "alias1 not found");
-	key = ksLookupByName(ks, "user/tests/hosts/ipv4/host/alias2", KDB_O_NONE);
+	key = ksLookupByName (ks, "user/tests/hosts/ipv4/host/alias2", KDB_O_NONE);
 	succeed_if (key, "alias2 not found");
 
 	ksDel (ks);
-	keyDel(parentKey);
+	keyDel (parentKey);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
-void test_duplicateOrder(char *fileName)
+void test_duplicateOrder (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename(), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-// clang-format off
+	// clang-format off
 	KeySet *ks = ksNew (20,
 			keyNew ("user/tests/hosts/ipv4/host1",
 					KEY_VALUE, "192.168.0.1",
@@ -161,31 +161,29 @@ void test_duplicateOrder(char *fileName)
 					KEY_META, "order", "20",
 					KEY_END),
 			KS_END);
-// clang-format on
+	// clang-format on
 
 	ksAppendKey (ks, parentKey);
 
-	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	succeed_if(output_error (parentKey), "error in kdbSet");
-	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
-			"files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
 
 	elektraUnlink (keyString (parentKey));
 	ksDel (ks);
 
-	PLUGIN_CLOSE()
-	;
+	PLUGIN_CLOSE ();
 }
 
-void test_writeHostsSimple(char *fileName)
+void test_writeHostsSimple (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename(), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-// clang-format off
+	// clang-format off
 	KeySet *ks = ksNew (20,
 			keyNew ("user/tests/hosts/ipv4/localhost",
 					KEY_VALUE, "127.0.0.1",
@@ -216,153 +214,153 @@ void test_writeHostsSimple(char *fileName)
 					KEY_META, "order", "40",
 					KEY_END),
 			KS_END);
-// clang-format on
+	// clang-format on
 
 	ksAppendKey (ks, parentKey);
 
-	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	succeed_if(output_error (parentKey), "error in kdbSet");
-	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
-			"files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
 
 	elektraUnlink (keyString (parentKey));
 	ksDel (ks);
 
-	PLUGIN_CLOSE()
-	;
+	PLUGIN_CLOSE ();
 }
 
-void test_readHostsComments(char *fileName)
+void test_readHostsComments (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file(fileName), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-	KeySet *ks=ksNew(0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
 	/* FIRST ENTRY */
-	Key *key = ksLookupByName(ks, "user/tests/hosts/ipv4/localhost", 0);
+	Key * key = ksLookupByName (ks, "user/tests/hosts/ipv4/localhost", 0);
 	exit_if_fail (key, "hostname localhost not found");
 
 	/* inline comment */
-	const Key *inlineComment1 = keyGetMeta(key, "comment/#0");
+	const Key * inlineComment1 = keyGetMeta (key, "comment/#0");
 	succeed_if (inlineComment1, "inline comment for first host does not exist");
-	succeed_if (!strcmp(keyString(inlineComment1), "inline comment0"), "inline comment for first host contains wrong text");
+	succeed_if (!strcmp (keyString (inlineComment1), "inline comment0"), "inline comment for first host contains wrong text");
 
-	const Key *inlineComment1Start = keyGetMeta(key, "comment/#0/start");
+	const Key * inlineComment1Start = keyGetMeta (key, "comment/#0/start");
 	succeed_if (inlineComment1Start, "start key for inline  of first host does not exist");
-	succeed_if (!strcmp(keyString(inlineComment1Start), "#"), "start key for inline comment of first host contains wrong text");
+	succeed_if (!strcmp (keyString (inlineComment1Start), "#"), "start key for inline comment of first host contains wrong text");
 
-	const Key *inlineComment1Space = keyGetMeta(key, "comment/#0/space");
+	const Key * inlineComment1Space = keyGetMeta (key, "comment/#0/space");
 	succeed_if (inlineComment1Space, "space key for inline comment of first host does not exist");
-	succeed_if (!strcmp(keyString(inlineComment1Space), "3"), "space key for inline comment of first host contains wrong number of spaces");
+	succeed_if (!strcmp (keyString (inlineComment1Space), "3"),
+		    "space key for inline comment of first host contains wrong number of spaces");
 
 
 	/* empty lines */
-	const Key *lineComment1 = keyGetMeta(key, "comment/#1");
+	const Key * lineComment1 = keyGetMeta (key, "comment/#1");
 	succeed_if (lineComment1, "comment for first empty line does not exist");
 
-	const Key *lineComment2 = keyGetMeta(key, "comment/#2");
+	const Key * lineComment2 = keyGetMeta (key, "comment/#2");
 	succeed_if (lineComment2, "comment for second empty line does not exist");
 
 
 	/* line comment */
-	const Key *lineComment3 = keyGetMeta(key, "comment/#3");
+	const Key * lineComment3 = keyGetMeta (key, "comment/#3");
 	succeed_if (lineComment3, "comment key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment3), " comment for localhost"), "comment key for line comment contains wrong text");
+	succeed_if (!strcmp (keyString (lineComment3), " comment for localhost"), "comment key for line comment contains wrong text");
 
-	const Key *lineComment3Start = keyGetMeta(key, "comment/#3/start");
+	const Key * lineComment3Start = keyGetMeta (key, "comment/#3/start");
 	succeed_if (lineComment3Start, "start key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment3Start), "#"), "start key for line comment contains wrong text");
+	succeed_if (!strcmp (keyString (lineComment3Start), "#"), "start key for line comment contains wrong text");
 
-	const Key *lineComment3Spaces = keyGetMeta(key, "comment/#3/space");
+	const Key * lineComment3Spaces = keyGetMeta (key, "comment/#3/space");
 	succeed_if (lineComment3Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment3Spaces), "0"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (keyString (lineComment3Spaces), "0"), "space key for line comment contains wrong number of spaces");
 
 	/* empty line */
-	const Key *emptyLine = keyGetMeta(key, "comment/#4");
+	const Key * emptyLine = keyGetMeta (key, "comment/#4");
 	succeed_if (emptyLine, "comment key for line comment does not exist");
-	succeed_if (!strcmp("", keyString(emptyLine)), "line comment key contains data although it shouldn't")
+	succeed_if (!strcmp ("", keyString (emptyLine)), "line comment key contains data although it shouldn't")
 
-	/* SECOND ENTRY */
-	Key *key2 = ksLookupByName(ks, "user/tests/hosts/ipv4/testentry", 0);
+		/* SECOND ENTRY */
+		Key * key2 = ksLookupByName (ks, "user/tests/hosts/ipv4/testentry", 0);
 	exit_if_fail (key2, "hostname localhost not found");
 
 	/* inline comment */
-	const Key *inlineComment2 = keyGetMeta(key2, "comment/#0");
+	const Key * inlineComment2 = keyGetMeta (key2, "comment/#0");
 	succeed_if (inlineComment2, "inline comment for second host does not exist");
-	succeed_if (!strcmp(keyString(inlineComment2), " inline comment1"), "inline comment for second host contains wrong text");
+	succeed_if (!strcmp (keyString (inlineComment2), " inline comment1"), "inline comment for second host contains wrong text");
 
-	const Key *inlineComment2Start = keyGetMeta(key2, "comment/#0/start");
+	const Key * inlineComment2Start = keyGetMeta (key2, "comment/#0/start");
 	succeed_if (inlineComment2Start, "start key for inline  of second host does not exist");
-	succeed_if (!strcmp(keyString(inlineComment2Start), "#"), "start key for inline comment of second host contains wrong text");
+	succeed_if (!strcmp (keyString (inlineComment2Start), "#"), "start key for inline comment of second host contains wrong text");
 
-	const Key *inlineComment2Space = keyGetMeta(key2, "comment/#0/space");
+	const Key * inlineComment2Space = keyGetMeta (key2, "comment/#0/space");
 	succeed_if (inlineComment2Space, "space key for inline comment of second host does not exist");
-	succeed_if (!strcmp(keyString(inlineComment2Space), "1"), "space key for inline comment of second host contains wrong number of spaces");
+	succeed_if (!strcmp (keyString (inlineComment2Space), "1"),
+		    "space key for inline comment of second host contains wrong number of spaces");
 
 
 	/* empty line */
-	const Key *lineComment4 = keyGetMeta(key2, "comment/#1");
+	const Key * lineComment4 = keyGetMeta (key2, "comment/#1");
 	succeed_if (lineComment4, "comment key for line comment does not exist");
 
-	const Key *lineComment4Spaces = keyGetMeta(key2, "comment/#1/space");
+	const Key * lineComment4Spaces = keyGetMeta (key2, "comment/#1/space");
 	succeed_if (lineComment4Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment4Spaces), "2"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (keyString (lineComment4Spaces), "2"), "space key for line comment contains wrong number of spaces");
 
 
 	/* line comment */
-	const Key *lineComment5 = keyGetMeta(key2, "comment/#2");
+	const Key * lineComment5 = keyGetMeta (key2, "comment/#2");
 	succeed_if (lineComment5, "comment key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment5), " comment for testentry"), "comment key for line comment contains wrong text");
+	succeed_if (!strcmp (keyString (lineComment5), " comment for testentry"), "comment key for line comment contains wrong text");
 
-	const Key *lineComment5Start = keyGetMeta(key2, "comment/#2/start");
+	const Key * lineComment5Start = keyGetMeta (key2, "comment/#2/start");
 	succeed_if (lineComment5Start, "start key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment5Start), "#"), "start key for line comment contains wrong text");
+	succeed_if (!strcmp (keyString (lineComment5Start), "#"), "start key for line comment contains wrong text");
 
-	const Key *lineComment5Spaces = keyGetMeta(key2, "comment/#2/space");
+	const Key * lineComment5Spaces = keyGetMeta (key2, "comment/#2/space");
 	succeed_if (lineComment5Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment5Spaces), "2"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (keyString (lineComment5Spaces), "2"), "space key for line comment contains wrong number of spaces");
 
 
 	/* NO ENTRY */
 
 	/* empty line */
-	const Key *lineComment6 = keyGetMeta(parentKey, "comment/#1");
+	const Key * lineComment6 = keyGetMeta (parentKey, "comment/#1");
 	succeed_if (lineComment6, "comment key for line comment does not exist");
 
 
 	/* line comment */
-	const Key *lineComment7 = keyGetMeta(parentKey, "comment/#2");
+	const Key * lineComment7 = keyGetMeta (parentKey, "comment/#2");
 	succeed_if (lineComment7, "comment key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment7), " comment without entry"), "comment key for line comment contains wrong text");
+	succeed_if (!strcmp (keyString (lineComment7), " comment without entry"), "comment key for line comment contains wrong text");
 
-	const Key *lineComment7Start = keyGetMeta(parentKey, "comment/#2/start");
+	const Key * lineComment7Start = keyGetMeta (parentKey, "comment/#2/start");
 	succeed_if (lineComment7Start, "start key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment7Start), "#"), "start key for line comment contains wrong text");
+	succeed_if (!strcmp (keyString (lineComment7Start), "#"), "start key for line comment contains wrong text");
 
-	const Key *lineComment7Spaces = keyGetMeta(parentKey, "comment/#2/space");
+	const Key * lineComment7Spaces = keyGetMeta (parentKey, "comment/#2/space");
 	succeed_if (lineComment7Spaces, "space key for line comment does not exist");
-	succeed_if (!strcmp(keyString(lineComment7Spaces), "0"), "space key for line comment contains wrong number of spaces");
+	succeed_if (!strcmp (keyString (lineComment7Spaces), "0"), "space key for line comment contains wrong number of spaces");
 
 
 	ksDel (ks);
-	keyDel(parentKey);
+	keyDel (parentKey);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
-void test_writeHostsComments(char *fileName)
+void test_writeHostsComments (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename(), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("hosts");
+	Key * parentKey = keyNew ("user/tests/hosts", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("hosts");
 
-// clang-format off
+	// clang-format off
 	KeySet *ks = ksNew (20,
 			keyNew ("user/tests/hosts/ipv4/localhost",
 					KEY_VALUE, "127.0.0.1",
@@ -393,45 +391,43 @@ void test_writeHostsComments(char *fileName)
 			keyNew ("user/tests/hosts/ipv4/testentry/alias2",
 					KEY_END),
 			KS_END);
-// clang-format on
+	// clang-format on
 
-	keySetMeta(parentKey, "comment/#1", "");
-	keySetMeta(parentKey, "comment/#2", " comment without entry");
-	keySetMeta(parentKey, "comment/#2/start", "#");
+	keySetMeta (parentKey, "comment/#1", "");
+	keySetMeta (parentKey, "comment/#2", " comment without entry");
+	keySetMeta (parentKey, "comment/#2/start", "#");
 
 	ksAppendKey (ks, parentKey);
 
-	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-	succeed_if(output_error (parentKey), "error in kdbSet");
-	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if(compare_line_files (srcdir_file (fileName), keyString (parentKey)),
-			"files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
 
 	elektraUnlink (keyString (parentKey));
 	ksDel (ks);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
-int main(int argc, char** argv)
+int main (int argc, char ** argv)
 {
-	printf("MOUNT       TESTS\n");
-	printf("==================\n\n");
+	printf ("MOUNT       TESTS\n");
+	printf ("==================\n\n");
 
 	init (argc, argv);
 
-	test_readHostsSimple("hosts/hosts-read-simple");
-	test_readInvalidIpAddress("hosts/hosts-invalid");
-	test_mixedAddresses("hosts/hosts-mixed");
-	test_duplicateEntries("hosts/hosts-duplicate");
-	test_duplicateOrder("hosts/hosts-duporder");
-	test_writeHostsSimple("hosts/hosts-write-simple");
-	test_readHostsComments("hosts/hosts-comments");
-	test_writeHostsComments("hosts/hosts-comments");
+	test_readHostsSimple ("hosts/hosts-read-simple");
+	test_readInvalidIpAddress ("hosts/hosts-invalid");
+	test_mixedAddresses ("hosts/hosts-mixed");
+	test_duplicateEntries ("hosts/hosts-duplicate");
+	test_duplicateOrder ("hosts/hosts-duporder");
+	test_writeHostsSimple ("hosts/hosts-write-simple");
+	test_readHostsComments ("hosts/hosts-comments");
+	test_writeHostsComments ("hosts/hosts-comments");
 
-	printf("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
-

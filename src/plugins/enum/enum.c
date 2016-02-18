@@ -9,34 +9,29 @@
 
 
 #ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
+#include "kdbconfig.h"
 #endif
 
-#include <string.h>
+#include "enum.h"
+#include <kdberrors.h>
+#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <regex.h>
-#include <kdberrors.h>
-#include "enum.h"
+#include <string.h>
 
-#define VALIDATE_KEY_SUBMATCHES 3 //first submatch is the string we want, second submatch , or EOL
+#define VALIDATE_KEY_SUBMATCHES 3 // first submatch is the string we want, second submatch , or EOL
 
-int elektraEnumGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp(keyName(parentKey), "system/elektra/modules/enum"))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/enum"))
 	{
-		KeySet *contract = ksNew (30,
-		keyNew ("system/elektra/modules/enum",
-			KEY_VALUE, "enum plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/enum/exports", KEY_END),
-		keyNew ("system/elektra/modules/enum/exports/get",
-			KEY_FUNC, elektraEnumGet, KEY_END),
-		keyNew ("system/elektra/modules/enum/exports/set",
-			KEY_FUNC, elektraEnumSet, KEY_END),
-#include ELEKTRA_README(enum)
-		keyNew ("system/elektra/modules/enum/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		KS_END);
+		KeySet * contract =
+			ksNew (30, keyNew ("system/elektra/modules/enum", KEY_VALUE, "enum plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/enum/exports", KEY_END),
+			       keyNew ("system/elektra/modules/enum/exports/get", KEY_FUNC, elektraEnumGet, KEY_END),
+			       keyNew ("system/elektra/modules/enum/exports/set", KEY_FUNC, elektraEnumSet, KEY_END),
+#include ELEKTRA_README (enum)
+			       keyNew ("system/elektra/modules/enum/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -47,67 +42,67 @@ int elektraEnumGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSE
 	return 1; /* success */
 }
 
-static int validateKey(Key *key)
+static int validateKey (Key * key)
 {
-	const Key *meta = keyGetMeta(key, "check/enum");
+	const Key * meta = keyGetMeta (key, "check/enum");
 	if (!meta)
 		return 1;
-	const char *validValues = keyString(meta);
-	const char *regexString = "'([^']*)'\\s*(,|$)";
+	const char * validValues = keyString (meta);
+	const char * regexString = "'([^']*)'\\s*(,|$)";
 	regex_t regex;
-	if (regcomp(&regex, regexString, REG_EXTENDED|REG_NEWLINE))
+	if (regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE))
 	{
-		ELEKTRA_SET_ERROR(120, key, "regcomp failed"); 
+		ELEKTRA_SET_ERROR (120, key, "regcomp failed");
 		return -1;
 	}
-	const char *ptr = validValues;
+	const char * ptr = validValues;
 	regmatch_t match[VALIDATE_KEY_SUBMATCHES];
-	char *value = NULL;
+	char * value = NULL;
 	int nomatch;
 	int start;
 	int end;
 	while (1)
 	{
-		nomatch = regexec(&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
+		nomatch = regexec (&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
 		if (nomatch)
 			break;
 
 		start = match[1].rm_so + (ptr - validValues);
 		end = match[1].rm_eo + (ptr - validValues);
-		elektraRealloc((void **)&value, (end - start)+1);
-		strncpy(value, validValues+start, end-start);
-		value[(end-start)] = '\0';
-		if (strcmp(keyString(key), value) == 0)
+		elektraRealloc ((void **)&value, (end - start) + 1);
+		strncpy (value, validValues + start, end - start);
+		value[(end - start)] = '\0';
+		if (strcmp (keyString (key), value) == 0)
 		{
-			regfree(&regex);
-			elektraFree(value);
+			regfree (&regex);
+			elektraFree (value);
 			return 1;
 		}
 		ptr += match[0].rm_eo;
 	}
 	if (value)
-		elektraFree(value);
-	regfree(&regex);
+		elektraFree (value);
+	regfree (&regex);
 	return 0;
 }
 
-int elektraEnumSet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned ELEKTRA_UNUSED, Key *parentKey ELEKTRA_UNUSED)
+int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	/* set all keys */
-	Key *cur;
-	while ((cur = ksNext(returned)) != NULL)
+	Key * cur;
+	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (!validateKey(cur))
+		if (!validateKey (cur))
 		{
-			ELEKTRA_SET_ERROR(121, parentKey, "Validation failed");
+			ELEKTRA_SET_ERROR (121, parentKey, "Validation failed");
 			return -1;
 		}
-	}	
+	}
 
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(enum)
+Plugin * ELEKTRA_PLUGIN_EXPORT (enum)
 {
 	// clang-format off
 	return elektraPluginExport("enum",

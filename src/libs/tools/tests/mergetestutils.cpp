@@ -7,19 +7,18 @@
  *
  */
 
-#include <iostream>
-#include <keysetio.hpp>
 #include <gtest/gtest.h>
-#include <merging/threewaymerge.hpp>
+#include <iostream>
 #include <kdbprivate.h>
+#include <keysetio.hpp>
+#include <merging/threewaymerge.hpp>
 
 using namespace kdb;
 using namespace kdb::tools::merging;
 
-class MergeTest: public ::testing::Test
+class MergeTest : public ::testing::Test
 {
 protected:
-
 	KeySet base;
 	KeySet ours;
 	KeySet theirs;
@@ -30,7 +29,7 @@ protected:
 	Key mergeParent;
 	Key mk1, mk2, mk3, mk4, mk5;
 
-	MergeTest()
+	MergeTest ()
 	{
 		baseParent = Key ("user/parentb", KEY_END);
 		base.append (baseParent);
@@ -70,65 +69,56 @@ protected:
 		mergeKeys.append (mk4);
 	}
 
-	virtual ~MergeTest()
-	{
-	}
+	virtual ~MergeTest () {}
 
-	virtual void SetUp() override
-	{
-	}
+	virtual void SetUp () override {}
 
-	virtual void TearDown() override
-	{
-	}
+	virtual void TearDown () override {}
 
-	virtual void unsyncKeys(KeySet& ks)
+	virtual void unsyncKeys (KeySet & ks)
 	{
 		Key current;
-		ks.rewind();
-		while ((current = ks.next()))
+		ks.rewind ();
+		while ((current = ks.next ()))
 		{
-			current.getKey()->flags = static_cast<ckdb::keyflag_t>(current.getKey()->flags & ~(ckdb::KEY_FLAG_SYNC));
+			current.getKey ()->flags = static_cast<ckdb::keyflag_t> (current.getKey ()->flags & ~(ckdb::KEY_FLAG_SYNC));
 
 			// This does not work because C++ complains about an invalid conversion from int to keyflags_t
-			//clear_bit(current.getKey()->flags, static_cast<int>(ckdb::KEY_FLAG_SYNC));
+			// clear_bit(current.getKey()->flags, static_cast<int>(ckdb::KEY_FLAG_SYNC));
 		}
 	}
 
-	virtual void compareKeys(const Key& k1, const Key& k2)
+	virtual void compareKeys (const Key & k1, const Key & k2)
 	{
-		EXPECT_EQ(k1, k2) << "keys have different names";
-		EXPECT_EQ(k1.getString(), k2.getString()) << "keys have different values";
+		EXPECT_EQ (k1, k2) << "keys have different names";
+		EXPECT_EQ (k1.getString (), k2.getString ()) << "keys have different values";
 	}
 
-	virtual void compareAllKeys(KeySet& merged)
+	virtual void compareAllKeys (KeySet & merged)
 	{
-		compareKeys (mk1, merged.lookup(mk1));
-		compareKeys (mk2, merged.lookup(mk2));
-		compareKeys (mk3, merged.lookup(mk3));
-		compareKeys (mk4, merged.lookup(mk4));
+		compareKeys (mk1, merged.lookup (mk1));
+		compareKeys (mk2, merged.lookup (mk2));
+		compareKeys (mk3, merged.lookup (mk3));
+		compareKeys (mk4, merged.lookup (mk4));
 	}
 
-	virtual void compareAllExceptKey1(KeySet& merged)
+	virtual void compareAllExceptKey1 (KeySet & merged)
 	{
-		compareKeys (mk2, merged.lookup(mk2));
-		compareKeys (mk3, merged.lookup(mk3));
-		compareKeys (mk4, merged.lookup(mk4));
+		compareKeys (mk2, merged.lookup (mk2));
+		compareKeys (mk3, merged.lookup (mk3));
+		compareKeys (mk4, merged.lookup (mk4));
 	}
 
-	virtual void testConflictMeta(const Key& key, ConflictOperation our, ConflictOperation their)
+	virtual void testConflictMeta (const Key & key, ConflictOperation our, ConflictOperation their)
 	{
 		Key const ourConflict = key.getMeta<Key const> ("conflict/operation/our");
-		EXPECT_TRUE(ourConflict) << "No conflict metakey for our operation present";
+		EXPECT_TRUE (ourConflict) << "No conflict metakey for our operation present";
 		ConflictOperation operation = MergeConflictOperation::getFromName (ourConflict.getString ());
-		EXPECT_EQ(our, operation);
+		EXPECT_EQ (our, operation);
 
 		Key const theirConflict = key.getMeta<Key const> ("conflict/operation/their");
-		EXPECT_TRUE(theirConflict) << "No conflict metakey for their operation present";
+		EXPECT_TRUE (theirConflict) << "No conflict metakey for their operation present";
 		operation = MergeConflictOperation::getFromName (theirConflict.getString ());
-		EXPECT_EQ(their, operation);
+		EXPECT_EQ (their, operation);
 	}
 };
-
-
-

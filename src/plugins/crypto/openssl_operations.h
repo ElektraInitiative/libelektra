@@ -15,11 +15,11 @@
 #define ELEKTRA_CRYPTO_SSL_KEYSIZE (32)
 #define ELEKTRA_CRYPTO_SSL_BLOCKSIZE (16)
 
-int elektraCryptoOpenSSLInit(Key *errorKey);
-void elektraCryptoOpenSSLTeardown(void);
-int elektraCryptoOpenSSLHandleCreate(elektraCryptoHandle **handle, KeySet *config, Key *errorKey);
-void elektraCryptoOpenSSLHandleDestroy(elektraCryptoHandle *handle);
-int elektraCryptoOpenSSLEncrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey);
-int elektraCryptoOpenSSLDecrypt(elektraCryptoHandle *handle, Key *k, Key *errorKey);
+int elektraCryptoOpenSSLInit (Key * errorKey);
+void elektraCryptoOpenSSLTeardown (void);
+int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey);
+void elektraCryptoOpenSSLHandleDestroy (elektraCryptoHandle * handle);
+int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);
+int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);
 
 #endif
