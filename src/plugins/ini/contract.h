@@ -12,7 +12,7 @@
 
 static inline KeySet *getPluginContract()
 {
-	// @formatter:off
+	// clang-format off
 	return ksNew (30,
 			keyNew ("system/elektra/modules/ini",
 					KEY_VALUE, "Ini plugin waits for your orders", KEY_END),
@@ -34,7 +34,7 @@ static inline KeySet *getPluginContract()
 					KEY_VALUE, PLUGINVERSION,
 					KEY_END),
 			KS_END);
-	// @formatter:on
+	// clang-format on
 }
 
 #endif /* CONTRACT_H_ */

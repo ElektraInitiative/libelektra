@@ -9,7 +9,7 @@
 #ifndef CONTRACT_H_
 #define CONTRACT_H_
 
-// @formatter:off
+// clang-format off
 
 ksNew (30,
 		keyNew ("system/elektra/modules/glob",
@@ -35,6 +35,6 @@ ksNew (30,
 			KEY_VALUE, PLUGINVERSION, KEY_END),
 		KS_END);
 
-// @formatter:on
+// clang-format on
 
 #endif /* CONTRACT_H_ */
