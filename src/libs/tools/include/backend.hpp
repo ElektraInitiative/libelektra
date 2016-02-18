@@ -131,35 +131,28 @@ public:
 class BackendFactory
 {
 	std::string which;
+
 public:
-	BackendFactory (std::string whichBackend) :
-		which(whichBackend)
-	{}
+	BackendFactory (std::string whichBackend) : which (whichBackend) {}
 
 	/**
 	 * @brief Create classes that implement MountBackendInterface
 	 */
-	MountBackendInterfacePtr create() const
+	MountBackendInterfacePtr create () const
 	{
 		if (which == "backend")
 		{
-			return MountBackendInterfacePtr(new Backend());
+			return MountBackendInterfacePtr (new Backend ());
 		}
-		throw NoSuchBackend(which);
+		throw NoSuchBackend (which);
 	}
 };
 
-inline std::string Backend::getMountpoint() const
-{
-	return mp;
-}
+inline std::string Backend::getMountpoint () const { return mp; }
 
-inline std::string Backend::getConfigFile() const
-{
-	return configFile;
-}
+inline std::string Backend::getConfigFile () const { return configFile; }
 
-std::ostream & operator<<(std::ostream & os, Backend const & b);
+std::ostream & operator<< (std::ostream & os, Backend const & b);
 
 /**
  * @brief Adds plugins in a generic map
@@ -170,6 +163,7 @@ protected:
 	Modules modules;
 
 	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
+
 public:
 	void addPlugin (PluginSpec const & spec);
 };
@@ -177,10 +171,10 @@ public:
 /**
  * @brief Low level representation of global plugins
  */
-class GlobalPlugins : public PluginAdder,  public SerializeInterface
+class GlobalPlugins : public PluginAdder, public SerializeInterface
 {
 public:
-	void serialize (kdb::KeySet &ret);
+	void serialize (kdb::KeySet & ret);
 };
 
 /**
@@ -198,14 +192,12 @@ class ImportExportBackend : public PluginAdder
 	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
 
 public:
-	ImportExportBackend();
+	ImportExportBackend ();
 	void status (std::ostream & os) const;
 	void importFromFile (KeySet & ks, Key const & parentKey) const;
 	void exportToFile (KeySet const & ks, Key const & parentKey) const;
 };
-
 }
-
 }
 
 #endif

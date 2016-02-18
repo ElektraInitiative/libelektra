@@ -7,8 +7,8 @@
  *
  */
 
-#include <string>
 #include <merging/mergeconflictstrategy.hpp>
+#include <string>
 
 using namespace std;
 
@@ -21,21 +21,21 @@ namespace tools
 namespace merging
 {
 
-ConflictOperation MergeConflictStrategy::getOurConflictOperation(const Key& conflictKey)
+ConflictOperation MergeConflictStrategy::getOurConflictOperation (const Key & conflictKey)
 {
-	string ourConflictName = conflictKey.getMeta<string>("conflict/operation/our");
-	ConflictOperation ourOperation = MergeConflictOperation::getFromName(ourConflictName);
+	string ourConflictName = conflictKey.getMeta<string> ("conflict/operation/our");
+	ConflictOperation ourOperation = MergeConflictOperation::getFromName (ourConflictName);
 	return ourOperation;
 }
 
-ConflictOperation MergeConflictStrategy::getTheirConflictOperation(const Key& conflictKey)
+ConflictOperation MergeConflictStrategy::getTheirConflictOperation (const Key & conflictKey)
 {
-	string theirConflictName = conflictKey.getMeta<string>("conflict/operation/their");
-	ConflictOperation theirOperation = MergeConflictOperation::getFromName(theirConflictName);
+	string theirConflictName = conflictKey.getMeta<string> ("conflict/operation/their");
+	ConflictOperation theirOperation = MergeConflictOperation::getFromName (theirConflictName);
 	return theirOperation;
 }
 
-void MergeConflictStrategy::copyKeyValue(const Key& source, Key& destination)
+void MergeConflictStrategy::copyKeyValue (const Key & source, Key & destination)
 {
 	if (source && destination)
 	{
@@ -48,13 +48,14 @@ void MergeConflictStrategy::copyKeyValue(const Key& source, Key& destination)
 			if (source.getValue () == nullptr)
 			{
 				destination.setBinary (nullptr, 0);
-			} else {
+			}
+			else
+			{
 				destination.setBinary (source.getBinary ().c_str (), source.getBinarySize ());
 			}
 		}
 	}
 }
-
 }
 }
 }

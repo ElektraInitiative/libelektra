@@ -11,10 +11,10 @@
 #ifndef TOOLS_MODULES_HPP
 #define TOOLS_MODULES_HPP
 
-#include <plugin.hpp>
 #include <keyset.hpp>
-#include <toolexcept.hpp>
+#include <plugin.hpp>
 #include <pluginspec.hpp>
+#include <toolexcept.hpp>
 
 namespace kdb
 {
@@ -28,17 +28,17 @@ namespace tools
 class Modules
 {
 public:
-	Modules();
-	~Modules();
+	Modules ();
+	~Modules ();
 
 	/**
 	 * @deprecated do not use
 	 */
-	PluginPtr load (std::string const& pluginName);
+	PluginPtr load (std::string const & pluginName);
 	/**
 	 * @deprecated do not use
 	 */
-	PluginPtr load (std::string const& pluginName, kdb::KeySet const& config);
+	PluginPtr load (std::string const & pluginName, kdb::KeySet const & config);
 	/**
 	 * @return a newly created plugin
 	 */
@@ -47,9 +47,7 @@ public:
 private:
 	KeySet modules;
 };
-
 }
-
 }
 
 #endif

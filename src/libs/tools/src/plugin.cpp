@@ -10,15 +10,15 @@
 
 #include <kdb.hpp>
 
+#include <helper/keyhelper.hpp>
 #include <kdb.h>
-#include <kdbplugin.h>
 #include <kdbmodule.h>
+#include <kdbplugin.h>
 #include <kdbprivate.h> // currently needed for plugin handling
 #include <plugindatabase.hpp>
-#include <helper/keyhelper.hpp>
 
-#include <set>
 #include <algorithm>
+#include <set>
 
 #include <plugin.hpp>
 
@@ -33,40 +33,31 @@ namespace kdb
 namespace tools
 {
 
-Plugin::Plugin(PluginSpec const & spec_, KeySet &modules) :
-	spec(spec_),
-	firstRef (true)
+Plugin::Plugin (PluginSpec const & spec_, KeySet & modules) : spec (spec_), firstRef (true)
 {
 	Key errorKey;
-	plugin = ckdb::elektraPluginOpen(spec.getName().c_str(), modules.getKeySet(), spec.getConfig().dup(), *errorKey);
+	plugin = ckdb::elektraPluginOpen (spec.getName ().c_str (), modules.getKeySet (), spec.getConfig ().dup (), *errorKey);
 
 	if (!plugin)
 	{
-		throw NoPlugin(errorKey);
+		throw NoPlugin (errorKey);
 	}
 }
 
-kdb::KeySet Plugin::getConfig()
-{
-	return ksDup(elektraPluginGetConfig(plugin));
-}
+kdb::KeySet Plugin::getConfig () { return ksDup (elektraPluginGetConfig (plugin)); }
 
-Plugin::Plugin(Plugin const& other) :
-	plugin(other.plugin),
-	spec(other.spec),
-	info(other.info),
-	symbols(other.symbols),
-	infos(other.infos),
-	firstRef(other.firstRef)
+Plugin::Plugin (Plugin const & other)
+: plugin (other.plugin), spec (other.spec), info (other.info), symbols (other.symbols), infos (other.infos), firstRef (other.firstRef)
 {
 	++plugin->refcounter;
 }
 
-Plugin& Plugin::operator = (Plugin const& other)
+Plugin & Plugin::operator= (Plugin const & other)
 {
-	if (this == &other) return *this;
+	if (this == &other)
+		return *this;
 
-	uninit();
+	uninit ();
 
 	plugin = other.plugin;
 	spec = other.spec;
@@ -80,83 +71,85 @@ Plugin& Plugin::operator = (Plugin const& other)
 	return *this;
 }
 
-Plugin::~Plugin()
-{
-	uninit();
-}
+Plugin::~Plugin () { uninit (); }
 
-void Plugin::uninit()
+void Plugin::uninit ()
 {
 	/* ref counting will avoid closing */
 
 	Key errorKey;
-	ckdb::elektraPluginClose(plugin, errorKey.getKey());
+	ckdb::elektraPluginClose (plugin, errorKey.getKey ());
 }
 
-void Plugin::loadInfo()
+void Plugin::loadInfo ()
 {
 	Key infoKey ("system/elektra/modules", KEY_END);
-	infoKey.addBaseName(spec.getName());
+	infoKey.addBaseName (spec.getName ());
 
-	if (spec.getName() != plugin->name)
+	if (spec.getName () != plugin->name)
 	{
-		throw PluginWrongName();
+		throw PluginWrongName ();
 	}
 
 	if (!plugin->kdbGet)
 	{
-		throw MissingSymbol("kdbGet");
+		throw MissingSymbol ("kdbGet");
 	}
-	plugin->kdbGet(plugin, info.getKeySet(), *infoKey);
+	plugin->kdbGet (plugin, info.getKeySet (), *infoKey);
 }
 
 void Plugin::parse ()
 {
-	Key root (std::string("system/elektra/modules/") + spec.getName(), KEY_END);
+	Key root (std::string ("system/elektra/modules/") + spec.getName (), KEY_END);
 
 	Key k = info.lookup (root);
 	if (!k)
 	{
-		throw PluginNoContract();
+		throw PluginNoContract ();
 	}
 
-	root.setName(std::string("system/elektra/modules/") + spec.getName() + "/exports");
+	root.setName (std::string ("system/elektra/modules/") + spec.getName () + "/exports");
 
 	k = info.lookup (root);
 
 	if (k)
 	{
-		while ((k = info.next()) && k.isBelow(root))
+		while ((k = info.next ()) && k.isBelow (root))
 		{
-			symbols[k.getBaseName()] = (*k.getFunc());
+			symbols[k.getBaseName ()] = (*k.getFunc ());
 		}
 	}
 
-	root.setName(std::string("system/elektra/modules/") + spec.getName() + "/infos");
+	root.setName (std::string ("system/elektra/modules/") + spec.getName () + "/infos");
 	k = info.lookup (root);
 
 	if (k)
 	{
-		while ((k = info.next()) && k.isBelow(root))
+		while ((k = info.next ()) && k.isBelow (root))
 		{
-			infos[k.getBaseName()] = k.getString();
+			infos[k.getBaseName ()] = k.getString ();
 		}
-	} else {
-		throw PluginNoInfo();
 	}
-
+	else
+	{
+		throw PluginNoInfo ();
+	}
 }
 
-void Plugin::check(vector<string> & warnings)
+void Plugin::check (vector<string> & warnings)
 {
-	if (infos.find("version") == infos.end()) warnings.push_back ("no version found");
-	else if (infos["version"] != PLUGINVERSION) throw VersionInfoMismatch();
+	if (infos.find ("version") == infos.end ())
+		warnings.push_back ("no version found");
+	else if (infos["version"] != PLUGINVERSION)
+		throw VersionInfoMismatch ();
 
-	if (infos.find("licence") == infos.end()) warnings.push_back ("no licence information found");
-	else if (infos["licence"] != "BSD") warnings.push_back
-		("the licence is not BSD, it might change the overall licence of your elektra installation");
+	if (infos.find ("licence") == infos.end ())
+		warnings.push_back ("no licence information found");
+	else if (infos["licence"] != "BSD")
+		warnings.push_back ("the licence is not BSD, it might change the overall licence of your elektra installation");
 
-	if (infos.find("status") == infos.end()) warnings.push_back ("no status information found");
+	if (infos.find ("status") == infos.end ())
+		warnings.push_back ("no status information found");
 	else
 	{
 		// check if status is correct
@@ -165,157 +158,183 @@ void Plugin::check(vector<string> & warnings)
 		std::string status;
 		while (ss >> status)
 		{
-			auto it = PluginDatabase::statusMap.find(status);
-			if (it == PluginDatabase::statusMap.end())
+			auto it = PluginDatabase::statusMap.find (status);
+			if (it == PluginDatabase::statusMap.end ())
 			{
-				char* endptr;
-				const char * str = status.c_str();
+				char * endptr;
+				const char * str = status.c_str ();
 				errno = 0;
-				long val = strtol(str, &endptr, 10);
-				if (((errno == ERANGE && (val > INT_MAX || val < INT_MIN))
-					|| (errno != 0 && val == 0))
-					|| endptr == str)
+				long val = strtol (str, &endptr, 10);
+				if (((errno == ERANGE && (val > INT_MAX || val < INT_MIN)) || (errno != 0 && val == 0)) || endptr == str)
 				{
-					throw WrongStatus(status);
+					throw WrongStatus (status);
 				}
 			}
 		}
 	}
 
-	if (infos.find("description") == infos.end()) warnings.push_back ("no description of the plugin found");
+	if (infos.find ("description") == infos.end ())
+		warnings.push_back ("no description of the plugin found");
 
-	if (infos.find("provides") == infos.end()) warnings.push_back ("no provides information found");
-	if (infos.find("placements") == infos.end())
+	if (infos.find ("provides") == infos.end ())
+		warnings.push_back ("no provides information found");
+	if (infos.find ("placements") == infos.end ())
 	{
 		warnings.push_back ("no placements information found");
-	} else {
+	}
+	else
+	{
 		std::vector<std::string> pp;
-		pp.push_back("prerollback");
-		pp.push_back("rollback");
-		pp.push_back("postrollback");
-		pp.push_back("getresolver");
-		pp.push_back("pregetstorage");
-		pp.push_back("getstorage");
-		pp.push_back("postgetstorage");
-		pp.push_back("setresolver");
-		pp.push_back("presetstorage");
-		pp.push_back("setstorage");
-		pp.push_back("precommit");
-		pp.push_back("commit");
-		pp.push_back("postcommit");
+		pp.push_back ("prerollback");
+		pp.push_back ("rollback");
+		pp.push_back ("postrollback");
+		pp.push_back ("getresolver");
+		pp.push_back ("pregetstorage");
+		pp.push_back ("getstorage");
+		pp.push_back ("postgetstorage");
+		pp.push_back ("setresolver");
+		pp.push_back ("presetstorage");
+		pp.push_back ("setstorage");
+		pp.push_back ("precommit");
+		pp.push_back ("commit");
+		pp.push_back ("postcommit");
 		std::string placements = infos["placements"];
-		istringstream is(placements);
+		istringstream is (placements);
 		std::string placement;
 		while (is >> placement)
 		{
-			if (std::find(pp.begin(), pp.end(), placement) == pp.end())
+			if (std::find (pp.begin (), pp.end (), placement) == pp.end ())
 			{
-				warnings.push_back ("not supported placement "
-					+ placement
-					+ " found");
+				warnings.push_back ("not supported placement " + placement + " found");
 			}
 		}
 	}
-	if (infos.find("needs") == infos.end()) warnings.push_back ("no needs information found");
+	if (infos.find ("needs") == infos.end ())
+		warnings.push_back ("no needs information found");
 
-	if (infos.find("author") == infos.end())
+	if (infos.find ("author") == infos.end ())
 	{
 		warnings.push_back ("no author found");
-	} else {
+	}
+	else
+	{
 		std::string author = infos["author"];
 		size_t ppos = 0;
 		ppos = author.find ('<', ppos);
-		if (ppos == string::npos) warnings.push_back ("Could not find \"<\" for authors e-mail address");
+		if (ppos == string::npos)
+			warnings.push_back ("Could not find \"<\" for authors e-mail address");
 
 		size_t pos = 0;
 		pos = author.find ('@', ppos);
-		if (pos == string::npos) warnings.push_back ("Could not find \"@\" for authors e-mail address");
-		if (pos < ppos) warnings.push_back ("@ found before <");
+		if (pos == string::npos)
+			warnings.push_back ("Could not find \"@\" for authors e-mail address");
+		if (pos < ppos)
+			warnings.push_back ("@ found before <");
 
 		size_t lpos = 0;
 		lpos = author.find ('>', pos);
-		if (lpos == string::npos) warnings.push_back ("Could not find \">\" for authors e-mail address");
-		if (lpos < pos) warnings.push_back ("> found before @");
+		if (lpos == string::npos)
+			warnings.push_back ("Could not find \">\" for authors e-mail address");
+		if (lpos < pos)
+			warnings.push_back ("> found before @");
 	}
 
 	std::set<func_t> checkDups;
 	std::pair<std::set<func_t>::iterator, bool> ret;
 	if (plugin->kdbOpen)
 	{
-		if (symbols.find("open") == symbols.end()) warnings.push_back ("no open symbol exported");
-		else if (symbols["open"] != reinterpret_cast<func_t>(plugin->kdbOpen)) throw SymbolMismatch ("open");
-		ret = checkDups.insert(symbols["open"]);
-		if (!ret.second) throw SymbolDuplicate("open");
+		if (symbols.find ("open") == symbols.end ())
+			warnings.push_back ("no open symbol exported");
+		else if (symbols["open"] != reinterpret_cast<func_t> (plugin->kdbOpen))
+			throw SymbolMismatch ("open");
+		ret = checkDups.insert (symbols["open"]);
+		if (!ret.second)
+			throw SymbolDuplicate ("open");
 	}
 	if (plugin->kdbClose)
 	{
-		if (symbols.find("close") == symbols.end()) warnings.push_back ("no close symbol exported");
-		else if (symbols["close"] != reinterpret_cast<func_t>(plugin->kdbClose)) throw SymbolMismatch ("close");
-		ret = checkDups.insert(symbols["close"]);
-		if (!ret.second) throw SymbolDuplicate("close");
+		if (symbols.find ("close") == symbols.end ())
+			warnings.push_back ("no close symbol exported");
+		else if (symbols["close"] != reinterpret_cast<func_t> (plugin->kdbClose))
+			throw SymbolMismatch ("close");
+		ret = checkDups.insert (symbols["close"]);
+		if (!ret.second)
+			throw SymbolDuplicate ("close");
 	}
 	if (plugin->kdbGet)
 	{
-		if (symbols.find("get") == symbols.end()) warnings.push_back ("no get symbol exported");
-		else if (symbols["get"] != reinterpret_cast<func_t>(plugin->kdbGet)) throw SymbolMismatch ("get");
-		ret = checkDups.insert(symbols["get"]);
-		if (!ret.second) throw SymbolDuplicate("get");
+		if (symbols.find ("get") == symbols.end ())
+			warnings.push_back ("no get symbol exported");
+		else if (symbols["get"] != reinterpret_cast<func_t> (plugin->kdbGet))
+			throw SymbolMismatch ("get");
+		ret = checkDups.insert (symbols["get"]);
+		if (!ret.second)
+			throw SymbolDuplicate ("get");
 	}
 	if (plugin->kdbSet)
 	{
-		if (symbols.find("set") == symbols.end()) warnings.push_back ("no set symbol exported");
-		else if (symbols["set"] != reinterpret_cast<func_t>(plugin->kdbSet)) throw SymbolMismatch ("set");
-		ret = checkDups.insert(symbols["set"]);
-		if (!ret.second) throw SymbolDuplicate("set");
+		if (symbols.find ("set") == symbols.end ())
+			warnings.push_back ("no set symbol exported");
+		else if (symbols["set"] != reinterpret_cast<func_t> (plugin->kdbSet))
+			throw SymbolMismatch ("set");
+		ret = checkDups.insert (symbols["set"]);
+		if (!ret.second)
+			throw SymbolDuplicate ("set");
 	}
 	if (plugin->kdbError)
 	{
-		if (symbols.find("error") == symbols.end()) warnings.push_back ("no error symbol exported");
-		else if (symbols["error"] != reinterpret_cast<func_t>(plugin->kdbError)) throw SymbolMismatch ("error");
-		ret = checkDups.insert(symbols["error"]);
-		if (!ret.second) throw SymbolDuplicate("error");
+		if (symbols.find ("error") == symbols.end ())
+			warnings.push_back ("no error symbol exported");
+		else if (symbols["error"] != reinterpret_cast<func_t> (plugin->kdbError))
+			throw SymbolMismatch ("error");
+		ret = checkDups.insert (symbols["error"]);
+		if (!ret.second)
+			throw SymbolDuplicate ("error");
 	}
-	if (symbols.find("open") != symbols.end())
+	if (symbols.find ("open") != symbols.end ())
 	{
-		if (!plugin->kdbOpen) throw SymbolMismatch ("open");
+		if (!plugin->kdbOpen)
+			throw SymbolMismatch ("open");
 	}
-	if (symbols.find("close") != symbols.end())
+	if (symbols.find ("close") != symbols.end ())
 	{
-		if (!plugin->kdbClose) throw SymbolMismatch ("close");
+		if (!plugin->kdbClose)
+			throw SymbolMismatch ("close");
 	}
-	if (symbols.find("get") != symbols.end())
+	if (symbols.find ("get") != symbols.end ())
 	{
-		if (!plugin->kdbGet) throw SymbolMismatch ("get");
+		if (!plugin->kdbGet)
+			throw SymbolMismatch ("get");
 	}
-	if (symbols.find("set") != symbols.end())
+	if (symbols.find ("set") != symbols.end ())
 	{
-		if (!plugin->kdbSet) throw SymbolMismatch ("set");
+		if (!plugin->kdbSet)
+			throw SymbolMismatch ("set");
 	}
-	if (symbols.find("error") != symbols.end())
+	if (symbols.find ("error") != symbols.end ())
 	{
-		if (!plugin->kdbError) throw SymbolMismatch ("error");
+		if (!plugin->kdbError)
+			throw SymbolMismatch ("error");
 	}
 }
 
-ckdb::Plugin *Plugin::operator->()
-{
-	return plugin;
-}
+ckdb::Plugin * Plugin::operator-> () { return plugin; }
 
-std::string Plugin::lookupInfo(std::string item, std::string section)
+std::string Plugin::lookupInfo (std::string item, std::string section)
 {
 	Key k ("system/elektra/modules", KEY_END);
-	k.addBaseName(spec.getName());
-	k.addBaseName(section);
-	k.addBaseName(item);
-	Key ret = info.lookup(k);
+	k.addBaseName (spec.getName ());
+	k.addBaseName (section);
+	k.addBaseName (item);
+	Key ret = info.lookup (k);
 
-	if (!ret) return ""; /* TODO Lets say missing info is ok for now */
+	if (!ret)
+		return ""; /* TODO Lets say missing info is ok for now */
 
-	return ret.getString();
+	return ret.getString ();
 }
 
-bool Plugin::findInfo(std::string compare, std::string item, std::string section)
+bool Plugin::findInfo (std::string compare, std::string item, std::string section)
 {
 	std::string str = lookupInfo (item, section);
 
@@ -324,27 +343,28 @@ bool Plugin::findInfo(std::string compare, std::string item, std::string section
 	std::string toCheck;
 	while (istr >> toCheck)
 	{
-		if (toCheck == compare) return true;
+		if (toCheck == compare)
+			return true;
 	}
 	return false;
 }
 
-kdb::KeySet Plugin::getNeededConfig()
+kdb::KeySet Plugin::getNeededConfig ()
 {
 	Key neededConfigKey ("system/elektra/modules", KEY_END);
-	neededConfigKey.addName(spec.getName());
-	neededConfigKey.addName("config/needs");
+	neededConfigKey.addName (spec.getName ());
+	neededConfigKey.addName ("config/needs");
 
-	KeySet d (info.dup());
-	KeySet config = d.cut(neededConfigKey);
+	KeySet d (info.dup ());
+	KeySet config = d.cut (neededConfigKey);
 
 	KeySet ret;
 	Key oldParent = neededConfigKey;
-	Key newParent("system", KEY_END);
-	for (KeySet::iterator i = config.begin(); i != config.end(); ++i)
+	Key newParent ("system", KEY_END);
+	for (KeySet::iterator i = config.begin (); i != config.end (); ++i)
 	{
-		Key k(i->dup());
-		ret.append(kdb::tools::helper::rebaseKey(k, oldParent, newParent));
+		Key k (i->dup ());
+		ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
 	}
 	return ret;
 }
@@ -353,74 +373,71 @@ int Plugin::open (kdb::Key & errorKey)
 {
 	if (!plugin->kdbOpen)
 	{
-		throw MissingSymbol("kdbOpen");
+		throw MissingSymbol ("kdbOpen");
 	}
 
-	return plugin->kdbOpen(plugin, errorKey.getKey());
+	return plugin->kdbOpen (plugin, errorKey.getKey ());
 }
 
 int Plugin::close (kdb::Key & errorKey)
 {
 	if (!plugin->kdbClose)
 	{
-		throw MissingSymbol("kdbClose");
+		throw MissingSymbol ("kdbClose");
 	}
 
-	return plugin->kdbClose(plugin, errorKey.getKey());
+	return plugin->kdbClose (plugin, errorKey.getKey ());
 }
 
 int Plugin::get (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbGet)
 	{
-		throw MissingSymbol("kdbGet");
+		throw MissingSymbol ("kdbGet");
 	}
 
-	return plugin->kdbGet(plugin, ks.getKeySet(), parentKey.getKey());
+	return plugin->kdbGet (plugin, ks.getKeySet (), parentKey.getKey ());
 }
 
 int Plugin::set (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbSet)
 	{
-		throw MissingSymbol("kdbSet");
+		throw MissingSymbol ("kdbSet");
 	}
 
-	return plugin->kdbSet(plugin, ks.getKeySet(), parentKey.getKey());
+	return plugin->kdbSet (plugin, ks.getKeySet (), parentKey.getKey ());
 }
 
 int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbError)
 	{
-		throw MissingSymbol("kdbError");
+		throw MissingSymbol ("kdbError");
 	}
 
-	return plugin->kdbError(plugin, ks.getKeySet(), parentKey.getKey());
+	return plugin->kdbError (plugin, ks.getKeySet (), parentKey.getKey ());
 }
 
 
-std::string Plugin::name() // TODO: rename + use internally
+std::string Plugin::name () // TODO: rename + use internally
 {
-	return spec.getName();
+	return spec.getName ();
 }
 
-std::string Plugin::getFullName()
-{
-	return spec.getFullName();
-}
+std::string Plugin::getFullName () { return spec.getFullName (); }
 
-std::string Plugin::refname()
+std::string Plugin::refname ()
 {
 	if (firstRef)
 	{
 		firstRef = false;
-		return std::string("#") + spec.getName() + "#" + spec.getRefName() + "#";
-	} else {
-		return std::string("#") + spec.getRefName();
+		return std::string ("#") + spec.getName () + "#" + spec.getRefName () + "#";
+	}
+	else
+	{
+		return std::string ("#") + spec.getRefName ();
 	}
 }
-
 }
-
 }

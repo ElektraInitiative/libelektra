@@ -14,9 +14,9 @@
 #include <plugin.hpp>
 #include <toolexcept.hpp>
 
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 #include <kdb.hpp>
 
@@ -32,15 +32,9 @@ struct Place
 	int current;
 	int max;
 
-	Place () :
-		current (-1),
-		max(0)
-	{}
+	Place () : current (-1), max (0) {}
 
-	Place (int current_, int max_) :
-		current (current_),
-		max (max_)
-	{}
+	Place (int current_, int max_) : current (current_), max (max_) {}
 };
 
 /**
@@ -51,37 +45,37 @@ class Plugins
 protected:
 	std::vector<Plugin *> plugins;
 
-	std::vector <std::string> needed;
-	std::vector <std::string> recommended;
-	std::vector <std::string> alreadyProvided;
-	std::vector <std::string> alreadyConflict;
+	std::vector<std::string> needed;
+	std::vector<std::string> recommended;
+	std::vector<std::string> alreadyProvided;
+	std::vector<std::string> alreadyConflict;
 
 	int nrStoragePlugins;
 	int nrResolverPlugins;
 
 	int revPostGet;
 
-	std::map <std::string, Place> placementInfo;
+	std::map<std::string, Place> placementInfo;
 
 public:
 	Plugins ();
 
 	/** Add needed, provided and recommend information */
-	void addInfo (Plugin &plugin);
-	void addPlugin (Plugin &plugin, std::string which);
+	void addInfo (Plugin & plugin);
+	void addPlugin (Plugin & plugin, std::string which);
 
 	/** Validate needed, and provided information.
 	 * (Recommended ignored, @see getRecommendedMissing(),
 	 * @see getNeededMissing() */
-	bool validateProvided() const;
-	std::vector<std::string> getNeededMissing() const;
-	std::vector<std::string> getRecommendedMissing() const;
+	bool validateProvided () const;
+	std::vector<std::string> getNeededMissing () const;
+	std::vector<std::string> getRecommendedMissing () const;
 
-	bool checkPlacement (Plugin &plugin, std::string which);
-	void checkStorage (Plugin &plugin);
-	void checkResolver (Plugin &plugin);
-	void checkOrdering (Plugin &plugin);
-	void checkConflicts (Plugin &plugin);
+	bool checkPlacement (Plugin & plugin, std::string which);
+	void checkStorage (Plugin & plugin);
+	void checkResolver (Plugin & plugin);
+	void checkOrdering (Plugin & plugin);
+	void checkConflicts (Plugin & plugin);
 };
 
 /**
@@ -96,11 +90,11 @@ public:
 	 * Will throw an exception if plugin could not
 	 * be added.
 	 */
-	void tryPlugin (Plugin &plugin);
-	void addPlugin (Plugin &plugin);
+	void tryPlugin (Plugin & plugin);
+	void addPlugin (Plugin & plugin);
 	bool validated () const;
 
-	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
+	void serialise (kdb::Key & baseKey, kdb::KeySet & ret);
 };
 
 
@@ -110,11 +104,11 @@ public:
 class SetPlugins : private Plugins
 {
 public:
-	void tryPlugin (Plugin &plugin);
-	void addPlugin (Plugin &plugin);
+	void tryPlugin (Plugin & plugin);
+	void addPlugin (Plugin & plugin);
 	bool validated () const;
 
-	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
+	void serialise (kdb::Key & baseKey, kdb::KeySet & ret);
 };
 
 /**
@@ -125,15 +119,13 @@ class ErrorPlugins : private Plugins
 public:
 	void status (std::ostream & os) const;
 
-	void tryPlugin (Plugin &plugin);
-	void addPlugin (Plugin &plugin);
+	void tryPlugin (Plugin & plugin);
+	void addPlugin (Plugin & plugin);
 	bool validated () const;
 
-	void serialise (kdb::Key &baseKey, kdb::KeySet &ret);
+	void serialise (kdb::Key & baseKey, kdb::KeySet & ret);
 };
-
 }
-
 }
 
 #endif

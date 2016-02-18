@@ -10,5 +10,4 @@
 #define KDBMERGE_HPP_
 
 
-
 #endif /* KDBMERGE_HPP_ */

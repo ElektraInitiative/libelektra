@@ -113,29 +113,29 @@ enum
  */
 typedef enum {
 	KEY_FLAG_SYNC = 1,	  /*!<
-		      Key need sync.
-		      If name, value or metadata
-		      are changed this flag will be set, so that the backend will sync
-		      the key to database.*/
+			Key need sync.
+			If name, value or metadata
+			are changed this flag will be set, so that the backend will sync
+			the key to database.*/
 	KEY_FLAG_RO_NAME = 1 << 1,  /*!<
-		     Read only flag for name.
-		     Key name is read only and not allowed
-		     to be changed. All attempts to change the name
-		     will lead to an error.
-		     Needed for meta keys and keys that are in a data
-		     structure that depends on name ordering.*/
+		      Read only flag for name.
+		      Key name is read only and not allowed
+		      to be changed. All attempts to change the name
+		      will lead to an error.
+		      Needed for meta keys and keys that are in a data
+		      structure that depends on name ordering.*/
 	KEY_FLAG_RO_VALUE = 1 << 2, /*!<
-		     Read only flag for value.
-		     Key value is read only and not allowed
-		     to be changed. All attempts to change the value
-		     will lead to an error.
-		     Needed for meta keys*/
+		      Read only flag for value.
+		      Key value is read only and not allowed
+		      to be changed. All attempts to change the value
+		      will lead to an error.
+		      Needed for meta keys*/
 	KEY_FLAG_RO_META = 1 << 3   /*!<
-		     Read only flag for meta.
-		     Key meta is read only and not allowed
-		     to be changed. All attempts to change the value
-		     will lead to an error.
-		     Needed for meta keys.*/
+		      Read only flag for meta.
+		      Key meta is read only and not allowed
+		      to be changed. All attempts to change the value
+		      will lead to an error.
+		      Needed for meta keys.*/
 } keyflag_t;
 
 
@@ -419,8 +419,8 @@ typedef enum {
 	     */
 
 	SPLIT_FLAG_CASCADING = 1 << 1 /*!< Do we need relative checks?
-		      Is this a cascading backend?
-		      */
+		       Is this a cascading backend?
+		       */
 } splitflag_t;
 
 

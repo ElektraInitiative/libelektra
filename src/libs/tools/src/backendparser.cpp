@@ -33,7 +33,7 @@ namespace tools
 KeySet parsePluginArguments (std::string const & pluginArguments, std::string const & basepath)
 {
 	KeySet ks;
-	std::istringstream sstream(pluginArguments);
+	std::istringstream sstream (pluginArguments);
 
 	std::string keyName;
 	std::string value;
@@ -44,17 +44,15 @@ KeySet parsePluginArguments (std::string const & pluginArguments, std::string co
 		// read until a ',' or the end of line
 		// if nothing is read because the '=' is the last character
 		// in the config string, consider the value empty
-		if (!std::getline (sstream, value, ',')) value = "";
+		if (!std::getline (sstream, value, ','))
+			value = "";
 
-		ks.append (Key(basepath+"/"+keyName, KEY_VALUE, value.c_str(), KEY_END));
+		ks.append (Key (basepath + "/" + keyName, KEY_VALUE, value.c_str (), KEY_END));
 	}
 	return ks;
 }
 
-PluginSpecVector parseArguments (std::initializer_list<std::string> cmdline)
-{
-	return parseArguments(cmdline.begin(), cmdline.end());
-}
+PluginSpecVector parseArguments (std::initializer_list<std::string> cmdline) { return parseArguments (cmdline.begin (), cmdline.end ()); }
 
 
 /**
@@ -77,7 +75,7 @@ PluginSpecVector parseArguments (std::string const & cmdline)
 	{
 		args.push_back (argument);
 	}
-	return parseArguments (args.begin(), args.end());
+	return parseArguments (args.begin (), args.end ());
 }
 
 
@@ -96,9 +94,10 @@ namespace detail
 void processArgument (PluginSpecVector & arguments, size_t & counter, std::string argument)
 {
 	// ignore empty or useless arguments (whitespace , only)
-	if (argument.empty()) return;
-	if (std::all_of(argument.begin(), argument.end(),
-		[](char c) {return std::isspace(c) || c==',';})) return;
+	if (argument.empty ())
+		return;
+	if (std::all_of (argument.begin (), argument.end (), [](char c) { return std::isspace (c) || c == ','; }))
+		return;
 
 	if (argument.find ('=') == std::string::npos)
 	{
@@ -108,13 +107,18 @@ void processArgument (PluginSpecVector & arguments, size_t & counter, std::strin
 		{
 			ps.setRefNumber (counter++);
 			arguments.push_back (ps);
-		} else {
+		}
+		else
+		{
 			arguments.push_back (ps);
 		}
-	} else {
+	}
+	else
+	{
 		// we have a plugin's configuration
-		if (arguments.empty()) throw ParseException ("config for plugin ("+argument+") without previous plugin name");
-		arguments.back().appendConfig(parsePluginArguments (argument));
+		if (arguments.empty ())
+			throw ParseException ("config for plugin (" + argument + ") without previous plugin name");
+		arguments.back ().appendConfig (parsePluginArguments (argument));
 	}
 }
 
@@ -128,19 +132,20 @@ void processArgument (PluginSpecVector & arguments, size_t & counter, std::strin
 void fixArguments (PluginSpecVector & arguments)
 {
 	// fix refnames of single occurrences for backwards compatibility and cleaner names
-	for (auto & a: arguments)
+	for (auto & a : arguments)
 	{
-		size_t nr = std::count_if(arguments.begin(), arguments.end(),
-				[&a](PluginSpec const & spec) {return spec.getName() == a.getName();});
-		if (nr == 1 && a.isRefNumber())
+		size_t nr = std::count_if (arguments.begin (), arguments.end (),
+					   [&a](PluginSpec const & spec) { return spec.getName () == a.getName (); });
+		if (nr == 1 && a.isRefNumber ())
 		{
-			a.setRefName (a.getName());
+			a.setRefName (a.getName ());
 		}
 
-		size_t identical = std::count_if(arguments.begin(), arguments.end(), std::bind(PluginSpecRefName(), a, std::placeholders::_1));
+		size_t identical =
+			std::count_if (arguments.begin (), arguments.end (), std::bind (PluginSpecRefName (), a, std::placeholders::_1));
 		if (identical > 1)
 		{
-			throw ParseException ("identical reference names found for plugin: " + a.getFullName());
+			throw ParseException ("identical reference names found for plugin: " + a.getFullName ());
 		}
 	}
 
@@ -148,15 +153,12 @@ void fixArguments (PluginSpecVector & arguments)
 	size_t counter = 0;
 	for (auto & a : arguments)
 	{
-		if (a.isRefNumber())
+		if (a.isRefNumber ())
 		{
 			a.setRefNumber (counter++);
 		}
 	}
 }
-
 }
-
 }
-
 }

@@ -7,8 +7,8 @@
  */
 
 #include <merging/automergeconfiguration.hpp>
-#include <merging/metamergestrategy.hpp>
 #include <merging/automergestrategy.hpp>
+#include <merging/metamergestrategy.hpp>
 
 namespace kdb
 {
@@ -19,17 +19,16 @@ namespace tools
 namespace merging
 {
 
-void AutoMergeConfiguration::configureMerger(ThreeWayMerge& merger)
+void AutoMergeConfiguration::configureMerger (ThreeWayMerge & merger)
 {
-	auto metaMergeStrategy = new MetaMergeStrategy(merger);
-	allocatedStrategies.push_back(metaMergeStrategy);
-	merger.addConflictStrategy(metaMergeStrategy);
+	auto metaMergeStrategy = new MetaMergeStrategy (merger);
+	allocatedStrategies.push_back (metaMergeStrategy);
+	merger.addConflictStrategy (metaMergeStrategy);
 
-	auto autoMergeStrategy = new AutoMergeStrategy();
-	allocatedStrategies.push_back(autoMergeStrategy);
-	merger.addConflictStrategy(autoMergeStrategy);
+	auto autoMergeStrategy = new AutoMergeStrategy ();
+	allocatedStrategies.push_back (autoMergeStrategy);
+	merger.addConflictStrategy (autoMergeStrategy);
 }
-
 }
 }
 }

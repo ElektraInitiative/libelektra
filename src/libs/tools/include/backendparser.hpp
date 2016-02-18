@@ -12,11 +12,11 @@
 #define TOOLS_BACKEND_PARSER_HPP
 
 
-#include <memory>
-#include <vector>
-#include <sstream>
 #include <algorithm>
 #include <initializer_list>
+#include <memory>
+#include <sstream>
+#include <vector>
 
 #include <pluginspec.hpp>
 
@@ -55,14 +55,12 @@ PluginSpecVector parseArguments (Iterator first, Iterator last)
 	while (first != last)
 	{
 		detail::processArgument (arguments, counter, *first);
-		++ first;
+		++first;
 	}
 	detail::fixArguments (arguments);
 	return arguments;
 }
-
 }
-
 }
 
 #endif

@@ -10,8 +10,8 @@
 #ifndef TOOLS_EXCEPTION_HPP
 #define TOOLS_EXCEPTION_HPP
 
-#include <stdexcept>
 #include <memory>
+#include <stdexcept>
 
 #include <kdbio.hpp>
 
@@ -36,123 +36,98 @@ namespace tools
  */
 struct ToolException : public std::runtime_error
 {
-	ToolException() :
-			runtime_error(
-		"When you read this, that means there was something wrong with Elektra Tools.\n"
-		"Seems like a wrong exception was thrown."
-				)
-	{};
-	ToolException(std::string message) :
-			runtime_error(message)
-	{};
+	ToolException ()
+	: runtime_error (
+		  "When you read this, that means there was something wrong with Elektra Tools.\n"
+		  "Seems like a wrong exception was thrown."){};
+	ToolException (std::string message) : runtime_error (message){};
 };
 
 struct ParseException : public ToolException
 {
-	ParseException(std::string str) :
-		m_str(std::move(str))
-	{}
+	ParseException (std::string str) : m_str (std::move (str)) {}
 
-	virtual ~ParseException() throw()
-	{}
+	virtual ~ParseException () throw () {}
 
-	virtual const char* what() const throw() override
-	{
-		return m_str.c_str();
-	}
+	virtual const char * what () const throw () override { return m_str.c_str (); }
 
 	std::string m_str;
 };
 
 struct PluginCheckException : public ToolException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		return  "When you read this, that means there was something wrong with the plugin.\n"
-			"Seems like a check could not specify the error any further";
+		return "When you read this, that means there was something wrong with the plugin.\n"
+		       "Seems like a check could not specify the error any further";
 	}
 };
 
 struct BackendCheckException : public ToolException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		return  "When you read this, that means there was something wrong with the backend.\n"
-			"Seems like a check could not specify the error any further";
+		return "When you read this, that means there was something wrong with the backend.\n"
+		       "Seems like a check could not specify the error any further";
 	}
 };
 
 struct FileNotValidException : public BackendCheckException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		return  "The path you entered is invalid.\n"
-			"Try to add another path instead.\n"
-			"\n"
-			"Filenames are typically (depending on\n"
-			"resolver) not allowed to contain '..'.\n"
-			"\n"
-			"For more information see:\n"
-			" kdb info <your resolver>\n"
-			;
+		return "The path you entered is invalid.\n"
+		       "Try to add another path instead.\n"
+		       "\n"
+		       "Filenames are typically (depending on\n"
+		       "resolver) not allowed to contain '..'.\n"
+		       "\n"
+		       "For more information see:\n"
+		       " kdb info <your resolver>\n";
 	}
 };
 
 struct MountpointInvalidException : public BackendCheckException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		return  "Given mountpoint is not a valid keyname, will abort\n"
-			"Examples: system/hosts or user/sw/app";
+		return "Given mountpoint is not a valid keyname, will abort\n"
+		       "Examples: system/hosts or user/sw/app";
 	}
 };
 
 struct MountpointAlreadyInUseException : public BackendCheckException
 {
-	MountpointAlreadyInUseException(std::string str) :
-		m_str(std::move(str))
-	{}
+	MountpointAlreadyInUseException (std::string str) : m_str (std::move (str)) {}
 
-	virtual ~MountpointAlreadyInUseException() throw()
-	{}
+	virtual ~MountpointAlreadyInUseException () throw () {}
 
-	virtual const char* what() const throw() override
-	{
-		return m_str.c_str();
-	}
+	virtual const char * what () const throw () override { return m_str.c_str (); }
 
 	std::string m_str;
 };
 
 struct NoSuchBackend : public BackendCheckException
 {
-	explicit NoSuchBackend (std::string const & message) :
-		m_str(message)
-	{}
+	explicit NoSuchBackend (std::string const & message) : m_str (message) {}
 
-	virtual ~NoSuchBackend() throw()
-	{}
+	virtual ~NoSuchBackend () throw () {}
 
-	virtual const char* what() const throw() override
-	{
-		return m_str.c_str();
-	}
+	virtual const char * what () const throw () override { return m_str.c_str (); }
 private:
 	std::string m_str;
 };
 
-struct PluginAlreadyInserted: public PluginCheckException
+struct PluginAlreadyInserted : public PluginCheckException
 {
 	explicit PluginAlreadyInserted (std::string name)
 	{
-		m_str = "It is not allowed to insert the same plugin (" + name + ") again!\n"
+		m_str = "It is not allowed to insert the same plugin (" + name +
+			") again!\n"
 			"Try to add other plugins or other refnames (part after #) instead.";
 	}
 
-	virtual const char* what() const throw() override
-	{
-		return m_str.c_str();
-	}
+	virtual const char * what () const throw () override { return m_str.c_str (); }
 
 	std::string m_str;
 };
@@ -161,76 +136,62 @@ struct BadPluginName : public PluginCheckException
 {
 	explicit BadPluginName (std::string name)
 	{
-		m_str = "You entered a bad name (" + name + ") for a plugin!\n"
+		m_str = "You entered a bad name (" + name +
+			") for a plugin!\n"
 			"A valid name of a plugin is either\n"
 			"modulename or modulename#refname\n"
 			"where both modulename and refname must start with a-z\n"
 			"and then a-z, 0-9 and underscore (_) only";
 	}
 
-	virtual const char* what() const throw() override
-	{
-		return m_str.c_str();
-	}
+	virtual const char * what () const throw () override { return m_str.c_str (); }
 
 	std::string m_str;
 };
 
 struct TooManyPlugins : public PluginCheckException
 {
-	TooManyPlugins(std::string str) :
-		m_str(std::move(str))
-	{}
+	TooManyPlugins (std::string str) : m_str (std::move (str)) {}
 
-	virtual ~TooManyPlugins() throw()
-	{}
+	virtual ~TooManyPlugins () throw () {}
 
-	virtual const char* what() const throw() override
-	{
-		return m_str.c_str();
-	}
+	virtual const char * what () const throw () override { return m_str.c_str (); }
 
 	std::string m_str;
 };
 
-struct OrderingViolation: public PluginCheckException
+struct OrderingViolation : public PluginCheckException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		return  "Ordering Violation!\n"
-			"You tried to add a plugin which requests another plugin to be positioned first.\n"
-			"Please position the other plugin first and try again.";
+		return "Ordering Violation!\n"
+		       "You tried to add a plugin which requests another plugin to be positioned first.\n"
+		       "Please position the other plugin first and try again.";
 	}
 };
 
-struct ConflictViolation: public PluginCheckException
+struct ConflictViolation : public PluginCheckException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		return  "Conflict Violation!\n"
-			"You tried to add a plugin which conflicts with another.\n"
-			"Please don't add a plugin which conflicts.";
+		return "Conflict Violation!\n"
+		       "You tried to add a plugin which conflicts with another.\n"
+		       "Please don't add a plugin which conflicts.";
 	}
 };
 
 
 struct NoPlugin : public PluginCheckException
 {
-	explicit NoPlugin (Key key) :
-		m_key(key),
-		m_str()
-	{}
+	explicit NoPlugin (Key key) : m_key (key), m_str () {}
 
-	explicit NoPlugin (std::string const & message) :
-		m_str(message)
-	{}
+	explicit NoPlugin (std::string const & message) : m_str (message) {}
 
-	virtual ~NoPlugin() throw()
-	{}
+	virtual ~NoPlugin () throw () {}
 
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		if (m_str.empty())
+		if (m_str.empty ())
 		{
 			// note that the code will be re-evaluated
 			// if it prints nothing, but an expensive
@@ -245,24 +206,25 @@ struct NoPlugin : public PluginCheckException
 			ss << "Maybe you misspelled it, there is no such plugin or the loader has problems.\n";
 			ss << "You might want to try to set LD_LIBRARY_PATH, use kdb-full or kdb-static.\n";
 			ss << "Errors/Warnings during loading were:\n";
-			printError(ss, m_key);
-			printWarnings(ss, m_key);
-			m_str = ss.str();
+			printError (ss, m_key);
+			printWarnings (ss, m_key);
+			m_str = ss.str ();
 		}
-		return m_str.c_str();
+		return m_str.c_str ();
 	}
+
 private:
 	Key m_key;
 	mutable std::string m_str;
 };
 
-struct ReferenceNotFound: public PluginCheckException
+struct ReferenceNotFound : public PluginCheckException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
-		return  "Could not find a reference!\n"
-			"Seems you forgot to create the reference before using it.\n"
-			"Use #modulename#label# before you #ref to it.";
+		return "Could not find a reference!\n"
+		       "Seems you forgot to create the reference before using it.\n"
+		       "Use #modulename#label# before you #ref to it.";
 	}
 };
 
@@ -271,145 +233,104 @@ struct MissingNeeded : public PluginCheckException
 	std::string msg;
 	MissingNeeded (std::string need)
 	{
-		msg = std::string(std::string("The plugin ") + need + " is needed by this plugin but it is not provided.");
+		msg = std::string (std::string ("The plugin ") + need + " is needed by this plugin but it is not provided.");
 	}
-	~MissingNeeded () throw()
-	{}
-	virtual const char* what() const throw() override
-	{
-		return msg.c_str();
-	}
+	~MissingNeeded () throw () {}
+	virtual const char * what () const throw () override { return msg.c_str (); }
 };
 
-struct MissingSymbol: public PluginCheckException
+struct MissingSymbol : public PluginCheckException
 {
 	std::string msg;
 	MissingSymbol (std::string symbol)
 	{
-		msg = std::string(std::string("The necessary symbol \"") + symbol + "\" is missing in that plugin!");
+		msg = std::string (std::string ("The necessary symbol \"") + symbol + "\" is missing in that plugin!");
 	}
-	~MissingSymbol () throw()
-	{}
-	virtual const char* what() const throw() override
-	{
-		return msg.c_str();
-	}
+	~MissingSymbol () throw () {}
+	virtual const char * what () const throw () override { return msg.c_str (); }
 };
 
-struct WrongStatus: public PluginCheckException
+struct WrongStatus : public PluginCheckException
 {
 	std::string msg;
 	WrongStatus (std::string status)
 	{
-		msg = std::string(std::string("The status \"") + status + "\" is neither a valid enum value nor an integer!");
+		msg = std::string (std::string ("The status \"") + status + "\" is neither a valid enum value nor an integer!");
 	}
-	~WrongStatus() throw()
-	{}
-	virtual const char* what() const throw() override
-	{
-		return msg.c_str();
-	}
+	~WrongStatus () throw () {}
+	virtual const char * what () const throw () override { return msg.c_str (); }
 };
 
 
-struct SymbolMismatch: public PluginCheckException
+struct SymbolMismatch : public PluginCheckException
 {
 	std::string msg;
 	SymbolMismatch (std::string symbol)
 	{
-		msg = std::string(std::string("The symbol \"") + symbol + "\" does not match with other exported information!");
+		msg = std::string (std::string ("The symbol \"") + symbol + "\" does not match with other exported information!");
 	}
-	~SymbolMismatch () throw()
-	{}
-	virtual const char* what() const throw() override
-	{
-		return msg.c_str();
-	}
+	~SymbolMismatch () throw () {}
+	virtual const char * what () const throw () override { return msg.c_str (); }
 };
 
-struct NoGlobalPlugin: public PluginCheckException
+struct NoGlobalPlugin : public PluginCheckException
 {
 	std::string msg;
 	NoGlobalPlugin (std::string plugin)
 	{
-		msg = std::string(std::string("The plugin \"") + plugin + "\" is not suitable to be mounted as global plugin!");
+		msg = std::string (std::string ("The plugin \"") + plugin + "\" is not suitable to be mounted as global plugin!");
 	}
-	~NoGlobalPlugin() throw()
-	{}
-	virtual const char* what() const throw() override
-	{
-		return msg.c_str();
-	}
+	~NoGlobalPlugin () throw () {}
+	virtual const char * what () const throw () override { return msg.c_str (); }
 };
 
 
-struct SymbolDuplicate: public PluginCheckException
+struct SymbolDuplicate : public PluginCheckException
 {
 	std::string msg;
-	SymbolDuplicate(std::string symbol)
+	SymbolDuplicate (std::string symbol)
 	{
-		msg = std::string(std::string("The symbol \"") + symbol + "\" has the same value as another symbol!");
+		msg = std::string (std::string ("The symbol \"") + symbol + "\" has the same value as another symbol!");
 	}
-	~SymbolDuplicate () throw()
-	{}
-	virtual const char* what() const throw() override
-	{
-		return msg.c_str();
-	}
+	~SymbolDuplicate () throw () {}
+	virtual const char * what () const throw () override { return msg.c_str (); }
 };
 
 struct StoragePlugin : public PluginCheckException
 {
-	virtual const char* what() const throw() override
-	{
-		return "There need to be exactly one storage plugin!";
-	}
+	virtual const char * what () const throw () override { return "There need to be exactly one storage plugin!"; }
 };
 
 
 struct ResolverPlugin : public PluginCheckException
 {
-	virtual const char* what() const throw() override
-	{
-		return "There need to be exactly one resolver plugin!";
-	}
+	virtual const char * what () const throw () override { return "There need to be exactly one resolver plugin!"; }
 };
 
 struct PluginWrongName : public PluginCheckException
 {
-	virtual const char* what() const throw() override
-	{
-		return "The real name of the plugin is different!";
-	}
+	virtual const char * what () const throw () override { return "The real name of the plugin is different!"; }
 };
 
-struct PluginNoContract: public PluginCheckException
+struct PluginNoContract : public PluginCheckException
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "No contract found for that plugin!\n"
-			"Make sure you export kdbGet correctly!";
+		       "Make sure you export kdbGet correctly!";
 	}
 };
 
-struct PluginNoInfo: public PluginCheckException
+struct PluginNoInfo : public PluginCheckException
 {
-	virtual const char* what() const throw() override
-	{
-		return "No info found for that plugin within contract!";
-	}
+	virtual const char * what () const throw () override { return "No info found for that plugin within contract!"; }
 };
 
-struct VersionInfoMismatch: public PluginCheckException
+struct VersionInfoMismatch : public PluginCheckException
 {
-	virtual const char* what() const throw() override
-	{
-		return "Version info does not match with library!";
-	}
+	virtual const char * what () const throw () override { return "Version info does not match with library!"; }
 };
-
 }
-
 }
 
 #endif
