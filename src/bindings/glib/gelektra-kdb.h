@@ -4,6 +4,8 @@
 #include <glib-object.h>
 #include <kdb.h>
 
+// clang-format off
+
 G_BEGIN_DECLS
 
 /*
