@@ -41,6 +41,7 @@
  */
 enum KDBStream
 {
+	// clang-format off
 	KDB_O_SHOWMETA = 0xF0,       /*!< Show all metadata (type, uid, gid, mode) */
 	KDB_O_SHOWFLAGS = 1 << 14,   /*!< Show all flags */
 	KDB_O_SHOWINDICES = 1 << 15, /*!< Show the indices for the entries */
@@ -48,9 +49,10 @@ enum KDBStream
 	KDB_O_NUMBER = 1 << 17,      /*!< Use a number intead of user and group name.*/
 	KDB_O_HEADER = 1 << 18,      /*!< Show also the header of the document. */
 	KDB_O_FULLNAME = 1 << 19,    /*!< Export @p user keys using full name.*/
-	KDB_O_HIER = 1 << 20	 /*!< Export to the new hierarchical XML
-								 representation using key basename.
-								 See ksToStream(). */
+	KDB_O_HIER = 1 << 20	     /*!< Export to the new hierarchical XML
+					  representation using key basename.
+					  See ksToStream(). */
+	// clang-format on
 };
 
 

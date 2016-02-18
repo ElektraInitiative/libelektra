@@ -6,6 +6,9 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
+kdb setmeta with 2 args to remove meta data!
+
+
 # 0.8.15
 
 Also see [githubs issues](http://git.libelektra.org/issues)

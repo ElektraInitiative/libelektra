@@ -7,8 +7,10 @@
  *
  */
 
-#include "openssl_operations.h"
 #include "crypto.h"
+
+#include "openssl_operations.h"
+
 #include <kdberrors.h>
 #include <kdbtypes.h>
 #include <openssl/buffer.h>
