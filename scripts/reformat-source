@@ -1,0 +1,9 @@
+#!/bin/sh
+
+SELF=$(readlink -f "$0")
+SCRIPTS=$(dirname "$SELF")
+SOURCE=$(dirname "$SCRIPTS")
+
+cd $SOURCE
+
+clang-format-3.8 -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp'`
