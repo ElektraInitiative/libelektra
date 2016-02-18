@@ -6,4 +6,4 @@ SOURCE=$(dirname "$SCRIPTS")
 
 cd $SOURCE
 
-clang-format-3.8 -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp'`
+clang-format-3.8 -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in'`
