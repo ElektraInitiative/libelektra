@@ -73,12 +73,30 @@ struct transitionTitle
  */
 
 const int linkStart = 0;
-static inline int linkPossible (int old, int new) { return (old == 0 || old == 5) && new == 2; }
-static inline int linkFound (int old, int new) { return old == 4 && new == 5; }
-static inline int linkName (int old, int new) { return ((old == 2 || old == 3) && (new == 2 || new == 3)) || (old == 3 && new == 4); }
-static inline int linkTarget (int old, int new) { return old == 4 && new == 4; }
-static inline int linkTrap (int old UNUSED, int new) { return new == 6; }
-static inline int linkNolink (int old UNUSED, int new) { return new == 0 || new == 1; }
+static inline int linkPossible (int old, int new)
+{
+	return (old == 0 || old == 5) && new == 2;
+}
+static inline int linkFound (int old, int new)
+{
+	return old == 4 && new == 5;
+}
+static inline int linkName (int old, int new)
+{
+	return ((old == 2 || old == 3) && (new == 2 || new == 3)) || (old == 3 && new == 4);
+}
+static inline int linkTarget (int old, int new)
+{
+	return old == 4 && new == 4;
+}
+static inline int linkTrap (int old UNUSED, int new)
+{
+	return new == 6;
+}
+static inline int linkNolink (int old UNUSED, int new)
+{
+	return new == 0 || new == 1;
+}
 
 struct transitionLink genLinkTransitionTable ()
 {
@@ -109,7 +127,10 @@ struct transitionLink genLinkTransitionTable ()
  */
 
 const int titleStart = 0;
-static inline int titleIsGoal (int old, int new) { return old == 3 && new == 0; }
+static inline int titleIsGoal (int old, int new)
+{
+	return old == 3 && new == 0;
+}
 
 struct transitionTitle genTitleTransitionTable ()
 {

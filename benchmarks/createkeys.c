@@ -8,7 +8,10 @@
 
 #include <benchmarks.h>
 
-void benchmarkDel () { ksDel (large); }
+void benchmarkDel ()
+{
+	ksDel (large);
+}
 
 int main (int argc, char ** argv)
 {

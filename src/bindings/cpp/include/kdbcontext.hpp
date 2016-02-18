@@ -43,9 +43,13 @@ private:
 	mutable std::unordered_map<std::string, ObserverSet> m_observers;
 };
 
-inline Subject::Subject () {}
+inline Subject::Subject ()
+{
+}
 
-inline Subject::~Subject () {}
+inline Subject::~Subject ()
+{
+}
 
 inline void Subject::attachObserver (std::string const & event, ValueObserver & observer)
 {
@@ -112,9 +116,14 @@ inline void Subject::notifyAllEvents () const
 class Context : public Subject
 {
 public:
-	Context () : m_active_layers () {}
+	Context () : m_active_layers ()
+	{
+	}
 
-	virtual void execute (Command & c) { c (); }
+	virtual void execute (Command & c)
+	{
+		c ();
+	}
 
 	/**
 	 * Lookup value for a current active layer
@@ -136,7 +145,10 @@ public:
 	/**
 	 * @return size of all current layers (to be used with operator[])
 	 */
-	size_t size () const { return m_active_layers.size (); }
+	size_t size () const
+	{
+		return m_active_layers.size ();
+	}
 
 	/**
 	 * Attach observer using to all events given by
@@ -299,7 +311,10 @@ protected:
 #endif
 	}
 
-	void clearAllLayer () { m_active_layers.clear (); }
+	void clearAllLayer ()
+	{
+		m_active_layers.clear ();
+	}
 
 	// needed for global activation
 	void activateLayer (std::shared_ptr<Layer> const & layer)

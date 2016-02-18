@@ -48,13 +48,13 @@ public:
 		ChildCountRole,		     ///< The role QML can access the number of children of a ConfigNode at a specified index.
 		ChildrenRole,		     ///< The role QML can access the children model of a ConfigNode at a specified index.
 		ChildrenHaveNoChildrenRole,  ///< The role QML can access if children of a ConfigNode at a specified index do have children
-					     ///on their own.
-		MetaValueRole,		     ///< The role QML can access the meta model of a ConfigNode at a specified index.
-		NodeRole,		     ///< The role QML can retrieve the ConfigNode at a specified index.
-		ParentModelRole,	     ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
-		IndexRole,		     ///< The role QML can retrieve the index of a ConfigNode.
-		IsNullRole,		     ///< The role QML can retrieve if the key of this node is null.
-		IsExpandedRole		     ///< The role QML can retrieve if a ConfigNode is expanded.
+		/// on their own.
+		MetaValueRole,   ///< The role QML can access the meta model of a ConfigNode at a specified index.
+		NodeRole,	///< The role QML can retrieve the ConfigNode at a specified index.
+		ParentModelRole, ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
+		IndexRole,       ///< The role QML can retrieve the index of a ConfigNode.
+		IsNullRole,      ///< The role QML can retrieve if the key of this node is null.
+		IsExpandedRole   ///< The role QML can retrieve if a ConfigNode is expanded.
 	};
 
 	/**
@@ -79,7 +79,10 @@ public:
 	 * @brief Returns the QList that holds the ConfigNodes.
 	 * @return The QList that holds the ConfigNodes.
 	 */
-	QList<ConfigNodePtr> & model () { return m_model; }
+	QList<ConfigNodePtr> & model ()
+	{
+		return m_model;
+	}
 
 	// mandatory methods inherited from QAbstractItemModel
 

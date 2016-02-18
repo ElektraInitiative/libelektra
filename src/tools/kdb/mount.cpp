@@ -27,7 +27,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-MountCommand::MountCommand () {}
+MountCommand::MountCommand ()
+{
+}
 
 
 /**
@@ -246,4 +248,6 @@ int MountCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-MountCommand::~MountCommand () {}
+MountCommand::~MountCommand ()
+{
+}

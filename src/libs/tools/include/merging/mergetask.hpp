@@ -29,25 +29,33 @@ public:
 	const Key parent;
 
 protected:
-	MergeKeys (const KeySet & _keys, const Key & _parentKey) : keys (_keys), parent (_parentKey) {}
+	MergeKeys (const KeySet & _keys, const Key & _parentKey) : keys (_keys), parent (_parentKey)
+	{
+	}
 };
 
 class BaseMergeKeys : public MergeKeys
 {
 public:
-	BaseMergeKeys (const KeySet & _keys, const Key & _parentKey) : MergeKeys (_keys, _parentKey) {}
+	BaseMergeKeys (const KeySet & _keys, const Key & _parentKey) : MergeKeys (_keys, _parentKey)
+	{
+	}
 };
 
 class TheirMergeKeys : public MergeKeys
 {
 public:
-	TheirMergeKeys (const KeySet & _keys, const Key & _parentKey) : MergeKeys (_keys, _parentKey) {}
+	TheirMergeKeys (const KeySet & _keys, const Key & _parentKey) : MergeKeys (_keys, _parentKey)
+	{
+	}
 };
 
 class OurMergeKeys : public MergeKeys
 {
 public:
-	OurMergeKeys (const KeySet & _keys, const Key & _parentKey) : MergeKeys (_keys, _parentKey) {}
+	OurMergeKeys (const KeySet & _keys, const Key & _parentKey) : MergeKeys (_keys, _parentKey)
+	{
+	}
 };
 
 class MergeTask
@@ -73,7 +81,9 @@ public:
 	{
 	}
 
-	~MergeTask () {}
+	~MergeTask ()
+	{
+	}
 
 	MergeTask reverse () const
 	{

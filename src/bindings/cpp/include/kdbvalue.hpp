@@ -85,9 +85,14 @@ public:
  *
  * @return Comparision result
  */
-bool operator< (ValueObserver const & lhs, ValueObserver const & rhs) { return &lhs < &rhs; }
+bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
+{
+	return &lhs < &rhs;
+}
 
-inline ValueObserver::~ValueObserver () {}
+inline ValueObserver::~ValueObserver ()
+{
+}
 
 
 class ValueSubject
@@ -119,7 +124,10 @@ public:
 	{
 	}
 
-	Pair operator() () { return execute (); }
+	Pair operator() ()
+	{
+		return execute ();
+	}
 
 	ValueSubject & v;   // this pointer
 	Func & execute;     // to be executed within lock
@@ -138,14 +146,19 @@ public:
 	 *
 	 * NoContext will never update anything
 	 */
-	void attachByName (ELEKTRA_UNUSED std::string const & key_name, ELEKTRA_UNUSED ValueObserver & ValueObserver) {}
+	void attachByName (ELEKTRA_UNUSED std::string const & key_name, ELEKTRA_UNUSED ValueObserver & ValueObserver)
+	{
+	}
 
 	/**
 	 * @brief The evaluated equals the non-evaluated name!
 	 *
 	 * @return NoContext always returns the same string
 	 */
-	std::string evaluate (std::string const & key_name) const { return key_name; }
+	std::string evaluate (std::string const & key_name) const
+	{
+		return key_name;
+	}
 
 	/**
 	 * @brief (Re)attaches a ValueSubject to a thread or simply
@@ -156,7 +169,10 @@ public:
 	 *
 	 * @param c the command to apply
 	 */
-	void execute (Command & c) { c (); }
+	void execute (Command & c)
+	{
+		c ();
+	}
 };
 
 /**
@@ -165,7 +181,10 @@ public:
 class DefaultGetPolicy
 {
 public:
-	static Key get (KeySet & ks, Key const & spec) { return ks.lookup (spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE); }
+	static Key get (KeySet & ks, Key const & spec)
+	{
+		return ks.lookup (spec, ckdb::KDB_O_SPEC | ckdb::KDB_O_CREATE);
+	}
 };
 
 /**
@@ -174,7 +193,10 @@ public:
 class DefaultSetPolicy
 {
 public:
-	static Key set (KeySet & ks, Key const & spec) { return setWithNamespace (ks, spec, "user"); }
+	static Key set (KeySet & ks, Key const & spec)
+	{
+		return setWithNamespace (ks, spec, "user");
+	}
 
 	static Key setWithNamespace (KeySet & ks, Key const & spec, std::string const & ns)
 	{
@@ -208,8 +230,12 @@ public:
 class NoLockPolicy
 {
 public:
-	void lock () {}
-	void unlock () {}
+	void lock ()
+	{
+	}
+	void unlock ()
+	{
+	}
 };
 
 /*
@@ -445,14 +471,26 @@ public:
 
 #undef ELEKTRA_DEFINE_OPERATOR
 
-	type operator- () const { return -m_cache; }
+	type operator- () const
+	{
+		return -m_cache;
+	}
 
-	type operator~ () const { return ~m_cache; }
+	type operator~ () const
+	{
+		return ~m_cache;
+	}
 
-	type operator! () const { return !m_cache; }
+	type operator! () const
+	{
+		return !m_cache;
+	}
 
 	// type conversion
-	operator type () const { return m_cache; }
+	operator type () const
+	{
+		return m_cache;
+	}
 
 	/**
 	 * @return the context bound to the value
@@ -469,19 +507,28 @@ public:
 	 *
 	 * @see context()
 	 */
-	typename Policies::ContextPolicy & c () const { return context (); }
+	typename Policies::ContextPolicy & c () const
+	{
+		return context ();
+	}
 
 	/**
 	 * @return Specification Key
 	 */
-	Key const & getSpec () const { return m_spec; }
+	Key const & getSpec () const
+	{
+		return m_spec;
+	}
 
 	/**
 	 * @brief Returns the current name of contextual value
 	 *
 	 * @return name under contextual interpretation
 	 */
-	std::string getName () const { return m_key.getName (); }
+	std::string getName () const
+	{
+		return m_key.getName ();
+	}
 
 	/**
 	 * @brief Sync key(set) to cache

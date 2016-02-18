@@ -22,7 +22,10 @@ class Cmdline;
 class CommandException : public std::exception
 {
 public:
-	virtual const char * what () const throw () override { return "A situation had a appeared where the command had to abort"; }
+	virtual const char * what () const throw () override
+	{
+		return "A situation had a appeared where the command had to abort";
+	}
 };
 
 class CommandAbortException : public CommandException
@@ -30,9 +33,16 @@ class CommandAbortException : public CommandException
 	const char * msg;
 
 public:
-	CommandAbortException () : msg (0) {}
-	CommandAbortException (const char * msg_) : msg (msg_) {}
-	virtual const char * what () const throw () override { return msg ? msg : "Command aborted"; }
+	CommandAbortException () : msg (0)
+	{
+	}
+	CommandAbortException (const char * msg_) : msg (msg_)
+	{
+	}
+	virtual const char * what () const throw () override
+	{
+		return msg ? msg : "Command aborted";
+	}
 };
 
 class Command

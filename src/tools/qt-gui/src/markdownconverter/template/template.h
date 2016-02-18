@@ -45,10 +45,18 @@ public:
 	};
 	Q_DECLARE_FLAGS (RenderOptions, RenderOption)
 
-	virtual ~Template () {}
+	virtual ~Template ()
+	{
+	}
 
-	QString codeHighlightingStyle () const { return highlightingStyle; }
-	void setCodeHighlightingStyle (const QString & style) { highlightingStyle = style; }
+	QString codeHighlightingStyle () const
+	{
+		return highlightingStyle;
+	}
+	void setCodeHighlightingStyle (const QString & style)
+	{
+		highlightingStyle = style;
+	}
 
 	virtual QString render (const QString & body, RenderOptions options) const = 0;
 	virtual QString exportAsHtml (const QString & header, const QString & body, RenderOptions options) const = 0;

@@ -22,7 +22,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-SpecMountCommand::SpecMountCommand () {}
+SpecMountCommand::SpecMountCommand ()
+{
+}
 
 void SpecMountCommand::setMountpoint (Cmdline const & cl)
 {
@@ -99,4 +101,6 @@ int SpecMountCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-SpecMountCommand::~SpecMountCommand () {}
+SpecMountCommand::~SpecMountCommand ()
+{
+}

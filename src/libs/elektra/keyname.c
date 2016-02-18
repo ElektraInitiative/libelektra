@@ -521,7 +521,10 @@ static int keyGetNameNamespace (const char * name)
  * @see keySetBaseName(), keyAddBaseName() to manipulate a name
  * @ingroup keyname
  */
-ssize_t keySetName (Key * key, const char * newName) { return elektraKeySetName (key, newName, 0); }
+ssize_t keySetName (Key * key, const char * newName)
+{
+	return elektraKeySetName (key, newName, 0);
+}
 
 ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 {

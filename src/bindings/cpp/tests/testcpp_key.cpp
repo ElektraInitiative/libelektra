@@ -399,7 +399,10 @@ TEST (key, name)
 	succeed_if (!test.isDirectBelow (Key ("user", KEY_END)), "key is not direct below");
 }
 
-void f (Key) { Key h ("user/infunction", KEY_END); }
+void f (Key)
+{
+	Key h ("user/infunction", KEY_END);
+}
 
 TEST (key, ref)
 {

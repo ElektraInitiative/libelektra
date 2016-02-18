@@ -22,7 +22,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-GlobalMountCommand::GlobalMountCommand () {}
+GlobalMountCommand::GlobalMountCommand ()
+{
+}
 
 void GlobalMountCommand::buildBackend (Cmdline const & cl)
 {
@@ -57,4 +59,6 @@ int GlobalMountCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-GlobalMountCommand::~GlobalMountCommand () {}
+GlobalMountCommand::~GlobalMountCommand ()
+{
+}

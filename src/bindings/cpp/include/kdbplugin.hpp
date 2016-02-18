@@ -33,7 +33,10 @@ class Delegator
 public:
 	typedef Delegated * (*Builder) (kdb::KeySet config);
 
-	inline static Delegated * defaultBuilder (kdb::KeySet config) { return new Delegated (config); }
+	inline static Delegated * defaultBuilder (kdb::KeySet config)
+	{
+		return new Delegated (config);
+	}
 
 	inline static int open (ckdb::Plugin * handle, ckdb::Key * errorKey, Builder builder = defaultBuilder)
 	{
@@ -49,7 +52,10 @@ public:
 		return 1; // always successfully
 	}
 
-	inline static Delegated * get (ckdb::Plugin * handle) { return static_cast<Delegated *> (elektraPluginGetData (handle)); }
+	inline static Delegated * get (ckdb::Plugin * handle)
+	{
+		return static_cast<Delegated *> (elektraPluginGetData (handle));
+	}
 
 private:
 	/**This function avoid that every return path need to release the

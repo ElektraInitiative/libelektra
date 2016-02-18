@@ -21,11 +21,19 @@ protected:
 	testing::Namespaces namespaces;
 	testing::MountpointPtr mp;
 
-	Simple () : namespaces () {}
+	Simple () : namespaces ()
+	{
+	}
 
-	virtual void SetUp () override { mp.reset (new testing::Mountpoint (testRoot, configFile)); }
+	virtual void SetUp () override
+	{
+		mp.reset (new testing::Mountpoint (testRoot, configFile));
+	}
 
-	virtual void TearDown () override { mp.reset (); }
+	virtual void TearDown () override
+	{
+		mp.reset ();
+	}
 };
 
 const std::string Simple::configFile = "kdbFile.dump";

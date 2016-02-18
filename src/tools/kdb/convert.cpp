@@ -19,7 +19,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-ConvertCommand::ConvertCommand () {}
+ConvertCommand::ConvertCommand ()
+{
+}
 
 int ConvertCommand::execute (Cmdline const & cl)
 {
@@ -72,4 +74,6 @@ int ConvertCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-ConvertCommand::~ConvertCommand () {}
+ConvertCommand::~ConvertCommand ()
+{
+}

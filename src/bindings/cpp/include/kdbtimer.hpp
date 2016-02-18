@@ -20,7 +20,10 @@
 class Timer
 {
 public:
-	TIMER_NOINLINE void start () { gettimeofday (&begin, nullptr); }
+	TIMER_NOINLINE void start ()
+	{
+		gettimeofday (&begin, nullptr);
+	}
 	TIMER_NOINLINE void stop ()
 	{
 		gettimeofday (&end, nullptr);
@@ -41,7 +44,9 @@ public:
 	static const timer_t usec_factor = 1000000LL;
 };
 
-inline Timer::Timer (std::string name_) : begin (), end (), results (), name (std::move (name_)) {}
+inline Timer::Timer (std::string name_) : begin (), end (), results (), name (std::move (name_))
+{
+}
 
 inline Timer::~Timer ()
 {

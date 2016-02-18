@@ -33,7 +33,9 @@
 
 #include <QFile>
 
-HtmlTemplate::HtmlTemplate () {}
+HtmlTemplate::HtmlTemplate ()
+{
+}
 
 QString HtmlTemplate::render (const QString & body, RenderOptions options) const
 {

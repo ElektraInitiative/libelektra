@@ -44,7 +44,10 @@ Plugin::Plugin (PluginSpec const & spec_, KeySet & modules) : spec (spec_), firs
 	}
 }
 
-kdb::KeySet Plugin::getConfig () { return ksDup (elektraPluginGetConfig (plugin)); }
+kdb::KeySet Plugin::getConfig ()
+{
+	return ksDup (elektraPluginGetConfig (plugin));
+}
 
 Plugin::Plugin (Plugin const & other)
 : plugin (other.plugin), spec (other.spec), info (other.info), symbols (other.symbols), infos (other.infos), firstRef (other.firstRef)
@@ -71,7 +74,10 @@ Plugin & Plugin::operator= (Plugin const & other)
 	return *this;
 }
 
-Plugin::~Plugin () { uninit (); }
+Plugin::~Plugin ()
+{
+	uninit ();
+}
 
 void Plugin::uninit ()
 {
@@ -318,7 +324,10 @@ void Plugin::check (vector<string> & warnings)
 	}
 }
 
-ckdb::Plugin * Plugin::operator-> () { return plugin; }
+ckdb::Plugin * Plugin::operator-> ()
+{
+	return plugin;
+}
 
 std::string Plugin::lookupInfo (std::string item, std::string section)
 {
@@ -425,7 +434,10 @@ std::string Plugin::name () // TODO: rename + use internally
 	return spec.getName ();
 }
 
-std::string Plugin::getFullName () { return spec.getFullName (); }
+std::string Plugin::getFullName ()
+{
+	return spec.getFullName ();
+}
 
 std::string Plugin::refname ()
 {

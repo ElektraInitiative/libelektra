@@ -20,7 +20,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-CheckCommand::CheckCommand () {}
+CheckCommand::CheckCommand ()
+{
+}
 
 int printProblems (Key k, std::string action, int off)
 {
@@ -127,4 +129,6 @@ int CheckCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-CheckCommand::~CheckCommand () {}
+CheckCommand::~CheckCommand ()
+{
+}

@@ -259,7 +259,9 @@ public:
 	{
 	}
 
-	NameIterator (const char * begin_, const char * end_, const char * current_) : begin (begin_), end (end_), current (current_) {}
+	NameIterator (const char * begin_, const char * end_, const char * current_) : begin (begin_), end (end_), current (current_)
+	{
+	}
 
 	std::string get () const
 	{
@@ -268,7 +270,10 @@ public:
 		return std::string (current);
 	}
 
-	const char * pos () const { return current; }
+	const char * pos () const
+	{
+		return current;
+	}
 
 	const char * findNext () const
 	{
@@ -315,7 +320,10 @@ public:
 	}
 
 	// Forward iterator requirements
-	reference operator* () const { return get (); }
+	reference operator* () const
+	{
+		return get ();
+	}
 	NameIterator & operator++ ()
 	{
 		current = findNext ();
@@ -349,9 +357,15 @@ protected:
 
 
 // Forward iterator requirements
-inline bool operator== (const NameIterator & lhs, const NameIterator & rhs) { return lhs.pos () == rhs.pos (); }
+inline bool operator== (const NameIterator & lhs, const NameIterator & rhs)
+{
+	return lhs.pos () == rhs.pos ();
+}
 
-inline bool operator!= (const NameIterator & lhs, const NameIterator & rhs) { return lhs.pos () != rhs.pos (); }
+inline bool operator!= (const NameIterator & lhs, const NameIterator & rhs)
+{
+	return lhs.pos () != rhs.pos ();
+}
 
 // some code duplication because std::reverse_iterator
 // needs a difference_type
@@ -376,7 +390,9 @@ public:
 			current = findPrevious ();
 	}
 
-	NameReverseIterator (const char * begin_, const char * end_, const char * current_) : NameIterator (begin_, end_, current_) {}
+	NameReverseIterator (const char * begin_, const char * end_, const char * current_) : NameIterator (begin_, end_, current_)
+	{
+	}
 
 	const char * findPrevious () const
 	{
@@ -399,10 +415,16 @@ public:
 		return NameIterator::get ();
 	}
 
-	const char * pos () const { return NameIterator::pos (); }
+	const char * pos () const
+	{
+		return NameIterator::pos ();
+	}
 
 	// Forward iterator requirements
-	reference operator* () const { return get (); }
+	reference operator* () const
+	{
+		return get ();
+	}
 	NameReverseIterator & operator++ ()
 	{
 		current = findPrevious ();
@@ -431,34 +453,76 @@ public:
 
 
 // Forward iterator requirements
-inline bool operator== (const NameReverseIterator & lhs, const NameReverseIterator & rhs) { return lhs.pos () == rhs.pos (); }
+inline bool operator== (const NameReverseIterator & lhs, const NameReverseIterator & rhs)
+{
+	return lhs.pos () == rhs.pos ();
+}
 
-inline bool operator!= (const NameReverseIterator & lhs, const NameReverseIterator & rhs) { return lhs.pos () != rhs.pos (); }
+inline bool operator!= (const NameReverseIterator & lhs, const NameReverseIterator & rhs)
+{
+	return lhs.pos () != rhs.pos ();
+}
 
 
-inline Key::iterator Key::begin () { return Key::iterator (*this, false); }
+inline Key::iterator Key::begin ()
+{
+	return Key::iterator (*this, false);
+}
 
-inline Key::const_iterator Key::begin () const { return Key::const_iterator (*this, false); }
+inline Key::const_iterator Key::begin () const
+{
+	return Key::const_iterator (*this, false);
+}
 
-inline Key::iterator Key::end () { return Key::iterator (*this, true); }
+inline Key::iterator Key::end ()
+{
+	return Key::iterator (*this, true);
+}
 
-inline Key::const_iterator Key::end () const { return Key::const_iterator (*this, true); }
+inline Key::const_iterator Key::end () const
+{
+	return Key::const_iterator (*this, true);
+}
 
-inline Key::reverse_iterator Key::rbegin () { return Key::reverse_iterator (*this, true); }
+inline Key::reverse_iterator Key::rbegin ()
+{
+	return Key::reverse_iterator (*this, true);
+}
 
-inline Key::const_reverse_iterator Key::rbegin () const { return Key::const_reverse_iterator (*this, true); }
+inline Key::const_reverse_iterator Key::rbegin () const
+{
+	return Key::const_reverse_iterator (*this, true);
+}
 
-inline Key::reverse_iterator Key::rend () { return Key::reverse_iterator (*this, false); }
+inline Key::reverse_iterator Key::rend ()
+{
+	return Key::reverse_iterator (*this, false);
+}
 
-inline Key::const_reverse_iterator Key::rend () const { return Key::const_reverse_iterator (*this, false); }
+inline Key::const_reverse_iterator Key::rend () const
+{
+	return Key::const_reverse_iterator (*this, false);
+}
 
-inline Key::const_iterator Key::cbegin () const noexcept { return Key::const_iterator (*this, true); }
+inline Key::const_iterator Key::cbegin () const noexcept
+{
+	return Key::const_iterator (*this, true);
+}
 
-inline Key::const_iterator Key::cend () const noexcept { return Key::const_iterator (*this, false); }
+inline Key::const_iterator Key::cend () const noexcept
+{
+	return Key::const_iterator (*this, false);
+}
 
-inline Key::const_reverse_iterator Key::crbegin () const noexcept { return Key::const_reverse_iterator (*this, true); }
+inline Key::const_reverse_iterator Key::crbegin () const noexcept
+{
+	return Key::const_reverse_iterator (*this, true);
+}
 
-inline Key::const_reverse_iterator Key::crend () const noexcept { return Key::const_reverse_iterator (*this, false); }
+inline Key::const_reverse_iterator Key::crend () const noexcept
+{
+	return Key::const_reverse_iterator (*this, false);
+}
 #endif // ELEKTRA_WITHOUT_ITERATOR
 
 
@@ -470,7 +534,10 @@ inline Key::const_reverse_iterator Key::crend () const noexcept { return Key::co
  *
  * @see isValid(), isNull()
  */
-inline Key::Key () : key (ckdb::keyNew (nullptr)) { operator++ (); }
+inline Key::Key () : key (ckdb::keyNew (nullptr))
+{
+	operator++ ();
+}
 
 /**
  * Constructs a key out of a C key.
@@ -482,7 +549,10 @@ inline Key::Key () : key (ckdb::keyNew (nullptr)) { operator++ (); }
  *
  * @see isValid(), isNull()
  */
-inline Key::Key (ckdb::Key * k) : key (k) { operator++ (); }
+inline Key::Key (ckdb::Key * k) : key (k)
+{
+	operator++ ();
+}
 
 /**
  * Takes a reference of another key.
@@ -492,7 +562,10 @@ inline Key::Key (ckdb::Key * k) : key (k) { operator++ (); }
  *
  * @param k the key to work with
  */
-inline Key::Key (Key & k) : key (k.key) { operator++ (); }
+inline Key::Key (Key & k) : key (k.key)
+{
+	operator++ ();
+}
 
 /**
  * Takes a reference of another key.
@@ -502,7 +575,10 @@ inline Key::Key (Key & k) : key (k.key) { operator++ (); }
  *
  * @param k the key to work with
  */
-inline Key::Key (Key const & k) : key (k.key) { operator++ (); }
+inline Key::Key (Key const & k) : key (k.key)
+{
+	operator++ ();
+}
 
 /**
  * @copydoc keyNew
@@ -571,27 +647,42 @@ inline Key::Key (const char * keyName, va_list ap)
 /**
  * @copydoc keyIncRef
  */
-void Key::operator++ (int)const { operator++ (); }
+void Key::operator++ (int)const
+{
+	operator++ ();
+}
 
 /**
  * @copydoc keyIncRef
  */
-void Key::operator++ () const { ckdb::keyIncRef (key); }
+void Key::operator++ () const
+{
+	ckdb::keyIncRef (key);
+}
 
 /**
  * @copydoc keyDecRef
  */
-void Key::operator-- (int)const { operator-- (); }
+void Key::operator-- (int)const
+{
+	operator-- ();
+}
 
 /**
  * @copydoc keyDecRef
  */
-void Key::operator-- () const { ckdb::keyDecRef (key); }
+void Key::operator-- () const
+{
+	ckdb::keyDecRef (key);
+}
 
 /**
  * @copydoc keyGetRef
  */
-inline ssize_t Key::getReferenceCounter () const { return ckdb::keyGetRef (key); }
+inline ssize_t Key::getReferenceCounter () const
+{
+	return ckdb::keyGetRef (key);
+}
 
 /**
  * Assign a C key.
@@ -628,7 +719,10 @@ inline Key & Key::operator= (const Key & k)
 /**
  * @copydoc keyCopy
  */
-inline void Key::copy (const Key & other) { ckdb::keyCopy (key, other.key); }
+inline void Key::copy (const Key & other)
+{
+	ckdb::keyCopy (key, other.key);
+}
 
 /**
  * Clears/Invalidates a key.
@@ -644,7 +738,10 @@ inline void Key::copy (const Key & other) { ckdb::keyCopy (key, other.key); }
  *
  * @copydoc keyClear
  */
-inline void Key::clear () { ckdb::keyClear (key); }
+inline void Key::clear ()
+{
+	ckdb::keyClear (key);
+}
 
 /**
  * Passes out the raw key pointer.
@@ -654,7 +751,10 @@ inline void Key::clear () { ckdb::keyClear (key); }
  *
  * \note that the ownership remains in the object
  */
-ckdb::Key * Key::getKey () const { return key; }
+ckdb::Key * Key::getKey () const
+{
+	return key;
+}
 
 /**
  * Is a abbreviation for getKey.
@@ -663,7 +763,10 @@ ckdb::Key * Key::getKey () const { return key; }
  *
  * @see getKey()
  */
-ckdb::Key * Key::operator* () const { return key; }
+ckdb::Key * Key::operator* () const
+{
+	return key;
+}
 
 /**
  * @returns a pointer to this object
@@ -671,7 +774,10 @@ ckdb::Key * Key::operator* () const { return key; }
  * Needed for KeySet iterators.
  * @see KeySetIterator
  */
-Key * Key::operator-> () { return this; }
+Key * Key::operator-> ()
+{
+	return this;
+}
 
 /**
  * Passes out the raw key pointer and resets internal key handle.
@@ -694,7 +800,10 @@ ckdb::Key * Key::release ()
 /**
  * @copydoc keyDup
  */
-ckdb::Key * Key::dup () const { return ckdb::keyDup (getKey ()); }
+ckdb::Key * Key::dup () const
+{
+	return ckdb::keyDup (getKey ());
+}
 
 /**
  * Destructs the key.
@@ -729,18 +838,27 @@ inline std::string Key::getName () const
 /**
  * @copydoc keyGetNameSize
  */
-inline ssize_t Key::getNameSize () const { return ckdb::keyGetNameSize (getKey ()); }
+inline ssize_t Key::getNameSize () const
+{
+	return ckdb::keyGetNameSize (getKey ());
+}
 
 
 /**
  * @copydoc keyGetBaseNameSize
  */
-inline ssize_t Key::getBaseNameSize () const { return ckdb::keyGetBaseNameSize (getKey ()); }
+inline ssize_t Key::getBaseNameSize () const
+{
+	return ckdb::keyGetBaseNameSize (getKey ());
+}
 
 /**
  * @copydoc keyBaseName
  */
-inline std::string Key::getBaseName () const { return std::string (ckdb::keyBaseName (key)); }
+inline std::string Key::getBaseName () const
+{
+	return std::string (ckdb::keyBaseName (key));
+}
 
 /**
  * @copydoc keySetName
@@ -794,7 +912,10 @@ inline void Key::addBaseName (const std::string & baseName)
 /**
  * @copydoc keyGetFullNameSize
  */
-inline ssize_t Key::getFullNameSize () const { return ckdb::keyGetFullNameSize (getKey ()); }
+inline ssize_t Key::getFullNameSize () const
+{
+	return ckdb::keyGetFullNameSize (getKey ());
+}
 
 /**
  * @copydoc keyGetFullName
@@ -824,42 +945,60 @@ inline std::string Key::getFullName () const
  *
  * @retval true == 0
  */
-inline bool Key::operator== (const Key & k) const { return ckdb::keyCmp (key, k.key) == 0; }
+inline bool Key::operator== (const Key & k) const
+{
+	return ckdb::keyCmp (key, k.key) == 0;
+}
 
 /**
  * @copydoc keyCmp
  *
  * @retval true != 0
  */
-inline bool Key::operator!= (const Key & k) const { return ckdb::keyCmp (key, k.key) != 0; }
+inline bool Key::operator!= (const Key & k) const
+{
+	return ckdb::keyCmp (key, k.key) != 0;
+}
 
 /**
  * @copydoc keyCmp
  *
  * @retval true < 0
  */
-inline bool Key::operator< (const Key & other) const { return ckdb::keyCmp (key, other.key) < 0; }
+inline bool Key::operator< (const Key & other) const
+{
+	return ckdb::keyCmp (key, other.key) < 0;
+}
 
 /**
  * @copydoc keyCmp
  *
  * @retval true <= 0
  */
-inline bool Key::operator<= (const Key & other) const { return ckdb::keyCmp (key, other.key) <= 0; }
+inline bool Key::operator<= (const Key & other) const
+{
+	return ckdb::keyCmp (key, other.key) <= 0;
+}
 
 /**
  * @copydoc keyCmp
  *
  * @retval true > 0
  */
-inline bool Key::operator> (const Key & other) const { return ckdb::keyCmp (key, other.key) > 0; }
+inline bool Key::operator> (const Key & other) const
+{
+	return ckdb::keyCmp (key, other.key) > 0;
+}
 
 /**
  * @copydoc keyCmp
  *
  * @retval true >= 0
  */
-inline bool Key::operator>= (const Key & other) const { return ckdb::keyCmp (key, other.key) >= 0; }
+inline bool Key::operator>= (const Key & other) const
+{
+	return ckdb::keyCmp (key, other.key) >= 0;
+}
 
 
 /**
@@ -876,7 +1015,10 @@ inline bool Key::operator>= (const Key & other) const { return ckdb::keyCmp (key
  * @return false on null keys
  * @return true otherwise
  */
-inline Key::operator bool () const { return !isNull (); }
+inline Key::operator bool () const
+{
+	return !isNull ();
+}
 
 /**
  * @brief Checks if C++ wrapper has an underlying key
@@ -884,12 +1026,18 @@ inline Key::operator bool () const { return !isNull (); }
  * @see operator bool(), isValid()
  * @return true if no underlying key exists
  */
-inline bool Key::isNull () const { return key == nullptr; }
+inline bool Key::isNull () const
+{
+	return key == nullptr;
+}
 
 /**
  * @copydoc keyNeedSync
  */
-inline bool Key::needSync () const { return ckdb::keyNeedSync (key); }
+inline bool Key::needSync () const
+{
+	return ckdb::keyNeedSync (key);
+}
 
 /**
  * Get a key value.
@@ -1106,7 +1254,10 @@ inline std::string Key::getString () const
 /**
  * @copydoc keyGetValueSize()
  */
-inline ssize_t Key::getStringSize () const { return ckdb::keyGetValueSize (key); }
+inline ssize_t Key::getStringSize () const
+{
+	return ckdb::keyGetValueSize (key);
+}
 
 /**
  * Elektra can store function pointers as binary.
@@ -1148,7 +1299,10 @@ inline void Key::setCallback (callback_t fct)
 /**
  * @copydoc keySetString
  */
-inline void Key::setString (std::string newString) { ckdb::keySetString (getKey (), newString.c_str ()); }
+inline void Key::setString (std::string newString)
+{
+	ckdb::keySetString (getKey (), newString.c_str ());
+}
 
 /**
  * @copydoc keyValue
@@ -1156,7 +1310,10 @@ inline void Key::setString (std::string newString) { ckdb::keySetString (getKey 
  * @return the value of the key
  * @see getBinary()
  */
-inline const void * Key::getValue () const { return ckdb::keyValue (getKey ()); }
+inline const void * Key::getValue () const
+{
+	return ckdb::keyValue (getKey ());
+}
 
 /**
  * @returns the binary Value of the key.
@@ -1197,12 +1354,18 @@ inline std::string Key::getBinary () const
 /**
  * @copydoc keyGetValueSize()
  */
-inline ssize_t Key::getBinarySize () const { return ckdb::keyGetValueSize (key); }
+inline ssize_t Key::getBinarySize () const
+{
+	return ckdb::keyGetValueSize (key);
+}
 
 /**
  * @copydoc keySetBinary
  */
-inline ssize_t Key::setBinary (const void * newBinary, size_t dataSize) { return ckdb::keySetBinary (getKey (), newBinary, dataSize); }
+inline ssize_t Key::setBinary (const void * newBinary, size_t dataSize)
+{
+	return ckdb::keySetBinary (getKey (), newBinary, dataSize);
+}
 
 
 /**
@@ -1325,28 +1488,40 @@ inline void Key::setMeta (const std::string & metaName, T x)
  *
  * @see setMeta(), getMeta(), copyMeta(), copyAllMeta()
  */
-inline void Key::delMeta (const std::string & metaName) { ckdb::keySetMeta (key, metaName.c_str (), nullptr); }
+inline void Key::delMeta (const std::string & metaName)
+{
+	ckdb::keySetMeta (key, metaName.c_str (), nullptr);
+}
 
 /**
  * @copydoc keyCopyMeta
  *
  * @see getMeta(), setMeta(), copyAllMeta()
  */
-inline void Key::copyMeta (const Key & other, const std::string & metaName) { ckdb::keyCopyMeta (key, other.key, metaName.c_str ()); }
+inline void Key::copyMeta (const Key & other, const std::string & metaName)
+{
+	ckdb::keyCopyMeta (key, other.key, metaName.c_str ());
+}
 
 /**
  * @copydoc keyCopyAllMeta
  *
  * @see getMeta(), setMeta(), copyMeta()
  */
-inline void Key::copyAllMeta (const Key & other) { ckdb::keyCopyAllMeta (key, other.key); }
+inline void Key::copyAllMeta (const Key & other)
+{
+	ckdb::keyCopyAllMeta (key, other.key);
+}
 
 /**
  * @copydoc keyRewindMeta
  *
  * @see nextMeta(), currentMeta()
  */
-inline void Key::rewindMeta () const { ckdb::keyRewindMeta (key); }
+inline void Key::rewindMeta () const
+{
+	ckdb::keyRewindMeta (key);
+}
 
 /**
  * @copydoc keyNextMeta
@@ -1391,7 +1566,10 @@ inline const Key Key::currentMeta () const
  *
  * @see getName(), isUser(), isSystem(), getNamespace()
  */
-inline bool Key::isValid () const { return ckdb::keyGetNameSize (getKey ()) > 1; }
+inline bool Key::isValid () const
+{
+	return ckdb::keyGetNameSize (getKey ()) > 1;
+}
 
 /**
  * @return namespace as string
@@ -1418,7 +1596,10 @@ inline std::string Key::getNamespace () const
  * @retval true if it is a system key
  * @retval false otherwise
  */
-inline bool Key::isSystem () const { return !strncmp (ckdb::keyName (key), "system", 6); }
+inline bool Key::isSystem () const
+{
+	return !strncmp (ckdb::keyName (key), "system", 6);
+}
 
 /**
  * Name starts with "user".
@@ -1426,22 +1607,34 @@ inline bool Key::isSystem () const { return !strncmp (ckdb::keyName (key), "syst
  * @retval true if it is a user key
  * @retval false otherwise
  */
-inline bool Key::isUser () const { return !strncmp (ckdb::keyName (key), "user", 4); }
+inline bool Key::isUser () const
+{
+	return !strncmp (ckdb::keyName (key), "user", 4);
+}
 
 /**
  * @copydoc keyIsString
  */
-inline bool Key::isString () const { return ckdb::keyIsString (key); }
+inline bool Key::isString () const
+{
+	return ckdb::keyIsString (key);
+}
 
 /**
  * @copydoc keyIsBinary
  */
-inline bool Key::isBinary () const { return ckdb::keyIsBinary (key); }
+inline bool Key::isBinary () const
+{
+	return ckdb::keyIsBinary (key);
+}
 
 /**
  * @copydoc keyIsInactive
  */
-inline bool Key::isInactive () const { return ckdb::keyIsInactive (key); }
+inline bool Key::isInactive () const
+{
+	return ckdb::keyIsInactive (key);
+}
 
 /**
  * @param k the other key

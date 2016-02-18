@@ -19,7 +19,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-ExportCommand::ExportCommand () {}
+ExportCommand::ExportCommand ()
+{
+}
 
 int ExportCommand::execute (Cmdline const & cl)
 {
@@ -64,4 +66,6 @@ int ExportCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-ExportCommand::~ExportCommand () {}
+ExportCommand::~ExportCommand ()
+{
+}

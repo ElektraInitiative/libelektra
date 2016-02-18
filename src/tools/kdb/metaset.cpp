@@ -17,7 +17,9 @@
 using namespace std;
 using namespace kdb;
 
-MetaSetCommand::MetaSetCommand () {}
+MetaSetCommand::MetaSetCommand ()
+{
+}
 
 int MetaSetCommand::execute (Cmdline const & cl)
 {
@@ -78,4 +80,6 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-MetaSetCommand::~MetaSetCommand () {}
+MetaSetCommand::~MetaSetCommand ()
+{
+}

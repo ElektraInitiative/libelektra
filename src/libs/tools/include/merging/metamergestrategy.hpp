@@ -38,7 +38,9 @@ class MetaMergeStrategy : public MergeConflictStrategy
 public:
 	ThreeWayMerge & innerMerger;
 
-	MetaMergeStrategy (ThreeWayMerge & _innerStrategy) : innerMerger (_innerStrategy) {}
+	MetaMergeStrategy (ThreeWayMerge & _innerStrategy) : innerMerger (_innerStrategy)
+	{
+	}
 
 	virtual void resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result) override;
 

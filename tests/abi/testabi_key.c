@@ -1569,7 +1569,9 @@ static void test_keyCopy ()
 
 
 typedef void (*fun_t) ();
-static void fun () {}
+static void fun ()
+{
+}
 
 static void test_binary ()
 {

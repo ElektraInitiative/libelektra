@@ -98,7 +98,10 @@
  * @see ksToStream()
  * @return number of bytes written to output
  */
-ssize_t keyToStream (const Key * key, FILE * stream, option_t options) { return keyToStreamBasename (key, stream, 0, 0, options); }
+ssize_t keyToStream (const Key * key, FILE * stream, option_t options)
+{
+	return keyToStreamBasename (key, stream, 0, 0, options);
+}
 
 
 /**

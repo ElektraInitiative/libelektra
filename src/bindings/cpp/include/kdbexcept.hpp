@@ -28,9 +28,13 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) : m_key (key), m_str () {}
+	KDBException (Key key) : m_key (key), m_str ()
+	{
+	}
 
-	virtual ~KDBException () throw () {}
+	virtual ~KDBException () throw ()
+	{
+	}
 
 	virtual const char * what () const throw ()
 	{

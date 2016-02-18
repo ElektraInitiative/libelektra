@@ -21,11 +21,20 @@ public:
 	FstabCommand ();
 	~FstabCommand ();
 
-	virtual std::string getShortOptions () override { return "v"; }
+	virtual std::string getShortOptions () override
+	{
+		return "v";
+	}
 
-	virtual std::string getSynopsis () override { return "<key-name> <device> <mpoint> <type> <options>"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<key-name> <device> <mpoint> <type> <options>";
+	}
 
-	virtual std::string getShortHelpText () override { return "Create a new fstab entry."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Create a new fstab entry.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

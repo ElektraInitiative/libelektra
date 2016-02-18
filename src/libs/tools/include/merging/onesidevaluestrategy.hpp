@@ -29,7 +29,9 @@ class OneSideValueStrategy : public MergeConflictStrategy
 public:
 	ConflictResolutionSide winningSide;
 
-	OneSideValueStrategy (ConflictResolutionSide _winningSide) : winningSide (_winningSide) {}
+	OneSideValueStrategy (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
+	{
+	}
 
 	virtual void resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result) override;
 };

@@ -89,22 +89,40 @@ TEST (test_contextual_thread, instanciation)
 class Other : public kdb::Layer
 {
 public:
-	std::string id () const override { return "other"; }
-	std::string operator() () const override { return "notused"; }
+	std::string id () const override
+	{
+		return "other";
+	}
+	std::string operator() () const override
+	{
+		return "notused";
+	}
 };
 
 class Activate : public kdb::Layer
 {
 public:
-	std::string id () const override { return "activate"; }
-	std::string operator() () const override { return "active"; }
+	std::string id () const override
+	{
+		return "activate";
+	}
+	std::string operator() () const override
+	{
+		return "active";
+	}
 };
 
 bool g_toggle = false;
 
-void toggleOn () { g_toggle = true; }
+void toggleOn ()
+{
+	g_toggle = true;
+}
 
-void toggleOff () { g_toggle = false; }
+void toggleOff ()
+{
+	g_toggle = false;
+}
 
 void activate1 (Coordinator & gc, KeySet & ks)
 {
@@ -194,8 +212,14 @@ public:
 		m_i = is.str ();
 		// capture current value of contextual value here
 	}
-	std::string id () const override { return "dep"; }
-	std::string operator() () const override { return m_i; }
+	std::string id () const override
+	{
+		return "dep";
+	}
+	std::string operator() () const override
+	{
+		return m_i;
+	}
 	std::string m_i;
 };
 

@@ -21,11 +21,20 @@ public:
 	ValidationCommand ();
 	~ValidationCommand ();
 
-	virtual std::string getShortOptions () override { return ""; }
+	virtual std::string getShortOptions () override
+	{
+		return "";
+	}
 
-	virtual std::string getSynopsis () override { return "<key-name> <value> <regular expression> [<message>]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<key-name> <value> <regular expression> [<message>]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Set a value together with a validation regex."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Set a value together with a validation regex.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

@@ -47,10 +47,15 @@ class Point
 public:
 	int x, y;
 
-	Point (int a, int b) : x (a), y (b) {}
+	Point (int a, int b) : x (a), y (b)
+	{
+	}
 };
 
-bool operator== (Point const & our, Point const & other) { return our.x == other.x && our.y == other.y; }
+bool operator== (Point const & our, Point const & other)
+{
+	return our.x == other.x && our.y == other.y;
+}
 
 ostream & operator<< (ostream & os, Point const & p)
 {

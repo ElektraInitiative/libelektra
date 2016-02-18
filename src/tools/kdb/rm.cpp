@@ -16,7 +16,9 @@
 using namespace std;
 using namespace kdb;
 
-RemoveCommand::RemoveCommand () {}
+RemoveCommand::RemoveCommand ()
+{
+}
 
 int RemoveCommand::execute (Cmdline const & cl)
 {
@@ -55,4 +57,6 @@ int RemoveCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-RemoveCommand::~RemoveCommand () {}
+RemoveCommand::~RemoveCommand ()
+{
+}

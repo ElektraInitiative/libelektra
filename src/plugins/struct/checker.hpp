@@ -47,7 +47,9 @@ class StructChecker : public Checker
 	kdb::KeySet config;
 
 public:
-	StructChecker (kdb::KeySet config_) : config (config_) {}
+	StructChecker (kdb::KeySet config_) : config (config_)
+	{
+	}
 
 	void buildup (Factory & f, std::string const & templateParameter) override;
 

@@ -14,9 +14,13 @@
 namespace elektra
 {
 
-Checker::~Checker () {}
+Checker::~Checker ()
+{
+}
 
-void StructChecker::buildup (Factory &, std::string const &) {}
+void StructChecker::buildup (Factory &, std::string const &)
+{
+}
 
 void ListChecker::buildup (Factory & f, std::string const & templateParameter)
 {

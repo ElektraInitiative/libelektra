@@ -15,7 +15,10 @@ int num_dir = NUM_DIR;
 int num_key = NUM_KEY;
 KeySet * large;
 
-void timeInit (void) { gettimeofday (&start, 0); }
+void timeInit (void)
+{
+	gettimeofday (&start, 0);
+}
 
 void timePrint (char * msg)
 {
@@ -30,7 +33,10 @@ void timePrint (char * msg)
 	gettimeofday (&start, 0);
 }
 
-void benchmarkCreate () { large = ksNew (num_key * num_dir, KS_END); }
+void benchmarkCreate ()
+{
+	large = ksNew (num_key * num_dir, KS_END);
+}
 
 void benchmarkFillup ()
 {

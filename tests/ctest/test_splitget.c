@@ -8,7 +8,10 @@
 
 #include <tests_internal.h>
 
-KeySet * modules_config (void) { return ksNew (5, keyNew ("system/elektra/modules", KEY_END), KS_END); }
+KeySet * modules_config (void)
+{
+	return ksNew (5, keyNew ("system/elektra/modules", KEY_END), KS_END);
+}
 
 KeySet * simple_config (void)
 {

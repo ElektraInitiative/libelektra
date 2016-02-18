@@ -509,4 +509,6 @@ int TestCommand::execute (Cmdline const & cl)
 	return nrError;
 }
 
-TestCommand::~TestCommand () {}
+TestCommand::~TestCommand ()
+{
+}

@@ -19,7 +19,9 @@
 using namespace std;
 using namespace kdb;
 
-GetCommand::GetCommand () {}
+GetCommand::GetCommand ()
+{
+}
 
 namespace
 {
@@ -196,4 +198,6 @@ int GetCommand::execute (Cmdline const & cl)
 	return ret;
 }
 
-GetCommand::~GetCommand () {}
+GetCommand::~GetCommand ()
+{
+}

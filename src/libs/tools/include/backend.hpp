@@ -133,7 +133,9 @@ class BackendFactory
 	std::string which;
 
 public:
-	BackendFactory (std::string whichBackend) : which (whichBackend) {}
+	BackendFactory (std::string whichBackend) : which (whichBackend)
+	{
+	}
 
 	/**
 	 * @brief Create classes that implement MountBackendInterface
@@ -148,9 +150,15 @@ public:
 	}
 };
 
-inline std::string Backend::getMountpoint () const { return mp; }
+inline std::string Backend::getMountpoint () const
+{
+	return mp;
+}
 
-inline std::string Backend::getConfigFile () const { return configFile; }
+inline std::string Backend::getConfigFile () const
+{
+	return configFile;
+}
 
 std::ostream & operator<< (std::ostream & os, Backend const & b);
 

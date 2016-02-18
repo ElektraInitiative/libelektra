@@ -19,11 +19,20 @@ public:
 	CheckCommand ();
 	~CheckCommand ();
 
-	virtual std::string getShortOptions () override { return "vcf"; }
+	virtual std::string getShortOptions () override
+	{
+		return "vcf";
+	}
 
-	virtual std::string getSynopsis () override { return "[<name>]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "[<name>]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Do some basic checks on a plugin."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Do some basic checks on a plugin.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

@@ -40,10 +40,14 @@ namespace tools
 {
 
 
-BackendBuilderInit::BackendBuilderInit () : pluginDatabase (make_shared<ModulesPluginDatabase> ()), backendFactory ("backend") {}
+BackendBuilderInit::BackendBuilderInit () : pluginDatabase (make_shared<ModulesPluginDatabase> ()), backendFactory ("backend")
+{
+}
 
 
-BackendBuilderInit::BackendBuilderInit (PluginDatabasePtr const & plugins) : pluginDatabase (plugins), backendFactory ("backend") {}
+BackendBuilderInit::BackendBuilderInit (PluginDatabasePtr const & plugins) : pluginDatabase (plugins), backendFactory ("backend")
+{
+}
 
 BackendBuilderInit::BackendBuilderInit (BackendFactory const & bf)
 : pluginDatabase (make_shared<ModulesPluginDatabase> ()), backendFactory (bf)
@@ -67,9 +71,13 @@ BackendBuilder::BackendBuilder (BackendBuilderInit const & bbi)
 }
 
 
-BackendBuilder::~BackendBuilder () {}
+BackendBuilder::~BackendBuilder ()
+{
+}
 
-MountBackendBuilder::MountBackendBuilder (BackendBuilderInit const & bbi) : BackendBuilder (bbi) {}
+MountBackendBuilder::MountBackendBuilder (BackendBuilderInit const & bbi) : BackendBuilder (bbi)
+{
+}
 
 /**
  * @brief Makes sure that ordering constraints are fulfilled.
@@ -343,7 +351,9 @@ void BackendBuilder::fillPlugins (BackendInterface & b) const
 	}
 }
 
-GlobalPluginsBuilder::GlobalPluginsBuilder (BackendBuilderInit const & bbi) : BackendBuilder (bbi) {}
+GlobalPluginsBuilder::GlobalPluginsBuilder (BackendBuilderInit const & bbi) : BackendBuilder (bbi)
+{
+}
 
 void GlobalPluginsBuilder::serialize (kdb::KeySet & ret)
 {
@@ -395,9 +405,15 @@ void MountBackendBuilder::setMountpoint (Key mountpoint_, KeySet mountConf_)
 	mbi->setMountpoint (mountpoint, mountConf);
 }
 
-std::string MountBackendBuilder::getMountpoint () const { return mountpoint.getName (); }
+std::string MountBackendBuilder::getMountpoint () const
+{
+	return mountpoint.getName ();
+}
 
-void MountBackendBuilder::setBackendConfig (KeySet const & ks) { backendConf = ks; }
+void MountBackendBuilder::setBackendConfig (KeySet const & ks)
+{
+	backendConf = ks;
+}
 
 void MountBackendBuilder::useConfigFile (std::string file)
 {
@@ -419,7 +435,10 @@ void MountBackendBuilder::useConfigFile (std::string file)
 	b->useConfigFile (configfile);
 }
 
-std::string MountBackendBuilder::getConfigFile () const { return configfile; }
+std::string MountBackendBuilder::getConfigFile () const
+{
+	return configfile;
+}
 
 void MountBackendBuilder::serialize (kdb::KeySet & ret)
 {

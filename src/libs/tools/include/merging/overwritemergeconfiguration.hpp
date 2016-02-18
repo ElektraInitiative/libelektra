@@ -33,7 +33,9 @@ private:
 	ConflictResolutionSide winningSide;
 
 public:
-	OverwriteMergeConfiguration (ConflictResolutionSide _winningSide) : winningSide (_winningSide) {}
+	OverwriteMergeConfiguration (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
+	{
+	}
 	virtual void configureMerger (ThreeWayMerge & merger) override;
 };
 }

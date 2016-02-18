@@ -21,7 +21,9 @@ using namespace kdb;
 using namespace kdb::tools;
 
 
-InfoCommand::InfoCommand () {}
+InfoCommand::InfoCommand ()
+{
+}
 
 int InfoCommand::execute (Cmdline const & cl)
 {
@@ -118,4 +120,6 @@ int InfoCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-InfoCommand::~InfoCommand () {}
+InfoCommand::~InfoCommand ()
+{
+}

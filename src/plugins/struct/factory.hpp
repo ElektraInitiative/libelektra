@@ -26,13 +26,18 @@ class Instancer
 {
 public:
 	virtual Checker * get () = 0;
-	virtual ~Instancer () {}
+	virtual ~Instancer ()
+	{
+	}
 };
 
 template <class T>
 class Cnstancer : public Instancer
 {
-	virtual T * get () override { return new T (); }
+	virtual T * get () override
+	{
+		return new T ();
+	}
 };
 
 class StructInstancer : public Instancer
@@ -40,9 +45,14 @@ class StructInstancer : public Instancer
 	kdb::KeySet config;
 
 public:
-	StructInstancer (kdb::KeySet config_) : config (config_) {}
+	StructInstancer (kdb::KeySet config_) : config (config_)
+	{
+	}
 
-	virtual StructChecker * get () override { return new StructChecker (config); }
+	virtual StructChecker * get () override
+	{
+		return new StructChecker (config);
+	}
 };
 
 class Factory

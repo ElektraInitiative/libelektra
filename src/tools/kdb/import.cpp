@@ -25,7 +25,9 @@ using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 
-ImportCommand::ImportCommand () {}
+ImportCommand::ImportCommand ()
+{
+}
 
 int ImportCommand::execute (Cmdline const & cl)
 {
@@ -94,4 +96,6 @@ int ImportCommand::execute (Cmdline const & cl)
 	return ret;
 }
 
-ImportCommand::~ImportCommand () {}
+ImportCommand::~ImportCommand ()
+{
+}

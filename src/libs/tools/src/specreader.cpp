@@ -13,12 +13,18 @@ namespace kdb
 namespace tools
 {
 
-SpecBackendBuilder::SpecBackendBuilder (BackendBuilderInit const & bbi) : MountBackendBuilder (bbi), nodes (0) {}
+SpecBackendBuilder::SpecBackendBuilder (BackendBuilderInit const & bbi) : MountBackendBuilder (bbi), nodes (0)
+{
+}
 
 
-SpecReader::SpecReader (BackendBuilderInit const & abbi) : bbi (abbi) {}
+SpecReader::SpecReader (BackendBuilderInit const & abbi) : bbi (abbi)
+{
+}
 
-SpecReader::~SpecReader () {}
+SpecReader::~SpecReader ()
+{
+}
 
 class SpecMountpointReader
 {
@@ -33,7 +39,9 @@ private:
 	SpecBackendBuilder bb;
 
 public:
-	SpecMountpointReader (Backends & b, BackendBuilderInit const & bbi_) : backends (b), bbi (bbi_), bb (bbi) {}
+	SpecMountpointReader (Backends & b, BackendBuilderInit const & bbi_) : backends (b), bbi (bbi_), bb (bbi)
+	{
+	}
 
 	void processKey (Key const & ck);
 	SpecBackendBuilder readMountpointSpecification (KeySet const & cks);
@@ -41,7 +49,10 @@ public:
 
 namespace
 {
-bool startsWith (std::string const & str, std::string const & start) { return std::equal (start.begin (), start.end (), str.begin ()); }
+bool startsWith (std::string const & str, std::string const & start)
+{
+	return std::equal (start.begin (), start.end (), str.begin ());
+}
 
 bool isToBeIgnored (std::string const & name)
 {

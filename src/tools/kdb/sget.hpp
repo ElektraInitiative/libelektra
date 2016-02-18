@@ -20,11 +20,20 @@ public:
 	ShellGetCommand ();
 	~ShellGetCommand ();
 
-	virtual std::string getShortOptions () override { return ""; }
+	virtual std::string getShortOptions () override
+	{
+		return "";
+	}
 
-	virtual std::string getSynopsis () override { return "<name> <default value>"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<name> <default value>";
+	}
 
-	virtual std::string getShortHelpText () override { return "Get the value of an individual key within a shell script."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Get the value of an individual key within a shell script.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

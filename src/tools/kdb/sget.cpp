@@ -16,7 +16,9 @@
 using namespace std;
 using namespace kdb;
 
-ShellGetCommand::ShellGetCommand () {}
+ShellGetCommand::ShellGetCommand ()
+{
+}
 
 int ShellGetCommand::execute (Cmdline const & cl)
 {
@@ -49,4 +51,6 @@ int ShellGetCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-ShellGetCommand::~ShellGetCommand () {}
+ShellGetCommand::~ShellGetCommand ()
+{
+}

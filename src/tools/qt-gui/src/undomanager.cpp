@@ -25,9 +25,15 @@ UndoManager::UndoManager (QObject * parentManager) : QObject (parentManager), m_
 	m_clipboard = QApplication::clipboard ();
 }
 
-bool UndoManager::canUndo () const { return m_undoStack->canUndo (); }
+bool UndoManager::canUndo () const
+{
+	return m_undoStack->canUndo ();
+}
 
-bool UndoManager::canRedo () const { return m_undoStack->canRedo (); }
+bool UndoManager::canRedo () const
+{
+	return m_undoStack->canRedo ();
+}
 
 void UndoManager::createEditKeyCommand (TreeViewModel * model, int idx, DataContainer * data)
 {
@@ -61,27 +67,60 @@ void UndoManager::createImportConfigurationCommand (TreeViewModel * model, int i
 	m_undoStack->push (new ImportConfigurationCommand (model, idx, data));
 }
 
-void UndoManager::setClean () { m_undoStack->setClean (); }
+void UndoManager::setClean ()
+{
+	m_undoStack->setClean ();
+}
 
-bool UndoManager::isClean () const { return m_undoStack->isClean (); }
+bool UndoManager::isClean () const
+{
+	return m_undoStack->isClean ();
+}
 
-bool UndoManager::canPaste () const { return !m_clipboardEmpty; }
+bool UndoManager::canPaste () const
+{
+	return !m_clipboardEmpty;
+}
 
-int UndoManager::index () const { return m_undoStack->index (); }
+int UndoManager::index () const
+{
+	return m_undoStack->index ();
+}
 
-int UndoManager::cleanIndex () const { return m_undoStack->cleanIndex (); }
+int UndoManager::cleanIndex () const
+{
+	return m_undoStack->cleanIndex ();
+}
 
-int UndoManager::count () const { return m_undoStack->count (); }
+int UndoManager::count () const
+{
+	return m_undoStack->count ();
+}
 
-void UndoManager::setIndex (int idx) { m_undoStack->setIndex (idx); }
+void UndoManager::setIndex (int idx)
+{
+	m_undoStack->setIndex (idx);
+}
 
-void UndoManager::undo () { m_undoStack->undo (); }
+void UndoManager::undo ()
+{
+	m_undoStack->undo ();
+}
 
-void UndoManager::redo () { m_undoStack->redo (); }
+void UndoManager::redo ()
+{
+	m_undoStack->redo ();
+}
 
-QString UndoManager::undoText () const { return m_undoStack->undoText (); }
+QString UndoManager::undoText () const
+{
+	return m_undoStack->undoText ();
+}
 
-QString UndoManager::clipboardType () const { return m_clipboardType; }
+QString UndoManager::clipboardType () const
+{
+	return m_clipboardType;
+}
 
 void UndoManager::putToClipboard (const QString & type, TreeViewModel * model, int idx)
 {
@@ -98,4 +137,7 @@ void UndoManager::putToClipboard (const QString & type, TreeViewModel * model, i
 	emit canPasteChanged ();
 }
 
-QString UndoManager::redoText () const { return m_undoStack->redoText (); }
+QString UndoManager::redoText () const
+{
+	return m_undoStack->redoText ();
+}

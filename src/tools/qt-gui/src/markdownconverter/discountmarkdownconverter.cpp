@@ -44,17 +44,27 @@ extern "C" {
 class DiscountMarkdownDocument : public MarkdownDocument
 {
 public:
-	explicit DiscountMarkdownDocument (MMIOT * document_) : discountDocument (document_) {}
-	~DiscountMarkdownDocument () { mkd_cleanup (discountDocument); }
+	explicit DiscountMarkdownDocument (MMIOT * document_) : discountDocument (document_)
+	{
+	}
+	~DiscountMarkdownDocument ()
+	{
+		mkd_cleanup (discountDocument);
+	}
 
-	MMIOT * document () const { return discountDocument; }
+	MMIOT * document () const
+	{
+		return discountDocument;
+	}
 
 private:
 	MMIOT * discountDocument;
 };
 
 
-DiscountMarkdownConverter::DiscountMarkdownConverter () {}
+DiscountMarkdownConverter::DiscountMarkdownConverter ()
+{
+}
 
 MarkdownDocument * DiscountMarkdownConverter::createDocument (const QString & text, ConverterOptions options)
 {

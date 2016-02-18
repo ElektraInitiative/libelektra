@@ -43,7 +43,10 @@ static void gelektra_kdb_class_init (GElektraKdbClass * klass)
  * Returns: (transfer full): A new #GElektraKdb
  * see kdbOpen
  */
-GElektraKdb * gelektra_kdb_open (GElektraKey * error) { return gelektra_kdb_make (kdbOpen (error->key)); }
+GElektraKdb * gelektra_kdb_open (GElektraKey * error)
+{
+	return gelektra_kdb_make (kdbOpen (error->key));
+}
 
 /**
  * gelektra_kdb_make: (skip)
@@ -77,7 +80,10 @@ gint gelektra_kdb_close (GElektraKdb * kdb, GElektraKey * error)
  * \note This is for GObject Introspection.
  * \note Do NOT use! Use gelektra_kdb_open instead
  */
-void gelektra_kdb_gi_open (GElektraKdb * kdb, GElektraKey * error) { kdb->handle = kdbOpen (error->key); }
+void gelektra_kdb_gi_open (GElektraKdb * kdb, GElektraKey * error)
+{
+	kdb->handle = kdbOpen (error->key);
+}
 
 gint gelektra_kdb_get (GElektraKdb * kdb, GElektraKeySet * returned, GElektraKey * parent)
 {

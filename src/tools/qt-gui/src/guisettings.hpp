@@ -37,7 +37,10 @@ public:
 	 * @brief GUISettings The copy contructor. Mandatory.
 	 * @param other
 	 */
-	GUISettings (GUISettings const & other) : QObject () { Q_UNUSED (other) }
+	GUISettings (GUISettings const & other) : QObject ()
+	{
+		Q_UNUSED (other)
+	}
 
 	/**
 	 * @brief highlightColor The color of the highlight bar in the views.

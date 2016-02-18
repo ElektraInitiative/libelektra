@@ -214,23 +214,65 @@ TEST (SameMountpoint, notSame)
 	}
 
 
-TEST (SameMountpoint, exactlySameHelloSpec) { checkSame ("spec/hello", "spec/hello"); }
-TEST (SameMountpoint, exactlySameHelloDir) { checkSame ("dir/hello", "dir/hello"); }
-TEST (SameMountpoint, exactlySameHelloUser) { checkSame ("user/hello", "user/hello"); }
-TEST (SameMountpoint, exactlySameHelloSystem) { checkSame ("system/hello", "system/hello"); }
+TEST (SameMountpoint, exactlySameHelloSpec)
+{
+	checkSame ("spec/hello", "spec/hello");
+}
+TEST (SameMountpoint, exactlySameHelloDir)
+{
+	checkSame ("dir/hello", "dir/hello");
+}
+TEST (SameMountpoint, exactlySameHelloUser)
+{
+	checkSame ("user/hello", "user/hello");
+}
+TEST (SameMountpoint, exactlySameHelloSystem)
+{
+	checkSame ("system/hello", "system/hello");
+}
 
-TEST (SameMountpoint, cascadingFirstSameHelloSpec) { checkAllow ("/hello", "spec/hello"); }
-TEST (SameMountpoint, cascadingFirstSameHelloUser) { checkSame ("/hello", "user/hello"); }
-TEST (SameMountpoint, cascadingFirstSameHelloSystem) { checkSame ("/hello", "system/hello"); }
+TEST (SameMountpoint, cascadingFirstSameHelloSpec)
+{
+	checkAllow ("/hello", "spec/hello");
+}
+TEST (SameMountpoint, cascadingFirstSameHelloUser)
+{
+	checkSame ("/hello", "user/hello");
+}
+TEST (SameMountpoint, cascadingFirstSameHelloSystem)
+{
+	checkSame ("/hello", "system/hello");
+}
 
-TEST (SameMountpoint, cascadingSameHelloSpec) { checkAllow ("spec/hello", "/hello"); }
-TEST (SameMountpoint, cascadingSameHelloDir) { checkSame ("dir/hello", "/hello"); }
-TEST (SameMountpoint, cascadingSameHelloUser) { checkSame ("user/hello", "/hello"); }
-TEST (SameMountpoint, cascadingSameHelloSystem) { checkSame ("system/hello", "/hello"); }
+TEST (SameMountpoint, cascadingSameHelloSpec)
+{
+	checkAllow ("spec/hello", "/hello");
+}
+TEST (SameMountpoint, cascadingSameHelloDir)
+{
+	checkSame ("dir/hello", "/hello");
+}
+TEST (SameMountpoint, cascadingSameHelloUser)
+{
+	checkSame ("user/hello", "/hello");
+}
+TEST (SameMountpoint, cascadingSameHelloSystem)
+{
+	checkSame ("system/hello", "/hello");
+}
 
-TEST (SameMountpoint, exactlySameSpec) { checkSame ("spec/an/more/involved/deeper/mountpoint", "spec/an/more/involved/deeper/mountpoint"); }
-TEST (SameMountpoint, exactlySameDir) { checkSame ("dir/an/more/involved/deeper/mountpoint", "dir/an/more/involved/deeper/mountpoint"); }
-TEST (SameMountpoint, exactlySameUser) { checkSame ("user/an/more/involved/deeper/mountpoint", "user/an/more/involved/deeper/mountpoint"); }
+TEST (SameMountpoint, exactlySameSpec)
+{
+	checkSame ("spec/an/more/involved/deeper/mountpoint", "spec/an/more/involved/deeper/mountpoint");
+}
+TEST (SameMountpoint, exactlySameDir)
+{
+	checkSame ("dir/an/more/involved/deeper/mountpoint", "dir/an/more/involved/deeper/mountpoint");
+}
+TEST (SameMountpoint, exactlySameUser)
+{
+	checkSame ("user/an/more/involved/deeper/mountpoint", "user/an/more/involved/deeper/mountpoint");
+}
 TEST (SameMountpoint, exactlySameSystem)
 {
 	checkSame ("system/an/more/involved/deeper/mountpoint", "system/an/more/involved/deeper/mountpoint");
@@ -253,21 +295,57 @@ TEST (SameMountpoint, cascadingFirstSameSystem)
 	checkSame ("/an/more/involved/deeper/mountpoint", "system/an/more/involved/deeper/mountpoint");
 }
 
-TEST (SameMountpoint, cascadingSameSpec) { checkAllow ("spec/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
-TEST (SameMountpoint, cascadingSameDir) { checkSame ("dir/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
-TEST (SameMountpoint, cascadingSameUser) { checkSame ("user/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint"); }
+TEST (SameMountpoint, cascadingSameSpec)
+{
+	checkAllow ("spec/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint");
+}
+TEST (SameMountpoint, cascadingSameDir)
+{
+	checkSame ("dir/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint");
+}
+TEST (SameMountpoint, cascadingSameUser)
+{
+	checkSame ("user/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint");
+}
 TEST (SameMountpoint, cascadingSameSystem)
 {
 	checkSame ("system/an/more/involved/deeper/mountpoint", "/an/more/involved/deeper/mountpoint");
 }
 
-TEST (SameMountpoint, sameRoot) { checkSame ("/", "/"); }
-TEST (SameMountpoint, sameRootSpec) { checkSame ("/", "spec"); }
-TEST (SameMountpoint, sameRootDir) { checkSame ("/", "dir"); }
-TEST (SameMountpoint, sameRootUser) { checkSame ("/", "user"); }
-TEST (SameMountpoint, sameRootSystem) { checkSame ("/", "system"); }
+TEST (SameMountpoint, sameRoot)
+{
+	checkSame ("/", "/");
+}
+TEST (SameMountpoint, sameRootSpec)
+{
+	checkSame ("/", "spec");
+}
+TEST (SameMountpoint, sameRootDir)
+{
+	checkSame ("/", "dir");
+}
+TEST (SameMountpoint, sameRootUser)
+{
+	checkSame ("/", "user");
+}
+TEST (SameMountpoint, sameRootSystem)
+{
+	checkSame ("/", "system");
+}
 
-TEST (SameMountpoint, sameRootSlashSpec) { checkSame ("/", "spec/"); }
-TEST (SameMountpoint, sameRootSlashDir) { checkSame ("/", "dir/"); }
-TEST (SameMountpoint, sameRootSlashUser) { checkSame ("/", "user/"); }
-TEST (SameMountpoint, sameRootSlashSystem) { checkSame ("/", "system/"); }
+TEST (SameMountpoint, sameRootSlashSpec)
+{
+	checkSame ("/", "spec/");
+}
+TEST (SameMountpoint, sameRootSlashDir)
+{
+	checkSame ("/", "dir/");
+}
+TEST (SameMountpoint, sameRootSlashUser)
+{
+	checkSame ("/", "user/");
+}
+TEST (SameMountpoint, sameRootSlashSystem)
+{
+	checkSame ("/", "system/");
+}

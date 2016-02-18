@@ -20,11 +20,20 @@ public:
 	ConvertCommand ();
 	~ConvertCommand ();
 
-	virtual std::string getShortOptions () override { return "v"; }
+	virtual std::string getShortOptions () override
+	{
+		return "v";
+	}
 
-	virtual std::string getSynopsis () override { return "[<import-format>] [<export-format>] [<import-file>] [export-file]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "[<import-format>] [<export-format>] [<import-file>] [export-file]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Convert configuration."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Convert configuration.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

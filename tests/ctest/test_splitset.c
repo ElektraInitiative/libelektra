@@ -57,7 +57,10 @@ KDB * kdb_open ()
 	return handle;
 }
 
-static void kdb_close (KDB * kdb) { kdbClose (kdb, 0); }
+static void kdb_close (KDB * kdb)
+{
+	kdbClose (kdb, 0);
+}
 
 void simulateGet (Split * split)
 {

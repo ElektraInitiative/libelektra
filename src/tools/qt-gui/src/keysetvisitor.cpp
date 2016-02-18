@@ -11,7 +11,9 @@
 
 using namespace kdb;
 
-KeySetVisitor::KeySetVisitor () {}
+KeySetVisitor::KeySetVisitor ()
+{
+}
 
 void KeySetVisitor::visit (ConfigNode & node)
 {
@@ -31,4 +33,7 @@ void KeySetVisitor::visit (TreeViewModel * model)
 	}
 }
 
-KeySet KeySetVisitor::getKeySet () { return m_set.dup (); }
+KeySet KeySetVisitor::getKeySet ()
+{
+	return m_set.dup ();
+}

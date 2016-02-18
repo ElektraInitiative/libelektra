@@ -20,7 +20,10 @@ void l (Key * k)
 }
 //! [Basic Copy All]
 
-int needsSharedData (Key * k) { return k ? 1 : 0; }
+int needsSharedData (Key * k)
+{
+	return k ? 1 : 0;
+}
 
 //! [Shared Meta All]
 void o (KeySet * ks)

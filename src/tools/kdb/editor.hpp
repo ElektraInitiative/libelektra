@@ -18,13 +18,25 @@ public:
 	virtual int execute (Cmdline const & cmdline);
 	void tmpFile ();
 
-	virtual std::string getShortOptions () { return "esv"; }
+	virtual std::string getShortOptions ()
+	{
+		return "esv";
+	}
 
-	virtual std::string getSynopsis () { return "[options] key-name [format]"; }
+	virtual std::string getSynopsis ()
+	{
+		return "[options] key-name [format]";
+	}
 
-	virtual std::string getShortHelpText () { return "Use your editor for editing KDB."; }
+	virtual std::string getShortHelpText ()
+	{
+		return "Use your editor for editing KDB.";
+	}
 
-	virtual std::string getLongHelpText () { return "See kdb help editor\n"; }
+	virtual std::string getLongHelpText ()
+	{
+		return "See kdb help editor\n";
+	}
 };
 
 #endif

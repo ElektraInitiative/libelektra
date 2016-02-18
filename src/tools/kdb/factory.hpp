@@ -52,13 +52,18 @@ class Instancer
 {
 public:
 	virtual Command * get () = 0;
-	virtual ~Instancer () {}
+	virtual ~Instancer ()
+	{
+	}
 };
 
 template <class T>
 class Cnstancer : public Instancer
 {
-	virtual T * get () override { return new T (); }
+	virtual T * get () override
+	{
+		return new T ();
+	}
 };
 
 class Factory

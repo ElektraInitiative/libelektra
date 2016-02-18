@@ -120,4 +120,6 @@ int ShellCommand::execute (Cmdline const &)
 	return 0;
 }
 
-ShellCommand::~ShellCommand () {}
+ShellCommand::~ShellCommand ()
+{
+}

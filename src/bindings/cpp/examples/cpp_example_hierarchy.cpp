@@ -88,7 +88,9 @@ public:
 	typedef std::map<std::string, KeyNode> KeyNodeMap;
 	typedef KeyNodeMap::iterator KeyNodeIterator;
 
-	KeyNode (unsigned long depth, Key k = static_cast<ckdb::Key *> (nullptr)) : m_self (k), m_subnodes (), m_depth (depth) {}
+	KeyNode (unsigned long depth, Key k = static_cast<ckdb::Key *> (nullptr)) : m_self (k), m_subnodes (), m_depth (depth)
+	{
+	}
 
 	/**
 	 * @brief (Recursively) add or update a key to nodes
@@ -171,7 +173,10 @@ private:
 class KeyHierarchy
 {
 public:
-	KeyHierarchy (KeySet & keyset) : m_userRootNode (0), m_systemRootNode (0), m_keyset (keyset) { add (keyset); }
+	KeyHierarchy (KeySet & keyset) : m_userRootNode (0), m_systemRootNode (0), m_keyset (keyset)
+	{
+		add (keyset);
+	}
 
 	/**
 	 * @brief Add all keys of a keyset

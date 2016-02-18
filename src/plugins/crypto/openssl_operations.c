@@ -64,7 +64,10 @@ static void internalLockingCallback (int mode, int type, const char * file ELEKT
 	}
 }
 
-static void internalThreadId (CRYPTO_THREADID * tid) { CRYPTO_THREADID_set_numeric (tid, (unsigned long)pthread_self ()); }
+static void internalThreadId (CRYPTO_THREADID * tid)
+{
+	CRYPTO_THREADID_set_numeric (tid, (unsigned long)pthread_self ());
+}
 
 int elektraCryptoOpenSSLInit (Key * errorKey)
 {

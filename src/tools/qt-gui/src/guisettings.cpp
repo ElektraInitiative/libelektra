@@ -50,13 +50,25 @@ GUISettings::GUISettings (QObject * parentGUISettings)
 	getKDB ();
 }
 
-QColor GUISettings::highlightColor () const { return m_highlightColor; }
+QColor GUISettings::highlightColor () const
+{
+	return m_highlightColor;
+}
 
-QColor GUISettings::frameColor () const { return m_frameColor; }
+QColor GUISettings::frameColor () const
+{
+	return m_frameColor;
+}
 
-QColor GUISettings::nodeWithKeyColor () const { return m_nodeWithKeyColor; }
+QColor GUISettings::nodeWithKeyColor () const
+{
+	return m_nodeWithKeyColor;
+}
 
-QColor GUISettings::nodeWithoutKeyColor () const { return m_nodeWithoutKeyColor; }
+QColor GUISettings::nodeWithoutKeyColor () const
+{
+	return m_nodeWithoutKeyColor;
+}
 
 void GUISettings::setHighlightColor (const QColor & color)
 {

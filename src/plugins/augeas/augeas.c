@@ -51,7 +51,10 @@ void keySetOrderMeta (Key * key, int order)
 	elektraFree (buffer);
 }
 
-static int keyCmpOrderWrapper (const void * a, const void * b) { return elektraKeyCmpOrder (*((const Key **)a), *((const Key **)b)); }
+static int keyCmpOrderWrapper (const void * a, const void * b)
+{
+	return elektraKeyCmpOrder (*((const Key **)a), *((const Key **)b));
+}
 
 static const char * getLensPath (Plugin * handle)
 {

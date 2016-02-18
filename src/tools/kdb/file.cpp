@@ -16,7 +16,9 @@
 using namespace std;
 using namespace kdb;
 
-FileCommand::FileCommand () {}
+FileCommand::FileCommand ()
+{
+}
 
 int FileCommand::execute (Cmdline const & cl)
 {
@@ -46,4 +48,6 @@ int FileCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-FileCommand::~FileCommand () {}
+FileCommand::~FileCommand ()
+{
+}

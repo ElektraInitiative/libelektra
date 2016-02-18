@@ -25,7 +25,9 @@ protected:
 	testing::MountpointPtr mpRoot;
 	testing::MountpointPtr mpBelow;
 
-	Nested () : namespaces () {}
+	Nested () : namespaces ()
+	{
+	}
 
 	virtual void SetUp () override
 	{

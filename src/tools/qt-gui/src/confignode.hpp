@@ -47,7 +47,9 @@ public:
 	/**
 	 * @brief dontDelete
 	 */
-	void dontDelete () {}
+	void dontDelete ()
+	{
+	}
 
 	/**
 	 * @brief Returns the number of children of this ConfigNode.

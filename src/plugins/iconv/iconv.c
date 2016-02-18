@@ -48,7 +48,10 @@ static inline const char * getTo (Plugin * handle)
  * @return anything else if needed
  * @ingroup backendhelper
  */
-int kdbbNeedsUTF8Conversion (Plugin * handle) { return strcmp (getFrom (handle), getTo (handle)); }
+int kdbbNeedsUTF8Conversion (Plugin * handle)
+{
+	return strcmp (getFrom (handle), getTo (handle));
+}
 
 
 /**

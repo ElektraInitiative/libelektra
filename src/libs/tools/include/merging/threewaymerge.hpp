@@ -64,7 +64,10 @@ public:
 	 *
 	 * @param a conflict reoslution strategy to be consulted in case of conflicts
 	 */
-	void addConflictStrategy (MergeConflictStrategy * strategy) { strategies.push_back (strategy); }
+	void addConflictStrategy (MergeConflictStrategy * strategy)
+	{
+		strategies.push_back (strategy);
+	}
 
 private:
 	std::vector<MergeConflictStrategy *> strategies;

@@ -35,7 +35,9 @@ class Cmdline
 {
 public:
 	Cmdline (int argc, char ** argv, Command * command);
-	~Cmdline () {}
+	~Cmdline ()
+	{
+	}
 
 	/** The synopsis of the command
 	  * Currently it is only printed out.

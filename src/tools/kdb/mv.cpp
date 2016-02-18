@@ -20,7 +20,9 @@
 using namespace std;
 using namespace kdb;
 
-MvCommand::MvCommand () {}
+MvCommand::MvCommand ()
+{
+}
 
 int MvCommand::execute (Cmdline const & cl)
 {
@@ -89,4 +91,6 @@ int MvCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-MvCommand::~MvCommand () {}
+MvCommand::~MvCommand ()
+{
+}

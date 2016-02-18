@@ -21,13 +21,25 @@ public:
 	MetaSetCommand ();
 	~MetaSetCommand ();
 
-	virtual std::string getShortOptions () override { return "v"; }
+	virtual std::string getShortOptions () override
+	{
+		return "v";
+	}
 
-	virtual std::string getSynopsis () override { return "<key-name> <meta-name> <meta-value>"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<key-name> <meta-name> <meta-value>";
+	}
 
-	virtual std::string getShortHelpText () override { return "Set a meta value."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Set a meta value.";
+	}
 
-	virtual std::string getLongHelpText () override { return "Meta key are information about keys.\n"; }
+	virtual std::string getLongHelpText () override
+	{
+		return "Meta key are information about keys.\n";
+	}
 
 	virtual int execute (Cmdline const & cmdline) override;
 };

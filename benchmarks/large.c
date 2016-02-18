@@ -12,7 +12,10 @@ KDB * kdb;
 Key * key;
 KeySet * large;
 
-void benchmarkOpen () { kdb = kdbOpen (key); }
+void benchmarkOpen ()
+{
+	kdb = kdbOpen (key);
+}
 
 void benchmarkInread ()
 {
@@ -45,15 +48,30 @@ void benchmarkLookupByName ()
 	}
 }
 
-void benchmarkReread () { kdbGet (kdb, large, key); }
+void benchmarkReread ()
+{
+	kdbGet (kdb, large, key);
+}
 
-void benchmarkInwrite () { kdbSet (kdb, large, key); }
+void benchmarkInwrite ()
+{
+	kdbSet (kdb, large, key);
+}
 
-void benchmarkRewrite () { kdbSet (kdb, large, key); }
+void benchmarkRewrite ()
+{
+	kdbSet (kdb, large, key);
+}
 
-void benchmarkWriteout () { kdbSet (kdb, large, key); }
+void benchmarkWriteout ()
+{
+	kdbSet (kdb, large, key);
+}
 
-void benchmarkClose () { kdbClose (kdb, key); }
+void benchmarkClose ()
+{
+	kdbClose (kdb, key);
+}
 
 
 int main ()

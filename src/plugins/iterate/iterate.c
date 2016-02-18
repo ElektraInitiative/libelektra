@@ -65,7 +65,10 @@ int elektraIterateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return doIterate (returned);
 }
 
-int elektraIterateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED) { return doIterate (returned); }
+int elektraIterateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+{
+	return doIterate (returned);
+}
 
 int elektraIterateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {

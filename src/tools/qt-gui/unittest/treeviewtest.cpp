@@ -36,6 +36,9 @@ void TreeViewTest::initTestCase ()
 	//    model->accept(printer);
 }
 
-void TreeViewTest::cleanupTestCase () { delete model; }
+void TreeViewTest::cleanupTestCase ()
+{
+	delete model;
+}
 
 QTEST_MAIN (TreeViewTest)

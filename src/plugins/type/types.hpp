@@ -38,19 +38,28 @@ public:
 class AnyType : public Type
 {
 public:
-	bool check (Key) override { return true; }
+	bool check (Key) override
+	{
+		return true;
+	}
 };
 
 class EmptyType : public Type
 {
 public:
-	bool check (Key k) override { return k.getString ().empty (); }
+	bool check (Key k) override
+	{
+		return k.getString ().empty ();
+	}
 };
 
 class StringType : public Type
 {
 public:
-	bool check (Key k) override { return !k.getString ().empty (); }
+	bool check (Key k) override
+	{
+		return !k.getString ().empty ();
+	}
 };
 
 template <typename T>

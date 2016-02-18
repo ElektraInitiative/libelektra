@@ -22,11 +22,20 @@ public:
 	LsCommand ();
 	~LsCommand ();
 
-	virtual std::string getShortOptions () override { return "v0"; }
+	virtual std::string getShortOptions () override
+	{
+		return "v0";
+	}
 
-	virtual std::string getSynopsis () override { return "<name>"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<name>";
+	}
 
-	virtual std::string getShortHelpText () override { return "List the names of keys below a given name."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "List the names of keys below a given name.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

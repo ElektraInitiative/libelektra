@@ -19,7 +19,9 @@ using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::helper;
 
-RemountCommand::RemountCommand () {}
+RemountCommand::RemountCommand ()
+{
+}
 
 
 void RemountCommand::getExistingMountpoint (Cmdline const & cl)
@@ -80,4 +82,6 @@ int RemountCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-RemountCommand::~RemountCommand () {}
+RemountCommand::~RemountCommand ()
+{
+}

@@ -84,7 +84,10 @@ static int Compare (const void * restrict key, size_t key_size, const void * res
 /* Returns the version of Ni this library was compiled with.  Compare this
  * value to Ni_VERSION to see if the header matches.
  */
-Ni_PUBLIC uint32_t Ni_GetVersion (void) { return Ni_HEADER_VERSION; }
+Ni_PUBLIC uint32_t Ni_GetVersion (void)
+{
+	return Ni_HEADER_VERSION;
+}
 
 /* Allocates an entirely new node, not connected to any others, and returns it.
  * This new node is the root of ... well, so far, just itself, but anything you
@@ -158,16 +161,25 @@ Ni_PUBLIC const char * Ni_GetName (Ni_node restrict n, int * restrict len_out)
  * is a root node if n == Ni_GetRoot(n) is nonzero.  Returns NULL if you pass
  * an invalid node.
  */
-Ni_PUBLIC Ni_node Ni_GetRoot (Ni_node restrict n) { return (n ? n->root : NULL); }
+Ni_PUBLIC Ni_node Ni_GetRoot (Ni_node restrict n)
+{
+	return (n ? n->root : NULL);
+}
 
 /* Returns the parent node of a node, or NULL if you pass an invalid node or a
  * root node (as they have no parent).
  */
-Ni_PUBLIC Ni_node Ni_GetParent (Ni_node restrict n) { return (n ? n->parent : NULL); }
+Ni_PUBLIC Ni_node Ni_GetParent (Ni_node restrict n)
+{
+	return (n ? n->parent : NULL);
+}
 
 /* Returns the number of children a node has, or 0 if you pass an invalid node.
  */
-Ni_PUBLIC int Ni_GetNumChildren (Ni_node restrict n) { return (n ? n->children.num : 0); }
+Ni_PUBLIC int Ni_GetNumChildren (Ni_node restrict n)
+{
+	return (n ? n->children.num : 0);
+}
 
 /* Useful for enumerating children--pass NULL as child to retrieve the node's
  * first child, then pass the previous return value as child to get the next,
@@ -240,7 +252,10 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
  * out, you only get the options set by the override file or ones you set since
  * it was loaded).
  */
-Ni_PUBLIC int Ni_GetModified (Ni_node restrict n) { return (n ? n->modified : 0); }
+Ni_PUBLIC int Ni_GetModified (Ni_node restrict n)
+{
+	return (n ? n->modified : 0);
+}
 
 /* Explicitly sets the modified state for a node, and if recurse is nonzero,
  * all the node's children and their children, etc.  See the note in the above
@@ -421,19 +436,28 @@ Ni_PUBLIC int Ni_SetValue (Ni_node restrict n, const char * restrict value, int 
 /* Sets a node's value to the value of a long.  Semantics are similar to those
  * of Ni_SetValue(), except you can't remove a node's value with this function.
  */
-Ni_PUBLIC int Ni_SetValueInt (Ni_node restrict n, long value) { return Ni_ValuePrint (n, "%ld", value); }
+Ni_PUBLIC int Ni_SetValueInt (Ni_node restrict n, long value)
+{
+	return Ni_ValuePrint (n, "%ld", value);
+}
 
 /* Sets a node's value to the value of a double.  Semantics are similar to
  * those of Ni_SetValue(), except you can't remove a node's value with this
  * function.
  */
-Ni_PUBLIC int Ni_SetValueFloat (Ni_node restrict n, double value) { return Ni_ValuePrint (n, "%.17g", value); }
+Ni_PUBLIC int Ni_SetValueFloat (Ni_node restrict n, double value)
+{
+	return Ni_ValuePrint (n, "%.17g", value);
+}
 
 /* Sets a node's value to "true" or "false" based on a boolean integer.
  * Semantics are similar to those of Ni_SetValue(), except you can't remove a
  * node's value with this function.
  */
-Ni_PUBLIC int Ni_SetValueBool (Ni_node restrict n, int value) { return Ni_SetValue (n, (value ? "true" : "false"), (value ? 4 : 5)); }
+Ni_PUBLIC int Ni_SetValueBool (Ni_node restrict n, int value)
+{
+	return Ni_SetValue (n, (value ? "true" : "false"), (value ? 4 : 5));
+}
 
 /* Uses printf() formatting to set the node's value.  You can't remove a node's
  * value with this function.  format is the printf()-formatted string, and any

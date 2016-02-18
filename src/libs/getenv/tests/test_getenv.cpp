@@ -10,7 +10,10 @@
 #include <gtest/gtest.h>
 #include <kdbgetenv.h>
 
-TEST (GetEnv, NonExist) { EXPECT_EQ (getenv ("du4Maiwi/does-not-exist"), static_cast<char *> (nullptr)); }
+TEST (GetEnv, NonExist)
+{
+	EXPECT_EQ (getenv ("du4Maiwi/does-not-exist"), static_cast<char *> (nullptr));
+}
 
 TEST (GetEnv, ExistOverride)
 {

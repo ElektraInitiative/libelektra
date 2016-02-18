@@ -38,9 +38,15 @@ public:
 		namespaces.push_back (n);
 	}
 
-	Namespace & operator[] (size_t i) { return namespaces[i]; }
+	Namespace & operator[] (size_t i)
+	{
+		return namespaces[i];
+	}
 
-	size_t size () { return namespaces.size (); }
+	size_t size ()
+	{
+		return namespaces.size ();
+	}
 
 	std::vector<Namespace> namespaces;
 };

@@ -18,10 +18,14 @@
 
 class TestValueSubject : public kdb::ValueSubject
 {
-	virtual void notifyInThread () override {}
+	virtual void notifyInThread () override
+	{
+	}
 };
 
-void fooxx (kdb::Command &) {}
+void fooxx (kdb::Command &)
+{
+}
 
 TEST (test_contextual_basic, command)
 {
@@ -44,23 +48,44 @@ const char * s_value = "55";
 class CountryGermanyLayer : public kdb::Layer
 {
 public:
-	std::string id () const override { return "country"; }
-	std::string operator() () const override { return "germany"; }
+	std::string id () const override
+	{
+		return "country";
+	}
+	std::string operator() () const override
+	{
+		return "germany";
+	}
 };
 
 class LanguageGermanLayer : public kdb::Layer
 {
 public:
-	std::string id () const override { return "language"; }
-	std::string operator() () const override { return "german"; }
+	std::string id () const override
+	{
+		return "language";
+	}
+	std::string operator() () const override
+	{
+		return "german";
+	}
 };
 
 class CountryGPSLayer : public kdb::Layer
 {
 public:
-	CountryGPSLayer () : m_country ("austria") {}
-	std::string id () const override { return "country"; }
-	std::string operator() () const override { return m_country; }
+	CountryGPSLayer () : m_country ("austria")
+	{
+	}
+	std::string id () const override
+	{
+		return "country";
+	}
+	std::string operator() () const override
+	{
+		return m_country;
+	}
+
 private:
 	std::string m_country;
 };
@@ -68,8 +93,13 @@ private:
 class ThreadLayer : public kdb::Layer
 {
 public:
-	ThreadLayer () {}
-	std::string id () const override { return "thread"; }
+	ThreadLayer ()
+	{
+	}
+	std::string id () const override
+	{
+		return "thread";
+	}
 	std::string operator() () const override
 	{
 		std::ostringstream os;
@@ -90,8 +120,13 @@ const std::thread::id ThreadLayer::g_main_id = std::this_thread::get_id ();
 class CountingLayer : public kdb::Layer
 {
 public:
-	CountingLayer () : m_id () {}
-	std::string id () const override { return "counting"; }
+	CountingLayer () : m_id ()
+	{
+	}
+	std::string id () const override
+	{
+		return "counting";
+	}
 	std::string operator() () const override
 	{
 		std::ostringstream os;
@@ -107,23 +142,44 @@ private:
 class SelectedPrinterLayer : public kdb::Layer
 {
 public:
-	std::string id () const override { return "printer"; }
-	std::string operator() () const override { return "Laserdrucker"; }
+	std::string id () const override
+	{
+		return "printer";
+	}
+	std::string operator() () const override
+	{
+		return "Laserdrucker";
+	}
 };
 
 class MainApplicationLayer : public kdb::Layer
 {
 public:
-	std::string id () const override { return "application"; }
-	std::string operator() () const override { return "main"; }
+	std::string id () const override
+	{
+		return "application";
+	}
+	std::string operator() () const override
+	{
+		return "main";
+	}
 };
 
 class KeyValueLayer : public kdb::Layer
 {
 public:
-	KeyValueLayer (std::string key, std::string value_) : m_key (std::move (key)), m_value (std::move (value_)) {}
-	std::string id () const override { return m_key; }
-	std::string operator() () const override { return m_value; }
+	KeyValueLayer (std::string key, std::string value_) : m_key (std::move (key)), m_value (std::move (value_))
+	{
+	}
+	std::string id () const override
+	{
+		return m_key;
+	}
+	std::string operator() () const override
+	{
+		return m_value;
+	}
+
 private:
 	std::string m_key;
 	std::string m_value;
@@ -132,9 +188,18 @@ private:
 class ProfileLayer : public kdb::Layer
 {
 public:
-	ProfileLayer (kdb::String const & profile) : m_profile (profile) {}
-	std::string id () const override { return "profile"; }
-	std::string operator() () const override { return m_profile; }
+	ProfileLayer (kdb::String const & profile) : m_profile (profile)
+	{
+	}
+	std::string id () const override
+	{
+		return "profile";
+	}
+	std::string operator() () const override
+	{
+		return m_profile;
+	}
+
 private:
 	kdb::String const & m_profile;
 };
@@ -150,7 +215,9 @@ template <>
 class test_contextual_basic<kdb::ThreadContext> : public ::testing::Test
 {
 public:
-	test_contextual_basic () : context (coordinator) {}
+	test_contextual_basic () : context (coordinator)
+	{
+	}
 	static kdb::Coordinator coordinator;
 	kdb::ThreadContext context;
 };
@@ -556,9 +623,14 @@ TEST (test_contextual_basic, evaluate)
 
 struct MockObserver : kdb::ValueObserver
 {
-	MockObserver () : counter () {}
+	MockObserver () : counter ()
+	{
+	}
 
-	virtual void updateContext () const override { ++counter; }
+	virtual void updateContext () const override
+	{
+		++counter;
+	}
 
 	mutable long long counter;
 };

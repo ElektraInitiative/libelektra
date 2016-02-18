@@ -24,9 +24,15 @@ typedef Delegator<elektra::Checker> Checker;
 
 extern "C" {
 
-int elektraStructOpen (ckdb::Plugin * handle, ckdb::Key * errorKey) { return Checker::open (handle, errorKey, elektra::buildChecker); }
+int elektraStructOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
+{
+	return Checker::open (handle, errorKey, elektra::buildChecker);
+}
 
-int elektraStructClose (ckdb::Plugin * handle, ckdb::Key * errorKey) { return Checker::close (handle, errorKey); }
+int elektraStructClose (ckdb::Plugin * handle, ckdb::Key * errorKey)
+{
+	return Checker::close (handle, errorKey);
+}
 
 int elektraStructGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key *)
 {

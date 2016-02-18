@@ -120,7 +120,10 @@ ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
  * @retval 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  **/
-int elektraStrCmp (const char * s1, const char * s2) { return strcmp (s1, s2); }
+int elektraStrCmp (const char * s1, const char * s2)
+{
+	return strcmp (s1, s2);
+}
 
 
 /**@brief Compare Strings ignoring case.
@@ -133,7 +136,10 @@ int elektraStrCmp (const char * s1, const char * s2) { return strcmp (s1, s2); }
  * @retval 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  **/
-int elektraStrCaseCmp (const char * s1, const char * s2) { return strcasecmp (s1, s2); }
+int elektraStrCaseCmp (const char * s1, const char * s2)
+{
+	return strcasecmp (s1, s2);
+}
 
 /**
  * @brief Compare two memory regions but make cmp chars uppercase before
@@ -222,7 +228,10 @@ if ((buffer = elektraMalloc (length)) == 0) {
  * @see elektraFree
  * @see elektraCalloc
  */
-void * elektraMalloc (size_t size) { return malloc (size); }
+void * elektraMalloc (size_t size)
+{
+	return malloc (size);
+}
 
 /**Allocate memory for Elektra.
  *
@@ -231,7 +240,10 @@ void * elektraMalloc (size_t size) { return malloc (size); }
  * @param size the requested size
  * @see elektraMalloc
  */
-void * elektraCalloc (size_t size) { return calloc (1, size); }
+void * elektraCalloc (size_t size)
+{
+	return calloc (1, size);
+}
 
 /**Free memory of elektra or its backends.
  *
@@ -240,7 +252,10 @@ void * elektraCalloc (size_t size) { return calloc (1, size); }
  * @ingroup internal
  *@see elektraMalloc
  */
-void elektraFree (void * ptr) { free (ptr); }
+void elektraFree (void * ptr)
+{
+	free (ptr);
+}
 
 
 /**Copy string into new allocated memory.

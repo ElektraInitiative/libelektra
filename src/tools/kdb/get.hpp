@@ -19,11 +19,20 @@ public:
 	GetCommand ();
 	~GetCommand ();
 
-	virtual std::string getShortOptions () override { return "anv"; }
+	virtual std::string getShortOptions () override
+	{
+		return "anv";
+	}
 
-	virtual std::string getSynopsis () override { return "<name>"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<name>";
+	}
 
-	virtual std::string getShortHelpText () override { return "Get the value of an individual key."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Get the value of an individual key.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

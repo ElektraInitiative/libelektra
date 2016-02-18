@@ -21,11 +21,20 @@ public:
 	FileCommand ();
 	~FileCommand ();
 
-	virtual std::string getShortOptions () override { return "nN"; }
+	virtual std::string getShortOptions () override
+	{
+		return "nN";
+	}
 
-	virtual std::string getSynopsis () override { return "<name>"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<name>";
+	}
 
-	virtual std::string getShortHelpText () override { return "Prints the file where a key is located."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Prints the file where a key is located.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

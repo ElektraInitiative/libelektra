@@ -24,11 +24,20 @@ public:
 
 	virtual int execute (Cmdline const & cmdline) override;
 
-	virtual std::string getShortOptions () override { return "iHsvf"; }
+	virtual std::string getShortOptions () override
+	{
+		return "iHsvf";
+	}
 
-	virtual std::string getSynopsis () override { return "[options] ourpath theirpath basepath resultpath"; }
+	virtual std::string getSynopsis () override
+	{
+		return "[options] ourpath theirpath basepath resultpath";
+	}
 
-	virtual std::string getShortHelpText () override { return "Three-way merge of KeySets."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Three-way merge of KeySets.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

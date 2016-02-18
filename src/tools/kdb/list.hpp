@@ -18,11 +18,20 @@ public:
 	ListCommand ();
 	~ListCommand ();
 
-	virtual std::string getShortOptions () override { return "0v"; }
+	virtual std::string getShortOptions () override
+	{
+		return "0v";
+	}
 
-	virtual std::string getSynopsis () override { return ""; }
+	virtual std::string getSynopsis () override
+	{
+		return "";
+	}
 
-	virtual std::string getShortHelpText () override { return "List available plugins."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "List available plugins.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

@@ -33,11 +33,20 @@ public:
 	MountCommand ();
 	~MountCommand ();
 
-	virtual std::string getShortOptions () override { return "idR0123cW"; }
+	virtual std::string getShortOptions () override
+	{
+		return "idR0123cW";
+	}
 
-	virtual std::string getSynopsis () override { return "[path mountpoint] [plugin [config] [..]]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "[path mountpoint] [plugin [config] [..]]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Mount a new backend."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Mount a new backend.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

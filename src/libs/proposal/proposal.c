@@ -125,7 +125,10 @@ int elektraKsToMemArray (KeySet * ks, Key ** buffer)
  *
  * The first key is removed in the resulting keyset.
  */
-KeySet * ksRenameKeys (KeySet * config, const Key * name) { return elektraRenameKeys (config, keyName (name)); }
+KeySet * ksRenameKeys (KeySet * config, const Key * name)
+{
+	return elektraRenameKeys (config, keyName (name));
+}
 
 /**
  * @brief Permanently locks a part of the key
@@ -150,7 +153,10 @@ KeySet * ksRenameKeys (KeySet * config, const Key * name) { return elektraRename
  * @retval 0 if everything was locked before
  * @retval -1 if it could not be locked (nullpointer)
  */
-int keyLock (Key * key, option_t what) { return elektraKeyLock (key, what); }
+int keyLock (Key * key, option_t what)
+{
+	return elektraKeyLock (key, what);
+}
 
 
 /**
@@ -186,7 +192,10 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key)
  * @see ksRewind(), ksCurrent()
  *
  */
-Key * ksPrev (KeySet * ks) { return elektraKsPrev (ks); }
+Key * ksPrev (KeySet * ks)
+{
+	return elektraKsPrev (ks);
+}
 
 /**
  * @brief Pop key at given cursor position
@@ -209,7 +218,10 @@ Key * ksPrev (KeySet * ks) { return elektraKsPrev (ks); }
  * @return the popped key
  * @retval 0 if ks is 0
  */
-Key * ksPopAtCursor (KeySet * ks, cursor_t pos) { return elektraKsPopAtCursor (ks, pos); }
+Key * ksPopAtCursor (KeySet * ks, cursor_t pos)
+{
+	return elektraKsPopAtCursor (ks, pos);
+}
 
 /**
  * @}

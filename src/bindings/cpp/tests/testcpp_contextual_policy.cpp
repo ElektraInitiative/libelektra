@@ -95,7 +95,10 @@ class MySetPolicy
 {
 public:
 	typedef T type;
-	static kdb::Key set (kdb::KeySet & ks, kdb::Key const & spec) { return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir"); }
+	static kdb::Key set (kdb::KeySet & ks, kdb::Key const & spec)
+	{
+		return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir");
+	}
 };
 
 TEST (test_contextual_policy, setPolicy)
@@ -172,8 +175,14 @@ TEST (test_contextual_policy, dynamicGetPolicy)
 
 struct RootLayer : kdb::Layer
 {
-	std::string id () const override { return "root"; }
-	std::string operator() () const override { return "root"; }
+	std::string id () const override
+	{
+		return "root";
+	}
+	std::string operator() () const override
+	{
+		return "root";
+	}
 };
 
 TEST (test_contextual_policy, root)
@@ -227,7 +236,10 @@ TEST (test_contextual_policy, myCVRoot)
 class MyNoneGetPolicy
 {
 public:
-	static kdb::Key get (ELEKTRA_UNUSED kdb::KeySet & ks, ELEKTRA_UNUSED kdb::Key const & spec) { return kdb::Key (); }
+	static kdb::Key get (ELEKTRA_UNUSED kdb::KeySet & ks, ELEKTRA_UNUSED kdb::Key const & spec)
+	{
+		return kdb::Key ();
+	}
 };
 
 class MyCV2 : public kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGetPolicy>>

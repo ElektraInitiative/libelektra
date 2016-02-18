@@ -79,7 +79,10 @@ inline KDB::KDB ()
  *
  * @copydoc kdbOpen
  */
-inline KDB::KDB (Key & errorKey) { open (errorKey); }
+inline KDB::KDB (Key & errorKey)
+{
+	open (errorKey);
+}
 
 /**
  * The destructor closes the database.

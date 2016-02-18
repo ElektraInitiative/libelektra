@@ -85,61 +85,121 @@ public:
 class Layer1 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer1"; }
-	std::string operator() () const override { return "1"; }
+	std::string id () const override
+	{
+		return "layer1";
+	}
+	std::string operator() () const override
+	{
+		return "1";
+	}
 };
 class Layer2 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer2"; }
-	std::string operator() () const override { return "2"; }
+	std::string id () const override
+	{
+		return "layer2";
+	}
+	std::string operator() () const override
+	{
+		return "2";
+	}
 };
 class Layer3 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer3"; }
-	std::string operator() () const override { return "3"; }
+	std::string id () const override
+	{
+		return "layer3";
+	}
+	std::string operator() () const override
+	{
+		return "3";
+	}
 };
 class Layer4 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer4"; }
-	std::string operator() () const override { return "4"; }
+	std::string id () const override
+	{
+		return "layer4";
+	}
+	std::string operator() () const override
+	{
+		return "4";
+	}
 };
 class Layer5 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer5"; }
-	std::string operator() () const override { return "5"; }
+	std::string id () const override
+	{
+		return "layer5";
+	}
+	std::string operator() () const override
+	{
+		return "5";
+	}
 };
 class Layer6 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer6"; }
-	std::string operator() () const override { return "6"; }
+	std::string id () const override
+	{
+		return "layer6";
+	}
+	std::string operator() () const override
+	{
+		return "6";
+	}
 };
 class Layer7 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer7"; }
-	std::string operator() () const override { return "7"; }
+	std::string id () const override
+	{
+		return "layer7";
+	}
+	std::string operator() () const override
+	{
+		return "7";
+	}
 };
 class Layer8 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer8"; }
-	std::string operator() () const override { return "8"; }
+	std::string id () const override
+	{
+		return "layer8";
+	}
+	std::string operator() () const override
+	{
+		return "8";
+	}
 };
 class Layer9 : public kdb::Layer
 {
 public:
-	std::string id () const override { return "layer9"; }
-	std::string operator() () const override { return "9"; }
+	std::string id () const override
+	{
+		return "layer9";
+	}
+	std::string operator() () const override
+	{
+		return "9";
+	}
 };
 
-kdb::ThreadInteger::type add_native (uint32_t const & i1, uint32_t const & i2) { return i1 + i2; }
+kdb::ThreadInteger::type add_native (uint32_t const & i1, uint32_t const & i2)
+{
+	return i1 + i2;
+}
 
-kdb::ThreadInteger::type add_contextual (kdb::ThreadInteger const & i1, kdb::ThreadInteger const & i2) { return i1 + i2; }
+kdb::ThreadInteger::type add_contextual (kdb::ThreadInteger const & i1, kdb::ThreadInteger const & i2)
+{
+	return i1 + i2;
+}
 
 
 // very fast benchmarks without any if:

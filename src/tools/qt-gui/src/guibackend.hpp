@@ -32,7 +32,10 @@ public:
 	/**
 	 * @brief GUIBackend The mandatory copy constructor.
 	 */
-	GUIBackend (const GUIBackend & other) : QObject () { Q_UNUSED (other) }
+	GUIBackend (const GUIBackend & other) : QObject ()
+	{
+		Q_UNUSED (other)
+	}
 
 	/**
 	 * @brief Creates a new backend on a mountpoint.

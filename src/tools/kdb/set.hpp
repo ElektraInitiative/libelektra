@@ -21,11 +21,20 @@ public:
 	SetCommand ();
 	~SetCommand ();
 
-	virtual std::string getShortOptions () override { return "vN"; }
+	virtual std::string getShortOptions () override
+	{
+		return "vN";
+	}
 
-	virtual std::string getSynopsis () override { return "<name> [<value>]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<name> [<value>]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Set the value of an individual key."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Set the value of an individual key.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

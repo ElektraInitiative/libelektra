@@ -16,7 +16,9 @@
 using namespace kdb;
 using namespace std;
 
-ListCommand::ListCommand () {}
+ListCommand::ListCommand ()
+{
+}
 
 int ListCommand::execute (Cmdline const & cl)
 {
@@ -71,4 +73,6 @@ int ListCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-ListCommand::~ListCommand () {}
+ListCommand::~ListCommand ()
+{
+}

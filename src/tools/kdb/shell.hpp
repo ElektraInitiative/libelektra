@@ -22,11 +22,20 @@ public:
 	ShellCommand ();
 	~ShellCommand ();
 
-	virtual std::string getShortOptions () override { return ""; }
+	virtual std::string getShortOptions () override
+	{
+		return "";
+	}
 
-	virtual std::string getSynopsis () override { return ""; }
+	virtual std::string getSynopsis () override
+	{
+		return "";
+	}
 
-	virtual std::string getShortHelpText () override { return "Start a kdb shell."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Start a kdb shell.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

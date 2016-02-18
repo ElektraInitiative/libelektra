@@ -17,7 +17,9 @@
 using namespace std;
 using namespace kdb;
 
-SetCommand::SetCommand () {}
+SetCommand::SetCommand ()
+{
+}
 
 int SetCommand::execute (Cmdline const & cl)
 {
@@ -102,4 +104,6 @@ int SetCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-SetCommand::~SetCommand () {}
+SetCommand::~SetCommand ()
+{
+}

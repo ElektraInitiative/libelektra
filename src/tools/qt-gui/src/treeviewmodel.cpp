@@ -29,9 +29,15 @@ using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 
-TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb (nullptr), m_base () { Q_UNUSED (parentModel); }
+TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb (nullptr), m_base ()
+{
+	Q_UNUSED (parentModel);
+}
 
-TreeViewModel::TreeViewModel (KDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb), m_base () { Q_UNUSED (parentModel); }
+TreeViewModel::TreeViewModel (KDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb), m_base ()
+{
+	Q_UNUSED (parentModel);
+}
 
 TreeViewModel::TreeViewModel (const TreeViewModel & other) : QAbstractListModel ()
 {
@@ -329,7 +335,10 @@ Qt::ItemFlags TreeViewModel::flags (const QModelIndex & idx) const
 	return QAbstractItemModel::flags (idx) | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
-void TreeViewModel::accept (Visitor & visitor) { visitor.visit (this); }
+void TreeViewModel::accept (Visitor & visitor)
+{
+	visitor.visit (this);
+}
 
 QVariantMap TreeViewModel::get (const int & idx) const
 {
@@ -560,7 +569,10 @@ Key TreeViewModel::createNewKey (const QString & path, const QString & value, co
 	return key;
 }
 
-void TreeViewModel::append (ConfigNodePtr node) { insertRow (rowCount (), node); }
+void TreeViewModel::append (ConfigNodePtr node)
+{
+	insertRow (rowCount (), node);
+}
 
 namespace
 {
@@ -823,7 +835,10 @@ QStringList TreeViewModel::getSplittedKeyname (const Key & key)
 	return names;
 }
 
-void TreeViewModel::discardModel () { delete this; }
+void TreeViewModel::discardModel ()
+{
+	delete this;
+}
 
 MergeConflictStrategy * TreeViewModel::getMergeStrategy (const QString & mergeStrategy)
 {

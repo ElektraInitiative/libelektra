@@ -20,7 +20,9 @@ using namespace kdb;
 namespace elektra
 {
 
-Printer::Printer (KeySet & ks) : nr_keys (0), nr_meta (0), current (ks) {}
+Printer::Printer (KeySet & ks) : nr_keys (0), nr_meta (0), current (ks)
+{
+}
 
 void Printer::add_key (std::vector<char> const & c)
 {

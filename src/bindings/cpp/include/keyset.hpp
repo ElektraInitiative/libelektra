@@ -31,7 +31,9 @@ class KeySetReverseIterator;
  */
 struct VaAlloc
 {
-	explicit VaAlloc (size_t size) : alloc (size) {}
+	explicit VaAlloc (size_t size) : alloc (size)
+	{
+	}
 	size_t alloc;
 };
 
@@ -145,20 +147,38 @@ public:
 	KeySetIterator (KeySet const & k, const cursor_t c) : ks (k), current (c){};
 	// conversion to const iterator?
 
-	Key get () const { return Key (ckdb::ksAtCursor (ks.getKeySet (), current)); }
-	Key get (cursor_t pos) const { return Key (ckdb::ksAtCursor (ks.getKeySet (), pos)); }
+	Key get () const
+	{
+		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
+	}
+	Key get (cursor_t pos) const
+	{
+		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
+	}
 
-	KeySet const & getKeySet () const { return ks; }
+	KeySet const & getKeySet () const
+	{
+		return ks;
+	}
 
 	// Forward iterator requirements
-	reference operator* () const { return get (); }
-	pointer operator-> () const { return get (); }
+	reference operator* () const
+	{
+		return get ();
+	}
+	pointer operator-> () const
+	{
+		return get ();
+	}
 	KeySetIterator & operator++ ()
 	{
 		++current;
 		return *this;
 	}
-	KeySetIterator operator++ (int) { return KeySetIterator (ks, current++); }
+	KeySetIterator operator++ (int)
+	{
+		return KeySetIterator (ks, current++);
+	}
 
 	// Bidirectional iterator requirements
 	KeySetIterator & operator-- ()
@@ -166,23 +186,38 @@ public:
 		--current;
 		return *this;
 	}
-	KeySetIterator operator-- (int) { return KeySetIterator (ks, current--); }
+	KeySetIterator operator-- (int)
+	{
+		return KeySetIterator (ks, current--);
+	}
 
 	// Random access iterator requirements
-	reference operator[] (const difference_type & pos) const { return get (pos); }
+	reference operator[] (const difference_type & pos) const
+	{
+		return get (pos);
+	}
 	KeySetIterator & operator+= (const difference_type & pos)
 	{
 		current += pos;
 		return *this;
 	}
-	KeySetIterator operator+ (const difference_type & pos) const { return KeySetIterator (ks, current + pos); }
+	KeySetIterator operator+ (const difference_type & pos) const
+	{
+		return KeySetIterator (ks, current + pos);
+	}
 	KeySetIterator & operator-= (const difference_type & pos)
 	{
 		current -= pos;
 		return *this;
 	}
-	KeySetIterator operator- (const difference_type & pos) const { return KeySetIterator (ks, current - pos); }
-	const cursor_t & base () const { return current; }
+	KeySetIterator operator- (const difference_type & pos) const
+	{
+		return KeySetIterator (ks, current - pos);
+	}
+	const cursor_t & base () const
+	{
+		return current;
+	}
 
 private:
 	KeySet const & ks;
@@ -202,13 +237,25 @@ inline bool operator!= (const KeySetIterator & lhs, const KeySetIterator & rhs)
 }
 
 // Random access iterator requirements
-inline bool operator< (const KeySetIterator & lhs, const KeySetIterator & rhs) { return lhs.base () < rhs.base (); }
+inline bool operator< (const KeySetIterator & lhs, const KeySetIterator & rhs)
+{
+	return lhs.base () < rhs.base ();
+}
 
-inline bool operator> (const KeySetIterator & lhs, const KeySetIterator & rhs) { return lhs.base () > rhs.base (); }
+inline bool operator> (const KeySetIterator & lhs, const KeySetIterator & rhs)
+{
+	return lhs.base () > rhs.base ();
+}
 
-inline bool operator<= (const KeySetIterator & lhs, const KeySetIterator & rhs) { return lhs.base () <= rhs.base (); }
+inline bool operator<= (const KeySetIterator & lhs, const KeySetIterator & rhs)
+{
+	return lhs.base () <= rhs.base ();
+}
 
-inline bool operator>= (const KeySetIterator & lhs, const KeySetIterator & rhs) { return lhs.base () >= rhs.base (); }
+inline bool operator>= (const KeySetIterator & lhs, const KeySetIterator & rhs)
+{
+	return lhs.base () >= rhs.base ();
+}
 
 // DR 685.
 inline auto operator- (const KeySetIterator & lhs, const KeySetIterator & rhs) -> decltype (lhs.base () - rhs.base ())
@@ -241,20 +288,38 @@ public:
 	KeySetReverseIterator (KeySet const & k, const cursor_t c) : ks (k), current (c){};
 	// conversion to const iterator?
 
-	Key get () const { return Key (ckdb::ksAtCursor (ks.getKeySet (), current)); }
-	Key get (cursor_t pos) const { return Key (ckdb::ksAtCursor (ks.getKeySet (), pos)); }
+	Key get () const
+	{
+		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
+	}
+	Key get (cursor_t pos) const
+	{
+		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
+	}
 
-	KeySet const & getKeySet () const { return ks; }
+	KeySet const & getKeySet () const
+	{
+		return ks;
+	}
 
 	// Forward iterator requirements
-	reference operator* () const { return get (); }
-	pointer operator-> () const { return get (); }
+	reference operator* () const
+	{
+		return get ();
+	}
+	pointer operator-> () const
+	{
+		return get ();
+	}
 	KeySetReverseIterator & operator++ ()
 	{
 		--current;
 		return *this;
 	}
-	KeySetReverseIterator operator++ (int) { return KeySetReverseIterator (ks, current--); }
+	KeySetReverseIterator operator++ (int)
+	{
+		return KeySetReverseIterator (ks, current--);
+	}
 
 	// Bidirectional iterator requirements
 	KeySetReverseIterator & operator-- ()
@@ -262,23 +327,38 @@ public:
 		++current;
 		return *this;
 	}
-	KeySetReverseIterator operator-- (int) { return KeySetReverseIterator (ks, current++); }
+	KeySetReverseIterator operator-- (int)
+	{
+		return KeySetReverseIterator (ks, current++);
+	}
 
 	// Random access iterator requirements
-	reference operator[] (const difference_type & pos) const { return get (ks.size () - pos - 1); }
+	reference operator[] (const difference_type & pos) const
+	{
+		return get (ks.size () - pos - 1);
+	}
 	KeySetReverseIterator & operator+= (const difference_type & pos)
 	{
 		current -= pos;
 		return *this;
 	}
-	KeySetReverseIterator operator+ (const difference_type & pos) const { return KeySetReverseIterator (ks, current - pos); }
+	KeySetReverseIterator operator+ (const difference_type & pos) const
+	{
+		return KeySetReverseIterator (ks, current - pos);
+	}
 	KeySetReverseIterator & operator-= (const difference_type & pos)
 	{
 		current += pos;
 		return *this;
 	}
-	KeySetReverseIterator operator- (const difference_type & pos) const { return KeySetReverseIterator (ks, current + pos); }
-	const cursor_t & base () const { return current; }
+	KeySetReverseIterator operator- (const difference_type & pos) const
+	{
+		return KeySetReverseIterator (ks, current + pos);
+	}
+	const cursor_t & base () const
+	{
+		return current;
+	}
 
 private:
 	KeySet const & ks;
@@ -298,13 +378,25 @@ inline bool operator!= (const KeySetReverseIterator & lhs, const KeySetReverseIt
 }
 
 // Random access iterator requirements
-inline bool operator< (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs) { return lhs.base () < rhs.base (); }
+inline bool operator< (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs)
+{
+	return lhs.base () < rhs.base ();
+}
 
-inline bool operator> (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs) { return lhs.base () > rhs.base (); }
+inline bool operator> (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs)
+{
+	return lhs.base () > rhs.base ();
+}
 
-inline bool operator<= (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs) { return lhs.base () <= rhs.base (); }
+inline bool operator<= (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs)
+{
+	return lhs.base () <= rhs.base ();
+}
 
-inline bool operator>= (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs) { return lhs.base () >= rhs.base (); }
+inline bool operator>= (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs)
+{
+	return lhs.base () >= rhs.base ();
+}
 
 // DR 685.
 inline auto operator- (const KeySetReverseIterator & lhs, const KeySetReverseIterator & rhs) -> decltype (lhs.base () - rhs.base ())
@@ -318,29 +410,65 @@ inline KeySetReverseIterator operator+ (KeySetReverseIterator::difference_type n
 }
 
 
-inline KeySet::iterator KeySet::begin () { return KeySet::iterator (*this, 0); }
+inline KeySet::iterator KeySet::begin ()
+{
+	return KeySet::iterator (*this, 0);
+}
 
-inline KeySet::const_iterator KeySet::begin () const { return KeySet::const_iterator (*this, 0); }
+inline KeySet::const_iterator KeySet::begin () const
+{
+	return KeySet::const_iterator (*this, 0);
+}
 
-inline KeySet::iterator KeySet::end () { return KeySet::iterator (*this, size ()); }
+inline KeySet::iterator KeySet::end ()
+{
+	return KeySet::iterator (*this, size ());
+}
 
-inline KeySet::const_iterator KeySet::end () const { return KeySet::const_iterator (*this, size ()); }
+inline KeySet::const_iterator KeySet::end () const
+{
+	return KeySet::const_iterator (*this, size ());
+}
 
-inline KeySet::reverse_iterator KeySet::rbegin () { return KeySet::reverse_iterator (*this, size () - 1); }
+inline KeySet::reverse_iterator KeySet::rbegin ()
+{
+	return KeySet::reverse_iterator (*this, size () - 1);
+}
 
-inline KeySet::const_reverse_iterator KeySet::rbegin () const { return KeySet::const_reverse_iterator (*this, size () - 1); }
+inline KeySet::const_reverse_iterator KeySet::rbegin () const
+{
+	return KeySet::const_reverse_iterator (*this, size () - 1);
+}
 
-inline KeySet::reverse_iterator KeySet::rend () { return KeySet::reverse_iterator (*this, -1); }
+inline KeySet::reverse_iterator KeySet::rend ()
+{
+	return KeySet::reverse_iterator (*this, -1);
+}
 
-inline KeySet::const_reverse_iterator KeySet::rend () const { return KeySet::const_reverse_iterator (*this, -1); }
+inline KeySet::const_reverse_iterator KeySet::rend () const
+{
+	return KeySet::const_reverse_iterator (*this, -1);
+}
 
-inline KeySet::const_iterator KeySet::cbegin () const noexcept { return KeySet::const_iterator (*this, 0); }
+inline KeySet::const_iterator KeySet::cbegin () const noexcept
+{
+	return KeySet::const_iterator (*this, 0);
+}
 
-inline KeySet::const_iterator KeySet::cend () const noexcept { return KeySet::const_iterator (*this, size ()); }
+inline KeySet::const_iterator KeySet::cend () const noexcept
+{
+	return KeySet::const_iterator (*this, size ());
+}
 
-inline KeySet::const_reverse_iterator KeySet::crbegin () const noexcept { return KeySet::const_reverse_iterator (*this, size () - 1); }
+inline KeySet::const_reverse_iterator KeySet::crbegin () const noexcept
+{
+	return KeySet::const_reverse_iterator (*this, size () - 1);
+}
 
-inline KeySet::const_reverse_iterator KeySet::crend () const noexcept { return KeySet::const_reverse_iterator (*this, -1); }
+inline KeySet::const_reverse_iterator KeySet::crend () const noexcept
+{
+	return KeySet::const_reverse_iterator (*this, -1);
+}
 #endif // ELEKTRA_WITHOUT_ITERATOR
 
 
@@ -349,7 +477,9 @@ inline KeySet::const_reverse_iterator KeySet::crend () const noexcept { return K
  *
  * @copydoc ksNew
  */
-inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END)) {}
+inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
+{
+}
 
 /**
  * Takes ownership of keyset!
@@ -363,7 +493,9 @@ inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END)) {}
  * @see release()
  * @see setKeySet()
  */
-inline KeySet::KeySet (ckdb::KeySet * k) : ks (k) {}
+inline KeySet::KeySet (ckdb::KeySet * k) : ks (k)
+{
+}
 
 /**
  * Duplicate a keyset.
@@ -380,7 +512,10 @@ inline KeySet::KeySet (ckdb::KeySet * k) : ks (k) {}
  *
  * @see dup
  */
-inline KeySet::KeySet (const KeySet & other) { ks = other.dup (); }
+inline KeySet::KeySet (const KeySet & other)
+{
+	ks = other.dup ();
+}
 
 /**
  * @brief Create a new keyset.
@@ -395,7 +530,10 @@ inline KeySet::KeySet (const KeySet & other) { ks = other.dup (); }
  *
  * @copydoc ksVNew
  */
-inline KeySet::KeySet (VaAlloc alloc, va_list av) { ks = ckdb::ksVNew (alloc.alloc, av); }
+inline KeySet::KeySet (VaAlloc alloc, va_list av)
+{
+	ks = ckdb::ksVNew (alloc.alloc, av);
+}
 
 /**
  * @brief Create a new keyset
@@ -419,7 +557,10 @@ inline KeySet::KeySet (size_t alloc, ...)
  *
  * @copydoc ksDel
  */
-inline KeySet::~KeySet () { ckdb::ksDel (ks); }
+inline KeySet::~KeySet ()
+{
+	ckdb::ksDel (ks);
+}
 
 /**
  * If you don't want destruction of keyset at
@@ -440,7 +581,10 @@ inline ckdb::KeySet * KeySet::release ()
  * @see release()
  * @see setKeySet()
  */
-inline ckdb::KeySet * KeySet::getKeySet () const { return ks; }
+inline ckdb::KeySet * KeySet::getKeySet () const
+{
+	return ks;
+}
 
 /**
  * @brief Take ownership of passed keyset
@@ -479,7 +623,10 @@ inline KeySet & KeySet::operator= (KeySet const & other)
  *
  * @return the number of keys in the keyset
  */
-inline ssize_t KeySet::size () const { return ckdb::ksGetSize (ks); }
+inline ssize_t KeySet::size () const
+{
+	return ckdb::ksGetSize (ks);
+}
 
 /**
  * @brief Duplicate a keyset
@@ -491,7 +638,10 @@ inline ssize_t KeySet::size () const { return ckdb::ksGetSize (ks); }
  *
  * @copydoc ksDup()
  */
-inline ckdb::KeySet * KeySet::dup () const { return ckdb::ksDup (ks); }
+inline ckdb::KeySet * KeySet::dup () const
+{
+	return ckdb::ksDup (ks);
+}
 
 /**
  * @brief Copy a keyset
@@ -503,14 +653,20 @@ inline ckdb::KeySet * KeySet::dup () const { return ckdb::ksDup (ks); }
  *
  * @copydoc ksCopy()
  */
-inline void KeySet::copy (const KeySet & other) { ckdb::ksCopy (ks, other.ks); }
+inline void KeySet::copy (const KeySet & other)
+{
+	ckdb::ksCopy (ks, other.ks);
+}
 
 /**
  * @brief Clear the keyset
  *
  * Keyset will have no keys afterwards.
  */
-inline void KeySet::clear () { ckdb::ksCopy (ks, nullptr); }
+inline void KeySet::clear ()
+{
+	ckdb::ksCopy (ks, nullptr);
+}
 
 /**
  * @brief append a key
@@ -521,7 +677,10 @@ inline void KeySet::clear () { ckdb::ksCopy (ks, nullptr); }
  *
  * @copydoc ksAppendKey()
  */
-inline ssize_t KeySet::append (const Key & toAppend) { return ckdb::ksAppendKey (ks, toAppend.getKey ()); }
+inline ssize_t KeySet::append (const Key & toAppend)
+{
+	return ckdb::ksAppendKey (ks, toAppend.getKey ());
+}
 
 /**
  * @brief append a keyset
@@ -532,27 +691,39 @@ inline ssize_t KeySet::append (const Key & toAppend) { return ckdb::ksAppendKey 
  *
  * @copydoc ksAppend()
  */
-inline ssize_t KeySet::append (KeySet const & toAppend) { return ckdb::ksAppend (ks, toAppend.getKeySet ()); }
+inline ssize_t KeySet::append (KeySet const & toAppend)
+{
+	return ckdb::ksAppend (ks, toAppend.getKeySet ());
+}
 
 /**
  * @return alphabetical first key
  *
  * @copydoc ksHead()
  */
-inline Key KeySet::head () const { return Key (ckdb::ksHead (ks)); }
+inline Key KeySet::head () const
+{
+	return Key (ckdb::ksHead (ks));
+}
 
 /**
  * @return alphabetical last key
  *
  * @copydoc ksTail()
  */
-inline Key KeySet::tail () const { return Key (ckdb::ksTail (ks)); }
+inline Key KeySet::tail () const
+{
+	return Key (ckdb::ksTail (ks));
+}
 
 
 /**
  * @copydoc ksRewind()
  */
-inline void KeySet::rewind () const { ckdb::ksRewind (ks); }
+inline void KeySet::rewind () const
+{
+	ckdb::ksRewind (ks);
+}
 
 /**
  * @copydoc ksNext()
@@ -566,17 +737,26 @@ inline Key KeySet::next () const
 /**
  * @copydoc ksCurrent()
  */
-inline Key KeySet::current () const { return Key (ckdb::ksCurrent (ks)); }
+inline Key KeySet::current () const
+{
+	return Key (ckdb::ksCurrent (ks));
+}
 
 /**
  * @copydoc ksSetCursor()
  */
-inline void KeySet::setCursor (cursor_t cursor) const { ckdb::ksSetCursor (ks, cursor); }
+inline void KeySet::setCursor (cursor_t cursor) const
+{
+	ckdb::ksSetCursor (ks, cursor);
+}
 
 /**
  * @copydoc ksGetCursor()
  */
-inline cursor_t KeySet::getCursor () const { return ckdb::ksGetCursor (ks); }
+inline cursor_t KeySet::getCursor () const
+{
+	return ckdb::ksGetCursor (ks);
+}
 
 /**
  * @copydoc ksPop()
@@ -605,7 +785,10 @@ inline Key KeySet::at (cursor_t pos) const
 /**
  * @copydoc ksCut()
  */
-inline KeySet KeySet::cut (Key k) { return KeySet (ckdb::ksCut (ks, k.getKey ())); }
+inline KeySet KeySet::cut (Key k)
+{
+	return KeySet (ckdb::ksCut (ks, k.getKey ()));
+}
 
 /**
  * @copydoc ksLookup()
@@ -682,7 +865,10 @@ inline bool operator== (const KeySet & lhs, const KeySet & rhs)
 }
 
 
-inline bool operator!= (const KeySet & lhs, const KeySet & rhs) { return !(lhs == rhs); }
+inline bool operator!= (const KeySet & lhs, const KeySet & rhs)
+{
+	return !(lhs == rhs);
+}
 
 
 } // end of namespace kdb

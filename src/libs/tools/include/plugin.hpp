@@ -121,7 +121,10 @@ public:
 	 * Returns the whole keyset of information.
 	 * @pre loadInfo()
 	 */
-	kdb::KeySet getInfo () { return info; }
+	kdb::KeySet getInfo ()
+	{
+		return info;
+	}
 
 	/**
 	 * In the plugin's contract there is a description of which

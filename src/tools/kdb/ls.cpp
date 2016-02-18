@@ -17,7 +17,9 @@
 using namespace kdb;
 using namespace std;
 
-LsCommand::LsCommand () : kdb (root) {}
+LsCommand::LsCommand () : kdb (root)
+{
+}
 
 int LsCommand::execute (Cmdline const & cl)
 {
@@ -52,4 +54,6 @@ int LsCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-LsCommand::~LsCommand () {}
+LsCommand::~LsCommand ()
+{
+}

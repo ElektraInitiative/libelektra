@@ -50,9 +50,15 @@ public:
 	BackendBuilderInit (PluginDatabasePtr const & plugins, BackendFactory const & bf);
 	BackendBuilderInit (BackendFactory const & bf, PluginDatabasePtr const & plugins);
 
-	PluginDatabasePtr getPluginDatabase () const { return pluginDatabase; }
+	PluginDatabasePtr getPluginDatabase () const
+	{
+		return pluginDatabase;
+	}
 
-	BackendFactory getBackendFactory () const { return backendFactory; }
+	BackendFactory getBackendFactory () const
+	{
+		return backendFactory;
+	}
 };
 
 /**
@@ -93,14 +99,32 @@ public:
 
 	typedef PluginSpecVector::const_iterator const_iterator;
 
-	const_iterator begin () const { return toAdd.begin (); }
-	const_iterator end () const { return toAdd.end (); }
-	const_iterator cbegin () const { return toAdd.begin (); }
-	const_iterator cend () const { return toAdd.end (); }
+	const_iterator begin () const
+	{
+		return toAdd.begin ();
+	}
+	const_iterator end () const
+	{
+		return toAdd.end ();
+	}
+	const_iterator cbegin () const
+	{
+		return toAdd.begin ();
+	}
+	const_iterator cend () const
+	{
+		return toAdd.end ();
+	}
 
-	PluginDatabasePtr const & getPluginDatabase () const { return pluginDatabase; }
+	PluginDatabasePtr const & getPluginDatabase () const
+	{
+		return pluginDatabase;
+	}
 
-	BackendFactory const & getBackendFactory () const { return backendFactory; }
+	BackendFactory const & getBackendFactory () const
+	{
+		return backendFactory;
+	}
 
 	~BackendBuilder ();
 
@@ -149,7 +173,10 @@ class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 	std::string configfile;
 
 public:
-	void addPlugin (PluginSpec const & spec) { return BackendBuilder::addPlugin (spec); }
+	void addPlugin (PluginSpec const & spec)
+	{
+		return BackendBuilder::addPlugin (spec);
+	}
 
 	explicit MountBackendBuilder (BackendBuilderInit const & bbi = BackendBuilderInit ());
 
@@ -157,7 +184,10 @@ public:
 	std::string getMountpoint () const;
 
 	void setBackendConfig (KeySet const & ks);
-	KeySet getBackendConfig () { return backendConf; }
+	KeySet getBackendConfig ()
+	{
+		return backendConf;
+	}
 
 	void useConfigFile (std::string file);
 	std::string getConfigFile () const;

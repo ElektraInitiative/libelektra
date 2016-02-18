@@ -80,9 +80,18 @@ namespace
 class KeyValueLayer : public kdb::Layer
 {
 public:
-	KeyValueLayer (std::string key, std::string value_) : m_key (std::move (key)), m_value (std::move (value_)) {}
-	std::string id () const override { return m_key; }
-	std::string operator() () const override { return m_value; }
+	KeyValueLayer (std::string key, std::string value_) : m_key (std::move (key)), m_value (std::move (value_))
+	{
+	}
+	std::string id () const override
+	{
+		return m_key;
+	}
+	std::string operator() () const override
+	{
+		return m_value;
+	}
+
 private:
 	std::string m_key;
 	std::string m_value;
@@ -96,7 +105,10 @@ public:
 		std::shared_ptr<kdb::Layer> layer = make_shared<KeyValueLayer> (layername, layervalue);
 		activateLayer (layer);
 	}
-	void clearAllLayer () { kdb::Context::clearAllLayer (); }
+	void clearAllLayer ()
+	{
+		kdb::Context::clearAllLayer ();
+	}
 } elektraEnvContext;
 
 #ifdef __powerpc__

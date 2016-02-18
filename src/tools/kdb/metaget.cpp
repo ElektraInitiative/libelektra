@@ -17,7 +17,9 @@
 using namespace std;
 using namespace kdb;
 
-MetaGetCommand::MetaGetCommand () {}
+MetaGetCommand::MetaGetCommand ()
+{
+}
 
 int MetaGetCommand::execute (Cmdline const & cl)
 {
@@ -56,4 +58,6 @@ int MetaGetCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-MetaGetCommand::~MetaGetCommand () {}
+MetaGetCommand::~MetaGetCommand ()
+{
+}

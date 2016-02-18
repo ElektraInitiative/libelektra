@@ -20,11 +20,20 @@ public:
 	ImportCommand ();
 	~ImportCommand ();
 
-	virtual std::string getShortOptions () override { return "svc"; }
+	virtual std::string getShortOptions () override
+	{
+		return "svc";
+	}
 
-	virtual std::string getSynopsis () override { return "<destination> [<format>]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<destination> [<format>]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Import configuration to the key database."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Import configuration to the key database.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

@@ -61,7 +61,9 @@ public:
 	};
 	Q_DECLARE_FLAGS (ConverterOptions, ConverterOption)
 
-	virtual ~MarkdownConverter () {}
+	virtual ~MarkdownConverter ()
+	{
+	}
 
 	virtual MarkdownDocument * createDocument (const QString & text, ConverterOptions options) = 0;
 	virtual QString renderAsHtml (MarkdownDocument * document) = 0;

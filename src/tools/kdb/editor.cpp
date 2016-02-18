@@ -23,9 +23,13 @@ using namespace kdb::tools;
 using namespace kdb::tools::merging;
 using namespace std;
 
-EditorCommand::EditorCommand () {}
+EditorCommand::EditorCommand ()
+{
+}
 
-EditorCommand::~EditorCommand () {}
+EditorCommand::~EditorCommand ()
+{
+}
 
 void EditorCommand::tmpFile ()
 {
@@ -62,7 +66,10 @@ bool runAllEditors (std::string filename)
 
 class EditorNotAvailable : public std::exception
 {
-	virtual const char * what () const throw () override { return "kdb-editor not available for windows (non-POSIX systems)"; }
+	virtual const char * what () const throw () override
+	{
+		return "kdb-editor not available for windows (non-POSIX systems)";
+	}
 };
 
 int EditorCommand::execute (Cmdline const & cl)

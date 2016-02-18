@@ -52,7 +52,10 @@ KeySet parsePluginArguments (std::string const & pluginArguments, std::string co
 	return ks;
 }
 
-PluginSpecVector parseArguments (std::initializer_list<std::string> cmdline) { return parseArguments (cmdline.begin (), cmdline.end ()); }
+PluginSpecVector parseArguments (std::initializer_list<std::string> cmdline)
+{
+	return parseArguments (cmdline.begin (), cmdline.end ());
+}
 
 
 /**

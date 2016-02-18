@@ -18,7 +18,9 @@
 using namespace std;
 using namespace kdb;
 
-FstabCommand::FstabCommand () {}
+FstabCommand::FstabCommand ()
+{
+}
 
 int FstabCommand::execute (Cmdline const & cl)
 {
@@ -75,4 +77,6 @@ int FstabCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-FstabCommand::~FstabCommand () {}
+FstabCommand::~FstabCommand ()
+{
+}

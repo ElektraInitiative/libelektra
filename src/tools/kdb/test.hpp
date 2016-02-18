@@ -35,11 +35,20 @@ public:
 	void doNamingTest ();
 	void doMetaTest ();
 
-	virtual std::string getShortOptions () override { return ""; }
+	virtual std::string getShortOptions () override
+	{
+		return "";
+	}
 
-	virtual std::string getSynopsis () override { return "<root-key> [<test-name> ...]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<root-key> [<test-name> ...]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Run key database test suite."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Run key database test suite.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

@@ -16,7 +16,10 @@
 #include <kdbextension.h>
 #include <kdbproposal.h>
 
-static int keyCmpOrderWrapper (const void * a, const void * b) { return elektraKeyCmpOrder (*((const Key **)a), *((const Key **)b)); }
+static int keyCmpOrderWrapper (const void * a, const void * b)
+{
+	return elektraKeyCmpOrder (*((const Key **)a), *((const Key **)b));
+}
 
 static void writeComment (const char * spaces, const char * start, const char * comment, FILE * fp)
 {

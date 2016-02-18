@@ -24,9 +24,13 @@ using namespace kdb;
 using namespace kdb::tools::merging;
 using namespace std;
 
-MergeCommand::MergeCommand () {}
+MergeCommand::MergeCommand ()
+{
+}
 
-MergeCommand::~MergeCommand () {}
+MergeCommand::~MergeCommand ()
+{
+}
 
 int MergeCommand::execute (Cmdline const & cl)
 {

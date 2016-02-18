@@ -21,11 +21,20 @@ public:
 	ExportCommand ();
 	~ExportCommand ();
 
-	virtual std::string getShortOptions () override { return "Ec"; }
+	virtual std::string getShortOptions () override
+	{
+		return "Ec";
+	}
 
-	virtual std::string getSynopsis () override { return "<source> [<format>]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<source> [<format>]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Export configuration from the key database."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Export configuration from the key database.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

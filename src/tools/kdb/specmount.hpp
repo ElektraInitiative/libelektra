@@ -31,13 +31,25 @@ public:
 	SpecMountCommand ();
 	~SpecMountCommand ();
 
-	virtual std::string getShortOptions () override { return "idRcWv"; }
+	virtual std::string getShortOptions () override
+	{
+		return "idRcWv";
+	}
 
-	virtual std::string getSynopsis () override { return "[mountpoint] [plugin [config] [..]]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "[mountpoint] [plugin [config] [..]]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Mount a new backend by specification."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Mount a new backend by specification.";
+	}
 
-	virtual std::string getLongHelpText () override { return ""; }
+	virtual std::string getLongHelpText () override
+	{
+		return "";
+	}
 
 	virtual int execute (Cmdline const & cmdline) override;
 };

@@ -426,7 +426,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 }
 
-kdb::KeySet Cmdline::getPluginsConfig (string basepath) const { return kdb::tools::parsePluginArguments (pluginsConfig, basepath); }
+kdb::KeySet Cmdline::getPluginsConfig (string basepath) const
+{
+	return kdb::tools::parsePluginArguments (pluginsConfig, basepath);
+}
 
 /**
  * @brief create a key from argument number pos

@@ -35,19 +35,29 @@ namespace kdb
 namespace tools
 {
 
-BackendInterface::~BackendInterface () {}
+BackendInterface::~BackendInterface ()
+{
+}
 
-MountBackendInterface::~MountBackendInterface () {}
+MountBackendInterface::~MountBackendInterface ()
+{
+}
 
-SerializeInterface::~SerializeInterface () {}
+SerializeInterface::~SerializeInterface ()
+{
+}
 
 /** Creates a new empty backend.
  *
  * */
-Backend::Backend () : plugins () {}
+Backend::Backend () : plugins ()
+{
+}
 
 
-Backend::~Backend () {}
+Backend::~Backend ()
+{
+}
 
 Backend::Backend (Backend && other)
 : getplugins (other.getplugins), setplugins (other.setplugins), errorplugins (other.errorplugins), mp (other.mp),
@@ -213,7 +223,10 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
  *
  * @param ks the config to add, should be below system/
  */
-void Backend::setBackendConfig (KeySet const & ks) { config.append (ks); }
+void Backend::setBackendConfig (KeySet const & ks)
+{
+	config.append (ks);
+}
 
 
 /**@pre: resolver needs to be loaded first

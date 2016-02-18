@@ -80,12 +80,18 @@ PluginSpec::PluginSpec (std::string pluginName, size_t refNumber, KeySet pluginC
  *
  * @return the module name, then #, and then the reference name
  */
-std::string PluginSpec::getFullName () const { return name + "#" + refname; }
+std::string PluginSpec::getFullName () const
+{
+	return name + "#" + refname;
+}
 
 /**
  * @return the reference name
  */
-std::string PluginSpec::getRefName () const { return refname; }
+std::string PluginSpec::getRefName () const
+{
+	return refname;
+}
 
 /**
  * @brief Checks if reference name contains only numbers
@@ -102,12 +108,18 @@ bool PluginSpec::isRefNumber () const
 /**
  * @return the module name
  */
-std::string PluginSpec::getName () const { return name; }
+std::string PluginSpec::getName () const
+{
+	return name;
+}
 
 /**
  * @return the config
  */
-KeySet PluginSpec::getConfig () const { return config; }
+KeySet PluginSpec::getConfig () const
+{
+	return config;
+}
 
 /**
  * @brief Set the full name with # or only the name
@@ -155,7 +167,10 @@ void PluginSpec::setRefName (std::string const & n)
  *
  * @param refnumber the number to set
  */
-void PluginSpec::setRefNumber (size_t refnumber) { refname = to_string (refnumber); }
+void PluginSpec::setRefNumber (size_t refnumber)
+{
+	refname = to_string (refnumber);
+}
 
 /**
  * @brief Set the module name of the plugin
@@ -175,7 +190,10 @@ void PluginSpec::setName (std::string const & n)
  *
  * @param c config to append
  */
-void PluginSpec::appendConfig (KeySet c) { config.append (c); }
+void PluginSpec::appendConfig (KeySet c)
+{
+	config.append (c);
+}
 
 /**
  * @brief Check if str starts with a-z and then only has chars a-z, 0-9 or underscore (_)
@@ -214,7 +232,10 @@ bool operator== (PluginSpec const & self, PluginSpec const & other)
  * @brief Compare two pluginspec if their value is not equal
  * @note the content of getConfig() will be only compared with keynames, not content!
  */
-bool operator!= (PluginSpec const & self, PluginSpec const & other) { return !(self == other); }
+bool operator!= (PluginSpec const & self, PluginSpec const & other)
+{
+	return !(self == other);
+}
 
 /**
  * @brief Output the name, refname and size of config

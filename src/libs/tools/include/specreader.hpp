@@ -68,7 +68,10 @@ public:
 	 *
 	 * @see resolveNeeds()
 	 */
-	Backends getBackends () { return backends; }
+	Backends getBackends ()
+	{
+		return backends;
+	}
 
 	/**
 	 * @brief Reads in a specification.

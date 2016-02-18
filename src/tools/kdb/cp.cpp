@@ -18,7 +18,9 @@
 using namespace std;
 using namespace kdb;
 
-CpCommand::CpCommand () {}
+CpCommand::CpCommand ()
+{
+}
 
 int CpCommand::execute (Cmdline const & cl)
 {
@@ -89,4 +91,6 @@ int CpCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-CpCommand::~CpCommand () {}
+CpCommand::~CpCommand ()
+{
+}

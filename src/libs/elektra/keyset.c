@@ -2446,7 +2446,10 @@ int ksResize (KeySet * ks, size_t alloc)
  *
  * @param ks the keyset object to work with
  * @return allocated size*/
-size_t ksGetAlloc (const KeySet * ks) { return ks->alloc - 1; }
+size_t ksGetAlloc (const KeySet * ks)
+{
+	return ks->alloc - 1;
+}
 
 
 /**

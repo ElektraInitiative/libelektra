@@ -1896,14 +1896,32 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 
 Key * global_a;
 
-int add_string (Key * check) { return keySetString (check, "string"); }
+int add_string (Key * check)
+{
+	return keySetString (check, "string");
+}
 // int add_comment (Key *check) { return keySetComment (check, "comment"); }
-int has_a (Key * check) { return keyName (check)[5] == 'a'; }
-int below_a (Key * check) { return keyIsBelow (global_a, check); }
-int direct_below_a (Key * check) { return keyIsDirectBelow (global_a, check); }
+int has_a (Key * check)
+{
+	return keyName (check)[5] == 'a';
+}
+int below_a (Key * check)
+{
+	return keyIsBelow (global_a, check);
+}
+int direct_below_a (Key * check)
+{
+	return keyIsDirectBelow (global_a, check);
+}
 
-int sum_helper (Key * check) { return atoi (keyValue (check)); }
-int below_30 (Key * check) { return atoi (keyValue (check)) < 30; }
+int sum_helper (Key * check)
+{
+	return atoi (keyValue (check));
+}
+int below_30 (Key * check)
+{
+	return atoi (keyValue (check)) < 30;
+}
 int find_80 (Key * check)
 {
 	int n = atoi (keyValue (check));

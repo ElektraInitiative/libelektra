@@ -71,9 +71,15 @@ static void test_mount ()
 	kdb_del (kdb);
 }
 
-KeySet * modules_config (void) { return ksNew (5, keyNew ("system/elektra/modules", KEY_END), KS_END); }
+KeySet * modules_config (void)
+{
+	return ksNew (5, keyNew ("system/elektra/modules", KEY_END), KS_END);
+}
 
-KeySet * minimal_config (void) { return ksNew (5, keyNew ("system/elektra/mountpoints", KEY_END), KS_END); }
+KeySet * minimal_config (void)
+{
+	return ksNew (5, keyNew ("system/elektra/mountpoints", KEY_END), KS_END);
+}
 
 
 static void test_minimaltrie ()

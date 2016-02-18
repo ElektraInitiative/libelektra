@@ -152,7 +152,10 @@ bool Plugins::checkPlacement (Plugin & plugin, std::string which)
 	return true;
 }
 
-bool Plugins::validateProvided () const { return getNeededMissing ().empty (); }
+bool Plugins::validateProvided () const
+{
+	return getNeededMissing ().empty ();
+}
 
 std::vector<std::string> Plugins::getNeededMissing () const
 {
@@ -382,11 +385,20 @@ void ErrorPlugins::status (std::ostream & os) const
 }
 
 
-bool ErrorPlugins::validated () const { return nrResolverPlugins == 1 && validateProvided (); }
+bool ErrorPlugins::validated () const
+{
+	return nrResolverPlugins == 1 && validateProvided ();
+}
 
-bool GetPlugins::validated () const { return nrStoragePlugins == 1 && nrResolverPlugins == 1; }
+bool GetPlugins::validated () const
+{
+	return nrStoragePlugins == 1 && nrResolverPlugins == 1;
+}
 
-bool SetPlugins::validated () const { return nrStoragePlugins == 1 && nrResolverPlugins == 1; }
+bool SetPlugins::validated () const
+{
+	return nrStoragePlugins == 1 && nrResolverPlugins == 1;
+}
 
 
 namespace

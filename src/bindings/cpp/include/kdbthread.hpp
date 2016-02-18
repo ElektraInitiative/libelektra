@@ -34,7 +34,9 @@ public:
 
 struct LayerAction
 {
-	LayerAction (bool activate_, std::shared_ptr<Layer> layer_) : activate (activate_), layer (std::move (layer_)) {}
+	LayerAction (bool activate_, std::shared_ptr<Layer> layer_) : activate (activate_), layer (std::move (layer_))
+	{
+	}
 	bool activate; // false if deactivate
 	std::shared_ptr<Layer> layer;
 };
@@ -58,14 +60,19 @@ public:
 	 *
 	 * NoContext will never update anything
 	 */
-	void attachByName (ELEKTRA_UNUSED std::string const & key_name, ELEKTRA_UNUSED ValueObserver & ValueObserver) {}
+	void attachByName (ELEKTRA_UNUSED std::string const & key_name, ELEKTRA_UNUSED ValueObserver & ValueObserver)
+	{
+	}
 
 	/**
 	 * @brief The evaluated equals the non-evaluated name!
 	 *
 	 * @return NoContext always returns the same string
 	 */
-	std::string evaluate (std::string const & key_name) const { return key_name; }
+	std::string evaluate (std::string const & key_name) const
+	{
+		return key_name;
+	}
 
 	/**
 	 * @brief (Re)attaches a ValueSubject to a thread or simply
@@ -289,7 +296,10 @@ class ThreadContext : public ThreadSubject, public Context
 public:
 	typedef std::reference_wrapper<ValueSubject> ValueRef;
 
-	explicit ThreadContext (Coordinator & gc) : m_gc (gc) { m_gc.attach (this); }
+	explicit ThreadContext (Coordinator & gc) : m_gc (gc)
+	{
+		m_gc.attach (this);
+	}
 
 	~ThreadContext ()
 	{
@@ -302,9 +312,15 @@ public:
 #endif
 	}
 
-	Coordinator & global () { return m_gc; }
+	Coordinator & global ()
+	{
+		return m_gc;
+	}
 
-	Coordinator & g () { return m_gc; }
+	Coordinator & g ()
+	{
+		return m_gc;
+	}
 
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> activate (Args &&... args)

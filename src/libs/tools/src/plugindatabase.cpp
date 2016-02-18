@@ -29,14 +29,22 @@ namespace tools
 class ModulesPluginDatabase::Impl
 {
 public:
-	Impl () {}
-	~Impl () {}
+	Impl ()
+	{
+	}
+	~Impl ()
+	{
+	}
 	Modules modules;
 };
 
-ModulesPluginDatabase::ModulesPluginDatabase () : impl (new ModulesPluginDatabase::Impl ()) {}
+ModulesPluginDatabase::ModulesPluginDatabase () : impl (new ModulesPluginDatabase::Impl ())
+{
+}
 
-ModulesPluginDatabase::~ModulesPluginDatabase () {}
+ModulesPluginDatabase::~ModulesPluginDatabase ()
+{
+}
 
 std::vector<std::string> ModulesPluginDatabase::listAllPlugins () const
 {

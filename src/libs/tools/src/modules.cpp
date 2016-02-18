@@ -22,9 +22,15 @@ namespace kdb
 namespace tools
 {
 
-Modules::Modules () { ckdb::elektraModulesInit (modules.getKeySet (), nullptr); }
+Modules::Modules ()
+{
+	ckdb::elektraModulesInit (modules.getKeySet (), nullptr);
+}
 
-Modules::~Modules () { ckdb::elektraModulesClose (modules.getKeySet (), nullptr); }
+Modules::~Modules ()
+{
+	ckdb::elektraModulesClose (modules.getKeySet (), nullptr);
+}
 
 PluginPtr Modules::load (std::string const & pluginName)
 {
@@ -33,7 +39,10 @@ PluginPtr Modules::load (std::string const & pluginName)
 	return load (pluginName, config);
 }
 
-PluginPtr Modules::load (std::string const & pluginName, KeySet const & config) { return load (PluginSpec (pluginName, config)); }
+PluginPtr Modules::load (std::string const & pluginName, KeySet const & config)
+{
+	return load (PluginSpec (pluginName, config));
+}
 
 PluginPtr Modules::load (PluginSpec const & spec)
 {

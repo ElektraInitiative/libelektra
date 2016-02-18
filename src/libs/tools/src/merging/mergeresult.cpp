@@ -20,7 +20,10 @@ namespace tools
 namespace merging
 {
 
-MergeResult::MergeResult () { resolvedKeys = 0; }
+MergeResult::MergeResult ()
+{
+	resolvedKeys = 0;
+}
 
 MergeResult::MergeResult (KeySet & _conflictSet, KeySet & _mergedKeys)
 {

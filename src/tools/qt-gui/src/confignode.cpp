@@ -70,11 +70,20 @@ int ConfigNode::getChildCount () const
 	return 0;
 }
 
-QString ConfigNode::getName () const { return m_name; }
+QString ConfigNode::getName () const
+{
+	return m_name;
+}
 
-QString ConfigNode::getPath () const { return m_path; }
+QString ConfigNode::getPath () const
+{
+	return m_path;
+}
 
-QVariant ConfigNode::getValue () const { return m_value; }
+QVariant ConfigNode::getValue () const
+{
+	return m_value;
+}
 
 void ConfigNode::setName (const QString & name)
 {
@@ -181,7 +190,10 @@ void ConfigNode::accept (Visitor & visitor)
 	}
 }
 
-Key ConfigNode::getKey () const { return m_key; }
+Key ConfigNode::getKey () const
+{
+	return m_key;
+}
 
 int ConfigNode::getChildIndexByName (const QString & name)
 {
@@ -197,14 +209,29 @@ int ConfigNode::getChildIndexByName (const QString & name)
 	return -1;
 }
 
-TreeViewModel * ConfigNode::getParentModel () { return m_parentModel; }
+TreeViewModel * ConfigNode::getParentModel ()
+{
+	return m_parentModel;
+}
 
-void ConfigNode::setParentModel (TreeViewModel * parentModel) { m_parentModel = parentModel; }
+void ConfigNode::setParentModel (TreeViewModel * parentModel)
+{
+	m_parentModel = parentModel;
+}
 
-bool ConfigNode::isExpanded () const { return m_isExpanded; }
-bool ConfigNode::isDirty () const { return m_isDirty; }
+bool ConfigNode::isExpanded () const
+{
+	return m_isExpanded;
+}
+bool ConfigNode::isDirty () const
+{
+	return m_isDirty;
+}
 
-void ConfigNode::setIsDirty (bool dirty) { m_isDirty = dirty; }
+void ConfigNode::setIsDirty (bool dirty)
+{
+	m_isDirty = dirty;
+}
 
 void ConfigNode::updateNode (Key key)
 {
@@ -213,7 +240,10 @@ void ConfigNode::updateNode (Key key)
 	populateMetaModel ();
 }
 
-void ConfigNode::setIsExpanded (bool value) { m_isExpanded = value; }
+void ConfigNode::setIsExpanded (bool value)
+{
+	m_isExpanded = value;
+}
 
 void ConfigNode::populateMetaModel ()
 {
@@ -244,7 +274,10 @@ void ConfigNode::setValue ()
 		m_value = QVariant::fromValue (QString::fromStdString (m_key.getBinary ()));
 }
 
-void ConfigNode::setKey (Key key) { m_key = key; }
+void ConfigNode::setKey (Key key)
+{
+	m_key = key;
+}
 
 void ConfigNode::setKeyName (const QString & name)
 {
@@ -263,7 +296,10 @@ void ConfigNode::setKeyName (const QString & name)
 	}
 }
 
-void ConfigNode::appendChild (ConfigNodePtr node) { m_children->append (node); }
+void ConfigNode::appendChild (ConfigNodePtr node)
+{
+	m_children->append (node);
+}
 
 bool ConfigNode::hasChild (const QString & name) const
 {
@@ -281,9 +317,15 @@ bool ConfigNode::hasChild (const QString & name) const
 	return false;
 }
 
-TreeViewModel * ConfigNode::getChildren () const { return m_children; }
+TreeViewModel * ConfigNode::getChildren () const
+{
+	return m_children;
+}
 
-TreeViewModel * ConfigNode::getMetaKeys () const { return m_metaData; }
+TreeViewModel * ConfigNode::getMetaKeys () const
+{
+	return m_metaData;
+}
 
 ConfigNodePtr ConfigNode::getChildByName (QString & name) const
 {

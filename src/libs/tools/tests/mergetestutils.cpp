@@ -69,11 +69,17 @@ protected:
 		mergeKeys.append (mk4);
 	}
 
-	virtual ~MergeTest () {}
+	virtual ~MergeTest ()
+	{
+	}
 
-	virtual void SetUp () override {}
+	virtual void SetUp () override
+	{
+	}
 
-	virtual void TearDown () override {}
+	virtual void TearDown () override
+	{
+	}
 
 	virtual void unsyncKeys (KeySet & ks)
 	{

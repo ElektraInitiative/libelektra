@@ -130,7 +130,10 @@ Key * create_root_key (const char * backendName)
 /**Create a configuration keyset for a backend.
  *
  * @return a allocated configuration keyset for a backend*/
-KeySet * create_conf (const char * filename) { return ksNew (2, keyNew ("system/path", KEY_VALUE, filename, KEY_END), KS_END); }
+KeySet * create_conf (const char * filename)
+{
+	return ksNew (2, keyNew ("system/path", KEY_VALUE, filename, KEY_END), KS_END);
+}
 
 
 /**
@@ -241,9 +244,15 @@ char * srcdir_file (const char * fileName)
 	return file;
 }
 
-const char * elektraFilename () { return tmpfilename; }
+const char * elektraFilename ()
+{
+	return tmpfilename;
+}
 
-void elektraUnlink (const char * filename) { unlink (filename); }
+void elektraUnlink (const char * filename)
+{
+	unlink (filename);
+}
 
 void clear_sync (KeySet * ks)
 {

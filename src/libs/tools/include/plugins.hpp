@@ -32,9 +32,13 @@ struct Place
 	int current;
 	int max;
 
-	Place () : current (-1), max (0) {}
+	Place () : current (-1), max (0)
+	{
+	}
 
-	Place (int current_, int max_) : current (current_), max (max_) {}
+	Place (int current_, int max_) : current (current_), max (max_)
+	{
+	}
 };
 
 /**

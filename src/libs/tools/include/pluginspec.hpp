@@ -62,17 +62,26 @@ private:
 
 struct PluginSpecName
 {
-	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const { return s1.getName () == s2.getName (); }
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getName () == s2.getName ();
+	}
 };
 
 struct PluginSpecRefName
 {
-	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const { return s1.getRefName () == s2.getRefName (); }
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getRefName () == s2.getRefName ();
+	}
 };
 
 struct PluginSpecFullName
 {
-	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const { return s1.getFullName () == s2.getFullName (); }
+	bool operator() (PluginSpec const & s1, PluginSpec const & s2) const
+	{
+		return s1.getFullName () == s2.getFullName ();
+	}
 };
 
 
@@ -81,7 +90,10 @@ struct PluginSpecFullName
  */
 struct PluginSpecHash
 {
-	size_t operator() (kdb::tools::PluginSpec const & s) const { return std::hash<std::string> () (s.getName ()); }
+	size_t operator() (kdb::tools::PluginSpec const & s) const
+	{
+		return std::hash<std::string> () (s.getName ());
+	}
 };
 
 #ifdef ELEKTRA_PLUGINSPEC_WITH_COMPARE

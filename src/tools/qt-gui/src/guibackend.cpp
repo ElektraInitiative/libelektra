@@ -117,9 +117,15 @@ void GUIBackend::serialise (TreeViewModel * model)
 	}
 }
 
-bool GUIBackend::validated () { return m_backend->validated (); }
+bool GUIBackend::validated ()
+{
+	return m_backend->validated ();
+}
 
-TreeViewModel * GUIBackend::pluginConfigModel () const { return m_pluginConfigModel; }
+TreeViewModel * GUIBackend::pluginConfigModel () const
+{
+	return m_pluginConfigModel;
+}
 
 void GUIBackend::resetModel ()
 {

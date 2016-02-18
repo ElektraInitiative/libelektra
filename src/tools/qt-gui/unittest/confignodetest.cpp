@@ -8,4 +8,6 @@
 
 #include "confignodetest.hpp"
 
-ConfigNodeTest::ConfigNodeTest (QObject * parent) : QObject (parent) {}
+ConfigNodeTest::ConfigNodeTest (QObject * parent) : QObject (parent)
+{
+}

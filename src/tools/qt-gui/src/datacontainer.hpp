@@ -25,12 +25,17 @@ public:
 	 * @brief The default constructor.
 	 * @param parentContainer An optional parent object.
 	 */
-	explicit DataContainer (QObject * parentContainer = nullptr) : QObject (parentContainer) {}
+	explicit DataContainer (QObject * parentContainer = nullptr) : QObject (parentContainer)
+	{
+	}
 
 	/**
 	 * @brief The mandatory copy construcor-
 	 */
-	DataContainer (const DataContainer & otherContainer) : QObject () { Q_UNUSED (otherContainer) }
+	DataContainer (const DataContainer & otherContainer) : QObject ()
+	{
+		Q_UNUSED (otherContainer)
+	}
 
 	/**
 	  * @brief The old name of a ConfigNode. Used when creating EditKeyCommands.

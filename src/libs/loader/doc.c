@@ -41,7 +41,10 @@
  * @return -1 on error
  * @return >=0 otherwise
  */
-int elektraModulesInit (KeySet * modules, Key * error) { return -1; }
+int elektraModulesInit (KeySet * modules, Key * error)
+{
+	return -1;
+}
 
 /**
  * Load a library with the given name.
@@ -79,7 +82,10 @@ int elektraModulesInit (KeySet * modules, Key * error) { return -1; }
  * @return 0 on error
  * @ingroup modules
  */
-elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * error) { return 0; }
+elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * error)
+{
+	return 0;
+}
 
 /**
  * Close all modules.
@@ -99,4 +105,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
  * @return >=0 otherwise
  * @ingroup modules
  */
-int elektraModulesClose (KeySet * modules, Key * error) { return -1; }
+int elektraModulesClose (KeySet * modules, Key * error)
+{
+	return -1;
+}

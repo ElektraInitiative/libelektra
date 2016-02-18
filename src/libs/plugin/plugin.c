@@ -110,7 +110,10 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
  * @ingroup plugin
  * @return keyset to the configuration for that plugin
  */
-KeySet * elektraPluginGetConfig (Plugin * handle) { return handle->config; }
+KeySet * elektraPluginGetConfig (Plugin * handle)
+{
+	return handle->config;
+}
 
 /**
  * @brief Store a pointer to any plugin related data.
@@ -119,7 +122,10 @@ KeySet * elektraPluginGetConfig (Plugin * handle) { return handle->config; }
  * @param data the pointer to the data
  * @ingroup plugin
  */
-void elektraPluginSetData (Plugin * plugin, void * data) { plugin->data = data; }
+void elektraPluginSetData (Plugin * plugin, void * data)
+{
+	plugin->data = data;
+}
 
 /**
  * @brief Get a pointer to any plugin related data stored before.
@@ -128,4 +134,7 @@ void elektraPluginSetData (Plugin * plugin, void * data) { plugin->data = data; 
  * @return a pointer to the data
  * @ingroup plugin
  */
-void * elektraPluginGetData (Plugin * plugin) { return plugin->data; }
+void * elektraPluginGetData (Plugin * plugin)
+{
+	return plugin->data;
+}

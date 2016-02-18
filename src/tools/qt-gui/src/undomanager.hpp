@@ -47,7 +47,10 @@ public:
 	 * @brief The mandatory copy constructor.
 	 * @param other
 	 */
-	UndoManager (UndoManager const & other) : QObject () { Q_UNUSED (other) }
+	UndoManager (UndoManager const & other) : QObject ()
+	{
+		Q_UNUSED (other)
+	}
 
 	/**
 	 * @brief Returns if a command can be undone.

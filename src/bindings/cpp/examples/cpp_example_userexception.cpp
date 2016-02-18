@@ -30,7 +30,10 @@
 class UserException : public std::exception
 {
 public:
-	virtual const char * what () const throw () override { return "User Exception"; }
+	virtual const char * what () const throw () override
+	{
+		return "User Exception";
+	}
 };
 
 namespace kdb
@@ -39,39 +42,60 @@ namespace kdb
 class Exception : public UserException
 {
 public:
-	virtual const char * what () const throw () override { return "User Exception: Exception thrown by Elektra"; }
+	virtual const char * what () const throw () override
+	{
+		return "User Exception: Exception thrown by Elektra";
+	}
 };
 
 class KeyException : public Exception
 {
 public:
-	virtual const char * what () const throw () override { return "User Exception: Exception thrown by a Key"; }
+	virtual const char * what () const throw () override
+	{
+		return "User Exception: Exception thrown by a Key";
+	}
 };
 
 class KeyNotFoundException : public Exception
 {
 public:
-	KeyNotFoundException (std::string const &) {}
-	virtual const char * what () const throw () { return "User Exception: Key not found"; }
+	KeyNotFoundException (std::string const &)
+	{
+	}
+	virtual const char * what () const throw ()
+	{
+		return "User Exception: Key not found";
+	}
+
 private:
 };
 
 class KeyTypeMismatch : public KeyException
 {
 public:
-	virtual const char * what () const throw () override { return "User Exception: Binary or String key mismatch"; }
+	virtual const char * what () const throw () override
+	{
+		return "User Exception: Binary or String key mismatch";
+	}
 };
 
 class KeyInvalidName : public KeyException
 {
 public:
-	virtual const char * what () const throw () override { return "User Exception: Invalid Keyname"; }
+	virtual const char * what () const throw () override
+	{
+		return "User Exception: Invalid Keyname";
+	}
 };
 
 class KeyTypeConversion : public KeyException
 {
 public:
-	virtual const char * what () const throw () override { return "User Exception: Exception thrown by get/set"; }
+	virtual const char * what () const throw () override
+	{
+		return "User Exception: Exception thrown by get/set";
+	}
 };
 }
 
@@ -84,11 +108,19 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) : m_key (key) {}
+	KDBException (Key key) : m_key (key)
+	{
+	}
 
-	virtual ~KDBException () throw () {}
+	virtual ~KDBException () throw ()
+	{
+	}
 
-	virtual const char * what () const throw () override { return "User Exception: KDB"; }
+	virtual const char * what () const throw () override
+	{
+		return "User Exception: KDB";
+	}
+
 private:
 	Key m_key;
 };

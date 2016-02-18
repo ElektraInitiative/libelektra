@@ -21,11 +21,20 @@ public:
 	InfoCommand ();
 	~InfoCommand ();
 
-	virtual std::string getShortOptions () override { return "lc"; }
+	virtual std::string getShortOptions () override
+	{
+		return "lc";
+	}
 
-	virtual std::string getSynopsis () override { return "<plugin name> [<clause name>]"; }
+	virtual std::string getSynopsis () override
+	{
+		return "<plugin name> [<clause name>]";
+	}
 
-	virtual std::string getShortHelpText () override { return "Print information about a plugin."; }
+	virtual std::string getShortHelpText () override
+	{
+		return "Print information about a plugin.";
+	}
 
 	virtual std::string getLongHelpText () override
 	{

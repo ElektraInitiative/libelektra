@@ -17,7 +17,9 @@
 using namespace std;
 using namespace kdb;
 
-ValidationCommand::ValidationCommand () {}
+ValidationCommand::ValidationCommand ()
+{
+}
 
 int ValidationCommand::execute (Cmdline const & cl)
 {
@@ -61,4 +63,6 @@ int ValidationCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-ValidationCommand::~ValidationCommand () {}
+ValidationCommand::~ValidationCommand ()
+{
+}

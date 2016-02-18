@@ -66,7 +66,10 @@ static KeySet * newInvalidConfiguration ()
  *
  * The required key "/crypto/key-derivation/key" is missing.
  */
-static KeySet * newIncompleteConfiguration () { return ksNew (0, KS_END); }
+static KeySet * newIncompleteConfiguration ()
+{
+	return ksNew (0, KS_END);
+}
 
 /**
  * @brief create a new KeySet holding sample data for encryption and decryption.

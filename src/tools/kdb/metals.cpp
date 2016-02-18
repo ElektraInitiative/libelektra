@@ -16,7 +16,9 @@
 using namespace kdb;
 using namespace std;
 
-MetaLsCommand::MetaLsCommand () {}
+MetaLsCommand::MetaLsCommand ()
+{
+}
 
 int MetaLsCommand::execute (Cmdline const & cl)
 {
@@ -64,4 +66,6 @@ int MetaLsCommand::execute (Cmdline const & cl)
 	return ret;
 }
 
-MetaLsCommand::~MetaLsCommand () {}
+MetaLsCommand::~MetaLsCommand ()
+{
+}

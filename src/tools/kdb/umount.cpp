@@ -18,7 +18,9 @@ using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 
-UmountCommand::UmountCommand () {}
+UmountCommand::UmountCommand ()
+{
+}
 
 int UmountCommand::execute (Cmdline const & cl)
 {
@@ -46,4 +48,6 @@ int UmountCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-UmountCommand::~UmountCommand () {}
+UmountCommand::~UmountCommand ()
+{
+}

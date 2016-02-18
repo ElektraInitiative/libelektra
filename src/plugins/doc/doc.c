@@ -71,9 +71,14 @@ int elektraDocClose (Plugin * handle, Key * warningsKey ELEKTRA_UNUSED)
 }
 //! [doc close]
 
-static int parseKey (FILE * fp ELEKTRA_UNUSED, char ** key ELEKTRA_UNUSED, char ** value ELEKTRA_UNUSED) { return 0; }
+static int parseKey (FILE * fp ELEKTRA_UNUSED, char ** key ELEKTRA_UNUSED, char ** value ELEKTRA_UNUSED)
+{
+	return 0;
+}
 
-static void doAction (Key * k ELEKTRA_UNUSED) {}
+static void doAction (Key * k ELEKTRA_UNUSED)
+{
+}
 
 //![get contract]
 int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
@@ -150,11 +155,19 @@ int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNU
 	return nr_keys;
 }
 
-int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED) { return 0; }
+int elektraDocError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	return 0;
+}
 
-static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED) { return 0; }
+static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
+{
+	return 0;
+}
 
-static void saveToDisc (Key * k ELEKTRA_UNUSED) {}
+static void saveToDisc (Key * k ELEKTRA_UNUSED)
+{
+}
 
 //![set full]
 static void usercode (KDB * handle, KeySet * keyset, Key * key)
@@ -194,7 +207,10 @@ int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * p
 //![set full]
 
 
-void elektraUsercodeUselessSymbol () { usercode (0, 0, 0); }
+void elektraUsercodeUselessSymbol ()
+{
+	usercode (0, 0, 0);
+}
 
 //![export]
 Plugin * ELEKTRA_PLUGIN_EXPORT (doc)
