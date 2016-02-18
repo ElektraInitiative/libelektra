@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 ksNew( 102 ,
 	keyNew ("user/tests/filesys/0-27042916"
 		, KEY_VALUE, "0 216905227"

@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 ksNew(714,
 	keyNew ("meta/", KEY_META_NAME, KEY_DIR,KEY_END),
 	keyNew ("meta/test", KEY_META_NAME, KEY_DIR,KEY_END),
