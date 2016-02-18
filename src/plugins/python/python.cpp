@@ -34,16 +34,14 @@ using namespace ckdb;
 static PyObject * Python_fromSWIG (ckdb::Key * key)
 {
 	swig_type_info * ti = SWIG_TypeQuery ("kdb::Key *");
-	if (key == nullptr || ti == nullptr)
-		return Py_None;
+	if (key == nullptr || ti == nullptr) return Py_None;
 	return SWIG_NewPointerObj (new kdb::Key (key), ti, 0);
 }
 
 static PyObject * Python_fromSWIG (ckdb::KeySet * keyset)
 {
 	swig_type_info * ti = SWIG_TypeQuery ("kdb::KeySet *");
-	if (keyset == nullptr || ti == nullptr)
-		return Py_None;
+	if (keyset == nullptr || ti == nullptr) return Py_None;
 	return SWIG_NewPointerObj (new kdb::KeySet (keyset), ti, 0);
 }
 
@@ -77,8 +75,7 @@ typedef struct
 
 static int Python_AppendToSysPath (const char * path)
 {
-	if (path == nullptr)
-		return 0;
+	if (path == nullptr) return 0;
 
 	PyObject * sysPath = PySys_GetObject ((char *)"path");
 	PyObject * pyPath = PyUnicode_FromString (path);
@@ -89,8 +86,7 @@ static int Python_AppendToSysPath (const char * path)
 
 static PyObject * Python_CallFunction (PyObject * object, PyObject * args)
 {
-	if (!PyCallable_Check (object))
-		return nullptr;
+	if (!PyCallable_Check (object)) return nullptr;
 
 	PyObject * res = PyObject_CallObject (object, args ? args : PyTuple_New (0));
 	Py_XINCREF (res);
@@ -104,8 +100,7 @@ static int Python_CallFunction_Int (moduleData * data, PyObject * object, PyObje
 	if (!res)
 	{
 		ELEKTRA_SET_ERROR (111, errorKey, "Error while calling python function");
-		if (data->printError)
-			PyErr_Print ();
+		if (data->printError) PyErr_Print ();
 	}
 	else
 	{
@@ -267,8 +262,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		tmpScript = elektraStrDup (keyString (script));
 		char * bname = basename (tmpScript);
 		size_t bname_len = strlen (bname);
-		if (bname_len >= 4 && strcmp (bname + bname_len - 3, ".py") == 0)
-			bname[bname_len - 3] = '\0';
+		if (bname_len >= 4 && strcmp (bname + bname_len - 3, ".py") == 0) bname[bname_len - 3] = '\0';
 
 		PyObject * pModule = PyImport_ImportModule (bname);
 		if (pModule == nullptr)
@@ -308,8 +302,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	return Python_CallFunction_Helper2 (data, "open", config, errorKey);
 
 error_print:
-	if (data->printError)
-		PyErr_Print ();
+	if (data->printError) PyErr_Print ();
 error:
 	/* destroy python */
 	Python_Shutdown (data);
@@ -320,8 +313,7 @@ error:
 int PYTHON_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data == nullptr)
-		return 0;
+	if (data == nullptr) return 0;
 
 	int ret = Python_CallFunction_Helper1 (data, "close", errorKey);
 
@@ -351,24 +343,21 @@ int PYTHON_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	}
 
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data != nullptr)
-		return Python_CallFunction_Helper2 (data, "get", returned, parentKey);
+	if (data != nullptr) return Python_CallFunction_Helper2 (data, "get", returned, parentKey);
 	return 0;
 }
 
 int PYTHON_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data != nullptr)
-		return Python_CallFunction_Helper2 (data, "set", returned, parentKey);
+	if (data != nullptr) return Python_CallFunction_Helper2 (data, "set", returned, parentKey);
 	return 0;
 }
 
 int PYTHON_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data != nullptr)
-		return Python_CallFunction_Helper2 (data, "error", returned, parentKey);
+	if (data != nullptr) return Python_CallFunction_Helper2 (data, "error", returned, parentKey);
 	return 0;
 }
 

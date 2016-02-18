@@ -51,13 +51,11 @@ TEST (MountBackendBuilder, parsePluginArguments)
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		EXPECT_EQ (psv1.size (), psv2.size ());                                                                                    \
-		if (psv1.size () != psv2.size ())                                                                                          \
-			break;                                                                                                             \
+		if (psv1.size () != psv2.size ()) break;                                                                                   \
 		for (size_t i = 0; i < psv1.size (); ++i)                                                                                  \
 		{                                                                                                                          \
 			EXPECT_EQ (psv1[i], psv2[i]) << "element " << i << " differs";                                                     \
-			if (!(psv1[i] == psv2[i]))                                                                                         \
-				break;                                                                                                     \
+			if (!(psv1[i] == psv2[i])) break;                                                                                  \
 		}                                                                                                                          \
 	} while (false)
 

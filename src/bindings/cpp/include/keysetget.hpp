@@ -47,13 +47,11 @@ struct KeySetTypeWrapper<std::map<std::string, T>>
 					break;
 				}
 			Key b = ks.lookup (n, options);
-			if (!b)
-				continue;
+			if (!b) continue;
 			Key k;
 			while ((k = ks.next ()))
 			{
-				if (!k.isBelow (b))
-					break; // other keys are not relevant anymore
+				if (!k.isBelow (b)) break; // other keys are not relevant anymore
 				if (k.isDirectBelow (b))
 				{
 					ret.insert (std::make_pair<std::string, T> (k.getBaseName (), k.get<T> ()));

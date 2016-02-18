@@ -38,14 +38,11 @@ parse_t parse (std::string const & file)
 		}
 
 		size_t colonPos = line.find (':');
-		if (colonPos == string::npos)
-			throw parse_error ("No : found", linenr);
+		if (colonPos == string::npos) throw parse_error ("No : found", linenr);
 		std::string identifier = line.substr (0, colonPos);
 		std::string text = line.substr (colonPos + 1);
-		if (identifier.empty ())
-			identifier = lastIdentifier;
-		if (identifier.empty ())
-			throw parse_error ("Line started with : but there was no previous identifier", linenr);
+		if (identifier.empty ()) identifier = lastIdentifier;
+		if (identifier.empty ()) throw parse_error ("Line started with : but there was no previous identifier", linenr);
 
 		if (identifier == "number")
 		{
@@ -53,12 +50,10 @@ parse_t parse (std::string const & file)
 			std::istringstream istr (text);
 			istr >> cmpNumber;
 
-			if (number != cmpNumber)
-				throw parse_error ("Given number for that entry wrong", linenr);
+			if (number != cmpNumber) throw parse_error ("Given number for that entry wrong", linenr);
 		}
 
-		if (!currentMap[identifier].empty ())
-			currentMap[identifier] += "\n";
+		if (!currentMap[identifier].empty ()) currentMap[identifier] += "\n";
 		currentMap[identifier] += text;
 
 		lastIdentifier = identifier;

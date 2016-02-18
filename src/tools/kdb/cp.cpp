@@ -54,8 +54,7 @@ int CpCommand::execute (Cmdline const & cl)
 
 	oldConf.rewind ();
 	std::string sourceName = sourceKey.getName ();
-	if (cl.verbose)
-		cout << "common name: " << sourceName << endl;
+	if (cl.verbose) cout << "common name: " << sourceName << endl;
 	if (cl.recursive)
 	{
 		// copy all keys with new name

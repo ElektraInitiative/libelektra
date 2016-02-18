@@ -34,10 +34,8 @@ TEST (BackendBuilder, loadAllPlugins)
 		// if (p == "python2") continue;
 		// if (p == "struct") continue;
 
-		if (p == "jni")
-			continue;
-		if (p == "crypto_gcrypt")
-			continue;
+		if (p == "jni") continue;
+		if (p == "crypto_gcrypt") continue;
 		try
 		{
 			m.load (p);

@@ -1104,8 +1104,7 @@ void driver1 ()
 		h = hashlittle (&buf[0], 1, h);
 	}
 	time (&z);
-	if (z - a > 0)
-		printf ("time %d %.8x\n", z - a, h);
+	if (z - a > 0) printf ("time %d %.8x\n", z - a, h);
 }
 
 /* check that every input bit changes every output bit half the time */
@@ -1159,22 +1158,18 @@ void driver2 ()
 							h[l] &= ~c[l];
 							x[l] &= d[l];
 							y[l] &= ~d[l];
-							if (e[l] | f[l] | g[l] | h[l] | x[l] | y[l])
-								finished = 0;
+							if (e[l] | f[l] | g[l] | h[l] | x[l] | y[l]) finished = 0;
 						}
-						if (finished)
-							break;
+						if (finished) break;
 					}
-					if (k > z)
-						z = k;
+					if (k > z) z = k;
 					if (k == MAXPAIR)
 					{
 						printf ("Some bit didn't change: ");
 						printf ("%.8x %.8x %.8x %.8x %.8x %.8x  ", e[0], f[0], g[0], h[0], x[0], y[0]);
 						printf ("i %d j %d m %d len %d\n", i, j, m, hlen);
 					}
-					if (z == MAXPAIR)
-						goto done;
+					if (z == MAXPAIR) goto done;
 				}
 			}
 		}
@@ -1237,15 +1232,13 @@ void driver3 ()
 	i = 47;
 	j = 0;
 	hashlittle2 (q, sizeof (q), &i, &j);
-	if (hashlittle (q, sizeof (q), 47) != i)
-		printf ("hashlittle2 and hashlittle mismatch\n");
+	if (hashlittle (q, sizeof (q), 47) != i) printf ("hashlittle2 and hashlittle mismatch\n");
 
 	/* check that hashword2 and hashword produce the same results */
 	len = 0xdeadbeef;
 	i = 47, j = 0;
 	hashword2 (&len, 1, &i, &j);
-	if (hashword (&len, 1, 47) != i)
-		printf ("hashword2 and hashword mismatch %x %x\n", i, hashword (&len, 1, 47));
+	if (hashword (&len, 1, 47) != i) printf ("hashword2 and hashword mismatch %x %x\n", i, hashword (&len, 1, 47));
 
 	/* check hashlittle doesn't read before or after the ends of the string */
 	for (h = 0, b = buf + 1; h < 8; ++h, ++b)

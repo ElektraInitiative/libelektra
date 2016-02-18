@@ -572,11 +572,9 @@ Key * elektraMountGetMountpoint (KDB * handle, const Key * where)
  */
 Backend * elektraMountGetBackend (KDB * handle, const Key * key)
 {
-	if (!key || !strcmp (keyName (key), ""))
-		return handle->defaultBackend;
+	if (!key || !strcmp (keyName (key), "")) return handle->defaultBackend;
 
 	Backend * ret = elektraTrieLookup (handle->trie, key);
-	if (!ret)
-		return handle->defaultBackend;
+	if (!ret) return handle->defaultBackend;
 	return ret;
 }

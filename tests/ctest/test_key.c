@@ -1257,12 +1257,9 @@ static void test_elektraKeySetName ()
 	for (int i = 0; i < 8; ++i)
 	{
 		int flags = 0;
-		if (i & 1)
-			flags |= KEY_CASCADING_NAME;
-		if (i & 2)
-			flags |= KEY_META_NAME;
-		if (i & 4)
-			flags |= KEY_EMPTY_NAME;
+		if (i & 1) flags |= KEY_CASCADING_NAME;
+		if (i & 2) flags |= KEY_META_NAME;
+		if (i & 4) flags |= KEY_EMPTY_NAME;
 
 		elektraKeySetName (key, "spec/test", flags);
 		succeed_if_same_string (keyName (key), "spec/test");

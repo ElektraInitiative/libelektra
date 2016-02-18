@@ -39,14 +39,11 @@
  */
 int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key * k, void * argument), void * argument)
 {
-	if (!result)
-		return -1;
+	if (!result) return -1;
 
-	if (!input)
-		return -1;
+	if (!input) return -1;
 
-	if (!filter)
-		return -1;
+	if (!filter) return -1;
 
 	int rc = 0;
 	int ret = 0;

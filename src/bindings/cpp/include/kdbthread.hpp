@@ -186,8 +186,7 @@ private:
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
 		KeySet & toUpdate = m_updates[c].toUpdate;
-		if (toUpdate.size () == 0)
-			return;
+		if (toUpdate.size () == 0) return;
 
 		c->notify (toUpdate);
 		toUpdate.clear ();
@@ -236,8 +235,7 @@ private:
 		for (auto & c : m_updates)
 		{
 			// caller itself has it already activated
-			if (cc == c.first)
-				continue;
+			if (cc == c.first) continue;
 			c.second.toActivate.insert (std::make_pair (layer->id (), LayerAction (true, layer)));
 		}
 	}
@@ -260,8 +258,7 @@ private:
 		for (auto & c : m_updates)
 		{
 			// caller itself has it already deactivated
-			if (cc == c.first)
-				continue;
+			if (cc == c.first) continue;
 			c.second.toActivate.insert (std::make_pair (layer->id (), LayerAction (false, layer)));
 		}
 	}
@@ -395,8 +392,7 @@ public:
 		for (auto const & k : ks)
 		{
 			auto const & f = m_keys.find (k.getName ());
-			if (f == m_keys.end ())
-				continue; // key already had context change
+			if (f == m_keys.end ()) continue; // key already had context change
 			f->second.get ().notifyInThread ();
 		}
 	}

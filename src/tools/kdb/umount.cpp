@@ -24,8 +24,7 @@ UmountCommand::UmountCommand ()
 
 int UmountCommand::execute (Cmdline const & cl)
 {
-	if (cl.arguments.size () != 1)
-		throw invalid_argument ("1 argument required");
+	if (cl.arguments.size () != 1) throw invalid_argument ("1 argument required");
 
 	KeySet conf;
 	Key parentKey (Backends::mountpointsPath, KEY_END);
@@ -34,8 +33,7 @@ int UmountCommand::execute (Cmdline const & cl)
 
 	std::string name = cl.createKey (0).getName ();
 
-	if (cl.verbose)
-		Backends::findBackend (name, conf, true);
+	if (cl.verbose) Backends::findBackend (name, conf, true);
 
 	if (Backends::umount (name, conf) == 0)
 	{

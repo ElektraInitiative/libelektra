@@ -26,8 +26,7 @@ typedef enum { NA, CR, LF, CRLF, LFCR, NUM_TYPES } Lineending;
 static inline char * LEString (Lineending index)
 {
 	static char * strings[] = { "NA", "CR", "LF", "CRLF", "LFCR" };
-	if (index > NUM_TYPES)
-		return NULL;
+	if (index > NUM_TYPES) return NULL;
 	return strings[index];
 }
 static Lineending strToLE (const char * str)
@@ -35,8 +34,7 @@ static Lineending strToLE (const char * str)
 	uint8_t counter = 0;
 	for (; counter < NUM_TYPES; ++counter)
 	{
-		if (!strcmp (LEString (counter), str))
-			return counter;
+		if (!strcmp (LEString (counter), str)) return counter;
 	}
 	return NA;
 }

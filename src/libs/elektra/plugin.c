@@ -178,8 +178,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 
 				KeySet * pluginConfig = elektraRenameKeys (cutConfig, "user");
 				ksDel (cutConfig);
-				if (!pluginConfig)
-					return -1;
+				if (!pluginConfig) return -1;
 				ksAppend (pluginConfig, systemConfig);
 				ksRewind (pluginConfig); /* TODO: bug ksAppend invalidates cursor */
 
@@ -318,20 +317,17 @@ int elektraPluginClose (Plugin * handle, Key * errorKey)
 {
 	int rc = 0;
 
-	if (!handle)
-		return 0;
+	if (!handle) return 0;
 
 	--handle->refcounter;
 
 	/* Check if we have the last reference on the plugin (unsigned!) */
-	if (handle->refcounter > 0)
-		return 0;
+	if (handle->refcounter > 0) return 0;
 
 	if (handle->kdbClose)
 	{
 		rc = handle->kdbClose (handle, errorKey);
-		if (rc == -1)
-			ELEKTRA_ADD_WARNING (12, errorKey, "kdbClose() failed");
+		if (rc == -1) ELEKTRA_ADD_WARNING (12, errorKey, "kdbClose() failed");
 	}
 
 	ksDel (handle->config);
@@ -358,8 +354,7 @@ Plugin * elektraPluginMissing (void)
 	Plugin * returned;
 
 	returned = elektraCalloc (sizeof (struct _Plugin));
-	if (!returned)
-		return 0;
+	if (!returned) return 0;
 
 	returned->name = "missing";
 	returned->kdbGet = elektraMissingGet;
@@ -410,8 +405,7 @@ Plugin * elektraPluginVersion (void)
 	Plugin * returned;
 
 	returned = elektraCalloc (sizeof (struct _Plugin));
-	if (!returned)
-		return 0;
+	if (!returned) return 0;
 
 	returned->name = "version";
 	returned->kdbGet = elektraVersionGet;

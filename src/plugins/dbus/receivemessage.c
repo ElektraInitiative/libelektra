@@ -23,8 +23,7 @@ int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filte
 	}
 
 	dbus_bus_add_match (connection, "type='signal',interface='org.libelektra',path='/org/libelektra/configuration'", &error);
-	if (dbus_error_is_set (&error))
-		goto error;
+	if (dbus_error_is_set (&error)) goto error;
 
 	if (!dbus_connection_add_filter (connection, filter_func, NULL, NULL))
 	{

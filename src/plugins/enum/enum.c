@@ -45,8 +45,7 @@ int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 static int validateKey (Key * key)
 {
 	const Key * meta = keyGetMeta (key, "check/enum");
-	if (!meta)
-		return 1;
+	if (!meta) return 1;
 	const char * validValues = keyString (meta);
 	const char * regexString = "'([^']*)'\\s*(,|$)";
 	regex_t regex;
@@ -64,8 +63,7 @@ static int validateKey (Key * key)
 	while (1)
 	{
 		nomatch = regexec (&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
-		if (nomatch)
-			break;
+		if (nomatch) break;
 
 		start = match[1].rm_so + (ptr - validValues);
 		end = match[1].rm_eo + (ptr - validValues);
@@ -80,8 +78,7 @@ static int validateKey (Key * key)
 		}
 		ptr += match[0].rm_eo;
 	}
-	if (value)
-		elektraFree (value);
+	if (value) elektraFree (value);
 	regfree (&regex);
 	return 0;
 }

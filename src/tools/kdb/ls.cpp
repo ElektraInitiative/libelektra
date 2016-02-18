@@ -34,13 +34,11 @@ int LsCommand::execute (Cmdline const & cl)
 
 	kdb.get (ks, root);
 
-	if (cl.verbose)
-		cout << "size of all keys in mountpoint: " << ks.size () << endl;
+	if (cl.verbose) cout << "size of all keys in mountpoint: " << ks.size () << endl;
 
 	KeySet part (ks.cut (root));
 
-	if (cl.verbose)
-		cout << "size of requested keys: " << part.size () << endl;
+	if (cl.verbose) cout << "size of requested keys: " << part.size () << endl;
 	cout.setf (std::ios_base::unitbuf);
 	if (cl.null)
 	{

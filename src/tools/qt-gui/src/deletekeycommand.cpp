@@ -22,8 +22,7 @@ DeleteKeyCommand::DeleteKeyCommand (const QString & type, TreeViewModel * model,
 
 void DeleteKeyCommand::undo ()
 {
-	if (m_isRoot)
-		m_model->removeRow (m_index);
+	if (m_isRoot) m_model->removeRow (m_index);
 	m_model->insertRow (m_index, m_node);
 	m_model->refreshArrayNumbers ();
 	m_model->refresh ();
@@ -32,7 +31,6 @@ void DeleteKeyCommand::undo ()
 void DeleteKeyCommand::redo ()
 {
 	m_model->removeRow (m_index);
-	if (m_isRoot)
-		m_model->insertRow (m_index, m_root, false);
+	if (m_isRoot) m_model->insertRow (m_index, m_root, false);
 	m_model->refreshArrayNumbers ();
 }

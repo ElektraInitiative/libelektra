@@ -265,8 +265,7 @@ public:
 
 	std::string get () const
 	{
-		if (current == end || current == begin - 1)
-			return "";
+		if (current == end || current == begin - 1) return "";
 		return std::string (current);
 	}
 
@@ -278,8 +277,7 @@ public:
 	const char * findNext () const
 	{
 		const char * c = current;
-		if (c >= end)
-			return end;
+		if (c >= end) return end;
 
 		if (c == begin && *c == 0)
 		{
@@ -291,8 +289,7 @@ public:
 		{
 			++c;
 		} while (c < end && *c != 0);
-		if (c != end)
-			++c; // skip past null character
+		if (c != end) ++c; // skip past null character
 
 		return c;
 	}
@@ -300,8 +297,7 @@ public:
 	const char * findPrevious () const
 	{
 		const char * c = current;
-		if (c <= begin)
-			return begin;
+		if (c <= begin) return begin;
 
 		--c; // go from start of string to null
 		do
@@ -396,22 +392,19 @@ public:
 
 	const char * findPrevious () const
 	{
-		if (current <= begin)
-			return begin - 1;
+		if (current <= begin) return begin - 1;
 		return NameIterator::findPrevious ();
 	}
 
 	const char * findNext () const
 	{
-		if (current == begin - 1)
-			return begin;
+		if (current == begin - 1) return begin;
 		return NameIterator::findNext ();
 	}
 
 	std::string get () const
 	{
-		if (current == begin - 1)
-			return "";
+		if (current == begin - 1) return "";
 		return NameIterator::get ();
 	}
 
@@ -595,8 +588,7 @@ inline Key::Key (const char * keyName, ...)
 	key = ckdb::keyVNew (keyName, ap);
 	va_end (ap);
 
-	if (!key)
-		throw std::bad_alloc ();
+	if (!key) throw std::bad_alloc ();
 
 	operator++ ();
 }
@@ -620,8 +612,7 @@ inline Key::Key (const std::string keyName, ...)
 	key = ckdb::keyVNew (keyName.c_str (), ap);
 	va_end (ap);
 
-	if (!key)
-		throw std::bad_alloc ();
+	if (!key) throw std::bad_alloc ();
 
 	operator++ ();
 }
@@ -638,8 +629,7 @@ inline Key::Key (const char * keyName, va_list ap)
 {
 	key = ckdb::keyVNew (keyName, ap);
 
-	if (!key)
-		throw std::bad_alloc ();
+	if (!key) throw std::bad_alloc ();
 
 	operator++ ();
 }
@@ -830,8 +820,7 @@ inline Key::~Key ()
  */
 inline std::string Key::getName () const
 {
-	if (!key)
-		throw KeyException ();
+	if (!key) throw KeyException ();
 	return std::string (ckdb::keyName (key));
 }
 
@@ -1275,8 +1264,7 @@ inline Key::func_t Key::getFunc () const
 	} conversation;
 	static_assert (sizeof (conversation) == sizeof (func_t), "union does not have size of function pointer");
 
-	if (ckdb::keyGetBinary (getKey (), &conversation.v, sizeof (conversation)) != sizeof (conversation))
-		throw KeyTypeMismatch ();
+	if (ckdb::keyGetBinary (getKey (), &conversation.v, sizeof (conversation)) != sizeof (conversation)) throw KeyTypeMismatch ();
 
 	return conversation.f;
 }
@@ -1582,10 +1570,8 @@ inline std::string Key::getNamespace () const
 {
 	std::string name = getName ();
 	size_t slash = name.find ('/');
-	if (slash == 0)
-		return "/";
-	if (slash != std::string::npos)
-		return name.substr (0, slash);
+	if (slash == 0) return "/";
+	if (slash != std::string::npos) return name.substr (0, slash);
 	return name;
 }
 
@@ -1645,8 +1631,7 @@ inline bool Key::isInactive () const
 inline bool Key::isBelow (const Key & k) const
 {
 	int ret = ckdb::keyIsBelow (k.getKey (), key);
-	if (ret == -1)
-		return false;
+	if (ret == -1) return false;
 	return ret;
 }
 
@@ -1659,8 +1644,7 @@ inline bool Key::isBelow (const Key & k) const
 inline bool Key::isBelowOrSame (const Key & k) const
 {
 	int ret = ckdb::keyIsBelowOrSame (k.getKey (), key);
-	if (ret == -1)
-		return false;
+	if (ret == -1) return false;
 	return ret;
 }
 
@@ -1673,8 +1657,7 @@ inline bool Key::isBelowOrSame (const Key & k) const
 inline bool Key::isDirectBelow (const Key & k) const
 {
 	int ret = ckdb::keyIsDirectBelow (k.getKey (), key);
-	if (ret == -1)
-		return false;
+	if (ret == -1) return false;
 	return ret;
 }
 

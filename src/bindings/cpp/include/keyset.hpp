@@ -777,8 +777,7 @@ inline Key KeySet::pop ()
  */
 inline Key KeySet::at (cursor_t pos) const
 {
-	if (pos < 0)
-		pos += size ();
+	if (pos < 0) pos += size ();
 	return Key (ckdb::ksAtCursor (ks, pos));
 }
 
@@ -827,8 +826,7 @@ struct KeySetTypeWrapper
 	T operator() (KeySet const & ks, std::string const & name, option_t const options) const
 	{
 		Key k = ks.lookup (name, options);
-		if (!k)
-			throw kdb::KeyNotFoundException ("key " + name + " was not found");
+		if (!k) throw kdb::KeyNotFoundException ("key " + name + " was not found");
 		return k.get<T> ();
 	}
 };

@@ -101,24 +101,20 @@ int kdbbUTF8Engine (Plugin * handle, int direction, char ** string, size_t * inp
 	size_t bufferSize;
 	iconv_t converter;
 
-	if (!*inputOutputByteSize)
-		return 0;
-	if (!kdbbNeedsUTF8Conversion (handle))
-		return 0;
+	if (!*inputOutputByteSize) return 0;
+	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
 	if (direction == UTF8_TO)
 		converter = iconv_open (getTo (handle), getFrom (handle));
 	else
 		converter = iconv_open (getFrom (handle), getTo (handle));
 
-	if (converter == (iconv_t) (-1))
-		return -1;
+	if (converter == (iconv_t) (-1)) return -1;
 
 	/* work with worst case, when all chars are wide */
 	bufferSize = *inputOutputByteSize * 4;
 	converted = elektraMalloc (bufferSize);
-	if (!converted)
-		return -1;
+	if (!converted) return -1;
 
 	readCursor = *string;
 	writeCursor = converted;
@@ -170,8 +166,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1;
 	}
 
-	if (!kdbbNeedsUTF8Conversion (handle))
-		return 0;
+	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
 	while ((cur = ksNext (returned)) != 0)
 	{
@@ -222,8 +217,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * cur;
 	const Key * meta;
 
-	if (!kdbbNeedsUTF8Conversion (handle))
-		return 0;
+	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
 	ksRewind (returned);
 

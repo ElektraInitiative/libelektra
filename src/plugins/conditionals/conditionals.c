@@ -173,28 +173,22 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	switch (cmpOp)
 	{
 	case EQU:
-		if (!ret)
-			result = 1;
+		if (!ret) result = 1;
 		break;
 	case NOT:
-		if (ret)
-			result = 1;
+		if (ret) result = 1;
 		break;
 	case LT:
-		if (ret < 0)
-			result = 1;
+		if (ret < 0) result = 1;
 		break;
 	case LE:
-		if (ret <= 0)
-			result = 1;
+		if (ret <= 0) result = 1;
 		break;
 	case GT:
-		if (ret > 0)
-			result = 1;
+		if (ret > 0) result = 1;
 		break;
 	case GE:
-		if (ret >= 0)
-			result = 1;
+		if (ret >= 0) result = 1;
 		break;
 	case SET:
 		keySetString (key, compareTo);
@@ -206,10 +200,8 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	}
 // freeing allocated heap
 Cleanup:
-	if (lookupName)
-		elektraFree (lookupName);
-	if (compareTo)
-		elektraFree (compareTo);
+	if (lookupName) elektraFree (lookupName);
+	if (compareTo) elektraFree (compareTo);
 	return result;
 }
 
@@ -291,13 +283,10 @@ static char * isAssign (char * expr)
 		++firstPtr;
 	while (isspace (*lastPtr))
 		--lastPtr;
-	if (*firstPtr != '\'' || *lastPtr != '\'')
-		return NULL;
-	if (firstPtr == lastPtr)
-		return NULL;
+	if (*firstPtr != '\'' || *lastPtr != '\'') return NULL;
+	if (firstPtr == lastPtr) return NULL;
 	char * nextMark = strchr (firstPtr + 1, '\'');
-	if (nextMark != lastPtr)
-		return NULL;
+	if (nextMark != lastPtr) return NULL;
 	*lastPtr = '\0';
 	*firstPtr = '\0';
 	++firstPtr;
@@ -455,8 +444,7 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 CleanUp:
 	elektraFree (condition);
 	elektraFree (thenexpr);
-	if (elseexpr)
-		elektraFree (elseexpr);
+	if (elseexpr) elektraFree (elseexpr);
 	regfree (&regex);
 	ksDel (ks);
 	return ret;

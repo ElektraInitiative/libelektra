@@ -69,8 +69,7 @@ static void test_keyCmp ()
 	char cmp[] = "user/a-a";
 	for (int i = 1; i < 256; ++i)
 	{
-		if (i == '/')
-			continue;
+		if (i == '/') continue;
 		cmp[6] = i;
 		// printf ("%i %s\n", i, cmp);
 		keySetName (k1, "user/a/a");

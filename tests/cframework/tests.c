@@ -293,8 +293,7 @@ void output_keyset (KeySet * ks)
 
 void output_plugin (Plugin * plugin)
 {
-	if (!plugin)
-		return;
+	if (!plugin) return;
 
 	printf ("Name: %s [%zd]\n", plugin->name, plugin->refcounter);
 	output_keyset (plugin->config);
@@ -302,8 +301,7 @@ void output_plugin (Plugin * plugin)
 
 void output_backend (Backend * backend)
 {
-	if (!backend)
-		return;
+	if (!backend) return;
 
 	printf ("us: %zd, ss: %zd\n", backend->usersize, backend->systemsize);
 	output_key (backend->mountpoint);
@@ -319,8 +317,7 @@ void output_trie (Trie * trie)
 			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *)trie->value[i], keyName (trie->value[i]->mountpoint),
 				keyString (trie->value[i]->mountpoint), i);
 		}
-		if (trie->children[i])
-			output_trie (trie->children[i]);
+		if (trie->children[i]) output_trie (trie->children[i]);
 	}
 	if (trie->empty_value)
 	{
@@ -375,8 +372,7 @@ int output_warnings (Key * warningKey)
 {
 	//! [warnings]
 	const Key * metaWarnings = keyGetMeta (warningKey, "warnings");
-	if (!metaWarnings)
-		return 1; /* There are no current warnings */
+	if (!metaWarnings) return 1; /* There are no current warnings */
 
 	int nrWarnings = atoi (keyString (metaWarnings));
 	char buffer[] = "warnings/#00\0description";
@@ -440,8 +436,7 @@ int output_error (Key * errorKey)
 {
 	//! [error]
 	const Key * metaError = keyGetMeta (errorKey, "error");
-	if (!metaError)
-		return 1; /* There is no current error */
+	if (!metaError) return 1; /* There is no current error */
 
 	printf ("number: %s\n", keyString (keyGetMeta (errorKey, "error/number")));
 	printf ("description: : %s\n", keyString (keyGetMeta (errorKey, "error/description")));

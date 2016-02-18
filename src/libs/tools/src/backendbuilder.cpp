@@ -429,8 +429,7 @@ void MountBackendBuilder::useConfigFile (std::string file)
 		}
 	}
 
-	if (!checkPossible)
-		return;
+	if (!checkPossible) return;
 	fillPlugins (*b);
 	b->useConfigFile (configfile);
 }

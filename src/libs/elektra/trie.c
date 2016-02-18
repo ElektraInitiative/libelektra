@@ -56,14 +56,11 @@ Backend * elektraTrieLookup (Trie * trie, const Key * key)
 	Backend * ret = 0;
 	size_t len = 0;
 
-	if (!key)
-		return 0;
-	if (!trie)
-		return 0;
+	if (!key) return 0;
+	if (!trie) return 0;
 
 	len = keyGetNameSize (key) + 1;
-	if (len <= 1)
-		return 0; // would crash otherwise
+	if (len <= 1) return 0; // would crash otherwise
 	where = elektraMalloc (len);
 	strncpy (where, keyName (key), len);
 	where[len - 2] = '/';
@@ -85,15 +82,13 @@ Backend * elektraTrieLookup (Trie * trie, const Key * key)
 int elektraTrieClose (Trie * trie, Key * errorKey)
 {
 	size_t i;
-	if (trie == NULL)
-		return 0;
+	if (trie == NULL) return 0;
 	for (i = 0; i < KDB_MAX_UCHAR; ++i)
 	{
 		if (trie->text[i] != NULL)
 		{
 			elektraTrieClose (trie->children[i], errorKey);
-			if (trie->value[i])
-				elektraBackendClose (trie->value[i], errorKey);
+			if (trie->value[i]) elektraBackendClose (trie->value[i], errorKey);
 			elektraFree (trie->text[i]);
 		}
 	}
@@ -109,8 +104,7 @@ Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value)
 	char * p;
 	unsigned char idx;
 
-	if (name == 0)
-		name = "";
+	if (name == 0) name = "";
 	idx = (unsigned char)name[0];
 
 	if (trie == NULL)
@@ -238,16 +232,14 @@ static char * elektraTrieStartsWith (const char * str, const char * substr)
 
 	for (i = 0; i < sublen; i++)
 	{
-		if (substr[i] != str[i])
-			return (char *)substr + i;
+		if (substr[i] != str[i]) return (char *)substr + i;
 	}
 	return 0;
 }
 
 static Backend * elektraTriePrefixLookup (Trie * trie, const char * name)
 {
-	if (trie == NULL)
-		return NULL;
+	if (trie == NULL) return NULL;
 
 	unsigned char idx = (unsigned char)name[0];
 	const char * trieText = trie->text[idx];
@@ -271,8 +263,7 @@ static Backend * elektraTriePrefixLookup (Trie * trie, const char * name)
 	{
 		return trie->empty_value;
 	}
-	if (ret == NULL)
-		return trie->value[idx];
+	if (ret == NULL) return trie->value[idx];
 
 	return ret;
 }

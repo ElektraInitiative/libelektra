@@ -48,8 +48,7 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 {
 	/* set all keys */
 	const char * configFile = keyString (parentKey);
-	if (!strcmp (configFile, ""))
-		return 0; // no underlying config file
+	if (!strcmp (configFile, "")) return 0; // no underlying config file
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{

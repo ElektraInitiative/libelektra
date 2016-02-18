@@ -50,8 +50,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 		k = Key (keyname, KEY_END);
 		// k.setBinary(0, 0); // conceptually maybe better, but would have confusing "binary" metadata
 		conf.append (k);
-		if (cl.verbose)
-			cout << "Creating key " << keyname << endl;
+		if (cl.verbose) cout << "Creating key " << keyname << endl;
 	}
 	if (!k.isValid ())
 	{
@@ -65,8 +64,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 		stringstream str (metavalue);
 		time_t t;
 		str >> t;
-		if (!str.good ())
-			throw "conversion failure";
+		if (!str.good ()) throw "conversion failure";
 		k.setMeta<time_t> (metaname, t);
 	}
 	else

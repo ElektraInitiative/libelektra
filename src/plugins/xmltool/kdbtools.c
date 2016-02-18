@@ -70,12 +70,9 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 			privateContext = xmlTextReaderGetAttribute (reader, (const xmlChar *)"parent");
 			buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *)"basename");
 
-			if (context)
-				keySetName (newKey, context);
-			if (privateContext)
-				keyAddName (newKey, (char *)privateContext);
-			if (buffer)
-				keyAddName (newKey, (char *)buffer);
+			if (context) keySetName (newKey, context);
+			if (privateContext) keyAddName (newKey, (char *)privateContext);
+			if (buffer) keyAddName (newKey, (char *)buffer);
 
 			xmlFree (privateContext);
 			privateContext = 0;
@@ -128,8 +125,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		/* Parse mode permissions */
 		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *)"mode");
 		int errsave = errno;
-		if (buffer)
-			keySetMode (newKey, strtol ((char *)buffer, 0, 0));
+		if (buffer) keySetMode (newKey, strtol ((char *)buffer, 0, 0));
 		errno = errsave;
 		xmlFree (buffer);
 
@@ -167,10 +163,8 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		}
 		xmlFree (buffer);
 
-		if (isdir)
-			keySetDir (newKey);
-		if (isbin)
-			keySetMeta (newKey, "binary", "");
+		if (isdir) keySetDir (newKey);
+		if (isbin) keySetMeta (newKey, "binary", "");
 
 		// TODO: should parse arbitrary attributes as metadata
 
@@ -259,8 +253,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 					appended = 1;
 				}
 
-				if (xmlTextReaderNodeType (reader) == 15)
-					/* found a </key> */
+				if (xmlTextReaderNodeType (reader) == 15) /* found a </key> */
 					end = 1;
 				else
 				{
@@ -273,8 +266,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 			xmlFree (nodeName);
 		}
 
-		if (privateContext)
-			xmlFree (privateContext);
+		if (privateContext) xmlFree (privateContext);
 
 		/* seems like we forgot the key, lets delete it */
 		if (newKey && !appended)
@@ -324,8 +316,7 @@ static int consumeKeySetNode (KeySet * ks, const char * context, xmlTextReaderPt
 			else if (!strcmp ((char *)nodeName, "keyset"))
 			{
 				/* A <keyset> can have nested <keyset>s */
-				if (xmlTextReaderNodeType (reader) == 15)
-					/* found a </keyset> */
+				if (xmlTextReaderNodeType (reader) == 15) /* found a </keyset> */
 					end = 1;
 				else if (privateContext)
 					consumeKeySetNode (ks, (char *)(*fullContext ? fullContext : privateContext), reader);
@@ -334,8 +325,7 @@ static int consumeKeySetNode (KeySet * ks, const char * context, xmlTextReaderPt
 			}
 			xmlFree (nodeName);
 		}
-		if (privateContext)
-			xmlFree (privateContext), privateContext = 0;
+		if (privateContext) xmlFree (privateContext), privateContext = 0;
 	}
 	xmlFree (keySetNodeName);
 	return 0;

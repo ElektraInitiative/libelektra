@@ -114,10 +114,8 @@ int elektraCcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 			if (keyRel (root, cur) == 1)
 			{
 				/* ignore invalid size */
-				if (keyGetBaseNameSize (cur) != 3)
-					continue;
-				if (keyGetValueSize (cur) != 3)
-					continue;
+				if (keyGetBaseNameSize (cur) != 3) continue;
+				if (keyGetValueSize (cur) != 3) continue;
 
 				int res;
 				res = elektraHexcodeConvFromHex (keyBaseName (cur)[1]);
@@ -158,8 +156,7 @@ void elektraCcodeDecode (Key * cur, CCodeData * d)
 	size_t valsize = keyGetValueSize (cur);
 	const char * val = keyValue (cur);
 
-	if (!val)
-		return;
+	if (!val) return;
 
 	size_t out = 0;
 	for (size_t in = 0; in < valsize - 1; ++in)
@@ -244,8 +241,7 @@ void elektraCcodeEncode (Key * cur, CCodeData * d)
 	size_t valsize = keyGetValueSize (cur);
 	const char * val = keyValue (cur);
 
-	if (!val)
-		return;
+	if (!val) return;
 
 	size_t out = 0;
 	for (size_t in = 0; in < valsize - 1; ++in)

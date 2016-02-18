@@ -15,8 +15,7 @@ int main (int argc, char ** argv)
 
 	/*Exit if no backend is given with error code, because
 	  argv[1] is used below*/
-	if (argc < 2)
-		return 1;
+	if (argc < 2) return 1;
 
 	FILE * f = fopen ("exported_symbols.h", "w");
 	fprintf (f,

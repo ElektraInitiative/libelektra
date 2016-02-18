@@ -35,8 +35,7 @@
  */
 int elektraWresolverCheckFile (const char * filename)
 {
-	if (filename[0] == '/')
-		return 0;
+	if (filename[0] == '/') return 0;
 
 	return 1;
 }

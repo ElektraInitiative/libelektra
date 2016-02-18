@@ -32,20 +32,16 @@ int ConvertCommand::execute (Cmdline const & cl)
 	}
 
 	string import_format = cl.format;
-	if (argc > 0)
-		import_format = cl.arguments[0];
+	if (argc > 0) import_format = cl.arguments[0];
 
 	string export_format = cl.format;
-	if (argc > 1)
-		export_format = cl.arguments[1];
+	if (argc > 1) export_format = cl.arguments[1];
 
 	string import_file = "/dev/stdin";
-	if (argc > 2 && cl.arguments[2] != "-")
-		import_file = cl.arguments[2];
+	if (argc > 2 && cl.arguments[2] != "-") import_file = cl.arguments[2];
 
 	string export_file = "/dev/stdout";
-	if (argc > 3 && cl.arguments[3] != "-")
-		export_file = cl.arguments[3];
+	if (argc > 3 && cl.arguments[3] != "-") export_file = cl.arguments[3];
 
 	if (cl.verbose)
 	{

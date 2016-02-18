@@ -62,8 +62,7 @@ Ni_PRIVATE int BufGetC (file_buf * restrict b)
 					b->buffer.buf[b->buffer.num - 1] = '\n';
 
 					// Get the next one and ignore it if it's \n.
-					if ((c = fgetc (b->stream)) != '\n' && c != EOF)
-						b->buffer.buf[b->buffer.num++] = c;
+					if ((c = fgetc (b->stream)) != '\n' && c != EOF) b->buffer.buf[b->buffer.num++] = c;
 				}
 			}
 		}

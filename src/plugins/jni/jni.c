@@ -196,8 +196,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 
 	k = ksLookupByName (config, "/ignore", 0);
 	jboolean ign = JNI_FALSE;
-	if (k)
-		ign = JNI_TRUE;
+	if (k) ign = JNI_TRUE;
 
 	/* TODO: check if JVM is already started:
 	jsize nVMs;

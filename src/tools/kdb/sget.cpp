@@ -22,8 +22,7 @@ ShellGetCommand::ShellGetCommand ()
 
 int ShellGetCommand::execute (Cmdline const & cl)
 {
-	if (cl.arguments.size () != 2)
-		throw invalid_argument ("Need two arguments");
+	if (cl.arguments.size () != 2) throw invalid_argument ("Need two arguments");
 
 	std::string default_value = cl.arguments[1];
 

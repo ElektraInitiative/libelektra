@@ -70,8 +70,7 @@ public:
 		kdb::Key k;
 		while ((k = config.next ()))
 		{
-			if (!k.isDirectBelow (root))
-				throw "Factory: key for configuration is not direct below";
+			if (!k.isDirectBelow (root)) throw "Factory: key for configuration is not direct below";
 
 			kdb::KeySet cks (config.cut (k));
 			m_factory.insert (std::make_pair (k.getBaseName (), new StructInstancer (cks)));
@@ -120,8 +119,7 @@ static inline void doCheck (Checker * c, kdb::KeySet ks)
 static inline Checker * buildChecker (kdb::KeySet config)
 {
 	kdb::Key k = config.lookup ("/struct");
-	if (!k)
-		throw "No Key describing the struct found";
+	if (!k) throw "No Key describing the struct found";
 
 	Factory f (config.cut (k));
 
@@ -131,8 +129,7 @@ static inline Checker * buildChecker (kdb::KeySet config)
 	ss >> whichChecker;
 
 	CheckerPtr c = f.get (whichChecker);
-	if (!c.get ())
-		throw "Could not create list";
+	if (!c.get ()) throw "Could not create list";
 
 	std::string whichParameter;
 	ss >> whichParameter;

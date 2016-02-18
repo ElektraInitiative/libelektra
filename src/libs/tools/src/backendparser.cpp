@@ -44,8 +44,7 @@ KeySet parsePluginArguments (std::string const & pluginArguments, std::string co
 		// read until a ',' or the end of line
 		// if nothing is read because the '=' is the last character
 		// in the config string, consider the value empty
-		if (!std::getline (sstream, value, ','))
-			value = "";
+		if (!std::getline (sstream, value, ',')) value = "";
 
 		ks.append (Key (basepath + "/" + keyName, KEY_VALUE, value.c_str (), KEY_END));
 	}
@@ -97,10 +96,8 @@ namespace detail
 void processArgument (PluginSpecVector & arguments, size_t & counter, std::string argument)
 {
 	// ignore empty or useless arguments (whitespace , only)
-	if (argument.empty ())
-		return;
-	if (std::all_of (argument.begin (), argument.end (), [](char c) { return std::isspace (c) || c == ','; }))
-		return;
+	if (argument.empty ()) return;
+	if (std::all_of (argument.begin (), argument.end (), [](char c) { return std::isspace (c) || c == ','; })) return;
 
 	if (argument.find ('=') == std::string::npos)
 	{
@@ -119,8 +116,7 @@ void processArgument (PluginSpecVector & arguments, size_t & counter, std::strin
 	else
 	{
 		// we have a plugin's configuration
-		if (arguments.empty ())
-			throw ParseException ("config for plugin (" + argument + ") without previous plugin name");
+		if (arguments.empty ()) throw ParseException ("config for plugin (" + argument + ") without previous plugin name");
 		arguments.back ().appendConfig (parsePluginArguments (argument));
 	}
 }

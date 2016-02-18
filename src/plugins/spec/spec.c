@@ -49,11 +49,9 @@ static char * keyNameToMatchingString (const Key * key)
 {
 	uint8_t arrayCount = 0;
 	char * name = strchr (keyName (key), '/');
-	if (!name)
-		return strdup (keyName (key));
+	if (!name) return strdup (keyName (key));
 	for (char * ptr = name; *ptr != '\0'; ++ptr)
-		if (*ptr == '#')
-			++arrayCount;
+		if (*ptr == '#') ++arrayCount;
 	char * pattern = elektraMalloc (elektraStrLen (name) + arrayCount);
 	char * dst = pattern;
 	for (char * src = (name + 1); *src != '\0'; ++src)
@@ -167,16 +165,14 @@ static void validateArray (KeySet * ks, Key * arrayKey, Key * specKey)
 	keySetBaseName (tmpArrayParent, 0);
 	Key * arrayParent = ksLookup (ks, tmpArrayParent, KDB_O_NONE);
 	keyDel (tmpArrayParent);
-	if (arrayParent == NULL)
-		return;
+	if (arrayParent == NULL) return;
 	KeySet * ksCopy = ksDup (ks);
 	KeySet * subKeys = ksCut (ksCopy, arrayParent);
 	Key * cur;
 	long validCount = 0;
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (!keyIsDirectBelow (arrayParent, cur))
-			continue;
+		if (!keyIsDirectBelow (arrayParent, cur)) continue;
 		if (keyBaseName (cur)[0] == '#')
 		{
 			if (elektraArrayValidateName (cur) == 1)
@@ -190,8 +186,7 @@ static void validateArray (KeySet * ks, Key * arrayKey, Key * specKey)
 				Key * toMark;
 				while ((toMark = ksNext (invalidCutKS)) != NULL)
 				{
-					if (strcmp (keyName (cur), keyName (toMark)))
-						keySetMeta (toMark, "conflict/invalid", "");
+					if (strcmp (keyName (cur), keyName (toMark))) keySetMeta (toMark, "conflict/invalid", "");
 					elektraMetaArrayAdd (arrayParent, "conflict/invalid/hasmember", keyName (toMark));
 				}
 				ksDel (invalidCutKS);
@@ -205,22 +200,19 @@ static void validateArray (KeySet * ks, Key * arrayKey, Key * specKey)
 static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 {
 	const Key * requiredMeta = keyGetMeta (specKey, "required");
-	if (!requiredMeta)
-		return;
+	if (!requiredMeta) return;
 	Key * tmpParent = keyDup (key);
 	keySetBaseName (tmpParent, 0);
 	Key * parent = ksLookup (ks, tmpParent, KDB_O_NONE);
 	keyDel (tmpParent);
-	if (parent == NULL)
-		return;
+	if (parent == NULL) return;
 	KeySet * ksCopy = ksDup (ks);
 	KeySet * subKeys = ksCut (ksCopy, parent);
 	Key * cur;
 	long subCount = 0;
 	while ((cur = ksNext (subKeys)) != NULL)
 	{
-		if (keyIsDirectBelow (parent, cur))
-			++subCount;
+		if (keyIsDirectBelow (parent, cur)) ++subCount;
 	}
 	long required = atol (keyString (requiredMeta));
 	char buffer[MAX_CHARS_IN_LONG + 1];
@@ -369,8 +361,7 @@ static int handleArrayConflict (Key * parentKey, Key * key, Key * conflictMeta, 
 
 		break;
 	}
-	if (problemKeys)
-		elektraFree ((void *)problemKeys);
+	if (problemKeys) elektraFree ((void *)problemKeys);
 	return ret;
 }
 
@@ -435,8 +426,7 @@ static int handleConflictConflict (Key * parentKey, Key * key, Key * conflictMet
 
 		break;
 	}
-	if (problemKeys)
-		elektraFree ((void *)problemKeys);
+	if (problemKeys) elektraFree ((void *)problemKeys);
 	return ret;
 }
 
@@ -499,8 +489,7 @@ static int handleMissingConflict (Key * parentKey, Key * key, Key * conflictMeta
 
 		break;
 	}
-	if (problemKeys)
-		elektraFree ((void *)problemKeys);
+	if (problemKeys) elektraFree ((void *)problemKeys);
 	return ret;
 }
 
@@ -654,8 +643,7 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 			{
 				if (require)
 				{
-					if (hasRequired (cur, specKey, returned))
-						copyMeta (cur, specKey);
+					if (hasRequired (cur, specKey, returned)) copyMeta (cur, specKey);
 				}
 				else if (keyGetMeta (cur, "conflict/invalid"))
 				{

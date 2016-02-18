@@ -146,11 +146,9 @@ int main (int argc, char ** argv)
 		{
 			// child
 			pthread_t * pwriter = elektraMalloc (num_threads * sizeof (pthread_t));
-			if (!pwriter)
-				return 13;
+			if (!pwriter) return 13;
 			for (i = 0; i < num_threads; i++)
-				if (pthread_create (&pwriter[i], NULL, writer, (void *)0) != 0)
-					return 14;
+				if (pthread_create (&pwriter[i], NULL, writer, (void *)0) != 0) return 14;
 			for (i = 0; i < num_threads; i++)
 				pthread_join (pwriter[i], NULL);
 			elektraFree (pwriter);

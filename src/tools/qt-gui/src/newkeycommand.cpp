@@ -19,8 +19,7 @@ NewKeyCommand::NewKeyCommand (TreeViewModel * model, int index, DataContainer * 
 	QStringList newNameSplit = parentModel->getSplittedKeyname (newKey);
 	kdb::Key parentKey = m_parentNode->getKey ();
 
-	if (!parentKey)
-		parentKey = kdb::Key (m_parentNode->getPath ().toStdString (), KEY_END);
+	if (!parentKey) parentKey = kdb::Key (m_parentNode->getPath ().toStdString (), KEY_END);
 
 	QStringList parentNameSplit = parentModel->getSplittedKeyname (parentKey);
 

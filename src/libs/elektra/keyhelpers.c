@@ -169,8 +169,7 @@ ssize_t keyGetParentNameSize (const Key * key)
 		parentNameEnd = p;
 
 	/* handle NULL or root key ("user" or "system") */
-	if (!parentNameEnd || parentNameEnd == key->key)
-		return 0;
+	if (!parentNameEnd || parentNameEnd == key->key) return 0;
 
 	/* at this point, parentNameEnd points to the first char of the basename */
 	/* example: it points to the 'b' of "user/key/basename" */
@@ -226,22 +225,19 @@ ssize_t keyGetParentName (const Key * key, char * returnedParent, size_t maxSize
 
 int keyNameIsSpec (const char * name)
 {
-	if (!strcmp ("spec", name) || !strncmp ("spec/", name, sizeof ("spec/") - 1))
-		return 1;
+	if (!strcmp ("spec", name) || !strncmp ("spec/", name, sizeof ("spec/") - 1)) return 1;
 	return 0;
 }
 
 int keyNameIsProc (const char * name)
 {
-	if (!strcmp ("proc", name) || !strncmp ("proc/", name, sizeof ("proc/") - 1))
-		return 1;
+	if (!strcmp ("proc", name) || !strncmp ("proc/", name, sizeof ("proc/") - 1)) return 1;
 	return 0;
 }
 
 int keyNameIsDir (const char * name)
 {
-	if (!strcmp ("dir", name) || !strncmp ("dir/", name, sizeof ("dir/") - 1))
-		return 1;
+	if (!strcmp ("dir", name) || !strncmp ("dir/", name, sizeof ("dir/") - 1)) return 1;
 	return 0;
 }
 
@@ -276,8 +272,7 @@ int keyNameIsUser (const char * name)
  */
 int keyNameIsSystem (const char * name)
 {
-	if (!strcmp ("system", name) || !strncmp ("system/", name, sizeof ("system/") - 1))
-		return 1;
+	if (!strcmp ("system", name) || !strncmp ("system/", name, sizeof ("system/") - 1)) return 1;
 	return 0;
 }
 
@@ -311,8 +306,7 @@ static int elektraSetMetaInt (Key * key, const char * meta, int value)
 static int elektraSetMode (Key * key, mode_t mode)
 {
 	char str[MAX_LEN_INT];
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (snprintf (str, MAX_LEN_INT - 1, "%o", mode) < 0)
 	{
@@ -346,8 +340,7 @@ void keyVInit (Key * key, const char * name, va_list va)
 	int mode = 0;
 	int hasMode = 0;
 
-	if (!key)
-		return;
+	if (!key) return;
 
 	keyInit (key);
 
@@ -390,16 +383,11 @@ void keyVInit (Key * key, const char * name, va_list va)
 			case KEY_CASCADING_NAME:
 			case KEY_META_NAME:
 			case KEY_EMPTY_NAME:
-				if (action != KEY_FLAGS)
-					flags |= action;
-				if (test_bit (flags, KEY_BINARY))
-					keySetMeta (key, "binary", "");
-				if (test_bit (flags, KEY_LOCK_NAME))
-					elektraKeyLock (key, KEY_LOCK_NAME);
-				if (test_bit (flags, KEY_LOCK_VALUE))
-					elektraKeyLock (key, KEY_LOCK_VALUE);
-				if (test_bit (flags, KEY_LOCK_META))
-					elektraKeyLock (key, KEY_LOCK_META);
+				if (action != KEY_FLAGS) flags |= action;
+				if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
+				if (test_bit (flags, KEY_LOCK_NAME)) elektraKeyLock (key, KEY_LOCK_NAME);
+				if (test_bit (flags, KEY_LOCK_VALUE)) elektraKeyLock (key, KEY_LOCK_VALUE);
+				if (test_bit (flags, KEY_LOCK_META)) elektraKeyLock (key, KEY_LOCK_META);
 				break;
 
 			/* deprecated flags */
@@ -452,7 +440,6 @@ void keyVInit (Key * key, const char * name, va_list va)
 		else if (mode != 0)
 			elektraSetMode (key, mode);
 
-		if (owner)
-			keySetOwner (key, owner);
+		if (owner) keySetOwner (key, owner);
 	}
 }

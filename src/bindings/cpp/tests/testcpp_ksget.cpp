@@ -34,10 +34,8 @@ struct KeySetTypeWrapper<int>
 	int operator() (KeySet const & ks, std::string const & name, option_t const options) const
 	{
 		Key k = ks.lookup (name, options);
-		if (!k)
-			return -5;
-		if (k.getStringSize () <= 1)
-			return -3;
+		if (!k) return -5;
+		if (k.getStringSize () <= 1) return -3;
 		return k.get<int> () + 5;
 	}
 };
@@ -69,11 +67,9 @@ struct KeySetTypeWrapper<Point>
 	Point operator() (KeySet const & ks, std::string const & name, option_t const options) const
 	{
 		Key x = ks.lookup (name + "/x", options);
-		if (!x)
-			throw KeyNotFoundException (name + "/x not found");
+		if (!x) throw KeyNotFoundException (name + "/x not found");
 		Key y = ks.lookup (name + "/y", options);
-		if (!y)
-			throw KeyNotFoundException (name + "/y not found");
+		if (!y) throw KeyNotFoundException (name + "/y not found");
 
 		return Point (x.get<int> (), y.get<int> ());
 	}

@@ -38,8 +38,7 @@ int MvCommand::execute (Cmdline const & cl)
 	string newDirName = destKey.getName ();
 
 	Key root = tools::helper::commonKeyName (sourceKey, destKey);
-	if (cl.verbose)
-		std::cout << "using common basename: " << root.getName () << std::endl;
+	if (cl.verbose) std::cout << "using common basename: " << root.getName () << std::endl;
 	kdb.get (conf, root);
 	KeySet tmpConf = conf;
 	KeySet oldConf;

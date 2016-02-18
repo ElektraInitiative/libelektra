@@ -133,8 +133,7 @@ GElektraKey * gelektra_key_new (const gchar * name, ...)
  */
 GElektraKey * gelektra_key_make (Key * key)
 {
-	if (key == NULL)
-		return NULL;
+	if (key == NULL) return NULL;
 	GElektraKey * ret = gelektra_key_new (NULL);
 	Key * old = gelektra_key_swap (ret, key);
 	keyDel (old);
@@ -158,8 +157,7 @@ GElektraKey * gelektra_key_gi_make (GElektraKey * key)
 /* initialization */
 static void gelektra_key_gi_init_va (GElektraKey * key, const gchar * name, ...)
 {
-	if (!name)
-		return;
+	if (!name) return;
 	va_list va;
 	va_start (va, name);
 	keyVInit (key->key, name, va);
@@ -314,8 +312,7 @@ gssize gelektra_key_getstring (const GElektraKey * key, gchar * out, gsize size)
 gchar * gelektra_key_gi_getstring (const GElektraKey * key)
 {
 	gssize size = keyGetValueSize (key->key);
-	if (size <= 0)
-		return NULL;
+	if (size <= 0) return NULL;
 
 	gchar * data = g_malloc0 (size);
 	if (keyGetString (key->key, data, size) <= 0)
@@ -361,8 +358,7 @@ void * gelektra_key_gi_getbinary (const GElektraKey * key, gssize * data_size)
 {
 	*data_size = 0;
 	gssize size = keyGetValueSize (key->key);
-	if (size <= 0)
-		return NULL;
+	if (size <= 0) return NULL;
 
 	void * data = g_malloc0 (size);
 	if ((*data_size = keyGetBinary (key->key, data, size)) <= 0)
@@ -402,8 +398,7 @@ gelektra_func_t gelektra_key_getfunc (const GElektraKey * key)
 		void * v;
 	} data;
 
-	if (keyGetBinary (key->key, &data.v, sizeof (data)) == sizeof (data))
-		return data.f;
+	if (keyGetBinary (key->key, &data.v, sizeof (data)) == sizeof (data)) return data.f;
 	return NULL;
 }
 

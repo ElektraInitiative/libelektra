@@ -71,8 +71,7 @@ GElektraKeySet * gelektra_keyset_new (gsize alloc, ...)
  */
 GElektraKeySet * gelektra_keyset_make (KeySet * ks)
 {
-	if (ks == NULL)
-		return NULL;
+	if (ks == NULL) return NULL;
 	GElektraKeySet * ret = gelektra_keyset_new (0);
 	KeySet * old = gelektra_keyset_swap (ret, ks);
 	ksDel (old);
@@ -131,8 +130,7 @@ static KeySet * gelektra_keyset_swap (GElektraKeySet * ks, KeySet * newks)
 gssize gelektra_keyset_append (GElektraKeySet * ks, GElektraKey * key)
 {
 	gssize ret = ksAppendKey (ks->keyset, key->key);
-	if (ret > 0)
-		g_object_unref (key);
+	if (ret > 0) g_object_unref (key);
 	return ret;
 }
 
@@ -162,8 +160,7 @@ gssize gelektra_keyset_gi_append (GElektraKeySet * ks, GElektraKey * key)
 gssize gelektra_keyset_append_keyset (GElektraKeySet * ks, GElektraKeySet * append)
 {
 	gssize ret = ksAppend (ks->keyset, append->keyset);
-	if (ret > 0)
-		g_object_unref (append);
+	if (ret > 0) g_object_unref (append);
 	return ret;
 }
 
@@ -333,7 +330,6 @@ gint gelektra_keyset_setcursor (GElektraKeySet * ks, cursor_t pos)
  */
 GElektraKey * gelektra_keyset_atcursor (GElektraKeySet * ks, cursor_t pos)
 {
-	if (pos < 0)
-		pos += gelektra_keyset_len (ks);
+	if (pos < 0) pos += gelektra_keyset_len (ks);
 	return gelektra_key_make (ksAtCursor (ks->keyset, pos));
 }

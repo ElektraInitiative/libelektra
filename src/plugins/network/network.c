@@ -20,8 +20,7 @@ int elektraNetworkAddrInfo (Key * toCheck)
 
 	const Key * meta = keyGetMeta (toCheck, "check/ipaddr");
 
-	if (!meta)
-		return 0; /* No check to do */
+	if (!meta) return 0; /* No check to do */
 
 	struct addrinfo hints;
 	memset (&hints, 0, sizeof (struct addrinfo));

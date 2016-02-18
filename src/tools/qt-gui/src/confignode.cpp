@@ -65,8 +65,7 @@ ConfigNode::~ConfigNode ()
 
 int ConfigNode::getChildCount () const
 {
-	if (m_children)
-		return m_children->rowCount ();
+	if (m_children) return m_children->rowCount ();
 	return 0;
 }
 
@@ -101,8 +100,7 @@ void ConfigNode::setName (const QString & name)
 
 	try
 	{
-		if (m_key.getBaseName ().compare (name.toStdString ()) != 0)
-			m_key.setBaseName (name.toStdString ());
+		if (m_key.getBaseName ().compare (name.toStdString ()) != 0) m_key.setBaseName (name.toStdString ());
 	}
 	catch (KeyInvalidName const & ex)
 	{
@@ -175,8 +173,7 @@ void ConfigNode::setMeta (const QVariantMap & metaData)
 
 void ConfigNode::deleteMeta (const QString & name)
 {
-	if (m_key)
-		m_key.delMeta (name.toStdString ());
+	if (m_key) m_key.delMeta (name.toStdString ());
 }
 
 void ConfigNode::accept (Visitor & visitor)
@@ -201,8 +198,7 @@ int ConfigNode::getChildIndexByName (const QString & name)
 	{
 		for (int i = 0; i < m_children->rowCount (); i++)
 		{
-			if (m_children->model ().at (i)->getName () == name)
-				return i;
+			if (m_children->model ().at (i)->getName () == name) return i;
 		}
 	}
 
@@ -347,8 +343,7 @@ ConfigNodePtr ConfigNode::getChildByIndex (int index) const
 {
 	if (m_children)
 	{
-		if (index >= 0 && index < m_children->model ().length ())
-			return m_children->model ().at (index);
+		if (index >= 0 && index < m_children->model ().length ()) return m_children->model ().at (index);
 	}
 
 	return ConfigNodePtr ();

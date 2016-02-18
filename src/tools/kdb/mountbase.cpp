@@ -121,8 +121,7 @@ void MountBaseCommand::askForConfirmation (Cmdline const & cl)
 		cout << "Are you sure you want to do that (y/N): ";
 		std::string answer;
 		cin >> answer;
-		if (answer != "y")
-			throw CommandAbortException ();
+		if (answer != "y") throw CommandAbortException ();
 	}
 
 	if (cl.debug)

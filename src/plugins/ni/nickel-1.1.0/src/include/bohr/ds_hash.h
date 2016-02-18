@@ -96,8 +96,7 @@ typedef int (*Ds_hash_compare_fn) (const void * key, size_t key_size, const void
  */
 Ds_HASH_INLINE int Ds_InitHashTable (Ds_hash_table * restrict table, size_t size)
 {
-	if (!Ds_InitVector_Dsh ((Ds_vector_Dsh *)table, size))
-		return 0;
+	if (!Ds_InitVector_Dsh ((Ds_vector_Dsh *)table, size)) return 0;
 
 	memset (table->buf, 0, size * sizeof (Ds_hash_entry *));
 	return 1;
@@ -232,8 +231,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable (Ds_hash_table * restrict table, size_t si
 		size_t old_size;
 
 		old_size = table->cap;
-		if (!Ds_ResizeVector_Dsh ((Ds_vector_Dsh *)table, size))
-			return 0;
+		if (!Ds_ResizeVector_Dsh ((Ds_vector_Dsh *)table, size)) return 0;
 		memset (table->buf + old_size, 0, (size - old_size) * sizeof (Ds_hash_entry *));
 
 		for (size_t i = 0; i < old_size; ++i)
@@ -286,8 +284,7 @@ Ds_HASH_INLINE int Ds_ResizeHashTable (Ds_hash_table * restrict table, size_t si
 		}
 
 		old_num = table->num;
-		if (!Ds_ResizeVector_Dsh ((Ds_vector_Dsh *)table, size))
-			return 0;
+		if (!Ds_ResizeVector_Dsh ((Ds_vector_Dsh *)table, size)) return 0;
 		table->num = old_num;
 	}
 

@@ -173,8 +173,7 @@ MergeResult ThreeWayMerge::mergeKeySet (const MergeTask & task)
 	detectConflicts (task, result);
 	detectConflicts (task.reverse (), result, true);
 
-	if (!result.hasConflicts ())
-		return result;
+	if (!result.hasConflicts ()) return result;
 
 
 	// TODO: test this behaviour (would probably need mocks)
@@ -187,8 +186,7 @@ MergeResult ThreeWayMerge::mergeKeySet (const MergeTask & task)
 		{
 			(elem)->resolveConflict (task, current, result);
 
-			if (!result.isConflict (current))
-				break;
+			if (!result.isConflict (current)) break;
 		}
 	}
 

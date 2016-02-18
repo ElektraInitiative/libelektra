@@ -151,8 +151,7 @@ public:
 	 */
 	func_t getSymbol (std::string which)
 	{
-		if (symbols.find (which) == symbols.end ())
-			throw MissingSymbol (which);
+		if (symbols.find (which) == symbols.end ()) throw MissingSymbol (which);
 		return symbols[which];
 	}
 

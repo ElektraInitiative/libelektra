@@ -306,8 +306,7 @@ static void test_optimize ()
 	ksRewind (ks);
 	while ((key = ksNext (ks)) != 0)
 	{
-		if (keyIsUser (key) == 1)
-			keyClearSync (key);
+		if (keyIsUser (key) == 1) keyClearSync (key);
 	}
 
 	succeed_if (elektraSplitBuildup (split, handle, 0) == 1, "should need sync");

@@ -200,10 +200,8 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 	}
 	*/
 
-	if (keyGetUID (key) != (uid_t)-1)
-		written += fprintf (stream, " uid=\"%d\"", (int)keyGetUID (key));
-	if (keyGetGID (key) != (gid_t)-1)
-		written += fprintf (stream, " gid=\"%d\"", (int)keyGetGID (key));
+	if (keyGetUID (key) != (uid_t)-1) written += fprintf (stream, " uid=\"%d\"", (int)keyGetUID (key));
+	if (keyGetGID (key) != (gid_t)-1) written += fprintf (stream, " gid=\"%d\"", (int)keyGetGID (key));
 
 	if (keyGetMode (key) != KDB_FILE_MODE)
 	{
@@ -214,8 +212,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 	if (!key->data.v && !keyComment (key))
 	{ /* no data AND no comment */
 		written += fprintf (stream, "/>");
-		if (!(options & KDB_O_CONDENSED))
-			written += fprintf (stream, "\n\n");
+		if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n\n");
 
 		return written; /* end of <key/> */
 	}
@@ -243,8 +240,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 				else
 				{
 					written += fprintf (stream, "/>");
-					if (!(options & KDB_O_CONDENSED))
-						written += fprintf (stream, "\n");
+					if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n");
 
 					return written;
 				}
@@ -252,8 +248,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 			else
 			{ /* value is bigger than 16 bytes: deserves own <value> */
 				written += fprintf (stream, ">");
-				if (!(options & KDB_O_CONDENSED))
-					written += fprintf (stream, "\n\n     ");
+				if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n\n     ");
 
 				written += fprintf (stream, "<value>");
 				if (keyIsString (key))
@@ -287,14 +282,12 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 			if (keyComment (key))
 			{
 				written += fprintf (stream, ">");
-				if (!(options & KDB_O_CONDENSED))
-					written += fprintf (stream, "\n");
+				if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n");
 			}
 			else
 			{
 				written += fprintf (stream, "/>");
-				if (!(options & KDB_O_CONDENSED))
-					written += fprintf (stream, "\n\n");
+				if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n\n");
 
 				return written;
 			}
@@ -304,21 +297,18 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 	if (!(options & KDB_O_CONDENSED))
 	{
 		written += fprintf (stream, "\n");
-		if (keyComment (key))
-			written += fprintf (stream, "     ");
+		if (keyComment (key)) written += fprintf (stream, "     ");
 	}
 
 	if (keyComment (key))
 	{
 		written += fprintf (stream, "<comment><![CDATA[%s]]></comment>", keyComment (key));
-		if (!(options & KDB_O_CONDENSED))
-			written += fprintf (stream, "\n");
+		if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n");
 	}
 
 	written += fprintf (stream, "</key>");
 
-	if (!(options & KDB_O_CONDENSED))
-		written += fprintf (stream, "\n\n");
+	if (!(options & KDB_O_CONDENSED)) written += fprintf (stream, "\n\n");
 
 	return written;
 }
@@ -479,8 +469,7 @@ int keyOutput (const Key * k, FILE * stream, option_t options)
 	if (n > 1)
 	{
 		nam = (char *)elektraMalloc (n);
-		if (nam == NULL)
-			return -1;
+		if (nam == NULL) return -1;
 		keyGetName (k, nam, n);
 
 		fprintf (stream, "Name[%d]: %s : ", (int)n, nam);
@@ -492,8 +481,7 @@ int keyOutput (const Key * k, FILE * stream, option_t options)
 	if (options & KEY_VALUE && s > 1)
 	{
 		str = (char *)elektraMalloc (s);
-		if (str == NULL)
-			return -1;
+		if (str == NULL) return -1;
 		if (keyIsBinary (k))
 		{
 			/*
@@ -519,8 +507,7 @@ int keyOutput (const Key * k, FILE * stream, option_t options)
 	if (options & KEY_COMMENT && c > 1)
 	{
 		com = (char *)elektraMalloc (c);
-		if (com == NULL)
-			return -1;
+		if (com == NULL) return -1;
 		keyGetComment (k, com, c);
 
 		fprintf (stream, "Comment[%d]: %s : ", (int)c, com);
@@ -529,14 +516,10 @@ int keyOutput (const Key * k, FILE * stream, option_t options)
 	}
 
 
-	if (options & KDB_O_SHOWMETA)
-		fprintf (stream, " : ");
-	if (options & KEY_UID)
-		fprintf (stream, "UID: %d : ", (int)keyGetUID (k));
-	if (options & KEY_GID)
-		fprintf (stream, "GID: %d : ", (int)keyGetGID (k));
-	if (options & KEY_MODE)
-		fprintf (stream, "Mode: %o : ", (int)keyGetMode (k));
+	if (options & KDB_O_SHOWMETA) fprintf (stream, " : ");
+	if (options & KEY_UID) fprintf (stream, "UID: %d : ", (int)keyGetUID (k));
+	if (options & KEY_GID) fprintf (stream, "GID: %d : ", (int)keyGetGID (k));
+	if (options & KEY_MODE) fprintf (stream, "Mode: %o : ", (int)keyGetMode (k));
 
 	if (options & KEY_ATIME)
 	{
@@ -564,17 +547,12 @@ int keyOutput (const Key * k, FILE * stream, option_t options)
 
 	if (options & KDB_O_SHOWFLAGS)
 	{
-		if (!(options & KDB_O_SHOWMETA))
-			fprintf (stream, " ");
+		if (!(options & KDB_O_SHOWMETA)) fprintf (stream, " ");
 		fprintf (stream, "Flags: ");
-		if (keyIsBinary (k))
-			fprintf (stream, "b");
-		if (keyIsString (k))
-			fprintf (stream, "s");
-		if (keyIsInactive (k))
-			fprintf (stream, "i");
-		if (keyNeedSync (k))
-			fprintf (stream, "s");
+		if (keyIsBinary (k)) fprintf (stream, "b");
+		if (keyIsString (k)) fprintf (stream, "s");
+		if (keyIsInactive (k)) fprintf (stream, "i");
+		if (keyNeedSync (k)) fprintf (stream, "s");
 	}
 
 	fprintf (stream, "\n");
@@ -619,8 +597,7 @@ int ksOutput (const KeySet * ks, FILE * stream, option_t options)
 	}
 	while ((key = ksNext (cks)) != NULL)
 	{
-		if (options & KDB_O_SHOWINDICES)
-			fprintf (stream, "[%d] ", (int)size);
+		if (options & KDB_O_SHOWINDICES) fprintf (stream, "[%d] ", (int)size);
 		keyOutput (key, stream, options);
 		size++;
 	}
@@ -656,8 +633,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	if (n > 1)
 	{
 		nam = (char *)elektraMalloc (n);
-		if (nam == NULL)
-			return -1;
+		if (nam == NULL) return -1;
 		keyGetName (key, nam, n);
 		fprintf (stream, "\tkeyNew (\"%s\"", nam);
 		elektraFree (nam);
@@ -667,8 +643,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	if (s > 1)
 	{
 		str = (char *)elektraMalloc (s);
-		if (str == NULL)
-			return -1;
+		if (str == NULL) return -1;
 		if (keyIsBinary (key))
 			keyGetBinary (key, str, s);
 		else
@@ -681,8 +656,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 	if (c > 1)
 	{
 		com = (char *)elektraMalloc (c);
-		if (com == NULL)
-			return -1;
+		if (com == NULL) return -1;
 		keyGetComment (key, com, c);
 		fprintf (stream, ", KEY_COMMENT, \"%s\"", com);
 		elektraFree (com);
@@ -695,8 +669,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 
 	fprintf (stream, ", KEY_END)");
 
-	if (options == 0)
-		return 1; /* dummy to make icc happy */
+	if (options == 0) return 1; /* dummy to make icc happy */
 	return 1;
 }
 
@@ -728,8 +701,7 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 	while ((key = ksNext (cks)) != 0)
 	{
 		if (options & KDB_O_INACTIVE)
-			if (key && keyIsInactive (key))
-				continue;
+			if (key && keyIsInactive (key)) continue;
 
 		s++;
 

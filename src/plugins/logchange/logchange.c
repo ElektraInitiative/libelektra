@@ -37,8 +37,7 @@ int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 
 	// remember all keys
 	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
-	if (ks)
-		ksDel (ks);
+	if (ks) ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
 	return 1; /* success */
@@ -102,8 +101,7 @@ int elektraLogchangeSet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 int elektraLogchangeClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
-	if (ks)
-		ksDel (ks);
+	if (ks) ksDel (ks);
 	return 1; /* success */
 }
 

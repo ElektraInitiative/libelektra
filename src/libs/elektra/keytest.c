@@ -57,8 +57,7 @@
  */
 int keyClearSync (Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	keyflag_t semiflag = KEY_FLAG_SYNC;
 
@@ -98,8 +97,7 @@ int keyClearSync (Key * key)
  */
 int keyNeedSync (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	return (key->flags & KEY_FLAG_SYNC) == KEY_FLAG_SYNC;
 }
@@ -107,8 +105,7 @@ int keyNeedSync (const Key * key)
 
 int keyIsSpec (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->key)
 		return keyNameIsSpec (key->key);
@@ -118,8 +115,7 @@ int keyIsSpec (const Key * key)
 
 int keyIsProc (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->key)
 		return keyNameIsProc (key->key);
@@ -130,8 +126,7 @@ int keyIsProc (const Key * key)
 
 int keyIsDir (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->key)
 		return keyNameIsDir (key->key);
@@ -152,8 +147,7 @@ int keyIsDir (const Key * key)
  */
 int keyIsSystem (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->key)
 		return keyNameIsSystem (key->key);
@@ -174,8 +168,7 @@ int keyIsSystem (const Key * key)
  */
 int keyIsUser (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->key)
 		return keyNameIsUser (key->key);
@@ -224,22 +217,17 @@ int keyIsBelow (const Key * key, const Key * check)
 	ssize_t keysize = 0;
 	ssize_t checksize = 0;
 
-	if (!key || !check)
-		return -1;
+	if (!key || !check) return -1;
 
 	keyname = keyName (key);
 	checkname = keyName (check);
 	keysize = keyGetNameSize (key);
 	checksize = keyGetNameSize (check);
 
-	if (keysize > checksize + 1)
-		return 0;
-	if (strncmp (keyname, checkname, keysize - 1))
-		return 0;
-	if (!strcmp (checkname, "/"))
-		return 0;
-	if (checkname[keysize - 1] != '/' && strcmp (keyname, "/"))
-		return 0;
+	if (keysize > checksize + 1) return 0;
+	if (strncmp (keyname, checkname, keysize - 1)) return 0;
+	if (!strcmp (checkname, "/")) return 0;
+	if (checkname[keysize - 1] != '/' && strcmp (keyname, "/")) return 0;
 	return 1;
 }
 
@@ -251,8 +239,7 @@ int keyIsBelow (const Key * key, const Key * check)
  */
 int keyIsBelowOrSame (const Key * key, const Key * check)
 {
-	if (!key || !check)
-		return -1;
+	if (!key || !check) return -1;
 
 	const char * name1 = keyName (key);
 	const char * name2 = keyName (check);
@@ -293,18 +280,15 @@ does not return true, because there is only a indirect relation
  */
 int keyIsDirectBelow (const Key * key, const Key * check)
 {
-	if (!key || !check)
-		return -1;
+	if (!key || !check) return -1;
 
-	if (!keyIsBelow (key, check))
-		return 0;
+	if (!keyIsBelow (key, check)) return 0;
 
 
 	const char * checkname = keyUnescapedName (check);
 	ssize_t keysize = keyGetUnescapedNameSize (key);
 	ssize_t checksize = keyGetUnescapedNameSize (check);
-	if (strchr (checkname + keysize, '\0') == checkname + checksize - 1)
-		return 1;
+	if (strchr (checkname + keysize, '\0') == checkname + checksize - 1) return 1;
 
 	return 0;
 }
@@ -438,21 +422,14 @@ user/key/sibling/any/depth/deeper/grand-nephew
  */
 int keyRel (const Key * key, const Key * check)
 {
-	if (!key || !check)
-		return -1;
-	if (!key->key || !check->key)
-		return -1;
+	if (!key || !check) return -1;
+	if (!key->key || !check->key) return -1;
 
-	if (!keyCmp (key, check))
-		return 0;
-	if (keyIsDirectBelow (key, check))
-		return 1;
-	if (keyIsBelow (key, check))
-		return 2;
-	if (keyIsUser (key) && keyIsUser (check))
-		return -3;
-	if (keyIsSystem (key) && keyIsSystem (check))
-		return -3;
+	if (!keyCmp (key, check)) return 0;
+	if (keyIsDirectBelow (key, check)) return 1;
+	if (keyIsBelow (key, check)) return 2;
+	if (keyIsUser (key) && keyIsUser (check)) return -3;
+	if (keyIsSystem (key) && keyIsSystem (check)) return -3;
 	// if (keyIsSibling(key, check)) return -4;
 	// if (keyIsNephew(key, check)) return -5;
 
@@ -483,14 +460,11 @@ int keyRel (const Key * key, const Key * check)
  */
 int keyIsInactive (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	const char * p = keyName (key);
-	if (!p)
-		return -1;
-	if (p[0] == '\0')
-		return -1;
+	if (!p) return -1;
+	if (p[0] == '\0') return -1;
 
 	size_t size = 0;
 
@@ -528,8 +502,7 @@ int keyIsInactive (const Key * key)
  */
 int keyIsBinary (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	return keyGetMeta (key, "binary") != 0;
 }
@@ -553,8 +526,7 @@ int keyIsBinary (const Key * key)
  */
 int keyIsString (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	return keyGetMeta (key, "binary") == 0;
 }
@@ -647,10 +619,8 @@ keyDel(base);
  */
 keyswitch_t keyCompare (const Key * key1, const Key * key2)
 {
-	if (!key1 && !key2)
-		return 0;
-	if (!key1 || !key2)
-		return KEY_NULL;
+	if (!key1 && !key2) return 0;
+	if (!key1 || !key2) return KEY_NULL;
 
 	keyswitch_t ret = 0;
 	ssize_t nsize1 = keyGetNameSize (key1);
@@ -667,14 +637,11 @@ keyswitch_t keyCompare (const Key * key1, const Key * key2)
 	ssize_t size2 = keyGetValueSize (key2);
 
 	// TODO: might be (binary) by chance
-	if (strcmp (keyString (comment1), keyString (comment2)))
-		ret |= KEY_COMMENT;
+	if (strcmp (keyString (comment1), keyString (comment2))) ret |= KEY_COMMENT;
 
-	if (strcmp (owner1, owner2))
-		ret |= KEY_OWNER;
+	if (strcmp (owner1, owner2)) ret |= KEY_OWNER;
 
-	if (keyCompareMeta (key1, key2))
-		ret |= KEY_META;
+	if (keyCompareMeta (key1, key2)) ret |= KEY_META;
 
 	if (nsize1 != nsize2)
 		ret |= KEY_NAME;
@@ -719,10 +686,8 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 			return KEY_META;
 		}
 
-		if (strcmp (keyName (meta1), keyName (meta2)))
-			return KEY_META;
-		if (strcmp (keyString (meta1), keyString (meta2)))
-			return KEY_META;
+		if (strcmp (keyName (meta1), keyName (meta2))) return KEY_META;
+		if (strcmp (keyString (meta1), keyString (meta2))) return KEY_META;
 	}
 
 	// TODO: rewind meta data to previous position

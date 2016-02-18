@@ -67,8 +67,7 @@ Ds_STR_INLINE int Ds_InitStr (Ds_str * restrict s, int size)
 
 	if (size > 0)
 	{
-		if (!(s->str = (char *)malloc (size * sizeof (char))))
-			return 0;
+		if (!(s->str = (char *)malloc (size * sizeof (char)))) return 0;
 
 		s->str[0] = '\0';
 		s->size = size;
@@ -81,8 +80,7 @@ Ds_STR_INLINE int Ds_InitStr (Ds_str * restrict s, int size)
  */
 Ds_STR_INLINE void Ds_FreeStr (Ds_str * restrict s)
 {
-	if (s->str)
-		elektraFree (s->str);
+	if (s->str) elektraFree (s->str);
 	*s = (Ds_str)Ds_STR_INIT;
 }
 
@@ -96,8 +94,7 @@ Ds_STR_INLINE int Ds_StrCat (Ds_str * restrict dest, const char * restrict sourc
 {
 	int new_size;
 
-	if (source_len < 0)
-		source_len = (int)strlen (source);
+	if (source_len < 0) source_len = (int)strlen (source);
 
 #if (Ds_STR_BEHAVIOR == 1)
 	new_size = dest->len + source_len + 1;
@@ -113,8 +110,7 @@ Ds_STR_INLINE int Ds_StrCat (Ds_str * restrict dest, const char * restrict sourc
 	if (new_size > dest->size)
 	{
 		char * new_str;
-		if (!(new_str = (char *)realloc (dest->str, new_size * sizeof (char))))
-			return -1;
+		if (!(new_str = (char *)realloc (dest->str, new_size * sizeof (char)))) return -1;
 		dest->str = new_str;
 		dest->size = new_size;
 	}
@@ -158,8 +154,7 @@ Ds_STR_INLINE int Ds_StrCatVPrint (Ds_str * restrict dest, const char * restrict
 		if (new_size > dest->size)
 		{
 			char * new_str;
-			if (!(new_str = (char *)realloc (dest->str, new_size * sizeof (char))))
-				return -1;
+			if (!(new_str = (char *)realloc (dest->str, new_size * sizeof (char)))) return -1;
 			dest->str = new_str;
 			dest->size = new_size;
 		}
@@ -201,14 +196,12 @@ Ds_STR_INLINE int Ds_ResizeStr (Ds_str * restrict s, int size)
 	{
 		char * new_str;
 
-		if (!(new_str = (char *)realloc (s->str, size * sizeof (char))))
-			return 0;
+		if (!(new_str = (char *)realloc (s->str, size * sizeof (char)))) return 0;
 
 		s->str = new_str;
 		s->size = size;
 
-		if (s->len > size - 1)
-			s->str[s->len = size - 1] = '\0';
+		if (s->len > size - 1) s->str[s->len = size - 1] = '\0';
 	}
 
 	return 1;

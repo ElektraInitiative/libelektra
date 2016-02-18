@@ -54,8 +54,7 @@ static kdblib_symbol * elektraStaticSym (kdblib_symbol * handle, const char * sy
 	/* For each symbol about this module */
 	while (current->function != NULL)
 	{
-		if (strcmp (current->name, symbol) == 0)
-			return current;
+		if (strcmp (current->name, symbol) == 0) return current;
 
 		current++;
 	}

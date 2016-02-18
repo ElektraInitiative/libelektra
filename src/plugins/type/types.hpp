@@ -72,12 +72,9 @@ public:
 		i.imbue (locale ("C"));
 		T n;
 		i >> n;
-		if (i.bad ())
-			return false;
-		if (i.fail ())
-			return false;
-		if (!i.eof ())
-			return false;
+		if (i.bad ()) return false;
+		if (i.fail ()) return false;
+		if (!i.eof ()) return false;
 		return true;
 	}
 };
@@ -98,17 +95,13 @@ public:
 		i.imbue (locale ("C"));
 		T n;
 		i >> n;
-		if (i.bad ())
-			return false;
-		if (i.fail ())
-			return false;
-		if (!i.eof ())
-			return false;
+		if (i.bad ()) return false;
+		if (i.fail ()) return false;
+		if (!i.eof ()) return false;
 
 		ostringstream o;
 		o << n;
-		if (o.str () != k.getString ())
-			return false;
+		if (o.str () != k.getString ()) return false;
 
 		return true;
 	}
@@ -130,20 +123,15 @@ public:
 		i.imbue (locale ("C"));
 		T n;
 		i >> n;
-		if (i.bad ())
-			return false;
-		if (i.fail ())
-			return false;
-		if (!i.eof ())
-			return false;
+		if (i.bad ()) return false;
+		if (i.fail ()) return false;
+		if (!i.eof ()) return false;
 
 		ostringstream o;
 		o.imbue (locale ("C"));
 		o << n;
-		if (o.fail ())
-			return false;
-		if (o.str () != k.getString ())
-			return false;
+		if (o.fail ()) return false;
+		if (o.str () != k.getString ()) return false;
 
 		Key const min = k.getMeta<const Key> ("check/type/min");
 		if (min)
@@ -152,14 +140,10 @@ public:
 			i_min.imbue (locale ("C"));
 			T n_min;
 			i_min >> n_min;
-			if (i_min.bad ())
-				return false;
-			if (i_min.fail ())
-				return false;
-			if (!i_min.eof ())
-				return false;
-			if (n < n_min)
-				return false;
+			if (i_min.bad ()) return false;
+			if (i_min.fail ()) return false;
+			if (!i_min.eof ()) return false;
+			if (n < n_min) return false;
 		}
 
 		Key const max = k.getMeta<const Key> ("check/type/max");
@@ -169,14 +153,10 @@ public:
 			i_max.imbue (locale ("C"));
 			T n_max;
 			i_max >> n_max;
-			if (i_max.bad ())
-				return false;
-			if (i_max.fail ())
-				return false;
-			if (!i_max.eof ())
-				return false;
-			if (n > n_max)
-				return false;
+			if (i_max.bad ()) return false;
+			if (i_max.fail ()) return false;
+			if (!i_max.eof ()) return false;
+			if (n > n_max) return false;
 		}
 
 		return true;
@@ -244,16 +224,14 @@ public:
 		while (pos != string::npos)
 		{
 			std::string type = label.substr (oldpos, pos - oldpos);
-			if (choices.find (type) == choices.end ())
-				return false;
+			if (choices.find (type) == choices.end ()) return false;
 
 			oldpos = pos + 1;
 			pos = label.find (',', oldpos);
 		}
 
 		std::string lastType = label.substr (oldpos, string::npos);
-		if (choices.find (lastType) == choices.end ())
-			return false;
+		if (choices.find (lastType) == choices.end ()) return false;
 
 		return true;
 	}

@@ -57,8 +57,7 @@ Plugin::Plugin (Plugin const & other)
 
 Plugin & Plugin::operator= (Plugin const & other)
 {
-	if (this == &other)
-		return *this;
+	if (this == &other) return *this;
 
 	uninit ();
 
@@ -179,11 +178,9 @@ void Plugin::check (vector<string> & warnings)
 		}
 	}
 
-	if (infos.find ("description") == infos.end ())
-		warnings.push_back ("no description of the plugin found");
+	if (infos.find ("description") == infos.end ()) warnings.push_back ("no description of the plugin found");
 
-	if (infos.find ("provides") == infos.end ())
-		warnings.push_back ("no provides information found");
+	if (infos.find ("provides") == infos.end ()) warnings.push_back ("no provides information found");
 	if (infos.find ("placements") == infos.end ())
 	{
 		warnings.push_back ("no placements information found");
@@ -215,8 +212,7 @@ void Plugin::check (vector<string> & warnings)
 			}
 		}
 	}
-	if (infos.find ("needs") == infos.end ())
-		warnings.push_back ("no needs information found");
+	if (infos.find ("needs") == infos.end ()) warnings.push_back ("no needs information found");
 
 	if (infos.find ("author") == infos.end ())
 	{
@@ -227,22 +223,17 @@ void Plugin::check (vector<string> & warnings)
 		std::string author = infos["author"];
 		size_t ppos = 0;
 		ppos = author.find ('<', ppos);
-		if (ppos == string::npos)
-			warnings.push_back ("Could not find \"<\" for authors e-mail address");
+		if (ppos == string::npos) warnings.push_back ("Could not find \"<\" for authors e-mail address");
 
 		size_t pos = 0;
 		pos = author.find ('@', ppos);
-		if (pos == string::npos)
-			warnings.push_back ("Could not find \"@\" for authors e-mail address");
-		if (pos < ppos)
-			warnings.push_back ("@ found before <");
+		if (pos == string::npos) warnings.push_back ("Could not find \"@\" for authors e-mail address");
+		if (pos < ppos) warnings.push_back ("@ found before <");
 
 		size_t lpos = 0;
 		lpos = author.find ('>', pos);
-		if (lpos == string::npos)
-			warnings.push_back ("Could not find \">\" for authors e-mail address");
-		if (lpos < pos)
-			warnings.push_back ("> found before @");
+		if (lpos == string::npos) warnings.push_back ("Could not find \">\" for authors e-mail address");
+		if (lpos < pos) warnings.push_back ("> found before @");
 	}
 
 	std::set<func_t> checkDups;
@@ -254,8 +245,7 @@ void Plugin::check (vector<string> & warnings)
 		else if (symbols["open"] != reinterpret_cast<func_t> (plugin->kdbOpen))
 			throw SymbolMismatch ("open");
 		ret = checkDups.insert (symbols["open"]);
-		if (!ret.second)
-			throw SymbolDuplicate ("open");
+		if (!ret.second) throw SymbolDuplicate ("open");
 	}
 	if (plugin->kdbClose)
 	{
@@ -264,8 +254,7 @@ void Plugin::check (vector<string> & warnings)
 		else if (symbols["close"] != reinterpret_cast<func_t> (plugin->kdbClose))
 			throw SymbolMismatch ("close");
 		ret = checkDups.insert (symbols["close"]);
-		if (!ret.second)
-			throw SymbolDuplicate ("close");
+		if (!ret.second) throw SymbolDuplicate ("close");
 	}
 	if (plugin->kdbGet)
 	{
@@ -274,8 +263,7 @@ void Plugin::check (vector<string> & warnings)
 		else if (symbols["get"] != reinterpret_cast<func_t> (plugin->kdbGet))
 			throw SymbolMismatch ("get");
 		ret = checkDups.insert (symbols["get"]);
-		if (!ret.second)
-			throw SymbolDuplicate ("get");
+		if (!ret.second) throw SymbolDuplicate ("get");
 	}
 	if (plugin->kdbSet)
 	{
@@ -284,8 +272,7 @@ void Plugin::check (vector<string> & warnings)
 		else if (symbols["set"] != reinterpret_cast<func_t> (plugin->kdbSet))
 			throw SymbolMismatch ("set");
 		ret = checkDups.insert (symbols["set"]);
-		if (!ret.second)
-			throw SymbolDuplicate ("set");
+		if (!ret.second) throw SymbolDuplicate ("set");
 	}
 	if (plugin->kdbError)
 	{
@@ -294,33 +281,27 @@ void Plugin::check (vector<string> & warnings)
 		else if (symbols["error"] != reinterpret_cast<func_t> (plugin->kdbError))
 			throw SymbolMismatch ("error");
 		ret = checkDups.insert (symbols["error"]);
-		if (!ret.second)
-			throw SymbolDuplicate ("error");
+		if (!ret.second) throw SymbolDuplicate ("error");
 	}
 	if (symbols.find ("open") != symbols.end ())
 	{
-		if (!plugin->kdbOpen)
-			throw SymbolMismatch ("open");
+		if (!plugin->kdbOpen) throw SymbolMismatch ("open");
 	}
 	if (symbols.find ("close") != symbols.end ())
 	{
-		if (!plugin->kdbClose)
-			throw SymbolMismatch ("close");
+		if (!plugin->kdbClose) throw SymbolMismatch ("close");
 	}
 	if (symbols.find ("get") != symbols.end ())
 	{
-		if (!plugin->kdbGet)
-			throw SymbolMismatch ("get");
+		if (!plugin->kdbGet) throw SymbolMismatch ("get");
 	}
 	if (symbols.find ("set") != symbols.end ())
 	{
-		if (!plugin->kdbSet)
-			throw SymbolMismatch ("set");
+		if (!plugin->kdbSet) throw SymbolMismatch ("set");
 	}
 	if (symbols.find ("error") != symbols.end ())
 	{
-		if (!plugin->kdbError)
-			throw SymbolMismatch ("error");
+		if (!plugin->kdbError) throw SymbolMismatch ("error");
 	}
 }
 
@@ -337,8 +318,7 @@ std::string Plugin::lookupInfo (std::string item, std::string section)
 	k.addBaseName (item);
 	Key ret = info.lookup (k);
 
-	if (!ret)
-		return ""; /* TODO Lets say missing info is ok for now */
+	if (!ret) return ""; /* TODO Lets say missing info is ok for now */
 
 	return ret.getString ();
 }
@@ -352,8 +332,7 @@ bool Plugin::findInfo (std::string compare, std::string item, std::string sectio
 	std::string toCheck;
 	while (istr >> toCheck)
 	{
-		if (toCheck == compare)
-			return true;
+		if (toCheck == compare) return true;
 	}
 	return false;
 }

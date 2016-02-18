@@ -21,14 +21,12 @@ int main ()
 	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
 	KDB * handle = kdbOpen (key);
 
-	if (!handle)
-		printError (key);
+	if (!handle) printError (key);
 
 
 	printWarnings (key);
 
-	if (kdbGet (handle, myConfig, key) < 0)
-		printError (key);
+	if (kdbGet (handle, myConfig, key) < 0) printError (key);
 
 
 	printWarnings (key);
@@ -81,8 +79,7 @@ void printError (Key * key)
  */
 void printWarnings (Key * key)
 {
-	if (!keyGetMeta (key, "warnings"))
-		return;
+	if (!keyGetMeta (key, "warnings")) return;
 	char * end;
 	int warn_count = strtol (keyString (keyGetMeta (key, "warnings")), &end, 10);
 	if (*end)
@@ -124,8 +121,7 @@ void removeMetaData (Key * key, const char * searchfor)
 		/*startsWith*/
 		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
 		{
-			if (keySetMeta (key, keyName (iter_key), 0) != 0)
-				printf ("Error while deleting %s\n", searchfor);
+			if (keySetMeta (key, keyName (iter_key), 0) != 0) printf ("Error while deleting %s\n", searchfor);
 		}
 	}
 }

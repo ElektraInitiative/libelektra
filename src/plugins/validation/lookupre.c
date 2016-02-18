@@ -89,8 +89,7 @@ Key * ksLookupRE (KeySet * ks, const regex_t * regexp)
 
 	while ((walker = ksNext (ks)) != end)
 	{
-		if (!regexec (regexp, keyString (walker), 1, &offsets, 0))
-			return walker;
+		if (!regexec (regexp, keyString (walker), 1, &offsets, 0)) return walker;
 	}
 
 	return 0;

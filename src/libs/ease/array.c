@@ -65,8 +65,7 @@ int elektraArrayValidateName (const Key * key)
 			digits++;
 		}
 
-		if (underscores != digits - 1)
-			return -1;
+		if (underscores != digits - 1) return -1;
 		if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
 		{
 			return -1;
@@ -217,11 +216,9 @@ static int arrayFilter (const Key * key, void * argument)
  */
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
 {
-	if (!arrayParent)
-		return 0;
+	if (!arrayParent) return 0;
 
-	if (!keys)
-		return 0;
+	if (!keys) return 0;
 
 	KeySet * arrayKeys = ksNew (ksGetSize (keys), KS_END);
 	elektraKsFilter (arrayKeys, keys, &arrayFilter, (void *)arrayParent);
@@ -246,13 +243,11 @@ KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
  */
 Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 {
-	if (!arrayKeys)
-		return 0;
+	if (!arrayKeys) return 0;
 
 	Key * last = ksPop (arrayKeys);
 
-	if (!last)
-		return 0;
+	if (!last) return 0;
 
 	ksAppendKey (arrayKeys, last);
 	Key * newKey = keyDup (last);

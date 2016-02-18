@@ -249,8 +249,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 			continue;
 		}
 
-		if (p[i]["severity"] != "warning")
-			continue;
+		if (p[i]["severity"] != "warning") continue;
 		os << "		case " << i << ": ELEKTRA_ADD_WARNING (" << i << ", parentKey, message);" << endl
 		   << "			break;" << endl;
 	}
@@ -270,8 +269,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 			continue;
 		}
 
-		if (p[i]["severity"] == "warning")
-			continue;
+		if (p[i]["severity"] == "warning") continue;
 		os << "		case " << i << ": ELEKTRA_SET_ERROR (" << i << ", parentKey, message);" << endl
 		   << "			break;" << endl;
 	}

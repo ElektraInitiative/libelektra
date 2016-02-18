@@ -67,8 +67,7 @@ const char * keyOwner (const Key * key)
 {
 	const char * owner;
 
-	if (!key)
-		return 0;
+	if (!key) return 0;
 	owner = keyValue (keyGetMeta (key, "owner"));
 
 	if (!owner)
@@ -106,8 +105,7 @@ buffer = elektraMalloc (keyGetOwnerSize (key));
 ssize_t keyGetOwnerSize (const Key * key)
 {
 	ssize_t size;
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	size = keyGetValueSize (keyGetMeta (key, "owner"));
 
@@ -148,15 +146,11 @@ ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
 {
 	const char * owner;
 	size_t ownerSize;
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
-	if (!maxSize)
-		return -1;
-	if (!returnedOwner)
-		return -1;
-	if (maxSize > SSIZE_MAX)
-		return -1;
+	if (!maxSize) return -1;
+	if (!returnedOwner) return -1;
+	if (maxSize > SSIZE_MAX) return -1;
 
 	owner = keyValue (keyGetMeta (key, "owner"));
 	ownerSize = keyGetValueSize (keyGetMeta (key, "owner"));
@@ -197,8 +191,7 @@ ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
  */
 ssize_t keySetOwner (Key * key, const char * newOwner)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 	if (!newOwner || *newOwner == 0)
 	{
 		keySetMeta (key, "owner", 0);

@@ -83,8 +83,7 @@
 static Key * elektraKeyMalloc ()
 {
 	Key * key = (Key *)elektraMalloc (sizeof (Key));
-	if (!key)
-		return 0;
+	if (!key) return 0;
 	keyInit (key);
 
 	return key;
@@ -214,8 +213,7 @@ Key * keyNew (const char * name, ...)
 Key * keyVNew (const char * name, va_list va)
 {
 	Key * key = elektraKeyMalloc ();
-	if (!key)
-		return 0;
+	if (!key) return 0;
 	keyVInit (key, name, va);
 	return key;
 }
@@ -270,12 +268,10 @@ Key * keyDup (const Key * source)
 {
 	Key * dest = 0;
 
-	if (!source)
-		return 0;
+	if (!source) return 0;
 
 	dest = elektraKeyMalloc ();
-	if (!dest)
-		return 0;
+	if (!dest) return 0;
 
 	/* Copy the struct data */
 	*dest = *source;
@@ -349,8 +345,7 @@ Key * keyDup (const Key * source)
  */
 int keyCopy (Key * dest, const Key * source)
 {
-	if (!dest)
-		return -1;
+	if (!dest) return -1;
 
 	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) || test_bit (dest->flags, KEY_FLAG_RO_VALUE) ||
 	    test_bit (dest->flags, KEY_FLAG_RO_META))
@@ -373,8 +368,7 @@ int keyCopy (Key * dest, const Key * source)
 	if (source->key)
 	{
 		dest->key = elektraStrNDup (source->key, source->keySize + source->keyUSize);
-		if (!dest->key)
-			goto memerror;
+		if (!dest->key) goto memerror;
 	}
 	else
 	{
@@ -384,8 +378,7 @@ int keyCopy (Key * dest, const Key * source)
 	if (source->data.v)
 	{
 		dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
-		if (!dest->data.v)
-			goto memerror;
+		if (!dest->data.v) goto memerror;
 	}
 	else
 	{
@@ -395,8 +388,7 @@ int keyCopy (Key * dest, const Key * source)
 	if (source->meta)
 	{
 		dest->meta = ksDup (source->meta);
-		if (!dest->meta)
-			goto memerror;
+		if (!dest->meta) goto memerror;
 	}
 	else
 	{
@@ -461,8 +453,7 @@ int keyDel (Key * key)
 {
 	int rc;
 
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->ksReference > 0)
 	{
@@ -514,12 +505,9 @@ int keyClear (Key * key)
 	size_t ref = 0;
 
 	ref = key->ksReference;
-	if (key->key)
-		elektraFree (key->key);
-	if (key->data.v)
-		elektraFree (key->data.v);
-	if (key->meta)
-		ksDel (key->meta);
+	if (key->key) elektraFree (key->key);
+	if (key->data.v) elektraFree (key->data.v);
+	if (key->meta) ksDel (key->meta);
 
 	keyInit (key);
 
@@ -556,8 +544,7 @@ int keyClear (Key * key)
  */
 ssize_t keyIncRef (Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->ksReference < SSIZE_MAX)
 		return ++key->ksReference;
@@ -591,8 +578,7 @@ ssize_t keyIncRef (Key * key)
  */
 ssize_t keyDecRef (Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (key->ksReference > 0)
 		return --key->ksReference;
@@ -642,8 +628,7 @@ ssize_t keyDecRef (Key * key)
  **/
 ssize_t keyGetRef (const Key * key)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	return key->ksReference;
 }

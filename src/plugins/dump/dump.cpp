@@ -125,14 +125,12 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size ())
-				namebuffer.resize (namesize + 1);
+			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
 			is.read (&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 			ckdb::keySetName (cur, &namebuffer[0]);
 
-			if (valuesize > valuebuffer.size ())
-				valuebuffer.resize (valuesize + 1);
+			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
 			is.read (&valuebuffer[0], valuesize);
 			valuebuffer[valuesize] = 0;
 
@@ -144,13 +142,11 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size ())
-				namebuffer.resize (namesize + 1);
+			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
 			is.read (&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size ())
-				valuebuffer.resize (valuesize + 1);
+			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
 			is.read (&valuebuffer[0], valuesize);
 			valuebuffer[valuesize] = 0;
 
@@ -162,13 +158,11 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 			ss >> namesize;
 			ss >> valuesize;
 
-			if (namesize > namebuffer.size ())
-				namebuffer.resize (namesize + 1);
+			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
 			is.read (&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
 
-			if (valuesize > valuebuffer.size ())
-				valuebuffer.resize (valuesize + 1);
+			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
 			is.read (&valuebuffer[0], valuesize);
 			valuebuffer[valuesize] = 0;
 

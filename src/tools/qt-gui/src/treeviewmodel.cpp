@@ -174,8 +174,7 @@ int TreeViewModel::getIndexByName (const QString & name) const
 {
 	for (int i = 0; i < m_model.count (); i++)
 	{
-		if (m_model.at (i)->getName () == name)
-			return i;
+		if (m_model.at (i)->getName () == name) return i;
 	}
 
 	return -1;
@@ -225,8 +224,7 @@ void TreeViewModel::importConfiguration (const QString & name, const QString & f
 	{
 		MergeConflictStrategy * strategy = getMergeStrategy (s.toString ());
 
-		if (strategy)
-			merger.addConflictStrategy (strategy);
+		if (strategy) merger.addConflictStrategy (strategy);
 	}
 
 	MergeResult result;
@@ -278,8 +276,7 @@ void TreeViewModel::exportConfiguration (TreeViewModel * parentModel, int idx, Q
 	Key root = parentModel->model ().at (idx)->getKey ();
 
 	// Node is only a filler
-	if (!root)
-		root = Key (parentModel->model ().at (idx)->getPath ().toStdString (), KEY_END);
+	if (!root) root = Key (parentModel->model ().at (idx)->getPath ().toStdString (), KEY_END);
 
 	KeySet part (ks.cut (root));
 
@@ -329,8 +326,7 @@ KeySet TreeViewModel::collectCurrentKeySet ()
 
 Qt::ItemFlags TreeViewModel::flags (const QModelIndex & idx) const
 {
-	if (!idx.isValid ())
-		return Qt::ItemIsEnabled;
+	if (!idx.isValid ()) return Qt::ItemIsEnabled;
 
 	return QAbstractItemModel::flags (idx) | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
@@ -382,8 +378,7 @@ bool TreeViewModel::removeRow (int row, const QModelIndex & parentIndex)
 
 	beginRemoveRows (QModelIndex (), row, row);
 
-	if (!m_model.isEmpty ())
-		m_model.removeAt (row);
+	if (!m_model.isEmpty ()) m_model.removeAt (row);
 
 	endRemoveRows ();
 
@@ -394,8 +389,7 @@ bool TreeViewModel::removeRow (int row, const QModelIndex & parentIndex)
 		childCount += node->getChildCount ();
 	}
 
-	if (childCount == 0)
-		emit expandNode (false);
+	if (childCount == 0) emit expandNode (false);
 
 	emit updateIndicator ();
 
@@ -422,8 +416,7 @@ bool TreeViewModel::insertRow (int row, const QModelIndex & parentIndex)
 void TreeViewModel::insertRow (int row, ConfigNodePtr node, bool addParent)
 {
 	beginInsertRows (QModelIndex (), row, row);
-	if (addParent)
-		node->setParentModel (this);
+	if (addParent) node->setParentModel (this);
 	m_model.insert (row, node);
 	endInsertRows ();
 
@@ -453,8 +446,7 @@ void TreeViewModel::insertMetaRow (int row, Key key, const QString & name)
 
 void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 {
-	if (keys.length () == 0)
-		return;
+	if (keys.length () == 0) return;
 
 	bool isLeaf = (keys.length () == 1);
 
@@ -471,8 +463,7 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 	}
 	else
 	{
-		if (node->hasChild (name))
-			node->getChildren ()->removeRow (node->getChildIndexByName (name));
+		if (node->hasChild (name)) node->getChildren ()->removeRow (node->getChildIndexByName (name));
 
 		ConfigNodePtr newNode;
 
@@ -529,8 +520,7 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 		case KEY_NS_CASCADING:
 			break;
 		}
-		if (toAdd)
-			m_model << toAdd;
+		if (toAdd) m_model << toAdd;
 	}
 
 	m_base = keySet;
@@ -549,8 +539,7 @@ void TreeViewModel::createNewNodes (KeySet keySet)
 
 		for (int i = 0; i < m_model.count (); i++)
 		{
-			if (root == m_model.at (i)->getName ())
-				sink (m_model.at (i), keys, k);
+			if (root == m_model.at (i)->getName ()) sink (m_model.at (i), keys, k);
 		}
 	}
 }
@@ -583,8 +572,7 @@ std::string printKey (Key const & k)
 	std::string ret;
 	ret += k.getName ();
 
-	if (ckdb::keyNeedSync (*k))
-		ret += "°";
+	if (ckdb::keyNeedSync (*k)) ret += "°";
 
 	if (!k.isBinary ())
 	{
@@ -817,8 +805,7 @@ QStringList TreeViewModel::mountedBackends ()
 	}
 
 	// cannot read the size of the QStringList in QML
-	if (mountedBends.isEmpty ())
-		mountedBends.append ("empty");
+	if (mountedBends.isEmpty ()) mountedBends.append ("empty");
 
 	return mountedBends;
 }

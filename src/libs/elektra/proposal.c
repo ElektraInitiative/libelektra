@@ -17,8 +17,7 @@
  */
 Key * elektraKsPrev (KeySet * ks)
 {
-	if (ks->size == 0)
-		return 0;
+	if (ks->size == 0) return 0;
 	if (ks->current <= 0)
 	{
 		ksRewind (ks);
@@ -50,8 +49,7 @@ KeySet * elektraRenameKeys (KeySet * config, const char * name)
 	keyDel (ksLookup (config, root, KDB_O_POP));
 
 	KeySet * newConfig = ksNew (ksGetSize (config), KS_END);
-	if (rootSize == -1)
-		return newConfig;
+	if (rootSize == -1) return newConfig;
 
 	while ((cur = ksPop (config)) != 0)
 	{
@@ -73,8 +71,7 @@ int elektraKeyLock (Key * key, /*option_t*/ enum elektraLockOptions what)
 {
 	int ret = 0;
 
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (test_bit (what, KEY_LOCK_NAME))
 	{
@@ -112,16 +109,12 @@ int elektraKeyLock (Key * key, /*option_t*/ enum elektraLockOptions what)
  */
 Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos)
 {
-	if (!ks)
-		return 0;
-	if (pos < 0)
-		return 0;
-	if (pos > SSIZE_MAX)
-		return 0;
+	if (!ks) return 0;
+	if (pos < 0) return 0;
+	if (pos > SSIZE_MAX) return 0;
 
 	size_t c = pos;
-	if (c >= ks->size)
-		return 0;
+	if (c >= ks->size) return 0;
 
 	if (c != ks->size - 1)
 	{

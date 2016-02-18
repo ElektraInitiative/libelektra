@@ -32,8 +32,7 @@ int main (int argc, char ** argv, char ** environ)
 		{
 			const char * name = argv[i];
 			const char * c = getenv (name);
-			if (!c)
-				return 1;
+			if (!c) return 1;
 			printf ("%s\n", c);
 		}
 	}

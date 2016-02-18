@@ -80,8 +80,7 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 
 			/* Look if we have a string */
 			size_t valsize = keyGetValueSize (k);
-			if (valsize < 2)
-				continue;
+			if (valsize < 2) continue;
 
 			/* We now know we want that key.
 			 Dup it to not change the configuration. */

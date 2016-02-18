@@ -52,8 +52,7 @@ using namespace std;
 using namespace ckdb;
 
 #define LOG                                                                                                                                \
-	if (elektraLog)                                                                                                                    \
-	(*elektraLog)
+	if (elektraLog) (*elektraLog)
 
 #define ELEKTRA_GETENV_USE_LOCKS 1
 
@@ -145,8 +144,7 @@ KeySet * elektraDocu = ksNew (20,
 
 int to_ (int c)
 {
-	if (c == '-')
-		return '_';
+	if (c == '-') return '_';
 	return c;
 }
 
@@ -225,8 +223,7 @@ void addLayer (string kv)
 	stringstream ss (kv);
 	string k, v;
 	getline (ss, k, '%');
-	if (ss.get () != '=')
-		return;
+	if (ss.get () != '=') return;
 	getline (ss, v);
 	LOG << "add layer " << k << " with " << v << endl;
 
@@ -420,8 +417,7 @@ void applyOptions ()
 extern "C" void elektraOpen (int * argc, char ** argv)
 {
 	elektraLockMutex ();
-	if (elektraRepo)
-		elektraClose (); // already opened
+	if (elektraRepo) elektraClose (); // already opened
 
 	LOG << "opening elektra" << endl;
 
@@ -522,8 +518,7 @@ Key * elektraContextEvaluation (ELEKTRA_UNUSED KeySet * ks, ELEKTRA_UNUSED Key *
 			LOG << ", in context: " << contextName;
 			// only consider context if key actually exists, otherwise continue searching
 			Key * ret = ksLookupByName (ks, contextName.c_str (), 0);
-			if (ret)
-				return ret; // use context override!
+			if (ret) return ret; // use context override!
 		}
 		else
 		{
@@ -548,8 +543,7 @@ char * elektraGetEnvKey (std::string const & fullName, bool & finish)
 	{
 		LOG << " found " << fullName << ": " << keyString (key) << endl;
 		finish = true;
-		if (keyIsBinary (key))
-			return nullptr;
+		if (keyIsBinary (key)) return nullptr;
 		return const_cast<char *> (keyString (key));
 	}
 
@@ -609,8 +603,7 @@ char * elektraGetEnv (const char * cname, gfcn origGetenv)
 	bool finish = false;
 	char * ret = nullptr;
 	ret = elektraGetEnvKey ("/env/override/" + name, finish);
-	if (finish)
-		return ret;
+	if (finish) return ret;
 
 	ret = (*origGetenv) (name.c_str ());
 	if (ret)
@@ -622,8 +615,7 @@ char * elektraGetEnv (const char * cname, gfcn origGetenv)
 		LOG << " tried environ,";
 
 	ret = elektraGetEnvKey ("/env/fallback/" + name, finish);
-	if (finish)
-		return ret;
+	if (finish) return ret;
 
 	LOG << " nothing found" << endl;
 	return nullptr;

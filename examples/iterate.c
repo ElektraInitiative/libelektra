@@ -19,13 +19,11 @@ Key * ksNextDir (KeySet * ks)
 	Key * cur;
 	Key * startKey = ksCurrent (ks);
 
-	if (!startKey)
-		return (ksNext (ks));
+	if (!startKey) return (ksNext (ks));
 
 	while ((cur = ksNext (ks)) != 0)
 	{
-		if (!keyIsBelow (startKey, cur))
-			return cur;
+		if (!keyIsBelow (startKey, cur)) return cur;
 	}
 
 	return 0;
@@ -67,8 +65,7 @@ int main (void)
 	printf ("Found key %s\n", keyName (found));
 	while ((cur = ksNext (ks)) != 0)
 	{ /* Iterates over all keys direct below and prints their name */
-		if (keyIsDirectBelow (found, cur) == 0)
-			break;
+		if (keyIsDirectBelow (found, cur) == 0) break;
 		printf ("%s\n", keyName (cur));
 	}
 
@@ -76,8 +73,7 @@ int main (void)
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != 0)
 	{ /* Iterates over inactive keys and prints their name */
-		if (keyIsInactive (cur) == 0)
-			continue;
+		if (keyIsInactive (cur) == 0) continue;
 		printf ("%s %s\n", keyName (cur), keyString (keyGetMeta (cur, "comment")));
 	}
 

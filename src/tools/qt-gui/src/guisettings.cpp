@@ -124,8 +124,7 @@ void GUISettings::lookupColor (const std::string & keyName, QColor & toSet) cons
 {
 	Key key = m_config.lookup (keyName);
 
-	if (!key)
-		return; // nothing to do
+	if (!key) return; // nothing to do
 
 	try
 	{

@@ -158,8 +158,7 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
 int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 {
 	handle->defaultBackend = elektraBackendOpenDefault (handle->modules, KDB_DB_INIT, errorKey);
-	if (!handle->defaultBackend)
-		return -1;
+	if (!handle->defaultBackend) return -1;
 
 	handle->split = elektraSplitNew ();
 	elektraSplitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
@@ -318,8 +317,7 @@ KDB * kdbOpen (Key * errorKey)
 #if DEBUG && VERBOSE
 	Key * key;
 
-	if (inFallback)
-		printf ("In fallback\n");
+	if (inFallback) printf ("In fallback\n");
 
 	ksRewind (keys);
 	for (key = ksNext (keys); key; key = ksNext (keys))

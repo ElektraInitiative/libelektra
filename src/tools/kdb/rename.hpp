@@ -17,8 +17,7 @@ inline kdb::Key rename_key (kdb::Key k, std::string sourceName, std::string newD
 {
 	std::string otherName = k.getName ();
 	std::string baseName = otherName.substr (sourceName.length ());
-	if (verbose)
-		std::cout << "key: " << otherName << " will be renamed to: " << newDirName + baseName << std::endl;
+	if (verbose) std::cout << "key: " << otherName << " will be renamed to: " << newDirName + baseName << std::endl;
 
 	kdb::Key newKey = k.dup ();
 	newKey.setName (newDirName + baseName);

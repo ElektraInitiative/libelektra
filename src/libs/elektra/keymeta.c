@@ -152,10 +152,8 @@ while ((meta = keyNextMeta (key))!=0)
  **/
 int keyRewindMeta (Key * key)
 {
-	if (!key)
-		return -1;
-	if (!key->meta)
-		return 0;
+	if (!key) return -1;
+	if (!key->meta) return 0;
 
 	return ksRewind (key->meta);
 }
@@ -188,10 +186,8 @@ int keyRewindMeta (Key * key)
 const Key * keyNextMeta (Key * key)
 {
 	Key * ret;
-	if (!key)
-		return 0;
-	if (!key->meta)
-		return 0;
+	if (!key) return 0;
+	if (!key->meta) return 0;
 
 	ret = ksNext (key->meta);
 
@@ -217,10 +213,8 @@ const Key * keyNextMeta (Key * key)
 const Key * keyCurrentMeta (const Key * key)
 {
 	Key * ret;
-	if (!key)
-		return 0;
-	if (!key->meta)
-		return 0;
+	if (!key) return 0;
+	if (!key->meta) return 0;
 
 	ret = ksCurrent (key->meta);
 
@@ -285,12 +279,9 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 {
 	Key * ret;
 
-	if (!source)
-		return -1;
-	if (!dest)
-		return -1;
-	if (dest->flags & KEY_FLAG_RO_META)
-		return -1;
+	if (!source) return -1;
+	if (!dest) return -1;
+	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
 	ret = (Key *)keyGetMeta (source, metaName);
 
@@ -374,12 +365,9 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
  */
 int keyCopyAllMeta (Key * dest, const Key * source)
 {
-	if (!source)
-		return -1;
-	if (!dest)
-		return -1;
-	if (dest->flags & KEY_FLAG_RO_META)
-		return -1;
+	if (!source) return -1;
+	if (!dest) return -1;
+	if (dest->flags & KEY_FLAG_RO_META) return -1;
 
 	if (source->meta)
 	{
@@ -430,12 +418,9 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 	Key * ret;
 	Key * search;
 
-	if (!key)
-		return 0;
-	if (!metaName)
-		return 0;
-	if (!key->meta)
-		return 0;
+	if (!key) return 0;
+	if (!metaName) return 0;
+	if (!key->meta) return 0;
 
 	search = keyNew (0);
 	elektraKeySetName (search, metaName, KEY_META_NAME | KEY_EMPTY_NAME);
@@ -480,25 +465,18 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	ssize_t metaNameSize;
 	ssize_t metaStringSize = 0;
 
-	if (!key)
-		return -1;
-	if (key->flags & KEY_FLAG_RO_META)
-		return -1;
-	if (!metaName)
-		return -1;
+	if (!key) return -1;
+	if (key->flags & KEY_FLAG_RO_META) return -1;
+	if (!metaName) return -1;
 	metaNameSize = elektraStrLen (metaName);
-	if (metaNameSize == -1)
-		return -1;
-	if (newMetaString)
-		metaStringSize = elektraStrLen (newMetaString);
+	if (metaNameSize == -1) return -1;
+	if (newMetaString) metaStringSize = elektraStrLen (newMetaString);
 
 	// optimization: we have nothing and want to remove something:
-	if (!key->meta && !newMetaString)
-		return 0;
+	if (!key->meta && !newMetaString) return 0;
 
 	toSet = keyNew (0);
-	if (!toSet)
-		return -1;
+	if (!toSet) return -1;
 
 	elektraKeySetName (toSet, metaName, KEY_META_NAME | KEY_EMPTY_NAME);
 
@@ -527,8 +505,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 			return -1;
 		}
 
-		if (toSet->data.v)
-			elektraFree (toSet->data.v);
+		if (toSet->data.v) elektraFree (toSet->data.v);
 		toSet->data.c = metaStringDup;
 		toSet->dataSize = metaStringSize;
 	}

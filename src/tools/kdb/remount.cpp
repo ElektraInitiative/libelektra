@@ -69,8 +69,7 @@ void RemountCommand::cloneMountpoint (Cmdline const & cl)
 
 int RemountCommand::execute (Cmdline const & cl)
 {
-	if (cl.arguments.size () != 3)
-		throw invalid_argument ("3 argument required");
+	if (cl.arguments.size () != 3) throw invalid_argument ("3 argument required");
 
 	readMountConf (cl);
 	getExistingMountpoint (cl);

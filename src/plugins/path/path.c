@@ -35,8 +35,7 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	while ((cur = ksNext (returned)) != 0)
 	{
 		const Key * meta = keyGetMeta (cur, "check/path");
-		if (!meta)
-			continue;
+		if (!meta) continue;
 
 		struct stat buf;
 		/* TODO: make exceptions configurable using path/allow */

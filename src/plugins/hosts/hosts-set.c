@@ -52,8 +52,7 @@ static const char * getMetaValue (Key * key, const char * metaName)
 {
 	const Key * metaKey = keyGetMeta (key, metaName);
 
-	if (metaKey)
-		return keyString (metaKey);
+	if (metaKey) return keyString (metaKey);
 
 	return 0;
 }
@@ -110,8 +109,7 @@ static void writeHostsEntry (Key * key, KeySet * returned, FILE * fp)
 	Key * alias;
 	while ((alias = ksNext (returned)) != 0)
 	{
-		if (keyRel (key, alias) < 1)
-			break;
+		if (keyRel (key, alias) < 1) break;
 
 		fprintf (fp, " %s", (char *)keyBaseName (alias));
 	}
@@ -160,8 +158,7 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		key = keyArray[i];
 
 		/* only process canonical name keys */
-		if (!keyIsDirectBelow (ipv4Base, key) && !keyIsDirectBelow (ipv6Base, key))
-			continue;
+		if (!keyIsDirectBelow (ipv4Base, key) && !keyIsDirectBelow (ipv6Base, key)) continue;
 
 		writeLineComments (key, fp);
 		writeHostsEntry (key, returned, fp);

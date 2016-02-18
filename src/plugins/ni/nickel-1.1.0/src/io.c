@@ -114,14 +114,12 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 // Macro to conserve space in code below--updates graph_len if the input
 // character isn't whitespace.
 #define chkgr(c)                                                                                                                           \
-	if (!isspace (c))                                                                                                                  \
-	graph_len = len + 1
+	if (!isspace (c)) graph_len = len + 1
 
 // Another space-saver--checks size of existing data and puts c into out,
 // incrementing len if it'll fit.
 #define put(c)                                                                                                                             \
-	if (len < Ni_KEY_SIZE - 1)                                                                                                         \
-	idfr_out[len++] = (c)
+	if (len < Ni_KEY_SIZE - 1) idfr_out[len++] = (c)
 
 // Another space-saver--resets len and graph_len to 0, i.e. erases what we
 // already had in the output.
@@ -131,8 +129,7 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 	while (state != ST_DONE) // do this until we're done
 	{
 		// Get char into c; if it's eof, dip out.
-		if ((c = BufGetC (fb)) == EOF)
-			break;
+		if ((c = BufGetC (fb)) == EOF) break;
 
 		switch (state)
 		{
@@ -174,14 +171,12 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 
 		// Comment ignores till eol, goes back to start.
 		case ST_COMMENT:
-			if (c == T_EOL)
-				state = ST_START; // if we hit eol, go back to start
+			if (c == T_EOL) state = ST_START; // if we hit eol, go back to start
 			break;
 
 		// Skip ignores till eol, then finishes.
 		case ST_SKIP:
-			if (c == T_EOL)
-				state = ST_DONE; // if we hit eol, we're done
+			if (c == T_EOL) state = ST_DONE; // if we hit eol, we're done
 			break;
 
 		// We found a [, look for an identifier.
@@ -239,9 +234,8 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			}
 			else
 			{
-				chkgr (c); // otherwise, if it's an escape sequence
-				if (c == T_ESC)
-					DoEscape (fb, &c, 0); // translate it
+				chkgr (c);			      // otherwise, if it's an escape sequence
+				if (c == T_ESC) DoEscape (fb, &c, 0); // translate it
 				put (c);
 			} // and either way save it
 			break;
@@ -303,9 +297,8 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			}
 			else
 			{
-				chkgr (c); // otherwise, if it's an escape sequence
-				if (c == T_ESC)
-					DoEscape (fb, &c, 0); // translate that
+				chkgr (c);			      // otherwise, if it's an escape sequence
+				if (c == T_ESC) DoEscape (fb, &c, 0); // translate that
 				put (c);
 			} // either way, save it
 			break;
@@ -357,15 +350,12 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 	}
 
 	// Trim the length down if it was longer than the last graphical character.
-	if (graph_len < len)
-		len = graph_len;
+	if (graph_len < len) len = graph_len;
 
 	idfr_out[len] = '\0'; // null-terminate the output
 
-	if (level_out)
-		*level_out = level; // set level_out if it wasn't NULL
-	if (len_out)
-		*len_out = len; // set len_out if it wasn't NULL
+	if (level_out) *level_out = level; // set level_out if it wasn't NULL
+	if (len_out) *len_out = len;       // set len_out if it wasn't NULL
 
 	// Flush the buffer, since we'll never need anything in it again.
 	BufFlush (fb);
@@ -415,8 +405,7 @@ Ni_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
 // Macro to conserve space in code below--updates graph_len if the input
 // character isn't whitespace.
 #define chkgr(c)                                                                                                                           \
-	if (!isspace (c))                                                                                                                  \
-	graph_len = value_out->len + 1
+	if (!isspace (c)) graph_len = value_out->len + 1
 
 // Macro to conserve space below--puts a char into value_out, dips out if
 // error.
@@ -441,8 +430,7 @@ Ni_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
 // Yet another--moves strlen back to the size of up to the last non-space
 // character.
 #define strip()                                                                                                                            \
-	if (graph_len < value_out->len)                                                                                                    \
-	value_out->len = graph_len
+	if (graph_len < value_out->len) value_out->len = graph_len
 
 
 	value_out->len = 0; // set length to 0
@@ -450,8 +438,7 @@ Ni_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
 	while (state != ST_DONE) // until we decide to stop
 	{
 		// Get next char; dip out (successfully) if EOF.
-		if ((c = BufGetC (fb)) == EOF)
-			break;
+		if ((c = BufGetC (fb)) == EOF) break;
 
 		switch (state)
 		{
@@ -580,8 +567,7 @@ Ni_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
 		put ('\0'); // this might set rc to 0
 
 		// put always adds to strlen, but we don't want that NULL in there
-		if (rc)
-			value_out->len--;
+		if (rc) value_out->len--;
 	}
 
 	// Flush the buffer, since we'll never need anything in it again.
@@ -617,19 +603,16 @@ Ni_PRIVATE int PutSection (FILE * restrict f, const char * restrict name, int na
 
 		for (i = 0; i < level - 1; ++i) // put initial spaces
 		{
-			if (fputc (' ', f) == EOF)
-				break;
+			if (fputc (' ', f) == EOF) break;
 		}
-		if (i < level - 1)
-			break;
+		if (i < level - 1) break;
 
 		for (i = 0; i < level; ++i)
 		{
 			if (fputc (T_OB, f) == EOF) // put as many ['s as level indicates
 				break;
 		}
-		if (i < level)
-			break;
+		if (i < level) break;
 
 		if (!PutString (f, name, name_len, 0, 1)) // put section name
 			break;
@@ -661,11 +644,9 @@ Ni_PRIVATE int PutEntry (FILE * restrict f, const char * restrict key, int key_l
 	{
 		for (i = 0; i < level - 1; ++i) // initial spaces
 		{
-			if (fputc (' ', f) == EOF)
-				break;
+			if (fputc (' ', f) == EOF) break;
 		}
-		if (i < level - 1)
-			break;
+		if (i < level - 1) break;
 
 		if (!PutString (f, key, key_len, 1, 0)) // key
 			break;
@@ -799,8 +780,7 @@ static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
 					comment = 1;
 
 				// if we're done or char is invalid
-				if (c == T_EOL || c == EOF || (!comment && !isspace (c)))
-					break;
+				if (c == T_EOL || c == EOF || (!comment && !isspace (c))) break;
 
 				c = BufGetC (fb); // get next char
 				++n;		  // we've gone one farther
@@ -846,8 +826,7 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 			quote = 1;	   // always escaped, so we just care about ' ')
 	}
 
-	if (quote && fputc (T_OQ, f) == EOF)
-		success = 0;
+	if (quote && fputc (T_OQ, f) == EOF) success = 0;
 
 	while (success && str_len > 0)
 	{
@@ -859,13 +838,11 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 			// In quotes, we just need to escape \ and "
 			if (c == T_ESC || c == T_CQ)
 			{
-				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF)
-					success = 0;
+				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF) success = 0;
 			}
 			else
 			{
-				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len)))
-					success = 0;
+				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len))) success = 0;
 			}
 		}
 		else
@@ -881,13 +858,11 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 			if (c == T_ESC || c == T_CMT || (first && c == T_OQ) || (is_key && (c == T_EQ || (first && c == T_OB))) ||
 			    (is_section && (c == T_CB || (first && c == T_OB))))
 			{
-				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF)
-					success = 0;
+				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF) success = 0;
 			}
 			else
 			{
-				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len)))
-					success = 0;
+				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len))) success = 0;
 			}
 		}
 
@@ -896,8 +871,7 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 		first = 0;
 	}
 
-	if (success && quote && fputc (T_CQ, f) == EOF)
-		success = 0;
+	if (success && quote && fputc (T_CQ, f) == EOF) success = 0;
 
 	return success;
 }
@@ -913,8 +887,7 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
 		// escape what's polite
 		if (str[0] < 0x20 || str[0] == 0x7f)
 		{
-			if (fputc (T_ESC, f) == EOF)
-				return 0;
+			if (fputc (T_ESC, f) == EOF) return 0;
 
 			// see if we can make a pretty, non-hex escape
 			int c = 0;
@@ -945,8 +918,7 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
 
 			if (c)
 			{
-				if (fputc (c, f) == EOF)
-					return 0;
+				if (fputc (c, f) == EOF) return 0;
 			}
 			else
 			{
@@ -956,14 +928,12 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
 				hex2ascii1 (str[0], hd1);
 				hex2ascii2 (str[0], hd2);
 
-				if (fputc (T_X, f) == EOF || fputc (hd1, f) == EOF || fputc (hd2, f) == EOF)
-					return 0;
+				if (fputc (T_X, f) == EOF || fputc (hd1, f) == EOF || fputc (hd2, f) == EOF) return 0;
 			}
 		}
 		else // doesn't warrant escaping
 		{
-			if (fputc (str[0], f) == EOF)
-				return 0;
+			if (fputc (str[0], f) == EOF) return 0;
 		}
 
 		return 1; // ASCII are one byte long
@@ -993,8 +963,7 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
 
 		for (int i = 0; i < char_len; ++i)
 		{
-			if (fputc (str[i], f) == EOF)
-				return 0;
+			if (fputc (str[i], f) == EOF) return 0;
 		}
 
 		return char_len; // let the caller know how many bytes we ate
@@ -1007,8 +976,7 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
 	hex2ascii1 (str[0], hd1);
 	hex2ascii2 (str[0], hd2);
 
-	if (fputc (T_ESC, f) == EOF || fputc (T_X, f) == EOF || fputc (hd1, f) == EOF || fputc (hd2, f) == EOF)
-		return 0;
+	if (fputc (T_ESC, f) == EOF || fputc (T_X, f) == EOF || fputc (hd1, f) == EOF || fputc (hd2, f) == EOF) return 0;
 
 	return 1; // we only processed one byte
 }

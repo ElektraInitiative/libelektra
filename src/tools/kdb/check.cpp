@@ -28,8 +28,7 @@ int printProblems (Key k, std::string action, int off)
 {
 	bool wo = k.getMeta<const kdb::Key> ("warnings");
 	bool eo = k.getMeta<const kdb::Key> ("error");
-	if (wo || eo)
-		std::cerr << "\n======\n" << action << " of kdb yield following problems:" << std::endl;
+	if (wo || eo) std::cerr << "\n======\n" << action << " of kdb yield following problems:" << std::endl;
 	printWarnings (cerr, k);
 	printError (cerr, k);
 	return (wo + eo * 2) << off;
@@ -90,8 +89,7 @@ int CheckCommand::execute (Cmdline const & cl)
 	std::string name = cl.arguments[0];
 
 	Modules modules;
-	if (cl.verbose)
-		cout << "will try check the plugin " << name << endl;
+	if (cl.verbose) cout << "will try check the plugin " << name << endl;
 
 	vector<string> warnings;
 	try

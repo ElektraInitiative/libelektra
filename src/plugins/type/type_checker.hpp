@@ -37,8 +37,7 @@ public:
 	{
 		enforce = config.lookup ("/enforce");
 		Key k = config.lookup ("/require_version");
-		if (k && k.getString () != "2")
-			throw "Required Version does not match 2";
+		if (k && k.getString () != "2") throw "Required Version does not match 2";
 
 		types.insert (pair<string, Type *> ("short", new MType<kdb::short_t> ()));
 		types.insert (pair<string, Type *> ("unsigned_short", new MType<kdb::unsigned_short_t> ()));
@@ -65,15 +64,13 @@ public:
 	bool check (Key & k)
 	{
 		Key const m = k.getMeta<const Key> ("check/type");
-		if (!m)
-			return !enforce;
+		if (!m) return !enforce;
 
 		istringstream istr (m.getString ());
 		string type;
 		while (istr >> type)
 		{
-			if (types[type] && types[type]->check (k))
-				return true;
+			if (types[type] && types[type]->check (k)) return true;
 		}
 
 		/* Type could not be checked successfully */
@@ -85,8 +82,7 @@ public:
 		Key k;
 		while ((k = ks.next ()))
 		{
-			if (!check (k))
-				return false;
+			if (!check (k)) return false;
 		}
 		return true;
 	}

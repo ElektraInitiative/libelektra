@@ -157,8 +157,7 @@ ssize_t elektraSplitAppend (Split * split, Backend * backend, Key * parentKey, i
 	}
 
 	++split->size;
-	if (split->size > split->alloc)
-		elektraSplitResize (split);
+	if (split->size > split->alloc) elektraSplitResize (split);
 
 	// index of the new element
 	const int n = split->size - 1;
@@ -195,20 +194,16 @@ ssize_t elektraSplitSearchBackend (Split * split, Backend * backend, Key * paren
 				switch (keyGetNamespace (parent))
 				{
 				case KEY_NS_SPEC:
-					if (keyIsSpec (split->parents[i]))
-						return i;
+					if (keyIsSpec (split->parents[i])) return i;
 					break;
 				case KEY_NS_DIR:
-					if (keyIsDir (split->parents[i]))
-						return i;
+					if (keyIsDir (split->parents[i])) return i;
 					break;
 				case KEY_NS_USER:
-					if (keyIsUser (split->parents[i]))
-						return i;
+					if (keyIsUser (split->parents[i])) return i;
 					break;
 				case KEY_NS_SYSTEM:
-					if (keyIsSystem (split->parents[i]))
-						return i;
+					if (keyIsSystem (split->parents[i])) return i;
 					break;
 				case KEY_NS_PROC:
 					return -1;
@@ -243,13 +238,11 @@ ssize_t elektraSplitSearchBackend (Split * split, Backend * backend, Key * paren
  */
 int elektraSplitSearchRoot (Split * split, Key * parentKey)
 {
-	if (!parentKey)
-		return 0;
+	if (!parentKey) return 0;
 
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		if (keyRel (split->parents[i], parentKey) >= 0)
-			return 1;
+		if (keyRel (split->parents[i], parentKey) >= 0) return 1;
 	}
 
 	return 0;
@@ -331,8 +324,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
 		Key * key = keyNew (0, KEY_END);
 		for (elektraNamespace ins = KEY_NS_FIRST; ins <= KEY_NS_LAST; ++ins)
 		{
-			if (!elektraKeySetNameByNamespace (key, ins))
-				continue;
+			if (!elektraKeySetNameByNamespace (key, ins)) continue;
 			keyAddName (key, keyName (parentKey));
 			elektraSplitBuildup (split, kdb, key);
 		}
@@ -414,13 +406,11 @@ int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks)
 	{
 		// TODO: handle keys in wrong namespaces
 		curHandle = elektraMountGetBackend (handle, curKey);
-		if (!curHandle)
-			return -1;
+		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend (split, curHandle, curKey);
 
-		if (curFound == -1)
-			continue; // key not relevant in this kdbSet
+		if (curFound == -1) continue; // key not relevant in this kdbSet
 
 		ksAppendKey (split->keysets[curFound], curKey);
 		if (keyNeedSync (curKey) == 1)
@@ -444,11 +434,9 @@ int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks)
 void elektraSplitUpdateFileName (Split * split, KDB * handle, Key * key)
 {
 	Backend * curHandle = elektraMountGetBackend (handle, key);
-	if (!curHandle)
-		return;
+	if (!curHandle) return;
 	ssize_t curFound = elektraSplitSearchBackend (split, curHandle, key);
-	if (curFound == -1)
-		return;
+	if (curFound == -1) return;
 #if DEBUG && VERBOSE
 	printf ("Update string from %s to %s\n", keyString (key), keyString (split->parents[curFound]));
 	printf ("Names are: %s and %s\n\n", keyName (key), keyName (split->parents[curFound]));
@@ -481,13 +469,11 @@ int elektraSplitAppoint (Split * split, KDB * handle, KeySet * ks)
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		curHandle = elektraMountGetBackend (handle, curKey);
-		if (!curHandle)
-			return -1;
+		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend (split, curHandle, curKey);
 
-		if (curFound == -1)
-			curFound = defFound;
+		if (curFound == -1) curFound = defFound;
 
 		if (split->syncbits[curFound] & SPLIT_FLAG_SYNC)
 		{
@@ -547,8 +533,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 	while ((cur = ksNext (split->keysets[i])) != 0)
 	{
 		curHandle = elektraMountGetBackend (handle, cur);
-		if (!curHandle)
-			return -1;
+		if (!curHandle) return -1;
 
 		keyClearSync (cur);
 
@@ -637,11 +622,9 @@ int elektraSplitGet (Split * split, Key * warningKey, KDB * handle)
 #endif
 		// first we need postprocessing because that might
 		// reduce sizes
-		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1)
-			ret = -1;
+		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1) ret = -1;
 		// then we can set the size
-		if (elektraBackendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1)
-			ret = -1;
+		if (elektraBackendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
 	}
 
 	return ret;
@@ -663,20 +646,16 @@ int elektraSplitCheckSize (Split * split)
 		switch (keyGetNamespace (split->parents[i]))
 		{
 		case KEY_NS_SPEC:
-			if (split->handles[i]->specsize == -1)
-				return -1;
+			if (split->handles[i]->specsize == -1) return -1;
 			break;
 		case KEY_NS_DIR:
-			if (split->handles[i]->dirsize == -1)
-				return -1;
+			if (split->handles[i]->dirsize == -1) return -1;
 			break;
 		case KEY_NS_USER:
-			if (split->handles[i]->usersize == -1)
-				return -1;
+			if (split->handles[i]->usersize == -1) return -1;
 			break;
 		case KEY_NS_SYSTEM:
-			if (split->handles[i]->systemsize == -1)
-				return -1;
+			if (split->handles[i]->systemsize == -1) return -1;
 			break;
 		case KEY_NS_PROC:
 		case KEY_NS_EMPTY:

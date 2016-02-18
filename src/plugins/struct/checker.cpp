@@ -26,8 +26,7 @@ void ListChecker::buildup (Factory & f, std::string const & templateParameter)
 {
 	structure = f.get (templateParameter);
 	CheckerPtr c = f.get (templateParameter);
-	if (!c.get ())
-		throw "Could not create structure of template Parameter";
+	if (!c.get ()) throw "Could not create structure of template Parameter";
 
 	// recursive handling code would belong here, but we don't have config
 	// at the moment in ListChecker...

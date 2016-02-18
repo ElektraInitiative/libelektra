@@ -59,12 +59,10 @@ int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 		msg += keyString (keyGetMeta (ksCurrent (returned), "check/type"));
 		msg += ") matched for ";
 		const char * name = keyName (ksCurrent (returned));
-		if (name)
-			msg += name;
+		if (name) msg += name;
 		msg += " with string: ";
 		const char * value = keyString (ksCurrent (returned));
-		if (value)
-			msg += value;
+		if (value) msg += value;
 		ELEKTRA_SET_ERROR (52, parentKey, msg.c_str ());
 		return -1;
 	}

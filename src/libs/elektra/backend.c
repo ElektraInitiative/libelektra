@@ -171,8 +171,7 @@ Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * er
 				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
 				    -1)
 				{
-					if (!failure)
-						ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for error failed");
+					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for error failed");
 					failure = 1;
 				}
 			}
@@ -181,8 +180,7 @@ Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * er
 				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
 				    -1)
 				{
-					if (!failure)
-						ELEKTRA_ADD_WARNING (13, errorKey, "elektraProcessPlugins for get failed");
+					if (!failure) ELEKTRA_ADD_WARNING (13, errorKey, "elektraProcessPlugins for get failed");
 					failure = 1;
 				}
 			}
@@ -196,16 +194,14 @@ Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * er
 				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
 				    -1)
 				{
-					if (!failure)
-						ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for set failed");
+					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for set failed");
 					failure = 1;
 				}
 			}
 			else
 			{
 				// no one cares about that config
-				if (!failure)
-					ELEKTRA_ADD_WARNING (16, errorKey, keyBaseName (cur));
+				if (!failure) ELEKTRA_ADD_WARNING (16, errorKey, keyBaseName (cur));
 				ksDel (cut);
 			}
 		}
@@ -441,14 +437,12 @@ int elektraBackendClose (Backend * backend, Key * errorKey)
 	int ret = 0;
 	int errorOccurred = 0;
 
-	if (!backend)
-		return -1;
+	if (!backend) return -1;
 
 	--backend->refcounter;
 
 	/* Check if we have the last reference on the backend (unsigned!) */
-	if (backend->refcounter > 0)
-		return 0;
+	if (backend->refcounter > 0) return 0;
 
 	keyDecRef (backend->mountpoint);
 	keySetName (errorKey, keyName (backend->mountpoint));
@@ -457,16 +451,13 @@ int elektraBackendClose (Backend * backend, Key * errorKey)
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
 		ret = elektraPluginClose (backend->setplugins[i], errorKey);
-		if (ret == -1)
-			++errorOccurred;
+		if (ret == -1) ++errorOccurred;
 
 		ret = elektraPluginClose (backend->getplugins[i], errorKey);
-		if (ret == -1)
-			++errorOccurred;
+		if (ret == -1) ++errorOccurred;
 
 		ret = elektraPluginClose (backend->errorplugins[i], errorKey);
-		if (ret == -1)
-			++errorOccurred;
+		if (ret == -1) ++errorOccurred;
 	}
 	elektraFree (backend);
 

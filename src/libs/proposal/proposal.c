@@ -94,10 +94,8 @@ ssize_t keySetStringF (Key * key, const char * format, ...)
  */
 int elektraKsToMemArray (KeySet * ks, Key ** buffer)
 {
-	if (!ks)
-		return -1;
-	if (!buffer)
-		return -1;
+	if (!ks) return -1;
+	if (!buffer) return -1;
 
 	/* clear the received buffer */
 	memset (buffer, 0, ksGetSize (ks) * sizeof (Key *));
@@ -168,10 +166,8 @@ int keyLock (Key * key, option_t what)
  */
 KeySet * elektraKeyGetMetaKeySet (const Key * key)
 {
-	if (!key)
-		return 0;
-	if (!key->meta)
-		return 0;
+	if (!key) return 0;
+	if (!key->meta) return 0;
 
 	return ksDup (key->meta);
 }

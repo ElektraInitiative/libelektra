@@ -37,8 +37,7 @@ void o (KeySet * ks)
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != 0)
 	{
-		if (needsSharedData (current))
-			keyCopyAllMeta (current, shared);
+		if (needsSharedData (current)) keyCopyAllMeta (current, shared);
 	}
 
 	keyDel (shared);

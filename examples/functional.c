@@ -40,8 +40,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
 	while ((current = ksNext (ks)) != 0)
 	{
 		rc = func (current);
-		if (rc == -1)
-			return -1;
+		if (rc == -1) return -1;
 		ret += rc;
 	}
 	ksSetCursor (ks, cursor);

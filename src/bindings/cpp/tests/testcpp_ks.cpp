@@ -185,8 +185,7 @@ TEST (ks, cursor)
 	for (ssize_t i = 0; i < ks3.size (); i++)
 	{
 		Key k = ks3.next ();
-		if (i == 0)
-			cursorTest = ks3.getCursor ();
+		if (i == 0) cursorTest = ks3.getCursor ();
 	}
 
 	ks3.setCursor (cursorTest);

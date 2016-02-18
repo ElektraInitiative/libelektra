@@ -287,12 +287,9 @@ static int needsMapping (Key * testKey, Key * errorKey)
 {
 	elektraNamespace ns = keyGetNamespace (errorKey);
 
-	if (ns == KEY_NS_NONE)
-		return 1; // for unit tests
-	if (ns == KEY_NS_EMPTY)
-		return 1; // for default backend
-	if (ns == KEY_NS_CASCADING)
-		return 1; // init all namespaces for cascading
+	if (ns == KEY_NS_NONE) return 1;      // for unit tests
+	if (ns == KEY_NS_EMPTY) return 1;     // for default backend
+	if (ns == KEY_NS_CASCADING) return 1; // init all namespaces for cascading
 
 	return ns == keyGetNamespace (testKey); // otherwise only init if same ns
 }
@@ -359,8 +356,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey)
 {
 	KeySet * resolverConfig = elektraPluginGetConfig (handle);
-	if (ksLookupByName (resolverConfig, "/module", 0))
-		return 0;
+	if (ksLookupByName (resolverConfig, "/module", 0)) return 0;
 	const char * path = keyString (ksLookupByName (resolverConfig, "/path", 0));
 
 	if (!path)

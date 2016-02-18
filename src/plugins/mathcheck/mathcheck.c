@@ -78,8 +78,7 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 {
 	--stackPtr;
 	PNElem result;
-	if (stackPtr < stack)
-		result.op = ERROR;
+	if (stackPtr < stack) result.op = ERROR;
 	while (stackPtr >= stack)
 	{
 		if (stackPtr->op == VAL && stackPtr != stack)
@@ -217,8 +216,7 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 			default:
 				ELEKTRA_SET_ERRORF (122, parentKey, "%c isn't a valid operation", prefixString[start]);
 				regfree (&regex);
-				if (searchKey)
-					elektraFree (searchKey);
+				if (searchKey) elektraFree (searchKey);
 				elektraFree (stack);
 				ksDel (ks);
 				return result;
@@ -288,8 +286,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		meta = keyGetMeta (cur, "check/math");
-		if (!meta)
-			continue;
+		if (!meta) continue;
 		result = parsePrefixString (keyString (meta), ksDup (returned), parentKey);
 		char val1[MAX_CHARS_DOUBLE];
 		char val2[MAX_CHARS_DOUBLE];

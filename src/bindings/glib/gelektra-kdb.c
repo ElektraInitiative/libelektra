@@ -15,8 +15,7 @@ static void gelektra_kdb_finalize (GObject * object)
 {
 	GElektraKdb * self = GELEKTRA_KDB (object);
 
-	if (self->handle)
-		kdbClose (self->handle, NULL);
+	if (self->handle) kdbClose (self->handle, NULL);
 	self->handle = NULL;
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
@@ -56,8 +55,7 @@ GElektraKdb * gelektra_kdb_open (GElektraKey * error)
  */
 GElektraKdb * gelektra_kdb_make (KDB * handle)
 {
-	if (handle == NULL)
-		return NULL;
+	if (handle == NULL) return NULL;
 	GElektraKdb * ret = g_object_new (GELEKTRA_TYPE_KDB, NULL);
 	gelektra_kdb_swap (ret, handle);
 	return ret;

@@ -49,8 +49,7 @@ int ListCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	if (cl.verbose)
-		cout << "number of all plugins: " << plugins.size () << endl;
+	if (cl.verbose) cout << "number of all plugins: " << plugins.size () << endl;
 
 	for (auto & plugin : sortedPlugins)
 	{

@@ -30,8 +30,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 			continue;
 		}
 
-		if (i != 1)
-			os << "," << endl;
+		if (i != 1) os << "," << endl;
 
 		os << "	QT_TRANSLATE_NOOP(" << p[i]["description"] << ")";
 	}

@@ -33,8 +33,7 @@ int elektraDbusGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// remember all keys
 	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
-	if (ks)
-		ksDel (ks);
+	if (ks) ksDel (ks);
 	elektraPluginSetData (handle, ksDup (returned));
 
 	return 1; /* success */
@@ -107,8 +106,7 @@ int elektraDbusSet (Plugin * handle, KeySet * returned, Key * parentKey)
 int elektraDbusClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	KeySet * ks = (KeySet *)elektraPluginGetData (handle);
-	if (ks)
-		ksDel (ks);
+	if (ks) ksDel (ks);
 	return 1; /* success */
 }
 

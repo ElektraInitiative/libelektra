@@ -91,8 +91,7 @@ const char * keyComment (const Key * key)
 {
 	const char * comment;
 
-	if (!key)
-		return 0;
+	if (!key) return 0;
 	comment = keyValue (keyGetMeta (key, "comment"));
 
 	if (!comment)
@@ -133,8 +132,7 @@ buffer = elektraMalloc (keyGetCommentSize (key));
 ssize_t keyGetCommentSize (const Key * key)
 {
 	ssize_t size;
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	size = keyGetValueSize (keyGetMeta (key, "comment"));
 
@@ -177,15 +175,11 @@ ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
 {
 	const char * comment;
 	size_t commentSize;
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
-	if (!maxSize)
-		return -1;
-	if (!returnedComment)
-		return -1;
-	if (maxSize > SSIZE_MAX)
-		return -1;
+	if (!maxSize) return -1;
+	if (!returnedComment) return -1;
+	if (maxSize > SSIZE_MAX) return -1;
 
 	comment = keyValue (keyGetMeta (key, "comment"));
 	commentSize = keyGetValueSize (keyGetMeta (key, "comment"));
@@ -222,8 +216,7 @@ ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
  */
 ssize_t keySetComment (Key * key, const char * newComment)
 {
-	if (!key)
-		return -1;
+	if (!key) return -1;
 	if (!newComment || *newComment == 0)
 	{
 		keySetMeta (key, "comment", 0);
@@ -269,30 +262,24 @@ uid_t keyGetUID (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key)
-		return (uid_t)-1;
+	if (!key) return (uid_t)-1;
 
 	uid = keyValue (keyGetMeta (key, "uid"));
-	if (!uid)
-		return (uid_t)-1;
-	if (*uid == '\0')
-		return (uid_t)-1;
+	if (!uid) return (uid_t)-1;
+	if (*uid == '\0') return (uid_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
 	val = strtol (uid, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno)
-		goto cleanup;
+	if (errno) goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == uid)
-		goto cleanup;
+	if (endptr == uid) goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0')
-		goto cleanup;
+	if (*endptr != '\0') goto cleanup;
 
 	return val;
 cleanup:
@@ -318,8 +305,7 @@ cleanup:
 int keySetUID (Key * key, uid_t uid)
 {
 	char str[MAX_LEN_INT];
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (snprintf (str, MAX_LEN_INT - 1, "%d", uid) < 0)
 	{
@@ -361,30 +347,24 @@ gid_t keyGetGID (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key)
-		return (gid_t)-1;
+	if (!key) return (gid_t)-1;
 
 	gid = keyValue (keyGetMeta (key, "gid"));
-	if (!gid)
-		return (gid_t)-1;
-	if (*gid == '\0')
-		return (gid_t)-1;
+	if (!gid) return (gid_t)-1;
+	if (*gid == '\0') return (gid_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
 	val = strtol (gid, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno)
-		goto cleanup;
+	if (errno) goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == gid)
-		goto cleanup;
+	if (endptr == gid) goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0')
-		goto cleanup;
+	if (*endptr != '\0') goto cleanup;
 
 	return val;
 cleanup:
@@ -410,8 +390,7 @@ cleanup:
 int keySetGID (Key * key, gid_t gid)
 {
 	char str[MAX_LEN_INT];
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (snprintf (str, MAX_LEN_INT - 1, "%d", gid) < 0)
 	{
@@ -461,8 +440,7 @@ int keySetGID (Key * key, gid_t gid)
 int keySetDir (Key * key)
 {
 	mode_t mode;
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	mode = keyGetMode (key);
 	mode |= KDB_DIR_MODE;
@@ -497,30 +475,24 @@ mode_t keyGetMode (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key)
-		return (mode_t)-1;
+	if (!key) return (mode_t)-1;
 
 	mode = keyValue (keyGetMeta (key, "mode"));
-	if (!mode)
-		return KDB_FILE_MODE;
-	if (*mode == '\0')
-		return KDB_FILE_MODE;
+	if (!mode) return KDB_FILE_MODE;
+	if (*mode == '\0') return KDB_FILE_MODE;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
 	val = strtol (mode, &endptr, 8);
 
 	/*Check for errors*/
-	if (errno)
-		goto cleanup;
+	if (errno) goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == mode)
-		goto cleanup;
+	if (endptr == mode) goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0')
-		goto cleanup;
+	if (*endptr != '\0') goto cleanup;
 
 	return val;
 cleanup:
@@ -600,8 +572,7 @@ cleanup:
 int keySetMode (Key * key, mode_t mode)
 {
 	char str[MAX_LEN_INT];
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (snprintf (str, MAX_LEN_INT - 1, "%o", mode) < 0)
 	{
@@ -649,30 +620,24 @@ time_t keyGetATime (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key)
-		return (time_t)-1;
+	if (!key) return (time_t)-1;
 
 	atime = keyValue (keyGetMeta (key, "atime"));
-	if (!atime)
-		return 0;
-	if (*atime == '\0')
-		return (time_t)-1;
+	if (!atime) return 0;
+	if (*atime == '\0') return (time_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
 	val = strtol (atime, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno)
-		goto cleanup;
+	if (errno) goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == atime)
-		goto cleanup;
+	if (endptr == atime) goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0')
-		goto cleanup;
+	if (*endptr != '\0') goto cleanup;
 
 	return val;
 cleanup:
@@ -701,8 +666,7 @@ cleanup:
 int keySetATime (Key * key, time_t atime)
 {
 	char str[MAX_LEN_INT];
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (snprintf (str, MAX_LEN_INT - 1, "%lu", atime) < 0)
 	{
@@ -749,30 +713,24 @@ time_t keyGetMTime (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key)
-		return (time_t)-1;
+	if (!key) return (time_t)-1;
 
 	mtime = keyValue (keyGetMeta (key, "mtime"));
-	if (!mtime)
-		return 0;
-	if (*mtime == '\0')
-		return (time_t)-1;
+	if (!mtime) return 0;
+	if (*mtime == '\0') return (time_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
 	val = strtol (mtime, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno)
-		goto cleanup;
+	if (errno) goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == mtime)
-		goto cleanup;
+	if (endptr == mtime) goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0')
-		goto cleanup;
+	if (*endptr != '\0') goto cleanup;
 
 	return val;
 cleanup:
@@ -794,8 +752,7 @@ cleanup:
 int keySetMTime (Key * key, time_t mtime)
 {
 	char str[MAX_LEN_INT];
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (snprintf (str, MAX_LEN_INT - 1, "%lu", mtime) < 0)
 	{
@@ -840,30 +797,24 @@ time_t keyGetCTime (const Key * key)
 	char * endptr;
 	int errorval = errno;
 
-	if (!key)
-		return (time_t)-1;
+	if (!key) return (time_t)-1;
 
 	ctime = keyValue (keyGetMeta (key, "ctime"));
-	if (!ctime)
-		return 0;
-	if (*ctime == '\0')
-		return (time_t)-1;
+	if (!ctime) return 0;
+	if (*ctime == '\0') return (time_t)-1;
 
 	/*From now on we have to leave using cleanup*/
 	errno = 0;
 	val = strtol (ctime, &endptr, 10);
 
 	/*Check for errors*/
-	if (errno)
-		goto cleanup;
+	if (errno) goto cleanup;
 
 	/*Check if nothing was found*/
-	if (endptr == ctime)
-		goto cleanup;
+	if (endptr == ctime) goto cleanup;
 
 	/*Check if the whole string was processed*/
-	if (*endptr != '\0')
-		goto cleanup;
+	if (*endptr != '\0') goto cleanup;
 
 	return val;
 cleanup:
@@ -887,8 +838,7 @@ cleanup:
 int keySetCTime (Key * key, time_t ctime)
 {
 	char str[MAX_LEN_INT];
-	if (!key)
-		return -1;
+	if (!key) return -1;
 
 	if (snprintf (str, MAX_LEN_INT - 1, "%lu", ctime) < 0)
 	{
@@ -921,14 +871,11 @@ int keySetCTime (Key * key, time_t ctime)
 int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 {
 
-	if (!ka && !kb)
-		return 0;
+	if (!ka && !kb) return 0;
 
-	if (ka && !kb)
-		return 1;
+	if (ka && !kb) return 1;
 
-	if (!ka && kb)
-		return -1;
+	if (!ka && kb) return -1;
 
 	int aorder = -1;
 	int border = -1;
@@ -936,22 +883,16 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 	const Key * kam = keyGetMeta (ka, "order");
 	const Key * kbm = keyGetMeta (kb, "order");
 
-	if (kam)
-		aorder = atoi (keyString (kam));
-	if (kbm)
-		border = atoi (keyString (kbm));
+	if (kam) aorder = atoi (keyString (kam));
+	if (kbm) border = atoi (keyString (kbm));
 
-	if (aorder > 0 && border > 0)
-		return aorder - border;
+	if (aorder > 0 && border > 0) return aorder - border;
 
-	if (aorder < 0 && border < 0)
-		return 0;
+	if (aorder < 0 && border < 0) return 0;
 
-	if (aorder < 0 && border >= 0)
-		return -1;
+	if (aorder < 0 && border >= 0) return -1;
 
-	if (aorder >= 0 && border < 0)
-		return 1;
+	if (aorder >= 0 && border < 0) return 1;
 
 	/* cannot happen anyway */
 	return 0;

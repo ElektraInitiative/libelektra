@@ -202,8 +202,7 @@ void PluginSpec::appendConfig (KeySet c)
  */
 void PluginSpec::validate (std::string const & n) const
 {
-	if (n.empty ())
-		throw BadPluginName ("<empty>");
+	if (n.empty ()) throw BadPluginName ("<empty>");
 	auto begin = n.find_first_of ("abcdefghijklmnopqrstuvwxyz");
 	if (begin != 0)
 	{

@@ -194,8 +194,7 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 	else
 	{
 		Key kmp (smp, KEY_END);
-		if (!kmp.isValid ())
-			throw MountpointInvalidException ();
+		if (!kmp.isValid ()) throw MountpointInvalidException ();
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), kmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
@@ -257,8 +256,7 @@ void Backend::useConfigFile (std::string file)
 
 	int res = checkFileFunction (file.c_str ());
 
-	if (res == -1)
-		throw FileNotValidException ();
+	if (res == -1) throw FileNotValidException ();
 
 	configFile = file;
 }
@@ -275,8 +273,7 @@ void Backend::tryPlugin (PluginSpec const & spec)
 
 	for (auto & elem : plugins)
 	{
-		if (plugin->getFullName () == elem->getFullName ())
-			throw PluginAlreadyInserted (plugin->getFullName ());
+		if (plugin->getFullName () == elem->getFullName ()) throw PluginAlreadyInserted (plugin->getFullName ());
 	}
 
 
@@ -320,12 +317,9 @@ bool Backend::validated () const
 	bool ret = true;
 
 
-	if (!errorplugins.validated ())
-		ret = false;
-	if (!getplugins.validated ())
-		ret = false;
-	if (!setplugins.validated ())
-		ret = false;
+	if (!errorplugins.validated ()) ret = false;
+	if (!getplugins.validated ()) ret = false;
+	if (!setplugins.validated ()) ret = false;
 
 
 	return ret;
@@ -400,10 +394,8 @@ void Backend::serialize (kdb::KeySet & ret)
 	{
 		Key k ("system" + mp, KEY_END);
 		Key restrictedPath ("system/elektra", KEY_END);
-		if (!k)
-			throw MountpointInvalidException ();
-		if (restrictedPath.isBelow (k))
-			throw MountpointInvalidException ();
+		if (!k) throw MountpointInvalidException ();
+		if (restrictedPath.isBelow (k)) throw MountpointInvalidException ();
 		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mountpoint says the location where the backend should be mounted.\n"
 				  "This is a cascading mountpoint.\n"
@@ -414,10 +406,8 @@ void Backend::serialize (kdb::KeySet & ret)
 	{
 		Key k (mp, KEY_END);
 		Key restrictedPath ("system/elektra", KEY_END);
-		if (!k)
-			throw MountpointInvalidException ();
-		if (restrictedPath.isBelow (k))
-			throw MountpointInvalidException ();
+		if (!k) throw MountpointInvalidException ();
+		if (restrictedPath.isBelow (k)) throw MountpointInvalidException ();
 		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mountpoint says the location where the backend should be mounted.\n"
 				  "This is a normal mountpoint.\n",
@@ -555,8 +545,7 @@ void GlobalPlugins::serialize (kdb::KeySet & ret)
 			bool isglobal = false;
 			while (ss >> status)
 			{
-				if (status == "global")
-					isglobal = true;
+				if (status == "global") isglobal = true;
 			}
 
 			if (!isglobal)
@@ -623,8 +612,7 @@ void ImportExportBackend::importFromFile (KeySet & ks, Key const & parentKey) co
 	for (auto const & placement : placements)
 	{
 		auto currentPlugins = plugins.find (placement);
-		if (currentPlugins == plugins.end ())
-			continue;
+		if (currentPlugins == plugins.end ()) continue;
 		for (auto const & plugin : currentPlugins->second)
 		{
 			plugin->get (ks, key);
@@ -646,8 +634,7 @@ void ImportExportBackend::exportToFile (KeySet const & cks, Key const & parentKe
 	for (auto const & placement : placements)
 	{
 		auto currentPlugins = plugins.find (placement);
-		if (currentPlugins == plugins.end ())
-			continue;
+		if (currentPlugins == plugins.end ()) continue;
 		for (auto const & plugin : currentPlugins->second)
 		{
 			plugin->set (ks, key);

@@ -53,14 +53,10 @@ void EditorCommand::tmpFile ()
 bool runAllEditors (std::string filename)
 {
 	using namespace kdb;
-	if (runEditor ("/usr/bin/sensible-editor", filename))
-		return true;
-	if (runEditor ("/usr/bin/editor", filename))
-		return true;
-	if (runEditor ("/usr/bin/vi", filename))
-		return true;
-	if (runEditor ("/bin/vi", filename))
-		return true;
+	if (runEditor ("/usr/bin/sensible-editor", filename)) return true;
+	if (runEditor ("/usr/bin/editor", filename)) return true;
+	if (runEditor ("/usr/bin/vi", filename)) return true;
+	if (runEditor ("/bin/vi", filename)) return true;
 	return false;
 }
 
@@ -92,15 +88,13 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	// export it to file
 	string format = cl.format;
-	if (argc > 1)
-		format = cl.arguments[1];
+	if (argc > 1) format = cl.arguments[1];
 
 	Modules modules;
 	PluginPtr plugin = modules.load (format);
 
 	tmpFile ();
-	if (cl.verbose)
-		std::cout << "filename set to " << filename << std::endl;
+	if (cl.verbose) std::cout << "filename set to " << filename << std::endl;
 	Key errorKey (root);
 	errorKey.setString (filename);
 
@@ -115,8 +109,7 @@ int EditorCommand::execute (Cmdline const & cl)
 
 
 	// start editor
-	if (cl.verbose)
-		std::cout << "running editor with " << filename << std::endl;
+	if (cl.verbose) std::cout << "running editor with " << filename << std::endl;
 	if (!cl.editor.empty ())
 	{
 		if (!runEditor (cl.editor, filename))
@@ -161,12 +154,10 @@ int EditorCommand::execute (Cmdline const & cl)
 		}
 
 		KeySet resultKeys = result.getMergedKeys ();
-		if (cl.verbose)
-			std::cout << "about to write result keys " << resultKeys << std::endl;
+		if (cl.verbose) std::cout << "about to write result keys " << resultKeys << std::endl;
 		ours.append (resultKeys);
 		kdb.set (ours, root);
-		if (cl.verbose)
-			std::cout << "successful, cleaning up " << filename << std::endl;
+		if (cl.verbose) std::cout << "successful, cleaning up " << filename << std::endl;
 		unlink (filename.c_str ());
 		ret = 0;
 	}

@@ -152,8 +152,7 @@ Ni_PUBLIC const char * Ni_GetName (Ni_node restrict n, int * restrict len_out)
 		len = n->name_len;
 	}
 
-	if (len_out)
-		*len_out = len;
+	if (len_out) *len_out = len;
 	return name;
 }
 
@@ -192,8 +191,7 @@ Ni_PUBLIC Ni_node Ni_GetNextChild (Ni_node restrict n, Ni_node restrict child)
 
 	if (n)
 	{
-		if ((e = Ds_NextHashEntry (&n->children, (child ? GetEntry (child) : NULL))) != NULL)
-			next = GetItem (e);
+		if ((e = Ds_NextHashEntry (&n->children, (child ? GetEntry (child) : NULL))) != NULL) next = GetItem (e);
 	}
 
 	return next;
@@ -218,12 +216,9 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
 
 	if (n)
 	{
-		if (!name)
-			name = "";
-		if (name_len < 0)
-			name_len = strlen (name);
-		if (name_len > Ni_KEY_SIZE - 1)
-			name_len = Ni_KEY_SIZE - 1;
+		if (!name) name = "";
+		if (name_len < 0) name_len = strlen (name);
+		if (name_len > Ni_KEY_SIZE - 1) name_len = Ni_KEY_SIZE - 1;
 
 		hash = Hash (name, (size_t)name_len, 0xbadc0de5);
 
@@ -231,13 +226,11 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
 			child = GetItem (e);
 		else if (add_if_new)
 		{
-			if ((child = AddNode (&c, n, name, name_len, hash)) != NULL)
-				added = 1;
+			if ((child = AddNode (&c, n, name, name_len, hash)) != NULL) added = 1;
 		}
 	}
 
-	if (added_out)
-		*added_out = added;
+	if (added_out) *added_out = added;
 	return child;
 }
 
@@ -290,8 +283,7 @@ Ni_PUBLIC const char * Ni_GetValue (Ni_node restrict n, int * restrict len_out)
 		len = n->value.len;
 	}
 
-	if (len_out)
-		*len_out = len;
+	if (len_out) *len_out = len;
 	return value;
 }
 
@@ -304,8 +296,7 @@ Ni_PUBLIC long Ni_GetValueInt (Ni_node restrict n)
 	long i = 0L;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL)
-		i = strtol (v, NULL, 0);
+	if ((v = Ni_GetValue (n, NULL)) != NULL) i = strtol (v, NULL, 0);
 
 	return i;
 }
@@ -318,8 +309,7 @@ Ni_PUBLIC double Ni_GetValueFloat (Ni_node restrict n)
 	double d = 0.0;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL)
-		d = strtod (v, NULL);
+	if ((v = Ni_GetValue (n, NULL)) != NULL) d = strtod (v, NULL);
 
 	return d;
 }
@@ -370,8 +360,7 @@ Ni_PUBLIC int Ni_ValueVScan (Ni_node restrict n, const char * restrict format, v
 	int items = 0;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL)
-		items = vsscanf (v, format, args);
+	if ((v = Ni_GetValue (n, NULL)) != NULL) items = vsscanf (v, format, args);
 
 	return items;
 }
@@ -548,8 +537,7 @@ Ni_PUBLIC int Ni_WriteStream (Ni_node restrict n, FILE * restrict stream, int mo
 	int success = 0;
 	do
 	{
-		if (!n || !stream)
-			break;
+		if (!n || !stream) break;
 
 		if (fprintf (stream,
 			     ";Ni1\n"
@@ -558,8 +546,7 @@ Ni_PUBLIC int Ni_WriteStream (Ni_node restrict n, FILE * restrict stream, int mo
 			break;
 		}
 
-		if (!RecursiveWrite (n, stream, modified_only, 0))
-			break;
+		if (!RecursiveWrite (n, stream, modified_only, 0)) break;
 
 		success = 1;
 	} while (0);
@@ -613,19 +600,15 @@ Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fol
 	int success = 0;
 	do
 	{
-		if (!n || !stream)
-			break;
+		if (!n || !stream) break;
 
-		if (!InitFileBuf (&fb, stream))
-			break;
-		if (!Ds_InitStr (&value, INITIAL_VALUE_BUFFER))
-			break;
+		if (!InitFileBuf (&fb, stream)) break;
+		if (!Ds_InitStr (&value, INITIAL_VALUE_BUFFER)) break;
 
 		// do this until eof
 		while ((result = GetNextIdentifier (&fb, key, &key_len, &key_level)) != 0)
 		{
-			if (result < 0)
-				break;
+			if (result < 0) break;
 
 			if (fold_case)
 			{
@@ -642,24 +625,20 @@ Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fol
 				while (key_level - cur_level > 1)
 				{
 					// get or add nameless children, as necessary
-					if (!(n = Ni_GetChild (n, "", 0, 1, NULL)))
-						break;
+					if (!(n = Ni_GetChild (n, "", 0, 1, NULL))) break;
 					++cur_level;
 				}
 				// if key_level is less deeply nested than we are currently, by more
 				// than 1
 				while (key_level - cur_level < 1)
 				{
-					if (!(n = Ni_GetParent (n)))
-						break;
+					if (!(n = Ni_GetParent (n))) break;
 					--cur_level;
 				}
 
-				if (key_level - cur_level != 1)
-					result = -1;
+				if (key_level - cur_level != 1) result = -1;
 			}
-			if (result < 0)
-				break;
+			if (result < 0) break;
 
 			// get/add the child
 			if (!(child = Ni_GetChild (n, key, key_len, 1, NULL)))
@@ -719,8 +698,7 @@ static Ni_node AddNode (Ni_node restrict n, Ni_node restrict parent, const char 
 	do
 	{
 		// init the node
-		if (!InitNode (n, parent))
-			break;
+		if (!InitNode (n, parent)) break;
 
 		// give it a name
 		memcpy (n->name, name, name_len * sizeof (char));
@@ -733,8 +711,7 @@ static Ni_node AddNode (Ni_node restrict n, Ni_node restrict parent, const char 
 			break;
 
 		// insert it
-		if (!(e = Ds_InsertHashItem (&parent->children, n, sizeof (struct Ni_node_struct), hash)))
-			break;
+		if (!(e = Ds_InsertHashItem (&parent->children, n, sizeof (struct Ni_node_struct), hash))) break;
 		child = GetItem (e); // get the inserted item
 
 		success = 1;
@@ -742,8 +719,7 @@ static Ni_node AddNode (Ni_node restrict n, Ni_node restrict parent, const char 
 
 	if (!success)
 	{
-		if (e)
-			Ds_RemoveHashEntry (&parent->children, e);
+		if (e) Ds_RemoveHashEntry (&parent->children, e);
 		FreeNode (n);
 	}
 
@@ -833,8 +809,7 @@ static int RecursiveWrite (Ni_node restrict n, FILE * restrict stream, int modif
 			if ((value = Ni_GetValue (child, &value_len)) != NULL && (!modified_only || Ni_GetModified (child)))
 			{
 				// put the actual key/value pair
-				if (!PutEntry (stream, name, name_len, value, value_len, level + 1))
-					break;
+				if (!PutEntry (stream, name, name_len, value, value_len, level + 1)) break;
 			}
 		}
 		if (child) // if we broke out early
@@ -852,16 +827,13 @@ static int RecursiveWrite (Ni_node restrict n, FILE * restrict stream, int modif
 				assert (name != NULL);
 
 				// put it as a section name
-				if (!PutSection (stream, name, name_len, level + 1))
-					break;
+				if (!PutSection (stream, name, name_len, level + 1)) break;
 
 				// recurse
-				if (!RecursiveWrite (child, stream, modified_only, level + 1))
-					break;
+				if (!RecursiveWrite (child, stream, modified_only, level + 1)) break;
 			}
 		}
-		if (child)
-			break;
+		if (child) break;
 
 		success = 1;
 	} while (0);

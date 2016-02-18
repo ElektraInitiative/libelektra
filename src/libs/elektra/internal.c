@@ -70,14 +70,10 @@
  */
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 {
-	if (!array1)
-		return -1;
-	if (!array2)
-		return -1;
-	if (size > SSIZE_MAX)
-		return -1;
-	if (size == 0)
-		return 0;
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
 	memcpy (array1, array2, size * sizeof (Key *));
 	return size;
 }
@@ -98,14 +94,10 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
  */
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
 {
-	if (!array1)
-		return -1;
-	if (!array2)
-		return -1;
-	if (size > SSIZE_MAX)
-		return -1;
-	if (size == 0)
-		return 0;
+	if (!array1) return -1;
+	if (!array2) return -1;
+	if (size > SSIZE_MAX) return -1;
+	if (size == 0) return 0;
 	memmove (array1, array2, size * sizeof (Key *));
 	return size;
 }
@@ -164,8 +156,7 @@ int elektraMemCaseCmp (const char * s1, const char * s2, size_t size)
 		const int CMP1 = toupper (cmp1);
 		const int CMP2 = toupper (cmp2);
 		const int diff = CMP1 - CMP2;
-		if (diff)
-			return diff;
+		if (diff) return diff;
 	}
 	return 0;
 }
@@ -282,8 +273,7 @@ char * elektraStrDup (const char * s)
 
 	l = elektraStrLen (s);
 	tmp = elektraMalloc (l);
-	if (tmp)
-		memcpy (tmp, s, l);
+	if (tmp) memcpy (tmp, s, l);
 
 	return tmp;
 }
@@ -306,8 +296,7 @@ char * elektraStrNDup (const char * s, size_t l)
 	void * tmp = 0;
 
 	tmp = elektraMalloc (l);
-	if (tmp)
-		memcpy (tmp, s, l);
+	if (tmp) memcpy (tmp, s, l);
 
 	return tmp;
 }
@@ -333,8 +322,7 @@ char * elektraStrNDup (const char * s, size_t l)
 size_t elektraStrLen (const char * s)
 {
 	char * found = strchr (s, 0);
-	if (found)
-		return found - s + 1;
+	if (found) return found - s + 1;
 	return 0;
 }
 
@@ -367,8 +355,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 {
 	static int const default_size = 512;
 	char * buffer = elektraMalloc (default_size);
-	if (!buffer)
-		return 0;
+	if (!buffer) return 0;
 
 	va_list arg_list_adj;
 	va_copy (arg_list_adj, arg_list);

@@ -56,8 +56,7 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 	Plugin * returned;
 	plugin_t method = 0;
 
-	if (pluginName == 0)
-		return 0;
+	if (pluginName == 0) return 0;
 
 	returned = elektraCalloc (sizeof (struct _Plugin));
 

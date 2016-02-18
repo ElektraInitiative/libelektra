@@ -61,16 +61,11 @@ public:
 
 	static ConflictOperation getFromName (std::string name)
 	{
-		if (name == "CONFLICT_ADD")
-			return CONFLICT_ADD;
-		if (name == "CONFLICT_DELETE")
-			return CONFLICT_DELETE;
-		if (name == "CONFLICT_MODIFY")
-			return CONFLICT_MODIFY;
-		if (name == "CONFLICT_META")
-			return CONFLICT_META;
-		if (name == "CONFLICT_SAME")
-			return CONFLICT_SAME;
+		if (name == "CONFLICT_ADD") return CONFLICT_ADD;
+		if (name == "CONFLICT_DELETE") return CONFLICT_DELETE;
+		if (name == "CONFLICT_MODIFY") return CONFLICT_MODIFY;
+		if (name == "CONFLICT_META") return CONFLICT_META;
+		if (name == "CONFLICT_SAME") return CONFLICT_SAME;
 		throw InvalidConflictOperation ("The conflict operation " + name + " is unknown");
 	}
 };

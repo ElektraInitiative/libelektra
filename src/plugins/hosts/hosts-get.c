@@ -78,8 +78,7 @@ size_t elektraParseToken (char ** token, const char * line)
 		i++;
 
 	/* end of line or string, abort */
-	if (line[i] == '\0' || line[i] == '\n')
-		return 0;
+	if (line[i] == '\0' || line[i] == '\n') return 0;
 
 	size_t start = i;
 
@@ -138,8 +137,7 @@ static char * parseCanonicalName (Key * result, char * line)
 	/* read the ip address (if any) */
 	int sret = elektraParseToken (&fieldBuffer, line);
 
-	if (sret == 0)
-		return 0;
+	if (sret == 0) return 0;
 
 	tokenPointer += sret;
 
@@ -154,8 +152,7 @@ static char * parseCanonicalName (Key * result, char * line)
 	/* read the canonical name */
 	sret = elektraParseToken (&fieldBuffer, tokenPointer);
 
-	if (sret == 0)
-		return 0;
+	if (sret == 0) return 0;
 
 	tokenPointer += sret;
 	keyAddBaseName (result, fieldBuffer);
@@ -169,8 +166,7 @@ static char * parseAlias (KeySet * append, const Key * hostParent, char * tokenP
 	char * fieldBuffer;
 	int sret = 0;
 	sret = elektraParseToken (&fieldBuffer, tokenPointer);
-	if (sret == 0)
-		return 0;
+	if (sret == 0) return 0;
 
 	Key * alias = keyDup (hostParent);
 	keyAddBaseName (alias, fieldBuffer);
@@ -191,10 +187,8 @@ static char * parseAlias (KeySet * append, const Key * hostParent, char * tokenP
 
 static int elektraKeySetMetaKeySet (Key * key, KeySet * metaKeySet)
 {
-	if (!key)
-		return 0;
-	if (!metaKeySet)
-		return 0;
+	if (!key) return 0;
+	if (!metaKeySet) return 0;
 
 	Key * currentMeta;
 	cursor_t initialCursor = ksGetCursor (metaKeySet);
@@ -247,20 +241,17 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	{
 		fret = fgets (readBuffer, HOSTS_KDB_BUFFER_SIZE, fp);
 
-		if (!fret)
-			break;
+		if (!fret) break;
 
 		if (!currentKey)
 		{
 			currentKey = keyDup (parentKey);
 		}
 
-		if (parseComment (comments, readBuffer, "#", &elektraAddLineComment))
-			continue;
+		if (parseComment (comments, readBuffer, "#", &elektraAddLineComment)) continue;
 
 		tokenPointer = parseCanonicalName (currentKey, readBuffer);
-		if (tokenPointer == 0)
-			continue;
+		if (tokenPointer == 0) continue;
 
 		/* canonical names have to be unique. If the hosts file contains
 		 * duplicates, we honor only the first entry. This mirrors the
@@ -284,13 +275,11 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		while (1)
 		{
 			/* if we find a comment, there cannot be any more aliases */
-			if (parseComment (comments, tokenPointer, "#", &elektraAddInlineComment))
-				break;
+			if (parseComment (comments, tokenPointer, "#", &elektraAddInlineComment)) break;
 
 			/* if we reach the end of the line, there cannot be any more aliases */
 			tokenPointer = parseAlias (append, currentKey, tokenPointer);
-			if (tokenPointer == 0)
-				break;
+			if (tokenPointer == 0) break;
 		}
 
 		/* flush collected comments and start over with a new entry */

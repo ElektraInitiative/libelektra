@@ -77,8 +77,7 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 			       const char * toUpperPath, const char * toLowerPath)
 {
 	size_t addToLen = 0;
-	if (replaceWith != NULL)
-		addToLen = strlen (replaceWith);
+	if (replaceWith != NULL) addToLen = strlen (replaceWith);
 
 	size_t maxNewLength = strlen (keyName (key)) + addToLen;
 

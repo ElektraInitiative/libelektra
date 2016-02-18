@@ -54,24 +54,21 @@ int MergeCommand::execute (Cmdline const & cl)
 		lkdb.get (ours, oursRoot);
 		ours = ours.cut (oursRoot);
 		ours.lookup (oursRoot, KDB_O_POP);
-		if (cl.verbose)
-			std::cout << "we got ours: " << oursRoot << " with keys " << ours << std::endl;
+		if (cl.verbose) std::cout << "we got ours: " << oursRoot << " with keys " << ours << std::endl;
 	}
 	{
 		KDB lkdb;
 		lkdb.get (theirs, theirsRoot);
 		theirs = theirs.cut (theirsRoot);
 		ours.lookup (oursRoot, KDB_O_POP);
-		if (cl.verbose)
-			std::cout << "we got theirs: " << theirsRoot << " with keys " << theirs << std::endl;
+		if (cl.verbose) std::cout << "we got theirs: " << theirsRoot << " with keys " << theirs << std::endl;
 	}
 	{
 		KDB lkdb;
 		lkdb.get (base, baseRoot);
 		base = base.cut (baseRoot);
 		ours.lookup (oursRoot, KDB_O_POP);
-		if (cl.verbose)
-			std::cout << "we got base: " << baseRoot << " with keys " << base << std::endl;
+		if (cl.verbose) std::cout << "we got base: " << baseRoot << " with keys " << base << std::endl;
 	}
 
 	KeySet resultKeys;

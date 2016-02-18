@@ -95,8 +95,7 @@ Ds_VECTOR_INLINE int Ds_InitVector (Ds_vector * restrict v, size_t cap)
 
 	if (cap > 0)
 	{
-		if (!(v->buf = (Ds_VECTOR_TYPE *)elektraMalloc (cap * sizeof (Ds_VECTOR_TYPE))))
-			return 0;
+		if (!(v->buf = (Ds_VECTOR_TYPE *)elektraMalloc (cap * sizeof (Ds_VECTOR_TYPE)))) return 0;
 
 		v->cap = cap;
 	}
@@ -108,8 +107,7 @@ Ds_VECTOR_INLINE int Ds_InitVector (Ds_vector * restrict v, size_t cap)
  */
 Ds_VECTOR_INLINE void Ds_FreeVector (Ds_vector * restrict v)
 {
-	if (v->buf)
-		elektraFree (v->buf);
+	if (v->buf) elektraFree (v->buf);
 	*v = (Ds_vector)Ds_VECTOR_INIT;
 }
 
@@ -161,13 +159,10 @@ Ds_VECTOR_INLINE int Ds_InsertVectorItems (Ds_vector * restrict v, const Ds_VECT
  */
 Ds_VECTOR_INLINE void Ds_RemoveVectorItems (Ds_vector * restrict v, Ds_VECTOR_TYPE * restrict items, size_t num, size_t pos)
 {
-	if (num > v->num)
-		num = v->num;
-	if (pos > v->num - num)
-		pos = v->num - num;
+	if (num > v->num) num = v->num;
+	if (pos > v->num - num) pos = v->num - num;
 
-	if (items)
-		memcpy (items, v->buf + pos, num * sizeof (Ds_VECTOR_TYPE));
+	if (items) memcpy (items, v->buf + pos, num * sizeof (Ds_VECTOR_TYPE));
 
 	if (v->num - num - pos > 0)
 	{
@@ -192,8 +187,7 @@ Ds_VECTOR_INLINE int Ds_ResizeVector (Ds_vector * restrict v, size_t cap)
 		v->buf = new_buf;
 		v->cap = cap;
 
-		if (v->num > cap)
-			v->num = cap;
+		if (v->num > cap) v->num = cap;
 	}
 
 	return 1;

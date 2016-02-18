@@ -62,26 +62,21 @@ static char * strncpy0 (char * dest, const char * src, size_t size)
 
 static int isContinuation (const char * line, const struct IniConfig * config)
 {
-	if (!(*line))
-		return 0;
+	if (!(*line)) return 0;
 	return !strncmp (line, config->continuationString, strlen (config->continuationString));
 }
 
 static int isSection (const char * line)
 {
-	if (!(*line))
-		return 0;
-	if (*line == '[')
-		return 1;
+	if (!(*line)) return 0;
+	if (*line == '[') return 1;
 	return 0;
 }
 
 static int isComment (const char * line)
 {
-	if (!(*line))
-		return 0;
-	if (*line == '#' || *line == ';')
-		return 1;
+	if (!(*line)) return 0;
+	if (*line == '#' || *line == ';') return 1;
 	return 0;
 }
 
@@ -127,36 +122,30 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 #endif
 		if (*start == '\n')
 		{
-			if (!config->commentHandler (user, " ") && !error)
-				error = lineno;
+			if (!config->commentHandler (user, " ") && !error) error = lineno;
 			continue;
 		}
 		start = lskip (line);
 		if (isContinuation (line, config) && config->supportMultiline && *prev_name)
 		{
 			start = line + strlen (config->continuationString);
-			if (*start == '"')
-				++start;
+			if (*start == '"') ++start;
 			end = line + (strlen (line) - 1);
 			while ((*end != '"') && (!isprint (*end)) && (end > start))
 			{
-				if (*end == '\n')
-					*end = '\0';
+				if (*end == '\n') *end = '\0';
 				--end;
 			}
-			if (*end == '"')
-				*end = '\0';
+			if (*end == '"') *end = '\0';
 
-			if (!config->keyHandler (user, section, prev_name, start, 1) && !error)
-				error = lineno;
+			if (!config->keyHandler (user, section, prev_name, start, 1) && !error) error = lineno;
 		}
 		else if (isSection (line))
 		{
 			end = line + (strlen (line) - 1);
 			while (end > start)
 			{
-				if (*end == ']')
-					break;
+				if (*end == ']') break;
 				--end;
 			}
 			++start;
@@ -165,8 +154,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				*end = '\0';
 				strncpy0 (section, start, sizeof (section));
 				*prev_name = '\0';
-				if (!config->sectionHandler (user, section) && !error)
-					error = lineno;
+				if (!config->sectionHandler (user, section) && !error) error = lineno;
 			}
 			else
 			{
@@ -184,8 +172,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 							*end = '\0';
 							strncpy0 (section + strlen (section), line, sizeof (section) - strlen (section));
 							*prev_name = '\0';
-							if (!config->sectionHandler (user, section) && !error)
-								error = lineno;
+							if (!config->sectionHandler (user, section) && !error) error = lineno;
 							break;
 						}
 						else
@@ -205,10 +192,8 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		{
 			start += 1;
 			end = line + (strlen (line) - 1);
-			if (*end == '\n')
-				*end = '\0';
-			if (!config->commentHandler (user, start) && !error)
-				error = lineno;
+			if (*end == '\n') *end = '\0';
+			if (!config->commentHandler (user, start) && !error) error = lineno;
 		}
 		else
 		{
@@ -229,8 +214,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			{
 				name = start;
 				end = strchr (start, '=');
-				if (!end)
-					end = strchr (start, ':');
+				if (!end) end = strchr (start, ':');
 				if (*name == '"')
 				{
 					if (*(end - 2) == '"')
@@ -272,10 +256,8 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				{
 					ptr = lskip (end + 1);
 					end = strchr (ptr, '=');
-					if (!end)
-						end = strchr (ptr, ':');
-					if (*end == '=' || *end == ':')
-						*end = '\0';
+					if (!end) end = strchr (ptr, ':');
+					if (*end == '=' || *end == ':') *end = '\0';
 				}
 				else
 				{
@@ -287,21 +269,17 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				value = lskip (end + 1);
 				end = find_char_or_comment (value, '\0');
-				if (*end == ';')
-					*end = '\0';
+				if (*end == ';') *end = '\0';
 				rstrip (value);
 				if (*value == '"')
 				{
 					*(value++) = '\0';
 					while ((*end != '"') && !isprint (*end) && end > value)
 						--end;
-					if (*end == '"')
-						*end = '\0';
+					if (*end == '"') *end = '\0';
 				}
-				if (prev_name != name)
-					strncpy0 (prev_name, name, sizeof (prev_name));
-				if (!config->keyHandler (user, section, name, value, 0) && !error)
-					error = lineno;
+				if (prev_name != name) strncpy0 (prev_name, name, sizeof (prev_name));
+				if (!config->keyHandler (user, section, name, value, 0) && !error) error = lineno;
 			}
 			else if (assign == 0)
 			{
@@ -314,8 +292,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					if (*end == '"' && end != start)
 					{
 						*end = '\0';
-						if (!config->keyHandler (user, section, start, NULL, 0) && !error)
-							error = lineno;
+						if (!config->keyHandler (user, section, start, NULL, 0) && !error) error = lineno;
 					}
 					else
 					{
@@ -341,21 +318,17 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 						name = prev_name;
 						ptr = end + 1;
 						end = strchr (ptr, '=');
-						if (!end)
-							end = strchr (ptr, ':');
+						if (!end) end = strchr (ptr, ':');
 						if (!end)
 						{
-							if (!config->keyHandler (user, section, name, NULL, 0) && !error)
-								error = lineno;
+							if (!config->keyHandler (user, section, name, NULL, 0) && !error) error = lineno;
 						}
 						else
 						{
 							*end = '\0';
 							value = lskip (end + 1);
-							if (*value == '"')
-								end = find_char_or_comment (value, '\0');
-							if (*end == ';')
-								*end = '\0';
+							if (*value == '"') end = find_char_or_comment (value, '\0');
+							if (*end == ';') *end = '\0';
 							rstrip (value);
 							if (*value == '"' || *(value + 1) == '"')
 							{
@@ -368,13 +341,10 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 								}
 								while ((*end != '"') && !isprint (*end) && end > value)
 									--end;
-								if (*end == '"')
-									*end = '\0';
+								if (*end == '"') *end = '\0';
 							}
-							if (prev_name != name)
-								strncpy0 (prev_name, name, sizeof (prev_name));
-							if (!config->keyHandler (user, section, name, value, 0) && !error)
-								error = lineno;
+							if (prev_name != name) strncpy0 (prev_name, name, sizeof (prev_name));
+							if (!config->keyHandler (user, section, name, value, 0) && !error) error = lineno;
 						}
 					}
 				}
@@ -383,8 +353,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					end = find_char_or_comment (start, '\0');
 					name = rstrip (start);
 					strncpy0 (prev_name, name, sizeof (prev_name));
-					if (!config->keyHandler (user, section, name, NULL, 0) && !error)
-						error = lineno;
+					if (!config->keyHandler (user, section, name, NULL, 0) && !error) error = lineno;
 				}
 			}
 			else
@@ -394,14 +363,12 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				{
 					if (*ptr == '=' || *ptr == ':')
 					{
-						if (*(ptr + 1) == '"' || *(ptr + 2) == '"' || *(ptr - 1) == '"' || *(ptr - 2) == '"')
-							break;
+						if (*(ptr + 1) == '"' || *(ptr + 2) == '"' || *(ptr - 1) == '"' || *(ptr - 2) == '"') break;
 					}
 					++ptr;
 				}
 				end = strstr (ptr + 1, " = ");
-				if (!end)
-					end = strstr (ptr + 1, " : ");
+				if (!end) end = strstr (ptr + 1, " : ");
 				name = NULL;
 				if (end)
 				{
@@ -426,8 +393,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				{
 					*ptr = '\0';
 					end = rstrip (start);
-					if (*start == '"')
-						++start;
+					if (*start == '"') ++start;
 					if (*(ptr - 1) == '"')
 						*(ptr - 1) = '\0';
 					else if (*(ptr - 2) == '"')
@@ -437,8 +403,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				value = ptr + 1;
 
 				end = find_char_or_comment (value, '\0');
-				if (*end == ';')
-					*end = '\0';
+				if (*end == ';') *end = '\0';
 				rstrip (value);
 				if (*value == '"' || *(value + 1) == '"')
 				{
@@ -451,18 +416,15 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					}
 					while ((*end != '"') && !isprint (*end) && end > value)
 						--end;
-					if (*end == '"')
-						*end = '\0';
+					if (*end == '"') *end = '\0';
 				}
 				strncpy0 (prev_name, name, sizeof (prev_name));
-				if (!config->keyHandler (user, section, name, value, 0) && !error)
-					error = lineno;
+				if (!config->keyHandler (user, section, name, value, 0) && !error) error = lineno;
 			}
 		}
 
 #if INI_STOP_ON_FIRST_ERROR
-		if (error)
-			break;
+		if (error) break;
 #endif
 	}
 
@@ -477,8 +439,7 @@ int ini_parse (const char * filename, const struct IniConfig * config, void * us
 	int error;
 
 	file = fopen (filename, "r");
-	if (!file)
-		return -1;
+	if (!file) return -1;
 	error = ini_parse_file (file, config, user);
 	fclose (file);
 	return error;

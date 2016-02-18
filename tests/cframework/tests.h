@@ -231,10 +231,8 @@ int init (int argc, char ** argv);
 			Key * cmmk1 = 0;                                                                                                   \
 			Key * cmmk2 = 0;                                                                                                   \
                                                                                                                                            \
-			if (ksGetSize (mmks1) == 0)                                                                                        \
-				yield_error ("real size of " quote_string (mmks1) " was 0");                                               \
-			if (ksGetSize (mmks2) == 0)                                                                                        \
-				yield_error ("real size of " quote_string (mmks2) " was 0");                                               \
+			if (ksGetSize (mmks1) == 0) yield_error ("real size of " quote_string (mmks1) " was 0");                           \
+			if (ksGetSize (mmks2) == 0) yield_error ("real size of " quote_string (mmks2) " was 0");                           \
                                                                                                                                            \
 			if (ksGetSize (mmks1) != ksGetSize (mmks2))                                                                        \
 			{                                                                                                                  \

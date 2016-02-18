@@ -40,8 +40,7 @@ void MountCommand::outputMtab (Cmdline const & cl)
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
 	bool all = cl.first && cl.second && cl.third;
 	char delim = '\n';
-	if (cl.null)
-		delim = '\0';
+	if (cl.null) delim = '\0';
 
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
@@ -167,8 +166,7 @@ void MountCommand::readPluginConfig (KeySet & pluginConfig)
 		cout << "Enter the Key name: ";
 		cin >> keyName;
 
-		if (keyName == ".")
-			break;
+		if (keyName == ".") break;
 
 		cout << "Enter the Key value: ";
 		cin >> value;

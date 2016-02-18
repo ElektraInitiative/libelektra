@@ -45,12 +45,10 @@ int ExportCommand::execute (Cmdline const & cl)
 	}
 
 	string format = cl.format;
-	if (argc > 1)
-		format = cl.arguments[1];
+	if (argc > 1) format = cl.arguments[1];
 
 	string file = "/dev/stdout";
-	if (argc > 2 && cl.arguments[2] != "-")
-		file = cl.arguments[2];
+	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
 	PluginPtr plugin = modules.load (format, cl.getPluginsConfig ());

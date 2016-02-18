@@ -100,8 +100,7 @@ static const char * getAugeasError (augeas * augeasHandle)
 	}
 
 	/* should not happen, but avoid 0 return */
-	if (!reason)
-		reason = "";
+	if (!reason) reason = "";
 
 	return reason;
 }
@@ -115,8 +114,7 @@ static Key * createKeyFromPath (Key * parentKey, const char * treePath)
 	size_t keyNameSize = strlen (baseName) + baseSize + 1;
 	char * newName = elektraMalloc (keyNameSize);
 
-	if (!newName)
-		return 0;
+	if (!newName) return 0;
 
 	strcpy (newName, keyName (key));
 	newName[baseSize - 1] = KDB_PATH_SEPARATOR;
@@ -136,8 +134,7 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	const char * value = 0;
 	result = aug_get (handle, treePath, &value);
 
-	if (result < 0)
-		return result;
+	if (result < 0) return result;
 
 	Key * key = createKeyFromPath (conversionData->parentKey, treePath);
 
@@ -206,8 +203,7 @@ static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAug
 	int numMatches = aug_match (handle, matchPath, &matches);
 	elektraFree (matchPath);
 
-	if (numMatches < 0)
-		return numMatches;
+	if (numMatches < 0) return numMatches;
 
 	int i;
 	int result = 0;
@@ -221,8 +217,7 @@ static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAug
 		/* handle the subtree */
 		result = foreachAugeasNode (handle, curPath, callback, callbackData);
 
-		if (result < 0)
-			break;
+		if (result < 0) break;
 
 		elektraFree (curPath);
 	}
@@ -242,8 +237,7 @@ static char * loadFile (FILE * fh)
 	/* open the file */
 	char * content = 0;
 
-	if (fseek (fh, 0, SEEK_END) != 0)
-		return 0;
+	if (fseek (fh, 0, SEEK_END) != 0) return 0;
 
 	long fileSize = ftell (fh);
 	rewind (fh);
@@ -251,12 +245,10 @@ static char * loadFile (FILE * fh)
 	if (fileSize > 0)
 	{
 		content = elektraMalloc (fileSize * sizeof (char) + 1);
-		if (content == 0)
-			return 0;
+		if (content == 0) return 0;
 		int readBytes = fread (content, sizeof (char), fileSize, fh);
 
-		if (feof (fh) || ferror (fh) || readBytes != fileSize)
-			return 0;
+		if (feof (fh) || ferror (fh) || readBytes != fileSize) return 0;
 
 		/* null terminate the string, as fread doesn't do it */
 		content[fileSize] = 0;
@@ -264,8 +256,7 @@ static char * loadFile (FILE * fh)
 	else if (fileSize == 0)
 	{
 		content = elektraMalloc (1);
-		if (content == 0)
-			return 0;
+		if (content == 0) return 0;
 		*content = (char)0;
 	}
 
@@ -291,8 +282,7 @@ static int saveFile (augeas * augeasHandle, FILE * fh)
 	{
 		ret = fwrite (value, sizeof (char), strlen (value), fh);
 
-		if (feof (fh) || ferror (fh))
-			return -1;
+		if (feof (fh) || ferror (fh)) return -1;
 	}
 
 	return ret;
@@ -330,8 +320,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 	/* remove keys not present in the KeySet */
 	struct OrphanSearch * data = elektraMalloc (sizeof (struct OrphanSearch));
 
-	if (!data)
-		return -1;
+	if (!data) return -1;
 
 	data->ks = ks;
 	data->parentKey = parentKey;
@@ -396,8 +385,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	/* retrieve the lens to use */
 	const char * lensPath = getLensPath (handle);
-	if (!lensPath)
-		ELEKTRA_SET_GENERAL_ERROR (86, parentKey, keyName (parentKey));
+	if (!lensPath) ELEKTRA_SET_GENERAL_ERROR (86, parentKey, keyName (parentKey));
 
 	FILE * fh = fopen (keyString (parentKey), "r");
 
@@ -523,8 +511,7 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ret = saveFile (augeasHandle, fh);
 	fclose (fh);
 
-	if (ret < 0)
-		ELEKTRA_SET_ERRNO_ERROR (75, parentKey);
+	if (ret < 0) ELEKTRA_SET_ERRNO_ERROR (75, parentKey);
 
 	errno = errnosave;
 	return 1;

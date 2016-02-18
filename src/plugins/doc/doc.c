@@ -45,8 +45,7 @@ int elektraDocOpen (Plugin * handle, Key * warningsKey ELEKTRA_UNUSED)
 
 	data = elektraMalloc (sizeof (GlobalData));
 	data->global = 0;
-	if (kg)
-		data->global = atoi (keyString (kg));
+	if (kg) data->global = atoi (keyString (kg));
 	elektraPluginSetData (handle, data);
 	//! [doc open]
 

@@ -73,8 +73,7 @@ Backends::BackendInfoVector Backends::getBackendInfo (KeySet mountConf)
 BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountConf, bool verbose)
 {
 	BackendInfo ret;
-	if (mountPath.empty ())
-		return ret;
+	if (mountPath.empty ()) return ret;
 
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
 
@@ -83,8 +82,7 @@ BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountCo
 	// search for proper mountname:
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
-		if (verbose)
-			std::cout << "compare: " << it->mountpoint << " with " << kmp.getBaseName () << std::endl;
+		if (verbose) std::cout << "compare: " << it->mountpoint << " with " << kmp.getBaseName () << std::endl;
 		if (it->mountpoint == kmp.getBaseName ())
 		{
 			return *it;
@@ -99,14 +97,11 @@ BackendInfo Backends::findBackend (std::string const & mountPath, KeySet mountCo
 	Key koldMountpoint ("user/" + soldMountpoint, KEY_END);
 	std::string omp = koldMountpoint.getName ();
 	std::string oldMountpoint (omp.begin () + 4, omp.end ());
-	if (soldMountpoint.at (0) != '/')
-		oldMountpoint.erase (0, 1); // fix non-cascading
-	if (koldMountpoint.getName () == "user")
-		oldMountpoint = "/"; // fix root
+	if (soldMountpoint.at (0) != '/') oldMountpoint.erase (0, 1); // fix non-cascading
+	if (koldMountpoint.getName () == "user") oldMountpoint = "/"; // fix root
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
-		if (verbose)
-			std::cout << "fallback compare: " << it->mountpoint << " with " << oldMountpoint << std::endl;
+		if (verbose) std::cout << "fallback compare: " << it->mountpoint << " with " << oldMountpoint << std::endl;
 		if (it->mountpoint == oldMountpoint)
 		{
 			return *it;

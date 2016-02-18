@@ -38,8 +38,7 @@ int elektraKeyCmpOrderWrapper (const void * a, const void * b)
 	/* comparing the order meta could not order the keys
 	 * revert to comparing the names instead
 	 */
-	if (orderResult == 0)
-		return keyCmp (*ka, *kb);
+	if (orderResult == 0) return keyCmp (*ka, *kb);
 
 	return orderResult;
 }
@@ -81,12 +80,9 @@ static Key * findNearestParent (Key * key, KeySet * ks)
  */
 int elektraKeyAppendMetaLine (Key * target, const char * metaName, const char * line)
 {
-	if (!target)
-		return 0;
-	if (!metaName)
-		return 0;
-	if (!line)
-		return 0;
+	if (!target) return 0;
+	if (!metaName) return 0;
+	if (!line) return 0;
 
 	if (!keyGetMeta (target, metaName))
 	{
@@ -96,8 +92,7 @@ int elektraKeyAppendMetaLine (Key * target, const char * metaName, const char * 
 
 	const Key * existingMeta = keyGetMeta (target, metaName);
 	char * buffer = elektraMalloc (keyGetValueSize (existingMeta) + strlen (line) + 1);
-	if (!buffer)
-		return 0;
+	if (!buffer) return 0;
 
 	keyGetString (existingMeta, buffer, keyGetValueSize (existingMeta));
 	strcat (buffer, "\n");
@@ -130,8 +125,7 @@ void removeKeyFromResult (Key * convertKey, Key * target, KeySet * orig)
 
 static void flushConvertedKeys (Key * target, KeySet * converted, KeySet * orig)
 {
-	if (ksGetSize (converted) == 0)
-		return;
+	if (ksGetSize (converted) == 0) return;
 
 	ksRewind (converted);
 	Key * current;
@@ -291,8 +285,7 @@ int elektraKeyToMetaSet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	KeySet * converted = elektraPluginGetData (handle);
 
 	/* nothing to do */
-	if (converted == 0)
-		return 1;
+	if (converted == 0) return 1;
 
 	ksRewind (converted);
 

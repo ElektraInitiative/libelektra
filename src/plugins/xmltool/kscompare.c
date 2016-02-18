@@ -55,15 +55,13 @@ ssize_t ksGetCommonParentName (const KeySet * working, char * returnedCommonPare
 	KeySet * ks;
 	ssize_t sMaxSize;
 
-	if (maxSize > SSIZE_MAX)
-		return -1;
+	if (maxSize > SSIZE_MAX) return -1;
 	sMaxSize = maxSize;
 
 	cinit = ksGetCursor (working);
 	ks = (KeySet *)working;
 
-	if (ksGetSize (ks) < 1)
-		return 0;
+	if (ksGetSize (ks) < 1) return 0;
 
 	ksRewind (ks);
 	current = ksNext (ks);
@@ -83,8 +81,7 @@ ssize_t ksGetCommonParentName (const KeySet * working, char * returnedCommonPare
 		while ((current = ksNext (ks)) != 0)
 		{
 			/* Test if a key doesn't match */
-			if (memcmp (returnedCommonParent, keyName (current), parentSize - 1))
-				break;
+			if (memcmp (returnedCommonParent, keyName (current), parentSize - 1)) break;
 		}
 		if (current)
 		{

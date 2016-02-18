@@ -23,8 +23,7 @@ void CopyKeyCommand::undo ()
 	m_isExpanded = m_target->isExpanded ();
 	m_target->getChildren ()->removeRow (m_index);
 
-	if (m_target->isExpanded () && m_target->childrenHaveNoChildren ())
-		m_target->setIsExpanded (false);
+	if (m_target->isExpanded () && m_target->childrenHaveNoChildren ()) m_target->setIsExpanded (false);
 }
 
 void CopyKeyCommand::redo ()

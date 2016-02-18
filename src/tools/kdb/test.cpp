@@ -284,8 +284,7 @@ void TestCommand::doNamingTest ()
 	teststrings.push_back ("€");
 	for (int i = 1; i < 256; ++i)
 	{
-		if (i == '.')
-			continue;
+		if (i == '.') continue;
 		string s;
 		s.push_back (i);
 		teststrings.push_back (s);
@@ -376,8 +375,7 @@ void TestCommand::doMetaTest ()
 	testnames.push_back ("€");
 	for (int i = 1; i < 256; ++i)
 	{
-		if (i == 46)
-			continue; // ignore .
+		if (i == 46) continue; // ignore .
 		string s;
 		s.push_back (i);
 		testnames.push_back (s);

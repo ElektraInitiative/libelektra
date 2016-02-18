@@ -36,8 +36,7 @@ int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	{
 		const Key * meta = keyGetMeta (cur, "check/validation");
 
-		if (!meta)
-			continue;
+		if (!meta) continue;
 
 		regex_t regex;
 		regmatch_t offsets;

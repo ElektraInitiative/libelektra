@@ -271,32 +271,25 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			kdb.get (conf, dirname);
 
 			Key k = conf.lookup (dirname + "resolver");
-			if (k)
-				resolver = k.get<string> ();
+			if (k) resolver = k.get<string> ();
 
 			k = conf.lookup (dirname + "format");
-			if (k)
-				format = k.get<string> ();
+			if (k) format = k.get<string> ();
 
 			k = conf.lookup (dirname + "plugins");
-			if (k)
-				plugins = k.get<string> ();
+			if (k) plugins = k.get<string> ();
 
 			k = conf.lookup (dirname + "plugins/global");
-			if (k)
-				globalPlugins = k.get<string> ();
+			if (k) globalPlugins = k.get<string> ();
 
 			k = conf.lookup (dirname + "namespace");
-			if (k)
-				ns = k.get<string> ();
+			if (k) ns = k.get<string> ();
 
 			k = conf.lookup (dirname + "editor");
-			if (k)
-				editor = k.get<string> ();
+			if (k) editor = k.get<string> ();
 
 			k = conf.lookup (dirname + "recommends");
-			if (k)
-				withRecommends = k.get<bool> ();
+			if (k) withRecommends = k.get<bool> ();
 
 			map nks = conf.get<map> (dirname + "bookmarks");
 			bookmarks.insert (nks.begin (), nks.end ());

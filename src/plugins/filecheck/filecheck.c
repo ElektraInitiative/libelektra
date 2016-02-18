@@ -25,8 +25,7 @@
 static inline char * LEString (Lineending index)
 {
 	static char * strings[] = { "NA", "CR", "LF", "CRLF", "LFCR" };
-	if (index > NUM_TYPES)
-		return NULL;
+	if (index > NUM_TYPES) return NULL;
 	return strings[index];
 }
 
@@ -35,8 +34,7 @@ static inline Lineending strToLE (const char * str)
 	uint8_t counter = 0;
 	for (; counter < NUM_TYPES; ++counter)
 	{
-		if (!strcmp (LEString (counter), str))
-			return counter;
+		if (!strcmp (LEString (counter), str)) return counter;
 	}
 	return NA;
 }
@@ -61,8 +59,7 @@ int elektraFilecheckClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTR
 {
 	// free all plugin resources and shut it down
 	checkStruct * checkConf = (checkStruct *)elektraPluginGetData (handle);
-	if (checkConf)
-		elektraFree (checkConf);
+	if (checkConf) elektraFree (checkConf);
 	return 1; // success
 }
 
@@ -93,8 +90,7 @@ static int checkBom (const uint8_t * line)
 				found = 0;
 			}
 		}
-		if (found)
-			break;
+		if (found) break;
 	}
 	if (found)
 		return -1;
@@ -202,8 +198,7 @@ static int checkUnprintable (const uint8_t * line)
 	unsigned int i;
 	for (i = 0; i < elektraStrLen ((char *)line); ++i)
 	{
-		if (line[i] < 0x20 || line[i] > 0x7E || line[i] != '\n' || line[i] != '\r')
-			return i;
+		if (line[i] < 0x20 || line[i] > 0x7E || line[i] != '\n' || line[i] != '\r') return i;
 	}
 	return 0;
 }
@@ -242,8 +237,7 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 	uint8_t firstLine = 1;
 	unsigned long counter = 0;
 	int retVal = 0;
-	if (checkConf->checkLineEnding)
-		validateLineEnding (NULL, NULL, 1);
+	if (checkConf->checkLineEnding) validateLineEnding (NULL, NULL, 1);
 	while (!feof (fp))
 	{
 		memset (line, 0, sizeof (line));
@@ -331,8 +325,7 @@ int elektraFilecheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	checkStruct * checkConf = elektraPluginGetData (handle);
 	const char * filename = keyString (parentKey);
 	int ret = checkFile (parentKey, filename, checkConf);
-	if (ret != 0)
-		return -1;
+	if (ret != 0) return -1;
 	return 1; // success
 }
 
@@ -342,8 +335,7 @@ int elektraFilecheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	checkStruct * checkConf = elektraPluginGetData (handle);
 	const char * filename = keyString (parentKey);
 	int ret = checkFile (parentKey, filename, checkConf);
-	if (ret != 0)
-		return -1;
+	if (ret != 0) return -1;
 	return 1; // success
 }
 

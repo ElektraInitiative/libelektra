@@ -61,8 +61,7 @@ typedef struct
 
 static void Lua_Shutdown (lua_State * L)
 {
-	if (L)
-		lua_close (L);
+	if (L) lua_close (L);
 }
 
 static int Lua_Require (lua_State * L, const char * name)
@@ -70,8 +69,7 @@ static int Lua_Require (lua_State * L, const char * name)
 	lua_getglobal (L, "require");
 	lua_pushstring (L, name);
 	int status = lua_pcall (L, 1, 1, 0);
-	if (status == LUA_OK)
-		lua_setglobal (L, name);
+	if (status == LUA_OK) lua_setglobal (L, name);
 	return status;
 }
 
@@ -159,12 +157,10 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	luaL_openlibs (data->L);
 
 	/* require kdb */
-	if (Lua_Require (data->L, "kdb") != LUA_OK)
-		goto error_print;
+	if (Lua_Require (data->L, "kdb") != LUA_OK) goto error_print;
 
 	/* load lua script */
-	if (luaL_dofile (data->L, keyString (script)))
-		goto error_print;
+	if (luaL_dofile (data->L, keyString (script))) goto error_print;
 
 	/* store module data after everything is set up */
 	elektraPluginSetData (handle, data);
@@ -173,8 +169,7 @@ int elektraLuaOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 	return Lua_CallFunction_Helper2 (data->L, "elektraOpen", config, errorKey);
 
 error_print:
-	if (!lua_isnil (data->L, -1))
-		ELEKTRA_SET_ERROR (131, errorKey, lua_tostring (data->L, -1));
+	if (!lua_isnil (data->L, -1)) ELEKTRA_SET_ERROR (131, errorKey, lua_tostring (data->L, -1));
 error:
 	/* destroy lua */
 	Lua_Shutdown (data->L);
@@ -185,8 +180,7 @@ error:
 int elektraLuaClose (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data == NULL)
-		return 0;
+	if (data == NULL) return 0;
 
 	int ret = Lua_CallFunction_Helper1 (data->L, "elektraClose", errorKey);
 
@@ -216,24 +210,21 @@ int elektraLuaGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * p
 	}
 
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data != NULL)
-		return Lua_CallFunction_Helper2 (data->L, "elektraGet", returned, parentKey);
+	if (data != NULL) return Lua_CallFunction_Helper2 (data->L, "elektraGet", returned, parentKey);
 	return 0;
 }
 
 int elektraLuaSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data != NULL)
-		return Lua_CallFunction_Helper2 (data->L, "elektraSet", returned, parentKey);
+	if (data != NULL) return Lua_CallFunction_Helper2 (data->L, "elektraSet", returned, parentKey);
 	return 0;
 }
 
 int elektraLuaError (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	moduleData * data = static_cast<moduleData *> (elektraPluginGetData (handle));
-	if (data != NULL)
-		return Lua_CallFunction_Helper2 (data->L, "elektraError", returned, parentKey);
+	if (data != NULL) return Lua_CallFunction_Helper2 (data->L, "elektraError", returned, parentKey);
 	return 0;
 }
 

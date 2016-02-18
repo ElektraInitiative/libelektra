@@ -3,7 +3,7 @@ AlignEscapedNewlinesLeft: false
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
-AllowShortIfStatementsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: false
 AlwaysBreakBeforeMultilineStrings: true

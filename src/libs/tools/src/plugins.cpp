@@ -87,8 +87,7 @@ void Plugins::addInfo (Plugin & plugin)
 
 void Plugins::addPlugin (Plugin & plugin, std::string which)
 {
-	if (!plugin.findInfo (which, "placements"))
-		return;
+	if (!plugin.findInfo (which, "placements")) return;
 
 	std::string stacking = plugin.lookupInfo ("stacking");
 
@@ -113,8 +112,7 @@ void Plugins::addPlugin (Plugin & plugin, std::string which)
  */
 bool Plugins::checkPlacement (Plugin & plugin, std::string which)
 {
-	if (!plugin.findInfo (which, "placements"))
-		return false; // nothing to check, won't be added anyway
+	if (!plugin.findInfo (which, "placements")) return false; // nothing to check, won't be added anyway
 
 	std::string stacking = plugin.lookupInfo ("stacking");
 
@@ -284,8 +282,7 @@ void ErrorPlugins::tryPlugin (Plugin & plugin)
 	willBeAdded |= checkPlacement (plugin, "prerollback");
 	willBeAdded |= checkPlacement (plugin, "rollback");
 	willBeAdded |= checkPlacement (plugin, "postrollback");
-	if (!willBeAdded)
-		return;
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol ("error"))
 	{
@@ -303,8 +300,7 @@ void GetPlugins::tryPlugin (Plugin & plugin)
 	willBeAdded |= checkPlacement (plugin, "pregetstorage");
 	willBeAdded |= checkPlacement (plugin, "getstorage");
 	willBeAdded |= checkPlacement (plugin, "postgetstorage");
-	if (!willBeAdded)
-		return;
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol ("get"))
 	{
@@ -324,8 +320,7 @@ void SetPlugins::tryPlugin (Plugin & plugin)
 	willBeAdded |= checkPlacement (plugin, "precommit");
 	willBeAdded |= checkPlacement (plugin, "commit");
 	willBeAdded |= checkPlacement (plugin, "postcommit");
-	if (!willBeAdded)
-		return;
+	if (!willBeAdded) return;
 
 	if (!plugin.getSymbol ("set"))
 	{
@@ -405,8 +400,7 @@ namespace
 {
 void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 {
-	if (!ks.size ())
-		return;
+	if (!ks.size ()) return;
 
 	Key oldParent ("user", KEY_END);
 	Key newParent (name + "/config", KEY_END);
@@ -416,8 +410,7 @@ void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 	for (KeySet::iterator i = ks.begin (); i != ks.end (); ++i)
 	{
 		Key k (i->dup ());
-		if (k.getNamespace () == "user")
-			ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
+		if (k.getNamespace () == "user") ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
 	}
 }
 }
@@ -429,16 +422,14 @@ void ErrorPlugins::serialise (Key & baseKey, KeySet & ret)
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
-		if (plugins[i] == nullptr)
-			continue;
+		if (plugins[i] == nullptr) continue;
 		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
 		std::string name = baseKey.getName () + "/errorplugins/#" + pluginNumber.str () + plugins[i]->refname ();
 		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
-		if (fr)
-			serializeConfig (name, plugins[i]->getConfig (), ret);
+		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
 }
 
@@ -448,16 +439,14 @@ void GetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
-		if (plugins[i] == nullptr)
-			continue;
+		if (plugins[i] == nullptr) continue;
 		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
 		std::string name = baseKey.getName () + "/getplugins/#" + pluginNumber.str () + plugins[i]->refname ();
 		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
-		if (fr)
-			serializeConfig (name, plugins[i]->getConfig (), ret);
+		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
 }
 
@@ -468,16 +457,14 @@ void SetPlugins::serialise (Key & baseKey, KeySet & ret)
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
-		if (plugins[i] == nullptr)
-			continue;
+		if (plugins[i] == nullptr) continue;
 		bool fr = plugins[i]->firstRef;
 
 		std::ostringstream pluginNumber;
 		pluginNumber << i;
 		std::string name = baseKey.getName () + "/setplugins/#" + pluginNumber.str () + plugins[i]->refname ();
 		ret.append (*Key (name, KEY_COMMENT, "A plugin", KEY_END));
-		if (fr)
-			serializeConfig (name, plugins[i]->getConfig (), ret);
+		if (fr) serializeConfig (name, plugins[i]->getConfig (), ret);
 	}
 }
 }

@@ -154,8 +154,7 @@ struct transitionTitle genTitleTransitionTable ()
 // Maps a given char to a int, used for the transition table
 static int resolveChar (int c)
 {
-	if (c != '\n' && isblank (c))
-		return 3;
+	if (c != '\n' && isblank (c)) return 3;
 	switch (c)
 	{
 	case '!':
@@ -230,14 +229,12 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	while ((c = fgetc (input)) != EOF)
 	{
 		newstate = transitions.t[resolveChar (c)][state];
-		if (c == '\n')
-			++lineCount;
+		if (c == '\n') ++lineCount;
 		if (linkPossible (state, newstate))
 		{
 			// first [, possible link
 			// position is saved for setting back
-			if (fgetpos (input, &pos))
-				exitError (input, NULL, "fgetpos");
+			if (fgetpos (input, &pos)) exitError (input, NULL, "fgetpos");
 
 			index = 0;
 			len = 0;
@@ -245,8 +242,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 		else if (linkFound (state, newstate))
 		{
 			// set back and convert link if not blacklisted
-			if (fsetpos (input, &pos))
-				exitError (input, NULL, "fsetpos");
+			if (fsetpos (input, &pos)) exitError (input, NULL, "fsetpos");
 
 			fprintf (output, "["); // first char got lost
 			// print link name
@@ -257,8 +253,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 			}
 			// extract target
 			char target[len * sizeof (char) + 1];
-			if (fread (&target[0], sizeof (char), len, input) != len)
-				exitError (input, NULL, "fread");
+			if (fread (&target[0], sizeof (char), len, input) != len) exitError (input, NULL, "fread");
 
 			target[len] = '\0';
 
@@ -277,8 +272,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 			// end
 			for (int i = 0; strcmp (linksToSrc[i], "") != 0; ++i)
 			{
-				if (len < strlen (linksToSrc[i]))
-					continue;
+				if (len < strlen (linksToSrc[i])) continue;
 
 				int j = len - strlen (linksToSrc[i]);
 				if (strncmp (linksToSrc[i], &target[j], strlen (linksToSrc[i])) == 0)
@@ -305,8 +299,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 		else if (linkTrap (state, newstate))
 		{
 			// trap, reset
-			if (fsetpos (input, &pos))
-				exitError (input, NULL, "fsetpos");
+			if (fsetpos (input, &pos)) exitError (input, NULL, "fsetpos");
 
 			fprintf (output, "["); // first char got lost
 			state = linkStart;
@@ -343,8 +336,7 @@ int main (int argc, char * argv[])
 		indexofElektraRoot = getIndexofElektraRoot (NULL);
 	}
 
-	if (0 > indexofElektraRoot)
-		return EXIT_FAILURE;
+	if (0 > indexofElektraRoot) return EXIT_FAILURE;
 
 	// 1st pass
 	FILE * input = fopen (inputFilename, "r");
@@ -364,10 +356,8 @@ int main (int argc, char * argv[])
 	// save start of each file
 	fpos_t startInput;
 	fpos_t startTempFile;
-	if (fgetpos (input, &startInput))
-		exitError (input, output, "fgetpos");
-	if (fgetpos (output, &startTempFile))
-		exitError (input, output, "fgetpos");
+	if (fgetpos (input, &startInput)) exitError (input, output, "fgetpos");
+	if (fgetpos (output, &startTempFile)) exitError (input, output, "fgetpos");
 
 	// detect plugins and give appropriate title
 	if (!strncmp (PLUGIN_PATH, &inputFilename[indexofElektraRoot], strlen (PLUGIN_PATH)))
@@ -392,15 +382,13 @@ int main (int argc, char * argv[])
 		 * print it out.
 		 */
 		// reset input file
-		if (fsetpos (input, &startInput))
-			exitError (input, output, "fsetpos");
+		if (fsetpos (input, &startInput)) exitError (input, output, "fsetpos");
 
 		fclose (output);
 		output = stdout;
 		// Generate Title
 		char * title = strrchr (inputFilename, FOLDER_DELIMITER);
-		if (title == NULL)
-			exitError (input, NULL, "parsed file path invalid");
+		if (title == NULL) exitError (input, NULL, "parsed file path invalid");
 
 		// print Title + Header
 		fprintf (output, "# %s # {#", &title[1]);
@@ -414,8 +402,7 @@ int main (int argc, char * argv[])
 	{
 		fclose (input);
 		// reset temp file
-		if (fsetpos (output, &startTempFile))
-			exitError (output, NULL, "fsetpos");
+		if (fsetpos (output, &startTempFile)) exitError (output, NULL, "fsetpos");
 
 		// 2nd pass (see README.md)
 		convertLinks (output, stdout, inputFilename, indexofElektraRoot);
@@ -556,11 +543,9 @@ static int getIndexofElektraRoot (char * cmakeCacheFilename)
 
 static void exitError (FILE * f1, FILE * f2, const char * mes)
 {
-	if (f1)
-		fclose (f1);
+	if (f1) fclose (f1);
 
-	if (f2)
-		fclose (f2);
+	if (f2) fclose (f2);
 
 	remove (TEMP_FILENAME);
 	fprintf (stderr, "%s Error\n", mes);
