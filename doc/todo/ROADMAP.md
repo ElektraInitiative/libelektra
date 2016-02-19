@@ -6,13 +6,26 @@ A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
 
-kdb setmeta with 2 args to remove meta data!
 
-
-# 0.8.15
+# 0.8.16
 
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
+
+## start with
+
+RPATH only where needed (+ where should elektraModulesLoad be?)
+
+api:
+	version rules ELEKTRA_ABI_13 ...
+	include rules to allow elektra/kdb.h
+
+to one cmake variable:
+	verbose/debug -> logging
+	pdf/on/off -> docu
+
+remove "resolver" resolver
+symlink resolver/storage?
 
 ## fixes
 
@@ -24,6 +37,16 @@ add all plugins mem-leak test
 check meta-data plugins with spec
 
 export/import/editor should use KDB_DEFAULT_STORAGE as default
+
+check: run reformat and check if something changed
+
+
+#kdb
+
+kdb setmeta with 2 args to remove meta data!
+kdb set --file -F (read from file) reuse import/export?
+
+
 
 ## docu
 
@@ -64,27 +87,6 @@ kdb --profile for its own config
 bookmark (+) feature
 
 
-
-
-
-
-
-# 0.8.16
-
-## start with
-
-RPATH only where needed (+ where should elektraModulesLoad be?)
-
-api:
-	version rules ELEKTRA_ABI_13 ...
-	include rules to allow elektra/kdb.h
-
-to one cmake variable:
-	verbose/debug -> logging
-	pdf/on/off -> docu
-
-remove "resolver" resolver
-symlink resolver/storage?
 
 ## cleanup
 
