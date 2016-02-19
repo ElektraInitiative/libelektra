@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <kdbhelper.h>
 
 
 // Controls inlining of this library's functions.
