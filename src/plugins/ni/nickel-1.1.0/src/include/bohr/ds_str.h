@@ -10,12 +10,12 @@
 #ifndef __bohr_ds_str_h__
 #define __bohr_ds_str_h__
 
+#include <kdbhelper.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <kdbhelper.h>
 
 
 // Controls inlining of this library's functions.
