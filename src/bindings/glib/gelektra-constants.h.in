@@ -3,6 +3,8 @@
 
 #include <kdb.h>
 
+// clang-format off
+
 #define GELEKTRA_DB_SYSTEM "@KDB_DB_SYSTEM@"
 #define GELEKTRA_DB_USER "@KDB_DB_USER@"
 #define GELEKTRA_DB_HOME "@KDB_DB_HOME@"
