@@ -214,7 +214,10 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 			++colCounter;
 		}
 		keyDel (key);
-		if (useHeader == 0) fseek (fp, 0, SEEK_SET);
+		if (useHeader == 0)
+		{
+			fseek (fp, 0, SEEK_SET);
+		}
 	}
 	Key * dirKey;
 	Key * cur;

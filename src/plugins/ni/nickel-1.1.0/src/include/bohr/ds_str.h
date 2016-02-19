@@ -80,7 +80,10 @@ Ds_STR_INLINE int Ds_InitStr (Ds_str * restrict s, int size)
  */
 Ds_STR_INLINE void Ds_FreeStr (Ds_str * restrict s)
 {
-	if (s->str) elektraFree (s->str);
+	if (s->str)
+	{
+		elektraFree (s->str);
+	}
 	*s = (Ds_str)Ds_STR_INIT;
 }
 
@@ -163,9 +166,13 @@ Ds_STR_INLINE int Ds_StrCatVPrint (Ds_str * restrict dest, const char * restrict
 	}
 
 	if (len >= dest->size - dest->len)
+	{
 		len = -1;
+	}
 	else
+	{
 		dest->len += len;
+	}
 
 	return len;
 }
@@ -201,7 +208,10 @@ Ds_STR_INLINE int Ds_ResizeStr (Ds_str * restrict s, int size)
 		s->str = new_str;
 		s->size = size;
 
-		if (s->len > size - 1) s->str[s->len = size - 1] = '\0';
+		if (s->len > size - 1)
+		{
+			s->str[s->len = size - 1] = '\0';
+		}
 	}
 
 	return 1;

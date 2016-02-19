@@ -102,7 +102,10 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 	{
 		if (getCascadingName (lastKeyName) != getCascadingName (k.getName ()))
 		{
-			if (depth != 0) depth -= 2;
+			if (depth != 0)
+			{
+				depth -= 2;
+			}
 			k.setMeta<int> ("callback/print_trace/depth", depth);
 		}
 	}

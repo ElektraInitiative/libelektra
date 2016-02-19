@@ -255,7 +255,9 @@ int keyNameIsDir (const char * name)
 int keyNameIsUser (const char * name)
 {
 	if (!strcmp ("user", name) || !strncmp ("user/", name, sizeof ("user/") - 1) || !strncmp ("user:", name, sizeof ("user:") - 1))
+	{
 		return 1;
+	}
 	return 0;
 }
 

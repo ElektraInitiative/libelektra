@@ -229,7 +229,10 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	while ((c = fgetc (input)) != EOF)
 	{
 		newstate = transitions.t[resolveChar (c)][state];
-		if (c == '\n') ++lineCount;
+		if (c == '\n')
+		{
+			++lineCount;
+		}
 		if (linkPossible (state, newstate))
 		{
 			// first [, possible link
@@ -536,16 +539,24 @@ static int getIndexofElektraRoot (char * cmakeCacheFilename)
 	}
 	char * CmakecacheVarValue = line;
 	while (*CmakecacheVarValue && *CmakecacheVarValue != '=')
+	{
 		++CmakecacheVarValue;
+	}
 	++CmakecacheVarValue;
 	return strlen (CmakecacheVarValue);
 }
 
 static void exitError (FILE * f1, FILE * f2, const char * mes)
 {
-	if (f1) fclose (f1);
+	if (f1)
+	{
+		fclose (f1);
+	}
 
-	if (f2) fclose (f2);
+	if (f2)
+	{
+		fclose (f2);
+	}
 
 	remove (TEMP_FILENAME);
 	fprintf (stderr, "%s Error\n", mes);

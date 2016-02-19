@@ -107,7 +107,10 @@ Ds_VECTOR_INLINE int Ds_InitVector (Ds_vector * restrict v, size_t cap)
  */
 Ds_VECTOR_INLINE void Ds_FreeVector (Ds_vector * restrict v)
 {
-	if (v->buf) elektraFree (v->buf);
+	if (v->buf)
+	{
+		elektraFree (v->buf);
+	}
 	*v = (Ds_vector)Ds_VECTOR_INIT;
 }
 

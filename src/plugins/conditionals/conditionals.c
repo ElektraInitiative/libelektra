@@ -82,11 +82,17 @@ static int compareStrings (const char * s1, const char * s2)
 		{
 			result = (fabs (atof (s1) - atof (s2)));
 			if (result < EPSILON)
+			{
 				retval = 0;
+			}
 			else if (result > 0)
+			{
 				retval = 1;
+			}
 			else if (result < 0)
+			{
 				retval = -1;
+			}
 		}
 		else
 		{
@@ -173,22 +179,40 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	switch (cmpOp)
 	{
 	case EQU:
-		if (!ret) result = 1;
+		if (!ret)
+		{
+			result = 1;
+		}
 		break;
 	case NOT:
-		if (ret) result = 1;
+		if (ret)
+		{
+			result = 1;
+		}
 		break;
 	case LT:
-		if (ret < 0) result = 1;
+		if (ret < 0)
+		{
+			result = 1;
+		}
 		break;
 	case LE:
-		if (ret <= 0) result = 1;
+		if (ret <= 0)
+		{
+			result = 1;
+		}
 		break;
 	case GT:
-		if (ret > 0) result = 1;
+		if (ret > 0)
+		{
+			result = 1;
+		}
 		break;
 	case GE:
-		if (ret >= 0) result = 1;
+		if (ret >= 0)
+		{
+			result = 1;
+		}
 		break;
 	case SET:
 		keySetString (key, compareTo);
@@ -200,8 +224,14 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	}
 // freeing allocated heap
 Cleanup:
-	if (lookupName) elektraFree (lookupName);
-	if (compareTo) elektraFree (compareTo);
+	if (lookupName)
+	{
+		elektraFree (lookupName);
+	}
+	if (compareTo)
+	{
+		elektraFree (compareTo);
+	}
 	return result;
 }
 
@@ -211,26 +241,46 @@ static int parseSingleCondition (const char * condition, KeySet * ks, Key * pare
 	Comparator cmpOp;
 	char * opStr;
 	if ((opStr = strstr (condition, "==")))
+	{
 		cmpOp = EQU;
+	}
 	else if ((opStr = strstr (condition, "!=")))
+	{
 		cmpOp = NOT;
+	}
 	else if ((opStr = strstr (condition, "<=")))
+	{
 		cmpOp = LE;
+	}
 	else if ((opStr = strstr (condition, "<")))
+	{
 		cmpOp = LT;
+	}
 	else if ((opStr = strstr (condition, ">=")))
+	{
 		cmpOp = GE;
+	}
 	else if ((opStr = strstr (condition, ">")))
+	{
 		cmpOp = GT;
+	}
 	else if ((opStr = strstr (condition, ":=")))
+	{
 		cmpOp = SET;
+	}
 	else
+	{
 		return -1;
+	}
 	int opLen;
 	if (cmpOp == LT || cmpOp == GT)
+	{
 		opLen = 1;
+	}
 	else
+	{
 		opLen = 2;
+	}
 	unsigned long startPos = 0;
 	unsigned long endPos = 0;
 	char * ptr = (char *)condition;
@@ -280,11 +330,21 @@ static char * isAssign (char * expr)
 	char * firstPtr = expr;
 	char * lastPtr = expr + elektraStrLen (expr) - 2;
 	while (isspace (*firstPtr))
+	{
 		++firstPtr;
+	}
 	while (isspace (*lastPtr))
+	{
 		--lastPtr;
-	if (*firstPtr != '\'' || *lastPtr != '\'') return NULL;
-	if (firstPtr == lastPtr) return NULL;
+	}
+	if (*firstPtr != '\'' || *lastPtr != '\'')
+	{
+		return NULL;
+	}
+	if (firstPtr == lastPtr)
+	{
+		return NULL;
+	}
 	char * nextMark = strchr (firstPtr + 1, '\'');
 	if (nextMark != lastPtr) return NULL;
 	*lastPtr = '\0';
@@ -444,7 +504,10 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 CleanUp:
 	elektraFree (condition);
 	elektraFree (thenexpr);
-	if (elseexpr) elektraFree (elseexpr);
+	if (elseexpr)
+	{
+		elektraFree (elseexpr);
+	}
 	regfree (&regex);
 	ksDel (ks);
 	return ret;

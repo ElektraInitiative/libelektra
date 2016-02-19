@@ -934,7 +934,10 @@ static char * getIniName (Key * section, Key * key)
 	char * slashCounter = (char *)keyName (key);
 	while (*slashCounter)
 	{
-		if (*slashCounter == '/') ++slashCount;
+		if (*slashCounter == '/')
+		{
+			++slashCount;
+		}
 		++slashCounter;
 	}
 	int len = 0;
@@ -1005,7 +1008,9 @@ static void insertSectionIntoExistingOrder (Key * parentKey, Key * appendKey, Ke
 		setSubOrderNumber (appendKey, lastOrderNumber);
 	}
 	else
+	{
 		setOrderNumber (parentKey, appendKey);
+	}
 
 	ksDel (cutKS);
 	ksDel (searchKS);
@@ -1049,7 +1054,9 @@ static void insertNewSectionIntoExistendOrder (Key * parentKey, Key * appendKey,
 		}
 	}
 	if (!lastOrderNumber)
+	{
 		setOrderNumber (parentKey, appendKey);
+	}
 	else
 	{
 		setSubOrderNumber (appendKey, lastOrderNumber);

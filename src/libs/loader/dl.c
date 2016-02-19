@@ -146,7 +146,9 @@ int elektraModulesClose (KeySet * modules, Key * errorKey)
 		ksDel (newModules);
 	}
 	else
+	{
 		keyDel (root);
+	}
 
 	return ret;
 }

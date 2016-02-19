@@ -714,7 +714,9 @@ const char * keyBaseName (const Key * key)
 
 	char * base = p;
 	while (*(--p))
+	{
 		base = p;
+	}
 
 	if (base != (key->key + key->keyUSize))
 		return base;

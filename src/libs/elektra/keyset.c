@@ -415,12 +415,18 @@ static int keyCompareByName (const void * p1, const void * p2)
 		if (nameSize1 < nameSize2)
 		{
 			ret = memcmp (name1, name2, nameSize1);
-			if (ret == 0) ret = -1;
+			if (ret == 0)
+			{
+				ret = -1;
+			}
 		}
 		else
 		{
 			ret = memcmp (name1, name2, nameSize2);
-			if (ret == 0) ret = 1;
+			if (ret == 0)
+			{
+				ret = 1;
+			}
 		}
 	}
 	return ret;
@@ -454,12 +460,18 @@ static int keyCompareByNameCase (const void * p1, const void * p2)
 		if (nameSize1 < nameSize2)
 		{
 			ret = elektraMemCaseCmp (name1, name2, nameSize1);
-			if (ret == 0) ret = -1;
+			if (ret == 0)
+			{
+				ret = -1;
+			}
 		}
 		else
 		{
 			ret = elektraMemCaseCmp (name1, name2, nameSize2);
-			if (ret == 0) ret = 1;
+			if (ret == 0)
+			{
+				ret = 1;
+			}
 		}
 	}
 	return ret;

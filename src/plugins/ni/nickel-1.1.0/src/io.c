@@ -171,12 +171,18 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 
 		// Comment ignores till eol, goes back to start.
 		case ST_COMMENT:
-			if (c == T_EOL) state = ST_START; // if we hit eol, go back to start
+			if (c == T_EOL)
+			{
+				state = ST_START; // if we hit eol, go back to start
+			}
 			break;
 
 		// Skip ignores till eol, then finishes.
 		case ST_SKIP:
-			if (c == T_EOL) state = ST_DONE; // if we hit eol, we're done
+			if (c == T_EOL)
+			{
+				state = ST_DONE; // if we hit eol, we're done
+			}
 			break;
 
 		// We found a [, look for an identifier.
@@ -234,8 +240,11 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			}
 			else
 			{
-				chkgr (c);			      // otherwise, if it's an escape sequence
-				if (c == T_ESC) DoEscape (fb, &c, 0); // translate it
+				chkgr (c); // otherwise, if it's an escape sequence
+				if (c == T_ESC)
+				{
+					DoEscape (fb, &c, 0); // translate it
+				}
 				put (c);
 			} // and either way save it
 			break;
@@ -248,8 +257,10 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			} // if we found close quote, go to after quote logic
 			else
 			{
-				if (c == T_ESC)		      // otherwise, if it's an escape sequence
+				if (c == T_ESC)
+				{			      // otherwise, if it's an escape sequence
 					DoEscape (fb, &c, 0); // translate it
+				}
 				put (c);
 			} // and either way put it in output
 			break;
@@ -297,8 +308,11 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			}
 			else
 			{
-				chkgr (c);			      // otherwise, if it's an escape sequence
-				if (c == T_ESC) DoEscape (fb, &c, 0); // translate that
+				chkgr (c); // otherwise, if it's an escape sequence
+				if (c == T_ESC)
+				{
+					DoEscape (fb, &c, 0); // translate that
+				}
 				put (c);
 			} // either way, save it
 			break;
@@ -311,8 +325,10 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			} // if close quote, go to after quote logic
 			else
 			{
-				if (c == T_ESC)		      // otherwise, if escape sequence
+				if (c == T_ESC)
+				{			      // otherwise, if escape sequence
 					DoEscape (fb, &c, 0); // translate it
+				}
 				put (c);
 			} // either way, put it into output
 			break;
@@ -350,12 +366,21 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 	}
 
 	// Trim the length down if it was longer than the last graphical character.
-	if (graph_len < len) len = graph_len;
+	if (graph_len < len)
+	{
+		len = graph_len;
+	}
 
 	idfr_out[len] = '\0'; // null-terminate the output
 
-	if (level_out) *level_out = level; // set level_out if it wasn't NULL
-	if (len_out) *len_out = len;       // set len_out if it wasn't NULL
+	if (level_out)
+	{
+		*level_out = level; // set level_out if it wasn't NULL
+	}
+	if (len_out)
+	{
+		*len_out = len; // set len_out if it wasn't NULL
+	}
 
 	// Flush the buffer, since we'll never need anything in it again.
 	BufFlush (fb);
@@ -802,8 +827,10 @@ static int DoEscape (file_buf * restrict fb, int * restrict out, int eol_valid)
 		esc = T_ESC;	 // set it
 		BufSeekBack (fb, 1); // and go back so we haven't gotten any other chars after backslash
 	}
-	if (out) // and set *out if we can
+	if (out)
+	{ // and set *out if we can
 		*out = esc;
+	}
 
 	return line_cont; // return whether it was a line continuation escape
 }
@@ -821,12 +848,17 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 
 	if (str_len > 0)
 	{
-		c = *(str + str_len - 1);    // set c to last character in string
-		if (*str == ' ' || c == ' ') // if initial or trailing spaces (\t etc. are
-			quote = 1;	   // always escaped, so we just care about ' ')
+		c = *(str + str_len - 1); // set c to last character in string
+		if (*str == ' ' || c == ' ')
+		{		   // if initial or trailing spaces (\t etc. are
+			quote = 1; // always escaped, so we just care about ' ')
+		}
 	}
 
-	if (quote && fputc (T_OQ, f) == EOF) success = 0;
+	if (quote && fputc (T_OQ, f) == EOF)
+	{
+		success = 0;
+	}
 
 	while (success && str_len > 0)
 	{
@@ -838,11 +870,17 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 			// In quotes, we just need to escape \ and "
 			if (c == T_ESC || c == T_CQ)
 			{
-				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF) success = 0;
+				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF)
+				{
+					success = 0;
+				}
 			}
 			else
 			{
-				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len))) success = 0;
+				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len)))
+				{
+					success = 0;
+				}
 			}
 		}
 		else
@@ -858,11 +896,17 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 			if (c == T_ESC || c == T_CMT || (first && c == T_OQ) || (is_key && (c == T_EQ || (first && c == T_OB))) ||
 			    (is_section && (c == T_CB || (first && c == T_OB))))
 			{
-				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF) success = 0;
+				if (fputc (T_ESC, f) == EOF || fputc (c, f) == EOF)
+				{
+					success = 0;
+				}
 			}
 			else
 			{
-				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len))) success = 0;
+				if (!(advance = PutUtf8Char (f, (const unsigned char *)str, str_len)))
+				{
+					success = 0;
+				}
 			}
 		}
 
@@ -871,7 +915,10 @@ static int PutString (FILE * restrict f, const char * restrict str, int str_len,
 		first = 0;
 	}
 
-	if (success && quote && fputc (T_CQ, f) == EOF) success = 0;
+	if (success && quote && fputc (T_CQ, f) == EOF)
+	{
+		success = 0;
+	}
 
 	return success;
 }

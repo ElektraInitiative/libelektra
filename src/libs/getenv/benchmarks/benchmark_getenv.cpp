@@ -104,7 +104,10 @@ __attribute__ ((noinline)) void benchmark_libc_getenv ()
 	} sym;
 
 	void * handle = dlopen ("/lib/x86_64-linux-gnu/libc-2.19.so", RTLD_NOW);
-	if (!handle) handle = dlopen ("/lib/i386-linux-gnu/libc-2.19.so", RTLD_NOW);
+	if (!handle)
+	{
+		handle = dlopen ("/lib/i386-linux-gnu/libc-2.19.so", RTLD_NOW);
+	}
 	if (!handle)
 	{
 		std::cout << "Aborting, could not find libc" << std::endl;

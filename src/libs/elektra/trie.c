@@ -104,7 +104,10 @@ Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value)
 	char * p;
 	unsigned char idx;
 
-	if (name == 0) name = "";
+	if (name == 0)
+	{
+		name = "";
+	}
 	idx = (unsigned char)name[0];
 
 	if (trie == NULL)

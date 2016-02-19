@@ -361,7 +361,10 @@ static int handleArrayConflict (Key * parentKey, Key * key, Key * conflictMeta, 
 
 		break;
 	}
-	if (problemKeys) elektraFree ((void *)problemKeys);
+	if (problemKeys)
+	{
+		elektraFree ((void *)problemKeys);
+	}
 	return ret;
 }
 
@@ -426,7 +429,10 @@ static int handleConflictConflict (Key * parentKey, Key * key, Key * conflictMet
 
 		break;
 	}
-	if (problemKeys) elektraFree ((void *)problemKeys);
+	if (problemKeys)
+	{
+		elektraFree ((void *)problemKeys);
+	}
 	return ret;
 }
 
@@ -489,7 +495,10 @@ static int handleMissingConflict (Key * parentKey, Key * key, Key * conflictMeta
 
 		break;
 	}
-	if (problemKeys) elektraFree ((void *)problemKeys);
+	if (problemKeys)
+	{
+		elektraFree ((void *)problemKeys);
+	}
 	return ret;
 }
 

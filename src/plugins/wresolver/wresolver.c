@@ -125,7 +125,9 @@ static void elektraResolveSpec (resolverHandle * p, Key * errorKey)
 		ELEKTRA_ADD_WARNING (90, errorKey, "could not get ALLUSERSPROFILE for spec, using /");
 	}
 	else
+	{
 		escapePath (system);
+	}
 
 
 	if (p->path[0] == '/')
@@ -217,7 +219,9 @@ static void elektraResolveSystem (resolverHandle * p, Key * errorKey)
 		ELEKTRA_ADD_WARNING (90, errorKey, "could not get ALLUSERSPROFILE, using /");
 	}
 	else
+	{
 		escapePath (system);
+	}
 
 	if (p->path[0] == '/')
 	{

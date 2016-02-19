@@ -78,7 +78,10 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 {
 	--stackPtr;
 	PNElem result;
-	if (stackPtr < stack) result.op = ERROR;
+	if (stackPtr < stack)
+	{
+		result.op = ERROR;
+	}
 	while (stackPtr >= stack)
 	{
 		if (stackPtr->op == VAL && stackPtr != stack)
@@ -127,9 +130,13 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 		}
 	}
 	if (stackPtr->op != VAL)
+	{
 		result.op = ERROR;
+	}
 	else
+	{
 		result.op = RES;
+	}
 	result.value = stackPtr->value;
 	return result;
 }
@@ -192,17 +199,29 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 				break;
 			case '=':
 				if (resultOp == LT)
+				{
 					resultOp = LE;
+				}
 				else if (resultOp == GT)
+				{
 					resultOp = GE;
+				}
 				else if (resultOp == ERROR)
+				{
 					resultOp = EQU;
+				}
 				else if (resultOp == EQU)
+				{
 					resultOp = EQU;
+				}
 				else if (resultOp == NOT)
+				{
 					resultOp = NOT;
+				}
 				else if (resultOp == SET)
+				{
 					resultOp = SET;
+				}
 				break;
 			case '<':
 				resultOp = LT;
@@ -216,7 +235,10 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 			default:
 				ELEKTRA_SET_ERRORF (122, parentKey, "%c isn't a valid operation", prefixString[start]);
 				regfree (&regex);
-				if (searchKey) elektraFree (searchKey);
+				if (searchKey)
+				{
+					elektraFree (searchKey);
+				}
 				elektraFree (stack);
 				ksDel (ks);
 				return result;
@@ -271,9 +293,13 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 	stackPtr->op = END;
 	result = doPrefixCalculation (stack, stackPtr);
 	if (result.op != ERROR)
+	{
 		result.op = resultOp;
+	}
 	else
+	{
 		ELEKTRA_SET_ERRORF (122, parentKey, "%s\n", prefixString);
+	}
 	elektraFree (stack);
 	return result;
 }

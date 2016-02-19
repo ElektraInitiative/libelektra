@@ -124,7 +124,9 @@ Ni_PUBLIC void Ni_Free (Ni_node restrict n)
 
 		// if it was root, it was created with malloc, so free it
 		if (n == n->root)
+		{
 			elektraFree (n);
+		}
 		else
 		{
 			// otherwise, we just remove it from its parent's hash table
@@ -152,7 +154,10 @@ Ni_PUBLIC const char * Ni_GetName (Ni_node restrict n, int * restrict len_out)
 		len = n->name_len;
 	}
 
-	if (len_out) *len_out = len;
+	if (len_out)
+	{
+		*len_out = len;
+	}
 	return name;
 }
 
@@ -216,8 +221,14 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
 
 	if (n)
 	{
-		if (!name) name = "";
-		if (name_len < 0) name_len = strlen (name);
+		if (!name)
+		{
+			name = "";
+		}
+		if (name_len < 0)
+		{
+			name_len = strlen (name);
+		}
 		if (name_len > Ni_KEY_SIZE - 1) name_len = Ni_KEY_SIZE - 1;
 
 		hash = Hash (name, (size_t)name_len, 0xbadc0de5);
@@ -230,7 +241,10 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
 		}
 	}
 
-	if (added_out) *added_out = added;
+	if (added_out)
+	{
+		*added_out = added;
+	}
 	return child;
 }
 
@@ -259,9 +273,13 @@ Ni_PUBLIC void Ni_SetModified (Ni_node restrict n, int modified, int recurse)
 	if (n)
 	{
 		if (!recurse)
+		{
 			n->modified = modified;
+		}
 		else
+		{
 			RecursiveSetModified (n, modified);
+		}
 	}
 }
 
@@ -283,7 +301,10 @@ Ni_PUBLIC const char * Ni_GetValue (Ni_node restrict n, int * restrict len_out)
 		len = n->value.len;
 	}
 
-	if (len_out) *len_out = len;
+	if (len_out)
+	{
+		*len_out = len;
+	}
 	return value;
 }
 
@@ -296,7 +317,10 @@ Ni_PUBLIC long Ni_GetValueInt (Ni_node restrict n)
 	long i = 0L;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL) i = strtol (v, NULL, 0);
+	if ((v = Ni_GetValue (n, NULL)) != NULL)
+	{
+		i = strtol (v, NULL, 0);
+	}
 
 	return i;
 }
@@ -309,7 +333,10 @@ Ni_PUBLIC double Ni_GetValueFloat (Ni_node restrict n)
 	double d = 0.0;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL) d = strtod (v, NULL);
+	if ((v = Ni_GetValue (n, NULL)) != NULL)
+	{
+		d = strtod (v, NULL);
+	}
 
 	return d;
 }
@@ -331,7 +358,9 @@ Ni_PUBLIC int Ni_GetValueBool (Ni_node restrict n)
 	{
 		if (*v == 'T' || *v == 't' || *v == 'Y' || *v == 'y' || strtol (v, NULL, 0) ||
 		    (len == 2 && (*v == 'o' || *v == 'O') && (*(v + 1) == 'n' || *(v + 1) == 'N')))
+		{
 			b = 1;
+		}
 	}
 
 	return b;
@@ -360,7 +389,10 @@ Ni_PUBLIC int Ni_ValueVScan (Ni_node restrict n, const char * restrict format, v
 	int items = 0;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL) items = vsscanf (v, format, args);
+	if ((v = Ni_GetValue (n, NULL)) != NULL)
+	{
+		items = vsscanf (v, format, args);
+	}
 
 	return items;
 }

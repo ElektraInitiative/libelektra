@@ -496,9 +496,13 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 	strcpy (warningMsg, "drop key ");
 	const char * name = keyName (k);
 	if (name)
+	{
 		strcat (warningMsg, name);
+	}
 	else
+	{
 		strcat (warningMsg, "(no name)");
+	}
 	strcat (warningMsg, " not belonging to ");
 	strcat (warningMsg, keyName (curHandle->mountpoint));
 	strcat (warningMsg, " with name ");

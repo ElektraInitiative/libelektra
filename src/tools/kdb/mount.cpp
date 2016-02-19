@@ -40,8 +40,10 @@ void MountCommand::outputMtab (Cmdline const & cl)
 	Backends::BackendInfoVector mtab = Backends::getBackendInfo (mountConf);
 	bool all = cl.first && cl.second && cl.third;
 	char delim = '\n';
-	if (cl.null) delim = '\0';
-
+	if (cl.null)
+	{
+		delim = '\0';
+	}
 	for (Backends::BackendInfoVector::const_iterator it = mtab.begin (); it != mtab.end (); ++it)
 	{
 		if (cl.first)

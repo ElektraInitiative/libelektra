@@ -78,7 +78,10 @@ static int validateKey (Key * key)
 		}
 		ptr += match[0].rm_eo;
 	}
-	if (value) elektraFree (value);
+	if (value)
+	{
+		elektraFree (value);
+	}
 	regfree (&regex);
 	return 0;
 }

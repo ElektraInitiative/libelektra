@@ -100,8 +100,10 @@ static const char * getAugeasError (augeas * augeasHandle)
 	}
 
 	/* should not happen, but avoid 0 return */
-	if (!reason) reason = "";
-
+	if (!reason)
+	{
+		reason = "";
+	}
 	return reason;
 }
 

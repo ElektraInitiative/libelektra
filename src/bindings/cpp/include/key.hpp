@@ -289,7 +289,10 @@ public:
 		{
 			++c;
 		} while (c < end && *c != 0);
-		if (c != end) ++c; // skip past null character
+		if (c != end)
+		{
+			++c; // skip past null character
+		}
 
 		return c;
 	}
@@ -305,7 +308,9 @@ public:
 			--c;
 		} while (c > begin && *c != 0);
 		if (c != begin && c + 1 != current)
+		{
 			++c; // jump back to not-null
+		}
 		else if (c == begin && *c == 0)
 		{
 			// special handling of cascading key names
@@ -381,9 +386,13 @@ public:
 	NameReverseIterator (Key const & k, bool last) : NameIterator (k, last)
 	{
 		if (!last)
+		{
 			current = begin - 1;
+		}
 		else
+		{
 			current = findPrevious ();
+		}
 	}
 
 	NameReverseIterator (const char * begin_, const char * end_, const char * current_) : NameIterator (begin_, end_, current_)
