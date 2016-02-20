@@ -121,7 +121,9 @@ if (ENABLE_COVERAGE)
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
 endif (ENABLE_COVERAGE)
 
-if (UNIX AND NOT APPLE)
+# check if native librt is available
+find_library(CMAKE_HAS_LIBRT "rt")
+if (CMAKE_HAS_LIBRT)
 	set(CMAKE_REALTIME_LIBS_INIT rt)
 endif()
 
