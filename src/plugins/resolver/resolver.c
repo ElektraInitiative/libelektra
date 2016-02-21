@@ -272,7 +272,7 @@ static void elektraAddErrnoText (char * errorText)
 	{
 		strcpy (buffer, "could not find a / in the pathname");
 	}
-	else if (errno == EBADMSG)
+	else if (errno == EINVAL)
 	{
 		strcpy (buffer, "went up to root for creating directory");
 	}
@@ -568,7 +568,7 @@ static int elektraMkdirParents (resolverHandle * pk, const char * pathname, Key 
 		{
 			// set any errno, corrected in
 			// elektraAddErrnoText
-			errno = EBADMSG;
+			errno = EINVAL;
 			goto error;
 		}
 
