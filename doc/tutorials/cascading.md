@@ -12,8 +12,8 @@ In Elektra, the default order of namespaces is as follows:
 
 Looking at this order, we can see that if a configuration option isn't specified
 by the user (then it would be in the `user` namespace), it will be loaded from
-the `system` namespace. In this case, the option in the `system` namespace works
-like a default value.
+the `system` namespace. In this case, the option in the `system` namespace will
+be used if the key hasn't been defined by the user.
 
 ```
 $ sudo kdb set system/t/test "hello world"
