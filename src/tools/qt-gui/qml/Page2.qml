@@ -66,7 +66,6 @@ Item {
             RowLayout {
                 spacing: defaultSpacing
 
-
                 ComboBox {
                     id: pluginDropdown
 
@@ -113,6 +112,7 @@ Item {
                     tooltip: qsTr("Remove Plugin")
 
                     onClicked: {
+                        //TODO
                     }
                 }
             }
@@ -123,15 +123,6 @@ Item {
             GridLayout {
                 rows: 2
                 columns: 2
-
-                CheckBox {
-                    id: includeCheck
-                }
-                Label {
-                    id: includeLabel
-
-                    text: qsTr("Add dependent plugins.")
-                }
 
                 CheckBox {
                     id: recommendCheck
