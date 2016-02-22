@@ -23,7 +23,14 @@ int main (int argc, char ** argv, char ** environ)
 			name[len] = 0;
 			const char * c = getenv (name);
 			printf ("getenv(\"%s\") -> ", name);
-			printf ("%s\n", c);
+			if (!c)
+			{
+				printf ("<null>\n");
+			}
+			else
+			{
+				printf ("%s\n", c);
+			}
 		}
 	}
 	else
