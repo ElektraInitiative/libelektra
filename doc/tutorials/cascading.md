@@ -1,16 +1,14 @@
 ## Order of namespaces
 
-This tutorial assumes that you know what namespaces are. You might want to read
-the [Namespaces tutorial](/doc/tutorials/namespaces.md) first.
+This tutorial assumes that you know what [namespaces](/doc/tutorials/namespaces.md) are. We will only be talking about [cascading lookup](/doc/help/elektra-cascading.md) here.
 
 In Elektra, the default order of namespaces is as follows:
 
- * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (modify elektra lookup behaviour)
+ * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behaviour)
  * [proc](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#proc) (process-related information)
  * [dir](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#dir) (directory-related information, e.g. `.git` or `.htaccess`)
  * [user](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#user) (user configuration)
  * [system](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#system) (system configuration)
- * [cascading](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#cascading) (keys without a namespace)
 
 Looking at this order, we can see that if a configuration option isn't specified
 by the user (then it would be in the `user` namespace), it will be loaded from
@@ -31,7 +29,7 @@ $ kdb get /t/test
 hello universe
 ```
 
-Furthermore, we can see that `dir` is even higher than `user`, which means that
+Furthermore, in the order `dir` is even higher than `user`, which means that
 configuration in the current folder can overwrite user configuration.
 
 `.configuration` in your current directory:
@@ -51,11 +49,11 @@ hello dir
 
 ## Cascading
 
-Cascading triggers secondary actions when, for example, the key isn't found.
-This concept is used for our previous example of using `system` configuration as
-default values. When a key starts with `/`, *cascading lookup* will
-automatically be performed. e.g. using `/test` instead of `system/test` will do
-a cascading lookup.
+Cascading triggers actions when, for example, the key isn't found.
+This concept is used for our previous example of using `system` configuration
+when the `user` configuration is not defined. When a key starts with `/`,
+*cascading lookup* will automatically be performed. e.g. using `/test` instead
+of `system/test` will do a cascading lookup.
 
 
 ## Override links
@@ -67,7 +65,7 @@ For example, in the meta data of the respective `spec`-keys, *override links*
 can be specified to use other keys in favor of the key itself. This way, even
 config from current folders (`dir`) can be overwritten.
 
-In the cascading lookup, override links come in as follows:
+In the cascading lookup, meta data of `spec`-keys comes in as follows:
 
  1. `override/#` keys will be considered
  2. namespaces specified in the `namespaces/#` keys are considered
@@ -75,10 +73,14 @@ In the cascading lookup, override links come in as follows:
  4. `fallback/#` keys will be considered
  5. `default` value will be returned
 
-As you can see, they are considered before everything else, which makes them
-really powerful.
+Note: `override/#` means an array of `override` keys, the array can be filled by
+      setting `#` followed by the position, e.g. `#0`, `#1`, etc
 
-First you need to create a key to link the override to:
+As you can see, override links are considered before everything else, which
+makes them really powerful.
+
+To create an override link, first you need to create a key to link the override
+to:
 
 ```
 $ sudo kdb set system/overrides/test "hello override"
@@ -102,6 +104,9 @@ keys and more. For more information, read the [`elektra-spec` help page](/doc/he
 Override links can also be used to define default values. It's similar to
 defining default values via the `system` namespace, but uses overrides, which
 means it will be preferred over the configuration in the current folder (`dir`).
+
+This means that user defaults overwrite values specified in the `.configuration`
+file we created and mounted earlier in this tutorial.
 
 First you need to create the system default value to link the override to if the
 user hasn't defined it:
@@ -128,4 +133,3 @@ Create a new key user/overrides/test with string hello user
 $ kdb get /t/test
 hello user
 ```
-
