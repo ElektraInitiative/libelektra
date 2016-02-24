@@ -8,8 +8,8 @@
 
 #include <kdbplugin.h>
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -22,18 +22,19 @@
 
 namespace dump
 {
-int serialise(std::ostream &os, ckdb::Key *, ckdb::KeySet *ks);
-int unserialise(std::istream &is, ckdb::Key *errorKey, ckdb::KeySet *ks);
+int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks);
+int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks);
 }
 
 extern "C" {
 
-namespace ckdb {
-ssize_t keySetRaw(ckdb::Key *key, const void *newBinary, size_t dataSize);
+namespace ckdb
+{
+ssize_t keySetRaw (ckdb::Key * key, const void * newBinary, size_t dataSize);
 }
 
-int elektraDumpGet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
-int elektraDumpSet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
-ckdb::Plugin* ELEKTRA_PLUGIN_EXPORT(dump);
+int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraDumpSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (dump);
 
 } // extern C

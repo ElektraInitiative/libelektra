@@ -18,30 +18,30 @@ class MetaLsCommand : public Command
 	kdb::KeySet ks;
 
 public:
-	MetaLsCommand();
-	~MetaLsCommand();
+	MetaLsCommand ();
+	~MetaLsCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
-		return "0";
+		return "0v";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<name>";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Get all meta information of an individual key.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
 		return "";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

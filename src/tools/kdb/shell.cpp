@@ -8,8 +8,8 @@
 
 #include <shell.hpp>
 
-#include <kdb.hpp>
 #include <cmdline.hpp>
+#include <kdb.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -17,20 +17,20 @@
 using namespace std;
 using namespace kdb;
 
-ShellCommand::ShellCommand() :
-	supportedCommands(
-			"kdbGet <name> .. get conf into current keyset\n"
-			"kdbSet <name> .. set conf from current keyset\n"
-			"keySetName <name> .. set name of current key\n"
-			"keySetMeta <name> <string> .. set meta of current key\n"
-			"keySetString <string> .. set string of current key\n"
-			"ksAppendKey .. append current key to current keyset\n"
-			"ksCut <name> .. cut current keyset\n"
-			"ksOutput .. outputs all keys of current keyset\n"
-			)
-{}
+ShellCommand::ShellCommand ()
+: supportedCommands (
+	  "kdbGet <name> .. get conf into current keyset\n"
+	  "kdbSet <name> .. set conf from current keyset\n"
+	  "keySetName <name> .. set name of current key (without bookmarks!)\n"
+	  "keySetMeta <name> <string> .. set meta of current key\n"
+	  "keySetString <string> .. set string of current key\n"
+	  "ksAppendKey .. append current key to current keyset\n"
+	  "ksCut <name> .. cut current keyset\n"
+	  "ksOutput .. outputs all keys of current keyset\n")
+{
+}
 
-int ShellCommand::execute(Cmdline const&)
+int ShellCommand::execute (Cmdline const &)
 {
 	KeySet current;
 	Key currentKey;
@@ -39,7 +39,7 @@ int ShellCommand::execute(Cmdline const&)
 	string prompt = "> ";
 
 	cout << prompt;
-	while (getline(cin, commandline))
+	while (getline (cin, commandline))
 	{
 		istringstream is (commandline);
 		string command;
@@ -50,20 +50,20 @@ int ShellCommand::execute(Cmdline const&)
 			string parent;
 			is >> parent;
 			Key parentKey (parent, KEY_END);
-			cout << "return value: " << kdb.get(current, parentKey) << endl;
+			cout << "return value: " << kdb.get (current, parentKey) << endl;
 		}
 		else if (command == "kdbSet")
 		{
 			string parent;
 			is >> parent;
 			Key parentKey (parent, KEY_END);
-			cout << "return value: " << kdb.set(current, parentKey) << endl;
+			cout << "return value: " << kdb.set (current, parentKey) << endl;
 		}
 		else if (command == "keySetName")
 		{
 			string name;
 			is >> name;
-			currentKey.setName(name);
+			currentKey.setName (name);
 		}
 		else if (command == "keySetMeta")
 		{
@@ -74,7 +74,7 @@ int ShellCommand::execute(Cmdline const&)
 			std::string tmp;
 			getline (is, tmp);
 			value += tmp;
-			currentKey.setMeta(name, value);
+			currentKey.setMeta (name, value);
 			cout << "Set meta " << name << " to " << value << endl;
 		}
 		else if (command == "keySetString")
@@ -84,11 +84,11 @@ int ShellCommand::execute(Cmdline const&)
 			std::string tmp;
 			getline (is, tmp);
 			value += tmp;
-			currentKey.setString(value);
+			currentKey.setString (value);
 		}
 		else if (command == "ksAppendKey")
 		{
-			current.append(currentKey.dup());
+			current.append (currentKey.dup ());
 		}
 		else if (command == "ksCut")
 		{
@@ -100,17 +100,18 @@ int ShellCommand::execute(Cmdline const&)
 		}
 		else if (command == "ksOutput")
 		{
-			current.rewind();
-			while (current.next())
+			current.rewind ();
+			while (current.next ())
 			{
-				Key const & c = current.current();
-				cout << c.getName() << " value: " << c.getString() << endl;
+				Key const & c = current.current ();
+				cout << c.getName () << " value: " << c.getString () << endl;
 			}
-		} else {
+		}
+		else
+		{
 			cout << "unknown command!\n"
 				"supported are:\n"
-				<< supportedCommands
-				<< endl;
+			     << supportedCommands << endl;
 		}
 
 		cout << prompt;
@@ -119,5 +120,6 @@ int ShellCommand::execute(Cmdline const&)
 	return 0;
 }
 
-ShellCommand::~ShellCommand()
-{}
+ShellCommand::~ShellCommand ()
+{
+}

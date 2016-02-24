@@ -8,26 +8,30 @@
 
 #include "conv.h"
 
-static inline const char* getFrom(Plugin *handle)
+static inline const char * getFrom (Plugin * handle)
 {
-	const char *from;
-	Key *k;
+	const char * from;
+	Key * k;
 
-	k = ksLookupByName(elektraPluginGetConfig(handle), "/from", 0);
-	if (!k) from = nl_langinfo(CODESET);
-	else from = keyString(k);
+	k = ksLookupByName (elektraPluginGetConfig (handle), "/from", 0);
+	if (!k)
+		from = nl_langinfo (CODESET);
+	else
+		from = keyString (k);
 
 	return from;
 }
 
-static inline const char* getTo(Plugin *handle)
+static inline const char * getTo (Plugin * handle)
 {
-	const char *to;
-	Key *k;
+	const char * to;
+	Key * k;
 
-	k = ksLookupByName(elektraPluginGetConfig(handle), "/to", 0);
-	if (!k) to = "UTF-8";
-	else to = keyString(k);
+	k = ksLookupByName (elektraPluginGetConfig (handle), "/to", 0);
+	if (!k)
+		to = "UTF-8";
+	else
+		to = keyString (k);
 
 	return to;
 }
@@ -44,9 +48,9 @@ static inline const char* getTo(Plugin *handle)
  * @return anything else if needed
  * @ingroup backendhelper
  */
-int kdbbNeedsUTF8Conversion(Plugin *handle)
+int kdbbNeedsUTF8Conversion (Plugin * handle)
 {
-	return strcmp(getFrom(handle),getTo(handle));
+	return strcmp (getFrom (handle), getTo (handle));
 }
 
 
@@ -85,124 +89,122 @@ setlocale (LC_ALL, "");
  * @ingroup backendhelper
  *
  */
-int kdbbUTF8Engine(Plugin *handle, int direction, char **string, size_t *inputOutputByteSize)
+int kdbbUTF8Engine (Plugin * handle, int direction, char ** string, size_t * inputOutputByteSize)
 {
-/* Current solution is not very complete.
- * Iconv might well be available when a usable nl_langinfo is not.
- * In this case we it should be possible to determine charset through other means
- * See http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate for more info on a possible solution */
- 
-	char *converted=0;
+	/* Current solution is not very complete.
+	 * Iconv might well be available when a usable nl_langinfo is not.
+	 * In this case we it should be possible to determine charset through other means
+	 * See http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate for more info on a possible solution */
+
+	char * converted = 0;
 	char *readCursor, *writeCursor;
 	size_t bufferSize;
 	iconv_t converter;
 
 	if (!*inputOutputByteSize) return 0;
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
-	if (direction==UTF8_TO) converter=iconv_open(getTo(handle),getFrom(handle));
-	else converter=iconv_open(getFrom(handle),getTo(handle));
+	if (direction == UTF8_TO)
+		converter = iconv_open (getTo (handle), getFrom (handle));
+	else
+		converter = iconv_open (getFrom (handle), getTo (handle));
 
-	if (converter == (iconv_t)(-1)) return -1;
+	if (converter == (iconv_t) (-1)) return -1;
 
 	/* work with worst case, when all chars are wide */
-	bufferSize=*inputOutputByteSize * 4;
-	converted=elektraMalloc(bufferSize);
+	bufferSize = *inputOutputByteSize * 4;
+	converted = elektraMalloc (bufferSize);
 	if (!converted) return -1;
 
-	readCursor=*string;
-	writeCursor=converted;
-	/* On some systems and with libiconv, arg1 is const char **. 
+	readCursor = *string;
+	writeCursor = converted;
+	/* On some systems and with libiconv, arg1 is const char **.
 	 * ICONV_CONST is defined by configure if the system needs this */
-	if (iconv(converter,
-			&readCursor,inputOutputByteSize,
-			&writeCursor,&bufferSize) == (size_t)(-1)) {
+	if (iconv (converter, &readCursor, inputOutputByteSize, &writeCursor, &bufferSize) == (size_t) (-1))
+	{
 		elektraFree (converted);
-		iconv_close(converter);
+		iconv_close (converter);
 		return -1;
 	}
 
 	/* calculate the UTF-8 string byte size, that will be returned */
-	*inputOutputByteSize=writeCursor-converted;
+	*inputOutputByteSize = writeCursor - converted;
 	/* store the current kdbbDecoded string for future free */
-	readCursor=*string;
+	readCursor = *string;
 	/* allocate an optimal size area to store the converted string */
-	*string=elektraMalloc(*inputOutputByteSize);
+	*string = elektraMalloc (*inputOutputByteSize);
 	/* copy all that matters for returning */
-	memcpy(*string,converted,*inputOutputByteSize);
+	memcpy (*string, converted, *inputOutputByteSize);
 	/* release memory used by passed string */
 	elektraFree (readCursor);
 	/* release buffer memory */
 	elektraFree (converted);
 	/* release the conversor engine */
-	iconv_close(converter);
+	iconv_close (converter);
 	return 0;
 }
 
 
-int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Key *cur;
-	const Key *meta;
+	Key * cur;
+	const Key * meta;
 
 	ksRewind (returned);
 
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/iconv"))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/iconv"))
 	{
-		KeySet *pluginConfig = ksNew (30,
-			keyNew ("system/elektra/modules/iconv",
-				KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/iconv/exports", KEY_END),
-			keyNew ("system/elektra/modules/iconv/exports/get",
-				KEY_FUNC, elektraIconvGet, KEY_END),
-			keyNew ("system/elektra/modules/iconv/exports/set",
-				KEY_FUNC, elektraIconvSet, KEY_END),
+		KeySet * pluginConfig =
+			ksNew (30, keyNew ("system/elektra/modules/iconv", KEY_VALUE, "iconv plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/iconv/exports", KEY_END),
+			       keyNew ("system/elektra/modules/iconv/exports/get", KEY_FUNC, elektraIconvGet, KEY_END),
+			       keyNew ("system/elektra/modules/iconv/exports/set", KEY_FUNC, elektraIconvSet, KEY_END),
 #include "readme_iconv.c"
-			keyNew ("system/elektra/modules/iconv/infos/version",
-				KEY_VALUE, PLUGINVERSION, KEY_END),
-			KS_END);
+			       keyNew ("system/elektra/modules/iconv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return 1;
 	}
 
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
-	while ((cur = ksNext(returned)) != 0)
+	while ((cur = ksNext (returned)) != 0)
 	{
 		if (keyIsString (cur))
 		{
 			/* String or similar type of value */
-			size_t convertedDataSize=keyGetValueSize(cur);
-			char *convertedData=elektraMalloc(convertedDataSize);
+			size_t convertedDataSize = keyGetValueSize (cur);
+			char * convertedData = elektraMalloc (convertedDataSize);
 
-			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
+			memcpy (convertedData, keyString (cur), keyGetValueSize (cur));
+			if (kdbbUTF8Engine (handle, UTF8_FROM, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s, encoding settings are from %s to %s",
-						keyString(cur), convertedData, getFrom(handle), getTo(handle));
+				ELEKTRA_SET_ERRORF (46, parentKey,
+						    "Could not convert string %s, got result %s, encoding settings are from %s to %s",
+						    keyString (cur), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetString(cur, convertedData);
+			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		meta = keyGetMeta(cur, "comment");
+		meta = keyGetMeta (cur, "comment");
 		if (meta)
 		{
 			/* String or similar type of value */
-			size_t convertedDataSize=keyGetValueSize(meta);
-			char *convertedData=elektraMalloc(convertedDataSize);
+			size_t convertedDataSize = keyGetValueSize (meta);
+			char * convertedData = elektraMalloc (convertedDataSize);
 
-			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
-			if (kdbbUTF8Engine(handle, UTF8_FROM, &convertedData, &convertedDataSize))
+			memcpy (convertedData, keyString (meta), keyGetValueSize (meta));
+			if (kdbbUTF8Engine (handle, UTF8_FROM, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s, encoding settings are from %s to %s",
-						keyString(meta), convertedData, getFrom(handle), getTo(handle));
+				ELEKTRA_SET_ERRORF (46, parentKey,
+						    "Could not convert string %s, got result %s, encoding settings are from %s to %s",
+						    keyString (meta), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetMeta(cur, "comment", convertedData);
+			keySetMeta (cur, "comment", convertedData);
 			elektraFree (convertedData);
 		}
 	}
@@ -210,52 +212,54 @@ int elektraIconvGet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
+int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Key *cur;
-	const Key *meta;
+	Key * cur;
+	const Key * meta;
 
-	if (!kdbbNeedsUTF8Conversion(handle)) return 0;
+	if (!kdbbNeedsUTF8Conversion (handle)) return 0;
 
 	ksRewind (returned);
 
-	while ((cur = ksNext(returned)) != 0)
+	while ((cur = ksNext (returned)) != 0)
 	{
 		if (keyIsString (cur))
 		{
 			/* String or similar type of value */
-			size_t convertedDataSize=keyGetValueSize(cur);
-			char *convertedData=elektraMalloc(convertedDataSize);
+			size_t convertedDataSize = keyGetValueSize (cur);
+			char * convertedData = elektraMalloc (convertedDataSize);
 
-			memcpy(convertedData,keyString(cur),keyGetValueSize(cur));
-			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
+			memcpy (convertedData, keyString (cur), keyGetValueSize (cur));
+			if (kdbbUTF8Engine (handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s,"
-						" encoding settings are from %s to %s (but swapped for write)",
-						keyString(cur), convertedData, getFrom(handle), getTo(handle));
+				ELEKTRA_SET_ERRORF (46, parentKey,
+						    "Could not convert string %s, got result %s,"
+						    " encoding settings are from %s to %s (but swapped for write)",
+						    keyString (cur), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetString(cur, convertedData);
+			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		meta = keyGetMeta(cur, "comment");
+		meta = keyGetMeta (cur, "comment");
 		if (meta)
 		{
 			/* String or similar type of value */
-			size_t convertedDataSize=keyGetValueSize(meta);
-			char *convertedData=elektraMalloc(convertedDataSize);
+			size_t convertedDataSize = keyGetValueSize (meta);
+			char * convertedData = elektraMalloc (convertedDataSize);
 
-			memcpy(convertedData,keyString(meta),keyGetValueSize(meta));
-			if (kdbbUTF8Engine(handle, UTF8_TO, &convertedData, &convertedDataSize))
+			memcpy (convertedData, keyString (meta), keyGetValueSize (meta));
+			if (kdbbUTF8Engine (handle, UTF8_TO, &convertedData, &convertedDataSize))
 			{
-				ELEKTRA_SET_ERRORF (46, parentKey, "Could not convert string %s, got result %s,"
-						" encodings settings are from %s to %s (but swapped for write)",
-						keyString(meta), convertedData, getFrom(handle), getTo(handle));
+				ELEKTRA_SET_ERRORF (46, parentKey,
+						    "Could not convert string %s, got result %s,"
+						    " encodings settings are from %s to %s (but swapped for write)",
+						    keyString (meta), convertedData, getFrom (handle), getTo (handle));
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetMeta(cur, "comment", convertedData);
+			keySetMeta (cur, "comment", convertedData);
 			elektraFree (convertedData);
 		}
 	}
@@ -263,8 +267,9 @@ int elektraIconvSet(Plugin *handle, KeySet *returned, Key *parentKey)
 	return 1; /* success */
 }
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(iconv)
+Plugin * ELEKTRA_PLUGIN_EXPORT (iconv)
 {
+	// clang-format off
 	return elektraPluginExport(BACKENDNAME,
 		ELEKTRA_PLUGIN_GET,	&elektraIconvGet,
 		ELEKTRA_PLUGIN_SET,	&elektraIconvSet,

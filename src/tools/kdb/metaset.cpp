@@ -11,25 +11,26 @@
 #include <iostream>
 #include <string>
 
-#include <kdb.hpp>
 #include <cmdline.hpp>
+#include <kdb.hpp>
 
 using namespace std;
 using namespace kdb;
 
-MetaSetCommand::MetaSetCommand()
-{}
-
-int MetaSetCommand::execute (Cmdline const& cl)
+MetaSetCommand::MetaSetCommand ()
 {
-	if (cl.arguments.size() != 3)
+}
+
+int MetaSetCommand::execute (Cmdline const & cl)
+{
+	if (cl.arguments.size () != 3)
 	{
 		throw invalid_argument ("Need 3 arguments");
 	}
-	string keyname = cl.arguments[0];
 	string metaname = cl.arguments[1];
 
-	Key parentKey(keyname, KEY_END);
+	Key parentKey = cl.createKey (0);
+	string keyname = parentKey.getName ();
 	if (keyname[0] == '/')
 	{
 		// fix name for lookup
@@ -37,21 +38,21 @@ int MetaSetCommand::execute (Cmdline const& cl)
 		std::cout << "Using keyname " << keyname << std::endl;
 
 		// fix k for kdb.set later
-		parentKey.setName(keyname);
+		parentKey.setName (keyname);
 	}
 
 	KeySet conf;
-	kdb.get(conf, parentKey);
-	Key k = conf.lookup(parentKey);
+	kdb.get (conf, parentKey);
+	Key k = conf.lookup (parentKey);
 
 	if (!k)
 	{
-		k = Key(keyname, KEY_END);
+		k = Key (keyname, KEY_END);
 		// k.setBinary(0, 0); // conceptually maybe better, but would have confusing "binary" metadata
-		conf.append(k);
+		conf.append (k);
 		if (cl.verbose) cout << "Creating key " << keyname << endl;
 	}
-	if (!k.isValid())
+	if (!k.isValid ())
 	{
 		cout << "Could not create key" << endl;
 		return 1;
@@ -63,17 +64,20 @@ int MetaSetCommand::execute (Cmdline const& cl)
 		stringstream str (metavalue);
 		time_t t;
 		str >> t;
-		if (!str.good()) throw "conversion failure";
+		if (!str.good ()) throw "conversion failure";
 		k.setMeta<time_t> (metaname, t);
-	} else {
+	}
+	else
+	{
 		k.setMeta<string> (metaname, metavalue);
 	}
 
-	kdb.set(conf,parentKey);
-	printWarnings(cerr,parentKey);
+	kdb.set (conf, parentKey);
+	printWarnings (cerr, parentKey);
 
 	return 0;
 }
 
-MetaSetCommand::~MetaSetCommand()
-{}
+MetaSetCommand::~MetaSetCommand ()
+{
+}

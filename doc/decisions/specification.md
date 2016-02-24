@@ -1,4 +1,4 @@
-# Template
+# Specification
 
 ## Issue
 
@@ -25,14 +25,14 @@
 ## Considered Alternatives
 
 - modifying kdbGet() and ksLookup() so that we get a logical hierarchy
-- having a duplicated in memory hierarchy with the cascaded keysets
+- having a duplicated in memory hierarchy with the cascaded key sets
 
 ## Decision
 
 ## Argument
 
 - The user wants deterministic retrieval of configuration.
-  It must be answerable (w/o study of sourcecode and debugging) which
+  It must be answerable (w/o study of source code and debugging) which
   value will be used in the current situation.
 
 ## Implications

@@ -112,9 +112,9 @@ infos/recommends = hexcode
 
 ## SEE ALSO
 
-- [see application integration tutorial (towards end)](doc/tutorials/application-integration.md)
-- [see namespaces tutorial](doc/tutorials/namespaces.md)
+- [see application integration tutorial (towards end)](/doc/tutorials/application-integration.md)
+- [see namespaces tutorial](/doc/tutorials/namespaces.md)
 
 - [elektra-namespaces(7)](elektra-namespaces.md)
 - [elektra-cascading(7)](elektra-cascading.md)
-- [elektra-ordering(7)](elektra-ordering.md)
+- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

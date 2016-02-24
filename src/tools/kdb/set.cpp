@@ -8,27 +8,26 @@
 
 #include <set.hpp>
 
+#include <cmdline.hpp>
 #include <kdb.hpp>
 #include <kdbio.hpp>
-#include <cmdline.hpp>
 
 #include <iostream>
 
 using namespace std;
 using namespace kdb;
 
-SetCommand::SetCommand()
-{}
-
-int SetCommand::execute(Cmdline const& cl)
+SetCommand::SetCommand ()
 {
-	int argc = cl.arguments.size();
+}
+
+int SetCommand::execute (Cmdline const & cl)
+{
+	int argc = cl.arguments.size ();
 	if (argc != 1 && argc != 2)
 	{
-		throw invalid_argument("1 or 2 arguments needed");
+		throw invalid_argument ("1 or 2 arguments needed");
 	}
-
-	std::string name = cl.arguments[0];
 
 	bool nullValue;
 	std::string value;
@@ -44,12 +43,13 @@ int SetCommand::execute(Cmdline const& cl)
 	}
 
 	KeySet conf;
-	Key k(name, KEY_END);
+	Key k = cl.createKey (0);
+	std::string name = k.getName ();
 
 	// do not resume on any get errors
 	// otherwise the user might break
 	// the config
-	kdb.get(conf, k);
+	kdb.get (conf, k);
 
 	if (name[0] == '/')
 	{
@@ -58,45 +58,52 @@ int SetCommand::execute(Cmdline const& cl)
 		std::cout << "Using name " << name << std::endl;
 
 		// fix k for kdb.set later
-		k.setName(name);
+		k.setName (name);
 	}
 
-	Key key = conf.lookup(name);
+	Key key = conf.lookup (name);
 
 	if (!key)
 	{
 		cout << "Create a new key " << name;
-		key = Key(name, KEY_END);
+		key = Key (name, KEY_END);
 		if (!nullValue)
 		{
 			cout << " with string " << value << endl;
-			key.setString(value);
-		} else {
-			cout << " with null value" << endl;
-			key.setBinary(nullptr, 0);
+			key.setString (value);
 		}
-		if (!key.isValid())
+		else
+		{
+			cout << " with null value" << endl;
+			key.setBinary (nullptr, 0);
+		}
+		if (!key.isValid ())
 		{
 			cerr << "no valid name supplied" << endl;
 			return 1;
 		}
-		conf.append(key);
-	} else {
+		conf.append (key);
+	}
+	else
+	{
 		if (!nullValue)
 		{
 			cout << "Set string to " << value << endl;
-			key.setString(value);
-		} else {
+			key.setString (value);
+		}
+		else
+		{
 			cout << "Set null value" << endl;
-			key.setBinary(nullptr, 0);
+			key.setBinary (nullptr, 0);
 		}
 	}
-	kdb.set(conf, k);
-	printWarnings(cerr, k);
-	printError(cerr, k);
+	kdb.set (conf, k);
+	printWarnings (cerr, k);
+	printError (cerr, k);
 
 	return 0;
 }
 
-SetCommand::~SetCommand()
-{}
+SetCommand::~SetCommand ()
+{
+}

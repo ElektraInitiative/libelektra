@@ -45,28 +45,22 @@
  * @param pnext a pointer to the name of the key at the correct pos
  * @param levels to iterate, if smaller or equal zero it does nothing
  */
-static void elektraGenOpenIterate(yajl_gen g,
-		const char *pnext,
-		int levels)
+static void elektraGenOpenIterate (yajl_gen g, const char * pnext, int levels)
 {
-	size_t size=0;
+	size_t size = 0;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf("elektraGenOpenIterate levels: %d,  next: \"%s\"\n",
-			levels, pnext);
+	printf ("elektraGenOpenIterate levels: %d,  next: \"%s\"\n", levels, pnext);
 #endif
 
-	for (int i=0; i<levels; ++i)
+	for (int i = 0; i < levels; ++i)
 	{
-		pnext=keyNameGetOneLevel(pnext+size,&size);
+		pnext = keyNameGetOneLevel (pnext + size, &size);
 
-		lookahead_t lookahead = elektraLookahead(pnext, size);
+		lookahead_t lookahead = elektraLookahead (pnext, size);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf("level by name %d: \"%.*s\", lookahead: %d\n",
-				(int)i,
-				(int)size, pnext,
-				lookahead);
+		printf ("level by name %d: \"%.*s\", lookahead: %d\n", (int)i, (int)size, pnext, lookahead);
 #endif
 
 		// do not yield array indizes as names
@@ -75,43 +69,36 @@ static void elektraGenOpenIterate(yajl_gen g,
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN (N1) array by name\n");
 #endif
-			yajl_gen_array_open(g);
+			yajl_gen_array_open (g);
 
 			if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
 				printf ("GEN (N0) anon-map\n");
 #endif
-				yajl_gen_map_open(g);
-
+				yajl_gen_map_open (g);
 			}
 		}
-		else if (lookahead == LOOKAHEAD_ARRAY ||
-			 lookahead == LOOKAHEAD_EMPTY_ARRAY ||
-			 lookahead == LOOKAHEAD_EMPTY_MAP)
+		else if (lookahead == LOOKAHEAD_ARRAY || lookahead == LOOKAHEAD_EMPTY_ARRAY || lookahead == LOOKAHEAD_EMPTY_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (N2) string for start/empty array/map %.*s\n",
-				(int)size, pnext);
+			printf ("GEN (N2) string for start/empty array/map %.*s\n", (int)size, pnext);
 #endif
-			yajl_gen_string(g, (const unsigned char *)pnext,
-					size);
+			yajl_gen_string (g, (const unsigned char *)pnext, size);
 
 			// opening (empty) array will be handled later
 		}
 		else
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf ("GEN (N3) string %.*s\n",
-				(int)size, pnext);
+			printf ("GEN (N3) string %.*s\n", (int)size, pnext);
 #endif
-			yajl_gen_string(g, (const unsigned char *)pnext,
-					size);
+			yajl_gen_string (g, (const unsigned char *)pnext, size);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
 			printf ("GEN (N3) map by name\n");
 #endif
-			yajl_gen_map_open(g);
+			yajl_gen_map_open (g);
 		}
 	}
 }
@@ -124,25 +111,22 @@ static void elektraGenOpenIterate(yajl_gen g,
  * @param g generate array there
  * @param key the key to look at
  */
-static void elektraGenOpenLast(yajl_gen g, const Key *key)
+static void elektraGenOpenLast (yajl_gen g, const Key * key)
 {
-	keyNameReverseIterator last =
-		elektraKeyNameGetReverseIterator(key);
-	elektraKeyNameReverseNext(&last);
+	keyNameReverseIterator last = elektraKeyNameGetReverseIterator (key);
+	elektraKeyNameReverseNext (&last);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf("last startup entry: \"%.*s\"\n",
-			(int)last.size, last.current);
+	printf ("last startup entry: \"%.*s\"\n", (int)last.size, last.current);
 #endif
 
-	if (last.current[0] == '#' && strcmp(last.current,
-				"###empty_array"))
+	if (last.current[0] == '#' && strcmp (last.current, "###empty_array"))
 	{
-		// is an array, but not an empty one
+// is an array, but not an empty one
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf("GEN array open last\n");
+		printf ("GEN array open last\n");
 #endif
-		yajl_gen_array_open(g);
+		yajl_gen_array_open (g);
 	}
 }
 
@@ -166,49 +150,46 @@ static void elektraGenOpenLast(yajl_gen g, const Key *key)
  * @param parentKey
  * @param first
  */
-void elektraGenOpenInitial(yajl_gen g, Key *parentKey,
-		const Key *first)
+void elektraGenOpenInitial (yajl_gen g, Key * parentKey, const Key * first)
 {
-	const char *pfirst = keyName(first);
-	size_t csize=0;
+	const char * pfirst = keyName (first);
+	size_t csize = 0;
 
-	int equalLevels = elektraKeyCountEqualLevel(parentKey, first);
-	int firstLevels = elektraKeyCountLevel(first);
+	int equalLevels = elektraKeyCountEqualLevel (parentKey, first);
+	int firstLevels = elektraKeyCountLevel (first);
 
 	// forward all equal levels
-	for (int i=0; i < equalLevels+1; ++i)
+	for (int i = 0; i < equalLevels + 1; ++i)
 	{
-		pfirst=keyNameGetOneLevel(pfirst+csize,&csize);
+		pfirst = keyNameGetOneLevel (pfirst + csize, &csize);
 	}
 
 	// calculate levels: do not iterate over last element
 	const int levelsToOpen = firstLevels - equalLevels - 1;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("open by name Initial %s, equal: %d, to open: %d\n",
-			pfirst, equalLevels, levelsToOpen);
+	printf ("open by name Initial %s, equal: %d, to open: %d\n", pfirst, equalLevels, levelsToOpen);
 #endif
 
 
 	if (pfirst && *pfirst == '#')
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf("array open INITIAL\n");
+		printf ("array open INITIAL\n");
 #endif
 	}
 	else
 	{
 #ifdef ELEKTRA_YAJL_VERBOSE
-		printf("GEN map open INITIAL\n");
+		printf ("GEN map open INITIAL\n");
 #endif
-		yajl_gen_map_open(g);
+		yajl_gen_map_open (g);
 	}
 
 
+	elektraGenOpenIterate (g, pfirst, levelsToOpen);
 
-	elektraGenOpenIterate(g, pfirst, levelsToOpen);
-
-	elektraGenOpenLast(g, first);
+	elektraGenOpenLast (g, first);
 }
 
 
@@ -313,18 +294,11 @@ void elektraGenOpenInitial(yajl_gen g, Key *parentKey,
  * @param cur
  * @param next
  */
-static void elektraGenOpenFirst(yajl_gen g,
-		const char *cur,
-		const char *next,
-		size_t nextSize)
+static void elektraGenOpenFirst (yajl_gen g, const char * cur, const char * next, size_t nextSize)
 {
-	lookahead_t lookahead =
-		elektraLookahead(next, nextSize);
+	lookahead_t lookahead = elektraLookahead (next, nextSize);
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf("elektraGenOpenFirst cur: \"%s\" next: \"%s\", lookahead: %d\n",
-			cur,
-			next,
-			lookahead);
+	printf ("elektraGenOpenFirst cur: \"%s\" next: \"%s\", lookahead: %d\n", cur, next, lookahead);
 #endif
 
 	if (*cur == '#')
@@ -334,14 +308,14 @@ static void elektraGenOpenFirst(yajl_gen g,
 			if (lookahead == LOOKAHEAD_MAP)
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
-				printf("GEN (O3) next anon map\n");
+				printf ("GEN (O3) next anon map\n");
 #endif
-				yajl_gen_map_open(g);
+				yajl_gen_map_open (g);
 			}
 			else
 			{
 #ifdef ELEKTRA_YAJL_VERBOSE
-				printf("we are iterating over array, nothing to do\n");
+				printf ("we are iterating over array, nothing to do\n");
 #endif
 			}
 		}
@@ -357,37 +331,29 @@ static void elektraGenOpenFirst(yajl_gen g,
 		if (lookahead == LOOKAHEAD_END)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf("GEN string (O4)\n");
+			printf ("GEN string (O4)\n");
 #endif
-			yajl_gen_string(g,
-				(const unsigned char *)next,
-				nextSize);
+			yajl_gen_string (g, (const unsigned char *)next, nextSize);
 		}
-		else if (lookahead == LOOKAHEAD_ARRAY ||
-			 lookahead == LOOKAHEAD_EMPTY_ARRAY ||
-			 lookahead == LOOKAHEAD_EMPTY_MAP)
+		else if (lookahead == LOOKAHEAD_ARRAY || lookahead == LOOKAHEAD_EMPTY_ARRAY || lookahead == LOOKAHEAD_EMPTY_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf("GEN string for start/empty array (O5)\n");
+			printf ("GEN string for start/empty array (O5)\n");
 #endif
-			yajl_gen_string(g,
-				(const unsigned char *)next,
-				nextSize);
+			yajl_gen_string (g, (const unsigned char *)next, nextSize);
 			// opening (empty) array will be handled later
 		}
 		else if (lookahead == LOOKAHEAD_MAP)
 		{
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf("GEN string (O6s)\n");
+			printf ("GEN string (O6s)\n");
 #endif
-			yajl_gen_string(g,
-				(const unsigned char *)next,
-				nextSize);
+			yajl_gen_string (g, (const unsigned char *)next, nextSize);
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-			printf("GEN map (O6m)\n");
+			printf ("GEN map (O6m)\n");
 #endif
-			yajl_gen_map_open(g);
+			yajl_gen_map_open (g);
 		}
 	}
 }
@@ -464,22 +430,22 @@ static void elektraGenOpenFirst(yajl_gen g,
  * @param cur current key of iteration
  * @param next next key of iteration
  */
-void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
+void elektraGenOpen (yajl_gen g, const Key * cur, const Key * next)
 {
-	const char *pcur = keyName(cur);
-	const char *pnext = keyName(next);
+	const char * pcur = keyName (cur);
+	const char * pnext = keyName (next);
 	// size_t curLevels = elektraKeyCountLevel(cur);
-	size_t nextLevels = elektraKeyCountLevel(next);
-	size_t size=0;
-	size_t csize=0;
+	size_t nextLevels = elektraKeyCountLevel (next);
+	size_t size = 0;
+	size_t csize = 0;
 
-	size_t equalLevels = elektraKeyCountEqualLevel(cur, next);
+	size_t equalLevels = elektraKeyCountEqualLevel (cur, next);
 
 	// forward all equal levels
-	for (size_t i=0; i < equalLevels+1; ++i)
+	for (size_t i = 0; i < equalLevels + 1; ++i)
 	{
-		pnext=keyNameGetOneLevel(pnext+size,&size);
-		pcur=keyNameGetOneLevel(pcur+csize,&csize);
+		pnext = keyNameGetOneLevel (pnext + size, &size);
+		pcur = keyNameGetOneLevel (pcur + csize, &csize);
 	}
 
 	// always skip first and last level
@@ -489,25 +455,23 @@ void elektraGenOpen(yajl_gen g, const Key *cur, const Key *next)
 	// nor the last one
 	int levels = nextLevels - equalLevels - levelsToSkip;
 
-	int actionRequired = equalLevels+1 < nextLevels;
+	int actionRequired = equalLevels + 1 < nextLevels;
 
 #ifdef ELEKTRA_YAJL_VERBOSE
-	printf ("elektraGenOpen %d: pcur: %s , pnext: %s, action: %d\n",
-		(int) levels, pcur, pnext, actionRequired);
+	printf ("elektraGenOpen %d: pcur: %s , pnext: %s, action: %d\n", (int)levels, pcur, pnext, actionRequired);
 #endif
 
 	// check if anything needs to be done at all
 	if (actionRequired)
 	{
-		elektraGenOpenFirst(g, pcur, pnext, size);
+		elektraGenOpenFirst (g, pcur, pnext, size);
 
 		// skip the first level we did already
-		pnext=keyNameGetOneLevel(pnext+size,&size);
+		pnext = keyNameGetOneLevel (pnext + size, &size);
 
 		// now yield everything else in the string but the last value
-		elektraGenOpenIterate(g, pnext, levels);
+		elektraGenOpenIterate (g, pnext, levels);
 
-		elektraGenOpenLast(g, next);
+		elektraGenOpenLast (g, next);
 	}
 }
-

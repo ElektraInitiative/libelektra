@@ -17,6 +17,8 @@ This command will list the name of all keys below a given path.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-0`, `--null`:
@@ -25,7 +27,7 @@ This command will list the name of all keys below a given path.
 ## EXAMPLES
 
 To list all keys below `user/example`:  
-	`kdb ls user/example`  
+`kdb ls user/example`  
 
 
 ## SEE ALSO

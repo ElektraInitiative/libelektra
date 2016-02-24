@@ -10,16 +10,15 @@
 
 int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filter_func)
 {
-	DBusConnection *connection;
+	DBusConnection * connection;
 	DBusError error;
 
 	dbus_error_init (&error);
 	connection = dbus_bus_get (type, &error);
 	if (connection == NULL)
 	{
-		fprintf (stderr, "Failed to open connection to %s message bus: %s\n",
-			(type == DBUS_BUS_SYSTEM) ? "system" : "session",
-			error.message);
+		fprintf (stderr, "Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
+			 error.message);
 		goto error;
 	}
 
@@ -31,11 +30,11 @@ int elektraDbusReceiveMessage (DBusBusType type, DBusHandleMessageFunction filte
 		goto error;
 	}
 
-	while (dbus_connection_read_write_dispatch(connection, -1));
+	while (dbus_connection_read_write_dispatch (connection, -1))
+		;
 	return 0;
 error:
 	printf ("Error occurred\n");
 	dbus_error_free (&error);
 	return -1;
 }
-

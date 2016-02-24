@@ -13,25 +13,25 @@
 
 typedef struct
 {
-	char encode [256];
-	char decode [256];
+	char encode[256];
+	char decode[256];
 
 	char escape;
 
-	char *buf;
+	char * buf;
 	size_t bufalloc;
 } CCodeData;
 
-ssize_t keySetRaw(Key *key, const void *newBinary, size_t dataSize);
+ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 
-void elektraCcodeEncode (Key *cur, CCodeData *h);
-void elektraCcodeDecode (Key *cur, CCodeData *h);
+void elektraCcodeEncode (Key * cur, CCodeData * h);
+void elektraCcodeDecode (Key * cur, CCodeData * h);
 
-int elektraCcodeOpen(Plugin *handle, Key *k);
-int elektraCcodeClose(Plugin *handle, Key *k);
-int elektraCcodeGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraCcodeSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraCcodeOpen (Plugin * handle, Key * k);
+int elektraCcodeClose (Plugin * handle, Key * k);
+int elektraCcodeGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCcodeSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(ccode);
+Plugin * ELEKTRA_PLUGIN_EXPORT (ccode);
 
 #endif

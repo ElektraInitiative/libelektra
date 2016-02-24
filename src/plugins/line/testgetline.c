@@ -8,11 +8,12 @@
 
 #include <stdio.h>
 
-int main(void){
+int main (void)
+{
 
-	char *line;
+	char * line;
 	size_t len = 0;
-	FILE *fp; 
-	getline(&line, &len, fp);
+	FILE * fp;
+	getline (&line, &len, fp);
 	return 0;
 }

@@ -10,7 +10,7 @@ if (COMPAT_GETLINE)
 		SOURCES
 			line.h
 			line.c
-		LINK_LIBRARIES
+		LINK_ELEKTRA
 			elektra-ease
 		)
 

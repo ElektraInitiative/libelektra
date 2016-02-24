@@ -8,36 +8,37 @@
 
 #include <import.hpp>
 
-#include <kdb.hpp>
-#include <modules.hpp>
 #include <cmdline.hpp>
+#include <kdb.hpp>
 #include <keysetio.hpp>
+#include <modules.hpp>
 #include <toolexcept.hpp>
 
 #include <iostream>
 
-#include <merging/threewaymerge.hpp>
-#include <merging/metamergestrategy.hpp>
 #include <mergehelper.hpp>
+#include <merging/metamergestrategy.hpp>
+#include <merging/threewaymerge.hpp>
 
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 
-ImportCommand::ImportCommand()
-{}
-
-int ImportCommand::execute(Cmdline const& cl)
+ImportCommand::ImportCommand ()
 {
-	size_t argc = cl.arguments.size();
+}
+
+int ImportCommand::execute (Cmdline const & cl)
+{
+	size_t argc = cl.arguments.size ();
 	if (argc != 1 && argc != 2 && argc != 3)
 	{
-		throw invalid_argument("need 1 to 3 arguments");
+		throw invalid_argument ("need 1 to 3 arguments");
 	}
 
-	Key root (cl.arguments[0], KEY_END);
-	if (!root.isValid())
+	Key root = cl.createKey (0);
+	if (!root.isValid ())
 	{
 		throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");
 	}
@@ -54,14 +55,14 @@ int ImportCommand::execute(Cmdline const& cl)
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;
-	PluginPtr plugin = modules.load (format, cl.getPluginsConfig());
+	PluginPtr plugin = modules.load (format, cl.getPluginsConfig ());
 
 	Key errorKey (root);
 	errorKey.setString (file);
 
 	KeySet importedKeys;
-	plugin->get(importedKeys, errorKey);
-	importedKeys = importedKeys.cut(root);
+	plugin->get (importedKeys, errorKey);
+	importedKeys = importedKeys.cut (root);
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
@@ -71,8 +72,7 @@ int ImportCommand::execute(Cmdline const& cl)
 
 	helper.configureMerger (cl, merger);
 	MergeResult result = merger.mergeKeySet (
-			MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root),
-					TheirMergeKeys (importedKeys, root), root));
+		MergeTask (BaseMergeKeys (base, root), OurMergeKeys (base, root), TheirMergeKeys (importedKeys, root), root));
 
 	helper.reportResult (cl, result, cout, cerr);
 
@@ -82,11 +82,11 @@ int ImportCommand::execute(Cmdline const& cl)
 		if (cl.verbose)
 		{
 			cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
-			cout << result.getMergedKeys();
+			cout << result.getMergedKeys ();
 		}
 
-		KeySet resultKeys = result.getMergedKeys();
-		originalKeys.append(resultKeys);
+		KeySet resultKeys = result.getMergedKeys ();
+		originalKeys.append (resultKeys);
 		kdb.set (originalKeys, root);
 		ret = 0;
 	}
@@ -94,5 +94,6 @@ int ImportCommand::execute(Cmdline const& cl)
 	return ret;
 }
 
-ImportCommand::~ImportCommand()
-{}
+ImportCommand::~ImportCommand ()
+{
+}

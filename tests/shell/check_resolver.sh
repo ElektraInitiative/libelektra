@@ -4,6 +4,13 @@ echo
 echo ELEKTRA CHECK RESOLVER
 echo
 
+#set tmp path (mainly for OS X compatibility)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	TMPPATH="/private/tmp"
+else
+	TMPPATH="/tmp"
+fi
+
 #checks if resolver can be mounted and also partly checks if it resolves
 #correctly (more tests welcome).
 
@@ -19,7 +26,7 @@ else
 fi
 
 #enable with care: might remove more (empty) directories than it created
-#root access required, writes into various pathes (they are listed,
+#root access required, writes into various paths (they are listed,
 #even if WRITE_TO_SYSTEM is deactivated)
 #WRITE_TO_SYSTEM=YES
 WRITE_TO_SYSTEM=NO
@@ -120,11 +127,11 @@ unset XDG_CONFIG_HOME
 check_resolver system x app/config_file /etc/xdg/app/config_file
 
 OD=`pwd`
-cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
-check_resolver dir x /a /tmp/a
-check_resolver dir x /a/b /tmp/a/b
-check_resolver dir x a /tmp/@KDB_DB_DIR@/a
-check_resolver dir x a/b /tmp/@KDB_DB_DIR@/a/b
+cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
+check_resolver dir x /a $TMPPATH/a
+check_resolver dir x /a/b $TMPPATH/a/b
+check_resolver dir x a $TMPPATH/@KDB_DB_DIR@/a
+check_resolver dir x a/b $TMPPATH/@KDB_DB_DIR@/a/b
 cd $OD
 
 fi # end of XDG tests
@@ -148,11 +155,11 @@ check_resolver user w app/config_file /D/app/config_file #@KDB_DB_USER@ not impl
 unset HOME
 
 OD=`pwd`
-cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
-check_resolver dir w /a /tmp//a
-check_resolver dir w /a/b /tmp//a/b
-check_resolver dir w a /tmp/a #@KDB_DB_DIR@ not impl
-check_resolver dir w a/b /tmp/a/b #@KDB_DB_DIR@ not impl
+cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
+check_resolver dir w /a $TMPPATH//a
+check_resolver dir w /a/b $TMPPATH//a/b
+check_resolver dir w a $TMPPATH/a #@KDB_DB_DIR@ not impl
+check_resolver dir w a/b $TMPPATH/a/b #@KDB_DB_DIR@ not impl
 cd $OD
 
 
@@ -190,11 +197,11 @@ check_resolver user b x/a @KDB_DB_HOME@/@KDB_DB_USER@/x/a
 check_resolver user b /a @KDB_DB_HOME@/a
 
 OD=`pwd`
-cd /tmp # hopefully no @KDB_DB_DIR@ is in /tmp
-check_resolver dir b /a /tmp/a
-check_resolver dir b /a/b /tmp/a/b
-check_resolver dir b a /tmp/@KDB_DB_DIR@/a
-check_resolver dir b a/b /tmp/@KDB_DB_DIR@/a/b
+cd $TMPPATH # hopefully no @KDB_DB_DIR@ is in $TMPPATH
+check_resolver dir b /a $TMPPATH/a
+check_resolver dir b /a/b $TMPPATH/a/b
+check_resolver dir b a $TMPPATH/@KDB_DB_DIR@/a
+check_resolver dir b a/b $TMPPATH/@KDB_DB_DIR@/a/b
 
 T="$(mktempdir_elektra)"
 

@@ -1,16 +1,34 @@
 # libelektra #
 
-_Elektra provides a universal and secure framework to store configuration
+_Elektra serves as a universal and secure framework to access configuration
 parameters in a global, hierarchical key database._
 
 <img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="50" />
 
-The core is a small library implemented in C. The plugin-based framework fulfills many
-configuration-related tasks to avoid any unnecessary code duplication
-across applications while it still allows the core to stay without any
-external dependency. Elektra abstracts from cross-platform-related issues
-with a consistent API, and allows applications to be aware of other
+Elektra provides a mature, consistent and easily comprehensible API.
+Its modularity effectively avoids code duplication across applications
+and tools regarding configuration tasks. Elektra abstracts from
+cross-platform-related issues and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
+
+To highlight a few concrete things about Elektra, configuration data can come from any
+data source, but usually comes from configuration files that are [_mounted_](doc/help/elektra-mounting.md) into Elektra
+similar to mounting a file system. As Elektra is a plugin based framework, there are a
+lot of _storage plugins_ that support various configuration formats like ini, json, xml,
+etc. However, there's a lot more to discover like executing scripts (`python`, `lua` or
+`shell`) when a configuration value changes, or, enhanced validation plugins that won't
+allow corrupted configuration to reach your application.
+
+As an application developer you get instant access to various configuration formats and the ability
+to fallback to a default configuration without having to deal with this on your own. As an administrator
+you can choose your favourite configuration format and _mount_ this configuration for the application.
+This features easy application integration as any application using Elektra can access any _mounted_
+configuration. You can even _mount_ `/etc` files such as `hosts` or `fstab`, so that there is no need to
+configure the same data twice in different files.
+
+In case you're worried about linking to such a powerful library. The core is a small library
+implemented in C, works cross-platform, and does not need any external dependencies. There are
+[bindings](src/bindings) for other languages in case C is too low-level for you.
 
 [Why should I use Elektra?](#goals)
 
@@ -66,7 +84,7 @@ kdb get /env/override/HTTP_PROXY
 ```
 
 For information about elektrified environment variables, see
-[src/libgetenv/README.md](src/libgetenv/README.md)
+[/src/libgetenv/README.md](/src/libs/getenv/README.md)
 
 
 ### Documentation ###
@@ -136,6 +154,7 @@ And in terms of quality, we want:
 
 ## News ##
 
+ - [16 Feb 2016 0.8.15](http://doc.libelektra.org/news/1ab4a560-c286-46d2-a058-1a8e7e208fe8.html) lib split, improved mount
  - [19 Nov 2015 0.8.14](http://doc.libelektra.org/news/519cbfac-6db5-4594-8a38-dec4c84b134f.html) adds docu and plugins
  - [17 Sep 2015 0.8.13](http://doc.libelektra.org/news/3c00a5f1-c017-4555-92b5-a2cf6e0803e3.html) adds elektrify-getenv
  - [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a.html) adds dir namespace

@@ -10,13 +10,13 @@
 #ifndef THREEWAYMERGE_HPP_
 #define THREEWAYMERGE_HPP_
 
-#include <string>
-#include <vector>
-#include <memory>
 #include <kdb.hpp>
+#include <memory>
+#include <merging/mergeconflictstrategy.hpp>
 #include <merging/mergeresult.hpp>
 #include <merging/mergetask.hpp>
-#include <merging/mergeconflictstrategy.hpp>
+#include <string>
+#include <vector>
 
 namespace kdb
 {
@@ -31,7 +31,6 @@ class ThreeWayMerge
 {
 
 public:
-
 	/**
 	 * Performs a threeway merge according to the supplied MergeTask. All merged keys will
 	 * be below the given mergeParent in the MergeTask. Found conflicts will be
@@ -45,8 +44,7 @@ public:
 	 * @return a MergeResult that contains the merged keys as well as all found conflicts.
 	 *
 	 **/
-	MergeResult mergeKeySet(const KeySet& base, const KeySet& ours,
-			const KeySet& theirs, const Key& mergeRoot);
+	MergeResult mergeKeySet (const KeySet & base, const KeySet & ours, const KeySet & theirs, const Key & mergeRoot);
 
 	/**
 	 * Performs a threeway merge based on the supplied KeySets. The result is the same
@@ -57,7 +55,7 @@ public:
 	 * @see ThreeWayMerge::mergeKeySet(const MergeTask&)
 	 * @return a MergeResult that contains the merged keys as well as all found conflicts.
 	 */
-	MergeResult mergeKeySet(const MergeTask& task);
+	MergeResult mergeKeySet (const MergeTask & task);
 
 	/**
 	 * Adds a conflict resolution strategy to the merger. The merger tries to resolve conflicts
@@ -66,14 +64,15 @@ public:
 	 *
 	 * @param a conflict reoslution strategy to be consulted in case of conflicts
 	 */
-	void addConflictStrategy(MergeConflictStrategy *strategy) { strategies.push_back(strategy); }
+	void addConflictStrategy (MergeConflictStrategy * strategy)
+	{
+		strategies.push_back (strategy);
+	}
 
 private:
 	std::vector<MergeConflictStrategy *> strategies;
-	void detectConflicts(const MergeTask& task, MergeResult& mergeResult,
-			bool reverseConflictMeta);
+	void detectConflicts (const MergeTask & task, MergeResult & mergeResult, bool reverseConflictMeta);
 };
-
 }
 }
 }

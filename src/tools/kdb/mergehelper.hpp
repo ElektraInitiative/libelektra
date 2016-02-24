@@ -12,8 +12,8 @@
 #include <map>
 
 #include <command.hpp>
-#include <merging/threewaymerge.hpp>
 #include <merging/mergeconfiguration.hpp>
+#include <merging/threewaymerge.hpp>
 
 using namespace std;
 using namespace kdb::tools::merging;
@@ -21,17 +21,16 @@ using namespace kdb::tools::merging;
 class MergeHelper
 {
 public:
-	MergeHelper();
-	virtual ~MergeHelper();
-	vector<MergeConfiguration *> getAllConfigurations();
-	string getConfigurationList();
-	void configureMerger(Cmdline const& cl, ThreeWayMerge& merger);
-	void reportResult(Cmdline const& cl, MergeResult& result, ostream& out, ostream& err);
+	MergeHelper ();
+	virtual ~MergeHelper ();
+	vector<MergeConfiguration *> getAllConfigurations ();
+	string getConfigurationList ();
+	void configureMerger (Cmdline const & cl, ThreeWayMerge & merger);
+	void reportResult (Cmdline const & cl, MergeResult & result, ostream & out, ostream & err);
 
 
 private:
 	map<string, MergeConfiguration *> configurationMap;
-
 };
 
 #endif /* MERGEHELPER_HPP_ */

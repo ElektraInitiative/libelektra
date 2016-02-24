@@ -38,13 +38,15 @@ t:append(kdb.Key("user/foo"))
 t:append(kdb.Key("user/bar"))
 assert(#t, 2)
 
--- iterator
-function item_cnt(...)
-	local cnt = 0
-	for i, v in ... do
-		cnt = cnt + 1
+-- iterator (LUA 5.2)
+if _ENV then
+	function item_cnt(...)
+		local cnt = 0
+		for i, v in ... do
+			cnt = cnt + 1
+		end
+		return cnt
 	end
-	return cnt
+	assert(item_cnt(ipairs(ks))            == 4)
+	assert(item_cnt(ipairs(kdb.KeySet(0))) == 0)
 end
-assert(item_cnt(ipairs(ks))            == 4)
-assert(item_cnt(ipairs(kdb.KeySet(0))) == 0)

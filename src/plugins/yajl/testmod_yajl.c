@@ -6,9 +6,9 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include "yajl.h"
-#include "name.h"
 #include "iterator.h"
+#include "name.h"
+#include "yajl.h"
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
@@ -20,6 +20,7 @@
 
 #include <tests_internal.h>
 
+// clang-format off
 KeySet *getEmptyKeys()
 {
 	return ksNew(1,
@@ -457,43 +458,39 @@ KeySet *getSomeBelowKeys()
 			KS_END);
 }
 
+// clang-format on
 
-KeySet *modules;
+KeySet * modules;
 
-void test_json(const char * fileName,
-		     KeySet * compareKeySet,
-		     KeySet * conf)
+void test_json (const char * fileName, KeySet * compareKeySet, KeySet * conf)
 {
-	printf ("Test json with %s\n", srcdir_file(fileName));
+	printf ("Test json with %s\n", srcdir_file (fileName));
 
-	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
+	Plugin * plugin = elektraPluginOpen ("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 	// printf ("Test with %s\n", srcdir_file(fileName));
 
-	Key *parentKey = keyNew ("user/tests/yajl",
-			KEY_VALUE, srcdir_file(fileName),
-			KEY_END);
-	KeySet *keys = ksNew(0, KS_END);
-	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
-	succeed_if(output_error(parentKey), "error in kdbGet");
-	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
+	Key * parentKey = keyNew ("user/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	KeySet * keys = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "kdbGet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbGet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	/*
 	output_keyset(keys);
 	output_keyset(compareKeySet);
 	*/
-	compare_keyset(keys, compareKeySet);
+	compare_keyset (keys, compareKeySet);
 
-	keySetString(parentKey, elektraFilename());
+	keySetString (parentKey, elektraFilename ());
 	// printf("File name is: %s\n", keyString(parentKey));
 
-	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
-	succeed_if(output_error(parentKey), "error in kdbSet");
-	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
+	succeed_if (plugin->kdbSet (plugin, keys, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)),
-			"files do not match as expected");
-	elektraUnlink(keyString(parentKey));
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+	elektraUnlink (keyString (parentKey));
 
 	/*
 	printf ("The keys we read out are:\n");
@@ -506,202 +503,209 @@ void test_json(const char * fileName,
 	ksDel (keys);
 	ksDel (compareKeySet);
 
-	elektraPluginClose(plugin, 0);
+	elektraPluginClose (plugin, 0);
 }
 
-void test_readWrite(const char * fileName,
-		     KeySet * conf)
+void test_readWrite (const char * fileName, KeySet * conf)
 {
-	printf ("Test read write with %s\n", srcdir_file(fileName));
+	printf ("Test read write with %s\n", srcdir_file (fileName));
 
-	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
+	Plugin * plugin = elektraPluginOpen ("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 	// printf ("Test with %s\n", srcdir_file(fileName));
 
-	Key *parentKey = keyNew ("user/tests/yajl",
-			KEY_VALUE, srcdir_file(fileName),
-			KEY_END);
-	KeySet *keys = ksNew(0, KS_END);
-	succeed_if(plugin->kdbGet(plugin, keys, parentKey) == 1, "kdbGet was not successful");
-	succeed_if(output_error(parentKey), "error in kdbGet");
-	succeed_if(output_warnings(parentKey), "warnings in kdbGet");
+	Key * parentKey = keyNew ("user/tests/yajl", KEY_VALUE, srcdir_file (fileName), KEY_END);
+	KeySet * keys = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "kdbGet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbGet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 
 	// output_keyset(keys);
 
-	keySetString(parentKey, elektraFilename());
+	keySetString (parentKey, elektraFilename ());
 	// keySetString(parentKey, "/proc/self/fd/1");
 	// printf("File name is: %s\n", keyString(parentKey));
 
-	succeed_if(plugin->kdbSet(plugin, keys, parentKey) == 1, "kdbSet was not successful");
-	succeed_if(output_error(parentKey), "error in kdbSet");
-	succeed_if(output_warnings(parentKey), "warnings in kdbSet");
+	succeed_if (plugin->kdbSet (plugin, keys, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if(compare_line_files(srcdir_file(fileName), keyString(parentKey)),
-	 		"files do not match as expected");
-	elektraUnlink(keyString(parentKey));
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+	elektraUnlink (keyString (parentKey));
 
 	keyDel (parentKey);
 	ksDel (keys);
 
-	elektraPluginClose(plugin, 0);
+	elektraPluginClose (plugin, 0);
 }
 
 // TODO: make nicer and put to test framework
-#define succeed_if_equal(x,y) succeed_if(!strcmp(x,y), x)
+#define succeed_if_equal(x, y) succeed_if (!strcmp (x, y), x)
 
-void test_nextNotBelow()
+void test_nextNotBelow ()
 {
 	printf ("Test next not below\n");
 
-	KeySet *ks = getNullKeys();
-	ksRewind(ks);
-	Key *k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/nullkey");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/nullkey");
-	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/second_nullkey");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/second_nullkey");
-	k = elektraNextNotBelow(ks);
-	succeed_if(k == 0, "not at end of keyset");
-	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
+	KeySet * ks = getNullKeys ();
+	ksRewind (ks);
+	Key * k = elektraNextNotBelow (ks);
+	succeed_if_equal (keyName (k), "user/tests/yajl/nullkey");
+	succeed_if_equal (keyName (ksCurrent (ks)), "user/tests/yajl/nullkey");
+	k = elektraNextNotBelow (ks);
+	succeed_if_equal (keyName (k), "user/tests/yajl/second_nullkey");
+	succeed_if_equal (keyName (ksCurrent (ks)), "user/tests/yajl/second_nullkey");
+	k = elektraNextNotBelow (ks);
+	succeed_if (k == 0, "not at end of keyset");
+	succeed_if (ksCurrent (ks) == 0, "not at end of keyset");
 	ksDel (ks);
 
-	ks = getBooleanKeys();
-	ksRewind(ks);
-	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/boolean_key");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/boolean_key");
-	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/second_boolean_key");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/second_boolean_key");
-	k = elektraNextNotBelow(ks);
-	succeed_if(k == 0, "not at end of keyset");
-	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
+	ks = getBooleanKeys ();
+	ksRewind (ks);
+	k = elektraNextNotBelow (ks);
+	succeed_if_equal (keyName (k), "user/tests/yajl/boolean_key");
+	succeed_if_equal (keyName (ksCurrent (ks)), "user/tests/yajl/boolean_key");
+	k = elektraNextNotBelow (ks);
+	succeed_if_equal (keyName (k), "user/tests/yajl/second_boolean_key");
+	succeed_if_equal (keyName (ksCurrent (ks)), "user/tests/yajl/second_boolean_key");
+	k = elektraNextNotBelow (ks);
+	succeed_if (k == 0, "not at end of keyset");
+	succeed_if (ksCurrent (ks) == 0, "not at end of keyset");
 	ksDel (ks);
 
-	ks = getBelowKeys();
-	ksRewind(ks);
-	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/fancy/path/below/v/y/z");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/fancy/path/below/v/y/z");
-	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/fancy/path/below/x/y/z");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/fancy/path/below/x/y/z");
-	k = elektraNextNotBelow(ks);
-	succeed_if(k == 0, "not at end of keyset");
-	succeed_if(ksCurrent(ks) == 0, "not at end of keyset");
+	ks = getBelowKeys ();
+	ksRewind (ks);
+	k = elektraNextNotBelow (ks);
+	succeed_if_equal (keyName (k), "user/tests/yajl/fancy/path/below/v/y/z");
+	succeed_if_equal (keyName (ksCurrent (ks)), "user/tests/yajl/fancy/path/below/v/y/z");
+	k = elektraNextNotBelow (ks);
+	succeed_if_equal (keyName (k), "user/tests/yajl/fancy/path/below/x/y/z");
+	succeed_if_equal (keyName (ksCurrent (ks)), "user/tests/yajl/fancy/path/below/x/y/z");
+	k = elektraNextNotBelow (ks);
+	succeed_if (k == 0, "not at end of keyset");
+	succeed_if (ksCurrent (ks) == 0, "not at end of keyset");
 	ksDel (ks);
 
-	ks = getMapKeys();
-	ksRewind(ks);
-	k = elektraNextNotBelow(ks);
-	succeed_if_equal(keyName(k), "user/tests/yajl/map/nested_map/second_string_key");
-	succeed_if_equal(keyName(ksCurrent(ks)), "user/tests/yajl/map/nested_map/second_string_key");
+	ks = getMapKeys ();
+	ksRewind (ks);
+	k = elektraNextNotBelow (ks);
+	succeed_if_equal (keyName (k), "user/tests/yajl/map/nested_map/second_string_key");
+	succeed_if_equal (keyName (ksCurrent (ks)), "user/tests/yajl/map/nested_map/second_string_key");
 	ksDel (ks);
 }
 
-void test_reverseLevel()
+void test_reverseLevel ()
 {
-	Key *k = keyNew("user/abc/defghi/jkl", KEY_END);
-	int level=0;
+	Key * k = keyNew ("user/abc/defghi/jkl", KEY_END);
+	int level = 0;
 	char buffer[20];
 
 	printf ("Test reverse level\n");
 
-	keyNameReverseIterator it =  elektraKeyNameGetReverseIterator(k);
-	while (elektraKeyNameReverseNext(&it))
+	keyNameReverseIterator it = elektraKeyNameGetReverseIterator (k);
+	while (elektraKeyNameReverseNext (&it))
 	{
 		level++;
 
-		strncpy(buffer,it.current,it.size);
-		buffer[it.size]=0;
+		strncpy (buffer, it.current, it.size);
+		buffer[it.size] = 0;
 
 		// printf("Level %d name: \"%s\"\n",level,buffer);
 		switch (level)
 		{
-			case 4: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct"); break;
-			case 3: succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct"); break;
-			case 2: succeed_if (strcmp (buffer, "defghi") == 0, "keyNameGetOneLevel not correct"); break;
-			case 1: succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct"); break;
-			default: succeed_if (0, "should not reach case statement");
+		case 4:
+			succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+			break;
+		case 3:
+			succeed_if (strcmp (buffer, "abc") == 0, "keyNameGetOneLevel not correct");
+			break;
+		case 2:
+			succeed_if (strcmp (buffer, "defghi") == 0, "keyNameGetOneLevel not correct");
+			break;
+		case 1:
+			succeed_if (strcmp (buffer, "jkl") == 0, "keyNameGetOneLevel not correct");
+			break;
+		default:
+			succeed_if (0, "should not reach case statement");
 		}
 	}
 
-	keySetName(k,"user////\\/abc/\\/def\\/ghi////jkl\\/\\/");
+	keySetName (k, "user////\\/abc/\\/def\\/ghi////jkl\\/\\/");
 
 	level = 0;
-	it =  elektraKeyNameGetReverseIterator(k);
-	while (elektraKeyNameReverseNext(&it))
+	it = elektraKeyNameGetReverseIterator (k);
+	while (elektraKeyNameReverseNext (&it))
 	{
 		level++;
 
-		strncpy(buffer,it.current,it.size);
-		buffer[it.size]=0;
+		strncpy (buffer, it.current, it.size);
+		buffer[it.size] = 0;
 
 		// printf("Level %d name: \"%s\"\n",level,buffer);
 		switch (level)
 		{
-			case 4: succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct"); break;
-			case 3: succeed_if (strcmp (buffer, "\\/abc") == 0, "keyNameGetOneLevel not correct"); break;
-			case 2: succeed_if (strcmp (buffer, "\\/def\\/ghi") == 0, "keyNameGetOneLevel not correct"); break;
-			case 1: succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct"); break;
-			default: succeed_if (0, "should not reach case statement");
+		case 4:
+			succeed_if (strcmp (buffer, "user") == 0, "keyNameGetOneLevel not correct");
+			break;
+		case 3:
+			succeed_if (strcmp (buffer, "\\/abc") == 0, "keyNameGetOneLevel not correct");
+			break;
+		case 2:
+			succeed_if (strcmp (buffer, "\\/def\\/ghi") == 0, "keyNameGetOneLevel not correct");
+			break;
+		case 1:
+			succeed_if (strcmp (buffer, "jkl\\/\\/") == 0, "keyNameGetOneLevel not correct");
+			break;
+		default:
+			succeed_if (0, "should not reach case statement");
 		}
 	}
 
 	keyDel (k);
 }
 
-void test_countLevel()
+void test_countLevel ()
 {
-	Key *k = keyNew("user///", KEY_END);
-	succeed_if(elektraKeyCountLevel(k) == 1, "count level wrong");
-	keySetName(k, "user/x");
-	succeed_if(elektraKeyCountLevel(k) == 2, "count level wrong");
-	keySetName(k, "user/x/z/f");
-	succeed_if(elektraKeyCountLevel(k) == 4, "count level wrong");
-	keySetName(k, "user/x/z\\/f");
-	succeed_if(elektraKeyCountLevel(k) == 3, "count level wrong");
+	Key * k = keyNew ("user///", KEY_END);
+	succeed_if (elektraKeyCountLevel (k) == 1, "count level wrong");
+	keySetName (k, "user/x");
+	succeed_if (elektraKeyCountLevel (k) == 2, "count level wrong");
+	keySetName (k, "user/x/z/f");
+	succeed_if (elektraKeyCountLevel (k) == 4, "count level wrong");
+	keySetName (k, "user/x/z\\/f");
+	succeed_if (elektraKeyCountLevel (k) == 3, "count level wrong");
 
-	Key *k2 = keyNew("user/x/z", KEY_END);
-	succeed_if(elektraKeyCountEqualLevel(k, k2) == 2,
-			"equal level wrong");
+	Key * k2 = keyNew ("user/x/z", KEY_END);
+	succeed_if (elektraKeyCountEqualLevel (k, k2) == 2, "equal level wrong");
 
-	keySetName(k,  "user/x/z\\/f");
-	keySetName(k2, "user/x/z\\/f");
-	succeed_if(elektraKeyCountEqualLevel(k, k2) == 3,
-			"equal level wrong");
+	keySetName (k, "user/x/z\\/f");
+	keySetName (k2, "user/x/z\\/f");
+	succeed_if (elektraKeyCountEqualLevel (k, k2) == 3, "equal level wrong");
 
-	keySetName(k,  "user/x/v/ffkkk");
-	keySetName(k2, "user/x/v/ff");
-	succeed_if(elektraKeyCountEqualLevel(k, k2) == 3,
-			"equal level wrong");
+	keySetName (k, "user/x/v/ffkkk");
+	keySetName (k2, "user/x/v/ff");
+	succeed_if (elektraKeyCountEqualLevel (k, k2) == 3, "equal level wrong");
 
-	keySetName(k,  "user/x/v/ff");
-	keySetName(k2, "user/x/v/ff");
-	succeed_if(elektraKeyCountEqualLevel(k, k2) == 4,
-			"equal level wrong");
+	keySetName (k, "user/x/v/ff");
+	keySetName (k2, "user/x/v/ff");
+	succeed_if (elektraKeyCountEqualLevel (k, k2) == 4, "equal level wrong");
 
-	keySetName(k,  "user/x\\abc/v/ff");
-	keySetName(k2, "user/x\\abc/v/ff");
-	succeed_if(elektraKeyCountEqualLevel(k, k2) == 4,
-			"equal level wrong");
+	keySetName (k, "user/x\\abc/v/ff");
+	keySetName (k2, "user/x\\abc/v/ff");
+	succeed_if (elektraKeyCountEqualLevel (k, k2) == 4, "equal level wrong");
 
-	keyDel(k);
-	keyDel(k2);
+	keyDel (k);
+	keyDel (k2);
 }
 
-void test_writing()
+void test_writing ()
 {
-	KeySet *conf = ksNew(0, KS_END);
-	Key *parentKey = keyNew("user/tests/yajl",
-				KEY_VALUE, "/proc/self/fd/1",
-				KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	Key * parentKey = keyNew ("user/tests/yajl", KEY_VALUE, "/proc/self/fd/1", KEY_END);
 
-	Plugin *plugin = elektraPluginOpen("yajl", modules, conf, 0);
+	Plugin * plugin = elektraPluginOpen ("yajl", modules, conf, 0);
 	exit_if_fail (plugin != 0, "could not open plugin");
 
-	KeySet *ks = getNullKeys();
+	KeySet * ks = getNullKeys ();
 	/*
 	output_keyset(ks);
 
@@ -715,63 +719,63 @@ void test_writing()
 	succeed_if(plugin->kdbSet(plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	*/
 
-	ksDel(ks);
-	keyDel(parentKey);
+	ksDel (ks);
+	keyDel (parentKey);
 
-	elektraPluginClose(plugin, 0);
+	elektraPluginClose (plugin, 0);
 }
 
-int main(int argc, char** argv)
+int main (int argc, char ** argv)
 {
-	printf("YAJL       TESTS\n");
-	printf("==================\n\n");
+	printf ("YAJL       TESTS\n");
+	printf ("==================\n\n");
 
-	modules = ksNew(0, KS_END);
-	elektraModulesInit(modules, 0);
+	modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
 
 	init (argc, argv);
 
-	test_nextNotBelow();
-	test_reverseLevel();
-	test_countLevel();
-	test_writing();
+	test_nextNotBelow ();
+	test_reverseLevel ();
+	test_countLevel ();
+	test_writing ();
 
-	test_json("yajl/testdata_null.json", getNullKeys(), ksNew(0, KS_END));
-	test_json("yajl/testdata_boolean.json", getBooleanKeys(), ksNew(0, KS_END));
-	test_json("yajl/testdata_number.json", getNumberKeys(), ksNew(0, KS_END));
-	test_json("yajl/testdata_string.json", getStringKeys(), ksNew(0, KS_END));
-	test_json("yajl/testdata_maps.json", getMapKeys(), ksNew(0, KS_END));
-	test_json("yajl/testdata_array.json", getArrayKeys(), ksNew(0, KS_END));
-	test_json("yajl/testdata_below.json", getBelowKeys(), ksNew(0, KS_END));
-	test_json("yajl/OpenICC_device_config_DB.json", getOpenICCKeys(), ksNew(0, KS_END));
+	test_json ("yajl/testdata_null.json", getNullKeys (), ksNew (0, KS_END));
+	test_json ("yajl/testdata_boolean.json", getBooleanKeys (), ksNew (0, KS_END));
+	test_json ("yajl/testdata_number.json", getNumberKeys (), ksNew (0, KS_END));
+	test_json ("yajl/testdata_string.json", getStringKeys (), ksNew (0, KS_END));
+	test_json ("yajl/testdata_maps.json", getMapKeys (), ksNew (0, KS_END));
+	test_json ("yajl/testdata_array.json", getArrayKeys (), ksNew (0, KS_END));
+	test_json ("yajl/testdata_below.json", getBelowKeys (), ksNew (0, KS_END));
+	test_json ("yajl/OpenICC_device_config_DB.json", getOpenICCKeys (), ksNew (0, KS_END));
 
 	// TODO currently do not have a KeySet, wait for C-plugin to make
 	// it easy to generate it..
-	test_readWrite("yajl/empty_object.json", ksNew(0, KS_END));
-	test_readWrite("yajl/empty_array.json", ksNew(0, KS_END));
-	test_readWrite("yajl/rfc_object.json", ksNew(0, KS_END));
-	test_readWrite("yajl/rfc_array.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_mixed.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_in_array.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_in_array_anon_map.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_nested.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_broken.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_special_ending.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_outside.json", ksNew(0, KS_END));
-	test_readWrite("yajl/keyframes_complex.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_mixed2.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_special_start.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_array_mixed3.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_empty_in_array.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_empty_in_map.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_empty_in_array1.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_empty_in_map2.json", ksNew(0, KS_END));
-	test_readWrite("yajl/testdata_empty_in_map1.json", ksNew(0, KS_END));
+	test_readWrite ("yajl/empty_object.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/empty_array.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/rfc_object.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/rfc_array.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_mixed.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_in_array.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_in_array_anon_map.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_nested.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_broken.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_special_ending.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_outside.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/keyframes_complex.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_mixed2.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_special_start.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_array_mixed3.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_empty_in_array.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_empty_in_map.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_empty_in_array1.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_empty_in_map2.json", ksNew (0, KS_END));
+	test_readWrite ("yajl/testdata_empty_in_map1.json", ksNew (0, KS_END));
 
-	elektraModulesClose(modules, 0);
+	elektraModulesClose (modules, 0);
 	ksDel (modules);
 
-	printf("\ntest_yajl RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_yajl RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

@@ -26,14 +26,14 @@ public:
 	 *
 	 * @param node The visited ConfigNode
 	 */
-	virtual void visit(ConfigNode& node) = 0;
+	virtual void visit (ConfigNode & node) = 0;
 
 	/**
 	 * @brief The abstract method a visitor who wants to visit a TreeViewModel needs to implement.
 	 *
 	 * @param model The visited TreeViewModel
 	 */
-	virtual void visit(TreeViewModel* model) = 0;
+	virtual void visit (TreeViewModel * model) = 0;
 };
 
 #endif // VISITOR_H

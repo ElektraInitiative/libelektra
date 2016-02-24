@@ -18,19 +18,17 @@
 namespace elektra
 {
 
-void serialise(std::ostream& os, kdb::KeySet & output);
-void unserialise(std::istream& os, kdb::KeySet & output);
-
+void serialise (std::ostream & os, kdb::KeySet & output);
+void unserialise (std::istream & os, kdb::KeySet & output);
 }
 
-extern "C"
-{
+extern "C" {
 
-int elektraTclGet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
-int elektraTclSet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
-int elektraTclError(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
+int elektraTclGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraTclSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraTclError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 
-ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(tcl);
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (tcl);
 
 } // end extern "C"
 

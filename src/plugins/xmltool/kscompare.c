@@ -11,7 +11,6 @@
 #include <string.h>
 
 
-
 /**
  * @internal
  *
@@ -48,59 +47,63 @@
  * @return size in bytes of the parent name, or 0 if there is no common parent,
  *         or -1 to indicate an error, then @p errno must be checked.
  */
-ssize_t ksGetCommonParentName(const KeySet *working, char *returnedCommonParent, size_t maxSize)
+ssize_t ksGetCommonParentName (const KeySet * working, char * returnedCommonParent, size_t maxSize)
 {
-	size_t parentSize=0;
-	Key *current=0;
+	size_t parentSize = 0;
+	Key * current = 0;
 	cursor_t cinit;
-	KeySet *ks;
+	KeySet * ks;
 	ssize_t sMaxSize;
 
 	if (maxSize > SSIZE_MAX) return -1;
 	sMaxSize = maxSize;
 
 	cinit = ksGetCursor (working);
-	ks = (KeySet *) working;
+	ks = (KeySet *)working;
 
-	if (ksGetSize(ks) < 1) return 0;
+	if (ksGetSize (ks) < 1) return 0;
 
-	ksRewind(ks);
-	current = ksNext(ks);
-	if (keyGetNameSize(current) > sMaxSize)
+	ksRewind (ks);
+	current = ksNext (ks);
+	if (keyGetNameSize (current) > sMaxSize)
 	{
 		/*errno=KDB_ERR_TRUNC;*/
-		returnedCommonParent[0]=0;
+		returnedCommonParent[0] = 0;
 		return -1;
 	}
 
-	strcpy(returnedCommonParent,keyName(current));
-	parentSize=elektraStrLen(returnedCommonParent);
+	strcpy (returnedCommonParent, keyName (current));
+	parentSize = elektraStrLen (returnedCommonParent);
 
 	while (*returnedCommonParent)
 	{
-		ksRewind(ks);
-		while ((current = ksNext(ks)) != 0)
+		ksRewind (ks);
+		while ((current = ksNext (ks)) != 0)
 		{
 			/* Test if a key doesn't match */
-			if (memcmp(returnedCommonParent,keyName(current),parentSize-1)) break;
+			if (memcmp (returnedCommonParent, keyName (current), parentSize - 1)) break;
 		}
 		if (current)
 		{
 			/* some key failed to be a child */
 			/* parent will be the parent of current parent... */
-			char *delim=0;
+			char * delim = 0;
 
 			// TODO: does not honor escaped characters
-			if ((delim=strrchr(returnedCommonParent,KDB_PATH_SEPARATOR)))
+			if ((delim = strrchr (returnedCommonParent, KDB_PATH_SEPARATOR)))
 			{
-				*delim=0;
-				parentSize=elektraStrLen(returnedCommonParent);
-			} else {
-				*returnedCommonParent=0;
-				parentSize=0;
+				*delim = 0;
+				parentSize = elektraStrLen (returnedCommonParent);
+			}
+			else
+			{
+				*returnedCommonParent = 0;
+				parentSize = 0;
 				break; /* Better don't make comparision with parentSize-1 now */
 			}
-		} else {
+		}
+		else
+		{
 			/* All keys matched (current==0) */
 			/* We have our common parent to return in commonParent */
 			ksSetCursor (ks, cinit);

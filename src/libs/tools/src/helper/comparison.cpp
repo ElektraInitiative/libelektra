@@ -20,25 +20,25 @@ namespace tools
 namespace helper
 {
 
-bool keyDataEqual(const Key& k1, const Key& k2)
+bool keyDataEqual (const Key & k1, const Key & k2)
 {
 	if (!k1 || !k2) return false;
 
-	if (k1.isBinary() != k2.isBinary()) return false;
+	if (k1.isBinary () != k2.isBinary ()) return false;
 
-	if (k1.isBinary() && k2.isBinary())
+	if (k1.isBinary () && k2.isBinary ())
 	{
-		return k1.getBinary() == k2.getBinary();
+		return k1.getBinary () == k2.getBinary ();
 	}
 	else
 	{
-		return k1.getString() == k2.getString();
+		return k1.getString () == k2.getString ();
 	}
 
 	return true;
 }
 
-bool keyMetaEqual(Key& k1, Key& k2)
+bool keyMetaEqual (Key & k1, Key & k2)
 {
 	if (!k1 || !k2) return false;
 
@@ -63,7 +63,6 @@ bool keyMetaEqual(Key& k1, Key& k2)
 
 	return true;
 }
-
 }
 }
 }

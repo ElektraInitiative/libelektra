@@ -10,10 +10,11 @@
 
 #include <stdio.h>
 
-void printNamespace(Key const* k)
+void printNamespace (Key const * k)
 {
+	// clang-format off
 //! [namespace]
-switch (keyGetNamespace(k))
+switch (keyGetNamespace (k))
 {
 case KEY_NS_SPEC:
 	printf ("spec namespace\n");
@@ -46,10 +47,10 @@ case KEY_NS_CASCADING:
 //! [namespace]
 }
 
-void loop()
+void loop ()
 {
 //! [loop]
-for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
+for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 {
 	// work with namespace
 	printf ("%d\n", ns);
@@ -57,15 +58,12 @@ for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
 //! [loop]
 }
 
-int main()
+int main ()
 {
 	char s[100];
-	fgets(s, 100, stdin);
+	fgets (s, 100, stdin);
 
-	Key *k = keyNew(s,
-		KEY_CASCADING_NAME,
-		KEY_META_NAME,
-		KEY_END);
-	printNamespace(k);
-	keyDel(k);
+	Key * k = keyNew (s, KEY_CASCADING_NAME, KEY_META_NAME, KEY_END);
+	printNamespace (k);
+	keyDel (k);
 }

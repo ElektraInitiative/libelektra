@@ -39,48 +39,51 @@
  * @see ksToStream()
  * @see keyToStream()
  */
-enum KDBStream {
-	KDB_O_SHOWMETA=0xF0,		/*!< Show all metadata (type, uid, gid, mode) */
-	KDB_O_SHOWFLAGS=1<<14,		/*!< Show all flags */
-	KDB_O_SHOWINDICES=1<<15,	/*!< Show the indices for the entries */
-	KDB_O_CONDENSED=1<<16,		/*!< Spare any whitespaces and do not group visually together.*/
-	KDB_O_NUMBER=1<<17,		/*!< Use a number intead of user and group name.*/
-	KDB_O_HEADER=1<<18,		/*!< Show also the header of the document. */
-	KDB_O_FULLNAME=1<<19,		/*!< Export @p user keys using full name.*/
-	KDB_O_HIER=1<<20		/*!< Export to the new hierarchical XML
-						representation using key basename.
-						See ksToStream(). */
+enum KDBStream
+{
+	// clang-format off
+	KDB_O_SHOWMETA = 0xF0,       /*!< Show all metadata (type, uid, gid, mode) */
+	KDB_O_SHOWFLAGS = 1 << 14,   /*!< Show all flags */
+	KDB_O_SHOWINDICES = 1 << 15, /*!< Show the indices for the entries */
+	KDB_O_CONDENSED = 1 << 16,   /*!< Spare any whitespaces and do not group visually together.*/
+	KDB_O_NUMBER = 1 << 17,      /*!< Use a number intead of user and group name.*/
+	KDB_O_HEADER = 1 << 18,      /*!< Show also the header of the document. */
+	KDB_O_FULLNAME = 1 << 19,    /*!< Export @p user keys using full name.*/
+	KDB_O_HIER = 1 << 20	     /*!< Export to the new hierarchical XML
+					  representation using key basename.
+					  See ksToStream(). */
+	// clang-format on
 };
 
 
-typedef int (*KSFromXMLfile)(KeySet *ks,const char *filename);
-typedef int (*KSFromXML)(KeySet *ks,int fd);
-typedef ssize_t (*output) (const KeySet *ks, FILE* stream, option_t options);
+typedef int (*KSFromXMLfile) (KeySet * ks, const char * filename);
+typedef int (*KSFromXML) (KeySet * ks, int fd);
+typedef ssize_t (*output) (const KeySet * ks, FILE * stream, option_t options);
 
 
-#define KDB_SCHEMA_PATH_KEY   "system/elektra/xml/schemapath"
+#define KDB_SCHEMA_PATH_KEY "system/elektra/xml/schemapath"
 
 #ifndef DYN_LINK
 
 #ifdef __cplusplus
-namespace ckdb {
+namespace ckdb
+{
 extern "C" {
 #endif
 
 
-int ksFromXMLfile(KeySet *ks,const char *filename);
-int ksFromXML(KeySet *ks,int fd);
+int ksFromXMLfile (KeySet * ks, const char * filename);
+int ksFromXML (KeySet * ks, int fd);
 
-ssize_t ksToStream(const KeySet *ks, FILE* stream, option_t options);
-int ksOutput (const KeySet *ks, FILE *stream, option_t options);
-int ksGenerate (const KeySet *ks, FILE *stream, option_t options);
+ssize_t ksToStream (const KeySet * ks, FILE * stream, option_t options);
+int ksOutput (const KeySet * ks, FILE * stream, option_t options);
+int ksGenerate (const KeySet * ks, FILE * stream, option_t options);
 
-ssize_t keyToStream(const Key *key, FILE *stream, option_t options);
-ssize_t keyToStreamBasename(const Key *key, FILE *stream,
-	const char *parent, const size_t parentSize, option_t options);
+ssize_t keyToStream (const Key * key, FILE * stream, option_t options);
+ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, option_t options);
 
-int keyOutput (const Key *key, FILE *stream, option_t options);
-int keyGenerate (const Key *key, FILE *stream, option_t options);
+int keyOutput (const Key * key, FILE * stream, option_t options);
+int keyGenerate (const Key * key, FILE * stream, option_t options);
 
 #ifdef __cplusplus
 }

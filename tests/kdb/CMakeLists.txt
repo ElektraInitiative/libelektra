@@ -9,5 +9,6 @@ include (LibAddTest)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_gtest (${name} KDBTESTS LINK_TOOLS)
+	target_link_elektra (${name} elektra-kdb)
 endforeach (file ${TESTS})
 

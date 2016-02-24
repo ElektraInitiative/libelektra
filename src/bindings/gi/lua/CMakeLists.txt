@@ -30,7 +30,7 @@ install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 
 # we're searching for the lua interpreter however FindLua only searches
 # for the library. But that's better than nothing.
-find_package (Lua 5.2)
+find_package (Lua 5.1)
 if (LUA_FOUND)
 	message(STATUS "Include Binding gi_lua")
 

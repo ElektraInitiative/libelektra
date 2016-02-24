@@ -9,20 +9,20 @@
 #ifndef TREEVIEWTEST_HPP
 #define TREEVIEWTEST_HPP
 
+#include "../src/treeviewmodel.hpp"
 #include <QObject>
 #include <QTest>
-#include "../src/treeviewmodel.hpp"
 
 class TreeViewTest : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 private slots:
-    void initTestCase();
-    void cleanupTestCase();
+	void initTestCase ();
+	void cleanupTestCase ();
 
 private:
-    TreeViewModel *model;
+	TreeViewModel * model;
 };
 
 #endif // TREEVIEWTEST_HPP

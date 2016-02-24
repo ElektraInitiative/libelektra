@@ -1,11 +1,12 @@
 - infos = Information about struct plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = apply
+- infos/needs =
 - infos/ordering = check
 - infos/placements = presetstorage
-- infos/description = Copies meta data to keys using structbing
+- infos/status = unfinished concept
+- infos/description = Copies meta data to keys using struct
 
 ## Introduction ##
 

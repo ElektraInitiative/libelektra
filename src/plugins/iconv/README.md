@@ -1,9 +1,10 @@
 - infos = Information about iconv plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = conv
+- infos/needs =
 - infos/placements = postgetstorage presetstorage
+- infos/status = maintained unittest libc configurable
 - infos/description = Converts values of keys between charsets
 
 ## Introduction ##
@@ -23,7 +24,7 @@ encoding. But the other key databases work well with the users
 encoding. So a quick fix for that backend is needed to feed that XML
 file with a different encoding.
 
-Iconv plugin provides a solution for both scenarios. It converts between
+The iconv plugin provides a solution for both scenarios. It converts between
 many available character encodings. With the plugin’s configuration
 the user can change the from and to encoding.  The default values of the
 plugin configuration are: `from` encoding will be determined at run time.

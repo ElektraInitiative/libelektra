@@ -6,25 +6,25 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <kdbhelper.h>
 #include <locale.h>
 #include <stdio.h>
-#include <kdbhelper.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "floathelper.h"
 
-char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
+char * elektraFtoA (char * buffer, ssize_t bufSize, double val)
 {
 	if (buffer == NULL)
 	{
 		bufSize = MAX_CHARS_DOUBLE;
-		buffer = elektraMalloc(bufSize);
+		buffer = elektraMalloc (bufSize);
 	}
-	snprintf(buffer, bufSize, "%g", val);
+	snprintf (buffer, bufSize, "%g", val);
 
-	struct lconv *locale;
-	locale = localeconv();
+	struct lconv * locale;
+	locale = localeconv ();
 	char sysSep = (locale->decimal_point)[0];
 
 	if (sysSep == ELEKTRA_DEFAULT_DECIMAL_POINT)
@@ -33,7 +33,7 @@ char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 	}
 	else
 	{
-		char *sepPtr = strchr(buffer, sysSep);
+		char * sepPtr = strchr (buffer, sysSep);
 		if (sepPtr == NULL)
 		{
 			return buffer;
@@ -46,23 +46,23 @@ char * elektraFtoA(char *buffer, ssize_t bufSize, double val)
 	}
 }
 
-double elektraEFtoF(const char *string)
+double elektraEFtoF (const char * string)
 {
-	char *buffer = elektraMalloc(elektraStrLen(string));
-	strcpy(buffer, string);
-	char *sepPtr = strchr(buffer, ELEKTRA_DEFAULT_DECIMAL_POINT);
+	char * buffer = elektraMalloc (elektraStrLen (string));
+	strcpy (buffer, string);
+	char * sepPtr = strchr (buffer, ELEKTRA_DEFAULT_DECIMAL_POINT);
 	if (sepPtr == NULL)
 	{
 		elektraFree (buffer);
-		return atof(string);
+		return atof (string);
 	}
 	else
 	{
-		struct lconv *locale;
-		locale = localeconv();
+		struct lconv * locale;
+		locale = localeconv ();
 		char sysSep = (locale->decimal_point)[0];
 		*sepPtr = sysSep;
-		double retval = atof(buffer);
+		double retval = atof (buffer);
 		elektraFree (buffer);
 		return retval;
 	}

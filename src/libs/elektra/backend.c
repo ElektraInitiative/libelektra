@@ -44,9 +44,9 @@
  *
  * @return 
  */
-static Backend* elektraBackendAllocate()
+static Backend * elektraBackendAllocate ()
 {
-	Backend *backend = elektraCalloc(sizeof(struct _Backend));
+	Backend * backend = elektraCalloc (sizeof (struct _Backend));
 
 	backend->refcounter = 1;
 
@@ -71,39 +71,34 @@ static Backend* elektraBackendAllocate()
  * @retval -1 if no mountpoint is found or memory allocation problem
  * @retval 0 on success
  */
-int elektraBackendSetMountpoint(Backend *backend, KeySet *elektraConfig, Key *errorKey)
+int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key * errorKey)
 {
-	Key * root = ksCurrent(elektraConfig);
-	Key * searchMountpoint = keyDup(root);
-	keyAddBaseName(searchMountpoint, "mountpoint");
-	Key * foundMountpoint = ksLookup(elektraConfig, searchMountpoint, 0);
+	Key * root = ksCurrent (elektraConfig);
+	Key * searchMountpoint = keyDup (root);
+	keyAddBaseName (searchMountpoint, "mountpoint");
+	Key * foundMountpoint = ksLookup (elektraConfig, searchMountpoint, 0);
 	keyDel (searchMountpoint);
-	ksLookup(elektraConfig, root, 0); // reset ksCurrent()
+	ksLookup (elektraConfig, root, 0); // reset ksCurrent()
 
 	if (!foundMountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF(14, errorKey,
-			"Could not find mountpoint within root %s",
-			keyName(root));
+		ELEKTRA_ADD_WARNINGF (14, errorKey, "Could not find mountpoint within root %s", keyName (root));
 		return -1;
 	}
 
-	backend->mountpoint = keyNew("",
-			KEY_VALUE, keyBaseName(root), KEY_END);
-	elektraKeySetName(backend->mountpoint, keyString(foundMountpoint),
-			KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	backend->mountpoint = keyNew ("", KEY_VALUE, keyBaseName (root), KEY_END);
+	elektraKeySetName (backend->mountpoint, keyString (foundMountpoint), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
-	keySetName(errorKey, keyName(backend->mountpoint));
+	keySetName (errorKey, keyName (backend->mountpoint));
 
 	if (!backend->mountpoint)
 	{
-		ELEKTRA_ADD_WARNINGF(14, errorKey,
-			"Could not create mountpoint with name %s and value %s",
-			keyString(foundMountpoint), keyBaseName(root));
+		ELEKTRA_ADD_WARNINGF (14, errorKey, "Could not create mountpoint with name %s and value %s", keyString (foundMountpoint),
+				      keyBaseName (root));
 		return -1;
 	}
 
-	keyIncRef(backend->mountpoint);
+	keyIncRef (backend->mountpoint);
 	return 0;
 }
 
@@ -142,69 +137,71 @@ system/elektra/mountpoints/<name>
  * @retval 0 if out of memory
  * @ingroup backend
  */
-Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKey)
+Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 {
 	Key * cur;
-	KeySet *referencePlugins = 0;
-	KeySet *systemConfig = 0;
+	KeySet * referencePlugins = 0;
+	KeySet * systemConfig = 0;
 	int failure = 0;
 
-	referencePlugins = ksNew(0, KS_END);
-	ksRewind(elektraConfig);
+	referencePlugins = ksNew (0, KS_END);
+	ksRewind (elektraConfig);
 
 	Key * root = ksNext (elektraConfig);
 
-	Backend *backend = elektraBackendAllocate();
-	if (elektraBackendSetMountpoint(backend, elektraConfig, errorKey) == -1)
-	{	// warning already set
+	Backend * backend = elektraBackendAllocate ();
+	if (elektraBackendSetMountpoint (backend, elektraConfig, errorKey) == -1)
+	{ // warning already set
 		failure = 1;
 	}
 
-	while ((cur = ksNext(elektraConfig)) != 0)
+	while ((cur = ksNext (elektraConfig)) != 0)
 	{
 		if (keyRel (root, cur) == 1)
 		{
 			// direct below root key
-			KeySet *cut = ksCut (elektraConfig, cur);
-			if (!strcmp(keyBaseName(cur), "config"))
+			KeySet * cut = ksCut (elektraConfig, cur);
+			if (!strcmp (keyBaseName (cur), "config"))
 			{
-				systemConfig = elektraRenameKeys(cut, "system");
+				systemConfig = elektraRenameKeys (cut, "system");
 				ksDel (cut);
 			}
-			else if (!strcmp(keyBaseName(cur), "errorplugins"))
+			else if (!strcmp (keyBaseName (cur), "errorplugins"))
 			{
-				if (elektraProcessPlugins(backend->errorplugins, modules, referencePlugins,
-							cut, systemConfig, errorKey) == -1)
+				if (elektraProcessPlugins (backend->errorplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
+				    -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for error failed");
+					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for error failed");
 					failure = 1;
 				}
 			}
-			else if (!strcmp(keyBaseName(cur), "getplugins"))
+			else if (!strcmp (keyBaseName (cur), "getplugins"))
 			{
-				if (elektraProcessPlugins(backend->getplugins, modules, referencePlugins,
-							cut, systemConfig, errorKey) == -1)
+				if (elektraProcessPlugins (backend->getplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
+				    -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING(13, errorKey, "elektraProcessPlugins for get failed");
+					if (!failure) ELEKTRA_ADD_WARNING (13, errorKey, "elektraProcessPlugins for get failed");
 					failure = 1;
 				}
 			}
-			else if (!strcmp(keyBaseName(cur), "mountpoint"))
+			else if (!strcmp (keyBaseName (cur), "mountpoint"))
 			{
 				ksDel (cut); // already handled by elektraBackendSetMountpoint
 				continue;
 			}
-			else if (!strcmp(keyBaseName(cur), "setplugins"))
+			else if (!strcmp (keyBaseName (cur), "setplugins"))
 			{
-				if (elektraProcessPlugins(backend->setplugins, modules, referencePlugins,
-							cut, systemConfig, errorKey) == -1)
+				if (elektraProcessPlugins (backend->setplugins, modules, referencePlugins, cut, systemConfig, errorKey) ==
+				    -1)
 				{
-					if (!failure) ELEKTRA_ADD_WARNING(15, errorKey, "elektraProcessPlugins for set failed");
+					if (!failure) ELEKTRA_ADD_WARNING (15, errorKey, "elektraProcessPlugins for set failed");
 					failure = 1;
 				}
-			} else {
+			}
+			else
+			{
 				// no one cares about that config
-				if (!failure) ELEKTRA_ADD_WARNING(16, errorKey, keyBaseName(cur));
+				if (!failure) ELEKTRA_ADD_WARNING (16, errorKey, keyBaseName (cur));
 				ksDel (cut);
 			}
 		}
@@ -212,8 +209,8 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
 
 	if (failure)
 	{
-		Backend *tmpBackend = elektraBackendOpenMissing(backend->mountpoint);
-		elektraBackendClose(backend, errorKey);
+		Backend * tmpBackend = elektraBackendOpenMissing (backend->mountpoint);
+		elektraBackendClose (backend, errorKey);
 		backend = tmpBackend;
 	}
 
@@ -230,15 +227,15 @@ Backend* elektraBackendOpen(KeySet *elektraConfig, KeySet *modules, Key *errorKe
  *
  * @return the fresh allocated backend or 0 if no memory
  */
-Backend* elektraBackendOpenMissing(Key *mp)
+Backend * elektraBackendOpenMissing (Key * mp)
 {
-	Backend *backend = elektraBackendAllocate();
+	Backend * backend = elektraBackendAllocate ();
 
-	Plugin *plugin = elektraPluginMissing();
+	Plugin * plugin = elektraPluginMissing ();
 	if (!plugin)
 	{
 		/* Could not allocate plugin */
-		elektraFree(backend);
+		elektraFree (backend);
 		return 0;
 	}
 
@@ -248,7 +245,7 @@ Backend* elektraBackendOpenMissing(Key *mp)
 
 	keySetString (mp, "missing");
 	backend->mountpoint = mp;
-	keyIncRef(backend->mountpoint);
+	keyIncRef (backend->mountpoint);
 
 	return backend;
 }
@@ -261,37 +258,33 @@ Backend* elektraBackendOpenMissing(Key *mp)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *errorKey)
+Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * errorKey)
 {
-	Backend *backend = elektraBackendAllocate();
+	Backend * backend = elektraBackendAllocate ();
 
-	KeySet *resolverConfig = ksNew(5,
-		keyNew("system/path", KEY_VALUE, file, KEY_END),
-		KS_END);
+	KeySet * resolverConfig = ksNew (5, keyNew ("system/path", KEY_VALUE, file, KEY_END), KS_END);
 
-	elektraKeySetName(errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
-	Plugin *resolver = elektraPluginOpen(KDB_DEFAULT_RESOLVER,
-			modules, resolverConfig, errorKey);
+	Plugin * resolver = elektraPluginOpen (KDB_DEFAULT_RESOLVER, modules, resolverConfig, errorKey);
 	if (!resolver)
 	{
-		elektraFree(backend);
+		elektraFree (backend);
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
 
 #if DEBUG && VERBOSE
-	KeySet *tracerConfig = ksNew(5,
-		// does not matter because it is mounted differently in system/elektra/modules:
-		// keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
-		KS_END);
-	Plugin *tracer = elektraPluginOpen("tracer",
-		modules, tracerConfig, errorKey);
+	KeySet * tracerConfig = ksNew (5,
+				       // does not matter because it is mounted differently in system/elektra/modules:
+				       // keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
+				       KS_END);
+	Plugin * tracer = elektraPluginOpen ("tracer", modules, tracerConfig, errorKey);
 	if (tracer)
 	{
-		backend->getplugins[RESOLVER_PLUGIN+1] = tracer;
-		backend->setplugins[RESOLVER_PLUGIN+1] = tracer;
-		backend->errorplugins[RESOLVER_PLUGIN+1] = tracer;
+		backend->getplugins[RESOLVER_PLUGIN + 1] = tracer;
+		backend->setplugins[RESOLVER_PLUGIN + 1] = tracer;
+		backend->errorplugins[RESOLVER_PLUGIN + 1] = tracer;
 		tracer->refcounter = 3;
 	}
 #endif
@@ -302,15 +295,13 @@ Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *erro
 	backend->errorplugins[STORAGE_PLUGIN] = resolver;
 	resolver->refcounter = 4;
 
-	KeySet *storageConfig = ksNew(5,
-		KS_END);
+	KeySet * storageConfig = ksNew (5, KS_END);
 
-	Plugin *storage = elektraPluginOpen(KDB_DEFAULT_STORAGE,
-			modules, storageConfig, errorKey);
+	Plugin * storage = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, storageConfig, errorKey);
 	if (!storage)
 	{
-		elektraPluginClose(resolver, errorKey);
-		elektraFree(backend);
+		elektraPluginClose (resolver, errorKey);
+		elektraFree (backend);
 		/* error already set in elektraPluginOpen */
 		return 0;
 	}
@@ -319,9 +310,9 @@ Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *erro
 	backend->setplugins[STORAGE_PLUGIN] = storage;
 	storage->refcounter = 2;
 
-	Key *mp = keyNew ("", KEY_VALUE, "default", KEY_END);
+	Key * mp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	backend->mountpoint = mp;
-	keyIncRef(backend->mountpoint);
+	keyIncRef (backend->mountpoint);
 
 	return backend;
 }
@@ -332,35 +323,33 @@ Backend* elektraBackendOpenDefault(KeySet *modules, const char * file, Key *erro
  * @param modules the modules to work with
  * @param errorKey the key to issue warnings and errors to
  */
-Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
+Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
 {
-	Backend *backend = elektraBackendAllocate();
+	Backend * backend = elektraBackendAllocate ();
 
 	cursor_t save = ksGetCursor (modules);
-	KeySet *defaultConfig = ksNew(5,
-		keyNew("system/module", KEY_VALUE, "1", KEY_END),
-		keyNew("user/module", KEY_VALUE, "1", KEY_END),
-		KS_END);
-	Key *cur = ksCurrent(modules);
+	KeySet * defaultConfig =
+		ksNew (5, keyNew ("system/module", KEY_VALUE, "1", KEY_END), keyNew ("user/module", KEY_VALUE, "1", KEY_END), KS_END);
+	Key * cur = ksCurrent (modules);
 
-	elektraKeySetName(errorKey, keyName(cur), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	elektraKeySetName (errorKey, keyName (cur), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
-	Plugin *plugin = elektraPluginOpen(keyBaseName(cur), modules, defaultConfig, errorKey);
+	Plugin * plugin = elektraPluginOpen (keyBaseName (cur), modules, defaultConfig, errorKey);
 	if (!plugin)
 	{
 		/* Error already set in plugin */
-		elektraFree(backend);
+		elektraFree (backend);
 		return 0;
 	}
 
-	Key *mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
-	keyAddBaseName (mp, keyBaseName(cur));
+	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
+	keyAddBaseName (mp, keyBaseName (cur));
 
 	backend->getplugins[0] = plugin;
 	plugin->refcounter = 1;
 
 	backend->mountpoint = mp;
-	keyIncRef(backend->mountpoint);
+	keyIncRef (backend->mountpoint);
 
 	ksSetCursor (modules, save);
 
@@ -373,26 +362,26 @@ Backend* elektraBackendOpenModules(KeySet *modules, Key *errorKey)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend* elektraBackendOpenVersion(Key * errorKey ELEKTRA_UNUSED)
+Backend * elektraBackendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
 {
-	Backend *backend = elektraBackendAllocate();
+	Backend * backend = elektraBackendAllocate ();
 
-	Plugin *plugin = elektraPluginVersion();
+	Plugin * plugin = elektraPluginVersion ();
 	if (!plugin)
 	{
 		/* Could not allocate plugin */
-		elektraFree(backend);
+		elektraFree (backend);
 		return 0;
 	}
 
-	Key *mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
+	Key * mp = keyNew ("system/elektra/version", KEY_VALUE, "version", KEY_END);
 
 	backend->getplugins[0] = plugin;
 	backend->setplugins[0] = plugin;
 	plugin->refcounter = 2;
 
 	backend->mountpoint = mp;
-	keyIncRef(backend->mountpoint);
+	keyIncRef (backend->mountpoint);
 
 	return backend;
 }
@@ -410,9 +399,9 @@ Backend* elektraBackendOpenVersion(Key * errorKey ELEKTRA_UNUSED)
  * @retval -1 if invalid parent (assert)
  * @retval 0 on success
  */
-int elektraBackendUpdateSize(Backend *backend, Key *parent, int size)
+int elektraBackendUpdateSize (Backend * backend, Key * parent, int size)
 {
-	switch (keyGetNamespace(parent))
+	switch (keyGetNamespace (parent))
 	{
 	case KEY_NS_SPEC:
 		backend->specsize = size;
@@ -431,7 +420,7 @@ int elektraBackendUpdateSize(Backend *backend, Key *parent, int size)
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
 	case KEY_NS_NONE:
-		ELEKTRA_ASSERT(0 && "invalid namespace");
+		ELEKTRA_ASSERT (0 && "invalid namespace");
 		return -1;
 	}
 
@@ -443,35 +432,37 @@ int elektraBackendUpdateSize(Backend *backend, Key *parent, int size)
 	return 0;
 }
 
-int elektraBackendClose(Backend *backend, Key* errorKey)
+int elektraBackendClose (Backend * backend, Key * errorKey)
 {
 	int ret = 0;
 	int errorOccurred = 0;
 
 	if (!backend) return -1;
 
-	-- backend->refcounter;
+	--backend->refcounter;
 
 	/* Check if we have the last reference on the backend (unsigned!) */
 	if (backend->refcounter > 0) return 0;
 
-	keyDecRef(backend->mountpoint);
-	keySetName(errorKey, keyName(backend->mountpoint));
+	keyDecRef (backend->mountpoint);
+	keySetName (errorKey, keyName (backend->mountpoint));
 	keyDel (backend->mountpoint);
 
-	for (int i=0; i<NR_OF_PLUGINS; ++i)
+	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
-		ret = elektraPluginClose(backend->setplugins[i], errorKey);
+		ret = elektraPluginClose (backend->setplugins[i], errorKey);
 		if (ret == -1) ++errorOccurred;
 
-		ret = elektraPluginClose(backend->getplugins[i], errorKey);
+		ret = elektraPluginClose (backend->getplugins[i], errorKey);
 		if (ret == -1) ++errorOccurred;
 
-		ret = elektraPluginClose(backend->errorplugins[i], errorKey);
+		ret = elektraPluginClose (backend->errorplugins[i], errorKey);
 		if (ret == -1) ++errorOccurred;
 	}
 	elektraFree (backend);
 
-	if (errorOccurred) return -1;
-	else return 0;
+	if (errorOccurred)
+		return -1;
+	else
+		return 0;
 }

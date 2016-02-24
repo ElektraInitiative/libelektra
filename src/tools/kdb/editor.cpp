@@ -1,10 +1,10 @@
 #include <editor.hpp>
 
-#include <kdb.hpp>
-#include <modules.hpp>
 #include <cmdline.hpp>
 #include <external.hpp>
+#include <kdb.hpp>
 #include <keysetio.hpp>
+#include <modules.hpp>
 
 #include <unistd.h>
 
@@ -14,24 +14,24 @@
 #include <iostream>
 #include <string>
 
-#include <merging/threewaymerge.hpp>
-#include <merging/metamergestrategy.hpp>
 #include <mergehelper.hpp>
+#include <merging/metamergestrategy.hpp>
+#include <merging/threewaymerge.hpp>
 
 using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 using namespace std;
 
-EditorCommand::EditorCommand()
+EditorCommand::EditorCommand ()
 {
 }
 
-EditorCommand::~EditorCommand()
+EditorCommand::~EditorCommand ()
 {
 }
 
-void EditorCommand::tmpFile()
+void EditorCommand::tmpFile ()
 {
 #ifndef _WIN32
 	const char * tmpvar = getenv ("TMPDIR");
@@ -41,56 +41,37 @@ void EditorCommand::tmpFile()
 	}
 	filename = tmpvar;
 	filename += "/elektra-test.XXXXXX";
-	char * fn = static_cast<char*>(malloc(filename.length()+1));
-	strcpy(fn, filename.c_str());
+	char * fn = static_cast<char *> (malloc (filename.length () + 1));
+	strcpy (fn, filename.c_str ());
 	fd = mkstemp (fn);
-	filename = std::string(fn);
-	close(fd);
+	filename = std::string (fn);
+	close (fd);
 	free (fn);
 #endif
 }
 
-bool runAllEditors(std::string filename)
+bool runAllEditors (std::string filename)
 {
 	using namespace kdb;
-	std::string dirname = "/sw/elektra/kdb/#0/";
-	std::string legacyDirname = "/sw/kdb/current/";
-	KDB kdb;
-	KeySet conf;
-	kdb.get(conf, dirname);
-	kdb.get(conf, legacyDirname);
-
-	Key k = conf.lookup(dirname+"current/editor");
-	if (!k) k = conf.lookup(dirname+"%/editor");
-	if (!k) k = conf.lookup(legacyDirname+"editor");
-	if (k)
-	{
-		std::string editor = k.get<std::string>().c_str();
-		if (runEditor(editor, filename))
-		{
-			return true;
-		} else {
-			std::cerr << "Could not run editor " << editor << std::endl;
-		}
-	}
 	if (runEditor ("/usr/bin/sensible-editor", filename)) return true;
 	if (runEditor ("/usr/bin/editor", filename)) return true;
 	if (runEditor ("/usr/bin/vi", filename)) return true;
+	if (runEditor ("/bin/vi", filename)) return true;
 	return false;
 }
 
-class EditorNotAvailable: public std::exception
+class EditorNotAvailable : public std::exception
 {
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "kdb-editor not available for windows (non-POSIX systems)";
 	}
 };
 
-int EditorCommand::execute(Cmdline const& cl)
+int EditorCommand::execute (Cmdline const & cl)
 {
 #ifdef _WIN32
-	throw EditorNotAvailable();
+	throw EditorNotAvailable ();
 #endif
 
 	int argc = cl.arguments.size ();
@@ -98,7 +79,7 @@ int EditorCommand::execute(Cmdline const& cl)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
 	}
-	Key root (cl.arguments[0], KEY_END);
+	Key root = cl.createKey (0);
 
 	KeySet ours;
 	KDB kdb;
@@ -110,44 +91,46 @@ int EditorCommand::execute(Cmdline const& cl)
 	if (argc > 1) format = cl.arguments[1];
 
 	Modules modules;
-	PluginPtr plugin = modules.load(format);
+	PluginPtr plugin = modules.load (format);
 
-	tmpFile();
+	tmpFile ();
 	if (cl.verbose) std::cout << "filename set to " << filename << std::endl;
-	Key errorKey(root);
-	errorKey.setString(filename);
+	Key errorKey (root);
+	errorKey.setString (filename);
 
-	if (plugin->set(oursToEdit, errorKey) == -1)
+	if (plugin->set (oursToEdit, errorKey) == -1)
 	{
-		printWarnings(cerr, errorKey);
-		printError(cerr, errorKey);
+		printWarnings (cerr, errorKey);
+		printError (cerr, errorKey);
 		return 11;
 	}
 
-	printWarnings(cerr, errorKey);
+	printWarnings (cerr, errorKey);
 
 
 	// start editor
 	if (cl.verbose) std::cout << "running editor with " << filename << std::endl;
-	if (!cl.editor.empty())
+	if (!cl.editor.empty ())
 	{
 		if (!runEditor (cl.editor, filename))
 		{
 			std::cerr << "Could not run editor " << cl.editor << std::endl;
 			return 12;
 		}
-	} else {
-		if (!runAllEditors(filename))
+	}
+	else
+	{
+		if (!runAllEditors (filename))
 		{
-			std::cerr << "Could not run any editor, please change /sw/kdb/current/editor" << std::endl;
+			std::cerr << "Could not run any editor, please change /sw/elektra/kdb/#0/current/editor" << std::endl;
 			return 12;
 		}
 	}
 
 	// import from the file
 	KeySet importedKeys;
-	plugin->get(importedKeys, errorKey);
-	importedKeys = importedKeys.cut(root);
+	plugin->get (importedKeys, errorKey);
+	importedKeys = importedKeys.cut (root);
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
@@ -157,8 +140,7 @@ int EditorCommand::execute(Cmdline const& cl)
 
 	helper.configureMerger (cl, merger);
 	MergeResult result = merger.mergeKeySet (
-			MergeTask (BaseMergeKeys (oursToEdit, root), OurMergeKeys (oursToEdit, root),
-					TheirMergeKeys (importedKeys, root), root));
+		MergeTask (BaseMergeKeys (oursToEdit, root), OurMergeKeys (oursToEdit, root), TheirMergeKeys (importedKeys, root), root));
 
 	helper.reportResult (cl, result, cout, cerr);
 
@@ -168,15 +150,15 @@ int EditorCommand::execute(Cmdline const& cl)
 		if (cl.verbose)
 		{
 			cout << "The merged keyset with strategy " << cl.strategy << " is:" << endl;
-			cout << result.getMergedKeys();
+			cout << result.getMergedKeys ();
 		}
 
-		KeySet resultKeys = result.getMergedKeys();
+		KeySet resultKeys = result.getMergedKeys ();
 		if (cl.verbose) std::cout << "about to write result keys " << resultKeys << std::endl;
-		ours.append(resultKeys);
+		ours.append (resultKeys);
 		kdb.set (ours, root);
 		if (cl.verbose) std::cout << "successful, cleaning up " << filename << std::endl;
-		unlink(filename.c_str());
+		unlink (filename.c_str ());
 		ret = 0;
 	}
 	else
@@ -186,4 +168,3 @@ int EditorCommand::execute(Cmdline const& cl)
 
 	return ret;
 }
-

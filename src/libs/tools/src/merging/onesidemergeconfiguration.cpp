@@ -18,14 +18,13 @@ namespace tools
 namespace merging
 {
 
-void OneSideMergeConfiguration::configureMerger(ThreeWayMerge& merger)
+void OneSideMergeConfiguration::configureMerger (ThreeWayMerge & merger)
 {
-	AutoMergeConfiguration::configureMerger(merger);
-	auto oneSideStrategy = new OneSideStrategy(winningSide);
-	allocatedStrategies.push_back(oneSideStrategy);
-	merger.addConflictStrategy(oneSideStrategy);
+	AutoMergeConfiguration::configureMerger (merger);
+	auto oneSideStrategy = new OneSideStrategy (winningSide);
+	allocatedStrategies.push_back (oneSideStrategy);
+	merger.addConflictStrategy (oneSideStrategy);
 }
-
 }
 }
 }

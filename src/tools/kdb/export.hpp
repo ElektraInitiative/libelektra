@@ -18,41 +18,31 @@ class ExportCommand : public Command
 	kdb::KeySet ks;
 
 public:
-	ExportCommand();
-	~ExportCommand();
+	ExportCommand ();
+	~ExportCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "Ec";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<source> [<format>]";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Export configuration from the key database.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
-		return
-			"The export utility allows you to export\n"
-			"all or parts of the configuration to stdout.\n"
-			"\n"
-			"The default format can be changed by\n"
-			" /sw/kdb/current/format\n"
-			"\n"
-			"Example:\n"
-			"kdb export system/sw > sw.ecf\n"
-			"To make a backup of your whole configuration\n"
-			"below system/sw"
-			;
+		return "The export utility allows you to export\n"
+		       "all or parts of the configuration to stdout.\n";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

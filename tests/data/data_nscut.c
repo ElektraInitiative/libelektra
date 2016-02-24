@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 ksNew(35,
 	keyNew("spec/a", KEY_END),
 	keyNew("spec/a/b", KEY_END),

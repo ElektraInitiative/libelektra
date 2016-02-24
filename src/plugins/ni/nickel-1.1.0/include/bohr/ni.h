@@ -260,48 +260,46 @@
 #define __STDC_CONSTANT_MACROS
 #endif
 
-#include <stdint.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 
 
-//Controls importing in Windows.
+// Controls importing in Windows.
 #ifndef Ni_PUBLIC
-#  if (defined(_WIN32))
-#     define Ni_PUBLIC __declspec(dllimport)
-#  else
-#     define Ni_PUBLIC
-#  endif
+#if (defined(_WIN32))
+#define Ni_PUBLIC __declspec(dllimport)
+#else
+#define Ni_PUBLIC
+#endif
 #endif
 
-//Nix non-critical C99 keywords in compilers that don't support them.
-#if ((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) \
- && !defined(restrict))
-#  define restrict
-#  define _Ni_DEFINED_RESTRICT
+// Nix non-critical C99 keywords in compilers that don't support them.
+#if ((!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L) && !defined(restrict))
+#define restrict
+#define _Ni_DEFINED_RESTRICT
 #endif
 
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 
-//The version of Nickel this header comes from.
-#define Ni_HEADER_VERSION UINT32_C(0x01010000) //v1.1.0(.0)
+// The version of Nickel this header comes from.
+#define Ni_HEADER_VERSION UINT32_C (0x01010000) // v1.1.0(.0)
 
-//The version of Nickel you want when you include this file.
+// The version of Nickel you want when you include this file.
 #ifndef Ni_VERSION
 #define Ni_VERSION Ni_HEADER_VERSION
 #endif
 
 
-//Buffer size (in bytes) needed to hold keys and section names.
+// Buffer size (in bytes) needed to hold keys and section names.
 #define Ni_KEY_SIZE 128
 
 
-//A node in a Nickel tree.
+// A node in a Nickel tree.
 #ifndef _Ni_NODE_DEFINED
 #define _Ni_NODE_DEFINED
 typedef void * Ni_node;
@@ -311,7 +309,7 @@ typedef void * Ni_node;
 /* Returns the version of Ni this library was compiled with.  Compare this
  * value to Ni_VERSION to see if the header matches.
  */
-Ni_PUBLIC uint32_t Ni_GetVersion(void);
+Ni_PUBLIC uint32_t Ni_GetVersion (void);
 
 /* Allocates an entirely new node, not connected to any others, and returns it.
  * This new node is the root of ... well, so far, just itself, but anything you
@@ -320,41 +318,41 @@ Ni_PUBLIC uint32_t Ni_GetVersion(void);
  * Ni_GetChild() instead of this function; this only allocates entirely new
  * trees.
  */
-Ni_PUBLIC Ni_node Ni_New(void);
+Ni_PUBLIC Ni_node Ni_New (void);
 
 /* Frees a node and any of the node's children, and their children, etc.  It
  * also checks if it has a parent and severs itself as a branch, so the entire
  * tree is kept synchronized.
  */
-Ni_PUBLIC void Ni_Free(Ni_node restrict n);
+Ni_PUBLIC void Ni_Free (Ni_node restrict n);
 
 /* Returns the name string of a node, or NULL if you pass an invalid node or a
  * root node (roots can't have names).  If len_out is non-NULL, it sticks the
  * returned string's length in len_out.  Note that all nodes have a name except
  * the root--but names can be "".
  */
-Ni_PUBLIC const char * Ni_GetName(Ni_node restrict n, int * restrict len_out);
+Ni_PUBLIC const char * Ni_GetName (Ni_node restrict n, int * restrict len_out);
 
 /* Returns the root of the tree the node belongs to.  You can check if a node
  * is a root node if n == Ni_GetRoot(n) is nonzero.  Returns NULL if you pass
  * an invalid node.
  */
-Ni_PUBLIC Ni_node Ni_GetRoot(Ni_node restrict n);
+Ni_PUBLIC Ni_node Ni_GetRoot (Ni_node restrict n);
 
 /* Returns the parent node of a node, or NULL if you pass an invalid node or a
  * root node (as they have no parent).
  */
-Ni_PUBLIC Ni_node Ni_GetParent(Ni_node restrict n);
+Ni_PUBLIC Ni_node Ni_GetParent (Ni_node restrict n);
 
 /* Returns the number of children a node has, or 0 if you pass an invalid node.
  */
-Ni_PUBLIC int Ni_GetNumChildren(Ni_node restrict n);
+Ni_PUBLIC int Ni_GetNumChildren (Ni_node restrict n);
 
 /* Useful for enumerating children--pass NULL as child to retrieve the node's
  * first child, then pass the previous return value as child to get the next,
  * etc.  Returns NULL if there's an error or there are no more children.
  */
-Ni_PUBLIC Ni_node Ni_GetNextChild(Ni_node restrict n, Ni_node restrict child);
+Ni_PUBLIC Ni_node Ni_GetNextChild (Ni_node restrict n, Ni_node restrict child);
 
 /* Returns the named child node of the node.  Specify the length of the name in
  * name_len, or use a negative number to have it calculated for you using
@@ -365,9 +363,7 @@ Ni_PUBLIC Ni_node Ni_GetNextChild(Ni_node restrict n, Ni_node restrict child);
  * either add_if_new was 0 or it failed to allocate a new node (in either case,
  * added_out will be 0).
  */
-Ni_PUBLIC Ni_node Ni_GetChild(Ni_node restrict n,
-                              const char * restrict name, int name_len,
-                              int add_if_new, int * restrict added_out);
+Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, int name_len, int add_if_new, int * restrict added_out);
 
 /* Returns the modified state of a node.  When nodes are created, they are "not
  * modified".  As soon as you call a Ni_SetValue() (or Ni_ValuePrint())
@@ -380,13 +376,13 @@ Ni_PUBLIC Ni_node Ni_GetChild(Ni_node restrict n,
  * out, you only get the options set by the override file or ones you set since
  * it was loaded).
  */
-Ni_PUBLIC int Ni_GetModified(Ni_node restrict n);
+Ni_PUBLIC int Ni_GetModified (Ni_node restrict n);
 
 /* Explicitly sets the modified state for a node, and if recurse is nonzero,
  * all the node's children and their children, etc.  See the note in the above
  * function how this is useful.
  */
-Ni_PUBLIC void Ni_SetModified(Ni_node restrict n, int modified, int recurse);
+Ni_PUBLIC void Ni_SetModified (Ni_node restrict n, int modified, int recurse);
 
 /* Returns a node's value.  Any node except a root node can have a value, but
  * not all of them do.  Until a node's value is set with a Ni_SetValue() (or
@@ -395,18 +391,18 @@ Ni_PUBLIC void Ni_SetModified(Ni_node restrict n, int modified, int recurse);
  * or root node.  If you care about the length of the value string, pass a non-
  * NULL len_out and its length is returned there.
  */
-Ni_PUBLIC const char * Ni_GetValue(Ni_node restrict n, int * restrict len_out);
+Ni_PUBLIC const char * Ni_GetValue (Ni_node restrict n, int * restrict len_out);
 
 /* Returns a node's value interpreted as a long, or 0 if the node doesn't have
  * a value (see Ni_GetValue()).  Note that it uses strtol()'s base detection so
  * strings starting with 0 are considered octal, and 0x are considered hex.
  */
-Ni_PUBLIC long Ni_GetValueInt(Ni_node restrict n);
+Ni_PUBLIC long Ni_GetValueInt (Ni_node restrict n);
 
 /* Returns the node's value interpreted as a double, or 0.0 if the node doesn't
  * have a value (see Ni_GetValue()).
  */
-Ni_PUBLIC double Ni_GetValueFloat(Ni_node restrict n);
+Ni_PUBLIC double Ni_GetValueFloat (Ni_node restrict n);
 
 /* Returns the node's value interpreted as a boolean integer (0/1), or 0 if the
  * node doesn't have a value (see Ni_GetValue()).  The following strings are
@@ -415,19 +411,17 @@ Ni_PUBLIC double Ni_GetValueFloat(Ni_node restrict n);
  * cases), or any nonzero integer.  Everything else is considered "false" and
  * will result in a 0 return value.
  */
-Ni_PUBLIC int Ni_GetValueBool(Ni_node restrict n);
+Ni_PUBLIC int Ni_GetValueBool (Ni_node restrict n);
 
 /* Calls vsscanf() on the node's value string directly.  format is the scanf()-
  * formatted argument string, and any arguments for scanf() are passed after
  * format.  Returns what scanf() returns: the number of translated items.
  */
-Ni_PUBLIC int Ni_ValueScan(Ni_node restrict n,
-                           const char * restrict format, ...);
+Ni_PUBLIC int Ni_ValueScan (Ni_node restrict n, const char * restrict format, ...);
 
 /* Same as above, except you pass a va_list instead of the args directly.
  */
-Ni_PUBLIC int Ni_ValueVScan(Ni_node restrict n,
-                            const char * restrict format, va_list args);
+Ni_PUBLIC int Ni_ValueVScan (Ni_node restrict n, const char * restrict format, va_list args);
 
 /* Sets or removes a node's value.  If value is non-NULL, the value is set to
  * that string (which can be any length--specify its length in value_len, or
@@ -443,25 +437,24 @@ Ni_PUBLIC int Ni_ValueVScan(Ni_node restrict n,
  * setting the value, the value string you pass need not persist after the
  * call--its contents are copied.
  */
-Ni_PUBLIC int Ni_SetValue(Ni_node restrict n,
-                          const char * restrict value, int value_len);
+Ni_PUBLIC int Ni_SetValue (Ni_node restrict n, const char * restrict value, int value_len);
 
 /* Sets a node's value to the value of a long.  Semantics are similar to those
  * of Ni_SetValue(), except you can't remove a node's value with this function.
  */
-Ni_PUBLIC int Ni_SetValueInt(Ni_node restrict n, long value);
+Ni_PUBLIC int Ni_SetValueInt (Ni_node restrict n, long value);
 
 /* Sets a node's value to the value of a double.  Semantics are similar to
  * those of Ni_SetValue(), except you can't remove a node's value with this
  * function.
  */
-Ni_PUBLIC int Ni_SetValueFloat(Ni_node restrict n, double value);
+Ni_PUBLIC int Ni_SetValueFloat (Ni_node restrict n, double value);
 
 /* Sets a node's value to "true" or "false" based on a boolean integer.
  * Semantics are similar to those of Ni_SetValue(), except you can't remove a
  * node's value with this function.
  */
-Ni_PUBLIC int Ni_SetValueBool(Ni_node restrict n, int value);
+Ni_PUBLIC int Ni_SetValueBool (Ni_node restrict n, int value);
 
 /* Uses printf() formatting to set the node's value.  You can't remove a node's
  * value with this function.  format is the printf()-formatted string, and any
@@ -473,14 +466,12 @@ Ni_PUBLIC int Ni_SetValueBool(Ni_node restrict n, int value);
  * garbage if you're only writing modified values.  I don't know what else to
  * do, really.
  */
-Ni_PUBLIC int Ni_ValuePrint(Ni_node restrict n,
-                            const char * restrict format, ...);
+Ni_PUBLIC int Ni_ValuePrint (Ni_node restrict n, const char * restrict format, ...);
 
 /* Same as above, except it expects a va_list instead of the args passed after
  * the format string.
  */
-Ni_PUBLIC int Ni_ValueVPrint(Ni_node restrict n,
-                             const char * restrict format, va_list args);
+Ni_PUBLIC int Ni_ValueVPrint (Ni_node restrict n, const char * restrict format, va_list args);
 
 /* Writes the contents of the tree starting at the node out to a file, in a
  * format that is parsable by Ni_ReadFile() or -Stream(), and roughly
@@ -492,15 +483,13 @@ Ni_PUBLIC int Ni_ValueVPrint(Ni_node restrict n,
  * Returns 0 on error, or nonzero on success.  The file is opened with
  * fopen(filename, "w"), so its contents will be erased.
  */
-Ni_PUBLIC int Ni_WriteFile(Ni_node restrict n, const char * restrict filename,
-                           int modified_only);
+Ni_PUBLIC int Ni_WriteFile (Ni_node restrict n, const char * restrict filename, int modified_only);
 
 /* Same as above, except instead of a filename, you can pass an already-open
  * file or a stream (like stdout).  The file must be writable, but need not be
  * seekable.
  */
-Ni_PUBLIC int Ni_WriteStream(Ni_node restrict n, FILE * restrict stream,
-                             int modified_only);
+Ni_PUBLIC int Ni_WriteStream (Ni_node restrict n, FILE * restrict stream, int modified_only);
 
 /* Reads the contents of the file into the node and its children.  The node is
  * treated as the root of the resulting tree, but need not actually be the root
@@ -512,15 +501,13 @@ Ni_PUBLIC int Ni_WriteStream(Ni_node restrict n, FILE * restrict stream,
  * converted to lowercase as they're read in.  Since "Name" and "name" are
  * different names, this makes the files less strict with case.
  */
-Ni_PUBLIC int Ni_ReadFile(Ni_node restrict n, const char * restrict filename,
-                          int fold_case);
+Ni_PUBLIC int Ni_ReadFile (Ni_node restrict n, const char * restrict filename, int fold_case);
 
 /* Same as above, except instead of a filename, you pass an already-open file
  * or stream (like stdin).  The file must be readable, but need not be
  * seekable.
  */
-Ni_PUBLIC int Ni_ReadStream(Ni_node restrict n, FILE * restrict stream,
-                            int fold_case);
+Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fold_case);
 
 
 #ifdef __cplusplus

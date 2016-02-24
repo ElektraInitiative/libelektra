@@ -10,44 +10,40 @@
 
 #include <stdio.h>
 
-void printError(char *what, Key const* parentKey)
+void printError (char * what, Key const * parentKey)
 {
-	printf("%s \"%s\" returned error: %s and reason %s\n",
-		what,
-		keyName(parentKey),
-		keyString(keyGetMeta(parentKey, "error/number")),
-		keyString(keyGetMeta(parentKey, "error/reason"))
-		);
+	printf ("%s \"%s\" returned error: %s and reason %s\n", what, keyName (parentKey),
+		keyString (keyGetMeta (parentKey, "error/number")), keyString (keyGetMeta (parentKey, "error/reason")));
 }
 
-int main()
+int main ()
 {
-	Key *parentKey = keyNew("", KEY_CASCADING_NAME, KEY_END);
-	KDB *kdb = kdbOpen(parentKey);
-	KeySet *ks = ksNew(0, KS_END);
-	if (kdbGet(kdb, ks, parentKey) == -1)
+	Key * parentKey = keyNew ("", KEY_CASCADING_NAME, KEY_END);
+	KDB * kdb = kdbOpen (parentKey);
+	KeySet * ks = ksNew (0, KS_END);
+	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
-		printError("kdbGet", parentKey);
+		printError ("kdbGet", parentKey);
 	}
-	keyDel(parentKey);
-	parentKey = keyNew("meta", KEY_META_NAME, KEY_END);
-	if (kdbGet(kdb, ks, parentKey) == -1)
+	keyDel (parentKey);
+	parentKey = keyNew ("meta", KEY_META_NAME, KEY_END);
+	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
-		printError("kdbGet", parentKey);
+		printError ("kdbGet", parentKey);
 	}
-	keyDel(parentKey);
-	parentKey = keyNew("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
-	if (kdbGet(kdb, ks, parentKey) == -1)
+	keyDel (parentKey);
+	parentKey = keyNew ("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
+	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
-		printError("kdbGet", parentKey);
+		printError ("kdbGet", parentKey);
 	}
-	keyDel(parentKey);
+	keyDel (parentKey);
 
-	ksRewind(ks);
-	Key *k;
-	while ((k = ksNext(ks)))
+	ksRewind (ks);
+	Key * k;
+	while ((k = ksNext (ks)))
 	{
-		printf ("%s = %s\n", keyName(k), keyString(k));
+		printf ("%s = %s\n", keyName (k), keyString (k));
 	}
 
 	/*
@@ -56,25 +52,25 @@ int main()
 	keyDel(k);
 	*/
 
-	parentKey = keyNew("/", KEY_CASCADING_NAME, KEY_END);
-	if (kdbSet(kdb, ks, parentKey) == -1)
+	parentKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	if (kdbSet (kdb, ks, parentKey) == -1)
 	{
-		printError("kdbSet", parentKey);
+		printError ("kdbSet", parentKey);
 	}
-	keyDel(parentKey);
-	parentKey = keyNew("meta", KEY_META_NAME, KEY_END);
-	if (kdbSet(kdb, ks, parentKey) == -1)
+	keyDel (parentKey);
+	parentKey = keyNew ("meta", KEY_META_NAME, KEY_END);
+	if (kdbSet (kdb, ks, parentKey) == -1)
 	{
-		printError("kdbSet", parentKey);
+		printError ("kdbSet", parentKey);
 	}
-	keyDel(parentKey);
-	parentKey = keyNew("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
-	if (kdbSet(kdb, ks, parentKey) == -1)
+	keyDel (parentKey);
+	parentKey = keyNew ("/test/shell/somewhere", KEY_CASCADING_NAME, KEY_END);
+	if (kdbSet (kdb, ks, parentKey) == -1)
 	{
-		printError("kdbSet", parentKey);
+		printError ("kdbSet", parentKey);
 	}
 
-	ksDel(ks);
-	kdbClose(kdb, 0);
-	keyDel(parentKey);
+	ksDel (ks);
+	kdbClose (kdb, 0);
+	keyDel (parentKey);
 }

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+SELF=$(readlink -f "$0")
+SCRIPTS=$(dirname "$SELF")
+SOURCE=$(dirname "$SCRIPTS")
+
+cd $SOURCE
+
+clang-tidy-3.8 -fix-errors -checks="readability-braces-around-statements"  `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^(./src/tools/gen|./tests/gtest-1.7.0)"`

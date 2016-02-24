@@ -1,9 +1,11 @@
 - infos = Information about path plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
+- infos/placements = presetstorage
 - infos/needs =
 - infos/provides = check
-- infos/placements = presetstorage
+- infos/status = maintained nodep libc
+- infos/metadata = check/path
 - infos/description = Checks if keys enriched with appropriate metadata contain valid paths as values
 
 ## Introduction ##

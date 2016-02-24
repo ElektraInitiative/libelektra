@@ -21,137 +21,90 @@
 #include <tests_plugin.h>
 
 
-void test_readfstab(const char * file)
+void test_readfstab (const char * file)
 {
-	Key * parentKey = keyNew ("user/tests/fstab", KEY_VALUE, srcdir_file(file), KEY_END);
-	KeySet *conf = 0;
-	PLUGIN_OPEN("fstab");
+	Key * parentKey = keyNew ("user/tests/fstab", KEY_VALUE, srcdir_file (file), KEY_END);
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("fstab");
 
-	KeySet *ks=ksNew(0, KS_END);
+	KeySet * ks = ksNew (0, KS_END);
 
 	printf ("Reading fstab using file: %s\n", file);
 
-	succeed_if (plugin->kdbGet(plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 
 	// output_keyset(ks);
 
-	Key *key = ksLookupByName(ks, "user/tests/fstab/\\//device",0);
+	Key * key = ksLookupByName (ks, "user/tests/fstab/\\//device", 0);
 	exit_if_fail (key, "rootfs device not found");
-	succeed_if (strcmp( "/dev/sda1", keyValue(key)) == 0, "device not correct");
+	succeed_if (strcmp ("/dev/sda1", keyValue (key)) == 0, "device not correct");
 
-	key = ksLookupByName(ks, "user/tests/fstab/\\/media\\/ext4/device",0);
+	key = ksLookupByName (ks, "user/tests/fstab/\\/media\\/ext4/device", 0);
 	exit_if_fail (key, "media device not found");
-	succeed_if (strcmp( "/dev/sdg1", keyValue(key)) == 0, "device not correct");
+	succeed_if (strcmp ("/dev/sdg1", keyValue (key)) == 0, "device not correct");
 
-	exit_if_fail (key = ksLookupByName(ks, "user/tests/fstab/\\/media\\/ext4/dumpfreq",0), "rootfs device not found");
-	succeed_if (strcmp( "0", keyValue(key)) == 0, "dumpfreq not correct");
+	exit_if_fail (key = ksLookupByName (ks, "user/tests/fstab/\\/media\\/ext4/dumpfreq", 0), "rootfs device not found");
+	succeed_if (strcmp ("0", keyValue (key)) == 0, "dumpfreq not correct");
 
-	ksDel(ks);
-	keyDel(parentKey);
+	ksDel (ks);
+	keyDel (parentKey);
 
-	PLUGIN_CLOSE();
+	PLUGIN_CLOSE ();
 }
 
-void test_writefstab(const char * file)
+void test_writefstab (const char * file)
 {
-	KeySet *conf = 0;
-	PLUGIN_OPEN("fstab");
+	KeySet * conf = 0;
+	PLUGIN_OPEN ("fstab");
 
 	printf ("Writing fstab using file: %s\n", file);
 
-	KeySet *ks = ksNew( 22 ,
-			keyNew ("user/tests/filesystems"
-				, KEY_VALUE, "filesystems"
-				, KEY_COMMENT, ""
-			, KEY_END),
-			keyNew ("user/tests/filesystems/\\/"
-				, KEY_VALUE, "the root fs"
-				, KEY_COMMENT, "pseudo name"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/\\//device"
-				, KEY_VALUE, "/dev/sda6"
-				, KEY_COMMENT, "Device or Label"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/\\//dumpfreq"
-				, KEY_VALUE, "0"
-				, KEY_COMMENT, "Dump frequency in days"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/\\//mpoint"
-				, KEY_VALUE, "/"
-				, KEY_COMMENT, "Moint point"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/\\//options"
-				, KEY_VALUE, "defaults,errors=remount-ro"
-				, KEY_COMMENT, "Fileuser/tests specific options. See mount(8)"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/\\//passno"
-				, KEY_VALUE, "1"
-				, KEY_COMMENT, "Pass number on parallel fsck"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/\\//type"
-				, KEY_VALUE, "jfs"
-				, KEY_COMMENT, "Fileuser/tests type. See fs(5)"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/swap00"
-				, KEY_VALUE, "non-swapfs"
-				, KEY_COMMENT, "pseudo name"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/swap00/device"
-				, KEY_VALUE, "/dev/sda10"
-				, KEY_COMMENT, "Device or Label"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/swap00/dumpfreq"
-				, KEY_VALUE, "0"
-				, KEY_COMMENT, "Dump frequency in days"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/swap00/mpoint"
-				, KEY_VALUE, "none"
-				, KEY_COMMENT, "Moint point"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/swap00/options"
-				, KEY_VALUE, "sw"
-				, KEY_COMMENT, "Fileuser/tests specific options. See mount(8)"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/swap00/passno"
-				, KEY_VALUE, "0"
-				, KEY_COMMENT, "Pass number on parallel fsck"
-			, KEY_END),
-			keyNew ("user/tests/filesystems/swap00/type"
-				, KEY_VALUE, "swap"
-				, KEY_COMMENT, "Fileuser/tests type. See fs(5)"
-			, KEY_END),
-			KS_END);
+	KeySet * ks = ksNew (
+		22, keyNew ("user/tests/filesystems", KEY_VALUE, "filesystems", KEY_COMMENT, "", KEY_END),
+		keyNew ("user/tests/filesystems/\\/", KEY_VALUE, "the root fs", KEY_COMMENT, "pseudo name", KEY_END),
+		keyNew ("user/tests/filesystems/\\//device", KEY_VALUE, "/dev/sda6", KEY_COMMENT, "Device or Label", KEY_END),
+		keyNew ("user/tests/filesystems/\\//dumpfreq", KEY_VALUE, "0", KEY_COMMENT, "Dump frequency in days", KEY_END),
+		keyNew ("user/tests/filesystems/\\//mpoint", KEY_VALUE, "/", KEY_COMMENT, "Moint point", KEY_END),
+		keyNew ("user/tests/filesystems/\\//options", KEY_VALUE, "defaults,errors=remount-ro", KEY_COMMENT,
+			"Fileuser/tests specific options. See mount(8)", KEY_END),
+		keyNew ("user/tests/filesystems/\\//passno", KEY_VALUE, "1", KEY_COMMENT, "Pass number on parallel fsck", KEY_END),
+		keyNew ("user/tests/filesystems/\\//type", KEY_VALUE, "jfs", KEY_COMMENT, "Fileuser/tests type. See fs(5)", KEY_END),
+		keyNew ("user/tests/filesystems/swap00", KEY_VALUE, "non-swapfs", KEY_COMMENT, "pseudo name", KEY_END),
+		keyNew ("user/tests/filesystems/swap00/device", KEY_VALUE, "/dev/sda10", KEY_COMMENT, "Device or Label", KEY_END),
+		keyNew ("user/tests/filesystems/swap00/dumpfreq", KEY_VALUE, "0", KEY_COMMENT, "Dump frequency in days", KEY_END),
+		keyNew ("user/tests/filesystems/swap00/mpoint", KEY_VALUE, "none", KEY_COMMENT, "Moint point", KEY_END),
+		keyNew ("user/tests/filesystems/swap00/options", KEY_VALUE, "sw", KEY_COMMENT,
+			"Fileuser/tests specific options. See mount(8)", KEY_END),
+		keyNew ("user/tests/filesystems/swap00/passno", KEY_VALUE, "0", KEY_COMMENT, "Pass number on parallel fsck", KEY_END),
+		keyNew ("user/tests/filesystems/swap00/type", KEY_VALUE, "swap", KEY_COMMENT, "Fileuser/tests type. See fs(5)", KEY_END),
+		KS_END);
 
-	Key *parentKey = keyNew ("user/tests/filesystems", KEY_VALUE,
-			elektraFilename(), KEY_END);
-	succeed_if(plugin->kdbSet (plugin, ks, parentKey) == 1,
-			"kdbSet was not successful");
-	succeed_if(output_error (parentKey), "error in kdbSet");
-	succeed_if(output_warnings (parentKey), "warnings in kdbSet");
+	Key * parentKey = keyNew ("user/tests/filesystems", KEY_VALUE, elektraFilename (), KEY_END);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
 
-	succeed_if( compare_line_files (srcdir_file (file), keyString (parentKey)),
-		    "files do not match as expected");
+	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
 
-	elektraUnlink(keyString (parentKey));
-	keyDel(parentKey);
+	elektraUnlink (keyString (parentKey));
+	keyDel (parentKey);
 
 	ksDel (ks);
 
 	PLUGIN_CLOSE ();
 }
 
-int main(int argc, char** argv)
+int main (int argc, char ** argv)
 {
-	printf("FSTAB       TESTS\n");
-	printf("==================\n\n");
+	printf ("FSTAB       TESTS\n");
+	printf ("==================\n\n");
 
 	init (argc, argv);
 
-	test_readfstab("fstab/fstab");
-	test_writefstab("fstab/fstab-write");
+	test_readfstab ("fstab/fstab");
+	test_writefstab ("fstab/fstab-write");
 
-	printf("\ntestmod_fstab RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntestmod_fstab RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
-

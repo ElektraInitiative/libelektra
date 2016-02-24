@@ -11,6 +11,7 @@
 #ifndef TOOLS_PLUGIN_DATABASE_HPP
 #define TOOLS_PLUGIN_DATABASE_HPP
 
+#include <map>
 #include <memory>
 #include <unordered_map>
 
@@ -39,7 +40,7 @@ public:
 	 *
 	 * @return a list of all available plugins
 	 */
-	virtual std::vector<std::string> listAllPlugins() const = 0;
+	virtual std::vector<std::string> listAllPlugins () const = 0;
 
 	// TODO: add additional functions:
 	// virtual void registerPlugin(PluginSpec) = 0;
@@ -89,6 +90,15 @@ public:
 	 * @return the plugin itself or the best suited plugin specification which provides it
 	 */
 	virtual PluginSpec lookupProvides (std::string const & provides) const = 0;
+
+	/**
+	 * @param statusString the string encoding the status
+	 *
+	 * @return The representing number for a given status.
+	 */
+	static int calculateStatus (std::string statusString);
+
+	static const std::map<std::string, int> statusMap;
 };
 
 typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
@@ -100,11 +110,12 @@ class ModulesPluginDatabase : public PluginDatabase
 {
 	class Impl;
 	std::unique_ptr<Impl> impl;
+
 public:
 	ModulesPluginDatabase ();
 	~ModulesPluginDatabase ();
 
-	std::vector<std::string> listAllPlugins() const;
+	std::vector<std::string> listAllPlugins () const;
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
@@ -119,15 +130,13 @@ class MockPluginDatabase : public ModulesPluginDatabase
 public:
 	/// only data from here will be returned
 	/// @note that it is ordered by name, i.e., different ref-names cannot be distinguished
-	mutable std::unordered_map <PluginSpec, std::unordered_map<std::string,std::string>, PluginSpecHash, PluginSpecName> data;
+	mutable std::unordered_map<PluginSpec, std::unordered_map<std::string, std::string>, PluginSpecHash, PluginSpecName> data;
 
-	std::vector<std::string> listAllPlugins() const;
+	std::vector<std::string> listAllPlugins () const;
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
-	std::string lookupInfo(PluginSpec const & spec, std::string const & which) const;
+	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
 };
-
 }
-
 }
 
 #endif

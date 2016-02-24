@@ -9,8 +9,8 @@
 #ifndef DELETEKEYCOMMAND_HPP
 #define DELETEKEYCOMMAND_HPP
 
-#include <QUndoCommand>
 #include "treeviewmodel.hpp"
+#include <QUndoCommand>
 
 /**
  * @brief The DeleteKeyCommand class. Remembers a node for redo/undo.
@@ -27,17 +27,17 @@ public:
 	 * @param index The index of the ConfigNode that is deleted.
 	 * @param parent An optional parent command.
 	 */
-	explicit DeleteKeyCommand(const QString& type, TreeViewModel* model, int index, QUndoCommand* parent = nullptr);
+	explicit DeleteKeyCommand (const QString & type, TreeViewModel * model, int index, QUndoCommand * parent = nullptr);
 
-	virtual void undo() override;
-	virtual void redo() override;
+	virtual void undo () override;
+	virtual void redo () override;
 
 private:
-	TreeViewModel*  m_model;
-	ConfigNodePtr   m_node;
-	int             m_index;
-	bool			m_isRoot;
-	ConfigNodePtr	m_root;
+	TreeViewModel * m_model;
+	ConfigNodePtr m_node;
+	int m_index;
+	bool m_isRoot;
+	ConfigNodePtr m_root;
 };
 
 #endif // DELETEKEYCOMMAND_HPP

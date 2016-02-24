@@ -22,22 +22,27 @@ namespace tools
 namespace merging
 {
 
-enum ConflictResolutionSide { BASE, OURS, THEIRS };
+enum ConflictResolutionSide
+{
+	BASE,
+	OURS,
+	THEIRS
+};
 
 class MergeConflictStrategy
 {
 
 public:
-	virtual ~MergeConflictStrategy() {};
-	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result) = 0;
+	virtual ~MergeConflictStrategy (){};
+	virtual void resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result) = 0;
 
 protected:
-	virtual ConflictOperation getOurConflictOperation(const Key& conflictKey);
-	virtual ConflictOperation getTheirConflictOperation(const Key& conflictKey);
+	virtual ConflictOperation getOurConflictOperation (const Key & conflictKey);
+	virtual ConflictOperation getTheirConflictOperation (const Key & conflictKey);
+	virtual void copyKeyValue (const Key & source, Key & destination);
 };
 
 typedef std::unique_ptr<MergeConflictStrategy> MergeConflictStrategyPtr;
-
 }
 }
 }

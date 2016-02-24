@@ -3,7 +3,7 @@
 This document provides an introduction in how the source code of
 libelektra is organized and how and where to add functionality.
 
-Make sure to read [DESIGN](DESIGN.md) together with this document.
+Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
 
 ## Folder structure ##
 
@@ -49,37 +49,60 @@ TODO marker to make the places visible.
 If you see inconsistency do not hesitate to talk about it with the
 intent to add a new rule here.
 
-See [DESIGN](DESIGN.md) document too, they complement each other.
+See [DESIGN](/doc/DESIGN.md) document too, they complement each other.
 
+### Coding Style ###
 
-### C Guidelines ###
+- Limits
 
  * Functions should not exceed 100 lines.
  * Files should not exceed 1000 lines.
- * A line should not be longer than 72 characters.
- * Split up when those limits are reached.
- * Rationale: Readability with split windows.
- * The compiler shall not emit any warning (or error).
+ * A line should not be longer than 140 characters.
+
+Split up when those limits are reached.
+Rationale: Readability with split windows.
+
+- Indentation
+
  * Use tabs for indentation.
+ * One tab equals 8 spaces.
+
+- Blocks
+
  * Use blocks even for single line statements.
- * Curly braces go on a line on their own on the previous indentation level
- * Use goto only for error situations.
+ * Curly braces go on a line on their own on the previous indentation level.
+ * Avoid multiple variable declarations at one place.
+ * Declare Variables as late as possible, preferable within blocks.
+
+- Naming
+
  * Use camelCase for functions and variables.
  * Start types with upper-case, everything else with lower-case.
- * Avoid spaces between words and round braces.
- * Use C-comments `/**/` with doxygen style for functions.
- * Use C++-comments `//` for single line statements about the code in the
-next line.
- * Avoid multiple variable declarations at one place and `*` are next to the
-variable names.
- * Use `const` as much as possible.
- * Use `static` methods if they should not be externally visible.
- * Declare Variables as late as possible, preferable within blocks.
- * C-Files have extension `.c`, Header files `.h`.
  * Prefix names with `elektra` for internal usage. External API either starts
 with `ks`, `key` or `kdb`.
 
-**Example:** [src/libelektra/kdb.c](../src/libelektra/kdb.c)
+- Comments
+
+ * Use C-comments `/**/` with doxygen style for functions.
+ * Use C++-comments `//` for single line statements about the code in the
+next line.
+
+- Whitespaces
+
+ * Use space before and after equal when assigning a value.
+ * Use space before round parenthesis ( `(` ).
+ * Use space before and after `*` from Pointers.
+ * Use space after `,` of every function argument.
+
+### C Guidelines ###
+
+ * The compiler shall not emit any warning (or error).
+ * Use goto only for error situations.
+ * Use `const` as much as possible.
+ * Use `static` methods if they should not be externally visible.
+ * C-Files have extension `.c`, Header files `.h`.
+
+**Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
 
 ### C++ Guidelines ###
@@ -101,7 +124,7 @@ We also support the import of Markdown pages. Doxygen 1.8.8 or later
 is required for this feature (Anyways you can find the
 [API Doc](http://doc.libelektra.org/api/latest/html/) online).
 Links between Markdown files will be converted with the
-[Markdown Link Converter](markdownlinkconverter/README.md).
+[Markdown Link Converter](/doc/markdownlinkconverter/README.md).
 **Markdown pages are used in the pdf, therefore watch which characters you use and
 provide a proper encoding!**
 
@@ -122,7 +145,7 @@ Files should start with:
 	 *
 	 * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 	 */
-	
+
 
 \endverbatim
 

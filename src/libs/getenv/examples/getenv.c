@@ -10,28 +10,35 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(int argc, char** argv, char** environ)
+int main (int argc, char ** argv, char ** environ)
 {
 	if (argc == 1)
 	{
-		char** env;
+		char ** env;
 		for (env = environ; *env != 0; env++)
 		{
-			const size_t len = strcspn(*env, "=");
-			char name[len+1];
-			strncpy(name, *env, len);
+			const size_t len = strcspn (*env, "=");
+			char name[len + 1];
+			strncpy (name, *env, len);
 			name[len] = 0;
-			const char *c = getenv(name);
+			const char * c = getenv (name);
 			printf ("getenv(\"%s\") -> ", name);
-			printf ("%s\n", c);
+			if (!c)
+			{
+				printf ("<null>\n");
+			}
+			else
+			{
+				printf ("%s\n", c);
+			}
 		}
 	}
 	else
 	{
-		for (int i=1; i<argc; ++i)
+		for (int i = 1; i < argc; ++i)
 		{
-			const char *name = argv[i];
-			const char *c = getenv(name);
+			const char * name = argv[i];
+			const char * c = getenv (name);
 			if (!c) return 1;
 			printf ("%s\n", c);
 		}

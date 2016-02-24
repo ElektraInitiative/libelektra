@@ -7,7 +7,7 @@ add_plugin(hosts
 		hosts-set.c
 		keymetaformatting.h
 		keymetaformatting.c
-	LINK_LIBRARIES
+	LINK_ELEKTRA
 		elektra-ease
 		elektra-proposal
 		elektra-meta

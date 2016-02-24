@@ -7,9 +7,9 @@
  *
  */
 
-#include <string>
-#include <merging/metamergestrategy.hpp>
 #include <helper/keyhelper.hpp>
+#include <merging/metamergestrategy.hpp>
+#include <string>
 
 using namespace std;
 using namespace kdb::tools::helper;
@@ -23,7 +23,7 @@ namespace tools
 namespace merging
 {
 
-KeySet MetaMergeStrategy::getMetaKeys(Key& key)
+KeySet MetaMergeStrategy::getMetaKeys (Key & key)
 {
 	KeySet result;
 
@@ -33,49 +33,48 @@ KeySet MetaMergeStrategy::getMetaKeys(Key& key)
 		Key currentMeta;
 		while ((currentMeta = key.nextMeta ()))
 		{
-			string resultName = "user/" + currentMeta.getName();
-			Key resultMeta = Key(resultName.c_str(), KEY_VALUE, currentMeta.getString().c_str(), KEY_END);
-			result.append(resultMeta);
+			string resultName = "user/" + currentMeta.getName ();
+			Key resultMeta = Key (resultName.c_str (), KEY_VALUE, currentMeta.getString ().c_str (), KEY_END);
+			result.append (resultMeta);
 		}
 	}
 
 	return result;
 }
 
-void MetaMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result)
+void MetaMergeStrategy::resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result)
 {
-	conflictKey.rewindMeta();
+	conflictKey.rewindMeta ();
 	Key currentMeta;
 
 	string baseLookup = rebasePath (conflictKey, task.mergeRoot, task.baseParent);
 	string ourLookup = rebasePath (conflictKey, task.mergeRoot, task.ourParent);
 	string theirLookup = rebasePath (conflictKey, task.mergeRoot, task.theirParent);
 
-	Key baseKey = task.base.lookup(baseLookup);
-	Key ourKey = task.ours.lookup(ourLookup);
-	Key theirKey = task.theirs.lookup(theirLookup);
+	Key baseKey = task.base.lookup (baseLookup);
+	Key ourKey = task.ours.lookup (ourLookup);
+	Key theirKey = task.theirs.lookup (theirLookup);
 
 	Key root ("user/", KEY_END);
 	KeySet baseMeta = getMetaKeys (baseKey);
 	KeySet ourMeta = getMetaKeys (ourKey);
 	KeySet theirMeta = getMetaKeys (theirKey);
 
-	MergeTask metaTask(BaseMergeKeys (baseMeta, root), OurMergeKeys (ourMeta, root),
-			TheirMergeKeys (theirMeta, root), root);
+	MergeTask metaTask (BaseMergeKeys (baseMeta, root), OurMergeKeys (ourMeta, root), TheirMergeKeys (theirMeta, root), root);
 
-	MergeResult metaResult = innerMerger.mergeKeySet(metaTask);
+	MergeResult metaResult = innerMerger.mergeKeySet (metaTask);
 
-	KeySet mergedMeta = metaResult.getMergedKeys();
+	KeySet mergedMeta = metaResult.getMergedKeys ();
 	Key current;
-	mergedMeta.rewind();
-	while ((current = mergedMeta.next()))
+	mergedMeta.rewind ();
+	while ((current = mergedMeta.next ()))
 	{
-		string metaName = current.getName().substr(string("user/").length());
-		conflictKey.setMeta(metaName, current.getString());
+		string metaName = current.getName ().substr (string ("user/").length ());
+		conflictKey.setMeta (metaName, current.getString ());
 	}
 
-	ConflictOperation ourOperation = getOurConflictOperation(conflictKey);
-	ConflictOperation theirOperation = getTheirConflictOperation(conflictKey);
+	ConflictOperation ourOperation = getOurConflictOperation (conflictKey);
+	ConflictOperation theirOperation = getTheirConflictOperation (conflictKey);
 
 	if (!metaResult.hasConflicts ())
 	{
@@ -85,16 +84,12 @@ void MetaMergeStrategy::resolveConflict(const MergeTask& task, Key& conflictKey,
 			// without this strategy restoring the value the value would be lost
 			// this happens only for CONFLICT_META <--> CONFLICT_META conflicts
 			// add a test for this behaviour
-			conflictKey.setString(ourKey.getString());
+			copyKeyValue (ourKey, conflictKey);
 			result.resolveConflict (conflictKey);
 			result.addMergeKey (conflictKey);
 		}
 	}
-
-}
-
 }
 }
 }
-
-
+}

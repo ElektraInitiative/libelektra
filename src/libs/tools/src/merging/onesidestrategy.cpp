@@ -7,9 +7,9 @@
  *
  */
 
-#include <string>
 #include <helper/keyhelper.hpp>
 #include <merging/onesidestrategy.hpp>
+#include <string>
 
 using namespace std;
 using namespace kdb::tools::helper;
@@ -23,7 +23,7 @@ namespace tools
 namespace merging
 {
 
-void OneSideStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result)
+void OneSideStrategy::resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result)
 {
 	string lookupPath;
 	Key winningKey;
@@ -32,31 +32,30 @@ void OneSideStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, M
 	{
 	case BASE:
 		lookupPath = rebasePath (conflictKey, task.mergeRoot, task.baseParent);
-		winningKey = task.base.lookup(lookupPath);
+		winningKey = task.base.lookup (lookupPath);
 		break;
 	case OURS:
 		lookupPath = rebasePath (conflictKey, task.mergeRoot, task.ourParent);
-		winningKey = task.ours.lookup(lookupPath);
+		winningKey = task.ours.lookup (lookupPath);
 		break;
 	case THEIRS:
 		lookupPath = rebasePath (conflictKey, task.mergeRoot, task.theirParent);
-		winningKey = task.theirs.lookup(lookupPath);
+		winningKey = task.theirs.lookup (lookupPath);
 		break;
 	}
 
 	if (winningKey)
 	{
-		conflictKey.setString(winningKey.getString());
-		result.resolveConflict(conflictKey);
-		result.addMergeKey(conflictKey);
-	} else
+		copyKeyValue (winningKey, conflictKey);
+		result.resolveConflict (conflictKey);
+		result.addMergeKey (conflictKey);
+	}
+	else
 	{
-		result.resolveConflict(conflictKey);
-		result.removeMergeKey(conflictKey);
+		result.resolveConflict (conflictKey);
+		result.removeMergeKey (conflictKey);
 	}
 }
-
 }
 }
 }
-

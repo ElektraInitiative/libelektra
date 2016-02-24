@@ -61,13 +61,32 @@ exit_if_fail "could not merge"
 [ "x`$KDB ls $MERGED_ROOT/key 2> /dev/null`" = "x$MERGED_ROOT/key" ]
 exit_if_fail "not exactly one result"
 
-[ "x`$KDB get $MERGED_ROOT/key 2> /dev/null`" = "xinit" ]
+[ "x`$KDB get $MERGED_ROOT/key 2> /dev/null`" = "xours" ]
+exit_if_fail "merge produced wrong result"
+
+$KDB rm -r $MERGED_ROOT/key
+$KDB rm -r $OURS_ROOT/key
+$KDB rm -r $THEIRS_ROOT/key
+$KDB rm -r $BASE_ROOT/key
+
+echo "Testing binary data handling"
+
+$KDB set $OURS_ROOT/nullbinary  >/dev/null
+exit_if_fail "could not set"
+
+$KDB getmeta $OURS_ROOT/nullbinary "binary" >/dev/null
+exit_if_fail "created key is not binary"
+
+$KDB merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
+exit_if_fail "could not merge"
+
+[ "x`$KDB ls $MERGED_ROOT/nullbinary 2> /dev/null`" = "x$MERGED_ROOT/nullbinary" ]
+exit_if_fail "not exactly one result"
+
+$KDB getmeta $MERGED_ROOT/nullbinary "binary" >/dev/null
+exit_if_fail "merged key is not binary"
 
 $KDB rm -r $USER_ROOT/mergetest
-
-
-
-
 
 echo "Testing metadata"
 

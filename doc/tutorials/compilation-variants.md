@@ -2,7 +2,7 @@
 
 To create different variants of the same feature, but avoid code
 duplications within plugins, you have multiple options:
-- Define a needs clause in a [contract](contract.md) and reuse another
+- Define a needs clause in a [contract](/doc/CONTRACT.ini) and reuse another
   plugin as it is. This should be preferred for filter and validation
   tasks.
 - Have common code together in a helper library (or core library),

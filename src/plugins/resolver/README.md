@@ -2,9 +2,9 @@
 - infos/author = Markus Raab <elektra@markus-raab.org>
 - infos/licence = BSD
 - infos/provides = resolver
-- infos/placements = rollback getresolver setresolver commit
 - infos/needs =
-- infos/status = productive specific unittest tested
+- infos/placements = rollback getresolver setresolver commit
+- infos/status = productive maintained specific unittest tested libc configurable
 - infos/description =
 ## Scope ##
 
@@ -95,7 +95,7 @@ if configured with the variant:
 
 Additionally KDB_DB_USER needs to be left unchanged as `.config`.
 
-XDG_CONFIG_DIRS will be used to resolve system pathes the following
+XDG_CONFIG_DIRS will be used to resolve system paths the following
 way:
 
 - if unset or empty /etc/xdg will be used instead

@@ -3,15 +3,15 @@
 Applications should use Elektra to read (and store) configurations for a
 overall better integrated system.
 A light integration would be to write parsers for the configuration files
-of your application as Elektra plugin. This yields following advantages:
+of your application as Elektra plugin. This yields the following advantages:
 
 - applications and administrators can easily change individual values
 - import/export of configuration
 
 
-For a full integration, however, the application needs to be patched
+For full integration, however, the application needs to be patched
 to directly access Elektra's key database.
-When the application is fully integrated in the Elektra's ecosystem
+When the application is fully integrated in Elektra's ecosystem
 additional benefits arise:
 
 - Benefits that shared libraries have, e.g.
@@ -80,8 +80,8 @@ Elektra's atomic unit and consists of:
 `Key`s are either associated with entries in configuration files or used
 as arguments in the API to transport some information.
 
-Thus a key is only in-memory and does not need any of the other Elektra's objects
-we always can create one:
+Thus a key is only in-memory and does not need any of the other Elektra's objects.
+We always can create one:
 
 	Key *parentKey = keyNew("/sw/org/myapp/#0/current",
 		KEY_CACADING_NAME,
@@ -143,7 +143,7 @@ To lookup a key, we simply use, e.g.:
 		"/sw/org/myapp/#0/current/section/subsection/key",
 		0);
 
-We see in that example that only Elektra pathes are hardcoded in
+We see in that example that only Elektra paths are hardcoded in
 the application, no configuration file or similar.
 Thus we are interested in the value we use:
 
@@ -158,8 +158,8 @@ Obviously, to do this manually has severe drawbacks:
 - tedious handling if key or value might be absent
 - converting to needed data type is error prone
 
-So (larger) applications should not directly use the `KeySet`, but
-instead use code generation that provides a type-safe front-end.
+So (larger) applications should not directly use `KeySet`, but
+instead use code generation to provide a type-safe front-end.
 
 For more information about that, continue reading
 [here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen)
@@ -192,6 +192,10 @@ are now available (in the meta data of respective `spec`-keys):
     the `fallback`-keys will be searched
 - `default`: this value will be used if nothing else was found
 
+They can be used like this:  
+	`kdb set /overrides/test "example override"`  
+	`sudo kdb setmeta spec/test override/#0 /overrides/test`
+
 This technique provides complete transparency how a program will fetch a configuration
 value. In practice that means that:
 
@@ -202,7 +206,7 @@ above lookup C-code.
 
 What we do not see in the program above are the default values and
 fallbacks. They are only present in the so specification (namespace `spec`).
-Luckily, the specification are (meta) key/value pairs, too. So we do not have
+Luckily, the specification consists of (meta) key/value pairs, too. So we do not have
 to learn something new.
 
 So lets say, that another application `otherapp` exactly has the
@@ -227,7 +231,7 @@ Using the `default` specification, we even can startup applications without
 any configuration file *at all* and still do not have anything hardcoded
 in the applications binary.
 Furthermore, by only using cascading keys for `kdbGet()` and `ksLookup()`
-Elektra gives you a possibility to specify how configuration data
+Elektra gives you the possibility to specify how configuration data
 should be retrieved. In this specification you can define, that
 configuration data from other applications or shared places should
 be considered or even preferred. Doing so, we can achieve configuration

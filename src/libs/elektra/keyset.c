@@ -33,9 +33,8 @@
 #include "kdbinternal.h"
 
 
-#define ELEKTRA_MAX_PREFIX_SIZE sizeof("namespace/")
-#define ELEKTRA_MAX_NAMESPACE_SIZE sizeof("system")
-
+#define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
+#define ELEKTRA_MAX_NAMESPACE_SIZE sizeof ("system")
 
 
 /** @class doxygenFlatCopy
@@ -147,12 +146,12 @@
  * @return a ready to use KeySet object
  * @retval 0 on memory error
  */
-KeySet *ksNew(size_t alloc, ...)
+KeySet * ksNew (size_t alloc, ...)
 {
-	KeySet *ks;
+	KeySet * ks;
 	va_list va;
 
-	va_start(va, alloc);
+	va_start (va, alloc);
 	ks = ksVNew (alloc, va);
 	va_end (va);
 
@@ -167,24 +166,26 @@ KeySet *ksNew(size_t alloc, ...)
  * @param alloc the allocation size
  * @param va the list of variable arguments
  **/
-KeySet *ksVNew (size_t alloc, va_list va)
+KeySet * ksVNew (size_t alloc, va_list va)
 {
-	KeySet *keyset=0;
-	Key *key = 0;
+	KeySet * keyset = 0;
+	Key * key = 0;
 
-	keyset= (KeySet *)elektraMalloc(sizeof(KeySet));
+	keyset = (KeySet *)elektraMalloc (sizeof (KeySet));
 	if (!keyset)
 	{
 		/*errno = KDB_ERR_NOMEM;*/
 		return 0;
 	}
-	ksInit(keyset);
+	ksInit (keyset);
 
-	alloc ++; /* for ending null byte */
-	if (alloc < KEYSET_SIZE) keyset->alloc=KEYSET_SIZE;
-	else keyset->alloc=alloc;
+	alloc++; /* for ending null byte */
+	if (alloc < KEYSET_SIZE)
+		keyset->alloc = KEYSET_SIZE;
+	else
+		keyset->alloc = alloc;
 
-	keyset->array = elektraMalloc (sizeof(struct _Key *) * keyset->alloc);
+	keyset->array = elektraMalloc (sizeof (struct _Key *) * keyset->alloc);
 	if (!keyset->array)
 	{
 		/*errno = KDB_ERR_NOMEM;*/
@@ -194,16 +195,15 @@ KeySet *ksVNew (size_t alloc, va_list va)
 
 	if (alloc != 1) // is >0 because of increment earlier
 	{
-		key = (struct _Key *) va_arg (va, struct _Key *);
+		key = (struct _Key *)va_arg (va, struct _Key *);
 		while (key)
 		{
-			ksAppendKey(keyset, key);
-			key = (struct _Key *) va_arg (va, struct _Key *);
+			ksAppendKey (keyset, key);
+			key = (struct _Key *)va_arg (va, struct _Key *);
 		}
-
 	}
 
-	ksRewind(keyset); // ksAppendKey changed the internal cursor
+	ksRewind (keyset); // ksAppendKey changed the internal cursor
 
 	return keyset;
 }
@@ -226,11 +226,11 @@ KeySet *ksVNew (size_t alloc, va_list va)
  * @see ksNew(), ksDel()
  * @see keyDup() for key duplication
  */
-KeySet *ksDup (const KeySet * source)
+KeySet * ksDup (const KeySet * source)
 {
 	if (!source) return 0;
 
-	KeySet *keyset=ksNew(source->alloc,KS_END);
+	KeySet * keyset = ksNew (source->alloc, KS_END);
 	ksAppend (keyset, source);
 	return keyset;
 }
@@ -252,24 +252,24 @@ KeySet *ksDup (const KeySet * source)
  * @see keyDup() for key duplication
  * @see ksDup() for flat copy
  */
-KeySet* ksDeepDup(const KeySet *source)
+KeySet * ksDeepDup (const KeySet * source)
 {
 	if (!source) return 0;
 
 	size_t s = source->size;
 	size_t i = 0;
-	KeySet *keyset = 0;
+	KeySet * keyset = 0;
 
-	keyset = ksNew(source->alloc,KS_END);
-	for (i=0; i<s; ++i)
+	keyset = ksNew (source->alloc, KS_END);
+	for (i = 0; i < s; ++i)
 	{
-		Key *k = source->array[i];
-		Key *d = keyDup(k);
-		if (!test_bit(k->flags, KEY_FLAG_SYNC))
+		Key * k = source->array[i];
+		Key * d = keyDup (k);
+		if (!test_bit (k->flags, KEY_FLAG_SYNC))
 		{
-			keyClearSync(d);
+			keyClearSync (d);
 		}
-		ksAppendKey(keyset, d);
+		ksAppendKey (keyset, d);
 	}
 
 	return keyset;
@@ -317,7 +317,7 @@ int f (KeySet *ks)
  * @see ksNew(), ksDel(), ksDup()
  * @see keyCopy() for copying keys
  */
-int ksCopy (KeySet *dest, const KeySet *source)
+int ksCopy (KeySet * dest, const KeySet * source)
 {
 	if (!dest) return -1;
 	ksClear (dest);
@@ -328,7 +328,6 @@ int ksCopy (KeySet *dest, const KeySet *source)
 
 	return 1;
 }
-
 
 
 /**
@@ -344,14 +343,14 @@ int ksCopy (KeySet *dest, const KeySet *source)
  * @retval -1 on null pointer
  * @see ksNew()
  */
-int ksDel(KeySet *ks)
+int ksDel (KeySet * ks)
 {
 	int rc;
 
 	if (!ks) return -1;
 
-	rc=ksClose(ks);
-	elektraFree(ks);
+	rc = ksClose (ks);
+	elektraFree (ks);
 
 	return rc;
 }
@@ -370,12 +369,12 @@ int ksDel(KeySet *ks)
  * @retval 0 on sucess
  * @retval -1 on failure (memory)
  */
-int ksClear(KeySet *ks)
+int ksClear (KeySet * ks)
 {
 	ksClose (ks);
 	// ks->array empty now
 
-	if ((ks->array = elektraMalloc (sizeof(struct _Key *) * KEYSET_SIZE)) == 0)
+	if ((ks->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
 	{
 		/*errno = KDB_ERR_NOMEM;*/
 		ks->size = 0;
@@ -398,26 +397,36 @@ int ksClear(KeySet *ks)
  * Is suitable for binary search (but may return wrong owner)
  *
  */
-static int keyCompareByName(const void *p1, const void *p2)
+static int keyCompareByName (const void * p1, const void * p2)
 {
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const void *name1 = key1->key+key1->keySize;
-	const void *name2 = key2->key+key2->keySize;
+	Key * key1 = *(Key **)p1;
+	Key * key2 = *(Key **)p2;
+	const void * name1 = key1->key + key1->keySize;
+	const void * name2 = key2->key + key2->keySize;
 	size_t const nameSize1 = key1->keyUSize;
 	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
 	if (nameSize1 == nameSize2)
 	{
-		ret = memcmp(name1, name2, nameSize2);
-	} else {
+		ret = memcmp (name1, name2, nameSize2);
+	}
+	else
+	{
 		if (nameSize1 < nameSize2)
 		{
-			ret = memcmp(name1, name2, nameSize1);
-			if (ret==0) ret = -1;
-		} else {
-			ret = memcmp(name1, name2, nameSize2);
-			if (ret==0) ret = 1;
+			ret = memcmp (name1, name2, nameSize1);
+			if (ret == 0)
+			{
+				ret = -1;
+			}
+		}
+		else
+		{
+			ret = memcmp (name1, name2, nameSize2);
+			if (ret == 0)
+			{
+				ret = 1;
+			}
 		}
 	}
 	return ret;
@@ -431,28 +440,38 @@ static int keyCompareByName(const void *p1, const void *p2)
  * @param p1
  * @param p2
  *
- * @return 
+ * @return
  */
-static int keyCompareByNameCase(const void *p1, const void *p2)
+static int keyCompareByNameCase (const void * p1, const void * p2)
 {
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const void *name1 = key1->key+key1->keySize;
-	const void *name2 = key2->key+key2->keySize;
+	Key * key1 = *(Key **)p1;
+	Key * key2 = *(Key **)p2;
+	const void * name1 = key1->key + key1->keySize;
+	const void * name2 = key2->key + key2->keySize;
 	size_t const nameSize1 = key1->keyUSize;
 	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
 	if (nameSize1 == nameSize2)
 	{
-		ret = elektraMemCaseCmp(name1, name2, nameSize2);
-	} else {
+		ret = elektraMemCaseCmp (name1, name2, nameSize2);
+	}
+	else
+	{
 		if (nameSize1 < nameSize2)
 		{
-			ret = elektraMemCaseCmp(name1, name2, nameSize1);
-			if (ret==0) ret = -1;
-		} else {
-			ret = elektraMemCaseCmp(name1, name2, nameSize2);
-			if (ret==0) ret = 1;
+			ret = elektraMemCaseCmp (name1, name2, nameSize1);
+			if (ret == 0)
+			{
+				ret = -1;
+			}
+		}
+		else
+		{
+			ret = elektraMemCaseCmp (name1, name2, nameSize2);
+			if (ret == 0)
+			{
+				ret = 1;
+			}
 		}
 	}
 	return ret;
@@ -463,16 +482,16 @@ static int keyCompareByNameCase(const void *p1, const void *p2)
  *
  * @return comparision result
  */
-static int keyCompareByOwner(const void *p1, const void *p2)
+static int keyCompareByOwner (const void * p1, const void * p2)
 {
-	Key *key1=*(Key **)p1;
-	Key *key2=*(Key **)p2;
-	const char *owner1 = keyValue(keyGetMeta(key1, "owner"));
-	const char *owner2 = keyValue(keyGetMeta(key2, "owner"));
+	Key * key1 = *(Key **)p1;
+	Key * key2 = *(Key **)p2;
+	const char * owner1 = keyValue (keyGetMeta (key1, "owner"));
+	const char * owner2 = keyValue (keyGetMeta (key2, "owner"));
 	if (!owner1 && !owner2) return 0;
 	if (!owner1) return -1;
 	if (!owner2) return 1;
-	return elektraStrCmp(owner1, owner2);
+	return elektraStrCmp (owner1, owner2);
 }
 
 /**
@@ -486,29 +505,28 @@ static int keyCompareByOwner(const void *p1, const void *p2)
  *
  * @see keyCmp, keyCompareByName
  */
-static int keyCompareByNameOwner(const void *p1, const void *p2)
+static int keyCompareByNameOwner (const void * p1, const void * p2)
 {
-	int ret = keyCompareByName(p1, p2);
+	int ret = keyCompareByName (p1, p2);
 
 	if (ret == 0)
 	{
-		return keyCompareByOwner(p1,p2);
+		return keyCompareByOwner (p1, p2);
 	}
 	return ret;
 }
 
 
-static int keyCompareByNameOwnerCase(const void *p1, const void *p2)
+static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
 {
-	int result = keyCompareByNameCase(p1, p2);
+	int result = keyCompareByNameCase (p1, p2);
 
 	if (result == 0)
 	{
-		return keyCompareByOwner(p1,p2);
+		return keyCompareByOwner (p1, p2);
 	}
 	return result;
 }
-
 
 
 /**
@@ -579,7 +597,7 @@ Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
  * @see ksLookup() will compare keys during searching
  * @ingroup keytest
  */
-int keyCmp (const Key *k1, const Key *k2)
+int keyCmp (const Key * k1, const Key * k2)
 {
 	if (!k1 && !k2) return 0;
 	if (!k1) return -1;
@@ -589,7 +607,7 @@ int keyCmp (const Key *k1, const Key *k2)
 	if (!k1->key) return -1;
 	if (!k2->key) return 1;
 
-	return keyCompareByNameOwner(&k1, &k2);
+	return keyCompareByNameOwner (&k1, &k2);
 }
 
 /**
@@ -612,14 +630,12 @@ int keyCmp (const Key *k1, const Key *k2)
  * @retval 0 if it does not need sync
  * @retval 1 if it needs sync
  */
-int ksNeedSync(const KeySet *ks)
+int ksNeedSync (const KeySet * ks)
 {
 	if (!ks) return -1;
 
 	return (ks->flags & KS_FLAG_SYNC) == KS_FLAG_SYNC;
 }
-
-
 
 
 /**
@@ -630,7 +646,7 @@ int ksNeedSync(const KeySet *ks)
  * @retval -1 on NULL pointer
  * @see ksNew(0, KS_END), ksDel()
  */
-ssize_t ksGetSize(const KeySet *ks)
+ssize_t ksGetSize (const KeySet * ks)
 {
 	if (!ks) return -1;
 
@@ -638,8 +654,7 @@ ssize_t ksGetSize(const KeySet *ks)
 }
 
 
-
-/******************************************* 
+/*******************************************
  *           Filling up KeySets            *
  *******************************************/
 
@@ -666,18 +681,18 @@ if (result >= 0)
  * @param ks the keyset to work with
  * @param toAppend the key to check
  * @return position where the key is (>=0) if the key was found
- * @return -insertpos -1 (< 0) if the key was not found 
+ * @return -insertpos -1 (< 0) if the key was not found
  *    so to get the insertpos simple do: -insertpos -1
  */
-ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
+ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 {
 	ssize_t left = 0;
-	ssize_t right = ks->size-1;
+	ssize_t right = ks->size - 1;
 	register int cmpresult = 1;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
 #if DEBUG && VERBOSE
-	int c=0;
+	int c = 0;
 #endif
 
 
@@ -691,31 +706,36 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
 			/* Nothing was found */
 			break;
 		}
-		middle = left + ((right-left)/2);
-		cmpresult = keyCompareByNameOwner(&toAppend, &ks->array[middle]);
+		middle = left + ((right - left) / 2);
+		cmpresult = keyCompareByNameOwner (&toAppend, &ks->array[middle]);
 		if (cmpresult > 0)
 		{
 			insertpos = left = middle + 1;
-		} else if (cmpresult == 0)
+		}
+		else if (cmpresult == 0)
 		{
 			/* We have found it */
 			break;
-		} else {
+		}
+		else
+		{
 			insertpos = middle;
 			right = middle - 1;
 		}
 #if DEBUG && VERBOSE
-		/* This is even for verbose too verbose!
-		printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
-			c, cmpresult, left, middle, right, insertpos);
-		*/
+/* This is even for verbose too verbose!
+printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
+	c, cmpresult, left, middle, right, insertpos);
+*/
 #endif
 	}
 
 	if (!cmpresult)
 	{
 		return middle;
-	} else {
+	}
+	else
+	{
 		return -insertpos - 1;
 	}
 }
@@ -763,7 +783,7 @@ ssize_t ksSearchInternal(const KeySet *ks, const Key *toAppend)
  * @see keyIncRef()
  *
  */
-ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
+ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 {
 	ssize_t result = -1;
 
@@ -776,9 +796,9 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		return -1;
 	}
 
-	elektraKeyLock(toAppend, KEY_LOCK_NAME);
+	elektraKeyLock (toAppend, KEY_LOCK_NAME);
 
-	result = ksSearchInternal(ks, toAppend);
+	result = ksSearchInternal (ks, toAppend);
 
 	if (result >= 0)
 	{
@@ -796,37 +816,40 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
 		/* And use the other one instead */
 		keyIncRef (toAppend);
 		ks->array[result] = toAppend;
-		ksSetCursor(ks, result);
-	} else {
-		ssize_t insertpos = -result-1;
+		ksSetCursor (ks, result);
+	}
+	else
+	{
+		ssize_t insertpos = -result - 1;
 
 		/* We want to append a new key
 		  in position insertpos */
-		++ ks->size;
-		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2-1);
+		++ks->size;
+		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2 - 1);
 		keyIncRef (toAppend);
 
-		if (insertpos == (ssize_t)ks->size-1)
+		if (insertpos == (ssize_t)ks->size - 1)
 		{
 			/* Append it to the very end */
-			ks->array[ks->size-1] = toAppend;
+			ks->array[ks->size - 1] = toAppend;
 			ks->array[ks->size] = 0;
-			ksSetCursor(ks, ks->size-1);
-		} else {
-			size_t n = ks->size-insertpos;
-			memmove(ks->array+(insertpos+1), ks->array+insertpos, n*sizeof(struct Key*));
+			ksSetCursor (ks, ks->size - 1);
+		}
+		else
+		{
+			size_t n = ks->size - insertpos;
+			memmove (ks->array + (insertpos + 1), ks->array + insertpos, n * sizeof (struct Key *));
 			/*
 			printf ("memmove -- ks->size: %zd insertpos: %zd n: %zd\n",
 				ks->size, insertpos, n);
 			*/
 			ks->array[insertpos] = toAppend;
-			ksSetCursor(ks, insertpos);
+			ksSetCursor (ks, insertpos);
 		}
 	}
 
 	return ks->size;
 }
-
 
 
 /**
@@ -846,9 +869,9 @@ ssize_t ksAppendKey(KeySet *ks, Key *toAppend)
  * @param ks the KeySet that will receive the keys
  * @param toAppend the KeySet that provides the keys that will be transferred
  * @see ksAppendKey()
- * 
+ *
  */
-ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
+ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 {
 	size_t toAlloc = 0;
 
@@ -858,17 +881,17 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
 	if (toAppend->size <= 0) return ks->size;
 
 	/* Do only one resize in advance */
-	for (toAlloc = ks->alloc; ks->size+toAppend->size >= toAlloc; toAlloc *= 2);
-	ksResize (ks, toAlloc-1);
+	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
+		;
+	ksResize (ks, toAlloc - 1);
 
 	/* TODO: here is lots of room for optimizations */
-	for (size_t i=0; i<toAppend->size; ++i)
+	for (size_t i = 0; i < toAppend->size; ++i)
 	{
 		ksAppendKey (ks, toAppend->array[i]);
 	}
 	return ks->size;
 }
-
 
 
 /**
@@ -883,21 +906,21 @@ ssize_t ksAppend(KeySet *ks, const KeySet *toAppend)
  * @retval -1 if length is smaller then 0
  * @return the number of moved elements otherwise
  */
-ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
+ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 {
 	ssize_t ssize = ks->size;
 	ssize_t sto = to;
 	ssize_t sfrom = from;
 
-	ssize_t sizediff = sto-sfrom;
-	ssize_t length = ssize-sfrom;
+	ssize_t sizediff = sto - sfrom;
+	ssize_t length = ssize - sfrom;
 	size_t ret = 0;
 
 	if (length < 0) return -1;
 	if (ks->size < to) return -1;
 
 	ks->size = ks->size + sizediff;
-	ret = elektraMemmove(ks->array + to, ks->array + from, length);
+	ret = elektraMemmove (ks->array + to, ks->array + from, length);
 	ks->array[ks->size] = 0;
 	return ret;
 }
@@ -959,9 +982,9 @@ ssize_t ksCopyInternal(KeySet *ks, size_t to, size_t from)
  *           The cutpoint itself will also be removed.
  * @param cutpoint the point where to cut out the keyset
  */
-KeySet *ksCut(KeySet *ks, const Key *cutpoint)
+KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 {
-	KeySet *returned = 0;
+	KeySet * returned = 0;
 	size_t found = 0;
 	size_t it = 0;
 	size_t newsize = 0;
@@ -970,100 +993,100 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	if (!ks) return 0;
 	if (!cutpoint) return 0;
 
-	char *name = cutpoint->key;
+	char * name = cutpoint->key;
 	if (!name) return 0;
 	// if (strcmp(name, "")) return 0;
 
 	if (name[0] == '/')
 	{
-		Key *key = (Key *) cutpoint;
+		Key * key = (Key *)cutpoint;
 		size_t size = key->keySize;
 		size_t usize = key->keyUSize;
 		size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
-		char newname[length*2];
+		char newname[length * 2];
 
-		KeySet *ret = ksNew(0, KS_END);
+		KeySet * ret = ksNew (0, KS_END);
 
-		for (elektraNamespace ns=KEY_NS_FIRST; ns<=KEY_NS_LAST; ++ns)
+		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
 			int validNS = 1;
-		switch (ns)
-		{
-		case KEY_NS_SPEC:
-			strncpy (newname+2, "spec", 4);
-			strcpy  (newname+6, name);
-			key->key = newname+2;
-			key->keySize = length-2;
-			if (!strcmp(name, "/")) key->keySize = 5;
-			elektraFinalizeName(key);
-			break;
-		case KEY_NS_PROC:
-			strncpy (newname+2, "proc", 4);
-			strcpy  (newname+6, name);
-			key->key = newname+2;
-			key->keySize = length-2;
-			if (!strcmp(name, "/")) key->keySize = 5;
-			elektraFinalizeName(key);
-			break;
-		case KEY_NS_DIR:
-			strncpy (newname+3, "dir", 3);
-			strcpy  (newname+6, name);
-			key->key = newname+3;
-			key->keySize = length-3;
-			if (!strcmp(name, "/")) key->keySize = 4;
-			elektraFinalizeName(key);
-			break;
-		case KEY_NS_USER:
-			strncpy (newname+2, "user", 4);
-			strcpy  (newname+6, name);
-			key->key = newname+2;
-			key->keySize = length-2;
-			if (!strcmp(name, "/")) key->keySize = 5;
-			elektraFinalizeName(key);
-			break;
-		case KEY_NS_SYSTEM:
-			strncpy (newname, "system",6);
-			strcpy  (newname+6, name);
-			key->key = newname;
-			key->keySize = length;
-			if (!strcmp(name, "/")) key->keySize = 7;
-			elektraFinalizeName(key);
-			break;
-		case KEY_NS_EMPTY:
-		case KEY_NS_NONE:
-		case KEY_NS_META:
-		case KEY_NS_CASCADING:
-			validNS = 0;
-		}
+			switch (ns)
+			{
+			case KEY_NS_SPEC:
+				strncpy (newname + 2, "spec", 4);
+				strcpy (newname + 6, name);
+				key->key = newname + 2;
+				key->keySize = length - 2;
+				if (!strcmp (name, "/")) key->keySize = 5;
+				elektraFinalizeName (key);
+				break;
+			case KEY_NS_PROC:
+				strncpy (newname + 2, "proc", 4);
+				strcpy (newname + 6, name);
+				key->key = newname + 2;
+				key->keySize = length - 2;
+				if (!strcmp (name, "/")) key->keySize = 5;
+				elektraFinalizeName (key);
+				break;
+			case KEY_NS_DIR:
+				strncpy (newname + 3, "dir", 3);
+				strcpy (newname + 6, name);
+				key->key = newname + 3;
+				key->keySize = length - 3;
+				if (!strcmp (name, "/")) key->keySize = 4;
+				elektraFinalizeName (key);
+				break;
+			case KEY_NS_USER:
+				strncpy (newname + 2, "user", 4);
+				strcpy (newname + 6, name);
+				key->key = newname + 2;
+				key->keySize = length - 2;
+				if (!strcmp (name, "/")) key->keySize = 5;
+				elektraFinalizeName (key);
+				break;
+			case KEY_NS_SYSTEM:
+				strncpy (newname, "system", 6);
+				strcpy (newname + 6, name);
+				key->key = newname;
+				key->keySize = length;
+				if (!strcmp (name, "/")) key->keySize = 7;
+				elektraFinalizeName (key);
+				break;
+			case KEY_NS_EMPTY:
+			case KEY_NS_NONE:
+			case KEY_NS_META:
+			case KEY_NS_CASCADING:
+				validNS = 0;
+			}
 			if (validNS)
 			{
-				KeySet * n = ksCut(ks, key);
-				ksAppend(ret, n);
-				ksDel(n);
+				KeySet * n = ksCut (ks, key);
+				ksAppend (ret, n);
+				ksDel (n);
 			}
 		}
 
 		// restore old cascading name
 		key->key = name;
 		key->keySize = size;
-		key->keyUSize = usize ;
+		key->keyUSize = usize;
 		return ret;
 	}
 
 	// search the cutpoint
-	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 0)
+	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 0)
 	{
 		++it;
 	}
 
 	// we found nothing
-	if (it == ks->size) return ksNew(0, KS_END);
+	if (it == ks->size) return ksNew (0, KS_END);
 
 	// we found the cutpoint
 	found = it;
 
 	// search the end of the keyset to cut
-	while (it < ks->size && keyIsBelowOrSame(cutpoint, ks->array[it]) == 1)
+	while (it < ks->size && keyIsBelowOrSame (cutpoint, ks->array[it]) == 1)
 	{
 		++it;
 	}
@@ -1073,7 +1096,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	{
 		if (found == 0)
 		{
-			ksRewind(ks);
+			ksRewind (ks);
 		}
 		else
 		{
@@ -1087,7 +1110,7 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 	{
 		if (it >= ks->size)
 		{
-			ksRewind(ks);
+			ksRewind (ks);
 		}
 		else
 		{
@@ -1096,24 +1119,22 @@ KeySet *ksCut(KeySet *ks, const Key *cutpoint)
 		}
 	}
 
-	newsize = it-found;
+	newsize = it - found;
 
-	returned = ksNew(newsize, KS_END);
-	elektraMemcpy (returned->array, ks->array+found, newsize);
+	returned = ksNew (newsize, KS_END);
+	elektraMemcpy (returned->array, ks->array + found, newsize);
 	returned->size = newsize;
 	returned->array[returned->size] = 0;
 
-	if (ksCopyInternal(ks, found, it) == -1)
+	if (ksCopyInternal (ks, found, it) == -1)
 	{
-		ELEKTRA_ASSERT(0 && "ksCopyInternal returned an error inside ksCut");
+		ELEKTRA_ASSERT (0 && "ksCopyInternal returned an error inside ksCut");
 	}
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];
 
 	return returned;
 }
-
-
 
 
 /**
@@ -1153,9 +1174,9 @@ ksDel (ks2);
  * @see commandList() for an example
  *
  */
-Key *ksPop(KeySet *ks)
+Key * ksPop (KeySet * ks)
 {
-	Key *ret=0;
+	Key * ret = 0;
 
 	if (!ks) return 0;
 
@@ -1163,11 +1184,11 @@ Key *ksPop(KeySet *ks)
 
 	if (ks->size <= 0) return 0;
 
-	-- ks->size;
-	if (ks->size+1 < ks->alloc/2) ksResize (ks, ks->alloc / 2-1);
+	--ks->size;
+	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);
 	ret = ks->array[ks->size];
 	ks->array[ks->size] = 0;
-	keyDecRef(ret);
+	keyDecRef (ret);
 
 	return ret;
 }
@@ -1176,7 +1197,6 @@ Key *ksPop(KeySet *ks)
 /*******************************************
  *           KeySet browsing methods       *
  *******************************************/
-
 
 
 /**
@@ -1196,12 +1216,12 @@ while ((key = ksNext (ks))!=0) {}
  * @retval -1 on NULL pointer
  * @see ksNext(), ksCurrent()
  */
-int ksRewind(KeySet *ks)
+int ksRewind (KeySet * ks)
 {
 	if (!ks) return -1;
 
-	ks->cursor=0;
-	ks->current=0;
+	ks->cursor = 0;
+	ks->current = 0;
 	return 0;
 }
 
@@ -1226,7 +1246,7 @@ int ksRewind(KeySet *ks)
  * @retval 0 on NULL pointer
  * @see ksRewind(), ksCurrent()
  */
-Key *ksNext(KeySet *ks)
+Key * ksNext (KeySet * ks)
 {
 	if (!ks) return 0;
 
@@ -1239,8 +1259,6 @@ Key *ksNext(KeySet *ks)
 	if (ks->cursor) ks->current++;
 	return ks->cursor = ks->array[ks->current];
 }
-
-
 
 
 /**
@@ -1257,14 +1275,12 @@ Key *ksNext(KeySet *ks)
  * @retval 0 on NULL pointer
  * @see ksNext(), ksRewind()
  */
-Key *ksCurrent(const KeySet *ks)
+Key * ksCurrent (const KeySet * ks)
 {
 	if (!ks) return 0;
 
 	return ks->cursor;
 }
-
-
 
 
 /**
@@ -1281,16 +1297,15 @@ Key *ksCurrent(const KeySet *ks)
  * @see ksTail() for the last key
  * @see ksRewind(), ksCurrent() and ksNext() for iterating over the keyset
  */
-Key *ksHead(const KeySet *ks)
+Key * ksHead (const KeySet * ks)
 {
 	if (!ks) return 0;
 
-	if (ks->size > 0) return ks->array[0];
-	else return 0;
+	if (ks->size > 0)
+		return ks->array[0];
+	else
+		return 0;
 }
-
-
-
 
 
 /**
@@ -1308,14 +1323,15 @@ Key *ksHead(const KeySet *ks)
  * @see ksHead() for the first key
  * @see ksRewind(), ksCurrent() and ksNext() for iterating over the keyset
  */
-Key *ksTail(const KeySet *ks)
+Key * ksTail (const KeySet * ks)
 {
 	if (!ks) return 0;
 
-	if (ks->size > 0) return ks->array[ks->size-1];
-	else return 0;
+	if (ks->size > 0)
+		return ks->array[ks->size - 1];
+	else
+		return 0;
 }
-
 
 
 /**
@@ -1385,12 +1401,14 @@ int f (KeySet *ks)
  * @return an invalid cursor on NULL pointer or after ksRewind()
  * @see ksNext(), ksSetCursor()
  */
-cursor_t ksGetCursor(const KeySet *ks)
+cursor_t ksGetCursor (const KeySet * ks)
 {
-	if (!ks) return (cursor_t) -1;
+	if (!ks) return (cursor_t)-1;
 
-	if (ks->cursor == 0) return (cursor_t) -1;
-	else return (cursor_t) ks->current;
+	if (ks->cursor == 0)
+		return (cursor_t)-1;
+	else
+		return (cursor_t)ks->current;
 }
 
 /**
@@ -1402,7 +1420,7 @@ cursor_t ksGetCursor(const KeySet *ks)
  * @retval NULL on NULL pointer, negative cursor position
  * or a position that does not lie within the keyset
  */
-Key *ksAtCursor(KeySet *ks, cursor_t pos)
+Key * ksAtCursor (KeySet * ks, cursor_t pos)
 {
 	if (!ks) return 0;
 	if (pos < 0) return 0;
@@ -1442,49 +1460,47 @@ ksCurrent(ks); // in same position as before
  * @retval -1 on NULL pointer
  * @see ksNext(), ksGetCursor()
  */
-int ksSetCursor(KeySet *ks, cursor_t cursor)
+int ksSetCursor (KeySet * ks, cursor_t cursor)
 {
 	if (!ks) return -1;
 
-	if ((cursor_t) -1 == cursor)
+	if ((cursor_t)-1 == cursor)
 	{
 		ksRewind (ks);
 		return 0;
 	}
-	ks->current= (size_t)cursor;
-	ks->cursor=ks->array[ks->current];
+	ks->current = (size_t)cursor;
+	ks->cursor = ks->array[ks->current];
 	return 1;
 }
 
 
-
-
-/******************************************* 
+/*******************************************
  *    Looking up Keys inside KeySets       *
  *******************************************/
 
-static void elektraCopyCallbackMeta(Key *dest, Key *source)
+static void elektraCopyCallbackMeta (Key * dest, Key * source)
 {
 	// possible optimization: only copy when callback is present (keyIsBinary && keyGetValueSize == sizeof(void(int))
-	const Key *m = 0;
+	const Key * m = 0;
 
-	keyRewindMeta(dest);
-	while ((m = keyNextMeta(dest)))
+	keyRewindMeta (dest);
+	while ((m = keyNextMeta (dest)))
 	{
-		const char *metaname = keyName(m);
-		if (!strncmp(metaname, "callback/", sizeof("callback")))
+		const char * metaname = keyName (m);
+		if (!strncmp (metaname, "callback/", sizeof ("callback")))
 		{
-			keySetMeta(dest, metaname, 0);
+			keySetMeta (dest, metaname, 0);
 		}
 	}
 
-	keyRewindMeta(source);
-	while ((m = keyNextMeta(source)))
+	keyRewindMeta (source);
+	while ((m = keyNextMeta (source)))
 	{
-		const char *metaname = keyName(m);
-		if (!strncmp(metaname, "callback/", sizeof("callback")))
+		const char * metaname = keyName (m);
+		if (!strncmp (metaname, "callback/", sizeof ("callback")))
 		{
-			keyCopyMeta(dest, source, metaname);
+			keyCopyMeta (dest, source, metaname);
 		}
 	}
 }
@@ -1500,20 +1516,19 @@ static void elektraCopyCallbackMeta(Key *dest, Key *source)
  * @retval 0 on success
  * @retval -1 on error
  */
-int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex)
+int elektraWriteArrayNumber (char * newName, kdb_long_long_t newIndex)
 {
 	// now we fill out newName
 	size_t index = 0; // index of newName
 	newName[index++] = '#';
-	kdb_long_long_t i = newIndex/10;
+	kdb_long_long_t i = newIndex / 10;
 
-	while (i>0)
+	while (i > 0)
 	{
 		newName[index++] = '_'; // index n-1 of decimals
-		i/=10;
+		i /= 10;
 	}
-	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE,
-				ELEKTRA_LONG_LONG_F, newIndex)  < 0)
+	if (snprintf (&newName[index], ELEKTRA_MAX_ARRAY_SIZE, ELEKTRA_LONG_LONG_F, newIndex) < 0)
 	{
 		return -1;
 	}
@@ -1531,39 +1546,39 @@ int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex)
  * @param specKey contains metadata as specified in buffer+#<number>
  * @param buffer the buffer used for incrementing numbers
  *
- * @return 
+ * @return
  */
-static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
+static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer)
 {
-	Key *ret = 0;
-	Key *k = 0;
+	Key * ret = 0;
+	Key * k = 0;
 	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 2;
-	kdb_long_long_t i=0;
-	const Key *m = 0;
+	kdb_long_long_t i = 0;
+	const Key * m = 0;
 
-	do {
-		elektraWriteArrayNumber(&buffer[prefixSize], i);
-		m = keyGetMeta(specKey, buffer);
+	do
+	{
+		elektraWriteArrayNumber (&buffer[prefixSize], i);
+		m = keyGetMeta (specKey, buffer);
 		if (!m) break;
 		// optimization: lazy instanziation of k
 		if (!k)
 		{
-			k = keyNew(keyString(m), KEY_CASCADING_NAME,
-				KEY_END);
-			keySetBinary(k, keyValue(specKey), keyGetValueSize(specKey));
-			elektraCopyCallbackMeta(k, specKey);
+			k = keyNew (keyString (m), KEY_CASCADING_NAME, KEY_END);
+			keySetBinary (k, keyValue (specKey), keyGetValueSize (specKey));
+			elektraCopyCallbackMeta (k, specKey);
 		}
-		else elektraKeySetName(k, keyString(m),
-				KEY_CASCADING_NAME);
-		ret=ksLookup(ks, k, KDB_O_NODEFAULT);
+		else
+			elektraKeySetName (k, keyString (m), KEY_CASCADING_NAME);
+		ret = ksLookup (ks, k, KDB_O_NODEFAULT);
 		if (ret) break;
 		++i;
 	} while (m);
 
 	if (k)
 	{
-		elektraCopyCallbackMeta(specKey, k);
-		keyDel(k);
+		elektraCopyCallbackMeta (specKey, k);
+		keyDel (k);
 	}
 	return ret;
 }
@@ -1572,27 +1587,23 @@ static Key *elektraLookupBySpecLinks(KeySet *ks, Key *specKey, char *buffer)
  * @internal
  * @brief Helper for elektraLookupBySpec
  */
-static Key *elektraLookupBySpecDefault(KeySet *ks, Key *specKey)
+static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
 {
-	Key *ret = 0;
-	const Key *m = 0;
+	Key * ret = 0;
+	const Key * m = 0;
 
-	ret=ksLookup(ks, specKey, KDB_O_NOCASCADING);
+	ret = ksLookup (ks, specKey, KDB_O_NOCASCADING);
 	if (ret) return ret; // return previous added default key
 
-	m = keyGetMeta(specKey, "default");
+	m = keyGetMeta (specKey, "default");
 	if (!m) return ret;
-	ret=keyNew(
-		keyName(specKey),
-		KEY_CASCADING_NAME,
-		KEY_VALUE, keyString(m),
-		KEY_END);
-	ksAppendKey(ks, ret);
+	ret = keyNew (keyName (specKey), KEY_CASCADING_NAME, KEY_VALUE, keyString (m), KEY_END);
+	ksAppendKey (ks, ret);
 
 	return ret;
 }
 
-static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options);
+static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options);
 
 /**
  * @internal
@@ -1604,17 +1615,17 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options);
  * @param specKey contains metadata as specified in buffer+#<number>
  * @param buffer the buffer used for incrementing numbers
  */
-static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer)
+static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * buffer)
 {
-	Key *ret = 0;
+	Key * ret = 0;
 	const int prefixSize = ELEKTRA_MAX_PREFIX_SIZE - 1;
-	kdb_long_long_t i=0;
-	const Key *m = 0;
+	kdb_long_long_t i = 0;
+	const Key * m = 0;
 
-	m = keyGetMeta(specKey, buffer);
+	m = keyGetMeta (specKey, buffer);
 	// no namespaces specified, so do a default cascading lookup
 	// (obviously w/o spec)
-	if (!m) return elektraLookupByCascading(ks, specKey, KDB_O_NOSPEC | KDB_O_NODEFAULT);
+	if (!m) return elektraLookupByCascading (ks, specKey, KDB_O_NOSPEC | KDB_O_NODEFAULT);
 
 	// store old name of specKey
 	char * name = specKey->key;
@@ -1622,29 +1633,30 @@ static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer
 	size_t usize = specKey->keyUSize;
 	size_t nameLength = strlen (name);
 	size_t maxSize = nameLength + ELEKTRA_MAX_NAMESPACE_SIZE;
-	char newname[maxSize*2]; // buffer for all new names (namespace + cascading key name)
+	char newname[maxSize * 2]; // buffer for all new names (namespace + cascading key name)
 
-	do {
+	do
+	{
 		// lookup with given namespace
-		size_t namespaceSize = keyGetValueSize(m);
-		char *startOfName = newname+ELEKTRA_MAX_NAMESPACE_SIZE-namespaceSize;
-		strncpy (startOfName, keyString(m), namespaceSize);
-		strcpy  (newname+ELEKTRA_MAX_NAMESPACE_SIZE-1, name); // name starts with /
+		size_t namespaceSize = keyGetValueSize (m);
+		char * startOfName = newname + ELEKTRA_MAX_NAMESPACE_SIZE - namespaceSize;
+		strncpy (startOfName, keyString (m), namespaceSize);
+		strcpy (newname + ELEKTRA_MAX_NAMESPACE_SIZE - 1, name); // name starts with /
 		specKey->key = startOfName;
 		specKey->keySize = nameLength + namespaceSize;
-		elektraFinalizeName(specKey);
-		ret=ksLookup(ks, specKey, 0);
+		elektraFinalizeName (specKey);
+		ret = ksLookup (ks, specKey, 0);
 		if (ret) break;
 		++i; // start with 1 (#0 was already in buffer)
 
-		elektraWriteArrayNumber(&buffer[prefixSize], i);
-		m = keyGetMeta(specKey, buffer);
+		elektraWriteArrayNumber (&buffer[prefixSize], i);
+		m = keyGetMeta (specKey, buffer);
 	} while (m);
 
 	// restore old cascading name
 	specKey->key = name;
 	specKey->keySize = size;
-	specKey->keyUSize = usize ;
+	specKey->keyUSize = usize;
 	return ret;
 }
 
@@ -1653,43 +1665,42 @@ static Key *elektraLookupBySpecNamespaces(KeySet *ks, Key *specKey, char *buffer
  * @internal
  * @brief Helper for ksLookup
  */
-static Key *elektraLookupBySpec(KeySet *ks, Key *specKey, option_t options)
+static Key * elektraLookupBySpec (KeySet * ks, Key * specKey, option_t options)
 {
-	Key *ret = 0;
+	Key * ret = 0;
 	// strip away beginning of specKey
 	char * name = specKey->key;
 	// stays same if already cascading and
 	// root must not be cascaded, so the usage of strchr is safe.
-	specKey->key = strchr(name, '/');
+	specKey->key = strchr (name, '/');
 	size_t size = specKey->keySize;
 	specKey->keySize = size - (specKey->key - name);
-	elektraFinalizeName(specKey);
+	elektraFinalizeName (specKey);
 
 	// lookup by override
-	char buffer [ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE]
-		= "override/";
-	ret = elektraLookupBySpecLinks(ks, specKey, buffer);
+	char buffer[ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE] = "override/";
+	ret = elektraLookupBySpecLinks (ks, specKey, buffer);
 	if (ret) goto finished;
 
 	// lookup by namespaces
 	strcpy (buffer, "namespace/#0");
-	ret=elektraLookupBySpecNamespaces(ks, specKey, buffer);
+	ret = elektraLookupBySpecNamespaces (ks, specKey, buffer);
 	if (ret) goto finished;
 
 	// lookup by fallback
 	strcpy (buffer, "fallback/");
-	ret = elektraLookupBySpecLinks(ks, specKey, buffer);
+	ret = elektraLookupBySpecLinks (ks, specKey, buffer);
 	if (ret) goto finished;
 
 	if (!(options & KDB_O_NODEFAULT))
 	{
-		ret = elektraLookupBySpecDefault(ks, specKey);
+		ret = elektraLookupBySpecDefault (ks, specKey);
 	}
 
 finished:
 	specKey->key = name;
 	specKey->keySize = size;
-	elektraFinalizeName(specKey);
+	elektraFinalizeName (specKey);
 
 	return ret;
 }
@@ -1698,24 +1709,24 @@ finished:
  * @internal
  * @brief Helper for ksLookup
  */
-static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
+static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 {
 	char * name = key->key;
 	size_t size = key->keySize;
 	size_t usize = key->keyUSize;
 	size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
-	char newname[length*2];
-	Key *found = 0;
-	Key *specKey = 0;
+	char newname[length * 2];
+	Key * found = 0;
+	Key * specKey = 0;
 
 	if (!(options & KDB_O_NOSPEC))
 	{
-		strncpy (newname+2, "spec", 4);
-		strcpy  (newname+6, name);
-		key->key = newname+2;
-		key->keySize = length-2;
-		elektraFinalizeName(key);
-		specKey = ksLookup(ks, key, (options & ~KDB_O_DEL) | KDB_O_CALLBACK);
+		strncpy (newname + 2, "spec", 4);
+		strcpy (newname + 6, name);
+		key->key = newname + 2;
+		key->keySize = length - 2;
+		elektraFinalizeName (key);
+		specKey = ksLookup (ks, key, (options & ~KDB_O_DEL) | KDB_O_CALLBACK);
 	}
 
 	if (specKey)
@@ -1723,96 +1734,97 @@ static Key *elektraLookupByCascading(KeySet *ks, Key *key, option_t options)
 		// restore old name
 		key->key = name;
 		key->keySize = size;
-		key->keyUSize = usize ;
+		key->keyUSize = usize;
 
-		if (strncmp(keyName(specKey), "spec/", 5))
+		if (strncmp (keyName (specKey), "spec/", 5))
 		{ // the search was modified in a way that not a spec Key was returned
 			return specKey;
 		}
 
 		// we found a spec key, so we know what to do
-		specKey = keyDup(specKey);
-		keySetBinary(specKey, keyValue(key), keyGetValueSize(key));
-		elektraCopyCallbackMeta(specKey, key);
-		found = elektraLookupBySpec(ks, specKey, options);
-		elektraCopyCallbackMeta(key, specKey);
-		keyDel(specKey);
+		specKey = keyDup (specKey);
+		keySetBinary (specKey, keyValue (key), keyGetValueSize (key));
+		elektraCopyCallbackMeta (specKey, key);
+		found = elektraLookupBySpec (ks, specKey, options);
+		elektraCopyCallbackMeta (key, specKey);
+		keyDel (specKey);
 		return found;
 	}
 
 	// default cascading:
-	strncpy (newname+2, "proc", 4);
-	strcpy  (newname+6, name);
-	key->key = newname+2;
-	key->keySize = length-2;
-	elektraFinalizeName(key);
-	found = ksLookup(ks, key, options & ~KDB_O_DEL);
+	strncpy (newname + 2, "proc", 4);
+	strcpy (newname + 6, name);
+	key->key = newname + 2;
+	key->keySize = length - 2;
+	elektraFinalizeName (key);
+	found = ksLookup (ks, key, options & ~KDB_O_DEL);
 
 	if (!found)
 	{
-		strncpy (newname+3, "dir", 3);
-		strcpy  (newname+6, name);
-		key->key = newname+3;
-		key->keySize = length-3;
-		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_DEL);
+		strncpy (newname + 3, "dir", 3);
+		strcpy (newname + 6, name);
+		key->key = newname + 3;
+		key->keySize = length - 3;
+		elektraFinalizeName (key);
+		found = ksLookup (ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
 	{
-		strncpy (newname+2, "user", 4);
-		strcpy  (newname+6, name);
-		key->key = newname+2;
-		key->keySize = length-2;
-		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_DEL);
+		strncpy (newname + 2, "user", 4);
+		strcpy (newname + 6, name);
+		key->key = newname + 2;
+		key->keySize = length - 2;
+		elektraFinalizeName (key);
+		found = ksLookup (ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
 	{
-		strncpy (newname, "system",6);
-		strcpy  (newname+6, name);
+		strncpy (newname, "system", 6);
+		strcpy (newname + 6, name);
 		key->key = newname;
 		key->keySize = length;
-		elektraFinalizeName(key);
-		found = ksLookup(ks, key, options & ~KDB_O_DEL);
+		elektraFinalizeName (key);
+		found = ksLookup (ks, key, options & ~KDB_O_DEL);
 	}
 
 	// restore old cascading name
 	key->key = name;
 	key->keySize = size;
-	key->keyUSize = usize ;
+	key->keyUSize = usize;
 
 	if (!found && !(options & KDB_O_NODEFAULT))
 	{
 		// search / key itself
-		found = ksLookup(ks, key, (options & ~KDB_O_DEL) | KDB_O_NOCASCADING);
+		found = ksLookup (ks, key, (options & ~KDB_O_DEL) | KDB_O_NOCASCADING);
 	}
 
 	return found;
 }
 
-static Key * elektraLookupLinearSearch(KeySet *ks, Key *key, option_t options)
+static Key * elektraLookupLinearSearch (KeySet * ks, Key * key, option_t options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
-	Key *current;
-	if (!(options & KDB_O_NOALL)) ksRewind(ks);
-	while ((current=ksNext(ks)) != 0)
+	Key * current;
+	if (!(options & KDB_O_NOALL)) ksRewind (ks);
+	while ((current = ksNext (ks)) != 0)
 	{
 		if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
 		{
-			if (!keyCompareByNameOwnerCase(&key, &current)) break;
+			if (!keyCompareByNameOwnerCase (&key, &current)) break;
 		}
 		else if (options & KDB_O_WITHOWNER)
 		{
-			if (!keyCompareByNameOwner(&key, &current)) break;
+			if (!keyCompareByNameOwner (&key, &current)) break;
 		}
 		else if (options & KDB_O_NOCASE)
 		{
-			if (!keyCompareByNameCase(&key, &current)) break;
+			if (!keyCompareByNameCase (&key, &current)) break;
 		}
-		else if (!keyCompareByName(&key, &current)) break;
+		else if (!keyCompareByName (&key, &current))
+			break;
 	}
 	if (current == 0)
 	{
@@ -1822,7 +1834,7 @@ static Key * elektraLookupLinearSearch(KeySet *ks, Key *key, option_t options)
 	return current;
 }
 
-static Key * elektraLookupBinarySearch(KeySet *ks, Key const *key, option_t options)
+static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
@@ -1830,28 +1842,28 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key const *key, option_t opti
 	size_t jump = 0;
 	/*If there is a known offset in the beginning jump could be set*/
 	if ((options & KDB_O_WITHOWNER) && (options & KDB_O_NOCASE))
-		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-			sizeof (Key *), keyCompareByNameOwnerCase);
+		found = (Key **)bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameOwnerCase);
 	else if (options & KDB_O_WITHOWNER)
-		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-			sizeof (Key *), keyCompareByNameOwner);
+		found = (Key **)bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameOwner);
 	else if (options & KDB_O_NOCASE)
-		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-			sizeof (Key *), keyCompareByNameCase);
+		found = (Key **)bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByNameCase);
 	else
-		found = (Key **) bsearch (&key, ks->array+jump, ks->size-jump,
-			sizeof (Key *), keyCompareByName);
+		found = (Key **)bsearch (&key, ks->array + jump, ks->size - jump, sizeof (Key *), keyCompareByName);
 	if (found)
 	{
-		cursor = found-ks->array;
+		cursor = found - ks->array;
 		if (options & KDB_O_POP)
 		{
-			return elektraKsPopAtCursor(ks, cursor);
-		} else {
-			ksSetCursor(ks, cursor);
+			return elektraKsPopAtCursor (ks, cursor);
+		}
+		else
+		{
+			ksSetCursor (ks, cursor);
 			return (*found);
 		}
-	} else {
+	}
+	else
+	{
 		ksSetCursor (ks, cursor);
 	}
 	return 0;
@@ -1862,24 +1874,25 @@ static Key * elektraLookupBinarySearch(KeySet *ks, Key const *key, option_t opti
  *
  * @return the found key
  */
-static Key * elektraLookupSearch(KeySet *ks, Key *key, option_t options)
+static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 {
-	typedef Key * (*callback_t) (KeySet *ks, Key *key, Key *found, option_t options);
-	union {callback_t f; void* v;} conversation;
+	typedef Key * (*callback_t) (KeySet * ks, Key * key, Key * found, option_t options);
+	union {
+		callback_t f;
+		void * v;
+	} conversation;
 
-	Key * found = elektraLookupBinarySearch(ks, key, options);
+	Key * found = elektraLookupBinarySearch (ks, key, options);
 
-	Key *ret = found;
+	Key * ret = found;
 
-	if (keyGetMeta(key, "callback"))
+	if (keyGetMeta (key, "callback"))
 	{
-		if (keyGetBinary(key,
-			&conversation.v,
-			sizeof(conversation)) == sizeof(conversation))
+		if (keyGetBinary (key, &conversation.v, sizeof (conversation)) == sizeof (conversation))
 		{
 			if (conversation.v != 0)
 			{
-				ret = (*conversation.f)(ks, key, found, options);
+				ret = (*conversation.f) (ks, key, found, options);
 			}
 		}
 	}
@@ -1887,10 +1900,10 @@ static Key * elektraLookupSearch(KeySet *ks, Key *key, option_t options)
 	return ret;
 }
 
-static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option_t options)
+static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED option_t options)
 {
-	Key *ret = keyDup(key);
-	ksAppendKey(ks, ret);
+	Key * ret = keyDup (key);
+	ksAppendKey (ks, ret);
 	return ret;
 }
 
@@ -1987,7 +2000,7 @@ static Key * elektraLookupCreateKey(KeySet *ks, Key * key, ELEKTRA_UNUSED option
  * @see ksLookupByName() to search by a name given by a string
  * @see ksCurrent(), ksRewind(), ksNext() for iterating over a keyset
  */
-Key *ksLookup(KeySet *ks, Key * key, option_t options)
+Key * ksLookup (KeySet * ks, Key * key, option_t options)
 {
 	if (!ks) return 0;
 	if (!key) return 0;
@@ -1995,44 +2008,44 @@ Key *ksLookup(KeySet *ks, Key * key, option_t options)
 	const char * name = key->key;
 	if (!name) return 0;
 
-	Key *ret = 0;
+	Key * ret = 0;
 	const int mask = ~KDB_O_DEL & ~KDB_O_CREATE;
 
 	if (options & KDB_O_SPEC)
 	{
-		Key *lookupKey = key;
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
-		ret = elektraLookupBySpec(ks, lookupKey, options & mask);
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME))
+		Key * lookupKey = key;
+		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key);
+		ret = elektraLookupBySpec (ks, lookupKey, options & mask);
+		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
 		{
-			elektraCopyCallbackMeta(key, lookupKey);
-			keyDel(lookupKey);
+			elektraCopyCallbackMeta (key, lookupKey);
+			keyDel (lookupKey);
 		}
 	}
-	else if (!(options & KDB_O_NOCASCADING) && strcmp(name, "") && name[0] == '/')
+	else if (!(options & KDB_O_NOCASCADING) && strcmp (name, "") && name[0] == '/')
 	{
-		Key *lookupKey = key;
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup(key);
-		ret = elektraLookupByCascading(ks, lookupKey, options & mask);
-		if (test_bit(key->flags, KEY_FLAG_RO_NAME))
+		Key * lookupKey = key;
+		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key);
+		ret = elektraLookupByCascading (ks, lookupKey, options & mask);
+		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
 		{
-			elektraCopyCallbackMeta(key, lookupKey);
-			keyDel(lookupKey);
+			elektraCopyCallbackMeta (key, lookupKey);
+			keyDel (lookupKey);
 		}
 	}
 	else if ((options & KDB_O_NOALL)
-		// || (options & KDB_O_NOCASE)
-		// || (options & KDB_O_WITHOWNER)
-		) // TODO binary search with nocase won't work
+		 // || (options & KDB_O_NOCASE)
+		 // || (options & KDB_O_WITHOWNER)
+		 ) // TODO binary search with nocase won't work
 	{
-		ret = elektraLookupLinearSearch(ks, key, options & mask);
+		ret = elektraLookupLinearSearch (ks, key, options & mask);
 	}
 	else
 	{
-		ret = elektraLookupSearch(ks, key, options & mask);
+		ret = elektraLookupSearch (ks, key, options & mask);
 	}
 
-	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey(ks, key, options & mask);
+	if (!ret && options & KDB_O_CREATE) ret = elektraLookupCreateKey (ks, key, options & mask);
 
 	if (options & KDB_O_DEL) keyDel (key);
 
@@ -2073,7 +2086,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/key", 0)) == NULL)
 	errorHandler ("Could not Lookup Key");
  * @endcode
  *
- * This is the way multi user Programs should get there configuration and
+ * This is the way multi user programs should get their configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
  *
@@ -2098,7 +2111,7 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  *
  * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
  * are considered. A much more efficient binary search will be used then.
- * 
+ *
  * @param ks where to look for
  * @param name key name you are looking for
  * @param options some @p KDB_O_* option bits:
@@ -2117,9 +2130,9 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
-Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
+Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
 {
-	Key * found=0;
+	Key * found = 0;
 
 	if (!ks) return 0;
 	if (!name) return 0;
@@ -2128,12 +2141,12 @@ Key *ksLookupByName(KeySet *ks, const char *name, option_t options)
 
 	struct _Key key;
 
-	keyInit(&key);
-	elektraKeySetName(&key, name, KEY_META_NAME|KEY_CASCADING_NAME);
+	keyInit (&key);
+	elektraKeySetName (&key, name, KEY_META_NAME | KEY_CASCADING_NAME);
 
-	found = ksLookup(ks, &key, options);
+	found = ksLookup (ks, &key, options);
 	elektraFree (key.key);
-	ksDel(key.meta); // sometimes owner is set
+	ksDel (key.meta); // sometimes owner is set
 	return found;
 }
 
@@ -2171,30 +2184,31 @@ while (key=ksLookupByString(ks,"my value",0))
  * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
-Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
+Key * ksLookupByString (KeySet * ks, const char * value, option_t options)
 {
-	cursor_t init=0;
-	Key *current=0;
+	cursor_t init = 0;
+	Key * current = 0;
 
 	if (!ks) return 0;
 
 	if (!(options & KDB_O_NOALL))
 	{
 		ksRewind (ks);
-		init=ksGetCursor(ks);
+		init = ksGetCursor (ks);
 	}
 
 	if (!value) return 0;
 
-	while ((current=ksNext(ks)) != 0)
+	while ((current = ksNext (ks)) != 0)
 	{
-		if (!keyIsString(current)) continue;
+		if (!keyIsString (current)) continue;
 
 		/*fprintf (stderr, "Compare %s with %s\n", keyValue(current), value);*/
 
-		if ((options & KDB_O_NOCASE) && 
-			!elektraStrCaseCmp(keyValue(current),value)) break;
-		else if (!strcmp(keyValue(current),value)) break;
+		if ((options & KDB_O_NOCASE) && !elektraStrCaseCmp (keyValue (current), value))
+			break;
+		else if (!strcmp (keyValue (current), value))
+			break;
 	}
 
 	/* reached end of KeySet */
@@ -2207,14 +2221,13 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
 }
 
 
-
 /*
  * Lookup for a Key contained in @p ks KeySet that matches the binary @p value,
  * starting from ks' ksNext() position.
  *
  * If found, @p ks internal cursor will be positioned in the matched key.
  * That means it is also accessible by ksCurrent(). A pointer to the Key
- * is returned. If not found, @p ks internal cursor won't move, and a 
+ * is returned. If not found, @p ks internal cursor won't move, and a
  * NULL pointer is returned.
  *
  * This method skips string keys.
@@ -2231,34 +2244,34 @@ Key *ksLookupByString(KeySet *ks, const char *value, option_t options)
  * @see keyCompare() for very powerful Key lookups in KeySets
  * @see ksCurrent(), ksRewind(), ksNext()
  */
-Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
-		option_t options)
+Key * ksLookupByBinary (KeySet * ks, const void * value, size_t size, option_t options)
 {
-	cursor_t init=0;
-	Key *current=0;
+	cursor_t init = 0;
+	Key * current = 0;
 
 	if (!ks) return 0;
 
 	if (!(options & KDB_O_NOALL))
 	{
 		ksRewind (ks);
-		init=ksGetCursor(ks);
+		init = ksGetCursor (ks);
 	}
 
-	while ((current=ksNext(ks)))
+	while ((current = ksNext (ks)))
 	{
-		if (!keyIsBinary(current)) continue;
+		if (!keyIsBinary (current)) continue;
 
 		if (size != current->dataSize) continue;
 
 		if (!value)
 		{
-			if (!current->data.v) break;
-			else continue;
+			if (!current->data.v)
+				break;
+			else
+				continue;
 		}
 
-		if (current->data.v && 
-			!memcmp(current->data.v,value,size)) break;
+		if (current->data.v && !memcmp (current->data.v, value, size)) break;
 	}
 
 	/* reached end of KeySet */
@@ -2269,7 +2282,6 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
 
 	return 0;
 }
-
 
 
 /*********************************************************************
@@ -2302,39 +2314,41 @@ Key *ksLookupByBinary(KeySet *ks, const void *value, size_t size,
  * @retval -1 if alloc is smaller then current size of keyset.
  * @retval -1 on memory error or null ptr
  */
-int ksResize (KeySet *ks, size_t alloc)
+int ksResize (KeySet * ks, size_t alloc)
 {
 	if (!ks) return -1;
 
-	alloc ++; /* for ending null byte */
+	alloc++; /* for ending null byte */
 	if (alloc == ks->alloc) return 1;
 	if (alloc < ks->size) return 0;
 	if (alloc < KEYSET_SIZE)
 	{
-		if (ks->alloc != KEYSET_SIZE) alloc = KEYSET_SIZE;
-		else return 0;
+		if (ks->alloc != KEYSET_SIZE)
+			alloc = KEYSET_SIZE;
+		else
+			return 0;
 	}
 
 	if (ks->array == NULL)
-	{	/* Not allocated up to now */
+	{ /* Not allocated up to now */
 		ks->alloc = alloc;
 		ks->size = 0;
-		ks->array = elektraMalloc (sizeof(struct _Key *) * ks->alloc);
+		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
 			return -1;
 		}
 	}
-/* This is much too verbose
-#if DEBUG && VERBOSE
-	printf ("Resize from %d to %d\n",(int) ks->alloc,(int) alloc);
-#endif
-*/
-	ks->alloc=alloc;
+	/* This is much too verbose
+	#if DEBUG && VERBOSE
+		printf ("Resize from %d to %d\n",(int) ks->alloc,(int) alloc);
+	#endif
+	*/
+	ks->alloc = alloc;
 
 
-	if (elektraRealloc((void**) &ks->array, sizeof(struct _Key *) * ks->alloc) == -1)
+	if (elektraRealloc ((void **)&ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
 #if DEBUG
 		fprintf (stderr, "Reallocation error\n");
@@ -2358,11 +2372,10 @@ int ksResize (KeySet *ks, size_t alloc)
  *
  * @param ks the keyset object to work with
  * @return allocated size*/
-size_t ksGetAlloc (const KeySet *ks)
+size_t ksGetAlloc (const KeySet * ks)
 {
-	return ks->alloc-1;
+	return ks->alloc - 1;
 }
-
 
 
 /**
@@ -2379,15 +2392,15 @@ size_t ksGetAlloc (const KeySet *ks)
  * @see ksNew(), ksClose(), keyInit()
  * @retval 1 on success
  */
-int ksInit(KeySet *ks)
+int ksInit (KeySet * ks)
 {
 	ks->array = 0;
 
-	ks->size=0;
-	ks->alloc=0;
-	ks->flags=0;
+	ks->size = 0;
+	ks->alloc = 0;
+	ks->flags = 0;
 
-	ksRewind(ks);
+	ksRewind (ks);
 
 	return 1;
 }
@@ -2401,12 +2414,12 @@ int ksInit(KeySet *ks)
  * @see ksDel(), ksNew(), keyInit()
  * @retval 1 on success
  */
-int ksClose(KeySet *ks)
+int ksClose (KeySet * ks)
 {
 	Key * k;
 
-	ksRewind(ks);
-	while ((k = ksNext(ks)) != 0)
+	ksRewind (ks);
+	while ((k = ksNext (ks)) != 0)
 	{
 		keyDecRef (k);
 		keyDel (k);
@@ -2425,4 +2438,3 @@ int ksClose(KeySet *ks)
 /**
  * @}
  */
-

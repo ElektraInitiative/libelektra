@@ -13,16 +13,17 @@
 #include <kdbplugin.h>
 
 #ifdef __cplusplus
-namespace ckdb {
+namespace ckdb
+{
 extern "C" {
 #endif
 
 /* The pointer to a function which will create a plugin */
-typedef Plugin *(*elektraPluginFactory) (void);
+typedef Plugin * (*elektraPluginFactory) (void);
 
-int elektraModulesInit (KeySet *modules, Key *error);
-elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *error);
-int elektraModulesClose (KeySet *modules, Key *error);
+int elektraModulesInit (KeySet * modules, Key * error);
+elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * error);
+int elektraModulesClose (KeySet * modules, Key * error);
 
 #ifdef __cplusplus
 }

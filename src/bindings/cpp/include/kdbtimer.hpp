@@ -6,35 +6,35 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <string>
-#include <numeric>
-#include <iostream>
-#include <iomanip>
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <string>
 #include <sys/time.h>
 
 #ifdef __GNUC__
-#define TIMER_NOINLINE __attribute__((noinline))
+#define TIMER_NOINLINE __attribute__ ((noinline))
 #endif
 
 class Timer
 {
 public:
-	TIMER_NOINLINE void start()
+	TIMER_NOINLINE void start ()
 	{
 		gettimeofday (&begin, nullptr);
 	}
-	TIMER_NOINLINE void stop()
+	TIMER_NOINLINE void stop ()
 	{
 		gettimeofday (&end, nullptr);
 		// force calculation in long long:
 		timer_t result = end.tv_sec - begin.tv_sec;
 		result *= usec_factor;
 		result += end.tv_usec - begin.tv_usec;
-		results.push_back(result);
+		results.push_back (result);
 	}
-	Timer(std::string  name);
-	~Timer(); // print csv table at end
+	Timer (std::string name);
+	~Timer (); // print csv table at end
 	struct timeval begin;
 	struct timeval end;
 	typedef long long timer_t;
@@ -44,18 +44,15 @@ public:
 	static const timer_t usec_factor = 1000000LL;
 };
 
-inline Timer::Timer(std::string  name_) :
-		begin(),
-		end(),
-		results(),
-		name(std::move(name_))
+inline Timer::Timer (std::string name_) : begin (), end (), results (), name (std::move (name_))
 {
 }
 
-inline Timer::~Timer()
+inline Timer::~Timer ()
 {
 	for (auto result : results)
 	{
+		// clang-format off
 		std::cerr << name << ","
 			 << result / Timer::usec_factor
 			 << "."
@@ -63,12 +60,14 @@ inline Timer::~Timer()
 			 << std::setfill('0')
 			 << result % Timer::usec_factor
 			 << std::endl;
+		// clang-format on
 	}
 }
 
 
 inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 {
+	// clang-format off
 	Timer::timer_t r = t.results.back();
 	os.width(30);
 	os.fill(' ');
@@ -124,6 +123,6 @@ inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 		<< r % Timer::usec_factor
 		<< " sec"
 		<< std::endl;
+	// clang-format on
 	return os;
 }
-

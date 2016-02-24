@@ -10,8 +10,8 @@
 #ifndef METAMERGESTRATEGY_HPP_
 #define METAMERGESTRATEGY_HPP_
 
-#include <merging/threewaymerge.hpp>
 #include <merging/mergeconflictstrategy.hpp>
+#include <merging/threewaymerge.hpp>
 
 namespace kdb
 {
@@ -36,24 +36,19 @@ class MetaMergeStrategy : public MergeConflictStrategy
 {
 
 public:
-	ThreeWayMerge& innerMerger;
+	ThreeWayMerge & innerMerger;
 
-	MetaMergeStrategy(ThreeWayMerge& _innerStrategy) :
-			innerMerger (_innerStrategy)
+	MetaMergeStrategy (ThreeWayMerge & _innerStrategy) : innerMerger (_innerStrategy)
 	{
 	}
 
-	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result) override;
+	virtual void resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result) override;
 
 private:
-	KeySet getMetaKeys (Key& key);
+	KeySet getMetaKeys (Key & key);
 };
-
 }
 }
 }
 
 #endif /* METAMERGESTRATEGY_HPP_ */
-
-
-

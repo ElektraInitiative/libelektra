@@ -1,9 +1,10 @@
 - infos = Information about the tracer plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
+- infos/provides = tracing
 - infos/needs =
-- infos/provides = logging
 - infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
+- infos/status = maintained tested global
 - infos/description = Traces the execution path of a backend
 
 ## Introduction ##

@@ -15,12 +15,12 @@
 #include <toolexcept.hpp>
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace ckdb
 {
-	typedef struct _Plugin Plugin;
+typedef struct _Plugin Plugin;
 }
 
 namespace kdb
@@ -45,31 +45,31 @@ namespace tools
 class Plugin
 {
 private:
-	typedef void (*func_t)();
+	typedef void (*func_t) ();
 
 private:
-	ckdb::Plugin *plugin;
+	ckdb::Plugin * plugin;
 	PluginSpec spec;
 	kdb::KeySet info;
 
 	std::map<std::string, func_t> symbols;
 	std::map<std::string, std::string> infos;
 
-	void uninit();
+	void uninit ();
 
 public:
 	/**
 	 * @brief Do not construct a plugin yourself, use Modules.load
 	 */
-	Plugin(PluginSpec const & spec, kdb::KeySet &modules);
+	Plugin (PluginSpec const & spec, kdb::KeySet & modules);
 
-	Plugin(Plugin const& other);
-	Plugin& operator = (Plugin const& other);
+	Plugin (Plugin const & other);
+	Plugin & operator= (Plugin const & other);
 
-	Plugin(Plugin && other) = delete;
-	Plugin& operator = (Plugin && other) = delete;
+	Plugin (Plugin && other) = delete;
+	Plugin & operator= (Plugin && other) = delete;
 
-	~Plugin();
+	~Plugin ();
 
 	/**
 	 * @brief Is toggled during serialization.
@@ -82,13 +82,13 @@ public:
 	 * Gets the configuration for the plugin.
 	 * (will be done in Modules.load)
 	 */
-	void loadInfo();
+	void loadInfo ();
 
 	/**
 	 * Creates symbol and info table.
 	 * (will be done in Modules.load)
 	 */
-	void parse();
+	void parse ();
 
 	/**
 	 * Does various checks on the Plugin and throws exceptions
@@ -101,27 +101,30 @@ public:
 	 *
 	 * @pre parse()
 	 */
-	void check(std::vector<std::string> & warnings);
+	void check (std::vector<std::string> & warnings);
 
-	ckdb::Plugin *operator->();
+	ckdb::Plugin * operator-> ();
 
 	/**
 	 * Gets the whole string of an information item.
 	 * @pre loadInfo()
 	 */
-	std::string lookupInfo(std::string item, std::string section = "infos");
+	std::string lookupInfo (std::string item, std::string section = "infos");
 
 	/**
 	 * Searches within a string of an information item.
 	 * @pre loadInfo()
 	 */
-	bool findInfo(std::string check, std::string item, std::string section = "infos");
+	bool findInfo (std::string check, std::string item, std::string section = "infos");
 
 	/**
 	 * Returns the whole keyset of information.
 	 * @pre loadInfo()
 	 */
-	kdb::KeySet getInfo() {return info;}
+	kdb::KeySet getInfo ()
+	{
+		return info;
+	}
 
 	/**
 	 * In the plugin's contract there is a description of which
@@ -132,7 +135,7 @@ public:
 	 * @see getConfig()
 	 * @pre loadInfo()
 	 */
-	kdb::KeySet getNeededConfig();
+	kdb::KeySet getNeededConfig ();
 
 	/**
 	 * @brief return the plugin config
@@ -140,7 +143,7 @@ public:
 	 * @return the config supplied with constructor
 	 * @see getNeededConfig()
 	 */
-	kdb::KeySet getConfig();
+	kdb::KeySet getConfig ();
 
 	/**
 	 * Returns symbol to a function.
@@ -148,7 +151,7 @@ public:
 	 */
 	func_t getSymbol (std::string which)
 	{
-		if (symbols.find (which) == symbols.end()) throw MissingSymbol(which);
+		if (symbols.find (which) == symbols.end ()) throw MissingSymbol (which);
 		return symbols[which];
 	}
 
@@ -185,12 +188,12 @@ public:
 	/**
 	 * @return the name of the plugin (module)
 	 */
-	std::string name();
+	std::string name ();
 
 	/**
 	 * @return the fullname of the plugin
 	 */
-	std::string getFullName();
+	std::string getFullName ();
 
 private:
 	friend class ErrorPlugins;
@@ -206,13 +209,11 @@ private:
 	 * @note Its not the same as getRefName(), and is only suitable for serialization!
 	 * @warning Its stateful in a really weird way!
 	 */
-	std::string refname();
+	std::string refname ();
 };
 
 typedef std::unique_ptr<Plugin> PluginPtr;
-
 }
-
 }
 
 #endif

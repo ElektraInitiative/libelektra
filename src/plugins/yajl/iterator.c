@@ -8,11 +8,11 @@
 
 #include "iterator.h"
 
-keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k)
+keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k)
 {
 	keyNameReverseIterator it;
-	it.rend   = keyName(k);
-	it.rbegin = it.rend + keyGetNameSize(k);
+	it.rend = keyName (k);
+	it.rbegin = it.rend + keyGetNameSize (k);
 	it.current = it.rbegin;
 	it.size = 0;
 	return it;
@@ -26,15 +26,15 @@ keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k)
  *
  * @return 
  */
-int elektraKeyNameReverseNext(keyNameReverseIterator *it)
+int elektraKeyNameReverseNext (keyNameReverseIterator * it)
 {
 	if (it->current == it->rend) // we are at the end (move that to hasNext?)
 	{
 		return 0;
 	}
 
-	const char *real=it->current-1; // start at one position left
-	int endReached=0;
+	const char * real = it->current - 1; // start at one position left
+	int endReached = 0;
 
 	// skip all repeating '/' in the "beginning" of string
 	while (*real == KDB_PATH_SEPARATOR)
@@ -47,14 +47,14 @@ int elektraKeyNameReverseNext(keyNameReverseIterator *it)
 		++real; // we skipped to much
 	}
 
-	const char *currentEnd = real; // now we know where the string will end
+	const char * currentEnd = real; // now we know where the string will end
 
 	// now see where this basename begins
 	// also handles escaped chars with '\'
 	while (real != it->rend && !endReached)
 	{
 		--real;
-		if (real != it->rend && *real==KDB_PATH_SEPARATOR)
+		if (real != it->rend && *real == KDB_PATH_SEPARATOR)
 		{
 			// only decrement if we have not send the end
 			--real;
@@ -67,7 +67,7 @@ int elektraKeyNameReverseNext(keyNameReverseIterator *it)
 	}
 
 	// update iterator and return it
-	it->size=currentEnd-real+1;
+	it->size = currentEnd - real + 1;
 	it->current = real;
 	return 1;
 }
@@ -92,29 +92,28 @@ int elektraKeyNameReverseNext(keyNameReverseIterator *it)
  * @return key after starting position which is not below (to any latter
  * one)
  */
-Key * elektraNextNotBelow(KeySet *ks)
+Key * elektraNextNotBelow (KeySet * ks)
 {
-	const Key *previous = ksNext(ks);
+	const Key * previous = ksNext (ks);
 
 	if (!previous)
 	{
-		ksRewind(ks);
+		ksRewind (ks);
 		return 0;
 	}
 
 	// unitialized variables are ok, because do{}while guarantees initialisation
-	cursor_t pos; // always one before current
+	cursor_t pos;			// always one before current
 	const Key * current = previous; // current is same as ksCurrent()
 	do
 	{
-		pos = ksGetCursor(ks); // remember candidate
-		previous = current;    // and remember last key
-		current = ksNext(ks);  // look forward to next key
-	}
-	while (current && keyIsBelow(previous, current));
+		pos = ksGetCursor (ks); // remember candidate
+		previous = current;     // and remember last key
+		current = ksNext (ks);  // look forward to next key
+	} while (current && keyIsBelow (previous, current));
 
 	// jump to and return candidate, because next is known to be not
 	// below candidate
-	ksSetCursor(ks, pos);
-	return ksCurrent(ks);
+	ksSetCursor (ks, pos);
+	return ksCurrent (ks);
 }

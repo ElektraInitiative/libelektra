@@ -5,12 +5,13 @@
 For the base system you only need cmake and build-essential (make, gcc,
 some unix tools).
 
-To build documentation you need doxygen and graphviz.
+To build documentation you need doxygen, graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files).
 
 To build pdf documentation you need pdflatex with
 
 	texlive-fonts-recommended
 	texlive-latex-recommended
+	texlive-latex-extra
 
 For the debian package, please refer to debian/control (in the debian
 branch).
@@ -22,7 +23,7 @@ plugin.
 
 ## PREPARATION ##
 
-Elektra is using cmake.
+Elektra uses cmake.
 Tested are cmake version 2.8.9 and version 3.0.2.
 
 To configure Elektra graphically (with curses) run (.. belongs to command):
@@ -32,7 +33,7 @@ To configure Elektra graphically (with curses) run (.. belongs to command):
 and press 'c':
 
 
-All options described here, can also be used with cmake rather then
+All options described here, can also be used with cmake rather than
 ccmake (.. belongs to the command!):
 
 	mkdir build && cd build && cmake -D<OPTION1>=<VAR1> -D<OPTION2>=<VAR2> ..
@@ -69,11 +70,11 @@ Additional gcc 4.6 armhf is tested regularly.
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
 
 
-To change the compiler, use  
+To change the compiler, use
 
 	CMAKE_C_COMPILER and CMAKE_CXX_COMPILER.
 
-for example to use gcc-4.3  
+for example to use gcc-4.3
 
 	cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
 
@@ -113,7 +114,8 @@ The default is also the minimal set of plugins you should add:
   `KDB_DEFAULT_RESOLVER` to it.
 - sync is very useful to not lose any data.
   If you do not want to include it, make sure to set
-  `/sw/kdb/current/plugins` to a value not containing sync.
+  `/sw/elektra/kdb/#0/current/plugins` to a value not containing sync
+  (e.g. an empty value).
   See [kdb-mount(1)](/doc/help/kdb-mount.md).
 
 To add all plugins, you can use:
@@ -130,11 +132,11 @@ E.g. if you want all plugins except the jni plugin you would use:
 	-DPLUGINS="ALL;-jni"
 
 To add all plugins not having additional dependencies
-(they need only POSIX), you can use  
+(they need only POSIX), you can use
 
 	-DPLUGINS=NODEP
 
-To manually set the default (same as not setting PLUGINS), you can use  
+To manually set the default (same as not setting PLUGINS), you can use
 
 	-DPLUGINS=DEFAULT
 
@@ -147,6 +149,9 @@ For this endeavour you need to change:
 and
 
 	-DKDB_DEFAULT_STORAGE=dump
+
+The default resolver+storage will write to `KDB_DB_FILE` and `KDB_DB_INIT`
+([for bootstrapping](/doc/help/elektra-bootstrapping.md)).
 
 !!! Note, that you cannot use NODEP or DEFAULT and add other plugins to it.
 Instead, you can pass the list of plugins you want, e.g.:
@@ -266,7 +271,7 @@ Edit that cache entry to change that behaviour.
 Also called system prefix within the documentation.
 
 If you want to create a package afterwards it is ok to use
-pathes that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
+paths that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
 
 #### LIB_SUFFIX ####
 Lets you install libraries into architecture specific folder.
@@ -300,6 +305,9 @@ It is recommended that you browse through all of the options.
 Afterwards press c again (maybe multiple times until all variables are
 resolved) and then g to generate.  Finally press e to exit.
 
+#### INSTALL_BUILD_TOOLS ####
+Specifies that the build tools, i.e. `elektra-export-symbols` and `elektra-export-symbols`
+are installed (by default off). Is needed for cross-compilation.
 
 
 ## BUILDING ##
@@ -324,11 +332,11 @@ Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later)
 installed. cmake configure will help you with that, it will make sure you don't forget something
 essential.
 
-For Most Linux system all you have to do is open up a console and 
+For Most Linux system all you have to do is open up a console and
 
-        mkdir build 
-        cd build 
-        cmake .. -G 'CodeBlocks - Unix Makefiles' 
+        mkdir build
+        cd build
+        cmake .. -G 'CodeBlocks - Unix Makefiles'
         make package
 
 
@@ -341,7 +349,7 @@ Note 2:
 	For Unix if you have nCurses install you can run ccmake to set important option after
 	running cmake like to enable debug symbol.
 
-Note 3: 
-	for Gentoo is recommend to emerge sys-apps/lsb-release to name the package 
+Note 3:
+	for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
 	right even thou not required.
 

@@ -22,14 +22,16 @@ The following tests are available: basic string umlauts binary naming meta
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 
 ## EXAMPLES
 
 To run all tests below the `user/example/tests` key:  
-	`kdb test user/example/tests`  
+`kdb test user/example/tests`  
 
 To run the `binary` and `naming` tests:  
-	`kdb test user/example/tests binary naming`  
+`kdb test user/example/tests binary naming`  
 
 
 

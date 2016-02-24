@@ -8,8 +8,8 @@
  */
 
 
-#include <modules.hpp>
 #include <keyset.hpp>
+#include <modules.hpp>
 
 #include <kdbmodule.h>
 #include <kdbplugin.h>
@@ -22,41 +22,35 @@ namespace kdb
 namespace tools
 {
 
-Modules::Modules()
+Modules::Modules ()
 {
-	ckdb::elektraModulesInit(modules.getKeySet(), nullptr);
+	ckdb::elektraModulesInit (modules.getKeySet (), nullptr);
 }
 
-Modules::~Modules()
+Modules::~Modules ()
 {
-	ckdb::elektraModulesClose(modules.getKeySet(), nullptr);
+	ckdb::elektraModulesClose (modules.getKeySet (), nullptr);
 }
 
-PluginPtr Modules::load(std::string const& pluginName)
+PluginPtr Modules::load (std::string const & pluginName)
 {
-	KeySet config(1,
-		*Key(	"system/module",
-			KEY_VALUE, "this plugin was loaded without a config",
-			KEY_END),
-		KS_END);
+	KeySet config (1, *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END);
 
-	return load(pluginName, config);
+	return load (pluginName, config);
 }
 
-PluginPtr Modules::load(std::string const& pluginName, KeySet const & config)
+PluginPtr Modules::load (std::string const & pluginName, KeySet const & config)
 {
 	return load (PluginSpec (pluginName, config));
 }
 
-PluginPtr Modules::load(PluginSpec const & spec)
+PluginPtr Modules::load (PluginSpec const & spec)
 {
 	PluginPtr plugin (new Plugin (spec, modules));
-	plugin->loadInfo();
-	plugin->parse();
+	plugin->loadInfo ();
+	plugin->parse ();
 
 	return plugin;
 }
-
 }
-
 }

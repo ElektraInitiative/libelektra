@@ -13,15 +13,15 @@
 
 typedef struct _keyNameReverseIterator
 {
-	const char *rbegin;  ///< begin of name (constant during iteration)
-	const char *rend;    ///< end of name (constant during iteration)
-	const char *current; ///< current position
-	size_t size;         ///< size of current substring (beginning from position)
+	const char * rbegin;  ///< begin of name (constant during iteration)
+	const char * rend;    ///< end of name (constant during iteration)
+	const char * current; ///< current position
+	size_t size;	  ///< size of current substring (beginning from position)
 } keyNameReverseIterator;
 
-keyNameReverseIterator elektraKeyNameGetReverseIterator(const Key *k);
-int elektraKeyNameReverseNext(keyNameReverseIterator *it);
+keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k);
+int elektraKeyNameReverseNext (keyNameReverseIterator * it);
 
-Key * elektraNextNotBelow(KeySet *ks);
+Key * elektraNextNotBelow (KeySet * ks);
 
 #endif

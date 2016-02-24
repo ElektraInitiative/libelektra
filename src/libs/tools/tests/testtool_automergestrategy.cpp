@@ -7,9 +7,9 @@
  *
  */
 
+#include "mergetestutils.cpp"
 #include <gtest/gtest.h>
 #include <merging/automergestrategy.hpp>
-#include "mergetestutils.cpp"
 
 using namespace std;
 using namespace kdb;
@@ -23,16 +23,15 @@ protected:
 	MergeTask task;
 	KeySet conflicts;
 
-	AutoMergeStrategyTest() : task (MergeTask (BaseMergeKeys (base, baseParent),
-				OurMergeKeys (ours, ourParent),
-				TheirMergeKeys (theirs, theirParent),
-				mergeParent))
+	AutoMergeStrategyTest ()
+	: task (MergeTask (BaseMergeKeys (base, baseParent), OurMergeKeys (ours, ourParent), TheirMergeKeys (theirs, theirParent),
+			   mergeParent))
 	{
-		result = MergeResult(conflicts, mergeKeys);
+		result = MergeResult (conflicts, mergeKeys);
 	}
 };
 
-TEST_F(AutoMergeStrategyTest, DeleteEqualsMerges)
+TEST_F (AutoMergeStrategyTest, DeleteEqualsMerges)
 {
 	task.ours.lookup ("user/parento/config/key1", KDB_O_POP);
 	Key conflictKey = mergeKeys.lookup (mk1);
@@ -41,16 +40,16 @@ TEST_F(AutoMergeStrategyTest, DeleteEqualsMerges)
 
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	cout << merged << endl;
-	EXPECT_EQ(3, merged.size ());
+	// cout << merged << endl;
+	EXPECT_EQ (3, merged.size ());
 
 	/* key with index 1 should be deleted */
 	compareAllExceptKey1 (merged);
 }
 
-TEST_F(AutoMergeStrategyTest, EqualsDeleteMerges)
+TEST_F (AutoMergeStrategyTest, EqualsDeleteMerges)
 {
 	task.theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
 	Key conflictKey = mergeKeys.lookup (mk1);
@@ -59,15 +58,15 @@ TEST_F(AutoMergeStrategyTest, EqualsDeleteMerges)
 
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(3, merged.size ());
+	EXPECT_EQ (3, merged.size ());
 
 	/* key with index 1 should be deleted */
 	compareAllExceptKey1 (merged);
 }
 
-TEST_F(AutoMergeStrategyTest, EqualsModifyMerges)
+TEST_F (AutoMergeStrategyTest, EqualsModifyMerges)
 {
 	task.theirs.lookup ("user/parentt/config/key1").setString ("modifiedvalue");
 	Key conflictKey = mergeKeys.lookup (mk1);
@@ -76,18 +75,48 @@ TEST_F(AutoMergeStrategyTest, EqualsModifyMerges)
 
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ (4, merged.size ());
 
-	EXPECT_EQ(mk1, merged.lookup (mk1));
-	EXPECT_EQ ("modifiedvalue", merged.lookup (mk1).getString()) << "Key " << merged.lookup (mk1)
-			<< "was not modified correctly";
+	EXPECT_EQ (mk1, merged.lookup (mk1));
+	EXPECT_EQ ("modifiedvalue", merged.lookup (mk1).getString ()) << "Key " << merged.lookup (mk1) << "was not modified correctly";
 
 	compareAllExceptKey1 (merged);
 }
 
-TEST_F(AutoMergeStrategyTest, ModifyEqualsMerges)
+// the expected behaviour is the same for EqualsModify, EqualsDelete and EqualsAdd
+TEST_F (AutoMergeStrategyTest, EqualsModifyRespectsBinaryData)
+{
+	task.theirs.lookup ("user/parentt/config/key1").setBinary ("modifiedvalue", 13);
+	Key conflictKey = mergeKeys.lookup (mk1);
+	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_MODIFY);
+	conflictKey = result.getConflictSet ().at (0);
+
+	strategy.resolveConflict (task, conflictKey, result);
+
+	EXPECT_TRUE (conflictKey.isBinary ());
+}
+
+TEST_F (AutoMergeStrategyTest, EqualsModifyRespectsNullData)
+{
+	Key l = task.theirs.lookup ("user/parentt/config/key1");
+	l.setBinary (nullptr, 0);
+	EXPECT_TRUE (l.isBinary ());
+	EXPECT_EQ (l.getValue (), nullptr);
+
+	Key conflictKey = mergeKeys.lookup (mk1);
+	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_MODIFY);
+	conflictKey = result.getConflictSet ().at (0);
+
+	strategy.resolveConflict (task, conflictKey, result);
+
+	EXPECT_TRUE (conflictKey.isBinary ());
+	EXPECT_EQ (conflictKey.getValue (), nullptr);
+}
+
+
+TEST_F (AutoMergeStrategyTest, ModifyEqualsMerges)
 {
 	task.ours.lookup ("user/parento/config/key1").setString ("modifiedvalue");
 	Key conflictKey = mergeKeys.lookup (mk1);
@@ -96,18 +125,30 @@ TEST_F(AutoMergeStrategyTest, ModifyEqualsMerges)
 
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ (4, merged.size ());
 
-	EXPECT_EQ(mk1, merged.lookup (mk1));
-	EXPECT_EQ ("modifiedvalue", merged.lookup (mk1).getString()) << "Key " << merged.lookup (mk1)
-			<< "was not modified correctly";
+	EXPECT_EQ (mk1, merged.lookup (mk1));
+	EXPECT_EQ ("modifiedvalue", merged.lookup (mk1).getString ()) << "Key " << merged.lookup (mk1) << "was not modified correctly";
 
 	compareAllExceptKey1 (merged);
 }
 
-TEST_F(AutoMergeStrategyTest, AddEqualsKeyMerge)
+// the expected behaviour is the same for ModifyEquals, DeleteEquals and AddEquals
+TEST_F (AutoMergeStrategyTest, ModifyEqualsRespectsBinaryData)
+{
+	task.ours.lookup ("user/parento/config/key1").setBinary ("modifiedvalue", 13);
+	Key conflictKey = mergeKeys.lookup (mk1);
+	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_SAME);
+	conflictKey = result.getConflictSet ().at (0);
+
+	strategy.resolveConflict (task, conflictKey, result);
+
+	EXPECT_TRUE (conflictKey.isBinary ());
+}
+
+TEST_F (AutoMergeStrategyTest, AddEqualsKeyMerge)
 {
 	Key addedKey = Key ("user/parento/config/key5", KEY_VALUE, "value5", KEY_END);
 	task.ours.append (addedKey);
@@ -118,13 +159,13 @@ TEST_F(AutoMergeStrategyTest, AddEqualsKeyMerge)
 
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ (5, merged.size ());
 	compareAllKeys (merged);
 }
 
-TEST_F(AutoMergeStrategyTest, EqualsAddKeyMerge)
+TEST_F (AutoMergeStrategyTest, EqualsAddKeyMerge)
 {
 	Key addedKey = Key ("user/parentt/config/key5", KEY_VALUE, "value5", KEY_END);
 	task.theirs.append (addedKey);
@@ -135,8 +176,8 @@ TEST_F(AutoMergeStrategyTest, EqualsAddKeyMerge)
 
 	strategy.resolveConflict (task, conflictKey, result);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
-	EXPECT_EQ(5, merged.size ());
+	EXPECT_EQ (5, merged.size ());
 	compareAllKeys (merged);
 }

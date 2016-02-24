@@ -13,7 +13,7 @@
 
 /**
  * @defgroup plugin Plugins
- * 
+ *
  * @brief Elektra plugin framework
  *
  * @since version 0.4.9, Elektra can dynamically load different key storage
@@ -59,7 +59,7 @@
  *   \n
  *   Other persistent storage then a file is not handled within
  *   this document because it involves many other issues.
- *   For files the resolver plugin already takes care for
+ *   For files the resolver plugin already takes care of
  *   transactions and rollback.
  *   So the storage plugin is the source and dump as known
  *   from pipes and filters.
@@ -91,9 +91,6 @@
  * @addtogroup plugin
  * @{
  */
-
-
-
 
 
 /**
@@ -130,7 +127,7 @@
 #undef ELEKTRA_SET_ERRORF
 
 /**
- * @brief Adds an warning in the keys metadata.
+ * @brief Adds a warning in the keys metadata.
  *
  * Include kdberrors.h to make it work:
  *
@@ -147,7 +144,7 @@
 #undef ELEKTRA_ADD_WARNINGF
 
 /**
- * @brief Adds an warning in the keys metadata.
+ * @brief Adds a warning in the keys metadata.
  *
  * Include kdberrors.h to make it work:
  *
@@ -161,12 +158,6 @@
  */
 #define ELEKTRA_ADD_WARNING(number, key, text)
 #undef ELEKTRA_ADD_WARNING
-
-
-
-
-
-
 
 
 /**
@@ -238,9 +229,7 @@
  * @see elektraDocClose()
  * @ingroup plugin
  */
-int elektraDocOpen(Plugin *handle, Key *warningsKey);
-
-
+int elektraDocOpen (Plugin * handle, Key * warningsKey);
 
 
 /**
@@ -275,7 +264,7 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey);
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocClose(Plugin *handle, Key *warningsKey);
+int elektraDocClose (Plugin * handle, Key * warningsKey);
 
 /**
  * @brief Get data from storage to application.
@@ -283,7 +272,7 @@ int elektraDocClose(Plugin *handle, Key *warningsKey);
  * Retrieve information from a permanent storage to construct
  * a keyset.
  *
- * @section intro .
+ * @section intro Introduction
  *
  * The elektraDocGet() function handle everything related
  * to receiving keys.
@@ -398,7 +387,7 @@ int elektraDocClose(Plugin *handle, Key *warningsKey);
  *
  * @ingroup plugin
  */
-int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey);
+int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 /**
  * @brief Set data from application to storage.
@@ -459,8 +448,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey);
-
+int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 
 /**
@@ -488,7 +476,7 @@ int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocError(Plugin *handle, KeySet *returned, Key *parentKey);
+int elektraDocError (Plugin * handle, KeySet * returned, Key * parentKey);
 
 
 /**

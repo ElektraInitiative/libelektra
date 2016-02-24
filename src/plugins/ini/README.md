@@ -1,10 +1,11 @@
 - infos = Information about ini plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org> Felix Berlakovich <elektra@berlakovich.net> 
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
+- infos/needs =
 - infos/placements = getstorage setstorage
-- infos/description = 
+- infos/status = maintained unittest nodep libc 1000 configurable
+- infos/description =
 
 ## INTRODUCTION ##
 
@@ -16,9 +17,11 @@ for example "[section]". Each section is converted into a directory key
 key. If the same section appears multiple times, the keys of all sections
 with the same name are merged together under the section key.
 
+The plugin is feature rich and customizable (+1000 in status)
+
 ## USAGE ##
 
-If you want to add a ini file to the global key database, simply use mount:
+If you want to add an ini file to the global key database, simply use mount:
 
     kdb mount file.ini /example ini
 

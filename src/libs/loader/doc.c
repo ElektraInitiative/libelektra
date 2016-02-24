@@ -41,7 +41,7 @@
  * @return -1 on error
  * @return >=0 otherwise
  */
-int elektraModulesInit (KeySet *modules, Key *error)
+int elektraModulesInit (KeySet * modules, Key * error)
 {
 	return -1;
 }
@@ -82,7 +82,7 @@ int elektraModulesInit (KeySet *modules, Key *error)
  * @return 0 on error
  * @ingroup modules
  */
-elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *error)
+elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * error)
 {
 	return 0;
 }
@@ -105,7 +105,7 @@ elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key 
  * @return >=0 otherwise
  * @ingroup modules
  */
-int elektraModulesClose (KeySet *modules, Key *error)
+int elektraModulesClose (KeySet * modules, Key * error)
 {
 	return -1;
 }

@@ -22,6 +22,8 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-r`, `--recursive`:
   Recursively copy keys.
 - `-v`, `--verbose`:
@@ -32,14 +34,14 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 ## EXAMPLES
 
 To copy a multiple keys:  
-	`kdb cp -r user/example1 user/example2`  
+`kdb cp -r user/example1 user/example2`  
 
 To copy a single key:  
-	`kdb cp user/example/key1 user/example/key2`  
+`kdb cp user/example/key1 user/example/key2`  
 
 To copy keys below an existing key:  
-	`kdb cp -r user/example user/example/key1`  
+`kdb cp -r user/example user/example/key1`  
 Note that in this example, all keys in the example directory will be copied below `key1` EXCEPT `key1`.  
-	
+
 
 

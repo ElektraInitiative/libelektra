@@ -1,9 +1,14 @@
 - infos = Information about the wresolver plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = resolver
+- infos/needs =
 - infos/placements = rollback getresolver setresolver
+#ifdef _WIN32
+- infos/status = recommended maintained unfinished nodoc
+#else
+- infos/status = maintained unfinished nodoc
+#endif
 - infos/description = Returns success on every call and can be used as resolver.
 
 ## Introduction ##

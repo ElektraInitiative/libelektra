@@ -9,7 +9,7 @@
 #include "fstab.h"
 
 #ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
+#include "kdbconfig.h"
 #endif
 
 #define MAX_NUMBER_SIZE 10
@@ -27,35 +27,40 @@
   * Some logic to define the filesystem name when it is not
   * so obvious.
   */
-void elektraFstabFsName(char * fsname, struct mntent *fstabEntry,
-		unsigned int *swapIndex)
+void elektraFstabFsName (char * fsname, struct mntent * fstabEntry, unsigned int * swapIndex)
 {
 
-	if (!strcmp(fstabEntry->mnt_type,"swap")) {
-		sprintf(fsname,"swap%02d",*swapIndex);
+	if (!strcmp (fstabEntry->mnt_type, "swap"))
+	{
+		sprintf (fsname, "swap%02d", *swapIndex);
 		++(*swapIndex);
-	} else if (!strcmp(fstabEntry->mnt_dir,"none")) {
-		strcpy(fsname,fstabEntry->mnt_type);
-	} else {
+	}
+	else if (!strcmp (fstabEntry->mnt_dir, "none"))
+	{
+		strcpy (fsname, fstabEntry->mnt_type);
+	}
+	else
+	{
 		// Otherwise take dir as-is
-		strcpy(fsname,fstabEntry->mnt_dir);
+		strcpy (fsname, fstabEntry->mnt_dir);
 	}
 }
 
-int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parentKey)
+int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	int errnosave = errno;
 	ssize_t nr_keys = 0;
-	Key *key;
-	Key *dir;
-	FILE *fstab=0;
+	Key * key;
+	Key * dir;
+	FILE * fstab = 0;
 
 #if DEBUG && VERBOSE
-	printf ("get fstab %s from %s\n", keyName(parentKey), keyString(parentKey));
+	printf ("get fstab %s from %s\n", keyName (parentKey), keyString (parentKey));
 #endif
 
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/fstab"))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/fstab"))
 	{
+		// clang-format off
 		KeySet *moduleConfig = ksNew (50,
 			keyNew ("system/elektra/modules/fstab",
 				KEY_VALUE, "fstab plugin waits for your orders", KEY_END),
@@ -99,96 +104,97 @@ int elektraFstabGet(Plugin *handle ELEKTRA_UNUSED, KeySet *returned, Key *parent
 				KEY_META, "check/type", "unsigned_short",
 				KEY_END),
 			KS_END);
+		// clang-format on
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
 	}
 
 	key = keyDup (parentKey);
-	ksAppendKey(returned, key);
-	nr_keys ++;
+	ksAppendKey (returned, key);
+	nr_keys++;
 
-	fstab=setmntent(keyString(parentKey), "r");
+	fstab = setmntent (keyString (parentKey), "r");
 	if (fstab == 0)
 	{
-		ELEKTRA_SET_ERROR_GET(parentKey);
+		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
 		return -1;
 	}
 
-	struct mntent *fstabEntry;
+	struct mntent * fstabEntry;
 	char fsname[KDB_MAX_PATH_LENGTH];
 	char buffer[MAX_NUMBER_SIZE];
-	unsigned int swapIndex=0;
-	while ((fstabEntry=getmntent(fstab)))
+	unsigned int swapIndex = 0;
+	while ((fstabEntry = getmntent (fstab)))
 	{
 		nr_keys += 7;
-		elektraFstabFsName(fsname, fstabEntry, &swapIndex);
+		elektraFstabFsName (fsname, fstabEntry, &swapIndex);
 
 		/* Include only the filesystem pseudo-names */
 		dir = keyDup (parentKey);
-		keyAddBaseName(dir, fsname);
-		keySetString(dir,"");
-		keySetComment(dir,"");
+		keyAddBaseName (dir, fsname);
+		keySetString (dir, "");
+		keySetComment (dir, "");
 		keySetComment (dir, "Filesystem pseudo-name");
-		ksAppendKey(returned,dir);
+		ksAppendKey (returned, dir);
 
 		key = keyDup (dir);
-		keyAddBaseName(key, "device");
+		keyAddBaseName (key, "device");
 		keySetString (key, fstabEntry->mnt_fsname);
 		keySetComment (key, "Device or Label");
-		ksAppendKey(returned, key);
+		ksAppendKey (returned, key);
 
 		key = keyDup (dir);
-		keyAddBaseName(key, "mpoint");
+		keyAddBaseName (key, "mpoint");
 		keySetString (key, fstabEntry->mnt_dir);
 		keySetComment (key, "Mount point");
-		ksAppendKey(returned, key);
+		ksAppendKey (returned, key);
 
 		key = keyDup (dir);
-		keyAddBaseName(key, "type");
+		keyAddBaseName (key, "type");
 		keySetString (key, fstabEntry->mnt_type);
 		keySetComment (key, "Filesystem type.");
-		ksAppendKey(returned, key);
+		ksAppendKey (returned, key);
 
 		key = keyDup (dir);
-		keyAddBaseName(key, "options");
+		keyAddBaseName (key, "options");
 		keySetString (key, fstabEntry->mnt_opts);
 		keySetComment (key, "Filesystem specific options");
-		ksAppendKey(returned, key);
+		ksAppendKey (returned, key);
 
 		key = keyDup (dir);
-		keyAddBaseName(key, "dumpfreq");
-		snprintf(buffer, MAX_NUMBER_SIZE, "%d",fstabEntry->mnt_freq);
+		keyAddBaseName (key, "dumpfreq");
+		snprintf (buffer, MAX_NUMBER_SIZE, "%d", fstabEntry->mnt_freq);
 		keySetString (key, buffer);
 		keySetComment (key, "Dump frequency in days");
-		ksAppendKey(returned, key);
+		ksAppendKey (returned, key);
 
 		key = keyDup (dir);
-		keyAddBaseName(key, "passno");
-		snprintf(buffer, MAX_NUMBER_SIZE, "%d",fstabEntry->mnt_passno);
+		keyAddBaseName (key, "passno");
+		snprintf (buffer, MAX_NUMBER_SIZE, "%d", fstabEntry->mnt_passno);
 		keySetString (key, buffer);
 		keySetComment (key, "Pass number on parallel fsck");
-		ksAppendKey(returned, key);
+		ksAppendKey (returned, key);
 	}
-	
-	endmntent(fstab);
+
+	endmntent (fstab);
 
 	errno = errnosave;
 	return nr_keys;
 }
 
 
-int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
+int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	int errnosave = errno;
-	FILE *fstab=0;
-	Key *key=0;
-	const void *rootname = 0;
+	FILE * fstab = 0;
+	Key * key = 0;
+	const void * rootname = 0;
 	struct mntent fstabEntry;
 
 #if DEBUG && VERBOSE
-	printf ("set fstab %s to file %s\n", keyName(parentKey), keyString(parentKey));
+	printf ("set fstab %s to file %s\n", keyName (parentKey), keyString (parentKey));
 #endif
 
 	ksRewind (ks);
@@ -197,53 +203,62 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 		/*skip parent key*/
 	}
 
-	fstab=setmntent(keyString(parentKey), "w");
+	fstab = setmntent (keyString (parentKey), "w");
 
 	if (fstab == 0)
 	{
-		ELEKTRA_SET_ERROR_SET(parentKey);
+		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errnosave;
 		return -1;
 	}
 
-	memset(&fstabEntry,0,sizeof(struct mntent));
+	memset (&fstabEntry, 0, sizeof (struct mntent));
 
 	while ((key = ksNext (ks)) != 0)
 	{
-		const char *basename=keyBaseName(key);
+		const char * basename = keyBaseName (key);
 #if DEBUG && VERBOSE
-		printf ("key: %s %s\n", keyName(key), basename);
+		printf ("key: %s %s\n", keyName (key), basename);
 #endif
 		if (!strcmp (basename, "device"))
 		{
-			fstabEntry.mnt_fsname=(char *)keyValue(key);
-		} else if (!strcmp (basename, "mpoint")) {
-			fstabEntry.mnt_dir=(char *)keyValue(key);
-		} else if (!strcmp (basename, "type")) {
-			fstabEntry.mnt_type=(char *)keyValue(key);
-		} else if (!strcmp (basename, "options")) {
-			fstabEntry.mnt_opts=(char *)keyValue(key);
-		} else if (!strcmp (basename, "dumpfreq")) {
-			fstabEntry.mnt_freq=atoi((char *)keyValue(key));
-		} else if (!strcmp (basename, "passno")) {
-			fstabEntry.mnt_passno=atoi((char *)keyValue(key));
-		} else { // new rootname
+			fstabEntry.mnt_fsname = (char *)keyValue (key);
+		}
+		else if (!strcmp (basename, "mpoint"))
+		{
+			fstabEntry.mnt_dir = (char *)keyValue (key);
+		}
+		else if (!strcmp (basename, "type"))
+		{
+			fstabEntry.mnt_type = (char *)keyValue (key);
+		}
+		else if (!strcmp (basename, "options"))
+		{
+			fstabEntry.mnt_opts = (char *)keyValue (key);
+		}
+		else if (!strcmp (basename, "dumpfreq"))
+		{
+			fstabEntry.mnt_freq = atoi ((char *)keyValue (key));
+		}
+		else if (!strcmp (basename, "passno"))
+		{
+			fstabEntry.mnt_passno = atoi ((char *)keyValue (key));
+		}
+		else
+		{ // new rootname
 			if (!rootname)
 			{
-				rootname = keyValue(key);
-			} else {
-				rootname = keyValue(key);
+				rootname = keyValue (key);
+			}
+			else
+			{
+				rootname = keyValue (key);
 #if DEBUG && VERBOSE
-				fprintf(stdout, "first: %s   %s   %s   %s   %d %d\n",
-					fstabEntry.mnt_fsname,
-					fstabEntry.mnt_dir,
-					fstabEntry.mnt_type,
-					fstabEntry.mnt_opts,
-					fstabEntry.mnt_freq,
-					fstabEntry.mnt_passno);
+				fprintf (stdout, "first: %s   %s   %s   %s   %d %d\n", fstabEntry.mnt_fsname, fstabEntry.mnt_dir,
+					 fstabEntry.mnt_type, fstabEntry.mnt_opts, fstabEntry.mnt_freq, fstabEntry.mnt_passno);
 #endif
-				addmntent(fstab, &fstabEntry);
-				memset(&fstabEntry,0,sizeof(struct mntent));
+				addmntent (fstab, &fstabEntry);
+				memset (&fstabEntry, 0, sizeof (struct mntent));
 			}
 		}
 	}
@@ -251,24 +266,21 @@ int elektraFstabSet(Plugin *handle ELEKTRA_UNUSED, KeySet *ks, Key *parentKey)
 	if (rootname)
 	{
 #if DEBUG && VERBOSE
-		fprintf(stdout, "last: %s   %s   %s   %s   %d %d\n",
-			fstabEntry.mnt_fsname,
-			fstabEntry.mnt_dir,
-			fstabEntry.mnt_type,
-			fstabEntry.mnt_opts,
-			fstabEntry.mnt_freq,
-			fstabEntry.mnt_passno);
+		fprintf (stdout, "last: %s   %s   %s   %s   %d %d\n", fstabEntry.mnt_fsname, fstabEntry.mnt_dir, fstabEntry.mnt_type,
+			 fstabEntry.mnt_opts, fstabEntry.mnt_freq, fstabEntry.mnt_passno);
 #endif
-		addmntent(fstab, &fstabEntry);
+		addmntent (fstab, &fstabEntry);
 	}
-	
-	endmntent(fstab);
+
+	endmntent (fstab);
 	errno = errnosave;
 	return 1;
 }
 
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(fstab) {
+Plugin * ELEKTRA_PLUGIN_EXPORT (fstab)
+{
+	// clang-format off
 	return elektraPluginExport("fstab",
 		ELEKTRA_PLUGIN_GET,            &elektraFstabGet,
 		ELEKTRA_PLUGIN_SET,            &elektraFstabSet,

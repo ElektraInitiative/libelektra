@@ -13,7 +13,7 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 if (BUILD_SHARED)
 	add_executable (kdb ${SOURCES})
 
-	target_link_libraries (kdb elektra elektratools)
+	target_link_libraries (kdb elektra-core elektra-kdb elektratools)
 
 	install (TARGETS kdb DESTINATION bin)
 endif (BUILD_SHARED)

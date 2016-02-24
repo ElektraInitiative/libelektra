@@ -11,15 +11,16 @@
 #ifndef ELEKTRA_PLUGIN_RENAME_H
 #define ELEKTRA_PLUGIN_RENAME_H
 
-#include <kdbplugin.h>
 #include <kdberrors.h>
 #include <kdbextension.h>
+#include <kdbplugin.h>
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 
 int elektraRenameGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraRenameSet (Plugin * handle, KeySet * ks, Key * parentKey);
-Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const char * cutPath, const char * replaceWith, const char * toUpper, const char * toLower);
+Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const char * cutPath, const char * replaceWith, const char * toUpper,
+			       const char * toLower);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (rename);
 

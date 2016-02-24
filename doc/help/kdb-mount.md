@@ -38,13 +38,15 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-d`, `--debug`:
   Give debug information or ask debug questions (in interactive mode).
 - `-i`, `--interactive`:
   Instead of passing all mounting information by parameters ask the user interactively.
-- `-R`, `--resolver <name>`:
+- `-R`, `--resolver`=<name>:
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
-  See also `/sw/kdb/current/resolver` [below](#KDB).
+  See also [below in KDB](#KDB).
 - `-0`, `--null`:
   Use binary 0 termination.
 - `-1`, `--first`:
@@ -53,7 +55,7 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Suppress the second column.
 - `-3`, `--third`:
   Suppress the third column.
-- `-c`, `--plugins-config`:
+- `-c`, `--plugins-config`=<config>:
   Add a plugin configuration for all plugins.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
@@ -62,34 +64,36 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 
 ## KDB
 
-- `/sw/kdb/current/resolver`:
+- `/sw/elektra/kdb/#0/current/resolver`:
   The resolver that will be added automatically, if `-R` is not given.
 
-- `/sw/kdb/current/plugins`:
-  It contains a space-separated list of plugins
+- `/sw/elektra/kdb/#0/current/plugins`:
+  It contains a space-separated list of plugins and their configs
   which are added automatically (by default sync).
-  The plugin-configuration syntax is as described above.
+  The plugin-configuration syntax is as described above in the
+  [synopsis](#SYNOPSIS).
+
 
 
 ## EXAMPLES
 
-To list the currently mounted backends:
-	`kdb mount`
+To list the currently mounted backends:  
+`kdb mount`
 
-To mount a system configuration file using the ini format:
-	`kdb mount /etc/configuration.ini system/example ini`
+To mount a system configuration file using the ini format:  
+`kdb mount /etc/configuration.ini system/example ini`
 
-Print a null-terminated output of paths and backend names:
-	`kdb mount -02 | xargs -0n 2 echo`
+Print a null-terminated output of paths and backend names:  
+`kdb mount -02 | xargs -0n 2 echo`
 
-To mount the /etc/file system file with two plugins with a respective configuration option each:
-	`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
+To mount the /etc/file system file with two plugins with a respective configuration option each:  
+`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
 
-To mount the /etc/file system file with two plugins and setting both to be verbose:
-	`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
+To mount the /etc/file system file with two plugins and setting both to be verbose:  
+`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
 
-To recode and rename a configuration file using Elektra:
-	`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`
+To recode and rename a configuration file using Elektra:  
+`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`
 
 ## SEE ALSO
 
@@ -97,4 +101,4 @@ To recode and rename a configuration file using Elektra:
 - [kdb-spec-mount(7)](kdb-spec-mount.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins(7)](elektra-plugins.md).
+- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

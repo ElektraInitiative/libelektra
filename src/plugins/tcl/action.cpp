@@ -8,9 +8,9 @@
 
 #include <keyset.hpp>
 
+#include <fstream>
 #include <iostream>
 #include <iterator>
-#include <fstream>
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/support_istream_iterator.hpp>
@@ -26,20 +26,20 @@ namespace elektra
 
 using namespace kdb;
 
-void serialise(ostream &ofs, KeySet & output)
+void serialise (ostream & ofs, KeySet & output)
 {
 
 	ofs << '{' << endl;
-	output.rewind();
-	while (Key k = output.next())
+	output.rewind ();
+	while (Key k = output.next ())
 	{
 		ofs << "\t{" << endl;
-		ofs << "\t\t" <<  k.getName() << " = " << k.getString() << endl;
-		k.rewindMeta();
-		while (const Key m = k.nextMeta())
+		ofs << "\t\t" << k.getName () << " = " << k.getString () << endl;
+		k.rewindMeta ();
+		while (const Key m = k.nextMeta ())
 		{
 			ofs << "\t\t{" << endl;
-			ofs << "\t\t\t" << m.getName() << " = " << m.getString() << endl;
+			ofs << "\t\t\t" << m.getName () << " = " << m.getString () << endl;
 			ofs << "\t\t}" << endl;
 		}
 		ofs << "\t}" << endl;
@@ -47,7 +47,7 @@ void serialise(ostream &ofs, KeySet & output)
 	ofs << '}' << endl;
 }
 
-void unserialise(istream &in, KeySet & input)
+void unserialise (istream & in, KeySet & input)
 {
 	namespace qi = boost::spirit::qi;
 
@@ -59,9 +59,9 @@ void unserialise(istream &in, KeySet & input)
 
 	Action<boost::spirit::istream_iterator> p (input);
 
-	if (!boost::spirit::qi::phrase_parse(begin, end, p, space))
+	if (!boost::spirit::qi::phrase_parse (begin, end, p, space))
 	{
-		throw std::runtime_error("boost::spirit::qi::phrase_parse returned unsuccessfully");
+		throw std::runtime_error ("boost::spirit::qi::phrase_parse returned unsuccessfully");
 	}
 }
 

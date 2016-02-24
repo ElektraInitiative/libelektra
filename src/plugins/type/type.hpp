@@ -14,17 +14,15 @@
 #include <kdbplugin.h>
 
 
-extern "C"
-{
+extern "C" {
 
-int elektraTypeOpen(ckdb::Plugin *handle, ckdb::Key *errorKey);
-int elektraTypeClose(ckdb::Plugin *handle, ckdb::Key *errorKey);
-int elektraTypeGet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
-int elektraTypeSet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
-int elektraTypeError(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
+int elektraTypeOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int elektraTypeClose (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int elektraTypeGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraTypeError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 
-ckdb::Plugin *ELEKTRA_PLUGIN_EXPORT(type);
-
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (type);
 }
 
 #endif

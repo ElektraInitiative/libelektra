@@ -13,38 +13,37 @@
 
 class RemountCommand : public MountBaseCommand
 {
-	void getExistingMountpoint(Cmdline const & cl);
-	void cloneMountpoint(Cmdline const & cl);
+	void getExistingMountpoint (Cmdline const & cl);
+	void cloneMountpoint (Cmdline const & cl);
 
 	std::string existingName;
 
 public:
-	RemountCommand();
-	~RemountCommand();
+	RemountCommand ();
+	~RemountCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "id";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<new filename> <new path> <existing mountpoint>";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Remount an existing backend with a different filename.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
 		return "";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
-
 
 
 #endif /* REMOUNT_HPP_ */

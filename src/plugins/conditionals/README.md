@@ -1,16 +1,21 @@
 - infos = Information about the conditionals plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides =
+- infos/needs =
+- infos/recommends =
 - infos/placements = presetstorage
+- infos/status = maintained unittest nodep libc preview
+- infos/metadata = check/condition assign/condition
 - infos/description =
 
 ## Introduction ##
 
-This plugin uses if-then-else like conditions stored in the metakey `check/condition` to validate data.
+This plugin uses if-then-else like conditions.
 
-## Syntax ##
+## Check Syntax ##
+
+Stored in the metakey `check/condition` to validate data is:
 
 `(IF-condition) ? (THEN-condition) : (ELSE-condition)` where the ELSE-condition is optional
 
@@ -22,6 +27,14 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - others are for comparison as in C
 
 
+### Assign Syntax ###
+
+`(IF-condition) ? ('ThenValue') : ('ElseValue')`
+
+Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign/condition` is used.
+
+
+
 ## Example ##
 
 `(this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')` 
@@ -31,8 +44,16 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 
 Another full example:
 
-    kdb mount conditionals.dump /tmount/conditionals conditionals dump
-    kdb set user/tmount/conditionals/fkey 3.0
-    kdb set user/tmount/conditionals/hkey hello
-    kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
-    kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
+	kdb mount conditionals.dump /tmount/conditionals conditionals dump
+	kdb set user/tmount/conditionals/fkey 3.0
+	kdb set user/tmount/conditionals/hkey hello
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
+	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
+
+Assignment example:
+
+	kdb mount conditionals.dump /tmount/conditionals conditionals dump
+	kdb set user/tmount/conditionals/hkey Hello
+	kdb setmeta user/tmount/conditionals/hkey assign/condition "(hkey == 'Hello') ? ('World')"
+	kdb get user/tmount/conditionals/hkey # output: World
+

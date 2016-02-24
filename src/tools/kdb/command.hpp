@@ -9,10 +9,10 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#include <string>
-#include <memory>
 #include <exception>
+#include <memory>
 #include <stdexcept>
+#include <string>
 
 class Cmdline;
 
@@ -22,7 +22,7 @@ class Cmdline;
 class CommandException : public std::exception
 {
 public:
-	virtual const char* what() const throw() override
+	virtual const char * what () const throw () override
 	{
 		return "A situation had a appeared where the command had to abort";
 	}
@@ -31,21 +31,24 @@ public:
 class CommandAbortException : public CommandException
 {
 	const char * msg;
+
 public:
-	CommandAbortException () : msg(0)
-	{}
-	CommandAbortException (const char * msg_) : msg(msg_)
-	{}
-	virtual const char* what() const throw() override
+	CommandAbortException () : msg (0)
 	{
-		return msg?msg:"Command aborted";
+	}
+	CommandAbortException (const char * msg_) : msg (msg_)
+	{
+	}
+	virtual const char * what () const throw () override
+	{
+		return msg ? msg : "Command aborted";
 	}
 };
 
 class Command
 {
 public:
-	virtual ~Command();
+	virtual ~Command ();
 
 	/**
 	  * @return the text representing which short options are needed
@@ -58,7 +61,7 @@ public:
 	  *       to getopt.
 	  *
 	  */
-	virtual std::string getShortOptions() = 0;
+	virtual std::string getShortOptions () = 0;
 
 	/**
 	  * @return a string describing describe what parameter the
@@ -78,7 +81,7 @@ public:
 	  *
 	  * The string may be empty if no arguments are taken.
 	  */
-	virtual std::string getSynopsis() = 0;
+	virtual std::string getSynopsis () = 0;
 
 	/**
 	  * @return a one line help text
@@ -91,7 +94,7 @@ public:
 	  *
 	  * @see getLongHelpText for the other help text lines
 	  */
-	virtual std::string getShortHelpText() = 0;
+	virtual std::string getShortHelpText () = 0;
 
 	/**
 	  * @return a long description of what the command does.
@@ -123,7 +126,7 @@ public:
 	  *
 	  * @see getShortOptions to express available options
 	  */
-	virtual std::string getLongHelpText() = 0;
+	virtual std::string getLongHelpText () = 0;
 
 	/**
 	  * Execute the command.
@@ -142,7 +145,7 @@ public:
 	  * @throw invalid_argument if the cmdline arguments could
 	  *        not be processed successfully.
 	  */
-	virtual int execute (Cmdline const& cmdline) = 0;
+	virtual int execute (Cmdline const & cmdline) = 0;
 };
 
 typedef std::unique_ptr<Command> CommandPtr;

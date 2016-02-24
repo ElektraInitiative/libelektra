@@ -1,9 +1,12 @@
 - infos = Information about the counter plugin is in keys below
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
+- infos/provides = tracing
 - infos/needs =
-- infos/provides =
+- infos/recommends =
 - infos/placements = pregetstorage
+- infos/status = maintained configurable final global
+- infos/metadata =
 - infos/description =
 
 ## Introduction ##

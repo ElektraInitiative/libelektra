@@ -12,10 +12,10 @@
 #include <kdb.h>
 #include <kdbinternal.h>
 
-#include <string.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <time.h>
 
@@ -32,13 +32,11 @@
 void timeInit (void);
 void timePrint (char * msg);
 
-void benchmarkCreate();
-void benchmarkFillup();
+void benchmarkCreate ();
+void benchmarkFillup ();
 
 extern int num_dir; // default = NUM_DIR;
 extern int num_key; // default = NUM_KEY;
-extern KeySet *large;
+extern KeySet * large;
 
 #endif
-
-

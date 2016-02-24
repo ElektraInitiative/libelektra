@@ -18,36 +18,30 @@ class MetaGetCommand : public Command
 	kdb::KDB kdb;
 
 public:
-	MetaGetCommand();
-	~MetaGetCommand();
+	MetaGetCommand ();
+	~MetaGetCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "n";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<key-name> <meta-name>";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Get a meta value.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
-		return
-			"Meta key are information about keys.\n"
-			"\n"
-			"Return values:\n"
-			"1 .. key not found\n"
-			"2 .. metakey not found\n"
-			;
+		return "Meta key are information about keys.\n";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

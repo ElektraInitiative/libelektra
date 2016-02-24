@@ -9,7 +9,6 @@ macro (do_example source)
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
 
-	target_link_elektra(${source})
 	target_link_elektratools(${source})
 
 	set_target_properties (${source} PROPERTIES

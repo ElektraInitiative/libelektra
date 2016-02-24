@@ -1,9 +1,10 @@
 - infos = Information about ni plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = storage
+- infos/needs =
 - infos/placements = getstorage setstorage
+- infos/status = maintained libc
 - infos/description = Reads and writes the nickel ini format
 
 ## Introduction ##
@@ -49,7 +50,7 @@ Exporting a KeySet to the nickle format:
 
 For in-detail explanation of the syntax
 (nested keys are not supported by the plugin, however)
-[see nickel-1.1.0/include/bohr/ni.h](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
+[see /src/plugins/ni/nickel-1.1.0/include/bohr/ni.h](/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
 
 
 ## Limitations ##
@@ -88,4 +89,4 @@ rewrote first ) line ini file with 1.1MB size is 16.88 MB.
 The sort order is not stable, even not with the same file
 rewritten again.
 
-[https://github.com/chazomaticus/bohr](bohr libraries)
+[bohr libraries](https://github.com/chazomaticus/bohr)

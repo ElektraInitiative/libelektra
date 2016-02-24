@@ -1,9 +1,10 @@
 - infos = Information about journald plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = logging
+- infos/needs =
 - infos/placements = postcommit postrollback
+- infos/status = maintained libc global
 - infos/description = logging of committed and rolled back keys via systemd-journal
 
 The plugin logs successful and failed write attempts via the systemd journal daemon (systemd-journal). 

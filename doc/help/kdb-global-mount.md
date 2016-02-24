@@ -31,8 +31,8 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-c`, `--plugins-config`: TODO: not yet implemented
-  Add a plugin configuration for all plugins.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 
@@ -40,7 +40,7 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
 
 ## KDB
 
-- `/sw/kdb/current/global/plugins`:
+- `/sw/elektra/kdb/#0/current/plugins/global`:
   It contains a space-separated list of plugins
   which are added automatically (by default `spec`).
   The plugin-configuration syntax is as described above in the [synopsis](#SYNOPSIS).
@@ -48,11 +48,11 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
 
 ## EXAMPLES
 
-Trace every interaction with the key database (very noisy!):
-	`kdb global-mount tracer`
+Trace every interaction with the key database (very noisy!):  
+`kdb global-mount tracer`
 
-For every change of KDB, write to syslog and notify by dbus:
-	`kdb global-mount syslog dbus`
+For every change of KDB, write to syslog and notify by dbus:  
+`kdb global-mount syslog dbus`
 
 
 ## SEE ALSO
@@ -60,4 +60,4 @@ For every change of KDB, write to syslog and notify by dbus:
 - [elektra-glossary(7)](elektra-glossary.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins(7)](elektra-plugins.md).
+- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

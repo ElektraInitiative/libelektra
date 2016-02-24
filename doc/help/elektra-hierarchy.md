@@ -18,7 +18,7 @@ Version information.
 
 ## spec/elektra/metadata
 
-(Can be found in source at doc/METADATA.ini)
+`doc/METADATA.ini` needs to be mounted there
 
 Avoids a duplication of documentation efforts of the meta data across plugins.
 
@@ -28,14 +28,14 @@ between metadata is supported.
 
 ## spec/elektra/modules
 
-(Can be found in source at doc/CONTRACT.ini)
+`doc/CONTRACT.ini` needs to be mounted there
 
 
 ## spec/elektra/error
 
-(Can be found in source at src/error/specification)
+`src/error/specification` needs to be mounted there
 
 ## SEE ALSO
 
-- [see namespaces tutorial](doc/tutorials/namespaces.md)
+- [see namespaces tutorial](/doc/tutorials/namespaces.md)
 - [elektra-namespaces(7)](elektra-namespaces.md)

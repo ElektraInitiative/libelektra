@@ -9,8 +9,8 @@
 #ifndef KEYSETVISITOR_HPP
 #define KEYSETVISITOR_HPP
 
-#include "visitor.hpp"
 #include "confignode.hpp"
+#include "visitor.hpp"
 #include <kdb.hpp>
 
 /**
@@ -23,16 +23,16 @@ public:
 	/**
 	 * @brief KeySetVisitor The default constructor.
 	 */
-	explicit KeySetVisitor();
+	explicit KeySetVisitor ();
 
-	void visit(ConfigNode& node) override;
-	void visit(TreeViewModel* model) override;
+	void visit (ConfigNode & node) override;
+	void visit (TreeViewModel * model) override;
 
 	/**
 	 * @brief getKeySet Returns the kdb::KeySet with all current valid keys
 	 * @return The kdb::KeySet with all current valid keys
 	 */
-	kdb::KeySet getKeySet();
+	kdb::KeySet getKeySet ();
 
 private:
 	kdb::KeySet m_set;

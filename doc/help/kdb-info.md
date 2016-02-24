@@ -31,6 +31,8 @@ This command returns the following exit statuses:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-l`, `--load`:
   Load plugin even if system/elektra is available.
 - `-c`, `--plugins-config`:
@@ -39,11 +41,11 @@ This command returns the following exit statuses:
 ## EXAMPLES
 
 To print all the information about the `dump` plugin:  
-	`kdb info dump`  
+`kdb info dump`  
 
 To print out the license of the `resolver` plugin directly by forcing it to load:  
-	`kdb info -l resolver licence`  
+`kdb info -l resolver licence`  
 
 To print out the author of the `line` plugin:  
-	`kdb info line author`  
+`kdb info line author`  
 

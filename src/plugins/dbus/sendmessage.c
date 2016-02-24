@@ -10,25 +10,24 @@
 #include "dbus.h"
 
 #ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
+#include "kdbconfig.h"
 #endif
 
-int elektraDbusSendMessage (DBusBusType type, const char *keyName, const char *signalName)
+int elektraDbusSendMessage (DBusBusType type, const char * keyName, const char * signalName)
 {
-	DBusConnection *connection;
+	DBusConnection * connection;
 	DBusError error;
-	DBusMessage *message;
-	const char *dest = NULL;  // to all receivers
-	const char *interface = "org.libelektra";
-	const char *path = "/org/libelektra/configuration";
+	DBusMessage * message;
+	const char * dest = NULL; // to all receivers
+	const char * interface = "org.libelektra";
+	const char * path = "/org/libelektra/configuration";
 
 	dbus_error_init (&error);
 	connection = dbus_bus_get (type, &error);
 	if (connection == NULL)
 	{
-		fprintf (stderr, "Failed to open connection to %s message bus: %s\n",
-			(type == DBUS_BUS_SYSTEM) ? "system" : "session",
-			error.message);
+		fprintf (stderr, "Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
+			 error.message);
 		dbus_error_free (&error);
 		return -1;
 	}
@@ -51,9 +50,9 @@ int elektraDbusSendMessage (DBusBusType type, const char *keyName, const char *s
 		return -1;
 	}
 
-	if (!dbus_message_append_args(message, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID))
+	if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID))
 	{
-		fprintf(stderr, "Couldn't add message argument");
+		fprintf (stderr, "Couldn't add message argument");
 		dbus_error_free (&error);
 		return -1;
 	}

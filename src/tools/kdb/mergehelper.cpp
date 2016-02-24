@@ -13,43 +13,42 @@
 #include <keysetio.hpp>
 
 #include <mergehelper.hpp>
-#include <merging/interactivemergestrategy.hpp>
 #include <merging/automergeconfiguration.hpp>
+#include <merging/importmergeconfiguration.hpp>
+#include <merging/interactivemergestrategy.hpp>
 #include <merging/onesidemergeconfiguration.hpp>
 #include <merging/overwritemergeconfiguration.hpp>
-#include <merging/importmergeconfiguration.hpp>
 
 using namespace kdb;
 using namespace kdb::tools::merging;
 using namespace std;
 
-MergeHelper::MergeHelper()
+MergeHelper::MergeHelper ()
 {
 	// TODO: this is just a quickfix, find a better solution
 	// without eager instantiating all the strategies. Maybe even automatically
 	// discover all available strategies
 	// comment markus: the factory could be part of libtools
-	configurationMap.insert (make_pair ("preserve", new AutoMergeConfiguration()));
+	configurationMap.insert (make_pair ("preserve", new AutoMergeConfiguration ()));
 
-	configurationMap.insert (make_pair ("ours", new OneSideMergeConfiguration(OURS)));
-	configurationMap.insert (make_pair ("theirs", new OneSideMergeConfiguration(THEIRS)));
+	configurationMap.insert (make_pair ("ours", new OneSideMergeConfiguration (OURS)));
+	configurationMap.insert (make_pair ("theirs", new OneSideMergeConfiguration (THEIRS)));
 
 	// primarily used for import
-	configurationMap.insert (make_pair ("cut", new OverwriteMergeConfiguration(THEIRS)));
-	configurationMap.insert (make_pair ("import", new ImportMergeConfiguration()));
-
+	configurationMap.insert (make_pair ("cut", new OverwriteMergeConfiguration (THEIRS)));
+	configurationMap.insert (make_pair ("import", new ImportMergeConfiguration ()));
 }
 
-MergeHelper::~MergeHelper()
+MergeHelper::~MergeHelper ()
 {
-	vector<MergeConfiguration *> configurations = getAllConfigurations();
+	vector<MergeConfiguration *> configurations = getAllConfigurations ();
 	for (auto & configuration : configurations)
 	{
 		delete (configuration);
 	}
 }
 
-vector<MergeConfiguration *> MergeHelper::getAllConfigurations()
+vector<MergeConfiguration *> MergeHelper::getAllConfigurations ()
 {
 	vector<MergeConfiguration *> result;
 	for (auto & elem : configurationMap)
@@ -60,7 +59,7 @@ vector<MergeConfiguration *> MergeHelper::getAllConfigurations()
 	return result;
 }
 
-string MergeHelper::getConfigurationList()
+string MergeHelper::getConfigurationList ()
 {
 	ostringstream oss;
 	for (auto & elem : configurationMap)
@@ -71,7 +70,7 @@ string MergeHelper::getConfigurationList()
 	return oss.str ();
 }
 
-void MergeHelper::configureMerger(Cmdline const& cl, ThreeWayMerge& merger)
+void MergeHelper::configureMerger (Cmdline const & cl, ThreeWayMerge & merger)
 {
 
 
@@ -84,35 +83,35 @@ void MergeHelper::configureMerger(Cmdline const& cl, ThreeWayMerge& merger)
 	{
 		if (configurationMap.find (cl.strategy) == configurationMap.end ())
 		{
-			throw invalid_argument (
-					"'" + cl.strategy + "' is not a valid strategy. Valid strategies are: " + getConfigurationList ());
+			throw invalid_argument ("'" + cl.strategy + "' is not a valid strategy. Valid strategies are: " +
+						getConfigurationList ());
 		}
 
-		MergeConfiguration *configuration = configurationMap[cl.strategy];
-		configuration->configureMerger(merger);
+		MergeConfiguration * configuration = configurationMap[cl.strategy];
+		configuration->configureMerger (merger);
 	}
 }
 
-void MergeHelper::reportResult(Cmdline const& cl, MergeResult& result, ostream& out, ostream& err)
+void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostream & out, ostream & err)
 {
 
 	if (!result.hasConflicts ())
 	{
 		if (cl.verbose)
 		{
-			out << result.getMergedKeys().size() << " keys in the result" << endl;
-			out << result.getNumberOfEqualKeys() << " keys were equal" << endl;
-			out << result.getNumberOfResolvedKeys() << " keys were resolved" << endl;
+			out << result.getMergedKeys ().size () << " keys in the result" << endl;
+			out << result.getNumberOfEqualKeys () << " keys were equal" << endl;
+			out << result.getNumberOfResolvedKeys () << " keys were resolved" << endl;
 		}
 	}
 	else
 	{
-		KeySet conflicts = result.getConflictSet();
+		KeySet conflicts = result.getConflictSet ();
 
-		err << conflicts.size() << " conflicts were detected that could not be resolved automatically:" << endl;
-		conflicts.rewind();
+		err << conflicts.size () << " conflicts were detected that could not be resolved automatically:" << endl;
+		conflicts.rewind ();
 		Key current;
-		while ((current = conflicts.next()))
+		while ((current = conflicts.next ()))
 		{
 			string ourConflict = current.getMeta<string> ("conflict/operation/our");
 			string theirConflict = current.getMeta<string> ("conflict/operation/their");

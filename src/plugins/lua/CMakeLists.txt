@@ -1,4 +1,4 @@
-find_package(Lua 5.2)
+find_package(Lua 5.1)
 find_swig()
 
 if (LUA_FOUND AND SWIG_FOUND)

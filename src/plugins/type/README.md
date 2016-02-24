@@ -1,14 +1,16 @@
 - infos = Information about type plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = check
+- infos/needs =
 - infos/placements = presetstorage
+- infos/status = maintained unittest unfinished old
+- infos/metadata = check/type check/type/min check/type/max
 - infos/description =
 
 ## Introduction ##
 
-This plugin is a type checker plugin using the `COBRA` data types.
+This plugin is a type checker plugin using the `CORBA` data types.
 
 ## Additional Information ##
 

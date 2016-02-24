@@ -9,8 +9,8 @@
 #ifndef FINDVISITOR_HPP
 #define FINDVISITOR_HPP
 
-#include "visitor.hpp"
 #include "confignode.hpp"
+#include "visitor.hpp"
 
 /**
  * @brief The FindVisitor class. It performs the search for a term and includes all ConfigNodes that contain the search
@@ -25,14 +25,14 @@ public:
 	 * is completed.
 	 * @param term The search term to look for.
 	 */
-	explicit FindVisitor(TreeViewModel* searchResults, QString  term);
+	explicit FindVisitor (TreeViewModel * searchResults, QString term);
 
-	void visit(ConfigNode& node) override;
-	void visit(TreeViewModel* model) override;
+	void visit (ConfigNode & node) override;
+	void visit (TreeViewModel * model) override;
 
 private:
-	TreeViewModel*	m_searchResults;
-	QString			m_term;
+	TreeViewModel * m_searchResults;
+	QString m_term;
 };
 
 #endif // FINDVISITOR_HPP

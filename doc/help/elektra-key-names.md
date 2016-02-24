@@ -87,7 +87,7 @@ the key names of software-applications should always start with:
   (exceptions: if the user or a technology, decide about parts of
   the key name, this restriction does not apply, e.g. if the wlan
   essid is used as part of the key name)
-- The only way to separate names is using `/` (no A-Z, no _, no whitespaces)
+- The only way to separate names is using `/` (no A-Z, no `_`, no whitespaces)
   (rationale: there are many different opinions about this topic
   and having a choice which separator to choose will certainly lead
   to inconsistencies)
@@ -101,8 +101,8 @@ the key names of software-applications should always start with:
 
 ## SEE ALSO
 
-- [see application integration tutorial](doc/tutorials/application-integration.md)
-- [see namespaces tutorial](doc/tutorials/namespaces.md)
+- [see application integration tutorial](/doc/tutorials/application-integration.md)
+- [see namespaces tutorial](/doc/tutorials/namespaces.md)
 
 - [elektra-namespaces(7)](elektra-namespaces.md)
 - [elektra-cascading(7)](elektra-cascading.md)

@@ -36,7 +36,7 @@ creates a new view to configuration files which is not necessarily
 the same as applications see it.
 Additionally, Augeas has a rather poor level of abstraction and many
 syntactical details must be reflected in the configuration tree.
-Nevertheless, Elektra provides an [/src/plugins/augeas/](augeas plugin)
+Nevertheless, Elektra provides an [augeas plugin](/src/plugins/augeas/)
 which allows parts of Elektra's global configuration tree to
 be implemented using lenses. Lenses are a promising technology,
 which allow mapping from and to configuration files to be specified
@@ -81,7 +81,7 @@ and thus handle conflicts in a much more fine-grained way.
 
 ## Freedesktop.org
 
-The [freedesktop.org](freedesktop.org) initiative unifies different desktops
+The [freedesktop.org](https://freedesktop.org) initiative unifies different desktops
 using the X Window System in various ways.
 The main focus, however, lies in KDE and Gnome integration.
 One of the most disturbing and

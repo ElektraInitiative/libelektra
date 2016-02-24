@@ -13,13 +13,13 @@
 
 #include <kdb.hpp>
 
+#include <algorithm>
+#include <cassert>
+#include <functional>
 #include <mutex>
 #include <thread>
-#include <vector>
-#include <cassert>
-#include <algorithm>
-#include <functional>
 #include <unordered_map>
+#include <vector>
 
 namespace kdb
 {
@@ -28,16 +28,15 @@ namespace kdb
 class ThreadSubject
 {
 public:
-	virtual void notify(KeySet &ks) = 0;
-	virtual void syncLayers() = 0;
+	virtual void notify (KeySet & ks) = 0;
+	virtual void syncLayers () = 0;
 };
 
 struct LayerAction
 {
-	LayerAction(bool activate_, std::shared_ptr<Layer> layer_) :
-		activate(activate_),
-		layer(std::move(layer_))
-	{ }
+	LayerAction (bool activate_, std::shared_ptr<Layer> layer_) : activate (activate_), layer (std::move (layer_))
+	{
+	}
 	bool activate; // false if deactivate
 	std::shared_ptr<Layer> layer;
 };
@@ -61,15 +60,16 @@ public:
 	 *
 	 * NoContext will never update anything
 	 */
-	void attachByName(ELEKTRA_UNUSED std::string const & key_name,ELEKTRA_UNUSED  ValueObserver & ValueObserver)
-	{}
+	void attachByName (ELEKTRA_UNUSED std::string const & key_name, ELEKTRA_UNUSED ValueObserver & ValueObserver)
+	{
+	}
 
 	/**
 	 * @brief The evaluated equals the non-evaluated name!
 	 *
 	 * @return NoContext always returns the same string
 	 */
-	std::string evaluate(std::string const & key_name) const
+	std::string evaluate (std::string const & key_name) const
 	{
 		return key_name;
 	}
@@ -83,11 +83,12 @@ public:
 	 *
 	 * @param c the command to apply
 	 */
-	void execute(Command & c)
+	void execute (Command & c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		c();
+		c ();
 	}
+
 private:
 	std::mutex m_mutex;
 };
@@ -99,67 +100,64 @@ class Coordinator
 {
 public:
 	template <typename T>
-	void onLayerActivation(std::function <void()> f)
+	void onLayerActivation (std::function<void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
-		std::shared_ptr<Layer>layer = std::make_shared<T>();
-		m_onActivate[layer->id()].push_back(f);
+		std::shared_ptr<Layer> layer = std::make_shared<T> ();
+		m_onActivate[layer->id ()].push_back (f);
 	}
 
 	template <typename T>
-	void onLayerDeactivation(std::function <void()> f)
+	void onLayerDeactivation (std::function<void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
-		std::shared_ptr<Layer>layer = std::make_shared<T>();
-		m_onDeactivate[layer->id()].push_back(f);
+		std::shared_ptr<Layer> layer = std::make_shared<T> ();
+		m_onDeactivate[layer->id ()].push_back (f);
 	}
 
-	void onLayerActivation(std::string layerid, std::function <void()> f)
+	void onLayerActivation (std::string layerid, std::function<void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
-		m_onActivate[layerid].push_back(f);
+		m_onActivate[layerid].push_back (f);
 	}
 
-	void onLayerDeactivation(std::string layerid, std::function <void()> f)
+	void onLayerDeactivation (std::string layerid, std::function<void()> f)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
-		m_onDeactivate[layerid].push_back(f);
+		m_onDeactivate[layerid].push_back (f);
 	}
 
-	void clearOnLayerActivation(std::string layerid)
+	void clearOnLayerActivation (std::string layerid)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
-		m_onActivate[layerid].clear();
+		m_onActivate[layerid].clear ();
 	}
 
-	void clearOnLayerDeactivation(std::string layerid)
+	void clearOnLayerDeactivation (std::string layerid)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
-		m_onDeactivate[layerid].clear();
+		m_onDeactivate[layerid].clear ();
 	}
 
-	std::unique_lock<std::mutex> requireLock()
+	std::unique_lock<std::mutex> requireLock ()
 	{
-		std::unique_lock<std::mutex> lock(m_mutex);
-		return std::move(lock);
+		std::unique_lock<std::mutex> lock (m_mutex);
+		return std::move (lock);
 	}
 
-	Coordinator()
+	Coordinator ()
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		m_updates.insert(std::make_pair(nullptr, PerContext()));
+		m_updates.insert (std::make_pair (nullptr, PerContext ()));
 	}
 
-	~Coordinator()
+	~Coordinator ()
 	{
 #if DEBUG
-		for (auto & i: m_updates)
+		for (auto & i : m_updates)
 		{
-			std::cout << "coordinator " << this
-				<< " left over: " << i.first
-				<< " with updates: " << i.second.toUpdate.size()
-				<< " activations: " << i.second.toActivate.size()
-				<< std::endl;
+			std::cout << "coordinator " << this << " left over: " << i.first << " with updates: " << i.second.toUpdate.size ()
+				  << " activations: " << i.second.toActivate.size () << std::endl;
 		}
 #endif
 	}
@@ -168,58 +166,57 @@ public:
 private:
 	friend class ThreadContext;
 
-	void attach(ThreadSubject *c)
+	void attach (ThreadSubject * c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		m_updates.insert(std::make_pair(c, m_updates[nullptr]));
+		m_updates.insert (std::make_pair (c, m_updates[nullptr]));
 	}
 
-	void detach(ThreadSubject *c)
+	void detach (ThreadSubject * c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		m_updates.erase(c);
+		m_updates.erase (c);
 	}
 
 	/**
 	 * @brief Update the given ThreadContext with newly assigned
 	 * values.
 	 */
-	void updateNewlyAssignedValues(ThreadSubject *c)
+	void updateNewlyAssignedValues (ThreadSubject * c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
 		KeySet & toUpdate = m_updates[c].toUpdate;
-		if (toUpdate.size() == 0) return;
+		if (toUpdate.size () == 0) return;
 
-		c->notify(toUpdate);
-		toUpdate.clear();
+		c->notify (toUpdate);
+		toUpdate.clear ();
 	}
 
 	/**
 	 * @brief Receive a function to be executed and remember
 	 * which keys need a update in the other ThreadContexts.
 	 */
-	void execute(Command & c)
+	void execute (Command & c)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
-		Command::Pair ret = c();
+		Command::Pair ret = c ();
 		c.oldKey = ret.first;
 		c.newKey = ret.second;
 		if (c.hasChanged)
 		{
-			for (auto & i: m_updates)
+			for (auto & i : m_updates)
 			{
-				i.second.toUpdate.append(Key(c.newKey,
-							KEY_CASCADING_NAME, KEY_END));
+				i.second.toUpdate.append (Key (c.newKey, KEY_CASCADING_NAME, KEY_END));
 			}
 		}
 	}
 
-	void runOnActivate(std::shared_ptr<Layer> layer)
+	void runOnActivate (std::shared_ptr<Layer> layer)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnActivate);
-		for (auto && f: m_onActivate[layer->id()])
+		for (auto && f : m_onActivate[layer->id ()])
 		{
-			f();
+			f ();
 		}
 	}
 
@@ -230,39 +227,39 @@ private:
 	 * @param cc requests it and already has it updated itself
 	 * @param layer to activate for all threads
 	 */
-	void globalActivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
+	void globalActivate (ThreadSubject * cc, std::shared_ptr<Layer> layer)
 	{
-		runOnActivate(layer);
+		runOnActivate (layer);
 
 		std::lock_guard<std::mutex> lock (m_mutex);
-		for (auto & c: m_updates)
+		for (auto & c : m_updates)
 		{
-			 // caller itself has it already activated
+			// caller itself has it already activated
 			if (cc == c.first) continue;
-			c.second.toActivate.insert(std::make_pair(layer->id(), LayerAction(true, layer)));
+			c.second.toActivate.insert (std::make_pair (layer->id (), LayerAction (true, layer)));
 		}
 	}
 
-	void runOnDeactivate(std::shared_ptr<Layer> layer)
+	void runOnDeactivate (std::shared_ptr<Layer> layer)
 	{
 		std::lock_guard<std::mutex> lock (m_mutexOnDeactivate);
-		for (auto && f: m_onDeactivate[layer->id()])
+		for (auto && f : m_onDeactivate[layer->id ()])
 		{
-			f();
+			f ();
 		}
 	}
 
 
-	void globalDeactivate(ThreadSubject *cc, std::shared_ptr<Layer> layer)
+	void globalDeactivate (ThreadSubject * cc, std::shared_ptr<Layer> layer)
 	{
-		runOnDeactivate(layer);
+		runOnDeactivate (layer);
 
 		std::lock_guard<std::mutex> lock (m_mutex);
-		for (auto & c: m_updates)
+		for (auto & c : m_updates)
 		{
-			 // caller itself has it already deactivated
+			// caller itself has it already deactivated
 			if (cc == c.first) continue;
-			c.second.toActivate.insert(std::make_pair(layer->id(), LayerAction(false, layer)));
+			c.second.toActivate.insert (std::make_pair (layer->id (), LayerAction (false, layer)));
 		}
 	}
 
@@ -272,12 +269,12 @@ private:
 	 * @see globalActivate
 	 * @return all layers for that subject
 	 */
-	LayerMap fetchGlobalActivation(ThreadSubject *cc)
+	LayerMap fetchGlobalActivation (ThreadSubject * cc)
 	{
 		std::lock_guard<std::mutex> lock (m_mutex);
 		LayerMap ret;
-		ret.swap(m_updates[cc].toActivate);
-		return std::move(ret);
+		ret.swap (m_updates[cc].toActivate);
+		return std::move (ret);
 	}
 
 	/// stores per context updates not yet delievered
@@ -294,73 +291,72 @@ private:
 class ThreadContext : public ThreadSubject, public Context
 {
 public:
-	typedef std::reference_wrapper<ValueSubject> ValueRef ;
+	typedef std::reference_wrapper<ValueSubject> ValueRef;
 
-	explicit ThreadContext(Coordinator & gc) : m_gc(gc)
+	explicit ThreadContext (Coordinator & gc) : m_gc (gc)
 	{
-		m_gc.attach(this);
+		m_gc.attach (this);
 	}
 
-	~ThreadContext()
+	~ThreadContext ()
 	{
-		m_gc.detach(this);
+		m_gc.detach (this);
 #if DEBUG
-		for (auto & i: m_keys)
+		for (auto & i : m_keys)
 		{
 			std::cout << "threadcontext " << this << " left over: " << i.first << std::endl;
 		}
 #endif
 	}
 
-	Coordinator & global()
+	Coordinator & global ()
 	{
 		return m_gc;
 	}
 
-	Coordinator & g()
+	Coordinator & g ()
 	{
 		return m_gc;
 	}
 
 	template <typename T, typename... Args>
-	std::shared_ptr<Layer> activate(Args&&... args)
+	std::shared_ptr<Layer> activate (Args &&... args)
 	{
-		syncLayers();
-		std::shared_ptr<Layer>layer = Context::activate<T>(std::forward<Args>(args)...);
-		m_gc.globalActivate(this, layer);
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::activate<T> (std::forward<Args> (args)...);
+		m_gc.globalActivate (this, layer);
 		return layer;
 	}
 
 	template <typename T, typename... Args>
-	std::shared_ptr<Layer> deactivate(Args&&... args)
+	std::shared_ptr<Layer> deactivate (Args &&... args)
 	{
-		syncLayers();
-		std::shared_ptr<Layer>layer = Context::deactivate<T>(std::forward<Args>(args)...);
-		m_gc.globalDeactivate(this, layer);
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::deactivate<T> (std::forward<Args> (args)...);
+		m_gc.globalDeactivate (this, layer);
 		return layer;
 	}
 
-	void syncLayers() override
+	void syncLayers () override
 	{
 		// now activate/deactive layers
 		Events e;
-		for (auto const & l: m_gc.fetchGlobalActivation(this))
+		for (auto const & l : m_gc.fetchGlobalActivation (this))
 		{
 			if (l.second.activate)
 			{
-				activateLayer(l.second.layer);
+				activateLayer (l.second.layer);
 			}
 			else
 			{
-				deactivateLayer(l.second.layer);
+				deactivateLayer (l.second.layer);
 			}
-			e.push_back(l.first);
+			e.push_back (l.first);
 		}
-		notifyByEvents(e);
+		notifyByEvents (e);
 
 		// pull in assignments from other threads
-		m_gc.updateNewlyAssignedValues(this);
-
+		m_gc.updateNewlyAssignedValues (this);
 	}
 
 	/**
@@ -368,18 +364,18 @@ public:
 	 *
 	 * @param c the command to execute
 	 */
-	void execute(Command & c) override
+	void execute (Command & c) override
 	{
-		m_gc.execute(c);
+		m_gc.execute (c);
 		if (c.oldKey != c.newKey)
 		{
-			if (!c.oldKey.empty())
+			if (!c.oldKey.empty ())
 			{
-				m_keys.erase(c.oldKey);
+				m_keys.erase (c.oldKey);
 			}
-			if (!c.newKey.empty())
+			if (!c.newKey.empty ())
 			{
-				m_keys.insert(std::make_pair(c.newKey, ValueRef(c.v)));
+				m_keys.insert (std::make_pair (c.newKey, ValueRef (c.v)));
 			}
 		}
 	}
@@ -391,13 +387,13 @@ public:
 	 *
 	 * @param ks
 	 */
-	void notify(KeySet & ks) override
+	void notify (KeySet & ks) override
 	{
-		for (auto const & k: ks)
+		for (auto const & k : ks)
 		{
-			auto const& f = m_keys.find(k.getName());
-			if (f == m_keys.end()) continue; // key already had context change
-			f->second.get().notifyInThread();
+			auto const & f = m_keys.find (k.getName ());
+			if (f == m_keys.end ()) continue; // key already had context change
+			f->second.get ().notifyInThread ();
 		}
 	}
 
@@ -409,27 +405,14 @@ private:
 	std::unordered_map<std::string, ValueRef> m_keys;
 };
 
-template<typename T,
-	typename PolicySetter1 = DefaultPolicyArgs,
-	typename PolicySetter2 = DefaultPolicyArgs,
-	typename PolicySetter3 = DefaultPolicyArgs,
-	typename PolicySetter4 = DefaultPolicyArgs,
-	typename PolicySetter5 = DefaultPolicyArgs
-	>
-using ThreadValue = Value <T,
-	ContextPolicyIs<ThreadContext>,
-	PolicySetter1,
-	PolicySetter2,
-	PolicySetter3,
-	PolicySetter4,
-	PolicySetter5
-	>;
+template <typename T, typename PolicySetter1 = DefaultPolicyArgs, typename PolicySetter2 = DefaultPolicyArgs,
+	  typename PolicySetter3 = DefaultPolicyArgs, typename PolicySetter4 = DefaultPolicyArgs,
+	  typename PolicySetter5 = DefaultPolicyArgs>
+using ThreadValue = Value<T, ContextPolicyIs<ThreadContext>, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5>;
 
-typedef ThreadValue<uint32_t>ThreadInteger;
-typedef ThreadValue<bool>ThreadBoolean;
-typedef ThreadValue<std::string>ThreadString;
-
-
+typedef ThreadValue<uint32_t> ThreadInteger;
+typedef ThreadValue<bool> ThreadBoolean;
+typedef ThreadValue<std::string> ThreadString;
 }
 
 #endif

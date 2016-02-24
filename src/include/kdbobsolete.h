@@ -14,6 +14,6 @@
 
 #include <kdb.h>
 
-char *keyNameGetOneLevel(const char *keyname, size_t *size);
+char * keyNameGetOneLevel (const char * keyname, size_t * size);
 
 #endif

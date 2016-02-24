@@ -10,321 +10,282 @@
 
 #include <memory>
 
-#include <vector>
 #include <algorithm>
+#include <vector>
 
-KeySet fun(size_t alloc, ...)
+KeySet fun (size_t alloc, ...)
 {
 	va_list vl;
 
 	va_start (vl, alloc);
-	KeySet ks (VaAlloc(alloc), vl);
+	KeySet ks (VaAlloc (alloc), vl);
 	va_end (vl);
 	return ks;
 }
 
-TEST(ks, new)
+TEST (ks, new)
 {
 	KeySet ks1;
 
-	KeySet ks2 (5,
-		ckdb::keyNew ("user/key2", KEY_END),
-		KS_END);
+	KeySet ks2 (5, ckdb::keyNew ("user/key2", KEY_END), KS_END);
 
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 	// ks3.toStream(stdout, 0);
 
-	Key k1("user/key4/1", KEY_END);
-	Key k2("user/key4/2", KEY_END);
-	Key k3("user/key4/3", KEY_VALUE, "value", KEY_END);
+	Key k1 ("user/key4/1", KEY_END);
+	Key k2 ("user/key4/2", KEY_END);
+	Key k3 ("user/key4/3", KEY_VALUE, "value", KEY_END);
 	KeySet ks4 (5,
-		*k1, // k1 will lose its key and pass it to keyset
-		*k2,
-		*k3,
-		KS_END);
+		    *k1, // k1 will lose its key and pass it to keyset
+		    *k2, *k3, KS_END);
 	// ks4.toStream(stdout, 0);
 
-	Key k4("user/key5/1", KEY_END);
-	Key k5("user/key5/2", KEY_END);
-	Key k6("user/key5/3", KEY_VALUE, "value", KEY_END);
-	KeySet ks5 (5,
-		k4.dup(),
-		k5.dup(),
-		k6.dup(),
-		KS_END);
+	Key k4 ("user/key5/1", KEY_END);
+	Key k5 ("user/key5/2", KEY_END);
+	Key k6 ("user/key5/3", KEY_VALUE, "value", KEY_END);
+	KeySet ks5 (5, k4.dup (), k5.dup (), k6.dup (), KS_END);
 	// ks5.toStream(stdout, 0);
 	// k4, k5, k6 can still be used
 
-	KeySet ks6 = fun(5,
-		k4.dup(),
-		k5.dup(),
-		k6.dup(),
-		KS_END);
+	KeySet ks6 = fun (5, k4.dup (), k5.dup (), k6.dup (), KS_END);
 }
 
 
-TEST(ks, dup)
+TEST (ks, dup)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 
-	KeySet ks4 (ks3.dup());
-	succeed_if (ks4.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks4.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks4.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks4.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks4.size() == 3, "size not correct");
+	KeySet ks4 (ks3.dup ());
+	succeed_if (ks4.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks4.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks4.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks4.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks4.size () == 3, "size not correct");
 
 	// ks3.toStream(stdout, 0);
 	// ks4.toStream(stdout, 0);
 }
 
-TEST(ks, copy)
+TEST (ks, copy)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
 	KeySet ks4 (ks3);
-	succeed_if (ks3.size() == 3, "size not correct");
-	succeed_if (ks4.size() == 3, "size not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
+	succeed_if (ks4.size () == 3, "size not correct");
 
 	KeySet ks5;
-	ks5.copy(ks4);
-	succeed_if (ks4.size() == 3, "size not correct");
-	succeed_if (ks5.size() == 3, "size not correct");
+	ks5.copy (ks4);
+	succeed_if (ks4.size () == 3, "size not correct");
+	succeed_if (ks5.size () == 3, "size not correct");
 
-	ks5.clear();
-	succeed_if (ks5.size() == 0, "size not correct");
-
+	ks5.clear ();
+	succeed_if (ks5.size () == 0, "size not correct");
 
 
 	// ks3.toStream(stdout, 0);
 	// ks4.toStream(stdout, 0);
 }
 
-TEST(ks, iterate)
+TEST (ks, iterate)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	ks3.rewind();
+	ks3.rewind ();
 
-	Key k1 = ks3.next();
-	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
-	succeed_if (k1 == ks3.head(), "first key not head key");
-	Key k2 = ks3.next();
-	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
-	Key k3 = ks3.next();
-	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
-	succeed_if (k3.getString() == "value", "wrong value");
-	succeed_if (k3 == ks3.tail(), "last key not tail key");
-	succeed_if (!ks3.next(), "no more key");
-	succeed_if (!ks3.next(), "no more key");
-	succeed_if (!ks3.next(), "no more key");
-	succeed_if (!ks3.next(), "no more key");
+	Key k1 = ks3.next ();
+	succeed_if (k1.getName () == "user/key3/1", "wrong keyname");
+	succeed_if (k1 == ks3.head (), "first key not head key");
+	Key k2 = ks3.next ();
+	succeed_if (k2.getName () == "user/key3/2", "wrong keyname");
+	Key k3 = ks3.next ();
+	succeed_if (k3.getName () == "user/key3/3", "wrong keyname");
+	succeed_if (k3.getString () == "value", "wrong value");
+	succeed_if (k3 == ks3.tail (), "last key not tail key");
+	succeed_if (!ks3.next (), "no more key");
+	succeed_if (!ks3.next (), "no more key");
+	succeed_if (!ks3.next (), "no more key");
+	succeed_if (!ks3.next (), "no more key");
 
-	Key null = static_cast<ckdb::Key*>(nullptr);
+	Key null = static_cast<ckdb::Key *> (nullptr);
 	succeed_if (!null, "null key");
 
-	ks3.rewind();
-	for (ssize_t i=0; i<ks3.size(); i++)
+	ks3.rewind ();
+	for (ssize_t i = 0; i < ks3.size (); i++)
 	{
-		Key k = ks3.next();
+		Key k = ks3.next ();
 		char str[] = "user/key3/X";
 
-		str [10] = i+'1';
-		succeed_if (k.getName() == str, "wrong keyname");
+		str[10] = i + '1';
+		succeed_if (k.getName () == str, "wrong keyname");
 	}
 
-	ks3.rewind();
+	ks3.rewind ();
 	Key n;
-	int j=0;
-	while ((n=ks3.next()))
+	int j = 0;
+	while ((n = ks3.next ()))
 	{
 		char str[] = "user/key3/X";
 
-		str [10] = j+'1';
-		succeed_if (n.getName() == str, "wrong keyname");
+		str[10] = j + '1';
+		succeed_if (n.getName () == str, "wrong keyname");
 		j++;
 	}
 
-	j=0;
-	ks3.rewind();
-	while ((n=ks3.next()) == true)
+	j = 0;
+	ks3.rewind ();
+	while ((n = ks3.next ()) == true)
 	{
 		char str[] = "user/key3/X";
 
-		str [10] = j+'1';
-		succeed_if (n.getName() == str, "wrong keyname");
+		str[10] = j + '1';
+		succeed_if (n.getName () == str, "wrong keyname");
 		j++;
 	}
 
-	j=0;
-	ks3.rewind();
-	for (Key k; (k=ks3.next());)
+	j = 0;
+	ks3.rewind ();
+	for (Key k; (k = ks3.next ());)
 	{
 		char str[] = "user/key3/X";
 
-		str [10] = j+'1';
-		succeed_if (k.getName() == str, "wrong keyname");
+		str[10] = j + '1';
+		succeed_if (k.getName () == str, "wrong keyname");
 		j++;
 	}
 
-	j=0;
-	ks3.rewind();
-	for (Key k=ks3.next(); k; (k=ks3.next()))
+	j = 0;
+	ks3.rewind ();
+	for (Key k = ks3.next (); k; (k = ks3.next ()))
 	{
 		char str[] = "user/key3/X";
 
-		str [10] = j+'1';
-		succeed_if (k.getName() == str, "wrong keyname");
+		str[10] = j + '1';
+		succeed_if (k.getName () == str, "wrong keyname");
 		j++;
 	}
 }
 
-TEST(ks, cursor)
+TEST (ks, cursor)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
-	cursor_t cursorTest = ks3.getCursor();
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
+	cursor_t cursorTest = ks3.getCursor ();
 
-	ks3.rewind();
-	for (ssize_t i=0; i<ks3.size(); i++)
+	ks3.rewind ();
+	for (ssize_t i = 0; i < ks3.size (); i++)
 	{
-		Key k = ks3.next();
-		if (i==0) cursorTest = ks3.getCursor();
+		Key k = ks3.next ();
+		if (i == 0) cursorTest = ks3.getCursor ();
 	}
 
 	ks3.setCursor (cursorTest);
-	Key k1 = ks3.current();
-	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
-	succeed_if (k1 == ks3.head(), "first key not head key");
+	Key k1 = ks3.current ();
+	succeed_if (k1.getName () == "user/key3/1", "wrong keyname");
+	succeed_if (k1 == ks3.head (), "first key not head key");
 }
 
-TEST(ks, pop)
+TEST (ks, pop)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	ks3.rewind();
+	ks3.rewind ();
 
-	Key k3 = ks3.pop();
-	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
-	succeed_if (k3.getString() == "value", "wrong value");
-	Key k2 = ks3.pop();
-	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
-	Key k1 = ks3.pop();
-	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
-	Key k0 = ks3.pop();
+	Key k3 = ks3.pop ();
+	succeed_if (k3.getName () == "user/key3/3", "wrong keyname");
+	succeed_if (k3.getString () == "value", "wrong value");
+	Key k2 = ks3.pop ();
+	succeed_if (k2.getName () == "user/key3/2", "wrong keyname");
+	Key k1 = ks3.pop ();
+	succeed_if (k1.getName () == "user/key3/1", "wrong keyname");
+	Key k0 = ks3.pop ();
 	succeed_if (!k0, "Out of Range, no more key");
 
-	KeySet ks4 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks4 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	ks4.rewind();
-	for (int i=ks4.size()-1; i>0; i--)
+	ks4.rewind ();
+	for (int i = ks4.size () - 1; i > 0; i--)
 	{
-		Key k = ks4.pop();
+		Key k = ks4.pop ();
 		char str[] = "user/key3/X";
 
-		str [10] = i+'1';
-		succeed_if (k.getName() == str, str);
+		str[10] = i + '1';
+		succeed_if (k.getName () == str, str);
 	}
 }
 
-TEST(ks, lookup)
+TEST (ks, lookup)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	Key k1 = ks3.lookup("user/key3/1");
+	Key k1 = ks3.lookup ("user/key3/1");
 	succeed_if (k1, "did not find key");
-	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
+	succeed_if (k1.getName () == "user/key3/1", "wrong keyname");
 
-	Key k2 = ks3.lookup("user/key3/2");
+	Key k2 = ks3.lookup ("user/key3/2");
 	succeed_if (k2, "did not find key");
-	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
+	succeed_if (k2.getName () == "user/key3/2", "wrong keyname");
 
-	Key k3 = ks3.lookup("user/key3/3");
+	Key k3 = ks3.lookup ("user/key3/3");
 	succeed_if (k3, "did not find key");
-	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
-	succeed_if (k3.getString() == "value", "wrong value");
+	succeed_if (k3.getName () == "user/key3/3", "wrong keyname");
+	succeed_if (k3.getString () == "value", "wrong value");
 
-	Key k4 = ks3.lookup("user/key3/4");
+	Key k4 = ks3.lookup ("user/key3/4");
 	succeed_if (!k4, "Key does not exist");
 }
 
-TEST(ks, append)
+TEST (ks, append)
 {
 	KeySet ks1;
 
-	KeySet ks2 (5,
-		ckdb::keyNew ("user/key2", KEY_END),
-		KS_END);
+	KeySet ks2 (5, ckdb::keyNew ("user/key2", KEY_END), KS_END);
 	ks1.append (ks2);
 
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 	ks2.append (ks3);
 	ks1.append (ks3);
 	ks3.append (ks2);
 
-	Key k1("user/key4/1", KEY_END);
-	Key k2("user/key4/2", KEY_END);
-	Key k3("user/key4/3", KEY_VALUE, "value", KEY_END);
-	ks1.append (k1); ks1.append (k2); ks1.append (k3);
-	ks2.append (k1); ks2.append (k2); ks2.append (k3);
-	ks3.append (k1); ks3.append (k2); ks3.append (k3);
+	Key k1 ("user/key4/1", KEY_END);
+	Key k2 ("user/key4/2", KEY_END);
+	Key k3 ("user/key4/3", KEY_VALUE, "value", KEY_END);
+	ks1.append (k1);
+	ks1.append (k2);
+	ks1.append (k3);
+	ks2.append (k1);
+	ks2.append (k2);
+	ks2.append (k3);
+	ks3.append (k1);
+	ks3.append (k2);
+	ks3.append (k3);
 
-	KeySet ks4 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks4 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
 	KeySet ks5;
-	std::vector<Key> v(3);
-	ks5.append(v[1]=Key("user/s/2", KEY_END));
-	ks5.append(v[0]=Key("user/s/1", KEY_END));
-	ks5.append(v[2]=Key("user/s/3", KEY_END));
+	std::vector<Key> v (3);
+	ks5.append (v[1] = Key ("user/s/2", KEY_END));
+	ks5.append (v[0] = Key ("user/s/1", KEY_END));
+	ks5.append (v[2] = Key ("user/s/3", KEY_END));
 
-	ks5.rewind();
-	for (ssize_t i=0; i<ks5.size(); ++i)
+	ks5.rewind ();
+	for (ssize_t i = 0; i < ks5.size (); ++i)
 	{
-		succeed_if (*ks5.next() == *v[i], "wrong order");
+		succeed_if (*ks5.next () == *v[i], "wrong order");
 	}
 
 	// ks1.toStream();
@@ -332,194 +293,201 @@ TEST(ks, append)
 	// ks3.toStream();
 }
 
-TEST(ks, permutations)
+TEST (ks, permutations)
 {
-	vector <Key> solution;
-	solution.push_back(Key("user/s/1", KEY_END));
-	solution.push_back(Key("user/s/2", KEY_END));
-	solution.push_back(Key("user/s/3", KEY_END));
-	solution.push_back(Key("user/s/3/s", KEY_END));
-	solution.push_back(Key("user/s/3-3", KEY_END));
+	vector<Key> solution;
+	solution.push_back (Key ("user/s/1", KEY_END));
+	solution.push_back (Key ("user/s/2", KEY_END));
+	solution.push_back (Key ("user/s/3", KEY_END));
+	solution.push_back (Key ("user/s/3/s", KEY_END));
+	solution.push_back (Key ("user/s/3-3", KEY_END));
 
-	vector <Key> permutation(solution);
+	vector<Key> permutation (solution);
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.append(permutation[4]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.append (permutation[3]);
+		ks.append (permutation[4]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next() == *solution[i], "wrong order ");
+			succeed_if (*ks.next () == *solution[i], "wrong order ");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back(Key("user/s/x", KEY_END));
-	permutation.push_back(solution[4]); // need a copy of same key, otherwise name is not the same string
-	sort(permutation.begin(), permutation.end());
+	solution.push_back (Key ("user/s/x", KEY_END));
+	permutation.push_back (solution[4]); // need a copy of same key, otherwise name is not the same string
+	sort (permutation.begin (), permutation.end ());
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.append(permutation[4]);
-		ks.append(permutation[5]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.append (permutation[3]);
+		ks.append (permutation[4]);
+		ks.append (permutation[5]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back(Key("user/x/y", KEY_END));
-	permutation.push_back(solution[5]);
-	sort(permutation.begin(), permutation.end());
+	solution.push_back (Key ("user/x/y", KEY_END));
+	permutation.push_back (solution[5]);
+	sort (permutation.begin (), permutation.end ());
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.append(permutation[4]);
-		ks.append(permutation[5]);
-		ks.append(permutation[6]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.append (permutation[3]);
+		ks.append (permutation[4]);
+		ks.append (permutation[5]);
+		ks.append (permutation[6]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
 			// note: raw pointers check the identity! It needs to be the same reference
-			succeed_if (*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back(Key("user/x/y/z", KEY_END));
-	permutation.push_back(solution[5]);
-	sort(permutation.begin(), permutation.end());
+	solution.push_back (Key ("user/x/y/z", KEY_END));
+	permutation.push_back (solution[5]);
+	sort (permutation.begin (), permutation.end ());
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.append(permutation[4]);
-		ks.append(permutation[5]);
-		ks.append(permutation[6]);
-		ks.append(permutation[7]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.append (permutation[3]);
+		ks.append (permutation[4]);
+		ks.append (permutation[5]);
+		ks.append (permutation[6]);
+		ks.append (permutation[7]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 }
 
-TEST(ks, appendOwner)
+TEST (ks, appendOwner)
 {
 	KeySet ks;
-	std::vector<Key> v(3);
-	ks.append(v[1]=Key("user/s/1", KEY_OWNER, "markus", KEY_END));
-	ks.append(v[0]=Key("user/s/1", KEY_END));
-	ks.append(v[2]=Key("user/s/1", KEY_OWNER, "max", KEY_END));
+	std::vector<Key> v (3);
+	ks.append (v[1] = Key ("user/s/1", KEY_OWNER, "markus", KEY_END));
+	ks.append (v[0] = Key ("user/s/1", KEY_END));
+	ks.append (v[2] = Key ("user/s/1", KEY_OWNER, "max", KEY_END));
 
-	ks.rewind();
-	for (ssize_t i=0; i<ks.size(); ++i)
+	ks.rewind ();
+	for (ssize_t i = 0; i < ks.size (); ++i)
 	{
-		succeed_if (*ks.next() == *v[i], "wrong order");
+		succeed_if (*ks.next () == *v[i], "wrong order");
 	}
 }
 
-TEST(ks, permutateOwner)
+TEST (ks, permutateOwner)
 {
-	vector <Key> solution;
-	solution.push_back(Key("user/s", KEY_END));
-	solution.push_back(Key("user/s", KEY_OWNER, "albert", KEY_END));
-	solution.push_back(Key("user/s", KEY_OWNER, "barbara", KEY_END));
+	vector<Key> solution;
+	solution.push_back (Key ("user/s", KEY_END));
+	solution.push_back (Key ("user/s", KEY_OWNER, "albert", KEY_END));
+	solution.push_back (Key ("user/s", KEY_OWNER, "barbara", KEY_END));
 
-	vector <Key> permutation(solution);
+	vector<Key> permutation (solution);
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if(*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back(Key("user/s", KEY_OWNER, "markus", KEY_END));
-	permutation.push_back(solution[3]); // need a copy of same key, otherwise name is not the same string
-	sort(permutation.begin(), permutation.end());
+	solution.push_back (Key ("user/s", KEY_OWNER, "markus", KEY_END));
+	permutation.push_back (solution[3]); // need a copy of same key, otherwise name is not the same string
+	sort (permutation.begin (), permutation.end ());
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.append (permutation[3]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back(Key("user/s", KEY_OWNER, "max", KEY_END));
-	permutation.push_back(solution[4]);
-	sort(permutation.begin(), permutation.end());
+	solution.push_back (Key ("user/s", KEY_OWNER, "max", KEY_END));
+	permutation.push_back (solution[4]);
+	sort (permutation.begin (), permutation.end ());
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.append(permutation[4]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.append (permutation[3]);
+		ks.append (permutation[4]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 
-	solution.push_back(Key("user/s", KEY_OWNER, "patrick", KEY_END));
-	permutation.push_back(solution[5]);
-	sort(permutation.begin(), permutation.end());
+	solution.push_back (Key ("user/s", KEY_OWNER, "patrick", KEY_END));
+	permutation.push_back (solution[5]);
+	sort (permutation.begin (), permutation.end ());
 
-	do {
+	do
+	{
 		KeySet ks;
-		ks.append(permutation[0]);
-		ks.append(permutation[1]);
-		ks.append(permutation[2]);
-		ks.append(permutation[3]);
-		ks.append(permutation[4]);
-		ks.append(permutation[5]);
-		ks.rewind();
-		for (ssize_t i=0; i<ks.size(); ++i)
+		ks.append (permutation[0]);
+		ks.append (permutation[1]);
+		ks.append (permutation[2]);
+		ks.append (permutation[3]);
+		ks.append (permutation[4]);
+		ks.append (permutation[5]);
+		ks.rewind ();
+		for (ssize_t i = 0; i < ks.size (); ++i)
 		{
-			succeed_if (*ks.next() == *solution[i], "wrong order");
+			succeed_if (*ks.next () == *solution[i], "wrong order");
 		}
-	} while (next_permutation(permutation.begin(), permutation.end()));
-
+	} while (next_permutation (permutation.begin (), permutation.end ()));
 }
 
-TEST(ks, comparision)
+TEST (ks, comparision)
 {
 	KeySet ks0 (5, KS_END);
 	KeySet ks00 (5, KS_END);
-	KeySet ks1 (5, *Key("user/a", KEY_END), *Key("user/b", KEY_END), KS_END);
-	KeySet ks11 (5, *Key("user/a", KEY_END), *Key("user/b", KEY_END), KS_END);
-	KeySet ks2 (5, *Key("user/a", KEY_END), *Key("user/bb", KEY_END), KS_END);
-	KeySet ks3 (5, *Key("user/aa", KEY_END), *Key("user/b", KEY_END), KS_END);
-	KeySet ks4 (5, *Key("user/aa", KEY_END), *Key("user/bb", KEY_END), KS_END);
+	KeySet ks1 (5, *Key ("user/a", KEY_END), *Key ("user/b", KEY_END), KS_END);
+	KeySet ks11 (5, *Key ("user/a", KEY_END), *Key ("user/b", KEY_END), KS_END);
+	KeySet ks2 (5, *Key ("user/a", KEY_END), *Key ("user/bb", KEY_END), KS_END);
+	KeySet ks3 (5, *Key ("user/aa", KEY_END), *Key ("user/b", KEY_END), KS_END);
+	KeySet ks4 (5, *Key ("user/aa", KEY_END), *Key ("user/bb", KEY_END), KS_END);
 
 	EXPECT_EQ (ks0, ks0);
 	EXPECT_EQ (ks0, ks00);
@@ -556,7 +524,6 @@ TEST(ks, comparision)
 	EXPECT_NE (ks4, ks3);
 
 
-
 	EXPECT_EQ (ks1, ks1);
 	EXPECT_NE (ks0, ks1);
 	EXPECT_NE (ks2, ks1);
@@ -584,270 +551,247 @@ TEST(ks, comparision)
 
 void call (KeySet ks3)
 {
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 }
 
-void refcall (KeySet &ks3)
+void refcall (KeySet & ks3)
 {
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 }
 
-TEST(ks, call)
+TEST (ks, call)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 
-	call(ks3);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	call (ks3);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 
-	refcall(ks3);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	refcall (ks3);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 }
 
 
 void ccall (KeySet ks3)
 {
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2", KDB_O_POP), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 2, "size not correct");
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2", KDB_O_POP), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 2, "size not correct");
 
-	ks3.lookup("user/key3/1").setString("will change");
-	ks3.append(Key("user/key3/ccall", KEY_END));
+	ks3.lookup ("user/key3/1").setString ("will change");
+	ks3.append (Key ("user/key3/ccall", KEY_END));
 }
 
-void refccall (KeySet &ks3)
+void refccall (KeySet & ks3)
 {
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2", KDB_O_POP), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 2, "size not correct");
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2", KDB_O_POP), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 2, "size not correct");
 
-	ks3.append(Key("user/key3/refccall", KEY_END));
-	ks3.lookup("user/key3/1").setString("will change again");
+	ks3.append (Key ("user/key3/refccall", KEY_END));
+	ks3.lookup ("user/key3/1").setString ("will change again");
 }
 
-TEST(ks, call2)
+TEST (ks, call2)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 
-	ccall(ks3);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/1").getString() == "will change", "value did not change");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
-	succeed_if (!ks3.lookup("user/key3/ccall"), "key should not be there");
+	ccall (ks3);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/1").getString () == "will change", "value did not change");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
+	succeed_if (!ks3.lookup ("user/key3/ccall"), "key should not be there");
 
-	refccall(ks3);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/1").getString() == "will change again", "value did not change");
-	succeed_if (!ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.lookup("user/key3/refccall"), "could not find key");
-	succeed_if (ks3.size() == 3, "size not correct");
+	refccall (ks3);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/1").getString () == "will change again", "value did not change");
+	succeed_if (!ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.lookup ("user/key3/refccall"), "could not find key");
+	succeed_if (ks3.size () == 3, "size not correct");
 }
 
 
-void rcopycall(KeySet ks)
+void rcopycall (KeySet ks)
 {
 	// do something with keyset
 	// (wont be one hierarchy higher)
-	ks.append(Key("user/yyy", KEY_END));
+	ks.append (Key ("user/yyy", KEY_END));
 }
 
-void rrefcall(KeySet & ks)
+void rrefcall (KeySet & ks)
 {
 	// do something with keyset
-	ks.append(Key("user/xxx", KEY_END));
+	ks.append (Key ("user/xxx", KEY_END));
 }
 
 /*Calling conventions: user need to free the keyset */
-void rcall(KeySet ks)
+void rcall (KeySet ks)
 {
 	// do something with ks
 
 	rrefcall (ks);
-	succeed_if (ks.lookup("user/xxx"), "could not find key");
+	succeed_if (ks.lookup ("user/xxx"), "could not find key");
 
 
-	rcopycall(ks);
-	succeed_if (ks.lookup("user/xxx"), "could not find key");
-	succeed_if (!ks.lookup("user/yyy"), "could not find key");
+	rcopycall (ks);
+	succeed_if (ks.lookup ("user/xxx"), "could not find key");
+	succeed_if (!ks.lookup ("user/yyy"), "could not find key");
 
 	// don't destroy ks
-	ks.release();
+	ks.release ();
 }
 
-TEST(ks, release)
+TEST (ks, release)
 {
 	KeySet ks1;
 
-	ckdb::KeySet *ks = ks1.release();
+	ckdb::KeySet * ks = ks1.release ();
 	ckdb::ksDel (ks);
 
-	KeySet ks2 (5,
-		ckdb::keyNew ("user/key2", KEY_END),
-		KS_END);
+	KeySet ks2 (5, ckdb::keyNew ("user/key2", KEY_END), KS_END);
 
-	ks = ks2.release();
+	ks = ks2.release ();
 	ckdb::ksDel (ks);
 
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	ks = ks3.release();
+	ks = ks3.release ();
 	ckdb::ksDel (ks);
 
-	ks = ckdb::ksNew (5, ckdb::keyNew("user/abc", KEY_END), KS_END);
+	ks = ckdb::ksNew (5, ckdb::keyNew ("user/abc", KEY_END), KS_END);
 	rcall (ks);
-	succeed_if (ckdb::ksLookupByName(ks, "user/xxx", 0) != nullptr, "could not find key");
+	succeed_if (ckdb::ksLookupByName (ks, "user/xxx", 0) != nullptr, "could not find key");
 	ckdb::ksDel (ks);
 }
 
-TEST(ks, lookupPop)
+TEST (ks, lookupPop)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	succeed_if (ks3.size() == 3, "size not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 
-	Key k3 = ks3.lookup("user/key3/3", KDB_O_POP);
-	succeed_if (k3.getName() == "user/key3/3", "wrong keyname");
-	succeed_if (k3.getString() == "value", "wrong value");
-	succeed_if (ks3.size() == 2, "size not correct");
+	Key k3 = ks3.lookup ("user/key3/3", KDB_O_POP);
+	succeed_if (k3.getName () == "user/key3/3", "wrong keyname");
+	succeed_if (k3.getString () == "value", "wrong value");
+	succeed_if (ks3.size () == 2, "size not correct");
 
-	Key k1 = ks3.lookup("user/key3/1", KDB_O_POP);
-	succeed_if (k1.getName() == "user/key3/1", "wrong keyname");
-	succeed_if (ks3.size() == 1, "size not correct");
+	Key k1 = ks3.lookup ("user/key3/1", KDB_O_POP);
+	succeed_if (k1.getName () == "user/key3/1", "wrong keyname");
+	succeed_if (ks3.size () == 1, "size not correct");
 
-	Key k2 = ks3.lookup("user/key3/2", KDB_O_POP);
-	succeed_if (k2.getName() == "user/key3/2", "wrong keyname");
-	succeed_if (ks3.size() == 0, "size not correct");
+	Key k2 = ks3.lookup ("user/key3/2", KDB_O_POP);
+	succeed_if (k2.getName () == "user/key3/2", "wrong keyname");
+	succeed_if (ks3.size () == 0, "size not correct");
 
-	Key k0 = ks3.lookup("user/key3/2", KDB_O_POP);
+	Key k0 = ks3.lookup ("user/key3/2", KDB_O_POP);
 	succeed_if (!k0, "Out of Range, no more key");
-	succeed_if (ks3.size() == 0, "size not correct");
+	succeed_if (ks3.size () == 0, "size not correct");
 
-	Key kn = ks3.lookup("user/key3/n", KDB_O_POP);
+	Key kn = ks3.lookup ("user/key3/n", KDB_O_POP);
 	succeed_if (!kn, "key was never in set");
-	succeed_if (ks3.size() == 0, "size not correct");
+	succeed_if (ks3.size () == 0, "size not correct");
 
-	KeySet ks4 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks4 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	for (ssize_t i=ks4.size(); i>0; i--)
+	for (ssize_t i = ks4.size (); i > 0; i--)
 	{
 		char str[] = "user/key3/X";
 
-		str [10] = i+'0';
-		succeed_if (ks4.size() == i, "size not correct");
-		Key k = ks4.lookup(str, KDB_O_POP);
+		str[10] = i + '0';
+		succeed_if (ks4.size () == i, "size not correct");
+		Key k = ks4.lookup (str, KDB_O_POP);
 		succeed_if (k, "there should be a key");
 
-		succeed_if (k.getName() == str, str);
-		succeed_if (ks4.size() == i-1, "size not correct");
+		succeed_if (k.getName () == str, str);
+		succeed_if (ks4.size () == i - 1, "size not correct");
 	}
 
-	KeySet ks5 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
+	KeySet ks5 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
 
-	for (ssize_t i=ks5.size(); i>0; i--)
+	for (ssize_t i = ks5.size (); i > 0; i--)
 	{
 		char str[] = "user/key3/X";
 
-		str [10] = i+'0';
+		str[10] = i + '0';
 		Key searchKey (str, KEY_END);
-		succeed_if (ks5.size() == i, "size not correct");
+		succeed_if (ks5.size () == i, "size not correct");
 
-		Key k = ks5.lookup(searchKey, KDB_O_POP);
+		Key k = ks5.lookup (searchKey, KDB_O_POP);
 		succeed_if (k, "there should be a key");
 
-		succeed_if (k.getName() == str, str);
-		succeed_if (ks5.size() == i-1, "size not correct");
+		succeed_if (k.getName () == str, str);
+		succeed_if (ks5.size () == i - 1, "size not correct");
 	}
 }
 
-TEST(ks, duplicate)
+TEST (ks, duplicate)
 {
-	KeySet ks3 (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END);
-	succeed_if (ks3.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks3.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks3.size() == 3, "size not correct");
+	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
+		    KS_END);
+	succeed_if (ks3.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks3.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks3.size () == 3, "size not correct");
 
 	KeySet ks4;
 	ks4 = ks3;
-	succeed_if (ks4.lookup("user/key3/1"), "could not find key");
-	succeed_if (ks4.lookup("user/key3/2"), "could not find key");
-	succeed_if (ks4.lookup("user/key3/3"), "could not find key");
-	succeed_if (ks4.lookup("user/key3/3").getString() == "value", "value not correct");
-	succeed_if (ks4.size() == 3, "size not correct");
+	succeed_if (ks4.lookup ("user/key3/1"), "could not find key");
+	succeed_if (ks4.lookup ("user/key3/2"), "could not find key");
+	succeed_if (ks4.lookup ("user/key3/3"), "could not find key");
+	succeed_if (ks4.lookup ("user/key3/3").getString () == "value", "value not correct");
+	succeed_if (ks4.size () == 3, "size not correct");
 
 	// ks3.toStream(stdout, 0);
 	// ks4.toStream(stdout, 0);
 }
 
-KeySet fill_vaargs(size_t size, ...)
+KeySet fill_vaargs (size_t size, ...)
 {
 	va_list ap;
-	va_start(ap, size);
-	KeySet ks(VaAlloc(size), ap);
-	va_end(ap);
+	va_start (ap, size);
+	KeySet ks (VaAlloc (size), ap);
+	va_end (ap);
 	return ks;
 }
 
@@ -856,29 +800,23 @@ struct C
 	KeySet ks;
 };
 
-TEST(ks, move)
+TEST (ks, move)
 {
 
-	std::unique_ptr<KeySet>u1(new KeySet (5,
-		*Key ("user/key3/1", KEY_END),
-		*Key ("user/key3/2", KEY_END),
-		*Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
-		KS_END));
-	std::unique_ptr<KeySet>u2(std::move(u1));
-	std::unique_ptr<KeySet>u3 = std::move(u1);
+	std::unique_ptr<KeySet> u1 (new KeySet (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END),
+						*Key ("user/key3/3", KEY_VALUE, "value", KEY_END), KS_END));
+	std::unique_ptr<KeySet> u2 (std::move (u1));
+	std::unique_ptr<KeySet> u3 = std::move (u1);
 
-	std::unique_ptr<C>c1(new C);
-	std::unique_ptr<C>c2(std::move(c1));
-	std::unique_ptr<C>c3 = std::move(c1);
+	std::unique_ptr<C> c1 (new C);
+	std::unique_ptr<C> c2 (std::move (c1));
+	std::unique_ptr<C> c3 = std::move (c1);
 	c3->ks = *u3;
 }
 
-TEST(ks, vaargs)
+TEST (ks, vaargs)
 {
-	KeySet ks = fill_vaargs(20,
-			*Key("user/a", KEY_END),
-			*Key("user/b", KEY_END),
-			KS_END);
-	succeed_if (ks.lookup("user/a"), "could not find key");
-	succeed_if (ks.lookup("user/b"), "could not find key");
+	KeySet ks = fill_vaargs (20, *Key ("user/a", KEY_END), *Key ("user/b", KEY_END), KS_END);
+	succeed_if (ks.lookup ("user/a"), "could not find key");
+	succeed_if (ks.lookup ("user/b"), "could not find key");
 }

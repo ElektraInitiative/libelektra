@@ -1,16 +1,20 @@
 - infos = Information about keytometa plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
-- infos/needs =
 - infos/provides = filter
+- infos/needs =
 - infos/placements = presetstorage postgetstorage
+- infos/status = maintained unittest nodep libc configurable
+- infos/metadata = rename/to rename/toupper rename/tolower rename/cut
 - infos/description = renaming of keys
 
 ## INTRODUCTION ##
 
 
-This plugin can be used to perform rename operations on keys passing by. This might be useful if a backend does not provide keys
-in the required format. If keys are renamed, their original name is stored in the `origname` MetaKey.
+This plugin can be used to perform rename operations on keys. This is useful if a backend does not provide keys
+with the required names or case.
+
+If keys are renamed, their original name is stored in the `origname` MetaKey.
 
 
 ## CUT ##
@@ -58,14 +62,23 @@ If an invalid configuration is given or the cut operation would cause a parent k
 
 Using the `/replacewith` global key or `rename/to`  MetaKey the rename plugin will replace the part removed by `cut` with the supplied String
 
-## TO UPPER / LOWER ##
 
-Using the `/toupper` or `/tolower` global configuration key, or the `rename/toupper` or `rename/tolower` MetaTag the rename plugin will
+### TO UPPER / LOWER ###
+
+Using the `/toupper` or `/tolower` global configuration key, or the `rename/toupper` or `rename/tolower` metakey the rename plugin will
 convert the keynames to uppercase or lowercase.
 The supplied values tell the plugin how many levels starting from the right will be converted. `toupper` and `tolower` can be combined.
 When no value or "0" is supplied with the keys the whole name below the parentkey will be converted.
 
-The toupper/tolower conversions are applied after cut/replace
+The toupper/tolower conversions are applied after cut/replace.
+
+Note that the names refer to the representation as KeySet. For example, if you have a configuration file where every name is uppercase:
+```
+KEY=value
+OTHER/KEY=otherval
+```
+you can use `tolower=0` to get the keys `key` and `other/key`.
+
 ### EXAMPLE ###
 
 ```
@@ -76,11 +89,12 @@ kdb set /rename/MIXED/CASE/conversion 1
 kdb ls /rename
 user/rename
 user/rename/mixed/case/CONVERSION
-
 ```
 
 ## PLANNED OPERATIONS ##
 
 
 Additional rename operations are planned for future versions of the rename plugin:
-* trim: remove spaces in the name (that are not part of parentKey!)
+* trim: remove spaces in the name (that are not part of parentKey)
+* ranges for toupper, tolower
+* allow one to specify the case in configuration files (#485)

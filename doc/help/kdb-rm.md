@@ -18,13 +18,15 @@ This command removes key(s) from the Key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile`=<profile>:
+  Use a different kdb profile.
 - `-r`, `--recursive`:
   Work in a recursive mode.
 
 ## EXAMPLES
 
 To remove a multiple keys:  
-	`kdb rm -r user/example`  
+`kdb rm -r user/example`  
 
 To remove a single key:  
-	`kdb rm user/example/key1`  
+`kdb rm user/example/key1`  

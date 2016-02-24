@@ -10,60 +10,49 @@
 
 #include <stdio.h>
 
-int main()
+int main ()
 {
-	Key *k;
-	Key *c;
-	const Key* meta;
-	k = keyNew("user/metakey", KEY_END);
-	c = keyNew("user/metacopy", KEY_END);
+	Key * k;
+	Key * c;
+	const Key * meta;
+	k = keyNew ("user/metakey", KEY_END);
+	c = keyNew ("user/metacopy", KEY_END);
 
-	keySetMeta(k, "hello", "hello_world");
+	keySetMeta (k, "hello", "hello_world");
 
-	keySetMeta(k, "mode", "0644");
-	keySetMeta(k, "time", "1271234264");
-	keySetMeta(k, "empty", "");
+	keySetMeta (k, "mode", "0644");
+	keySetMeta (k, "time", "1271234264");
+	keySetMeta (k, "empty", "");
 
-	meta = keyGetMeta(k, "hello");
-	printf ("Metadata %s has the value %s with the value size %zd\n",
-			keyName(meta),
-			(const char*)keyValue(meta),
-			keyGetValueSize(meta));
-	printf ("Metadata mode has the value %s\n",
-			(const char*)keyValue(keyGetMeta(k, "mode")));
-	printf ("Metadata time has the value %s\n",
-			(const char*)keyValue(keyGetMeta(k, "time")));
-	printf ("Metadata empty has the value %s\n",
-			(const char*)keyValue(keyGetMeta(k, "empty")));
+	meta = keyGetMeta (k, "hello");
+	printf ("Metadata %s has the value %s with the value size %zd\n", keyName (meta), (const char *)keyValue (meta),
+		keyGetValueSize (meta));
+	printf ("Metadata mode has the value %s\n", (const char *)keyValue (keyGetMeta (k, "mode")));
+	printf ("Metadata time has the value %s\n", (const char *)keyValue (keyGetMeta (k, "time")));
+	printf ("Metadata empty has the value %s\n", (const char *)keyValue (keyGetMeta (k, "empty")));
 
-	if (!keyGetMeta(k, "nonexist"))
-		printf ("Check if a meta data exist\n");
+	if (!keyGetMeta (k, "nonexist")) printf ("Check if a meta data exist\n");
 
-	keySetMeta(k, "hello", "between");
-	keyCopyMeta(c, k, "hello");
+	keySetMeta (k, "hello", "between");
+	keyCopyMeta (c, k, "hello");
 
-	if (keyGetMeta(k, "hello") == keyGetMeta(c, "hello"))
-		printf ("Check if they point to the same meta data after a copy\n");
+	if (keyGetMeta (k, "hello") == keyGetMeta (c, "hello")) printf ("Check if they point to the same meta data after a copy\n");
 
-	printf ("Metadata hello now has the value %s\n",
-			(const char*)keyValue(keyGetMeta(k, "hello")));
+	printf ("Metadata hello now has the value %s\n", (const char *)keyValue (keyGetMeta (k, "hello")));
 
-	keySetMeta(k, "hello", 0);
+	keySetMeta (k, "hello", 0);
 
-	printf ("Metadata hello now has the value %s (after dropping)\n",
-			(const char*)keyValue(keyGetMeta(k, "hello")));
+	printf ("Metadata hello now has the value %s (after dropping)\n", (const char *)keyValue (keyGetMeta (k, "hello")));
 
-	keySetMeta(k, "hello", "goodbye");
+	keySetMeta (k, "hello", "goodbye");
 
-	printf ("Metadata hello now has the value %s\n",
-			(const char*)keyValue(keyGetMeta(k, "hello")));
+	printf ("Metadata hello now has the value %s\n", (const char *)keyValue (keyGetMeta (k, "hello")));
 
 	printf ("Now we will output all meta data of the key:\n");
 	keyRewindMeta (k);
-	while ((meta = keyNextMeta (k))!=0)
+	while ((meta = keyNextMeta (k)) != 0)
 	{
-		printf ("%s=%s\n", keyName(meta),
-				(const char*)keyValue(meta));
+		printf ("%s=%s\n", keyName (meta), (const char *)keyValue (meta));
 	}
 
 	keyDel (k);

@@ -16,19 +16,49 @@
 using namespace kdb;
 using namespace std;
 
-ListCommand::ListCommand()
-{}
+ListCommand::ListCommand ()
+{
+}
 
-int ListCommand::execute(Cmdline const& cl)
+int ListCommand::execute (Cmdline const & cl)
 {
 	using namespace kdb::tools;
-	std::vector<std::string> plugins = ModulesPluginDatabase().listAllPlugins();
+	ModulesPluginDatabase db;
 
-	if (cl.verbose) cout << "number of all plugins: " << plugins.size() << endl;
+	std::vector<std::string> plugins = db.listAllPlugins ();
 
-	for (auto & plugin : plugins)
+	std::multimap<int, std::string> sortedPlugins;
+	for (const auto & plugin : plugins)
 	{
-		std::cout << plugin;
+		try
+		{
+			int s = db.calculateStatus (
+				db.lookupInfo (PluginSpec (plugin, KeySet (5, *Key ("system/module", KEY_VALUE,
+										    "this plugin was loaded without a config", KEY_END),
+									   KS_END)),
+					       "status"));
+			sortedPlugins.insert (std::make_pair (s, plugin));
+		}
+		catch (std::exception const & e)
+		{
+			sortedPlugins.insert (std::make_pair (-1000000, plugin));
+			if (cl.verbose)
+			{
+				std::cerr << "No status found for " << plugin << std::endl;
+			}
+		}
+	}
+
+	if (cl.verbose) cout << "number of all plugins: " << plugins.size () << endl;
+
+	for (auto & plugin : sortedPlugins)
+	{
+		std::cout << plugin.second;
+		if (cl.verbose)
+		{
+			std::cout << " " << plugin.first;
+		}
+
 		if (cl.null)
 		{
 			cout << '\0';
@@ -39,10 +69,9 @@ int ListCommand::execute(Cmdline const& cl)
 		}
 	}
 
-	//TODO: check for ELEKTRA_STATIC and do ls in folder
-
 	return 0;
 }
 
-ListCommand::~ListCommand()
-{}
+ListCommand::~ListCommand ()
+{
+}

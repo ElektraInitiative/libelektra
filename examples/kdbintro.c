@@ -8,18 +8,18 @@
 
 #include <kdb.h>
 
-int main()
+int main ()
 {
-	KeySet *myConfig = ksNew(0, KS_END);
-	Key *parentKey = keyNew("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
-	KDB *handle = kdbOpen(parentKey);
+	KeySet * myConfig = ksNew (0, KS_END);
+	Key * parentKey = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
+	KDB * handle = kdbOpen (parentKey);
 
-	kdbGet(handle, myConfig, parentKey); // kdbGet() must be first
+	kdbGet (handle, myConfig, parentKey); // kdbGet() must be first
 	// now any number of any kdbGet()/kdbSet() calls are allowed, e.g.:
-	kdbSet(handle, myConfig, parentKey);
+	kdbSet (handle, myConfig, parentKey);
 
 	ksDel (myConfig); // delete the in-memory configuration
 
-	kdbClose(handle, parentKey); // no more affairs with the key database.
-	keyDel(parentKey); // working with key/ks does not need kdb
+	kdbClose (handle, parentKey); // no more affairs with the key database.
+	keyDel (parentKey);	   // working with key/ks does not need kdb
 }

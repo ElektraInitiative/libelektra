@@ -42,7 +42,7 @@ and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
 
 Because remembering all these functions can be cumbersome, we provide a skeleton plugin in order to easily create a new plugin.
 The skeleton plugin is called "template" and a new plugin can be created by calling the
-[copy-template script](scripts/copy-template) .
+[copy-template script](/scripts/copy-template) .
 For example for my plugin I called `../../scripts/copy-template line` from within the plugins directory. Afterwards two
 important things are left to be done:
 
@@ -233,11 +233,11 @@ be called and the mounted file will be updated.
 
 We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
-even if a critical error occurres, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
+even if a critical error occurs, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
 A listing of existing errors together with a short description and a categorization can be found at
 [error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
 The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
-caused the error. The kdb tools will interprete this error and print it in a pretty way. Notice that this can be used in any plugin function where the
+caused the error. The kdb tools will interpret this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
 
 ### elektraPluginOpen and elektraPluginClose ###
