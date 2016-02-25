@@ -121,11 +121,6 @@ if (ENABLE_COVERAGE)
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
 endif (ENABLE_COVERAGE)
 
-# check if native librt is available
-find_library(CMAKE_HAS_LIBRT "rt")
-if (CMAKE_HAS_LIBRT)
-	set(CMAKE_REALTIME_LIBS_INIT rt)
-endif()
 
 set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wno-missing-field-initializers")
 set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast -Woverloaded-virtual  -Wsign-promo")
