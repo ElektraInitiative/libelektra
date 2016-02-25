@@ -5,21 +5,39 @@ set (SOURCES resolver.h resolver.c filename.c)
 find_package(Threads)
 find_package(LibRt)
 
+
 #TODO: remove "default" resolver
-add_plugin(resolver
-	SOURCES
-		${SOURCES}
-	LINK_LIBRARIES
-		${CMAKE_THREAD_LIBS_INIT}
-		${LIBRT_LIBRARIES}
-	COMPILE_DEFINITIONS
-		ELEKTRA_VARIANT_BASE=\"\"
-		ELEKTRA_VARIANT_USER=\"hpu\"
-		ELEKTRA_VARIANT_SYSTEM=\"b\"
-		ELEKTRA_PLUGIN_NAME=\"resolver\"
-		ELEKTRA_LOCK_FILE
-		ELEKTRA_LOCK_MUTEX
+if (LIBRT_FOUND)
+	add_plugin(resolver
+		SOURCES
+			${SOURCES}
+		LINK_LIBRARIES
+			${CMAKE_THREAD_LIBS_INIT}
+			${LIBRT_LIBRARIES}
+		COMPILE_DEFINITIONS
+			ELEKTRA_VARIANT_BASE=\"\"
+			ELEKTRA_VARIANT_USER=\"hpu\"
+			ELEKTRA_VARIANT_SYSTEM=\"b\"
+			ELEKTRA_PLUGIN_NAME=\"resolver\"
+			ELEKTRA_LOCK_FILE
+			ELEKTRA_LOCK_MUTEX
 	)
+else ()
+	add_plugin(resolver
+		SOURCES
+			${SOURCES}
+		LINK_LIBRARIES
+			${CMAKE_THREAD_LIBS_INIT}
+		COMPILE_DEFINITIONS
+			ELEKTRA_VARIANT_BASE=\"\"
+			ELEKTRA_VARIANT_USER=\"hpu\"
+			ELEKTRA_VARIANT_SYSTEM=\"b\"
+			ELEKTRA_PLUGIN_NAME=\"resolver\"
+			ELEKTRA_LOCK_FILE
+			ELEKTRA_LOCK_MUTEX
+	)
+endif()
+
 
 add_plugintest(resolver)
 
@@ -45,8 +63,11 @@ foreach (plugin ${PLUGINS})
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
 			set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES}
-				${CMAKE_THREAD_LIBS_INIT}
-				${LIBRT_LIBRARIES})
+				${CMAKE_THREAD_LIBS_INIT})
+
+			if (LIBRT_FOUND)
+				set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES} ${LIBRT_LIBRARIES})
+			endif()
 		endif ()
 
 

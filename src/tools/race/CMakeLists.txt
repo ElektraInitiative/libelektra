@@ -4,6 +4,10 @@ find_package(LibRt)
 if (APPLE)
 	remove_tool(race "race tool does not compile under MAC OS X")
 else()
+	if (NOT LIBRT_FOUND)
+		remove_tool(race "race tool requires librt support")
+	endif ()
+
 	add_headers (HDR_FILES)
 
 	add_executable(race race.c)
