@@ -16,7 +16,6 @@
 #include <kdb.hpp>
 #include <string>
 
-
 std::string makeLiteralString (std::string str)
 {
 	std::string ret;

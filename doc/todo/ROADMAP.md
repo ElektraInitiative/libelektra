@@ -50,6 +50,8 @@ kdb set --file -F (read from file) reuse import/export?
 
 ## docu
 
+traceability
+
 make elektra-hierarchy reality:
 	generate errors for spec/elektra/error
 	install and mount-script for ini files in spec/elektra/metadata spec/elektra/modules

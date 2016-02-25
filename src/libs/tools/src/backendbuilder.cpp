@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <regex>
 #include <set>
 
 #include <cassert>
@@ -214,6 +215,25 @@ void removeMissing (std::vector<std::string> & recommendedPlugins, std::vector<s
 		recommendedPlugins.erase (std::remove (recommendedPlugins.begin (), recommendedPlugins.end (), mp));
 	}
 }
+
+std::string removeArray (std::string s)
+{
+	std::regex e ("#_*[0-9]*");
+	return std::regex_replace (s,e,"#");
+}
+
+/*
+TEST(Backend, x)
+{
+	EXPECT_EQ(removeArray("should/be/unchanged"), "should/be/unchanged");
+	EXPECT_EQ(removeArray("should/be/#_12"), "should/be/#");
+	EXPECT_EQ(removeArray("should/be/#__200"), "should/be/#");
+	EXPECT_EQ(removeArray("should/#_20/abc/#__200"), "should/#/abc/#");
+	EXPECT_EQ(removeArray("should/#_20/abc/#__204"), "should/#/abc/#");
+	EXPECT_EQ(removeArray("should/_20/abc/__204"), "should/_20/abc/__204");
+}
+*/
+
 }
 
 /**
@@ -260,6 +280,7 @@ std::vector<std::string> BackendBuilder::resolveNeeds (bool addRecommends)
 		else if (!metadata.empty ())
 		{
 			std::string first = (*metadata.begin ());
+			first = removeArray (first);
 			addPlugin (pluginDatabase->lookupMetadata (first));
 			metadata.erase (first);
 		}
