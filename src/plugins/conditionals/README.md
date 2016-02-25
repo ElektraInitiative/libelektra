@@ -56,4 +56,3 @@ Assignment example:
 	kdb set user/tmount/conditionals/hkey Hello
 	kdb setmeta user/tmount/conditionals/hkey assign/condition "(hkey == 'Hello') ? ('World')"
 	kdb get user/tmount/conditionals/hkey # output: World
-

@@ -11,18 +11,18 @@
 #include "kdbconfig.h"
 #endif
 
-#include "ini.h"
-#include <ctype.h>
 #include <errno.h>
-#include <inih.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbos.h>
-#include <kdbprivate.h>  //elektraReadArrayNumber
-#include <kdbproposal.h> //elektraKsToMemArray
 #include <stdlib.h>
 #include <string.h>
+#include <kdberrors.h>
+#include <kdbproposal.h> //elektraKsToMemArray
+#include <kdbprivate.h>  //elektraReadArrayNumber
+#include <kdbease.h>
+#include <kdbhelper.h>
+#include <kdbos.h>
+#include <inih.h>
+#include <ctype.h>
+#include "ini.h"
 
 
 char * keyNameGetOneLevel (const char *, size_t *);
@@ -34,7 +34,12 @@ int elektraIniClose (Plugin * handle, Key * parentKey);
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
 
-typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
+typedef enum
+{
+	NONE,
+	BINARY,
+	ALWAYS
+} SectionHandling;
 
 typedef struct
 {
@@ -414,7 +419,20 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 	keySetMeta (appendKey, "ini/section", 0);
 	if (!section || *section == '\0')
 	{
-		section = INTERNAL_ROOT_SECTION;
+		if (!handle->toMeta)
+		{
+			section = INTERNAL_ROOT_SECTION;
+		}
+		else
+		{
+			Key * rootKey = ksLookup (handle->result, handle->parentKey, KDB_O_NONE);
+			if (!rootKey)
+			{
+				rootKey = keyDup (handle->parentKey);
+			}
+			keySetMeta (rootKey, name, value);
+			ksAppendKey (handle->result, rootKey);
+		}
 	}
 	appendKey = createUnescapedKey (appendKey, section);
 	short mergeSections = 0;
@@ -580,7 +598,7 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	Key * contStringKey = ksLookupByName (config, "/linecont", KDB_O_NONE);
 	if (!contStringKey)
 	{
-		pluginConfig->continuationString = strdup ("\\");
+		pluginConfig->continuationString = strdup ("\t");
 	}
 	else
 	{
@@ -838,7 +856,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 }
 
 // TODO: # and ; comments get mixed up, patch inih to differentiate and
-// create comment keys instead of writing meta data. Writing the meta
+// create comment keys instead of writing meta data. iriting the meta
 // data can be done by keytometa then
 void writeComments (Key * current, FILE * fh)
 {
@@ -934,10 +952,7 @@ static char * getIniName (Key * section, Key * key)
 	char * slashCounter = (char *)keyName (key);
 	while (*slashCounter)
 	{
-		if (*slashCounter == '/')
-		{
-			++slashCount;
-		}
+		if (*slashCounter == '/') ++slashCount;
 		++slashCounter;
 	}
 	int len = 0;
@@ -1008,9 +1023,7 @@ static void insertSectionIntoExistingOrder (Key * parentKey, Key * appendKey, Ke
 		setSubOrderNumber (appendKey, lastOrderNumber);
 	}
 	else
-	{
 		setOrderNumber (parentKey, appendKey);
-	}
 
 	ksDel (cutKS);
 	ksDel (searchKS);
@@ -1054,9 +1067,7 @@ static void insertNewSectionIntoExistendOrder (Key * parentKey, Key * appendKey,
 		}
 	}
 	if (!lastOrderNumber)
-	{
 		setOrderNumber (parentKey, appendKey);
-	}
 	else
 	{
 		setSubOrderNumber (appendKey, lastOrderNumber);
@@ -1704,12 +1715,6 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 {
-	// clang-format off
-	return elektraPluginExport("ini",
-			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
-			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
-			ELEKTRA_PLUGIN_GET,	&elektraIniGet,
-			ELEKTRA_PLUGIN_SET,	&elektraIniSet,
-			ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("ini", ELEKTRA_PLUGIN_OPEN, &elektraIniOpen, ELEKTRA_PLUGIN_CLOSE, &elektraIniClose, ELEKTRA_PLUGIN_GET,
+				    &elektraIniGet, ELEKTRA_PLUGIN_SET, &elektraIniSet, ELEKTRA_PLUGIN_END);
 }
-

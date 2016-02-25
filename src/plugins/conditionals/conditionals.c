@@ -12,21 +12,36 @@
 #include "kdbconfig.h"
 #endif
 
-#include "conditionals.h"
-#include <ctype.h>
-#include <errno.h>
-#include <kdberrors.h>
-#include <math.h>
-#include <regex.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <kdberrors.h>
+#include <regex.h>
+#include <ctype.h>
+#include <math.h>
+#include <errno.h>
+#include <kdbease.h>
+
+#include "conditionals.h"
 
 #define EPSILON 0.00001
 
-typedef enum { EQU, NOT, LT, LE, GT, GE, SET } Comparator;
+typedef enum
+{
+	EQU,
+	NOT,
+	LT,
+	LE,
+	GT,
+	GE,
+	SET
+} Comparator;
 
-typedef enum { CONDITION, ASSIGN } Operation;
+typedef enum
+{
+	CONDITION,
+	ASSIGN
+} Operation;
 
 static int isNumber (const char * s)
 {
@@ -82,17 +97,11 @@ static int compareStrings (const char * s1, const char * s2)
 		{
 			result = (fabs (atof (s1) - atof (s2)));
 			if (result < EPSILON)
-			{
 				retval = 0;
-			}
 			else if (result > 0)
-			{
 				retval = 1;
-			}
 			else if (result < 0)
-			{
 				retval = -1;
-			}
 		}
 		else
 		{
@@ -180,39 +189,27 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	{
 	case EQU:
 		if (!ret)
-		{
 			result = 1;
-		}
 		break;
 	case NOT:
 		if (ret)
-		{
 			result = 1;
-		}
 		break;
 	case LT:
 		if (ret < 0)
-		{
 			result = 1;
-		}
 		break;
 	case LE:
 		if (ret <= 0)
-		{
 			result = 1;
-		}
 		break;
 	case GT:
 		if (ret > 0)
-		{
 			result = 1;
-		}
 		break;
 	case GE:
 		if (ret >= 0)
-		{
 			result = 1;
-		}
 		break;
 	case SET:
 		keySetString (key, compareTo);
@@ -225,13 +222,9 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 // freeing allocated heap
 Cleanup:
 	if (lookupName)
-	{
 		elektraFree (lookupName);
-	}
 	if (compareTo)
-	{
 		elektraFree (compareTo);
-	}
 	return result;
 }
 
@@ -241,46 +234,26 @@ static int parseSingleCondition (const char * condition, KeySet * ks, Key * pare
 	Comparator cmpOp;
 	char * opStr;
 	if ((opStr = strstr (condition, "==")))
-	{
 		cmpOp = EQU;
-	}
 	else if ((opStr = strstr (condition, "!=")))
-	{
 		cmpOp = NOT;
-	}
 	else if ((opStr = strstr (condition, "<=")))
-	{
 		cmpOp = LE;
-	}
 	else if ((opStr = strstr (condition, "<")))
-	{
 		cmpOp = LT;
-	}
 	else if ((opStr = strstr (condition, ">=")))
-	{
 		cmpOp = GE;
-	}
 	else if ((opStr = strstr (condition, ">")))
-	{
 		cmpOp = GT;
-	}
 	else if ((opStr = strstr (condition, ":=")))
-	{
 		cmpOp = SET;
-	}
 	else
-	{
 		return -1;
-	}
 	int opLen;
 	if (cmpOp == LT || cmpOp == GT)
-	{
 		opLen = 1;
-	}
 	else
-	{
 		opLen = 2;
-	}
 	unsigned long startPos = 0;
 	unsigned long endPos = 0;
 	char * ptr = (char *)condition;
@@ -325,32 +298,44 @@ static int parseSingleCondition (const char * condition, KeySet * ks, Key * pare
 	elektraFree (leftSide);
 	return ret;
 }
-static char * isAssign (char * expr)
+static const char * isAssign (char * expr, Key * parentKey, KeySet * ks)
 {
 	char * firstPtr = expr;
 	char * lastPtr = expr + elektraStrLen (expr) - 2;
 	while (isspace (*firstPtr))
-	{
 		++firstPtr;
-	}
 	while (isspace (*lastPtr))
-	{
 		--lastPtr;
-	}
 	if (*firstPtr != '\'' || *lastPtr != '\'')
 	{
-		return NULL;
+		if (lastPtr <= firstPtr)
+			return NULL;
+		*(lastPtr + 1) = '\0';
+		Key * lookupKey = keyDup (parentKey);
+		keyAddName (lookupKey, firstPtr);
+		Key * assign = ksLookup (ks, lookupKey, KDB_O_NONE);
+		keyDel (lookupKey);
+		if (!assign)
+		{
+			return NULL;
+		}
+		else
+		{
+			return keyString (assign);
+		}
 	}
-	if (firstPtr == lastPtr)
+	else
 	{
-		return NULL;
+		if (firstPtr == lastPtr)
+			return NULL;
+		char * nextMark = strchr (firstPtr + 1, '\'');
+		if (nextMark != lastPtr)
+			return NULL;
+		*lastPtr = '\0';
+		*firstPtr = '\0';
+		++firstPtr;
+		return firstPtr;
 	}
-	char * nextMark = strchr (firstPtr + 1, '\'');
-	if (nextMark != lastPtr) return NULL;
-	*lastPtr = '\0';
-	*firstPtr = '\0';
-	++firstPtr;
-	return firstPtr;
 }
 static int parseConditionString (const Key * meta, Key * parentKey, Key * key, KeySet * ks, Operation op)
 {
@@ -418,7 +403,7 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 	{
 		if (op == ASSIGN)
 		{
-			const char * assign = isAssign (thenexpr);
+			const char * assign = isAssign (thenexpr, parentKey, ks);
 			if (assign != NULL)
 			{
 				keySetString (key, assign);
@@ -455,7 +440,7 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 		{
 			if (op == ASSIGN)
 			{
-				const char * assign = isAssign (elseexpr);
+				const char * assign = isAssign (elseexpr, parentKey, ks);
 				if (assign != NULL)
 				{
 					keySetString (key, assign);
@@ -492,7 +477,7 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 		else
 		{
 			ELEKTRA_SET_ERRORF (135, parentKey, "Validation of %s failed. (%s failed) ", conditionString, condition);
-			ret = 1;
+			ret = -3;
 		}
 	}
 	else if (ret == (-1))
@@ -505,12 +490,57 @@ CleanUp:
 	elektraFree (condition);
 	elektraFree (thenexpr);
 	if (elseexpr)
-	{
 		elektraFree (elseexpr);
-	}
 	regfree (&regex);
 	ksDel (ks);
 	return ret;
+}
+
+static int doCheck (Key * meta, Key * parentKey, Key * key, KeySet * ks, Operation op)
+{
+	int result;
+	result = parseConditionString (meta, parentKey, key, ksDup (ks), op);
+	if (result == -1)
+	{
+		return -1;
+	}
+	else if (result == 0 && op != ASSIGN)
+	{
+		return -1;
+	}
+	else if (result == 1 && op != ASSIGN)
+	{
+		return 1;
+	}
+	else if (result == -2 && op != ASSIGN)
+	{
+		return -1;
+	}
+	else if (result != -1 && op == ASSIGN)
+	{
+		return 1;
+	}
+	else if (result == -3)
+	{
+		return -3;
+	}
+	return 1;
+}
+
+static Key * getNextMeta (Key * key, Key * lastMeta)
+{
+	Key * lookupElem = keyDup (lastMeta);
+	if (keyBaseName (lookupElem)[0] != '#')
+	{
+		keyAddBaseName (lookupElem, "#0");
+	}
+	else
+	{
+		elektraArrayIncName (lookupElem);
+	}
+	Key * foundMeta = (Key *)keyGetMeta (key, keyName (lookupElem));
+	keyDel (lookupElem);
+	return foundMeta;
 }
 
 int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -530,101 +560,144 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		return 1; /* success */
 	}
 	Key * cur;
+	ksRewind (returned);
 	int ret = 0;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
-		int result;
+
 		if (conditionMeta)
 		{
-			result = parseConditionString (conditionMeta, parentKey, cur, ksDup (returned), CONDITION);
-			if (result == -1)
+			if (keyString (conditionMeta)[0] != '#')
 			{
-				ret |= -1;
+				int result;
+				result = doCheck (conditionMeta, parentKey, cur, returned, CONDITION);
+				if (result == -3)
+				{
+					ret = 1;
+				}
+				else
+				{
+					ret |= result;
+				}
 			}
-			else if (result == 0)
+			else
 			{
-				ret |= -1;
-			}
-			else if (result == 1)
-			{
-				ret |= 1;
-			}
-			else if (result == -2)
-			{
-				ret |= -1;
+				int _ret = 0;
+				while ((conditionMeta = getNextMeta (cur, conditionMeta)) != NULL)
+				{
+					int result;
+					result = doCheck (conditionMeta, parentKey, cur, returned, CONDITION);
+					if (result == 1)
+					{
+						_ret = 1;
+					}
+					if (_ret != 1)
+					{
+						_ret |= result;
+					}
+				}
+				ret |= _ret;
 			}
 		}
 		if (assignMeta)
 		{
-			result = parseConditionString (assignMeta, parentKey, cur, ksDup (returned), ASSIGN);
-			if (result == -1)
-			{
-				ret |= -1;
-			}
-			else
-			{
-				ret |= 1;
-			}
+			ret |= parseConditionString (assignMeta, parentKey, cur, ksDup (returned), ASSIGN);
 		}
 	}
-
+	if (ret == 1)
+	{
+		Key * errorNumberMeta = (Key *)keyGetMeta (parentKey, "error/number");
+		if (errorNumberMeta && !strcmp (keyString (errorNumberMeta), "135"))
+		{
+			keySetMeta (parentKey, "error", 0);
+			keySetMeta (parentKey, "error/number", 0);
+			keySetMeta (parentKey, "error/description", 0);
+			keySetMeta (parentKey, "error/ingroup", 0);
+			keySetMeta (parentKey, "error/module", 0);
+			keySetMeta (parentKey, "error/file", 0);
+			keySetMeta (parentKey, "error/line", 0);
+			keySetMeta (parentKey, "error/mountpoint", 0);
+			keySetMeta (parentKey, "error/configfile", 0);
+			keySetMeta (parentKey, "error/reason", 0);
+		}
+	}
 	return ret; /* success */
 }
+
 
 int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	Key * cur;
+	ksRewind (returned);
 	int ret = 0;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
-		int result;
 		if (conditionMeta)
 		{
-			result = parseConditionString (conditionMeta, parentKey, cur, ksDup (returned), CONDITION);
-			if (result == -1)
+			if (keyString (conditionMeta)[0] != '#')
 			{
-				ret |= -1;
+				int result;
+				result = doCheck (conditionMeta, parentKey, cur, returned, CONDITION);
+				if (result == -3)
+				{
+					ret |= 1;
+				}
+				else
+				{
+					ret |= result;
+				}
 			}
-			else if (result == 0)
+			else
 			{
-				ret |= -1;
-			}
-			else if (result == 1)
-			{
-				ret |= 1;
-			}
-			else if (result == -2)
-			{
-				ret |= -1;
+				int _ret = 0;
+				while ((conditionMeta = getNextMeta (cur, conditionMeta)) != NULL)
+				{
+					int result;
+					result = doCheck (conditionMeta, parentKey, cur, returned, CONDITION);
+					if (result == 1)
+					{
+						_ret = 1;
+					}
+					if (_ret != 1)
+					{
+						_ret |= result;
+					}
+				}
+				ret |= _ret;
 			}
 		}
 		if (assignMeta)
 		{
-			result = parseConditionString (assignMeta, parentKey, cur, ksDup (returned), ASSIGN);
-			if (result == -1)
-			{
-				ret |= -1;
-			}
-			else
-			{
-				ret |= 1;
-			}
+			ret |= parseConditionString (assignMeta, parentKey, cur, ksDup (returned), ASSIGN);
 		}
 	}
 
+	if (ret == 1)
+	{
+		Key * errorNumberMeta = (Key *)keyGetMeta (parentKey, "error/number");
+		if (errorNumberMeta && !strcmp (keyString (errorNumberMeta), "135"))
+		{
+			keySetMeta (parentKey, "error", 0);
+			keySetMeta (parentKey, "error/number", 0);
+			keySetMeta (parentKey, "error/description", 0);
+			keySetMeta (parentKey, "error/ingroup", 0);
+			keySetMeta (parentKey, "error/module", 0);
+			keySetMeta (parentKey, "error/file", 0);
+			keySetMeta (parentKey, "error/line", 0);
+			keySetMeta (parentKey, "error/mountpoint", 0);
+			keySetMeta (parentKey, "error/configfile", 0);
+			keySetMeta (parentKey, "error/reason", 0);
+		}
+	}
 	return ret;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals)
 {
-	// clang-format off
-	return elektraPluginExport("conditionals",
-			ELEKTRA_PLUGIN_GET,	&elektraConditionalsGet,
-			ELEKTRA_PLUGIN_SET,	&elektraConditionalsSet,
-			ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("conditionals", ELEKTRA_PLUGIN_GET, &elektraConditionalsGet, ELEKTRA_PLUGIN_SET,
+				    &elektraConditionalsSet, ELEKTRA_PLUGIN_END);
 }
-
