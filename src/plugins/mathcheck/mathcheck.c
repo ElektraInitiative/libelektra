@@ -27,7 +27,7 @@
 #define str(s) #s
 #define xstr(s) str (s)
 
-typedef enum { ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, EMPTY } Operation;
+typedef enum { ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, NA, EMPTY } Operation;
 typedef struct
 {
 	double value;
@@ -70,6 +70,13 @@ static PNElem nextVal (const PNElem * stackPtr)
 			result.value = ptr->value;
 			break;
 		}
+		else if (ptr->op == NA)
+		{
+			ptr->op = EMPTY;
+			result.op = NA;
+			result.value = 0;
+			break;
+		}
 		++ptr;
 	}
 	return result;
@@ -95,6 +102,33 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 		}
 		PNElem e1 = nextVal (stackPtr);
 		PNElem e2 = nextVal (stackPtr);
+		if (e1.op == NA)
+		{
+			if (stackPtr->op == ADD || stackPtr->op == SUB)
+			{
+				e1.value = 0;
+				e1.op = VAL;
+			}
+			else if (stackPtr->op == DIV || stackPtr->op == MUL)
+			{
+				e1.value = 1;
+				e1.op = VAL;
+			}
+		}
+		if (e2.op == NA)
+		{
+			if (stackPtr->op == ADD || stackPtr->op == SUB)
+			{
+				e2.value = 0;
+				e2.op = VAL;
+			}
+			else if (stackPtr->op == DIV || stackPtr->op == MUL)
+			{
+				e2.value = 1;
+				e2.op = VAL;
+			}
+		}		
+
 		if (e1.op == VAL && e2.op == VAL)
 		{
 			switch (stackPtr->op)
@@ -247,6 +281,8 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 		}
 		else
 		{
+			stackPtr->op = ERROR;
+			stackPtr->value = 0;
 			char * subString = elektraMalloc (len + 1);
 			strncpy (subString, prefixString + start, len);
 			subString[len] = '\0';
@@ -267,18 +303,17 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 				key = ksLookupByName (ks, searchKey, 0);
 				if (!key)
 				{
-					ELEKTRA_SET_ERRORF (124, parentKey, "Operant key %s doesn't exist", searchKey);
-					regfree (&regex);
-					elektraFree (searchKey);
-					ksDel (ks);
-					elektraFree (stack);
-					elektraFree (subString);
-					return result;
+					stackPtr->value = 0;
+					stackPtr->op = NA;
 				}
-				stackPtr->value = elektraEFtoF (keyString (key));
+				else
+				{
+					stackPtr->value = elektraEFtoF (keyString (key));
+				}
 				elektraFree (subString);
 			}
-			stackPtr->op = VAL;
+			if(stackPtr->op != NA)
+				stackPtr->op = VAL;
 			++stackPtr;
 		}
 		int offset = stackPtr - stack;
@@ -358,7 +393,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		{
 			if (elektraEFtoF (keyString (cur)) > result.value)
 			{
-				ELEKTRA_SET_ERRORF (123, parentKey, "%s not <=  %s", val1, val2);
+				ELEKTRA_SET_ERRORF (123, parentKey, "%s not <=	%s", val1, val2);
 				return -1;
 			}
 		}

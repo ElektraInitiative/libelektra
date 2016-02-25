@@ -91,6 +91,18 @@ static int compareStrings (const char * s1, const char * s2)
 	{
 		retval = 1;
 	}
+	else if (*s1 == '\0' && *s2 != '\0')
+	{
+		retval = -1;
+	}
+	else if (*s2 == '\0' && *s1 != '\0')
+	{
+		retval = 1;
+	}
+	else if (*s1 == '\0' && *s2 == '\0')
+	{
+		retval = 0;
+	}
 	else if ((ret = isNumber (s1)) && (ret2 = isNumber (s2)))
 	{
 		if (ret == 2 || ret2 == 2)
@@ -155,7 +167,7 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 		if (!key)
 		{
 			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found but is required for the evaluation of %s", lookupName,
-					    condition);
+						condition);
 			result = -2;
 			goto Cleanup;
 		}
@@ -359,7 +371,7 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 	if (nomatch)
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
-				    conditionString);
+					conditionString);
 		regfree (&regex);
 		ksDel (ks);
 		return -1;
@@ -367,7 +379,7 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 	if (m[2].rm_so == -1 || m[5].rm_so == -1)
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
-				    conditionString);
+					conditionString);
 		regfree (&regex);
 		ksDel (ks);
 		return -1;
@@ -414,8 +426,8 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 			{
 				ret = -1;
 				ELEKTRA_SET_ERRORF (134, parentKey,
-						    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
-						    thenexpr);
+							"Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
+							thenexpr);
 				goto CleanUp;
 			}
 		}
@@ -429,8 +441,8 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 			else if (ret == (-1))
 			{
 				ELEKTRA_SET_ERRORF (134, parentKey,
-						    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
-						    thenexpr);
+							"Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
+							thenexpr);
 			}
 		}
 	}
@@ -463,7 +475,7 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 				if (ret == 0)
 				{
 					ELEKTRA_SET_ERRORF (135, parentKey, "Validation of %s failed. (%s failed)", conditionString,
-							    elseexpr);
+								elseexpr);
 				}
 				else if (ret == (-1))
 				{
@@ -476,14 +488,13 @@ static int parseConditionString (const Key * meta, Key * parentKey, Key * key, K
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (135, parentKey, "Validation of %s failed. (%s failed) ", conditionString, condition);
 			ret = -3;
 		}
 	}
 	else if (ret == (-1))
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
-				    condition);
+					condition);
 	}
 
 CleanUp:
@@ -514,7 +525,7 @@ static int doCheck (Key * meta, Key * parentKey, Key * key, KeySet * ks, Operati
 	}
 	else if (result == -2 && op != ASSIGN)
 	{
-		return -1;
+		return -2;
 	}
 	else if (result != -1 && op == ASSIGN)
 	{
@@ -606,7 +617,7 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 			ret |= parseConditionString (assignMeta, parentKey, cur, ksDup (returned), ASSIGN);
 		}
 	}
-	if (ret == 1)
+	if (ret == 1 || ret == 0)
 	{
 		Key * errorNumberMeta = (Key *)keyGetMeta (parentKey, "error/number");
 		if (errorNumberMeta && !strcmp (keyString (errorNumberMeta), "135"))
@@ -657,16 +668,27 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 				while ((conditionMeta = getNextMeta (cur, conditionMeta)) != NULL)
 				{
 					int result;
+					fprintf(stderr, "COND: %s:(%s)\n", keyName(conditionMeta), keyString(conditionMeta));
 					result = doCheck (conditionMeta, parentKey, cur, returned, CONDITION);
 					if (result == 1)
 					{
 						_ret = 1;
 					}
-					if (_ret != 1)
+					else if (result == -3)
+					{
+						_ret |= 0;
+					}
+					else if (result == -2)
+					{
+						_ret |= 0;
+					}
+					else if (_ret != 1)
 					{
 						_ret |= result;
 					}
 				}
+				if(_ret != 1)
+					_ret = -1;
 				ret |= _ret;
 			}
 		}
@@ -675,8 +697,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 			ret |= parseConditionString (assignMeta, parentKey, cur, ksDup (returned), ASSIGN);
 		}
 	}
-
-	if (ret == 1)
+	if (ret == 1 || ret == 0)
 	{
 		Key * errorNumberMeta = (Key *)keyGetMeta (parentKey, "error/number");
 		if (errorNumberMeta && !strcmp (keyString (errorNumberMeta), "135"))
@@ -699,5 +720,5 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals)
 {
 	return elektraPluginExport ("conditionals", ELEKTRA_PLUGIN_GET, &elektraConditionalsGet, ELEKTRA_PLUGIN_SET,
-				    &elektraConditionalsSet, ELEKTRA_PLUGIN_END);
+					&elektraConditionalsSet, ELEKTRA_PLUGIN_END);
 }
