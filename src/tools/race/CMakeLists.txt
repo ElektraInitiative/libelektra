@@ -6,6 +6,7 @@ if (APPLE)
 else()
 	if (NOT LIBRT_FOUND)
 		remove_tool(race "race tool requires librt support")
+		return ()
 	endif ()
 
 	add_headers (HDR_FILES)
