@@ -13,3 +13,19 @@ find_package_handle_standard_args (LibRt DEFAULT_MSG LIBRT_LIBRARIES)
 
 # hide variables from the CMake GUI
 mark_as_advanced (LIBRT_LIBRARIES)
+
+# Most systems (except Linux) have librt features built into their libc.
+# If no librt has been found, there is still a chance that the system supports our desired features.
+if (NOT LIBRT_FOUND)
+	try_compile (HAS_LIBRT_4SURE
+		"${CMAKE_BINARY_DIR}"
+		"${PROJECT_SOURCE_DIR}/tests/librt_test.c"
+	)
+
+	if (HAS_LIBRT_4SURE)
+		set (LIBRT_FOUND on)
+		set (LIBRT_LIBRARIES "")
+		message (STATUS "using system's built-in librt functions")
+	endif ()
+	unset (HAS_LIBRT_4SURE)
+endif ()
