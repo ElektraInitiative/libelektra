@@ -2,6 +2,8 @@ find_package(Threads)
 find_package(LibRt)
 
 if (APPLE)
+	# Mac OS X does not provide pthread_barrier_t and all related functions are not to be found.
+	# Thus we exlucde the race test from OS X.
 	remove_tool(race "race tool does not compile under MAC OS X")
 else()
 	if (NOT LIBRT_FOUND)
