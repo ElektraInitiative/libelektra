@@ -3,14 +3,19 @@ include(LibAddPlugin)
 set (SOURCES resolver.h resolver.c filename.c)
 
 find_package(Threads)
+find_package(LibRt)
+
+set (CMAKE_RESOLVER_DEFAULT_LIBS ${CMAKE_THREAD_LIBS_INIT})
+if (LIBRT_FOUND)
+	set (CMAKE_RESOLVER_DEFAULT_LIBS ${CMAKE_RESOLVER_DEFAULT_LIBS} ${LIBRT_LIBRARIES})
+endif ()
 
 #TODO: remove "default" resolver
 add_plugin(resolver
 	SOURCES
 		${SOURCES}
 	LINK_LIBRARIES
-		${CMAKE_THREAD_LIBS_INIT}
-		${CMAKE_REALTIME_LIBS_INIT}
+		${CMAKE_RESOLVER_DEFAULT_LIBS}
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hpu\"
@@ -18,7 +23,7 @@ add_plugin(resolver
 		ELEKTRA_PLUGIN_NAME=\"resolver\"
 		ELEKTRA_LOCK_FILE
 		ELEKTRA_LOCK_MUTEX
-	)
+)
 
 add_plugintest(resolver)
 
@@ -44,8 +49,11 @@ foreach (plugin ${PLUGINS})
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
 			set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES}
-				${CMAKE_THREAD_LIBS_INIT}
-				${CMAKE_REALTIME_LIBS_INIT})
+				${CMAKE_THREAD_LIBS_INIT})
+
+			if (LIBRT_FOUND)
+				set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES} ${LIBRT_LIBRARIES})
+			endif()
 		endif ()
 
 
