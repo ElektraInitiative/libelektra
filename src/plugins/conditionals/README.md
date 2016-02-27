@@ -1,7 +1,7 @@
 - infos = Information about the conditionals plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/provides = 
+- infos/provides =
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
@@ -26,6 +26,9 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
+### Testing if Key exists ###
+
+`(! a/key)` evaluates to true if the key `a/key` doesn't exist, to false if it exists.
 
 ### Assign Syntax ###
 
@@ -33,7 +36,9 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 
 Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign/condition` is used.
 
+### EXPERIMENTAL: Nested Conditions ###
 
+Multiple conditions can be nested and combined using parentheses and `&&` (logical AND) or `||` (logical OR). Additional parentheses must be used to form valid conditions again. `(` `(condition 1) && (condition 2)` `)`
 
 ## Example ##
 

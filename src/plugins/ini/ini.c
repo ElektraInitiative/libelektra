@@ -856,7 +856,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 }
 
 // TODO: # and ; comments get mixed up, patch inih to differentiate and
-// create comment keys instead of writing meta data. iriting the meta
+// create comment keys instead of writing meta data. Writing the meta
 // data can be done by keytometa then
 void writeComments (Key * current, FILE * fh)
 {

@@ -27,7 +27,26 @@
 #define str(s) #s
 #define xstr(s) str (s)
 
-typedef enum { ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, NA, EMPTY } Operation;
+typedef enum
+{
+	ERROR,
+	ADD,
+	SUB,
+	MUL,
+	DIV,
+	NOT,
+	EQU,
+	LT,
+	GT,
+	LE,
+	GE,
+	RES,
+	VAL,
+	END,
+	SET,
+	NA,
+	EMPTY
+} Operation;
 typedef struct
 {
 	double value;
@@ -127,7 +146,7 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 				e2.value = 1;
 				e2.op = VAL;
 			}
-		}		
+		}
 
 		if (e1.op == VAL && e2.op == VAL)
 		{
@@ -312,8 +331,7 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 				}
 				elektraFree (subString);
 			}
-			if(stackPtr->op != NA)
-				stackPtr->op = VAL;
+			if (stackPtr->op != NA) stackPtr->op = VAL;
 			++stackPtr;
 		}
 		int offset = stackPtr - stack;

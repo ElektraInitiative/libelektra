@@ -238,17 +238,16 @@ static void test_assignKeyElse ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multipleSuccess ()
+static void test_doesntExistSuccess ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition", "#2", KEY_META,
-					"check/condition/#0", "(totest>bla/val1) ? (bla/result == 'result1')", KEY_META,
-					"check/condition/#1", "(totest>bla/val2) ? (bla/result == 'result2')", KEY_META,
-					"check/condition/#2", "(totest>bla/val3) ? (bla/result == 'result3')", KEY_END),
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
+					"(totest<bla/val1) ? (! bla/val4)", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
+
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
@@ -258,17 +257,95 @@ static void test_multipleSuccess ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_multipleFail ()
+static void test_doesntExistFail ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition", "#2", KEY_META,
-					"check/condition/#0", "(totest>bla/val1) ? (bla/result == 'result1')", KEY_META,
-					"check/condition/#1", "(totest>bla/val2) ? (bla/result == 'result2')", KEY_META,
-					"check/condition/#2", "(totest>bla/val3) ? (bla/result != 'result3')", KEY_END),
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
+					"(totest<bla/val1) ? (! bla/val1)", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
 			     keyNew ("user/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_nested1Success ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
+					"(totest<bla/val1) ? ((bla/result == 'result1') || (bla/result == 'result3'))", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_nested1Fail ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
+					"(totest<bla/val1) ? ((bla/result == 'result1') || (bla/result == 'result2'))", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "error");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+
+static void test_nested2Success ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks =
+		ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
+				  "(totest<bla/val1) ? ((bla/val1 == '100') && ((bla/result == 'result1') || (bla/result == 'result3')))",
+				  KEY_END),
+		       keyNew ("user/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
+		       keyNew ("user/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
+		       keyNew ("user/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
+		       keyNew ("user/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_nested2Fail ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks =
+		ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "5", KEY_META, "check/condition",
+				  "(totest<bla/val1) ? ((bla/val1 == '100') && ((bla/result == 'result1') || (bla/result == 'result2')))",
+				  KEY_END),
+		       keyNew ("user/tests/conditionals/bla/val1", KEY_VALUE, "100", KEY_END),
+		       keyNew ("user/tests/conditionals/bla/val2", KEY_VALUE, "50", KEY_END),
+		       keyNew ("user/tests/conditionals/bla/val3", KEY_VALUE, "3", KEY_END),
+		       keyNew ("user/tests/conditionals/bla/result", KEY_VALUE, "result3", KEY_END), KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("conditionals");
 	ksRewind (ks);
@@ -298,8 +375,14 @@ int main (int argc, char ** argv)
 	test_assignElse ();
 	test_assignKeyThen ();
 	test_assignKeyElse ();
-	test_multipleSuccess ();
-	test_multipleFail ();
+	test_nested1Success ();
+	test_nested1Fail ();
+	test_nested2Success ();
+	test_nested2Fail ();
+
+	test_doesntExistSuccess ();
+	test_doesntExistFail ();
+
 	printf ("\ntestmod_conditionals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
