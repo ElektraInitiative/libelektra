@@ -219,7 +219,9 @@ void removeMissing (std::vector<std::string> & recommendedPlugins, std::vector<s
 std::string removeArray (std::string s)
 {
 	std::regex e ("#_*[0-9]*");
-	return std::regex_replace (s,e,"#");
+	std::string result;
+	std::regex_replace (std::back_inserter(result), s.begin(), s.end(), e, "#");
+	return result;
 }
 
 /*
