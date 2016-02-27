@@ -63,6 +63,7 @@ set (PLUGINS_LIST_NODEP
 	wresolver
 	ini
 	list
+	dpkg
 	logchange
 	iterate
 	spec
