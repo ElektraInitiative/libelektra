@@ -355,6 +355,24 @@ static void test_nested2Fail ()
 	PLUGIN_CLOSE ();
 }
 
+static void test_suffix ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "2%", KEY_META, "check/condition",
+					"(totest >= '10%') ? (bla/val1 == '50%') : (bla/val3 == '3%')", KEY_META, "condition/validsuffix",
+					"'%', '$'", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val1", KEY_VALUE, "100%", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val2", KEY_VALUE, "50%", KEY_END),
+			     keyNew ("user/tests/conditionals/bla/val3", KEY_VALUE, "3%", KEY_END), KS_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("CONDITIONALS     TESTS\n");
@@ -382,7 +400,7 @@ int main (int argc, char ** argv)
 
 	test_doesntExistSuccess ();
 	test_doesntExistFail ();
-
+	test_suffix ();
 	printf ("\ntestmod_conditionals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

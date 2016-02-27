@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep libc preview
-- infos/metadata = check/condition assign/condition
+- infos/metadata = check/condition assign/condition condition/validsuffix
 - infos/description =
 
 ## Introduction ##

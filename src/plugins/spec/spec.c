@@ -386,12 +386,12 @@ static int handleSubCountConflict (Key * parentKey, Key * key, Key * specKey, Ke
 	{
 	case ERROR:
 		ELEKTRA_SET_ERRORF (142, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName (key),
-					keyString (conflictMeta), keyString (keyGetMeta (specKey, "required")));
+				    keyString (conflictMeta), keyString (keyGetMeta (specKey, "required")));
 		ret = -1;
 		break;
 	case WARNING:
 		ELEKTRA_ADD_WARNINGF (143, parentKey, "%s has a invalid number of subkeys: %s. Expected: %s\n", keyName (key),
-					  keyString (conflictMeta), keyString (keyGetMeta (specKey, "required")));
+				      keyString (conflictMeta), keyString (keyGetMeta (specKey, "required")));
 		break;
 	case INFO:
 	{
@@ -454,12 +454,12 @@ static int handleOutOfRangeConflict (Key * parentKey, Key * key, Key * specKey, 
 	{
 	case ERROR:
 		ELEKTRA_SET_ERRORF (142, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName (key),
-					keyString (conflictMeta), keyString (keyGetMeta (specKey, "array")));
+				    keyString (conflictMeta), keyString (keyGetMeta (specKey, "array")));
 		ret = -1;
 		break;
 	case WARNING:
 		ELEKTRA_ADD_WARNINGF (143, parentKey, "%s has invalid number of members: %s. Expected: %s\n", keyName (key),
-					  keyString (conflictMeta), keyString (keyGetMeta (specKey, "array")));
+				      keyString (conflictMeta), keyString (keyGetMeta (specKey, "array")));
 		break;
 	case INFO:
 	{
@@ -682,7 +682,7 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 					if (*ptrCopy == '?')
 					{
 						while (*segmentStart != '/' && segmentStart > metaString && ptrCopy > relativeName &&
-							   *ptrCopy != '/')
+						       *ptrCopy != '/')
 						{
 							--segmentStart;
 							--ptrCopy;
@@ -701,7 +701,7 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 					else if (*ptrCopy == '_')
 					{
 						while (*segmentStart != '/' && segmentStart > metaString && ptrCopy > relativeName &&
-							   *ptrCopy != '/')
+						       *ptrCopy != '/')
 						{
 							--segmentStart;
 							--ptrCopy;
@@ -740,12 +740,12 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 				}
 				ptrCopy = ptr;
 				while ((!noMatch) && (ptrCopy < relativeName + strlen (relativeName)) &&
-					   (segmentEnd < metaString + strlen (metaString)))
+				       (segmentEnd < metaString + strlen (metaString)))
 				{
 					if (*ptrCopy == '?')
 					{
 						while (*segmentEnd != '/' && segmentEnd < metaString + strlen (metaString) &&
-							   ptrCopy < relativeName + strlen (relativeName) && *ptrCopy != '/')
+						       ptrCopy < relativeName + strlen (relativeName) && *ptrCopy != '/')
 						{
 							++segmentEnd;
 							++ptrCopy;
@@ -760,7 +760,7 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 					else if (*ptrCopy == '_')
 					{
 						while (*segmentEnd != '/' && segmentEnd < metaString + strlen (metaString) &&
-							   ptrCopy < relativeName + strlen (relativeName) && *ptrCopy != '/')
+						       ptrCopy < relativeName + strlen (relativeName) && *ptrCopy != '/')
 						{
 							++segmentEnd;
 							++ptrCopy;
@@ -888,7 +888,7 @@ static void copyMeta (Key * key, Key * specKey, Key * parentKey)
 		const Key * meta = keyCurrentMeta (specKey);
 		const char * name = keyName (meta);
 		if (!(!strcmp (name, "array") || !strcmp (name, "required") || !strncmp (name, "conflict/", 9) ||
-			  !strcmp (name, "require")))
+		      !strcmp (name, "require")))
 		{
 			const Key * oldMeta;
 			if ((oldMeta = keyGetMeta (key, name)) != NULL)
@@ -1058,11 +1058,11 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
-				   keyNew ("system/elektra/modules/spec/exports", KEY_END),
-				   keyNew ("system/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
-				   keyNew ("system/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
+			       keyNew ("system/elektra/modules/spec/exports", KEY_END),
+			       keyNew ("system/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
+			       keyNew ("system/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
 #include ELEKTRA_README (spec)
-				   keyNew ("system/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system/elektra/modules/spec/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
