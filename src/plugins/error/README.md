@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides = error
 - infos/needs =
-- infos/recommends = 
+- infos/recommends =
 - infos/placements = presetstorage
 - infos/status = productive maintained conformant shelltest unittest tested nodep libc discouraged
 - infos/metadata = trigger/warnings trigger/error

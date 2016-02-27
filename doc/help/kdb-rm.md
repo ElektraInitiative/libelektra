@@ -25,8 +25,8 @@ This command removes key(s) from the Key database.
 
 ## EXAMPLES
 
-To remove a multiple keys:  
-`kdb rm -r user/example`  
+To remove a multiple keys:
+`kdb rm -r user/example`
 
-To remove a single key:  
-`kdb rm user/example/key1`  
+To remove a single key:
+`kdb rm user/example/key1`

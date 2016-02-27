@@ -3,7 +3,7 @@ kdb-global-mount(1) - Globally mount plugins
 
 ## SYNOPSIS
 
-`kdb global-mount [<plugin> [<config>] [..]]`  
+`kdb global-mount [<plugin> [<config>] [..]]`
 
 - `plugin` are be Elektra plugins to be mounted globally.
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
@@ -48,10 +48,10 @@ Use `kdb file system/elektra/globalplugins` to find out where exactly it will wr
 
 ## EXAMPLES
 
-Trace every interaction with the key database (very noisy!):  
+Trace every interaction with the key database (very noisy!):
 `kdb global-mount tracer`
 
-For every change of KDB, write to syslog and notify by dbus:  
+For every change of KDB, write to syslog and notify by dbus:
 `kdb global-mount syslog dbus`
 
 

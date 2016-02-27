@@ -22,7 +22,7 @@ If keys are renamed, their original name is stored in the `origname` MetaKey.
 ### OPERATION ###
 
 The cut operation can be used to strip parts of a keys name. The cut operation is able to cut anything below the path
-of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the 
+of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the
 parent key `user/config`. If the KeySet contained a key with the name `user/config/with/long/path/key1`, the cut operation
 would be able to strip the following key name parts:
 * with
@@ -55,7 +55,7 @@ The cut operation is agnostic to a single trailing slash in the configuration. T
 or `cut = will/be/stripped/`. However, the cut operation refuses cut paths with leading slash. This is to clarify that key name parts can only be stripped
 after the parent key path.
 
-If an invalid configuration is given or the cut operation would cause a parent key duplicate, the affected keys are simply skipped and not renamed. 
+If an invalid configuration is given or the cut operation would cause a parent key duplicate, the affected keys are simply skipped and not renamed.
 
 
 ## REPLACE ##
