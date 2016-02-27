@@ -77,18 +77,28 @@ question will be asked (by user markus2330):
 	Can one of the admins verify if this patch should be build?
 
 Then one of the admins:
+
 - fberlakovich
 - manuelm
 - markus2330
 - beku  
+
 need to confirm by saying:  
+
 	.*add\W+to\W+whitelist.*
+
 or if just the pull request should be checked:  
+
 	.*build\W+allow.*
+
 or if just a single build of the mergerequest should be started:
+
 	jenkins build please
-or if the bindings job should be started:
+
+or if specific jobs should be started:
+
 	jenkins build bindings please
+	jenkins build ini please
 
 If you want any configuration changes, please contact
 `Markus Raab <elektra@markus-raab.org>`.
