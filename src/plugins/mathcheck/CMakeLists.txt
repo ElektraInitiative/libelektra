@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-add_plugin(mathcheck
+add_plugin (mathcheck
 	SOURCES
 		mathcheck.h
 		mathcheck.c
@@ -8,4 +8,4 @@ add_plugin(mathcheck
 		floathelper.c
 	)
 
-add_plugintest(mathcheck)
+add_plugintest (mathcheck)

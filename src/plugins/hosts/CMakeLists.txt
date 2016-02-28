@@ -1,6 +1,6 @@
-include(LibAddMacros)
+include (LibAddMacros)
 
-add_plugin(hosts
+add_plugin (hosts
 	SOURCES
 		hosts.h
 		hosts-get.c
@@ -13,6 +13,7 @@ add_plugin(hosts
 		elektra-meta
 	)
 
-install(DIRECTORY hosts DESTINATION ${TARGET_TEST_DATA_FOLDER})
+
+install (DIRECTORY hosts DESTINATION ${TARGET_TEST_DATA_FOLDER})
 
 add_plugintest(hosts)

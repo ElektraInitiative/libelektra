@@ -45,8 +45,8 @@ then
 else
 	USER_FOLDER=@KDB_DB_HOME@/$USER/@KDB_DB_USER@
 fi
-PLUGINS=`echo "@PLUGINS@" | tr ';' ' '`
-PLUGINS_NEWLINES=`echo "@PLUGINS@" | tr ';' '\n'`
+PLUGINS=`echo "@ADDED_PLUGINS@" | tr ';' ' '`
+PLUGINS_NEWLINES=`echo "@ADDED_PLUGINS@" | tr ';' '\n'`
 
 DATE=`date "+%b %d %H:%M"`
 

@@ -1,6 +1,6 @@
-include(LibAddMacros)
+include (LibAddMacros)
 
-add_plugin(timeofday
+add_plugin (timeofday
 	SOURCES
 		timeofday.h
 		timeofday.c

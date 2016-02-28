@@ -1,4 +1,4 @@
-find_package(Boost)
+find_package (Boost)
 if (Boost_FOUND)
 	add_plugin(tcl
 		CPP

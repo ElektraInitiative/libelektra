@@ -52,6 +52,9 @@ important things are left to be done:
 After these two steps your plugin is ready to be compiled, installed and mounted for the first time. Have a look at
 [How-To: kdb mount](http://community.libelektra.org/wp/?p=31)
 
+
+
+
 ## Contract ##
 
 In Elektra, multiple plugins form a backend. If every plugin would do
@@ -78,6 +81,8 @@ But prefer to use
 	add_plugin(pluginname)
 
 where the readme (among many other things) are already done for you.
+More details about how to write the CMakeLists.txt will be discussed
+later in the tutorial.
 
 
 ### Content of README.md ###
@@ -158,6 +163,71 @@ so make sure that your CMakeLists.txt contains (prefer to use add_plugin
 where this is already done correctly):
 
 	include_directories (${CMAKE_CURRENT_BINARY_DIR})
+
+
+
+## CMake ##
+
+For every plugin you have to write a CMakeLists.txt. If your plugin has
+no dependencies, you can jump this section. The full documentation of
+`add_plugin` is available [here](/cmake/Modules/LibAddPlugin.cmake).
+
+In order to understand how to write the CMakeLists.txt, you need to know that
+the same file is included multiple times for different reasons.
+
+1.) The first time, only the name of plugins and directories are enquired.
+    In this phase, only the `add_plugin` should be executed.
+2.) The second time (if the plugin is actually requested), the CMakeLists.txt
+    is used to detect if all dependencies are actually available.
+
+This means that in the first time, only the `add_plugin` should be executed
+and in the second time the detection code together with `add_plugin`.
+
+So that you can distinguish the first and second phase, the variable `DEPENDENCY_PHASE`
+is set to `ON` iff you should find for all needed cmake packages. You should avoid
+to search for packages otherwise, because this would:
+
+- clutter the output
+- introduce more variables into the CMakeCache which are irrelevant for the user
+- maybe even find libraries in wrong versions which are incompatible to what other
+  plugins need
+
+So usually you would have:
+
+	if (DEPENDENCY_PHASE)
+		find_package (LibXml2)
+		if (LIBXML2_FOUND)
+			# add testdata, testcases...
+		else ()
+			remove_plugin (xmltool "libxml2 not found")
+		endif ()
+	endif ()
+
+So if you are in the second phase (`DEPENDENCY_PHASE`), you will search for all
+dependencies, in this case `LibXml2`. If all dependencies are satisfied, you add
+everything needed for the plugin, except the plugin itself.
+This happens after `endif ()`:
+
+	add_plugin (xmltool
+		SOURCES
+			...
+		LINK_LIBRARIES
+			${LIBXML2_LIBRARIES}
+		DEPENDENCIES
+			${LIBXML2_FOUND}
+		)
+
+Important is that you pass the information which packages are found as boolean.
+The plugin will actually be added iff all of the `DEPENDENCIES` are true.
+
+Note that no code should be outside of `if (DEPENDENCY_PHASE)`
+thus it would be executed twice otherwise. The only exception is
+`add_plugin` which *must* be called twice to successfully add a plugin.
+
+If your plugin makes use of [compilation variants](/doc/tutorials/compilation-variants.md)
+you should also read the information there.
+
+
 
 ## Coding ##
 

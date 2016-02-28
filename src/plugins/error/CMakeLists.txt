@@ -1,6 +1,6 @@
-include(LibAddMacros)
+include (LibAddMacros)
 
-add_plugin(error
+add_plugin (error
 	SOURCES
 		error.h
 		error.c

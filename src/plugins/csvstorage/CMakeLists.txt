@@ -1,6 +1,11 @@
 include (LibAddMacros)
 
-add_plugin(csvstorage
+if (DEPENDENCY_PHASE)
+	install (DIRECTORY csvstorage DESTINATION ${TARGET_TEST_DATA_FOLDER})
+	add_plugintest (csvstorage)
+endif ()
+
+add_plugin (csvstorage
 	SOURCES
 		csvstorage.h
 		csvstorage.c
@@ -8,6 +13,3 @@ add_plugin(csvstorage
 		elektra-ease
 	)
 
-install(DIRECTORY csvstorage DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-add_plugintest(csvstorage)

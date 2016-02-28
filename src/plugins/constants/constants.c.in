@@ -76,7 +76,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "cmake/PLUGINS");
-	keySetString (key, "@PLUGINS@");
+	keySetString (key, "@ADDED_PLUGINS@");
 	ksAppendKey (ks, key);
 
 

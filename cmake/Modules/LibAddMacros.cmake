@@ -101,9 +101,14 @@ endmacro()
 # will include the common tests.h file + its source file
 # additional source files can be added as additional arguments
 #
-# links the executeable (only if build_full)
+# links the executeable (only if build_static or build_full)
 # and adds a test
 macro (add_plugintest testname)
+	list (FIND ADDED_PLUGINS "${testname}" FOUND_NAME)
+	if (NOT DEPENDENCY_PHASE)
+		return ()
+	endif ()
+
 	if (BUILD_TESTING AND (BUILD_STATIC OR BUILD_FULL))
 		cmake_parse_arguments (ARG
 			"MEMLEAK" # optional keywords
@@ -267,10 +272,17 @@ endmacro (add_toolheaders)
 #remove_plugin (fstab "mntent is missing")
 #
 macro (remove_plugin name reason)
-	set (TMP ${PLUGINS})
 	message (STATUS "Exclude Plugin ${name} because ${reason}")
+
+	set (TMP ${ADDED_PLUGINS})
 	list (REMOVE_ITEM TMP ${name})
-	set (PLUGINS ${TMP} CACHE STRING ${PLUGINS_DOC} FORCE)
+	set (ADDED_PLUGINS ${TMP} CACHE STRING ${ADDED_PLUGINS_DOC} FORCE)
+
+	if (REMOVED_PLUGINS)
+		set (REMOVED_PLUGINS "${REMOVED_PLUGINS};${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+	else ()
+		set (REMOVED_PLUGINS "${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+	endif ()
 endmacro (remove_plugin)
 
 

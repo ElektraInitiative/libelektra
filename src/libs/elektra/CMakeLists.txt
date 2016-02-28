@@ -19,18 +19,20 @@ endif (INSTALL_BUILD_TOOLS)
 include(LibAddMacros)
 find_util(elektra-export-symbols EXE_SYM_LOC EXE_SYM_ARG)
 
+
+set (ARG ${KDB_DEFAULT_RESOLVER} ${KDB_DEFAULT_STORAGE} ${ADDED_PLUGINS})
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.h
 		DEPENDS elektra-export-symbols
 		COMMAND ${EXE_SYM_LOC}
-		ARGS ${EXE_SYM_ARG} ${PLUGINS}
+		ARGS ${EXE_SYM_ARG} ${ARG}
 		)
 
 add_custom_command (
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/exported_symbols.c
 		DEPENDS elektra-export-symbols
 		COMMAND ${EXE_SYM_LOC}
-		ARGS ${EXE_SYM_ARG} ${PLUGINS}
+		ARGS ${EXE_SYM_ARG} ${ARG}
 		)
 
 

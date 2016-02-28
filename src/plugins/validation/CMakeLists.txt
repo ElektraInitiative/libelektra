@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-add_plugin(validation
+add_plugin (validation
 	SOURCES
 		validation.h
 		validation.c

@@ -1,6 +1,6 @@
 include(LibAddMacros)
 
-add_plugin(syslog
+add_plugin (syslog
 	SOURCES
 		log.h
 		syslog.c

@@ -1,4 +1,4 @@
-add_plugin(struct
+add_plugin (struct
 	CPP
 	SOURCES
 		struct.hpp struct.cpp

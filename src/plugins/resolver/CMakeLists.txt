@@ -1,21 +1,18 @@
-include(LibAddPlugin)
+include (LibAddPlugin)
 
-set (SOURCES resolver.h resolver.c filename.c)
-
-find_package(Threads)
-find_package(LibRt)
-
-set (CMAKE_RESOLVER_DEFAULT_LIBS ${CMAKE_THREAD_LIBS_INIT})
-if (LIBRT_FOUND)
-	set (CMAKE_RESOLVER_DEFAULT_LIBS ${CMAKE_RESOLVER_DEFAULT_LIBS} ${LIBRT_LIBRARIES})
+if (DEPENDENCY_PHASE)
+	find_package (Threads)
+	add_plugintest (resolver)
 endif ()
 
-#TODO: remove "default" resolver
+# TODO: remove resolver
+# following test cases still fail (testmod_resolver testtool_backend testkdb_simple)
 add_plugin(resolver
 	SOURCES
 		${SOURCES}
 	LINK_LIBRARIES
-		${CMAKE_RESOLVER_DEFAULT_LIBS}
+		${CMAKE_THREAD_LIBS_INIT}
+		${CMAKE_REALTIME_LIBS_INIT}
 	COMPILE_DEFINITIONS
 		ELEKTRA_VARIANT_BASE=\"\"
 		ELEKTRA_VARIANT_USER=\"hpu\"
@@ -23,11 +20,46 @@ add_plugin(resolver
 		ELEKTRA_PLUGIN_NAME=\"resolver\"
 		ELEKTRA_LOCK_FILE
 		ELEKTRA_LOCK_MUTEX
-)
+	CATEGORIES
+		"RESOLVER"
+		"NODEP"
+		"MINIMAL"
+	)
 
-add_plugintest(resolver)
+
+set (SOURCES resolver.h resolver.c filename.c)
+
+if (KDB_DEFAULT_RESOLVER MATCHES "resolver_.*")
+	set (RESOLVERS "${KDB_DEFAULT_RESOLVER}") # default resolver
+endif ()
 
 foreach (plugin ${PLUGINS})
+	if (${plugin} MATCHES "^resolver_.*")
+		set (RESOLVERS
+			"${RESOLVERS}"
+			"${plugin}"
+			)
+	endif ()
+	if (${plugin} MATCHES "ALL" OR ${plugin} MATCHES "DEFAULT")
+		set (RESOLVERS
+			"${RESOLVERS}"
+			resolver_fm_b_b
+			resolver_fm_pb_b
+			resolver_fm_hb_b
+			resolver_fm_hp_b
+			resolver_fm_ub_x
+			resolver_fm_xb_x
+			resolver_fm_xp_x
+			resolver_fm_xhp_x
+			resolver_fm_uhb_xb
+			resolver_fm_hpu_b # proposed default
+			)
+	endif ()
+endforeach ()
+
+list (REMOVE_DUPLICATES RESOLVERS)
+
+foreach (plugin ${RESOLVERS})
 	if (${plugin} MATCHES "^resolver_.*")
 		string(REGEX REPLACE "resolver_" "" variant ${plugin})
 		string(REGEX REPLACE "_" ";" variantlist ${variant})
@@ -49,13 +81,9 @@ foreach (plugin ${PLUGINS})
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
 			set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES}
-				${CMAKE_THREAD_LIBS_INIT})
-
-			if (LIBRT_FOUND)
-				set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES} ${LIBRT_LIBRARIES})
-			endif()
+				${CMAKE_THREAD_LIBS_INIT}
+				${CMAKE_REALTIME_LIBS_INIT})
 		endif ()
-
 
 		add_plugin(${plugin}
 			SOURCES
@@ -69,6 +97,9 @@ foreach (plugin ${PLUGINS})
 				ELEKTRA_VARIANT=${variant}
 				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
 				${FURTHER_DEFINITIONS}
+			CATEGORIES
+				"RESOLVER"
+				"NODEP"
 			)
 	endif()
 endforeach(plugin)
