@@ -46,6 +46,14 @@ typedef enum
 	ASSIGN
 } Operation;
 
+typedef enum
+{
+	TRUE = 1,
+	FALSE = 0,
+	ERROR = -1,
+	NOEXPR = -3,
+} CondResult;
+
 static int isValidSuffix (char * suffix, const Key * suffixList)
 {
 	if (!suffixList) return 0;
@@ -130,20 +138,46 @@ static int compareStrings (const char * s1, const char * s2, const Key * suffixL
 	}
 	else if ((ret = isNumber (s1, suffixList)) && (ret2 = isNumber (s2, suffixList)))
 	{
+		char * s1EndPtr;
+		char * s2EndPtr;
 		if (ret == 2 || ret2 == 2)
 		{
-			result = (fabs (atof (s1) - atof (s2)));
-			if (result < EPSILON)
-				retval = 0;
-			else if (result > 0)
-				retval = 1;
-			else if (result < 0)
-				retval = -1;
+			float s1Value = strtof (s1, &s1EndPtr);
+			float s2Value = strtof (s2, &s2EndPtr);
+			if (!strcmp (s1EndPtr, s2EndPtr) || *s1EndPtr == 0 || *s2EndPtr == 0)
+			{
+				result = (fabs (s1Value - s2Value));
+				if (result < EPSILON)
+				{
+					retval = 0;
+				}
+				else if (result > 0)
+				{
+					retval = 1;
+				}
+				else if (result < 0)
+				{
+					retval = -1;
+				}
+			}
+			else
+			{
+				retval = strcmp (s1, s2);
+			}
 		}
 		else
 		{
-			result = atol (s1) - atol (s2);
-			retval = result;
+			int s1Value = strtol (s1, &s1EndPtr, 10);
+			int s2Value = strtol (s2, &s2EndPtr, 10);
+			if (!strcmp (s1EndPtr, s2EndPtr) || *s1EndPtr == 0 || *s2EndPtr == 0)
+			{
+				result = s1Value - s2Value;
+				retval = result;
+			}
+			else
+			{
+				retval = strcmp (s1, s2);
+			}
 		}
 	}
 	else
@@ -153,8 +187,8 @@ static int compareStrings (const char * s1, const char * s2, const Key * suffixL
 	return retval;
 }
 
-static int evalCondition (const char * leftSide, Comparator cmpOp, const char * rightSide, const char * condition, const Key * suffixList,
-			  KeySet * ks, Key * parentKey)
+static CondResult evalCondition (const char * leftSide, Comparator cmpOp, const char * rightSide, const char * condition,
+				 const Key * suffixList, KeySet * ks, Key * parentKey)
 {
 	char * lookupName = NULL;
 	char * compareTo = NULL;
@@ -165,16 +199,17 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	{
 		if (rightSide[0] == '\'')
 		{
+			// right side of the statement is a literal enclosed by ''
 			char * endPos = strchr (rightSide + 1, '\'');
 			if (!endPos)
 			{
-				result = -1;
+				result = ERROR;
 				goto Cleanup;
 			}
 			if (elektraRealloc ((void **)&compareTo, endPos - rightSide) < 0)
 			{
 				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
-				result = -1;
+				result = ERROR;
 				goto Cleanup;
 			}
 			memset (compareTo, 0, endPos - rightSide);
@@ -182,11 +217,12 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 		}
 		else if (rightSide && elektraStrLen (rightSide) > 1)
 		{
+			// not a literal, it has to be a key
 			len = keyGetNameSize (parentKey) + elektraStrLen (rightSide);
 			if (elektraRealloc ((void **)&lookupName, len) < 0)
 			{
 				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
-				result = -1;
+				result = ERROR;
 				goto Cleanup;
 			}
 			snprintf (lookupName, len, "%s/%s", keyName (parentKey), rightSide);
@@ -198,13 +234,13 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 					ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found but is required for the evaluation of %s",
 							    lookupName, condition);
 				}
-				result = 0;
+				result = FALSE;
 				goto Cleanup;
 			}
 			if (elektraRealloc ((void **)&compareTo, keyGetValueSize (key)) < 0)
 			{
 				ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
-				result = -1;
+				result = ERROR;
 				goto Cleanup;
 			}
 			strcpy (compareTo, keyString (key));
@@ -215,7 +251,7 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	if (elektraRealloc ((void **)&lookupName, len) < 0)
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
-		result = -1;
+		result = ERROR;
 		goto Cleanup;
 	}
 	snprintf (lookupName, len, "%s/%s", keyName (parentKey), leftSide);
@@ -223,9 +259,9 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	if (cmpOp == NEX)
 	{
 		if (key)
-			result = 0;
+			result = FALSE;
 		else
-			result = 1;
+			result = TRUE;
 		goto Cleanup;
 	}
 	if (!key && cmpOp != OR && cmpOp != AND)
@@ -235,7 +271,7 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found but is required for the evaluation of %s", lookupName,
 					    condition);
 		}
-		result = 0;
+		result = FALSE;
 		goto Cleanup;
 	}
 	long ret;
@@ -246,35 +282,35 @@ static int evalCondition (const char * leftSide, Comparator cmpOp, const char * 
 	switch (cmpOp)
 	{
 	case EQU:
-		if (!ret) result = 1;
+		if (!ret) result = TRUE;
 		break;
 	case NOT:
-		if (ret) result = 1;
+		if (ret) result = TRUE;
 		break;
 	case LT:
-		if (ret < 0) result = 1;
+		if (ret < 0) result = TRUE;
 		break;
 	case LE:
-		if (ret <= 0) result = 1;
+		if (ret <= 0) result = TRUE;
 		break;
 	case GT:
-		if (ret > 0) result = 1;
+		if (ret > 0) result = TRUE;
 		break;
 	case GE:
-		if (ret >= 0) result = 1;
+		if (ret >= 0) result = TRUE;
 		break;
 	case SET:
 		keySetString (key, compareTo);
-		result = 1;
+		result = TRUE;
 		break;
 	case AND:
-		if (ret == 0 && !strcmp (leftSide, "'1'")) result = 1;
+		if (ret == 0 && !strcmp (leftSide, "'1'")) result = TRUE;
 		break;
 	case OR:
-		if (!strcmp (leftSide, "'1'") || !strcmp (rightSide, "'1'")) result = 1;
+		if (!strcmp (leftSide, "'1'") || !strcmp (rightSide, "'1'")) result = TRUE;
 		break;
 	default:
-		result = -1;
+		result = ERROR;
 		break;
 	}
 // freeing allocated heap
@@ -285,28 +321,45 @@ Cleanup:
 }
 
 
-static int parseSingleCondition (const char * condition, const Key * suffixList, KeySet * ks, Key * parentKey)
+static char * condition2cmpOp (const char * condition, Comparator * cmpOp)
 {
-	Comparator cmpOp;
 	char * opStr;
 	if ((opStr = strstr (condition, "==")))
-		cmpOp = EQU;
+	{
+		*cmpOp = EQU;
+	}
 	else if ((opStr = strstr (condition, "!=")))
-		cmpOp = NOT;
+	{
+		*cmpOp = NOT;
+	}
 	else if ((opStr = strstr (condition, "<=")))
-		cmpOp = LE;
+	{
+		*cmpOp = LE;
+	}
 	else if ((opStr = strstr (condition, "<")))
-		cmpOp = LT;
+	{
+		*cmpOp = LT;
+	}
 	else if ((opStr = strstr (condition, ">=")))
-		cmpOp = GE;
+	{
+		*cmpOp = GE;
+	}
 	else if ((opStr = strstr (condition, ">")))
-		cmpOp = GT;
+	{
+		*cmpOp = GT;
+	}
 	else if ((opStr = strstr (condition, ":=")))
-		cmpOp = SET;
+	{
+		*cmpOp = SET;
+	}
 	else if ((opStr = strstr (condition, "&&")))
-		cmpOp = AND;
+	{
+		*cmpOp = AND;
+	}
 	else if ((opStr = strstr (condition, "||")))
-		cmpOp = OR;
+	{
+		*cmpOp = OR;
+	}
 	else
 	{
 		char * ptr = (char *)condition;
@@ -316,19 +369,37 @@ static int parseSingleCondition (const char * condition, const Key * suffixList,
 		}
 		if (*ptr != '!')
 		{
-			return -1;
+			return NULL;
 		}
 		else
 		{
 			opStr = ptr + strlen (condition) + 1;
-			cmpOp = NEX;
+			*cmpOp = NEX;
 		}
 	}
+	return opStr;
+}
+
+static CondResult parseSingleCondition (const char * condition, const Key * suffixList, KeySet * ks, Key * parentKey)
+{
+	Comparator cmpOp;
+	char * opStr;
+	opStr = condition2cmpOp (condition, &cmpOp);
+
+	if (!opStr)
+	{
+		return ERROR;
+	}
+
 	int opLen;
 	if (cmpOp == LT || cmpOp == GT || cmpOp == NEX)
+	{
 		opLen = 1;
+	}
 	else
+	{
 		opLen = 2;
+	}
 	unsigned long startPos = 0;
 	unsigned long endPos = 0;
 	char * ptr = (char *)condition;
@@ -385,7 +456,7 @@ static int parseSingleCondition (const char * condition, const Key * suffixList,
 	rightSide = elektraMalloc (len);
 	strncpy (rightSide, opStr + opLen + startPos, len - 1);
 	rightSide[len - 1] = '\0';
-	int ret;
+	CondResult ret;
 
 parseSingleEnd:
 	ret = evalCondition (leftSide, cmpOp, rightSide, condition, suffixList, ks, parentKey);
@@ -431,9 +502,9 @@ static const char * isAssign (char * expr, Key * parentKey, KeySet * ks)
 	}
 }
 
-static int parseCondition (const char * condition, const Key * suffixList, KeySet * ks, Key * parentKey)
+static CondResult parseCondition (const char * condition, const Key * suffixList, KeySet * ks, Key * parentKey)
 {
-	int result = 0;
+	CondResult result = FALSE;
 	const char * regexString = "((\\(([^\\(\\)]*)\\)))";
 	regex_t regex;
 
@@ -443,7 +514,7 @@ static int parseCondition (const char * condition, const Key * suffixList, KeySe
 		// possible error would be out of
 		// memory
 		ksDel (ks);
-		return -1;
+		return ERROR;
 	}
 
 	char * localCondition = strdup (condition);
@@ -469,13 +540,11 @@ static int parseCondition (const char * condition, const Key * suffixList, KeySe
 		char * singleCondition = elektraMalloc (endPos - startPos + 1);
 		strncpy (singleCondition, localCondition + startPos, endPos - startPos);
 		singleCondition[endPos - startPos] = '\0';
-		int ret = parseSingleCondition (singleCondition, suffixList, ks, parentKey);
-		result = ret;
-		ret += 48;
+		result = parseSingleCondition (singleCondition, suffixList, ks, parentKey);
 		for (int i = startPos - 1; i < endPos + 1; ++i)
 			localCondition[i] = ' ';
 		localCondition[startPos - 1] = '\'';
-		localCondition[startPos] = (char)ret;
+		localCondition[startPos] = (result == TRUE) ? '1' : '0';
 		localCondition[startPos + 1] = '\'';
 		elektraFree (singleCondition);
 	}
@@ -485,20 +554,20 @@ static int parseCondition (const char * condition, const Key * suffixList, KeySe
 }
 
 
-static int parseConditionString (const Key * meta, const Key * suffixList, Key * parentKey, Key * key, KeySet * ks, Operation op)
+static CondResult parseConditionString (const Key * meta, const Key * suffixList, Key * parentKey, Key * key, KeySet * ks, Operation op)
 {
 	const char * conditionString = keyString (meta);
 	const char * regexString = "((\\((.*?)\\))[[:space:]]*\\?[[:space:]]*(\\((.*?)\\)))($|([[:space:]]*:[[:space:]]*(\\((.*)\\))))";
 
 	regex_t regex;
-	int ret;
+	CondResult ret;
 	if ((ret = regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE)))
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
 		// memory
 		ksDel (ks);
-		return -1;
+		return ERROR;
 	}
 	int subMatches = 10;
 	regmatch_t m[subMatches];
@@ -510,7 +579,7 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 				    conditionString);
 		regfree (&regex);
 		ksDel (ks);
-		return -1;
+		return ERROR;
 	}
 	if (m[2].rm_so == -1 || m[5].rm_so == -1)
 	{
@@ -518,7 +587,7 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 				    conditionString);
 		regfree (&regex);
 		ksDel (ks);
-		return -1;
+		return ERROR;
 	}
 	char * condition = NULL;
 	char * thenexpr = NULL;
@@ -549,7 +618,7 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 
 
 	ret = parseCondition (condition, suffixList, ks, parentKey);
-	if (ret == 1)
+	if (ret == TRUE)
 	{
 		if (op == ASSIGN)
 		{
@@ -557,12 +626,12 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 			if (assign != NULL)
 			{
 				keySetString (key, assign);
-				ret = 1;
+				ret = TRUE;
 				goto CleanUp;
 			}
 			else
 			{
-				ret = -1;
+				ret = ERROR;
 				ELEKTRA_SET_ERRORF (134, parentKey,
 						    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
 						    thenexpr);
@@ -572,11 +641,11 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 		else
 		{
 			ret = parseCondition (thenexpr, suffixList, ks, parentKey);
-			if (ret == 0)
+			if (ret == FALSE)
 			{
 				ELEKTRA_SET_ERRORF (135, parentKey, "Validation of %s failed. (%s failed)", conditionString, thenexpr);
 			}
-			else if (ret == (-1))
+			else if (ret == ERROR)
 			{
 				ELEKTRA_SET_ERRORF (134, parentKey,
 						    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
@@ -584,7 +653,7 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 			}
 		}
 	}
-	else if (ret == 0)
+	else if (ret == FALSE)
 	{
 		if (elseexpr)
 		{
@@ -594,12 +663,12 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 				if (assign != NULL)
 				{
 					keySetString (key, assign);
-					ret = 1;
+					ret = TRUE;
 					goto CleanUp;
 				}
 				else
 				{
-					ret = -1;
+					ret = ERROR;
 					ELEKTRA_SET_ERRORF (
 						134, parentKey,
 						"Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
@@ -610,12 +679,12 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 			else
 			{
 				ret = parseCondition (elseexpr, suffixList, ks, parentKey);
-				if (ret == 0)
+				if (ret == FALSE)
 				{
 					ELEKTRA_SET_ERRORF (135, parentKey, "Validation of %s failed. (%s failed)", conditionString,
 							    elseexpr);
 				}
-				else if (ret == (-1))
+				else if (ret == ERROR)
 				{
 					ELEKTRA_SET_ERRORF (
 						134, parentKey,
@@ -626,10 +695,10 @@ static int parseConditionString (const Key * meta, const Key * suffixList, Key *
 		}
 		else
 		{
-			ret = -3;
+			ret = NOEXPR;
 		}
 	}
-	else if (ret == (-1))
+	else if (ret == ERROR)
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
 				    condition);
@@ -644,35 +713,31 @@ CleanUp:
 	return ret;
 }
 
-static int parse (const Key * meta, const Key * suffixList, Key * parentKey, Key * key, KeySet * ks, Operation op)
+static CondResult evaluateKey (const Key * meta, const Key * suffixList, Key * parentKey, Key * key, KeySet * ks, Operation op)
 {
-	int result;
+	CondResult result;
 	result = parseConditionString (meta, suffixList, parentKey, key, ksDup (ks), op);
-	if (result == -1)
+	if (result == ERROR)
 	{
-		return -1;
+		return ERROR;
 	}
-	else if (result == 0 && op != ASSIGN)
+	else if (result == FALSE && op != ASSIGN)
 	{
-		return -1;
+		return ERROR;
 	}
-	else if (result == 1 && op != ASSIGN)
+	else if (result == TRUE && op != ASSIGN)
 	{
-		return 1;
+		return TRUE;
 	}
-	else if (result == -2 && op != ASSIGN)
+	else if (result != ERROR && op == ASSIGN)
 	{
-		return -2;
+		return TRUE;
 	}
-	else if (result != -1 && op == ASSIGN)
+	else if (result == NOEXPR)
 	{
-		return 1;
+		return NOEXPR;
 	}
-	else if (result == -3)
-	{
-		return -3;
-	}
-	return 1;
+	return TRUE;
 }
 
 int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -693,7 +758,7 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	}
 	Key * cur;
 	ksRewind (returned);
-	int ret = 0;
+	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
@@ -701,11 +766,11 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
 		if (conditionMeta)
 		{
-			int result;
-			result = parse (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-			if (result == -3)
+			CondResult result;
+			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+			if (result == NOEXPR)
 			{
-				ret |= 1;
+				ret |= TRUE;
 			}
 			else
 			{
@@ -714,10 +779,10 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		}
 		if (assignMeta)
 		{
-			ret |= parse (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
 		}
 	}
-	if (ret == 1) keySetMeta (parentKey, "error", 0);
+	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
 	return ret; /* success */
 }
 
@@ -726,7 +791,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 {
 	Key * cur;
 	ksRewind (returned);
-	int ret = 0;
+	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
@@ -734,11 +799,11 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
 		if (conditionMeta)
 		{
-			int result;
-			result = parse (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-			if (result == -3)
+			CondResult result;
+			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+			if (result == NOEXPR)
 			{
-				ret |= 1;
+				ret |= TRUE;
 			}
 			else
 			{
@@ -747,15 +812,18 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		}
 		if (assignMeta)
 		{
-			ret |= parse (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
 		}
 	}
-	if (ret == 1) keySetMeta (parentKey, "error", 0);
+	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
 	return ret;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals)
 {
-	return elektraPluginExport ("conditionals", ELEKTRA_PLUGIN_GET, &elektraConditionalsGet, ELEKTRA_PLUGIN_SET,
-				    &elektraConditionalsSet, ELEKTRA_PLUGIN_END);
+	// clang-format off
+	return elektraPluginExport ("conditionals", 
+					ELEKTRA_PLUGIN_GET, &elektraConditionalsGet, 
+					ELEKTRA_PLUGIN_SET, &elektraConditionalsSet, 
+					ELEKTRA_PLUGIN_END);
 }

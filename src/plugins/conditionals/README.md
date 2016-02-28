@@ -40,6 +40,11 @@ Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be 
 
 Multiple conditions can be nested and combined using parentheses and `&&` (logical AND) or `||` (logical OR). Additional parentheses must be used to form valid conditions again. `(` `(condition 1) && (condition 2)` `)`
 
+### valid suffix ###
+
+The `condition/validsuffix` can be used to define a list of valid suffixes to numeric values. If two operants have the same valid suffix or one of them no suffix they will be treated by their numeric value ignoring their suffix.
+`condition/validsuffix = 'm', 'cm', 'km'` would treat `2.3m` just as the numeric value `2.3` when comparing to another value having the same or no suffix.
+
 ## Example ##
 
 `(this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')` 

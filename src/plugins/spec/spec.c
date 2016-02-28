@@ -589,28 +589,44 @@ static int handleErrors (Key * parentKey, KeySet * ks, Key * key, Key * specKey,
 	return ret;
 }
 
+
+// Naive approach to replace wildcards in meta string with the actual values
+
 static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const char * name)
 {
 	Key * metaKey = (Key *)keyGetMeta (specKey, name);
 	const char * metaString = keyString (metaKey);
+
+	// name relative to parent key
 	const char * relativeName = strchr (keyName (specKey), '/') + strlen (strchr (keyName (parentKey), '/')) + 1;
+
 	int hasWildcard = 0;
 	int singleWC = 0;
 	int multiWC = 0;
 	int arrayWC = 0;
 	int metaHasWildcard = 0;
 	char * ptr = (char *)relativeName;
+
+	// Counting occurrences of ?, _ and # in spec keyname
 	while (*ptr)
 	{
 		if (*ptr == '?')
+		{
 			++singleWC;
+		}
 		else if (*ptr == '_')
+		{
 			++multiWC;
+		}
 		else if (*ptr == '#')
+		{
 			++arrayWC;
+		}
 		++ptr;
 	}
 	hasWildcard = singleWC + multiWC + arrayWC;
+
+	// check if metastring has wildcards
 	if (hasWildcard)
 	{
 		ptr = (char *)metaString;
@@ -620,9 +636,13 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 			++ptr;
 		}
 	}
+
+	// both keyname and string have wildcards
 	if (metaHasWildcard && hasWildcard)
 	{
+		// keyname with wildcards matched to actual values relative to parent key
 		const char * relativeFullName = strchr (keyName (key), '/') + strlen (strchr (keyName (parentKey), '/')) + 1;
+
 		size_t newMetaSize = keyGetValueSize (metaKey) + 3 * (strlen (relativeFullName) - strlen (relativeName));
 		char * newMetaString = elektraCalloc (newMetaSize);
 		char * src = (char *)metaString;
@@ -630,6 +650,8 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 		int singleWCCounter = 0;
 		int multiWCCounter = 0;
 		int arrayWCCounter = 0;
+
+		// search and replace wildcards using the same order the globbing key has module the number of occurrences.
 		while (*src)
 		{
 			if (*src != '?' && *src != '_' && *src != '#')
@@ -640,10 +662,14 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 			}
 			else
 			{
+				// found a wildcard
+
 				char * segmentStart = src;
 				char * segmentEnd = src;
 				int localCounter = 0;
 				ptr = (char *)relativeName;
+
+				// try to find the corresponding wildcard in the globbing key.
 				if (*src == '?' && singleWC)
 				{
 					++singleWCCounter;
@@ -677,6 +703,10 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 				--ptr;
 				int noMatch = 0;
 				char * ptrCopy = ptr;
+
+				// check if the key name part containing the wildcard matches the globbing key
+
+				// check starting at the wildcard until the start of the name part.
 				while (!noMatch && ptrCopy > relativeName && segmentStart > metaString)
 				{
 					if (*ptrCopy == '?')
@@ -739,6 +769,8 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 					}
 				}
 				ptrCopy = ptr;
+
+				// check from wildcard position until the end of the key name part is found
 				while ((!noMatch) && (ptrCopy < relativeName + strlen (relativeName)) &&
 				       (segmentEnd < metaString + strlen (metaString)))
 				{
@@ -795,14 +827,20 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 						break;
 					}
 				}
+
 				segmentEnd = ptrCopy;
+
 				if (!noMatch)
 				{
+					// key name part in string matches the globbing key name part
+
 					char * realPtr = (char *)relativeFullName;
 					char * otherPtr = (char *)relativeName;
 					int localSingleWCCounter = 0;
 					int localMultiWCCounter = 0;
 					int localArrayWCCounter = 0;
+
+					// replace wildcard with actual match.
 					while (*otherPtr)
 					{
 						if (*otherPtr == '?' && *src == '?')
@@ -865,6 +903,22 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 				}
 				else
 				{
+					// doesn't match globbing part,
+					// since it's not an actual wildcard, decrement the counter again.
+					// move on to the next symbol.
+
+					if (*src == '#')
+					{
+						--multiWCCounter;
+					}
+					else if (*src == '?')
+					{
+						--singleWCCounter;
+					}
+					else if (*src == '#')
+					{
+						--arrayWCCounter;
+					}
 					*dest = *src;
 					++dest;
 					++src;
@@ -876,6 +930,8 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 	}
 	else
 	{
+		// no wildcards in string, simply copy the metadata
+
 		keyCopyMeta (key, specKey, name);
 	}
 }

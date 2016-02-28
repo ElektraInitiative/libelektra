@@ -1715,6 +1715,11 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 {
-	return elektraPluginExport ("ini", ELEKTRA_PLUGIN_OPEN, &elektraIniOpen, ELEKTRA_PLUGIN_CLOSE, &elektraIniClose, ELEKTRA_PLUGIN_GET,
-				    &elektraIniGet, ELEKTRA_PLUGIN_SET, &elektraIniSet, ELEKTRA_PLUGIN_END);
+	// clang-format off
+	return elektraPluginExport("ini", 
+					ELEKTRA_PLUGIN_OPEN, &elektraIniOpen, 
+					ELEKTRA_PLUGIN_CLOSE, &elektraIniClose, 
+					ELEKTRA_PLUGIN_GET,	&elektraIniGet, 
+					ELEKTRA_PLUGIN_SET, &elektraIniSet, 
+					ELEKTRA_PLUGIN_END);
 }

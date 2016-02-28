@@ -101,5 +101,9 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (enum)
 {
-	return elektraPluginExport ("enum", ELEKTRA_PLUGIN_GET, &elektraEnumGet, ELEKTRA_PLUGIN_SET, &elektraEnumSet, ELEKTRA_PLUGIN_END);
+	// clang-format off
+	return elektraPluginExport ("enum", 
+			ELEKTRA_PLUGIN_GET, 	&elektraEnumGet,
+			ELEKTRA_PLUGIN_SET, 	&elektraEnumSet,
+			ELEKTRA_PLUGIN_END);
 }
