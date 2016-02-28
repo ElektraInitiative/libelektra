@@ -16,16 +16,16 @@ the `system` namespace. In this case, the option in the `system` namespace will
 be used if the key hasn't been defined by the user.
 
 ```
-$ sudo kdb set system/t/test "hello world"
-create a new key system/t/test with string hello world
+$ sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
+create a new key system/sw/tutorial/cascading/#0/current/test with string hello world
 
-$ kdb get /t/test
+$ kdb get /sw/tutorial/cascading/#0/current/test
 hello world
 
-$ kdb set user/t/test "hello universe"
-Create a new key user/t/test with string hello universe
+$ kdb set user/sw/tutorial/cascading/#0/current/test "hello universe"
+Create a new key user/sw/tutorial/cascading/#0/current/test with string hello universe
 
-$ kdb get /t/test
+$ kdb get /sw/tutorial/cascading/#0/current/test
 hello universe
 ```
 
@@ -41,8 +41,8 @@ test = hello dir
 Then run:
 
 ```
-$ sudo kdb mount /.configuration dir/t ini
-$ kdb get /t/test
+$ sudo kdb mount /.configuration dir/sw/tutorial/cascading/#0/current ini
+$ kdb get /sw/tutorial/cascading/#0/current/test
 hello dir
 ```
 
@@ -73,8 +73,8 @@ In the cascading lookup, meta data of `spec`-keys comes in as follows:
  4. `fallback/#` keys will be considered
  5. `default` value will be returned
 
-Note: `override/#` means an array of `override` keys, the array can be filled by
-      setting `#` followed by the position, e.g. `#0`, `#1`, etc
+**Note:** `override/#` means an array of `override` keys, the array can be filled by
+          setting `#` followed by the position, e.g. `#0`, `#1`, etc
 
 As you can see, override links are considered before everything else, which
 makes them really powerful.
@@ -90,8 +90,8 @@ Create a new key system/overrides/test with string hello override
 Override links can be defined by adding them to the `override/#` array:
 
 ```
-$ sudo kdb setmeta spec/t/test override/#0 /overrides/test
-$ kdb get /test
+$ sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
+$ kdb get /sw/tutorial/cascading/#0/current/test
 hello system override
 ```
 
@@ -119,8 +119,8 @@ Create a new key system/overrides/test with string hello default
 Then we can create the link:
 
 ```
-$ sudo kdb setmeta spec/t/test override/#0 /overrides/test
-$ kdb get /t/test
+$ sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
+$ kdb get /sw/tutorial/cascading/#0/current/test
 hello default
 ```
 
@@ -130,6 +130,6 @@ Now the user overrides the system default:
 $ kdb set /overrides/test "hello user"
 Using name user/overrides/test
 Create a new key user/overrides/test with string hello user
-$ kdb get /t/test
+$ kdb get /sw/tutorial/cascading/#0/current/test
 hello user
 ```
