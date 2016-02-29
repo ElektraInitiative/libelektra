@@ -88,7 +88,7 @@ Return values on plugin checking:
 Please report any output caused by official plugins to [http://git.libelektra.org/issues](http://git.libelektra.org/issues).
 
 Since the error code is a return value, it is not automatically displayed to the shell.
-If the user wants to have the value printed, they must do so manually (by running a command such as `echo $?`.
+If the user wants to have the value printed, they must do so manually (by running a command such as `echo $?`).
 
 
 ## EXAMPLES

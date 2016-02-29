@@ -162,7 +162,7 @@ So (larger) applications should not directly use `KeySet`, but
 instead use code generation to provide a type-safe front-end.
 
 For more information about that, continue reading
-[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen)
+[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
 
 
 
