@@ -40,7 +40,7 @@ to find bugs.
 Some calls that create data, have an opposite call that frees this
 data. For example after you call:
 
-    KDB * kdbOpen();
+	KDB * kdbOpen();
 
 you need to use:
 

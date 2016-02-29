@@ -2,7 +2,7 @@
 
 ## BASIC GIT COMMANDS ##
 
-    git add .
+	git add .
 	git commit -a
 
 ## BASIC Configuration ##

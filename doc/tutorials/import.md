@@ -64,9 +64,11 @@ If no strategy is specified, the command defaults to the preserve strategy as to
 This command would import all keys stored in the file backup.ecf into the Key Database under system/backup.
 
 In this example, backup.ecf was exported from the KeySet using the dump format by using the command:
+
 	kdb export system/backup > backup.ecf
 
 backup.ecf contains all the information about the keys below system/backup:
+
 	$cat backup.ecf
 	kdbOpen 1
 	ksNew 3
@@ -89,6 +91,7 @@ backup.ecf contains all the information about the keys below system/backup:
 
 Before the import command, system/backup does not exists and no keys are contained there.
 After the import command, running the command `kdb ls system/backup` prints:
+
 	system/backup/key1
 	system/backup/key2
 	system/backup/key3

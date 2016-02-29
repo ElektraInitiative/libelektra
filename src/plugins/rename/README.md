@@ -36,21 +36,21 @@ The cut operation takes as its only configuration parameter the key name part to
 different ways. First, the global configuration key `cut` can be used. Second, keys to be stripped can be tagged with the MetaKey `rename/cut`.
 If both options are given, the MetaKey takes precedence. For example, consider the following setup:
 
-				`config/cut` = will/be
-				parent key = user/config
-								
-				user/config/will/be/stripped/key1			<- meta rename/cut = will/be/stripped
-				user/config/will/be/stripped/key2			<- meta rename/cut = will/be/stripped
-				user/config/will/be/stripped/key3
-				user/config/will/not/be/stripped/key4
+	config/cut = will/be
+	parent key = user/config
+
+	user/config/will/be/stripped/key1		<- meta rename/cut = will/be/stripped
+	user/config/will/be/stripped/key2		<- meta rename/cut = will/be/stripped
+	user/config/will/be/stripped/key3
+	user/config/will/not/be/stripped/key4
 
 The result of the cut operation would be the following KeySet:
 
-				user/config/key1
-				user/config/key2
-				user/config/stripped/key3
-				user/config/will/not/be/stripped/key4
-				
+	user/config/key1
+	user/config/key2
+	user/config/stripped/key3
+	user/config/will/not/be/stripped/key4
+
 The cut operation is agnostic to a single trailing slash in the configuration. This means that it makes no difference whether `cut = will/be/stripped`
 or `cut = will/be/stripped/`. However, the cut operation refuses cut paths with leading slash. This is to clarify that key name parts can only be stripped
 after the parent key path.

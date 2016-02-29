@@ -32,11 +32,11 @@ It's worth noting, resultpath should be empty before attempting a merge, otherwi
 
 As for the options, there are a few basic options:
 
-    -i  --interactive			which attempts the merge in an interactive way
+	-i  --interactive		which attempts the merge in an interactive way
 
-	-t  --test					which tests the proposed merge and informs you about possible conflicts
+	-t  --test			which tests the proposed merge and informs you about possible conflicts
 
-	-f --force					which overwrites any Keys in resultpath
+	-f --force			which overwrites any Keys in resultpath
 
 ### Strategies ###
 
