@@ -33,18 +33,22 @@ static void doTest ()
 	Key * parentKey = keyNew ("user/tests/list", KEY_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("list");
-	Plugin * check = elektraPluginOpen ("keytometa", modules, conf, errorKey);
+
+	Plugin * check = elektraPluginOpen ("keytometa", modules, ksNew(5, KS_END), errorKey);
 	if (!check)
 	{
 		printf ("Abort test case, keytometa is missing");
-		return;
+		goto end;
 	}
-	check = elektraPluginOpen ("rename", modules, conf, errorKey);
+	elektraPluginClose (check, 0);
+
+	check = elektraPluginOpen ("rename", modules,  ksNew(5, KS_END), errorKey);
 	if (!check)
 	{
 		printf ("Abort test case, rename is missing");
-		return;
+		goto end;
 	}
+	elektraPluginClose (check, 0);
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbget failed");
 	const Key * key = ksLookupByName (ks, "user/tests/list/meta1", 0);
@@ -54,6 +58,8 @@ static void doTest ()
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "kdbset failed");
 	key = ksLookupByName (ks, "user/tests/list/to/be/cut/meta1", 0);
 	succeed_if (key, "key not found");
+
+end:
 	PLUGIN_CLOSE ();
 	keyDel (parentKey);
 	ksDel (ks);
