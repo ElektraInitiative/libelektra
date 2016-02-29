@@ -29,7 +29,7 @@ You can move keys to another directory within the database or even below another
 
 ## EXAMPLES
 
-To move a multiple keys:
+To move multiple keys:
 `kdb mv -r user/example1 user/example2`
 
 To move a single key:

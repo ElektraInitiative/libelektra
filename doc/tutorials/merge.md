@@ -22,11 +22,11 @@ For mounted conffiles:
 *	theirs would be the maintainers copy,
 *	base would be the previous version of the maintainer's copy.
 
-If the user is just trying to accomplish is a three-way merge using any two arbitrary keysets that share a base,
+If the user is just trying to accomplish a three-way merge using any two arbitrary keysets that share a base,
 it doesn't matter which ones are defined as ours or theirs as long as they use the correct base KeySet.
 In kdb merge, ourpath, theirpath, and basepath work just like ours, theirs, and base except each one represents the
 root of a KeySet. Resultpath is pretty self-explanatory, it is just where you want the result of the merge to be saved under.
-It's worth noting, resultpath should be empty before attempting a merge, otherwise there can be unintended consquences.
+It's worth noting, resultpath should be empty before attempting a merge, otherwise there can be unintended consequences.
 
 ## Options ##
 
@@ -68,7 +68,7 @@ Basic Usage:
 
 ## Examples Using Strategies ##
 
-Here are examples of the same KeySets being merged using different strateigies.
+Here are examples of the same KeySets being merged using different strategies.
 The KeySets are mounted using the simpleini file, the left side of '=' is the name of
 the Key, the right side is its string value.
 

@@ -11,7 +11,7 @@
 ## Introduction ##
 
 This plugin is a check plugin which checks the structure and
-interrelations of Keys in order the verify that they represent a valid
+interrelations of Keys in order to verify that they represent a valid
 configuration.
 
 ## Purpose ##

@@ -33,7 +33,7 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
 
 ## EXAMPLES
 
-To copy a multiple keys:
+To copy multiple keys:
 `kdb cp -r user/example1 user/example2`
 
 To copy a single key:

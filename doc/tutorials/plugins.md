@@ -246,7 +246,7 @@ Here is the trickier part to explain. Basically, at this point you will want to 
 inside of them according to what your plug-in is supposed to do. I will give a few examples of different plug-ins to better explain.
 
 The line plug-in was written to read files into a KeySet line by line using the newline character as a delimiter and naming the keys by their line
-number such as `#1`, `#2`, .. `#\_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time a I read a line I create a new key,
+number such as `#1`, `#2`, .. `#\_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time as I read a line I create a new key,
 let's call it new_key using dupKey(parentKey). Then I set new_keys's name to lineNN (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the KeySet that was passed into the
 elektraPluginGet function, let's call it returned for now, using `ksAppendKey(return, new_key)`. Now the KeySet will contain `new_key` with the
@@ -274,7 +274,7 @@ First have a look at the signature of `elektraLineSet`:
 `elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKey)`
 
 Lets start with the most important parameters, the KeySet and the `parentKey`. The KeySet supplied is the KeySet that is going to be persisted in
-the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet at serves several purposes.
+the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet and serves several purposes.
 First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the parentKey. We will discuss
 error handling in more detail later. The Plugin handle can be used to persist state information in a threadsafe way with `elektraPluginSetData`.
 As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to suppress compiler warnings.

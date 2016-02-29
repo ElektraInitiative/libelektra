@@ -17,7 +17,7 @@
 ## Target ##
 
 - Embedded: Elektra is on the frontier for embedded systems because of
-  its tiny core and the many possibilities with it`s plugins.
+  its tiny core and the many possibilities with its plugins.
 - Server: Elektra is ideal suited for a local configuration storage by
   mounting existing configuration files into the global tree. Nodes
   using Elektra can be connected by already existing configuration

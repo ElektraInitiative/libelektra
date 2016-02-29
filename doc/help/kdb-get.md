@@ -61,4 +61,4 @@ This command will actually get `user/sw/elektra/kdb/#0/current/format` if the bo
 
 - [kdb(1)](kdb.md) for how to configure the kdb utility and use the bookmarks.
 - For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
-- TO get keys in shell scripts, you also can use [kdb-sget(1)](kdb-sget.md)
+- To get keys in shell scripts, you also can use [kdb-sget(1)](kdb-sget.md)

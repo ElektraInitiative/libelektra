@@ -31,7 +31,7 @@ Run `kdb list` for a list of plugins.
 
 ## COMMON OPTIONS
 
-Every core-tool has following options:
+Every core-tool has the following options:
 
 - `-H`, `--help`:
   Show the man page.

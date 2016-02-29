@@ -99,7 +99,7 @@ For example, the ccode plugin, implements:
 		}
 		// implementation of elektraCcodeGet
 
-We see in Listing above that the plugin generates and returns
+We see in the listing above that the plugin generates and returns
 the contract if, and only if, the name of the `parentKey` is
 `system/elektra/modules/ccode`.  The user and the contract checker can
 access the contract of ccode below the key `system/elektra/modules/ccode`
@@ -125,7 +125,7 @@ remounted if it is a subtype of the earlier version.  Only in this
 situation it can be a drop-in placement.  With a good testing framework
 the behaviour can be checked to some extent.
 
-We also see in Listing above that the code responsible for generating
+We also see in the listing above that the code responsible for generating
 the contract and the code for the implementation are next to each other.
 Plugins need to satisfy those self-imposed obligations that are described
 in contracts.  They ensure that plugins interact in predictable ways.
