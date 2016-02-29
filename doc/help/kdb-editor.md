@@ -1,5 +1,5 @@
-kdb-import(1) -- Import an existing configuration into the key database
-=======================================================================
+kdb-editor(1) -- Use your editor for editing KDB
+================================================
 
 ## SYNOPSIS
 
