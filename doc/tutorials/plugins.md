@@ -324,8 +324,8 @@ the plug-in exists and which methods it implements. The code from the line plugi
 	Plugin *ELEKTRA_PLUGIN_EXPORT(line)
 	{
 		return elektraPluginExport("line",
-		ELEKTRA_PLUGIN_GET, &amp;elektraLineGet,
-		ELEKTRA_PLUGIN_SET, &amp;elektraLineSet,
+		ELEKTRA_PLUGIN_GET, &elektraLineGet,
+		ELEKTRA_PLUGIN_SET, &elektraLineSet,
 		ELEKTRA_PLUGIN_END);
 	}
 
