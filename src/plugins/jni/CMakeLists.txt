@@ -27,7 +27,6 @@ if (DEPENDENCY_PHASE)
 		else ()
 			remove_plugin (jni "jni.h does not define JNI_VERSION_1_8")
 		endif ()
-		unset (CMAKE_REQUIRED_INCLUDES)
 	else ()
 		remove_plugin (jni "jni not found")
 	endif ()
@@ -44,3 +43,5 @@ add_plugin(jni
 		${JAVA_AWT_LIBRARY}
 		${JAVA_JVM_LIBRARY}
 	)
+
+unset (CMAKE_REQUIRED_INCLUDES)
