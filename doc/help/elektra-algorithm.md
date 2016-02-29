@@ -387,7 +387,7 @@ described in *exception safety*).
 ### Errors
 
 The plugins within `kdbSet()` can fail for a variety of reasons.
-\intro[conflict]{Conflicts} occur most frequently.  A conflict means that
+Conflicts occur most frequently.  A conflict means that
 during executions of `kdbGet()` and `kdbSet()` another program has changed
 the key database.  In order not to lose any data, `kdbSet()` fails without
 doing anything.  In conflict situations Elektra leaves the programmer
