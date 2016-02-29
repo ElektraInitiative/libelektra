@@ -16,7 +16,6 @@ if (DEPENDENCY_PHASE)
 		# generate readme from pythons readme.
 		set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
 		set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../python")
-		generate_readme (python2)
 		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_SAFE})
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
