@@ -58,15 +58,15 @@ fallback/#0=/somewhere/else
 namespace/#0=user
 ```
 
-1.) When this file is mounted to `spec/sw/app/#0` we specify, that
+1. When this file is mounted to `spec/sw/app/#0` we specify, that
     for the key `/sw/app/#0/promise` only the namespace `user` should be
     used.
-2.) If this key was not found, but `/somewhere/else` is present, we will use
+2. If this key was not found, but `/somewhere/else` is present, we will use
     this key instead.  The `fallback` technique is very powerful: it allows
     us to have (recursive) links between applications. In the example above,
     the application is tricked in receiving e.g. the key `user/somewhere/else`
     when `promise` was not available.
-3.) The value `20` will be used as default, even if no configuration file
+3. The value `20` will be used as default, even if no configuration file
     is found.
 
 Note that the fallback, override and cascading works on *key level*,

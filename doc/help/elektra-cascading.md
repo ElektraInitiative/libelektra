@@ -42,13 +42,13 @@ They can be used like this:
 When cascading keys (those starting with `/`) the lookup will work in the
 following way (it can be debugged with `kdb get -v`):
 
-1.) In the `spec`-key the `override/#` keys will be considered.
-2.) If, in the `spec`-key, a `namespace/#` exist, those namespaces
+1. In the `spec`-key the `override/#` keys will be considered.
+2. If, in the `spec`-key, a `namespace/#` exist, those namespaces
     will be used.
-3.) Otherwise, all namespaces will be considered, see
+3. Otherwise, all namespaces will be considered, see
     [here.](/doc/help/elektra-namespaces.md)
-4.) In the `spec`-key the `fallback/#` keys will be considered.
-5.) In the `spec`-key the `default` value will be returned.
+4. In the `spec`-key the `fallback/#` keys will be considered.
+5. In the `spec`-key the `default` value will be returned.
 
 
 See [application integration](/doc/tutorials/application-integration.md)

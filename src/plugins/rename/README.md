@@ -25,6 +25,7 @@ The cut operation can be used to strip parts of a keys name. The cut operation i
 of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the
 parent key `user/config`. If the KeySet contained a key with the name `user/config/with/long/path/key1`, the cut operation
 would be able to strip the following key name parts:
+
 * with
 * with/long
 * with/long/path
