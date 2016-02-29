@@ -29,7 +29,7 @@ Note: In order for this command to work, the `validation` plugin must be mounted
 
 ## EXAMPLES
 
-To set the `user/example/key` key to the value `a` and validate that any future sets must match the regular expression `a*`:
+To set the `user/example/key` key to the value `a` and validate that any future sets must match the regular expression `a+`:
 `kdb vset user/example/key a a+ "The value of this key must only consist of one more of the letter a"`
 
 For more information about regular expressions with the `validation` plugin see:

@@ -304,7 +304,7 @@ The user passes the configuration using the `KeySet` `returned`.  The key
 set will not be changed by `kdbSet()`.	The `parentKey` provides a way
 to limit which part of the configuration is written out.  For example,
 the `parentKey` `user/sw/org/app/#0/current` will induce `kdbSet()` to
-only modify the key databases below `user/sw/apps/myapp` even
+only modify the key databases below `user/sw/org/app` even
 if the `KeySet` `returned` also contains more configuration.  Note that
 all backends with no keys in `returned` but that are below `parentKey`
 will completely wipe out their key database.  The `KDB` handle contains

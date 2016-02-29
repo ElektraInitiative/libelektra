@@ -31,7 +31,7 @@ To get the value of a key from a script or return the value `0`:
 `kdb sget user/example/key 0`
 
 To get the value of a key using a cascading lookup or return the value `notfound`:
-`kdb get /example/key "notfound"`
+`kdb sget /example/key "notfound"`
 
 ## SEE ALSO
 
