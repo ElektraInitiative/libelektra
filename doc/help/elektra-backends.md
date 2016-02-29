@@ -1,7 +1,7 @@
 elektra-backends(7) -- the backend concept
 ==========================================
 
-Elektra has introduced *backends** to support the storage of
+Elektra has introduced **backends** to support the storage of
 key databases in different formats.
 Elektra abstracts configuration so that applications can receive
 and store settings without carrying information
