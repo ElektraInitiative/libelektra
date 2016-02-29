@@ -21,11 +21,22 @@
 
 #define MAX_CHARS_IN_LONG 26
 
-typedef enum { GET, SET } Direction;
+typedef enum
+{
+	GET,
+	SET
+} Direction;
 
-typedef enum { ERROR, WARNING, INFO, IGNORE } OnConflict;
+typedef enum
+{
+	ERROR,
+	WARNING,
+	INFO,
+	IGNORE
+} OnConflict;
 
-typedef enum {
+typedef enum
+{
 	ARRAYMEMBER,
 	INVALID,
 	SUBCOUNT,
@@ -578,7 +589,354 @@ static int handleErrors (Key * parentKey, KeySet * ks, Key * key, Key * specKey,
 	return ret;
 }
 
-static void copyMeta (Key * key, Key * specKey)
+
+// Naive approach to replace wildcards in meta string with the actual values
+
+static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const char * name)
+{
+	Key * metaKey = (Key *)keyGetMeta (specKey, name);
+	const char * metaString = keyString (metaKey);
+
+	// name relative to parent key
+	const char * relativeName = strchr (keyName (specKey), '/') + strlen (strchr (keyName (parentKey), '/')) + 1;
+
+	int hasWildcard = 0;
+	int singleWC = 0;
+	int multiWC = 0;
+	int arrayWC = 0;
+	int metaHasWildcard = 0;
+	char * ptr = (char *)relativeName;
+
+	// Counting occurrences of ?, _ and # in spec keyname
+	while (*ptr)
+	{
+		if (*ptr == '?')
+		{
+			++singleWC;
+		}
+		else if (*ptr == '_')
+		{
+			++multiWC;
+		}
+		else if (*ptr == '#')
+		{
+			++arrayWC;
+		}
+		++ptr;
+	}
+	hasWildcard = singleWC + multiWC + arrayWC;
+
+	// check if metastring has wildcards
+	if (hasWildcard)
+	{
+		ptr = (char *)metaString;
+		while (*ptr)
+		{
+			if (*ptr == '?' || *ptr == '_' || *ptr == '#') ++metaHasWildcard;
+			++ptr;
+		}
+	}
+
+	// both keyname and string have wildcards
+	if (metaHasWildcard && hasWildcard)
+	{
+		// keyname with wildcards matched to actual values relative to parent key
+		const char * relativeFullName = strchr (keyName (key), '/') + strlen (strchr (keyName (parentKey), '/')) + 1;
+
+		size_t newMetaSize = keyGetValueSize (metaKey) + 3 * (strlen (relativeFullName) - strlen (relativeName));
+		char * newMetaString = elektraCalloc (newMetaSize);
+		char * src = (char *)metaString;
+		char * dest = newMetaString;
+		int singleWCCounter = 0;
+		int multiWCCounter = 0;
+		int arrayWCCounter = 0;
+
+		// search and replace wildcards using the same order the globbing key has module the number of occurrences.
+		while (*src)
+		{
+			if (*src != '?' && *src != '_' && *src != '#')
+			{
+				*dest = *src;
+				++src;
+				++dest;
+			}
+			else
+			{
+				// found a wildcard
+
+				char * segmentStart = src;
+				char * segmentEnd = src;
+				int localCounter = 0;
+				ptr = (char *)relativeName;
+
+				// try to find the corresponding wildcard in the globbing key.
+				if (*src == '?' && singleWC)
+				{
+					++singleWCCounter;
+					if (singleWCCounter > singleWC) singleWCCounter = 1;
+					while (localCounter < singleWCCounter)
+					{
+						if (*ptr == '?') ++localCounter;
+						++ptr;
+					}
+				}
+				else if (*src == '_' && multiWC)
+				{
+					++multiWCCounter;
+					if (multiWCCounter > multiWC) multiWCCounter = 1;
+					while (localCounter < multiWCCounter)
+					{
+						if (*ptr == '_') ++localCounter;
+						++ptr;
+					}
+				}
+				else if (*src == '#' && arrayWC)
+				{
+					++arrayWCCounter;
+					if (arrayWCCounter > arrayWC) arrayWCCounter = 1;
+					while (localCounter < arrayWCCounter)
+					{
+						if (*ptr == '#') ++localCounter;
+						++ptr;
+					}
+				}
+				--ptr;
+				int noMatch = 0;
+				char * ptrCopy = ptr;
+
+				// check if the key name part containing the wildcard matches the globbing key
+
+				// check starting at the wildcard until the start of the name part.
+				while (!noMatch && ptrCopy > relativeName && segmentStart > metaString)
+				{
+					if (*ptrCopy == '?')
+					{
+						while (*segmentStart != '/' && segmentStart > metaString && ptrCopy > relativeName &&
+						       *ptrCopy != '/')
+						{
+							--segmentStart;
+							--ptrCopy;
+							if (*segmentStart != *ptrCopy)
+							{
+								noMatch = 1;
+								break;
+							}
+						}
+						if (*segmentStart == *ptrCopy && *ptrCopy != '\0')
+						{
+							segmentStart = src;
+							break;
+						}
+					}
+					else if (*ptrCopy == '_')
+					{
+						while (*segmentStart != '/' && segmentStart > metaString && ptrCopy > relativeName &&
+						       *ptrCopy != '/')
+						{
+							--segmentStart;
+							--ptrCopy;
+							if (*segmentStart != *ptrCopy)
+							{
+								noMatch = 1;
+								break;
+							}
+						}
+						if (*segmentStart == *ptrCopy && *ptrCopy != '\0')
+						{
+							segmentStart = src;
+							break;
+						}
+					}
+					else if (*ptrCopy == '#')
+					{
+						--segmentStart;
+						--ptrCopy;
+						if (*segmentStart != *ptrCopy)
+						{
+							noMatch = 1;
+							break;
+						}
+						if (*segmentStart == *ptrCopy && *ptrCopy != '\0')
+						{
+							segmentStart = src;
+							break;
+						}
+					}
+					else if (*ptrCopy != *segmentStart)
+					{
+						noMatch = 1;
+						break;
+					}
+				}
+				ptrCopy = ptr;
+
+				// check from wildcard position until the end of the key name part is found
+				while ((!noMatch) && (ptrCopy < relativeName + strlen (relativeName)) &&
+				       (segmentEnd < metaString + strlen (metaString)))
+				{
+					if (*ptrCopy == '?')
+					{
+						while (*segmentEnd != '/' && segmentEnd < metaString + strlen (metaString) &&
+						       ptrCopy < relativeName + strlen (relativeName) && *ptrCopy != '/')
+						{
+							++segmentEnd;
+							++ptrCopy;
+							if (*segmentEnd != *ptrCopy)
+							{
+								noMatch = 1;
+								break;
+							}
+						}
+						if (*segmentEnd == *ptrCopy && *ptrCopy != '\0') break;
+					}
+					else if (*ptrCopy == '_')
+					{
+						while (*segmentEnd != '/' && segmentEnd < metaString + strlen (metaString) &&
+						       ptrCopy < relativeName + strlen (relativeName) && *ptrCopy != '/')
+						{
+							++segmentEnd;
+							++ptrCopy;
+							if (*segmentEnd != *ptrCopy)
+							{
+								noMatch = 1;
+								break;
+							}
+						}
+						if (*segmentEnd == *ptrCopy && *ptrCopy != '\0')
+						{
+							break;
+						}
+					}
+					else if (*ptrCopy == '#')
+					{
+						++segmentEnd;
+						++ptrCopy;
+						if (*segmentEnd != *ptrCopy)
+						{
+							noMatch = 1;
+							break;
+						}
+						if (*segmentEnd == *ptrCopy && *ptrCopy != '\0')
+						{
+							break;
+						}
+					}
+					else if (*ptrCopy != *segmentEnd)
+					{
+						noMatch = 1;
+						break;
+					}
+				}
+
+				segmentEnd = ptrCopy;
+
+				if (!noMatch)
+				{
+					// key name part in string matches the globbing key name part
+
+					char * realPtr = (char *)relativeFullName;
+					char * otherPtr = (char *)relativeName;
+					int localSingleWCCounter = 0;
+					int localMultiWCCounter = 0;
+					int localArrayWCCounter = 0;
+
+					// replace wildcard with actual match.
+					while (*otherPtr)
+					{
+						if (*otherPtr == '?' && *src == '?')
+						{
+							++localSingleWCCounter;
+							if (localSingleWCCounter == singleWCCounter) break;
+							++realPtr;
+							++otherPtr;
+						}
+						else if (*otherPtr == '_' && *src == '_')
+						{
+							++localMultiWCCounter;
+							if (localMultiWCCounter == multiWCCounter) break;
+							++otherPtr;
+							while (*realPtr && *realPtr != *otherPtr)
+							{
+								++realPtr;
+							}
+						}
+						else if (*otherPtr == '#' && *src == '#')
+						{
+							++localArrayWCCounter;
+							if (localArrayWCCounter == arrayWCCounter) break;
+							++otherPtr;
+							while (*realPtr && *realPtr != *otherPtr)
+							{
+								++realPtr;
+							}
+						}
+						else if (*otherPtr == '?' && *realPtr != '?')
+						{
+							++otherPtr;
+							++realPtr;
+						}
+						else if (*otherPtr == '_' && *realPtr != '_')
+						{
+							++otherPtr;
+							while (*realPtr && *realPtr != *otherPtr)
+								++realPtr;
+						}
+						else if (*otherPtr == '#' && *realPtr != '#')
+						{
+							++otherPtr;
+							while (*realPtr && *realPtr != *otherPtr)
+								++realPtr;
+						}
+						else if (*otherPtr == *realPtr)
+						{
+							++otherPtr;
+							++realPtr;
+						}
+					}
+					while (*realPtr && *realPtr != *segmentEnd)
+					{
+						*dest = *realPtr;
+						++dest;
+						++realPtr;
+					}
+					++src;
+				}
+				else
+				{
+					// doesn't match globbing part,
+					// since it's not an actual wildcard, decrement the counter again.
+					// move on to the next symbol.
+
+					if (*src == '#')
+					{
+						--multiWCCounter;
+					}
+					else if (*src == '?')
+					{
+						--singleWCCounter;
+					}
+					else if (*src == '#')
+					{
+						--arrayWCCounter;
+					}
+					*dest = *src;
+					++dest;
+					++src;
+				}
+			}
+		}
+		keySetMeta (key, name, newMetaString);
+		elektraFree (newMetaString);
+	}
+	else
+	{
+		// no wildcards in string, simply copy the metadata
+
+		keyCopyMeta (key, specKey, name);
+	}
+}
+
+static void copyMeta (Key * key, Key * specKey, Key * parentKey)
 {
 	keyRewindMeta (specKey);
 	while (keyNextMeta (specKey) != NULL)
@@ -591,17 +949,20 @@ static void copyMeta (Key * key, Key * specKey)
 			const Key * oldMeta;
 			if ((oldMeta = keyGetMeta (key, name)) != NULL)
 			{
-				int conflictStringSize = elektraStrLen (name) + elektraStrLen ("conflict/collision/");
-				char * conflictName = elektraMalloc (conflictStringSize);
-				snprintf (conflictName, conflictStringSize, "conflict/%s", name);
-				keySetMeta (key, conflictName, keyString (oldMeta));
-				keyCopyMeta (key, specKey, name);
-				elektraFree (conflictName);
-				elektraMetaArrayAdd (key, "conflict/collision", name);
+				if (strcmp (keyString (oldMeta), keyString (meta)))
+				{
+					int conflictStringSize = elektraStrLen (name) + elektraStrLen ("conflict/collision/");
+					char * conflictName = elektraMalloc (conflictStringSize);
+					snprintf (conflictName, conflictStringSize, "conflict/%s", name);
+					keySetMeta (key, conflictName, keyString (oldMeta));
+					matchedKeyCopyMeta (key, specKey, parentKey, name);
+					elektraFree (conflictName);
+					elektraMetaArrayAdd (key, "conflict/collision", name);
+				}
 			}
 			else
 			{
-				keyCopyMeta (key, specKey, name);
+				matchedKeyCopyMeta (key, specKey, parentKey, name);
 			}
 		}
 	}
@@ -644,33 +1005,35 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		{
 			pattern = keyNameToMatchingString (specKey);
 		}
+		int found = 0;
 		ksRewind (returned);
 		while ((cur = ksNext (returned)) != NULL)
 		{
 			cursor_t cursor = ksGetCursor (returned);
 			if (matchPatternToKey (pattern, cur))
 			{
+				found = 1;
 				if (require)
 				{
-					if (hasRequired (cur, specKey, returned)) copyMeta (cur, specKey);
+					if (hasRequired (cur, specKey, returned)) copyMeta (cur, specKey, parentKey);
 				}
 				else if (keyGetMeta (cur, "conflict/invalid"))
 				{
-					copyMeta (cur, specKey);
+					copyMeta (cur, specKey, parentKey);
 				}
 				else if (keyGetMeta (cur, "spec/internal/valid"))
 				{
-					copyMeta (cur, specKey);
+					copyMeta (cur, specKey, parentKey);
 				}
 				else if (elektraArrayValidateName (cur) == 1)
 				{
 					validateArray (returned, cur, specKey);
-					copyMeta (cur, specKey);
+					copyMeta (cur, specKey, parentKey);
 				}
 				else if (!(strcmp (keyBaseName (specKey), "_")))
 				{
 					validateWildcardSubs (returned, cur, specKey);
-					copyMeta (cur, specKey);
+					copyMeta (cur, specKey, parentKey);
 				}
 				else
 				{
@@ -678,18 +1041,29 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 					{
 						if (isValidArrayKey (cur))
 						{
-							copyMeta (cur, specKey);
+							copyMeta (cur, specKey, parentKey);
 						}
 					}
 					else
 					{
-						copyMeta (cur, specKey);
+						copyMeta (cur, specKey, parentKey);
 					}
 				}
 			}
 			ksSetCursor (returned, cursor);
 		}
 		ksRewind (returned);
+		if (!found && dir == GET)
+		{
+			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only assign/conditional currently exists
+			{
+				Key * newKey =
+					keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE, "BLUBBERBLASEN!", KEY_END);
+				copyMeta (cur, specKey, parentKey);
+				ksAppendKey (returned, keyDup (newKey));
+				keyDel (newKey);
+			}
+		}
 		while ((cur = ksNext (returned)) != NULL)
 		{
 			ret = handleErrors (parentKey, returned, cur, specKey, ch, dir);
@@ -698,7 +1072,6 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 
 		elektraFree (pattern);
 	}
-	ksAppend (returned, specKS);
 	return ret;
 }
 
@@ -781,20 +1154,20 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ch->conflict = onConflict;
 	ch->range = onConflict;
 	ch->missing = onConflict;
-
 	KeySet * conflictCut = ksCut (config, onConflictConf);
 	parseConfig (conflictCut, ch);
 	ksAppend (config, conflictCut);
 	ksDel (conflictCut);
 	Key * specKey = keyNew ("spec", KEY_END);
 	KeySet * specKS = ksCut (returned, specKey);
+	elektraPluginSetData (handle, ksDup (specKS));
 	keyDel (specKey);
 	KeySet * ks = ksCut (returned, parentKey);
 	ksRewind (ks);
 	ksRewind (specKS);
 	int ret = doGlobbing (parentKey, ks, specKS, ch, GET);
-	ksAppend (returned, ks);
 	ksAppend (returned, specKS);
+	ksAppend (returned, ks);
 	ksDel (ks);
 	ksDel (specKS);
 	elektraFree (ch);
@@ -835,14 +1208,11 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	parseConfig (conflictCut, ch);
 	ksAppend (config, conflictCut);
 	ksDel (conflictCut);
-	Key * specKey = keyNew ("spec", KEY_END);
-	KeySet * specKS = ksCut (returned, specKey);
-	keyDel (specKey);
+	KeySet * specKS = elektraPluginGetData (handle);
 	KeySet * ks = ksCut (returned, parentKey);
 	ksRewind (ks);
 	ksRewind (specKS);
 	int ret = doGlobbing (parentKey, ks, specKS, ch, SET);
-	ksAppend (returned, specKS);
 	ksAppend (returned, ks);
 	ksDel (ks);
 	ksDel (specKS);

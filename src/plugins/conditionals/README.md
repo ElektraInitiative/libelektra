@@ -4,9 +4,9 @@
 - infos/provides =
 - infos/needs =
 - infos/recommends =
-- infos/placements = presetstorage
+- infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep libc preview
-- infos/metadata = check/condition assign/condition
+- infos/metadata = check/condition assign/condition condition/validsuffix
 - infos/description =
 
 ## Introduction ##
@@ -26,6 +26,9 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
+### Testing if Key exists ###
+
+`(! a/key)` evaluates to true if the key `a/key` doesn't exist, to false if it exists.
 
 ### Assign Syntax ###
 
@@ -33,7 +36,14 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 
 Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign/condition` is used.
 
+### EXPERIMENTAL: Nested Conditions ###
 
+Multiple conditions can be nested and combined using parentheses and `&&` (logical AND) or `||` (logical OR). Additional parentheses must be used to form valid conditions again. `(` `(condition 1) && (condition 2)` `)`
+
+### valid suffix ###
+
+The `condition/validsuffix` can be used to define a list of valid suffixes to numeric values. If two operants have the same valid suffix or one of them no suffix they will be treated by their numeric value ignoring their suffix.
+`condition/validsuffix = 'm', 'cm', 'km'` would treat `2.3m` just as the numeric value `2.3` when comparing to another value having the same or no suffix.
 
 ## Example ##
 
@@ -56,4 +66,3 @@ Assignment example:
 	kdb set user/tmount/conditionals/hkey Hello
 	kdb setmeta user/tmount/conditionals/hkey assign/condition "(hkey == 'Hello') ? ('World')"
 	kdb get user/tmount/conditionals/hkey # output: World
-

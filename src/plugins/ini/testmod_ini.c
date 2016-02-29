@@ -63,29 +63,13 @@ static void test_plainIniWrite (char * fileName)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	// clang-format off
-	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-write/nosectionkey",
-					KEY_VALUE, "nosectionvalue",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section1",
-					KEY_BINARY, 
-					KEY_END),
-			keyNew ("user/tests/ini-write/section1/key1",
-					KEY_VALUE, "value1",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section1/key2",
-					KEY_VALUE, "value2",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section2",
-					KEY_BINARY,
-					KEY_END),
-			keyNew ("user/tests/ini-write/section2/key3",
-					KEY_VALUE, "value3",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section2/emptykey", KEY_END),
-			KS_END);
-	// clang-format on
+	KeySet * ks = ksNew (30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_END),
+			     keyNew ("user/tests/ini-write/section1", KEY_BINARY, KEY_END),
+			     keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_END),
+			     keyNew ("user/tests/ini-write/section1/key2", KEY_VALUE, "value2", KEY_END),
+			     keyNew ("user/tests/ini-write/section2", KEY_BINARY, KEY_END),
+			     keyNew ("user/tests/ini-write/section2/key3", KEY_VALUE, "value3", KEY_END),
+			     keyNew ("user/tests/ini-write/section2/emptykey", KEY_END), KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
@@ -105,29 +89,15 @@ static void test_plainIniEmptyWrite (char * fileName)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	// clang-format off
-	KeySet *ks = ksNew (30,
-			keyNew ("user/tests/ini-write/nosectionkey",
-					KEY_VALUE, "nosectionvalue",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section1",
-					KEY_BINARY,
-					KEY_END),
-			keyNew ("user/tests/ini-write/section1/key1",
-					KEY_VALUE, "value1",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section1/key2",
-					KEY_VALUE, "value2",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section2",
-					KEY_BINARY,
-					KEY_END),
-			keyNew ("user/tests/ini-write/section2/key3",
-					KEY_VALUE, "value3",
-					KEY_END),
-			keyNew ("user/tests/ini-write/section2/emptykey", KEY_META, "ini/empty", "", KEY_END),
-			KS_END);
-	// clang-format on
+	KeySet * ks = ksNew (30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_END),
+			     keyNew ("user/tests/ini-write/section1", KEY_BINARY,
+
+				     KEY_END),
+			     keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_END),
+			     keyNew ("user/tests/ini-write/section1/key2", KEY_VALUE, "value2", KEY_END),
+			     keyNew ("user/tests/ini-write/section2", KEY_BINARY, KEY_END),
+			     keyNew ("user/tests/ini-write/section2/key3", KEY_VALUE, "value3", KEY_END),
+			     keyNew ("user/tests/ini-write/section2/emptykey", KEY_META, "ini/empty", "", KEY_END), KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");

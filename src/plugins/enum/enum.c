@@ -12,12 +12,12 @@
 #include "kdbconfig.h"
 #endif
 
-#include "enum.h"
-#include <kdberrors.h>
-#include <regex.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <regex.h>
+#include <kdberrors.h>
+#include "enum.h"
 
 #define VALIDATE_KEY_SUBMATCHES 3 // first submatch is the string we want, second submatch , or EOL
 
@@ -47,7 +47,7 @@ static int validateKey (Key * key)
 	const Key * meta = keyGetMeta (key, "check/enum");
 	if (!meta) return 1;
 	const char * validValues = keyString (meta);
-	const char * regexString = "'([^']*)'\\s*(,|$)";
+	const char * regexString = "'([^']*)'\\s*(,|$|([)]}])?)";
 	regex_t regex;
 	if (regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE))
 	{
@@ -78,10 +78,7 @@ static int validateKey (Key * key)
 		}
 		ptr += match[0].rm_eo;
 	}
-	if (value)
-	{
-		elektraFree (value);
-	}
+	if (value) elektraFree (value);
 	regfree (&regex);
 	return 0;
 }
@@ -94,7 +91,7 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	{
 		if (!validateKey (cur))
 		{
-			ELEKTRA_SET_ERROR (121, parentKey, "Validation failed");
+			ELEKTRA_SET_ERRORF (121, parentKey, "Validation of %s failed.", keyName (cur));
 			return -1;
 		}
 	}
@@ -105,9 +102,8 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 Plugin * ELEKTRA_PLUGIN_EXPORT (enum)
 {
 	// clang-format off
-	return elektraPluginExport("enum",
-		ELEKTRA_PLUGIN_GET,	&elektraEnumGet,
-		ELEKTRA_PLUGIN_SET,	&elektraEnumSet,
-		ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("enum", 
+			ELEKTRA_PLUGIN_GET, 	&elektraEnumGet,
+			ELEKTRA_PLUGIN_SET, 	&elektraEnumSet,
+			ELEKTRA_PLUGIN_END);
 }
-
