@@ -13,11 +13,6 @@ if (DEPENDENCY_PHASE)
 			COMMAND ${SWIG_EXECUTABLE} -c++ -python -external-runtime runtime.h
 		)
 
-		# generate readme from pythons readme.
-		set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
-		set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../python")
-		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_SAFE})
-
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
 		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
 		set_source_files_properties (python.cpp PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
@@ -51,7 +46,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 endif ()
 
-add_plugin(python2
+add_plugin (python2
 	CPP
 	SOURCES
 		python.hpp python.cpp ${CMAKE_CURRENT_BINARY_DIR}/runtime.h
@@ -65,3 +60,12 @@ add_plugin(python2
 		PYTHON_PLUGIN_NAME=python2
 		PYTHON_PLUGIN_SYMBOL_NAME=Python2
 )
+
+if (DEPENDENCY_PHASE)
+	# generate readme from pythons3 README.md
+	# it will overwrite previously generated file of add_plugin directly above
+	set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
+	set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../python")
+	generate_readme (python2)
+	set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_SAFE})
+endif ()
