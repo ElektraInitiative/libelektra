@@ -2,15 +2,15 @@
 
 ## BASIC GIT COMMANDS ##
 
-    git add .
+	git add .
 	git commit -a
 
 ## BASIC Configuration ##
 
-make sure to do:  
+make sure to do:
 
-	git config --global merge.ff false  
-	git config merge.ff false  
+	git config --global merge.ff false
+	git config merge.ff false
 
 ## Remote Branches ##
 
@@ -48,23 +48,23 @@ master.  (see config option above)
 
 ## Local branches ##
 
-You should always make your own feature branch with:  
+You should always make your own feature branch with:
 
 	git-checkout -b <feature-branch-name>
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
-To merge a branch use (no-fastforward):  
+To merge a branch use (no-fastforward):
 
 	git-merge --no-ff <branchname>
 
 If you already did some commits, but want them in a branch,
-you can do:  
+you can do:
 
-	git-branch foo  
-	git reset HEAD^^  (for 2 commits back)  
-	git reset origin/master  
+	git-branch foo
+	git reset HEAD^^  (for 2 commits back)
+	git reset origin/master
 
 	git-ref-log # recover
 
@@ -81,13 +81,13 @@ Then one of the admins:
 - fberlakovich
 - manuelm
 - markus2330
-- beku  
+- beku
 
-need to confirm by saying:  
+need to confirm by saying:
 
 	.*add\W+to\W+whitelist.*
 
-or if just the pull request should be checked:  
+or if just the pull request should be checked:
 
 	.*build\W+allow.*
 

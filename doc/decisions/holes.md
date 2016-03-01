@@ -5,6 +5,6 @@ good idea for strongly hierarchically structured data.
 
 + allow specific overrides without override of structure below
 
-See [Hierarchy Example]/src/bindings/cpp/examples/cpp_example_hierarchy.cpp)
+See [Hierarchy Example](/src/bindings/cpp/examples/cpp_example_hierarchy.cpp)
 for how to implement a hierarchy that gets rid of the problem that holes
 might create in this context.
