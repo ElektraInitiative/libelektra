@@ -123,6 +123,7 @@ static void test_init ()
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
+	// gcrypt tests
 	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (), 0);
 	if (plugin)
 	{
@@ -131,6 +132,7 @@ static void test_init ()
 		elektraPluginClose (plugin, 0);
 	}
 
+	// OpenSSL tests
 	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (), 0);
 	if (plugin)
 	{
@@ -138,12 +140,6 @@ static void test_init ()
 		test_init_internal (plugin, parentKey);
 		elektraPluginClose (plugin, 0);
 	}
-
-	plugin = elektraPluginOpen ("crypto", modules, newWorkingConfiguration (), 0);
-	exit_if_fail (plugin, "could not load crypto_openssl plugin");
-	succeed_if (!strcmp (plugin->name, "crypto"), "got wrong name");
-	test_init_internal (plugin, parentKey);
-	elektraPluginClose (plugin, 0);
 
 	elektraModulesClose (modules, 0);
 	ksDel (modules);

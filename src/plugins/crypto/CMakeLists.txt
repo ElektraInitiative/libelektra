@@ -126,3 +126,5 @@ add_plugin (crypto_openssl
 		ELEKTRA_VARIANT=openssl
 		ELEKTRA_CRYPTO_API_OPENSSL
 )
+
+add_plugintest (crypto)
