@@ -84,7 +84,7 @@ if (DEPENDENCY_PHASE)
 	unset (LIBGCRYPT_MANUAL_OSX_HACK)
 	unset (plugin)
 
-	if (HAS_OPENSSL_4SURE AND HAS_GCRYPT_4SURE)
+	if (HAS_OPENSSL_4SURE OR HAS_GCRYPT_4SURE)
 		add_plugintest (crypto)
 	endif ()
 endif ()
@@ -126,5 +126,3 @@ add_plugin (crypto_openssl
 		ELEKTRA_VARIANT=openssl
 		ELEKTRA_CRYPTO_API_OPENSSL
 )
-
-add_plugintest (crypto)
