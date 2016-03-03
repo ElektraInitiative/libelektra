@@ -31,7 +31,7 @@ if (DEPENDENCY_PHASE)
 	endif ()
 
 	set (plugin crypto_openssl)
-	if (FIND_PACKAGES AND NOT OPENSSL_MANUAL_OSX_HACK)
+	if (NOT OPENSSL_MANUAL_OSX_HACK)
 		include (FindPkgConfig)
 		pkg_search_module (OPENSSL openssl)
 	endif ()
