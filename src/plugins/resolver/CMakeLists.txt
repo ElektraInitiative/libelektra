@@ -40,7 +40,7 @@ foreach (plugin ${PLUGINS})
 			"${plugin}"
 			)
 	endif ()
-	if (${plugin} MATCHES "ALL" OR ${plugin} MATCHES "DEFAULT")
+	if (${plugin} MATCHES "ALL" OR ${plugin} MATCHES "DEFAULT" OR ${plugin} MATCHES "NODEP")
 		set (RESOLVERS
 			"${RESOLVERS}"
 			resolver_fm_b_b
