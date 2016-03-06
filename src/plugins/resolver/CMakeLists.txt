@@ -57,7 +57,9 @@ foreach (plugin ${PLUGINS})
 	endif ()
 endforeach ()
 
-list (REMOVE_DUPLICATES RESOLVERS)
+if (RESOLVERS)
+	list (REMOVE_DUPLICATES RESOLVERS)
+endif ()
 
 foreach (plugin ${RESOLVERS})
 	if (${plugin} MATCHES "^resolver_.*")
