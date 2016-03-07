@@ -15,16 +15,16 @@
 
 #include <tests_plugin.h>
 
-#define test(ks, retval)																												   \
-	{																																   \
-		Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);												   \
-		KeySet * conf = ksNew (0, KS_END);																						   \
-		PLUGIN_OPEN ("mathcheck");																								   \
-		ksRewind (ks);																											   \
-		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == retval, "error");													   \
-		keyDel (parentKey);																										   \
-		PLUGIN_CLOSE ();																										   \
-	}
+static inline void test (KeySet * ks, int retval)
+{
+	Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mathcheck");
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == retval, "error");
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
 
 static KeySet * create_ks (const char * res, const char * meta)
 {
@@ -78,15 +78,15 @@ int main (int argc, char ** argv)
 	ksDel (ks); 
 
 	ks = create_ks ("3", "== + bla/nonExisting + bla/nonExistingToo bla/val3");
-	test (ks, 1)
+	test (ks, 1);
 	ksDel (ks);   
   
 	ks = create_ks ("3", "== / bla/nonExisting / bla/nonExistingToo bla/val3");
-	test (ks, 1)
+	test (ks, 1);
 	ksDel (ks);   
   
 	ks = create_ks ("3", "== + bla/nonExisting / bla/nonExistingToo bla/val3");
-	test (ks, 1)
+	test (ks, 1);
 	ksDel (ks);   
 
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
