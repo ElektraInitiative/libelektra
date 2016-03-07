@@ -1049,7 +1049,7 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only assign/conditional currently exists
 			{
 				Key * newKey =
-					keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE, "BLUBBERBLASEN!", KEY_END);
+					keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
 				copyMeta (cur, specKey, parentKey);
 				ksAppendKey (returned, keyDup (newKey));
 				keyDel (newKey);
