@@ -508,13 +508,14 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 		keySetName (parentKey, keyName (split->parents[i]));
 		keySetString (parentKey, keyString (split->parents[i]));
 
-		for (size_t p = 1; p < NR_OF_PLUGINS; ++p)
+		for (size_t p = 1; p < 6; ++p)
 		{
 			int ret = 0;
 			if (backend->getplugins[p])
 			{
 				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
 			}
+
 			if (ret == -1)
 			{
 				// Ohh, an error occurred,
@@ -526,7 +527,39 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 	return 0;
 }
 
+static int elektraGetDoUpdate2 (Split * split, KeySet * ks, Key * parentKey)
+{
+	const int bypassedSplits = 1;
+	for (size_t i = 0; i < split->size - bypassedSplits; i++)
+	{
+		if (!test_bit (split->syncbits[i], SPLIT_FLAG_SYNC))
+		{
+			// skip it, update is not needed
+			continue;
+		}
+		Backend * backend = split->handles[i];
+		ksRewind (split->keysets[i]);
+		keySetName (parentKey, keyName (split->parents[i]));
+		keySetString (parentKey, keyString (split->parents[i]));
 
+		for (size_t p = 6; p < NR_OF_PLUGINS; ++p)
+		{
+			int ret = 0;
+			if (backend->getplugins[p])
+			{
+				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], ks, parentKey);
+			}
+
+			if (ret == -1)
+			{
+				// Ohh, an error occurred,
+				// lets stop the process.
+				return -1;
+			}
+		}
+	}
+	return 0;
+}
 /**
  * @brief Retrieve keys in an atomic and universal way.
  *
@@ -693,6 +726,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ksRewind (ks);
 
+	if (elektraGetDoUpdate2(split, ks, parentKey) == -1)
+	{
+		goto error;
+	}
+	
 	keySetName (parentKey, keyName (initialParent));
 	elektraSplitUpdateFileName (split, handle, parentKey);
 	keyDel (initialParent);

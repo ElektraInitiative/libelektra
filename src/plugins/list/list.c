@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum { preGetStorage = 0, postGetStorage, getEnd } GetPlacements;
+typedef enum { preGetStorage = 0, postGetStorage, postGetCleanup, getEnd } GetPlacements;
 
 typedef enum { preSetStorage = 0, preCommit, postCommit, setEnd } SetPlacements;
 
@@ -37,12 +37,12 @@ typedef struct
 
 	ErrPlacements errPlacements[2]; // prerollback and postrollback
 	SetPlacements setPlacements[3]; // presetstorage, precommit and postcommit
-	GetPlacements getPlacements[2]; // pregetstorage and postgetstorage
+	GetPlacements getPlacements[3]; // pregetstorage and postgetstorage
 
 	// each keyset contains the list of plugin names for a given placement
 	KeySet * setKS[3];
 	KeySet * errKS[2];
-	KeySet * getKS[2];
+	KeySet * getKS[3];
 	KeySet * plugins;
 	KeySet * modules;
 } Placements;
@@ -59,6 +59,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		placements->getCurrent = preGetStorage;
 		placements->getKS[0] = ksNew (0, KS_END);
 		placements->getKS[1] = ksNew (0, KS_END);
+		placements->getKS[2] = ksNew (0, KS_END);
 		placements->setKS[0] = ksNew (0, KS_END);
 		placements->setKS[1] = ksNew (0, KS_END);
 		placements->setKS[2] = ksNew (0, KS_END);
@@ -91,7 +92,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	if (key)
 	{
 		const char * getString = keyString (key);
-		const char * getStrings[] = { "pregetstorage", "postgetstorage" };
+		const char * getStrings[] = { "pregetstorage", "postgetstorage", "postgetcleanup" };
 		GetPlacements getPlacement = preGetStorage;
 		while (getPlacement != getEnd)
 		{
