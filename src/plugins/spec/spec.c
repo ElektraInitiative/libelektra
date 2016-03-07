@@ -598,7 +598,10 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 	const char * metaString = keyString (metaKey);
 
 	// name relative to parent key
-	const char * relativeName = strchr (keyName (specKey), '/') + strlen (strchr (keyName (parentKey), '/')) + 1;
+	size_t offset = 1;
+	if (strchr (keyName (parentKey), '/') != NULL) offset += strlen ((strchr (keyName (parentKey), '/')));
+
+	const char * relativeName = strchr (keyName (specKey), '/') + offset;
 
 	int hasWildcard = 0;
 	int singleWC = 0;
