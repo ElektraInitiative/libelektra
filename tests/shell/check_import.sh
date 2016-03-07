@@ -35,11 +35,6 @@ do
 
 	echo "Import with existing root"
 
-	if [ "x$PLUGIN" = "xini" ]
-	then
-		$KDB mount test.ini $ROOT $PLUGIN 
-	fi
-
 	if [ "x$PLUGIN" != "xyajl" ]
 	then
 		$KDB set $ROOT "root" >/dev/null
@@ -289,10 +284,6 @@ user/tests/script/key"
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove $ROOT"
 		
-	if [ "x$PLUGIN" = "xini" ]
-	then
-		$KDB umount $ROOT
-	fi
 
 done
 
