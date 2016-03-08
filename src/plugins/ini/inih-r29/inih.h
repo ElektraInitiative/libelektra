@@ -17,10 +17,10 @@ extern "C" {
 
 #include <stdio.h>
 
-typedef int (*KeyHandler)(void *, const char *, const char *, const char *, unsigned short lineContinuation);
-typedef int (*SectionHandler)(void *, const char *);
-typedef int (*CommentHandler)(void *, const char *);
-typedef void (*BomHandler)(void *, short);
+typedef int (*KeyHandler) (void *, const char *, const char *, const char *, unsigned short lineContinuation);
+typedef int (*SectionHandler) (void *, const char *);
+typedef int (*CommentHandler) (void *, const char *);
+typedef void (*BomHandler) (void *, short);
 
 struct IniConfig
 {

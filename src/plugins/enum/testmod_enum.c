@@ -13,8 +13,8 @@
 #include <kdbconfig.h>
 #include <stdio.h>
 
-#include <tests_plugin.h>
 #include <tests_internal.h>
+#include <tests_plugin.h>
 
 
 static void test ()

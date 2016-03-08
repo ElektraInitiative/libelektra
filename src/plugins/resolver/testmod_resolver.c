@@ -49,7 +49,7 @@ void test_resolve ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
@@ -97,7 +97,7 @@ void test_name ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
@@ -134,7 +134,7 @@ void test_lockname ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
@@ -171,7 +171,7 @@ void test_tempname ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
@@ -213,20 +213,20 @@ void test_checkfile ()
 	func_t checkFile = conversation.f;
 
 
-	succeed_if (checkFile("valid") == 1, "valid file not recognised");
-	succeed_if (checkFile("/valid") == 0, "valid absolute file not recognised");
-	succeed_if (checkFile("/absolute/valid") == 0, "valid absolute file not recognised");
-	succeed_if (checkFile("../valid") == -1, "invalid file not recognised");
-	succeed_if (checkFile("valid/..") == -1, "invalid file not recognised");
-	succeed_if (checkFile("/../valid") == -1, "invalid absolute file not recognised");
-	succeed_if (checkFile("/valid/..") == -1, "invalid absolute file not recognised");
-	succeed_if (checkFile("very..strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("very/..strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("very../strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("very/../strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("/") == -1, "invalid absolute file not recognised");
-	succeed_if (checkFile(".") == -1, "invalid file not recognised");
-	succeed_if (checkFile("..") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("valid") == 1, "valid file not recognised");
+	succeed_if (checkFile ("/valid") == 0, "valid absolute file not recognised");
+	succeed_if (checkFile ("/absolute/valid") == 0, "valid absolute file not recognised");
+	succeed_if (checkFile ("../valid") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("valid/..") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("/../valid") == -1, "invalid absolute file not recognised");
+	succeed_if (checkFile ("/valid/..") == -1, "invalid absolute file not recognised");
+	succeed_if (checkFile ("very..strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("very/..strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("very../strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("very/../strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("/") == -1, "invalid absolute file not recognised");
+	succeed_if (checkFile (".") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("..") == -1, "invalid file not recognised");
 
 	ksDel (contract);
 	keyDel (root);

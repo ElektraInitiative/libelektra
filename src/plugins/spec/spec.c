@@ -21,22 +21,11 @@
 
 #define MAX_CHARS_IN_LONG 26
 
-typedef enum
-{
-	GET,
-	SET
-} Direction;
+typedef enum { GET, SET } Direction;
 
-typedef enum
-{
-	ERROR,
-	WARNING,
-	INFO,
-	IGNORE
-} OnConflict;
+typedef enum { ERROR, WARNING, INFO, IGNORE } OnConflict;
 
-typedef enum
-{
+typedef enum {
 	ARRAYMEMBER,
 	INVALID,
 	SUBCOUNT,

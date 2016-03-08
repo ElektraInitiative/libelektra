@@ -8,11 +8,11 @@
  */
 
 #include "dpkg.h"
+#include <kdb.h>
+#include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <kdb.h>
-#include <kdbhelper.h>
 
 #define DPKG_LINE_MAX 512
 
@@ -54,8 +54,8 @@ static KeySet * nextPackage (FILE * fp, Key * parentKey)
 			char * section = line;
 			char * data = strchr (line, ':');
 			if (data) *data = '\0';
-			++data; // skip :
-			++data; // skip whitespace
+			++data;		     // skip :
+			++data;		     // skip whitespace
 			strtok (data, "\n"); // remove newline
 			if (!strcmp (section, "Package"))
 			{

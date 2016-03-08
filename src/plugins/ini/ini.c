@@ -11,18 +11,18 @@
 #include "kdbconfig.h"
 #endif
 
+#include "ini.h"
+#include <ctype.h>
 #include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <kdberrors.h>
-#include <kdbproposal.h> //elektraKsToMemArray
-#include <kdbprivate.h>  //elektraReadArrayNumber
+#include <inih.h>
 #include <kdbease.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbos.h>
-#include <inih.h>
-#include <ctype.h>
-#include "ini.h"
+#include <kdbprivate.h>  //elektraReadArrayNumber
+#include <kdbproposal.h> //elektraKsToMemArray
+#include <stdlib.h>
+#include <string.h>
 
 
 char * keyNameGetOneLevel (const char *, size_t *);
@@ -34,12 +34,7 @@ static const char * findParent (Key *, Key *, KeySet *);
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
 
-typedef enum
-{
-	NONE,
-	BINARY,
-	ALWAYS
-} SectionHandling;
+typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
 
 typedef struct
 {
@@ -262,16 +257,16 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 	return 1;
 }
 
-//inserts newly created ini section or key into the keyset and sets it's order number
+// inserts newly created ini section or key into the keyset and sets it's order number
 static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 {
 	cursor_t savedCursor = ksGetCursor (ks);
 
-	//trying to find the keys section or sections parent section
+	// trying to find the keys section or sections parent section
 	const char * parent = findParent (parentKey, key, ksDup (ks));
 	if (parent)
 	{
-		//parent section found, inserting key 
+		// parent section found, inserting key
 		keySetMeta (key, "parent", parent);
 		Key * cutKey = keyNew (parent, KEY_END);
 		KeySet * cutKS = ksCut (ks, cutKey);
@@ -291,13 +286,13 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		keyDel (cutKey);
 		if (!sectionKey)
 		{
-			//no section or parent section found, parent == parentKey
+			// no section or parent section found, parent == parentKey
 			sectionKey = parentKey;
 		}
 		cutKS = ksCut (ks, sectionKey);
 		ksRewind (cutKS);
 
-		//since keyset is ordered alphabetically, just search the keyset below the "parent" until we found our key
+		// since keyset is ordered alphabetically, just search the keyset below the "parent" until we found our key
 		while ((cur = ksNext (cutKS)) != NULL)
 		{
 			if (!strcmp (keyName (cur), keyName (key))) break;
@@ -305,13 +300,13 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		Key * prevKey = ksPrev (cutKS);
 		ksAppend (ks, cutKS);
 		ksDel (cutKS);
-		//set keys ordernumber next the the order number of the key above it
+		// set keys ordernumber next the the order number of the key above it
 		const char * oldOrder = keyString (keyGetMeta (prevKey, "order"));
 		setSubOrderNumber (key, oldOrder);
 	}
 	else
 	{
-		//no section or parent section found, insert alphabetically
+		// no section or parent section found, insert alphabetically
 		Key * cur;
 		ksRewind (ks);
 		while ((cur = ksNext (ks)) != NULL)

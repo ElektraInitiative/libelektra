@@ -12,22 +12,21 @@
 #include "kdbconfig.h"
 #endif
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <kdberrors.h>
-#include <regex.h>
 #include <ctype.h>
-#include <math.h>
 #include <errno.h>
 #include <kdbease.h>
+#include <kdberrors.h>
+#include <math.h>
+#include <regex.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "conditionals.h"
 
 #define EPSILON 0.00001
 
-typedef enum
-{
+typedef enum {
 	EQU,
 	NOT,
 	LT,
@@ -40,14 +39,9 @@ typedef enum
 	OR,
 } Comparator;
 
-typedef enum
-{
-	CONDITION,
-	ASSIGN
-} Operation;
+typedef enum { CONDITION, ASSIGN } Operation;
 
-typedef enum
-{
+typedef enum {
 	TRUE = 1,
 	FALSE = 0,
 	ERROR = -1,

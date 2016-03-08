@@ -7,12 +7,12 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <sys/wait.h>
+#include <fcntl.h> /* For O_* constants */
 #include <sys/mman.h>
-#include <sys/stat.h>        /* For mode constants */
-#include <fcntl.h>           /* For O_* constants */
+#include <sys/stat.h> /* For mode constants */
+#include <sys/wait.h>
 
-int main(int argc, char **argv)
+int main (int argc, char ** argv)
 {
 	char shm_name[] = "shm_name_elektra_test_compile";
 	shm_unlink (shm_name);

@@ -238,7 +238,6 @@ TEST(Backend, x)
 	EXPECT_EQ(removeArray("should/_20/abc/__204"), "should/_20/abc/__204");
 }
 */
-
 }
 
 /**

@@ -15,23 +15,23 @@
 
 #include <tests_plugin.h>
 
-#define test(ks, retval)																												   \
-	{																																   \
-		Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);												   \
-		KeySet * conf = ksNew (0, KS_END);																						   \
-		PLUGIN_OPEN ("mathcheck");																								   \
-		ksRewind (ks);																											   \
-		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == retval, "error");													   \
-		keyDel (parentKey);																										   \
-		PLUGIN_CLOSE ();																										   \
+#define test(ks, retval)                                                                                                                   \
+	{                                                                                                                                  \
+		Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                 \
+		KeySet * conf = ksNew (0, KS_END);                                                                                         \
+		PLUGIN_OPEN ("mathcheck");                                                                                                 \
+		ksRewind (ks);                                                                                                             \
+		succeed_if (plugin->kdbSet (plugin, ks, parentKey) == retval, "error");                                                    \
+		keyDel (parentKey);                                                                                                        \
+		PLUGIN_CLOSE ();                                                                                                           \
 	}
 
 static KeySet * create_ks (const char * res, const char * meta)
 {
 	return ksNew (5, keyNew ("user/tests/mathcheck/sum", KEY_VALUE, res, KEY_META, "check/math", meta, KEY_END),
-			  keyNew ("user/tests/mathcheck/bla/val1", KEY_VALUE, "100", KEY_END),
-			  keyNew ("user/tests/mathcheck/bla/val2", KEY_VALUE, "50", KEY_END),
-			  keyNew ("user/tests/mathcheck/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
+		      keyNew ("user/tests/mathcheck/bla/val1", KEY_VALUE, "100", KEY_END),
+		      keyNew ("user/tests/mathcheck/bla/val2", KEY_VALUE, "50", KEY_END),
+		      keyNew ("user/tests/mathcheck/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 }
 
 int main (int argc, char ** argv)
@@ -68,26 +68,23 @@ int main (int argc, char ** argv)
 	ks = create_ks ("10", "== + bla/val3 '7'");
 	test (ks, 1);
 	ksDel (ks);
-	
+
 	ks = create_ks ("7", "== + bla/nonExisting '7'");
 	test (ks, 1);
-	ksDel (ks);    
-   
+	ksDel (ks);
+
 	ks = create_ks ("7", "== * bla/nonExisting '7'");
 	test (ks, 1);
-	ksDel (ks); 
+	ksDel (ks);
 
 	ks = create_ks ("3", "== + bla/nonExisting + bla/nonExistingToo bla/val3");
-	test (ks, 1)
-	ksDel (ks);   
-  
+	test (ks, 1) ksDel (ks);
+
 	ks = create_ks ("3", "== / bla/nonExisting / bla/nonExistingToo bla/val3");
-	test (ks, 1)
-	ksDel (ks);   
-  
+	test (ks, 1) ksDel (ks);
+
 	ks = create_ks ("3", "== + bla/nonExisting / bla/nonExistingToo bla/val3");
-	test (ks, 1)
-	ksDel (ks);   
+	test (ks, 1) ksDel (ks);
 
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

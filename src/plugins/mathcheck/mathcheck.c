@@ -27,26 +27,7 @@
 #define str(s) #s
 #define xstr(s) str (s)
 
-typedef enum
-{
-	ERROR,
-	ADD,
-	SUB,
-	MUL,
-	DIV,
-	NOT,
-	EQU,
-	LT,
-	GT,
-	LE,
-	GE,
-	RES,
-	VAL,
-	END,
-	SET,
-	NA,
-	EMPTY
-} Operation;
+typedef enum { ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, NA, EMPTY } Operation;
 typedef struct
 {
 	double value;
