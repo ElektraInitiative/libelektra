@@ -21,4 +21,13 @@ public class KeyNameIterator implements java.util.Iterator<String> {
 		pos += ret.length()+1;
 		return ret;
 	}
+
+	/**
+	 * NOT SUPPORTED
+	 * @throws UnsupportedOperationException
+	 */
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+	
 }

@@ -17,4 +17,12 @@ public class KeySetIterator implements java.util.Iterator<Key> {
 		++pos;
 		return ret;
 	}
+
+	/**
+	 * NOT SUPPORTED
+	 * @throws UnsupportedOperationException
+	 */
+	public void remove() {
+	    throw new UnsupportedOperationException();
+	}
 }
