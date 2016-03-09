@@ -89,6 +89,12 @@ public class KeySet implements java.lang.Iterable<Key> {
 
 	public int append(KeySet ks) {
 		return Elektra.INSTANCE.ksAppendKey(get(), ks.get());
+		int result = -1;
+		Iterator<Key> iter = ks.iterator();
+		while(iter.hasNext()) {
+			result = Elektra.INSTANCE.ksAppendKey(get(), iter.next().get());
+		}
+		return result;
 	}
 
 	public KeySet cut(Key cutpoint) {
