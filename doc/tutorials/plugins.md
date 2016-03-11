@@ -175,9 +175,9 @@ no dependencies, you can jump this section. The full documentation of
 In order to understand how to write the CMakeLists.txt, you need to know that
 the same file is included multiple times for different reasons.
 
-1.) The first time, only the name of plugins and directories are enquired.
+1. The first time, only the name of plugins and directories are enquired.
     In this phase, only the `add_plugin` should be executed.
-2.) The second time (if the plugin is actually requested), the CMakeLists.txt
+2. The second time (if the plugin is actually requested), the CMakeLists.txt
     is used to detect if all dependencies are actually available.
 
 This means that in the first time, only the `add_plugin` should be executed
