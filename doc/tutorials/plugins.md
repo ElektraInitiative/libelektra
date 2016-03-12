@@ -175,9 +175,9 @@ no dependencies, you can jump this section. The full documentation of
 In order to understand how to write the CMakeLists.txt, you need to know that
 the same file is included multiple times for different reasons.
 
-1.) The first time, only the name of plugins and directories are enquired.
+1. The first time, only the name of plugins and directories are enquired.
     In this phase, only the `add_plugin` should be executed.
-2.) The second time (if the plugin is actually requested), the CMakeLists.txt
+2. The second time (if the plugin is actually requested), the CMakeLists.txt
     is used to detect if all dependencies are actually available.
 
 This means that in the first time, only the `add_plugin` should be executed
@@ -246,7 +246,7 @@ Here is the trickier part to explain. Basically, at this point you will want to 
 inside of them according to what your plug-in is supposed to do. I will give a few examples of different plug-ins to better explain.
 
 The line plug-in was written to read files into a KeySet line by line using the newline character as a delimiter and naming the keys by their line
-number such as `#1`, `#2`, .. `#\_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time as I read a line I create a new key,
+number such as `#1`, `#2`, .. `#_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time as I read a line I create a new key,
 let's call it new_key using dupKey(parentKey). Then I set new_keys's name to lineNN (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the KeySet that was passed into the
 elektraPluginGet function, let's call it returned for now, using `ksAppendKey(return, new_key)`. Now the KeySet will contain `new_key` with the
