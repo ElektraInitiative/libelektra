@@ -14,10 +14,8 @@ STDOUTCMP=
 STDERRCMP=
 DIFFCMP=
 
-REPLAY=0
 BACKUP=0
 TMPFILE=$(mktemp)
-OLDFILE=
 
 execute()
 {
@@ -244,56 +242,39 @@ rm ./protocol 2>/dev/null
 rm ./stdout 2>/dev/null
 rm ./stderr 2>/dev/null
 
+if [ "$#" -lt "1" ] || [ "$#" -gt "2" ];
+then
+    echo "Usage: ./shell_recorder inputscript [protocol to compare]"
+    exit 0
+fi
+
 BACKUP=1
 
 run_script
-
-grep -Eq "REPLAY!" $FILE
-if [ "$?" -eq "0" ];
-then
-    REPLAY=1
-    OLDFILE=$(mktemp)
-    cp ${DBFile} ${OLDFILE} 2>/dev/null  
-fi
-
 
 kdb rm -r $Mountpoint 2>/dev/null
 cat "$TMPFILE" | kdb import $Mountpoint 2>/dev/null
 rm "${DBFile}.1" 2>/dev/null
 
+EVAL=0
 
-if [ "$REPLAY" -eq "1" ];
+if [ "$#" -eq "2" ];
 then
-    BACKUP=1
-    REPLAY=0
-    mv ./protocol ./protocol.2 2>/dev/null
-    rm ./stdout 2>/dev/null
-    rm ./stderr 2>/dev/null
-    run_script
-    mv ./protocol ./protocol.1 2>/dev/null
-    RESULT=$(diff -N --text ./protocol.1 ./protocol.2 2>/dev/null)
+    RESULT=$(diff -N --text "$2" ./protocol 2>/dev/null)
     if [ "$?" -ne "0" ];
     then
         echo -e "=======================================\nReplay test failed, protocols differ"
         echo "$RESULT"
         echo -en "\n\n"
+        EVAL=1
+    else
+         echo -e "=======================================\nReplay test succeeded"
     fi
-    RESULT=$(diff -N --text ${DBFile} ${OLDFILE})
-    if [ "$?" -ne "0" ];
-    then
-        echo -e "=======================================\nReplay test failed, DB files differ"
-        echo "$RESULT"
-        echo -en "\n\n"
-        echo "$RESULT" > ./replay_diff
-    fi
-    
-    kdb rm -r $Mountpoint 2>/dev/null
-    cat "$TMPFILE" | kdb import $Mountpoint 2>/dev/null
-    rm "${DBFile}.1" 2>/dev/null
 fi
 
 
 rm ./stdout 2>/dev/null
 rm ./stderr 2>/dev/null
-[ ! -z "$OLDFILE" ] && rm "$OLDFILE"
+
 rm ${TMPFILE}
+exit "$EVAL"
