@@ -11,18 +11,18 @@
 #include "kdbconfig.h"
 #endif
 
-#include "ini.h"
-#include <ctype.h>
 #include <errno.h>
-#include <inih.h>
-#include <kdbease.h>
-#include <kdberrors.h>
-#include <kdbhelper.h>
-#include <kdbos.h>
-#include <kdbprivate.h>  //elektraReadArrayNumber
-#include <kdbproposal.h> //elektraKsToMemArray
 #include <stdlib.h>
 #include <string.h>
+#include <kdberrors.h>
+#include <kdbproposal.h> //elektraKsToMemArray
+#include <kdbprivate.h>  //elektraReadArrayNumber
+#include <kdbease.h>
+#include <kdbhelper.h>
+#include <kdbos.h>
+#include <inih.h>
+#include <ctype.h>
+#include "ini.h"
 
 
 char * keyNameGetOneLevel (const char *, size_t *);
@@ -34,7 +34,12 @@ static const char * findParent (Key *, Key *, KeySet *);
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
 
-typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
+typedef enum
+{
+	NONE,
+	BINARY,
+	ALWAYS
+} SectionHandling;
 
 typedef struct
 {
@@ -134,7 +139,7 @@ static Key * createUnescapedKey (Key * key, const char * name)
 
 static void setOrderNumber (Key * parentKey, Key * key)
 {
-	kdb_long_long_t order = 0;
+	kdb_long_long_t order = 1;
 	const Key * orderKey = keyGetMeta (parentKey, "order");
 	if (orderKey != NULL)
 	{
@@ -302,6 +307,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		ksDel (cutKS);
 		// set keys ordernumber next the the order number of the key above it
 		const char * oldOrder = keyString (keyGetMeta (prevKey, "order"));
+		if (prevKey) keySetMeta (key, "parent", keyName (prevKey));
 		setSubOrderNumber (key, oldOrder);
 	}
 	else
@@ -321,7 +327,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		}
 		else
 		{
-			keySetMeta (key, "order", "#0");
+			keySetMeta (key, "order", "#1");
 		}
 	}
 	ksSetCursor (ks, savedCursor);
@@ -669,7 +675,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 
-	kdb_long_long_t order = 0;
+	kdb_long_long_t order = 1;
 	const Key * orderKey = keyGetMeta (parentKey, "ini/internal/oldorder");
 	if (orderKey)
 	{
@@ -696,8 +702,8 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	else
 	{
-		keySetMeta (parentKey, "order", "#0");
-		keySetMeta (parentKey, "ini/rootindex", "#0");
+		keySetMeta (parentKey, "order", "#1");
+		keySetMeta (parentKey, "ini/rootindex", "#1");
 	}
 
 
@@ -910,6 +916,105 @@ static char * getIniName (Key * section, Key * key)
 	return buffer;
 }
 
+Key * getGlobalRoot (Key * parentKey, KeySet * ks)
+{
+	Key * lookup = keyDup (parentKey);
+	keyAddName (lookup, INTERNAL_ROOT_SECTION);
+	Key * found = ksLookup (ks, lookup, KDB_O_NONE);
+	keyDel (lookup);
+	return found;
+}
+
+int hasGlobalRoot (Key * parentKey, KeySet * ks)
+{
+	if (getGlobalRoot (parentKey, ks))
+		return 1;
+	else
+		return 0;
+}
+
+void createGlobalRoot (Key * parentKey, KeySet * ks)
+{
+	Key * appendKey = keyDup (parentKey);
+	keySetString (appendKey, 0);
+	keySetMeta (appendKey, "ini/rootindex", 0);
+	keySetMeta (appendKey, "order", 0);
+	keySetMeta (appendKey, "binary", 0);
+	keySetMeta (appendKey, "ini/key", 0);
+	keyAddName (appendKey, INTERNAL_ROOT_SECTION);
+	keySetMeta (appendKey, "order", "#0");
+	ksAppendKey (ks, appendKey);
+}
+
+void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, KeySet * newKS)
+{
+	Key * arrayParentLookup = keyDup (newKey);
+	keySetBaseName (arrayParentLookup, 0);
+	Key * arrayParent = ksLookup (newKS, arrayParentLookup, KDB_O_NONE);
+	keyDel (arrayParentLookup);
+	const Key * arrayMeta = keyGetMeta (arrayParent, "ini/array");
+	if (arrayMeta)
+	{
+		if (strcmp (keyString (arrayMeta), keyBaseName (cur)) < 0)
+		{
+			keySetMeta (arrayParent, "ini/array", keyBaseName (newKey));
+		}
+	}
+	else if (arrayParent && !keyIsBinary (arrayParent))
+	{
+		const char * oldVal = keyString (arrayParent);
+		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
+		keySetMeta (arrayParent, "ini/key", "");
+		keySetMeta (arrayParent, "binary", 0);
+
+		if (oldVal && strlen (oldVal))
+		{
+			Key * arrayInitKey = keyDup (arrayParent);
+			keyAddBaseName (arrayInitKey, "#0");
+			keySetString (arrayInitKey, oldVal);
+			ksAppendKey (newKS, arrayInitKey);
+		}
+	}
+	else if (arrayParent && (keyBaseName (newKey)[1] == '0'))
+	{
+		Key * newParent = keyDup (arrayParent);
+		keyAddName (newParent, "..");
+		arrayParent = ksLookup (newKS, newParent, KDB_O_NONE);
+		if (arrayParent)
+		{
+			keyDel (newParent);
+		}
+		else
+		{
+			arrayParent = newParent;
+			keySetBinary (arrayParent, 0, 0);
+			keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
+			keySetMeta (arrayParent, "ini/key", "");
+			ksAppendKey (newKS, arrayParent);
+			insertKeyIntoKeySet (parentKey, arrayParent, newKS);
+		}
+		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
+		keySetMeta (arrayParent, "ini/key", "");
+		keyAddName (newKey, "..");
+	}
+	else if (keyIsDirectBelow (parentKey, newKey))
+	{
+		if (!hasGlobalRoot (parentKey, newKS))
+		{
+			createGlobalRoot (parentKey, newKS);
+			keyAddName (sectionKey, INTERNAL_ROOT_SECTION);
+		}
+		else
+		{
+			keyDel (sectionKey);
+			sectionKey = getGlobalRoot (parentKey, newKS);
+		}
+		keyDel (newKey);
+		newKey = keyDup (sectionKey);
+		keyAddBaseName (newKey, keyBaseName (cur));
+	}
+}
+
 void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig * pluginConfig)
 {
 	Key * appendKey = keyDup (parentKey);
@@ -928,7 +1033,16 @@ void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig *
 		keyAddName (sectionKey, "..");
 		if (keyIsDirectBelow (parentKey, cur))
 		{
-			keyAddName (sectionKey, INTERNAL_ROOT_SECTION);
+			if (!hasGlobalRoot (parentKey, newKS))
+			{
+				createGlobalRoot (parentKey, newKS);
+				keyAddName (sectionKey, INTERNAL_ROOT_SECTION);
+			}
+			else
+			{
+				keyDel (sectionKey);
+				sectionKey = getGlobalRoot (parentKey, newKS);
+			}
 		}
 		newKey = keyDup (sectionKey);
 		keyAddBaseName (newKey, keyBaseName (cur));
@@ -940,6 +1054,7 @@ void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig *
 	{
 		if (!ksLookup (newKS, sectionKey, KDB_O_NONE))
 		{
+			keySetBinary (sectionKey, 0, 0);
 			ksAppendKey (newKS, sectionKey);
 			insertKeyIntoKeySet (parentKey, sectionKey, newKS);
 		}
@@ -956,33 +1071,7 @@ void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig *
 	{
 		if ((elektraArrayValidateName (newKey) == 1) && pluginConfig->array)
 		{
-			Key * arrayParentLookup = keyDup (newKey);
-			keySetBaseName (arrayParentLookup, 0);
-			Key * arrayParent = ksLookup (newKS, arrayParentLookup, KDB_O_NONE);
-			keyDel (arrayParentLookup);
-			const Key * arrayMeta = keyGetMeta (arrayParent, "ini/array");
-			if (arrayMeta)
-			{
-				if (strcmp (keyString (arrayMeta), keyBaseName (cur)) < 0)
-				{
-					keySetMeta (arrayParent, "ini/array", keyBaseName (newKey));
-				}
-			}
-			else
-			{
-				const char * oldVal = keyString (arrayParent);
-				keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
-				keySetMeta (arrayParent, "ini/key", "");
-				keySetMeta (arrayParent, "binary", 0);
-
-				if (oldVal && strlen (oldVal))
-				{
-					Key * arrayInitKey = keyDup (arrayParent);
-					keyAddBaseName (arrayInitKey, "#0");
-					keySetString (arrayInitKey, oldVal);
-					ksAppendKey (newKS, arrayInitKey);
-				}
-			}
+			arrayHandler (parentKey, newKey, cur, sectionKey, newKS);
 		}
 
 		ksAppendKey (newKS, newKey);
@@ -1197,6 +1286,8 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 				if (keyGetMeta (cur, "ini/array") && config->array)
 				{
 					int lastArrayIndex = atoi (keyString (keyGetMeta (cur, "ini/array")) + 1);
+					keySetBaseName (cur, 0);
+
 					char * name = getIniName (sectionKey, cur);
 					++i;
 					for (int j = i; j <= i + lastArrayIndex; ++j)
@@ -1211,6 +1302,11 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 							fprintf (fh, "\"%s\"\n", string);
 						else
 							fprintf (fh, "%s\n", string);
+						if (lastArrayIndex == atoi (keyBaseName (cur) + 1))
+						{
+							lastArrayIndex = j - i;
+							break;
+						}
 					}
 					free (name);
 					i += lastArrayIndex;
@@ -1400,8 +1496,8 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	else
 	{
-		keySetMeta (parentKey, "order", "#0");
-		keySetMeta (parentKey, "ini/rootindex", "#0");
+		keySetMeta (parentKey, "order", "#1");
+		keySetMeta (parentKey, "ini/rootindex", "#1");
 	}
 
 	Key * root = keyDup (ksLookup (returned, parentKey, KDB_O_NONE));
@@ -1482,9 +1578,9 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 {
 	// clang-format off
 	return elektraPluginExport ("ini",
-					ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
-					ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
-					ELEKTRA_PLUGIN_GET, &elektraIniGet,
-					ELEKTRA_PLUGIN_SET, &elektraIniSet, 
-					ELEKTRA_PLUGIN_END);
+			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
+			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
+			ELEKTRA_PLUGIN_GET, &elektraIniGet,
+			ELEKTRA_PLUGIN_SET, &elektraIniSet, 
+			ELEKTRA_PLUGIN_END);
 }
