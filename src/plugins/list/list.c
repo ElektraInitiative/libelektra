@@ -20,13 +20,35 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum { preGetStorage = 0, postGetStorage, postGetCleanup, getEnd } GetPlacements;
+typedef enum
+{
+	preGetStorage = 0,
+	postGetStorage,
+	postGetCleanup,
+	getEnd
+} GetPlacements;
 
-typedef enum { preSetStorage = 0, preCommit, postCommit, setEnd } SetPlacements;
+typedef enum
+{
+	preSetStorage = 0,
+	preCommit,
+	postCommit,
+	setEnd
+} SetPlacements;
 
-typedef enum { preRollback = 0, postRollback, errEnd } ErrPlacements;
+typedef enum
+{
+	preRollback = 0,
+	postRollback,
+	errEnd
+} ErrPlacements;
 
-typedef enum { GET, SET, ERR } OP;
+typedef enum
+{
+	GET,
+	SET,
+	ERR
+} OP;
 
 typedef struct
 {
@@ -37,7 +59,7 @@ typedef struct
 
 	ErrPlacements errPlacements[2]; // prerollback and postrollback
 	SetPlacements setPlacements[3]; // presetstorage, precommit and postcommit
-	GetPlacements getPlacements[3]; // pregetstorage and postgetstorage
+	GetPlacements getPlacements[3]; // pregetstorage, postgetstorage, postgetclenaup
 
 	// each keyset contains the list of plugin names for a given placement
 	KeySet * setKS[3];
@@ -153,7 +175,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		if (sub)
 		{
 			const char * getString = keyString (sub);
-			const char * getStrings[] = { "pregetstorage", "postgetstorage" };
+			const char * getStrings[] = { "pregetstorage", "postgetstorage", "postgetcleanup" };
 			GetPlacements getPlacement = preGetStorage;
 			while (getPlacement != getEnd)
 			{
@@ -193,6 +215,7 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 	Placements * placements = elektraPluginGetData (handle);
 	ksDel (placements->getKS[0]);
 	ksDel (placements->getKS[1]);
+	ksDel (placements->getKS[2]);
 	ksDel (placements->setKS[0]);
 	ksDel (placements->setKS[1]);
 	ksDel (placements->setKS[2]);
@@ -215,7 +238,7 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 }
 
 static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, Key * parentKey,
-		       OP op, Key * (*traversalFunction) (KeySet *))
+		       OP op, Key * (*traversalFunction)(KeySet *))
 {
 	Key * current;
 

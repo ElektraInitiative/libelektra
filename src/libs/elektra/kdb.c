@@ -726,11 +726,15 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ksRewind (ks);
 
-	if (elektraGetDoUpdate2(split, ks, parentKey) == -1)
+	if (elektraGetDoUpdate2 (split, ks, parentKey) == -1)
 	{
 		goto error;
 	}
-	
+	if (handle->globalPlugins[POSTGETCLEANUP])
+	{
+		handle->globalPlugins[POSTGETCLEANUP]->kdbGet (handle->globalPlugins[POSTGETCLEANUP], ks, parentKey);
+	}
+
 	keySetName (parentKey, keyName (initialParent));
 	elektraSplitUpdateFileName (split, handle, parentKey);
 	keyDel (initialParent);

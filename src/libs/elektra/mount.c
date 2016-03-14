@@ -262,7 +262,7 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 			continue;
 		const char * placement = keyBaseName (cur);
 		const char * pluginName = keyString (cur);
-		const char * globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback",   "postrollback", "pregetstorage", "postgetstorage",
+		const char * globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback",   "postrollback", "pregetstorage", "postgetstorage", "postgetcleanup",
 								     "presetstorage", "precommit",    "postcommit" };
 
 
