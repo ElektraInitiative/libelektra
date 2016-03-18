@@ -845,3 +845,9 @@ description:globbing warning
 severity:warning
 ingroup:plugin
 module:spec
+
+number:144
+description:shell plugin error
+severity:error
+ingroup:plugin
+module:shell
