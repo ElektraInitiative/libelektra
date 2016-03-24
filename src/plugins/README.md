@@ -211,6 +211,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
 - [curlget](curlget/) fetchs configuration file from a remote host
+- [shell](shell/) executes shell commandos after kdbGet, kdbSet and kdbError
 
 ## New Plugins ##
 
