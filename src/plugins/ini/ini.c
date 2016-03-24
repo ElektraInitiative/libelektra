@@ -29,7 +29,7 @@ char * keyNameGetOneLevel (const char *, size_t *);
 
 int elektraIniOpen (Plugin * handle, Key * parentKey);
 int elektraIniClose (Plugin * handle, Key * parentKey);
-static const char * findParent (Key *, Key *, KeySet *);
+static char * findParent (Key *, Key *, KeySet *);
 #include "contract.h"
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
@@ -268,7 +268,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 	cursor_t savedCursor = ksGetCursor (ks);
 
 	// trying to find the keys section or sections parent section
-	const char * parent = findParent (parentKey, key, ksDup (ks));
+	char * parent = findParent (parentKey, key, ksDup (ks));
 	if (parent)
 	{
 		// parent section found, inserting key
@@ -307,7 +307,6 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		ksDel (cutKS);
 		// set keys ordernumber next the the order number of the key above it
 		const char * oldOrder = keyString (keyGetMeta (prevKey, "order"));
-		if (prevKey) keySetMeta (key, "parent", keyName (prevKey));
 		setSubOrderNumber (key, oldOrder);
 	}
 	else
@@ -331,6 +330,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		}
 	}
 	ksSetCursor (ks, savedCursor);
+	if (parent) elektraFree (parent);
 }
 
 static int iniKeyToElektraKey (void * vhandle, const char * section, const char * name, const char * value, unsigned short lineContinuation)
@@ -606,7 +606,7 @@ static void outputDebug (KeySet * ks)
 }
 #endif
 
-static const char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
+static char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
 {
 	if (keyGetMeta (searchkey, "parent"))
 	{
@@ -640,9 +640,10 @@ static const char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
 	}
 	lookedUp = ksLookup (ks, key, KDB_O_NONE);
 	if (!lookedUp) lookedUp = parentKey;
+	char * parentName = strdup (keyName (lookedUp));
 	keyDel (key);
 	ksDel (ks);
-	return keyName (lookedUp);
+	return parentName;
 }
 static void setParents (KeySet * ks, Key * parentKey)
 {
@@ -650,11 +651,12 @@ static void setParents (KeySet * ks, Key * parentKey)
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != NULL)
 	{
-		const char * parentName = findParent (parentKey, cur, ksDup (ks));
+		char * parentName = findParent (parentKey, cur, ksDup (ks));
 		if (parentName)
 		{
 			keySetMeta (cur, "parent", parentName);
 		}
+		elektraFree (parentName);
 	}
 }
 static void stripInternalData (Key * parentKey, KeySet *);
@@ -1202,6 +1204,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 		}
 		if (keyName (parentKey)[0] == '/')
 		{
+			if (!strchr (keyName (cur) + 1, '/')) continue;
 			if (!strcmp (keyName (parentKey), strchr (keyName (cur) + 1, '/'))) continue;
 		}
 
