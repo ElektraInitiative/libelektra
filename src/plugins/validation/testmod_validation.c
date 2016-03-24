@@ -25,6 +25,10 @@
 
 #include "validation.h"
 
+#include <tests_internal.h>
+#include <tests_plugin.h>
+
+
 #define NR_KEYS 4
 
 void test_lookupre ()
@@ -82,9 +86,126 @@ void test_extended ()
 	ksDel (ks);
 }
 
+void word_test ()
+{
+	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
+			   "check/validation/word", "", KEY_END);
+	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
+			   "check/validation/word", "", KEY_END);
+	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
+			   "check/validation/word", "", KEY_END);
+	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word", KEY_META,
+			   "check/validation/word", "", KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks;
+	PLUGIN_OPEN ("validation");
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k1);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k2);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k3);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k4);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
+	ksDel (ks);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+void line_test ()
+{
+	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "line", KEY_META, "check/validation", "line", KEY_META,
+			   "check/validation/line", "", KEY_END);
+	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line2",
+			   KEY_META, "check/validation/line", "", KEY_END);
+	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "alinea", KEY_META, "check/validation", "line", KEY_META,
+			   "check/validation/line", "", KEY_END);
+	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line",
+			   KEY_META, "check/validation/line", "", KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks;
+	PLUGIN_OPEN ("validation");
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k1);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k2);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k3);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k4);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
+	ksDel (ks);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+void icase_test ()
+{
+	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "WORD", KEY_META, "check/validation", "word", KEY_META,
+			   "check/validation/word", "", KEY_META, "check/validation/ignorecase", "", KEY_END);
+	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "wORd2", KEY_META,
+			   "check/validation/word", "", KEY_META, "check/validation/ignorecase", "", KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks;
+	PLUGIN_OPEN ("validation");
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k1);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k2);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+
 int main (int argc, char ** argv)
 {
-	printf ("   ICONV   TESTS\n");
+	printf ("   VALIDATION   TESTS\n");
 	printf ("====================\n\n");
 
 	init (argc, argv);
@@ -92,6 +213,9 @@ int main (int argc, char ** argv)
 	test_lookupre ();
 	test_extended ();
 
+	word_test ();
+	line_test ();
+	icase_test ();
 	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
