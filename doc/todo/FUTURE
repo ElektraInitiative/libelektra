@@ -83,7 +83,8 @@ Remove/Refactor/Rename obsolete/not needed methods:
 
 conventions should be used everywhere
 
-warnings should have array conventions #0, #10...
+warnings should have array conventions #0, #_10...
+	also allow many errors? (for many validation/parse errors)
 
 
 == Libraries ==
@@ -265,6 +266,13 @@ only exported symbols should be available
 Version info
 release
 minimize API -> (split core and convenience (e.g. libmetadata)?)
+
+== GOALS for 1.0.0 ==
+
+added API evolution for all parts+declare every API stable+METADATA+CONTRACT stable
+finished core plugins: INI, validation, notification
+nicely working front-ends+bindings for some projects
+
 
 
 == OVERVIEW ==

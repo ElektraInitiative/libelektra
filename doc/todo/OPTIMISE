@@ -1,4 +1,4 @@
-This page describes optimization tasks for the current release.
+This page describes optimization tasks.
 
 general:
 	scripts for performance and stability testing
@@ -9,8 +9,12 @@ general:
 
 == mmap storage ==
 
-Cow keys for mmap storage
+Implement as global plugins
 
+Cow keys for mmap storage [in progress]
+
+optimization: single elektraMalloc per key, name unchangeable?
+	Mmap custom storage, cow, realloc only when too large
 
 
 == SEARCH ==
@@ -57,8 +61,6 @@ dynamic memory management:
 
 ksAppend() in O(1)
 
-KDB_O_NOALL could use binary search
-
 iconv:
 	open handles in kdbOpen? (depending on kdbOpen optimization that it is only done when needed)
 
@@ -67,9 +69,6 @@ iconv:
 
 getString in C++
 
-optimization: single elektraMalloc per key, name unchangeable?
-	Mmap custom storage, cow, realloc only when too large
-	Limit: only do when necessary!!
 
 
 == BENCHMARK TESTS ==
@@ -90,6 +89,6 @@ Implement order preserving perfect hashing functions
 	rebuilding on seldom lookups
 	if hash is available it will be used regardless of options
 
-
 improve memory footprint C structures:
 	http://www.catb.org/esr/structure-packing/?src=yc
+

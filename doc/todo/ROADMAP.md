@@ -17,8 +17,8 @@ for other activities of the current release.
 RPATH only where needed (+ where should elektraModulesLoad be?)
 
 api:
-	version rules ELEKTRA_ABI_13 ...
-	include rules to allow elektra/kdb.h
+	version rules ELEKTRA_API 16 ...
+	include rules to allow elektra/kdb.h (needs ELEKTRA_API set)
 
 to one cmake variable:
 	verbose/debug -> logging
@@ -27,12 +27,21 @@ to one cmake variable:
 remove "resolver" resolver
 symlink resolver/storage?
 
+## check
+
+array:
+	check if its a valid array via metadata
+	spec/array metadaten: array=1-10
+	user/array/#0 -> gültig
+	user/array -> ungültig
+	system/array/x -> ungültig
+
 ## fixes
 
 compiler warnings:
 	key hash warning
 
-add all plugins mem-leak test
+fix all plugins mem-leak test
 
 check meta-data plugins with spec
 
@@ -47,10 +56,9 @@ kdb setmeta with 2 args to remove meta data!
 kdb set --file -F (read from file) reuse import/export?
 
 
-
 ## docu
 
-traceability
+add traceability
 
 make elektra-hierarchy reality:
 	generate errors for spec/elektra/error
@@ -74,20 +82,14 @@ minimal generic description of commandline-options in kdb
 
 ## INI
 
-as default backend (meta?)
+meta as special syntax
 ordering
 comments
 
+
 ## Lua plugin
 
-value transformations
-
-## tools
-
-kdb --profile for its own config
-
-bookmark (+) feature
-
+further value transformations
 
 
 ## cleanup
@@ -99,6 +101,7 @@ core, kdb.. remove useless symbols
 metastorage:
 	keytometa?
 	different plugins?
+
 spec:
 	black/whitelist
 	removal of meta data
@@ -133,7 +136,6 @@ create new test cases with shell script recorder
 
 execute all examples to see if they do not crash or memleak
 	assert test cases -> test cases (rename succeed_if)
-
 
 ## other stuff
 

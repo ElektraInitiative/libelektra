@@ -1,6 +1,18 @@
 = TOOLS =
 
 
+== MOUNT ==
+
+user/dir-mountpoints:
+	for mounting as non-root
+	make mountpoints specific for a namespace, e.g.
+	kdb mount --as-user file.x user/x
+	stored in user/elektra/mountpoints
+
+lazy-mount
+
+allow --no-env --no-arg --no-default arguments?
+
 
 
 
@@ -30,14 +42,6 @@ more testing
 
 
 
-== MOUNT ==
-
-multi-mount (e.g. all .ini from one folder)
-
-allow --no-env --no-arg --no-default arguments?
-
-
-
 
 
 
@@ -55,20 +59,13 @@ allow key array increments with kdb tool
 list existing plugins
 	dynamically detect them when installed
 
-allow change of symlink (resolver, storage)
-
 kdb-export:
 	in a way that it can be used as shell script to immediately
 	import
 
-kdb resolve feature:
-	output file how it would resolve for key
-
 kdb tool:
 	allow verification of local key database by exported file
 	tset (typesafe set)
-
-env-get env-set `kdb env-get`
 
 export should be able to export only configuration that was changed
 	suppress default config by some metadata
@@ -115,6 +112,11 @@ genopt.hpp + include enforcement in template_dynamic?
 	generic command-line parsing
 	%% context evaluation?
 
+generator for:
+	exc classes
+	try catch blocks
+	as keyset
+	human readable text
 
 
 
@@ -122,7 +124,7 @@ genopt.hpp + include enforcement in template_dynamic?
 
 == GUI ==
 
-commandline arguments:
+generic commandline arguments:
 	for self configuring
 	for proc namespace
 
@@ -153,10 +155,3 @@ upgrade
 web2.0:
 	share elektra xml files
 	web frontent to kdb with xml/generate output/paste
-
-
-== docu ==
-
-git-<command> like functionality
-ascii doc
-man pages
