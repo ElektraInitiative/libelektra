@@ -4,12 +4,6 @@ Prefer using great frameworks to do that in short time with high quality.
 
 ## Resolver
 
-chown files to what they had before
-
-resolving for system+spec
-	~ resolving using getpwuid_r
-	resolving using config/env vars ${HOME}/abc
-
 git-plugin
 	commit files on set()
 	using libgit
@@ -407,6 +401,19 @@ path plugin:
 	check NFS, mounting properties
 
 # RESOLVER #
+
+resolving using config/env vars ${HOME}/abc
+
+    /$HOME$/abc.conf  will resolve to  /home/markus/abc.conf if env var HOME=/home/markus
+
+Environment variable names are started and terminated with $. Note it is not possible to refer to a variable name that contains a $. I think this limitation is irrelevant (using = as terminating character would not have this limitation, but I think it would be confusing).
+
+If you want in the filename that contains $, you need to double it. So:
+
+    abc$USER$ -> USER as environment variable
+    abc$$USER$$ -> file name called abc$USER$
+    abc$USER -> error: used invalid unquoted $; checkFile should return -1
+
 
 
 curl resolver:
