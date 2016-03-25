@@ -90,13 +90,13 @@ void word_test ()
 {
 	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/word", "", KEY_END);
+			   "check/validation/match", "word", KEY_END);
 	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
-			   "check/validation/word", "", KEY_END);
+			   "check/validation/match", "word", KEY_END);
 	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/word", "", KEY_END);
+			   "check/validation/match", "word", KEY_END);
 	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word", KEY_META,
-			   "check/validation/word", "", KEY_END);
+			   "check/validation/match", "word", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;
@@ -134,13 +134,13 @@ void line_test ()
 {
 	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "line", KEY_META, "check/validation", "line", KEY_META,
-			   "check/validation/line", "", KEY_END);
+			   "check/validation/match", "line", KEY_END);
 	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line2",
-			   KEY_META, "check/validation/line", "", KEY_END);
+			   KEY_META, "check/validation/match", "line", KEY_END);
 	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "alinea", KEY_META, "check/validation", "line", KEY_META,
-			   "check/validation/line", "", KEY_END);
+			   "check/validation/match", "line", KEY_END);
 	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "line1\nline2\nline3", KEY_META, "check/validation", "line",
-			   KEY_META, "check/validation/line", "", KEY_END);
+			   KEY_META, "check/validation/match", "line", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;
@@ -168,6 +168,50 @@ void line_test ()
 	ksAppendKey (ks, k4);
 	ksRewind (ks);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
+	ksDel (ks);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+void invert_test ()
+{
+	Key * parentKey = keyNew ("user/tests/validation", KEY_VALUE, "", KEY_END);
+	Key * k1 = keyNew ("user/tests/validation/valid1", KEY_VALUE, "word", KEY_META, "check/validation", "word", KEY_META,
+			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
+	Key * k2 = keyNew ("user/tests/validation/valid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word2", KEY_META,
+			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
+	Key * k3 = keyNew ("user/tests/validation/invalid1", KEY_VALUE, "aworda", KEY_META, "check/validation", "word", KEY_META,
+			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
+	Key * k4 = keyNew ("user/tests/validation/invalid2", KEY_VALUE, "word1 word2 word3", KEY_META, "check/validation", "word", KEY_META,
+			   "check/validation/match", "word", KEY_META, "check/validation/invert", "", KEY_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks;
+	PLUGIN_OPEN ("validation");
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k1);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k2);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k3);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
+	ksDel (ks);
+
+	ks = ksNew (2, KS_END);
+	ksAppendKey (ks, k4);
+	ksRewind (ks);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (1), "kdbSet failed");
 	ksDel (ks);
 
 	keyDel (parentKey);
@@ -216,6 +260,7 @@ int main (int argc, char ** argv)
 	word_test ();
 	line_test ();
 	icase_test ();
+	invert_test ();
 	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
