@@ -46,6 +46,7 @@ int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 		const Key * icaseMeta = keyGetMeta (cur, "check/validation/ignorecase");
 		const Key * matchMeta = keyGetMeta (cur, "check/validation/match");
 		const Key * invertMeta = keyGetMeta (cur, "check/validation/invert");
+		const Key * typeMeta = keyGetMeta (cur, "check/validation/type");
 
 		int lineValidation = 0;
 		int wordValidation = 0;
@@ -76,6 +77,21 @@ int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 		int cflags = REG_NOSUB | REG_EXTENDED;
 		if (icaseValidation) cflags |= REG_ICASE;
 		if (lineValidation) cflags |= REG_NEWLINE;
+		if (typeMeta)
+		{
+			char * typeCopy = strdup (keyString (typeMeta));
+			char * ptr = typeCopy;
+			while (*ptr)
+			{
+				*ptr = toupper (*ptr);
+				++ptr;
+			}
+			if (!strcmp (typeCopy, "ERE"))
+				cflags |= REG_EXTENDED;
+			else if (!strcmp (typeCopy, "BRE"))
+				cflags &= REG_EXTENDED;
+			elektraFree (typeCopy);
+		}
 
 		char * regexString = NULL;
 		int freeString = 0;
