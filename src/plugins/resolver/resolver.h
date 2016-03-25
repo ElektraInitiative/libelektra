@@ -16,6 +16,8 @@
 #include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbplugin.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #define ERROR_SIZE 1024
 
@@ -36,6 +38,9 @@ struct _resolverHandle
 	const char * path; ///< the configuration file name as passed from config
 	const char * env;  ///< environment variables to search for files
 	const char * fix;  ///< add
+
+	gid_t gid;
+	uid_t uid;
 };
 
 typedef struct _resolverHandles resolverHandles;
