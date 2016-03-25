@@ -30,7 +30,7 @@
  * @retval 0 on success (Absolute path)
  * @retval -1 on a non-valid file
  */
-int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile)(const char * filename)
 {
 	if (!filename) return -1;
 	if (filename[0] == '0') return -1;
@@ -193,7 +193,37 @@ static int elektraResolveSystem (char variant, resolverHandle * p, Key * warning
 		elektraResolveFinishByFilename (p);
 		return 1;
 	}
+	if (p->path[0] == '~')
+	{
+		ssize_t bufSize = sysconf (_SC_GETPW_R_SIZE_MAX);
+		if (bufSize == -1) bufSize = 16384; // man 3 getpwuid
 
+		char * buf = elektraMalloc (bufSize);
+		if (!buf) return -1;
+		struct passwd pwd;
+		struct passwd * result;
+		int s;
+
+		s = getpwuid_r (getuid (), &pwd, buf, bufSize, &result);
+		if (result == NULL)
+		{
+			elektraFree (buf);
+			if (s != 0)
+			{
+				ELEKTRA_ADD_WARNING (90, warningsKey, strerror (s));
+			}
+			return -1;
+		}
+
+		const char * home = pwd.pw_dir;
+		size_t filenameSize = elektraStrLen (home) + elektraStrLen (p->path) - 1;
+
+		p->filename = elektraMalloc (filenameSize);
+		snprintf (p->filename, filenameSize, "%s/%s", home, (p->path) + 1);
+		elektraResolveFinishByFilename (p);
+		elektraFree (buf);
+		return 1;
+	}
 	switch (variant)
 	{
 	case 'x':
@@ -361,6 +391,36 @@ static int elektraResolveSpec (resolverHandle * p, Key * warningsKey ELEKTRA_UNU
 	if (p->path[0] == '/')
 	{
 		strcpy (p->filename, p->path);
+	}
+	else if (p->path[0] == '~')
+	{
+		ssize_t bufSize = sysconf (_SC_GETPW_R_SIZE_MAX);
+		if (bufSize == -1) bufSize = 16384; // man 3 getpwuid
+
+		char * buf = elektraMalloc (bufSize);
+		if (!buf) return -1;
+		struct passwd pwd;
+		struct passwd * result;
+		int s;
+
+		s = getpwuid_r (getuid (), &pwd, buf, bufSize, &result);
+		if (result == NULL)
+		{
+			elektraFree (buf);
+			if (s != 0)
+			{
+				ELEKTRA_ADD_WARNING (90, warningsKey, strerror (s));
+			}
+			return -1;
+		}
+
+		const char * home = pwd.pw_dir;
+		filenameSize = elektraStrLen (home) + elektraStrLen (p->path) - 1;
+
+		p->filename = elektraMalloc (filenameSize);
+		snprintf (p->filename, filenameSize, "%s/%s", home, (p->path) + 1);
+
+		elektraFree (buf);
 	}
 	else
 	{
@@ -590,7 +650,7 @@ static int elektraResolveMapperSystem (resolverHandle * p, Key * warningsKey)
  *         be found
  * warnings will be reported to warningsKey
  */
-int ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (Key * forKey, resolverHandle * p, Key * warningsKey)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, filename)(Key * forKey, resolverHandle * p, Key * warningsKey)
 {
 	if (!p)
 	{
