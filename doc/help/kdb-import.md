@@ -28,7 +28,7 @@ Conflicts when importing can be resolved using a [strategy](#STRATEGIES) with th
 Currently the following strategies exist for importing configurations:
 
 - `cut`:
-  Removes existing keys below `destination` and repalces them with the keys resulting from the import.
+  Removes existing keys below `destination` and replaces them with the keys resulting from the import.
   This is the default strategy.
 
 - `import`:
