@@ -562,9 +562,7 @@ private:
 	void unsafeUpdateKeyUsingContext (std::string const & evaluatedName) const
 	{
 		Key spec (m_spec.dup ());
-		// TODO: change to .setName() once
-		// KEY_CASCADING_NAME is fixed
-		ckdb::elektraKeySetName (*spec, evaluatedName.c_str (), KEY_CASCADING_NAME);
+		spec.setName (evaluatedName);
 		m_key = Policies::GetPolicy::get (m_ks, spec);
 		assert (m_key);
 	}
@@ -591,9 +589,7 @@ private:
 		{
 			m_hasChanged = false;
 			Key spec (m_spec.dup ());
-			// TODO: change to .setName() once
-			// KEY_CASCADING_NAME is fixed
-			ckdb::elektraKeySetName (*spec, m_key.getName ().c_str (), KEY_CASCADING_NAME);
+			spec.setName (m_key.getName ());
 			m_key = Policies::SetPolicy::set (m_ks, spec);
 		}
 		assert (m_key);
