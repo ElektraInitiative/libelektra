@@ -514,6 +514,47 @@ TYPED_TEST (test_contextual_basic, wrapped)
 }
 
 
+TYPED_TEST (test_contextual_basic, cvWrapped)
+{
+	using namespace kdb;
+
+	KeySet ks;
+	TypeParam c = this->context;
+	Value<std::string, ContextPolicyIs<TypeParam>> i (
+		ks, c, Key ("/ignore/id",
+			    KEY_META, "default", "my", KEY_END));
+
+	Value<int, ContextPolicyIs<TypeParam>> x (
+		ks, c, Key ("/%id%/key",
+			    KEY_META, "default", s_value, KEY_END));
+
+	ASSERT_EQ (x.getName (), "/%/key");
+	c.template activate (i);
+	ASSERT_EQ (x.getName (), "/my/key");
+}
+
+
+TYPED_TEST (test_contextual_basic, cvWrappedInt)
+{
+	using namespace kdb;
+
+	KeySet ks;
+	TypeParam c = this->context;
+	Value<int, ContextPolicyIs<TypeParam>> i (
+		ks, c, Key ("/ignore/id",
+			    KEY_META, "default", "88", KEY_END));
+
+	Value<int, ContextPolicyIs<TypeParam>> x (
+		ks, c, Key ("/%id%/key",
+			    KEY_META, "default", s_value, KEY_END));
+
+	ASSERT_EQ (x.getName (), "/%/key");
+	c.template activate (i);
+	ASSERT_EQ (x.getName (), "/88/key");
+}
+
+
+
 TEST (test_contextual_basic, integer_copy)
 {
 	using namespace kdb;

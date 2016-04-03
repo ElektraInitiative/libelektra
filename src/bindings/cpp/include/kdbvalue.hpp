@@ -410,7 +410,7 @@ public:
 template <typename T, typename PolicySetter1 = DefaultPolicyArgs, typename PolicySetter2 = DefaultPolicyArgs,
 	  typename PolicySetter3 = DefaultPolicyArgs, typename PolicySetter4 = DefaultPolicyArgs,
 	  typename PolicySetter5 = DefaultPolicyArgs, typename PolicySetter6 = DefaultPolicyArgs>
-class Value : public ValueObserver, public ValueSubject
+class Value : public ValueObserver, public ValueSubject, public Wrapped
 {
 public:
 	typedef T type;
@@ -586,6 +586,17 @@ public:
 	{
 		return m_key.getName ();
 	}
+
+	std::string layerId () const
+	{
+		return m_key.getBaseName ();
+	}
+
+	std::string layerVal () const
+	{
+		return m_key.getString ();
+	}
+
 
 	/**
 	 * @brief Sync key(set) to cache
