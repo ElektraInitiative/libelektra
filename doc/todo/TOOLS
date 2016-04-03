@@ -18,6 +18,16 @@ allow --no-env --no-arg --no-default arguments?
 
 
 
+
+== STATUS ==
+
+Plugin queries by status and other metadata
+
+evidence of plugins (architecture, compilation, tests)..
+
+
+
+
 == LIBTOOLS ==
 
 let backends to import/export

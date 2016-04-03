@@ -11,11 +11,25 @@ general:
 
 Implement as global plugins
 
-Cow keys for mmap storage [in progress]
+Cow: key/keyset for mmap storage [in progress]
+	allocate everything in keyNew in a single block
+	then for value/name changes, do malloc/realloc (COW)
 
-optimization: single elektraMalloc per key, name unchangeable?
-	Mmap custom storage, cow, realloc only when too large
+Mmap global plugin:
+	in the get path: resolver-like functionality to check if
+		mmap files are up-to-date, if they are immediately
+		return mmaped KeySet
+	at the end of get path: store everything so that it can
+		be mmaped the next time
+	sanity checks for byte order, version, validity...
 
+
+== lazyness ==
+
+make KeySet lazy (create keys on ksLookup)
+make getValue lazy (fetch value on ksLookup)
+	feature interferes with mmap storage and
+	might be even slower than mmap
 
 == SEARCH ==
 
