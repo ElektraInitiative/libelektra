@@ -66,6 +66,63 @@ public:
 };
 
 /**
+ * @brief Everything implementing this interface can be used as layer
+ *
+ * Different from "Layer" objects they will not be constructed on activation
+ * but instead only the WrapLayer will be constructed and the wrapped object
+ * will be passed along by reference.
+ *
+ * @note the lifetime must be beyond layer deactivation!
+ */
+class Wrapped
+{
+public:
+	virtual std::string layerId () const = 0;
+	virtual std::string layerVal () const = 0;
+};
+
+class WrapLayer : public Layer
+{
+public:
+	WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
+	{
+	}
+
+	virtual std::string id () const
+	{
+		return m_wrapped.layerId();
+	}
+
+	virtual std::string operator() () const
+	{
+		return m_wrapped.layerVal();
+	}
+
+private:
+	Wrapped const & m_wrapped;
+};
+
+class KeyValueLayer : public kdb::Layer
+{
+public:
+	KeyValueLayer (std::string key, std::string value) : m_key (std::move (key)), m_value (std::move (value))
+	{
+	}
+	std::string id () const override
+	{
+		return m_key;
+	}
+	std::string operator() () const override
+	{
+		return m_value;
+	}
+
+private:
+	std::string m_key;
+	std::string m_value;
+};
+
+/**
  * @brief Base class for values to be observed.
  *
  * updateContext() is called whenever a context tells a value that it

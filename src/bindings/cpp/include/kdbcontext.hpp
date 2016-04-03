@@ -325,6 +325,8 @@ protected:
 			p.first->second = layer; // update
 		}
 
+		notifyByEvents ({ layer->id () });
+
 #if DEBUG && VERBOSE
 		std::cout << "activate layer: " << layer->id () << std::endl;
 #endif
@@ -343,7 +345,20 @@ public:
 	{
 		std::shared_ptr<Layer> layer = std::make_shared<T> (std::forward<Args> (args)...);
 		activateLayer (layer);
-		notifyByEvents ({ layer->id () });
+		return layer;
+	}
+
+	std::shared_ptr<Layer> activate (Wrapped const & value)
+	{
+		std::shared_ptr<Layer> layer = std::make_shared<WrapLayer> (value);
+		activateLayer (layer);
+		return layer;
+	}
+
+	std::shared_ptr<Layer> activate (std::string key, std::string value)
+	{
+		std::shared_ptr<Layer> layer = std::make_shared<KeyValueLayer> (key, value);
+		activateLayer (layer);
 		return layer;
 	}
 

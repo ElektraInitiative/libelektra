@@ -165,26 +165,6 @@ public:
 	}
 };
 
-class KeyValueLayer : public kdb::Layer
-{
-public:
-	KeyValueLayer (std::string key, std::string value_) : m_key (std::move (key)), m_value (std::move (value_))
-	{
-	}
-	std::string id () const override
-	{
-		return m_key;
-	}
-	std::string operator() () const override
-	{
-		return m_value;
-	}
-
-private:
-	std::string m_key;
-	std::string m_value;
-};
-
 class ProfileLayer : public kdb::Layer
 {
 public:
@@ -473,13 +453,13 @@ TYPED_TEST (test_contextual_basic, groups)
 	String s (ks, c, Key ("/%x%", KEY_CASCADING_NAME, KEY_META, "default", "anonymous", KEY_END));
 	c.template activate<ProfileLayer> (s);
 	ASSERT_EQ (i.getName (), "/main/%/%/serial_number");
-	c.template activate<KeyValueLayer> ("version", "1");
+	c.template activate ("version", "1");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
-	c.template activate<KeyValueLayer> ("module", "M1");
+	c.template activate ("module", "M1");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
-	c.template activate<KeyValueLayer> ("manufacturer", "hp");
+	c.template activate ("manufacturer", "hp");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
-	c.template activate<KeyValueLayer> ("family", "EliteBook");
+	c.template activate ("family", "EliteBook");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
 	c.template activate<KeyValueLayer> ("type", "MobileWorkstation");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
@@ -503,6 +483,34 @@ TYPED_TEST (test_contextual_basic, groups)
 						   "") ([&] { ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP/serial_number"); });
 		ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 	});
+}
+
+class myId : public kdb::Wrapped
+{
+	virtual std::string layerId () const
+	{
+		return "id";
+	}
+
+	virtual std::string layerVal () const
+	{
+		return "my";
+	}
+};
+
+
+TYPED_TEST (test_contextual_basic, wrapped)
+{
+	using namespace kdb;
+
+	KeySet ks;
+	TypeParam c = this->context;
+	Value<int, ContextPolicyIs<TypeParam>> i (
+		ks, c, Key ("/%id%/key",
+			    KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ (i.getName (), "/%/key");
+	c.template activate (myId());
+	ASSERT_EQ (i.getName (), "/my/key");
 }
 
 

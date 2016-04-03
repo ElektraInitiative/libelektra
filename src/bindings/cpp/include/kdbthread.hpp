@@ -328,6 +328,23 @@ public:
 		return layer;
 	}
 
+	std::shared_ptr<Layer> activate (std::string key, std::string value)
+	{
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::activate (key, value);
+		m_gc.globalActivate (this, layer);
+		return layer;
+	}
+
+	std::shared_ptr<Layer> activate (Wrapped const & value)
+	{
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::activate (value);
+		m_gc.globalActivate (this, layer);
+		return layer;
+	}
+
+
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> deactivate (Args &&... args)
 	{
