@@ -7,12 +7,12 @@ http://code.google.com/p/inih/
 
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "inih.h"
 #include <ctype.h>
 #include <regex.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "inih.h"
 
 #if !INI_USE_STACK
 #include <stdlib.h>

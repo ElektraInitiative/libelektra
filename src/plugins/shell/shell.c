@@ -8,14 +8,14 @@
  */
 
 #include "shell.h"
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <errno.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 
 static int executeCommand (const char * cmdline)

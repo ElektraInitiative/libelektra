@@ -15,7 +15,6 @@
 #include <tests_plugin.h>
 
 
-
 int main (int argc, char ** argv)
 {
 	printf ("SHELL     TESTS\n");
@@ -23,9 +22,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	printf ("\ntestmod_shell RESULTS: %d test(s) done. %d error(s).\n",
-			nbTest, nbError);
+	printf ("\ntestmod_shell RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
-

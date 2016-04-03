@@ -11,18 +11,18 @@
 #include "kdbconfig.h"
 #endif
 
+#include "ini.h"
+#include <ctype.h>
 #include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <kdberrors.h>
-#include <kdbproposal.h> //elektraKsToMemArray
-#include <kdbprivate.h>  //elektraReadArrayNumber
+#include <inih.h>
 #include <kdbease.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbos.h>
-#include <inih.h>
-#include <ctype.h>
-#include "ini.h"
+#include <kdbprivate.h>  //elektraReadArrayNumber
+#include <kdbproposal.h> //elektraKsToMemArray
+#include <stdlib.h>
+#include <string.h>
 
 
 char * keyNameGetOneLevel (const char *, size_t *);
@@ -34,12 +34,7 @@ static char * findParent (Key *, Key *, KeySet *);
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
 
-typedef enum
-{
-	NONE,
-	BINARY,
-	ALWAYS
-} SectionHandling;
+typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
 
 typedef struct
 {

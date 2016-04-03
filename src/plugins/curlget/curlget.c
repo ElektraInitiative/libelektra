@@ -9,10 +9,10 @@
 
 #include "curlget.h"
 
-#include <kdbhelper.h>
-#include <stdio.h>
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <kdbhelper.h>
+#include <stdio.h>
 #include <string.h>
 
 int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
