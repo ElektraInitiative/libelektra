@@ -16,7 +16,7 @@ else (LIBSYSTEMD_JOURNAL_INCLUDE_DIR AND LIBSYSTEMD_ID128_INCLUDE_DIR)
   find_package(PkgConfig)
 
   if (PKG_CONFIG_FOUND)
-    pkg_check_modules(_LIBSYSTEMD_JOURNAL_PC QUIET "libsystemd")
+    pkg_check_modules(_LIBSYSTEMD_JOURNAL_PC QUIET "libsystemd-journal")
     pkg_check_modules(_LIBSYSTEMD_ID128_PC QUIET "libsystemd-id128")
     pkg_check_modules(_LIBSYSTEMD_PC QUIET "libsystemd")
   endif (PKG_CONFIG_FOUND)
@@ -35,7 +35,7 @@ else (LIBSYSTEMD_JOURNAL_INCLUDE_DIR AND LIBSYSTEMD_ID128_INCLUDE_DIR)
     /usr/local/include
   )
 
-  find_library (LIBSYSTEMD_JOURNAL_LIBRARIES NAMES systemd systemd-id128
+  find_library (LIBSYSTEMD_JOURNAL_LIBRARIES NAMES systemd-journal systemd-id128
     PATHS
     ${_LIBSYSTEMD_JOURNAL_PC_LIBDIR}
     ${_LIBSYSTEMD_ID128_PC_LIBDIR}
