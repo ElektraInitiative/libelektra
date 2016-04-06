@@ -31,7 +31,7 @@
 #include "kdbinternal.h"
 #include "kdbprivate.h"
 
-
+#include <stdio.h>
 /**
  * @defgroup keytest Methods for Making Tests
  * @ingroup key
@@ -224,11 +224,54 @@ int keyIsBelow (const Key * key, const Key * check)
 	keysize = keyGetNameSize (key);
 	checksize = keyGetNameSize (check);
 
-	if (keysize > checksize + 1) return 0;
-	if (strncmp (keyname, checkname, keysize - 1)) return 0;
 	if (!strcmp (checkname, "/")) return 0;
-	if (checkname[keysize - 1] != '/' && strcmp (keyname, "/")) return 0;
-	return 1;
+	if (keyname[0] != '/')
+	{
+		if (strncmp (keyname, checkname, keysize - 1)) return 0;
+		if (checkname[keysize - 1] != '/' && strcmp (keyname, "/")) return 0;
+		if (keysize > checksize + 1) return 0;
+		return 1;
+	}
+	else
+	{
+		if (checkname[0] == '/')
+		{
+			if (!strcmp (keyname, "/") && (keysize < checksize)) return 1;
+			if (strncmp (keyname, checkname, keysize - 1))
+			{
+				return 0;
+			}
+			else
+			{
+				if (checkname[keysize - 1] != '/')
+					return 0;
+				else
+					return 1;
+			}
+		}
+		if (!strchr (checkname, '/') && !strcmp (keyname, "/")) return 0;
+		checkname = strchr (checkname, '/');
+		if (checkname)
+		{
+			checksize = elektraStrLen (checkname);
+			if (keysize > checksize + 1) return 0;
+			if (strncmp (keyname, checkname, keysize - 1))
+			{
+				return 0;
+			}
+			else
+			{
+				if (checkname[keysize - 1] != '/')
+					return 0;
+				else
+					return 1;
+			}
+		}
+		else
+		{
+			return 0;
+		}
+	}
 }
 
 /**
@@ -288,7 +331,26 @@ int keyIsDirectBelow (const Key * key, const Key * check)
 	const char * checkname = keyUnescapedName (check);
 	ssize_t keysize = keyGetUnescapedNameSize (key);
 	ssize_t checksize = keyGetUnescapedNameSize (check);
-	if (strchr (checkname + keysize, '\0') == checkname + checksize - 1) return 1;
+
+	char * startPtr = NULL;
+
+	if (keyName (key)[0] != '/')
+	{
+		startPtr = strrchr (checkname + keysize, '\0');
+	}
+	else
+	{
+		if (keyName (check)[0] != '/')
+		{
+			startPtr = strrchr (checkname, '\0');
+			startPtr = strrchr (startPtr + keysize, '\0');
+		}
+		else
+		{
+			startPtr = strrchr (checkname + keysize, '\0');
+		}
+	}
+	if (startPtr == checkname + checksize - 1) return 1;
 
 	return 0;
 }
