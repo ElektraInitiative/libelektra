@@ -31,7 +31,6 @@
 #include "kdbinternal.h"
 #include "kdbprivate.h"
 
-#include <stdio.h>
 /**
  * @defgroup keytest Methods for Making Tests
  * @ingroup key

@@ -10,10 +10,9 @@
 #include "kdbconfig.h"
 #endif
 
-#include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "validation.h"
 
