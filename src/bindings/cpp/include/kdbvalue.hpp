@@ -605,6 +605,7 @@ public:
 	{
 		Command::Func fun = [this]() -> Command::Pair {
 			std::string const & oldKey = m_key.getName ();
+			this->unsafeLookupKey ();
 			this->unsafeSyncCache ();
 			return std::make_pair (oldKey, m_key.getName ());
 		};
@@ -635,8 +636,17 @@ private:
 		assert (m_key);
 	}
 
+	void unsafeLookupKey () const
+	{
+		// Key spec (m_spec.dup ());
+		// spec.setName (m_context.evaluate(m_spec.getName()));
+		// m_key = Policies::GetPolicy::get (m_ks, spec);
+		m_key = Policies::GetPolicy::get (m_ks, m_key);
+		assert (m_key);
+	}
+
 	/**
-	 * @brief Execute this method *only* in a Command execution
+	 * @brief Unsafe: Execute this method *only* in a Command execution
 	 */
 	void unsafeSyncCache () const
 	{

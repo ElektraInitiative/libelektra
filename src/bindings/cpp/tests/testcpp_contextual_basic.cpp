@@ -529,8 +529,22 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 			    KEY_META, "default", s_value, KEY_END));
 
 	ASSERT_EQ (x.getName (), "/%/key");
+	ASSERT_TRUE (ks.lookup ("/%/key"));
 	c.template activate (i);
 	ASSERT_EQ (x.getName (), "/my/key");
+	ASSERT_TRUE (ks.lookup ("/my/key"));
+
+	ks.append (Key("/other/key", KEY_VALUE, "88", KEY_END));
+	i = "other";
+	c.template activate (i);
+	ASSERT_EQ (x.getName (), "/other/key");
+	ASSERT_TRUE (ks.lookup ("/other/key"));
+	ASSERT_EQ (x, 88);
+	ASSERT_EQ (ks.lookup ("/other/key").getString(), "88");
+
+	ks.append (Key("/other/key", KEY_VALUE, "100", KEY_END));
+	ASSERT_EQ (ks.lookup ("/other/key").getString(), "100");
+	ASSERT_EQ (x, 88) << "updated from KeySet?";
 }
 
 
