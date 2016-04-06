@@ -96,7 +96,7 @@ const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey)
 
 	if (!strcmp (keyName (parentKey), "/"))
 	{
-		return keyName (cur) + 2;
+		return keyName (cur);
 	}
 	else if (keyName (parentKey)[0] == '/' && keyName (cur)[0] != '/')
 	{
