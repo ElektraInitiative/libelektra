@@ -1,7 +1,7 @@
 # How-To: Write a Plugin #
 
 This file serves as a tutorial on how to write a storage plugin. Storage plugins are used by Elektra in order to store data in the Elektra Key Database
-in an intelligent way. They act as a liason between configuration files and the Key Database. Storage plugins are largely responsible for
+in an intelligent way. They act as a liaison between configuration files and the Key Database. Storage plugins are largely responsible for
 the functionality of Elektra and they allow many of its advanced features to work.
 
 ## Basics ##
