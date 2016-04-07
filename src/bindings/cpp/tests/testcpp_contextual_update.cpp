@@ -71,7 +71,6 @@ TEST_F (test_contextual_update, syncCache)
 
 TEST_F (test_contextual_update, notifyAllEvents)
 {
-
 	ks.append (Key ("/%/key", KEY_VALUE, "133", KEY_END));
 
 	c.notifyAllEvents ();
@@ -82,21 +81,62 @@ TEST_F (test_contextual_update, notifyAllEvents)
 
 TEST_F (test_contextual_update, notifyAllEventsChange)
 {
+	ASSERT_EQ (ks.size (), 2);
 	ks.append (Key ("/other/key", KEY_VALUE, "133", KEY_END));
+	ASSERT_EQ (ks.size (), 3);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key") << "nothing done, so its not changed";
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id") << "nothing done, so its not changed";
 
 	i = "other";
 	c.template activate (i);
 	ASSERT_EQ (x.getName (), "/other/key");
 	ASSERT_EQ (x, 133);
 	ASSERT_EQ (ks.lookup ("/other/key").getString (), "133") << "nothing done, so its not changed";
+	ASSERT_EQ (ks.size (), 4);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key") << "nothing done, so its not changed";
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id") << "nothing done, so its not changed";
+	EXPECT_EQ (ks.at (2).getName (), "/other/key") << "nothing done, so its not changed";
+	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id") << "nothing done, so its not changed";
+	EXPECT_EQ (ks.at (3).getString (), "other");
 }
 
 TEST_F (test_contextual_update, notifyKeySetUpdate)
 {
+	ASSERT_EQ (ks.size (), 2);
 	ks.append (Key ("/%/key", KEY_VALUE, "144", KEY_END));
+	ASSERT_EQ (ks.size (), 2);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key");
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
 
 	c.notifyKeySetUpdate ();
 	ASSERT_EQ (x.getName (), "/%/key");
 	ASSERT_EQ (x, 144) << "reevaluated context, should have found new key";
 	ASSERT_EQ (ks.lookup ("/%/key").getString (), "144");
+	ASSERT_EQ (ks.size (), 2);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key");
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
+}
+
+TEST_F (test_contextual_update, notifyAssignKeySetUpdate)
+{
+	x = 5;
+	ASSERT_EQ (ks.size (), 3);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key");
+	EXPECT_EQ (ks.at (0).getString (), "33");
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
+	EXPECT_EQ (ks.at (2).getName (), "user/%/key");
+	EXPECT_EQ (ks.at (2).getString (), "5");
+
+	ks.append (Key ("user/%/key", KEY_VALUE, "144", KEY_END));
+
+	c.notifyKeySetUpdate ();
+	ASSERT_EQ (x.getName (), "user/%/key");
+	ASSERT_EQ (x, 144) << "reevaluated context, should have found new key";
+	ASSERT_EQ (ks.lookup ("/%/key").getString (), "144");
+	ASSERT_EQ (ks.size (), 3);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key");
+	EXPECT_EQ (ks.at (0).getString (), "33");
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
+	EXPECT_EQ (ks.at (2).getName (), "user/%/key");
+	EXPECT_EQ (ks.at (2).getString (), "144");
 }
