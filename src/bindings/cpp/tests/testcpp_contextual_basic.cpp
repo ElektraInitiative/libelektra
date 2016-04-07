@@ -690,7 +690,7 @@ struct MockObserver : kdb::ValueObserver
 	{
 	}
 
-	virtual void updateContext () const override
+	virtual void updateContext (bool) const override
 	{
 		++counter;
 	}

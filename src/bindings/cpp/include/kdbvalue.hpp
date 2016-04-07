@@ -132,7 +132,7 @@ class ValueObserver
 {
 public:
 	virtual ~ValueObserver () = 0;
-	virtual void updateContext () const = 0;
+	virtual void updateContext (bool write = true) const = 0;
 
 	typedef std::reference_wrapper<ValueObserver> reference;
 };
@@ -687,22 +687,26 @@ private:
 	}
 
 
-	virtual void updateContext () const override
+	virtual void updateContext (bool write) const override
 	{
 		std::string evaluatedName = m_context.evaluate (m_spec.getName ());
 #if DEBUG && VERBOSE
-		std::cout << "update context " << evaluatedName << " from " << m_spec.getName () << std::endl;
+		std::cout << "update context " << evaluatedName << " from " << m_spec.getName () << " with write " << write << std::endl;
 #endif
 
-		Command::Func fun = [this, &evaluatedName]() -> Command::Pair {
+		Command::Func fun = [this, &evaluatedName, write]() -> Command::Pair {
 			std::string oldKey = m_key.getName ();
-			if (evaluatedName == oldKey)
+			if (write && evaluatedName == oldKey)
 			{
 				// nothing changed, same name
 				return std::make_pair (evaluatedName, evaluatedName);
 			}
 
-			this->unsafeSyncKeySet (); // flush out what currently is in cache
+			if (write)
+			{
+				this->unsafeSyncKeySet (); // flush out what currently is in cache
+			}
+
 			this->unsafeUpdateKeyUsingContext (evaluatedName);
 			this->unsafeSyncCache (); // read what we have under new context
 
