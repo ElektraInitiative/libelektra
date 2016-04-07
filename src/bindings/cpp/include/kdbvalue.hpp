@@ -90,12 +90,12 @@ public:
 
 	virtual std::string id () const
 	{
-		return m_wrapped.layerId();
+		return m_wrapped.layerId ();
 	}
 
 	virtual std::string operator() () const
 	{
-		return m_wrapped.layerVal();
+		return m_wrapped.layerVal ();
 	}
 
 private:

@@ -505,11 +505,9 @@ TYPED_TEST (test_contextual_basic, wrapped)
 
 	KeySet ks;
 	TypeParam c = this->context;
-	Value<int, ContextPolicyIs<TypeParam>> i (
-		ks, c, Key ("/%id%/key",
-			    KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ (i.getName (), "/%/key");
-	c.template activate (myId());
+	c.template activate (myId ());
 	ASSERT_EQ (i.getName (), "/my/key");
 }
 
@@ -520,13 +518,9 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 
 	KeySet ks;
 	TypeParam c = this->context;
-	Value<std::string, ContextPolicyIs<TypeParam>> i (
-		ks, c, Key ("/ignore/id",
-			    KEY_META, "default", "my", KEY_END));
+	Value<std::string, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", KEY_META, "default", "my", KEY_END));
 
-	Value<int, ContextPolicyIs<TypeParam>> x (
-		ks, c, Key ("/%id%/key",
-			    KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
 
 	ASSERT_EQ (x.getName (), "/%/key");
 	ASSERT_TRUE (ks.lookup ("/%/key"));
@@ -534,16 +528,16 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 	ASSERT_EQ (x.getName (), "/my/key");
 	ASSERT_TRUE (ks.lookup ("/my/key"));
 
-	ks.append (Key("/other/key", KEY_VALUE, "88", KEY_END));
+	ks.append (Key ("/other/key", KEY_VALUE, "88", KEY_END));
 	i = "other";
 	c.template activate (i);
 	ASSERT_EQ (x.getName (), "/other/key");
 	ASSERT_TRUE (ks.lookup ("/other/key"));
 	ASSERT_EQ (x, 88);
-	ASSERT_EQ (ks.lookup ("/other/key").getString(), "88");
+	ASSERT_EQ (ks.lookup ("/other/key").getString (), "88");
 
-	ks.append (Key("/other/key", KEY_VALUE, "100", KEY_END));
-	ASSERT_EQ (ks.lookup ("/other/key").getString(), "100");
+	ks.append (Key ("/other/key", KEY_VALUE, "100", KEY_END));
+	ASSERT_EQ (ks.lookup ("/other/key").getString (), "100");
 	ASSERT_EQ (x, 88) << "updated from KeySet?";
 }
 
@@ -554,19 +548,14 @@ TYPED_TEST (test_contextual_basic, cvWrappedInt)
 
 	KeySet ks;
 	TypeParam c = this->context;
-	Value<int, ContextPolicyIs<TypeParam>> i (
-		ks, c, Key ("/ignore/id",
-			    KEY_META, "default", "88", KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", KEY_META, "default", "88", KEY_END));
 
-	Value<int, ContextPolicyIs<TypeParam>> x (
-		ks, c, Key ("/%id%/key",
-			    KEY_META, "default", s_value, KEY_END));
+	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
 
 	ASSERT_EQ (x.getName (), "/%/key");
 	c.template activate (i);
 	ASSERT_EQ (x.getName (), "/88/key");
 }
-
 
 
 TEST (test_contextual_basic, integer_copy)
