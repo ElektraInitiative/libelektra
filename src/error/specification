@@ -851,3 +851,9 @@ description:shell plugin error
 severity:error
 ingroup:plugin
 module:shell
+
+number:145
+description:lock plugin error
+severity:error
+ingroup:plugin
+module:lock
