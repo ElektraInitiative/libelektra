@@ -60,7 +60,9 @@ int elektraLockGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		if (lockFile)
 		{
 			fclose (lockFile);
-		} else {
+		}
+		else
+		{
 			break;
 		}
 	}
@@ -93,7 +95,8 @@ int elektraLockSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			ELEKTRA_SET_ERRORF (145, parentKey, "removing lock file %s failed\n", lockFilePath);
 			return -1;
 		}
-	} else
+	}
+	else
 	{
 		ELEKTRA_SET_ERRORF (145, parentKey, "lock file %s not present at set\n", lockFilePath);
 		free (lockFilePath);

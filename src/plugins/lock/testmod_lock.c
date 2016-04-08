@@ -30,7 +30,7 @@ static void test_filewrite ()
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	//test
+	// test
 
 	plugin->kdbGet (plugin, ks, parentKey);
 
@@ -42,7 +42,7 @@ static void test_filewrite ()
 		remove (TESTFILELOCK);
 	}
 
-	//test
+	// test
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -59,7 +59,7 @@ static void test_block ()
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	//test
+	// test
 
 	plugin->kdbGet (plugin, ks, parentKey);
 
@@ -70,22 +70,24 @@ static void test_block ()
 		fprintf (stderr, "ERROR: fork\n");
 		remove (TESTFILELOCK);
 		goto endblock;
-	} else
+	}
+	else
 	{
 		if (pid)
 		{
-			//parent
+			// parent
 			plugin->kdbGet (plugin, ks, parentKey);
-		} else
+		}
+		else
 		{
-			//child
+			// child
 			remove (TESTFILELOCK);
 			exit (EXIT_SUCCESS);
 		}
 	}
 	remove (TESTFILELOCK);
 
-	//test
+// test
 endblock:
 	keyDel (parentKey);
 	ksDel (ks);
@@ -102,12 +104,12 @@ static void test_set ()
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	//test
+	// test
 
 	FILE * file = fopen (TESTFILELOCK, "w");
 	if (!file)
 	{
-		fprintf (stderr, "ERROR: can not wirte file %s\n",TESTFILELOCK);
+		fprintf (stderr, "ERROR: can not wirte file %s\n", TESTFILELOCK);
 		goto endset;
 	}
 	fclose (file);
@@ -122,7 +124,7 @@ static void test_set ()
 		remove (TESTFILELOCK);
 	}
 
-	//test
+// test
 endset:
 	keyDel (parentKey);
 	ksDel (ks);
