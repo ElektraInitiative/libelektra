@@ -86,12 +86,16 @@ kdb tool:
 	request -f for rm, mv in system/elektra
 
 
+
+
 == GEN ==
 
 install kdb gen properly
 	search by default in installed pathes
 
 using python kdb for gen
+
+array support for kdbvalue.hpp (might already work with proper type conversion)
 
 code generator always yields LONG_MIN, LONG_MAX on any type!
 
@@ -128,6 +132,12 @@ generator for:
 	as keyset
 	human readable text
 
+use spec+proc namespaces
+
+=== Validate
+
+using kdbSet+kdbGet?
+with constraint checking+solving and so on.
 
 
 
@@ -141,6 +151,7 @@ generic commandline arguments:
 dbus-listener + notify single events, maybe zeromq
 	auto-completion for metadata
 
+see above for validate
 
 
 == GEN-BACKEND ==

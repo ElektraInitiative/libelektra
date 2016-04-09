@@ -42,7 +42,14 @@ is not present, but /sw/apache/httpd/#0/%/key is:
 
 range: check/range 5-20,23-45 (for number types)
 
-units-of-measurements (e.g. m, kg, A, ..)
+units-of-measurements
+	(e.g. 20m, 5kg, A, ..)
+
+allow numbers to enter:
+	binary (e.g. 0b1000110)
+	hex (e.g. 0x...)
+		or even mix: 0x20kg
+	oct (e.g. 0332, would disallow prefix 0?)
 
 calculate default values
 	same as assign, but with very low priority
