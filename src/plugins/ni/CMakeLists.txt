@@ -15,6 +15,8 @@ add_plugin(ni
 	INCLUDE_DIRECTORIES
 		${NI}/include
 		${NI}/src/include
+	LINK_ELEKTRA
+		elektra-ease
 	)
 
 include_directories (${NI}/include)
