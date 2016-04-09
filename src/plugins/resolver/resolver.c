@@ -74,8 +74,8 @@ static void resolverInit (resolverHandle * p, const char * path)
 
 	p->path = path;
 
-	p->uid = getuid ();
-	p->gid = getgid ();
+	p->uid = 0;
+	p->gid = 0;
 }
 
 static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
@@ -307,7 +307,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	{
 	case KEY_NS_SPEC:
 		keySetName (testKey, "spec");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename)(testKey, &p->spec, errorKey) == -1)
+		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->spec, errorKey) == -1)
 		{
 			resolverClose (p);
 			keyDel (testKey);
@@ -317,7 +317,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 
 	case KEY_NS_DIR:
 		keySetName (testKey, "dir");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename)(testKey, &p->dir, errorKey) == -1)
+		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->dir, errorKey) == -1)
 		{
 			resolverClose (p);
 			keyDel (testKey);
@@ -327,7 +327,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 
 	case KEY_NS_USER:
 		keySetName (testKey, "user");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename)(testKey, &p->user, errorKey) == -1)
+		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->user, errorKey) == -1)
 		{
 			resolverClose (p);
 			keyDel (testKey);
@@ -337,7 +337,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 
 	case KEY_NS_SYSTEM:
 		keySetName (testKey, "system");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename)(testKey, &p->system, errorKey) == -1)
+		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->system, errorKey) == -1)
 		{
 			resolverClose (p);
 			keyDel (testKey);
@@ -356,7 +356,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	return 0;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, open)(Plugin * handle, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey)
 {
 	KeySet * resolverConfig = elektraPluginGetConfig (handle);
 	if (ksLookupByName (resolverConfig, "/module", 0)) return 0;
@@ -424,7 +424,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, open)(Plugin * handle, Key * errorKey)
 	return ret; /* success */
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, close)(Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	resolverHandles * ps = elektraPluginGetData (handle);
 
@@ -438,7 +438,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, close)(Plugin * handle, Key * errorKey EL
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, get)(Plugin * handle, KeySet * returned, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
@@ -471,7 +471,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get)(Plugin * handle, KeySet * returned, 
 	}
 	else
 	{
-		// successful, remember mode
+		// successful, remember mode, uid and gid
 		pk->filemode = buf.st_mode;
 		pk->gid = buf.st_gid;
 		pk->uid = buf.st_uid;
@@ -842,7 +842,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 }
 
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, set)(Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
@@ -913,7 +913,7 @@ static void elektraUnlinkFile (char * filename, Key * parentKey)
 	}
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (resolver, error)(Plugin * handle, KeySet * r ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (resolver, error) (Plugin * handle, KeySet * r ELEKTRA_UNUSED, Key * parentKey)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
