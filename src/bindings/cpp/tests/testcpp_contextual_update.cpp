@@ -31,7 +31,7 @@ TEST_F (test_contextual_update, activate)
 {
 	ASSERT_EQ (x.getName (), "/%/key");
 	ASSERT_TRUE (ks.lookup ("/%/key"));
-	c.template activate (i);
+	c.activate (i);
 	ASSERT_EQ (x.getName (), "/my/key");
 	ASSERT_TRUE (ks.lookup ("/my/key"));
 }
@@ -40,7 +40,7 @@ TEST_F (test_contextual_update, changeKey)
 {
 	ks.append (Key ("/other/key", KEY_VALUE, "88", KEY_END));
 	i = "other";
-	c.template activate (i);
+	c.activate (i);
 	ASSERT_EQ (x.getName (), "/other/key");
 	ASSERT_TRUE (ks.lookup ("/other/key"));
 	ASSERT_EQ (x, 88);
@@ -88,7 +88,7 @@ TEST_F (test_contextual_update, notifyAllEventsChange)
 	EXPECT_EQ (ks.at (1).getName (), "/ignore/id") << "nothing done, so its not changed";
 
 	i = "other";
-	c.template activate (i);
+	c.activate (i);
 	ASSERT_EQ (x.getName (), "/other/key");
 	ASSERT_EQ (x, 133);
 	ASSERT_EQ (ks.lookup ("/other/key").getString (), "133") << "nothing done, so its not changed";
