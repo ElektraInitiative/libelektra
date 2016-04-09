@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "metafunctions.h"
 
 #define MAX_CHARS_IN_LONG 26
 

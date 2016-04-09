@@ -10,7 +10,6 @@
 #include <kdbconfig.h>
 #include <kdbmeta.h>
 #include <kdbprivate.h>
-
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
@@ -898,6 +897,236 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 	return 0;
 }
 
+
+/*
+ * creates an metadata array or appends another element to an existing metadata array
+ * e.g.
+ * Key *key = keyNew("user/test", KEY_END);
+ * elektraMetaArrayAdd(key, "array", "test0");
+ * key now has "test/#0" with value "test0" as metadata
+ * elektraMetaArrayAdd(key, "array", "test1");
+ * appends "test/#1" with value "test1" to key
+ */
+
+void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
+{
+	const Key * meta = keyGetMeta (key, metaName);
+	Key * arrayKey;
+	if (!meta)
+	{
+		keySetMeta (key, metaName, "#0");
+		arrayKey = keyDup (keyGetMeta (key, metaName));
+		keySetString (arrayKey, 0);
+		keyAddBaseName (arrayKey, "#");
+	}
+	else
+	{
+		arrayKey = keyDup (meta);
+		keyAddBaseName (arrayKey, keyString (meta));
+	}
+	elektraArrayIncName (arrayKey);
+	keySetMeta (key, keyName (arrayKey), value);
+	keySetMeta (key, metaName, keyBaseName (arrayKey));
+	keyDel (arrayKey);
+}
+
+KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
+{
+	const Key * meta = keyGetMeta (key, metaName);
+	if (!meta) return NULL;
+
+	KeySet * result = ksNew (0, KS_END);
+
+	if (keyString (meta)[0] != '#')
+	{
+		ksAppendKey (result, (Key *)meta);
+		ksRewind (result);
+		return result;
+	}
+	Key * currentKey = keyDup (meta);
+	keyAddName (currentKey, "#");
+	elektraArrayIncName (currentKey);
+	Key * curMeta = NULL;
+	while ((curMeta = (Key *)keyGetMeta (key, keyName (currentKey))) != NULL)
+	{
+		ksAppendKey (result, curMeta);
+		elektraArrayIncName (currentKey);
+	}
+	keyDel (currentKey);
+	ksRewind (result);
+	return result;
+}
+
+typedef struct
+{
+	Key * key;
+	KeySet * ks;
+} _adjMatrix;
+
+static void removeDepFromAll (_adjMatrix * adjMatrix, unsigned int size, Key * toRemove)
+{
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		ksRewind (adjMatrix[i].ks);
+		keyDel (ksLookup (adjMatrix[i].ks, toRemove, KDB_O_POP));
+	}
+}
+
+static int topCmpOrder (const void * a, const void * b)
+{
+	const Key * ka = (*(const Key **)a);
+	const Key * kb = (*(const Key **)b);
+
+	if (!ka && !kb) return 0;
+	if (ka && !kb) return 1;
+	if (!ka && kb) return -1;
+
+	const Key * kam = keyGetMeta (ka, "order");
+	const Key * kbm = keyGetMeta (kb, "order");
+
+	return strcmp (keyString (kam), keyString (kbm));
+}
+
+int elektraSortTopology (KeySet * ks, Key ** array)
+{
+	if (ks == NULL || array == NULL) return -1;
+	KeySet * done = ksNew (0, KS_END);
+	KeySet * todo = ksNew (0, KS_END);
+	ksRewind (ks);
+	KeySet * lookupKS = ksDup (ks);
+	Key * cur;
+	size_t size = ksGetSize (ks);
+	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
+	elektraArrayIncName (orderCounter);
+	_adjMatrix adjMatrix[size];
+	unsigned int i = 0;
+	int retVal = 0;
+	for (i = 0; i < size; ++i)
+	{
+		adjMatrix[i].key = NULL;
+		adjMatrix[i].ks = ksNew (0, KS_END);
+	}
+	i = 0;
+	while ((cur = ksNext (ks)) != NULL)
+	{
+		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
+		if (ksGetSize (deps) == -1)
+		{
+			keySetMeta (cur, "order", keyBaseName (orderCounter));
+			elektraArrayIncName (orderCounter);
+			ksAppendKey (done, keyDup (cur));
+			ksDel (deps);
+			continue;
+		}
+		else
+		{
+			adjMatrix[i].key = keyDup (cur);
+			keySetBinary (adjMatrix[i].key, (int *)&i, sizeof (i));
+			ksAppendKey (todo, adjMatrix[i].key);
+			Key * dep;
+			while ((dep = ksNext (deps)) != NULL)
+			{
+				ksRewind (lookupKS);
+				Key * tmp;
+				tmp = ksLookupByName (lookupKS, keyString (dep), KDB_O_NONE);
+				ksAppendKey (adjMatrix[i].ks, tmp);
+			}
+			++i;
+			ksDel (deps);
+		}
+	}
+	ksRewind (done);
+	while ((cur = ksNext (done)) != NULL)
+		removeDepFromAll (adjMatrix, size, cur);
+	int found = 0;
+	ksRewind (todo);
+	while (ksGetSize (todo) > 0)
+	{
+		cur = ksNext (todo);
+		if (cur == NULL)
+		{
+			if (found)
+			{
+				found = 0;
+				ksRewind (todo);
+				continue;
+			}
+			else
+				break;
+		}
+		unsigned int index;
+		keyGetBinary (cur, &index, sizeof (index));
+		if (ksGetSize (adjMatrix[index].ks) <= 0)
+		{
+			ksRewind (adjMatrix[index].ks);
+			found = 1;
+			ksRewind (ks);
+			Key * realKey = ksLookup (ks, cur, KDB_O_NONE);
+			keySetMeta (realKey, "order", keyBaseName (orderCounter));
+			elektraArrayIncName (orderCounter);
+			ksAppendKey (done, realKey);
+			removeDepFromAll (adjMatrix, size, cur);
+			keyDel (ksLookup (adjMatrix[index].ks, cur, KDB_O_POP));
+			keyDel (adjMatrix[index].key);
+			adjMatrix[index].key = NULL;
+			keyDel (ksLookup (todo, cur, KDB_O_POP));
+		}
+	}
+	ksClear (ks);
+	ksAppend (ks, done);
+	ksDel (done);
+	if (found)
+	{
+		retVal = 1;
+		elektraKsToMemArray (ks, array);
+		qsort (array, size, sizeof (Key *), topCmpOrder);
+	}
+	else
+	{
+		retVal = 0;
+	}
+	for (i = 0; i < size; ++i)
+	{
+		if (adjMatrix[i].key) keyDel (adjMatrix[i].key);
+		ksDel (adjMatrix[i].ks);
+	}
+
+	keyDel (orderCounter);
+	ksDel (todo);
+	ksDel (lookupKS);
+	return retVal;
+}
+
+/*
+ * returns the metakey array as a string separated by delim
+ * the return value must be freed
+ */
+
+char * elektraMetaArrayToString (Key * key, const char * metaName, const char * delim)
+{
+	char * result = NULL;
+	Key * lookupElem = keyDup (keyGetMeta (key, metaName));
+	keyAddBaseName (lookupElem, "#0");
+	Key * elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	if (elem != NULL)
+	{
+		elektraRealloc ((void **)&result, keyGetValueSize (elem));
+		snprintf (result, keyGetValueSize (elem), "%s", keyString (elem));
+	}
+	elektraArrayIncName (lookupElem);
+	elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	while (elem != NULL)
+	{
+		elektraRealloc ((void **)&result,
+				elektraStrLen (result) + keyGetValueSize (elem) + 1); // String (incl. +2 times \0) + delimiter + whitespace
+		strcat (result, delim);
+		strcat (result, keyString (elem));
+		elektraArrayIncName (lookupElem);
+		elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	}
+	keyDel (lookupElem);
+	return result;
+}
 
 /**
  * @}

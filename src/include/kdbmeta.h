@@ -53,6 +53,14 @@ int keySetCTime (Key * key, time_t ctime);
 
 int elektraKeyCmpOrder (const Key * a, const Key * b);
 
+KeySet * elektraMetaArrayToKS (Key *, const char *);
+
+void elektraMetaArrayAdd (Key *, const char *, const char *);
+
+char * elektraMetaArrayToString (Key *, const char *, const char *);
+
+int elektraSortTopology (KeySet *, Key **);
+
 #ifdef __cplusplus
 }
 }
