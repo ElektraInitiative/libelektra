@@ -176,6 +176,38 @@ static int elektraResolveSystemXDG (resolverHandle * p, Key * warningsKey)
 	return 1;
 }
 
+static int elektraResolvePasswdHome (resolverHandle * p, Key * warningsKey)
+{
+	ssize_t bufSize = sysconf (_SC_GETPW_R_SIZE_MAX);
+	if (bufSize == -1) bufSize = 16384; // man 3 getpwuid
+
+	char * buf = elektraMalloc (bufSize);
+	if (!buf) return -1;
+	struct passwd pwd;
+	struct passwd * result;
+	int s;
+
+	s = getpwuid_r (getuid (), &pwd, buf, bufSize, &result);
+	if (result == NULL)
+	{
+		elektraFree (buf);
+		if (s != 0)
+		{
+			ELEKTRA_ADD_WARNING (90, warningsKey, strerror (s));
+		}
+		return -1;
+	}
+
+	const char * home = pwd.pw_dir;
+	size_t filenameSize = elektraStrLen (home) + elektraStrLen (p->path) - 1;
+
+	p->filename = elektraMalloc (filenameSize);
+	snprintf (p->filename, filenameSize, "%s/%s", home, (p->path) + 1);
+
+	elektraFree (buf);
+	return 0;
+}
+
 /**
  * @retval 0 if variant did not have a result
  * @retval 1 on success
@@ -193,7 +225,12 @@ static int elektraResolveSystem (char variant, resolverHandle * p, Key * warning
 		elektraResolveFinishByFilename (p);
 		return 1;
 	}
-
+	if (p->path[0] == '~')
+	{
+		if (elektraResolvePasswdHome (p, warningsKey) == -1) return -1;
+		elektraResolveFinishByFilename (p);
+		return 1;
+	}
 	switch (variant)
 	{
 	case 'x':
@@ -242,7 +279,7 @@ static int elektraResolvePasswd (resolverHandle * p, Key * warningsKey)
 		return 0;
 	}
 
-	s = getpwuid_r (geteuid (), &pwd, buf, bufsize, &result);
+	s = getpwuid_r (getuid (), &pwd, buf, bufsize, &result);
 	if (result == NULL)
 	{
 		elektraFree (buf);
@@ -361,6 +398,10 @@ static int elektraResolveSpec (resolverHandle * p, Key * warningsKey ELEKTRA_UNU
 	if (p->path[0] == '/')
 	{
 		strcpy (p->filename, p->path);
+	}
+	else if (p->path[0] == '~')
+	{
+		if (elektraResolvePasswdHome (p, warningsKey) == -1) return -1;
 	}
 	else
 	{

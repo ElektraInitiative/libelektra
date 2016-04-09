@@ -73,6 +73,9 @@ static void resolverInit (resolverHandle * p, const char * path)
 	p->tempfile = 0;
 
 	p->path = path;
+
+	p->uid = 0;
+	p->gid = 0;
 }
 
 static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
@@ -468,8 +471,10 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	}
 	else
 	{
-		// successful, remember mode
+		// successful, remember mode, uid and gid
 		pk->filemode = buf.st_mode;
+		pk->gid = buf.st_gid;
+		pk->uid = buf.st_uid;
 	}
 
 	/* Check if update needed */
@@ -817,7 +822,10 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		// change mode to what it was before
 		chmod (pk->filename, pk->filemode);
 	}
-
+	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
+	{
+		chown (pk->filename, pk->uid, pk->gid);
+	}
 	elektraUnlockFile (pk->fd, parentKey);
 	elektraCloseFile (pk->fd, parentKey);
 	elektraUnlockMutex (parentKey);
