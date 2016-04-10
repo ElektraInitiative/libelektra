@@ -8,7 +8,9 @@
 
 #include <kdb.h>
 #include <kdbconfig.h>
+#include <kdbease.h>
 #include <kdbmeta.h>
+#include <kdbproposal.h>
 #include <kdbprivate.h>
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -52,7 +54,7 @@
  */
 
 
-/********************************************* 
+/*********************************************
  *    General comment manipulation methods   *
  *********************************************/
 
