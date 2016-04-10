@@ -23,11 +23,12 @@
 
 #include <algorithm>
 #include <functional>
-// #include <regex>
 #include <set>
+#include <unordered_set>
 
 #include <cassert>
 #include <kdb.hpp>
+#include <kdbmeta.h>
 
 
 using namespace std;
@@ -91,37 +92,86 @@ MountBackendBuilder::MountBackendBuilder (BackendBuilderInit const & bbi) : Back
  */
 void BackendBuilder::sort ()
 {
-	auto hasOrderingConflict = [this](PluginSpec const & other, PluginSpec const & inserted) {
-		std::stringstream ss (pluginDatabase->lookupInfo (inserted, "ordering"));
+	KeySet deps;
+	size_t i = 0;
+	for (auto const & ps : toAdd)
+	{
+		Key dep("/"+ps.getName(), KEY_END);
+		if (ps.getName() != ps.getRefName())
+		{
+			dep.addBaseName (ps.getRefName());
+		}
+		deps.append (dep);
+		std::string v = to_string(i);
+		dep.set<size_t> (i);
+		dep.setMeta<size_t> ("order", i);
+		++i;
+	}
+
+	std::unordered_set <std::string> addedDeps;
+	for (auto const & ps : toAdd)
+	{
+		std::stringstream ss (pluginDatabase->lookupInfo (ps, "ordering"));
 		std::string order;
 		while (ss >> order)
 		{
-			if (order == other.getName ())
+			if (addedDeps.find (order) != addedDeps.end())
 			{
-				return true;
+				continue;
 			}
 
-			if (order == pluginDatabase->lookupInfo (other, "provides"))
+			addedDeps.insert(order);
+
+			// check if dependency is relevant (occurs in KeySet)
+			for (auto const & self : deps)
 			{
-				return true;
+				const size_t jumpSlash = 1;
+				std::string n = self.getName();
+				std::string name (n.begin ()+jumpSlash, n.end ());
+
+				bool hasProvides = false;
+				/* TODO: should also take care of provides
+				   implementation below would self-conflict on multiple same providers
+				std::string provides = pluginDatabase->lookupInfo (PluginSpec(name), "provides");
+				std::istringstream ss2 (provides);
+				std::string provide;
+				while (ss2 >> provide)
+				{
+					if (provide == name)
+					{
+						hasProvides = true;
+					}
+				}
+				*/
+
+				if (std::equal (order.begin (), order.end (), name.begin ()) ||
+					hasProvides)
+				{
+					// is relevant, add this instance of dep to every other key
+					// add reverse dep of every key to self
+					for (auto const & k : deps)
+					{
+						if (k == self) continue;
+						ckdb::elektraMetaArrayAdd (*self, "dep", ("/"+k.getName()).c_str());
+					}
+				}
 			}
 		}
-		return false;
-	};
+	}
 
-	// compare with all but the last
-	for (auto i = toAdd.begin (); std::next (i) != toAdd.end (); ++i)
+	// now sort by the given topology
+	std::vector <ckdb::Key*> ordered;
+	ordered.resize (deps.size());
+	if (elektraSortTopology (deps.getKeySet (), &ordered[0]) != 1) throw CyclicOrderingViolation();
+
+	PluginSpecVector copy(toAdd);
+
+	// now swap everything in toAdd as we have the indizes given in ordered
+	i = 0;
+	for (auto const & o : ordered)
 	{
-		if (hasOrderingConflict (*i, toAdd.back ()))
-		{
-			// bring last *before* the plugin where ordering constraint
-			// would be violated
-			PluginSpecVector n (toAdd.begin (), i);
-			n.push_back (toAdd.back ());
-			n.insert (n.end (), i, std::prev (toAdd.end ()));
-			toAdd = n;
-			return;
-		}
+		toAdd[i] = copy[atoi (ckdb::keyString (o))];
+		++i;
 	}
 }
 
