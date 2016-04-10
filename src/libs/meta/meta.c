@@ -10,8 +10,8 @@
 #include <kdbconfig.h>
 #include <kdbease.h>
 #include <kdbmeta.h>
-#include <kdbproposal.h>
 #include <kdbprivate.h>
+#include <kdbproposal.h>
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
@@ -900,7 +900,7 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 }
 
 
-/*
+/**
  * creates an metadata array or appends another element to an existing metadata array
  * e.g.
  * Key *key = keyNew("user/test", KEY_END);
@@ -908,6 +908,10 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
  * key now has "test/#0" with value "test0" as metadata
  * elektraMetaArrayAdd(key, "array", "test1");
  * appends "test/#1" with value "test1" to key
+ *
+ * @param key the key the metadata should be added to
+ * @param metaName the name of the metakey array parent
+ * @param value the value of the newly appended metakey
  */
 
 void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
@@ -931,6 +935,19 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 	keySetMeta (key, metaName, keyBaseName (arrayKey));
 	keyDel (arrayKey);
 }
+/**
+ * creates a KeySet from a MetaKey array.
+ * e.g.
+ * elektraMetaArrayToKS(keyNew ("/a", KEY_VALUE, "b, c",
+ * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
+ * returns a KeySet containing the keys "dep/#0" with value "/b" and "dep/#1" with value "/c"
+ * If no MetaKey array is found, null is returned.
+ * The returned KeySet must be free'd with ksDel
+ *
+ * @returns a keyset containing all the metakeys of the metakey array
+ * @param key the key containing the metakey array
+ * @param metaName the name of the metakey array parent
+*/
 
 KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 {
@@ -959,12 +976,15 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 	return result;
 }
 
+// helper struct for elektraSortTopology
 typedef struct
 {
 	Key * key;
 	KeySet * ks;
 } _adjMatrix;
 
+
+// helper for elektraSortTopology
 static void removeDepFromAll (_adjMatrix * adjMatrix, unsigned int size, Key * toRemove)
 {
 	for (unsigned int i = 0; i < size; ++i)
@@ -974,6 +994,7 @@ static void removeDepFromAll (_adjMatrix * adjMatrix, unsigned int size, Key * t
 	}
 }
 
+// helper for elektraSortTopology
 static int topCmpOrder (const void * a, const void * b)
 {
 	const Key * ka = (*(const Key **)a);
@@ -989,6 +1010,23 @@ static int topCmpOrder (const void * a, const void * b)
 	return strcmp (keyString (kam), keyString (kbm));
 }
 
+/**
+ * does topological sorting on "ks" using the dependencies defined by the "dep/#" metakeys
+ * e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
+ * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
+ * depends on Key "/b" and Key "/c".
+ *
+ * duplicated and reflexive dep entries are ignored.
+ * if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
+ * order.
+ *
+ * the sorted keys are stored in "array" in topological order
+ *
+ * @returns 0 for cycles
+ * @param ks the keyset that should be sorted
+ * @param array the array where the sorted keys will be stored
+*/
+
 int elektraSortTopology (KeySet * ks, Key ** array)
 {
 	if (ks == NULL || array == NULL) return -1;
@@ -1003,14 +1041,18 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	_adjMatrix adjMatrix[size];
 	unsigned int i = 0;
 	int retVal = 0;
+	Key ** localArray = elektraMalloc (size * sizeof (Key *));
+	elektraKsToMemArray (ks, localArray);
+	qsort (localArray, size, sizeof (Key *), topCmpOrder);
 	for (i = 0; i < size; ++i)
 	{
 		adjMatrix[i].key = NULL;
 		adjMatrix[i].ks = ksNew (0, KS_END);
 	}
 	i = 0;
-	while ((cur = ksNext (ks)) != NULL)
+	for (unsigned int j = 0; j < size; ++j)
 	{
+		cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
 		if (ksGetSize (deps) == -1)
 		{
@@ -1020,8 +1062,25 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			ksDel (deps);
 			continue;
 		}
+		else if (ksGetSize (deps) == 1)
+		{
+			Key * tmpDep = ksHead (deps);
+			if (!strcmp (keyName (cur), keyString (tmpDep)))
+			{
+				keySetMeta (cur, "order", keyBaseName (orderCounter));
+				elektraArrayIncName (orderCounter);
+				ksAppendKey (done, keyDup (cur));
+				ksDel (deps);
+				continue;
+			}
+			else
+			{
+				goto TopSearchElseBranch;
+			}
+		}
 		else
 		{
+		TopSearchElseBranch:
 			adjMatrix[i].key = keyDup (cur);
 			keySetBinary (adjMatrix[i].key, (int *)&i, sizeof (i));
 			ksAppendKey (todo, adjMatrix[i].key);
@@ -1030,6 +1089,10 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			{
 				ksRewind (lookupKS);
 				Key * tmp;
+				if (!strcmp (keyName (cur), keyString (dep)))
+				{
+					continue;
+				}
 				tmp = ksLookupByName (lookupKS, keyString (dep), KDB_O_NONE);
 				ksAppendKey (adjMatrix[i].ks, tmp);
 			}
@@ -1040,15 +1103,16 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	ksRewind (done);
 	while ((cur = ksNext (done)) != NULL)
 		removeDepFromAll (adjMatrix, size, cur);
-	int found = 0;
+	int found = 1;
 	ksRewind (todo);
-	while (ksGetSize (todo) > 0)
+
+	for (i = 0; ksGetSize (todo) > 0; ++i)
 	{
-		cur = ksNext (todo);
-		if (cur == NULL)
+		if (i == size)
 		{
 			if (found)
 			{
+				i = -1;
 				found = 0;
 				ksRewind (todo);
 				continue;
@@ -1056,22 +1120,22 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			else
 				break;
 		}
-		unsigned int index;
-		keyGetBinary (cur, &index, sizeof (index));
-		if (ksGetSize (adjMatrix[index].ks) <= 0)
+		if (adjMatrix[i].key == NULL) continue;
+		if (ksGetSize (adjMatrix[i].ks) <= 0)
 		{
-			ksRewind (adjMatrix[index].ks);
+			ksRewind (adjMatrix[i].ks);
 			found = 1;
 			ksRewind (ks);
-			Key * realKey = ksLookup (ks, cur, KDB_O_NONE);
+			Key * realKey = ksLookupByName (ks, keyName (adjMatrix[i].key), KDB_O_NONE);
 			keySetMeta (realKey, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
 			ksAppendKey (done, realKey);
-			removeDepFromAll (adjMatrix, size, cur);
-			keyDel (ksLookup (adjMatrix[index].ks, cur, KDB_O_POP));
-			keyDel (adjMatrix[index].key);
-			adjMatrix[index].key = NULL;
-			keyDel (ksLookup (todo, cur, KDB_O_POP));
+			removeDepFromAll (adjMatrix, size, adjMatrix[i].key);
+			keyDel (ksLookupByName (adjMatrix[i].ks, keyName (adjMatrix[i].key), KDB_O_POP));
+			keyDel (adjMatrix[i].key);
+			keyDel (ksLookupByName (todo, keyName (adjMatrix[i].key), KDB_O_POP));
+			adjMatrix[i].key = NULL;
+			i = -1;
 		}
 	}
 	ksClear (ks);
@@ -1092,16 +1156,21 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		if (adjMatrix[i].key) keyDel (adjMatrix[i].key);
 		ksDel (adjMatrix[i].ks);
 	}
-
+	elektraFree (localArray);
 	keyDel (orderCounter);
 	ksDel (todo);
 	ksDel (lookupKS);
 	return retVal;
 }
 
-/*
+/**
  * returns the metakey array as a string separated by delim
- * the return value must be freed
+ * 
+ * @param key the key containing the metakey array
+ * @param metaName the name of the metakey array parent
+ * @param delim delimiter for the records in the returned string
+ *
+ * @returns a string containing all metakey values separated by "delim"
  */
 
 char * elektraMetaArrayToString (Key * key, const char * metaName, const char * delim)
