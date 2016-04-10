@@ -1003,14 +1003,18 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	_adjMatrix adjMatrix[size];
 	unsigned int i = 0;
 	int retVal = 0;
+	Key **localArray = elektraMalloc(size*sizeof(Key *));
+	elektraKsToMemArray (ks, localArray);
+	qsort (localArray, size, sizeof (Key *), topCmpOrder);
 	for (i = 0; i < size; ++i)
 	{
 		adjMatrix[i].key = NULL;
 		adjMatrix[i].ks = ksNew (0, KS_END);
 	}
 	i = 0;
-	while ((cur = ksNext (ks)) != NULL)
+	for(unsigned int j = 0; j < size; ++j)
 	{
+	    	cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
 		if (ksGetSize (deps) == -1)
 		{
@@ -1020,9 +1024,27 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			ksDel (deps);
 			continue;
 		}
+		else if(ksGetSize(deps) == 1)
+		{
+		    Key *tmpDep = ksHead(deps);
+		    if(!strcmp(keyName(cur), keyString(tmpDep)))
+		    {
+			keySetMeta (cur, "order", keyBaseName (orderCounter));
+			elektraArrayIncName (orderCounter);
+			ksAppendKey (done, keyDup (cur));
+			ksDel (deps);
+			continue;
+
+		    }
+		    else
+		    {
+			goto TopSearchElseBranch;
+		    }
+		}
 		else
 		{
-			adjMatrix[i].key = keyDup (cur);
+TopSearchElseBranch:			
+		    	adjMatrix[i].key = keyDup (cur);
 			keySetBinary (adjMatrix[i].key, (int *)&i, sizeof (i));
 			ksAppendKey (todo, adjMatrix[i].key);
 			Key * dep;
@@ -1030,6 +1052,10 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			{
 				ksRewind (lookupKS);
 				Key * tmp;
+				if(!strcmp(keyName(cur), keyString(dep)))
+				{
+					continue;
+				}
 				tmp = ksLookupByName (lookupKS, keyString (dep), KDB_O_NONE);
 				ksAppendKey (adjMatrix[i].ks, tmp);
 			}
@@ -1040,15 +1066,16 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	ksRewind (done);
 	while ((cur = ksNext (done)) != NULL)
 		removeDepFromAll (adjMatrix, size, cur);
-	int found = 0;
+	int found = 1;
 	ksRewind (todo);
-	while (ksGetSize (todo) > 0)
+	
+	for(i = 0; ksGetSize (todo) > 0; ++i)
 	{
-		cur = ksNext (todo);
-		if (cur == NULL)
+		if (i == size)
 		{
 			if (found)
 			{
+			    	i = -1;
 				found = 0;
 				ksRewind (todo);
 				continue;
@@ -1056,22 +1083,23 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			else
 				break;
 		}
-		unsigned int index;
-		keyGetBinary (cur, &index, sizeof (index));
-		if (ksGetSize (adjMatrix[index].ks) <= 0)
+		if(adjMatrix[i].key == NULL)
+		    continue;
+		if (ksGetSize (adjMatrix[i].ks) <= 0)
 		{
-			ksRewind (adjMatrix[index].ks);
+			ksRewind (adjMatrix[i].ks);
 			found = 1;
 			ksRewind (ks);
-			Key * realKey = ksLookup (ks, cur, KDB_O_NONE);
+			Key * realKey = ksLookupByName (ks, keyName(adjMatrix[i].key), KDB_O_NONE);
 			keySetMeta (realKey, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
 			ksAppendKey (done, realKey);
-			removeDepFromAll (adjMatrix, size, cur);
-			keyDel (ksLookup (adjMatrix[index].ks, cur, KDB_O_POP));
-			keyDel (adjMatrix[index].key);
-			adjMatrix[index].key = NULL;
-			keyDel (ksLookup (todo, cur, KDB_O_POP));
+			removeDepFromAll (adjMatrix, size, adjMatrix[i].key);
+			keyDel (ksLookupByName (adjMatrix[i].ks, keyName(adjMatrix[i].key), KDB_O_POP));
+			keyDel (adjMatrix[i].key);
+			keyDel (ksLookupByName (todo, keyName(adjMatrix[i].key), KDB_O_POP));
+			adjMatrix[i].key = NULL;
+			i = -1;
 		}
 	}
 	ksClear (ks);
@@ -1092,7 +1120,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		if (adjMatrix[i].key) keyDel (adjMatrix[i].key);
 		ksDel (adjMatrix[i].ks);
 	}
-
+	elektraFree(localArray);
 	keyDel (orderCounter);
 	ksDel (todo);
 	ksDel (lookupKS);
