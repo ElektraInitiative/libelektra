@@ -76,9 +76,9 @@ GElektraKey * gelektra_keyset_current (const GElektraKeySet * ks);
 GElektraKey * gelektra_keyset_head (const GElektraKeySet * ks);
 GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks);
 
-cursor_t gelektra_keyset_getcursor (const GElektraKeySet * ks);
-gint gelektra_keyset_setcursor (GElektraKeySet * ks, cursor_t pos);
-GElektraKey * gelektra_keyset_atcursor (GElektraKeySet * ks, cursor_t pos);
+gssize gelektra_keyset_getcursor (const GElektraKeySet * ks);
+gint gelektra_keyset_setcursor (GElektraKeySet * ks, gssize pos);
+GElektraKey * gelektra_keyset_atcursor (GElektraKeySet * ks, gssize pos);
 
 G_END_DECLS
 
