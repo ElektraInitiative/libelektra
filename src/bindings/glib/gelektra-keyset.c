@@ -300,10 +300,10 @@ GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks)
  * gelektra_keyset_getcursor:
  * @ks: A #GElektraKeySet
  *
- * Returns: (type gssize) (transfer none): Current cursor position
+ * Returns: Current cursor position
  * see ksGetCursor
  */
-cursor_t gelektra_keyset_getcursor (const GElektraKeySet * ks)
+gssize gelektra_keyset_getcursor (const GElektraKeySet * ks)
 {
 	return ksGetCursor (ks->keyset);
 }
@@ -311,11 +311,11 @@ cursor_t gelektra_keyset_getcursor (const GElektraKeySet * ks)
 /**
  * gelektra_keyset_setcursor:
  * @ks: A #GElektraKeySet
- * @pos: (type gssize): The new cursor position
+ * @pos: The new cursor position
  *
  * see ksSetCursor
  */
-gint gelektra_keyset_setcursor (GElektraKeySet * ks, cursor_t pos)
+gint gelektra_keyset_setcursor (GElektraKeySet * ks, gssize pos)
 {
 	return ksSetCursor (ks->keyset, pos);
 }
@@ -323,12 +323,12 @@ gint gelektra_keyset_setcursor (GElektraKeySet * ks, cursor_t pos)
 /**
  * gelektra_keyset_atcursor:
  * @ks: A #GElektraKeySet
- * @pos: (type gssize): The cursor position
+ * @pos: The cursor position
  *
  * Returns: (transfer full): #GElektraKey in @ks at @pos
  * see ksAtCursor
  */
-GElektraKey * gelektra_keyset_atcursor (GElektraKeySet * ks, cursor_t pos)
+GElektraKey * gelektra_keyset_atcursor (GElektraKeySet * ks, gssize pos)
 {
 	if (pos < 0) pos += gelektra_keyset_len (ks);
 	return gelektra_key_make (ksAtCursor (ks->keyset, pos));
