@@ -20,19 +20,15 @@
  */
 const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey)
 {
-	const size_t parentSize = keyGetNameSize (parentKey);
+	size_t offset = 0;
 
-	if (!strcmp (keyName (parentKey), "/"))
+	if (strcmp (keyName (parentKey), "/"))
 	{
-		return keyName (cur);
+		offset = keyGetNameSize (parentKey);
+		if (keyName (parentKey)[0] == '/' && keyName (cur)[0] != '/')
+		{
+			offset += strchr (keyName (cur) + 1, '/') - keyName (cur);
+		}
 	}
-	else if (keyName (parentKey)[0] == '/' && keyName (cur)[0] != '/')
-	{
-		size_t offset = strchr (keyName (cur) + 1, '/') - keyName (cur);
-		return keyName (cur) + strlen (keyName (parentKey)) + offset + 1;
-	}
-	else
-	{
-		return keyName (cur) + parentSize;
-	}
+	return keyName (cur) + offset;
 }
