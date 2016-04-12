@@ -12,6 +12,7 @@
 #include <kdbconfig.h>
 
 #include <kdbvalue.hpp>
+#include <kdbmeta.h>
 
 #include <cassert>
 #include <functional>
@@ -131,9 +132,23 @@ inline void Subject::notifyAllEvents () const
 
 inline void Subject::notifyKeySetUpdate () const
 {
+	KeySet deps;
+	size_t i = 0;
 	for (auto & o : m_observers)
 	{
-		o.get ().updateContext (false);
+		Key dep (o.get ().getDepKey());
+		dep.set<size_t> (i);
+		++i;
+		deps.append (dep);
+	}
+
+	std::vector <ckdb::Key*> ordered;
+	ordered.resize (deps.size());
+	if (elektraSortTopology (deps.getKeySet (), &ordered[0]) != 1) throw std::runtime_error("Cycle in layer dependencies");
+
+	for (auto & o : ordered)
+	{
+		std::next (m_observers.begin (), Key(o).get<size_t> ())->get().updateContext (false);
 	}
 }
 

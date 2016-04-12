@@ -23,6 +23,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <kdbmeta.h>
 
 #include <kdbproposal.h>
 #include <keyset.hpp>
@@ -133,6 +134,7 @@ class ValueObserver
 public:
 	virtual ~ValueObserver () = 0;
 	virtual void updateContext (bool write = true) const = 0;
+	virtual kdb::Key getDepKey () const = 0;
 
 	typedef std::reference_wrapper<ValueObserver> reference;
 };
@@ -213,6 +215,12 @@ public:
 	 * @return NoContext always returns the same string
 	 */
 	std::string evaluate (std::string const & key_name) const
+	{
+		return key_name;
+	}
+
+	std::string evaluate (std::string const & key_name,
+			      std::function<bool(std::string const &, std::string &, bool in_group)> const & ) const
 	{
 		return key_name;
 	}
@@ -589,7 +597,9 @@ public:
 
 	std::string layerId () const
 	{
-		return m_key.getBaseName ();
+		const Key meta = m_spec.getMeta <const Key> ("layer/name");
+		if (meta) return meta.getString();
+		return m_spec.getBaseName ();
 	}
 
 	std::string layerVal () const
@@ -714,6 +724,25 @@ private:
 		};
 		Command command (*this, fun);
 		m_context.execute (command);
+	}
+
+	virtual kdb::Key getDepKey () const override
+	{
+		kdb::Key dep ("/"+layerId (), KEY_END);
+		// rename to /layer/order
+		const Key meta = m_spec.getMeta<const Key> ("layer/order");
+		if (meta)
+		{
+			dep.setMeta ("order", meta.getString());
+		}
+		m_context.evaluate (m_spec.getName(), [&](std::string const & current_id, std::string &, bool) {
+#if DEBUG && VERBOSE
+				std::cout << "add dep " << current_id << " to " << dep.getName() << std::endl;
+#endif
+				ckdb::elektraMetaArrayAdd (*dep, "dep", ("/"+current_id).c_str());
+				return false;
+		});
+		return dep;
 	}
 
 private:

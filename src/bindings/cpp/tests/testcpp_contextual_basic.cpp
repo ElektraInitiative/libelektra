@@ -684,6 +684,11 @@ struct MockObserver : kdb::ValueObserver
 		++counter;
 	}
 
+	virtual kdb::Key getDepKey () const override
+	{
+		throw "should not happen";
+	}
+
 	mutable long long counter;
 };
 
