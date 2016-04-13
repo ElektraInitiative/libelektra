@@ -31,7 +31,6 @@ static void doTest ()
 			       keyNew ("user/plugins/#1/placements/set", KEY_VALUE, "presetstorage", KEY_END),
 			       keyNew ("user/plugins/#1/placements/get", KEY_VALUE, "pregetstorage", KEY_END), KS_END);
 	Key * parentKey = keyNew ("user/tests/list", KEY_END);
-	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("list");
 
 	Plugin * check = elektraPluginOpen ("keytometa", modules, ksNew (5, KS_END), errorKey);

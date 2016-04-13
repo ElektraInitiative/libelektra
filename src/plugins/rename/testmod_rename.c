@@ -395,6 +395,26 @@ static void test_mixCase ()
 	PLUGIN_CLOSE ();
 }
 
+static void test_write ()
+{
+	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
+	KeySet * conf =
+		ksNew (20, keyNew ("system/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system/get/case", KEY_VALUE, "toupper", KEY_END),
+		       keyNew ("system/set/case", KEY_VALUE, "keyname"), KS_END);
+	KeySet * ks = ksNew (20, keyNew ("user/tests/rename/uppercase/uppercase/uppercase/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
+	ksAppendKey (ks, parentKey);
+	PLUGIN_OPEN ("rename");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	Key * key = ksLookupByName (ks, "user/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/lowercase", KDB_O_NONE);
+	succeed_if (key, "key1 was not correctly rename");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	key = ksLookupByName (ks, "user/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/lowercase", KDB_O_NONE);
+	succeed_if (key, "key1s name was not correctly saved");
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("RENAME       TESTS\n");
@@ -415,7 +435,7 @@ int main (int argc, char ** argv)
 	test_toLower ();
 	test_mixCase ();
 	test_replaceString ();
-
+	test_write ();
 	printf ("\ntest_rename RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
