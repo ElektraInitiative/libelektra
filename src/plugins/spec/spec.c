@@ -1137,6 +1137,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports", KEY_END),
+			       keyNew ("system/elektra/modules/spec/exports/close", KEY_FUNC, elektraSpecClose, KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
 #include ELEKTRA_README (spec)
@@ -1185,6 +1186,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (pluginConfig->counter == 1)
 	{
 		clean = 1;
+		pluginConfig->counter = 0;
 	}
 	ch->member = onConflict;
 	ch->invalid = onConflict;
@@ -1198,6 +1200,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (conflictCut);
 	Key * specKey = keyNew ("spec", KEY_END);
 	KeySet * specKS = ksCut (returned, specKey);
+	Key * cur;
 	pluginConfig->ks = ksDup (specKS);
 	elektraPluginSetData (handle, pluginConfig);
 	keyDel (specKey);
@@ -1236,14 +1239,27 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			onConflict = INFO;
 		}
 	}
+	int clean = 0;
+	PluginConfig * pluginConfig = elektraPluginGetData (handle);
+	if (pluginConfig)
+	{
+		++(pluginConfig->counter);
+	}
+	else
+	{
+		return 0;
+	}
+	if (pluginConfig->counter == 2)
+	{
+		clean = 1;
+		pluginConfig->counter = 0;
+	}
 	ch->member = onConflict;
 	ch->invalid = onConflict;
 	ch->count = onConflict;
 	ch->conflict = onConflict;
 	ch->range = onConflict;
 	ch->missing = onConflict;
-	PluginConfig * pluginConfig = elektraPluginGetData (handle);
-	if (pluginConfig) pluginConfig->counter = 0;
 	KeySet * conflictCut = ksCut (config, onConflictConf);
 	parseConfig (conflictCut, ch);
 	ksAppend (config, conflictCut);
@@ -1256,22 +1272,31 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (specKS)
 	{
 		ksRewind (specKS);
-		ret = doGlobbing (parentKey, ks, specKS, ch, SET, 0);
+		ret = doGlobbing (parentKey, ks, specKS, ch, SET, clean);
 	}
 	ksAppend (returned, ks);
 	ksDel (ks);
-	if (specKS) ksDel (specKS);
 	elektraFree (ch);
 	ksRewind (returned);
 	elektraPluginSetData (handle, pluginConfig);
 	return ret; // success
 }
 
+int elektraSpecClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+{
+	PluginConfig * pluginConfig = elektraPluginGetData (handle);
+	if (!pluginConfig) return 0;
+	if (pluginConfig->ks) ksDel (pluginConfig->ks);
+	elektraFree (pluginConfig);
+	elektraPluginSetData (handle, 0);
+	return 0;
+}
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
 {
 	// clang-format off
 	return elektraPluginExport ("spec",
+            ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
 			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,
 			ELEKTRA_PLUGIN_END);

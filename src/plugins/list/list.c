@@ -20,35 +20,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum
-{
-	preGetStorage = 0,
-	postGetStorage,
-	postGetCleanup,
-	getEnd
-} GetPlacements;
+typedef enum { preGetStorage = 0, postGetStorage, postGetCleanup, getEnd } GetPlacements;
 
-typedef enum
-{
-	preSetStorage = 0,
-	preCommit,
-	postCommit,
-	setEnd
-} SetPlacements;
+typedef enum { preSetStorage = 0, preSetCleanup, preCommit, postCommit, setEnd } SetPlacements;
 
-typedef enum
-{
-	preRollback = 0,
-	postRollback,
-	errEnd
-} ErrPlacements;
+typedef enum { preRollback = 0, postRollback, errEnd } ErrPlacements;
 
-typedef enum
-{
-	GET,
-	SET,
-	ERR
-} OP;
+typedef enum { GET, SET, ERR } OP;
 
 typedef struct
 {
@@ -58,11 +36,11 @@ typedef struct
 	GetPlacements getCurrent;
 
 	ErrPlacements errPlacements[2]; // prerollback and postrollback
-	SetPlacements setPlacements[3]; // presetstorage, precommit and postcommit
+	SetPlacements setPlacements[4]; // presetstorage, presetcleanup, precommit and postcommit
 	GetPlacements getPlacements[3]; // pregetstorage, postgetstorage, postgetclenaup
 
 	// each keyset contains the list of plugin names for a given placement
-	KeySet * setKS[3];
+	KeySet * setKS[4];
 	KeySet * errKS[2];
 	KeySet * getKS[3];
 	KeySet * plugins;
@@ -85,6 +63,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		placements->setKS[0] = ksNew (0, KS_END);
 		placements->setKS[1] = ksNew (0, KS_END);
 		placements->setKS[2] = ksNew (0, KS_END);
+		placements->setKS[3] = ksNew (0, KS_END);
 		placements->errKS[0] = ksNew (0, KS_END);
 		placements->errKS[1] = ksNew (0, KS_END);
 		placements->plugins = ksNew (0, KS_END);
@@ -99,7 +78,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	if (key)
 	{
 		const char * setString = keyString (key);
-		const char * setStrings[] = { "presetstorage", "precommit", "postcommit" };
+		const char * setStrings[] = { "presetstorage", "presetcleanup", "precommit", "postcommit" };
 		SetPlacements setPlacement = preSetStorage;
 		while (setPlacement != setEnd)
 		{
@@ -159,7 +138,7 @@ int elektraListOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		if (sub)
 		{
 			const char * setString = keyString (sub);
-			const char * setStrings[] = { "presetstorage", "precommit", "postcommit" };
+			const char * setStrings[] = { "presetstorage", "presetcleanup", "precommit", "postcommit" };
 			SetPlacements setPlacement = preSetStorage;
 			while (setPlacement != setEnd)
 			{
@@ -219,6 +198,7 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 	ksDel (placements->setKS[0]);
 	ksDel (placements->setKS[1]);
 	ksDel (placements->setKS[2]);
+	ksDel (placements->setKS[3]);
 	ksDel (placements->errKS[0]);
 	ksDel (placements->errKS[1]);
 	Key * cur;
@@ -238,7 +218,7 @@ int elektraListClose (Plugin * handle, Key * errorKey)
 }
 
 static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, KeySet * configOrig, KeySet * returned, Key * parentKey,
-		       OP op, Key * (*traversalFunction)(KeySet *))
+		       OP op, Key * (*traversalFunction) (KeySet *))
 {
 	Key * current;
 
