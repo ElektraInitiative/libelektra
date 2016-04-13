@@ -225,12 +225,12 @@ static void test_metaConfigTakesPrecedence ()
 static void test_keyCutNamePart ()
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
-	Key * result = elektraKeyCreateNewName (parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL);
+	Key * result = elektraKeyCreateNewName (parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (!result, "parentKey was modified although it should have been ignored");
 
 	/* cutting works correctly without trailing slash */
 	Key * testKey = keyNew ("user/tests/rename/will/cut/this/key1", KEY_END);
-	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this", NULL, NULL, NULL);
+	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (result, "key1 was not cut")
 		succeed_if (!strcmp (keyName (result), "user/tests/rename/key1"), "cutting key1 did not yield the expected result");
 	keyDel (testKey);
@@ -238,7 +238,7 @@ static void test_keyCutNamePart ()
 
 	/* cutting works correctly with trailing slash */
 	testKey = keyNew ("user/tests/rename/will/cut/this/key1", KEY_END);
-	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this/", NULL, NULL, NULL);
+	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this/", NULL, NULL, NULL, 0);
 	succeed_if (result, "key1 was not cut")
 		succeed_if (!strcmp (keyName (result), "user/tests/rename/key1"), "cutting key1 did not yield the expected result");
 	keyDel (testKey);
@@ -246,7 +246,7 @@ static void test_keyCutNamePart ()
 
 	/* disallow leading slashes */
 	testKey = keyNew ("user/tests/rename/wont/cut/this/key1", KEY_END);
-	result = elektraKeyCreateNewName (testKey, parentKey, "/wont/cut/this", NULL, NULL, NULL);
+	result = elektraKeyCreateNewName (testKey, parentKey, "/wont/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (!result, "key was cut although it the cutpath contained a leading slash");
 	keyDel (testKey);
 	keyDel (parentKey);
