@@ -337,8 +337,12 @@ static void checkTopOrder3 (Key ** array)
 	succeed_if_top (2, "/c");
 	succeed_if_top (3, "/a");
 }
-
-
+uint64_t rdtsc ()
+{
+	unsigned int lo, hi;
+	__asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
+	return ((uint64_t)hi << 32) | lo;
+}
 static void test_top ()
 {
 	KeySet * test0 = ksNew (10, keyNew ("/a", KEY_VALUE, "whatever", KEY_END), KS_END);
@@ -367,20 +371,61 @@ static void test_top ()
 		KS_END);
 	Key ** array = elektraMalloc (ksGetSize (test1) * sizeof (Key *));
 	memset (array, 0, ksGetSize (test1) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST 1 ----\n");
+	unsigned long long before, after;
+	before = rdtsc ();
 	elektraSortTopology (test1, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+
 	checkTopArray (array, ksGetSize (test1));
+	before = rdtsc ();
+	elektraSortTopologyOld (test1, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+
 	elektraRealloc ((void **)&array, ksGetSize (test2) * sizeof (Key *));
 	memset (array, 0, ksGetSize (test2) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST 2 ----\n");
+	before = rdtsc ();
 	elektraSortTopology (test2, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+
 	checkTopArray (array, ksGetSize (test2));
+	before = rdtsc ();
+	elektraSortTopologyOld (test2, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+
 	elektraRealloc ((void **)&array, ksGetSize (test3) * sizeof (Key *));
 	memset (array, 0, ksGetSize (test3) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST 3 ----\n");
+	before = rdtsc ();
 	elektraSortTopology (test3, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+
 	checkTopArray (array, ksGetSize (test3));
+	before = rdtsc ();
+	elektraSortTopologyOld (test3, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
 	elektraRealloc ((void **)&array, ksGetSize (test0) * sizeof (Key *));
 	memset (array, 0, ksGetSize (test0) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST 0 ----\n");
+	before = rdtsc ();
 	elektraSortTopology (test0, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+
 	checkTopArray (array, ksGetSize (test0));
+	before = rdtsc ();
+	elektraSortTopologyOld (test0, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
 	KeySet * testCycle = ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
 				    keyNew ("/b", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_END), KS_END);
 	KeySet * testCycle2 = ksNew (
@@ -392,10 +437,67 @@ static void test_top ()
 		keyNew ("/f", KEY_VALUE, "h", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/h", KEY_END),
 		keyNew ("/g", KEY_VALUE, "h", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/h", KEY_END),
 		keyNew ("/h", KEY_VALUE, "e", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/e", KEY_END), KS_END);
+
+	KeySet * testCycle3 = ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
+				     keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
+				     keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_END),
+				     keyNew ("/d", KEY_VALUE, "e", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/e", KEY_END),
+				     keyNew ("/e", KEY_VALUE, "f", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/f", KEY_END),
+				     keyNew ("/f", KEY_VALUE, "g", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/g", KEY_END),
+				     keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_END), KS_END);
+	KeySet * testCycle4 =
+		ksNew (10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_END),
+		       keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
+		       keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_END),
+		       keyNew ("/d", KEY_VALUE, "e", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/e", KEY_META, "dep/#1", "/g", KEY_END),
+		       keyNew ("/e", KEY_VALUE, "f", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/f", KEY_END),
+		       keyNew ("/f", KEY_VALUE, "g", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/g", KEY_END),
+		       keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_END), KS_END);
+
+
 	elektraRealloc ((void **)&array, ksGetSize (testCycle) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST C1 ----\n");
+	before = rdtsc ();
 	succeed_if (elektraSortTopology (testCycle, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+	before = rdtsc ();
+	succeed_if (elektraSortTopologyOld (testCycle, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
 	elektraRealloc ((void **)&array, ksGetSize (testCycle2) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST C2 ----\n");
+	before = rdtsc ();
 	succeed_if (elektraSortTopology (testCycle2, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+	before = rdtsc ();
+	succeed_if (elektraSortTopologyOld (testCycle2, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+	elektraRealloc ((void **)&array, ksGetSize (testCycle3) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST C3 ----\n");
+	before = rdtsc ();
+	succeed_if (elektraSortTopology (testCycle3, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+	before = rdtsc ();
+	succeed_if (elektraSortTopologyOld (testCycle3, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+	elektraRealloc ((void **)&array, ksGetSize (testCycle4) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST C4 ----\n");
+	before = rdtsc ();
+	succeed_if (elektraSortTopology (testCycle4, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+	before = rdtsc ();
+	succeed_if (elektraSortTopologyOld (testCycle4, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
 
 	KeySet * orderTest1 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
@@ -404,8 +506,18 @@ static void test_top ()
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#0", KEY_END), KS_END);
 	elektraRealloc ((void **)&array, ksGetSize (orderTest1) * sizeof (Key *));
 	memset (array, 0, ksGetSize (orderTest1) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST O1 ----\n");
+	before = rdtsc ();
 	elektraSortTopology (orderTest1, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
 	checkTopOrder1 (array);
+	before = rdtsc ();
+	elektraSortTopologyOld (orderTest1, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+
 	KeySet * orderTest2 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END),
 		keyNew ("/b", KEY_VALUE, "b, c", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_META,
@@ -413,8 +525,17 @@ static void test_top ()
 		keyNew ("/c", KEY_VALUE, "-", KEY_META, "order", "#3", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#1", KEY_END), KS_END);
 	memset (array, 0, ksGetSize (orderTest2) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST O2 ----\n");
+	before = rdtsc ();
 	elektraSortTopology (orderTest2, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
 	checkTopOrder2 (array);
+	before = rdtsc ();
+	elektraSortTopologyOld (orderTest2, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
 
 	KeySet * orderTest3 = ksNew (
 		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/a", KEY_META, "dep/#1", "/b", KEY_META,
@@ -423,8 +544,71 @@ static void test_top ()
 		keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#1", KEY_END),
 		keyNew ("/d", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#5", KEY_END), KS_END);
 	memset (array, 0, ksGetSize (orderTest3) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST O3 ----\n");
+	before = rdtsc ();
 	elektraSortTopology (orderTest3, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
 	checkTopOrder3 (array);
+	before = rdtsc ();
+	elektraSortTopologyOld (orderTest3, array);
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+
+	KeySet * testCycleOrder1 = ksNew (
+		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "1", KEY_END),
+		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_END),
+		keyNew ("/c", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_META, "order", "#0", KEY_END), KS_END);
+
+	KeySet * testCycleOrder2 = ksNew (
+		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "#2", KEY_END),
+		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_META, "order", "#0", KEY_END),
+		keyNew ("/c", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_META, "order", "#1", KEY_END), KS_END);
+
+	KeySet * testCycleOrder3 = ksNew (
+		10, keyNew ("/a", KEY_VALUE, "b", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/b", KEY_META, "order", "#2", KEY_END),
+		keyNew ("/b", KEY_VALUE, "c", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/c", KEY_META, "order", "#0", KEY_END),
+		keyNew ("/c", KEY_VALUE, "d", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/d", KEY_META, "order", "#1", KEY_END),
+		keyNew ("/d", KEY_VALUE, "e", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/e", KEY_META, "order", "#3", KEY_END),
+		keyNew ("/e", KEY_VALUE, "f", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/f", KEY_META, "order", "#5", KEY_END),
+		keyNew ("/f", KEY_VALUE, "g", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/g", KEY_META, "order", "#4", KEY_END),
+		keyNew ("/g", KEY_VALUE, "a", KEY_META, "dep", "#0", KEY_META, "dep/#0", "/a", KEY_META, "order", "#6", KEY_END), KS_END);
+
+	elektraRealloc ((void **)&array, ksGetSize (testCycleOrder1) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST CO1 ----\n");
+	before = rdtsc ();
+	succeed_if (elektraSortTopology (testCycleOrder1, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+	before = rdtsc ();
+	succeed_if (elektraSortTopologyOld (testCycleOrder1, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+
+	elektraRealloc ((void **)&array, ksGetSize (testCycleOrder2) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST CO2 ----\n");
+	before = rdtsc ();
+	succeed_if (elektraSortTopology (testCycleOrder2, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+	before = rdtsc ();
+	succeed_if (elektraSortTopologyOld (testCycleOrder2, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
+	elektraRealloc ((void **)&array, ksGetSize (testCycleOrder3) * sizeof (Key *));
+	fprintf (stderr, "\t ---- TEST CO3 ----\n");
+	before = rdtsc ();
+	succeed_if (elektraSortTopology (testCycleOrder3, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------NEW: %llu\n", after - before);
+	before = rdtsc ();
+	succeed_if (elektraSortTopologyOld (testCycleOrder3, array) == 0, "Cycle detection failed\n");
+	after = rdtsc ();
+	fprintf (stderr, "\t\t-------OLD: %llu\n", after - before);
+
 
 	ksDel (test0);
 	ksDel (test1);
@@ -432,9 +616,14 @@ static void test_top ()
 	ksDel (test3);
 	ksDel (testCycle);
 	ksDel (testCycle2);
+	ksDel (testCycle3);
+	ksDel (testCycle4);
 	ksDel (orderTest1);
 	ksDel (orderTest2);
 	ksDel (orderTest3);
+	ksDel (testCycleOrder1);
+	ksDel (testCycleOrder2);
+	ksDel (testCycleOrder3);
 	elektraFree (array);
 }
 int main (int argc, char ** argv)

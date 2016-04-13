@@ -69,10 +69,10 @@
  *
  * keyComment() returns "" when there is no keyComment. The reason is
  * @code
-key=keyNew(0);
-keySetComment(key,"");
-keyComment(key); // you would expect "" here
-keyDel(key);
+ key=keyNew(0);
+ keySetComment(key,"");
+ keyComment(key); // you would expect "" here
+ keyDel(key);
  * @endcode
  *
  * See keySetComment() for more information on comments.
@@ -118,8 +118,8 @@ const char * keyComment (const Key * key)
  * For that reason 1 is returned.
  *
  * @code
-char *buffer;
-buffer = elektraMalloc (keyGetCommentSize (key));
+ char *buffer;
+ buffer = elektraMalloc (keyGetCommentSize (key));
 // use this buffer to store the comment
 // pass keyGetCommentSize (key) for maxSize
  * @endcode
@@ -947,7 +947,7 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
  * @returns a keyset containing all the metakeys of the metakey array
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
-*/
+ */
 
 KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 {
@@ -981,11 +981,11 @@ typedef struct
 {
 	Key * key;
 	KeySet * ks;
-} _adjMatrix;
+} _adjMatrix2;
 
 
 // helper for elektraSortTopology
-static void removeDepFromAll (_adjMatrix * adjMatrix, unsigned int size, Key * toRemove)
+static void removeDepFromAll (_adjMatrix2 * adjMatrix, unsigned int size, Key * toRemove)
 {
 	for (unsigned int i = 0; i < size; ++i)
 	{
@@ -1025,9 +1025,299 @@ static int topCmpOrder (const void * a, const void * b)
  * @returns 0 for cycles
  * @param ks the keyset that should be sorted
  * @param array the array where the sorted keys will be stored
-*/
+ */
+typedef struct
+{
+	Key * key;
+	uint8_t isResolved;
+	unsigned long * deps;
+} _adjMatrix;
+
+static int getArrayIndex (Key * depKey, _adjMatrix * adjMatrix, size_t size)
+{
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (!strcmp (keyName (adjMatrix[i].key), keyString (depKey))) return i;
+	}
+	return -1;
+}
+
+static int resolveDep (unsigned int j, _adjMatrix * adjMatrix, size_t size)
+{
+	int removed = 0;
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (adjMatrix[i].deps[j])
+		{
+			++removed;
+			adjMatrix[i].deps[j] = 0;
+		}
+	}
+	return removed;
+}
+static int hasUnresolvedDependencies (unsigned int j, _adjMatrix * adjMatrix, size_t size)
+{
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (adjMatrix[j].deps[i]) return 1;
+	}
+	return 0;
+}
+
+static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, KeySet * done, Key * orderCounter)
+{
+	unsigned int loops = 0;
+	unsigned int frontier[size];
+	//    unsigned int depCount = 0;
+	unsigned int todo = 0;
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (adjMatrix[j].deps[i])
+		{
+			frontier[i] = 1;
+			//            ++depCount;
+			++todo;
+		}
+		else
+		{
+			frontier[i] = 0;
+		}
+	}
+	int found = 1;
+	while (found)
+	{
+		found = 0;
+		for (unsigned int i = 0; i < size; ++i)
+		{
+			if (!frontier[i]) continue;
+			if (hasUnresolvedDependencies (i, adjMatrix, size))
+			{
+				for (unsigned int k = 0; k < size; ++k)
+				{
+					if (adjMatrix[i].deps[k])
+					{
+						if (!frontier[k])
+						{
+							found = 1;
+							++todo;
+							frontier[k] = 1;
+						}
+						//                        ++depCount;
+					}
+				}
+			}
+		}
+	}
+	if (todo == 0)
+	{
+		adjMatrix[j].isResolved = 1;
+		resolveDep (j, adjMatrix, size);
+		keySetMeta (adjMatrix[j].key, "order", keyBaseName (orderCounter));
+		elektraArrayIncName (orderCounter);
+		ksAppendKey (done, keyDup (adjMatrix[j].key));
+		return 1;
+	}
+	unsigned int max_loops = todo;
+	//    if((depCount / todo) < todo)
+	//        return -1;
+	for (unsigned int i = 0; todo; ++i)
+	{
+		if (i == size)
+		{
+			++loops;
+			i = 0;
+		}
+		if (loops > max_loops) return -1;
+		if (!frontier[i]) continue;
+		if (!hasUnresolvedDependencies (i, adjMatrix, size))
+		{
+			resolveDep (i, adjMatrix, size);
+			frontier[i] = 0;
+			--todo;
+			adjMatrix[i].isResolved = 1;
+			resolveDep (i, adjMatrix, size);
+			keySetMeta (adjMatrix[i].key, "order", keyBaseName (orderCounter));
+			elektraArrayIncName (orderCounter);
+			ksAppendKey (done, keyDup (adjMatrix[i].key));
+		}
+	}
+	return 1;
+}
+
 
 int elektraSortTopology (KeySet * ks, Key ** array)
+{
+	if (ks == NULL || array == NULL) return -1;
+	KeySet * done = ksNew (0, KS_END);
+	ksRewind (ks);
+	Key * cur;
+	size_t size = ksGetSize (ks);
+	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
+	elektraArrayIncName (orderCounter);
+	_adjMatrix adjMatrix[size];
+	int i = 0;
+	int retVal = 1;
+	unsigned int depCount = 0;
+	Key ** localArray = elektraMalloc (size * sizeof (Key *));
+	elektraKsToMemArray (ks, localArray);
+	qsort (localArray, size, sizeof (Key *), topCmpOrder);
+	for (unsigned long j = 0; j < size; ++j)
+	{
+		adjMatrix[j].key = localArray[j];
+		adjMatrix[j].isResolved = 0;
+		adjMatrix[j].deps = elektraCalloc (sizeof (unsigned long) * size);
+	}
+	i = 0;
+	uint8_t hasOrder = 0;
+	if (keyGetMeta (localArray[0], "order")) hasOrder = 1;
+	unsigned int unresolved = 0;
+	for (unsigned int j = 0; j < size; ++j)
+	{
+		cur = localArray[j];
+		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
+		Key * tmpDep;
+		int gotUnresolved = 0;
+		switch (ksGetSize (deps))
+		{
+		case -1:
+		{
+			keySetMeta (cur, "order", keyBaseName (orderCounter));
+			elektraArrayIncName (orderCounter);
+			ksAppendKey (done, keyDup (cur));
+			adjMatrix[j].isResolved = 1;
+			ksDel (deps);
+			break;
+		}
+		case 1:
+		{
+			tmpDep = ksHead (deps);
+			if (!strcmp (keyName (cur), keyString (tmpDep)))
+			{
+				keySetMeta (cur, "order", keyBaseName (orderCounter));
+				elektraArrayIncName (orderCounter);
+				ksAppendKey (done, keyDup (cur));
+				adjMatrix[j].isResolved = 1;
+				ksDel (deps);
+				break;
+			}
+		}
+		default:
+		{
+			while ((tmpDep = ksNext (deps)) != NULL)
+			{
+				i = getArrayIndex (tmpDep, adjMatrix, size);
+				if (i == -1)
+				{
+					retVal = -1;
+					break;
+				}
+				else if (i == j)
+				{
+				}
+				else
+				{
+					if (!adjMatrix[i].isResolved)
+					{
+						adjMatrix[j].deps[i] = 1;
+						++gotUnresolved;
+						// simple cycle detection
+						if (adjMatrix[i].deps[j])
+						{
+							retVal = 0;
+							break;
+						}
+					}
+				}
+			}
+			if (gotUnresolved)
+			{
+				adjMatrix[j].isResolved = 0;
+				++unresolved;
+				depCount += gotUnresolved;
+			}
+			ksDel (deps);
+			break;
+		}
+		}
+		if (retVal <= 0) break;
+	}
+	if (retVal <= 0)
+	{
+		goto TopSortCleanup;
+	}
+	for (unsigned int j = 0; j < size; ++j)
+	{
+		if (adjMatrix[j].isResolved) depCount -= resolveDep (j, adjMatrix, size);
+	}
+	size_t resolved = ksGetSize (done);
+	if (((depCount + resolved) >= size) && (unresolved))
+	{
+		retVal = 0;
+		goto TopSortCleanup;
+	}
+	int found = 1;
+	if (unresolved)
+	{
+		for (unsigned int j = 0; j < size + 1; ++j)
+		{
+			if (j == size)
+			{
+				if (found)
+				{
+					found = 0;
+					j = -1;
+					unresolved = 0;
+					continue;
+				}
+				else
+					break;
+			}
+			if (adjMatrix[j].isResolved) continue;
+			++unresolved;
+			if (hasOrder)
+			{
+				int ret = resolveDeps (j, adjMatrix, size, done, orderCounter);
+				if (ret == -1) break;
+				j = -1;
+				found = 1;
+				continue;
+			}
+			else
+			{
+				if (!hasUnresolvedDependencies (j, adjMatrix, size))
+				{
+					adjMatrix[j].isResolved = 1;
+					resolveDep (j, adjMatrix, size);
+					keySetMeta (localArray[j], "order", keyBaseName (orderCounter));
+					elektraArrayIncName (orderCounter);
+					ksAppendKey (done, keyDup (localArray[j]));
+					found = 1;
+				}
+			}
+		}
+	}
+	if (unresolved == 0)
+	{
+		elektraKsToMemArray (ks, array);
+		qsort (array, size, sizeof (Key *), topCmpOrder);
+		retVal = 1;
+	}
+	else
+		retVal = 0;
+
+TopSortCleanup:
+	ksDel (done);
+	keyDel (orderCounter);
+	elektraFree (localArray);
+	for (unsigned int j = 0; j < size; ++j)
+	{
+		elektraFree (adjMatrix[j].deps);
+	}
+	return retVal;
+}
+
+
+int elektraSortTopologyOld (KeySet * ks, Key ** array)
 {
 	if (ks == NULL || array == NULL) return -1;
 	KeySet * done = ksNew (0, KS_END);
@@ -1038,7 +1328,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	size_t size = ksGetSize (ks);
 	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
 	elektraArrayIncName (orderCounter);
-	_adjMatrix adjMatrix[size];
+	_adjMatrix2 adjMatrix[size];
 	unsigned int i = 0;
 	int retVal = 0;
 	Key ** localArray = elektraMalloc (size * sizeof (Key *));
