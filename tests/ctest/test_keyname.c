@@ -44,20 +44,20 @@ static void test_relative_cascading ()
 {
 	printf ("Get relative name of key with cascading mount point\n");
 
-	Key * parent = keyNew ("/cascading");
-	Key * child = keyNew ("/cascading/k");
+	Key * parent = keyNew ("/cascading", KEY_END);
+	Key * child = keyNew ("/cascading/k", KEY_END);
 
 	test_relative ("k", child, parent);
 	keyDel (child);
-	child = keyNew ("system/cascading/deep/deeper/deepest");
+	child = keyNew ("system/cascading/deep/deeper/deepest", KEY_END);
 	test_relative ("deep/deeper/deepest", child, parent);
 	keyDel (parent);
 	keyDel (child);
-	parent = keyNew ("/cascading\\/mountpoint/");
-	child = keyNew ("user/cascading\\/mountpoint/\\/dot");
+	parent = keyNew ("/cascading\\/mountpoint/", KEY_END);
+	child = keyNew ("user/cascading\\/mountpoint/\\/dot", KEY_END);
 	test_relative ("\\/dot", child, parent);
 	keyDel (child);
-	child = keyNew ("user/second_level/cascading\\/mountpoint/\\/dot");
+	child = keyNew ("user/second_level/cascading\\/mountpoint/\\/dot", KEY_END);
 	test_relative ("\\/dot", child, parent);
 	keyDel (child);
 	keyDel (parent);
@@ -67,20 +67,20 @@ static void test_relative_generic ()
 {
 	printf ("Get relative name of key with generic mount point\n");
 
-	Key * parent = keyNew ("system/");
-	Key * child = keyNew ("system/key/🔑/🗝");
+	Key * parent = keyNew ("system/", KEY_END);
+	Key * child = keyNew ("system/f/k", KEY_END);
 
-	test_relative ("key/🔑/🗝", child, parent);
+	test_relative ("f/k", child, parent);
 	keyDel (child);
-	child = keyNew ("system/Käfer/K");
+	child = keyNew ("system/Käfer/K", KEY_END);
 	test_relative ("Käfer/K", child, parent);
 	keyDel (child);
 	keyDel (parent);
-	parent = keyNew ("user");
-	child = keyNew ("user/K");
+	parent = keyNew ("user", KEY_END);
+	child = keyNew ("user/K", KEY_END);
 	test_relative ("K", child, parent);
 	keyDel (child);
-	child = keyNew ("user/KK\\/Kitchens/What/Were/You/Thinking?");
+	child = keyNew ("user/KK\\/Kitchens/What/Were/You/Thinking?", KEY_END);
 	test_relative ("KK\\/Kitchens/What/Were/You/Thinking?", child, parent);
 	keyDel (child);
     keyDel (parent);
