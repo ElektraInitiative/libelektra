@@ -976,24 +976,6 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 	return result;
 }
 
-// helper struct for elektraSortTopology
-typedef struct
-{
-	Key * key;
-	KeySet * ks;
-} _adjMatrix2;
-
-
-// helper for elektraSortTopology
-static void removeDepFromAll (_adjMatrix2 * adjMatrix, unsigned int size, Key * toRemove)
-{
-	for (unsigned int i = 0; i < size; ++i)
-	{
-		ksRewind (adjMatrix[i].ks);
-		keyDel (ksLookup (adjMatrix[i].ks, toRemove, KDB_O_POP));
-	}
-}
-
 // helper for elektraSortTopology
 static int topCmpOrder (const void * a, const void * b)
 {
@@ -1010,22 +992,11 @@ static int topCmpOrder (const void * a, const void * b)
 	return strcmp (keyString (kam), keyString (kbm));
 }
 
+
 /**
- * does topological sorting on "ks" using the dependencies defined by the "dep/#" metakeys
- * e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
- * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
- * depends on Key "/b" and Key "/c".
- *
- * duplicated and reflexive dep entries are ignored.
- * if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
- * order.
- *
- * the sorted keys are stored in "array" in topological order
- *
- * @returns 0 for cycles
- * @param ks the keyset that should be sorted
- * @param array the array where the sorted keys will be stored
+ * elektraSortTopology helpers
  */
+
 typedef struct
 {
 	Key * key;
@@ -1068,14 +1039,12 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 {
 	unsigned int loops = 0;
 	unsigned int frontier[size];
-	//    unsigned int depCount = 0;
 	unsigned int todo = 0;
 	for (unsigned int i = 0; i < size; ++i)
 	{
 		if (adjMatrix[j].deps[i])
 		{
 			frontier[i] = 1;
-			//            ++depCount;
 			++todo;
 		}
 		else
@@ -1102,7 +1071,6 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 							++todo;
 							frontier[k] = 1;
 						}
-						//                        ++depCount;
 					}
 				}
 			}
@@ -1118,8 +1086,6 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 		return 1;
 	}
 	unsigned int max_loops = todo;
-	//    if((depCount / todo) < todo)
-	//        return -1;
 	for (unsigned int i = 0; todo; ++i)
 	{
 		if (i == size)
@@ -1144,6 +1110,31 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 	return 1;
 }
 
+static int isValidKeyName (const char * testName)
+{
+	int retVal = 0;
+	Key * testKey = keyNew (testName, KEY_CASCADING_NAME, KEY_END);
+	if (!strcmp (keyName (testKey), testName)) retVal = 1;
+	keyDel (testKey);
+	return retVal;
+}
+
+/**
+ * does topological sorting on "ks" using the dependencies defined by the "dep/#" metakeys
+ * e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
+ * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
+ * depends on Key "/b" and Key "/c".
+ *
+ * duplicated and reflexive dep entries are ignored.
+ * if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
+ * order.
+ *
+ * the sorted keys are stored in "array" in topological order
+ *
+ * @returns 0 for cycles, -1 for invalid dependencies
+ * @param ks the keyset that should be sorted
+ * @param array the array where the sorted keys will be stored
+ */
 
 int elektraSortTopology (KeySet * ks, Key ** array)
 {
@@ -1205,11 +1196,15 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		{
 			while ((tmpDep = ksNext (deps)) != NULL)
 			{
-				i = getArrayIndex (tmpDep, adjMatrix, size);
-				if (i == -1)
+				if (!isValidKeyName (keyString (tmpDep)))
 				{
 					retVal = -1;
 					break;
+				}
+				i = getArrayIndex (tmpDep, adjMatrix, size);
+				if (i == -1)
+				{
+					continue;
 				}
 				else if ((long)i == (long)j)
 				{
@@ -1313,143 +1308,6 @@ TopSortCleanup:
 	{
 		elektraFree (adjMatrix[j].deps);
 	}
-	return retVal;
-}
-
-
-int elektraSortTopologyOld (KeySet * ks, Key ** array)
-{
-	if (ks == NULL || array == NULL) return -1;
-	KeySet * done = ksNew (0, KS_END);
-	KeySet * todo = ksNew (0, KS_END);
-	ksRewind (ks);
-	KeySet * lookupKS = ksDup (ks);
-	Key * cur;
-	size_t size = ksGetSize (ks);
-	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
-	elektraArrayIncName (orderCounter);
-	_adjMatrix2 adjMatrix[size];
-	unsigned int i = 0;
-	int retVal = 0;
-	Key ** localArray = elektraMalloc (size * sizeof (Key *));
-	elektraKsToMemArray (ks, localArray);
-	qsort (localArray, size, sizeof (Key *), topCmpOrder);
-	for (i = 0; i < size; ++i)
-	{
-		adjMatrix[i].key = NULL;
-		adjMatrix[i].ks = ksNew (0, KS_END);
-	}
-	i = 0;
-	for (unsigned int j = 0; j < size; ++j)
-	{
-		cur = localArray[j];
-		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
-		if (ksGetSize (deps) == -1)
-		{
-			keySetMeta (cur, "order", keyBaseName (orderCounter));
-			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, keyDup (cur));
-			ksDel (deps);
-			continue;
-		}
-		else if (ksGetSize (deps) == 1)
-		{
-			Key * tmpDep = ksHead (deps);
-			if (!strcmp (keyName (cur), keyString (tmpDep)))
-			{
-				keySetMeta (cur, "order", keyBaseName (orderCounter));
-				elektraArrayIncName (orderCounter);
-				ksAppendKey (done, keyDup (cur));
-				ksDel (deps);
-				continue;
-			}
-			else
-			{
-				goto TopSearchElseBranch;
-			}
-		}
-		else
-		{
-		TopSearchElseBranch:
-			adjMatrix[i].key = keyDup (cur);
-			keySetBinary (adjMatrix[i].key, (int *)&i, sizeof (i));
-			ksAppendKey (todo, adjMatrix[i].key);
-			Key * dep;
-			while ((dep = ksNext (deps)) != NULL)
-			{
-				ksRewind (lookupKS);
-				Key * tmp;
-				if (!strcmp (keyName (cur), keyString (dep)))
-				{
-					continue;
-				}
-				tmp = ksLookupByName (lookupKS, keyString (dep), KDB_O_NONE);
-				ksAppendKey (adjMatrix[i].ks, tmp);
-			}
-			++i;
-			ksDel (deps);
-		}
-	}
-	ksRewind (done);
-	while ((cur = ksNext (done)) != NULL)
-		removeDepFromAll (adjMatrix, size, cur);
-	int found = 1;
-	ksRewind (todo);
-
-	for (i = 0; ksGetSize (todo) > 0; ++i)
-	{
-		if (i == size)
-		{
-			if (found)
-			{
-				i = -1;
-				found = 0;
-				ksRewind (todo);
-				continue;
-			}
-			else
-				break;
-		}
-		if (adjMatrix[i].key == NULL) continue;
-		if (ksGetSize (adjMatrix[i].ks) <= 0)
-		{
-			ksRewind (adjMatrix[i].ks);
-			found = 1;
-			ksRewind (ks);
-			Key * realKey = ksLookupByName (ks, keyName (adjMatrix[i].key), KDB_O_NONE);
-			keySetMeta (realKey, "order", keyBaseName (orderCounter));
-			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, realKey);
-			removeDepFromAll (adjMatrix, size, adjMatrix[i].key);
-			keyDel (ksLookupByName (adjMatrix[i].ks, keyName (adjMatrix[i].key), KDB_O_POP));
-			keyDel (adjMatrix[i].key);
-			keyDel (ksLookupByName (todo, keyName (adjMatrix[i].key), KDB_O_POP));
-			adjMatrix[i].key = NULL;
-			i = -1;
-		}
-	}
-	ksClear (ks);
-	ksAppend (ks, done);
-	ksDel (done);
-	if (found)
-	{
-		retVal = 1;
-		elektraKsToMemArray (ks, array);
-		qsort (array, size, sizeof (Key *), topCmpOrder);
-	}
-	else
-	{
-		retVal = 0;
-	}
-	for (i = 0; i < size; ++i)
-	{
-		if (adjMatrix[i].key) keyDel (adjMatrix[i].key);
-		ksDel (adjMatrix[i].ks);
-	}
-	elektraFree (localArray);
-	keyDel (orderCounter);
-	ksDel (todo);
-	ksDel (lookupKS);
 	return retVal;
 }
 
