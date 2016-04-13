@@ -1211,7 +1211,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 					retVal = -1;
 					break;
 				}
-				else if (i == j)
+				else if ((long)i == (long)j)
 				{
 				}
 				else
