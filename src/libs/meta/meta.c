@@ -976,25 +976,26 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 	return result;
 }
 
-// helper struct for elektraSortTopology
+
+/**
+ * elektraSortTopology helpers
+ */
+
+/**
+ * elektraSortTopology helper
+ * matrix struct
+ */
 typedef struct
 {
 	Key * key;
-	KeySet * ks;
-} _adjMatrix2;
+	uint8_t isResolved;
+	unsigned long * deps;
+} _adjMatrix;
 
-
-// helper for elektraSortTopology
-static void removeDepFromAll (_adjMatrix2 * adjMatrix, unsigned int size, Key * toRemove)
-{
-	for (unsigned int i = 0; i < size; ++i)
-	{
-		ksRewind (adjMatrix[i].ks);
-		keyDel (ksLookup (adjMatrix[i].ks, toRemove, KDB_O_POP));
-	}
-}
-
-// helper for elektraSortTopology
+/**
+ * elektraSortTopology helper
+ * ordering function for qsort
+ */
 static int topCmpOrder (const void * a, const void * b)
 {
 	const Key * ka = (*(const Key **)a);
@@ -1010,29 +1011,11 @@ static int topCmpOrder (const void * a, const void * b)
 	return strcmp (keyString (kam), keyString (kbm));
 }
 
-/**
- * does topological sorting on "ks" using the dependencies defined by the "dep/#" metakeys
- * e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
- * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
- * depends on Key "/b" and Key "/c".
- *
- * duplicated and reflexive dep entries are ignored.
- * if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
- * order.
- *
- * the sorted keys are stored in "array" in topological order
- *
- * @returns 0 for cycles
- * @param ks the keyset that should be sorted
- * @param array the array where the sorted keys will be stored
- */
-typedef struct
-{
-	Key * key;
-	uint8_t isResolved;
-	unsigned long * deps;
-} _adjMatrix;
 
+/**
+ * elektraSortTopology helper
+ * returns the index of dependency depKey
+ */
 static int getArrayIndex (Key * depKey, _adjMatrix * adjMatrix, size_t size)
 {
 	for (unsigned int i = 0; i < size; ++i)
@@ -1041,7 +1024,10 @@ static int getArrayIndex (Key * depKey, _adjMatrix * adjMatrix, size_t size)
 	}
 	return -1;
 }
-
+/**
+ * elektraSortTopology helper
+ * removes resolved dependency j from our matrix
+ */
 static int resolveDep (unsigned int j, _adjMatrix * adjMatrix, size_t size)
 {
 	int removed = 0;
@@ -1055,6 +1041,11 @@ static int resolveDep (unsigned int j, _adjMatrix * adjMatrix, size_t size)
 	}
 	return removed;
 }
+
+/**
+ * elektraSortTopology helper
+ * checks if the key with index j has unresolved dependencies
+ */
 static int hasUnresolvedDependencies (unsigned int j, _adjMatrix * adjMatrix, size_t size)
 {
 	for (unsigned int i = 0; i < size; ++i)
@@ -1064,18 +1055,21 @@ static int hasUnresolvedDependencies (unsigned int j, _adjMatrix * adjMatrix, si
 	return 0;
 }
 
+/**
+ * elektraSortTopology helper
+ * resolve all dependencies of the key with the index j in our matrix.
+ */
+
 static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, KeySet * done, Key * orderCounter)
 {
 	unsigned int loops = 0;
 	unsigned int frontier[size];
-	//    unsigned int depCount = 0;
 	unsigned int todo = 0;
 	for (unsigned int i = 0; i < size; ++i)
 	{
 		if (adjMatrix[j].deps[i])
 		{
 			frontier[i] = 1;
-			//            ++depCount;
 			++todo;
 		}
 		else
@@ -1084,6 +1078,8 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 		}
 	}
 	int found = 1;
+
+	// loop until all dependencies are added to frontier
 	while (found)
 	{
 		found = 0;
@@ -1102,7 +1098,6 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 							++todo;
 							frontier[k] = 1;
 						}
-						//                        ++depCount;
 					}
 				}
 			}
@@ -1110,6 +1105,8 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 	}
 	if (todo == 0)
 	{
+		// all dependecies are already resolved, give key an order number and add it to
+		// the our list of resolved keys (done)
 		adjMatrix[j].isResolved = 1;
 		resolveDep (j, adjMatrix, size);
 		keySetMeta (adjMatrix[j].key, "order", keyBaseName (orderCounter));
@@ -1118,8 +1115,6 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 		return 1;
 	}
 	unsigned int max_loops = todo;
-	//    if((depCount / todo) < todo)
-	//        return -1;
 	for (unsigned int i = 0; todo; ++i)
 	{
 		if (i == size)
@@ -1127,7 +1122,7 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 			++loops;
 			i = 0;
 		}
-		if (loops > max_loops) return -1;
+		if (loops > max_loops) return -1; // more loops than we had unresolved keys -> cycle
 		if (!frontier[i]) continue;
 		if (!hasUnresolvedDependencies (i, adjMatrix, size))
 		{
@@ -1144,6 +1139,35 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 	return 1;
 }
 
+/**
+ * elektraSortTopology helper
+ * tests if name is a valid keyname
+ */
+static int isValidKeyName (const char * testName)
+{
+	int retVal = 0;
+	Key * testKey = keyNew (testName, KEY_CASCADING_NAME, KEY_END);
+	if (!strcmp (keyName (testKey), testName)) retVal = 1;
+	keyDel (testKey);
+	return retVal;
+}
+
+/**
+ * does topological sorting on "ks" using the dependencies defined by the "dep/#" metakeys
+ * e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
+ * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
+ * depends on Key "/b" and Key "/c".
+ *
+ * duplicated and reflexive dep entries are ignored.
+ * if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
+ * order.
+ *
+ * the sorted keys are stored in "array" in topological order
+ *
+ * @returns 0 for cycles, -1 for invalid dependencies
+ * @param ks the keyset that should be sorted
+ * @param array the array where the sorted keys will be stored
+ */
 
 int elektraSortTopology (KeySet * ks, Key ** array)
 {
@@ -1151,17 +1175,17 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	KeySet * done = ksNew (0, KS_END);
 	ksRewind (ks);
 	Key * cur;
-	size_t size = ksGetSize (ks);
+	ssize_t size = ksGetSize (ks);
 	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
 	elektraArrayIncName (orderCounter);
 	_adjMatrix adjMatrix[size];
 	int i = 0;
 	int retVal = 1;
-	unsigned int depCount = 0;
+	int depCount = 0;
 	Key ** localArray = elektraMalloc (size * sizeof (Key *));
 	elektraKsToMemArray (ks, localArray);
 	qsort (localArray, size, sizeof (Key *), topCmpOrder);
-	for (unsigned long j = 0; j < size; ++j)
+	for (long j = 0; j < size; ++j)
 	{
 		adjMatrix[j].key = localArray[j];
 		adjMatrix[j].isResolved = 0;
@@ -1171,7 +1195,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	uint8_t hasOrder = 0;
 	if (keyGetMeta (localArray[0], "order")) hasOrder = 1;
 	unsigned int unresolved = 0;
-	for (unsigned int j = 0; j < size; ++j)
+	for (int j = 0; j < size; ++j)
 	{
 		cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
@@ -1181,6 +1205,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		{
 		case -1:
 		{
+			// key has no dependencies, give it an order number and add it to list of resolved dependencies
 			keySetMeta (cur, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
 			ksAppendKey (done, keyDup (cur));
@@ -1190,6 +1215,8 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		}
 		case 1:
 		{
+			// only 1 dependency:
+			// test if it's reflexive
 			tmpDep = ksHead (deps);
 			if (!strcmp (keyName (cur), keyString (tmpDep)))
 			{
@@ -1200,24 +1227,33 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 				ksDel (deps);
 				break;
 			}
+			// if not, fallthrough to normal dependency handling
 		}
 		default:
 		{
 			while ((tmpDep = ksNext (deps)) != NULL)
 			{
-				i = getArrayIndex (tmpDep, adjMatrix, size);
-				if (i == -1)
+				if (!isValidKeyName (keyString (tmpDep)))
 				{
+					// invalid keyname -> ERROR
 					retVal = -1;
 					break;
 				}
+				i = getArrayIndex (tmpDep, adjMatrix, size);
+				if (i == -1)
+				{
+					// key doesn't exist yet but has valid name, ignore it.
+					continue;
+				}
 				else if (i == j)
 				{
+					// reflexiv depencency, do nothing
 				}
 				else
 				{
 					if (!adjMatrix[i].isResolved)
 					{
+						// unresolved dependency
 						adjMatrix[j].deps[i] = 1;
 						++gotUnresolved;
 						// simple cycle detection
@@ -1233,6 +1269,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			{
 				adjMatrix[j].isResolved = 0;
 				++unresolved;
+				// cound unresolved dependencies
 				depCount += gotUnresolved;
 			}
 			ksDel (deps);
@@ -1243,23 +1280,32 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	}
 	if (retVal <= 0)
 	{
+		// error or cycle: goto cleanup
 		goto TopSortCleanup;
 	}
-	for (unsigned int j = 0; j < size; ++j)
+
+	// resolve all dependencies that can be resolved immediately
+	for (int j = 0; j < size; ++j)
 	{
 		if (adjMatrix[j].isResolved) depCount -= resolveDep (j, adjMatrix, size);
 	}
-	size_t resolved = ksGetSize (done);
+
+	ssize_t resolved = ksGetSize (done);
 	if (((depCount + resolved) >= size) && (unresolved))
 	{
+		// more dependencies dependencies than keys:
+		//  cycle found !
 		retVal = 0;
 		goto TopSortCleanup;
 	}
 	int found = 1;
+
 	if (unresolved)
 	{
-		for (unsigned int j = 0; j < size + 1; ++j)
+		// we have unresolved dependencies
+		for (int j = 0; j < size + 1; ++j)
 		{
+			// loop until no dependency can be resolved anymore
 			if (j == size)
 			{
 				if (found)
@@ -1276,6 +1322,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			++unresolved;
 			if (hasOrder)
 			{
+				// resolve by order
 				int ret = resolveDeps (j, adjMatrix, size, done, orderCounter);
 				if (ret == -1) break;
 				j = -1;
@@ -1284,6 +1331,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			}
 			else
 			{
+				// resolve next possible dependency in keyset
 				if (!hasUnresolvedDependencies (j, adjMatrix, size))
 				{
 					adjMatrix[j].isResolved = 1;
@@ -1298,13 +1346,18 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	}
 	if (unresolved == 0)
 	{
+		// everything resolved
+		// add dependencies in topological order to array
 		elektraKsToMemArray (ks, array);
 		qsort (array, size, sizeof (Key *), topCmpOrder);
 		retVal = 1;
 	}
 	else
+	{
+		// still unresolved dependencies left:
+		// there must be a cycle somewhere
 		retVal = 0;
-
+	}
 TopSortCleanup:
 	ksDel (done);
 	keyDel (orderCounter);
@@ -1313,143 +1366,6 @@ TopSortCleanup:
 	{
 		elektraFree (adjMatrix[j].deps);
 	}
-	return retVal;
-}
-
-
-int elektraSortTopologyOld (KeySet * ks, Key ** array)
-{
-	if (ks == NULL || array == NULL) return -1;
-	KeySet * done = ksNew (0, KS_END);
-	KeySet * todo = ksNew (0, KS_END);
-	ksRewind (ks);
-	KeySet * lookupKS = ksDup (ks);
-	Key * cur;
-	size_t size = ksGetSize (ks);
-	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
-	elektraArrayIncName (orderCounter);
-	_adjMatrix2 adjMatrix[size];
-	unsigned int i = 0;
-	int retVal = 0;
-	Key ** localArray = elektraMalloc (size * sizeof (Key *));
-	elektraKsToMemArray (ks, localArray);
-	qsort (localArray, size, sizeof (Key *), topCmpOrder);
-	for (i = 0; i < size; ++i)
-	{
-		adjMatrix[i].key = NULL;
-		adjMatrix[i].ks = ksNew (0, KS_END);
-	}
-	i = 0;
-	for (unsigned int j = 0; j < size; ++j)
-	{
-		cur = localArray[j];
-		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
-		if (ksGetSize (deps) == -1)
-		{
-			keySetMeta (cur, "order", keyBaseName (orderCounter));
-			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, keyDup (cur));
-			ksDel (deps);
-			continue;
-		}
-		else if (ksGetSize (deps) == 1)
-		{
-			Key * tmpDep = ksHead (deps);
-			if (!strcmp (keyName (cur), keyString (tmpDep)))
-			{
-				keySetMeta (cur, "order", keyBaseName (orderCounter));
-				elektraArrayIncName (orderCounter);
-				ksAppendKey (done, keyDup (cur));
-				ksDel (deps);
-				continue;
-			}
-			else
-			{
-				goto TopSearchElseBranch;
-			}
-		}
-		else
-		{
-		TopSearchElseBranch:
-			adjMatrix[i].key = keyDup (cur);
-			keySetBinary (adjMatrix[i].key, (int *)&i, sizeof (i));
-			ksAppendKey (todo, adjMatrix[i].key);
-			Key * dep;
-			while ((dep = ksNext (deps)) != NULL)
-			{
-				ksRewind (lookupKS);
-				Key * tmp;
-				if (!strcmp (keyName (cur), keyString (dep)))
-				{
-					continue;
-				}
-				tmp = ksLookupByName (lookupKS, keyString (dep), KDB_O_NONE);
-				ksAppendKey (adjMatrix[i].ks, tmp);
-			}
-			++i;
-			ksDel (deps);
-		}
-	}
-	ksRewind (done);
-	while ((cur = ksNext (done)) != NULL)
-		removeDepFromAll (adjMatrix, size, cur);
-	int found = 1;
-	ksRewind (todo);
-
-	for (i = 0; ksGetSize (todo) > 0; ++i)
-	{
-		if (i == size)
-		{
-			if (found)
-			{
-				i = -1;
-				found = 0;
-				ksRewind (todo);
-				continue;
-			}
-			else
-				break;
-		}
-		if (adjMatrix[i].key == NULL) continue;
-		if (ksGetSize (adjMatrix[i].ks) <= 0)
-		{
-			ksRewind (adjMatrix[i].ks);
-			found = 1;
-			ksRewind (ks);
-			Key * realKey = ksLookupByName (ks, keyName (adjMatrix[i].key), KDB_O_NONE);
-			keySetMeta (realKey, "order", keyBaseName (orderCounter));
-			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, realKey);
-			removeDepFromAll (adjMatrix, size, adjMatrix[i].key);
-			keyDel (ksLookupByName (adjMatrix[i].ks, keyName (adjMatrix[i].key), KDB_O_POP));
-			keyDel (adjMatrix[i].key);
-			keyDel (ksLookupByName (todo, keyName (adjMatrix[i].key), KDB_O_POP));
-			adjMatrix[i].key = NULL;
-			i = -1;
-		}
-	}
-	ksClear (ks);
-	ksAppend (ks, done);
-	ksDel (done);
-	if (found)
-	{
-		retVal = 1;
-		elektraKsToMemArray (ks, array);
-		qsort (array, size, sizeof (Key *), topCmpOrder);
-	}
-	else
-	{
-		retVal = 0;
-	}
-	for (i = 0; i < size; ++i)
-	{
-		if (adjMatrix[i].key) keyDel (adjMatrix[i].key);
-		ksDel (adjMatrix[i].ks);
-	}
-	elektraFree (localArray);
-	keyDel (orderCounter);
-	ksDel (todo);
-	ksDel (lookupKS);
 	return retVal;
 }
 
