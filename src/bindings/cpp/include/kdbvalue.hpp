@@ -144,7 +144,7 @@ public:
  *
  * @return Comparision result
  */
-bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
+inline bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
 {
 	return &lhs < &rhs;
 }
