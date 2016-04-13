@@ -144,7 +144,9 @@ inline void Subject::notifyKeySetUpdate () const
 
 	std::vector <ckdb::Key*> ordered;
 	ordered.resize (deps.size());
-	if (elektraSortTopology (deps.getKeySet (), &ordered[0]) != 1) throw std::runtime_error("Cycle in layer dependencies");
+	int ret = elektraSortTopology (deps.getKeySet (), &ordered[0]);
+	if (ret == 0) throw std::runtime_error("Cycle in layer dependencies");
+	if (ret == -1) throw std::logic_error("elektraSortTopology used wrongly");
 
 	for (auto & o : ordered)
 	{
