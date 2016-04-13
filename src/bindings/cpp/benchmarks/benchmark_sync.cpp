@@ -42,16 +42,8 @@ std::unique_ptr<Timer> tSync[10]{
 	std::unique_ptr<Timer>(new Timer ("layer sync9", Timer::quiet))
 	};
 
-__attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
+std::vector<std::shared_ptr<kdb::ThreadInteger>> createCV(kdb::KeySet & ks, kdb::ThreadContext & tc, int N)
 {
-	kdb::Coordinator c;
-	kdb::ThreadContext tc (c);
-	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ti = 5;
-	kdb::ThreadInteger::type x = ti;
-
-	// N additional integers producing overhead
 	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi;
 	for (long long i = 0; i < N; ++i)
 	{
@@ -66,6 +58,19 @@ __attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
 		vi.push_back (std::make_shared<kdb::ThreadInteger> (
 			ks, tc, kdb::Key (os.str ().c_str (), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
 	}
+	return vi;
+}
+
+
+__attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
+{
+	kdb::Coordinator c;
+	kdb::ThreadContext tc (c);
+	kdb::KeySet ks;
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	ti = 5;
+	kdb::ThreadInteger::type x = ti;
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
 
 	Timer & t = *tSync[N];
 	t.start ();
@@ -111,21 +116,7 @@ __attribute__ ((noinline)) void benchmark_kdb_reloadN (long long N)
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
-	// N additional integers producing overhead
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi;
-	for (long long i = 0; i < N; ++i)
-	{
-		std::ostringstream os;
-		os << "/test";
-		for (long long j = 0; j < i; ++j)
-		{
-			os << "/%layer" << j << "%";
-		}
-		os << "/" << i;
-		// std::cout << os.str().c_str() << std::endl;
-		vi.push_back (std::make_shared<kdb::ThreadInteger> (
-			ks, tc, kdb::Key (os.str ().c_str (), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
-	}
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
 
 	Timer & t = *tReload[N];
 
@@ -188,36 +179,67 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (long long N)
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
-	// N additional integers producing overhead
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi;
-	for (long long i = 0; i < N; ++i)
-	{
-		std::ostringstream os;
-		os << "/test";
-		for (long long j = 0; j < i; ++j)
-		{
-			os << "/%layer" << j << "%";
-		}
-		os << "/" << i;
-		// std::cout << os.str().c_str() << std::endl;
-		vi.push_back (std::make_shared<kdb::ThreadInteger> (
-			ks, tc, kdb::Key (os.str ().c_str (), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
-	}
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
 
 	Timer & t = *tSwitch[N];
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		tc.activate<Layer<0>> ();
-		tc.activate<Layer<1>> ();
-		tc.activate<Layer<2>> ();
-		tc.activate<Layer<3>> ();
-		tc.activate<Layer<4>> ();
-		tc.activate<Layer<5>> ();
-		tc.activate<Layer<6>> ();
-		tc.activate<Layer<7>> ();
-		tc.activate<Layer<8>> ();
-		tc.activate<Layer<9>> ();
+		if (N>0) tc.activate<Layer<0>> ();
+		if (N>1) tc.activate<Layer<1>> ();
+		if (N>2) tc.activate<Layer<2>> ();
+		if (N>3) tc.activate<Layer<3>> ();
+		if (N>4) tc.activate<Layer<4>> ();
+		if (N>5) tc.activate<Layer<5>> ();
+		if (N>6) tc.activate<Layer<6>> ();
+		if (N>7) tc.activate<Layer<7>> ();
+		if (N>8) tc.activate<Layer<8>> ();
+		if (N>9) tc.activate<Layer<9>> ();
+		x ^= add_contextual (ti, ti);
+	}
+	t.stop ();
+	std::cout << t;
+	dump << t.name << x << std::endl;
+}
+
+std::unique_ptr<Timer> tCV[10]{
+	std::unique_ptr<Timer>(new Timer ("CV switch0", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch1", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch2", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch3", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch4", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch5", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch6", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch7", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch8", Timer::quiet)),
+	std::unique_ptr<Timer>(new Timer ("CV switch9", Timer::quiet))
+	};
+
+__attribute__ ((noinline)) void benchmark_cv_switchN (long long N)
+{
+	kdb::Coordinator c;
+	kdb::ThreadContext tc (c);
+	kdb::KeySet ks;
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	ti = 5;
+	kdb::ThreadInteger::type x = ti;
+
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
+
+	Timer & t = *tCV[N];
+	t.start ();
+	for (long long i = 0; i < iterations; ++i)
+	{
+		if (N>0) tc.activate (*vi[0]);
+		if (N>1) tc.activate (*vi[1]);
+		if (N>2) tc.activate (*vi[2]);
+		if (N>3) tc.activate (*vi[3]);
+		if (N>4) tc.activate (*vi[4]);
+		if (N>5) tc.activate (*vi[5]);
+		if (N>6) tc.activate (*vi[6]);
+		if (N>7) tc.activate (*vi[7]);
+		if (N>8) tc.activate (*vi[8]);
+		if (N>9) tc.activate (*vi[9]);
 		x ^= add_contextual (ti, ti);
 	}
 	t.stop ();
@@ -294,12 +316,14 @@ int main (int argc, char ** argv)
 			benchmark_layer_syncN (j);
 			benchmark_kdb_reloadN ( j);
 			benchmark_layer_switchN (j);
+			benchmark_cv_switchN (j);
 		}
 	}
 
 	for (int i = 0; i<10; ++i)
 	{
-		std::cerr << i << "," << tSync[i]->getMedian() << "," << tReload[i]->getMedian()  << "," << tSwitch[i]->getMedian() << std::endl;
+		std::cerr << i << "," << tSync[i]->getMedian() << "," << tReload[i]->getMedian()  << "," << tSwitch[i]->getMedian() << "," << tCV[i]->getMedian()
+			  << std::endl;
 	}
 
 	// data << "value,benchmark" << std::endl;
