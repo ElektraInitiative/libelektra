@@ -321,7 +321,7 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 	EXPECT_EQ (ks.at (6).getString (), "155");
 }
 
-TEST_F (test_contextual_update, notifySyncMore)
+TEST_F (test_contextual_update, notifySyncAssign)
 {
 	ThreadValue<std::string> j (ks, c, Key ("/%country%/language/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
 	ThreadValue<int> y (ks, c, Key ("/%language%/%id%/key", KEY_META, "default", "55", KEY_END));
@@ -340,8 +340,7 @@ TEST_F (test_contextual_update, notifySyncMore)
 	EXPECT_EQ (ks.at (4).getName (), "/my/%/key");
 	EXPECT_EQ (ks.at (4).getString (), "55");
 
-	// now in the database the language changes:
-	ks.append (Key ("user/%/language/code", KEY_VALUE, "de", KEY_END));
+	j = "de";
 	ks.append (Key ("user/de/%/key", KEY_VALUE, "155", KEY_END));
 
 	c.sync ();
