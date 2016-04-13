@@ -48,11 +48,13 @@ std::vector<std::shared_ptr<kdb::ThreadInteger>> createCV(kdb::KeySet & ks, kdb:
 	for (long long i = 0; i < N; ++i)
 	{
 		std::ostringstream os;
-		os << "/test";
+		os << "/test/layer1";
+		/*
 		for (long long j = 0; j < i; ++j)
 		{
 			os << "/%layer" << j << "%";
 		}
+		*/
 		os << "/" << i;
 		// std::cout << os.str().c_str() << std::endl;
 		vi.push_back (std::make_shared<kdb::ThreadInteger> (
