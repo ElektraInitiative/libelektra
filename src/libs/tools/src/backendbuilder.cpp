@@ -104,6 +104,7 @@ void BackendBuilder::sort ()
 		deps.append (dep);
 		std::string v = to_string(i);
 		dep.set<size_t> (i);
+		//TODO: use #__ here
 		dep.setMeta<size_t> ("order", i);
 		++i;
 	}
@@ -152,7 +153,7 @@ void BackendBuilder::sort ()
 					for (auto const & k : deps)
 					{
 						if (k == self) continue;
-						ckdb::elektraMetaArrayAdd (*self, "dep", ("/"+k.getName()).c_str());
+						ckdb::elektraMetaArrayAdd (*self, "dep", (k.getName()).c_str());
 					}
 				}
 			}
@@ -162,7 +163,9 @@ void BackendBuilder::sort ()
 	// now sort by the given topology
 	std::vector <ckdb::Key*> ordered;
 	ordered.resize (deps.size());
-	if (elektraSortTopology (deps.getKeySet (), &ordered[0]) != 1) throw CyclicOrderingViolation();
+	int ret = elektraSortTopology (deps.getKeySet (), &ordered[0]);
+	if (ret == 0) throw CyclicOrderingViolation();
+	if (ret == -1) throw std::logic_error("elektraSortTopology was used wrongly");
 
 	PluginSpecVector copy(toAdd);
 
