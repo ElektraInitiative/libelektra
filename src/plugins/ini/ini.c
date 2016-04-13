@@ -31,6 +31,7 @@ int elektraIniOpen (Plugin * handle, Key * parentKey);
 int elektraIniClose (Plugin * handle, Key * parentKey);
 static char * findParent (Key *, Key *, KeySet *);
 #include "contract.h"
+static int iniCmpOrder (const void * a, const void * b);
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
 
@@ -275,7 +276,8 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		Key * sectionKey = NULL;
 		while ((cur = ksNext (cutKS)) != NULL)
 		{
-			if (keyIsBinary (cur) && keyIsBelow (cur, key))
+			if (sectionKey && strcmp (keyName (cur), keyName (key)) > 0) break;
+			if ((keyIsBinary (cur) && keyIsBelow (cur, key)) || (keyIsBinary (cur) && keyRel (cur, key) == -3))
 			{
 				sectionKey = cur;
 			}
@@ -292,25 +294,57 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		cutKS = ksCut (ks, sectionKey);
 		ksRewind (cutKS);
 
-		// since keyset is ordered alphabetically, just search the keyset below the "parent" until we found our key
-		while ((cur = ksNext (cutKS)) != NULL)
+		Key * prevKey = NULL;
+		if (keyIsBinary (key))
 		{
-			if (!strcmp (keyName (cur), keyName (key))) break;
+			Key ** keyArray;
+			ssize_t arraySize = ksGetSize (cutKS);
+			keyArray = elektraCalloc (arraySize * sizeof (Key *));
+			elektraKsToMemArray (cutKS, keyArray);
+			qsort (keyArray, arraySize, sizeof (Key *), iniCmpOrder);
+			unsigned int i = 0;
+			for (; i < arraySize; ++i)
+			{
+				cur = keyArray[i];
+				if (!strcmp (keyName (cur), keyName (sectionKey))) break;
+			}
+			if (i < arraySize)
+			{
+				++i;
+				for (; i < arraySize; ++i)
+				{
+					if (!strcmp (keyName (cur), keyName (key))) continue;
+					if (keyIsBinary (keyArray[i])) break;
+				}
+			}
+
+			prevKey = ksLookup (cutKS, keyArray[i - 1], KDB_O_NONE);
+			elektraFree (keyArray);
 		}
-		Key * prevKey = ksPrev (cutKS);
+		else
+		{
+			while ((cur = ksNext (cutKS)) != NULL)
+			{
+				if (!strcmp (keyName (cur), keyName (key))) break;
+			}
+			prevKey = ksPrev (cutKS);
+		}
+
+		if (prevKey && !strcmp (keyName (prevKey), keyName (key))) prevKey = NULL;
+
 		ksAppend (ks, cutKS);
 		ksDel (cutKS);
 		// set keys ordernumber next the the order number of the key above it
 		const char * oldOrder = NULL;
-		const Key * orderMeta = keyGetMeta (prevKey, "order");
-		if (!orderMeta)
+		const Key * orderMeta = NULL;
+		if (!prevKey)
 		{
 			oldOrder = keyString (keyGetMeta (parentKey, "order"));
 			setOrderNumber (parentKey, key);
 		}
 		else
 		{
-			oldOrder = keyString (orderMeta);
+			oldOrder = keyString (keyGetMeta (prevKey, "order"));
 			setSubOrderNumber (key, oldOrder);
 		}
 	}
@@ -519,7 +553,7 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
-	IniPluginConfig * pluginConfig = (IniPluginConfig *)elektraMalloc (sizeof (IniPluginConfig));
+	IniPluginConfig * pluginConfig = elektraMalloc (sizeof (IniPluginConfig));
 	pluginConfig->BOM = 0;
 	Key * multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
 	Key * sectionHandlingKey = ksLookupByName (config, "/section", KDB_O_NONE);
@@ -589,7 +623,7 @@ int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-#if DEBUG && VERBOSE
+//#if DEBUG && VERBOSE
 static void outputDebug () __attribute__ ((unused));
 
 static void outputDebug (KeySet * ks)
@@ -609,7 +643,7 @@ static void outputDebug (KeySet * ks)
 		fprintf (stderr, "\n");
 	}
 }
-#endif
+//#endif
 
 static char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
 {
@@ -875,7 +909,6 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
  */
 static char * getIniName (Key * section, Key * key)
 {
-	//    fprintf(stderr, "section: %s, key: %s\n", keyName(section), keyName(key));
 	if (!strcmp (keyName (section), keyName (key))) return strdup (keyBaseName (key));
 	if (keyName (section)[0] == '/')
 	{
@@ -1572,6 +1605,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		pluginConfig->oldKS = NULL;
 		elektraPluginSetData (handle, pluginConfig);
 	}
+	outputDebug (returned);
 	ret = iniWriteKeySet (fh, parentKey, returned, pluginConfig);
 
 	fclose (fh);
@@ -1588,10 +1622,10 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 {
 	// clang-format off
-	return elektraPluginExport ("ini",
-			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
-			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
-			ELEKTRA_PLUGIN_GET, &elektraIniGet,
-			ELEKTRA_PLUGIN_SET, &elektraIniSet, 
-			ELEKTRA_PLUGIN_END);
+    return elektraPluginExport ("ini",
+            ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
+            ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
+            ELEKTRA_PLUGIN_GET, &elektraIniGet,
+            ELEKTRA_PLUGIN_SET, &elektraIniSet, 
+            ELEKTRA_PLUGIN_END);
 }
