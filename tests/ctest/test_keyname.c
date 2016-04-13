@@ -30,12 +30,14 @@ static void test_relative_root ()
 	Key * child = keyNew ("spec/ni/test", KEY_END);
 
 	test_relative ("spec/ni/test", child, parent);
-
+	keyDel (child);
 	child = keyNew ("system/💩🦄/Fjørt", KEY_END);
 	test_relative ("system/💩🦄/Fjørt", child, parent);
-
+	keyDel (child);
 	child = keyNew ("user/\\/dot", KEY_END);
 	test_relative ("user/\\/dot", child, parent);
+	keyDel (child);
+	keyDel (parent);
 }
 
 static void test_relative_cascading ()
@@ -46,16 +48,19 @@ static void test_relative_cascading ()
 	Key * child = keyNew ("/cascading/k");
 
 	test_relative ("k", child, parent);
-
+	keyDel (child);
 	child = keyNew ("system/cascading/deep/deeper/deepest");
 	test_relative ("deep/deeper/deepest", child, parent);
-
+	keyDel (parent);
+	keyDel (child);
 	parent = keyNew ("/cascading\\/mountpoint/");
 	child = keyNew ("user/cascading\\/mountpoint/\\/dot");
 	test_relative ("\\/dot", child, parent);
-
+	keyDel (child);
 	child = keyNew ("user/second_level/cascading\\/mountpoint/\\/dot");
 	test_relative ("\\/dot", child, parent);
+	keyDel (child);
+	keyDel (parent);
 }
 
 static void test_relative_generic ()
@@ -66,16 +71,19 @@ static void test_relative_generic ()
 	Key * child = keyNew ("system/key/🔑/🗝");
 
 	test_relative ("key/🔑/🗝", child, parent);
-
+	keyDel (child);
 	child = keyNew ("system/Käfer/K");
 	test_relative ("Käfer/K", child, parent);
-
+	keyDel (child);
+	keyDel (parent);
 	parent = keyNew ("user");
 	child = keyNew ("user/K");
 	test_relative ("K", child, parent);
-
+	keyDel (child);
 	child = keyNew ("user/KK\\/Kitchens/What/Were/You/Thinking?");
 	test_relative ("KK\\/Kitchens/What/Were/You/Thinking?", child, parent);
+	keyDel (child);
+    keyDel (parent);
 }
 
 int main (int argc, char ** argv)
