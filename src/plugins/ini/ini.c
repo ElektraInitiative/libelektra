@@ -301,8 +301,18 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		ksAppend (ks, cutKS);
 		ksDel (cutKS);
 		// set keys ordernumber next the the order number of the key above it
-		const char * oldOrder = keyString (keyGetMeta (prevKey, "order"));
-		setSubOrderNumber (key, oldOrder);
+		const char * oldOrder = NULL;
+		const Key * orderMeta = keyGetMeta (prevKey, "order");
+		if (!orderMeta)
+		{
+			oldOrder = keyString (keyGetMeta (parentKey, "order"));
+			setOrderNumber (parentKey, key);
+		}
+		else
+		{
+			oldOrder = keyString (orderMeta);
+			setSubOrderNumber (key, oldOrder);
+		}
 	}
 	else
 	{
@@ -865,6 +875,7 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
  */
 static char * getIniName (Key * section, Key * key)
 {
+	//    fprintf(stderr, "section: %s, key: %s\n", keyName(section), keyName(key));
 	if (!strcmp (keyName (section), keyName (key))) return strdup (keyBaseName (key));
 	if (keyName (section)[0] == '/')
 	{
@@ -1241,17 +1252,19 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 		{
 			if (isSectionKey (cur))
 			{
-				char * iniName = getIniName (parentKey, cur);
-				fprintf (fh, "[%s]\n", iniName);
-				free (iniName);
+				if (keyIsBelow (parentKey, cur))
+				{
+					char * iniName = getIniName (parentKey, cur);
+					fprintf (fh, "[%s]\n", iniName);
+					free (iniName);
+				}
 			}
 			else if (isIniKey (cur))
 			{
 				if (config->sectionHandling != NONE)
 				{
 					const Key * parentMeta = keyGetMeta (cur, "parent");
-					if (parentMeta && strcmp (keyString (parentMeta), keyName (sectionKey)) &&
-					    strcmp (keyName (cur), keyString (parentMeta)))
+					if (parentMeta && !keyIsBelow (sectionKey, cur))
 					{
 						Key * oldSectionKey = sectionKey;
 						sectionKey = keyNew (keyString (parentMeta), KEY_END);
