@@ -53,6 +53,9 @@ static void test_relative_cascading ()
 	parent = keyNew ("/cascading\\/mountpoint/");
 	child = keyNew ("user/cascading\\/mountpoint/\\/dot");
 	test_relative ("\\/dot", child, parent);
+
+	child = keyNew ("user/second_level/cascading\\/mountpoint/\\/dot");
+	test_relative ("\\/dot", child, parent);
 }
 
 static void test_relative_generic ()

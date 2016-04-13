@@ -27,7 +27,7 @@ const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey)
 		offset = keyGetNameSize (parentKey);
 		if (keyName (parentKey)[0] == '/' && keyName (cur)[0] != '/')
 		{
-			offset += strchr (keyName (cur) + 1, '/') - keyName (cur);
+			offset += strstr (keyName (cur), keyName (parentKey)) - keyName (cur);
 		}
 	}
 	return keyName (cur) + offset;
