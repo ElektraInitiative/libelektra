@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <numeric>
 #include <string>
 #include <sys/time.h>
@@ -20,6 +21,15 @@
 class Timer
 {
 public:
+	// options what to do at cleanup
+	enum option_t
+	{
+		raw_data_cerr, ///< print name,data\n (default!)
+		median_cerr, ///< print name,median\n
+		quiet, ///< print nothing
+	};
+
+	// functions
 	TIMER_NOINLINE void start ()
 	{
 		gettimeofday (&begin, nullptr);
@@ -33,35 +43,65 @@ public:
 		result += end.tv_usec - begin.tv_usec;
 		results.push_back (result);
 	}
-	Timer (std::string name);
+	std::string getMedian() const;
+	Timer (std::string name, option_t option = raw_data_cerr);
 	~Timer (); // print csv table at end
+
+	// data
 	struct timeval begin;
 	struct timeval end;
 	typedef long long timer_t;
 	typedef std::vector<timer_t> results_t;
 	results_t results;
 	std::string name;
+	option_t option;
 	static const timer_t usec_factor = 1000000LL;
 };
 
-inline Timer::Timer (std::string name_) : begin (), end (), results (), name (std::move (name_))
+inline Timer::Timer (std::string name_, option_t option_) : begin (), end (), results (), name (std::move (name_)), option (option_)
 {
 }
 
 inline Timer::~Timer ()
 {
-	for (auto result : results)
+	switch(option)
 	{
-		// clang-format off
-		std::cerr << name << ","
-			 << result / Timer::usec_factor
-			 << "."
-			 << std::setw(6)
-			 << std::setfill('0')
-			 << result % Timer::usec_factor
-			 << std::endl;
-		// clang-format on
+	case raw_data_cerr:
+		for (auto result : results)
+		{
+			// clang-format off
+			std::cerr << name << ","
+				 << result / Timer::usec_factor
+				 << "."
+				 << std::setw(6)
+				 << std::setfill('0')
+				 << result % Timer::usec_factor
+				 << std::endl;
+			// clang-format on
+		}
+		break;
+	case median_cerr:
+		std::cerr << name << "," << getMedian() << std::endl;
+		break;
+	case quiet:
+		break;
 	}
+}
+
+std::string Timer::getMedian() const
+{
+	Timer::results_t md = results;
+	nth_element(md.begin(),
+				md.begin()+md.size()/2, 
+				md.end());
+	Timer::timer_t r=*(md.begin()+md.size()/2);
+	std::ostringstream os;
+	os  <<  r / Timer::usec_factor
+		<< "."
+		<< std::setw(6)
+		<< std::setfill('0')
+		<< r % Timer::usec_factor;
+	return os.str();
 }
 
 
@@ -110,17 +150,8 @@ inline std::ostream & operator<< (std::ostream & os, Timer const & t)
 		<< std::setfill('0')
 		<< r % Timer::usec_factor
 		<< " sec";
-	Timer::results_t md = t.results;
-	nth_element(md.begin(),
-				md.begin()+md.size()/2, 
-				md.end());
-	r=*(md.begin()+md.size()/2);
 	os  << "\tMedian: "
-		<< r / Timer::usec_factor
-		<< "."
-		<< std::setw(6)
-		<< std::setfill('0')
-		<< r % Timer::usec_factor
+		<< t.getMedian()
 		<< " sec"
 		<< std::endl;
 	// clang-format on
