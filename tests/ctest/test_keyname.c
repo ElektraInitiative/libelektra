@@ -83,7 +83,7 @@ static void test_relative_generic ()
 	child = keyNew ("user/KK\\/Kitchens/What/Were/You/Thinking?", KEY_END);
 	test_relative ("KK\\/Kitchens/What/Were/You/Thinking?", child, parent);
 	keyDel (child);
-    keyDel (parent);
+	keyDel (parent);
 }
 
 int main (int argc, char ** argv)
