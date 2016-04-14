@@ -51,7 +51,7 @@ then
 
 	$KDB umount spec$ROOT_MOUNTPOINT
 	succeed_if "could not unmount previously mounted spec mountpoint"
-	
+
 	rm -f $SYSTEM_FILE
 	rm -f $SPEC_FILE
 fi

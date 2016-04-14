@@ -137,7 +137,7 @@ do
 			$KDB set "$KEY" "$VALUE" 1>/dev/null
 			succeed_if "could not set key $ROOT/hello/a/array/#0"
 
-			if [ "$i" -eq 0 ] && [ "x$PLUGIN" = "xini" ] 
+			if [ "$i" -eq 0 ] && [ "x$PLUGIN" = "xini" ]
 			then
 				[ "x`$KDB get $ROOT/hello/a/array`" = "x$VALUE" ]
 				succeed_if "$KEY is not $VALUE"

@@ -49,7 +49,7 @@ do
 
 	$KDB import $ROOT $PLUGIN < $DATADIR/one_value.$PLUGIN
 	succeed_if "Could not run kdb import"
-		
+
 	test "x`$KDB ls $ROOT`" = "xuser/tests/script"
 	succeed_if "key name not correct one_value"
 
@@ -283,7 +283,7 @@ user/tests/script/key"
 
 	$KDB rm -r $ROOT
 	succeed_if "Could not remove $ROOT"
-		
+
 
 done
 

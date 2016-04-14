@@ -18,7 +18,7 @@ if is_plugin_available dump
 then
 	$KDB mount $ROOT_FILE $ROOT_MOUNTPOINT dump 1>/dev/null
 	succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
-	
+
 	$KDB umount $ROOT_MOUNTPOINT
 	succeed_if "could not unmount previously mounted mountpoint"
 fi
@@ -66,7 +66,7 @@ then
 		succeed_if "could not unmount previously mounted mountpoint"
 
 		echo "Test simple mount configuration"
-		
+
 		$KDB mount -c "test1=testvalue1" $ROOT_FILE $ROOT_MOUNTPOINT glob "test1=testvalue1" hosts 1>/dev/null
 		succeed_if "could not mount glob and hosts plugin together"
 
@@ -76,24 +76,24 @@ then
 		configvalue=$($KDB get "system/elektra/mountpoints/$ROOT_MOUNTPOINTN/config/test1")
 		test "$configvalue" = "testvalue1"
 		succeed_if "config key was not set correctly"
-		
+
 		$KDB umount $ROOT_MOUNTPOINT
 		succeed_if "could not unmount previously mounted mountpoint"
-		
+
 		echo "Test multiple mount configurations"
-		
+
 		$KDB mount -c "test1=testvalue1,test2=test value2" $ROOT_FILE $ROOT_MOUNTPOINT glob "test1=testvalue1" hosts "test2=test value2" 1>/dev/null
 		succeed_if "could not mount glob and hosts plugin together"
-		
+
 		# TODO: reenable
 		configvalue=$($KDB get "system/elektra/mountpoints/$ROOT_MOUNTPOINTN/config/test2")
-		test "$configvalue" = "test value2" 
+		test "$configvalue" = "test value2"
 		succeed_if "config key was not set correctly"
 
 		echo "Test remounting the existing mount"
 
 		$KDB remount "testfile" $ROOT_MOUNTPOINT2 $ROOT_MOUNTPOINT
-		succeed_if "could not remount previous mountpoint"             
+		succeed_if "could not remount previous mountpoint"
 
 		#$KDB ls "system/elektra/mountpoints"
 		#$KDB mount
@@ -109,11 +109,11 @@ then
 
 		# TODO: reenable
 		#configvalue=$($KDB get "system/elektra/mountpoints/$ROOT_MOUNTPOINT2N/config/test2")
-		#test "$configvalue" = "test value2" 
+		#test "$configvalue" = "test value2"
 		#succeed_if "config key was not copied correctly"
 
 		#configvalue=$($KDB get "system/elektra/mountpoints/$ROOT_MOUNTPOINT2N/config/path")
-		#test "$configvalue" = "testfile" 
+		#test "$configvalue" = "testfile"
 		#succeed_if "path was not set correctly"
 
 		echo "Testing unmount via path"

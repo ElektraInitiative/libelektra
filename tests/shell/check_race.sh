@@ -54,7 +54,7 @@ do_race_test()
 	#[ "$SHOULD" -le "1"  ]
 	#succeed_if "race had not one or zero, but $SHOULD, winner(s)! $OUTPUT"
 
-	[ "$IS" -eq "1" ] 
+	[ "$IS" -eq "1" ]
 	succeed_if "keyset had not one, but $IS, key(s)! $OUTPUT"
 
 	$KDB rm -r $WHERE
