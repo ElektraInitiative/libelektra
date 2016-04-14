@@ -203,7 +203,7 @@ check_resolver dir b /a/b $TMPPATH/a/b
 check_resolver dir b a $TMPPATH/@KDB_DB_DIR@/a
 check_resolver dir b a/b $TMPPATH/@KDB_DB_DIR@/a/b
 
-T="$(mktempdir_elektra)"
+T="`cd $(mktempdir_elektra); pwd -P`"
 
 cleanup()
 {
