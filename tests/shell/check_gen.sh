@@ -48,22 +48,22 @@ LIFT_FILE=test_lift.ini
 LIFT_USERROOT=user/test/lift
 LIFT_SYSTEMROOT=system/test/lift
 LIFT_MOUNTPOINT=/test/lift
-$KDB mount $LIFT_FILE $LIFT_MOUNTPOINT ni 1>/dev/null
+"$KDB" mount $LIFT_FILE $LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $LIFT_FILE at $LIFT_MOUNTPOINT"
 
 MATERIAL_LIFT_FILE=test_material_lift.ini
 MATERIAL_LIFT_MOUNTPOINT=/test/material_lift
-$KDB mount $MATERIAL_LIFT_FILE $MATERIAL_LIFT_MOUNTPOINT ni 1>/dev/null
+"$KDB" mount $MATERIAL_LIFT_FILE $MATERIAL_LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $MATERIAL_LIFT_FILE at $MATERIAL_LIFT_MOUNTPOINT"
 
 PERSON_LIFT_FILE=test_person_lift.ini
 PERSON_LIFT_MOUNTPOINT=/test/person_lift
-$KDB mount $PERSON_LIFT_FILE $PERSON_LIFT_MOUNTPOINT ni 1>/dev/null
+"$KDB" mount $PERSON_LIFT_FILE $PERSON_LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $PERSON_LIFT_FILE at $PERSON_LIFT_MOUNTPOINT"
 
 HEAVY_MATERIAL_LIFT_FILE=test_heavy_material_lift.ini
 HEAVY_MATERIAL_LIFT_MOUNTPOINT=/test/heavy_material_lift
-$KDB mount $HEAVY_MATERIAL_LIFT_FILE $HEAVY_MATERIAL_LIFT_MOUNTPOINT ni 1>/dev/null
+"$KDB" mount $HEAVY_MATERIAL_LIFT_FILE $HEAVY_MATERIAL_LIFT_MOUNTPOINT ni 1>/dev/null
 succeed_if "could not mount: $HEAVY_MATERIAL_LIFT_FILE at $HEAVY_MATERIAL_LIFT_MOUNTPOINT"
 
 
@@ -152,10 +152,10 @@ echo "Test with keys in KDB"
 SKEY=$LIFT_SYSTEMROOT/emergency/delay
 UKEY=$LIFT_USERROOT/emergency/delay
 VALUE=3
-$KDB set "$SKEY" "$VALUE" 1>/dev/null
+"$KDB" set "$SKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $SKEY to value $VALUE"
 
-[ "x`$KDB get $SKEY 2> /dev/null`" = "x$VALUE" ]
+[ "x`"$KDB" get $SKEY 2> /dev/null`" = "x$VALUE" ]
 succeed_if "cant get $SKEY"
 
 for TESTPROG in $TESTPROGS
@@ -178,17 +178,17 @@ done
 
 echo "test writeback to user using -w"
 
-$KDB get $UKEY 1> /dev/null
+"$KDB" get $UKEY 1> /dev/null
 [ $? != "0" ]
 succeed_if "got nonexisting key $UKEY"
 
 ./lift -d 4 -w | grep "delay: 4"
 succeed_if "delay commandline parameter with writeback not working"
 
-[ "x`$KDB get $UKEY 2> /dev/null`" = "x4" ]
+[ "x`"$KDB" get $UKEY 2> /dev/null`" = "x4" ]
 succeed_if "cant get $UKEY (writeback problem)"
 
-[ "x`$KDB get $SKEY 2> /dev/null`" = "x$VALUE" ]
+[ "x`"$KDB" get $SKEY 2> /dev/null`" = "x$VALUE" ]
 succeed_if "cant get $SKEY with $VALUE (writeback)"
 
 for TESTPROG in $TESTPROGS
@@ -197,10 +197,10 @@ do
 	succeed_if "writeback  in $TESTPROG was not permenent"
 done
 
-$KDB rm "$SKEY" 1>/dev/null
+"$KDB" rm "$SKEY" 1>/dev/null
 succeed_if "cannot rm $SKEY"
 
-$KDB rm "$UKEY" 1>/dev/null
+"$KDB" rm "$UKEY" 1>/dev/null
 succeed_if "cannot rm $UKEY"
 
 
@@ -219,11 +219,11 @@ echo "test override with limit"
 UKEY=$LIFT_USERROOT/limit
 OKEY=system/test/material_lift/limit
 VALUE=33
-$KDB get $UKEY 1> /dev/null
+"$KDB" get $UKEY 1> /dev/null
 [ $? != "0" ]
 succeed_if "got nonexisting key $UKEY"
 
-$KDB get $OKEY 1> /dev/null
+"$KDB" get $OKEY 1> /dev/null
 [ $? != "0" ]
 succeed_if "got nonexisting key $OKEY"
 
@@ -254,7 +254,7 @@ succeed_if "limit commandline validation was not detected"
 ./lift -l 22 -w | grep "limit: 22"
 succeed_if "limit commandline parameter with writeback not working"
 
-[ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
+[ "x`"$KDB" get $UKEY 2> /dev/null`" = "x22" ]
 succeed_if "cant get $UKEY (writeback problem)"
 
 for TESTPROG in $TESTPROGS
@@ -272,7 +272,7 @@ succeed_if "limit commandline below limit not working (with param)"
 ./lift -l -1 | grep "limit: 22"
 succeed_if "limit commandline negativ not working (with param)"
 
-$KDB set "$OKEY" "$VALUE" 1>/dev/null
+"$KDB" set "$OKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $OKEY to value $VALUE"
 
 
@@ -285,7 +285,7 @@ done
 ./lift -l 22 -w | grep "limit: $VALUE"
 succeed_if "override was not in favour to commandline parameter"
 
-[ "x`$KDB get $UKEY 2> /dev/null`" = "x22" ]
+[ "x`"$KDB" get $UKEY 2> /dev/null`" = "x22" ]
 succeed_if "cant get $UKEY which will not be used"
 
 for TESTPROG in $TESTPROGS
@@ -294,10 +294,10 @@ do
 	succeed_if "override  in $TESTPROG was not in favour to writeback"
 done
 
-$KDB rm "$OKEY" 1>/dev/null
+"$KDB" rm "$OKEY" 1>/dev/null
 succeed_if "cannot rm $OKEY"
 
-$KDB rm "$UKEY" 1>/dev/null
+"$KDB" rm "$UKEY" 1>/dev/null
 succeed_if "cannot rm $UKEY"
 
 
@@ -317,14 +317,14 @@ KKEY=user/test/lift/floor/#3/height
 UKEY=user/test/lift/floor/height
 SKEY=system/test/lift/floor/height
 
-$KDB set "$SKEY" "$VALUE" 1>/dev/null
+"$KDB" set "$SKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $SKEY to value $VALUE"
 
 ./lift | grep "height #3: $VALUE"
 succeed_if "fallback of height $VALUE was not used"
 
 VALUE=9.5
-$KDB set "$UKEY" "$VALUE" 1>/dev/null
+"$KDB" set "$UKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $UKEY to value $VALUE"
 
 for TESTPROG in $TESTPROGS
@@ -339,12 +339,12 @@ succeed_if "commandline parameter did not overwrite fallback"
 ./lift -h 14.4 -w | grep "height #3: 14.4"
 succeed_if "commandline parameter did not overwrite fallback"
 
-[ "x`$KDB get $KKEY 2> /dev/null`" = "x14.4" ]
+[ "x`"$KDB" get $KKEY 2> /dev/null`" = "x14.4" ]
 succeed_if "cant get $KKEY which was written back"
 
 
 VALUE=18.8
-$KDB set "$KKEY" "$VALUE" 1>/dev/null
+"$KDB" set "$KKEY" "$VALUE" 1>/dev/null
 succeed_if "could not set $KKEY to value $VALUE"
 
 for TESTPROG in $TESTPROGS
@@ -353,13 +353,13 @@ do
 	succeed_if "fallback  in $TESTPROG of height $VALUE was not used"
 done
 
-$KDB rm "$KKEY" 1>/dev/null
+"$KDB" rm "$KKEY" 1>/dev/null
 succeed_if "cannot rm $KKEY"
 
-$KDB rm "$SKEY" 1>/dev/null
+"$KDB" rm "$SKEY" 1>/dev/null
 succeed_if "cannot rm $SKEY"
 
-$KDB rm "$UKEY" 1>/dev/null
+"$KDB" rm "$UKEY" 1>/dev/null
 succeed_if "cannot rm $UKEY"
 
 make clean
@@ -369,16 +369,16 @@ make clean
 
 
 
-$KDB umount $LIFT_MOUNTPOINT >/dev/null
+"$KDB" umount $LIFT_MOUNTPOINT >/dev/null
 succeed_if "could not umount $LIFT_MOUNTPOINT"
 
-$KDB umount $MATERIAL_LIFT_MOUNTPOINT >/dev/null
+"$KDB" umount $MATERIAL_LIFT_MOUNTPOINT >/dev/null
 succeed_if "could not umount $MATERIAL_LIFT_MOUNTPOINT"
 
-$KDB umount $PERSON_LIFT_MOUNTPOINT >/dev/null
+"$KDB" umount $PERSON_LIFT_MOUNTPOINT >/dev/null
 succeed_if "could not umount $PERSON_LIFT_MOUNTPOINT"
 
-$KDB umount $HEAVY_MATERIAL_LIFT_MOUNTPOINT >/dev/null
+"$KDB" umount $HEAVY_MATERIAL_LIFT_MOUNTPOINT >/dev/null
 succeed_if "could not umount $HEAVY_MATERIAL_LIFT_MOUNTPOINT"
 
 rm -f $USER_FOLDER/test_*lift.ini
