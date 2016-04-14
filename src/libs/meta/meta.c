@@ -978,10 +978,8 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 
 
 /**
- * elektraSortTopology helpers
- */
-
-/**
+ * @internal
+ *
  * elektraSortTopology helper
  * matrix struct
  */
@@ -993,6 +991,8 @@ typedef struct
 } _adjMatrix;
 
 /**
+ * @internal
+ *
  * elektraSortTopology helper
  * ordering function for qsort
  */
@@ -1013,6 +1013,8 @@ static int topCmpOrder (const void * a, const void * b)
 
 
 /**
+ * @internal
+ *
  * elektraSortTopology helper
  * returns the index of dependency depKey
  */
@@ -1025,6 +1027,8 @@ static int getArrayIndex (Key * depKey, _adjMatrix * adjMatrix, size_t size)
 	return -1;
 }
 /**
+ * @internal
+ *
  * elektraSortTopology helper
  * removes resolved dependency j from our matrix
  */
@@ -1043,6 +1047,8 @@ static int resolveDep (unsigned int j, _adjMatrix * adjMatrix, size_t size)
 }
 
 /**
+ * @internal
+ *
  * elektraSortTopology helper
  * checks if the key with index j has unresolved dependencies
  */
@@ -1056,10 +1062,11 @@ static int hasUnresolvedDependencies (unsigned int j, _adjMatrix * adjMatrix, si
 }
 
 /**
+ * @internal
+ *
  * elektraSortTopology helper
  * resolve all dependencies of the key with the index j in our matrix.
  */
-
 static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, KeySet * done, Key * orderCounter)
 {
 	unsigned int loops = 0;
@@ -1153,20 +1160,31 @@ static int isValidKeyName (const char * testName)
 }
 
 /**
- * does topological sorting on "ks" using the dependencies defined by the "dep/#" metakeys
- * e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
- * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
- * depends on Key "/b" and Key "/c".
+ * @brief topological sorting
  *
- * duplicated and reflexive dep entries are ignored.
- * if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
- * order.
+ * @param array the array where the sorted keys will be stored in topological order.
+ *        Nothing will be written into an array if
+ * @param ks is the keyset that should be sorted.
+ *        Dependencies and order is defined by metakeys.
  *
- * the sorted keys are stored in "array" in topological order
+ * - the "dep/#" metakeys
+ *  e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
+ *  KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
+ *  depends on Key "/b" and Key "/c".
+ * - if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
+ *  order using lexical comparison. You should prefer `#0` array syntax.
  *
- * @returns 0 for cycles, -1 for invalid dependencies
- * @param ks the keyset that should be sorted
- * @param array the array where the sorted keys will be stored
+ * Duplicated and reflexive dep entries are ignored.
+ *
+ * The algorithm used is a mixture of Kahn and BFS.
+ * Furthermore the algorithm does not use recursion.
+ *
+ * First a BFS with the keys sorted by "order" is used.
+ * Then all dependencies (recursively) of every key is collected.
+ *
+ * @retval 1 on success
+ * @retval 0 for cycles
+ * @retval -1 for invalid dependencies
  */
 
 int elektraSortTopology (KeySet * ks, Key ** array)
