@@ -365,12 +365,6 @@ set (LIB_SUFFIX ""
 		"Optional suffix to use on lib folders (e.g. 64 for lib64)"
     )
 
-set (MEMORYCHECK_COMMAND
-		/usr/bin/valgrind
-		CACHE FILEPATH
-		"Full path to valgrind"
-    )
-
 set(MEMORYCHECK_SUPPRESSIONS_FILE
 		${CMAKE_SOURCE_DIR}/tests/valgrind.suppression
 		CACHE FILEPATH
