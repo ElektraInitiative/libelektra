@@ -366,7 +366,7 @@ set (LIB_SUFFIX ""
     )
 
 set(MEMORYCHECK_SUPPRESSIONS_FILE
-		${CMAKE_SOURCE_DIR}/tests/valgrind.suppression
+		"${CMAKE_SOURCE_DIR}/tests/valgrind.suppression"
 		CACHE FILEPATH
 		"Full path to suppression file for valgrind")
 
