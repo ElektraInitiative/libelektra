@@ -31,7 +31,6 @@
 #include "kdbinternal.h"
 #include "kdbprivate.h"
 
-#include <stdio.h>
 
 /**
  * @defgroup keytest Methods for Making Tests
@@ -216,15 +215,23 @@ int keyIsBelow (const Key * key, const Key * check)
 {
 	const char * keyname = 0;
 	const char * checkname = 0;
+	const char * ukeyname = 0;
+	const char * ucheckname = 0;
 	ssize_t keysize = 0;
 	ssize_t checksize = 0;
+	ssize_t ukeysize = 0;
+	ssize_t uchecksize = 0;
 
 	if (!key || !check) return -1;
 
 	keyname = keyName (key);
 	checkname = keyName (check);
+	ukeyname = keyUnescapedName (key);
+	ucheckname = keyUnescapedName (check);
 	keysize = keyGetNameSize (key);
 	checksize = keyGetNameSize (check);
+	ukeysize = keyGetUnescapedNameSize (key);
+	uchecksize = keyGetUnescapedNameSize (check);
 	if (!strcmp (checkname, "/")) return 0;
 	if (!strcmp (keyname, "/"))
 	{
@@ -237,56 +244,59 @@ int keyIsBelow (const Key * key, const Key * check)
 		{
 			if (!strncmp (keyname, checkname, keysize - 1))
 			{
-				if (checkname[keysize - 1] == '/')
+				if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
 				{
-					if (strstr (checkname, "\\/") != &checkname[keysize - 2]) return 1;
+					return 1;
 				}
 			}
 		}
 		else
 		{
-			const char * escaped = strstr (keyname, "\\/");
-			keyname = strchr (keyname, '/');
-			// skip escaped slashes
-			while ((escaped == (keyname - 1)) && keyname)
-			{
-				escaped = strstr (keyname, "\\/");
-				keyname = strchr (keyname, '/');
-			}
-			if (!keyname)
+			size_t size = 0;
+			char * ptr = (char *)keyname;
+			ptr = keyNameGetOneLevel (ptr, &size);
+			if (size == (size_t)keysize)
 			{
 				return 1;
 			}
+			keyname += size;
 			keysize = elektraStrLen (keyname);
+			ptr = strrchr (ukeyname, '\0');
+			ukeysize -= (ptr - ukeyname);
 			if (!strncmp (keyname, checkname, keysize - 1))
 			{
-				if (checkname[keysize - 1] == '/')
+				if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
 				{
-					if (strstr (checkname, "\\/") != &checkname[keysize - 2]) return 1;
+					return 1;
 				}
 			}
 		}
 	}
 	else if (keyname[0] == '/')
 	{
-		checkname = strchr (checkname, '/');
-		if (!checkname)
+		size_t size = 0;
+		char * ptr = (char *)checkname;
+		ptr = keyNameGetOneLevel (ptr, &size);
+		if (size == (size_t)checksize)
 		{
 			return 0;
 		}
+		checkname += size;
 		checksize = elektraStrLen (checkname);
+		ptr = strrchr (ucheckname, '\0');
+		uchecksize -= (ptr - ucheckname);
+		ucheckname = ptr;
 		if (!strncmp (keyname, checkname, keysize - 1))
 		{
-			if (checkname[keysize - 1] == '/')
+			if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
 			{
-				if (strstr (checkname, "\\/") != &checkname[keysize - 2]) return 1;
+				return 1;
 			}
 		}
 	}
 	else if (!strncmp (keyname, checkname, keysize - 1))
 	{
-		if (checkname[keysize - 1] == '/')
-			if (strstr (checkname, "\\/") != &checkname[keysize - 2]) return 1;
+		if ((ucheckname[ukeysize - 1] == '\0') && (uchecksize > ukeysize)) return 1;
 	}
 	return 0;
 }
@@ -457,49 +467,49 @@ succeed_if (keyRel (key, check) < -2, "key is not below, but same namespace");
 * It could continue the search into the other direction
 * if any (grand-)parents are equal.
 *
-    * - If the keys are direct below a key which is next to the key, -2 is returned.
+	* - If the keys are direct below a key which is next to the key, -2 is returned.
 * This is also called nephew. (TODO not implemented)
-    * @verbatim
-    user/key/myself
-    user/key/sibling
-    @endverbatim
-    *
-    * - If the keys are direct below a key which is next to the key, -2 is returned.
+	* @verbatim
+	user/key/myself
+	user/key/sibling
+	@endverbatim
+	*
+	* - If the keys are direct below a key which is next to the key, -2 is returned.
 * This is also called nephew. (TODO not implemented)
-    * @verbatim
-    user/key/myself
-    user/key/sibling/nephew
-    @endverbatim
-    *
-    * - If the keys are below a key which is next to the key, -3 is returned.
+	* @verbatim
+	user/key/myself
+	user/key/sibling/nephew
+	@endverbatim
+	*
+	* - If the keys are below a key which is next to the key, -3 is returned.
 * This is also called grand-nephew. (TODO not implemented)
-    @verbatim
-    user/key/myself
-    user/key/sibling/any/depth/deeper/grand-nephew
-    @endverbatim
-    *
-    * The same holds true for the other direction, but with negative values.
-    * For no relation INT_MIN is returned.
-    *
-    * @note to check if the keys are the same, you must use
-    *       keyCmp() == 0!
-    *       keyRel() does not give you the information if it did not
-    *       find a relation or if it is the same key.
-    *
-    * @return depending on the relation
-    * @retval 2 if below
-    * @retval 1 if direct below
-    * @retval 0 if the same
-    * @retval -1 on null or invalid keys
-    * @retval -2 if none of any other relation
-    * @retval -3 if same hierarchy (none of those below)
-    * @retval -4 if sibling (in same hierarchy)
+	@verbatim
+	user/key/myself
+	user/key/sibling/any/depth/deeper/grand-nephew
+	@endverbatim
+	*
+	* The same holds true for the other direction, but with negative values.
+	* For no relation INT_MIN is returned.
+	*
+	* @note to check if the keys are the same, you must use
+	*		keyCmp() == 0!
+	*		keyRel() does not give you the information if it did not
+	*		find a relation or if it is the same key.
+	*
+	* @return depending on the relation
+	* @retval 2 if below
+	* @retval 1 if direct below
+	* @retval 0 if the same
+	* @retval -1 on null or invalid keys
+	* @retval -2 if none of any other relation
+	* @retval -3 if same hierarchy (none of those below)
+	* @retval -4 if sibling (in same hierarchy)
 * @retval -5 if nephew (in same hierarchy)
-    *
-    * @param key the key object to work with
-    * @param check the second key object to check the relation with
-    * @ingroup keytest
-    */
+	*
+	* @param key the key object to work with
+	* @param check the second key object to check the relation with
+	* @ingroup keytest
+	*/
 int keyRel (const Key * key, const Key * check)
 {
 	if (!key || !check) return -1;
@@ -661,7 +671,7 @@ printf("key1 and key2 have different UID\n");
 // we are interested only in key type and access permissions
 interests=(KEY_TYPE | KEY_MODE);
 
-ksRewind(ks);   // put cursor in the beginning
+ksRewind(ks);	// put cursor in the beginning
 while ((curren=ksNext(ks))) {
 match=keyCompare(current,base);
 
@@ -696,7 +706,7 @@ keyDel(base);
 * @param key2 second key
 * @see #keyswitch_t
 * @ingroup keytest
-    */
+	*/
 keyswitch_t keyCompare (const Key * key1, const Key * key2)
 {
 	if (!key1 && !key2) return 0;

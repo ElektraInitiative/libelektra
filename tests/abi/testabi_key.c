@@ -1407,6 +1407,26 @@ static void test_keyBelow ()
 	succeed_if (keyIsBelow (key1, key2), "Key should be below");
 	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
 
+	keySetName (key1, "/");
+	keySetName (key2, "system/infos/constants/version/version");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "user/valid");
+	keySetName (key2, "user/valid\\/e");
+	succeed_if (!keyIsBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "user/valid\\/");
+	keySetName (key2, "user/valid/e");
+	succeed_if (!keyIsBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/valid\\/");
+	keySetName (key2, "user/valid\\//valid");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
 
 	keySetName (key1, "user/valid");
 	keySetName (key2, "user/valid/valide");
