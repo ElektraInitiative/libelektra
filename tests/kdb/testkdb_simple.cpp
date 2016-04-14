@@ -9,6 +9,8 @@
 
 #include <keysetio.hpp>
 
+#include <thread> // for sleep
+
 #include <gtest/gtest-elektra.h>
 
 
@@ -145,6 +147,8 @@ TEST_F (Simple, ThrowsExceptionCorrectly)
 	ks.append (kdb::Key ("system/tests/key", KEY_VALUE, "value", KEY_END));
 	kdb.set (ks, "/tests");
 	ks.append (kdb::Key ("system/tests/key2", KEY_VALUE, "value2", KEY_END));
+
+	std::this_thread::sleep_for (std::chrono::seconds (1));
 	EXPECT_THROW (kdb2.set (ks, "/tests"), kdb::KDBException);
 }
 
