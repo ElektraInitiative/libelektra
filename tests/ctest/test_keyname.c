@@ -68,9 +68,9 @@ static void test_relative_generic ()
 	printf ("Get relative name of key with generic mount point\n");
 
 	Key * parent = keyNew ("system/", KEY_END);
-	Key * child = keyNew ("system/f/k", KEY_END);
+	Key * child = keyNew ("system/key/🔑/🗝", KEY_END);
 
-	test_relative ("f/k", child, parent);
+	test_relative ("key/🔑/🗝", child, parent);
 	keyDel (child);
 	child = keyNew ("system/Käfer/K", KEY_END);
 	test_relative ("Käfer/K", child, parent);
