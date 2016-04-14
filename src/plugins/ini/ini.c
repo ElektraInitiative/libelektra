@@ -34,6 +34,7 @@ static char * findParent (Key *, Key *, KeySet *);
 static int iniCmpOrder (const void * a, const void * b);
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
+#define DEFAULT_DELIMITER '='
 
 typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
 
@@ -47,6 +48,7 @@ typedef struct
 	short BOM;
 	short toMeta;
 	char * continuationString;
+	char delim;
 	KeySet * oldKS;
 } IniPluginConfig;
 
@@ -258,6 +260,7 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 	return 1;
 }
 
+
 // inserts newly created ini section or key into the keyset and sets it's order number
 static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 {
@@ -313,8 +316,8 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 				++i;
 				for (; i < arraySize; ++i)
 				{
-					if (!strcmp (keyName (cur), keyName (key))) continue;
-					if (keyIsBinary (keyArray[i])) break;
+					cur = keyArray[i];
+					if (keyIsBinary (cur)) break;
 				}
 			}
 
@@ -335,15 +338,13 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		ksAppend (ks, cutKS);
 		ksDel (cutKS);
 		// set keys ordernumber next the the order number of the key above it
-		const char * oldOrder = NULL;
-		const Key * orderMeta = NULL;
 		if (!prevKey)
 		{
-			oldOrder = keyString (keyGetMeta (parentKey, "order"));
 			setOrderNumber (parentKey, key);
 		}
 		else
 		{
+			const char * oldOrder = NULL;
 			oldOrder = keyString (keyGetMeta (prevKey, "order"));
 			setSubOrderNumber (key, oldOrder);
 		}
@@ -561,6 +562,8 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	Key * mergeSectionsKey = ksLookupByName (config, "/mergesections", KDB_O_NONE);
 	Key * toMetaKey = ksLookupByName (config, "/meta", KDB_O_NONE);
 	Key * contStringKey = ksLookupByName (config, "/linecont", KDB_O_NONE);
+	Key * delimiterKey = ksLookupByName (config, "/delimiter", KDB_O_NONE);
+
 	if (!contStringKey)
 	{
 		pluginConfig->continuationString = strdup ("\t");
@@ -606,6 +609,14 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 			pluginConfig->sectionHandling = ALWAYS;
 		}
 	}
+	if (delimiterKey)
+	{
+		pluginConfig->delim = keyString (delimiterKey)[0];
+	}
+	else
+	{
+		pluginConfig->delim = DEFAULT_DELIMITER;
+	}
 	pluginConfig->oldKS = NULL;
 	elektraPluginSetData (handle, pluginConfig);
 
@@ -623,7 +634,7 @@ int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-//#if DEBUG && VERBOSE
+#if DEBUG && VERBOSE
 static void outputDebug () __attribute__ ((unused));
 
 static void outputDebug (KeySet * ks)
@@ -643,7 +654,7 @@ static void outputDebug (KeySet * ks)
 		fprintf (stderr, "\n");
 	}
 }
-//#endif
+#endif
 
 static char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
 {
@@ -771,6 +782,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
 	iniConfig.continuationString = pluginConfig->continuationString;
 	iniConfig.supportMultiline = pluginConfig->supportMultiline;
+	iniConfig.delim = pluginConfig->delim;
 	pluginConfig->BOM = 0;
 	cbHandle.array = pluginConfig->array;
 	cbHandle.mergeSections = pluginConfig->mergeSections;
@@ -873,11 +885,11 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
 	result = strtok_r (value, "\n", &saveptr);
 	if (containsSpecialCharacter (iniName))
 	{
-		fprintf (fh, "\"%s\" = ", iniName);
+		fprintf (fh, "\"%s\" %c ", iniName, config->delim);
 	}
 	else
 	{
-		fprintf (fh, "%s = ", iniName);
+		fprintf (fh, "%s %c ", iniName, config->delim);
 	}
 	if (result == NULL)
 		fprintf (fh, "\"\n%s\"", config->continuationString);
@@ -1144,7 +1156,7 @@ static int containsSpecialCharacter (const char * str)
 	if (*ptr == '[') return 1;
 	while (*ptr)
 	{
-		if (*ptr == '"' || *ptr == '=' || *ptr == ':')
+		if (*ptr == '"' || *ptr == '=')
 		{
 			return 1;
 		}
@@ -1176,7 +1188,7 @@ static void iniWriteMeta (FILE * fh, Key * parentKey, Key * key, IniPluginConfig
 				if (containsSpecialCharacter (name))
 					fprintf (fh, "\"%s\" = ", name);
 				else
-					fprintf (fh, "%s = ", name);
+					fprintf (fh, "%s %c ", name, config->delim);
 				if (strlen (string) && (containsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else if (strlen (string))
@@ -1202,7 +1214,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 	Key * cur = NULL;
 	Key * sectionKey = parentKey;
 	int ret = 1;
-
+	const char delim = config->delim;
 	if (config->toMeta)
 	{
 		for (ssize_t i = 0; i < arraySize; ++i)
@@ -1215,9 +1227,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			if (strstr (string, "\n") == 0)
 			{
 				if (containsSpecialCharacter (name))
-					fprintf (fh, "\"%s\" = ", name);
+					fprintf (fh, "\"%s\" %c ", name, delim);
 				else
-					fprintf (fh, "%s = ", name);
+					fprintf (fh, "%s %c ", name, delim);
 				if (strlen (string) && (containsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else if (strlen (string))
@@ -1271,9 +1283,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			{
 				const char * string = keyString (cur);
 				if (containsSpecialCharacter (name))
-					fprintf (fh, "\"%s\" = ", name);
+					fprintf (fh, "\"%s\" %c ", name, delim);
 				else
-					fprintf (fh, "%s = ", name);
+					fprintf (fh, "%s %c ", name, delim);
 				if (strlen (string) && (containsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else
@@ -1339,9 +1351,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						cur = keyArray[j];
 						const char * string = keyString (cur);
 						if (containsSpecialCharacter (name))
-							fprintf (fh, "\"%s\" = ", name);
+							fprintf (fh, "\"%s\" %c ", name, delim);
 						else
-							fprintf (fh, "%s = ", name);
+							fprintf (fh, "%s %c ", name, delim);
 						if (strlen (string) && (containsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else
@@ -1389,9 +1401,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 					{
 						const char * string = keyString (cur);
 						if (containsSpecialCharacter (name))
-							fprintf (fh, "\"%s\" = ", name);
+							fprintf (fh, "\"%s\" %c ", name, delim);
 						else
-							fprintf (fh, "%s = ", name);
+							fprintf (fh, "%s %c ", name, delim);
 						if (strlen (string) && (containsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else if (strlen (string))
@@ -1605,7 +1617,6 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		pluginConfig->oldKS = NULL;
 		elektraPluginSetData (handle, pluginConfig);
 	}
-	outputDebug (returned);
 	ret = iniWriteKeySet (fh, parentKey, returned, pluginConfig);
 
 	fclose (fh);
