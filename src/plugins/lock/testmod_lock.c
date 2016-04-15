@@ -14,118 +14,35 @@
 
 #include <tests_plugin.h>
 
-#include <unistd.h>
-
-#define TESTFILE "testfile"
-#define TESTFILELOCK "testfile.lock"
-
-
-static void test_filewrite ()
+static void test_OpenClose ()
 {
-	printf ("test filewrite\n");
+	printf ("test Open & Close\n");
 
-	Key * parentKey = keyNew ("user/tests/lock", KEY_VALUE, TESTFILE, KEY_END);
+	Key * parentKey = keyNew ("user/tests/lock", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("lock");
 
-	KeySet * ks = ksNew (0, KS_END);
-
-	// test
-
-	plugin->kdbGet (plugin, ks, parentKey);
-
-	FILE * file = fopen (TESTFILELOCK, "r");
-	succeed_if (file, "kdbGet dit not create a lock file");
-	if (file)
-	{
-		fclose (file);
-		remove (TESTFILELOCK);
-	}
-
-	// test
-
 	keyDel (parentKey);
-	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
 
-static void test_block ()
+static void test_GetSet ()
 {
-	printf ("test block\n");
+	printf ("test Get & Set\n");
 
-	Key * parentKey = keyNew ("user/tests/lock", KEY_VALUE, TESTFILE, KEY_END);
+	Key * parentKey = keyNew ("user/tests/lock", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("lock");
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	// test
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
 
-	plugin->kdbGet (plugin, ks, parentKey);
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
-	pid_t pid = fork ();
 
-	if (pid < 0)
-	{
-		fprintf (stderr, "ERROR: fork\n");
-		remove (TESTFILELOCK);
-		goto endblock;
-	}
-	else
-	{
-		if (pid)
-		{
-			// parent
-			plugin->kdbGet (plugin, ks, parentKey);
-		}
-		else
-		{
-			// child
-			remove (TESTFILELOCK);
-			exit (EXIT_SUCCESS);
-		}
-	}
-	remove (TESTFILELOCK);
-
-// test
-endblock:
-	keyDel (parentKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
-}
-
-static void test_set ()
-{
-	printf ("test set\n");
-
-	Key * parentKey = keyNew ("user/tests/lock", KEY_VALUE, TESTFILE, KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("lock");
-
-	KeySet * ks = ksNew (0, KS_END);
-
-	// test
-
-	FILE * file = fopen (TESTFILELOCK, "w");
-	if (!file)
-	{
-		fprintf (stderr, "ERROR: can not wirte file %s\n", TESTFILELOCK);
-		goto endset;
-	}
-	fclose (file);
-
-	plugin->kdbSet (plugin, ks, parentKey);
-
-	file = fopen (TESTFILELOCK, "r");
-	succeed_if (!file, "kdbGet did not removed the lock file");
-	if (file)
-	{
-		fclose (file);
-		remove (TESTFILELOCK);
-	}
-
-// test
-endset:
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -138,9 +55,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_filewrite ();
-	test_block ();
-	test_set ();
+	test_OpenClose ();
+	test_GetSet ();
 
 	printf ("\ntestmod_lock RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

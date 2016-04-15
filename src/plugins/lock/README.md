@@ -3,13 +3,17 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
-- infos/placements = pregetstorage postcommit
-- infos/status = maintained unittest tested nodep libc 0
+- infos/placements = pregetstorage postgetstorage presetstorage postcommit postrollback
+- infos/status = maintained global
 - infos/description =
 
 ## LOCK ##
 
-This small plugin lock for each file. The granularity is huge and the logic very simple.
+This global lock plugin introduces a read lock while `GET` and a read/write lock
+while `SET`.
 
-It locks at the `GET` the accessed file with a `$FILENAME$.lock` file.
-Other `GET` request end up busy waiting until a `SET` removes the lock file.
+A semaphore is used for the synchronisation and the implemented algorithm favors the writer,
+because updates should be propagated soon as possible and a `kdbSet` is more expansive than
+a `kdbGet`. This expansiveness comes from merging and conflict solving.
+
+The algorithm is described [here](https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem#Second_readers-writers_problem).
