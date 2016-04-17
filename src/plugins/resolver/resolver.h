@@ -29,7 +29,8 @@ struct _resolverHandle
 	struct timespec mtime; ///< Previous timestamp of the file
 	mode_t filemode;       ///< The mode to set (from previous file)
 	mode_t dirmode;	///< The mode to set for new directories
-	int removalNeeded;     ///< Error on freshly created files need removal
+	unsigned int removalNeeded : 1;     ///< Error on freshly created files need removal
+	unsigned int isMissing : 1;     ///< when doing kdbGet(), no file was there
 
 	char * dirname;  ///< directory where real+temp file is
 	char * filename; ///< the full path to the configuration file

@@ -25,16 +25,6 @@ protected:
 	{
 	}
 
-	void createConfigFile ()
-	{
-		using namespace kdb;
-		KDB repo;
-		KeySet ks;
-		repo.get (ks, testRoot);
-		ks.append (Key ("system" + testRoot, KEY_END));
-		repo.set (ks, testRoot);
-	}
-
 	virtual void SetUp () override
 	{
 		mp.reset (new testing::Mountpoint (testRoot, configFile));
@@ -48,74 +38,6 @@ protected:
 
 const std::string Simple::configFile = "kdbFile.dump";
 const std::string Simple::testRoot = "/tests/kdb/";
-
-TEST_F (Simple, ConflictWithFile)
-{
-	using namespace kdb;
-	createConfigFile ();
-
-	Key parent(testRoot, KEY_END);
-
-	KDB first;
-	KeySet firstReturned;
-	first.get(firstReturned, parent);
-
-	KDB second;
-	KeySet secondReturned;
-	second.get(secondReturned, parent);
-
-	firstReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
-
-	second.set(secondReturned, parent);
-	EXPECT_THROW (first.set(firstReturned, parent), KDBException);
-}
-
-TEST_F (Simple, ConflictWithFileSameKey)
-{
-	using namespace kdb;
-	createConfigFile ();
-
-	Key parent(testRoot, KEY_END);
-
-	KDB first;
-	KeySet firstReturned;
-	first.get(firstReturned, parent);
-
-	KDB second;
-	KeySet secondReturned;
-	second.get(secondReturned, parent);
-
-	firstReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value2", KEY_END));
-
-	second.set(secondReturned, parent);
-	EXPECT_THROW (first.set(firstReturned, parent), KDBException);
-}
-
-TEST_F (Simple, ConflictWithFileSameKeyValue)
-{
-	using namespace kdb;
-	createConfigFile ();
-
-	Key parent(testRoot, KEY_END);
-
-	KDB first;
-	KeySet firstReturned;
-	first.get(firstReturned, parent);
-
-	KDB second;
-	KeySet secondReturned;
-	second.get(secondReturned, parent);
-
-	firstReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-
-	second.set(secondReturned, parent);
-	EXPECT_THROW (first.set(firstReturned, parent), KDBException);
-}
-
 
 TEST_F (Simple, GetNothing)
 {

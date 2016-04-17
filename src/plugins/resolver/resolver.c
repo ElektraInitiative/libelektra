@@ -67,6 +67,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 	p->filemode = KDB_FILE_MODE;
 	p->dirmode = KDB_FILE_MODE | KDB_DIR_MODE;
 	p->removalNeeded = 0;
+	p->isMissing = 0;
 
 	p->filename = 0;
 	p->dirname = 0;
@@ -467,6 +468,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 		errno = errnoSave;
 		pk->mtime.tv_sec = 0;  // no file, so no time
 		pk->mtime.tv_nsec = 0; // no file, so no time
+		pk->isMissing = 1;
 		return 0;
 	}
 	else
@@ -475,6 +477,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 		pk->filemode = buf.st_mode;
 		pk->gid = buf.st_gid;
 		pk->uid = buf.st_uid;
+		pk->isMissing = 0;
 	}
 
 	/* Check if update needed */
@@ -505,30 +508,98 @@ static void elektraAddIdentity (char * errorText)
 	strcat (errorText, buffer);
 }
 
+
 /**
- * @brief Open a file and yield an error if it did not work
+ * @brief Open a file and yield an error on conflicts
  *
  * @param pk->filename will be used
- * @param parentKey to yield the error too
+ * @param parentKey to yield the error to
+ *
+ * @retval 0 on success (might be an error for creating a missing file)
+ * @retval -1 on conflict
+ */
+static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
+{
+	int flags = 0;
+
+	if (pk->isMissing)
+	{
+		// it must be created newly, otherwise we have an conflict
+		flags = O_RDWR | O_CREAT | O_EXCL;
+
+		// only works when using NFSv3 or later on kernel 2.6 or later
+		// TODO: add variant with linkat?
+	}
+	else
+	{
+		// file was there before, so opening should work!
+		flags = O_RDWR;
+	}
+
+	errno = 0;
+	pk->fd = open (pk->filename, flags, pk->filemode);
+
+	if (!pk->isMissing)
+	{
+		if (errno == ENOENT)
+		{
+			ELEKTRA_SET_ERRORF(30, parentKey, "The configuration file \"%s\" was there earlier, "
+				"now it is missing",
+				pk->filename);
+			return -1;
+		}
+		else if (pk->fd == -1)
+		{
+			ELEKTRA_SET_ERRORF (26, parentKey, "Could not reopen configuration file \"%s\" for writing because %s",
+					pk->filename,
+					strerror(errno));
+			return -1;
+		}
+		// successfully reopened
+	}
+	else
+	{
+		if (pk->fd != -1)
+		{
+			// successfully created a file
+			pk->removalNeeded = 1;
+			return 0;
+		}
+		else if (errno == EEXIST)
+		{
+			ELEKTRA_SET_ERRORF(30, parentKey, "No configuration file was there earlier, "
+				"now configuration file \"%s\" exists",
+				pk->filename);
+			return -1;
+		}
+
+		// ignore errors for attempts to create a new file, we will try it again later
+	}
+
+	errno = 0;
+
+	return 0;
+}
+
+
+/**
+ * @brief Create a file and yield an error if it did not work
+ *
+ * @param pk->filename will be used
+ * @param parentKey to yield the error to
  *
  * @retval 0 on success
  * @retval -1 on error
  */
-static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
+static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 {
 	pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
 
 	if (pk->fd == -1)
 	{
-		char * errorText = elektraMalloc (strlen (pk->filename) + ERROR_SIZE * 2 + 60);
-		strcpy (errorText, "Opening configuration file \"");
-		strcat (errorText, pk->filename);
-		strcat (errorText, "\" failed, error was: \"");
-		elektraAddErrnoText (errorText);
-		strcat (errorText, "\" ");
-		elektraAddIdentity (errorText);
-		ELEKTRA_SET_ERROR (26, parentKey, errorText);
-		elektraFree (errorText);
+		ELEKTRA_SET_ERRORF (26, parentKey, "Could not create configuration file \"%s\" because %s",
+				pk->filename,
+				strerror(errno));
 		return -1;
 	}
 	return 0;
@@ -628,11 +699,10 @@ error:
  */
 static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 {
-	if (pk->mtime.tv_sec == 0 && pk->mtime.tv_nsec == 0)
+	if (pk->isMissing)
 	{
-		// this can happen if the kdbGet() path found no file
-
-		// no conflict possible, so just return successfully
+		pk->isMissing = 0;
+		// conflict already handled at file creation time, so just return successfully
 		return 0;
 	}
 
@@ -665,6 +735,7 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 				    geteuid (), getgid (), getegid ());
 		return -1;
 	}
+
 
 	return 0;
 }
@@ -704,25 +775,25 @@ static int elektraRemoveConfigurationFile (resolverHandle * pk, Key * parentKey)
 static int elektraSetPrepare (resolverHandle * pk, Key * parentKey)
 {
 	pk->removalNeeded = 0;
-	// most common case: config file is there just to be opened
-	pk->fd = open (pk->filename, O_RDWR, pk->filemode);
-	// we can silently ignore an error, because we will retry
-	// with creation of file
+
+	if (elektraOpenFile (pk, parentKey) == -1)
+	{
+		// file/none-file conflict OR error on previously existing file
+		return -1;
+	}
+
 	if (pk->fd == -1)
 	{
-		// retry with creation:
-		pk->fd = open (pk->filename, O_RDWR | O_CREAT, pk->filemode);
-		// we can silently ignore an error, because we will retry again
-		// with creation of underlying directory
-		if (pk->fd == -1)
+		// try creation of underlying directory
+		elektraMkdirParents (pk, pk->dirname, parentKey);
+
+		// now try to create file
+		if (elektraCreateFile (pk, parentKey) == -1)
 		{
-			elektraMkdirParents (pk, pk->dirname, parentKey);
-			if (elektraOpenFile (pk, parentKey) == -1)
-			{
-				// no way to be successful
-				return -1;
-			}
+			// no way to be successful
+			return -1;
 		}
+
 		// the file was created by us, so we need to remove it
 		// on error:
 		pk->removalNeeded = 1;

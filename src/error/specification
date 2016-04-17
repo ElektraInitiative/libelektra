@@ -155,7 +155,7 @@ severity:warning
 ingroup:trie
 
 number:26
-description:could not open lock file
+description:could not open configuration file
 severity:error
 ingroup:plugin
 module:resolver
