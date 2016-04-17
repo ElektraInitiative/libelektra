@@ -9,8 +9,6 @@
 
 #include <keysetio.hpp>
 
-#include <thread> // for sleep
-
 #include <gtest/gtest-elektra.h>
 
 
@@ -27,6 +25,16 @@ protected:
 	{
 	}
 
+	void createConfigFile ()
+	{
+		using namespace kdb;
+		KDB repo;
+		KeySet ks;
+		repo.get (ks, testRoot);
+		ks.append (Key ("system" + testRoot, KEY_END));
+		repo.set (ks, testRoot);
+	}
+
 	virtual void SetUp () override
 	{
 		mp.reset (new testing::Mountpoint (testRoot, configFile));
@@ -41,30 +49,11 @@ protected:
 const std::string Simple::configFile = "kdbFile.dump";
 const std::string Simple::testRoot = "/tests/kdb/";
 
-TEST_F (Simple, ThrowsExceptionFail)
+TEST_F (Simple, ConflictWithFile)
 {
 	using namespace kdb;
-	Key parent(testRoot, KEY_END);
+	createConfigFile ();
 
-	KDB first;
-	KeySet firstReturned;
-	first.get(firstReturned, parent);
-
-	KDB second;
-	KeySet secondReturned;
-	second.get(secondReturned, parent);
-
-	firstReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-
-	second.set(secondReturned, parent);
-	first.set(firstReturned, parent); // TODO: this should throw an exception
-	// EXPECT_THROW (first.set(firstReturned, parent), KDBException);
-}
-
-TEST_F (Simple, ThrowsExceptionFail2)
-{
-	using namespace kdb;
 	Key parent(testRoot, KEY_END);
 
 	KDB first;
@@ -80,13 +69,14 @@ TEST_F (Simple, ThrowsExceptionFail2)
 	secondReturned.append(Key ("system" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
 
 	second.set(secondReturned, parent);
-	first.set(firstReturned, parent); // TODO: this should throw an exception
-	// EXPECT_THROW (first.set(firstReturned, parent), KDBException);
+	EXPECT_THROW (first.set(firstReturned, parent), KDBException);
 }
 
-TEST_F (Simple, ThrowsExceptionFail3)
+TEST_F (Simple, ConflictWithFileSameKey)
 {
 	using namespace kdb;
+	createConfigFile ();
+
 	Key parent(testRoot, KEY_END);
 
 	KDB first;
@@ -95,23 +85,20 @@ TEST_F (Simple, ThrowsExceptionFail3)
 
 	KDB second;
 	KeySet secondReturned;
-	parent = Key (testRoot, KEY_END);
 	second.get(secondReturned, parent);
 
 	firstReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
+	secondReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value2", KEY_END));
 
-	parent = Key (testRoot, KEY_END);
 	second.set(secondReturned, parent);
-	parent = Key (testRoot, KEY_END);
-	first.set(firstReturned, parent); // TODO: this should throw an exception
-	// EXPECT_THROW (first.set(firstReturned, parent), KDBException);
+	EXPECT_THROW (first.set(firstReturned, parent), KDBException);
 }
 
-TEST_F (Simple, ThrowsExceptionFail4)
+TEST_F (Simple, ConflictWithFileSameKeyValue)
 {
 	using namespace kdb;
+	createConfigFile ();
+
 	Key parent(testRoot, KEY_END);
 
 	KDB first;
@@ -120,36 +107,13 @@ TEST_F (Simple, ThrowsExceptionFail4)
 
 	KDB second;
 	KeySet secondReturned;
-	parent = Key (testRoot, KEY_END);
 	second.get(secondReturned, parent);
 
-	secondReturned.append(Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-	secondReturned.append(Key ("system" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
-
-	parent = Key (testRoot, KEY_END);
-	second.set(secondReturned, parent);
-
-	parent = Key (testRoot, KEY_END);
 	firstReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-	first.set(firstReturned, parent); // TODO: this should throw an exception
-	// EXPECT_THROW (first.set(firstReturned, parent), KDBException);
-}
+	secondReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
 
-
-TEST_F (Simple, ThrowsExceptionCorrectlyFail5)
-{
-	kdb::KDB kdb;
-	kdb::KDB kdb2;
-
-	kdb::KeySet ks;
-	kdb.get (ks, "/tests");
-	kdb2.get (ks, "/tests");
-	ks.append (kdb::Key ("system/tests/key", KEY_VALUE, "value", KEY_END));
-	kdb.set (ks, "/tests");
-	ks.append (kdb::Key ("system/tests/key2", KEY_VALUE, "value2", KEY_END));
-
-	std::this_thread::sleep_for (std::chrono::seconds (1));
-	// EXPECT_THROW (kdb2.set (ks, "/tests"), kdb::KDBException);
+	second.set(secondReturned, parent);
+	EXPECT_THROW (first.set(firstReturned, parent), KDBException);
 }
 
 
