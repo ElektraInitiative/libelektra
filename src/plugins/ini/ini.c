@@ -18,6 +18,7 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbmeta.h>
 #include <kdbos.h>
 #include <kdbprivate.h>  //elektraReadArrayNumber
 #include <kdbproposal.h> //elektraKsToMemArray
@@ -54,9 +55,9 @@ typedef struct
 
 typedef struct
 {
-	Key * parentKey;	 /* the parent key of the result KeySet */
-	KeySet * result;	 /* the result KeySet */
-	char * collectedComment; /* buffer for collecting comments until a non comment key is reached */
+	Key * parentKey;	/* the parent key of the result KeySet */
+	KeySet * result;	/* the result KeySet */
+	Key * collectedComment; /* buffer for collecting comments until a non comment key is reached */
 	short array;
 	short mergeSections;
 	short toMeta;
@@ -68,9 +69,15 @@ static void flushCollectedComment (CallbackHandle * handle, Key * key)
 {
 	if (handle->collectedComment)
 	{
-		keySetMeta (key, "comment", handle->collectedComment);
-		elektraFree (handle->collectedComment);
-		handle->collectedComment = 0;
+		KeySet * comments = elektraMetaArrayToKS (handle->collectedComment, "comments");
+		Key * cur;
+		while ((cur = ksNext (comments)) != NULL)
+		{
+			keySetMeta (key, keyName (cur), keyString (cur));
+		}
+		ksDel (comments);
+		keyDel (handle->collectedComment);
+		handle->collectedComment = NULL;
 	}
 }
 
@@ -268,7 +275,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 
 	// trying to find the keys section or sections parent section
 	char * parent = findParent (parentKey, key, ksDup (ks));
-	if (parent)
+	if (parent && strcmp(keyName(parentKey), parent))
 	{
 		// parent section found, inserting key
 		keySetMeta (key, "parent", parent);
@@ -280,7 +287,8 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		while ((cur = ksNext (cutKS)) != NULL)
 		{
 			if (sectionKey && strcmp (keyName (cur), keyName (key)) > 0) break;
-			if ((keyIsBinary (cur) && keyIsBelow (cur, key)) || (keyIsBinary (cur) && keyRel (cur, key) == -3))
+			if ((keyIsBinary (cur) && keyIsBelow (cur, key)) ||
+			    ((keyIsBinary (cur) && keyRel (cur, key) == -3) && (strcmp (keyName (cur), keyName (key)) < 0)))
 			{
 				sectionKey = cur;
 			}
@@ -525,28 +533,8 @@ static int iniSectionToElektraKey (void * vhandle, const char * section)
 static int iniCommentToMeta (void * vhandle, const char * comment)
 {
 	CallbackHandle * handle = (CallbackHandle *)vhandle;
-
-	size_t commentSize = strlen (comment) + 1;
-
-	if (!handle->collectedComment)
-	{
-		handle->collectedComment = elektraMalloc (commentSize);
-
-		if (!handle->collectedComment) return 0;
-
-		strncpy (handle->collectedComment, comment, commentSize);
-	}
-	else
-	{
-		size_t newCommentSize = strlen (handle->collectedComment) + commentSize + 1;
-		handle->collectedComment = realloc (handle->collectedComment, newCommentSize);
-
-		if (!handle->collectedComment) return 0;
-
-		strcat (handle->collectedComment, "\n");
-		strncat (handle->collectedComment, comment, newCommentSize);
-	}
-
+	if (!handle->collectedComment) handle->collectedComment = keyNew ("/comments", KEY_CASCADING_NAME, KEY_END);
+	elektraMetaArrayAdd (handle->collectedComment, "comments", comment);
 	return 1;
 }
 
@@ -634,7 +622,7 @@ int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-//#if DEBUG && VERBOSE
+#if DEBUG && VERBOSE
 static void outputDebug () __attribute__ ((unused));
 
 static void outputDebug (KeySet * ks)
@@ -654,7 +642,7 @@ static void outputDebug (KeySet * ks)
 		fprintf (stderr, "\n");
 	}
 }
-//#endif
+#endif
 
 static char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
 {
@@ -770,7 +758,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	CallbackHandle cbHandle;
 	cbHandle.parentKey = parentKey;
 	cbHandle.result = append;
-	cbHandle.collectedComment = 0;
+	cbHandle.collectedComment = NULL;
 
 	// ksAppendKey (cbHandle.result, keyDup(parentKey));
 
@@ -792,7 +780,6 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (cbHandle.result);
 	setParents (cbHandle.result, cbHandle.parentKey);
 	stripInternalData (cbHandle.parentKey, cbHandle.result);
-
 	fclose (fh);
 	errno = errnosave;
 	ksRewind (cbHandle.result);
@@ -838,15 +825,10 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 // data can be done by keytometa then
 void writeComments (Key * current, FILE * fh)
 {
-	const Key * commentMeta = keyGetMeta (current, "comment");
-	if (commentMeta)
-	{
-		size_t commentSize = keyGetValueSize (commentMeta);
-		char * comments = elektraMalloc (commentSize);
-		keyGetString (commentMeta, comments, commentSize);
-        fprintf(fh, "%s\n", comments);
-		elektraFree (comments);
-	}
+	char * toWrite = elektraMetaArrayToString (current, "comments", "\n");
+	if (toWrite == NULL) return;
+	fprintf (fh, "%s\n", toWrite);
+	elektraFree (toWrite);
 }
 static int containsSpecialCharacter (const char *);
 
@@ -1592,7 +1574,6 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		pluginConfig->oldKS = NULL;
 		elektraPluginSetData (handle, pluginConfig);
 	}
-	outputDebug (returned);
 	ret = iniWriteKeySet (fh, parentKey, returned, pluginConfig);
 
 	fclose (fh);
@@ -1609,10 +1590,10 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 {
 	// clang-format off
-    return elektraPluginExport ("ini",
-            ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
-            ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
-            ELEKTRA_PLUGIN_GET, &elektraIniGet,
-            ELEKTRA_PLUGIN_SET, &elektraIniSet, 
-            ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("ini",
+			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
+			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
+			ELEKTRA_PLUGIN_GET, &elektraIniGet,
+			ELEKTRA_PLUGIN_SET, &elektraIniSet, 
+			ELEKTRA_PLUGIN_END);
 }

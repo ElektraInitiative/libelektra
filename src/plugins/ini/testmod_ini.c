@@ -133,22 +133,39 @@ static void test_commentIniRead (char * fileName)
 
 	Key * key = ksLookupByName (ks, "user/tests/ini-read/nosectionkey", KDB_O_NONE);
 	exit_if_fail (key, "nosectionkey not found");
-	const Key * noSectionComment = keyGetMeta (key, "comment");
+	const Key * noSectionComment = keyGetMeta (key, "comments/#0");
 	exit_if_fail (noSectionComment, "nosectionkey contained no comment");
-    succeed_if (!strcmp (";nosection comment1\n;nosection comment2", keyString (noSectionComment)),
+    succeed_if (!strcmp (";nosection comment1", keyString (noSectionComment)),
 		    "nosectionkey contained an invalid comment");
+    noSectionComment = keyGetMeta (key, "comments/#1");
+	exit_if_fail (noSectionComment, "nosectionkey contained no comment");
+    succeed_if (!strcmp (";nosection comment2", keyString (noSectionComment)),
+		    "nosectionkey contained an invalid comment");
+
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1", KDB_O_NONE);
 	exit_if_fail (key, "section1 not found");
-	const Key * sectionComment = keyGetMeta (key, "comment");
-	exit_if_fail (sectionComment, "nosectionkey contained no comment");
-    succeed_if (!strcmp (";section comment1\n;section comment2", keyString (sectionComment)), "section1 contained an invalid comment");
+	const Key * sectionComment = keyGetMeta (key, "comments/#0");
+	exit_if_fail (sectionComment, "sectionkey contained no comment");
+    succeed_if (!strcmp (";section comment1", keyString (sectionComment)),
+		    "sectionkey contained an invalid comment");
+    sectionComment = keyGetMeta (key, "comments/#1");
+	exit_if_fail (sectionComment, "sectionkey contained no comment");
+    succeed_if (!strcmp (";section comment2", keyString (sectionComment)),
+		    "sectionkey contained an invalid comment");
+
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1/key1", KDB_O_NONE);
 	exit_if_fail (key, "key1 not found");
-	const Key * keyComment_ = keyGetMeta (key, "comment");
+	const Key * keyComment_ = keyGetMeta (key, "comments/#0");
 	exit_if_fail (keyComment_, "key1 contained no comment");
-	succeed_if (!strcmp (";key comment1\n;key comment2", keyString (keyComment_)), "key1 contained an invalid comment");
+    succeed_if (!strcmp (";key comment1", keyString (keyComment_)),
+		    "key1 contained an invalid comment");
+    keyComment_ = keyGetMeta (key, "comments/#1");
+	exit_if_fail (keyComment_, "key1 contained no comment");
+    succeed_if (!strcmp (";key comment2", keyString (keyComment_)),
+		    "key1 contained an invalid comment");
+
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -158,17 +175,16 @@ static void test_commentIniRead (char * fileName)
 
 static void test_commentIniWrite (char * fileName)
 {
-	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, "/tmp/commentIniWrite.ini", KEY_END);//elektraFilename (), KEY_END);
+	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ini");
 
 	KeySet * ks = ksNew (
-		30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_COMMENT,
-			    ";nosection comment1\n;nosection comment2", KEY_END),
-		keyNew ("user/tests/ini-write/section1", KEY_BINARY,
-
-			KEY_COMMENT, ";section comment1\n;section comment2", KEY_END),
-		keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_COMMENT, ";key comment1\n;key comment2", KEY_END),
+		30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_META, "comments", "#1", KEY_META, "comments/#0",
+			    ";nosection comment1", KEY_META, "comments/#1", ";nosection comment2", KEY_END),
+		keyNew ("user/tests/ini-write/section1", KEY_BINARY, KEY_META, "comments", "#1",
+			KEY_META, "comments/#0", ";section comment1", KEY_META, "comments/#1", ";section comment2", KEY_END),
+		keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_META, "comments", "#1", KEY_META, "comments/#0", ";key comment1", KEY_META, "comments/#1", ";key comment2", KEY_END),
 		KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
@@ -399,7 +415,7 @@ static void test_array (char * fileName)
 static void test_preserveEmptyLines (char * fileName)
 {
 	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, srcdir_file (fileName), KEY_END);
-	Key * writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, "/tmp/emptyLines.ini", KEY_END);//elektraFilename (), KEY_END);
+	Key * writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (30, KS_END);
 	PLUGIN_OPEN ("ini");

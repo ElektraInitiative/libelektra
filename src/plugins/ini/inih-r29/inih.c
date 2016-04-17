@@ -140,7 +140,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 #endif
 		if (*start == '\n')
 		{
-			if (!config->commentHandler (user, "\0") && !error) error = lineno;
+			if (!config->commentHandler (user, "") && !error) error = lineno;
 			continue;
 		}
 		start = lskip (line);
@@ -385,7 +385,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				if (*ptr)
 				{
-					char tmpDel[6] = { '"', ' ', delim, ' ', '"', '\0' };
+					char tmpDel[4] = { ' ', delim, ' ', '\0' };
 					end = strstr (ptr, tmpDel);
 					name = NULL;
 					if (end)
