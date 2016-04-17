@@ -14,7 +14,7 @@ exit 0
 RACE="@RACE_COMMAND@"
 RACEKEYS=user/test/race/keys
 
-if [ "x`$KDB ls $RACEKEYS | wc -l 2> /dev/null`" != "x0" ]
+if [ "x`"$KDB" ls $RACEKEYS | wc -l 2> /dev/null`" != "x0" ]
 then
 	echo "There are already keys in $RACEKEYS"
 	exit 1
@@ -35,7 +35,7 @@ do_race_test()
 
 	WHERE=user/test/race/keys
 
-	KEYS=`$KDB ls "$WHERE"`
+	KEYS=`"$KDB" ls "$WHERE"`
 	succeed_if "could not run $KDB ls $WHERE successfully"
 
 	WON=`echo "$RES" | grep won`
@@ -54,10 +54,10 @@ do_race_test()
 	#[ "$SHOULD" -le "1"  ]
 	#succeed_if "race had not one or zero, but $SHOULD, winner(s)! $OUTPUT"
 
-	[ "$IS" -eq "1" ] 
+	[ "$IS" -eq "1" ]
 	succeed_if "keyset had not one, but $IS, key(s)! $OUTPUT"
 
-	$KDB rm -r $WHERE
+	"$KDB" rm -r $WHERE
 	succeed_if "could not remove key! $OUTPUT"
 }
 

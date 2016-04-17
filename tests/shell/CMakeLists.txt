@@ -87,7 +87,7 @@ function (add_scripttest testname)
 			endif ()
 			set(RACE_COMMAND "${CMAKE_BINARY_DIR}/bin/race")
 			set(INCLUDE_COMMON
-				"${INCLUDE_COMMON_FILE}KDB=${KDB_COMMAND}"
+				"${INCLUDE_COMMON_FILE}KDB=\"${KDB_COMMAND}\""
 				)
 			set(testscriptname
 				"${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}")
