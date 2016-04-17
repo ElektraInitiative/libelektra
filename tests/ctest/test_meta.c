@@ -272,6 +272,8 @@ static void test_metaArrayToKS ()
 	KeySet * ks = elektraMetaArrayToKS (test, "dep");
 	Key * cur;
 	cur = ksNext (ks);
+	succeed_if (!strcmp (keyName (cur), "dep"), "failed!");
+	cur = ksNext (ks);
 	succeed_if (!strcmp (keyName (cur), "dep/#0"), "failed!");
 	cur = ksNext (ks);
 	succeed_if (!strcmp (keyName (cur), "dep/#1"), "failed!");
@@ -289,6 +291,7 @@ static void checkTopArray (Key ** array, unsigned int size)
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
 		Key * dep;
 		ksRewind (deps);
+		ksNext (deps);
 		ksRewind (done);
 		while ((dep = ksNext (deps)) != NULL)
 		{

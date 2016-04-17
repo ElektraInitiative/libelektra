@@ -962,6 +962,7 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 		ksRewind (result);
 		return result;
 	}
+	ksAppendKey (result, meta);
 	Key * currentKey = keyDup (meta);
 	keyAddName (currentKey, "#");
 	elektraArrayIncName (currentKey);
@@ -1217,6 +1218,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	{
 		cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
+		keyDel (ksLookupByName (deps, "dep", KDB_O_POP));
 		Key * tmpDep;
 		int gotUnresolved = 0;
 		switch (ksGetSize (deps))
