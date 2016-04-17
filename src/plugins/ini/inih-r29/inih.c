@@ -140,7 +140,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 #endif
 		if (*start == '\n')
 		{
-			if (!config->commentHandler (user, " ") && !error) error = lineno;
+			if (!config->commentHandler (user, "\0") && !error) error = lineno;
 			continue;
 		}
 		start = lskip (line);
@@ -208,7 +208,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		}
 		else if (isComment (line))
 		{
-			start += 1;
+			start = line;
 			end = line + (strlen (line) - 1);
 			if (*end == '\n') *end = '\0';
 			if (!config->commentHandler (user, start) && !error) error = lineno;

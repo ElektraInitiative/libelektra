@@ -634,7 +634,7 @@ int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-#if DEBUG && VERBOSE
+//#if DEBUG && VERBOSE
 static void outputDebug () __attribute__ ((unused));
 
 static void outputDebug (KeySet * ks)
@@ -654,7 +654,7 @@ static void outputDebug (KeySet * ks)
 		fprintf (stderr, "\n");
 	}
 }
-#endif
+//#endif
 
 static char * findParent (Key * parentKey, Key * searchkey, KeySet * ks)
 {
@@ -844,32 +844,7 @@ void writeComments (Key * current, FILE * fh)
 		size_t commentSize = keyGetValueSize (commentMeta);
 		char * comments = elektraMalloc (commentSize);
 		keyGetString (commentMeta, comments, commentSize);
-		char * ptr = comments;
-		while (*ptr)
-		{
-			if ((*ptr) == '\n')
-			{
-				fprintf (fh, "\n");
-				++ptr;
-			}
-			else if (*ptr != ' ')
-			{
-				fprintf (fh, ";");
-				while (*ptr && ((*ptr) != '\n'))
-				{
-					fprintf (fh, "%c", *ptr);
-					++ptr;
-				}
-			}
-			else
-			{
-				++ptr;
-			}
-		}
-		if (!(*ptr))
-		{
-			fprintf (fh, "\n");
-		}
+        fprintf(fh, "%s\n", comments);
 		elektraFree (comments);
 	}
 }
@@ -1617,6 +1592,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		pluginConfig->oldKS = NULL;
 		elektraPluginSetData (handle, pluginConfig);
 	}
+	outputDebug (returned);
 	ret = iniWriteKeySet (fh, parentKey, returned, pluginConfig);
 
 	fclose (fh);
