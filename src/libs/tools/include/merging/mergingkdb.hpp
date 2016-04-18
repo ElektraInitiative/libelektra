@@ -55,7 +55,9 @@ public:
 
 	/**
 	 * If a conflict occurs during set, the supplied merger is used to resolve the conflict.
-	 * If the conflict cannot be solved, an exception is thrown.
+	 * If the conflict cannot be solved, an exception is thrown. If the KeySet was successfully
+	 * written (either by merging or due the absence of a conflict) the supplied KeySet is updated
+	 * with the new content of the file.
 	 *
 	 * @see KDB
 	 * @throws MergingKDBException
@@ -81,6 +83,10 @@ public:
 	virtual const char * what () const throw () override
 	{
 		return "Exception while merging conflicting KeySets";
+	}
+
+	KeySet getConflicts() const {
+		return m_conflicts;
 	}
 
 private:

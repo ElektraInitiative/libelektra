@@ -18,7 +18,7 @@
 #include <keyio.hpp>
 
 #include <merging/automergeconfiguration.hpp>
-#include <merging/mergeconfiguration.hpp>
+#include <merging/mergingkdb.hpp>
 
 #include "confignode.hpp"
 #include "findvisitor.hpp"
@@ -26,6 +26,8 @@
 #include "printvisitor.hpp"
 
 class Visitor;
+
+using namespace kdb::tools::merging;
 
 /**
  * @brief The TreeViewModel class. It holds ConfigNodes.
@@ -290,8 +292,8 @@ private:
 	QList<ConfigNodePtr> m_model;
 	kdb::Key m_root;
 	kdb::KDB * m_kdb;   // only held by root node of TreeViewModel
-	kdb::KeySet m_base; // only held by root node of TreeViewModel
 	kdb::Key m_metaModelParent;
+	MergingKDB mergingKdb;
 	/**
 	 * @brief Returns a MergeConflictStrategy object based on the name of the MergeConflictStrategy.
 	 * @param mergeStrategy The name of the MergeConflictStrategy.
