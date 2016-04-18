@@ -10,7 +10,6 @@
 #include "lock.h"
 
 #include <kdbhelper.h>
-#include <kdbprivate.h>
 #include <kdberrors.h>
 
 
