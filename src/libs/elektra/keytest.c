@@ -455,61 +455,61 @@ int keyIsDirectBelow (const Key * key, const Key * check)
  *
  * @code
  keySetName (key, "user/key/folder");
-keySetName (check, "user/notsame/folder");
-succeed_if (keyRel (key, check) < -2, "key is not below, but same namespace");
-* @endcode
-*
-* @code
-* @endcode
-*
-*
-* TODO Below is an idea how it could be extended:
-* It could continue the search into the other direction
-* if any (grand-)parents are equal.
-*
-	* - If the keys are direct below a key which is next to the key, -2 is returned.
-* This is also called nephew. (TODO not implemented)
-	* @verbatim
-	user/key/myself
-	user/key/sibling
-	@endverbatim
-	*
-	* - If the keys are direct below a key which is next to the key, -2 is returned.
-* This is also called nephew. (TODO not implemented)
-	* @verbatim
-	user/key/myself
-	user/key/sibling/nephew
-	@endverbatim
-	*
-	* - If the keys are below a key which is next to the key, -3 is returned.
-* This is also called grand-nephew. (TODO not implemented)
-	@verbatim
-	user/key/myself
-	user/key/sibling/any/depth/deeper/grand-nephew
-	@endverbatim
-	*
-	* The same holds true for the other direction, but with negative values.
-	* For no relation INT_MIN is returned.
-	*
-	* @note to check if the keys are the same, you must use
-	*		keyCmp() == 0!
-	*		keyRel() does not give you the information if it did not
-	*		find a relation or if it is the same key.
-	*
-	* @return depending on the relation
-	* @retval 2 if below
-	* @retval 1 if direct below
-	* @retval 0 if the same
-	* @retval -1 on null or invalid keys
-	* @retval -2 if none of any other relation
-	* @retval -3 if same hierarchy (none of those below)
-	* @retval -4 if sibling (in same hierarchy)
-* @retval -5 if nephew (in same hierarchy)
-	*
-	* @param key the key object to work with
-	* @param check the second key object to check the relation with
-	* @ingroup keytest
-	*/
+ keySetName (check, "user/notsame/folder");
+ succeed_if (keyRel (key, check) < -2, "key is not below, but same namespace");
+ * @endcode
+ *
+ * @code
+ * @endcode
+ *
+ *
+ * TODO Below is an idea how it could be extended:
+ * It could continue the search into the other direction
+ * if any (grand-)parents are equal.
+ *
+ * - If the keys are direct below a key which is next to the key, -2 is returned.
+ * This is also called nephew. (TODO not implemented)
+ * @verbatim
+ user/key/myself
+ user/key/sibling
+ @endverbatim
+ *
+ * - If the keys are direct below a key which is next to the key, -2 is returned.
+ * This is also called nephew. (TODO not implemented)
+ * @verbatim
+ user/key/myself
+ user/key/sibling/nephew
+ @endverbatim
+ *
+ * - If the keys are below a key which is next to the key, -3 is returned.
+ * This is also called grand-nephew. (TODO not implemented)
+ @verbatim
+ user/key/myself
+ user/key/sibling/any/depth/deeper/grand-nephew
+ @endverbatim
+ *
+ * The same holds true for the other direction, but with negative values.
+ * For no relation INT_MIN is returned.
+ *
+ * @note to check if the keys are the same, you must use
+ *		keyCmp() == 0!
+ *		keyRel() does not give you the information if it did not
+ *		find a relation or if it is the same key.
+ *
+ * @return depending on the relation
+ * @retval 2 if below
+ * @retval 1 if direct below
+ * @retval 0 if the same
+ * @retval -1 on null or invalid keys
+ * @retval -2 if none of any other relation
+ * @retval -3 if same hierarchy (none of those below)
+ * @retval -4 if sibling (in same hierarchy)
+ * @retval -5 if nephew (in same hierarchy)
+ *
+ * @param key the key object to work with
+ * @param check the second key object to check the relation with
+ * @ingroup keytest
+ */
 int keyRel (const Key * key, const Key * check)
 {
 	if (!key || !check) return -1;
@@ -655,7 +655,7 @@ printf("key1 and key2 have different UID\n");
  *
  * @endcode
  *
- * 
+ *
  * @par Example of very powerful specific Key lookup in a KeySet:
  * @code
  Key *base = keyNew ("/sw/MyApp/something", KEY_END);
@@ -700,7 +700,7 @@ ksDel(ks);
 kdbClose (handle, base);
 keyDel(base);
 * @endcode
-* 
+*
 * @return a bit array pointing the differences
 * @param key1 first key
 * @param key2 second key
