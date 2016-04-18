@@ -655,7 +655,7 @@ printf("key1 and key2 have different UID\n");
  *
  * @endcode
  *
- * 
+ *
  * @par Example of very powerful specific Key lookup in a KeySet:
  * @code
  Key *base = keyNew ("/sw/MyApp/something", KEY_END);
@@ -700,7 +700,7 @@ ksDel(ks);
 kdbClose (handle, base);
 keyDel(base);
 * @endcode
-* 
+*
 * @return a bit array pointing the differences
 * @param key1 first key
 * @param key2 second key
