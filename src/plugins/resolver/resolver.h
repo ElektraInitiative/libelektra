@@ -25,11 +25,11 @@ typedef struct _resolverHandle resolverHandle;
 
 struct _resolverHandle
 {
-	int fd;		       ///< Descriptor to the locking file
-	struct timespec mtime; ///< Previous timestamp of the file
-	mode_t filemode;       ///< The mode to set (from previous file)
-	mode_t dirmode;	///< The mode to set for new directories
-	unsigned int removalNeeded : 1;     ///< Error on freshly created files need removal
+	int fd;				///< Descriptor to the locking file
+	struct timespec mtime;		///< Previous timestamp of the file
+	mode_t filemode;		///< The mode to set (from previous file)
+	mode_t dirmode;			///< The mode to set for new directories
+	unsigned int removalNeeded : 1; ///< Error on freshly created files need removal
 	unsigned int isMissing : 1;     ///< when doing kdbGet(), no file was there
 
 	char * dirname;  ///< directory where real+temp file is

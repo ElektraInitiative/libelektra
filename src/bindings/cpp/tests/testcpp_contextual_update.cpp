@@ -17,8 +17,7 @@ using namespace kdb;
 struct test_contextual_update : ::testing::Test
 {
 	test_contextual_update ()
-	: ks (), gc (), c (gc),
-	  i (ks, c, Key ("/ignore/id", KEY_META, "default", "my", KEY_END)),
+	: ks (), gc (), c (gc), i (ks, c, Key ("/ignore/id", KEY_META, "default", "my", KEY_END)),
 	  x (ks, c, Key ("/%id%/key", KEY_META, "default", "33", KEY_END)){};
 
 	KeySet ks;
@@ -147,10 +146,10 @@ void printKs (KeySet & ks)
 	size_t s = ks.size ();
 	std::cout << "ASSERT_GE (ks.size (), " << s << ");" << std::endl;
 	std::cout << "EXPECT_EQ (ks.size (), " << s << ");" << std::endl;
-	for (size_t i = 0; i<s; ++i)
+	for (size_t i = 0; i < s; ++i)
 	{
-		std::cout << "EXPECT_EQ (ks.at (" << i << ").getName (), \"" << ks.at(i).getName () << "\");" << std::endl;
-		std::cout << "EXPECT_EQ (ks.at (" << i << ").getString (), \"" << ks.at(i).getString () << "\");" << std::endl;
+		std::cout << "EXPECT_EQ (ks.at (" << i << ").getName (), \"" << ks.at (i).getName () << "\");" << std::endl;
+		std::cout << "EXPECT_EQ (ks.at (" << i << ").getString (), \"" << ks.at (i).getString () << "\");" << std::endl;
 	}
 }
 
@@ -169,8 +168,8 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayer)
 
 	ks.append (Key ("user/other/key", KEY_VALUE, "144", KEY_END));
 
-	const_cast<Key&>(i.getSpec ()).setMeta<std::string> ("order", "#0");
-	const_cast<Key&>(x.getSpec ()).setMeta<std::string> ("order", "#1");
+	const_cast<Key &> (i.getSpec ()).setMeta<std::string> ("order", "#0");
+	const_cast<Key &> (x.getSpec ()).setMeta<std::string> ("order", "#1");
 	c.notifyKeySetUpdate ();
 	EXPECT_EQ (x.getName (), "user/%/key") << "should be same name";
 	EXPECT_EQ (x, 5) << "not activated, thus old value persists";
@@ -211,8 +210,8 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivateOrder)
 
 	ks.append (Key ("user/other/key", KEY_VALUE, "144", KEY_END));
 
-	const_cast<Key&>(i.getSpec ()).setMeta<std::string> ("layer/order", "#0");
-	const_cast<Key&>(x.getSpec ()).setMeta<std::string> ("layer/order", "#1");
+	const_cast<Key &> (i.getSpec ()).setMeta<std::string> ("layer/order", "#0");
+	const_cast<Key &> (x.getSpec ()).setMeta<std::string> ("layer/order", "#1");
 	c.notifyKeySetUpdate ();
 	EXPECT_EQ (x.getName (), "user/other/key");
 	EXPECT_EQ (x, 144) << "reevaluated context, should have found new key";
@@ -276,7 +275,8 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivate)
 
 TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 {
-	ThreadValue<std::string> j (ks, c, Key ("/%country%/language/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
+	ThreadValue<std::string> j (
+		ks, c, Key ("/%country%/language/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
 	ThreadValue<int> y (ks, c, Key ("/%language%/%id%/key", KEY_META, "default", "55", KEY_END));
 	c.activate (j); // activate language layer "my"
 
@@ -323,7 +323,8 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 
 TEST_F (test_contextual_update, notifySyncAssign)
 {
-	ThreadValue<std::string> j (ks, c, Key ("/%country%/language/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
+	ThreadValue<std::string> j (
+		ks, c, Key ("/%country%/language/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
 	ThreadValue<int> y (ks, c, Key ("/%language%/%id%/key", KEY_META, "default", "55", KEY_END));
 	c.activate (j); // activate language layer with "my"
 
@@ -369,9 +370,10 @@ TEST_F (test_contextual_update, notifySyncAssign)
 
 TEST_F (test_contextual_update, notifySyncCycle)
 {
-	ThreadValue<std::string> j (ks, c, Key ("/%country%/%language%/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
+	ThreadValue<std::string> j (
+		ks, c, Key ("/%country%/%language%/code", KEY_META, "layer/name", "language", KEY_META, "default", "my", KEY_END));
 	ThreadValue<int> y (ks, c, Key ("/%language%/%country%/country", KEY_META, "default", "55", KEY_END));
-	EXPECT_NO_THROW(c.activate (j)) << "also works with cycle"; // activate language layer with "my"
+	EXPECT_NO_THROW (c.activate (j)) << "also works with cycle"; // activate language layer with "my"
 
 	ASSERT_GE (ks.size (), 6);
 	EXPECT_EQ (ks.size (), 6);
@@ -392,7 +394,7 @@ TEST_F (test_contextual_update, notifySyncCycle)
 	ks.append (Key ("user/%/language/code", KEY_VALUE, "de", KEY_END));
 	ks.append (Key ("user/de/%/key", KEY_VALUE, "155", KEY_END));
 
-	EXPECT_THROW(c.sync (), std::runtime_error);
+	EXPECT_THROW (c.sync (), std::runtime_error);
 	EXPECT_EQ (std::string (j), "my");
 	EXPECT_EQ (y, 55);
 

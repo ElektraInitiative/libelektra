@@ -96,39 +96,39 @@ void BackendBuilder::sort ()
 	size_t i = 0;
 	for (auto const & ps : toAdd)
 	{
-		Key dep("/"+ps.getName(), KEY_END);
-		if (ps.getName() != ps.getRefName())
+		Key dep ("/" + ps.getName (), KEY_END);
+		if (ps.getName () != ps.getRefName ())
 		{
-			dep.addBaseName (ps.getRefName());
+			dep.addBaseName (ps.getRefName ());
 		}
 		deps.append (dep);
-		std::string v = to_string(i);
+		std::string v = to_string (i);
 		dep.set<size_t> (i);
-		//TODO: use #__ here
+		// TODO: use #__ here
 		dep.setMeta<size_t> ("order", i);
 		++i;
 	}
 
-	std::unordered_set <std::string> addedDeps;
+	std::unordered_set<std::string> addedDeps;
 	for (auto const & ps : toAdd)
 	{
 		std::stringstream ss (pluginDatabase->lookupInfo (ps, "ordering"));
 		std::string order;
 		while (ss >> order)
 		{
-			if (addedDeps.find (order) != addedDeps.end())
+			if (addedDeps.find (order) != addedDeps.end ())
 			{
 				continue;
 			}
 
-			addedDeps.insert(order);
+			addedDeps.insert (order);
 
 			// check if dependency is relevant (occurs in KeySet)
 			for (auto const & self : deps)
 			{
 				const size_t jumpSlash = 1;
-				std::string n = self.getName();
-				std::string name (n.begin ()+jumpSlash, n.end ());
+				std::string n = self.getName ();
+				std::string name (n.begin () + jumpSlash, n.end ());
 
 				bool hasProvides = false;
 				/* TODO: should also take care of provides
@@ -145,15 +145,14 @@ void BackendBuilder::sort ()
 				}
 				*/
 
-				if (std::equal (order.begin (), order.end (), name.begin ()) ||
-					hasProvides)
+				if (std::equal (order.begin (), order.end (), name.begin ()) || hasProvides)
 				{
 					// is relevant, add this instance of dep to every other key
 					// add reverse dep of every key to self
 					for (auto const & k : deps)
 					{
 						if (k == self) continue;
-						ckdb::elektraMetaArrayAdd (*self, "dep", (k.getName()).c_str());
+						ckdb::elektraMetaArrayAdd (*self, "dep", (k.getName ()).c_str ());
 					}
 				}
 			}
@@ -161,13 +160,13 @@ void BackendBuilder::sort ()
 	}
 
 	// now sort by the given topology
-	std::vector <ckdb::Key*> ordered;
-	ordered.resize (deps.size());
+	std::vector<ckdb::Key *> ordered;
+	ordered.resize (deps.size ());
 	int ret = elektraSortTopology (deps.getKeySet (), &ordered[0]);
-	if (ret == 0) throw CyclicOrderingViolation();
-	if (ret == -1) throw std::logic_error("elektraSortTopology was used wrongly");
+	if (ret == 0) throw CyclicOrderingViolation ();
+	if (ret == -1) throw std::logic_error ("elektraSortTopology was used wrongly");
 
-	PluginSpecVector copy(toAdd);
+	PluginSpecVector copy (toAdd);
 
 	// now swap everything in toAdd as we have the indizes given in ordered
 	i = 0;

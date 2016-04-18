@@ -543,16 +543,16 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	{
 		if (errno == ENOENT)
 		{
-			ELEKTRA_SET_ERRORF(30, parentKey, "The configuration file \"%s\" was there earlier, "
-				"now it is missing",
-				pk->filename);
+			ELEKTRA_SET_ERRORF (30, parentKey,
+					    "The configuration file \"%s\" was there earlier, "
+					    "now it is missing",
+					    pk->filename);
 			return -1;
 		}
 		else if (pk->fd == -1)
 		{
 			ELEKTRA_SET_ERRORF (26, parentKey, "Could not reopen configuration file \"%s\" for writing because %s",
-					pk->filename,
-					strerror(errno));
+					    pk->filename, strerror (errno));
 			return -1;
 		}
 		// successfully reopened
@@ -567,9 +567,10 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (errno == EEXIST)
 		{
-			ELEKTRA_SET_ERRORF(30, parentKey, "No configuration file was there earlier, "
-				"now configuration file \"%s\" exists",
-				pk->filename);
+			ELEKTRA_SET_ERRORF (30, parentKey,
+					    "No configuration file was there earlier, "
+					    "now configuration file \"%s\" exists",
+					    pk->filename);
 			return -1;
 		}
 
@@ -597,9 +598,7 @@ static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 
 	if (pk->fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (26, parentKey, "Could not create configuration file \"%s\" because %s",
-				pk->filename,
-				strerror(errno));
+		ELEKTRA_SET_ERRORF (26, parentKey, "Could not create configuration file \"%s\" because %s", pk->filename, strerror (errno));
 		return -1;
 	}
 	return 0;

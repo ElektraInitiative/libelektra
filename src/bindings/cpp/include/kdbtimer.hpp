@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <numeric>
+#include <sstream>
 #include <string>
 #include <sys/time.h>
 
@@ -25,8 +25,8 @@ public:
 	enum option_t
 	{
 		raw_data_cerr, ///< print name,data\n (default!)
-		median_cerr, ///< print name,median\n
-		quiet, ///< print nothing
+		median_cerr,   ///< print name,median\n
+		quiet,	 ///< print nothing
 	};
 
 	// functions
@@ -43,7 +43,7 @@ public:
 		result += end.tv_usec - begin.tv_usec;
 		results.push_back (result);
 	}
-	std::string getMedian() const;
+	std::string getMedian () const;
 	Timer (std::string name, option_t option = raw_data_cerr);
 	~Timer (); // print csv table at end
 
@@ -64,7 +64,7 @@ inline Timer::Timer (std::string name_, option_t option_) : begin (), end (), re
 
 inline Timer::~Timer ()
 {
-	switch(option)
+	switch (option)
 	{
 	case raw_data_cerr:
 		for (auto result : results)
@@ -81,27 +81,21 @@ inline Timer::~Timer ()
 		}
 		break;
 	case median_cerr:
-		std::cerr << name << "," << getMedian() << std::endl;
+		std::cerr << name << "," << getMedian () << std::endl;
 		break;
 	case quiet:
 		break;
 	}
 }
 
-std::string Timer::getMedian() const
+std::string Timer::getMedian () const
 {
 	Timer::results_t md = results;
-	nth_element(md.begin(),
-				md.begin()+md.size()/2, 
-				md.end());
-	Timer::timer_t r=*(md.begin()+md.size()/2);
+	nth_element (md.begin (), md.begin () + md.size () / 2, md.end ());
+	Timer::timer_t r = *(md.begin () + md.size () / 2);
 	std::ostringstream os;
-	os  <<  r / Timer::usec_factor
-		<< "."
-		<< std::setw(6)
-		<< std::setfill('0')
-		<< r % Timer::usec_factor;
-	return os.str();
+	os << r / Timer::usec_factor << "." << std::setw (6) << std::setfill ('0') << r % Timer::usec_factor;
+	return os.str ();
 }
 
 

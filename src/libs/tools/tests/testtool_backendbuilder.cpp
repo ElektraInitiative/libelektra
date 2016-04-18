@@ -63,7 +63,6 @@ TEST (BackendBuilder, withDatabaseIrrelevantDep)
 }
 
 
-
 TEST (MountBackendBuilder, basicAddRem)
 {
 	using namespace kdb;
@@ -151,7 +150,8 @@ TEST (MountBackendBuilder, allSort)
 		return;
 	}
 
-	std::vector<std::string> permutation = { "augeas", "glob", "keytometa", "resolver"
+	std::vector<std::string> permutation = {
+		"augeas", "glob", "keytometa", "resolver"
 		// , "type", "validation"
 	};
 

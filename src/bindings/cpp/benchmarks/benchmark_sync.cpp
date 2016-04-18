@@ -30,19 +30,14 @@ kdb::ThreadInteger::type add_contextual (kdb::ThreadInteger const & i1, kdb::Thr
 }
 
 std::unique_ptr<Timer> tSync[10]{
-	std::unique_ptr<Timer>(new Timer ("layer sync0", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync1", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync2", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync3", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync4", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync5", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync6", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync7", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync8", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer sync9", Timer::quiet))
-	};
+	std::unique_ptr<Timer> (new Timer ("layer sync0", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("layer sync1", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("layer sync2", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("layer sync3", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("layer sync4", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("layer sync5", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("layer sync6", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("layer sync7", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("layer sync8", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("layer sync9", Timer::quiet))
+};
 
-std::vector<std::shared_ptr<kdb::ThreadInteger>> createCV(kdb::KeySet & ks, kdb::ThreadContext & tc, int N)
+std::vector<std::shared_ptr<kdb::ThreadInteger>> createCV (kdb::KeySet & ks, kdb::ThreadContext & tc, int N)
 {
 	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi;
 	for (long long i = 0; i < N; ++i)
@@ -72,13 +67,13 @@ __attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
 	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV (ks, tc, N);
 
 	Timer & t = *tSync[N];
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		tc.sync();
+		tc.sync ();
 		x ^= add_contextual (ti, ti);
 	}
 	t.stop ();
@@ -86,18 +81,16 @@ __attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
 	dump << t.name << x << std::endl;
 }
 
-std::unique_ptr<Timer> tReload[10]{
-	std::unique_ptr<Timer>(new Timer ("layer reload0", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload1", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload2", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload3", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload4", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload5", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload6", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload7", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload8", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer reload9", Timer::quiet))
-	};
+std::unique_ptr<Timer> tReload[10]{ std::unique_ptr<Timer> (new Timer ("layer reload0", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload1", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload2", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload3", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload4", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload5", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload6", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload7", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload8", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer reload9", Timer::quiet)) };
 
 __attribute__ ((noinline)) void benchmark_kdb_reloadN (long long N)
 {
@@ -118,19 +111,19 @@ __attribute__ ((noinline)) void benchmark_kdb_reloadN (long long N)
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV (ks, tc, N);
 
 	Timer & t = *tReload[N];
 
 	std::vector<kdb::KDB> kdbx;
-	kdbx.resize(iterations); // really expensive operation, but need to be clean for every benchmark
+	kdbx.resize (iterations); // really expensive operation, but need to be clean for every benchmark
 
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
 		// kdb.set(ks, "/test");
-		kdbx[i].get(ks, "/test");
-		tc.sync();
+		kdbx[i].get (ks, "/test");
+		tc.sync ();
 		x ^= add_contextual (ti, ti);
 	}
 	t.stop ();
@@ -139,38 +132,35 @@ __attribute__ ((noinline)) void benchmark_kdb_reloadN (long long N)
 }
 
 
-
-template<int N>
+template <int N>
 class Layer : public kdb::Layer
 {
 public:
 	std::string id () const override
 	{
-		std::string ret("layerX");
-		ret[5] = ('0'+N);
+		std::string ret ("layerX");
+		ret[5] = ('0' + N);
 		return ret;
 	}
 	std::string operator() () const override
 	{
-		std::string ret("X");
-		ret[0] = '0'+N;
+		std::string ret ("X");
+		ret[0] = '0' + N;
 		return ret;
 	}
 };
 
 
-std::unique_ptr<Timer> tSwitch[10]{
-	std::unique_ptr<Timer>(new Timer ("layer switch0", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch1", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch2", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch3", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch4", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch5", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch6", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch7", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch8", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("layer switch9", Timer::quiet))
-	};
+std::unique_ptr<Timer> tSwitch[10]{ std::unique_ptr<Timer> (new Timer ("layer switch0", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch1", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch2", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch3", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch4", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch5", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch6", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch7", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch8", Timer::quiet)),
+				    std::unique_ptr<Timer> (new Timer ("layer switch9", Timer::quiet)) };
 
 __attribute__ ((noinline)) void benchmark_layer_switchN (long long N)
 {
@@ -181,22 +171,22 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (long long N)
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV (ks, tc, N);
 
 	Timer & t = *tSwitch[N];
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		if (N>0) tc.activate<Layer<0>> ();
-		if (N>1) tc.activate<Layer<1>> ();
-		if (N>2) tc.activate<Layer<2>> ();
-		if (N>3) tc.activate<Layer<3>> ();
-		if (N>4) tc.activate<Layer<4>> ();
-		if (N>5) tc.activate<Layer<5>> ();
-		if (N>6) tc.activate<Layer<6>> ();
-		if (N>7) tc.activate<Layer<7>> ();
-		if (N>8) tc.activate<Layer<8>> ();
-		if (N>9) tc.activate<Layer<9>> ();
+		if (N > 0) tc.activate<Layer<0>> ();
+		if (N > 1) tc.activate<Layer<1>> ();
+		if (N > 2) tc.activate<Layer<2>> ();
+		if (N > 3) tc.activate<Layer<3>> ();
+		if (N > 4) tc.activate<Layer<4>> ();
+		if (N > 5) tc.activate<Layer<5>> ();
+		if (N > 6) tc.activate<Layer<6>> ();
+		if (N > 7) tc.activate<Layer<7>> ();
+		if (N > 8) tc.activate<Layer<8>> ();
+		if (N > 9) tc.activate<Layer<9>> ();
 		x ^= add_contextual (ti, ti);
 	}
 	t.stop ();
@@ -205,17 +195,12 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (long long N)
 }
 
 std::unique_ptr<Timer> tCV[10]{
-	std::unique_ptr<Timer>(new Timer ("CV switch0", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch1", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch2", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch3", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch4", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch5", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch6", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch7", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch8", Timer::quiet)),
-	std::unique_ptr<Timer>(new Timer ("CV switch9", Timer::quiet))
-	};
+	std::unique_ptr<Timer> (new Timer ("CV switch0", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("CV switch1", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("CV switch2", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("CV switch3", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("CV switch4", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("CV switch5", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("CV switch6", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("CV switch7", Timer::quiet)),
+	std::unique_ptr<Timer> (new Timer ("CV switch8", Timer::quiet)), std::unique_ptr<Timer> (new Timer ("CV switch9", Timer::quiet))
+};
 
 __attribute__ ((noinline)) void benchmark_cv_switchN (long long N)
 {
@@ -226,22 +211,22 @@ __attribute__ ((noinline)) void benchmark_cv_switchN (long long N)
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV(ks, tc, N);
+	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV (ks, tc, N);
 
 	Timer & t = *tCV[N];
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		if (N>0) tc.activate (*vi[0]);
-		if (N>1) tc.activate (*vi[1]);
-		if (N>2) tc.activate (*vi[2]);
-		if (N>3) tc.activate (*vi[3]);
-		if (N>4) tc.activate (*vi[4]);
-		if (N>5) tc.activate (*vi[5]);
-		if (N>6) tc.activate (*vi[6]);
-		if (N>7) tc.activate (*vi[7]);
-		if (N>8) tc.activate (*vi[8]);
-		if (N>9) tc.activate (*vi[9]);
+		if (N > 0) tc.activate (*vi[0]);
+		if (N > 1) tc.activate (*vi[1]);
+		if (N > 2) tc.activate (*vi[2]);
+		if (N > 3) tc.activate (*vi[3]);
+		if (N > 4) tc.activate (*vi[4]);
+		if (N > 5) tc.activate (*vi[5]);
+		if (N > 6) tc.activate (*vi[6]);
+		if (N > 7) tc.activate (*vi[7]);
+		if (N > 8) tc.activate (*vi[8]);
+		if (N > 9) tc.activate (*vi[9]);
 		x ^= add_contextual (ti, ti);
 	}
 	t.stop ();
@@ -289,19 +274,19 @@ int main (int argc, char ** argv)
 	{
 		using namespace kdb;
 		std::string testRoot = "/test/";
-		Key parent(testRoot, KEY_END);
+		Key parent (testRoot, KEY_END);
 
 		KDB first;
 		KeySet firstReturned;
-		first.get(firstReturned, parent);
-		firstReturned.append(Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+		first.get (firstReturned, parent);
+		firstReturned.append (Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
 
 		KDB second;
 		KeySet secondReturned;
-		second.get(secondReturned, parent);
-		secondReturned.append(Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+		second.get (secondReturned, parent);
+		secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
 
-		second.set(secondReturned, parent);
+		second.set (secondReturned, parent);
 		// first.set(firstReturned, parent); // exception expected
 	}
 
@@ -316,16 +301,16 @@ int main (int argc, char ** argv)
 		for (int j = 0; j < 10; ++j)
 		{
 			benchmark_layer_syncN (j);
-			benchmark_kdb_reloadN ( j);
+			benchmark_kdb_reloadN (j);
 			benchmark_layer_switchN (j);
 			benchmark_cv_switchN (j);
 		}
 	}
 
-	for (int i = 0; i<10; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
-		std::cerr << i << "," << tSync[i]->getMedian() << "," << tReload[i]->getMedian()  << "," << tSwitch[i]->getMedian() << "," << tCV[i]->getMedian()
-			  << std::endl;
+		std::cerr << i << "," << tSync[i]->getMedian () << "," << tReload[i]->getMedian () << "," << tSwitch[i]->getMedian () << ","
+			  << tCV[i]->getMedian () << std::endl;
 	}
 
 	// data << "value,benchmark" << std::endl;
