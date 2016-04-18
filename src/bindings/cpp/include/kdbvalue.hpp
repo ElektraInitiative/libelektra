@@ -16,6 +16,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <kdbmeta.h>
 #include <map>
 #include <memory>
 #include <set>
@@ -66,6 +67,63 @@ public:
 };
 
 /**
+ * @brief Everything implementing this interface can be used as layer
+ *
+ * Different from "Layer" objects they will not be constructed on activation
+ * but instead only the WrapLayer will be constructed and the wrapped object
+ * will be passed along by reference.
+ *
+ * @note the lifetime must be beyond layer deactivation!
+ */
+class Wrapped
+{
+public:
+	virtual std::string layerId () const = 0;
+	virtual std::string layerVal () const = 0;
+};
+
+class WrapLayer : public Layer
+{
+public:
+	WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
+	{
+	}
+
+	virtual std::string id () const
+	{
+		return m_wrapped.layerId ();
+	}
+
+	virtual std::string operator() () const
+	{
+		return m_wrapped.layerVal ();
+	}
+
+private:
+	Wrapped const & m_wrapped;
+};
+
+class KeyValueLayer : public kdb::Layer
+{
+public:
+	KeyValueLayer (std::string key, std::string value) : m_key (std::move (key)), m_value (std::move (value))
+	{
+	}
+	std::string id () const override
+	{
+		return m_key;
+	}
+	std::string operator() () const override
+	{
+		return m_value;
+	}
+
+private:
+	std::string m_key;
+	std::string m_value;
+};
+
+/**
  * @brief Base class for values to be observed.
  *
  * updateContext() is called whenever a context tells a value that it
@@ -75,7 +133,8 @@ class ValueObserver
 {
 public:
 	virtual ~ValueObserver () = 0;
-	virtual void updateContext () const = 0;
+	virtual void updateContext (bool write = true) const = 0;
+	virtual kdb::Key getDepKey () const = 0;
 
 	typedef std::reference_wrapper<ValueObserver> reference;
 };
@@ -85,7 +144,7 @@ public:
  *
  * @return Comparision result
  */
-bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
+inline bool operator< (ValueObserver const & lhs, ValueObserver const & rhs)
 {
 	return &lhs < &rhs;
 }
@@ -156,6 +215,12 @@ public:
 	 * @return NoContext always returns the same string
 	 */
 	std::string evaluate (std::string const & key_name) const
+	{
+		return key_name;
+	}
+
+	std::string evaluate (std::string const & key_name,
+			      std::function<bool(std::string const &, std::string &, bool in_group)> const &) const
 	{
 		return key_name;
 	}
@@ -353,7 +418,7 @@ public:
 template <typename T, typename PolicySetter1 = DefaultPolicyArgs, typename PolicySetter2 = DefaultPolicyArgs,
 	  typename PolicySetter3 = DefaultPolicyArgs, typename PolicySetter4 = DefaultPolicyArgs,
 	  typename PolicySetter5 = DefaultPolicyArgs, typename PolicySetter6 = DefaultPolicyArgs>
-class Value : public ValueObserver, public ValueSubject
+class Value : public ValueObserver, public ValueSubject, public Wrapped
 {
 public:
 	typedef T type;
@@ -530,6 +595,19 @@ public:
 		return m_key.getName ();
 	}
 
+	std::string layerId () const
+	{
+		const Key meta = m_spec.getMeta<const Key> ("layer/name");
+		if (meta) return meta.getString ();
+		return m_spec.getBaseName ();
+	}
+
+	std::string layerVal () const
+	{
+		return m_key.getString ();
+	}
+
+
 	/**
 	 * @brief Sync key(set) to cache
 	 */
@@ -537,6 +615,7 @@ public:
 	{
 		Command::Func fun = [this]() -> Command::Pair {
 			std::string const & oldKey = m_key.getName ();
+			this->unsafeLookupKey ();
 			this->unsafeSyncCache ();
 			return std::make_pair (oldKey, m_key.getName ());
 		};
@@ -562,15 +641,22 @@ private:
 	void unsafeUpdateKeyUsingContext (std::string const & evaluatedName) const
 	{
 		Key spec (m_spec.dup ());
-		// TODO: change to .setName() once
-		// KEY_CASCADING_NAME is fixed
-		ckdb::elektraKeySetName (*spec, evaluatedName.c_str (), KEY_CASCADING_NAME);
+		spec.setName (evaluatedName);
 		m_key = Policies::GetPolicy::get (m_ks, spec);
 		assert (m_key);
 	}
 
+	void unsafeLookupKey () const
+	{
+		// Key spec (m_spec.dup ());
+		// spec.setName (m_context.evaluate(m_spec.getName()));
+		// m_key = Policies::GetPolicy::get (m_ks, spec);
+		m_key = Policies::GetPolicy::get (m_ks, m_key);
+		assert (m_key);
+	}
+
 	/**
-	 * @brief Execute this method *only* in a Command execution
+	 * @brief Unsafe: Execute this method *only* in a Command execution
 	 */
 	void unsafeSyncCache () const
 	{
@@ -591,9 +677,7 @@ private:
 		{
 			m_hasChanged = false;
 			Key spec (m_spec.dup ());
-			// TODO: change to .setName() once
-			// KEY_CASCADING_NAME is fixed
-			ckdb::elektraKeySetName (*spec, m_key.getName ().c_str (), KEY_CASCADING_NAME);
+			spec.setName (m_key.getName ());
 			m_key = Policies::SetPolicy::set (m_ks, spec);
 		}
 		assert (m_key);
@@ -613,22 +697,26 @@ private:
 	}
 
 
-	virtual void updateContext () const override
+	virtual void updateContext (bool write) const override
 	{
 		std::string evaluatedName = m_context.evaluate (m_spec.getName ());
 #if DEBUG && VERBOSE
-		std::cout << "update context " << evaluatedName << " from " << m_spec.getName () << std::endl;
+		std::cout << "update context " << evaluatedName << " from " << m_spec.getName () << " with write " << write << std::endl;
 #endif
 
-		Command::Func fun = [this, &evaluatedName]() -> Command::Pair {
+		Command::Func fun = [this, &evaluatedName, write]() -> Command::Pair {
 			std::string oldKey = m_key.getName ();
-			if (evaluatedName == oldKey)
+			if (write && evaluatedName == oldKey)
 			{
 				// nothing changed, same name
 				return std::make_pair (evaluatedName, evaluatedName);
 			}
 
-			this->unsafeSyncKeySet (); // flush out what currently is in cache
+			if (write)
+			{
+				this->unsafeSyncKeySet (); // flush out what currently is in cache
+			}
+
 			this->unsafeUpdateKeyUsingContext (evaluatedName);
 			this->unsafeSyncCache (); // read what we have under new context
 
@@ -636,6 +724,25 @@ private:
 		};
 		Command command (*this, fun);
 		m_context.execute (command);
+	}
+
+	virtual kdb::Key getDepKey () const override
+	{
+		kdb::Key dep ("/" + layerId (), KEY_END);
+		// rename to /layer/order
+		const Key meta = m_spec.getMeta<const Key> ("layer/order");
+		if (meta)
+		{
+			dep.setMeta ("order", meta.getString ());
+		}
+		m_context.evaluate (m_spec.getName (), [&](std::string const & current_id, std::string &, bool) {
+#if DEBUG && VERBOSE
+			std::cout << "add dep " << current_id << " to " << dep.getName () << std::endl;
+#endif
+			ckdb::elektraMetaArrayAdd (*dep, "dep", ("/" + current_id).c_str ());
+			return false;
+		});
+		return dep;
 	}
 
 private:

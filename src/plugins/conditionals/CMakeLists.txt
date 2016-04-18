@@ -1,9 +1,9 @@
 include (LibAddMacros)
 
-add_plugin(conditionals
+add_plugin (conditionals
 	SOURCES
 		conditionals.h
 		conditionals.c
 	)
 
-add_plugintest(conditionals)
+add_plugintest (conditionals)

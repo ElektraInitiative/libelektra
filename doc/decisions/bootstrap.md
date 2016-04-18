@@ -4,7 +4,7 @@
 
 Currently the default backend (default.ecf) will also be used for bootstrapping. There are two problems with this approach:
 
-1. Thus the default backend will first will be read with parentKey `system/elektra` and later with parentKey `system`, it needs to store absolute paths and thus won't work with the current INI plugin
+1. Thus the default backend first will be read with parentKey `system/elektra` and later with parentKey `system`, it needs to store absolute paths and thus won't work with the current INI plugin
 2. When `system` is large without mountpoints, everything is reread twice during bootstrapping.
 
 ## Constraints

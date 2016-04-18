@@ -5,7 +5,8 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 	)
 
-add_definitions(-DGTEST_HAS_PTHREAD=0)
+# needed by TEST_P
+add_definitions(-DGTEST_HAS_PTHREAD=1)
 
 ########################################################################
 #

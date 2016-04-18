@@ -1,0 +1,61 @@
+## Proposal
+
+Security issues triggered by specific entries in
+configuration files become more and more common.
+Especially with the advent of long term support (LTS),
+Debian faces issues that configuration options that were considered
+secure earlier turn out to be problematic.
+Such issues are relevant and quite frequent, for example
+recently in DSA-3517-1 exim4, recurring problems with sudo,
+and sometimes by ciphers which are now considered too weak.
+Currently, Debian provides no user-friendly way to update
+configuration files: It is not clear what the purpose of
+upstream changes are and thus no automatic merging is possible.
+
+In this Google Summer of Code Project we want to introduce a simple way
+for maintainers to specify the relevance of individual configuration options.
+When the specification and the default option changes, a tool
+will merge options to achieve better quality attributes such as security.
+
+For example, we want to increase ServerKeyBits of the openssh-server.
+Thus we specify:
+
+[openssh/sshd/ServerKeyBits]
+default = 2048
+security = (<= 1024) ? (-1000) : (+1000)
+
+Using the conditional expression in security, we now gave ServerKeyBits
+the semantics so that the merge tool knows it should avoid the configuration
+option to be 1024 or below.
+The goal of this Google Summer of Code Project we want to
+extend the Elektra framework to support such specified quality attributes
+and write a tool that allows us to validate such configurations.
+Additionally, we write a specification for important Debian packages such as
+the openssh-server.
+
+## Implementation
+
+[openssh/permit_root_access]
+type = boolean
+check/condition = #quality
+attributes/condition/quality = (true) ? (1000 * ssh/weight_factor_root) : (-5000)
+attributes/condition/security = (true) ? (1000) : (-5000)
+attributes/condition/performance = (true) ? (1000) : (-5000)
+
+## Scope
+
+- conditionals for meta data
+- ssh config parsen
+- git plugin
+- range plugin
+
+
+## Case Study
+
+openssh
+
+With less priority:
+
+kernel config (sysctl.conf)
+nfs exports
+

@@ -12,27 +12,43 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
-## start with
+## libs
+
+make all libs public with soversion
 
 RPATH only where needed (+ where should elektraModulesLoad be?)
 
-api:
-	version rules ELEKTRA_ABI_13 ...
-	include rules to allow elektra/kdb.h
+## cleanup
 
-to one cmake variable:
-	verbose/debug -> logging
-	pdf/on/off -> docu
+elektraRemoveOneLevel
+keyGetParentName
+
+## open
+
+api:
+	version rules ELEKTRA_API 816 ...
+	include rules to allow elektra/kdb.h (needs ELEKTRA_API set)
 
 remove "resolver" resolver
 symlink resolver/storage?
+
+
+## check
+
+array:
+	together with yajl
+	check if its a valid array via metadata
+	spec/array metadaten: array=1-10
+	user/array/#0 -> valid
+	user/array -> invalid
+	system/array/x -> invalid
 
 ## fixes
 
 compiler warnings:
 	key hash warning
 
-add all plugins mem-leak test
+fix all plugins mem-leak test
 
 check meta-data plugins with spec
 
@@ -41,14 +57,30 @@ export/import/editor should use KDB_DEFAULT_STORAGE as default
 check: run reformat and check if something changed
 
 
-#kdb
+## kdb
 
 kdb setmeta with 2 args to remove meta data!
 kdb set --file -F (read from file) reuse import/export?
+kdb gen --commandline .. is not passed correctly
 
 
+
+
+
+
+
+
+
+# 0.8.17
+
+## lazy mountpoints
+
+using list plugin
+so that everything is lazy+arbitrary number of plugins
 
 ## docu
+
+add traceability
 
 make elektra-hierarchy reality:
 	generate errors for spec/elektra/error
@@ -72,20 +104,14 @@ minimal generic description of commandline-options in kdb
 
 ## INI
 
-as default backend (meta?)
+meta as special syntax
 ordering
 comments
 
+
 ## Lua plugin
 
-value transformations
-
-## tools
-
-kdb --profile for its own config
-
-bookmark (+) feature
-
+further value transformations
 
 
 ## cleanup
@@ -97,6 +123,7 @@ core, kdb.. remove useless symbols
 metastorage:
 	keytometa?
 	different plugins?
+
 spec:
 	black/whitelist
 	removal of meta data
@@ -105,6 +132,11 @@ spec:
 
 ## cmake
 
+to one cmake variable:
+	verbose/debug -> logging
+	pdf/on/off -> docu
+
+
 make name(s) of variant and in which folder it is independent
 
 autoadd plugins to PLUGINS? (avoid duplication in ElektraCache)
@@ -112,12 +144,6 @@ autoadd plugins to PLUGINS? (avoid duplication in ElektraCache)
 build all tests also with shared
 
 remove ENABLE_TESTING or BUILD_TESTING
-
-
-## lazy mountpoints
-
-using list plugin
-so that everything is lazy+arbitrary number of plugins
 
 ## types
 
@@ -129,16 +155,12 @@ let json use same types (double, boolean, nothing for string)
 
 create new test cases with shell script recorder
 
-execute all examples to see if they do not crash or memleak
-	assert test cases -> test cases (rename succeed_if)
-
 
 ## other stuff
 
 debian package from upstream 3h
 
 specification checker+application
-	replaces struct+glob
 	type inference with type classes
 	stacking: apply links for whole hierarchy
 	+ vendor overrides (apply additional data to specification)
@@ -153,4 +175,9 @@ type checker plugin redesign: take care of simplicity + working together with ot
 	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
 	copy from thesis
 	look into haskell type classes
+
+
+
+
+
 

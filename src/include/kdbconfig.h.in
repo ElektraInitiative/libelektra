@@ -45,7 +45,7 @@
 
 #define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"
 
-#define ELEKTRA_PLUGINS          "@PLUGINS@"
+#define ELEKTRA_PLUGINS          "@ADDED_PLUGINS@"
 
 #define ELEKTRA_TOOLS            "@TOOLS@"
 

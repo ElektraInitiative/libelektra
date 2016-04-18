@@ -16,6 +16,6 @@ add_plugin(ini
 		elektra-proposal
 	)
 
-install(DIRECTORY ini DESTINATION ${TARGET_TEST_DATA_FOLDER})
+install (DIRECTORY ini DESTINATION ${TARGET_TEST_DATA_FOLDER})
 
 add_plugintest (ini)

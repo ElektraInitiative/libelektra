@@ -64,13 +64,14 @@ int main (int argc, char ** argv)
 		 "kdblib_symbol kdb_exported_syms[] =\n"
 		 "{\n");
 
-	// quite a number of tests still rely on that they can
-	// load a backend called "default"
-	fprintf (f, "\t{\"default\", 0},\n");
+	fprintf (f, "\t{\"resolver\", 0},\n");
 	fprintf (f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[1]);
 
+	fprintf (f, "\t{\"storage\", 0},\n");
+	fprintf (f, "\t{\"elektraPluginSymbol\", &libelektra_%s_LTX_elektraPluginSymbol},\n", argv[2]);
+
 	printf ("Exporting symbols for ");
-	for (i = 1; i < argc; ++i)
+	for (i = 2; i < argc; ++i)
 	{
 		printf ("%s ", argv[i]);
 		fprintf (f, "\t{\"%s\", 0},\n", argv[i]);

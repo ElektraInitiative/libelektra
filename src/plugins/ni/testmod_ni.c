@@ -1,4 +1,4 @@
-/*************************************************************************** 
+/***************************************************************************
  *           testmod_ni.c  - Test suite for nickel ini parser
  ****************************************************************************/
 
@@ -438,8 +438,12 @@ Ni_Free (node);
 #undef NUM_parse_output_NODES
 END_TEST ()
 
-int main ()
+int main (int argc, char ** argv)
 {
+	if (argc >= 1)
+	{
+		argv0 = argv[0];
+	}
 	printf ("NICKEL TESTS\n");
 	printf ("==================\n\n");
 

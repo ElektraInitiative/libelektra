@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-add_plugin(keytometa
+add_plugin (keytometa
 	SOURCES
 		keytometa.h
 		keytometa.c
@@ -9,4 +9,4 @@ add_plugin(keytometa
 		elektra-meta
 	)
 
-add_plugintest(keytometa)
+add_plugintest (keytometa)

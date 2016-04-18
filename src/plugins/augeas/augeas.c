@@ -198,7 +198,7 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAugNodeClb callback, void * callbackData)
 {
 	char * matchPath;
-	asprintf (&matchPath, "%s/*", treePath);
+	asprintf (&matchPath, "%s//*", treePath);
 
 	/* must be non NULL for aug_match to return matches */
 	char ** matches = (char **)1;
@@ -215,9 +215,6 @@ static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAug
 		char * curPath = matches[i];
 
 		result = (*callback) (handle, curPath, callbackData);
-
-		/* handle the subtree */
-		result = foreachAugeasNode (handle, curPath, callback, callbackData);
 
 		if (result < 0) break;
 

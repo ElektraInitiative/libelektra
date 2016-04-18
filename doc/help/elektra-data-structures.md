@@ -325,7 +325,7 @@ and cascading mount points.
 ### Split
 
 So, instead of transforming the trie to a list of backends,
-we introduced a new data structure \intro[Split@\lstinline{Split}]{Split}.
+we introduced a new data structure called `Split`.
 The name `Split` comes from the fact that
 an initial key set is split into many key sets.
 These key sets are stored in the `Split` object.

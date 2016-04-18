@@ -1,24 +1,25 @@
-find_package(SystemdJournal)
+if (DEPENDENCY_PHASE)
+	find_package(SystemdJournal)
 
-if (LIBSYSTEMD_JOURNAL_FOUND)
+	if (LIBSYSTEMD_JOURNAL_FOUND)
 
-	include (LibAddMacros)
+		include (LibAddMacros)
 
-	add_plugin(journald
-		SOURCES
-			journald.h
-			journald.c
-		INCLUDE_DIRECTORIES
-			${LIBSYSTEMD_JOURNAL_INCLUDE_DIR}
-		LINK_LIBRARIES
-			${LIBSYSTEMD_JOURNAL_LIBRARIES}
-		)
+		#add_plugintest (journald)
 
-	#add_plugintest (journald)
+	else (LIBSYSTEMD_JOURNAL_FOUND)
 
-else (LIBSYSTEMD_JOURNAL_FOUND)
+		remove_plugin (journald "systemd-journal not found")
 
-	remove_plugin (journald "systemd-journal not found")
+	endif (LIBSYSTEMD_JOURNAL_FOUND)
+endif ()
 
-endif (LIBSYSTEMD_JOURNAL_FOUND)
-
+add_plugin(journald
+	SOURCES
+		journald.h
+		journald.c
+	INCLUDE_DIRECTORIES
+		${LIBSYSTEMD_JOURNAL_INCLUDE_DIR}
+	LINK_LIBRARIES
+		${LIBSYSTEMD_JOURNAL_LIBRARIES}
+	)

@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-add_plugin(wresolver
+add_plugin (wresolver
 	SOURCES
 		wresolver.h
 		wresolver.c

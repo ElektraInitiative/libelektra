@@ -1,24 +1,53 @@
-include(LibAddPlugin)
+include (LibAddPlugin)
 
-foreach (plugin ${PLUGINS})
-	if (${plugin} MATCHES ".*_.*")
-		message(STATUS "Include Plugin's build variant ${plugin}")
-	else()
-		message(STATUS "Include Plugin ${plugin}")
-		add_subdirectory ("${plugin}")
-	endif()
+generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
+
+set (COLLECTION_PHASE ON)
+set (DEPENDENCY_PHASE OFF)
+set (ADDTESTING_PHASE OFF)
+
+file (GLOB DIRECTORIES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+
+foreach (plugin ${DIRECTORIES})
+	message (STATUS ${plugin})
+	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${plugin} AND NOT ${plugin} STREQUAL CMakeFiles)
+		include ("${plugin}/CMakeLists.txt")
+	endif ()
 endforeach(plugin)
 
-# Check for plugins will be done here, because plugins might
-# remove themselves.
 #
-# Note this is only a sanity check, not if elektra will really
-# work with the chosen set of plugins.
-if (NOT PLUGINS)
-	message (SEND_ERROR "No plugins defined, please set PLUGINS with ccmake")
-else ()
-	generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
-endif (NOT PLUGINS)
+# Now ADDED_DIRECTORIES and ADDED_PLUGINS is modified accordingly
+#
+
+list (SORT ADDED_DIRECTORIES)
+list (REMOVE_DUPLICATES ADDED_DIRECTORIES)
+
+
+set (COLLECTION_PHASE OFF)
+set (DEPENDENCY_PHASE ON)
+set (ADDTESTING_PHASE OFF)
+
+foreach (plugin ${ADDED_DIRECTORIES})
+	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${plugin})
+		add_subdirectory ("${plugin}")
+	else ()
+		message (WARNING "${plugin} is not a valid directory")
+	endif ()
+endforeach(plugin)
+
+
+
+list (FIND ADDED_PLUGINS ${KDB_DEFAULT_STORAGE} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
+endif()
+
+list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
+if (output EQUAL -1)
+	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
+endif()
+
+
 
 #TODO:
 # - symlink for default plugin instead of having it in code?

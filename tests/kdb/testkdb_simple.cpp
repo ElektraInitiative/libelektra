@@ -39,7 +39,6 @@ protected:
 const std::string Simple::configFile = "kdbFile.dump";
 const std::string Simple::testRoot = "/tests/kdb/";
 
-
 TEST_F (Simple, GetNothing)
 {
 	using namespace kdb;

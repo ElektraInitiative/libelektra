@@ -1,6 +1,6 @@
-include(LibAddMacros)
+include (LibAddMacros)
 
-add_plugin(tracer
+add_plugin (tracer
 	SOURCES
 		tracer.h
 		tracer.c

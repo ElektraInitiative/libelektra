@@ -28,6 +28,26 @@ TEST (BackendBuilder, withDatabase)
 	using namespace kdb;
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("a")]["ordering"] = "c";
+	mpd->data[PluginSpec ("b")]["ordering"] = "c";
+	mpd->data[PluginSpec ("c")]["ordering"];
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	bb.addPlugin (PluginSpec ("a"));
+	bb.addPlugin (PluginSpec ("b"));
+	bb.addPlugin (PluginSpec ("c"));
+
+	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("a"));
+	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("b"));
+	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c"));
+}
+
+
+TEST (BackendBuilder, withDatabaseIrrelevantDep)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
 	mpd->data[PluginSpec ("a")]["ordering"] = "d";
 	mpd->data[PluginSpec ("b")]["ordering"] = "d";
 	mpd->data[PluginSpec ("c")]["ordering"];
@@ -36,6 +56,10 @@ TEST (BackendBuilder, withDatabase)
 	bb.addPlugin (PluginSpec ("a"));
 	bb.addPlugin (PluginSpec ("b"));
 	bb.addPlugin (PluginSpec ("c"));
+
+	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("a"));
+	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("b"));
+	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c"));
 }
 
 
@@ -96,6 +120,11 @@ TEST (MountBackendBuilder, basicSort)
 	EXPECT_FALSE (bb.validated ());
 
 	bb.addPlugin (PluginSpec ("augeas"));
+
+	// std::cout << "Solution: ";
+	// for (auto const & p : bb) std::cout << p.getName() << " ";
+	// std::cout << std::endl;
+
 	EXPECT_TRUE (bb.validated ()) << "Reordering not successful?";
 }
 
@@ -111,6 +140,9 @@ TEST (MountBackendBuilder, allSort)
 		b.addPlugin (PluginSpec ("glob"));
 		b.addPlugin (PluginSpec ("keytometa"));
 		b.addPlugin (PluginSpec ("augeas"));
+		// b.addPlugin (PluginSpec ("type"));
+		// b.addPlugin (PluginSpec ("validation"));
+		// b.addPlugin (PluginSpec ("struct", KeySet(Key("user/module", KEY_END), KS_END);
 	}
 	catch (std::exception const & e)
 	{
@@ -118,17 +150,28 @@ TEST (MountBackendBuilder, allSort)
 		return;
 	}
 
-	std::vector<std::string> permutation = { "augeas", "glob", "keytometa", "resolver" };
+	std::vector<std::string> permutation = {
+		"augeas", "glob", "keytometa", "resolver"
+		// , "type", "validation"
+	};
 
 	do
 	{
 		// for (auto const & p : permutation) std::cout << p << " ";
 		// std::cout << std::endl;
+
 		MountBackendBuilder bb;
 		bb.addPlugin (PluginSpec (permutation[0]));
 		bb.addPlugin (PluginSpec (permutation[1]));
 		bb.addPlugin (PluginSpec (permutation[2]));
 		bb.addPlugin (PluginSpec (permutation[3]));
+		// bb.addPlugin (PluginSpec (permutation[4]));
+		// bb.addPlugin (PluginSpec (permutation[5]));
+		// bb.addPlugin (PluginSpec (permutation[6]));
+
+		// std::cout << "Solution: ";
+		// for (auto const & p : bb) std::cout << p.getName() << " ";
+		// std::cout << std::endl;
 		EXPECT_TRUE (bb.validated ()) << "Reordering not successful?";
 	} while (std::next_permutation (permutation.begin (), permutation.end ()));
 }

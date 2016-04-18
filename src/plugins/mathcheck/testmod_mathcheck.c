@@ -36,7 +36,7 @@ static KeySet * create_ks (const char * res, const char * meta)
 
 int main (int argc, char ** argv)
 {
-	printf ("MATHCHECK     TESTS\n");
+	printf ("MATHCHECK	   TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
@@ -68,6 +68,24 @@ int main (int argc, char ** argv)
 	ks = create_ks ("10", "== + bla/val3 '7'");
 	test (ks, 1);
 	ksDel (ks);
+
+	ks = create_ks ("7", "== + bla/nonExisting '7'");
+	test (ks, 1);
+	ksDel (ks);
+
+	ks = create_ks ("7", "== * bla/nonExisting '7'");
+	test (ks, 1);
+	ksDel (ks);
+
+	ks = create_ks ("3", "== + bla/nonExisting + bla/nonExistingToo bla/val3");
+	test (ks, 1) ksDel (ks);
+
+	ks = create_ks ("3", "== / bla/nonExisting / bla/nonExistingToo bla/val3");
+	test (ks, 1) ksDel (ks);
+
+	ks = create_ks ("3", "== + bla/nonExisting / bla/nonExistingToo bla/val3");
+	test (ks, 1) ksDel (ks);
+
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	char buffer[24];

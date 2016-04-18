@@ -50,19 +50,19 @@ checkFailed()
 	exit 1
 }
 
-$KDB export spec dump > "$SPECEXPORT"
+"$KDB" export spec dump > "$SPECEXPORT"
 exit_if_fail "Could not export spec config"
 
-$KDB export dir dump > "$DIREXPORT"
+"$KDB" export dir dump > "$DIREXPORT"
 exit_if_fail "Could not export dir config"
 
-$KDB export user dump > "$USEREXPORT"
+"$KDB" export user dump > "$USEREXPORT"
 exit_if_fail "Could not export user config"
 
-$KDB export system --without-elektra dump > "$SYSTEMEXPORT"
+"$KDB" export system --without-elektra dump > "$SYSTEMEXPORT"
 exit_if_fail "Could not export system config"
 
-$KDB export system/elektra/mountpoints dump > "$MOUNTEXPORT"
+"$KDB" export system/elektra/mountpoints dump > "$MOUNTEXPORT"
 exit_if_fail "Could not export mount config"
 
 for t in test* check*
@@ -71,7 +71,7 @@ do
 	echo
 	echo
 
-	$KDB $t
+	"$KDB" $t
 
 	if [ $? != "0" ]
 	then
@@ -81,19 +81,19 @@ do
 	fi
 	nbTest=$(( $nbTest + 1 ))
 
-	$KDB export spec dump > "$SPECCHECK"
+	"$KDB" export spec dump > "$SPECCHECK"
 	exit_if_fail "Could not export spec config"
 
-	$KDB export dir dump > "$DIRCHECK"
+	"$KDB" export dir dump > "$DIRCHECK"
 	exit_if_fail "Could not export dir config"
 
-	$KDB export user dump > "$USERCHECK"
+	"$KDB" export user dump > "$USERCHECK"
 	exit_if_fail "Could not export user config"
 
-	$KDB export system --without-elektra dump > "$SYSTEMCHECK"
+	"$KDB" export system --without-elektra dump > "$SYSTEMCHECK"
 	exit_if_fail "Could not export system config"
 
-	$KDB export system/elektra/mountpoints dump > "$MOUNTCHECK"
+	"$KDB" export system/elektra/mountpoints dump > "$MOUNTCHECK"
 	exit_if_fail "Could not export mount config"
 
 

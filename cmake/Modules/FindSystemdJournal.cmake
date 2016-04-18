@@ -35,17 +35,18 @@ else (LIBSYSTEMD_JOURNAL_INCLUDE_DIR AND LIBSYSTEMD_ID128_INCLUDE_DIR)
     /usr/local/include
   )
 
-  find_library (LIBSYSTEMD_JOURNAL_LIBRARIES NAMES systemd-journal systemd-id128
+  # try to use the merged library libsystemd
+  find_library (LIBSYSTEMD_JOURNAL_LIBRARIES NAMES systemd
     PATHS
-    ${_LIBSYSTEMD_JOURNAL_PC_LIBDIR}
-    ${_LIBSYSTEMD_ID128_PC_LIBDIR}
+    ${_LIBSYSTEMD_PC_LIBDIR}
   )
 
-  # at least on newer versions of debian the libraries have been merged
+  # if the merged library was not found try to use the old split library
   if (NOT LIBSYSTEMD_JOURNAL_LIBRARIES)
-    find_library (LIBSYSTEMD_JOURNAL_LIBRARIES NAMES systemd
+    find_library (LIBSYSTEMD_JOURNAL_LIBRARIES NAMES systemd-journal systemd-id128
       PATHS
-      ${_LIBSYSTEMD_PC_LIBDIR}
+      ${_LIBSYSTEMD_JOURNAL_PC_LIBDIR}
+      ${_LIBSYSTEMD_ID128_PC_LIBDIR}
     )
   endif (NOT LIBSYSTEMD_JOURNAL_LIBRARIES)
 

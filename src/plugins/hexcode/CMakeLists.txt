@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-add_plugin(hexcode
+add_plugin (hexcode
 	SOURCES
 		hexcode.h
 		hexcode.c

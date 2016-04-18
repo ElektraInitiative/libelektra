@@ -1,4 +1,4 @@
-- infos = All information you want to know are in keys below
+- infos = All information you want to know is in keys below
 - infos/author = Markus Raab <elektra@markus-raab.org>
 - infos/licence = BSD
 - infos/provides = resolver

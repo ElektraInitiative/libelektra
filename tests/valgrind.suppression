@@ -547,6 +547,16 @@
    obj:*libcrypto.so*
    ...
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:re_compile_fastmap_iter.isra.*
+   fun:re_compile_fastmap
+   fun:regcomp
+   fun:elektraValidationSet
+   fun:icase_test
+   fun:main
+}
 
 
 

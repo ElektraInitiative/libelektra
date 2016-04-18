@@ -8,9 +8,10 @@
 
 #include <kdb.h>
 #include <kdbconfig.h>
+#include <kdbease.h>
 #include <kdbmeta.h>
 #include <kdbprivate.h>
-
+#include <kdbproposal.h>
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
@@ -53,7 +54,7 @@
  */
 
 
-/********************************************* 
+/*********************************************
  *    General comment manipulation methods   *
  *********************************************/
 
@@ -68,10 +69,10 @@
  *
  * keyComment() returns "" when there is no keyComment. The reason is
  * @code
-key=keyNew(0);
-keySetComment(key,"");
-keyComment(key); // you would expect "" here
-keyDel(key);
+ key=keyNew(0);
+ keySetComment(key,"");
+ keyComment(key); // you would expect "" here
+ keyDel(key);
  * @endcode
  *
  * See keySetComment() for more information on comments.
@@ -117,8 +118,8 @@ const char * keyComment (const Key * key)
  * For that reason 1 is returned.
  *
  * @code
-char *buffer;
-buffer = elektraMalloc (keyGetCommentSize (key));
+ char *buffer;
+ buffer = elektraMalloc (keyGetCommentSize (key));
 // use this buffer to store the comment
 // pass keyGetCommentSize (key) for maxSize
  * @endcode
@@ -898,6 +899,529 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 	return 0;
 }
 
+
+/**
+ * creates an metadata array or appends another element to an existing metadata array
+ * e.g.
+ * Key *key = keyNew("user/test", KEY_END);
+ * elektraMetaArrayAdd(key, "array", "test0");
+ * key now has "test/#0" with value "test0" as metadata
+ * elektraMetaArrayAdd(key, "array", "test1");
+ * appends "test/#1" with value "test1" to key
+ *
+ * @param key the key the metadata should be added to
+ * @param metaName the name of the metakey array parent
+ * @param value the value of the newly appended metakey
+ */
+
+void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
+{
+	const Key * meta = keyGetMeta (key, metaName);
+	Key * arrayKey;
+	if (!meta)
+	{
+		keySetMeta (key, metaName, "#0");
+		arrayKey = keyDup (keyGetMeta (key, metaName));
+		keySetString (arrayKey, 0);
+		keyAddBaseName (arrayKey, "#");
+	}
+	else
+	{
+		arrayKey = keyDup (meta);
+		keyAddBaseName (arrayKey, keyString (meta));
+	}
+	elektraArrayIncName (arrayKey);
+	keySetMeta (key, keyName (arrayKey), value);
+	keySetMeta (key, metaName, keyBaseName (arrayKey));
+	keyDel (arrayKey);
+}
+/**
+ * creates a KeySet from a MetaKey array.
+ * e.g.
+ * elektraMetaArrayToKS(keyNew ("/a", KEY_VALUE, "b, c",
+ * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
+ * returns a KeySet containing the keys "dep/#0" with value "/b" and "dep/#1" with value "/c"
+ * If no MetaKey array is found, null is returned.
+ * The returned KeySet must be free'd with ksDel
+ *
+ * @returns a keyset containing all the metakeys of the metakey array
+ * @param key the key containing the metakey array
+ * @param metaName the name of the metakey array parent
+ */
+
+KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
+{
+	const Key * meta = keyGetMeta (key, metaName);
+	if (!meta) return NULL;
+
+	KeySet * result = ksNew (0, KS_END);
+
+	if (keyString (meta)[0] != '#')
+	{
+		ksAppendKey (result, (Key *)meta);
+		ksRewind (result);
+		return result;
+	}
+	Key * currentKey = keyDup (meta);
+	keyAddName (currentKey, "#");
+	elektraArrayIncName (currentKey);
+	Key * curMeta = NULL;
+	while ((curMeta = (Key *)keyGetMeta (key, keyName (currentKey))) != NULL)
+	{
+		ksAppendKey (result, curMeta);
+		elektraArrayIncName (currentKey);
+	}
+	keyDel (currentKey);
+	ksRewind (result);
+	return result;
+}
+
+
+/**
+ * @internal
+ *
+ * elektraSortTopology helper
+ * matrix struct
+ */
+typedef struct
+{
+	Key * key;
+	uint8_t isResolved;
+	unsigned long * deps;
+} _adjMatrix;
+
+/**
+ * @internal
+ *
+ * elektraSortTopology helper
+ * ordering function for qsort
+ */
+static int topCmpOrder (const void * a, const void * b)
+{
+	const Key * ka = (*(const Key **)a);
+	const Key * kb = (*(const Key **)b);
+
+	if (!ka && !kb) return 0;
+	if (ka && !kb) return 1;
+	if (!ka && kb) return -1;
+
+	const Key * kam = keyGetMeta (ka, "order");
+	const Key * kbm = keyGetMeta (kb, "order");
+
+	return strcmp (keyString (kam), keyString (kbm));
+}
+
+
+/**
+ * @internal
+ *
+ * elektraSortTopology helper
+ * returns the index of dependency depKey
+ */
+static int getArrayIndex (Key * depKey, _adjMatrix * adjMatrix, size_t size)
+{
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (!strcmp (keyName (adjMatrix[i].key), keyString (depKey))) return i;
+	}
+	return -1;
+}
+/**
+ * @internal
+ *
+ * elektraSortTopology helper
+ * removes resolved dependency j from our matrix
+ */
+static int resolveDep (unsigned int j, _adjMatrix * adjMatrix, size_t size)
+{
+	int removed = 0;
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (adjMatrix[i].deps[j])
+		{
+			++removed;
+			adjMatrix[i].deps[j] = 0;
+		}
+	}
+	return removed;
+}
+
+/**
+ * @internal
+ *
+ * elektraSortTopology helper
+ * checks if the key with index j has unresolved dependencies
+ */
+static int hasUnresolvedDependencies (unsigned int j, _adjMatrix * adjMatrix, size_t size)
+{
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (adjMatrix[j].deps[i]) return 1;
+	}
+	return 0;
+}
+
+/**
+ * @internal
+ *
+ * elektraSortTopology helper
+ * resolve all dependencies of the key with the index j in our matrix.
+ */
+static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, KeySet * done, Key * orderCounter)
+{
+	unsigned int loops = 0;
+	unsigned int frontier[size];
+	unsigned int todo = 0;
+	for (unsigned int i = 0; i < size; ++i)
+	{
+		if (adjMatrix[j].deps[i])
+		{
+			frontier[i] = 1;
+			++todo;
+		}
+		else
+		{
+			frontier[i] = 0;
+		}
+	}
+	int found = 1;
+
+	// loop until all dependencies are added to frontier
+	while (found)
+	{
+		found = 0;
+		for (unsigned int i = 0; i < size; ++i)
+		{
+			if (!frontier[i]) continue;
+			if (hasUnresolvedDependencies (i, adjMatrix, size))
+			{
+				for (unsigned int k = 0; k < size; ++k)
+				{
+					if (adjMatrix[i].deps[k])
+					{
+						if (!frontier[k])
+						{
+							found = 1;
+							++todo;
+							frontier[k] = 1;
+						}
+					}
+				}
+			}
+		}
+	}
+	if (todo == 0)
+	{
+		// all dependecies are already resolved, give key an order number and add it to
+		// the our list of resolved keys (done)
+		adjMatrix[j].isResolved = 1;
+		resolveDep (j, adjMatrix, size);
+		keySetMeta (adjMatrix[j].key, "order", keyBaseName (orderCounter));
+		elektraArrayIncName (orderCounter);
+		ksAppendKey (done, keyDup (adjMatrix[j].key));
+		return 1;
+	}
+	unsigned int max_loops = todo;
+	for (unsigned int i = 0; todo; ++i)
+	{
+		if (i == size)
+		{
+			++loops;
+			i = 0;
+		}
+		if (loops > max_loops) return -1; // more loops than we had unresolved keys -> cycle
+		if (!frontier[i]) continue;
+		if (!hasUnresolvedDependencies (i, adjMatrix, size))
+		{
+			resolveDep (i, adjMatrix, size);
+			frontier[i] = 0;
+			--todo;
+			adjMatrix[i].isResolved = 1;
+			resolveDep (i, adjMatrix, size);
+			keySetMeta (adjMatrix[i].key, "order", keyBaseName (orderCounter));
+			elektraArrayIncName (orderCounter);
+			ksAppendKey (done, keyDup (adjMatrix[i].key));
+		}
+	}
+	return 1;
+}
+
+/**
+ * elektraSortTopology helper
+ * tests if name is a valid keyname
+ */
+static int isValidKeyName (const char * testName)
+{
+	int retVal = 0;
+	Key * testKey = keyNew (testName, KEY_CASCADING_NAME, KEY_END);
+	if (!strcmp (keyName (testKey), testName)) retVal = 1;
+	keyDel (testKey);
+	return retVal;
+}
+
+/**
+ * @brief topological sorting
+ *
+ * @param array the array where the sorted keys will be stored in topological order.
+ *        Nothing will be written into an array if
+ * @param ks is the keyset that should be sorted.
+ *        Dependencies and order is defined by metakeys.
+ *
+ * - the "dep/#" metakeys
+ *  e.g. the Key *k = keyNew ("/a", KEY_VALUE, "b, c",
+ *  KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
+ *  depends on Key "/b" and Key "/c".
+ * - if "order" metakeys are defined for the keys the algorithm tries to resolves them by that
+ *  order using lexical comparison. You should prefer `#0` array syntax.
+ *
+ * Duplicated and reflexive dep entries are ignored.
+ *
+ * The algorithm used is a mixture of Kahn and BFS.
+ * Furthermore the algorithm does not use recursion.
+ *
+ * First a BFS with the keys sorted by "order" is used.
+ * Then all dependencies (recursively) of every key is collected.
+ *
+ * @retval 1 on success
+ * @retval 0 for cycles
+ * @retval -1 for invalid dependencies
+ */
+
+int elektraSortTopology (KeySet * ks, Key ** array)
+{
+	if (ks == NULL || array == NULL) return -1;
+	KeySet * done = ksNew (0, KS_END);
+	ksRewind (ks);
+	Key * cur;
+	ssize_t size = ksGetSize (ks);
+	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
+	elektraArrayIncName (orderCounter);
+	_adjMatrix adjMatrix[size];
+	int i = 0;
+	int retVal = 1;
+	int depCount = 0;
+	Key ** localArray = elektraMalloc (size * sizeof (Key *));
+	elektraKsToMemArray (ks, localArray);
+	qsort (localArray, size, sizeof (Key *), topCmpOrder);
+	for (long j = 0; j < size; ++j)
+	{
+		adjMatrix[j].key = localArray[j];
+		adjMatrix[j].isResolved = 0;
+		adjMatrix[j].deps = elektraCalloc (sizeof (unsigned long) * size);
+	}
+	i = 0;
+	uint8_t hasOrder = 0;
+	if (keyGetMeta (localArray[0], "order")) hasOrder = 1;
+	unsigned int unresolved = 0;
+	for (int j = 0; j < size; ++j)
+	{
+		cur = localArray[j];
+		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
+		Key * tmpDep;
+		int gotUnresolved = 0;
+		switch (ksGetSize (deps))
+		{
+		case -1:
+		{
+			// key has no dependencies, give it an order number and add it to list of resolved dependencies
+			keySetMeta (cur, "order", keyBaseName (orderCounter));
+			elektraArrayIncName (orderCounter);
+			ksAppendKey (done, keyDup (cur));
+			adjMatrix[j].isResolved = 1;
+			ksDel (deps);
+			break;
+		}
+		case 1:
+		{
+			// only 1 dependency:
+			// test if it's reflexive
+			tmpDep = ksHead (deps);
+			if (!strcmp (keyName (cur), keyString (tmpDep)))
+			{
+				keySetMeta (cur, "order", keyBaseName (orderCounter));
+				elektraArrayIncName (orderCounter);
+				ksAppendKey (done, keyDup (cur));
+				adjMatrix[j].isResolved = 1;
+				ksDel (deps);
+				break;
+			}
+			// if not, fallthrough to normal dependency handling
+		}
+		default:
+		{
+			while ((tmpDep = ksNext (deps)) != NULL)
+			{
+				if (!isValidKeyName (keyString (tmpDep)))
+				{
+					// invalid keyname -> ERROR
+					retVal = -1;
+					break;
+				}
+				i = getArrayIndex (tmpDep, adjMatrix, size);
+				if (i == -1)
+				{
+					// key doesn't exist yet but has valid name, ignore it.
+					continue;
+				}
+				else if (i == j)
+				{
+					// reflexiv depencency, do nothing
+				}
+				else
+				{
+					if (!adjMatrix[i].isResolved)
+					{
+						// unresolved dependency
+						adjMatrix[j].deps[i] = 1;
+						++gotUnresolved;
+						// simple cycle detection
+						if (adjMatrix[i].deps[j])
+						{
+							retVal = 0;
+							break;
+						}
+					}
+				}
+			}
+			if (gotUnresolved)
+			{
+				adjMatrix[j].isResolved = 0;
+				++unresolved;
+				// cound unresolved dependencies
+				depCount += gotUnresolved;
+			}
+			ksDel (deps);
+			break;
+		}
+		}
+		if (retVal <= 0) break;
+	}
+	if (retVal <= 0)
+	{
+		// error or cycle: goto cleanup
+		goto TopSortCleanup;
+	}
+
+	// resolve all dependencies that can be resolved immediately
+	for (int j = 0; j < size; ++j)
+	{
+		if (adjMatrix[j].isResolved) depCount -= resolveDep (j, adjMatrix, size);
+	}
+
+	ssize_t resolved = ksGetSize (done);
+	if (((depCount + resolved) >= size) && (unresolved))
+	{
+		// more dependencies dependencies than keys:
+		//  cycle found !
+		retVal = 0;
+		goto TopSortCleanup;
+	}
+	int found = 1;
+
+	if (unresolved)
+	{
+		// we have unresolved dependencies
+		for (int j = 0; j < size + 1; ++j)
+		{
+			// loop until no dependency can be resolved anymore
+			if (j == size)
+			{
+				if (found)
+				{
+					found = 0;
+					j = -1;
+					unresolved = 0;
+					continue;
+				}
+				else
+					break;
+			}
+			if (adjMatrix[j].isResolved) continue;
+			++unresolved;
+			if (hasOrder)
+			{
+				// resolve by order
+				int ret = resolveDeps (j, adjMatrix, size, done, orderCounter);
+				if (ret == -1) break;
+				j = -1;
+				found = 1;
+				continue;
+			}
+			else
+			{
+				// resolve next possible dependency in keyset
+				if (!hasUnresolvedDependencies (j, adjMatrix, size))
+				{
+					adjMatrix[j].isResolved = 1;
+					resolveDep (j, adjMatrix, size);
+					keySetMeta (localArray[j], "order", keyBaseName (orderCounter));
+					elektraArrayIncName (orderCounter);
+					ksAppendKey (done, keyDup (localArray[j]));
+					found = 1;
+				}
+			}
+		}
+	}
+	if (unresolved == 0)
+	{
+		// everything resolved
+		// add dependencies in topological order to array
+		elektraKsToMemArray (ks, array);
+		qsort (array, size, sizeof (Key *), topCmpOrder);
+		retVal = 1;
+	}
+	else
+	{
+		// still unresolved dependencies left:
+		// there must be a cycle somewhere
+		retVal = 0;
+	}
+TopSortCleanup:
+	ksDel (done);
+	keyDel (orderCounter);
+	elektraFree (localArray);
+	for (unsigned int j = 0; j < size; ++j)
+	{
+		elektraFree (adjMatrix[j].deps);
+	}
+	return retVal;
+}
+
+/**
+ * returns the metakey array as a string separated by delim
+ * 
+ * @param key the key containing the metakey array
+ * @param metaName the name of the metakey array parent
+ * @param delim delimiter for the records in the returned string
+ *
+ * @returns a string containing all metakey values separated by "delim"
+ */
+
+char * elektraMetaArrayToString (Key * key, const char * metaName, const char * delim)
+{
+	char * result = NULL;
+	Key * lookupElem = keyDup (keyGetMeta (key, metaName));
+	keyAddBaseName (lookupElem, "#0");
+	Key * elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	if (elem != NULL)
+	{
+		elektraRealloc ((void **)&result, keyGetValueSize (elem));
+		snprintf (result, keyGetValueSize (elem), "%s", keyString (elem));
+	}
+	elektraArrayIncName (lookupElem);
+	elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	while (elem != NULL)
+	{
+		elektraRealloc ((void **)&result,
+				elektraStrLen (result) + keyGetValueSize (elem) + 1); // String (incl. +2 times \0) + delimiter + whitespace
+		strcat (result, delim);
+		strcat (result, keyString (elem));
+		elektraArrayIncName (lookupElem);
+		elem = (Key *)keyGetMeta (key, keyName (lookupElem));
+	}
+	keyDel (lookupElem);
+	return result;
+}
 
 /**
  * @}

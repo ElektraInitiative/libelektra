@@ -3,9 +3,9 @@ kdb-help(1) -- Show man page for elektra tools
 
 ## SYNOPSIS
 
-`kdb help <tool>`
-`kdb --help <tool>`
-`kdb -H <tool>`
+	kdb help <tool>
+	kdb --help <tool>
+	kdb -H <tool>
 
 ## DESCRIPTION
 
@@ -23,8 +23,8 @@ invocation. If you want that use `--help` or `-H` after `<tool>`.
 
 ## EXAMPLES
 
-Show how to set keys:  
+Show how to set keys:
 `kdb help set`
 
-Use the info program as man page viewer for the current user:  
+Use the info program as man page viewer for the current user:
 `kdb set user/sw/elektra/kdb/#0/current/man /usr/bin/info`

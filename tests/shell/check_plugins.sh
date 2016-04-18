@@ -29,10 +29,10 @@ do
 	[ $WC -eq 1 ]
 	succeed_if "Your plugin $PLUGIN does not have an entry ^- [$PLUGIN]($PLUGIN)$ in $README"
 
-	CACHE=@CMAKE_SOURCE_DIR@/cmake/ElektraCache.cmake
-	WC=`grep "^	$PLUGIN$" "$CACHE"  | wc -l`
-	[ $WC -eq 1 ]
-	succeed_if "Your plugin $PLUGIN does not have an entry ^<tab>$PLUGIN$ in $CACHE"
+	#CACHE=@CMAKE_SOURCE_DIR@/cmake/ElektraCache.cmake
+	#WC=`grep "^	$PLUGIN$" "$CACHE"  | wc -l`
+	#[ $WC -eq 1 ]
+	#succeed_if "Your plugin $PLUGIN does not have an entry ^<tab>$PLUGIN$ in $CACHE"
 
 	if [ $PLUGIN != doc ]; then
 		check_wrong_export GET $PLUGIN_DIR
