@@ -453,13 +453,13 @@ TYPED_TEST (test_contextual_basic, groups)
 	String s (ks, c, Key ("/%x%", KEY_CASCADING_NAME, KEY_META, "default", "anonymous", KEY_END));
 	c.template activate<ProfileLayer> (s);
 	ASSERT_EQ (i.getName (), "/main/%/%/serial_number");
-	c.template activate ("version", "1");
+	c.activate ("version", "1");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
-	c.template activate ("module", "M1");
+	c.activate ("module", "M1");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
-	c.template activate ("manufacturer", "hp");
+	c.activate ("manufacturer", "hp");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
-	c.template activate ("family", "EliteBook");
+	c.activate ("family", "EliteBook");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
 	c.template activate<KeyValueLayer> ("type", "MobileWorkstation");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
@@ -507,7 +507,7 @@ TYPED_TEST (test_contextual_basic, wrapped)
 	TypeParam c = this->context;
 	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ (i.getName (), "/%/key");
-	c.template activate (myId ());
+	c.activate (myId ());
 	ASSERT_EQ (i.getName (), "/my/key");
 }
 
@@ -524,13 +524,13 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 
 	ASSERT_EQ (x.getName (), "/%/key");
 	ASSERT_TRUE (ks.lookup ("/%/key"));
-	c.template activate (i);
+	c.activate (i);
 	ASSERT_EQ (x.getName (), "/my/key");
 	ASSERT_TRUE (ks.lookup ("/my/key"));
 
 	ks.append (Key ("/other/key", KEY_VALUE, "88", KEY_END));
 	i = "other";
-	c.template activate (i);
+	c.activate (i);
 	ASSERT_EQ (x.getName (), "/other/key");
 	ASSERT_TRUE (ks.lookup ("/other/key"));
 	ASSERT_EQ (x, 88);
@@ -553,7 +553,7 @@ TYPED_TEST (test_contextual_basic, cvWrappedInt)
 	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
 
 	ASSERT_EQ (x.getName (), "/%/key");
-	c.template activate (i);
+	c.activate (i);
 	ASSERT_EQ (x.getName (), "/88/key");
 }
 
