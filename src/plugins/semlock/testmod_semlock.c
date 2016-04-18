@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for lock plugin
+ * @brief Tests for semlock plugin
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -18,9 +18,9 @@ static void test_OpenClose ()
 {
 	printf ("test Open & Close\n");
 
-	Key * parentKey = keyNew ("user/tests/lock", KEY_END);
+	Key * parentKey = keyNew ("user/tests/semlock", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("lock");
+	PLUGIN_OPEN ("semlock");
 
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
@@ -30,9 +30,9 @@ static void test_GetSet ()
 {
 	printf ("test Get & Set\n");
 
-	Key * parentKey = keyNew ("user/tests/lock", KEY_END);
+	Key * parentKey = keyNew ("user/tests/semlock", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("lock");
+	PLUGIN_OPEN ("semlock");
 
 	KeySet * ks = ksNew (0, KS_END);
 
@@ -50,7 +50,7 @@ static void test_GetSet ()
 
 int main (int argc, char ** argv)
 {
-	printf ("LOCK     TESTS\n");
+	printf ("SEMLOCK     TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
@@ -58,7 +58,7 @@ int main (int argc, char ** argv)
 	test_OpenClose ();
 	test_GetSet ();
 
-	printf ("\ntestmod_lock RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntestmod_semlock RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

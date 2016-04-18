@@ -1,13 +1,13 @@
 /**
  * @file
  *
- * @brief Source for lock plugin
+ * @brief Source for semlock plugin
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
-#include "lock.h"
+#include "semlock.h"
 
 #include <kdbhelper.h>
 #include <kdberrors.h>
@@ -54,7 +54,7 @@ static void errorOpen (int error, Key * parentKey)
 	}
 }
 
-int elektraLockOpen (Plugin * handle, Key * errorKey)
+int elektraSemlockOpen (Plugin * handle, Key * errorKey)
 {
 	Data * data = elektraCalloc (sizeof (Data));
 	data->state = PRE;
@@ -84,7 +84,7 @@ int elektraLockOpen (Plugin * handle, Key * errorKey)
 	return 1;
 }
 
-int elektraLockClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int elektraSemlockClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Data * data = elektraPluginGetData (handle);
 	sem_close (data->readCount);
@@ -107,19 +107,19 @@ int elektraLockClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	return 1;
 }
 
-int elektraLockGet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraSemlockGet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/lock"))
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/semlock"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/lock", KEY_VALUE, "lock plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/lock/exports", KEY_END),
-			       keyNew ("system/elektra/modules/lock/exports/open", KEY_FUNC, elektraLockOpen, KEY_END),
-			       keyNew ("system/elektra/modules/lock/exports/close", KEY_FUNC, elektraLockClose, KEY_END),
-			       keyNew ("system/elektra/modules/lock/exports/get", KEY_FUNC, elektraLockGet, KEY_END),
-			       keyNew ("system/elektra/modules/lock/exports/set", KEY_FUNC, elektraLockSet, KEY_END),
-#include ELEKTRA_README (lock)
-			       keyNew ("system/elektra/modules/lock/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			ksNew (30, keyNew ("system/elektra/modules/semlock", KEY_VALUE, "semlock plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/semlock/exports", KEY_END),
+			       keyNew ("system/elektra/modules/semlock/exports/open", KEY_FUNC, elektraSemlockOpen, KEY_END),
+			       keyNew ("system/elektra/modules/semlock/exports/close", KEY_FUNC, elektraSemlockClose, KEY_END),
+			       keyNew ("system/elektra/modules/semlock/exports/get", KEY_FUNC, elektraSemlockGet, KEY_END),
+			       keyNew ("system/elektra/modules/semlock/exports/set", KEY_FUNC, elektraSemlockSet, KEY_END),
+#include ELEKTRA_README (semlock)
+			       keyNew ("system/elektra/modules/semlock/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -160,7 +160,7 @@ int elektraLockGet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * par
 	return 1; // success
 }
 
-int elektraLockSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraSemlockSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	Data * data = elektraPluginGetData (handle);
 	if (!data->state)
@@ -196,13 +196,13 @@ int elektraLockSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * par
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (lock)
+Plugin * ELEKTRA_PLUGIN_EXPORT (semlock)
 {
 	// clang-format off
-	return elektraPluginExport ("lock",
-		ELEKTRA_PLUGIN_OPEN,	&elektraLockOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraLockClose,
-		ELEKTRA_PLUGIN_GET,	&elektraLockGet,
-		ELEKTRA_PLUGIN_SET,	&elektraLockSet,
+	return elektraPluginExport ("semlock",
+		ELEKTRA_PLUGIN_OPEN,	&elektraSemlockOpen,
+		ELEKTRA_PLUGIN_CLOSE,	&elektraSemlockClose,
+		ELEKTRA_PLUGIN_GET,	&elektraSemlockGet,
+		ELEKTRA_PLUGIN_SET,	&elektraSemlockSet,
 		ELEKTRA_PLUGIN_END);
 }

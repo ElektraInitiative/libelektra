@@ -1,12 +1,12 @@
 find_package(Threads)
 include (LibAddMacros)
 
-add_plugin (lock
+add_plugin (semlock
 	SOURCES
-		lock.h
-		lock.c
+		semlock.h
+		semlock.c
 	LINK_LIBRARIES
 		${CMAKE_THREAD_LIBS_INIT}
 	)
 
-add_plugintest (lock)
+add_plugintest (semlock)

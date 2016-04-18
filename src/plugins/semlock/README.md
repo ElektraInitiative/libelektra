@@ -1,4 +1,4 @@
-- infos = Information about the lock plugin is in keys below
+- infos = Information about the semlock plugin is in keys below
 - infos/author = Kurt Micheli <kurt.micheli@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
@@ -7,9 +7,9 @@
 - infos/status = maintained global
 - infos/description =
 
-## LOCK ##
+## SEMLOCK ##
 
-This global lock plugin introduces a read lock while `GET` and a read/write lock
+This global semlock plugin introduces a read lock while `GET` and a read/write lock
 while `SET`.
 
 A semaphore is used for the synchronisation and the implemented algorithm favors the writer,

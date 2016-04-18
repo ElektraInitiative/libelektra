@@ -853,7 +853,7 @@ ingroup:plugin
 module:shell
 
 number:145
-description:lock plugin error
+description:semlock plugin error
 severity:error
 ingroup:plugin
-module:lock
+module:semlock
