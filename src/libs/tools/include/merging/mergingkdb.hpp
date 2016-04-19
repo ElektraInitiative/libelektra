@@ -25,9 +25,10 @@ namespace merging
  * Provides a merging wrapper around a KDB instance. The wrapper allows to pass
  * a three way merger instance that is used to resolve conflicts during KDB set.
  */
-class MergingKDB {
+class MergingKDB : KDB{
 public:
-	MergingKDB(KDB * kdb) : innerKdb(kdb) { }
+	MergingKDB() { }
+	MergingKDB(KDB & kdb) : KDB(kdb) { }
 	~MergingKDB() { }
 
 	/**
@@ -35,23 +36,26 @@ public:
 	 *
 	 * @see KDB
 	 */
-	virtual int get (KeySet & returned, std::string const & keyname);
+	int get (KeySet & returned, std::string const & keyname) override;
 
 	/**
 	 * Behaves like the KDB get function
 	 *
 	 * @see KDB
 	 */
-	virtual int get (KeySet & returned, Key & parentKey);
+	int get (KeySet & returned, Key & parentKey) override;
 
 	/**
+	 * Synchronizes the file with the supplied KeySet.
 	 * If a conflict occurs during set, the supplied merger is used to resolve the conflict.
-	 * If the conflict cannot be solved, an exception is thrown.
+	 * If the conflict cannot be solved, an exception is thrown. If the KeySet was successfully
+	 * written (either by merging or due the absence of a conflict) the supplied KeySet is updated
+	 * with the new content of the file.
 	 *
 	 * @see KDB
 	 * @throws MergingKDBException
 	 */
-	virtual int set (KeySet & returned, std::string const & keyname, ThreeWayMerge & merger);
+	virtual int synchronize (KeySet & returned, std::string const & keyname, ThreeWayMerge & merger);
 
 	/**
 	 * If a conflict occurs during set, the supplied merger is used to resolve the conflict.
@@ -62,17 +66,16 @@ public:
 	 * @see KDB
 	 * @throws MergingKDBException
 	 */
-	virtual int set (KeySet & returned, Key & parentKey, ThreeWayMerge & merger);
+	virtual int synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge & merger);
 
 private:
-	KDB * innerKdb;
 	KeySet base;
 };
 
-class MergingKDBException : public Exception
+class MergingKDBException : public KDBException
 {
 public:
-	MergingKDBException (Key key, KeySet conflicts) : m_key (key), m_conflicts(conflicts)
+	MergingKDBException (Key key, KeySet conflicts) : KDBException(key), m_conflicts(conflicts)
 	{
 	}
 
@@ -90,7 +93,6 @@ public:
 	}
 
 private:
-	Key m_key;
 	KeySet m_conflicts;
 };
 

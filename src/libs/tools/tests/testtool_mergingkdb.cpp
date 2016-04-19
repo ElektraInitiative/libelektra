@@ -26,7 +26,6 @@ protected:
 	static const std::string configFile;
 
 	KDB first;
-	KDB second;
 
 	KeySet firstReturned;
 	KeySet secondReturned;
@@ -39,7 +38,7 @@ protected:
 	testing::Namespaces namespaces;
 	testing::MountpointPtr mp;
 
-	MergingKDBTest () : parent(testRoot, KEY_END), mergingKDB(&second), namespaces ()
+	MergingKDBTest () : parent (testRoot, KEY_END), mergingKDB (), namespaces ()
 	{
 		clearConfigFile();
 	}
@@ -75,7 +74,7 @@ TEST_F (MergingKDBTest, HandlesUnconflictingKeySets)
 
 	mergingKDB.get (secondReturned, parent);
 	secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-	mergingKDB.set (secondReturned, parent, merger);
+	mergingKDB.synchronize (secondReturned, parent, merger);
 }
 
 TEST_F (MergingKDBTest, ThrowsIfNoConflictStrategyRegistered)
@@ -88,7 +87,7 @@ TEST_F (MergingKDBTest, ThrowsIfNoConflictStrategyRegistered)
 	first.set (firstReturned, parent);
 
 	secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
-	EXPECT_THROW (mergingKDB.set (secondReturned, parent, merger), MergingKDBException);
+	EXPECT_THROW (mergingKDB.synchronize (secondReturned, parent, merger), MergingKDBException);
 }
 
 TEST_F (MergingKDBTest, MergesResolvableConflicts)
@@ -106,7 +105,7 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 
 	Key key2 ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END);
 	secondReturned.append (key2);
-	mergingKDB.set (secondReturned, parent, merger);
+	mergingKDB.synchronize (secondReturned, parent, merger);
 
 	first.get (firstReturned, parent);
 	Key resultKey1 = firstReturned.lookup("system" + testRoot + "key1");

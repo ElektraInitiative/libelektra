@@ -27,8 +27,6 @@
 
 class Visitor;
 
-using namespace kdb::tools::merging;
-
 /**
  * @brief The TreeViewModel class. It holds ConfigNodes.
  */
@@ -69,7 +67,7 @@ public:
 	 * @brief Constructor for root node.
 	 * @param parentModel An optional parent.
 	 */
-	explicit TreeViewModel (kdb::KDB * kdb, QObject * parentModel = nullptr);
+	explicit TreeViewModel (kdb::KDB & kdb, QObject * parentModel = nullptr);
 
 	/**
 	 * @brief The mandatory copy constructor.
@@ -291,9 +289,8 @@ public:
 private:
 	QList<ConfigNodePtr> m_model;
 	kdb::Key m_root;
-	kdb::KDB * m_kdb;   // only held by root node of TreeViewModel
 	kdb::Key m_metaModelParent;
-	MergingKDB mergingKdb;
+	kdb::tools::merging::MergingKDB mergingKdb;
 	/**
 	 * @brief Returns a MergeConflictStrategy object based on the name of the MergeConflictStrategy.
 	 * @param mergeStrategy The name of the MergeConflictStrategy.

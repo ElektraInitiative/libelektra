@@ -20,33 +20,33 @@ namespace merging
 
 int MergingKDB::get (KeySet & returned, std::string const & keyname)
 {
-	int ret = innerKdb->get(returned, keyname);
+	int ret = KDB::get(returned, keyname);
 	base = returned.dup();
 	return ret;
 }
 
 int MergingKDB::get (KeySet & returned, Key & parentKey)
 {
-	int ret = innerKdb->get(returned, parentKey);
+	int ret = KDB::get(returned, parentKey);
 	base = returned.dup();
 	return ret;
 }
 
-int MergingKDB::set (KeySet & returned, std::string const & keyname, ThreeWayMerge & merger)
+int MergingKDB::synchronize (KeySet & returned, std::string const & keyname, ThreeWayMerge & merger)
 {
 	Key parentKey (keyname.c_str (), KEY_CASCADING_NAME, KEY_END);
-	return set(returned, parentKey, merger);
+	return synchronize(returned, parentKey, merger);
 }
 
-int MergingKDB::set (KeySet & returned, Key & parentKey, ThreeWayMerge & merger)
+int MergingKDB::synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge & merger)
 {
 	try
 	{
 		// write our config
-		int ret = innerKdb->set (returned, parentKey);
+		int ret = KDB::set (returned, parentKey);
 
 		// update our config (if no conflict)
-		innerKdb->get (returned, parentKey);
+		KDB::get (returned, parentKey);
 
 		return ret;
 	}
@@ -56,7 +56,7 @@ int MergingKDB::set (KeySet & returned, Key & parentKey, ThreeWayMerge & merger)
 
 		// refresh the key database
 		KeySet theirs = returned.dup ();
-		innerKdb->get (theirs, parentKey);
+		KDB::get (theirs, parentKey);
 
 		// try to merge
 		MergeResult result = merger.mergeKeySet (MergeTask (
@@ -68,7 +68,7 @@ int MergingKDB::set (KeySet & returned, Key & parentKey, ThreeWayMerge & merger)
 		{
 			// hurray, we solved the issue
 			KeySet resultKeys = result.getMergedKeys ();
-			int ret = innerKdb->set (resultKeys, parentKey);
+			int ret = KDB::set (resultKeys, parentKey);
 			base = resultKeys;
 			return ret;
 		}
