@@ -25,11 +25,18 @@ namespace merging
  * Provides a merging wrapper around a KDB instance. The wrapper allows to pass
  * a three way merger instance that is used to resolve conflicts during KDB set.
  */
-class MergingKDB : KDB{
+class MergingKDB : KDB
+{
 public:
-	MergingKDB() { }
-	MergingKDB(KDB & kdb) : KDB(kdb) { }
-	~MergingKDB() { }
+	MergingKDB ()
+	{
+	}
+	MergingKDB (KDB & kdb) : KDB (kdb)
+	{
+	}
+	~MergingKDB ()
+	{
+	}
 
 	/**
 	 * Behaves like the KDB get function
@@ -75,7 +82,7 @@ private:
 class MergingKDBException : public KDBException
 {
 public:
-	MergingKDBException (Key key, KeySet conflicts) : KDBException(key), m_conflicts(conflicts)
+	MergingKDBException (Key key, KeySet conflicts) : KDBException (key), m_conflicts (conflicts)
 	{
 	}
 
@@ -88,20 +95,17 @@ public:
 		return "Exception while merging conflicting KeySets";
 	}
 
-	KeySet getConflicts() const {
+	KeySet getConflicts () const
+	{
 		return m_conflicts;
 	}
 
 private:
 	KeySet m_conflicts;
 };
-
-
 }
 }
 }
 
 
 #endif /* KDBMERGE_HPP_ */
-
-

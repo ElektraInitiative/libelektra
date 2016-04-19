@@ -20,22 +20,22 @@ namespace merging
 
 int MergingKDB::get (KeySet & returned, std::string const & keyname)
 {
-	int ret = KDB::get(returned, keyname);
-	base = returned.dup();
+	int ret = KDB::get (returned, keyname);
+	base = returned.dup ();
 	return ret;
 }
 
 int MergingKDB::get (KeySet & returned, Key & parentKey)
 {
-	int ret = KDB::get(returned, parentKey);
-	base = returned.dup();
+	int ret = KDB::get (returned, parentKey);
+	base = returned.dup ();
 	return ret;
 }
 
 int MergingKDB::synchronize (KeySet & returned, std::string const & keyname, ThreeWayMerge & merger)
 {
 	Key parentKey (keyname.c_str (), KEY_CASCADING_NAME, KEY_END);
-	return synchronize(returned, parentKey, merger);
+	return synchronize (returned, parentKey, merger);
 }
 
 int MergingKDB::synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge & merger)
@@ -50,7 +50,7 @@ int MergingKDB::synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge &
 
 		return ret;
 	}
-	catch(KDBException const &)
+	catch (KDBException const &)
 	{
 		// a conflict occurred, see if we can solve it with the merger
 
@@ -59,10 +59,8 @@ int MergingKDB::synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge &
 		KDB::get (theirs, parentKey);
 
 		// try to merge
-		MergeResult result = merger.mergeKeySet (MergeTask (
-				BaseMergeKeys (base, parentKey),
-				OurMergeKeys (returned, parentKey),
-				TheirMergeKeys (theirs, parentKey), parentKey));
+		MergeResult result = merger.mergeKeySet (MergeTask (BaseMergeKeys (base, parentKey), OurMergeKeys (returned, parentKey),
+								    TheirMergeKeys (theirs, parentKey), parentKey));
 
 		if (!result.hasConflicts ())
 		{
@@ -76,11 +74,10 @@ int MergingKDB::synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge &
 		{
 			// nothing we can do anymore
 			KeySet conflictSet = result.getConflictSet ();
-			throw MergingKDBException(parentKey, conflictSet);
+			throw MergingKDBException (parentKey, conflictSet);
 		}
 	}
 }
-
 }
 }
 }

@@ -29,18 +29,18 @@ using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 
-TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), mergingKdb()
+TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), mergingKdb ()
 {
 	Q_UNUSED (parentModel);
 }
 
-TreeViewModel::TreeViewModel (KDB & kdb, QObject * parentModel) : m_root ("/", KEY_END), mergingKdb(kdb)
+TreeViewModel::TreeViewModel (KDB & kdb, QObject * parentModel) : m_root ("/", KEY_END), mergingKdb (kdb)
 {
 	Q_UNUSED (parentModel);
 }
 
-TreeViewModel::TreeViewModel (const TreeViewModel & other) : QAbstractListModel (),
-		m_model(other.m_model), m_root(other.m_root), mergingKdb(other.mergingKdb)
+TreeViewModel::TreeViewModel (const TreeViewModel & other)
+: QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), mergingKdb (other.mergingKdb)
 
 {
 }
@@ -645,19 +645,18 @@ void TreeViewModel::synchronize ()
 
 		createNewNodes (ours);
 	}
-	catch (MergingKDBException const &exc)
+	catch (MergingKDBException const & exc)
 	{
 
 #if DEBUG && VERBOSE
-			std::cout << "guitest: exception: now after set" << std::endl;
-			printKeys (theirs, result, ours);
+		std::cout << "guitest: exception: now after set" << std::endl;
+		printKeys (theirs, result, ours);
 #endif
 
-		QStringList conflicts = getConflicts (exc.getConflicts());
+		QStringList conflicts = getConflicts (exc.getConflicts ());
 		emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occured."), conflicts.join ("\n"));
-
 	}
-	catch (KDBException const &e)
+	catch (KDBException const & e)
 	{
 		emit showMessage (tr ("Error"), tr ("Synchronizing failed, could not write merged configuration."), e.what ());
 	}

@@ -7,13 +7,13 @@
  *
  */
 
+#include <chrono>
+#include <gtest/gtest-elektra.h>
+#include <gtest/gtest.h>
+#include <merging/automergeconfiguration.hpp>
 #include <merging/mergingkdb.hpp>
 #include <merging/threewaymerge.hpp>
-#include <merging/automergeconfiguration.hpp>
-#include <gtest/gtest.h>
-#include <gtest/gtest-elektra.h>
 #include <thread>
-#include <chrono>
 
 
 using namespace kdb;
@@ -40,7 +40,7 @@ protected:
 
 	MergingKDBTest () : parent (testRoot, KEY_END), mergingKDB (), namespaces ()
 	{
-		clearConfigFile();
+		clearConfigFile ();
 	}
 
 	void clearConfigFile ()
@@ -48,7 +48,7 @@ protected:
 		KDB repo;
 		KeySet ks;
 		repo.get (ks, parent);
-		ks.clear();
+		ks.clear ();
 		repo.set (ks, parent);
 	}
 
@@ -81,7 +81,7 @@ TEST_F (MergingKDBTest, ThrowsIfNoConflictStrategyRegistered)
 {
 	first.get (firstReturned, parent);
 	mergingKDB.get (secondReturned, parent);
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
 	firstReturned.append (Key ("system" + testRoot + "key", KEY_VALUE, "value", KEY_END));
 	first.set (firstReturned, parent);
@@ -97,7 +97,7 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 
 	first.get (firstReturned, parent);
 	mergingKDB.get (secondReturned, parent);
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
 	Key key1 ("system" + testRoot + "key1", KEY_VALUE, "value", KEY_END);
 	firstReturned.append (key1);
@@ -108,11 +108,9 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 	mergingKDB.synchronize (secondReturned, parent, merger);
 
 	first.get (firstReturned, parent);
-	Key resultKey1 = firstReturned.lookup("system" + testRoot + "key1");
-	Key resultKey2 = firstReturned.lookup("system" + testRoot + "key2");
-	EXPECT_EQ (2, firstReturned.size()) << "Written KeySet has a wrong size";
+	Key resultKey1 = firstReturned.lookup ("system" + testRoot + "key1");
+	Key resultKey2 = firstReturned.lookup ("system" + testRoot + "key2");
+	EXPECT_EQ (2, firstReturned.size ()) << "Written KeySet has a wrong size";
 	EXPECT_EQ (key1, resultKey1) << "Key1 was not written correctly";
 	EXPECT_EQ (key2, resultKey2) << "Key1 was not written correctly";
 }
-
-
