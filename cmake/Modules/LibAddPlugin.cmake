@@ -46,8 +46,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 		set (NOT_INCLUDED "")
 		list (FIND PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
-		list (FIND PLUGINS "ALL" FOUND_ALL)
-		if (FOUND_NAME EQUAL -1 AND FOUND_ALL EQUAL -1)
+		if (FOUND_NAME EQUAL -1)
 			set (NOT_INCLUDED "Not include Plugin ${PLUGIN_SHORT_NAME}")
 		endif ()
 
@@ -58,7 +57,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 		STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9 ]*)" PROVIDES "${contents}")
 		STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9 ]*)" "\\1" PROVIDES "${PROVIDES}")
-		list (APPEND CATEGORIES ${PROVIDES})
+		list (APPEND CATEGORIES "ALL" "${PROVIDES}")
 		STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
 		#message (STATUS "CATEGORIES ${CATEGORIES}")
 
