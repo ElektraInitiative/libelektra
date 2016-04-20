@@ -75,6 +75,36 @@ TEST_P (Conflict, ConflictWithFile)
 	EXPECT_THROW (first.set (firstReturned, parent), KDBException);
 }
 
+TEST_P (Conflict, ConflictWithFileLoop)
+{
+	using namespace kdb;
+
+	Key parent (testRoot, KEY_END);
+
+	KDB first;
+	KeySet firstReturned;
+	first.get (firstReturned, parent);
+
+	KDB second;
+	KeySet secondReturned;
+
+	const int retries = 5;
+	for (int j=0; j<retries; j++)
+	{
+		second.get (secondReturned, parent);
+
+		firstReturned.append (Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
+		secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
+		secondReturned.append (Key ("system" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
+
+		for (int i=0; i<retries; ++i)
+		{
+			second.set (secondReturned, parent);
+			EXPECT_THROW (first.set (firstReturned, parent), KDBException);
+		}
+	}
+}
+
 TEST_P (Conflict, ConflictWithFileSameKey)
 {
 	using namespace kdb;
