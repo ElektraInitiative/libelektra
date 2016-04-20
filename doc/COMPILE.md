@@ -140,12 +140,12 @@ To add all plugins not having additional dependencies
 	-DPLUGINS=NODEP
 
 Note, that every `infos/provides` and `infos/status` field written uppercase can
-be used to select plugins that way.
-To manually set the default (same as not setting PLUGINS), you can use
+be used to select plugins that way.  You also can combine any of these fields
+and add/remove other plugins to/from it, e.g. to include all plugins without deps,
+that provide storage (except yajl) and are maintained, but not include all plugins
+that are experimental, you would use:
 
-	-DPLUGINS=DEFAULT
-
-You also can use NODEP and DEFAULT and add/remove other plugins to/from it.
+	-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
 
 Note, that changing `PLUGINS` will not modifiy the defaults used
 after Elektra was installed.  For this endeavour you need to change:
