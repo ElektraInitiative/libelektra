@@ -21,30 +21,57 @@
 #include <gtest/gtest.h>
 #include <kdb.hpp>
 
-TEST (BackendBuilder, loadAllPlugins)
+std::vector<std::string> getAllPlugins()
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	ModulesPluginDatabase mpd;
-	Modules m;
-	for (auto const & p : mpd.listAllPlugins ())
-	{
-		// std::cout << p << std::endl;
-		// if (p == "python") continue;
-		// if (p == "python2") continue;
-		// if (p == "struct") continue;
+	std::vector<std::string> plugins = mpd.listAllPlugins ();
 
-		if (p == "jni") continue;
-		if (p == "crypto_gcrypt") continue;
-		try
-		{
-			m.load (p);
-			Backend b;
-			b.addPlugin (PluginSpec (p));
-		}
-		catch (std::exception const & e)
-		{
-			EXPECT_TRUE (true) << p;
-		}
+	// remove known problems
+	plugins.erase(std::remove(plugins.begin(), plugins.end(), "jni"), plugins.end());
+	plugins.erase(std::remove(plugins.begin(), plugins.end(), "crypto_gcrypt"), plugins.end());
+	return plugins;
+}
+
+class AllPlugins: public ::testing::TestWithParam<std::string>
+{
+protected:
+};
+
+TEST_P (AllPlugins, backend)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::string p = GetParam ();
+
+	try
+	{
+		Backend b;
+		b.addPlugin (PluginSpec (p));
+	}
+	catch (std::exception const & e)
+	{
+		EXPECT_TRUE (true) << p;
 	}
 }
+
+TEST_P (AllPlugins, modules)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::string p = GetParam ();
+
+	try
+	{
+		Modules m;
+		m.load (p);
+	}
+	catch (std::exception const & e)
+	{
+		EXPECT_TRUE (true) << p;
+	}
+}
+
+
+INSTANTIATE_TEST_CASE_P (AllPlugins, AllPlugins, testing::ValuesIn(getAllPlugins()));
