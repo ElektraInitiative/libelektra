@@ -4,7 +4,7 @@
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver commit
-- infos/status = productive maintained specific unittest tested libc configurable
+- infos/status = productive maintained specific unittest tested libc configurable nodep
 - infos/description =
 ## Scope ##
 

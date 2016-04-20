@@ -26,7 +26,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP" # optional keywords
 		"" # one value keywords
-		"CATEGORIES;SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
+		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
 		${ARGN}
 	)
 
@@ -51,7 +51,13 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			set (NOT_INCLUDED "Not include Plugin ${PLUGIN_SHORT_NAME}")
 		endif ()
 
-		foreach (CAT ${ARG_CATEGORIES})
+		FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_DIRECTORY_NAME}/README.md contents)
+		STRING (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
+		STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
+		STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+		STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
+
+		foreach (CAT ${CATEGORIES})
 			list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)
 			if (FOUND_EXCLUDE_CATEGORY GREATER -1)
 				message (STATUS "Exclude Plugin ${PLUGIN_SHORT_NAME} because of category ${CAT}")

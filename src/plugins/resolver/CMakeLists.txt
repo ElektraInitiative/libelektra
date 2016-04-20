@@ -20,10 +20,6 @@ add_plugin(resolver
 		ELEKTRA_PLUGIN_NAME=\"resolver\"
 		ELEKTRA_LOCK_FILE
 		ELEKTRA_LOCK_MUTEX
-	CATEGORIES
-		"RESOLVER"
-		"NODEP"
-		"MINIMAL"
 	)
 
 
@@ -99,9 +95,6 @@ foreach (plugin ${RESOLVERS})
 				ELEKTRA_VARIANT=${variant}
 				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
 				${FURTHER_DEFINITIONS}
-			CATEGORIES
-				"RESOLVER"
-				"NODEP"
 			)
 	endif()
 endforeach(plugin)
