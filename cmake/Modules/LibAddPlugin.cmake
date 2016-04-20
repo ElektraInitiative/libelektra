@@ -55,7 +55,12 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		STRING (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
 		STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
 		STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+
+		STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9 ]*)" PROVIDES "${contents}")
+		STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9 ]*)" "\\1" PROVIDES "${PROVIDES}")
+		list (APPEND CATEGORIES ${PROVIDES})
 		STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
+		#message (STATUS "CATEGORIES ${CATEGORIES}")
 
 		foreach (CAT ${CATEGORIES})
 			list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)

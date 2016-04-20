@@ -139,6 +139,8 @@ To add all plugins not having additional dependencies
 
 	-DPLUGINS=NODEP
 
+Note, that every `infos/provides` and `infos/status` field written uppercase can
+be used to select plugins that way.
 To manually set the default (same as not setting PLUGINS), you can use
 
 	-DPLUGINS=DEFAULT
