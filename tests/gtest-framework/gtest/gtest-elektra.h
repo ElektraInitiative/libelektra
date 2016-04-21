@@ -112,13 +112,13 @@ public:
 		return parent.getString ();
 	}
 
-	static void mount (std::string mountpoint, std::string configFile)
+	static void mount (std::string mountpoint_, std::string configFile)
 	{
 		using namespace kdb;
 		using namespace kdb::tools;
 
 		Backend b;
-		b.setMountpoint (Key (mountpoint, KEY_END), KeySet (0, KS_END));
+		b.setMountpoint (Key (mountpoint_, KEY_END), KeySet (0, KS_END));
 		b.addPlugin (PluginSpec (KDB_DEFAULT_RESOLVER));
 		b.useConfigFile (configFile);
 		b.addPlugin (PluginSpec ("dump"));
@@ -131,7 +131,7 @@ public:
 		kdb.set (ks, parentKey);
 	}
 
-	static void umount (std::string mountpoint)
+	static void umount (std::string mountpoint_)
 	{
 		using namespace kdb;
 		using namespace kdb::tools;
@@ -139,7 +139,7 @@ public:
 		KDB kdb;
 		Key parentKey ("system/elektra/mountpoints", KEY_END);
 		kdb.get (ks, parentKey);
-		Backends::umount (mountpoint, ks);
+		Backends::umount (mountpoint_, ks);
 		kdb.set (ks, parentKey);
 	}
 };
