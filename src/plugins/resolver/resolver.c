@@ -888,15 +888,13 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 			pk->mtime.tv_sec = statSeconds (buf);
 			pk->mtime.tv_nsec = statNanoSeconds (buf);
 		}
-		else
+
+		/* For timejump backwards or time not changed,
+		   use time + 1ns */
+		pk->mtime.tv_nsec ++;
+		if (pk->mtime.tv_nsec == 0)
 		{
-			/* Timejump backwards or time not changed,
-			   use old time + 1ns */
-			pk->mtime.tv_nsec ++;
-			if (pk->mtime.tv_nsec == 0)
-			{
-				pk->mtime.tv_sec ++;
-			}
+			pk->mtime.tv_sec ++;
 		}
 	}
 
