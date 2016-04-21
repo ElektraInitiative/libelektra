@@ -47,8 +47,8 @@ public:
 	void open (Key & errorKey);
 	void close (Key & errorKey) throw ();
 
-	inline int get (KeySet & returned, std::string const & keyname);
-	inline int get (KeySet & returned, Key & parentKey);
+	virtual inline int get (KeySet & returned, std::string const & keyname);
+	virtual inline int get (KeySet & returned, Key & parentKey);
 	inline int set (KeySet & returned, std::string const & keyname);
 	inline int set (KeySet & returned, Key & parentKey);
 

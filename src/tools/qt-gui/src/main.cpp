@@ -47,7 +47,7 @@ int main (int argc, char * argv[])
 	GUIBackend backend;
 	GUISettings settings;
 	kdb::KDB kdb;
-	TreeViewModel treeModel (&kdb);
+	TreeViewModel treeModel (kdb);
 
 	engine.setObjectOwnership (&treeModel, QQmlApplicationEngine::CppOwnership);
 
