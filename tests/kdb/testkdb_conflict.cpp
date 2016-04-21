@@ -89,7 +89,7 @@ TEST_P (Conflict, ConflictWithFileLoop)
 	KeySet secondReturned;
 
 	const int retries = 5;
-	for (int j=0; j<retries; j++)
+	for (int j = 0; j < retries; j++)
 	{
 		second.get (secondReturned, parent);
 
@@ -97,7 +97,7 @@ TEST_P (Conflict, ConflictWithFileLoop)
 		secondReturned.append (Key ("system" + testRoot + "key2", KEY_VALUE, "value2", KEY_END));
 		secondReturned.append (Key ("system" + testRoot + "key3", KEY_VALUE, "value3", KEY_END));
 
-		for (int i=0; i<retries; ++i)
+		for (int i = 0; i < retries; ++i)
 		{
 			second.set (secondReturned, parent);
 			EXPECT_THROW (first.set (firstReturned, parent), KDBException);

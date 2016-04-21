@@ -21,7 +21,7 @@
 #include <gtest/gtest.h>
 #include <kdb.hpp>
 
-std::vector<std::string> getAllPlugins()
+std::vector<std::string> getAllPlugins ()
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -29,12 +29,12 @@ std::vector<std::string> getAllPlugins()
 	std::vector<std::string> plugins = mpd.listAllPlugins ();
 
 	// remove known problems
-	plugins.erase(std::remove(plugins.begin(), plugins.end(), "jni"), plugins.end());
-	plugins.erase(std::remove(plugins.begin(), plugins.end(), "crypto_gcrypt"), plugins.end());
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "jni"), plugins.end ());
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_gcrypt"), plugins.end ());
 	return plugins;
 }
 
-class AllPlugins: public ::testing::TestWithParam<std::string>
+class AllPlugins : public ::testing::TestWithParam<std::string>
 {
 protected:
 };
@@ -76,4 +76,4 @@ TEST_P (AllPlugins, modules)
 }
 
 
-INSTANTIATE_TEST_CASE_P (AllPlugins, AllPlugins, testing::ValuesIn(getAllPlugins()));
+INSTANTIATE_TEST_CASE_P (AllPlugins, AllPlugins, testing::ValuesIn (getAllPlugins ()));

@@ -9,8 +9,8 @@
 
 #include "semlock.h"
 
-#include <kdbhelper.h>
 #include <kdberrors.h>
+#include <kdbhelper.h>
 
 
 typedef enum { PRE = 0, POST } State;
