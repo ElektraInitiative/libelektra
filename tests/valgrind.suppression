@@ -571,3 +571,14 @@
    ...
 }
 
+{
+   dynamic loading of plugins
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   obj:*
+   ...
+   obj:*
+   fun:elektraPluginOpen
+   fun:_ZN3kdb5tools6PluginC1ERKNS0_10PluginSpecERNS_6KeySetE
+}
