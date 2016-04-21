@@ -290,7 +290,7 @@ private:
 	QList<ConfigNodePtr> m_model;
 	kdb::Key m_root;
 	kdb::Key m_metaModelParent;
-	kdb::tools::merging::MergingKDB mergingKdb;
+	kdb::tools::merging::MergingKDB m_kdb;
 	/**
 	 * @brief Returns a MergeConflictStrategy object based on the name of the MergeConflictStrategy.
 	 * @param mergeStrategy The name of the MergeConflictStrategy.

@@ -29,18 +29,18 @@ using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 
-TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), mergingKdb ()
+TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb ()
 {
 	Q_UNUSED (parentModel);
 }
 
-TreeViewModel::TreeViewModel (KDB & kdb, QObject * parentModel) : m_root ("/", KEY_END), mergingKdb (kdb)
+TreeViewModel::TreeViewModel (KDB & kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
 {
 	Q_UNUSED (parentModel);
 }
 
 TreeViewModel::TreeViewModel (const TreeViewModel & other)
-: QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), mergingKdb (other.mergingKdb)
+: QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), m_kdb (other.m_kdb)
 
 {
 }
@@ -478,7 +478,7 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 void TreeViewModel::populateModel ()
 {
 	kdb::KeySet config;
-	mergingKdb.get (config, m_root);
+	m_kdb.get (config, m_root);
 	populateModel (config);
 }
 
@@ -636,7 +636,7 @@ void TreeViewModel::synchronize ()
 		configuration.configureMerger (merger);
 
 		// write our config
-		mergingKdb.synchronize (ours, m_root, merger);
+		m_kdb.synchronize (ours, m_root, merger);
 
 #if DEBUG && VERBOSE
 		std::cout << "guitest: after get" << std::endl;

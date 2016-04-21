@@ -25,7 +25,7 @@ namespace merging
  * Provides a merging wrapper around a KDB instance. The wrapper allows to pass
  * a three way merger instance that is used to resolve conflicts during KDB set.
  */
-class MergingKDB : KDB
+class MergingKDB : public KDB
 {
 public:
 	MergingKDB ()
@@ -34,7 +34,7 @@ public:
 	MergingKDB (KDB & kdb) : KDB (kdb)
 	{
 	}
-	~MergingKDB ()
+	virtual ~MergingKDB ()
 	{
 	}
 
