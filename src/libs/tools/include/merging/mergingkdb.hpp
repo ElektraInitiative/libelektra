@@ -28,15 +28,9 @@ namespace merging
 class MergingKDB : public KDB
 {
 public:
-	MergingKDB ()
-	{
-	}
-	MergingKDB (KDB & kdb) : KDB (kdb)
-	{
-	}
-	virtual ~MergingKDB ()
-	{
-	}
+	MergingKDB ();
+	MergingKDB (KDB & kdb);
+	virtual ~MergingKDB ();
 
 	/**
 	 * Behaves like the KDB get function

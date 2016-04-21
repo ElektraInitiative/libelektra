@@ -42,15 +42,19 @@ class KDB
 public:
 	KDB ();
 	KDB (Key & errorKey);
-	~KDB () throw ();
+	virtual ~KDB () throw ()
+	{
+		close ();
+	}
 
-	void open (Key & errorKey);
-	void close (Key & errorKey) throw ();
+	virtual inline void open (Key & errorKey);
+	virtual inline void close () throw ();
+	virtual inline void close (Key & errorKey) throw ();
 
 	virtual inline int get (KeySet & returned, std::string const & keyname);
 	virtual inline int get (KeySet & returned, Key & parentKey);
-	inline int set (KeySet & returned, std::string const & keyname);
-	inline int set (KeySet & returned, Key & parentKey);
+	virtual inline int set (KeySet & returned, std::string const & keyname);
+	virtual inline int set (KeySet & returned, Key & parentKey);
 
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
@@ -85,24 +89,6 @@ inline KDB::KDB (Key & errorKey)
 }
 
 /**
- * The destructor closes the database.
- *
- * @copydoc kdbClose
- */
-inline KDB::~KDB () throw ()
-{
-	Key errorKey;
-	try
-	{
-		close (errorKey);
-	}
-	catch (...)
-	{
-		// silently drop potential warnings/errors
-	}
-}
-
-/**
  * Open the database
  *
  * @param errorKey is useful if you want to get the warnings in
@@ -120,7 +106,22 @@ inline void KDB::open (Key & errorKey)
 }
 
 /**
- * Open the database.
+ * Close the database.
+ *
+ * The return value does not matter because its only a null pointer check.
+ *
+ * @copydoc kdbClose
+ */
+inline void KDB::close () throw ()
+{
+	Key errorKey;
+	ckdb::kdbClose (handle, errorKey.getKey ());
+	handle = nullptr;
+}
+
+
+/**
+ * Close the database.
  *
  * The return value does not matter because its only a null pointer check.
  *

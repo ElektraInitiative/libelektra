@@ -18,6 +18,18 @@ namespace tools
 namespace merging
 {
 
+MergingKDB::MergingKDB ()
+{
+}
+
+MergingKDB::MergingKDB (KDB & kdb) : KDB (kdb)
+{
+}
+
+MergingKDB::~MergingKDB ()
+{
+}
+
 int MergingKDB::get (KeySet & returned, std::string const & keyname)
 {
 	int ret = KDB::get (returned, keyname);
