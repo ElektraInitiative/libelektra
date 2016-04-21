@@ -881,9 +881,23 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 	else
 	{
-		/* Update my timestamp */
-		pk->mtime.tv_sec = statSeconds (buf);
-		pk->mtime.tv_nsec = statNanoSeconds (buf);
+		if (pk->mtime.tv_sec <= statSeconds (buf) ||
+			(pk->mtime.tv_sec == statSeconds (buf) && pk->mtime.tv_nsec < statNanoSeconds (buf)))
+		{
+			/* Update timestamp */
+			pk->mtime.tv_sec = statSeconds (buf);
+			pk->mtime.tv_nsec = statNanoSeconds (buf);
+		}
+		else
+		{
+			/* Timejump backwards or time not changed,
+			   use old time + 1ns */
+			pk->mtime.tv_nsec ++;
+			if (pk->mtime.tv_nsec == 0)
+			{
+				pk->mtime.tv_sec ++;
+			}
+		}
 	}
 
 	elektraUpdateFileTime (pk, parentKey);
