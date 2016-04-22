@@ -868,6 +868,15 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 {
 	int ret = 0;
 
+	int fd = open (pk->tempfile, O_RDWR);
+	if (fd == -1)
+	{
+		ELEKTRA_SET_ERRORF (26, parentKey, "Could not open file again for changing properties of file because %s", strerror (errno));
+		ret = -1;
+	}
+
+	elektraLockFile (fd, parentKey);
+
 	if (rename (pk->tempfile, pk->filename) == -1)
 	{
 		ELEKTRA_SET_ERROR (31, parentKey, strerror (errno));
@@ -875,42 +884,51 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 
 	struct stat buf;
-	if (stat (pk->filename, &buf) == -1)
+	if (fstat (fd, &buf) == -1)
 	{
 		ELEKTRA_ADD_WARNING (29, parentKey, strerror (errno));
 	}
 	else
 	{
-		if (pk->mtime.tv_sec <= statSeconds (buf) ||
-			(pk->mtime.tv_sec == statSeconds (buf) && pk->mtime.tv_nsec < statNanoSeconds (buf)))
+		if (!(pk->mtime.tv_sec == statSeconds (buf) && pk->mtime.tv_nsec == statNanoSeconds (buf)))
 		{
 			/* Update timestamp */
 			pk->mtime.tv_sec = statSeconds (buf);
 			pk->mtime.tv_nsec = statNanoSeconds (buf);
 		}
-
-		/* For timejump backwards or time not changed,
-		   use time + 1ns */
-		pk->mtime.tv_nsec ++;
-		if (pk->mtime.tv_nsec == 0)
+		else
 		{
-			pk->mtime.tv_sec ++;
+			/* For timejump backwards or time not changed,
+			   use time + 1ns
+			   This is needed to fulfill the postcondition
+			   that the timestamp changed at least slightly
+			   and makes sure that all processes that stat()ed
+			   the file will get a conflict. */
+			pk->mtime.tv_nsec ++;
+			if (pk->mtime.tv_nsec >= 1000000000)
+			{
+				pk->mtime.tv_nsec = 0;
+				pk->mtime.tv_sec ++;
+			}
+
+			// update file visible in filesystem:
+			int pfd = pk->fd; pk->fd = fd;
+			elektraUpdateFileTime (pk, parentKey);
+			pk->fd = pfd;
 		}
 	}
 
 	elektraUpdateFileTime (pk, parentKey);
+
 	if (buf.st_mode != pk->filemode)
 	{
 		// change mode to what it was before
-		chmod (pk->filename, pk->filemode);
+		fchmod (fd, pk->filemode);
 	}
 	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
 	{
-		chown (pk->filename, pk->uid, pk->gid);
+		fchown (fd, pk->uid, pk->gid);
 	}
-	elektraUnlockFile (pk->fd, parentKey);
-	elektraCloseFile (pk->fd, parentKey);
-	elektraUnlockMutex (parentKey);
 
 	DIR * dirp = opendir (pk->dirname);
 	// checking dirp not needed, fsync will have EBADF
@@ -919,6 +937,12 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		ELEKTRA_ADD_WARNINGF (88, parentKey, "Could not sync directory \"%s\", because %s", pk->dirname, strerror (errno));
 	}
 	closedir (dirp);
+
+	elektraUnlockFile (pk->fd, parentKey);
+	elektraCloseFile (pk->fd, parentKey);
+	elektraUnlockFile (fd, parentKey);
+	elektraCloseFile (fd, parentKey);
+	elektraUnlockMutex (parentKey);
 
 	return ret;
 }
