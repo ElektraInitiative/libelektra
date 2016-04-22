@@ -551,10 +551,9 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (pk->fd == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN,
-					    parentKey,
-					    "Could not reopen configuration file \"%s\" for writing because %s",
-					    pk->filename, strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
+					    "Could not reopen configuration file \"%s\" for writing because %s", pk->filename,
+					    strerror (errno));
 			return -1;
 		}
 		// successfully reopened
@@ -600,9 +599,8 @@ static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 
 	if (pk->fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN,
-				    parentKey,
-				    "Could not create configuration file \"%s\" because %s", pk->filename, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey, "Could not create configuration file \"%s\" because %s",
+				    pk->filename, strerror (errno));
 		return -1;
 	}
 	return 0;
@@ -875,8 +873,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	int fd = open (pk->tempfile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN,
-				    parentKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
 				    "Could not open file again for changing properties of file because %s", strerror (errno));
 		ret = -1;
 	}
@@ -904,27 +901,32 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		}
 		else
 		{
-			/* For timejump backwards or time not changed,
+
+#ifdef HAVE_FUTIMENS
+			pk->mtime.tv_nsec++;
+#else
+			pk->mtime.tv_nsec += 1001;
+#endif
+
+			if (pk->mtime.tv_nsec >= 1000000000)
+			{
+				pk->mtime.tv_nsec = 0;
+				pk->mtime.tv_sec++;
+			}
+
+			// update file visible in filesystem:
+			int pfd = pk->fd;
+			pk->fd = fd;
+			elektraUpdateFileTime (pk, parentKey);
+			pk->fd = pfd;
+
+			/* @post
+			   For timejump backwards or time not changed,
 			   use time + 1ns
 			   This is needed to fulfill the postcondition
 			   that the timestamp changed at least slightly
 			   and makes sure that all processes that stat()ed
 			   the file will get a conflict. */
-#ifdef HAVE_FUTIMENS
-			pk->mtime.tv_nsec ++;
-#else
-			pk->mtime.tv_nsec += 1001;
-#endif
-			if (pk->mtime.tv_nsec >= 1000000000)
-			{
-				pk->mtime.tv_nsec = 0;
-				pk->mtime.tv_sec ++;
-			}
-
-			// update file visible in filesystem:
-			int pfd = pk->fd; pk->fd = fd;
-			elektraUpdateFileTime (pk, parentKey);
-			pk->fd = pfd;
 		}
 	}
 

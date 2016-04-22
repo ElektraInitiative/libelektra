@@ -3173,7 +3173,6 @@ static void test_ksAppend3 ()
 }
 
 
-
 int main (int argc, char ** argv)
 {
 	printf ("KEYSET ABI   TESTS\n");

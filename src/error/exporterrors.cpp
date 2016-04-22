@@ -90,8 +90,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 		os << "#define ELEKTRA_ERROR_" << p[i]["macro"] << " " << i << endl;
 	}
 
-	os << endl
-	   << endl;
+	os << endl << endl;
 
 	for (size_t i = 1; i < p.size (); ++i)
 	{
