@@ -904,7 +904,11 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 			   that the timestamp changed at least slightly
 			   and makes sure that all processes that stat()ed
 			   the file will get a conflict. */
+#ifdef HAVE_FUTIMENS
 			pk->mtime.tv_nsec ++;
+#else
+			pk->mtime.tv_nsec += 1001;
+#endif
 			if (pk->mtime.tv_nsec >= 1000000000)
 			{
 				pk->mtime.tv_nsec = 0;
