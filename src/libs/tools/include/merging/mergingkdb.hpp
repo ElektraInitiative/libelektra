@@ -30,7 +30,7 @@ class MergingKDB : public KDB
 public:
 	MergingKDB ();
 	MergingKDB (KDB & kdb);
-	virtual ~MergingKDB ();
+	virtual ~MergingKDB () throw ();
 
 	/**
 	 * Behaves like the KDB get function
