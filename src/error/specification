@@ -159,6 +159,7 @@ description:could not open configuration file
 severity:error
 ingroup:plugin
 module:resolver
+macro:COULD_NOT_OPEN
 
 number:27
 description:locking yield an error
