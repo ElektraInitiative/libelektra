@@ -3147,7 +3147,6 @@ static void test_ksAppend2 ()
 	ksDel (iter);
 	// parent+key removed!
 	succeed_if (ksLookupByName (ks, "user/test/rename/cut", 0) != 0, "did not find key");
-	;
 	succeed_if (ksGetSize (ks) == 1, "only result in it") ksDel (ks);
 
 	parent = keyNew ("user/test/rename", KEY_END);
@@ -3165,9 +3164,9 @@ static void test_ksAppend3 ()
 	Key * key = keyNew ("user/key", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (ksAppendKey (ks, inks) == 1, "could not append key");
-	succeed_if (ksLookupByName (ks, "user/key", 0) == key "did not find key");
-	succeed_if (ksAppendKey (ks, inks) == 1, "could not append key");
+	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
+	succeed_if (ksLookupByName (ks, "user/key", 0) == key, "did not find key");
+	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
 	succeed_if (ksLookupByName (ks, "user/key", 0) == key, "did not find key again");
 
 	ksDel (ks);
