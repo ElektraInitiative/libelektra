@@ -111,6 +111,8 @@ TEST_F (MergingKDBTest, MergesResolvableConflicts)
 	Key resultKey1 = firstReturned.lookup ("system" + testRoot + "key1");
 	Key resultKey2 = firstReturned.lookup ("system" + testRoot + "key2");
 	EXPECT_EQ (2, firstReturned.size ()) << "Written KeySet has a wrong size";
+	ASSERT_TRUE (resultKey1);
 	EXPECT_EQ (key1, resultKey1) << "Key1 was not written correctly";
-	EXPECT_EQ (key2, resultKey2) << "Key1 was not written correctly";
+	ASSERT_TRUE (resultKey2);
+	EXPECT_EQ (key2, resultKey2) << "Key2 was not written correctly";
 }
