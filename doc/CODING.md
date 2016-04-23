@@ -113,6 +113,7 @@ next line.
  * C++-Files have extension `.cpp`, Header files `.hpp`.
  * Do not use `static`, but anonymous namespaces.
  * Write everything within namespaces and do not prefix names.
+ * Even though we use C++11, we should be oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md)
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](http://libelektra.org/tree/master/src/bindings/cpp/include/kdb.hpp)
 
