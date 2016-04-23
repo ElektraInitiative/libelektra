@@ -262,8 +262,9 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 			continue;
 		const char * placement = keyBaseName (cur);
 		const char * pluginName = keyString (cur);
-		const char * globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback",   "postrollback", "pregetstorage", "postgetstorage",
-								     "presetstorage", "precommit",    "postcommit" };
+		const char * globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback",    "postrollback",   "pregetstorage",
+								     "postgetstorage", "postgetcleanup", "presetstorage",
+								     "presetcleanup",  "precommit",      "postcommit" };
 
 
 		if (!strcmp (pluginName, ""))
@@ -277,6 +278,7 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 #if DEBUG && VERBOSE
 				printf ("mounting global plugin %s to %s\n", pluginName, placement);
 #endif
+
 				Plugin * plugin;
 				Key * refKey;
 				Key * searchKey = keyNew ("/", KEY_END);

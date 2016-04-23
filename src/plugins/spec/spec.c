@@ -44,6 +44,12 @@ typedef struct
 	OnConflict missing;
 } ConflictHandling;
 
+typedef struct
+{
+	KeySet * ks;
+	int counter;
+} PluginConfig;
+
 static char * keyNameToMatchingString (const Key * key)
 {
 	uint8_t arrayCount = 0;
@@ -927,6 +933,25 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 	}
 }
 
+static void removeMeta (Key * key, Key * specKey, Key * parentKey)
+{
+	keyRewindMeta (specKey);
+	while (keyNextMeta (specKey) != NULL)
+	{
+		const Key * meta = keyCurrentMeta (specKey);
+		const char * name = keyName (meta);
+		if (!(!strcmp (name, "array") || !strcmp (name, "required") || !strncmp (name, "conflict/", 9) ||
+		      !strcmp (name, "require")))
+		{
+			const Key * oldMeta;
+			if ((oldMeta = keyGetMeta (key, name)) != NULL)
+			{
+				keySetMeta (key, name, 0);
+			}
+		}
+	}
+}
+
 static void copyMeta (Key * key, Key * specKey, Key * parentKey)
 {
 	keyRewindMeta (specKey);
@@ -974,7 +999,7 @@ static int hasRequired (Key * key, Key * specKey, KeySet * ks)
 	return 1;
 }
 
-static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, ConflictHandling * ch, Direction dir)
+static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, ConflictHandling * ch, Direction dir, int clean)
 {
 	Key * specKey;
 	ksRewind (specKS);
@@ -1003,42 +1028,49 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 			cursor_t cursor = ksGetCursor (returned);
 			if (matchPatternToKey (pattern, cur))
 			{
-				found = 1;
-				if (require)
+				if (!clean)
 				{
-					if (hasRequired (cur, specKey, returned)) copyMeta (cur, specKey, parentKey);
-				}
-				else if (keyGetMeta (cur, "conflict/invalid"))
-				{
-					copyMeta (cur, specKey, parentKey);
-				}
-				else if (keyGetMeta (cur, "spec/internal/valid"))
-				{
-					copyMeta (cur, specKey, parentKey);
-				}
-				else if (elektraArrayValidateName (cur) == 1)
-				{
-					validateArray (returned, cur, specKey);
-					copyMeta (cur, specKey, parentKey);
-				}
-				else if (!(strcmp (keyBaseName (specKey), "_")))
-				{
-					validateWildcardSubs (returned, cur, specKey);
-					copyMeta (cur, specKey, parentKey);
-				}
-				else
-				{
-					if (hasArray (cur))
+					found = 1;
+					if (require)
 					{
-						if (isValidArrayKey (cur))
+						if (hasRequired (cur, specKey, returned)) copyMeta (cur, specKey, parentKey);
+					}
+					else if (keyGetMeta (cur, "conflict/invalid"))
+					{
+						copyMeta (cur, specKey, parentKey);
+					}
+					else if (keyGetMeta (cur, "spec/internal/valid"))
+					{
+						copyMeta (cur, specKey, parentKey);
+					}
+					else if (elektraArrayValidateName (cur) == 1)
+					{
+						validateArray (returned, cur, specKey);
+						copyMeta (cur, specKey, parentKey);
+					}
+					else if (!(strcmp (keyBaseName (specKey), "_")))
+					{
+						validateWildcardSubs (returned, cur, specKey);
+						copyMeta (cur, specKey, parentKey);
+					}
+					else
+					{
+						if (hasArray (cur))
+						{
+							if (isValidArrayKey (cur))
+							{
+								copyMeta (cur, specKey, parentKey);
+							}
+						}
+						else
 						{
 							copyMeta (cur, specKey, parentKey);
 						}
 					}
-					else
-					{
-						copyMeta (cur, specKey, parentKey);
-					}
+				}
+				else
+				{
+					removeMeta (cur, specKey, parentKey);
 				}
 			}
 			ksSetCursor (returned, cursor);
@@ -1048,9 +1080,8 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		{
 			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only assign/conditional currently exists
 			{
-				Key * newKey =
-					keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE, "BLUBBERBLASEN!", KEY_END);
-				copyMeta (cur, specKey, parentKey);
+				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
+				copyMeta (newKey, specKey, parentKey);
 				ksAppendKey (returned, keyDup (newKey));
 				keyDel (newKey);
 			}
@@ -1106,6 +1137,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/spec", KEY_VALUE, "spec plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports", KEY_END),
+			       keyNew ("system/elektra/modules/spec/exports/close", KEY_FUNC, elektraSpecClose, KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports/get", KEY_FUNC, elektraSpecGet, KEY_END),
 			       keyNew ("system/elektra/modules/spec/exports/set", KEY_FUNC, elektraSpecSet, KEY_END),
 #include ELEKTRA_README (spec)
@@ -1139,6 +1171,23 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			onConflict = IGNORE;
 		}
 	}
+	int clean = 0;
+	PluginConfig * pluginConfig = elektraPluginGetData (handle);
+	if (pluginConfig)
+	{
+		++(pluginConfig->counter);
+	}
+	else
+	{
+		pluginConfig = elektraMalloc (sizeof (PluginConfig));
+		pluginConfig->counter = 0;
+		pluginConfig->ks = NULL;
+	}
+	if (pluginConfig->counter == 1)
+	{
+		clean = 1;
+		pluginConfig->counter = 0;
+	}
 	ch->member = onConflict;
 	ch->invalid = onConflict;
 	ch->count = onConflict;
@@ -1151,12 +1200,14 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (conflictCut);
 	Key * specKey = keyNew ("spec", KEY_END);
 	KeySet * specKS = ksCut (returned, specKey);
-	elektraPluginSetData (handle, ksDup (specKS));
+	Key * cur;
+	pluginConfig->ks = ksDup (specKS);
+	elektraPluginSetData (handle, pluginConfig);
 	keyDel (specKey);
 	KeySet * ks = ksCut (returned, parentKey);
 	ksRewind (ks);
 	ksRewind (specKS);
-	int ret = doGlobbing (parentKey, ks, specKS, ch, GET);
+	int ret = doGlobbing (parentKey, ks, specKS, ch, GET, clean);
 	ksAppend (returned, specKS);
 	ksAppend (returned, ks);
 	ksDel (ks);
@@ -1188,35 +1239,64 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			onConflict = INFO;
 		}
 	}
+	int clean = 0;
+	PluginConfig * pluginConfig = elektraPluginGetData (handle);
+	if (pluginConfig)
+	{
+		++(pluginConfig->counter);
+	}
+	else
+	{
+		return 0;
+	}
+	if (pluginConfig->counter == 2)
+	{
+		clean = 1;
+		pluginConfig->counter = 0;
+	}
 	ch->member = onConflict;
 	ch->invalid = onConflict;
 	ch->count = onConflict;
 	ch->conflict = onConflict;
 	ch->range = onConflict;
 	ch->missing = onConflict;
-
 	KeySet * conflictCut = ksCut (config, onConflictConf);
 	parseConfig (conflictCut, ch);
 	ksAppend (config, conflictCut);
 	ksDel (conflictCut);
-	KeySet * specKS = elektraPluginGetData (handle);
+	KeySet * specKS = NULL;
+	if (pluginConfig) specKS = pluginConfig->ks;
 	KeySet * ks = ksCut (returned, parentKey);
 	ksRewind (ks);
-	ksRewind (specKS);
-	int ret = doGlobbing (parentKey, ks, specKS, ch, SET);
+	int ret = 0;
+	if (specKS)
+	{
+		ksRewind (specKS);
+		ret = doGlobbing (parentKey, ks, specKS, ch, SET, clean);
+	}
 	ksAppend (returned, ks);
 	ksDel (ks);
-	ksDel (specKS);
 	elektraFree (ch);
 	ksRewind (returned);
+	elektraPluginSetData (handle, pluginConfig);
 	return ret; // success
 }
 
+int elektraSpecClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
+{
+	PluginConfig * pluginConfig = elektraPluginGetData (handle);
+	if (!pluginConfig) return 0;
+	if (pluginConfig->ks) ksDel (pluginConfig->ks);
+	elektraFree (pluginConfig);
+	elektraPluginSetData (handle, 0);
+	return 0;
+}
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
 {
 	// clang-format off
 	return elektraPluginExport ("spec",
+            ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
 			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,
 			ELEKTRA_PLUGIN_END);
