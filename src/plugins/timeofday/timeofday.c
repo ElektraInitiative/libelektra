@@ -12,6 +12,8 @@
 
 #include <string.h>
 
+#define ARRAY_LENGTH 25
+
 static inline void timeofday (char * t, struct timeval * start, struct timeval * now)
 {
 	struct timeval tv;
@@ -54,7 +56,7 @@ const char * elektraTimeofdayHelper (char * t, TimeofdayInfo * ti)
 int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	TimeofdayInfo * ti = calloc (1, sizeof (TimeofdayInfo));
-	// char t[24];
+	char t[ARRAY_LENGTH];
 
 	elektraPluginSetData (handle, ti);
 
@@ -67,13 +69,11 @@ int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			char t[24];
 			fprintf (stderr, "open (module)\t%s\n", elektraTimeofdayHelper (t, ti));
 		}
 	}
 	else
 	{
-		char t[24];
 		fprintf (stderr, "open\t%s\n", elektraTimeofdayHelper (t, ti));
 	}
 
@@ -82,39 +82,30 @@ int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 int elektraTimeofdayClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	// char t[24];
-	// TimeofdayInfo *ti = elektraPluginGetData(handle);
+	char t[ARRAY_LENGTH];
+	TimeofdayInfo *ti = elektraPluginGetData(handle);
 
 	KeySet * config = elektraPluginGetConfig (handle);
-	TimeofdayInfo * ti = elektraPluginGetData (handle);
 	if (ksLookupByName (config, "/module", 0))
 	{
 		if (ksLookupByName (config, "/logmodule", 0))
 		{
-			char t[24];
 			fprintf (stderr, "close (module)\t%s\n", elektraTimeofdayHelper (t, ti));
 		}
 	}
 	else
 	{
-		char t[24];
 		fprintf (stderr, "close\t%s\n", elektraTimeofdayHelper (t, ti));
 	}
 
-	/* How weird is that??
-	   ti gets modified after elektraTimeofdayHelper even though
-	   the pointer to it is not even passed and it is valgrind
-	   clean?
-	   Fixed by using fti */
-	TimeofdayInfo * fti = elektraPluginGetData (handle);
-	elektraFree (fti);
+	elektraFree (ti);
 
 	return 0; /* success */
 }
 
 int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	char t[24];
+	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
 	const char * position = "get";
 
@@ -159,7 +150,7 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 int elektraTimeofdaySet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	char t[24];
+	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
 	const char * position = "set";
 
@@ -182,7 +173,7 @@ int elektraTimeofdaySet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 
 int elektraTimeofdayError (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	char t[24];
+	char t[ARRAY_LENGTH];
 	TimeofdayInfo * ti = elektraPluginGetData (handle);
 	const char * position = "error";
 
