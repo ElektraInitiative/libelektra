@@ -858,3 +858,10 @@ description:semlock plugin error
 severity:error
 ingroup:plugin
 module:semlock
+
+number:146
+description:could not get current directory
+severity:warning
+ingroup:plugin
+module:resolver
+macro:NOCWD

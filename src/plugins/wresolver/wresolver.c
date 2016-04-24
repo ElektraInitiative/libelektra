@@ -160,18 +160,21 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	{
 		char buf[256];
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256, NULL);
-		ELEKTRA_ADD_WARNINGF (90, warningsKey, "GetCurrentDirectory failed: %s", buf);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed: %s, defaulting to /", buf);
+		dir[0] = 0;
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		ELEKTRA_ADD_WARNINGF (90, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
+		dir[0] = 0;
 	}
 	escapePath (dir);
 #else
 	char dir[KDB_MAX_PATH_LENGTH];
 	if (getcwd (dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
-		ELEKTRA_ADD_WARNINGF (90, warningsKey, "getcwd failed: %s", strerror (errno));
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "getcwd failed: %s, defaulting to /", strerror (errno));
+		dir[0] = 0;
 	}
 #endif
 
