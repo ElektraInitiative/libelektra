@@ -933,7 +933,7 @@ static void matchedKeyCopyMeta (Key * key, Key * specKey, Key * parentKey, const
 	}
 }
 
-static void removeMeta (Key * key, Key * specKey, Key * parentKey)
+static void removeMeta (Key * key, Key * specKey, Key * parentKey ELEKTRA_UNUSED)
 {
 	keyRewindMeta (specKey);
 	while (keyNextMeta (specKey) != NULL)
@@ -1200,7 +1200,6 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (conflictCut);
 	Key * specKey = keyNew ("spec", KEY_END);
 	KeySet * specKS = ksCut (returned, specKey);
-	Key * cur;
 	pluginConfig->ks = ksDup (specKS);
 	elektraPluginSetData (handle, pluginConfig);
 	keyDel (specKey);
