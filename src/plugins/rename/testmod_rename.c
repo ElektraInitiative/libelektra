@@ -225,12 +225,12 @@ static void test_metaConfigTakesPrecedence ()
 static void test_keyCutNamePart ()
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
-	Key * result = elektraKeyCreateNewName (parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL);
+	Key * result = elektraKeyCreateNewName (parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (!result, "parentKey was modified although it should have been ignored");
 
 	/* cutting works correctly without trailing slash */
 	Key * testKey = keyNew ("user/tests/rename/will/cut/this/key1", KEY_END);
-	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this", NULL, NULL, NULL);
+	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (result, "key1 was not cut")
 		succeed_if (!strcmp (keyName (result), "user/tests/rename/key1"), "cutting key1 did not yield the expected result");
 	keyDel (testKey);
@@ -238,7 +238,7 @@ static void test_keyCutNamePart ()
 
 	/* cutting works correctly with trailing slash */
 	testKey = keyNew ("user/tests/rename/will/cut/this/key1", KEY_END);
-	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this/", NULL, NULL, NULL);
+	result = elektraKeyCreateNewName (testKey, parentKey, "will/cut/this/", NULL, NULL, NULL, 0);
 	succeed_if (result, "key1 was not cut")
 		succeed_if (!strcmp (keyName (result), "user/tests/rename/key1"), "cutting key1 did not yield the expected result");
 	keyDel (testKey);
@@ -246,7 +246,7 @@ static void test_keyCutNamePart ()
 
 	/* disallow leading slashes */
 	testKey = keyNew ("user/tests/rename/wont/cut/this/key1", KEY_END);
-	result = elektraKeyCreateNewName (testKey, parentKey, "/wont/cut/this", NULL, NULL, NULL);
+	result = elektraKeyCreateNewName (testKey, parentKey, "/wont/cut/this", NULL, NULL, NULL, 0);
 	succeed_if (!result, "key was cut although it the cutpath contained a leading slash");
 	keyDel (testKey);
 	keyDel (parentKey);
@@ -395,6 +395,45 @@ static void test_mixCase ()
 	PLUGIN_CLOSE ();
 }
 
+static void test_write ()
+{
+	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
+	KeySet * conf =
+		ksNew (20, keyNew ("system/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system/get/case", KEY_VALUE, "toupper", KEY_END),
+		       keyNew ("system/set/case", KEY_VALUE, "keyname"), KS_END);
+	KeySet * ks = ksNew (20, keyNew ("user/tests/rename/uppercase/uppercase/uppercase/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
+	ksAppendKey (ks, parentKey);
+	PLUGIN_OPEN ("rename");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	Key * key = ksLookupByName (ks, "user/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/lowercase", KDB_O_NONE);
+	succeed_if (key, "key1 was not correctly rename");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	key = ksLookupByName (ks, "user/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/lowercase", KDB_O_NONE);
+	succeed_if (key, "key1s name was not correctly saved");
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+
+static void test_write2 ()
+{
+	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
+	KeySet * conf =
+		ksNew (20, keyNew ("system/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system/get/case", KEY_VALUE, "tolower", KEY_END),
+		       keyNew ("system/set/case", KEY_VALUE, "toupper"), KS_END);
+	KeySet * ks = ksNew (20, keyNew ("user/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
+	ksAppendKey (ks, parentKey);
+	PLUGIN_OPEN ("rename");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	Key * key = ksLookupByName (ks, "user/tests/rename/uppercase/uppercase/uppercase/lowercase", KDB_O_NONE);
+	succeed_if (key, "key1 was not correctly rename");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	key = ksLookupByName (ks, "user/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/LOWERCASE", KDB_O_NONE);
+	succeed_if (key, "key1s name was not correctly saved");
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 int main (int argc, char ** argv)
 {
 	printf ("RENAME       TESTS\n");
@@ -415,7 +454,8 @@ int main (int argc, char ** argv)
 	test_toLower ();
 	test_mixCase ();
 	test_replaceString ();
-
+	test_write ();
+	test_write2 ();
 	printf ("\ntest_rename RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
