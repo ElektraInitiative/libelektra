@@ -87,7 +87,16 @@ ostream & operator<< (ostream & os, parse_t & p)
 			continue;
 		}
 
-		os << "#define ELEKTRA_ERROR_" << p[i]["macro"] << " " << i << endl;
+		os << "#define ELEKTRA_";
+		if (p[i]["severity"] == "warning")
+		{
+			os << "WARNING_";
+		}
+		else
+		{
+			os << "ERROR_";
+		}
+		os << p[i]["macro"] << " " << i << endl;
 	}
 
 	os << endl << endl;
