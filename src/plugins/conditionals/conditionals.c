@@ -816,8 +816,8 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals)
 {
 	// clang-format off
-	return elektraPluginExport ("conditionals", 
-					ELEKTRA_PLUGIN_GET, &elektraConditionalsGet, 
-					ELEKTRA_PLUGIN_SET, &elektraConditionalsSet, 
+	return elektraPluginExport ("conditionals",
+					ELEKTRA_PLUGIN_GET, &elektraConditionalsGet,
+					ELEKTRA_PLUGIN_SET, &elektraConditionalsSet,
 					ELEKTRA_PLUGIN_END);
 }
