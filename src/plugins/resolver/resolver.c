@@ -152,11 +152,11 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 	{
 		if (errno == EAGAIN || errno == EACCES)
 		{
-			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other process writes to configuration indicated by file lock");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "conflict because other process writes to configuration indicated by file lock");
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed file lock with message: %s",
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed file lock with message: %s",
 					    strerror (errno));
 		}
 		return -1;
@@ -213,11 +213,11 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 		if (errno == EBUSY       // for trylock
 		    || errno == EDEADLK) // for error checking mutex, if enabled
 		{
-			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other thread writes to configuration indicated by mutex lock");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "conflict because other thread writes to configuration indicated by mutex lock");
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed mutex lock with message: %s",
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed mutex lock with message: %s",
 					    strerror (errno));
 		}
 		return -1;
@@ -543,7 +543,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	{
 		if (errno == ENOENT)
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 					    "The configuration file \"%s\" was there earlier, "
 					    "now it is missing",
 					    pk->filename);
@@ -568,7 +568,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (errno == EEXIST)
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 					    "No configuration file was there earlier, "
 					    "now configuration file \"%s\" exists",
 					    pk->filename);
@@ -722,13 +722,13 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		ELEKTRA_ADD_WARNING (29, parentKey, errorText);
 		elektraFree (errorText);
 
-		ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
 		return -1;
 	}
 
 	if (statSeconds (buf) != pk->mtime.tv_sec || statNanoSeconds (buf) != pk->mtime.tv_nsec)
 	{
-		ELEKTRA_SET_ERRORF (30, parentKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 				    "conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file "
 				    "name is \"%s\", "
 				    "our identity is uid: %u, euid: %u, gid: %u, egid: %u",

@@ -180,6 +180,7 @@ ingroup:plugin
 module:resolver
 
 number:30
+macro:CONFLICT
 description:A conflict occurred: Another KDB instance modified the key database.
 severity:error
 ingroup:plugin
@@ -627,6 +628,7 @@ ingroup:plugin
 module:dump
 
 number:107
+macro:STATE
 description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
 severity:error
 ingroup:kdb

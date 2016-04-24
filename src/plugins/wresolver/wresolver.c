@@ -47,6 +47,7 @@ struct _resolverHandle
 {
 	time_t mtime; ///< Previous timestamp of the file
 	mode_t mode;  ///< The mode to set
+	int state;    ///< 0 .. invalid -> kdbGet -> 1 .. ready to set -> kdbSet -> 2
 
 	char * filename; ///< the full path to the configuration file
 
@@ -98,6 +99,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 {
 	p->mtime = 0;
 	p->mode = 0;
+	p->state = 0;
 
 	p->filename = 0;
 
@@ -347,6 +349,8 @@ int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
 
+	pk->state = 1;
+
 	struct stat buf;
 
 	if (stat (pk->filename, &buf) == -1)
@@ -373,6 +377,20 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
 
+	switch (pk->state)
+	{
+	case 0:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_STATE, parentKey, "kdbSet() called before kdbGet()");
+		return -1;
+	case 1:
+		++ pk->state;
+		break;
+	case 2:
+		pk->state = 1;
+		// nothing to do on commit
+		return 1;
+	}
+
 	/* set all keys */
 	if (pk->mtime == 0)
 	{
@@ -395,11 +413,12 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	if (pk->mtime != buf.st_mtime)
 	{
 		// conflict
-		ELEKTRA_ADD_WARNINGF (
-			29, parentKey,
-			"conflict, file modification time stamp %sis different than our time stamp %sconfig file name is \"%s\", ",
-			asctime(gmtime(&buf.st_mtime)), asctime(gmtime(&pk->mtime)), pk->filename);
-		return 1; // stat unreliable for windows, keep it at warning
+		ELEKTRA_SET_ERRORF (
+			ELEKTRA_ERROR_CONFLICT, parentKey,
+			"conflict, file modification time stamp %ld is different than our time stamp %ld config file name is \"%s\", ",
+			(long) buf.st_mtime, (long) pk->mtime, pk->filename);
+		pk->state = 0; // invalid state, need to kdbGet again
+		return -1;
 	}
 
 	pk->mtime = buf.st_mtime;
@@ -409,7 +428,9 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 
 int elektraWresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	/* set all keys */
+	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
+	pk->state = 1;
+
 
 	return 1; /* success */
 }
