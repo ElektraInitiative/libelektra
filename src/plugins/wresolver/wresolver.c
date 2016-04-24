@@ -15,6 +15,7 @@
 #include <kdberrors.h>
 
 #include <string.h>
+#include <time.h>
 
 #include "wresolver.h"
 #include <errno.h> /* errno in getcwd() */
@@ -157,7 +158,9 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	DWORD dwRet = GetCurrentDirectory (MAX_PATH, dir);
 	if (dwRet == 0)
 	{
-		ELEKTRA_ADD_WARNINGF (90, warningsKey, "GetCurrentDirectory failed: %s", GetLastError ());
+		char buf[256];
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256, NULL);
+		ELEKTRA_ADD_WARNINGF (90, warningsKey, "GetCurrentDirectory failed: %s", buf);
 	}
 	else if (dwRet > MAX_PATH)
 	{
@@ -391,8 +394,8 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 		// conflict
 		ELEKTRA_ADD_WARNINGF (
 			29, parentKey,
-			"conflict, file modification time stamp %ld is different than our time stamp %ld, config file name is \"%s\", ",
-			buf.st_mtime, pk->mtime, pk->filename);
+			"conflict, file modification time stamp %sis different than our time stamp %sconfig file name is \"%s\", ",
+			asctime(gmtime(&buf.st_mtime)), asctime(gmtime(&pk->mtime)), pk->filename);
 		return 1; // stat unreliable for windows, keep it at warning
 	}
 
