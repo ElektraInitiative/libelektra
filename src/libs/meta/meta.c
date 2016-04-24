@@ -962,14 +962,14 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 		ksRewind (result);
 		return result;
 	}
-	ksAppendKey (result, (Key *)meta);
+	ksAppendKey (result, keyDup (meta));
 	Key * currentKey = keyDup (meta);
 	keyAddName (currentKey, "#");
 	elektraArrayIncName (currentKey);
 	Key * curMeta = NULL;
 	while ((curMeta = (Key *)keyGetMeta (key, keyName (currentKey))) != NULL)
 	{
-		ksAppendKey (result, curMeta);
+		ksAppendKey (result, keyDup (curMeta));
 		elektraArrayIncName (currentKey);
 	}
 	keyDel (currentKey);
