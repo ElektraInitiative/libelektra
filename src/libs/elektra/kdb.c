@@ -529,9 +529,12 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 
 typedef enum { FIRST, LAST } UpdatePass;
 
-static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySet * ks, Key * parentKey, UpdatePass run)
+static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySet * ks, Key * parentKey, Key * initialParent,
+					      UpdatePass run)
 {
 	const int bypassedSplits = 1;
+	int pgs_done = 0;
+	int pgc_done = 0;
 	for (size_t i = 0; i < split->size - bypassedSplits; i++)
 	{
 		if (!test_bit (split->syncbits[i], SPLIT_FLAG_SYNC))
@@ -557,13 +560,21 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 		for (int p = start; p < end; ++p)
 		{
 			int ret = 0;
-			if ((p == (STORAGE_PLUGIN + 1)) && handle->globalPlugins[POSTGETSTORAGE])
+			if (!pgs_done && (p == (STORAGE_PLUGIN + 1)) && handle->globalPlugins[POSTGETSTORAGE])
 			{
+				pgs_done = 1;
+				keySetName (parentKey, keyName (initialParent));
+				ksRewind (ks);
 				handle->globalPlugins[POSTGETSTORAGE]->kdbGet (handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+				keySetName (parentKey, keyName (split->parents[i]));
 			}
-			else if ((p == (NR_OF_PLUGINS - 1)) && handle->globalPlugins[POSTGETCLEANUP])
+			else if (!pgc_done && (p == (NR_OF_PLUGINS - 1)) && handle->globalPlugins[POSTGETCLEANUP])
 			{
+				pgc_done = 1;
+				keySetName (parentKey, keyName (initialParent));
+				ksRewind (ks);
 				handle->globalPlugins[POSTGETCLEANUP]->kdbGet (handle->globalPlugins[POSTGETCLEANUP], ks, parentKey);
+				keySetName (parentKey, keyName (split->parents[i]));
 			}
 
 			if (backend->getplugins[p])
@@ -574,7 +585,15 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 				}
 				else
 				{
-					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], ks, parentKey);
+					ksRewind (ks);
+					Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+					keyAddName (cutKey, strchr (keyName (parentKey), '/'));
+					KeySet * cutKS = ksCut (ks, cutKey);
+					ksRewind (cutKS);
+					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], cutKS, parentKey);
+					ksAppend (ks, cutKS);
+					ksDel (cutKS);
+					keyDel (cutKey);
 				}
 			}
 
@@ -729,31 +748,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (handle->globalPlugins[POSTGETSTORAGE] || handle->globalPlugins[POSTGETCLEANUP])
 	{
+		if (elektraGetDoUpdateWithGlobalHooks (NULL, split, NULL, parentKey, initialParent, FIRST) == -1)
+		{
+			goto error;
+		}
 
-		if (elektraGetDoUpdateWithGlobalHooks (NULL, split, NULL, parentKey, FIRST) == -1)
-		{
-			goto error;
-		}
-		ksClear (ks);
-		elektraSplitMerge (split, ks);
-		KeySet * dupKS = ksDup (ks);
-		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, LAST) == -1)
-		{
-			goto error;
-		}
-		Key * cur;
-		ksRewind (ks);
-		KeySet * newKeys = ksNew (0, KS_END);
-		while ((cur = ksNext (ks)) != NULL)
-		{
-			if (!ksLookup (dupKS, cur, KDB_O_NONE))
-			{
-				ksAppendKey (newKeys, cur);
-			}
-		}
-		ksDel (dupKS);
-		ksRewind (ks);
-		/* Now postprocess the updated keysets */
+		keySetName (parentKey, keyName (initialParent));
+
 		if (elektraSplitGet (split, parentKey, handle) == -1)
 		{
 			ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
@@ -761,8 +762,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 		ksClear (ks);
 		elektraSplitMerge (split, ks);
-		ksAppend (ks, newKeys);
-		ksDel (newKeys);
+
+		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
+		{
+			goto error;
+		}
 	}
 	else
 	{
