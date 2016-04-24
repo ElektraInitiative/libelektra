@@ -962,7 +962,7 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 		ksRewind (result);
 		return result;
 	}
-	ksAppendKey (result, meta);
+	ksAppendKey (result, (Key *)meta);
 	Key * currentKey = keyDup (meta);
 	keyAddName (currentKey, "#");
 	elektraArrayIncName (currentKey);
