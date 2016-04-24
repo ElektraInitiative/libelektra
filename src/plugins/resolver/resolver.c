@@ -905,9 +905,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 #if defined(__APPLE__)
 			// apple precision for futimes seems to be one second
 			pk->mtime.tv_sec ++;
-#endif
-
+#else
 			pk->mtime.tv_nsec ++;
+#endif
 
 			if (pk->mtime.tv_nsec >= 1000000000)
 			{
