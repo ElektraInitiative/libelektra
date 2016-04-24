@@ -234,6 +234,11 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 			Key * result = keyDup (key);
 			keySetName (result, keyString (origNameKey));
 			keySetMeta (result, ELEKTRA_ORIGINAL_NAME_META, 0);
+
+			if (!hasSync)
+			{
+				keyClearSync (result);
+			}
 			return result;
 		}
 	}
@@ -408,11 +413,11 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ksAppendKey (returned, key);
 		}
 	}
-	
+
 	keyIncRef (parentKey);
 	ksDel (iterateKs);
 	keyDecRef (parentKey);
-	
+
 	ksRewind (returned);
 	elektraFree (parentKeyName);
 	return 1; /* success */

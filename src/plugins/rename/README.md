@@ -129,6 +129,22 @@ user/rename
 user/rename/mixed/case/CONVERSION
 ```
 
+```
+% cat renameTest.ini
+test/removed/key = test
+
+% kdb mount renameTest.ini /rename ini rename get/case=toupper,set/case=keyname,/cut=REMOVED
+% kdb ls /rename
+user/rename/TEST/KEY
+
+% kdb set /rename
+Using name user/rename
+Create a new key user/rename with null value
+% cat renameTest.ini
+TEST/KEY = test
+```
+
+
 ## PLANNED OPERATIONS ##
 
 
