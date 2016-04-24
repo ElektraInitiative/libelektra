@@ -932,6 +932,21 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 
 	elektraUpdateFileTime (pk, parentKey);
 
+	if (fstat (fd, &buf) == -1)
+	{
+		ELEKTRA_ADD_WARNINGF (29, parentKey, "stat again failed (for debug): %s", strerror (errno));
+	}
+	else
+	{
+		if (!(pk->mtime.tv_sec == statSeconds (buf) && pk->mtime.tv_nsec == statNanoSeconds (buf)))
+		{
+			ELEKTRA_ADD_WARNINGF (29, parentKey, "stat again did not have same time (for debug): "
+				    "file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file "
+				    "name is \"%s\"",
+				    statSeconds (buf), statNanoSeconds (buf), pk->mtime.tv_sec, pk->mtime.tv_nsec, pk->filename);
+		}
+	}
+
 	if (buf.st_mode != pk->filemode)
 	{
 		// change mode to what it was before
