@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <kdbprivate.h> // for access to sync bit (keyClearSync)
+
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)
 #define TOUPPER 1
@@ -228,6 +230,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 	{
 		if (strcmp (keyString (origNameKey), keyName (key)))
 		{
+			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
 			Key * result = keyDup (key);
 			keySetName (result, keyString (origNameKey));
 			keySetMeta (result, ELEKTRA_ORIGINAL_NAME_META, 0);
@@ -238,6 +241,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 	{
 		if (configKey)
 		{
+			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
 			Key * result = keyDup (key);
 			keySetName (result, keyName (parentKey));
 			keyAddUnescapedBasePath (result, keyString (configKey));
@@ -249,6 +253,10 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 				keyAddUnescapedBasePath (result, relativePath);
 			}
 
+			if (!hasSync)
+			{
+				keyClearSync (result);
+			}
 			return result;
 		}
 	}
