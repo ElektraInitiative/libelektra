@@ -104,7 +104,15 @@ int ShellCommand::execute (Cmdline const &)
 			while (current.next ())
 			{
 				Key const & c = current.current ();
-				cout << c.getName () << " value: " << c.getString () << endl;
+				cout << c.getName ();
+				if (c.isString())
+				{
+					cout << " string: " << c.getString () << endl;
+				}
+				else
+				{
+					cout << " binary: " << c.getBinary() << " (length: " << c.getBinarySize() << ")" << endl;
+				}
 			}
 		}
 		else
