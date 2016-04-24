@@ -8,7 +8,7 @@
 - infos/metadata = rename/to rename/toupper rename/tolower rename/cut
 - infos/description = renaming of keys
 
-## INTRODUCTION ##
+# INTRODUCTION #
 
 
 This plugin can be used to perform rename operations on keys. This is useful if a backend does not provide keys
@@ -21,18 +21,25 @@ There are 2 types of transformations:
 * advanced
 
 
-## BASIC TRANSFORMATIONS ##
+# BASIC TRANSFORMATIONS #
 
 are applied before and after the advanced transformations.
 
-### GET ###
+## GET ##
+
+first transformation to be applied to all keys on kdbGet.
+
 `get/case`
 * toupper
 * tolower
 * unchanged    // this is the default value if no configuration is given
+
 converts the whole keyname below the parentKey to upper- or lowercase. if no configuration or `unchanged` is used no transformation is done here.
 
-### SET ###
+## SET ##
+
+last transformation to be applied to all keys on kdbSet.
+
 `set/case`
 * toupper
 * tolower
@@ -40,10 +47,12 @@ converts the whole keyname below the parentKey to upper- or lowercase. if no con
 * unchanged   // this is the default value if no configuration is given
 
 `toupper` or `tolower` tells the rename plugin to convert the whole keyname below below the parentKey to lower or uppercase.
+
 `unchanged` returnes the key to it's original name
+
 `keyname` tells the plugin to keep the name of the advanced transformation
 
-## ADVANCED TRANSFORMATIONS ##
+# ADVANCED TRANSFORMATIONS #
 
 ## CUT ##
 
