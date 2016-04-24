@@ -26,7 +26,7 @@ MergingKDB::MergingKDB (KDB & kdb) : KDB (kdb)
 {
 }
 
-MergingKDB::~MergingKDB ()
+MergingKDB::~MergingKDB () throw ()
 {
 }
 
