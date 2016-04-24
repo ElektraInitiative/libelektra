@@ -1,6 +1,14 @@
 This is a list of TODO items which do not fit in
 the other TODO categories which should be resolved in 0.8.
 
+
+== CONTRACT
+
+status:
+	add needsprivate (for abi)
+	relative keys?
+
+
 == META DATA LIBRARY ==
 
 (maybe generate similar to gen/liberror)
