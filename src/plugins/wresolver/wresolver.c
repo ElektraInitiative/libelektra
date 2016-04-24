@@ -379,7 +379,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 		// this can happen if the kdbGet() path found no file
 
 		// no conflict possible, so just return successfully
-		return 0;
+		return 1;
 	}
 
 	struct stat buf;
@@ -387,7 +387,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	if (stat (pk->filename, &buf) == -1)
 	{
 		ELEKTRA_ADD_WARNINGF (29, parentKey, "could not stat config file \"%s\", ", pk->filename);
-		// no file found
+		// no file found, nothing to do
 		return 0;
 	}
 
