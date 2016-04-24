@@ -1,5 +1,5 @@
 /**
- * \file
+ * @file
  *
  * \brief A plugin that converts keys to metakeys and vice versa
  *

@@ -16,6 +16,34 @@ with the required names or case.
 
 If keys are renamed, their original name is stored in the `origname` MetaKey.
 
+There are 2 types of transformations: 
+* basic
+* advanced
+
+
+## BASIC TRANSFORMATIONS ##
+
+are applied before and after the advanced transformations.
+
+### GET ###
+`get/case`
+* toupper
+* tolower
+* unchanged    // this is the default value if no configuration is given
+converts the whole keyname below the parentKey to upper- or lowercase. if no configuration or `unchanged` is used no transformation is done here.
+
+### SET ###
+`set/case`
+* toupper
+* tolower
+* keyname
+* unchanged   // this is the default value if no configuration is given
+
+`toupper` or `tolower` tells the rename plugin to convert the whole keyname below below the parentKey to lower or uppercase.
+`unchanged` returnes the key to it's original name
+`keyname` tells the plugin to keep the name of the advanced transformation
+
+## ADVANCED TRANSFORMATIONS ##
 
 ## CUT ##
 
