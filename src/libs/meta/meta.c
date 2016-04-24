@@ -12,6 +12,7 @@
 #include <kdbmeta.h>
 #include <kdbprivate.h>
 #include <kdbproposal.h>
+#include <kdbtypes.h>
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif
@@ -986,7 +987,7 @@ KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 typedef struct
 {
 	Key * key;
-	uint8_t isResolved;
+	kdb_octet_t isResolved;
 	unsigned long * deps;
 } _adjMatrix;
 
@@ -1210,7 +1211,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		adjMatrix[j].deps = elektraCalloc (sizeof (unsigned long) * size);
 	}
 	i = 0;
-	uint8_t hasOrder = 0;
+	kdb_octet_t hasOrder = 0;
 	if (keyGetMeta (localArray[0], "order")) hasOrder = 1;
 	unsigned int unresolved = 0;
 	for (int j = 0; j < size; ++j)
