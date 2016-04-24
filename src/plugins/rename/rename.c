@@ -408,8 +408,11 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ksAppendKey (returned, key);
 		}
 	}
+	
+	keyIncRef (parentKey);
 	ksDel (iterateKs);
-
+	keyDecRef (parentKey);
+	
 	ksRewind (returned);
 	elektraFree (parentKeyName);
 	return 1; /* success */
