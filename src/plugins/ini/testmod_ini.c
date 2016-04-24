@@ -453,6 +453,30 @@ static void test_insertOrder (char * source, char * compare)
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
+
+static void test_complexInsert(char *source, char *compare)
+{
+	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, srcdir_file (source), KEY_END);
+	Key * writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (30, KS_END);
+	KeySet * appendKS = ksNew (10, keyNew ("user/tests/ini-write/section/subsection", KEY_BINARY, KEY_END),
+				   keyNew ("user/tests/ini-write/section/subsection/subkey", KEY_VALUE, "subval", KEY_END),
+				   keyNew ("user/tests/ini-write/section/zkey3", KEY_VALUE, "3", KEY_END), KS_END);
+
+	PLUGIN_OPEN ("ini");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
+	keyDel (ksLookup (ks, parentKey, KDB_O_POP));
+	keyDel (parentKey);
+	ksAppend (ks, appendKS);
+	succeed_if (plugin->kdbSet (plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (compare_line_files (srcdir_file (compare), keyString (writeParentKey)), "files do not match as expected");
+	keyDel (ksLookup (ks, writeParentKey, KDB_O_POP));
+	keyDel (writeParentKey);
+	ksDel (appendKS);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 int main (int argc, char ** argv)
 {
 	printf ("INI	   TESTS\n");
@@ -476,6 +500,7 @@ int main (int argc, char ** argv)
 	test_array ("ini/array.ini");
 	test_preserveEmptyLines ("ini/emptyLines");
 	test_insertOrder ("ini/insertTest.input.ini", "ini/insertTest.output.ini");
+    test_complexInsert("ini/complexIn.ini", "ini/complexOut.ini");
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
