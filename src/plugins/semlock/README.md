@@ -18,3 +18,8 @@ because updates should be propagated soon as possible.
 The algorithm is described [here](https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem#Second_readers-writers_problem).
 
 The usage of this plugin could lead to deadlocks, due to an ongoing discussion (-10000) ([Link](https://github.com/ElektraInitiative/libelektra/pull/555)).
+
+## /dev/shm ##
+
+Is the location where the semaphores will be saved. `/dev/shm` should be mounted as tempfs, otherwise the
+semaphores can not be created (this issue only appears on older systems). More information [here](http://stackoverflow.com/questions/270113/how-do-i-stop-sem-open-failing-with-enosys).
