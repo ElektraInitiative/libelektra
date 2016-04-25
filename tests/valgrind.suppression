@@ -582,3 +582,16 @@
    fun:elektraPluginOpen
    fun:_ZN3kdb5tools6PluginC1ERKNS0_10PluginSpecERNS_6KeySetE
 }
+
+{
+   semlock plugin sem_open
+   Memcheck:Param
+   write(buf)
+   fun:__write_nocancel
+   fun:sem_open
+   fun:open*
+   fun:elektraSemlockOpen
+   fun:elektraPluginOpen
+   fun:test_OpenClose
+   fun:main
+}

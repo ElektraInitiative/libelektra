@@ -96,6 +96,10 @@ int elektraSemlockOpen (Plugin * handle, Key * errorKey)
 int elektraSemlockClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Data * data = elektraPluginGetData (handle);
+	if (!data)
+	{
+		return -1;
+	}
 	sem_close (data->readCount);
 	sem_close (data->writeCount);
 	sem_close (data->read);
