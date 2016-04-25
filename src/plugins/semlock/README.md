@@ -18,3 +18,7 @@ because updates should be propagated soon as possible.
 The algorithm is described [here](https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem#Second_readers-writers_problem).
 
 The usage of this plugin could lead to deadlocks, due to an ongoing discussion (-10000) ([Link](https://github.com/ElektraInitiative/libelektra/pull/555)).
+
+## ENOSYS ##
+
+If the semaphore can not be created and `errorno` is ENOSYS, consult this [link](http://stackoverflow.com/questions/270113/how-do-i-stop-sem-open-failing-with-enosys).
