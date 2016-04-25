@@ -52,11 +52,20 @@ static void errorOpen (int error, Key * parentKey)
 	{
 		ELEKTRA_SET_ERRORF (145, parentKey, "Open semaphore: %s\n", "ENOMEM");
 	}
+	else if (error == ENOSYS)
+	{
+		ELEKTRA_SET_ERRORF (145, parentKey, "Open semaphore: %s\n", "ENOSYS");
+	}
 }
 
 int elektraSemlockOpen (Plugin * handle, Key * errorKey)
 {
 	Data * data = elektraCalloc (sizeof (Data));
+	if (!data)
+	{
+		ELEKTRA_SET_ERRORF (145, errorKey, "Open semaphore: %s\n", "malloc fail");
+		return -1;
+	}
 	data->state = PRE;
 	data->sem_mutex = openMutex (SEM_MUTEX);
 	if (data->sem_mutex == SEM_FAILED)
