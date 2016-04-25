@@ -1200,7 +1200,10 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (conflictCut);
 	Key * specKey = keyNew ("spec", KEY_END);
 	KeySet * specKS = ksCut (returned, specKey);
-	pluginConfig->ks = ksDup (specKS);
+	if (pluginConfig->ks)
+		ksAppend (pluginConfig->ks, specKS);
+	else
+		pluginConfig->ks = ksDup (specKS);
 	elektraPluginSetData (handle, pluginConfig);
 	keyDel (specKey);
 	KeySet * ks = ksCut (returned, parentKey);
