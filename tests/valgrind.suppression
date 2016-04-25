@@ -592,6 +592,5 @@
    fun:open*
    fun:elektraSemlockOpen
    fun:elektraPluginOpen
-   fun:test_OpenClose
-   fun:main
+   ...
 }
