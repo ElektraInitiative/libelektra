@@ -74,7 +74,7 @@ set (KDB_VERSION_MICRO 15)
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 
 set (SO_VERSION 4)
-#set (SO_VERSION_TOOLS 3)
+set (SO_VERSION_TOOLS 0)
 
 #needs version above
 include (cmake/ElektraPackaging.cmake)

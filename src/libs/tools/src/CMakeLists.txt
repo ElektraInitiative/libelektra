@@ -20,6 +20,13 @@ if (BUILD_SHARED)
 
 	target_link_libraries (elektratools elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)
 
+	set_target_properties (elektratools PROPERTIES
+		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION_TOOLS}
+		CLEAN_DIRECT_OUTPUT 1
+		LINKER_LANGUAGE CXX
+	)
+
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektratools PROPERTIES
 			LINK_FLAGS "-Wl,--version-script=${__symbols_file}"
@@ -34,6 +41,13 @@ if (BUILD_FULL)
 
 	target_link_libraries (elektratools-full elektra-full)
 
+	set_target_properties (elektratools-full PROPERTIES
+		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION_TOOLS}
+		CLEAN_DIRECT_OUTPUT 1
+		LINKER_LANGUAGE CXX
+	)
+
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektratools-full PROPERTIES
 			LINK_FLAGS "-Wl,--version-script=${__symbols_file}"
@@ -47,6 +61,13 @@ if (BUILD_STATIC)
 	add_library (elektratools-static STATIC ${SOURCES})
 
 	target_link_libraries (elektratools-static elektra-static)
+
+	set_target_properties (elektratools-static PROPERTIES
+		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION_TOOLS}
+		CLEAN_DIRECT_OUTPUT 1
+		LINKER_LANGUAGE CXX
+	)
 
 	set_target_properties (elektratools-static PROPERTIES LINKER_LANGUAGE CXX)
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
