@@ -9,6 +9,11 @@ status:
 	relative keys?
 
 
+## ERRORS
+
+also rotate errors into warnings when they are overwritten
+
+
 == META DATA LIBRARY ==
 
 (maybe generate similar to gen/liberror)
