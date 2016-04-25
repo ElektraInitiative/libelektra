@@ -207,6 +207,18 @@ static void iniBomHandler (void * vhandle, short BOM)
 	}
 }
 
+static void setKeyOrderNumber (Key * sectionKey, Key * key)
+{
+	const Key * childMeta = keyGetMeta (sectionKey, "lastChild");
+	keySetMeta (key, "keyNo", keyString (childMeta));
+	Key * newChild = keyDup (childMeta);
+	keyAddName (newChild, keyString (newChild));
+	elektraArrayIncName (newChild);
+	keySetMeta (sectionKey, "lastChild", keyBaseName (newChild));
+	keyDel (newChild);
+	keySetMeta (key, "order", keyString (keyGetMeta (sectionKey, "order")));
+}
+
 static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key * appendKey, const char * value)
 {
 
@@ -224,6 +236,8 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		}
 		keySetString (appendKey, value);
 		keySetMeta (appendKey, "ini/arrayMember", "");
+		keySetMeta (appendKey, "order", keyString (keyGetMeta (existingKey, "order")));
+		keySetMeta (appendKey, "keyNo", keyBaseName (appendKey));
 		ksAppendKey (handle->result, appendKey);
 		keySetMeta (existingKey, "ini/array", keyBaseName (appendKey));
 		ksAppendKey (handle->result, existingKey);
@@ -243,13 +257,13 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		keySetMeta (appendKey, "ini/array", 0);
 		keySetMeta (appendKey, "parent", 0);
 		keyAddName (appendKey, "#");
-		keySetMeta (appendKey, "order", 0);
 		if (elektraArrayIncName (appendKey) == -1)
 		{
 			free (origVal);
 			return -1;
 		}
 		keySetString (appendKey, origVal);
+		keySetMeta (appendKey, "keyNo", keyBaseName (appendKey));
 		ksAppendKey (handle->result, keyDup (appendKey));
 		free (origVal);
 		if (elektraArrayIncName (appendKey) == -1)
@@ -258,6 +272,7 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		}
 		keySetMeta (appendKey, "parent", 0);
 		keySetString (appendKey, value);
+		keySetMeta (appendKey, "keyNo", keyBaseName (appendKey));
 		ksAppendKey (handle->result, keyDup (appendKey));
 		keyDel (appendKey);
 		keyDel (sectionKey);
@@ -265,17 +280,6 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 	return 1;
 }
 
-static void setKeyOrderNumber (Key * sectionKey, Key * key)
-{
-	const Key * childMeta = keyGetMeta (sectionKey, "lastChild");
-	keySetMeta (key, "keyNo", keyString (childMeta));
-	Key * newChild = keyDup (childMeta);
-	keyAddName (newChild, keyString (newChild));
-	elektraArrayIncName (newChild);
-	keySetMeta (sectionKey, "lastChild", keyBaseName (newChild));
-	keyDel (newChild);
-	keySetMeta (key, "order", keyString (keyGetMeta (sectionKey, "order")));
-}
 
 static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 {
@@ -887,21 +891,32 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 		if (strcmp (keyString (arrayMeta), keyBaseName (cur)) < 0)
 		{
 			keySetMeta (arrayParent, "ini/array", keyBaseName (newKey));
+			keySetMeta (newKey, "ini/arrayMember", "");
+			keySetMeta (newKey, "order", keyString (keyGetMeta (arrayParent, "order")));
+			keySetMeta (newKey, "keyNo", 0); // keyBaseName (newKey));
+			ksAppendKey (newKS, newKey);
 		}
 	}
 	else if (arrayParent && !keyIsBinary (arrayParent))
 	{
 		const char * oldVal = keyString (arrayParent);
 		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
-		keySetMeta (arrayParent, "binary", 0);
 
 		if (oldVal && strlen (oldVal))
 		{
 			Key * arrayInitKey = keyDup (arrayParent);
 			keyAddBaseName (arrayInitKey, "#0");
 			keySetString (arrayInitKey, oldVal);
+			keySetMeta (arrayInitKey, "ini/array", 0);
+			keySetMeta (arrayInitKey, "ini/arrayMember", "");
 			ksAppendKey (newKS, arrayInitKey);
+			keySetMeta (arrayInitKey, "order", keyString (keyGetMeta (arrayParent, "order")));
+			keySetMeta (arrayInitKey, "keyNo", 0); // keyBaseName(arrayInitKey));
 		}
+		ksAppendKey (newKS, newKey);
+		keySetMeta (newKey, "order", keyString (keyGetMeta (arrayParent, "order")));
+		keySetMeta (newKey, "keyNo", 0); // keyBaseName(newKey));
+		keySetMeta (newKey, "ini/arrayMember", "");
 	}
 	else if (arrayParent && (keyBaseName (newKey)[1] == '0'))
 	{
@@ -919,9 +934,16 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 			keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
 			ksAppendKey (newKS, arrayParent);
 			insertKeyIntoKeySet (parentKey, arrayParent, newKS);
+			keySetMeta (arrayParent, "lastChild", 0);
 		}
+		keySetBinary (newKey, 0, 0);
 		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
 		keyAddName (newKey, "..");
+		ksAppendKey (newKS, newKey);
+		insertKeyIntoKeySet (parentKey, newKey, newKS);
+		keySetMeta (newKey, "binary", 0);
+		keySetString (newKey, keyString (cur));
+		keySetMeta (newKey, "lastChild", 0);
 	}
 	else if (keyIsDirectBelow (parentKey, newKey))
 	{
@@ -996,9 +1018,11 @@ void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig *
 		{
 			arrayHandler (parentKey, newKey, cur, sectionKey, newKS);
 		}
-
-		ksAppendKey (newKS, newKey);
-		insertKeyIntoKeySet (parentKey, newKey, newKS);
+		else
+		{
+			ksAppendKey (newKS, newKey);
+			insertKeyIntoKeySet (parentKey, newKey, newKS);
+		}
 	}
 	keyDel (appendKey);
 }
