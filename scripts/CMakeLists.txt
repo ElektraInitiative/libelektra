@@ -26,7 +26,7 @@ if (INSTALL_SYSTEM_FILES)
 			RENAME kdb)
 	install (FILES elektraenv.sh
 			DESTINATION /etc/profile.d
-			RENAME kdb)
+			RENAME kdb.sh)
 endif()
 
 configure_file(
