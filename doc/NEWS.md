@@ -76,6 +76,21 @@ that are experimental, you would use:
 
 Details see [/doc/COMPILE.md].
 
+/etc/profile.d/kdb -> /etc/profile.d/kdb.sh
+
+new files:
+
+/usr/lib/elektra4/libelektra-profile.so*
+/usr/lib/elektra4/libelektra-dpkg.so*
+
+new links:
+
+/usr/lib/elektra4/libelektra-storage.so
+/usr/lib/elektra4/libelektra-resolver.so
+
+
+
+
 
 ## Development
 
