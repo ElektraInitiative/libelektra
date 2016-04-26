@@ -1,3 +1,137 @@
+# 0.8.16 Release
+
+These release notes are in preparation.
+Please create a PR if you want changes.
+The release is expected to be soon, whenever all critical bugs are fixed.
+
+
+In case you do not yet know about it, here is an abstract about Elektra:
+
+Elektra serves as a universal and secure framework to access configuration
+parameters in a global, hierarchical key database.
+Elektra provides a mature, consistent and easily comprehensible API.
+Its modularity effectively avoids code duplication across applications
+and tools regarding configuration tasks. Elektra abstracts from
+cross-platform-related issues and allows applications to be aware of other
+applications' configurations, leveraging easy application integration.
+
+See [http://libelektra.org](http://libelektra.org)
+
+## Highlights
+
+- Elektra now allows applications to support multiple
+  profiles with an plugin (without changes of Elektra applications)
+- Add plugin for dpkg database (read-only)
+- More flexible handling of default resolver/storage
+- More flexible CMake syntax for PLUGINS
+- Improvements in sync/merge of qt-gui
+- Source is now automatically formatted
+- Resolver can also handle conflicts that happen
+  within a single time tick (resolution of your clock)
+  and also better handles NFS and older file systems
+- Overall many important fixes and improvements
+
+## Other new features
+
+- Assignment for conditionals using `assign/condition`.
+- Support for multiple and nested statements
+- Support for `condition/validsuffix` which allows you to suffix
+  numbers with signs such as `%` or `$`.
+  It does not check if the suffixes are identical.
+- INI improved section, ordering and parsing
+
+## Bindings
+
+Marvin Mall improved the Java binding, fixed the appending
+of keysets, added lots of documentation, and many unit tests.
+
+
+## Documentation
+
+René Schwaiger<sanssecours> reworked most of the documentation and
+fixed countless spelling mistakes and other problems.
+
+- Peter Nirschl updated the status of the crypto-plugin
+  and fixed a typo
+- Daniel Bugl wrote a cascading tutorial
+- Daniel Bugl fixed all broken links
+- René Schwaiger also draw a new logo with SVG.
+  It is already used on github as avatar for the organisation.
+
+
+## Maintainer
+
+By default now ALL plugins are included.
+They will be automatically excluded if dependencies are missing.
+
+The PLUGINS syntax was vastly improved.
+Now many categories can be intermixed freely
+and also categories can be used for exclusion.
+
+E.g. to include all plugins without deps,
+that provide storage (except yajl) and are maintained, but not include all plugins
+that are experimental, you would use:
+
+	-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
+
+Details see [/doc/COMPILE.md].
+
+
+## Development
+
+You do not need to format the source manually anymore.
+Make sure that you run scripts/reformat-source before
+creating a PR.
+
+`clang-tidy` helps you to add blocks to have better
+maintainable code.
+
+Felix Berlakovich improved the performance of the augeas plugin and
+also contributed a script to benchmark different host plugin.
+His thesis can be downloaded from [here](http://www.libelektra.org/ftp/elektra/berlakovich2016universal.pdf).
+It contains benchmarks and discussions about augeas.
+
+The CMake function `add_plugin` was completely rewritten.
+Now you do not have to register your plugin at multiple points
+but instead information of README.md is parsed to correctly
+register the plugin to categories as stated by `infos/status`
+and `infos/provides`.
+
+
+## Compatibility
+
+This might be the last release supporting wheezy, because
+it gets more and more time-intensive to find workarounds
+for the old compiler. The C++11 regex do not work at all.
+
+
+
+
+
+
+## Portability
+
+- Peter Nirschl fixed code in the resolver that uses EBADMSG which was not
+  available in BSD.
+- Peter Nirschl improved detection of librt
+
+
+## Bugs
+
+- print null-environment correctly with `kdb getenv`
+
+
+stopped at e479018f32beb88e303541375d3ba428dfe8f6b3:
+
+ Merge pull request #562 from tom-wa/INI_fixes
+
+
+
+
+
+
+
+
 # 0.8.15 Release
 
 - guid: 1ab4a560-c286-46d2-a058-1a8e7e208fe8
