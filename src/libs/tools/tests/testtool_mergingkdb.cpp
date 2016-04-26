@@ -25,36 +25,32 @@ protected:
 	static const std::string testRoot;
 	static const std::string configFile;
 
-	KDB first;
 
 	KeySet firstReturned;
 	KeySet secondReturned;
 
-	Key parent;
-
-	MergingKDB mergingKDB;
 	ThreeWayMerge merger;
 
 	testing::Namespaces namespaces;
 	testing::MountpointPtr mp;
 
-	MergingKDBTest () : parent (testRoot, KEY_END), mergingKDB (), namespaces ()
+	MergingKDBTest () : namespaces ()
 	{
-		clearConfigFile ();
 	}
 
 	void clearConfigFile ()
 	{
 		KDB repo;
 		KeySet ks;
-		repo.get (ks, parent);
+		repo.get (ks, testRoot);
 		ks.clear ();
-		repo.set (ks, parent);
+		repo.set (ks, testRoot);
 	}
 
 	virtual void SetUp () override
 	{
 		mp.reset (new testing::Mountpoint (testRoot, configFile));
+		clearConfigFile ();
 	}
 
 	virtual void TearDown () override
@@ -68,6 +64,11 @@ const std::string MergingKDBTest::testRoot = "/tests/merging/";
 
 TEST_F (MergingKDBTest, HandlesUnconflictingKeySets)
 {
+	KDB first;
+	MergingKDB mergingKDB;
+
+	Key parent (testRoot, KEY_END);
+
 	first.get (firstReturned, parent);
 	firstReturned.append (Key ("system" + testRoot + "key", KEY_VALUE, "value", KEY_END));
 	first.set (firstReturned, parent);
@@ -79,6 +80,10 @@ TEST_F (MergingKDBTest, HandlesUnconflictingKeySets)
 
 TEST_F (MergingKDBTest, ThrowsIfNoConflictStrategyRegistered)
 {
+	KDB first;
+	MergingKDB mergingKDB;
+	Key parent (testRoot, KEY_END);
+
 	first.get (firstReturned, parent);
 	mergingKDB.get (secondReturned, parent);
 	std::this_thread::sleep_for (std::chrono::milliseconds (100));
@@ -92,6 +97,10 @@ TEST_F (MergingKDBTest, ThrowsIfNoConflictStrategyRegistered)
 
 TEST_F (MergingKDBTest, MergesResolvableConflicts)
 {
+	KDB first;
+	MergingKDB mergingKDB;
+	Key parent (testRoot, KEY_END);
+
 	AutoMergeConfiguration configuration;
 	configuration.configureMerger (merger);
 
