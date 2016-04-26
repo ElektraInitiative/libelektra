@@ -49,6 +49,7 @@ usr/lib/elektra4/libelektra-resolver_fm_xb_x.so*
 usr/lib/elektra4/libelektra-resolver_fm_xp_x.so*
 usr/lib/elektra4/libelektra-resolver_fm_xhp_x.so*
 usr/lib/elektra4/libelektra-resolver_fm_uhb_xb.so*
+usr/lib/elektra4/libelektra-resolver_fm_hpu_b.so*
 usr/lib/elektra4/libelektra-rename.so*
 usr/lib/elektra4/libelektra-csvstorage.so*
 usr/lib/elektra4/libelektra-enum.so*
