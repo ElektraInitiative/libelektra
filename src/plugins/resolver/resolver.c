@@ -68,6 +68,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 	p->dirmode = KDB_FILE_MODE | KDB_DIR_MODE;
 	p->removalNeeded = 0;
 	p->isMissing = 0;
+	p->timeFix = 1;
 
 	p->filename = 0;
 	p->dirname = 0;
@@ -830,6 +831,40 @@ static int elektraSetPrepare (resolverHandle * pk, Key * parentKey)
 	return 0;
 }
 
+static void elektraModifyFileTime (resolverHandle * pk)
+{
+#ifdef HAVE_CLOCK_GETTIME
+	// for linux let us calculate a new ns timestamp to use
+	struct timespec ts;
+	clock_gettime (CLOCK_MONOTONIC, &ts);
+
+	if (ts.tv_sec == pk->mtime.tv_sec)
+	{
+		// for filesystems not supporting subseconds, make sure the second is changed, too
+		pk->mtime.tv_sec  += pk->timeFix;
+		pk->timeFix *= -1; // toggle timefix
+	}
+	else
+	{
+		pk->mtime.tv_sec = ts.tv_sec;
+	}
+
+	if (ts.tv_nsec == pk->mtime.tv_nsec)
+	{
+		// also slightly change nsec (same direction as seconds):
+		pk->mtime.tv_nsec  += pk->timeFix;
+	}
+	else
+	{
+		pk->mtime.tv_nsec = ts.tv_nsec;
+	}
+#else
+	// otherwise use simple time toggling schema of seconds
+	pk->mtime.tv_sec  += pk->timeFix;
+	pk->timeFix *= -1; // toggle timefix
+#endif
+}
+
 
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
@@ -903,20 +938,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		}
 		else
 		{
-
-#if defined(__APPLE__)
-			// apple precision for futimes seems to be one second
-			pk->mtime.tv_sec++;
-#else
-			pk->mtime.tv_nsec++;
-#endif
-
-			if (pk->mtime.tv_nsec >= 1000000000)
-			{
-				pk->mtime.tv_nsec = 0;
-				pk->mtime.tv_sec++;
-			}
-
+			elektraModifyFileTime (pk);
 			// update file visible in filesystem:
 			int pfd = pk->fd;
 			pk->fd = fd;
