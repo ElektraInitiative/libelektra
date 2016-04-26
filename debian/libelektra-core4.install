@@ -60,3 +60,4 @@ usr/lib/elektra4/libelektra-filecheck.so*
 usr/lib/elektra4/libelektra-counter.so*
 usr/lib/elektra4/libelektra-spec.so*
 usr/lib/elektra4/libelektra-profile.so*
+usr/lib/elektra4/libelektra-dpkg.so*
