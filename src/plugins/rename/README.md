@@ -148,7 +148,7 @@ If you always want the keys in the configuration file upper case,
 but for your application lower case you would use:
 ```
 $ kdb mount caseconversion.ini /rename ini rename get/case=tolower,set/case=toupper
-$ kdb set user/rename/section/key valu
+$ kdb set user/rename/section/key value
 $ cat ~/.config/caseconversion.ini
 [SECTION]
 KEY = value
