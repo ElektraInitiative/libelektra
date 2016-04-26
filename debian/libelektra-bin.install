@@ -2,7 +2,7 @@ usr/bin/kdb
 usr/lib/libelektratools.so
 usr/lib/libelektratools.so*
 etc/profile.d/kdb
-etc/bash_completion.d/kdb
+etc/bash_completion.d/kdb.sh
 usr/lib/elektra/tool_exec/benchmark-createtree
 usr/lib/elektra/tool_exec/elektrify-getenv
 usr/lib/elektra/tool_exec/getenv
