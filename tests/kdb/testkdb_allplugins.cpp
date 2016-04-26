@@ -30,6 +30,7 @@ std::vector<std::string> getAllPlugins ()
 
 	// remove known problems
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "jni"), plugins.end ());
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "semlock"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_gcrypt"), plugins.end ());
 	return plugins;
 }
