@@ -91,10 +91,8 @@ void Plugin::loadInfo ()
 	Key infoKey ("system/elektra/modules", KEY_END);
 	infoKey.addBaseName (spec.getName ());
 
-	if (spec.getName () != plugin->name)
-	{
-		throw PluginWrongName ();
-	}
+	// Note: plugin->name might be different for default plugins
+	//       so make sure to always use spec.getName ()
 
 	if (!plugin->kdbGet)
 	{
