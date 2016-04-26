@@ -64,6 +64,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	elektraAddKeyValue (ks, parentKey, "version/SO_VERSION", "@SO_VERSION@");
 	elektraAddKeyValue (ks, parentKey, "version/SO_VERSION_TOOLS", "@SO_VERSION_TOOLS@");
+	elektraAddKeyValue (ks, parentKey, "version/SO_VERSION_GETENV", "@SO_VERSION_GETENV@");
 
 
 	key = keyDup (parentKey);
