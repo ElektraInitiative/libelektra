@@ -465,7 +465,8 @@ static char * elektraGetCwd (Key * warningsKey)
 			{
 				// give up, we cannot handle the problem
 				elektraFree (cwd);
-				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "getcwd failed with errno %d \"%s\", defaulting to /", errno, strerror(errno));
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey,
+						      "getcwd failed with errno %d \"%s\", defaulting to /", errno, strerror (errno));
 				return 0;
 			}
 

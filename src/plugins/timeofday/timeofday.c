@@ -83,7 +83,7 @@ int elektraTimeofdayOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 int elektraTimeofdayClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	char t[ARRAY_LENGTH];
-	TimeofdayInfo *ti = elektraPluginGetData(handle);
+	TimeofdayInfo * ti = elektraPluginGetData (handle);
 
 	KeySet * config = elektraPluginGetConfig (handle);
 	if (ksLookupByName (config, "/module", 0))

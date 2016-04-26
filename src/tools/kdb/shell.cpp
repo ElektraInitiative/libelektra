@@ -105,13 +105,13 @@ int ShellCommand::execute (Cmdline const &)
 			{
 				Key const & c = current.current ();
 				cout << c.getName ();
-				if (c.isString())
+				if (c.isString ())
 				{
 					cout << " string: " << c.getString () << endl;
 				}
 				else
 				{
-					cout << " binary: " << c.getBinary() << " (length: " << c.getBinarySize() << ")" << endl;
+					cout << " binary: " << c.getBinary () << " (length: " << c.getBinarySize () << ")" << endl;
 				}
 			}
 		}

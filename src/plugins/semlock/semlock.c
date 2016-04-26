@@ -54,7 +54,8 @@ static void errorOpen (int error, Key * parentKey)
 	}
 	else if (error == ENOSYS)
 	{
-		ELEKTRA_SET_ERRORF (145, parentKey, "Open semaphore: %s\n", "ENOSYS. /dev/shm should be mounted as tempfs. Please look in the README using \"kdb info semlock\"!");
+		ELEKTRA_SET_ERRORF (145, parentKey, "Open semaphore: %s\n",
+				    "ENOSYS. /dev/shm should be mounted as tempfs. Please look in the README using \"kdb info semlock\"!");
 	}
 }
 

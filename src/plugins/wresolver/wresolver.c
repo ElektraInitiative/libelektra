@@ -161,13 +161,15 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	if (dwRet == 0)
 	{
 		char buf[256];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256, NULL);
+		FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError (), MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256,
+			       NULL);
 		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed: %s, defaulting to /", buf);
 		dir[0] = 0;
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld",
+				      dwRet);
 		dir[0] = 0;
 	}
 	escapePath (dir);
@@ -383,7 +385,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_STATE, parentKey, "kdbSet() called before kdbGet()");
 		return -1;
 	case 1:
-		++ pk->state;
+		++pk->state;
 		break;
 	case 2:
 		pk->state = 1;
@@ -416,7 +418,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 		ELEKTRA_SET_ERRORF (
 			ELEKTRA_ERROR_CONFLICT, parentKey,
 			"conflict, file modification time stamp %ld is different than our time stamp %ld config file name is \"%s\", ",
-			(long) buf.st_mtime, (long) pk->mtime, pk->filename);
+			(long)buf.st_mtime, (long)pk->mtime, pk->filename);
 		pk->state = 0; // invalid state, need to kdbGet again
 		return -1;
 	}

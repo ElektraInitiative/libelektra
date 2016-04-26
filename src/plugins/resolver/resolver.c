@@ -152,12 +152,13 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 	{
 		if (errno == EAGAIN || errno == EACCES)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "conflict because other process writes to configuration indicated by file lock");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey,
+					   "conflict because other process writes to configuration indicated by file lock");
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed file lock with message: %s",
-					    strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
+					    "assuming conflict because of failed file lock with message: %s", strerror (errno));
 		}
 		return -1;
 	}
@@ -213,12 +214,13 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 		if (errno == EBUSY       // for trylock
 		    || errno == EDEADLK) // for error checking mutex, if enabled
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "conflict because other thread writes to configuration indicated by mutex lock");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey,
+					   "conflict because other thread writes to configuration indicated by mutex lock");
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed mutex lock with message: %s",
-					    strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
+					    "assuming conflict because of failed mutex lock with message: %s", strerror (errno));
 		}
 		return -1;
 	}
@@ -904,9 +906,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 
 #if defined(__APPLE__)
 			// apple precision for futimes seems to be one second
-			pk->mtime.tv_sec ++;
+			pk->mtime.tv_sec++;
 #else
-			pk->mtime.tv_nsec ++;
+			pk->mtime.tv_nsec++;
 #endif
 
 			if (pk->mtime.tv_nsec >= 1000000000)
