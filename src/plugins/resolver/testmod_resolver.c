@@ -188,6 +188,8 @@ void test_tempname ()
 
 void test_checkfile ()
 {
+	printf ("Check file\n");
+
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
@@ -236,6 +238,30 @@ void test_checkfile ()
 	ksDel (modules);
 }
 
+static void check_xdg ()
+{
+	KeySet * modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+	exit_if_fail (plugin, "did not find a resolver");
+
+	int abort = 0;
+	if (strchr (plugin->name, 'x') != NULL)
+	{
+		printf ("Will abort successfully because default resolver is an XDG resolver (%s)\n", plugin->name);
+		abort = 1;
+	}
+
+	elektraPluginClose (plugin, 0);
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+
+	if (abort)
+	{
+		exit (0);
+	}
+}
+
 
 int main (int argc, char ** argv)
 {
@@ -244,11 +270,14 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	test_checkfile ();
+
+	check_xdg ();
+
 	test_resolve ();
 	test_name ();
 	test_lockname ();
 	test_tempname ();
-	test_checkfile ();
 
 
 	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
