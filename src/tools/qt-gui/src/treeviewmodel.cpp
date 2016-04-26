@@ -456,7 +456,10 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 	{
 		if (node->getChildByName (name)->getKey ())
 		{
-			node->getChildByName (name)->updateNode (key);
+			if (node->getChildByName (name)->getKey ().getName() == key.getName())
+			{
+				node->getChildByName (name)->updateNode (key);
+			}
 		}
 
 		sink (node->getChildByName (name), keys, key);
@@ -680,8 +683,6 @@ void TreeViewModel::synchronize ()
 		std::cout << "guitest: after get" << std::endl;
 		printKeys (ours, ours, ours);
 #endif
-
-		m_base = ours;
 		m_base = ours;
 		createNewNodes (ours);
 	}
@@ -700,8 +701,6 @@ void TreeViewModel::synchronize ()
 			std::cout << "guitest: exception: now after set" << std::endl;
 			printKeys (theirs, result, ours);
 #endif
-
-			m_base = result;
 			m_base = result;
 			createNewNodes (result);
 		}
