@@ -48,14 +48,14 @@ of keysets, added lots of documentation, and many unit tests.
 
 ## Documentation
 
-René Schwaiger<sanssecours> reworked most of the documentation and
+Rene Schwaiger<sanssecours> reworked most of the documentation and
 fixed countless spelling mistakes and other problems.
 
 - Peter Nirschl updated the status of the crypto-plugin
   and fixed a typo
 - Daniel Bugl wrote a cascading tutorial
 - Daniel Bugl fixed all broken links
-- René Schwaiger also draw a new logo with SVG.
+- Rene Schwaiger also draw a new logo with SVG.
   It is already used on github as avatar for the organisation.
 
 
