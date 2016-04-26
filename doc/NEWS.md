@@ -88,6 +88,8 @@ new links:
 /usr/lib/elektra4/libelektra-storage.so
 /usr/lib/elektra4/libelektra-resolver.so
 
+libraries libelektratools and libelektragetenv now have SOVERSION 0
+
 
 
 
