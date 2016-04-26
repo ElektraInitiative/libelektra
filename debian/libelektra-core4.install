@@ -5,7 +5,7 @@ usr/lib/libelektra-kdb.so*
 usr/lib/libelektra-meta.so*
 usr/lib/libelektra-plugin.so*
 usr/lib/libelektra-proposal.so*
-usr/lib/libelektragetenv.so
+usr/lib/libelektragetenv.so*
 usr/lib/elektra4/libelektra-resolver.so*
 usr/lib/elektra4/libelektra-storage.so*
 usr/lib/elektra4/libelektra-dump.so*
