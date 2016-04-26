@@ -12,17 +12,28 @@ macro (copy_file src dest)
 endmacro (copy_file)
 
 
-# Create a symlink
-#create_symlink old new    - create a symbolic link new -> old
+# Create a symlink for a lib/plugin both in lib and at installation
 #
-macro (create_symlink old new)
-	execute_process (
-			COMMAND
-			${CMAKE_COMMAND} -E create_symlink
-				"${old}"
-				"${new}"
+# create_symlink src dest - create a symbolic link from src -> dest
+#
+macro (create_lib_symlink src dest)
+	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
+		"${src}"
+		"${dest}"
+		WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 		)
-endmacro (create_symlink)
+
+	set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
+
+	install(CODE "
+		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest} -> ${src}\")
+		execute_process(COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+			\"${src}\"
+			\"${dest}\"
+			WORKING_DIRECTORY \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}\"
+			)
+		")
+endmacro (create_lib_symlink src dest)
 
 # Make a directory
 #

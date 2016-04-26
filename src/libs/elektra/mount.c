@@ -362,6 +362,11 @@ int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 
 	while ((cur = ksNext (modules)) != 0)
 	{
+		// exclude "virtual" plugins where actual plugins could not deliever
+		// their contract properly
+		if (!strcmp (keyName (cur), "system/elektra/modules/resolver")) continue;
+		if (!strcmp (keyName (cur), "system/elektra/modules/storage")) continue;
+
 		Backend * backend = elektraBackendOpenModules (modules, errorKey);
 		elektraMountBackend (kdb, backend, errorKey);
 	}

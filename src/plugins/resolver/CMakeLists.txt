@@ -5,24 +5,6 @@ if (DEPENDENCY_PHASE)
 	add_plugintest (resolver)
 endif ()
 
-# TODO: remove resolver
-# following test cases still fail (testmod_resolver testtool_backend testkdb_simple)
-add_plugin(resolver
-	SOURCES
-		${SOURCES}
-	LINK_LIBRARIES
-		${CMAKE_THREAD_LIBS_INIT}
-		${CMAKE_REALTIME_LIBS_INIT}
-	COMPILE_DEFINITIONS
-		ELEKTRA_VARIANT_BASE=\"\"
-		ELEKTRA_VARIANT_USER=\"hpu\"
-		ELEKTRA_VARIANT_SYSTEM=\"b\"
-		ELEKTRA_PLUGIN_NAME=\"resolver\"
-		ELEKTRA_LOCK_FILE
-		ELEKTRA_LOCK_MUTEX
-	)
-
-
 set (SOURCES resolver.h resolver.c filename.c)
 
 if (KDB_DEFAULT_RESOLVER MATCHES "resolver_.*")

@@ -183,11 +183,18 @@ set (KDB_DB_INIT "elektra.ecf" CACHE STRING
 set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
 	"This storage plugin will be used initially (as default and for bootstrapping).")
 
+if (KDB_DEFAULT_STORAGE STREQUAL "storage")
+	message (FATAL_ERROR "KDB_DEFAULT_STORAGE must not be storage, pick a concrete storage, e.g. dump or ini")
+endif ()
 
-#TODO: Change default
-#set (KDB_DEFAULT_RESOLVER "resolver_fm_hpu_b" CACHE STRING
-set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
+
+set (KDB_DEFAULT_RESOLVER "resolver_fm_hpu_b" CACHE STRING
 	"This resolver plugin will be used initially (as default and for bootstrapping).")
+
+if (KDB_DEFAULT_RESOLVER STREQUAL "resolver")
+	message (FATAL_ERROR "KDB_DEFAULT_RESOLVER must not be resolver, pick one of the variants, e.g. resolver_fm_hpu_b or wresolver")
+endif ()
+
 
 
 #

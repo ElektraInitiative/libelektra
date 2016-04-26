@@ -49,15 +49,13 @@ if (output EQUAL -1)
 	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
 endif()
 
+mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+create_lib_symlink (
+		libelektra-${KDB_DEFAULT_STORAGE}.so
+		libelektra-storage.so
+		)
 
-
-#TODO:
-# - symlink for default plugin instead of having it in code?
-#
-#	shouldn't that be at installation time??
-#	mkdir (${CMAKE_BINARY_DIR}/dist/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
-#	create_symlink (
-#			libelektra-${BACKEND_DEFAULT}.so
-#			${CMAKE_BINARY_DIR}/dist/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}/libelektra-default.so
-#			)
-#	message (STATUS "Default backend: ${BACKEND_DEFAULT}")
+create_lib_symlink (
+		libelektra-${KDB_DEFAULT_RESOLVER}.so
+		libelektra-resolver.so
+		)
