@@ -144,6 +144,17 @@ Create a new key user/rename with null value
 TEST/KEY = test
 ```
 
+If you always want the keys in the configuration file upper case,
+but for your application lower case you would use:
+```
+$ kdb mount caseconversion.ini /rename ini rename get/case=tolower,set/case=toupper
+$ kdb set user/rename/section/key valu
+$ cat ~/.config/caseconversion.ini
+[SECTION]
+KEY = value
+```
+
+
 
 ## PLANNED OPERATIONS ##
 
