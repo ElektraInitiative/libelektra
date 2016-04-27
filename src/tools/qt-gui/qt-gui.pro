@@ -27,10 +27,11 @@ SUBDIRS += \
 
 unix: LIBS += -L/usr/local/lib/ -lelektra
 unix: LIBS += -L/usr/local/lib/ -lelektratools
+unix: LIBS += -L/usr/local/lib/ -lelektra-ease
 unix: LIBS += -L/usr/local/lib/ -lmarkdown
 
 INCLUDEPATH += /usr/local/include/elektra
-INCLUDEPATH += src/markdownconverter
 INCLUDEPATH += ../../libtools/include/
 INCLUDEPATH += ../../libtools/include/merging
 INCLUDEPATH += ../../include/
+INCLUDEPATH += src/markdownconverter

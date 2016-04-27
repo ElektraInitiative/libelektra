@@ -14,7 +14,6 @@
 #include <backends.hpp>
 #include <discountmarkdownconverter.h>
 #include <markdowndocument.h>
-#include <plugindatabase.hpp>
 #include <string>
 #include <vector>
 

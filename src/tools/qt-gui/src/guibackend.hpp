@@ -12,7 +12,7 @@
 #include "treeviewmodel.hpp"
 #include <QObject>
 #include <QStringList>
-#include <backend.hpp>
+#include <backendbuilder.hpp>
 
 /**
  * @brief The GUIBackend class. It interacts with the wizard in the GUI to create new backends.

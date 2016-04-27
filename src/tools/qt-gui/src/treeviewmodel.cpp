@@ -453,7 +453,10 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 	{
 		if (node->getChildByName (name)->getKey ())
 		{
-			node->getChildByName (name)->updateNode (key);
+			if (node->getChildByName (name)->getKey ().getName() == key.getName())
+			{
+				node->getChildByName (name)->updateNode (key);
+			}
 		}
 
 		sink (node->getChildByName (name), keys, key);
@@ -642,7 +645,6 @@ void TreeViewModel::synchronize ()
 		std::cout << "guitest: after get" << std::endl;
 		printKeys (ours, ours, ours);
 #endif
-
 		createNewNodes (ours);
 	}
 	catch (MergingKDBException const & exc)
@@ -652,8 +654,6 @@ void TreeViewModel::synchronize ()
 		std::cout << "guitest: exception: now after set" << std::endl;
 		printKeys (theirs, result, ours);
 #endif
-
-		QStringList conflicts = getConflicts (exc.getConflicts ());
 		emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occured."), conflicts.join ("\n"));
 	}
 	catch (KDBException const & e)
