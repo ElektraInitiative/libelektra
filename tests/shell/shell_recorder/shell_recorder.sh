@@ -6,6 +6,7 @@ DBFile=
 Storage=
 MountArgs=
 DiffType=File
+OutFile=`mktemp`
 
 RETCMP=
 ERRORSCMP=
@@ -60,13 +61,13 @@ execute()
 
     echo "$command"
 
-    echo -e "CMD: $command\0" >> ./protocol
+    echo -e "CMD: $command\0" >> $OutFile
 
     bash -c "kdb $command 2>stderr 1>stdout"
 
     RETVAL="$?"
 
-    echo -e "RET: $RETVAL\0" >> ./protocol
+    echo -e "RET: $RETVAL\0" >> $OutFile
 
     if [ ! -z "$RETCMP" ];
     then
@@ -74,7 +75,7 @@ execute()
         if [ "$?" -ne "0" ];
         then
             echo "Return value $RETVAL doesn't match $RETCMP"
-            echo -e "=== FAILED return value doesn't match expected pattern $RETCMP\0" >> ./protocol
+            echo -e "=== FAILED return value doesn't match expected pattern $RETCMP\0" >> $OutFile
         fi
     fi
 
@@ -101,14 +102,14 @@ execute()
 
     STDERR=$(<./stderr)
 
-    echo -e "STDERR: $STDERR\0" >> ./protocol
+    echo -e "STDERR: $STDERR\0" >> $OutFile
     if [ ! -z "$STDERRCMP" ];
     then
         echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDERR doesn't match $STDERRCMP"
-            echo -e "=== FAILED stderr doesn't match expected patter $STDERRCMP\0" >> ./protocol
+            echo -e "=== FAILED stderr doesn't match expected patter $STDERRCMP\0" >> $OutFile
         fi
     fi
 
@@ -116,14 +117,14 @@ execute()
 
     STDOUT=$(<./stdout)
 
-    echo -e "STDOUT: $STDOUT\0" >> ./protocol
+    echo -e "STDOUT: $STDOUT\0" >> $OutFile
     if [ ! -z "$STDOUTCMP" ];
     then
         echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDOUT doesn't match $STDOUTCMP"
-            echo -e "=== FAILED stdout doesn't match expected pattern $STDOUTCMP\0" >> ./protocol
+            echo -e "=== FAILED stdout doesn't match expected pattern $STDOUTCMP\0" >> $OutFile
         fi
     fi
 
@@ -131,14 +132,14 @@ execute()
 
     WARNINGS=$(echo "$STDERR" | grep -Po "(?<=Warning number: )([[:digit:]]*)" | tr '\n' ',')
 
-    echo -e "WARNINGS: $WARNINGS\0" >> ./protocol
+    echo -e "WARNINGS: $WARNINGS\0" >> $OutFile
     if [ ! -z "$WARNINGSCMP" ];
     then
         echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "WARNINGS doesn't match $WARNINGSCMP"
-            echo -e "=== FAILED Warnings don't match expected pattern $WARNINGSCMP\0" >> ./protocol
+            echo -e "=== FAILED Warnings don't match expected pattern $WARNINGSCMP\0" >> $OutFile
         fi
     fi
 
@@ -148,32 +149,32 @@ execute()
     ERRORS=$(echo "$STDERR" | grep -Po "(?<=Error \(\#)([[:digit:]]*)" | tr '\n' ',')
 
 
-    echo -e "ERRORS: $ERRORS\0" >> ./protocol
+    echo -e "ERRORS: $ERRORS\0" >> $OutFile
     if [ ! -z "$ERRORSCMP" ];
     then
         echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "ERRORS doesn't match $ERRORSCMP"
-            echo -e "=== FAILED Errors don't match expected pattern $ERRORSCMP\0" >> ./protocol
+            echo -e "=== FAILED Errors don't match expected pattern $ERRORSCMP\0" >> $OutFile
         fi
     fi
 
 
 
-    echo -e "DIFF: $DIFF\0" >> ./protocol
+    echo -e "DIFF: $DIFF\0" >> $OutFile
     if [ ! -z "$DIFFCMP" ];
     then
         echo "$DIFF" | grep -Eqz --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "Changes to $DBFile don't match $DIFFCMP"
-            echo -e "=== FAILED changes to database file ($DBFILE) don't match $DIFFCMP\0" >> ./protocol
+            echo -e "=== FAILED changes to database file ($DBFILE) don't match $DIFFCMP\0" >> $OutFile
         fi
     fi
 
 
-    echo >> ./protocol 
+    echo >> $OutFile 
 }
 
 run_script()
@@ -238,17 +239,19 @@ run_script()
     done < $FILE
 }
 
-rm ./protocol 2>/dev/null
 rm ./stdout 2>/dev/null
 rm ./stderr 2>/dev/null
 
 if [ "$#" -lt "1" ] || [ "$#" -gt "2" ];
 then
     echo "Usage: ./shell_recorder inputscript [protocol to compare]"
-    exit 0
+    rm $OutFile
+	exit 0
 fi
 
 BACKUP=1
+
+echo "protocol file: $OutFile"
 
 run_script
 
@@ -260,7 +263,7 @@ EVAL=0
 
 if [ "$#" -eq "2" ];
 then
-    RESULT=$(diff -N --text "$2" ./protocol 2>/dev/null)
+    RESULT=$(diff -N --text "$2" "$OutFile" 2>/dev/null)
     if [ "$?" -ne "0" ];
     then
         echo -e "=======================================\nReplay test failed, protocols differ"
