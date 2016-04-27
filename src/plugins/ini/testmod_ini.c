@@ -133,22 +133,33 @@ static void test_commentIniRead (char * fileName)
 
 	Key * key = ksLookupByName (ks, "user/tests/ini-read/nosectionkey", KDB_O_NONE);
 	exit_if_fail (key, "nosectionkey not found");
-	const Key * noSectionComment = keyGetMeta (key, "comment");
+	const Key * noSectionComment = keyGetMeta (key, "comments/#0");
 	exit_if_fail (noSectionComment, "nosectionkey contained no comment");
-	succeed_if (!strcmp ("nosection comment1\nnosection comment2", keyString (noSectionComment)),
-		    "nosectionkey contained an invalid comment");
+	succeed_if (!strcmp (";nosection comment1", keyString (noSectionComment)), "nosectionkey contained an invalid comment");
+	noSectionComment = keyGetMeta (key, "comments/#1");
+	exit_if_fail (noSectionComment, "nosectionkey contained no comment");
+	succeed_if (!strcmp (";nosection comment2", keyString (noSectionComment)), "nosectionkey contained an invalid comment");
+
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1", KDB_O_NONE);
 	exit_if_fail (key, "section1 not found");
-	const Key * sectionComment = keyGetMeta (key, "comment");
-	exit_if_fail (sectionComment, "nosectionkey contained no comment");
-	succeed_if (!strcmp ("section comment1\nsection comment2", keyString (sectionComment)), "section1 contained an invalid comment");
+	const Key * sectionComment = keyGetMeta (key, "comments/#0");
+	exit_if_fail (sectionComment, "sectionkey contained no comment");
+	succeed_if (!strcmp (";section comment1", keyString (sectionComment)), "sectionkey contained an invalid comment");
+	sectionComment = keyGetMeta (key, "comments/#1");
+	exit_if_fail (sectionComment, "sectionkey contained no comment");
+	succeed_if (!strcmp (";section comment2", keyString (sectionComment)), "sectionkey contained an invalid comment");
+
 
 	key = ksLookupByName (ks, "user/tests/ini-read/section1/key1", KDB_O_NONE);
 	exit_if_fail (key, "key1 not found");
-	const Key * keyComment_ = keyGetMeta (key, "comment");
+	const Key * keyComment_ = keyGetMeta (key, "comments/#0");
 	exit_if_fail (keyComment_, "key1 contained no comment");
-	succeed_if (!strcmp ("key comment1\nkey comment2", keyString (keyComment_)), "key1 contained an invalid comment");
+	succeed_if (!strcmp (";key comment1", keyString (keyComment_)), "key1 contained an invalid comment");
+	keyComment_ = keyGetMeta (key, "comments/#1");
+	exit_if_fail (keyComment_, "key1 contained no comment");
+	succeed_if (!strcmp (";key comment2", keyString (keyComment_)), "key1 contained an invalid comment");
+
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -162,14 +173,14 @@ static void test_commentIniWrite (char * fileName)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	KeySet * ks = ksNew (
-		30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_COMMENT,
-			    "nosection comment1\nnosection comment2", KEY_END),
-		keyNew ("user/tests/ini-write/section1", KEY_BINARY,
-
-			KEY_COMMENT, "section comment1\nsection comment2", KEY_END),
-		keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_COMMENT, "key comment1\nkey comment2", KEY_END),
-		KS_END);
+	KeySet * ks =
+		ksNew (30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_META, "comments", "#1", KEY_META,
+				   "comments/#0", ";nosection comment1", KEY_META, "comments/#1", ";nosection comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1", KEY_BINARY, KEY_META, "comments", "#1", KEY_META, "comments/#0",
+			       ";section comment1", KEY_META, "comments/#1", ";section comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_META, "comments", "#1", KEY_META,
+			       "comments/#0", ";key comment1", KEY_META, "comments/#1", ";key comment2", KEY_END),
+		       KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
@@ -437,6 +448,54 @@ static void test_insertOrder (char * source, char * compare)
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
+
+static void test_complexInsert (char * source, char * compare)
+{
+	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, srcdir_file (source), KEY_END);
+	Key * writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (30, KS_END);
+	KeySet * appendKS = ksNew (10, keyNew ("user/tests/ini-write/section/subsection", KEY_BINARY, KEY_END),
+				   keyNew ("user/tests/ini-write/section/subsection/subkey", KEY_VALUE, "subval", KEY_END),
+				   keyNew ("user/tests/ini-write/section/zkey3", KEY_VALUE, "3", KEY_END), KS_END);
+
+	PLUGIN_OPEN ("ini");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
+	keyDel (ksLookup (ks, parentKey, KDB_O_POP));
+	keyDel (parentKey);
+	ksAppend (ks, appendKS);
+	succeed_if (plugin->kdbSet (plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (compare_line_files (srcdir_file (compare), keyString (writeParentKey)), "files do not match as expected");
+	keyDel (ksLookup (ks, writeParentKey, KDB_O_POP));
+	keyDel (writeParentKey);
+	ksDel (appendKS);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
+static void test_arrayInsert (char * source, char * compare)
+{
+	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, srcdir_file (source), KEY_END);
+	Key * writeParentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system/array", KEY_VALUE, "1", KEY_END), KS_END);
+	KeySet * ks = ksNew (30, KS_END);
+	KeySet * appendKS = ksNew (10, keyNew ("user/tests/ini-write/a/section/array/#0", KEY_VALUE, "0", KEY_END),
+				   keyNew ("user/tests/ini-write/a/section/array/#1", KEY_VALUE, "1", KEY_END),
+				   keyNew ("user/tests/ini-write/a/section/array/#2", KEY_VALUE, "2", KEY_END),
+				   keyNew ("user/tests/ini-write/a/section/array/#3", KEY_VALUE, "3", KEY_END), KS_END);
+
+	PLUGIN_OPEN ("ini");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
+	keyDel (ksLookup (ks, parentKey, KDB_O_POP));
+	keyDel (parentKey);
+	ksAppend (ks, appendKS);
+	succeed_if (plugin->kdbSet (plugin, ks, writeParentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (compare_line_files (srcdir_file (compare), keyString (writeParentKey)), "files do not match as expected");
+	keyDel (ksLookup (ks, writeParentKey, KDB_O_POP));
+	keyDel (writeParentKey);
+	ksDel (appendKS);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 int main (int argc, char ** argv)
 {
 	printf ("INI	   TESTS\n");
@@ -460,6 +519,8 @@ int main (int argc, char ** argv)
 	test_array ("ini/array.ini");
 	test_preserveEmptyLines ("ini/emptyLines");
 	test_insertOrder ("ini/insertTest.input.ini", "ini/insertTest.output.ini");
+	test_complexInsert ("ini/complexIn.ini", "ini/complexOut.ini");
+	test_arrayInsert ("ini/arrayInsertIn.ini", "ini/arrayInsertOut.ini");
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

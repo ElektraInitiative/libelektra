@@ -110,6 +110,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 	char * end;
 	char * name;
 	char * value;
+	char delim = config->delim;
 	int lineno = 0;
 	int error = 0;
 
@@ -139,7 +140,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 #endif
 		if (*start == '\n')
 		{
-			if (!config->commentHandler (user, " ") && !error) error = lineno;
+			if (!config->commentHandler (user, "") && !error) error = lineno;
 			continue;
 		}
 		start = lskip (line);
@@ -207,7 +208,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		}
 		else if (isComment (line))
 		{
-			start += 1;
+			start = line;
 			end = line + (strlen (line) - 1);
 			if (*end == '\n') *end = '\0';
 			if (!config->commentHandler (user, start) && !error) error = lineno;
@@ -220,7 +221,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			unsigned int assign = 0;
 			while (*ptr)
 			{
-				if (*ptr == '=' || *ptr == ':')
+				if (*ptr == delim)
 				{
 					++assign;
 				}
@@ -230,8 +231,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			if (assign == 1)
 			{
 				name = start;
-				end = strchr (start, '=');
-				if (!end) end = strchr (start, ':');
+				end = strchr (start, delim);
 				if (*name == '"')
 				{
 					if (*(end - 2) == '"')
@@ -269,12 +269,11 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 						name = prev_name;
 					}
 				}
-				if (*end != '=' && *end != ':')
+				if (*end != delim)
 				{
 					ptr = lskip (end + 1);
-					end = strchr (ptr, '=');
-					if (!end) end = strchr (ptr, ':');
-					if (*end == '=' || *end == ':') *end = '\0';
+					end = strchr (ptr, delim);
+					if (*end == delim) *end = '\0';
 				}
 				else
 				{
@@ -378,7 +377,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				ptr = start + 1;
 				while (*ptr)
 				{
-					if (*ptr == '=' || *ptr == ':')
+					if (*ptr == delim)
 					{
 						if (*(ptr + 1) == '"' || *(ptr + 2) == '"' || *(ptr - 1) == '"' || *(ptr - 2) == '"') break;
 					}
@@ -386,12 +385,12 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				if (*ptr)
 				{
-					end = strstr (ptr + 1, " = ");
-					if (!end) end = strstr (ptr + 1, " : ");
+					char tmpDel[4] = { ' ', delim, ' ', '\0' };
+					end = strstr (ptr, tmpDel);
 					name = NULL;
 					if (end)
 					{
-						// keyname == ":", "=", " : " or " = "
+						// keyname == "=" or " = " where '=' is the delimiter
 						if (*(ptr + 1) == '"')
 						{
 							*(ptr + 1) = '\0';
@@ -408,7 +407,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 							*(ptr - 2) = '\0';
 						name = ptr;
 					}
-					else if (*ptr == '=' || *ptr == ':')
+					else if (*ptr == delim)
 					{
 						*ptr = '\0';
 						end = rstrip (start);
@@ -421,8 +420,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					}
 					else
 					{
-						if (!end) end = strrstr (start + 1, " = ");
-						if (!end) end = strrstr (start + 1, " : ");
+						if (!end) end = strrstr (start + 1, tmpDel);
 						*end = '\0';
 						ptr = end + 2;
 						end = rstrip (start);

@@ -31,6 +31,7 @@ struct IniConfig
 	unsigned short supportMultiline;
 	unsigned short keyToMeta;
 	char * continuationString;
+	char delim;
 };
 
 /* Parse given INI-style file. May have [section]s, name=value pairs
