@@ -27,15 +27,9 @@ macro (create_lib_symlink src dest)
 
 	install(CODE "
 		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest} -> ${src}\")
-		execute_process (COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
-			\"${src}\"
-			\"${dest}\"
-			WORKING_DIRECTORY \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}\"
+		execute_process (COMMAND ln -f -s \"${src}\" \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest}\"
 			RESULT_VARIABLE RET
 			)
-#		execute_process (COMMAND ln -s \"${src}\" \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest}\"
-#			RESULT_VARIABLE RET
-#			)
 		if (RET)
 			message (WARNING \"Could not install symlink\")
 		endif ()
