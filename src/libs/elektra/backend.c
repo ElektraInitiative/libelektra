@@ -342,8 +342,14 @@ Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
 		return 0;
 	}
 
+
+
 	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
-	keyAddBaseName (mp, keyBaseName (cur));
+
+	// for "virtual" plugins the keyBaseName (cur) would be "resolver" or "storage"
+	// thus we use plugin->name here, which must be handled by kdbGet() of every
+	// plugin properly by convention.
+	keyAddBaseName (mp, plugin->name);
 
 	backend->getplugins[0] = plugin;
 	plugin->refcounter = 1;
