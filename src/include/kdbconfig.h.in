@@ -41,9 +41,25 @@
 
 #define KDB_DB_INIT              "@KDB_DB_INIT@"
 
+/** Only to be used where really the specific
+  * storage is needed!
+  * Note that for mounting/export and so on
+  * KDB_STORAGE should be preferred.*/
 #define KDB_DEFAULT_STORAGE      "@KDB_DEFAULT_STORAGE@"
 
+/** Only to be used where really the specific
+  * resolver is needed!
+  * Note that for mounting/export and so on
+  * KDB_STORAGE should be preferred.*/
 #define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"
+
+/** To be used if you want the currently
+  * build-in default storage, whatever it is. */
+#define KDB_STORAGE      "storage"
+
+/** To be used if you want the currently
+  * build-in default resolver, whatever it is. */
+#define KDB_RESOLVER     "resolver"
 
 #define ELEKTRA_PLUGINS          "@ADDED_PLUGINS@"
 
