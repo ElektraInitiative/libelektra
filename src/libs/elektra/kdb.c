@@ -801,13 +801,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
-	if (handle->globalPlugins[POSTGETSTORAGE])
+	if (handle && handle->globalPlugins[POSTGETSTORAGE])
 	{
 		handle->globalPlugins[POSTGETSTORAGE]->kdbGet (handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-	elektraSplitUpdateFileName (split, handle, parentKey);
+	if (handle) elektraSplitUpdateFileName (split, handle, parentKey);
 	keyDel (initialParent);
 	elektraSplitDel (split);
 	errno = errnosave;
