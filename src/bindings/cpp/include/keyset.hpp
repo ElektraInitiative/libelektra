@@ -9,6 +9,10 @@
 #ifndef ELEKTRA_KEYSET_HPP
 #define ELEKTRA_KEYSET_HPP
 
+#ifndef ELEKTRA_WRONG
+#define ELEKTRA_WRONG // make swig happy
+#endif
+
 #include <string>
 
 #include <key.hpp>
@@ -54,6 +58,8 @@ public:
 	inline KeySet ();
 	inline KeySet (ckdb::KeySet * k);
 	inline KeySet (const KeySet & other);
+
+	ELEKTRA_WRONG explicit KeySet(Key, ...);
 
 	inline explicit KeySet (size_t alloc, ...) ELEKTRA_SENTINEL;
 	inline explicit KeySet (VaAlloc alloc, va_list ap);
