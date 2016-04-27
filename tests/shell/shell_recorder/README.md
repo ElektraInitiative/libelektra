@@ -42,6 +42,7 @@ A command starts with `<` followed by the usual kdb commands.
 
 ### Basic ###
 
+This testcase uses the dump-format to validate database changes. the first DIFF tells the shell recorder to watch for the line `> keyNew.*user/test/key3` in the diff of the config files after the command `kdb set /test/key val` is executed. The second DIFF + set work the same, but, because this time the line `> keyNew.*user/test/key3` can't be found in the diff, yields an error
 ```
  % cat db_changes.dat
 
@@ -91,7 +92,6 @@ DIFF: 2c2
 > keyNew 15 5
 > user/test/key2val2
 === FAILED changes to database file () don't match (> keyNew.*user/test/key3)
-
 ```
 
 
