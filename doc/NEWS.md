@@ -20,7 +20,7 @@ See [http://libelektra.org](http://libelektra.org)
 ## Highlights
 
 - Elektra now allows applications to support multiple
-  profiles with an plugin (without changes of Elektra applications)
+  profiles with a plugin (without changes to Elektra applications)
 - Add plugin for dpkg database (read-only)
 - More flexible handling of default resolver/storage
 - More flexible CMake syntax for PLUGINS
@@ -55,7 +55,7 @@ fixed countless spelling mistakes and other problems.
   and fixed a typo
 - Daniel Bugl wrote a cascading tutorial
 - Daniel Bugl fixed all broken links
-- René Schwaiger also draw a new logo with SVG.
+- René Schwaiger also drew a new logo with SVG.
   It is already used on github as avatar for the organisation.
 
 
