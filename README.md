@@ -13,16 +13,16 @@ applications' configurations, leveraging easy application integration.
 
 Elektra consists of three parts:
 
-1.) *LibElektra* is a modular configuration access toolkit to
-    construct and integrate applications into a global,
-    hierarchical key database. The building blocks are:
-    - language bindings (inclusive high-level interfaces)
-    - GenElektra, the code generator for type-safe bindings
-    - plugins for configuration access behaviour and validation
-2.) *SpecElektra* is a configuration specification language
-    that is easy to use and self-contained in the same key database (i.e.
-    written in any of the configuration file formats Elektra supports).
-3.) Tools on top of LibElektra for administrators, such as CLI tools and GUIs.
+1. *LibElektra* is a modular configuration access toolkit to
+   construct and integrate applications into a global,
+   hierarchical key database. The building blocks are:
+   - language bindings (inclusive high-level interfaces)
+   - GenElektra, the code generator for type-safe bindings
+   - plugins for configuration access behaviour and validation
+2. *SpecElektra* is a configuration specification language
+   that is easy to use and self-contained in the same key database (i.e.
+   written in any of the configuration file formats Elektra supports).
+3. Tools on top of LibElektra for administrators, such as CLI tools and GUIs.
 
 To highlight a few concrete things about Elektra, configuration data can come from any
 data source, but usually comes from configuration files that are [_mounted_](doc/help/elektra-mounting.md) into Elektra
