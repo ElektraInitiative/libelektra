@@ -273,6 +273,7 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 		}
 		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
 		{
+			kdb->globalPlugins[i] = NULL;
 			if (!strcmp (placement, globalPlacements[i]))
 			{
 #if DEBUG && VERBOSE
